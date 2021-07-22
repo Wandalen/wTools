@@ -988,7 +988,7 @@ function sourceCode( test )
   function program()
   {
     const _ = require( toolsPath );
-    _.include( 'wFiles' );
+    _.include( 'wProcess' );
     throw Error( 'Uncaught error' );
   }
 
