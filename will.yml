@@ -51,6 +51,11 @@ build:
       - step::clean.build.out.*=1
       - step::transpile.build.proto.release.*=1
       - step::reflect.module.files.*=1
+  build.release.min :
+    steps :
+      - step::clean.release.min
+      - step::transpile.build.release.min
+      - step::reflect.module.files.release.no.tests
   build.debug.tests :
     criterion :
       debug : debug
@@ -264,6 +269,12 @@ reflector:
       '**.test*' : 0
       '**.test/**' : 0
       '{path::proto}/**' : '{path::out.build.*=1}/Main.s'
+  transpile.reflect.release.min :
+    inherit : predefined.*
+    filePath :
+      '**.test*' : 0
+      '**.test/**' : 0
+      '{path::proto}/**' : '{path::out.release.min}/Main.s'
   transpile.reflect.tests :
     inherit : predefined.*
     criterion :
@@ -356,9 +367,9 @@ step:
     inherit : files.transpile
     filePath : reflector::transpile.reflect.proto.*=1
     entry : '{path::in}/proto/wtools/abase/l1/Include.s'
-    transpilingStrategy : [ 'Uglify' ]
-    optimization : 9
-    minification : 9
+    transpilingStrategy : [ 'Nop' ]
+    optimization : 0
+    minification : 0
     diagnosing : 0
     beautifing : 0
     criterion :
@@ -370,12 +381,21 @@ step:
     entry : '{path::in}/proto/wtools/abase/l1/Include.s'
     transpilingStrategy : [ 'Uglify' ]
     optimization : 9
-    minification : 9
-    diagnosing : 1
-    beautifing : 1
+    minification : 0
+    diagnosing : 0
+    beautifing : 0
     criterion :
       debug : release
       tests : [ 'no.tests', 'only.tests' ]
+  transpile.build.release.min :
+    inherit : files.transpile
+    filePath : reflector::transpile.reflect.release.min
+    entry : '{path::in}/proto/wtools/abase/l1/Include.s'
+    transpilingStrategy : [ 'Uglify' ]
+    optimization : 9
+    minification : 9
+    diagnosing : 0
+    beautifing : 0
   transpile.build.tests.debug :
     inherit : files.transpile
     filePath : reflector::transpile.reflect.tests.*=1
@@ -398,6 +418,19 @@ step:
     criterion :
       debug : release
       tests : [ 'no.tests', 'only.tests' ]
+  clean.build.out:
+    inherit: files.delete
+    filePath: '{path::out.build.*=1}'
+    criterion:
+      debug:
+        - debug
+        - release
+      tests:
+        - no.tests
+        - only.tests
+  clean.release.min:
+    inherit: files.delete
+    filePath: '{path::out.release.min}'
   #
 
   proto.export:
@@ -458,16 +491,6 @@ step:
       content:
         - prime
         - npm
-  clean.build.out:
-    inherit: files.delete
-    filePath: '{path::out.build.*=1}'
-    criterion:
-      debug:
-        - debug
-        - release
-      tests:
-        - no.tests
-        - only.tests
   clean.out.npm:
     inherit: files.delete
     filePath: 'path::out.*=1'
