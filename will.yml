@@ -57,6 +57,8 @@ build:
       tests : 'only.tests'
     steps :
       - step::clean.build.out.*=1
+      - step::transpile.build.proto.debug.no.tests
+      - step::reflect.compiled.debug.files
       - step::transpile.build.tests.debug.*=1
       - step::reflect.module.files.*=1
   build.release.tests :
@@ -65,6 +67,8 @@ build:
       tests : 'only.tests'
     steps :
       - step::clean.build.out.*=1
+      - step::transpile.build.proto.release.no.tests
+      - step::reflect.compiled.release.files
       - step::transpile.build.tests.release.*=1
       - step::reflect.module.files.*=1
 
@@ -277,6 +281,14 @@ reflector:
       '{path::in}/License': '{path::out.build.*=1}/License'
       '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
       '{path::in}/will.yml': '{path::out.build.*=1}/will.yml'
+  reflect.compiled.debug.files :
+    inherit : predefined.*
+    filePath :
+      '{path::out.build.debug.no.test}/Main.s': '{path::out.build.debug.only.test}/Main.s'
+  reflect.compiled.release.files :
+    inherit : predefined.*
+    filePath :
+      '{path::out.build.release.no.test}/Main.s': '{path::out.build.release.only.test}/Main.s'
 
   #
 
