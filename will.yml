@@ -55,7 +55,7 @@ build:
     steps :
       - step::clean.release.min
       - step::transpile.build.release.min
-      - step::reflect.module.files.release.no.tests
+      - step::reflect.release.min.files
   build.debug.tests :
     criterion :
       debug : debug
@@ -291,7 +291,10 @@ reflector:
     filePath :
       '{path::in}/License': '{path::out.build.*=1}/License'
       '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
-      '{path::in}/will.yml': '{path::out.build.*=1}/will.yml'
+  reflect.release.min.files :
+    filePath :
+      '{path::in}/License': '{path::out.release.min}/License'
+      '{path::in}/Readme.md': '{path::out.release.min}/Readme.md'
   reflect.compiled.debug.files :
     inherit : predefined.*
     filePath :
