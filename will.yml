@@ -379,7 +379,6 @@ step:
   transpile.build.tests.debug :
     inherit : files.transpile
     filePath : reflector::transpile.reflect.tests.*=1
-    entry : ./proto/node_modules/wTools
     transpilingStrategy : [ 'UglifyJs' ] # Dmytro : experimental, Uglify does not convert BigInts
     optimization : 9
     minification : 9
@@ -391,7 +390,6 @@ step:
   transpile.build.tests.release :
     inherit : files.transpile
     filePath : reflector::transpile.reflect.tests.*=1
-    entry : ./proto/node_modules/wTools
     transpilingStrategy : [ 'UglifyJs' ] # Dmytro : experimental, Uglify does not convert BigInts
     optimization : 9
     minification : 9
