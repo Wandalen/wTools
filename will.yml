@@ -355,7 +355,7 @@ step:
   transpile.build.proto.debug :
     inherit : files.transpile
     filePath : reflector::transpile.reflect.proto.*=1
-    entry : ./proto/node_modules/wTools
+    entry : '{path::in}/proto/wtools/abase/l1/Include.s'
     transpilingStrategy : [ 'Uglify' ]
     optimization : 9
     minification : 9
@@ -367,7 +367,7 @@ step:
   transpile.build.proto.release :
     inherit : files.transpile
     filePath : reflector::transpile.reflect.proto.*=1
-    entry : ./proto/node_modules/wTools
+    entry : '{path::in}/proto/wtools/abase/l1/Include.s'
     transpilingStrategy : [ 'Uglify' ]
     optimization : 9
     minification : 9
