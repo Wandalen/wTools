@@ -25,4 +25,3 @@ npm add 'wTools@stable'
 ### Credits
 
 Special thanks to [wtklbm](https://github.com/wtklbm).
-
