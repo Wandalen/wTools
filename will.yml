@@ -32,6 +32,44 @@ about:
     test: wtest .run proto/**
     docgen: wdocgen .build proto
 build:
+
+  #
+
+  build.debug :
+    criterion :
+      debug : debug
+      tests : 'no.tests'
+    steps :
+      - step::clean.build.out.*=1
+      - step::transpile.build.proto.debug.*=1
+      - step::reflect.module.files.*=1
+  build.release :
+    criterion :
+      debug : release
+      tests : 'no.tests'
+    steps :
+      - step::clean.build.out.*=1
+      - step::transpile.build.proto.release.*=1
+      - step::reflect.module.files.*=1
+  build.debug.tests :
+    criterion :
+      debug : debug
+      tests : 'only.tests'
+    steps :
+      - step::clean.build.out.*=1
+      - step::transpile.build.tests.debug.*=1
+      - step::reflect.module.files.*=1
+  build.release.tests :
+    criterion :
+      debug : release
+      tests : 'only.tests'
+    steps :
+      - step::clean.build.out.*=1
+      - step::transpile.build.tests.release.*=1
+      - step::reflect.module.files.*=1
+
+  #
+
   proto.export:
     criterion:
       content: proto
@@ -129,6 +167,34 @@ path:
   proto: ./proto
   export: '{path::proto}/**'
   doc: ./doc
+
+  #
+
+  out.build.debug.no.test :
+    path: '{path::out}/debug'
+    criterion:
+      debug: debug
+      tests: 'no.tests'
+  out.build.release.no.test :
+    path: '{path::out}/release'
+    criterion:
+      debug: release
+      tests: 'no.tests'
+  out.build.debug.only.test :
+    path: '{path::out}/debug.test'
+    criterion:
+      debug: debug
+      tests: 'only.tests'
+  out.build.release.only.test :
+    path: '{path::out}/release.test'
+    criterion:
+      debug: release
+      tests: 'only.tests'
+  out.release.min :
+    path: '{path::out}/release.min'
+
+  #
+
   out.raw.debug:
     path: '{path::out}/debug'
     criterion:
@@ -182,6 +248,38 @@ path:
     - proto/wtools/abase/l1/Include.s
     - proto/node_modules/wTools
 reflector:
+
+  #
+
+  transpile.reflect.proto :
+    inherit : predefined.*
+    criterion :
+      debug : [ debug, release ]
+      tests : 'no.tests'
+    filePath :
+      '**.test*' : 0
+      '**.test/**' : 0
+      '{path::proto}/**' : '{path::out.build.*=1}/Main.s'
+  transpile.reflect.tests :
+    inherit : predefined.*
+    criterion :
+      debug : [ debug, release ]
+      tests : 'only.tests'
+    filePath :
+      '**.test*': 1
+      '{path::proto}/**': '{path::out.build*=1}/Tests.test.s'
+  reflect.module.files :
+    inherit : predefined.*
+    criterion :
+      debug : [ debug, release ]
+      tests : [ 'no.tests', 'only.tests' ]
+    filePath :
+      '{path::in}/License': '{path::out.build.*=1}/License'
+      '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
+      '{path::in}/will.yml': '{path::out.build.*=1}/will.yml'
+
+  #
+
   reflect.proto:
     inherit: predefined.*
     criterion:
@@ -239,6 +337,59 @@ reflector:
       '**.test*': 1
       'path::proto': '{path::out.*=1}/Tests.test.s'
 step:
+
+  #
+
+  transpile.build.proto.debug :
+    inherit : files.transpile
+    filePath : reflector::transpile.reflect.proto.*=1
+    entry : ./proto/node_modules/wTools
+    transpilingStrategy : [ 'Uglify' ]
+    optimization : 9
+    minification : 9
+    diagnosing : 0
+    beautifing : 0
+    criterion :
+      debug : debug
+      tests : [ 'no.tests', 'only.tests' ]
+  transpile.build.proto.release :
+    inherit : files.transpile
+    filePath : reflector::transpile.reflect.proto.*=1
+    entry : ./proto/node_modules/wTools
+    transpilingStrategy : [ 'Uglify' ]
+    optimization : 9
+    minification : 9
+    diagnosing : 1
+    beautifing : 1
+    criterion :
+      debug : release
+      tests : [ 'no.tests', 'only.tests' ]
+  transpile.build.tests.debug :
+    inherit : files.transpile
+    filePath : reflector::transpile.reflect.tests.*=1
+    entry : ./proto/node_modules/wTools
+    transpilingStrategy : [ 'UglifyJs' ] # Dmytro : experimental, Uglify does not convert BigInts
+    optimization : 9
+    minification : 9
+    diagnosing : 0
+    beautifing : 0
+    criterion :
+      debug : debug
+      tests : [ 'no.tests', 'only.tests' ]
+  transpile.build.tests.release :
+    inherit : files.transpile
+    filePath : reflector::transpile.reflect.tests.*=1
+    entry : ./proto/node_modules/wTools
+    transpilingStrategy : [ 'UglifyJs' ] # Dmytro : experimental, Uglify does not convert BigInts
+    optimization : 9
+    minification : 9
+    diagnosing : 1
+    beautifing : 1
+    criterion :
+      debug : release
+      tests : [ 'no.tests', 'only.tests' ]
+  #
+
   proto.export:
     inherit: module.export
     export: 'path::export'
@@ -297,6 +448,16 @@ step:
       content:
         - prime
         - npm
+  clean.build.out:
+    inherit: files.delete
+    filePath: '{path::out.build.*=1}'
+    criterion:
+      debug:
+        - debug
+        - release
+      tests:
+        - no.tests
+        - only.tests
   clean.out.npm:
     inherit: files.delete
     filePath: 'path::out.*=1'
