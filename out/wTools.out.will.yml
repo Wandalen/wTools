@@ -3,8 +3,8 @@ root:
   - wTools.out
 consistency:
   ../will.yml: &ref_0
-    hash: 75677995925031e8d1a35d9109be7e9b
-    size: 12266
+    hash: 3ff45fdf1d5c54b5126bf12728b082c7
+    size: 12365
 module:
   wTools.out:
     about:
@@ -668,7 +668,6 @@ module:
           filePath:
             '{path::in}/License': '{path::out.build.*=1}/License'
             '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
-            '{path::in}/will.yml': '{path::out.build.*=1}/will.yml'
           prefixPath: ''
         dst:
           prefixPath: ''
@@ -682,7 +681,6 @@ module:
           filePath:
             '{path::in}/License': '{path::out.build.*=1}/License'
             '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
-            '{path::in}/will.yml': '{path::out.build.*=1}/will.yml'
           prefixPath: ''
         dst:
           prefixPath: ''
@@ -696,7 +694,6 @@ module:
           filePath:
             '{path::in}/License': '{path::out.build.*=1}/License'
             '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
-            '{path::in}/will.yml': '{path::out.build.*=1}/will.yml'
           prefixPath: ''
         dst:
           prefixPath: ''
@@ -710,7 +707,6 @@ module:
           filePath:
             '{path::in}/License': '{path::out.build.*=1}/License'
             '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
-            '{path::in}/will.yml': '{path::out.build.*=1}/will.yml'
           prefixPath: ''
         dst:
           prefixPath: ''
@@ -719,6 +715,14 @@ module:
           tests: only.tests
         inherit:
           - predefined.*
+      reflect.release.min.files:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.release.min}/License'
+            '{path::in}/Readme.md': '{path::out.release.min}/Readme.md'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
       reflect.compiled.debug.files:
         src:
           filePath:
@@ -1394,6 +1398,11 @@ module:
           tests: only.tests
         inherit:
           - files.reflect
+      reflect.release.min.files:
+        opts:
+          filePath: 'reflector::reflect.release.min.files'
+        inherit:
+          - files.reflect
       reflect.compiled.debug.files:
         opts:
           filePath: 'reflector::reflect.compiled.debug.files'
@@ -1521,7 +1530,7 @@ module:
         steps:
           - 'step::clean.release.min'
           - 'step::transpile.build.release.min'
-          - 'step::reflect.module.files.release.no.tests'
+          - 'step::reflect.release.min.files'
       build.debug.tests:
         steps:
           - 'step::clean.build.out.*=1'
@@ -1870,7 +1879,6 @@ module:
           filePath:
             '{path::in}/License': '{path::out.build.*=1}/License'
             '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
-            '{path::in}/will.yml': '{path::out.build.*=1}/will.yml'
         criterion:
           debug: debug
           tests: no.tests
@@ -1881,7 +1889,6 @@ module:
           filePath:
             '{path::in}/License': '{path::out.build.*=1}/License'
             '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
-            '{path::in}/will.yml': '{path::out.build.*=1}/will.yml'
         criterion:
           debug: release
           tests: no.tests
@@ -1892,7 +1899,6 @@ module:
           filePath:
             '{path::in}/License': '{path::out.build.*=1}/License'
             '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
-            '{path::in}/will.yml': '{path::out.build.*=1}/will.yml'
         criterion:
           debug: debug
           tests: only.tests
@@ -1903,12 +1909,16 @@ module:
           filePath:
             '{path::in}/License': '{path::out.build.*=1}/License'
             '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
-            '{path::in}/will.yml': '{path::out.build.*=1}/will.yml'
         criterion:
           debug: release
           tests: only.tests
         inherit:
           - predefined.*
+      reflect.release.min.files:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.release.min}/License'
+            '{path::in}/Readme.md': '{path::out.release.min}/Readme.md'
       reflect.compiled.debug.files:
         src:
           filePath:
@@ -2527,6 +2537,11 @@ module:
           tests: only.tests
         inherit:
           - files.reflect
+      reflect.release.min.files:
+        opts:
+          filePath: 'reflector::reflect.release.min.files'
+        inherit:
+          - files.reflect
       reflect.compiled.debug.files:
         opts:
           filePath: 'reflector::reflect.compiled.debug.files'
@@ -2654,7 +2669,7 @@ module:
         steps:
           - 'step::clean.release.min'
           - 'step::transpile.build.release.min'
-          - 'step::reflect.module.files.release.no.tests'
+          - 'step::reflect.release.min.files'
       build.debug.tests:
         steps:
           - 'step::clean.build.out.*=1'
@@ -2772,5 +2787,5 @@ module:
           - 'build::npm.*=5'
     consistency:
       ../will.yml:
-        hash: 75677995925031e8d1a35d9109be7e9b
-        size: 12266
+        hash: 3ff45fdf1d5c54b5126bf12728b082c7
+        size: 12365
