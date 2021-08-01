@@ -24,7 +24,8 @@ npm add 'wTools@stable'
 
 ### To use on a web page
 
-To use on a web page use:
+Add to you HTML page:
+
 ```html
 <script src="https://cdn.jsdelivr.net/npm/wTools/out/release.min/Main.s"></script>
 ```
