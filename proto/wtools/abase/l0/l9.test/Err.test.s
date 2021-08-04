@@ -1308,7 +1308,7 @@ function eventUncaughtErrorOnce( test )
   let filePath/*programPath*/ = a.program( program ).filePath/*programPath*/;
   let ready = __.take( null );
 
-  // ready.then( () => run( 'once' ) ); /* qqq2 : for Dmytro : switch on later */
+  ready.then( () => run( 'once' ) ); /* aaa2 : for Dmytro : switch on later */ /* Dmytro : switched on */
   ready.then( () => run( 'off' ) );
 
   return ready;
@@ -1355,7 +1355,7 @@ function eventUncaughtErrorOnce( test )
     let off = process.argv.includes( 'how:off' );
 
     if( once )
-    _.process.once( 'uncaughtError', ( e ) => /* qqq : for Dmytro : implement routine _.process.once(). make sure it works */
+    _.process.once( 'uncaughtError', ( e ) => /* aaa : for Dmytro : implement routine _.process.once(). make sure it works */ /* Dmytro : done */
     {
       _.error.attend( e.err );
     });
