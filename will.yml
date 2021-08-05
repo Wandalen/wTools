@@ -35,46 +35,30 @@ build:
 
   #
 
-  build.debug :
+  build :
     criterion :
-      debug : debug
+      debug : [ debug, release ]
       tests : 'no.tests'
     steps :
       - step::clean.build.out.*=1
-      - step::transpile.build.proto.debug.*=1
+      - step::transpile.build.proto.*=1
       - step::reflect.module.files.*=1
-  build.release :
-    criterion :
-      debug : release
-      tests : 'no.tests'
-    steps :
-      - step::clean.build.out.*=1
-      - step::transpile.build.proto.release.*=1
-      - step::reflect.module.files.*=1
+      - step::npm.build.*=1
   build.release.min :
     steps :
       - step::clean.release.min
       - step::transpile.build.release.min
       - step::reflect.release.min.files
-  build.debug.tests :
+      - step::npm.release.min
+  build.tests :
     criterion :
-      debug : debug
+      debug : [ debug, release ]
       tests : 'only.tests'
     steps :
       - step::clean.build.out.*=1
-      - step::transpile.build.proto.debug.no.tests
-      - step::reflect.compiled.debug.files
-      - step::transpile.build.tests.debug.*=1
-      - step::reflect.module.files.*=1
-  build.release.tests :
-    criterion :
-      debug : release
-      tests : 'only.tests'
-    steps :
-      - step::clean.build.out.*=1
-      - step::transpile.build.proto.release.no.tests
-      - step::reflect.compiled.release.files
-      - step::transpile.build.tests.release.*=1
+      - step::transpile.build.proto.*=1
+      - step::reflect.compiled.*=1
+      - step::transpile.build.tests.*=1
       - step::reflect.module.files.*=1
 
   #
@@ -425,15 +409,23 @@ step:
     inherit: files.delete
     filePath: '{path::out.build.*=1}'
     criterion:
-      debug:
-        - debug
-        - release
-      tests:
-        - no.tests
-        - only.tests
+      debug: [ debug, release ]
+      tests : [ 'no.tests', 'only.tests' ]
   clean.release.min:
     inherit: files.delete
     filePath: '{path::out.release.min}'
+  npm.build:
+    inherit: npm.generate
+    entryPath: '{path::out.build.*=1}/Main.s'
+    packagePath: '{path::out.build.*=1}/package.json'
+    criterion:
+      debug: [ debug, release ]
+      tests : [ 'no.tests', 'only.tests' ]
+  npm.release.min:
+    inherit: npm.generate
+    entryPath: '{path::out.release.min}/Main.s'
+    packagePath: '{path::out.release.min}/package.json'
+
   #
 
   proto.export:
