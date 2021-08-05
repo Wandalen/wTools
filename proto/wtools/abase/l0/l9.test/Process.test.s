@@ -1268,103 +1268,6 @@ function onceWithOptionsMap( test )
     return null;
   });
 
-  // test.open( 'option first - 0' );
-  //
-  // test.case = 'no callback for events';
-  // var result = [];
-  // var onEvent = () => result.push( result.length );
-  // var onEvent2 = () => result.push( -1 * result.length );
-  // _.event.eventGive( _.process._edispatcher, 'event1' );
-  // test.identical( result, [] );
-  // _.event.eventGive( _.process._edispatcher, 'event2' );
-  // test.identical( result, [] );
-  //
-  // /* */
-  //
-  // test.case = 'single callback for single event, single event is given';
-  // var result = [];
-  // var onEvent = () => result.push( result.length );
-  // var onEvent2 = () => result.push( -1 * result.length );
-  // var got = _.process.on({ 'callbackMap' : { 'event1' : onEvent } });
-  // _.event.eventGive( _.process._edispatcher, 'event1' );
-  // test.identical( result, [ 0 ] );
-  // _.event.eventGive( _.process._edispatcher, 'event2' );
-  // test.identical( result, [ 0 ] );
-  // test.true( _.event.eventHasHandler( _.process._edispatcher, { eventName : 'event1', eventHandler : onEvent } ) );
-  // test.false( _.event.eventHasHandler( _.process._edispatcher, { eventName : 'event2', eventHandler : onEvent2 } ) );
-  // got.event1.off();
-  //
-  // /* */
-  //
-  // test.case = 'single callback for single event, a few events are given';
-  // var result = [];
-  // var onEvent = () => result.push( result.length );
-  // var onEvent2 = () => result.push( -1 * result.length );
-  // var got = _.process.on({ 'callbackMap' : { 'event1' : onEvent } } );
-  // _.event.eventGive( _.process._edispatcher, 'event1' );
-  // test.identical( result, [ 0 ] );
-  // _.event.eventGive( _.process._edispatcher, 'event1' );
-  // test.identical( result, [ 0, 1 ] );
-  // _.event.eventGive( _.process._edispatcher, 'event2' );
-  // test.identical( result, [ 0, 1 ] );
-  // test.true( _.event.eventHasHandler( _.process._edispatcher, { eventName : 'event1', eventHandler : onEvent } ) );
-  // test.false( _.event.eventHasHandler( _.process._edispatcher, { eventName : 'event2', eventHandler : onEvent2 } ) );
-  // got.event1.off();
-  //
-  // /* */
-  //
-  // test.case = 'single callback for each events in event handler, a few events are given';
-  // var result = [];
-  // var onEvent = () => result.push( result.length );
-  // var onEvent2 = () => result.push( -1 * result.length );
-  // var got = _.process.on({ 'callbackMap' : { 'event1' : onEvent, 'event2' : onEvent2 } });
-  // _.event.eventGive( _.process._edispatcher, 'event1' );
-  // test.identical( result, [ 0 ] );
-  // _.event.eventGive( _.process._edispatcher, 'event1' );
-  // test.identical( result, [ 0, 1 ] );
-  // _.event.eventGive( _.process._edispatcher, 'event2' );
-  // _.event.eventGive( _.process._edispatcher, 'event2' );
-  // test.identical( result, [ 0, 1, -2, -3 ] );
-  // test.true( _.event.eventHasHandler( _.process._edispatcher, { eventName : 'event1', eventHandler : onEvent } ) );
-  // test.true( _.event.eventHasHandler( _.process._edispatcher, { eventName : 'event2', eventHandler : onEvent2 } ) );
-  // got.event1.off();
-  // got.event2.off();
-  //
-  // test.close( 'option first - 0' );
-  //
-  // /* - */
-  //
-  // test.open( 'option first - 1' );
-  //
-  // test.case = 'callback added before other callback';
-  // var result = [];
-  // var onEvent = () => result.push( result.length );
-  // var onEvent2 = () => result.push( -1 * result.length );
-  // var got = _.process.on({ 'callbackMap' : { 'event1' : onEvent } });
-  // var got2 = _.process.on({ 'callbackMap' : { 'event1' : onEvent2 }, 'first' : 1 });
-  // _.event.eventGive( _.process._edispatcher, 'event1' );
-  // test.identical( result, [ -0, 1 ] );
-  // _.event.eventGive( _.process._edispatcher, 'event1' );
-  // test.identical( result, [ -0, 1, -2, 3 ] );
-  // got.event1.off();
-  // got2.event1.off();
-  //
-  // /* */
-  //
-  // test.case = 'callback added after other callback';
-  //
-  // var result = [];
-  // var onEvent = () => result.push( result.length );
-  // var onEvent2 = () => result.push( -1 * result.length );
-  // var got = _.process.on({ 'callbackMap' : { 'event1' : onEvent2 }, 'first' : 1 });
-  // var got2 = _.process.on({ 'callbackMap' : { 'event1' : onEvent } });
-  // _.event.eventGive( _.process._edispatcher, 'event1' );
-  // test.identical( result, [ -0, 1 ] );
-  // _.event.eventGive( _.process._edispatcher, 'event1' );
-  // test.identical( result, [ -0, 1, -2, 3 ] );
-  //
-  // test.close( 'option first - 1' );
-
   /* - */
 
   if( Config.debug )
@@ -1468,6 +1371,75 @@ function onceWithOptionsMap( test )
 }
 
 onceWithOptionsMap.timeOut = 30000;
+
+//
+
+function onceWithChain( test )
+{
+  const self = this;
+  const a = test.assetFor( false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* - */
+
+  a.ready.then( () =>
+  {
+    test.case = 'chain in args';
+    return null;
+  });
+  var program = a.program( chainInArgs );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ [ \'uncaughtError\', \'arg\' ] ]' ), 1 );
+    return null;
+  });
+
+  a.ready.then( () =>
+  {
+    test.case = 'chain in map';
+    return null;
+  });
+  var program = a.program( chainInMap );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ [ \'uncaughtError\', \'arg\' ] ]' ), 1 );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready
+
+  /* */
+
+  function chainInArgs()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once( _.event.Chain( 'available', 'uncaughtError' ), ( ... args ) => result.push( args ) );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function chainInMap()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once({ callbackMap : { 'available' : [ _.event.Name( 'uncaughtError' ), ( ... args ) => result.push( args ) ] } });
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+}
 
 //
 
@@ -1607,6 +1579,7 @@ const Proto =
 
     onceWithArguments,
     onceWithOptionsMap,
+    onceWithChain,
 
     //
 
