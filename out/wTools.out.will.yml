@@ -3,8 +3,8 @@ root:
   - wTools.out
 consistency:
   ../will.yml: &ref_0
-    hash: 3ff45fdf1d5c54b5126bf12728b082c7
-    size: 12365
+    hash: f697b74ed163d9fca3c5c2c004ef1bfd
+    size: 12226
 module:
   wTools.out:
     about:
@@ -1062,6 +1062,48 @@ module:
           filePath: '{path::out.release.min}'
         inherit:
           - files.delete
+      npm.build.debug.no.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - npm.generate
+      npm.build.release.no.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - npm.generate
+      npm.build.debug.only.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - npm.generate
+      npm.build.release.only.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - npm.generate
+      npm.release.min:
+        opts:
+          entryPath: '{path::out.release.min}/Main.s'
+          packagePath: '{path::out.release.min}/package.json'
+        inherit:
+          - npm.generate
       proto.export:
         opts:
           export: 'path::export'
@@ -1513,16 +1555,18 @@ module:
       build.debug:
         steps:
           - 'step::clean.build.out.*=1'
-          - 'step::transpile.build.proto.debug.*=1'
+          - 'step::transpile.build.proto.*=1'
           - 'step::reflect.module.files.*=1'
+          - 'step::npm.build.*=1'
         criterion:
           debug: debug
           tests: no.tests
       build.release:
         steps:
           - 'step::clean.build.out.*=1'
-          - 'step::transpile.build.proto.release.*=1'
+          - 'step::transpile.build.proto.*=1'
           - 'step::reflect.module.files.*=1'
+          - 'step::npm.build.*=1'
         criterion:
           debug: release
           tests: no.tests
@@ -1531,22 +1575,23 @@ module:
           - 'step::clean.release.min'
           - 'step::transpile.build.release.min'
           - 'step::reflect.release.min.files'
-      build.debug.tests:
+          - 'step::npm.release.min'
+      build.tests.debug:
         steps:
           - 'step::clean.build.out.*=1'
-          - 'step::transpile.build.proto.debug.no.tests'
-          - 'step::reflect.compiled.debug.files'
-          - 'step::transpile.build.tests.debug.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.compiled.*=1'
+          - 'step::transpile.build.tests.*=1'
           - 'step::reflect.module.files.*=1'
         criterion:
           debug: debug
           tests: only.tests
-      build.release.tests:
+      build.tests.release:
         steps:
           - 'step::clean.build.out.*=1'
-          - 'step::transpile.build.proto.release.no.tests'
-          - 'step::reflect.compiled.release.files'
-          - 'step::transpile.build.tests.release.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.compiled.*=1'
+          - 'step::transpile.build.tests.*=1'
           - 'step::reflect.module.files.*=1'
         criterion:
           debug: release
@@ -2201,6 +2246,48 @@ module:
           filePath: '{path::out.release.min}'
         inherit:
           - files.delete
+      npm.build.debug.no.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - npm.generate
+      npm.build.release.no.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - npm.generate
+      npm.build.debug.only.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - npm.generate
+      npm.build.release.only.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - npm.generate
+      npm.release.min:
+        opts:
+          entryPath: '{path::out.release.min}/Main.s'
+          packagePath: '{path::out.release.min}/package.json'
+        inherit:
+          - npm.generate
       proto.export:
         opts:
           export: 'path::export'
@@ -2652,16 +2739,18 @@ module:
       build.debug:
         steps:
           - 'step::clean.build.out.*=1'
-          - 'step::transpile.build.proto.debug.*=1'
+          - 'step::transpile.build.proto.*=1'
           - 'step::reflect.module.files.*=1'
+          - 'step::npm.build.*=1'
         criterion:
           debug: debug
           tests: no.tests
       build.release:
         steps:
           - 'step::clean.build.out.*=1'
-          - 'step::transpile.build.proto.release.*=1'
+          - 'step::transpile.build.proto.*=1'
           - 'step::reflect.module.files.*=1'
+          - 'step::npm.build.*=1'
         criterion:
           debug: release
           tests: no.tests
@@ -2670,22 +2759,23 @@ module:
           - 'step::clean.release.min'
           - 'step::transpile.build.release.min'
           - 'step::reflect.release.min.files'
-      build.debug.tests:
+          - 'step::npm.release.min'
+      build.tests.debug:
         steps:
           - 'step::clean.build.out.*=1'
-          - 'step::transpile.build.proto.debug.no.tests'
-          - 'step::reflect.compiled.debug.files'
-          - 'step::transpile.build.tests.debug.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.compiled.*=1'
+          - 'step::transpile.build.tests.*=1'
           - 'step::reflect.module.files.*=1'
         criterion:
           debug: debug
           tests: only.tests
-      build.release.tests:
+      build.tests.release:
         steps:
           - 'step::clean.build.out.*=1'
-          - 'step::transpile.build.proto.release.no.tests'
-          - 'step::reflect.compiled.release.files'
-          - 'step::transpile.build.tests.release.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.compiled.*=1'
+          - 'step::transpile.build.tests.*=1'
           - 'step::reflect.module.files.*=1'
         criterion:
           debug: release
@@ -2787,5 +2877,5 @@ module:
           - 'build::npm.*=5'
     consistency:
       ../will.yml:
-        hash: 3ff45fdf1d5c54b5126bf12728b082c7
-        size: 12365
+        hash: f697b74ed163d9fca3c5c2c004ef1bfd
+        size: 12226
