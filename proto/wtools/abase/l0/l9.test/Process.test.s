@@ -883,6 +883,163 @@ function onCheckDescriptor( test )
 
 //
 
+function onceWithArguments( test )
+{
+  const self = this;
+  const a = test.assetFor( false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* - */
+
+  a.ready.then( () =>
+  {
+    test.case = 'no callbacks for events';
+    return null;
+  });
+  var program = a.program( withoutCallbacks );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[]' ), 1 );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'single callback for single event, single event is given';
+    return null;
+  });
+  var program = a.program( callbackForAvailable );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ [ \'available\', \'arg\' ] ]' ), 1 );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'single callback for single event, a few events are given';
+    return null;
+  });
+  var program = a.program( callbackForAvailableDouble );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ [ \'available\', \'arg\' ] ]' ), 1 );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'single callback for single event, a few events are given';
+    return null;
+  });
+  var program = a.program( callbacksForEvents );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    var exp = `[ [ 'available', 'arg' ], 'uncaughtError1' ]`;
+    test.identical( _.strCount( op.output, exp ), 1 );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'throw uncaught error';
+    return null;
+  });
+  var program = a.program( uncaughtError );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    var exp = 'exit';
+    test.identical( _.strCount( op.output, exp ), 0 );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready;
+
+  /* */
+
+  function withoutCallbacks()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function callbackForAvailable()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once( 'available', ( ... args ) => result.push( args ) );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function callbackForAvailableDouble()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once( 'available', ( ... args ) => result.push( args ) );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function callbacksForEvents()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once( 'available', ( ... args ) => result.push( args ) );
+    _.process.once( 'uncaughtError', ( e ) => result.push( e + result.length ) );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function uncaughtError()
+  {
+    const _ = require( toolsPath );
+    _.process.once( 'uncaughtError', ( o ) => _.errAttend( o.err ) );
+    throw _.err( 'Error' );
+    console.log( 'exit' );
+  }
+}
+
+//
+
 function ready( test )
 {
   let t1 = 100;
@@ -1016,6 +1173,8 @@ const Proto =
     onWithOptionsMap,
     onWithChain,
     onCheckDescriptor,
+
+    onceWithArguments,
 
     //
 
