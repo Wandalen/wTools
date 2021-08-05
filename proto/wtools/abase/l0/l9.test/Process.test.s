@@ -1443,6 +1443,85 @@ function onceWithChain( test )
 
 //
 
+function onceCheckDescriptor( test )
+{
+  const self = this;
+  const a = test.assetFor( false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* - */
+
+  a.ready.then( () =>
+  {
+    test.case = 'from arguments';
+    return null;
+  });
+  var program = a.program( callbackInArgs );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ \'available\' ]' ), 1 );
+    test.identical( _.strCount( op.output, '[ \'off\', \'enabled\', \'first\', \'callbackMap\' ]' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.enabled : true' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.first : false' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.callbackMap : available' ), 1 );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'from map';
+    return null;
+  });
+  var program = a.program( callbackInMap );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ \'available\' ]' ), 1 );
+    test.identical( _.strCount( op.output, '[ \'off\', \'enabled\', \'first\', \'callbackMap\' ]' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.enabled : true' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.first : true' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.callbackMap : available' ), 1 );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready;
+
+  /* */
+
+  function callbackInArgs()
+  {
+    const _ = require( toolsPath );
+    const descriptor = _.process.once( 'available', ( ... args ) => result.push( args ) );
+    console.log( _.props.keys( descriptor ) );
+    console.log( _.props.keys( descriptor.available ) );
+    console.log( `descriptor.enabled : ${ descriptor.available.enabled }` );
+    console.log( `descriptor.first : ${ descriptor.available.first }` );
+    console.log( `descriptor.callbackMap : ${ _.props.keys( descriptor.available.callbackMap ) }` );
+  }
+
+  /* */
+
+  function callbackInMap()
+  {
+    const _ = require( toolsPath );
+    const descriptor = _.process.once({ callbackMap : { 'available' : ( ... args ) => result.push( args ) }, first : true });
+    console.log( _.props.keys( descriptor ) );
+    console.log( _.props.keys( descriptor.available ) );
+    console.log( `descriptor.enabled : ${ descriptor.available.enabled }` );
+    console.log( `descriptor.first : ${ descriptor.available.first }` );
+    console.log( `descriptor.callbackMap : ${ _.props.keys( descriptor.available.callbackMap ) }` );
+  }
+}
+
+//
+
 function ready( test )
 {
   let t1 = 100;
@@ -1580,6 +1659,7 @@ const Proto =
     onceWithArguments,
     onceWithOptionsMap,
     onceWithChain,
+    onceCheckDescriptor,
 
     //
 
