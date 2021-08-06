@@ -119,6 +119,7 @@
   let setup = _starter_.setup = _starter_.setup || Object.create( null );
   let event = _starter_.event = _starter_.event || Object.create( null );
   let sourcesMap = _starter_.sourcesMap = _starter_.sourcesMap || Object.create( null );
+  let requireCache = _starter_.requireCache = _starter_.requireCache || Object.create( null );
   let moduleMainFilesMap = _starter_.moduleMainFilesMap = _starter_.moduleMainFilesMap || Object.create( null );
   let color = _starter_.color = _starter_.color || Object.create( null );
   let colorRgba = _starter_.color.rgba = _starter_.color.rgba || Object.create( null );
@@ -21410,13 +21411,12 @@ _.path.reroot.defaults =
     if( sourceFile.njsModule )
     return sourceFile.njsModule;
     let Module = _natInclude( 'module' );
-    let normalizedPath = this.path.normalize( sourceFile.filePath );
-    // let natPath = this.path.nativize( sourceFile.filePath );
-    let njsModule = Module._cache[ normalizedPath ];
+    let natPath = this.path.nativize( sourceFile.filePath );
+    let njsModule = Module._cache[ natPath ];
     if( !njsModule )
     {
-      njsModule = new Module( normalizedPath, sourceFile.parent ? sourceFile.parent.njsModule : null );
-      Module._cache[ normalizedPath ] = njsModule;
+      njsModule = new Module( natPath, sourceFile.parent ? sourceFile.parent.njsModule : null );
+      Module._cache[ natPath ] = njsModule;
     }
     njsModule.sourceFile = sourceFile;
     sourceFile.njsModule = njsModule;
@@ -21707,9 +21707,12 @@ _.path.reroot.defaults =
     console.log( ` . SourceFile ${o.filePath}` );
 
 
-    starter.sourcesMap[ o.filePath ] = sourceFile;
+    starter.sourcesMap[ _.path.nativize( o.filePath ) ] = sourceFile;
     if( sourceFile.isModuleDeclareFile )
     starter.moduleMainFilesMap[ starter.path.fullName( o.filePath ) ] = sourceFile;
+    // starter.sourcesMap[ o.filePath ] = sourceFile;
+    // if( sourceFile.isModuleDeclareFile )
+    // starter.moduleMainFilesMap[ starter.path.fullName( o.filePath ) ] = sourceFile;
     // Object.preventExtensions( sourceFile );
     return sourceFile;
 
@@ -21782,7 +21785,7 @@ _.path.reroot.defaults =
       throw _._err({ args : [ `Found no source file ${sourcePath}` ], level : 4 });
 
       if( childSource.state === 'errored' || childSource.state === 'opening' || childSource.state === 'opened' )
-      return childSource.exports;
+      return end();
 
       childSource.parent = parentSource || null;
 
@@ -21805,7 +21808,15 @@ _.path.reroot.defaults =
       throw err;
     }
 
-    return childSource.exports;
+    return end();
+
+    function end()
+    {
+      if( !starter.requireCache[ childSource.filePath ] )
+      starter.requireCache[ childSource.filePath ] = childSource;
+  
+      return childSource.exports;
+    }
   }
 
   //
@@ -21840,7 +21851,15 @@ _.path.reroot.defaults =
       }
       else
       {
-        let childSource = starter._sourceForInclude.apply( starter, arguments );
+        let resolvedFilePath = this._pathResolveLocal( parentSource, basePath, filePath );
+        let chachedSource = this.requireCache[ resolvedFilePath ];
+        if( chachedSource )
+        {
+          _.assert( chachedSource.state === 'errored' || chachedSource.state === 'opening' || chachedSource.state === 'opened' )
+          return chachedSource.exports;
+        }
+        // let childSource = starter._sourceForInclude.apply( starter, arguments );
+        let childSource = this.sourcesMap[ resolvedFilePath ];
         if( childSource )
         return starter._sourceIncludeResolvedCalling( parentSource, childSource, filePath );
       }
@@ -21938,7 +21957,8 @@ _.path.reroot.defaults =
       return starter.moduleMainFilesMap[ filePathLower ].filePath;
     }
 
-    return filePath;
+    return _.path.nativize( filePath );
+    // return filePath;
   }
 
   //
@@ -61432,7 +61452,7 @@ on.defaults =
 
 function once( o )
 {
-  o = _.event.once.head( _.event.once, arguments );
+  o = _.event.onHead( _.event.once, arguments );
   return _.event.once( this._edispatcher, o );
 }
 
