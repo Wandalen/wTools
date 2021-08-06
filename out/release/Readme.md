@@ -22,7 +22,14 @@ npm add 'wTools@stable'
 
 `Willbe` is not required to use the module in your project as submodule.
 
+### To use on a web page
+
+Add to you HTML page:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/wTools/out/release.min/Main.s"></script>
+```
+
 ### Credits
 
 Special thanks to [wtklbm](https://github.com/wtklbm).
-

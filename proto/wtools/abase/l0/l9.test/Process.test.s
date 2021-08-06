@@ -883,6 +883,645 @@ function onCheckDescriptor( test )
 
 //
 
+function onceWithArguments( test )
+{
+  const self = this;
+  const a = test.assetFor( false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* - */
+
+  a.ready.then( () =>
+  {
+    test.case = 'no callbacks for events';
+    return null;
+  });
+  var program = a.program( withoutCallbacks );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[]' ), 1 );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'single callback for single event, single event is given';
+    return null;
+  });
+  var program = a.program( callbackForAvailable );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ [ \'available\', \'arg\' ] ]' ), 1 );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'single callback for single event, a few events are given';
+    return null;
+  });
+  var program = a.program( callbackForAvailableDouble );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ [ \'available\', \'arg\' ] ]' ), 1 );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'single callback for single event, a few events are given';
+    return null;
+  });
+  var program = a.program( callbacksForEvents );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    var exp = `[ [ 'available', 'arg' ], 'uncaughtError1' ]`;
+    test.identical( _.strCount( op.output, exp ), 1 );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'throw uncaught error';
+    return null;
+  });
+  var program = a.program( uncaughtError );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    var exp = 'exit';
+    test.identical( _.strCount( op.output, exp ), 0 );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready;
+
+  /* */
+
+  function withoutCallbacks()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function callbackForAvailable()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once( 'available', ( ... args ) => result.push( args ) );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function callbackForAvailableDouble()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once( 'available', ( ... args ) => result.push( args ) );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function callbacksForEvents()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once( 'available', ( ... args ) => result.push( args ) );
+    _.process.once( 'uncaughtError', ( e ) => result.push( e + result.length ) );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function uncaughtError()
+  {
+    const _ = require( toolsPath );
+    _.process.once( 'uncaughtError', ( o ) => _.errAttend( o.err ) );
+    throw _.err( 'Error' );
+    console.log( 'exit' );
+  }
+}
+
+//
+
+function onceWithOptionsMap( test )
+{
+  const self = this;
+  const a = test.assetFor( false );
+  const con = __.take( null );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* - */
+
+  con.then( () =>
+  {
+    test.case = 'no callbacks for events';
+    var program = a.program( withoutCallbacks );
+    return program.start()
+    .then( ( op ) =>
+    {
+      test.identical( op.exitCode, 0 );
+      test.identical( _.strCount( op.output, '[]' ), 1 );
+      return null;
+    });
+  });
+
+  /* - */
+
+  con.then( () =>
+  {
+    test.open( 'single callback for event' );
+    return null;
+  });
+
+  con.then( () =>
+  {
+    test.case = 'single callback for single event, single event is given';
+    var o =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( args ) },
+      first : false,
+    };
+    var program = a.program({ entry : callbackForAvailable, locals : { o, result : [] } });
+    return program.start()
+    .then( ( op ) =>
+    {
+      test.identical( op.exitCode, 0 );
+      test.identical( _.strCount( op.output, '[ [ \'available\', \'arg\' ] ]' ), 1 );
+      return null;
+    });
+  });
+
+  /* */
+
+  con.then( () =>
+  {
+    test.case = 'single callback for single event, a few events are given';
+    var o =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( args ) },
+      first : false,
+    };
+    var program = a.program({ entry : callbackForAvailableDouble, locals : { o, result : [] } });
+    return program.start()
+    .then( ( op ) =>
+    {
+      test.identical( op.exitCode, 0 );
+      test.identical( _.strCount( op.output, '[ [ \'available\', \'arg\' ] ]' ), 1 );
+      return null;
+    });
+  });
+
+  /* */
+
+  con.then( () =>
+  {
+    test.case = 'single callback for single event, a few events are given';
+    var o =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( args ) },
+      first : false,
+    };
+    var program = a.program({ entry : callbacksForEvents, locals : { o, result : [] } });
+    return program.start()
+    .then( ( op ) =>
+    {
+      test.identical( op.exitCode, 0 );
+      var exp = `[ [ 'available', 'arg' ], 'uncaughtError1' ]`;
+      test.identical( _.strCount( op.output, exp ), 1 );
+      return null;
+    });
+  });
+
+  /* */
+
+  con.then( () =>
+  {
+    test.case = 'throw uncaught error';
+    var o =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( args ) },
+      first : false,
+    };
+    var program = a.program({ entry : uncaughtError, locals : { o, result : [] } });
+    return program.start()
+    .then( ( op ) =>
+    {
+      test.identical( op.exitCode, 0 );
+      var exp = 'exit';
+      test.identical( _.strCount( op.output, exp ), 0 );
+      return null;
+    });
+  });
+
+  con.then( () =>
+  {
+    test.close( 'single callback for event' );
+    return null;
+  });
+
+  /* - */
+
+  con.then( () =>
+  {
+    test.open( 'options map with option first' );
+    return null;
+  });
+
+  con.then( () =>
+  {
+    test.case = 'callback1.first - false, callback2.first - false';
+    var o1 =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( args ) },
+      first : false,
+    };
+    var o2 =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( result.length ) },
+      first : false,
+    };
+    var program = a.program({ entry : severalCallbacks, locals : { o1, o2, result : [] } });
+    return program.start()
+    .then( ( op ) =>
+    {
+      test.identical( op.exitCode, 0 );
+      test.identical( _.strCount( op.output, '[ [ \'available\', \'arg\' ], 1 ]' ), 1 );
+      return null;
+    });
+  });
+
+  /* */
+
+  con.then( () =>
+  {
+    test.case = 'callback1.first - true, callback2.first - false';
+    var o1 =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( args ) },
+      first : true,
+    };
+    var o2 =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( result.length ) },
+      first : false,
+    };
+    var program = a.program({ entry : severalCallbacks, locals : { o1, o2, result : [] } });
+    return program.start()
+    .then( ( op ) =>
+    {
+      test.identical( op.exitCode, 0 );
+      test.identical( _.strCount( op.output, '[ [ \'available\', \'arg\' ], 1 ]' ), 1 );
+      return null;
+    });
+  });
+
+  /* */
+
+  con.then( () =>
+  {
+    test.case = 'callback1.first - false, callback2.first - true';
+    var o1 =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( args ) },
+      first : false,
+    };
+    var o2 =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( result.length ) },
+      first : true,
+    };
+    var program = a.program({ entry : severalCallbacks, locals : { o1, o2, result : [] } });
+    return program.start()
+    .then( ( op ) =>
+    {
+      test.identical( op.exitCode, 0 );
+      test.identical( _.strCount( op.output, '[ 0, [ \'available\', \'arg\' ] ]' ), 1 );
+      return null;
+    });
+  });
+
+  /* */
+
+  con.then( () =>
+  {
+    test.case = 'callback1.first - true, callback2.first - true';
+    var o1 =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( args ) },
+      first : true,
+    };
+    var o2 =
+    {
+      callbackMap : { 'available' : ( ... args ) => result.push( result.length ) },
+      first : true,
+    };
+    var program = a.program({ entry : severalCallbacks, locals : { o1, o2, result : [] } });
+    return program.start()
+    .then( ( op ) =>
+    {
+      test.identical( op.exitCode, 0 );
+      test.identical( _.strCount( op.output, '[ 0, [ \'available\', \'arg\' ] ]' ), 1 );
+      return null;
+    });
+  });
+
+  con.then( () =>
+  {
+    test.close( 'options map with option first' );
+    return null;
+  });
+
+  /* - */
+
+  if( Config.debug )
+  con.then( () =>
+  {
+    test.case = 'without arguments';
+    test.shouldThrowErrorSync( () => _.process.on() );
+
+    test.case = 'wrong type of callback';
+    test.shouldThrowErrorSync( () => _.process.on( 'event1', {} ) );
+
+    test.case = 'wrong type of event name';
+    test.shouldThrowErrorSync( () => _.process.on( [], () => 'str' ) );
+
+    test.case = 'wrong type of options map o';
+    test.shouldThrowErrorSync( () => _.process.on( 'wrong' ) );
+
+    test.case = 'extra options in options map o';
+    test.shouldThrowErrorSync( () => _.process.on({ callbackMap : {}, wrong : {} }) );
+
+    test.case = 'not known event in callbackMap';
+    test.shouldThrowErrorSync( () => _.process.on({ callbackMap : { unknown : () => 'unknown' } }) );
+    return null;
+  });
+
+  /* - */
+
+  return con;
+
+  /* */
+
+  function withoutCallbacks()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function callbackForAvailable()
+  {
+    const _ = require( toolsPath );
+    _.process.once( o );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function callbackForAvailableDouble()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once( 'available', ( ... args ) => result.push( args ) );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function callbacksForEvents()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once( 'available', ( ... args ) => result.push( args ) );
+    _.process.once( 'uncaughtError', ( e ) => result.push( e + result.length ) );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function uncaughtError()
+  {
+    const _ = require( toolsPath );
+    _.process.once( 'uncaughtError', ( o ) => _.errAttend( o.err ) );
+    throw _.err( 'Error' );
+    console.log( 'exit' );
+  }
+
+  /* */
+
+  function severalCallbacks()
+  {
+    const _ = require( toolsPath );
+    _.process.once( o1 );
+    _.process.once( o2 );
+    _.process.eventGive( 'available', 'arg' );
+    console.log( result );
+  }
+}
+
+onceWithOptionsMap.timeOut = 30000;
+
+//
+
+function onceWithChain( test )
+{
+  const self = this;
+  const a = test.assetFor( false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* - */
+
+  a.ready.then( () =>
+  {
+    test.case = 'chain in args';
+    return null;
+  });
+  var program = a.program( chainInArgs );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ [ \'uncaughtError\', \'arg\' ] ]' ), 1 );
+    return null;
+  });
+
+  a.ready.then( () =>
+  {
+    test.case = 'chain in map';
+    return null;
+  });
+  var program = a.program( chainInMap );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ [ \'uncaughtError\', \'arg\' ] ]' ), 1 );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready
+
+  /* */
+
+  function chainInArgs()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once( _.event.Chain( 'available', 'uncaughtError' ), ( ... args ) => result.push( args ) );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+
+  /* */
+
+  function chainInMap()
+  {
+    const _ = require( toolsPath );
+    const result = [];
+    _.process.once({ callbackMap : { 'available' : [ _.event.Name( 'uncaughtError' ), ( ... args ) => result.push( args ) ] } });
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    _.process.eventGive( 'available', 'arg' );
+    _.process.eventGive( 'uncaughtError', 'arg' );
+    console.log( result );
+  }
+}
+
+//
+
+function onceCheckDescriptor( test )
+{
+  const self = this;
+  const a = test.assetFor( false );
+  a.fileProvider.dirMake( a.abs( '.' ) );
+
+  /* - */
+
+  a.ready.then( () =>
+  {
+    test.case = 'from arguments';
+    return null;
+  });
+  var program = a.program( callbackInArgs );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ \'available\' ]' ), 1 );
+    test.identical( _.strCount( op.output, '[ \'off\', \'enabled\', \'first\', \'callbackMap\' ]' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.enabled : true' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.first : false' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.callbackMap : available' ), 1 );
+    return null;
+  });
+
+  /* */
+
+  a.ready.then( () =>
+  {
+    test.case = 'from map';
+    return null;
+  });
+  var program = a.program( callbackInMap );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( _.strCount( op.output, '[ \'available\' ]' ), 1 );
+    test.identical( _.strCount( op.output, '[ \'off\', \'enabled\', \'first\', \'callbackMap\' ]' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.enabled : true' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.first : true' ), 1 );
+    test.identical( _.strCount( op.output, 'descriptor.callbackMap : available' ), 1 );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready;
+
+  /* */
+
+  function callbackInArgs()
+  {
+    const _ = require( toolsPath );
+    const descriptor = _.process.once( 'available', ( ... args ) => result.push( args ) );
+    console.log( _.props.keys( descriptor ) );
+    console.log( _.props.keys( descriptor.available ) );
+    console.log( `descriptor.enabled : ${ descriptor.available.enabled }` );
+    console.log( `descriptor.first : ${ descriptor.available.first }` );
+    console.log( `descriptor.callbackMap : ${ _.props.keys( descriptor.available.callbackMap ) }` );
+  }
+
+  /* */
+
+  function callbackInMap()
+  {
+    const _ = require( toolsPath );
+    const descriptor = _.process.once({ callbackMap : { 'available' : ( ... args ) => result.push( args ) }, first : true });
+    console.log( _.props.keys( descriptor ) );
+    console.log( _.props.keys( descriptor.available ) );
+    console.log( `descriptor.enabled : ${ descriptor.available.enabled }` );
+    console.log( `descriptor.first : ${ descriptor.available.first }` );
+    console.log( `descriptor.callbackMap : ${ _.props.keys( descriptor.available.callbackMap ) }` );
+  }
+}
+
+//
+
 function ready( test )
 {
   let t1 = 100;
@@ -1016,6 +1655,11 @@ const Proto =
     onWithOptionsMap,
     onWithChain,
     onCheckDescriptor,
+
+    onceWithArguments,
+    onceWithOptionsMap,
+    onceWithChain,
+    onceCheckDescriptor,
 
     //
 
