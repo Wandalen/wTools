@@ -687,7 +687,6 @@ function makeUndefined( test )
 
 function makeUndefinedLongDescriptor( test )
 {
-
   test.case = 'F32x. long';
   var got = _.withLong.F32x.long.makeUndefined();
   test.identical( got, new F32x() );
@@ -982,6 +981,8 @@ function makeUndefinedLongDescriptor( test )
     return this;
   };
 }
+
+makeUndefinedLongDescriptor.timeOut = 10000;
 
 //
 

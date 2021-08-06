@@ -25,7 +25,7 @@ on.defaults =
 
 function once( o )
 {
-  o = _.event.once.head( _.event.once, arguments );
+  o = _.event.onHead( _.event.once, arguments );
   return _.event.once( this._edispatcher, o );
 }
 

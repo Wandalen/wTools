@@ -5858,12 +5858,13 @@ function requireElectronProblem( test )
 
   a.program({ entry : program1, filePath : a.abs( 'program.js' ) });
 
+  let noSandbox = _.process.insideTestContainer() ? '' : ' --no-sandbox';
   let packagedPath =
   {
-    'win32' : 'dist/win-unpacked/test.exe',
-    'darwin' : 'dist/mac/test.app/Contents/MacOS/test',
-    'linux' : 'dist/linux-unpacked/test',
-  }
+    'win32' : `dist/win-unpacked/test.exe${ noSandbox }`,
+    'darwin' : `dist/mac/test.app/Contents/MacOS/test${ noSandbox }`,
+    'linux' : `dist/linux-unpacked/test${ noSandbox }`,
+  };
 
   let packageJson =
   {
@@ -5879,7 +5880,7 @@ function requireElectronProblem( test )
       'electron' : '8.2.5',
       'electron-builder': '22.6.0'
     }
-  }
+  };
 
   a.fileProvider.fileWrite({ filePath : a.abs( 'package.json' ), data : packageJson, encoding : 'json' })
 

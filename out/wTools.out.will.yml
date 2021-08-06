@@ -3,8 +3,8 @@ root:
   - wTools.out
 consistency:
   ../will.yml: &ref_0
-    hash: 49d60e99d766568ac75be89f019d9d99
-    size: 7048
+    hash: f697b74ed163d9fca3c5c2c004ef1bfd
+    size: 12226
 module:
   wTools.out:
     about:
@@ -90,6 +90,28 @@ module:
         path: '{path::proto}/**'
       doc:
         path: ../doc
+      out.build.debug.no.test:
+        criterion:
+          debug: debug
+          tests: no.tests
+        path: '{path::out}/debug'
+      out.build.release.no.test:
+        criterion:
+          debug: release
+          tests: no.tests
+        path: '{path::out}/release'
+      out.build.debug.only.test:
+        criterion:
+          debug: debug
+          tests: only.tests
+        path: '{path::out}/debug.test'
+      out.build.release.only.test:
+        criterion:
+          debug: release
+          tests: only.tests
+        path: '{path::out}/release.test'
+      out.release.min:
+        path: '{path::out}/release.min'
       out.raw.debug:
         criterion:
           debug: debug
@@ -576,6 +598,149 @@ module:
         criterion:
           development: 1
     reflector:
+      transpile.reflect.proto.debug:
+        src:
+          filePath:
+            '**.test*': false
+            '**.test/**': false
+            '{path::proto}/**': '{path::out.build.*=1}/Main.s'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - predefined.*
+      transpile.reflect.proto.release:
+        src:
+          filePath:
+            '**.test*': false
+            '**.test/**': false
+            '{path::proto}/**': '{path::out.build.*=1}/Main.s'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - predefined.*
+      transpile.reflect.release.min:
+        src:
+          filePath:
+            '**.test*': false
+            '**.test/**': false
+            '{path::proto}/**': '{path::out.release.min}/Main.s'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        inherit:
+          - predefined.*
+      transpile.reflect.tests.debug:
+        src:
+          filePath:
+            '**.test*': true
+            '{path::proto}/**': '{path::out.build*=1}/Tests.test.s'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - predefined.*
+      transpile.reflect.tests.release:
+        src:
+          filePath:
+            '**.test*': true
+            '{path::proto}/**': '{path::out.build*=1}/Tests.test.s'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - predefined.*
+      reflect.module.files.debug.no.tests:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.build.*=1}/License'
+            '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - predefined.*
+      reflect.module.files.release.no.tests:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.build.*=1}/License'
+            '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - predefined.*
+      reflect.module.files.debug.only.tests:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.build.*=1}/License'
+            '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - predefined.*
+      reflect.module.files.release.only.tests:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.build.*=1}/License'
+            '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - predefined.*
+      reflect.release.min.files:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.release.min}/License'
+            '{path::in}/Readme.md': '{path::out.release.min}/Readme.md'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+      reflect.compiled.debug.files:
+        src:
+          filePath:
+            '{path::out.build.debug.no.test}/Main.s': '{path::out.build.debug.only.test}/Main.s'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        inherit:
+          - predefined.*
+      reflect.compiled.release.files:
+        src:
+          filePath:
+            '{path::out.build.release.no.test}/Main.s': '{path::out.build.release.only.test}/Main.s'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        inherit:
+          - predefined.*
       reflect.proto.debug.raw:
         src:
           filePath:
@@ -732,6 +897,213 @@ module:
           content: proto
           export: 1
     step:
+      transpile.build.proto.debug.no.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.*=1'
+          entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+          transpilingStrategy:
+            - Nop
+          optimization: 0
+          minification: 0
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - files.transpile
+      transpile.build.proto.debug.only.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.*=1'
+          entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+          transpilingStrategy:
+            - Nop
+          optimization: 0
+          minification: 0
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - files.transpile
+      transpile.build.proto.release.no.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.*=1'
+          entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+          transpilingStrategy:
+            - Uglify
+          optimization: 9
+          minification: 0
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - files.transpile
+      transpile.build.proto.release.only.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.*=1'
+          entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+          transpilingStrategy:
+            - Uglify
+          optimization: 9
+          minification: 0
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - files.transpile
+      transpile.build.release.min:
+        opts:
+          filePath: 'reflector::transpile.reflect.release.min'
+          entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+          transpilingStrategy:
+            - Uglify
+          optimization: 9
+          minification: 9
+          diagnosing: 0
+          beautifing: 0
+        inherit:
+          - files.transpile
+      transpile.build.tests.debug.no.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.*=1'
+          transpilingStrategy:
+            - UglifyJs
+          optimization: 9
+          minification: 9
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - files.transpile
+      transpile.build.tests.debug.only.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.*=1'
+          transpilingStrategy:
+            - UglifyJs
+          optimization: 9
+          minification: 9
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - files.transpile
+      transpile.build.tests.release.no.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.*=1'
+          transpilingStrategy:
+            - UglifyJs
+          optimization: 9
+          minification: 9
+          diagnosing: 1
+          beautifing: 1
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - files.transpile
+      transpile.build.tests.release.only.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.*=1'
+          transpilingStrategy:
+            - UglifyJs
+          optimization: 9
+          minification: 9
+          diagnosing: 1
+          beautifing: 1
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - files.transpile
+      clean.build.out.debug.no.tests:
+        opts:
+          filePath: '{path::out.build.*=1}'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - files.delete
+      clean.build.out.release.no.tests:
+        opts:
+          filePath: '{path::out.build.*=1}'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - files.delete
+      clean.build.out.debug.only.tests:
+        opts:
+          filePath: '{path::out.build.*=1}'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - files.delete
+      clean.build.out.release.only.tests:
+        opts:
+          filePath: '{path::out.build.*=1}'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - files.delete
+      clean.release.min:
+        opts:
+          filePath: '{path::out.release.min}'
+        inherit:
+          - files.delete
+      npm.build.debug.no.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - npm.generate
+      npm.build.release.no.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - npm.generate
+      npm.build.debug.only.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - npm.generate
+      npm.build.release.only.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - npm.generate
+      npm.release.min:
+        opts:
+          entryPath: '{path::out.release.min}/Main.s'
+          packagePath: '{path::out.release.min}/package.json'
+        inherit:
+          - npm.generate
       proto.export:
         opts:
           export: 'path::export'
@@ -999,6 +1371,90 @@ module:
         criterion:
           content: prime
           debug: release
+      transpile.reflect.proto.debug:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.debug'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - files.reflect
+      transpile.reflect.proto.release:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.release'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - files.reflect
+      transpile.reflect.release.min:
+        opts:
+          filePath: 'reflector::transpile.reflect.release.min'
+        inherit:
+          - files.reflect
+      transpile.reflect.tests.debug:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.debug'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - files.reflect
+      transpile.reflect.tests.release:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.release'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - files.reflect
+      reflect.module.files.debug.no.tests:
+        opts:
+          filePath: 'reflector::reflect.module.files.debug.no.tests'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - files.reflect
+      reflect.module.files.release.no.tests:
+        opts:
+          filePath: 'reflector::reflect.module.files.release.no.tests'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - files.reflect
+      reflect.module.files.debug.only.tests:
+        opts:
+          filePath: 'reflector::reflect.module.files.debug.only.tests'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - files.reflect
+      reflect.module.files.release.only.tests:
+        opts:
+          filePath: 'reflector::reflect.module.files.release.only.tests'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - files.reflect
+      reflect.release.min.files:
+        opts:
+          filePath: 'reflector::reflect.release.min.files'
+        inherit:
+          - files.reflect
+      reflect.compiled.debug.files:
+        opts:
+          filePath: 'reflector::reflect.compiled.debug.files'
+        inherit:
+          - files.reflect
+      reflect.compiled.release.files:
+        opts:
+          filePath: 'reflector::reflect.compiled.release.files'
+        inherit:
+          - files.reflect
       reflect.proto.debug.raw:
         opts:
           filePath: 'reflector::reflect.proto.debug.raw'
@@ -1096,6 +1552,50 @@ module:
         inherit:
           - files.transpile
     build:
+      build.debug:
+        steps:
+          - 'step::clean.build.out.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.module.files.*=1'
+          - 'step::npm.build.*=1'
+        criterion:
+          debug: debug
+          tests: no.tests
+      build.release:
+        steps:
+          - 'step::clean.build.out.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.module.files.*=1'
+          - 'step::npm.build.*=1'
+        criterion:
+          debug: release
+          tests: no.tests
+      build.release.min:
+        steps:
+          - 'step::clean.release.min'
+          - 'step::transpile.build.release.min'
+          - 'step::reflect.release.min.files'
+          - 'step::npm.release.min'
+      build.tests.debug:
+        steps:
+          - 'step::clean.build.out.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.compiled.*=1'
+          - 'step::transpile.build.tests.*=1'
+          - 'step::reflect.module.files.*=1'
+        criterion:
+          debug: debug
+          tests: only.tests
+      build.tests.release:
+        steps:
+          - 'step::clean.build.out.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.compiled.*=1'
+          - 'step::transpile.build.tests.*=1'
+          - 'step::reflect.module.files.*=1'
+        criterion:
+          debug: release
+          tests: only.tests
       proto.export:
         steps:
           - 'step::proto.export'
@@ -1272,6 +1772,28 @@ module:
         path: '{path::proto}/**'
       doc:
         path: doc
+      out.build.debug.no.test:
+        criterion:
+          debug: debug
+          tests: no.tests
+        path: '{path::out}/debug'
+      out.build.release.no.test:
+        criterion:
+          debug: release
+          tests: no.tests
+        path: '{path::out}/release'
+      out.build.debug.only.test:
+        criterion:
+          debug: debug
+          tests: only.tests
+        path: '{path::out}/debug.test'
+      out.build.release.only.test:
+        criterion:
+          debug: release
+          tests: only.tests
+        path: '{path::out}/release.test'
+      out.release.min:
+        path: '{path::out}/release.min'
       out.raw.debug:
         criterion:
           debug: debug
@@ -1347,6 +1869,113 @@ module:
         criterion:
           development: 1
     reflector:
+      transpile.reflect.proto.debug:
+        src:
+          filePath:
+            '**.test*': 0
+            '**.test/**': 0
+            '{path::proto}/**': '{path::out.build.*=1}/Main.s'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - predefined.*
+      transpile.reflect.proto.release:
+        src:
+          filePath:
+            '**.test*': 0
+            '**.test/**': 0
+            '{path::proto}/**': '{path::out.build.*=1}/Main.s'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - predefined.*
+      transpile.reflect.release.min:
+        src:
+          filePath:
+            '**.test*': 0
+            '**.test/**': 0
+            '{path::proto}/**': '{path::out.release.min}/Main.s'
+        inherit:
+          - predefined.*
+      transpile.reflect.tests.debug:
+        src:
+          filePath:
+            '**.test*': 1
+            '{path::proto}/**': '{path::out.build*=1}/Tests.test.s'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - predefined.*
+      transpile.reflect.tests.release:
+        src:
+          filePath:
+            '**.test*': 1
+            '{path::proto}/**': '{path::out.build*=1}/Tests.test.s'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - predefined.*
+      reflect.module.files.debug.no.tests:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.build.*=1}/License'
+            '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - predefined.*
+      reflect.module.files.release.no.tests:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.build.*=1}/License'
+            '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - predefined.*
+      reflect.module.files.debug.only.tests:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.build.*=1}/License'
+            '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - predefined.*
+      reflect.module.files.release.only.tests:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.build.*=1}/License'
+            '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - predefined.*
+      reflect.release.min.files:
+        src:
+          filePath:
+            '{path::in}/License': '{path::out.release.min}/License'
+            '{path::in}/Readme.md': '{path::out.release.min}/Readme.md'
+      reflect.compiled.debug.files:
+        src:
+          filePath:
+            '{path::out.build.debug.no.test}/Main.s': '{path::out.build.debug.only.test}/Main.s'
+        inherit:
+          - predefined.*
+      reflect.compiled.release.files:
+        src:
+          filePath:
+            '{path::out.build.release.no.test}/Main.s': '{path::out.build.release.only.test}/Main.s'
+        inherit:
+          - predefined.*
       reflect.proto.debug.raw:
         src:
           filePath:
@@ -1452,6 +2081,213 @@ module:
         inherit:
           - predefined.*
     step:
+      transpile.build.proto.debug.no.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.*=1'
+          entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+          transpilingStrategy:
+            - Nop
+          optimization: 0
+          minification: 0
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - files.transpile
+      transpile.build.proto.debug.only.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.*=1'
+          entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+          transpilingStrategy:
+            - Nop
+          optimization: 0
+          minification: 0
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - files.transpile
+      transpile.build.proto.release.no.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.*=1'
+          entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+          transpilingStrategy:
+            - Uglify
+          optimization: 9
+          minification: 0
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - files.transpile
+      transpile.build.proto.release.only.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.*=1'
+          entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+          transpilingStrategy:
+            - Uglify
+          optimization: 9
+          minification: 0
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - files.transpile
+      transpile.build.release.min:
+        opts:
+          filePath: 'reflector::transpile.reflect.release.min'
+          entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+          transpilingStrategy:
+            - Uglify
+          optimization: 9
+          minification: 9
+          diagnosing: 0
+          beautifing: 0
+        inherit:
+          - files.transpile
+      transpile.build.tests.debug.no.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.*=1'
+          transpilingStrategy:
+            - UglifyJs
+          optimization: 9
+          minification: 9
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - files.transpile
+      transpile.build.tests.debug.only.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.*=1'
+          transpilingStrategy:
+            - UglifyJs
+          optimization: 9
+          minification: 9
+          diagnosing: 0
+          beautifing: 0
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - files.transpile
+      transpile.build.tests.release.no.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.*=1'
+          transpilingStrategy:
+            - UglifyJs
+          optimization: 9
+          minification: 9
+          diagnosing: 1
+          beautifing: 1
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - files.transpile
+      transpile.build.tests.release.only.tests:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.*=1'
+          transpilingStrategy:
+            - UglifyJs
+          optimization: 9
+          minification: 9
+          diagnosing: 1
+          beautifing: 1
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - files.transpile
+      clean.build.out.debug.no.tests:
+        opts:
+          filePath: '{path::out.build.*=1}'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - files.delete
+      clean.build.out.release.no.tests:
+        opts:
+          filePath: '{path::out.build.*=1}'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - files.delete
+      clean.build.out.debug.only.tests:
+        opts:
+          filePath: '{path::out.build.*=1}'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - files.delete
+      clean.build.out.release.only.tests:
+        opts:
+          filePath: '{path::out.build.*=1}'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - files.delete
+      clean.release.min:
+        opts:
+          filePath: '{path::out.release.min}'
+        inherit:
+          - files.delete
+      npm.build.debug.no.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - npm.generate
+      npm.build.release.no.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - npm.generate
+      npm.build.debug.only.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - npm.generate
+      npm.build.release.only.tests:
+        opts:
+          entryPath: '{path::out.build.*=1}/Main.s'
+          packagePath: '{path::out.build.*=1}/package.json'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - npm.generate
+      npm.release.min:
+        opts:
+          entryPath: '{path::out.release.min}/Main.s'
+          packagePath: '{path::out.release.min}/package.json'
+        inherit:
+          - npm.generate
       proto.export:
         opts:
           export: 'path::export'
@@ -1719,6 +2555,90 @@ module:
         criterion:
           content: prime
           debug: release
+      transpile.reflect.proto.debug:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.debug'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - files.reflect
+      transpile.reflect.proto.release:
+        opts:
+          filePath: 'reflector::transpile.reflect.proto.release'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - files.reflect
+      transpile.reflect.release.min:
+        opts:
+          filePath: 'reflector::transpile.reflect.release.min'
+        inherit:
+          - files.reflect
+      transpile.reflect.tests.debug:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.debug'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - files.reflect
+      transpile.reflect.tests.release:
+        opts:
+          filePath: 'reflector::transpile.reflect.tests.release'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - files.reflect
+      reflect.module.files.debug.no.tests:
+        opts:
+          filePath: 'reflector::reflect.module.files.debug.no.tests'
+        criterion:
+          debug: debug
+          tests: no.tests
+        inherit:
+          - files.reflect
+      reflect.module.files.release.no.tests:
+        opts:
+          filePath: 'reflector::reflect.module.files.release.no.tests'
+        criterion:
+          debug: release
+          tests: no.tests
+        inherit:
+          - files.reflect
+      reflect.module.files.debug.only.tests:
+        opts:
+          filePath: 'reflector::reflect.module.files.debug.only.tests'
+        criterion:
+          debug: debug
+          tests: only.tests
+        inherit:
+          - files.reflect
+      reflect.module.files.release.only.tests:
+        opts:
+          filePath: 'reflector::reflect.module.files.release.only.tests'
+        criterion:
+          debug: release
+          tests: only.tests
+        inherit:
+          - files.reflect
+      reflect.release.min.files:
+        opts:
+          filePath: 'reflector::reflect.release.min.files'
+        inherit:
+          - files.reflect
+      reflect.compiled.debug.files:
+        opts:
+          filePath: 'reflector::reflect.compiled.debug.files'
+        inherit:
+          - files.reflect
+      reflect.compiled.release.files:
+        opts:
+          filePath: 'reflector::reflect.compiled.release.files'
+        inherit:
+          - files.reflect
       reflect.proto.debug.raw:
         opts:
           filePath: 'reflector::reflect.proto.debug.raw'
@@ -1816,6 +2736,50 @@ module:
         inherit:
           - files.transpile
     build:
+      build.debug:
+        steps:
+          - 'step::clean.build.out.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.module.files.*=1'
+          - 'step::npm.build.*=1'
+        criterion:
+          debug: debug
+          tests: no.tests
+      build.release:
+        steps:
+          - 'step::clean.build.out.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.module.files.*=1'
+          - 'step::npm.build.*=1'
+        criterion:
+          debug: release
+          tests: no.tests
+      build.release.min:
+        steps:
+          - 'step::clean.release.min'
+          - 'step::transpile.build.release.min'
+          - 'step::reflect.release.min.files'
+          - 'step::npm.release.min'
+      build.tests.debug:
+        steps:
+          - 'step::clean.build.out.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.compiled.*=1'
+          - 'step::transpile.build.tests.*=1'
+          - 'step::reflect.module.files.*=1'
+        criterion:
+          debug: debug
+          tests: only.tests
+      build.tests.release:
+        steps:
+          - 'step::clean.build.out.*=1'
+          - 'step::transpile.build.proto.*=1'
+          - 'step::reflect.compiled.*=1'
+          - 'step::transpile.build.tests.*=1'
+          - 'step::reflect.module.files.*=1'
+        criterion:
+          debug: release
+          tests: only.tests
       proto.export:
         steps:
           - 'step::proto.export'
@@ -1913,5 +2877,5 @@ module:
           - 'build::npm.*=5'
     consistency:
       ../will.yml:
-        hash: 49d60e99d766568ac75be89f019d9d99
-        size: 7048
+        hash: f697b74ed163d9fca3c5c2c004ef1bfd
+        size: 12226

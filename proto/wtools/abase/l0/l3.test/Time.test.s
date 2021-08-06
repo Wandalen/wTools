@@ -105,7 +105,10 @@ function sleep( test )
   test.shouldThrowErrorSync( () => _.time.sleep() );
 
   test.case = 'extra arguments';
-  test.shouldThrowErrorSync( () => _.time.sleep( 10, new _.Procedure(), 10 ) );
+  var procedure = new __.Procedure();
+  procedure.begin();
+  test.shouldThrowErrorSync( () => _.time.sleep( 10, procedure, 10 ) );
+  procedure.end();
 
   test.case = 'wrong type of delay';
   test.shouldThrowErrorSync( () => _.time.sleep( '10' ) );

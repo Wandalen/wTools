@@ -3945,6 +3945,8 @@ function arrayGrow_( test )
 
 }
 
+arrayGrow_.timeOut = 10000;
+
 //
 
 function arrayGrow_CheckReturnedContainer( test )
@@ -4804,6 +4806,8 @@ function arrayRelength_( test )
   test.shouldThrowErrorSync( () => _.arrayRelength_( [ 1, 2 ], [ 'str' ], [ 4 ] ) );
   test.shouldThrowErrorSync( () => _.arrayRelength_( [ 1, 2 ], [ 1, 2, 3 ], [ 4 ] ) );
 }
+
+arrayRelength_.timeOut = 10000;
 
 //
 
