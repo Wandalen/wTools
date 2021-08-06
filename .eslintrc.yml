@@ -15,6 +15,7 @@ globals :
   SharedArrayBuffer : readonly
 parserOptions :
   ecmaVersion : 2020
+  # sourceType : module
 rules :
   accessor-pairs : error
   array-bracket-newline :
@@ -127,6 +128,8 @@ rules :
         let : { 'after' : true }
         const : { 'after' : true }
         var : { 'after' : true }
+        import : { 'after' : true, 'before' : true }
+        from : { 'after' : true, 'before' : true }
   line-comment-position : off
   linebreak-style :
     - error
@@ -328,7 +331,7 @@ rules :
   semi-style :
     - error
     - last
-  sort-imports : error
+  sort-imports : off
   sort-keys : off
   sort-vars : off
   space-before-blocks : off
@@ -402,7 +405,6 @@ rules :
     - warn
     - args : 'none'
   no-ex-assign : warn
-
 
   # play with this later
 
