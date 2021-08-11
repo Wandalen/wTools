@@ -38,7 +38,7 @@ jobs :
     - name : Update npm if current version is 6
       if : "startsWith( steps.getnpmver.outputs.npmver, '6.' )"
       run : npm install -g npm@latest-6
-    - run : npm -g i willbe@stable
+    - run : npm -g i willbe@delta
     - run : will .npm.install
     - name : Environment
       run : env
