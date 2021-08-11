@@ -2122,9 +2122,14 @@ function _trackingEnable()
     {
       let error;
       if( parent && parent.filename )
-      error = _.err( err, `\nModule file "${parent.filename}" failed to include "${request}"` );
+      {
+        error = _.err( err, `\nModule file "${parent.filename}" failed to include "${request}"` );
+        console.error( error );
+      }
       else
-      error = _.err( err, `\nFailed to include "${request}"` );
+      {
+        error = _.err( err, `\nFailed to include "${request}"` );
+      }
       throw error;
     }
     finally
