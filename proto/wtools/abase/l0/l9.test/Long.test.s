@@ -13894,6 +13894,7 @@ const Proto =
   name : 'Tools.Long.l0.l9',
   silencing : 1,
   enabled : 1,
+  routineTimeOut : 10000,
 
   tests :
   {
