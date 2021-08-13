@@ -3,11 +3,13 @@ program();
 function program()
 {
 
-  let _ = require( '../../proto/node_modules/Tools' );
-  _.include( 'wFiles' );
+  const _ = require( 'wTools' );
+  _.include( 'wProcedure' );
+  // let _ = require( '../../proto/node_modules/Tools' );
+  // _.include( 'wFiles' );
   _.include( 'wConsequence' );
 
-  var con = _.Consequence();
+  const con = _.Consequence();
 
   con.then( function callback1( arg )
   {

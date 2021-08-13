@@ -3474,6 +3474,8 @@ function begin( test )
   return ready;
 }
 
+begin.timeOut = 10000;
+
 //
 
 function beginTimerInsideOfCallback( test )
@@ -4043,6 +4045,8 @@ function finally_( test )
   return ready;
 }
 
+finally_.timeOut = 10000;
+
 //
 
 function periodic( test )
@@ -4393,7 +4397,7 @@ function periodic( test )
   return ready;
 }
 
-periodic.timeOut = 10000;
+periodic.timeOut = 20000;
 
 //
 
