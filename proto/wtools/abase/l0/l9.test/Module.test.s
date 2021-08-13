@@ -2864,7 +2864,7 @@ orphans
 
 }
 
-predeclarePrime.timeOut = 60000;
+predeclarePrime.timeOut = 120000;
 
 //
 
@@ -5406,10 +5406,11 @@ function stealthyRequireIssue( test )
   }
 }
 
+stealthyRequireIssue.timeOut = 60000;
 stealthyRequireIssue.description =
 `
 - That https://github.com/analog-nico/stealthy-require is working
-`
+`;
 
 //
 
@@ -5924,7 +5925,7 @@ function requireElectronProblem( test )
   }
 }
 
-requireElectronProblem.routineTimeOut = 60000;
+requireElectronProblem.routineTimeOut = 120000;
 
 //
 
