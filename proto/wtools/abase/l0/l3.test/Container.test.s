@@ -177,7 +177,6 @@ function exportStringDiagnosticShallow( test )
 
 function lengthOf( test )
 {
-
   test.case = 'number';
   var src = 1;
   test.identical( _.container.lengthOf( src ), 0 );
@@ -389,9 +388,9 @@ function lengthOf( test )
   /* - */
 
   function routine () {}
-
-
 }
+
+lengthOf.timeOut = 10000;
 
 // --
 // container interface
