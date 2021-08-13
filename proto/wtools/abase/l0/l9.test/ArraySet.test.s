@@ -4174,6 +4174,8 @@ function containAny_( test )
   test.shouldThrowErrorSync( () => _.arraySet.containAny_( new Set( [] ), 'wrong' ) );
 }
 
+containAny_.timeOut = 10000;
+
 //
 
 function containNone_( test )
