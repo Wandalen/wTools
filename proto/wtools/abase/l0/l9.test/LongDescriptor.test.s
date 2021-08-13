@@ -1144,6 +1144,7 @@ const Proto =
 
   name : 'Tools.LongDescriptor.l0.l9',
   silencing : 1,
+  routineTimeOut : 10000,
 
   tests :
   {

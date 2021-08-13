@@ -20386,6 +20386,7 @@ const Proto =
 
   name : 'Tools.ContainerAdapter.l1',
   silencing : 1,
+  routineTimeOut : 10000,
 
   tests :
   {

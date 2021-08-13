@@ -735,6 +735,8 @@ function diff_( test )
   test.shouldThrowErrorSync( () => _.arraySet.diff_( [], [ 1 ], [ 2 ], [] ) );
 }
 
+diff_.timeOut = 10000;
+
 //
 
 // function arraySetBut( test )

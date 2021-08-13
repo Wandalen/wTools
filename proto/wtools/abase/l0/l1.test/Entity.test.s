@@ -1500,6 +1500,8 @@ function makeLongDescriptor( test )
   };
 }
 
+makeLongDescriptor.timeOut = 10000;
+
 /* qqq2 : for junior : implement 4 separate test routines for
 - make / makeEmpty / makeUndefined / cloneShallow
 - with long / without long

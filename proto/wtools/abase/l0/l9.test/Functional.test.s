@@ -23740,6 +23740,7 @@ const Proto =
   name : 'Tools.Functional.l0.l9',
   silencing : 1,
   enabled : 1,
+  routineTimeOut : 10000,
 
   tests :
   {
