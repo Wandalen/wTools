@@ -2106,6 +2106,8 @@ function timerInCancelBegun( test )
   return ready;
 }
 
+timerInCancelBegun.timeOut = 10000;
+
 //
 
 function timerInCancelEnded( test )
