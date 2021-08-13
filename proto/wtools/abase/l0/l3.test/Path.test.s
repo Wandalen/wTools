@@ -3639,9 +3639,6 @@ function refine( test )
 
 function normalize( test )
 {
-
-  /* */
-
   test.case = 'posix path';
 
   var path = 'a/foo/../b';
@@ -4218,6 +4215,8 @@ function normalize( test )
   test.case = 'No path - NaN';
   test.shouldThrowErrorOfAnyKind( () => _.path.normalize( NaN ) );
 }
+
+normalize.timeOut = 10000;
 
 //
 
@@ -7165,7 +7164,7 @@ function fullName( test )
 const Proto =
 {
 
-  name : 'Tools.path.Fundamental.l0.l3',
+  name : 'Tools.Path.l0.l3',
   silencing : 1,
 
   tests :
