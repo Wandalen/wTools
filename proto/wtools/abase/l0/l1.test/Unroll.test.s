@@ -3460,6 +3460,7 @@ const Proto =
   name : 'Tools.Unroll.l0.l1',
   silencing : 1,
   enabled : 1,
+  routineTimeOut : 10000,
 
   tests :
   {

@@ -431,8 +431,9 @@ function dichotomy( test ) /* qqq : extend with construbile* checks */
   // test.identical( _.aux.isEmpty( src ), false );
   // test.identical( _.map.isPopulated( src ), false );
   // test.identical( _.aux.isPopulated( src ), true );
-
 }
+
+dichotomy.timeOut = 10000;
 
 //
 

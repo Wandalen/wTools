@@ -8292,6 +8292,7 @@ const Proto =
 
   name : 'Tools.Entity.l0.l3',
   silencing : 1,
+  routineTimeOut : 10000,
 
   tests :
   {

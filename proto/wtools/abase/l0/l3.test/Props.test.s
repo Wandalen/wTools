@@ -434,8 +434,9 @@ function dichotomy( test )
   test.identical( _.aux.isEmpty( src ), false );
   test.identical( _.map.isPopulated( src ), false );
   test.identical( _.aux.isPopulated( src ), true );
-
 }
+
+dichotomy.timeOut = 10000;
 
 //
 

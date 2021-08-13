@@ -2410,8 +2410,9 @@ function arrayBut_( test )
   test.shouldThrowErrorSync( () => _.arrayBut_( [ 1, 2 ], 0, 4 ) );
   test.shouldThrowErrorSync( () => _.arrayBut_( [ 1, 2 ], 0, { a : 1 } ) );
   test.shouldThrowErrorSync( () => _.arrayBut_( [ 1, 2 ], 0, new BufferRaw( 2 ) ) );
-
 }
+
+arrayBut_.timeOut = 10000;
 
 //
 
@@ -3945,7 +3946,7 @@ function arrayGrow_( test )
 
 }
 
-arrayGrow_.timeOut = 10000;
+arrayGrow_.timeOut = 20000;
 
 //
 

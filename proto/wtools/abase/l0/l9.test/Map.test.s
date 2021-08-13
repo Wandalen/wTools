@@ -828,6 +828,8 @@ function mapsExtend( test )
   test.shouldThrowErrorSync( () => _.mapsExtend( {}, [ 'wrong' ] ) );
 }
 
+mapsExtend.timeOut = 10000;
+
 //
 
 function mapsExtendWithVectorsInSrcMaps( test )
@@ -7563,6 +7565,8 @@ function mapButIgnoringUndefines_ButMapIsVector( test )
 
   test.close( 'containerAdapter' );
 }
+
+mapButIgnoringUndefines_ButMapIsVector.timeOut = 10000;
 
 //
 
