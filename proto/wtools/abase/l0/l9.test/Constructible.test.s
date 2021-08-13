@@ -1196,6 +1196,7 @@ const Proto =
 
   name : 'Tools.Constructible.l0.l9',
   silencing : 1,
+  routineTimeOut : 10000,
 
   tests :
   {
