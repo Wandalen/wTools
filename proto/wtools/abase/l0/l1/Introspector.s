@@ -316,7 +316,7 @@ function locationFromStackFrame( o )
   /* */
 
   if( !( _.strIs( o.stackFrame ) ) )
-  throw Error( `Expects string {- stackFrame -}, but fot ${_.entity.strType( o.stackFrame )}` );
+  throw Error( `Expects string {- stackFrame -}, but got ${_.entity.strType( o.stackFrame )}` );
 
   if( o.location && !_.mapIs( o.location ) )
   throw Error( 'Expects map option::location' );

@@ -831,7 +831,7 @@ function _filesUniversalAssociateModule( files, modules, disassociating )
     let module2 = _.module._predeclaredWithEntryPath( file.sourcePath );
     if( module2 && !modules.has( module2 ) )
     return;
-    // if( module2 && modules.size > 1 ) /* xxx2*/
+    // if( module2 && modules.size > 1 ) /* xxx2 */
     // _.assert( 0, 'not tested' ); /* xxx qqq : cover and fix */
 
     if( _.set.identicalShallow( file.modules, modules ) )
@@ -955,12 +955,15 @@ function fileWithResolvedPath( sourcePath )
 
 //
 
-function fileWith( relativeSourcePath )
+/* xxx : qqq : cover please */
+function fileWith( relativeSourcePath, relativeLevel )
 {
   let absoluteSourcePath = relativeSourcePath;
 
   if( _.numberIs( relativeSourcePath ) )
   {
+    if( relativeLevel !== undefined )
+    relativeSourcePath += relativeLevel;
     _.assert( relativeSourcePath >= 0 );
     absoluteSourcePath = _.introspector.location({ level : relativeSourcePath + 1 }).filePath;
     return _.module._fileWithResolvedPath( absoluteSourcePath );
@@ -970,16 +973,50 @@ function fileWith( relativeSourcePath )
   {
     /* zzz : qqq : optimize _.introspector.location({ level : 1 }).filePath */
     /* zzz : qqq : optimize _.path.dir( _.introspector.location({ level : 1 }).filePath ) */
-    let basePath = _.path.dir( _.introspector.location({ level : 1 }).filePath );
+    let level = 1;
+    if( relativeLevel !== undefined )
+    level += relativeLevel;
+    let basePath = _.path.dir( _.introspector.location({ level }).filePath );
     absoluteSourcePath = _.path.canonize( basePath + '/' + absoluteSourcePath );
+  }
+  else if( _.path.isGlobal( absoluteSourcePath ) )
+  {
+    absoluteSourcePath = _.path.canonize( absoluteSourcePath );
   }
   else
   {
-    absoluteSourcePath = _.path.canonize( absoluteSourcePath );
+    let downPath = _.introspector.location({ level : ( relativeLevel || 0 ) + 1 }).filePath;
+    absoluteSourcePath = this._fileResolve
+    ({
+      sourcePaths : [ absoluteSourcePath ],
+      downPath : downPath,
+      withAlternatives : true,
+      all : false,
+    });
   }
 
   let moduleFile = _.module._fileWithResolvedPath( absoluteSourcePath );
   return moduleFile;
+}
+
+//
+
+function fileInvalidate( relativeSourcePath )
+{
+  // if( _.numberIs( relativeSourcePath ) )
+  // relativeSourcePath += 1;
+
+  let moduleFile = _.module.fileWith( relativeSourcePath, 1 );
+
+  if( !moduleFile )
+  {
+    return false;
+  }
+
+  _.module._fileUniversalFinit( moduleFile );
+  delete moduleFile.moduleNativeFilesMap[ moduleFile.nativeSourcePath ];
+
+  return true;
 }
 
 //
@@ -1565,7 +1602,7 @@ function _resolve( o )
     {
       let r = _.module._resolve
       ({
-        basePath : o.basePath,
+        // basePath : o.basePath,
         downPath : o.downPath,
         moduleName : o.moduleName[ a ],
         throwing : o.throwing,
@@ -1584,7 +1621,7 @@ function _resolve( o )
   ({
     moduleNames : [ o.moduleName ],
     downPath : o.downPath,
-    basePath : o.basePath,
+    // basePath : o.basePath,
     throwing : o.throwing,
     withAlternatives : o.withAlternatives,
   });
@@ -1594,7 +1631,7 @@ function _resolve( o )
 
 _resolve.defaults =
 {
-  basePath : null,
+  // basePath : null,
   downPath : null,
   moduleName : null,
   throwing : 0,
@@ -1606,11 +1643,11 @@ _resolve.defaults =
 function resolve( moduleName )
 {
   let downPath = _.path.normalize( _.introspector.location({ level : 1 }).filePath );
-  let basePath = _.path.dir( downPath );
+  // let basePath = _.path.dir( downPath );
   /* qqq zzz : optimize for release build for utility::starter */
   let result = _.module._resolve
   ({
-    basePath,
+    // basePath,
     downPath,
     moduleName : arguments,
     throwing : 0,
@@ -1631,13 +1668,13 @@ function _resolveFirst( o )
   o = { moduleNames : arguments }
 
   _.assert( _.strDefined( o.downPath ) );
-  _.assert( _.strDefined( o.basePath ) );
+  // _.assert( _.strDefined( o.basePath ) );
 
   let sourcePaths = this._moduleNamesToPaths( o.moduleNames );
   let resolved = this._fileResolve
   ({
     sourcePaths,
-    basePath : o.basePath,
+    // basePath : o.basePath,
     downPath : o.downPath,
     withAlternatives : o.withAlternatives,
     all : 0,
@@ -1661,7 +1698,7 @@ _resolveFirst.defaults =
 {
   moduleNames : null,
   downPath : null,
-  basePath : null,
+  // basePath : null,
   throwing : 0,
   withAlternatives : 1,
 }
@@ -1671,11 +1708,11 @@ _resolveFirst.defaults =
 function resolveFirst()
 {
   let downPath = _.path.normalize( _.introspector.location({ level : 1 }).filePath );
-  let basePath = _.path.dir( downPath );
+  // let basePath = _.path.dir( downPath );
   return _.module._resolveFirst
   ({
     moduleNames : arguments,
-    basePath,
+    // basePath,
     downPath,
     throwing : 0,
   });
@@ -1696,16 +1733,13 @@ function _fileResolve( o )
   _.assert( arguments.length === 1 );
   _.assert( _.longIs( o.sourcePaths ) );
   _.strDefined( o.downPath );
-  _.strDefined( o.basePath );
+  // _.strDefined( o.basePath );
   _.assert( !!native );
 
   for( let a = 0 ; a < o.sourcePaths.length ; a++ )
   {
     let sourcePath = o.sourcePaths[ a ];
     let resolved;
-
-    // if( _.strHas( sourcePath, '/Main.s' ) )
-    // debugger;
 
     resolved = nativeResolve( sourcePath );
     if( resolved === undefined && o.withAlternatives )
@@ -1719,39 +1753,6 @@ function _fileResolve( o )
     if( !o.all )
     return result[ 0 ];
   }
-
-  // /* zzz : remove later */
-  // if( o.basePath )
-  // {
-  //   o.basePath = _.path.canonize( o.basePath );
-  //   let index = o.basePath.indexOf( '/wtools/' );
-  //   if( index >= 0 )
-  //   o.basePath = o.basePath.substring( 0, index+8 );
-  // }
-
-  // if( o.basePath )
-  // for( let a = 0 ; a < o.sourcePaths.length ; a++ )
-  // {
-  //   let sourcePath = o.sourcePaths[ a ];
-  //   let resolved;
-  //
-  //   if( _.path.isAbsolute( sourcePath ) )
-  //   continue;
-  //
-  //   try
-  //   {
-  //     let filePath = _.path.nativizeMinimal( _.path.canonize( o.basePath + '/' + sourcePath ) );
-  //     resolved = ModuleFileNative._resolveFilename( filePath, native, false, undefined );
-  //   }
-  //   catch( err )
-  //   {
-  //     continue;
-  //   }
-  //
-  //   result.push( resolved );
-  //   if( !o.all )
-  //   return result[ 0 ];
-  // }
 
   if( o.all )
   return result;
@@ -1783,7 +1784,7 @@ _fileResolve.defaults =
 {
   sourcePaths : null,
   downPath : null,
-  basePath : null,
+  // basePath : null,
   withAlternatives : 1,
   all : 0,
 }
@@ -1852,10 +1853,10 @@ function include()
   _.assert( _.strIs( arguments[ 0 ] ) );
 
   let downPath = _.path.normalize( _.introspector.location({ level : 1 }).filePath );
-  let basePath = _.path.dir( downPath );
+  // let basePath = _.path.dir( downPath );
   let resolved = _.module._resolve
   ({
-    basePath,
+    // basePath,
     downPath,
     moduleName : arguments,
     throwing : 1,
@@ -1881,10 +1882,10 @@ function include()
 function includeFirst()
 {
   let downPath = _.path.normalize( _.introspector.location({ level : 1 }).filePath );
-  let basePath = _.path.dir( downPath );
+  // let basePath = _.path.dir( downPath );
   let resolved = _.module._resolveFirst
   ({
-    basePath,
+    // basePath,
     downPath,
     moduleNames : arguments,
     throwing : 1,
@@ -2371,6 +2372,7 @@ var ModuleExtension =
   _fileWithResolvedPathAnyNamespace,
   fileWithResolvedPath,
   fileWith,
+  fileInvalidate,
 
   fileNativeIs : __.module.fileNativeIs,
   fileNativeFrom : __.module.fileNativeFrom,
