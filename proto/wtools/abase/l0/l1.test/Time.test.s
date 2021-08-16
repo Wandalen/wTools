@@ -4496,6 +4496,21 @@ function cancel( test )
   test.close( 'timer - _periodic' );
 }
 
+//
+
+function now( test )
+{
+  test.case = 'trivial';
+  var got = _.time.now();
+  test.ge( got, 1629089923250 );
+  test.true( _.intIs( got ) );
+
+  test.case = 'call with argument, should not throw error';
+  var got = _.time.now( 'wrong' );
+  test.ge( got, 1629089923250 );
+  test.true( _.intIs( got ) );
+}
+
 // --
 // declaration
 // --
@@ -4541,6 +4556,7 @@ const Proto =
     periodic,
     cancel,
 
+    now,
   }
 
 }

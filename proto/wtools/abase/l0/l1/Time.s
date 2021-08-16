@@ -702,7 +702,8 @@ function _now_functor()
 {
   let now;
 
-  if( typeof performance !== 'undefined' && performance.now !== undefined )
+  const majorVersion = Number( process.versions.node.match( /^\d+/ )[ 0 ] );
+  if( typeof performance !== 'undefined' && performance.now !== undefined && majorVersion < 16 )
   now = _.routine.join( performance, performance.now );
   else if( Date.now )
   now = _.routine.join( Date, Date.now );
