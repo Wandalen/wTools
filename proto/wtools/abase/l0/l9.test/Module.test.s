@@ -5790,17 +5790,17 @@ function fileInvalidateBasic( test )
   let context = this;
   let a = test.assetFor( false );
 
-  var data = { a : 1 }
+  var data = { a : 1 };
   __.fileProvider.fileWrite({ filePath : a.abs( 'f.json' ), data, encoding : 'json' });
-  var got = require( a.abs( 'f.json' ) );
+  var got = require( __.path.nativize( a.abs( 'f.json' ) ) );
   test.identical( got, data );
 
   var deleted = _.module.fileInvalidate( a.abs( 'f.json' ) );
   test.true( deleted );
 
-  var data = { b : 2 }
+  var data = { b : 2 };
   __.fileProvider.fileWrite({ filePath : a.abs( 'f.json' ), data, encoding : 'json' });
-  var got = require( a.abs( 'f.json' ) );
+  var got = require( __.path.nativize( a.abs( 'f.json' ) ) );
   test.identical( got, data );
 
 }
