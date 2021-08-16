@@ -718,9 +718,7 @@ function modulingGlobalNamespaces( test )
     {
       test.case = `basic, ${__.entity.exportStringSolo( env )}`;
 
-      debugger;
       var filePath = a.program({ entry : programRoutine1, locals : env }).filePath;
-      debugger;
       a.program({ entry : programRoutine2, locals : env });
       a.program({ entry : programRoutine2b, locals : env });
       a.program({ entry : program3, locals : env });
@@ -821,7 +819,6 @@ programRoutine1 : ./program6 : undefined
 
   function programRoutine1()
   {
-    debugger;
     console.log( 'programRoutine1' );
     const _ = require( toolsPath );
     require( './programRoutine2' );
@@ -1093,7 +1090,6 @@ function preload( test )
   {
     console.log( 'program.begin' );
     let _ = _global_.wTools;
-    debugger;
     console.log( _.module.toolsPathGet() );
     console.log( 'program.end' );
   }
@@ -4745,7 +4741,6 @@ r1.test1.theStatus : r4
     require( './r4' );
     _realGlobal_.includeR4 = function()
     {
-      debugger;
       require( './r4' );
     }
   }
@@ -4830,7 +4825,6 @@ r1.real.name : real
 
     console.log( module.universal );
     module.universal.upFiles.forEach( ( file ) => console.log( `  ${file}` ) );
-    debugger;
 
   }
 
@@ -5207,7 +5201,6 @@ function requireSameModuleTwice( test )
   function withRequire()
   {
     _ = Object.create( null );
-    debugger;
     if( process.platform === 'linux' )
     require( 'withrequire' );
     else
@@ -6078,9 +6071,7 @@ function requireModuleProcess( test )
 
   function program1()
   {
-    debugger;
     require( 'wprocess' );
-    debugger;
   }
 }
 
@@ -6099,10 +6090,8 @@ function moduleBinProblem( test )
   // {
     a.fileProvider.dirMake( a.abs( '.' ) );
     a.shell({ execPath : 'git init', sync : 1 });
-    debugger;
     require( 'wdeasync' );
     return test.true( true );
-    debugger;
     return null;
   // });
   // a.ready.then( () =>
@@ -6161,11 +6150,6 @@ function requireElectronProblem( test )
   /* */
 
   a.shell( 'npm i' )
-  a.ready.then( () =>
-  {
-    debugger;
-    return null;
-  });
   a.shell({ execPath : `${packagedPath[ process.platform ]}` })
   // a.shell( `${packagedPath[ process.platform]} --inspect-brk`) /* Vova: use to debug in chrome*/
   .then( ( op ) =>
@@ -6307,6 +6291,49 @@ requireElectronProblem.routineTimeOut = 120000;
 //   }
 // }
 
+//
+
+function requireMongooseAfterTestingProblem( test )
+{
+  let a = test.assetFor( false );
+
+  let filePath = a.program({ entry : program1, filePath : a.abs( 'program.js' ) }).filePath;
+  let packageJson =
+  {
+    dependencies : { 'mongoose' : '' },
+    devDependencies : { 'wTesting' : 'latest' },
+  };
+  a.fileProvider.fileWrite({ filePath : a.abs( 'package.json' ), data : packageJson, encoding : 'json' })
+
+  /* */
+
+  a.shell( 'npm i' );
+  a.shell({ execPath : `node ${ filePath }` });
+  a.ready.then( ( op ) =>
+  {
+    test.identical( op.exitCode, 0 );
+    test.identical( op.output, 'succefully loaded modules\n' );
+    return null;
+  });
+
+  /* - */
+
+  return a.ready;
+
+  /* */
+
+  function program1()
+  {
+    const _ = require( 'wTesting' );
+    const Mongoose_ = require( 'mongoose' );
+    console.log( 'succefully loaded modules' );
+  }
+}
+
+requireMongooseAfterTestingProblem.experimental = 1;
+
+//
+
 function requireProductionModuleProblemWithGitTools( test )
 {
   const a = test.assetFor( false );
@@ -6325,7 +6352,6 @@ function requireProductionModuleProblemWithGitTools( test )
     const filesMap = Object.create( null );
     _.each( directories, ( filePath ) =>
     {
-      debugger;
       filesMap[ filePath ] = a.find( a.abs( 'node_modules', filePath, './*' ) );
     });
     console.log( __.entity.exportStringNice( filesMap, { levels : 2 } ) );
@@ -6529,6 +6555,8 @@ const Proto =
     moduleBinProblem,
 
     requireElectronProblem,
+    requireMongooseAfterTestingProblem, /* xxx : investigate */
+
     requireProductionModuleProblemWithGitTools,
     requireProductionModuleProblemWithGitToolsAlternative,
     requireProductionModuleProblemWithGdf,
