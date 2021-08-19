@@ -702,7 +702,7 @@ function _now_functor()
 {
   let now;
 
-  const majorVersion = 0;
+  let majorVersion = 0;
   if( typeof process !== 'undefined' && process.versions !== undefined )
   majorVersion = Number( process.versions.node.match( /^\d+/ )[ 0 ] );
   if( typeof performance !== 'undefined' && performance.now !== undefined && majorVersion < 16 )
