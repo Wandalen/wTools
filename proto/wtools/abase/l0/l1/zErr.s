@@ -1450,7 +1450,11 @@ function process( err )
   err = _.err( ... arguments );
 
   if( _.process && _.process.entryPointInfo )
-  _.error.sectionAdd( err, { name : 'process', body : _.process.entryPointInfo() });
+  {
+    let body = _.process.entryPointInfo();
+    if( body )
+    _.error.sectionAdd( err, { name : 'process', body });
+  }
 
   return err;
 }
