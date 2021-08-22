@@ -20,6 +20,33 @@ function nodeIs( src )
   return false;
 }
 
+//
+
+function nodeIsOLd( src )
+{
+  if( typeof BufferNode !== 'undefined' )
+  return src instanceof BufferNode;
+  return false;
+}
+
+//
+
+function nodeIsUsingFunctor_functor()
+{
+  let isBufferNode = !!_global_.BufferNode;
+  return nodeIsUsingFunctor;
+
+  function nodeIsUsingFunctor( src )
+  {
+    if( isBufferNode )
+    return src instanceof BufferNode;
+    return false;
+  }
+}
+
+let nodeIsUsingFunctor = nodeIsUsingFunctor_functor();
+nodeIsUsingFunctor.functor = nodeIsUsingFunctor_functor;
+
 // --
 // declaration
 // --
@@ -41,6 +68,8 @@ let BufferNodeExtension =
   // dichotomy
 
   nodeIs,
+  nodeIsOLd,
+  nodeIsUsingFunctor,
   is : nodeIs,
   like : nodeIs,
 
