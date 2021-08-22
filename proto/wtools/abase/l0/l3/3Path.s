@@ -291,6 +291,112 @@ function refine( src )
 
 //
 
+function refineOld( src )
+{
+
+  _.assert( arguments.length === 1, 'Expects single argument' );
+  _.assert( _.strIs( src ) );
+
+  let result = src;
+
+  if( result[ 1 ] === ':' )
+  {
+    if( result[ 2 ] === '\\' || result[ 2 ] === '/' )
+    {
+      if( result.length > 3 )
+      result = '/' + result[ 0 ] + '/' + result.substring( 3 );
+      else
+      result = '/' + result[ 0 ]
+    }
+    else if( result.length === 2 )
+    {
+      result = '/' + result[ 0 ];
+    }
+  }
+
+  result = result.replace( /\\/g, '/' );
+
+  return result;
+}
+
+//
+
+function refineFast( src )
+{
+
+  _.assert( arguments.length === 1, 'Expects single argument' );
+  _.assert( _.strIs( src ) );
+
+  let result = src;
+
+  const hasBackSlash = result.includes( '\\' );
+  const hasColon = result[ 1 ] === ':';
+
+  if( !hasBackSlash && !hasColon )
+  return result;
+
+  if( hasColon )
+  {
+    if( result[ 2 ] === '\\' || result[ 2 ] === '/' )
+    {
+      if( result.length > 3 )
+      result = '/' + result[ 0 ] + '/' + result.substring( 3 );
+      else
+      result = '/' + result[ 0 ]
+    }
+    else if( result.length === 2 )
+    {
+      result = '/' + result[ 0 ];
+    }
+  }
+
+  if( hasBackSlash )
+  return result.replace( /\\/g, '/' );
+  else
+  return result;
+}
+
+//
+
+function refineFaster( src )
+{
+
+  _.assert( arguments.length === 1, 'Expects single argument' );
+  _.assert( _.strIs( src ) );
+
+  let result = src;
+
+  const hasBackSlash = result.indexOf( '\\' ) !== -1;
+  const hasColon = result[ 1 ] === ':';
+  const charAtSecondIndex = result[ 2 ];
+  const charAtZeroIndex = result[ 0 ];
+
+  if( !hasBackSlash && !hasColon )
+  return result;
+
+  if( hasColon )
+  {
+    if( result.length > 3 )
+    {
+      if( charAtSecondIndex === '\\' || charAtSecondIndex === '/' )
+      {
+        result = `/${charAtZeroIndex}/${result.substring( 3 )}`;
+      }
+    }
+    else
+    {
+      result = `/${charAtZeroIndex}`;
+    }
+  }
+
+  if( hasBackSlash )
+  return result.replace( /\\/g, '/' );
+  else
+  return result;
+}
+
+//
+
 function _normalize( o )
 {
   // let debug = 0;
@@ -1160,6 +1266,9 @@ let Extension =
   // reformer
 
   refine,
+  refineOld,
+  refineFast,
+  refineFaster,
 
   _normalize,
   normalize,
