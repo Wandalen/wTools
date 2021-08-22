@@ -382,7 +382,7 @@ function error_functor( name, onErrorMake )
     let prepend = onErrorMake;
     onErrorMake = function onErrorMake()
     {
-      debugger;
+      debugger; /* eslint-disable-line no-debugger */
       let args = _.arrayAppendArrays( [], [ prepend, arguments ] );
       return args;
     }
@@ -454,6 +454,90 @@ function error_functor( name, onErrorMake )
   return ErrorConstructor;
 }
 
+//
+
+function error_functorFast( name, onErrorMake )
+{
+
+  _.assert( _._err.defaults[ name ] === undefined );
+
+  if( _.arrayIs( onErrorMake ) || _.strIs( onErrorMake ) )
+  {
+    let prepend = onErrorMake;
+    onErrorMake = function onErrorMake()
+    {
+      debugger; /* eslint-disable-line no-debugger */
+      let args = _.arrayAppendArrays( [], [ prepend, arguments ] );
+      return args;
+    }
+  }
+  else if( !onErrorMake )
+  {
+    onErrorMake = function onErrorMake()
+    {
+      return arguments;
+    }
+  }
+
+  let Error =
+  {
+    [ name ] : function()
+    {
+      if( ( this instanceof ErrorConstructor ) )
+      {
+
+        let err1 = this;
+        let args1 = onErrorMake.apply( err1, arguments );
+        _.assert( _.argumentsArray.like( args1 ) );
+        let args2 = args1;
+
+        if( !Array.prototype.includes.call( args2, err1 ) )
+        args2 = [ err1, ... args1 ];
+        let err2 = _._err({ args : args2, level : 2, concealed : { [ name ] : true } });
+        _.assert( err1 === err2 );
+        _.assert( err2 instanceof _global.Error );
+        _.assert( err2 instanceof ErrorConstructor );
+        return err2;
+
+      }
+      else
+      {
+
+        if( arguments.length === 1 && arguments[ 0 ] instanceof ErrorConstructor )
+        return arguments[ 0 ];
+
+        let err1;
+        for( let i = 0 ; i < arguments.length ; i++ )
+        if( arguments[ i ] instanceof ErrorConstructor )
+        {
+          err1 = arguments[ i ];
+          break;
+        }
+
+        if( err1 )
+        return ErrorConstructor.apply( err1, arguments );
+        return new ErrorConstructor( ... arguments );
+      }
+    }
+  }
+
+  let ErrorConstructor = Error[ name ];
+
+  _.assert
+  (
+    ErrorConstructor.name === name,
+    'Looks like your interpreter does not support dynamice naming of functions. Please use ES2015 or later interpreter.'
+  );
+
+  ErrorConstructor.prototype = Object.create( _global.Error.prototype );
+  ErrorConstructor.prototype.constructor = ErrorConstructor;
+  // ErrorConstructor.constructor = ErrorConstructor;
+  // ErrorConstructor.constructor = Object.create( _global.Error.constructor );
+  Object.setPrototypeOf( ErrorConstructor, _global.Error );
+
+  return ErrorConstructor;
+}
+
 // --
 // extension
 // --
@@ -466,6 +550,7 @@ let Extension =
   _setupUncaughtErrorHandler9,
 
   error_functor,
+  error_functorFast,
 
   uncaughtDelayTime : 100,
 
