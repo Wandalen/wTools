@@ -18,6 +18,15 @@ jobs :
       - run : will .npm.install
       - run : npm test
 workflows :
+  # test :
+  #   jobs :
+  #     - test
+
   test :
     jobs :
-      - test
+      - test :
+          filters :
+            tags :
+              only : /^v.*/
+            branches :
+              only : master
