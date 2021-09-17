@@ -29,12 +29,7 @@ pub struct split<'a>
   formed : u8,
 }
 
-fn on_delimeter( src : &str ) -> &str
-{
-    src
-}
-
-impl Default for split<'_>
+impl<'a> Default for split<'a>
 {
   fn default() -> Self
   {
@@ -58,6 +53,123 @@ impl Default for split<'_>
   }
 }
 
+impl<'a> split<'a> /* Dmytro : dubious, need to use traits */
+{
+  pub fn src( &mut self, src : String ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.src = src;
+    self
+  }
+
+  //
+
+  pub fn delimeter( &mut self, delimeter : Vec<&'a str> ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.delimeter = delimeter;
+    self
+  }
+
+  //
+
+  pub fn preserving_empty( &mut self, preserving_empty : bool ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.preserving_empty = preserving_empty;
+    self
+  }
+
+  //
+
+  pub fn preserving_delimeters( &mut self, preserving_delimeters : bool ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.preserving_delimeters = preserving_delimeters;
+    self
+  }
+
+  //
+
+  pub fn preserving_quoting( &mut self, preserving_quoting : bool ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.preserving_quoting = preserving_quoting;
+    self
+  }
+
+  //
+
+  pub fn inlining_quoting( &mut self, inlining_quoting : bool ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.inlining_quoting = inlining_quoting;
+    self
+  }
+
+  //
+
+  pub fn stripping( &mut self, stripping : bool ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.stripping = stripping;
+    self
+  }
+
+  //
+
+  pub fn quoting( &mut self, quoting : bool ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.quoting = quoting;
+    self
+  }
+
+  //
+
+  pub fn quoting_prefixes( &mut self, quoting_prefixes : Vec<&'a str> ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.quoting_prefixes = quoting_prefixes;
+    self
+  }
+
+  //
+
+  pub fn quoting_postfixes( &mut self, quoting_postfixes : Vec<&'a str> ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.quoting_postfixes = quoting_postfixes;
+    self
+  }
+
+  //
+
+  pub fn on_delimeter( &mut self, on_delimeter : fn( &'a str, usize, &'a str ) -> &'a str ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.on_delimeter = Some( on_delimeter );
+    self
+  }
+
+  //
+
+  pub fn on_quote( &mut self, on_quote : fn( &'a str, usize, &'a str ) -> &'a str ) -> &mut Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    self.on_quote = Some( on_quote );
+    self
+  }
+
+  //
+
+  pub fn form( self ) -> Self
+  {
+    assert!( self.formed == 0, "Context is already formed" );
+    Self { formed : 1, .. self }
+  }
+}
+
 //
 
 #[derive(Debug, Clone)]
@@ -70,7 +182,7 @@ pub struct split_fast<'a>
   formed : u8,
 }
 
-impl <'a>Default for split_fast<'a>
+impl<'a> Default for split_fast<'a>
 {
   fn default() -> Self
   {
@@ -130,7 +242,6 @@ impl<'a> split_fast<'a>
     Self { formed : 1, .. self }
   }
 }
-
 
 //
 
