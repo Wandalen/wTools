@@ -41,6 +41,7 @@ impl <'a>Default for split_fast<'a>
     opts
   }
 }
+
 impl<'a> split_fast<'a>
 {
   pub fn src( &mut self, src : String ) -> &mut Self
@@ -84,164 +85,165 @@ impl<'a> split_fast<'a>
     assert!( self.formed == 0, "Context is already formed" );
     Self { formed : 1, .. self }
   }
+}
 
-  //
 
-  pub fn split( o : &'a split_fast ) -> Vec<&'a str>
+//
+
+pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
+{
+  let mut result: Vec<&str> = vec![];
+
+  let delimeters = &o.delimeter;
+
+  let preserving_empty = o.preserving_empty;
+  let preserving_delimeters = o.preserving_delimeters;
+
+  let mut found_delimeters = delimeters.clone();
+
+  if !preserving_delimeters && delimeters.len() == 1
   {
-    let mut result: Vec<&str> = vec![];
-
-    let delimeters = &o.delimeter;
-
-    let preserving_empty = o.preserving_empty;
-    let preserving_delimeters = o.preserving_delimeters;
-
-    let mut found_delimeters = delimeters.clone();
-
-    if !preserving_delimeters && delimeters.len() == 1
+    result = o.src.split( delimeters[ 0 ] ).collect();
+    if !preserving_empty
     {
-      result = o.src.split( delimeters[ 0 ] ).collect();
-      if !preserving_empty
-      {
-        result = result.iter().filter( | x | x.len() == 0 ).map( | x | *x ).collect::<Vec<_>>();
-      }
+      result = result.iter().filter( | x | x.len() == 0 ).map( | x | *x ).collect::<Vec<_>>();
     }
-    else
+  }
+  else
+  {
+    let src_len = o.src.len();
+    let delimeter_len = delimeters.len();
+    if delimeter_len == 0
     {
-      let src_len = o.src.len();
-      let delimeter_len = delimeters.len();
-      if delimeter_len == 0
-      {
-        result.push( &*o.src );
-        return result;
-      }
-
-      let mut closests : Vec<usize> = vec![];
-      let mut position : usize = 0;
-      let mut closest_position : usize = 0;
-      let mut closest_index : i32 = -1;
-      let mut has_empty_delimeter : bool = false;
-
-      for d in 0..delimeter_len
-      {
-        let delimeter = delimeters[ d ];
-        if regexp_is( delimeter )
-        {
-          unimplemented!( "regexp splitting is not implemented" );
-        }
-        else
-        {
-          if delimeter.len() == 0
-          {
-            has_empty_delimeter = true;
-          }
-        }
-        closests[ d ] = delimeter_next( &o.src, delimeter, &mut found_delimeters, position );
-      }
-
-      if position >= o.src.len()
-      {
-        position -= 1;
-      }
-
-      let mut delimeter = "";
-      while position < src_len
-      {
-        delimeter = closest_which( &o.src, &found_delimeters, &closests, &mut closest_position, &mut closest_index );
-
-        if closest_position == src_len
-        {
-          break;
-        }
-
-        let del_len = delimeter.len();
-        if del_len == 0
-        {
-          position += 1;
-        }
-
-        let substring = o.src.get( position..closest_position ).unwrap();
-        if preserving_empty || !substring.is_empty()
-        {
-          result.push( &substring );
-        }
-
-        if delimeter_len > 0 || position < src_len
-        {
-          if preserving_delimeters
-          {
-            if preserving_empty || del_len > 0
-            {
-              result.push( delimeter );
-            }
-          }
-        }
-
-        position = closests[ closest_index as usize ] + ( if del_len > 0 { del_len } else { 1 } );
-
-        for d in 0..del_len
-        {
-          if closests[ d ] < position
-          {
-            closests[ d ] = delimeter_next( &o.src, delimeters[ d ], &mut found_delimeters, position );
-          }
-        }
-      }
-
-      if delimeter.len() > 0 || !has_empty_delimeter
-      {
-        let substring = o.src.get( position..src_len ).unwrap();
-        if preserving_empty || !substring.is_empty()
-        {
-          result.push( &substring );
-        }
-      }
+      result.push( &*o.src );
+      return result;
     }
 
-    return result;
+    let mut closests : Vec<usize> = vec![];
+    let mut position : usize = 0;
+    let mut closest_position : usize = 0;
+    let mut closest_index : i32 = -1;
+    let mut has_empty_delimeter : bool = false;
 
-    /* */
-
-    fn delimeter_next( src : &String, delimeter : &str, found_delimeters : &mut Vec<&str>, position : usize ) -> usize
+    for d in 0..delimeter_len
     {
-      assert!( position <= src.len() );
-
+      let delimeter = delimeters[ d ];
       if regexp_is( delimeter )
       {
         unimplemented!( "regexp splitting is not implemented" );
       }
       else
       {
-        let indexes: Vec<( usize, &str )> = src.match_indices( delimeter ).collect();
-        for ( index, _ ) in indexes
+        if delimeter.len() == 0
         {
-          if index >= position
+          has_empty_delimeter = true;
+        }
+      }
+      closests[ d ] = delimeter_next( &o.src, delimeter, &mut found_delimeters, position );
+    }
+
+    if position >= o.src.len()
+    {
+      position -= 1;
+    }
+
+    let mut delimeter = "";
+    while position < src_len
+    {
+      delimeter = closest_which( &o.src, &found_delimeters, &closests, &mut closest_position, &mut closest_index );
+
+      if closest_position == src_len
+      {
+        break;
+      }
+
+      let del_len = delimeter.len();
+      if del_len == 0
+      {
+        position += 1;
+      }
+
+      let substring = o.src.get( position..closest_position ).unwrap();
+      if preserving_empty || !substring.is_empty()
+      {
+        result.push( &substring );
+      }
+
+      if delimeter_len > 0 || position < src_len
+      {
+        if preserving_delimeters
+        {
+          if preserving_empty || del_len > 0
           {
-            return index;
+            result.push( delimeter );
           }
         }
       }
 
-      src.len()
-    }
+      position = closests[ closest_index as usize ] + ( if del_len > 0 { del_len } else { 1 } );
 
-    //
-
-    fn closest_which<'a>( src : &String, found_delimeters : &Vec<&'a str>, closests : &Vec<usize>, closest_position : &mut usize, closest_index : &mut i32  ) -> &'a str
-    {
-      let src_len = src.len();
-      *closest_position = src_len;
-      *closest_index = -1;
-      for d in 0..found_delimeters.len()
+      for d in 0..del_len
       {
-        if ( closests[ d ] < src_len ) && ( closests[ d ] < *closest_position )
+        if closests[ d ] < position
         {
-          *closest_position = closests[ d ];
-          *closest_index = d as i32;
+          closests[ d ] = delimeter_next( &o.src, delimeters[ d ], &mut found_delimeters, position );
         }
       }
-
-      found_delimeters[ *closest_index as usize ]
     }
+
+    if delimeter.len() > 0 || !has_empty_delimeter
+    {
+      let substring = o.src.get( position..src_len ).unwrap();
+      if preserving_empty || !substring.is_empty()
+      {
+        result.push( &substring );
+      }
+    }
+  }
+
+  return result;
+
+  /* */
+
+  fn delimeter_next( src : &String, delimeter : &str, found_delimeters : &mut Vec<&str>, position : usize ) -> usize
+  {
+    assert!( position <= src.len() );
+
+    if regexp_is( delimeter )
+    {
+      unimplemented!( "regexp splitting is not implemented" );
+    }
+    else
+    {
+      let indexes: Vec<( usize, &str )> = src.match_indices( delimeter ).collect();
+      for ( index, _ ) in indexes
+      {
+        if index >= position
+        {
+          return index;
+        }
+      }
+    }
+
+    src.len()
+  }
+
+  //
+
+  fn closest_which<'a>( src : &String, found_delimeters : &Vec<&'a str>, closests : &Vec<usize>, closest_position : &mut usize, closest_index : &mut i32  ) -> &'a str
+  {
+    let src_len = src.len();
+    *closest_position = src_len;
+    *closest_index = -1;
+    for d in 0..found_delimeters.len()
+    {
+      if ( closests[ d ] < src_len ) && ( closests[ d ] < *closest_position )
+      {
+        *closest_position = closests[ d ];
+        *closest_index = d as i32;
+      }
+    }
+
+    found_delimeters[ *closest_index as usize ]
   }
 }
