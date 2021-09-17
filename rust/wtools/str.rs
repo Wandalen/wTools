@@ -172,6 +172,21 @@ impl<'a> split<'a> /* Dmytro : dubious, need to use traits */
 
 //
 
+pub fn split( o : &split ) -> Vec<String>
+{
+
+  if o.stripping && !o.quoting && o.on_delimeter.is_none()
+  {
+    let opts = split_fast::from( &o );
+    return split_fast( &opts );
+  }
+
+  let mut result : Vec<String> = vec![];
+  result
+}
+
+//
+
 #[derive(Debug, Clone)]
 pub struct split_fast<'a>
 {
@@ -200,6 +215,19 @@ impl<'a> Default for split_fast<'a>
 
 impl<'a> split_fast<'a>
 {
+  pub fn from( o : &'a split ) -> Self
+  {
+    let opts = Self
+    {
+      src : o.src.clone(),
+      delimeter : o.delimeter.clone(),
+      preserving_empty : o.preserving_empty,
+      preserving_delimeters : o.preserving_delimeters,
+      formed : o.formed,
+    };
+    opts
+  }
+
   pub fn src( &mut self, src : String ) -> &mut Self
   {
     assert!( self.formed == 0, "Context is already formed" );
@@ -245,9 +273,9 @@ impl<'a> split_fast<'a>
 
 //
 
-pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
+pub fn split_fast( o : &split_fast ) -> Vec<String>
 {
-  let mut result: Vec<&str> = vec![];
+  let mut result: Vec<String> = vec![];
 
   let delimeters = &o.delimeter;
 
@@ -258,10 +286,11 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
 
   if !preserving_delimeters && delimeters.len() == 1
   {
-    result = o.src.split( delimeters[ 0 ] ).collect();
+    let splits: Vec<&str> = o.src.split( delimeters[ 0 ] ).collect();
+    result = splits.iter().map( | x | x.to_string() ).collect::<Vec<String>>();
     if !preserving_empty
     {
-      result = result.iter().filter( | x | x.len() != 0 ).map( | x | *x ).collect::<Vec<_>>();
+      result = result.iter().filter( | x | x.len() != 0 ).map( | x | x.to_string() ).collect::<Vec<String>>();
     }
   }
   else
@@ -270,7 +299,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
     let delimeter_len = delimeters.len();
     if delimeter_len == 0
     {
-      result.push( &*o.src );
+      result.push( o.src.to_string() );
       return result;
     }
 
@@ -316,7 +345,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
       let substring = o.src.get( position..closest_position ).unwrap();
       if preserving_empty || !substring.is_empty()
       {
-        result.push( &substring );
+        result.push( String::from( substring ) );
       }
 
       if del_len > 0 || position < src_len
@@ -325,7 +354,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
         {
           if preserving_empty || del_len > 0
           {
-            result.push( delimeter );
+            result.push( String::from( delimeter ) );
           }
         }
       }
@@ -346,7 +375,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
       let substring = o.src.get( position..src_len ).unwrap();
       if preserving_empty || !substring.is_empty()
       {
-        result.push( &substring );
+        result.push( String::from( substring ) );
       }
     }
 
@@ -359,7 +388,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
     }
   }
 
-  return result;
+  return result.iter().map( | x | x.to_string() ).collect::<Vec<String>>();
 
   /* */
 

@@ -6,8 +6,11 @@ use wtools::str;
 #[test]
 fn split_trivial()
 {
-  let opts = str::split::default();
-  assert_eq!( opts.preserving_delimeters, true );
+  let mut opts = str::split::default();
+  opts.delimeter( vec![ "" ] );
+  let got = str::split( &opts );
+  let exp : Vec<&str> = vec![];
+  assert_eq!( got, exp );
 }
 
 //
