@@ -6,7 +6,7 @@ use regex::Regex;
 
 pub fn regexp_is( src : &str ) -> bool
 {
-  let regexp = Regex::new(r"^\/.*\/[dgimsuUx]").unwrap();
+  let regexp = Regex::new(r"^\\/.*\\/[dgimsuUx]").unwrap();
   regexp.is_match( src )
 }
 
@@ -35,7 +35,7 @@ impl <'a>Default for split_fast<'a>
       src : String::from( "" ),
       delimeter : vec![ " " ],
       preserving_empty : true,
-      preserving_delimeters : false,
+      preserving_delimeters : true,
       formed : 0,
     };
     opts
@@ -120,7 +120,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
     }
 
     let mut closests : Vec<usize> = vec![];
-    let mut position : usize = 0;
+    let mut position : i32 = 0;
     let mut closest_position : usize = 0;
     let mut closest_index : i32 = -1;
     let mut has_empty_delimeter : bool = false;
@@ -139,16 +139,16 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
           has_empty_delimeter = true;
         }
       }
-      closests[ d ] = delimeter_next( &o.src, delimeter, &mut found_delimeters, position );
+      closests.push( delimeter_next( &o.src, delimeter, &mut found_delimeters, position ) );
     }
 
-    if position >= o.src.len()
+    if position >= src_len as i32
     {
       position -= 1;
     }
 
     let mut delimeter = "";
-    while position < src_len
+    while position < src_len as i32
     {
       delimeter = closest_which( &o.src, &found_delimeters, &closests, &mut closest_position, &mut closest_index );
 
@@ -163,13 +163,13 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
         position += 1;
       }
 
-      let substring = o.src.get( position..closest_position ).unwrap();
+      let substring = o.src.get( position as usize..closest_position ).unwrap();
       if preserving_empty || !substring.is_empty()
       {
         result.push( &substring );
       }
 
-      if delimeter_len > 0 || position < src_len
+      if delimeter_len > 0 || position < src_len as i32
       {
         if preserving_delimeters
         {
@@ -180,11 +180,11 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
         }
       }
 
-      position = closests[ closest_index as usize ] + ( if del_len > 0 { del_len } else { 1 } );
+      position = ( closests[ closest_index as usize ] + ( if del_len > 0 { del_len } else { 1 } ) ) as i32;
 
       for d in 0..del_len
       {
-        if closests[ d ] < position
+        if ( closests[ d ] as i32 ) < position
         {
           closests[ d ] = delimeter_next( &o.src, delimeters[ d ], &mut found_delimeters, position );
         }
@@ -193,7 +193,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
 
     if delimeter.len() > 0 || !has_empty_delimeter
     {
-      let substring = o.src.get( position..src_len ).unwrap();
+      let substring = o.src.get( ( position as usize )..src_len ).unwrap();
       if preserving_empty || !substring.is_empty()
       {
         result.push( &substring );
@@ -205,9 +205,9 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
 
   /* */
 
-  fn delimeter_next( src : &String, delimeter : &str, found_delimeters : &mut Vec<&str>, position : usize ) -> usize
+  fn delimeter_next( src : &String, delimeter : &str, found_delimeters : &mut Vec<&str>, position : i32 ) -> usize
   {
-    assert!( position <= src.len() );
+    assert!( position <= src.len() as i32 );
 
     if regexp_is( delimeter )
     {
@@ -218,7 +218,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
       let indexes: Vec<( usize, &str )> = src.match_indices( delimeter ).collect();
       for ( index, _ ) in indexes
       {
-        if index >= position
+        if ( index as i32 ) >= position
         {
           return index;
         }
@@ -234,7 +234,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
   {
     let src_len = src.len();
     *closest_position = src_len;
-    *closest_index = -1;
+    *closest_index = 0;
     for d in 0..found_delimeters.len()
     {
       if ( closests[ d ] < src_len ) && ( closests[ d ] < *closest_position )
