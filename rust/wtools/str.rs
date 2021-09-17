@@ -12,7 +12,51 @@ pub fn regexp_is( src : &str ) -> bool
 
 //
 
-// struct split;
+pub struct split<'a>
+{
+  pub src : String,
+  pub delimeter : Vec<&'a str>,
+  pub preserving_empty : bool,
+  pub preserving_delimeters : bool,
+  pub preserving_quoting : bool,
+  pub inlining_quoting : bool,
+  pub stripping : bool,
+  pub quoting : bool,
+  pub quoting_prefixes : Vec<&'a str>,
+  pub quoting_postfixes : Vec<&'a str>,
+  pub on_delimeter : Option<fn( &'a str, usize, &'a str ) -> &'a str>,
+  pub on_quote : Option<fn( &'a str, usize, &'a str ) -> &'a str>,
+  formed : u8,
+}
+
+fn on_delimeter( src : &str ) -> &str
+{
+    src
+}
+
+impl Default for split<'_>
+{
+  fn default() -> Self
+  {
+    let opts = Self
+    {
+      src : String::from( "" ),
+      delimeter : vec![ " " ],
+      preserving_empty : true,
+      preserving_delimeters : true,
+      preserving_quoting : true,
+      inlining_quoting : true,
+      stripping : true,
+      quoting : true,
+      quoting_prefixes : vec![ "\"" ],
+      quoting_postfixes : vec![ "\"" ],
+      on_delimeter : None,
+      on_quote : None,
+      formed : 0,
+    };
+    return opts;
+  }
+}
 
 //
 
