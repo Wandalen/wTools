@@ -106,7 +106,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
     result = o.src.split( delimeters[ 0 ] ).collect();
     if !preserving_empty
     {
-      result = result.iter().filter( | x | x.len() == 0 ).map( | x | *x ).collect::<Vec<_>>();
+      result = result.iter().filter( | x | x.len() != 0 ).map( | x | *x ).collect::<Vec<_>>();
     }
   }
   else
@@ -120,7 +120,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
     }
 
     let mut closests : Vec<usize> = vec![];
-    let mut position : i32 = 0;
+    let mut position : usize = 0;
     let mut closest_position : usize = 0;
     let mut closest_index : i32 = -1;
     let mut has_empty_delimeter : bool = false;
@@ -142,13 +142,8 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
       closests.push( delimeter_next( &o.src, delimeter, &mut found_delimeters, position ) );
     }
 
-    if position >= src_len as i32
-    {
-      position -= 1;
-    }
-
     let mut delimeter = "";
-    while position < src_len as i32
+    while position < src_len || position == 0
     {
       delimeter = closest_which( &o.src, &found_delimeters, &closests, &mut closest_position, &mut closest_index );
 
@@ -160,16 +155,16 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
       let del_len = delimeter.len();
       if del_len == 0
       {
-        position += 1;
+        closest_position += 1;
       }
 
-      let substring = o.src.get( position as usize..closest_position ).unwrap();
+      let substring = o.src.get( position..closest_position ).unwrap();
       if preserving_empty || !substring.is_empty()
       {
         result.push( &substring );
       }
 
-      if delimeter_len > 0 || position < src_len as i32
+      if del_len > 0 || position < src_len
       {
         if preserving_delimeters
         {
@@ -180,11 +175,11 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
         }
       }
 
-      position = ( closests[ closest_index as usize ] + ( if del_len > 0 { del_len } else { 1 } ) ) as i32;
+      position = closests[ closest_index as usize ] + ( if del_len > 0 { del_len } else { 1 } );
 
-      for d in 0..del_len
+      for d in 0..delimeter_len
       {
-        if ( closests[ d ] as i32 ) < position
+        if closests[ d ] < position
         {
           closests[ d ] = delimeter_next( &o.src, delimeters[ d ], &mut found_delimeters, position );
         }
@@ -193,10 +188,18 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
 
     if delimeter.len() > 0 || !has_empty_delimeter
     {
-      let substring = o.src.get( ( position as usize )..src_len ).unwrap();
+      let substring = o.src.get( position..src_len ).unwrap();
       if preserving_empty || !substring.is_empty()
       {
         result.push( &substring );
+      }
+    }
+
+    if has_empty_delimeter
+    {
+      if result.len() > 0 && result[ result.len() - 1 ].is_empty()
+      {
+        result.pop();
       }
     }
   }
@@ -205,9 +208,9 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
 
   /* */
 
-  fn delimeter_next( src : &String, delimeter : &str, found_delimeters : &mut Vec<&str>, position : i32 ) -> usize
+  fn delimeter_next( src : &String, delimeter : &str, found_delimeters : &mut Vec<&str>, position : usize ) -> usize
   {
-    assert!( position <= src.len() as i32 );
+    assert!( position <= src.len() );
 
     if regexp_is( delimeter )
     {
@@ -218,7 +221,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
       let indexes: Vec<( usize, &str )> = src.match_indices( delimeter ).collect();
       for ( index, _ ) in indexes
       {
-        if ( index as i32 ) >= position
+        if index >= position
         {
           return index;
         }
@@ -237,7 +240,7 @@ pub fn split_fast<'a>( o : &'a split_fast ) -> Vec<&'a str>
     *closest_index = 0;
     for d in 0..found_delimeters.len()
     {
-      if ( closests[ d ] < src_len ) && ( closests[ d ] < *closest_position )
+      if closests[ d ] < src_len && closests[ d ] < *closest_position
       {
         *closest_position = closests[ d ];
         *closest_index = d as i32;
