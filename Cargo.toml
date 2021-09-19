@@ -7,8 +7,8 @@ edition = "2018"
 
 [lib]
 name = "wtools"
-path = "wtools/mod.rs"
+path = "rust/wtools/mod.rs"
 
 [dependencies]
-regex = "1"
-chrono = "0.4"
+regex = "1.5.4"
+chrono = "0.4.19"
