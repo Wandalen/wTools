@@ -15,18 +15,18 @@ pub fn regexp_is( src : &str ) -> bool
 
 pub struct split<'a>
 {
-  pub src : String,
-  pub delimeter : Vec<&'a str>,
-  pub preserving_empty : bool,
-  pub preserving_delimeters : bool,
-  pub preserving_quoting : bool,
-  pub inlining_quoting : bool,
-  pub stripping : bool,
-  pub quoting : bool,
-  pub quoting_prefixes : Vec<&'a str>,
-  pub quoting_postfixes : Vec<&'a str>,
-  pub on_delimeter : Option<fn( &String, usize, &Vec<String> ) -> String>,
-  pub on_quote : Option<fn( &String, usize, &Vec<String> ) -> String>,
+  src : String,
+  delimeter : Vec<&'a str>,
+  preserving_empty : bool,
+  preserving_delimeters : bool,
+  preserving_quoting : bool,
+  inlining_quoting : bool,
+  stripping : bool,
+  quoting : bool,
+  quoting_prefixes : Vec<&'a str>,
+  quoting_postfixes : Vec<&'a str>,
+  on_delimeter : Option<fn( &String, usize, &Vec<&'a str> ) -> String>,
+  on_quote : Option<fn( &String, usize, &Vec<&'a str> ) -> String>,
   formed : u8,
 }
 
@@ -146,7 +146,7 @@ impl<'a> split<'a> /* Dmytro : dubious, need to use traits */
 
   //
 
-  pub fn on_delimeter( &mut self, on_delimeter : fn( &String, usize, &Vec<String> ) -> String ) -> &mut Self
+  pub fn on_delimeter( &mut self, on_delimeter : fn( &String, usize, &Vec<&'a str> ) -> String ) -> &mut Self
   {
     assert!( self.formed == 0, "Context is already formed" );
     self.on_delimeter = Some( on_delimeter );
@@ -155,7 +155,7 @@ impl<'a> split<'a> /* Dmytro : dubious, need to use traits */
 
   //
 
-  pub fn on_quote( &mut self, on_quote : fn( &String, usize, &Vec<String> ) -> String ) -> &mut Self
+  pub fn on_quote( &mut self, on_quote : fn( &String, usize, &Vec<&'a str> ) -> String ) -> &mut Self
   {
     assert!( self.formed == 0, "Context is already formed" );
     self.on_quote = Some( on_quote );
@@ -185,10 +185,9 @@ pub fn split( o : &split ) -> Vec<String>
 
   if o.quoting
   {
-    unimplemented!( "not implemented" );
-    // let mut delimeters: Vec<&str> = vec![];
-    // vector::append_vectors_once( &mut delimeters, &vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone(), o.delimeter.clone() ], None::<fn(_)> );
-    // fast_options.delimeter( delimeters );
+    let mut appender: vector::append_vectors_once<&str> = vector::append_vectors_once::default();
+    appender.src( vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone(), o.delimeter.clone() ] );
+    fast_options.delimeter( appender.call() );
   }
 
   fast_options.preserving_empty( true );
@@ -198,17 +197,25 @@ pub fn split( o : &split ) -> Vec<String>
 
   if o.quoting && o.on_quote.is_some()
   {
-    // let on_quote = o.on_quote.unwrap();
-    // let quotes = vector::append_vectors_once( &mut quotes, &vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone() ], None::<fn(_)> );
-    //
-    // for i in 0..splits.len()
-    // {
-    //   let index = vector::left_index( &quotes, &splits[ i ], Some( equalize_strings ) );
-    //   if index.is_some()
-    //   {
-    //     splits[ i ] = on_quote( &splits[ i ], index.unwrap(), &quotes );
-    //   }
-    // }
+    let on_quote = o.on_quote.unwrap();
+    let mut appender : vector::append_vectors_once<&str> = vector::append_vectors_once::default();
+    appender.src( vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone() ] );
+    let quotes : Vec<_> = appender.call();
+
+    let mut indexer : vector::left_index<&str> = vector::left_index::default();
+    indexer.on_equalize( equalize_strings );
+    indexer.src( quotes.clone() );
+
+    let clone = splits.clone();
+
+    for i in 0..splits.len()
+    {
+      let index = indexer.ins( &clone[ i ].as_str() ).call();
+      if index.is_some()
+      {
+        splits[ i ] = on_quote( &splits[ i ], index.unwrap(), &quotes );
+      }
+    }
   }
 
   if o.on_delimeter.is_some()
@@ -261,7 +268,7 @@ pub fn split( o : &split ) -> Vec<String>
 
   /* */
 
-  fn equalize_strings( pattern : &String, el : &String ) -> bool
+  fn equalize_strings( pattern : &&str, el : &&str ) -> bool
   {
     if regexp_is( pattern )
     {

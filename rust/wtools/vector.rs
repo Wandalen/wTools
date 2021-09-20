@@ -174,7 +174,7 @@ impl<T : std::default::Default> Default for left_index<T>
   }
 }
 
-impl<T : PartialEq + Copy +  Clone> left_index<T>
+impl<T : PartialEq> left_index<T>
 {
   pub fn src( &mut self, src : Vec<T> ) -> &mut Self
   {
@@ -245,7 +245,7 @@ impl<T : PartialEq + Copy +  Clone> left_index<T>
   {
     if self.on_equalize.is_some()
     {
-      let mut equalizer = self.on_equalize.unwrap();
+      let equalizer = self.on_equalize.unwrap();
       for i in 0..self.src.len()
       {
         if equalizer( &self.src[ i ], &self.ins )
@@ -256,7 +256,7 @@ impl<T : PartialEq + Copy +  Clone> left_index<T>
     }
     else if self.on_evaluate1.is_some()
     {
-      let mut ins;
+      let ins;
       let evaluate1 = self.on_evaluate1.unwrap();
 
       if self.on_evaluate2.is_some()
@@ -280,7 +280,13 @@ impl<T : PartialEq + Copy +  Clone> left_index<T>
     else
     {
       assert!( self.on_evaluate2.is_none(), "Expects callback {-on_evaluate1-}." );
-      return self.src.iter().position( | &x | x == self.ins );
+      for i in self.start_from..self.src.len()
+      {
+        if self.src[ i ] == self.ins
+        {
+          return Some( i );
+        }
+      }
     }
 
     None

@@ -254,7 +254,9 @@ fn left_index_with_two_evaluators()
 }
 
 /*
-  append_vectors_once_trivial
-  left_index_trivial
+  append_vectors_once
+  left_index
   left_index_with_equalizer
+  left_index_with_evaluator
+  left_index_with_two_evaluators
 */
