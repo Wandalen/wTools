@@ -9,6 +9,10 @@ edition = "2018"
 name = "wtools"
 path = "rust/wtools/mod.rs"
 
+[[test]]
+name = "wtools-test"
+path = "rust/test/common_list.rs"
+
 [dependencies]
 regex = "1.5.4"
 chrono = "0.4.19"

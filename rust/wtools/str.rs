@@ -177,8 +177,7 @@ pub fn split( o : &split ) -> Vec<String>
 
   if o.stripping && !o.quoting && o.on_delimeter.is_none()
   {
-    let opts = split_fast::from( &o );
-    return split_fast( &opts );
+    return split_fast( &split_fast::from( &o ) );
   }
 
   let mut result : Vec<String> = vec![];
