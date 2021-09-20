@@ -2,6 +2,7 @@
 #![ allow( unused_variables ) ]
 #![ allow( non_camel_case_types ) ]
 
+use super::*;
 use regex::Regex;
 
 pub fn regexp_is( src : &str ) -> bool
@@ -174,14 +175,81 @@ impl<'a> split<'a> /* Dmytro : dubious, need to use traits */
 
 pub fn split( o : &split ) -> Vec<String>
 {
-
+  let mut fast_options = split_fast::from( &o );
   if o.stripping && !o.quoting && o.on_delimeter.is_none()
   {
-    return split_fast( &split_fast::from( &o ) );
+    return split_fast( &fast_options );
   }
 
+  /* */
+
   let mut result : Vec<String> = vec![];
-  result
+
+  if o.quoting
+  {
+    let mut delimeters: Vec<&str> = vec![];
+    vector::append_vectors_once( &mut delimeters, &vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone(), o.delimeter.clone() ], None::<fn(_)> );
+    fast_options.delimeter( delimeters );
+  }
+
+  fast_options.preserving_empty( true );
+  fast_options.preserving_delimeters( true );
+
+  let splits = split_fast( &fast_options );
+
+  if o.quoting && o.on_quote.is_some()
+  {
+    let mut quotes: Vec<&str> = vec![];
+    vector::append_vectors_once( &mut quotes, &vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone() ], None::<fn(_)> );
+
+    for x in 0..splits.len()
+    {
+      unimplemented!( "not implemented" );
+      // leftIndex
+    }
+  }
+
+  if o.on_delimeter.is_some()
+  {
+    let delimeter = o.delimeter.iter().filter
+    ( | pattern |
+    {
+      if regexp_is( pattern )
+      {
+        unimplemented!( "not implemented" );
+      }
+      true
+    })
+    .map( | x | *x ).collect::<Vec<&str>>();
+
+    for x in 0..splits.len()
+    {
+      unimplemented!( "not implemented" );
+      // leftIndex
+    }
+  }
+
+  if o.quoting
+  {
+    unimplemented!( "not implemented splitsQuotedRejoin" );
+  }
+
+  if !o.preserving_delimeters
+  {
+    unimplemented!( "not implemented splitsDropDelimeters" );
+  }
+
+  if o.stripping
+  {
+    unimplemented!( "not implemented splitsStrip" );
+  }
+
+  if !o.preserving_empty
+  {
+    unimplemented!( "not implemented splitsDropEmpty" );
+  }
+
+  splits
 }
 
 //
@@ -222,7 +290,7 @@ impl<'a> split_fast<'a>
       delimeter : o.delimeter.clone(),
       preserving_empty : o.preserving_empty,
       preserving_delimeters : o.preserving_delimeters,
-      formed : o.formed,
+      formed : 0,
     };
     opts
   }
