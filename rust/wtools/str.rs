@@ -25,8 +25,8 @@ pub struct split<'a>
   pub quoting : bool,
   pub quoting_prefixes : Vec<&'a str>,
   pub quoting_postfixes : Vec<&'a str>,
-  pub on_delimeter : Option<fn( &'a str, usize, &'a str ) -> &'a str>,
-  pub on_quote : Option<fn( &'a str, usize, &'a str ) -> &'a str>,
+  pub on_delimeter : Option<fn( &String, usize, &Vec<String> ) -> String>,
+  pub on_quote : Option<fn( &String, usize, &Vec<String> ) -> String>,
   formed : u8,
 }
 
@@ -146,7 +146,7 @@ impl<'a> split<'a> /* Dmytro : dubious, need to use traits */
 
   //
 
-  pub fn on_delimeter( &mut self, on_delimeter : fn( &'a str, usize, &'a str ) -> &'a str ) -> &mut Self
+  pub fn on_delimeter( &mut self, on_delimeter : fn( &String, usize, &Vec<String> ) -> String ) -> &mut Self
   {
     assert!( self.formed == 0, "Context is already formed" );
     self.on_delimeter = Some( on_delimeter );
@@ -155,7 +155,7 @@ impl<'a> split<'a> /* Dmytro : dubious, need to use traits */
 
   //
 
-  pub fn on_quote( &mut self, on_quote : fn( &'a str, usize, &'a str ) -> &'a str ) -> &mut Self
+  pub fn on_quote( &mut self, on_quote : fn( &String, usize, &Vec<String> ) -> String ) -> &mut Self
   {
     assert!( self.formed == 0, "Context is already formed" );
     self.on_quote = Some( on_quote );
@@ -183,8 +183,6 @@ pub fn split( o : &split ) -> Vec<String>
 
   /* */
 
-  let mut result : Vec<String> = vec![];
-
   if o.quoting
   {
     let mut delimeters: Vec<&str> = vec![];
@@ -195,38 +193,48 @@ pub fn split( o : &split ) -> Vec<String>
   fast_options.preserving_empty( true );
   fast_options.preserving_delimeters( true );
 
-  let splits = split_fast( &fast_options );
+  let mut splits = split_fast( &fast_options );
 
   if o.quoting && o.on_quote.is_some()
   {
-    let mut quotes: Vec<&str> = vec![];
-    vector::append_vectors_once( &mut quotes, &vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone() ], None::<fn(_)> );
-
-    for x in 0..splits.len()
-    {
-      unimplemented!( "not implemented" );
-      // leftIndex
-    }
+    unimplemented!( "not implemented" );
+    // let on_quote = o.on_quote.unwrap();
+    // let quotes = vector::append_vectors_once( &mut quotes, &vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone() ], None::<fn(_)> );
+    //
+    // for i in 0..splits.len()
+    // {
+    //   let index = vector::left_index( &quotes, &splits[ i ], Some( equalize_strings ) );
+    //   if index.is_some()
+    //   {
+    //     splits[ i ] = on_quote( &splits[ i ], index.unwrap(), &quotes );
+    //   }
+    // }
   }
 
   if o.on_delimeter.is_some()
   {
-    let delimeter = o.delimeter.iter().filter
-    ( | pattern |
-    {
-      if regexp_is( pattern )
-      {
-        unimplemented!( "not implemented" );
-      }
-      true
-    })
-    .map( | x | *x ).collect::<Vec<&str>>();
-
-    for x in 0..splits.len()
-    {
-      unimplemented!( "not implemented" );
-      // leftIndex
-    }
+    unimplemented!( "not implemented" );
+    // let on_delimeter = o.on_delimeter.unwrap();
+    // let delimeter = o.delimeter.iter()
+    // .filter( | pattern |
+    // {
+    //   if regexp_is( pattern )
+    //   {
+    //     unimplemented!( "not implemented" );
+    //   }
+    //   true
+    // })
+    // .map( | x | *x ).collect::<Vec<_>>();
+    // let delimeter = delimeter.iter().map( | &x | x.to_string() ).collect();
+    //
+    // for i in 0..splits.len()
+    // {
+    //   let index = vector::left_index( &delimeter, &splits[ i ], Some( equalize_strings ) );
+    //   if index.is_some()
+    //   {
+    //     splits[ i ] = on_delimeter( &splits[ i ], index.unwrap(), &o.delimeter.iter().map( | x | x.to_string() ).collect() );
+    //   }
+    // }
   }
 
   if o.quoting
@@ -249,7 +257,21 @@ pub fn split( o : &split ) -> Vec<String>
     unimplemented!( "not implemented splitsDropEmpty" );
   }
 
-  splits
+  return splits;
+
+  /* */
+
+  fn equalize_strings( pattern : &String, el : &String ) -> bool
+  {
+    if regexp_is( pattern )
+    {
+      unimplemented!( "not implemented for regexp" );
+    }
+    else
+    {
+      return pattern == el;
+    }
+  }
 }
 
 //

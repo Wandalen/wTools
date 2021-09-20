@@ -1,5 +1,6 @@
 
 use wtools::vector;
+use wtools::vector::left_index;
 
 //
 
@@ -47,31 +48,40 @@ fn append_vectors_once_trivial()
 //
 
 #[test]
-fn left_index_trivial()
+fn left_index()
 {
   println!( "empty vector" );
-  let src: Vec<u8> = vec![];
-  let got = vector::left_index( &src, &1, None::<fn(_, _) -> bool> );
+  let mut src : left_index<u8> = left_index::default();
+  src.ins( 1 );
+  let got = src.call();
   assert_eq!( got, None );
 
   println!( "filled vector, not matches" );
-  let src: Vec<u8> = vec![ 1, 2, 3 ];
-  let got = vector::left_index( &src, &4, None::<fn(_, _) -> bool> );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 3 ] );
+  src.ins( 4 );
+  let got = src.call();
   assert_eq!( got, None );
 
   println!( "filled vector, matches one" );
-  let src: Vec<u8> = vec![ 1, 2, 3 ];
-  let got = vector::left_index( &src, &2, None::<fn(_, _) -> bool> );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 3 ] );
+  src.ins( 2 );
+  let got = src.call();
   assert_eq!( got, Some( 1 ) );
 
   println!( "filled vector, matches several" );
-  let src: Vec<u8> = vec![ 1, 2, 2 ];
-  let got = vector::left_index( &src, &2, None::<fn(_, _) -> bool> );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 2 ] );
+  src.ins( 2 );
+  let got = src.call();
   assert_eq!( got, Some( 1 ) );
 
   println!( "filled vector, matches all" );
-  let src: Vec<u8> = vec![ 2, 2, 2 ];
-  let got = vector::left_index( &src, &2, None::<fn(_, _) -> bool> );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 2, 2, 2 ] );
+  src.ins( 2 );
+  let got = src.call();
   assert_eq!( got, Some( 0 ) );
 }
 
@@ -84,29 +94,159 @@ fn left_index_with_equalizer()
   {
     *src1 == *src2
   }
+
+  /* */
+
   println!( "empty vector" );
-  let src: Vec<u8> = vec![];
-  let got = vector::left_index( &src, &1, Some( equalizer ) );
+  let mut src : left_index<u8> = left_index::default();
+  src.ins( 1 );
+  src.on_equalize( equalizer );
+  let got = src.call();
   assert_eq!( got, None );
 
   println!( "filled vector, not matches" );
-  let src: Vec<u8> = vec![ 1, 2, 3 ];
-  let got = vector::left_index( &src, &4, Some( equalizer ) );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 3 ] );
+  src.ins( 4 );
+  src.on_equalize( equalizer );
+  let got = src.call();
   assert_eq!( got, None );
 
   println!( "filled vector, matches one" );
-  let src: Vec<u8> = vec![ 1, 2, 3 ];
-  let got = vector::left_index( &src, &2, Some( equalizer ) );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 3 ] );
+  src.ins( 2 );
+  src.on_equalize( equalizer );
+  let got = src.call();
   assert_eq!( got, Some( 1 ) );
 
   println!( "filled vector, matches several" );
-  let src: Vec<u8> = vec![ 1, 2, 2 ];
-  let got = vector::left_index( &src, &2, Some( equalizer ) );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 2 ] );
+  src.ins( 2 );
+  src.on_equalize( equalizer );
+  let got = src.call();
   assert_eq!( got, Some( 1 ) );
 
   println!( "filled vector, matches all" );
-  let src: Vec<u8> = vec![ 2, 2, 2 ];
-  let got = vector::left_index( &src, &2, Some( equalizer ) );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 2, 2, 2 ] );
+  src.ins( 2 );
+  src.on_equalize( equalizer );
+  let got = src.call();
+  assert_eq!( got, Some( 0 ) );
+}
+
+//
+
+#[test]
+fn left_index_with_evaluator()
+{
+  fn evaluator1( src : &u8 ) -> u8
+  {
+    *src
+  }
+
+  /* */
+
+  println!( "empty vector" );
+  let mut src : left_index<u8> = left_index::default();
+  src.ins( 1 );
+  src.on_evaluate1( evaluator1 );
+  let got = src.call();
+  assert_eq!( got, None );
+
+  println!( "filled vector, not matches" );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 3 ] );
+  src.ins( 4 );
+  src.on_evaluate1( evaluator1 );
+  let got = src.call();
+  assert_eq!( got, None );
+
+  println!( "filled vector, matches one" );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 3 ] );
+  src.ins( 2 );
+  src.on_evaluate1( evaluator1 );
+  let got = src.call();
+  assert_eq!( got, Some( 1 ) );
+
+  println!( "filled vector, matches several" );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 2 ] );
+  src.ins( 2 );
+  src.on_evaluate1( evaluator1 );
+  let got = src.call();
+  assert_eq!( got, Some( 1 ) );
+
+  println!( "filled vector, matches all" );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 2, 2, 2 ] );
+  src.ins( 2 );
+  src.on_evaluate1( evaluator1 );
+  let got = src.call();
+  assert_eq!( got, Some( 0 ) );
+}
+
+//
+
+#[test]
+fn left_index_with_two_evaluators()
+{
+  fn evaluator1( src : &u8 ) -> u8
+  {
+    *src
+  }
+  fn evaluator2( src : &u8 ) -> u8
+  {
+    *src
+  }
+
+  /* */
+
+  println!( "empty vector" );
+  let mut src : left_index<u8> = left_index::default();
+  src.ins( 1 );
+  src.on_evaluate1( evaluator1 );
+  src.on_evaluate1( evaluator2 );
+  let got = src.call();
+  assert_eq!( got, None );
+
+  println!( "filled vector, not matches" );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 3 ] );
+  src.ins( 4 );
+  src.on_evaluate1( evaluator1 );
+  src.on_evaluate1( evaluator2 );
+  let got = src.call();
+  assert_eq!( got, None );
+
+  println!( "filled vector, matches one" );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 3 ] );
+  src.ins( 2 );
+  src.on_evaluate1( evaluator1 );
+  src.on_evaluate1( evaluator2 );
+  let got = src.call();
+  assert_eq!( got, Some( 1 ) );
+
+  println!( "filled vector, matches several" );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 1, 2, 2 ] );
+  src.ins( 2 );
+  src.on_evaluate1( evaluator1 );
+  src.on_evaluate1( evaluator2 );
+  let got = src.call();
+  assert_eq!( got, Some( 1 ) );
+
+  println!( "filled vector, matches all" );
+  let mut src : left_index<u8> = left_index::default();
+  src.src( vec![ 2, 2, 2 ] );
+  src.ins( 2 );
+  src.on_evaluate1( evaluator1 );
+  src.on_evaluate1( evaluator2 );
+  let got = src.call();
   assert_eq!( got, Some( 0 ) );
 }
 
