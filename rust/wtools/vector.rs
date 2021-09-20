@@ -28,18 +28,18 @@ pub fn append_vectors_once<'a, T : PartialEq + Copy, F : FnMut(T)>( dst : &'a mu
 
 //
 
-pub fn left_index<T : PartialEq + Copy, F : FnMut(T, T) -> bool>( src : &Vec<T>, el : T, on_equalize : Option<F> ) -> Option<usize>
+pub fn left_index<'a, T : PartialEq + Copy, F : FnMut(&'a T, &'a T) -> bool>( src : &'a Vec<T>, el : &'a T, on_equalize : Option<F> ) -> Option<usize>
 {
   if on_equalize.is_none()
   {
-    return src.iter().position( | &x | x == el );
+    return src.iter().position( | &x | x == *el );
   }
   else
   {
     let mut equalizer = on_equalize.unwrap();
     for x in 0..src.len()
     {
-      if equalizer( src[ x ], el )
+      if equalizer( &src[ x ], el )
       {
         return Some( x );
       }

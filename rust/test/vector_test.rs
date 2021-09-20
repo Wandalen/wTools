@@ -51,27 +51,27 @@ fn left_index_trivial()
 {
   println!( "empty vector" );
   let src: Vec<u8> = vec![];
-  let got = vector::left_index( &src, 1, None::<fn(_, _) -> bool> );
+  let got = vector::left_index( &src, &1, None::<fn(_, _) -> bool> );
   assert_eq!( got, None );
 
   println!( "filled vector, not matches" );
   let src: Vec<u8> = vec![ 1, 2, 3 ];
-  let got = vector::left_index( &src, 4, None::<fn(_, _) -> bool> );
+  let got = vector::left_index( &src, &4, None::<fn(_, _) -> bool> );
   assert_eq!( got, None );
 
   println!( "filled vector, matches one" );
   let src: Vec<u8> = vec![ 1, 2, 3 ];
-  let got = vector::left_index( &src, 2, None::<fn(_, _) -> bool> );
+  let got = vector::left_index( &src, &2, None::<fn(_, _) -> bool> );
   assert_eq!( got, Some( 1 ) );
 
   println!( "filled vector, matches several" );
   let src: Vec<u8> = vec![ 1, 2, 2 ];
-  let got = vector::left_index( &src, 2, None::<fn(_, _) -> bool> );
+  let got = vector::left_index( &src, &2, None::<fn(_, _) -> bool> );
   assert_eq!( got, Some( 1 ) );
 
   println!( "filled vector, matches all" );
   let src: Vec<u8> = vec![ 2, 2, 2 ];
-  let got = vector::left_index( &src, 2, None::<fn(_, _) -> bool> );
+  let got = vector::left_index( &src, &2, None::<fn(_, _) -> bool> );
   assert_eq!( got, Some( 0 ) );
 }
 
@@ -80,33 +80,33 @@ fn left_index_trivial()
 #[test]
 fn left_index_with_equalizer()
 {
-  fn equalizer( src1 : u8, src2 : u8 ) -> bool
+  fn equalizer( src1 : &u8, src2 : &u8 ) -> bool
   {
-    src1 == src2
+    *src1 == *src2
   }
   println!( "empty vector" );
   let src: Vec<u8> = vec![];
-  let got = vector::left_index( &src, 1, Some( equalizer ) );
+  let got = vector::left_index( &src, &1, Some( equalizer ) );
   assert_eq!( got, None );
 
   println!( "filled vector, not matches" );
   let src: Vec<u8> = vec![ 1, 2, 3 ];
-  let got = vector::left_index( &src, 4, Some( equalizer ) );
+  let got = vector::left_index( &src, &4, Some( equalizer ) );
   assert_eq!( got, None );
 
   println!( "filled vector, matches one" );
   let src: Vec<u8> = vec![ 1, 2, 3 ];
-  let got = vector::left_index( &src, 2, Some( equalizer ) );
+  let got = vector::left_index( &src, &2, Some( equalizer ) );
   assert_eq!( got, Some( 1 ) );
 
   println!( "filled vector, matches several" );
   let src: Vec<u8> = vec![ 1, 2, 2 ];
-  let got = vector::left_index( &src, 2, Some( equalizer ) );
+  let got = vector::left_index( &src, &2, Some( equalizer ) );
   assert_eq!( got, Some( 1 ) );
 
   println!( "filled vector, matches all" );
   let src: Vec<u8> = vec![ 2, 2, 2 ];
-  let got = vector::left_index( &src, 2, Some( equalizer ) );
+  let got = vector::left_index( &src, &2, Some( equalizer ) );
   assert_eq!( got, Some( 0 ) );
 }
 
