@@ -28,15 +28,24 @@ pub fn append_vectors_once<'a, T : PartialEq + Copy, F : FnMut(T)>( dst : &'a mu
 
 //
 
-pub fn left_index<T : PartialEq + Copy, F : FnMut(T)>( src : &Vec<T>, el : T, on_evaluate1 : Option<F> ) -> Option<usize>
+pub fn left_index<T : PartialEq + Copy, F : FnMut(T, T) -> bool>( src : &Vec<T>, el : T, on_equalize : Option<F> ) -> Option<usize>
 {
-  if on_evaluate1.is_none()
+  if on_equalize.is_none()
   {
     return src.iter().position( | &x | x == el );
   }
   else
   {
-    unimplemented!( "not implemented for callbacks" );
+    let mut equalizer = on_equalize.unwrap();
+    for x in 0..src.len()
+    {
+      if equalizer( src[ x ], el )
+      {
+        return Some( x );
+      }
+    }
+    return None
+    // unimplemented!( "not implemented for callbacks" );
   }
 }
 
