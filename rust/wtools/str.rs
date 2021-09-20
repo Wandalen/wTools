@@ -185,9 +185,10 @@ pub fn split( o : &split ) -> Vec<String>
 
   if o.quoting
   {
-    let mut delimeters: Vec<&str> = vec![];
-    vector::append_vectors_once( &mut delimeters, &vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone(), o.delimeter.clone() ], None::<fn(_)> );
-    fast_options.delimeter( delimeters );
+    unimplemented!( "not implemented" );
+    // let mut delimeters: Vec<&str> = vec![];
+    // vector::append_vectors_once( &mut delimeters, &vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone(), o.delimeter.clone() ], None::<fn(_)> );
+    // fast_options.delimeter( delimeters );
   }
 
   fast_options.preserving_empty( true );
@@ -197,7 +198,6 @@ pub fn split( o : &split ) -> Vec<String>
 
   if o.quoting && o.on_quote.is_some()
   {
-    unimplemented!( "not implemented" );
     // let on_quote = o.on_quote.unwrap();
     // let quotes = vector::append_vectors_once( &mut quotes, &vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone() ], None::<fn(_)> );
     //
