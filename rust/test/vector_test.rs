@@ -1,48 +1,51 @@
 
 use wtools::vector;
-use wtools::vector::left_index;
+use wtools::vector::{ left_index, append_vectors_once };
 
 //
 
 #[test]
-fn append_vectors_once_trivial()
+fn append_vectors_once()
 {
   println!( "empty vector" );
-  let mut dst: Vec<u8> = vec![];
-  let src: Vec<Vec<u8>> = vec![];
-  let got = vector::append_vectors_once( &mut dst, &src, None::<fn(_)> );
+  let mut appender: append_vectors_once<u8> = append_vectors_once::default();
+  let got = appender.call();
   let exp: Vec<u8> = vec![];
-  assert_eq!( *got, exp );
+  assert_eq!( got, exp );
 
   println!( "dst - filled, src - empty" );
-  let mut dst: Vec<u8> = vec![ 1, 2 ];
-  let src: Vec<Vec<u8>> = vec![];
-  let got = vector::append_vectors_once( &mut dst, &src, None::<fn(_)> );
-  assert_eq!( *got, vec![ 1, 2 ] );
+  let mut appender: append_vectors_once<u8> = append_vectors_once::default();
+  appender.dst( vec![ 1, 2 ] );
+  let got = appender.call();
+  assert_eq!( got, vec![ 1, 2 ] );
 
   println!( "dst - filled, src - filled, all is unical elements" );
-  let mut dst: Vec<u8> = vec![ 1, 2 ];
-  let src: Vec<Vec<u8>> = vec![ vec![ 3, 4 ], vec![ 5, 6 ] ];
-  let got = vector::append_vectors_once( &mut dst, &src, None::<fn(_)> );
+  let mut appender: append_vectors_once<u8> = append_vectors_once::default();
+  appender.dst( vec![ 1, 2 ] );
+  appender.src( vec![ vec![ 3, 4 ], vec![ 5, 6 ] ] );
+  let got = appender.call();
   assert_eq!( *got, vec![ 1, 2, 3, 4, 5, 6 ] );
 
   println!( "dst - filled, src - filled, some is duplicated" );
-  let mut dst: Vec<u8> = vec![ 1, 2 ];
-  let src: Vec<Vec<u8>> = vec![ vec![ 1, 3 ], vec![ 4, 2 ] ];
-  let got = vector::append_vectors_once( &mut dst, &src, None::<fn(_)> );
-  assert_eq!( *got, vec![ 1, 2, 3, 4 ] );
+  let mut appender: append_vectors_once<u8> = append_vectors_once::default();
+  appender.dst( vec![ 1, 2 ] );
+  appender.src( vec![ vec![ 1, 3 ], vec![ 2, 4 ] ] );
+  let got = appender.call();
+  assert_eq!( got, vec![ 1, 2, 3, 4 ] );
 
   println!( "dst - filled, src - filled, all is duplicated" );
-  let mut dst: Vec<u8> = vec![ 1, 2 ];
-  let src: Vec<Vec<u8>> = vec![ vec![ 1, 1 ], vec![ 2, 2 ] ];
-  let got = vector::append_vectors_once( &mut dst, &src, None::<fn(_)> );
-  assert_eq!( *got, vec![ 1, 2 ] );
+  let mut appender: append_vectors_once<u8> = append_vectors_once::default();
+  appender.dst( vec![ 1, 2 ] );
+  appender.src( vec![ vec![ 1, 1 ], vec![ 2, 2 ] ] );
+  let got = appender.call();
+  assert_eq!( got, vec![ 1, 2 ] );
 
   println!( "dst - filled, src - filled, all is duplicated" );
-  let mut dst: Vec<u8> = vec![ 1, 2 ];
-  let src: Vec<Vec<u8>> = vec![ vec![ 1, 2 ], vec![ 2, 1 ] ];
-  let got = vector::append_vectors_once( &mut dst, &src, None::<fn(_)> );
-  assert_eq!( *got, vec![ 1, 2 ] );
+  let mut appender: append_vectors_once<u8> = append_vectors_once::default();
+  appender.dst( vec![ 1, 2 ] );
+  appender.src( vec![ vec![ 1, 2 ], vec![ 2, 1 ] ] );
+  let got = appender.call();
+  assert_eq!( got, vec![ 1, 2 ] );
 }
 
 //
