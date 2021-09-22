@@ -16643,130 +16643,299 @@ function entityMapDstNotNull_( test )
 TODO : need to check actuality of this test | 'Dmytro' : it works correctly
 */
 
-function entityFilter( test )
+// function entityFilter( test )
+// {
+//   test.open( 'onEach is routine' );
+//
+//   test.case = 'number';
+//   var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
+//   var got = _.filter_( null, 3, callback );
+//   test.identical( got, Math.sqrt( 3 ) );
+//
+//   test.case = 'string';
+//   var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
+//   var got = _.filter_( null, 'str', ( v ) => v + ' ' + v );
+//   test.identical( got, 'str str' );
+//
+//   test.case = 'array';
+//   var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
+//   var got = _.filter_( null, [ 9, -16, 25, 36, -49 ], callback );
+//   test.identical( got, [ 3, 5, 6 ] );
+//   test.notIdentical( got, [ 3, 4, 5, 6, 7 ] );
+//
+//   test.case = 'unroll';
+//   var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
+//   var src = _.unroll.make( [ 9, _.unroll.make( [ -16, 25, _.unroll.from( [ 36, -49 ] ) ] ) ] );
+//   var got = _.filter_( null, src, callback );
+//   test.identical( got, [ 3, 5, 6 ] );
+//   test.notIdentical( got, [ 3, 4, 5, 6, 7 ] );
+//   test.false( _.unrollIs( got) );
+//
+//   test.case = 'argumentsArray';
+//   var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
+//   var src = _.argumentsArray.make( [ 9, -16, 25, 36, -49 ] );
+//   var got = _.filter_( null, src, callback );
+//   test.identical( got, [ 3, 5, 6 ] );
+//
+//   test.case = 'BufferTyped to Array';
+//   var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
+//   var src = new F32x( [ 9, -16, 25, 36, -49 ] );
+//   var src = Array.from( src );
+//   var got = _.filter_( null, src, callback );
+//   test.identical( got, [ 3, 5, 6 ] );
+//   test.notIdentical( got, [ 3, 4, 5, 6, 7 ] );
+//
+//   test.case = 'aixiliary';
+//   var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
+//   var got = _.filter_( null, { '3' : 9, '4' : 16, '5' : 25, '6' : -36 }, callback );
+//   test.identical( got, { '3' : 3, '4' : 4, '5' : 5 } );
+//   test.notIdentical( got, { '3' : 3, '4' : 4, '5' : 5, '6' : 6 } );
+//
+//   test.case = 'callback in routine';
+//   var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
+//   function testFn2()
+//   {
+//     return _.filter_( null, arguments, callback );
+//   }
+//   var got = testFn2( 9, -16, 25, 36, -49 );
+//   test.identical( got, [ 3, 5, 6 ] );
+//
+//   test.case = 'src is array, filter makes unrolls';
+//   var onEach = ( e, i, s ) => _.unroll.make( [ e ] );
+//   var src = [ 1, [ 2, 3 ], [ 'str', null, undefined ] ];
+//   var got = _.filter_( null, src, onEach );
+//   test.identical( got, [ 1, [ 2, 3 ], [ 'str', null, undefined ] ] );
+//   test.false( _.unrollIs( got ) );
+//   test.true( _.arrayIs( got ) );
+//
+//   test.case = 'src is array, filter check equality';
+//   var onEach = ( e, i, s ) => e === i;
+//   var src = [ 0, 2, 2, [ 'str', null ], undefined ];
+//   var got = _.filter_( null, src, onEach );
+//   test.identical( got, [ true, false, true, false, false ] );
+//   test.notIdentical( got, [ true, false, true, false, false, false ] );
+//   test.true( _.arrayIs( got ) );
+//
+//   test.close( 'onEach is routine' );
+//
+//   /* - */
+//
+//   test.case = 'onEach is objectLike - condition, one entry';
+//   var callback = { '3' : 9 };
+//   var got = _.filter_( null, { 'a' : { '3' : 9 }, 'b' : { '3' : 4 } }, callback );
+//   test.identical( got, { 'a' : { '3' : 9 } } );
+//
+//   test.case = 'onEach is objectLike - condition, a few entry';
+//   var callback = { '3' : 9 };
+//   var src = { 'a' : { '3' : 9 }, 'b' : { '3' : 4 }, 'c' : { '3' : 9 }, 'd' : { '3' : 9 } };
+//   var got = _.filter_( null, src, callback );
+//   test.identical( got, { 'a' : { '3' : 9 }, 'c' : { '3' : 9 }, 'd' : { '3' : 9 } } );
+//
+//   test.case = 'onEach is objectLike - condition, entry nested to next level';
+//   var callback = { '3' : 9 };
+//   var src = { 'a' : { 'b' : { '3' : 9 } } };
+//   var got = _.filter_( null, src, callback );
+//   test.identical( got, {} );
+//   test.notIdentical( got, { 'a' : { 'b' : { '3' : 9 } } } );
+//
+//   test.case = 'onEach is objectLike - routine, entry nested to next level';
+//   var onEach = ( e ) => true;
+//   var callback = { '3' : onEach };
+//   var src = { 'a' : { '3' : 9 } };
+//   var got = _.filter_( null, src, callback );
+//   test.identical( got, {} );
+//   test.notIdentical( got, { 'a' : { '3' : 9 } } );
+//
+//   test.case = 'onEach is objectLike - condition, identical entry';
+//   var onEach = ( e ) => true;
+//   var callback = { '3' : onEach };
+//   var src = { 'a' : { '3' : onEach } };
+//   var got = _.filter_( null, src, callback );
+//   test.identical( got, { 'a' : { '3' : onEach } } );
+//   test.notIdentical( got, {} );
+//
+//   /* - */
+//
+//   if( !Config.debug )
+//   return;
+//
+//   test.case = 'missed arguments';
+//   test.shouldThrowErrorSync( () => _.filter_( null ) );
+//
+//   test.case = 'extra argument';
+//   test.shouldThrowErrorSync( () => _.filter_( null, [ 1, 3 ], () => true, 1 ) );
+//
+//   test.case = 'onEach is not routine';
+//   test.shouldThrowErrorSync( () => _.filter_( null, [ 1, 3 ], 'callback' ) );
+// }
+
+function entityFilterCountables( test )
 {
-  test.open( 'onEach is routine' );
+  const makerChecker =
+  [
+    { maker : 'long', checker : 'long' },
+    { maker : 'array', checker : 'array' },
+    { maker : 'unroll', checker : 'unroll' },
+    { maker : 'countable', checker : 'countable' },
+    { maker : 'vector', checker : 'vector' },
+    { maker : 'argumentsArray', checker : 'array' },
 
-  test.case = 'number';
-  var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
-  var got = _.filter_( null, 3, callback );
-  test.identical( got, Math.sqrt( 3 ) );
+    // { maker : 'f32', checker : 'f32' }, /* Dmytro : does not work */
+    // { maker : 'set', checker : 'set' }, /* Dmytro : does not work */
+  ];
 
-  test.case = 'string';
-  var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
-  var got = _.filter_( null, 'str', ( v ) => v + ' ' + v );
-  test.identical( got, 'str str' );
-
-  test.case = 'array';
-  var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
-  var got = _.filter_( null, [ 9, -16, 25, 36, -49 ], callback );
-  test.identical( got, [ 3, 5, 6 ] );
-  test.notIdentical( got, [ 3, 4, 5, 6, 7 ] );
-
-  test.case = 'unroll';
-  var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
-  var src = _.unroll.make( [ 9, _.unroll.make( [ -16, 25, _.unroll.from( [ 36, -49 ] ) ] ) ] );
-  var got = _.filter_( null, src, callback );
-  test.identical( got, [ 3, 5, 6 ] );
-  test.notIdentical( got, [ 3, 4, 5, 6, 7 ] );
-  test.false( _.unrollIs( got) );
-
-  test.case = 'argumentsArray';
-  var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
-  var src = _.argumentsArray.make( [ 9, -16, 25, 36, -49 ] );
-  var got = _.filter_( null, src, callback );
-  test.identical( got, [ 3, 5, 6 ] );
-
-  test.case = 'BufferTyped to Array';
-  var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
-  var src = new F32x( [ 9, -16, 25, 36, -49 ] );
-  var src = Array.from( src );
-  var got = _.filter_( null, src, callback );
-  test.identical( got, [ 3, 5, 6 ] );
-  test.notIdentical( got, [ 3, 4, 5, 6, 7 ] );
-
-  test.case = 'aixiliary';
-  var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
-  var got = _.filter_( null, { '3' : 9, '4' : 16, '5' : 25, '6' : -36 }, callback );
-  test.identical( got, { '3' : 3, '4' : 4, '5' : 5 } );
-  test.notIdentical( got, { '3' : 3, '4' : 4, '5' : 5, '6' : 6 } );
-
-  test.case = 'callback in routine';
-  var callback = ( v, i, s ) => v < 0 ? undefined : Math.sqrt( v );
-  function testFn2()
+  _.each( makerChecker, ( env ) =>
   {
-    return _.filter_( null, arguments, callback );
+    env.inplace = false;
+    run( env );
+  });
+
+  _.each( makerChecker, ( env ) =>
+  {
+    env.inplace = true;
+    if( env.maker === 'argumentsArray' )
+    env.checker = 'argumentsArray';
+    run( env );
+  });
+
+  /* */
+
+  function run( env )
+  {
+    test.open( `${ __.entity.exportStringSolo( env ) }` );
+
+    test.case = 'empty container';
+    var src = _[ env.maker ].make( [] );
+    var got = _.filter_( env.inplace ? src : null, src, ( e ) => true );
+    test.identical( got, _[ env.checker ].make( [] ) );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback returns 1';
+    var src = _[ env.maker ].make([ 1, 2, 3 ]);
+    var got = _.filter_( env.inplace ? src : null, src, ( e ) => 1 );
+    test.identical( got, _[ env.checker ].make([ 1, 1, 1 ]) );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback returns element';
+    var src = _[ env.maker ].make([ 1, 2, 3 ]);
+    var got = _.filter_( env.inplace ? src : null, src, ( e ) => e );
+    test.identical( got, _[ env.checker ].make([ 1, 2, 3 ]) );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback returns key + 1';
+    var src = _[ env.maker ].make([ 1, 2, 3 ]);
+    var got = _.filter_( env.inplace ? src : null, src, ( e, k ) => k + 1 );
+    test.identical( got, _[ env.checker ].make([ 1, 2, 3 ]) );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback checks container length/size';
+    var src = _[ env.maker ].make([ 1, 2, 3 ]);
+    var got = _.filter_( env.inplace ? src : null, src, ( e, k, c ) => c.length || c.size );
+    test.identical( got, _[ env.checker ].make([ 3, 3, 3 ]) );
+    test.identical( src === got, env.inplace );
+
+    if( env.maker === 'argumentsArray' && !env.inplace )
+    {
+      test.case = 'filled container, callback returns undefined';
+      var src = _[ env.maker ].make([ 1, 2, 3 ]);
+      var got = _.filter_( env.inplace ? src : null, src, ( e ) => undefined );
+      test.identical( got, _[ env.checker ].make( [] ) );
+      test.identical( src === got, env.inplace );
+    }
+
+    test.close( `${ __.entity.exportStringSolo( env ) }` );
   }
-  var got = testFn2( 9, -16, 25, 36, -49 );
-  test.identical( got, [ 3, 5, 6 ] );
-
-  test.case = 'src is array, filter makes unrolls';
-  var onEach = ( e, i, s ) => _.unroll.make( [ e ] );
-  var src = [ 1, [ 2, 3 ], [ 'str', null, undefined ] ];
-  var got = _.filter_( null, src, onEach );
-  test.identical( got, [ 1, [ 2, 3 ], [ 'str', null, undefined ] ] );
-  test.false( _.unrollIs( got ) );
-  test.true( _.arrayIs( got ) );
-
-  test.case = 'src is array, filter check equality';
-  var onEach = ( e, i, s ) => e === i;
-  var src = [ 0, 2, 2, [ 'str', null ], undefined ];
-  var got = _.filter_( null, src, onEach );
-  test.identical( got, [ true, false, true, false, false ] );
-  test.notIdentical( got, [ true, false, true, false, false, false ] );
-  test.true( _.arrayIs( got ) );
-
-  test.close( 'onEach is routine' );
-
-  /* - */
-
-  test.case = 'onEach is objectLike - condition, one entry';
-  var callback = { '3' : 9 };
-  var got = _.filter_( null, { 'a' : { '3' : 9 }, 'b' : { '3' : 4 } }, callback );
-  test.identical( got, { 'a' : { '3' : 9 } } );
-
-  test.case = 'onEach is objectLike - condition, a few entry';
-  var callback = { '3' : 9 };
-  var src = { 'a' : { '3' : 9 }, 'b' : { '3' : 4 }, 'c' : { '3' : 9 }, 'd' : { '3' : 9 } };
-  var got = _.filter_( null, src, callback );
-  test.identical( got, { 'a' : { '3' : 9 }, 'c' : { '3' : 9 }, 'd' : { '3' : 9 } } );
-
-  test.case = 'onEach is objectLike - condition, entry nested to next level';
-  var callback = { '3' : 9 };
-  var src = { 'a' : { 'b' : { '3' : 9 } } };
-  var got = _.filter_( null, src, callback );
-  test.identical( got, {} );
-  test.notIdentical( got, { 'a' : { 'b' : { '3' : 9 } } } );
-
-  test.case = 'onEach is objectLike - routine, entry nested to next level';
-  var onEach = ( e ) => true;
-  var callback = { '3' : onEach };
-  var src = { 'a' : { '3' : 9 } };
-  var got = _.filter_( null, src, callback );
-  test.identical( got, {} );
-  test.notIdentical( got, { 'a' : { '3' : 9 } } );
-
-  test.case = 'onEach is objectLike - condition, identical entry';
-  var onEach = ( e ) => true;
-  var callback = { '3' : onEach };
-  var src = { 'a' : { '3' : onEach } };
-  var got = _.filter_( null, src, callback );
-  test.identical( got, { 'a' : { '3' : onEach } } );
-  test.notIdentical( got, {} );
 
   /* - */
 
   if( !Config.debug )
   return;
 
-  test.case = 'missed arguments';
-  test.shouldThrowErrorSync( () => _.filter_( null ) );
+  test.case = 'without arguments';
+  test.shouldThrowErrorSync( () => _.filter_() );
 
-  test.case = 'extra argument';
-  test.shouldThrowErrorSync( () => _.filter_( null, [ 1, 3 ], () => true, 1 ) );
+  test.case = 'not enough arguments';
+  test.shouldThrowErrorSync( () => _.filter_( [] ) );
+  test.shouldThrowErrorSync( () => _.filter_( null, [] ) );
 
-  test.case = 'onEach is not routine';
-  test.shouldThrowErrorSync( () => _.filter_( null, [ 1, 3 ], 'callback' ) );
+  test.case = 'extra arguments';
+  test.shouldThrowErrorSync( () => _.filter_( null, [], ( e ) => e, 'extra' ) );
+
+  test.case = 'wrong type of callback';
+  test.shouldThrowErrorSync( () => _.filter_( null, [], 'wrong' ) );
+}
+
+//
+
+function entityFilterObjects( test )
+{
+  const namespaces =
+  [
+    'props',
+    'map',
+    'aux',
+    'object',
+    'container',
+  ];
+
+  _.each( namespaces, ( namespace ) =>
+  {
+    const env = { namespace };
+    env.inplace = false;
+    run( env );
+  });
+
+  _.each( namespaces, ( namespace ) =>
+  {
+    const env = { namespace };
+    env.inplace = true;
+    run( env );
+  });
+
+  /* */
+
+  function run( env )
+  {
+    test.open( `${ __.entity.exportStringSolo( env ) }` );
+
+    test.case = 'empty container';
+    var src = _[ env.namespace ].make({});
+    var got = _.filter_( env.inplace ? src : null, src, ( e ) => true );
+    test.identical( got, {} );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback returns 1';
+    var src = _[ env.namespace ].make({ a : 1, b : 2, c : 3 });
+    var got = _.filter_( env.inplace ? src : null, src, ( e ) => 1 );
+    test.identical( got, { a : 1, b : 1, c : 1 } );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback returns element';
+    var src = _[ env.namespace ].make({ a : 1, b : 2, c : 3 });
+    var got = _.filter_( env.inplace ? src : null, src, ( e ) => e );
+    test.identical( got, { a : 1, b : 2, c : 3 } );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback returns key + 1';
+    var src = _[ env.namespace ].make({ a : 1, b : 2, c : 3 });
+    var got = _.filter_( env.inplace ? src : null, src, ( e, k ) => k + 1 );
+    test.identical( got, { a : 'a1', b : 'b1', c : 'c1' } );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback checks container';
+    var src = _[ env.namespace ].make({ a : 1, b : 2, c : 3 });
+    var got = _.filter_( env.inplace ? src : null, src, ( e, k, c ) => c.c );
+    test.identical( got, _[ env.namespace ].make({ a : 3, b : 3, c : 3 }) );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback returns undefined';
+    var src = _[ env.namespace ].make({ a : 1, b : 2, c : 3 });
+    var got = _.filter_( env.inplace ? src : null, src, ( e ) => undefined );
+    test.identical( got, {} );
+    test.identical( src === got, env.inplace );
+
+    test.close( `${ __.entity.exportStringSolo( env ) }` );
+  }
 }
 
 // //
@@ -23828,7 +23997,9 @@ const Proto =
     entityMapDstNull_,
     entityMapDstNotNull_,
 
-    // entityFilter,  /* qqq2 for Dmytro : rewrite please */
+    // entityFilter,  /* qqq2 for Dmytro : rewrite please */ /* aaa : Done */
+    entityFilterCountables,
+    entityFilterObjects,
 
     // entityFilterWithoutDst_, /* xxx : restore later */
     entityFilterDstNull_,
