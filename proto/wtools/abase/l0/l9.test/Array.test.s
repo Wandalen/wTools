@@ -9059,11 +9059,11 @@ function arrayAppendArrayOnceStrictly( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 1, undefined, 2 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayAppendArrayOnceStrictly( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 1, undefined, 2 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -9129,11 +9129,11 @@ function arrayAppendArrayOnceStrictly( test )
   test.case = 'one of elements is not unique';
 
   var dst = [ 1, 2, 3 ];
+  var onErrorCallback = ( err, arg ) => test.identical( dst, [ 1, 2, 3, 4, 5 ] );
   test.shouldThrowErrorSync( function ()
   {
     _.arrayAppendArrayOnceStrictly( dst, [ 4, 5, 2 ] );
-  })
-  test.identical( dst, [ 1, 2, 3, 4, 5 ] );
+  }, onErrorCallback );
 
   var dst = [ 1, 1, 1 ];
   test.shouldThrowErrorSync( function ()
@@ -9195,11 +9195,11 @@ function arrayAppendedArray( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 1, undefined, 2 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayAppendedArray( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 1, undefined, 2 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -9271,11 +9271,11 @@ function arrayAppendedArrayOnce( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 1, undefined, 2 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayAppendedArrayOnce( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 1, undefined, 2 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src'
   var dst = [ 1, 1, 2, 2, 3, 3 ];
@@ -9435,11 +9435,11 @@ function arrayAppendedArrayOnceWithSelector( test )
 
   var dst = [ { a : 1 } ];
   var got;
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ { a : 1 }, { b : undefined }, { b : 2 } ] );
   test.mustNotThrowError( function ()
   {
     var got = _.arrayAppendedArrayOnce( dst, [ { b : undefined }, { b : 2 } ], ( e ) => e.a, ( e ) => e.b );
-  });
-  test.identical( dst, [ { a : 1 }, { b : undefined }, { b : 2 } ] );
+  }, onResultCallback );
   test.identical( got, 2 );
 
   var dst = [ { a : 1 }, { a : undefined } ];
@@ -9518,11 +9518,11 @@ function arrayAppendedArrayOnceStrictly( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 1, undefined, 2 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayAppendedArrayOnceStrictly( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 1, undefined, 2 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -9600,11 +9600,11 @@ function arrayAppendedArrayOnceStrictly( test )
   test.case = 'one of elements is not unique';
 
   var dst = [ 1, 2, 3 ];
+  var onErrorCallback = ( err, arg ) => test.identical( dst, [ 1, 2, 3, 4, 5 ] );
   test.shouldThrowErrorSync( function ()
   {
     _.arrayAppendedArrayOnceStrictly( dst, [ 4, 5, 2 ] );
-  })
-  test.identical( dst, [ 1, 2, 3, 4, 5 ] );
+  }, onErrorCallback );
 
   var dst = [ 1, 1, 1 ];
   test.shouldThrowErrorSync( function ()
@@ -9802,11 +9802,11 @@ function arrayAppendArraysOnce( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 1, undefined, 2 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayAppendArraysOnce( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 1, undefined, 2 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -9945,11 +9945,11 @@ function arrayAppendArraysOnceStrictly( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 1, undefined, 2 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayAppendArraysOnceStrictly( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 1, undefined, 2 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -10058,11 +10058,11 @@ function arrayAppendArraysOnceStrictly( test )
 
   test.case = 'One of ins elements is not unique';
   var dst = [ 1, 2, 3 ];
+  var onErrorCallback = ( err, arg ) => test.identical( dst, [ 1, 2, 3, 4, 5 ] );
   test.shouldThrowErrorSync( function ()
   {
     _.arrayAppendArraysOnceStrictly( dst, [ 4, 2, 5 ] );
-  })
-  test.identical( dst, [ 1, 2, 3, 4, 5 ] )
+  });
 
   var dst = [ 1, 1, 1 ];
   test.shouldThrowErrorSync( function ()
@@ -10259,11 +10259,11 @@ function arrayAppendedArraysOnce( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 1, undefined, 2 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayAppendedArraysOnce( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 1, undefined, 2 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -10404,11 +10404,11 @@ function arrayAppendedArraysOnceStrictly( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 1, undefined, 2 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayAppendedArraysOnceStrictly( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 1, undefined, 2 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -10517,11 +10517,11 @@ function arrayAppendedArraysOnceStrictly( test )
 
   test.case = 'One of ins elements is not unique';
   var dst = [ 1, 2, 3 ];
-  test.shouldThrowErrorSync( function ()
+  var onErrorCallback = ( err, arg ) => test.identical( dst, [ 1, 2, 3, 4, 5 ] );
+  test.shouldThrowErrorSync( () =>
   {
     _.arrayAppendedArraysOnceStrictly( dst, [ 4, 2, 5 ] );
-  })
-  test.identical( dst, [ 1, 2, 3, 4, 5 ] )
+  }, onErrorCallback );
 
   var dst = [ 1, 1, 1 ];
   test.shouldThrowErrorSync( function ()
