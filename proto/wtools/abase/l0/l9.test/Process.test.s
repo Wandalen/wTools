@@ -734,7 +734,7 @@ function onWithChain( test )
   // test.case = 'call with options map';
   // var result = [];
   // var onEvent = () => result.push( result.length );
-  // var got = _.process.on({ callbackMap : { event1 : [ _.event.Name( 'event2' ), onEvent ] } });
+  // var got = _.process.on({ callbackMap : { event1 : [ 'event2', onEvent ] } });
   // test.false( _.event.eventHasHandler( _.process._edispatcher, { eventName : 'event1', eventHandler : onEvent } ) );
   // test.false( _.event.eventHasHandler( _.process._edispatcher, { eventName : 'event2', eventHandler : onEvent } ) );
   // _.event.eventGive( _.process._edispatcher, 'event1' );
@@ -768,7 +768,7 @@ function onWithChain( test )
   {
     const _ = require( toolsPath );
     const result = [];
-    _.process.on({ callbackMap : { 'available' : [ _.event.Name( 'uncaughtError' ), ( ... args ) => result.push( args ) ] } });
+    _.process.on({ callbackMap : { 'available' : [ 'uncaughtError', ( ... args ) => result.push( args ) ] } });
     _.process.eventGive( 'uncaughtError', 'arg' );
     _.process.eventGive( 'available', 'arg' );
     _.process.eventGive( 'uncaughtError', 'arg' );
@@ -1433,7 +1433,7 @@ function onceWithChain( test )
   {
     const _ = require( toolsPath );
     const result = [];
-    _.process.once({ callbackMap : { 'available' : [ _.event.Name( 'uncaughtError' ), ( ... args ) => result.push( args ) ] } });
+    _.process.once({ callbackMap : { 'available' : [ 'uncaughtError', ( ... args ) => result.push( args ) ] } });
     _.process.eventGive( 'uncaughtError', 'arg' );
     _.process.eventGive( 'available', 'arg' );
     _.process.eventGive( 'uncaughtError', 'arg' );
