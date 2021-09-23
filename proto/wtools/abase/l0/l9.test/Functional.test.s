@@ -15569,6 +15569,80 @@ function entityMapCountables( test )
 
 //
 
+function entityMapObjects( test )
+{
+  const namespaces =
+  [
+    'props',
+    'map',
+    'aux',
+    'object',
+    'container',
+  ];
+
+  _.each( namespaces, ( namespace ) =>
+  {
+    const env = { namespace };
+    env.inplace = false;
+    run( env );
+  });
+
+  _.each( namespaces, ( namespace ) =>
+  {
+    const env = { namespace };
+    env.inplace = true;
+    run( env );
+  });
+
+  /* */
+
+  function run( env )
+  {
+    test.open( `${ __.entity.exportStringSolo( env ) }` );
+
+    test.case = 'empty container';
+    var src = _[ env.namespace ].make({});
+    var got = _.map_( env.inplace ? src : null, src, ( e ) => true );
+    test.identical( got, {} );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback returns 1';
+    var src = _[ env.namespace ].make({ a : 1, b : 2, c : 3 });
+    var got = _.map_( env.inplace ? src : null, src, ( e ) => 1 );
+    test.identical( got, { a : 1, b : 1, c : 1 } );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback returns element';
+    var src = _[ env.namespace ].make({ a : 1, b : 2, c : 3 });
+    var got = _.map_( env.inplace ? src : null, src, ( e ) => e );
+    test.identical( got, { a : 1, b : 2, c : 3 } );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback returns key + 1';
+    var src = _[ env.namespace ].make({ a : 1, b : 2, c : 3 });
+    var got = _.map_( env.inplace ? src : null, src, ( e, k ) => k + 1 );
+    test.identical( got, { a : 'a1', b : 'b1', c : 'c1' } );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback checks container';
+    var src = _[ env.namespace ].make({ a : 1, b : 2, c : 3 });
+    var got = _.map_( env.inplace ? src : null, src, ( e, k, c ) => c.c );
+    test.identical( got, _[ env.namespace ].make({ a : 3, b : 3, c : 3 }) );
+    test.identical( src === got, env.inplace );
+
+    test.case = 'filled container, callback returns undefined';
+    var src = _[ env.namespace ].make({ a : 1, b : 2, c : 3 });
+    var got = _.map_( env.inplace ? src : null, src, ( e ) => undefined );
+    var exp = env.inplace ? { a : 1, b : 2, c : 3 } : {};
+    test.identical( got, exp );
+    test.identical( src === got, env.inplace );
+
+    test.close( `${ __.entity.exportStringSolo( env ) }` );
+  }
+}
+
+//
+
 // function entityMap( test )
 // {
 //   test.open( 'src is arrayLike' );
@@ -24086,9 +24160,10 @@ const Proto =
 
     _filter_functor,
 
-    // entityMap, /* qqq2 for Dmytro : rewrite please */
-    // entityMapDifferentCallbacks, /* qqq2 for Dmytro : rewrite please */
+    // entityMap, /* qqq2 for Dmytro : rewrite please */ /* aaa : Done */
+    // entityMapDifferentCallbacks, /* qqq2 for Dmytro : rewrite please */ /* aaa : Done */
     entityMapCountables,
+    entityMapObjects,
 
     // entityMapWithoutDst_, /* xxx : restore later */
     entityMapDstNull_,
