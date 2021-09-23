@@ -49,10 +49,6 @@ function chainIs( test )
   var got = _.event.chainIs( src );
   test.identical( got, false );
 
-  test.case = 'src - instance of _.event.Name';
-  var got = _.event.chainIs( _.event.Name( 'begin' ) );
-  test.identical( got, false );
-
   test.case = 'src - instance of _.event.Chain';
   var got = _.event.chainIs( _.event.Chain( 'begin' ) );
   test.identical( got, true );
@@ -67,28 +63,16 @@ function Chain( test )
   test.true( _.event.chainIs( got ) );
   test.true( _.longIs( got.chain ) );
   test.identical( got.chain.length, 1 );
-  test.true( _.event.nameIs( got.chain[ 0 ] ) );
-  test.identical( got.chain[ 0 ].value, 'begin' );
-
-  test.case = 'single Name';
-  var name = _.event.Name( 'begin' );
-  var got = _.event.Chain( name );
-  test.true( _.event.chainIs( got ) );
-  test.true( _.longIs( got.chain ) );
-  test.identical( got.chain.length, 1 );
-  test.identical( got.chain[ 0 ], name );
+  test.identical( got.chain[ 0 ], 'begin' );
 
   test.case = 'single Chain';
-  var name = _.event.Name( 'begin' );
-  var chain = _.event.Chain( name, 'end' );
+  var chain = _.event.Chain( 'begin', 'end' );
   var got = _.event.Chain( chain );
   test.true( _.event.chainIs( got ) );
   test.true( got === chain );
   test.true( _.longIs( got.chain ) );
   test.identical( got.chain.length, 2 );
-  test.identical( got.chain[ 0 ], name );
-  test.true( _.event.nameIs( got.chain[ 1 ] ) );
-  test.identical( got.chain[ 1 ].value, 'end' );
+  test.identical( got.chain, [ 'begin', 'end' ] );
 
   /* */
 
@@ -97,17 +81,14 @@ function Chain( test )
   test.true( _.event.chainIs( got ) );
   test.true( _.longIs( got.chain ) );
   test.identical( got.chain.length, 3 );
-  test.true( _.event.nameIs( got.chain[ 0 ] ) );
-  test.identical( got.chain[ 0 ].value, 'begin' );
-  test.true( _.event.nameIs( got.chain[ 1 ] ) );
-  test.identical( got.chain[ 1 ].value, 'end' );
-  test.true( _.event.nameIs( got.chain[ 2 ] ) );
-  test.identical( got.chain[ 2 ].value, 'error' );
+  test.identical( got.chain[ 0 ], 'begin' );
+  test.identical( got.chain[ 1 ], 'end' );
+  test.identical( got.chain[ 2 ], 'error' );
 
   test.case = 'a few Names';
-  var name1 = _.event.Name( 'begin' );
-  var name2 = _.event.Name( 'end' );
-  var name3 = _.event.Name( 'error' );
+  var name1 = 'begin';
+  var name2 = 'end';
+  var name3 = 'error';
   var got = _.event.Chain( name1, name2, name3 );
   test.true( _.event.chainIs( got ) );
   test.true( _.longIs( got.chain ) );
@@ -124,7 +105,7 @@ function Chain( test )
 
   test.case = 'wrong type of element';
   test.shouldThrowErrorSync( () => _.event.Chain( null ) );
-  test.shouldThrowErrorSync( () => _.event.Chain( 'begin', _.event.Name( 'err' ), undefined ) );
+  test.shouldThrowErrorSync( () => _.event.Chain( 'begin', undefined ) );
 
   test.case = 'first argument is a Chain, arguments.length > 1';
   test.shouldThrowErrorSync( () => _.event.Chain( _.event.Chain( 'begin' ), 'end' ) );
@@ -573,7 +554,7 @@ function onWithChain( test )
   var edispatcher = { events : { 'event' : [], 'event2' : [] } };
   var result = [];
   var onEvent = () => result.push( result.length );
-  _.event.on( edispatcher, { 'callbackMap' : { 'event' : [ _.event.Name( 'event2' ), onEvent ] } } );
+  _.event.on( edispatcher, { 'callbackMap' : { 'event' : [ 'event2', onEvent ] } } );
   _.event.eventGive( edispatcher, { event : 'event2', args : [] } );
   test.identical( result, [] );
   test.identical( edispatcher.events.event2, [] );
@@ -593,7 +574,7 @@ function onWithChain( test )
   var edispatcher = { events : { 'event' : [], 'event2' : [], 'event3' : [] } };
   var result = [];
   var onEvent = () => result.push( result.length );
-  _.event.on( edispatcher, { 'callbackMap' : { 'event' : [ _.event.Name( 'event3' ), _.event.Name( 'event2' ), onEvent ] } } );
+  _.event.on( edispatcher, { 'callbackMap' : { 'event' : [ 'event3', 'event2', onEvent ] } } );
   _.event.eventGive( edispatcher, { event : 'event2', args : [] } );
   test.identical( result, [] );
   test.identical( edispatcher.events.event2, [] );
@@ -1081,7 +1062,7 @@ function onceWithChain( test )
   var edispatcher = { events : { 'event' : [], 'event2' : [] } };
   var result = [];
   var onEvent = () => result.push( result.length );
-  _.event.once( edispatcher, { 'callbackMap' : { 'event' : [ _.event.Name( 'event2' ), onEvent ] } } );
+  _.event.once( edispatcher, { 'callbackMap' : { 'event' : [ 'event2', onEvent ] } } );
   _.event.eventGive( edispatcher, { event : 'event2', args : [] } );
   test.identical( result, [] );
   test.identical( edispatcher.events.event2, [] );
@@ -1101,7 +1082,7 @@ function onceWithChain( test )
   var edispatcher = { events : { 'event' : [], 'event2' : [], 'event3' : [] } };
   var result = [];
   var onEvent = () => result.push( result.length );
-  _.event.once( edispatcher, { 'callbackMap' : { 'event' : [ _.event.Name( 'event3' ), _.event.Name( 'event2' ), onEvent ] } } );
+  _.event.once( edispatcher, { 'callbackMap' : { 'event' : [ 'event3', 'event2', onEvent ] } } );
   _.event.eventGive( edispatcher, { event : 'event2', args : [] } );
   test.identical( result, [] );
   test.identical( edispatcher.events.event2, [] );
@@ -1568,7 +1549,7 @@ function eventGiveHead( test )
   /* */
 
   test.case = 'options map in args[ 0 ] contains fields of routine.defaults';
-  var routine = ( arg ) =>  arg;
+  var routine = ( arg ) => arg;
   routine.defaults = { event : null, args : null, onError : null, additional : null };
   var got = _.event.eventGiveHead( edispatcher, routine, [ { event : 'event', additional : 1 } ] );
   test.identical( _.props.keys( got ), [ 'event', 'additional', 'onError', 'args' ] );
