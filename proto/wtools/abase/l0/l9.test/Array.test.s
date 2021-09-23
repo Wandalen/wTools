@@ -6035,7 +6035,7 @@ function arrayPrependArray( test )
   test.case = 'mixed arguments types';
   var dst = [ 1 ];
   var got = _.arrayPrependArray( dst, [ 'a', 1, [ { a : 1 } ], { b : 2 } ] );
-  test.identical( dst, [  'a', 1, [ { a : 1 } ], { b : 2 }, 1 ] );
+  test.identical( dst, [ 'a', 1, [ { a : 1 } ], { b : 2 }, 1 ] );
   test.true( got === dst );
 
   test.case = 'argument is undefined';
@@ -6714,7 +6714,7 @@ function arrayPrependArrays( test )
   var dst = [ 1 ];
   var insArray = [ 'a', 1, [ { a : 1 } ], { b : 2 } ];
   var got = _.arrayPrependArrays( dst, insArray );
-  test.identical( dst, [  { b : 2 }, { a : 1 }, 1, 'a', 1 ] );
+  test.identical( dst, [ { b : 2 }, { a : 1 }, 1, 'a', 1 ] );
   test.true( got === dst );
 
   test.case = 'array has undefined';
@@ -7211,7 +7211,7 @@ function arrayPrependedArrays( test )
   var dst = [];
   var insArray = [ [ 1 ], [ 2 ], [ 3, [ 4 ], 5 ] ];
   var got = _.arrayPrependedArrays( dst, insArray );
-  test.identical( dst,  [ 3, [ 4 ], 5, 2, 1 ] );
+  test.identical( dst, [ 3, [ 4 ], 5, 2, 1 ] );
   test.identical( got, 5 );
 
   var dst = [];
@@ -7530,7 +7530,7 @@ function arrayPrependedArraysOnceStrictly( test )
   test.case = 'mixed arguments types';
   var dst = [ 1 ];
   var got = _.arrayPrependedArraysOnceStrictly( dst, [ 'a', 0, [ { a : 1 } ], { b : 2 } ] );
-  test.identical( dst, [ { 'b' : 2 }, { 'a' : 1 }, 0, 'a',  1 ] );
+  test.identical( dst, [ { 'b' : 2 }, { 'a' : 1 }, 0, 'a', 1 ] );
   test.identical( got, 4 );
 
   var dst = [];
@@ -7728,10 +7728,10 @@ function arrayAppend( test )
   test.identical( got, [ 1, '1' ] );
 
   var got = _.arrayAppend( [ 1 ], -1 );
-  test.identical( got, [  1, -1 ] );
+  test.identical( got, [ 1, -1 ] );
 
   var got = _.arrayAppend( [ 1 ], [ 1 ] );
-  test.identical( got, [  1, [ 1 ] ] );
+  test.identical( got, [ 1, [ 1 ] ] );
 
   /* - */
 
@@ -8251,10 +8251,10 @@ function arrayAppendElement( test )
   test.identical( got, [ 1, '1' ] );
 
   var got = _.arrayAppendElement( [ 1 ], -1 );
-  test.identical( got, [  1, -1 ] );
+  test.identical( got, [ 1, -1 ] );
 
   var got = _.arrayAppendElement( [ 1 ], [ 1 ] );
-  test.identical( got, [  1, [ 1 ] ] );
+  test.identical( got, [ 1, [ 1 ] ] );
 
   /* - */
 
@@ -8830,7 +8830,7 @@ function arrayAppendArray( test )
   test.case = 'mixed arguments types';
   var dst = [ 1 ];
   var got = _.arrayAppendArray( dst, [ 'a', 1, [ { a : 1 } ], { b : 2 } ] );
-  test.identical( dst, [  1, 'a', 1, [ { a : 1 } ], { b : 2 } ] );
+  test.identical( dst, [ 1, 'a', 1, [ { a : 1 } ], { b : 2 } ] );
   test.true( got === dst );
 
   test.case = 'argument is undefined';
@@ -9675,7 +9675,7 @@ function arrayAppendArrays( test )
   var dst = [ 1 ];
   var insArray = [ 'a', 1, [ { a : 1 } ], { b : 2 } ];
   var got = _.arrayAppendArrays( dst, insArray );
-  test.identical( dst, [  1, 'a', 1, { a : 1 }, { b : 2 } ] );
+  test.identical( dst, [ 1, 'a', 1, { a : 1 }, { b : 2 } ] );
   test.true( got === dst );
 
   test.case = 'argument is undefined';
@@ -10130,7 +10130,7 @@ function arrayAppendedArrays( test )
   var dst = [ 1 ];
   var insArray = [ 'a', 1, [ { a : 1 } ], { b : 2 } ];
   var got = _.arrayAppendedArrays( dst, insArray );
-  test.identical( dst, [  1, 'a', 1, { a : 1 }, { b : 2 } ] );
+  test.identical( dst, [ 1, 'a', 1, { a : 1 }, { b : 2 } ] );
   test.identical( got, 4 );
 
   test.case = 'array has undefined';
@@ -10231,7 +10231,7 @@ function arrayAppendedArraysOnce( test )
   var dst = [ 1 ];
   var insArray = [ 'a', 1, [ { a : 1 } ], { b : 2 } ];
   var got = _.arrayAppendedArraysOnce( dst, insArray );
-  test.identical( dst, [  1, 'a', { a : 1 }, { b : 2 } ] );
+  test.identical( dst, [ 1, 'a', { a : 1 }, { b : 2 } ] );
   test.identical( got, 3 );
 
   var dst = [ 1, 2, 3, 5 ];
@@ -11014,12 +11014,12 @@ function arrayRemovedOnce( test )
 
   var dst = [ 1 ];
   var got = _.arrayRemovedOnce( dst, -1 );
-  test.identical( dst, [  1 ] );
+  test.identical( dst, [ 1 ] );
   test.identical( got, -1 );
 
   var dst = [ 1 ];
   var got = _.arrayRemovedOnce( dst, [ 1 ] );
-  test.identical( dst, [  1 ] );
+  test.identical( dst, [ 1 ] );
   test.identical( got, -1 );
 
   test.case = 'equalizer 2 args';
@@ -11330,7 +11330,9 @@ function arrayRemoveElement( test )
 
   test.case = 'evaluator ( equalizer ) has wrong length';
   test.shouldThrowErrorSync( () => _.arrayRemoveElement( [ 1 ], 1, () => 1 ) );
+  /* eslint-disable */
   test.shouldThrowErrorSync( () => _.arrayRemoveElement( [ 1 ], 1, ( a, b, c, d ) => a - b + c === d ) );
+  /* eslint-enable */
   test.shouldThrowErrorSync( () => _.arrayRemoveElement( [ 1 ], 1, ( a ) => a, () => 1 ) );
   test.shouldThrowErrorSync( () => _.arrayRemoveElement( [ 1 ], 1, ( a ) => a, ( a, b ) => a === b ) );
 }
@@ -11989,7 +11991,9 @@ function arrayRemovedElement_( test )
 
   test.case = 'wrong length of evaluator1';
   test.shouldThrowErrorSync( () => _.arrayRemovedElement_( [ 1 ], 1, 1, () => 'str' ) );
+  /* eslint-disable */
   test.shouldThrowErrorSync( () => _.arrayRemovedElement_( [ 1 ], 1, 1, ( a, b, c, d ) => a - b + c === d ) );
+  /* eslint-enable */
 
   test.case = 'wrong type of evaluator2';
   test.shouldThrowErrorSync( () => _.arrayRemovedElement_( [ 1 ], 1, 1, ( e ) => e, 'wrong' ) );
@@ -12032,12 +12036,12 @@ function arrayRemovedElementOnce( test )
 
   var dst = [ 1 ];
   var got = _.arrayRemovedElementOnce( dst, -1 );
-  test.identical( dst, [  1 ] );
+  test.identical( dst, [ 1 ] );
   test.identical( got, -1 );
 
   var dst = [ 1 ];
   var got = _.arrayRemovedElementOnce( dst, [ 1 ] );
-  test.identical( dst, [  1 ] );
+  test.identical( dst, [ 1 ] );
   test.identical( got, -1 );
 
   test.case = 'equalizer 2 args';
@@ -12361,7 +12365,9 @@ function arrayRemovedElementOnce_( test )
 
   test.case = 'wrong length of evaluator1';
   test.shouldThrowErrorSync( () => _.arrayRemovedElementOnce_( [ 1 ], 1, 1, () => 'str' ) );
+  /* eslint-disable */
   test.shouldThrowErrorSync( () => _.arrayRemovedElementOnce_( [ 1 ], 1, 1, ( a, b, c, d ) => a - b + c === d ) );
+  /* eslint-enable */
 
   test.case = 'wrong type of evaluator2';
   test.shouldThrowErrorSync( () => _.arrayRemovedElementOnce_( [ 1 ], 1, 1, ( e ) => e, 'wrong' ) );
@@ -12549,7 +12555,7 @@ function arrayRemovedElementOnceStrictly_( test )
 
   test.case = 'dst - filled array, ins - string';
   var dst = [ 1, 2, 1, 1, 1 ];
-  var got = _.arrayRemovedElementOnceStrictly_( dst, '1', ( e, ins ) => e === parseFloat( ins ) + 1  );
+  var got = _.arrayRemovedElementOnceStrictly_( dst, '1', ( e, ins ) => e === parseFloat( ins ) + 1 );
   test.identical( dst, [ 1, 1, 1, 1 ] );
   test.identical( got, 2 );
 
@@ -14338,7 +14344,7 @@ function arrayRemoveDuplicates( test )
 
   var got  = _.arrayRemoveDuplicates( dst, function( a, b )
   {
-    return  a === b;
+    return a === b;
   });
   var expected = [ 1, 2, 3, '4', 5 ];
   test.identical( dst, expected );
@@ -14349,7 +14355,7 @@ function arrayRemoveDuplicates( test )
 
   var got  = _.arrayRemoveDuplicates( dst, function( a )
   {
-    return  a.num;
+    return a.num;
   });
   var expected = [ { 'num' : 0 }, { 'num' : 1 }, { 'num' : 2 } ];
   test.identical( dst, expected );
@@ -14756,7 +14762,7 @@ function arrayFlattenSets( test )
   var dst = null;
   var src = new Set( [ [ [ [ 1, [ 'str' ], { a : 3 }, undefined ] ] ], [ [ [ 1, [ 'str' ], 3 ] ] ] ] );
   var got = _.arrayFlatten( dst, src );
-  test.identical( got, [ 1, 'str', { a : 3 }, undefined,  1, 'str', 3 ] );
+  test.identical( got, [ 1, 'str', { a : 3 }, undefined, 1, 'str', 3 ] );
 
   test.close( 'dst - null' );
 
@@ -14803,8 +14809,8 @@ function arrayFlattenSets( test )
   var dst = [];
   var src = new Set( [ [ [ [ 1, [ 'str' ], { a : 3 }, undefined ] ] ], [ [ [ 1, [ 'str' ], 3 ] ] ] ] );
   var got = _.arrayFlatten( dst, src );
-  test.identical( dst, [ 1, 'str', { a : 3 }, undefined,  1, 'str', 3 ] );
-  test.identical( got, [ 1, 'str', { a : 3 }, undefined,  1, 'str', 3 ] );
+  test.identical( dst, [ 1, 'str', { a : 3 }, undefined, 1, 'str', 3 ] );
+  test.identical( got, [ 1, 'str', { a : 3 }, undefined, 1, 'str', 3 ] );
 
   test.close( 'dst - empty array' );
 
@@ -14851,22 +14857,22 @@ function arrayFlattenSets( test )
   var dst = [ 1, undefined, [ 2 ], { a : 0 } ];
   var src = new Set( [ [ [ [ 1, [ 'str' ], { a : 3 }, undefined ] ] ], [ [ [ 1, [ 'str' ], 3 ] ] ] ] );
   var got = _.arrayFlatten( dst, src );
-  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1, 'str', { a : 3 }, undefined,  1, 'str', 3 ] );
-  test.identical( got, [ 1, undefined, [ 2 ], { a : 0 }, 1, 'str', { a : 3 }, undefined,  1, 'str', 3 ] );
+  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1, 'str', { a : 3 }, undefined, 1, 'str', 3 ] );
+  test.identical( got, [ 1, undefined, [ 2 ], { a : 0 }, 1, 'str', { a : 3 }, undefined, 1, 'str', 3 ] );
 
   test.case = 'src - Set from dst';
   var dst = [ 1, [ undefined, [ 2 ], { a : 0 } ] ];
   var src = new Set( dst );
   var got = _.arrayFlatten( dst, src );
-  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1, undefined,  2, { a : 0 } ] );
-  test.identical( got, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1, undefined,  2, { a : 0 } ] );
+  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1, undefined, 2, { a : 0 } ] );
+  test.identical( got, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1, undefined, 2, { a : 0 } ] );
 
   test.case = 'src - Set from two dst in container';
   var dst = [ 1, undefined, [ 2 ] ];
   var src = new Set( [ dst, [ dst, dst ] ] );
   var got = _.arrayFlatten( dst, src );
-  test.identical( dst, [ 1, undefined, [ 2 ], 1, undefined,  2, 1, undefined,  2, 1, undefined,  2 ] );
-  test.identical( got, [ 1, undefined, [ 2 ], 1, undefined,  2, 1, undefined,  2, 1, undefined,  2 ] );
+  test.identical( dst, [ 1, undefined, [ 2 ], 1, undefined, 2, 1, undefined, 2, 1, undefined, 2 ] );
+  test.identical( got, [ 1, undefined, [ 2 ], 1, undefined, 2, 1, undefined, 2, 1, undefined, 2 ] );
 
   test.close( 'dst - array' );
 }
@@ -15471,8 +15477,8 @@ function arrayFlattenOnceSets( test )
   var dst = [ 1, [ undefined, [ 2 ], { a : 0 } ] ];
   var src = new Set( dst );
   var got = _.arrayFlattenOnce( dst, src );
-  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], undefined,  2, { a : 0 } ] );
-  test.identical( got, [ 1, [ undefined, [ 2 ], { a : 0 } ], undefined,  2, { a : 0 } ] );
+  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], undefined, 2, { a : 0 } ] );
+  test.identical( got, [ 1, [ undefined, [ 2 ], { a : 0 } ], undefined, 2, { a : 0 } ] );
 
   test.case = 'src - Set from two dst in container';
   var dst = [ 1, undefined, [ 2 ], { a : 0 } ];
@@ -15623,7 +15629,7 @@ function arrayFlattenOnceStrictly( test )
 
   test.case = 'dst - array, level 2, src - array, level 2';
   var dst = [ [ 1 ], [ 2 ], [ 3 ] ];
-  var got = _.arrayFlattenOnceStrictly( dst, [  [ 1 ], [ 2 ], [ 3 ] ] );
+  var got = _.arrayFlattenOnceStrictly( dst, [ [ 1 ], [ 2 ], [ 3 ] ] );
   test.identical( dst, [ [ 1 ], [ 2 ], [ 3 ], 1, 2, 3 ] );
   test.identical( got, [ [ 1 ], [ 2 ], [ 3 ], 1, 2, 3 ] );
 
@@ -16496,7 +16502,7 @@ function arrayFlattenedSets( test )
   var dst = [];
   var src = new Set( [ [ [ [ 1, [ 'str' ], { a : 3 }, undefined ] ] ], [ [ [ 1, [ 'str' ], 3 ] ] ] ] );
   var got = _.arrayFlattened( dst, src );
-  test.identical( dst, [ 1, 'str', { a : 3 }, undefined,  1, 'str', 3 ] );
+  test.identical( dst, [ 1, 'str', { a : 3 }, undefined, 1, 'str', 3 ] );
   test.identical( got, 7 );
 
   test.close( 'dst - empty array' );
@@ -16544,21 +16550,21 @@ function arrayFlattenedSets( test )
   var dst = [ 1, undefined, [ 2 ], { a : 0 } ];
   var src = new Set( [ [ [ [ 1, [ 'str' ], { a : 3 }, undefined ] ] ], [ [ [ 1, [ 'str' ], 3 ] ] ] ] );
   var got = _.arrayFlattened( dst, src );
-  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1, 'str', { a : 3 }, undefined,  1, 'str', 3 ] );
+  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1, 'str', { a : 3 }, undefined, 1, 'str', 3 ] );
   test.identical( got, 7 );
 
   test.case = 'src - Set from dst';
   var dst = [ 1, [ undefined, [ 2 ], { a : 0 } ] ];
   var src = new Set( dst );
   var got = _.arrayFlattened( dst, src );
-  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1, undefined,  2, { a : 0 } ] );
+  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1, undefined, 2, { a : 0 } ] );
   test.identical( got, 4 );
 
   test.case = 'src - Set from two dst in container';
   var dst = [ 1, undefined, [ 2 ] ];
   var src = new Set( [ dst, [ dst, dst ] ] );
   var got = _.arrayFlattened( dst, src );
-  test.identical( dst, [ 1, undefined, [ 2 ], 1, undefined,  2, 1, undefined,  2, 1, undefined,  2 ] );
+  test.identical( dst, [ 1, undefined, [ 2 ], 1, undefined, 2, 1, undefined, 2, 1, undefined, 2 ] );
   test.identical( got, 9 );
 
   test.close( 'dst - array' );
@@ -17164,7 +17170,7 @@ function arrayFlattenedOnceSets( test )
   var dst = [ 1, [ undefined, [ 2 ], { a : 0 } ] ];
   var src = new Set( dst );
   var got = _.arrayFlattenedOnce( dst, src );
-  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], undefined,  2, { a : 0 } ] );
+  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], undefined, 2, { a : 0 } ] );
   test.identical( got, 3 );
 
   test.case = 'src - Set from two dst in container';
@@ -17316,7 +17322,7 @@ function arrayFlattenedOnceStrictly( test )
 
   test.case = 'dst - array, level 2, src - array, level 2';
   var dst = [ [ 1 ], [ 2 ], [ 3 ] ];
-  var got = _.arrayFlattenedOnceStrictly( dst, [  [ 1 ], [ 2 ], [ 3 ] ] );
+  var got = _.arrayFlattenedOnceStrictly( dst, [ [ 1 ], [ 2 ], [ 3 ] ] );
   test.identical( dst, [ [ 1 ], [ 2 ], [ 3 ], 1, 2, 3 ] );
   test.identical( got, 3 );
 
@@ -18326,22 +18332,22 @@ function arrayFlattenDefinedSets( test )
   var dst = [ 1, undefined, [ 2 ], { a : 0 } ];
   var src = new Set( [ [ [ [ 1, [ undefined ], { a : 3 }, undefined ] ] ], [ [ [ 1, [ undefined ], 3 ] ] ] ] );
   var got = _.arrayFlattenDefined( dst, src );
-  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1, { a : 3 },  1, 3 ] );
-  test.identical( got, [ 1, undefined, [ 2 ], { a : 0 }, 1, { a : 3 },  1, 3 ] );
+  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1, { a : 3 }, 1, 3 ] );
+  test.identical( got, [ 1, undefined, [ 2 ], { a : 0 }, 1, { a : 3 }, 1, 3 ] );
 
   test.case = 'src - Set from dst';
   var dst = [ 1, [ undefined, [ 2 ], { a : 0 } ] ];
   var src = new Set( dst );
   var got = _.arrayFlattenDefined( dst, src );
-  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1,  2, { a : 0 } ] );
-  test.identical( got, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1,  2, { a : 0 } ] );
+  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1, 2, { a : 0 } ] );
+  test.identical( got, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1, 2, { a : 0 } ] );
 
   test.case = 'src - Set from two dst in container';
   var dst = [ 1, undefined, [ 2 ], { a : 0 } ];
   var src = new Set( [ dst, [ dst, dst ] ] );
   var got = _.arrayFlattenDefined( dst, src );
-  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1,  2, { a : 0 }, 1,  2, { a : 0 }, 1,  2, { a : 0 } ] );
-  test.identical( got, [ 1, undefined, [ 2 ], { a : 0 }, 1,  2, { a : 0 }, 1,  2, { a : 0 }, 1,  2, { a : 0 } ] );
+  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1, 2, { a : 0 }, 1, 2, { a : 0 }, 1, 2, { a : 0 } ] );
+  test.identical( got, [ 1, undefined, [ 2 ], { a : 0 }, 1, 2, { a : 0 }, 1, 2, { a : 0 }, 1, 2, { a : 0 } ] );
 
   test.close( 'dst - array' );
 }
@@ -20008,7 +20014,7 @@ function arrayFlattenedDefinedSets( test )
   var dst = [];
   var src = new Set( [ [ [ [ 1, [ undefined ], { a : 3 }, undefined ] ] ], [ [ [ 1, [ undefined ], 3 ] ] ] ] );
   var got = _.arrayFlattenedDefined( dst, src );
-  test.identical( dst, [ 1, { a : 3 },  1, 3 ] );
+  test.identical( dst, [ 1, { a : 3 }, 1, 3 ] );
   test.identical( got, 4 );
 
   test.close( 'dst - empty array' );
@@ -20056,21 +20062,21 @@ function arrayFlattenedDefinedSets( test )
   var dst = [ 1, undefined, [ 2 ], { a : 0 } ];
   var src = new Set( [ [ [ [ 1, [ undefined ], { a : 3 }, undefined ] ] ], [ [ [ 1, [ undefined ], 3 ] ] ] ] );
   var got = _.arrayFlattenedDefined( dst, src );
-  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1, { a : 3 },  1, 3 ] );
+  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1, { a : 3 }, 1, 3 ] );
   test.identical( got, 4 );
 
   test.case = 'src - Set from dst';
   var dst = [ 1, [ undefined, [ 2 ], { a : 0 } ] ];
   var src = new Set( dst );
   var got = _.arrayFlattenedDefined( dst, src );
-  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1,  2, { a : 0 } ] );
+  test.identical( dst, [ 1, [ undefined, [ 2 ], { a : 0 } ], 1, 2, { a : 0 } ] );
   test.identical( got, 3 );
 
   test.case = 'src - Set from two dst in container';
   var dst = [ 1, undefined, [ 2 ], { a : 0 } ];
   var src = new Set( [ dst, [ dst, dst ] ] );
   var got = _.arrayFlattenedDefined( dst, src );
-  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1,  2, { a : 0 }, 1,  2, { a : 0 }, 1,  2, { a : 0 } ] );
+  test.identical( dst, [ 1, undefined, [ 2 ], { a : 0 }, 1, 2, { a : 0 }, 1, 2, { a : 0 }, 1, 2, { a : 0 } ] );
   test.identical( got, 9 );
 
   test.close( 'dst - array' );
@@ -20834,7 +20840,7 @@ function arrayFlattenedDefinedOnceStrictly( test )
 
   test.case = 'dst - array, level 2, src - array, level 2';
   var dst = [ [ 1 ], [ 2 ], [ undefined ] ];
-  var got = _.arrayFlattenedDefinedOnceStrictly( dst, [  [ 1 ], [ 2 ], [ undefined ] ] );
+  var got = _.arrayFlattenedDefinedOnceStrictly( dst, [ [ 1 ], [ 2 ], [ undefined ] ] );
   test.identical( dst, [ [ 1 ], [ 2 ], [ undefined ], 1, 2 ] );
   test.identical( got, 2 );
 
@@ -23089,7 +23095,7 @@ function arrayReplacedArray( test )
 
   var dst = [ 0, 0, 0, 1, 1, 1, 0, 1 ];
   var got = _.arrayReplacedArray( dst, [ 1, 0 ], [ 0, 1 ] );
-  test.identical( dst, [  1, 1, 1, 1, 1, 1, 1, 1 ] );
+  test.identical( dst, [ 1, 1, 1, 1, 1, 1, 1, 1 ] );
   test.identical( got, 12 );
 
   var dst = [ 'a', 'b', 'c', false, 'c', 'b', 'a', true, 2 ];
@@ -24212,7 +24218,7 @@ function arrayReplacedArrays( test )
   test.case = 'ins and sub Array of arrays with mirror elements';
   var dst = [ 1, 1, 0, 0 ];
   var got = _.arrayReplacedArrays( dst, [ [ 0, 1 ], [ 'a', 'b' ], [ true, false ] ], [ [ 1, 0 ], [ 'b', 'a' ], [ false, true ] ] );
-  test.identical( dst, [  0, 0, 0, 0 ] );
+  test.identical( dst, [ 0, 0, 0, 0 ] );
   test.identical( got, 6 );
 
   var dst = [ 'a', 'b', 'c' ];
@@ -24576,7 +24582,7 @@ function arrayReplacedArraysOnceStrictly( test )
   var dst = [ 1, 2, 3 ];
   var got = _.arrayReplacedArraysOnceStrictly( dst, [ 1, 2, 3 ], [ 4, 5, 6 ] );
   test.identical( dst, [ 4, 5, 6 ] );
-  test.identical( got, 3  );
+  test.identical( got, 3 );
 
   test.case = 'ins has undefined';
 
