@@ -3953,7 +3953,7 @@ let ToolsExtension =
   // entityMap,
   // map : entityMap,/* !!! : use instead of entityMap */
   // container.map_,
-  // map_,
+  map_,
   // entityFilter,
   // filter : entityFilter, /* !!! : use instead of entityFilter */
   // container.filter_,
