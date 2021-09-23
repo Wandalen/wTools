@@ -6130,11 +6130,11 @@ function arrayPrependArrayOnce( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ undefined, 2, 1 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayPrependArrayOnce( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ undefined, 2, 1 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -6243,11 +6243,11 @@ function arrayPrependArrayOnceStrictly( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ undefined, 2, 1 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayPrependArrayOnceStrictly( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ undefined, 2, 1 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -6313,11 +6313,11 @@ function arrayPrependArrayOnceStrictly( test )
   test.case = 'one of elements is not unique';
 
   var dst = [ 1, 2, 3 ];
+  var onErrorCallback = ( err, arg ) => test.identical( dst, [ 4, 5, 1, 2, 3 ] );
   test.shouldThrowErrorSync( function ()
   {
     _.arrayPrependArrayOnceStrictly( dst, [ 4, 5, 2 ] );
-  })
-  test.identical( dst, [ 4, 5, 1, 2, 3 ] );
+  }, onErrorCallback );
 
   var dst = [ 1, 1, 1 ];
   test.shouldThrowErrorSync( function ()
@@ -6379,11 +6379,11 @@ function arrayPrependedArray( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ undefined, 2, 1 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayPrependedArray( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ undefined, 2, 1 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -6462,11 +6462,11 @@ function arrayPrependedArrayOnce( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ undefined, 2, 1 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayPrependedArrayOnce( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ undefined, 2, 1 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src'
   var dst = [ 1, 1, 2, 2, 3, 3 ];
@@ -6574,11 +6574,11 @@ function arrayPrependedArrayOnceStrictly( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ undefined, 2, 1 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayPrependedArrayOnceStrictly( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ undefined, 2, 1 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -6881,11 +6881,11 @@ function arrayPrependArraysOnce( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 2, undefined, 1 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayPrependArraysOnce( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 2, undefined, 1 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -7040,11 +7040,11 @@ function arrayPrependArraysOnceStrictly( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 2, undefined, 1 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayPrependArraysOnceStrictly( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 2, undefined, 1 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -7153,11 +7153,11 @@ function arrayPrependArraysOnceStrictly( test )
 
   test.case = 'Same element in insArray and in dstArray';
   var dst = [ 1, 2, 3 ];
+  var onErrorCallback = ( err, arg ) => test.identical( dst, [ 5, 4, 1, 2, 3 ] );
   test.shouldThrowErrorSync( function ()
   {
     _.arrayPrependArraysOnceStrictly( dst, [ 4, 2, 5 ] );
-  })
-  test.identical( dst, [ 5, 4, 1, 2, 3 ] )
+  }, onErrorCallback );
 
   var dst = [ 1, 1, 1 ];
   test.shouldThrowErrorSync( function ()
@@ -7397,11 +7397,11 @@ function arrayPrependedArraysOnce( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 2, undefined, 1 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayPrependedArraysOnce( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 2, undefined, 1 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
@@ -7566,11 +7566,11 @@ function arrayPrependedArraysOnceStrictly( test )
 
   test.case = 'array has undefined';
   var dst = [ 1 ];
+  var onResultCallback = ( err, arg ) => test.identical( dst, [ 2, undefined, 1 ] );
   test.mustNotThrowError( function ()
   {
     _.arrayPrependedArraysOnceStrictly( dst, [ undefined, 2 ] );
-  });
-  test.identical( dst, [ 2, undefined, 1 ] );
+  }, onResultCallback );
 
   test.case = 'dst === src';
   var dst = [ 1, 2, 3 ];
