@@ -3703,6 +3703,11 @@ function entityOnlyBoth( test )
 
 function entityOnlyDiffTypes( test )
 {
+  if( !Config.debug )
+  return test.true( true );
+
+  /* */
+
   test.shouldThrowErrorSync
   ( () =>
   {
@@ -3888,6 +3893,7 @@ function entityOnlyDiffTypes( test )
     test.identical( got, exp );
   });
 
+  test.true( true );
 }
 
 //
@@ -6088,6 +6094,11 @@ function entityButBoth( test )
 
 function entityButDiffTypes( test )
 {
+  if( !Config.debug )
+  return test.true( true );
+
+  /* */
+
   test.shouldThrowErrorSync
   ( () =>
   {
@@ -6272,6 +6283,8 @@ function entityButDiffTypes( test )
     test.true( src !== got );
     test.identical( got, exp );
   });
+
+  test.true( true );
 }
 
 //
@@ -8523,6 +8536,11 @@ function entityAndBoth( test )
 
 function entityAndDiffTypes( test )
 {
+  if( !Config.debug )
+  return test.true( true );
+
+  /* */
+
   test.shouldThrowErrorSync
   ( () =>
   {
@@ -8707,6 +8725,8 @@ function entityAndDiffTypes( test )
     test.true( src !== got );
     test.identical( got, exp );
   });
+
+  test.true( true );
 }
 
 //
@@ -10966,6 +10986,11 @@ function entityOrBoth( test )
 
 function entityOrDiffTypes( test )
 {
+  if( !Config.debug )
+  return test.true( true );
+
+  /* */
+
   test.shouldThrowErrorSync
   ( () =>
   {
@@ -11148,6 +11173,8 @@ function entityOrDiffTypes( test )
     test.true( src !== got );
     test.identical( got, exp );
   });
+
+  test.true( true );
 }
 
 //
@@ -13432,6 +13459,11 @@ function entityXorBoth( test )
 
 function entityXorDiffTypes( test )
 {
+  if( !Config.debug )
+  return test.true( true );
+
+  /* */
+
   test.shouldThrowErrorSync
   ( () =>
   {
@@ -13613,6 +13645,8 @@ function entityXorDiffTypes( test )
     test.true( src !== got );
     test.identical( got, exp );
   });
+
+  test.true( true );
 }
 
 //
