@@ -2054,8 +2054,6 @@ const Proto =
 
 }
 
-/* qqq for Dmytro : this test suite fails with shoulding:0. check also other test suites */
-
 const Self = wTestSuite( Proto );
 if( typeof module !== 'undefined' && !module.parent )
 wTester.test( Self.name );
