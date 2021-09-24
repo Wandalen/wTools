@@ -3162,54 +3162,54 @@ function mapOnlyOwnBut_( dstMap, srcMap, butMap )
   return _.mapButConditional_( _.props.condition.dstNotHasSrcOwn(), ... arguments );
 }
 
+// //
 //
-
-/**
- * @typedef screenMaps
- * @property { objectLike } screenMaps.screenMap - The first object.
- * @property { ...objectLike } srcMap.arguments[1, ...] -
- * The pseudo array (arguments[]) from the first [1] index to the end.
- * @property { object } dstMap - The empty object.
- * @namespace Tools
- */
-
-/**
- * The mapOnly() returns an object filled by unique [ key, value ]
- * from others objects.
- *
- * It takes number of objects, creates a new object by three properties
- * and calls the _mapOnly( {} ) with created object.
- *
- * @see  {@link wTools._mapOnly} - See for more information.
- *
- * @param { objectLike } screenMap - The first object.
- * @param { ...objectLike } arguments[] - One or more objects.
- *
- * @example
- * _.mapOnly_( null, { a : 13, b : 77, c : 3, d : 'name' }, { d : 'name', c : 33, a : 'abc' } );
- * // returns { a : "abc", c : 33, d : "name" };
- *
- * @returns { Object } Returns the object filled by unique [ key, value ]
- * from others objects.
- * @function mapOnly
- * @throws { Error } Will throw an Error if (arguments.length < 2) or (arguments.length !== 2).
- * @namespace Tools
- */
-
-function mapOnlyOld( srcMaps, screenMaps )
-{
-  if( arguments.length === 1 )
-  return _.mapsExtend( null, srcMaps );
-
-  _.assert( arguments.length === 2, 'Expects single or two arguments' );
-
-  return _._mapOnly
-  ({
-    srcMaps,
-    screenMaps,
-    dstMap : Object.create( null ),
-  });
-}
+// /**
+//  * @typedef screenMaps
+//  * @property { objectLike } screenMaps.screenMap - The first object.
+//  * @property { ...objectLike } srcMap.arguments[1, ...] -
+//  * The pseudo array (arguments[]) from the first [1] index to the end.
+//  * @property { object } dstMap - The empty object.
+//  * @namespace Tools
+//  */
+//
+// /**
+//  * The mapOnly() returns an object filled by unique [ key, value ]
+//  * from others objects.
+//  *
+//  * It takes number of objects, creates a new object by three properties
+//  * and calls the _mapOnly( {} ) with created object.
+//  *
+//  * @see  {@link wTools._mapOnly} - See for more information.
+//  *
+//  * @param { objectLike } screenMap - The first object.
+//  * @param { ...objectLike } arguments[] - One or more objects.
+//  *
+//  * @example
+//  * _.mapOnly_( null, { a : 13, b : 77, c : 3, d : 'name' }, { d : 'name', c : 33, a : 'abc' } );
+//  * // returns { a : "abc", c : 33, d : "name" };
+//  *
+//  * @returns { Object } Returns the object filled by unique [ key, value ]
+//  * from others objects.
+//  * @function mapOnly
+//  * @throws { Error } Will throw an Error if (arguments.length < 2) or (arguments.length !== 2).
+//  * @namespace Tools
+//  */
+//
+// function mapOnlyOld( srcMaps, screenMaps )
+// {
+//   if( arguments.length === 1 )
+//   return _.mapsExtend( null, srcMaps );
+//
+//   _.assert( arguments.length === 2, 'Expects single or two arguments' );
+//
+//   return _._mapOnly
+//   ({
+//     srcMaps,
+//     screenMaps,
+//     dstMap : Object.create( null ),
+//   });
+// }
 
 //
 
@@ -3491,239 +3491,239 @@ function mapOnlyComplementing_( dstMap, srcMaps, screenMaps )
 
 }
 
+// //
 //
-
-/**
- * @callback  options.filter
- * @param { objectLike } dstMap - An empty object.
- * @param { objectLike } srcMaps - The target object.
- * @param { string } - The key of the (screenMap).
- */
-
-/**
- * The _mapOnly() returns an object filled by unique [ key, value]
- * from others objects.
- *
- * The _mapOnly() checks whether there are the keys of
- * the (screenMap) in the list of (srcMaps).
- * If true, it calls a provided callback function(filter)
- * and adds to the (dstMap) all the [ key, value ]
- * for which callback function returns true.
- *
- * @param { function } [options.filter = filter.bypass()] options.filter - The callback function.
- * @param { objectLike } options.srcMaps - The target object.
- * @param { objectLike } options.screenMaps - The source object.
- * @param { Object } [options.dstMap = Object.create( null )] options.dstMap - The empty object.
- *
- * @example
- * let options = Object.create( null );
- * options.dstMap = Object.create( null );
- * options.screenMaps = { 'a' : 13, 'b' : 77, 'c' : 3, 'name' : 'Mikle' };
- * options.srcMaps = { 'a' : 33, 'd' : 'name', 'name' : 'Mikle', 'c' : 33 };
- * _mapOnly( options );
- * // returns { a : 33, c : 33, name : "Mikle" };
- *
- * @example
- * let options = Object.create( null );
- * options.dstMap = Object.create( null );
- * options.screenMaps = { a : 13, b : 77, c : 3, d : 'name' };
- * options.srcMaps = { d : 'name', c : 33, a : 'abc' };
- * _mapOnly( options );
- * // returns { a : "abc", c : 33, d : "name" };
- *
- * @returns { Object } Returns an object filled by unique [ key, value ]
- * from others objects.
- * @function _mapOnly
- * @throws { Error } Will throw an Error if (options.dstMap or screenMap) are not objects,
- * or if (srcMaps) is not an array
- * @namespace Tools
- */
-
-/* xxx : qqq : for Dmytro : comment out */
-function _mapOnly( o )
-{
-  let self = this;
-
-  o.dstMap = o.dstMap || Object.create( null );
-  o.filter = o.filter || _.props.mapper.bypass();
-
-  _.assert( arguments.length === 1, 'Expects single options map {-o-}' );
-  _.assert( _.props.mapperIs( o.filter ), 'Expects PropertyFilter {-o.filter-}' );
-  _.assert( !_.primitive.is( o.dstMap ), 'Expects non primitive {-o.dstMap-}' );
-  _.assert( !_.primitive.is( o.screenMaps ), 'Expects non primitive {-o.screenMaps-}' );
-  _.assert( !_.primitive.is( o.srcMaps ), 'Expects non primitive {-srcMap-}' );
-  _.map.assertHasOnly( o, _mapOnly.defaults );
-
-  /* aaa : allow and cover vector */ /* Dmytro : implemented, covered */
-  if( _.countable.is( o.srcMaps ) )
-  for( let srcMap of o.srcMaps )
-  {
-    _.assert( !_.primitive.is( srcMap ), 'Expects non primitive {-srcMap-}' );
-
-    if( _.countable.is( o.screenMaps ) )
-    filterSrcMapWithVectorScreenMap( srcMap );
-    else
-    filterSrcMap( srcMap );
-  }
-  else
-  {
-    if( _.countable.is( o.screenMaps ) )
-    filterSrcMapWithVectorScreenMap( o.srcMaps );
-    else
-    filterSrcMap( o.srcMaps );
-  }
-
-  return o.dstMap;
-
-  /* */
-
-  function filterSrcMapWithVectorScreenMap( srcMap )
-  {
-    for( let key in srcMap )
-    {
-      let screenKey = screenKeySearch( key );
-      if( screenKey )
-      o.filter.call( self, o.dstMap, srcMap, screenKey );
-    }
-  }
-
-  /* */
-
-  function screenKeySearch( key )
-  {
-    if( _.argumentsArray.like( o.screenMaps ) )
-    {
-      for( let m = 0 ; m < o.screenMaps.length ; m++ )
-      if( _.primitive.is( o.screenMaps[ m ] ) )
-      {
-        if( o.screenMaps[ m ] === key )
-        return key;
-      }
-    }
-    else
-    {
-      for( let m of o.screenMaps )
-      if( _.primitive.is( m ) )
-      {
-        if( m === key )
-        return key;
-      }
-    }
-
-    // let m;
-    // if( _.argumentsArray.like( o.screenMaps ) )
-    // {
-    //   for( m = 0 ; m < o.screenMaps.length ; m++ )
-    //   if( _.vector.is( o.screenMaps[ m ] ) && key in o.screenMaps[ m ] )
-    //   return key;
-    //   else if( _.aux.is( o.screenMaps[ m ] ) && key in o.screenMaps[ m ] )
-    //   return key;
-    //   else if( _.primitive.is( o.screenMaps[ m ] ) && o.screenMaps[ m ] === key )
-    //   return key;
-    //   else if( key === String( m ) )
-    //   return key;
-    // }
-    // else
-    // {
-    //   for( m of o.screenMaps )
-    //   if( _.vector.is( m ) && key in m )
-    //   return key;
-    //   else if( _.aux.is( m ) && key in m )
-    //   return key;
-    //   else if( _.primitive.is( m ) && m === key )
-    //   return key;
-    // }
-  }
-
-  /* */
-
-  function filterSrcMap( srcMap )
-  {
-    for( let key in o.screenMaps )
-    {
-      if( o.screenMaps[ key ] === undefined )
-      continue;
-
-      if( key in srcMap )
-      o.filter.call( this, o.dstMap, srcMap, key );
-    }
-  }
-
-  // let dstMap = o.dstMap || Object.create( null );
-  // let screenMap = o.screenMaps;
-  // let srcMaps = o.srcMaps;
-  //
-  // /* aaa : for Dmytro : not optimal */ /* Dmytro : optimized */
-  // if( !_.vector.is( srcMaps ) )
-  // srcMaps = [ srcMaps ];
-  //
-  // if( !o.filter )
-  // o.filter = _.props.mapper.bypass();
-  //
-  // if( Config.debug )
-  // {
-  //
-  //   // _.assert( o.filter.functionFamily === 'PropertyMapper' );
-  //   _.assert( _.props.mapperIs( o.filter ), 'Expects PropertyFilter {-propertyCondition-}' );
-  //   _.assert( arguments.length === 1, 'Expects single argument' );
-  //   _.assert( !_.primitive.is( dstMap ), 'Expects object-like {-dstMap-}' );
-  //   _.assert( !_.primitive.is( screenMap ), 'Expects not primitive {-screenMap-}' );
-  //   _.assert( _.vector.is( srcMaps ), 'Expects array {-srcMaps-}' );
-  //   _.map.assertHasOnly( o, _mapOnly.defaults );
-  //
-  //   for( let s = srcMaps.length - 1 ; s >= 0 ; s-- )
-  //   _.assert( !_.primitive.is( srcMaps[ s ] ), 'Expects {-srcMaps-}' );
-  //
-  // }
-  //
-  // if( _.longIs( screenMap ) )
-  // {
-  //   for( let k in screenMap ) /* aaa : for Dmytro : bad */ /* Dmytro : improved, used conditions for types */
-  //   {
-  //
-  //     if( screenMap[ k ] === undefined )
-  //     continue;
-  //
-  //     let s;
-  //     for( s = srcMaps.length-1 ; s >= 0 ; s-- )
-  //     {
-  //       if( !_.aux.is( screenMap[ k ] ) && screenMap[ k ] in srcMaps[ s ] )
-  //       // k = screenMap[ k ]; /* aaa : ? */ /* Dmytro : key definition */
-  //       break;
-  //       if( k in srcMaps[ s ] )
-  //       break;
-  //     }
-  //
-  //     if( s === -1 )
-  //     continue;
-  //
-  //     o.filter.call( this, dstMap, srcMaps[ s ], k );
-  //
-  //   }
-  // }
-  // else
-  // {
-  //   for( let k in screenMap )
-  //   {
-  //     if( screenMap[ k ] === undefined )
-  //     continue;
-  //
-  //     for( let s in srcMaps )
-  //     if( k in srcMaps[ s ] )
-  //     o.filter.call( this, dstMap, srcMaps[ s ], k );
-  //   }
-  // }
-  //
-  // return dstMap;
-}
-
-_mapOnly.defaults =
-{
-  dstMap : null,
-  srcMaps : null,
-  screenMaps : null,
-  filter : null,
-}
+// /**
+//  * @callback  options.filter
+//  * @param { objectLike } dstMap - An empty object.
+//  * @param { objectLike } srcMaps - The target object.
+//  * @param { string } - The key of the (screenMap).
+//  */
+//
+// /**
+//  * The _mapOnly() returns an object filled by unique [ key, value]
+//  * from others objects.
+//  *
+//  * The _mapOnly() checks whether there are the keys of
+//  * the (screenMap) in the list of (srcMaps).
+//  * If true, it calls a provided callback function(filter)
+//  * and adds to the (dstMap) all the [ key, value ]
+//  * for which callback function returns true.
+//  *
+//  * @param { function } [options.filter = filter.bypass()] options.filter - The callback function.
+//  * @param { objectLike } options.srcMaps - The target object.
+//  * @param { objectLike } options.screenMaps - The source object.
+//  * @param { Object } [options.dstMap = Object.create( null )] options.dstMap - The empty object.
+//  *
+//  * @example
+//  * let options = Object.create( null );
+//  * options.dstMap = Object.create( null );
+//  * options.screenMaps = { 'a' : 13, 'b' : 77, 'c' : 3, 'name' : 'Mikle' };
+//  * options.srcMaps = { 'a' : 33, 'd' : 'name', 'name' : 'Mikle', 'c' : 33 };
+//  * _mapOnly( options );
+//  * // returns { a : 33, c : 33, name : "Mikle" };
+//  *
+//  * @example
+//  * let options = Object.create( null );
+//  * options.dstMap = Object.create( null );
+//  * options.screenMaps = { a : 13, b : 77, c : 3, d : 'name' };
+//  * options.srcMaps = { d : 'name', c : 33, a : 'abc' };
+//  * _mapOnly( options );
+//  * // returns { a : "abc", c : 33, d : "name" };
+//  *
+//  * @returns { Object } Returns an object filled by unique [ key, value ]
+//  * from others objects.
+//  * @function _mapOnly
+//  * @throws { Error } Will throw an Error if (options.dstMap or screenMap) are not objects,
+//  * or if (srcMaps) is not an array
+//  * @namespace Tools
+//  */
+//
+// /* xxx : qqq : for Dmytro : comment out */ /* aaa : Dmytro : done */
+// function _mapOnly( o )
+// {
+//   let self = this;
+//
+//   o.dstMap = o.dstMap || Object.create( null );
+//   o.filter = o.filter || _.props.mapper.bypass();
+//
+//   _.assert( arguments.length === 1, 'Expects single options map {-o-}' );
+//   _.assert( _.props.mapperIs( o.filter ), 'Expects PropertyFilter {-o.filter-}' );
+//   _.assert( !_.primitive.is( o.dstMap ), 'Expects non primitive {-o.dstMap-}' );
+//   _.assert( !_.primitive.is( o.screenMaps ), 'Expects non primitive {-o.screenMaps-}' );
+//   _.assert( !_.primitive.is( o.srcMaps ), 'Expects non primitive {-srcMap-}' );
+//   _.map.assertHasOnly( o, _mapOnly.defaults );
+//
+//   /* aaa : allow and cover vector */ /* Dmytro : implemented, covered */
+//   if( _.countable.is( o.srcMaps ) )
+//   for( let srcMap of o.srcMaps )
+//   {
+//     _.assert( !_.primitive.is( srcMap ), 'Expects non primitive {-srcMap-}' );
+//
+//     if( _.countable.is( o.screenMaps ) )
+//     filterSrcMapWithVectorScreenMap( srcMap );
+//     else
+//     filterSrcMap( srcMap );
+//   }
+//   else
+//   {
+//     if( _.countable.is( o.screenMaps ) )
+//     filterSrcMapWithVectorScreenMap( o.srcMaps );
+//     else
+//     filterSrcMap( o.srcMaps );
+//   }
+//
+//   return o.dstMap;
+//
+//   /* */
+//
+//   function filterSrcMapWithVectorScreenMap( srcMap )
+//   {
+//     for( let key in srcMap )
+//     {
+//       let screenKey = screenKeySearch( key );
+//       if( screenKey )
+//       o.filter.call( self, o.dstMap, srcMap, screenKey );
+//     }
+//   }
+//
+//   /* */
+//
+//   function screenKeySearch( key )
+//   {
+//     if( _.argumentsArray.like( o.screenMaps ) )
+//     {
+//       for( let m = 0 ; m < o.screenMaps.length ; m++ )
+//       if( _.primitive.is( o.screenMaps[ m ] ) )
+//       {
+//         if( o.screenMaps[ m ] === key )
+//         return key;
+//       }
+//     }
+//     else
+//     {
+//       for( let m of o.screenMaps )
+//       if( _.primitive.is( m ) )
+//       {
+//         if( m === key )
+//         return key;
+//       }
+//     }
+//
+//     // let m;
+//     // if( _.argumentsArray.like( o.screenMaps ) )
+//     // {
+//     //   for( m = 0 ; m < o.screenMaps.length ; m++ )
+//     //   if( _.vector.is( o.screenMaps[ m ] ) && key in o.screenMaps[ m ] )
+//     //   return key;
+//     //   else if( _.aux.is( o.screenMaps[ m ] ) && key in o.screenMaps[ m ] )
+//     //   return key;
+//     //   else if( _.primitive.is( o.screenMaps[ m ] ) && o.screenMaps[ m ] === key )
+//     //   return key;
+//     //   else if( key === String( m ) )
+//     //   return key;
+//     // }
+//     // else
+//     // {
+//     //   for( m of o.screenMaps )
+//     //   if( _.vector.is( m ) && key in m )
+//     //   return key;
+//     //   else if( _.aux.is( m ) && key in m )
+//     //   return key;
+//     //   else if( _.primitive.is( m ) && m === key )
+//     //   return key;
+//     // }
+//   }
+//
+//   /* */
+//
+//   function filterSrcMap( srcMap )
+//   {
+//     for( let key in o.screenMaps )
+//     {
+//       if( o.screenMaps[ key ] === undefined )
+//       continue;
+//
+//       if( key in srcMap )
+//       o.filter.call( this, o.dstMap, srcMap, key );
+//     }
+//   }
+//
+//   // let dstMap = o.dstMap || Object.create( null );
+//   // let screenMap = o.screenMaps;
+//   // let srcMaps = o.srcMaps;
+//   //
+//   // /* aaa : for Dmytro : not optimal */ /* Dmytro : optimized */
+//   // if( !_.vector.is( srcMaps ) )
+//   // srcMaps = [ srcMaps ];
+//   //
+//   // if( !o.filter )
+//   // o.filter = _.props.mapper.bypass();
+//   //
+//   // if( Config.debug )
+//   // {
+//   //
+//   //   // _.assert( o.filter.functionFamily === 'PropertyMapper' );
+//   //   _.assert( _.props.mapperIs( o.filter ), 'Expects PropertyFilter {-propertyCondition-}' );
+//   //   _.assert( arguments.length === 1, 'Expects single argument' );
+//   //   _.assert( !_.primitive.is( dstMap ), 'Expects object-like {-dstMap-}' );
+//   //   _.assert( !_.primitive.is( screenMap ), 'Expects not primitive {-screenMap-}' );
+//   //   _.assert( _.vector.is( srcMaps ), 'Expects array {-srcMaps-}' );
+//   //   _.map.assertHasOnly( o, _mapOnly.defaults );
+//   //
+//   //   for( let s = srcMaps.length - 1 ; s >= 0 ; s-- )
+//   //   _.assert( !_.primitive.is( srcMaps[ s ] ), 'Expects {-srcMaps-}' );
+//   //
+//   // }
+//   //
+//   // if( _.longIs( screenMap ) )
+//   // {
+//   //   for( let k in screenMap ) /* aaa : for Dmytro : bad */ /* Dmytro : improved, used conditions for types */
+//   //   {
+//   //
+//   //     if( screenMap[ k ] === undefined )
+//   //     continue;
+//   //
+//   //     let s;
+//   //     for( s = srcMaps.length-1 ; s >= 0 ; s-- )
+//   //     {
+//   //       if( !_.aux.is( screenMap[ k ] ) && screenMap[ k ] in srcMaps[ s ] )
+//   //       // k = screenMap[ k ]; /* aaa : ? */ /* Dmytro : key definition */
+//   //       break;
+//   //       if( k in srcMaps[ s ] )
+//   //       break;
+//   //     }
+//   //
+//   //     if( s === -1 )
+//   //     continue;
+//   //
+//   //     o.filter.call( this, dstMap, srcMaps[ s ], k );
+//   //
+//   //   }
+//   // }
+//   // else
+//   // {
+//   //   for( let k in screenMap )
+//   //   {
+//   //     if( screenMap[ k ] === undefined )
+//   //     continue;
+//   //
+//   //     for( let s in srcMaps )
+//   //     if( k in srcMaps[ s ] )
+//   //     o.filter.call( this, dstMap, srcMaps[ s ], k );
+//   //   }
+//   // }
+//   //
+//   // return dstMap;
+// }
+//
+// _mapOnly.defaults =
+// {
+//   dstMap : null,
+//   srcMaps : null,
+//   screenMaps : null,
+//   filter : null,
+// }
 
 //
 
@@ -5763,14 +5763,14 @@ let Extension =
   mapOnlyOwnButOld, /* !!! : use instead of mapOnlyOwnBut */ /* Dmytro : covered, coverage is more complex */
   mapOnlyOwnBut_, /* qqq : make it accept null in the first argument */
 
-  mapOnlyOld, /* !!! : use instead of mapOnly */ /* Dmytro : covered, coverage is more complex */
+  // mapOnlyOld, /* !!! : use instead of mapOnly */ /* Dmytro : covered, coverage is more complex */
   mapOnly_,  /* qqq : make it accept null in the first argument */
   // mapOnlyOwn, /* !!! : use instead of mapOnlyOwn */ /* Dmytro : covered, coverage is more complex */
   mapOnlyOwn_, /* qqq : make it accept null in the first argument */
   /* qqq : cover */
   // mapOnlyComplementing, /* !!! : use instead of mapOnlyComplementing */ /* Dmytro : covered, coverage is more complex */
   mapOnlyComplementing_, /* qqq : make it accept null in the first argument */
-  _mapOnly, /* xxx : qqq : comment out */
+  // _mapOnly, /* xxx : qqq : comment out */ /* aaa : Dmytro : done */
   _mapOnly_VerifyMapFields,
   _mapOnly_FilterFunctor,
   _screenMapSearchingRoutineFunctor,
