@@ -11,7 +11,7 @@ path = "rust/wtools/mod.rs"
 
 [[test]]
 name = "wtools-test"
-path = "rust/test/common_list.rs"
+path = "rust/test/mod.rs"
 
 [dependencies]
 regex = "1.5.4"

@@ -292,4 +292,3 @@ impl<T : PartialEq> left_index<T>
     None
   }
 }
-
