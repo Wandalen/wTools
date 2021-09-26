@@ -2,6 +2,7 @@
 #![ allow( unused_variables ) ]
 #![ allow( non_camel_case_types ) ]
 
+use super::*;
 use regex::Regex;
 
 pub fn regexp_is( src : &str ) -> bool
@@ -14,18 +15,18 @@ pub fn regexp_is( src : &str ) -> bool
 
 pub struct split<'a>
 {
-  pub src : String,
-  pub delimeter : Vec<&'a str>,
-  pub preserving_empty : bool,
-  pub preserving_delimeters : bool,
-  pub preserving_quoting : bool,
-  pub inlining_quoting : bool,
-  pub stripping : bool,
-  pub quoting : bool,
-  pub quoting_prefixes : Vec<&'a str>,
-  pub quoting_postfixes : Vec<&'a str>,
-  pub on_delimeter : Option<fn( &'a str, usize, &'a str ) -> &'a str>,
-  pub on_quote : Option<fn( &'a str, usize, &'a str ) -> &'a str>,
+  src : String,
+  delimeter : Vec<&'a str>,
+  preserving_empty : bool,
+  preserving_delimeters : bool,
+  preserving_quoting : bool,
+  inlining_quoting : bool,
+  stripping : bool,
+  quoting : bool,
+  quoting_prefixes : Vec<&'a str>,
+  quoting_postfixes : Vec<&'a str>,
+  on_delimeter : Option<fn( &String, usize, &Vec<&'a str> ) -> String>,
+  on_quote : Option<fn( &String, usize, &Vec<&'a str> ) -> String>,
   formed : u8,
 }
 
@@ -145,7 +146,7 @@ impl<'a> split<'a> /* Dmytro : dubious, need to use traits */
 
   //
 
-  pub fn on_delimeter( &mut self, on_delimeter : fn( &'a str, usize, &'a str ) -> &'a str ) -> &mut Self
+  pub fn on_delimeter( &mut self, on_delimeter : fn( &String, usize, &Vec<&'a str> ) -> String ) -> &mut Self
   {
     assert!( self.formed == 0, "Context is already formed" );
     self.on_delimeter = Some( on_delimeter );
@@ -154,7 +155,7 @@ impl<'a> split<'a> /* Dmytro : dubious, need to use traits */
 
   //
 
-  pub fn on_quote( &mut self, on_quote : fn( &'a str, usize, &'a str ) -> &'a str ) -> &mut Self
+  pub fn on_quote( &mut self, on_quote : fn( &String, usize, &Vec<&'a str> ) -> String ) -> &mut Self
   {
     assert!( self.formed == 0, "Context is already formed" );
     self.on_quote = Some( on_quote );
@@ -174,15 +175,110 @@ impl<'a> split<'a> /* Dmytro : dubious, need to use traits */
 
 pub fn split( o : &split ) -> Vec<String>
 {
-
+  let mut fast_options = split_fast::from( &o );
   if o.stripping && !o.quoting && o.on_delimeter.is_none()
   {
-    let opts = split_fast::from( &o );
-    return split_fast( &opts );
+    return split_fast( &fast_options );
   }
 
-  let mut result : Vec<String> = vec![];
-  result
+  /* */
+
+  if o.quoting
+  {
+    let mut appender: vector::append_vectors_once<&str> = vector::append_vectors_once::default();
+    appender.src( vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone(), o.delimeter.clone() ] );
+    fast_options.delimeter( appender.call() );
+  }
+
+  fast_options.preserving_empty( true );
+  fast_options.preserving_delimeters( true );
+
+  let mut splits = split_fast( &fast_options );
+
+  if o.quoting && o.on_quote.is_some()
+  {
+    let on_quote = o.on_quote.unwrap();
+    let mut appender : vector::append_vectors_once<&str> = vector::append_vectors_once::default();
+    appender.src( vec![ o.quoting_prefixes.clone(), o.quoting_postfixes.clone() ] );
+    let quotes : Vec<_> = appender.call();
+
+    let mut indexer : vector::left_index<&str> = vector::left_index::default();
+    indexer.on_equalize( equalize_strings );
+    indexer.src( quotes.clone() );
+
+    let clone = splits.clone();
+
+    for i in 0..splits.len()
+    {
+      let index = indexer.ins( &clone[ i ].as_str() ).call();
+      if index.is_some()
+      {
+        splits[ i ] = on_quote( &splits[ i ], index.unwrap(), &quotes );
+      }
+    }
+  }
+
+  if o.on_delimeter.is_some()
+  {
+    unimplemented!( "not implemented" );
+    // let on_delimeter = o.on_delimeter.unwrap();
+    // let delimeter = o.delimeter.iter()
+    // .filter( | pattern |
+    // {
+    //   if regexp_is( pattern )
+    //   {
+    //     unimplemented!( "not implemented" );
+    //   }
+    //   true
+    // })
+    // .map( | x | *x ).collect::<Vec<_>>();
+    // let delimeter = delimeter.iter().map( | &x | x.to_string() ).collect();
+    //
+    // for i in 0..splits.len()
+    // {
+    //   let index = vector::left_index( &delimeter, &splits[ i ], Some( equalize_strings ) );
+    //   if index.is_some()
+    //   {
+    //     splits[ i ] = on_delimeter( &splits[ i ], index.unwrap(), &o.delimeter.iter().map( | x | x.to_string() ).collect() );
+    //   }
+    // }
+  }
+
+  if o.quoting
+  {
+    unimplemented!( "not implemented splitsQuotedRejoin" );
+  }
+
+  if !o.preserving_delimeters
+  {
+    unimplemented!( "not implemented splitsDropDelimeters" );
+  }
+
+  if o.stripping
+  {
+    unimplemented!( "not implemented splitsStrip" );
+  }
+
+  if !o.preserving_empty
+  {
+    unimplemented!( "not implemented splitsDropEmpty" );
+  }
+
+  return splits;
+
+  /* */
+
+  fn equalize_strings( pattern : &&str, el : &&str ) -> bool
+  {
+    if regexp_is( pattern )
+    {
+      unimplemented!( "not implemented for regexp" );
+    }
+    else
+    {
+      return pattern == el;
+    }
+  }
 }
 
 //
@@ -223,7 +319,7 @@ impl<'a> split_fast<'a>
       delimeter : o.delimeter.clone(),
       preserving_empty : o.preserving_empty,
       preserving_delimeters : o.preserving_delimeters,
-      formed : o.formed,
+      formed : 0,
     };
     opts
   }
