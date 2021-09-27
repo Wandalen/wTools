@@ -3627,62 +3627,50 @@ function routineExtendWithDstIsNull( test )
 
 //
 
+function routineExtendWithSingleDst( test )
+{
+  act({ method : 'extendCloning' });
+  act({ method : 'extendInheriting' });
+  act({ method : 'extendReplacing' });
+
+  /* */
+
+  function act( env )
+  {
+    test.case = 'single dst';
+    var r = ( arg ) => arg;
+    var got = _.routine[ env.method ]( r );
+    test.identical( got, r );
+
+    test.case = 'single dst is routine, has properties';
+    var r = ( arg ) => arg;
+    r.a = 0;
+    r.b = 3;
+    var got = _.routine[ env.method ]( r );
+    test.identical( got, r );
+    test.identical( got.a, 0 );
+    test.identical( got.b, 3 );
+
+    test.case = 'single dst is routine, has hiden properties';
+    var r = ( arg ) => arg;
+    var props =
+    {
+      a : { value : 0, enumerable : true, writable : false },
+      b : { value : { a : 2 }, enumerable : false, writable : false },
+    };
+    Object.defineProperties( r, props );
+    var got = _.routine[ env.method ]( r );
+    test.identical( got, r );
+    test.identical( _.props.keys( got ), [ 'a' ] );
+    test.identical( got.a, 0 );
+    test.identical( got.b, { a : 2 } );
+  }
+}
+
+//
+
 function routineExtend( test )
 {
-  test.open( 'single dst');
-
-  test.case = 'single dst';
-  var dst = ( o ) =>
-  {
-  }
-  var got = _.routine.extend( dst );
-  test.identical( got, dst );
-  test.identical( typeof got, 'function' );
-
-  test.case = 'single dst is routine, has properties';
-  var dst = ( o ) =>
-  {
-  };
-  dst.a = 0;
-  dst.b = 3;
-  dst.c = 'c';
-  var got = _.routine.extend( dst );
-  test.identical( got, dst );
-  test.identical( typeof got, 'function' );
-  test.identical( got.a, 0 );
-  test.identical( got.b, 3 );
-  test.identical( got.c, 'c' );
-
-  test.case = 'single dst is routine, has hiden properties';
-  var dst = ( o ) =>
-  {
-  };
-  var props =
-  {
-    'a' :
-    {
-      value : 0,
-      enumerable : true,
-      writable : false,
-    },
-    'b' :
-    {
-      value : { a : 2 },
-      enumerable : false,
-      writable : false,
-    }
-  };
-  Object.defineProperties( dst, props );
-  var got = _.routine.extend( dst );
-  test.identical( got, dst );
-  test.identical( typeof got, 'function' );
-  test.identical( got.a, 0 );
-  test.identical( got.b, { a : 2 } );
-  var got = Object.getOwnPropertyDescriptor( got, 'b' );
-  test.false( got.enumerable );
-
-  test.close( 'single dst');
-
   test.case = 'dst has properties, src map has different properties';
   var dst = ( o ) =>
   {
@@ -5028,6 +5016,7 @@ const Proto =
 
     /* routineExtend_old, */
     routineExtendWithDstIsNull,
+    routineExtendWithSingleDst,
     routineExtend,
     extendSpecial,
     extendBodyInstanicing,
