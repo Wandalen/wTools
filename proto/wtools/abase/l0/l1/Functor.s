@@ -631,7 +631,7 @@ vectorize_body.defaults =
   propertyCondition : null,
   bypassingFilteredOut : 1,
   bypassingEmpty : 0,
-  vectorizingArray : 1, /* qqq2 : for Dmytro : add option vectorizingCountable : 1. discuss */
+  vectorizingArray : 1, /* xxx : review : add option vectorizingCountable : 1. discuss */
   vectorizingMapVals : 0,
   vectorizingMapKeys : 0,
   vectorizingContainerAdapter : 0,
