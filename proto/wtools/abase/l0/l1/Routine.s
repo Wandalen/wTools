@@ -955,15 +955,16 @@ _verifyDefaults.meta.locals =
 // --
 
 /* qqq : for Dmytro : cover and optimize */
+
 function _amend( o )
 {
   let dst = o.dst;
   let srcs = o.srcs;
-  let srcIsVector = _.vectorIs( srcs );
+  let srcIsVector = _.vector.is( srcs );
   let extended = false;
 
-  _.routine.assertOptions( _amend, o );
   _.assert( arguments.length === 1 );
+  _.routine.assertOptions( _amend, o );
   _.assert( _.routine.is( dst ) || dst === null );
   _.assert( srcs === null || srcs === undefined || _.aux.is( srcs ) || _.routine.is( srcs ) || _.vector.is( srcs ) );
   _.assert( o.amending === 'extending', 'not implemented' );
@@ -977,13 +978,6 @@ function _amend( o )
 
   if( dst === null ) /* qqq : for Dmytro : good coverage required */
   dst = _dstMake( srcs );
-
-  // /* shallow clone properties of dst routine */
-  //
-  // if( o.strategy === 'cloning' )
-  // _fieldsClone( dst );
-  // else if( o.strategy === 'inheriting' )
-  // _fieldsInherit( dst );
 
   /* extend dst routine */
 
@@ -1006,7 +1000,6 @@ function _amend( o )
   check and cover it by good test, please
   */
   if( extended )
-  // if( dst.body && dst.body.defaults )
   if( dst.body )
   dst.body = bodyFrom( dst.body );
 
@@ -1046,10 +1039,10 @@ function _amend( o )
       _.props.extend( dstMap, srcs );
     }
 
+    let dstRoutine = null;
     if( dstMap.body )
     {
-      // dst = _.routine.uniteCloning( dstMap.head, dstMap.body );
-      dst = _.routine.unite
+      dstRoutine = _.routine.unite
       ({
         head : dstMap.head || null,
         body : dstMap.body || null,
@@ -1061,50 +1054,15 @@ function _amend( o )
     else
     {
       if( srcIsVector )
-      dst = dstFrom( srcs[ 0 ] );
+      dstRoutine = dstFrom( srcs[ 0 ] );
       else
-      dst = dstFrom( srcs );
+      dstRoutine = dstFrom( srcs );
     }
 
-    _.assert( _.routineIs( dst ) );
-    // _.props.extend( dst, dstMap );
+    _.assert( _.routine.is( dstRoutine ) );
 
-    return dst;
+    return dstRoutine;
   }
-
-  /* */
-
-  // function _fieldsClone( dst )
-  // {
-  //
-  //   for( let s in dst )
-  //   {
-  //     let property = dst[ s ];
-  //     if( _.object.isBasic( property ) )
-  //     {
-  //       property = _.props.extend( null, property );
-  //       dst[ s ] = property;
-  //     }
-  //   }
-  //
-  // }
-  //
-  // /* */
-  //
-  // function _fieldsInherit( dst )
-  // {
-  //
-  //   for( let s in dst )
-  //   {
-  //     let property = dst[ s ];
-  //     if( _.object.isBasic( property ) )
-  //     {
-  //       property = Object.create( property );
-  //       dst[ s ] = property;
-  //     }
-  //   }
-  //
-  // }
 
   /* */
 
@@ -1129,10 +1087,6 @@ function _amend( o )
         _.props.extend( dst[ s ], property );
         else
         dst[ s ] = property = _.props.extend( null, property );
-
-        // property = _.props.extend( null, property );
-        // if( dst[ s ] )
-        // _.props.supplement( property, dst[ s ] );
       }
       else
       {
@@ -1198,11 +1152,9 @@ function _amend( o )
     _.assert( body.tail === undefined, 'Body should not have own tail' );
     _.assert( body.body === undefined, 'Body should not have own body' );
     {
-      // let srcs = srcIsVector ? _.map_( null, o.srcs, ( src ) => propertiesBut( src ) ) : [ propertiesBut( o.srcs ) ];
       let srcs;
       if( srcIsVector )
       {
-        // debugger;
         srcs = o.srcs.map( (src ) => propertiesBut( src ) );
       }
       else
@@ -1233,8 +1185,7 @@ function _amend( o )
     let result = _.props.extend( null, src );
     delete result.head;
     delete result.body;
-    delete result.taul;
-    // return src ? _.mapBut_( null, src, [ 'head', 'body', 'tail' ] ) : src;
+    delete result.tail;
     return result;
   }
 
@@ -1271,10 +1222,328 @@ function _amend( o )
   {
     return routineClone( routine );
   }
-
-  /* */
-
 }
+
+// function _amend( o )
+// {
+//   let dst = o.dst;
+//   let srcs = o.srcs;
+//   let srcIsVector = _.vectorIs( srcs );
+//   let extended = false;
+//
+//   _.routine.assertOptions( _amend, o );
+//   _.assert( arguments.length === 1 );
+//   _.assert( _.routine.is( dst ) || dst === null );
+//   _.assert( srcs === null || srcs === undefined || _.aux.is( srcs ) || _.routine.is( srcs ) || _.vector.is( srcs ) );
+//   _.assert( o.amending === 'extending', 'not implemented' );
+//   _.assert
+//   (
+//     o.strategy === 'cloning' || o.strategy === 'replacing' || o.strategy === 'inheriting',
+//     () => `Unknown strategy ${o.strategy}`
+//   );
+//
+//   /* generate dst routine */
+//
+//   if( dst === null ) /* qqq : for Dmytro : good coverage required */
+//   dst = _dstMake( srcs );
+//
+//   // /* shallow clone properties of dst routine */
+//   //
+//   // if( o.strategy === 'cloning' )
+//   // _fieldsClone( dst );
+//   // else if( o.strategy === 'inheriting' )
+//   // _fieldsInherit( dst );
+//
+//   /* extend dst routine */
+//
+//   let _dstAmend;
+//   if( o.strategy === 'cloning' )
+//   _dstAmend = _dstAmendCloning;
+//   else if( o.strategy === 'replacing' )
+//   _dstAmend = _dstAmendReplacing;
+//   else if( o.strategy === 'inheriting' )
+//   _dstAmend = _dstAmendInheriting;
+//   else _.assert( 0, 'not implemented' );
+//
+//   if( srcIsVector )
+//   for( let src of srcs )
+//   _dstAmend( dst, src );
+//   else
+//   _dstAmend( dst, srcs );
+//
+//   /* qqq : for Dmytro : it should be optimal, no redundant cloning of body should happen
+//   check and cover it by good test, please
+//   */
+//   if( extended )
+//   // if( dst.body && dst.body.defaults )
+//   if( dst.body )
+//   dst.body = bodyFrom( dst.body );
+//
+//   if( Config.debug )
+//   {
+//     /* qqq : for Dmytro : cover, please */
+//     if( _.strEnds( dst.name, '_body' ) )
+//     {
+//       _.assert( dst.body === undefined, 'Body of routine should not have its own body' );
+//       _.assert( dst.head === undefined, 'Body of routine should not have its own head' );
+//       _.assert( dst.tail === undefined, 'Body of routine should not have its own tail' );
+//     }
+//     // xxx : uncomment?
+//     // if( dst.defaults )
+//     // _.routine._verifyDefaults( dst.defaults );
+//   }
+//
+//   return dst;
+//
+//   /* */
+//
+//   function _dstMake( srcs )
+//   {
+//     let dstMap = Object.create( null );
+//
+//     /* qqq : option amendment influence on it */
+//     if( srcIsVector )
+//     for( let src of srcs )
+//     {
+//       if( src === null )
+//       continue;
+//       _.props.extend( dstMap, src );
+//     }
+//     else
+//     {
+//       if( srcs !== null )
+//       _.props.extend( dstMap, srcs );
+//     }
+//
+//     if( dstMap.body )
+//     {
+//       // dst = _.routine.uniteCloning( dstMap.head, dstMap.body );
+//       dst = _.routine.unite
+//       ({
+//         head : dstMap.head || null,
+//         body : dstMap.body || null,
+//         tail : dstMap.tail || null,
+//         name : dstMap.name || null,
+//         strategy : o.strategy,
+//       });
+//     }
+//     else
+//     {
+//       if( srcIsVector )
+//       dst = dstFrom( srcs[ 0 ] );
+//       else
+//       dst = dstFrom( srcs );
+//     }
+//
+//     _.assert( _.routineIs( dst ) );
+//     // _.props.extend( dst, dstMap );
+//
+//     return dst;
+//   }
+//
+//   /* */
+//
+//   // function _fieldsClone( dst )
+//   // {
+//   //
+//   //   for( let s in dst )
+//   //   {
+//   //     let property = dst[ s ];
+//   //     if( _.object.isBasic( property ) )
+//   //     {
+//   //       property = _.props.extend( null, property );
+//   //       dst[ s ] = property;
+//   //     }
+//   //   }
+//   //
+//   // }
+//   //
+//   // /* */
+//   //
+//   // function _fieldsInherit( dst )
+//   // {
+//   //
+//   //   for( let s in dst )
+//   //   {
+//   //     let property = dst[ s ];
+//   //     if( _.object.isBasic( property ) )
+//   //     {
+//   //       property = Object.create( property );
+//   //       dst[ s ] = property;
+//   //     }
+//   //   }
+//   //
+//   // }
+//
+//   /* */
+//
+//   function _dstAmendCloning( dst, src )
+//   {
+//     _.assert( !!dst );
+//     _.assert( _.aux.is( src ) || _.routine.is( src ) );
+//     for( let s in src )
+//     {
+//       let property = src[ s ];
+//       if( dst[ s ] === property )
+//       continue;
+//       let d = Object.getOwnPropertyDescriptor( dst, s );
+//       if( d && !d.writable )
+//       continue;
+//       extended = true;
+//       if( _.object.isBasic( property ) )
+//       {
+//         _.assert( !_.props.own( dst, s ) || _.object.isBasic( dst[ s ] ) );
+//
+//         if( dst[ s ] )
+//         _.props.extend( dst[ s ], property );
+//         else
+//         dst[ s ] = property = _.props.extend( null, property );
+//
+//         // property = _.props.extend( null, property );
+//         // if( dst[ s ] )
+//         // _.props.supplement( property, dst[ s ] );
+//       }
+//       else
+//       {
+//         dst[ s ] = property;
+//       }
+//     }
+//   }
+//
+//   /* */
+//
+//   function _dstAmendInheriting( dst, src )
+//   {
+//     _.assert( !!dst );
+//     _.assert( _.aux.is( src ) || _.routine.is( src ) );
+//     /* qqq : for Dmytro : on extending should inherit from the last one, on supplementing should inherit from the first one
+//     implement, and cover in separate test
+//     */
+//     for( let s in src )
+//     {
+//       let property = src[ s ];
+//       if( dst[ s ] === property )
+//       continue;
+//       let d = Object.getOwnPropertyDescriptor( dst, s );
+//       if( d && !d.writable )
+//       continue;
+//       extended = true;
+//       if( _.object.isBasic( property ) )
+//       {
+//         property = Object.create( property );
+//         if( dst[ s ] )
+//         _.props.supplement( property, dst[ s ] );
+//       }
+//       dst[ s ] = property;
+//     }
+//   }
+//
+//   /* */
+//
+//   function _dstAmendReplacing( dst, src )
+//   {
+//     _.assert( !!dst );
+//     _.assert( _.aux.is( src ) || _.routine.is( src ) );
+//     for( let s in src )
+//     {
+//       let property = src[ s ];
+//       if( dst[ s ] === property )
+//       continue;
+//       let d = Object.getOwnPropertyDescriptor( dst, s );
+//       if( d && !d.writable )
+//       continue;
+//       extended = true;
+//       dst[ s ] = property;
+//     }
+//   }
+//
+//   /* */
+//
+//   function bodyFrom()
+//   {
+//     const body = dst.body;
+//     let body2 = body;
+//     _.assert( body.head === undefined, 'Body should not have own head' );
+//     _.assert( body.tail === undefined, 'Body should not have own tail' );
+//     _.assert( body.body === undefined, 'Body should not have own body' );
+//     {
+//       // let srcs = srcIsVector ? _.map_( null, o.srcs, ( src ) => propertiesBut( src ) ) : [ propertiesBut( o.srcs ) ];
+//       let srcs;
+//       if( srcIsVector )
+//       {
+//         // debugger;
+//         srcs = o.srcs.map( (src ) => propertiesBut( src ) );
+//       }
+//       else
+//       {
+//         srcs = [ propertiesBut( o.srcs ) ];
+//       }
+//       srcs.unshift( body );
+//       body2 = _.routine._amend
+//       ({
+//         dst : o.strategy === 'replacing' ? body2 : null,
+//         srcs,
+//         strategy : o.strategy,
+//         amending : o.amending,
+//       });
+//       _.assert( body2.head === undefined, 'Body should not have own head' );
+//       _.assert( body2.tail === undefined, 'Body should not have own tail' );
+//       _.assert( body2.body === undefined, 'Body should not have own body' );
+//     }
+//     return body2;
+//   }
+//
+//   /* */
+//
+//   function propertiesBut( src )
+//   {
+//     if( !src )
+//     return src;
+//     let result = _.props.extend( null, src );
+//     delete result.head;
+//     delete result.body;
+//     delete result.taul;
+//     // return src ? _.mapBut_( null, src, [ 'head', 'body', 'tail' ] ) : src;
+//     return result;
+//   }
+//
+//   /* */
+//
+//   /* xxx : make routine? */
+//   function routineClone( routine )
+//   {
+//     _.assert( _.routine.is( routine ) );
+//     let name = routine.name;
+//     // const routine2 = routine.bind();
+//     // _.assert( routine2 !== routine );
+//     const routine2 =
+//     ({
+//       [ name ] : function()
+//       {
+//         return routine.apply( this, arguments );
+//       }
+//     })[ name ];
+//
+//     let o2 =
+//     {
+//       value : routine,
+//       enumerable : false,
+//     };
+//     Object.defineProperty( routine2, 'originalRoutine', o2 ); /* qqq : for Dmytro : cover */
+//
+//     return routine2;
+//   }
+//
+//   /* */
+//
+//   function dstFrom( routine )
+//   {
+//     return routineClone( routine );
+//   }
+//
+//   /* */
+//
+// }
 
 _amend.defaults =
 {
