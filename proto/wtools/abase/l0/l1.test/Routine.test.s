@@ -3669,6 +3669,130 @@ function routineExtendWithSingleDst( test )
 
 //
 
+function routineExtendWithDstIsSimpleRoutine( test )
+{
+  act({ method : 'extendCloning' });
+  act({ method : 'extendInheriting' });
+  act({ method : 'extendReplacing' });
+
+  /* */
+
+  function act( env )
+  {
+    test.case = `${__.entity.exportStringSolo( env )}, srcs is routine with no props`;
+    var dst = () => 'dst';
+    var r = ( arg ) => arg;
+    var got = _.routine[ env.method ]( dst, r );
+    test.true( _.routine.is( got ) );
+    test.identical( got( 'str' ), 'dst' );
+    test.identical( _.props.keys( got ), [] );
+    test.identical( got.originalRoutine, undefined );
+
+    test.case = `${__.entity.exportStringSolo( env )}, srcs is routine with its own props`;
+    var dst = () => 'dst';
+    var r = ( arg ) => arg;
+    r.original = 0;
+    var got = _.routine[ env.method ]( dst, r );
+    test.true( _.routine.is( got ) );
+    test.identical( got( 'str' ), 'dst' );
+    test.identical( _.props.keys( got ), [ 'original' ] );
+    test.identical( got.original, 0 );
+    test.identical( got.originalRoutine, undefined );
+
+    test.case = `${__.entity.exportStringSolo( env )}, srcs is map`;
+    var dst = () => 'dst';
+    var r = { original : 0 };
+    var got = _.routine[ env.method ]( dst, r );
+    test.true( _.routine.is( got ) );
+    test.identical( got( 'str' ), 'dst' );
+    test.identical( _.props.keys( got ), [ 'original' ] );
+    test.identical( got.original, 0 );
+    test.identical( got.originalRoutine, undefined );
+
+    test.case = `${__.entity.exportStringSolo( env )}, srcs is vector with routine and map with properties, first is routine`;
+    var dst = () => 'dst';
+    var r1 = ( arg ) => arg;
+    r1.original1 = 0;
+    var r2 = Object.create( null );
+    r2.original2 = 1;
+    var got = _.routine[ env.method ]( dst, r1, r2 );
+    test.true( _.routine.is( got ) );
+    test.identical( _.props.keys( got ), [ 'original1', 'original2' ] );
+    test.identical( got.original1, 0 );
+    test.identical( got.original2, 1 );
+    test.identical( got.originalRoutine, undefined );
+
+    test.case = `${__.entity.exportStringSolo( env )}, srcs is routine with body`;
+    var dst = () => 'dst';
+    var rb = ( arg ) => arg;
+    rb.defaults = { src : null };
+    var r = () => {};
+    r.body = rb;
+    var got = _.routine[ env.method ]( dst, r );
+    test.true( _.routine.is( got ) );
+    test.identical( _.props.keys( got ), [ 'body' ] );
+    test.identical( got.originalRoutine, undefined );
+    test.identical( got({ src : {} }), 'dst' );
+
+    test.case = `${__.entity.exportStringSolo( env )}, srcs is routine with head and body`;
+    var dst = () => 'dst';
+    var rh = ( r, args ) => args[ 0 ];
+    var rb = ( arg ) => arg;
+    rb.defaults = { src : null };
+    var r = () => {};
+    r.head = rh;
+    r.body = rb;
+    var got = _.routine[ env.method ]( dst, r );
+    test.true( _.routine.is( got ) );
+    test.identical( _.props.keys( got ), [ 'head', 'body' ] );
+    test.identical( got.originalRoutine, undefined );
+    test.identical( got( 'arg' ), 'dst' );
+
+    test.case = `${__.entity.exportStringSolo( env )}, srcs is routine with head, body and tail`;
+    var rh = ( r, args ) => args[ 0 ];
+    var rb = ( arg ) => arg;
+    rb.defaults = { src : null };
+    var rt = ( arg ) => arg + 1;
+    var r = () => {};
+    r.head = rh;
+    r.body = rb;
+    r.tail = rt;
+    var got = _.routine[ env.method ]( dst, r );
+    test.true( _.routine.is( got ) );
+    test.identical( _.props.keys( got ), [ 'head', 'body', 'tail' ] );
+    test.identical( got.originalRoutine, undefined );
+    test.identical( got( 'arg' ), 'dst' );
+
+    test.case = `${__.entity.exportStringSolo( env )}, srcs is vector with routine ( head, body and tail ) and map`;
+    var dst = () => 'dst';
+    var rh = ( r, args ) => args[ 0 ];
+    var rb = ( arg ) => arg;
+    rb.defaults = { src : null };
+    var rt = ( arg ) => arg + 1;
+    var r = () => {};
+    r.head = rh;
+    r.body = rb;
+    r.tail = rt;
+    var got = _.routine[ env.method ]( dst, r, { name : 'simple' } );
+    test.true( _.routine.is( got ) );
+    test.identical( _.props.keys( got ), [ 'head', 'body', 'tail' ] );
+    test.identical( got.originalRoutine, undefined );
+    test.identical( got.name, 'dst' );
+    test.identical( got( 'arg' ), 'dst' );
+
+    if( Config.debug )
+    {
+      test.case = 'srcs - undefined';
+      test.shouldThrowErrorSync( () => _.routine[ env.method ]( () => {}, undefined ) );
+
+      test.case = 'srcs - null';
+      test.shouldThrowErrorSync( () => _.routine[ env.method ]( () => {}, null ) );
+    }
+  }
+}
+
+//
+
 function routineExtend( test )
 {
   test.case = 'dst has properties, src map has different properties';
@@ -5017,6 +5141,7 @@ const Proto =
     /* routineExtend_old, */
     routineExtendWithDstIsNull,
     routineExtendWithSingleDst,
+    routineExtendWithDstIsSimpleRoutine,
     routineExtend,
     extendSpecial,
     extendBodyInstanicing,
