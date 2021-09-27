@@ -3608,20 +3608,6 @@ function routineExtendWithDstIsNull( test )
     test.identical( got( 'arg' ), 'arg1' );
 
     /* qqq : for Dmytro : bad : don't use routines from modules as test assets */ /* aaa : Dmytro : done */
-
-    /* - */
-
-    if( Config.debug )
-    {
-      test.case = 'srcs - undefined';
-      test.shouldThrowErrorSync( () => _.routine[ env.method ]( null, undefined ) );
-
-      test.case = 'srcs - null';
-      test.shouldThrowErrorSync( () => _.routine[ env.method ]( null, null ) );
-
-      test.case = 'srcs - map';
-      test.shouldThrowErrorSync( () => _.routine[ env.method ]( null, { str : 'abc' } ) );
-    }
   }
 }
 
@@ -3781,17 +3767,6 @@ function routineExtendWithDstIsSimpleRoutine( test )
     test.identical( got.originalRoutine, undefined );
     test.identical( got.name, 'dst' );
     test.identical( got( 'arg' ), 'dst' );
-
-    /* - */
-
-    if( Config.debug )
-    {
-      test.case = 'srcs - undefined';
-      test.shouldThrowErrorSync( () => _.routine[ env.method ]( () => {}, undefined ) );
-
-      test.case = 'srcs - null';
-      test.shouldThrowErrorSync( () => _.routine[ env.method ]( () => {}, null ) );
-    }
   }
 }
 
@@ -4131,23 +4106,43 @@ function extendThrowing( test )
     var got = _.routine[ env.method ]( f1 );
     test.true( got === f1 );
 
-    if( Config.debug )
-    return test.true( true );
-
-    test.case = 'undefined second arg';
-    test.shouldThrowErrorSync( () => _.routine[ env.method ]( f1, undefined ) );
-    test.case = 'undefined first arg';
-    test.shouldThrowErrorSync( () => _.routine[ env.method ]( undefined, f1 ) );
-
     test.case = 'sanitare';
     test.identical( _.props.extend( null, f1 ), {} );
 
+    if( Config.debug )
+    return test.true( true );
+
+    test.case = 'no arguments';
+    test.shouldThrowErrorSync( () => _.routine[ env.method ]() );
+
+    test.case = 'single dst is null';
+    test.shouldThrowErrorSync( () => _.routine[ env.method ]( null ) );
+
+    test.case = 'second arg is primitive';
+    test.shouldThrowErrorSync( () => _.routine[ env.method ]( _.unrollIs, 'str' ) );
+
+    test.case = 'wrong type of dst';
+    test.shouldThrowErrorSync( () => _.routine[ env.method ]( 1, { a : 1 } ) );
+
+    test.case = 'dst - null, srcs - undefined';
+    test.shouldThrowErrorSync( () => _.routine[ env.method ]( null, undefined ) );
+
+    test.case = 'dst - null, srcs - null';
+    test.shouldThrowErrorSync( () => _.routine[ env.method ]( null, null ) );
+
+    test.case = 'dst - null, srcs - map';
+    test.shouldThrowErrorSync( () => _.routine[ env.method ]( null, { str : 'abc' } ) );
+
+    test.case = 'dst - routine, srcs - undefined';
+    test.shouldThrowErrorSync( () => _.routine[ env.method ]( () => {}, undefined ) );
+
+    test.case = 'dst - routine, srcs - null';
+    test.shouldThrowErrorSync( () => _.routine[ env.method ]( () => {}, null ) );
   }
 
-  function f1()
-  {
-  }
+  /* */
 
+  function f1() {}
 }
 
 //
