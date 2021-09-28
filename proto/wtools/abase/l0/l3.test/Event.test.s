@@ -1831,33 +1831,30 @@ function eventGive( test )
   test.case = 'wrong type of o.args';
   test.shouldThrowErrorSync( () => _.event.eventGive( { events : { 'event' : [] } }, { event : 'event', args : 'wrong' } ) );
 
-  // test.case = 'callback throws error';
-  // test.shouldThrowErrorSync( () =>
-  // {
-  //   var handler = { events : { event : [ () => { throw _.err( 'err' ) } ] } };
-  //   _.event.eventGive( handler, 'event' );
-  // },
-  // ( err, arg ) =>
-  // {
-  //   test.true( _.error.is( err ) );
-  //   test.identical( _.strCount( err.message, 'Error on handing event event\n' ), 1 );
-  // });
-  // qqq2 : for Dmytro : ask
+  test.case = 'callback throws error';
+  var onErrorCallback = ( err, arg ) =>
+  {
+    test.true( _.error.is( err ) );
+    test.identical( err.originalMessage, 'Unknown event undefined' );
+  };
+  test.shouldThrowErrorSync( () =>
+  {
+    var handler = { events : { event : [ () => { throw _.err( 'err' ) } ] } };
+    _.event.eventGive( handler, 'event' );
+  }, onErrorCallback );
+  // qqq2 : for Dmytro : ask /* aaa : Dmytro : fixed */
 
   test.case = 'callback throws error, onError handler does not attend error';
-  test.shouldThrowErrorSync
-  (
-    () =>
-    {
-      var handler = { events : { event : [ () => { throw _.err( 'event err' ) } ] } };
-      _.event.eventGive( handler, { event : 'event', args : [], onError : ( err ) => { throw _.err( err ) } } );
-    },
-    ( err, arg ) =>
-    {
-      test.true( _.error.is( err ) );
-      test.identical( _.strCount( err.message, 'event err' ), 2 );
-    }
-  );
+  var onErrorCallback = ( err, arg ) =>
+  {
+    test.true( _.error.is( err ) );
+    test.identical( err.originalMessage, 'event err' );
+  };
+  test.shouldThrowErrorSync( () =>
+  {
+    var handler = { events : { event : [ () => { throw _.err( 'event err' ) } ] } };
+    _.event.eventGive( handler, { event : 'event', args : [], onError : ( err ) => { throw _.err( err ) } } );
+  }, onErrorCallback );
 }
 
 // --
