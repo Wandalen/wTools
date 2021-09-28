@@ -3,7 +3,7 @@
 
 /* */  /* begin of predefined */ ( function _predefined_() {
 
-  
+
 
   'use strict';
 
@@ -89,7 +89,7 @@
 
 /* */  _global_.Config.debug = 1;
 
-  
+
 
 ;
 
@@ -98,7 +98,7 @@
 
 /* */  /* begin of early */ ( function _early_() {
 
-  
+
 
   'use strict';
 
@@ -262,7 +262,7 @@
   // };
 
 ;
-  
+
 
   let StarterExtension =
   {
@@ -303,10 +303,10 @@
 
 /* */  /* end of early */ })();
 
-  
+
 /* */  /* begin of extract */ ( function _extract_() {
 
-  
+
 
   'use strict';
 
@@ -328,7 +328,7 @@
 
 ;
 
-  
+
   _.strQuote = function quote( o )
 {
 
@@ -939,28 +939,28 @@ _.strQuote.defaults =
 }
 _._err.defaults =
 {
-  "args" : null, 
-  "sections" : null, 
-  "concealed" : null, 
-  "exposed" : null, 
-  "level" : 1, 
-  "message" : null, 
-  "reason" : null, 
-  "sourceCode" : null, 
-  "stackRemovingBeginIncluding" : 0, 
-  "stackRemovingBeginExcluding" : 0, 
-  "usingSourceCode" : 1, 
-  "stackCondensing" : 1, 
-  "attended" : null, 
-  "logged" : null, 
-  "brief" : null, 
-  "throwLocation" : null, 
-  "catchLocation" : null, 
-  "asyncCallsStack" : null, 
-  "throwCallsStack" : null, 
-  "catchCallsStack" : null, 
-  "fallBackStack" : null, 
-  "throwsStack" : ``, 
+  "args" : null,
+  "sections" : null,
+  "concealed" : null,
+  "exposed" : null,
+  "level" : 1,
+  "message" : null,
+  "reason" : null,
+  "sourceCode" : null,
+  "stackRemovingBeginIncluding" : 0,
+  "stackRemovingBeginExcluding" : 0,
+  "usingSourceCode" : 1,
+  "stackCondensing" : 1,
+  "attended" : null,
+  "logged" : null,
+  "brief" : null,
+  "throwLocation" : null,
+  "catchLocation" : null,
+  "asyncCallsStack" : null,
+  "throwCallsStack" : null,
+  "catchCallsStack" : null,
+  "fallBackStack" : null,
+  "throwsStack" : ``,
   "throws" : null
 }
 
@@ -1255,22 +1255,22 @@ _._err.defaults =
 }
 _._errMake.defaults =
 {
-  "error" : null, 
-  "id" : null, 
-  "throwLocation" : null, 
-  "sections" : null, 
-  "concealed" : null, 
-  "exposed" : null, 
-  "attended" : null, 
-  "logged" : null, 
-  "brief" : null, 
-  "stackCondensing" : null, 
-  "originalMessage" : null, 
-  "combinedStack" : ``, 
-  "throwCallsStack" : ``, 
-  "throwsStack" : ``, 
-  "asyncCallsStack" : ``, 
-  "sourceCode" : null, 
+  "error" : null,
+  "id" : null,
+  "throwLocation" : null,
+  "sections" : null,
+  "concealed" : null,
+  "exposed" : null,
+  "attended" : null,
+  "logged" : null,
+  "brief" : null,
+  "stackCondensing" : null,
+  "originalMessage" : null,
+  "combinedStack" : ``,
+  "throwCallsStack" : ``,
+  "throwsStack" : ``,
+  "asyncCallsStack" : ``,
+  "sourceCode" : null,
   "reason" : null
 }
 
@@ -1739,22 +1739,22 @@ _._errMake.defaults =
 }
 _.error._make.defaults =
 {
-  "error" : null, 
-  "id" : null, 
-  "throwLocation" : null, 
-  "sections" : null, 
-  "concealed" : null, 
-  "exposed" : null, 
-  "attended" : null, 
-  "logged" : null, 
-  "brief" : null, 
-  "stackCondensing" : null, 
-  "originalMessage" : null, 
-  "combinedStack" : ``, 
-  "throwCallsStack" : ``, 
-  "throwsStack" : ``, 
-  "asyncCallsStack" : ``, 
-  "sourceCode" : null, 
+  "error" : null,
+  "id" : null,
+  "throwLocation" : null,
+  "sections" : null,
+  "concealed" : null,
+  "exposed" : null,
+  "attended" : null,
+  "logged" : null,
+  "brief" : null,
+  "stackCondensing" : null,
+  "originalMessage" : null,
+  "combinedStack" : ``,
+  "throwCallsStack" : ``,
+  "throwsStack" : ``,
+  "asyncCallsStack" : ``,
+  "sourceCode" : null,
   "reason" : null
 }
 
@@ -1780,9 +1780,9 @@ _.error._make.defaults =
 }
 _.error._sectionAdd.defaults =
 {
-  "sections" : null, 
-  "name" : null, 
-  "head" : null, 
+  "sections" : null,
+  "name" : null,
+  "head" : null,
   "body" : null
 }
 
@@ -1879,9 +1879,9 @@ _.error._sectionExposedAdd.defaults =
 }
 _.error._messageForm.defaults =
 {
-  "error" : null, 
-  "sections" : null, 
-  "brief" : false, 
+  "error" : null,
+  "sections" : null,
+  "brief" : false,
   "message" : ``
 }
 
@@ -2159,7 +2159,7 @@ _.error._sectionsJoin.defaults =
 
 
 
-  
+
 
   _.date.is = function is( src )
 {
@@ -2285,15 +2285,15 @@ _.error._sectionsJoin.defaults =
 }
 _.introspector.code.defaults =
 {
-  "level" : 0, 
-  "nearestLines" : 5, 
-  "withPath" : 1, 
-  "asMap" : 0, 
-  "selectMode" : `center`, 
-  "identation" : null, 
-  "stack" : null, 
-  "error" : null, 
-  "location" : null, 
+  "level" : 0,
+  "nearestLines" : 5,
+  "withPath" : 1,
+  "asMap" : 0,
+  "selectMode" : `center`,
+  "identation" : null,
+  "stack" : null,
+  "error" : null,
+  "location" : null,
   "sourceCode" : null
 }
 
@@ -2582,9 +2582,9 @@ _.introspector.code.defaults =
 }
 _.introspector.location.defaults =
 {
-  "level" : 0, 
-  "stack" : null, 
-  "error" : null, 
+  "level" : 0,
+  "stack" : null,
+  "error" : null,
   "location" : null
 }
 
@@ -2702,17 +2702,17 @@ _.introspector.locationFromStackFrame.defaults =
 }
 _.introspector.locationToStack.defaults =
 {
-  "original" : null, 
-  "filePath" : null, 
-  "routineName" : null, 
-  "routineAlias" : null, 
-  "internal" : null, 
-  "abstraction" : null, 
-  "line" : null, 
-  "col" : null, 
-  "filePathLineCol" : null, 
-  "routineFilePathLineCol" : null, 
-  "fileName" : null, 
+  "original" : null,
+  "filePath" : null,
+  "routineName" : null,
+  "routineAlias" : null,
+  "internal" : null,
+  "abstraction" : null,
+  "line" : null,
+  "col" : null,
+  "filePathLineCol" : null,
+  "routineFilePathLineCol" : null,
+  "fileName" : null,
   "fileNameLineCol" : null
 }
 
@@ -3030,17 +3030,17 @@ _.introspector.locationToStack.defaults =
 }
 _.introspector.locationNormalize.defaults =
 {
-  "original" : null, 
-  "filePath" : null, 
-  "routineName" : null, 
-  "routineAlias" : null, 
-  "internal" : null, 
-  "abstraction" : null, 
-  "line" : null, 
-  "col" : null, 
-  "filePathLineCol" : null, 
-  "routineFilePathLineCol" : null, 
-  "fileName" : null, 
+  "original" : null,
+  "filePath" : null,
+  "routineName" : null,
+  "routineAlias" : null,
+  "internal" : null,
+  "abstraction" : null,
+  "line" : null,
+  "col" : null,
+  "filePathLineCol" : null,
+  "routineFilePathLineCol" : null,
+  "fileName" : null,
   "fileNameLineCol" : null
 }
 
@@ -3225,23 +3225,23 @@ return _.long._functor_functor( 'makeUndefined', 'namespaceOf', 0 )
 
 
   _.entity.TranslatedTypeMap = {
-  "BigUint64Array" : `U64x`, 
-  "Uint32Array" : `U32x`, 
-  "Uint16Array" : `U16x`, 
-  "Uint8Array" : `U8x`, 
-  "Uint8ClampedArray" : `U8xClamped`, 
-  "BigInt64Array" : `I64x`, 
-  "Int32Array" : `I32x`, 
-  "Int16Array" : `I16x`, 
-  "Int8Array" : `I8x`, 
-  "Float64Array" : `F64x`, 
-  "Float32Array" : `F32x`, 
-  "Buffer" : `BufferNode`, 
-  "ArrayBuffer" : `BufferRaw`, 
-  "SharedArrayBuffer" : `BufferRawShared`, 
-  "Map" : `HashMap`, 
-  "WeakMap" : `HashMapWeak`, 
-  "Function" : `Routine`, 
+  "BigUint64Array" : `U64x`,
+  "Uint32Array" : `U32x`,
+  "Uint16Array" : `U16x`,
+  "Uint8Array" : `U8x`,
+  "Uint8ClampedArray" : `U8xClamped`,
+  "BigInt64Array" : `I64x`,
+  "Int32Array" : `I32x`,
+  "Int16Array" : `I16x`,
+  "Int8Array" : `I8x`,
+  "Float64Array" : `F64x`,
+  "Float32Array" : `F32x`,
+  "Buffer" : `BufferNode`,
+  "ArrayBuffer" : `BufferRaw`,
+  "SharedArrayBuffer" : `BufferRawShared`,
+  "Map" : `HashMap`,
+  "WeakMap" : `HashMapWeak`,
+  "Function" : `Routine`,
   "Arguments" : `ArgumentsArray`
 };
 
@@ -3249,26 +3249,26 @@ return _.long._functor_functor( 'makeUndefined', 'namespaceOf', 0 )
 
 
   _.entity.StandardTypeSet = new Set([
-  `U64x`, 
-  `U32x`, 
-  `U16x`, 
-  `U8x`, 
-  `U8xClamped`, 
-  `I64x`, 
-  `I32x`, 
-  `I16x`, 
-  `I8x`, 
-  `F64x`, 
-  `F32x`, 
-  `BufferNode`, 
-  `BufferRaw`, 
-  `BufferRawShared`, 
-  `HashMap`, 
-  `HashMapWeak`, 
-  `ArgumentsArray`, 
-  `Array`, 
-  `Set`, 
-  `Routine`, 
+  `U64x`,
+  `U32x`,
+  `U16x`,
+  `U8x`,
+  `U8xClamped`,
+  `I64x`,
+  `I32x`,
+  `I16x`,
+  `I8x`,
+  `F64x`,
+  `F32x`,
+  `BufferNode`,
+  `BufferRaw`,
+  `BufferRawShared`,
+  `HashMap`,
+  `HashMapWeak`,
+  `ArgumentsArray`,
+  `Array`,
+  `Set`,
+  `Routine`,
   `Global`
 ]);
 
@@ -3430,9 +3430,9 @@ return _.long._functor_functor( 'makeUndefined', 'namespaceOf', 0 )
 }
 _.path._normalize.defaults =
 {
-  "src" : null, 
-  "tolerant" : false, 
-  "detrailing" : false, 
+  "src" : null,
+  "tolerant" : false,
+  "detrailing" : false,
   "undoting" : false
 }
 
@@ -4572,7 +4572,7 @@ _.path._normalize.defaults =
   }
 
   return false;
-}, 
+},
   "areFinite" : function areFinite( src )
 {
   _.assert( arguments.length === 1, 'Expects exactly one argument' );
@@ -4588,7 +4588,7 @@ _.path._normalize.defaults =
   }
 
   return true;
-}, 
+},
   "arePositive" : function arePositive( src )
 {
   _.assert( arguments.length === 1, 'Expects exactly one argument' );
@@ -4604,7 +4604,7 @@ _.path._normalize.defaults =
   }
 
   return true;
-}, 
+},
   "areInt" : function areInt( src )
 {
   _.assert( arguments.length === 1, 'Expects exactly one argument' );
@@ -4620,7 +4620,7 @@ _.path._normalize.defaults =
   }
 
   return true;
-}, 
+},
   "total" : function numbersTotal( numbers )
 {
   let result = 0;
@@ -4633,7 +4633,7 @@ _.path._normalize.defaults =
     result += number;
   }
   return result;
-}, 
+},
   "from" : function numbersFrom( src )
 {
   _.assert( arguments.length === 1, 'Expects single argument' );
@@ -4664,7 +4664,7 @@ _.path._normalize.defaults =
   }
 
   return result;
-}, 
+},
   "slice" : function numbersSlice( src, f, l )
 {
   if( _.argumentsArray.like( src ) )
@@ -4673,7 +4673,7 @@ _.path._normalize.defaults =
   if( _.number.is( src ) )
   return src;
   return _.longSlice( src, f, l );
-}, 
+},
   "make" : function numbersMake( src, length )
 {
   let result;
@@ -4699,7 +4699,7 @@ _.path._normalize.defaults =
   }
 
   return result;
-}, 
+},
   "fromNumber" : function numbersFromNumber( src, length )
 {
 
@@ -4721,7 +4721,7 @@ _.path._normalize.defaults =
   result[ i ] = src;
 
   return result;
-}, 
+},
   "fromInt" : function numbersFromInt( dst, length )
 {
 
@@ -4743,7 +4743,7 @@ _.path._normalize.defaults =
   }
 
   return dst;
-}, 
+},
   "make_functor" : function numbersMake_functor( length )
 {
   // let _ = this;
@@ -4757,7 +4757,7 @@ _.path._normalize.defaults =
   }
 
   return numbersMake;
-}, 
+},
   "from_functor" : function numbersFrom_functor( length )
 {
   // let _ = this;
@@ -5061,9 +5061,9 @@ _.path._normalize.defaults =
 }
 _.aux._keys.defaults =
 {
-  "srcMap" : null, 
-  "onlyOwn" : 0, 
-  "onlyEnumerable" : 1, 
+  "srcMap" : null,
+  "onlyOwn" : 0,
+  "onlyEnumerable" : 1,
   "selectFilter" : null
 }
 
@@ -6228,9 +6228,9 @@ _.routine.optionsWithoutUndefined = function optionsWithoutUndefined( routine, o
 }
 _.props._ofAct.defaults =
 {
-  "srcMap" : null, 
-  "onlyOwn" : 0, 
-  "onlyEnumerable" : 1, 
+  "srcMap" : null,
+  "onlyOwn" : 0,
+  "onlyEnumerable" : 1,
   "selectFilter" : null
 }
 
@@ -6365,9 +6365,9 @@ _.props.fields.defaults =
 }
 _.props._keys.defaults =
 {
-  "srcMap" : null, 
-  "onlyOwn" : 0, 
-  "onlyEnumerable" : 1, 
+  "srcMap" : null,
+  "onlyOwn" : 0,
+  "onlyEnumerable" : 1,
   "selectFilter" : null
 }
 
@@ -7381,9 +7381,9 @@ _.props.onlyOwnKeys.defaults =
 }
 _._mapOnly_VerifyMapFields.defaults =
 {
-  "dstMap" : null, 
-  "srcMaps" : null, 
-  "screenMaps" : null, 
+  "dstMap" : null,
+  "srcMaps" : null,
+  "screenMaps" : null,
   "filter" : null
 }
 
@@ -8085,7 +8085,7 @@ _._mapOnly_VerifyMapFields.defaults =
   const _uniteReplacing_head = function unite_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     if( args[ 1 ] !== undefined )
     {
       if( args.length === 3 )
@@ -8093,7 +8093,7 @@ _._mapOnly_VerifyMapFields.defaults =
       else
       o = { head : args[ 0 ], body : ( args.length > 1 ? args[ 1 ] : null ) };
     }
-  
+
     _.routine.optionsWithoutUndefined( routine, o );
     _.assert( args.length === 1 || args.length === 2 || args.length === 3 );
     _.assert( arguments.length === 2 );
@@ -8105,13 +8105,13 @@ _._mapOnly_VerifyMapFields.defaults =
     _.assert( _.routine.is( o.body ), 'Expects routine {-o.body-}' );
     _.assert( o.tail === null || _.routine.is( o.tail ), () => `Expects routine {-o.tail-}, but got ${_.entity.strType( o.tail )}` );
     _.assert( o.body.defaults !== undefined, 'Body should have defaults' );
-  
+
     return o;
   }
 
   const _uniteReplacing_body = function unite_body( o )
   {
-  
+
     if( _.longIs( o.head ) )
     {
       /* xxx : deprecate compose */
@@ -8150,7 +8150,7 @@ _._mapOnly_VerifyMapFields.defaults =
     {
       o.head = headWithNargs_functor( o.head, o.body );
     }
-  
+
     if( o.head === null )
     {
       /* qqq : for Dmytro : cover please */
@@ -8159,7 +8159,7 @@ _._mapOnly_VerifyMapFields.defaults =
       else
       o.head = headWithoutDefaults;
     }
-  
+
     if( !o.name )
     {
       _.assert( _.strDefined( o.body.name ), 'Body routine should have name' );
@@ -8167,9 +8167,9 @@ _._mapOnly_VerifyMapFields.defaults =
       if( o.name.indexOf( '_body' ) === o.name.length-5 && o.name.length > 5 )
       o.name = o.name.substring( 0, o.name.length-5 );
     }
-  
+
     /* generate body */
-  
+
     /* qqq : for Dmytro : cover in separate test routine */
     let body;
     if( o.strategy === 'replacing' )
@@ -8182,15 +8182,15 @@ _._mapOnly_VerifyMapFields.defaults =
       strategy : o.strategy,
       amending : 'extending',
     });
-  
+
     /* make routine */
-  
+
     let unitedRoutine = _unite_functor( o.name, o.head, body, o.tail );
-  
+
     _.assert( _.strDefined( unitedRoutine.name ), 'Looks like your interpreter does not support dynamic naming of functions. Please use ES2015 or later interpreter.' );
-  
+
     /* qqq : for Dmytro : cover option::strategy */
-  
+
     _.routine._amend
     ({
       dst : unitedRoutine,
@@ -8198,20 +8198,20 @@ _._mapOnly_VerifyMapFields.defaults =
       strategy : 'replacing',
       amending : 'extending',
     });
-  
+
     unitedRoutine.head = o.head;
     unitedRoutine.body = body;
     if( o.tail )
     unitedRoutine.tail = o.tail;
-  
+
     _.assert
     (
       unitedRoutine.defaults === body.defaults,
       'Something wrong, united routined should have same instance of defaults its body has'
     );
-  
+
     return unitedRoutine;
-  
+
     function headWithNargs_functor( nargs, body )
     {
       _.assert( !!o.body.defaults );
@@ -8223,9 +8223,9 @@ _._mapOnly_VerifyMapFields.defaults =
         return _.unroll.from([ ... Array.prototype.slice.call( args, 0, nargs ), o ]);
       }
     }
-  
+
     /* */
-  
+
     function headWithoutDefaults( routine, args )
     {
       let o = args[ 0 ];
@@ -8234,9 +8234,9 @@ _._mapOnly_VerifyMapFields.defaults =
       _.assert( args.length === 0 || o === undefined || o === null || _.auxIs( o ) );
       return o || null;
     }
-  
+
     /* */
-  
+
     function headWithDefaults( routine, args )
     {
       let o = args[ 0 ];
@@ -8245,9 +8245,9 @@ _._mapOnly_VerifyMapFields.defaults =
       _.assert( args.length === 0 || o === undefined || o === null || _.auxIs( o ) );
       return _.routine.options( routine, o || Object.create( null ) );
     }
-  
+
     /* */
-  
+
     function _unite_functor()
     {
       const name = arguments[ 0 ];
@@ -8255,11 +8255,11 @@ _._mapOnly_VerifyMapFields.defaults =
       const body = arguments[ 2 ];
       const tail = arguments[ 3 ];
       let r;
-  
+
       _.assert( head === null || _.routineIs( head ) );
       _.assert( body === null || _.routineIs( body ) );
       _.assert( tail === null || _.routineIs( tail ) );
-  
+
       if( tail === null )
       r =
       {
@@ -8267,14 +8267,14 @@ _._mapOnly_VerifyMapFields.defaults =
         {
           let result;
           let o = head.call( this, unitedRoutine, arguments );
-  
+
           _.assert( !_.argumentsArray.is( o ), 'does not expect arguments array' );
-  
+
           if( _.unrollIs( o ) )
           result = body.apply( this, o );
           else
           result = body.call( this, o );
-  
+
           return result;
         }
       };
@@ -8285,18 +8285,18 @@ _._mapOnly_VerifyMapFields.defaults =
         {
           let result;
           let o = arguments[ 0 ];
-  
+
           _.assert( arguments.length === 1, 'Expects single argument {-o-}.' );
-  
+
           if( _.unrollIs( o ) )
           result = body.apply( this, o );
           else if( _.mapIs( o ) )
           result = body.call( this, o );
           else
           _.assert( 0, 'Unexpected type of {-o-}, expects options map or unroll.' );
-  
+
           result = tail.call( this, result, o );
-  
+
           return result;
         }
       };
@@ -8307,29 +8307,29 @@ _._mapOnly_VerifyMapFields.defaults =
         {
           let result;
           let o = head.call( this, unitedRoutine, arguments );
-  
+
           _.assert( !_.argumentsArray.is( o ), 'does not expect arguments array' );
-  
+
           if( _.unrollIs( o ) )
           result = body.apply( this, o );
           else
           result = body.call( this, o );
-  
+
           debugger;
           result = tail.call( this, result, o );
-  
+
           return result;
         }
       };
-  
+
       return r[ name ]
     }
   }
   _uniteReplacing_body.defaults = {
-      "head" : null, 
-      "body" : null, 
-      "tail" : null, 
-      "name" : null, 
+      "head" : null,
+      "body" : null,
+      "tail" : null,
+      "name" : null,
       "strategy" : null
     }
 
@@ -8342,7 +8342,7 @@ _._mapOnly_VerifyMapFields.defaults =
   _uniteReplacing_.head = function unite_head( routine, args )
     {
       let o = args[ 0 ];
-    
+
       if( args[ 1 ] !== undefined )
       {
         if( args.length === 3 )
@@ -8350,7 +8350,7 @@ _._mapOnly_VerifyMapFields.defaults =
         else
         o = { head : args[ 0 ], body : ( args.length > 1 ? args[ 1 ] : null ) };
       }
-    
+
       _.routine.optionsWithoutUndefined( routine, o );
       _.assert( args.length === 1 || args.length === 2 || args.length === 3 );
       _.assert( arguments.length === 2 );
@@ -8362,12 +8362,12 @@ _._mapOnly_VerifyMapFields.defaults =
       _.assert( _.routine.is( o.body ), 'Expects routine {-o.body-}' );
       _.assert( o.tail === null || _.routine.is( o.tail ), () => `Expects routine {-o.tail-}, but got ${_.entity.strType( o.tail )}` );
       _.assert( o.body.defaults !== undefined, 'Body should have defaults' );
-    
+
       return o;
     }
     _uniteReplacing_.body = function unite_body( o )
     {
-    
+
       if( _.longIs( o.head ) )
       {
         /* xxx : deprecate compose */
@@ -8406,7 +8406,7 @@ _._mapOnly_VerifyMapFields.defaults =
       {
         o.head = headWithNargs_functor( o.head, o.body );
       }
-    
+
       if( o.head === null )
       {
         /* qqq : for Dmytro : cover please */
@@ -8415,7 +8415,7 @@ _._mapOnly_VerifyMapFields.defaults =
         else
         o.head = headWithoutDefaults;
       }
-    
+
       if( !o.name )
       {
         _.assert( _.strDefined( o.body.name ), 'Body routine should have name' );
@@ -8423,9 +8423,9 @@ _._mapOnly_VerifyMapFields.defaults =
         if( o.name.indexOf( '_body' ) === o.name.length-5 && o.name.length > 5 )
         o.name = o.name.substring( 0, o.name.length-5 );
       }
-    
+
       /* generate body */
-    
+
       /* qqq : for Dmytro : cover in separate test routine */
       let body;
       if( o.strategy === 'replacing' )
@@ -8438,15 +8438,15 @@ _._mapOnly_VerifyMapFields.defaults =
         strategy : o.strategy,
         amending : 'extending',
       });
-    
+
       /* make routine */
-    
+
       let unitedRoutine = _unite_functor( o.name, o.head, body, o.tail );
-    
+
       _.assert( _.strDefined( unitedRoutine.name ), 'Looks like your interpreter does not support dynamic naming of functions. Please use ES2015 or later interpreter.' );
-    
+
       /* qqq : for Dmytro : cover option::strategy */
-    
+
       _.routine._amend
       ({
         dst : unitedRoutine,
@@ -8454,20 +8454,20 @@ _._mapOnly_VerifyMapFields.defaults =
         strategy : 'replacing',
         amending : 'extending',
       });
-    
+
       unitedRoutine.head = o.head;
       unitedRoutine.body = body;
       if( o.tail )
       unitedRoutine.tail = o.tail;
-    
+
       _.assert
       (
         unitedRoutine.defaults === body.defaults,
         'Something wrong, united routined should have same instance of defaults its body has'
       );
-    
+
       return unitedRoutine;
-    
+
       function headWithNargs_functor( nargs, body )
       {
         _.assert( !!o.body.defaults );
@@ -8479,9 +8479,9 @@ _._mapOnly_VerifyMapFields.defaults =
           return _.unroll.from([ ... Array.prototype.slice.call( args, 0, nargs ), o ]);
         }
       }
-    
+
       /* */
-    
+
       function headWithoutDefaults( routine, args )
       {
         let o = args[ 0 ];
@@ -8490,9 +8490,9 @@ _._mapOnly_VerifyMapFields.defaults =
         _.assert( args.length === 0 || o === undefined || o === null || _.auxIs( o ) );
         return o || null;
       }
-    
+
       /* */
-    
+
       function headWithDefaults( routine, args )
       {
         let o = args[ 0 ];
@@ -8501,9 +8501,9 @@ _._mapOnly_VerifyMapFields.defaults =
         _.assert( args.length === 0 || o === undefined || o === null || _.auxIs( o ) );
         return _.routine.options( routine, o || Object.create( null ) );
       }
-    
+
       /* */
-    
+
       function _unite_functor()
       {
         const name = arguments[ 0 ];
@@ -8511,11 +8511,11 @@ _._mapOnly_VerifyMapFields.defaults =
         const body = arguments[ 2 ];
         const tail = arguments[ 3 ];
         let r;
-    
+
         _.assert( head === null || _.routineIs( head ) );
         _.assert( body === null || _.routineIs( body ) );
         _.assert( tail === null || _.routineIs( tail ) );
-    
+
         if( tail === null )
         r =
         {
@@ -8523,14 +8523,14 @@ _._mapOnly_VerifyMapFields.defaults =
           {
             let result;
             let o = head.call( this, unitedRoutine, arguments );
-    
+
             _.assert( !_.argumentsArray.is( o ), 'does not expect arguments array' );
-    
+
             if( _.unrollIs( o ) )
             result = body.apply( this, o );
             else
             result = body.call( this, o );
-    
+
             return result;
           }
         };
@@ -8541,18 +8541,18 @@ _._mapOnly_VerifyMapFields.defaults =
           {
             let result;
             let o = arguments[ 0 ];
-    
+
             _.assert( arguments.length === 1, 'Expects single argument {-o-}.' );
-    
+
             if( _.unrollIs( o ) )
             result = body.apply( this, o );
             else if( _.mapIs( o ) )
             result = body.call( this, o );
             else
             _.assert( 0, 'Unexpected type of {-o-}, expects options map or unroll.' );
-    
+
             result = tail.call( this, result, o );
-    
+
             return result;
           }
         };
@@ -8563,29 +8563,29 @@ _._mapOnly_VerifyMapFields.defaults =
           {
             let result;
             let o = head.call( this, unitedRoutine, arguments );
-    
+
             _.assert( !_.argumentsArray.is( o ), 'does not expect arguments array' );
-    
+
             if( _.unrollIs( o ) )
             result = body.apply( this, o );
             else
             result = body.call( this, o );
-    
+
             debugger;
             result = tail.call( this, result, o );
-    
+
             return result;
           }
         };
-    
+
         return r[ name ]
       }
     }
     _uniteReplacing_.defaults = {
-      "head" : null, 
-      "body" : null, 
-      "tail" : null, 
-      "name" : null, 
+      "head" : null,
+      "body" : null,
+      "tail" : null,
+      "name" : null,
       "strategy" : `replacing`
     }
   ;
@@ -8595,10 +8595,10 @@ _uniteReplacing_.body = _uniteReplacing_body;
 })();
 _.routine.unite.defaults =
 {
-  "head" : null, 
-  "body" : null, 
-  "tail" : null, 
-  "name" : null, 
+  "head" : null,
+  "body" : null,
+  "tail" : null,
+  "name" : null,
   "strategy" : `replacing`
 }
 
@@ -8610,7 +8610,7 @@ _.routine.unite.defaults =
   const _uniteCloning_head = function unite_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     if( args[ 1 ] !== undefined )
     {
       if( args.length === 3 )
@@ -8618,7 +8618,7 @@ _.routine.unite.defaults =
       else
       o = { head : args[ 0 ], body : ( args.length > 1 ? args[ 1 ] : null ) };
     }
-  
+
     _.routine.optionsWithoutUndefined( routine, o );
     _.assert( args.length === 1 || args.length === 2 || args.length === 3 );
     _.assert( arguments.length === 2 );
@@ -8630,13 +8630,13 @@ _.routine.unite.defaults =
     _.assert( _.routine.is( o.body ), 'Expects routine {-o.body-}' );
     _.assert( o.tail === null || _.routine.is( o.tail ), () => `Expects routine {-o.tail-}, but got ${_.entity.strType( o.tail )}` );
     _.assert( o.body.defaults !== undefined, 'Body should have defaults' );
-  
+
     return o;
   }
 
   const _uniteCloning_body = function unite_body( o )
   {
-  
+
     if( _.longIs( o.head ) )
     {
       /* xxx : deprecate compose */
@@ -8675,7 +8675,7 @@ _.routine.unite.defaults =
     {
       o.head = headWithNargs_functor( o.head, o.body );
     }
-  
+
     if( o.head === null )
     {
       /* qqq : for Dmytro : cover please */
@@ -8684,7 +8684,7 @@ _.routine.unite.defaults =
       else
       o.head = headWithoutDefaults;
     }
-  
+
     if( !o.name )
     {
       _.assert( _.strDefined( o.body.name ), 'Body routine should have name' );
@@ -8692,9 +8692,9 @@ _.routine.unite.defaults =
       if( o.name.indexOf( '_body' ) === o.name.length-5 && o.name.length > 5 )
       o.name = o.name.substring( 0, o.name.length-5 );
     }
-  
+
     /* generate body */
-  
+
     /* qqq : for Dmytro : cover in separate test routine */
     let body;
     if( o.strategy === 'replacing' )
@@ -8707,15 +8707,15 @@ _.routine.unite.defaults =
       strategy : o.strategy,
       amending : 'extending',
     });
-  
+
     /* make routine */
-  
+
     let unitedRoutine = _unite_functor( o.name, o.head, body, o.tail );
-  
+
     _.assert( _.strDefined( unitedRoutine.name ), 'Looks like your interpreter does not support dynamic naming of functions. Please use ES2015 or later interpreter.' );
-  
+
     /* qqq : for Dmytro : cover option::strategy */
-  
+
     _.routine._amend
     ({
       dst : unitedRoutine,
@@ -8723,20 +8723,20 @@ _.routine.unite.defaults =
       strategy : 'replacing',
       amending : 'extending',
     });
-  
+
     unitedRoutine.head = o.head;
     unitedRoutine.body = body;
     if( o.tail )
     unitedRoutine.tail = o.tail;
-  
+
     _.assert
     (
       unitedRoutine.defaults === body.defaults,
       'Something wrong, united routined should have same instance of defaults its body has'
     );
-  
+
     return unitedRoutine;
-  
+
     function headWithNargs_functor( nargs, body )
     {
       _.assert( !!o.body.defaults );
@@ -8748,9 +8748,9 @@ _.routine.unite.defaults =
         return _.unroll.from([ ... Array.prototype.slice.call( args, 0, nargs ), o ]);
       }
     }
-  
+
     /* */
-  
+
     function headWithoutDefaults( routine, args )
     {
       let o = args[ 0 ];
@@ -8759,9 +8759,9 @@ _.routine.unite.defaults =
       _.assert( args.length === 0 || o === undefined || o === null || _.auxIs( o ) );
       return o || null;
     }
-  
+
     /* */
-  
+
     function headWithDefaults( routine, args )
     {
       let o = args[ 0 ];
@@ -8770,9 +8770,9 @@ _.routine.unite.defaults =
       _.assert( args.length === 0 || o === undefined || o === null || _.auxIs( o ) );
       return _.routine.options( routine, o || Object.create( null ) );
     }
-  
+
     /* */
-  
+
     function _unite_functor()
     {
       const name = arguments[ 0 ];
@@ -8780,11 +8780,11 @@ _.routine.unite.defaults =
       const body = arguments[ 2 ];
       const tail = arguments[ 3 ];
       let r;
-  
+
       _.assert( head === null || _.routineIs( head ) );
       _.assert( body === null || _.routineIs( body ) );
       _.assert( tail === null || _.routineIs( tail ) );
-  
+
       if( tail === null )
       r =
       {
@@ -8792,14 +8792,14 @@ _.routine.unite.defaults =
         {
           let result;
           let o = head.call( this, unitedRoutine, arguments );
-  
+
           _.assert( !_.argumentsArray.is( o ), 'does not expect arguments array' );
-  
+
           if( _.unrollIs( o ) )
           result = body.apply( this, o );
           else
           result = body.call( this, o );
-  
+
           return result;
         }
       };
@@ -8810,18 +8810,18 @@ _.routine.unite.defaults =
         {
           let result;
           let o = arguments[ 0 ];
-  
+
           _.assert( arguments.length === 1, 'Expects single argument {-o-}.' );
-  
+
           if( _.unrollIs( o ) )
           result = body.apply( this, o );
           else if( _.mapIs( o ) )
           result = body.call( this, o );
           else
           _.assert( 0, 'Unexpected type of {-o-}, expects options map or unroll.' );
-  
+
           result = tail.call( this, result, o );
-  
+
           return result;
         }
       };
@@ -8832,29 +8832,29 @@ _.routine.unite.defaults =
         {
           let result;
           let o = head.call( this, unitedRoutine, arguments );
-  
+
           _.assert( !_.argumentsArray.is( o ), 'does not expect arguments array' );
-  
+
           if( _.unrollIs( o ) )
           result = body.apply( this, o );
           else
           result = body.call( this, o );
-  
+
           debugger;
           result = tail.call( this, result, o );
-  
+
           return result;
         }
       };
-  
+
       return r[ name ]
     }
   }
   _uniteCloning_body.defaults = {
-      "head" : null, 
-      "body" : null, 
-      "tail" : null, 
-      "name" : null, 
+      "head" : null,
+      "body" : null,
+      "tail" : null,
+      "name" : null,
       "strategy" : null
     }
 
@@ -8867,7 +8867,7 @@ _.routine.unite.defaults =
   _uniteCloning_.head = function unite_head( routine, args )
     {
       let o = args[ 0 ];
-    
+
       if( args[ 1 ] !== undefined )
       {
         if( args.length === 3 )
@@ -8875,7 +8875,7 @@ _.routine.unite.defaults =
         else
         o = { head : args[ 0 ], body : ( args.length > 1 ? args[ 1 ] : null ) };
       }
-    
+
       _.routine.optionsWithoutUndefined( routine, o );
       _.assert( args.length === 1 || args.length === 2 || args.length === 3 );
       _.assert( arguments.length === 2 );
@@ -8887,12 +8887,12 @@ _.routine.unite.defaults =
       _.assert( _.routine.is( o.body ), 'Expects routine {-o.body-}' );
       _.assert( o.tail === null || _.routine.is( o.tail ), () => `Expects routine {-o.tail-}, but got ${_.entity.strType( o.tail )}` );
       _.assert( o.body.defaults !== undefined, 'Body should have defaults' );
-    
+
       return o;
     }
     _uniteCloning_.body = function unite_body( o )
     {
-    
+
       if( _.longIs( o.head ) )
       {
         /* xxx : deprecate compose */
@@ -8931,7 +8931,7 @@ _.routine.unite.defaults =
       {
         o.head = headWithNargs_functor( o.head, o.body );
       }
-    
+
       if( o.head === null )
       {
         /* qqq : for Dmytro : cover please */
@@ -8940,7 +8940,7 @@ _.routine.unite.defaults =
         else
         o.head = headWithoutDefaults;
       }
-    
+
       if( !o.name )
       {
         _.assert( _.strDefined( o.body.name ), 'Body routine should have name' );
@@ -8948,9 +8948,9 @@ _.routine.unite.defaults =
         if( o.name.indexOf( '_body' ) === o.name.length-5 && o.name.length > 5 )
         o.name = o.name.substring( 0, o.name.length-5 );
       }
-    
+
       /* generate body */
-    
+
       /* qqq : for Dmytro : cover in separate test routine */
       let body;
       if( o.strategy === 'replacing' )
@@ -8963,15 +8963,15 @@ _.routine.unite.defaults =
         strategy : o.strategy,
         amending : 'extending',
       });
-    
+
       /* make routine */
-    
+
       let unitedRoutine = _unite_functor( o.name, o.head, body, o.tail );
-    
+
       _.assert( _.strDefined( unitedRoutine.name ), 'Looks like your interpreter does not support dynamic naming of functions. Please use ES2015 or later interpreter.' );
-    
+
       /* qqq : for Dmytro : cover option::strategy */
-    
+
       _.routine._amend
       ({
         dst : unitedRoutine,
@@ -8979,20 +8979,20 @@ _.routine.unite.defaults =
         strategy : 'replacing',
         amending : 'extending',
       });
-    
+
       unitedRoutine.head = o.head;
       unitedRoutine.body = body;
       if( o.tail )
       unitedRoutine.tail = o.tail;
-    
+
       _.assert
       (
         unitedRoutine.defaults === body.defaults,
         'Something wrong, united routined should have same instance of defaults its body has'
       );
-    
+
       return unitedRoutine;
-    
+
       function headWithNargs_functor( nargs, body )
       {
         _.assert( !!o.body.defaults );
@@ -9004,9 +9004,9 @@ _.routine.unite.defaults =
           return _.unroll.from([ ... Array.prototype.slice.call( args, 0, nargs ), o ]);
         }
       }
-    
+
       /* */
-    
+
       function headWithoutDefaults( routine, args )
       {
         let o = args[ 0 ];
@@ -9015,9 +9015,9 @@ _.routine.unite.defaults =
         _.assert( args.length === 0 || o === undefined || o === null || _.auxIs( o ) );
         return o || null;
       }
-    
+
       /* */
-    
+
       function headWithDefaults( routine, args )
       {
         let o = args[ 0 ];
@@ -9026,9 +9026,9 @@ _.routine.unite.defaults =
         _.assert( args.length === 0 || o === undefined || o === null || _.auxIs( o ) );
         return _.routine.options( routine, o || Object.create( null ) );
       }
-    
+
       /* */
-    
+
       function _unite_functor()
       {
         const name = arguments[ 0 ];
@@ -9036,11 +9036,11 @@ _.routine.unite.defaults =
         const body = arguments[ 2 ];
         const tail = arguments[ 3 ];
         let r;
-    
+
         _.assert( head === null || _.routineIs( head ) );
         _.assert( body === null || _.routineIs( body ) );
         _.assert( tail === null || _.routineIs( tail ) );
-    
+
         if( tail === null )
         r =
         {
@@ -9048,14 +9048,14 @@ _.routine.unite.defaults =
           {
             let result;
             let o = head.call( this, unitedRoutine, arguments );
-    
+
             _.assert( !_.argumentsArray.is( o ), 'does not expect arguments array' );
-    
+
             if( _.unrollIs( o ) )
             result = body.apply( this, o );
             else
             result = body.call( this, o );
-    
+
             return result;
           }
         };
@@ -9066,18 +9066,18 @@ _.routine.unite.defaults =
           {
             let result;
             let o = arguments[ 0 ];
-    
+
             _.assert( arguments.length === 1, 'Expects single argument {-o-}.' );
-    
+
             if( _.unrollIs( o ) )
             result = body.apply( this, o );
             else if( _.mapIs( o ) )
             result = body.call( this, o );
             else
             _.assert( 0, 'Unexpected type of {-o-}, expects options map or unroll.' );
-    
+
             result = tail.call( this, result, o );
-    
+
             return result;
           }
         };
@@ -9088,29 +9088,29 @@ _.routine.unite.defaults =
           {
             let result;
             let o = head.call( this, unitedRoutine, arguments );
-    
+
             _.assert( !_.argumentsArray.is( o ), 'does not expect arguments array' );
-    
+
             if( _.unrollIs( o ) )
             result = body.apply( this, o );
             else
             result = body.call( this, o );
-    
+
             debugger;
             result = tail.call( this, result, o );
-    
+
             return result;
           }
         };
-    
+
         return r[ name ]
       }
     }
     _uniteCloning_.defaults = {
-      "head" : null, 
-      "body" : null, 
-      "tail" : null, 
-      "name" : null, 
+      "head" : null,
+      "body" : null,
+      "tail" : null,
+      "name" : null,
       "strategy" : `cloning`
     }
   ;
@@ -9120,10 +9120,10 @@ _uniteCloning_.body = _uniteCloning_body;
 })();
 _.routine.uniteCloning_replaceByUnite.defaults =
 {
-  "head" : null, 
-  "body" : null, 
-  "tail" : null, 
-  "name" : null, 
+  "head" : null,
+  "body" : null,
+  "tail" : null,
+  "name" : null,
   "strategy" : `cloning`
 }
 
@@ -9452,9 +9452,9 @@ _.routine.uniteCloning_replaceByUnite.defaults =
 }
 _.routine._amend.defaults =
 {
-  "dst" : null, 
-  "srcs" : null, 
-  "strategy" : `cloning`, 
+  "dst" : null,
+  "srcs" : null,
+  "strategy" : `cloning`,
   "amending" : `extending`
 }
 
@@ -9825,24 +9825,24 @@ _.routine.s.compose = ( function() {
   const _compose_head = function _compose_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     if( !_.mapIs( o ) )
     o = { bodies : args[ 0 ] };
     if( args[ 1 ] !== undefined )
     o.chainer = args[ 1 ];
-  
+
     // if( o.bodies === null )
     // debugger;
     // o.bodies = _.arrayAppendArrays( [], [ o.bodies ] );
     // o.bodies = merge( o.bodies );
-  
+
     // let bodies2 = __arrayFlatten( o.bodies );
     // if( bodies2.length && bodies2[ 0 ] === undefined )
     // debugger;
-  
+
     o.bodies = __arrayFlatten( o.bodies );
     o.bodies = o.bodies.filter( ( e ) => e !== null );
-  
+
     _.routine.options( routine, o );
     _.assert( _.routine.s.are( o.bodies ) );
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
@@ -9852,9 +9852,9 @@ _.routine.s.compose = ( function() {
     _.assert( _.routine.is( args[ 1 ] ) || args[ 1 ] === undefined || args[ 1 ] === null );
     _.assert( o.chainer === null || _.routine.is( o.chainer ) );
     _.assert( o.tail === null || _.routine.is( o.tail ) );
-  
+
     return o;
-  
+
     // function merge( arrays )
     // {
     //   let result = [];
@@ -9894,13 +9894,13 @@ _.routine.s.compose = ( function() {
 
   const _compose_body = function _compose_body( o )
   {
-  
+
     // if( o.chainer === null )
     // o.chainer = defaultChainer;
     // o.bodies = __arrayFlatten( o.bodies );
     if( o.chainer === null )
     o.chainer = _.routine.chainer.default;
-  
+
     let bodies = [];
     for( let s = 0 ; s < o.bodies.length ; s++ )
     {
@@ -9922,41 +9922,41 @@ _.routine.s.compose = ( function() {
         bodies.push( body );
       }
     }
-  
+
     o.bodies = bodies;
-  
+
     let tail = o.tail;
     let chainer = o.chainer;
-  
+
     _.assert( _.routine.is( chainer ) );
     _.assert( tail === null || _.routine.is( tail ) );
-  
+
     /* */
-  
+
     if( bodies.length === 0 )
     o.act = compositionEmpty;
     else if( bodies.length === 1 )
     o.act = compositionOfSingle;
     else
     o.act = composition;
-  
+
     o.act.composed = o;
-  
+
     if( tail )
     {
       _.routine.extendReplacing( routineWithTail, o.act );
       return routineWithTail;
     }
-  
+
     return o.act;
-  
+
     /* */
-  
+
     function compositionEmpty()
     {
       return [];
     }
-  
+
     function compositionOfSingle()
     {
       let result = [];
@@ -9969,7 +9969,7 @@ _.routine.s.compose = ( function() {
       _.unrollAppend( result, r );
       return result;
     }
-  
+
     function composition()
     {
       let result = [];
@@ -9989,7 +9989,7 @@ _.routine.s.compose = ( function() {
       }
       return result;
     }
-  
+
     // function defaultChainer( /* args, result, op, k */ )
     // {
     //   let args = arguments[ 0 ];
@@ -10000,7 +10000,7 @@ _.routine.s.compose = ( function() {
     //   return result;
     //   return args;
     // }
-  
+
     function routineWithTail()
     {
       let result = tail.call( this, arguments, o );
@@ -10185,11 +10185,11 @@ _.routine.s.compose.defaults =
 }
 _.strConcat.defaults =
 {
-  "linePrefix" : ``, 
-  "linePostfix" : ``, 
-  "lineDelimter" : `\n`, 
-  "optionsForToStr" : null, 
-  "onToStr" : null, 
+  "linePrefix" : ``,
+  "linePostfix" : ``,
+  "lineDelimter" : `\n`,
+  "optionsForToStr" : null,
+  "onToStr" : null,
   "onPairWithDelimeter" : null
 }
 
@@ -10340,11 +10340,11 @@ _.strConcat.defaults =
 }
 _.strLinesNumber.defaults =
 {
-  "src" : null, 
-  "zeroLine" : null, 
-  "zeroChar" : null, 
-  "onLine" : null, 
-  "highlighting" : null, 
+  "src" : null,
+  "zeroLine" : null,
+  "zeroChar" : null,
+  "onLine" : null,
+  "highlighting" : null,
   "highlightingToken" : `*`
 }
 
@@ -10386,39 +10386,39 @@ _.strLinesNumber.defaults =
     var _body_0 = function strSplitFast_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     if( args.length === 2 )
     o = { src : args[ 0 ], delimeter : args[ 1 ] }
     else if( _.strIs( args[ 0 ] ) )
     o = { src : args[ 0 ] }
-  
+
     _.routine.options( routine, o );
-  
+
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( args.length === 1 || args.length === 2, 'Expects one or two arguments' );
     _.assert( _.strIs( o.src ) );
     _.assert( o.delimeter === null || _.regexp.like( o.delimeter ) || _.arrayIs( o.delimeter ) );
     _.assert( _.object.isBasic( o ) );
-  
+
     return o;
   }
-  
+
   //
-  
-  
+
+
    _strSplit_head.push( _body_0 );
     var _body_1 = function strSplitsQuotedRejoin_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     _.routine.options( routine, o );
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( args.length === 1, 'Expects one or two arguments' );
     _.assert( _.object.isBasic( o ) );
-  
+
     if( o.quoting )
     {
-  
+
       if( _.bool.like( o.quoting ) )
       {
         if( !o.quotingPrefixes )
@@ -10436,13 +10436,13 @@ _.strLinesNumber.defaults =
         o.quoting = true;
       }
       else _.assert( 0, 'unexpected type of {-o.quoting-}' );
-  
+
       _.assert
       (
         !o.pairing || o.quotingPrefixes.length === o.quotingPostfixes.length,
         `If option::o.paring is true then the length of o.quotingPrefixes should be equal to the length of o.quotingPostfixes`
       );
-  
+
       if( Config.debug )
       {
         _.assert( o.quotingPrefixes.length === o.quotingPostfixes.length );
@@ -10450,101 +10450,101 @@ _.strLinesNumber.defaults =
         o.quotingPrefixes.forEach( ( q ) => _.assert( _.strIs( q ) ) );
         o.quotingPostfixes.forEach( ( q ) => _.assert( _.strIs( q ) ) );
       }
-  
+
     }
-  
+
     return o;
   }
-  
+
   //
-  
-  
+
+
    _strSplit_head.push( _body_1 );
     var _body_2 = function strSplitsDropDelimeters_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     _.routine.options( routine, o );
-  
+
     if( _.strIs( o.delimeter ) )
     o.delimeter = [ o.delimeter ];
-  
+
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( args.length === 1 );
     _.assert( _.object.isBasic( o ) );
-  
+
     return o;
   }
-  
+
   //
-  
-  
+
+
    _strSplit_head.push( _body_2 );
     var _body_3 = function strSplitsStrip_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     _.routine.options( routine, o );
-  
+
     if( o.stripping && _.bool.like( o.stripping ) )
     o.stripping = _.strStrip.defaults.stripper;
-  
+
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( args.length === 1 );
     _.assert( _.object.isBasic( o ) );
     _.assert( !o.stripping || _.strIs( o.stripping ) || _.regexpIs( o.stripping ) );
-  
+
     return o;
   }
-  
+
   //
-  
-  
+
+
    _strSplit_head.push( _body_3 );
     var _body_4 = function strSplitsDropEmpty_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     _.routine.options( routine, o );
-  
+
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( args.length === 1 );
     _.assert( _.object.isBasic( o ) );
-  
+
     return o;
   }
-  
+
   //
-  
-  
+
+
    _strSplit_head.push( _body_4 );
 
   const _strSplit_body = function strSplit_body( o )
   {
-  
+
     o.delimeter = _.array.as( o.delimeter );
-  
+
     if( !o.stripping && !o.quoting && !o.onDelimeter )
     {
       return _.strSplitFast.body( _.mapOnly_( null, o, _.strSplitFast.defaults ) );
     }
-  
+
     /* */
-  
+
     _.assert( arguments.length === 1 );
-  
+
     /* */
-  
+
     let result = [];
     let fastOptions = _.mapOnly_( null, o, _.strSplitFast.defaults );
     fastOptions.preservingEmpty = 1;
     fastOptions.preservingDelimeters = 1;
-  
+
     if( o.quoting )
     fastOptions.delimeter = _.arrayAppendArraysOnce( [], [ o.quotingPrefixes, o.quotingPostfixes, fastOptions.delimeter ] );
-  
+
     o.splits = _.strSplitFast.body( fastOptions );
-  
+
     if( o.quoting && o.onQuote )
     {
       let quotes = _.arrayAppendArraysOnce( null, [ o.quotingPrefixes, o.quotingPostfixes ] );
@@ -10570,25 +10570,25 @@ _.strLinesNumber.defaults =
         o.splits[ i ] = o.onDelimeter( o.splits[ i ], index, o.delimeter );
       }
     }
-  
+
     if( o.quoting )
     _.strSplitsQuotedRejoin.body( o );
-  
+
     if( !o.preservingDelimeters )
     _.strSplitsDropDelimeters.body( o );
-  
+
     if( o.stripping )
     _.strSplitsStrip.body( o );
-  
+
     if( !o.preservingEmpty )
     _.strSplitsDropEmpty.body( o );
-  
+
     /* */
-  
+
     return o.splits;
-  
+
     /* */
-  
+
     function equalizeStrings( pattern, el )
     {
       if( _.strIs( pattern ) )
@@ -10597,18 +10597,18 @@ _.strLinesNumber.defaults =
       return pattern.test( el );
       return false;
     }
-  
+
   }
   _strSplit_body.defaults = {
-      "preservingEmpty" : 1, 
-      "preservingDelimeters" : 1, 
-      "preservingQuoting" : 1, 
-      "inliningQuoting" : 1, 
-      "stripping" : 1, 
-      "quoting" : 1, 
-      "quotingPrefixes" : null, 
-      "quotingPostfixes" : null, 
-      "onDelimeter" : null, 
+      "preservingEmpty" : 1,
+      "preservingDelimeters" : 1,
+      "preservingQuoting" : 1,
+      "inliningQuoting" : 1,
+      "stripping" : 1,
+      "quoting" : 1,
+      "quotingPrefixes" : null,
+      "quotingPostfixes" : null,
+      "onDelimeter" : null,
       "onQuote" : null
     }
 
@@ -10622,17 +10622,17 @@ _.strLinesNumber.defaults =
 })();
 _.strSplit.defaults =
 {
-  "preservingEmpty" : 1, 
-  "preservingDelimeters" : 1, 
-  "preservingQuoting" : 1, 
-  "inliningQuoting" : 1, 
-  "stripping" : 1, 
-  "quoting" : 1, 
-  "quotingPrefixes" : null, 
-  "quotingPostfixes" : null, 
-  "onDelimeter" : null, 
-  "onQuote" : null, 
-  "src" : null, 
+  "preservingEmpty" : 1,
+  "preservingDelimeters" : 1,
+  "preservingQuoting" : 1,
+  "inliningQuoting" : 1,
+  "stripping" : 1,
+  "quoting" : 1,
+  "quotingPrefixes" : null,
+  "quotingPostfixes" : null,
+  "onDelimeter" : null,
+  "onQuote" : null,
+  "src" : null,
   "delimeter" : ` `
 }
 
@@ -10644,62 +10644,62 @@ _.strSplit.defaults =
   const _strSplitFast_head = function strSplitFast_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     if( args.length === 2 )
     o = { src : args[ 0 ], delimeter : args[ 1 ] }
     else if( _.strIs( args[ 0 ] ) )
     o = { src : args[ 0 ] }
-  
+
     _.routine.options( routine, o );
-  
+
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( args.length === 1 || args.length === 2, 'Expects one or two arguments' );
     _.assert( _.strIs( o.src ) );
     _.assert( o.delimeter === null || _.regexp.like( o.delimeter ) || _.arrayIs( o.delimeter ) );
     _.assert( _.object.isBasic( o ) );
-  
+
     return o;
   }
 
   const _strSplitFast_body = function strSplitFast_body( o )
   {
     let result, closests, position, closestPosition, closestIndex, hasEmptyDelimeter, delimeter
-  
+
     o.delimeter = _.array.as( o.delimeter );
-  
+
     let foundDelimeters = o.delimeter.slice();
-  
+
     _.assert( arguments.length === 1 );
     _.assert( _.arrayIs( o.delimeter ) );
     _.assert( _.bool.like( o.preservingDelimeters ) );
-  
+
     /* */
-  
+
     if( !o.preservingDelimeters && o.delimeter.length === 1 )
     {
-  
+
       result = o.src.split( o.delimeter[ 0 ] );
-  
+
       if( !o.preservingEmpty )
       result = result.filter( ( e ) => e ? e : false );
-  
+
     }
     else
     {
-  
+
       if( !o.delimeter.length )
       {
         result = [ o.src ];
         return result;
       }
-  
+
       result = [];
       closests = [];
       position = 0;
       closestPosition = 0;
       closestIndex = -1;
       hasEmptyDelimeter = false;
-  
+
       for( let d = 0 ; d < o.delimeter.length ; d++ )
       {
         let delimeter = o.delimeter[ d ];
@@ -10716,43 +10716,43 @@ _.strSplit.defaults =
         }
         closests[ d ] = delimeterNext( d, position );
       }
-  
+
       do
       {
         closestWhich();
-  
+
         if( closestPosition === o.src.length )
         break;
-  
+
         if( !delimeter.length )
         position += 1;
-  
+
         ordinaryAdd( o.src.substring( position, closestPosition ) );
-  
+
         if( delimeter.length > 0 || position < o.src.length )
         delimeterAdd( delimeter );
-  
+
         position = closests[ closestIndex ] + ( delimeter.length ? delimeter.length : 1 );
-  
+
         for( let d = 0 ; d < o.delimeter.length ; d++ )
         if( closests[ d ] < position )
         closests[ d ] = delimeterNext( d, position );
-  
+
       }
       while( position < o.src.length );
-  
+
       if( delimeter || !hasEmptyDelimeter )
       ordinaryAdd( o.src.substring( position, o.src.length ) );
-  
+
     }
-  
+
     return result;
-  
+
     /* */
-  
+
     function delimeterAdd( delimeter )
     {
-  
+
       if( o.preservingDelimeters )
       if( o.preservingEmpty || delimeter )
       {
@@ -10763,22 +10763,22 @@ _.strSplit.defaults =
         // else
         // result.push( delimeter );
       }
-  
+
     }
-  
+
     /*  */
-  
+
     function ordinaryAdd( ordinary )
     {
       if( o.preservingEmpty || ordinary )
       result.push( ordinary );
     }
-  
+
     /* */
-  
+
     function closestWhich()
     {
-  
+
       closestPosition = o.src.length;
       closestIndex = -1;
       for( let d = 0 ; d < o.delimeter.length ; d++ )
@@ -10789,19 +10789,19 @@ _.strSplit.defaults =
           closestIndex = d;
         }
       }
-  
+
       delimeter = foundDelimeters[ closestIndex ];
-  
+
     }
-  
+
     /* */
-  
+
     function delimeterNext( d, position )
     {
       _.assert( position <= o.src.length );
       let delimeter = o.delimeter[ d ];
       let result;
-  
+
       if( _.strIs( delimeter ) )
       {
         result = o.src.indexOf( delimeter, position );
@@ -10815,17 +10815,17 @@ _.strSplit.defaults =
           foundDelimeters[ d ] = execed[ 0 ];
         }
       }
-  
+
       if( result === -1 )
       return o.src.length;
       return result;
     }
-  
+
   }
   _strSplitFast_body.defaults = {
-      "src" : null, 
-      "delimeter" : ` `, 
-      "preservingEmpty" : 1, 
+      "src" : null,
+      "delimeter" : ` `,
+      "preservingEmpty" : 1,
       "preservingDelimeters" : 1
     }
 
@@ -10839,9 +10839,9 @@ _.strSplit.defaults =
 })();
 _.strSplitFast.defaults =
 {
-  "src" : null, 
-  "delimeter" : ` `, 
-  "preservingEmpty" : 1, 
+  "src" : null,
+  "delimeter" : ` `,
+  "preservingEmpty" : 1,
   "preservingDelimeters" : 1
 }
 
@@ -10853,15 +10853,15 @@ _.strSplitFast.defaults =
   const _strSplitsQuotedRejoin_head = function strSplitsQuotedRejoin_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     _.routine.options( routine, o );
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( args.length === 1, 'Expects one or two arguments' );
     _.assert( _.object.isBasic( o ) );
-  
+
     if( o.quoting )
     {
-  
+
       if( _.bool.like( o.quoting ) )
       {
         if( !o.quotingPrefixes )
@@ -10879,13 +10879,13 @@ _.strSplitFast.defaults =
         o.quoting = true;
       }
       else _.assert( 0, 'unexpected type of {-o.quoting-}' );
-  
+
       _.assert
       (
         !o.pairing || o.quotingPrefixes.length === o.quotingPostfixes.length,
         `If option::o.paring is true then the length of o.quotingPrefixes should be equal to the length of o.quotingPostfixes`
       );
-  
+
       if( Config.debug )
       {
         _.assert( o.quotingPrefixes.length === o.quotingPostfixes.length );
@@ -10893,20 +10893,20 @@ _.strSplitFast.defaults =
         o.quotingPrefixes.forEach( ( q ) => _.assert( _.strIs( q ) ) );
         o.quotingPostfixes.forEach( ( q ) => _.assert( _.strIs( q ) ) );
       }
-  
+
     }
-  
+
     return o;
   }
 
   const _strSplitsQuotedRejoin_body = function strSplitsQuotedRejoin_body( o )
   {
-  
+
     _.assert( arguments.length === 1 );
     _.assert( _.arrayIs( o.splits ) );
-  
+
     /* quoting */
-  
+
     // let s = 1; // why was it 1??
     let s = 0;
     if( o.quoting )
@@ -10914,14 +10914,14 @@ _.strSplitFast.defaults =
       for( s ; s < o.splits.length ; s += 1 )
       splitsQuote( o.splits[ s ], s );
     }
-  
+
     return o.splits;
-  
+
     function splitsQuote( split, i )
     {
       let s2;
       let q = o.quotingPrefixes.indexOf( split );
-  
+
       if( q >= 0 )
       {
         let postfix = o.quotingPostfixes[ q ];
@@ -10958,9 +10958,9 @@ _.strSplitFast.defaults =
           }
         }
       }
-  
+
       /* if complementing postfix not found */
-  
+
       if( s2 >= o.splits.length )
       {
         if( !_.longHas( o.delimeter, split ) )
@@ -10975,14 +10975,14 @@ _.strSplitFast.defaults =
     }
   }
   _strSplitsQuotedRejoin_body.defaults = {
-      "quoting" : 1, 
-      "quotingPrefixes" : null, 
-      "quotingPostfixes" : null, 
-      "preservingQuoting" : 1, 
-      "inliningQuoting" : 1, 
-      "splits" : null, 
-      "delimeter" : null, 
-      "onQuoting" : null, 
+      "quoting" : 1,
+      "quotingPrefixes" : null,
+      "quotingPostfixes" : null,
+      "preservingQuoting" : 1,
+      "inliningQuoting" : 1,
+      "splits" : null,
+      "delimeter" : null,
+      "onQuoting" : null,
       "pairing" : 0
     }
 
@@ -10996,14 +10996,14 @@ _.strSplitFast.defaults =
 })();
 _.strSplitsQuotedRejoin.defaults =
 {
-  "quoting" : 1, 
-  "quotingPrefixes" : null, 
-  "quotingPostfixes" : null, 
-  "preservingQuoting" : 1, 
-  "inliningQuoting" : 1, 
-  "splits" : null, 
-  "delimeter" : null, 
-  "onQuoting" : null, 
+  "quoting" : 1,
+  "quotingPrefixes" : null,
+  "quotingPostfixes" : null,
+  "preservingQuoting" : 1,
+  "inliningQuoting" : 1,
+  "splits" : null,
+  "delimeter" : null,
+  "onQuoting" : null,
   "pairing" : 0
 }
 
@@ -11015,45 +11015,45 @@ _.strSplitsQuotedRejoin.defaults =
   const _strSplitsDropDelimeters_head = function strSplitsDropDelimeters_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     _.routine.options( routine, o );
-  
+
     if( _.strIs( o.delimeter ) )
     o.delimeter = [ o.delimeter ];
-  
+
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( args.length === 1 );
     _.assert( _.object.isBasic( o ) );
-  
+
     return o;
   }
 
   const _strSplitsDropDelimeters_body = function strSplitsDropDelimeters_body( o )
   {
-  
+
     _.assert( arguments.length === 1 );
     _.assert( _.arrayIs( o.splits ) );
-  
+
     /* stripping */
-  
+
     // if( o.delimeter.some( ( d ) => _.regexpIs( d ) ) )
     // debugger;
-  
+
     for( let s = o.splits.length-1 ; s >= 0 ; s-- )
     {
       let split = o.splits[ s ];
-  
+
       if( _.regexpsTestAny( o.delimeter, split ) ) /* xxx qqq : ? */
       o.splits.splice( s, 1 );
-  
+
       // if( _.longHas( o.delimeter, split ) )
       // o.splits.splice( s, 1 );
       //
       // if( s % 2 === 1 )
       // o.splits.splice( s, 1 );
-  
+
     }
-  
+
     return o.splits;
   }
   _strSplitsDropDelimeters_body.defaults = { "splits" : null, "delimeter" : null }
@@ -11077,41 +11077,41 @@ _.strSplitsDropDelimeters.defaults =
   const _strSplitsStrip_head = function strSplitsStrip_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     _.routine.options( routine, o );
-  
+
     if( o.stripping && _.bool.like( o.stripping ) )
     o.stripping = _.strStrip.defaults.stripper;
-  
+
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( args.length === 1 );
     _.assert( _.object.isBasic( o ) );
     _.assert( !o.stripping || _.strIs( o.stripping ) || _.regexpIs( o.stripping ) );
-  
+
     return o;
   }
 
   const _strSplitsStrip_body = function strSplitsStrip_body( o )
   {
-  
+
     _.assert( arguments.length === 1 );
     _.assert( _.arrayIs( o.splits ) );
-  
+
     if( !o.stripping )
     return o.splits;
-  
+
     /* stripping */
-  
+
     for( let s = 0 ; s < o.splits.length ; s++ )
     {
       let split = o.splits[ s ];
-  
+
       if( _.strIs( split ) )
       split = _.strStrip({ src : split, stripper : o.stripping });
-  
+
       o.splits[ s ] = split;
     }
-  
+
     return o.splits;
   }
   _strSplitsStrip_body.defaults = { "stripping" : 1, "splits" : null }
@@ -11135,36 +11135,36 @@ _.strSplitsStrip.defaults =
   const _strSplitsDropEmpty_head = function strSplitsDropEmpty_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     _.routine.options( routine, o );
-  
+
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( args.length === 1 );
     _.assert( _.object.isBasic( o ) );
-  
+
     return o;
   }
 
   const _strSplitsDropEmpty_body = function strSplitsDropEmpty_body( o )
   {
-  
+
     _.assert( arguments.length === 1 );
     _.assert( _.arrayIs( o.splits ) );
-  
+
     /* stripping */
-  
+
     for( let s = 0 ; s < o.splits.length ; s++ )
     {
       let split = o.splits[ s ];
-  
+
       if( !split )
       {
         o.splits.splice( s, 1 );
         s -= 1;
       }
-  
+
     }
-  
+
     return o.splits;
   }
   _strSplitsDropEmpty_body.defaults = { "splits" : null }
@@ -11405,14 +11405,14 @@ _.strStrip.defaults =
 }
 _.strLinesSelect.defaults =
 {
-  "src" : null, 
-  "range" : null, 
-  "line" : null, 
-  "nearestLines" : 3, 
-  "selectMode" : `center`, 
-  "highlighting" : `*`, 
-  "numbering" : 0, 
-  "zeroLine" : 1, 
+  "src" : null,
+  "range" : null,
+  "line" : null,
+  "nearestLines" : 3,
+  "selectMode" : `center`,
+  "highlighting" : `*`,
+  "numbering" : 0,
+  "zeroLine" : 1,
   "delimteter" : `\n`
 }
 
@@ -11601,7 +11601,7 @@ _.strLinesSelect.defaults =
   const _strIsolate_head = function strIsolate_head( routine, args )
   {
     let o;
-  
+
     if( args.length > 1 )
     {
       if( args.length === 3 )
@@ -11616,14 +11616,14 @@ _.strLinesSelect.defaults =
       o = args[ 0 ];
       _.assert( args.length === 1, 'Expects single argument' );
     }
-  
+
     _.routine.options( routine, o );
     _.assert( args.length === 1 || args.length === 2 || args.length === 3 );
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( _.strIs( o.src ) );
     _.assert( _.regexpsLikeAll( o.delimeter ) )
     _.assert( _.number.is( o.times ) );
-  
+
     return o;
   }
 
@@ -11635,34 +11635,34 @@ _.strLinesSelect.defaults =
     let index = o.left ? 0 : o.src.length;
     let more = o.left ? strLeft : strRight;
     let delta = ( o.left ? +1 : -1 );
-  
+
     _.routine.assertOptions( strIsolate_body, arguments );
-  
+
     /* */
-  
+
     if( _.arrayIs( o.delimeter ) && o.delimeter.length === 1 )
     o.delimeter = o.delimeter[ 0 ];
-  
+
     let quote;
     if( o.quote )
     quote = _.strQuoteAnalyze({ src : o.src, quote : o.quote });
-  
+
     /* */
-  
+
     while( times > 0 )
     {
       let found = more( index );
-  
+
       if( found.entry === undefined )
       break;
-  
+
       times -= 1;
-  
+
       if( o.left )
       index = found.index + delta;
       else
       index = found.index + found.entry.length + delta;
-  
+
       if( times === 0 )
       {
         result.push( o.src.substring( 0, found.index ) );
@@ -11670,9 +11670,9 @@ _.strLinesSelect.defaults =
         result.push( o.src.substring( found.index + found.entry.length ) );
         return result;
       }
-  
+
       /* */
-  
+
       if( o.left )
       {
         if( index >= o.src.length )
@@ -11683,34 +11683,34 @@ _.strLinesSelect.defaults =
         if( index <= 0 )
         break;
       }
-  
+
     }
-  
+
     /* */
-  
+
     if( !result.length )
     {
-  
+
       if( o.times === 0 )
       return everything( !o.left );
       else if( times === o.times )
       return everything( o.left ^ o.none );
       else
       return everything( o.left );
-  
+
     }
-  
+
     return result;
-  
+
     /* */
-  
+
     function everything( side )
     {
       return ( side ) ? [ o.src, undefined, '' ] : [ '', undefined, o.src ];
     }
-  
+
     /* */
-  
+
     function strLeft( index )
     {
       // let r = _._strLeftSingle( o.src, o.delimeter, [ index, undefined ] );
@@ -11724,9 +11724,9 @@ _.strLinesSelect.defaults =
       }
       return r;
     }
-  
+
     /* */
-  
+
     function strRight( index )
     {
       // let r = _._strRightSingle( o.src, o.delimeter, [ undefined, index ] );
@@ -11740,9 +11740,9 @@ _.strLinesSelect.defaults =
       }
       return r;
     }
-  
+
     /* */
-  
+
     function inQuoteRange( offset )
     {
       let i = _.sorted.searchFirstIndex( quote.ranges, offset );
@@ -11758,9 +11758,9 @@ _.strLinesSelect.defaults =
       return false;
       return [ b, e ];
     }
-  
+
     /* */
-  
+
     // function binSearch( val )
     // {
     //   let l = 0;
@@ -11783,9 +11783,9 @@ _.strLinesSelect.defaults =
     //   return m+1;
     //   return m;
     // }
-  
+
     /* */
-  
+
     // let quotedRanges = [];
     //
     // function quoteRangesSetup( index )
@@ -11802,14 +11802,14 @@ _.strLinesSelect.defaults =
     //   for( let i = 0 ; i < x ; i++ )
     //
     // }
-  
+
   }
   _strIsolate_body.defaults = {
-      "src" : null, 
-      "delimeter" : ` `, 
-      "quote" : 0, 
-      "left" : 1, 
-      "times" : 1, 
+      "src" : null,
+      "delimeter" : ` `,
+      "quote" : 0,
+      "left" : 1,
+      "times" : 1,
       "none" : 1
     }
 
@@ -11823,11 +11823,11 @@ _.strLinesSelect.defaults =
 })();
 _.strIsolate.defaults =
 {
-  "src" : null, 
-  "delimeter" : ` `, 
-  "quote" : 0, 
-  "left" : 1, 
-  "times" : 1, 
+  "src" : null,
+  "delimeter" : ` `,
+  "quote" : 0,
+  "left" : 1,
+  "times" : 1,
   "none" : 1
 }
 
@@ -11839,7 +11839,7 @@ _.strIsolate.defaults =
   const _strIsolateLeftOrNone_head = function strIsolate_head( routine, args )
   {
     let o;
-  
+
     if( args.length > 1 )
     {
       if( args.length === 3 )
@@ -11854,14 +11854,14 @@ _.strIsolate.defaults =
       o = args[ 0 ];
       _.assert( args.length === 1, 'Expects single argument' );
     }
-  
+
     _.routine.options( routine, o );
     _.assert( args.length === 1 || args.length === 2 || args.length === 3 );
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( _.strIs( o.src ) );
     _.assert( _.regexpsLikeAll( o.delimeter ) )
     _.assert( _.number.is( o.times ) );
-  
+
     return o;
   }
 
@@ -11873,9 +11873,9 @@ _.strIsolate.defaults =
     return result;
   }
   _strIsolateLeftOrNone_body.defaults = {
-      "src" : null, 
-      "delimeter" : ` `, 
-      "times" : 1, 
+      "src" : null,
+      "delimeter" : ` `,
+      "times" : 1,
       "quote" : null
     }
 
@@ -11889,9 +11889,9 @@ _.strIsolate.defaults =
 })();
 _.strIsolateLeftOrNone.defaults =
 {
-  "src" : null, 
-  "delimeter" : ` `, 
-  "times" : 1, 
+  "src" : null,
+  "delimeter" : ` `,
+  "times" : 1,
   "quote" : null
 }
 
@@ -11903,7 +11903,7 @@ _.strIsolateLeftOrNone.defaults =
   const _strIsolateRightOrNone_head = function strIsolate_head( routine, args )
   {
     let o;
-  
+
     if( args.length > 1 )
     {
       if( args.length === 3 )
@@ -11918,14 +11918,14 @@ _.strIsolateLeftOrNone.defaults =
       o = args[ 0 ];
       _.assert( args.length === 1, 'Expects single argument' );
     }
-  
+
     _.routine.options( routine, o );
     _.assert( args.length === 1 || args.length === 2 || args.length === 3 );
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( _.strIs( o.src ) );
     _.assert( _.regexpsLikeAll( o.delimeter ) )
     _.assert( _.number.is( o.times ) );
-  
+
     return o;
   }
 
@@ -11937,9 +11937,9 @@ _.strIsolateLeftOrNone.defaults =
     return result;
   }
   _strIsolateRightOrNone_body.defaults = {
-      "src" : null, 
-      "delimeter" : ` `, 
-      "times" : 1, 
+      "src" : null,
+      "delimeter" : ` `,
+      "times" : 1,
       "quote" : null
     }
 
@@ -11953,9 +11953,9 @@ _.strIsolateLeftOrNone.defaults =
 })();
 _.strIsolateRightOrNone.defaults =
 {
-  "src" : null, 
-  "delimeter" : ` `, 
-  "times" : 1, 
+  "src" : null,
+  "delimeter" : ` `,
+  "times" : 1,
   "quote" : null
 }
 
@@ -11967,7 +11967,7 @@ _.strIsolateRightOrNone.defaults =
   const _strIsolateLeftOrAll_head = function strIsolate_head( routine, args )
   {
     let o;
-  
+
     if( args.length > 1 )
     {
       if( args.length === 3 )
@@ -11982,14 +11982,14 @@ _.strIsolateRightOrNone.defaults =
       o = args[ 0 ];
       _.assert( args.length === 1, 'Expects single argument' );
     }
-  
+
     _.routine.options( routine, o );
     _.assert( args.length === 1 || args.length === 2 || args.length === 3 );
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( _.strIs( o.src ) );
     _.assert( _.regexpsLikeAll( o.delimeter ) )
     _.assert( _.number.is( o.times ) );
-  
+
     return o;
   }
 
@@ -12001,9 +12001,9 @@ _.strIsolateRightOrNone.defaults =
     return result;
   }
   _strIsolateLeftOrAll_body.defaults = {
-      "src" : null, 
-      "delimeter" : ` `, 
-      "times" : 1, 
+      "src" : null,
+      "delimeter" : ` `,
+      "times" : 1,
       "quote" : null
     }
 
@@ -12017,9 +12017,9 @@ _.strIsolateRightOrNone.defaults =
 })();
 _.strIsolateLeftOrAll.defaults =
 {
-  "src" : null, 
-  "delimeter" : ` `, 
-  "times" : 1, 
+  "src" : null,
+  "delimeter" : ` `,
+  "times" : 1,
   "quote" : null
 }
 
@@ -12031,7 +12031,7 @@ _.strIsolateLeftOrAll.defaults =
   const _strIsolateRightOrAll_head = function strIsolate_head( routine, args )
   {
     let o;
-  
+
     if( args.length > 1 )
     {
       if( args.length === 3 )
@@ -12046,14 +12046,14 @@ _.strIsolateLeftOrAll.defaults =
       o = args[ 0 ];
       _.assert( args.length === 1, 'Expects single argument' );
     }
-  
+
     _.routine.options( routine, o );
     _.assert( args.length === 1 || args.length === 2 || args.length === 3 );
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( _.strIs( o.src ) );
     _.assert( _.regexpsLikeAll( o.delimeter ) )
     _.assert( _.number.is( o.times ) );
-  
+
     return o;
   }
 
@@ -12065,9 +12065,9 @@ _.strIsolateLeftOrAll.defaults =
     return result;
   }
   _strIsolateRightOrAll_body.defaults = {
-      "src" : null, 
-      "delimeter" : ` `, 
-      "times" : 1, 
+      "src" : null,
+      "delimeter" : ` `,
+      "times" : 1,
       "quote" : null
     }
 
@@ -12081,9 +12081,9 @@ _.strIsolateLeftOrAll.defaults =
 })();
 _.strIsolateRightOrAll.defaults =
 {
-  "src" : null, 
-  "delimeter" : ` `, 
-  "times" : 1, 
+  "src" : null,
+  "delimeter" : ` `,
+  "times" : 1,
   "quote" : null
 }
 
@@ -12328,13 +12328,13 @@ _.strEscape.defaults =
 }
 _.strShort_.defaults =
 {
-  "src" : null, 
-  "widthLimit" : 40, 
-  "heightLimit" : 0, 
-  "delimeter" : null, 
-  "heightDelimeter" : null, 
-  "onLength" : null, 
-  "cutting" : `center`, 
+  "src" : null,
+  "widthLimit" : 40,
+  "heightLimit" : 0,
+  "delimeter" : null,
+  "heightDelimeter" : null,
+  "onLength" : null,
+  "cutting" : `center`,
   "heightCutting" : `center`
 }
 
@@ -12373,35 +12373,35 @@ _.strShort_.defaults =
     let o = args[ 0 ];
     if( _.strIs( o ) )
     o = { path : o };
-  
+
     _.routine.options_( routine, o );
     _.assert( args.length === 1 );
     _.assert( arguments.length === 2 );
     _.assert( _.strIs( o.path ), 'Expects string {-o.path-}' );
-  
+
     return o;
   }
 
   const _name_body = function name_body( o )
   {
-  
+
     if( _.strIs( o ) )
     o = { path : o };
-  
+
     _.routine.assertOptions( name_body, arguments );
-  
+
     o.path = this.canonize( o.path );
-  
+
     let i = o.path.lastIndexOf( '/' );
     if( i !== -1 )
     o.path = o.path.substr( i+1 );
-  
+
     if( !o.full )
     {
       let i = o.path.lastIndexOf( '.' );
       if( i !== -1 ) o.path = o.path.substr( 0, i );
     }
-  
+
     return o.path;
   }
   _name_body.defaults = { "path" : null, "full" : 0 }
@@ -12427,35 +12427,35 @@ _.path.name.defaults =
     let o = args[ 0 ];
     if( _.strIs( o ) )
     o = { path : o };
-  
+
     _.routine.options_( routine, o );
     _.assert( args.length === 1 );
     _.assert( arguments.length === 2 );
     _.assert( _.strIs( o.path ), 'Expects string {-o.path-}' );
-  
+
     return o;
   }
 
   const _name_body = function name_body( o )
   {
-  
+
     if( _.strIs( o ) )
     o = { path : o };
-  
+
     _.routine.assertOptions( name_body, arguments );
-  
+
     o.path = this.canonize( o.path );
-  
+
     let i = o.path.lastIndexOf( '/' );
     if( i !== -1 )
     o.path = o.path.substr( i+1 );
-  
+
     if( !o.full )
     {
       let i = o.path.lastIndexOf( '.' );
       if( i !== -1 ) o.path = o.path.substr( 0, i );
     }
-  
+
     return o.path;
   }
   _name_body.defaults = { "path" : null, "full" : 0 }
@@ -12476,16 +12476,16 @@ _.path.fullName.defaults =
 
 
   _.str = {
-  "lines" : 
+  "lines" :
   {
-    "Eol" : 
+    "Eol" :
     {
-      "any" : [ `\r\n`, `\n\r`, `\n` ], 
-      "posix" : `\n`, 
-      "windows" : `\r\n`, 
-      "mac" : `\n\r`, 
+      "any" : [ `\r\n`, `\n\r`, `\n` ],
+      "posix" : `\n`,
+      "windows" : `\r\n`,
+      "mac" : `\n\r`,
       "default" : `\n`
-    }, 
+    },
     "split" : function split( src, eol )
 {
   if( _.arrayIs( src ) )
@@ -12495,7 +12495,7 @@ _.path.fullName.defaults =
   if( eol === undefined )
   eol = _.str.lines.Eol.default;
   return src.split( eol );
-}, 
+},
     "join" : function join( src, eol )
 {
   _.assert( _.strIs( src ) || _.arrayIs( src ) );
@@ -12506,7 +12506,7 @@ _.path.fullName.defaults =
   if( _.arrayIs( src ) )
   result = src.join( eol );
   return result;
-}, 
+},
     "strip" : function strip( src )
 {
 
@@ -12527,7 +12527,7 @@ _.path.fullName.defaults =
   if( _.strIs( src ) )
   lines = _.str.lines.join( lines );
   return lines;
-}, 
+},
     "atLeft" : function atLeft( src, index, eol )
 {
   let result;
@@ -12572,7 +12572,7 @@ _.path.fullName.defaults =
     result.line = src.slice( it.charInterval[ 0 ], it.charInterval[ 1 ]-it.nl.length+1 );
   }
 
-}, 
+},
     "atRight" : function atRight( src, index, eol )
 {
   let result;
@@ -12618,7 +12618,7 @@ _.path.fullName.defaults =
     result.line = src.slice( it.charInterval[ 0 ], it.charInterval[ 1 ]-it.nl.length+1 );
   }
 
-}, 
+},
     "at" : function atLeft( src, index, eol )
 {
   let result;
@@ -12663,7 +12663,7 @@ _.path.fullName.defaults =
     result.line = src.slice( it.charInterval[ 0 ], it.charInterval[ 1 ]-it.nl.length+1 );
   }
 
-}, 
+},
     "_eachLeft" : function _eachLeft( o )
 {
 
@@ -12913,7 +12913,7 @@ _.path.fullName.defaults =
 
   /* */
 
-}, 
+},
     "eachLeft" : function eachLeft( o )
 {
 
@@ -12937,7 +12937,7 @@ _.path.fullName.defaults =
   _.assert( _.str.is( o.src ) );
 
   return this._eachLeft( o );
-}, 
+},
     "_eachRight" : function _eachRight( o )
 {
 
@@ -13199,7 +13199,7 @@ _.path.fullName.defaults =
 
   /* */
 
-}, 
+},
     "eachRight" : function eachRight( o )
 {
 
@@ -13223,7 +13223,7 @@ _.path.fullName.defaults =
   _.assert( _.str.is( o.src ) );
 
   return this._eachRight( o );
-}, 
+},
     "each" : function eachLeft( o )
 {
 
@@ -13248,12 +13248,12 @@ _.path.fullName.defaults =
 
   return this._eachLeft( o );
 }
-  }, 
+  },
   "is" : function is( src )
 {
   let result = Object.prototype.toString.call( src ) === '[object String]';
   return result;
-}, 
+},
   "like" : function like( src )
 {
   if( _.str.is( src ) )
@@ -13261,14 +13261,14 @@ _.path.fullName.defaults =
   if( _.regexp.is( src ) )
   return true;
   return false;
-}, 
+},
   "defined" : function defined( src )
 {
   if( !src )
   return false;
   let result = Object.prototype.toString.call( src ) === '[object String]';
   return result;
-}, 
+},
   "has" : function has( src, ins )
 {
   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
@@ -13280,7 +13280,7 @@ _.path.fullName.defaults =
   else
   return ins.test( src );
 
-}, 
+},
   "short_" : function short_( o )  /* version with binary search cutting */
 {
 
@@ -13372,7 +13372,7 @@ _.path.fullName.defaults =
 
     return o;
   }
-}, 
+},
   "_shortWidth" : function _shortWidth( o )
 {
   /*
@@ -13580,7 +13580,7 @@ _.path.fullName.defaults =
     return [ begin, end ];
   }
 
-}, 
+},
   "shortHeight" : function shortHeight( o )
 {
 
@@ -13614,7 +13614,7 @@ _.path.fullName.defaults =
 
   return o;
 
-}, 
+},
   "_shortHeight" : function _shortHeight( o )  /* version with binary search cutting */
 {
   /*
@@ -13714,7 +13714,7 @@ _.path.fullName.defaults =
     return [ splittedLeft, splittedRight ];
   }
 
-}, 
+},
   "concat" : function concat( srcs, o )
 {
 
@@ -13793,7 +13793,7 @@ _.path.fullName.defaults =
   {
     return src1 + src2;
   }
-}, 
+},
   "_beginOf" : function _beginOf( src, begin )
 {
 
@@ -13814,7 +13814,7 @@ _.path.fullName.defaults =
   else _.assert( 0, 'Expects string-like ( string or regexp )' );
 
   return undefined;
-}, 
+},
   "_endOf" : function _endOf( src, end )
 {
 
@@ -13839,7 +13839,7 @@ _.path.fullName.defaults =
   else _.assert( 0, 'Expects string-like ( string or regexp )' );
 
   return undefined;
-}, 
+},
   "begins" : function begins( src, begin )
 {
 
@@ -13862,7 +13862,7 @@ _.path.fullName.defaults =
   }
 
   return false;
-}, 
+},
   "ends" : function ends( src, end )
 {
 
@@ -13884,7 +13884,7 @@ _.path.fullName.defaults =
   }
 
   return false;
-}, 
+},
   "beginOf" : function beginOf( src, begin )
 {
 
@@ -13906,7 +13906,7 @@ _.path.fullName.defaults =
   }
 
   return undefined;
-}, 
+},
   "endOf" : function endOf( src, end )
 {
 
@@ -13928,7 +13928,7 @@ _.path.fullName.defaults =
   }
 
   return undefined;
-}, 
+},
   "removeBegin" : function removeBegin( src, begin )
 {
   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
@@ -13962,7 +13962,7 @@ _.path.fullName.defaults =
   return result[ 0 ];
 
   return result;
-}, 
+},
   "removeEnd" : function removeEnd( src, end )
 {
   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
@@ -13997,7 +13997,7 @@ _.path.fullName.defaults =
   return result[ 0 ];
 
   return result;
-}, 
+},
   "remove" : function remove( srcStr, insStr )
 {
   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
@@ -14009,40 +14009,40 @@ _.path.fullName.defaults =
   result = result.replace( insStr, '' );
 
   return result;
-}, 
+},
   "_exportStringDiagnosticShallow" : function _exportStringDiagnosticShallow( src, o )
 {
   return src;
-}, 
+},
   "exportStringDiagnosticShallow" : function exportStringDiagnosticShallow( src, o )
 {
   let result;
   _.assert( arguments.length === 1 || arguments.length === 2, 'Expects 1 or 2 arguments' );
   _.assert( this.like( src ) );
   return this._exportStringDiagnosticShallow( ... arguments );
-}, 
+},
   "_exportStringCodeShallow" : function _exportStringCodeShallow( src, o )
 {
   return `'${src}'`;
-}, 
+},
   "exportStringCodeShallow" : function exportStringCodeShallow( src, o )
 {
   let result;
   _.assert( arguments.length === 1 || arguments.length === 2, 'Expects 1 or 2 arguments' );
   _.assert( this.like( src ) );
   return this._exportStringCodeShallow( ... arguments );
-}, 
+},
   "exportString" : function exportStringDiagnosticShallow( src, o )
 {
   let result;
   _.assert( arguments.length === 1 || arguments.length === 2, 'Expects 1 or 2 arguments' );
   _.assert( this.like( src ) );
   return this._exportStringDiagnosticShallow( ... arguments );
-}, 
+},
   "_identicalShallow" : function _identicalShallow( src1, src2 )
 {
   return src1 === src2;
-}, 
+},
   "identicalShallow" : function identicalShallow( src1, src2, accuracy )
 {
   _.assert( arguments.length === 2 || arguments.length === 3 );
@@ -14051,7 +14051,7 @@ _.path.fullName.defaults =
   if( !this.is( src2 ) )
   return false;
   return this._identicalShallow( ... arguments );
-}, 
+},
   "identical" : function identicalShallow( src1, src2, accuracy )
 {
   _.assert( arguments.length === 2 || arguments.length === 3 );
@@ -14060,7 +14060,7 @@ _.path.fullName.defaults =
   if( !this.is( src2 ) )
   return false;
   return this._identicalShallow( ... arguments );
-}, 
+},
   "_equivalentShallow" : function _equivalentShallow( src1, src2 )
 {
   let strIs1 = _.strIs( src1 );
@@ -14091,7 +14091,7 @@ _.path.fullName.defaults =
   }
 
   return false;
-}, 
+},
   "equivalentShallow" : function equivalentShallow( src1, src2, accuracy )
 {
   _.assert( arguments.length === 2 || arguments.length === 3 );
@@ -14100,7 +14100,7 @@ _.path.fullName.defaults =
   if( !_.regexp.like( src2 ) )
   return false;
   return _.str._equivalentShallow( ... arguments );
-}, 
+},
   "equivalent" : function equivalentShallow( src1, src2, accuracy )
 {
   _.assert( arguments.length === 2 || arguments.length === 3 );
@@ -14109,7 +14109,7 @@ _.path.fullName.defaults =
   if( !_.regexp.like( src2 ) )
   return false;
   return _.str._equivalentShallow( ... arguments );
-}, 
+},
   "prependOnce" : function prependOnce( src, begin )
 {
   _.assert( _.strIs( src ) && _.strIs( begin ), 'Expects {-src-} and {-begin-} as strings' );
@@ -14117,7 +14117,7 @@ _.path.fullName.defaults =
   return src;
   else
   return begin + src;
-}, 
+},
   "appendOnce" : function appendOnce( src, end )
 {
   _.assert( _.strIs( src ) && _.strIs( end ), 'Expects {-src-} and {-end-} as strings' );
@@ -14125,7 +14125,7 @@ _.path.fullName.defaults =
   return src + end;
   else
   return src;
-}, 
+},
   "parseType" : function parseType( src )
 {
   /*
@@ -14155,7 +14155,7 @@ _.path.fullName.defaults =
 
   return _.str._parseType( src );
 
-}, 
+},
   "_parseType" : function _parseType( src )
 {
   /*
@@ -14209,7 +14209,7 @@ _.path.fullName.defaults =
 
   return o;
 
-}, 
+},
   "quote" : function quote( o )
 {
 
@@ -14238,7 +14238,7 @@ _.path.fullName.defaults =
   let result = o.quote + String( src ) + o.quote;
 
   return result;
-}, 
+},
   "unquote" : function unquote( o )
 {
 
@@ -14263,7 +14263,7 @@ _.path.fullName.defaults =
   result = isolated[ 2 ];
 
   return result;
-}, 
+},
   "quotePairsNormalize" : function quotePairsNormalize( quote )
 {
 
@@ -14284,7 +14284,7 @@ _.path.fullName.defaults =
   }
 
   return quote;
-}, 
+},
   "quoteAnalyze" : function quoteAnalyze( o )
 {
   let i = -1;
@@ -14368,7 +14368,7 @@ _.path.fullName.defaults =
     return false;
   }
 
-}, 
+},
   "_leftSingle_" : function _leftSingle_( src, ins, cinterval )
 {
 
@@ -14431,7 +14431,7 @@ _.path.fullName.defaults =
   result.index += cinterval[ 0 ];
 
   return result;
-}, 
+},
   "left_" : function left_( src, ins, cinterval )
 {
 
@@ -14449,7 +14449,7 @@ _.path.fullName.defaults =
     return _._strLeftSingle_( src, ins, cinterval );
   }
 
-}, 
+},
   "right_" : function right_( src, ins, cinterval )
 {
 
@@ -14467,7 +14467,7 @@ _.path.fullName.defaults =
     return _._strRightSingle_( src, ins, cinterval );
   }
 
-}, 
+},
   "insideOf" : function()
       {
         let result;
@@ -14481,7 +14481,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "insideOf_" : function()
       {
         let result;
@@ -14495,7 +14495,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "outsideOf" : function outsideOf( src, begin, end )
 {
 
@@ -14515,7 +14515,7 @@ _.path.fullName.defaults =
   let result = beginOf + endOf;
 
   return result;
-}, 
+},
   "_removedBegin" : function _removedBegin( src, begin )
 {
   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
@@ -14527,7 +14527,7 @@ _.path.fullName.defaults =
   result = result.substr( beginOf.length, result.length );
 
   return result;
-}, 
+},
   "_removedEnd" : function _removedEnd( src, end )
 {
   _.assert( arguments.length === 2, 'Expects exactly two arguments' );
@@ -14539,7 +14539,7 @@ _.path.fullName.defaults =
   result = result.substr( 0, result.length - endOf.length );
 
   return result;
-}, 
+},
   "replaceBegin" : function replaceBegin( src, begin, ins )
 {
   _.assert( arguments.length === 3, 'Expects exactly three arguments' );
@@ -14564,7 +14564,7 @@ _.path.fullName.defaults =
   return result[ 0 ];
 
   return result;
-}, 
+},
   "replaceEnd" : function replaceEnd( src, end, ins )
 {
   _.assert( arguments.length === 3, 'Expects exactly three arguments' );
@@ -14589,7 +14589,7 @@ _.path.fullName.defaults =
   return result[ 0 ];
 
   return result;
-}, 
+},
   "replace" : function replace( src, ins, sub )
 {
   _.assert( arguments.length === 3, 'Expects exactly three arguments' );
@@ -14625,7 +14625,7 @@ _.path.fullName.defaults =
   return result[ 0 ];
 
   return result;
-}, 
+},
   "strip" : function strip( o )
 {
 
@@ -14703,7 +14703,7 @@ _.path.fullName.defaults =
     return src.substring( begin, end + 1 );
   }
 
-}, 
+},
   "stripLeft" : function stripLeft( o )
 {
 
@@ -14714,7 +14714,7 @@ _.path.fullName.defaults =
   _.assert( arguments.length === 1, 'Expects single argument' );
 
   return _.strStrip( o );
-}, 
+},
   "stripRight" : function stripRight( o )
 {
 
@@ -14725,7 +14725,7 @@ _.path.fullName.defaults =
   _.assert( arguments.length === 1, 'Expects single argument' );
 
   return _.strStrip( o );
-}, 
+},
   "_removeAllSpaces" : function _removeAllSpaces( src, sub )
 {
 
@@ -14736,7 +14736,7 @@ _.path.fullName.defaults =
   sub = '';
 
   return src.replace( /\s/g, sub );
-}, 
+},
   "_stripEmptyLines" : function _stripEmptyLines( srcStr )
 {
   let result = '';
@@ -14757,7 +14757,7 @@ _.path.fullName.defaults =
 
   result = result.substring( 0, result.length - 1 );
   return result;
-}, 
+},
   "splitsCoupledGroup" : function splitsCoupledGroup( o )
 {
 
@@ -14811,7 +14811,7 @@ _.path.fullName.defaults =
   }
 
   return o.splits;
-}, 
+},
   "splitsUngroupedJoin" : function splitsUngroupedJoin( o )
 {
 
@@ -14856,7 +14856,7 @@ _.path.fullName.defaults =
     l = null;
   }
 
-}, 
+},
   "splitsQuotedRejoin" : function()
       {
         let result;
@@ -14870,7 +14870,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "splitsDropDelimeters" : function()
       {
         let result;
@@ -14884,7 +14884,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "splitsStrip" : function()
       {
         let result;
@@ -14898,7 +14898,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "splitsDropEmpty" : function()
       {
         let result;
@@ -14912,7 +14912,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "splitFast" : function()
       {
         let result;
@@ -14926,7 +14926,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "split" : function()
       {
         let result;
@@ -14940,7 +14940,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "splitNonPreserving" : function()
       {
         let result;
@@ -14954,7 +14954,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "splitInlined" : function()
       {
         let result;
@@ -14968,7 +14968,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "splitInlinedStereo_" : function splitInlinedStereo_( o )
 {
   /*
@@ -15206,7 +15206,7 @@ _.path.fullName.defaults =
     }
   }
 
-}, 
+},
   "from" : function from( src )
 {
 
@@ -15223,7 +15223,7 @@ _.path.fullName.defaults =
 
   _.assert( _.strIs( src ) );
   return src;
-}, 
+},
   "isolate" : function()
       {
         let result;
@@ -15237,7 +15237,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "isolateLeftOrNone" : function()
       {
         let result;
@@ -15251,7 +15251,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "isolateLeftOrAll" : function()
       {
         let result;
@@ -15265,7 +15265,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "isolateRightOrNone" : function()
       {
         let result;
@@ -15279,7 +15279,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "isolateRightOrAll" : function()
       {
         let result;
@@ -15293,7 +15293,7 @@ _.path.fullName.defaults =
         result = body.call( this, o );
 
         return result;
-      }, 
+      },
   "isolateInsideSignle" : function isolateInsideSignle( src, begin, end )
 {
 
@@ -15381,7 +15381,7 @@ _.path.fullName.defaults =
     // return [ '', '', src, '', '' ];
     return [ '', undefined, src, undefined, '' ];
   }
-}, 
+},
   "isolateInside" : function isolateInside( src, begin, end )
 {
 
@@ -16576,41 +16576,41 @@ _.path.fullName.defaults =
 } )();
 _.entity.exportString.defaults =
 {
-  "noSubObject" : 0, 
-  "onlyRoutines" : 0, 
-  "onlyEnumerable" : 1, 
-  "precision" : null, 
-  "fixed" : null, 
-  "comma" : null, 
-  "multiline" : 0, 
-  "multilinedString" : null, 
-  "escaping" : 0, 
-  "jsonLike" : 0, 
-  "jsLike" : 0, 
-  "noRoutine" : 0, 
-  "noAtomic" : 0, 
-  "noArray" : 0, 
-  "noObject" : 0, 
-  "noRow" : 0, 
-  "noError" : 0, 
-  "noNumber" : 0, 
-  "noString" : 0, 
-  "noDate" : 0, 
-  "noUndefines" : 0, 
-  "levels" : 1, 
-  "level" : 0, 
-  "wrap" : 1, 
-  "stringWrapper" : null, 
-  "keyWrapper" : ``, 
-  "prependTab" : 1, 
-  "errorAsMap" : 0, 
-  "onlyOwn" : 1, 
-  "tab" : ``, 
-  "dtab" : `  `, 
-  "colon" : ` : `, 
-  "limitElementsNumber" : 0, 
-  "widthLimit" : 0, 
-  "heightLimit" : 0, 
+  "noSubObject" : 0,
+  "onlyRoutines" : 0,
+  "onlyEnumerable" : 1,
+  "precision" : null,
+  "fixed" : null,
+  "comma" : null,
+  "multiline" : 0,
+  "multilinedString" : null,
+  "escaping" : 0,
+  "jsonLike" : 0,
+  "jsLike" : 0,
+  "noRoutine" : 0,
+  "noAtomic" : 0,
+  "noArray" : 0,
+  "noObject" : 0,
+  "noRow" : 0,
+  "noError" : 0,
+  "noNumber" : 0,
+  "noString" : 0,
+  "noDate" : 0,
+  "noUndefines" : 0,
+  "levels" : 1,
+  "level" : 0,
+  "wrap" : 1,
+  "stringWrapper" : null,
+  "keyWrapper" : ``,
+  "prependTab" : 1,
+  "errorAsMap" : 0,
+  "onlyOwn" : 1,
+  "tab" : ``,
+  "dtab" : `  `,
+  "colon" : ` : `,
+  "limitElementsNumber" : 0,
+  "widthLimit" : 0,
+  "heightLimit" : 0,
   "format" : `string.diagnostic`
 }
 
@@ -17655,7 +17655,7 @@ _.event.eventGive.defaults =
 //
 
 
-  
+
 
   _.each = function entityEach( src, onEach )
 {
@@ -17720,13 +17720,13 @@ _.event.eventGive.defaults =
   const _parse_head = function parse_head( routine, args )
   {
     _.assert( args.length === 1, 'Expects single argument' );
-  
+
     let o = { srcPath : args[ 0 ] };
-  
+
     _.routine.options_( routine, o );
     _.assert( _.strIs( o.srcPath ) || _.mapIs( o.srcPath ) );
     _.assert( _.longHas( routine.Kind, o.kind ), () => 'Unknown kind of parsing ' + o.kind );
-  
+
     return o;
   }
 
@@ -17734,7 +17734,7 @@ _.event.eventGive.defaults =
   {
     let self = this;
     let result = Object.create( null );
-  
+
     if( _.mapIs( o.srcPath ) )
     {
       _.map.assertHasOnly( o.srcPath, this.UriFull.propsExtension );
@@ -17745,34 +17745,34 @@ _.event.eventGive.defaults =
       else
       o.srcPath = this.str( o.srcPath );
     }
-  
+
     let postfixes = '';
-  
+
     longPathParse();
-  
+
     let delimeter = [ self.tagToken, self.hashToken, self.queryToken ];
     if( _.strHasAny( result.longPath, delimeter ) )
     postfixesParse( delimeter );
-  
+
     /* */
-  
+
     if( o.kind === 'full' )
     {
-  
+
       result.postfixedPath = result.longPath + postfixes;
-  
+
       self._parseLongPath( result, result.longPath );
-  
+
       if( result.protocol )
       result.protocols = result.protocol.split( '+' );
       else
       result.protocols = [];
-  
+
       if( _.strIs( result.protocol ) )
       result.origin = result.protocol + self.protocolToken + result.hostFull;
-  
+
       result.full = o.srcPath;
-  
+
     }
     else if( o.kind === 'consecutive' )
     {
@@ -17784,14 +17784,14 @@ _.event.eventGive.defaults =
       delete result.longPath;
     }
     else _.assert( 0 );
-  
+
     return result;
-  
+
     /* */
-  
+
     function longPathParse()
     {
-  
+
       let isolates = _.strIsolateLeftOrNone.body
       ({
         src : o.srcPath,
@@ -17799,22 +17799,22 @@ _.event.eventGive.defaults =
         times : 1,
         quote : false,
       });
-  
+
       if( isolates[ 1 ] )
       result.protocol = isolates[ 0 ];
-  
+
       result.longPath = isolates[ 2 ];
     }
-  
+
     /* */
-  
+
     function postfixesParse( delimeter )
     {
-  
+
       let rest = '';
       let splits2 = _.path.split( result.longPath );
       let left, s;
-  
+
       for( s = 0 ; s < splits2.length ; s++ )
       {
         let split = splits2[ s ];
@@ -17838,56 +17838,56 @@ _.event.eventGive.defaults =
           break;
         }
       }
-  
+
       if( left && left.entry )
       restParse( rest, left.entry, delimeter );
-  
+
     }
-  
+
     /* */
-  
+
     function restParse( rest, entry, delimeter )
     {
-  
+
       _.arrayRemoveOnceStrictly( delimeter, entry );
-  
+
       let isolates = _.strIsolateLeftOrAll( rest, delimeter );
-  
+
       if( entry === self.queryToken )
       result.query = isolates[ 0 ];
       else if( entry === self.hashToken )
       result.hash = isolates[ 0 ];
       else if( entry === self.tagToken )
       result.tag = isolates[ 0 ];
-  
+
       postfixes += entry + isolates[ 0 ];
-  
+
       // rest = isolates[ 2 ]; /* xxx : remove variable? */
       if( isolates[ 1 ] )
       {
         restParse( isolates[ 2 ], isolates[ 1 ], delimeter );
       }
-  
+
     }
-  
+
     /* */
-  
+
   }
   _parse_body.defaults = { "srcPath" : null, "kind" : `full` }
     _parse_body.components = {
-      "protocol" : null, 
-      "query" : null, 
-      "hash" : null, 
-      "tag" : null, 
-      "protocols" : null, 
-      "postfixedPath" : null, 
-      "resourcePath" : null, 
-      "longPath" : null, 
-      "full" : null, 
-      "hostFull" : null, 
-      "host" : null, 
-      "port" : null, 
-      "user" : null, 
+      "protocol" : null,
+      "query" : null,
+      "hash" : null,
+      "tag" : null,
+      "protocols" : null,
+      "postfixedPath" : null,
+      "resourcePath" : null,
+      "longPath" : null,
+      "full" : null,
+      "hostFull" : null,
+      "host" : null,
+      "port" : null,
+      "user" : null,
       "origin" : null
     }
     _parse_body.Kind = [ `full`, `atomic`, `consecutive` ]
@@ -18040,9 +18040,9 @@ _.uri.parseConsecutive.defaults =
 }
 _.uri._normalize.defaults =
 {
-  "src" : null, 
-  "tolerant" : false, 
-  "detrailing" : false, 
+  "src" : null,
+  "tolerant" : false,
+  "detrailing" : false,
   "undoting" : false
 }
 
@@ -18665,337 +18665,337 @@ _.color.fromTable.defaults =
 //
 
 
-  
+
   _.color.ColorMap = {
-  "invisible" : [ 0, 0, 0, 0 ], 
-  "transparent" : [ 1, 1, 1, 0.5 ], 
-  "cyan" : [ 0, 1, 1 ], 
-  "magenta" : [ 1, 0, 1 ], 
-  "maroon" : [ 0.5, 0, 0 ], 
-  "dark green" : [ 0, 0.5, 0 ], 
-  "navy" : [ 0, 0, 0.5 ], 
-  "olive" : [ 0.5, 0.5, 0 ], 
-  "teal" : [ 0, 0.5, 0.5 ], 
-  "bright green" : [ 0.5, 1, 0 ], 
-  "spring green" : [ 0, 1, 0.5 ], 
-  "pink" : [ 1, 0, 0.5 ], 
-  "dark orange" : [ 1, 0.5, 0 ], 
-  "azure" : [ 0, 0.5, 1 ], 
-  "dark blue" : [ 0, 0, 0.63 ], 
-  "brown" : [ 0.65, 0.16, 0.16 ], 
-  "white" : [ 1, 1, 1 ], 
-  "smoke" : [ 0.9, 0.9, 0.9 ], 
-  "silver" : [ 0.75, 0.75, 0.75 ], 
-  "gray" : [ 0.5, 0.5, 0.5 ], 
-  "dim" : [ 0.35, 0.35, 0.35 ], 
-  "black" : [ 0, 0, 0 ], 
-  "yellow" : [ 1, 1, 0 ], 
-  "purple" : [ 0.5, 0, 0.5 ], 
-  "orange" : [ 1, 0.65, 0 ], 
-  "bright blue" : [ 0.68, 0.85, 0.9 ], 
-  "red" : [ 1, 0, 0 ], 
-  "buff" : [ 0.94, 0.86, 0.51 ], 
-  "green" : [ 0, 1, 0 ], 
-  "purplish pink" : [ 0.96, 0.46, 0.56 ], 
-  "blue" : [ 0, 0, 1 ], 
-  "yellowish pink" : [ 1, 0.48, 0.36 ], 
-  "violet" : [ 0.5, 0, 1 ], 
-  "orange yellow" : [ 1, 0.56, 0 ], 
-  "purplish red" : [ 0.7, 0.16, 0.32 ], 
-  "greenish yellow" : [ 0.96, 0.78, 0 ], 
-  "reddish brown" : [ 0.5, 0.1, 0.05 ], 
-  "yellow green" : [ 0.57, 0.6, 0 ], 
-  "yellowish brown" : [ 0.34, 0.2, 0.08 ], 
-  "reddish orange" : [ 0.95, 0.23, 0.07 ], 
-  "olive green" : [ 0.14, 0.17, 0.09 ], 
-  "aquamarine" : [ 0.5, 1, 0.83 ], 
-  "light blue" : [ 0.94, 1, 1 ], 
-  "beige" : [ 0.96, 0.96, 0.86 ], 
-  "bisque" : [ 1, 0.89, 0.77 ], 
-  "chocolate" : [ 0.82, 0.41, 0.12 ], 
-  "coral" : [ 1, 0.5, 0.3 ], 
-  "cornsilk" : [ 1, 0.97, 0.86 ], 
-  "crimson" : [ 0.86, 0.08, 0.23 ], 
-  "gainsboro" : [ 0.86, 0.86, 0.86 ], 
-  "gold" : [ 1, 0.84, 0 ], 
-  "honeydew" : [ 0.94, 1, 0.94 ], 
-  "indigo" : [ 0.29, 0, 0.51 ], 
-  "ivory" : [ 1, 1, 0.94 ], 
-  "khaki" : [ 0.94, 0.9, 0.55 ], 
-  "lavender" : [ 0.9, 0.9, 0.98 ], 
-  "linen" : [ 0.98, 0.94, 0.9 ], 
-  "moccasin" : [ 1, 0.89, 0.71 ], 
-  "orchid" : [ 0.85, 0.44, 0.84 ], 
-  "peru" : [ 0.8, 0.52, 0.25 ], 
-  "plum" : [ 0.87, 0.63, 0.87 ], 
-  "salmon" : [ 0.98, 0.5, 0.45 ], 
-  "sienna" : [ 0.63, 0.32, 0.17 ], 
-  "snow" : [ 1, 0.98, 0.98 ], 
-  "tan" : [ 0.82, 0.7, 0.55 ], 
-  "thistle" : [ 0.85, 0.75, 0.85 ], 
-  "tomato" : [ 1, 0.39, 0.28 ], 
-  "turquoise" : [ 0.25, 0.88, 0.81 ], 
-  "wheat" : [ 0.96, 0.87, 0.7 ], 
-  "moderate pink" : [ 0.93, 0.56, 0.53 ], 
-  "dark pink" : [ 0.78, 0.41, 0.39 ], 
-  "pale pink" : [ 1, 0.8, 0.73 ], 
-  "grayish pink" : [ 0.81, 0.61, 0.56 ], 
-  "pinkish white " : [ 0.98, 0.86, 0.78 ], 
-  "pinkish gray " : [ 0.78, 0.65, 0.59 ], 
-  "vivid red" : [ 0.76, 0, 0.13 ], 
-  "strong red" : [ 0.75, 0.13, 0.2 ], 
-  "deep red" : [ 0.48, 0, 0.11 ], 
-  "very deep red" : [ 0.31, 0, 0.08 ], 
-  "moderate red" : [ 0.67, 0.2, 0.23 ], 
-  "dark red" : [ 0.41, 0.11, 0.14 ], 
-  "very dark red" : [ 0.2, 0.04, 0.09 ], 
-  "light grayish red" : [ 0.69, 0.45, 0.4 ], 
-  "grayish red" : [ 0.55, 0.28, 0.26 ], 
-  "dark grayish red" : [ 0.28, 0.16, 0.16 ], 
-  "blackish red" : [ 0.12, 0.05, 0.07 ], 
-  "reddish gray" : [ 0.55, 0.42, 0.38 ], 
-  "dark reddish gray" : [ 0.32, 0.24, 0.21 ], 
-  "reddish black" : [ 0.12, 0.07, 0.07 ], 
-  "vivid yellowish pink" : [ 1, 0.52, 0.36 ], 
-  "deep yellowish pink" : [ 0.96, 0.29, 0.27 ], 
-  "light yellowish pink" : [ 1, 0.7, 0.55 ], 
-  "moderate yellowish pink" : [ 0.93, 0.58, 0.45 ], 
-  "dark yellowish pink" : [ 0.8, 0.42, 0.36 ], 
-  "pale yellowish pink" : [ 1, 0.78, 0.66 ], 
-  "grayish yellowish pink" : [ 0.83, 0.61, 0.52 ], 
-  "brownish pink" : [ 0.8, 0.6, 0.48 ], 
-  "strong reddish orange" : [ 1, 0.73, 0.38 ], 
-  "deep reddish orange" : [ 0.66, 0.11, 0.07 ], 
-  "moderate reddish orange" : [ 0.83, 0.33, 0.22 ], 
-  "dark reddish orange" : [ 0.61, 0.18, 0.12 ], 
-  "grayish reddish orange" : [ 0.72, 0.36, 0.26 ], 
-  "deep reddish brown" : [ 0.29, 0, 0.02 ], 
-  "light reddish brown" : [ 0.67, 0.4, 0.32 ], 
-  "moderate reddish brown" : [ 0.44, 0.18, 0.15 ], 
-  "dark reddish brown" : [ 0.2, 0.06, 0.07 ], 
-  "light grayish reddish brown" : [ 0.59, 0.42, 0.34 ], 
-  "grayish reddish brown" : [ 0.37, 0.22, 0.19 ], 
-  "dark grayish reddish brown" : [ 0.22, 0.12, 0.11 ], 
-  "vivid orange" : [ 1, 0.41, 0 ], 
-  "brilliant orange" : [ 1, 0.72, 0.25 ], 
-  "strong orange" : [ 1, 0.44, 0.1 ], 
-  "deep orange" : [ 0.76, 0.3, 0.04 ], 
-  "light orange" : [ 1, 0.63, 0.38 ], 
-  "moderate orange" : [ 0.91, 0.47, 0.24 ], 
-  "brownish orange" : [ 0.69, 0.32, 0.14 ], 
-  "strong brown" : [ 0.46, 0.2, 0.07 ], 
-  "deep brown" : [ 0.3, 0.13, 0.05 ], 
-  "light brown" : [ 0.66, 0.4, 0.25 ], 
-  "moderate brown" : [ 0.4, 0.22, 0.14 ], 
-  "dark brown" : [ 0.21, 0.09, 0.05 ], 
-  "light grayish brown" : [ 0.58, 0.42, 0.33 ], 
-  "grayish brown" : [ 0.35, 0.24, 0.19 ], 
-  "dark grayish brown" : [ 0.2, 0.13, 0.1 ], 
-  "light brownish gray" : [ 0.55, 0.43, 0.36 ], 
-  "brownish gray" : [ 0.31, 0.24, 0.2 ], 
-  "brownish black" : [ 0.08, 0.06, 0.04 ], 
-  "brilliant orange yellow" : [ 1, 0.69, 0.18 ], 
-  "strong orange yellow" : [ 1, 0.56, 0.05 ], 
-  "deep orange yellow" : [ 0.84, 0.43, 0 ], 
-  "light orange yellow" : [ 1, 0.73, 0.38 ], 
-  "moderate orange yellow" : [ 0.97, 0.58, 0.24 ], 
-  "dark orange yellow" : [ 0.76, 0.46, 0.16 ], 
-  "pale orange yellow" : [ 1, 0.79, 0.53 ], 
-  "strong yellowish brown" : [ 0.58, 0.31, 0.05 ], 
-  "light yellowish brown" : [ 0.73, 0.55, 0.33 ], 
-  "moderate yellowish brown" : [ 0.49, 0.32, 0.18 ], 
-  "dark yellowish brown" : [ 0.25, 0.15, 0.07 ], 
-  "light grayish yellowish brown" : [ 0.71, 0.53, 0.39 ], 
-  "grayish yellowish brown" : [ 0.47, 0.35, 0.25 ], 
-  "dark grayish yellowish brown" : [ 0.24, 0.17, 0.12 ], 
-  "vivid yellow" : [ 1, 0.7, 0 ], 
-  "brilliant yellow" : [ 1, 0.81, 0.25 ], 
-  "strong yellow" : [ 0.9, 0.62, 0.12 ], 
-  "deep yellow" : [ 0.71, 0.47, 0 ], 
-  "light yellow" : [ 1, 0.83, 0.37 ], 
-  "moderate yellow" : [ 0.84, 0.62, 0.25 ], 
-  "dark yellow" : [ 0.69, 0.49, 0.17 ], 
-  "pale yellow" : [ 1, 0.86, 0.55 ], 
-  "grayish yellow" : [ 0.81, 0.64, 0.38 ], 
-  "dark grayish yellow" : [ 0.64, 0.49, 0.27 ], 
-  "yellowish white" : [ 1, 0.89, 0.72 ], 
-  "yellowish gray" : [ 0.79, 0.66, 0.52 ], 
-  "light olive brown" : [ 0.58, 0.36, 0.04 ], 
-  "moderate olive brown" : [ 0.39, 0.25, 0.06 ], 
-  "dark olive brown" : [ 0.19, 0.13, 0.07 ], 
-  "vivid greenish yellow" : [ 0.96, 0.78, 0 ], 
-  "brilliant greenish yellow" : [ 1, 0.86, 0.2 ], 
-  "strong greenish yellow" : [ 0.8, 0.66, 0.09 ], 
-  "deep greenish yellow" : [ 0.62, 0.51, 0 ], 
-  "light greenish yellow" : [ 1, 0.87, 0.35 ], 
-  "moderate greenish yellow" : [ 0.77, 0.64, 0.24 ], 
-  "dark greenish yellow" : [ 0.61, 0.51, 0.15 ], 
-  "pale greenish yellow" : [ 1, 0.87, 0.52 ], 
-  "grayish greenish yellow" : [ 0.77, 0.65, 0.37 ], 
-  "light olive" : [ 0.52, 0.42, 0.13 ], 
-  "moderate olive" : [ 0.37, 0.29, 0.06 ], 
-  "dark olive" : [ 0.21, 0.17, 0.07 ], 
-  "light grayish olive" : [ 0.55, 0.45, 0.29 ], 
-  "grayish olive" : [ 0.32, 0.27, 0.17 ], 
-  "dark grayish olive" : [ 0.17, 0.15, 0.09 ], 
-  "light olive gray" : [ 0.53, 0.45, 0.35 ], 
-  "olive gray" : [ 0.3, 0.26, 0.2 ], 
-  "olive black" : [ 0.07, 0.1, 0.06 ], 
-  "brilliant yellow green" : [ 0.81, 0.82, 0.23 ], 
-  "strong yellow green" : [ 0.5, 0.56, 0.09 ], 
-  "deep yellow green" : [ 0.26, 0.37, 0.09 ], 
-  "light yellow green" : [ 0.86, 0.83, 0.42 ], 
-  "moderate yellow green" : [ 0.55, 0.54, 0.25 ], 
-  "pale yellow green" : [ 0.94, 0.84, 0.6 ], 
-  "grayish yellow green" : [ 0.56, 0.52, 0.36 ], 
-  "strong olive green" : [ 0.04, 0.27, 0 ], 
-  "deep olive green" : [ 0.08, 0.14, 0 ], 
-  "moderate olive green" : [ 0.26, 0.29, 0.11 ], 
-  "grayish olive green" : [ 0.28, 0.27, 0.18 ], 
-  "dark grayish olive green" : [ 0.15, 0.15, 0.1 ], 
-  "vivid yellowish green" : [ 0.22, 0.6, 0.19 ], 
-  "brilliant yellowish green" : [ 0.55, 0.8, 0.37 ], 
-  "strong yellowish green" : [ 0.28, 0.52, 0.19 ], 
-  "deep yellowish green" : [ 0, 0.33, 0.12 ], 
-  "very deep yellowish green" : [ 0, 0.16, 0 ], 
-  "very light yellowish green" : [ 0.78, 0.87, 0.56 ], 
-  "light yellowish green" : [ 0, 0.48, 0.65 ], 
-  "moderate yellowish green" : [ 0.4, 0.5, 0.29 ], 
-  "dark yellowish green" : [ 0.19, 0.29, 0.15 ], 
-  "very dark yellowish green" : [ 0.07, 0.15, 0.07 ], 
-  "vivid green" : [ 0, 0.49, 0.2 ], 
-  "brilliant green" : [ 0.28, 0.65, 0.42 ], 
-  "strong green" : [ 0, 0.42, 0.24 ], 
-  "deep green" : [ 0, 0.27, 0.14 ], 
-  "very light green" : [ 0.6, 0.78, 0.58 ], 
-  "light green" : [ 0.44, 0.61, 0.43 ], 
-  "moderate green" : [ 0.22, 0.4, 0.27 ], 
-  "very dark green" : [ 0.09, 0.15, 0.11 ], 
-  "very pale green" : [ 0.85, 0.87, 0.73 ], 
-  "pale green" : [ 0.55, 0.57, 0.48 ], 
-  "grayish green" : [ 0.34, 0.37, 0.31 ], 
-  "dark grayish green" : [ 0.19, 0.22, 0.19 ], 
-  "blackish green" : [ 0.08, 0.09, 0.07 ], 
-  "greenish white" : [ 0.96, 0.9, 0.8 ], 
-  "light greenish gray" : [ 0.73, 0.69, 0.59 ], 
-  "greenish gray" : [ 0.48, 0.46, 0.4 ], 
-  "dark greenish gray" : [ 0.27, 0.26, 0.23 ], 
-  "greenish black" : [ 0.09, 0.08, 0.07 ], 
-  "vivid bluish green" : [ 0, 0.51, 0.43 ], 
-  "brilliant bluish green" : [ 0, 0.61, 0.46 ], 
-  "strong bluish green" : [ 0, 0.43, 0.36 ], 
-  "deep bluish green" : [ 0, 0.22, 0.17 ], 
-  "very light bluish green" : [ 0.63, 0.84, 0.71 ], 
-  "light bluish green" : [ 0.4, 0.62, 0.52 ], 
-  "moderate bluish green" : [ 0.18, 0.4, 0.34 ], 
-  "dark bluish green" : [ 0, 0.23, 0.2 ], 
-  "very dark bluish green" : [ 0, 0.11, 0.09 ], 
-  "vivid greenish blue" : [ 0, 0.48, 0.65 ], 
-  "brilliant greenish blue" : [ 0.16, 0.55, 0.61 ], 
-  "strong greenish blue" : [ 0, 0.4, 0.49 ], 
-  "deep greenish blue" : [ 0, 0.48, 0.65 ], 
-  "very light greenish blue" : [ 0.64, 0.78, 0.75 ], 
-  "light greenish blue" : [ 0.39, 0.6, 0.62 ], 
-  "moderate greenish blue" : [ 0.19, 0.38, 0.42 ], 
-  "dark greenish blue" : [ 0, 0.22, 0.25 ], 
-  "very dark greenish blue" : [ 0.01, 0.13, 0.15 ], 
-  "vivid blue,ultramarine" : [ 0, 0.49, 0.68 ], 
-  "brilliant blue,celestial blue" : [ 0.26, 0.52, 0.71 ], 
-  "strong blue,bright blue" : [ 0, 0.33, 0.54 ], 
-  "deep blue,royal blue" : [ 0, 0.18, 0.33 ], 
-  "very light blue" : [ 0.65, 0.74, 0.84 ], 
-  "sky blue" : [ 0.42, 0.57, 0.69 ], 
-  "moderate blue,cerulean blue" : [ 0.22, 0.34, 0.47 ], 
-  "dark blue,navy blue" : [ 0, 0.13, 0.22 ], 
-  "very pale blue,cloud blue" : [ 0.76, 0.79, 0.79 ], 
-  "pale blue,alice blue" : [ 0.57, 0.57, 0.57 ], 
-  "grayish blue,slate blue" : [ 0.29, 0.33, 0.36 ], 
-  "dark grayish blue" : [ 0.17, 0.2, 0.22 ], 
-  "blackish blue" : [ 0.09, 0.1, 0.12 ], 
-  "bluish white" : [ 0.98, 0.87, 0.81 ], 
-  "light bluish gray" : [ 0.75, 0.68, 0.63 ], 
-  "bluish gray" : [ 0.49, 0.45, 0.43 ], 
-  "dark bluish gray" : [ 0.27, 0.27, 0.27 ], 
-  "bluish black" : [ 0.08, 0.09, 0.1 ], 
-  "vivid purplish blue" : [ 0.13, 0.08, 0.37 ], 
-  "brilliant purplish blue" : [ 0.38, 0.39, 0.61 ], 
-  "strong purplish blue" : [ 0.28, 0.26, 0.54 ], 
-  "deep purplish blue" : [ 0.1, 0.08, 0.25 ], 
-  "very light purplish blue" : [ 0.73, 0.67, 0.78 ], 
-  "light purplish blue" : [ 0.51, 0.49, 0.64 ], 
-  "moderate purplish blue" : [ 0.26, 0.24, 0.39 ], 
-  "dark purplish blue" : [ 0.1, 0.09, 0.16 ], 
-  "very pale purplish blue" : [ 0.8, 0.73, 0.77 ], 
-  "pale purplish blue" : [ 0.54, 0.5, 0.56 ], 
-  "grayish purplish blue" : [ 0.25, 0.24, 0.32 ], 
-  "vivid violet" : [ 0.53, 0.29, 0.68 ], 
-  "brilliant violet" : [ 0.46, 0.36, 0.6 ], 
-  "strong violet" : [ 0.33, 0.22, 0.48 ], 
-  "deep violet" : [ 0.14, 0.04, 0.21 ], 
-  "very light violet" : [ 0.93, 0.75, 0.95 ], 
-  "light violet" : [ 0.53, 0.42, 0.6 ], 
-  "moderate violet" : [ 0.33, 0.22, 0.39 ], 
-  "dark violet" : [ 0.13, 0.07, 0.17 ], 
-  "very pale violet" : [ 0.85, 0.69, 0.75 ], 
-  "pale violet" : [ 0.58, 0.48, 0.55 ], 
-  "grayish violet" : [ 0.27, 0.22, 0.29 ], 
-  "vivid purple" : [ 0.58, 0.2, 0.57 ], 
-  "brilliant purple" : [ 0.87, 0.5, 0.8 ], 
-  "strong purple" : [ 0.5, 0.24, 0.46 ], 
-  "deep purple" : [ 0.33, 0.1, 0.31 ], 
-  "very deep purple" : [ 0.2, 0.04, 0.21 ], 
-  "very light purple" : [ 0.89, 0.66, 0.75 ], 
-  "light purple" : [ 0.73, 0.5, 0.64 ], 
-  "moderate purple" : [ 0.5, 0.28, 0.44 ], 
-  "dark purple" : [ 0.28, 0.16, 0.25 ], 
-  "very dark purple" : [ 0.14, 0.05, 0.13 ], 
-  "very pale purple" : [ 0.9, 0.73, 0.76 ], 
-  "pale purple" : [ 0.68, 0.52, 0.55 ], 
-  "grayish purple" : [ 0.45, 0.32, 0.36 ], 
-  "dark grayish purple" : [ 0.27, 0.18, 0.21 ], 
-  "blackish purple" : [ 0.11, 0.06, 0.09 ], 
-  "purplish white" : [ 0.98, 0.86, 0.78 ], 
-  "light purplish gray" : [ 0.78, 0.66, 0.62 ], 
-  "purplish gray" : [ 0.53, 0.44, 0.42 ], 
-  "dark purplish gray" : [ 0.34, 0.25, 0.26 ], 
-  "purplish black" : [ 0.11, 0.07, 0.09 ], 
-  "vivid reddish purple" : [ 0.49, 0, 0.35 ], 
-  "strong reddish purple" : [ 0.6, 0.21, 0.42 ], 
-  "deep reddish purple" : [ 0.39, 0.07, 0.29 ], 
-  "very deep reddish purple" : [ 0.28, 0.03, 0.21 ], 
-  "light reddish purple" : [ 0.73, 0.42, 0.54 ], 
-  "moderate reddish purple" : [ 0.55, 0.27, 0.4 ], 
-  "dark reddish purple" : [ 0.31, 0.15, 0.23 ], 
-  "very dark reddish purple" : [ 0.15, 0.04, 0.12 ], 
-  "pale reddish purple" : [ 0.67, 0.46, 0.5 ], 
-  "grayish reddish purple" : [ 0.49, 0.3, 0.36 ], 
-  "brilliant purplish pink" : [ 1, 0.59, 0.73 ], 
-  "deep purplish pink" : [ 0.92, 0.32, 0.52 ], 
-  "light purplish pink" : [ 1, 0.66, 0.69 ], 
-  "moderate purplish pink" : [ 0.89, 0.5, 0.56 ], 
-  "dark purplish pink" : [ 0.78, 0.4, 0.45 ], 
-  "pale purplish pink" : [ 0.99, 0.74, 0.73 ], 
-  "grayish purplish pink" : [ 0.8, 0.57, 0.58 ], 
-  "vivid purplish red" : [ 0.84, 0.15, 0.36 ], 
-  "deep purplish red" : [ 0.44, 0, 0.21 ], 
-  "very deep purplish red" : [ 0.28, 0, 0.15 ], 
-  "moderate purplish red" : [ 0.65, 0.22, 0.33 ], 
-  "dark purplish red" : [ 0.36, 0.12, 0.19 ], 
-  "very dark purplish red" : [ 0.16, 0.03, 0.1 ], 
-  "light grayish purplish red" : [ 0.7, 0.44, 0.44 ], 
-  "grayish purplish red" : [ 0.55, 0.28, 0.32 ], 
-  "light gray" : [ 0.76, 0.66, 0.58 ], 
-  "medium gray" : [ 0.51, 0.44, 0.4 ], 
-  "dark gray" : [ 0.29, 0.26, 0.24 ], 
-  "bright black" : [ 0.5, 0.5, 0.5 ], 
-  "dark magenta" : [ 0.5, 0, 0.5 ], 
-  "dark cyan" : [ 0, 0.5, 0.5 ], 
-  "dark white" : [ 0.75, 0.75, 0.75 ], 
-  "bright white" : [ 1, 1, 1 ], 
-  "bright red" : [ 1, 0, 0 ], 
-  "bright yellow" : [ 1, 1, 0 ], 
-  "bright cyan" : [ 0, 1, 1 ], 
-  "bright magenta" : [ 1, 0, 1 ], 
+  "invisible" : [ 0, 0, 0, 0 ],
+  "transparent" : [ 1, 1, 1, 0.5 ],
+  "cyan" : [ 0, 1, 1 ],
+  "magenta" : [ 1, 0, 1 ],
+  "maroon" : [ 0.5, 0, 0 ],
+  "dark green" : [ 0, 0.5, 0 ],
+  "navy" : [ 0, 0, 0.5 ],
+  "olive" : [ 0.5, 0.5, 0 ],
+  "teal" : [ 0, 0.5, 0.5 ],
+  "bright green" : [ 0.5, 1, 0 ],
+  "spring green" : [ 0, 1, 0.5 ],
+  "pink" : [ 1, 0, 0.5 ],
+  "dark orange" : [ 1, 0.5, 0 ],
+  "azure" : [ 0, 0.5, 1 ],
+  "dark blue" : [ 0, 0, 0.63 ],
+  "brown" : [ 0.65, 0.16, 0.16 ],
+  "white" : [ 1, 1, 1 ],
+  "smoke" : [ 0.9, 0.9, 0.9 ],
+  "silver" : [ 0.75, 0.75, 0.75 ],
+  "gray" : [ 0.5, 0.5, 0.5 ],
+  "dim" : [ 0.35, 0.35, 0.35 ],
+  "black" : [ 0, 0, 0 ],
+  "yellow" : [ 1, 1, 0 ],
+  "purple" : [ 0.5, 0, 0.5 ],
+  "orange" : [ 1, 0.65, 0 ],
+  "bright blue" : [ 0.68, 0.85, 0.9 ],
+  "red" : [ 1, 0, 0 ],
+  "buff" : [ 0.94, 0.86, 0.51 ],
+  "green" : [ 0, 1, 0 ],
+  "purplish pink" : [ 0.96, 0.46, 0.56 ],
+  "blue" : [ 0, 0, 1 ],
+  "yellowish pink" : [ 1, 0.48, 0.36 ],
+  "violet" : [ 0.5, 0, 1 ],
+  "orange yellow" : [ 1, 0.56, 0 ],
+  "purplish red" : [ 0.7, 0.16, 0.32 ],
+  "greenish yellow" : [ 0.96, 0.78, 0 ],
+  "reddish brown" : [ 0.5, 0.1, 0.05 ],
+  "yellow green" : [ 0.57, 0.6, 0 ],
+  "yellowish brown" : [ 0.34, 0.2, 0.08 ],
+  "reddish orange" : [ 0.95, 0.23, 0.07 ],
+  "olive green" : [ 0.14, 0.17, 0.09 ],
+  "aquamarine" : [ 0.5, 1, 0.83 ],
+  "light blue" : [ 0.94, 1, 1 ],
+  "beige" : [ 0.96, 0.96, 0.86 ],
+  "bisque" : [ 1, 0.89, 0.77 ],
+  "chocolate" : [ 0.82, 0.41, 0.12 ],
+  "coral" : [ 1, 0.5, 0.3 ],
+  "cornsilk" : [ 1, 0.97, 0.86 ],
+  "crimson" : [ 0.86, 0.08, 0.23 ],
+  "gainsboro" : [ 0.86, 0.86, 0.86 ],
+  "gold" : [ 1, 0.84, 0 ],
+  "honeydew" : [ 0.94, 1, 0.94 ],
+  "indigo" : [ 0.29, 0, 0.51 ],
+  "ivory" : [ 1, 1, 0.94 ],
+  "khaki" : [ 0.94, 0.9, 0.55 ],
+  "lavender" : [ 0.9, 0.9, 0.98 ],
+  "linen" : [ 0.98, 0.94, 0.9 ],
+  "moccasin" : [ 1, 0.89, 0.71 ],
+  "orchid" : [ 0.85, 0.44, 0.84 ],
+  "peru" : [ 0.8, 0.52, 0.25 ],
+  "plum" : [ 0.87, 0.63, 0.87 ],
+  "salmon" : [ 0.98, 0.5, 0.45 ],
+  "sienna" : [ 0.63, 0.32, 0.17 ],
+  "snow" : [ 1, 0.98, 0.98 ],
+  "tan" : [ 0.82, 0.7, 0.55 ],
+  "thistle" : [ 0.85, 0.75, 0.85 ],
+  "tomato" : [ 1, 0.39, 0.28 ],
+  "turquoise" : [ 0.25, 0.88, 0.81 ],
+  "wheat" : [ 0.96, 0.87, 0.7 ],
+  "moderate pink" : [ 0.93, 0.56, 0.53 ],
+  "dark pink" : [ 0.78, 0.41, 0.39 ],
+  "pale pink" : [ 1, 0.8, 0.73 ],
+  "grayish pink" : [ 0.81, 0.61, 0.56 ],
+  "pinkish white " : [ 0.98, 0.86, 0.78 ],
+  "pinkish gray " : [ 0.78, 0.65, 0.59 ],
+  "vivid red" : [ 0.76, 0, 0.13 ],
+  "strong red" : [ 0.75, 0.13, 0.2 ],
+  "deep red" : [ 0.48, 0, 0.11 ],
+  "very deep red" : [ 0.31, 0, 0.08 ],
+  "moderate red" : [ 0.67, 0.2, 0.23 ],
+  "dark red" : [ 0.41, 0.11, 0.14 ],
+  "very dark red" : [ 0.2, 0.04, 0.09 ],
+  "light grayish red" : [ 0.69, 0.45, 0.4 ],
+  "grayish red" : [ 0.55, 0.28, 0.26 ],
+  "dark grayish red" : [ 0.28, 0.16, 0.16 ],
+  "blackish red" : [ 0.12, 0.05, 0.07 ],
+  "reddish gray" : [ 0.55, 0.42, 0.38 ],
+  "dark reddish gray" : [ 0.32, 0.24, 0.21 ],
+  "reddish black" : [ 0.12, 0.07, 0.07 ],
+  "vivid yellowish pink" : [ 1, 0.52, 0.36 ],
+  "deep yellowish pink" : [ 0.96, 0.29, 0.27 ],
+  "light yellowish pink" : [ 1, 0.7, 0.55 ],
+  "moderate yellowish pink" : [ 0.93, 0.58, 0.45 ],
+  "dark yellowish pink" : [ 0.8, 0.42, 0.36 ],
+  "pale yellowish pink" : [ 1, 0.78, 0.66 ],
+  "grayish yellowish pink" : [ 0.83, 0.61, 0.52 ],
+  "brownish pink" : [ 0.8, 0.6, 0.48 ],
+  "strong reddish orange" : [ 1, 0.73, 0.38 ],
+  "deep reddish orange" : [ 0.66, 0.11, 0.07 ],
+  "moderate reddish orange" : [ 0.83, 0.33, 0.22 ],
+  "dark reddish orange" : [ 0.61, 0.18, 0.12 ],
+  "grayish reddish orange" : [ 0.72, 0.36, 0.26 ],
+  "deep reddish brown" : [ 0.29, 0, 0.02 ],
+  "light reddish brown" : [ 0.67, 0.4, 0.32 ],
+  "moderate reddish brown" : [ 0.44, 0.18, 0.15 ],
+  "dark reddish brown" : [ 0.2, 0.06, 0.07 ],
+  "light grayish reddish brown" : [ 0.59, 0.42, 0.34 ],
+  "grayish reddish brown" : [ 0.37, 0.22, 0.19 ],
+  "dark grayish reddish brown" : [ 0.22, 0.12, 0.11 ],
+  "vivid orange" : [ 1, 0.41, 0 ],
+  "brilliant orange" : [ 1, 0.72, 0.25 ],
+  "strong orange" : [ 1, 0.44, 0.1 ],
+  "deep orange" : [ 0.76, 0.3, 0.04 ],
+  "light orange" : [ 1, 0.63, 0.38 ],
+  "moderate orange" : [ 0.91, 0.47, 0.24 ],
+  "brownish orange" : [ 0.69, 0.32, 0.14 ],
+  "strong brown" : [ 0.46, 0.2, 0.07 ],
+  "deep brown" : [ 0.3, 0.13, 0.05 ],
+  "light brown" : [ 0.66, 0.4, 0.25 ],
+  "moderate brown" : [ 0.4, 0.22, 0.14 ],
+  "dark brown" : [ 0.21, 0.09, 0.05 ],
+  "light grayish brown" : [ 0.58, 0.42, 0.33 ],
+  "grayish brown" : [ 0.35, 0.24, 0.19 ],
+  "dark grayish brown" : [ 0.2, 0.13, 0.1 ],
+  "light brownish gray" : [ 0.55, 0.43, 0.36 ],
+  "brownish gray" : [ 0.31, 0.24, 0.2 ],
+  "brownish black" : [ 0.08, 0.06, 0.04 ],
+  "brilliant orange yellow" : [ 1, 0.69, 0.18 ],
+  "strong orange yellow" : [ 1, 0.56, 0.05 ],
+  "deep orange yellow" : [ 0.84, 0.43, 0 ],
+  "light orange yellow" : [ 1, 0.73, 0.38 ],
+  "moderate orange yellow" : [ 0.97, 0.58, 0.24 ],
+  "dark orange yellow" : [ 0.76, 0.46, 0.16 ],
+  "pale orange yellow" : [ 1, 0.79, 0.53 ],
+  "strong yellowish brown" : [ 0.58, 0.31, 0.05 ],
+  "light yellowish brown" : [ 0.73, 0.55, 0.33 ],
+  "moderate yellowish brown" : [ 0.49, 0.32, 0.18 ],
+  "dark yellowish brown" : [ 0.25, 0.15, 0.07 ],
+  "light grayish yellowish brown" : [ 0.71, 0.53, 0.39 ],
+  "grayish yellowish brown" : [ 0.47, 0.35, 0.25 ],
+  "dark grayish yellowish brown" : [ 0.24, 0.17, 0.12 ],
+  "vivid yellow" : [ 1, 0.7, 0 ],
+  "brilliant yellow" : [ 1, 0.81, 0.25 ],
+  "strong yellow" : [ 0.9, 0.62, 0.12 ],
+  "deep yellow" : [ 0.71, 0.47, 0 ],
+  "light yellow" : [ 1, 0.83, 0.37 ],
+  "moderate yellow" : [ 0.84, 0.62, 0.25 ],
+  "dark yellow" : [ 0.69, 0.49, 0.17 ],
+  "pale yellow" : [ 1, 0.86, 0.55 ],
+  "grayish yellow" : [ 0.81, 0.64, 0.38 ],
+  "dark grayish yellow" : [ 0.64, 0.49, 0.27 ],
+  "yellowish white" : [ 1, 0.89, 0.72 ],
+  "yellowish gray" : [ 0.79, 0.66, 0.52 ],
+  "light olive brown" : [ 0.58, 0.36, 0.04 ],
+  "moderate olive brown" : [ 0.39, 0.25, 0.06 ],
+  "dark olive brown" : [ 0.19, 0.13, 0.07 ],
+  "vivid greenish yellow" : [ 0.96, 0.78, 0 ],
+  "brilliant greenish yellow" : [ 1, 0.86, 0.2 ],
+  "strong greenish yellow" : [ 0.8, 0.66, 0.09 ],
+  "deep greenish yellow" : [ 0.62, 0.51, 0 ],
+  "light greenish yellow" : [ 1, 0.87, 0.35 ],
+  "moderate greenish yellow" : [ 0.77, 0.64, 0.24 ],
+  "dark greenish yellow" : [ 0.61, 0.51, 0.15 ],
+  "pale greenish yellow" : [ 1, 0.87, 0.52 ],
+  "grayish greenish yellow" : [ 0.77, 0.65, 0.37 ],
+  "light olive" : [ 0.52, 0.42, 0.13 ],
+  "moderate olive" : [ 0.37, 0.29, 0.06 ],
+  "dark olive" : [ 0.21, 0.17, 0.07 ],
+  "light grayish olive" : [ 0.55, 0.45, 0.29 ],
+  "grayish olive" : [ 0.32, 0.27, 0.17 ],
+  "dark grayish olive" : [ 0.17, 0.15, 0.09 ],
+  "light olive gray" : [ 0.53, 0.45, 0.35 ],
+  "olive gray" : [ 0.3, 0.26, 0.2 ],
+  "olive black" : [ 0.07, 0.1, 0.06 ],
+  "brilliant yellow green" : [ 0.81, 0.82, 0.23 ],
+  "strong yellow green" : [ 0.5, 0.56, 0.09 ],
+  "deep yellow green" : [ 0.26, 0.37, 0.09 ],
+  "light yellow green" : [ 0.86, 0.83, 0.42 ],
+  "moderate yellow green" : [ 0.55, 0.54, 0.25 ],
+  "pale yellow green" : [ 0.94, 0.84, 0.6 ],
+  "grayish yellow green" : [ 0.56, 0.52, 0.36 ],
+  "strong olive green" : [ 0.04, 0.27, 0 ],
+  "deep olive green" : [ 0.08, 0.14, 0 ],
+  "moderate olive green" : [ 0.26, 0.29, 0.11 ],
+  "grayish olive green" : [ 0.28, 0.27, 0.18 ],
+  "dark grayish olive green" : [ 0.15, 0.15, 0.1 ],
+  "vivid yellowish green" : [ 0.22, 0.6, 0.19 ],
+  "brilliant yellowish green" : [ 0.55, 0.8, 0.37 ],
+  "strong yellowish green" : [ 0.28, 0.52, 0.19 ],
+  "deep yellowish green" : [ 0, 0.33, 0.12 ],
+  "very deep yellowish green" : [ 0, 0.16, 0 ],
+  "very light yellowish green" : [ 0.78, 0.87, 0.56 ],
+  "light yellowish green" : [ 0, 0.48, 0.65 ],
+  "moderate yellowish green" : [ 0.4, 0.5, 0.29 ],
+  "dark yellowish green" : [ 0.19, 0.29, 0.15 ],
+  "very dark yellowish green" : [ 0.07, 0.15, 0.07 ],
+  "vivid green" : [ 0, 0.49, 0.2 ],
+  "brilliant green" : [ 0.28, 0.65, 0.42 ],
+  "strong green" : [ 0, 0.42, 0.24 ],
+  "deep green" : [ 0, 0.27, 0.14 ],
+  "very light green" : [ 0.6, 0.78, 0.58 ],
+  "light green" : [ 0.44, 0.61, 0.43 ],
+  "moderate green" : [ 0.22, 0.4, 0.27 ],
+  "very dark green" : [ 0.09, 0.15, 0.11 ],
+  "very pale green" : [ 0.85, 0.87, 0.73 ],
+  "pale green" : [ 0.55, 0.57, 0.48 ],
+  "grayish green" : [ 0.34, 0.37, 0.31 ],
+  "dark grayish green" : [ 0.19, 0.22, 0.19 ],
+  "blackish green" : [ 0.08, 0.09, 0.07 ],
+  "greenish white" : [ 0.96, 0.9, 0.8 ],
+  "light greenish gray" : [ 0.73, 0.69, 0.59 ],
+  "greenish gray" : [ 0.48, 0.46, 0.4 ],
+  "dark greenish gray" : [ 0.27, 0.26, 0.23 ],
+  "greenish black" : [ 0.09, 0.08, 0.07 ],
+  "vivid bluish green" : [ 0, 0.51, 0.43 ],
+  "brilliant bluish green" : [ 0, 0.61, 0.46 ],
+  "strong bluish green" : [ 0, 0.43, 0.36 ],
+  "deep bluish green" : [ 0, 0.22, 0.17 ],
+  "very light bluish green" : [ 0.63, 0.84, 0.71 ],
+  "light bluish green" : [ 0.4, 0.62, 0.52 ],
+  "moderate bluish green" : [ 0.18, 0.4, 0.34 ],
+  "dark bluish green" : [ 0, 0.23, 0.2 ],
+  "very dark bluish green" : [ 0, 0.11, 0.09 ],
+  "vivid greenish blue" : [ 0, 0.48, 0.65 ],
+  "brilliant greenish blue" : [ 0.16, 0.55, 0.61 ],
+  "strong greenish blue" : [ 0, 0.4, 0.49 ],
+  "deep greenish blue" : [ 0, 0.48, 0.65 ],
+  "very light greenish blue" : [ 0.64, 0.78, 0.75 ],
+  "light greenish blue" : [ 0.39, 0.6, 0.62 ],
+  "moderate greenish blue" : [ 0.19, 0.38, 0.42 ],
+  "dark greenish blue" : [ 0, 0.22, 0.25 ],
+  "very dark greenish blue" : [ 0.01, 0.13, 0.15 ],
+  "vivid blue,ultramarine" : [ 0, 0.49, 0.68 ],
+  "brilliant blue,celestial blue" : [ 0.26, 0.52, 0.71 ],
+  "strong blue,bright blue" : [ 0, 0.33, 0.54 ],
+  "deep blue,royal blue" : [ 0, 0.18, 0.33 ],
+  "very light blue" : [ 0.65, 0.74, 0.84 ],
+  "sky blue" : [ 0.42, 0.57, 0.69 ],
+  "moderate blue,cerulean blue" : [ 0.22, 0.34, 0.47 ],
+  "dark blue,navy blue" : [ 0, 0.13, 0.22 ],
+  "very pale blue,cloud blue" : [ 0.76, 0.79, 0.79 ],
+  "pale blue,alice blue" : [ 0.57, 0.57, 0.57 ],
+  "grayish blue,slate blue" : [ 0.29, 0.33, 0.36 ],
+  "dark grayish blue" : [ 0.17, 0.2, 0.22 ],
+  "blackish blue" : [ 0.09, 0.1, 0.12 ],
+  "bluish white" : [ 0.98, 0.87, 0.81 ],
+  "light bluish gray" : [ 0.75, 0.68, 0.63 ],
+  "bluish gray" : [ 0.49, 0.45, 0.43 ],
+  "dark bluish gray" : [ 0.27, 0.27, 0.27 ],
+  "bluish black" : [ 0.08, 0.09, 0.1 ],
+  "vivid purplish blue" : [ 0.13, 0.08, 0.37 ],
+  "brilliant purplish blue" : [ 0.38, 0.39, 0.61 ],
+  "strong purplish blue" : [ 0.28, 0.26, 0.54 ],
+  "deep purplish blue" : [ 0.1, 0.08, 0.25 ],
+  "very light purplish blue" : [ 0.73, 0.67, 0.78 ],
+  "light purplish blue" : [ 0.51, 0.49, 0.64 ],
+  "moderate purplish blue" : [ 0.26, 0.24, 0.39 ],
+  "dark purplish blue" : [ 0.1, 0.09, 0.16 ],
+  "very pale purplish blue" : [ 0.8, 0.73, 0.77 ],
+  "pale purplish blue" : [ 0.54, 0.5, 0.56 ],
+  "grayish purplish blue" : [ 0.25, 0.24, 0.32 ],
+  "vivid violet" : [ 0.53, 0.29, 0.68 ],
+  "brilliant violet" : [ 0.46, 0.36, 0.6 ],
+  "strong violet" : [ 0.33, 0.22, 0.48 ],
+  "deep violet" : [ 0.14, 0.04, 0.21 ],
+  "very light violet" : [ 0.93, 0.75, 0.95 ],
+  "light violet" : [ 0.53, 0.42, 0.6 ],
+  "moderate violet" : [ 0.33, 0.22, 0.39 ],
+  "dark violet" : [ 0.13, 0.07, 0.17 ],
+  "very pale violet" : [ 0.85, 0.69, 0.75 ],
+  "pale violet" : [ 0.58, 0.48, 0.55 ],
+  "grayish violet" : [ 0.27, 0.22, 0.29 ],
+  "vivid purple" : [ 0.58, 0.2, 0.57 ],
+  "brilliant purple" : [ 0.87, 0.5, 0.8 ],
+  "strong purple" : [ 0.5, 0.24, 0.46 ],
+  "deep purple" : [ 0.33, 0.1, 0.31 ],
+  "very deep purple" : [ 0.2, 0.04, 0.21 ],
+  "very light purple" : [ 0.89, 0.66, 0.75 ],
+  "light purple" : [ 0.73, 0.5, 0.64 ],
+  "moderate purple" : [ 0.5, 0.28, 0.44 ],
+  "dark purple" : [ 0.28, 0.16, 0.25 ],
+  "very dark purple" : [ 0.14, 0.05, 0.13 ],
+  "very pale purple" : [ 0.9, 0.73, 0.76 ],
+  "pale purple" : [ 0.68, 0.52, 0.55 ],
+  "grayish purple" : [ 0.45, 0.32, 0.36 ],
+  "dark grayish purple" : [ 0.27, 0.18, 0.21 ],
+  "blackish purple" : [ 0.11, 0.06, 0.09 ],
+  "purplish white" : [ 0.98, 0.86, 0.78 ],
+  "light purplish gray" : [ 0.78, 0.66, 0.62 ],
+  "purplish gray" : [ 0.53, 0.44, 0.42 ],
+  "dark purplish gray" : [ 0.34, 0.25, 0.26 ],
+  "purplish black" : [ 0.11, 0.07, 0.09 ],
+  "vivid reddish purple" : [ 0.49, 0, 0.35 ],
+  "strong reddish purple" : [ 0.6, 0.21, 0.42 ],
+  "deep reddish purple" : [ 0.39, 0.07, 0.29 ],
+  "very deep reddish purple" : [ 0.28, 0.03, 0.21 ],
+  "light reddish purple" : [ 0.73, 0.42, 0.54 ],
+  "moderate reddish purple" : [ 0.55, 0.27, 0.4 ],
+  "dark reddish purple" : [ 0.31, 0.15, 0.23 ],
+  "very dark reddish purple" : [ 0.15, 0.04, 0.12 ],
+  "pale reddish purple" : [ 0.67, 0.46, 0.5 ],
+  "grayish reddish purple" : [ 0.49, 0.3, 0.36 ],
+  "brilliant purplish pink" : [ 1, 0.59, 0.73 ],
+  "deep purplish pink" : [ 0.92, 0.32, 0.52 ],
+  "light purplish pink" : [ 1, 0.66, 0.69 ],
+  "moderate purplish pink" : [ 0.89, 0.5, 0.56 ],
+  "dark purplish pink" : [ 0.78, 0.4, 0.45 ],
+  "pale purplish pink" : [ 0.99, 0.74, 0.73 ],
+  "grayish purplish pink" : [ 0.8, 0.57, 0.58 ],
+  "vivid purplish red" : [ 0.84, 0.15, 0.36 ],
+  "deep purplish red" : [ 0.44, 0, 0.21 ],
+  "very deep purplish red" : [ 0.28, 0, 0.15 ],
+  "moderate purplish red" : [ 0.65, 0.22, 0.33 ],
+  "dark purplish red" : [ 0.36, 0.12, 0.19 ],
+  "very dark purplish red" : [ 0.16, 0.03, 0.1 ],
+  "light grayish purplish red" : [ 0.7, 0.44, 0.44 ],
+  "grayish purplish red" : [ 0.55, 0.28, 0.32 ],
+  "light gray" : [ 0.76, 0.66, 0.58 ],
+  "medium gray" : [ 0.51, 0.44, 0.4 ],
+  "dark gray" : [ 0.29, 0.26, 0.24 ],
+  "bright black" : [ 0.5, 0.5, 0.5 ],
+  "dark magenta" : [ 0.5, 0, 0.5 ],
+  "dark cyan" : [ 0, 0.5, 0.5 ],
+  "dark white" : [ 0.75, 0.75, 0.75 ],
+  "bright white" : [ 1, 1, 1 ],
+  "bright red" : [ 1, 0, 0 ],
+  "bright yellow" : [ 1, 1, 0 ],
+  "bright cyan" : [ 0, 1, 1 ],
+  "bright magenta" : [ 1, 0, 1 ],
   "dark black" : [ 0, 0, 0 ]
 };
 
@@ -19079,7 +19079,7 @@ _.color.fromTable.defaults =
 
 
 
-  
+
 
   let StarterExtension =
   {
@@ -19097,7 +19097,7 @@ _.color.fromTable.defaults =
 
 /* */  /* begin of globing */ ( function _proceduring_() {
 
-  
+
 
   'use strict';
 
@@ -19124,7 +19124,7 @@ _.color.fromTable.defaults =
 
 ;
 
-  
+
 
   _.array.likeResizable = function likeResizable( src )
 {
@@ -19217,29 +19217,29 @@ _.color.fromTable.defaults =
   const _vectorize_head = function vectorize_head( routine, args )
   {
     let o = args[ 0 ];
-  
+
     if( args.length === 2 )
     o = { routine : args[ 0 ], select : args[ 1 ] }
     else if( _.routine.is( o ) || _.strIs( o ) )
     o = { routine : args[ 0 ] }
-  
+
     _.routine.options( routine, o );
     _.assert( arguments.length === 2, 'Expects exactly two arguments' );
     _.assert( _.routine.is( o.routine ) || _.strIs( o.routine ) || _.strsAreAll( o.routine ), () => 'Expects routine {-o.routine-}, but got ' + o.routine );
     _.assert( args.length === 1 || args.length === 2 );
     _.assert( o.select >= 1 || _.strIs( o.select ) || _.argumentsArray.like( o.select ), () => 'Expects {-o.select-} as number >= 1, string or array, but got ' + o.select );
-  
+
     return o;
   }
 
   const _vectorize_body = function vectorize_body( o )
   {
-  
+
     _.routine.assertOptions( vectorize_body, arguments );
-  
+
     if( _.argumentsArray.like( o.routine ) && o.routine.length === 1 )
     o.routine = o.routine[ 0 ];
-  
+
     let routine = o.routine;
     let propertyCondition = o.propertyCondition;
     let bypassingFilteredOut = o.bypassingFilteredOut;
@@ -19253,25 +19253,25 @@ _.color.fromTable.defaults =
     let select = o.select === null ? 1 : o.select;
     let selectAll = o.select === Infinity;
     let multiply = select > 1 ? multiplyReally : multiplyNo;
-  
+
     routine = routineNormalize( routine );
-  
+
     _.assert( _.routine.is( routine ), () => 'Expects routine {-o.routine-}, but got ' + routine );
-  
+
     /* */
-  
+
     let resultRoutine = vectorizeArray;
-  
+
     if( _.number.is( select ) )
     {
-  
+
       if( !vectorizingArray && !vectorizingMapVals && !vectorizingMapKeys )
       resultRoutine = routine;
       else if( propertyCondition )
       resultRoutine = vectorizeWithFilters;
       else if( vectorizingMapKeys )
       {
-  
+
         if( vectorizingMapVals )
         {
           _.assert( select === 1, 'Only single argument is allowed if {-o.vectorizingMapKeys-} and {-o.vectorizingMapVals-} are enabled.' );
@@ -19281,7 +19281,7 @@ _.color.fromTable.defaults =
         {
           resultRoutine = vectorizeKeysOrArray;
         }
-  
+
       }
       else if( !vectorizingArray || vectorizingMapVals )
       resultRoutine = vectorizeMapOrArray;
@@ -19289,7 +19289,7 @@ _.color.fromTable.defaults =
       resultRoutine = vectorizeArray;
       else
       resultRoutine = vectorizeArrayMultiplying;
-  
+
     }
     else
     {
@@ -19312,28 +19312,28 @@ _.color.fromTable.defaults =
       }
       else _.assert( 0, 'not implemented' );
     }
-  
+
     /* */
-  
+
     resultRoutine.vectorized = o;
-  
+
     /* */
-  
+
     _.routine.extend( resultRoutine, routine );
     return resultRoutine;
-  
+
     /*
       vectorizeWithFilters : multiply + array/map vectorizing + filter
       vectorizeArray : array vectorizing
       vectorizeArrayMultiplying :  multiply + array vectorizing
       vectorizeMapOrArray :  multiply +  array/map vectorizing
     */
-  
+
     /* - */
-  
+
     function routineNormalize( routine )
     {
-  
+
       if( _.strIs( routine ) )
       {
         return function methodCall()
@@ -19352,30 +19352,30 @@ _.color.fromTable.defaults =
           return c[ routine[ 1 ] ].apply( c, arguments );
         }
       }
-  
+
       return routine;
     }
-  
+
     /* - */
-  
+
     function multiplyNo( args )
     {
       return args;
     }
-  
+
     /* - */
-  
+
     function multiplyReally( args )
     {
       let length, keys;
-  
+
       args = [ ... args ];
-  
+
       if( selectAll )
       select = args.length;
-  
+
       _.assert( args.length === select, () => 'Expects ' + select + ' arguments, but got ' + args.length );
-  
+
       for( let d = 0 ; d < select ; d++ )
       {
         if( vectorizingArray && _.argumentsArray.like( args[ d ] ) )
@@ -19399,7 +19399,7 @@ _.color.fromTable.defaults =
           break;
         }
       }
-  
+
       if( length !== undefined )
       {
         for( let d = 0 ; d < select ; d++ )
@@ -19410,7 +19410,7 @@ _.color.fromTable.defaults =
           continue;
           args[ d ] = _.multiple( args[ d ], length );
         }
-  
+
       }
       else if( keys !== undefined )
       {
@@ -19428,20 +19428,20 @@ _.color.fromTable.defaults =
           args[ d ] = arg;
         }
       }
-  
+
       return args;
     }
-  
+
     /* - */
-  
+
     function vectorizeArray()
     {
       if( bypassingEmpty && !arguments.length )
       return [];
-  
+
       let args = arguments;
       let src = args[ 0 ];
-  
+
       if( _.arrayIs( src ) ) /* Dmytro : arrayLike returns true for instances of containerAdapter */
       {
         let args2 = [ ... args ];
@@ -19479,23 +19479,23 @@ _.color.fromTable.defaults =
         else
         return result;
       }
-  
+
       return routine.apply( this, args );
     }
-  
+
     /* - */
-  
+
     function vectorizeArrayMultiplying()
     {
       if( bypassingEmpty && !arguments.length )
       return [];
-  
+
       let args = multiply( arguments );
       let src = args[ 0 ];
-  
+
       if( _.argumentsArray.like( src ) )
       {
-  
+
         let args2 = [ ... args ];
         let result = _.long.makeEmpty( src );
         let append = _.long.appender( result );
@@ -19508,21 +19508,21 @@ _.color.fromTable.defaults =
         });
         return result;
       }
-  
+
       return routine.apply( this, args );
     }
-  
+
     /* - */
-  
+
     function vectorizeForOptionsMap( srcMap )
     {
       if( bypassingEmpty && !arguments.length )
       return [];
-  
+
       let src = srcMap[ select ];
       let args = [ ... arguments ];
       _.assert( arguments.length === 1, 'Expects single argument' );
-  
+
       if( _.argumentsArray.like( src ) )
       {
         if( head )
@@ -19530,7 +19530,7 @@ _.color.fromTable.defaults =
           args = head( routine, args );
           _.assert( _.arrayLikeResizable( args ) );
         }
-  
+
         let result = _.long.makeEmpty( src );
         let append = _.long.appender( result );
         let each = _.long.eacher( src );
@@ -19541,7 +19541,7 @@ _.color.fromTable.defaults =
           append( routine.apply( this, args ) );
         });
         return result;
-  
+
       }
       else if( _.set.like( src ) ) /* qqq : cover */
       {
@@ -19577,19 +19577,19 @@ _.color.fromTable.defaults =
         else
         return result;
       }
-  
+
       return routine.apply( this, arguments );
     }
-  
+
     /* - */
-  
+
     function vectorizeForOptionsMapForKeys()
     {
       let result = [];
-  
+
       if( bypassingEmpty && !arguments.length )
       return result;
-  
+
       for( let i = 0; i < o.select.length; i++ )
       {
         select = o.select[ i ];
@@ -19597,30 +19597,30 @@ _.color.fromTable.defaults =
       }
       return result;
     }
-  
+
     /* - */
-  
+
     function vectorizeMapOrArray()
     {
       if( bypassingEmpty && !arguments.length )
       return [];
-  
+
       let args = multiply( arguments );
       let src = args[ 0 ];
-  
+
       if( vectorizingArray && _.argumentsArray.like( src ) )
       {
-  
+
         let args2 = [ ... args ];
         let result = _.long.makeEmpty( src );
         let append = _.long.appender( result );
         let each = _.long.eacher( src );
         each( ( e, r ) =>
         {
-  
+
           for( let m = 0 ; m < select ; m++ )
           args2[ m ] = args[ m ][ r ]; /* qqq zzz : use _.long.get? */
-  
+
           append( routine.apply( this, args2 ) );
         });
         return result;
@@ -19633,27 +19633,27 @@ _.color.fromTable.defaults =
         {
           for( let m = 0 ; m < select ; m++ )
           args2[ m ] = args[ m ][ r ];
-  
+
           result[ r ] = routine.apply( this, args2 );
         }
         return result;
       }
-  
+
       return routine.apply( this, arguments );
     }
-  
+
     /* - */
-  
+
     function vectorizeMapWithKeysOrArray()
     {
       if( bypassingEmpty && !arguments.length )
       return [];
-  
+
       let args = multiply( arguments );
       let srcs = args[ 0 ];
-  
+
       _.assert( args.length === select, () => 'Expects ' + select + ' arguments but got : ' + args.length );
-  
+
       if( vectorizingMapKeys && vectorizingMapVals &&_.mapIs( srcs ) )
       {
         let result = Object.create( null );
@@ -19672,25 +19672,25 @@ _.color.fromTable.defaults =
         result[ s ] = routine.call( this, srcs[ s ] );
         return result;
       }
-  
+
       return routine.apply( this, arguments );
     }
-  
+
     /* - */
-  
+
     function vectorizeWithFilters( src )
     {
-  
+
       _.assert( 0, 'not tested' ); /* qqq : cover please */
       _.assert( arguments.length === 1, 'Expects single argument' );
-  
+
       let args = multiply( arguments );
-  
+
       if( vectorizingArray && _.argumentsArray.like( src ) )
       {
         args = [ ... args ];
         throw _.err( 'not tested' ); /* cover please */
-  
+
         let result = _.long.makeEmpty( src );
         let append = _.long.appender( result );
         let each = _.long.eacher( src );
@@ -19705,12 +19705,12 @@ _.color.fromTable.defaults =
           {
             append( e );
           }
-  
+
           args2[ 0 ] = e;
           append( routine.apply( this, args2 ) );
         });
         return result;
-  
+
       }
       else if( vectorizingMapVals && _.mapIs( src ) )
       {
@@ -19731,24 +19731,24 @@ _.color.fromTable.defaults =
         }
         return result;
       }
-  
+
       return routine.call( this, src );
     }
-  
+
     /* - */
-  
+
     function vectorizeKeysOrArray()
     {
       if( bypassingEmpty && !arguments.length )
       return [];
-  
+
       // let args = multiply( _.originalsFromAdaptersInplace( arguments ) );
       let args = multiply( arguments );
       let src = args[ 0 ];
       let args2, result, map, mapIndex, arr;
-  
+
       _.assert( args.length === select, () => 'Expects ' + select + ' arguments but got : ' + args.length );
-  
+
       if( vectorizingMapKeys )
       {
         for( let d = 0; d < select; d++ )
@@ -19763,19 +19763,19 @@ _.color.fromTable.defaults =
           }
         }
       }
-  
+
       if( map )
       {
         result = Object.create( null );
         args2 = [ ... args ];
-  
+
         if( vectorizingArray && _.argumentsArray.like( arr ) )
         {
           for( let i = 0; i < arr.length; i++ )
           {
             for( let m = 0 ; m < select ; m++ )
             args2[ m ] = args[ m ][ i ];
-  
+
             for( let k in map )
             {
               args2[ mapIndex ] = k;
@@ -19793,12 +19793,12 @@ _.color.fromTable.defaults =
             result[ key ] = map[ k ];
           }
         }
-  
+
         return result;
       }
       else if( vectorizingArray && _.argumentsArray.like( src ) )
       {
-  
+
         let args2 = [ ... args ];
         let result = _.long.makeEmpty( src );
         let append = _.long.appender( result );
@@ -19810,23 +19810,23 @@ _.color.fromTable.defaults =
           append( routine.apply( this, args2 ) );
         });
         return result;
-  
+
       }
-  
+
       return routine.apply( this, arguments );
     }
-  
+
   }
   _vectorize_body.defaults = {
-      "routine" : null, 
-      "propertyCondition" : null, 
-      "bypassingFilteredOut" : 1, 
-      "bypassingEmpty" : 0, 
-      "vectorizingArray" : 1, 
-      "vectorizingMapVals" : 0, 
-      "vectorizingMapKeys" : 0, 
-      "vectorizingContainerAdapter" : 0, 
-      "unwrapingContainerAdapter" : 0, 
+      "routine" : null,
+      "propertyCondition" : null,
+      "bypassingFilteredOut" : 1,
+      "bypassingEmpty" : 0,
+      "vectorizingArray" : 1,
+      "vectorizingMapVals" : 0,
+      "vectorizingMapKeys" : 0,
+      "vectorizingContainerAdapter" : 0,
+      "unwrapingContainerAdapter" : 0,
       "select" : 1
     }
 
@@ -19840,15 +19840,15 @@ _.color.fromTable.defaults =
 })();
 _.vectorize.defaults =
 {
-  "routine" : null, 
-  "propertyCondition" : null, 
-  "bypassingFilteredOut" : 1, 
-  "bypassingEmpty" : 0, 
-  "vectorizingArray" : 1, 
-  "vectorizingMapVals" : 0, 
-  "vectorizingMapKeys" : 0, 
-  "vectorizingContainerAdapter" : 0, 
-  "unwrapingContainerAdapter" : 0, 
+  "routine" : null,
+  "propertyCondition" : null,
+  "bypassingFilteredOut" : 1,
+  "bypassingEmpty" : 0,
+  "vectorizingArray" : 1,
+  "vectorizingMapVals" : 0,
+  "vectorizingMapKeys" : 0,
+  "vectorizingContainerAdapter" : 0,
+  "unwrapingContainerAdapter" : 0,
   "select" : 1
 }
 
@@ -19938,11 +19938,11 @@ _.vectorize.defaults =
 }
 _.strReplaceAll.defaults =
 {
-  "src" : null, 
-  "dictionary" : null, 
-  "ins" : null, 
-  "sub" : null, 
-  "joining" : 1, 
+  "src" : null,
+  "dictionary" : null,
+  "ins" : null,
+  "sub" : null,
+  "joining" : 1,
   "onUnknown" : null
 }
 
@@ -20206,10 +20206,10 @@ _.strReplaceAll.defaults =
 }
 _.strFindAll.defaults =
 {
-  "src" : null, 
-  "ins" : null, 
-  "fast" : 0, 
-  "counter" : 0, 
+  "src" : null,
+  "ins" : null,
+  "fast" : 0,
+  "counter" : 0,
   "tokenizingUnknown" : 0
 }
 
@@ -20743,22 +20743,22 @@ _.props.keys.defaults =
   const _globShortFilter_head = function globShortFilter_head( routine, args )
   {
     let result;
-  
+
     _.assert( arguments.length === 2 );
     _.assert( args.length === 1 || args.length === 2 );
-  
+
     let o = args[ 0 ];
     if( args[ 1 ] !== undefined )
     o = { src : args[ 0 ], selector : args[ 1 ] }
-  
+
     o = _.routine.options_( routine, o );
-  
+
     if( o.onEvaluate === null )
     o.onEvaluate = function byVal( e, k, src )
     {
       return e;
     }
-  
+
     return o;
   }
 
@@ -20766,12 +20766,12 @@ _.props.keys.defaults =
   {
     let self = this;
     let result;
-  
+
     _.assert( arguments.length === 1 );
-  
+
     // if( _global_.debugger )
     // debugger;
-  
+
     if( self.isGlob( o.selector ) )
     {
       let regexp = self.globShortSplitsToRegexps( o.selector );
@@ -20788,7 +20788,7 @@ _.props.keys.defaults =
         return o.onEvaluate( e, k, o.src ) === o.selector ? e : undefined;
       } );
     }
-  
+
     return result;
   }
   _globShortFilter_body.defaults = { "src" : null, "selector" : null, "onEvaluate" : null }
@@ -20803,8 +20803,8 @@ _.props.keys.defaults =
 })();
 _.path.globShortFilterKeys.defaults =
 {
-  "src" : null, 
-  "selector" : null, 
+  "src" : null,
+  "selector" : null,
   "onEvaluate" : function byKey( e, k, src )
 {
   return _.arrayIs( src ) ? e : k;
@@ -21053,35 +21053,35 @@ toVectorize.unwrapingContainerAdapter = 0;
     let o = args[ 0 ];
     if( _.strIs( o ) )
     o = { path : o };
-  
+
     _.routine.options_( routine, o );
     _.assert( args.length === 1 );
     _.assert( arguments.length === 2 );
     _.assert( _.strIs( o.path ), 'Expects string {-o.path-}' );
-  
+
     return o;
   }
 
   const _name_body = function name_body( o )
   {
-  
+
     if( _.strIs( o ) )
     o = { path : o };
-  
+
     _.routine.assertOptions( name_body, arguments );
-  
+
     o.path = this.canonize( o.path );
-  
+
     let i = o.path.lastIndexOf( '/' );
     if( i !== -1 )
     o.path = o.path.substr( i+1 );
-  
+
     if( !o.full )
     {
       let i = o.path.lastIndexOf( '.' );
       if( i !== -1 ) o.path = o.path.substr( 0, i );
     }
-  
+
     return o.path;
   }
   _name_body.defaults = { "path" : null, "full" : 0 }
@@ -21107,35 +21107,35 @@ _.path.name.defaults =
     let o = args[ 0 ];
     if( _.strIs( o ) )
     o = { path : o };
-  
+
     _.routine.options_( routine, o );
     _.assert( args.length === 1 );
     _.assert( arguments.length === 2 );
     _.assert( _.strIs( o.path ), 'Expects string {-o.path-}' );
-  
+
     return o;
   }
 
   const _name_body = function name_body( o )
   {
-  
+
     if( _.strIs( o ) )
     o = { path : o };
-  
+
     _.routine.assertOptions( name_body, arguments );
-  
+
     o.path = this.canonize( o.path );
-  
+
     let i = o.path.lastIndexOf( '/' );
     if( i !== -1 )
     o.path = o.path.substr( i+1 );
-  
+
     if( !o.full )
     {
       let i = o.path.lastIndexOf( '.' );
       if( i !== -1 ) o.path = o.path.substr( 0, i );
     }
-  
+
     return o.path;
   }
   _name_body.defaults = { "path" : null, "full" : 0 }
@@ -21174,13 +21174,13 @@ _.path.fullName.defaults =
   {
     _.assert( args.length > 0, 'Expects argument' )
     let o = { paths : args };
-  
+
     _.routine.options_( routine, o );
     //_.assert( o.paths.length > 0 );
     _.assert( _.boolLike( o.reroot ) );
     _.assert( _.boolLike( o.allowingNull ) );
     _.assert( _.boolLike( o.raw ) );
-  
+
     return o;
   }
 
@@ -21189,9 +21189,9 @@ _.path.fullName.defaults =
     let self = this;
     let result = null;
     let prepending = true;
-  
+
     /* */
-  
+
     if( Config.debug )
     for( let a = o.paths.length-1 ; a >= 0 ; a-- )
     {
@@ -21201,49 +21201,49 @@ _.path.fullName.defaults =
         _.strIs( src ) || src === null, () => `Expects strings as path arguments, but #${a} argument is ${_.entity.strType( src )}`
       );
     }
-  
+
     /* */
-  
+
     for( let a = o.paths.length-1 ; a >= 0 ; a-- )
     {
       let src = o.paths[ a ];
-  
+
       if( o.allowingNull )
       if( src === null )
       break;
-  
+
       if( result === null )
       result = '';
-  
+
       _.assert( _.strIs( src ), () => `Expects strings as path arguments, but #${a} argument is ${_.entity.strType( src )}` );
-  
+
       if( !prepend( src ) )
       break;
-  
+
     }
-  
+
     /* */
-  
+
     if( !o.raw && result !== null )
     result = self.normalize( result );
-  
+
     return result;
-  
+
     /* */
-  
+
     function prepend( src )
     {
       let trailed = false;
       let endsWithUp = false;
-  
+
       if( src )
       src = self.refine( src );
-  
+
       if( !src )
       return true;
-  
+
       // src = src.replace( /\\/g, self.upToken );
-  
+
       // if( result )
       if( _.strEnds( src, self.upToken ) )
       // if( _.strEnds( src, self.upToken ) && !_.strEnds( src, self.upToken + self.upToken ) )
@@ -21254,41 +21254,41 @@ _.path.fullName.defaults =
           if( result )
           src = src.substr( 0, src.length-1 );
           trailed = true;
-  
+
           if( result === self.downToken )
           result = self.hereToken;
           else if( result === self.downUpToken )
           result = self.hereUpToken;
           else
           result = _.strRemoveBegin( result, self.downUpToken );
-  
+
         }
         else
         {
           endsWithUp = true;
         }
       }
-  
+
       if( src && result )
       if( !endsWithUp && !_.strBegins( result, self.upToken ) )
       result = self.upToken + result;
-  
+
       result = src + result;
-  
+
       if( !o.reroot )
       {
         if( _.strBegins( result, self.rootToken ) )
         return false;
       }
-  
+
       return true;
     }
-  
+
   }
   _join_body.defaults = {
-      "paths" : null, 
-      "reroot" : 0, 
-      "allowingNull" : 1, 
+      "paths" : null,
+      "reroot" : 0,
+      "allowingNull" : 1,
       "raw" : 0
     }
 
@@ -21302,9 +21302,9 @@ _.path.fullName.defaults =
 })();
 _.path.reroot.defaults =
 {
-  "paths" : null, 
-  "reroot" : 1, 
-  "allowingNull" : 1, 
+  "paths" : null,
+  "reroot" : 1,
+  "allowingNull" : 1,
   "raw" : 0
 }
 
@@ -21366,7 +21366,7 @@ _.path.reroot.defaults =
 
 
 
-  
+
 
   let ToolsExtension =
   {
@@ -21388,7 +21388,7 @@ _.path.reroot.defaults =
 
 /* */  /* begin of njs */ ( function _njs_() {
 
-  
+
 
   'use strict';
 
@@ -21605,7 +21605,7 @@ _.path.reroot.defaults =
   }
 
 ;
-  
+
 
   let Extension =
   {
@@ -21636,7 +21636,7 @@ _.path.reroot.defaults =
 
 /* */  /* begin of starter */ ( function _starter_() {
 
-  
+
 
   'use strict';
 
@@ -21814,7 +21814,7 @@ _.path.reroot.defaults =
     {
       if( !starter.requireCache[ childSource.filePath ] )
       starter.requireCache[ childSource.filePath ] = childSource;
-  
+
       return childSource.exports;
     }
   }
@@ -21983,7 +21983,7 @@ _.path.reroot.defaults =
   }
 
 ;
-  
+
 
   let Extension =
   {
@@ -88019,7 +88019,7 @@ let PropsExtension =
   mapperFromCondition,
   mapperFrom,
   conditionFrom,
-  transformerRegister, 
+  transformerRegister,
   transformersRegister,
   transformerUnregister,
   transformersUnregister,
