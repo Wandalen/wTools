@@ -524,7 +524,6 @@ module:
           - ../proto/wtools/abase/l0/l9.test/Entity.test.s
           - ../proto/wtools/abase/l0/l9.test/Err.test.s
           - ../proto/wtools/abase/l0/l9.test/Escape.test.s
-          - ../proto/wtools/abase/l0/l9.test/Event.test.s
           - ../proto/wtools/abase/l0/l9.test/Functional.test.s
           - ../proto/wtools/abase/l0/l9.test/Functor.test.s
           - ../proto/wtools/abase/l0/l9.test/Fuzzy.test.s
