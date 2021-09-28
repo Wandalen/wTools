@@ -20,7 +20,8 @@ function _chainGenerate( args )
   for( let a = 0 ; a < args.length-2 ; a++ )
   chainMake( a );
 
-  chain.push([ _.event.nameValueFrom( args[ args.length-2 ] ), args[ args.length-1 ] ]);
+  // chain.push([ _.event.nameValueFrom( args[ args.length-2 ] ), args[ args.length-1 ] ]);
+  chain.push([ args[ args.length-2 ], args[ args.length-1 ] ]);
 
   _.assert( _.routine.is( args[ args.length-1 ] ) );
 
@@ -30,7 +31,8 @@ function _chainGenerate( args )
 
   function chainMake( a )
   {
-    let e1 = _.event.nameValueFrom( args[ a ] );
+    // let e1 = _.event.nameValueFrom( args[ a ] );
+    let e1 = args[ a ];
     chain.push([ e1, on ]);
     function on()
     {
@@ -79,9 +81,11 @@ function _chainValidate( chain )
 {
 
   for( let i = 0 ; i < chain.length - 1 ; i++ )
-  {
-    _.assert( _.event.nameIs( chain[ i ] ) );
-  }
+  _.assert( _.str.defined( chain[ i ] ) );
+  // for( let i = 0 ; i < chain.length - 1 ; i++ )
+  // {
+  //   _.assert( _.event.nameIs( chain[ i ] ) );
+  // }
   _.assert( _.routine.is( chain[ chain.length - 1 ] ) );
 
   return true;
@@ -104,22 +108,47 @@ function _callbackMapValidate( callbackMap )
 
 }
 
+// //
 //
-
-function nameValueFrom( name )
-{
-  if( _.strIs( name ) )
-  return name;
-  _.assert( _.event.nameIs( name ) );
-  return name.value;
-}
-
+// function nameValueFrom( name )
+// {
+//   if( _.strIs( name ) )
+//   return name;
+//   _.assert( _.event.nameIs( name ) );
+//   return name.value;
+// }
 //
-
-function nameIs( name )
-{
-  return name instanceof _.event.Name;
-}
+// //
+//
+// function nameIs( name )
+// {
+//   return name instanceof _.event.Name;
+// }
+//
+// //
+//
+// /*
+// _.process.on( 'available', _.event.Name( 'exit' ), _.event.Name( 'exit' ), _.procedure._eventProcessExitHandle )
+// ->
+// _.process.on( _.event.Chain( 'available', 'exit', 'exit' ), _.procedure._eventProcessExitHandle )
+// */
+//
+// /* qqq for Dmytro : remove the class */ /* aaa : Dmytro : removed */
+// function Name( name )
+// {
+//   if( !( this instanceof Name ) )
+//   {
+//     if( _.event.nameIs( name ) )
+//     return name;
+//     return new Name( ... arguments );
+//   }
+//   _.assert( arguments.length === 1 );
+//   _.assert( _.strIs( name ) );
+//   this.value = name;
+//   return this;
+// }
+//
+// Name.prototype = Object.create( null );
 
 //
 
@@ -148,31 +177,6 @@ function chainIs( src )
 {
   return src instanceof _.event.Chain;
 }
-
-//
-
-/*
-_.process.on( 'available', _.event.Name( 'exit' ), _.event.Name( 'exit' ), _.procedure._eventProcessExitHandle )
-->
-_.process.on( _.event.Chain( 'available', 'exit', 'exit' ), _.procedure._eventProcessExitHandle )
-*/
-
-/* qqq for Dmytro : remove the class */
-function Name( name )
-{
-  if( !( this instanceof Name ) )
-  {
-    if( _.event.nameIs( name ) )
-    return name;
-    return new Name( ... arguments );
-  }
-  _.assert( arguments.length === 1 );
-  _.assert( _.strIs( name ) );
-  this.value = name;
-  return this;
-}
-
-Name.prototype = Object.create( null );
 
 //
 
@@ -225,7 +229,11 @@ function Chain()
   let result = _.array.make( arguments.length );
   _.assert( arguments.length >= 1, 'Expects events names' );
   for( let i = 0 ; i < arguments.length ; i++ )
-  result[ i ] = _.event.Name( arguments[ i ] );
+  {
+    _.assert( _.str.is( arguments[ i ] ) );
+    result[ i ] = arguments[ i ];
+  }
+  // result[ i ] = _.event.Name( arguments[ i ] );
 
   this.chain = result;
   return this;
@@ -252,17 +260,19 @@ function onHead( routine, args )
     if( _.event.chainIs( args[ 0 ] ) )
     {
       let chain = args[ 0 ].chain;
-      o.callbackMap[ chain[ 0 ].value ] = _.longOnly_( null, chain, [ 1, chain.length - 1 ] );
-      o.callbackMap[ chain[ 0 ].value ].push( args[ 1 ] );
+      o.callbackMap[ chain[ 0 ] ] = _.longOnly_( null, chain, [ 1, chain.length - 1 ] );
+      o.callbackMap[ chain[ 0 ] ].push( args[ 1 ] );
+      // o.callbackMap[ chain[ 0 ].value ] = _.longOnly_( null, chain, [ 1, chain.length - 1 ] );
+      // o.callbackMap[ chain[ 0 ].value ].push( args[ 1 ] );
     }
-    else if( _.strIs( args[ 0 ] ) )
+    else if( _.str.is( args[ 0 ] ) )
     {
       o.callbackMap[ args[ 0 ] ] = args[ 1 ];
     }
-    else if( _.event.nameIs( args[ 0 ] ) )
-    {
-      o.callbackMap[ args[ 0 ].value ] = args[ 1 ];
-    }
+    // else if( _.event.nameIs( args[ 0 ] ) )
+    // {
+    //   o.callbackMap[ args[ 0 ].value ] = args[ 1 ];
+    // }
     else
     {
       _.assert( 0, 'Expects Chain with names or single name of event.' );
@@ -1029,10 +1039,10 @@ let Extension =
   _chainValidate,
   _callbackMapValidate,
 
-  nameValueFrom,
-  nameIs,
+  // nameValueFrom,
+  // nameIs,
+  // Name,
   chainIs,
-  Name,
   Chain,
 
   onHead,
