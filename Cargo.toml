@@ -10,7 +10,7 @@ name = "wtools"
 path = "rust/wtools/mod.rs"
 
 [[test]]
-name = "wtools-test"
+name = "wtools_test"
 path = "rust/test/mod.rs"
 
 [dependencies]
