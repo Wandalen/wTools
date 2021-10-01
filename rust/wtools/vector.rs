@@ -279,7 +279,7 @@ impl<T : PartialEq> left_index<T>
     }
     else
     {
-      assert!( self.on_evaluate2.is_none(), "Expects callback {-on_evaluate1-}." );
+      assert!( self.on_evaluate2.is_none(), "{}", "Expects callback {-on_evaluate1-}." );
       for i in self.start_from..self.src.len()
       {
         if self.src[ i ] == self.ins

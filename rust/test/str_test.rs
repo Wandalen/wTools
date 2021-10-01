@@ -10,8 +10,8 @@ fn split_trivial()
   let mut opts = str::split::default();
   opts.delimeter( vec![ "" ] );
   let got = str::split( &opts );
-  // let exp : Vec<&str> = vec![];
-  // assert_eq!( got, exp );
+  let exp : Vec<&str> = vec![];
+  assert_eq!( got, exp );
 }
 
 //

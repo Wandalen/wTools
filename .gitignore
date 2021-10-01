@@ -11,9 +11,11 @@
 /node_modules
 /.module
 /package-lock.json
+/Cargo.lock
 
 -*
 .module
+Cargo.lock
 .warchive*
 *.log
 *.db
