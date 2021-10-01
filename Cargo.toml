@@ -14,8 +14,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 categories = [ "algorithms" ]
 keywords = [ "fundamental", "general-purpose" ]
 
-include =
-[
+include = [
   "rust",
   "Cargo.toml",
   "Readme.md",
