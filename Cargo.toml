@@ -11,7 +11,7 @@ homepage = "https://github.com/wtools"
 description = """
 Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling namespace, so may be used solely or in conjunction with another module of such kind.
 """
-categories = [ "algorithms" ]
+categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [

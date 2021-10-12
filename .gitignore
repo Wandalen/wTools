@@ -12,6 +12,7 @@
 /.module
 /package-lock.json
 /Cargo.lock
+/.vscode
 
 -*
 .module
@@ -21,4 +22,5 @@ Cargo.lock
 *.db
 *.tmp
 *.build
-
+.DS_Store
+.idea
