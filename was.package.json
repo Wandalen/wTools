@@ -1,6 +1,6 @@
 {
   "name": "wTools",
-  "version": "0.8.1199",
+  "version": "0.8.1200",
   "engine": "node >= 10.0.0",
   "enabled": 1,
   "description": "Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling namespace, so may be used solely or in conjunction with another module of such kind.",
