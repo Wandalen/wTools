@@ -447,55 +447,55 @@ function dichotomy( test )
   /* */
 
   test.case = `Unnamed Generator`;
-  test.true( !_.routine.is( function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.like( function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isTrivial( function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isSync( function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isAsync( function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.isGenerator( function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.isSyncGenerator( function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isAsyncGenerator( function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.withName( function* () { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.is( function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.like( function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isTrivial( function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isSync( function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isAsync( function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.isGenerator( function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.isSyncGenerator( function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isAsyncGenerator( function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.withName( function *() { yield 1; yield 2; yield 3; } ) );
 
   /* */
 
   test.case = `Named Generator`;
-  test.true( !_.routine.is( function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.like( function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isTrivial( function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isSync( function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isAsync( function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.isGenerator( function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.isSyncGenerator( function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isAsyncGenerator( function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.withName( function* abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.is( function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.like( function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isTrivial( function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isSync( function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isAsync( function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.isGenerator( function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.isSyncGenerator( function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isAsyncGenerator( function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.withName( function *abc() { yield 1; yield 2; yield 3; } ) );
 
   /* */
 
   test.case = `Unnamed async generator`;
-  test.true( !_.routine.is( async function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.like( async function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isTrivial( async function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isSync( async function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isAsync( async function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.isGenerator( async function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isSyncGenerator( async function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.isAsyncGenerator( async function* () { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.withName( async function* () { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.is( async function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.like( async function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isTrivial( async function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isSync( async function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isAsync( async function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.isGenerator( async function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isSyncGenerator( async function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.isAsyncGenerator( async function *() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.withName( async function *() { yield 1; yield 2; yield 3; } ) );
 
 
   /* */
 
   test.case = `Named async generator`;
-  test.true( !_.routine.is( async function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.like( async function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isTrivial( async function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isSync( async function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isAsync( async function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.isGenerator( async function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( !_.routine.isSyncGenerator( async function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.isAsyncGenerator( async function* abc() { yield 1; yield 2; yield 3; } ) );
-  test.true( _.routine.withName( async function* abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.is( async function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.like( async function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isTrivial( async function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isSync( async function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isAsync( async function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.isGenerator( async function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( !_.routine.isSyncGenerator( async function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.isAsyncGenerator( async function *abc() { yield 1; yield 2; yield 3; } ) );
+  test.true( _.routine.withName( async function *abc() { yield 1; yield 2; yield 3; } ) );
 
   /* */
 
@@ -522,7 +522,7 @@ function dichotomy( test )
   /* */
 
   test.case = `Generator created using Generator Function constructor`;
-  var GeneratorFunction = Object.getPrototypeOf( function* (){} ).constructor;
+  var GeneratorFunction = Object.getPrototypeOf( function *(){} ).constructor;
   var src = new GeneratorFunction( 'a', 'yield a * 2' );
   test.true( !_.routine.is( src ) );
   test.true( _.routine.like( src ) );
@@ -534,6 +534,10 @@ function dichotomy( test )
   test.true( !_.routine.isAsyncGenerator( src ) );
   test.true( _.routine.withName( src ) );
 }
+
+dichotomy.timeOut = 10000;
+
+//
 
 function is( test )
 {
@@ -667,7 +671,7 @@ function is( test )
   test.identical( got, true )
 
   test.case = `generator`;
-  var src = function* abc()
+  var src = function *abc()
   {
     yield 1;
     yield 2;
