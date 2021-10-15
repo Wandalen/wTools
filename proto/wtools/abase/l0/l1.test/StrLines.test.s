@@ -628,9 +628,7 @@ function eachLeftMultipleInInterval( test )
   var src = ``;
   var interval = [ -2, -2 ];
   _.str.lines.eachLeft({ src, onEach, interval,  });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 0 );
 
@@ -641,9 +639,7 @@ function eachLeftMultipleInInterval( test )
   var src = ``;
   var interval = [ -1, -1 ];
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 0 );
 
@@ -654,9 +650,7 @@ function eachLeftMultipleInInterval( test )
   var src = ``;
   var interval = [ 1, 1 ];
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 0 );
 
@@ -667,9 +661,7 @@ function eachLeftMultipleInInterval( test )
   var src = ``;
   var interval = [ 2, 2 ];
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 0 );
 
@@ -776,9 +768,7 @@ function eachLeftMultipleInInterval( test )
   var src = ``;
   var interval = [ 1, 1 ];
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 0 );
 
@@ -907,9 +897,7 @@ function eachLeftMultipleInInterval( test )
   var src = `aa\nbb`;
   var interval = [ -2, -2 ];
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 5 );
 
@@ -920,9 +908,7 @@ function eachLeftMultipleInInterval( test )
   var src = `aa\nbb`;
   var interval = [ -1, -1 ];
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 5 );
 
@@ -933,9 +919,7 @@ function eachLeftMultipleInInterval( test )
   var src = `aa\nbb`;
   var interval = [ 0, -1 ];
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 5 );
 
@@ -946,9 +930,7 @@ function eachLeftMultipleInInterval( test )
   var src = `aa\nbb`;
   var interval = [ 2, 1 ];
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 5 );
 
@@ -959,9 +941,7 @@ function eachLeftMultipleInInterval( test )
   var src = `aa\nbb`;
   var interval = [ 2, 2 ];
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 5 );
 
@@ -1274,9 +1254,7 @@ function eachLeftMultipleInInterval( test )
   var interval = [ 3, 2 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
@@ -1287,9 +1265,7 @@ function eachLeftMultipleInInterval( test )
   var interval = [ 2, 1 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
@@ -1300,9 +1276,7 @@ function eachLeftMultipleInInterval( test )
   var interval = [ -1, -1 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
@@ -1313,9 +1287,7 @@ function eachLeftMultipleInInterval( test )
   var interval = [ 0, -1 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
@@ -1326,9 +1298,7 @@ function eachLeftMultipleInInterval( test )
   var interval = [ -2, -1 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
@@ -1339,9 +1309,7 @@ function eachLeftMultipleInInterval( test )
   var interval = [ 5, 6 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachLeft({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
@@ -1487,50 +1455,47 @@ function eachLeftCallbacks( test )
 
 function atLeftSingle( test )
 {
-
-  /* */
-
   test.case = 'empty';
   var src = ``;
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : -2,
-    'charInterval' : [ 0, -1 ],
-  }
+    src,
+    lineIndex : -2,
+    charInterval : [ 0, -1 ],
+  };
   var got = _.str.lines.atLeft( src, -2 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : -1,
-    'charInterval' : [ 0, -1 ],
-  }
+    src,
+    lineIndex : -1,
+    charInterval : [ 0, -1 ],
+  };
   var got = _.str.lines.atLeft( src, -1 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 0,
-    'charInterval' : [ 0, -1 ],
-    'line' : '',
-    'nl' : '',
+    src,
+    lineIndex : 0,
+    charInterval : [ 0, -1 ],
+    line : '',
+    nl : '',
   }
   var got = _.str.lines.atLeft( src, 0 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 1,
-    'charInterval' : [ 0, -1 ],
+    src,
+    lineIndex : 1,
+    charInterval : [ 0, -1 ],
   }
   var got = _.str.lines.atLeft( src, 1 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 2,
-    'charInterval' : [ 0, -1 ],
+    src,
+    lineIndex : 2,
+    charInterval : [ 0, -1 ],
   }
   var got = _.str.lines.atLeft( src, 2 );
   test.identical( got, exp );
@@ -1542,54 +1507,54 @@ function atLeftSingle( test )
   var src = `\n`;
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : -2,
-    'charInterval' : [ 0, -1 ],
+    src,
+    lineIndex : -2,
+    charInterval : [ 0, -1 ],
   }
   var got = _.str.lines.atLeft( src, -2 );
   test.identical( got, exp );
 
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : -1,
-    'charInterval' : [ 0, -1 ],
+    src,
+    lineIndex : -1,
+    charInterval : [ 0, -1 ],
   }
   var got = _.str.lines.atLeft( src, -1 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 0,
-    'charInterval' : [ 0, 0 ],
-    'line' : '',
-    'nl' : '\n',
+    src,
+    lineIndex : 0,
+    charInterval : [ 0, 0 ],
+    line : '',
+    nl : '\n',
   }
   var got = _.str.lines.atLeft( src, 0 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 1,
-    'charInterval' : [ 1, 0 ],
-    'line' : '',
-    'nl' : '',
+    src,
+    lineIndex : 1,
+    charInterval : [ 1, 0 ],
+    line : '',
+    nl : '',
   }
   var got = _.str.lines.atLeft( src, 1 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 2,
-    'charInterval' : [ 1, 0 ],
+    src,
+    lineIndex : 2,
+    charInterval : [ 1, 0 ],
   }
   var got = _.str.lines.atLeft( src, 2 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 3,
-    'charInterval' : [ 1, 0 ],
+    src,
+    lineIndex : 3,
+    charInterval : [ 1, 0 ],
   }
   var got = _.str.lines.atLeft( src, 3 );
   test.identical( got, exp );
@@ -1601,53 +1566,53 @@ function atLeftSingle( test )
   var src = `a\nb`;
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : -2,
-    'charInterval' : [ 0, -1 ],
+    src,
+    lineIndex : -2,
+    charInterval : [ 0, -1 ],
   }
   var got = _.str.lines.atLeft( src, -2 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : -1,
-    'charInterval' : [ 0, -1 ],
+    src,
+    lineIndex : -1,
+    charInterval : [ 0, -1 ],
   }
   var got = _.str.lines.atLeft( src, -1 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 0,
-    'charInterval' : [ 0, 1 ],
-    'line' : 'a',
-    'nl' : '\n',
+    src,
+    lineIndex : 0,
+    charInterval : [ 0, 1 ],
+    line : 'a',
+    nl : '\n',
   }
   var got = _.str.lines.atLeft( src, 0 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 1,
-    'charInterval' : [ 2, 2 ],
-    'line' : 'b',
-    'nl' : '',
+    src,
+    lineIndex : 1,
+    charInterval : [ 2, 2 ],
+    line : 'b',
+    nl : '',
   }
   var got = _.str.lines.atLeft( src, 1 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 2,
-    'charInterval' : [ 3, 2 ],
+    src,
+    lineIndex : 2,
+    charInterval : [ 3, 2 ],
   }
   var got = _.str.lines.atLeft( src, 2 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 3,
-    'charInterval' : [ 3, 2 ],
+    src,
+    lineIndex : 3,
+    charInterval : [ 3, 2 ],
   }
   test.identical( src.length, 3 );
 
@@ -1657,63 +1622,63 @@ function atLeftSingle( test )
   var src = `ab\nabc\nabcd`;
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : -2,
-    'charInterval' : [ 0, -1 ],
+    src,
+    lineIndex : -2,
+    charInterval : [ 0, -1 ],
   }
   var got = _.str.lines.atLeft( src, -2 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : -1,
-    'charInterval' : [ 0, -1 ],
+    src,
+    lineIndex : -1,
+    charInterval : [ 0, -1 ],
   }
   var got = _.str.lines.atLeft( src, -1 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 0,
-    'charInterval' : [ 0, 2 ],
-    'line' : 'ab',
-    'nl' : '\n',
+    src,
+    lineIndex : 0,
+    charInterval : [ 0, 2 ],
+    line : 'ab',
+    nl : '\n',
   }
   var got = _.str.lines.atLeft( src, 0 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 1,
-    'charInterval' : [ 3, 6 ],
-    'line' : 'abc',
-    'nl' : '\n',
+    src,
+    lineIndex : 1,
+    charInterval : [ 3, 6 ],
+    line : 'abc',
+    nl : '\n',
   }
   var got = _.str.lines.atLeft( src, 1 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 2,
-    'charInterval' : [ 7, 10 ],
-    'line' : 'abcd',
-    'nl' : '',
+    src,
+    lineIndex : 2,
+    charInterval : [ 7, 10 ],
+    line : 'abcd',
+    nl : '',
   }
   var got = _.str.lines.atLeft( src, 2 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 3,
-    'charInterval' : [ 11, 10 ],
+    src,
+    lineIndex : 3,
+    charInterval : [ 11, 10 ],
   }
   var got = _.str.lines.atLeft( src, 3 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 4,
-    'charInterval' : [ 11, 10 ],
+    src,
+    lineIndex : 4,
+    charInterval : [ 11, 10 ],
   }
   var got = _.str.lines.atLeft( src, 4 );
   test.identical( got, exp );
@@ -1725,83 +1690,82 @@ function atLeftSingle( test )
   var src = `\nab\nabc\nabcd\n`;
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : -2,
-    'charInterval' : [ 0, -1 ],
+    src,
+    lineIndex : -2,
+    charInterval : [ 0, -1 ],
   }
   var got = _.str.lines.atLeft( src, -2 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : -1,
-    'charInterval' : [ 0, -1 ],
+    src,
+    lineIndex : -1,
+    charInterval : [ 0, -1 ],
   }
   var got = _.str.lines.atLeft( src, -1 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 0,
-    'charInterval' : [ 0, 0 ],
-    'line' : '',
-    'nl' : '\n',
+    src,
+    lineIndex : 0,
+    charInterval : [ 0, 0 ],
+    line : '',
+    nl : '\n',
   }
   var got = _.str.lines.atLeft( src, 0 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 1,
-    'charInterval' : [ 1, 3 ],
-    'line' : 'ab',
-    'nl' : '\n',
+    src,
+    lineIndex : 1,
+    charInterval : [ 1, 3 ],
+    line : 'ab',
+    nl : '\n',
   }
   var got = _.str.lines.atLeft( src, 1 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 2,
-    'charInterval' : [ 4, 7 ],
-    'line' : 'abc',
-    'nl' : '\n',
+    src,
+    lineIndex : 2,
+    charInterval : [ 4, 7 ],
+    line : 'abc',
+    nl : '\n',
   }
   var got = _.str.lines.atLeft( src, 2 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 3,
-    'charInterval' : [ 8, 12 ],
-    'line' : 'abcd',
-    'nl' : '\n',
+    src,
+    lineIndex : 3,
+    charInterval : [ 8, 12 ],
+    line : 'abcd',
+    nl : '\n',
   }
   var got = _.str.lines.atLeft( src, 3 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 4,
-    'charInterval' : [ 13, 12 ],
-    'line' : '',
-    'nl' : '',
+    src,
+    lineIndex : 4,
+    charInterval : [ 13, 12 ],
+    line : '',
+    nl : '',
   }
   var got = _.str.lines.atLeft( src, 4 );
   test.identical( got, exp );
   var exp  =
   {
-    'src' : src,
-    'lineIndex' : 5,
-    'charInterval' : [ 13, 12 ],
+    src,
+    lineIndex : 5,
+    charInterval : [ 13, 12 ],
   }
   var got = _.str.lines.atLeft( src, 5 );
   test.identical( got, exp );
   test.identical( src.length, 13 );
-
-  /* */
-
 }
+
+atLeftSingle.timeOut = 10000;
 
 //
 
@@ -2826,9 +2790,7 @@ function eachRightMultipleInInterval( test )
   var src = ``;
   var interval = [ -2, -2 ];
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 0 );
 
@@ -2839,9 +2801,7 @@ function eachRightMultipleInInterval( test )
   var src = ``;
   var interval = [ -1, -1 ];
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 0 );
 
@@ -2852,9 +2812,7 @@ function eachRightMultipleInInterval( test )
   var src = ``;
   var interval = [ 1, 1 ];
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 0 );
 
@@ -2865,9 +2823,7 @@ function eachRightMultipleInInterval( test )
   var src = ``;
   var interval = [ 2, 2 ];
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 0 );
 
@@ -2974,9 +2930,7 @@ function eachRightMultipleInInterval( test )
   var src = ``;
   var interval = [ 1, 1 ];
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 0 );
 
@@ -3105,9 +3059,7 @@ function eachRightMultipleInInterval( test )
   var src = `aa\nbb`;
   var interval = [ -2, -2 ];
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 5 );
 
@@ -3118,9 +3070,7 @@ function eachRightMultipleInInterval( test )
   var src = `aa\nbb`;
   var interval = [ -1, -1 ];
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 5 );
 
@@ -3131,9 +3081,7 @@ function eachRightMultipleInInterval( test )
   var src = `aa\nbb`;
   var interval = [ 0, -1 ];
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 5 );
 
@@ -3144,9 +3092,7 @@ function eachRightMultipleInInterval( test )
   var src = `aa\nbb`;
   var interval = [ 2, 1 ];
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 5 );
 
@@ -3157,9 +3103,7 @@ function eachRightMultipleInInterval( test )
   var src = `aa\nbb`;
   var interval = [ 2, 2 ];
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 5 );
 
@@ -3472,9 +3416,7 @@ function eachRightMultipleInInterval( test )
   var interval = [ 3, 2 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
@@ -3485,9 +3427,7 @@ function eachRightMultipleInInterval( test )
   var interval = [ 2, 1 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
@@ -3498,9 +3438,7 @@ function eachRightMultipleInInterval( test )
   var interval = [ -1, -1 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
@@ -3511,9 +3449,7 @@ function eachRightMultipleInInterval( test )
   var interval = [ 0, -1 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
@@ -3524,9 +3460,7 @@ function eachRightMultipleInInterval( test )
   var interval = [ -2, -1 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
@@ -3537,9 +3471,7 @@ function eachRightMultipleInInterval( test )
   var interval = [ 5, 6 ];
   var src = `\r\nab\n\rabc\nabcd\n`;
   _.str.lines.eachRight({ src, onEach, interval, eol : _.str.lines.Eol.any });
-  var exp =
-  [
-  ]
+  var exp = [];
   test.identical( its, exp );
   test.identical( src.length, 15 );
 
