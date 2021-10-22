@@ -5399,7 +5399,7 @@ function stealthyRequireIssue( test )
   }
 }
 
-stealthyRequireIssue.timeOut = 60000;
+stealthyRequireIssue.timeOut = 120000;
 stealthyRequireIssue.description =
 `
 - That https://github.com/analog-nico/stealthy-require is working
