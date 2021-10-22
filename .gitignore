@@ -16,6 +16,7 @@
 
 -*
 .module
+target
 Cargo.lock
 .warchive*
 *.log
