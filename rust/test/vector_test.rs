@@ -251,6 +251,7 @@ fn left_index_with_two_evaluators()
   src.on_evaluate1( evaluator2 );
   let got = src.call();
   assert_eq!( got, Some( 0 ) );
+
 }
 
 /*

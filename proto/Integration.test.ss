@@ -226,7 +226,7 @@ function samples( test )
 
   let sampleDir = path.join( __dirname, '../sample' );
 
-  let appStartNonThrowing = __.process.starter
+  let start = __.process.starter
   ({
     currentPath : sampleDir,
     outputCollecting : 1,
@@ -268,7 +268,7 @@ function samples( test )
 
     if( __.longHas( found[ i ].exts, 'throwing' ) )
     {
-      appStartNonThrowing({ execPath : found[ i ].relative, outputPiping : 0 })
+      start({ execPath : found[ i ].relative, outputPiping : 0 })
       .then( ( op ) =>
       {
         console.log( __.time.spent( startTime ) );
@@ -279,7 +279,7 @@ function samples( test )
     }
     else
     {
-      appStartNonThrowing({ execPath : found[ i ].relative })
+      start({ execPath : found[ i ].relative })
       .then( ( op ) =>
       {
         console.log( __.time.spent( startTime ) );
@@ -474,7 +474,7 @@ const Proto =
     production,
     samples,
     eslint,
-    build
+    build,
   },
 
 }

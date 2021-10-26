@@ -283,7 +283,7 @@ pub fn split( o : &split ) -> Vec<String>
 
 //
 
-#[derive(Debug, Clone)]
+#[derive( Debug, Clone )]
 pub struct split_fast<'a>
 {
   pub src : String,
@@ -311,6 +311,7 @@ impl<'a> Default for split_fast<'a>
 
 impl<'a> split_fast<'a>
 {
+  /* qqq : split?? */
   pub fn from( o : &'a split ) -> Self
   {
     let opts = Self

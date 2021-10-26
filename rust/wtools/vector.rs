@@ -36,7 +36,8 @@ impl<T> Default for append_vectors_once<T>
   }
 }
 
-impl<T : PartialEq + Copy +  Clone + std::default::Default> append_vectors_once<T>
+/* qqq : ?? */
+impl<T : PartialEq + Copy + Clone + std::default::Default> append_vectors_once<T>
 {
   pub fn src( &mut self, src : Vec<Vec<T>> ) -> &mut Self
   {
