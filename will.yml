@@ -114,7 +114,7 @@ reflector:
     inherit : predefined.*
     criterion :
       debug : [ debug, release ]
-      tests : 'no.tests'
+      tests : [ 'no.tests', 'only.tests' ]
     filePath :
       '**.test*' : 0
       '**.test/**' : 0
@@ -147,10 +147,14 @@ reflector:
       '{path::in}/Readme.md': '{path::out.release.min}/Readme.md'
   reflect.compiled.debug :
     inherit : predefined.*
+    criterion :
+      debug : debug
     filePath :
       '{path::out.build.debug.no.test}/Main.s': '{path::out.build.debug.only.test}/Main.s'
   reflect.compiled.release :
     inherit : predefined.*
+    criterion :
+      debug : release
     filePath :
       '{path::out.build.release.no.test}/Main.s': '{path::out.build.release.only.test}/Main.s'
 step:
