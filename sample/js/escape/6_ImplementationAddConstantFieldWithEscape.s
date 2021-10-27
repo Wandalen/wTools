@@ -1,4 +1,4 @@
-let _ = require( '../..' );
+let _ = require( 'wTools' );
 
 /*
 null serves as an identifier, that we should not change object property's value, but make it constant.

@@ -5,8 +5,6 @@ function program()
 
   const _ = require( 'wTools' );
   _.include( 'wProcedure' );
-  // let _ = require( '../../proto/node_modules/Tools' );
-  // _.include( 'wFiles' );
   _.include( 'wConsequence' );
 
   const con = _.Consequence();

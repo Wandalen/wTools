@@ -1,4 +1,4 @@
-let _ = require( '../..' );
+let _ = require( 'wTools' );
 
 try
 {

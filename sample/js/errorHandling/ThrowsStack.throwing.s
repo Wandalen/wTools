@@ -1,4 +1,6 @@
-let _ = require( '../..' ); function decrement( i )
+let _ = require( 'wTools' );
+
+function decrement( i )
 {
   try
   {
