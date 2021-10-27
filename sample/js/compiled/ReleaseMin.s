@@ -1,4 +1,4 @@
-const _ = require( '../../out/release.min/Main.s' );
+const _ = require( '../../../out/release.min/Main.s' );
 
 var src = [ 1, 2, 3 ];
 var arr = _.array.make( src );

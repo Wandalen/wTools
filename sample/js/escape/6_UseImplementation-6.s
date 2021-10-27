@@ -1,4 +1,4 @@
-let _ = require( '../..' );
+let _ = require( 'wTools' );
 let objectSetFieldConstantWithEscape = require( './6_ImplementationAddConstantFieldWithEscape.s' )
 
 var src = { 'fieldToBeRemained' : 1 };

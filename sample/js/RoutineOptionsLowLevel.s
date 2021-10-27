@@ -1,7 +1,7 @@
 
 /* minimal require */
 
-require( '../proto/wtools/abase/l0/Include1.s' );
+require( '../../proto/wtools/abase/l0/Include1.s' );
 
 //
 

@@ -1,5 +1,5 @@
 
-let _ = require( '../..' );
+let _ = require( 'wTools' );
 _.include( 'wFiles' );
 
 program();
