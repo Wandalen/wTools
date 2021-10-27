@@ -1,4 +1,4 @@
-let _ = require( '../..' );
+let _ = require( 'wTools' );
 // _.include( 'wFiles' );
 // uncomment to have source code in error report
 
