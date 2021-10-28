@@ -30,6 +30,13 @@ about:
     test: wtest .run proto/**
     docgen: wdocgen .build proto
 build:
+  publish.npm:
+    criterion:
+      default: 1
+      publish: 1
+      bump: patch
+    steps:
+      - publish.npm
   build :
     criterion :
       debug : [ debug, release ]
@@ -239,6 +246,8 @@ step:
     tar: 0
     criterion:
       content: proto
+  publish.npm:
+    inherit: npm.publish
 submodule:
   wTesting:
     path: 'npm:///wTesting'
