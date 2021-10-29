@@ -1191,6 +1191,8 @@ function _finally( test )
   return ready;
 }
 
+_finally.timeOut = 10000;
+
 //
 
 function _periodic( test )
