@@ -1,0 +1,10 @@
+Command [32m".imply withSubmodules:0 .build.imply tag:gamma .publish"[39;0m
+ . Opened . [36m/pro/module/wTools/will.yml[39;0m
+ . Opened . [36m/pro/module/wTools/out/wTools.out.will.yml[39;0m
+ . Read 2 willfile(s) in 2.297s
+
+  Building [94mmodule::wTools / build::publish.npm[39;0m
+  
+  Committing [94mmodule::wTools[39;0m at [36m/pro/module/wTools[39;0m
+  [97m > [39;0mgit add --all
+  [97m > [39;0mgit commit -am "."
