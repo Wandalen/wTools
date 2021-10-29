@@ -3,8 +3,8 @@ root:
   - wTools.out
 consistency:
   ../will.yml: &ref_0
-    hash: 62db8bb11421abe00f4e0fb5ee066246
-    size: 7018
+    hash: 091d8b89b5e7d82900f728c5ffdeee15
+    size: 7171
 module:
   wTools.out:
     about:
@@ -950,6 +950,9 @@ module:
           content: proto
         inherit:
           - module.export
+      publish.npm:
+        inherit:
+          - npm.publish
       transpile.reflect.proto.debug.no.tests:
         opts:
           filePath: 'reflector::transpile.reflect.proto.debug.no.tests'
@@ -1055,6 +1058,13 @@ module:
         inherit:
           - files.reflect
     build:
+      publish.npm:
+        steps:
+          - publish.npm
+        criterion:
+          default: 1
+          publish: 1
+          bump: patch
       build.debug:
         steps:
           - 'step::clean.build.out.*=1'
@@ -1576,6 +1586,9 @@ module:
           content: proto
         inherit:
           - module.export
+      publish.npm:
+        inherit:
+          - npm.publish
       transpile.reflect.proto.debug.no.tests:
         opts:
           filePath: 'reflector::transpile.reflect.proto.debug.no.tests'
@@ -1681,6 +1694,13 @@ module:
         inherit:
           - files.reflect
     build:
+      publish.npm:
+        steps:
+          - publish.npm
+        criterion:
+          default: 1
+          publish: 1
+          bump: patch
       build.debug:
         steps:
           - 'step::clean.build.out.*=1'
@@ -1739,5 +1759,5 @@ module:
           export: 1
     consistency:
       ../will.yml:
-        hash: 62db8bb11421abe00f4e0fb5ee066246
-        size: 7018
+        hash: 091d8b89b5e7d82900f728c5ffdeee15
+        size: 7171
