@@ -3,8 +3,8 @@ root:
   - wTools.out
 consistency:
   ../will.yml: &ref_0
-    hash: 091d8b89b5e7d82900f728c5ffdeee15
-    size: 7171
+    hash: 20843b7ca7ed1f8ae59e2fb950b041c4
+    size: 7177
 module:
   wTools.out:
     about:
@@ -15,7 +15,7 @@ module:
         extend the language without spoiling, so may be used solely or in
         conjunction with another module of such kind.
       enabled: 1
-      version: 0.9.0
+      version: 0.9.1
       license: MIT
       npm.name: wTools
       author: Kostiantyn Wandalen <wanalen@01.school>
@@ -1123,7 +1123,7 @@ module:
           export: 1
     exported:
       proto.export:
-        version: 0.9.0
+        version: 0.9.1
         recursive: 0
         withIntegrated: 2
         tar: 0
@@ -1145,7 +1145,7 @@ module:
         extend the language without spoiling, so may be used solely or in
         conjunction with another module of such kind.
       enabled: 1
-      version: 0.9.0
+      version: 0.9.1
       license: MIT
       npm.name: wTools
       author: Kostiantyn Wandalen <wanalen@01.school>
@@ -1759,5 +1759,5 @@ module:
           export: 1
     consistency:
       ../will.yml:
-        hash: 091d8b89b5e7d82900f728c5ffdeee15
-        size: 7171
+        hash: 20843b7ca7ed1f8ae59e2fb950b041c4
+        size: 7177
