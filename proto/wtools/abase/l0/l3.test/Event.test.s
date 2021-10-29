@@ -986,6 +986,8 @@ function onceCheckDescriptor( test )
   test.identical( result, [] );
 }
 
+onceCheckDescriptor.timeOut = 10000;
+
 //
 
 function onceWithChain( test )
