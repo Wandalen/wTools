@@ -110,6 +110,8 @@ function exportStringDiagnosticShallow( test )
   test.shouldThrowErrorSync( () => _.map.exportStringDiagnosticShallow( [] ) );
 }
 
+exportStringDiagnosticShallow.timeOut = 10000;
+
 //
 
 function identicalShallow( test )
