@@ -1108,6 +1108,8 @@ function onceWithChain( test )
   test.close( 'with instances of Name' );
 }
 
+onceWithChain.timeOut = 10000;
+
 //
 
 function onceCallWithHeadRoutine( test )
