@@ -1,7 +1,9 @@
 about:
   name: wTools
   description: >-
-    Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
+    Collection of general purpose tools for solving problems. Fundamentally
+    extend the language without spoiling, so may be used solely or in
+    conjunction with another module of such kind.
   version: 0.9.0
   enabled: 1
   license: MIT
@@ -37,31 +39,35 @@ build:
       bump: patch
     steps:
       - publish.npm
-  build :
-    criterion :
-      debug : [ debug, release ]
-      tests : 'no.tests'
-    steps :
-      - step::clean.build.out.*=1
-      - step::transpile.build.proto.*=1
-      - step::reflect.module.files.*=1
-      - step::npm.build.*=1
-  build.release.min :
-    steps :
-      - step::clean.release.min
-      - step::transpile.build.release.min
-      - step::reflect.release.min.files
-      - step::npm.release.min
-  build.tests :
-    criterion :
-      debug : [ debug, release ]
-      tests : 'only.tests'
-    steps :
-      - step::clean.build.out.*=1
-      - step::transpile.build.proto.*=1
-      - step::reflect.compiled.*=1
-      - step::transpile.build.tests.*=1
-      - step::reflect.module.files.*=1
+  build:
+    criterion:
+      debug:
+        - debug
+        - release
+      tests: no.tests
+    steps:
+      - 'step::clean.build.out.*=1'
+      - 'step::transpile.build.proto.*=1'
+      - 'step::reflect.module.files.*=1'
+      - 'step::npm.build.*=1'
+  build.release.min:
+    steps:
+      - 'step::clean.release.min'
+      - 'step::transpile.build.release.min'
+      - 'step::reflect.release.min.files'
+      - 'step::npm.release.min'
+  build.tests:
+    criterion:
+      debug:
+        - debug
+        - release
+      tests: only.tests
+    steps:
+      - 'step::clean.build.out.*=1'
+      - 'step::transpile.build.proto.*=1'
+      - 'step::reflect.compiled.*=1'
+      - 'step::transpile.build.tests.*=1'
+      - 'step::reflect.module.files.*=1'
   proto.export:
     criterion:
       content: proto
@@ -91,141 +97,168 @@ path:
   proto: ./proto
   export: '{path::proto}/**'
   doc: ./doc
-  out.build.debug.no.test :
+  out.build.debug.no.test:
     path: '{path::out}/debug'
     criterion:
       debug: debug
-      tests: 'no.tests'
-  out.build.release.no.test :
+      tests: no.tests
+  out.build.release.no.test:
     path: '{path::out}/release'
     criterion:
       debug: release
-      tests: 'no.tests'
-  out.build.debug.only.test :
+      tests: no.tests
+  out.build.debug.only.test:
     path: '{path::out}/debug.test'
     criterion:
       debug: debug
-      tests: 'only.tests'
-  out.build.release.only.test :
+      tests: only.tests
+  out.build.release.only.test:
     path: '{path::out}/release.test'
     criterion:
       debug: release
-      tests: 'only.tests'
-  out.release.min :
+      tests: only.tests
+  out.release.min:
     path: '{path::out}/release.min'
   npm.proto.entry:
     - proto/wtools/abase/l1/Include.s
     - proto/node_modules/wTools
 reflector:
-  transpile.reflect.proto :
-    inherit : predefined.*
-    criterion :
-      debug : [ debug, release ]
-      tests : [ 'no.tests', 'only.tests' ]
-    filePath :
-      '**.test*' : 0
-      '**.test/**' : 0
-      '{path::proto}/**' : '{path::out.build.*=1}/Main.s'
-  transpile.reflect.release.min :
-    inherit : predefined.*
-    filePath :
-      '**.test*' : 0
-      '**.test/**' : 0
-      '{path::proto}/**' : '{path::out.release.min}/Main.s'
-  transpile.reflect.tests :
-    inherit : predefined.*
-    criterion :
-      debug : [ debug, release ]
-      tests : 'only.tests'
-    filePath :
+  transpile.reflect.proto:
+    inherit: predefined.*
+    criterion:
+      debug:
+        - debug
+        - release
+      tests:
+        - no.tests
+        - only.tests
+    filePath:
+      '**.test*': 0
+      '**.test/**': 0
+      '{path::proto}/**': '{path::out.build.*=1}/Main.s'
+  transpile.reflect.release.min:
+    inherit: predefined.*
+    filePath:
+      '**.test*': 0
+      '**.test/**': 0
+      '{path::proto}/**': '{path::out.release.min}/Main.s'
+  transpile.reflect.tests:
+    inherit: predefined.*
+    criterion:
+      debug:
+        - debug
+        - release
+      tests: only.tests
+    filePath:
       '**.test*': 1
       '{path::proto}/**': '{path::out.build*=1}/Tests.test.s'
-  reflect.module.files :
-    inherit : predefined.*
-    criterion :
-      debug : [ debug, release ]
-      tests : [ 'no.tests', 'only.tests' ]
-    filePath :
+  reflect.module.files:
+    inherit: predefined.*
+    criterion:
+      debug:
+        - debug
+        - release
+      tests:
+        - no.tests
+        - only.tests
+    filePath:
       '{path::in}/License': '{path::out.build.*=1}/License'
       '{path::in}/Readme.md': '{path::out.build.*=1}/Readme.md'
-  reflect.release.min.files :
-    filePath :
+  reflect.release.min.files:
+    filePath:
       '{path::in}/License': '{path::out.release.min}/License'
       '{path::in}/Readme.md': '{path::out.release.min}/Readme.md'
-  reflect.compiled.debug :
-    inherit : predefined.*
-    criterion :
-      debug : debug
-    filePath :
+  reflect.compiled.debug:
+    inherit: predefined.*
+    criterion:
+      debug: debug
+    filePath:
       '{path::out.build.debug.no.test}/Main.s': '{path::out.build.debug.only.test}/Main.s'
-  reflect.compiled.release :
-    inherit : predefined.*
-    criterion :
-      debug : release
-    filePath :
+  reflect.compiled.release:
+    inherit: predefined.*
+    criterion:
+      debug: release
+    filePath:
       '{path::out.build.release.no.test}/Main.s': '{path::out.build.release.only.test}/Main.s'
 step:
-  transpile.build.proto.debug :
-    inherit : files.transpile
-    filePath : reflector::transpile.reflect.proto.*=1
-    entry : '{path::in}/proto/wtools/abase/l1/Include.s'
-    transpilingStrategy : [ 'Nop' ]
-    optimization : 0
-    minification : 0
-    diagnosing : 0
-    beautifing : 0
-    criterion :
-      debug : debug
-      tests : [ 'no.tests', 'only.tests' ]
-  transpile.build.proto.release :
-    inherit : files.transpile
-    filePath : reflector::transpile.reflect.proto.*=1
-    entry : '{path::in}/proto/wtools/abase/l1/Include.s'
-    transpilingStrategy : [ 'Uglify' ]
-    optimization : 9
-    minification : 0
-    diagnosing : 0
-    beautifing : 0
-    criterion :
-      debug : release
-      tests : [ 'no.tests', 'only.tests' ]
-  transpile.build.release.min :
-    inherit : files.transpile
-    filePath : reflector::transpile.reflect.release.min
-    entry : '{path::in}/proto/wtools/abase/l1/Include.s'
-    transpilingStrategy : [ 'Uglify' ]
-    optimization : 9
-    minification : 9
-    diagnosing : 0
-    beautifing : 0
-  transpile.build.tests.debug :
-    inherit : files.transpile
-    filePath : reflector::transpile.reflect.tests.*=1
-    transpilingStrategy : [ 'UglifyJs' ] # Dmytro : experimental, Uglify does not convert BigInts
-    optimization : 9
-    minification : 9
-    diagnosing : 0
-    beautifing : 0
-    criterion :
-      debug : debug
-      tests : [ 'no.tests', 'only.tests' ]
-  transpile.build.tests.release :
-    inherit : files.transpile
-    filePath : reflector::transpile.reflect.tests.*=1
-    transpilingStrategy : [ 'UglifyJs' ] # Dmytro : experimental, Uglify does not convert BigInts
-    optimization : 9
-    minification : 9
-    diagnosing : 1
-    beautifing : 1
-    criterion :
-      debug : release
-      tests : [ 'no.tests', 'only.tests' ]
+  transpile.build.proto.debug:
+    inherit: files.transpile
+    filePath: 'reflector::transpile.reflect.proto.*=1'
+    entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+    transpilingStrategy:
+      - Nop
+    optimization: 0
+    minification: 0
+    diagnosing: 0
+    beautifing: 0
+    criterion:
+      debug: debug
+      tests:
+        - no.tests
+        - only.tests
+  transpile.build.proto.release:
+    inherit: files.transpile
+    filePath: 'reflector::transpile.reflect.proto.*=1'
+    entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+    transpilingStrategy:
+      - Uglify
+    optimization: 9
+    minification: 0
+    diagnosing: 0
+    beautifing: 0
+    criterion:
+      debug: release
+      tests:
+        - no.tests
+        - only.tests
+  transpile.build.release.min:
+    inherit: files.transpile
+    filePath: 'reflector::transpile.reflect.release.min'
+    entry: '{path::in}/proto/wtools/abase/l1/Include.s'
+    transpilingStrategy:
+      - Uglify
+    optimization: 9
+    minification: 9
+    diagnosing: 0
+    beautifing: 0
+  transpile.build.tests.debug:
+    inherit: files.transpile
+    filePath: 'reflector::transpile.reflect.tests.*=1'
+    transpilingStrategy:
+      - UglifyJs
+    optimization: 9
+    minification: 9
+    diagnosing: 0
+    beautifing: 0
+    criterion:
+      debug: debug
+      tests:
+        - no.tests
+        - only.tests
+  transpile.build.tests.release:
+    inherit: files.transpile
+    filePath: 'reflector::transpile.reflect.tests.*=1'
+    transpilingStrategy:
+      - UglifyJs
+    optimization: 9
+    minification: 9
+    diagnosing: 1
+    beautifing: 1
+    criterion:
+      debug: release
+      tests:
+        - no.tests
+        - only.tests
   clean.build.out:
     inherit: files.delete
     filePath: '{path::out.build.*=1}'
     criterion:
-      debug: [ debug, release ]
-      tests : [ 'no.tests', 'only.tests' ]
+      debug:
+        - debug
+        - release
+      tests:
+        - no.tests
+        - only.tests
   clean.release.min:
     inherit: files.delete
     filePath: '{path::out.release.min}'
@@ -234,8 +267,12 @@ step:
     entryPath: '{path::out.build.*=1}/Main.s'
     packagePath: '{path::out.build.*=1}/package.json'
     criterion:
-      debug: [ debug, release ]
-      tests : [ 'no.tests', 'only.tests' ]
+      debug:
+        - debug
+        - release
+      tests:
+        - no.tests
+        - only.tests
   npm.release.min:
     inherit: npm.generate
     entryPath: '{path::out.release.min}/Main.s'
