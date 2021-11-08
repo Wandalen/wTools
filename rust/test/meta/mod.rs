@@ -72,10 +72,138 @@ fn _implements_basic()
 
 //
 
+fn _implements_functions()
+{
+
+  let _f = ||
+  {
+    println!( "hello" );
+  };
+
+  let fn_context = vec!( 1, 2, 3 );
+  let _fn = ||
+  {
+    println!( "hello {:?}", fn_context );
+  };
+
+  let mut fn_mut_context = vec!( 1, 2, 3 );
+  let _fn_mut = ||
+  {
+    fn_mut_context[ 0 ] = 3;
+    println!( "{:?}", fn_mut_context );
+  };
+
+  let mut fn_once_context = vec!( 1, 2, 3 );
+  let _fn_once = ||
+  {
+    fn_once_context[ 0 ] = 3;
+    let x = fn_once_context;
+    println!( "{:?}", x );
+  };
+
+  // assert_eq!( TheModule::implements!( function1 => fn() -> () ), true );
+  // assert_eq!( TheModule::implements!( &function1 => Fn() -> () ), true );
+  // assert_eq!( TheModule::implements!( &function1 => FnMut() -> () ), true );
+  // assert_eq!( TheModule::implements!( &function1 => FnOnce() -> () ), true );
+
+  // assert_eq!( TheModule::implements!( _fn => fn() -> () ), true );
+  assert_eq!( TheModule::implements!( _fn => Fn() -> () ), true );
+  assert_eq!( TheModule::implements!( _fn => FnMut() -> () ), true );
+  assert_eq!( TheModule::implements!( _fn => FnOnce() -> () ), true );
+
+  // assert_eq!( TheModule::implements!( _fn_mut => fn() -> () ), true );
+  // assert_eq!( TheModule::implements!( _fn_mut => Fn() -> () ), true );
+  assert_eq!( TheModule::implements!( _fn_mut => FnMut() -> () ), true );
+  assert_eq!( TheModule::implements!( _fn_mut => FnOnce() -> () ), true );
+
+  // assert_eq!( TheModule::implements!( _fn_once => fn() -> () ), true );
+  // assert_eq!( TheModule::implements!( _fn_once => Fn() -> () ), true );
+  // assert_eq!( TheModule::implements!( _fn_once => FnMut() -> () ), true );
+  assert_eq!( TheModule::implements!( _fn_once => FnOnce() -> () ), true );
+
+  fn is_f < R >                             ( _x : fn() -> R )      -> bool { true }
+  fn is_fn < R, F : Fn() -> R >             ( _x : &F )             -> bool { true }
+  fn is_fn_mut < R, F : FnMut() -> R >      ( _x : &F )             -> bool { true }
+  fn is_fn_once < R, F : FnOnce() -> R >    ( _x : &F )             -> bool { true }
+  fn function1() -> bool { true }
+
+}
+
+//
+
+fn _fn_experiment()
+{
+
+  let _f = ||
+  {
+    println!( "hello" );
+  };
+
+  let fn_context = vec!( 1, 2, 3 );
+  let _fn = ||
+  {
+    println!( "hello {:?}", fn_context );
+  };
+
+  let mut fn_mut_context = vec!( 1, 2, 3 );
+  let _fn_mut = ||
+  {
+    fn_mut_context[ 0 ] = 3;
+    println!( "{:?}", fn_mut_context );
+  };
+
+  let mut fn_once_context = vec!( 1, 2, 3 );
+  let _fn_once = ||
+  {
+    fn_once_context[ 0 ] = 3;
+    let x = fn_once_context;
+    println!( "{:?}", x );
+  };
+
+  assert_eq!( is_f( function1 ), true );
+  assert_eq!( is_fn( &function1 ), true );
+  assert_eq!( is_fn_mut( &function1 ), true );
+  assert_eq!( is_fn_once( &function1 ), true );
+
+  assert_eq!( is_f( _f ), true );
+  assert_eq!( is_fn( &_f ), true );
+  assert_eq!( is_fn_mut( &_f ), true );
+  assert_eq!( is_fn_once( &_f ), true );
+
+  // assert_eq!( is_f( _fn ), true );
+  assert_eq!( is_fn( &_fn ), true );
+  assert_eq!( is_fn_mut( &_fn ), true );
+  assert_eq!( is_fn_once( &_fn ), true );
+
+  // assert_eq!( is_f( _fn_mut ), true );
+  // assert_eq!( is_fn( &_fn_mut ), true );
+  assert_eq!( is_fn_mut( &_fn_mut ), true );
+  assert_eq!( is_fn_once( &_fn_mut ), true );
+
+  // assert_eq!( is_f( _fn_once ), true );
+  // assert_eq!( is_fn( &_fn_once ), true );
+  // assert_eq!( is_fn_mut( &_fn_once ), true );
+  assert_eq!( is_fn_once( &_fn_once ), true );
+
+  // type Routine< R > = fn() -> R;
+  fn is_f < R >                             ( _x : fn() -> R )      -> bool { true }
+  // fn is_f < R >                             ( _x : Routine< R > )   -> bool { true }
+  fn is_fn < R, F : Fn() -> R >             ( _x : &F )             -> bool { true }
+  fn is_fn_mut < R, F : FnMut() -> R >      ( _x : &F )             -> bool { true }
+  fn is_fn_once < R, F : FnOnce() -> R >    ( _x : &F )             -> bool { true }
+
+  fn function1() -> bool { true }
+
+}
+
+//
+
 // trace_macros!( true );
 test_suite!
 {
   is_slice_basic,
   implements_basic,
+  implements_functions,
+  fn_experiment,
 }
 // trace_macros!( false );
