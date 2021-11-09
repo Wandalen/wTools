@@ -44,178 +44,205 @@ function onSuiteEnd( test )
 // test
 // --
 
-function production( test )
+function _production_functor( command )
 {
-  let context = this;
-  let a = test.assetFor( 'production' );
-  let runList = [];
-
-  let mdlPath = a.abs( __dirname, '../package.json' );
-  let mdl = a.fileProvider.fileRead({ filePath : mdlPath, encoding : 'json' });
-  let moduleLocalPath = a.abs( __dirname, '..' );
-  let trigger = __.test.workflowTriggerGet( moduleLocalPath );
-
-  if( mdl.private || trigger === 'pull_request' )
+  return function _production( test )
   {
-    test.true( true );
-    return;
-  }
+    let context = this;
+    let a = test.assetFor( 'production' );
+    let runList = [];
 
-  /* delay to let npm get updated */
-  if( trigger === 'publish' )
-  a.ready.delay( 60000 );
+    let mdlPath = a.abs( __dirname, '../package.json' );
+    let mdl = a.fileProvider.fileRead({ filePath : mdlPath, encoding : 'json' });
+    let moduleLocalPath = a.abs( __dirname, '..' );
+    let trigger = __.test.workflowTriggerGet( moduleLocalPath );
 
-  console.log( `Event : ${trigger}` );
-  console.log( `Env :\n${__.entity.exportString( environmentsGet() )}` );
-
-  /* */
-
-  let sampleDir = a.abs( __dirname, '../sample/trivial' );
-  let samplePath = a.find
-  ({
-    filePath : sampleDir,
-    filter : { filePath : { 'Sample.(s|js|ss)' : 1 } }
-  });
-
-  if( !samplePath.length )
-  throw _.err( `Sample with name "Sample.(s|ss|js)" does not exist in directory ${ sampleDir }` );
-
-  /* */
-
-  a.fileProvider.filesReflect({ reflectMap : { [ sampleDir ] : a.abs( 'sample/trivial' ) } });
-
-  let remotePath = null;
-  if( __.git.insideRepository( moduleLocalPath ) )
-  remotePath = __.git.remotePathFromLocal( moduleLocalPath );
-
-  let isFork = false;
-  let mdlRepoParsed, remotePathParsed;
-  if( remotePath )
-  {
-    mdlRepoParsed = __.git.path.parse( mdl.repository.url );
-    remotePathParsed = __.git.path.parse( remotePath );
-    isFork = mdlRepoParsed.user !== remotePathParsed.user || mdlRepoParsed.repo !== remotePathParsed.repo;
-  }
-
-  let version = versionGet( isFork, remotePath );
-  if( !version )
-  throw _.err( 'Cannot obtain version to install' );
-
-  let structure = { dependencies : { [ mdl.name ] : version } };
-  a.fileProvider.fileWrite({ filePath : a.abs( 'package.json' ), data : structure, encoding : 'json' });
-  let data = a.fileProvider.fileRead({ filePath : a.abs( 'package.json' ) });
-  console.log( data );
-
-  let moduleDir = __.path.join( a.routinePath, 'node_modules', mdl.name );
-
-  /* */
-
-  a.shell( `npm i --production` )
-  .catch( handleDownloadingError )
-  .then( ( op ) =>
-  {
-    test.case = 'install module';
-    test.identical( op.exitCode, 0 );
-
-    test.case = 'no test files';
-    let testFiles = a.fileProvider.filesFind({ filePath : __.path.join( moduleDir, '**.test*' ), outputFormat : 'relative' });
-    test.identical( testFiles, [] );
-    return null;
-  });
-
-  if( isFork )
-  a.shell({ execPath : `will .npm.install`, currentPath : moduleDir })
-
-  run( 'Sample.s' );
-  run( 'Sample.ss' );
-
-  /* */
-
-  return a.ready;
-
-  /* */
-
-  function environmentsGet()
-  {
-    /* object process.env is not an auxiliary element ( new implemented check ) */
-    return __.filter_( null, __.props.extend( null, process.env ), ( element, key ) => /* xxx */
+    if( mdl.private || trigger === 'pull_request' )
     {
-      if( __.strBegins( key, 'PRIVATE_' ) )
+      test.true( true );
       return;
-      if( key === 'NODE_PRE_GYP_GITHUB_TOKEN' )
-      return;
-      return key;
-    });
-  }
+    }
 
-  /* */
+    /* delay to let npm get updated */
+    if( trigger === 'publish' )
+    a.ready.delay( 60000 );
 
-  function run( name )
-  {
-    let filePath = `sample/trivial/${ name }`;
-    if( !a.fileProvider.fileExists( a.abs( filePath ) ) )
-    return null;
-    runList.push( filePath );
-    a.shell
+    console.log( `Event : ${trigger}` );
+    console.log( `Env :\n${__.entity.exportString( environmentsGet() )}` );
+
+    /* */
+
+    let sampleDir = a.abs( __dirname, '../sample/trivial' );
+    let samplePath = a.find
     ({
-      execPath : `node ${ filePath }`,
-      throwingExitCode : 0
-    })
+      filePath : sampleDir,
+      filter : { filePath : { 'Sample.(s|js|ss)' : 1 } }
+    });
+
+    if( !samplePath.length )
+    throw _.err( `Sample with name "Sample.(s|ss|js)" does not exist in directory ${ sampleDir }` );
+
+    /* */
+
+    a.fileProvider.filesReflect({ reflectMap : { [ sampleDir ] : a.abs( 'sample/trivial' ) } });
+
+    let remotePath = null;
+    if( __.git.insideRepository( moduleLocalPath ) )
+    remotePath = __.git.remotePathFromLocal( moduleLocalPath );
+
+    let isFork = false;
+    let mdlRepoParsed, remotePathParsed;
+    if( remotePath )
+    {
+      mdlRepoParsed = __.git.path.parse( mdl.repository.url );
+      remotePathParsed = __.git.path.parse( remotePath );
+      isFork = mdlRepoParsed.user !== remotePathParsed.user || mdlRepoParsed.repo !== remotePathParsed.repo;
+    }
+
+    let version = versionGet( isFork, remotePath );
+    if( !version )
+    throw _.err( 'Cannot obtain version to install' );
+
+    let structure = { dependencies : { [ mdl.name ] : version } };
+    a.fileProvider.fileWrite({ filePath : a.abs( 'package.json' ), data : structure, encoding : 'json' });
+    let data = a.fileProvider.fileRead({ filePath : a.abs( 'package.json' ) });
+    console.log( data );
+
+    let moduleDir = __.path.join( a.routinePath, 'node_modules', mdl.name );
+
+    /* */
+
+    a.shell( command )
+    .catch( handleDownloadingError )
     .then( ( op ) =>
     {
-      test.case = `running of sample ${filePath}`;
+      test.case = 'install module';
       test.identical( op.exitCode, 0 );
-      test.ge( op.output.length, 3 );
 
-      if( op.exitCode === 0 || !isFork )
+      if( _.array.is( command ) && isFork )
       return null;
 
-      test.case = 'fork is up to date with origin'
-      return __.git.isUpToDate
-      ({
-        localPath : moduleLocalPath,
-        remotePath : __.git.path.normalize( mdl.repository.url )
-      })
-      .then( ( isUpToDate ) =>
-      {
-        test.identical( isUpToDate, true );
-        return null;
-      })
+      test.case = 'no test files';
+      let testFiles = a.fileProvider.filesFind({ filePath : __.path.join( moduleDir, '**.test*' ), outputFormat : 'relative' });
+      test.identical( testFiles, [] );
+      return null;
     });
-  }
+    // a.shell( `npm i --production` )
+    // .catch( handleDownloadingError )
+    // .then( ( op ) =>
+    // {
+    //   test.case = 'install module';
+    //   test.identical( op.exitCode, 0 );
+    //
+    //   test.case = 'no test files';
+    //   let testFiles = a.fileProvider.filesFind({ filePath : __.path.join( moduleDir, '**.test*' ), outputFormat : 'relative' });
+    //   test.identical( testFiles, [] );
+    //   return null;
+    // });
 
-  /* */
+    if( isFork && !_.array.is( command ) )
+    a.shell({ execPath : `will .npm.install`, currentPath : moduleDir })
 
-  function versionGet( isFork )
-  {
-    if( isFork )
-    return __.git.path.nativize( remotePath );
+    run( 'Sample.s' );
+    run( 'Sample.ss' );
 
-    let devDependencies = __.npm.fileReadField
-    ({
-      localPath : __.npm.pathLocalFromInside( __dirname ),
-      key : 'devDependencies'
-    });
-    if( devDependencies && devDependencies.wTesting && isNaN( devDependencies.wTesting[ 0 ] ) )
-    return devDependencies.wTesting;
+    /* */
 
-    return mdl.version;
-  }
+    return a.ready;
 
-  /* */
+    /* */
 
-  function handleDownloadingError( err )
-  {
-    if( _.strHas( err.message, 'npm ERR! ERROR: Repository not found' ) )
+    function environmentsGet()
     {
-      _.error.attend( err );
-      return a.shell( `npm i --production` );
+      /* object process.env is not an auxiliary element ( new implemented check ) */
+      return __.filter_( null, __.props.extend( null, process.env ), ( element, key ) => /* xxx */
+      {
+        if( __.strBegins( key, 'PRIVATE_' ) )
+        return;
+        if( key === 'NODE_PRE_GYP_GITHUB_TOKEN' )
+        return;
+        return key;
+      });
     }
-    throw _.err( err );
+
+    /* */
+
+    function run( name )
+    {
+      let filePath = `sample/trivial/${ name }`;
+      if( !a.fileProvider.fileExists( a.abs( filePath ) ) )
+      return null;
+      runList.push( filePath );
+      a.shell
+      ({
+        execPath : `node ${ filePath }`,
+        throwingExitCode : 0
+      })
+      .then( ( op ) =>
+      {
+        test.case = `running of sample ${filePath}`;
+        test.identical( op.exitCode, 0 );
+        test.ge( op.output.length, 3 );
+
+        if( op.exitCode === 0 || !isFork )
+        return null;
+
+        test.case = 'fork is up to date with origin'
+        return __.git.isUpToDate
+        ({
+          localPath : moduleLocalPath,
+          remotePath : __.git.path.normalize( mdl.repository.url )
+        })
+        .then( ( isUpToDate ) =>
+        {
+          test.identical( isUpToDate, true );
+          return null;
+        })
+      });
+    }
+
+    /* */
+
+    function versionGet( isFork )
+    {
+      if( isFork )
+      return __.git.path.nativize( remotePath );
+
+      let devDependencies = __.npm.fileReadField
+      ({
+        localPath : __.npm.pathLocalFromInside( __dirname ),
+        key : 'devDependencies'
+      });
+      if( devDependencies && devDependencies.wTesting && isNaN( devDependencies.wTesting[ 0 ] ) )
+      return devDependencies.wTesting;
+
+      return mdl.version;
+    }
+
+    /* */
+
+    function handleDownloadingError( err )
+    {
+      if( _.strHas( err.message, 'npm ERR! ERROR: Repository not found' ) )
+      {
+        _.error.attend( err );
+        return a.shell( `npm i --production` );
+      }
+      throw _.err( err );
+    }
   }
+
+  _production.timeOut = 300000;
 }
 
-production.timeOut = 300000;
+//
+
+const production = _production_functor( `npm i --production` );
+
+//
+
+const productionYarn = _production_functor([ `npm i -g yarn`, `yarn install --production` ])
+productionYarn.rapidity = -4;
 
 //
 
@@ -472,6 +499,7 @@ const Proto =
   tests :
   {
     production,
+    // productionYarn,
     samples,
     eslint,
     build,
