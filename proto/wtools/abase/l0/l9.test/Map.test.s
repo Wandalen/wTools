@@ -12129,6 +12129,8 @@ function mapOnlyComplementing_ScreenMapIsVector( test )
   test.close( 'containerAdapter' );
 }
 
+mapOnlyComplementing_ScreenMapIsVector.timeOut = 10000;
+
 // //
 //
 // function _mapOnly( test )
