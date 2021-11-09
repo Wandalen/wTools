@@ -134,6 +134,8 @@ fn _implements_functions()
 fn _fn_experiment()
 {
 
+  fn function1() -> bool { true }
+
   let _f = ||
   {
     println!( "hello" );
@@ -191,8 +193,6 @@ fn _fn_experiment()
   fn is_fn < R, F : Fn() -> R >             ( _x : &F )             -> bool { true }
   fn is_fn_mut < R, F : FnMut() -> R >      ( _x : &F )             -> bool { true }
   fn is_fn_once < R, F : FnOnce() -> R >    ( _x : &F )             -> bool { true }
-
-  fn function1() -> bool { true }
 
 }
 

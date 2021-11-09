@@ -3,8 +3,8 @@ root:
   - wTools.out
 consistency:
   ../will.yml: &ref_0
-    hash: 929cd4d2e1a0dcaba8eb8ee49e45b7d1
-    size: 8085
+    hash: f4eda88a1bd5cd414dcac0fb3e059a94
+    size: 8105
 module:
   wTools.out:
     about:
@@ -138,7 +138,7 @@ module:
           - ../proto/wtools/abase/l0/Include7.s
           - ../proto/wtools/abase/l1
           - ../proto/node_modules
-          - .
+          - wTools.out.will.yml
           - ../proto/node_modules/Tools
           - ../proto/node_modules/wTools
           - ../proto/node_modules/wTools.l1
@@ -1284,7 +1284,7 @@ module:
           - proto/wtools/abase/l0/Include7.s
           - proto/wtools/abase/l1
           - proto/node_modules
-          - out
+          - out/wTools.out.will.yml
           - proto/node_modules/Tools
           - proto/node_modules/wTools
           - proto/node_modules/wTools.l1
@@ -1827,5 +1827,5 @@ module:
           export: 1
     consistency:
       ../will.yml:
-        hash: 929cd4d2e1a0dcaba8eb8ee49e45b7d1
-        size: 8085
+        hash: f4eda88a1bd5cd414dcac0fb3e059a94
+        size: 8105
