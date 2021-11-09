@@ -141,7 +141,7 @@ path:
     - proto/wtools/abase/l0/Include7.s
     - proto/wtools/abase/l1
     - proto/node_modules
-    - out
+    - out/wTools.out.will.yml
     - proto/node_modules/Tools
     - proto/node_modules/wTools
     - proto/node_modules/wTools.l1
