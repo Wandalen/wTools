@@ -1,6 +1,6 @@
 {
   "name": "wTools",
-  "version": "0.8.1209",
+  "version": "0.8.1210",
   "engine": "node >= 10.0.0",
   "enabled": 1,
   "description": "Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.",
@@ -32,7 +32,7 @@
     "proto/wtools/abase/l0/Include7.s",
     "proto/wtools/abase/l1",
     "proto/node_modules",
-    "out",
+    "out/wTools.out.will.yml",
     "proto/node_modules/Tools",
     "proto/node_modules/wTools",
     "proto/node_modules/wTools.l1",
