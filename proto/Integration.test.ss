@@ -112,9 +112,15 @@ function _production_functor( command )
 
     /* */
 
-    a.shell( command )
-    .catch( handleDownloadingError )
-    .then( ( op ) =>
+    a.ready.then( () =>
+    {
+      return __.retry
+      ({
+        routine : () => a.shell({ execPath : command, timeOut : 120000, ready : null }),
+        onError,
+      });
+    });
+    a.ready.then( ( op ) =>
     {
       test.case = 'install module';
       test.identical( op.exitCode, 0 );
@@ -141,7 +147,7 @@ function _production_functor( command )
     // });
 
     if( isFork && !_.array.is( command ) )
-    a.shell({ execPath : `will .npm.install`, currentPath : moduleDir })
+    a.shell({ execPath : `will .npm.install`, currentPath : moduleDir });
 
     run( 'Sample.s' );
     run( 'Sample.ss' );
@@ -221,18 +227,19 @@ function _production_functor( command )
 
     /* */
 
-    function handleDownloadingError( err )
+    function onError( err )
     {
-      if( _.strHas( err.message, 'npm ERR! ERROR: Repository not found' ) )
+      const errMsg = err.originalMessage;
+      if( _.str.has( errMsg, /[Nn]ot found/ ) || _.str.has( errMsg, 'SIGTERM' ) )
       {
         _.error.attend( err );
-        return a.shell( `npm i --production` );
+        return true;
       }
-      throw _.err( err );
+      return false;
     }
   }
 
-  _production.timeOut = 300000;
+  _production.timeOut = 600000;
 }
 
 //
