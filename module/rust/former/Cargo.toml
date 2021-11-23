@@ -1,0 +1,26 @@
+[package]
+name = "former"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "former"
+#path = "../../../rust/former/mod.rs"
+path = "src/former.rs"
+
+# [[example]]
+# name = "current"
+# path = "../../../rust/former/test/full.rs"
+
+#[[test]]
+#name = "former_test"
+#path = "../../../rust/former/test/former.rs"
+
+[dev-dependencies]
+trybuild = { version = "1.0.52", features = ["diff"] }
+
+[dependencies]
+anyhow = "1.0.47"
+maplit = "1.0.2"
+#former_derive = { path = "../former_derive", version = "0.1.0" }
+#former_runtime = { path = "../former_runtime", version = "0.1.0" }
