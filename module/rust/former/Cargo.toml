@@ -23,7 +23,8 @@ include = [
 [lib]
 name = "former"
 #path = "../../../rust/former/mod.rs"
-path = "module/rust/former/src/former.rs"
+# path = "./module/rust/former/src/former.rs"
+path = "./src/former.rs"
 
 # [[example]]
 # name = "current"
