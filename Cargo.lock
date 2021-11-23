@@ -19,8 +19,6 @@ name = "former"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "former_derive",
- "former_runtime",
  "maplit",
  "trybuild",
 ]
