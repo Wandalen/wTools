@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [ "Kostiantyn Wandalen <wanalen@01.school>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>" ]
 license = "MIT"
@@ -15,16 +15,16 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/src",
+  # "/src",
+  "../../../rust/former",
   "/Cargo.toml",
   "/Readme.md",
 ]
 
 [lib]
 name = "former"
-#path = "../../../rust/former/mod.rs"
-# path = "./module/rust/former/src/former.rs"
-path = "./src/former.rs"
+path = "../../../rust/former/mod.rs"
+# path = "./src/former.rs"
 
 # [[example]]
 # name = "current"
