@@ -15,7 +15,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust",
+  "/src",
   "/Cargo.toml",
   "/Readme.md",
 ]
