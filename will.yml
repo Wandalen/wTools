@@ -206,6 +206,14 @@ reflector:
       debug: release
     filePath:
       '{path::out.build.release.no.test}/Main.s': '{path::out.build.release.only.test}/Main.s'
+
+  reflect.rust.module:
+    inherit: predefined.*
+    criterion:
+      debug: release
+    filePath:
+      'rust/former_runtime': '{path::out.build.release.only.test}/Main.s'
+
 step:
   transpile.build.proto.debug:
     inherit: files.transpile
