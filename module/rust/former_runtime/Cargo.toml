@@ -15,18 +15,18 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "../../../rust/former/runtime",
+  "/rust/former/runtime",
   "/Cargo.toml",
   "/Readme.md",
 ]
 
 [lib]
 name = "former_runtime"
-path = "../../../rust/former/runtime/mod.rs"
+path = "/rust/former/runtime/mod.rs"
 
 [[test]]
 name = "derive_runtime_test"
-path = "../../../rust/former/test/runtime.rs"
+path = "/rust/former/test/runtime.rs"
 
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }

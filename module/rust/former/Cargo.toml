@@ -15,23 +15,23 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "../../../rust/former/mod.rs",
+  "/rust/former/mod.rs",
   "/Cargo.toml",
   "/Readme.md",
 ]
 
 [lib]
 name = "former"
-path = "../../../rust/former/mod.rs"
+path = "/rust/former/mod.rs"
 # path = "./src/former.rs"
 
 # [[example]]
 # name = "current"
-# path = "../../../rust/former/test/full.rs"
+# path = "/rust/former/test/full.rs"
 
 [[test]]
 name = "former_test"
-path = "../../../rust/former/test/former.rs"
+path = "/rust/former/test/former.rs"
 
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }

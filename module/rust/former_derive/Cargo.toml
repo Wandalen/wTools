@@ -15,7 +15,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "../../../rust/former/derive",
+  "/rust/former/derive",
   "/Cargo.toml",
   "/Readme.md",
 ]
@@ -23,7 +23,7 @@ include = [
 [lib]
 proc-macro = true
 name = "former_derive"
-path = "../../../rust/former/derive/mod.rs"
+path = "/rust/former/derive/mod.rs"
 
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }
