@@ -80,6 +80,10 @@ build:
       export: 1
     steps:
       - 'build::proto.export'
+  reflect.rust.modules:
+    steps:
+      - 'reflect.rust.modules'
+
 path:
   repository: 'git+https:///github.com/Wandalen/wTools.git'
   origins:
@@ -207,12 +211,11 @@ reflector:
     filePath:
       '{path::out.build.release.no.test}/Main.s': '{path::out.build.release.only.test}/Main.s'
 
-  reflect.rust.module:
+  reflect.rust.modules:
     inherit: predefined.*
-    criterion:
-      debug: release
     filePath:
-      'rust/former_runtime': '{path::out.build.release.only.test}/Main.s'
+      'module/rust/former_runtime': 'out/rust/former_runtime'
+      'rust/former/runtime': 'out/rust/former_runtime/rust/former/runtime'
 
 step:
   transpile.build.proto.debug:
