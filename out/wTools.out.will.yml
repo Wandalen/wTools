@@ -3,8 +3,8 @@ root:
   - wTools.out
 consistency:
   ../will.yml: &ref_0
-    hash: f4eda88a1bd5cd414dcac0fb3e059a94
-    size: 8105
+    hash: 6c0b35ae750cdb08fdd4c8605338d0ac
+    size: 8280
 module:
   wTools.out:
     about:
@@ -744,6 +744,17 @@ module:
           debug: release
         inherit:
           - predefined.*
+      reflect.rust.module:
+        src:
+          filePath:
+            rust/former_runtime: '{path::out.build.release.only.test}/Main.s'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
+        criterion:
+          debug: release
+        inherit:
+          - predefined.*
       exported.proto.export:
         src:
           filePath:
@@ -1087,6 +1098,13 @@ module:
       reflect.compiled.release:
         opts:
           filePath: 'reflector::reflect.compiled.release'
+        criterion:
+          debug: release
+        inherit:
+          - files.reflect
+      reflect.rust.module:
+        opts:
+          filePath: 'reflector::reflect.rust.module'
         criterion:
           debug: release
         inherit:
@@ -1438,6 +1456,14 @@ module:
           debug: release
         inherit:
           - predefined.*
+      reflect.rust.module:
+        src:
+          filePath:
+            rust/former_runtime: '{path::out.build.release.only.test}/Main.s'
+        criterion:
+          debug: release
+        inherit:
+          - predefined.*
     step:
       transpile.build.proto.debug.no.tests:
         opts:
@@ -1761,6 +1787,13 @@ module:
           debug: release
         inherit:
           - files.reflect
+      reflect.rust.module:
+        opts:
+          filePath: 'reflector::reflect.rust.module'
+        criterion:
+          debug: release
+        inherit:
+          - files.reflect
     build:
       publish.npm:
         steps:
@@ -1827,5 +1860,5 @@ module:
           export: 1
     consistency:
       ../will.yml:
-        hash: f4eda88a1bd5cd414dcac0fb3e059a94
-        size: 8105
+        hash: 6c0b35ae750cdb08fdd4c8605338d0ac
+        size: 8280
