@@ -1,0 +1,36 @@
+[package]
+name = "former_derive"
+version = "0.1.0"
+edition = "2021"
+authors = [ "Kostiantyn Wandalen <wanalen@01.school>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>" ]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/former_runtime"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/former_runtime"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/former_runtime"
+description = """
+Former - variation of builder pattern. Implementation of its derive macro.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+include = [
+  "../../../rust/former/derive",
+  "/Cargo.toml",
+  "/Readme.md",
+]
+
+[lib]
+proc-macro = true
+name = "former_derive"
+path = "../../../rust/former/derive/mod.rs"
+
+[dev-dependencies]
+trybuild = { version = "1.0.52", features = ["diff"] }
+
+[dependencies]
+proc-macro-error = "1.0.4"
+proc-macro2 = "1.0.32"
+quote = "1.0.10"
+syn = { version = "1.0.81", features = ["full", "extra-traits", "parsing"] }
+unzip-n = "0.1.2"
