@@ -3,8 +3,8 @@ root:
   - wTools.out
 consistency:
   ../will.yml: &ref_0
-    hash: 6c0b35ae750cdb08fdd4c8605338d0ac
-    size: 8280
+    hash: 5e60ef4cbda926fbde3c9a3ef40bc9a6
+    size: 8812
 module:
   wTools.out:
     about:
@@ -145,6 +145,8 @@ module:
           - ../proto/node_modules/wTools.l3
           - ../proto/node_modules/wTools.l5
           - ../proto/node_modules/wTools.l7
+      out.rust:
+        path: '{path::out}/rust'
       exported.dir.proto.export:
         criterion:
           generated: 1
@@ -744,15 +746,18 @@ module:
           debug: release
         inherit:
           - predefined.*
-      reflect.rust.module:
+      reflect.rust.modules:
         src:
           filePath:
-            rust/former_runtime: '{path::out.build.release.only.test}/Main.s'
+            module/rust/former_runtime: '{path::out.rust}/former_runtime'
+            rust/former/runtime: '{path::out.rust}/former_runtime/rust/former/runtime'
+            module/rust/former_derive: '{path::out.rust}/former_derive'
+            rust/former/derive: '{path::out.rust}/former_derive/rust/former/derive'
+            module/rust/former: '{path::out.rust}/former'
+            rust/former/mod.rs: '{path::out.rust}/former/rust/former/mod.rs'
           prefixPath: ''
         dst:
           prefixPath: ''
-        criterion:
-          debug: release
         inherit:
           - predefined.*
       exported.proto.export:
@@ -908,7 +913,7 @@ module:
           tests: only.tests
         inherit:
           - files.transpile
-      clean.build.out.debug.no.tests:
+      clean.out.build.debug.no.tests:
         opts:
           filePath: '{path::out.build.*=1}'
         criterion:
@@ -916,7 +921,7 @@ module:
           tests: no.tests
         inherit:
           - files.delete
-      clean.build.out.release.no.tests:
+      clean.out.build.release.no.tests:
         opts:
           filePath: '{path::out.build.*=1}'
         criterion:
@@ -924,7 +929,7 @@ module:
           tests: no.tests
         inherit:
           - files.delete
-      clean.build.out.debug.only.tests:
+      clean.out.build.debug.only.tests:
         opts:
           filePath: '{path::out.build.*=1}'
         criterion:
@@ -932,7 +937,7 @@ module:
           tests: only.tests
         inherit:
           - files.delete
-      clean.build.out.release.only.tests:
+      clean.out.build.release.only.tests:
         opts:
           filePath: '{path::out.build.*=1}'
         criterion:
@@ -998,6 +1003,11 @@ module:
       publish.npm:
         inherit:
           - npm.publish
+      clean.out.rust:
+        opts:
+          filePath: '{path::out.rust}'
+        inherit:
+          - files.delete
       transpile.reflect.proto.debug.no.tests:
         opts:
           filePath: 'reflector::transpile.reflect.proto.debug.no.tests'
@@ -1102,11 +1112,9 @@ module:
           debug: release
         inherit:
           - files.reflect
-      reflect.rust.module:
+      reflect.rust.modules:
         opts:
-          filePath: 'reflector::reflect.rust.module'
-        criterion:
-          debug: release
+          filePath: 'reflector::reflect.rust.modules'
         inherit:
           - files.reflect
     build:
@@ -1119,7 +1127,7 @@ module:
           bump: patch
       build.debug:
         steps:
-          - 'step::clean.build.out.*=1'
+          - 'step::clean.out.build.*=1'
           - 'step::transpile.build.proto.*=1'
           - 'step::reflect.module.files.*=1'
           - 'step::npm.build.*=1'
@@ -1128,7 +1136,7 @@ module:
           tests: no.tests
       build.release:
         steps:
-          - 'step::clean.build.out.*=1'
+          - 'step::clean.out.build.*=1'
           - 'step::transpile.build.proto.*=1'
           - 'step::reflect.module.files.*=1'
           - 'step::npm.build.*=1'
@@ -1143,7 +1151,7 @@ module:
           - 'step::npm.release.min'
       build.tests.debug:
         steps:
-          - 'step::clean.build.out.*=1'
+          - 'step::clean.out.build.*=1'
           - 'step::transpile.build.proto.*=1'
           - 'step::reflect.compiled.*=1'
           - 'step::transpile.build.tests.*=1'
@@ -1153,7 +1161,7 @@ module:
           tests: only.tests
       build.tests.release:
         steps:
-          - 'step::clean.build.out.*=1'
+          - 'step::clean.out.build.*=1'
           - 'step::transpile.build.proto.*=1'
           - 'step::reflect.compiled.*=1'
           - 'step::transpile.build.tests.*=1'
@@ -1173,6 +1181,10 @@ module:
         criterion:
           default: 1
           export: 1
+      reflect.rust.modules:
+        steps:
+          - 'step::clean.out.rust'
+          - 'step::reflect.rust.modules'
     exported:
       proto.export:
         version: 0.9.3
@@ -1309,6 +1321,8 @@ module:
           - proto/node_modules/wTools.l3
           - proto/node_modules/wTools.l5
           - proto/node_modules/wTools.l7
+      out.rust:
+        path: '{path::out}/rust'
     submodule:
       wTesting:
         path: 'npm:///wTesting'
@@ -1456,12 +1470,15 @@ module:
           debug: release
         inherit:
           - predefined.*
-      reflect.rust.module:
+      reflect.rust.modules:
         src:
           filePath:
-            rust/former_runtime: '{path::out.build.release.only.test}/Main.s'
-        criterion:
-          debug: release
+            module/rust/former_runtime: '{path::out.rust}/former_runtime'
+            rust/former/runtime: '{path::out.rust}/former_runtime/rust/former/runtime'
+            module/rust/former_derive: '{path::out.rust}/former_derive'
+            rust/former/derive: '{path::out.rust}/former_derive/rust/former/derive'
+            module/rust/former: '{path::out.rust}/former'
+            rust/former/mod.rs: '{path::out.rust}/former/rust/former/mod.rs'
         inherit:
           - predefined.*
     step:
@@ -1593,7 +1610,7 @@ module:
           tests: only.tests
         inherit:
           - files.transpile
-      clean.build.out.debug.no.tests:
+      clean.out.build.debug.no.tests:
         opts:
           filePath: '{path::out.build.*=1}'
         criterion:
@@ -1601,7 +1618,7 @@ module:
           tests: no.tests
         inherit:
           - files.delete
-      clean.build.out.release.no.tests:
+      clean.out.build.release.no.tests:
         opts:
           filePath: '{path::out.build.*=1}'
         criterion:
@@ -1609,7 +1626,7 @@ module:
           tests: no.tests
         inherit:
           - files.delete
-      clean.build.out.debug.only.tests:
+      clean.out.build.debug.only.tests:
         opts:
           filePath: '{path::out.build.*=1}'
         criterion:
@@ -1617,7 +1634,7 @@ module:
           tests: only.tests
         inherit:
           - files.delete
-      clean.build.out.release.only.tests:
+      clean.out.build.release.only.tests:
         opts:
           filePath: '{path::out.build.*=1}'
         criterion:
@@ -1683,6 +1700,11 @@ module:
       publish.npm:
         inherit:
           - npm.publish
+      clean.out.rust:
+        opts:
+          filePath: '{path::out.rust}'
+        inherit:
+          - files.delete
       transpile.reflect.proto.debug.no.tests:
         opts:
           filePath: 'reflector::transpile.reflect.proto.debug.no.tests'
@@ -1787,11 +1809,9 @@ module:
           debug: release
         inherit:
           - files.reflect
-      reflect.rust.module:
+      reflect.rust.modules:
         opts:
-          filePath: 'reflector::reflect.rust.module'
-        criterion:
-          debug: release
+          filePath: 'reflector::reflect.rust.modules'
         inherit:
           - files.reflect
     build:
@@ -1804,7 +1824,7 @@ module:
           bump: patch
       build.debug:
         steps:
-          - 'step::clean.build.out.*=1'
+          - 'step::clean.out.build.*=1'
           - 'step::transpile.build.proto.*=1'
           - 'step::reflect.module.files.*=1'
           - 'step::npm.build.*=1'
@@ -1813,7 +1833,7 @@ module:
           tests: no.tests
       build.release:
         steps:
-          - 'step::clean.build.out.*=1'
+          - 'step::clean.out.build.*=1'
           - 'step::transpile.build.proto.*=1'
           - 'step::reflect.module.files.*=1'
           - 'step::npm.build.*=1'
@@ -1828,7 +1848,7 @@ module:
           - 'step::npm.release.min'
       build.tests.debug:
         steps:
-          - 'step::clean.build.out.*=1'
+          - 'step::clean.out.build.*=1'
           - 'step::transpile.build.proto.*=1'
           - 'step::reflect.compiled.*=1'
           - 'step::transpile.build.tests.*=1'
@@ -1838,7 +1858,7 @@ module:
           tests: only.tests
       build.tests.release:
         steps:
-          - 'step::clean.build.out.*=1'
+          - 'step::clean.out.build.*=1'
           - 'step::transpile.build.proto.*=1'
           - 'step::reflect.compiled.*=1'
           - 'step::transpile.build.tests.*=1'
@@ -1858,7 +1878,11 @@ module:
         criterion:
           default: 1
           export: 1
+      reflect.rust.modules:
+        steps:
+          - 'step::clean.out.rust'
+          - 'step::reflect.rust.modules'
     consistency:
       ../will.yml:
-        hash: 6c0b35ae750cdb08fdd4c8605338d0ac
-        size: 8280
+        hash: 5e60ef4cbda926fbde3c9a3ef40bc9a6
+        size: 8812
