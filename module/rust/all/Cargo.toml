@@ -15,24 +15,34 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust",
+  "/../../../rust",
   "/Cargo.toml",
   "/Readme.md",
 ]
 
 [lib]
 name = "wtools"
-path = "rust/impl/mod.rs"
+path = "../../../rust/impl/mod.rs"
 
 [[test]]
 name = "wtools_test"
-path = "rust/test/mod.rs"
+path = "../../../rust/test/mod.rs"
+
+[[example]]
+name = "trivial"
+path = "../../../sample/rust/trivial/src/main.rs"
+
+[dev-dependencies]
+trybuild = { version = "1.0.52", features = ["diff"] }
+maplit = "1.0.2"
 
 [dependencies]
 regex = "1.5.4"
 chrono = "0.4.19"
 paste = "1.0.5"
+proc-macro-error = "1.0.4"
+anyhow = "1.0.48"
 
-[[example]]
-name = "trivial"
-path = "sample/rust/trivial/src/main.rs"
+[features]
+all = []
+default = ["all"]

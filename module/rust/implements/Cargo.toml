@@ -15,16 +15,14 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust",
+  "/rust/wtools/meta",
   "/Cargo.toml",
   "/Readme.md",
 ]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [lib]
 name = "implements"
-path = "../../rust/wtools/meta/mod.rs"
+path = "rust/wtools/meta/mod.rs"
 
 [[test]]
 name = "wtools_test"
