@@ -34,7 +34,7 @@ jobs :
     - name : ${{ matrix.node-version }}
       uses : Wandalen/wretry.action@v1.0.11
       with :
-        action : actions/setup-node@v1
+        action : actions/setup-node@v2
         with : |
           node-version : ${{ matrix.node-version }}
         attempt_limit : 3

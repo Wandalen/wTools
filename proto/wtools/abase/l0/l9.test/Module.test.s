@@ -6175,6 +6175,60 @@ requireElectronProblem.routineTimeOut = 120000;
 
 //
 
+function requireGulpImageMin( test )
+{
+  let a = test.assetFor( false );
+  let program = a.program({ entry : program1, filePath : a.abs( 'program.js' ) });
+
+  let packageJson =
+  {
+    name : 'test',
+    version : '0.0.1',
+    main : 'program.js',
+    devDependencies :
+    {
+      'gulp-imagemin' : "=8.0.0"
+    }
+  };
+
+  a.fileProvider.fileWrite({ filePath : a.abs( 'package.json' ), data : packageJson, encoding : 'json' })
+
+  /* */
+
+  a.shell( 'npm i' );
+  program.start();
+  a.ready.then( ( op ) =>
+  {
+    console.log( "abc3" );
+    test.identical( op.exitCode, 0 );
+    test.false( _.strHas( op.output, 'Assertion fails' ) )
+    return null;
+  })
+
+  return a.ready;
+
+  /* */
+
+  function program1()
+  {
+    const _ = require( toolsPath );
+    // var imagemin = require( 'gulp-imagemin' );
+    var imagemin = import( 'gulp-imagemin' );
+    imagemin.then( function( m )
+    {
+      console.log( "gifsicle :", m.gifsicle.name );
+    })
+    console.log( imagemin );
+    console.log( "abc2" );
+    /* qqq : for Dmytro : why does not print?? */
+  }
+
+}
+
+requireGulpImageMin.routineTimeOut = 120000;
+
+//
+
 // function requireProductionModuleProblem( test )
 // {
 //   const a = test.assetFor( false );
@@ -6555,6 +6609,7 @@ const Proto =
     moduleBinProblem,
 
     requireElectronProblem,
+    requireGulpImageMin,
     requireMongooseAfterTestingProblem, /* xxx : investigate */
 
     requireProductionModuleProblemWithGitTools,

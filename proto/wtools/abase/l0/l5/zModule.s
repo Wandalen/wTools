@@ -2198,6 +2198,11 @@ function _trackingEnable()
 
     try
     {
+      if( _.strHas( nativeSourcePath, 'imagemin' ) )
+      {
+        debugger;
+        console.log( nativeSourcePath, arguments );
+      }
       result = NjsLoad2.apply( this, arguments );
     }
     catch( err )
