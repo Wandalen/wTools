@@ -121,11 +121,11 @@ fn _implements_functions()
   // assert_eq!( TheModule::implements!( _fn_once => FnMut() -> () ), true );
   assert_eq!( TheModule::implements!( _fn_once => FnOnce() -> () ), true );
 
-  fn is_f < R >                             ( _x : fn() -> R )      -> bool { true }
-  fn is_fn < R, F : Fn() -> R >             ( _x : &F )             -> bool { true }
-  fn is_fn_mut < R, F : FnMut() -> R >      ( _x : &F )             -> bool { true }
-  fn is_fn_once < R, F : FnOnce() -> R >    ( _x : &F )             -> bool { true }
-  fn function1() -> bool { true }
+  // fn is_f < R >                             ( _x : fn() -> R )      -> bool { true }
+  // fn is_fn < R, F : Fn() -> R >             ( _x : &F )             -> bool { true }
+  // fn is_fn_mut < R, F : FnMut() -> R >      ( _x : &F )             -> bool { true }
+  // fn is_fn_once < R, F : FnOnce() -> R >    ( _x : &F )             -> bool { true }
+  // fn function1() -> bool { true }
 
 }
 

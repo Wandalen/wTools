@@ -1,6 +1,6 @@
 [package]
 name = "former_runtime"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [ "Kostiantyn Wandalen <wanalen@01.school>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>" ]
 license = "MIT"
@@ -15,18 +15,18 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/former/runtime",
+  "/rust/impl/former/runtime",
   "/Cargo.toml",
   "/Readme.md",
 ]
 
 [lib]
 name = "former_runtime"
-path = "rust/former/runtime/mod.rs"
+path = "rust/impl/former/runtime/mod.rs"
 
 [[test]]
 name = "derive_runtime_test"
-path = "rust/former/test/runtime.rs"
+path = "rust/test/former/runtime.rs"
 
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }

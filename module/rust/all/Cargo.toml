@@ -1,36 +1,20 @@
 [package]
 name = "wtools"
-version = "0.1.0"
+version = "0.0.0"
 edition = "2021"
-authors = [ "Kostiantyn Wandalen <wanalen@01.school>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>" ]
-license = "MIT"
-readme = "Readme.md"
-documentation = "https://docs.rs/wtools"
-repository = "https://github.com/wtools"
-homepage = "https://github.com/wtools"
-description = """
-Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
-"""
-categories = [ "algorithms", "development-tools" ]
-keywords = [ "fundamental", "general-purpose" ]
-
-include = [
-  "/../../../rust",
-  "/Cargo.toml",
-  "/Readme.md",
-]
+publish = false
 
 [lib]
 name = "wtools"
-path = "../../../rust/impl/mod.rs"
+path = "rust/impl/mod.rs"
 
 [[test]]
 name = "wtools_test"
-path = "../../../rust/test/mod.rs"
+path = "rust/test/mod.rs"
 
 [[example]]
 name = "trivial"
-path = "../../../sample/rust/trivial/src/main.rs"
+path = "sample/rust/trivial/src/main.rs"
 
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }
