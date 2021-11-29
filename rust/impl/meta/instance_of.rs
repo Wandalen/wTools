@@ -10,7 +10,7 @@ mod implements_impl;
 ///
 /// Macro `implements` to answer the question: does it implement a trait?
 ///
-/// # Example
+/// # Sample
 /// ```
 /// use instance_of::implements;
 ///
@@ -32,7 +32,7 @@ macro_rules! implements
 ///
 /// Macro `instance_of` to answer the question: does it implement a trait? Alias of the macro `implements`.
 ///
-/// # Example
+/// # Sample
 /// ```
 /// use instance_of::instance_of;
 ///
