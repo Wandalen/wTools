@@ -22,4 +22,22 @@ fn main()
   .string_optional_1( "dir1" )
   .form();
   dbg!( &command );
+
+// <  &command = Command {
+// <   int_1: 13,
+// <   string_1: "Abcd",
+// <   vec_1: [
+// <       "ghi",
+// <       "klm",
+// <   ],
+// <   hashmap_strings_1: {
+// <       "k1": "v1",
+// <       "k2": "v2",
+// <   },
+// <   int_optional_1: None,
+// <   string_optional_1: Some(
+// <       "dir1",
+// <   ),
+// < }
+
 }
