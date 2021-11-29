@@ -33,5 +33,5 @@
 //!
 //! ```
 
-pub use test_basic as basic;
+pub use wtest_basic as basic;
 pub use basic::*;
