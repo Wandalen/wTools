@@ -1,4 +1,4 @@
-# module::implements
+# module::instance_of
 
 Macro to answer the question: does it implement a trait?
 
@@ -9,10 +9,10 @@ This solution has a limmitation:
 ### Sample
 
 ```rust
-dbg!( implements!( 13_i32 => Copy ) );
-// < implements!( 13_i32 => Copy ) : true
-dbg!( implements!( Box::new( 13_i32 ) => Copy ) );
-// < implements!( 13_i32 => Copy ) : false
+dbg!( instance_of!( 13_i32 => Copy ) );
+// < instance_of!( 13_i32 => Copy ) : true
+dbg!( instance_of!( Box::new( 13_i32 ) => Copy ) );
+// < instance_of!( 13_i32 => Copy ) : false
 ```
 
 ### Try out from the repository
@@ -20,12 +20,12 @@ dbg!( implements!( Box::new( 13_i32 ) => Copy ) );
 ```
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/meta_implements_trivial
+cd sample/rust/meta_instance_of_trivial
 cargo run
 ```
 
 ### To add to your project
 
 ```
-cargo add implements
+cargo add instance_of
 ```
