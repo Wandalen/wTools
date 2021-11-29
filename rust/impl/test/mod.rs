@@ -1,8 +1,41 @@
-
-#![allow(dead_code)]
+#![ warn( missing_docs ) ]
+#![ allow( dead_code ) ]
 // #![no_std]
 
+//!
+//! Tools for writing tests and runnint tests.
+//!
+//! # Sample
+//! ``` rust
+//! use wtest::test_suite;
+//!
+//! //
+//!
+//! fn _pass1()
+//! {
+//!   assert_eq!( true, true );
+//! }
+//!
+//! //
+//!
+//! fn _pass2()
+//! {
+//!   assert_eq!( 1, 1 );
+//! }
+//!
+//! //
+//!
+//! test_suite!
+//! {
+//!   pass1,
+//!   pass2,
+//! }
+//!
+//! ```
+
 pub extern crate paste;
+
+/// Macro to define test suite. This macro encourages refactoring the code of the test in the most readable way, gathering a list of all test routines at the end of the test file.
 
 #[ macro_export ]
 macro_rules! test_suite
@@ -19,7 +52,7 @@ macro_rules! test_suite
   // }
 }
 
-//
+/// Pass only if callback fails either returning error or panicing.
 
 pub fn should_throw< R, F : FnOnce() -> anyhow::Result< R > >( f : F ) -> anyhow::Result< R >
 {
@@ -35,15 +68,15 @@ pub fn should_throw< R, F : FnOnce() -> anyhow::Result< R > >( f : F ) -> anyhow
 //   loop {}
 // }
 
-//
+/// Macro asserts that two expressions are identical to each other. Unlike std::assert_eq it is removed from a release build.
 
 #[macro_export]
-macro_rules! debug_assert_eq
+macro_rules! debug_assert_id
 {
   ( $( $arg : tt )+ ) =>
   {
     #[cfg(debug_assertions)]
-    assert_eq!( $( $arg )+ );
+    $crate::assert_eq!( $( $arg )+ );
   };
   // ( $left : expr, $right : expr $(,)? ) =>
   // {{
@@ -89,7 +122,43 @@ macro_rules! debug_assert_eq
   // }};
 }
 
-//
+/// Macro asserts that two expressions are identical to each other. Unlike std::assert_eq it is removed from a release build. Alias of debug_assert_id.
+
+#[macro_export]
+macro_rules! debug_assert_identical
+{
+  ( $( $arg : tt )+ ) =>
+  {
+    #[cfg(debug_assertions)]
+    $crate::debug_assert_id!( $( $arg )+ );
+  };
+}
+
+/// Macro asserts that two expressions are not identical to each other. Unlike std::assert_eq it is removed from a release build.
+
+#[macro_export]
+macro_rules! debug_assert_ni
+{
+  ( $( $arg : tt )+ ) =>
+  {
+    #[cfg(debug_assertions)]
+    $crate::assert_ne!( $( $arg )+ );
+  };
+}
+
+/// Macro asserts that two expressions are not identical to each other. Unlike std::assert_eq it is removed from a release build.
+
+#[macro_export]
+macro_rules! debug_assert_not_identical
+{
+  ( $( $arg : tt )+ ) =>
+  {
+    #[cfg(debug_assertions)]
+    $crate::assert_ne!( $( $arg )+ );
+  };
+}
+
+/// Macro asserts that expression is ture. Unlike std::assert it is removed from a release build.
 
 #[macro_export]
 macro_rules! debug_assert
@@ -97,6 +166,6 @@ macro_rules! debug_assert
   ( $( $arg : tt )+ ) =>
   {
     #[cfg(debug_assertions)]
-    assert!( $( $arg )+ );
+    $crate::assert!( $( $arg )+ );
   };
 }

@@ -1,10 +1,6 @@
 # module::wtest
 
-Tools for writing tests.
-
-```rust
-
-```
+Tools for writing tests and runnint tests.
 
 ### Try out from the repository
 
@@ -19,4 +15,34 @@ cargo run
 
 ```
 cargo add wtest --dev
+```
+
+### Sample
+
+``` rust
+
+use wtest::test_suite;
+
+//
+
+fn _pass1()
+{
+  assert_eq!( true, true );
+}
+
+//
+
+fn _pass2()
+{
+  assert_eq!( 1, 1 );
+}
+
+//
+
+test_suite!
+{
+  pass1,
+  pass2,
+}
+
 ```

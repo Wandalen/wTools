@@ -1,4 +1,5 @@
-#![allow(dead_code)]
+#![ warn( missing_docs ) ]
+// #![ allow( dead_code ) ]
 
 use chrono::prelude::*;
 
