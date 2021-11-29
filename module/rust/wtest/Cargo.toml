@@ -43,4 +43,4 @@ path = "sample/rust/wtest_trivial/src/main.rs"
 [dependencies]
 # paste = "~1.0"
 # anyhow = "~1.0"
-wtest_basic = { path = "../wtest_basic", version = "*" }
+wtest_basic = { path = "../wtest_basic", version = "~0" }
