@@ -19,7 +19,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/wtools/impl/meta/implements.rs",
+  "/rust/impl/meta/implements.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
