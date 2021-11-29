@@ -28,5 +28,3 @@ test_suite!
   pass1,
   pass2,
 }
-
-xxx

@@ -1,6 +1,6 @@
 [package]
 name = "instance_of"
-version = "0.0.6"
+version = "0.0.7"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -19,7 +19,6 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/meta/implements_impl.rs",
   "/rust/impl/meta/instance_of.rs",
   "/Cargo.toml",
   "/Readme.md",
@@ -35,6 +34,7 @@ name = "instance_of_test"
 path = "rust/test/meta/instance_of_test.rs"
 
 [dependencies]
+implements = { path = "../implements", version = "~0" }
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = ["diff"] }

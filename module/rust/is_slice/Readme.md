@@ -30,7 +30,7 @@ fn main()
   dbg!( is_slice!( &[ 1, 2, 3 ] ) );
   // < is_slice!(& [1, 2, 3]) = false
   dbg!( is_slice!( &[ 1, 2, 3 ][ .. ] ) );
-  // < is_slice!(& [1, 2, 3] [..]) = tru
+  // < is_slice!(& [1, 2, 3] [..]) = true
 
 }
 ```
