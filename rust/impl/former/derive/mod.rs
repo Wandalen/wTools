@@ -1,11 +1,10 @@
 #![ warn( missing_docs ) ]
-
-//!
-//! Former - variation of builder pattern. Implementation of its derive macro.
-//!
-
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
+
+//!
+//! Former - a variation of builder pattern. Implementation of its derive macro. Should not be used independently, instead use module::former which relies on the module.
+//!
 
 extern crate proc_macro;
 extern crate proc_macro_error;
