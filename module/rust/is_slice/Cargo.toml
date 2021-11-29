@@ -19,7 +19,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/wtools/meta/is_slice",
+  "/rust/impl/meta/is_slice.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
