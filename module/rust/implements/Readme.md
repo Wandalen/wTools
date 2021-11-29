@@ -6,8 +6,13 @@ This solution has a limmitation:
 
 - In case enity is a function and trat is `Fn`/`FnMut`/`FnOnce` which current entity does not implement you will get compile-time error instead of `false`.
 
-```rust
+### Sample
 
+```rust
+println!( "implements!( 13_i32 => Copy ) : {}", implements!( 13_i32 => Copy ) );
+// < implements!( 13_i32 => Copy ) : true
+println!( "implements!( Box::new( 13_i32 ) => Copy ) : {}", implements!( Box::new( 13_i32 ) => Copy ) );
+// < implements!( 13_i32 => Copy ) : false
 ```
 
 ### Try out from the repository

@@ -37,6 +37,10 @@ path = "rust/test/mod.rs"
 name = "trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
+[[example]]
+name = "meta_implements"
+path = "sample/rust/meta_implements_trivial/src/main.rs"
+
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }
 maplit = "1.0.2"
