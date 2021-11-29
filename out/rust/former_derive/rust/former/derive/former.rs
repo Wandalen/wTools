@@ -269,7 +269,7 @@ fn field_setter_map( field : &FormerField ) -> syn::Stmt
       quote!
       {
         // pub fn #ident2() {}
-        pub fn #ident( mut self ) -> former_runtime::VectorFormer
+        pub fn #ident( mut self ) -> former::runtime::VectorFormer
         <
           #internal_ty,
           #ty,
@@ -282,7 +282,7 @@ fn field_setter_map( field : &FormerField ) -> syn::Stmt
           {
             former.#ident = container;
           };
-          former_runtime::VectorFormer::new( self, container, on_end )
+          former::runtime::VectorFormer::new( self, container, on_end )
         }
       }
     },
@@ -297,7 +297,7 @@ fn field_setter_map( field : &FormerField ) -> syn::Stmt
       quote!
       {
         // pub fn #ident2() {}
-        pub fn #ident( mut self ) -> former_runtime::HashmapFormer
+        pub fn #ident( mut self ) -> former::runtime::HashmapFormer
         <
           #k_ty,
           #e_ty,
@@ -311,7 +311,7 @@ fn field_setter_map( field : &FormerField ) -> syn::Stmt
           {
             former.hashmap_strings_1 = container;
           };
-          former_runtime::HashmapFormer::new( self, container, on_end )
+          former::runtime::HashmapFormer::new( self, container, on_end )
         }
       }
     },

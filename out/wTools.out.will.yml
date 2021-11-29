@@ -18,7 +18,7 @@ module:
       version: 0.9.3
       license: MIT
       npm.name: wTools
-      author: Kostiantyn Wandalen <wanalen@01.school>
+      author: Kostiantyn Wandalen <wandalen@obox.systems>
       keywords: &ref_1
         - base
         - basic
@@ -29,7 +29,7 @@ module:
         - wBase
         - generic
       contributors: &ref_2
-        - Kostiantyn Wandalen <wanalen@01.school>
+        - Kostiantyn Wandalen <wandalen@obox.systems>
         - Volodymyr M. <volodymyr.migdal@gmail.com>
         - Ihor O. <iostashvxi@gmail.com>
         - Pablo Garcimartin <pablogarcimartinruiz@gmail.com>
@@ -1212,7 +1212,7 @@ module:
       version: 0.9.3
       license: MIT
       npm.name: wTools
-      author: Kostiantyn Wandalen <wanalen@01.school>
+      author: Kostiantyn Wandalen <wandalen@obox.systems>
       keywords: *ref_1
       contributors: *ref_2
       interpreters: *ref_3

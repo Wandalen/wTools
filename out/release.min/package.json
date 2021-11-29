@@ -4,7 +4,7 @@
   "version" : "0.9.0",
   "enabled" : 1,
   "license" : "MIT",
-  "author" : "Kostiantyn Wandalen <wanalen@01.school>",
+  "author" : "Kostiantyn Wandalen <wandalen@obox.systems>",
   "keywords" :
   [
     "base",
@@ -18,7 +18,7 @@
   ],
   "contributors" :
   [
-    "Kostiantyn Wandalen <wanalen@01.school>",
+    "Kostiantyn Wandalen <wandalen@obox.systems>",
     "Volodymyr M. <volodymyr.migdal@gmail.com>",
     "Ihor O. <iostashvxi@gmail.com>",
     "Pablo Garcimartin <pablogarcimartinruiz@gmail.com>",

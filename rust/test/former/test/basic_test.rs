@@ -281,14 +281,14 @@ fn test_optional_string() -> anyhow::Result< () >
 
 //
 
-fn main()
-{
-  test_int().unwrap();
-  test_string().unwrap();
-  test_vector().unwrap();
-  test_hashmap().unwrap();
-  test_optional_string().unwrap();
-}
+// fn main()
+// {
+//   test_int().unwrap();
+//   test_string().unwrap();
+//   test_vector().unwrap();
+//   test_hashmap().unwrap();
+//   test_optional_string().unwrap();
+// }
 
 //
 

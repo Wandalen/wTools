@@ -5,9 +5,9 @@
   "enabled": 1,
   "description": "Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.",
   "license": "MIT",
-  "author": "Kostiantyn Wandalen <wanalen@01.school>",
+  "author": "Kostiantyn Wandalen <wandalen@obox.systems>",
   "contributors": [
-    "Kostiantyn Wandalen <wanalen@01.school>",
+    "Kostiantyn Wandalen <wandalen@obox.systems>",
     "Volodymyr M. <volodymyr.migdal@gmail.com>",
     "Ihor O. <iostashvxi@gmail.com>",
     "Pablo Garcimartin <pablogarcimartinruiz@gmail.com>",

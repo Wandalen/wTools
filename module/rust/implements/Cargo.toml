@@ -1,38 +1,47 @@
 [package]
-name = "wtools"
-version = "0.1.0"
+name = "implements"
+version = "0.0.0"
 edition = "2021"
-authors = [ "Kostiantyn Wandalen <wanalen@01.school>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>" ]
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Volodymyr M. <volodymyr.migdal@gmail.com>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/implements"
-repository = "https://github.com/Wandalen/wTools/tree/master/out/rust.implements"
-homepage = "https://github.com/Wandalen/wTools/tree/master/out/rust.implements"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/implements"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/implements"
 description = """
-A macro to answer the question: does it implement a trait
+Macro to answer the question: does it implement a trait?
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/wtools/meta",
+  "/rust/wtools/impl/meta/implements.rs",
   "/Cargo.toml",
   "/Readme.md",
+  "/License",
 ]
 
 [lib]
 name = "implements"
-path = "rust/wtools/meta/mod.rs"
+path = "rust/impl/meta/implements.rs"
 
 [[test]]
-name = "wtools_test"
-path = "rust/test/mod.rs"
+name = "implements_test"
+path = "rust/test/meta/implements_test.rs"
 
 [dependencies]
-regex = "1.5.4"
-chrono = "0.4.19"
-paste = "1.0.5"
+# regex = "1.5.4"
+# chrono = "0.4.19"
+# paste = "1.0.5"
+
+[dev-dependencies]
+# trybuild = { version = "~1.0", features = ["diff"] }
+wtest = { path = "../wtest", version = "~0" }
 
 [[example]]
 name = "trivial"
-path = "sample/rust/trivial/src/main.rs"
+path = "sample/rust/meta_implements_trivial/src/main.rs"

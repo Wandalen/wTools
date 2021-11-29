@@ -5,13 +5,19 @@ members = [
   "module/rust/former_derive",
   "module/rust/former_runtime",
   "module/rust/former",
-  "module/rust/all"
+  "module/rust/implements",
+  "module/rust/is_slice",
+  "module/rust/wtest",
+  "module/rust/wtools",
+  "sample/rust/wtools_trivial",
+  "sample/rust/wtest_trivial",
+  "sample/rust/meta_implements_trivial",
 ]
 exclude = [
   "*",
-  "out/rust/*",
-  "out/rust/former_runtime",
-  "out/rust/former_derive",
-  "out/rust/former",
+  # "out/rust/*",
+  # "out/rust/former_runtime",
+  # "out/rust/former_derive",
+  # "out/rust/former",
 ]
-default-members = ["module/rust/all"]
+default-members = ["module/rust/wtools"]

@@ -2,12 +2,12 @@
 use std::env;
 
 #[test]
-fn tests()
+fn trybuild_tests()
 {
-  let t = trybuild::TestCases::new();
   println!( "current_dir : {:?}", env::current_dir().unwrap() );
-  t.pass( "../../../rust/test/former/test/basic_manual.rs" );
+  // let t = trybuild::TestCases::new();
+  // t.pass( "rust/test/former/test/basic_manual.rs" );
 }
 
-// include!( "../../../rust/test/former/test/basic_manual.rs" );
+include!( "./test/basic_manual.rs" );
 

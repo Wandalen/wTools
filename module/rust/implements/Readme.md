@@ -1,7 +1,10 @@
+# module::implements
 
-# module::Tools  [![status](https://github.com/Wandalen/wTools/actions/workflows/StandardPublish.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/StandardPublish.yml) [![stable](https://img.shields.io/badge/stability-stable-brightgreen.svg)](https://github.com/emersion/stability-badges#stable)
+Macro to answer the question: does it implement a trait?
 
-Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
+```rust
+
+```
 
 ### Try out from the repository
 
@@ -15,5 +18,5 @@ cargo run
 ### To add to your project
 
 ```
-cargo add wtools
+cargo add implements
 ```
