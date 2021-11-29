@@ -1,3 +1,9 @@
+#![ warn( missing_docs ) ]
+
+//!
+//! Former - variation of builder pattern.
+//!
+
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
 

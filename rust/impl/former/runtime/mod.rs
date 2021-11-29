@@ -1,3 +1,9 @@
+#![ warn( missing_docs ) ]
+
+//!
+//! Former - variation of builder pattern. Implementation of its runtime.
+//!
+
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
 
@@ -18,5 +24,7 @@
 // }
 
 mod runtime;
-pub mod test_framework;
+// mod wtest;
+// mod test_framework;
+// use wtest::*;
 pub use runtime::*;

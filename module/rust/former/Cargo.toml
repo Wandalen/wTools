@@ -40,9 +40,9 @@ path = "/rust/former/test/former.rs"
 
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }
+maplit = "1.0.2"
 
 [dependencies]
 anyhow = "1.0.47"
-maplit = "1.0.2"
 former_derive = { path = "../former_derive", version = "0.1.0" }
 former_runtime = { path = "../former_runtime", version = "0.1.0" }
