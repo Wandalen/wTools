@@ -38,7 +38,7 @@ implements = { path = "../implements", version = "~0" }
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = ["diff"] }
-wtest = { path = "../wtest", version = "~0" }
+wtest_basic = { path = "../wtest_basic", version = "~0" }
 
 [[example]]
 name = "trivial"

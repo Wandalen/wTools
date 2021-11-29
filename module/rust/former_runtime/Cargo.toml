@@ -35,7 +35,7 @@ name = "former_runtime_test"
 path = "rust/test/former/runtime.rs"
 
 [dev-dependencies]
-wtest = { path = "../wtest", version = "~0" }
+wtest_basic = { path = "../wtest_basic", version = "~0" }
 maplit = "~1.0.2"
 
 [dependencies]

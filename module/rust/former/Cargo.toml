@@ -40,6 +40,7 @@ path = "rust/test/former/former.rs"
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }
 maplit = "1.0.2"
+wtest_basic = { path = "../wtest_basic", version = "~0" }
 
 [dependencies]
 anyhow = "1.0.47"
