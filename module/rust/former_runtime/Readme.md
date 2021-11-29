@@ -7,7 +7,7 @@ Former - variation of builder pattern. Its runtime.
 ```rust sample
 ```
 
-/* qqq2 : for Dmytro : implement sample
+/* qqq2 : for Rust : for Dmytro : implement sample
 - paste it to section Sample
 - make sure section also works
 - paste the sample in source code ( inlined doc )
