@@ -33,9 +33,9 @@ path = "rust/impl/meta/is_slice.rs"
 name = "is_slice_test"
 path = "rust/test/meta/is_slice_test.rs"
 
-# [[example]]
-# name = "trivial"
-# path = "sample/rust/is_slice_trivial/src/main.rs"
+[[example]]
+name = "trivial"
+path = "sample/rust/is_slice_trivial/src/main.rs"
 
 [dependencies]
 
