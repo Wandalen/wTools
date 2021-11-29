@@ -6,6 +6,7 @@ members = [
   "module/rust/former_runtime",
   "module/rust/former",
   "module/rust/implements",
+  "module/rust/instance_of",
   "module/rust/is_slice",
   "module/rust/wtest",
   "module/rust/wtools",

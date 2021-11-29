@@ -1,3 +1,5 @@
+#![warn( missing_docs )]
+
 // #![ feature( concat_idents ) ]
 
 // extern crate chrono;

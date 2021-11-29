@@ -1,3 +1,5 @@
+#![ warn( missing_docs ) ]
+
 #[ macro_export ]
 macro_rules! is_slice
 {
