@@ -31,7 +31,7 @@ path = "rust/impl/test/basic.rs"
 
 [[test]]
 name = "wtest_basic_test"
-path = "rust/test/test/mod.rs"
+path = "rust/test/test/basic.rs"
 
 [[example]]
 name = "trivial"

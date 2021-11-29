@@ -4,7 +4,7 @@ Tools for writing tests and runnint tests.
 
 ### Try out from the repository
 
-```
+``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/test_trivial
