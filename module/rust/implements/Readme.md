@@ -9,9 +9,9 @@ This solution has a limmitation:
 ### Sample
 
 ```rust
-println!( "implements!( 13_i32 => Copy ) : {}", implements!( 13_i32 => Copy ) );
+dbg!( implements!( 13_i32 => Copy ) );
 // < implements!( 13_i32 => Copy ) : true
-println!( "implements!( Box::new( 13_i32 ) => Copy ) : {}", implements!( Box::new( 13_i32 ) => Copy ) );
+dbg!( implements!( Box::new( 13_i32 ) => Copy ) );
 // < implements!( 13_i32 => Copy ) : false
 ```
 
