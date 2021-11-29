@@ -16,7 +16,7 @@ description = """
 Former - a variation of builder pattern. Implementation of its derive macro. Should not be used independently, instead use module::former which relies on the module.
 """
 categories = [ "algorithms", "development-tools" ]
-keywords = [ "fundamental", "general-purpose" ]
+keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
 include = [
   "/rust/impl/former",

@@ -281,6 +281,34 @@ fn test_optional_string() -> anyhow::Result< () >
 
 //
 
+fn test_complex() -> anyhow::Result< () >
+{
+
+  let command = Command::former()
+  .int_1( 13 )
+  .string_1( "Abcd".to_string() )
+  .vec_1().push( "ghi" ).push( "klm" ).end()
+  .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
+  .string_optional_1( "dir1" )
+  .form();
+  dbg!( &command );
+
+  let expected = Command
+  {
+    int_1 : 13,
+    string_1 : "Abcd".to_string(),
+    vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
+    hashmap_strings_1 : maplit::hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+    int_optional_1 : None,
+    string_optional_1 : Some( "dir1".to_string() ),
+  };
+  assert_eq!( command, expected );
+
+  Ok( () )
+}
+
+//
+
 // fn main()
 // {
 //   test_int().unwrap();
@@ -300,4 +328,5 @@ fn main_test()
   test_vector().unwrap();
   test_hashmap().unwrap();
   test_optional_string().unwrap();
+  test_complex().unwrap();
 }

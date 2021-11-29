@@ -1,14 +1,10 @@
 
 // #[cfg( feature = "all" )]
-use wtools::former;
-use wtools::former::Former;
+// use wtools::former;
+// use wtools::former::Former;
 // #[cfg( not( feature = "all" ) )]
 // use former_derive::Former;
-
-// use former_derive::Former;
-// use anyhow;
-
-// use maplit as maplit2;
+use former::Former;
 
 #[derive( Debug, PartialEq, Former )]
 pub struct Command

@@ -10,9 +10,11 @@ members = [
   "module/rust/is_slice",
   "module/rust/wtest",
   "module/rust/wtools",
+  "sample/rust/former_trivial",
+  "sample/rust/meta_implements_trivial",
+  "sample/rust/meta_instance_of_trivial",
   "sample/rust/wtools_trivial",
   "sample/rust/wtest_trivial",
-  "sample/rust/meta_implements_trivial",
 ]
 exclude = [
   "*",
