@@ -35,7 +35,6 @@ name = "former_runtime_test"
 path = "rust/test/former/runtime.rs"
 
 [dev-dependencies]
-trybuild = { version = "~1.0", features = ["diff"] }
 wtest = { path = "../wtest", version = "~0" }
 maplit = "~1.0.2"
 
