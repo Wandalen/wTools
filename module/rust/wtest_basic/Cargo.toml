@@ -1,6 +1,6 @@
 [package]
 name = "wtest_basic"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -26,11 +26,11 @@ include = [
 ]
 
 [lib]
-name = "wtest"
+name = "wtest_basic"
 path = "rust/impl/test/basic.rs"
 
 [[test]]
-name = "wtest_test"
+name = "wtest_basic_test"
 path = "rust/test/test/mod.rs"
 
 [[example]]
