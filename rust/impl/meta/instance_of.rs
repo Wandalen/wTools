@@ -34,7 +34,7 @@ macro_rules! implements
 ///
 /// # Sample
 /// ```
-/// use instance_of::instance_of;
+/// use instance_of::*;
 ///
 /// dbg!( instance_of!( 13_i32 => Copy ) );
 /// // < instance_of!( 13_i32 => Copy ) : true

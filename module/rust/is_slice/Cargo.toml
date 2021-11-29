@@ -9,9 +9,9 @@ authors = [
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/implements"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/implements"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/implements"
+documentation = "https://docs.rs/is_slice"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/is_slice"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/is_slice"
 description = """
 Macro to answer the question: is it a slice?
 """
@@ -19,25 +19,26 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/wtools/meta/implements",
+  "/rust/wtools/meta/is_slice",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
 
 [lib]
-name = "implements"
-path = "rust/impl/meta/implements/mod.rs"
+name = "is_slice"
+path = "rust/impl/meta/is_slice.rs"
 
 [[test]]
-name = "implements_test"
-path = "rust/test/meta/implements_test.rs"
+name = "is_slice_test"
+path = "rust/test/meta/is_slice_test.rs"
+
+# [[example]]
+# name = "trivial"
+# path = "sample/rust/is_slice_trivial/src/main.rs"
 
 [dependencies]
-# regex = "1.5.4"
-# chrono = "0.4.19"
-# paste = "1.0.5"
 
-[[example]]
-name = "trivial"
-path = "sample/rust/implements_trivial/src/main.rs"
+[dev-dependencies]
+# trybuild = { version = "~1.0", features = ["diff"] }
+wtest = { path = "../wtest", version = "~0" }

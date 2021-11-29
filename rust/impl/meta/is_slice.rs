@@ -1,5 +1,22 @@
 #![ warn( missing_docs ) ]
 
+//!
+//! Macro to answer the question: is it a slice?
+//!
+
+/// Macro to answer the question: is it a slice?
+///
+/// # Sample
+/// ```
+/// use is_slice::*;
+///
+/// fn main()
+/// {
+///   dbg!( is_slice!( &[ 1, 2, 3 ] ) );
+///   dbg!( is_slice!( Box::new( true ) ) );
+/// }
+/// ```
+
 #[ macro_export ]
 macro_rules! is_slice
 {

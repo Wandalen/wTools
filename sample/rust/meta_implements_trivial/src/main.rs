@@ -1,4 +1,4 @@
-pub use implements::implements;
+pub use implements::*;
 
 fn main()
 {

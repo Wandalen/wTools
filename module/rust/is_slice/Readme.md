@@ -2,13 +2,9 @@
 
 Macro to answer the question: is it a slice?
 
-```rust
-
-```
-
 ### Try out from the repository
 
-```
+``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/trivial
@@ -19,4 +15,8 @@ cargo run
 
 ```
 cargo add implements
+```
+
+``` rust sample test
+
 ```

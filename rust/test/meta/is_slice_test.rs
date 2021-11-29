@@ -1,6 +1,6 @@
 
-use wtools as TheModule;
-use wtools::test_suite;
+use is_slice as TheModule;
+use wtest::test_suite;
 
 //
 
@@ -22,9 +22,7 @@ fn _is_slice_basic()
 
 //
 
-// trace_macros!( true );
 test_suite!
 {
   is_slice_basic,
 }
-// trace_macros!( false );

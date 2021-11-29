@@ -34,12 +34,12 @@ path = "rust/impl/meta/implements.rs"
 name = "implements_test"
 path = "rust/test/meta/implements_test.rs"
 
+[[example]]
+name = "trivial"
+path = "sample/rust/meta_implements_trivial/src/main.rs"
+
 [dependencies]
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = ["diff"] }
 wtest = { path = "../wtest", version = "~0" }
-
-[[example]]
-name = "trivial"
-path = "sample/rust/meta_implements_trivial/src/main.rs"

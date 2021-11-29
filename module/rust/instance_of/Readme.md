@@ -11,7 +11,7 @@ This is alias for [module::implements](https://github.com/Wandalen/wTools/tree/m
 ### Sample
 
 ```rust
-use instance_of::instance_of;
+use instance_of::*;
 
 dbg!( instance_of!( 13_i32 => Copy ) );
 // < instance_of!( 13_i32 => Copy ) : true

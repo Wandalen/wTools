@@ -1,31 +1,32 @@
-// use wtest::test_suite;
+use wtest::test_suite;
+
+// //
+
+// fn main()
+// {
+
+// }
 
 //
 
-fn main()
+fn pass1()
 {
-
+  assert_eq!( true, true );
 }
 
-// //
+//
 
-// fn pass1()
-// {
-//   assert_eq!( true, true );
-// }
+fn pass2()
+{
+  assert_eq!( 1, 1 );
+}
 
-// //
+//
 
-// fn fail1()
-// {
-//   assert_eq!( true, false );
-// }
+test_suite!
+{
+  pass1,
+  pass2,
+}
 
-// //
-
-// test_suite!
-// {
-//   pass1,
-//   fail1,
-// }
-
+xxx

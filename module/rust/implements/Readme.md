@@ -24,7 +24,7 @@ cargo add implements
 ### Sample
 
 ``` rust sample test
-use implements::implements;
+use implements::*;
 
 dbg!( implements!( 13_i32 => Copy ) );
 // < implements!( 13_i32 => Copy ) : true

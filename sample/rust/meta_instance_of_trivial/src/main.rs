@@ -1,4 +1,4 @@
-pub use instance_of::instance_of;
+pub use instance_of::*;
 
 fn main()
 {

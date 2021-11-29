@@ -1,7 +1,7 @@
 #![ warn( missing_docs ) ]
 
 //!
-//! Module::instance_of with macro `instance_of` to answer the question: does it implement a trait?
+//! Macro to answer the question: is it a slice?
 //!
 
 // #[ macro_use ]
@@ -12,7 +12,7 @@ mod implements_impl;
 ///
 /// # Sample
 /// ```
-/// use implements::implements;
+/// use implements::*;
 ///
 /// dbg!( implements!( 13_i32 => Copy ) );
 /// // < implements!( 13_i32 => Copy ) : true

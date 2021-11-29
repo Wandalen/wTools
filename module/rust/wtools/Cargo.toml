@@ -41,6 +41,10 @@ path = "sample/rust/wtools_trivial/src/main.rs"
 name = "meta_implements"
 path = "sample/rust/meta_implements_trivial/src/main.rs"
 
+[[example]]
+name = "is_slice"
+path = "sample/rust/is_slice_trivial/src/main.rs"
+
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }
 maplit = "1.0.2"
