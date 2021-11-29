@@ -1,6 +1,6 @@
 [package]
 name = "implements"
-version = "0.0.2"
+version = "0.0.3"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -34,9 +34,6 @@ name = "implements_test"
 path = "rust/test/meta/implements_test.rs"
 
 [dependencies]
-# regex = "1.5.4"
-# chrono = "0.4.19"
-# paste = "1.0.5"
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = ["diff"] }
