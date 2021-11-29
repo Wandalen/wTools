@@ -1,8 +1,8 @@
 [package]
-name = "wtest_trivial_sample"
+name = "wtest_basic_trivial_sample"
 version = "0.0.0"
 edition = "2021"
 publish = false
 
 [dependencies]
-wtest = "*"
+wtest_basic = "*"

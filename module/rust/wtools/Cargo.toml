@@ -45,6 +45,14 @@ path = "sample/rust/meta_implements_trivial/src/main.rs"
 name = "is_slice"
 path = "sample/rust/is_slice_trivial/src/main.rs"
 
+[[example]]
+name = "wtest"
+path = "sample/rust/wtest_trivial/src/main.rs"
+
+[[example]]
+name = "wtest_basic"
+path = "sample/rust/wtest_basic_trivial/src/main.rs"
+
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }
 maplit = "1.0.2"
@@ -60,6 +68,7 @@ is_slice = { path = "../is_slice", version = "~0" }
 implements = { path = "../implements", version = "~0" }
 instance_of = { path = "../instance_of", version = "~0" }
 wtest = { path = "../wtest", version = "~0" }
+wtest_basic = { path = "../wtest_basic", version = "~0" }
 
 [features]
 all = []
