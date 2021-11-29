@@ -5,8 +5,6 @@ extern crate proc_macro;
 extern crate proc_macro_error;
 
 #[macro_use]
-mod wt;
-#[macro_use]
 mod meta_tools;
 mod former;
 

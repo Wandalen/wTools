@@ -23,12 +23,12 @@ pub fn should_throw< R, F : FnOnce() -> anyhow::Result< R > >( f : F ) -> anyhow
 macro_rules! debug_assert_eq
 {
   ( $( $arg : tt )+ ) =>
-  ({
+  {
     #[cfg(debug_assertions)]
     assert_eq!( $( $arg )+ );
-  });
+  };
   // ( $left : expr, $right : expr $(,)? ) =>
-  // ({
+  // {{
   //   match( &$left, &$right )
   //   {
   //     #[cfg(debug_assertions)]
@@ -47,9 +47,9 @@ macro_rules! debug_assert_eq
   //       }
   //     }
   //   }
-  // });
+  // }};
   // ( $left : expr, $right:expr, $( $arg : tt )+ ) =>
-  // ({
+  // {{
   //   match( &$left, &$right )
   //   {
   //     #[cfg(debug_assertions)]
@@ -68,7 +68,7 @@ macro_rules! debug_assert_eq
   //       }
   //     }
   //   }
-  // });
+  // }};
 }
 
 //
@@ -77,8 +77,8 @@ macro_rules! debug_assert_eq
 macro_rules! debug_assert
 {
   ( $( $arg : tt )+ ) =>
-  ({
+  {
     #[cfg(debug_assertions)]
     assert!( $( $arg )+ );
-  });
+  };
 }

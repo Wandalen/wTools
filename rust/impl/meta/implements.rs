@@ -1,3 +1,4 @@
+
 #[ macro_export ]
 macro_rules! implements
 {
@@ -20,7 +21,8 @@ macro_rules! implements
       fn get( self : &'_ Self ) -> bool { true }
     }
 
-    impl< T > True for PhantomData< T >
+    impl< T > True
+    for PhantomData< T >
     where T : $( $Traits )+ + ?Sized,
     {}
 
@@ -31,4 +33,13 @@ macro_rules! implements
     ( &does( &$V ) ).get()
 
   }}
+}
+
+#[ macro_export ]
+macro_rules! instance_of
+{
+  ( $( $arg : tt )+ ) =>
+  {
+    $crate::implements!( $( $arg )+ );
+  }
 }

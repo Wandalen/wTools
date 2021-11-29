@@ -43,13 +43,16 @@ fn _implements_basic()
   assert_eq!( TheModule::implements!( src => Copy ), false );
   assert_eq!( TheModule::implements!( src => Clone ), true );
 
-  let pointer_size = std::mem::size_of::< &u8 >();
-  dbg!( &pointer_size );
-  assert_eq!( 2 * pointer_size, std::mem::size_of::< &[ u8 ] >() );
-  assert_eq!( 2 * pointer_size, std::mem::size_of::< *const [ u8 ] >() );
-  assert_eq!( 2 * pointer_size, std::mem::size_of::< Box< [ u8 ] > >() );
-  assert_eq!( 2 * pointer_size, std::mem::size_of::< std::rc::Rc< [ u8 ] > >() );
-  assert_eq!( 1 * pointer_size, std::mem::size_of::< &[ u8 ; 20 ] >() );
+}
+
+//
+
+fn _instance_of()
+{
+
+  let src = Box::new( true );
+  assert_eq!( TheModule::instance_of!( src => Copy ), false );
+  assert_eq!( TheModule::instance_of!( src => Clone ), true );
 
 }
 
@@ -84,6 +87,15 @@ fn _implements_functions()
     println!( "{:?}", x );
   };
 
+  /* */
+
+  assert_eq!( TheModule::implements!( _fn => Copy ), true );
+  assert_eq!( TheModule::implements!( _fn => Clone ), true );
+  assert_eq!( TheModule::implements!( _fn => core::ops::Not ), false );
+  let _ = _fn.clone();
+
+  /* */
+
   // assert_eq!( TheModule::implements!( function1 => fn() -> () ), true );
   // assert_eq!( TheModule::implements!( &function1 => Fn() -> () ), true );
   // assert_eq!( TheModule::implements!( &function1 => FnMut() -> () ), true );
@@ -94,14 +106,14 @@ fn _implements_functions()
   assert_eq!( TheModule::implements!( _fn => FnMut() -> () ), true );
   assert_eq!( TheModule::implements!( _fn => FnOnce() -> () ), true );
 
-  // assert_eq!( TheModule::implements!( _fn_mut => fn() -> () ), true );
-  // assert_eq!( TheModule::implements!( _fn_mut => Fn() -> () ), true );
+  // assert_eq!( TheModule::implements!( _fn_mut => fn() -> () ), false );
+  // assert_eq!( TheModule::implements!( _fn_mut => Fn() -> () ), false );
   assert_eq!( TheModule::implements!( _fn_mut => FnMut() -> () ), true );
   assert_eq!( TheModule::implements!( _fn_mut => FnOnce() -> () ), true );
 
-  // assert_eq!( TheModule::implements!( _fn_once => fn() -> () ), true );
-  // assert_eq!( TheModule::implements!( _fn_once => Fn() -> () ), true );
-  // assert_eq!( TheModule::implements!( _fn_once => FnMut() -> () ), true );
+  // assert_eq!( TheModule::implements!( _fn_once => fn() -> () ), false );
+  // assert_eq!( TheModule::implements!( _fn_once => Fn() -> () ), false );
+  // assert_eq!( TheModule::implements!( _fn_once => FnMut() -> () ), false );
   assert_eq!( TheModule::implements!( _fn_once => FnOnce() -> () ), true );
 
   // fn is_f < R >                             ( _x : fn() -> R )      -> bool { true }
@@ -109,6 +121,21 @@ fn _implements_functions()
   // fn is_fn_mut < R, F : FnMut() -> R >      ( _x : &F )             -> bool { true }
   // fn is_fn_once < R, F : FnOnce() -> R >    ( _x : &F )             -> bool { true }
   // fn function1() -> bool { true }
+
+}
+
+//
+
+fn _pointer_experiment()
+{
+
+  let pointer_size = std::mem::size_of::< &u8 >();
+  dbg!( &pointer_size );
+  assert_eq!( 2 * pointer_size, std::mem::size_of::< &[ u8 ] >() );
+  assert_eq!( 2 * pointer_size, std::mem::size_of::< *const [ u8 ] >() );
+  assert_eq!( 2 * pointer_size, std::mem::size_of::< Box< [ u8 ] > >() );
+  assert_eq!( 2 * pointer_size, std::mem::size_of::< std::rc::Rc< [ u8 ] > >() );
+  assert_eq!( 1 * pointer_size, std::mem::size_of::< &[ u8 ; 20 ] >() );
 
 }
 
@@ -185,7 +212,9 @@ fn _fn_experiment()
 test_suite!
 {
   implements_basic,
+  instance_of,
   implements_functions,
+  pointer_experiment,
   fn_experiment,
 }
 // trace_macros!( false );
