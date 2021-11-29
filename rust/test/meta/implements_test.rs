@@ -47,7 +47,7 @@ fn _implements_basic()
 
 //
 
-fn _instance_of()
+fn _instance_of_basic()
 {
 
   let src = Box::new( true );
@@ -208,13 +208,11 @@ fn _fn_experiment()
 
 //
 
-// trace_macros!( true );
 test_suite!
 {
   implements_basic,
-  instance_of,
+  instance_of_basic,
   implements_functions,
   pointer_experiment,
   fn_experiment,
 }
-// trace_macros!( false );

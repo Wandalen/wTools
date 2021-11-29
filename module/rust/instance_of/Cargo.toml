@@ -1,6 +1,6 @@
 [package]
 name = "instance_of"
-version = "0.0.5"
+version = "0.0.6"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -20,6 +20,7 @@ keywords = [ "fundamental", "general-purpose" ]
 
 include = [
   "/rust/impl/meta/implements.rs",
+  "/rust/impl/meta/instance_of.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -27,11 +28,11 @@ include = [
 
 [lib]
 name = "instance_of"
-path = "rust/impl/meta/implements.rs"
+path = "rust/impl/meta/instance_of.rs"
 
 [[test]]
 name = "instance_of_test"
-path = "rust/test/meta/implements.rs"
+path = "rust/test/meta/instance_of_test.rs"
 
 [dependencies]
 
@@ -41,4 +42,4 @@ wtest = { path = "../wtest", version = "~0" }
 
 [[example]]
 name = "trivial"
-path = "sample/rust/meta_implements_trivial/src/main.rs"
+path = "sample/rust/meta_instance_of_trivial/src/main.rs"
