@@ -39,7 +39,7 @@ path = "sample/rust/wtools_trivial/src/main.rs"
 
 [[example]]
 name = "meta_implements"
-path = "sample/rust/meta_implements_trivial/src/main.rs"
+path = "sample/rust/implements_trivial/src/main.rs"
 
 [[example]]
 name = "is_slice"

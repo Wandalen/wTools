@@ -42,4 +42,4 @@ wtest_basic = { path = "../wtest_basic", version = "~0" }
 
 [[example]]
 name = "trivial"
-path = "sample/rust/meta_instance_of_trivial/src/main.rs"
+path = "sample/rust/instance_of_trivial/src/main.rs"

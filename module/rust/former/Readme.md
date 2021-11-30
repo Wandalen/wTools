@@ -7,7 +7,7 @@ Former - variation of builder pattern.
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/meta_implements_trivial
+cd sample/rust/implements_trivial
 cargo run
 ```
 

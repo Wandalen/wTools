@@ -13,8 +13,8 @@ members = [
   # "module/rust/wtools",
   # "sample/rust/former_trivial",
   # "sample/rust/is_slice_trivial",
-  # "sample/rust/meta_implements_trivial",
-  # "sample/rust/meta_instance_of_trivial",
+  # "sample/rust/implements_trivial",
+  # "sample/rust/instance_of_trivial",
   # "sample/rust/wtools_trivial",
   # "sample/rust/wtest_trivial",
 ]

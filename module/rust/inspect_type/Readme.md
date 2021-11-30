@@ -1,35 +1,34 @@
-# module::instance_of
+# module::inspect_type
 
-Macro to answer the question: does it implement a trait?
-
-This solution has a limitation:
-
-- In case enity is a function and trat is `Fn`/`FnMut`/`FnOnce` which current entity does not implement you will get compile-time error instead of `false`.
-
-This is alias for [module::implements](https://github.com/Wandalen/wTools/tree/master/module/rust/implements).
+Diagnostic-purpose tools to inspect type of a variable and its size.
 
 ### Sample
 
-```rust
-use instance_of::*;
+``` rust test
+#![ feature( type_name_of_val ) ]
 
-dbg!( instance_of!( 13_i32 => Copy ) );
-// < instance_of!( 13_i32 => Copy ) : true
-dbg!( instance_of!( Box::new( 13_i32 ) => Copy ) );
-// < instance_of!( 13_i32 => Copy ) : false
+pub use inspect_type::*;
+
+fn main()
+{
+  inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
+  // < sizeof( &[1, 2, 3][..] : &[i32] ) = 16
+  inspect_type_of!( &[ 1, 2, 3 ] );
+  // < sizeof( &[1, 2, 3] : &[i32; 3] ) = 8
+}
 ```
 
 ### Try out from the repository
 
-```
+``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/meta_implements_trivial
+cd sample/rust/inspect_type_trivial
 cargo run
 ```
 
 ### To add to your project
 
-```
+``` shell
 cargo add implements
 ```
