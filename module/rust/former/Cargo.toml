@@ -29,13 +29,13 @@ include = [
 name = "former"
 path = "rust/impl/former/former/mod.rs"
 
-[[example]]
-name = "current"
-path = "sample/rust/former_trivial/src/main.rs"
-
 [[test]]
 name = "former_test"
 path = "rust/test/former/former.rs"
+
+# [[example]]
+# name = "current"
+# path = "sample/rust/former_trivial/src/main.rs"
 
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }

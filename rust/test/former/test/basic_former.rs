@@ -7,7 +7,7 @@
 use former::Former;
 
 #[derive( Debug, PartialEq, Former )]
-pub struct Command
+pub struct Struct1
 {
   pub int_1 : i32,
   string_1 : String,

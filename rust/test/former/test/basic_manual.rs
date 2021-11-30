@@ -3,7 +3,7 @@
 // use wtools::former;
 
 #[derive( Debug, PartialEq )]
-pub struct Command
+pub struct Struct1
 {
   pub int_1 : i32,
   string_1 : String,
@@ -15,11 +15,11 @@ pub struct Command
 
 //
 
-impl Command
+impl Struct1
 {
-  pub fn former() -> CommandFormer
+  pub fn former() -> Struct1Former
   {
-    CommandFormer
+    Struct1Former
     {
       int_1 : core::option::Option::None,
       string_1 : core::option::Option::None,
@@ -34,7 +34,7 @@ impl Command
 //
 
 #[derive( Debug )]
-pub struct CommandFormer
+pub struct Struct1Former
 {
   pub int_1 : core::option::Option< i32 >,
   pub string_1 : core::option::Option< String >,
@@ -46,9 +46,9 @@ pub struct CommandFormer
 
 //
 
-impl CommandFormer
+impl Struct1Former
 {
-  fn form( mut self ) -> Command
+  fn form( mut self ) -> Struct1
   {
 
     let int_1 = if self.int_1.is_some()
@@ -109,7 +109,7 @@ impl CommandFormer
       None
     };
 
-    Command
+    Struct1
     {
       int_1,
       string_1,
@@ -141,12 +141,12 @@ impl CommandFormer
   <
     String,
     Vec< String >,
-    CommandFormer,
-    impl Fn( &mut CommandFormer, core::option::Option< Vec< String > > )
+    Struct1Former,
+    impl Fn( &mut Struct1Former, core::option::Option< Vec< String > > )
   >
   {
     let container = self.vec_1.take();
-    let on_end = | former : &mut CommandFormer, container : core::option::Option< Vec< String > > |
+    let on_end = | former : &mut Struct1Former, container : core::option::Option< Vec< String > > |
     {
       former.vec_1 = container;
     };
@@ -158,12 +158,12 @@ impl CommandFormer
     String,
     String,
     std::collections::HashMap< String, String >,
-    CommandFormer,
-    impl Fn( &mut CommandFormer, core::option::Option< std::collections::HashMap< String, String > > )
+    Struct1Former,
+    impl Fn( &mut Struct1Former, core::option::Option< std::collections::HashMap< String, String > > )
   >
   {
     let container = self.hashmap_strings_1.take();
-    let on_end = | former : &mut CommandFormer, container : core::option::Option< std::collections::HashMap< String, String > > |
+    let on_end = | former : &mut Struct1Former, container : core::option::Option< std::collections::HashMap< String, String > > |
     {
       former.hashmap_strings_1 = container;
     };

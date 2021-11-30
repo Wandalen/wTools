@@ -34,24 +34,36 @@ name = "wtools_test"
 path = "rust/test/mod.rs"
 
 [[example]]
-name = "trivial"
-path = "sample/rust/wtools_trivial/src/main.rs"
+name = "former"
+path = "sample/rust/former_trivial/src/main.rs"
 
 [[example]]
-name = "meta_implements"
+name = "implements"
 path = "sample/rust/implements_trivial/src/main.rs"
+
+[[example]]
+name = "inspect_type"
+path = "sample/rust/inspect_type_trivial/src/main.rs"
+
+# [[example]]
+# name = "instance_of"
+# path = "sample/rust/instance_of_trivial/src/main.rs"
 
 [[example]]
 name = "is_slice"
 path = "sample/rust/is_slice_trivial/src/main.rs"
 
 [[example]]
-name = "wtest"
-path = "sample/rust/wtest_trivial/src/main.rs"
-
-[[example]]
 name = "wtest_basic"
 path = "sample/rust/wtest_basic_trivial/src/main.rs"
+
+[[example]]
+name = "trivial"
+path = "sample/rust/wtools_trivial/src/main.rs"
+
+# [[example]]
+# name = "wtest"
+# path = "sample/rust/wtest_trivial/src/main.rs"
 
 [dev-dependencies]
 trybuild = { version = "1.0.52", features = ["diff"] }
@@ -64,7 +76,7 @@ paste = "1.0.5"
 anyhow = "1.0.48"
 former_derive = { path = "../former_derive", version = "~0" }
 former_runtime = { path = "../former_runtime", version = "~0" }
-inspect_type = { path = "../inspect_type", version = "~0" }
+inspect_type = { path = "../inspect_type", version = "~0", optional = true }
 is_slice = { path = "../is_slice", version = "~0" }
 implements = { path = "../implements", version = "~0" }
 # instance_of = { path = "../instance_of", version = "~0" }
@@ -72,5 +84,5 @@ implements = { path = "../implements", version = "~0" }
 wtest_basic = { path = "../wtest_basic", version = "~0" }
 
 [features]
-all = []
-default = ["all"]
+wtools = []
+default = ["wtools"]

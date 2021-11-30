@@ -5,6 +5,7 @@ use syn::{ parse_macro_input, parse_quote, DeriveInput };
 use proc_macro_error::{ abort, abort_call_site };
 use unzip_n::unzip_n;
 
+unzip_n!( 0 );
 unzip_n!( 3 );
 unzip_n!( 4 );
 unzip_n!( 5 );
@@ -232,14 +233,14 @@ fn field_name_map( field : &FormerField ) -> syn::Ident
   }
   else
   {
-    syn::Ident::new( "?? no name ??", proc_macro2::Span::call_site() )
+    syn::Ident::new( "?? no name_ident ??", proc_macro2::Span::call_site() )
   }
 }
 
 //
 
 #[inline]
-fn field_setter_map( field : &FormerField ) -> syn::Stmt
+fn field_setter_map( field : &FormerField, former_name : &syn::Ident ) -> syn::Stmt
 {
   let ident = field.ident.clone();
   // let ty = field.ty;
@@ -251,6 +252,7 @@ fn field_setter_map( field : &FormerField ) -> syn::Stmt
       let non_optional_ty = &field.non_optional_ty;
       quote!
       {
+        #[inline]
         pub fn #ident< Src >( mut self, src : Src ) -> Self
         where Src : core::convert::Into< #non_optional_ty >,
         {
@@ -269,16 +271,17 @@ fn field_setter_map( field : &FormerField ) -> syn::Stmt
       quote!
       {
         // pub fn #ident2() {}
+        #[inline]
         pub fn #ident( mut self ) -> former::runtime::VectorFormer
         <
           #internal_ty,
           #ty,
-          CommandFormer,
-          impl Fn( &mut CommandFormer, core::option::Option< #ty > )
+          #former_name,
+          impl Fn( &mut #former_name, core::option::Option< #ty > )
         >
         {
           let container = self.#ident.take();
-          let on_end = | former : &mut CommandFormer, container : core::option::Option< #ty > |
+          let on_end = | former : &mut #former_name, container : core::option::Option< #ty > |
           {
             former.#ident = container;
           };
@@ -297,17 +300,18 @@ fn field_setter_map( field : &FormerField ) -> syn::Stmt
       quote!
       {
         // pub fn #ident2() {}
+        #[inline]
         pub fn #ident( mut self ) -> former::runtime::HashmapFormer
         <
           #k_ty,
           #e_ty,
           #ty,
-          CommandFormer,
-          impl Fn( &mut CommandFormer, core::option::Option< #ty > )
+          #former_name,
+          impl Fn( &mut #former_name, core::option::Option< #ty > )
         >
         {
           let container = self.hashmap_strings_1.take();
-          let on_end = | former : &mut CommandFormer, container : core::option::Option< #ty > |
+          let on_end = | former : &mut #former_name, container : core::option::Option< #ty > |
           {
             former.hashmap_strings_1 = container;
           };
@@ -335,10 +339,10 @@ fn field_setter_map( field : &FormerField ) -> syn::Stmt
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let ast = parse_macro_input!( input as DeriveInput );
-  let name = &ast.ident;
+  let name_ident = &ast.ident;
 
-  let former_name = format!( "{}Former", name );
-  let former_ident = syn::Ident::new( &former_name, name.span() );
+  let former_name = format!( "{}Former", name_ident );
+  let former_ident = syn::Ident::new( &former_name, name_ident.span() );
   let fields = if let syn::Data::Struct( syn::DataStruct { fields : syn::Fields::Named( syn::FieldsNamed { ref named, .. } ), .. } ) = ast.data
   {
     named
@@ -367,15 +371,16 @@ pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
       field_optional_map( &former_field ),
       field_form_map( &former_field ),
       field_name_map( &former_field ),
-      field_setter_map( &former_field ),
+      field_setter_map( &former_field, &former_ident ),
     )
   }).unzip_n_vec();
 
   let result = quote!
   {
 
-    impl #name
+    impl #name_ident
     {
+      #[inline]
       pub fn former() -> #former_ident
       {
         #former_ident
@@ -393,10 +398,11 @@ pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
     impl #former_ident
     {
-      fn form( mut self ) -> #name
+      #[inline]
+      fn form( mut self ) -> #name_ident
       {
         #( #fields_form )*
-        Command
+        #name_ident
         {
           #( #fields_names, )*
         }
@@ -409,7 +415,6 @@ pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
   // println!( "{:#?}", ast );
   // println!( "{:#?}", result );
-
   // proc_macro::TokenStream::new()
   result.into()
 }
