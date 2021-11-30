@@ -14,8 +14,8 @@ fn _is_slice_basic()
   assert_eq!( TheModule::is_slice!( &[ 1, 2, 3 ][ .. ] ), true );
   assert_eq!( TheModule::is_slice!( &[ 1, 2, 3 ] ), false );
 
-  // TheModule::inspect_logging_type_of!( &[ 1, 2, 3 ][ .. ] );
-  // TheModule::inspect_logging_type_of!( &[ 1, 2, 3 ] );
+  // TheModule::inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
+  // TheModule::inspect_type_of!( &[ 1, 2, 3 ] );
 
   assert_eq!( TheModule::is_slice!( vec!( 1, 2, 3 ) ), false );
   assert_eq!( TheModule::is_slice!( 13_f32 ), false );
