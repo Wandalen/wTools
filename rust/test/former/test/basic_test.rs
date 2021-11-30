@@ -11,10 +11,10 @@
 
 //   // test.case( "basic" );
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .int_1( 13 )
 //   .form();
-//   // dbg!( &command );
+//   // dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -25,7 +25,7 @@
 //     int_optional_1 : None,
 //     string_optional_1 : None,
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   // test.case( "rewriting" );
 
@@ -48,10 +48,10 @@
 
 //   // test.case( "string : object" );
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .string_1( "Abcd".to_string() )
 //   .form();
-//   // dbg!( &command );
+//   // dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -62,14 +62,14 @@
 //     int_optional_1 : None,
 //     string_optional_1 : None,
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   // test.case( "string : slice" );
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .string_1( "Abcd" )
 //   .form();
-//   // dbg!( &command );
+//   // dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -80,7 +80,7 @@
 //     int_optional_1 : None,
 //     string_optional_1 : None,
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   // test.case( "string : rewriting" );
 
@@ -103,11 +103,11 @@
 
 //   // test.case( "vector : implicit construction" );
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .vec_1().push( "ghi" ).push( "klm" ).end()
 //   .form()
 //   ;
-//   // dbg!( &command );
+//   // dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -118,14 +118,14 @@
 //     int_optional_1 : None,
 //     string_optional_1 : None,
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   // test.case( "vector : replace" );
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .vec_1().replace( vec![ "a".to_string(), "bc".to_string(), "def".to_string() ] ).end()
 //   .form();
-//   // dbg!( &command );
+//   // dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -136,14 +136,14 @@
 //     int_optional_1 : None,
 //     string_optional_1 : None,
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   // test.case( "vector : replace and push" );
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .vec_1().replace( vec![ "a".to_string(), "bc".to_string(), "def".to_string() ] ).push( "gh" ).end()
 //   .form();
-//   // dbg!( &command );
+//   // dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -154,7 +154,7 @@
 //     int_optional_1 : None,
 //     string_optional_1 : None,
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   Ok( () )
 // }
@@ -166,11 +166,11 @@
 
 //   // test.case( "implicit construction" );
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
 //   .form()
 //   ;
-//   // dbg!( &command );
+//   // dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -181,15 +181,15 @@
 //     int_optional_1 : None,
 //     string_optional_1 : None,
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   // test.case( "replace" );
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .hashmap_strings_1().replace( maplit::hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
 //   .form()
 //   ;
-//   // dbg!( &command );
+//   // dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -200,15 +200,15 @@
 //     int_optional_1 : None,
 //     string_optional_1 : None,
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   // test.case( "replace and insert" );
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .hashmap_strings_1().replace( maplit::hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).insert( "k3", "v3" ).end()
 //   .form()
 //   ;
-//   // dbg!( &command );
+//   // dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -219,7 +219,7 @@
 //     int_optional_1 : None,
 //     string_optional_1 : None,
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   Ok( () )
 // }
@@ -231,10 +231,10 @@
 
 //   // test.case( "basic" );
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .string_optional_1( "dir1" )
 //   .form();
-//   dbg!( &command );
+//   dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -245,13 +245,13 @@
 //     int_optional_1 : None,
 //     string_optional_1 : Some( "dir1".to_string() ),
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   // test.case( "none" );
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .form();
-//   dbg!( &command );
+//   dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -262,7 +262,7 @@
 //     int_optional_1 : None,
 //     string_optional_1 : None,
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   // test.case( "optional : rewriting" );
 
@@ -283,14 +283,14 @@
 // fn test_complex() -> anyhow::Result< () >
 // {
 
-//   let command = Struct1::former()
+//   let command1 = Struct1::former()
 //   .int_1( 13 )
 //   .string_1( "Abcd".to_string() )
 //   .vec_1().push( "ghi" ).push( "klm" ).end()
 //   .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
 //   .string_optional_1( "dir1" )
 //   .form();
-//   dbg!( &command );
+//   dbg!( &command1 );
 
 //   let expected = Struct1
 //   {
@@ -301,7 +301,7 @@
 //     int_optional_1 : None,
 //     string_optional_1 : Some( "dir1".to_string() ),
 //   };
-//   assert_eq!( command, expected );
+//   assert_eq!( command1, expected );
 
 //   Ok( () )
 // }

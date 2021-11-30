@@ -10,7 +10,7 @@
 //! use former::Former;
 //!
 //! #[derive( Debug, PartialEq, Former )]
-//! pub struct Command
+//! pub struct Structure1
 //! {
 //!   int_1 : i32,
 //!   string_1 : String,
@@ -23,16 +23,16 @@
 //! fn main()
 //! {
 //!
-//!   let command = Command::former()
+//!   let command1 = Structure1::former()
 //!   .int_1( 13 )
 //!   .string_1( "Abcd".to_string() )
 //!   .vec_1().push( "ghi" ).push( "klm" ).end()
 //!   .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
 //!   .string_optional_1( "dir1" )
 //!   .form();
-//!   dbg!( &command );
+//!   dbg!( &command1 );
 //!
-//! // <  &command = Command {
+//! // <  &command1 = Structure1 {
 //! // <   int_1: 13,
 //! // <   string_1: "Abcd",
 //! // <   vec_1: [
