@@ -20,7 +20,7 @@ cargo add werror
 ### Sample
 
 ``` rust sample test
-use werror::Error;
+use werror::*;
 
 let err1 = Error::new( "Some error" );
 println!( "err1 : {}", err1 );

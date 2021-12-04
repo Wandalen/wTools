@@ -1,6 +1,6 @@
 [package]
 name = "werror"
-version = "0.0.0"
+version = "0.0.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -33,12 +33,11 @@ path = "rust/impl/error/mod.rs"
 name = "werror_test"
 path = "rust/test/error/mod.rs"
 
-# [[example]]
-# name = "trivial"
-# path = "sample/rust/werror_trivial/src/main.rs"
+[[example]]
+name = "trivial"
+path = "sample/rust/werror_trivial/src/main.rs"
 
 [dependencies]
 
 [dev-dependencies]
-# trybuild = { version = "~1.0", features = ["diff"] }
 wtest_basic = { path = "../wtest_basic", version = "~0" }

@@ -1,6 +1,4 @@
-use werror::Error;
-
-//
+use werror::*;
 
 fn main()
 {
