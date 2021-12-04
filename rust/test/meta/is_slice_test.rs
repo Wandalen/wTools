@@ -1,7 +1,7 @@
 // #![feature(type_name_of_val)]
 
 use is_slice as TheModule;
-use wtest::test_suite;
+use wtest_basic::test_suite;
 
 //
 

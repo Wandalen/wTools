@@ -11,4 +11,5 @@ pub mod str;
 pub mod time;
 pub mod vector;
 
+pub use werror;
 pub use wtest_basic as test;

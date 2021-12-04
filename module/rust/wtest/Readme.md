@@ -21,7 +21,7 @@ cargo add wtest --dev
 
 ``` rust
 
-use wtest::test_suite;
+use wtest_basic::test_suite;
 
 //
 

@@ -10,8 +10,10 @@ extern crate proc_macro;
 extern crate proc_macro_error;
 
 #[macro_use]
-mod meta_tools;
+mod tools_proc_macro;
 mod former;
+
+use tools_proc_macro as tpm;
 
 /// Derive macro to generate former for a structure. Former is variation of Builder Pattern.
 

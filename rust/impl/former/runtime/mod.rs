@@ -26,5 +26,5 @@
 mod runtime;
 // mod wtest;
 // mod test_framework;
-// use wtest::*;
+// use wtest_basic::*;
 pub use runtime::*;
