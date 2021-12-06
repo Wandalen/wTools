@@ -7,7 +7,7 @@
 //!
 //! # Sample
 //! ``` rust
-//! use wtest_basic::test_suite;
+//! use wtest_basic::*;
 //!
 //! //
 //!

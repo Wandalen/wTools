@@ -1,7 +1,7 @@
 #![ allow( dead_code ) ]
 #![ feature( trace_macros ) ]
 
-use wtest_basic::test_suite;
+use wtest_basic::*;
 use select_matching as TheModule;
 
 //

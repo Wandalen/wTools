@@ -1,5 +1,5 @@
 
-use wtest_basic::test_suite;
+use wtest_basic::*;
 use implements as TheModule;
 
 //

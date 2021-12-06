@@ -1,6 +1,6 @@
 #![allow(deprecated)]
 
-use wtest_basic::test_suite;
+use wtest_basic::*;
 
 //
 
