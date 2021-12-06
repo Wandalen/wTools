@@ -132,8 +132,8 @@ pub fn parameters_internal( ty : &syn::Type, r : ::core::ops::RangeInclusive< us
 //     }
 //   }
 // }
-//
-// pub use syn::spanned::Spanned;
+
+pub use syn::spanned::Spanned;
 
 /// Trait to implement method span() for those structures which do not have it implemented.
 
