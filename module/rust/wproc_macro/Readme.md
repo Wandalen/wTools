@@ -3,21 +3,6 @@
 
 Tools for writing procedural macroses.
 
-### Try out from the repository
-
-``` shell test
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd sample/rust/wproc_macro_trivial
-cargo run
-```
-
-### To add to your project
-
-``` shell test
-cargo add wproc_macro
-```
-
 ### Sample
 
 ``` rust test
@@ -28,4 +13,19 @@ got.iter().for_each( | e | println!( "{}", quote!( #e ) ) );
 // < i8
 // < i16
 // < i32
+```
+
+### To add to your project
+
+``` shell test
+cargo add wproc_macro
+```
+
+### Try out from the repository
+
+``` shell test
+git clone https://github.com/Wandalen/wTools
+cd wTools
+cd sample/rust/wproc_macro_trivial
+cargo run
 ```

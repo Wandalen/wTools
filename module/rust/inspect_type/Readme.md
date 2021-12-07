@@ -18,6 +18,12 @@ fn main()
 }
 ```
 
+### To add to your project
+
+``` shell
+cargo add implements
+```
+
 ### Try out from the repository
 
 ``` shell test
@@ -25,10 +31,4 @@ git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/inspect_type_trivial
 cargo run
-```
-
-### To add to your project
-
-``` shell
-cargo add implements
 ```

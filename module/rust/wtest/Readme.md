@@ -1,21 +1,6 @@
 # module::wtest
 
-Tools for writing tests and runnint tests.
-
-### Try out from the repository
-
-``` shell test
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd sample/rust/test_trivial
-cargo run
-```
-
-### To add to your project
-
-```
-cargo add wtest --dev
-```
+Tools for writing and runnint tests.
 
 ### Sample
 
@@ -45,4 +30,19 @@ test_suite!
   pass2,
 }
 
+```
+
+### To add to your project
+
+```
+cargo add wtest --dev
+```
+
+### Try out from the repository
+
+``` shell test
+git clone https://github.com/Wandalen/wTools
+cd wTools
+cd sample/rust/test_trivial
+cargo run
 ```
