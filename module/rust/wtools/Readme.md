@@ -2,17 +2,23 @@
 
 Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 
-<!-- ### Sample
-xxx : qqq2 : for rust : write
-``` rust
+### Sample
 
+``` rust test
 use wtools::*;
 
-``` -->
+fn main()
+{
+
+  println!( "implements!( 13_i32 => Copy ) : {}", implements!( 13_i32 => Copy ) );
+  println!( "implements!( Box::new( 13_i32 ) => Copy ) : {}", implements!( Box::new( 13_i32 ) => Copy ) );
+
+}
+```
 
 ### To add to your project
 
-```
+``` shell
 cargo add wtools
 ```
 

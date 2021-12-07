@@ -1,3 +1,4 @@
+#![ allow( unused_attributes ) ]
 #![ feature( type_name_of_val ) ]
 
 use inspect_type as TheModule;

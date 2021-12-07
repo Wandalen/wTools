@@ -13,6 +13,8 @@
 
 // pub use werror;
 
+/// Meta tools.
+pub mod meta;
 pub use inspect_type::*;
 pub use is_slice::*;
 pub use implements::*;

@@ -1,4 +1,4 @@
 
-// mod is_slice_test;
 mod implements_test;
-mod instance_of_test;
+mod inspect_type_test;
+mod is_slice_test;
