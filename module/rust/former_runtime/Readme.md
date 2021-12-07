@@ -2,25 +2,7 @@
 
 Former - variation of builder pattern. Its runtime.
 
-<!-- ### Sample
-
-```rust sample
-```
-
-/* qqq2 : for Rust : for Dmytro : implement sample
-- paste it to section Sample
-- make sure section also works
-- paste the sample in source code ( inlined doc )
-*/
-
-### Try out from the repository
-
-```
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd sample/rust/former_runtime_trivial
-cargo run
-``` -->
+Not intended to be used without derive. This module and derive is aggregate in module::former is [here](https://github.com/Wandalen/wTools/tree/master/module/rust/former).
 
 ### To add to your project
 
