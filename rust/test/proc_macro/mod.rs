@@ -2,7 +2,7 @@
 
 use wtest_basic::*;
 use wproc_macro as TheModule;
-use quote::quote;
+use quote::*;
 
 //
 

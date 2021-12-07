@@ -45,10 +45,6 @@ path = "sample/rust/implements_trivial/src/main.rs"
 name = "inspect_type"
 path = "sample/rust/inspect_type_trivial/src/main.rs"
 
-# [[example]]
-# name = "instance_of"
-# path = "sample/rust/instance_of_trivial/src/main.rs"
-
 [[example]]
 name = "is_slice"
 path = "sample/rust/is_slice_trivial/src/main.rs"
@@ -61,13 +57,10 @@ path = "sample/rust/wtest_basic_trivial/src/main.rs"
 name = "trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
-# [[example]]
-# name = "wtest"
-# path = "sample/rust/wtest_trivial/src/main.rs"
-
-[dev-dependencies]
-trybuild = { version = "1.0.52", features = ["diff"] }
-maplit = "1.0.2"
+[features]
+wtools = []
+# proc_macro = [ "wproc_macro" ]
+default = [ "wtools" ]
 
 [dependencies]
 # regex = "1.5.4"
@@ -84,9 +77,10 @@ implements = { path = "../implements", version = "~0" }
 # wtest = { path = "../wtest", version = "~0" }
 wtest_basic = { path = "../wtest_basic", version = "~0" }
 werror = { path = "../werror", version = "~0" }
-wproc_macro = { path = "../wproc_macro", version = "~0", optional = true }
+wproc_macro = { path = "../wproc_macro", version = "~0" }
 
-[features]
-wtools = []
-proc_macro = [ "wproc_macro" ]
-default = [ "wtools" ]
+[dev-dependencies]
+trybuild = { version = "1.0.52", features = ["diff"] }
+maplit = "1.0.2"
+anyhow = "1.0.47"
+quote = "~1.0"

@@ -23,6 +23,8 @@ pub use former as former;
 pub use werror as error;
 pub use wtest_basic as test;
 
+pub use wproc_macro as proc_macro;
+
 // former = { path = "../former", version = "~0" }
 // inspect_type = { path = "../inspect_type", version = "~0" }
 // is_slice = { path = "../is_slice", version = "~0" }

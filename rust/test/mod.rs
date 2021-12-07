@@ -6,6 +6,6 @@ mod error;
 mod former;
 mod meta;
 // // mod str;
-// mod proc_macro;
+mod proc_macro;
 // mod test;
 // // mod vector;
