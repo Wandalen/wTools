@@ -20,6 +20,7 @@ keywords = [ "fundamental", "general-purpose" ]
 
 include = [
   "/rust/impl/mod.rs",
+  "/rust/impl/meta/mod.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -75,11 +76,11 @@ is_slice = { path = "../is_slice", version = "~0" }
 implements = { path = "../implements", version = "~0" }
 # instance_of = { path = "../instance_of", version = "~0" }
 # wtest = { path = "../wtest", version = "~0" }
-wtest_basic = { path = "../wtest_basic", version = "~0" }
 werror = { path = "../werror", version = "~0" }
 wproc_macro = { path = "../wproc_macro", version = "~0", optional = true }
 
 [dev-dependencies]
+wtest_basic = { path = "../wtest_basic", version = "~0" }
 trybuild = { version = "1.0.52", features = ["diff"] }
 maplit = "1.0.2"
 anyhow = "1.0.47"

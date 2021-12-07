@@ -13,7 +13,6 @@ pub use implements::*;
 
 pub use former as former;
 pub use werror as error;
-pub use wtest_basic as test;
 
 #[ cfg( feature = "proc_macro" ) ]
 pub use wproc_macro as proc_macro;
