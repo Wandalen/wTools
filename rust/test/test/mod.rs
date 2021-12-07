@@ -10,4 +10,4 @@ fn basic_trybuild()
 
 }
 
-include!( "./test/wtools.rs" );
+include!( "./test/basic.rs" );

@@ -38,8 +38,8 @@ name = "trivial"
 path = "sample/rust/wproc_macro_trivial/src/main.rs"
 
 [dependencies]
-proc-macro2 = { version = "~1.0.32", features = [ "span-locations" ] }
-syn = { version = "~1.0.81", features = [ "full", "extra-traits", "parsing" ] }
+proc-macro2 = { version = "~1.0" }
+syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }
 # werror = { path = "../werror", version = "~0.0" }
 
 [dev-dependencies]
