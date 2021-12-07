@@ -1,3 +1,3 @@
 
-// mod former_basic;
-mod former_short;
+mod former_basic;
+mod former_conflict;

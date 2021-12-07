@@ -235,7 +235,7 @@ fn test_optional_string() -> anyhow::Result< () >
   let command = Struct1::former()
   .string_optional_1( "dir1" )
   .form();
-  dbg!( &command );
+  // dbg!( &command );
 
   let expected = Struct1
   {
@@ -252,7 +252,7 @@ fn test_optional_string() -> anyhow::Result< () >
 
   let command = Struct1::former()
   .form();
-  dbg!( &command );
+  // dbg!( &command );
 
   let expected = Struct1
   {
@@ -303,6 +303,11 @@ fn test_complex() -> anyhow::Result< () >
     string_optional_1 : Some( "dir1".to_string() ),
   };
   assert_eq!( command, expected );
+
+  #[ cfg( debug_assertions ) ]
+  println!("Debugging enabled");
+  #[ cfg( not( debug_assertions ) ) ]
+  println!("Debugging disabled");
 
   Ok( () )
 }

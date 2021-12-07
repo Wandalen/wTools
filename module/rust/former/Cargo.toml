@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -33,16 +33,16 @@ path = "rust/impl/former/former/mod.rs"
 name = "former_test"
 path = "rust/test/former/former.rs"
 
-# [[example]]
-# name = "current"
-# path = "sample/rust/former_trivial/src/main.rs"
+[[example]]
+name = "current"
+path = "sample/rust/former_trivial/src/main.rs"
 
 [dependencies]
-former_derive = { path = "../former_derive", version = "0.1.0" }
-former_runtime = { path = "../former_runtime", version = "0.1.0" }
+former_derive = { path = "../former_derive", version = "~0.1" }
+former_runtime = { path = "../former_runtime", version = "~0.1" }
 
 [dev-dependencies]
 anyhow = "1.0.47"
-trybuild = { version = "1.0.52", features = ["diff"] }
 maplit = "1.0.2"
+trybuild = { version = "1.0.52", features = ["diff"] }
 wtest_basic = { path = "../wtest_basic", version = "~0" }
