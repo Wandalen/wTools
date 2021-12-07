@@ -6,21 +6,6 @@ This solution has a limitation:
 
 - In case enity is a function and trat is `Fn`/`FnMut`/`FnOnce` which current entity does not implement you will get compile-time error instead of `false`.
 
-### Try out from the repository
-
-``` shell test
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd sample/rust/implements_trivial
-cargo run
-```
-
-### To add to your project
-
-```
-cargo add implements
-```
-
 ### Sample
 
 ``` rust sample test
@@ -30,4 +15,19 @@ dbg!( implements!( 13_i32 => Copy ) );
 // < implements!( 13_i32 => Copy ) : true
 dbg!( implements!( Box::new( 13_i32 ) => Copy ) );
 // < implements!( 13_i32 => Copy ) : false
+```
+
+### To add to your project
+
+```
+cargo add implements
+```
+
+### Try out from the repository
+
+``` shell test
+git clone https://github.com/Wandalen/wTools
+cd wTools
+cd sample/rust/implements_trivial
+cargo run
 ```
