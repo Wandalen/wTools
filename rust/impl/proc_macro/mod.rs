@@ -61,6 +61,7 @@ pub enum ContainerKind
 }
 
 /// Return kind of container specified by type.
+///
 /// Good to verify `alloc::vec::Vec< i32 >` is vector.
 /// Good to verify `std::collections::HashMap< i32, i32 >` is hash map.
 ///
@@ -95,6 +96,7 @@ pub fn type_container_kind( ty : &syn::Type ) -> ContainerKind
 }
 
 /// Check is the rightmost item of path refering a type is specified type.
+///
 /// Good to verify `core::option::Option< i32 >` is optional.
 /// Good to verify `alloc::vec::Vec< i32 >` is vector.
 ///
@@ -130,6 +132,7 @@ pub fn type_rightmost( ty : &syn::Type ) -> Option< String >
 use crate::interval::Interval;
 
 /// Return the specified number of parameters of the type.
+///
 /// Good to getting `i32` from `core::option::Option< i32 >` or `alloc::vec::Vec< i32 >`
 ///
 /// # Sample
@@ -177,7 +180,7 @@ where
 
 pub use syn::spanned::Spanned;
 
-/// Trait to implement method span() for those structures which do not have it implemented.
+/// Trait to implement method span() for those structures which [module::syn](https://docs.rs/syn/latest/syn/spanned/index.html) do not have it implemented.
 
 pub trait Spanned2
 {
@@ -201,16 +204,6 @@ impl Spanned2 for syn::Data
 }
 
 //
-
-// impl< T : syn::spanned::Spanned > Spanned2 for T
-// {
-//   fn span2( &self ) -> proc_macro2::Span
-//   {
-//     self.span()
-//   }
-// }
-
-// use ::core::marker::PhantomData;
 
 #[ doc( hidden ) ]
 pub struct Data< 'a, T >( &'a T );
@@ -270,7 +263,8 @@ macro_rules! span_of
 }
 
 /// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
-/// Works only for items for which span is not implemented in [module::syn](https://docs.rs/syn/latest/syn/spanned/index.html).
+///
+/// Works only for items for which span is not implemented in [module::syn](https://docs.rs/syn/latest/syn/spanned/index.html). For other use macro [`span_of!`](span_of!).
 
 pub fn span_of< Src : Spanned2 >( src : &Src ) -> proc_macro2::Span
 {
