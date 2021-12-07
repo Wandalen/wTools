@@ -40,7 +40,7 @@ struct FormerField< 'a >
 
 fn is_option( ty : &syn::Type ) -> bool
 {
-  wproc_macro::type_rightmost( ty ) == Some( "Option" )
+  wproc_macro::type_rightmost( ty ) == Some( "Option".to_string() )
 }
 
 //

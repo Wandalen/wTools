@@ -2,21 +2,6 @@
 
 Former - variation of builder pattern.
 
-### Try out from the repository
-
-``` shell test
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd sample/rust/implements_trivial
-cargo run
-```
-
-### To add to your project
-
-```
-cargo add implements
-```
-
 ### Sample
 
 ``` rust sample test
@@ -63,4 +48,19 @@ fn main()
 // < }
 
 }
+```
+
+### To add to your project
+
+```
+cargo add implements
+```
+
+### Try out from the repository
+
+``` shell test
+git clone https://github.com/Wandalen/wTools
+cd wTools
+cd sample/rust/implements_trivial
+cargo run
 ```
