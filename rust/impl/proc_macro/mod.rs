@@ -8,6 +8,16 @@ mod num;
 mod interval;
 
 /// Macro for diagnostics purpose to print both syntax tree and source code behind it.
+///
+/// # Sample
+/// ```
+/// use wproc_macro::*;
+/// use quote::quote;
+///
+/// let code = quote!( std::collections::HashMap< i32, i32 > );
+/// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+/// tree_print!( tree_type );
+/// ```
 
 #[ macro_export ]
 macro_rules! tree_print
@@ -53,6 +63,17 @@ pub enum ContainerKind
 /// Return kind of container specified by type.
 /// Good to verify `alloc::vec::Vec< i32 >` is vector.
 /// Good to verify `std::collections::HashMap< i32, i32 >` is hash map.
+///
+/// # Sample
+/// ```
+/// use wproc_macro::*;
+/// use quote::quote;
+///
+/// let code = quote!( std::collections::HashMap< i32, i32 > );
+/// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+/// let got = type_container_kind( &tree_type );
+/// assert_eq!( got, ContainerKind::HashMap );
+/// ```
 
 pub fn type_container_kind( ty : &syn::Type ) -> ContainerKind
 {
@@ -76,6 +97,17 @@ pub fn type_container_kind( ty : &syn::Type ) -> ContainerKind
 /// Check is the rightmost item of path refering a type is specified type.
 /// Good to verify `core::option::Option< i32 >` is optional.
 /// Good to verify `alloc::vec::Vec< i32 >` is vector.
+///
+/// # Sample
+/// ```
+/// use wproc_macro::*;
+/// use quote::quote;
+///
+/// let code = quote!( core::option::Option< i32 > );
+/// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+/// let got = type_rightmost( &tree_type );
+/// assert_eq!( got, Some( "Option".to_string() ) );
+/// ```
 
 // pub fn type_rightmost< R : AsRef< str > >( ty : &syn::Type, rightmost : R ) -> bool
 pub fn type_rightmost( ty : &syn::Type ) -> Option< String >
@@ -99,6 +131,20 @@ use crate::interval::Interval;
 
 /// Return the specified number of parameters of the type.
 /// Good to getting `i32` from `core::option::Option< i32 >` or `alloc::vec::Vec< i32 >`
+///
+/// # Sample
+/// ```
+/// use wproc_macro::*;
+/// use quote::quote;
+///
+/// let code = quote!( core::option::Option< i8, i16, i32, i64 > );
+/// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+/// let got = type_parameters( &tree_type, 0..=2 );
+/// got.iter().for_each( | e | println!( "{}", quote!( #e ) ) );
+/// // < i8
+/// // < i16
+/// // < i32
+/// ```
 
 pub fn type_parameters< R >( ty : &syn::Type, range : R ) -> Vec< &syn::Type >
 where
