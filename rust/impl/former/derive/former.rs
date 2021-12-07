@@ -33,21 +33,21 @@ struct FormerField< 'a >
   pub ty : &'a syn::Type,
   pub non_optional_ty : &'a syn::Type,
   pub is_option : bool,
-  pub container_kind : wproc_macro::ContainerKind,
+  pub type_container_kind : wproc_macro::ContainerKind,
 }
 
 //
 
 fn is_option( ty : &syn::Type ) -> bool
 {
-  wproc_macro::rightmost_is( ty, "Option" )
+  wproc_macro::type_rightmost( ty ) == Some( "Option" )
 }
 
 //
 
 fn parameter_internal_first( ty : &syn::Type ) -> &syn::Type
 {
-  wproc_macro::parameters_internal( ty, 0 ..= 0 )
+  wproc_macro::type_parameters( ty, 0 ..= 0 )
   .first()
   .or_else( || panic!( "Expect at least one parameter here:\n  {}", quote!{ #ty } ) ).unwrap()
 }
@@ -60,7 +60,7 @@ fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn
   {
     syn::Error::new( proc_macro2::Span::call_site(), format!( "Expect at least two parameters here:\n  {}", quote!{ #ty } ) )
   };
-  let result = wproc_macro::parameters_internal( ty, 0 ..= 1 );
+  let result = wproc_macro::type_parameters( ty, 0 ..= 1 );
   let mut iter = result.iter();
   Ok
   ((
@@ -183,7 +183,7 @@ fn field_setter_map( field : &FormerField, former_name : &syn::Ident ) -> Result
 {
   let ident = field.ident.clone();
 
-  let tokens = match &field.container_kind
+  let tokens = match &field.type_container_kind
   {
     wproc_macro::ContainerKind::No =>
     {
@@ -303,9 +303,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     let colon_token = &field.colon_token;
     let ty = &field.ty;
     let is_option = is_option( &ty );
-    let container_kind = wproc_macro::container_kind( &ty );
+    let type_container_kind = wproc_macro::type_container_kind( &ty );
     let non_optional_ty : &syn::Type = if is_option { parameter_internal_first( ty ) } else { ty };
-    let former_field = FormerField { attrs, vis, ident, colon_token, ty, non_optional_ty, is_option, container_kind };
+    let former_field = FormerField { attrs, vis, ident, colon_token, ty, non_optional_ty, is_option, type_container_kind };
     (
       field_none_map( &former_field ),
       field_optional_map( &former_field ),

@@ -4,6 +4,9 @@
 //! Tools for writing procedural macroses.
 //!
 
+mod num;
+mod interval;
+
 /// Macro for diagnostics purpose to print both syntax tree and source code behind it.
 
 #[ macro_export ]
@@ -11,11 +14,13 @@ macro_rules! tree_print
 {
   ( $src : expr ) =>
   {{
-    println!( "{}", tree_export_str!( $src ) );
+    let result = $crate::tree_export_str!( $src );
+    println!( "{}", result );
+    result
   }};
   ( $( $src : expr ),+ $(,)? ) =>
   {{
-    $( tree_print!( $src ) );+;
+    $( $crate::tree_print!( $src ) );+
   }};
 }
 
@@ -49,7 +54,7 @@ pub enum ContainerKind
 /// Good to verify `alloc::vec::Vec< i32 >` is vector.
 /// Good to verify `std::collections::HashMap< i32, i32 >` is hash map.
 
-pub fn container_kind( ty : &syn::Type ) -> ContainerKind
+pub fn type_container_kind( ty : &syn::Type ) -> ContainerKind
 {
   if let syn::Type::Path( path ) = ty
   {
@@ -72,25 +77,34 @@ pub fn container_kind( ty : &syn::Type ) -> ContainerKind
 /// Good to verify `core::option::Option< i32 >` is optional.
 /// Good to verify `alloc::vec::Vec< i32 >` is vector.
 
-pub fn rightmost_is< R : AsRef< str > >( ty : &syn::Type, rightmost : R ) -> bool
+// pub fn type_rightmost< R : AsRef< str > >( ty : &syn::Type, rightmost : R ) -> bool
+pub fn type_rightmost( ty : &syn::Type ) -> Option< String >
 {
   if let syn::Type::Path( path ) = ty
   {
     let last = &path.path.segments.last();
     if last.is_none()
     {
-      return false;
+      return None;
+      // return false;
     }
-    return last.unwrap().ident == rightmost.as_ref();
+    return Some( last.unwrap().ident.to_string() );
+    // return last.unwrap().ident == rightmost.as_ref();
   }
-  false
+  // false
+  None
 }
+
+use crate::interval::Interval;
 
 /// Return the specified number of parameters of the type.
 /// Good to getting `i32` from `core::option::Option< i32 >` or `alloc::vec::Vec< i32 >`
 
-pub fn parameters_internal( ty : &syn::Type, r : ::core::ops::RangeInclusive< usize > ) -> Vec< &syn::Type >
+pub fn type_parameters< R >( ty : &syn::Type, range : R ) -> Vec< &syn::Type >
+where
+  R : std::convert::Into< crate::interval::IntervalInclusive >
 {
+  let range = range.into();
   if let syn::Type::Path( syn::TypePath{ path : syn::Path { ref segments, .. }, .. } ) = ty
   {
     let last = &segments.last();
@@ -105,8 +119,8 @@ pub fn parameters_internal( ty : &syn::Type, r : ::core::ops::RangeInclusive< us
       let selected : Vec< &syn::Type > = args3
       .iter()
       .skip_while( | e | if let syn::GenericArgument::Type( _ ) = e { false } else { true } )
-      .skip( *r.start() )
-      .take( *r.end() - *r.start() + 1 )
+      .skip( range.first().try_into().unwrap() )
+      .take( range.len().try_into().unwrap() )
       .map( | e | if let syn::GenericArgument::Type( ty ) = e { ty } else { unreachable!( "Expects Type" ) } )
       .collect();
       return selected;
@@ -114,24 +128,6 @@ pub fn parameters_internal( ty : &syn::Type, r : ::core::ops::RangeInclusive< us
   }
   vec![ &ty ]
 }
-
-// /// Wrapper to implement trait Spanned for those structures for which it's not implemented.
-//
-// pub struct DataWrapped( pub syn::Data );
-// impl syn::spanned::Spanned for DataWrapped
-// {
-//   fn span( &self ) -> proc_macro2::Span
-//   {
-//     let DataWrapped( ref data ) = self;
-//     match data
-//     {
-//       syn::Data::Struct( syn::DataStruct { ref fields, .. } ) => fields.span(),
-//       syn::Data::Enum( syn::DataEnum { ref variants, .. } ) => variants.span(),
-//       syn::Data::Union( syn::DataUnion { ref fields, .. } ) => fields.span(),
-//       // _ => proc_macro2::Span::call_site(),
-//     }
-//   }
-// }
 
 pub use syn::spanned::Spanned;
 
@@ -158,7 +154,77 @@ impl Spanned2 for syn::Data
   }
 }
 
+//
+
+// impl< T : syn::spanned::Spanned > Spanned2 for T
+// {
+//   fn span2( &self ) -> proc_macro2::Span
+//   {
+//     self.span()
+//   }
+// }
+
+// use ::core::marker::PhantomData;
+
+#[ doc( hidden ) ]
+pub struct Data< 'a, T >( &'a T );
+
+#[ doc( hidden ) ]
+pub trait Span1
+{
+  fn act( self ) -> proc_macro2::Span;
+}
+
+impl< 'a, T > Span1
+for Data< 'a, T >
+where T : syn::spanned::Spanned,
+{
+  fn act( self ) -> proc_macro2::Span
+  {
+    self.0.span()
+  }
+}
+
+#[ doc( hidden ) ]
+pub trait Span2
+{
+  fn act( self ) -> proc_macro2::Span;
+}
+
+impl< 'a, T > Span2
+for Data< 'a, T >
+where T : Spanned2,
+{
+  fn act( self ) -> proc_macro2::Span
+  {
+    self.0.span2()
+  }
+}
+
+#[ doc( hidden ) ]
+pub fn _span_of< T : Sized >( src : &T ) -> Data< T >
+{
+  Data( src )
+}
+
+// fn span2_of< T : Sized >( src : &T )
+// {
+//   _span_of( src ).act()
+// }
+
 /// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
+
+#[ macro_export ]
+macro_rules! span_of
+{
+  ( $src : expr ) =>
+  {
+    $crate::_span_of( &$src ).act()
+  }
+}
+
+/// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
+/// Works only for items for which span is not implemented in [module::syn](https://docs.rs/syn/latest/syn/spanned/index.html).
 
 pub fn span_of< Src : Spanned2 >( src : &Src ) -> proc_macro2::Span
 {
