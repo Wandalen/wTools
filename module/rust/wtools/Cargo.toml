@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -19,7 +19,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust",
+  "/rust/impl/mod.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -70,19 +70,23 @@ trybuild = { version = "1.0.52", features = ["diff"] }
 maplit = "1.0.2"
 
 [dependencies]
-regex = "1.5.4"
-chrono = "0.4.19"
-paste = "1.0.5"
-anyhow = "1.0.48"
-former_derive = { path = "../former_derive", version = "~0" }
-former_runtime = { path = "../former_runtime", version = "~0" }
-inspect_type = { path = "../inspect_type", version = "~0", optional = true }
+# regex = "1.5.4"
+# chrono = "0.4.19"
+# paste = "1.0.5"
+# anyhow = "1.0.48"
+# former_derive = { path = "../former_derive", version = "~0" }
+# former_runtime = { path = "../former_runtime", version = "~0" }
+former = { path = "../former", version = "~0" }
+inspect_type = { path = "../inspect_type", version = "~0" }
 is_slice = { path = "../is_slice", version = "~0" }
 implements = { path = "../implements", version = "~0" }
 # instance_of = { path = "../instance_of", version = "~0" }
 # wtest = { path = "../wtest", version = "~0" }
 wtest_basic = { path = "../wtest_basic", version = "~0" }
+werror = { path = "../werror", version = "~0" }
+wproc_macro = { path = "../wproc_macro", version = "~0", optional = true }
 
 [features]
 wtools = []
-default = ["wtools"]
+proc_macro = [ "wproc_macro" ]
+default = [ "wtools" ]
