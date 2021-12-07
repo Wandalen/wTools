@@ -37,12 +37,12 @@ path = "rust/test/former/former.rs"
 # name = "current"
 # path = "sample/rust/former_trivial/src/main.rs"
 
+[dependencies]
+former_derive = { path = "../former_derive", version = "0.1.0" }
+former_runtime = { path = "../former_runtime", version = "0.1.0" }
+
 [dev-dependencies]
+anyhow = "1.0.47"
 trybuild = { version = "1.0.52", features = ["diff"] }
 maplit = "1.0.2"
 wtest_basic = { path = "../wtest_basic", version = "~0" }
-
-[dependencies]
-anyhow = "1.0.47"
-former_derive = { path = "../former_derive", version = "0.1.0" }
-former_runtime = { path = "../former_runtime", version = "0.1.0" }

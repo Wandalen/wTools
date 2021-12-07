@@ -1,7 +1,7 @@
 [package]
 
 name = "former_runtime"
-version = "0.1.6"
+version = "0.1.7"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -34,10 +34,10 @@ path = "rust/impl/former/runtime/mod.rs"
 name = "former_runtime_test"
 path = "rust/test/former/runtime.rs"
 
+[dependencies]
+# unzip-n = "~0.1"
+
 [dev-dependencies]
 wtest_basic = { path = "../wtest_basic", version = "~0" }
 maplit = "~1.0.2"
-
-[dependencies]
 anyhow = "~1.0"
-unzip-n = "~0.1"
