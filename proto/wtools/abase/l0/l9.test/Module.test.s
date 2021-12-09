@@ -5778,10 +5778,11 @@ function fileExportExternal( test )
 
 }
 
+fileExportExternal.timeOut = 120000;
 fileExportExternal.description =
 `
 - change of option verbosity change level of verbosity of the output
-`
+`;
 
 //
 
