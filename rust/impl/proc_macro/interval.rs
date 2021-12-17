@@ -1,14 +1,18 @@
-#![ warn( missing_docs ) ]
-
-// use crate::num::*;
+#![ allow( missing_docs ) ]
 
 /* xxx : qqq : for rust : move */
+/* xxx : qqq : for rust : implement trait IntervalAdapter for standard ranges */
 /* qqq : for rust : cover */
 
-pub trait Interval< T = isize >
+///
+/// Interface of interval.
+///
+/// Interval adapter is implemented for [core::ops::Range], [core::ops::RangeInclusive] as well as for [crate::Interval].
+///
+
+pub trait IntervalAdapter< T = isize >
 where
   T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
-  // < T as SignedOf >::Unsigned : std::ops::Sub< Output = < T as SignedOf >::Unsigned >,
   isize : Into< T >,
 {
   fn first( &self ) -> T;
@@ -18,9 +22,26 @@ where
     let one : T = 1.into();
     self.last() - self.first() + one
   }
+  fn closed( &self ) -> ( T, T )
+  {
+    ( self.first(), self.last() )
+  }
+  fn closed_open( &self ) -> ( T, T )
+  {
+    let one : T = 1.into();
+    ( self.first(), self.last() + one )
+  }
+  fn first_len( &self ) -> ( T, T )
+  {
+    ( self.first(), self.len() )
+  }
 }
 
-pub struct IntervalInclusive< T = isize >
+///
+/// Alternative implementation of interval. Both [core::ops::Range], [core::ops::RangeInclusive] are convertable to [crate::Interval]
+///
+
+pub struct Interval< T = isize >
 where
   T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
   isize : Into< T >,
@@ -29,7 +50,7 @@ where
   _last : T,
 }
 
-impl< T > IntervalInclusive< T >
+impl< T > Interval< T >
 where
   T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
   isize : Into< T >,
@@ -40,11 +61,10 @@ where
   }
 }
 
-impl< T > Interval< T >
-for IntervalInclusive< T >
+impl< T > IntervalAdapter< T >
+for Interval< T >
 where
   T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
-  // < T as SignedOf >::Unsigned : std::ops::Sub< Output = < T as SignedOf >::Unsigned >,
   isize : Into< T >,
 {
   fn first( &self ) -> T
@@ -58,7 +78,7 @@ where
 }
 
 impl< T > From< ::core::ops::Range< T > >
-for IntervalInclusive< T >
+for Interval< T >
 where
   T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
   isize : Into< T >,
@@ -71,7 +91,7 @@ where
 }
 
 impl< T > From< ::core::ops::RangeInclusive< T > >
-for IntervalInclusive< T >
+for Interval< T >
 where
   T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
   isize : Into< T >,

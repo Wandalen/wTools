@@ -48,7 +48,7 @@ macro_rules! tree_export_str
 
 /// Kind of container.
 
-/* qqq : for rust : add HashSet */
+/* xxx : qqq : for rust : add HashSet */
 #[derive( Debug, PartialEq, Copy, Clone )]
 pub enum ContainerKind
 {
@@ -129,7 +129,7 @@ pub fn type_rightmost( ty : &syn::Type ) -> Option< String >
   None
 }
 
-use crate::interval::Interval;
+pub use crate::interval::*;
 
 /// Return the specified number of parameters of the type.
 ///
@@ -151,7 +151,7 @@ use crate::interval::Interval;
 
 pub fn type_parameters< R >( ty : &syn::Type, range : R ) -> Vec< &syn::Type >
 where
-  R : std::convert::Into< crate::interval::IntervalInclusive >
+  R : std::convert::Into< crate::interval::Interval >
 {
   let range = range.into();
   if let syn::Type::Path( syn::TypePath{ path : syn::Path { ref segments, .. }, .. } ) = ty
@@ -178,95 +178,107 @@ where
   vec![ &ty ]
 }
 
-pub use syn::spanned::Spanned;
-
-/// Trait to implement method span() for those structures which [module::syn](https://docs.rs/syn/latest/syn/spanned/index.html) do not have it implemented.
-
-pub trait Spanned2
-{
-  /// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
-  fn span2( &self ) -> proc_macro2::Span;
-}
-
 //
 
-impl Spanned2 for syn::Data
-{
-  fn span2( &self ) -> proc_macro2::Span
-  {
-    match self
-    {
-      syn::Data::Struct( syn::DataStruct { ref fields, .. } ) => fields.span(),
-      syn::Data::Enum( syn::DataEnum { ref variants, .. } ) => variants.span(),
-      syn::Data::Union( syn::DataUnion { ref fields, .. } ) => fields.span(),
-    }
-  }
-}
-
+// pub use syn::spanned::Spanned;
 //
-
-#[ doc( hidden ) ]
-pub struct Data< 'a, T >( &'a T );
-
-#[ doc( hidden ) ]
-pub trait Span1
-{
-  fn act( self ) -> proc_macro2::Span;
-}
-
-impl< 'a, T > Span1
-for Data< 'a, T >
-where T : syn::spanned::Spanned,
-{
-  fn act( self ) -> proc_macro2::Span
-  {
-    self.0.span()
-  }
-}
-
-#[ doc( hidden ) ]
-pub trait Span2
-{
-  fn act( self ) -> proc_macro2::Span;
-}
-
-impl< 'a, T > Span2
-for Data< 'a, T >
-where T : Spanned2,
-{
-  fn act( self ) -> proc_macro2::Span
-  {
-    self.0.span2()
-  }
-}
-
-#[ doc( hidden ) ]
-pub fn _span_of< T : Sized >( src : &T ) -> Data< T >
-{
-  Data( src )
-}
-
-// fn span2_of< T : Sized >( src : &T )
+// /// Trait to implement method span() for those structures which [module::syn](https://docs.rs/syn/latest/syn/spanned/index.html) do not have it implemented.
+//
+// pub trait Spanned2
 // {
-//   _span_of( src ).act()
+//   /// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
+//   fn span2( &self ) -> proc_macro2::Span;
 // }
-
-/// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
-
-#[ macro_export ]
-macro_rules! span_of
-{
-  ( $src : expr ) =>
-  {
-    $crate::_span_of( &$src ).act()
-  }
-}
-
-/// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
-///
-/// Works only for items for which span is not implemented in [module::syn](https://docs.rs/syn/latest/syn/spanned/index.html). For other use macro [`span_of!`](span_of!).
-
-pub fn span_of< Src : Spanned2 >( src : &Src ) -> proc_macro2::Span
-{
-  src.span2()
-}
+//
+// //
+//
+// impl Spanned2 for syn::Data
+// {
+//   fn span2( &self ) -> proc_macro2::Span
+//   {
+//     // data_fields_of( &self ).span()
+//     match self
+//     {
+//       syn::Data::Struct( syn::DataStruct { ref fields, .. } ) => fields.span(),
+//       syn::Data::Enum( syn::DataEnum { ref variants, .. } ) => variants.span(),
+//       syn::Data::Union( syn::DataUnion { ref fields, .. } ) => fields.span(),
+//     }
+//   }
+// }
+//
+// impl< T : Spanned2 > Spanned2 for &T
+// {
+//   fn span2( &self ) -> proc_macro2::Span
+//   {
+//     ( *self ).span2()
+//   }
+// }
+//
+// //
+//
+// #[ doc( hidden ) ]
+// pub struct Data< 'a, T >( &'a T );
+//
+// #[ doc( hidden ) ]
+// pub trait Span1
+// {
+//   fn act( self ) -> proc_macro2::Span;
+// }
+//
+// impl< 'a, T > Span1
+// for Data< 'a, T >
+// where T : syn::spanned::Spanned,
+// {
+//   fn act( self ) -> proc_macro2::Span
+//   {
+//     self.0.span()
+//   }
+// }
+//
+//
+// #[ doc( hidden ) ]
+// pub trait Span2
+// {
+//   fn act( self ) -> proc_macro2::Span;
+// }
+//
+// impl< 'a, T > Span2
+// for Data< 'a, T >
+// where T : Spanned2,
+// {
+//   fn act( self ) -> proc_macro2::Span
+//   {
+//     self.0.span2()
+//   }
+// }
+//
+// #[ doc( hidden ) ]
+// pub fn _span_of< T : Sized >( src : &T ) -> Data< T >
+// {
+//   Data( src )
+// }
+//
+// // fn span2_of< T : Sized >( src : &T )
+// // {
+// //   _span_of( src ).act()
+// // }
+//
+// /// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
+//
+// #[ macro_export ]
+// macro_rules! span_of
+// {
+//   ( $src : expr ) =>
+//   {
+//     $crate::_span_of( &$src ).act()
+//   }
+// }
+//
+// /// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
+// ///
+// /// Works only for items for which span is not implemented in [module::syn](https://docs.rs/syn/latest/syn/spanned/index.html). For other use macro [`span_of!`](span_of!).
+//
+// pub fn span_of< Src : Spanned2 >( src : &Src ) -> proc_macro2::Span
+// {
+//   src.span2()
+// }

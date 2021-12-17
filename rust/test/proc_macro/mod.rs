@@ -186,84 +186,92 @@ fn _type_parameters_basic()
 
 //
 
-fn _span_of_basic()
-{
-
-  // use proc_macro2::Span;
-  use wproc_macro::Span2;
-  use wproc_macro::Span1;
-
-  // test.case( "core::option::Option< i8, i16, i32, i64 >" );
-  let code = quote!
-  (
-    #[derive( Debug, PartialEq )]
-    pub struct Struct1
-    {
-      pub int_1 : i32,
-    }
-  );
-  let ast = syn::parse2::< syn::DeriveInput >( code ).unwrap();
-  // TheModule::tree_print!( ast );
-
-  let got = TheModule::_span_of( &ast.data ).act();
-  print( got );
-  let got = TheModule::span_of!( ast.data );
-  print( got );
-
-  let code = quote!( core::option::Option< i8, i16, i32, i64 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::_span_of( &tree_type ).act();
-  print( got );
-  let got = TheModule::span_of!( tree_type );
-  print( got );
-
-  assert_eq!( true, true );
-
-  fn print( src : proc_macro2::Span )
-  {
-    // println!( "span : {:?} {:?} {:?}", src, src.start(), src.end() );
-    println!( "span : {:?}", src );
-  }
-}
-
+// fn _span_of_basic()
+// {
 //
-
-fn _span_of_with_use()
-{
-
-  use wproc_macro::*;
-
-  // test.case( "core::option::Option< i8, i16, i32, i64 >" );
-  let code = quote!
-  (
-    #[derive( Debug, PartialEq )]
-    pub struct Struct1
-    {
-      pub int_1 : i32,
-    }
-  );
-  let ast = syn::parse2::< syn::DeriveInput >( code ).unwrap();
-
-  let got = TheModule::_span_of( &ast.data ).act();
-  print( got );
-  let got = TheModule::span_of!( ast.data );
-  print( got );
-
-  let code = quote!( core::option::Option< i8, i16, i32, i64 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::_span_of( &tree_type ).act();
-  print( got );
-  let got = TheModule::span_of!( tree_type );
-  print( got );
-
-  assert_eq!( true, true );
-
-  fn print( src : proc_macro2::Span )
-  {
-    // println!( "span : {:?} {:?} {:?}", src, src.start(), src.end() );
-    println!( "span : {:?}", src );
-  }
-}
+//   // use proc_macro2::Span;
+//   use wproc_macro::Span2;
+//   use wproc_macro::Span1;
+//
+//   // test.case( "core::option::Option< i8, i16, i32, i64 >" );
+//   let code = quote!
+//   (
+//     #[derive( Debug, PartialEq )]
+//     pub struct Struct1
+//     {
+//       pub int_1 : i32,
+//     }
+//   );
+//   let ast = syn::parse2::< syn::DeriveInput >( code ).unwrap();
+//   // TheModule::tree_print!( ast );
+//
+//   let got = TheModule::_span_of( &ast.data ).act();
+//   print( got );
+//   let got = TheModule::span_of!( ast.data );
+//   print( got );
+//   let got = TheModule::span_of!( &ast.data );
+//   print( got );
+//   let got = TheModule::span_of!( &&ast.data );
+//   print( got );
+//
+//   let code = quote!( core::option::Option< i8, i16, i32, i64 > );
+//   let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+//   let got = TheModule::_span_of( &tree_type ).act();
+//   print( got );
+//   let got = TheModule::span_of!( tree_type );
+//   print( got );
+//   let got = TheModule::span_of!( &tree_type );
+//   print( got );
+//   let got = TheModule::span_of!( &&tree_type );
+//   print( got );
+//
+//   assert_eq!( true, true );
+//
+//   fn print( src : proc_macro2::Span )
+//   {
+//     // println!( "span : {:?} {:?} {:?}", src, src.start(), src.end() );
+//     println!( "span : {:?}", src );
+//   }
+// }
+//
+// //
+//
+// fn _span_of_with_use()
+// {
+//
+//   use wproc_macro::*;
+//
+//   // test.case( "core::option::Option< i8, i16, i32, i64 >" );
+//   let code = quote!
+//   (
+//     #[derive( Debug, PartialEq )]
+//     pub struct Struct1
+//     {
+//       pub int_1 : i32,
+//     }
+//   );
+//   let ast = syn::parse2::< syn::DeriveInput >( code ).unwrap();
+//
+//   let got = TheModule::_span_of( &ast.data ).act();
+//   print( got );
+//   let got = TheModule::span_of!( ast.data );
+//   print( got );
+//
+//   let code = quote!( core::option::Option< i8, i16, i32, i64 > );
+//   let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+//   let got = TheModule::_span_of( &tree_type ).act();
+//   print( got );
+//   let got = TheModule::span_of!( tree_type );
+//   print( got );
+//
+//   assert_eq!( true, true );
+//
+//   fn print( src : proc_macro2::Span )
+//   {
+//     // println!( "span : {:?} {:?} {:?}", src, src.start(), src.end() );
+//     println!( "span : {:?}", src );
+//   }
+// }
 
 //
 
@@ -273,6 +281,6 @@ test_suite!
   container_kind_basic,
   type_rightmost_basic,
   type_parameters_basic,
-  span_of_basic,
-  span_of_with_use,
+  // span_of_basic,
+  // span_of_with_use,
 }
