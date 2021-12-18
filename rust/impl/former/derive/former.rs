@@ -110,7 +110,7 @@ fn field_optional_map( field : &FormerField ) -> syn::Field
   syn::Field
   {
     attrs : vec![],
-    vis : syn::Visibility::Inherited,
+    vis : syn::Visibility::Public( syn::VisPublic { pub_token : syn::Token!( pub ) } ),
     ident,
     colon_token,
     ty : ty2,
@@ -230,7 +230,8 @@ fn field_name_map( field : &FormerField ) -> syn::Ident
 #[inline]
 fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> Result< syn::Stmt >
 {
-  let ident = field.ident.clone();
+  // let ident = field.ident.clone();
+  let ident = &field.ident;
 
   let tokens = match &field.type_container_kind
   {
@@ -359,7 +360,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 
   let former_fields : Vec< _ > = process_results( former_fields, | iter | iter.collect() )?;
 
-  let( fields_none, fields_optional, fields_form, fields_names, fields_setter )
+  let ( fields_none, fields_optional, fields_form, fields_names, fields_setter )
   : ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
   = former_fields.iter().map( | former_field |
   {(
@@ -370,6 +371,30 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     field_setter_map( &former_field, &former_name_ident ),
   )}).multiunzip();
 
+  let doc_example1 =
+r#"
+#[derive( Former )]
+pub struct Struct1
+{
+  #[former( default = 31 )]
+  field1 : i32,
+}
+"#;
+
+  let doc = format!
+  (
+r#" Object to form [{}]. If field's values is not set then default value of the field is set.
+
+For specifing custom default value use attribute `default`. For example:
+```
+{}
+```
+"#,
+    name_ident, doc_example1
+  );
+
+  // println!( "doc : {}", doc );
+
   let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
   let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
 
@@ -379,7 +404,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     impl #generics #name_ident #generics
     {
       #[inline]
-      pub fn former() -> #former_name_ident
+      pub fn former() -> #former_name_ident #generics
       {
         #former_name_ident
         {
@@ -388,7 +413,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       }
     }
 
-    /* xxx : qqq : pub is optional here */
+    #[doc = #doc]
     #[derive( Debug )]
     pub struct #former_name_ident #generics
     {
@@ -398,7 +423,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     impl #generics #former_name_ident #generics
     {
       #[inline]
-      pub fn form( mut self ) -> #name_ident
+      pub fn form( mut self ) -> #name_ident #generics
       {
         #( #fields_form )*
         #name_ident

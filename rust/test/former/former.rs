@@ -9,4 +9,4 @@
 //   // t.pass( "rust/test/former/test/basic_former.rs" );
 // }
 
-include!( "./test/former.rs" );
+include!( "./all/mod.rs" );

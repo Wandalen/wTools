@@ -15,4 +15,4 @@ pub struct Struct1
 
 //
 
-include!( "basic_test.rs" );
+include!( "basic_only_test.rs" );

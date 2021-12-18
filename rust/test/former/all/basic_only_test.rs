@@ -1,10 +1,4 @@
 
-// #[macro_use]
-// extern crate maplit;
-// extern crate former_runtime;
-// use anyhow;
-// use former::anyhow;
-
 //
 
 fn test_int() -> anyhow::Result< () >
@@ -291,7 +285,7 @@ fn test_complex() -> anyhow::Result< () >
   .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
   .string_optional_1( "dir1" )
   .form();
-  dbg!( &command );
+  // dbg!( &command );
 
   let expected = Struct1
   {
