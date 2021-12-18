@@ -3,19 +3,14 @@
 
 use quote::quote;
 use syn::{ DeriveInput };
-use itertools::Itertools;
-// use unzip_n::unzip_n;
+use itertools::{ MultiUnzip, process_results };
+// use itertools::{ Itertools };
+// use itertools::*;
 
-// use crate::wproc_macro;
-// use wproc_macro::*;
+use wproc_macro::*;
 use syn::spanned::*;
 
-type Result< T > = std::result::Result< T, syn::Error >;
-
-// unzip_n!( 0 );
-// unzip_n!( 3 );
-// unzip_n!( 4 );
-// unzip_n!( 5 );
+pub type Result< T > = std::result::Result< T, syn::Error >;
 
 /* xxx :
 - remove unwraps
@@ -30,7 +25,7 @@ struct FormerField< 'a >
 {
   pub attrs : &'a Vec< syn::Attribute >,
   pub vis : &'a syn::Visibility,
-  pub ident : &'a Option< syn::Ident >,
+  pub ident : &'a Option< syn::Ident >, /* xxx : make it nonoptional? */
   pub colon_token : &'a Option< syn::token::Colon >,
   pub ty : &'a syn::Type,
   pub non_optional_ty : &'a syn::Type,
@@ -125,13 +120,44 @@ fn field_optional_map( field : &FormerField ) -> syn::Field
 //
 
 #[inline]
-fn field_form_map( field : &FormerField ) -> syn::Stmt
+fn field_form_map( field : &FormerField ) -> Result< syn::Stmt >
 {
   let ident = field.ident;
   let ty = field.ty;
 
+  let mut default = None;
+  if field.attrs.len() == 1
+  {
+    let ( key, val, _meta ) = attr_pair_single
+    (
+      field.attrs.first().ok_or_else( || syn_err!( field.ident.as_ref().unwrap(), "No attr" ) )?
+    )?;
+    if key != "default".to_string()
+    {
+      return Err( syn_err!( field.ident.as_ref().unwrap(), format!( "Unknown attribute key {}", key ) ) ); /* xxx : negative test? */
+    }
+    default = Some( val );
+  }
+
   let tokens = if field.is_option
   {
+
+    let _else = if default == None
+    {
+      quote!
+      {
+        ::core::option::Option::None
+      }
+    }
+    else
+    {
+      let default_val = default.unwrap();
+      quote!
+      {
+        ::core::option::Option::Some( ( #default_val ).into() )
+      }
+    };
+
     quote!
     {
       let #ident = if self.#ident.is_some()
@@ -140,12 +166,30 @@ fn field_form_map( field : &FormerField ) -> syn::Stmt
       }
       else
       {
-        ::core::option::Option::None
+        #_else
       };
     }
+
   }
   else
   {
+
+    let _else = if default == None
+    {
+      quote!
+      {
+        let val : #ty = ::core::default::Default::default();
+      }
+    }
+    else
+    {
+      let default_val = default.unwrap();
+      quote!
+      {
+        let val : #ty = ( #default_val ).into();
+      }
+    };
+
     quote!
     {
       let #ident = if self.#ident.is_some()
@@ -154,14 +198,15 @@ fn field_form_map( field : &FormerField ) -> syn::Stmt
       }
       else
       {
-        let val : #ty = ::core::default::Default::default();
+        #_else
         val
       };
     }
+
   };
 
   let stmt : syn::Stmt = syn::parse2( tokens ).unwrap();
-  stmt
+  Ok( stmt )
 }
 
 //
@@ -183,7 +228,7 @@ fn field_name_map( field : &FormerField ) -> syn::Ident
 //
 
 #[inline]
-fn field_setter_map( field : &FormerField, former_name : &syn::Ident ) -> Result< syn::Stmt >
+fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> Result< syn::Stmt >
 {
   let ident = field.ident.clone();
 
@@ -215,12 +260,12 @@ fn field_setter_map( field : &FormerField, former_name : &syn::Ident ) -> Result
         <
           #internal_ty,
           #ty,
-          #former_name,
-          impl Fn( &mut #former_name, ::core::option::Option< #ty > )
+          #former_name_ident,
+          impl Fn( &mut #former_name_ident, ::core::option::Option< #ty > )
         >
         {
           let container = self.#ident.take();
-          let on_end = | former : &mut #former_name, container : ::core::option::Option< #ty > |
+          let on_end = | former : &mut #former_name_ident, container : ::core::option::Option< #ty > |
           {
             former.#ident = container;
           };
@@ -240,12 +285,12 @@ fn field_setter_map( field : &FormerField, former_name : &syn::Ident ) -> Result
           #k_ty,
           #e_ty,
           #ty,
-          #former_name,
-          impl Fn( &mut #former_name, ::core::option::Option< #ty > )
+          #former_name_ident,
+          impl Fn( &mut #former_name_ident, ::core::option::Option< #ty > )
         >
         {
           let container = self.hashmap_strings_1.take();
-          let on_end = | former : &mut #former_name, container : ::core::option::Option< #ty > |
+          let on_end = | former : &mut #former_name_ident, container : ::core::option::Option< #ty > |
           {
             former.hashmap_strings_1 = container;
           };
@@ -281,15 +326,21 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   };
 
   let name_ident = &ast.ident;
+  let generics = &ast.generics;
   let former_name = format!( "{}Former", name_ident );
-  let former_ident = syn::Ident::new( &former_name, name_ident.span() );
-  let fields = if let syn::Data::Struct( syn::DataStruct { fields : syn::Fields::Named( syn::FieldsNamed { ref named, .. } ), .. } ) = ast.data
+  let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
+
+  let fields = match ast.data
   {
-    named
-  }
-  else
-  {
-    return Err( syn::Error::new( ast.span(), format!( "Expects struct, but found :\n{:#}", quote!{ #ast } ) ) );
+    syn::Data::Struct( ref data_struct ) => match data_struct.fields
+    {
+      syn::Fields::Named( ref fields_named ) =>
+      {
+        &fields_named.named
+      },
+      _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Fields::Named( ref fields_named )" ) ),
+    },
+    _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Data::Struct( ref data_struct )" ) ),
   };
 
   let former_fields : Vec< Result< FormerField > > = fields.iter().map( | field |
@@ -306,11 +357,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     Ok( former_field )
   }).collect();
 
-  if let Some( Err( err ) ) = former_fields.iter().find( | e | e.is_err() )
-  {
-    return Err( err.clone() );
-  }
-  let former_fields : Vec< FormerField > = former_fields.into_iter().map( | e | e.unwrap() ).collect();
+  let former_fields : Vec< _ > = process_results( former_fields, | iter | iter.collect() )?;
 
   let( fields_none, fields_optional, fields_form, fields_names, fields_setter )
   : ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
@@ -320,38 +367,35 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     field_optional_map( &former_field ),
     field_form_map( &former_field ),
     field_name_map( &former_field ),
-    field_setter_map( &former_field, &former_ident ),
+    field_setter_map( &former_field, &former_name_ident ),
   )}).multiunzip();
 
-  if let Some( Err( err ) ) = fields_setter.iter().find( | e | e.is_err() )
-  {
-    return Err( err.clone() );
-  }
-  let fields_setter = fields_setter.into_iter().map( | e | e.unwrap() ).collect::< Vec< syn::Stmt > >();
+  let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
+  let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
 
   let result = quote!
   {
 
-    impl #name_ident
+    impl #generics #name_ident #generics
     {
       #[inline]
-      pub fn former() -> #former_ident
+      pub fn former() -> #former_name_ident
       {
-        #former_ident
+        #former_name_ident
         {
           #( #fields_none, )*
         }
       }
     }
 
-    /* qqq : pub is optional here */
+    /* xxx : qqq : pub is optional here */
     #[derive( Debug )]
-    pub struct #former_ident
+    pub struct #former_name_ident #generics
     {
       #( #fields_optional, )*
     }
 
-    impl #former_ident
+    impl #generics #former_name_ident #generics
     {
       #[inline]
       pub fn form( mut self ) -> #name_ident
@@ -370,6 +414,5 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   // println!( "{:#?}", ast );
   // println!( "{:#?}", result );
   // let result = proc_macro2::TokenStream::new();
-  // result.into()
   Ok( result )
 }

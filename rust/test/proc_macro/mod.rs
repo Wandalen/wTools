@@ -186,92 +186,62 @@ fn _type_parameters_basic()
 
 //
 
-// fn _span_of_basic()
-// {
-//
-//   // use proc_macro2::Span;
-//   use wproc_macro::Span2;
-//   use wproc_macro::Span1;
-//
-//   // test.case( "core::option::Option< i8, i16, i32, i64 >" );
-//   let code = quote!
-//   (
-//     #[derive( Debug, PartialEq )]
-//     pub struct Struct1
-//     {
-//       pub int_1 : i32,
-//     }
-//   );
-//   let ast = syn::parse2::< syn::DeriveInput >( code ).unwrap();
-//   // TheModule::tree_print!( ast );
-//
-//   let got = TheModule::_span_of( &ast.data ).act();
-//   print( got );
-//   let got = TheModule::span_of!( ast.data );
-//   print( got );
-//   let got = TheModule::span_of!( &ast.data );
-//   print( got );
-//   let got = TheModule::span_of!( &&ast.data );
-//   print( got );
-//
-//   let code = quote!( core::option::Option< i8, i16, i32, i64 > );
-//   let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-//   let got = TheModule::_span_of( &tree_type ).act();
-//   print( got );
-//   let got = TheModule::span_of!( tree_type );
-//   print( got );
-//   let got = TheModule::span_of!( &tree_type );
-//   print( got );
-//   let got = TheModule::span_of!( &&tree_type );
-//   print( got );
-//
-//   assert_eq!( true, true );
-//
-//   fn print( src : proc_macro2::Span )
-//   {
-//     // println!( "span : {:?} {:?} {:?}", src, src.start(), src.end() );
-//     println!( "span : {:?}", src );
-//   }
-// }
-//
-// //
-//
-// fn _span_of_with_use()
-// {
-//
-//   use wproc_macro::*;
-//
-//   // test.case( "core::option::Option< i8, i16, i32, i64 >" );
-//   let code = quote!
-//   (
-//     #[derive( Debug, PartialEq )]
-//     pub struct Struct1
-//     {
-//       pub int_1 : i32,
-//     }
-//   );
-//   let ast = syn::parse2::< syn::DeriveInput >( code ).unwrap();
-//
-//   let got = TheModule::_span_of( &ast.data ).act();
-//   print( got );
-//   let got = TheModule::span_of!( ast.data );
-//   print( got );
-//
-//   let code = quote!( core::option::Option< i8, i16, i32, i64 > );
-//   let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-//   let got = TheModule::_span_of( &tree_type ).act();
-//   print( got );
-//   let got = TheModule::span_of!( tree_type );
-//   print( got );
-//
-//   assert_eq!( true, true );
-//
-//   fn print( src : proc_macro2::Span )
-//   {
-//     // println!( "span : {:?} {:?} {:?}", src, src.start(), src.end() );
-//     println!( "span : {:?}", src );
-//   }
-// }
+// fn attr_pair_single( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ), syn::Error >
+
+#[test]
+fn _attr_pair_single_basic() -> Result< (), syn::Error >
+{
+  use syn::spanned::Spanned;
+
+  // test.case( "basic" );
+  let input = quote!
+  {
+    #[derive( Former )]
+    pub struct Struct1
+    {
+      #[former( default = 31 )]
+      pub int_1 : i32,
+    }
+  };
+
+  let ast = match syn::parse2::< syn::DeriveInput >( input )
+  {
+    Ok( syntax_tree ) => syntax_tree,
+    Err( err ) => return Err( err ),
+  };
+
+  let fields = match ast.data
+  {
+    syn::Data::Struct( ref data_struct ) => match data_struct.fields
+    {
+      syn::Fields::Named( ref fields_named ) =>
+      {
+        &fields_named.named
+      },
+      _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Fields::Named( ref fields_named )" ) ),
+    },
+    _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Data::Struct( ref data_struct )" ) ),
+  };
+
+  let attr = fields.first().ok_or_else( || err( "No field" ) )?.attrs.first().ok_or_else( || err( "No attr" ) )?;
+
+  let ( key, val, meta ) = TheModule::attr_pair_single( &attr )?;
+  assert_eq!( key, "default".to_string() );
+  assert_eq!( quote!( #val ).to_string(), "31".to_string() );
+  let is = match meta
+  {
+    syn::Meta::List( _ ) => true,
+    _ => false,
+  };
+  assert!( is );
+
+  return Ok( () );
+
+  fn err( src : &str ) -> syn::Error
+  {
+    syn::Error::new( proc_macro2::Span::call_site(), src )
+  }
+}
 
 //
 
@@ -281,6 +251,5 @@ test_suite!
   container_kind_basic,
   type_rightmost_basic,
   type_parameters_basic,
-  // span_of_basic,
-  // span_of_with_use,
+  // attr_pair_single_basic -> Result< (), syn::Error >,
 }

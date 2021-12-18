@@ -7,6 +7,7 @@
 mod num;
 mod interval;
 
+///
 /// Macro for diagnostics purpose to print both syntax tree and source code behind it.
 ///
 /// # Sample
@@ -18,6 +19,7 @@ mod interval;
 /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
 /// tree_print!( tree_type );
 /// ```
+///
 
 #[ macro_export ]
 macro_rules! tree_print
@@ -34,7 +36,9 @@ macro_rules! tree_print
   }};
 }
 
+///
 /// Macro for diagnostics purpose to export both syntax tree and source code behind it into string.
+///
 
 #[ macro_export ]
 macro_rules! tree_export_str
@@ -44,6 +48,32 @@ macro_rules! tree_export_str
     let src2 = &$src;
     format!( "{} : {} :\n{:#?}", stringify!( $src ), quote!{ #src2 }, $src )
   }};
+}
+
+///
+/// Macro to generate syn error either with span of a syntax tree element or with default one `proc_macro2::Span::call_site()`.
+///
+/// # Sample
+/// ```
+/// # use wproc_macro::*;
+/// syn_err!( "No attr" );
+/// # ()
+/// ```
+///
+
+#[ macro_export ]
+macro_rules! syn_err
+{
+
+  ( $msg : expr ) =>
+  {
+    syn::Error::new( proc_macro2::Span::call_site(), $msg )
+  };
+  ( $span : expr, $msg : expr ) =>
+  {
+    syn::Error::new( ( $span ).span(), $msg )
+  };
+
 }
 
 /// Kind of container.
@@ -178,8 +208,56 @@ where
   vec![ &ty ]
 }
 
+///
+/// For attribute like `#[former( default = 31 )]` return key `default` and value `31`,
+/// as well as syn::Meta as the last element of result tuple.
+///
+/// # Sample
+/// ``` ignore
+/// let ( key, val, meta ) = attr_pair_single( &attr )?;
+/// ```
+
+pub fn attr_pair_single( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ), syn::Error >
+{
+  use syn::spanned::Spanned;
+  let meta = attr.parse_meta()?;
+
+  let ( key, val );
+  match meta
+  {
+    syn::Meta::List( ref meta_list ) =>
+    match meta_list.nested.first()
+    {
+      Some( nested_meta ) => match nested_meta
+      {
+        syn::NestedMeta::Meta( meta2 ) => match meta2
+        {
+          syn::Meta::NameValue( name_value ) => // match &name_value.lit
+          {
+            if meta_list.nested.len() != 1
+            {
+              return Err( syn::Error::new( attr.span(), format!( "Expected single element of the list, but got {}", meta_list.nested.len() ) ) );
+            }
+            key = name_value.path.get_ident().unwrap().to_string();
+            val = name_value.lit.clone();
+          },
+          _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::NameValue( name_value )" ) ),
+        },
+        _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::NestedMeta::Meta( meta2 )" ) ),
+      },
+      _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected Some( nested_meta )" ) ),
+    },
+    _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
+  };
+
+  Ok( ( key, val, meta ) )
+}
+
 //
 
+// don't delete!
+// good example of overloading to reuse
+//
 // pub use syn::spanned::Spanned;
 //
 // /// Trait to implement method span() for those structures which [module::syn](https://docs.rs/syn/latest/syn/spanned/index.html) do not have it implemented.
