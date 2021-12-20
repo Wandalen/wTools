@@ -769,7 +769,7 @@ module:
           prefixPath: ../proto
         mandatory: 1
         dstRewritingOnlyPreserving: 1
-        linkingAction: hardLinkMaybe
+        linking: hardLinkMaybe
         criterion:
           generated: 1
           content: proto
