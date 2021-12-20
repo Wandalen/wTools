@@ -872,6 +872,8 @@ function fromLeft( test )
   }
 }
 
+fromLeft.timeOut = 10000;
+
 //
 
 function fromRight( test )
@@ -1030,6 +1032,8 @@ function fromRight( test )
     test.shouldThrowErrorSync( () => _[ namespace ].fromRight( [ 2, 'abc' ] ) );
   }
 }
+
+fromRight.timeOut = 10000;
 
 //
 

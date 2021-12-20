@@ -42,7 +42,7 @@ function secondaryNamespaceOfTesting( test )
       var exp =
 `
 {- ModuleFile ${ _.module.resolve( 'wTesting' ) } -}
-  {- ModuleFile ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/atop/testing/entry/Main.s' ) } -}
+  {- ModuleFile ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/atop/testing/entry/Basic.s' ) } -}
     {- ModuleFile ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/atop/testing/include/Top.s' ) } -}
       {- ModuleFile ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/abase/l0/l0/l0/Global.s' ) } -}
       {- ModuleFile ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/atop/testing/include/Base.s' ) } -}
@@ -106,10 +106,10 @@ function modulingLogistic( test )
   test.identical( _.entity.lengthOf( module.alias ), 2 );
   var exp = new Set
   ([
-    'proto/node_modules/wTesting',
-    'proto/wtools/atop/testing/entry/Main.s',
+    'proto/wtools/atop/testing/entry/Basic.s',
     'proto/wtools/atop/testing/include/Top.s',
     'proto/wtools/abase/l0/l0/l0/Global.s',
+    'proto/node_modules/wTesting',
   ]);
   var files = __.select( [ ... module.files.values() ], '*/sourcePath' );
   _.assert( files[ 0 ] !== undefined );
@@ -189,7 +189,7 @@ moduleFile.downFile.module null
 module.is( moduleFile.module ) true
 filesOfTesting
   ${ __.path.join( _.module.resolve( 'wTesting' ), '.' ) }
-  ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/atop/testing/entry/Main.s' ) }
+  ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/atop/testing/entry/Basic.s' ) }
   ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/atop/testing/include/Top.s' ) }
   ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/abase/l0/l0/l0/Global.s' ) }
 lengthOf( _modulesToPredeclare ) 0
