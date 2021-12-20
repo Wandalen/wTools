@@ -6,6 +6,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 
 
+
 ### JavaScript tools
 
 To work with JS module visit [the JS main page](./module/js/wTools/Readme.md).
