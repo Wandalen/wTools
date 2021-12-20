@@ -6178,10 +6178,14 @@ requireElectronProblem.routineTimeOut = 120000;
 
 function requireGulpImageMin( test )
 {
-  let a = test.assetFor( false );
-  let program = a.program({ entry : program1, filePath : a.abs( 'program.js' ) });
+  if( Config.interpreter === 'njs' )
+  if( _.number.from( process.versions.node.substring( 0, 2 ) ) < 14 )
+  return test.true( true );
 
-  let packageJson =
+  const a = test.assetFor( false );
+  const program = a.program({ entry : program1, filePath : a.abs( 'program.js' ) });
+
+  const packageJson =
   {
     name : 'test',
     version : '0.0.1',
@@ -6214,6 +6218,7 @@ function requireGulpImageMin( test )
   {
     const _ = require( toolsPath );
     // var imagemin = require( 'gulp-imagemin' );
+    debugger;
     var imagemin = import( 'gulp-imagemin' );
     imagemin.then( function( m )
     {
