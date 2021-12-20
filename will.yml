@@ -124,6 +124,7 @@ path:
       tests: only.tests
   out.release.min:
     path: '{path::out}/release.min'
+  npm.publish: 'module/js/{about::name}'
   npm.proto.entry:
     - proto/wtools/abase/l1/Include.s
     - proto/node_modules/wTools
