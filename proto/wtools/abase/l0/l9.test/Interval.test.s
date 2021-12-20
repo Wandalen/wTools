@@ -1033,6 +1033,8 @@ function fromRight( test )
   }
 }
 
+fromRight.timeOut = 10000;
+
 //
 
 function firstGet( test )
