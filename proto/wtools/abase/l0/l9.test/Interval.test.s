@@ -872,6 +872,8 @@ function fromLeft( test )
   }
 }
 
+fromLeft.timeOut = 10000;
+
 //
 
 function fromRight( test )
