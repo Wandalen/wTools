@@ -1,6 +1,6 @@
 [package]
 name = "wproc_macro"
-version = "0.0.4"
+version = "0.0.5"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -40,6 +40,7 @@ path = "sample/rust/wproc_macro_trivial/src/main.rs"
 [dependencies]
 proc-macro2 = { version = "~1.0" }
 syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }
+# inspect_type = { path = "../inspect_type", version = "~0" }
 # werror = { path = "../werror", version = "~0.0" }
 
 [dev-dependencies]

@@ -1,0 +1,6 @@
+error: Unknown attribute key : defaultx
+       Did you mean `default`
+ --> ../../../rust/test/former/all/bad_attr.rs:8:3
+  |
+8 |   int_1 : i32,
+  |   ^^^^^

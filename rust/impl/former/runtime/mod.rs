@@ -6,5 +6,10 @@
 //! Not intended to be used without derive. This module and derive is aggregate in module::former is [here](https://github.com/Wandalen/wTools/tree/master/module/rust/former).
 //!
 
-mod runtime;
-pub use runtime::*;
+mod vector;
+mod hash_map;
+mod hash_set;
+
+pub use vector::*;
+pub use hash_map::*;
+pub use hash_set::*;

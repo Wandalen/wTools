@@ -1,0 +1,6 @@
+error: Expects at least one parameter here:
+         Vec < >
+  --> ../../../rust/test/former/all/vector_without_parameter.rs:11:24
+   |
+11 |   pub string_slice_1 : Vec<>,
+   |                        ^^^^^

@@ -9,5 +9,4 @@
 //   // t.pass( "rust/test/former/test/basic_manual.rs" );
 // }
 
-include!( "./all/basic_manual.rs" );
-include!( "./all/string_slice_manual.rs" );
+include!( "./all/manual.rs" );

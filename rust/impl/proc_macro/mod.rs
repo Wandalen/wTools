@@ -1,4 +1,5 @@
 #![ warn( missing_docs ) ]
+// #![ feature( type_name_of_val ) ]
 
 //!
 //! Tools for writing procedural macroses.
@@ -69,16 +70,29 @@ macro_rules! syn_err
   {
     syn::Error::new( proc_macro2::Span::call_site(), $msg )
   };
+  ( _, $msg : expr ) =>
+  {
+    syn::Error::new( proc_macro2::Span::call_site(), $msg )
+  };
   ( $span : expr, $msg : expr ) =>
   {
-    syn::Error::new( ( $span ).span(), $msg )
+    // syn::Error::new( ( $span ).span(), $msg )
+    syn::Error::new( syn::spanned::Spanned::span( &( $span ) ), $msg )
+  };
+  ( $span : expr, $msg : expr, $( $arg : expr ),+ ) =>
+  {
+    // syn::Error::new( ( $span ).span(), format!( $msg, $( $arg ),+ ) )
+    syn::Error::new( syn::spanned::Spanned::span( &( $span ) ), format!( $msg, $( $arg ),+ ) )
+  };
+  ( _, $msg : expr, $( $arg : expr ),+ ) =>
+  {
+    syn::Error::new( proc_macro2::Span::call_site(), format!( $msg, $( $arg ),+ ) )
   };
 
 }
 
 /// Kind of container.
 
-/* xxx : qqq : for rust : add HashSet */
 #[derive( Debug, PartialEq, Copy, Clone )]
 pub enum ContainerKind
 {
@@ -88,6 +102,8 @@ pub enum ContainerKind
   Vector,
   /// Hash map-like.
   HashMap,
+  /// Hash set-like.
+  HashSet,
 }
 
 /// Return kind of container specified by type.
@@ -102,12 +118,13 @@ pub enum ContainerKind
 ///
 /// let code = quote!( std::collections::HashMap< i32, i32 > );
 /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-/// let got = type_container_kind( &tree_type );
-/// assert_eq!( got, ContainerKind::HashMap );
+/// let kind = type_container_kind( &tree_type );
+/// assert_eq!( kind, ContainerKind::HashMap );
 /// ```
 
 pub fn type_container_kind( ty : &syn::Type ) -> ContainerKind
 {
+
   if let syn::Type::Path( path ) = ty
   {
     let last = &path.path.segments.last();
@@ -119,10 +136,47 @@ pub fn type_container_kind( ty : &syn::Type ) -> ContainerKind
     {
       "Vec" => { return ContainerKind::Vector }
       "HashMap" => { return ContainerKind::HashMap }
+      "HashSet" => { return ContainerKind::HashSet }
       _ => { return ContainerKind::No }
     }
   }
   ContainerKind::No
+}
+
+/// Return kind of container specified by type. Unlike [type_container_kind] it also understand optional types.
+///
+/// Good to verify `Option< alloc::vec::Vec< i32 > >` is optional vector.
+///
+/// # Sample
+/// ```
+/// use wproc_macro::*;
+/// use quote::quote;
+///
+/// let code = quote!( Option< std::collections::HashMap< i32, i32 > > );
+/// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+/// let ( kind, optional ) = type_optional_container_kind( &tree_type );
+/// assert_eq!( kind, ContainerKind::HashMap );
+/// assert_eq!( optional, true );
+/// ```
+
+pub fn type_optional_container_kind( ty : &syn::Type ) -> ( ContainerKind, bool )
+{
+
+  // use inspect_type::*;
+
+  if type_rightmost( ty ) == Some( "Option".to_string() )
+  {
+    let ty2 = type_parameters( ty, 0 ..= 0 ).first().map( | e | *e );
+    // inspect_type::inspect_type_of!( ty2 );
+    if ty2.is_none()
+    {
+      return ( ContainerKind::No, false )
+    }
+    let ty2 = ty2.unwrap();
+    return ( type_container_kind( ty2 ), true );
+  }
+
+  return ( type_container_kind( ty ), false );
 }
 
 /// Check is the rightmost item of path refering a type is specified type.
@@ -141,7 +195,6 @@ pub fn type_container_kind( ty : &syn::Type ) -> ContainerKind
 /// assert_eq!( got, Some( "Option".to_string() ) );
 /// ```
 
-// pub fn type_rightmost< R : AsRef< str > >( ty : &syn::Type, rightmost : R ) -> bool
 pub fn type_rightmost( ty : &syn::Type ) -> Option< String >
 {
   if let syn::Type::Path( path ) = ty
@@ -150,12 +203,9 @@ pub fn type_rightmost( ty : &syn::Type ) -> Option< String >
     if last.is_none()
     {
       return None;
-      // return false;
     }
     return Some( last.unwrap().ident.to_string() );
-    // return last.unwrap().ident == rightmost.as_ref();
   }
-  // false
   None
 }
 

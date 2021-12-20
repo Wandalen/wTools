@@ -7,7 +7,7 @@
 //! ```
 //!#![ feature( type_name_of_val ) ]
 //!
-//! pub use inspect_type::*;
+//! use inspect_type::*;
 //!
 //! fn main()
 //! {

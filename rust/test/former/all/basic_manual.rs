@@ -7,10 +7,11 @@ pub struct Struct1
 {
   pub int_1 : i32,
   string_1 : String,
-  vec_1 : Vec< String >,
-  hashmap_strings_1 : std::collections::HashMap< String, String >,
   int_optional_1 : core::option::Option< i32 >,
   string_optional_1 : Option< String >,
+  vec_1 : Vec< String >,
+  hashmap_strings_1 : std::collections::HashMap< String, String >,
+  hashset_strings_1 : std::collections::HashSet< String >,
 }
 
 //
@@ -23,10 +24,11 @@ impl Struct1
     {
       int_1 : core::option::Option::None,
       string_1 : core::option::Option::None,
-      vec_1 : core::option::Option::None,
-      hashmap_strings_1 : core::option::Option::None,
       int_optional_1 : core::option::Option::None,
       string_optional_1 : core::option::Option::None,
+      vec_1 : core::option::Option::None,
+      hashmap_strings_1 : core::option::Option::None,
+      hashset_strings_1 : core::option::Option::None,
     }
   }
 }
@@ -38,10 +40,11 @@ pub struct Struct1Former
 {
   pub int_1 : core::option::Option< i32 >,
   pub string_1 : core::option::Option< String >,
-  pub vec_1 : core::option::Option< Vec< String > >,
-  pub hashmap_strings_1 : core::option::Option< std::collections::HashMap< String, String > >,
   pub int_optional_1 :  core::option::Option< i32 >,
   pub string_optional_1 : core::option::Option< String >,
+  pub vec_1 : core::option::Option< Vec< String > >,
+  pub hashmap_strings_1 : core::option::Option< std::collections::HashMap< String, String > >,
+  pub hashset_strings_1 : core::option::Option< std::collections::HashSet< String > >,
 }
 
 //
@@ -71,6 +74,24 @@ impl Struct1Former
       val
     };
 
+    let int_optional_1 = if self.int_optional_1.is_some()
+    {
+      Some( self.int_optional_1.take().unwrap() )
+    }
+    else
+    {
+      None
+    };
+
+    let string_optional_1 = if self.string_optional_1.is_some()
+    {
+      Some( self.string_optional_1.take().unwrap() )
+    }
+    else
+    {
+      None
+    };
+
     let vec_1 = if self.vec_1.is_some()
     {
       self.vec_1.take().unwrap()
@@ -91,32 +112,25 @@ impl Struct1Former
       val
     };
 
-    let int_optional_1 = if self.int_optional_1.is_some()
+    let hashset_strings_1 = if self.hashset_strings_1.is_some()
     {
-      Some( self.int_optional_1.take().unwrap() )
+      self.hashset_strings_1.take().unwrap()
     }
     else
     {
-      None
-    };
-
-    let string_optional_1 = if self.string_optional_1.is_some()
-    {
-      Some( self.string_optional_1.take().unwrap() )
-    }
-    else
-    {
-      None
+      let val : std::collections::HashSet< String > = Default::default();
+      val
     };
 
     Struct1
     {
       int_1,
       string_1,
-      vec_1,
-      hashmap_strings_1,
       int_optional_1,
       string_optional_1,
+      vec_1,
+      hashmap_strings_1,
+      hashset_strings_1,
     }
 
   }
@@ -137,6 +151,14 @@ impl Struct1Former
     self
   }
 
+  pub fn string_optional_1< Src >( mut self, src : Src ) -> Self
+  where Src : core::convert::Into< String >
+  {
+    debug_assert!( self.string_optional_1.is_none() );
+    self.string_optional_1 = Some( src.into() );
+    self
+  }
+
   pub fn vec_1( mut self ) -> former_runtime::VectorFormer
   <
     String,
@@ -153,7 +175,7 @@ impl Struct1Former
     former_runtime::VectorFormer::new( self, container, on_end )
   }
 
-  pub fn hashmap_strings_1( mut self ) -> former_runtime::HashmapFormer
+  pub fn hashmap_strings_1( mut self ) -> former_runtime::HashMapFormer
   <
     String,
     String,
@@ -167,15 +189,23 @@ impl Struct1Former
     {
       former.hashmap_strings_1 = container;
     };
-    former_runtime::HashmapFormer::new( self, container, on_end )
+    former_runtime::HashMapFormer::new( self, container, on_end )
   }
 
-  pub fn string_optional_1< Src >( mut self, src : Src ) -> Self
-  where Src : core::convert::Into< String >
+  pub fn hashset_strings_1( mut self ) -> former_runtime::HashSetFormer
+  <
+    String,
+    std::collections::HashSet< String >,
+    Struct1Former,
+    impl Fn( &mut Struct1Former, core::option::Option< std::collections::HashSet< String > > )
+  >
   {
-    debug_assert!( self.string_optional_1.is_none() );
-    self.string_optional_1 = Some( src.into() );
-    self
+    let container = self.hashset_strings_1.take();
+    let on_end = | former : &mut Struct1Former, container : core::option::Option< std::collections::HashSet< String > > |
+    {
+      former.hashset_strings_1 = container;
+    };
+    former_runtime::HashSetFormer::new( self, container, on_end )
   }
 
 }

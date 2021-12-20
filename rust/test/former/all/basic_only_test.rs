@@ -1,4 +1,6 @@
 
+use maplit::*;
+
 //
 
 fn test_int() -> anyhow::Result< () >
@@ -15,10 +17,11 @@ fn test_int() -> anyhow::Result< () >
   {
     int_1 : 13,
     string_1 : "".to_string(),
-    vec_1 : vec![],
-    hashmap_strings_1 : maplit::hashmap!{},
     int_optional_1 : None,
     string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{},
   };
   assert_eq!( command, expected );
 
@@ -52,10 +55,11 @@ fn test_string() -> anyhow::Result< () >
   {
     int_1 : 0,
     string_1 : "Abcd".to_string(),
-    vec_1 : vec![],
-    hashmap_strings_1 : maplit::hashmap!{},
     int_optional_1 : None,
     string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{},
   };
   assert_eq!( command, expected );
 
@@ -70,10 +74,11 @@ fn test_string() -> anyhow::Result< () >
   {
     int_1 : 0,
     string_1 : "Abcd".to_string(),
-    vec_1 : vec![],
-    hashmap_strings_1 : maplit::hashmap!{},
     int_optional_1 : None,
     string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{},
   };
   assert_eq!( command, expected );
 
@@ -84,6 +89,62 @@ fn test_string() -> anyhow::Result< () >
   //   let _command = Struct1::former()
   //   .string_1( "dir1" )
   //   .string_1( "dir2" )
+  //   .form();
+  //   Ok( () )
+  // })?;
+
+  Ok( () )
+}
+
+//
+
+fn test_optional_string() -> anyhow::Result< () >
+{
+
+  // test.case( "basic" );
+
+  let command = Struct1::former()
+  .string_optional_1( "dir1" )
+  .form();
+  // dbg!( &command );
+
+  let expected = Struct1
+  {
+    int_1 : 0,
+    string_1 : "".to_string(),
+    int_optional_1 : None,
+    string_optional_1 : Some( "dir1".to_string() ),
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{},
+  };
+  assert_eq!( command, expected );
+
+  // test.case( "none" );
+
+  let command = Struct1::former()
+  .form();
+  // dbg!( &command );
+
+  let expected = Struct1
+  {
+    int_1 : 0,
+    string_1 : "".to_string(),
+    int_optional_1 : None,
+    string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{},
+  };
+  assert_eq!( command, expected );
+
+  // test.case( "optional : rewriting" );
+
+  // should_throw( ||
+  // {
+  //   let _command = Struct1::former()
+  //   .string_optional_1( "dir1" )
+  //   .string_optional_1( "dir2" )
   //   .form();
   //   Ok( () )
   // })?;
@@ -108,10 +169,11 @@ fn test_vector() -> anyhow::Result< () >
   {
     int_1 : 0,
     string_1 : "".to_string(),
-    vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
-    hashmap_strings_1 : maplit::hashmap!{},
     int_optional_1 : None,
     string_optional_1 : None,
+    vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{},
   };
   assert_eq!( command, expected );
 
@@ -126,10 +188,11 @@ fn test_vector() -> anyhow::Result< () >
   {
     int_1 : 0,
     string_1 : "".to_string(),
-    vec_1 : vec![ "a".to_string(), "bc".to_string(), "def".to_string() ],
-    hashmap_strings_1 : maplit::hashmap!{},
     int_optional_1 : None,
     string_optional_1 : None,
+    vec_1 : vec![ "a".to_string(), "bc".to_string(), "def".to_string() ],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{},
   };
   assert_eq!( command, expected );
 
@@ -144,10 +207,11 @@ fn test_vector() -> anyhow::Result< () >
   {
     int_1 : 0,
     string_1 : "".to_string(),
-    vec_1 : vec![ "a".to_string(), "bc".to_string(), "def".to_string(), "gh".to_string() ],
-    hashmap_strings_1 : maplit::hashmap!{},
     int_optional_1 : None,
     string_optional_1 : None,
+    vec_1 : vec![ "a".to_string(), "bc".to_string(), "def".to_string(), "gh".to_string() ],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{},
   };
   assert_eq!( command, expected );
 
@@ -171,17 +235,18 @@ fn test_hashmap() -> anyhow::Result< () >
   {
     int_1 : 0,
     string_1 : "".to_string(),
-    vec_1 : vec![],
-    hashmap_strings_1 : maplit::hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
     int_optional_1 : None,
     string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+    hashset_strings_1 : hashset!{},
   };
   assert_eq!( command, expected );
 
   // test.case( "replace" );
 
   let command = Struct1::former()
-  .hashmap_strings_1().replace( maplit::hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
+  .hashmap_strings_1().replace( hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
   .form()
   ;
   // dbg!( &command );
@@ -190,17 +255,18 @@ fn test_hashmap() -> anyhow::Result< () >
   {
     int_1 : 0,
     string_1 : "".to_string(),
-    vec_1 : vec![],
-    hashmap_strings_1 : maplit::hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
     int_optional_1 : None,
     string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+    hashset_strings_1 : hashset!{},
   };
   assert_eq!( command, expected );
 
   // test.case( "replace and insert" );
 
   let command = Struct1::former()
-  .hashmap_strings_1().replace( maplit::hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).insert( "k3", "v3" ).end()
+  .hashmap_strings_1().replace( hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).insert( "k3", "v3" ).end()
   .form()
   ;
   // dbg!( &command );
@@ -209,10 +275,11 @@ fn test_hashmap() -> anyhow::Result< () >
   {
     int_1 : 0,
     string_1 : "".to_string(),
-    vec_1 : vec![],
-    hashmap_strings_1 : maplit::hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string(), "k3".to_string() => "v3".to_string() },
     int_optional_1 : None,
     string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string(), "k3".to_string() => "v3".to_string() },
+    hashset_strings_1 : hashset!{},
   };
   assert_eq!( command, expected );
 
@@ -221,54 +288,68 @@ fn test_hashmap() -> anyhow::Result< () >
 
 //
 
-fn test_optional_string() -> anyhow::Result< () >
+fn test_hashset() -> anyhow::Result< () >
 {
 
-  // test.case( "basic" );
+  // test.case( "implicit construction" );
 
   let command = Struct1::former()
-  .string_optional_1( "dir1" )
-  .form();
+  .hashset_strings_1().insert( "v1" ).insert( "v2" ).end()
+  .form()
+  ;
   // dbg!( &command );
 
   let expected = Struct1
   {
     int_1 : 0,
     string_1 : "".to_string(),
-    vec_1 : vec![],
-    hashmap_strings_1 : maplit::hashmap!{},
-    int_optional_1 : None,
-    string_optional_1 : Some( "dir1".to_string() ),
-  };
-  assert_eq!( command, expected );
-
-  // test.case( "none" );
-
-  let command = Struct1::former()
-  .form();
-  // dbg!( &command );
-
-  let expected = Struct1
-  {
-    int_1 : 0,
-    string_1 : "".to_string(),
-    vec_1 : vec![],
-    hashmap_strings_1 : maplit::hashmap!{},
     int_optional_1 : None,
     string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{ "v1".to_string(), "v2".to_string() },
   };
   assert_eq!( command, expected );
 
-  // test.case( "optional : rewriting" );
+  // test.case( "replace" );
 
-  // should_throw( ||
-  // {
-  //   let _command = Struct1::former()
-  //   .string_optional_1( "dir1" )
-  //   .string_optional_1( "dir2" )
-  //   .form();
-  //   Ok( () )
-  // })?;
+  let command = Struct1::former()
+  .hashset_strings_1().replace( hashset!{ "v1".to_string(), "v2".to_string() } ).end()
+  .form()
+  ;
+  // dbg!( &command );
+
+  let expected = Struct1
+  {
+    int_1 : 0,
+    string_1 : "".to_string(),
+    int_optional_1 : None,
+    string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{ "v1".to_string(), "v2".to_string() },
+  };
+  assert_eq!( command, expected );
+
+  // test.case( "replace and insert" );
+
+  let command = Struct1::former()
+  .hashset_strings_1().replace( hashset!{ "v1".to_string(), "v2".to_string() } ).insert( "v3" ).end()
+  .form()
+  ;
+  // dbg!( &command );
+
+  let expected = Struct1
+  {
+    int_1 : 0,
+    string_1 : "".to_string(),
+    int_optional_1 : None,
+    string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{ "v1".to_string(), "v2".to_string(), "v3".to_string() },
+  };
+  assert_eq!( command, expected );
 
   Ok( () )
 }
@@ -291,10 +372,11 @@ fn test_complex() -> anyhow::Result< () >
   {
     int_1 : 13,
     string_1 : "Abcd".to_string(),
-    vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
-    hashmap_strings_1 : maplit::hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
     int_optional_1 : None,
     string_optional_1 : Some( "dir1".to_string() ),
+    vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
+    hashmap_strings_1 : hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+    hashset_strings_1 : hashset!{},
   };
   assert_eq!( command, expected );
 
@@ -320,12 +402,14 @@ fn test_complex() -> anyhow::Result< () >
 //
 
 #[ test ]
-fn main_test()
+fn main_test() -> anyhow::Result< () >
 {
-  test_int().unwrap();
-  test_string().unwrap();
-  test_vector().unwrap();
-  test_hashmap().unwrap();
-  test_optional_string().unwrap();
-  test_complex().unwrap();
+  test_int()?;
+  test_string()?;
+  test_optional_string()?;
+  test_vector()?;
+  test_hashmap()?;
+  test_hashset()?;
+  test_complex()?;
+  Ok( () )
 }
