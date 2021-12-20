@@ -42,7 +42,7 @@ function secondaryNamespaceOfTesting( test )
       var exp =
 `
 {- ModuleFile ${ _.module.resolve( 'wTesting' ) } -}
-  {- ModuleFile ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/atop/testing/entry/Main.s' ) } -}
+  {- ModuleFile ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/atop/testing/entry/Basic.s' ) } -}
     {- ModuleFile ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/atop/testing/include/Top.s' ) } -}
       {- ModuleFile ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/abase/l0/l0/l0/Global.s' ) } -}
       {- ModuleFile ${ __.path.join( _.module.resolve( 'wTesting' ), '../../wtools/atop/testing/include/Base.s' ) } -}
