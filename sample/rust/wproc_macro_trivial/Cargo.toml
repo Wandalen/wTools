@@ -1,0 +1,10 @@
+[package]
+name = "wproc_macro_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+wproc_macro = "*"
+syn = { version = "~1.0.81", features = [ "full", "extra-traits", "parsing" ] }
+quote = "~1.0.10"

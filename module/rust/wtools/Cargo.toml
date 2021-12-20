@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.1.1"
+version = "0.1.3"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -10,8 +10,8 @@ authors = [
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/wtools"
-repository = "https://github.com/wtools"
-homepage = "https://github.com/wtools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wtools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wtools"
 description = """
 Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 """
@@ -19,7 +19,8 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust",
+  "/rust/impl/mod.rs",
+  "/rust/impl/meta/mod.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -45,10 +46,6 @@ path = "sample/rust/implements_trivial/src/main.rs"
 name = "inspect_type"
 path = "sample/rust/inspect_type_trivial/src/main.rs"
 
-# [[example]]
-# name = "instance_of"
-# path = "sample/rust/instance_of_trivial/src/main.rs"
-
 [[example]]
 name = "is_slice"
 path = "sample/rust/is_slice_trivial/src/main.rs"
@@ -61,28 +58,28 @@ path = "sample/rust/wtest_basic_trivial/src/main.rs"
 name = "trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
-# [[example]]
-# name = "wtest"
-# path = "sample/rust/wtest_trivial/src/main.rs"
-
-[dev-dependencies]
-trybuild = { version = "1.0.52", features = ["diff"] }
-maplit = "1.0.2"
-
-[dependencies]
-regex = "1.5.4"
-chrono = "0.4.19"
-paste = "1.0.5"
-anyhow = "1.0.48"
-former_derive = { path = "../former_derive", version = "~0" }
-former_runtime = { path = "../former_runtime", version = "~0" }
-inspect_type = { path = "../inspect_type", version = "~0", optional = true }
-is_slice = { path = "../is_slice", version = "~0" }
-implements = { path = "../implements", version = "~0" }
-# instance_of = { path = "../instance_of", version = "~0" }
-# wtest = { path = "../wtest", version = "~0" }
-wtest_basic = { path = "../wtest_basic", version = "~0" }
-
 [features]
 wtools = []
-default = ["wtools"]
+proc_macro = [ "wproc_macro" ]
+default = [ "wtools" ]
+
+[dependencies]
+former = { path = "../former", version = "~0" }
+inspect_type = { path = "../inspect_type", version = "~0" }
+is_slice = { path = "../is_slice", version = "~0" }
+implements = { path = "../implements", version = "~0" }
+werror = { path = "../werror", version = "~0" }
+wproc_macro = { path = "../wproc_macro", version = "~0", optional = true }
+# regex = "1.5.4"
+# chrono = "0.4.19"
+# paste = "1.0.5"
+# anyhow = "1.0.48"
+
+[dev-dependencies]
+wtest_basic = { path = "../wtest_basic", version = "~0" }
+trybuild = { version = "1.0.52", features = ["diff"] }
+maplit = "1.0.2"
+anyhow = "1.0.47"
+# quote = { version = "~1.0" }
+# proc-macro2 = { version = "~1.0" }
+# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }

@@ -1,9 +1,4 @@
 
-// #[cfg( feature = "all" )]
-// use wtools::former;
-// use wtools::former::Former;
-// #[cfg( not( feature = "all" ) )]
-// use former_derive::Former;
 use former::Former;
 
 #[allow(dead_code)]
@@ -23,8 +18,6 @@ type Box = ();
 #[allow(dead_code)]
 type Default = ();
 
-// core::option::Option::
-
 #[derive( Debug, PartialEq, Former )]
 pub struct Struct1
 {
@@ -38,4 +31,4 @@ pub struct Struct1
 
 //
 
-include!( "basic_test.rs" );
+include!( "basic_only_test.rs" );

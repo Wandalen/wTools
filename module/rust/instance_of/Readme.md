@@ -19,6 +19,12 @@ dbg!( instance_of!( Box::new( 13_i32 ) => Copy ) );
 // < instance_of!( 13_i32 => Copy ) : false
 ```
 
+### To add to your project
+
+```
+cargo add implements
+```
+
 ### Try out from the repository
 
 ```
@@ -26,10 +32,4 @@ git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/implements_trivial
 cargo run
-```
-
-### To add to your project
-
-```
-cargo add implements
 ```

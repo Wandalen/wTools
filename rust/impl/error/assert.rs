@@ -89,14 +89,14 @@ macro_rules! debug_assert_not_identical
   };
 }
 
-/// Macro asserts that expression is ture. Unlike std::assert it is removed from a release build.
-
-#[macro_export]
-macro_rules! debug_assert
-{
-  ( $( $arg : tt )+ ) =>
-  {
-    #[cfg(debug_assertions)]
-    $crate::assert!( $( $arg )+ );
-  };
-}
+// /// Macro asserts that expression is ture. Unlike std::assert it is removed from a release build.
+//
+// #[macro_export]
+// macro_rules! debug_assert
+// {
+//   ( $( $arg : tt )+ ) =>
+//   {
+//     #[cfg(debug_assertions)]
+//     $crate::assert!( $( $arg )+ );
+//   };
+// }

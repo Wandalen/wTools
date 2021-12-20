@@ -7,14 +7,14 @@ Macro to answer the question: is it a slice?
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/trivial
+cd sample/rust/is_slice_trivial
 cargo run
 ```
 
 ### To add to your project
 
 ```
-cargo add implements
+cargo add is_slice
 ```
 
 ### Sample

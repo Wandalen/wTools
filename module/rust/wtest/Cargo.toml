@@ -1,6 +1,6 @@
 [package]
 name = "wtest"
-version = "0.0.2"
+version = "0.0.3"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -13,13 +13,13 @@ documentation = "https://docs.rs/wtest"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wtest"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wtest"
 description = """
-Tools for writing tests.
+Tools for writing and runnint tests.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "testing" ]
 
 include = [
-  "/rust/impl/test",
+  "/rust/impl/test/mod.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",

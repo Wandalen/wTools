@@ -55,6 +55,3 @@ macro_rules! is_slice
 
   }}
 }
-
-// pub mod inspect_type;
-// pub use inspect_type::*;

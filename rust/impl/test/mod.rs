@@ -1,9 +1,7 @@
 #![ warn( missing_docs ) ]
-#![ allow( dead_code ) ]
-// #![no_std]
 
 //!
-//! Tools for writing tests and runnint tests.
+//! Tools for writing and runnint tests.
 //!
 //! # Sample
 //! ``` rust

@@ -3,17 +3,14 @@
 
 use quote::quote;
 use syn::{ DeriveInput };
-// use proc_macro_error::{ abort };
-use unzip_n::unzip_n;
+use itertools::{ MultiUnzip, process_results };
+// use itertools::{ Itertools };
+// use itertools::*;
 
-use crate::wproc_macro;
-// #[macro_use]
-// extern crate wproc_macro;
+use wproc_macro::*;
+use syn::spanned::*;
 
-unzip_n!( 0 );
-unzip_n!( 3 );
-unzip_n!( 4 );
-unzip_n!( 5 );
+pub type Result< T > = std::result::Result< T, syn::Error >;
 
 /* xxx :
 - remove unwraps
@@ -28,39 +25,41 @@ struct FormerField< 'a >
 {
   pub attrs : &'a Vec< syn::Attribute >,
   pub vis : &'a syn::Visibility,
-  pub ident : &'a Option< syn::Ident >,
+  pub ident : &'a Option< syn::Ident >, /* xxx : make it nonoptional? */
   pub colon_token : &'a Option< syn::token::Colon >,
   pub ty : &'a syn::Type,
   pub non_optional_ty : &'a syn::Type,
   pub is_option : bool,
-  pub container_kind : wproc_macro::ContainerKind,
+  pub type_container_kind : wproc_macro::ContainerKind,
 }
 
 //
 
 fn is_option( ty : &syn::Type ) -> bool
 {
-  wproc_macro::rightmost_is( ty, "Option" )
+  wproc_macro::type_rightmost( ty ) == Some( "Option".to_string() )
 }
 
 //
 
-fn parameter_internal_first( ty : &syn::Type ) -> &syn::Type
+fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 {
-  wproc_macro::parameters_internal( ty, 0 ..= 0 )
+  wproc_macro::type_parameters( ty, 0 ..= 0 )
   .first()
-  .or_else( || panic!( "Expect at least one parameter here:\n  {}", quote!{ #ty } ) ).unwrap()
+  .map( | e | *e )
+  .ok_or_else( || syn::Error::new( ty.span(), format!( "Expect at least one parameter here:\n  {}", quote!{ #ty } ) ) )
+  /* xxx : write failing test */
 }
 
 //
 
-fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn::Type ), syn::Error >
+fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn::Type ) >
 {
   let on_err = ||
   {
-    syn::Error::new( proc_macro2::Span::call_site(), format!( "Expect at least two parameters here:\n  {}", quote!{ #ty } ) )
+    syn::Error::new( ty.span(), format!( "Expect at least two parameters here:\n  {}", quote!{ #ty } ) )
   };
-  let result = wproc_macro::parameters_internal( ty, 0 ..= 1 );
+  let result = wproc_macro::type_parameters( ty, 0 ..= 1 );
   let mut iter = result.iter();
   Ok
   ((
@@ -111,7 +110,7 @@ fn field_optional_map( field : &FormerField ) -> syn::Field
   syn::Field
   {
     attrs : vec![],
-    vis : syn::Visibility::Inherited,
+    vis : syn::Visibility::Public( syn::VisPublic { pub_token : syn::Token!( pub ) } ),
     ident,
     colon_token,
     ty : ty2,
@@ -121,13 +120,44 @@ fn field_optional_map( field : &FormerField ) -> syn::Field
 //
 
 #[inline]
-fn field_form_map( field : &FormerField ) -> syn::Stmt
+fn field_form_map( field : &FormerField ) -> Result< syn::Stmt >
 {
   let ident = field.ident;
   let ty = field.ty;
 
+  let mut default = None;
+  if field.attrs.len() == 1
+  {
+    let ( key, val, _meta ) = attr_pair_single
+    (
+      field.attrs.first().ok_or_else( || syn_err!( field.ident.as_ref().unwrap(), "No attr" ) )?
+    )?;
+    if key != "default".to_string()
+    {
+      return Err( syn_err!( field.ident.as_ref().unwrap(), format!( "Unknown attribute key {}", key ) ) ); /* xxx : negative test? */
+    }
+    default = Some( val );
+  }
+
   let tokens = if field.is_option
   {
+
+    let _else = if default == None
+    {
+      quote!
+      {
+        ::core::option::Option::None
+      }
+    }
+    else
+    {
+      let default_val = default.unwrap();
+      quote!
+      {
+        ::core::option::Option::Some( ( #default_val ).into() )
+      }
+    };
+
     quote!
     {
       let #ident = if self.#ident.is_some()
@@ -136,12 +166,30 @@ fn field_form_map( field : &FormerField ) -> syn::Stmt
       }
       else
       {
-        ::core::option::Option::None
+        #_else
       };
     }
+
   }
   else
   {
+
+    let _else = if default == None
+    {
+      quote!
+      {
+        let val : #ty = ::core::default::Default::default();
+      }
+    }
+    else
+    {
+      let default_val = default.unwrap();
+      quote!
+      {
+        let val : #ty = ( #default_val ).into();
+      }
+    };
+
     quote!
     {
       let #ident = if self.#ident.is_some()
@@ -150,14 +198,15 @@ fn field_form_map( field : &FormerField ) -> syn::Stmt
       }
       else
       {
-        let val : #ty = ::core::default::Default::default();
+        #_else
         val
       };
     }
+
   };
 
   let stmt : syn::Stmt = syn::parse2( tokens ).unwrap();
-  stmt
+  Ok( stmt )
 }
 
 //
@@ -179,11 +228,12 @@ fn field_name_map( field : &FormerField ) -> syn::Ident
 //
 
 #[inline]
-fn field_setter_map( field : &FormerField, former_name : &syn::Ident ) -> Result< syn::Stmt, syn::Error >
+fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> Result< syn::Stmt >
 {
-  let ident = field.ident.clone();
+  // let ident = field.ident.clone();
+  let ident = &field.ident;
 
-  let tokens = match &field.container_kind
+  let tokens = match &field.type_container_kind
   {
     wproc_macro::ContainerKind::No =>
     {
@@ -203,7 +253,7 @@ fn field_setter_map( field : &FormerField, former_name : &syn::Ident ) -> Result
     wproc_macro::ContainerKind::Vector =>
     {
       let ty = &field.ty;
-      let internal_ty = parameter_internal_first( ty );
+      let internal_ty = parameter_internal_first( ty )?;
       quote!
       {
         #[inline]
@@ -211,12 +261,12 @@ fn field_setter_map( field : &FormerField, former_name : &syn::Ident ) -> Result
         <
           #internal_ty,
           #ty,
-          #former_name,
-          impl Fn( &mut #former_name, ::core::option::Option< #ty > )
+          #former_name_ident,
+          impl Fn( &mut #former_name_ident, ::core::option::Option< #ty > )
         >
         {
           let container = self.#ident.take();
-          let on_end = | former : &mut #former_name, container : ::core::option::Option< #ty > |
+          let on_end = | former : &mut #former_name_ident, container : ::core::option::Option< #ty > |
           {
             former.#ident = container;
           };
@@ -236,12 +286,12 @@ fn field_setter_map( field : &FormerField, former_name : &syn::Ident ) -> Result
           #k_ty,
           #e_ty,
           #ty,
-          #former_name,
-          impl Fn( &mut #former_name, ::core::option::Option< #ty > )
+          #former_name_ident,
+          impl Fn( &mut #former_name_ident, ::core::option::Option< #ty > )
         >
         {
           let container = self.hashmap_strings_1.take();
-          let on_end = | former : &mut #former_name, container : ::core::option::Option< #ty > |
+          let on_end = | former : &mut #former_name_ident, container : ::core::option::Option< #ty > |
           {
             former.hashmap_strings_1 = container;
           };
@@ -266,10 +316,7 @@ fn field_setter_map( field : &FormerField, former_name : &syn::Ident ) -> Result
 
 //
 
-// use syn::spanned::Spanned;
-// use wproc_macro::DataWrapped;
-
-pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream, syn::Error >
+pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   // let ast = parse_macro_input!( input as DeriveInput );
 
@@ -280,22 +327,24 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   };
 
   let name_ident = &ast.ident;
+  let generics = &ast.generics;
   let former_name = format!( "{}Former", name_ident );
-  let former_ident = syn::Ident::new( &former_name, name_ident.span() );
-  let fields = if let syn::Data::Struct( syn::DataStruct { fields : syn::Fields::Named( syn::FieldsNamed { ref named, .. } ), .. } ) = ast.data
+  let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
+
+  let fields = match ast.data
   {
-    named
-  }
-  else
-  {
-    let data = &ast.data;
-    return Err( syn::Error::new( wproc_macro::span_of( data ), format!( "Expects struct, found :\n{}", "xxx"/*quote!{ #data } */ ) ) );
-    // return Err( syn::Error::new( wproc_macro::DataWrapped( data ).span(), format!( "Expects struct, found :\n{}", "xxx"/*quote!{ #data } */ ) ) );
-    // return Err( syn::Error::new( data.span(), format!( "Expects struct, found :\n{}", "xxx"/*quote!{ #data } */ ) ) );
-    // return Err( syn::Error::new( proc_macro2::Span::call_site(), format!( "Expects struct, found :\n{}", "xxx"/*quote!{ #data } */ ) ) );
+    syn::Data::Struct( ref data_struct ) => match data_struct.fields
+    {
+      syn::Fields::Named( ref fields_named ) =>
+      {
+        &fields_named.named
+      },
+      _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Fields::Named( ref fields_named )" ) ),
+    },
+    _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Data::Struct( ref data_struct )" ) ),
   };
 
-  let( fields_none, fields_optional, fields_form, fields_names, fields_setter ) = fields.iter().map( | field |
+  let former_fields : Vec< Result< FormerField > > = fields.iter().map( | field |
   {
     let attrs = &field.attrs;
     let vis = &field.vis;
@@ -303,51 +352,78 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     let colon_token = &field.colon_token;
     let ty = &field.ty;
     let is_option = is_option( &ty );
-    let container_kind = wproc_macro::container_kind( &ty );
-    let non_optional_ty : &syn::Type = if is_option { parameter_internal_first( ty ) } else { ty };
-    let former_field = FormerField { attrs, vis, ident, colon_token, ty, non_optional_ty, is_option, container_kind };
-    (
-      field_none_map( &former_field ),
-      field_optional_map( &former_field ),
-      field_form_map( &former_field ),
-      field_name_map( &former_field ),
-      field_setter_map( &former_field, &former_ident ),
-    )
-  }).unzip_n_vec();
+    let type_container_kind = wproc_macro::type_container_kind( &ty );
+    let non_optional_ty : &syn::Type = if is_option { parameter_internal_first( ty )? } else { ty };
+    let former_field = FormerField { attrs, vis, ident, colon_token, ty, non_optional_ty, is_option, type_container_kind };
+    Ok( former_field )
+  }).collect();
 
-  if let Some( Err( err ) ) = fields_setter.iter().find( | e | e.is_err() )
-  {
-    return Err( err.clone() );
-  }
+  let former_fields : Vec< _ > = process_results( former_fields, | iter | iter.collect() )?;
 
-  let fields_setter = fields_setter.into_iter().map( | e | e.unwrap() ).collect::< Vec< syn::Stmt > >();
+  let ( fields_none, fields_optional, fields_form, fields_names, fields_setter )
+  : ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
+  = former_fields.iter().map( | former_field |
+  {(
+    field_none_map( &former_field ),
+    field_optional_map( &former_field ),
+    field_form_map( &former_field ),
+    field_name_map( &former_field ),
+    field_setter_map( &former_field, &former_name_ident ),
+  )}).multiunzip();
+
+  let doc_example1 =
+r#"
+#[derive( Former )]
+pub struct Struct1
+{
+  #[former( default = 31 )]
+  field1 : i32,
+}
+"#;
+
+  let doc = format!
+  (
+r#" Object to form [{}]. If field's values is not set then default value of the field is set.
+
+For specifing custom default value use attribute `default`. For example:
+```
+{}
+```
+"#,
+    name_ident, doc_example1
+  );
+
+  // println!( "doc : {}", doc );
+
+  let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
+  let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
 
   let result = quote!
   {
 
-    impl #name_ident
+    impl #generics #name_ident #generics
     {
       #[inline]
-      pub fn former() -> #former_ident
+      pub fn former() -> #former_name_ident #generics
       {
-        #former_ident
+        #former_name_ident
         {
           #( #fields_none, )*
         }
       }
     }
 
-    /* qqq : pub is optional here */
+    #[doc = #doc]
     #[derive( Debug )]
-    pub struct #former_ident
+    pub struct #former_name_ident #generics
     {
       #( #fields_optional, )*
     }
 
-    impl #former_ident
+    impl #generics #former_name_ident #generics
     {
       #[inline]
-      pub fn form( mut self ) -> #name_ident
+      pub fn form( mut self ) -> #name_ident #generics
       {
         #( #fields_form )*
         #name_ident
@@ -363,6 +439,5 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   // println!( "{:#?}", ast );
   // println!( "{:#?}", result );
   // let result = proc_macro2::TokenStream::new();
-  // result.into()
   Ok( result )
 }
