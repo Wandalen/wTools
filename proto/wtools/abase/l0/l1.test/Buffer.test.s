@@ -3126,7 +3126,7 @@ function makeUndefinedWithLongDescriptor( test )
   }
 }
 
-makeUndefinedWithLongDescriptor.timeOut = 10000;
+makeUndefinedWithLongDescriptor.timeOut = 30000;
 
 // function bufferMakeUndefinedWithArrayAndUnroll( test )
 // {
