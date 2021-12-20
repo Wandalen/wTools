@@ -1384,7 +1384,7 @@ function makeCommonWithLongDescriptor( test )
   }
 }
 
-makeCommonWithLongDescriptor.timeOut = 30000;
+makeCommonWithLongDescriptor.timeOut = 60000;
 
 // function bufferMakeWithArrayAndUnroll( test )
 // {
