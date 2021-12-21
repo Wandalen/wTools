@@ -1,1 +1,34 @@
-module/js/wTools/package.json
+{
+  "name" : "wTools",
+  "main" : "proto/node_modules/wTools",
+  "files" :
+  [
+    "proto/wtools/abase/l0/l0",
+    "proto/wtools/abase/l0/l1",
+    "proto/wtools/abase/l0/l2",
+    "proto/wtools/abase/l0/l3",
+    "proto/wtools/abase/l0/l4",
+    "proto/wtools/abase/l0/l5",
+    "proto/wtools/abase/l0/l6",
+    "proto/wtools/abase/l0/l7",
+    "proto/wtools/abase/l0/l8",
+    "proto/wtools/abase/l0/l9",
+    "proto/wtools/abase/l0/Include.s",
+    "proto/wtools/abase/l0/Include1.s",
+    "proto/wtools/abase/l0/Include3.s",
+    "proto/wtools/abase/l0/Include5.s",
+    "proto/wtools/abase/l0/Include7.s",
+    "proto/wtools/abase/l1",
+    "proto/node_modules",
+    "out/wTools.out.will.yml",
+    "proto/node_modules/Tools",
+    "proto/node_modules/wTools",
+    "proto/node_modules/wTools.l1",
+    "proto/node_modules/wTools.l3",
+    "proto/node_modules/wTools.l5",
+    "proto/node_modules/wTools.l7"
+  ],
+  "scripts" : { "test" : "wtest .run \"proto/**\" rapidity:-1", "docgen" : "wdocgen proto" },
+  "devDependencies" : { "eslint" : "7.32.0", "wTesting" : "alpha" }
+}
+
