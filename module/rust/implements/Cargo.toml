@@ -28,11 +28,11 @@ include = [
 
 [lib]
 name = "implements"
-path = "rust/impl/meta/implements.rs"
+path = "rust/impl/typing/implements.rs"
 
 [[test]]
 name = "implements_test"
-path = "rust/test/meta/implements_test.rs"
+path = "rust/test/typing/implements_test.rs"
 
 [[example]]
 name = "trivial"

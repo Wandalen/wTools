@@ -2,6 +2,7 @@
 #![ feature( trace_macros ) ]
 
 use wtest_basic::*;
+use werror::*;
 use select_matching as TheModule;
 
 //

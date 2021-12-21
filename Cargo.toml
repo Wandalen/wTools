@@ -25,4 +25,4 @@ exclude = [
   "module/rust/_*",
   "sample/rust/_*",
 ]
-default-members = [ "module/rust/wtools" ]
+# default-members = [ "module/rust/wtools" ]

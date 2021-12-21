@@ -1,6 +1,11 @@
 
-// #[cfg( feature = "all" )]
-// use wtools::former;
+#[cfg( feature = "with_wtools" )]
+use wtools::*;
+#[cfg( not( feature = "with_wtools" ) )]
+mod former
+{
+  pub use former_runtime as runtime;
+}
 
 #[derive( Debug, PartialEq )]
 pub struct Struct1
@@ -159,7 +164,7 @@ impl Struct1Former
     self
   }
 
-  pub fn vec_1( mut self ) -> former_runtime::VectorFormer
+  pub fn vec_1( mut self ) -> former::runtime::VectorFormer
   <
     String,
     Vec< String >,
@@ -172,10 +177,10 @@ impl Struct1Former
     {
       former.vec_1 = container;
     };
-    former_runtime::VectorFormer::new( self, container, on_end )
+    former::runtime::VectorFormer::new( self, container, on_end )
   }
 
-  pub fn hashmap_strings_1( mut self ) -> former_runtime::HashMapFormer
+  pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapFormer
   <
     String,
     String,
@@ -189,10 +194,10 @@ impl Struct1Former
     {
       former.hashmap_strings_1 = container;
     };
-    former_runtime::HashMapFormer::new( self, container, on_end )
+    former::runtime::HashMapFormer::new( self, container, on_end )
   }
 
-  pub fn hashset_strings_1( mut self ) -> former_runtime::HashSetFormer
+  pub fn hashset_strings_1( mut self ) -> former::runtime::HashSetFormer
   <
     String,
     std::collections::HashSet< String >,
@@ -205,7 +210,7 @@ impl Struct1Former
     {
       former.hashset_strings_1 = container;
     };
-    former_runtime::HashSetFormer::new( self, container, on_end )
+    former::runtime::HashSetFormer::new( self, container, on_end )
   }
 
 }

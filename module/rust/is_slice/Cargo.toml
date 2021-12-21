@@ -27,11 +27,11 @@ include = [
 
 [lib]
 name = "is_slice"
-path = "rust/impl/meta/is_slice.rs"
+path = "rust/impl/typing/is_slice.rs"
 
 [[test]]
 name = "is_slice_test"
-path = "rust/test/meta/is_slice_test.rs"
+path = "rust/test/typing/is_slice_test.rs"
 
 [[example]]
 name = "trivial"

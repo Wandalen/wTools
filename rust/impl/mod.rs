@@ -8,7 +8,15 @@
 ///
 /// Meta tools.
 ///
+
 pub mod meta;
+pub use meta::*;
+
+///
+/// Type checking tools.
+///
+
+pub mod typing;
 pub use inspect_type::*;
 pub use is_slice::*;
 pub use implements::*;
@@ -16,12 +24,15 @@ pub use implements::*;
 pub use former as former;
 pub use werror as error;
 
-#[ cfg( feature = "proc_macro" ) ]
+#[ cfg( feature = "with_proc_macro" ) ]
 pub use wproc_macro as proc_macro;
+
+// pub use anyhow; // xxx : add also maplit
 
 ///
 /// Prelude to use: `use wtools::prelude::*`.
 ///
+
 pub mod prelude
 {
   pub use super::*;

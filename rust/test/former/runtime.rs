@@ -6,7 +6,7 @@
 // {
 //   println!( "current_dir : {:?}", env::current_dir().unwrap() );
 //   // let t = trybuild::TestCases::new();
-//   // t.pass( "rust/test/former/test/basic_manual.rs" );
+//   // t.pass( "rust/test/former/test/basic_runtime.rs" );
 // }
 
-include!( "./all/manual.rs" );
+include!( "./all/runtime.rs" );

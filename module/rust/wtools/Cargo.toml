@@ -59,9 +59,9 @@ name = "trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
-wtools = []
-proc_macro = [ "wproc_macro" ]
-default = [ "wtools" ]
+with_wtools = []
+with_proc_macro = [ "wproc_macro" ]
+default = [ "with_wtools" ]
 
 [dependencies]
 former = { path = "../former", version = "~0" }

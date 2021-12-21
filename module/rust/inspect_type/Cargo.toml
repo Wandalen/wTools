@@ -27,11 +27,11 @@ include = [
 
 [lib]
 name = "inspect_type"
-path = "rust/impl/meta/inspect_type.rs"
+path = "rust/impl/typing/inspect_type.rs"
 
 [[test]]
 name = "inspect_type_test"
-path = "rust/test/meta/inspect_type_test.rs"
+path = "rust/test/typing/inspect_type_test.rs"
 
 [dependencies]
 
