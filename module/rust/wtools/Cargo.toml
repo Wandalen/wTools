@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -35,28 +35,28 @@ path = "rust/impl/mod.rs"
 name = "wtools_test"
 path = "rust/test/mod.rs"
 
-[[example]]
-name = "former"
-path = "sample/rust/former_trivial/src/main.rs"
+# [[example]]
+# name = "former"
+# path = "sample/rust/former_trivial/src/main.rs"
+#
+# [[example]]
+# name = "implements"
+# path = "sample/rust/implements_trivial/src/main.rs"
+#
+# [[example]]
+# name = "inspect_type"
+# path = "sample/rust/inspect_type_trivial/src/main.rs"
+#
+# [[example]]
+# name = "is_slice"
+# path = "sample/rust/is_slice_trivial/src/main.rs"
+#
+# [[example]]
+# name = "wtest_basic"
+# path = "sample/rust/wtest_basic_trivial/src/main.rs"
 
 [[example]]
-name = "implements"
-path = "sample/rust/implements_trivial/src/main.rs"
-
-[[example]]
-name = "inspect_type"
-path = "sample/rust/inspect_type_trivial/src/main.rs"
-
-[[example]]
-name = "is_slice"
-path = "sample/rust/is_slice_trivial/src/main.rs"
-
-[[example]]
-name = "wtest_basic"
-path = "sample/rust/wtest_basic_trivial/src/main.rs"
-
-[[example]]
-name = "trivial"
+name = "wtools_trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
@@ -79,8 +79,9 @@ wproc_macro = { path = "../wproc_macro", version = "~0", optional = true }
 [dev-dependencies]
 wtest_basic = { path = "../wtest_basic", version = "~0" }
 trybuild = { version = "1.0.52", features = ["diff"] }
-maplit = "1.0.2"
-anyhow = "1.0.47"
+maplit = "~1.0"
+anyhow = "~1.0"
+rustversion = "~1.0"
 # quote = { version = "~1.0" }
 # proc-macro2 = { version = "~1.0" }
 # syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }
