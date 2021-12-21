@@ -2,6 +2,14 @@
 use std::env;
 
 #[test]
+#[rustversion::stable]
+fn trybuild_tests()
+{
+  println!( "current_dir : {:?}", env::current_dir().unwrap() );
+}
+
+#[test]
+#[rustversion::nightly]
 fn trybuild_tests()
 {
   println!( "current_dir : {:?}", env::current_dir().unwrap() );
