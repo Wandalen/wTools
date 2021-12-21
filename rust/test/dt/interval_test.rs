@@ -62,7 +62,7 @@ fn _adapter_std_closed()
 
   // test.case( "basic" );
 
-  let src = 2..=5;
+  let src = 2..=4;
 
   assert_eq!( TheModule::IntervalAdapter::first( &src ), 2 );
   assert_eq!( TheModule::IntervalAdapter::last( &src ), 4 );

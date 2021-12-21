@@ -1,21 +1,23 @@
-# module::werror
+# module::winterval
 
-Basic exceptions handling mechanism.
+Interval adapter for both open/closed implementations of intervals ( ranges ).
 
 ### Sample
 
 ``` rust sample test
-use werror::*;
+use winterval::*;
 
-let err1 = Error::new( "Some error" );
-println!( "err1 : {}", err1 );
-// < err1 : Some error
+let src = 2..5;
+assert_eq!( src.closed(), ( 2, 4 ) );
+
+let src = 2..=4;
+assert_eq!( src.closed(), ( 2, 4 ) );
 ```
 
 ### To add to your project
 
 ```
-cargo add werror
+cargo add winterval
 ```
 
 ### Try out from the repository
@@ -23,6 +25,6 @@ cargo add werror
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/werror_trivial
+cd sample/rust/winterval_trivial
 cargo run
 ```

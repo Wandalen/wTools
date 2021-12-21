@@ -8,6 +8,18 @@
 //!
 //! Interval adapter for both open/closed implementations of intervals ( ranges ).
 //!
+//! # sample
+//!
+//! ``` rust sample test
+//! use winterval::*;
+//!
+//! let src = 2..5;
+//! assert_eq!( src.closed(), ( 2, 4 ) );
+//!
+//! let src = 2..=4;
+//! assert_eq!( src.closed(), ( 2, 4 ) );
+//! ```
+//!
 
 ///
 /// Interval adapter. Interface to interval-like structures.
@@ -122,8 +134,7 @@ where
   }
   fn last( &self ) -> T
   {
-    let one : T = 1.into();
-    *self.end() - one
+    *self.end()
   }
 }
 

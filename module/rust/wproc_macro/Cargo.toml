@@ -30,12 +30,12 @@ name = "wproc_macro"
 path = "rust/impl/proc_macro/mod.rs"
 
 [[test]]
-name = "wproc_macro"
+name = "proc_macro"
 path = "rust/test/proc_macro/mod.rs"
 
 [[example]]
-name = "wproc_macro_trivial"
-path = "sample/rust/wproc_macro_trivial/src/main.rs"
+name = "proc_macro_trivial"
+path = "sample/rust/proc_macro_trivial/src/main.rs"
 
 [dependencies]
 proc-macro2 = { version = "~1.0" }

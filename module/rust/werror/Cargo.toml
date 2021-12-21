@@ -30,12 +30,12 @@ name = "werror"
 path = "rust/impl/error/mod.rs"
 
 [[test]]
-name = "werror_test"
+name = "error_test"
 path = "rust/test/error/mod.rs"
 
 [[example]]
-name = "werror_trivial"
-path = "sample/rust/werror_trivial/src/main.rs"
+name = "error_trivial"
+path = "sample/rust/error_trivial/src/main.rs"
 
 [dependencies]
 

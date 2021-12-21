@@ -1,6 +1,6 @@
 [package]
 name = "winterval"
-version = "0.0.0"
+version = "0.0.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -30,12 +30,12 @@ name = "winterval"
 path = "rust/impl/dt/interval.rs"
 
 [[test]]
-name = "werror_test"
+name = "interval_test"
 path = "rust/test/dt/interval_test.rs"
 
-# [[example]]
-# name = "werror_trivial"
-# path = "sample/rust/winterval_trivial/src/main.rs"
+[[example]]
+name = "interval_trivial"
+path = "sample/rust/interval_trivial/src/main.rs"
 
 [dependencies]
 
