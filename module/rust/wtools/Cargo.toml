@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -21,6 +21,7 @@ keywords = [ "fundamental", "general-purpose" ]
 include = [
   "/rust/impl/mod.rs",
   "/rust/impl/meta/mod.rs",
+  "/rust/impl/typing/mod.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
