@@ -2,18 +2,31 @@ use std::collections::HashMap;
 
 /*
   var track = [];
-  var commandWith = ( e ) => { track.push( 'with' ) };
+  var commandRun = ( e ) => { track.push( e ) };
+  commandRun.subjectHint = 'Path to test';
+  commandRun.properties =
+  {
+    'verbosity' : 'verbosity of testing',
+    'rapidity' : 'rapidity of testing',
+    'routine' : 'routine to test',
+  }
+  command.propertiesAliases =
+  {
+    verbosity : [ 'v' ]
+  }
+
   var Commands =
   {
-    'with' : { ro : commandWith, h : 'with', lh : 'WITH' },
+    '.run' : { ro : commandRun, h : 'Run test', lh : 'Run test with path and options' },
   };
 
   var aggregator = _.CommandsAggregator
   ({
     commands : Commands,
+    withHelp : 1,
   }).form();
 
-  aggregator.instructionPerform({ command : '.help' });
+  aggregator.instructionPerform({ command : '.run proto/ v:7 rapidity:-1 routine:[ test1, test2 ]' });
  */
 
 #[test]
@@ -29,7 +42,7 @@ fn full_interface()
   {
     ro : Box::new( command_run ),
     h : "Run test",
-    lh : "Run test",
+    lh : "Run test with path and options",
 
     /* can construct type RoutineDescriptor */
     subject_hint : "Path to tests",
