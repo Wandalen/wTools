@@ -34,7 +34,7 @@ name = "werror_test"
 path = "rust/test/error/mod.rs"
 
 [[example]]
-name = "trivial"
+name = "werror_trivial"
 path = "sample/rust/werror_trivial/src/main.rs"
 
 [dependencies]

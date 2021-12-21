@@ -33,11 +33,11 @@ path = "rust/impl/typing/inspect_type.rs"
 name = "inspect_type_test"
 path = "rust/test/typing/inspect_type_test.rs"
 
+[[example]]
+name = "inspect_type_trivial"
+path = "sample/rust/inspect_type_trivial/src/main.rs"
+
 [dependencies]
 
 [dev-dependencies]
 wtest_basic = { path = "../wtest_basic", version = "~0" }
-
-[[example]]
-name = "trivial"
-path = "sample/rust/inspect_type_trivial/src/main.rs"

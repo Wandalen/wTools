@@ -33,13 +33,13 @@ path = "rust/impl/typing/instance_of.rs"
 name = "instance_of_test"
 path = "rust/test/typing/instance_of_test.rs"
 
+[[example]]
+name = "instance_of_trivial"
+path = "sample/rust/instance_of_trivial/src/main.rs"
+
 [dependencies]
 implements = { path = "../implements", version = "~0" }
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = ["diff"] }
 wtest_basic = { path = "../wtest_basic", version = "~0" }
-
-[[example]]
-name = "trivial"
-path = "sample/rust/instance_of_trivial/src/main.rs"

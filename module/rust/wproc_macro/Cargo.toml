@@ -34,7 +34,7 @@ name = "wproc_macro"
 path = "rust/test/proc_macro/mod.rs"
 
 [[example]]
-name = "trivial"
+name = "wproc_macro_trivial"
 path = "sample/rust/wproc_macro_trivial/src/main.rs"
 
 [dependencies]

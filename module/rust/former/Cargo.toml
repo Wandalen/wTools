@@ -34,7 +34,7 @@ name = "former_test"
 path = "rust/test/former/former.rs"
 
 [[example]]
-name = "current"
+name = "former_trivial"
 path = "sample/rust/former_trivial/src/main.rs"
 
 [dependencies]

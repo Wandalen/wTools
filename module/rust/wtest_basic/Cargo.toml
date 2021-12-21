@@ -34,7 +34,7 @@ name = "wtest_basic_test"
 path = "rust/test/test/basic.rs"
 
 [[example]]
-name = "trivial"
+name = "wtest_basic_trivial"
 path = "sample/rust/wtest_basic_trivial/src/main.rs"
 
 [dev-dependencies]

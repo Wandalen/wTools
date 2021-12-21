@@ -34,7 +34,7 @@ name = "is_slice_test"
 path = "rust/test/typing/is_slice_test.rs"
 
 [[example]]
-name = "trivial"
+name = "is_slice_trivial"
 path = "sample/rust/is_slice_trivial/src/main.rs"
 
 [dependencies]
