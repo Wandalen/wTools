@@ -8,8 +8,8 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 ### JavaScript tools
 
-To work with JS module visit [the JS main page](./module/js/wTools/Readme.md).
+To work with JS module visit [the JS main page](./module/js/wTools).
 
 ### Rust tools
 
-To work with Rust crates visit [the Rust main page](./module/rust/wtools/Readme.md).
+To work with Rust crates visit [the Rust main page](./module/rust/wtools).
