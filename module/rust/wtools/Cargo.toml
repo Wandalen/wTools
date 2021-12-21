@@ -65,19 +65,20 @@ with_proc_macro = [ "wproc_macro" ]
 default = [ "with_wtools" ]
 
 [dependencies]
-former = { path = "../former", version = "~0" }
-inspect_type = { path = "../inspect_type", version = "~0" }
-is_slice = { path = "../is_slice", version = "~0" }
-implements = { path = "../implements", version = "~0" }
-werror = { path = "../werror", version = "~0" }
-wproc_macro = { path = "../wproc_macro", version = "~0", optional = true }
+former = { version = "~0", path = "../former" }
+inspect_type = { version = "~0", path = "../inspect_type" }
+is_slice = { version = "~0", path = "../is_slice" }
+implements = { version = "~0", path = "../implements" }
+werror = { version = "~0", path = "../werror" }
+winterval = { version = "~0", path = "../winterval" }
+wproc_macro = { version = "~0", path = "../wproc_macro", optional = true }
 # regex = "1.5.4"
 # chrono = "0.4.19"
 # paste = "1.0.5"
 # anyhow = "1.0.48"
 
 [dev-dependencies]
-wtest_basic = { path = "../wtest_basic", version = "~0" }
+wtest_basic = { version = "~0", path = "../wtest_basic" }
 trybuild = { version = "~1.0", features = ["diff"] }
 maplit = "~1.0"
 anyhow = "~1.0"

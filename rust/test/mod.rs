@@ -2,6 +2,7 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( concat_idents ) ]
 
+mod dt;
 mod error;
 mod former;
 mod meta;
