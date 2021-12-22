@@ -1,6 +1,7 @@
 #![ warn( missing_docs ) ]
 
-/* xxx : qqq : for rust : move */
+/* xxx : qqq : for rust : cover */
+/* xxx : publish? */
 
 pub trait SignedOf
 {

@@ -1,9 +1,6 @@
 #![ warn( missing_docs ) ]
 
-/* xxx : qqq : for rust : move */
-/* xxx : qqq : for rust : implement trait IntervalAdapter for standard ranges */
 /* xxx : qqq : for rust : implement iterator */
-/* qqq : for rust : cover */
 
 //!
 //! Interval adapter for both open/closed implementations of intervals ( ranges ).
