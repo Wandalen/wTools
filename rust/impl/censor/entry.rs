@@ -4,6 +4,6 @@ use wcensor_mid::*;
 fn main()
 {
   let params = InstructionParseParams::new();
-  instruction_parse_from_args( &params, env::args().skip( 1 ) );
-  // println!( "{}", 13 );
+  let instruction = instruction_parse_from_splits( &params, env::args().skip( 1 ) );
+  println!( "{:?}", instruction );
 }

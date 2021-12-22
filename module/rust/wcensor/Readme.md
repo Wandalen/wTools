@@ -5,7 +5,7 @@ Utility to operate files from command line.
 ### Sample
 
 ``` shell
-censor hlink link to_file
+censor .hlink new_link to_file
 ```
 
 ### To install
