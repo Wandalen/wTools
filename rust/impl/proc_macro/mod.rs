@@ -5,8 +5,8 @@
 //! Tools for writing procedural macroses.
 //!
 
-mod num;
-mod interval;
+// mod num;
+// mod interval;
 
 ///
 /// Macro for diagnostics purpose to print both syntax tree and source code behind it.
@@ -209,7 +209,8 @@ pub fn type_rightmost( ty : &syn::Type ) -> Option< String >
   None
 }
 
-pub use crate::interval::*;
+// pub use crate::interval::*;
+use winterval::*;
 
 /// Return the specified number of parameters of the type.
 ///
@@ -231,7 +232,7 @@ pub use crate::interval::*;
 
 pub fn type_parameters< R >( ty : &syn::Type, range : R ) -> Vec< &syn::Type >
 where
-  R : std::convert::Into< crate::interval::Interval >
+  R : std::convert::Into< Interval >
 {
   let range = range.into();
   if let syn::Type::Path( syn::TypePath{ path : syn::Path { ref segments, .. }, .. } ) = ty

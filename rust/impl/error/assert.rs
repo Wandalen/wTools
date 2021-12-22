@@ -1,5 +1,7 @@
 
+///
 /// Macro asserts that two expressions are identical to each other. Unlike std::assert_eq it is removed from a release build.
+///
 
 #[macro_export]
 macro_rules! debug_assert_id

@@ -1,13 +1,25 @@
-#![ allow( missing_docs ) ]
+#![ warn( missing_docs ) ]
 
-/* xxx : qqq : for rust : move */
-/* xxx : qqq : for rust : implement trait IntervalAdapter for standard ranges */
-/* qqq : for rust : cover */
+/* xxx : qqq : for rust : implement iterator */
+
+//!
+//! Interval adapter for both open/closed implementations of intervals ( ranges ).
+//!
+//! # sample
+//!
+//! ``` rust sample test
+//! use winterval::*;
+//!
+//! let src = 2..5;
+//! assert_eq!( src.closed(), ( 2, 4 ) );
+//!
+//! let src = 2..=4;
+//! assert_eq!( src.closed(), ( 2, 4 ) );
+//! ```
+//!
 
 ///
-/// Interface of interval.
-///
-/// Interval adapter is implemented for [core::ops::Range], [core::ops::RangeInclusive] as well as for [crate::Interval].
+/// Interval adapter. Interface to interval-like structures.
 ///
 
 pub trait IntervalAdapter< T = isize >
@@ -15,22 +27,28 @@ where
   T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
   isize : Into< T >,
 {
+  /// the first element of the ( closed ) interval
   fn first( &self ) -> T;
+  /// the last element of the ( closed ) interval
   fn last( &self ) -> T;
+  /// number of discrete elements in the interval
   fn len( &self ) -> T
   {
     let one : T = 1.into();
     self.last() - self.first() + one
   }
+  /// interval in closed format as pair of numbers
   fn closed( &self ) -> ( T, T )
   {
     ( self.first(), self.last() )
   }
+  /// interval in closed-open format as pair of numbers
   fn closed_open( &self ) -> ( T, T )
   {
     let one : T = 1.into();
     ( self.first(), self.last() + one )
   }
+  /// interval in first-length format as pair of numbers
   fn first_len( &self ) -> ( T, T )
   {
     ( self.first(), self.len() )
@@ -38,7 +56,9 @@ where
 }
 
 ///
-/// Alternative implementation of interval. Both [core::ops::Range], [core::ops::RangeInclusive] are convertable to [crate::Interval]
+/// Alternative implementation of interval.
+///
+/// Both [core::ops::Range], [core::ops::RangeInclusive] are convertable to [crate::Interval]
 ///
 
 pub struct Interval< T = isize >
@@ -55,6 +75,7 @@ where
   T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
   isize : Into< T >,
 {
+  /// Constructor of an interval. Expects closed interval in arguments.
   pub fn new( first : T, last : T ) -> Self
   {
     Self { _first : first, _last : last }
@@ -77,6 +98,47 @@ where
   }
 }
 
+//
+// IntervalAdapter for std
+//
+
+impl< T > IntervalAdapter< T >
+for ::core::ops::Range< T >
+where
+  T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
+  isize : Into< T >,
+{
+  fn first( &self ) -> T
+  {
+    self.start
+  }
+  fn last( &self ) -> T
+  {
+    let one : T = 1.into();
+    self.end - one
+  }
+}
+
+impl< T > IntervalAdapter< T >
+for ::core::ops::RangeInclusive< T >
+where
+  T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
+  isize : Into< T >,
+{
+  fn first( &self ) -> T
+  {
+    *self.start()
+  }
+  fn last( &self ) -> T
+  {
+    *self.end()
+  }
+}
+
+//
+// from for std
+//
+
 impl< T > From< ::core::ops::Range< T > >
 for Interval< T >
 where
@@ -89,6 +151,8 @@ where
     Self { _first : src.start, _last : src.end - one }
   }
 }
+
+//
 
 impl< T > From< ::core::ops::RangeInclusive< T > >
 for Interval< T >

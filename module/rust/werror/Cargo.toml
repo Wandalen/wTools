@@ -1,6 +1,6 @@
 [package]
 name = "werror"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -30,14 +30,14 @@ name = "werror"
 path = "rust/impl/error/mod.rs"
 
 [[test]]
-name = "werror_test"
+name = "error_test"
 path = "rust/test/error/mod.rs"
 
 [[example]]
-name = "werror_trivial"
-path = "sample/rust/werror_trivial/src/main.rs"
+name = "error_trivial"
+path = "sample/rust/error_trivial/src/main.rs"
 
 [dependencies]
 
 [dev-dependencies]
-wtest_basic = { path = "../wtest_basic", version = "~0" }
+wtest_basic = { version = "~0", path = "../wtest_basic" }

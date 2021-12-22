@@ -42,5 +42,5 @@ path = "rust/test/meta/select_matching_test.rs"
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = ["diff"] }
-wtest_basic = { path = "../wtest_basic", version = "~0" }
-werror = { path = "../werror", version = "~0" }
+wtest_basic = { version = "~0", path = "../wtest_basic" }
+werror = { version = "~0", path = "../werror" }
