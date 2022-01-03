@@ -72,6 +72,7 @@ implements = { version = "~0", path = "../implements" }
 werror = { version = "~0", path = "../werror" }
 winterval = { version = "~0", path = "../winterval" }
 wproc_macro = { version = "~0", path = "../wproc_macro", optional = true }
+maplit = "~1.0"
 # regex = "1.5.4"
 # chrono = "0.4.19"
 # paste = "1.0.5"
@@ -80,7 +81,6 @@ wproc_macro = { version = "~0", path = "../wproc_macro", optional = true }
 [dev-dependencies]
 wtest_basic = { version = "~0", path = "../wtest_basic" }
 trybuild = { version = "~1.0", features = ["diff"] }
-maplit = "~1.0"
 anyhow = "~1.0"
 rustversion = "~1.0"
 # quote = { version = "~1.0" }

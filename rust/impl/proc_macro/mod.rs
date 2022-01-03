@@ -304,6 +304,19 @@ pub fn attr_pair_single( attr : &syn::Attribute ) -> Result< ( String, syn::Lit,
   Ok( ( key, val, meta ) )
 }
 
+// ///
+// /// Canonize path and return it in string format.
+// ///
+//
+// pub fn path_of( syn_path : &syn::Path ) -> String
+// {
+//   // use quote::*;
+//   use syn::*;
+//   let result : String = format!( "{}", syn_path.to_token_stream() );
+//   // let result : String = format!( "{}", quote!{ #syn_path } );
+//   result
+// }
+
 //
 
 // don't delete!

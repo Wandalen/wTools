@@ -31,12 +31,12 @@ name = "former_derive"
 path = "rust/impl/former/derive/mod.rs"
 
 [dependencies]
-proc-macro2 = "~1.0.32"
-quote = "~1.0.10"
-syn = { version = "~1.0.81", features = ["full", "extra-traits", "parsing"] }
+proc-macro2 = "~1.0"
+quote = "~1.0"
+syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
 itertools = "~0.10"
 werror = { path = "../werror", version = "~0.0" }
 wproc_macro = { path = "../wproc_macro", version = "~0.0" }
 
 [dev-dependencies]
-trybuild = { version = "~1.0", features = ["diff"] }
+trybuild = { version = "~1.0", features = [ "diff" ] }

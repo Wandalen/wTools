@@ -1,16 +1,19 @@
-// #![allow( unused_imports )]
+// #![ allow( unused_imports ) ]
+// #![ allow( unused_mut ) ]
+// #![ allow( dead_code ) ]
 #![ warn( missing_docs ) ]
 
-use quote::quote;
+use quote::{ quote };
 use syn::{ DeriveInput };
 use itertools::{ MultiUnzip, process_results };
 
 use wproc_macro::*;
-// use syn::spanned::*;
 
 pub type Result< T > = std::result::Result< T, syn::Error >;
 
-//
+///
+/// Descripotr of a field.
+///
 
 #[allow( dead_code )]
 struct FormerField< 'a >
@@ -25,7 +28,63 @@ struct FormerField< 'a >
   pub type_container_kind : wproc_macro::ContainerKind,
 }
 
-//
+///
+/// Attribute to hold information about method to call after form.
+///
+/// `#[ form_after =( fn after1< 'a >() -> Option< &'a str > ) ]`
+///
+
+#[allow( dead_code )]
+struct AttributeFormAfter
+{
+  paren_token : syn::token::Paren,
+  signature : syn::Signature,
+}
+
+impl syn::parse::Parse for AttributeFormAfter
+{
+  fn parse( input : syn::parse::ParseStream ) -> Result< Self >
+  {
+    let input2;
+    Ok( Self
+    {
+      paren_token : syn::parenthesized!( input2 in input ),
+      signature : input2.parse()?,
+    })
+  }
+}
+
+///
+/// Attribute to hold information about default value.
+///
+/// `#[ default = 13 ]`
+///
+
+#[allow( dead_code )]
+struct AttributeDefault
+{
+  // eq_token : syn::Token!{ = },
+  paren_token : syn::token::Paren,
+  expr : syn::Expr,
+}
+
+impl syn::parse::Parse for AttributeDefault
+{
+  fn parse( input : syn::parse::ParseStream ) -> Result< Self >
+  {
+    let input2;
+    Ok( Self
+    {
+      paren_token : syn::parenthesized!( input2 in input ),
+      // eq_token : input.parse()?,
+      expr : input2.parse()?,
+    })
+  }
+}
+
+///
+/// Is type under Option.
+///
 
 fn is_optional( ty : &syn::Type ) -> bool
 {
@@ -118,18 +177,43 @@ fn field_form_map( field : &FormerField ) -> Result< syn::Stmt >
   let ty = field.ty;
 
   let mut default = None;
-  if field.attrs.len() == 1
+  // if field.attrs.len() == 1
+  // {
+  //   let ( key, val, _meta ) = attr_pair_single
+  //   (
+  //     field.attrs.first().ok_or_else( || syn_err!( field.ident, "No attr" ) )?
+  //   )?;
+  //   if key != "default".to_string()
+  //   {
+  //     return Err( syn_err!( field.ident, "Unknown attribute key : {}\nDid you mean `default`", key ) );
+  //   }
+  //   default = Some( val );
+  // }
+
+  for attr in field.attrs.iter()
   {
-    let ( key, val, _meta ) = attr_pair_single
-    (
-      field.attrs.first().ok_or_else( || syn_err!( field.ident, "No attr" ) )?
-    )?;
-    if key != "default".to_string()
+    let key_ident = attr.path.get_ident()
+    .ok_or_else( || syn_err!( attr, "Expects simple key of an attirbute, but got:\n  {}", quote!{ #attr } ) )?;
+    let key_str = format!( "{}", key_ident );
+    // println!( "key_ident : {}", key_ident );
+    match key_str.as_ref()
     {
-      return Err( syn_err!( field.ident, "Unknown attribute key : {}\nDid you mean `default`", key ) );
+      "default" =>
+      {
+        let attr_default = syn::parse2::< AttributeDefault >( attr.tokens.clone() )?;
+        default = Some( attr_default.expr );
+      }
+      _ =>
+      {
+        return Err( syn_err!( attr, "Unknown attribute {}", quote!{ #attr } ) );
+      }
     }
-    default = Some( val );
   }
+
+  // if false
+  // {
+  //   default = Some( 13 );
+  // }
 
   let tokens = if field.is_optional
   {
@@ -208,14 +292,6 @@ fn field_name_map( field : &FormerField ) -> syn::Ident
 {
   let ident = field.ident.clone();
   ident
-  // if let Some( ident ) = ident
-  // {
-  //   ident
-  // }
-  // else
-  // {
-  //   syn::Ident::new( "?? no name_ident ??", proc_macro2::Span::call_site() )
-  // }
 }
 
 //
@@ -223,7 +299,6 @@ fn field_name_map( field : &FormerField ) -> syn::Ident
 #[inline]
 fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> Result< syn::Stmt >
 {
-  // let ident = field.ident.clone();
   let ident = &field.ident;
 
   let tokens = match &field.type_container_kind
@@ -333,6 +408,37 @@ fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> 
 
 //
 
+fn doc_generate( name_ident : &syn::Ident ) -> String
+{
+
+  let doc_example1 =
+r#"
+use wtools::former::Former;
+#[derive( Former )]
+pub struct Struct1
+{
+  #[former( default = 31 )]
+  field1 : i32,
+}
+"#;
+
+  let doc = format!
+  (
+r#" Object to form [{}]. If field's values is not set then default value of the field is set.
+
+For specifing custom default value use attribute `default`. For example:
+``` ignore
+{}
+```
+"#,
+    name_ident, doc_example1
+  );
+
+  doc
+}
+
+//
+
 pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   // let ast = parse_macro_input!( input as DeriveInput );
@@ -347,6 +453,49 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   let generics = &ast.generics;
   let former_name = format!( "{}Former", name_ident );
   let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
+
+  /* structure attribute */
+
+  let mut form_after = quote!
+  {
+    return result;
+  };
+  let mut form_after_output = quote!{ #name_ident #generics };
+  let mut form_generics = quote!{};
+  for attr in ast.attrs.iter()
+  {
+    if let Some( ident ) = attr.path.get_ident()
+    {
+      let ident_string = format!( "{}", ident );
+      if ident_string == "form_after"
+      {
+        let attr_form_after = syn::parse2::< AttributeFormAfter >( attr.tokens.clone() )?;
+        let signature = &attr_form_after.signature;
+        let generics = &signature.generics;
+        form_generics = quote!{ #generics };
+        let form_after_ident = &signature.ident;
+        let output = &signature.output;
+        match output
+        {
+          syn::ReturnType::Type( _, boxed_type ) =>
+          {
+            form_after_output = quote!{ #boxed_type };
+          },
+          _ => {},
+        }
+        form_after = quote!
+        {
+          return result.#form_after_ident();
+        };
+      }
+    }
+    else
+    {
+      return Err( syn_err!( "Unknown structure attribute:\n{}", quote!{ attr } ) );
+    }
+  }
+
+  /* */
 
   let fields = match ast.data
   {
@@ -389,28 +538,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     field_setter_map( &former_field, &former_name_ident ),
   )}).multiunzip();
 
-  let doc_example1 =
-r#"
-#[derive( Former )]
-pub struct Struct1
-{
-  #[former( default = 31 )]
-  field1 : i32,
-}
-"#;
-
-  let doc = format!
-  (
-r#" Object to form [{}]. If field's values is not set then default value of the field is set.
-
-For specifing custom default value use attribute `default`. For example:
-```
-{}
-```
-"#,
-    name_ident, doc_example1
-  );
-
+  let doc = doc_generate( &name_ident );
   let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
   let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
 
@@ -439,13 +567,20 @@ For specifing custom default value use attribute `default`. For example:
     impl #generics #former_name_ident #generics
     {
       #[inline]
-      pub fn form( mut self ) -> #name_ident #generics
+      pub fn form #form_generics ( self ) -> #form_after_output
+      {
+        let result = self._form();
+        #form_after
+      }
+      #[inline]
+      pub fn _form( mut self ) -> #name_ident #generics
       {
         #( #fields_form )*
-        #name_ident
+        let result = #name_ident
         {
           #( #fields_names, )*
-        }
+        };
+        return result;
       }
       #( #fields_setter )*
     }

@@ -56,7 +56,7 @@ pub struct Struct1Former
 
 impl Struct1Former
 {
-  fn form( mut self ) -> Struct1
+  fn _form( mut self ) -> Struct1
   {
 
     let int_1 = if self.int_1.is_some()
@@ -138,6 +138,11 @@ impl Struct1Former
       hashset_strings_1,
     }
 
+  }
+
+  fn form( self ) -> Struct1
+  {
+    self._form()
   }
 
   pub fn int_1< Src >( mut self, src : Src ) -> Self

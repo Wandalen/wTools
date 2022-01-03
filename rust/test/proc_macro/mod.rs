@@ -367,6 +367,28 @@ fn _attr_pair_single_basic() -> Result< (), syn::Error >
 
 //
 
+// #[test]
+// fn path_of() -> Result< (), syn::Error >
+// {
+//
+//   let input = quote!
+//   {
+//     This::is::path
+//   };
+//   let ast = match syn::parse2::< syn::Path >( input )
+//   {
+//     Ok( syntax_tree ) => syntax_tree,
+//     Err( err ) => return Err( err ),
+//   };
+//
+//   let got = wproc_macro::path_of( &ast );
+//   assert_eq!( got, "This::is::path" );
+//
+//   return Ok( () );
+// }
+
+//
+
 test_suite!
 {
   tree_export_str_basic,
@@ -376,4 +398,5 @@ test_suite!
   type_rightmost_basic,
   type_parameters_basic,
   // attr_pair_single_basic -> Result< (), syn::Error >,
+  // path_of -> Result< (), syn::Error >,
 }

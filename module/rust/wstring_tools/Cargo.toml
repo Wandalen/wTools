@@ -1,6 +1,6 @@
 [package]
-name = "wcensor"
-version = "0.0.1"
+name = "wstring_tools"
+version = "0.0.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -9,9 +9,9 @@ authors = [
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/wcensor"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wcensor"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wcensor"
+documentation = "https://docs.rs/wstring_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wstring_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wstring_tools"
 description = """
 Utility to operate files from command line.
 """
@@ -19,30 +19,27 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/censor",
+  "/rust/impl/string",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
 
 [lib]
-name = "wcensor"
-path = "rust/impl/censor/lib.rs"
-
-[[bin]]
-name = "wcensor"
-path = "rust/impl/censor/entry.rs"
+name = "wstring_tools"
+path = "rust/impl/string/lib.rs"
 
 [[test]]
-name = "censor_test"
-path = "rust/test/censor/censor_test.rs"
+name = "string_test"
+path = "rust/test/string/test.rs"
 
 # [[example]]
-# name = "censor_trivial"
-# path = "sample/rust/censor_trivial/src/main.rs"
+# name = "string_trivial"
+# path = "sample/rust/string_trivial/src/main.rs"
 
 [dependencies]
-wtools = { version = "~0", path = "../wtools" }
+former = { version = "~0", path = "../former" }
+# wtools = { version = "~0", path = "../wtools" }
 # werror = { version = "~0", path = "../werror" }
 
 [dev-dependencies]

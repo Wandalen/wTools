@@ -6,13 +6,13 @@ use std::collections::HashSet;
 #[derive( Debug, PartialEq, Former )]
 pub struct Struct1
 {
-  #[former( default = 31 )]
+  #[ default( 31 ) ]
   pub int_1 : i32,
-  #[former( default = "abc" )]
+  #[ default( "abc" ) ]
   string_1 : String,
-  #[former( default = 31 )]
+  #[ default( 31 ) ]
   int_optional_1 : Option< i32 >,
-  #[former( default = "abc" )]
+  #[ default( "abc" ) ]
   string_optional_1 : Option< String >,
 
   vec_1 : Vec< String >,
@@ -25,9 +25,7 @@ pub struct Struct1
 fn test_complex() -> anyhow::Result< () >
 {
 
-  let command = Struct1::former()
-  .form();
-  // dbg!( &command );
+  let command = Struct1::former().form();
 
   let expected = Struct1
   {

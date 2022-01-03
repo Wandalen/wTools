@@ -27,6 +27,8 @@ pub use werror as error;
 #[ cfg( feature = "with_proc_macro" ) ]
 pub use wproc_macro as proc_macro;
 
+pub use maplit::*;
+
 // pub use anyhow; // xxx : add also maplit
 
 ///

@@ -356,6 +356,32 @@ fn test_hashset() -> anyhow::Result< () >
 
 //
 
+fn test_underscored_form() -> anyhow::Result< () >
+{
+
+  // test.case( "basic" );
+
+  let command = Struct1::former()
+  .int_1( 13 )
+  ._form();
+
+  let expected = Struct1
+  {
+    int_1 : 13,
+    string_1 : "".to_string(),
+    int_optional_1 : None,
+    string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hashmap!{},
+    hashset_strings_1 : hashset!{},
+  };
+  assert_eq!( command, expected );
+
+  Ok( () )
+}
+
+//
+
 fn test_complex() -> anyhow::Result< () >
 {
 
@@ -410,6 +436,7 @@ fn main_test() -> anyhow::Result< () >
   test_vector()?;
   test_hashmap()?;
   test_hashset()?;
+  test_underscored_form()?;
   test_complex()?;
   Ok( () )
 }
