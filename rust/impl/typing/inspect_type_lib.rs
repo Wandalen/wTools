@@ -6,12 +6,12 @@
 //!
 //! Sample
 //! ```
-//! // #![ feature( type_name_of_val ) ]
+//!# // #![ feature( type_name_of_val ) ]
 //! #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 //!
 //! use inspect_type::*;
 //!
-//! #[ rustversion::nightly ]
+//! #[ cfg( feature = "nightly" ) ]
 //! fn main()
 //! {
 //!   inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
@@ -20,10 +20,10 @@
 //!   // < sizeof( &[1, 2, 3] : &[i32; 3] ) = 8
 //! }
 //!
-//! #[ rustversion::stable ]
-//! fn main()
-//! {
-//! }
+//!# #[ cfg( not( feature = "nightly" ) ) ]
+//!# fn main()
+//!# {
+//!# }
 //!
 //! ```
 

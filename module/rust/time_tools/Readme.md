@@ -9,7 +9,7 @@ use time_tools::*;
 
 ```
 
-<!-- xxx : qqq for Rust : write -->
+<!-- # qqq : for Rust dev : please add -->
 
 ### To add to your project
 

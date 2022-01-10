@@ -36,7 +36,7 @@ path = "rust/test/typing/lib_test.rs"
 # [[example]]
 # name = "typing_tools_trivial"
 # path = "sample/rust/typing_tools_trivial/src/main.rs"
-# xxx
+# qqq : for Rust dev : please add
 
 [features]
 nightly = [ "inspect_type/nightly" ]

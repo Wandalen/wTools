@@ -13,12 +13,6 @@
 pub mod meta;
 pub use meta::*;
 
-// pub mod meta;
-// pub use meta::*;
-
-// pub use meta_tools as meta;
-// pub use meta::*;
-
 ///
 /// Type checking tools.
 ///
@@ -26,20 +20,12 @@ pub use meta::*;
 pub mod typing;
 pub use typing::*;
 
-// pub use typing_tools as typing;
-// pub use typing::*;
-
 ///
 /// Exporting/importing serialize/deserialize encoding/decoding macros, algorithms and structures for that.
 ///
 
 pub mod convert;
 pub use convert::*;
-
-// pub mod typing;
-// pub use inspect_type::*;
-// pub use is_slice::*;
-// pub use implements::*;
 
 ///
 /// Collection of general purpose time tools.
@@ -49,11 +35,13 @@ pub mod time;
 
 //
 
-pub use former as former;
 pub use werror as error;
 
-#[ cfg( feature = "with_proc_macro" ) ]
-pub use wproc_macro as proc_macro;
+// #[ cfg( feature = "with_proc_macro" ) ]
+// pub use wproc_macro as proc_macro;
+
+pub use former as former;
+pub use woptions as options;
 
 ///
 /// Prelude to use: `use wtools::prelude::*`.

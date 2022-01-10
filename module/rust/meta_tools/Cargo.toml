@@ -36,7 +36,7 @@ path = "rust/test/meta/lib_test.rs"
 # [[example]]
 # name = "meta_tools_trivial"
 # path = "sample/rust/meta_tools_trivial/src/main.rs"
-# xxx
+# qqq : for Rust dev : please add
 
 [dependencies]
 # former = { version = "~0.1", path = "../former" }

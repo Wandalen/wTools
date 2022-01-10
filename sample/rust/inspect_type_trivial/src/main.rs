@@ -18,7 +18,8 @@
 
 pub use inspect_type::*;
 
-#[ rustversion::nightly ]
+// #[ rustversion::nightly ]
+#[ cfg( feature = "nightly" ) ]
 fn main()
 {
   inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
@@ -27,7 +28,8 @@ fn main()
   // < sizeof( &[1, 2, 3] : &[i32; 3] ) = 8
 }
 
-#[ rustversion::stable ]
+// #[ rustversion::stable ]
+#[ cfg( not( feature = "nightly" ) ) ]
 fn main()
 {
 }

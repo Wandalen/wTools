@@ -9,7 +9,7 @@ use meta_tools::*;
 
 ```
 
-<!-- xxx : qqq for Rust : write -->
+<!-- qqq for Rust dev : please write -->
 
 ### To add to your project
 
