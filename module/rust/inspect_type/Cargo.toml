@@ -19,7 +19,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "diagnostic-purpose" ]
 
 include = [
-  "/rust/impl/meta/inspect_type.rs",
+  "/rust/impl/meta/inspect_type_lib.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -35,7 +35,7 @@ all-features = true
 
 [lib]
 name = "inspect_type"
-path = "rust/impl/typing/inspect_type.rs"
+path = "rust/impl/typing/inspect_type_lib.rs"
 
 [[test]]
 name = "inspect_type_test"
