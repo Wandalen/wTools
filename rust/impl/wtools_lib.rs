@@ -30,11 +30,11 @@ pub use typing::*;
 // pub use typing::*;
 
 ///
-/// Exporting/importing tools to serialize/deserialize structures.
+/// Exporting/importing serialize/deserialize encoding/decoding macros, algorithms and structures for that.
 ///
 
-pub mod exporting;
-pub use exporting::*;
+pub mod convert;
+pub use convert::*;
 
 // pub mod typing;
 // pub use inspect_type::*;
