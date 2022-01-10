@@ -1,4 +1,5 @@
 #![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
 
 /* xxx : qqq : for rust : cover */
 /* xxx : publish? */

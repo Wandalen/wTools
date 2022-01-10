@@ -1,3 +1,6 @@
+// #![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
+
 // pub use werror::*;
 pub use wtools::error::*;
 use std::collections::HashMap;
@@ -148,6 +151,7 @@ For example: `.command1 subject key1:val key2:val2`."#
 
 }
 
+#[ derive( Debug, PartialEq ) ]
 pub struct InstructionParseParams
 {
 }

@@ -1,5 +1,9 @@
 
 use wtest_basic::*;
+
+#[cfg( feature = "with_wtools" )]
+use wtools::typing as TheModule;
+#[cfg( not( feature = "with_wtools" ) )]
 use implements as TheModule;
 
 //

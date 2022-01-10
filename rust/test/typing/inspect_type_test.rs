@@ -1,11 +1,18 @@
-#![ allow( unused_attributes ) ]
-#![ feature( type_name_of_val ) ]
+#![ allow( unused_imports ) ]
+// #![ allow( unused_attributes ) ]
+// #![ feature( type_name_of_val ) ]
+#![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 
-use inspect_type as TheModule;
 use wtest_basic::*;
+
+#[cfg( feature = "with_wtools" )]
+use wtools::typing as TheModule;
+#[cfg( not( feature = "with_wtools" ) )]
+use inspect_type as TheModule;
 
 //
 
+#[ cfg( feature = "nightly" ) ]
 fn _inspect_to_str_type_of()
 {
 
@@ -21,6 +28,7 @@ fn _inspect_to_str_type_of()
 
 //
 
+#[ cfg( feature = "nightly" ) ]
 fn _inspect_type_of()
 {
 
@@ -36,6 +44,8 @@ fn _inspect_type_of()
 
 //
 
+// #[ rustversion::nightly ]
+#[ cfg( feature = "nightly" ) ]
 test_suite!
 {
   inspect_to_str_type_of,

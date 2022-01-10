@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.1.6"
+version = "0.1.7"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -19,9 +19,9 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/mod.rs",
-  "/rust/impl/meta/mod.rs",
-  "/rust/impl/typing/mod.rs",
+  "/rust/impl/wtools_lib.rs",
+  # "/rust/impl/meta/mod.rs",
+  # "/rust/impl/typing/mod.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -29,31 +29,11 @@ include = [
 
 [lib]
 name = "wtools"
-path = "rust/impl/mod.rs"
+path = "rust/impl/wtools_lib.rs"
 
 [[test]]
 name = "wtools_test"
-path = "rust/test/mod.rs"
-
-# [[example]]
-# name = "former"
-# path = "sample/rust/former_trivial/src/main.rs"
-#
-# [[example]]
-# name = "implements"
-# path = "sample/rust/implements_trivial/src/main.rs"
-#
-# [[example]]
-# name = "inspect_type"
-# path = "sample/rust/inspect_type_trivial/src/main.rs"
-#
-# [[example]]
-# name = "is_slice"
-# path = "sample/rust/is_slice_trivial/src/main.rs"
-#
-# [[example]]
-# name = "wtest_basic"
-# path = "sample/rust/wtest_basic_trivial/src/main.rs"
+path = "rust/test/wtools_test.rs"
 
 [[example]]
 name = "wtools_trivial"
@@ -61,26 +41,37 @@ path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
 with_wtools = []
+nightly = [ "typing_tools/nightly" ]
 with_proc_macro = [ "wproc_macro" ]
 default = [ "with_wtools" ]
 
+[package.metadata.docs.rs]
+all-features = true
+# rustdoc-args = []
+
 [dependencies]
-former = { version = "~0", path = "../former" }
-inspect_type = { version = "~0", path = "../inspect_type" }
-is_slice = { version = "~0", path = "../is_slice" }
-implements = { version = "~0", path = "../implements" }
-werror = { version = "~0", path = "../werror" }
-winterval = { version = "~0", path = "../winterval" }
-wproc_macro = { version = "~0", path = "../wproc_macro", optional = true }
-maplit = "~1.0"
+former = { version = "~0.1", path = "../former" }
+woptions = { version = "~0.1", path = "../woptions" }
+# inspect_type = { version = "~0.1", path = "../inspect_type" }
+# is_slice = { version = "~0.1", path = "../is_slice" }
+# implements = { version = "~0.1", path = "../implements" }
+meta_tools = { version = "~0.1", path = "../meta_tools" }
+typing_tools = { version = "~0.1", path = "../typing_tools" }
+time_tools = { version = "~0.1", path = "../time_tools" }
+wstring_tools = { version = "~0.1", path = "../wstring_tools" }
+werror = { version = "~0.1", path = "../werror" }
+winterval = { version = "~0.1", path = "../winterval" }
+wproc_macro = { version = "~0.1", path = "../wproc_macro", optional = true }
+parse-display = { version = "~0.5" } # xxx : add test?
+# maplit = "~1.0"
 # regex = "1.5.4"
 # chrono = "0.4.19"
 # paste = "1.0.5"
 # anyhow = "1.0.48"
 
 [dev-dependencies]
-wtest_basic = { version = "~0", path = "../wtest_basic" }
-trybuild = { version = "~1.0", features = ["diff"] }
+wtest_basic = { version = "~0.1", path = "../wtest_basic" }
+trybuild = { version = "~1.0", features = [ "diff" ] }
 anyhow = "~1.0"
 rustversion = "~1.0"
 # quote = { version = "~1.0" }

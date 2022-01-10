@@ -1,6 +1,6 @@
 # module::wcensor
 
-Utility to operate files from command line.
+Utility to operate files from a command line.
 
 ### Sample
 

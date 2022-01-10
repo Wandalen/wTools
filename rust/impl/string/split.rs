@@ -1,45 +1,60 @@
+// #![ warn( missing_docs ) ]
+// #![ warn( missing_debug_implementations ) ]
 
-/* xxx : implement no_std feature */
-use std::rc::Rc;
 use former::Former;
 
-//
+///
+/// Either delimeter or delimeted with the slice on its string.
+///
 
-pub enum Split< 'a >
+#[ derive( Debug ) ]
+pub struct Split< 'a >
 {
-  Split( &'a str ),
-  Delimeter( Rc< str > ),
+  string : &'a str,
+  typ : SplitType,
 }
 
 impl< 'a > From< Split< 'a > > for String
 {
   fn from( src : Split ) -> Self
   {
-    match src
-    {
-      Split::Split( e ) => e.into(),
-      Split::Delimeter( e ) => e.to_string(),
-    }
+    src.string.into()
   }
 }
 
-//
+///
+/// Either delimeter or delimeted
+///
 
+#[ derive( Debug ) ]
+pub enum SplitType
+{
+  /// Substring of the original string with text inbetween delimeters.
+  Delimeted,
+  /// Delimeter.
+  Delimeter,
+}
+
+///
+/// Split iterator.
+///
+
+#[ derive( Debug ) ]
 pub struct SplitIterator< 'a >
 {
   iterator : std::iter::Peekable< std::str::Split< 'a, &'a str > >,
   counter : i32,
-  delimeter : Rc< str >,
+  delimeter : &'a str,
 }
 
 //
 
 impl< 'a > SplitIterator< 'a >
 {
-  fn new( src : &'a str, delimeter : Rc< str > ) -> Self
+  fn new( src : &'a str, delimeter : &'a str ) -> Self
   {
     let counter = 0;
-    let delimeter = delimeter.clone();
+    // let delimeter = delimeter.clone();
     let delimeter_slice = unsafe
     {
       let slice = core::slice::from_raw_parts( delimeter.as_ptr(), delimeter.len() );
@@ -59,7 +74,6 @@ impl< 'a > SplitIterator< 'a >
 
 impl< 'a > Iterator for SplitIterator< 'a >
 {
-  // type Item = &'a str;
   type Item = Split< 'a >;
 
   fn next( &mut self ) -> Option< Self::Item >
@@ -70,7 +84,7 @@ impl< 'a > Iterator for SplitIterator< 'a >
       let next = self.iterator.next();
       if let Some( next ) = next
       {
-        Some( Split::Split( next ) )
+        Some( Split { string : next, typ : SplitType::Delimeted } )
       }
       else
       {
@@ -84,48 +98,57 @@ impl< 'a > Iterator for SplitIterator< 'a >
         self.iterator.next();
         return None;
       }
-      Some( Split::Delimeter( self.delimeter.clone() ) )
+      Some( Split { string : self.delimeter, typ : SplitType::Delimeter } )
+      // Some( Split::Delimeter( self.delimeter.clone() ) )
     }
   }
 }
 
-//
+///
+/// Options of function split.
+///
 
+#[ derive( Debug ) ]
 #[ derive( Former ) ]
 #[ form_after( fn split( self ) -> SplitIterator< 'a > ) ]
 pub struct SplitOptions< 'a >
 {
+
   #[ default( "" ) ]
   src : &'a str,
   #[ default( "" ) ]
-  delimeter : Rc< str >,
+  delimeter : &'a str,
   #[ default( true ) ]
   preserving_empty : bool,
   #[ default( true ) ]
   preserving_delimeters : bool,
+
+  // #[ method ]
+  // fn split( self ) -> SplitIterator< 'a >
+  // where
+  //   Self : Sized,
+  // {
+  //   SplitIterator::new( self.src(), self.delimeter() )
+  // }
+
   // result : HashMap< Box< str >, Box< str > >,
 }
 
-impl< 'a > SplitOptions< 'a >
-{
-  pub fn new() -> Self
-  {
-    Self
-    {
-      src : "".into(),
-      delimeter : " ".into(),
-      preserving_empty : true,
-      preserving_delimeters : true,
-    }
-  }
-}
-
-//
+///
+/// Adapter for Split Options.
+///
 
 pub trait SplitOptionsAdapter< 'a >
 {
-  fn delimeter( &self ) -> Rc< str >;
+  /// A string to split.
   fn src( &self ) -> &'a str;
+  /// A delimeter to split string.
+  fn delimeter( &self ) -> &'a str;
+  /// Preserving or dropping empty splits.
+  fn preserving_empty( &self ) -> bool;
+  /// Preserving or dropping delimeters.
+  fn preserving_delimeters( &self ) -> bool;
+  /// Do splitting.
   fn split( self ) -> SplitIterator< 'a >
   where
     Self : Sized,
@@ -138,47 +161,36 @@ pub trait SplitOptionsAdapter< 'a >
 
 impl< 'a > SplitOptionsAdapter< 'a > for SplitOptions< 'a >
 {
-  fn delimeter( &self ) -> Rc< str >
-  {
-    self.delimeter.clone()
-  }
   fn src( &self ) -> &'a str
   {
     self.src
   }
+  fn delimeter( &self ) -> &'a str
+  {
+    self.delimeter
+  }
+  fn preserving_empty( &self ) -> bool
+  {
+    self.preserving_empty
+  }
+  fn preserving_delimeters( &self ) -> bool
+  {
+    self.preserving_delimeters
+  }
 }
 
-//
-
-// pub trait SplitOptionSrcAdapter< 'a > : SplitOptionsAdapter
-// {
-//   fn src( &self ) -> &'a str;
-//   fn split( &self ) -> SplitIterator
-//   {
-//     SplitIterator::new( self.src(), self.delimeter().clone() )
-//   }
-// }
-//
-// //
-//
-// impl< 'a > SplitOptionSrcAdapter< 'a > for SplitOptions< 'a >
-// {
-//   fn src( &self ) -> &'a str
-//   {
-//     self.src
-//   }
-// }
-
-//
-
-// pub fn split_default< 'a >( src : &'a str ) -> SplitIterator< 'a >
-// {
-//   let mut options = SplitOptions::new();
-//   // options.src = src;
-//   options.split()
-// }
-
-//
+///
+/// Function to split a string.
+///
+/// It produces former. To convert former into options and run algorithm of splitting call `form()`.
+///
+/// # Sample
+/// ```
+///   let iter = wstring_tools::string::split()
+///   .src( "abc def" )
+///   .delimeter( " " )
+///   .form();
+/// ```
 
 pub fn split< 'a >() -> SplitOptionsFormer< 'a >
 {

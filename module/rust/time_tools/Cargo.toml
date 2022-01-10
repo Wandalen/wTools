@@ -1,0 +1,64 @@
+[package]
+name = "time_tools"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Volodymyr M. <volodymyr.migdal@gmail.com>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/time_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/time_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/time_tools"
+description = """
+Collection of general purpose time tools.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+include = [
+  "/rust/impl/time",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[lib]
+name = "time_tools"
+path = "rust/impl/time/lib.rs"
+
+[[test]]
+name = "time_tools_test"
+path = "rust/test/time/lib_test.rs"
+
+# [[example]]
+# name = "time_tools_trivial"
+# path = "sample/rust/time_tools_trivial/src/main.rs"
+# xxx
+
+[dependencies]
+# former = { version = "~0.1", path = "../former" }
+# inspect_type = { version = "~0.1", path = "../inspect_type" }
+# is_slice = { version = "~0.1", path = "../is_slice" }
+# implements = { version = "~0.1", path = "../implements" }
+# time_tools = { version = "~0.1", path = "../time_tools" }
+# time_tools = { version = "~0.1", path = "../time_tools" }
+# werror = { version = "~0.1", path = "../werror" }
+# winterval = { version = "~0.1", path = "../winterval" }
+# wproc_macro = { version = "~0.1", path = "../wproc_macro", optional = true }
+# # maplit = "~1.0"
+# regex = "1.5.4"
+chrono = "~0.4"
+# paste = "1.0.5"
+# anyhow = "1.0.48"
+
+[dev-dependencies]
+wtest_basic = { version = "~0.1", path = "../wtest_basic" }
+# trybuild = { version = "~1.0", features = ["diff"] }
+# anyhow = "~1.0"
+# rustversion = "~1.0"
+# quote = { version = "~1.0" }
+# proc-macro2 = { version = "~1.0" }
+# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }

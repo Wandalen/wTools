@@ -1,4 +1,5 @@
 
+use meta_tools::*;
 use former::Former;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -34,8 +35,8 @@ fn test_complex() -> anyhow::Result< () >
     int_optional_1 : Some( 31 ),
     string_optional_1 : Some( "abc".to_string() ),
     vec_1 : vec![],
-    hashmap_strings_1 : maplit::hashmap!{},
-    hashset_strings_1 : maplit::hashset!{},
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 

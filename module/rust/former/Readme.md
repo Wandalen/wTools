@@ -53,7 +53,7 @@ fn main()
 ### To add to your project
 
 ```
-cargo add implements
+cargo add former
 ```
 
 ### Try out from the repository
@@ -61,6 +61,6 @@ cargo add implements
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/implements_trivial
+cd sample/rust/former_trivial
 cargo run
 ```

@@ -25,14 +25,14 @@ fn _instruction_parse_from_splits_basic()
   let instruction = TheModule::instruction::parse_from_splits( args.iter() );
   assert_eq!( instruction.command_name.as_ref(), ".command1" );
   assert_eq!( vec_as_ref( &instruction.subject ), vec![ "subject1", "subject2" ] );
-  assert_eq!( instruction.properties_map, hashmap!{} );
+  assert_eq!( instruction.properties_map, hmap!{} );
 
   // // test.case( "basic comand, subject map" );
   // let args = vec![ ".command1", "subject1", "k1:v1" ];
   // let instruction = TheModule::instruction::parse_from_splits( args.iter() );
   // assert_eq!( instruction.command_name.as_ref(), ".command1" );
   // assert_eq!( vec_as_ref( &instruction.subject ), vec![ "subject1" ] );
-  // assert_eq!( instruction.properties_map, hashmap!{} );
+  // assert_eq!( instruction.properties_map, hmap!{} );
 
 }
 

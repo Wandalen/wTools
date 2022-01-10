@@ -1,0 +1,42 @@
+[package]
+name = "former_macro"
+version = "0.1.8"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Volodymyr M. <volodymyr.migdal@gmail.com>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/former_macro"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/former_macro"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/former_macro"
+description = """
+Former - a variation of builder pattern. Implementation of its derive macro. Should not be used independently, instead use module::former which relies on the module.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
+
+include = [
+  "/rust/impl/former/derive",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[lib]
+proc-macro = true
+name = "former_macro"
+path = "rust/impl/former/macro/lib.rs"
+
+[dependencies]
+proc-macro2 = "~1.0"
+quote = "~1.0"
+syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
+itertools = "~0.10"
+werror = { path = "../werror", version = "~0.1" }
+wproc_macro = { version = "~0.1", path = "../wproc_macro" }
+
+[dev-dependencies]
+trybuild = { version = "~1.0", features = [ "diff" ] }

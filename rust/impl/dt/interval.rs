@@ -1,4 +1,5 @@
 #![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
 
 /* xxx : qqq : for rust : implement iterator */
 
@@ -61,6 +62,7 @@ where
 /// Both [core::ops::Range], [core::ops::RangeInclusive] are convertable to [crate::Interval]
 ///
 
+#[ derive( PartialEq, Debug ) ]
 pub struct Interval< T = isize >
 where
   T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,

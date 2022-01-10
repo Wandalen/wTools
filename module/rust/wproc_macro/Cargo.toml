@@ -1,6 +1,6 @@
 [package]
 name = "wproc_macro"
-version = "0.0.5"
+version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -27,11 +27,11 @@ include = [
 
 [lib]
 name = "wproc_macro"
-path = "rust/impl/proc_macro/mod.rs"
+path = "rust/impl/proc_macro/lib.rs"
 
 [[test]]
 name = "proc_macro"
-path = "rust/test/proc_macro/mod.rs"
+path = "rust/test/proc_macro/lib_test.rs"
 
 [[example]]
 name = "proc_macro_trivial"
@@ -40,11 +40,11 @@ path = "sample/rust/proc_macro_trivial/src/main.rs"
 [dependencies]
 proc-macro2 = { version = "~1.0" }
 syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }
-winterval = { version = "~0", path = "../winterval" }
-# inspect_type = { version = "~0", path = "../inspect_type" }
-# werror = { path = "../werror", version = "~0.0" }
+winterval = { version = "~0.1", path = "../winterval" }
+# inspect_type = { version = "~0.1", path = "../inspect_type" }
+# werror = { path = "../werror", version = "~0.1" }
 
 [dev-dependencies]
 trybuild = { version = "~1.0", features = ["diff"] }
-wtest_basic = { version = "~0", path = "../wtest_basic" }
+wtest_basic = { version = "~0.1", path = "../wtest_basic" }
 quote = "~1.0"

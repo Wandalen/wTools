@@ -1,3 +1,6 @@
+// #![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
+
 // pub use werror::*;
 use std::collections::HashMap;
 
@@ -16,6 +19,7 @@ pub trait PropsParseOptionsAdapter
   }
 }
 
+#[ derive( Debug, PartialEq ) ]
 pub struct PropsParseOptions
 {
   // result : HashMap< Box< str >, Box< str > >,

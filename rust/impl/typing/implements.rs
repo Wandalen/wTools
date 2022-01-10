@@ -1,4 +1,5 @@
 #![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
 
 //!
 //! Macro to answer the question: does it implement a trait?

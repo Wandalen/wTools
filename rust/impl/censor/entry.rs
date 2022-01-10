@@ -1,3 +1,10 @@
+#![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
+
+//!
+//! Utility to operate files from a command line.
+//!
+
 // #![feature( pattern )]
 
 use std::env;

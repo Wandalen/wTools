@@ -1,6 +1,6 @@
 [package]
 name = "wcensor"
-version = "0.0.1"
+version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -13,7 +13,7 @@ documentation = "https://docs.rs/wcensor"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wcensor"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wcensor"
 description = """
-Utility to operate files from command line.
+Utility to operate files from a command line.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
@@ -42,8 +42,8 @@ path = "rust/test/censor/censor_test.rs"
 # path = "sample/rust/censor_trivial/src/main.rs"
 
 [dependencies]
-wtools = { version = "~0", path = "../wtools" }
-# werror = { version = "~0", path = "../werror" }
+wtools = { version = "~0.1", path = "../wtools" }
+# werror = { version = "~0.1", path = "../werror" }
 
 [dev-dependencies]
-wtest_basic = { version = "~0", path = "../wtest_basic" }
+wtest_basic = { version = "~0.1", path = "../wtest_basic" }

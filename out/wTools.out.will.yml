@@ -753,8 +753,8 @@ module:
           filePath:
             module/rust/former_runtime: '{path::out.rust}/former_runtime'
             rust/former/runtime: '{path::out.rust}/former_runtime/rust/former/runtime'
-            module/rust/former_derive: '{path::out.rust}/former_derive'
-            rust/former/derive: '{path::out.rust}/former_derive/rust/former/derive'
+            module/rust/former_macro: '{path::out.rust}/former_macro'
+            rust/former/derive: '{path::out.rust}/former_macro/rust/former/derive'
             module/rust/former: '{path::out.rust}/former'
             rust/former/mod.rs: '{path::out.rust}/former/rust/former/mod.rs'
           prefixPath: ''
@@ -1479,8 +1479,8 @@ module:
           filePath:
             module/rust/former_runtime: '{path::out.rust}/former_runtime'
             rust/former/runtime: '{path::out.rust}/former_runtime/rust/former/runtime'
-            module/rust/former_derive: '{path::out.rust}/former_derive'
-            rust/former/derive: '{path::out.rust}/former_derive/rust/former/derive'
+            module/rust/former_macro: '{path::out.rust}/former_macro'
+            rust/former/derive: '{path::out.rust}/former_macro/rust/former/derive'
             module/rust/former: '{path::out.rust}/former'
             rust/former/mod.rs: '{path::out.rust}/former/rust/former/mod.rs'
         inherit:

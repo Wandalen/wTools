@@ -1,6 +1,6 @@
 [package]
 name = "wtest_basic"
-version = "0.0.4"
+version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -27,19 +27,19 @@ include = [
 
 [lib]
 name = "wtest_basic"
-path = "rust/impl/test/basic.rs"
+path = "rust/impl/test/basic_lib.rs"
 
 [[test]]
 name = "wtest_basic_test"
-path = "rust/test/test/basic.rs"
+path = "rust/test/test/wtest_basic_test.rs"
 
 [[example]]
 name = "wtest_basic_trivial"
 path = "sample/rust/wtest_basic_trivial/src/main.rs"
 
-[dev-dependencies]
-# trybuild = { version = "~1.0", features = ["diff"] }
-
 [dependencies]
 paste = "~1.0"
-anyhow = "~1.0"
+# anyhow = "~1.0"
+
+[dev-dependencies]
+# trybuild = { version = "~1.0", features = ["diff"] }

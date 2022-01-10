@@ -1,4 +1,5 @@
 #![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
 
@@ -53,5 +54,5 @@
 //! ```
 
 pub use former_runtime as runtime;
-pub use former_derive as derive;
+pub use former_macro as derive;
 pub use derive::Former as Former;

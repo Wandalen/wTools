@@ -10,5 +10,6 @@ exclude = [
   "sample/rust/-*",
   "module/rust/_*",
   "sample/rust/_*",
+  "sample/rust/_select_matching",
 ]
 # default-members = [ "module/rust/wtools" ]
