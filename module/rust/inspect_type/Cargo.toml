@@ -19,7 +19,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "diagnostic-purpose" ]
 
 include = [
-  "/rust/impl/meta/inspect_type_lib.rs",
+  "/rust/impl/typing/inspect_type_lib.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
