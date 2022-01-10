@@ -54,5 +54,5 @@
 //! ```
 
 pub use former_runtime as runtime;
-pub use former_macro as derive;
+pub use former_meta as derive;
 pub use derive::Former as Former;

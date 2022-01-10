@@ -1,5 +1,5 @@
 [package]
-name = "former_macro"
+name = "former_meta"
 version = "0.1.8"
 edition = "2021"
 authors = [
@@ -9,9 +9,9 @@ authors = [
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/former_macro"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/former_macro"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/former_macro"
+documentation = "https://docs.rs/former_meta"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/former_meta"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/former_meta"
 description = """
 Former - a variation of builder pattern. Implementation of its derive macro. Should not be used independently, instead use module::former which relies on the module.
 """
@@ -27,7 +27,7 @@ include = [
 
 [lib]
 proc-macro = true
-name = "former_macro"
+name = "former_meta"
 path = "rust/impl/former/derive/lib.rs"
 
 [dependencies]

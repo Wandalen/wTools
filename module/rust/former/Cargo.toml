@@ -38,7 +38,7 @@ name = "former_trivial"
 path = "sample/rust/former_trivial/src/main.rs"
 
 [dependencies]
-former_macro = { version = "~0.1", path = "../former_macro" }
+former_meta = { version = "~0.1", path = "../former_meta" }
 former_runtime = { version = "~0.1", path = "../former_runtime" }
 
 [dev-dependencies]
