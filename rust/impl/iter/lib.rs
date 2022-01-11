@@ -5,6 +5,8 @@
 //! Collection of general purpose tools to iterate. Currently it simply reexport itertools.
 //!
 
+// pub use itertools as itertools;
+
 pub use itertools::
 {
   Diff,

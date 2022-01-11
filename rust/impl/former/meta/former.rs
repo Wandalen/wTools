@@ -6,7 +6,8 @@
 
 use quote::{ quote };
 use syn::{ DeriveInput };
-use itertools::{ MultiUnzip, process_results };
+// use itertools::{ MultiUnzip, process_results };
+use iter_tools::{ Itertools, process_results };
 
 use wproc_macro::*;
 

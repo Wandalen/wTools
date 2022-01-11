@@ -10,7 +10,8 @@ use quote::{ quote, TokenStreamExt };
 use syn::parse::*;
 use wproc_macro::*;
 use std::collections::HashMap;
-use itertools::{ MultiUnzip, process_results };
+// use itertools::{ MultiUnzip, process_results };
+use iter_tools::{ Itertools, process_results };
 
 pub type Result< T > = std::result::Result< T, syn::Error >;
 
