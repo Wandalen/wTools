@@ -38,6 +38,7 @@ syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "print
 # werror = { path = "../werror", version = "~0.1" }
 wproc_macro = { version = "~0.1", path = "../wproc_macro" }
 meta_tools = { version = "~0.1", path = "../meta_tools" }
+iter_tools = { path = "../iter_tools", version = "~0.1" }
 
 [dev-dependencies]
 trybuild = { version = "~1.0", features = [ "diff" ] }

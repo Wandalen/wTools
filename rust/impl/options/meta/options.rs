@@ -6,10 +6,11 @@
 #![ warn( missing_debug_implementations ) ]
 
 use meta_tools::*;
-use quote::{ quote };
+use quote::{ quote, TokenStreamExt };
 use syn::parse::*;
 use wproc_macro::*;
 use std::collections::HashMap;
+use itertools::{ MultiUnzip, process_results };
 
 pub type Result< T > = std::result::Result< T, syn::Error >;
 
@@ -23,6 +24,27 @@ pub struct FnQuick
   pub vis : syn::Visibility,
   pub sig : syn::Signature,
   pub block : Option< proc_macro2::TokenStream >,
+}
+
+impl quote::ToTokens for FnQuick
+{
+  fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+  {
+
+    for attr in self.attrs.iter()
+    {
+      attr.to_tokens( tokens );
+    }
+
+    self.sig.to_tokens( tokens );
+
+    match &self.block
+    {
+      Some( block ) => tokens.append( proc_macro2::Group::new( proc_macro2::Delimiter::Brace, block.to_token_stream() ) ),
+      None => tokens.append( proc_macro2::Punct::new( ';', proc_macro2::Spacing::Alone ) ),
+    }
+
+  }
 }
 
 ///
@@ -100,7 +122,6 @@ struct OptionsDescriptor
   ident : syn::Ident,
   generics: syn::Generics,
   brace_token : syn::token::Brace,
-  // elements : syn::punctuated::Punctuated< Element, syn::Token!{ ; } >,
   methods_map : HashMap< String, FnQuick >,
   signatures_map : HashMap< String, FnQuick >,
   fields_map : HashMap< String, syn::Field >,
@@ -153,7 +174,6 @@ impl Parse for OptionsDescriptor
       generics,
       brace_token,
       attrs,
-      // elements,
       methods_map,
       signatures_map,
       fields_map,
@@ -162,7 +182,26 @@ impl Parse for OptionsDescriptor
   }
 }
 
-//
+///
+/// Generate a getter for a field.
+///
+
+// fn getter_gen( name : &str, field : &syn::Field ) -> Result< syn::Stmt >
+fn getter_gen( name : &str, field : &syn::Field ) -> Result< proc_macro2::TokenStream >
+{
+
+  let tokens = quote!
+  {
+    fn #name ( &self ) -> &'a str;
+  };
+
+  Ok( tokens )
+  // let stmt : syn::Stmt = syn::parse2( tokens )?;
+}
+
+///
+/// Options macro handler.
+///
 
 pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
@@ -174,6 +213,7 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
     Err( err ) => return Err( err ),
   };
 
+  let name_ident = &options_descriptor.ident;
   let generics = &options_descriptor.generics;
   let attrs = &options_descriptor.attrs;
   let mut fields_define = Vec::< &syn::Field >::new();
@@ -182,20 +222,47 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
   {
     fields_define.push( field );
   }
+  let mut perform = quote!{};
   let mut attr_form_after = quote!{};
   if let Some( perform_fn ) = options_descriptor.methods_map.get( "perform" )
   {
     let sig = &perform_fn.sig;
     attr_form_after = quote!{ #[ form_after( #sig ) ] };
+    perform = quote!
+    {
+      #[ allow( unused_attributes ) ]
+      #[ inline ]
+      #perform_fn
+    }
   }
+
+  // let ( fields_none, fields_optional, fields_form, fields_names, fields_setter )
+  // : ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
+  // = former_fields.iter().map( | former_field |
+  // {(
+  //   field_none_map( &former_field ),
+  //   field_optional_map( &former_field ),
+  //   field_form_map( &former_field ),
+  //   field_name_map( &former_field ),
+  //   field_setter_map( &former_field, &former_name_ident ),
+  // )}).multiunzip();
+
+  let getters : Vec< _ > = options_descriptor.fields_map.iter().map( | ( key, field ) | getter_gen( key, field ) ).collect();
+  let getters : Vec< _ > = process_results( getters, | iter | iter.collect() )?;
+
+  // #[ inline ]
+  // fn src( &self ) -> &'a str
+  // {
+  //   &self.src
+  // }
 
   let result = quote!
   {
 
-    mod split
+    mod #name_ident
     {
 
-      use woptions::*;
+      use ::woptions::*;
 
       #( #attrs )*
       #[ derive( Former, PartialEq, Debug ) ]
@@ -209,13 +276,10 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
       {
         fn src( &self ) -> &'a str;
         fn delimeter( &self ) -> &'a str;
-        #[ inline ]
-        fn perform( self ) -> std::str::Split< 'a, &'a str >
-        where
-          Self : Sized,
-        {
-          self.src().split( self.delimeter() )
-        }
+        fn left( &self ) -> &bool;
+
+        #perform
+
       }
 
       impl #generics OptionsAdapter #generics for Options #generics
@@ -230,6 +294,11 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
         {
           &self.delimeter
         }
+        #[ inline ]
+        fn left( &self ) -> &bool
+        {
+          &self.left
+        }
       }
 
       #[ inline ]
@@ -241,9 +310,9 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
     }
 
     #[ inline ]
-    fn split< 'a >() -> split::OptionsFormer< 'a >
+    fn #name_ident #generics () -> #name_ident::OptionsFormer #generics
     {
-      split::former::< 'a >()
+      #name_ident::former::#generics()
     }
 
   };

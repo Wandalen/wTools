@@ -10,12 +10,19 @@ Options!{ split< 'a >
   #[ default( true ) ]
   pub left : bool;
 
-  fn perform( self ) -> std::str::Split< 'a, &'a str >
+  fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
   where
     Self : Sized,
   {
-    self.src().split( self.delimeter() )
-  };
+    if *self.left()
+    {
+      Box::new( self.src().split( self.delimeter() ) )
+    }
+    else
+    {
+      Box::new( self.src().rsplit( self.delimeter() ) )
+    }
+  }
 
 }}
 
