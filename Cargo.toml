@@ -2,14 +2,16 @@
 resolver = "2"
 members = [
   "module/rust/*",
+  "module/rust_alias/*",
+  "module/rust_move/*",
   "sample/rust/*",
 ]
 exclude = [
   "*",
-  "module/rust/-*",
-  "sample/rust/-*",
-  "module/rust/_*",
-  "sample/rust/_*",
-  "sample/rust/_select_matching",
+  # "module/rust/-*",
+  # "sample/rust/-*",
+  # "module/rust/_*",
+  # "sample/rust/_*",
+  # "sample/rust/_select_matching",
 ]
 # default-members = [ "module/rust/wtools" ]

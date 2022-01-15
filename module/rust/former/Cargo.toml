@@ -38,13 +38,13 @@ name = "former_trivial"
 path = "sample/rust/former_trivial/src/main.rs"
 
 [dependencies]
-former_meta = { version = "~0.1", path = "../former_meta" }
-former_runtime = { version = "~0.1", path = "../former_runtime" }
+former_meta = { version = "~0.1", path = "../../rust/former_meta" }
+former_runtime = { version = "~0.1", path = "../../rust/former_runtime" }
 
 [dev-dependencies]
 anyhow = "~1.0"
-meta_tools = { version = "~0.1", path = "../meta_tools" }
+meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
 # maplit = "~1.0"
 trybuild = { version = "~1.0", features = [ "diff" ] }
-wtest_basic = { version = "~0.1", path = "../wtest_basic" }
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
 rustversion = "~1.0"

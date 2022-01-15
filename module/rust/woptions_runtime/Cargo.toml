@@ -34,11 +34,11 @@ name = "options_runtime_test"
 path = "rust/test/options/runtime_test.rs"
 
 [dependencies]
-former = { version = "~0.1", path = "../former" }
+former = { version = "~0.1", path = "../../rust/former" }
 # unzip-n = "~0.1"
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../wtest_basic" }
-# meta_tools = { version = "~0.1", path = "../meta_tools" }
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+# meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
 # # maplit = "~1.0.2"
 anyhow = "~1.0"

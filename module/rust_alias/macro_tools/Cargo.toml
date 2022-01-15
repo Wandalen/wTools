@@ -1,5 +1,5 @@
 [package]
-name = "winterval"
+name = "macro_tools"
 version = "0.1.0"
 edition = "2021"
 authors = [
@@ -9,35 +9,32 @@ authors = [
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/winterval"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/winterval"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/winterval"
+documentation = "https://docs.rs/macro_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/macro_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/macro_tools"
 description = """
-Interval adapter for both open/closed implementations of intervals ( ranges ).
+Tools for writing procedural macroses.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/dt/interval.rs",
+  "/rust/impl/macro_tools",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
 
 [lib]
-name = "winterval"
-path = "rust/impl/dt/interval.rs"
+name = "macro_tools"
+path = "rust/impl/proc_macro/macro_tools_lib.rs"
 
 [[test]]
-name = "interval_test"
-path = "rust/test/dt/interval_test.rs"
-
-[[example]]
-name = "interval_trivial"
-path = "sample/rust/interval_trivial/src/main.rs"
+name = "macro_tools_test"
+path = "rust/test/proc_macro/macro_tools_lib_test.rs"
 
 [dependencies]
+proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
 
 [dev-dependencies]
 wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }

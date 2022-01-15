@@ -42,8 +42,8 @@ path = "rust/test/censor/censor_test.rs"
 # path = "sample/rust/censor_trivial/src/main.rs"
 
 [dependencies]
-wtools = { version = "~0.1", path = "../wtools" }
-# werror = { version = "~0.1", path = "../werror" }
+wtools = { version = "~0.1", path = "../../rust/wtools" }
+# werror = { version = "~0.1", path = "../../rust/werror" }
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../wtest_basic" }
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }

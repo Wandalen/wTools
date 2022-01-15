@@ -53,18 +53,18 @@ all-features = true
 # rustdoc-args = []
 
 [dependencies]
-former = { version = "~0.1", path = "../former" }
-woptions = { version = "~0.1", path = "../woptions" }
-# inspect_type = { version = "~0.1", path = "../inspect_type" }
-# is_slice = { version = "~0.1", path = "../is_slice" }
-# implements = { version = "~0.1", path = "../implements" }
-meta_tools = { version = "~0.1", path = "../meta_tools" }
-typing_tools = { version = "~0.1", path = "../typing_tools" }
-time_tools = { version = "~0.1", path = "../time_tools" }
-wstring_tools = { version = "~0.1", path = "../wstring_tools" }
-werror = { version = "~0.1", path = "../werror" }
-winterval = { version = "~0.1", path = "../winterval" }
-# proc_macro_tools = { version = "~0.1", path = "../proc_macro_tools", optional = true }
+former = { version = "~0.1", path = "../../rust/former" }
+woptions = { version = "~0.1", path = "../../rust/woptions" }
+# inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
+# is_slice = { version = "~0.1", path = "../../rust/is_slice" }
+# implements = { version = "~0.1", path = "../../rust/implements" }
+meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
+typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
+time_tools = { version = "~0.1", path = "../../rust/time_tools" }
+wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
+werror = { version = "~0.1", path = "../../rust/werror" }
+winterval = { version = "~0.1", path = "../../rust/winterval" }
+# proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
 parse-display = { version = "~0.5" } # xxx : add test?
 # maplit = "~1.0"
 # regex = "1.5.4"
@@ -73,7 +73,7 @@ parse-display = { version = "~0.5" } # xxx : add test?
 # anyhow = "1.0.48"
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../wtest_basic" }
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
 trybuild = { version = "~1.0", features = [ "diff" ] }
 anyhow = "~1.0"
 rustversion = "~1.0"

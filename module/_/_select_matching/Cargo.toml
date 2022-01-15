@@ -48,5 +48,5 @@ include = [
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = ["diff"] }
-wtest_basic = { version = "~0.1", path = "../wtest_basic" }
-werror = { version = "~0.1", path = "../werror" }
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+werror = { version = "~0.1", path = "../../rust/werror" }

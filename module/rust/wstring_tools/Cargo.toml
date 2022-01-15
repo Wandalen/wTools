@@ -39,9 +39,9 @@ path = "rust/test/string/test.rs"
 # xxx
 
 [dependencies]
-former = { version = "~0.1", path = "../former" }
-# wtools = { version = "~0.1", path = "../wtools" }
-# werror = { version = "~0.1", path = "../werror" }
+former = { version = "~0.1", path = "../../rust/former" }
+# wtools = { version = "~0.1", path = "../../rust/wtools" }
+# werror = { version = "~0.1", path = "../../rust/werror" }
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../wtest_basic" }
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }

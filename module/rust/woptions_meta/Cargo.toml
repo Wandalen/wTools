@@ -35,10 +35,10 @@ proc-macro2 = "~1.0"
 quote = "~1.0"
 syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
 # itertools = "~0.10"
-# werror = { path = "../werror", version = "~0.1" }
-proc_macro_tools = { version = "~0.1", path = "../proc_macro_tools" }
-meta_tools = { version = "~0.1", path = "../meta_tools" }
-iter_tools = { path = "../iter_tools", version = "~0.1" }
+# werror = { path = "../../rust/werror", version = "~0.1" }
+proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
+meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
+iter_tools = { path = "../../rust/iter_tools", version = "~0.1" }
 
 [dev-dependencies]
 trybuild = { version = "~1.0", features = [ "diff" ] }

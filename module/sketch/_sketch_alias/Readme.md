@@ -1,6 +1,6 @@
 # module::___
 
-Macro to answer the question: is it a slice?
+___
 
 ### Sample
 
