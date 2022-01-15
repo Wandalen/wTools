@@ -9,5 +9,15 @@
 //   // t.pass( "rust/test/former/test/basic_runtime.rs" );
 // }
 
-// include!( "./all/basic_runtime.rs" );
-include!( "./all/basic.rs" );
+// /* xxx : implement module::mod_at */
+//
+// mods_at!{ "./all"
+// {
+//   mod basic_runtime;
+//   mod basic;
+//   mod without_perform;
+// }}
+
+mod basic_runtime { include!( "./all/basic_runtime.rs" ); }
+mod basic { include!( "./all/basic.rs" ); }
+mod without_perform { include!( "./all/without_perform.rs" ); }

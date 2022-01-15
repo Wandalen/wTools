@@ -258,28 +258,12 @@ fn getter_gen( name : &str, field : &syn::Field ) -> Result< GetterDescriptor >
 }
 
 ///
-/// Options macro handler.
+///
 ///
 
-pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+fn perform_gen( options_descriptor : &OptionsDescriptor ) -> ( proc_macro2::TokenStream, proc_macro2::TokenStream )
 {
-  // let ast = parse_macro_input!( input as DeriveInput );
 
-  let options_descriptor = match syn::parse::< OptionsDescriptor >( item )
-  {
-    Ok( syntax_tree ) => syntax_tree,
-    Err( err ) => return Err( err ),
-  };
-
-  let name_ident = &options_descriptor.ident;
-  let generics = &options_descriptor.generics;
-  let attrs = &options_descriptor.attrs;
-  let mut fields_define = Vec::< &syn::Field >::new();
-
-  for ( name, field ) in options_descriptor.fields_map.iter()
-  {
-    fields_define.push( field );
-  }
   let mut perform = quote!{};
   let mut attr_form_after = quote!{};
   if let Some( perform_fn ) = options_descriptor.methods_map.get( "perform" )
@@ -293,6 +277,34 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
       #perform_fn
     }
   }
+
+  ( perform, attr_form_after )
+}
+
+///
+/// Options macro handler.
+///
+
+pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+{
+
+  let options_descriptor = match syn::parse::< OptionsDescriptor >( item )
+  {
+    Ok( syntax_tree ) => syntax_tree,
+    Err( err ) => return Err( err ),
+  };
+
+  let name_ident = &options_descriptor.ident;
+  let generics = &options_descriptor.generics;
+  let attrs = &options_descriptor.attrs;
+
+  let mut fields_define = Vec::< &syn::Field >::new();
+  for ( name, field ) in options_descriptor.fields_map.iter()
+  {
+    fields_define.push( field );
+  }
+
+  let ( perform, attr_form_after ) = perform_gen( &options_descriptor );
 
   let getters = options_descriptor.fields_map.iter().map( | ( key, field ) | getter_gen( key, field ) );
   let getters : Vec< _ > = process_results( getters, | iter | iter.collect() )?;
@@ -316,10 +328,8 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
 
       pub trait OptionsAdapter #generics
       {
-
         #( #getters_signatures ; )*
         #perform
-
       }
 
       impl #generics OptionsAdapter #generics for Options #generics
@@ -343,14 +353,40 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
 
   };
 
-  // println!( "{:#?}", ast );
-  // println!( "{:#?}", result );
-  // let result = proc_macro2::TokenStream::new();
   Ok( result )
 }
 
 //
-// Output:
+// = Input :
+//
+// Options!{ split< 'a >
+// {
+//   #![ derive( PartialOrd ) ]
+//
+//   pub src : &'a str;
+//   pub delimeter : &'a str;
+//   #[ default( true ) ]
+//   pub left : bool;
+//
+//   fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
+//   where
+//     Self : Sized,
+//   {
+//     if *self.left()
+//     {
+//       Box::new( self.src().split( self.delimeter() ) )
+//     }
+//     else
+//     {
+//       Box::new( self.src().rsplit( self.delimeter() ) )
+//     }
+//   }
+//
+// }}
+//
+
+//
+// = Output:
 //
 // #[ derive( PartialOrd ) ]
 // #[ derive( Former, PartialEq, Debug ) ]

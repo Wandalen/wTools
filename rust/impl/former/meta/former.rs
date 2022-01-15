@@ -630,7 +630,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 }
 
 //
-// = input :
+// = Input :
 //
 // #[derive( Debug, PartialEq )]
 // pub struct Struct1
@@ -643,8 +643,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 //   hashmap_strings_1 : std::collections::HashMap< String, String >,
 //   hashset_strings_1 : std::collections::HashSet< String >,
 // }
+
 //
-// = output :
+// = Output :
 //
 // impl Struct1
 // {

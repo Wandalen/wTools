@@ -9,5 +9,4 @@
 //   // t.pass( "rust/test/former/test/basic_runtime.rs" );
 // }
 
-include!( "./all/basic_runtime.rs" );
-// include!( "./all/basic.rs" );
+mod basic_runtime { include!( "./all/basic_runtime.rs" ); }
