@@ -5,6 +5,8 @@ use wtest_basic::*;
 use proc_macro_tools as TheModule;
 use quote::*;
 
+use proc_macro_tools::dependencies::*;
+
 //
 
 fn _tree_export_str_basic()

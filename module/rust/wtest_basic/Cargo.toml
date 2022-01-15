@@ -42,4 +42,4 @@ paste = "~1.0"
 # anyhow = "~1.0"
 
 [dev-dependencies]
-# trybuild = { version = "~1.0", features = ["diff"] }
+# trybuild = { version = "~1.0", features = [ "diff" ] }

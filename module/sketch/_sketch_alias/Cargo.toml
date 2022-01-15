@@ -1,5 +1,5 @@
 [package]
-name = "____alias"
+name = "___"
 version = "0.1.0"
 edition = "2021"
 authors = [
@@ -31,7 +31,7 @@ path = "rust/impl/sketch_alias/lib.rs"
 
 [[test]]
 name = "sketch_alias_test"
-path = "rust/test/sketch_blank/lib_test.rs"
+path = "rust/test/sketch_alias/lib_test.rs"
 
 [dependencies]
 

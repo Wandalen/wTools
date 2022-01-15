@@ -1,0 +1,42 @@
+[package]
+name = "wproc_macro"
+version = "0.1.1"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Volodymyr M. <volodymyr.migdal@gmail.com>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/wproc_macro"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wproc_macro"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wproc_macro"
+description = """
+Tools for writing procedural macroses.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+include = [
+  "/rust/impl/proc_macro/wproc_macro_lib.rs",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[lib]
+name = "macro_tools"
+path = "rust/impl/proc_macro/wproc_macro_lib.rs"
+
+[[test]]
+name = "macro_tools_test"
+path = "rust/test/proc_macro/wproc_macro_lib_test.rs"
+
+[dependencies]
+proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
+
+[dev-dependencies]
+trybuild = { version = "~1.0", features = [ "diff" ] }
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+quote = "~1.0"

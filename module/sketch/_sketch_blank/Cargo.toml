@@ -1,5 +1,5 @@
 [package]
-name = "____blank"
+name = "___"
 version = "0.1.0"
 edition = "2021"
 authors = [
@@ -40,5 +40,5 @@ path = "rust/test/sketch_blank/lib_test.rs"
 [dependencies]
 
 [dev-dependencies]
-# trybuild = { version = "~1.0", features = ["diff"] }
+# trybuild = { version = "~1.0", features = [ "diff" ] }
 wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }

@@ -1,11 +1,11 @@
-# module::macro_tools
+# module::wproc_macro
 
 Tools for writing procedural macroses.
 
 ### Sample
 
 ``` rust sample test
-use macro_tools::*;
+use wproc_macro::*;
 
 fn main()
 {
@@ -22,5 +22,5 @@ fn main()
 ### To add to your project
 
 ```
-cargo add macro_tools
+cargo add wproc_macro
 ```
