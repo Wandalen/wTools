@@ -19,7 +19,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/macro_tools",
+  "/rust/impl/proc_macro/macro_tools_lib.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
