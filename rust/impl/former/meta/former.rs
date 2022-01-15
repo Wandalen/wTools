@@ -128,7 +128,7 @@ fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn
 ///
 /// # Sample of output
 ///
-/// ```ignore
+/// ```compile_fail
 /// int_1 : core::option::Option::None,
 /// string_1 : core::option::Option::None,
 /// int_optional_1 : core::option::Option::None,
@@ -153,7 +153,7 @@ fn field_none_map( field : &FormerField ) -> proc_macro2::TokenStream
 ///
 /// # Sample of output
 ///
-/// ```ignore
+/// ```compile_fail
 /// pub int_1 : core::option::Option< i32 >,
 /// pub string_1 : core::option::Option< String >,
 /// pub int_optional_1 :  core::option::Option< i32 >,
@@ -188,7 +188,7 @@ fn field_optional_map( field : &FormerField ) -> proc_macro2::TokenStream
 ///
 /// # Sample of output
 ///
-/// ```ignore
+/// ```compile_fail
 /// let int_1 = if self.int_1.is_some()
 /// {
 ///   self.int_1.take().unwrap()
@@ -312,7 +312,7 @@ fn field_name_map( field : &FormerField ) -> syn::Ident
 ///
 /// # Sample of output
 ///
-/// ```ignore
+/// ```compile_fail
 /// pub fn int_1< Src >( mut self, src : Src ) -> Self
 /// where Src : Into< i32 >,
 /// {

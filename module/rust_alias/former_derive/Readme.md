@@ -1,4 +1,4 @@
-# module::former_meta
+# module::former_derive
 
 Former - a variation of builder pattern. Implementation of its derive macro. Should not be used independently, instead use module::former which relies on the module.
 
@@ -7,5 +7,5 @@ Not intended to be used without runtime. This module and runtime is aggregate in
 ### To add to your project
 
 ```
-cargo add former_meta
+cargo add former_derive
 ```

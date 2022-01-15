@@ -456,11 +456,15 @@ pub mod internal
 /* xxx : rename to proc_macro_tools */
 /* xxx : register macro_tools as wrapper of proc_macro_tools */
 
+/* xxx : alias wproc_macro -> proc_macro_tools */
+/* xxx : alias former_derive -> former_meta */
+/* xxx : alias wTools -> wtools */
+
+/* xxx : register error_tools */
+
 /* xxx : implement module::mod_at */
 /* xxx : implement and publish mod_expose */
 
-/* xxx : deperate wproc_macro -> proc_macro_tools */
-/* xxx : deperate former_derive -> former_meta */
 /* xxx : use skeptic? */
 
 ///
