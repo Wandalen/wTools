@@ -45,7 +45,8 @@ fn basic() -> anyhow::Result< () >
 
   // test.case( "bool" );
 
-  use crate::split::OptionsAdapter;
+  use split::OptionsAdapter;
+
   let got = split().src( "abc" ).delimeter( "b" ).left( true )._form().perform();
   let exp = vec![ "a", "c" ];
   assert_eq!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );

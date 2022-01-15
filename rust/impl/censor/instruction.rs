@@ -41,7 +41,7 @@ pub trait InstructionParseParamsAdapter
 r#"Command should start from a dot `.`.
 Command can have a subject and properties.
 Property is pair delimited by colon `:`.
-For example: `.command1 subject key1:val key2:val2`."#
+For example: `.struct1 subject key1:val key2:val2`."#
   }
 
   //

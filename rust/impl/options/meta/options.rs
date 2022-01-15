@@ -6,11 +6,11 @@
 #![ warn( missing_debug_implementations ) ]
 
 use meta_tools::*;
-use quote::{ quote, TokenStreamExt };
+use quote::{ quote, ToTokens, TokenStreamExt };
 use syn::parse::*;
+use syn::spanned::Spanned;
 use wproc_macro::*;
 use std::collections::HashMap;
-// use itertools::{ MultiUnzip, process_results };
 use iter_tools::{ Itertools, process_results };
 
 pub type Result< T > = std::result::Result< T, syn::Error >;
@@ -184,20 +184,77 @@ impl Parse for OptionsDescriptor
 }
 
 ///
+/// Getter descriptor.
+///
+
+#[ derive( Debug ) ]
+pub struct GetterDescriptor
+{
+  attr : proc_macro2::TokenStream,
+  signature : proc_macro2::TokenStream,
+  body : proc_macro2::TokenStream,
+}
+
+//
+
+impl quote::ToTokens for GetterDescriptor
+{
+  fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+  {
+    self.attr.to_tokens( tokens );
+    self.signature.to_tokens( tokens );
+    self.body.to_tokens( tokens );
+  }
+}
+
+///
 /// Generate a getter for a field.
 ///
 
-// fn getter_gen( name : &str, field : &syn::Field ) -> Result< syn::Stmt >
-fn getter_gen( name : &str, field : &syn::Field ) -> Result< proc_macro2::TokenStream >
+fn getter_gen( name : &str, field : &syn::Field ) -> Result< GetterDescriptor >
 {
 
-  let tokens = quote!
+  let name_ident = syn::Ident::new( &name, field.span() );
+  let ty = &field.ty;
+
+  // tree_print!( ty );
+
+  let ty_is_ref = matches!( ty, syn::Type::Reference( _ ) );
+
+  let ty2 = if ty_is_ref
   {
-    fn #name ( &self ) -> &'a str;
+    ty.to_token_stream()
+  }
+  else
+  {
+    quote!{ & #ty }
   };
 
-  Ok( tokens )
-  // let stmt : syn::Stmt = syn::parse2( tokens )?;
+  let attr = quote!
+  {
+    #[ inline ]
+  };
+
+  let signature = quote!
+  {
+    fn #name_ident( &self ) -> #ty2
+  };
+
+  let body = quote!
+  {
+    {
+      &self.#name_ident
+    }
+  };
+
+  let result = GetterDescriptor
+  {
+    attr,
+    signature,
+    body,
+  };
+
+  Ok( result )
 }
 
 ///
@@ -237,25 +294,9 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
     }
   }
 
-  // let ( fields_none, fields_optional, fields_form, fields_names, fields_setter )
-  // : ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
-  // = former_fields.iter().map( | former_field |
-  // {(
-  //   field_none_map( &former_field ),
-  //   field_optional_map( &former_field ),
-  //   field_form_map( &former_field ),
-  //   field_name_map( &former_field ),
-  //   field_setter_map( &former_field, &former_name_ident ),
-  // )}).multiunzip();
-
-  let getters : Vec< _ > = options_descriptor.fields_map.iter().map( | ( key, field ) | getter_gen( key, field ) ).collect();
+  let getters = options_descriptor.fields_map.iter().map( | ( key, field ) | getter_gen( key, field ) );
   let getters : Vec< _ > = process_results( getters, | iter | iter.collect() )?;
-
-  // #[ inline ]
-  // fn src( &self ) -> &'a str
-  // {
-  //   &self.src
-  // }
+  let getters_signatures : Vec< _ > = getters.iter().map( | e | e.signature.clone() ).collect();
 
   let result = quote!
   {
@@ -275,31 +316,15 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
 
       pub trait OptionsAdapter #generics
       {
-        fn src( &self ) -> &'a str;
-        fn delimeter( &self ) -> &'a str;
-        fn left( &self ) -> &bool;
 
+        #( #getters_signatures ; )*
         #perform
 
       }
 
       impl #generics OptionsAdapter #generics for Options #generics
       {
-        #[ inline ]
-        fn src( &self ) -> &'a str
-        {
-          &self.src
-        }
-        #[ inline ]
-        fn delimeter( &self ) -> &'a str
-        {
-          &self.delimeter
-        }
-        #[ inline ]
-        fn left( &self ) -> &bool
-        {
-          &self.left
-        }
+        #( #getters )*
       }
 
       #[ inline ]
@@ -323,3 +348,72 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
   // let result = proc_macro2::TokenStream::new();
   Ok( result )
 }
+
+//
+// Output:
+//
+// #[ derive( PartialOrd ) ]
+// #[ derive( Former, PartialEq, Debug ) ]
+// #[ form_after( fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) > ) ]
+// pub struct Options< 'a >
+// {
+//   pub src : &'a str,
+//   pub delimeter : &'a str,
+//   #[ default( true ) ]
+//   pub left : bool,
+// }
+//
+// pub trait OptionsAdapter< 'a >
+// {
+//   fn src( &self ) -> &'a str;
+//   fn delimeter( &self ) -> &'a str;
+//   fn left( &self ) -> &bool;
+//   #[ inline ]
+//   fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
+//   where
+//     Self : Sized,
+//   {
+//     if *self.left()
+//     {
+//       Box::new( self.src().split( self.delimeter() ) )
+//     }
+//     else
+//     {
+//       Box::new( self.src().rsplit( self.delimeter() ) )
+//     }
+//   }
+// }
+//
+// impl< 'a > OptionsAdapter< 'a > for Options< 'a >
+// {
+//   #[ inline ]
+//   fn src( &self ) -> &'a str
+//   {
+//     &self.src
+//   }
+//   #[ inline ]
+//   fn delimeter( &self ) -> &'a str
+//   {
+//     &self.delimeter
+//   }
+//   #[ inline ]
+//   fn left( &self ) -> &bool
+//   {
+//     &self.left
+//   }
+// }
+//
+// #[ inline ]
+// pub fn former< 'a >() -> OptionsFormer< 'a >
+// {
+//   Options::< 'a >::former()
+// }
+//
+// }
+//
+// #[ inline ]
+// fn split< 'a >() -> split::OptionsFormer< 'a >
+// {
+// split::former::< 'a >()
+// }
+//

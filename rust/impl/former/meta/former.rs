@@ -6,7 +6,6 @@
 
 use quote::{ quote };
 use syn::{ DeriveInput };
-// use itertools::{ MultiUnzip, process_results };
 use iter_tools::{ Itertools, process_results };
 
 use wproc_macro::*;
@@ -93,7 +92,9 @@ fn is_optional( ty : &syn::Type ) -> bool
   wproc_macro::type_rightmost( ty ) == Some( "Option".to_string() )
 }
 
-//
+///
+/// Extract the first parameter of the type if such exist.
+///
 
 fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 {
@@ -103,7 +104,9 @@ fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
   .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", quote!{ #ty } ) )
 }
 
-//
+///
+/// Extract the first and the second parameters of the type if such exist.
+///
 
 fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn::Type ) >
 {
@@ -120,35 +123,51 @@ fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn
   ),)
 }
 
-//
+///
+/// Generate fields for initializer of a struct setting each field to `None`.
+///
+/// # Sample of output
+///
+/// ```ignore
+/// int_1 : core::option::Option::None,
+/// string_1 : core::option::Option::None,
+/// int_optional_1 : core::option::Option::None,
+/// ```
+///
 
 #[inline]
-fn field_none_map( field : &FormerField ) -> syn::Field
+fn field_none_map( field : &FormerField ) -> proc_macro2::TokenStream
 {
   let ident = Some( field.ident.clone() );
-  let colon_token = field.colon_token.clone();
   let tokens = quote! { ::core::option::Option::None };
   let ty2 : syn::Type = syn::parse2( tokens ).unwrap();
-  syn::Field
+
+  quote!
   {
-    attrs : vec![],
-    vis : syn::Visibility::Inherited,
-    ident,
-    colon_token,
-    ty : ty2,
+    #ident : #ty2
   }
 }
 
-//
+///
+/// Generate field of the former for a field of the structure
+///
+/// # Sample of output
+///
+/// ```ignore
+/// pub int_1 : core::option::Option< i32 >,
+/// pub string_1 : core::option::Option< String >,
+/// pub int_optional_1 :  core::option::Option< i32 >,
+/// pub string_optional_1 : core::option::Option< String >,
+/// ```
+///
 
 #[inline]
-fn field_optional_map( field : &FormerField ) -> syn::Field
+fn field_optional_map( field : &FormerField ) -> proc_macro2::TokenStream
 {
   let ident = Some( field.ident.clone() );
-  let colon_token = field.colon_token.clone();
   let ty = field.ty.clone();
 
-  let tokens = if is_optional( &ty )
+  let ty2 = if is_optional( &ty )
   {
     quote! { #ty }
   }
@@ -157,47 +176,43 @@ fn field_optional_map( field : &FormerField ) -> syn::Field
     quote! { ::core::option::Option< #ty > }
   };
 
-  let ty2 : syn::Type = syn::parse2( tokens ).unwrap();
-  let vis : syn::Visibility = syn::parse2( quote!( pub ) ).unwrap();
-
-  syn::Field
+  quote!
   {
-    attrs : vec![],
-    vis,
-    ident,
-    colon_token,
-    ty : ty2,
+    pub #ident : #ty2
   }
+
 }
 
-//
+///
+/// Generate code converting a field of the former to the field of the structure.
+///
+/// # Sample of output
+///
+/// ```ignore
+/// let int_1 = if self.int_1.is_some()
+/// {
+///   self.int_1.take().unwrap()
+/// }
+/// else
+/// {
+///   let val : i32 = Default::default();
+///   val
+/// };
+/// ```
+///
 
 #[inline]
-fn field_form_map( field : &FormerField ) -> Result< syn::Stmt >
+fn field_form_map( field : &FormerField ) -> Result< proc_macro2::TokenStream >
 {
   let ident = field.ident;
   let ty = field.ty;
-
   let mut default = None;
-  // if field.attrs.len() == 1
-  // {
-  //   let ( key, val, _meta ) = attr_pair_single
-  //   (
-  //     field.attrs.first().ok_or_else( || syn_err!( field.ident, "No attr" ) )?
-  //   )?;
-  //   if key != "default".to_string()
-  //   {
-  //     return Err( syn_err!( field.ident, "Unknown attribute key : {}\nDid you mean `default`", key ) );
-  //   }
-  //   default = Some( val );
-  // }
 
   for attr in field.attrs.iter()
   {
     let key_ident = attr.path.get_ident()
     .ok_or_else( || syn_err!( attr, "Expects simple key of an attirbute, but got:\n  {}", quote!{ #attr } ) )?;
     let key_str = format!( "{}", key_ident );
-    // println!( "key_ident : {}", key_ident );
     match key_str.as_ref()
     {
       "default" =>
@@ -211,11 +226,6 @@ fn field_form_map( field : &FormerField ) -> Result< syn::Stmt >
       }
     }
   }
-
-  // if false
-  // {
-  //   default = Some( 13 );
-  // }
 
   let tokens = if field.is_optional
   {
@@ -283,11 +293,12 @@ fn field_form_map( field : &FormerField ) -> Result< syn::Stmt >
 
   };
 
-  let stmt : syn::Stmt = syn::parse2( tokens ).unwrap();
-  Ok( stmt )
+  Ok( tokens )
 }
 
-//
+///
+/// Extract name of a field out.
+///
 
 #[inline]
 fn field_name_map( field : &FormerField ) -> syn::Ident
@@ -296,10 +307,24 @@ fn field_name_map( field : &FormerField ) -> syn::Ident
   ident
 }
 
-//
+///
+/// Generate a fomer setter for the field.
+///
+/// # Sample of output
+///
+/// ```ignore
+/// pub fn int_1< Src >( mut self, src : Src ) -> Self
+/// where Src : Into< i32 >,
+/// {
+///   debug_assert!( self.int_1.is_none() );
+///   self.int_1 = Some( src.into() );
+///   self
+/// }
+/// ```
+///
 
 #[inline]
-fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> Result< syn::Stmt >
+fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> Result< proc_macro2::TokenStream >
 {
   let ident = &field.ident;
 
@@ -395,27 +420,18 @@ fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> 
     },
   };
 
-  let stmt : syn::Stmt = syn::parse2( tokens )?;
-  Ok( stmt )
-
-  // pub fn int_1< Src >( mut self, src : Src ) -> Self
-  // where Src : Into< i32 >,
-  // {
-  //   debug_assert!( self.int_1.is_none() );
-  //   self.int_1 = Some( src.into() );
-  //   self
-  // }
-
+  Ok( tokens )
 }
 
-//
+///
+/// Generate documentation for the former.
+///
 
 fn doc_generate( name_ident : &syn::Ident ) -> String
 {
 
   let doc_example1 =
 r#"
-// use wtools::former::Former;
 use former::Former;
 #[derive( Former )]
 pub struct Struct1
@@ -568,7 +584,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     pub struct #former_name_ident #generics
     {
       #(
-        /// Option
+        /// A field
         #fields_optional,
       )*
     }
@@ -610,8 +626,222 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 
   };
 
-  // println!( "{:#?}", ast );
-  // println!( "{:#?}", result );
-  // let result = proc_macro2::TokenStream::new();
   Ok( result )
 }
+
+//
+// = input :
+//
+// #[derive( Debug, PartialEq )]
+// pub struct Struct1
+// {
+//   pub int_1 : i32,
+//   string_1 : String,
+//   int_optional_1 : core::option::Option< i32 >,
+//   string_optional_1 : Option< String >,
+//   vec_1 : Vec< String >,
+//   hashmap_strings_1 : std::collections::HashMap< String, String >,
+//   hashset_strings_1 : std::collections::HashSet< String >,
+// }
+//
+// = output :
+//
+// impl Struct1
+// {
+//   pub fn former() -> Struct1Former
+//   {
+//     Struct1Former
+//     {
+//       int_1 : core::option::Option::None,
+//       string_1 : core::option::Option::None,
+//       int_optional_1 : core::option::Option::None,
+//       string_optional_1 : core::option::Option::None,
+//       vec_1 : core::option::Option::None,
+//       hashmap_strings_1 : core::option::Option::None,
+//       hashset_strings_1 : core::option::Option::None,
+//     }
+//   }
+// }
+//
+// //
+//
+// #[derive( Debug )]
+// pub struct Struct1Former
+// {
+//   pub int_1 : core::option::Option< i32 >,
+//   pub string_1 : core::option::Option< String >,
+//   pub int_optional_1 :  core::option::Option< i32 >,
+//   pub string_optional_1 : core::option::Option< String >,
+//   pub vec_1 : core::option::Option< Vec< String > >,
+//   pub hashmap_strings_1 : core::option::Option< std::collections::HashMap< String, String > >,
+//   pub hashset_strings_1 : core::option::Option< std::collections::HashSet< String > >,
+// }
+//
+// //
+//
+// impl Struct1Former
+// {
+//   fn _form( mut self ) -> Struct1
+//   {
+//
+//     let int_1 = if self.int_1.is_some()
+//     {
+//       self.int_1.take().unwrap()
+//     }
+//     else
+//     {
+//       let val : i32 = Default::default();
+//       val
+//     };
+//
+//     let string_1 = if self.string_1.is_some()
+//     {
+//       self.string_1.take().unwrap()
+//     }
+//     else
+//     {
+//       let val : String = Default::default();
+//       val
+//     };
+//
+//     let int_optional_1 = if self.int_optional_1.is_some()
+//     {
+//       Some( self.int_optional_1.take().unwrap() )
+//     }
+//     else
+//     {
+//       None
+//     };
+//
+//     let string_optional_1 = if self.string_optional_1.is_some()
+//     {
+//       Some( self.string_optional_1.take().unwrap() )
+//     }
+//     else
+//     {
+//       None
+//     };
+//
+//     let vec_1 = if self.vec_1.is_some()
+//     {
+//       self.vec_1.take().unwrap()
+//     }
+//     else
+//     {
+//       let val : Vec< String > = Default::default();
+//       val
+//     };
+//
+//     let hashmap_strings_1 = if self.hashmap_strings_1.is_some()
+//     {
+//       self.hashmap_strings_1.take().unwrap()
+//     }
+//     else
+//     {
+//       let val : std::collections::HashMap< String, String > = Default::default();
+//       val
+//     };
+//
+//     let hashset_strings_1 = if self.hashset_strings_1.is_some()
+//     {
+//       self.hashset_strings_1.take().unwrap()
+//     }
+//     else
+//     {
+//       let val : std::collections::HashSet< String > = Default::default();
+//       val
+//     };
+//
+//     Struct1
+//     {
+//       int_1,
+//       string_1,
+//       int_optional_1,
+//       string_optional_1,
+//       vec_1,
+//       hashmap_strings_1,
+//       hashset_strings_1,
+//     }
+//
+//   }
+//
+//   fn form( self ) -> Struct1
+//   {
+//     self._form()
+//   }
+//
+//   pub fn int_1< Src >( mut self, src : Src ) -> Self
+//   where Src : core::convert::Into< i32 >,
+//   {
+//     debug_assert!( self.int_1.is_none() );
+//     self.int_1 = Some( src.into() );
+//     self
+//   }
+//
+//   pub fn string_1< Src >( mut self, src : Src ) -> Self
+//   where Src : core::convert::Into< String >,
+//   {
+//     debug_assert!( self.string_1.is_none() );
+//     self.string_1 = Some( src.into() );
+//     self
+//   }
+//
+//   pub fn string_optional_1< Src >( mut self, src : Src ) -> Self
+//   where Src : core::convert::Into< String >
+//   {
+//     debug_assert!( self.string_optional_1.is_none() );
+//     self.string_optional_1 = Some( src.into() );
+//     self
+//   }
+//
+//   pub fn vec_1( mut self ) -> former::runtime::VectorFormer
+//   <
+//     String,
+//     Vec< String >,
+//     Struct1Former,
+//     impl Fn( &mut Struct1Former, core::option::Option< Vec< String > > )
+//   >
+//   {
+//     let container = self.vec_1.take();
+//     let on_end = | former : &mut Struct1Former, container : core::option::Option< Vec< String > > |
+//     {
+//       former.vec_1 = container;
+//     };
+//     former::runtime::VectorFormer::new( self, container, on_end )
+//   }
+//
+//   pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapFormer
+//   <
+//     String,
+//     String,
+//     std::collections::HashMap< String, String >,
+//     Struct1Former,
+//     impl Fn( &mut Struct1Former, core::option::Option< std::collections::HashMap< String, String > > )
+//   >
+//   {
+//     let container = self.hashmap_strings_1.take();
+//     let on_end = | former : &mut Struct1Former, container : core::option::Option< std::collections::HashMap< String, String > > |
+//     {
+//       former.hashmap_strings_1 = container;
+//     };
+//     former::runtime::HashMapFormer::new( self, container, on_end )
+//   }
+//
+//   pub fn hashset_strings_1( mut self ) -> former::runtime::HashSetFormer
+//   <
+//     String,
+//     std::collections::HashSet< String >,
+//     Struct1Former,
+//     impl Fn( &mut Struct1Former, core::option::Option< std::collections::HashSet< String > > )
+//   >
+//   {
+//     let container = self.hashset_strings_1.take();
+//     let on_end = | former : &mut Struct1Former, container : core::option::Option< std::collections::HashSet< String > > |
+//     {
+//       former.hashset_strings_1 = container;
+//     };
+//     former::runtime::HashSetFormer::new( self, container, on_end )
+//   }
+//
+// }
+//
