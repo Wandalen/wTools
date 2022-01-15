@@ -9,7 +9,7 @@ use meta_tools::*;
 use quote::{ quote, ToTokens, TokenStreamExt };
 use syn::parse::*;
 use syn::spanned::Spanned;
-use wproc_macro::*;
+use proc_macro_tools::*;
 use std::collections::HashMap;
 use iter_tools::{ Itertools, process_results };
 

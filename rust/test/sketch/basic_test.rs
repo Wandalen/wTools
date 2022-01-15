@@ -4,7 +4,7 @@ use wtest_basic::*;
 
 fn _basic()
 {
-  assert_eq( true, true );
+  assert_eq!( true, true );
 }
 
 //

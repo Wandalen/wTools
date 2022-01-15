@@ -47,7 +47,7 @@ path = "rust/test/meta/lib_test.rs"
 # meta_tools = { version = "~0.1", path = "../meta_tools" }
 # werror = { version = "~0.1", path = "../werror" }
 # winterval = { version = "~0.1", path = "../winterval" }
-# wproc_macro = { version = "~0.1", path = "../wproc_macro", optional = true }
+# proc_macro_tools = { version = "~0.1", path = "../proc_macro_tools", optional = true }
 literally = "~0.1"
 # # maplit = "~1.0"
 # regex = "1.5.4"

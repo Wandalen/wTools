@@ -36,7 +36,7 @@ quote = "~1.0"
 syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
 # itertools = "~0.10"
 # werror = { path = "../werror", version = "~0.1" }
-wproc_macro = { version = "~0.1", path = "../wproc_macro" }
+proc_macro_tools = { version = "~0.1", path = "../proc_macro_tools" }
 meta_tools = { version = "~0.1", path = "../meta_tools" }
 iter_tools = { path = "../iter_tools", version = "~0.1" }
 

@@ -1,4 +1,4 @@
-use wproc_macro::*;
+use proc_macro_tools::*;
 use quote::quote;
 
 fn main()

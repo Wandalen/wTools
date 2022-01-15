@@ -5,7 +5,7 @@
 //! Mechanism to define map of options for a fuction and its defaults laconically.
 //!
 
-// extern crate wproc_macro;
+// extern crate proc_macro_tools;
 // mod former;
 mod options;
 

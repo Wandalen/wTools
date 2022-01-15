@@ -1,5 +1,5 @@
-// #![ warn( missing_docs ) ]
-// #![ warn( missing_debug_implementations ) ]
+#![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
 // #![ feature( type_name_of_val ) ]
 
 //!
@@ -19,7 +19,7 @@ pub mod internal
   ///
   /// # Sample
   /// ```
-  /// use wproc_macro::*;
+  /// use proc_macro_tools::*;
   /// use quote::quote;
   ///
   /// let code = quote!( std::collections::HashMap< i32, i32 > );
@@ -64,7 +64,7 @@ pub mod internal
   ///
   /// # Sample
   /// ```
-  /// # use wproc_macro::*;
+  /// # use proc_macro_tools::*;
   /// syn_err!( "No attr" );
   /// # ()
   /// ```
@@ -124,7 +124,7 @@ pub mod internal
   ///
   /// # Sample
   /// ```
-  /// use wproc_macro::*;
+  /// use proc_macro_tools::*;
   /// use quote::quote;
   ///
   /// let code = quote!( std::collections::HashMap< i32, i32 > );
@@ -160,7 +160,7 @@ pub mod internal
   ///
   /// # Sample
   /// ```
-  /// use wproc_macro::*;
+  /// use proc_macro_tools::*;
   /// use quote::quote;
   ///
   /// let code = quote!( Option< std::collections::HashMap< i32, i32 > > );
@@ -197,7 +197,7 @@ pub mod internal
   ///
   /// # Sample
   /// ```
-  /// use wproc_macro::*;
+  /// use proc_macro_tools::*;
   /// use quote::quote;
   ///
   /// let code = quote!( core::option::Option< i32 > );
@@ -228,7 +228,7 @@ pub mod internal
   ///
   /// # Sample
   /// ```
-  /// use wproc_macro::*;
+  /// use proc_macro_tools::*;
   /// use quote::quote;
   ///
   /// let code = quote!( core::option::Option< i8, i16, i32, i64 > );
@@ -453,8 +453,13 @@ pub mod internal
 //
 // }}
 
+/* xxx : rename to proc_macro_tools */
+/* xxx : register macro_tools as wrapper of proc_macro_tools */
 /* xxx : implement module::mod_at */
 /* xxx : implement and publish mod_expose */
+
+/* xxx : deperate proc_macro_tools -> proc_macro_tools */
+/* xxx : deperate former_derive -> former_meta */
 
 // expose!{
 // {
@@ -508,6 +513,3 @@ pub use internal::attr_pair_single;
 // {
 //   internal::attr_pair_single( attr )
 // }
-
-/* xxx : rename to proc_macro_tools */
-/* xxx : register macro_tools as wrapper of proc_macro_tools */

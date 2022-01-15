@@ -8,7 +8,7 @@ use quote::{ quote };
 use syn::{ DeriveInput };
 use iter_tools::{ Itertools, process_results };
 
-use wproc_macro::*;
+use proc_macro_tools::*;
 
 pub type Result< T > = std::result::Result< T, syn::Error >;
 
@@ -26,7 +26,7 @@ struct FormerField< 'a >
   pub ty : &'a syn::Type,
   pub non_optional_ty : &'a syn::Type,
   pub is_optional : bool,
-  pub type_container_kind : wproc_macro::ContainerKind,
+  pub type_container_kind : proc_macro_tools::ContainerKind,
 }
 
 ///
@@ -89,7 +89,7 @@ impl syn::parse::Parse for AttributeDefault
 
 fn is_optional( ty : &syn::Type ) -> bool
 {
-  wproc_macro::type_rightmost( ty ) == Some( "Option".to_string() )
+  proc_macro_tools::type_rightmost( ty ) == Some( "Option".to_string() )
 }
 
 ///
@@ -98,7 +98,7 @@ fn is_optional( ty : &syn::Type ) -> bool
 
 fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 {
-  wproc_macro::type_parameters( ty, 0 ..= 0 )
+  proc_macro_tools::type_parameters( ty, 0 ..= 0 )
   .first()
   .map( | e | *e )
   .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", quote!{ #ty } ) )
@@ -114,7 +114,7 @@ fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn
   {
     syn_err!( ty, "Expects at least two parameters here:\n  {}", quote!{ #ty } )
   };
-  let result = wproc_macro::type_parameters( ty, 0 ..= 1 );
+  let result = proc_macro_tools::type_parameters( ty, 0 ..= 1 );
   let mut iter = result.iter();
   Ok
   ((
@@ -330,7 +330,7 @@ fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> 
 
   let tokens = match &field.type_container_kind
   {
-    wproc_macro::ContainerKind::No =>
+    proc_macro_tools::ContainerKind::No =>
     {
       let non_optional_ty = &field.non_optional_ty;
       quote!
@@ -345,7 +345,7 @@ fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> 
         }
       }
     },
-    wproc_macro::ContainerKind::Vector =>
+    proc_macro_tools::ContainerKind::Vector =>
     {
       let ty = &field.ty;
       let internal_ty = parameter_internal_first( ty )?;
@@ -369,7 +369,7 @@ fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> 
         }
       }
     },
-    wproc_macro::ContainerKind::HashMap =>
+    proc_macro_tools::ContainerKind::HashMap =>
     {
       let ty = &field.ty;
       let ( k_ty, e_ty ) = parameter_internal_first_two( ty )?;
@@ -394,7 +394,7 @@ fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> 
         }
       }
     },
-    wproc_macro::ContainerKind::HashSet =>
+    proc_macro_tools::ContainerKind::HashSet =>
     {
       let ty = &field.ty;
       let internal_ty = parameter_internal_first( ty )?;
@@ -538,7 +538,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     let colon_token = &field.colon_token;
     let ty = &field.ty;
     let is_optional = is_optional( &ty );
-    let type_container_kind = wproc_macro::type_container_kind( &ty );
+    let type_container_kind = proc_macro_tools::type_container_kind( &ty );
     let non_optional_ty : &syn::Type = if is_optional { parameter_internal_first( ty )? } else { ty };
     let former_field = FormerField { attrs, vis, ident, colon_token, ty, non_optional_ty, is_optional, type_container_kind };
     Ok( former_field )

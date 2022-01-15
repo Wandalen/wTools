@@ -2,7 +2,7 @@
 // #![ feature( type_name_of_val ) ]
 
 use wtest_basic::*;
-use wproc_macro as TheModule;
+use proc_macro_tools as TheModule;
 use quote::*;
 
 //
@@ -381,7 +381,7 @@ fn _attr_pair_single_basic() -> Result< (), syn::Error >
 //     Err( err ) => return Err( err ),
 //   };
 //
-//   let got = wproc_macro::path_of( &ast );
+//   let got = proc_macro_tools::path_of( &ast );
 //   assert_eq!( got, "This::is::path" );
 //
 //   return Ok( () );

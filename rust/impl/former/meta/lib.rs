@@ -9,7 +9,7 @@
 //! Not intended to be used without runtime. This module and runtime is aggregate in module::former is [here](https://github.com/Wandalen/wTools/tree/master/module/rust/former).
 //!
 
-// extern crate wproc_macro;
+// extern crate proc_macro_tools;
 mod former;
 // mod options;
 

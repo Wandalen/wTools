@@ -26,12 +26,12 @@ include = [
 ]
 
 [lib]
-name = "___"
+name = "sketch"
 path = "rust/impl/sketch/lib.rs"
 
 [[test]]
-name = "____test"
-path = "rust/test/sketch/test.rs"
+name = "sketch_test"
+path = "rust/test/sketch/lib_test.rs"
 
 # [[example]]
 # name = "____trivial"

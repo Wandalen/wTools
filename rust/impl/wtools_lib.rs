@@ -38,7 +38,7 @@ pub mod time;
 pub use werror as error;
 
 // #[ cfg( feature = "with_proc_macro" ) ]
-// pub use wproc_macro as proc_macro;
+// pub use proc_macro_tools as proc_macro;
 
 pub use former as former;
 pub use woptions as options;

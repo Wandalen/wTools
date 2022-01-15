@@ -45,7 +45,7 @@ path = "sample/rust/wtools_trivial/src/main.rs"
 [features]
 with_wtools = []
 nightly = [ "typing_tools/nightly" ]
-# with_proc_macro = [ "wproc_macro" ]
+# with_proc_macro = [ "proc_macro_tools" ]
 default = [ "with_wtools" ]
 
 [package.metadata.docs.rs]
@@ -64,7 +64,7 @@ time_tools = { version = "~0.1", path = "../time_tools" }
 wstring_tools = { version = "~0.1", path = "../wstring_tools" }
 werror = { version = "~0.1", path = "../werror" }
 winterval = { version = "~0.1", path = "../winterval" }
-# wproc_macro = { version = "~0.1", path = "../wproc_macro", optional = true }
+# proc_macro_tools = { version = "~0.1", path = "../proc_macro_tools", optional = true }
 parse-display = { version = "~0.5" } # xxx : add test?
 # maplit = "~1.0"
 # regex = "1.5.4"
