@@ -1,6 +1,6 @@
 [package]
 name = "macro_tools"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -37,4 +37,6 @@ path = "rust/test/proc_macro/macro_tools_lib_test.rs"
 proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
 
 [dev-dependencies]
+trybuild = { version = "~1.0", features = [ "diff" ] }
 wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+quote = "~1.0"
