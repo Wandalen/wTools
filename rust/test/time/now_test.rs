@@ -1,11 +1,16 @@
 
 use wtest_basic::*;
 
+#[cfg( feature = "in_wtools" )]
+use wtools::time as TheModule;
+#[cfg( not( feature = "in_wtools" ) )]
+use time_tools as TheModule;
+
 //
 
 fn _basic()
 {
-  use time_tools::*;
+  use TheModule::*;
 
   // test.case( "time::now" );
   let got = time::now();

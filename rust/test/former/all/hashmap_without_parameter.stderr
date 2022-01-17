@@ -1,6 +1,6 @@
 error: Expects at least two parameters here:
          HashMap < i32 >
-  --> ../../../rust/test/former/all/hashmap_without_parameter.rs:12:24
+  --> ../../../rust/test/former/all/hashmap_without_parameter.rs:15:24
    |
-12 |   pub string_slice_1 : HashMap< i32 >,
+15 |   pub string_slice_1 : HashMap< i32 >,
    |                        ^^^^^^^^^^^^^^

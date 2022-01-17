@@ -1,6 +1,19 @@
 
+#[cfg( feature = "in_wtools" )]
+use wtools::meta::*;
+#[cfg( not( feature = "in_wtools" ) )]
 use meta_tools::*;
+
+#[cfg( feature = "in_wtools" )]
+use wtools::former::Former;
+#[cfg( not( feature = "in_wtools" ) )]
 use former::Former;
+
+// #[cfg( feature = "in_wtools" )]
+// use wtools::time as TheModule;
+// #[cfg( not( feature = "in_wtools" ) )]
+// use time_tools as TheModule;
+
 use std::collections::HashMap;
 use std::collections::HashSet;
 

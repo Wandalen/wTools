@@ -1,11 +1,11 @@
 error: Unknown attribute #[defaultx(31)]
- --> ../../../rust/test/former/all/bad_attr.rs:7:3
-  |
-7 |   #[ defaultx( 31 ) ]
-  |   ^^^^^^^^^^^^^^^^^^^
+  --> ../../../rust/test/former/all/bad_attr.rs:10:3
+   |
+10 |   #[ defaultx( 31 ) ]
+   |   ^^^^^^^^^^^^^^^^^^^
 
 error: cannot find attribute `defaultx` in this scope
- --> ../../../rust/test/former/all/bad_attr.rs:7:6
-  |
-7 |   #[ defaultx( 31 ) ]
-  |      ^^^^^^^^ help: a derive helper attribute with a similar name exists: `default`
+  --> ../../../rust/test/former/all/bad_attr.rs:10:6
+   |
+10 |   #[ defaultx( 31 ) ]
+   |      ^^^^^^^^ help: a derive helper attribute with a similar name exists: `default`

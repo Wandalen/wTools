@@ -2,9 +2,9 @@
 
 use wtest_basic::*;
 
-#[cfg( feature = "with_wtools" )]
+#[cfg( feature = "in_wtools" )]
 use wtools::typing as TheModule;
-#[cfg( not( feature = "with_wtools" ) )]
+#[cfg( not( feature = "in_wtools" ) )]
 use is_slice as TheModule;
 
 //

@@ -1,5 +1,9 @@
 
 use wtest_basic::*;
+
+#[cfg( feature = "in_wtools" )]
+use wtools::string as TheModule;
+#[cfg( not( feature = "in_wtools" ) )]
 use wstring_tools as TheModule;
 
 //

@@ -1,12 +1,16 @@
 
 use wtest_basic::*;
+
+#[cfg( feature = "in_wtools" )]
+use wtools::interval as TheModule;
+#[cfg( not( feature = "in_wtools" ) )]
 use winterval as TheModule;
 
 //
 
 fn _adapter_basic()
 {
-  use winterval::*;
+  use TheModule::*;
 
   // test.case( "basic" );
 
@@ -32,7 +36,7 @@ fn _adapter_basic()
 
 fn _adapter_std_closed_open()
 {
-  use winterval::*;
+  use TheModule::*;
 
   // test.case( "basic" );
 
@@ -58,7 +62,7 @@ fn _adapter_std_closed_open()
 
 fn _adapter_std_closed()
 {
-  use winterval::*;
+  use TheModule::*;
 
   // test.case( "basic" );
 
@@ -84,7 +88,7 @@ fn _adapter_std_closed()
 
 fn _into_interval()
 {
-  use winterval::*;
+  use TheModule::*;
 
   // test.case( "from closed open std interval" );
 

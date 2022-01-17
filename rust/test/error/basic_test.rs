@@ -2,12 +2,16 @@
 
 use wtest_basic::*;
 
+#[cfg( feature = "in_wtools" )]
+use wtools::error as TheModule;
+#[cfg( not( feature = "in_wtools" ) )]
+use werror as TheModule;
+
 //
 
 fn _basic()
 {
 
-  use werror as TheModule;
   use std::error::Error;
 
   // test.case( "basic" );
@@ -40,7 +44,7 @@ fn _use1()
 {
 
   use std::error::Error as ErrorAdapter;
-  use werror::Error;
+  use TheModule::Error;
 
   // test.case( "basic" );
 
@@ -57,7 +61,7 @@ fn _use1()
 fn _use2()
 {
 
-  use werror::*;
+  use TheModule::*;
 
   // test.case( "basic" );
 
@@ -90,7 +94,6 @@ fn _use3()
 
 fn _err_basic()
 {
-  use werror as TheModule;
 
   // test.case( "basic" );
   let err = TheModule::err!( "abc" );

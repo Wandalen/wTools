@@ -1,8 +1,10 @@
 
+#[cfg( not( feature = "in_wtools" ) )]
 use meta_tools::*;
-#[cfg( feature = "with_wtools" )]
+
+#[cfg( feature = "in_wtools" )]
 use wtools::*;
-#[cfg( not( feature = "with_wtools" ) )]
+#[cfg( not( feature = "in_wtools" ) )]
 mod former
 {
   pub use former_runtime as runtime;

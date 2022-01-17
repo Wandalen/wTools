@@ -461,11 +461,13 @@ pub mod internal
 /* xxx : alias wTools -> wtools */
 
 /* xxx : register error_tools */
+/* xxx : register text_tools as alias */
 
 /* xxx : implement module::mod_at */
 /* xxx : implement and publish mod_expose */
 
 /* xxx : use skeptic? */
+/* xxx : rename dt -> adt */
 
 ///
 /// Dependencies of the module.

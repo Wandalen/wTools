@@ -10,8 +10,8 @@ authors = [
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/former_derive"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/former_derive"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/former_derive"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/former_derive"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/former_derive"
 description = """
 Former - a variation of builder pattern. Implementation of its derive macro. Should not be used independently, instead use module::former which relies on the module.
 """

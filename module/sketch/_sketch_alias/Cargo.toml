@@ -10,8 +10,8 @@ authors = [
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/___"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/___"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/___"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/___"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/___"
 description = """
 ___
 """

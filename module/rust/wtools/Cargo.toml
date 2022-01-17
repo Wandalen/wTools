@@ -24,7 +24,6 @@ include = [
   "/rust/impl/typing/mod.rs",
   "/rust/impl/convert/mod.rs",
   "/rust/impl/time/mod.rs",
-
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -36,17 +35,16 @@ path = "rust/impl/wtools_lib.rs"
 
 [[test]]
 name = "wtools_test"
-path = "rust/test/wtools_test.rs"
+path = "rust/test/wtools_lib_test.rs"
 
 [[example]]
 name = "wtools_trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
-with_wtools = []
+in_wtools = []
 nightly = [ "typing_tools/nightly" ]
-# with_proc_macro = [ "proc_macro_tools" ]
-default = [ "with_wtools" ]
+default = [ "in_wtools" ]
 
 [package.metadata.docs.rs]
 all-features = true
@@ -55,28 +53,16 @@ all-features = true
 [dependencies]
 former = { version = "~0.1", path = "../../rust/former" }
 woptions = { version = "~0.1", path = "../../rust/woptions" }
-# inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
-# is_slice = { version = "~0.1", path = "../../rust/is_slice" }
-# implements = { version = "~0.1", path = "../../rust/implements" }
 meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
 time_tools = { version = "~0.1", path = "../../rust/time_tools" }
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
 werror = { version = "~0.1", path = "../../rust/werror" }
 winterval = { version = "~0.1", path = "../../rust/winterval" }
-# proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
-parse-display = { version = "~0.5" } # xxx : add test?
-# maplit = "~1.0"
-# regex = "1.5.4"
-# chrono = "0.4.19"
-# paste = "1.0.5"
-# anyhow = "1.0.48"
+parse-display = { version = "~0.5" } # xxx : add test? # xxx : move
 
 [dev-dependencies]
 wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
 trybuild = { version = "~1.0", features = [ "diff" ] }
 anyhow = "~1.0"
 rustversion = "~1.0"
-# quote = { version = "~1.0" }
-# proc-macro2 = { version = "~1.0" }
-# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }

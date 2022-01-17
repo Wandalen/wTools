@@ -42,6 +42,8 @@ pub use werror as error;
 
 pub use former as former;
 pub use woptions as options;
+pub use winterval as interval;
+pub use wstring_tools as string;
 
 ///
 /// Prelude to use: `use wtools::prelude::*`.
@@ -50,4 +52,26 @@ pub use woptions as options;
 pub mod prelude
 {
   pub use super::*;
+}
+
+///
+/// Dependencies.
+///
+
+pub mod dependencies
+{
+
+  pub use ::former;
+  pub use ::woptions;
+  pub use ::meta_tools;
+  pub use ::typing_tools;
+  pub use ::time_tools;
+  pub use ::wstring_tools;
+  pub use ::werror;
+  pub use ::winterval;
+  pub use ::parse_display; /* xxx : move */
+
+  // #[ cfg( debug_assertions ) ]
+  // pub use ::wtest_basic;
+
 }

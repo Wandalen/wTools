@@ -3,11 +3,15 @@
 // #![ feature( type_name_of_val ) ]
 #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 
+/* xxx : qqq : make sure CD run test on both stable and nightly channels */
+/* xxx : qqq : make sure CD run debug tests and release tests */
+/* xxx : qqq : introduce tag to run fewer tests */
+
 use wtest_basic::*;
 
-#[cfg( feature = "with_wtools" )]
+#[cfg( feature = "in_wtools" )]
 use wtools::typing as TheModule;
-#[cfg( not( feature = "with_wtools" ) )]
+#[cfg( not( feature = "in_wtools" ) )]
 use inspect_type as TheModule;
 
 //

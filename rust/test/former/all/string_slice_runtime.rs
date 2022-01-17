@@ -1,6 +1,4 @@
 
-// use meta_tools::*;
-
 #[derive(  Debug, PartialEq  )]
 pub struct Struct1< 'a >
 {
