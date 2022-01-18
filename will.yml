@@ -220,8 +220,8 @@ reflector:
     filePath:
       'module/rust/former_runtime': '{path::out.rust}/former_runtime'
       'rust/former/runtime': '{path::out.rust}/former_runtime/rust/former/runtime'
-      'module/rust/former_derive': '{path::out.rust}/former_derive'
-      'rust/former/derive': '{path::out.rust}/former_derive/rust/former/derive'
+      'module/rust/former_meta': '{path::out.rust}/former_meta'
+      'rust/former/derive': '{path::out.rust}/former_meta/rust/former/derive'
       'module/rust/former': '{path::out.rust}/former'
   reflect.package:
     filePath:

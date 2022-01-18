@@ -4,5 +4,10 @@ version = "0.0.0"
 edition = "2021"
 publish = false
 
+# [features]
+# nightly = [ "inspect_type/nightly" ]
+# default = []
+
 [dependencies]
-inspect_type = "*"
+inspect_type = { version = "*" }
+rustversion = "~1.0"

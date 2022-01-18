@@ -1,13 +1,13 @@
-// #![ feature( type_name_of_val ) ]
-// #![ feature( trace_macros ) ]
-// #![ feature( concat_idents ) ]
 
 mod dt;
 mod error;
 mod former;
 mod meta;
-// mod str;
+mod options;
+mod string;
+mod test;
+mod time;
+mod typing;
 // #[ cfg( feature = "proc_macro" ) ]
 // mod proc_macro;
-mod test;
 // mod vector;

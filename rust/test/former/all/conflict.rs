@@ -1,4 +1,12 @@
 
+#[cfg( feature = "in_wtools" )]
+use wtools::meta::*;
+#[cfg( not( feature = "in_wtools" ) )]
+use meta_tools::*;
+
+#[cfg( feature = "in_wtools" )]
+use wtools::former::Former;
+#[cfg( not( feature = "in_wtools" ) )]
 use former::Former;
 
 #[allow(dead_code)]

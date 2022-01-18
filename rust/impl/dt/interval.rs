@@ -1,6 +1,8 @@
 #![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
 
-/* xxx : qqq : for rust : implement iterator */
+/* zzz : consider https://doc.rust-lang.org/std/ops/trait.RangeBounds.html */
+/* zzz : implement iterator */
 
 //!
 //! Interval adapter for both open/closed implementations of intervals ( ranges ).
@@ -61,6 +63,7 @@ where
 /// Both [core::ops::Range], [core::ops::RangeInclusive] are convertable to [crate::Interval]
 ///
 
+#[ derive( PartialEq, Debug ) ]
 pub struct Interval< T = isize >
 where
   T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,

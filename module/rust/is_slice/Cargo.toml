@@ -1,6 +1,6 @@
 [package]
 name = "is_slice"
-version = "0.0.2"
+version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -19,7 +19,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/meta/is_slice.rs",
+  "/rust/impl/typing/is_slice_lib.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -27,7 +27,7 @@ include = [
 
 [lib]
 name = "is_slice"
-path = "rust/impl/typing/is_slice.rs"
+path = "rust/impl/typing/is_slice_lib.rs"
 
 [[test]]
 name = "is_slice_test"
@@ -40,5 +40,5 @@ path = "sample/rust/is_slice_trivial/src/main.rs"
 [dependencies]
 
 [dev-dependencies]
-# trybuild = { version = "~1.0", features = ["diff"] }
-wtest_basic = { version = "~0", path = "../wtest_basic" }
+# trybuild = { version = "~1.0", features = [ "diff" ] }
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
