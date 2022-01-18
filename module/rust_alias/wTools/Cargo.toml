@@ -26,11 +26,11 @@ include = [
 ]
 
 [lib]
-name = "sketch_alias"
+name = "wtools_alias"
 path = "rust/impl/wtools_alias_lib.rs"
 
 [[test]]
-name = "sketch_alias_test"
+name = "wtools_alias_test"
 path = "rust/test/wtools_alias_lib_test.rs"
 
 [features]

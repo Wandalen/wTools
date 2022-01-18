@@ -316,6 +316,9 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
     mod #name_ident
     {
 
+      #[cfg( feature = "in_wtools" )]
+      use ::wtools::options::*;
+      #[cfg( not( feature = "in_wtools" ) )]
       use ::woptions::*;
 
       #( #attrs )*

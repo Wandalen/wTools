@@ -4,7 +4,6 @@ use wtools::options::*;
 #[cfg( not( feature = "in_wtools" ) )]
 use woptions::*;
 
-
 Options!{ split< 'a >
 {
   #![ derive( PartialOrd ) ]

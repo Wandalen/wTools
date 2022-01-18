@@ -36,6 +36,22 @@
 
 pub extern crate paste;
 
+///
+/// Dependencies.
+///
+
+pub mod dependencies
+{
+  pub use paste;
+  // #[ cfg( test ) ]
+  pub use trybuild;
+  // #[ cfg( test ) ]
+  pub use anyhow;
+  // #[ cfg( test ) ]
+  // #[ cfg( debug_assertions ) ]
+  pub use rustversion;
+}
+
 /// Mechanism to define test suite. This macro encourages refactoring the code of the test in the most readable way, gathering a list of all test routines at the end of the test file.
 
 #[ macro_export ]

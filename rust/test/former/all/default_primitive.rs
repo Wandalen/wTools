@@ -1,4 +1,6 @@
 
+use wtest_basic::dependencies::*;
+
 #[cfg( feature = "in_wtools" )]
 use wtools::meta::*;
 #[cfg( not( feature = "in_wtools" ) )]

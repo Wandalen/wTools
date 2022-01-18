@@ -1,5 +1,5 @@
 
-// use maplit::*;
+use wtest_basic::dependencies::*;
 
 //
 

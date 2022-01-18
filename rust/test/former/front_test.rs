@@ -1,15 +1,15 @@
 
 use std::env;
-// use meta_tools::*;
+use wtest_basic::dependencies::*;
 
-#[test]
+#[ test ]
 #[ rustversion::stable ]
 fn trybuild_tests()
 {
   println!( "current_dir : {:?}", env::current_dir().unwrap() );
 }
 
-#[test]
+#[ test ]
 #[ rustversion::nightly ]
 fn trybuild_tests()
 {
@@ -20,7 +20,7 @@ fn trybuild_tests()
   t.compile_fail( "../../../rust/test/former/all/hashmap_without_parameter.rs" );
 }
 
-// include!( "./former/mod.rs" );
+/* xxx : use mod_at */
 
 mod basic_runtime { include!( "./all/basic_runtime.rs" ); }
 mod basic { include!( "./all/basic.rs" ); }

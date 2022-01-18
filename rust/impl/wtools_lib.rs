@@ -69,7 +69,7 @@ pub mod dependencies
   pub use ::wstring_tools;
   pub use ::werror;
   pub use ::winterval;
-  pub use ::parse_display; /* xxx : move */
+  pub use ::parse_display; /* xxx : move to stringing */
 
   // #[ cfg( debug_assertions ) ]
   // pub use ::wtest_basic;

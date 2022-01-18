@@ -3,6 +3,7 @@
 // #![ allow( dead_code ) ]
 #![ warn( missing_docs ) ]
 #![ warn( missing_debug_implementations ) ]
+// #![ allow( proc_macro_derive_resolution_fallback ) ]
 
 use quote::{ quote };
 use syn::{ DeriveInput };
@@ -427,8 +428,15 @@ fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> 
 /// Generate documentation for the former.
 ///
 
-fn doc_generate( name_ident : &syn::Ident ) -> String
+fn doc_generate( name_ident : &syn::Ident ) -> ( String, String )
 {
+
+  let doc_former_mod = format!
+  (
+r#" Implementation of former for [{}].
+"#,
+    name_ident
+  );
 
   let doc_example1 =
 r#"
@@ -441,7 +449,7 @@ pub struct Struct1
 }
 "#;
 
-  let doc = format!
+  let doc_former_struct = format!
   (
 r#" Object to form [{}]. If field's values is not set then default value of the field is set.
 
@@ -453,7 +461,7 @@ For specifing custom default value use attribute `default`. For example:
     name_ident, doc_example1
   );
 
-  doc
+  ( doc_former_mod, doc_former_struct )
 }
 
 //
@@ -472,6 +480,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   let generics = &ast.generics;
   let former_name = format!( "{}Former", name_ident );
   let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
+
+  // use heck::ToSnakeCase;
+  // let former_snake = name_ident.to_string().to_snake_case();
+  // let former_mod = format!( "{}_former", former_snake );
+  // let former_mod_ident = syn::Ident::new( &former_mod, name_ident.span() );
 
   /* structure attribute */
 
@@ -557,7 +570,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     field_setter_map( &former_field, &former_name_ident ),
   )}).multiunzip();
 
-  let doc = doc_generate( &name_ident );
+  let ( _doc_former_mod, doc_former_struct ) = doc_generate( &name_ident );
   let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
   let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
 
@@ -579,50 +592,62 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       }
     }
 
-    #[doc = #doc]
-    #[derive( Debug )]
-    pub struct #former_name_ident #generics
-    {
-      #(
-        /// A field
-        #fields_optional,
-      )*
-    }
+    // #[doc = #doc_former_mod]
+    // mod #former_mod_ident
+    // {
+      // use;
+      // use super::*;
+      // use super::#name_ident;
+      #[cfg( feature = "in_wtools" )]
+      use wtools::former;
 
-    impl #generics #former_name_ident #generics
-    {
-      ///
-      /// Finish setting options and return formed entity.
-      ///
-      /// If `form_after` defined then associated method is called and its result returned instead of entity.
-      /// For example `form()` of structure with : `#[ form_after( fn after1< 'a >() -> Option< &'a str > )` returns `Option< &'a str >`.
-      ///
-      #[inline]
-      pub fn form #form_generics ( self ) -> #form_after_output
+      #[doc = #doc_former_struct]
+      #[derive( Debug )]
+      pub struct #former_name_ident #generics
       {
-        let result = self._form();
-        #form_after
+        #(
+          /// A field
+          #fields_optional,
+        )*
       }
-      ///
-      /// Finish setting options and return formed entity.
-      ///
-      /// `form_after` has no effect on method `_form` unlike method `form`.
-      ///
-      #[inline]
-      pub fn _form( mut self ) -> #name_ident #generics
+
+      impl #generics #former_name_ident #generics
       {
-        #( #fields_form )*
-        let result = #name_ident
+        ///
+        /// Finish setting options and return formed entity.
+        ///
+        /// If `form_after` defined then associated method is called and its result returned instead of entity.
+        /// For example `form()` of structure with : `#[ form_after( fn after1< 'a >() -> Option< &'a str > )` returns `Option< &'a str >`.
+        ///
+        #[inline]
+        pub fn form #form_generics ( self ) -> #form_after_output
         {
-          #( #fields_names, )*
-        };
-        return result;
+          let result = self._form();
+          #form_after
+        }
+        ///
+        /// Finish setting options and return formed entity.
+        ///
+        /// `form_after` has no effect on method `_form` unlike method `form`.
+        ///
+        #[inline]
+        pub fn _form( mut self ) -> #name_ident #generics
+        {
+          #( #fields_form )*
+          let result = #name_ident
+          {
+            #( #fields_names, )*
+          };
+          return result;
+        }
+        #(
+          /// Field setter.
+          #fields_setter
+        )*
       }
-      #(
-        /// Field setter.
-        #fields_setter
-      )*
-    }
+
+    // }
+    // pub use #former_mod_ident::#former_name_ident;
 
   };
 

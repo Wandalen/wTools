@@ -82,7 +82,7 @@ fn _use3()
 
   // test.case( "basic" );
 
-  let err1 = werror::Error::new( "Some error" );
+  let err1 = TheModule::Error::new( "Some error" );
   assert_eq!( err1.to_string(), "Some error" );
   assert_eq!( err1.description(), "Some error" );
   assert_eq!( err1.msg(), "Some error" );

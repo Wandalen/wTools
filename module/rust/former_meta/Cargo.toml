@@ -33,6 +33,7 @@ path = "rust/impl/former/meta/lib.rs"
 [dependencies]
 proc-macro2 = "~1.0"
 quote = "~1.0"
+heck = "~0.4"
 syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
 iter_tools = { path = "../../rust/iter_tools", version = "~0.1" }
 werror = { path = "../../rust/werror", version = "~0.1" }

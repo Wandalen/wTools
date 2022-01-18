@@ -39,7 +39,9 @@ path = "sample/rust/wtest_basic_trivial/src/main.rs"
 
 [dependencies]
 paste = "~1.0"
-# anyhow = "~1.0"
+rustversion = "~1.0"
+trybuild = { version = "~1.0", features = [ "diff" ] }
+anyhow = "~1.0"
 
 [dev-dependencies]
-# trybuild = { version = "~1.0", features = [ "diff" ] }
+# rustversion = "~1.0"
