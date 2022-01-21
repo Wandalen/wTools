@@ -453,15 +453,9 @@ pub mod internal
 //
 // }}
 
-/* xxx : rename to proc_macro_tools */
-/* xxx : register macro_tools as wrapper of proc_macro_tools */
-
-/* xxx : alias wproc_macro -> proc_macro_tools */
-/* xxx : alias former_derive -> former_meta */
-/* xxx : alias wTools -> wtools */
-
 /* xxx : register error_tools */
-/* xxx : register text_tools as alias */
+/* xxx : alias werror -> error_tools  */
+/* xxx : register text_tools as alias for wstring */
 
 /* xxx : implement module::mod_at */
 /* xxx : implement and publish mod_expose */
@@ -479,7 +473,7 @@ pub mod dependencies
   pub use proc_macro2;
 }
 
-// expose!{
+// mod_expose!{
 // {
 //
 //   _tree_print as tree_print,
