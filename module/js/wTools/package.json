@@ -53,7 +53,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "wTesting": "",
+    "wTesting": "alpha",
     "eslint": "7.32.0"
   },
   "keywords": [
