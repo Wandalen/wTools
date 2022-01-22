@@ -227,8 +227,8 @@ reflector:
     filePath:
       '{path::npm.publish}/package.json': '{path::in}/package.json'
       '{path::npm.publish}/was.package.json': '{path::in}/was.package.json'
-    dstRewritingOnlyPreserving: 0
-      'rust/former/mod.rs': '{path::out.rust}/former/rust/former/mod.rs'
+      'rust/former/mod.rs' : '{path::out.rust}/former/rust/former/mod.rs'
+    # dstRewritingOnlyPreserving: 0
 
 step:
   transpile.build.proto.debug:
