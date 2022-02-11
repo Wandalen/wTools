@@ -23910,6 +23910,8 @@ function arrayReplaceArraysOnce( test )
 
 }
 
+arrayReplaceArraysOnce.timeOut = 10000;
+
 //
 
 function arrayReplaceArraysOnceStrictly( test )
