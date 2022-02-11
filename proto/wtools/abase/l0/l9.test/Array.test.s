@@ -17650,6 +17650,8 @@ function arrayFlattenedOnceStrictlySame( test )
   });
 }
 
+arrayFlattenedOnceStrictlySame.timeOut = 10000;
+
 //
 
 function arrayFlattenedOnceStrictlySets( test )
