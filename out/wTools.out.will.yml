@@ -3,8 +3,8 @@ root:
   - wTools.out
 consistency:
   ../will.yml: &ref_0
-    hash: 292a4d4f1cdc41b62f9ada960cc767ca
-    size: 8861
+    hash: bc1f41458319d6eb6aa0917fb32fe16a
+    size: 9093
 module:
   wTools.out:
     about:
@@ -753,15 +753,23 @@ module:
           filePath:
             module/rust/former_runtime: '{path::out.rust}/former_runtime'
             rust/former/runtime: '{path::out.rust}/former_runtime/rust/former/runtime'
-            module/rust/former_derive: '{path::out.rust}/former_derive'
-            rust/former/derive: '{path::out.rust}/former_derive/rust/former/derive'
+            module/rust/former_meta: '{path::out.rust}/former_meta'
+            rust/former/derive: '{path::out.rust}/former_meta/rust/former/derive'
             module/rust/former: '{path::out.rust}/former'
-            rust/former/mod.rs: '{path::out.rust}/former/rust/former/mod.rs'
           prefixPath: ''
         dst:
           prefixPath: ''
         inherit:
           - predefined.*
+      reflect.package:
+        src:
+          filePath:
+            '{path::npm.publish}/package.json': '{path::in}/package.json'
+            '{path::npm.publish}/was.package.json': '{path::in}/was.package.json'
+            rust/former/mod.rs: '{path::out.rust}/former/rust/former/mod.rs'
+          prefixPath: ''
+        dst:
+          prefixPath: ''
       exported.proto.export:
         src:
           filePath:
@@ -1119,10 +1127,16 @@ module:
           filePath: 'reflector::reflect.rust.modules'
         inherit:
           - files.reflect
+      reflect.package:
+        opts:
+          filePath: 'reflector::reflect.package'
+        inherit:
+          - files.reflect
     build:
       publish.npm:
         steps:
           - publish.npm
+          - reflect.package
         criterion:
           default: 1
           publish: 1
@@ -1479,12 +1493,17 @@ module:
           filePath:
             module/rust/former_runtime: '{path::out.rust}/former_runtime'
             rust/former/runtime: '{path::out.rust}/former_runtime/rust/former/runtime'
-            module/rust/former_derive: '{path::out.rust}/former_derive'
-            rust/former/derive: '{path::out.rust}/former_derive/rust/former/derive'
+            module/rust/former_meta: '{path::out.rust}/former_meta'
+            rust/former/derive: '{path::out.rust}/former_meta/rust/former/derive'
             module/rust/former: '{path::out.rust}/former'
-            rust/former/mod.rs: '{path::out.rust}/former/rust/former/mod.rs'
         inherit:
           - predefined.*
+      reflect.package:
+        src:
+          filePath:
+            '{path::npm.publish}/package.json': '{path::in}/package.json'
+            '{path::npm.publish}/was.package.json': '{path::in}/was.package.json'
+            rust/former/mod.rs: '{path::out.rust}/former/rust/former/mod.rs'
     step:
       transpile.build.proto.debug.no.tests:
         opts:
@@ -1818,10 +1837,16 @@ module:
           filePath: 'reflector::reflect.rust.modules'
         inherit:
           - files.reflect
+      reflect.package:
+        opts:
+          filePath: 'reflector::reflect.package'
+        inherit:
+          - files.reflect
     build:
       publish.npm:
         steps:
           - publish.npm
+          - reflect.package
         criterion:
           default: 1
           publish: 1
@@ -1888,5 +1913,5 @@ module:
           - 'step::reflect.rust.modules'
     consistency:
       ../will.yml:
-        hash: 292a4d4f1cdc41b62f9ada960cc767ca
-        size: 8861
+        hash: bc1f41458319d6eb6aa0917fb32fe16a
+        size: 9093

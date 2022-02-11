@@ -1,4 +1,6 @@
 
+use wtest_basic::dependencies::*;
+
 //
 
 #[ test ]

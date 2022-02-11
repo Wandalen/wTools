@@ -1,5 +1,5 @@
 
-use maplit::*;
+use wtest_basic::dependencies::*;
 
 //
 
@@ -20,8 +20,8 @@ fn test_int() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![],
-    hashmap_strings_1 : hashmap!{},
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
@@ -58,8 +58,8 @@ fn test_string() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![],
-    hashmap_strings_1 : hashmap!{},
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
@@ -77,8 +77,8 @@ fn test_string() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![],
-    hashmap_strings_1 : hashmap!{},
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
@@ -115,8 +115,8 @@ fn test_optional_string() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : Some( "dir1".to_string() ),
     vec_1 : vec![],
-    hashmap_strings_1 : hashmap!{},
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
@@ -133,8 +133,8 @@ fn test_optional_string() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![],
-    hashmap_strings_1 : hashmap!{},
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
@@ -172,8 +172,8 @@ fn test_vector() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
-    hashmap_strings_1 : hashmap!{},
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
@@ -191,8 +191,8 @@ fn test_vector() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![ "a".to_string(), "bc".to_string(), "def".to_string() ],
-    hashmap_strings_1 : hashmap!{},
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
@@ -210,8 +210,8 @@ fn test_vector() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![ "a".to_string(), "bc".to_string(), "def".to_string(), "gh".to_string() ],
-    hashmap_strings_1 : hashmap!{},
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
@@ -238,15 +238,15 @@ fn test_hashmap() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![],
-    hashmap_strings_1 : hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
   // test.case( "replace" );
 
   let command = Struct1::former()
-  .hashmap_strings_1().replace( hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
+  .hashmap_strings_1().replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
   .form()
   ;
   // dbg!( &command );
@@ -258,15 +258,15 @@ fn test_hashmap() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![],
-    hashmap_strings_1 : hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
   // test.case( "replace and insert" );
 
   let command = Struct1::former()
-  .hashmap_strings_1().replace( hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).insert( "k3", "v3" ).end()
+  .hashmap_strings_1().replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).insert( "k3", "v3" ).end()
   .form()
   ;
   // dbg!( &command );
@@ -278,8 +278,8 @@ fn test_hashmap() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![],
-    hashmap_strings_1 : hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string(), "k3".to_string() => "v3".to_string() },
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string(), "k3".to_string() => "v3".to_string() },
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
@@ -306,15 +306,15 @@ fn test_hashset() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![],
-    hashmap_strings_1 : hashmap!{},
-    hashset_strings_1 : hashset!{ "v1".to_string(), "v2".to_string() },
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string() },
   };
   assert_eq!( command, expected );
 
   // test.case( "replace" );
 
   let command = Struct1::former()
-  .hashset_strings_1().replace( hashset!{ "v1".to_string(), "v2".to_string() } ).end()
+  .hashset_strings_1().replace( hset!{ "v1".to_string(), "v2".to_string() } ).end()
   .form()
   ;
   // dbg!( &command );
@@ -326,15 +326,15 @@ fn test_hashset() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![],
-    hashmap_strings_1 : hashmap!{},
-    hashset_strings_1 : hashset!{ "v1".to_string(), "v2".to_string() },
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string() },
   };
   assert_eq!( command, expected );
 
   // test.case( "replace and insert" );
 
   let command = Struct1::former()
-  .hashset_strings_1().replace( hashset!{ "v1".to_string(), "v2".to_string() } ).insert( "v3" ).end()
+  .hashset_strings_1().replace( hset!{ "v1".to_string(), "v2".to_string() } ).insert( "v3" ).end()
   .form()
   ;
   // dbg!( &command );
@@ -346,8 +346,34 @@ fn test_hashset() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : None,
     vec_1 : vec![],
-    hashmap_strings_1 : hashmap!{},
-    hashset_strings_1 : hashset!{ "v1".to_string(), "v2".to_string(), "v3".to_string() },
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string(), "v3".to_string() },
+  };
+  assert_eq!( command, expected );
+
+  Ok( () )
+}
+
+//
+
+fn test_underscored_form() -> anyhow::Result< () >
+{
+
+  // test.case( "basic" );
+
+  let command = Struct1::former()
+  .int_1( 13 )
+  ._form();
+
+  let expected = Struct1
+  {
+    int_1 : 13,
+    string_1 : "".to_string(),
+    int_optional_1 : None,
+    string_optional_1 : None,
+    vec_1 : vec![],
+    hashmap_strings_1 : hmap!{},
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
@@ -375,8 +401,8 @@ fn test_complex() -> anyhow::Result< () >
     int_optional_1 : None,
     string_optional_1 : Some( "dir1".to_string() ),
     vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
-    hashmap_strings_1 : hashmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-    hashset_strings_1 : hashset!{},
+    hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+    hashset_strings_1 : hset!{},
   };
   assert_eq!( command, expected );
 
@@ -410,6 +436,7 @@ fn main_test() -> anyhow::Result< () >
   test_vector()?;
   test_hashmap()?;
   test_hashset()?;
+  test_underscored_form()?;
   test_complex()?;
   Ok( () )
 }

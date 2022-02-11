@@ -1,3 +1,5 @@
+#![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
 
 /// Alias for std::error::Error.
 
@@ -38,10 +40,12 @@ pub struct Error
 
 impl Error
 {
+  /// Constructor expecting message with description.
   pub fn new< Msg : Into< String > >( msg : Msg ) -> Error
   {
     Error { msg : msg.into() }
   }
+  /// Message with description getter.
   pub fn msg( &self ) -> &String
   {
     &self.msg

@@ -39,6 +39,7 @@ build:
       bump: patch
     steps:
       - publish.npm
+      - reflect.package
   build:
     criterion:
       debug:
@@ -219,10 +220,15 @@ reflector:
     filePath:
       'module/rust/former_runtime': '{path::out.rust}/former_runtime'
       'rust/former/runtime': '{path::out.rust}/former_runtime/rust/former/runtime'
-      'module/rust/former_derive': '{path::out.rust}/former_derive'
-      'rust/former/derive': '{path::out.rust}/former_derive/rust/former/derive'
+      'module/rust/former_meta': '{path::out.rust}/former_meta'
+      'rust/former/derive': '{path::out.rust}/former_meta/rust/former/derive'
       'module/rust/former': '{path::out.rust}/former'
-      'rust/former/mod.rs': '{path::out.rust}/former/rust/former/mod.rs'
+  reflect.package:
+    filePath:
+      '{path::npm.publish}/package.json': '{path::in}/package.json'
+      '{path::npm.publish}/was.package.json': '{path::in}/was.package.json'
+      'rust/former/mod.rs' : '{path::out.rust}/former/rust/former/mod.rs'
+    # dstRewritingOnlyPreserving: 0
 
 step:
   transpile.build.proto.debug:
