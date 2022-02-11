@@ -28,6 +28,7 @@ mod conflict { include!( "./all/conflict.rs" ); }
 mod string_slice_runtime { include!( "./all/string_slice_runtime.rs" ); }
 mod string_slice { include!( "./all/string_slice.rs" ); }
 
+mod default_user_type { include!( "./all/default_user_type.rs" ); }
 mod default_primitive { include!( "./all/default_primitive.rs" ); }
 mod default_container { include!( "./all/default_container.rs" ); }
 mod after { include!( "./all/after.rs" ); }
