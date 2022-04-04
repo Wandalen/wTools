@@ -4,7 +4,7 @@ Macro to answer the question: does it implement a trait?
 
 This solution has a limitation:
 
-- In case enity is a function and trat is `Fn`/`FnMut`/`FnOnce` which current entity does not implement you will get compile-time error instead of `false`.
+- In case entity is a function and trait is `Fn`/`FnMut`/`FnOnce` which current entity does not implement you will get compile-time error instead of `false`.
 
 ### Sample
 
