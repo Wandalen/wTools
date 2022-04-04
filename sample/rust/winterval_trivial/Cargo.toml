@@ -1,5 +1,5 @@
 [package]
-name = "interval_trivial_sample"
+name = "winterval_trivial_sample"
 version = "0.0.0"
 edition = "2021"
 publish = false

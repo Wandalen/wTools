@@ -34,8 +34,8 @@ name = "interval_test"
 path = "rust/test/dt/interval_test.rs"
 
 [[example]]
-name = "interval_trivial"
-path = "sample/rust/interval_trivial/src/main.rs"
+name = "winterval_trivial"
+path = "sample/rust/winterval_trivial/src/main.rs"
 
 [dependencies]
 
