@@ -37,7 +37,7 @@
 //   }
 // }
 
-// /* qqq : ?? */
+// /* qqq : ?? */ /* aaa : not actual task, old code */
 // impl<T : PartialEq + Copy + Clone + std::default::Default> append_vectors_once<T>
 // {
 //   pub fn src( &mut self, src : Vec<Vec<T>> ) -> &mut Self
