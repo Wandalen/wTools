@@ -5,32 +5,74 @@ Mechanism to define map of options for a function and its defaults laconically.
 ### Sample
 
 ``` rust sample test
-use woptions::*;
-
-Options!{ splitter< 'a >
+mod splitter
 {
-  #![ derive( PartialOrd ) ]
+  use former::Former;
 
-  pub src : &'a str;
-  pub delimeter : &'a str;
-  #[ default( true ) ]
-  pub left : bool;
-
-  fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
-  where
-    Self : Sized,
+  #[ derive( PartialOrd ) ]
+  #[ derive( Former, PartialEq, Debug ) ]
+  #[ form_after( fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) > ) ]
+  pub struct Options< 'a >
   {
-    if *self.left()
+    pub src : &'a str,
+    pub delimeter : &'a str,
+    #[ default( true ) ]
+    pub left : bool,
+  }
+
+  pub trait OptionsAdapter< 'a >
+  {
+    fn src( &self ) -> &'a str;
+    fn delimeter( &self ) -> &'a str;
+    fn left( &self ) -> &bool;
+    #[ inline ]
+    fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
+    where
+      Self : Sized,
     {
-      Box::new( self.src().split( self.delimeter() ) )
-    }
-    else
-    {
-      Box::new( self.src().rsplit( self.delimeter() ) )
+      if *self.left()
+      {
+        Box::new( self.src().split( self.delimeter() ) )
+      }
+      else
+      {
+        Box::new( self.src().rsplit( self.delimeter() ) )
+      }
     }
   }
 
-}}
+  impl< 'a > OptionsAdapter< 'a > for Options< 'a >
+  {
+    #[ inline ]
+    fn src( &self ) -> &'a str
+    {
+      &self.src
+    }
+    #[ inline ]
+    fn delimeter( &self ) -> &'a str
+    {
+      &self.delimeter
+    }
+    #[ inline ]
+    fn left( &self ) -> &bool
+    {
+      &self.left
+    }
+  }
+
+  #[ inline ]
+  pub fn former< 'a >() -> OptionsFormer< 'a >
+  {
+    Options::< 'a >::former()
+  }
+
+}
+
+#[ inline ]
+fn splitter< 'a >() -> splitter::OptionsFormer< 'a >
+{
+  splitter::former::< 'a >()
+}
 
 //
 
