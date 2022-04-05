@@ -1,6 +1,6 @@
 # module::wtest_basic
 
-Tools for writing and runnint tests. The most basic things.
+Tools for writing and running tests. The most basic things.
 
 ### Sample
 

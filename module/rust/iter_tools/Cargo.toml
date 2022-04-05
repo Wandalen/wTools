@@ -33,10 +33,10 @@ path = "rust/impl/iter/lib.rs"
 name = "iter_tools_test"
 path = "rust/test/iter/lib_test.rs"
 
-# [[example]]
-# name = "iter_tools_trivial"
-# path = "sample/rust/iter_tools_trivial/src/main.rs"
-# qqq : for Rust dev : please add
+[[example]]
+name = "iter_tools_trivial"
+path = "sample/rust/iter_tools_trivial/src/main.rs"
+# qqq : for Rust dev : please add # aaa : done
 
 [dependencies]
 itertools = "~0.10.3"
