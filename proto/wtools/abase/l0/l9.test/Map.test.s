@@ -15915,6 +15915,8 @@ function sureMapHasNoUndefine( test )
   test.identical( err.originalMessage, 'Expects one, two or three arguments' );
 }
 
+sureMapHasNoUndefine.timeOut = 10000;
+
 //
 
 function assertMapHasNoUndefine( test )

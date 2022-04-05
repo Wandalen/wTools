@@ -33,10 +33,10 @@ path = "rust/impl/time/lib.rs"
 name = "time_tools_test"
 path = "rust/test/time/lib_test.rs"
 
-# [[example]]
-# name = "time_tools_trivial"
-# path = "sample/rust/time_tools_trivial/src/main.rs"
-# qqq : for Rust dev : please add
+[[example]]
+name = "time_tools_trivial"
+path = "sample/rust/time_tools_trivial/src/main.rs"
+# qqq : for Rust dev : please add # aaa : done
 
 [dependencies]
 # former = { version = "~0.1", path = "../../rust/former" }

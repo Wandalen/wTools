@@ -1,10 +1,3 @@
-# module::woptions
-
-Mechanism to define map of options for a function and its defaults laconically.
-
-### Sample
-
-``` rust sample test
 use woptions::*;
 
 Options!{ splitter< 'a >
@@ -51,20 +44,3 @@ fn main()
   let splitted = from_former.perform().map( | e | String::from( e ) ).collect::< Vec< _ > >();
   assert_eq!( splitted, vec![ "a", "c" ] );
 }
-```
-<!-- xxx --> <!-- aaa : done -->
-
-### To add to your project
-
-```
-cargo add woptions
-```
-
-### Try out from the repository
-
-``` shell test
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd sample/rust/woptions_trivial
-cargo run
-```

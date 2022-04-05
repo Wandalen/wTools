@@ -311,7 +311,7 @@
 
 // impl<'a> split_fast<'a>
 // {
-//   /* qqq : split?? */
+//   /* qqq : split?? */ /* aaa : not actual task, old code */
 //   pub fn from( o : &'a split ) -> Self
 //   {
 //     let opts = Self
