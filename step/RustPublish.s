@@ -19,8 +19,8 @@ let step = function rustPublish( o )
   if( !o.modulesList )
   o.modulesList =
   [
-    // 'module/rust/*',
-    // 'module/rust_alias/*',
+    'module/rust/*',
+    'module/rust_alias/*',
     'module/rust_move/*',
   ];
 
@@ -35,7 +35,7 @@ let step = function rustPublish( o )
   if( _.path.isGlob( o.modulesList[ i ] ) )
   {
     const paths = filesFind({ filePath : o.modulesList[ i ] });
-    o.modulesList = _.arrayBut( o.modulesList, i, paths );
+    _.arrayBut_( o.modulesList, o.modulesList, i, paths );
   }
 
   const ready = _.take( null );
@@ -51,47 +51,63 @@ let step = function rustPublish( o )
     ready,
   });
 
-  start({ currentPath, execPath : 'cargo install wselector' });
-
-  let appliedVersion = '0.0.0';
   const con = _.take( null );
-  for( let i = 0; i < o.modulesList.length; i++ )
+  con.then( () => start({ currentPath, execPath : 'cargo install wselector' }) );
+  /* filter */
+  con.then( () =>
   {
-    con.then( () =>
+    for( let i = o.modulesList.length - 1; i >= 0; i-- )
     {
-      /* qqq : toml reader is required */
-      start({ currentPath : o.modulesList[ i ], execPath : 'selector get ./Cargo.toml package.version -f yaml' });
-      return ready.then( ( op ) =>
+      start({ currentPath : o.modulesList[ i ], execPath : 'selector get ./Cargo.toml package.publish' });
+      ready.then( ( op ) =>
       {
-        /* qqq : primitive bump, should be improved */
-        const version = op.output;
-        const splits = version.split( '.' );
-        splits[ 2 ] = Number( splits[ 2 ] ) + 1;
-        appliedVersion = splits.join( '.' );
-        return null;
+        if( op.output.trim() === 'false' )
+        _.arrayBut_( o.modulesList, o.modulesList, i );
+        return null
       });
-    });
-    con.then( () =>
+    }
+    return ready;
+  });
+
+  /* bump */
+  con.then( () =>
+  {
+    /* qqq : primitive bump, can be improved */
+    for( let i = 0; i < o.modulesList.length; i++ )
+    ready.then( () => bump( o, i ) );
+    return ready;
+  });
+
+  /* commit */
+  /* alternatively, commit each package version */
+  con.then( () =>
+  {
+    if( o.logger && o.logger.verbosity >= 3 );
+    ready.then( () =>
     {
-      /* qqq : toml writer is required */
-      start({ currentPath : o.modulesList[ i ], execPath : `selector set ./Cargo.toml package.version ${ appliedVersion }` });
-      if( o.dry )
+      console.log( 'Committing changes in rust packages.' );
       return null;
-      return ready.then( ( op ) =>
-      {
-        const data = op.output;
-        const packagePath = _.path.join( o.modulesList[ i ], 'Cargo.toml' );
-        _.fileProvider.fileWrite( packagePath, data );
-        return null;
-      });
     });
-    con.then( () =>
+    if( !o.dry )
+    {
+      start({ currentPath, execPath : `git commit -am "publish rust packages"` });
+      start({ currentPath, execPath : `git push"` });
+    }
+    return ready;
+  });
+
+  /* publish */
+  con.then( () =>
+  {
+    for( let i = 0; i < o.modulesList.length; i++ )
     {
       if( o.dry )
-      return start({ currentPath : o.modulesList[ i ], execPath : `cargo publish --dry-run` })
-      return start({ currentPath : o.modulesList[ i ], execPath : `cargo publish` })
-    });
-  }
+      start({ currentPath : o.modulesList[ i ], execPath : `cargo publish --dry-run` });
+      else
+      start({ currentPath : o.modulesList[ i ], execPath : `cargo publish` });
+    }
+    return ready;
+  });
 
   return con;
 }
@@ -100,6 +116,8 @@ let defaults = step.defaults = Object.create( null );
 defaults.modulesList = null;
 defaults.logger = 2;
 defaults.dry = 0;
+
+//
 
 function filesFind( o2 )
 {
@@ -110,6 +128,53 @@ function filesFind( o2 )
   o2.withStem = false;
   let files = _.fileProvider.filesFind( o2 );
   return files;
+}
+
+//
+
+function bump( o, i )
+{
+  const start = _.process.starter
+  ({
+    currentPath : o.modulesList[ i ],
+    outputCollecting : 1,
+    outputPiping : o.logger ? o.logger.verbosity >= 3 : 0,
+    inputMirroring : o.logger ? o.logger.verbosity >= 3 : 0,
+    verbosity : o.logger ? o.logger.verbosity : 0,
+    logger : o.logger,
+    mode : 'shell',
+  });
+
+  const con = _.take( null );
+  let appliedVersion = '0.0.0';
+  con.then( () =>
+  {
+    /* qqq : toml reader is required */
+    return start( 'selector get ./Cargo.toml package.version -f yaml' )
+    .then( ( op ) =>
+    {
+      const splits = op.output.split( '.' );
+      splits[ 2 ] = Number( splits[ 2 ] ) + 1;
+      appliedVersion = splits.join( '.' );
+      return null;
+    });
+  });
+  con.then( () =>
+  {
+    /* qqq : toml writer is required */
+    const ready = start( `selector set ./Cargo.toml package.version ${ appliedVersion }` );
+    if( o.dry )
+    return null;
+    return ready.then( ( op ) =>
+    {
+      const data = op.output;
+      const packagePath = _.path.join( o.modulesList[ i ], 'Cargo.toml' );
+      _.fileProvider.fileWrite( packagePath, data );
+      return null;
+    });
+  });
+
+  return con;
 }
 
 module.exports = step;
