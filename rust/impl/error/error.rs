@@ -1,5 +1,34 @@
+#![ warn( missing_docs ) ]
+#![ warn( missing_debug_implementations ) ]
 
-pub use std::error::Error as ErrorTrait;
+/// Alias for std::error::Error.
+
+pub use std::error::Error as ErrorAdapter;
+
+///
+/// Macro to generate error.
+///
+/// # Sample
+/// ```
+/// # use werror::*;
+/// err!( "No attr" );
+/// ```
+///
+
+#[ macro_export ]
+macro_rules! err
+{
+
+  ( $msg : expr ) =>
+  {
+    $crate::Error::new( $msg )
+  };
+  ( $msg : expr, $( $arg : expr ),+ ) =>
+  {
+    $crate::Error::new( format!( $msg, $( $arg ),+ ) )
+  };
+
+}
 
 /// baic implementation of generic Error
 
@@ -11,10 +40,12 @@ pub struct Error
 
 impl Error
 {
+  /// Constructor expecting message with description.
   pub fn new< Msg : Into< String > >( msg : Msg ) -> Error
   {
     Error { msg : msg.into() }
   }
+  /// Message with description getter.
   pub fn msg( &self ) -> &String
   {
     &self.msg

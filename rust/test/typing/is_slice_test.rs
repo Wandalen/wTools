@@ -1,7 +1,11 @@
 // #![feature(type_name_of_val)]
 
-use is_slice as TheModule;
 use wtest_basic::*;
+
+#[cfg( feature = "in_wtools" )]
+use wtools::typing as TheModule;
+#[cfg( not( feature = "in_wtools" ) )]
+use is_slice as TheModule;
 
 //
 

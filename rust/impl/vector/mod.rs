@@ -1,5 +1,6 @@
 #![ warn( missing_docs ) ]
-#![ allow( non_camel_case_types ) ]
+#![ warn( missing_debug_implementations ) ]
+// #![ allow( non_camel_case_types ) ]
 
 // use std::cmp::PartialEq;
 

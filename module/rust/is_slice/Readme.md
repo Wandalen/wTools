@@ -2,21 +2,6 @@
 
 Macro to answer the question: is it a slice?
 
-### Try out from the repository
-
-``` shell test
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd sample/rust/is_slice_trivial
-cargo run
-```
-
-### To add to your project
-
-```
-cargo add is_slice
-```
-
 ### Sample
 
 ``` rust sample test
@@ -33,4 +18,19 @@ fn main()
   // < is_slice!(& [1, 2, 3] [..]) = true
 
 }
+```
+
+### To add to your project
+
+```
+cargo add is_slice
+```
+
+### Try out from the repository
+
+``` shell test
+git clone https://github.com/Wandalen/wTools
+cd wTools
+cd sample/rust/is_slice_trivial
+cargo run
 ```

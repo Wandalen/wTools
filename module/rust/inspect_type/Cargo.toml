@@ -1,6 +1,6 @@
 [package]
 name = "inspect_type"
-version = "0.0.8"
+version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -19,15 +19,23 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "diagnostic-purpose" ]
 
 include = [
-  "/rust/impl/meta/inspect_type.rs",
+  "/rust/impl/typing/inspect_type_lib.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
 
+[features]
+nightly = []
+default = []
+
+[package.metadata.docs.rs]
+all-features = true
+# rustdoc-args = []
+
 [lib]
 name = "inspect_type"
-path = "rust/impl/typing/inspect_type.rs"
+path = "rust/impl/typing/inspect_type_lib.rs"
 
 [[test]]
 name = "inspect_type_test"
@@ -40,4 +48,5 @@ path = "sample/rust/inspect_type_trivial/src/main.rs"
 [dependencies]
 
 [dev-dependencies]
-wtest_basic = { path = "../wtest_basic", version = "~0" }
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+rustversion = "~1.0"

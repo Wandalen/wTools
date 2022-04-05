@@ -1,0 +1,43 @@
+[package]
+name = "winterval"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Volodymyr M. <volodymyr.migdal@gmail.com>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/winterval"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/winterval"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/winterval"
+description = """
+Interval adapter for both open/closed implementations of intervals ( ranges ).
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+include = [
+  "/rust/impl/dt/interval.rs",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[lib]
+name = "winterval"
+path = "rust/impl/dt/interval.rs"
+
+[[test]]
+name = "interval_test"
+path = "rust/test/dt/interval_test.rs"
+
+[[example]]
+name = "interval_trivial"
+path = "sample/rust/interval_trivial/src/main.rs"
+
+[dependencies]
+
+[dev-dependencies]
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }

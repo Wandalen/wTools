@@ -1,0 +1,51 @@
+[package]
+name = "wTools"
+version = "0.1.0"
+publish = false
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Volodymyr M. <volodymyr.migdal@gmail.com>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/wTools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/wTools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/wTools"
+description = """
+Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+include = [
+  "/rust/impl/wtools_alias_lib.rs",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[lib]
+name = "wtools_alias"
+path = "rust/impl/wtools_alias_lib.rs"
+
+[[test]]
+name = "wtools_alias_test"
+path = "rust/test/wtools_alias_lib_test.rs"
+
+[features]
+in_wtools = [ "wtools/in_wtools" ]
+nightly = [ "wtools/nightly" ]
+default = [ "in_wtools" ]
+
+[package.metadata.docs.rs]
+all-features = true
+# rustdoc-args = []
+
+[dependencies]
+wtools = { version = "~0.1", path = "../../rust/wtools" }
+
+[dev-dependencies]
+rustversion = "~1.0"
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }

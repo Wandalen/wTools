@@ -1,0 +1,52 @@
+[package]
+name = "woptions"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Volodymyr M. <volodymyr.migdal@gmail.com>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/woptions"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/woptions"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/woptions"
+description = """
+Mechanism to define map of options for a fuction and its defaults laconically.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
+
+include = [
+  "/rust/impl/options/front",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[lib]
+name = "woptions"
+path = "rust/impl/options/front/lib.rs"
+
+[[test]]
+name = "woptions_test"
+path = "rust/test/options/front_test.rs"
+
+# [[example]]
+# name = "woptions_trivial"
+# path = "sample/rust/woptions_trivial/src/main.rs"
+# xxx
+
+[dependencies]
+woptions_meta = { version = "~0.1", path = "../../rust/woptions_meta" }
+woptions_runtime = { version = "~0.1", path = "../../rust/woptions_runtime" }
+former = { version = "~0.1", path = "../../rust/former" }
+# meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
+
+[dev-dependencies]
+anyhow = "~1.0"
+# maplit = "~1.0"
+trybuild = { version = "~1.0", features = [ "diff" ] }
+wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+rustversion = "~1.0"
