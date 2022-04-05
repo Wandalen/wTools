@@ -6,6 +6,6 @@ Not intended to be used without runtime. This module and runtime is aggregate in
 
 ### To add to your project
 
-```
+```sh
 cargo add former_meta
 ```

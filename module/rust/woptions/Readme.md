@@ -4,7 +4,7 @@ Mechanism to define map of options for a function and its defaults laconically.
 
 ### Sample
 
-``` rust sample test
+```rust
 use woptions::*;
 
 Options!{ splitter< 'a >
@@ -56,13 +56,13 @@ fn main()
 
 ### To add to your project
 
-```
+```sh
 cargo add woptions
 ```
 
 ### Try out from the repository
 
-``` shell test
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/woptions_trivial

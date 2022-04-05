@@ -4,7 +4,7 @@ Former - variation of builder pattern.
 
 ### Sample
 
-``` rust sample test
+```rust
 use former::Former;
 
 #[derive( Debug, PartialEq, Former )]
@@ -52,13 +52,13 @@ fn main()
 
 ### To add to your project
 
-```
+```sh
 cargo add former
 ```
 
 ### Try out from the repository
 
-``` shell test
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/former_trivial

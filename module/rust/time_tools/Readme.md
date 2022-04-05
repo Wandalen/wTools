@@ -4,7 +4,7 @@ Collection of general purpose time tools.
 
 ### Sample
 
-``` rust test
+```rust
 use time_tools::*;
 
 fn main()
@@ -30,13 +30,13 @@ fn main()
 
 ### To add to your project
 
-``` shell
+```sh
 cargo add time_tools
 ```
 
 ### Try out from the repository
 
-``` shell test
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/time_tools_trivial

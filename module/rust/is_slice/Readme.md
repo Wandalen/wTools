@@ -4,7 +4,7 @@ Macro to answer the question: is it a slice?
 
 ### Sample
 
-``` rust sample test
+```rust
 use is_slice::*;
 
 fn main()
@@ -22,13 +22,13 @@ fn main()
 
 ### To add to your project
 
-```
+```sh
 cargo add is_slice
 ```
 
 ### Try out from the repository
 
-``` shell test
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/is_slice_trivial

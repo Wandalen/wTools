@@ -4,7 +4,7 @@ Diagnostic-purpose tools to inspect type of a variable and its size.
 
 ### Sample
 
-``` rust test
+```rust
 #![ feature( type_name_of_val ) ]
 
 pub use inspect_type::*;
@@ -20,13 +20,13 @@ fn main()
 
 ### To add to your project
 
-``` shell
+```sh
 cargo add implements
 ```
 
 ### Try out from the repository
 
-``` shell test
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/inspect_type_trivial
