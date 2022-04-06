@@ -625,6 +625,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
           let result = self._form();
           #form_after
         }
+
         ///
         /// Finish setting options and return formed entity.
         ///
@@ -640,10 +641,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
           };
           return result;
         }
+
         #(
-          /// Field setter.
           #fields_setter
         )*
+
       }
 
     // }

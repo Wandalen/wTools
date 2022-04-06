@@ -391,6 +391,8 @@ function eslint( test )
       '--ignore-pattern', '*.less',
       '--ignore-pattern', '*.hbs',
       '--ignore-pattern', '*.noeslint',
+      '--ignore-pattern', '*.toml',
+      '--ignore-pattern', '*.rs',
       '--quiet'
     ],
     throwingExitCode : 0,
