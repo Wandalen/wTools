@@ -21,3 +21,4 @@
 mod basic_runtime { include!( "./all/basic_runtime.rs" ); }
 mod basic { include!( "./all/basic.rs" ); }
 mod without_perform { include!( "./all/without_perform.rs" ); }
+mod custom_getter { include!( "./all/custom_getter.rs" ); }
