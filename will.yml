@@ -40,6 +40,11 @@ build:
     steps:
       - publish.npm
       - reflect.package
+  publish.rust:
+    criterion:
+      publish: 1
+    steps:
+      - publish.rust
   build:
     criterion:
       debug:
@@ -103,6 +108,7 @@ path:
   proto: ./proto
   export: '{path::proto}/**'
   doc: ./doc
+  step: ./step
   out.build.debug.no.test:
     path: '{path::out}/debug'
     criterion:
@@ -335,6 +341,9 @@ step:
       content: proto
   publish.npm:
     inherit: npm.publish
+  publish.rust :
+    currentPath : 'path::in'
+    shell : 'node {path::step}/RustPublish.s logger:3'
   clean.out.rust:
     inherit: files.delete
     filePath: '{path::out.rust}'
