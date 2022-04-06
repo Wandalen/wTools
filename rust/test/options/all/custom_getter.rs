@@ -12,10 +12,11 @@ Options!{ split< 'a >
   #[ default( true ) ]
   pub left : bool;
 
-  fn left( &self ) -> bool
-  {
-    !self.left
-  };
+  /* xxx */
+  // fn left( &self ) -> bool
+  // {
+  //   !self.left
+  // };
 
   fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
   where
