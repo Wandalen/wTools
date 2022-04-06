@@ -33,10 +33,10 @@ path = "rust/impl/string/lib.rs"
 name = "string_test"
 path = "rust/test/string/test.rs"
 
-# [[example]]
-# name = "string_trivial"
-# path = "sample/rust/string_trivial/src/main.rs"
-# xxx
+[[example]]
+name = "wstring_tools_trivial"
+path = "sample/rust/wstring_tools_trivial/src/main.rs"
+# xxx # aaa : done
 
 [dependencies]
 former = { version = "~0.1", path = "../../rust/former" }

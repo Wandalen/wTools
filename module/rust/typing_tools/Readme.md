@@ -1,20 +1,26 @@
-# module::meta_tools [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/RustPublish.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/RustPublish.yml)
+# module::typing_tools [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/RustPublish.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/RustPublish.yml)
 
-Collection of general purpose meta tools.
+Collection of general purpose tools for type checking.
 
 ### Sample
 
 ``` rust test
-use meta_tools::*;
+use typing_tools::*;
 
+fn main()
+{
+  let src = Box::new( true );
+  assert_eq!( implements!( src => Copy ), false );
+  assert_eq!( implements!( src => Clone ), true );
+}
 ```
 
-<!-- # qqq : for Rust dev : please add -->
+<!-- # qqq : for Rust dev : please add --> <!-- aaa : done -->
 
 ### To add to your project
 
 ``` shell
-cargo add meta_tools
+cargo add typing_tools
 ```
 
 ### Try out from the repository
@@ -22,6 +28,6 @@ cargo add meta_tools
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/meta_tools_trivial
+cd sample/rust/typing_tools_trivial
 cargo run
 ```
