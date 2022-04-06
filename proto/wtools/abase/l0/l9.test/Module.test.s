@@ -6172,7 +6172,7 @@ function requireElectronProblem( test )
   }
 }
 
-requireElectronProblem.routineTimeOut = 120000;
+requireElectronProblem.routineTimeOut = 240000;
 
 //
 

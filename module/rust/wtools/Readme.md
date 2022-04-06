@@ -4,27 +4,25 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 ### Sample
 
-``` rust test
+```rust
 use wtools::*;
 
 fn main()
 {
-
   println!( "implements!( 13_i32 => Copy ) : {}", implements!( 13_i32 => Copy ) );
   println!( "implements!( Box::new( 13_i32 ) => Copy ) : {}", implements!( Box::new( 13_i32 ) => Copy ) );
-
 }
 ```
 
 ### To add to your project
 
-``` shell
+```sh
 cargo add wtools
 ```
 
 ### Try out from the repository
 
-``` shell test
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/wtools_trivial

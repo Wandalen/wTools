@@ -5,7 +5,7 @@
 //! Tools for writing and runnint tests.
 //!
 //! # Sample
-//! ``` rust
+//! ```
 //! use wtest_basic::*;
 //!
 //! //
@@ -29,7 +29,6 @@
 //!   pass1,
 //!   pass2,
 //! }
-//!
 //! ```
 
 pub use wtest_basic as basic;

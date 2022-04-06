@@ -4,8 +4,7 @@ Tools for writing and running tests. The most basic things.
 
 ### Sample
 
-``` rust
-
+```rust
 use wtest_basic::*;
 
 //
@@ -29,18 +28,17 @@ test_suite!
   pass1,
   pass2,
 }
-
 ```
 
 ### To add to your project
 
-```
+```sh
 cargo add wtest_basic --dev
 ```
 
 ### Try out from the repository
 
-``` shell test
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/test_basic_trivial
