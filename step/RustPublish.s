@@ -1,19 +1,20 @@
 
-var _ = require( 'wTools' );
-
-_.include( 'wProcess' );
+const _ = require( 'wTools' );
+_.include( 'wHttp' );
 _.include( 'wFiles' );
+_.include( 'wProcess' );
+const crypto = require( 'crypto' );
 
-let step = function rustPublish( o )
+function rustPublish( o )
 {
-  o = _.routine.optionsWithUndefined( step, o || Object.create( null ) );
+  o = _.routine.optionsWithUndefined( rustPublish, o || Object.create( null ) );
 
   const appArgs = _.process.input();
   _.process.inputReadTo
   ({
     dst : o,
     propertiesMap : appArgs.map,
-    namesMap : _.map.keys( step.defaults ),
+    namesMap : _.map.keys( rustPublish.defaults ),
   });
 
   if( !o.modulesList )
@@ -58,53 +59,93 @@ let step = function rustPublish( o )
   {
     for( let i = o.modulesList.length - 1; i >= 0; i-- )
     {
-      start({ currentPath : o.modulesList[ i ], execPath : 'selector get ./Cargo.toml package.publish' });
+      /* qqq : toml reader is required */
+      start({ currentPath : o.modulesList[ i ], execPath : 'selector get ./Cargo.toml package' });
       ready.then( ( op ) =>
       {
-        if( op.output.trim() === 'false' )
-        _.arrayBut_( o.modulesList, o.modulesList, i );
+        const data = JSON.parse( op.output.trim() );
+        if( data.publish === false )
+        {
+          _.arrayBut_( o.modulesList, o.modulesList, i );
+        }
+        else
+        {
+          data.localPath = o.modulesList[ i ];
+          o.modulesList[ i ] = data;
+          const name = o.modulesList[ i ].name;
+          const version = o.modulesList[ i ].version;
+          const packageCon = start({ currentPath : o.modulesList[ i ].localPath, execPath : 'cargo package', ready : null });
+          const retrieveCon = _.http.retrieve
+          ({
+            uri : `https://static.crates.io/crates/${ name }/${ name }-${ version }.crate`,
+          });
+          return _.Consequence.And( packageCon, retrieveCon );
+        }
         return null
+      });
+      ready.finally( ( err, cons ) =>
+      {
+        if( err )
+        {
+          if( _.strHas( err.originalMessage, 'Unexpected status code: 403' ) )
+          _.error.attend( err );
+          else
+          throw _.error.brief( err );
+        }
+        if( cons )
+        {
+          const localPackageHash = crypto.createHash( 'sha1' );
+          const remotePackageHash = crypto.createHash( 'sha1' );
+          const packagePath = `target/package/${ o.modulesList[ i ].name }-${ o.modulesList[ i ].version }.crate`;
+          const localPackageData = _.fileProvider.fileRead( _.path.join( currentPath, packagePath ) );
+          localPackageHash.update( localPackageData );
+          remotePackageHash.update( cons[ 1 ].response.body );
+
+          if( localPackageHash.digest( 'hex' ) === remotePackageHash.digest( 'hex' ) )
+          _.arrayBut_( o.modulesList, o.modulesList, i );
+        }
+        return null;
       });
     }
     return ready;
   });
 
-  /* bump */
-  con.then( () =>
-  {
-    /* qqq : primitive bump, can be improved */
-    for( let i = 0; i < o.modulesList.length; i++ )
-    ready.then( () => bump( o, i ) );
-    return ready;
-  });
-
-  /* commit */
-  /* alternatively, commit each package version */
-  con.then( () =>
-  {
-    if( o.logger && o.logger.verbosity >= 3 );
-    ready.then( () =>
-    {
-      console.log( 'Committing changes in rust packages.' );
-      return null;
-    });
-    if( !o.dry )
-    {
-      start({ currentPath, execPath : `git commit -am "publish rust packages"` });
-      start({ currentPath, execPath : `git push"` });
-    }
-    return ready;
-  });
-
-  /* publish */
+  /* update and publish */
   con.then( () =>
   {
     for( let i = 0; i < o.modulesList.length; i++ )
     {
+      /* bump */
+      /* qqq : primitive bump, can be improved */
+      ready.then( () => bump( o, i ) );
+
+      /* commit */
+      /* alternatively, commit each package version */
+      if( o.logger && o.logger.verbosity >= 3 );
+      ready.then( () =>
+      {
+        console.log( `Committing changes in package ${ o.modulesList[ i ].name }.` );
+        return null;
+      });
+      if( !o.dry )
+      {
+        ready.then( () =>
+        {
+          return start
+          ({
+            currentPath,
+            execPath : `git commit -am "${ o.modulesList[ i ].name } v${ o.modulesList[ i ].version }"`,
+            ready : null,
+          });
+        });
+        ready.then( () => start({ currentPath, execPath : `git push`, ready : null }) );
+      }
+
+      /* publish */
       if( o.dry )
-      start({ currentPath : o.modulesList[ i ], execPath : `cargo publish --dry-run` });
+      start({ currentPath : o.modulesList[ i ].localPath, execPath : `cargo publish --dry-run` });
       else
-      start({ currentPath : o.modulesList[ i ], execPath : `cargo publish` });
+      start({ currentPath : o.modulesList[ i ].localPath, execPath : `cargo publish` });
     }
     return ready;
   });
@@ -112,21 +153,21 @@ let step = function rustPublish( o )
   return con;
 }
 
-let defaults = step.defaults = Object.create( null );
+let defaults = rustPublish.defaults = Object.create( null );
 defaults.modulesList = null;
 defaults.logger = 2;
 defaults.dry = 0;
 
 //
 
-function filesFind( o2 )
+function filesFind( o )
 {
-  o2.outputFormat = 'absolute';
-  o2.mode = 'distinct';
-  o2.withDirs = true;
-  o2.withTerminals = false;
-  o2.withStem = false;
-  let files = _.fileProvider.filesFind( o2 );
+  o.outputFormat = 'absolute';
+  o.mode = 'distinct';
+  o.withDirs = true;
+  o.withTerminals = false;
+  o.withStem = false;
+  let files = _.fileProvider.filesFind( o );
   return files;
 }
 
@@ -134,9 +175,15 @@ function filesFind( o2 )
 
 function bump( o, i )
 {
-  const start = _.process.starter
+  const splits = o.modulesList[ i ].version.split( '.' );
+  splits[ 2 ] = Number( splits[ 2 ] ) + 1;
+  o.modulesList[ i ].version = splits.join( '.' );
+
+  /* qqq : toml writer is required */
+  const ready = _.process.start
   ({
-    currentPath : o.modulesList[ i ],
+    execPath : `selector set ./Cargo.toml package.version ${ o.modulesList[ i ].version }`,
+    currentPath : o.modulesList[ i ].localPath,
     outputCollecting : 1,
     outputPiping : o.logger ? o.logger.verbosity >= 3 : 0,
     inputMirroring : o.logger ? o.logger.verbosity >= 3 : 0,
@@ -144,39 +191,23 @@ function bump( o, i )
     logger : o.logger,
     mode : 'shell',
   });
-
-  const con = _.take( null );
-  let appliedVersion = '0.0.0';
-  con.then( () =>
+  if( !o.dry )
   {
-    /* qqq : toml reader is required */
-    return start( 'selector get ./Cargo.toml package.version -f yaml' )
-    .then( ( op ) =>
-    {
-      const splits = op.output.split( '.' );
-      splits[ 2 ] = Number( splits[ 2 ] ) + 1;
-      appliedVersion = splits.join( '.' );
-      return null;
-    });
-  });
-  con.then( () =>
-  {
-    /* qqq : toml writer is required */
-    const ready = start( `selector set ./Cargo.toml package.version ${ appliedVersion }` );
-    if( o.dry )
-    return null;
-    return ready.then( ( op ) =>
+    ready.then( ( op ) =>
     {
       const data = op.output;
-      const packagePath = _.path.join( o.modulesList[ i ], 'Cargo.toml' );
-      _.fileProvider.fileWrite( packagePath, data );
+      const configPath = _.path.join( o.modulesList[ i ].localPath, 'Cargo.toml' );
+      _.fileProvider.fileWrite( configPath, data );
       return null;
     });
-  });
+  }
 
-  return con;
+  return ready;
 }
 
+//
+
+const step = rustPublish;
 module.exports = step;
 if( !module.parent )
 step();
