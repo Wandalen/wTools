@@ -26,3 +26,21 @@ pub mod props;
 ///
 
 pub mod manifest;
+
+///
+/// Work with crate on `crates.io`.
+///
+
+pub mod http;
+
+///
+/// Run external processes.
+///
+
+pub mod process;
+
+///
+/// Make sha-1 hash for data.
+///
+
+pub mod digest;

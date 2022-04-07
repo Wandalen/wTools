@@ -46,6 +46,9 @@ wtools = { version = "~0.1", path = "../../rust/wtools" }
 wca = "0.1.0"
 anyhow = "1.0.56"
 toml_edit = "0.14.2"
+ureq = "2.4.0"
+sha-1 = "0.10.0"
+generic-array = "0.14.5"
 
 [dev-dependencies]
 wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }

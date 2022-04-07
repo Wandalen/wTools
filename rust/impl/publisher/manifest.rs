@@ -17,7 +17,8 @@ use std::path::PathBuf;
 #[ derive( Debug ) ]
 pub struct Manifest
 {
-  manifest_path : PathBuf,
+  /// Path to `Cargo.toml`
+  pub manifest_path : PathBuf,
   /// Strict type of `Cargo.toml` manifest.
   pub manifest_data : Option<toml_edit::Document>,
 }
@@ -60,6 +61,7 @@ impl Manifest
     Ok( () )
   }
 
+  /// Store manifest.
   pub fn store( &self ) -> anyhow::Result<()>
   {
     fs::write( &self.manifest_path, self.manifest_data.as_ref().unwrap().to_string() ).unwrap_or_else
