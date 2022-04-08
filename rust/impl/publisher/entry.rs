@@ -33,7 +33,7 @@ fn publish( instruction : &instruction::Instruction ) -> anyhow::Result<()>
   let local_package_path = local_package_path_get( name, version, &manifest.manifest_path );
 
   let local_package = fs::read( &local_package_path )?;
-  let remote_package = http::retrieve( name, version )?;
+  let remote_package = http::retrieve_bytes( name, version )?;
 
   let digest_of_local = digest::hash( &local_package );
   let digest_of_remote = digest::hash( &remote_package );
