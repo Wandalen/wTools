@@ -64,7 +64,11 @@ impl Manifest
   /// Store manifest.
   pub fn store( &self ) -> anyhow::Result<()>
   {
-    fs::write( &self.manifest_path, self.manifest_data.as_ref().unwrap().to_string() ).unwrap_or_else
+    let data = self.manifest_data.as_ref().unwrap().to_string();
+    println!( "Saved manifest data to {:?}\n", &self.manifest_path );
+    println!( "{}", &data );
+
+    fs::write( &self.manifest_path, &data ).unwrap_or_else
     (
       | err |
       {

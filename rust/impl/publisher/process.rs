@@ -16,7 +16,11 @@ use std::process::
 /// Run external processes.
 ///
 
-pub fn start_sync<'a>( exec_path : &'a str, current_path : &'a str ) -> anyhow::Result<Output>
+pub fn start_sync
+(
+  exec_path : &str,
+  current_path : impl Into<std::path::PathBuf> + AsRef<std::path::Path>
+) -> anyhow::Result<Output>
 {
   let child = if cfg!( target_os = "windows" )
   {
@@ -43,4 +47,14 @@ pub fn start_sync<'a>( exec_path : &'a str, current_path : &'a str ) -> anyhow::
   .expect( "failed to wait on child" );
 
   Ok( output )
+}
+
+///
+/// Log output.
+///
+
+pub fn log_output( output : &Output )
+{
+  println!( "{}", std::str::from_utf8( &output.stdout ).expect( "Found invalid UTF-8" ) );
+  eprintln!( "{}", std::str::from_utf8( &output.stderr ).expect( "Found invalid UTF-8" ) );
 }
