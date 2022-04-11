@@ -1,12 +1,9 @@
-# module::woptions
-
-Mechanism to define map of options for a function and its defaults laconically.
-
-### Sample
-
-```rust
-mod splitter
+mod split
 {
+
+  #[cfg( feature = "in_wtools" )]
+  use wtools::former::Former;
+  #[cfg( not( feature = "in_wtools" ) )]
   use former::Former;
 
   #[ derive( PartialOrd ) ]
@@ -69,39 +66,11 @@ mod splitter
 }
 
 #[ inline ]
-fn splitter< 'a >() -> splitter::OptionsFormer< 'a >
+fn split< 'a >() -> split::OptionsFormer< 'a >
 {
-  splitter::former::< 'a >()
+  split::former::< 'a >()
 }
 
 //
 
-fn main()
-{
-  /* form options */
-  let from_former = splitter().src( "abc" ).delimeter( "b" ).form();
-  let from_options = splitter::Options
-  {
-    src : "abc",
-    delimeter : "b",
-    left : true,
-  };
-  assert_eq!( from_former, from_options );
-}
-```
-<!-- xxx --> <!-- aaa : done -->
-
-### To add to your project
-
-```sh
-cargo add woptions
-```
-
-### Try out from the repository
-
-```sh
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd sample/rust/woptions_trivial
-cargo run
-```
+include!( "./basic_only_test.rs" );

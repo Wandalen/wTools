@@ -33,7 +33,7 @@ struct FormerField< 'a >
 ///
 /// Attribute to hold information about method to call after form.
 ///
-/// `#[ form_after =( fn after1< 'a >() -> Option< &'a str > ) ]`
+/// `#[ perform = ( fn after1< 'a >() -> Option< &'a str > ) ]`
 ///
 
 #[allow( dead_code )]
@@ -488,36 +488,36 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 
   /* structure attribute */
 
-  let mut form_after = quote!
+  let mut perform = quote!
   {
     return result;
   };
-  let mut form_after_output = quote!{ #name_ident #generics };
-  let mut form_generics = quote!{};
+  let mut perform_output = quote!{ #name_ident #generics };
+  let mut perform_generics = quote!{};
   for attr in ast.attrs.iter()
   {
     if let Some( ident ) = attr.path.get_ident()
     {
       let ident_string = format!( "{}", ident );
-      if ident_string == "form_after"
+      if ident_string == "perform"
       {
-        let attr_form_after = syn::parse2::< AttributeFormAfter >( attr.tokens.clone() )?;
-        let signature = &attr_form_after.signature;
+        let attr_perform = syn::parse2::< AttributeFormAfter >( attr.tokens.clone() )?;
+        let signature = &attr_perform.signature;
         let generics = &signature.generics;
-        form_generics = quote!{ #generics };
-        let form_after_ident = &signature.ident;
+        perform_generics = quote!{ #generics };
+        let perform_ident = &signature.ident;
         let output = &signature.output;
         match output
         {
           syn::ReturnType::Type( _, boxed_type ) =>
           {
-            form_after_output = quote!{ #boxed_type };
+            perform_output = quote!{ #boxed_type };
           },
           _ => {},
         }
-        form_after = quote!
+        perform = quote!
         {
-          return result.#form_after_ident();
+          return result.#perform_ident();
         };
       }
     }
@@ -614,25 +614,25 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       impl #generics #former_name_ident #generics
       {
         ///
-        /// Finish setting options and return formed entity.
+        /// Finish setting options and call perform on formed entity.
         ///
-        /// If `form_after` defined then associated method is called and its result returned instead of entity.
-        /// For example `form()` of structure with : `#[ form_after( fn after1< 'a >() -> Option< &'a str > )` returns `Option< &'a str >`.
+        /// If `perform` defined then associated method is called and its result returned instead of entity.
+        /// For example `perform()` of structure with : `#[ perform( fn after1< 'a >() -> Option< &'a str > )` returns `Option< &'a str >`.
         ///
         #[inline]
-        pub fn form #form_generics ( self ) -> #form_after_output
+        pub fn perform #perform_generics ( self ) -> #perform_output
         {
-          let result = self._form();
-          #form_after
+          let result = self.form();
+          #perform
         }
 
         ///
         /// Finish setting options and return formed entity.
         ///
-        /// `form_after` has no effect on method `_form` unlike method `form`.
+        /// `perform` has no effect on method `form`, but change behavior and returned type of mehod `perform`.
         ///
         #[inline]
-        pub fn _form( mut self ) -> #name_ident #generics
+        pub fn form( mut self ) -> #name_ident #generics
         {
           #( #fields_form )*
           let result = #name_ident
@@ -709,7 +709,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 //
 // impl Struct1Former
 // {
-//   fn _form( mut self ) -> Struct1
+//   fn form( mut self ) -> Struct1
 //   {
 //
 //     let int_1 = if self.int_1.is_some()
@@ -791,11 +791,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 //       hashset_strings_1,
 //     }
 //
-//   }
-//
-//   fn form( self ) -> Struct1
-//   {
-//     self._form()
 //   }
 //
 //   pub fn int_1< Src >( mut self, src : Src ) -> Self

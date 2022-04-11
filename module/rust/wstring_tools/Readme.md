@@ -16,7 +16,7 @@ fn main()
   let iter = string::split()
   .src( src )
   .delimeter( " " )
-  .form();
+  .perform();
   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
   assert_eq!( iterated, vec![ "abc", " ", "def" ] );
 
@@ -25,7 +25,7 @@ fn main()
   let iter = string::split()
   .src( src )
   .delimeter( "g" )
-  .form();
+  .perform();
   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
   assert_eq!( iterated, vec![ "abc def" ] );
 }
