@@ -60,10 +60,53 @@ fn derive() -> anyhow::Result< () >
 
 //
 
+fn prelude() -> anyhow::Result< () >
+{
+
+  // test.case = "prelude";
+  {
+    use split::prelude::*;
+    let got = split().src( "abc" ).delimeter( "b" ).form();
+    assert_eq!( got.src(), "abc" );
+  }
+
+  // test.case = "SplitOptionsAdapter";
+  {
+    use split::prelude::SplitOptionsAdapter;
+    let got = split().src( "abc" ).delimeter( "b" ).form();
+    assert_eq!( got.src(), "abc" );
+  }
+
+  Ok( () )
+}
+
+//
+
+fn accessor() -> anyhow::Result< () >
+{
+
+  use split::prelude::*;
+  let mut got = split().src( "abc" ).delimeter( "b" ).form();
+
+  assert_eq!( got.src(), "abc" );
+  *got.src_mut() = "def";
+  assert_eq!( got.src(), "def" );
+
+  assert_eq!( *got.left(), true );
+  *got.left_mut() = false;
+  assert_eq!( *got.left(), false );
+
+  Ok( () )
+}
+
+//
+
 #[ test ]
 fn main_test() -> anyhow::Result< () >
 {
   basic()?;
   derive()?;
+  prelude()?;
+  accessor()?;
   Ok( () )
 }
