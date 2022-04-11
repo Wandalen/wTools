@@ -12,7 +12,6 @@
 // //! println!( "err1 : {}", err1 );
 // //! // < err1 : Some error
 // //! ```
-
 #![ doc = include_str!( "../../../module/rust/werror/Readme.md" ) ]
 
 mod assert;

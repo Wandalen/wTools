@@ -7,17 +7,18 @@
 //!
 //! Interval adapter for both open/closed implementations of intervals ( ranges ).
 //!
-//! # Sample
-//!
-//! ```
-//! use winterval::*;
-//!
-//! let src = 2..5;
-//! assert_eq!( src.closed(), ( 2, 4 ) );
-//!
-//! let src = 2..=4;
-//! assert_eq!( src.closed(), ( 2, 4 ) );
-//! ```
+// //! # Sample
+// //!
+// //! ```
+// //! use winterval::*;
+// //!
+// //! let src = 2..5;
+// //! assert_eq!( src.closed(), ( 2, 4 ) );
+// //!
+// //! let src = 2..=4;
+// //! assert_eq!( src.closed(), ( 2, 4 ) );
+// //! ```
+#![ doc = include_str!( "../../../module/rust/winterval/Readme.md" ) ]
 
 ///
 /// Interval adapter. Interface to interval-like structures.

@@ -5,6 +5,7 @@
 //!
 //! Tools for writing procedural macroses.
 //!
+#![ doc = include_str!( "../../../module/rust/proc_macro_tools/Readme.md" ) ]
 
 ///
 /// Internals.
