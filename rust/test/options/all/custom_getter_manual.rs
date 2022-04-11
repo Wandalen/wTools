@@ -1,4 +1,39 @@
 
+// #[cfg( feature = "in_wtools" )]
+// use wtools::options::*;
+// #[cfg( not( feature = "in_wtools" ) )]
+// use woptions::*;
+//
+// Options!{ split< 'a >
+// {
+//
+//   pub src : &'a str;
+//   pub delimeter : &'a str;
+//   #[ default( true ) ]
+//   pub left : bool;
+//
+//   /* xxx */
+//   fn left( &self ) -> bool
+//   {
+//     !self.left
+//   };
+//
+//   fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
+//   where
+//     Self : Sized,
+//   {
+//     if *self.left()
+//     {
+//       Box::new( self.src().split( self.delimeter() ) )
+//     }
+//     else
+//     {
+//       Box::new( self.src().rsplit( self.delimeter() ) )
+//     }
+//   }
+//
+// }}
+
 mod split
 {
 
@@ -7,9 +42,7 @@ mod split
   #[cfg( not( feature = "in_wtools" ) )]
   use former::Former;
 
-  #[ derive( PartialOrd ) ]
   #[ derive( Former, PartialEq, Debug ) ]
-  #[ form_after( fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) > ) ]
   pub struct Options< 'a >
   {
     pub src : &'a str,
@@ -23,20 +56,6 @@ mod split
     fn src( &self ) -> &'a str;
     fn delimeter( &self ) -> &'a str;
     fn left( &self ) -> &bool;
-    #[ inline ]
-    fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
-    where
-      Self : Sized,
-    {
-      if *self.left()
-      {
-        Box::new( self.src().split( self.delimeter() ) )
-      }
-      else
-      {
-        Box::new( self.src().rsplit( self.delimeter() ) )
-      }
-    }
   }
 
   impl< 'a > OptionsAdapter< 'a > for Options< 'a >
@@ -54,7 +73,7 @@ mod split
     #[ inline ]
     fn left( &self ) -> &bool
     {
-      &self.left
+      &!self.left
     }
   }
 
@@ -62,6 +81,12 @@ mod split
   pub fn former< 'a >() -> OptionsFormer< 'a >
   {
     Options::< 'a >::former()
+  }
+
+  pub mod prelude
+  {
+    pub use super::OptionsAdapter as SplitOptionsAdapter;
+    /* xxx : cover by a test */
   }
 
 }
@@ -74,4 +99,4 @@ fn split< 'a >() -> split::OptionsFormer< 'a >
 
 //
 
-include!( "./basic_only_test.rs" );
+include!( "./custom_getter_only_test.rs" );

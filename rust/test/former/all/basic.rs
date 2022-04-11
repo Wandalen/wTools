@@ -9,11 +9,6 @@ use wtools::former::Former;
 #[cfg( not( feature = "in_wtools" ) )]
 use former::Former;
 
-// #[cfg( feature = "in_wtools" )]
-// use wtools::time as TheModule;
-// #[cfg( not( feature = "in_wtools" ) )]
-// use time_tools as TheModule;
-
 use std::collections::HashMap;
 use std::collections::HashSet;
 
@@ -71,7 +66,7 @@ include!( "basic_only_test.rs" );
 //
 // impl Struct1Former
 // {
-//   fn _form( mut self ) -> Struct1
+//   fn form( mut self ) -> Struct1
 //   {
 //
 //     let int_1 = if self.int_1.is_some()
@@ -153,11 +148,6 @@ include!( "basic_only_test.rs" );
 //       hashset_strings_1,
 //     }
 //
-//   }
-//
-//   fn form( self ) -> Struct1
-//   {
-//     self._form()
 //   }
 //
 //   pub fn int_1< Src >( mut self, src : Src ) -> Self

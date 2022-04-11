@@ -1,12 +1,20 @@
-// #![ warn( missing_docs ) ]
-// #![ warn( missing_debug_implementations ) ]
+// ! Spit string with a delimeter.
+
+// xxx
+
+pub( crate ) mod internal
+{
+
+  /* xxx : qqq : tab after git sync */
 
 use former::Former;
+// use woptions::*; /* xxx : use prelude */
 
 ///
 /// Either delimeter or delimeted with the slice on its string.
 ///
 
+#[allow(dead_code)]
 #[ derive( Debug ) ]
 pub struct Split< 'a >
 {
@@ -149,7 +157,7 @@ impl< 'a > Iterator for SplitIterator< 'a >
 
 #[ derive( Debug ) ]
 #[ derive( Former ) ]
-#[ form_after( fn split( self ) -> SplitIterator< 'a > ) ]
+#[ perform( fn split( self ) -> SplitIterator< 'a > ) ]
 pub struct SplitOptions< 'a >
 {
 
@@ -243,10 +251,44 @@ impl< 'a > SplitOptionsAdapter< 'a > for SplitOptions< 'a >
 ///   let iter = wstring_tools::string::split()
 ///   .src( "abc def" )
 ///   .delimeter( " " )
-///   .form();
+///   .perform();
 /// ```
 
 pub fn split< 'a >() -> SplitOptionsFormer< 'a >
 {
   SplitOptions::former()
+}
+
+}
+
+/// Owned namespace of the module.
+pub mod own
+{
+  use super::internal as i;
+
+  pub use i::Split;
+  pub use i::SplitType;
+  pub use i::SplitIterator;
+  pub use i::SplitOptions;
+  pub use i::SplitOptionsAdapter;
+  pub use i::split;
+}
+
+pub use own::*;
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  use super::internal as i;
+
+  pub use i::SplitOptionsAdapter;
+  pub use i::split;
+}
+
+/// Namespace of the module to include with `use module::*`.
+pub mod prelude
+{
+  use super::internal as i;
+
+  pub use i::SplitOptionsAdapter;
 }

@@ -6,6 +6,8 @@ use wtools::string as TheModule;
 #[cfg( not( feature = "in_wtools" ) )]
 use wstring_tools as TheModule;
 
+// use TheModule::prelude::*;
+
 //
 
 fn _basic()
@@ -13,7 +15,7 @@ fn _basic()
   let src = "abc";
   let iter = TheModule::string::split()
   .src( src )
-  .form();
+  .perform();
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "", "", "a", "", "b", "", "c", "", "", ] );
 }
 
@@ -27,7 +29,7 @@ fn _split_with_option_preserving_empty()
   .delimeter( " " )
   .preserving_empty( true )
   .stripping( false )
-  .form();
+  .perform();
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
 
   let src = "a b c";
@@ -36,7 +38,7 @@ fn _split_with_option_preserving_empty()
   .delimeter( " " )
   .preserving_empty( false )
   .stripping( false )
-  .form();
+  .perform();
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
 
   /* */
@@ -47,7 +49,7 @@ fn _split_with_option_preserving_empty()
   .delimeter( " " )
   .preserving_empty( true )
   .stripping( true )
-  .form();
+  .perform();
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "", "b", "", "c" ] );
 
   let src = "a b c";
@@ -56,7 +58,7 @@ fn _split_with_option_preserving_empty()
   .delimeter( " " )
   .preserving_empty( false )
   .stripping( true )
-  .form();
+  .perform();
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
 }
 
@@ -70,7 +72,7 @@ fn _split_with_option_preserving_delimeters()
   .delimeter( " " )
   .preserving_delimeters( true )
   .stripping( false )
-  .form();
+  .perform();
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
 
   let src = "a b c";
@@ -79,7 +81,7 @@ fn _split_with_option_preserving_delimeters()
   .delimeter( " " )
   .preserving_delimeters( false )
   .stripping( false )
-  .form();
+  .perform();
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
 }
 
@@ -92,7 +94,7 @@ fn _split_with_option_stripping()
   .src( src )
   .delimeter( " " )
   .stripping( true )
-  .form();
+  .perform();
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "", "b", "", "c" ] );
 
   let src = "a b c";
@@ -100,7 +102,7 @@ fn _split_with_option_stripping()
   .src( src )
   .delimeter( " " )
   .stripping( false )
-  .form();
+  .perform();
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
 }
 

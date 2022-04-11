@@ -36,7 +36,6 @@ path = "rust/test/options/front_test.rs"
 [[example]]
 name = "woptions_trivial"
 path = "sample/rust/woptions_trivial/src/main.rs"
-# xxx # aaa : done
 
 [dependencies]
 woptions_meta = { version = "~0.1", path = "../../rust/woptions_meta" }
@@ -46,7 +45,6 @@ former = { version = "~0.1", path = "../../rust/former" }
 
 [dev-dependencies]
 anyhow = "~1.0"
-# maplit = "~1.0"
 trybuild = { version = "~1.0", features = [ "diff" ] }
 wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
 rustversion = "~1.0"

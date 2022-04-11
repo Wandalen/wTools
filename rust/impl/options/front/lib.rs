@@ -12,7 +12,7 @@
 //!
 //!   #[ derive( PartialOrd ) ]
 //!   #[ derive( Former, PartialEq, Debug ) ]
-//!   #[ form_after( fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) > ) ]
+//!   #[ perform( fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) > ) ]
 //!   pub struct Options< 'a >
 //!   {
 //!     pub src : &'a str,
@@ -80,7 +80,7 @@
 //! fn main()
 //! {
 //!   /* form options */
-//!   let from_former = splitter().src( "abc" ).delimeter( "b" )._form();
+//!   let from_former = splitter().src( "abc" ).delimeter( "b" ).form();
 //!   let from_options = splitter::Options
 //!   {
 //!     src : "abc",
