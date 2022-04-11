@@ -363,7 +363,7 @@ fn test_underscored_form() -> anyhow::Result< () >
 
   let command = Struct1::former()
   .int_1( 13 )
-  ._form();
+  .form();
 
   let expected = Struct1
   {

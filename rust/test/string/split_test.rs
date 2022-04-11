@@ -6,6 +6,8 @@ use wtools::string as TheModule;
 #[cfg( not( feature = "in_wtools" ) )]
 use wstring_tools as TheModule;
 
+// use TheModule::prelude::*;
+
 //
 
 fn _basic()
@@ -16,7 +18,7 @@ fn _basic()
   let iter = TheModule::string::split()
   .src( src )
   .delimeter( "bc" )
-  .form();
+  .perform();
   // assert_eq!( iter.collect::< Vec< _ > >(), vec![ "a", "bc", " def" ] );
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "bc", " def" ] );
 

@@ -8,16 +8,21 @@ fn basic() -> anyhow::Result< () >
 
   // test.case( "basic" );
 
-  let got = split().src( "abc" ).delimeter( "b" ).left( true )._form();
+  let got = split().src( "abc" ).delimeter( "b" ).left( true ).form();
   let exp = split::Options
   {
     src : "abc",
     delimeter : "b",
     left : true,
-    /* xxx */
-    // left : false,
   };
   assert_eq!( got, exp );
+
+  use split::OptionsAdapter;
+  assert_eq!( *got.left(), false );
+
+  // xxx : uncoment later
+  // let exp = vec![ "c", "a" ];
+  // assert_eq!( got.perform().map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
 
   Ok( () )
 }
@@ -30,55 +35,3 @@ fn main_test() -> anyhow::Result< () >
   basic()?;
   Ok( () )
 }
-
-// use wtest_basic::dependencies::*;
-//
-// //
-//
-// fn basic() -> anyhow::Result< () >
-// {
-//
-//   // test.case( "former + _form()" );
-//
-//   let got = split::former().src( "abc" ).delimeter( "b" )._form();
-//   let exp = split::Options
-//   {
-//     src : "abc",
-//     delimeter : "b",
-//     left : true,
-//   };
-//   assert_eq!( got, exp );
-//
-//   // test.case( "_form()" );
-//
-//   let got = split().src( "abc" ).delimeter( "b" )._form();
-//   let exp = split::Options
-//   {
-//     src : "abc",
-//     delimeter : "b",
-//     left : true,
-//   };
-//   assert_eq!( got, exp );
-//
-//   // test.case( "split() + form()" );
-//
-//   let got = split().src( "abc" ).delimeter( "b" ).form();
-//   let exp = split::Options
-//   {
-//     src : "abc",
-//     delimeter : "b",
-//     left : true,
-//   };
-//   assert!( !( got > exp ) && !( got < exp ) );
-//
-//   Ok( () )
-// }
-//
-// //
-//
-// #[ test ]
-// fn main_test() -> anyhow::Result< () >
-// {
-//   basic()?;
-//   Ok( () )
-// }

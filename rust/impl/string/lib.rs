@@ -1,48 +1,17 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ allow( dead_code ) ]
 
-//!
-//! String tools.
-//!
+/// Spit string with a delimeter.
+pub mod split;
 
-///
-/// String tools.
-///
-/// # Sample
-/// ```
-/// use wstring_tools::*;
-///
-/// fn main()
-/// {
-///   /* delimeter exists */
-///   let src = "abc def";
-///   let iter = string::split()
-///   .src( src )
-///   .delimeter( " " )
-///   .form();
-///   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
-///   assert_eq!( iterated, vec![ "abc", " ", "def" ] );
-///
-///   /* delimeter no exists */
-///   let src = "abc def";
-///   let iter = string::split()
-///   .src( src )
-///   .delimeter( "g" )
-///   .form();
-///   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
-///   assert_eq!( iterated, vec![ "abc def" ] );
-/// }
-/// ```
-
-pub mod string
+/// Exposed namespace of the module.
+pub mod exposed
 {
-  ///
-  /// String split.
-  ///
-  pub mod split
-  {
-    include!( "./split.rs" );
-  }
-  pub use split::split;
+  pub use super::split::exposed::*;
+}
+
+pub use exposed::*;
+
+/// Namespace of the module to include with `use module::*`.
+pub mod prelude
+{
+  pub use super::split::prelude::*;
 }
