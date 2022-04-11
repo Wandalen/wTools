@@ -18,7 +18,7 @@
 // //! let src = 2..=4;
 // //! assert_eq!( src.closed(), ( 2, 4 ) );
 // //! ```
-#![ doc = include_str!( "../../../module/rust/winterval/Readme.md" ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 ///
 /// Interval adapter. Interface to interval-like structures.

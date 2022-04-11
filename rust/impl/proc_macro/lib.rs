@@ -5,7 +5,7 @@
 //!
 //! Tools for writing procedural macroses.
 //!
-#![ doc = include_str!( "../../../module/rust/proc_macro_tools/Readme.md" ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 ///
 /// Internals.

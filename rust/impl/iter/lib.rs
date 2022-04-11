@@ -27,7 +27,7 @@
 // //!   assert_eq!( result, vec![ ( 5, "a" ), ( 1, "b" ), ( -2, "c" ) ] );
 // //! }
 // //! ```
-#![ doc = include_str!( "../../../module/rust/iter_tools/Readme.md" ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 // pub use itertools as itertools;
 

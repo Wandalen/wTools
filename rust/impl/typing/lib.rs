@@ -4,7 +4,7 @@
 //!
 //! Collection of general purpose tools for type checking.
 //!
-#![ doc = include_str!( "../../../module/rust/typing_tools/Readme.md" ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 ///
 /// Collection of general purpose tools for type checking.

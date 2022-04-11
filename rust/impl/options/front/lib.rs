@@ -95,7 +95,7 @@
 // //!   assert_eq!( splitted, vec![ "a", "c" ] );
 // //! }
 // //! ```
-#![ doc = include_str!( "../../../../module/rust/woptions/Readme.md" ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 pub use woptions_runtime as runtime;
 pub use woptions_meta as meta;

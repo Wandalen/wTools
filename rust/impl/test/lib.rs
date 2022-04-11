@@ -30,7 +30,7 @@
 // //!   pass2,
 // //! }
 // //! ```
-#![ doc = include_str!( "../../../module/rust_move/wtest/Readme.md" ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 pub use wtest_basic as basic;
 pub use basic::*;

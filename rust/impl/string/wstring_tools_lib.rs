@@ -5,7 +5,7 @@
 //!
 //! String tools.
 //!
-#![ doc = include_str!( "../../../module/rust/wstring_tools/Readme.md" ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 // ///
 // /// String tools.

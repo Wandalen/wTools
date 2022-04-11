@@ -52,7 +52,7 @@
 // //!
 // //! }
 // //! ```
-#![ doc = include_str!( "../../../../module/rust/former/Readme.md" ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 pub use derive::*;
 pub use former_runtime as runtime;
