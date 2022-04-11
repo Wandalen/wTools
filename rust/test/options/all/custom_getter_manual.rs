@@ -1,39 +1,3 @@
-
-// #[cfg( feature = "in_wtools" )]
-// use wtools::options::*;
-// #[cfg( not( feature = "in_wtools" ) )]
-// use woptions::*;
-//
-// Options!{ split< 'a >
-// {
-//
-//   pub src : &'a str;
-//   pub delimeter : &'a str;
-//   #[ default( true ) ]
-//   pub left : bool;
-//
-//   /* xxx */
-//   fn left( &self ) -> bool
-//   {
-//     !self.left
-//   };
-//
-//   fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
-//   where
-//     Self : Sized,
-//   {
-//     if *self.left()
-//     {
-//       Box::new( self.src().split( self.delimeter() ) )
-//     }
-//     else
-//     {
-//       Box::new( self.src().rsplit( self.delimeter() ) )
-//     }
-//   }
-//
-// }}
-
 mod split
 {
 
@@ -75,6 +39,7 @@ mod split
     {
       &!self.left
     }
+
   }
 
   #[ inline ]
@@ -86,7 +51,6 @@ mod split
   pub mod prelude
   {
     pub use super::OptionsAdapter as SplitOptionsAdapter;
-    /* xxx : cover by a test */
   }
 
 }

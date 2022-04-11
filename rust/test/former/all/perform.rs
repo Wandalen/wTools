@@ -7,7 +7,7 @@ use wtools::former::Former;
 use former::Former;
 
 #[ derive( Debug, PartialEq, Former ) ]
-#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]
+#[ perform( fn perform1< 'a >() -> Option< &'a str > ) ]
 pub struct Struct1
 {
   #[ default( 31 ) ]
@@ -18,7 +18,7 @@ pub struct Struct1
 
 impl Struct1
 {
-  fn after1< 'a >( &self ) -> Option< &'a str >
+  fn perform1< 'a >( &self ) -> Option< &'a str >
   {
     Some( "abc" )
   }

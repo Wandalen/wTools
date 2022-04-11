@@ -22,6 +22,9 @@ mod split
     fn src( &self ) -> &'a str;
     fn delimeter( &self ) -> &'a str;
     fn left( &self ) -> &bool;
+    fn src_mut( &mut self ) -> &mut &'a str;
+    fn delimeter_mut( &mut self ) -> &mut &'a str;
+    fn left_mut( &mut self ) -> &mut bool;
     #[ inline ]
     fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
     where
@@ -40,6 +43,7 @@ mod split
 
   impl< 'a > OptionsAdapter< 'a > for Options< 'a >
   {
+
     #[ inline ]
     fn src( &self ) -> &'a str
     {
@@ -55,12 +59,35 @@ mod split
     {
       &self.left
     }
+
+    #[ inline ]
+    fn src_mut( &mut self ) -> &mut &'a str
+    {
+      &mut self.src
+    }
+    #[ inline ]
+    fn delimeter_mut( &mut self ) -> &mut &'a str
+    {
+      &mut self.delimeter
+    }
+    #[ inline ]
+    fn left_mut( &mut self ) -> &mut bool
+    {
+      &mut self.left
+    }
+
   }
 
   #[ inline ]
   pub fn former< 'a >() -> OptionsFormer< 'a >
   {
     Options::< 'a >::former()
+  }
+
+  pub mod prelude
+  {
+    pub use super::OptionsAdapter as SplitOptionsAdapter;
+    /* xxx : cover by a test */
   }
 
 }
