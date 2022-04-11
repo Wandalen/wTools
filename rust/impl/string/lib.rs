@@ -1,6 +1,5 @@
 #![ warn( missing_docs ) ]
 #![ warn( missing_debug_implementations ) ]
-#![ allow( dead_code ) ]
 
 //!
 //! String tools.
