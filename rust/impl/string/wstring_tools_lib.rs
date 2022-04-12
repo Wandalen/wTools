@@ -21,6 +21,7 @@
 ///   let iter = wtools::string::split()
 ///   .src( src )
 ///   .delimeter( " " )
+///   .stripping( false )
 ///   .perform();
 ///   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
 ///   assert_eq!( iterated, vec![ "abc", " ", "def" ] );
