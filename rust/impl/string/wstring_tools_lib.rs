@@ -5,37 +5,37 @@
 //!
 //! String tools.
 //!
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-///
-/// String tools.
-///
-/// # Sample
-/// ```
-/// use wstring_tools as wtools;
-/// use wstring_tools::prelude::*;
-///
-/// fn main()
-/// {
-///   /* delimeter exists */
-///   let src = "abc def";
-///   let iter = wtools::string::split()
-///   .src( src )
-///   .delimeter( " " )
-///   .stripping( false )
-///   .perform();
-///   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
-///   assert_eq!( iterated, vec![ "abc", " ", "def" ] );
-///
-///   /* delimeter no exists */
-///   let src = "abc def";
-///   let iter = wtools::string::split()
-///   .src( src )
-///   .delimeter( "g" )
-///   .perform();
-///   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
-///   assert_eq!( iterated, vec![ "abc def" ] );
-/// }
-/// ```
+// ///
+// /// String tools.
+// ///
+// /// # Sample
+// /// ```
+// /// use wstring_tools as wtools;
+// /// use wstring_tools::prelude::*;
+// ///
+// /// fn main()
+// /// {
+// ///   /* delimeter exists */
+// ///   let src = "abc def";
+// ///   let iter = wtools::string::split()
+// ///   .src( src )
+// ///   .delimeter( " " )
+// ///   .perform();
+// ///   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
+// ///   assert_eq!( iterated, vec![ "abc", " ", "def" ] );
+// ///
+// ///   /* delimeter no exists */
+// ///   let src = "abc def";
+// ///   let iter = wtools::string::split()
+// ///   .src( src )
+// ///   .delimeter( "g" )
+// ///   .perform();
+// ///   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
+// ///   assert_eq!( iterated, vec![ "abc def" ] );
+// /// }
+// /// ```
 
 pub mod string
 {

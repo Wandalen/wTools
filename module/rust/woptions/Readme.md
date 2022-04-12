@@ -11,7 +11,7 @@ mod splitter
 
   #[ derive( PartialOrd ) ]
   #[ derive( Former, PartialEq, Debug ) ]
-  #[ form_after( fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) > ) ]
+  #[ perform( fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) > ) ]
   pub struct Options< 'a >
   {
     pub src : &'a str,
@@ -79,7 +79,7 @@ fn splitter< 'a >() -> splitter::OptionsFormer< 'a >
 fn main()
 {
   /* form options */
-  let from_former = splitter().src( "abc" ).delimeter( "b" )._form();
+  let from_former = splitter().src( "abc" ).delimeter( "b" ).form();
   let from_options = splitter::Options
   {
     src : "abc",
@@ -87,11 +87,6 @@ fn main()
     left : true,
   };
   assert_eq!( from_former, from_options );
-
-  /* perform methods from autotrait */
-  use splitter::OptionsAdapter;
-  let splitted = from_former.perform().map( | e | String::from( e ) ).collect::< Vec< _ > >();
-  assert_eq!( splitted, vec![ "a", "c" ] );
 }
 ```
 <!-- xxx --> <!-- aaa : done -->
