@@ -1,7 +1,8 @@
 
 pub( crate ) mod internal
 {
-  use woptions::*;
+  use former::Former;
+  use crate::string::split::*;
   use std::collections::HashMap;
 
   ///
@@ -19,9 +20,9 @@ pub( crate ) mod internal
     /// Delimeter for commands.
     pub commands_delimeter : &'a str,
     /// Parsed subject of first command.
-    pub subject : &'a str,
+    pub subject : String,
     /// All subjects of the commands in request.
-    pub subjects : Vec<&'a str>,
+    pub subjects : Vec<String>,
     /// Options map of first command.
     pub map : HashMap<String, String>,
     /// All options maps of the commands in request.
@@ -132,7 +133,6 @@ pub( crate ) mod internal
       result.key_val_delimeter = self.key_val_delimeter();
       result.commands_delimeter = self.commands_delimeter();
 
-      println!("'{}' '{}'", self.src, self.src.trim());
       self.src = self.src.trim();
 
       if self.src.is_empty()
@@ -140,8 +140,174 @@ pub( crate ) mod internal
         return result;
       }
 
+      let commands;
+      if self.commands_delimeter.trim().is_empty()
+      {
+        commands = vec![ self.src().to_string() ];
+      }
+      else
+      {
+        /* qqq : should use quoting */
+        let iter = split()
+        .src( self.src() )
+        .delimeter( self.commands_delimeter() )
+        // .quoting( self.quoting() )
+        .stripping( true )
+        .preserving_empty( false )
+        .preserving_delimeters( false )
+        .perform();
+        commands = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
+      }
+
+      for command in commands
+      {
+        let mut map_entries;
+        if self.key_val_delimeter.trim().is_empty()
+        {
+          map_entries =  ( command.as_str(), None, "" );
+        }
+        else
+        {
+          map_entries = match command.split_once( self.key_val_delimeter )
+          {
+            Some( entries ) => ( entries.0, Some( self.key_val_delimeter ), entries.1 ),
+            None => ( command.as_str(), None, "" ),
+          };
+        }
+
+        let subject;
+        let mut map : HashMap<String, String> = HashMap::new();
+
+        if map_entries.1.is_some()
+        {
+          /* qqq : should be isolate_right* with option quoting */
+          let subject_and_key = isolate_right_or_none( map_entries.0.trim(), " " );
+          subject = subject_and_key.0;
+          map_entries.0 = subject_and_key.2;
+
+          let mut join = String::from( map_entries.0 );
+          join.push_str( map_entries.1.unwrap() );
+          join.push_str( map_entries.2 );
+
+          /* qqq : implement preserving_quoting */
+          let mut splits = split()
+          .src( join.as_str() )
+          .delimeter( self.key_val_delimeter )
+          .stripping( false )
+          // .quoting( self.quoting )
+          .preserving_empty( true )
+          .preserving_delimeters( true )
+          // .preserving_quoting( true )
+          .perform()
+          .map( | e | String::from( e ) ).collect::< Vec< _ > >();
+
+
+          let mut pairs = vec![];
+          for a in ( 0..splits.len() - 2 ).step_by( 2 )
+          {
+            let mut right = splits[ a + 2 ].clone();
+
+            while a < ( splits.len() - 3 )
+            {
+              let cuts = isolate_right_or_none( &right.trim(), " " );
+
+              if cuts.1.is_none()
+              {
+                let mut joined = splits[ a + 2 ].clone();
+                joined.push_str( splits[ a + 3 ].as_str() );
+                joined.push_str( splits[ a + 4 ].as_str() );
+
+                splits[ a + 2 ] = joined;
+                right = splits[ a + 2 ].clone();
+                splits.remove( a + 3 );
+                splits.remove( a + 4 );
+                continue;
+              }
+
+              splits[ a + 2 ] = cuts.2.to_string();
+              right = cuts.0.to_string();
+              break;
+            }
+
+            let left = splits[ a ].clone();
+            let right = right.trim().to_string();
+            if self.unquoting
+            {
+              if left.contains( "\"" ) || left.contains( "'" ) || right.contains( "\"" ) || right.contains( "'" )
+              {
+                unimplemented!( "not implemented" );
+              }
+              // left = str_unquote( left );
+              // right = str_unquote( right );
+            }
+
+            pairs.push( left );
+            pairs.push( right );
+          }
+
+          for a in ( 0..pairs.len() - 1 ).step_by( 2 )
+          {
+            let left = &pairs[ a ];
+            let right = &pairs[ a + 1 ];
+            // right = _.numberFromStrMaybe( right );
+            // right = strToArrayMaybe( right );
+
+            if self.several_values
+            {
+              unimplemented!( "not implemented" );
+              // map[ left ] = _.scalarAppendOnce( map[ left ], right );
+            }
+            else
+            {
+              map.insert( left.to_string(), right.to_string() );
+            }
+          }
+        }
+        else
+        {
+          subject = map_entries.0;
+        }
+
+        if self.unquoting
+        {
+          if subject.contains( "\"" ) || subject.contains( "'" )
+          {
+            unimplemented!( "not implemented" );
+          }
+          // subject = _.strUnquote( subject );
+        }
+
+        if self.subject_win_paths_maybe
+        {
+          unimplemented!( "not implemented" );
+          // subject = win_path_subject_check( subject, map );
+        }
+
+        result.subjects.push( subject.to_string() );
+        result.maps.push( map );
+      }
+
+      if result.subjects.len() > 0
+      {
+        result.subject = result.subjects[ 0 ].clone();
+      }
+      if result.maps.len() > 0
+      {
+        result.map = result.maps[ 0 ].clone();
+      }
+
       result
     }
+  }
+
+  fn isolate_right_or_none<'a>( src : &'a str, delimeter : &'a str ) -> ( &'a str, Option<&'a str>, &'a str )
+  {
+    let result = match src.trim().rsplit_once( delimeter )
+    {
+      Some( entries ) => ( entries.0, Some( delimeter ), entries.1 ),
+      None => ( "", None, src ),
+    };
+    result
   }
 
   ///
