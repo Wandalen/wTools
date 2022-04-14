@@ -8,7 +8,7 @@ This solution has a limitation:
 
 ### Sample
 
-``` rust sample test
+``` rust
 use implements::*;
 
 dbg!( implements!( 13_i32 => Copy ) );
@@ -19,13 +19,13 @@ dbg!( implements!( Box::new( 13_i32 ) => Copy ) );
 
 ### To add to your project
 
-```
+```sh
 cargo add implements
 ```
 
 ### Try out from the repository
 
-``` shell test
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/implements_trivial

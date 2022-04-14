@@ -6,7 +6,7 @@ String tools.
 
 ### Sample
 
-``` rust sample test
+```rust
 use wstring_tools::*;
 
 fn main()
@@ -16,7 +16,7 @@ fn main()
   let iter = string::split()
   .src( src )
   .delimeter( " " )
-  .form();
+  .perform();
   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
   assert_eq!( iterated, vec![ "abc", " ", "def" ] );
 
@@ -25,7 +25,7 @@ fn main()
   let iter = string::split()
   .src( src )
   .delimeter( "g" )
-  .form();
+  .perform();
   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
   assert_eq!( iterated, vec![ "abc def" ] );
 }
@@ -33,13 +33,13 @@ fn main()
 
 ### To add to your project
 
-```
+```sh
 cargo add wstring_tools
 ```
 
 ### Try out from the repository
 
-``` shell test
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/wstring_tools_trivial

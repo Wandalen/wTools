@@ -6,12 +6,17 @@ use woptions::*;
 
 Options!{ split< 'a >
 {
-  #![ derive( PartialOrd ) ]
 
   pub src : &'a str;
   pub delimeter : &'a str;
   #[ default( true ) ]
   pub left : bool;
+
+  /* xxx */
+  fn left( &self ) -> &bool
+  {
+    &!self.left
+  };
 
   fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
   where

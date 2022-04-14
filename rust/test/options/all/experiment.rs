@@ -3,7 +3,7 @@ use former::Options;
 
 // #[ derive( Debug ) ]
 // #[ derive( Former ) ]
-// #[ form_after( fn split( self ) -> SplitIterator< 'a > ) ]
+// #[ perform( fn split( self ) -> SplitIterator< 'a > ) ]
 #[ Options ]
 fn SomeOptions()
 {

@@ -1,12 +1,20 @@
-// #![ warn( missing_docs ) ]
-// #![ warn( missing_debug_implementations ) ]
+// ! Spit string with a delimeter.
+
+// xxx
+
+pub( crate ) mod internal
+{
+
+  /* xxx : qqq : tab after git sync */
 
 use former::Former;
+// use woptions::*; /* xxx : use prelude */
 
 ///
 /// Either delimeter or delimeted with the slice on its string.
 ///
 
+#[allow(dead_code)]
 #[ derive( Debug ) ]
 pub struct Split< 'a >
 {
@@ -45,13 +53,23 @@ pub struct SplitIterator< 'a >
   iterator : std::iter::Peekable< std::str::Split< 'a, &'a str > >,
   counter : i32,
   delimeter : &'a str,
+  preserving_empty : bool,
+  preserving_delimeters : bool,
+  stripping : bool,
 }
 
 //
 
 impl< 'a > SplitIterator< 'a >
 {
-  fn new( src : &'a str, delimeter : &'a str ) -> Self
+  fn new
+  (
+    src : &'a str,
+    delimeter : &'a str,
+    preserving_empty : bool,
+    preserving_delimeters : bool,
+    stripping : bool
+  ) -> Self
   {
     let counter = 0;
     // let delimeter = delimeter.clone();
@@ -66,6 +84,9 @@ impl< 'a > SplitIterator< 'a >
       iterator,
       delimeter,
       counter,
+      preserving_empty,
+      preserving_delimeters,
+      stripping,
     }
   }
 }
@@ -79,11 +100,17 @@ impl< 'a > Iterator for SplitIterator< 'a >
   fn next( &mut self ) -> Option< Self::Item >
   {
     self.counter += 1;
+
     if self.counter % 2 == 1
     {
       let next = self.iterator.next();
-      if let Some( next ) = next
+      if let Some( mut next ) = next
       {
+        if self.stripping
+        {
+          next = next.trim();
+        }
+
         Some( Split { string : next, typ : SplitType::Delimeted } )
       }
       else
@@ -98,8 +125,28 @@ impl< 'a > Iterator for SplitIterator< 'a >
         self.iterator.next();
         return None;
       }
-      Some( Split { string : self.delimeter, typ : SplitType::Delimeter } )
-      // Some( Split::Delimeter( self.delimeter.clone() ) )
+
+      let mut string = self.delimeter;
+
+      if self.stripping
+      {
+        string = string.trim();
+      }
+
+      if !self.preserving_empty
+      {
+        if string.is_empty()
+        {
+          return Some( Split { string : self.iterator.next().unwrap(), typ : SplitType::Delimeted } );
+        }
+      }
+
+      if self.preserving_delimeters
+      {
+        return Some( Split { string, typ : SplitType::Delimeter } );
+      }
+
+      Some( Split { string : self.iterator.next().unwrap(), typ : SplitType::Delimeted } )
     }
   }
 }
@@ -110,7 +157,7 @@ impl< 'a > Iterator for SplitIterator< 'a >
 
 #[ derive( Debug ) ]
 #[ derive( Former ) ]
-#[ form_after( fn split( self ) -> SplitIterator< 'a > ) ]
+#[ perform( fn split( self ) -> SplitIterator< 'a > ) ]
 pub struct SplitOptions< 'a >
 {
 
@@ -122,6 +169,8 @@ pub struct SplitOptions< 'a >
   preserving_empty : bool,
   #[ default( true ) ]
   preserving_delimeters : bool,
+  #[ default( true ) ]
+  stripping : bool,
 
   // #[ method ]
   // fn split( self ) -> SplitIterator< 'a >
@@ -148,12 +197,21 @@ pub trait SplitOptionsAdapter< 'a >
   fn preserving_empty( &self ) -> bool;
   /// Preserving or dropping delimeters.
   fn preserving_delimeters( &self ) -> bool;
+  /// Stripping.
+  fn stripping( &self ) -> bool;
   /// Do splitting.
   fn split( self ) -> SplitIterator< 'a >
   where
     Self : Sized,
   {
-    SplitIterator::new( self.src(), self.delimeter() )
+    SplitIterator::new
+    (
+      self.src(),
+      self.delimeter(),
+      self.preserving_empty(),
+      self.preserving_delimeters(),
+      self.stripping()
+    )
   }
 }
 
@@ -177,6 +235,10 @@ impl< 'a > SplitOptionsAdapter< 'a > for SplitOptions< 'a >
   {
     self.preserving_delimeters
   }
+  fn stripping( &self ) -> bool
+  {
+    self.stripping
+  }
 }
 
 ///
@@ -189,10 +251,44 @@ impl< 'a > SplitOptionsAdapter< 'a > for SplitOptions< 'a >
 ///   let iter = wstring_tools::string::split()
 ///   .src( "abc def" )
 ///   .delimeter( " " )
-///   .form();
+///   .perform();
 /// ```
 
 pub fn split< 'a >() -> SplitOptionsFormer< 'a >
 {
   SplitOptions::former()
+}
+
+}
+
+/// Owned namespace of the module.
+pub mod own
+{
+  use super::internal as i;
+
+  pub use i::Split;
+  pub use i::SplitType;
+  pub use i::SplitIterator;
+  pub use i::SplitOptions;
+  pub use i::SplitOptionsAdapter;
+  pub use i::split;
+}
+
+pub use own::*;
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  use super::internal as i;
+
+  pub use i::SplitOptionsAdapter;
+  pub use i::split;
+}
+
+/// Namespace of the module to include with `use module::*`.
+pub mod prelude
+{
+  use super::internal as i;
+
+  pub use i::SplitOptionsAdapter;
 }

@@ -11,7 +11,8 @@ use syn::parse::*;
 use syn::spanned::Spanned;
 use proc_macro_tools::*;
 use std::collections::HashMap;
-use iter_tools::{ Itertools, process_results };
+use iter_tools::{ Itertools, process_results }; /* xxx : use wtools::iter_tool */
+use convert_case::{Case, Casing};
 
 pub type Result< T > = std::result::Result< T, syn::Error >;
 
@@ -188,7 +189,7 @@ impl Parse for OptionsDescriptor
 ///
 
 #[ derive( Debug ) ]
-pub struct GetterDescriptor
+pub struct AccessorDescriptor
 {
   attr : proc_macro2::TokenStream,
   signature : proc_macro2::TokenStream,
@@ -197,7 +198,7 @@ pub struct GetterDescriptor
 
 //
 
-impl quote::ToTokens for GetterDescriptor
+impl quote::ToTokens for AccessorDescriptor
 {
   fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
   {
@@ -211,7 +212,7 @@ impl quote::ToTokens for GetterDescriptor
 /// Generate a getter for a field.
 ///
 
-fn getter_gen( name : &str, field : &syn::Field ) -> Result< GetterDescriptor >
+fn getter_gen( name : &str, field : &syn::Field ) -> Result< AccessorDescriptor >
 {
 
   let name_ident = syn::Ident::new( &name, field.span() );
@@ -247,7 +248,49 @@ fn getter_gen( name : &str, field : &syn::Field ) -> Result< GetterDescriptor >
     }
   };
 
-  let result = GetterDescriptor
+  let result = AccessorDescriptor
+  {
+    attr,
+    signature,
+    body,
+  };
+
+  Ok( result )
+}
+
+///
+/// Generate a mutter for a field.
+///
+
+fn mutter_gen( name : &str, field : &syn::Field ) -> Result< AccessorDescriptor >
+{
+
+  let name_ident = syn::Ident::new( &name, field.span() );
+  let name_mut_ident = syn::Ident::new( &format!( "{}_mut", name ), field.span() );
+  let ty = &field.ty;
+
+  // tree_print!( ty );
+
+  let ty2 = quote!{ &mut #ty };
+
+  let attr = quote!
+  {
+    #[ inline ]
+  };
+
+  let signature = quote!
+  {
+    fn #name_mut_ident( &mut self ) -> #ty2
+  };
+
+  let body = quote!
+  {
+    {
+      &mut self.#name_ident
+    }
+  };
+
+  let result = AccessorDescriptor
   {
     attr,
     signature,
@@ -265,11 +308,11 @@ fn perform_gen( options_descriptor : &OptionsDescriptor ) -> ( proc_macro2::Toke
 {
 
   let mut perform = quote!{};
-  let mut attr_form_after = quote!{};
+  let mut attr_perform = quote!{};
   if let Some( perform_fn ) = options_descriptor.methods_map.get( "perform" )
   {
     let sig = &perform_fn.sig;
-    attr_form_after = quote!{ #[ form_after( #sig ) ] };
+    attr_perform = quote!{ #[ perform( #sig ) ] };
     perform = quote!
     {
       #[ allow( unused_attributes ) ]
@@ -278,7 +321,7 @@ fn perform_gen( options_descriptor : &OptionsDescriptor ) -> ( proc_macro2::Toke
     }
   }
 
-  ( perform, attr_form_after )
+  ( perform, attr_perform )
 }
 
 ///
@@ -295,6 +338,9 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
   };
 
   let name_ident = &options_descriptor.ident;
+  let name_options_adapter_str = String::from( name_ident.to_string() ).from_case( Case::Snake ).to_case( Case::UpperCamel );
+  let name_options_adapter_str = format!( "{}OptionsAdapter", name_options_adapter_str );
+  let name_options_adapter_ident = syn::Ident::new( &name_options_adapter_str, name_ident.span() );
   let generics = &options_descriptor.generics;
   let attrs = &options_descriptor.attrs;
 
@@ -304,16 +350,20 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
     fields_define.push( field );
   }
 
-  let ( perform, attr_form_after ) = perform_gen( &options_descriptor );
+  let ( perform, attr_perform ) = perform_gen( &options_descriptor );
 
   let getters = options_descriptor.fields_map.iter().map( | ( key, field ) | getter_gen( key, field ) );
   let getters : Vec< _ > = process_results( getters, | iter | iter.collect() )?;
   let getters_signatures : Vec< _ > = getters.iter().map( | e | e.signature.clone() ).collect();
 
+  let mutters = options_descriptor.fields_map.iter().map( | ( key, field ) | mutter_gen( key, field ) );
+  let mutters : Vec< _ > = process_results( mutters, | iter | iter.collect() )?;
+  let mutters_signatures : Vec< _ > = mutters.iter().map( | e | e.signature.clone() ).collect();
+
   let result = quote!
   {
 
-    mod #name_ident
+    pub mod #name_ident
     {
 
       #[cfg( feature = "in_wtools" )]
@@ -323,7 +373,7 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
 
       #( #attrs )*
       #[ derive( Former, PartialEq, Debug ) ]
-      #attr_form_after
+      #attr_perform
       pub struct Options #generics
       {
         #( #fields_define, )*
@@ -332,12 +382,14 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
       pub trait OptionsAdapter #generics
       {
         #( #getters_signatures ; )*
+        #( #mutters_signatures ; )*
         #perform
       }
 
       impl #generics OptionsAdapter #generics for Options #generics
       {
         #( #getters )*
+        #( #mutters )*
       }
 
       #[ inline ]
@@ -346,10 +398,16 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
         Options::#generics::former()
       }
 
+      /// Namespace of the module to include with `use module::*`.
+      pub mod prelude
+      {
+        pub use super::OptionsAdapter as #name_options_adapter_ident;
+      }
+
     }
 
     #[ inline ]
-    fn #name_ident #generics () -> #name_ident::OptionsFormer #generics
+    pub fn #name_ident #generics () -> #name_ident::OptionsFormer #generics
     {
       #name_ident::former::#generics()
     }
@@ -358,101 +416,3 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
 
   Ok( result )
 }
-
-//
-// = Input :
-//
-// Options!{ split< 'a >
-// {
-//   #![ derive( PartialOrd ) ]
-//
-//   pub src : &'a str;
-//   pub delimeter : &'a str;
-//   #[ default( true ) ]
-//   pub left : bool;
-//
-//   fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
-//   where
-//     Self : Sized,
-//   {
-//     if *self.left()
-//     {
-//       Box::new( self.src().split( self.delimeter() ) )
-//     }
-//     else
-//     {
-//       Box::new( self.src().rsplit( self.delimeter() ) )
-//     }
-//   }
-//
-// }}
-//
-
-//
-// = Output:
-//
-// #[ derive( PartialOrd ) ]
-// #[ derive( Former, PartialEq, Debug ) ]
-// #[ form_after( fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) > ) ]
-// pub struct Options< 'a >
-// {
-//   pub src : &'a str,
-//   pub delimeter : &'a str,
-//   #[ default( true ) ]
-//   pub left : bool,
-// }
-//
-// pub trait OptionsAdapter< 'a >
-// {
-//   fn src( &self ) -> &'a str;
-//   fn delimeter( &self ) -> &'a str;
-//   fn left( &self ) -> &bool;
-//   #[ inline ]
-//   fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
-//   where
-//     Self : Sized,
-//   {
-//     if *self.left()
-//     {
-//       Box::new( self.src().split( self.delimeter() ) )
-//     }
-//     else
-//     {
-//       Box::new( self.src().rsplit( self.delimeter() ) )
-//     }
-//   }
-// }
-//
-// impl< 'a > OptionsAdapter< 'a > for Options< 'a >
-// {
-//   #[ inline ]
-//   fn src( &self ) -> &'a str
-//   {
-//     &self.src
-//   }
-//   #[ inline ]
-//   fn delimeter( &self ) -> &'a str
-//   {
-//     &self.delimeter
-//   }
-//   #[ inline ]
-//   fn left( &self ) -> &bool
-//   {
-//     &self.left
-//   }
-// }
-//
-// #[ inline ]
-// pub fn former< 'a >() -> OptionsFormer< 'a >
-// {
-//   Options::< 'a >::former()
-// }
-//
-// }
-//
-// #[ inline ]
-// fn split< 'a >() -> split::OptionsFormer< 'a >
-// {
-// split::former::< 'a >()
-// }
-//

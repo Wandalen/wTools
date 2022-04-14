@@ -15,7 +15,7 @@ mod former;
 /// Derive macro to generate former for a structure. Former is variation of Builder Pattern.
 ///
 
-#[ proc_macro_derive( Former, attributes( form_after, default ) ) ]
+#[ proc_macro_derive( Former, attributes( perform, default ) ) ]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = former::former( input );

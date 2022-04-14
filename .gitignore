@@ -3,7 +3,6 @@
 !/.circleci
 !/.*
 
-/_*
 /build
 /builder
 /binding
@@ -13,15 +12,18 @@
 /package-lock.json
 /Cargo.lock
 /.vscode
+/_*
 
--*
-.module
 target
+dist
+.module
 Cargo.lock
-.warchive*
+.DS_Store
+.idea
 *.log
 *.db
 *.tmp
 *.build
-.DS_Store
-.idea
+*.code-workspace
+.warchive*
+-*

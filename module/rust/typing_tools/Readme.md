@@ -4,7 +4,7 @@ Collection of general purpose tools for type checking.
 
 ### Sample
 
-``` rust test
+```rust
 use typing_tools::*;
 
 fn main()
@@ -19,13 +19,13 @@ fn main()
 
 ### To add to your project
 
-``` shell
+```sh
 cargo add typing_tools
 ```
 
 ### Try out from the repository
 
-``` shell test
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/typing_tools_trivial

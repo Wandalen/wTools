@@ -4,40 +4,82 @@ Mechanism to define map of options for a function and its defaults laconically.
 
 ### Sample
 
-``` rust sample test
-use woptions::*;
-
-Options!{ splitter< 'a >
+```rust
+mod splitter
 {
-  #![ derive( PartialOrd ) ]
+  use former::Former;
 
-  pub src : &'a str;
-  pub delimeter : &'a str;
-  #[ default( true ) ]
-  pub left : bool;
-
-  fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
-  where
-    Self : Sized,
+  #[ derive( PartialOrd ) ]
+  #[ derive( Former, PartialEq, Debug ) ]
+  #[ perform( fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) > ) ]
+  pub struct Options< 'a >
   {
-    if *self.left()
+    pub src : &'a str,
+    pub delimeter : &'a str,
+    #[ default( true ) ]
+    pub left : bool,
+  }
+
+  pub trait OptionsAdapter< 'a >
+  {
+    fn src( &self ) -> &'a str;
+    fn delimeter( &self ) -> &'a str;
+    fn left( &self ) -> &bool;
+    #[ inline ]
+    fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) >
+    where
+      Self : Sized,
     {
-      Box::new( self.src().split( self.delimeter() ) )
-    }
-    else
-    {
-      Box::new( self.src().rsplit( self.delimeter() ) )
+      if *self.left()
+      {
+        Box::new( self.src().split( self.delimeter() ) )
+      }
+      else
+      {
+        Box::new( self.src().rsplit( self.delimeter() ) )
+      }
     }
   }
 
-}}
+  impl< 'a > OptionsAdapter< 'a > for Options< 'a >
+  {
+    #[ inline ]
+    fn src( &self ) -> &'a str
+    {
+      &self.src
+    }
+    #[ inline ]
+    fn delimeter( &self ) -> &'a str
+    {
+      &self.delimeter
+    }
+    #[ inline ]
+    fn left( &self ) -> &bool
+    {
+      &self.left
+    }
+  }
+
+  #[ inline ]
+  pub fn former< 'a >() -> OptionsFormer< 'a >
+  {
+    Options::< 'a >::former()
+  }
+
+}
+
+#[ inline ]
+fn splitter< 'a >() -> splitter::OptionsFormer< 'a >
+{
+  splitter::former::< 'a >()
+}
 
 //
 
 fn main()
 {
   /* form options */
-  let from_former = splitter().src( "abc" ).delimeter( "b" )._form();
+  let from_former = splitter().src( "abc" ).delimeter( "b" ).form();
   let from_options = splitter::Options
   {
     src : "abc",
@@ -45,24 +87,19 @@ fn main()
     left : true,
   };
   assert_eq!( from_former, from_options );
-
-  /* perform methods from autotrait */
-  use splitter::OptionsAdapter;
-  let splitted = from_former.perform().map( | e | String::from( e ) ).collect::< Vec< _ > >();
-  assert_eq!( splitted, vec![ "a", "c" ] );
 }
 ```
 <!-- xxx --> <!-- aaa : done -->
 
 ### To add to your project
 
-```
+```sh
 cargo add woptions
 ```
 
 ### Try out from the repository
 
-``` shell test
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/woptions_trivial
