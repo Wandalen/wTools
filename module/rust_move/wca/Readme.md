@@ -1,24 +1,41 @@
-# module::wselector
+# module::wca
 
-Collection of cross-platform routines to select a sub-structure from a complex data structure. Use the module to transform a data structure with the help of a short query string.
+The tool to make CLI ( commands user interface ). It is able to aggregate external binary applications, as well as functions, which are written in your language.
 
 ### Sample
 
-```bash
-cargo run --bin selector -- get Cargo.toml workspace
+```rust
+use wca::*;
+
+fn main()
+{
+  let instruction = instruction::instruction_parse()
+  .instruction( ".get some v:1" )
+  .perform();
+  let properties_map = std::collections::HashMap::from([ ( "v".to_string(), "1".to_string() ) ]);
+  let exp = instruction::Instruction
+  {
+    err : None,
+    command_name : ".get".to_string(),
+    subject : "some".to_string(),
+    properties_map,
+  };
+  assert_eq!( instruction, exp );
+}
 ```
 
 ### To add to your project
 
-```
-cargo add wselector
+```sh
+cargo add wca
 ```
 
 ### Try out from the repository
 
-``` shell test
-git clone https://github.com/Wandalen/wSelector
-cd wSelector
-cd sample/rust/selector
+```sh
+git clone https://github.com/Wandalen/wTools
+cd wTools
+cd sample/rust/wca_trivial
 cargo run
 ```
+
