@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+#![allow(missing_docs)]
 
 //
 
@@ -20,6 +20,7 @@ macro_rules! field_str
 {
   ( $name:ident ) =>
   {
+    #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
     pub fn $name< Str : AsRef< str > >( &mut self, src : Str ) -> &mut Self
     where
       String : From<Str>
@@ -30,6 +31,7 @@ macro_rules! field_str
   };
   ( $name1:ident, $name2:ident ) =>
   {
+    #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
     pub fn $name2< Str : AsRef< str > >( &mut self, src : Str ) -> &mut Self
     where
       String : From<Str>
@@ -45,6 +47,7 @@ macro_rules! field_map_str_str
 {
   ( $name1:ident, $name2:ident ) =>
   {
+    #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
     pub fn $name2< Str : AsRef< str > >( &mut self, property : Str, hint : Str ) -> &mut Self
     where
       String : From<Str>
@@ -60,6 +63,7 @@ macro_rules! field_map_str_vec_str
 {
   ( $name1:ident, $name2:ident ) =>
   {
+    #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
     pub fn $name2< Str : AsRef< str > >( &mut self, property : Str, alias : Str ) -> &mut Self
     where
       String : From<Str>
@@ -76,6 +80,7 @@ macro_rules! field_routine
 {
   ( $name:ident ) =>
   {
+    #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
     pub fn $name( &mut self, routine : &'static dyn Fn() ) -> &mut Self
     {
       self.ins.$name = routine.into();
@@ -84,6 +89,7 @@ macro_rules! field_routine
   };
   ( $name1:ident, $name2:ident ) =>
   {
+    #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
     pub fn $name2( &mut self, routine : &'static dyn Fn() ) -> &mut Self
     {
       self.ins.$name1 = routine.into();

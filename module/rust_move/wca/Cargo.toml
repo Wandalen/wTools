@@ -23,7 +23,7 @@ include = [
 
 [lib]
 name = "wca"
-path = "rust/impl/ca/mod.rs"
+path = "rust/impl/ca/wca_lib.rs"
 
 [[test]]
 name = "wca_test"
