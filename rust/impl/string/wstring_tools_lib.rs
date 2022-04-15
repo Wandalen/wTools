@@ -37,6 +37,7 @@
 // /// }
 // /// ```
 
+/// String tools.
 pub mod string
 {
   include!( "./lib.rs" );

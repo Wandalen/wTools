@@ -131,13 +131,11 @@ impl< 'a > Iterator for SplitIterator< 'a >
       if self.stripping
       {
         string = string.trim();
-      }
 
-      if !self.preserving_empty
-      {
-        if string.is_empty()
+        if string.is_empty() && !self.preserving_empty
         {
-          return Some( Split { string : self.iterator.next().unwrap(), typ : SplitType::Delimeted } );
+          string = self.iterator.next().unwrap().trim();
+          return Some( Split { string, typ : SplitType::Delimeted } );
         }
       }
 
@@ -145,8 +143,15 @@ impl< 'a > Iterator for SplitIterator< 'a >
       {
         return Some( Split { string, typ : SplitType::Delimeter } );
       }
-
-      Some( Split { string : self.iterator.next().unwrap(), typ : SplitType::Delimeted } )
+      else
+      {
+        string = self.iterator.next().unwrap();
+        if self.stripping
+        {
+          string = string.trim();
+        }
+        return Some( Split { string, typ : SplitType::Delimeted } );
+      }
     }
   }
 }
