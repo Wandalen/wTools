@@ -10,6 +10,7 @@ use std::fs;
 use std::fmt::Write;
 use toml_edit::value;
 use wpublisher::*;
+use wca::*;
 use cargo_metadata::MetadataCommand;
 
 //
@@ -18,7 +19,7 @@ fn publish( instruction : &instruction::Instruction ) -> anyhow::Result<()>
 {
   let current_path = env::current_dir()?;
 
-  let mut manifest = manifest_get( instruction.subject[ 0 ].as_ref() )?;
+  let mut manifest = manifest_get( instruction.subject.as_str() )?;
   let data = manifest.manifest_data.as_deref_mut().unwrap();
 
   let mut package_dir = manifest.manifest_path.clone();
@@ -99,9 +100,12 @@ fn bump( version : &str ) -> anyhow::Result<toml_edit::Item>
 
 fn main() -> anyhow::Result<()>
 {
-  let instruction = wpublisher::instruction::parse_from_splits( env::args().skip( 1 ) );
+  let args = env::args().skip( 1 ).collect::<Vec<String>>();
+  let instruction = instruction::instruction_parse()
+  .instruction( args.join( " " ).as_str() )
+  .perform();
 
-  match instruction.command_name.as_ref()
+  match instruction.command_name.as_str()
   {
     ".publish" => publish( &instruction )?,
     _ => panic!( "Unknown command" ),
