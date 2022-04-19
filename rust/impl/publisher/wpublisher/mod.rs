@@ -2,7 +2,7 @@
 #![ warn( missing_debug_implementations ) ]
 
 //!
-//! Library of utility to operate files from a command line.
+//! Library of utility to operate packages from a command line.
 //!
 
 ///

@@ -25,17 +25,13 @@ include = [
   "/License",
 ]
 
-[lib]
-name = "wpublisher"
-path = "rust/impl/publisher/lib.rs"
-
 [[bin]]
 name = "wpublisher"
 path = "rust/impl/publisher/entry.rs"
 
 [[test]]
 name = "publisher_test"
-path = "rust/test/publisher/publisher_test.rs"
+path = "rust/test/publisher/mod.rs"
 
 # [[example]]
 # name = "publisher_trivial"
