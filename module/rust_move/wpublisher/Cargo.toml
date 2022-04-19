@@ -45,6 +45,7 @@ toml_edit = "0.14.2"
 cargo_metadata = "0.14.2"
 ureq = "2.4.0"
 sha-1 = "0.10.0"
+globwalk = "0.8.1"
 
 [dev-dependencies]
 wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }

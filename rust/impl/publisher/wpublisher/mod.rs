@@ -6,6 +6,12 @@
 //!
 
 ///
+/// Manipulate over files.
+///
+
+pub mod files;
+
+///
 /// Manipulate over manifest.
 ///
 
