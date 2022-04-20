@@ -74,8 +74,40 @@ fn _callback_trivial()
   .routine( &| _i : &instruction::Instruction | { println!( "hello" ); Ok( () ) } )
   .form();
 
-  let perform = command.perform( &instruction::Instruction::default() );
+  let instruction = instruction::instruction_parse()
+  .instruction( "" )
+  .perform();
+  let perform = command.perform( &instruction );
   assert!( perform.is_ok() );
+}
+
+//
+
+fn _callback_with_props()
+{
+  let command = CommandOptions::default()
+  .hint( "hint" )
+  .long_hint( "long_hint" )
+  .phrase( "phrase" )
+  .subject_hint( "subject_hint" )
+  .property_hint( "prop1", "hint of prop1" )
+  .property_hint( "prop2", "hint of prop2" )
+  .property_alias( "property_alias", "a1" )
+  .property_alias( "property_alias", "a2" )
+  .routine( &| _i : &instruction::Instruction | { println!( "hello" ); Ok( () ) } )
+  .form();
+
+  let instruction = instruction::instruction_parse()
+  .instruction( ".get subj prop1:1" )
+  .perform();
+  let perform = command.perform( &instruction );
+  assert!( perform.is_ok() );
+
+  let instruction = instruction::instruction_parse()
+  .instruction( ".get subj unknown:1" )
+  .perform();
+  let perform = command.perform( &instruction );
+  assert!( perform.is_err() );
 }
 
 //
@@ -85,5 +117,6 @@ test_suite!
   basic,
   shortcut,
   callback_trivial,
+  callback_with_props,
 }
 
