@@ -44,6 +44,18 @@ fn _basic()
   assert_eq!( instruction, exp );
 
   let instruction = instruction::instruction_parse()
+  .instruction( ".get v:1" )
+  .perform();
+  let exp = instruction::Instruction
+  {
+    err : None,
+    command_name : ".get".to_string(),
+    subject : "".to_string(),
+    properties_map : HashMap::from([ ( "v".to_string(), "1".to_string() ) ]),
+  };
+  assert_eq!( instruction, exp );
+
+  let instruction = instruction::instruction_parse()
   .instruction( ".get some v:1" )
   .perform();
   let mut properties_map = HashMap::new();
