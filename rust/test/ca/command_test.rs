@@ -60,7 +60,7 @@ fn _shortcut()
 
 //
 
-fn _callback_trivial()
+fn _perform_trivial()
 {
   let command = CommandOptions::default()
   .hint( "hint" )
@@ -83,7 +83,34 @@ fn _callback_trivial()
 
 //
 
-fn _callback_with_props()
+fn _perform_with_subject()
+{
+  let command = CommandOptions::default()
+  .hint( "hint" )
+  .subject_hint( "" )
+  .routine( &| _i : &instruction::Instruction | { println!( "hello" ); Ok( () ) } )
+  .form();
+  let instruction = instruction::instruction_parse()
+  .instruction( ".get subj" )
+  .perform();
+  let perform = command.perform( &instruction );
+  assert!( perform.is_err() );
+
+  let command = CommandOptions::default()
+  .hint( "hint" )
+  .subject_hint( "subject" )
+  .routine( &| _i : &instruction::Instruction | { println!( "hello" ); Ok( () ) } )
+  .form();
+  let instruction = instruction::instruction_parse()
+  .instruction( ".get subj" )
+  .perform();
+  let perform = command.perform( &instruction );
+  assert!( perform.is_ok() );
+}
+
+//
+
+fn _perform_with_props()
 {
   let command = CommandOptions::default()
   .hint( "hint" )
@@ -116,7 +143,8 @@ test_suite!
 {
   basic,
   shortcut,
-  callback_trivial,
-  callback_with_props,
+  perform_trivial,
+  perform_with_subject,
+  perform_with_props,
 }
 
