@@ -15,15 +15,14 @@ pub fn list( instruction : &instruction::Instruction ) -> Result<(), Error>
 
   for path in paths
   {
-    let manifest_dir = path.parent().unwrap();
-    let manifest = manifest_get( manifest_dir.to_str().unwrap() );
+    let manifest = manifest_get( path );
     let data = manifest.manifest_data.as_ref().unwrap();
     if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
     {
       let remote = data[ "package" ].get( "publish" ).is_none()
                    || data[ "package" ][ "publish" ].as_bool().unwrap() == true;
       let remote = if remote { "remote" } else { "local" };
-      println!( "{} - {:?}, {}", data[ "package" ][ "name" ].to_string().trim(), manifest_dir, remote );
+      println!( "{} - {:?}, {}", data[ "package" ][ "name" ].to_string().trim(), path.parent().unwrap(), remote );
     }
   }
 
@@ -32,10 +31,10 @@ pub fn list( instruction : &instruction::Instruction ) -> Result<(), Error>
 
 //
 
-fn manifest_get( path : &str ) -> manifest::Manifest
+fn manifest_get( path : &std::path::Path ) -> manifest::Manifest
 {
   let mut manifest = manifest::Manifest::new();
-  manifest.manifest_path_from_str( path ).unwrap();
+  manifest.manifest_path = path.into();
   manifest.load().unwrap();
   manifest
 }
