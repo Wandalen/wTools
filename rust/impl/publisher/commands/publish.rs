@@ -1,5 +1,7 @@
 
 use crate::*;
+use crate::wpublisher::bool::*;
+use wca::*;
 use std::env;
 use std::fs;
 use std::fmt::Write;
@@ -20,6 +22,7 @@ pub fn publish( instruction : &instruction::Instruction ) -> Result<(), Error>
 
   let mut package_dir = manifest.manifest_path.clone();
   package_dir.pop();
+
   let output = process::start_sync( "cargo package", &package_dir ).unwrap();
   process::log_output( &output );
 
@@ -42,16 +45,38 @@ pub fn publish( instruction : &instruction::Instruction ) -> Result<(), Error>
     let version = version.as_str().unwrap();
     manifest.store().unwrap();
 
-    let mut buf = String::new();
-    write!( &mut buf, "git commit -am \"{} v{}\"", name, version ).unwrap();
-    let output = process::start_sync( &buf, &current_path ).unwrap();
-    process::log_output( &output );
+    let dry = match instruction.properties_map.get( "dry" )
+    {
+      Some( x ) => x.to_bool_like(),
+      None => BoolLike::False,
+    };
 
-    let output = process::start_sync( "git push", &current_path ).unwrap();
-    process::log_output( &output );
+    if dry == BoolLike::True
+    {
+      let mut buf = String::new();
+      write!( &mut buf, "git commit --dry-run -am \"{} v{}\"", name, version ).unwrap();
+      let output = process::start_sync( &buf, &current_path ).unwrap();
+      process::log_output( &output );
 
-    let output = process::start_sync( "cargo publish", &package_dir ).unwrap();
-    process::log_output( &output );
+      let output = process::start_sync( "git push --dry-run", &current_path ).unwrap();
+      process::log_output( &output );
+
+      let output = process::start_sync( "cargo publish --dry-run --allow-dirty", &package_dir ).unwrap();
+      process::log_output( &output );
+    }
+    else
+    {
+      let mut buf = String::new();
+      write!( &mut buf, "git commit -am \"{} v{}\"", name, version ).unwrap();
+      let output = process::start_sync( &buf, &current_path ).unwrap();
+      process::log_output( &output );
+
+      let output = process::start_sync( "git push", &current_path ).unwrap();
+      process::log_output( &output );
+
+      let output = process::start_sync( "cargo publish", &package_dir ).unwrap();
+      process::log_output( &output );
+    }
   }
   else
   {
