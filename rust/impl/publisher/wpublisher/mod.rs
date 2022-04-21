@@ -6,6 +6,12 @@
 //!
 
 ///
+/// Work with bools.
+///
+
+pub mod bool;
+
+///
 /// Manipulate over files.
 ///
 
