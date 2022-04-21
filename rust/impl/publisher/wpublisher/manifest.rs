@@ -78,4 +78,27 @@ impl Manifest
     );
     Ok( () )
   }
+
+  pub fn package_is( &self ) -> bool
+  {
+    let data = self.manifest_data.as_ref().unwrap();
+    if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
+    {
+      return true;
+    }
+    false
+  }
+
+  pub fn local_is( &self ) -> bool
+  {
+    let data = self.manifest_data.as_ref().unwrap();
+    if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
+    {
+      let remote = data[ "package" ].get( "publish" ).is_none()
+                   || data[ "package" ][ "publish" ].as_bool().unwrap() == true;
+      return !remote;
+    }
+
+    true
+  }
 }

@@ -3,7 +3,7 @@ use std::env;
 use wtools::error::Error;
 
 ///
-/// Publish package.
+/// List packages.
 ///
 
 pub fn list( instruction : &instruction::Instruction ) -> Result<(), Error>
@@ -16,12 +16,11 @@ pub fn list( instruction : &instruction::Instruction ) -> Result<(), Error>
   for path in paths
   {
     let manifest = manifest_get( path );
-    let data = manifest.manifest_data.as_ref().unwrap();
-    if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
+    if manifest.package_is()
     {
-      let remote = data[ "package" ].get( "publish" ).is_none()
-                   || data[ "package" ][ "publish" ].as_bool().unwrap() == true;
-      let remote = if remote { "remote" } else { "local" };
+      let local_is = manifest.local_is();
+      let remote = if local_is { "local" } else { "remote" };
+      let data = manifest.manifest_data.as_ref().unwrap();
       println!( "{} - {:?}, {}", data[ "package" ][ "name" ].to_string().trim(), path.parent().unwrap(), remote );
     }
   }
