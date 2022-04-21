@@ -33,7 +33,7 @@ pub fn list( instruction : &instruction::Instruction ) -> Result<(), Error>
 fn manifest_get( path : &std::path::Path ) -> manifest::Manifest
 {
   let mut manifest = manifest::Manifest::new();
-  manifest.manifest_path = path.into();
+  manifest.manifest_path_from_str( path ).unwrap();
   manifest.load().unwrap();
   manifest
 }

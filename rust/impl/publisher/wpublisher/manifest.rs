@@ -36,20 +36,22 @@ impl Manifest
   }
 
   /// Join manifest path.
-  pub fn manifest_path_from_str( &mut self, path : &str ) -> anyhow::Result<PathBuf>
+  pub fn manifest_path_from_str( &mut self, path : impl Into<PathBuf> ) -> anyhow::Result<PathBuf>
   {
-    let mut dst_path = env::current_dir()?;
-    match path
+    let mut path_buf : PathBuf = path.into();
+    if path_buf.is_relative()
     {
-      "." | "./" => dst_path.push( "Cargo.toml" ),
-      _ =>
-      {
-        dst_path.push( path );
-        dst_path.push( "Cargo.toml" );
-      },
+      let mut current_dir = env::current_dir()?;
+      current_dir.push( path_buf );
+      path_buf = current_dir;
     }
-    self.manifest_path = dst_path.clone();
-    Ok( dst_path )
+
+    if !path_buf.ends_with( "Cargo.toml" )
+    {
+      path_buf.push( "Cargo.toml" );
+    }
+    self.manifest_path = path_buf.clone();
+    Ok( path_buf )
   }
 
   /// Load manifest from path.
