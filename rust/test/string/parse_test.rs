@@ -43,6 +43,8 @@ fn _basic()
   assert_eq!( req, exp );
 }
 
+//
+
 fn _with_subject_and_map()
 {
   let src = "subj";
@@ -176,8 +178,48 @@ fn _with_subject_and_map()
 
 //
 
+fn _with_several_values()
+{
+  let src = "subj v:1 v:2";
+  let req = TheModule::string::request_parse()
+  .src( src )
+  .several_values( false )
+  .perform();
+  let mut options = HashMap::new();
+  options.insert( String::from( "v" ), parse::OpType::Primitive( "2".to_string() ) );
+  let mut exp = parse::Request::default();
+  exp.original = "subj v:1 v:2";
+  exp.subject = "subj".to_string();
+  exp.subjects = vec![ "subj".to_string() ];
+  exp.map = options.clone();
+  exp.maps = vec![ options.clone() ];
+  exp.key_val_delimeter = ":";
+  exp.commands_delimeter = ";";
+  assert_eq!( req, exp );
+
+  let src = "subj v:1 v:2";
+  let req = TheModule::string::request_parse()
+  .src( src )
+  .several_values( true )
+  .perform();
+  let mut options = HashMap::new();
+  options.insert( String::from( "v" ), parse::OpType::Vector( vec![ "1".to_string(), "2".to_string() ] ) );
+  let mut exp = parse::Request::default();
+  exp.original = "subj v:1 v:2";
+  exp.subject = "subj".to_string();
+  exp.subjects = vec![ "subj".to_string() ];
+  exp.map = options.clone();
+  exp.maps = vec![ options.clone() ];
+  exp.key_val_delimeter = ":";
+  exp.commands_delimeter = ";";
+  assert_eq!( req, exp );
+}
+
+//
+
 test_suite!
 {
   basic,
   with_subject_and_map,
+  with_several_values,
 }
