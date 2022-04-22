@@ -6,6 +6,29 @@ pub( crate ) mod internal
   use std::collections::HashMap;
 
   ///
+  /// Wrapper types to make transformation.
+  ///
+
+  #[ derive( Debug, Clone, PartialEq ) ]
+  pub enum OpType<T>
+  {
+    /// Wrapper over single element of type <T>.
+    Primitive( T ),
+    /// Wrapper over vector of elements of type <T>.
+    Vector( Vec<T> ),
+    /// Wrapper over hash map of elements of type <T>.
+    Map( HashMap<String, T> ),
+  }
+
+  impl<T : Default> Default for OpType<T>
+  {
+    fn default() -> Self
+    {
+      OpType::Primitive( T::default() )
+    }
+  }
+
+  ///
   /// Parsed request data.
   ///
 
@@ -24,9 +47,9 @@ pub( crate ) mod internal
     /// All subjects of the commands in request.
     pub subjects : Vec<String>,
     /// Options map of first command.
-    pub map : HashMap<String, String>,
+    pub map : HashMap<String, OpType<String>>,
     /// All options maps of the commands in request.
-    pub maps : Vec<HashMap<String, String>>,
+    pub maps : Vec<HashMap<String, OpType<String>>>,
   }
 
   ///
@@ -176,7 +199,7 @@ pub( crate ) mod internal
         }
 
         let subject;
-        let mut map : HashMap<String, String> = HashMap::new();
+        let mut map : HashMap<String, OpType<String>> = HashMap::new();
 
         if map_entries.1.is_some()
         {
@@ -259,7 +282,7 @@ pub( crate ) mod internal
             }
             else
             {
-              map.insert( left.to_string(), right.to_string() );
+              map.insert( left.to_string(), OpType::Primitive( right.to_string() ) );
             }
           }
         }
@@ -327,6 +350,7 @@ pub mod own
 {
   use super::internal as i;
 
+  pub use i::OpType;
   pub use i::Request;
   pub use i::ParseOptions;
   pub use i::ParseOptionsAdapter;

@@ -76,7 +76,7 @@ fn _with_subject_and_map()
   .src( src )
   .perform();
   let mut options = HashMap::new();
-  options.insert( String::from( "v" ), String::from( "1" ) );
+  options.insert( String::from( "v" ), parse::OpType::Primitive( String::from( "1" ) ) );
   let mut exp = parse::Request::default();
   exp.original = "subj v:1";
   exp.subject = "subj".to_string();
@@ -92,8 +92,8 @@ fn _with_subject_and_map()
   .src( src )
   .perform();
   let mut options = HashMap::new();
-  options.insert( String::from( "v" ), String::from( "1" ) );
-  options.insert( String::from( "r" ), String::from( "some" ) );
+  options.insert( String::from( "v" ), parse::OpType::Primitive( String::from( "1" ) ) );
+  options.insert( String::from( "r" ), parse::OpType::Primitive( String::from( "some" ) ) );
   let mut exp = parse::Request::default();
   exp.original = "subj v:1 r:some";
   exp.subject = "subj".to_string();
@@ -124,7 +124,7 @@ fn _with_subject_and_map()
   .src( src )
   .perform();
   let mut options = HashMap::new();
-  options.insert( String::from( "v" ), String::from( "1" ) );
+  options.insert( String::from( "v" ), parse::OpType::Primitive( String::from( "1" ) ) );
   let mut exp = parse::Request::default();
   exp.original = "subj1 v:1 ; subj2";
   exp.subject = "subj1".to_string();
@@ -140,9 +140,9 @@ fn _with_subject_and_map()
   .src( src )
   .perform();
   let mut options1 = HashMap::new();
-  options1.insert( String::from( "v" ), String::from( "1" ) );
+  options1.insert( String::from( "v" ), parse::OpType::Primitive( String::from( "1" ) ) );
   let mut options2 = HashMap::new();
-  options2.insert( String::from( "v" ), String::from( "2" ) );
+  options2.insert( String::from( "v" ), parse::OpType::Primitive( String::from( "2" ) ) );
   let mut exp = parse::Request::default();
   exp.original = "subj1 v:1 ; subj2 v:2";
   exp.subject = "subj1".to_string();
@@ -158,11 +158,11 @@ fn _with_subject_and_map()
   .src( src )
   .perform();
   let mut options1 = HashMap::new();
-  options1.insert( String::from( "v" ), String::from( "1" ) );
-  options1.insert( String::from( "ne" ), String::from( "-2" ) );
+  options1.insert( String::from( "v" ), parse::OpType::Primitive( String::from( "1" ) ) );
+  options1.insert( String::from( "ne" ), parse::OpType::Primitive( String::from( "-2" ) ) );
   let mut options2 = HashMap::new();
-  options2.insert( String::from( "v" ), String::from( "2" ) );
-  options2.insert( String::from( "r" ), String::from( "some" ) );
+  options2.insert( String::from( "v" ), parse::OpType::Primitive( String::from( "2" ) ) );
+  options2.insert( String::from( "r" ), parse::OpType::Primitive( String::from( "some" ) ) );
   let mut exp = parse::Request::default();
   exp.original = "subj1 v:1 ne:-2 ; subj2 v:2 r:some";
   exp.subject = "subj1".to_string();
