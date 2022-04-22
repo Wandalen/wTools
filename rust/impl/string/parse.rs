@@ -28,6 +28,31 @@ pub( crate ) mod internal
     }
   }
 
+  impl<T : Clone> OpType<T>
+  where
+    String : From<T>
+  {
+    /// Append item to current value. If current type is `Primitive`, then it will be converted to
+    /// `Vector`.
+    pub fn append( mut self, item : T ) -> OpType<T>
+    {
+      match self
+      {
+        OpType::Primitive( value ) =>
+        {
+          let vector = vec![ value, item ];
+          OpType::Vector( vector )
+        },
+        OpType::Vector( ref mut vector ) =>
+        {
+          vector.push( item );
+          self
+        },
+        OpType::Map( _ ) => panic!( "Unexpected operation. Please, use method `insert` to insert item in hash map." ),
+      }
+    }
+  }
+
   ///
   /// Parsed request data.
   ///
@@ -277,8 +302,15 @@ pub( crate ) mod internal
 
             if self.several_values
             {
-              unimplemented!( "not implemented" );
-              // map[ left ] = _.scalarAppendOnce( map[ left ], right );
+              if let Some( op ) = map.get( left )
+              {
+                let value = op.clone().append( right.to_string() );
+                map.insert( left.to_string(), value );
+              }
+              else
+              {
+                map.insert( left.to_string(), OpType::Primitive( right.to_string() ) );
+              }
             }
             else
             {
