@@ -32,21 +32,46 @@ pub( crate ) mod internal
   where
     String : From<T>
   {
-    /// Append item to current value. If current type is `Primitive`, then it will be converted to
+    /// Append item of OpType to current value. If current type is `Primitive`, then it will be converted to
     /// `Vector`.
-    pub fn append( mut self, item : T ) -> OpType<T>
+    pub fn append( mut self, item : OpType<T> ) -> OpType<T>
     {
+      let mut mut_item = item;
       match self
       {
         OpType::Primitive( value ) =>
         {
-          let vector = vec![ value, item ];
-          OpType::Vector( vector )
+          match mut_item
+          {
+            OpType::Primitive( ins ) =>
+            {
+              let vector = vec![ value, ins ];
+              OpType::Vector( vector )
+            }
+            OpType::Vector( ref mut vector ) =>
+            {
+              vector.insert( 0, value );
+              mut_item
+            },
+            OpType::Map( _ ) => panic!( "Unexpected operation. Please, use method `insert` to insert item in hash map." ),
+          }
         },
         OpType::Vector( ref mut vector ) =>
         {
-          vector.push( item );
-          self
+          match mut_item
+          {
+            OpType::Primitive( ins ) =>
+            {
+              vector.push( ins );
+              self
+            }
+            OpType::Vector( ref mut ins_vec ) =>
+            {
+              vector.append( ins_vec );
+              self
+            },
+            OpType::Map( _ ) => panic!( "Unexpected operation. Please, use method `insert` to insert item in hash map." ),
+          }
         },
         OpType::Map( _ ) => panic!( "Unexpected operation. Please, use method `insert` to insert item in hash map." ),
       }
@@ -293,28 +318,60 @@ pub( crate ) mod internal
             pairs.push( right );
           }
 
+          /* */
+
+          let str_to_vec_maybe = | src : &str | -> Option<Vec<String>>
+          {
+            if !src.starts_with( '[' ) || !src.ends_with( ']' )
+            {
+              return None;
+            }
+
+            let splits = split()
+            .src( &src[ 1..src.len() - 1 ] )
+            .delimeter( "," )
+            .stripping( true )
+            // .quoting( self.quoting )
+            .preserving_empty( false )
+            .preserving_delimeters( false )
+            // .preserving_quoting( false )
+            .perform()
+            .map( | e | String::from( e ).trim().to_owned() ).collect::< Vec<String> >();
+
+            Some( splits )
+          };
+
+          /* */
+
           for a in ( 0..pairs.len() - 1 ).step_by( 2 )
           {
             let left = &pairs[ a ];
-            let right = &pairs[ a + 1 ];
-            // right = _.numberFromStrMaybe( right );
-            // right = strToArrayMaybe( right );
+            let right_str = &pairs[ a + 1 ];
+            let mut right = OpType::Primitive( pairs[ a + 1 ].to_string() );
+
+            if self.parsing_arrays
+            {
+              if let Some( vector ) = str_to_vec_maybe( right_str )
+              {
+                right = OpType::Vector( vector );
+              }
+            }
 
             if self.several_values
             {
               if let Some( op ) = map.get( left )
               {
-                let value = op.clone().append( right.to_string() );
+                let value = op.clone().append( right );
                 map.insert( left.to_string(), value );
               }
               else
               {
-                map.insert( left.to_string(), OpType::Primitive( right.to_string() ) );
+                map.insert( left.to_string(), right );
               }
             }
             else
             {
-              map.insert( left.to_string(), OpType::Primitive( right.to_string() ) );
+              map.insert( left.to_string(), right );
             }
           }
         }
