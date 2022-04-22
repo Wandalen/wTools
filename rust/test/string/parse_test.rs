@@ -217,9 +217,105 @@ fn _with_several_values()
 
 //
 
+fn _with_parsing_arrays()
+{
+  let src = "subj v:[1,2]";
+  let req = TheModule::string::request_parse()
+  .src( src )
+  .parsing_arrays( false )
+  .perform();
+  let mut options = HashMap::new();
+  options.insert( String::from( "v" ), parse::OpType::Primitive( "[1,2]".to_string() ) );
+  let mut exp = parse::Request::default();
+  exp.original = "subj v:[1,2]";
+  exp.subject = "subj".to_string();
+  exp.subjects = vec![ "subj".to_string() ];
+  exp.map = options.clone();
+  exp.maps = vec![ options.clone() ];
+  exp.key_val_delimeter = ":";
+  exp.commands_delimeter = ";";
+  assert_eq!( req, exp );
+
+  let src = "subj v:[1,2]";
+  let req = TheModule::string::request_parse()
+  .src( src )
+  .parsing_arrays( true )
+  .perform();
+  let mut options = HashMap::new();
+  options.insert( String::from( "v" ), parse::OpType::Vector( vec![ "1".to_string(), "2".to_string() ] ) );
+  let mut exp = parse::Request::default();
+  exp.original = "subj v:[1,2]";
+  exp.subject = "subj".to_string();
+  exp.subjects = vec![ "subj".to_string() ];
+  exp.map = options.clone();
+  exp.maps = vec![ options.clone() ];
+  exp.key_val_delimeter = ":";
+  exp.commands_delimeter = ";";
+  assert_eq!( req, exp );
+
+  /* */
+
+  let src = "subj v:[1,2] v:3";
+  let req = TheModule::string::request_parse()
+  .src( src )
+  .parsing_arrays( true )
+  .several_values( true )
+  .perform();
+  let mut options = HashMap::new();
+  options.insert( String::from( "v" ), parse::OpType::Vector( vec![ "1".to_string(), "2".to_string(), "3".to_string() ] ) );
+  let mut exp = parse::Request::default();
+  exp.original = "subj v:[1,2] v:3";
+  exp.subject = "subj".to_string();
+  exp.subjects = vec![ "subj".to_string() ];
+  exp.map = options.clone();
+  exp.maps = vec![ options.clone() ];
+  exp.key_val_delimeter = ":";
+  exp.commands_delimeter = ";";
+  assert_eq!( req, exp );
+
+  let src = "subj v:3 v:[1,2]";
+  let req = TheModule::string::request_parse()
+  .src( src )
+  .parsing_arrays( true )
+  .several_values( true )
+  .perform();
+  let mut options = HashMap::new();
+  options.insert( String::from( "v" ), parse::OpType::Vector( vec![ "3".to_string(), "1".to_string(), "2".to_string() ] ) );
+  let mut exp = parse::Request::default();
+  exp.original = "subj v:3 v:[1,2]";
+  exp.subject = "subj".to_string();
+  exp.subjects = vec![ "subj".to_string() ];
+  exp.map = options.clone();
+  exp.maps = vec![ options.clone() ];
+  exp.key_val_delimeter = ":";
+  exp.commands_delimeter = ";";
+  assert_eq!( req, exp );
+
+  let src = "subj v:[1,2] v:[3,4]";
+  let req = TheModule::string::request_parse()
+  .src( src )
+  .parsing_arrays( true )
+  .several_values( true )
+  .perform();
+  let mut options = HashMap::new();
+  options.insert( String::from( "v" ), parse::OpType::Vector( vec![ "1".to_string(), "2".to_string(), "3".to_string(), "4".to_string() ] ) );
+  let mut exp = parse::Request::default();
+  exp.original = "subj v:[1,2] v:[3,4]";
+  exp.subject = "subj".to_string();
+  exp.subjects = vec![ "subj".to_string() ];
+  exp.map = options.clone();
+  exp.maps = vec![ options.clone() ];
+  exp.key_val_delimeter = ":";
+  exp.commands_delimeter = ";";
+  assert_eq!( req, exp );
+}
+
+//
+
 test_suite!
 {
   basic,
   with_subject_and_map,
   with_several_values,
+  with_parsing_arrays,
 }
