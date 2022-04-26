@@ -26,6 +26,7 @@ pub mod meta
 {
   // pub use maplit::*;
   pub use literally::*;
+  pub use either::*;
 }
 
 pub use meta::*;
