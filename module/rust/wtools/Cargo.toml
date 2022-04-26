@@ -53,7 +53,7 @@ all-features = true
 [dependencies]
 former = { version = "~0.1", path = "../../rust/former" }
 woptions = { version = "~0.1", path = "../../rust/woptions" }
-meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
+meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
 time_tools = { version = "~0.1", path = "../../rust/time_tools" }
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
