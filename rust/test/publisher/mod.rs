@@ -1,1 +1,2 @@
-mod censor_test
+
+mod publisher_test;

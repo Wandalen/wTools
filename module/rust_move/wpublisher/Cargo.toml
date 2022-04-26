@@ -25,17 +25,13 @@ include = [
   "/License",
 ]
 
-[lib]
-name = "wpublisher"
-path = "rust/impl/publisher/lib.rs"
-
 [[bin]]
 name = "wpublisher"
 path = "rust/impl/publisher/entry.rs"
 
 [[test]]
 name = "publisher_test"
-path = "rust/test/publisher/publisher_test.rs"
+path = "rust/test/publisher/mod.rs"
 
 # [[example]]
 # name = "publisher_trivial"
@@ -43,12 +39,13 @@ path = "rust/test/publisher/publisher_test.rs"
 
 [dependencies]
 wtools = { version = "~0.1", path = "../../rust/wtools" }
-wca = "0.1.0"
+wca = { version = "~0.1", path = "../../rust_move/wca" }
 anyhow = "1.0.56"
 toml_edit = "0.14.2"
 cargo_metadata = "0.14.2"
 ureq = "2.4.0"
 sha-1 = "0.10.0"
+globwalk = "0.8.1"
 
 [dev-dependencies]
 wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
