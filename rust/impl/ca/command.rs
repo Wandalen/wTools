@@ -5,6 +5,7 @@ mod internal
   use std::rc::Rc;
   use std::fmt;
   use crate::*;
+  use wtools::error::Error;
 
   //
 
@@ -12,7 +13,34 @@ mod internal
   /// Handle for command routine.
   ///
 
-  pub struct OnCommand( Option< Rc< dyn Fn() -> () > > );
+  pub struct OnCommand( Option<Rc<dyn Fn( &instruction::Instruction ) -> Result<(), Error>>> );
+
+  impl OnCommand
+  {
+    /// Checks that OnCommand has callback to call.
+    pub fn callable( &self ) -> bool
+    {
+      if self.0.is_some()
+      {
+        true
+      }
+      else
+      {
+        false
+      }
+    }
+    /// Perform callback.
+    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result<(), Error>
+    {
+      if self.0.is_some()
+      {
+        let r = self.0.as_ref().unwrap();
+        return r( instruction );
+      }
+
+      Ok( () )
+    }
+  }
 
   impl Default for OnCommand
   {
@@ -22,17 +50,13 @@ mod internal
     }
   }
 
-  impl From< &'static dyn Fn() -> () > for OnCommand
+  impl From<&'static dyn Fn( &instruction::Instruction ) -> Result<(), Error>> for OnCommand
   {
-    fn from( src : &'static dyn Fn() -> () ) -> Self
+    fn from( src : &'static dyn Fn( &instruction::Instruction ) -> Result<(), Error> ) -> Self
     {
       OnCommand( Some( Rc::new( src ) ) )
     }
   }
-
-  // impl Copy for OnCommand
-  // {
-  // }
 
   impl Clone for OnCommand
   {
@@ -79,6 +103,32 @@ mod internal
     pub properties_aliases : HashMap< String, Vec< String > >,
     /// Command routine.
     pub routine : OnCommand,
+  }
+
+  impl Command
+  {
+    /// Execute callback.
+    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result<(), Error>
+    {
+      if self.subject_hint.len() == 0 && instruction.subject.len() != 0
+      {
+        return Err( Error::new( "Unexpected subject." ) );
+      }
+
+      for ( key, _value ) in &instruction.properties_map
+      {
+        if self.properties_hints.get( key.as_str() ).is_none()
+        {
+          return Err( Error::new( "Unknown option." ) );
+        }
+      }
+      if self.routine.callable()
+      {
+        return self.routine.perform( instruction );
+      }
+
+      Ok( () )
+    }
   }
 
   ///
