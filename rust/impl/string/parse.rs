@@ -6,6 +6,125 @@ pub( crate ) mod internal
   use std::collections::HashMap;
 
   ///
+  /// Wrapper types to make transformation.
+  ///
+
+  #[ derive( Debug, Clone, PartialEq ) ]
+  pub enum OpType<T>
+  {
+    /// Wrapper over single element of type <T>.
+    Primitive( T ),
+    /// Wrapper over vector of elements of type <T>.
+    Vector( Vec<T> ),
+    /// Wrapper over hash map of elements of type <T>.
+    Map( HashMap<String, T> ),
+  }
+
+  impl<T : Default> Default for OpType<T>
+  {
+    fn default() -> Self
+    {
+      OpType::Primitive( T::default() )
+    }
+  }
+
+  impl<T> From<T> for OpType<T>
+  {
+    fn from( value: T ) -> Self
+    {
+      OpType::Primitive( value )
+    }
+  }
+
+  impl<T> From<Vec<T>> for OpType<T>
+  {
+    fn from( value: Vec<T> ) -> Self
+    {
+      OpType::Vector( value )
+    }
+  }
+
+  impl<T> Into<Vec<T>> for OpType<T>
+  {
+    fn into( self ) -> Vec<T>
+    {
+      match self
+      {
+        OpType::Vector( vec ) => vec,
+        _ => unimplemented!( "not implemented" ),
+      }
+    }
+  }
+
+  impl<T : Clone> OpType<T>
+  {
+    /// Append item of OpType to current value. If current type is `Primitive`, then it will be converted to
+    /// `Vector`.
+    pub fn append( mut self, item : OpType<T> ) -> OpType<T>
+    {
+      let mut mut_item = item;
+      match self
+      {
+        OpType::Primitive( value ) =>
+        {
+          match mut_item
+          {
+            OpType::Primitive( ins ) =>
+            {
+              let vector = vec![ value, ins ];
+              OpType::Vector( vector )
+            }
+            OpType::Vector( ref mut vector ) =>
+            {
+              vector.insert( 0, value );
+              mut_item
+            },
+            OpType::Map( _ ) => panic!( "Unexpected operation. Please, use method `insert` to insert item in hash map." ),
+          }
+        },
+        OpType::Vector( ref mut vector ) =>
+        {
+          match mut_item
+          {
+            OpType::Primitive( ins ) =>
+            {
+              vector.push( ins );
+              self
+            }
+            OpType::Vector( ref mut ins_vec ) =>
+            {
+              vector.append( ins_vec );
+              self
+            },
+            OpType::Map( _ ) => panic!( "Unexpected operation. Please, use method `insert` to insert item in hash map." ),
+          }
+        },
+        OpType::Map( _ ) => panic!( "Unexpected operation. Please, use method `insert` to insert item in hash map." ),
+      }
+    }
+
+    /// Unwrap primitive value. Consumes self.
+    pub fn primitive( self ) -> Option<T>
+    {
+      match self
+      {
+        OpType::Primitive( v ) => Some( v ),
+        _ => None,
+      }
+    }
+
+    /// Unwrap vector value. Consumes self.
+    pub fn vector( self ) -> Option<Vec<T>>
+    {
+      match self
+      {
+        OpType::Vector( vec ) => Some( vec ),
+        _ => None,
+      }
+    }
+  }
+
+  ///
   /// Parsed request data.
   ///
 
@@ -24,9 +143,9 @@ pub( crate ) mod internal
     /// All subjects of the commands in request.
     pub subjects : Vec<String>,
     /// Options map of first command.
-    pub map : HashMap<String, String>,
+    pub map : HashMap<String, OpType<String>>,
     /// All options maps of the commands in request.
-    pub maps : Vec<HashMap<String, String>>,
+    pub maps : Vec<HashMap<String, OpType<String>>>,
   }
 
   ///
@@ -176,7 +295,7 @@ pub( crate ) mod internal
         }
 
         let subject;
-        let mut map : HashMap<String, String> = HashMap::new();
+        let mut map : HashMap<String, OpType<String>> = HashMap::new();
 
         if map_entries.1.is_some()
         {
@@ -245,21 +364,60 @@ pub( crate ) mod internal
             pairs.push( right );
           }
 
+          /* */
+
+          let str_to_vec_maybe = | src : &str | -> Option<Vec<String>>
+          {
+            if !src.starts_with( '[' ) || !src.ends_with( ']' )
+            {
+              return None;
+            }
+
+            let splits = split()
+            .src( &src[ 1..src.len() - 1 ] )
+            .delimeter( "," )
+            .stripping( true )
+            // .quoting( self.quoting )
+            .preserving_empty( false )
+            .preserving_delimeters( false )
+            // .preserving_quoting( false )
+            .perform()
+            .map( | e | String::from( e ).trim().to_owned() ).collect::< Vec<String> >();
+
+            Some( splits )
+          };
+
+          /* */
+
           for a in ( 0..pairs.len() - 1 ).step_by( 2 )
           {
             let left = &pairs[ a ];
-            let right = &pairs[ a + 1 ];
-            // right = _.numberFromStrMaybe( right );
-            // right = strToArrayMaybe( right );
+            let right_str = &pairs[ a + 1 ];
+            let mut right = OpType::Primitive( pairs[ a + 1 ].to_string() );
+
+            if self.parsing_arrays
+            {
+              if let Some( vector ) = str_to_vec_maybe( right_str )
+              {
+                right = OpType::Vector( vector );
+              }
+            }
 
             if self.several_values
             {
-              unimplemented!( "not implemented" );
-              // map[ left ] = _.scalarAppendOnce( map[ left ], right );
+              if let Some( op ) = map.get( left )
+              {
+                let value = op.clone().append( right );
+                map.insert( left.to_string(), value );
+              }
+              else
+              {
+                map.insert( left.to_string(), right );
+              }
             }
             else
             {
-              map.insert( left.to_string(), right.to_string() );
+              map.insert( left.to_string(), right );
             }
           }
         }
@@ -327,6 +485,7 @@ pub mod own
 {
   use super::internal as i;
 
+  pub use i::OpType;
   pub use i::Request;
   pub use i::ParseOptions;
   pub use i::ParseOptionsAdapter;

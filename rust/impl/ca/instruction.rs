@@ -4,7 +4,8 @@
 mod internal
 {
   pub use wtools::error::*;
-  pub use wstring_tools::string::parse as parse;
+  pub use wstring_tools::string::parse;
+  pub use wstring_tools::string::parse::OpType;
   pub use former::Former;
   use std::collections::HashMap;
 
@@ -22,7 +23,7 @@ mod internal
     /// Subject.
     pub subject : String,
     /// Properties map.
-    pub properties_map : HashMap<String, String>,
+    pub properties_map : HashMap<String, OpType<String>>,
   }
 
   ///
@@ -36,7 +37,7 @@ mod internal
   {
     #[ default( "" ) ]
     instruction : &'a str,
-    properties_map : Option<HashMap<String, String>>,
+    properties_map : Option<HashMap<String, OpType<String>>>,
     #[ default( true ) ]
     properties_map_parsing : bool,
     #[ default( true ) ]
@@ -52,7 +53,7 @@ mod internal
   impl<'a> InstructionParseParams<'a>
   {
     /// Set not default builder field `properties_map`.
-    pub fn properties_map( mut self, properties_map : HashMap<String, String> ) -> InstructionParseParams<'a>
+    pub fn properties_map( mut self, properties_map : HashMap<String, OpType<String>> ) -> InstructionParseParams<'a>
     {
       self.properties_map = Some( properties_map );
       self
@@ -111,8 +112,7 @@ mod internal
 
       let request = parse::request_parse()
       .src( request )
-      // .several_values( self.several_values ) /* qqq : uncomment when feature will be implemented */
-      .several_values( false )
+      .several_values( self.several_values )
       .quoting( self.quoting )
       .unquoting( self.unquoting )
       .subject_win_paths_maybe( self.subject_win_paths_maybe )
@@ -124,7 +124,7 @@ mod internal
         return result;
       }
 
-      if self.properties_map_parsing || self.several_values /* dead code to delete */
+      if self.properties_map_parsing /* dead code to delete */
       {
       }
 
