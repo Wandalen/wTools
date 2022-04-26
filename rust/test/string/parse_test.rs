@@ -11,6 +11,29 @@ use std::collections::HashMap;
 
 //
 
+fn _op_type_from_into()
+{
+  let got = parse::OpType::from( 1 );
+  let exp = parse::OpType::Primitive( 1 );
+  assert_eq!( got, exp );
+
+  let got = parse::OpType::from( vec![ 1, 2 ] );
+  let exp = parse::OpType::Vector( vec![ 1, 2 ] );
+  assert_eq!( got, exp );
+
+  /* */
+
+  // let op = parse::OpType::from( 1 ); /* qqq : does not work properly, find better way to convert types */
+  // let got : i32 = op.into();
+  // assert_eq!( got, 1 );
+
+  let op = parse::OpType::from( vec![ 1, 2 ] );
+  let got : Vec<isize> = op.into();
+  assert_eq!( got, vec![ 1, 2 ] );
+}
+
+//
+
 fn _basic()
 {
   let src = "";
@@ -314,6 +337,7 @@ fn _with_parsing_arrays()
 
 test_suite!
 {
+  op_type_from_into,
   basic,
   with_subject_and_map,
   with_several_values,
