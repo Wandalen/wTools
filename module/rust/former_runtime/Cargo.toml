@@ -37,6 +37,6 @@ path = "rust/test/former/runtime_test.rs"
 
 [dev-dependencies]
 wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
-meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
+meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
 # maplit = "~1.0.2"
 anyhow = "~1.0"

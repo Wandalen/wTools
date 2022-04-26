@@ -43,8 +43,8 @@ path = "sample/rust/meta_tools_trivial/src/main.rs"
 # inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
 # is_slice = { version = "~0.1", path = "../../rust/is_slice" }
 # implements = { version = "~0.1", path = "../../rust/implements" }
-# meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
-# meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
+# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
+# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
 # werror = { version = "~0.1", path = "../../rust/werror" }
 # winterval = { version = "~0.1", path = "../../rust/winterval" }
 # proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }

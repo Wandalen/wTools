@@ -44,7 +44,7 @@ all-features = true
 # rustdoc-args = []
 
 [dependencies]
-wtools = { version = "~0.1", path = "../../rust/wtools" }
+wtools = { version = "~0.2", path = "../../rust/wtools" }
 
 [dev-dependencies]
 rustversion = "~1.0"

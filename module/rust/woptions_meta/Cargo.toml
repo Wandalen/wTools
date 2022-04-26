@@ -38,7 +38,7 @@ syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "print
 # itertools = "~0.10"
 # werror = { path = "../../rust/werror", version = "~0.1" }
 proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
-meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
+meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
 iter_tools = { path = "../../rust/iter_tools", version = "~0.1" }
 
 [dev-dependencies]

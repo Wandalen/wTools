@@ -30,7 +30,7 @@ name = "wca_test"
 path = "rust/test/ca/mod.rs"
 
 [dependencies]
-wtools = { version = "~0.1", path = "../../rust/wtools" }
+wtools = { version = "~0.2", path = "../../rust/wtools" }
 former = { version = "~0.1", path = "../../rust/former" }
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
 maplit = "1.0.2"

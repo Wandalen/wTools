@@ -41,7 +41,7 @@ path = "sample/rust/woptions_trivial/src/main.rs"
 woptions_meta = { version = "~0.1", path = "../../rust/woptions_meta" }
 woptions_runtime = { version = "~0.1", path = "../../rust/woptions_runtime" }
 former = { version = "~0.1", path = "../../rust/former" }
-# meta_tools = { version = "~0.1", path = "../../rust/meta_tools" }
+# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
 
 [dev-dependencies]
 anyhow = "~1.0"
