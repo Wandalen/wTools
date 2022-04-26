@@ -1,25 +1,21 @@
-// #![ warn( missing_docs ) ]
+#![ warn( missing_docs ) ]
 #![ warn( missing_debug_implementations ) ]
 
 //!
-//! Library of utility to operate files from a command line.
+//! Library of utility to operate packages from a command line.
 //!
 
-// #![feature( pattern )]
-
-// use wtools::former::Former;
-
 ///
-/// Result of parsing.
+/// Work with bools.
 ///
 
-pub mod instruction;
+pub mod bool;
 
 ///
-/// Properties parsing.
+/// Manipulate over files.
 ///
 
-pub mod props;
+pub mod files;
 
 ///
 /// Manipulate over manifest.
