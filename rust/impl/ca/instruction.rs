@@ -112,8 +112,7 @@ mod internal
 
       let request = parse::request_parse()
       .src( request )
-      // .several_values( self.several_values ) /* qqq : uncomment when feature will be implemented */
-      .several_values( false )
+      .several_values( self.several_values )
       .quoting( self.quoting )
       .unquoting( self.unquoting )
       .subject_win_paths_maybe( self.subject_win_paths_maybe )
@@ -125,7 +124,7 @@ mod internal
         return result;
       }
 
-      if self.properties_map_parsing || self.several_values /* dead code to delete */
+      if self.properties_map_parsing /* dead code to delete */
       {
       }
 
