@@ -57,8 +57,6 @@ pub( crate ) mod internal
   }
 
   impl<T : Clone> OpType<T>
-  where
-    String : From<T>
   {
     /// Append item of OpType to current value. If current type is `Primitive`, then it will be converted to
     /// `Vector`.
@@ -102,6 +100,26 @@ pub( crate ) mod internal
           }
         },
         OpType::Map( _ ) => panic!( "Unexpected operation. Please, use method `insert` to insert item in hash map." ),
+      }
+    }
+
+    /// Unwrap primitive value. Consumes self.
+    pub fn primitive( self ) -> Option<T>
+    {
+      match self
+      {
+        OpType::Primitive( v ) => Some( v ),
+        _ => None,
+      }
+    }
+
+    /// Unwrap vector value. Consumes self.
+    pub fn vector( self ) -> Option<Vec<T>>
+    {
+      match self
+      {
+        OpType::Vector( vec ) => Some( vec ),
+        _ => None,
       }
     }
   }
