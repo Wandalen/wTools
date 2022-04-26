@@ -23,13 +23,27 @@ fn _op_type_from_into()
 
   /* */
 
-  // let op = parse::OpType::from( 1 ); /* qqq : does not work properly, find better way to convert types */
-  // let got : i32 = op.into();
-  // assert_eq!( got, 1 );
-
   let op = parse::OpType::from( vec![ 1, 2 ] );
   let got : Vec<isize> = op.into();
   assert_eq!( got, vec![ 1, 2 ] );
+
+  /* */
+
+  let op = parse::OpType::from( 1 );
+  let got = op.primitive(); /* qqq : does not work properly, find better way to convert types */
+  assert_eq!( got.unwrap(), 1 );
+
+  let op = parse::OpType::from( vec![ 1, 2 ] );
+  let got : Vec<isize> = op.vector().unwrap();
+  assert_eq!( got, vec![ 1, 2 ] );
+
+  let op = parse::OpType::from( 1 );
+  let got = op.vector();
+  assert_eq!( got, None );
+
+  let op : parse::OpType<usize> = parse::OpType::from( vec![ 1, 2 ] );
+  let got = op.primitive();
+  assert_eq!( got, None );
 }
 
 //
