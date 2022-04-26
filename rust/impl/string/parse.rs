@@ -28,6 +28,34 @@ pub( crate ) mod internal
     }
   }
 
+  impl<T> From<T> for OpType<T>
+  {
+    fn from( value: T ) -> Self
+    {
+      OpType::Primitive( value )
+    }
+  }
+
+  impl<T> From<Vec<T>> for OpType<T>
+  {
+    fn from( value: Vec<T> ) -> Self
+    {
+      OpType::Vector( value )
+    }
+  }
+
+  impl<T> Into<Vec<T>> for OpType<T>
+  {
+    fn into( self ) -> Vec<T>
+    {
+      match self
+      {
+        OpType::Vector( vec ) => vec,
+        _ => unimplemented!( "not implemented" ),
+      }
+    }
+  }
+
   impl<T : Clone> OpType<T>
   where
     String : From<T>
