@@ -6,13 +6,14 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 
 ```rust
 use wca::*;
+use wstring_tools::string::parse::OpType;
 
 fn main()
 {
   let instruction = instruction::instruction_parse()
   .instruction( ".get some v:1" )
   .perform();
-  let properties_map = std::collections::HashMap::from([ ( "v".to_string(), "1".to_string() ) ]);
+  let properties_map = std::collections::HashMap::from([ ( "v".to_string(), OpType::Primitive( "1".to_string() ) ) ]);
   let exp = instruction::Instruction
   {
     err : None,
