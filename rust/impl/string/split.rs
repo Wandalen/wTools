@@ -60,6 +60,54 @@ impl Searcher for &str
   }
 }
 
+impl Searcher for String
+{
+  fn pos( &self, src : &str ) -> Option< ( usize, usize ) >
+  {
+    src.find( self ).map( | start | ( start, start + self.len() ) )
+  }
+}
+
+impl Searcher for Vec<&str>
+{
+  fn pos( &self, src : &str ) -> Option< ( usize, usize ) >
+  {
+    let mut r = vec![];
+    for pat in self
+    {
+      match src.find( pat )
+      {
+        Some( x ) => r.push( ( x, x + pat.len() ) ),
+        None => (),
+      }
+    }
+
+    if r.is_empty()
+    {
+      return None;
+    }
+
+    r.into_iter().reduce( | accum, item |
+    {
+      if accum.0 > item.0
+      {
+        item
+      }
+      else
+      {
+        if accum.1 > item.1
+        {
+          item
+        }
+        else
+        {
+          accum
+        }
+      }
+    })
+  }
+}
+
 ///
 /// Split iterator.
 ///
@@ -139,7 +187,7 @@ where
         {
           if self.counter >= 3
           {
-            next = &self.iterable[ ..start+1 ];
+            next = &self.iterable[ ..start + 1 ];
             start += 1;
           }
         }
@@ -224,7 +272,7 @@ where
 
         if start == end
         {
-          string = &self.iterable[ ..start+1 ];
+          string = &self.iterable[ ..start + 1 ];
           end += 1;
         }
         self.iterable = &self.iterable[ end.. ];
@@ -327,8 +375,13 @@ where
     self
   }
 
-  pub fn perform( &self ) -> SplitIterator< 'a, D >
+  pub fn perform( &mut self ) -> SplitIterator< 'a, D >
   {
+    if !self.formed
+    {
+      self.formed = true;
+    }
+
     let opts = SplitOptions
     {
       src : self.src,
@@ -420,6 +473,13 @@ pub fn split< 'a >() -> SplitOptionsBuilder< 'a, &'a str >
   SplitOptionsBuilder::new( < &str >::default() )
 }
 
+///
+
+pub fn split_generic< 'a, D : Searcher + Default + Clone >() -> SplitOptionsBuilder< 'a, D >
+{
+  SplitOptionsBuilder::new( <D>::default() )
+}
+
 }
 
 /// Owned namespace of the module.
@@ -433,6 +493,7 @@ pub mod own
   pub use i::SplitOptions;
   pub use i::SplitOptionsAdapter;
   pub use i::split;
+  pub use i::split_generic;
 }
 
 pub use own::*;
@@ -444,6 +505,7 @@ pub mod exposed
 
   pub use i::SplitOptionsAdapter;
   pub use i::split;
+  pub use i::split_generic;
 }
 
 /// Namespace of the module to include with `use module::*`.
