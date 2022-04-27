@@ -61,7 +61,7 @@ pub fn publish( instruction : &instruction::Instruction ) -> Result<(), Error>
 
       let dry = match instruction.properties_map.get( "dry" )
       {
-        Some( x ) => x.to_bool_like(),
+        Some( x ) => x.clone().primitive().unwrap().to_bool_like(),
         None => BoolLike::False,
       };
 
