@@ -7,7 +7,6 @@ pub( crate ) mod internal
 
   /* xxx : qqq : tab after git sync */
 
-use former::Former;
 // use woptions::*; /* xxx : use prelude */
 
 ///
@@ -44,56 +43,72 @@ pub enum SplitType
 }
 
 ///
+/// Find first match in the string.
+///
+
+pub trait Searcher
+{
+  /// Find positions of delimeter.
+  fn pos( &self, src : &str ) -> Option< ( usize, usize ) >;
+}
+
+impl Searcher for &str
+{
+  fn pos( &self, src : &str ) -> Option< ( usize, usize ) >
+  {
+    src.find( self ).map( | start | ( start, start + self.len() ) )
+  }
+}
+
+///
 /// Split iterator.
 ///
 
 #[ derive( Debug ) ]
-pub struct SplitIterator< 'a >
+pub struct SplitIterator< 'a, D >
+where
+  D : Searcher
 {
-  iterator : std::iter::Peekable< std::str::Split< 'a, &'a str > >,
+  iterable : &'a str,
   counter : i32,
-  delimeter : &'a str,
+  delimeter : D,
   preserving_empty : bool,
   preserving_delimeters : bool,
   stripping : bool,
+  stop_empty : bool,
 }
 
 //
 
-impl< 'a > SplitIterator< 'a >
+impl< 'a, D : Searcher > SplitIterator< 'a, D >
 {
   fn new
   (
     src : &'a str,
-    delimeter : &'a str,
+    delimeter : D,
     preserving_empty : bool,
     preserving_delimeters : bool,
     stripping : bool
   ) -> Self
   {
-    let counter = 0;
-    // let delimeter = delimeter.clone();
-    let delimeter_slice = unsafe
-    {
-      let slice = core::slice::from_raw_parts( delimeter.as_ptr(), delimeter.len() );
-      core::str::from_utf8_unchecked( slice )
-    };
-    let iterator = src.split( delimeter_slice ).peekable();
     Self
     {
-      iterator,
+      iterable : src,
       delimeter,
-      counter,
+      counter : 0,
       preserving_empty,
       preserving_delimeters,
       stripping,
+      stop_empty : false,
     }
   }
 }
 
 //
 
-impl< 'a > Iterator for SplitIterator< 'a >
+impl< 'a, D > Iterator for SplitIterator< 'a, D >
+where
+  D : Searcher
 {
   type Item = Split< 'a >;
 
@@ -103,30 +118,56 @@ impl< 'a > Iterator for SplitIterator< 'a >
 
     if self.counter % 2 == 1
     {
-      let next = self.iterator.next();
-      if let Some( mut next ) = next
+      let positions = self.delimeter.pos( self.iterable );
+      if let Some( ( mut start, end ) ) = positions
       {
+        if self.iterable == "" && start == end
+        {
+          if self.stop_empty
+          {
+            return None;
+          }
+          else
+          {
+            self.counter -= 1;
+            self.stop_empty = true;
+            return Some( Split { string : "", typ : SplitType::Delimeted } );
+          }
+        }
+        let mut next = &self.iterable[ ..start ];
+        if start == end
+        {
+          if self.counter >= 3
+          {
+            next = &self.iterable[ ..start+1 ];
+            start += 1;
+          }
+        }
         if self.stripping
         {
           next = next.trim();
         }
 
+        self.iterable = &self.iterable[ start.. ];
+
         Some( Split { string : next, typ : SplitType::Delimeted } )
       }
       else
       {
-        None
+        return self.next_end_split();
       }
     }
     else
     {
-      if self.iterator.peek().is_none()
+      if self.delimeter.pos( self.iterable ).is_none()
       {
-        self.iterator.next();
+        self.iterable = "";
         return None;
       }
 
-      let mut string = self.delimeter;
+      let ( start, end ) = self.delimeter.pos( self.iterable ).unwrap();
+      let mut string = &self.iterable[ start..end ];
+      self.iterable = &self.iterable[ end.. ];
 
       if self.stripping
       {
@@ -134,8 +175,7 @@ impl< 'a > Iterator for SplitIterator< 'a >
 
         if string.is_empty() && !self.preserving_empty
         {
-          string = self.iterator.next().unwrap().trim();
-          return Some( Split { string, typ : SplitType::Delimeted } );
+          return self.next_odd_split();
         }
       }
 
@@ -145,13 +185,59 @@ impl< 'a > Iterator for SplitIterator< 'a >
       }
       else
       {
-        string = self.iterator.next().unwrap();
+        return self.next_odd_split();
+      }
+    }
+  }
+}
+
+impl< 'a, D > SplitIterator< 'a, D >
+where
+  D : Searcher
+{
+  fn next_end_split( &mut self ) -> Option< Split< 'a > >
+  {
+    if self.iterable == ""
+    {
+      return None;
+    }
+    else
+    {
+      let mut string = self.iterable;
+      if self.stripping
+      {
+        string = string.trim();
+      }
+      let r = Split { string, typ : SplitType::Delimeted };
+      self.iterable = "";
+      return Some( r );
+    }
+  }
+
+  fn next_odd_split( &mut self ) -> Option< Split< 'a > >
+  {
+    match self.delimeter.pos( self.iterable )
+    {
+      Some( ( start, mut end ) ) =>
+      {
+        let mut string = &self.iterable[ ..start ];
+
+        if start == end
+        {
+          string = &self.iterable[ ..start+1 ];
+          end += 1;
+        }
+        self.iterable = &self.iterable[ end.. ];
         if self.stripping
         {
           string = string.trim();
         }
         return Some( Split { string, typ : SplitType::Delimeted } );
-      }
+      },
+      None =>
+      {
+        self.next_end_split()
+      },
     }
   }
 }
@@ -161,43 +247,110 @@ impl< 'a > Iterator for SplitIterator< 'a >
 ///
 
 #[ derive( Debug ) ]
-#[ derive( Former ) ]
-#[ perform( fn split( self ) -> SplitIterator< 'a > ) ]
-pub struct SplitOptions< 'a >
+pub struct SplitOptions< 'a, D >
+where
+  D : Searcher + Default + Clone
+{
+  src : &'a str,
+  delimeter : D,
+  preserving_empty : bool,
+  preserving_delimeters : bool,
+  stripping : bool,
+}
+
+//
+
+macro_rules! builder_impls_from
+{
+  ( $name : ident, $( ( $field : ident, $type : ty ) ),* $( , )? ) =>
+  {
+    impl< 'a, D > $name< 'a, D >
+    where
+      D : Searcher + Default + Clone
+    {
+      $(
+        pub fn $field( mut self, value : $type ) -> $name< 'a, D >
+        {
+          assert!( !self.formed, "Already formed" );
+          self.$field = value;
+          self
+        }
+      )*
+
+      pub fn form( mut self ) -> $name< 'a, D >
+      {
+        assert!( !self.formed, "Already formed" );
+        self.formed = true;
+        self
+      }
+    }
+  }
+}
+
+/// Builder.
+#[ derive( Debug ) ]
+pub struct SplitOptionsBuilder< 'a, D >
+where
+  D : Searcher + Default + Clone
 {
 
-  #[ default( "" ) ]
   src : &'a str,
-  #[ default( "" ) ]
-  delimeter : &'a str,
-  #[ default( true ) ]
+  delimeter : D,
   preserving_empty : bool,
-  #[ default( true ) ]
   preserving_delimeters : bool,
-  #[ default( true ) ]
   stripping : bool,
+  formed : bool,
+}
+builder_impls_from!( SplitOptionsBuilder, ( src, &'a str ), ( preserving_empty, bool ), ( preserving_delimeters, bool ), ( stripping, bool ) );
 
-  // #[ method ]
-  // fn split( self ) -> SplitIterator< 'a >
-  // where
-  //   Self : Sized,
-  // {
-  //   SplitIterator::new( self.src(), self.delimeter() )
-  // }
+impl< 'a, D > SplitOptionsBuilder< 'a, D >
+where
+  D : Searcher + Default + Clone
+{
+  pub fn new( delimeter : D ) -> SplitOptionsBuilder< 'a, D >
+  {
+    Self
+    {
+      src : "",
+      delimeter,
+      preserving_empty : true,
+      preserving_delimeters : true,
+      stripping : true,
+      formed : false,
+    }
+  }
 
-  // result : HashMap< Box< str >, Box< str > >,
+  pub fn delimeter( mut self, value : D ) -> SplitOptionsBuilder< 'a, D >
+  {
+    assert!( !self.formed, "Already formed" );
+    self.delimeter = value;
+    self
+  }
+
+  pub fn perform( &self ) -> SplitIterator< 'a, D >
+  {
+    let opts = SplitOptions
+    {
+      src : self.src,
+      delimeter : self.delimeter.clone(),
+      preserving_empty : self.preserving_empty,
+      preserving_delimeters : self.preserving_delimeters,
+      stripping : self.stripping,
+    };
+    opts.split()
+  }
 }
 
 ///
 /// Adapter for Split Options.
 ///
 
-pub trait SplitOptionsAdapter< 'a >
+pub trait SplitOptionsAdapter< 'a, D >
 {
   /// A string to split.
   fn src( &self ) -> &'a str;
   /// A delimeter to split string.
-  fn delimeter( &self ) -> &'a str;
+  fn delimeter( &self ) -> D;
   /// Preserving or dropping empty splits.
   fn preserving_empty( &self ) -> bool;
   /// Preserving or dropping delimeters.
@@ -205,9 +358,10 @@ pub trait SplitOptionsAdapter< 'a >
   /// Stripping.
   fn stripping( &self ) -> bool;
   /// Do splitting.
-  fn split( self ) -> SplitIterator< 'a >
+  fn split( self ) -> SplitIterator< 'a, D >
   where
     Self : Sized,
+    D : Searcher + Default,
   {
     SplitIterator::new
     (
@@ -222,15 +376,17 @@ pub trait SplitOptionsAdapter< 'a >
 
 //
 
-impl< 'a > SplitOptionsAdapter< 'a > for SplitOptions< 'a >
+impl< 'a, D > SplitOptionsAdapter< 'a, D > for SplitOptions< 'a, D >
+where
+  D : Searcher + Default + Clone,
 {
   fn src( &self ) -> &'a str
   {
     self.src
   }
-  fn delimeter( &self ) -> &'a str
+  fn delimeter( &self ) -> D
   {
-    self.delimeter
+    self.delimeter.clone()
   }
   fn preserving_empty( &self ) -> bool
   {
@@ -259,9 +415,9 @@ impl< 'a > SplitOptionsAdapter< 'a > for SplitOptions< 'a >
 ///   .perform();
 /// ```
 
-pub fn split< 'a >() -> SplitOptionsFormer< 'a >
+pub fn split< 'a >() -> SplitOptionsBuilder< 'a, &'a str >
 {
-  SplitOptions::former()
+  SplitOptionsBuilder::new( < &str >::default() )
 }
 
 }
