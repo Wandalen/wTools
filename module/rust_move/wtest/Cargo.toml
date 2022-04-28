@@ -13,7 +13,7 @@ documentation = "https://docs.rs/wtest"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wtest"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wtest"
 description = """
-Tools for writing and runnint tests.
+Tools for writing and running tests.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "testing" ]
