@@ -19,7 +19,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "testing" ]
 
 include = [
-  "/rust/impl/skatch",
+  "/rust/impl/math",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -31,11 +31,11 @@ path = "rust/impl/math/lib.rs"
 
 [[test]]
 name = "wskatch_test"
-path = "rust/test/math/wskatch_test.rs"
+path = "rust/test/math/wmath_test.rs"
 
-[[example]]
-name = "wskatch_trivial"
-path = "sample/rust/wskatch_trivial/src/main.rs"
+# [[example]]
+# name = "wskatch_trivial"
+# path = "sample/rust/wskatch_trivial/src/main.rs"
 
 [dependencies]
 # paste = "~1.0"
