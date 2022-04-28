@@ -4,6 +4,7 @@ members = [
   "module/rust/*",
   "module/rust_alias/*",
   "module/rust_move/*",
+  "module/rust_math/*",
   "sample/rust/*",
 ]
 exclude = [

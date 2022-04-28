@@ -1,5 +1,5 @@
 [package]
-name = "wtest"
+name = "wskatch"
 version = "0.1.0"
 edition = "2021"
 authors = [
@@ -9,33 +9,33 @@ authors = [
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/wtest"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wtest"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wtest"
+documentation = "https://docs.rs/wskatch"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wskatch"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wskatch"
 description = """
-Tools for writing and running tests.
+___.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "testing" ]
 
 include = [
-  "/rust/impl/test",
+  "/rust/impl/math",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
 
 [lib]
-name = "wtest"
-path = "rust/impl/test/lib.rs"
+name = "wskatch"
+path = "rust/impl/math/lib.rs"
 
 [[test]]
-name = "wtest_test"
-path = "rust/test/test/wtest_test.rs"
+name = "wskatch_test"
+path = "rust/test/math/wmath_test.rs"
 
-[[example]]
-name = "wtest_trivial"
-path = "sample/rust/wtest_trivial/src/main.rs"
+# [[example]]
+# name = "wskatch_trivial"
+# path = "sample/rust/wskatch_trivial/src/main.rs"
 
 [dependencies]
 # paste = "~1.0"

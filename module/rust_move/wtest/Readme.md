@@ -1,6 +1,6 @@
 # module::wtest
 
-Tools for writing and runnint tests.
+Tools for writing and running tests.
 
 ### Sample
 
