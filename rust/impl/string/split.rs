@@ -8,6 +8,7 @@ pub( crate ) mod internal
   /* xxx : qqq : tab after git sync */
 
   // use woptions::*; /* xxx : use prelude */
+  use crate::string::parse::OpType;
 
   ///
   /// Either delimeter or delimeted with the slice on its string.
@@ -129,6 +130,7 @@ pub( crate ) mod internal
 
   impl< 'a, D : Searcher > SplitFastIterator< 'a, D >
   {
+    #[ allow( dead_code ) ]
     fn new
     (
       src : &'a str,
@@ -207,7 +209,7 @@ pub( crate ) mod internal
         }
 
         let ( start, end ) = self.delimeter.pos( self.iterable ).unwrap();
-        let mut string = &self.iterable[ start..end ];
+        let string = &self.iterable[ start..end ];
         self.iterable = &self.iterable[ end.. ];
 
         if self.preserving_delimeters
@@ -234,8 +236,7 @@ pub( crate ) mod internal
       }
       else
       {
-        let mut string = self.iterable;
-        let r = Split { string, typ : SplitType::Delimeted };
+        let r = Split { string : self.iterable, typ : SplitType::Delimeted };
         self.iterable = "";
         return Some( r );
       }
@@ -319,10 +320,9 @@ pub( crate ) mod internal
 
     fn next( &mut self ) -> Option< Self::Item >
     {
-      let mut split = self.iterator.next();
       self.counter += 1;
 
-      if let Some( mut split ) = split
+      if let Some( mut split ) = self.iterator.next()
       {
         if self.stripping
         {
@@ -349,7 +349,7 @@ pub( crate ) mod internal
   #[ derive( Debug ) ]
   pub struct SplitOptions< 'a, D >
   where
-    D : Searcher + Default + Clone
+    D : Searcher + Default + Clone,
   {
     src : &'a str,
     delimeter : D,
@@ -425,12 +425,10 @@ pub( crate ) mod internal
   {
     ( $name : ident, $( ( $field : ident, $type : ty ) ),* $( , )? ) =>
     {
-      impl< 'a, D > $name< 'a, D >
-      where
-        D : Searcher + Default + Clone
+      impl< 'a > $name< 'a >
       {
         $(
-          pub fn $field( mut self, value : $type ) -> $name< 'a, D >
+          pub fn $field( &mut self, value : $type ) -> &mut $name< 'a >
           {
             assert!( !self.formed, "Already formed" );
             self.$field = value;
@@ -438,7 +436,7 @@ pub( crate ) mod internal
           }
         )*
 
-        pub fn form( mut self ) -> $name< 'a, D >
+        pub fn form( &mut self ) -> &mut $name< 'a >
         {
           assert!( !self.formed, "Already formed" );
           self.formed = true;
@@ -449,16 +447,14 @@ pub( crate ) mod internal
   }
 
   ///
-  /// Builder for SplitOptions.
+  /// Former for SplitOptions.
   ///
 
   #[ derive( Debug ) ]
-  pub struct SplitOptionsBuilder< 'a, D >
-  where
-    D : Searcher + Default + Clone
+  pub struct SplitOptionsFormer< 'a >
   {
     src : &'a str,
-    delimeter : D,
+    delimeter : OpType< &'a str >,
     preserving_empty : bool,
     preserving_delimeters : bool,
     stripping : bool,
@@ -466,24 +462,22 @@ pub( crate ) mod internal
   }
   builder_impls_from!
   (
-    SplitOptionsBuilder,
+    SplitOptionsFormer,
     ( src, &'a str ),
-    ( delimeter, D ),
     ( preserving_empty, bool ),
     ( preserving_delimeters, bool ),
     ( stripping, bool )
   );
 
-  impl< 'a, D > SplitOptionsBuilder< 'a, D >
-  where
-    D : Searcher + Default + Clone
+  impl< 'a > SplitOptionsFormer< 'a >
   {
-    pub fn new( delimeter : D ) -> SplitOptionsBuilder< 'a, D >
+    pub fn new< D : Into< OpType< &'a str > > >( delimeter : D ) -> SplitOptionsFormer< 'a >
     {
+      let op_vec : OpType<&'a str> = OpType::Vector( vec![] );
       Self
       {
         src : "",
-        delimeter,
+        delimeter : op_vec.append( delimeter.into() ),
         preserving_empty : true,
         preserving_delimeters : true,
         stripping : true,
@@ -491,7 +485,16 @@ pub( crate ) mod internal
       }
     }
 
-    pub fn perform( &mut self ) -> SplitIterator< 'a, D >
+    pub fn delimeter< D : Into< OpType< &'a str > > >( &mut self, value : D ) -> &mut SplitOptionsFormer< 'a >
+    {
+      assert!( !self.formed, "Already formed" );
+      let op_vec : OpType<&'a str> = OpType::Vector( vec![] );
+      let op : OpType<&'a str> = value.into();
+      self.delimeter = op_vec.append( op );
+      self
+    }
+
+    pub fn perform( &mut self ) -> SplitIterator< 'a, Vec< &'a str > >
     {
       if !self.formed
       {
@@ -501,7 +504,7 @@ pub( crate ) mod internal
       let opts = SplitOptions
       {
         src : self.src,
-        delimeter : self.delimeter.clone(),
+        delimeter : self.delimeter.clone().vector().unwrap(),
         preserving_empty : self.preserving_empty,
         preserving_delimeters : self.preserving_delimeters,
         stripping : self.stripping,
@@ -523,18 +526,10 @@ pub( crate ) mod internal
   ///   .perform();
   /// ```
 
-  pub fn split< 'a >() -> SplitOptionsBuilder< 'a, &'a str >
+  pub fn split< 'a >() -> SplitOptionsFormer< 'a >
   {
-    SplitOptionsBuilder::new( < &str >::default() )
+    SplitOptionsFormer::new( < &str >::default() )
   }
-
-  ///
-
-  pub fn split_generic< 'a, D : Searcher + Default + Clone >() -> SplitOptionsBuilder< 'a, D >
-  {
-    SplitOptionsBuilder::new( <D>::default() )
-  }
-
 }
 
 /// Owned namespace of the module.
@@ -548,7 +543,6 @@ pub mod own
   pub use i::SplitOptions;
   pub use i::SplitOptionsAdapter;
   pub use i::split;
-  pub use i::split_generic;
 }
 
 pub use own::*;
@@ -560,7 +554,6 @@ pub mod exposed
 
   pub use i::SplitOptionsAdapter;
   pub use i::split;
-  pub use i::split_generic;
 }
 
 /// Namespace of the module to include with `use module::*`.
