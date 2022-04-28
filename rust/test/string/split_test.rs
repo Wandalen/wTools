@@ -127,37 +127,24 @@ fn _split_with_option_stripping()
 
 //
 
-fn _basic_split_generic()
+fn _basic_split_with_vector()
 {
   let src = "abc";
-  let iter = TheModule::string::split_generic::< &str >()
+  let iter = TheModule::string::split()
   .src( src )
-  .perform();
-  assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "", "", "a", "", "b", "", "c", "", "", ] );
-
-  let src = "abc";
-  let iter = TheModule::string::split_generic::< String >()
-  .src( src )
-  .perform();
-  assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "", "", "a", "", "b", "", "c", "", "", ] );
-
-  /* */
-
-  let src = "abc";
-  let iter = TheModule::string::split_generic::< Vec< &str > >()
-  .src( src )
+  .delimeter( vec![] )
   .perform();
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "abc", ] );
 
   let src = "abc";
-  let iter = TheModule::string::split_generic::< Vec< &str > >()
+  let iter = TheModule::string::split()
   .src( src )
   .delimeter( vec![ "a", "b", "" ] )
   .perform();
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "", "", "a", "", "b", "", "c", "", "", ] );
 
   let src = "abc";
-  let iter = TheModule::string::split_generic::< Vec< &str > >()
+  let iter = TheModule::string::split()
   .src( src )
   .delimeter( vec![ "b", "d" ] )
   .perform();
@@ -172,5 +159,5 @@ test_suite!
   split_with_option_preserving_empty,
   split_with_option_preserving_delimeters,
   split_with_option_stripping,
-  basic_split_generic,
+  basic_split_with_vector,
 }
