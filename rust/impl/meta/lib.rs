@@ -30,3 +30,20 @@ pub mod meta
 }
 
 pub use meta::*;
+
+// zzz : use
+//
+// macro_rules! for_each_tuple_ {
+//     ( $m:ident !! ) => (
+//         $m! { }
+//     );
+//     ( $m:ident !! $h:ident, $($t:ident,)* ) => (
+//         $m! { $h $($t)* }
+//         for_each_tuple_! { $m !! $($t,)* }
+//     );
+// }
+// macro_rules! for_each_tuple {
+//     ($m:ident) => {
+//         for_each_tuple_! { $m !! A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, }
+//     };
+// }
