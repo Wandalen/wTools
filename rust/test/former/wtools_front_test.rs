@@ -24,17 +24,7 @@ fn trybuild_tests()
 
 mod basic_runtime
 {
-  #[cfg( not( feature = "in_wtools" ) )]
-  use meta_tools::*;
-
-  #[cfg( feature = "in_wtools" )]
   use wtools::*;
-  #[cfg( not( feature = "in_wtools" ) )]
-  mod former
-  {
-    pub use former_runtime as runtime;
-  }
-
   include!( "./all/basic_runtime_common.rs" );
 }
 mod basic { include!( "./all/basic.rs" ); }
@@ -46,5 +36,3 @@ mod default_user_type { include!( "./all/default_user_type.rs" ); }
 mod default_primitive { include!( "./all/default_primitive.rs" ); }
 mod default_container { include!( "./all/default_container.rs" ); }
 mod after { include!( "./all/perform.rs" ); }
-
-mod user_setter { include!( "./all/user_setter.rs" ); }
