@@ -32,3 +32,5 @@ mod default_user_type { include!( "./all/default_user_type.rs" ); }
 mod default_primitive { include!( "./all/default_primitive.rs" ); }
 mod default_container { include!( "./all/default_container.rs" ); }
 mod after { include!( "./all/perform.rs" ); }
+
+mod user_setter { include!( "./all/user_setter.rs" ); }
