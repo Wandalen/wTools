@@ -12,5 +12,19 @@
 
 // include!( "./all/runtime.rs" );
 
-mod basic_runtime { include!( "./all/basic_runtime.rs" ); }
+mod basic_runtime
+{
+  #[cfg( not( feature = "in_wtools" ) )]
+  use meta_tools::*;
+
+  #[cfg( feature = "in_wtools" )]
+  use wtools::*;
+  #[cfg( not( feature = "in_wtools" ) )]
+  mod former
+  {
+    pub use former_runtime as runtime;
+  }
+
+  include!( "./all/basic_runtime_common.rs" );
+}
 mod string_slice_runtime { include!( "./all/string_slice_runtime.rs" ); }
