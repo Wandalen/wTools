@@ -1,15 +1,4 @@
 
-#[cfg( not( feature = "in_wtools" ) )]
-use meta_tools::*;
-
-#[cfg( feature = "in_wtools" )]
-use wtools::*;
-#[cfg( not( feature = "in_wtools" ) )]
-mod former
-{
-  pub use former_runtime as runtime;
-}
-
 #[derive( Debug, PartialEq )]
 pub struct Struct1
 {
