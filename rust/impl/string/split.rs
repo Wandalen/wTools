@@ -128,24 +128,18 @@ pub( crate ) mod internal
 
   //
 
-  impl< 'a, D : Searcher > SplitFastIterator< 'a, D >
+  impl< 'a, D : Searcher + Clone > SplitFastIterator< 'a, D >
   {
     #[ allow( dead_code ) ]
-    fn new
-    (
-      src : &'a str,
-      delimeter : D,
-      preserving_empty : bool,
-      preserving_delimeters : bool,
-    ) -> Self
+    fn new( o : impl SplitOptionsAdapter< 'a, D > ) -> Self
     {
       Self
       {
-        iterable : src,
-        delimeter,
+        iterable : o.src(),
+        delimeter : o.delimeter(),
         counter : 0,
-        preserving_empty,
-        preserving_delimeters,
+        preserving_empty : o.preserving_empty(),
+        preserving_delimeters : o.preserving_delimeters(),
         stop_empty : false,
       }
     }
@@ -271,50 +265,69 @@ pub( crate ) mod internal
   ///
 
   #[ derive( Debug ) ]
-  pub struct SplitIterator< 'a, D >
-  where
-    D : Searcher
+  pub struct SplitIterator< 'a >
   {
-    iterator : SplitFastIterator< 'a, D >,
+    iterator : SplitFastIterator< 'a, Vec< &'a str > >,
     counter : usize,
     stripping : bool,
   }
 
   //
 
-  impl< 'a, D : Searcher > SplitIterator< 'a, D >
+  impl< 'a > SplitIterator< 'a >
   {
-    fn new
-    (
-      src : &'a str,
-      delimeter : D,
-      preserving_empty : bool,
-      preserving_delimeters : bool,
-      stripping : bool,
-    ) -> Self
+    fn new( o : impl SplitOptionsAdapter< 'a, Vec< &'a str > > ) -> Self
     {
-      let iterator = SplitFastIterator
+      let iterator;
+      if !o.stripping() && !o.quoting() /* && !onDelimeter */
       {
-        iterable : src,
-        delimeter,
-        counter : 0,
-        preserving_empty,
-        preserving_delimeters,
-        stop_empty : false,
-      };
+        iterator = SplitFastIterator
+        {
+          iterable : o.src(),
+          delimeter : o.delimeter(),
+          counter : 0,
+          preserving_empty : o.preserving_empty(),
+          preserving_delimeters : o.preserving_delimeters(),
+          stop_empty : false,
+        };
+      }
+      else
+      {
+        let mut delimeter;
+        if o.quoting()
+        {
+          delimeter = vec![ "\"", "`", "'" ];
+          delimeter.extend( vec![ "\"", "`", "'" ] );
+          delimeter.extend( o.delimeter() );
+        }
+        else
+        {
+          delimeter = o.delimeter();
+        }
+
+        iterator = SplitFastIterator
+        {
+          iterable : o.src(),
+          delimeter,
+          counter : 0,
+          preserving_empty : o.preserving_empty(),
+          preserving_delimeters : o.preserving_delimeters(),
+          // preserving_empty : true,
+          // preserving_delimeters : true,
+          stop_empty : false,
+        };
+      }
 
       Self
       {
         iterator,
         counter : 0,
-        stripping,
+        stripping : o.stripping(),
       }
     }
   }
 
-  impl< 'a, D > Iterator for SplitIterator< 'a, D >
-  where
-    D : Searcher
+  impl< 'a > Iterator for SplitIterator< 'a >
   {
     type Item = Split< 'a >;
 
@@ -356,6 +369,31 @@ pub( crate ) mod internal
     preserving_empty : bool,
     preserving_delimeters : bool,
     stripping : bool,
+    quoting : bool,
+  }
+
+  impl< 'a > SplitOptions< 'a, Vec< &'a str > >
+  {
+    /// Produces SplitIterator.
+    pub fn split( self ) -> SplitIterator< 'a >
+    where
+      Self : Sized,
+    {
+      SplitIterator::new( self )
+    }
+  }
+
+  impl< 'a, D > SplitOptions< 'a, D >
+  where
+    D : Searcher + Default + Clone
+  {
+    /// Produces SplitFastIterator.
+    pub fn split_fast( self ) -> SplitFastIterator< 'a, D >
+    where
+      Self : Sized,
+    {
+      SplitFastIterator::new( self )
+    }
   }
 
   ///
@@ -363,6 +401,8 @@ pub( crate ) mod internal
   ///
 
   pub trait SplitOptionsAdapter< 'a, D >
+  where
+    D : Clone
   {
     /// A string to split.
     fn src( &self ) -> &'a str;
@@ -374,28 +414,13 @@ pub( crate ) mod internal
     fn preserving_delimeters( &self ) -> bool;
     /// Stripping.
     fn stripping( &self ) -> bool;
-    /// Do splitting.
-    fn split( self ) -> SplitIterator< 'a, D >
-    where
-      Self : Sized,
-      D : Searcher + Default,
-    {
-      SplitIterator::new
-      (
-        self.src(),
-        self.delimeter(),
-        self.preserving_empty(),
-        self.preserving_delimeters(),
-        self.stripping()
-      )
-    }
+    /// Quoting.
+    fn quoting( &self ) -> bool;
   }
 
   //
 
-  impl< 'a, D > SplitOptionsAdapter< 'a, D > for SplitOptions< 'a, D >
-  where
-    D : Searcher + Default + Clone,
+  impl< 'a, D : Searcher + Clone + Default > SplitOptionsAdapter< 'a, D > for SplitOptions< 'a, D >
   {
     fn src( &self ) -> &'a str
     {
@@ -417,6 +442,10 @@ pub( crate ) mod internal
     {
       self.stripping
     }
+    fn quoting( &self ) -> bool
+    {
+      self.quoting
+    }
   }
 
   //
@@ -430,17 +459,22 @@ pub( crate ) mod internal
         $(
           pub fn $field( &mut self, value : $type ) -> &mut $name< 'a >
           {
-            assert!( !self.formed, "Already formed" );
             self.$field = value;
             self
           }
         )*
 
-        pub fn form( &mut self ) -> &mut $name< 'a >
+        pub fn form( &mut self ) -> SplitOptions< 'a, Vec< &'a str > >
         {
-          assert!( !self.formed, "Already formed" );
-          self.formed = true;
-          self
+          SplitOptions
+          {
+            src : self.src,
+            delimeter : self.delimeter.clone().vector().unwrap(),
+            preserving_empty : self.preserving_empty,
+            preserving_delimeters : self.preserving_delimeters,
+            stripping : self.stripping,
+            quoting : self.quoting,
+          }
         }
       }
     }
@@ -458,7 +492,7 @@ pub( crate ) mod internal
     preserving_empty : bool,
     preserving_delimeters : bool,
     stripping : bool,
-    formed : bool,
+    quoting : bool,
   }
   builder_impls_from!
   (
@@ -466,7 +500,8 @@ pub( crate ) mod internal
     ( src, &'a str ),
     ( preserving_empty, bool ),
     ( preserving_delimeters, bool ),
-    ( stripping, bool )
+    ( stripping, bool ),
+    ( quoting, bool ),
   );
 
   impl< 'a > SplitOptionsFormer< 'a >
@@ -481,34 +516,21 @@ pub( crate ) mod internal
         preserving_empty : true,
         preserving_delimeters : true,
         stripping : true,
-        formed : false,
+        quoting : false,
       }
     }
 
     pub fn delimeter< D : Into< OpType< &'a str > > >( &mut self, value : D ) -> &mut SplitOptionsFormer< 'a >
     {
-      assert!( !self.formed, "Already formed" );
       let op_vec : OpType<&'a str> = OpType::Vector( vec![] );
       let op : OpType<&'a str> = value.into();
       self.delimeter = op_vec.append( op );
       self
     }
 
-    pub fn perform( &mut self ) -> SplitIterator< 'a, Vec< &'a str > >
+    pub fn perform( &mut self ) -> SplitIterator< 'a >
     {
-      if !self.formed
-      {
-        self.formed = true;
-      }
-
-      let opts = SplitOptions
-      {
-        src : self.src,
-        delimeter : self.delimeter.clone().vector().unwrap(),
-        preserving_empty : self.preserving_empty,
-        preserving_delimeters : self.preserving_delimeters,
-        stripping : self.stripping,
-      };
+      let opts = self.form();
       opts.split()
     }
   }
