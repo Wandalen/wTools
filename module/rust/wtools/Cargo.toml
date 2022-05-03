@@ -42,7 +42,7 @@ name = "wtools_trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
-in_wtools = []
+in_wtools = [] # qqq : for Dima : feature still here?
 nightly = [ "typing_tools/nightly" ]
 default = [ "in_wtools" ]
 
@@ -59,7 +59,7 @@ time_tools = { version = "~0.1", path = "../../rust/time_tools" }
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
 werror = { version = "~0.1", path = "../../rust/werror" }
 winterval = { version = "~0.1", path = "../../rust/winterval" }
-parse-display = { version = "~0.5" } # xxx : add test? # xxx : move
+# parse-display = { version = "~0.5" } # xxx : add test? # xxx : move
 
 [dev-dependencies]
 wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
