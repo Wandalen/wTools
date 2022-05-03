@@ -19,6 +19,23 @@ fn _basic()
   assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "", "", "a", "", "b", "", "c", "", "", ] );
 }
 
+fn _basic_form_and_methods()
+{
+  let src = "abc";
+  let opts = TheModule::string::split()
+  .src( src )
+  .form();
+  let iter = opts.split();
+  assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "", "", "a", "", "b", "", "c", "", "", ] );
+
+  let src = "abc";
+  let opts = TheModule::string::split()
+  .src( src )
+  .form();
+  let iter = opts.split_fast();
+  assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "", "", "a", "", "b", "", "c", "", "", ] );
+}
+
 //
 
 fn _split_with_option_preserving_empty()
@@ -156,6 +173,7 @@ fn _basic_split_with_vector()
 test_suite!
 {
   basic,
+  basic_form_and_methods,
   split_with_option_preserving_empty,
   split_with_option_preserving_delimeters,
   split_with_option_stripping,
