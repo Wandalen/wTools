@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -59,6 +59,7 @@ time_tools = { version = "~0.1", path = "../../rust/time_tools" }
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
 werror = { version = "~0.1", path = "../../rust/werror" }
 winterval = { version = "~0.1", path = "../../rust/winterval" }
+derive_tools = { version = "~0.1", path = "../../rust/derive_tools" }
 # parse-display = { version = "~0.5" } # xxx : add test? # xxx : move
 
 [dev-dependencies]

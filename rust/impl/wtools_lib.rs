@@ -30,12 +30,12 @@ pub use meta::*;
 pub mod typing;
 pub use typing::*;
 
-///
-/// Exporting/importing serialize/deserialize encoding/decoding macros, algorithms and structures for that.
-///
-
-pub mod convert;
-pub use convert::*;
+// ///
+// /// Exporting/importing serialize/deserialize encoding/decoding macros, algorithms and structures for that.
+// ///
+//
+// pub mod convert;
+// pub use convert::*;
 
 ///
 /// Collection of general purpose time tools.
@@ -54,6 +54,7 @@ pub use former as former;
 pub use woptions as options;
 pub use winterval as interval;
 pub use wstring_tools as string;
+pub use derive_tools as derive;
 
 ///
 /// Prelude to use: `use wtools::prelude::*`.
@@ -79,7 +80,9 @@ pub mod dependencies
   pub use ::wstring_tools;
   pub use ::werror;
   pub use ::winterval;
-  pub use ::parse_display; /* xxx : move to stringing */
+  pub use ::derive_tools;
+
+  // pub use ::parse_display; /* xxx : move to stringing */
 
   // #[ cfg( debug_assertions ) ]
   // pub use ::wtest_basic;

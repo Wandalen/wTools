@@ -7,6 +7,7 @@ mod former
   include!( "./former/wtools_front_test.rs" );
 }
 
+mod derive;
 mod meta;
 mod options;
 mod string;
