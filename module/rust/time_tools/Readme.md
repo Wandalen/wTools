@@ -1,4 +1,4 @@
-# module::time_tools [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/RustPublish.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/RustPublish.yml)
+# module::time_tools [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ToolsRustPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ToolsRustPush.yml) [![stable](https://img.shields.io/badge/stability-stable-brightgreen.svg)](https://github.com/emersion/stability-badges#stable)
 
 Collection of general purpose time tools.
 
