@@ -175,6 +175,12 @@ pub( crate ) mod internal
               return Some( Split { string : "", typ : SplitType::Delimeted } );
             }
           }
+
+          if start == 0 && end != 0
+          {
+            return self.next();
+          }
+
           let mut next = &self.iterable[ ..start ];
           if start == end
           {
@@ -187,11 +193,25 @@ pub( crate ) mod internal
 
           self.iterable = &self.iterable[ start.. ];
 
+          if !self.preserving_empty && next.is_empty()
+          {
+            return self.next();
+          }
+
           Some( Split { string : next, typ : SplitType::Delimeted } )
         }
         else
         {
-          return self.next_end_split();
+          if self.iterable == ""
+          {
+            return None;
+          }
+          else
+          {
+            let r = Split { string : self.iterable, typ : SplitType::Delimeted };
+            self.iterable = "";
+            return Some( r );
+          }
         }
       }
       else
@@ -206,56 +226,20 @@ pub( crate ) mod internal
         let string = &self.iterable[ start..end ];
         self.iterable = &self.iterable[ end.. ];
 
+        if !self.preserving_empty && string.is_empty()
+        {
+          return self.next();
+        }
+
         if self.preserving_delimeters
         {
           return Some( Split { string, typ : SplitType::Delimeter } );
         }
         else
         {
-          return self.next_odd_split();
+          return self.next();
+          // return self.next_odd_split();
         }
-      }
-    }
-  }
-
-  impl< 'a, D > SplitFastIterator< 'a, D >
-  where
-    D : Searcher
-  {
-    fn next_end_split( &mut self ) -> Option< Split< 'a > >
-    {
-      if self.iterable == ""
-      {
-        return None;
-      }
-      else
-      {
-        let r = Split { string : self.iterable, typ : SplitType::Delimeted };
-        self.iterable = "";
-        return Some( r );
-      }
-    }
-
-    fn next_odd_split( &mut self ) -> Option< Split< 'a > >
-    {
-      match self.delimeter.pos( self.iterable )
-      {
-        Some( ( start, mut end ) ) =>
-        {
-          let mut string = &self.iterable[ ..start ];
-
-          if start == end
-          {
-            string = &self.iterable[ ..start + 1 ];
-            end += 1;
-          }
-          self.iterable = &self.iterable[ end.. ];
-          return Some( Split { string, typ : SplitType::Delimeted } );
-        },
-        None =>
-        {
-          self.next_end_split()
-        },
       }
     }
   }
@@ -268,8 +252,13 @@ pub( crate ) mod internal
   pub struct SplitIterator< 'a >
   {
     iterator : SplitFastIterator< 'a, Vec< &'a str > >,
-    counter : usize,
+    src : &'a str,
     stripping : bool,
+    preserving_empty : bool,
+    preserving_delimeters : bool,
+    quoting : bool,
+    quoting_prefixes : Vec< &'a str >,
+    quoting_postfixes : Vec< &'a str >,
   }
 
   //
@@ -296,8 +285,8 @@ pub( crate ) mod internal
         let mut delimeter;
         if o.quoting()
         {
-          delimeter = vec![ "\"", "`", "'" ];
-          delimeter.extend( vec![ "\"", "`", "'" ] );
+          delimeter = o.quoting_prefixes().clone();
+          delimeter.extend( o.quoting_postfixes().clone() );
           delimeter.extend( o.delimeter() );
         }
         else
@@ -310,10 +299,8 @@ pub( crate ) mod internal
           iterable : o.src(),
           delimeter,
           counter : 0,
-          preserving_empty : o.preserving_empty(),
-          preserving_delimeters : o.preserving_delimeters(),
-          // preserving_empty : true,
-          // preserving_delimeters : true,
+          preserving_empty : true,
+          preserving_delimeters : true,
           stop_empty : false,
         };
       }
@@ -321,8 +308,13 @@ pub( crate ) mod internal
       Self
       {
         iterator,
-        counter : 0,
+        src : o.src(),
         stripping : o.stripping(),
+        preserving_empty : o.preserving_empty(),
+        preserving_delimeters : o.preserving_delimeters(),
+        quoting : o.quoting(),
+        quoting_prefixes : o.quoting_prefixes().clone(),
+        quoting_postfixes : o.quoting_postfixes().clone(),
       }
     }
   }
@@ -333,24 +325,91 @@ pub( crate ) mod internal
 
     fn next( &mut self ) -> Option< Self::Item >
     {
-      self.counter += 1;
-
       if let Some( mut split ) = self.iterator.next()
       {
+        if self.quoting
+        {
+          split = self.quoted_split( split.string );
+        }
+
         if self.stripping
         {
           split.string = split.string.trim();
-          if !self.iterator.preserving_empty && split.string.is_empty() && self.counter % 2 == 0
+          if !self.preserving_empty && split.string.is_empty()
           {
-            self.counter += 1;
-            return self.iterator.next();
+            return self.next();
           }
         }
+        else
+        {
+          if !self.quoting
+          {
+            return Some( split );
+          }
+        }
+
+        if !self.preserving_delimeters
+        {
+          match self.iterator.delimeter.pos( split.string )
+          {
+            Some( ( s, e ) ) =>
+            {
+              if s == 0 && e == split.string.len()
+              {
+                return self.next();
+              }
+              else
+              {
+                return Some( split );
+              }
+            },
+            None =>
+            {
+              return Some( split );
+            },
+          }
+        }
+
+        if !self.preserving_empty && split.string.is_empty()
+        {
+          return self.next();
+        }
+
         Some( split )
       }
       else
       {
         None
+      }
+    }
+  }
+
+  impl< 'a > SplitIterator< 'a >
+  {
+    pub fn quoted_split( &mut self, split_str : &'a str ) -> Split< 'a >
+    {
+      match self.quoting_prefixes.iter().position( | &quote | quote == split_str )
+      {
+        Some( index ) =>
+        {
+          let postfix = self.quoting_postfixes[ index ];
+          let pos = self.src.find( self.iterator.iterable ).unwrap();
+          let start = pos - split_str.len();
+          let end = self.iterator.iterable.find( postfix );
+
+          if end.is_none()
+          {
+            self.iterator.iterable = "";
+            return Split { string : &self.src[ start.. ], typ : SplitType::Delimeted };
+          }
+          else
+          {
+            let end = end.unwrap() + 1;
+            while self.iterator.next().unwrap().string != postfix {}
+            return Split { string : &self.src[ start..pos + end ], typ : SplitType::Delimeted };
+          }
+        },
+        None => Split { string : split_str, typ : SplitType::Delimeted },
       }
     }
   }
@@ -370,6 +429,8 @@ pub( crate ) mod internal
     preserving_delimeters : bool,
     stripping : bool,
     quoting : bool,
+    quoting_prefixes : Vec< &'a str >,
+    quoting_postfixes : Vec< &'a str >,
   }
 
   impl< 'a > SplitOptions< 'a, Vec< &'a str > >
@@ -416,6 +477,10 @@ pub( crate ) mod internal
     fn stripping( &self ) -> bool;
     /// Quoting.
     fn quoting( &self ) -> bool;
+    /// Quoting prefixes.
+    fn quoting_prefixes( &self ) -> &Vec< &'a str >;
+    /// Quoting postfixes.
+    fn quoting_postfixes( &self ) -> &Vec< &'a str >;
   }
 
   //
@@ -446,6 +511,14 @@ pub( crate ) mod internal
     {
       self.quoting
     }
+    fn quoting_prefixes( &self ) -> &Vec< &'a str >
+    {
+      &self.quoting_prefixes
+    }
+    fn quoting_postfixes( &self ) -> &Vec< &'a str >
+    {
+      &self.quoting_postfixes
+    }
   }
 
   //
@@ -466,6 +539,17 @@ pub( crate ) mod internal
 
         pub fn form( &mut self ) -> SplitOptions< 'a, Vec< &'a str > >
         {
+          if self.quoting
+          {
+            if self.quoting_prefixes.is_empty()
+            {
+              self.quoting_prefixes = vec![ "\"", "`", "'" ];
+            }
+            if self.quoting_postfixes.is_empty()
+            {
+              self.quoting_postfixes = vec![ "\"", "`", "'" ];
+            }
+          }
           SplitOptions
           {
             src : self.src,
@@ -474,6 +558,8 @@ pub( crate ) mod internal
             preserving_delimeters : self.preserving_delimeters,
             stripping : self.stripping,
             quoting : self.quoting,
+            quoting_prefixes : self.quoting_prefixes.clone(),
+            quoting_postfixes : self.quoting_postfixes.clone(),
           }
         }
       }
@@ -493,6 +579,8 @@ pub( crate ) mod internal
     preserving_delimeters : bool,
     stripping : bool,
     quoting : bool,
+    quoting_prefixes : Vec< &'a str >,
+    quoting_postfixes : Vec< &'a str >,
   }
   builder_impls_from!
   (
@@ -502,6 +590,8 @@ pub( crate ) mod internal
     ( preserving_delimeters, bool ),
     ( stripping, bool ),
     ( quoting, bool ),
+    ( quoting_prefixes, Vec< &'a str > ),
+    ( quoting_postfixes, Vec< &'a str > ),
   );
 
   impl< 'a > SplitOptionsFormer< 'a >
@@ -516,7 +606,9 @@ pub( crate ) mod internal
         preserving_empty : true,
         preserving_delimeters : true,
         stripping : true,
-        quoting : false,
+        quoting : true,
+        quoting_prefixes : vec![],
+        quoting_postfixes : vec![],
       }
     }
 
