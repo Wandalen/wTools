@@ -10,4 +10,4 @@ fn basic_trybuild()
 
 }
 
-include!( "./test/basic.rs" );
+include!( "./test/basic_test.rs" );

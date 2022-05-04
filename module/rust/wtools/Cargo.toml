@@ -46,6 +46,8 @@ in_wtools = [] # qqq : for Dima : feature still here?
 nightly = [ "typing_tools/nightly" ]
 default = [ "in_wtools" ]
 
+# qqq : for Dima : discuss features
+
 [package.metadata.docs.rs]
 all-features = true
 # rustdoc-args = []
