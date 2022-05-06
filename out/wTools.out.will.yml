@@ -3,8 +3,8 @@ root:
   - wTools.out
 consistency:
   ../will.yml: &ref_0
-    hash: bc1f41458319d6eb6aa0917fb32fe16a
-    size: 9093
+    hash: f8c1af9385e2f5db7a6ad4c1ecc32545
+    size: 9289
 module:
   wTools.out:
     about:
@@ -91,6 +91,8 @@ module:
         path: '{path::proto}/**'
       doc:
         path: ../doc
+      step:
+        path: ../step
       out.build.debug.no.test:
         criterion:
           debug: debug
@@ -1013,6 +1015,10 @@ module:
       publish.npm:
         inherit:
           - npm.publish
+      publish.rust:
+        opts:
+          currentPath: 'path::in'
+          shell: 'node {path::step}/RustPublish.s logger:3'
       clean.out.rust:
         opts:
           filePath: '{path::out.rust}'
@@ -1141,6 +1147,11 @@ module:
           default: 1
           publish: 1
           bump: patch
+      publish.rust:
+        steps:
+          - publish.rust
+        criterion:
+          publish: 1
       build.debug:
         steps:
           - 'step::clean.out.build.*=1'
@@ -1283,6 +1294,8 @@ module:
         path: '{path::proto}/**'
       doc:
         path: doc
+      step:
+        path: step
       out.build.debug.no.test:
         criterion:
           debug: debug
@@ -1723,6 +1736,10 @@ module:
       publish.npm:
         inherit:
           - npm.publish
+      publish.rust:
+        opts:
+          currentPath: 'path::in'
+          shell: 'node {path::step}/RustPublish.s logger:3'
       clean.out.rust:
         opts:
           filePath: '{path::out.rust}'
@@ -1851,6 +1868,11 @@ module:
           default: 1
           publish: 1
           bump: patch
+      publish.rust:
+        steps:
+          - publish.rust
+        criterion:
+          publish: 1
       build.debug:
         steps:
           - 'step::clean.out.build.*=1'
@@ -1913,5 +1935,5 @@ module:
           - 'step::reflect.rust.modules'
     consistency:
       ../will.yml:
-        hash: bc1f41458319d6eb6aa0917fb32fe16a
-        size: 9093
+        hash: f8c1af9385e2f5db7a6ad4c1ecc32545
+        size: 9289
