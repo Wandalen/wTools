@@ -31,11 +31,11 @@ path = "rust/impl/test/basic_lib.rs"
 
 [[test]]
 name = "wtest_basic_test"
-path = "rust/test/test/wtest_basic_test.rs"
+path = "rust/test/test/wtest_basic_lib_test.rs"
 
 [[example]]
-name = "wtest_basic_trivial"
-path = "sample/rust/wtest_basic_trivial/src/main.rs"
+name = "wtest_basic_trivial_sample"
+path = "sample/rust/wtest_basic_trivial_sample/src/main.rs"
 
 [dependencies]
 paste = "~1.0"
