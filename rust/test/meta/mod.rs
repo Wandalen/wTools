@@ -1,3 +1,2 @@
 
-mod generator_test;
-mod either_test;
+include!( "include.rs" );

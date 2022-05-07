@@ -17,10 +17,31 @@ fn fail1_test()
 
 //
 
+#[cfg(any())]
+fn never_test()
+{
+  println!( "never_test" );
+}
+
+//
+
+#[cfg(all())]
+fn always_test()
+{
+  println!( "always_test" );
+}
+
+//
+
 test_suite!
 {
   pass1,
   fail1,
+  #[cfg(any())]
+  never,
+  #[cfg(all())]
+  #[cfg(all())]
+  always,
 }
 
 //
