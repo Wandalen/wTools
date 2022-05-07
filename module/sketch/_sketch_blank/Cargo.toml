@@ -1,5 +1,5 @@
 [package]
-name = "___"
+name = "sketch_blank"
 version = "0.1.0"
 edition = "2021"
 authors = [
@@ -27,15 +27,15 @@ include = [
 
 [lib]
 name = "sketch_blank"
-path = "rust/impl/sketch_blank/lib.rs"
+path = "rust/impl/sketch_blank/sketch_blank_lib.rs"
 
 [[test]]
 name = "sketch_blank_test"
-path = "rust/test/sketch_blank/lib_test.rs"
+path = "rust/test/sketch_blank/sketch_blank_lib_test.rs"
 
 # [[example]]
-# name = "____trivial"
-# path = "sample/rust/____trivial/src/main.rs"
+# name = "sketch_blank_trivial_sample"
+# path = "sample/rust/sketch_blank_trivial_sample/src/main.rs"
 
 [dependencies]
 

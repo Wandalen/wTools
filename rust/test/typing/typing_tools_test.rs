@@ -14,6 +14,8 @@ mod is_slice_test
   use typing_tools as TheModule;
   include!( "./common/is_slice_test.rs" );
 }
+
+// #![ cfg( feature = "nightly" ) ]
 mod inspect_type_test
 {
   #[ allow( unused_imports ) ]
