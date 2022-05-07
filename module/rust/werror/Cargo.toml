@@ -40,4 +40,4 @@ path = "sample/rust/error_trivial/src/main.rs"
 [dependencies]
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

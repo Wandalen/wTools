@@ -48,5 +48,5 @@ path = "sample/rust/inspect_type_trivial/src/main.rs"
 [dependencies]
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }
 rustversion = "~1.0"

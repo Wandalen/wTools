@@ -45,4 +45,4 @@ woptions = { version = "~0.1", path = "../../rust/woptions" }
 # werror = { version = "~0.1", path = "../../rust/werror" }
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

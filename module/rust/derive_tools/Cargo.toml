@@ -58,7 +58,7 @@ parse-display = { version = "~0.5" }
 # anyhow = "1.0.48"
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }
 # trybuild = { version = "~1.0", features = [ "diff" ] }
 # anyhow = "~1.0"
 # rustversion = "~1.0"

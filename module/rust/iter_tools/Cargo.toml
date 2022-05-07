@@ -42,4 +42,4 @@ path = "sample/rust/iter_tools_trivial/src/main.rs"
 itertools = "~0.10.3"
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

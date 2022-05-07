@@ -19,7 +19,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/sketch_blank",
+  "/rust/impl/automata",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
