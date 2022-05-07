@@ -1,4 +1,4 @@
-use wtest_basic::*;
+use test_tools::*;
 
 #[cfg( feature = "in_wtools" )]
 use wtools::meta as TheModule;

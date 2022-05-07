@@ -1,6 +1,6 @@
 // #![ feature( pattern ) ]
 
-use wtest_basic::*;
+use test_tools::*;
 use wtools::*;
 use wcensor as TheModule;
 

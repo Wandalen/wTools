@@ -1,7 +1,7 @@
 // #![ feature( proc_macro_span ) ]
 // #![ feature( type_name_of_val ) ]
 
-use wtest_basic::*;
+use test_tools::*;
 use proc_macro_tools as TheModule;
 use quote::*;
 

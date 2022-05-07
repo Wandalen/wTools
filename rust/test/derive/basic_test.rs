@@ -1,5 +1,5 @@
 
-use wtest_basic::*;
+use test_tools::*;
 
 // xxx qqq : removoe the feature?
 #[cfg( feature = "in_wtools" )]

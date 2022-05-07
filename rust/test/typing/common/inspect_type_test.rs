@@ -1,5 +1,5 @@
 #[ allow( unused_imports ) ]
-use wtest_basic::*;
+use test_tools::*;
 
 /* xxx : qqq : make sure CD run test on both stable and nightly channels */
 /* xxx : qqq : make sure CD run debug tests and release tests */

@@ -1,3 +1,7 @@
+
+#[cfg( feature = "in_wtools" )]
+use wtools::test::*;
+#[cfg( not( feature = "in_wtools" ) )]
 use wtest_basic::*;
 
 include!( "./dynamic/basic.rs" );

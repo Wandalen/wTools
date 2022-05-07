@@ -1,5 +1,5 @@
 
-use wtest_basic::dependencies::*;
+use test_tools::dependencies::*;
 
 #[cfg( feature = "in_wtools" )]
 use wtools::meta::*;

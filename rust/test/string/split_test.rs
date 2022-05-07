@@ -1,5 +1,5 @@
 
-use wtest_basic::*;
+use test_tools::*;
 
 #[cfg( feature = "in_wtools" )]
 use wtools::string as TheModule;
@@ -64,7 +64,7 @@ fn split_with_option_preserving_empty_test()
 
 //
 
-fn _split_with_option_preserving_delimeters()
+fn split_with_option_preserving_delimeters_test()
 {
   let src = "a b c";
   let iter = TheModule::string::split()
@@ -87,7 +87,7 @@ fn _split_with_option_preserving_delimeters()
 
 //
 
-fn _split_with_option_stripping()
+fn split_with_option_stripping_test()
 {
   let src = "a b c";
   let iter = TheModule::string::split()

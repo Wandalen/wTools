@@ -36,4 +36,4 @@ wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
 maplit = "1.0.2"
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

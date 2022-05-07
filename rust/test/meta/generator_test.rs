@@ -1,7 +1,7 @@
 // #![ allow( dead_code ) ]
 // #![ feature( trace_macros ) ]
 
-use wtest_basic::*;
+use test_tools::*;
 // use meta_tools as TheModule;
 
 #[cfg( feature = "in_wtools" )]

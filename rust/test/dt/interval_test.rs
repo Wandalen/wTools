@@ -1,5 +1,5 @@
 
-use wtest_basic::*;
+use test_tools::*;
 
 #[cfg( feature = "in_wtools" )]
 use wtools::interval as TheModule;
@@ -111,6 +111,7 @@ fn into_interval_test()
 test_suite!
 {
   adapter_basic,
+  adapter_std_closed,
   adapter_std_closed_open,
   into_interval,
 }

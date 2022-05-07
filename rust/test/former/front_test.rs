@@ -1,7 +1,7 @@
 /* qqq : for Dima : bad. discuss */
 
 use std::env;
-use wtest_basic::dependencies::*;
+use test_tools::dependencies::*;
 
 #[ test ]
 #[ rustversion::stable ]

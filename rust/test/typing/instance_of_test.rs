@@ -1,5 +1,5 @@
 
-use wtest_basic::*;
+use test_tools::*;
 use instance_of as TheModule;
 
 //

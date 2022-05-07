@@ -1,5 +1,5 @@
 
-use wtest_basic::*;
+use test_tools::*;
 
 #[cfg( feature = "in_wtools" )]
 use wtools::time as TheModule;
