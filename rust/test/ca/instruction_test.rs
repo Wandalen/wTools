@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 //
 
-fn _basic()
+fn basic_test()
 {
   let instruction = instruction::instruction_parse()
   .instruction( "" )
@@ -128,7 +128,9 @@ fn _basic()
   assert_eq!( instruction, exp );
 }
 
-fn _with_several_values()
+//
+
+fn with_several_values_test()
 {
   let instruction = instruction::instruction_parse()
   .instruction( ".get some v:1 v:2" )

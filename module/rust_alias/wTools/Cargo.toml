@@ -26,6 +26,10 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+# rustdoc-args = []
+
 [lib]
 name = "wtools_alias"
 path = "rust/impl/wtools_alias_lib.rs"
@@ -38,10 +42,6 @@ path = "rust/test/wtools_alias_lib_test.rs"
 in_wtools = [ "wtools/in_wtools" ]
 nightly = [ "wtools/nightly" ]
 default = [ "in_wtools" ]
-
-[package.metadata.docs.rs]
-all-features = true
-# rustdoc-args = []
 
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }

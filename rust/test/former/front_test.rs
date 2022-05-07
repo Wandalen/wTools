@@ -1,3 +1,4 @@
+/* qqq : for Dima : bad. discuss */
 
 use std::env;
 use wtest_basic::dependencies::*;
@@ -9,6 +10,7 @@ fn trybuild_tests()
   println!( "current_dir : {:?}", env::current_dir().unwrap() );
 }
 
+/* xxx : qqq : for Dima : why nightly? */
 #[ test ]
 #[ rustversion::nightly ]
 fn trybuild_tests()

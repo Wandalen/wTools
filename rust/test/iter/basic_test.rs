@@ -4,7 +4,7 @@ use iter_tools as TheModule;
 
 //
 
-fn _basic()
+fn basic_test()
 {
 
   use TheModule::*;

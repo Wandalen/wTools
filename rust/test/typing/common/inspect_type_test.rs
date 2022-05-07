@@ -8,7 +8,7 @@ use wtest_basic::*;
 //
 
 #[ cfg( feature = "nightly" ) ]
-fn _inspect_to_str_type_of()
+fn inspect_to_str_type_of_test()
 {
 
   let exp = "sizeof( &[1, 2, 3][..] : &[i32] ) = 16".to_string();
@@ -24,7 +24,7 @@ fn _inspect_to_str_type_of()
 //
 
 #[ cfg( feature = "nightly" ) ]
-fn _inspect_type_of()
+fn inspect_type_of_test()
 {
 
   let exp = "sizeof( &[1, 2, 3][..] : &[i32] ) = 16".to_string();
@@ -46,3 +46,4 @@ test_suite!
   inspect_to_str_type_of,
   inspect_type_of,
 }
+/* xxx : move cfg */

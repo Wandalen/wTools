@@ -11,7 +11,7 @@ use std::collections::HashMap;
 
 //
 
-fn _op_type_from_into()
+fn op_type_from_into_test()
 {
   let got = parse::OpType::from( 1 );
   let exp = parse::OpType::Primitive( 1 );
@@ -48,7 +48,7 @@ fn _op_type_from_into()
 
 //
 
-fn _basic()
+fn basic_test()
 {
   let src = "";
   let req = TheModule::string::request_parse()
@@ -82,7 +82,7 @@ fn _basic()
 
 //
 
-fn _with_subject_and_map()
+fn with_subject_and_map_test()
 {
   let src = "subj";
   let req = TheModule::string::request_parse()
@@ -215,7 +215,7 @@ fn _with_subject_and_map()
 
 //
 
-fn _with_several_values()
+fn with_several_values_test()
 {
   let src = "subj v:1 v:2";
   let req = TheModule::string::request_parse()
@@ -254,7 +254,7 @@ fn _with_several_values()
 
 //
 
-fn _with_parsing_arrays()
+fn with_parsing_arrays_test()
 {
   let src = "subj v:[1,2]";
   let req = TheModule::string::request_parse()

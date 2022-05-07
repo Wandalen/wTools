@@ -9,7 +9,7 @@ use werror as TheModule;
 
 //
 
-fn _basic()
+fn basic_test()
 {
 
   use std::error::Error;
@@ -40,7 +40,7 @@ fn _basic()
 
 //
 
-fn _use1()
+fn use1_test()
 {
 
   use std::error::Error as ErrorAdapter;
@@ -58,7 +58,7 @@ fn _use1()
 
 //
 
-fn _use2()
+fn use2_test()
 {
 
   use TheModule::*;
@@ -75,7 +75,7 @@ fn _use2()
 
 //
 
-fn _use3()
+fn use3_test()
 {
 
   use std::error::Error;
@@ -92,7 +92,7 @@ fn _use3()
 
 //
 
-fn _err_basic()
+fn err_basic_test()
 {
 
   // test.case( "basic" );

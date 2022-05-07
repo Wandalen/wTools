@@ -5,7 +5,7 @@ use wtest_basic::*;
 
 //
 
-fn _basic()
+fn basic_test()
 {
   let command = CommandOptions::default()
   .hint( "hint" )
@@ -42,7 +42,7 @@ fn _basic()
 
 //
 
-fn _shortcut()
+fn shortcut_test()
 {
   let command = CommandOptions::default()
   .h( "hint2" )
@@ -60,7 +60,7 @@ fn _shortcut()
 
 //
 
-fn _perform_trivial()
+fn perform_trivial_test()
 {
   let command = CommandOptions::default()
   .hint( "hint" )
@@ -83,7 +83,7 @@ fn _perform_trivial()
 
 //
 
-fn _perform_with_subject()
+fn perform_with_subject_test()
 {
   let command = CommandOptions::default()
   .hint( "hint" )
@@ -110,7 +110,7 @@ fn _perform_with_subject()
 
 //
 
-fn _perform_with_props()
+fn perform_with_props_test()
 {
   let command = CommandOptions::default()
   .hint( "hint" )

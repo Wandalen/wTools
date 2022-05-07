@@ -17,7 +17,7 @@ where
 
 //
 
-fn _instruction_parse_from_splits_basic()
+fn instruction_parse_from_splits_basic_test()
 {
 
   // test.case( "command and several subjects" );

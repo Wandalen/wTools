@@ -2,7 +2,7 @@ use wtest_basic::*;
 
 //
 
-fn _implements_basic()
+fn implements_basic_test()
 {
 
   trait Trait1 {}
@@ -42,7 +42,7 @@ fn _implements_basic()
 
 //
 
-fn _instance_of_basic()
+fn instance_of_basic_test()
 {
 
   let src = Box::new( true );
@@ -53,7 +53,7 @@ fn _instance_of_basic()
 
 //
 
-fn _implements_functions()
+fn implements_functions_test()
 {
 
   let _f = ||
@@ -121,7 +121,7 @@ fn _implements_functions()
 
 //
 
-fn _pointer_experiment()
+fn pointer_experiment_test()
 {
 
   let pointer_size = std::mem::size_of::< &u8 >();
@@ -136,7 +136,7 @@ fn _pointer_experiment()
 
 //
 
-fn _fn_experiment()
+fn fn_experiment_test()
 {
 
   fn function1() -> bool { true }

@@ -2,7 +2,7 @@ use wtest_basic::*;
 
 //
 
-fn _basic()
+fn basic_test()
 {
   assert_eq!( true, true );
 }

@@ -9,14 +9,14 @@ use wtest_basic::*;
 
 //
 
-fn _pass1()
+fn pass1_test()
 {
   assert_eq!( true, true );
 }
 
 //
 
-fn _pass2()
+fn pass2_test()
 {
   assert_eq!( 1, 1 );
 }

@@ -8,7 +8,7 @@ use winterval as TheModule;
 
 //
 
-fn _adapter_basic()
+fn adapter_basic_test()
 {
   use TheModule::*;
 
@@ -34,7 +34,7 @@ fn _adapter_basic()
 
 //
 
-fn _adapter_std_closed_open()
+fn adapter_std_closed_open_test()
 {
   use TheModule::*;
 
@@ -60,7 +60,7 @@ fn _adapter_std_closed_open()
 
 //
 
-fn _adapter_std_closed()
+fn adapter_std_closed_test()
 {
   use TheModule::*;
 
@@ -86,7 +86,7 @@ fn _adapter_std_closed()
 
 //
 
-fn _into_interval()
+fn into_interval_test()
 {
   use TheModule::*;
 

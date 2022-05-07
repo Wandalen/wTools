@@ -27,7 +27,7 @@ include = [
 
 [lib]
 name = "wtest_basic"
-path = "rust/impl/test/basic_lib.rs"
+path = "rust/impl/test/wtest_basic_lib.rs"
 
 [[test]]
 name = "wtest_basic_test"

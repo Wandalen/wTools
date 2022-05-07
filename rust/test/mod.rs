@@ -4,7 +4,7 @@ mod error;
 
 mod former
 {
-  include!( "./former/wtools_front_test.rs" );
+  include!( "./former/front_test.rs" );
 }
 
 mod derive;
@@ -36,6 +36,7 @@ mod typing
     include!( "./typing/common/inspect_type_test.rs" );
   }
 }
+
 // #[ cfg( feature = "proc_macro" ) ]
 // mod proc_macro;
 // mod vector;

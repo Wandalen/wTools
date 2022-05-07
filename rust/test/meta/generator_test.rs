@@ -11,7 +11,7 @@ use meta_tools as TheModule;
 
 //
 
-fn _hash_map()
+fn hash_map_test()
 {
 
   // test.case( "empty" );
@@ -29,7 +29,7 @@ fn _hash_map()
 
 //
 
-fn _hash_set()
+fn hash_set_test()
 {
 
   // test.case( "empty" );

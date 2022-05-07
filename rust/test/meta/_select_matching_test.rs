@@ -7,7 +7,7 @@ use select_matching as TheModule;
 
 //
 
-fn _basic()
+fn basic_test()
 {
 
   #[ derive( Debug, Clone, PartialEq ) ]

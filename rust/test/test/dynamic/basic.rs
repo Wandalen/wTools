@@ -1,16 +1,16 @@
-
+#[ allow( unused_imports ) ]
 use wtest_basic::*;
 
 //
 
-fn _pass1()
+fn pass1_test()
 {
   assert_eq!( true, true );
 }
 
 //
 
-fn _fail1()
+fn fail1_test()
 {
   // assert_eq!( true, false );
 }
@@ -21,4 +21,11 @@ test_suite!
 {
   pass1,
   fail1,
+}
+
+//
+
+#[ allow( dead_code ) ]
+fn main()
+{
 }

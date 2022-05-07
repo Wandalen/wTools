@@ -4,7 +4,7 @@ use wtest_basic::*;
 
 //
 
-fn _is_slice_basic()
+fn is_slice_basic_test()
 {
 
 

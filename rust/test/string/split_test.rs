@@ -10,7 +10,7 @@ use wstring_tools as TheModule;
 
 //
 
-fn _basic()
+fn basic_test()
 {
   let src = "abc";
   let iter = TheModule::string::split()
@@ -21,7 +21,7 @@ fn _basic()
 
 //
 
-fn _split_with_option_preserving_empty()
+fn split_with_option_preserving_empty_test()
 {
   let src = "a b c";
   let iter = TheModule::string::split()

@@ -7,7 +7,7 @@ use meta_tools as TheModule;
 
 //
 
-fn _basic()
+fn basic_test()
 {
   let left : TheModule::Either< _, () > = TheModule::Either::Left( 13 );
   assert_eq!( left.flip(), TheModule::Either::Right( 13 ) );

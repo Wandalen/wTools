@@ -9,7 +9,7 @@ use proc_macro_tools::dependencies::*;
 
 //
 
-fn _tree_export_str_basic()
+fn tree_export_str_basic_test()
 {
 
   let exp = r#"code : std :: collections :: HashMap < i32 , i32 > :
@@ -70,7 +70,7 @@ TokenStream [
 
 //
 
-fn _syn_err_basic()
+fn syn_err_basic_test()
 {
 
   // test.case( "basic" );
@@ -103,7 +103,7 @@ fn _syn_err_basic()
 
 //
 
-fn _type_container_kind_basic()
+fn type_container_kind_basic_test()
 {
 
   // test.case( "core::option::Option< i32 >" );
@@ -176,7 +176,7 @@ fn _type_container_kind_basic()
 
 //
 
-fn _type_optional_container_kind_basic()
+fn type_optional_container_kind_basic_test()
 {
 
   // test.case( "non optional not container" );
@@ -258,7 +258,7 @@ fn _type_optional_container_kind_basic()
 
 //
 
-fn _type_rightmost_basic()
+fn type_rightmost_basic_test()
 {
 
   // test.case( "core::option::Option< i32 >" );
@@ -271,7 +271,7 @@ fn _type_rightmost_basic()
 
 //
 
-fn _type_parameters_basic()
+fn type_parameters_basic_test()
 {
 
   macro_rules! q
@@ -313,7 +313,7 @@ fn _type_parameters_basic()
 // fn attr_pair_single( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ), syn::Error >
 
 #[test]
-fn _attr_pair_single_basic() -> Result< (), syn::Error >
+fn attr_pair_single_basic_test() -> Result< (), syn::Error >
 {
   use syn::spanned::Spanned;
 
