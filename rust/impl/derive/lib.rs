@@ -3,9 +3,7 @@
 #![ warn( missing_docs ) ]
 
 // #![ feature( trait_alias ) ]
-// #![ feature( generic_associated_types ) ]
 // #![ feature( type_name_of_val ) ]
-// #![ feature( generic_associated_types ) ]
 
 //!
 //! Collection of general purpose derives.
@@ -18,13 +16,10 @@ pub mod internal
 {
 }
 
-pub use derive_more::*;
-pub use parse_display::*;
-pub use parse_display::Display;
-
 /// Own namespace of the module.
 pub mod own
 {
+  pub use super::exposed::*;
   // use super::internal as i;
 }
 
@@ -33,9 +28,11 @@ pub use own::*;
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::prelude::*;
+  pub use ::derive_more::*;
+  pub use ::parse_display::*;
+  pub use ::parse_display::Display;
 }
-
-pub use exposed::*;
 
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude

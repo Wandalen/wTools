@@ -38,7 +38,7 @@ path = "rust/test/derive/derive_lib_test.rs"
 # qqq : add please
 
 [dependencies]
-derive_more = "~0.99"
+derive_more = { version = "~0.99" }
 parse-display = { version = "~0.5" }
 # former = { version = "~0.1", path = "../../rust/former" }
 # inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
