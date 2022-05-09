@@ -1,6 +1,6 @@
 [package]
 name = "for_each"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -32,9 +32,13 @@ path = "rust/impl/meta/for_each/lib.rs"
 name = "for_each_test"
 path = "rust/test/meta/for_each_lib_test.rs"
 
-# [[example]]
-# name = "for_each_trivial_sample"
-# path = "sample/rust/for_each_trivial_sample/src/main.rs"
+[[example]]
+name = "for_each_trivial_sample"
+path = "sample/rust/for_each_trivial_sample/src/main.rs"
+
+[[example]]
+name = "for_each_map_style_sample"
+path = "sample/rust/for_each_map_style_sample/src/main.rs"
 
 [dependencies]
 

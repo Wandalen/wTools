@@ -7,8 +7,7 @@ pub mod internal
 /// Dependencies.
 pub mod dependencies
 {
-  pub use ::literally;
-  // pub use ::either;
+  pub use ::either;
 }
 
 /// Several macro to encourage write readable code.
@@ -42,7 +41,6 @@ pub mod exposed
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
-  pub use literally::*;
-  // pub use either::*;
+  pub use either::*;
   pub use super::impls::prelude::*;
 }
