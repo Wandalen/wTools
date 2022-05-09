@@ -2,6 +2,7 @@
 mod dt;
 mod error;
 
+// xxx : remove include
 mod former
 {
   include!( "./former/front_test.rs" );

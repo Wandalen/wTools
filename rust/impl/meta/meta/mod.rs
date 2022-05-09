@@ -8,7 +8,7 @@ pub mod internal
 pub mod dependencies
 {
   pub use ::literally;
-  // pub use ::either;
+  pub use ::for_each;
 }
 
 /// Several macro to encourage write readable code.
@@ -37,12 +37,13 @@ pub mod exposed
 {
   pub use super::prelude::*;
   pub use super::impls::exposed::*;
+  pub use super::dependencies::for_each::exposed::*;
 }
 
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
   pub use literally::*;
-  // pub use either::*;
   pub use super::impls::prelude::*;
+  pub use super::dependencies::for_each::prelude::*;
 }

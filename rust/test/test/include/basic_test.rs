@@ -1,8 +1,8 @@
 
-#[cfg( feature = "in_wtools" )]
-use wtools::test::*;
-#[cfg( not( feature = "in_wtools" ) )]
-use wtest_basic::*;
+// #[cfg( feature = "in_wtools" )]
+// use wtools::test::*;
+// #[cfg( not( feature = "in_wtools" ) )]
+// use wtest_basic::*;
 
 #[ path = "../dynamic/basic.rs" ]
 mod basic;

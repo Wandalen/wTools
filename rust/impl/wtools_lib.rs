@@ -36,6 +36,12 @@ pub use meta::*;
 pub mod typing;
 pub use typing::*;
 
+///
+/// Collection of primal data types
+///
+
+pub mod dt;
+
 // ///
 // /// Exporting/importing serialize/deserialize encoding/decoding macros, algorithms and structures for that.
 // ///

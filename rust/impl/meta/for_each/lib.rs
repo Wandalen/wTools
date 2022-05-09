@@ -481,3 +481,18 @@ pub mod internal
 }
 
 pub use internal::*;
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  pub use super::prelude::*;
+}
+
+/// Prelude to use: `use wtools::prelude::*`.
+pub mod prelude
+{
+  use super::internal as i;
+  pub use i::for_each;
+  pub use i::braces_unwrap;
+  pub use i::identity;
+}
