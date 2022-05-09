@@ -4,6 +4,7 @@
 //!
 //! Collection of general purpose time tools.
 //!
+
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 ///

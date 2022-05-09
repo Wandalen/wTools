@@ -2,30 +2,11 @@
 #![ warn( missing_docs ) ]
 #![ warn( missing_debug_implementations ) ]
 
+//!
 //! Diagnostic-purpose tools to inspect type of a variable and its size.
 //!
-//! Sample
-//! ```
-//!# // #![ feature( type_name_of_val ) ]
-//! #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
-//!
-//! use inspect_type::*;
-//!
-//! #[ cfg( feature = "nightly" ) ]
-//! fn main()
-//! {
-//!   inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
-//!   // < sizeof( &[1, 2, 3][..] : &[i32] ) = 16
-//!   inspect_type_of!( &[ 1, 2, 3 ] );
-//!   // < sizeof( &[1, 2, 3] : &[i32; 3] ) = 8
-//! }
-//!
-//!# #[ cfg( not( feature = "nightly" ) ) ]
-//!# fn main()
-//!# {
-//!# }
-//!
-//! ```
+
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 #[ cfg( feature = "nightly" ) ]
 mod nightly

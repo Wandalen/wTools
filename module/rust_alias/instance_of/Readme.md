@@ -21,13 +21,13 @@ dbg!( instance_of!( Box::new( 13_i32 ) => Copy ) );
 
 ### To add to your project
 
-```
+```sh
 cargo add implements
 ```
 
 ### Try out from the repository
 
-```
+```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
 cd sample/rust/implements_trivial

@@ -5,6 +5,8 @@
 //! Utility to publish modules on `crates.io` from a command line.
 //!
 
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+
 mod wpublisher;
 mod commands;
 

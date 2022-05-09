@@ -5,6 +5,8 @@
 //! Macro to answer the question: is it a slice?
 //!
 
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+
 /// Macro to answer the question: is it a slice?
 ///
 /// # Sample

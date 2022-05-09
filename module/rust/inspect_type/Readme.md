@@ -9,12 +9,18 @@ Diagnostic-purpose tools to inspect type of a variable and its size.
 
 pub use inspect_type::*;
 
+#[ cfg( feature = "nightly" ) ]
 fn main()
 {
   inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
   // < sizeof( &[1, 2, 3][..] : &[i32] ) = 16
   inspect_type_of!( &[ 1, 2, 3 ] );
   // < sizeof( &[1, 2, 3] : &[i32; 3] ) = 8
+}
+
+#[ cfg( not( feature = "nightly" ) ) ]
+fn main()
+{
 }
 ```
 
