@@ -8,7 +8,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-/// Collection of general purpose dt tools.
+/// Collection of primal data types.
 pub mod dt;
 
 /// Owned namespace of the module.
@@ -32,3 +32,6 @@ pub mod prelude
 {
   pub use super::dt::prelude::*;
 }
+
+// zzz : use
+// https://github.com/CAD97/pointer-utils/tree/master/crates/slice-dst

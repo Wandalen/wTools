@@ -1,0 +1,44 @@
+[package]
+name = "data_type"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/data_type"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/data_type"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/data_type"
+description = """
+Collection of primal data types.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+include = [
+  "/rust/impl/dt",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[lib]
+name = "data_type"
+path = "rust/impl/dt/data_type_lib.rs"
+
+[[test]]
+name = "data_type_test"
+path = "rust/test/dt/data_type_lib_test.rs"
+
+# [[example]]
+# name = "data_type_trivial_sample"
+# path = "sample/rust/data_type_trivial_sample/src/main.rs"
+# <!-- zzz : write please -->
+
+[dependencies]
+either = "~1.6"
+
+[dev-dependencies]
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

@@ -1,9 +1,9 @@
 use test_tools::*;
 
 #[cfg( feature = "in_wtools" )]
-use wtools::meta as TheModule;
+use wtools::dt as TheModule;
 #[cfg( not( feature = "in_wtools" ) )]
-use meta_tools as TheModule;
+use data_type as TheModule;
 
 //
 
