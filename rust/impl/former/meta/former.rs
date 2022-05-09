@@ -1,9 +1,10 @@
 // #![ allow( unused_imports ) ]
 // #![ allow( unused_mut ) ]
 // #![ allow( dead_code ) ]
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
 // #![ allow( proc_macro_derive_resolution_fallback ) ]
+#![ warn( rust_2018_idioms ) ]
+#![ warn( missing_debug_implementations ) ]
+#![ warn( missing_docs ) ]
 
 use quote::{ quote };
 use syn::{ DeriveInput };

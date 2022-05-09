@@ -1,4 +1,4 @@
-#![ allow( dead_code ) ]
+// #![ allow( dead_code ) ]
 #![ feature( trace_macros ) ]
 
 use test_tools::*;

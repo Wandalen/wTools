@@ -1,9 +1,10 @@
-#![ allow( unused_imports ) ]
-#![ allow( unused_mut ) ]
-#![ allow( dead_code ) ]
-#![ allow( unused_variables ) ]
-#![ warn( missing_docs ) ]
+// #![ allow( unused_imports ) ]
+// #![ allow( unused_mut ) ]
+// #![ allow( dead_code ) ]
+// #![ allow( unused_variables ) ]
+#![ warn( rust_2018_idioms ) ]
 #![ warn( missing_debug_implementations ) ]
+#![ warn( missing_docs ) ]
 
 use meta_tools::*;
 use quote::{ quote, ToTokens, TokenStreamExt };
@@ -11,7 +12,7 @@ use syn::parse::*;
 use syn::spanned::Spanned;
 use proc_macro_tools::*;
 use std::collections::HashMap;
-use iter_tools::{ Itertools, process_results }; /* xxx : use wtools::iter_tool */
+use iter_tools::{ /* Itertools, */ process_results }; /* xxx : use wtools::iter_tool */
 use convert_case::{Case, Casing};
 
 pub type Result< T > = std::result::Result< T, syn::Error >;
@@ -56,6 +57,7 @@ impl quote::ToTokens for FnQuick
 pub enum Element
 {
   Fn( FnQuick ),
+  #[ allow( dead_code ) ]
   Signature( FnQuick ),
   Field( syn::Field ),
 }
@@ -77,7 +79,7 @@ impl Parse for Element
       if lookahead2.peek( syn::token::Brace )
       {
         let input2;
-        let brace_token : syn::token::Brace = syn::braced!( input2 in input );
+        let _brace_token : syn::token::Brace = syn::braced!( input2 in input );
         let block : proc_macro2::TokenStream = input2.parse()?;
         let fn_desc = FnQuick
         {
@@ -169,7 +171,7 @@ impl Parse for OptionsDescriptor
       }
     }
 
-    let mut result = OptionsDescriptor
+    let result = OptionsDescriptor
     {
       vis,
       ident,
@@ -328,7 +330,7 @@ fn perform_gen( options_descriptor : &OptionsDescriptor ) -> ( proc_macro2::Toke
 /// Options macro handler.
 ///
 
-pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+pub fn options( _attr : proc_macro::TokenStream, item : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
 
   let options_descriptor = match syn::parse::< OptionsDescriptor >( item )
@@ -345,7 +347,7 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
   let attrs = &options_descriptor.attrs;
 
   let mut fields_define = Vec::< &syn::Field >::new();
-  for ( name, field ) in options_descriptor.fields_map.iter()
+  for ( _name, field ) in options_descriptor.fields_map.iter()
   {
     fields_define.push( field );
   }

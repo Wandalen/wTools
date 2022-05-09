@@ -1,6 +1,7 @@
 // #![ feature( type_name_of_val ) ]
-#![ warn( missing_docs ) ]
+#![ warn( rust_2018_idioms ) ]
 #![ warn( missing_debug_implementations ) ]
+#![ warn( missing_docs ) ]
 
 //!
 //! Diagnostic-purpose tools to inspect type of a variable and its size.
