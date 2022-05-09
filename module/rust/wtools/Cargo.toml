@@ -20,6 +20,7 @@ keywords = [ "fundamental", "general-purpose" ]
 
 include = [
   "/rust/impl/wtools_lib.rs",
+  "/rust/impl/dt/mod.rs",
   "/rust/impl/meta/mod.rs",
   "/rust/impl/typing/mod.rs",
   "/rust/impl/convert/mod.rs",
