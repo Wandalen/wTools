@@ -1,14 +1,16 @@
-#![ warn( rust_2018_idioms ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
 
 // pub use werror::*;
 use std::collections::HashMap;
 
 //
 
+///
+/// Parse properties.
+///
+
 pub trait PropsParseOptionsAdapter
 {
+  /// Parse from splits.
   fn parse_from_splits< I >( &self, mut _splits : I ) -> HashMap< Box< str >, Box< str > >
   where
     I : core::iter::Iterator,
@@ -20,6 +22,10 @@ pub trait PropsParseOptionsAdapter
   }
 }
 
+///
+/// Properties parsing options.
+///
+
 #[ derive( Debug, PartialEq ) ]
 pub struct PropsParseOptions
 {
@@ -28,6 +34,7 @@ pub struct PropsParseOptions
 
 impl PropsParseOptions
 {
+  /// Create new parsing properties.
   pub fn new() -> Self
   {
     Self
@@ -41,6 +48,10 @@ impl PropsParseOptionsAdapter for PropsParseOptions
 }
 
 //
+
+///
+/// Parse properties from splits.
+///
 
 pub fn parse_from_splits< I >( splits : I ) -> HashMap< Box< str >, Box< str > >
 where

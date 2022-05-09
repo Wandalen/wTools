@@ -1,7 +1,3 @@
-#![ warn( rust_2018_idioms ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
-
 ///
 /// Macro asserts that two expressions are identical to each other. Unlike std::assert_eq it is removed from a release build.
 ///

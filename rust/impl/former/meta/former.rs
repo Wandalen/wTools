@@ -2,9 +2,6 @@
 // #![ allow( unused_mut ) ]
 // #![ allow( dead_code ) ]
 // #![ allow( proc_macro_derive_resolution_fallback ) ]
-#![ warn( rust_2018_idioms ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
 
 use quote::{ quote };
 use syn::{ DeriveInput };
@@ -46,7 +43,7 @@ struct AttributeFormAfter
 
 impl syn::parse::Parse for AttributeFormAfter
 {
-  fn parse( input : syn::parse::ParseStream ) -> Result< Self >
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
     let input2;
     Ok( Self
@@ -73,7 +70,7 @@ struct AttributeDefault
 
 impl syn::parse::Parse for AttributeDefault
 {
-  fn parse( input : syn::parse::ParseStream ) -> Result< Self >
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
     let input2;
     Ok( Self
@@ -138,7 +135,7 @@ fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn
 ///
 
 #[inline]
-fn field_none_map( field : &FormerField ) -> proc_macro2::TokenStream
+fn field_none_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 {
   let ident = Some( field.ident.clone() );
   let tokens = quote! { ::core::option::Option::None };
@@ -164,7 +161,7 @@ fn field_none_map( field : &FormerField ) -> proc_macro2::TokenStream
 ///
 
 #[inline]
-fn field_optional_map( field : &FormerField ) -> proc_macro2::TokenStream
+fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 {
   let ident = Some( field.ident.clone() );
   let ty = field.ty.clone();
@@ -204,7 +201,7 @@ fn field_optional_map( field : &FormerField ) -> proc_macro2::TokenStream
 ///
 
 #[inline]
-fn field_form_map( field : &FormerField ) -> Result< proc_macro2::TokenStream >
+fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
 {
   let ident = field.ident;
   let ty = field.ty;
@@ -303,7 +300,7 @@ fn field_form_map( field : &FormerField ) -> Result< proc_macro2::TokenStream >
 ///
 
 #[inline]
-fn field_name_map( field : &FormerField ) -> syn::Ident
+fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 {
   let ident = field.ident.clone();
   ident
@@ -326,7 +323,7 @@ fn field_name_map( field : &FormerField ) -> syn::Ident
 ///
 
 #[inline]
-fn field_setter_map( field : &FormerField, former_name_ident : &syn::Ident ) -> Result< proc_macro2::TokenStream >
+fn field_setter_map( field : &FormerField< '_ >, former_name_ident : &syn::Ident ) -> Result< proc_macro2::TokenStream >
 {
   let ident = &field.ident;
 
@@ -543,7 +540,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     _ => return Err( syn_err!( ast, "Unknown format of data, expected syn::Data::Struct( ref data_struct )\n  {}", quote!{ #ast } ) ),
   };
 
-  let former_fields : Vec< Result< FormerField > > = fields.iter().map( | field |
+  let former_fields : Vec< Result< FormerField< '_ > > > = fields.iter().map( | field |
   {
     let attrs = &field.attrs;
     let vis = &field.vis;

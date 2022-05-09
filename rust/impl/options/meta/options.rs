@@ -2,9 +2,6 @@
 // #![ allow( unused_mut ) ]
 // #![ allow( dead_code ) ]
 // #![ allow( unused_variables ) ]
-#![ warn( rust_2018_idioms ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
 
 use meta_tools::*;
 use quote::{ quote, ToTokens, TokenStreamExt };
@@ -64,7 +61,7 @@ pub enum Element
 
 impl Parse for Element
 {
-  fn parse( input : ParseStream ) -> Result< Self >
+  fn parse( input : ParseStream< '_ > ) -> Result< Self >
   {
 
     let attrs : Vec< syn::Attribute > = input.call( syn::Attribute::parse_outer )?;
@@ -133,7 +130,7 @@ struct OptionsDescriptor
 
 impl Parse for OptionsDescriptor
 {
-  fn parse( input : ParseStream ) -> Result< Self >
+  fn parse( input : ParseStream< '_ > ) -> Result< Self >
   {
     let input2;
     let vis = input.parse()?;

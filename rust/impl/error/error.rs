@@ -1,7 +1,3 @@
-#![ warn( rust_2018_idioms ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
-
 ///
 /// Alias for std::error::Error.
 ///
@@ -57,7 +53,7 @@ impl Error
 
 impl core::fmt::Display for Error
 {
-  fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result
+  fn fmt(&self, f: &mut core::fmt::Formatter< '_ >) -> core::fmt::Result
   {
     write!( f, "{}", self.msg )
   }
