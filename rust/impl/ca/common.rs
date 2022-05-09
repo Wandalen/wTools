@@ -18,7 +18,7 @@
 /// Expand field to method of instance.
 ///
 
-#[macro_export]
+#[ macro_export ]
 macro_rules! field_str
 {
   ( $name:ident ) =>
@@ -49,7 +49,7 @@ macro_rules! field_str
 /// Expand field to alias method of instance.
 ///
 
-#[macro_export]
+#[ macro_export ]
 macro_rules! field_map_str_str
 {
   ( $name1:ident, $name2:ident ) =>
@@ -69,7 +69,7 @@ macro_rules! field_map_str_str
 /// Expand field to method that works with a vector of strings.
 ///
 
-#[macro_export]
+#[ macro_export ]
 macro_rules! field_map_str_vec_str
 {
   ( $name1:ident, $name2:ident ) =>
@@ -90,7 +90,7 @@ macro_rules! field_map_str_vec_str
 /// Expand field to method of instance to setup routine.
 ///
 
-#[macro_export]
+#[ macro_export ]
 macro_rules! field_routine
 {
   ( $name:ident ) =>

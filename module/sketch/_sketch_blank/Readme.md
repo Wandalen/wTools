@@ -1,11 +1,11 @@
-# module::___
+# Module :: sketch_blank
 
 ___
 
-### Sample
+### Sample :: trivial
 
 ``` rust sample test
-use ___::*;
+use sketch_blank::*;
 
 fn main()
 {
@@ -15,7 +15,7 @@ fn main()
 ### To add to your project
 
 ```
-cargo add ___
+cargo add sketch_blank
 ```
 
 ### Try out from the repository
@@ -23,6 +23,6 @@ cargo add ___
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/____trivial
+cd sample/rust/sketch_blank_trivial_sample
 cargo run
 ```

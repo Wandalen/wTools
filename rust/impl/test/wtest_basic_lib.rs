@@ -18,6 +18,7 @@ pub mod dependencies
   pub use trybuild;
   pub use anyhow;
   pub use rustversion;
+  pub use meta_tools;
 }
 
 pub use dependencies::*;
@@ -26,6 +27,7 @@ pub use dependencies::*;
 pub mod exposed
 {
   pub use super::basic::exposed::*;
+  pub use meta_tools::{ impls, index };
 }
 
 pub use exposed::*;

@@ -5,7 +5,7 @@
 // #![ feature( type_name_of_val ) ]
 
 //!
-//! Implementation of automata
+//! Implementation of automata.
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
