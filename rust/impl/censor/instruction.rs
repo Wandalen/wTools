@@ -1,16 +1,22 @@
-// #![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
 
 // pub use werror::*;
 pub use wtools::error::*;
 use std::collections::HashMap;
 
+///
+/// Instruction.
+///
+
 #[ derive( Debug, PartialEq ) ]
 pub struct Instruction
 {
+  /// Error of parsing an instruction.
   pub err : Option< Error >,
+  /// Command name.
   pub command_name : Box< str >,
+  /// Subject of command.
   pub subject : Vec< Box< str > >,
+  /// Properties of command.
   pub properties_map : HashMap< Box< str >, Box< str > >,
 }
 
@@ -31,11 +37,14 @@ impl Instruction
 
 //
 
+///
+/// Adapter for instruction.
+///
+
 pub trait InstructionParseParamsAdapter
 {
 
-  //
-
+  /// Print info about command format.
   fn about_command_format( &self ) -> &'static str
   {
 r#"Command should start from a dot `.`.
@@ -44,15 +53,13 @@ Property is pair delimited by colon `:`.
 For example: `.struct1 subject key1:val key2:val2`."#
   }
 
-  //
-
+  /// Check that command begins with dot.
   fn instruction_split_is_command< Src : AsRef< str > >( &self, src : Src ) -> bool
   {
     src.as_ref().starts_with( "." )
   }
 
-  //
-
+  /// Normalize command name.
   fn command_name_normalize< Src : AsRef< str > >( &self, src : Src ) -> Box< str >
   {
     let splits : Vec< &str > = src.as_ref()
@@ -63,8 +70,7 @@ For example: `.struct1 subject key1:val key2:val2`."#
     ( ".".to_string() + &splits.join( "." ) ).to_string().into_boxed_str()
   }
 
-  //
-
+  /// Make properties map.
   fn split_belong_to_properties< Src : AsRef< str > >( &self, src : Src ) -> i32
   {
     let src = src.as_ref();
@@ -85,8 +91,7 @@ For example: `.struct1 subject key1:val key2:val2`."#
     return 1;
   }
 
-  //
-
+  /// Parse instruction from splits.
   /* xxx : make it accept also vector */
   fn parse_from_splits< I >( &self, mut splits : I ) -> Instruction
   where
@@ -151,6 +156,10 @@ For example: `.struct1 subject key1:val key2:val2`."#
 
 }
 
+///
+/// Parameters of instruction.
+///
+
 #[ derive( Debug, PartialEq ) ]
 pub struct InstructionParseParams
 {
@@ -158,6 +167,7 @@ pub struct InstructionParseParams
 
 impl InstructionParseParams
 {
+  /// Create new instruction parameters.
   pub fn new() -> Self
   {
     Self
@@ -171,6 +181,10 @@ impl InstructionParseParamsAdapter for InstructionParseParams
 }
 
 //
+
+///
+/// Parse input as instruction from splits.
+///
 
 pub fn parse_from_splits< I >( splits : I ) -> Instruction
 where

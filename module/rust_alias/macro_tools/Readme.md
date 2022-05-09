@@ -4,8 +4,10 @@ Tools for writing procedural macroses.
 
 ### Sample
 
-``` rust sample test
+```rust
 use macro_tools::*;
+use macro_tools::dependencies::*;
+use quote::quote;
 
 fn main()
 {
@@ -21,6 +23,6 @@ fn main()
 
 ### To add to your project
 
-```
+```sh
 cargo add macro_tools
 ```

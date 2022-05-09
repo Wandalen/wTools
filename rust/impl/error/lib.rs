@@ -1,17 +1,11 @@
-#![ warn( missing_docs ) ]
+#![ warn( rust_2018_idioms ) ]
 #![ warn( missing_debug_implementations ) ]
+#![ warn( missing_docs ) ]
 
 //!
 //! Basic exceptions handling mechanism.
 //!
-// //! # Sample
-// //! ```
-// //! use werror::*;
-// //!
-// //! let err1 = Error::new( "Some error" );
-// //! println!( "err1 : {}", err1 );
-// //! // < err1 : Some error
-// //! ```
+
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 mod assert;

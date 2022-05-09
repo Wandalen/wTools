@@ -4,12 +4,12 @@ Utility to operate files from a command line.
 
 ### Sample
 
-``` shell
+```sh
 censor .hlink new_link to_file
 ```
 
 ### To install
 
-```
+```sh
 cargo install wcensor
 ```

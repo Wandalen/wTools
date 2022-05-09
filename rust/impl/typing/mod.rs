@@ -1,6 +1,3 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
-
 // pub use is_slice::*;
 // // pub use instance_of::*;
 // #[cfg( feature = "inspect_type" )]

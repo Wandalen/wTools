@@ -1,5 +1,3 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
 
 //!
 //! Library of utility to work with commands.

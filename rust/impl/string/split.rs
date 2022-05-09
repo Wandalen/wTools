@@ -24,7 +24,7 @@ pub struct Split< 'a >
 
 impl< 'a > From< Split< 'a > > for String
 {
-  fn from( src : Split ) -> Self
+  fn from( src : Split< '_ > ) -> Self
   {
     src.string.into()
   }

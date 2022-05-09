@@ -1,6 +1,3 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
-
 //!
 //! A module to manipulate manifest data.
 //!
