@@ -1,5 +1,5 @@
 // #![ allow( dead_code ) ]
-#![ feature( trace_macros ) ]
+// #![ feature( trace_macros ) ]
 
 use test_tools::*;
 use werror::*;
