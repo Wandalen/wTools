@@ -1,2 +1,2 @@
 
-include( "./for_each_test" );
+include!( "./for_each_test.rs" );
