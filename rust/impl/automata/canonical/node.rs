@@ -121,9 +121,9 @@ pub mod internal
     Kind : NodeKindInterface,
   {
 
-    fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = Self > + 'a >
+    fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + 'a >
     {
-      Box::new( NodesIterator::make( &self ) )
+      Box::new( self.out_nodes.iter().cloned() )
     }
 
   }

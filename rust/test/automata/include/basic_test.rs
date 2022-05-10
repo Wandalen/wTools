@@ -1,13 +1,12 @@
+use std::collections::HashSet;
 use test_tools::*;
+use wtools::prelude::*;
 
 //
 
 fn basic_test()
 {
   use wautomata::*;
-  // use wautomata::NodeFactory;
-
-  // let node1 = wautomata::Node::make_labeled();
 
   let mut factory = wautomata::canonical::NodeFactory::make();
 
@@ -18,10 +17,18 @@ fn basic_test()
   // dbg!( &b );
 
   factory.node( a ).borrow_mut().extend( core::iter::once( b ) );
-  factory.node( b ).borrow_mut().extend( core::iter::once( a ) );
+  factory.node( b ).borrow_mut().extend( [ a, b ].into_iter() );
 
   dbg!( factory.node( a ) );
   dbg!( factory.node( b ) );
+
+  let exp = vec![ b ];
+  let got : Vec< _ > = factory.node( a ).borrow().out_nodes().collect();
+  assert_eq!( got, exp );
+
+  let exp = hset![ a, b ];
+  let got : HashSet< _ > = factory.node( b ).borrow().out_nodes().collect();
+  assert_eq!( got, exp );
 
   // a.borrow_mut().extend( core::iter::once( b.borrow().id() ) );
   // b.borrow_mut().extend( core::iter::once( a.borrow().id() ) );

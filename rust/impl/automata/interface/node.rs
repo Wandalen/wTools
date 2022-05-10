@@ -50,16 +50,8 @@ pub mod internal
       HasId +
   {
 
-    // /// Id of the node.
-    // type Id : IdentityInterface;
-//     /// Type which represents edge between nodes.
-//     type Edge : EdgeInterface;
-//
-//     /// Iterate all edges of the node.
-//     fn edges( &self ) -> crate::EdgesIterator< Self::Edge >;
-
     /// Iterate output nodes of the node.
-    fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = Self > + 'a >;
+    fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + 'a >;
 
   }
 
@@ -86,20 +78,6 @@ pub mod internal
   {
   }
 
-//   ///
-//   /// Node which has constructor make.
-//   ///
-//
-//   pub trait NodeConstructableInterface
-//   where
-//     Self :
-//       NodeBasicInterface +
-//     ,
-//   {
-//     /// Constructor without arguments.
-//     fn make() -> Self;
-//   }
-
   ///
   /// Node wich has a kind.
   ///
@@ -117,6 +95,7 @@ pub mod internal
   /// Node in RefCell in Rc.
   ///
 
+  #[ repr( transparent ) ]
   pub struct NodeCell< Node >( Arc< RefCell< Node > > )
   where
     Node : NodeBasicInterface,
@@ -126,10 +105,21 @@ pub mod internal
   where
     Node : NodeBasicInterface,
   {
+    /// Constructor.
     #[ inline ]
     pub fn make( src : Node ) -> Self
     {
       Self( Arc::new( RefCell::new( src ) ) )
+    }
+  }
+
+  impl< Node > From< Arc< RefCell< Node > > > for NodeCell< Node >
+  where
+    Node : NodeBasicInterface,
+  {
+    fn from( src : Arc< RefCell< Node > > ) -> Self
+    {
+      Self( src )
     }
   }
 

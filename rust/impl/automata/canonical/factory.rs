@@ -4,8 +4,9 @@ pub mod internal
   use crate::prelude::*;
   use crate::canonical::*;
   use std::collections::HashMap;
-  use core::cell::RefCell;
-  use std::sync::Arc;
+  use wtools::prelude::*;
+  // use core::cell::RefCell;
+  // use std::sync::Arc;
 
   ///
   /// Node factory.
@@ -18,10 +19,13 @@ pub mod internal
     pub id_to_node_map : HashMap< < < Self as NodeFactoryInterface >::Node as HasId >::Id, crate::NodeCell< Node > >,
   }
 
-  impl NodeFactory
+  impls!
   {
 
+    ///
     /// Constructor.
+    ///
+
     pub fn make() -> Self
     {
       let id_to_node_map = HashMap::new();
@@ -31,7 +35,10 @@ pub mod internal
       }
     }
 
+    ///
     /// Get node.
+    ///
+
     pub fn node< Id >( &self, id : Id )
     -> &crate::NodeCell< Node >
     where
@@ -41,15 +48,16 @@ pub mod internal
       let got = self.id_to_node_map.get( &id );
       if got.is_some()
       {
-        // meta_tools::inspect_type_of!( got );
-        // let result : crate::NodeCell< Node > = got.as_deref();
         let result : &crate::NodeCell< Node > = got.unwrap().clone();
         return result;
       }
       unreachable!( "No node with id {:?} found", id );
     }
 
+    ///
     /// Get node, making a new one if no such exist. Returns id of the node.
+    ///
+
     pub fn node_making_id< Id >( &mut self, id : Id ) -> < < Self as NodeFactoryInterface >::Node as HasId >::Id
     where
       Id : Into< < < Self as NodeFactoryInterface >::Node as HasId >::Id >,
@@ -62,6 +70,27 @@ pub mod internal
       ;
 
       result.borrow().id()
+    }
+
+  }
+
+  // trace_macros!( true );
+  // impl NodeFactory{ index2!
+  // {
+  //   make,
+  //   node,
+  //   node_making_id,
+  // }}
+  // trace_macros!( false );
+
+  impl NodeFactory
+  {
+
+    index!
+    {
+      make,
+      node,
+      node_making_id,
     }
 
   }

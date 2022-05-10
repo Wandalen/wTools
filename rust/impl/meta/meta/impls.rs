@@ -14,7 +14,9 @@ pub mod internal
 
     (
       $( #[ $Meta : meta ] )*
-      fn $Name : ident $( $Rest : tt )*
+      pub
+      fn $Name : ident
+      $( $Rest : tt )*
     )
     =>
     {
@@ -22,15 +24,37 @@ pub mod internal
       {
         @DEFINE_FN
         @NAME $Name
+        @VIS pub
         @REST
           $( #[ $Meta ] )*
-          fn $Name $( $Rest )*
+          pub fn $Name
+          $( $Rest )*
+      }
+    };
+
+    (
+      $( #[ $Meta : meta ] )*
+      fn $Name : ident
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      $crate::impls!
+      {
+        @DEFINE_FN
+        @NAME $Name
+        @VIS
+        @REST
+          $( #[ $Meta ] )*
+          fn $Name
+          $( $Rest )*
       }
     };
 
     (
       @DEFINE_FN
       @NAME $Name : ident
+      @VIS $( pub )*
       @REST
         $Item : item
         $( $Rest : tt )*
@@ -76,8 +100,44 @@ pub mod internal
 
   }
 
+//   ///
+//   /// Index of items.
+//   ///
+//
+//   #[ macro_export ]
+//   macro_rules! index2
+//   {
+//
+//     () => { };
+//
+//     (
+//       $Name : ident ,
+//       $( $Rest : tt )*
+//     )
+//     =>
+//     {{
+//       $Name!();
+//       $crate::index2!( @ACT $( $Rest )* );
+//     }};
+//
+//     ( @ACT ) => { };
+//
+//     (
+//       @ACT
+//       $Name : ident ,
+//       $( $Rest : tt )*
+//     )
+//     =>
+//     {
+//       $Name!();
+//       $crate::index2!( @ACT $( $Rest )* );
+//     };
+//
+//   }
+
   pub use impls;
   pub use index;
+  // pub use index2;
 }
 
 /// Exposed namespace of the module.
@@ -95,4 +155,5 @@ pub mod prelude
   use super::internal as i;
   pub use i::impls;
   pub use i::index;
+  // pub use i::index2;
 }
