@@ -8,6 +8,8 @@ pub mod internal
 
 /// Implements canonical edge.
 pub mod edge;
+/// Implements canonical factory.
+pub mod factory;
 /// Implements canonical node.
 pub mod node;
 
@@ -17,6 +19,7 @@ pub mod own
   // use super::internal as i;
   pub use super::exposed::*;
   pub use super::edge::parented::*;
+  pub use super::factory::parented::*;
   pub use super::node::parented::*;
 }
 
@@ -28,6 +31,7 @@ pub mod exposed
   // use super::internal as i;
   pub use super::prelude::*;
   pub use super::edge::exposed::*;
+  pub use super::factory::exposed::*;
   pub use super::node::exposed::*;
 }
 
@@ -36,5 +40,6 @@ pub mod prelude
 {
   // use super::internal as i;
   pub use super::edge::prelude::*;
+  pub use super::factory::prelude::*;
   pub use super::node::prelude::*;
 }

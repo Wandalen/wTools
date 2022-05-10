@@ -2,8 +2,12 @@
 pub mod internal
 {
   use crate::prelude::*;
+  use std::fmt;
   use core::fmt::Debug;
   use core::hash::Hash;
+  use core::cell::RefCell;
+  use std::sync::Arc;
+  use core::ops::Deref;
 
   ///
   /// Kind of a ode.
@@ -82,19 +86,19 @@ pub mod internal
   {
   }
 
-  ///
-  /// Node which has constructor make.
-  ///
-
-  pub trait NodeConstructableInterface
-  where
-    Self :
-      NodeBasicInterface +
-    ,
-  {
-    /// Constructor without arguments.
-    fn make() -> Self;
-  }
+//   ///
+//   /// Node which has constructor make.
+//   ///
+//
+//   pub trait NodeConstructableInterface
+//   where
+//     Self :
+//       NodeBasicInterface +
+//     ,
+//   {
+//     /// Constructor without arguments.
+//     fn make() -> Self;
+//   }
 
   ///
   /// Node wich has a kind.
@@ -107,6 +111,49 @@ pub mod internal
   {
     /// Get kind of the node.
     fn kind() -> Kind;
+  }
+
+  ///
+  /// Node in RefCell in Rc.
+  ///
+
+  pub struct NodeCell< Node >( Arc< RefCell< Node > > )
+  where
+    Node : NodeBasicInterface,
+  ;
+
+  impl< Node > NodeCell< Node >
+  where
+    Node : NodeBasicInterface,
+  {
+    #[ inline ]
+    pub fn make( src : Node ) -> Self
+    {
+      Self( Arc::new( RefCell::new( src ) ) )
+    }
+  }
+
+  impl< Node > fmt::Debug
+  for NodeCell< Node >
+  where
+    Node : NodeBasicInterface + fmt::Debug,
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      f.write_fmt( format_args!( "{:?}", self.0.borrow() ) )
+    }
+  }
+
+  impl< Node > Deref
+  for NodeCell< Node >
+  where
+    Node : NodeBasicInterface,
+  {
+    type Target = Arc< RefCell< Node > >;
+    fn deref( &self ) -> &Self::Target
+    {
+      &self.0
+    }
   }
 
 }
@@ -123,9 +170,9 @@ pub use parented::*;
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
+  use super::internal as i;
   pub use super::prelude::*;
-  // pub use i::NodesIterator;
+  pub use i::NodeCell;
 }
 
 pub use exposed::*;
@@ -136,6 +183,5 @@ pub mod prelude
   use super::internal as i;
   pub use i::NodeKindInterface;
   pub use i::NodeBasicInterface;
-  pub use i::NodeConstructableInterface;
   pub use i::NodeKindGetterInterface;
 }

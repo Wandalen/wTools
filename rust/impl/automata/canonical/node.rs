@@ -6,6 +6,8 @@ pub mod internal
   use core::fmt::Debug;
   use std::cmp::Eq;
   use core::hash::{ Hash, Hasher };
+  use std::fmt;
+  // use core::cell::RefCell;
 
   ///
   /// No kind for nodes.
@@ -22,6 +24,7 @@ pub mod internal
   pub struct NodesIterator< 'a, Kind >
   where
     Kind : NodeKindInterface,
+    // Node< Kind > : Debug,
   {
     /// Node.
     pub node : &'a Node< Kind >,
@@ -57,7 +60,7 @@ pub mod internal
   /// Canonical implementation of node.
   ///
 
-  #[ derive( Debug ) ]
+  // #[ derive( Debug ) ]
   pub struct Node< Kind = NodeKindless >
   where
     Kind : NodeKindInterface,
@@ -66,8 +69,8 @@ pub mod internal
     pub out_nodes : HashSet< < Self as HasId >::Id >,
     /// Kind of the node.
     pub kind : Kind,
-    /// Label.
-    pub label : String,
+    /// Name.
+    pub name : < Self as HasId >::Id,
     // //// Lifetime.
     // _p : std::marker::PhantomData< &'a () >,
   }
@@ -77,8 +80,10 @@ pub mod internal
   impl Node
   {
 
-    /// Construct a labeled instance of the node.
-    pub fn make_labeled( label : String ) ->Self
+    /// Construct a name instance of the node.
+    pub fn make_named< Name >( name : Name ) ->Self
+    where
+      Name : Into< < Self as HasId >::Id >,
     {
       let out_nodes = HashSet::new();
       let kind = Default::default();
@@ -86,7 +91,7 @@ pub mod internal
       {
         out_nodes,
         kind,
-        label,
+        name : name.into(),
       }
     }
 
@@ -100,11 +105,12 @@ pub mod internal
     Kind : NodeKindInterface,
   {
 
-    type Id = crate::IdentityByPointer;
+    type Id = crate::IdentityByName;
 
     fn id( &self ) -> Self::Id
     {
-      Self::Id::make( &self )
+      self.name
+      // Self::Id::make( &self )
     }
 
   }
@@ -118,27 +124,6 @@ pub mod internal
     fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = Self > + 'a >
     {
       Box::new( NodesIterator::make( &self ) )
-    }
-
-  }
-
-  impl< Kind > NodeConstructableInterface
-  for Node< Kind >
-  where
-    Kind : NodeKindInterface,
-  {
-
-    fn make() -> Self
-    {
-      let out_nodes = HashSet::new();
-      let kind = Default::default();
-      let label = Default::default();
-      Self
-      {
-        out_nodes,
-        kind,
-        label
-      }
     }
 
   }
@@ -177,7 +162,7 @@ pub mod internal
 
   //
 
-  impl Extend< crate::IdentityByPointer > for Node
+  impl Extend< crate::IdentityByName > for Node
   {
 
     fn extend< Iter >( &mut self, iter : Iter )
@@ -188,9 +173,104 @@ pub mod internal
       {
         self.out_nodes.insert( node );
       }
-      // ( self.out_nodes as HashSet< Self > ).extend( iter );
     }
   }
+
+  //
+
+  impl< Kind > fmt::Debug for Node< Kind >
+  where
+    Kind : NodeKindInterface,
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      f.write_fmt( format_args!( "node::{:?}", self.id() ) )?;
+      for e in &self.out_nodes
+      {
+        f.write_fmt( format_args!( "\n - {:?}", e ) )?;
+      }
+      f.write_fmt( format_args!( "" ) )
+    }
+  }
+
+  // --
+
+//   impl< Kind > HasId
+//   for RefCell< Node< Kind > >
+//   where
+//     Kind : NodeKindInterface,
+//   {
+//
+//     type Id = crate::IdentityByName;
+//
+//     fn id( &self ) -> Self::Id
+//     {
+//       self.name
+//       // Self::Id::make( &self )
+//     }
+//
+//   }
+//
+//   impl< Kind > NodeBasicInterface
+//   for RefCell< Node< Kind > >
+//   where
+//     Kind : NodeKindInterface,
+//   {
+//
+//     fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = Self > + 'a >
+//     {
+//       Box::new( NodesIterator::make( &self ) )
+//     }
+//
+//   }
+//
+//   impl< Kind > PartialEq
+//   for RefCell< Node< Kind > >
+//   where
+//     Kind : NodeKindInterface,
+//   {
+//     fn eq( &self, other : &Self ) -> bool
+//     {
+//       self.id() == other.id()
+//     }
+//   }
+//
+//   impl< Kind > Eq
+//   for RefCell< Node< Kind > >
+//   where
+//     Kind : NodeKindInterface,
+//   {}
+//
+//   impl< Kind > Hash
+//   for RefCell< Node< Kind > >
+//   where
+//     Kind : NodeKindInterface,
+//   {
+//     fn hash< H >( &self, state : &mut H )
+//     where
+//       H : Hasher,
+//     {
+//       self.id().hash( state );
+//     }
+//   }
+
+//   //
+//
+//   impl Extend< crate::IdentityByName > for Node
+//   {
+//
+//     fn extend< Iter >( &mut self, iter : Iter )
+//     where
+//       Iter : IntoIterator< Item = < Self as HasId >::Id >
+//     {
+//       for node in iter
+//       {
+//         self.out_nodes.insert( node );
+//       }
+//     }
+//   }
+
+  // --
 
 }
 
