@@ -1,9 +1,8 @@
 /// Internal namespace.
 pub mod internal
 {
-  // use crate::prelude::*;
+  use crate::prelude::*;
   use core::fmt::Debug;
-  // use std::cmp::Eq;
   use core::hash::Hash;
 
   ///
@@ -18,6 +17,7 @@ pub mod internal
       Debug +
       PartialEq +
       Hash  +
+      Default +
     ,
   {
   }
@@ -30,46 +30,10 @@ pub mod internal
       Debug +
       PartialEq +
       Hash  +
+      Default +
     ,
   {
   }
-
-//   ///
-//   /// Nodes iterator.
-//   ///
-//
-//   #[ derive( Debug ) ]
-//   pub struct NodesIterator< Node >
-//   where
-//     Node : NodeBasicInterface + ?Sized,
-//   {
-//
-//     _p : std::marker::PhantomData< Node >,
-//   }
-//
-//   impl< Node > NodesIterator< Node >
-//   where
-//     Node : NodeBasicInterface + ?Sized,
-//   {
-//     pub fn make() -> Self
-//     {
-//       Self
-//       {
-//         _p : std::marker::PhantomData,
-//       }
-//     }
-//   }
-//
-//   impl< Node > Iterator for NodesIterator< Node >
-//   where
-//     Node : NodeBasicInterface,
-//   {
-//     type Item = Node;
-//     fn next( &mut self ) -> Option< Self::Item >
-//     {
-//       None
-//     }
-//   }
 
   ///
   /// Node of a graph.
@@ -79,10 +43,11 @@ pub mod internal
   where
     Self :
       Hash +
-      // PartialEq +
-      // Eq +
+      HasId +
   {
 
+    // /// Id of the node.
+    // type Id : IdentityInterface;
 //     /// Type which represents edge between nodes.
 //     type Edge : EdgeInterface;
 //
@@ -98,7 +63,7 @@ pub mod internal
   /// Node which is extendable
   ///
 
-  pub trait NodeWritableInterface
+  pub trait NodeExtendableInterface
   where
     Self :
       Sized +
@@ -106,10 +71,9 @@ pub mod internal
       Extend< Self > +
     ,
   {
-
   }
 
-  impl< T > NodeWritableInterface for T
+  impl< T > NodeExtendableInterface for T
   where
     T :
       NodeBasicInterface +

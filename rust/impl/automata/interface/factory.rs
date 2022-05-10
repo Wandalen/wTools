@@ -15,18 +15,18 @@ pub mod internal
   #[ derive( Debug ) ]
   pub struct NodeFactory< Node, Id >
   where
-    Node : NodeConstructableInterface,
+    Node : NodeConstructableInterface< Id = Id >,
     Id : IdentityInterface,
   {
     /// Map id to node.
     pub id_to_node_map : HashMap< Id, Node >,
     // /// Map name to node.
-    // name_to_node_map : HashMap< Name, Node >,
+    // pub name_to_node_map : HashMap< Name, Node >,
   }
 
   impl< Node, Id > NodeFactory< Node, Id >
   where
-    Node : NodeConstructableInterface,
+    Node : NodeConstructableInterface< Id = Id >,
     Id : IdentityInterface,
   {
 

@@ -2,11 +2,8 @@
 pub mod internal
 {
   // use crate::prelude::*;
-  // use std::collections::HashSet;
-  // use std::collections::HashMap;
   use core::fmt::Debug;
   use std::cmp::{ PartialEq, Eq };
-  // use core::hash::{ Hash, Hasher };
 
   ///
   /// Interface to identify an instance of somthging, for exampel a node.
@@ -35,6 +32,51 @@ pub mod internal
   {
   }
 
+  ///
+  /// Instance has an id.
+  ///
+
+  pub trait HasId
+  {
+    /// Id of the node.
+    type Id : IdentityInterface;
+    /// Get id.
+    fn id( &self ) -> Self::Id;
+  }
+
+
+  ///
+  /// Identify an instance by its location in memory.
+  ///
+
+  #[ derive( Debug, PartialEq, Eq, Copy, Clone, Hash ) ]
+  pub struct IdentityByPointer( usize );
+
+  impl IdentityByPointer
+  {
+
+    /// Construct from an arbitrary reference.
+    #[ inline ]
+    pub fn make< T >( src : &T ) -> Self
+    {
+      // Safety : it differentiate different instances.
+      let ptr = unsafe
+      {
+        std::mem::transmute::< _, usize >( src )
+      };
+      Self( ptr )
+    }
+
+  }
+
+  #[ test ]
+  fn identity_implemented_for_identity_by_pointer()
+  {
+    let src = IdentityByPointer::make( &13 );
+    check( src );
+    fn check< T : IdentityInterface >( _ : T ){}
+  }
+
 }
 
 /// Own namespace of the module.
@@ -56,7 +98,8 @@ pub mod parented
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
+  use super::internal as i;
+  pub use i::IdentityByPointer;
   pub use super::prelude::*;
 }
 
@@ -65,4 +108,6 @@ pub mod prelude
 {
   use super::internal as i;
   pub use i::IdentityInterface;
+  pub use i::HasId;
+  // pub use i::EqById;
 }
