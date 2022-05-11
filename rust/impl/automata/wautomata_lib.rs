@@ -13,8 +13,10 @@
 
 /// Other interfaces.
 pub mod interface;
-/// Canonical implementations.
+/// Canonical representation.
 pub mod canonical;
+/// Matrix representation.
+pub mod matrix;
 
 /// Namespace with dependencies.
 pub mod dependency
@@ -27,6 +29,7 @@ pub mod exposed
   pub use super::prelude::*;
   pub use super::interface::exposed::*;
   pub use super::canonical::exposed::*;
+  pub use super::matrix::exposed::*;
 }
 
 pub use exposed::*;
@@ -36,4 +39,5 @@ pub mod prelude
 {
   pub use super::interface::prelude::*;
   pub use super::canonical::prelude::*;
+  pub use super::matrix::prelude::*;
 }
