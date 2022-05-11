@@ -24,7 +24,6 @@ pub mod internal
   pub struct NodesIterator< 'a, Kind >
   where
     Kind : NodeKindInterface,
-    // Node< Kind > : Debug,
   {
     /// Node.
     pub node : &'a Node< Kind >,
@@ -71,8 +70,6 @@ pub mod internal
     pub kind : Kind,
     /// Name.
     pub name : < Self as HasId >::Id,
-    // //// Lifetime.
-    // _p : std::marker::PhantomData< &'a () >,
   }
 
   //
@@ -110,7 +107,6 @@ pub mod internal
     fn id( &self ) -> Self::Id
     {
       self.name
-      // Self::Id::make( &self )
     }
 
   }
