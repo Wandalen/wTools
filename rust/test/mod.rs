@@ -17,7 +17,7 @@ mod time;
 
 mod typing
 {
-  #[ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
+  // #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
   mod implements_test
   {
     #[ allow( unused_imports ) ]
