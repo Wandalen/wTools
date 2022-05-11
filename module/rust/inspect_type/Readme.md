@@ -5,6 +5,7 @@ Diagnostic-purpose tools to inspect type of a variable and its size.
 ### Sample
 
 ```rust
+#![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 pub use inspect_type::*;
 
 #[ cfg( feature = "nightly" ) ]
