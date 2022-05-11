@@ -5,8 +5,6 @@ pub mod internal
   use crate::canonical::*;
   use std::collections::HashMap;
   use wtools::prelude::*;
-  // use core::cell::RefCell;
-  // use std::sync::Arc;
 
   ///
   /// Node factory.
@@ -42,7 +40,7 @@ pub mod internal
     pub fn node< Id >( &self, id : Id )
     -> &crate::NodeCell< Node >
     where
-      Id : Into< < < Self as NodeFactoryInterface >::Node as HasId >::Id >,
+      Id : Into< Self::Id >,
     {
       let id = id.into();
       let got = self.id_to_node_map.get( &id );
@@ -73,15 +71,6 @@ pub mod internal
     }
 
   }
-
-  // trace_macros!( true );
-  // impl NodeFactory{ index2!
-  // {
-  //   make,
-  //   node,
-  //   node_making_id,
-  // }}
-  // trace_macros!( false );
 
   impl NodeFactory
   {
