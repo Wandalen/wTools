@@ -15,17 +15,18 @@ pub mod internal
 
   pub trait GraphBasicInterface
   {
-    // type Id : crate::IdentityInterface;
-    type Node : crate::HasId + crate::NodeBasicInterface;
+
+    /// It's not always possible to operate a node directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
+    /// Otherwise NodeHandle could be &Node.
+    type NodeHandle : NodeBasicInterface;
+
     /// Iterate output nodes of the node.
-    fn out_nodes< 'a >( &'a self, node_id : Self::Id ) -> Box< dyn Iterator< Item = Self::Node::Id > + 'a >;
+    fn out_nodes< 'a, 'b >( &'a self, node_id : < Self::NodeHandle as HasId >::Id )
+    ->
+    Box< dyn Iterator< Item = < Self::NodeHandle as HasId >::Id > + 'b >;
 
     /// Get node with id.
-    fn node< Self::Id >( &self, id : Self::Id )
-    -> &Node
-    // -> &crate::NodeCell< Node >
-    {
-    }
+    fn node( &self, id : < Self::NodeHandle as HasId >::Id ) -> Self::NodeHandle;
 
   }
 
@@ -37,7 +38,7 @@ pub mod internal
   where
     Self :
       GraphBasicInterface +
-      Extend< < Self as GraphBasicInterface >::Id > +
+      Extend< < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id > +
     ,
   {
   }
@@ -46,7 +47,7 @@ pub mod internal
   where
     T :
       GraphBasicInterface +
-      Extend< < Self as GraphBasicInterface >::Id > +
+      Extend< < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id > +
     ,
   {
   }
@@ -56,11 +57,14 @@ pub mod internal
   ///
 
   pub trait GraphKindGetterInterface
+  where
     Self : GraphBasicInterface,
   {
-    type NodeKind : crate::NodeKindIterface = crate::NodeKindless;
+    /// Enumerate kinds of the node.
+    type NodeKind : crate::NodeKindInterface;
+    // type NodeKind : crate::NodeKindInterface = crate::NodeKindless;
     /// Get kind of the node.
-    fn node_kind( &self, node_id : < Self as GraphBasicInterface >::Id ) -> Self::Kind;
+    fn node_kind( &self, node_id : < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id ) -> Self::NodeKind;
   }
 
 }

@@ -2,12 +2,8 @@
 pub mod internal
 {
   use crate::prelude::*;
-  use std::fmt;
   use core::fmt::Debug;
   use core::hash::Hash;
-  use core::cell::RefCell;
-  use std::sync::Arc;
-  use core::ops::Deref;
 
   ///
   /// Kind of a ode.
@@ -40,6 +36,13 @@ pub mod internal
   }
 
   ///
+  /// No kind for nodes.
+  ///
+
+  #[ derive( Debug, PartialEq, Copy, Clone, Hash, Default ) ]
+  pub struct NodeKindless();
+
+  ///
   /// Node of a graph.
   ///
 
@@ -56,81 +59,50 @@ pub mod internal
 
   }
 
-  ///
-  /// Node which is extendable
-  ///
-
-  pub trait NodeExtendableInterface
-  where
-    Self :
-      Sized +
-      NodeBasicInterface +
-      Extend< Self > +
-    ,
-  {
-  }
-
-  impl< T > NodeExtendableInterface for T
-  where
-    T :
-      NodeBasicInterface +
-      Extend< Self > +
-    ,
-  {
-  }
-
-  ///
-  /// Node which has a kind.
-  ///
-
-  pub trait NodeKindGetterInterface< Kind >
-  where
-    Kind : NodeKindInterface,
-    Self : NodeBasicInterface,
-  {
-    /// Get kind of the node.
-    fn kind() -> Kind;
-  }
-
 //   ///
-//   /// Interface of node cell.
+//   /// Node which is extendable
 //   ///
 //
-//   pub trait NodeCellInterface
+//   pub trait NodeExtendableInterface
+//   where
+//     Self :
+//       Sized +
+//       NodeBasicInterface +
+//       Extend< Self > +
+//     ,
 //   {
+//   }
 //
-//     /// Node itself.
-//     type Node : NodeBasicInterface;
-//     /// Node itself.
-//     type BorrowedNode;
+//   impl< T > NodeExtendableInterface for T
+//   where
+//     T :
+//       NodeBasicInterface +
+//       Extend< Self > +
+//     ,
+//   {
+//   }
+
+//   ///
+//   /// Node which has a kind.
+//   ///
 //
-//     /// Constructor.
-//     fn make( src : Self::Node ) -> Self;
-//     /// Borrow.
-//     fn borrow( &self ) -> Self::BorrowedNode;
-//
+//   pub trait NodeKindGetterInterface< Kind >
+//   where
+//     Kind : NodeKindInterface,
+//     Self : NodeBasicInterface,
+//   {
+//     /// Get kind of the node.
+//     fn kind() -> Kind;
 //   }
 
   ///
-  /// Node in RefCell in Rc.
+  /// Node handle.
   ///
 
-  #[ repr( transparent ) ]
-  pub struct NodeCell< Node >( Arc< RefCell< Node > > )
-  where
-    Node : NodeBasicInterface,
-  ;
-
-  impl< Node > NodeCell< Node >
-  where
-    Node : NodeBasicInterface,
+  pub trait NodeHandleInterface : NodeBasicInterface + HasId
   {
-    /// Constructor.
-    #[ inline ]
-    pub fn make( src : Node ) -> Self
-    {
-      Self( Arc::new( RefCell::new( src ) ) )
-    }
+    /// Node itself.
+    type Node : NodeBasicInterface + HasId< Id = Self::Id >;
   }
 
 }
@@ -149,6 +121,7 @@ pub mod exposed
 {
   use super::internal as i;
   pub use super::prelude::*;
+  pub use i::NodeKindless;
 }
 
 pub use exposed::*;
@@ -159,5 +132,6 @@ pub mod prelude
   use super::internal as i;
   pub use i::NodeKindInterface;
   pub use i::NodeBasicInterface;
-  pub use i::NodeKindGetterInterface;
+  // pub use i::NodeKindGetterInterface;
+  pub use i::NodeHandleInterface;
 }

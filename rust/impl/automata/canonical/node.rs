@@ -4,17 +4,8 @@ pub mod internal
   use crate::prelude::*;
   use std::collections::HashSet;
   use core::fmt::Debug;
-  use std::cmp::Eq;
-  use core::hash::{ Hash, Hasher };
+  // use core::hash::{ Hash };
   use std::fmt;
-  // use core::cell::RefCell;
-
-  ///
-  /// No kind for nodes.
-  ///
-
-  #[ derive( Debug, PartialEq, Copy, Clone, Hash, Default ) ]
-  pub struct NodeKindless();
 
   ///
   /// Nodes iterator for canonical node.
@@ -59,8 +50,7 @@ pub mod internal
   /// Canonical implementation of node.
   ///
 
-  // #[ derive( Debug ) ]
-  pub struct Node< Kind = NodeKindless >
+  pub struct Node< Kind = crate::NodeKindless >
   where
     Kind : NodeKindInterface,
   {
@@ -210,7 +200,6 @@ pub mod parented
 {
   use super::internal as i;
   pub use super::exposed::*;
-  pub use i::NodeKindless;
   pub use i::NodesIterator;
   pub use i::Node;
 }

@@ -8,7 +8,7 @@ pub mod internal
 
   macro_rules! IdOfFactory
   {
-    () => { < < Self as NodeFactoryInterface >::Node as HasId >::Id };
+    () => { < < Self as NodeFactoryInterface >::NodeHandle as HasId >::Id };
   }
 
   ///
@@ -119,8 +119,8 @@ pub mod internal
   impl NodeFactoryInterface
   for NodeFactory
   {
-    type Node = Node;
-    type NodeHandle = crate::NodeCell< Self::Node >;
+    // type Node = Node;
+    type NodeHandle = crate::NodeCell< crate::canonical::Node >;
 
   }
 

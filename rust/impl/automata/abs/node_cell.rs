@@ -3,31 +3,9 @@ pub mod internal
 {
   use crate::prelude::*;
   use std::fmt;
-  use core::fmt::Debug;
-  use core::hash::Hash;
   use core::cell::RefCell;
   use std::sync::Arc;
   use core::ops::Deref;
-  use core::hash::Hasher;
-
-//   ///
-//   /// Interface of node cell.
-//   ///
-//
-//   pub trait NodeCellInterface
-//   {
-//
-//     /// Node itself.
-//     type Node : NodeBasicInterface;
-//     /// Node itself.
-//     type BorrowedNode;
-//
-//     /// Constructor.
-//     fn make( src : Self::Node ) -> Self;
-//     /// Borrow.
-//     fn borrow( &self ) -> Self::BorrowedNode;
-//
-//   }
 
   ///
   /// Node in RefCell in Rc.
@@ -51,28 +29,13 @@ pub mod internal
     }
   }
 
-//   impl< Kind > NodeCellInterface
-//   for NodeCell
-//   {
-//
-//     /// Node itself.
-//     type Node = Node< Kind >;
-//     /// Node itself.
-//     type BorrowedNode;
-//
-//     /// Constructor.
-//     #[ inline ]
-//     pub fn make( src : Node ) -> Self
-//     {
-//       Self( Arc::new( RefCell::new( src ) ) )
-//     }
-//     /// Constructor.
-//     #[ inline ]
-//     fn borrow( &self ) -> Self::BorrowedNode
-//     {
-//       Self( Arc::new( RefCell::new( src ) ) )
-//     }
-//   }
+  impl< Node > NodeHandleInterface
+  for NodeCell< Node >
+  where
+    Node : NodeBasicInterface,
+  {
+    type Node = Node;
+  }
 
   impl< Node > HasId
   for NodeCell< Node >
@@ -95,61 +58,39 @@ pub mod internal
     Node : NodeBasicInterface,
   {
 
-    // fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + 'a >
     fn out_nodes( &self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + '_ >
     {
-      let iterator : Box< dyn Iterator< Item = < Self as HasId >::Id > > = self.borrow().out_nodes();
-      iterator
+      let node = self.borrow();
+      let iterator : Box< dyn Iterator< Item = < Self as HasId >::Id > > = node.out_nodes();
+      // xxx : check
+      // safety : ?
+      let result = unsafe
+      {
+        std::mem::transmute::< _, _ >( iterator )
+      };
+      result
     }
 
   }
 
-//   impl< Node > PartialEq
-//   for NodeCell< Node >
-//   where
-//     Node : NodeBasicInterface,
-//   {
-//     fn eq( &self, other : &Self ) -> bool
-//     {
-//       self.id() == other.id()
-//     }
-//   }
-//
-//   impl< Node > Eq
-//   for NodeCell< Node >
-//   where
-//     Node : NodeBasicInterface,
-//   {}
-//
-//   impl< Node > Hash
-//   for NodeCell< Node >
-//   where
-//     Node : NodeBasicInterface,
-//   {
-//     fn hash< H >( &self, state : &mut H )
-//     where
-//       H : Hasher,
-//     {
-//       self.id().hash( state );
-//     }
-//   }
+  //
 
-//   //
-//
-//   impl< Node > Extend< Node::Id >
+//   impl< Node > Extend
 //   for NodeCell< Node >
 //   where
-//     Node : NodeBasicInterface,
+//     Node : NodeBasicInterface + NodeExtendableInterface,
 //   {
 //
 //     fn extend< Iter >( &mut self, iter : Iter )
 //     where
 //       Iter : IntoIterator< Item = < Self as HasId >::Id >
 //     {
-//       for node in iter
-//       {
-//         self.out_nodes.insert( node );
-//       }
+//       let node = self.borrow_mut();
+//       node.extend( iter );
+//       // for node in iter
+//       // {
+//       //   self.out_nodes.insert( node );
+//       // }
 //     }
 //   }
 
