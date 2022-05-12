@@ -132,6 +132,7 @@ pub mod internal
     )
     where
       Iter : IntoIterator< Item = Id >,
+      // Iter::IntoIter : Clone,
       Id : Into< ID!() >,
     {
       let out_nodes_iter2 = out_nodes_iter.into_iter()
