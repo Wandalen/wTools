@@ -74,7 +74,9 @@ pub mod internal
   {
     type NodeHandle = crate::NodeCell< crate::canonical::Node >;
 
-    fn node( &self, id : ID!() ) -> &Self::NodeHandle
+    fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
+    where
+      Id : Into< ID!() >,
     {
       let id = id.into();
       let got = self.id_to_node_map.get( &id );
@@ -86,7 +88,9 @@ pub mod internal
       unreachable!( "No node with id {:?} found", id );
     }
 
-    fn node_mut( &mut self, id : ID!() ) -> &mut Self::NodeHandle
+    fn node_mut< Id >( &mut self, id : Id ) -> &mut Self::NodeHandle
+    where
+      Id : Into< ID!() >,
     {
       let id = id.into();
       let got = self.id_to_node_map.get_mut( &id );
@@ -98,10 +102,11 @@ pub mod internal
       unreachable!( "No node with id {:?} found", id );
     }
 
-    fn out_nodes< 'a, 'b >( &'a self, node_id : ID!() )
+    fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
     ->
     Box< dyn Iterator< Item = ID!() > + 'b >
     where
+      Id : Into< ID!() >,
       'a : 'b,
     {
       let node = self.node( node_id ).borrow();
@@ -119,16 +124,25 @@ pub mod internal
   {
 
     /// Iterate output nodes of the node.
-    fn node_extend_out_nodes< Iter >
+    fn node_extend_out_nodes< Id, Iter >
     (
       &mut self,
-      node_id : ID!(),
+      node_id : Id,
       out_nodes_iter : Iter,
     )
     where
-      Iter : IntoIterator< Item = ID!() >,
+      Iter : IntoIterator< Item = Id >,
+      Id : Into< ID!() >,
     {
-      self.node( node_id ).borrow_mut().extend( out_nodes_iter );
+      let out_nodes_iter2 = out_nodes_iter.into_iter()
+      .map( | id |
+      {
+        let id = id.into();
+        self.node( id );
+        id
+      });
+      self.node( node_id.into() ).borrow_mut().extend( out_nodes_iter2 );
+      // self.node_mut( node_id.into() ).extend( out_nodes_iter );
     }
 
   }

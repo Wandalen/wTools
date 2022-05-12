@@ -4,34 +4,30 @@ use wtools::prelude::*;
 
 //
 
-fn cell_factory_basic_test()
+fn node_test()
 {
   use wautomata::*;
 
-  let mut factory = wautomata::canonical::CellNodeFactory::make();
+  let mut factory = wautomata::canonical::NodeFactory::make();
 
-  let a = factory.node_making( 1 );
-  let b = factory.node_making( 2 );
+  let n1 = factory.node_making( 1 );
+  let n1b = factory.node( 1 );
+  assert_eq!( n1, n1b.id() );
+  dbg!( &n1 );
 
-  factory.node_extend_out_node( a, b );
-  factory.node_extend_out_nodes( b, [ a, b ].into_iter() );
+  let node1a = factory.node( 1 );
+  let node1b = factory.node( 1 );
+  assert_eq!( node1a, node1b );
 
-  dbg!( factory.node( a ) );
-  dbg!( factory.node( b ) );
-
-  let exp = hset![ b ];
-  let got : HashSet< _ > = factory.out_nodes( a ).collect();
-  assert_eq!( got, exp );
-
-  let exp = hset![ a, b ];
-  let got : HashSet< _ > = factory.out_nodes( b ).collect();
-  assert_eq!( got, exp );
+  let node1a = factory.node( &1 );
+  let node1b = factory.node( &&1 );
+  assert_eq!( node1a, node1b );
 
 }
 
 //
 
-fn factory_basic_test()
+fn basic_test()
 {
   use wautomata::*;
 
@@ -58,7 +54,7 @@ fn factory_basic_test()
 
 //
 
-fn factory_make_edge_list_test()
+fn make_edge_list_test()
 {
   use wautomata::*;
 
@@ -66,28 +62,22 @@ fn factory_make_edge_list_test()
 
   factory.make_edge_list
   ([
-    1, 2
+    1, 2,
     2, 1,
     2, 2,
   ])
   ;
 
-//   let a = factory.node_making( 1 );
-//   let b = factory.node_making( 2 );
-//
-//   factory.node_extend_out_node( a, b );
-//   factory.node_extend_out_nodes( b, [ a, b ].into_iter() );
-//
-//   dbg!( factory.node( a ) );
-//   dbg!( factory.node( b ) );
-//
-//   let exp = hset![ b ];
-//   let got : HashSet< _ > = factory.out_nodes( a ).collect();
-//   assert_eq!( got, exp );
-//
-//   let exp = hset![ a, b ];
-//   let got : HashSet< _ > = factory.out_nodes( b ).collect();
-//   assert_eq!( got, exp );
+  dbg!( factory.node( 1 ) );
+  dbg!( factory.node( 2 ) );
+
+  let exp = hset![ 2 ];
+  let got : HashSet< _ > = factory.out_nodes( 1 ).collect();
+  assert_eq!( got, exp );
+
+  let exp = hset![ 1, 2 ];
+  let got : HashSet< _ > = factory.out_nodes( 2 ).collect();
+  assert_eq!( got, exp );
 
 }
 
@@ -95,7 +85,7 @@ fn factory_make_edge_list_test()
 
 test_suite!
 {
-  cell_factory_basic,
-  factory_basic,
-  factory_make_edge_list,
+  node,
+  basic,
+  make_edge_list,
 }

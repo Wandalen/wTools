@@ -20,16 +20,23 @@ pub mod internal
     type NodeHandle : NodeBasicInterface;
 
     /// Get node with id.
-    fn node( &self, id : ID!() ) -> &Self::NodeHandle;
+    fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
+    where
+      Id : Into< ID!() >
+    ;
 
     /// Get node with id mutably.
-    fn node_mut( &mut self, id : ID!() ) -> &mut Self::NodeHandle;
+    fn node_mut< Id >( &mut self, id : Id ) -> &mut Self::NodeHandle
+    where
+      Id : Into< ID!() >
+    ;
 
     /// Iterate output nodes of the node.
-    fn out_nodes< 'a, 'b >( &'a self, node_id : ID!() )
+    fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
     ->
     Box< dyn Iterator< Item = ID!() > + 'b >
     where
+      Id : Into< ID!() >,
       'a : 'b,
     ;
 
@@ -47,23 +54,26 @@ pub mod internal
   {
 
     /// Iterate output nodes of the node.
-    fn node_extend_out_nodes< Iter >
+    fn node_extend_out_nodes< Id, Iter >
     (
       &mut self,
-      node_id : ID!(),
+      node_id : Id,
       out_nodes_iter : Iter,
     )
     where
-      Iter : IntoIterator< Item = ID!() >,
+      Id : Into< ID!() >,
+      Iter : IntoIterator< Item = Id >,
     ;
 
     /// Iterate output nodes of the node.
-    fn node_extend_out_node
+    fn node_extend_out_node< Id >
     (
       &mut self,
-      node_id : ID!(),
-      out_node_id : ID!(),
+      node_id : Id,
+      out_node_id : Id,
     )
+    where
+      Id : Into< ID!() >,
     {
       self.node_extend_out_nodes( node_id, core::iter::once( out_node_id ) );
     }
@@ -93,13 +103,21 @@ pub mod internal
     where
       Id : Into< ID!() >,
       IntoIter : IntoIterator< Item = Id >,
+      IntoIter::IntoIter : core::iter::ExactSizeIterator< Item = Id >,
     {
       use wtools::iter::prelude::*;
       let iter = into_iter.into_iter();
 
-      for [ src, dst ] in &iter.chunks( 2 )
+      // debug_assert_eq!( into_iter.len() % 2, 0 );
+
+      for mut chunk in &iter.chunks( 2 )
       {
-          println!( "{}--{}", src, dst );
+        let id1 = chunk.next().unwrap().into();
+        let id2 = chunk.next().unwrap().into();
+        self.node_making( id1 );
+        self.node_making( id2 );
+        self.node_extend_out_node( id1, id2 );
+        // println!( "{:?} -> {:?}", id1, id2 );
       }
 
       // for id in iter

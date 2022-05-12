@@ -120,6 +120,18 @@ pub mod internal
     }
   }
 
+  //
+
+  impl< Kind > PartialEq for Node< Kind >
+  where
+    Kind : NodeKindInterface,
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      self.id() == other.id()
+    }
+  }
+
 }
 
 /// Own namespace of the module.

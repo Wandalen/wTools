@@ -24,7 +24,7 @@ impls!
 
   fn node_making< Id >( &mut self, id : Id ) -> ID!()
   where
-    Id : Into< ID!() >
+    Id : Into< ID!() >,
   {
     let id = id.into();
 
@@ -35,40 +35,43 @@ impls!
     result.id()
   }
 
-  //
-
-//   fn node_making< Id >( &mut self, id : Id ) -> ID!()
-//   where
-//     Id : Into< ID!() >
-//   {
-//     let id = id.into();
-//
-//     let result = self.id_to_node_map
-//     .entry( id )
-//     .or_insert_with( || Node::make_named( id ) )
-//     ;
-//     result.id()
-//   }
-
   ///
   /// Iterate output nodes of the node.
   ///
 
-  fn node_extend_out_nodes< Iter >
+  fn node_extend_out_nodes< Id, Iter >
   (
     &mut self,
-    node_id : ID!(),
+    node_id : Id,
     out_nodes_iter : Iter,
   )
   where
-    Iter : IntoIterator< Item = ID!() >,
+    Iter : IntoIterator< Item = Id >,
+    Id : Into< ID!() >
   {
-    self.node_mut( node_id ).extend( out_nodes_iter );
+    let out_nodes_iter2 : Vec< _ > = out_nodes_iter.into_iter()
+    .map( | id |
+    {
+      let id = id.into();
+      self.node( id );
+      id
+    })
+    // .by_ref()
+    // .cloned()
+    // .copied()
+    // .by_ref()
+    .collect()
+    ;
+    // xxx
+    self.node_mut( node_id.into() ).extend( out_nodes_iter2 );
+    // self.node_mut( node_id.into() ).extend( out_nodes_iter );
   }
 
   //
 
-  fn node( &self, id : ID!() ) -> &Self::NodeHandle
+  fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
+  where
+    Id : Into< ID!() >,
   {
     let id = id.into();
     let got = self.id_to_node_map.get( &id );
@@ -82,7 +85,9 @@ impls!
 
   //
 
-  fn node_mut( &mut self, id : ID!() ) -> &mut Self::NodeHandle
+  fn node_mut< Id >( &mut self, id : Id ) -> &mut Self::NodeHandle
+  where
+    Id : Into< ID!() >
   {
     let id = id.into();
     let got = self.id_to_node_map.get_mut( &id );
@@ -96,10 +101,11 @@ impls!
 
   //
 
-  fn out_nodes< 'a, 'b >( &'a self, node_id : ID!() )
+  fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
   ->
   Box< dyn Iterator< Item = ID!() > + 'b >
   where
+    Id : Into< ID!() >,
     'a : 'b,
   {
     let node = self.node( node_id );

@@ -74,6 +74,29 @@ pub mod internal
 
   }
 
+  impl< 'a, T > From< &'a T > for IdentityWithPointer
+  {
+    fn from( src : &'a T ) -> Self
+    {
+      let ptr = unsafe
+      {
+        std::mem::transmute::< _, usize >( src )
+      };
+      Self( ptr )
+    }
+  }
+
+  // impl< Src > From< &Src > for IdentityWithPointer
+  // where
+  //   Src : Clone,
+  //   IdentityWithPointer : From< Src >,
+  // {
+  //   fn from( src : &Src ) -> Self
+  //   {
+  //     From::< Src >::from( src.clone() )
+  //   }
+  // }
+
   #[ test ]
   fn identity_implemented_for_identity_by_pointer()
   {
@@ -111,6 +134,17 @@ pub mod internal
     fn from( src : &'static str ) -> Self
     {
       Self( src )
+    }
+  }
+
+  impl< Src > From< &Src > for IdentityWithName
+  where
+    Src : Clone,
+    IdentityWithName : From< Src >,
+  {
+    fn from( src : &Src ) -> Self
+    {
+      From::< Src >::from( src.clone() )
     }
   }
 
@@ -157,6 +191,17 @@ pub mod internal
     fn from( src : isize ) -> Self
     {
       Self( src )
+    }
+  }
+
+  impl< Src > From< &Src > for IdentityWithInt
+  where
+    Src : Clone,
+    IdentityWithInt : From< Src >,
+  {
+    fn from( src : &Src ) -> Self
+    {
+      From::< Src >::from( src.clone() )
     }
   }
 
