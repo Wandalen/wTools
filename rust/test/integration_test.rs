@@ -25,12 +25,14 @@ impl< 'a > IntegrationModuleTest< 'a >
     }
   }
 
+  #[ allow( dead_code ) ]
   fn version( &mut self, version : &'a str ) -> &mut IntegrationModuleTest< 'a >
   {
     self.version = version;
     self
   }
 
+  #[ allow( dead_code ) ]
   fn code( &mut self, code : &'a str ) -> &mut IntegrationModuleTest< 'a >
   {
     self.code = code;
@@ -40,27 +42,53 @@ impl< 'a > IntegrationModuleTest< 'a >
   fn form( &self ) -> Result<(), &'static str>
   {
     std::fs::create_dir( &self.test_path ).unwrap();
+
+    let mut test_path = self.test_path.clone();
+
+    /* create binary test module */
+    let test_name = format!( "{}_test", self.dependency_name );
     let output = std::process::Command::new( "cargo" )
-    .current_dir( &self.test_path )
-    .args( [ "new", "--bin", self.dependency_name ] )
+    .current_dir( &test_path )
+    .args([ "new", "--bin", &test_name ])
     .output()
-    .expect("Failed to execute command");
-    println!( "{:?}", output );
+    .expect( "Failed to execute command" );
+    println!( "{}", std::str::from_utf8( &output.stderr ).expect( "Found invalid UTF-8" ) );
+
+    test_path.push( test_name );
+
+    /* setup config */
+    let dependency_name = format!( "dependencies.{}", self.dependency_name );
+    let output = std::process::Command::new( "selector" )
+    .current_dir( &test_path )
+    .args([ "set", "./Cargo.toml", &dependency_name, "*" ])
+    .output()
+    .expect( "Failed to execute command" );
+    let output = std::str::from_utf8( &output.stdout ).expect( "Found invalid UTF-8" );
+    let mut config_path = test_path.clone();
+    config_path.push( "Cargo.toml" );
+    std::fs::write( config_path, output ).unwrap();
+
+    /* write code */
+    test_path.push( "src" );
+    test_path.push( "main.rs" );
+    let code = format!( "#[ allow( unused_imports ) ]\nfn main()\n{{\n  use {}::*;\n  {}\n}}", self.dependency_name, self.code );
+    std::fs::write( &test_path, code ).unwrap();
 
     Ok( () )
   }
 
-  fn perform( &self ) -> Result<(), &'static str>
+  fn run( &self ) -> Result<(), &'static str>
   {
     let mut test_path = self.test_path.clone();
-    test_path.push( self.dependency_name );
+    let test_name = format!( "{}_test", self.dependency_name );
+    test_path.push( test_name );
 
     let output = std::process::Command::new( "cargo" )
     .current_dir( test_path )
-    .arg( "run --release" )
+    .args([ "test", "--release" ])
     .output()
-    .expect("Failed to execute command");
-    println!( "{:?}", output );
+    .unwrap();
+    println!( "{}", std::str::from_utf8( &output.stderr ).expect( "Found invalid UTF-8" ) );
 
     Ok( () )
   }
@@ -76,9 +104,18 @@ impl< 'a > IntegrationModuleTest< 'a >
 
 fn run_tests_test()
 {
-  let t = IntegrationModuleTest::new( "wtools" );
-  t.form().unwrap();
-  t.clean().unwrap();
+  test_default( "wtools" );
+  test_default( "wtest_basic" );
+
+  //
+
+  fn test_default( module_name : &str )
+  {
+    let t = IntegrationModuleTest::new( module_name );
+    t.form().unwrap();
+    t.run().unwrap();
+    t.clean().unwrap();
+  }
 }
 
 //
