@@ -158,7 +158,8 @@ pub mod internal
 
   //
 
-  impl Extend< crate::IdentityByName > for Node
+  impl Extend< crate::IdentityByName >
+  for Node
   {
 
     fn extend< Iter >( &mut self, iter : Iter )
@@ -174,7 +175,8 @@ pub mod internal
 
   //
 
-  impl< Kind > fmt::Debug for Node< Kind >
+  impl< Kind > fmt::Debug
+  for Node< Kind >
   where
     Kind : NodeKindInterface,
   {
@@ -188,83 +190,6 @@ pub mod internal
       f.write_fmt( format_args!( "" ) )
     }
   }
-
-  // --
-
-//   impl< Kind > HasId
-//   for RefCell< Node< Kind > >
-//   where
-//     Kind : NodeKindInterface,
-//   {
-//
-//     type Id = crate::IdentityByName;
-//
-//     fn id( &self ) -> Self::Id
-//     {
-//       self.name
-//       // Self::Id::make( &self )
-//     }
-//
-//   }
-//
-//   impl< Kind > NodeBasicInterface
-//   for RefCell< Node< Kind > >
-//   where
-//     Kind : NodeKindInterface,
-//   {
-//
-//     fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = Self > + 'a >
-//     {
-//       Box::new( NodesIterator::make( &self ) )
-//     }
-//
-//   }
-//
-//   impl< Kind > PartialEq
-//   for RefCell< Node< Kind > >
-//   where
-//     Kind : NodeKindInterface,
-//   {
-//     fn eq( &self, other : &Self ) -> bool
-//     {
-//       self.id() == other.id()
-//     }
-//   }
-//
-//   impl< Kind > Eq
-//   for RefCell< Node< Kind > >
-//   where
-//     Kind : NodeKindInterface,
-//   {}
-//
-//   impl< Kind > Hash
-//   for RefCell< Node< Kind > >
-//   where
-//     Kind : NodeKindInterface,
-//   {
-//     fn hash< H >( &self, state : &mut H )
-//     where
-//       H : Hasher,
-//     {
-//       self.id().hash( state );
-//     }
-//   }
-
-//   //
-//
-//   impl Extend< crate::IdentityByName > for Node
-//   {
-//
-//     fn extend< Iter >( &mut self, iter : Iter )
-//     where
-//       Iter : IntoIterator< Item = < Self as HasId >::Id >
-//     {
-//       for node in iter
-//       {
-//         self.out_nodes.insert( node );
-//       }
-//     }
-//   }
 
   // --
 

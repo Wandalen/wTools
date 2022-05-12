@@ -79,7 +79,7 @@ pub mod internal
   }
 
   ///
-  /// Node wich has a kind.
+  /// Node which has a kind.
   ///
 
   pub trait NodeKindGetterInterface< Kind >
@@ -90,6 +90,25 @@ pub mod internal
     /// Get kind of the node.
     fn kind() -> Kind;
   }
+
+//   ///
+//   /// Interface of node cell.
+//   ///
+//
+//   pub trait NodeCellInterface
+//   {
+//
+//     /// Node itself.
+//     type Node : NodeBasicInterface;
+//     /// Node itself.
+//     type BorrowedNode;
+//
+//     /// Constructor.
+//     fn make( src : Self::Node ) -> Self;
+//     /// Borrow.
+//     fn borrow( &self ) -> Self::BorrowedNode;
+//
+//   }
 
   ///
   /// Node in RefCell in Rc.
@@ -113,39 +132,6 @@ pub mod internal
     }
   }
 
-  impl< Node > From< Arc< RefCell< Node > > > for NodeCell< Node >
-  where
-    Node : NodeBasicInterface,
-  {
-    fn from( src : Arc< RefCell< Node > > ) -> Self
-    {
-      Self( src )
-    }
-  }
-
-  impl< Node > fmt::Debug
-  for NodeCell< Node >
-  where
-    Node : NodeBasicInterface + fmt::Debug,
-  {
-    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-    {
-      f.write_fmt( format_args!( "{:?}", self.0.borrow() ) )
-    }
-  }
-
-  impl< Node > Deref
-  for NodeCell< Node >
-  where
-    Node : NodeBasicInterface,
-  {
-    type Target = Arc< RefCell< Node > >;
-    fn deref( &self ) -> &Self::Target
-    {
-      &self.0
-    }
-  }
-
 }
 
 /// Parented namespace of the module.
@@ -162,7 +148,6 @@ pub mod exposed
 {
   use super::internal as i;
   pub use super::prelude::*;
-  pub use i::NodeCell;
 }
 
 pub use exposed::*;

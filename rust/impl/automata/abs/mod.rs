@@ -19,6 +19,8 @@ pub mod edge;
 pub mod identity;
 /// Node interface.
 pub mod node;
+/// Node in a ref counted cell.
+pub mod node_cell;
 
 /// Factory of nodes.
 pub mod factory;
@@ -29,10 +31,11 @@ pub mod exposed
   // use super::internal as i;
   pub use super::prelude::*;
 
-  pub use super::edge::*;
-  pub use super::node::*;
-  pub use super::identity::*;
-  pub use super::factory::*;
+  pub use super::edge::exposed::*;
+  pub use super::node::exposed::*;
+  pub use super::node_cell::exposed::*;
+  pub use super::identity::exposed::*;
+  pub use super::factory::exposed::*;
 
 }
 
@@ -42,10 +45,11 @@ pub use exposed::*;
 pub mod prelude
 {
   // use super::internal as i;
-  pub use super::edge::*;
-  pub use super::node::*;
-  pub use super::identity::*;
-  pub use super::factory::*;
+  pub use super::edge::prelude::*;
+  pub use super::node::prelude::*;
+  pub use super::node_cell::prelude::*;
+  pub use super::identity::prelude::*;
+  pub use super::factory::prelude::*;
 
   // pub use i::GraphInterface;
 }

@@ -6,6 +6,11 @@ pub mod internal
   use std::collections::HashMap;
   use wtools::prelude::*;
 
+  macro_rules! IdOfFactory
+  {
+    () => { < < Self as NodeFactoryInterface >::Node as HasId >::Id };
+  }
+
   ///
   /// Node factory.
   ///
@@ -14,12 +19,7 @@ pub mod internal
   pub struct NodeFactory
   {
     /// Map id to node.
-    pub id_to_node_map : HashMap< < < Self as NodeFactoryInterface >::Node as HasId >::Id, crate::NodeCell< Node > >,
-  }
-
-  macro_rules! IdOfFactory
-  {
-    () => { < < Self as NodeFactoryInterface >::Node as HasId >::Id };
+    pub id_to_node_map : HashMap< IdOfFactory!(), crate::NodeCell< Node > >,
   }
 
   impls!
@@ -36,26 +36,6 @@ pub mod internal
       {
         id_to_node_map,
       }
-    }
-
-    ///
-    /// Get node.
-    ///
-
-    pub fn node< Id >( &self, id : Id )
-    -> &crate::NodeCell< Node >
-    where
-      Id : Into< IdOfFactory!() >,
-      // Id : Into< < < Self as NodeFactoryInterface >::Node as HasId >::Id >,
-    {
-      let id = id.into();
-      let got = self.id_to_node_map.get( &id );
-      if got.is_some()
-      {
-        let result : &crate::NodeCell< Node > = got.unwrap().clone();
-        return result;
-      }
-      unreachable!( "No node with id {:?} found", id );
     }
 
     ///
@@ -76,6 +56,26 @@ pub mod internal
       result.borrow().id()
     }
 
+    ///
+    /// Get node.
+    ///
+
+    pub fn node< Id >( &self, id : Id )
+    -> &crate::NodeCell< Node >
+    // -> &impl NodeCellInterface
+    where
+      Id : Into< IdOfFactory!() >,
+    {
+      let id = id.into();
+      let got = self.id_to_node_map.get( &id );
+      if got.is_some()
+      {
+        let result : &crate::NodeCell< Node > = got.unwrap().clone();
+        return result;
+      }
+      unreachable!( "No node with id {:?} found", id );
+    }
+
   }
 
   impl NodeFactory
@@ -84,20 +84,51 @@ pub mod internal
     index!
     {
       make,
-      node,
       node_making_id,
+      node,
     }
 
   }
+
+//   impl GraphBasicInterface
+//   for NodeFactory
+//   {
+//
+//     ///
+//     /// Get node.
+//     ///
+//
+//     pub fn node< Id >( &self, id : Id )
+//     -> &crate::NodeCell< Node >
+//     // -> &impl NodeCellInterface
+//     where
+//       Id : Into< IdOfFactory!() >,
+//     {
+//       let id = id.into();
+//       let got = self.id_to_node_map.get( &id );
+//       if got.is_some()
+//       {
+//         let result : &crate::NodeCell< Node > = got.unwrap().clone();
+//         return result;
+//       }
+//       unreachable!( "No node with id {:?} found", id );
+//     }
+//
+//   }
 
   impl NodeFactoryInterface
   for NodeFactory
   {
     type Node = Node;
-
-
+    type NodeHandle = crate::NodeCell< Self::Node >;
 
   }
+
+  // impl GraphBasicInterface
+  // for NodeFactory
+  // {
+  //
+  // }
 
 }
 
