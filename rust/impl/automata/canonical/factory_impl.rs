@@ -47,43 +47,53 @@ impls!
   )
   where
     Iter : IntoIterator< Item = Id >,
-    // Iter::IntoIter : Clone,
+    Iter::IntoIter : Clone,
     Id : Into< ID!() >
   {
 
-    let out_nodes_iter2 : Vec< _ > = out_nodes_iter.into_iter()
+    // let out_nodes_iter2 = out_nodes_iter.into_iter()
+    // .map( | id |
+    // {
+    //   let id = id.into();
+    //   self.node( id );
+    //   id
+    // })
+    // // .collect()
+    // ;
+    // self.node_mut( node_id.into() ).extend( out_nodes_iter2 );
+
+    // let out_nodes_iter2 : Vec< _ > = out_nodes_iter.into_iter()
+    // .map( | id |
+    // {
+    //   let id = id.into();
+    //   self.node( id );
+    //   id
+    // })
+    // .collect()
+    // ;
+    // self.node_mut( node_id.into() ).extend( out_nodes_iter2 );
+
+    let iter = out_nodes_iter.into_iter();
+    let iter2 = iter.clone();
+
+    #[ cfg( debug_assertions ) ]
+    iter
+    .map( | id |
+    {
+      let node = self.node( id );
+    })
+    ;
+
+    let iter3 = iter2.into_iter()
     .map( | id |
     {
       let id = id.into();
-      self.node( id );
       id
     })
-    .collect()
     ;
-    self.node_mut( node_id.into() ).extend( out_nodes_iter2 );
 
-//     let iter = out_nodes_iter.into_iter();
-//     let iter2 = iter.clone();
-//
-//     // #[ cfg( debug_assertions ) ]
-//     iter()
-//     .map( | id |
-//     {
-//       let node = self.node( id );
-//     })
-//     ;
-//
-//     let iter3 = iter2.into_iter()
-//     .map( | id |
-//     {
-//       let id = id.into();
-//       // let node = self.node( id );
-//       id
-//     })
-//     ;
-//
-//     // xxx
-//     self.node_mut( node_id.into() ).extend( iter3 );
+    // xxx
+    self.node_mut( node_id.into() ).extend( iter3 );
   }
 
   //

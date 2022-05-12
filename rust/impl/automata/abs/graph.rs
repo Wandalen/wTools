@@ -63,7 +63,7 @@ pub mod internal
     where
       Id : Into< ID!() >,
       Iter : IntoIterator< Item = Id >,
-      // Iter::IntoIter : Clone,
+      Iter::IntoIter : Clone,
     ;
 
     /// Iterate output nodes of the node.
@@ -75,7 +75,9 @@ pub mod internal
     )
     where
       Id : Into< ID!() >,
-      // core::iter::Once< Id > : Clone,
+      // ID!() : Into< ID!() >,
+      // Id : < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id,
+      core::iter::Once< Id > : Clone,
     {
       // let out_node_id : ID!() = out_node_id.into();
       // self.node_extend_out_nodes( node_id, core::iter::once( out_node_id ) );
