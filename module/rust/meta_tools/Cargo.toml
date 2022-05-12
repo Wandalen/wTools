@@ -1,6 +1,6 @@
 [package]
 name = "meta_tools"
-version = "0.2.5"
+version = "0.2.6"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -49,7 +49,7 @@ path = "sample/rust/meta_tools_trivial_sample/src/main.rs"
 # werror = { version = "~0.1", path = "../../rust/werror" }
 # winterval = { version = "~0.1", path = "../../rust/winterval" }
 # proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
-for_each = { version = "0.1", path = "../../rust/for_each" }
+for_each = { version = "~0.1", path = "../../rust/for_each" }
 literally = "~0.1"
 # either = "~1.6"
 # # maplit = "~1.0"
