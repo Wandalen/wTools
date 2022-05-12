@@ -2,12 +2,11 @@
 pub mod internal
 {
   use crate::prelude::*;
-  // use std::fmt;
-  // use core::fmt::Debug;
-  // use core::hash::Hash;
-  // use core::cell::RefCell;
-  // use std::sync::Arc;
-  // use core::ops::Deref;
+
+  macro_rules! ID
+  {
+    () => { < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id };
+  }
 
   ///
   /// Graph which know how to iterate output nodes of a given node.
@@ -20,39 +19,75 @@ pub mod internal
     /// Otherwise NodeHandle could be &Node.
     type NodeHandle : NodeBasicInterface;
 
+    /// Get node with id.
+    fn node( &self, id : ID!() ) -> &Self::NodeHandle;
+
+    /// Get node with id mutably.
+    fn node_mut( &mut self, id : ID!() ) -> &mut Self::NodeHandle;
+
     /// Iterate output nodes of the node.
-    fn out_nodes< 'a, 'b >( &'a self, node_id : < Self::NodeHandle as HasId >::Id )
+    fn out_nodes< 'a, 'b >( &'a self, node_id : ID!() )
     ->
-    Box< dyn Iterator< Item = < Self::NodeHandle as HasId >::Id > + 'b >
+    Box< dyn Iterator< Item = ID!() > + 'b >
     where
       'a : 'b,
     ;
 
-    /// Get node with id.
-    fn node( &self, id : < Self::NodeHandle as HasId >::Id ) -> &Self::NodeHandle;
+  }
+
+  ///
+  /// Graph which allow to add more edges between nodes.
+  ///
+
+  pub trait GraphEditableInterface
+  where
+    Self :
+      GraphBasicInterface +
+    ,
+  {
+
+    /// Iterate output nodes of the node.
+    fn node_extend_out_nodes< Iter >
+    (
+      &mut self,
+      node_id : ID!(),
+      out_nodes_iter : Iter,
+    )
+    where
+      Iter : IntoIterator< Item = ID!() >,
+    ;
+
+    /// Iterate output nodes of the node.
+    fn node_extend_out_node
+    (
+      &mut self,
+      node_id : ID!(),
+      out_node_id : ID!(),
+    )
+    {
+      self.node_extend_out_nodes( node_id, core::iter::once( out_node_id ) );
+    }
 
   }
 
   ///
-  /// Graph which know how to extend set of out nodes of a given node.
+  /// Graph which allow to add more nodes.
   ///
 
   pub trait GraphExtendableInterface
   where
     Self :
       GraphBasicInterface +
-      Extend< < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id > +
+      GraphEditableInterface +
     ,
   {
-  }
 
-  impl< T > GraphExtendableInterface for T
-  where
-    T :
-      GraphBasicInterface +
-      Extend< < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id > +
-    ,
-  {
+    /// Either make new or get existing node.
+    fn node_making< Id >( &mut self, id : Id ) -> ID!()
+    where
+      Id : Into< ID!() >
+    ;
+
   }
 
   ///
@@ -65,9 +100,8 @@ pub mod internal
   {
     /// Enumerate kinds of the node.
     type NodeKind : crate::NodeKindInterface;
-    // type NodeKind : crate::NodeKindInterface = crate::NodeKindless;
     /// Get kind of the node.
-    fn node_kind( &self, node_id : < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id ) -> Self::NodeKind;
+    fn node_kind( &self, node_id : ID!() ) -> Self::NodeKind;
   }
 
 }
@@ -95,6 +129,7 @@ pub mod prelude
 {
   use super::internal as i;
   pub use i::GraphBasicInterface;
+  pub use i::GraphEditableInterface;
   pub use i::GraphExtendableInterface;
   pub use i::GraphKindGetterInterface;
 }

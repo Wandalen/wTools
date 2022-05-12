@@ -55,9 +55,9 @@ pub mod internal
   ///
 
   #[ derive( Debug, PartialEq, Eq, Copy, Clone, Hash, Default ) ]
-  pub struct IdentityByPointer( usize );
+  pub struct IdentityWithPointer( usize );
 
-  impl IdentityByPointer
+  impl IdentityWithPointer
   {
 
     /// Construct from an arbitrary reference.
@@ -79,8 +79,8 @@ pub mod internal
   {
     let x = 1;
     let y = 1;
-    let src1 = IdentityByPointer::make( &x );
-    let src2 = IdentityByPointer::make( &y );
+    let src1 = IdentityWithPointer::make( &x );
+    let src2 = IdentityWithPointer::make( &y );
     check( src1 );
     fn check< T : IdentityInterface >( _ : T ){}
     assert_ne!( src1, src2 );
@@ -91,10 +91,10 @@ pub mod internal
   ///
 
   #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
-  pub struct IdentityByName( pub &'static str )
+  pub struct IdentityWithName( pub &'static str )
   ;
 
-  impl IdentityByName
+  impl IdentityWithName
   {
 
     /// Construct from an arbitrary reference.
@@ -106,7 +106,7 @@ pub mod internal
 
   }
 
-  impl From< &'static str > for IdentityByName
+  impl From< &'static str > for IdentityWithName
   {
     fn from( src : &'static str ) -> Self
     {
@@ -114,7 +114,7 @@ pub mod internal
     }
   }
 
-  impl fmt::Debug for IdentityByName
+  impl fmt::Debug for IdentityWithName
   {
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
     {
@@ -125,8 +125,8 @@ pub mod internal
   #[ test ]
   fn identity_implemented_for_identity_by_name()
   {
-    let src1 = IdentityByName::make( "abc" );
-    let src2 = IdentityByName::make( "abc" );
+    let src1 = IdentityWithName::make( "abc" );
+    let src2 = IdentityWithName::make( "abc" );
     check( src1 );
     fn check< T : IdentityInterface >( _ : T ){}
     assert_eq!( src1, src2 );
@@ -137,10 +137,10 @@ pub mod internal
   ///
 
   #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
-  pub struct IdentityByInt( pub isize )
+  pub struct IdentityWithInt( pub isize )
   ;
 
-  impl IdentityByInt
+  impl IdentityWithInt
   {
 
     /// Construct from an arbitrary reference.
@@ -152,7 +152,7 @@ pub mod internal
 
   }
 
-  impl From< isize > for IdentityByInt
+  impl From< isize > for IdentityWithInt
   {
     fn from( src : isize ) -> Self
     {
@@ -160,7 +160,7 @@ pub mod internal
     }
   }
 
-  impl fmt::Debug for IdentityByInt
+  impl fmt::Debug for IdentityWithInt
   {
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
     {
@@ -171,8 +171,8 @@ pub mod internal
   #[ test ]
   fn identity_implemented_for_identity_by_int()
   {
-    let src1 = IdentityByInt::make( 3 );
-    let src2 = IdentityByInt::make( 3 );
+    let src1 = IdentityWithInt::make( 3 );
+    let src2 = IdentityWithInt::make( 3 );
     check( src1 );
     fn check< T : IdentityInterface >( _ : T ){}
     assert_eq!( src1, src2 );
@@ -200,9 +200,9 @@ pub mod parented
 pub mod exposed
 {
   use super::internal as i;
-  pub use i::IdentityByPointer;
-  pub use i::IdentityByName;
-  pub use i::IdentityByInt;
+  pub use i::IdentityWithPointer;
+  pub use i::IdentityWithName;
+  pub use i::IdentityWithInt;
   pub use super::prelude::*;
 }
 
