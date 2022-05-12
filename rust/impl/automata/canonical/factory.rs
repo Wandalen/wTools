@@ -90,38 +90,58 @@ pub mod internal
 
   }
 
-//   impl GraphBasicInterface
-//   for NodeFactory
-//   {
-//
-//     ///
-//     /// Get node.
-//     ///
-//
-//     pub fn node< Id >( &self, id : Id )
-//     -> &crate::NodeCell< Node >
-//     // -> &impl NodeCellInterface
-//     where
-//       Id : Into< IdOfFactory!() >,
-//     {
-//       let id = id.into();
-//       let got = self.id_to_node_map.get( &id );
-//       if got.is_some()
-//       {
-//         let result : &crate::NodeCell< Node > = got.unwrap().clone();
-//         return result;
-//       }
-//       unreachable!( "No node with id {:?} found", id );
-//     }
-//
-//   }
+  impl GraphBasicInterface
+  for NodeFactory
+  {
+    type NodeHandle = crate::NodeCell< crate::canonical::Node >;
+
+    // pub fn node< Id >( &self, id : Id )
+    // -> &crate::NodeCell< Node >
+    // -> &impl NodeCellInterface
+    fn node( &self, id : < Self::NodeHandle as HasId >::Id ) -> &Self::NodeHandle
+    {
+      let id = id.into();
+      let got = self.id_to_node_map.get( &id );
+      if got.is_some()
+      {
+        let result : &crate::NodeCell< Node > = got.unwrap().clone();
+        return result;
+      }
+      unreachable!( "No node with id {:?} found", id );
+    }
+
+    // pub fn node< Id >( &self, id : Id )
+    // -> &crate::NodeCell< Node >
+    // -> &impl NodeCellInterface
+    fn out_nodes< 'a, 'b >( &'a self, node_id : < Self::NodeHandle as HasId >::Id )
+    ->
+    Box< dyn Iterator< Item = < Self::NodeHandle as HasId >::Id > + 'b >
+    where
+      'a : 'b,
+    // where
+    //   Id : Into< IdOfFactory!() >,
+    {
+      // use core::cell::Ref;
+
+      let node = self.node( node_id ).borrow();
+      // let iterator = Ref::map( node, | node | &node.out_nodes.iter().cloned() );
+
+      let iterator : Box< dyn Iterator< Item = < Self::NodeHandle as HasId >::Id > > = Box::new( node.out_nodes.iter().cloned() );
+      unsafe
+      {
+        std::mem::transmute::< _, _ >( iterator )
+      }
+      // iterator
+      // xxx
+    }
+
+  }
 
   impl NodeFactoryInterface
   for NodeFactory
   {
     // type Node = Node;
     type NodeHandle = crate::NodeCell< crate::canonical::Node >;
-
   }
 
   // impl GraphBasicInterface

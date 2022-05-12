@@ -23,10 +23,13 @@ pub mod internal
     /// Iterate output nodes of the node.
     fn out_nodes< 'a, 'b >( &'a self, node_id : < Self::NodeHandle as HasId >::Id )
     ->
-    Box< dyn Iterator< Item = < Self::NodeHandle as HasId >::Id > + 'b >;
+    Box< dyn Iterator< Item = < Self::NodeHandle as HasId >::Id > + 'b >
+    where
+      'a : 'b,
+    ;
 
     /// Get node with id.
-    fn node( &self, id : < Self::NodeHandle as HasId >::Id ) -> Self::NodeHandle;
+    fn node( &self, id : < Self::NodeHandle as HasId >::Id ) -> &Self::NodeHandle;
 
   }
 

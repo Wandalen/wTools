@@ -23,11 +23,11 @@ pub mod exposed
 {
   pub use super::prelude::*;
   pub use super::edge::exposed::*;
+  pub use super::factory::exposed::*;
+  pub use super::graph::exposed::*;
   pub use super::node::exposed::*;
   pub use super::node_cell::exposed::*;
   pub use super::identity::exposed::*;
-  pub use super::factory::exposed::*;
-
 }
 
 pub use exposed::*;
@@ -36,8 +36,9 @@ pub use exposed::*;
 pub mod prelude
 {
   pub use super::edge::prelude::*;
+  pub use super::factory::prelude::*;
+  pub use super::graph::prelude::*;
   pub use super::node::prelude::*;
   pub use super::node_cell::prelude::*;
   pub use super::identity::prelude::*;
-  pub use super::factory::prelude::*;
 }

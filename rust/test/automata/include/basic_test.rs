@@ -23,11 +23,11 @@ fn basic_test()
   dbg!( factory.node( b ) );
 
   let exp = vec![ b ];
-  let got : Vec< _ > = factory.node( a ).borrow().out_nodes().collect();
+  let got : Vec< _ > = factory.out_nodes( a ).collect();
   assert_eq!( got, exp );
 
   let exp = hset![ a, b ];
-  let got : HashSet< _ > = factory.node( b ).borrow().out_nodes().collect();
+  let got : HashSet< _ > = factory.out_nodes( b ).collect();
   assert_eq!( got, exp );
 
   // a.borrow_mut().extend( core::iter::once( b.borrow().id() ) );

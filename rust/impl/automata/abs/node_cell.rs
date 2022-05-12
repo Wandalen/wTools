@@ -58,18 +58,17 @@ pub mod internal
     Node : NodeBasicInterface,
   {
 
-    fn out_nodes( &self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + '_ >
-    {
-      let node = self.borrow();
-      let iterator : Box< dyn Iterator< Item = < Self as HasId >::Id > > = node.out_nodes();
-      // xxx : check
-      // safety : ?
-      let result = unsafe
-      {
-        std::mem::transmute::< _, _ >( iterator )
-      };
-      result
-    }
+    // fn out_nodes( &self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + '_ >
+    // {
+    //   let node = self.borrow();
+    //   let iterator : Box< dyn Iterator< Item = < Self as HasId >::Id > > = node.out_nodes();
+    //   // safety : developer should make sure graph is not edited during the iterating
+    //   let result = unsafe
+    //   {
+    //     std::mem::transmute::< _, _ >( iterator )
+    //   };
+    //   result
+    // }
 
   }
 
