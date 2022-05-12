@@ -98,7 +98,7 @@ pub mod internal
     // fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + 'a >
     fn out_nodes( &self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + '_ >
     {
-      let iterator : &dyn Iterator< Item = < Self as HasId >::Id > = self.borrow().out_nodes();
+      let iterator : Box< dyn Iterator< Item = < Self as HasId >::Id > > = self.borrow().out_nodes();
       iterator
     }
 
