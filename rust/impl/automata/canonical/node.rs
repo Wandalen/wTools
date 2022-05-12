@@ -117,44 +117,45 @@ pub mod internal
     Kind : NodeKindInterface,
   {
 
-    fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + 'a >
+    fn out_nodes( &self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + '_ >
+    // fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + 'a >
     {
       Box::new( self.out_nodes.iter().cloned() )
     }
 
   }
 
-  /* zzz : macro? */
-
-  impl< Kind > PartialEq
-  for Node< Kind >
-  where
-    Kind : NodeKindInterface,
-  {
-    fn eq( &self, other : &Self ) -> bool
-    {
-      self.id() == other.id()
-    }
-  }
-
-  impl< Kind > Eq
-  for Node< Kind >
-  where
-    Kind : NodeKindInterface,
-  {}
-
-  impl< Kind > Hash
-  for Node< Kind >
-  where
-    Kind : NodeKindInterface,
-  {
-    fn hash< H >( &self, state : &mut H )
-    where
-      H : Hasher,
-    {
-      self.id().hash( state );
-    }
-  }
+//   /* zzz : macro? */
+//
+//   impl< Kind > PartialEq
+//   for Node< Kind >
+//   where
+//     Kind : NodeKindInterface,
+//   {
+//     fn eq( &self, other : &Self ) -> bool
+//     {
+//       self.id() == other.id()
+//     }
+//   }
+//
+//   impl< Kind > Eq
+//   for Node< Kind >
+//   where
+//     Kind : NodeKindInterface,
+//   {}
+//
+//   impl< Kind > Hash
+//   for Node< Kind >
+//   where
+//     Kind : NodeKindInterface,
+//   {
+//     fn hash< H >( &self, state : &mut H )
+//     where
+//       H : Hasher,
+//     {
+//       self.id().hash( state );
+//     }
+//   }
 
   //
 

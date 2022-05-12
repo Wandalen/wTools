@@ -46,12 +46,13 @@ pub mod internal
   pub trait NodeBasicInterface
   where
     Self :
-      Hash +
+      // Hash +
       HasId +
   {
 
     /// Iterate output nodes of the node.
-    fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + 'a >;
+    fn out_nodes( &self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + '_ >;
+    // fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + 'a >;
 
   }
 

@@ -20,6 +20,7 @@ pub mod internal
       Debug +
       PartialEq +
       Eq +
+      Hash +
   {
   }
 
@@ -32,6 +33,7 @@ pub mod internal
       Debug +
       PartialEq +
       Eq +
+      Hash +
     ,
   {
   }
