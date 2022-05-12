@@ -88,6 +88,26 @@ pub mod internal
       Id : Into< ID!() >
     ;
 
+    /// Make edges.
+    fn make_edge_list< IntoIter, Id >( &mut self, into_iter : IntoIter )
+    where
+      Id : Into< ID!() >,
+      IntoIter : IntoIterator< Item = Id >,
+    {
+      use wtools::iter::prelude::*;
+      let iter = into_iter.into_iter();
+
+      for [ src, dst ] in &iter.chunks( 2 )
+      {
+          println!( "{}--{}", src, dst );
+      }
+
+      // for id in iter
+      // {
+      //   let id = id.into();
+      // }
+    }
+
   }
 
   ///

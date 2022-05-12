@@ -35,6 +35,21 @@ impls!
     result.id()
   }
 
+  //
+
+//   fn node_making< Id >( &mut self, id : Id ) -> ID!()
+//   where
+//     Id : Into< ID!() >
+//   {
+//     let id = id.into();
+//
+//     let result = self.id_to_node_map
+//     .entry( id )
+//     .or_insert_with( || Node::make_named( id ) )
+//     ;
+//     result.id()
+//   }
+
   ///
   /// Iterate output nodes of the node.
   ///

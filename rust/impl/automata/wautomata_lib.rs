@@ -28,6 +28,7 @@ pub mod dependency
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::prelude::*;
   pub use super::abs::exposed::*;
   pub use super::prelude::*;
   pub use super::algo::exposed::*;
