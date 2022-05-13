@@ -6,6 +6,8 @@ pub mod internal
   use std::collections::HashMap;
   use wtools::prelude::*;
 
+  include!( "./factory_impl.rs" );
+
   ///
   /// Node factory.
   ///
@@ -14,68 +16,7 @@ pub mod internal
   pub struct NodeFactory
   {
     /// Map id to node.
-    pub id_to_node_map : HashMap< < < Self as NodeFactoryInterface >::Node as HasId >::Id, crate::NodeCell< Node > >,
-  }
-
-  macro_rules! IdOfFactory
-  {
-    () => { < < Self as NodeFactoryInterface >::Node as HasId >::Id };
-  }
-
-  impls!
-  {
-
-    ///
-    /// Constructor.
-    ///
-
-    pub fn make() -> Self
-    {
-      let id_to_node_map = HashMap::new();
-      Self
-      {
-        id_to_node_map,
-      }
-    }
-
-    ///
-    /// Get node.
-    ///
-
-    pub fn node< Id >( &self, id : Id )
-    -> &crate::NodeCell< Node >
-    where
-      Id : Into< IdOfFactory!() >,
-      // Id : Into< < < Self as NodeFactoryInterface >::Node as HasId >::Id >,
-    {
-      let id = id.into();
-      let got = self.id_to_node_map.get( &id );
-      if got.is_some()
-      {
-        let result : &crate::NodeCell< Node > = got.unwrap().clone();
-        return result;
-      }
-      unreachable!( "No node with id {:?} found", id );
-    }
-
-    ///
-    /// Get node, making a new one if no such exist. Returns id of the node.
-    ///
-
-    pub fn node_making_id< Id >( &mut self, id : Id ) -> IdOfFactory!()
-    where
-      Id : Into< IdOfFactory!() >,
-    {
-      let id = id.into();
-
-      let result = self.id_to_node_map
-      .entry( id )
-      .or_insert_with( || crate::NodeCell::make( Node::make_named( id ) ) )
-      ;
-
-      result.borrow().id()
-    }
-
+    pub id_to_node_map : HashMap< ID!(), crate::canonical::Node >,
   }
 
   impl NodeFactory
@@ -84,19 +25,58 @@ pub mod internal
     index!
     {
       make,
-      node,
-      node_making_id,
     }
 
   }
 
+  //
+
+  impl GraphBasicInterface
+  for NodeFactory
+  {
+    type NodeHandle = crate::canonical::Node;
+
+    index!
+    {
+      node,
+      node_mut,
+      out_nodes,
+    }
+
+  }
+
+  //
+
+  impl GraphExtendableInterface
+  for NodeFactory
+  {
+
+    index!
+    {
+      node_making,
+    }
+
+  }
+
+  //
+
+  impl GraphEditableInterface
+  for NodeFactory
+  {
+
+    index!
+    {
+      node_extend_out_nodes,
+    }
+
+  }
+
+  //
+
   impl NodeFactoryInterface
   for NodeFactory
   {
-    type Node = Node;
-
-
-
+    type NodeHandle = crate::canonical::Node;
   }
 
 }

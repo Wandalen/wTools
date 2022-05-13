@@ -3,64 +3,13 @@ pub mod internal
 {
   use crate::prelude::*;
   use std::collections::HashSet;
-  use core::fmt::Debug;
-  use std::cmp::Eq;
-  use core::hash::{ Hash, Hasher };
   use std::fmt;
-  // use core::cell::RefCell;
-
-  ///
-  /// No kind for nodes.
-  ///
-
-  #[ derive( Debug, PartialEq, Copy, Clone, Hash, Default ) ]
-  pub struct NodeKindless();
-
-  ///
-  /// Nodes iterator for canonical node.
-  ///
-
-  #[ derive( Debug ) ]
-  pub struct NodesIterator< 'a, Kind >
-  where
-    Kind : NodeKindInterface,
-  {
-    /// Node.
-    pub node : &'a Node< Kind >,
-  }
-
-  impl< 'a, Kind > NodesIterator< 'a, Kind >
-  where
-    Kind : NodeKindInterface,
-  {
-    /// Make a new iterator of nodes.
-    pub fn make( node : &'a Node< Kind > ) -> Self
-    {
-      Self
-      {
-        node,
-      }
-    }
-  }
-
-  impl< 'a, Kind > Iterator
-  for NodesIterator< 'a, Kind >
-  where
-    Kind : NodeKindInterface,
-  {
-    type Item = Node< Kind >;
-    fn next( &mut self ) -> Option< Self::Item >
-    {
-      None
-    }
-  }
 
   ///
   /// Canonical implementation of node.
   ///
 
-  // #[ derive( Debug ) ]
-  pub struct Node< Kind = NodeKindless >
+  pub struct Node< Kind = crate::NodeKindless >
   where
     Kind : NodeKindInterface,
   {
@@ -96,13 +45,30 @@ pub mod internal
 
   //
 
+//   impl< Kind > HasId
+//   for Node< Kind >
+//   where
+//     Kind : NodeKindInterface,
+//   {
+//
+//     type Id = crate::IdentityWithName;
+//
+//     fn id( &self ) -> Self::Id
+//     {
+//       self.name
+//     }
+//
+//   }
+
+  //
+
   impl< Kind > HasId
   for Node< Kind >
   where
     Kind : NodeKindInterface,
   {
 
-    type Id = crate::IdentityByName;
+    type Id = crate::IdentityWithInt;
 
     fn id( &self ) -> Self::Id
     {
@@ -111,56 +77,20 @@ pub mod internal
 
   }
 
+  //
+
   impl< Kind > NodeBasicInterface
   for Node< Kind >
   where
     Kind : NodeKindInterface,
   {
-
-    fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + 'a >
-    {
-      Box::new( self.out_nodes.iter().cloned() )
-    }
-
-  }
-
-  /* zzz : macro? */
-
-  impl< Kind > PartialEq
-  for Node< Kind >
-  where
-    Kind : NodeKindInterface,
-  {
-    fn eq( &self, other : &Self ) -> bool
-    {
-      self.id() == other.id()
-    }
-  }
-
-  impl< Kind > Eq
-  for Node< Kind >
-  where
-    Kind : NodeKindInterface,
-  {}
-
-  impl< Kind > Hash
-  for Node< Kind >
-  where
-    Kind : NodeKindInterface,
-  {
-    fn hash< H >( &self, state : &mut H )
-    where
-      H : Hasher,
-    {
-      self.id().hash( state );
-    }
   }
 
   //
 
-  impl Extend< crate::IdentityByName > for Node
+  impl Extend< < Self as HasId >::Id >
+  for Node
   {
-
     fn extend< Iter >( &mut self, iter : Iter )
     where
       Iter : IntoIterator< Item = < Self as HasId >::Id >
@@ -174,7 +104,8 @@ pub mod internal
 
   //
 
-  impl< Kind > fmt::Debug for Node< Kind >
+  impl< Kind > fmt::Debug
+  for Node< Kind >
   where
     Kind : NodeKindInterface,
   {
@@ -189,84 +120,17 @@ pub mod internal
     }
   }
 
-  // --
+  //
 
-//   impl< Kind > HasId
-//   for RefCell< Node< Kind > >
-//   where
-//     Kind : NodeKindInterface,
-//   {
-//
-//     type Id = crate::IdentityByName;
-//
-//     fn id( &self ) -> Self::Id
-//     {
-//       self.name
-//       // Self::Id::make( &self )
-//     }
-//
-//   }
-//
-//   impl< Kind > NodeBasicInterface
-//   for RefCell< Node< Kind > >
-//   where
-//     Kind : NodeKindInterface,
-//   {
-//
-//     fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = Self > + 'a >
-//     {
-//       Box::new( NodesIterator::make( &self ) )
-//     }
-//
-//   }
-//
-//   impl< Kind > PartialEq
-//   for RefCell< Node< Kind > >
-//   where
-//     Kind : NodeKindInterface,
-//   {
-//     fn eq( &self, other : &Self ) -> bool
-//     {
-//       self.id() == other.id()
-//     }
-//   }
-//
-//   impl< Kind > Eq
-//   for RefCell< Node< Kind > >
-//   where
-//     Kind : NodeKindInterface,
-//   {}
-//
-//   impl< Kind > Hash
-//   for RefCell< Node< Kind > >
-//   where
-//     Kind : NodeKindInterface,
-//   {
-//     fn hash< H >( &self, state : &mut H )
-//     where
-//       H : Hasher,
-//     {
-//       self.id().hash( state );
-//     }
-//   }
-
-//   //
-//
-//   impl Extend< crate::IdentityByName > for Node
-//   {
-//
-//     fn extend< Iter >( &mut self, iter : Iter )
-//     where
-//       Iter : IntoIterator< Item = < Self as HasId >::Id >
-//     {
-//       for node in iter
-//       {
-//         self.out_nodes.insert( node );
-//       }
-//     }
-//   }
-
-  // --
+  impl< Kind > PartialEq for Node< Kind >
+  where
+    Kind : NodeKindInterface,
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      self.id() == other.id()
+    }
+  }
 
 }
 
@@ -284,8 +148,7 @@ pub mod parented
 {
   use super::internal as i;
   pub use super::exposed::*;
-  pub use i::NodeKindless;
-  pub use i::NodesIterator;
+  // pub use i::NodesIterator;
   pub use i::Node;
 }
 

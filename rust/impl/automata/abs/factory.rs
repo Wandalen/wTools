@@ -12,8 +12,11 @@ pub mod internal
   where
     Self : Debug,
   {
-    /// Node.
-    type Node : NodeBasicInterface;
+    // /// Node of the graph.
+    // type Node : NodeBasicInterface;
+    /// It's not always possible to operate a node directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
+    /// Otherwise NodeHandle is the same as Node.
+    type NodeHandle : NodeBasicInterface;
   }
 
 }

@@ -17,6 +17,7 @@ mod former
 mod derive;
 mod meta;
 mod options;
+mod iter;
 mod string;
 mod test;
 mod time;
