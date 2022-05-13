@@ -14,7 +14,7 @@ pub mod internal
 
     (
       $( #[ $Meta : meta ] )*
-      pub
+      $( pub )?
       fn $Name : ident
       $( $Rest : tt )*
     )
@@ -22,52 +22,130 @@ pub mod internal
     {
       $crate::impls!
       {
-        @DEFINE_FN
-        @NAME $Name
-        @VIS pub
-        @REST
+        as DEFINE_FN
+        as META $( #[ $Meta ] )*
+        as VIS $( pub )?
+        as NAME $Name
+        as INPUT ()
+        as OUTPUT
+        as BLOCK {}
+        as REST
           $( #[ $Meta ] )*
-          pub fn $Name
+          $( pub )? fn $Name
           $( $Rest )*
       }
     };
 
-    (
-      $( #[ $Meta : meta ] )*
-      fn $Name : ident
-      $( $Rest : tt )*
-    )
-    =>
-    {
-      $crate::impls!
-      {
-        @DEFINE_FN
-        @NAME $Name
-        @VIS
-        @REST
-          $( #[ $Meta ] )*
-          fn $Name
-          $( $Rest )*
-      }
-    };
+    // (
+    //   $( #[ $Meta : meta ] )*
+    //   fn $Name : ident
+    //   // $( < $( $ParamName : ident : $ParamType : ty ),* > )?
+    //   // $Input : tt
+    //   // $( -> $Output : ty )?
+    //   // $Block : block
+    //   $( $Rest : tt )*
+    // )
+    // =>
+    // {
+    //   $crate::impls!
+    //   {
+    //     as DEFINE_FN
+    //     as META $( #[ $Meta ] )*
+    //     as VIS
+    //     as NAME $Name
+    //     as INPUT ()
+    //     as OUTPUT
+    //     as BLOCK {}
+    //     as REST
+    //       $( #[ $Meta ] )*
+    //       fn $Name
+    //       // $Input $( -> $Output )?
+    //       // $Block
+    //       $( $Rest )*
+    //   }
+    // };
+
+//     (
+//       $( #[ $Meta : meta ] )*
+//       pub
+//       fn $Name : ident
+//       $Input : tt
+//       $( -> $Output : ty )?
+//       $Block : block
+//       $( $Rest : tt )*
+//     )
+//     =>
+//     {
+//       $crate::impls!
+//       {
+//         as DEFINE_FN
+//         as META $( #[ $Meta ] )*
+//         as VIS pub
+//         as NAME $Name
+//         as INPUT $Input
+//         as OUTPUT $( -> $Output )?
+//         as BLOCK $Block
+//         as REST
+//           $( #[ $Meta ] )*
+//           pub fn $Name $Input $( -> $Output )?
+//           $Block
+//           $( $Rest )*
+//       }
+//     };
+//
+//     (
+//       $( #[ $Meta : meta ] )*
+//       fn $Name : ident
+//       $Input : tt
+//       $( -> $Output : ty )?
+//       $Block : block
+//       $( $Rest : tt )*
+//     )
+//     =>
+//     {
+//       $crate::impls!
+//       {
+//         as DEFINE_FN
+//         as META $( #[ $Meta ] )*
+//         as VIS
+//         as NAME $Name
+//         as INPUT $Input
+//         as OUTPUT $( -> $Output )?
+//         as BLOCK $Block
+//         as REST
+//           $( #[ $Meta ] )*
+//           fn $Name $Input $( -> $Output )?
+//           $Block
+//           $( $Rest )*
+//       }
+//     };
 
     (
-      @DEFINE_FN
-      @NAME $Name : ident
-      @VIS $( pub )*
-      @REST
+      as DEFINE_FN
+      as META $( #[ $Meta : meta ] )*
+      as VIS $( pub )*
+      as NAME $Name : ident
+      as INPUT $Input : tt
+      as OUTPUT $( -> $Output : ty )?
+      as BLOCK $Block : block
+      as REST
         $Item : item
         $( $Rest : tt )*
     )
     =>
     {
-      #[ deny( unused_macros ) ]
+      // #[ deny( unused_macros ) ]
       macro_rules! $Name
       {
         () =>
         {
           $Item
         };
+        // ( as AS $Name : ident ) =>
+        // {
+        //   $( #[ $Meta ] )*
+        //   fn $Name
+        // };
       }
 
       $crate::impls!
@@ -100,6 +178,28 @@ pub mod internal
 
   }
 
+  ///
+  /// Index of items.
+  ///
+
+  #[ macro_export ]
+  macro_rules! ignore_macro
+  {
+
+    () => { };
+
+    (
+      $Name : ident ,
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      $Name!();
+      stringify!( $crate::index!( $( $Rest )* ) );
+    };
+
+  }
+
 //   ///
 //   /// Index of items.
 //   ///
@@ -117,27 +217,27 @@ pub mod internal
 //     =>
 //     {{
 //       $Name!();
-//       $crate::index2!( @ACT $( $Rest )* );
+//       $crate::index2!( as ACT $( $Rest )* );
 //     }};
 //
-//     ( @ACT ) => { };
+//     ( as ACT ) => { };
 //
 //     (
-//       @ACT
+//       as ACT
 //       $Name : ident ,
 //       $( $Rest : tt )*
 //     )
 //     =>
 //     {
 //       $Name!();
-//       $crate::index2!( @ACT $( $Rest )* );
+//       $crate::index2!( as ACT $( $Rest )* );
 //     };
 //
 //   }
 
   pub use impls;
   pub use index;
-  // pub use index2;
+  pub use ignore_macro;
 }
 
 /// Exposed namespace of the module.
@@ -155,5 +255,5 @@ pub mod prelude
   use super::internal as i;
   pub use i::impls;
   pub use i::index;
-  // pub use i::index2;
+  pub use i::ignore_macro;
 }

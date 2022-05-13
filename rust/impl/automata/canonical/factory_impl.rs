@@ -30,7 +30,7 @@ impls!
 
     let result = self.id_to_node_map
     .entry( id )
-    .or_insert_with( || Node::make_named( id ) )
+    .or_insert_with( || Node::make_named( id ).into() )
     ;
     result.id()
   }
@@ -51,28 +51,6 @@ impls!
     Id : Into< ID!() >
   {
 
-    // let out_nodes_iter2 = out_nodes_iter.into_iter()
-    // .map( | id |
-    // {
-    //   let id = id.into();
-    //   self.node( id );
-    //   id
-    // })
-    // // .collect()
-    // ;
-    // self.node_mut( node_id.into() ).extend( out_nodes_iter2 );
-
-    // let out_nodes_iter2 : Vec< _ > = out_nodes_iter.into_iter()
-    // .map( | id |
-    // {
-    //   let id = id.into();
-    //   self.node( id );
-    //   id
-    // })
-    // .collect()
-    // ;
-    // self.node_mut( node_id.into() ).extend( out_nodes_iter2 );
-
     let iter = out_nodes_iter.into_iter();
     let iter2 = iter.clone();
 
@@ -82,6 +60,7 @@ impls!
     {
       let node = self.node( id );
     })
+    .fold( (), | acc, e | () )
     ;
 
     let iter3 = iter2.into_iter()
@@ -92,8 +71,33 @@ impls!
     })
     ;
 
-    // xxx
     self.node_mut( node_id.into() ).extend( iter3 );
+  }
+
+  ///
+  /// Iterate output nodes of the node.
+  ///
+
+  fn node_extend_out_nodes_cell< Id, Iter >
+  (
+    &mut self,
+    node_id : Id,
+    out_nodes_iter : Iter,
+  )
+  where
+    Iter : IntoIterator< Item = Id >,
+    Iter::IntoIter : Clone,
+    Id : Into< ID!() >,
+  {
+    let out_nodes_iter2 = out_nodes_iter.into_iter()
+    .map( | id |
+    {
+      let id = id.into();
+      self.node( id );
+      id
+    });
+    self.node( node_id.into() ).borrow_mut().extend( out_nodes_iter2 );
+    // self.node_mut( node_id.into() ).extend( out_nodes_iter );
   }
 
   //

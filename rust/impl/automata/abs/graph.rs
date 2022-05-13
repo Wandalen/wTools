@@ -77,7 +77,8 @@ pub mod internal
       Id : Into< ID!() >,
       // ID!() : Into< ID!() >,
       // Id : < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id,
-      core::iter::Once< Id > : Clone,
+      // core::iter::Once< Id > : Clone,
+      Id : Clone,
     {
       // let out_node_id : ID!() = out_node_id.into();
       // self.node_extend_out_nodes( node_id, core::iter::once( out_node_id ) );

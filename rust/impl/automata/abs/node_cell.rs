@@ -127,6 +127,17 @@ pub mod internal
     }
   }
 
+  impl< Node > From< Node >
+  for NodeCell< Node >
+  where
+    Node : NodeBasicInterface,
+  {
+    fn from( src : Node ) -> Self
+    {
+      Self( Arc::new( RefCell::new( src ) ) )
+    }
+  }
+
 }
 
 /// Parented namespace of the module.
