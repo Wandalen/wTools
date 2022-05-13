@@ -23,12 +23,12 @@ pub mod internal
       $crate::impls!
       {
         @DEFINE_FN
-        @META $( #[ $Meta ] )*
+        @META{ $( #[ $Meta ] )* }
         @VIS{ $Vis }
-        @NAME $Name
-        // @INPUT ()
-        // @OUTPUT
-        // @BLOCK {}
+        @NAME{ $Name }
+        @INPUT{ () }
+        @OUTPUT{}
+        @BLOCK{ {} }
         @REST
           $( #[ $Meta ] )*
           $Vis fn $Name
@@ -36,105 +36,21 @@ pub mod internal
       }
     };
 
-    // (
-    //   $( #[ $Meta : meta ] )*
-    //   fn $Name : ident
-    //   // $( < $( $ParamName : ident : $ParamType : ty ),* > )?
-    //   // $Input : tt
-    //   // $( -> $Output : ty )?
-    //   // $Block : block
-    //   $( $Rest : tt )*
-    // )
-    // =>
-    // {
-    //   $crate::impls!
-    //   {
-    //     @DEFINE_FN
-    //     @META $( #[ $Meta ] )*
-    //     @VIS
-    //     @NAME $Name
-    //     @INPUT ()
-    //     @OUTPUT
-    //     @BLOCK {}
-    //     @REST
-    //       $( #[ $Meta ] )*
-    //       fn $Name
-    //       // $Input $( -> $Output )?
-    //       // $Block
-    //       $( $Rest )*
-    //   }
-    // };
-
-//     (
-//       $( #[ $Meta : meta ] )*
-//       pub
-//       fn $Name : ident
-//       $Input : tt
-//       $( -> $Output : ty )?
-//       $Block : block
-//       $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       $crate::impls!
-//       {
-//         @DEFINE_FN
-//         @META $( #[ $Meta ] )*
-//         @VIS pub
-//         @NAME $Name
-//         @INPUT $Input
-//         @OUTPUT $( -> $Output )?
-//         @BLOCK $Block
-//         @REST
-//           $( #[ $Meta ] )*
-//           pub fn $Name $Input $( -> $Output )?
-//           $Block
-//           $( $Rest )*
-//       }
-//     };
-//
-//     (
-//       $( #[ $Meta : meta ] )*
-//       fn $Name : ident
-//       $Input : tt
-//       $( -> $Output : ty )?
-//       $Block : block
-//       $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       $crate::impls!
-//       {
-//         @DEFINE_FN
-//         @META $( #[ $Meta ] )*
-//         @VIS
-//         @NAME $Name
-//         @INPUT $Input
-//         @OUTPUT $( -> $Output )?
-//         @BLOCK $Block
-//         @REST
-//           $( #[ $Meta ] )*
-//           fn $Name $Input $( -> $Output )?
-//           $Block
-//           $( $Rest )*
-//       }
-//     };
-
     (
       @DEFINE_FN
-      @META $( #[ $Meta : meta ] )*
+      @META{ $( #[ $Meta : meta ] )* }
       @VIS{ $Vis : vis }
-      @NAME $Name : ident
-      // @INPUT $Input : tt
-      // @OUTPUT $( -> $Output : ty )?
-      // @BLOCK $Block : block
+      @NAME{ $Name : ident }
+      @INPUT{ $Input : tt }
+      @OUTPUT{ $( -> $Output : ty )? }
+      @BLOCK{ $Block : block }
       @REST
         $Item : item
         $( $Rest : tt )*
     )
     =>
     {
-      // #[ deny( unused_macros ) ]
+      #[ deny( unused_macros ) ]
       macro_rules! $Name
       {
         () =>
@@ -222,3 +138,221 @@ pub mod prelude
   pub use i::index;
   pub use i::ignore_macro;
 }
+
+
+//   #[ macro_export ]
+//   macro_rules! impls
+//   {
+//
+//     () => {};
+//
+//     (
+//       $( #[ $Meta : meta ] )*
+//       $Vis : vis
+//       fn $Name : ident
+//       $( $Rest : tt )*
+//     )
+//     =>
+//     {
+//       $crate::impls!
+//       {
+//         @DEFINE_FN
+//         @META{ $( #[ $Meta ] )* }
+//         @VIS{ $Vis }
+//         @NAME{ $Name }
+//         @INPUT{ () }
+//         @OUTPUT{}
+//         @BLOCK{ {} }
+//         @REST
+//           $( #[ $Meta ] )*
+//           $Vis fn $Name
+//           $( $Rest )*
+//       }
+//     };
+//
+//     (
+//       @DEFINE_FN
+//       @META{ $( #[ $Meta : meta ] )* }
+//       @VIS{ $Vis : vis }
+//       @NAME{ $Name : ident }
+//       @INPUT{ $Input : tt }
+//       @OUTPUT{ $( -> $Output : ty )? }
+//       @BLOCK{ $Block : block }
+//       @REST
+//         $Item : item
+//         $( $Rest : tt )*
+//     )
+//     =>
+//     {
+//       #[ deny( unused_macros ) ]
+//       macro_rules! $Name
+//       {
+//         () =>
+//         {
+//           $Item
+//         };
+//         // ( @AS $Name : ident ) =>
+//         // {
+//         //   $( #[ $Meta ] )*
+//         //   fn $Name
+//         // };
+//       }
+//
+//       $crate::impls!
+//       {
+//         $( $Rest )*
+//       }
+//     };
+//
+//   }
+
+
+//   #[ macro_export ]
+//   macro_rules! impls
+//   {
+//
+//     () => {};
+//
+//     (
+//       $( #[ $Meta : meta ] )*
+//       $Vis : vis
+//       fn $Name : ident
+//       $( $Rest : tt )*
+//     )
+//     =>
+//     {
+//       $crate::impls!
+//       {
+//         @DEFINE_FN
+//         @META $( #[ $Meta ] )*
+//         @VIS{ $Vis }
+//         @NAME $Name
+//         // @INPUT ()
+//         // @OUTPUT
+//         // @BLOCK {}
+//         @REST
+//           $( #[ $Meta ] )*
+//           $Vis fn $Name
+//           $( $Rest )*
+//       }
+//     };
+//
+//     // (
+//     //   $( #[ $Meta : meta ] )*
+//     //   fn $Name : ident
+//     //   // $( < $( $ParamName : ident : $ParamType : ty ),* > )?
+//     //   // $Input : tt
+//     //   // $( -> $Output : ty )?
+//     //   // $Block : block
+//     //   $( $Rest : tt )*
+//     // )
+//     // =>
+//     // {
+//     //   $crate::impls!
+//     //   {
+//     //     @DEFINE_FN
+//     //     @META $( #[ $Meta ] )*
+//     //     @VIS
+//     //     @NAME $Name
+//     //     @INPUT ()
+//     //     @OUTPUT
+//     //     @BLOCK {}
+//     //     @REST
+//     //       $( #[ $Meta ] )*
+//     //       fn $Name
+//     //       // $Input $( -> $Output )?
+//     //       // $Block
+//     //       $( $Rest )*
+//     //   }
+//     // };
+//
+// //     (
+// //       $( #[ $Meta : meta ] )*
+// //       pub
+// //       fn $Name : ident
+// //       $Input : tt
+// //       $( -> $Output : ty )?
+// //       $Block : block
+// //       $( $Rest : tt )*
+// //     )
+// //     =>
+// //     {
+// //       $crate::impls!
+// //       {
+// //         @DEFINE_FN
+// //         @META $( #[ $Meta ] )*
+// //         @VIS pub
+// //         @NAME $Name
+// //         @INPUT $Input
+// //         @OUTPUT $( -> $Output )?
+// //         @BLOCK $Block
+// //         @REST
+// //           $( #[ $Meta ] )*
+// //           pub fn $Name $Input $( -> $Output )?
+// //           $Block
+// //           $( $Rest )*
+// //       }
+// //     };
+// //
+// //     (
+// //       $( #[ $Meta : meta ] )*
+// //       fn $Name : ident
+// //       $Input : tt
+// //       $( -> $Output : ty )?
+// //       $Block : block
+// //       $( $Rest : tt )*
+// //     )
+// //     =>
+// //     {
+// //       $crate::impls!
+// //       {
+// //         @DEFINE_FN
+// //         @META $( #[ $Meta ] )*
+// //         @VIS
+// //         @NAME $Name
+// //         @INPUT $Input
+// //         @OUTPUT $( -> $Output )?
+// //         @BLOCK $Block
+// //         @REST
+// //           $( #[ $Meta ] )*
+// //           fn $Name $Input $( -> $Output )?
+// //           $Block
+// //           $( $Rest )*
+// //       }
+// //     };
+//
+//     (
+//       @DEFINE_FN
+//       @META $( #[ $Meta : meta ] )*
+//       @VIS{ $Vis : vis }
+//       @NAME $Name : ident
+//       // @INPUT $Input : tt
+//       // @OUTPUT $( -> $Output : ty )?
+//       // @BLOCK $Block : block
+//       @REST
+//         $Item : item
+//         $( $Rest : tt )*
+//     )
+//     =>
+//     {
+//       // #[ deny( unused_macros ) ]
+//       macro_rules! $Name
+//       {
+//         () =>
+//         {
+//           $Item
+//         };
+//         // ( @AS $Name : ident ) =>
+//         // {
+//         //   $( #[ $Meta ] )*
+//         //   fn $Name
+//         // };
+//       }
+//
+//       $crate::impls!
+//       {
+//         $( $Rest )*
+//       }
+//     };
+//
+//   }
