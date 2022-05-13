@@ -1,3 +1,4 @@
+#[ allow( unused_imports ) ]
 use test_tools::test_suite;
 
 #[ derive( Debug ) ]
@@ -102,28 +103,22 @@ impl< 'a > IntegrationModuleTest< 'a >
 
 //
 
-fn run_tests_test()
+macro_rules! module_integration_test
 {
-  test_default( "wtools" );
-  test_default( "wtest_basic" );
-
-  //
-
-  fn test_default( module_name : &str )
+  ( $name : ident ) =>
   {
-    let t = IntegrationModuleTest::new( module_name );
-    t.form().unwrap();
-    t.run().unwrap();
-    t.clean().unwrap();
+    #[ test ]
+    fn $name()
+    {
+      let t = IntegrationModuleTest::new( stringify!( $name ) );
+      t.form().unwrap();
+      t.run().unwrap();
+      t.clean().unwrap();
+    }
   }
 }
 
 //
 
-test_suite!
-{
-  run_tests,
-  // run_samples,
-}
-
-/* xxx */
+module_integration_test!( wtools );
+module_integration_test!( wtest_basic );

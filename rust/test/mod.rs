@@ -1,10 +1,4 @@
 
-mod integration
-{
-  include!( "./integration_test.rs" );
-}
-
-
 mod dt;
 mod error;
 
