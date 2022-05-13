@@ -1,6 +1,6 @@
 # Module :: for_each
 
-Apply macro for each element of a list.
+Apply a macro for each element of a list.
 
 Macros `$Callback` is called for each element of the passed list, optionally passing prefix `$Prefix` as the first argument(s) and postfix `$Postfix` as the last argument(s).
 Macros could be invoked in either function call style or map call style. Prefix and postfix could be passed only in map call style.

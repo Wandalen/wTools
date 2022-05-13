@@ -3,108 +3,78 @@ pub mod internal
 {
   use crate::prelude::*;
   use std::collections::HashSet;
-  use core::fmt::Debug;
-  use std::cmp::Eq;
-  use core::hash::{ Hash, Hasher };
-
-  ///
-  /// No kind for nodes.
-  ///
-
-  #[ derive( Debug, PartialEq, Copy, Clone, Hash, Default ) ]
-  pub struct NodeKindless();
-
-  ///
-  /// Nodes iterator for canonical node.
-  ///
-
-  #[ derive( Debug ) ]
-  pub struct NodesIterator< 'a, Kind >
-  where
-    Kind : NodeKindInterface,
-  {
-    /// Node.
-    pub node : &'a Node< Kind >,
-  }
-
-  impl< 'a, Kind > NodesIterator< 'a, Kind >
-  where
-    Kind : NodeKindInterface,
-  {
-    /// Make a new iterator of nodes.
-    pub fn make( node : &'a Node< Kind > ) -> Self
-    {
-      Self
-      {
-        node,
-      }
-    }
-  }
-
-  impl< 'a, Kind > Iterator
-  for NodesIterator< 'a, Kind >
-  where
-    Kind : NodeKindInterface,
-  {
-    type Item = Node< Kind >;
-    fn next( &mut self ) -> Option< Self::Item >
-    {
-      None
-    }
-  }
+  use std::fmt;
 
   ///
   /// Canonical implementation of node.
   ///
 
-  #[ derive( Debug ) ]
-  pub struct Node< Kind = NodeKindless >
+  pub struct Node< Kind = crate::NodeKindless >
   where
     Kind : NodeKindInterface,
   {
     /// Input node.
-    pub out_nodes : HashSet< Self >,
+    pub out_nodes : HashSet< < Self as HasId >::Id >,
     /// Kind of the node.
     pub kind : Kind,
-    /// Label.
-    pub label : String,
-    // //// Lifetime.
-    // _p : std::marker::PhantomData< &'a () >,
+    /// Name.
+    pub name : < Self as HasId >::Id,
   }
 
   //
 
-  impl PartialEq for Node
+  impl Node
   {
-    fn eq( &self, other : &Self ) -> bool
+
+    /// Construct a name instance of the node.
+    pub fn make_named< Name >( name : Name ) ->Self
+    where
+      Name : Into< < Self as HasId >::Id >,
     {
-      // Different instances of node are different logical instances.
-      unsafe
+      let out_nodes = HashSet::new();
+      let kind = Default::default();
+      Self
       {
-        let ptr1 = std::mem::transmute::< _, *const () >( self );
-        let ptr2 = std::mem::transmute::< _, *const () >( other );
-        ptr1 == ptr2
+        out_nodes,
+        kind,
+        name : name.into(),
       }
     }
+
   }
 
-  impl Eq for Node {}
+  //
 
-  impl< Kind > Hash for Node< Kind >
+//   impl< Kind > HasId
+//   for Node< Kind >
+//   where
+//     Kind : NodeKindInterface,
+//   {
+//
+//     type Id = crate::IdentityWithName;
+//
+//     fn id( &self ) -> Self::Id
+//     {
+//       self.name
+//     }
+//
+//   }
+
+  //
+
+  impl< Kind > HasId
+  for Node< Kind >
   where
     Kind : NodeKindInterface,
   {
-    fn hash< H >( &self, state : &mut H )
-    where
-      H : Hasher,
+
+    type Id = crate::IdentityWithInt;
+
+    fn id( &self ) -> Self::Id
     {
-      // Just use the address of the instance.
-      unsafe
-      {
-        let ptr1 = std::mem::transmute::< _, *const () >( self );
-        ptr1.hash( state );
-      }
+      self.name
     }
+
   }
 
   //
@@ -114,29 +84,51 @@ pub mod internal
   where
     Kind : NodeKindInterface,
   {
-
-    /// Iterate output nodes of the node.
-    fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = Self > + 'a >
-    {
-      Box::new( NodesIterator::make( &self ) )
-    }
-
   }
 
   //
 
-  impl Extend< Node > for Node
+  impl Extend< < Self as HasId >::Id >
+  for Node
   {
-
     fn extend< Iter >( &mut self, iter : Iter )
     where
-      Iter : IntoIterator< Item = Node >
+      Iter : IntoIterator< Item = < Self as HasId >::Id >
     {
       for node in iter
       {
         self.out_nodes.insert( node );
       }
-      // ( self.out_nodes as HashSet< Self > ).extend( iter );
+    }
+  }
+
+  //
+
+  impl< Kind > fmt::Debug
+  for Node< Kind >
+  where
+    Kind : NodeKindInterface,
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      f.write_fmt( format_args!( "node::{:?}", self.id() ) )?;
+      for e in &self.out_nodes
+      {
+        f.write_fmt( format_args!( "\n - {:?}", e ) )?;
+      }
+      f.write_fmt( format_args!( "" ) )
+    }
+  }
+
+  //
+
+  impl< Kind > PartialEq for Node< Kind >
+  where
+    Kind : NodeKindInterface,
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      self.id() == other.id()
     }
   }
 
@@ -156,8 +148,7 @@ pub mod parented
 {
   use super::internal as i;
   pub use super::exposed::*;
-  pub use i::NodeKindless;
-  pub use i::NodesIterator;
+  // pub use i::NodesIterator;
   pub use i::Node;
 }
 

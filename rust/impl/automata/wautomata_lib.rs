@@ -3,6 +3,7 @@
 #![ warn( missing_docs ) ]
 
 // #![ feature( type_name_of_val ) ]
+// #![ feature( trace_macros ) ]
 
 //!
 //! Implementation of automata.
@@ -10,10 +11,14 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-/// Other interfaces.
-pub mod interface;
-/// Canonical implementations.
+/// Abstract layer.
+pub mod abs;
+/// Canonical representation.
 pub mod canonical;
+/// Matrix representation.
+pub mod matrix;
+/// Algorithms.
+pub mod algo;
 
 /// Namespace with dependencies.
 pub mod dependency
@@ -24,8 +29,11 @@ pub mod dependency
 pub mod exposed
 {
   pub use super::prelude::*;
-  pub use super::interface::exposed::*;
+  pub use super::abs::exposed::*;
+  pub use super::prelude::*;
+  pub use super::algo::exposed::*;
   pub use super::canonical::exposed::*;
+  pub use super::matrix::exposed::*;
 }
 
 pub use exposed::*;
@@ -33,6 +41,8 @@ pub use exposed::*;
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
-  pub use super::interface::prelude::*;
+  pub use super::abs::prelude::*;
+  pub use super::algo::prelude::*;
   pub use super::canonical::prelude::*;
+  pub use super::matrix::prelude::*;
 }

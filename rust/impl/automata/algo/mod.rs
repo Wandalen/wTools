@@ -13,15 +13,8 @@ pub mod internal
 
 }
 
-/// Edge interface.
-pub mod edge;
-/// Interface to identify an instance of somthging, for exampel a node.
-pub mod identity;
-/// Node interface.
-pub mod node;
-
-/// Factory of nodes.
-pub mod factory;
+/// Depth-first search.
+pub mod dfs;
 
 /// Exposed namespace of the module.
 pub mod exposed
@@ -29,10 +22,7 @@ pub mod exposed
   // use super::internal as i;
   pub use super::prelude::*;
 
-  pub use super::edge::*;
-  pub use super::node::*;
-  pub use super::identity::*;
-  pub use super::factory::*;
+  pub use super::dfs::*;
 
 }
 
@@ -42,10 +32,7 @@ pub use exposed::*;
 pub mod prelude
 {
   // use super::internal as i;
-  pub use super::edge::*;
-  pub use super::node::*;
-  pub use super::identity::*;
-  pub use super::factory::*;
+  pub use super::dfs::*;
 
   // pub use i::GraphInterface;
 }

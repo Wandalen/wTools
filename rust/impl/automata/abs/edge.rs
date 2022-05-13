@@ -30,6 +30,13 @@ pub mod internal
   {
   }
 
+  ///
+  /// No kind for edges.
+  ///
+
+  #[ derive( Debug, PartialEq, Copy, Clone, Hash, Default ) ]
+  pub struct EdgeKindless();
+
 //   ///
 //   /// Edge iterator.
 //   ///
@@ -105,8 +112,9 @@ pub use parented::*;
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
+  use super::internal as i;
   pub use super::prelude::*;
+  pub use i::EdgeKindless;
   // pub use i::EdgesIterator;
 }
 

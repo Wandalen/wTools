@@ -2,21 +2,7 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
-use test_tools::*;
+#![ feature( trace_macros ) ]
+#![ feature( type_name_of_val ) ]
 
-//
-
-fn basic_test()
-{
-
-
-
-}
-
-//
-
-test_suite!
-{
-  basic,
-}
-/* zzz : extend macro test_suite. teach to understand meta directives */
+mod include;
