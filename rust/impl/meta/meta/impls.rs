@@ -14,7 +14,7 @@ pub mod internal
 
     (
       $( #[ $Meta : meta ] )*
-      $( pub )?
+      $Vis : vis
       fn $Name : ident
       $( $Rest : tt )*
     )
@@ -22,16 +22,16 @@ pub mod internal
     {
       $crate::impls!
       {
-        as DEFINE_FN
-        as META $( #[ $Meta ] )*
-        as VIS $( pub )?
-        as NAME $Name
-        as INPUT ()
-        as OUTPUT
-        as BLOCK {}
-        as REST
+        @DEFINE_FN
+        @META $( #[ $Meta ] )*
+        @VIS{ $Vis }
+        @NAME $Name
+        // @INPUT ()
+        // @OUTPUT
+        // @BLOCK {}
+        @REST
           $( #[ $Meta ] )*
-          $( pub )? fn $Name
+          $Vis fn $Name
           $( $Rest )*
       }
     };
@@ -49,14 +49,14 @@ pub mod internal
     // {
     //   $crate::impls!
     //   {
-    //     as DEFINE_FN
-    //     as META $( #[ $Meta ] )*
-    //     as VIS
-    //     as NAME $Name
-    //     as INPUT ()
-    //     as OUTPUT
-    //     as BLOCK {}
-    //     as REST
+    //     @DEFINE_FN
+    //     @META $( #[ $Meta ] )*
+    //     @VIS
+    //     @NAME $Name
+    //     @INPUT ()
+    //     @OUTPUT
+    //     @BLOCK {}
+    //     @REST
     //       $( #[ $Meta ] )*
     //       fn $Name
     //       // $Input $( -> $Output )?
@@ -78,14 +78,14 @@ pub mod internal
 //     {
 //       $crate::impls!
 //       {
-//         as DEFINE_FN
-//         as META $( #[ $Meta ] )*
-//         as VIS pub
-//         as NAME $Name
-//         as INPUT $Input
-//         as OUTPUT $( -> $Output )?
-//         as BLOCK $Block
-//         as REST
+//         @DEFINE_FN
+//         @META $( #[ $Meta ] )*
+//         @VIS pub
+//         @NAME $Name
+//         @INPUT $Input
+//         @OUTPUT $( -> $Output )?
+//         @BLOCK $Block
+//         @REST
 //           $( #[ $Meta ] )*
 //           pub fn $Name $Input $( -> $Output )?
 //           $Block
@@ -105,14 +105,14 @@ pub mod internal
 //     {
 //       $crate::impls!
 //       {
-//         as DEFINE_FN
-//         as META $( #[ $Meta ] )*
-//         as VIS
-//         as NAME $Name
-//         as INPUT $Input
-//         as OUTPUT $( -> $Output )?
-//         as BLOCK $Block
-//         as REST
+//         @DEFINE_FN
+//         @META $( #[ $Meta ] )*
+//         @VIS
+//         @NAME $Name
+//         @INPUT $Input
+//         @OUTPUT $( -> $Output )?
+//         @BLOCK $Block
+//         @REST
 //           $( #[ $Meta ] )*
 //           fn $Name $Input $( -> $Output )?
 //           $Block
@@ -121,14 +121,14 @@ pub mod internal
 //     };
 
     (
-      as DEFINE_FN
-      as META $( #[ $Meta : meta ] )*
-      as VIS $( pub )*
-      as NAME $Name : ident
-      as INPUT $Input : tt
-      as OUTPUT $( -> $Output : ty )?
-      as BLOCK $Block : block
-      as REST
+      @DEFINE_FN
+      @META $( #[ $Meta : meta ] )*
+      @VIS{ $Vis : vis }
+      @NAME $Name : ident
+      // @INPUT $Input : tt
+      // @OUTPUT $( -> $Output : ty )?
+      // @BLOCK $Block : block
+      @REST
         $Item : item
         $( $Rest : tt )*
     )
@@ -141,7 +141,7 @@ pub mod internal
         {
           $Item
         };
-        // ( as AS $Name : ident ) =>
+        // ( @AS $Name : ident ) =>
         // {
         //   $( #[ $Meta ] )*
         //   fn $Name
@@ -199,41 +199,6 @@ pub mod internal
     };
 
   }
-
-//   ///
-//   /// Index of items.
-//   ///
-//
-//   #[ macro_export ]
-//   macro_rules! index2
-//   {
-//
-//     () => { };
-//
-//     (
-//       $Name : ident ,
-//       $( $Rest : tt )*
-//     )
-//     =>
-//     {{
-//       $Name!();
-//       $crate::index2!( as ACT $( $Rest )* );
-//     }};
-//
-//     ( as ACT ) => { };
-//
-//     (
-//       as ACT
-//       $Name : ident ,
-//       $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       $Name!();
-//       $crate::index2!( as ACT $( $Rest )* );
-//     };
-//
-//   }
 
   pub use impls;
   pub use index;
