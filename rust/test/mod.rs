@@ -11,7 +11,11 @@ mod former
 mod derive;
 mod meta;
 mod options;
-mod iter;
+mod iter
+{
+  use wtools::iter as TheModule;
+  include!( "./iter/basic_test.rs" );
+}
 mod string;
 mod test;
 mod time;
