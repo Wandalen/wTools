@@ -9,17 +9,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /// Basics.
-pub mod basic
-{
-  pub mod prelude
-  {
-    pub use test_suite::*;
-  }
-  pub mod exposed
-  {
-    pub use test_suite::*;
-  }
-}
+pub mod basic;
 
 /// Dependencies.
 pub mod dependencies

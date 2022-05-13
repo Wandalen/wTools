@@ -22,13 +22,11 @@ mod basic;
 
 //
 
-fn trybuild()
+test_routine!{ trybuild =>
 {
-
   // let t = trybuild::TestCases::new();
   // t.pass( "../../../rust/test/test/dynamic/basic.rs" );
-
-}
+}}
 
 //
 

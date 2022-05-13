@@ -1,169 +1,86 @@
 /// Internal namespace.
 pub mod internal
 {
-
   ///
-  /// Mechanism to define test suite.
+  /// Mechanism to expand and format test case.
   /// This macro encourages refactoring the code of the test in the most readable way, gathering a list of all test routines at the end of the test file.
-  ///
-  /// Name of test routine should have postfix `*_test`. In the index of test routine the postfix should be ommited.
   ///
   /// # Sample
   /// use wtest_basic::*;
   ///
   /// //
   ///
-  /// fn pass1_test()
+  /// fn pass1()
   /// {
-  ///   assert_eq!( true, true );
-  /// }
-  ///
-  /// //
-  ///
-  /// fn pass2_test()
-  /// {
-  ///   assert_eq!( 1, 1 );
+  ///   test_case!{ "equal ints" =>
+  ///   {
+  ///     assert_eq!( 1, 1 );
+  ///   }}
   /// }
   ///
   /// //
   ///
   /// test_suite!
-  /// {
+  /// { simple =>
   ///   pass1,
-  ///   pass2,
   /// }
   ///
 
   #[ macro_export ]
-  macro_rules! test_suite
+  macro_rules! test_case_
   {
-
-    () => { };
-
-    (
-      $( #[ $Meta : meta ] )*
-      $Name : ident ,
-      $( $Rest : tt )*
-    )
-    =>
+    ( $name : expr => { $( $tree : tt )* } ) =>
     {
-      $( #[ $Meta ] )*
-      #[test]
-      fn $Name()
-      {
-        $crate::paste::paste!([< $Name _test >])()
-      }
-      $crate::test_suite!( $( $Rest )* );
+      $({
+        println!( "Test case::{}", std::stringify!( $name ) );
+        $tree
+      })*
     };
-
   }
 
-//   ///
-//   /// Internals of a test suite.
-//   ///
-//
-//   #[ macro_export ]
-//   macro_rules! impls
-//   {
-//
-//     // ( $( $Rest : tt )* ) => { fn f1() {} };
-//
-//     () => {};
-//
-//     (
-//       $( #[ $Meta : meta ] )*
-//       fn $Name : ident $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       $crate::test_suite_internals!
-//       {
-//         @DEFINE_FN
-//         @NAME $Name
-//         @REST
-//           $( #[ $Meta ] )*
-//           fn $Name $( $Rest )*
-//       }
-//     };
-//
-//     (
-//       @DEFINE_FN
-//       @NAME $Name : ident
-//       @REST
-//         $Item : item
-//         // $( #[ $Meta : meta ] )*
-//         // fn $Name : ident
-//         // $Parentheses : tt
-//         // $Block : block
-//         $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       macro_rules! $Name
-//       {
-//         () =>
-//         {
-//           $Item
-//         };
-//       }
-//
-//       // macro_rules! $Name
-//       // {
-//       //   $( #[ $Meta ] )*
-//       //   fn $Name
-//       //   $Parentheses
-//       //   $Block
-//       // }
-//
-//       $crate::test_suite_internals!
-//       {
-//         $( $Rest )*
-//       }
-//     };
-//
-//   }
-//
-//   ///
-//   /// Index of items.
-//   ///
-//
-//   #[ macro_export ]
-//   macro_rules! index
-//   {
-//
-//     () => { };
-//
-//     (
-//       $Name : ident ,
-//       $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       $Name!();
-//       $crate::index!( $( $Rest )* );
-//     };
-//
-//   }
+  ///
+  /// Mechanism to expand and format test routine.
+  /// This macro encourages refactoring the code of the test in the most readable way, gathering a list of all test routines at the end of the test file.
+  ///
+  /// # Sample
+  /// use wtest_basic::*;
+  ///
+  /// //
+  ///
+  /// test_routine!{ pass1 =>
+  /// {
+  ///   test_case!{ "equal ints" =>
+  ///   {
+  ///     assert_eq!( 1, 1 );
+  ///   }}
+  /// }}
+  ///
+  /// //
+  ///
+  /// test_suite!
+  /// { simple =>
+  ///   pass1,
+  /// }
+  ///
 
-  // /// Pass only if callback fails either returning error or panicing.
-  //
-  // pub fn should_throw< R, F : FnOnce() -> anyhow::Result< R > >( f : F ) -> anyhow::Result< R >
-  // {
-  //   f()
-  // }
+  #[ macro_export ]
+  macro_rules! test_routine
+  {
+    ( $name : ident => { $( $tree : tt )* } ) =>
+    {
+      fn $name()
+      {
+        println!( "Test routine::{}", std::stringify!( $name ) );
+        $( $tree )*
+      }
+    };
+  }
 
   //
 
-  // #[panic_handler]
-  // fn panic( info : &core::panic::PanicInfo ) -> !
-  // {
-  //   println!( "{:?}", info );
-  //   loop {}
-  // }
-
-  pub use test_suite;
-  // pub use test_suite_internals;
-  // pub use index;
+  pub use test_case_ as test_case;
+  pub use test_routine;
+  pub use test_suite::test_suite;
 }
 
 /// Exposed namespace of the module.
@@ -171,6 +88,8 @@ pub mod exposed
 {
   use super::internal as i;
   pub use super::prelude::*;
+  pub use i::test_case;
+  pub use i::test_routine;
   pub use i::test_suite;
 }
 
@@ -180,5 +99,7 @@ pub use exposed::*;
 pub mod prelude
 {
   use super::internal as i;
+  pub use i::test_case;
+  pub use i::test_routine;
   pub use i::test_suite;
 }
