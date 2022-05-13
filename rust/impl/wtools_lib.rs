@@ -23,6 +23,13 @@
 //! ```
 
 ///
+/// Iter tools.
+///
+
+pub mod iter;
+pub use iter::exposed::*;
+
+///
 /// Meta tools.
 ///
 

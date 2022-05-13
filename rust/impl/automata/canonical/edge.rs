@@ -2,42 +2,13 @@
 pub mod internal
 {
   use crate::prelude::*;
-  // use derive_tools::Default;
-  // use std::collections::HashSet;
-
-  ///
-  /// No kind for edges.
-  ///
-
-  // // xxx
-  // #[ derive( Debug, PartialEq, Copy, Clone ) ]
-  // pub enum EdgeKindless
-  // {
-  //   /// No kind.
-  //   No,
-  // }
-
-  ///
-  /// No kind for edges.
-  ///
-
-  #[ derive( Debug, PartialEq, Copy, Clone, Hash, Default ) ]
-  pub struct EdgeKindless();
-
-  // impl Default for EdgeKindless
-  // {
-  //   fn default() -> Self
-  //   {
-  //     Self::No
-  //   }
-  // }
 
   ///
   /// Canonical implementation of edge.
   ///
 
   #[ derive( Debug, PartialEq, Copy, Clone ) ]
-  pub struct Edge< 'a, Node, Kind = EdgeKindless >
+  pub struct Edge< 'a, Node, Kind = crate::EdgeKindless >
   where
     Node : NodeBasicInterface,
     Kind : EdgeKindInterface,
@@ -74,7 +45,6 @@ pub mod parented
 {
   use super::internal as i;
   pub use super::exposed::*;
-  pub use i::EdgeKindless;
   pub use i::Edge;
 }
 
