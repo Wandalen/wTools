@@ -50,7 +50,7 @@ pub mod internal
     )
     =>
     {
-      #[ deny( unused_macros ) ]
+      // #[ deny( unused_macros ) ]
       macro_rules! $Name
       {
         () =>
