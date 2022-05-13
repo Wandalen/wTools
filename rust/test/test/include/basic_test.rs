@@ -22,7 +22,7 @@ mod basic;
 
 //
 
-fn trybuild_test()
+fn trybuild()
 {
 
   // let t = trybuild::TestCases::new();

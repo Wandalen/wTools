@@ -1,0 +1,19 @@
+[package]
+name = "test_suite"
+version = "0.1.0"
+edition = "2021"
+autotests = false
+publish = false
+
+[features]
+nightly = []
+default = []
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "~1", features = [ "extra-traits", "full" ] }
+quote = "~1"
+proc-macro2 = "~1"
+

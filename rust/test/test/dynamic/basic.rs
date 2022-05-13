@@ -3,22 +3,22 @@ use wtest_basic::*;
 
 //
 
-fn pass1_test()
+fn pass1()
 {
   assert_eq!( true, true );
 }
 
 //
 
-fn fail1_test()
+fn fail1()
 {
   // assert_eq!( true, false );
 }
 
 //
 
-#[cfg(any())]
-fn never_test()
+// #[cfg(any())]
+fn never()
 {
   println!( "never_test" );
 }
@@ -26,7 +26,7 @@ fn never_test()
 //
 
 #[cfg(all())]
-fn always_test()
+fn always()
 {
   println!( "always_test" );
 }
@@ -37,10 +37,10 @@ test_suite!
 {
   pass1,
   fail1,
-  #[cfg(any())]
+  // #[cfg(any())]
   never,
-  #[cfg(all())]
-  #[cfg(all())]
+  // #[cfg(all())]
+  // #[cfg(all())]
   always,
 }
 

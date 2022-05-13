@@ -43,6 +43,7 @@ rustversion = "~1.0"
 anyhow = "~1.0"
 trybuild = { version = "~1.0", features = [ "diff" ] }
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
+test_suite = { path = "rust/impl/test/test_suite" }
 
 [dev-dependencies]
 # rustversion = "~1.0"
