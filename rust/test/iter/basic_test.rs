@@ -1,14 +1,11 @@
 
 use test_tools::*;
-use iter_tools as TheModule;
+use TheModule::*;
 
 //
 
 fn basic_test()
 {
-
-  use TheModule::*;
-
   // test.case( "basic" );
   let src = vec![ 1, 2, 3 ];
   let exp = ( vec![ 2, 3, 4 ], vec![ 0, 1, 2 ] );
