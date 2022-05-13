@@ -38,9 +38,9 @@ path = "rust/impl/wtools_lib.rs"
 name = "wtools_test"
 path = "rust/test/wtools_lib_test.rs"
 
-[[test]]
-name = "wtools_integration_test"
-path = "rust/test/integration_test.rs"
+# [[test]]
+# name = "wtools_integration_test"
+# path = "rust/test/integration_test.rs"
 
 [[example]]
 name = "wtools_trivial"

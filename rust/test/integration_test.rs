@@ -78,7 +78,7 @@ impl< 'a > IntegrationModuleTest< 'a >
     Ok( () )
   }
 
-  fn run( &self ) -> Result<(), &'static str>
+  fn perform( &self ) -> Result<(), &'static str>
   {
     let mut test_path = self.test_path.clone();
     let test_name = format!( "{}_test", self.dependency_name );
@@ -105,20 +105,25 @@ impl< 'a > IntegrationModuleTest< 'a >
 
 macro_rules! module_integration_test
 {
-  ( $name : ident ) =>
+  ( $( $name : ident , )* ) =>
   {
-    #[ test ]
-    fn $name()
-    {
-      let t = IntegrationModuleTest::new( stringify!( $name ) );
-      t.form().unwrap();
-      t.run().unwrap();
-      t.clean().unwrap();
-    }
+    $(
+      #[ test ]
+      fn $name()
+      {
+        let t = IntegrationModuleTest::new( stringify!( $name ) );
+        t.form().unwrap();
+        t.perform().unwrap();
+        t.clean().unwrap();
+      }
+    )*
   }
 }
 
 //
 
-module_integration_test!( wtools );
-module_integration_test!( wtest_basic );
+module_integration_test!
+{
+  wtools,
+  wtest_basic,
+};
