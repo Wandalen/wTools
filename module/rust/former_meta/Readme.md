@@ -1,4 +1,4 @@
-# module::former_meta
+# Module :: former_meta
 
 Former - a variation of builder pattern. Implementation of its derive macro. Should not be used independently, instead use module::former which relies on the module.
 

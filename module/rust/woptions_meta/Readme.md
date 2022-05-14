@@ -1,4 +1,4 @@
-# module::woptions_meta
+# Module :: woptions_meta
 
 Mechanism to define map of options for a fuction and its defaults laconically. Its meta.
 

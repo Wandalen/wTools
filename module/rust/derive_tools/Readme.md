@@ -1,4 +1,4 @@
-# module::derive_tools [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/RustPublish.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/RustPublish.yml)
+# Module :: derive_tools [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/RustPublish.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/RustPublish.yml)
 
 Collection of general purpose derives.
 

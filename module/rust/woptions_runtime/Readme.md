@@ -1,4 +1,4 @@
-# module::woptions_runtime
+# Module :: woptions_runtime
 
 Mechanism to define map of options for a fuction and its defaults laconically. Its runtime.
 

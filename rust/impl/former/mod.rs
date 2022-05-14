@@ -2,6 +2,8 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
+xxx
+
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
 

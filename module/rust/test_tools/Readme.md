@@ -1,4 +1,4 @@
-# module::test_tools
+# Module :: test_tools
 
 Tools for writing and running tests.
 

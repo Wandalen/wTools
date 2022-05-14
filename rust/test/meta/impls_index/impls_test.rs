@@ -1,7 +1,7 @@
 #[cfg( feature = "in_wtools" )]
 use wtools::meta as TheModule;
 #[cfg( not( feature = "in_wtools" ) )]
-use meta_tools as TheModule;
+use impls_index as TheModule;
 use TheModule::prelude::*;
 
 // trace_macros!( true );

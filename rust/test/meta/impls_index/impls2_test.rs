@@ -345,10 +345,10 @@ fn fns_test()
 fn impls_basic_test()
 {
 
-  // test.case( "impls basic" );
+  // test.case( "impls2 basic" );
   {
 
-    impls!
+    impls2!
     {
       fn f1()
       {
@@ -370,10 +370,10 @@ fn impls_basic_test()
 
   }
 
-  // test.case( "impls as" );
+  // test.case( "impls2 as" );
   {
 
-    impls!
+    impls2!
     {
       fn f1()
       {
@@ -395,10 +395,10 @@ fn impls_basic_test()
 
   }
 
-  // test.case( "impls as index" );
+  // test.case( "impls2 as index" );
   {
 
-    impls!
+    impls2!
     {
       fn f1()
       {

@@ -5,4 +5,7 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-mod all;
+mod impls_index
+{
+  include!{ "./impls_index/mod.rs" }
+}

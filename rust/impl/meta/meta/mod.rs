@@ -9,12 +9,13 @@ pub mod dependencies
 {
   pub use ::literally;
   pub use ::for_each;
+  pub use ::impls_index;
 }
 
-/// Several macro on functions.
-pub mod func;
-/// Several macro to encourage to write indexed code to improve readibility.
-pub mod impls;
+// /// Several macro on functions.
+// pub mod func;
+// /// Several macro to encourage to write indexed code to improve readibility.
+// pub mod impls;
 
 /* xxx2 : use name protected */
 /* zzz : use for implementing of macro mod_interface */
@@ -38,16 +39,18 @@ pub mod parented
 pub mod exposed
 {
   pub use super::prelude::*;
-  pub use super::impls::exposed::*;
-  pub use super::func::exposed::*;
+  pub use ::impls_index::exposed::*;
+  // pub use super::impls::exposed::*;
+  // pub use super::func::exposed::*;
   pub use super::dependencies::for_each::exposed::*;
 }
 
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
-  pub use literally::*;
-  pub use super::impls::prelude::*;
-  pub use super::func::prelude::*;
+  pub use ::literally::*;
+  pub use ::impls_index::prelude::*;
+  // pub use super::impls::prelude::*;
+  // pub use super::func::prelude::*;
   pub use super::dependencies::for_each::prelude::*;
 }

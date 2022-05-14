@@ -3,7 +3,7 @@ pub mod internal
 {
 
   ///
-  /// Internal impls_2 macro. Don't use.
+  /// Internal impls macro. Don't use.
   ///
 
   #[ macro_export ]
@@ -46,7 +46,7 @@ pub mod internal
   ///
 
   #[ macro_export ]
-  macro_rules! impls
+  macro_rules! impls2
   {
 
     (
@@ -68,7 +68,7 @@ pub mod internal
   ///
 
   #[ macro_export ]
-  macro_rules! impls_2
+  macro_rules! impls
   {
 
     () => {};
@@ -80,7 +80,7 @@ pub mod internal
     )
     =>
     {
-      $crate::impls_2!
+      $crate::impls!
       {
         @DefineFn
         @Meta{ $( #[ $Meta ] )* }
@@ -124,7 +124,7 @@ pub mod internal
         // };
       }
 
-      $crate::impls_2!
+      $crate::impls!
       {
         $( $Rest )*
       }
@@ -165,8 +165,8 @@ pub mod internal
   }
 
   pub use _impls_callback;
+  pub use impls2;
   pub use impls;
-  pub use impls_2;
   pub use index;
 }
 
@@ -184,7 +184,7 @@ pub mod prelude
 {
   use super::internal as i;
   pub use i::_impls_callback;
+  pub use i::impls2;
   pub use i::impls;
-  pub use i::impls_2;
   pub use i::index;
 }
