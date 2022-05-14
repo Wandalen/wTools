@@ -1,7 +1,9 @@
-// #![ feature( type_name_of_val ) ]
-// #![ feature( trace_macros ) ]
-// #![ feature( concat_idents ) ]
+#![ warn( rust_2018_idioms ) ]
+#![ warn( missing_debug_implementations ) ]
+#![ warn( missing_docs ) ]
 
-// mod meta;
+#![ feature( trace_macros ) ]
+#![ feature( type_name_of_val ) ]
 
-include!( "include.rs" );
+mod include;
+// include!( "include.rs" );

@@ -3,7 +3,7 @@
 #![ warn( missing_docs ) ]
 
 // #![ feature( type_name_of_val ) ]
-// #![ feature( trace_macros ) ]
+#![ feature( trace_macros ) ]
 
 //!
 //! Implementation of automata.

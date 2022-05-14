@@ -22,6 +22,7 @@ pub mod internal
     pub id_to_node_map : HashMap< ID!(), crate::NodeCell< Node > >,
   }
 
+  // trace_macros!( true );
   impls!
   {
 
@@ -57,6 +58,7 @@ pub mod internal
     }
 
   }
+  // trace_macros!( false );
 
   impl CellNodeFactory
   {

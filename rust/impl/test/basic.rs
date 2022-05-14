@@ -78,18 +78,18 @@ pub mod internal
 //     {
 //       $crate::test_suite_internals!
 //       {
-//         @DEFINE_FN
-//         @NAME $Name
-//         @REST
+//         @DefineFn
+//         @Name $Name
+//         @Rest
 //           $( #[ $Meta ] )*
 //           fn $Name $( $Rest )*
 //       }
 //     };
 //
 //     (
-//       @DEFINE_FN
-//       @NAME $Name : ident
-//       @REST
+//       @DefineFn
+//       @Name $Name : ident
+//       @Rest
 //         $Item : item
 //         // $( #[ $Meta : meta ] )*
 //         // fn $Name : ident

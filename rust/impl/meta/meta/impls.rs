@@ -3,15 +3,75 @@ pub mod internal
 {
 
   ///
-  /// Internals of a test suite.
+  /// Internal impls_2 macro. Don't use.
+  ///
+
+  #[ macro_export ]
+  macro_rules! _impls_callback
+  {
+
+    (
+      $( #[ $Meta : meta ] )*
+      $Vis : vis
+      fn $Name : ident
+      $( $Rest : tt )*
+    ) =>
+    {
+      macro_rules! $Name
+      {
+        ( as $Name2 : ident ) =>
+        {
+          $crate::fn_rename!{ @Name { $Name2 } @FN
+          {
+            $( #[ $Meta ] )*
+            $Vis
+            fn $Name
+            $( $Rest )*
+          }}
+        };
+        () =>
+        {
+          $( #[ $Meta ] )*
+          $Vis
+          fn $Name
+          $( $Rest )*
+        };
+      }
+    };
+
+  }
+
+  ///
+  /// Define implementation putting each function under a macro.
   ///
 
   #[ macro_export ]
   macro_rules! impls
   {
 
-    () => {};
+    (
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      $crate::fns!
+      {
+        @Callback { $crate::_impls_callback }
+        @Fns { $( $Rest )* }
+      }
+    };
 
+  }
+
+  ///
+  /// Define implementation putting each function under a macro.
+  ///
+
+  #[ macro_export ]
+  macro_rules! impls_2
+  {
+
+    () => {};
     (
       $( #[ $Meta : meta ] )*
       $Vis : vis
@@ -20,16 +80,16 @@ pub mod internal
     )
     =>
     {
-      $crate::impls!
+      $crate::impls_2!
       {
-        @DEFINE_FN
-        @META{ $( #[ $Meta ] )* }
-        @VIS{ $Vis }
-        @NAME{ $Name }
-        @INPUT{ () }
-        @OUTPUT{}
-        @BLOCK{ {} }
-        @REST
+        @DefineFn
+        @Meta{ $( #[ $Meta ] )* }
+        @Vis{ $Vis }
+        @Name{ $Name }
+        @Input{ () }
+        @Output{}
+        @Block{ {} }
+        @Rest
           $( #[ $Meta ] )*
           $Vis fn $Name
           $( $Rest )*
@@ -37,14 +97,14 @@ pub mod internal
     };
 
     (
-      @DEFINE_FN
-      @META{ $( #[ $Meta : meta ] )* }
-      @VIS{ $Vis : vis }
-      @NAME{ $Name : ident }
-      @INPUT{ $Input : tt }
-      @OUTPUT{ $( -> $Output : ty )? }
-      @BLOCK{ $Block : block }
-      @REST
+      @DefineFn
+      @Meta{ $( #[ $Meta : meta ] )* }
+      @Vis{ $Vis : vis }
+      @Name{ $Name : ident }
+      @Input{ $Input : tt }
+      @Output{ $( -> $Output : ty )? }
+      @Block{ $Block : block }
+      @Rest
         $Item : item
         $( $Rest : tt )*
     )
@@ -64,7 +124,7 @@ pub mod internal
         // };
       }
 
-      $crate::impls!
+      $crate::impls_2!
       {
         $( $Rest )*
       }
@@ -83,6 +143,16 @@ pub mod internal
     () => { };
 
     (
+      $Name : ident as $Alias : ident,
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      $Name!( as $Alias );
+      $crate::index!( $( $Rest )* );
+    };
+
+    (
       $Name : ident ,
       $( $Rest : tt )*
     )
@@ -94,31 +164,10 @@ pub mod internal
 
   }
 
-  ///
-  /// Index of items.
-  ///
-
-  #[ macro_export ]
-  macro_rules! ignore_macro
-  {
-
-    () => { };
-
-    (
-      $Name : ident ,
-      $( $Rest : tt )*
-    )
-    =>
-    {
-      $Name!();
-      stringify!( $crate::index!( $( $Rest )* ) );
-    };
-
-  }
-
+  pub use _impls_callback;
   pub use impls;
+  pub use impls_2;
   pub use index;
-  pub use ignore_macro;
 }
 
 /// Exposed namespace of the module.
@@ -134,225 +183,8 @@ pub use exposed::*;
 pub mod prelude
 {
   use super::internal as i;
+  pub use i::_impls_callback;
   pub use i::impls;
+  pub use i::impls_2;
   pub use i::index;
-  pub use i::ignore_macro;
 }
-
-
-//   #[ macro_export ]
-//   macro_rules! impls
-//   {
-//
-//     () => {};
-//
-//     (
-//       $( #[ $Meta : meta ] )*
-//       $Vis : vis
-//       fn $Name : ident
-//       $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       $crate::impls!
-//       {
-//         @DEFINE_FN
-//         @META{ $( #[ $Meta ] )* }
-//         @VIS{ $Vis }
-//         @NAME{ $Name }
-//         @INPUT{ () }
-//         @OUTPUT{}
-//         @BLOCK{ {} }
-//         @REST
-//           $( #[ $Meta ] )*
-//           $Vis fn $Name
-//           $( $Rest )*
-//       }
-//     };
-//
-//     (
-//       @DEFINE_FN
-//       @META{ $( #[ $Meta : meta ] )* }
-//       @VIS{ $Vis : vis }
-//       @NAME{ $Name : ident }
-//       @INPUT{ $Input : tt }
-//       @OUTPUT{ $( -> $Output : ty )? }
-//       @BLOCK{ $Block : block }
-//       @REST
-//         $Item : item
-//         $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       #[ deny( unused_macros ) ]
-//       macro_rules! $Name
-//       {
-//         () =>
-//         {
-//           $Item
-//         };
-//         // ( @AS $Name : ident ) =>
-//         // {
-//         //   $( #[ $Meta ] )*
-//         //   fn $Name
-//         // };
-//       }
-//
-//       $crate::impls!
-//       {
-//         $( $Rest )*
-//       }
-//     };
-//
-//   }
-
-
-//   #[ macro_export ]
-//   macro_rules! impls
-//   {
-//
-//     () => {};
-//
-//     (
-//       $( #[ $Meta : meta ] )*
-//       $Vis : vis
-//       fn $Name : ident
-//       $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       $crate::impls!
-//       {
-//         @DEFINE_FN
-//         @META $( #[ $Meta ] )*
-//         @VIS{ $Vis }
-//         @NAME $Name
-//         // @INPUT ()
-//         // @OUTPUT
-//         // @BLOCK {}
-//         @REST
-//           $( #[ $Meta ] )*
-//           $Vis fn $Name
-//           $( $Rest )*
-//       }
-//     };
-//
-//     // (
-//     //   $( #[ $Meta : meta ] )*
-//     //   fn $Name : ident
-//     //   // $( < $( $ParamName : ident : $ParamType : ty ),* > )?
-//     //   // $Input : tt
-//     //   // $( -> $Output : ty )?
-//     //   // $Block : block
-//     //   $( $Rest : tt )*
-//     // )
-//     // =>
-//     // {
-//     //   $crate::impls!
-//     //   {
-//     //     @DEFINE_FN
-//     //     @META $( #[ $Meta ] )*
-//     //     @VIS
-//     //     @NAME $Name
-//     //     @INPUT ()
-//     //     @OUTPUT
-//     //     @BLOCK {}
-//     //     @REST
-//     //       $( #[ $Meta ] )*
-//     //       fn $Name
-//     //       // $Input $( -> $Output )?
-//     //       // $Block
-//     //       $( $Rest )*
-//     //   }
-//     // };
-//
-// //     (
-// //       $( #[ $Meta : meta ] )*
-// //       pub
-// //       fn $Name : ident
-// //       $Input : tt
-// //       $( -> $Output : ty )?
-// //       $Block : block
-// //       $( $Rest : tt )*
-// //     )
-// //     =>
-// //     {
-// //       $crate::impls!
-// //       {
-// //         @DEFINE_FN
-// //         @META $( #[ $Meta ] )*
-// //         @VIS pub
-// //         @NAME $Name
-// //         @INPUT $Input
-// //         @OUTPUT $( -> $Output )?
-// //         @BLOCK $Block
-// //         @REST
-// //           $( #[ $Meta ] )*
-// //           pub fn $Name $Input $( -> $Output )?
-// //           $Block
-// //           $( $Rest )*
-// //       }
-// //     };
-// //
-// //     (
-// //       $( #[ $Meta : meta ] )*
-// //       fn $Name : ident
-// //       $Input : tt
-// //       $( -> $Output : ty )?
-// //       $Block : block
-// //       $( $Rest : tt )*
-// //     )
-// //     =>
-// //     {
-// //       $crate::impls!
-// //       {
-// //         @DEFINE_FN
-// //         @META $( #[ $Meta ] )*
-// //         @VIS
-// //         @NAME $Name
-// //         @INPUT $Input
-// //         @OUTPUT $( -> $Output )?
-// //         @BLOCK $Block
-// //         @REST
-// //           $( #[ $Meta ] )*
-// //           fn $Name $Input $( -> $Output )?
-// //           $Block
-// //           $( $Rest )*
-// //       }
-// //     };
-//
-//     (
-//       @DEFINE_FN
-//       @META $( #[ $Meta : meta ] )*
-//       @VIS{ $Vis : vis }
-//       @NAME $Name : ident
-//       // @INPUT $Input : tt
-//       // @OUTPUT $( -> $Output : ty )?
-//       // @BLOCK $Block : block
-//       @REST
-//         $Item : item
-//         $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       // #[ deny( unused_macros ) ]
-//       macro_rules! $Name
-//       {
-//         () =>
-//         {
-//           $Item
-//         };
-//         // ( @AS $Name : ident ) =>
-//         // {
-//         //   $( #[ $Meta ] )*
-//         //   fn $Name
-//         // };
-//       }
-//
-//       $crate::impls!
-//       {
-//         $( $Rest )*
-//       }
-//     };
-//
-//   }
