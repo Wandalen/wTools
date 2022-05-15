@@ -39,9 +39,9 @@ pub mod internal
   {
 
     (
-      @PREFIX { $( $Prefix : tt )* }
+      @Prefix { $( $Prefix : tt )* }
       @Name { $Name : ident }
-      @POSTFIX
+      @Postfix
       {
         fn $OldName : ident
         $( $Postfix : tt )*
@@ -55,9 +55,9 @@ pub mod internal
     };
 
     (
-      @PREFIX { $( $Prefix : tt )* }
+      @Prefix { $( $Prefix : tt )* }
       @Name { $Name : ident }
-      @POSTFIX
+      @Postfix
       {
         $First : tt
         $( $Postfix : tt )*
@@ -67,23 +67,23 @@ pub mod internal
     {
       $crate::fn_rename!
       {
-        @PREFIX { $( $Prefix )* }
+        @Prefix { $( $Prefix )* }
         @Name { $Name }
-        @POSTFIX { $( $Postfix )* }
+        @Postfix { $( $Postfix )* }
       }
     };
 
     (
       @Name { $Name : ident }
-      @FN { $( $Fn : tt )* }
+      @Fn { $( $Fn : tt )* }
     )
     =>
     {
       $crate::fn_rename!
       {
-        @PREFIX {}
+        @Prefix {}
         @Name { $Name }
-        @POSTFIX { $( $Fn )* }
+        @Postfix { $( $Fn )* }
       }
     };
 

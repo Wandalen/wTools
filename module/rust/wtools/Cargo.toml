@@ -63,6 +63,7 @@ former = { version = "~0.1", path = "../../rust/former" }
 woptions = { version = "~0.1", path = "../../rust/woptions" }
 iter_tools = { version = "~0.1", path = "../../rust/iter_tools" }
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
+impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by meta_tools it should also be imported immediatly
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
 time_tools = { version = "~0.1", path = "../../rust/time_tools" }
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }

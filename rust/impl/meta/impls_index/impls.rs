@@ -3,136 +3,6 @@ pub mod internal
 {
 
   ///
-  /// Internal impls macro. Don't use.
-  ///
-
-  #[ macro_export ]
-  macro_rules! _impls_callback
-  {
-
-    (
-      $( #[ $Meta : meta ] )*
-      $Vis : vis
-      fn $Name : ident
-      $( $Rest : tt )*
-    ) =>
-    {
-      macro_rules! $Name
-      {
-        ( as $Name2 : ident ) =>
-        {
-          $crate::fn_rename!{ @Name { $Name2 } @FN
-          {
-            $( #[ $Meta ] )*
-            $Vis
-            fn $Name
-            $( $Rest )*
-          }}
-        };
-        () =>
-        {
-          $( #[ $Meta ] )*
-          $Vis
-          fn $Name
-          $( $Rest )*
-        };
-      }
-    };
-
-  }
-
-  ///
-  /// Define implementation putting each function under a macro.
-  ///
-
-  #[ macro_export ]
-  macro_rules! impls2
-  {
-
-    (
-      $( $Rest : tt )*
-    )
-    =>
-    {
-      $crate::fns!
-      {
-        @Callback { $crate::_impls_callback }
-        @Fns { $( $Rest )* }
-      }
-    };
-
-  }
-
-  ///
-  /// Define implementation putting each function under a macro.
-  ///
-
-  #[ macro_export ]
-  macro_rules! impls
-  {
-
-    () => {};
-    (
-      $( #[ $Meta : meta ] )*
-      $Vis : vis
-      fn $Name : ident
-      $( $Rest : tt )*
-    )
-    =>
-    {
-      $crate::impls!
-      {
-        @DefineFn
-        @Meta{ $( #[ $Meta ] )* }
-        @Vis{ $Vis }
-        @Name{ $Name }
-        @Input{ () }
-        @Output{}
-        @Block{ {} }
-        @Rest
-          $( #[ $Meta ] )*
-          $Vis fn $Name
-          $( $Rest )*
-      }
-    };
-
-    (
-      @DefineFn
-      @Meta{ $( #[ $Meta : meta ] )* }
-      @Vis{ $Vis : vis }
-      @Name{ $Name : ident }
-      @Input{ $Input : tt }
-      @Output{ $( -> $Output : ty )? }
-      @Block{ $Block : block }
-      @Rest
-        $Item : item
-        $( $Rest : tt )*
-    )
-    =>
-    {
-      // #[ deny( unused_macros ) ]
-      macro_rules! $Name
-      {
-        () =>
-        {
-          $Item
-        };
-        // ( @AS $Name : ident ) =>
-        // {
-        //   $( #[ $Meta ] )*
-        //   fn $Name
-        // };
-      }
-
-      $crate::impls!
-      {
-        $( $Rest )*
-      }
-    };
-
-  }
-
-  ///
   /// Index of items.
   ///
 
@@ -164,10 +34,137 @@ pub mod internal
 
   }
 
-  pub use _impls_callback;
-  pub use impls2;
-  pub use impls;
+  ///
+  /// Define implementation putting each function under a macro.
+  ///
+
+  #[ macro_export ]
+  macro_rules! impls1
+  {
+
+    () => {};
+    (
+      $( #[ $Meta : meta ] )*
+      $Vis : vis
+      fn $Name : ident
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      $crate::impls1!
+      {
+        @DefineFn
+        @Meta{ $( #[ $Meta ] )* }
+        @Vis{ $Vis }
+        @Name{ $Name }
+        @Input{ () }
+        @Output{}
+        @Block{ {} }
+        @Rest
+          $( #[ $Meta ] )*
+          $Vis fn $Name
+          $( $Rest )*
+      }
+    };
+
+    (
+      @DefineFn
+      @Meta{ $( #[ $Meta : meta ] )* }
+      @Vis{ $Vis : vis }
+      @Name{ $Name : ident }
+      @Input{ $Input : tt }
+      @Output{ $( -> $Output : ty )? }
+      @Block{ $Block : block }
+      @Rest
+        $Item : item
+        $( $Rest : tt )*
+    )
+    =>
+    {
+      #[ deny( unused_macros ) ]
+      macro_rules! $Name
+      {
+        () =>
+        {
+          $Item
+        };
+      }
+
+      $crate::impls1!
+      {
+        $( $Rest )*
+      }
+    };
+
+  }
+
+  ///
+  /// Define implementation putting each function under a macro.
+  ///
+
+  #[ macro_export ]
+  macro_rules! impls2
+  {
+
+    (
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      $crate::fns!
+      {
+        @Callback { $crate::_impls_callback }
+        @Fns { $( $Rest )* }
+      }
+    };
+
+  }
+
+  ///
+  /// Internal impls1 macro. Don't use.
+  ///
+
+  #[ macro_export ]
+  macro_rules! _impls_callback
+  {
+
+    (
+      $( #[ $Meta : meta ] )*
+      $Vis : vis
+      fn $Name : ident
+      $( $Rest : tt )*
+    ) =>
+    {
+      #[ deny( unused_macros ) ]
+      macro_rules! $Name
+      {
+        ( as $Name2 : ident ) =>
+        {
+          $crate::fn_rename!{ @Name { $Name2 } @Fn
+          {
+            $( #[ $Meta ] )*
+            $Vis
+            fn $Name
+            $( $Rest )*
+          }}
+        };
+        () =>
+        {
+          $( #[ $Meta ] )*
+          $Vis
+          fn $Name
+          $( $Rest )*
+        };
+      }
+    };
+
+  }
+
   pub use index;
+  pub use impls1;
+  pub use impls2;
+  pub use _impls_callback;
+
 }
 
 /// Exposed namespace of the module.
@@ -183,8 +180,10 @@ pub use exposed::*;
 pub mod prelude
 {
   use super::internal as i;
-  pub use i::_impls_callback;
-  pub use i::impls2;
-  pub use i::impls;
   pub use i::index;
+  pub use i::impls1;
+  pub use i::impls2;
+  pub use i::_impls_callback;
+  pub use ::impls_index_meta::impls3;
+  pub use impls1 as impls;
 }

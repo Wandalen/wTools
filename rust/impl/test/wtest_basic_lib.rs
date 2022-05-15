@@ -27,7 +27,7 @@ pub use dependencies::*;
 pub mod exposed
 {
   pub use super::basic::exposed::*;
-  pub use meta_tools::{ impls, index };
+  pub use meta_tools::{ impls, impls1, impls2, impls3, index };
 }
 
 pub use exposed::*;

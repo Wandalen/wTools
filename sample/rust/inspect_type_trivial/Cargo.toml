@@ -9,5 +9,7 @@ publish = false
 # default = []
 
 [dependencies]
-inspect_type = { version = "*" }
+inspect_type = { version = "*", path = "../../../module/rust/inspect_type" }
 rustversion = "~1.0"
+
+# xxx : require feature

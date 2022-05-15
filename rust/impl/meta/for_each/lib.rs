@@ -39,43 +39,43 @@ pub mod internal
     // -- callback-less
 
     (
-      @PREFIX $Prefix : tt
-      @POSTFIX $Postfix : tt
-      @EACH $( $Each : tt )*
+      @Prefix $Prefix : tt
+      @Postfix $Postfix : tt
+      @Each $( $Each : tt )*
     ) =>
     {
       $crate::for_each!
       {
         $crate::identity where
-        @PREFIX $Prefix
-        @POSTFIX $Postfix
-        @EACH $( $Each )*
+        @Prefix $Prefix
+        @Postfix $Postfix
+        @Each $( $Each )*
       }
     };
 
     (
-      @PREFIX $Prefix : tt
-      @EACH $( $Each : tt )*
+      @Prefix $Prefix : tt
+      @Each $( $Each : tt )*
     ) =>
     {
       $crate::for_each!
       {
         $crate::identity where
-        @PREFIX $Prefix
-        @EACH $( $Each )*
+        @Prefix $Prefix
+        @Each $( $Each )*
       }
     };
 
     (
-      @POSTFIX $Postfix : tt
-      @EACH $( $Each : tt )*
+      @Postfix $Postfix : tt
+      @Each $( $Each : tt )*
     ) =>
     {
       $crate::for_each!
       {
         $crate::identity where
-        @POSTFIX $Postfix
-        @EACH $( $Each )*
+        @Postfix $Postfix
+        @Each $( $Each )*
       }
     };
 
@@ -83,7 +83,7 @@ pub mod internal
 
     (
       $Callback : path where
-      @EACH $( $Each : tt )*
+      @Each $( $Each : tt )*
     ) =>
     {
       $(
@@ -94,17 +94,17 @@ pub mod internal
     (
       $Callback : path
       where
-        @PREFIX $Prefix : tt
-        @POSTFIX $Postfix : tt
-        @EACH $( $Each : tt )*
+        @Prefix $Prefix : tt
+        @Postfix $Postfix : tt
+        @Each $( $Each : tt )*
     ) =>
     {
       $(
         $crate::braces_unwrap!
         (
           $Callback where
-          @PREFIX{ $Prefix }
-          @POSTFIX{ $Postfix }
+          @Prefix{ $Prefix }
+          @Postfix{ $Postfix }
           @SRC{ $Each }
         );
       )*
@@ -112,15 +112,15 @@ pub mod internal
 
     (
       $Callback : path where
-      @PREFIX $Prefix : tt
-      @EACH $( $Each : tt )*
+      @Prefix $Prefix : tt
+      @Each $( $Each : tt )*
     ) =>
     {
       $(
         $crate::braces_unwrap!
         (
           $Callback where
-          @PREFIX{ $Prefix }
+          @Prefix{ $Prefix }
           @SRC{ $Each }
         );
       )*
@@ -128,15 +128,15 @@ pub mod internal
 
     (
       $Callback : path where
-      @POSTFIX $Postfix : tt
-      @EACH $( $Each : tt )*
+      @Postfix $Postfix : tt
+      @Each $( $Each : tt )*
     ) =>
     {
       $(
         $crate::braces_unwrap!
         (
           $Callback where
-          @POSTFIX{ $Postfix }
+          @Postfix{ $Postfix }
           @SRC{ $Each }
         );
       )*
@@ -166,8 +166,8 @@ pub mod internal
   /// braces_unwrap!
   /// (
   ///   dbg where
-  ///   @PREFIX{ prefix, }
-  ///   @POSTFIX{ postfix }
+  ///   @Prefix{ prefix, }
+  ///   @Postfix{ postfix }
   ///   @SRC{ { a, b, c, } }
   /// );
   /// // generates :
@@ -175,8 +175,8 @@ pub mod internal
   /// braces_unwrap!
   /// (
   ///   dbg where
-  ///   @PREFIX{ prefix, }
-  ///   @POSTFIX{ postfix }
+  ///   @Prefix{ prefix, }
+  ///   @Postfix{ postfix }
   ///   @SRC{ a, b, c, }
   /// );
   /// // generates :
@@ -237,8 +237,8 @@ pub mod internal
     /* 0 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Prefix{ { $( $Prefix : tt )* } }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -251,8 +251,8 @@ pub mod internal
     /* 1 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Prefix{ { $( $Prefix : tt )* } }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -265,8 +265,8 @@ pub mod internal
     /* 2 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Prefix{ { $( $Prefix : tt )* } }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -279,8 +279,8 @@ pub mod internal
     /* 3 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Prefix{ { $( $Prefix : tt )* } }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -293,8 +293,8 @@ pub mod internal
     /* 4 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Prefix{ $( $Prefix : tt )* }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -307,8 +307,8 @@ pub mod internal
     /* 5 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Prefix{ $( $Prefix : tt )* }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -321,8 +321,8 @@ pub mod internal
     /* 6 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Prefix{ $( $Prefix : tt )* }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -335,8 +335,8 @@ pub mod internal
     /* 7 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Prefix{ $( $Prefix : tt )* }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -352,7 +352,7 @@ pub mod internal
     /* 0 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
+      @Prefix{ { $( $Prefix : tt )* } }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -365,7 +365,7 @@ pub mod internal
     /* 1 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
+      @Prefix{ { $( $Prefix : tt )* } }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -378,7 +378,7 @@ pub mod internal
     /* 2 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
+      @Prefix{ $( $Prefix : tt )* }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -391,7 +391,7 @@ pub mod internal
     /* 3 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
+      @Prefix{ $( $Prefix : tt )* }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -407,7 +407,7 @@ pub mod internal
     /* 0 */
     (
       $Callback : path where
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -420,7 +420,7 @@ pub mod internal
     /* 1 */
     (
       $Callback : path where
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -433,7 +433,7 @@ pub mod internal
     /* 2 */
     (
       $Callback : path where
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -446,7 +446,7 @@ pub mod internal
     /* 3 */
     (
       $Callback : path where
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ $( $Src : tt )* }
     )
     =>

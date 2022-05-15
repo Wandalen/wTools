@@ -18,7 +18,7 @@ mod impls;
 ///
 
 #[ proc_macro ]
-pub fn impls( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+pub fn impls3( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = impls::impls( input );
   match result
@@ -27,22 +27,3 @@ pub fn impls( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
     Err( err ) => err.to_compile_error().into(),
   }
 }
-
-// ///
-// /// Derive macro to generate former for a structure. Former is variation of Builder Pattern.
-// ///
-//
-// #[ proc_macro_derive( Former, attributes( perform, default ) ) ]
-// pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
-// {
-//   let result = former::former( input );
-//   match result
-//   {
-//     Ok( stream ) => stream.into(),
-//     Err( err ) => err.to_compile_error().into(),
-//   }
-// }
-
-// include!( "./lib.rs" );
-// xxx : unduplicate
-

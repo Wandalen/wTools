@@ -5,6 +5,4 @@ edition = "2021"
 publish = false
 
 [dependencies]
-# wtest_basic = "*"
-wtest_basic = { path = "../../../module/rust/wtest_basic" }
-
+wtest_basic = { version = "*", path = "../../../module/rust/wtest_basic" }

@@ -12,6 +12,12 @@ pub mod impls;
 /* xxx2 : use name protected */
 /* zzz : use for implementing of macro mod_interface */
 
+/// Namespace with dependencies.
+pub mod dependency
+{
+  pub use ::impls_index_meta;
+}
+
 /// Owned namespace of the module.
 pub mod own
 {
@@ -38,7 +44,7 @@ pub mod exposed
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
-  // pub use literally::*;
   pub use super::impls::prelude::*;
   pub use super::func::prelude::*;
+  pub use ::impls_index_meta::*;
 }

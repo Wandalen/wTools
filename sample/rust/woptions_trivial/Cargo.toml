@@ -5,5 +5,4 @@ edition = "2021"
 publish = false
 
 [dependencies]
-# woptions = "*" # qqq : xxx : uncomment later to use published version instead of local
-woptions = { path = "../../../module/rust/woptions" }
+woptions = { version = "*", path = "../../../module/rust/woptions" }

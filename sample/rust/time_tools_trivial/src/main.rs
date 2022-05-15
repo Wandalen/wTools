@@ -4,8 +4,7 @@ fn main()
 {
   /* get milliseconds from UNIX epoch */
   let now = time::now();
-  let now_chrono = chrono::prelude::Utc::now().timestamp_millis();
-  assert_eq!( now, now_chrono );
+  println!( "now {}", now );
 
   /* get nanoseconds from UNIX epoch */
   let now = time::now();

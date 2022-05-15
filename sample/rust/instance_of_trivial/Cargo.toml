@@ -5,4 +5,4 @@ edition = "2021"
 publish = false
 
 [dependencies]
-instance_of = "*"
+instance_of = { version = "*", path = "../../../module/rust_alias/instance_of" }

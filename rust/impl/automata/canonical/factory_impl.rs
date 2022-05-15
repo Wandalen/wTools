@@ -35,70 +35,70 @@ impls!
     result.id()
   }
 
-  ///
-  /// Iterate output nodes of the node.
-  ///
-
-  fn node_extend_out_nodes< Id, Iter >
-  (
-    &mut self,
-    node_id : Id,
-    out_nodes_iter : Iter,
-  )
-  where
-    Iter : IntoIterator< Item = Id >,
-    Iter::IntoIter : Clone,
-    Id : Into< ID!() >
-  {
-
-    let iter = out_nodes_iter.into_iter();
-    let iter2 = iter.clone();
-
-    #[ cfg( debug_assertions ) ]
-    iter
-    .map( | id |
-    {
-      let node = self.node( id );
-    })
-    .fold( (), | acc, e | () )
-    ;
-
-    let iter3 = iter2.into_iter()
-    .map( | id |
-    {
-      let id = id.into();
-      id
-    })
-    ;
-
-    self.node_mut( node_id.into() ).extend( iter3 );
-  }
-
-  ///
-  /// Iterate output nodes of the node.
-  ///
-
-  fn node_extend_out_nodes_cell< Id, Iter >
-  (
-    &mut self,
-    node_id : Id,
-    out_nodes_iter : Iter,
-  )
-  where
-    Iter : IntoIterator< Item = Id >,
-    Iter::IntoIter : Clone,
-    Id : Into< ID!() >,
-  {
-    let out_nodes_iter2 = out_nodes_iter.into_iter()
-    .map( | id |
-    {
-      let id = id.into();
-      self.node( id );
-      id
-    });
-    self.node( node_id.into() ).borrow_mut().extend( out_nodes_iter2 );
-    // self.node_mut( node_id.into() ).extend( out_nodes_iter );
-  }
+//   ///
+//   /// Iterate output nodes of the node.
+//   ///
+//
+//   fn node_extend_out_nodes< Id, Iter >
+//   (
+//     &mut self,
+//     node_id : Id,
+//     out_nodes_iter : Iter,
+//   )
+//   where
+//     Iter : IntoIterator< Item = Id >,
+//     Iter::IntoIter : Clone,
+//     Id : Into< ID!() >
+//   {
+//
+//     let iter = out_nodes_iter.into_iter();
+//     let iter2 = iter.clone();
+//
+//     #[ cfg( debug_assertions ) ]
+//     iter
+//     .map( | id |
+//     {
+//       let node = self.node( id );
+//     })
+//     .fold( (), | acc, e | () )
+//     ;
+//
+//     let iter3 = iter2.into_iter()
+//     .map( | id |
+//     {
+//       let id = id.into();
+//       id
+//     })
+//     ;
+//
+//     self.node_mut( node_id.into() ).extend( iter3 );
+//   }
+//
+//   ///
+//   /// Iterate output nodes of the node.
+//   ///
+//
+//   fn node_extend_out_nodes_cell< Id, Iter >
+//   (
+//     &mut self,
+//     node_id : Id,
+//     out_nodes_iter : Iter,
+//   )
+//   where
+//     Iter : IntoIterator< Item = Id >,
+//     Iter::IntoIter : Clone,
+//     Id : Into< ID!() >,
+//   {
+//     let out_nodes_iter2 = out_nodes_iter.into_iter()
+//     .map( | id |
+//     {
+//       let id = id.into();
+//       self.node( id );
+//       id
+//     });
+//     self.node( node_id.into() ).borrow_mut().extend( out_nodes_iter2 );
+//     // self.node_mut( node_id.into() ).extend( out_nodes_iter );
+//   }
 
   //
 
@@ -130,22 +130,6 @@ impls!
       return result;
     }
     unreachable!( "No node with id {:?} found", id );
-  }
-
-  //
-
-  fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
-  ->
-  Box< dyn Iterator< Item = ID!() > + 'b >
-  where
-    Id : Into< ID!() >,
-    'a : 'b,
-  {
-    let node = self.node( node_id );
-    let iterator
-      : Box< dyn Iterator< Item = ID!() > >
-      = Box::new( node.out_nodes.iter().cloned() );
-    iterator
   }
 
 }

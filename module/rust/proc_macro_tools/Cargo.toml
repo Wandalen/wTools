@@ -39,6 +39,7 @@ path = "sample/rust/proc_macro_tools_trivial/src/main.rs"
 
 [dependencies]
 proc-macro2 = { version = "~1.0" }
+quote = { version = "~1.0" }
 syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }
 winterval = { version = "~0.1", path = "../../rust/winterval" }
 # inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }

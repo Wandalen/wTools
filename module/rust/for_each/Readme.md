@@ -29,9 +29,9 @@ dbg!( "c" );
 # Sample :: map-style call
 
 Macro `for_each` may be called either in function-style way or in map-style way.
-Use keys @PREFIX @POSTFIX @EACH to pass options as entries of a map.
-Options @PREFIX and @POSTFIX are optional and their entries could be ommited, but entry @EACH is mandatory.
-Order of options should always be @PREFIX, @POSTFIX, @EACH.
+Use keys @Prefix @Postfix @Each to pass options as entries of a map.
+Options @Prefix and @Postfix are optional and their entries could be ommited, but entry @Each is mandatory.
+Order of options should always be @Prefix, @Postfix, @Each.
 
 ```rust
 use for_each::for_each;
@@ -39,9 +39,9 @@ use for_each::for_each;
 for_each!
 {
   dbg where
-  @PREFIX { "prefix".to_string() + }
-  @POSTFIX { + "postfix" }
-  @EACH "a" "b" "c"
+  @Prefix { "prefix".to_string() + }
+  @Postfix { + "postfix" }
+  @Each "a" "b" "c"
 };
 
 // generates
@@ -61,9 +61,9 @@ use for_each::for_each;
 for_each!
 {
   dbg where
-  @PREFIX { "prefix".to_string() + }
-  @POSTFIX { + "postfix" }
-  @EACH { "a" + "1" } { "b" + "2" } { "c" + "3" }
+  @Prefix { "prefix".to_string() + }
+  @Postfix { + "postfix" }
+  @Each { "a" + "1" } { "b" + "2" } { "c" + "3" }
 };
 
 // generates
@@ -81,8 +81,8 @@ Use map call style and omit path to callback macro with keyword `where` to invok
 use for_each::for_each;
 for_each!
 {
-  @PREFIX { dbg! }
-  @EACH ( "a" ) ( "b" ) ( "c" )
+  @Prefix { dbg! }
+  @Each ( "a" ) ( "b" ) ( "c" )
 };
 // generates
 dbg!( "a" );

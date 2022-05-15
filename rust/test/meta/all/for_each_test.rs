@@ -4,6 +4,7 @@ use test_tools::*;
 use wtools::meta as TheModule;
 #[cfg( not( feature = "in_wtools" ) )]
 use for_each as TheModule;
+// use TheModule::prelude::*;
 
 impls!
 {
@@ -42,8 +43,8 @@ impls!
       TheModule::braces_unwrap!
       (
         dbg where
-        @PREFIX{ prefix, }
-        @POSTFIX{ postfix }
+        @Prefix{ prefix, }
+        @Postfix{ postfix }
         @SRC{ { a, b, c, } }
       );
       // generates :
@@ -51,8 +52,8 @@ impls!
       TheModule::braces_unwrap!
       (
         dbg where
-        @PREFIX{ prefix, }
-        @POSTFIX{ postfix }
+        @Prefix{ prefix, }
+        @Postfix{ postfix }
         @SRC{ a, b, c, }
       );
       // generates :
@@ -173,8 +174,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
-        @POSTFIX{ postfix }
+        @Prefix{ prefix }
+        @Postfix{ postfix }
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c postfix;";
@@ -184,8 +185,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
-        @POSTFIX{ postfix }
+        @Prefix{ prefix }
+        @Postfix{ postfix }
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
@@ -195,8 +196,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
-        @POSTFIX{ postfix }
+        @Prefix{ prefix }
+        @Postfix{ postfix }
         @SRC{ { { a, b, c } } }
       );
       let exp = "prefix { a, b, c } postfix;";
@@ -206,8 +207,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
-        @POSTFIX{ postfix }
+        @Prefix{ prefix }
+        @Postfix{ postfix }
         @SRC{ ( a, b, c ) }
       );
       let exp = "prefix(a, b, c) postfix;";
@@ -217,8 +218,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
-        @POSTFIX{ postfix }
+        @Prefix{ prefix }
+        @Postfix{ postfix }
         @SRC{ ( ( a, b, c ) ) }
       );
       let exp = "prefix((a, b, c)) postfix;";
@@ -228,8 +229,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
-        @POSTFIX{ postfix }
+        @Prefix{ prefix }
+        @Postfix{ postfix }
         @SRC{ [ a, b, c ] }
       );
       let exp = "prefix [a, b, c] postfix;";
@@ -239,8 +240,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
-        @POSTFIX{ postfix }
+        @Prefix{ prefix }
+        @Postfix{ postfix }
         @SRC{ [ [ a, b, c ] ] }
       );
       let exp = "prefix [[a, b, c]] postfix;";
@@ -256,8 +257,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ { prefix } }
-        @POSTFIX{ { postfix } }
+        @Prefix{ { prefix } }
+        @Postfix{ { postfix } }
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
@@ -267,8 +268,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ { prefix } }
-        @POSTFIX{ { postfix } }
+        @Prefix{ { prefix } }
+        @Postfix{ { postfix } }
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
@@ -278,8 +279,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ { prefix } }
-        @POSTFIX{ { postfix } }
+        @Prefix{ { prefix } }
+        @Postfix{ { postfix } }
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
@@ -289,8 +290,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ { prefix } }
-        @POSTFIX{ { postfix } }
+        @Prefix{ { prefix } }
+        @Postfix{ { postfix } }
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
@@ -300,8 +301,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
-        @POSTFIX{ { postfix } }
+        @Prefix{ prefix }
+        @Postfix{ { postfix } }
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
@@ -311,8 +312,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
-        @POSTFIX{ { postfix } }
+        @Prefix{ prefix }
+        @Postfix{ { postfix } }
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c postfix;";
@@ -322,8 +323,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
-        @POSTFIX{ postfix }
+        @Prefix{ prefix }
+        @Postfix{ postfix }
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
@@ -333,8 +334,8 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
-        @POSTFIX{ postfix }
+        @Prefix{ prefix }
+        @Postfix{ postfix }
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c postfix;";
@@ -348,7 +349,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
+        @Prefix{ prefix }
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c;";
@@ -358,7 +359,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
+        @Prefix{ prefix }
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c;";
@@ -368,7 +369,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
+        @Prefix{ prefix }
         @SRC{ { { a, b, c } } }
       );
       let exp = "prefix { a, b, c };";
@@ -378,7 +379,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
+        @Prefix{ prefix }
         @SRC{ ( a, b, c ) }
       );
       let exp = "prefix(a, b, c);";
@@ -388,7 +389,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
+        @Prefix{ prefix }
         @SRC{ ( ( a, b, c ) ) }
       );
       let exp = "prefix((a, b, c));";
@@ -398,7 +399,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
+        @Prefix{ prefix }
         @SRC{ [ a, b, c ] }
       );
       let exp = "prefix [a, b, c];";
@@ -408,7 +409,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
+        @Prefix{ prefix }
         @SRC{ [ [ a, b, c ] ] }
       );
       let exp = "prefix [[a, b, c]];";
@@ -424,7 +425,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ { prefix } }
+        @Prefix{ { prefix } }
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c;";
@@ -434,7 +435,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ { prefix } }
+        @Prefix{ { prefix } }
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c;";
@@ -444,7 +445,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
+        @Prefix{ prefix }
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c;";
@@ -454,7 +455,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @PREFIX{ prefix }
+        @Prefix{ prefix }
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c;";
@@ -468,7 +469,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @POSTFIX{ postfix }
+        @Postfix{ postfix }
         @SRC{ a, b, c }
       );
       let exp = "a, b, c postfix;";
@@ -478,7 +479,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @POSTFIX{ postfix }
+        @Postfix{ postfix }
         @SRC{ { a, b, c } }
       );
       let exp = "a, b, c postfix;";
@@ -488,7 +489,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @POSTFIX{ postfix }
+        @Postfix{ postfix }
         @SRC{ { { a, b, c } } }
       );
       let exp = "{ a, b, c } postfix;";
@@ -498,7 +499,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @POSTFIX{ postfix }
+        @Postfix{ postfix }
         @SRC{ ( a, b, c ) }
       );
       let exp = "(a, b, c) postfix;";
@@ -508,7 +509,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @POSTFIX{ postfix }
+        @Postfix{ postfix }
         @SRC{ ( ( a, b, c ) ) }
       );
       let exp = "((a, b, c)) postfix;";
@@ -518,7 +519,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @POSTFIX{ postfix }
+        @Postfix{ postfix }
         @SRC{ [ a, b, c ] }
       );
       let exp = "[a, b, c] postfix;";
@@ -528,7 +529,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @POSTFIX{ postfix }
+        @Postfix{ postfix }
         @SRC{ [ [ a, b, c ] ] }
       );
       let exp = "[[a, b, c]] postfix;";
@@ -544,7 +545,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @POSTFIX{ { postfix } }
+        @Postfix{ { postfix } }
         @SRC{ { a, b, c } }
       );
       let exp = "a, b, c postfix;";
@@ -554,7 +555,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @POSTFIX{ { postfix } }
+        @Postfix{ { postfix } }
         @SRC{ a, b, c }
       );
       let exp = "a, b, c postfix;";
@@ -564,7 +565,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @POSTFIX{ postfix }
+        @Postfix{ postfix }
         @SRC{ { a, b, c } }
       );
       let exp = "a, b, c postfix;";
@@ -574,7 +575,7 @@ impls!
       TheModule::braces_unwrap!
       (
         test_with where
-        @POSTFIX{ postfix }
+        @Postfix{ postfix }
         @SRC{ a, b, c }
       );
       let exp = "a, b, c postfix;";
@@ -618,9 +619,9 @@ impls!
       TheModule::for_each!
       {
         dbg where
-        @PREFIX { "prefix".to_string() + }
-        @POSTFIX { + "postfix" }
-        @EACH "a" "b" "c"
+        @Prefix { "prefix".to_string() + }
+        @Postfix { + "postfix" }
+        @Each "a" "b" "c"
       };
       // generates
       dbg!( "prefix".to_string() + "a" + "postfix" );
@@ -633,9 +634,9 @@ impls!
       TheModule::for_each!
       {
         dbg where
-        @PREFIX { "prefix".to_string() + }
-        @POSTFIX { + "postfix" }
-        @EACH { "a" + "1" } { "b" + "2" } { "c" + "3" }
+        @Prefix { "prefix".to_string() + }
+        @Postfix { + "postfix" }
+        @Each { "a" + "1" } { "b" + "2" } { "c" + "3" }
       };
       // generates
       dbg!( "prefix".to_string() + "a" + "1" + "postfix" );
@@ -647,8 +648,8 @@ impls!
     {
       TheModule::for_each!
       {
-        @PREFIX { dbg! }
-        @EACH ( "a" ) ( "b" ) ( "c" )
+        @Prefix { dbg! }
+        @Each ( "a" ) ( "b" ) ( "c" )
       };
       // generates
       dbg!( "a" );
@@ -711,9 +712,9 @@ impls!
       GOT = "".to_string();
       TheModule::for_each!
       {
-        @PREFIX { test_with! }
-        @POSTFIX { ; test_with!( postfix ); }
-        @EACH ( a ) ( b ) ( c )
+        @Prefix { test_with! }
+        @Postfix { ; test_with!( postfix ); }
+        @Each ( a ) ( b ) ( c )
       };
       let exp = "a+postfix+b+postfix+c+postfix+";
       assert_eq!( GOT, exp );
@@ -725,8 +726,8 @@ impls!
       GOT = "".to_string();
       TheModule::for_each!
       {
-        @PREFIX { test_with! }
-        @EACH ( a ) ( b ) ( c )
+        @Prefix { test_with! }
+        @Each ( a ) ( b ) ( c )
       };
       let exp = "a+b+c+";
       assert_eq!( GOT, exp );
@@ -738,8 +739,8 @@ impls!
       GOT = "".to_string();
       TheModule::for_each!
       {
-        @POSTFIX { ; test_with!( postfix ); }
-        @EACH { test_with!( a ) } { test_with!( b ) } { test_with!( c ) }
+        @Postfix { ; test_with!( postfix ); }
+        @Each { test_with!( a ) } { test_with!( b ) } { test_with!( c ) }
       };
       let exp = "a+postfix+b+postfix+c+postfix+";
       assert_eq!( GOT, exp );
@@ -751,7 +752,7 @@ impls!
     unsafe
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with where @EACH a b c );
+      TheModule::for_each!( test_with where @Each a b c );
       let exp = "a+b+c+";
       assert_eq!( GOT, exp );
     }
@@ -760,7 +761,7 @@ impls!
     unsafe
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with where @PREFIX prefix @POSTFIX postfix @EACH a b c );
+      TheModule::for_each!( test_with where @Prefix prefix @Postfix postfix @Each a b c );
       let exp = "prefix a postfix+prefix b postfix+prefix c postfix+";
       assert_eq!( GOT, exp );
     }
@@ -769,7 +770,7 @@ impls!
     unsafe
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with where @PREFIX prefix @EACH a b c );
+      TheModule::for_each!( test_with where @Prefix prefix @Each a b c );
       let exp = "prefix a+prefix b+prefix c+";
       assert_eq!( GOT, exp );
     }
@@ -778,7 +779,7 @@ impls!
     unsafe
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with where @POSTFIX postfix @EACH a b c );
+      TheModule::for_each!( test_with where @Postfix postfix @Each a b c );
       let exp = "a postfix+b postfix+c postfix+";
       assert_eq!( GOT, exp );
     }
@@ -792,7 +793,7 @@ impls!
       TheModule::for_each!
       {
         test_with where
-        @EACH { a _ a } { b _ b } { c _ c }
+        @Each { a _ a } { b _ b } { c _ c }
       };
       let exp = "a _ a+b _ b+c _ c+";
       assert_eq!( GOT, exp );
@@ -805,9 +806,9 @@ impls!
       TheModule::for_each!
       {
         test_with where
-        @PREFIX { pre fix }
-        @POSTFIX { post fix }
-        @EACH { a _ a } { b _ b } { c _ c }
+        @Prefix { pre fix }
+        @Postfix { post fix }
+        @Each { a _ a } { b _ b } { c _ c }
       };
       let exp = "pre fix a _ a post fix+pre fix b _ b post fix+pre fix c _ c post fix+";
       assert_eq!( GOT, exp );
@@ -820,8 +821,8 @@ impls!
       TheModule::for_each!
       {
         test_with where
-        @PREFIX { pre fix }
-        @EACH { a _ a } { b _ b } { c _ c }
+        @Prefix { pre fix }
+        @Each { a _ a } { b _ b } { c _ c }
       };
       let exp = "pre fix a _ a+pre fix b _ b+pre fix c _ c+";
       assert_eq!( GOT, exp );
@@ -834,8 +835,8 @@ impls!
       TheModule::for_each!
       {
         test_with where
-        @POSTFIX { post fix }
-        @EACH { a _ a } { b _ b } { c _ c }
+        @Postfix { post fix }
+        @Each { a _ a } { b _ b } { c _ c }
       };
       let exp = "a _ a post fix+b _ b post fix+c _ c post fix+";
       assert_eq!( GOT, exp );
@@ -874,7 +875,7 @@ impls!
         (
           $Callback where
           $( $( $Args )* )?
-          @EACH f32 f64
+          @Each f32 f64
         );
       };
 
@@ -884,8 +885,8 @@ impls!
     unsafe
     {
       GOT = "".to_string();
-      for_each_float!( test_with where @PREFIX { pre fix 1 } @POSTFIX { post fix } );
-      for_each_float!( test_with where @PREFIX { pre fix 2 } @POSTFIX { post fix } );
+      for_each_float!( test_with where @Prefix { pre fix 1 } @Postfix { post fix } );
+      for_each_float!( test_with where @Prefix { pre fix 2 } @Postfix { post fix } );
       let exp = "pre fix 1 f32 post fix;pre fix 1 f64 post fix;pre fix 2 f32 post fix;pre fix 2 f64 post fix;";
       assert_eq!( GOT, exp );
     }
@@ -897,9 +898,9 @@ impls!
       TheModule::for_each!
       {
         for_each_float where
-        @EACH
-          { test_with where @PREFIX { pre fix 1 } @POSTFIX { post fix } }
-          { test_with where @PREFIX { pre fix 2 } @POSTFIX { post fix } }
+        @Each
+          { test_with where @Prefix { pre fix 1 } @Postfix { post fix } }
+          { test_with where @Prefix { pre fix 2 } @Postfix { post fix } }
       }
       let exp = "pre fix 1 f32 post fix;pre fix 1 f64 post fix;pre fix 2 f32 post fix;pre fix 2 f64 post fix;";
       assert_eq!( GOT, exp );
@@ -912,9 +913,9 @@ impls!
       TheModule::for_each!
       {
         for_each_float where
-        @PREFIX { test_with where @PREFIX }
-        @POSTFIX { @POSTFIX { post fix } }
-        @EACH
+        @Prefix { test_with where @Prefix }
+        @Postfix { @Postfix { post fix } }
+        @Each
           { { pre fix 1 } }
           { { pre fix 2 } }
       }

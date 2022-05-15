@@ -2,6 +2,4 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
-// include!( "./include.rs" );
-
-mod include;
+mod all;

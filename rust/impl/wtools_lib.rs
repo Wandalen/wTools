@@ -82,6 +82,7 @@ pub use derive_tools as derive;
 pub mod prelude
 {
   pub use super::*;
+  pub use super::meta::prelude::*;
 }
 
 ///

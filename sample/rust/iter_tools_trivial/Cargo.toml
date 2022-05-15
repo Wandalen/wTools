@@ -5,4 +5,4 @@ edition = "2021"
 publish = false
 
 [dependencies]
-iter_tools = "*"
+iter_tools = { version = "*", path = "../../../module/rust/iter_tools" }

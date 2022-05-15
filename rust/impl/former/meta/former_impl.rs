@@ -1,12 +1,7 @@
-// #![ allow( unused_imports ) ]
-// #![ allow( unused_mut ) ]
-// #![ allow( dead_code ) ]
-// #![ allow( proc_macro_derive_resolution_fallback ) ]
 
 use quote::{ quote };
 use syn::{ DeriveInput };
 use iter_tools::{ Itertools, process_results };
-
 use proc_macro_tools::*;
 
 pub type Result< T > = std::result::Result< T, syn::Error >;

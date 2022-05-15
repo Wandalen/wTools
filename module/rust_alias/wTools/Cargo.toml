@@ -45,6 +45,7 @@ default = [ "in_wtools" ]
 
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }
+impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by wtools it should also be imported immediatly
 
 [dev-dependencies]
 rustversion = "~1.0"

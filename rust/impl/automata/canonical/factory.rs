@@ -8,6 +8,66 @@ pub mod internal
 
   include!( "./factory_impl.rs" );
 
+  impls!
+  {
+
+    ///
+    /// Iterate output nodes of the node.
+    ///
+
+    fn node_extend_out_nodes< Id, Iter >
+    (
+      &mut self,
+      node_id : Id,
+      out_nodes_iter : Iter,
+    )
+    where
+      Iter : IntoIterator< Item = Id >,
+      Iter::IntoIter : Clone,
+      Id : Into< ID!() >
+    {
+
+      let iter = out_nodes_iter.into_iter();
+      let iter2 = iter.clone();
+
+      #[ cfg( debug_assertions ) ]
+      iter
+      .map( | id |
+      {
+        let node = self.node( id );
+      })
+      .fold( (), | acc, e | () )
+      ;
+
+      let iter3 = iter2.into_iter()
+      .map( | id |
+      {
+        let id = id.into();
+        id
+      })
+      ;
+
+      self.node_mut( node_id.into() ).extend( iter3 );
+    }
+
+    //
+
+    fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
+    ->
+    Box< dyn Iterator< Item = ID!() > + 'b >
+    where
+      Id : Into< ID!() >,
+      'a : 'b,
+    {
+      let node = self.node( node_id );
+      let iterator
+        : Box< dyn Iterator< Item = ID!() > >
+        = Box::new( node.out_nodes.iter().cloned() );
+      iterator
+    }
+
+  }
+
   ///
   /// Node factory.
   ///
