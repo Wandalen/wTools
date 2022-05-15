@@ -18,6 +18,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
+  "/rust/impl/meta/impls_index_lib.rs",
   "/rust/impl/meta/impls_index",
   "/Cargo.toml",
   "/Readme.md",

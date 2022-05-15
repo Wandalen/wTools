@@ -18,7 +18,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
 include = [
-  "/rust/impl/impls_index/meta",
+  "/rust/impl/meta/impls_index_meta",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
