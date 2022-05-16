@@ -1,4 +1,4 @@
-# Module :: winterval [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ToolsRustPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ToolsRustPush.yml) [![stable](https://img.shields.io/badge/stability-stable-brightgreen.svg)](https://github.com/emersion/stability-badges#stable)
+# Module :: winterval [![experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModulewIntervalPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModulewIntervalPush.yml) [![docs.rs](https://img.shields.io/docsrs/winterval?color=e3e8f0&logo=docs.rs)](https://docs.rs/winterval) [![discord](https://img.shields.io/discord/872391416519737405?color=e3e8f0&logo=discord&logoColor=e3e8f0)](https://discord.gg/JwTG6d2b)
 
 Interval adapter for both open/closed implementations of intervals ( ranges ).
 

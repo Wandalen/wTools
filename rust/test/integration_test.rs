@@ -144,6 +144,7 @@ macro_rules! module_integration_test
       fn $name()
       {
         let t = IntegrationModuleTest::new( stringify!( $name ) );
+        t.clean().unwrap();
         t.form().unwrap();
         t.perform().unwrap();
         t.clean().unwrap();
