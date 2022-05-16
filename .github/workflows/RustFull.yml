@@ -1,0 +1,46 @@
+
+name: RustFull
+
+on:
+  workflow_call:
+    inputs:
+      manifest_path:
+        required: true
+        type: string
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  full:
+    strategy :
+      fail-fast : false
+      matrix :
+        os : [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Install latest stable toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+    - uses: actions/checkout@v2
+    - name: Build
+      run: cargo build --manifest-path ${{ inputs.manifest_path }} --release
+    - name: Run all tests without features
+      run: cargo test --manifest-path ${{ inputs.manifest_path }}
+
+    - name: Install latest nightly toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+    - uses: actions/checkout@v2
+    - name: Build
+      run: cargo build --manifest-path ${{ inputs.manifest_path }} --release
+    - name: Run all tests with default features
+      run: cargo test --manifest-path ${{ inputs.manifest_path }}
+    - name: Run all tests without default features
+      run: cargo test --manifest-path ${{ inputs.manifest_path }} --no-default-features
+    - name: Run all tests with all features
+      run: cargo test --manifest-path ${{ inputs.manifest_path }} --all-features
