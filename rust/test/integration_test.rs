@@ -59,7 +59,8 @@ impl< 'a > IntegrationModuleTest< 'a >
 
     /* setup config */
     let dependency_name = format!( "dependencies.{}", self.dependency_name );
-    let output = std::process::Command::new( "selector" )
+    let selector = self.selector_global_or_temporary();
+    let output = std::process::Command::new( &selector )
     .current_dir( &test_path )
     .args([ "set", "./Cargo.toml", &dependency_name, "*" ])
     .output()
@@ -76,6 +77,37 @@ impl< 'a > IntegrationModuleTest< 'a >
     std::fs::write( &test_path, code ).unwrap();
 
     Ok( () )
+  }
+
+  fn selector_global_or_temporary( &self ) -> String
+  {
+    let output = std::process::Command::new( "selector" )
+    .current_dir( &self.test_path )
+    .arg( "--help" )
+    .output();
+
+    if output.is_ok()
+    {
+      "selector".to_owned()
+    }
+    else
+    {
+      let mut tmp_path = self.test_path.clone();
+      tmp_path.push( ".cargo" );
+
+      std::fs::create_dir( &tmp_path ).unwrap();
+
+      let _output = std::process::Command::new( "cargo" )
+      .current_dir( &tmp_path )
+      .args([ "install", "wselector", "--root", tmp_path.to_str().unwrap() ])
+      .output()
+      .expect( "Failed to install local version of selector" );
+
+      tmp_path.push( "bin" );
+      tmp_path.push( "selector" );
+      let selector_str = tmp_path.to_str().unwrap();
+      selector_str.to_owned()
+    }
   }
 
   fn perform( &self ) -> Result<(), &'static str>
@@ -126,4 +158,4 @@ module_integration_test!
 {
   wtools,
   wtest_basic,
-};
+}
