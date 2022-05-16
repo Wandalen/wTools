@@ -9,6 +9,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /// Collection of general purpose meta tools.
+#[ path = "./mod.rs" ]
 pub mod impls_index;
 
 /// Dependencies.
@@ -19,13 +20,13 @@ pub mod dependencies
 }
 
 /// Owned namespace of the module.
-pub mod own
+pub mod protected
 {
   pub use super::exposed::*;
-  pub use super::impls_index::parented::*;
+  pub use super::impls_index::orphan::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed

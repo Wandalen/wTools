@@ -262,7 +262,7 @@ pub( crate ) mod internal
 }
 
 /// Owned namespace of the module.
-pub mod own
+pub mod protected
 {
   use super::internal as i;
 
@@ -274,7 +274,7 @@ pub mod own
   pub use i::split;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed

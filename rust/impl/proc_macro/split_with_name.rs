@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub mod internal
+mod internal
 {
 
 //   #[ allow( unused_imports ) ]

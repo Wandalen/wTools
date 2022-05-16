@@ -21,7 +21,7 @@ mod hash_map;
 mod hash_set;
 
 /// Own namespace of the module.
-pub mod own
+pub mod protected
 {
   pub use super::exposed::*;
   pub use super::vector::*;
@@ -29,7 +29,7 @@ pub mod own
   pub use super::hash_set::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed

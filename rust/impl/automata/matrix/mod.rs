@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub mod internal
+mod internal
 {
   // use crate::prelude::*;
   // use std::collections::HashSet;
@@ -10,14 +10,14 @@ pub mod internal
 // pub mod factory;
 
 /// Own namespace of the module.
-pub mod own
+pub mod protected
 {
   // use super::internal as i;
   pub use super::exposed::*;
-  // pub use super::factory::parented::*;
+  // pub use super::factory::orphan::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed

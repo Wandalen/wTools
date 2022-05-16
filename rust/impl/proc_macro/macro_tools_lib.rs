@@ -8,4 +8,5 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
+// xxx : lack of attribute
 pub use proc_macro_tools::*;

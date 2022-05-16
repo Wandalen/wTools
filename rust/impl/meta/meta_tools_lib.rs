@@ -12,13 +12,13 @@
 pub mod meta;
 
 /// Owned namespace of the module.
-pub mod own
+pub mod protected
 {
   pub use super::exposed::*;
-  pub use super::meta::parented::*;
+  pub use super::meta::orphan::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed

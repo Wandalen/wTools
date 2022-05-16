@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub mod internal
+mod internal
 {
   use crate::prelude::*;
   // use core::fmt::Debug;
@@ -23,13 +23,13 @@ pub mod internal
 }
 
 /// Parented namespace of the module.
-pub mod parented
+pub mod orphan
 {
   // use super::internal as i;
   pub use super::exposed::*;
 }
 
-pub use parented::*;
+pub use orphan::*;
 
 /// Exposed namespace of the module.
 pub mod exposed

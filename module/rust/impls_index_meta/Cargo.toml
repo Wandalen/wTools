@@ -27,7 +27,7 @@ include = [
 [lib]
 proc-macro = true
 name = "impls_index_meta"
-path = "rust/impl/meta/impls_index_meta/impls_index_meta_lib.rs"
+path = "rust/impl/meta/impls_index/meta/lib.rs"
 
 [dependencies]
 proc-macro2 = "~1.0"

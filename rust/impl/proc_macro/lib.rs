@@ -23,8 +23,9 @@ pub mod split_with_name;
 
 pub mod dependencies
 {
-  pub use syn;
-  pub use proc_macro2;
+  pub use ::syn;
+  pub use ::quote;
+  pub use ::proc_macro2;
 }
 
 /// Exposed namespace of the module.
@@ -46,4 +47,11 @@ pub mod prelude
   pub use super::helper::prelude::*;
   pub use super::name::prelude::*;
   pub use super::split_with_name::prelude::*;
+
+  pub use ::syn;
+  // pub use ::quote;
+  pub use ::proc_macro2;
+  pub use quote::{ quote };
+  pub use syn::{ parse_quote };
+
 }

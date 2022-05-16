@@ -19,12 +19,12 @@ pub mod dependency
 }
 
 /// Own namespace of the module.
-pub mod own
+pub mod protected
 {
   pub use super::exposed::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed

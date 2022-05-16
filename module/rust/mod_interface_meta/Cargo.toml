@@ -1,0 +1,43 @@
+[package]
+name = "mod_interface_meta"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/mod_interface_meta"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/mod_interface_meta"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/mod_interface_meta"
+description = """
+Protocol of modularity unifying interface of a module.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
+
+include = [
+  "/rust/impl/meta/mod_interface_meta_lib.rs",
+  "/rust/impl/meta/mod_interface/meta",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[lib]
+proc-macro = true
+name = "mod_interface_meta"
+path = "rust/impl/meta/mod_interface/meta/lib.rs"
+
+[dependencies]
+# proc-macro2 = "~1.0"
+# quote = "~1.0"
+# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
+# iter_tools = { path = "../../rust/iter_tools", version = "~0.1" }
+# werror = { path = "../../rust/werror", version = "~0.1" }
+proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
+# xxx : unify dependencies of other procedural macroses
+
+[dev-dependencies]
+# trybuild = { version = "~1.0", features = [ "diff" ] }

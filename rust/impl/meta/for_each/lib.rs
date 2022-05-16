@@ -17,7 +17,7 @@ use module::macro_for_each in module::macro_tools
 */
 
 /// Internal namespace.
-pub mod internal
+mod internal
 {
 
   #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]

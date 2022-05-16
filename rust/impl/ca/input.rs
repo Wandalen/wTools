@@ -16,14 +16,14 @@ mod internal
 }
 
 /// Owned namespace of the module.
-pub mod own
+pub mod protected
 {
   use super::internal as i;
 
   pub use i::ask;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed

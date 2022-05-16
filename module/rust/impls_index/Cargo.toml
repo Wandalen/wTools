@@ -27,7 +27,7 @@ include = [
 
 [lib]
 name = "impls_index"
-path = "rust/impl/meta/impls_index_lib.rs"
+path = "rust/impl/meta/impls_index/front/lib.rs"
 
 [[test]]
 name = "impls_index_test"

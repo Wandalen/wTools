@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub mod internal
+mod internal
 {
 
 }
@@ -14,15 +14,15 @@ pub mod dependencies
 /* zzz : use for implementing of macro mod_interface */
 
 /// Owned namespace of the module.
-pub mod own
+pub mod protected
 {
-  pub use super::parented::*;
+  pub use super::orphan::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Shared with parent namespace of the module
-pub mod parented
+pub mod orphan
 {
   pub use super::exposed::*;
   pub use super::dependencies;

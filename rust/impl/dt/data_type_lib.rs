@@ -12,13 +12,13 @@
 pub mod dt;
 
 /// Owned namespace of the module.
-pub mod own
+pub mod protected
 {
   pub use super::exposed::*;
-  pub use super::dt::parented::*;
+  pub use super::dt::orphan::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed
