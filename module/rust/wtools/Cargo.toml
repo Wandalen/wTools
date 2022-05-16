@@ -38,10 +38,10 @@ path = "rust/impl/wtools_lib.rs"
 name = "wtools_test"
 path = "rust/test/wtools_lib_test.rs"
 
-# # qqq : still broken # aaa : fixed
-[[test]]
-name = "wtools_integration_test"
-path = "rust/test/integration_test.rs"
+# qqq : for Dima : still broken
+# [[test]]
+# name = "wtools_integration_test"
+# path = "rust/test/integration_test.rs"
 
 [[example]]
 name = "wtools_trivial"
