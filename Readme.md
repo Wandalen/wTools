@@ -6,7 +6,7 @@
 
 <!-- ![wTools](./asset/img/logo_trans.png | width=100) -->
 
-![wTools](./asset/img/logo_edge_trans.png)
+![wTools](./asset/img/logo_v2_light.png)
 
 # Repository :: Tools
 
