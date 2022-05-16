@@ -15,7 +15,7 @@ mod internal
   }
 }
 
-/// Owned namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   use super::internal as i;

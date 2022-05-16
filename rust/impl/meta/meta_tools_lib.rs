@@ -11,7 +11,7 @@
 /// Collection of general purpose meta tools.
 pub mod meta;
 
-/// Owned namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::exposed::*;

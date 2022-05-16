@@ -49,7 +49,6 @@ pub mod prelude
   pub use super::split_with_name::prelude::*;
 
   pub use ::syn;
-  // pub use ::quote;
   pub use ::proc_macro2;
   pub use quote::{ quote };
   pub use syn::{ parse_quote };

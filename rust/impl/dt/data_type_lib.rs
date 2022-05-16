@@ -11,7 +11,7 @@
 /// Collection of primal data types.
 pub mod dt;
 
-/// Owned namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::exposed::*;

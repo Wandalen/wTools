@@ -13,7 +13,7 @@ pub mod dependencies
 /* xxx2 : use name protected */
 /* zzz : use for implementing of macro mod_interface */
 
-/// Owned namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;

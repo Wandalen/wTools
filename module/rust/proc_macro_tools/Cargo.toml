@@ -1,6 +1,6 @@
 [package]
 name = "proc_macro_tools"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -49,4 +49,4 @@ winterval = { version = "~0.1", path = "../../rust/winterval" }
 [dev-dependencies]
 trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-quote = "~1.0"
+# quote = "~1.0"
