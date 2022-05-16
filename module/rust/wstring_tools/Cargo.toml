@@ -1,6 +1,6 @@
 [package]
-name = "wstring_tools"
-version = "0.1.0"
+name = "string_tools"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
