@@ -1,6 +1,10 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
 
-![wTools](./asset/img/logo.png){ width="634" height="152" style="display: block; margin: 0 auto" }
+<p align="center">
+  <img width="634" height="152" style="display: block; margin: 0 auto" src="./asset/img/logo.png">
+</p>
+
+<!-- ![wTools](./asset/img/logo.png){ width="634" height="152" style="display: block; margin: 0 auto" } -->
 
 # Repository :: Tools
 
