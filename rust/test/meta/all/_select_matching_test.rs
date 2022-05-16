@@ -159,7 +159,7 @@ fn basic_test()
 //   },
 //   _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
 // };
-/* xxx */
+/* zzz : implement. cehck https://github.com/lambda-fairy/if_chain */
 
 //
 

@@ -1,10 +1,6 @@
 #[ allow( unused_imports ) ]
 use test_tools::*;
 
-/* xxx : qqq : make sure CD run test on both stable and nightly channels */
-/* xxx : qqq : make sure CD run debug tests and release tests */
-/* xxx : qqq : introduce tag to run fewer tests */
-
 //
 
 #[ cfg( feature = "nightly" ) ]
@@ -39,7 +35,6 @@ fn inspect_type_of_test()
 
 //
 
-// #[ rustversion::nightly ]
 #[ cfg( feature = "nightly" ) ]
 test_suite!
 {

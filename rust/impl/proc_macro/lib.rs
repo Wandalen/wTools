@@ -10,16 +10,6 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-/* xxx : register error_tools */
-/* xxx : alias werror -> error_tools  */
-/* xxx : register text_tools as alias for wstring */
-
-/* xxx : implement module::mod_at */
-/* xxx : implement and publish mod_expose */
-
-/* xxx : use skeptic? */
-/* xxx : rename dt -> adt */
-
 /// Helpers.
 pub mod helper;
 /// Trait name.

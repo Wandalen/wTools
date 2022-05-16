@@ -83,47 +83,6 @@ pub mod internal
     // type NodeHandle = crate::canonical::Node;
     type NodeHandle = crate::NodeCell< crate::canonical::Node >;
 
-//     fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
-//     where
-//       Id : Into< ID!() >,
-//     {
-//       let id = id.into();
-//       let got = self.id_to_node_map.get( &id );
-//       if got.is_some()
-//       {
-//         let result : &Self::NodeHandle = got.unwrap().clone();
-//         return result;
-//       }
-//       unreachable!( "No node with id {:?} found", id );
-//     }
-//
-//     fn node_mut< Id >( &mut self, id : Id ) -> &mut Self::NodeHandle
-//     where
-//       Id : Into< ID!() >,
-//     {
-//       let id = id.into();
-//       let got = self.id_to_node_map.get_mut( &id );
-//       if got.is_some()
-//       {
-//         let result : &mut Self::NodeHandle = got.unwrap();
-//         return result;
-//       }
-//       unreachable!( "No node with id {:?} found", id );
-//     }
-//
-//     fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
-//     ->
-//     Box< dyn Iterator< Item = ID!() > + 'b >
-//     where
-//       Id : Into< ID!() >,
-//       'a : 'b,
-//     {
-//       let node = self.node( node_id ).borrow();
-//       let collected : Vec< ID!() > = node.out_nodes.iter().cloned().collect();
-//       let iterator : Box< dyn Iterator< Item = ID!() > > = Box::new( collected.into_iter() );
-//       iterator
-//     }
-
     index!
     {
       node,

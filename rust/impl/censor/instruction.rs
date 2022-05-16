@@ -92,7 +92,7 @@ For example: `.struct1 subject key1:val key2:val2`."#
   }
 
   /// Parse instruction from splits.
-  /* xxx : make it accept also vector */
+  /* zzz : make it accept also vector */
   fn parse_from_splits< I >( &self, mut splits : I ) -> Instruction
   where
     < I as Iterator >::Item : std::fmt::Display,

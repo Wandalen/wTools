@@ -12,7 +12,6 @@ Options!{ split< 'a >
   #[ default( true ) ]
   pub left : bool;
 
-  /* xxx */
   fn left( &self ) -> &bool
   {
     &!self.left

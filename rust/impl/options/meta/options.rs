@@ -1,7 +1,3 @@
-// #![ allow( unused_imports ) ]
-// #![ allow( unused_mut ) ]
-// #![ allow( dead_code ) ]
-// #![ allow( unused_variables ) ]
 
 use meta_tools::*;
 use quote::{ quote, ToTokens, TokenStreamExt };
@@ -9,7 +5,7 @@ use syn::parse::*;
 use syn::spanned::Spanned;
 use proc_macro_tools::*;
 use std::collections::HashMap;
-use iter_tools::{ /* Itertools, */ process_results }; /* xxx : use wtools::iter_tool */
+use iter_tools::{ /* Itertools, */ process_results };
 use convert_case::{Case, Casing};
 
 pub type Result< T > = std::result::Result< T, syn::Error >;

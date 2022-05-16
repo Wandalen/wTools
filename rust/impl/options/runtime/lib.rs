@@ -5,5 +5,23 @@
 //!
 //! Mechanism to define map of options for a fuction and its defaults laconically. Its runtime.
 //!
-//! Not intended to be used without derive. This module and derive is aggregate in module::woptions is [here](https://github.com/Wandalen/wTools/tree/master/module/rust/woptions).
-//!
+
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+
+/// Namespace with dependencies.
+pub mod dependency
+{
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  pub use super::prelude::*;
+}
+
+pub use exposed::*;
+
+/// Prelude to use: `use wtools::prelude::*`.
+pub mod prelude
+{
+}

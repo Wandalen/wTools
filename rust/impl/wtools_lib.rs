@@ -22,6 +22,20 @@
 //! }
 //! ```
 
+/* zzz : register error_tools */
+/* zzz : alias werror -> error_tools  */
+/* zzz : register text_tools as alias for wstring */
+
+/* zzz : implement module::mod_at */
+/* zzz : implement and publish mod_expose */
+
+/* zzz : use skeptic? */
+/* zzz : rename dt -> adt */
+
+/* zzz : make sure CD run test on both stable and nightly channels */
+/* zzz : make sure CD run debug tests and release tests */
+/* zzz : introduce tag to run fewer tests */
+
 ///
 /// Iter tools.
 ///
@@ -69,11 +83,11 @@ pub use werror as error;
 // #[ cfg( feature = "with_proc_macro" ) ]
 // pub use proc_macro_tools as proc_macro;
 
-pub use former as former;
-pub use woptions as options;
-pub use winterval as interval;
-pub use wstring_tools as string;
-pub use derive_tools as derive;
+pub use ::former as former;
+pub use ::woptions as options;
+pub use ::winterval as interval;
+pub use ::wstring_tools as string;
+pub use ::derive_tools as derive;
 
 ///
 /// Prelude to use: `use wtools::prelude::*`.
@@ -101,8 +115,6 @@ pub mod dependencies
   pub use ::werror;
   pub use ::winterval;
   pub use ::derive_tools;
-
-  // pub use ::parse_display; /* xxx : move to stringing */
 
   // #[ cfg( debug_assertions ) ]
   // pub use ::wtest_basic;

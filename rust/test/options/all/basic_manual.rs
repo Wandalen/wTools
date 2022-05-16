@@ -87,7 +87,7 @@ mod split
   pub mod prelude
   {
     pub use super::OptionsAdapter as SplitOptionsAdapter;
-    /* xxx : cover by a test */
+    /* zzz : cover by a test */
   }
 
 }

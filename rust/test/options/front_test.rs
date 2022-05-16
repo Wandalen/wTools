@@ -21,6 +21,6 @@
 mod basic_manual { include!( "./all/basic_manual.rs" ); }
 mod basic { include!( "./all/basic.rs" ); }
 mod without_perform { include!( "./all/without_perform.rs" ); }
-/* xxx : use macro mod_at */
+/* zzz : use macro mod_at */
 // mod custom_getter_manual { include!( "./all/custom_getter_manual.rs" ); }
 // mod custom_getter { include!( "./all/custom_getter.rs" ); }

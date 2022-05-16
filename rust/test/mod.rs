@@ -2,7 +2,7 @@
 mod dt;
 mod error;
 
-// xxx : remove include
+// zzz : remove include
 mod former
 {
   include!( "./former/front_test.rs" );
@@ -17,7 +17,6 @@ mod iter
   include!( "./iter/basic_test.rs" );
 }
 mod string;
-mod test;
 mod time;
 
 mod typing

@@ -8,9 +8,28 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-pub use woptions_runtime as runtime;
-pub use woptions_meta as meta;
-pub use meta::Options;
-// pub use meta::options;
+/// Namespace with dependencies.
+pub mod dependency
+{
+  pub use ::woptions_runtime as runtime;
+  pub use ::woptions_meta as meta;
+}
 
-pub use former::derive::Former;
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  pub use super::prelude::*;
+  pub use woptions_runtime as runtime;
+  pub use woptions_meta as meta;
+  pub use meta::Options;
+  pub use former::derive::Former;
+  pub use woptions_runtime::exposed::*;
+}
+
+pub use exposed::*;
+
+/// Prelude to use: `use wtools::prelude::*`.
+pub mod prelude
+{
+  pub use woptions_runtime::prelude::*;
+}

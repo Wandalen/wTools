@@ -12,4 +12,4 @@
 mod basic_manual { include!( "./all/basic_manual.rs" ); }
 // mod custom_getter_manual { include!( "./all/custom_getter_manual.rs" ); }
 
-/* xxx : use macro mod_at */
+/* zzz : use macro mod_at */

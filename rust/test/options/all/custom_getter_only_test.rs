@@ -20,7 +20,7 @@ fn basic() -> anyhow::Result< () >
   use split::OptionsAdapter;
   assert_eq!( *got.left(), false );
 
-  // xxx : uncoment later
+  // zzz : uncoment later
   // let exp = vec![ "c", "a" ];
   // assert_eq!( got.perform().map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
 

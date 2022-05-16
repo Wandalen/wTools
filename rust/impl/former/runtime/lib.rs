@@ -5,13 +5,39 @@
 //!
 //! Former - variation of builder pattern. Implementation of its runtime.
 //!
-//! Not intended to be used without derive. This module and derive is aggregate in module::former is [here](https://github.com/Wandalen/wTools/tree/master/module/rust/former).
-//!
 
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+
+/// Namespace with dependencies.
+pub mod dependency
+{
+}
+
+/// Former of a fector.
 mod vector;
+/// Former of a hash map.
 mod hash_map;
+/// Former of a hash set.
 mod hash_set;
 
-pub use vector::*;
-pub use hash_map::*;
-pub use hash_set::*;
+/// Own namespace of the module.
+pub mod own
+{
+  pub use super::exposed::*;
+  pub use super::vector::*;
+  pub use super::hash_map::*;
+  pub use super::hash_set::*;
+}
+
+pub use own::*;
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  pub use super::prelude::*;
+}
+
+/// Prelude to use: `use wtools::prelude::*`.
+pub mod prelude
+{
+}

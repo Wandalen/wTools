@@ -1,17 +1,19 @@
-/* qqq : for Dima : bad. discuss */
 
 use std::env;
-use test_tools::dependencies::*;
+// use test_tools::dependencies::*;
 
 #[ test ]
 #[ rustversion::stable ]
+// #[ cfg( not( feature = "nightly" ) ) ]
 fn trybuild_tests()
 {
   println!( "current_dir : {:?}", env::current_dir().unwrap() );
 }
 
-/* xxx : qqq : for Dima : why nightly? */
+// stable have different information about error
+// that's why these tests are active only for nightly
 #[ test ]
+// #[ cfg( feature = "nightly" ) ]
 #[ rustversion::nightly ]
 fn trybuild_tests()
 {
@@ -22,7 +24,7 @@ fn trybuild_tests()
   t.compile_fail( "../../../rust/test/former/all/hashmap_without_parameter.rs" );
 }
 
-/* xxx : use mod_at */
+/* zzz : use mod_at */
 
 mod basic_runtime
 {
@@ -39,6 +41,9 @@ mod basic_runtime
 
   include!( "./all/basic_runtime_common.rs" );
 }
+
+/* zzz : introduce file all.rs */
+
 mod basic { include!( "./all/basic.rs" ); }
 mod conflict { include!( "./all/conflict.rs" ); }
 mod string_slice_runtime { include!( "./all/string_slice_runtime.rs" ); }

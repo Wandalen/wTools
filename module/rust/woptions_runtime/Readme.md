@@ -6,6 +6,6 @@ Not intended to be used without derive. This module and derive is aggregate in m
 
 ### To add to your project
 
-```
+```bash
 cargo add woptions_runtime
 ```
