@@ -1,5 +1,5 @@
 [package]
-name = "wstring_tools"
+name = "string_tools"
 version = "0.1.1"
 edition = "2021"
 authors = [
