@@ -1,6 +1,10 @@
+
 // #![ feature( type_name_of_val ) ]
 #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 // #![ cfg_attr( all( feature = "nightly" ), feature( type_name_of_val ) ) ]
+
+#[ cfg( feature = "nightly" ) ]
+compile_error!( "nightly!" );
 
 //
 // To run this sample, please make sure you are on nightly rustc and switched on feature "nightly"

@@ -40,7 +40,8 @@ path = "rust/test/automata/wautomata_lib_test.rs"
 [dependencies]
 # derive_tools = { version = "~0.1", path = "../../rust/derive_tools" }
 # wtools = { version = "~0.2", features = [ "nightly" ] }
-wtools = { version = "~0.2", path = "../../rust/wtools", features = [ "nightly" ] }
+# wtools = { version = "~0.2", path = "../../rust/wtools", features = [ "nightly" ] }
+wtools = { version = "~0.2", path = "../../rust/wtools", features = [] }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
