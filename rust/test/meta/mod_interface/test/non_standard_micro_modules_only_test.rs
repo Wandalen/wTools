@@ -1,13 +1,6 @@
 
 use test_tools::*;
 
-#[cfg( feature = "in_wtools" )]
-use wtools::meta as TheModule;
-#[cfg( not( feature = "in_wtools" ) )]
-use mod_interface as TheModule;
-#[ allow( unused_imports ) ]
-use TheModule::prelude::*;
-
 //
 
 fn basic_test()

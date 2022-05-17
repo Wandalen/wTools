@@ -5,10 +5,8 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-// mod impls_index
-// {
-//   include!{ "./impls_index/mod.rs" }
-// }
-
-// #[ path = "./impls_index/mod.rs" ]
-mod impls_index;
+mod impls_index
+{
+  use impls_index as TheModule;
+  include!( "./impls_index/mod.rs" );
+}
