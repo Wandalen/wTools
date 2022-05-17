@@ -24,23 +24,23 @@ fn trybuild_tests()
   t.compile_fail( "../../../rust/test/former/all/hashmap_without_parameter.rs" );
 }
 
-/* zzz : use mod_at */
-
-mod basic_runtime
-{
-  #[cfg( not( feature = "in_wtools" ) )]
-  use meta_tools::*;
-
-  #[cfg( feature = "in_wtools" )]
-  use wtools::*;
-  #[cfg( not( feature = "in_wtools" ) )]
-  mod former
-  {
-    pub use former_runtime as runtime;
-  }
-
-  include!( "./all/basic_runtime_common.rs" );
-}
+// /* zzz : use mod_at */
+//
+// mod basic_runtime
+// {
+//   #[cfg( not( feature = "in_wtools" ) )]
+//   use meta_tools::*;
+//
+//   #[cfg( feature = "in_wtools" )]
+//   use wtools::*;
+//   #[cfg( not( feature = "in_wtools" ) )]
+//   mod former
+//   {
+//     pub use former_runtime as runtime;
+//   }
+//
+//   include!( "./all/basic_runtime_common.rs" );
+// }
 
 /* zzz : introduce file all.rs */
 
