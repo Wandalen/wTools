@@ -11,5 +11,9 @@ mod generator_test
   include!( "./all/generator_test.rs" );
 }
 
-#[ path = "./impls_index/mod.rs" ]
-mod impls;
+mod impls
+{
+  use super::TheModule as TheModule;
+  include!( "./impls_index/mod.rs" );
+}
+
