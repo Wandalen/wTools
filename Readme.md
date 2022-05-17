@@ -22,7 +22,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 |--------|------|-----------|
 | [wTools](./module/js/wTools) | [![stable](https://img.shields.io/badge/stability-stable-brightgreen.svg)](https://github.com/emersion/stability-badges#stable) | [![js-status](https://github.com/Wandalen/wTools/actions/workflows/StandardPublish.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/StandardPublish.yml) |
 
-### Rust tools [![discord](https://img.shields.io/discord/872391416519737405?color=e3e8f0&logo=discord&logoColor=e3e8f0)](https://discord.gg/JwTG6d2b)
+### Rust tools 
 
 | Module | Stability | Test | Documentation |
 |--------|-----------|------|---------------|
