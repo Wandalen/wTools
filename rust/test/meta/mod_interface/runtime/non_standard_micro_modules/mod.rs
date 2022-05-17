@@ -52,14 +52,14 @@ pub mod exposed
 pub mod prelude
 {
 
-  pub use super::private
-  {
-    slim_private,
-    slim_protected,
-    slim_orphan,
-    slim_exposed,
-    slim_prelude
-  }
+  // pub use super::private::
+  // {
+  //   slim_private,
+  //   slim_protected,
+  //   slim_orphan,
+  //   slim_exposed,
+  //   // slim_prelude,
+  // };
 
   pub use super::slim_prelude;
 }
