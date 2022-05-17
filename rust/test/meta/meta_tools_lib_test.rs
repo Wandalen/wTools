@@ -5,5 +5,5 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-use for_each as TheModule;
+use meta_tools as TheModule;
 include!( "./all.rs" );
