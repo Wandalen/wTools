@@ -52,7 +52,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 | [test_tools](./module/rust/test_tools) | [![experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestToolsPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestToolsPush.yml) | [![docs.rs](./asset/img/docsrs.svg)](https://docs.rs/test_tools)
 | [wtest_basic](./module/rust/wtest_basic) | [![experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModulewTestBasicPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModulewTestBasicPush.yml) | [![docs.rs](./asset/img/docsrs.svg)](https://docs.rs/wtest_basic)
 
-### External rust tools
+### Rust modules to be moved out to other repositories
 
 | Module | Stability | Test | Documentation |
 |--------|-----------|------|---------------|
