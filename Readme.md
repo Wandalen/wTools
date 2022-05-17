@@ -6,7 +6,7 @@
 
 <!-- ![wTools](./asset/img/logo_trans.png | width=100) -->
 
-![wTools](./asset/img/logo_v2_trans.png)
+![wTools](./asset/img/logo_v2_wide_trans.png.png)
 
 #
 
