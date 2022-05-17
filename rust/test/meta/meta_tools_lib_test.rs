@@ -5,4 +5,5 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-mod all;
+use for_each as TheModule;
+include!( "./all.rs" );
