@@ -13,7 +13,7 @@ use TheModule::prelude::*;
 fn basic_test()
 {
 
-  assert_eq!( private::slim_private::slim_private(), "slim_private" );
+  assert_eq!( private::slim_private(), false );
   assert_eq!( private::slim_protected(), false );
   assert_eq!( private::slim_orphan(), false );
   assert_eq!( private::slim_exposed(), false );

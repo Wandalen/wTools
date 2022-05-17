@@ -4,8 +4,9 @@ mod private
 {
   // #[ doc( inline ) ]
   // pub use super::protected::*;
-  pub use super::slim_private;
+  // pub use super::slim_private;
 
+  pub fn slim_private() -> bool { false }
   pub fn slim_protected() -> bool { false }
   pub fn slim_orphan() -> bool { false }
   pub fn slim_exposed() -> bool { false }
@@ -24,6 +25,7 @@ pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
+
   pub use super::slim_protected;
 }
 
@@ -49,6 +51,16 @@ pub mod exposed
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
+
+  pub use super::private
+  {
+    slim_private,
+    slim_protected,
+    slim_orphan,
+    slim_exposed,
+    slim_prelude
+  }
+
   pub use super::slim_prelude;
 }
 
