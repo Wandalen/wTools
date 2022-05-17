@@ -5,4 +5,5 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-mod all;
+use meta_tools as TheModule;
+include!( "./all.rs" );

@@ -1,13 +1,5 @@
 use test_tools::*;
 
-// #[ allow( unused_imports ) ]
-#[cfg( feature = "in_wtools" )]
-use wtools::meta as TheModule;
-// #[ allow( unused_imports ) ]
-#[cfg( not( feature = "in_wtools" ) )]
-use meta_tools as TheModule;
-// #[ allow( unused_imports ) ]
-// use TheModule::prelude::*;
 use TheModule::prelude::impls1;
 
 //

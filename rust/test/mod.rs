@@ -5,7 +5,7 @@ mod error;
 // zzz : remove include
 mod former
 {
-  include!( "./former/front_test.rs" );
+  include!( "./former/wtools_front_test.rs" );
 }
 
 mod derive;

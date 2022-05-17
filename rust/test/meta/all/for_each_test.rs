@@ -1,11 +1,5 @@
 use test_tools::*;
 
-#[cfg( feature = "in_wtools" )]
-use wtools::meta as TheModule;
-#[cfg( not( feature = "in_wtools" ) )]
-use for_each as TheModule;
-// use TheModule::prelude::*;
-
 impls!
 {
 

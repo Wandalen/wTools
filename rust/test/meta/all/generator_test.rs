@@ -2,12 +2,6 @@
 // #![ feature( trace_macros ) ]
 
 use test_tools::*;
-// use meta_tools as TheModule;
-
-#[cfg( feature = "in_wtools" )]
-use wtools::meta as TheModule;
-#[cfg( not( feature = "in_wtools" ) )]
-use meta_tools as TheModule;
 
 //
 

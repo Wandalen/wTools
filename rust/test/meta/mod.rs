@@ -1,2 +1,3 @@
+use wtools::meta as TheModule;
 
-mod all;
+include!( "./all.rs" );
