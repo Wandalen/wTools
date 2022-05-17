@@ -1,6 +1,6 @@
 
 use std::env;
-// use test_tools::dependencies::*;
+use test_tools::dependencies::trybuild;
 
 #[ test ]
 #[ rustversion::stable ]

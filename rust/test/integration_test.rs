@@ -126,9 +126,18 @@ impl< 'a > IntegrationModuleTest< 'a >
     Ok( () )
   }
 
-  fn clean( &self ) -> Result<(), &'static str>
+  fn clean( &self, force : bool ) -> Result<(), &'static str>
   {
-    std::fs::remove_dir_all( &self.test_path ).unwrap();
+    let result = std::fs::remove_dir_all( &self.test_path );
+    if force
+    {
+      result.unwrap_or_default();
+    }
+    else
+    {
+      let msg = format!( "Cannot remove temporary directory {}. Please, remove it manually", &self.test_path.display() );
+      result.expect( &msg );
+    }
     Ok( () )
   }
 }
@@ -144,10 +153,10 @@ macro_rules! module_integration_test
       fn $name()
       {
         let t = IntegrationModuleTest::new( stringify!( $name ) );
-        t.clean().unwrap();
+        t.clean( true ).unwrap();
         t.form().unwrap();
         t.perform().unwrap();
-        t.clean().unwrap();
+        t.clean( false ).unwrap();
       }
     )*
   }
