@@ -47,5 +47,6 @@ mod_interface_runtime = { version = "~0.1", path = "../../rust/mod_interface_run
 # maplit = "~1.0"
 # trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+# inspect_type = { version = "~0.1", path = "../../rust/inspect_type", features = [ "nightly" ] }
 # rustversion = "~1.0"
 # xxx : review dependency of former / options

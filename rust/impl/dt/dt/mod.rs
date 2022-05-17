@@ -10,7 +10,7 @@ pub mod dependencies
   pub use ::either;
 }
 
-/* xxx2 : use name protected */
+/* zzz : use name protected */
 /* zzz : use for implementing of macro mod_interface */
 
 /// Protected namespace of the module.

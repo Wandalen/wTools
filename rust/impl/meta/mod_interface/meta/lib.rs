@@ -20,7 +20,7 @@ mod impls;
 #[ proc_macro ]
 pub fn mod_interface( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = impls::impls( input );
+  let result = impls::mod_interface( input );
   match result
   {
     Ok( stream ) => stream.into(),

@@ -1,12 +1,29 @@
 use ::mod_interface::prelude::*;
 
+/// Private namespace of the module.
+mod private
+{
+}
+
 mod_interface!
 {
 
-  private mod micro_private;
-  protected mod micro_protected;
-  orphan mod micro_orphan;
-  exposed mod micro_exposed;
-  prelude mod micro_prelude;
+//   mod mod1;
+//   mod mod2;
+//
+//   protected1 protected1;
+//   orphan orphan1;
+//   exposed exposed1;
+//   prelude prelude1;
+
+  // private mod mod_private;
+  protected mod mod_protected;
+  orphan mod mod_orphan;
+  exposed mod mod_exposed;
+  prelude mod mod_prelude;
 
 }
+
+//
+
+include!( "../../test/non_standard_micro_modules_only_test.rs" );

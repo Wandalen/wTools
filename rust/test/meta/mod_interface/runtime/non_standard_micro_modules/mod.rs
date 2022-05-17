@@ -2,31 +2,19 @@
 /// Private namespace of the module.
 mod private
 {
-  // #[ doc( inline ) ]
-  // pub use super::protected::*;
-  // pub use super::slim_private;
-
-  pub fn slim_private() -> bool { false }
-  pub fn slim_protected() -> bool { false }
-  pub fn slim_orphan() -> bool { false }
-  pub fn slim_exposed() -> bool { false }
-  pub fn slim_prelude() -> bool { false }
-
 }
 
-pub mod slim_private;
-pub mod slim_protected;
-pub mod slim_orphan;
-pub mod slim_exposed;
-pub mod slim_prelude;
+pub mod mod_protected;
+pub mod mod_orphan;
+pub mod mod_exposed;
+pub mod mod_prelude;
 
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
-
-  pub use super::slim_protected;
+  pub use super::mod_protected;
 }
 
 #[ doc( inline ) ]
@@ -37,7 +25,7 @@ pub mod orphan
 {
   #[ doc( inline ) ]
   pub use super::exposed::*;
-  pub use super::slim_orphan;
+  pub use super::mod_orphan;
 }
 
 /// Exposed namespace of the module.
@@ -45,23 +33,14 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::prelude::*;
-  pub use super::slim_exposed;
+  pub use super::mod_exposed;
 }
 
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
 
-  // pub use super::private::
-  // {
-  //   slim_private,
-  //   slim_protected,
-  //   slim_orphan,
-  //   slim_exposed,
-  //   // slim_prelude,
-  // };
-
-  pub use super::slim_prelude;
+  pub use super::mod_prelude;
 }
 
 //

@@ -9,7 +9,7 @@ pub mod func;
 /// Several macro to encourage to write indexed code to improve readibility.
 pub mod impls;
 
-/* xxx2 : use name protected */
+/* zzz : use name protected */
 /* zzz : use for implementing of macro mod_interface */
 
 /// Namespace with dependencies.

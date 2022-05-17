@@ -50,7 +50,20 @@ pub mod prelude
 
   pub use ::syn;
   pub use ::proc_macro2;
-  pub use quote::{ quote };
-  pub use syn::{ parse_quote };
+  pub use quote;
+  pub use quote::quote as qt;
+  pub use syn::
+  {
+    parse::ParseStream,
+    Token,
+    braced,
+    bracketed,
+    custom_keyword,
+    custom_punctuation,
+    parenthesized,
+    parse_macro_input,
+    parse_quote,
+    parse_quote_spanned,
+  };
 
 }

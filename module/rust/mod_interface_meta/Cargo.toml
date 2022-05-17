@@ -37,6 +37,7 @@ path = "rust/impl/meta/mod_interface/meta/lib.rs"
 # iter_tools = { path = "../../rust/iter_tools", version = "~0.1" }
 # werror = { path = "../../rust/werror", version = "~0.1" }
 proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
+# inspect_type = { version = "~0.1", path = "../../rust/inspect_type", features = [ "nightly" ] }
 # xxx : unify dependencies of other procedural macroses
 
 [dev-dependencies]

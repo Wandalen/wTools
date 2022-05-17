@@ -535,4 +535,5 @@ pub mod prelude
   pub use i::_tree_export_str as tree_export_str;
   pub use i::_syn_err as syn_err;
 
+  pub use i::Result;
 }

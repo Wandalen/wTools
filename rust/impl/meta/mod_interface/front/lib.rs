@@ -32,10 +32,10 @@ pub mod exposed
   pub use super::prelude::*;
   pub use mod_interface_runtime as runtime;
   pub use mod_interface_meta as meta;
-  pub use meta::*;
 }
 
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
+  pub use mod_interface_meta::*;
 }
