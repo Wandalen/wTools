@@ -1,4 +1,7 @@
 
+// #[ allow( unused_imports ) ]
+// use super::TheModule;
+
 /// Private namespace of the module.
 mod private
 {

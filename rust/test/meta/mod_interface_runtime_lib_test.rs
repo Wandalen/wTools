@@ -4,3 +4,6 @@
 
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
+
+#[ allow( unused_imports ) ]
+use ::mod_interface_runtime as TheModule;

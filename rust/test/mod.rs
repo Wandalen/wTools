@@ -13,7 +13,6 @@ mod error;
 //   include!( "./former/wtools_front_test.rs" );
 // }
 
-#[ path = "./former/wtools_front_test.rs" ]
 mod former;
 
 mod derive;

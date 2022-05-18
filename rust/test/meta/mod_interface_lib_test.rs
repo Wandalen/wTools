@@ -2,6 +2,8 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
+use ::mod_interface as TheModule;
+
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 

@@ -43,4 +43,3 @@ test_suite!
   inspect_to_str_type_of,
   inspect_type_of,
 }
-/* xxx : move cfg */
