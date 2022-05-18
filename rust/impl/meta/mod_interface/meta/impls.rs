@@ -380,6 +380,194 @@ impl CanBeUsedForNonStandardModInterface for Visibility
 }
 
 ///
+/// Attribute which is inner.
+///
+
+#[ derive( Debug, PartialEq, Eq, Clone ) ]
+pub struct AttributeInner( pub syn::Attribute );
+
+impl syn::parse::Parse for AttributeInner
+{
+  fn parse( input : ParseStream< '_ > ) -> Result< Self >
+  {
+    let input2;
+    Ok( Self( syn::Attribute
+    {
+      pound_token : input.parse()?,
+      style : syn::AttrStyle::Inner( input.parse()? ),
+      bracket_token : bracketed!( input2 in input ),
+      path : input2.call( syn::Path::parse_mod_style )?,
+      tokens : input2.parse()?,
+    }))
+    // Ok( ( input.call( syn::Attribute::parse_inner )? ).into() )
+  }
+}
+
+impl quote::ToTokens for AttributeInner
+{
+  fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+  {
+    self.0.to_tokens( tokens );
+  }
+}
+
+impl From< syn::Attribute > for AttributeInner
+{
+  fn from( src : syn::Attribute ) -> Self
+  {
+    Self( src )
+  }
+}
+
+impl From< AttributeInner > for syn::Attribute
+{
+  fn from( src : AttributeInner ) -> Self
+  {
+    src.0
+  }
+}
+
+///
+/// Pair of syntax elements.
+///
+
+#[ derive( Debug, PartialEq, Eq, Clone ) ]
+pub struct Pair< T1, T2 >
+( pub T1, pub T2 )
+where
+  T1 : syn::parse::Parse + quote::ToTokens,
+  T2 : syn::parse::Parse + quote::ToTokens,
+;
+
+impl< T1, T2 > syn::parse::Parse for Pair< T1, T2 >
+where
+  T1 : syn::parse::Parse + quote::ToTokens,
+  T2 : syn::parse::Parse + quote::ToTokens,
+{
+  fn parse( input : ParseStream< '_ > ) -> Result< Self >
+  {
+    Ok( Self( input.parse()?, input.parse()? ) )
+  }
+}
+
+impl< T1, T2 > quote::ToTokens for Pair< T1, T2 >
+where
+  T1 : syn::parse::Parse + quote::ToTokens,
+  T2 : syn::parse::Parse + quote::ToTokens,
+{
+  fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+  {
+    self.0.to_tokens( tokens );
+    self.1.to_tokens( tokens );
+  }
+}
+
+// xxx : publish module cotainer with good prelude
+
+///
+/// Pair of syntax elements.
+///
+
+#[ derive( Debug, PartialEq, Eq, Clone ) ]
+pub struct Many< T > ( Vec< T > )
+where
+  T : quote::ToTokens,
+;
+
+impl< T > Many< T >
+where
+  T : quote::ToTokens,
+{
+  pub fn new() -> Self
+  {
+    Self( Vec::new() )
+  }
+}
+
+impl< T > quote::ToTokens
+for Many< T >
+where
+  T : quote::ToTokens,
+{
+  fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+  {
+    use proc_macro_tools::quote::TokenStreamExt;
+    tokens.append_all( self.0.iter() );
+    // self.0.to_tokens( tokens );
+  }
+}
+
+impl syn::parse::Parse
+for Many< AttributeInner >
+{
+  fn parse( input : ParseStream< '_ > ) -> Result< Self >
+  {
+    let mut result = Self::new();
+    while input.peek( Token![ # ] )
+    {
+      result.0.push( input.parse()? );
+    }
+    Ok( result )
+  }
+}
+
+// xxx : macro?
+impl< T > core::ops::Deref
+for Many< T >
+where
+  T : quote::ToTokens,
+{
+  type Target = Vec< T >;
+  fn deref( &self ) -> &Self::Target
+  {
+    &self.0
+  }
+}
+
+// xxx : macro
+impl< T > From< Vec< T > > for Many< T >
+where
+  T : quote::ToTokens,
+{
+  fn from( src : Vec< T > ) -> Self
+  {
+    Self( src )
+  }
+}
+
+impl< T > From< Many< T > > for Vec< T >
+where
+  T : quote::ToTokens,
+{
+  fn from( src : Many< T > ) -> Self
+  {
+    src.0
+  }
+}
+
+///
+/// Attribute and ident.
+///
+
+pub type AttributedIdent = Pair< Many< AttributeInner >, syn::Ident >;
+
+impl From< syn::Ident > for AttributedIdent
+{
+  fn from( src : syn::Ident ) -> Self
+  {
+    Self( Vec::new().into(), src )
+  }
+}
+
+impl From< AttributedIdent > for syn::Ident
+{
+  fn from( src : AttributedIdent ) -> Self
+  {
+    src.1
+  }
+}
+
+///
 /// Record.
 ///
 
@@ -389,10 +577,13 @@ pub struct Record
   pub attrs : Vec< syn::Attribute >,
   pub vis : Visibility,
   pub mod_token : Option< syn::token::Mod >,
-  pub ident : syn::Ident,
-  pub content : Option< ( syn::token::Brace, Vec< Record > ) >,
+  pub elements : Many< AttributedIdent >,
+  // pub ident : syn::Ident,
+  // pub content : Option< ( syn::token::Brace, Vec< Record > ) >,
   pub semi : Option< syn::token::Semi >,
 }
+
+//
 
 pub fn attrs_parse_inner_single( input : ParseStream< '_ > ) -> Result< syn::Attribute >
 {
@@ -433,8 +624,32 @@ impl syn::parse::Parse for Record
 
     let mod_token : Option< Token![ mod ] > = input.parse()?;
 
-    let ident : syn::Ident = input.parse()?;
+//     if lookahead.peek( syn::token::Brace )
+//     {
+//       let input2;
+//       let brace_token = syn::braced!( input2 in input );
+//       // attrs_parse_inner_as_much_as_possible( &input2, &mut attrs )?;
+//       // xxx : test with attributes
+//
+//       let mut elements = Vec::new();
+//       while !input2.is_empty()
+//       {
+//         elements.push( input2.parse()? );
+//       }
+//
+//       Ok( Record
+//       {
+//         attrs,
+//         vis,
+//         mod_token,
+//         elements,
+//         // ident,
+//         // content : Some( ( brace_token, items ) ),
+//         semi : None,
+//       })
+//     }
 
+    let ident : syn::Ident = input.parse()?;
     let lookahead = input.lookahead1();
     if lookahead.peek( Token![ ; ] )
     {
@@ -443,66 +658,38 @@ impl syn::parse::Parse for Record
         attrs,
         vis,
         mod_token,
-        ident,
-        content : None,
+        elements : vec!( ident.into() ).into(),
+        // content : None,
         semi : Some( input.parse()? ),
       })
     }
-    else if lookahead.peek( syn::token::Brace )
-    {
-      let input2;
-      let brace_token = syn::braced!( input2 in input );
-      attrs_parse_inner_as_much_as_possible( &input2, &mut attrs )?;
-
-      let mut items = Vec::new();
-      while !input2.is_empty()
-      {
-        items.push( input2.parse()? );
-      }
-
-      Ok( Record
-      {
-        attrs,
-        vis,
-        mod_token,
-        ident,
-        content : Some( ( brace_token, items ) ),
-        semi : None,
-      })
-    }
+//     else if lookahead.peek( syn::token::Brace )
+//     {
+//       let input2;
+//       let brace_token = syn::braced!( input2 in input );
+//       attrs_parse_inner_as_much_as_possible( &input2, &mut attrs )?;
+//
+//       let mut items = Vec::new();
+//       while !input2.is_empty()
+//       {
+//         items.push( input2.parse()? );
+//       }
+//
+//       Ok( Record
+//       {
+//         attrs,
+//         vis,
+//         mod_token,
+//         ident,
+//         content : Some( ( brace_token, items ) ),
+//         semi : None,
+//       })
+//     }
     else
     {
       Err( lookahead.error() )
     }
 
-//     let attrs = input.parse_terminated( syn::Attribute )?;
-//     let how = input.parse()?;
-//     let vis = input.parse()?;
-//     let mod_token = input.parse()?;
-//     let ident = ident.parse()?;
-//     let content = None;
-//     let semi = ident.parse()?;
-//
-//     Ok( Self
-//     {
-//       attrs,
-//       how,
-//       vis,
-//       mod_token,
-//       ident,
-//       content,
-//       semi,
-//     })
-
-    // let mut items = vec![];
-    // while !input.is_empty()
-    // {
-    //   let item : syn::Item = input.parse()?;
-    //   items.push( item );
-    // }
-
-    // Ok( Self( items ) )
-    // Err( syn_err!( "Error" ) )
   }
 }
 
@@ -516,11 +703,18 @@ impl quote::ToTokens for Record
     tokens.append_all( &self.attrs );
     self.vis.to_tokens( tokens );
     self.mod_token.to_tokens( tokens );
-    self.ident.to_tokens( tokens );
+    // self.ident.to_tokens( tokens );
     // self.content.to_tokens( tokens );
+    self.elements.to_tokens( tokens ); // xxx : problem
     self.semi.to_tokens( tokens );
   }
 }
+
+  // pub attrs : Vec< syn::Attribute >,
+  // pub vis : Visibility,
+  // pub mod_token : Option< syn::token::Mod >,
+  // pub elements : Many< AttributedIdent >,
+  // pub semi : Option< syn::token::Semi >,
 
 ///
 /// Module-specific item.
@@ -578,7 +772,7 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::
 
   let records = syn::parse::< Records >( input )?;
 
-  let mut mods = vec![];
+  //let mut mods = vec![];
   let mut immediates : Vec< proc_macro2::TokenStream > = vec![];
 
   // use inspect_type::*;
@@ -595,25 +789,29 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::
 
   records.0.iter().for_each( | record |
   {
-    mods.push( record.ident.clone() );
-    let ident = &record.ident;
-
-    if record.mod_token.is_some()
+    record.elements.iter().for_each( | element |
     {
-      immediates.push( qt!{ pub mod #ident; } );
-      let fixes = fixes.get_mut( &record.vis.kind() ).unwrap();
-      fixes.push( qt!{ pub use super::#ident; } );
+      //mods.push( record.ident.clone() );
+//      let ident = &record.ident;
+      let ident = &element.1;
 
-      // xxx : test
-      if !record.vis.can_be_used_for_non_standard_mod()
+      if record.mod_token.is_some()
       {
-        err = Some( syn_err!
-        (
-          record, "To include a non-standard module use either [ protected, orphan, exposed, prelude ] visibility:\n  {}",
-          qt!{ #record }
-        ));
+        immediates.push( qt!{ pub mod #ident; } );
+        let fixes = fixes.get_mut( &record.vis.kind() ).unwrap();
+        fixes.push( qt!{ pub use super::#ident; } );
+
+        // xxx : test
+        if !record.vis.can_be_used_for_non_standard_mod()
+        {
+          err = Some( syn_err!
+          (
+            record, "To include a non-standard module use either [ protected, orphan, exposed, prelude ] visibility:\n  {}",
+            qt!{ #record }
+          ));
+        }
       }
-    }
+    });
 
   });
 
@@ -627,13 +825,6 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::
   let orphan_fix = fixes.get( &VisOrphan::Kind() ).unwrap();
   let exposed_fix = fixes.get( &VisExposed::Kind() ).unwrap();
   let prelude_fix = fixes.get( &VisPrelude::Kind() ).unwrap();
-
-  // pub attrs : Vec< syn::Attribute >,
-  // pub vis : Visibility,
-  // pub mod_token : Option< syn::token::Mod >,
-  // pub ident : syn::Ident,
-  // pub content : Option< ( syn::token::Brace, Vec< Record > ) >,
-  // pub semi : Option< syn::token::Semi >,
 
   let result = qt!
   {

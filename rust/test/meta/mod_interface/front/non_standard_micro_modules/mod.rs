@@ -1,7 +1,4 @@
 
-// only_for_local_module!( use ::mod_interface::prelude::*; );
-// only_for_wtools!( use ::wtools::prelude::*; );
-
 use super::TheModule;
 use TheModule::prelude::*;
 

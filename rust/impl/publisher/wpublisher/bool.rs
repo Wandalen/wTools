@@ -17,7 +17,7 @@ impl Default for BoolLike
   fn default() -> Self { BoolLike::False }
 }
 
-impl From<BoolLike> for bool
+impl From< BoolLike > for bool
 {
   fn from( bool_like: BoolLike ) -> Self
   {
