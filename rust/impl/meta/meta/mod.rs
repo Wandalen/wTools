@@ -4,14 +4,6 @@ mod internal
 
 }
 
-/// Dependencies.
-pub mod dependencies
-{
-  pub use ::literally;
-  pub use ::for_each;
-  pub use ::impls_index;
-}
-
 // /// Several macro on functions.
 // pub mod func;
 // /// Several macro to encourage to write indexed code to improve readibility.
@@ -24,6 +16,9 @@ pub mod dependencies
 pub mod protected
 {
   pub use super::orphan::*;
+  pub use ::impls_index::orphan::*;
+  pub use ::mod_interface::orphan::*;
+  pub use ::for_each::orphan::*;
 }
 
 pub use protected::*;
@@ -32,7 +27,6 @@ pub use protected::*;
 pub mod orphan
 {
   pub use super::exposed::*;
-  pub use super::dependencies;
 }
 
 /// Exposed namespace of the module.
@@ -40,9 +34,8 @@ pub mod exposed
 {
   pub use super::prelude::*;
   pub use ::impls_index::exposed::*;
-  // pub use super::impls::exposed::*;
-  // pub use super::func::exposed::*;
-  pub use super::dependencies::for_each::exposed::*;
+  pub use ::mod_interface::exposed::*;
+  pub use ::for_each::exposed::*;
 }
 
 /// Prelude to use: `use wtools::prelude::*`.
@@ -50,7 +43,6 @@ pub mod prelude
 {
   pub use ::literally::*;
   pub use ::impls_index::prelude::*;
-  // pub use super::impls::prelude::*;
-  // pub use super::func::prelude::*;
-  pub use super::dependencies::for_each::prelude::*;
+  pub use ::mod_interface::prelude::*;
+  pub use ::for_each::prelude::*;
 }

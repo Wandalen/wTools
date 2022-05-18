@@ -5,5 +5,6 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-// #[ path = "./mod_interface/mod.rs" ]
+include!( "../_conditional/local_module.rs" );
+
 mod mod_interface;

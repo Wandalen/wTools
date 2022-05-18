@@ -19,6 +19,6 @@ mod impls_index
 
 mod mod_interface
 {
-  use super::TheModule as TheModule;
+  // use super::TheModule as TheModule;
   include!( "./mod_interface/mod.rs" );
 }

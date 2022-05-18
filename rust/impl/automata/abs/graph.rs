@@ -151,14 +151,20 @@ mod internal
 
 }
 
+/// Own namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+}
+
+pub use protected::*;
+
 /// Parented namespace of the module.
 pub mod orphan
 {
   // use super::internal as i;
   pub use super::exposed::*;
 }
-
-pub use orphan::*;
 
 /// Exposed namespace of the module.
 pub mod exposed

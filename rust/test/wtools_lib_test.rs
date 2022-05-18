@@ -6,4 +6,6 @@
 
 #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 
+include!( "./_conditional/wtools.rs" );
+
 include!( "./mod.rs" );

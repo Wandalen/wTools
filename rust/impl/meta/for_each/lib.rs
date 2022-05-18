@@ -480,7 +480,21 @@ mod internal
 
 }
 
-pub use internal::*;
+// pub use internal::*;
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+}
+
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed
