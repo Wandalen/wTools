@@ -22,3 +22,8 @@ mod mod_interface
   // use super::TheModule as TheModule;
   include!( "./mod_interface/mod.rs" );
 }
+
+// mod for_each_test;
+// mod generator_test;
+// mod impls_index;
+// mod mod_interface;

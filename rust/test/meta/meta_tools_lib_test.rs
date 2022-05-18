@@ -5,5 +5,8 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
+include!( "../_conditional/local_module.rs" );
+
 use meta_tools as TheModule;
-include!( "./all.rs" );
+mod all;
+// include!( "./all.rs" );
