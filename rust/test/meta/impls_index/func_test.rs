@@ -1,5 +1,5 @@
 use test_tools::*;
-
+use super::TheModule as TheModule;
 use TheModule::prelude::*;
 
 //

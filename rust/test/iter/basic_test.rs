@@ -1,6 +1,6 @@
-
-use test_tools::*;
+use super::TheModule;
 use TheModule::*;
+use test_tools::*;
 
 //
 

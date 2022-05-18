@@ -1,3 +1,4 @@
 use wtools::meta as TheModule;
 
-include!( "./all.rs" );
+// #[ path = "./all.rs" ]
+mod all;

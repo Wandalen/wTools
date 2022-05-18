@@ -1,6 +1,7 @@
 // #![feature(type_name_of_val)]
 
 use test_tools::*;
+use super::TheModule;
 
 //
 
