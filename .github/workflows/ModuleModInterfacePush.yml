@@ -1,0 +1,20 @@
+name: mod_interface
+
+on : push
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    if : "startsWith( github.event.head_commit.message, '[build]' ) || startsWith( github.event.head_commit.message, 'Merge' )"
+    uses: Wandalen/wTools/.github/workflows/RustFull.yml@master
+    with:
+      manifest_path: 'module/rust/mod_interface/Cargo.toml'
+
+  build_fast:
+    if : "!startsWith( github.event.head_commit.message, '[build]' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'wmath' )"
+    uses: Wandalen/wTools/.github/workflows/RustFast.yml@master
+    with:
+      manifest_path: 'module/rust/mod_interface/Cargo.toml'
+
