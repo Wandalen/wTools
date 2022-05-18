@@ -11,4 +11,5 @@
 // pub use wtest_basic as basic;
 // pub use basic::*;
 
+#[ doc( inline ) ]
 pub use test_tools::*;

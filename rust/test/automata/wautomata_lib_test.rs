@@ -5,4 +5,4 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-mod all;
+mod inc;

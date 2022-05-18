@@ -8,5 +8,6 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-// xxx : lack of attribute
+// xxx : apply the attribute for most star imports
+#[ doc( inline ) ]
 pub use proc_macro_tools::*;

@@ -32,39 +32,23 @@
 /* zzz : make sure CD run debug tests and release tests */
 /* zzz : introduce tag to run fewer tests */
 
-///
 /// Iter tools.
-///
-
 pub mod iter;
+#[ doc( inline ) ]
 pub use iter::exposed::*;
 
-///
 /// Meta tools.
-///
-
 pub mod meta;
+#[ doc( inline ) ]
 pub use meta::*;
 
-///
 /// Type checking tools.
-///
-
 pub mod typing;
+#[ doc( inline ) ]
 pub use typing::*;
 
-///
 /// Collection of primal data types
-///
-
 pub mod dt;
-
-// ///
-// /// Exporting/importing serialize/deserialize encoding/decoding macros, algorithms and structures for that.
-// ///
-//
-// pub mod convert;
-// pub use convert::*;
 
 ///
 /// Collection of general purpose time tools.

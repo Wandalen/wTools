@@ -2,4 +2,4 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
-mod all;
+mod inc;

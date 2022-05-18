@@ -26,7 +26,9 @@ pub use dependencies::*;
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::basic::exposed::*;
+  #[ doc( inline ) ]
   pub use meta_tools::{ impls, impls1, impls2, impls3, index };
 }
 
@@ -35,5 +37,6 @@ pub use exposed::*;
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use super::basic::prelude::*;
 }

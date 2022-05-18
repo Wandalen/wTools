@@ -1,7 +1,7 @@
 
 use test_tools::*;
 
-// xxx qqq : removoe the feature?
+// xxx : qqq : for Dima : removoe the feature?
 #[cfg( feature = "in_wtools" )]
 use wtools::derive as TheModule;
 #[cfg( not( feature = "in_wtools" ) )]

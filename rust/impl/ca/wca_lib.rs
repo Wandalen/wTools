@@ -14,6 +14,7 @@ pub mod ca
   include!( "./lib.rs" );
 }
 
+#[ doc( inline ) ]
 pub use ca::*;
 
 /// Exposed namespace of the module.

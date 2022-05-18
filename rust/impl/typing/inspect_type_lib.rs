@@ -57,4 +57,5 @@ mod nightly
 }
 
 #[ cfg( feature = "nightly" ) ]
+#[ doc( inline ) ]
 pub use nightly::*;

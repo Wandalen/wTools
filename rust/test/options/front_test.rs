@@ -9,7 +9,7 @@
 //   // t.pass( "rust/test/former/test/basic_manual.rs" );
 // }
 
-// /* xxx : implement module::mod_at */
+// /* zzz : implement module::mod_at */
 //
 // mods_at!{ "./all"
 // {
