@@ -522,13 +522,6 @@ impl quote::ToTokens for Record
   }
 }
 
-  // pub attrs : Vec< syn::Attribute >,
-  // pub vis : Visibility,
-  // pub mod_token : Option< syn::token::Mod >,
-  // pub ident : syn::Ident,
-  // pub content : Option< ( syn::token::Brace, Vec< Record > ) >,
-  // pub semi : Option< syn::token::Semi >,
-
 ///
 /// Module-specific item.
 ///
@@ -539,6 +532,7 @@ pub struct Records
   pub Vec< Record >,
 );
 
+// xxx
 // impl From< Records > for Records
 // {
 //   fn from( src : Records ) -> Self
@@ -623,20 +617,28 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::
 
   });
 
+  if let Some( _err ) = err
+  {
+    return Err( _err );
+  }
+
   let _private_fix = fixes.get( &VisPrivate::Kind() ).unwrap();
   let protected_fix = fixes.get( &VisProtected::Kind() ).unwrap();
   let orphan_fix = fixes.get( &VisOrphan::Kind() ).unwrap();
   let exposed_fix = fixes.get( &VisExposed::Kind() ).unwrap();
   let prelude_fix = fixes.get( &VisPrelude::Kind() ).unwrap();
 
+  // pub attrs : Vec< syn::Attribute >,
+  // pub vis : Visibility,
+  // pub mod_token : Option< syn::token::Mod >,
+  // pub ident : syn::Ident,
+  // pub content : Option< ( syn::token::Brace, Vec< Record > ) >,
+  // pub semi : Option< syn::token::Semi >,
+
   let result = qt!
   {
 
     #( #immediates )*
-    // pub mod mod_protected;
-    // pub mod mod_orphan;
-    // pub mod mod_exposed;
-    // pub mod mod_prelude;
 
     /// Protected namespace of the module.
     pub mod protected
@@ -644,7 +646,6 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::
       #[ doc( inline ) ]
       pub use super::orphan::*;
 
-      // pub use super::mod_protected;
       #( #protected_fix )*
 
     }
@@ -658,7 +659,6 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::
       #[ doc( inline ) ]
       pub use super::exposed::*;
 
-      // pub use super::mod_orphan;
       #( #orphan_fix )*
 
     }
@@ -669,7 +669,6 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::
       #[ doc( inline ) ]
       pub use super::prelude::*;
 
-      // pub use super::mod_exposed;
       #( #exposed_fix )*
 
     }
@@ -678,7 +677,6 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::
     pub mod prelude
     {
 
-      // pub use super::mod_prelude;
       #( #prelude_fix )*
 
     }

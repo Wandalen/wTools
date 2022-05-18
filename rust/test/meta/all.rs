@@ -11,9 +11,14 @@ mod generator_test
   include!( "./all/generator_test.rs" );
 }
 
-mod impls
+mod impls_index
 {
   use super::TheModule as TheModule;
   include!( "./impls_index/mod.rs" );
 }
 
+mod mod_interface
+{
+  use super::TheModule as TheModule;
+  include!( "./mod_interface/mod.rs" );
+}
