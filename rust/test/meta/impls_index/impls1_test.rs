@@ -1,5 +1,5 @@
 use test_tools::*;
-use super::TheModule as TheModule;
+use super::TheModule;
 use TheModule::prelude::impls1;
 
 //

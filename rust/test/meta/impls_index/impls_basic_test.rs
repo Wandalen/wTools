@@ -1,4 +1,4 @@
-use super::TheModule as TheModule;
+use super::TheModule;
 use TheModule::prelude::*;
 
 // trace_macros!( true );

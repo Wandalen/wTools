@@ -1,4 +1,4 @@
-use super::TheModule as TheModule;
+use super::TheModule;
 use test_tools::*;
 
 impls!

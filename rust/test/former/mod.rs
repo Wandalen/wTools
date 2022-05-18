@@ -7,6 +7,7 @@
 // include!( "./common_front_test.rs" );
 
 use wtools::former as TheModule;
+use wtools::former;
 
 #[ allow( unused_imports ) ]
 use TheModule::prelude::*;

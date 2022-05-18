@@ -1,6 +1,6 @@
 // #![ allow( dead_code ) ]
 // #![ feature( trace_macros ) ]
-use super::TheModule as TheModule;
+use super::TheModule;
 use test_tools::*;
 
 //
