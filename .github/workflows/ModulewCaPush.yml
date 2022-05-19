@@ -13,7 +13,7 @@ jobs:
       manifest_path: 'module/rust_move/wca/Cargo.toml'
 
   build_fast:
-    if : "!startsWith( github.event.head_commit.message, '[build]' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'wmath' )"
+    if : "!startsWith( github.event.head_commit.message, '[build]' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'wca' )"
     uses: Wandalen/wTools/.github/workflows/RustFast.yml@master
     with:
       manifest_path: 'module/rust_move/wca/Cargo.toml'
