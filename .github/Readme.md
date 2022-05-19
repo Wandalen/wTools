@@ -27,6 +27,6 @@ Example : `!build rust modules`
 
 #### Keyword with name of the module
 
-Example for module `wtools` : `some important changes in module 'wtools'`.
+Example for module wtools : `some important changes in module 'wtools'`.
 
-Example for module `wtools` : `rust : wtools publish`.
+Example for module wtools : `rust : wtools publish`.
