@@ -122,16 +122,17 @@ mod internal
 
   }
 
-//   single!
-//   {
-//
-//     ///
-//     /// A type wrapping a single another type into a tuple.
-//     ///
-//
-//     Single : < T >;
-//
-//   }
+  single!
+  {
+
+    ///
+    /// A type wrapping a single another type into a tuple.
+    ///
+
+    #[ derive( Debug, Clone, PartialEq, Eq ) ]
+    Single : < T >;
+
+  }
 
   pub use single;
 }
@@ -150,5 +151,6 @@ pub mod prelude
   pub use super::internal::
   {
     single,
+    Single,
   };
 }
