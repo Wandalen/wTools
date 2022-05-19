@@ -1,4 +1,4 @@
 ## Documentation
 
-- [Rust](./rust/Rust.md)
+- [Rust](./rust/Readme.md)
 - [JS](./js/Readme.md)
