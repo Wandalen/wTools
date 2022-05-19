@@ -1,4 +1,4 @@
-# Rust CD system
+# Continious development of rust modules
 
 The CD system for rust modules consists of 3 parts :
 
