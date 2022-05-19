@@ -83,7 +83,7 @@ pub mod prelude
     parenthesized,
     parse_macro_input,
     parse_quote,
-    // parse_quote_spanned,
+    parse_quote_spanned,
   };
 
 }

@@ -7,13 +7,13 @@ env:
 
 jobs:
   build:
-    if : "startsWith( github.event.head_commit.message, '[build]' ) || startsWith( github.event.head_commit.message, 'Merge' )"
+    if : "startsWith( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
     uses: Wandalen/wTools/.github/workflows/RustFull.yml@master
     with:
       manifest_path: 'module/rust/time_tools/Cargo.toml'
 
   build_fast:
-    if : "!startsWith( github.event.head_commit.message, '[build]' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'time_tools' )"
+    if : "!startsWith( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'time_tools' )"
     uses: Wandalen/wTools/.github/workflows/RustFast.yml@master
     with:
       manifest_path: 'module/rust/time_tools/Cargo.toml'
