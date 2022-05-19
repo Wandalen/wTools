@@ -2,4 +2,6 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
+use wtest as TheModule;
+
 mod inc;
