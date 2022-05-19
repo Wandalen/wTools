@@ -6,24 +6,27 @@ The CD system for rust modules consists of 3 parts :
 - individual modules CD scripts
 - CD script for pull request event
 
-## Individual modules statuses
+## Module status
 
 The status badges on [main page](../Readme.md#rust-tools) show the last test run of individual module CD script.
 
-To run CD script one of the condition should be met:
+To run CD script name should have either:
+- Keyword `Merge`
+- Keyword `!build`
+- Keyword with name of the module
 
-#### Keyword `Merge` at the start of the commit message
+#### Keyword `Merge`
 
 Example : `Merge branch 'fix' into master`
 
 Example : [CD script run](https://github.com/Wandalen/wTools/actions/runs/2343552303)
 
-#### Keyword `[build]` at the start of the commit message
+#### Keyword `!build`
 
-Example : `[build] rust modules`
+Example : `!build rust modules`
 
-#### Keyword with module name in commit message
+#### Keyword with name of the module
 
-Example for module `wtools` : `build module 'wtools'`.
+Example for module `wtools` : `some important changes in module 'wtools'`.
 
 Example for module `wtools` : `rust : wtools publish`.
