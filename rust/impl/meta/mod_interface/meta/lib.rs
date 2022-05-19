@@ -12,6 +12,12 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 mod impls;
+#[ allow( unused_imports ) ]
+use impls::exposed::*;
+mod record;
+use record::exposed::*;
+mod visibility;
+use visibility::exposed::*;
 
 ///
 /// Protocol of modularity unifying interface of a module.
@@ -27,6 +33,49 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
     Err( err ) => err.to_compile_error().into(),
   }
 }
+
+// /// Own namespace of the module.
+// pub mod protected
+// {
+//   pub use super::orphan::*;
+//   pub use super::
+//   {
+//     impls::orphan::*,
+//     record::orphan::*,
+//     visibility::orphan::*,
+//   };
+// }
+//
+// pub use protected::*;
+//
+// /// Parented namespace of the module.
+// pub mod orphan
+// {
+//   pub use super::exposed::*;
+// }
+//
+// /// Exposed namespace of the module.
+// pub mod exposed
+// {
+//   pub use super::prelude::*;
+//   pub use super::
+//   {
+//     impls::exposed::*,
+//     record::exposed::*,
+//     visibility::exposed::*,
+//   };
+// }
+//
+// /// Prelude to use: `use wtools::prelude::*`.
+// pub mod prelude
+// {
+//   pub use super::
+//   {
+//     impls::prelude::*,
+//     record::prelude::*,
+//     visibility::prelude::*,
+//   };
+// }
 
 /*
 

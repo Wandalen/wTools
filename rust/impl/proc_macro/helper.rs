@@ -9,42 +9,6 @@ mod internal
   pub type Result< T > = std::result::Result< T, syn::Error >;
 
   ///
-  /// Many items.
-  ///
-
-  // #[ allow( dead_code ) ]
-  #[ derive( Debug ) ]
-  pub struct Items
-  (
-    pub Vec< syn::Item >,
-  );
-
-  impl syn::parse::Parse for Items
-  {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-    {
-
-      let mut items = vec![];
-      while !input.is_empty()
-      {
-        let item : syn::Item = input.parse()?;
-        items.push( item );
-      }
-
-      Ok( Self( items ) )
-    }
-  }
-
-  impl quote::ToTokens for Items
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
-      // use quote::ToTokens;
-      self.0.iter().for_each( | item | item.to_tokens( tokens ) );
-    }
-  }
-
-  ///
   /// Macro for diagnostics purpose to print both syntax tree and source code behind it.
   ///
   /// # Sample
@@ -128,96 +92,6 @@ mod internal
       syn::Error::new( proc_macro2::Span::call_site(), format!( $msg, $( $arg ),+ ) )
     };
 
-  }
-
-  ///
-  /// Kind of container.
-  ///
-
-  #[derive( Debug, PartialEq, Copy, Clone )]
-  pub enum ContainerKind
-  {
-    /// Not a container.
-    No,
-    /// Vector-like.
-    Vector,
-    /// Hash map-like.
-    HashMap,
-    /// Hash set-like.
-    HashSet,
-  }
-
-  /// Return kind of container specified by type.
-  ///
-  /// Good to verify `alloc::vec::Vec< i32 >` is vector.
-  /// Good to verify `std::collections::HashMap< i32, i32 >` is hash map.
-  ///
-  /// # Sample
-  /// ```
-  /// use proc_macro_tools::*;
-  /// use quote::quote;
-  ///
-  /// let code = quote!( std::collections::HashMap< i32, i32 > );
-  /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let kind = type_container_kind( &tree_type );
-  /// assert_eq!( kind, ContainerKind::HashMap );
-  /// ```
-
-  pub fn type_container_kind( ty : &syn::Type ) -> ContainerKind
-  {
-
-    if let syn::Type::Path( path ) = ty
-    {
-      let last = &path.path.segments.last();
-      if last.is_none()
-      {
-        return ContainerKind::No
-      }
-      match last.unwrap().ident.to_string().as_ref()
-      {
-        "Vec" => { return ContainerKind::Vector }
-        "HashMap" => { return ContainerKind::HashMap }
-        "HashSet" => { return ContainerKind::HashSet }
-        _ => { return ContainerKind::No }
-      }
-    }
-    ContainerKind::No
-  }
-
-  /// Return kind of container specified by type. Unlike [type_container_kind] it also understand optional types.
-  ///
-  /// Good to verify `Option< alloc::vec::Vec< i32 > >` is optional vector.
-  ///
-  /// # Sample
-  /// ```
-  /// use proc_macro_tools::*;
-  /// use quote::quote;
-  ///
-  /// let code = quote!( Option< std::collections::HashMap< i32, i32 > > );
-  /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let ( kind, optional ) = type_optional_container_kind( &tree_type );
-  /// assert_eq!( kind, ContainerKind::HashMap );
-  /// assert_eq!( optional, true );
-  /// ```
-
-  pub fn type_optional_container_kind( ty : &syn::Type ) -> ( ContainerKind, bool )
-  {
-
-    // use inspect_type::*;
-
-    if type_rightmost( ty ) == Some( "Option".to_string() )
-    {
-      let ty2 = type_parameters( ty, 0 ..= 0 ).first().map( | e | *e );
-      // inspect_type::inspect_type_of!( ty2 );
-      if ty2.is_none()
-      {
-        return ( ContainerKind::No, false )
-      }
-      let ty2 = ty2.unwrap();
-      return ( type_container_kind( ty2 ), true );
-    }
-
-    return ( type_container_kind( ty ), false );
   }
 
   /// Check is the rightmost item of path refering a type is specified type.
@@ -313,6 +187,7 @@ mod internal
     use syn::spanned::Spanned;
     let meta = attr.parse_meta()?;
 
+    // zzz : try to use helper
     let ( key, val );
     match meta
     {
@@ -350,174 +225,12 @@ mod internal
 
 }
 
-// ///
-// /// Canonize path and return it in string format.
-// ///
-//
-// pub fn path_of( syn_path : &syn::Path ) -> String
-// {
-//   // use quote::*;
-//   use syn::*;
-//   let result : String = format!( "{}", syn_path.to_token_stream() );
-//   // let result : String = format!( "{}", quote!{ #syn_path } );
-//   result
-// }
-
-//
-
-// don't delete!
-// good example of overloading to reuse
-//
-// pub use syn::spanned::Spanned;
-//
-// /// Trait to implement method span() for those structures which [module::syn](https://docs.rs/syn/latest/syn/spanned/index.html) do not have it implemented.
-//
-// pub trait Spanned2
-// {
-//   /// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
-//   fn span2( &self ) -> proc_macro2::Span;
-// }
-//
-// //
-//
-// impl Spanned2 for syn::Data
-// {
-//   fn span2( &self ) -> proc_macro2::Span
-//   {
-//     // data_fields_of( &self ).span()
-//     match self
-//     {
-//       syn::Data::Struct( syn::DataStruct { ref fields, .. } ) => fields.span(),
-//       syn::Data::Enum( syn::DataEnum { ref variants, .. } ) => variants.span(),
-//       syn::Data::Union( syn::DataUnion { ref fields, .. } ) => fields.span(),
-//     }
-//   }
-// }
-//
-// impl< T : Spanned2 > Spanned2 for &T
-// {
-//   fn span2( &self ) -> proc_macro2::Span
-//   {
-//     ( *self ).span2()
-//   }
-// }
-//
-// //
-//
-// #[ doc( hidden ) ]
-// pub struct Data< 'a, T >( &'a T );
-//
-// #[ doc( hidden ) ]
-// pub trait Span1
-// {
-//   fn act( self ) -> proc_macro2::Span;
-// }
-//
-// impl< 'a, T > Span1
-// for Data< 'a, T >
-// where T : syn::spanned::Spanned,
-// {
-//   fn act( self ) -> proc_macro2::Span
-//   {
-//     self.0.span()
-//   }
-// }
-//
-//
-// #[ doc( hidden ) ]
-// pub trait Span2
-// {
-//   fn act( self ) -> proc_macro2::Span;
-// }
-//
-// impl< 'a, T > Span2
-// for Data< 'a, T >
-// where T : Spanned2,
-// {
-//   fn act( self ) -> proc_macro2::Span
-//   {
-//     self.0.span2()
-//   }
-// }
-//
-// #[ doc( hidden ) ]
-// pub fn _span_of< T : Sized >( src : &T ) -> Data< T >
-// {
-//   Data( src )
-// }
-//
-// // fn span2_of< T : Sized >( src : &T )
-// // {
-// //   _span_of( src ).act()
-// // }
-//
-// /// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
-//
-// #[ macro_export ]
-// macro_rules! span_of
-// {
-//   ( $src : expr ) =>
-//   {
-//     $crate::_span_of( &$src ).act()
-//   }
-// }
-//
-// /// Returns a Span covering the complete contents of this syntax tree node, or Span::call_site() if this node is empty.
-// ///
-// /// Works only for items for which span is not implemented in [module::syn](https://docs.rs/syn/latest/syn/spanned/index.html). For other use macro [`span_of!`](span_of!).
-//
-// pub fn span_of< Src : Spanned2 >( src : &Src ) -> proc_macro2::Span
-// {
-//   src.span2()
-// }
-//
-
-// =
-
-// repeat!{ ( pub use internal::, ) ( ; ) ( ; )
-// {
-//
-//   ContainerKind
-//
-//   type_container_kind
-//   type_optional_container_kind
-//   type_rightmost
-//   type_parameters
-//   attr_pair_single
-//
-// }}
-
-// --
-
-// mod_expose!{
-// {
-//
-//   _tree_print as tree_print,
-//   _tree_export_str as tree_export_str,
-//   _syn_err as syn_err,
-//
-//   ContainerKind,
-//
-//   type_container_kind,
-//   type_optional_container_kind,
-//   type_rightmost,
-//   type_parameters,
-//   attr_pair_single,
-//
-// }};
-
 /// Exposed namespace of the module.
 pub mod exposed
 {
   pub use super::prelude::*;
   use super::internal as i;
 
-  pub use i::Result;
-  pub use i::Items;
-
-  pub use i::ContainerKind;
-  pub use i::type_container_kind;
-  pub use i::type_optional_container_kind;
   pub use i::type_rightmost;
   pub use i::type_parameters;
   pub use i::attr_pair_single;
