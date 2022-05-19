@@ -1,11 +1,7 @@
 #![ allow( deprecated ) ]
 
 use test_tools::*;
-
-#[cfg( feature = "in_wtools" )]
-use wtools::error as TheModule;
-#[cfg( not( feature = "in_wtools" ) )]
-use werror as TheModule;
+use super::TheModule;
 
 //
 

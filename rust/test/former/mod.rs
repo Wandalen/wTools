@@ -1,10 +1,3 @@
-// mod basic_runtime
-// {
-//   use wtools::*;
-//   include!( "./all/basic_runtime_common.rs" );
-// }
-//
-// include!( "./common_front_test.rs" );
 
 use wtools::former as TheModule;
 use wtools::former;
