@@ -1,6 +1,6 @@
 
-use wtools::options as TheModule;
-use wtools::former::Former;
+use super::TheModule::dependencies::woptions as TheModule;
+use super::TheModule::former::Former;
 
 mod runtime_test;
 mod front_test;

@@ -361,10 +361,10 @@ pub fn options( _attr : proc_macro::TokenStream, item : proc_macro::TokenStream 
     pub mod #name_ident
     {
 
-      #[cfg( feature = "in_wtools" )]
-      use ::wtools::options::*;
-      #[cfg( not( feature = "in_wtools" ) )]
-      use ::woptions::*;
+      // #[cfg( feature = "in_wtools" )]
+      // use ::wtools::options::*;
+      // #[cfg( not( feature = "in_wtools" ) )]
+      use super::Former;
 
       #( #attrs )*
       #[ derive( Former, PartialEq, Debug ) ]

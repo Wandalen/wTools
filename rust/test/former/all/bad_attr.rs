@@ -1,7 +1,7 @@
 
-#[cfg( feature = "in_wtools" )]
-use wtools::former::Former;
-#[cfg( not( feature = "in_wtools" ) )]
+#[cfg( feature = "wtools_alias" )]
+use wtools_alias::former as former;
+
 use former::Former;
 
 #[derive( Former )]
