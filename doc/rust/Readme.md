@@ -1,3 +1,3 @@
 ## Documentation
 
-- [CD](./CD.md)
+- [CD](./Cd.md)
