@@ -30,12 +30,13 @@ name = "proc_macro_tools"
 path = "rust/impl/proc_macro/lib.rs"
 
 [[test]]
-name = "proc_macro"
-path = "rust/test/proc_macro/lib_test.rs"
+name = "proc_macro_tools_test"
+path = "rust/test/proc_macro/proc_macro_tools_lib_test.rs"
 
 [[example]]
-name = "proc_macro_trivial"
+name = "proc_macro_trivial_sample"
 path = "sample/rust/proc_macro_tools_trivial/src/main.rs"
+# qqq : for Dima : normalize names of samples, missing postfix _sample
 
 [dependencies]
 proc-macro2 = { version = "~1.0", features = [] }

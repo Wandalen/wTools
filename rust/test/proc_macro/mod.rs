@@ -1,2 +1,3 @@
 
-mod basic_test;
+#[ path = "./inc.rs" ]
+mod inc;

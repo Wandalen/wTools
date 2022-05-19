@@ -1,2 +1,4 @@
+use macro_tools as TheModule;
 
-include!( "mod.rs" );
+#[ path = "./inc.rs" ]
+mod inc;

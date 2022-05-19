@@ -3,14 +3,20 @@ mod internal
 {
   use crate::exposed::*;
 
-  ///
-  /// Attribute which is inner.
-  ///
+  single!
+  {
 
-  #[ derive( Debug, PartialEq, Eq, Clone ) ]
-  pub struct AttributeInner( pub syn::Attribute );
+    ///
+    /// Attribute which is inner.
+    ///
 
-  impl syn::parse::Parse for AttributeInner
+    #[ derive( Debug, PartialEq, Eq, Clone ) ]
+    AttributeInner : syn::Attribute;
+
+  }
+
+  impl syn::parse::Parse
+  for AttributeInner
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
@@ -27,27 +33,12 @@ mod internal
     }
   }
 
-  impl quote::ToTokens for AttributeInner
+  impl quote::ToTokens
+  for AttributeInner
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
       self.0.to_tokens( tokens );
-    }
-  }
-
-  impl From< syn::Attribute > for AttributeInner
-  {
-    fn from( src : syn::Attribute ) -> Self
-    {
-      Self( src )
-    }
-  }
-
-  impl From< AttributeInner > for syn::Attribute
-  {
-    fn from( src : AttributeInner ) -> Self
-    {
-      src.0
     }
   }
 
@@ -86,7 +77,7 @@ mod internal
     }
   }
 
-  // xxx : publish module cotainer with good prelude
+  // zzz : publish module cotainer with good prelude
 
   ///
   /// Parse as much elements as possible.
@@ -136,23 +127,22 @@ mod internal
     }
   }
 
-// xxx : ?
-//   impl syn::parse::Parse
-//   for Many< Items >
-//   {
-//     fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-//     {
-//
-//       let mut items = vec![];
-//       while !input.is_empty()
-//       {
-//         let item : syn::Item = input.parse()?;
-//         items.push( item );
-//       }
-//
-//       Ok( Self( items ) )
-//     }
-//   }
+  impl syn::parse::Parse
+  for Many< syn::Item >
+  {
+    fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+    {
+
+      let mut items = vec![];
+      while !input.is_empty()
+      {
+        let item : syn::Item = input.parse()?;
+        items.push( item );
+      }
+
+      Ok( Self( items ) )
+    }
+  }
 
   // xxx : macro?
   impl< T > core::ops::Deref

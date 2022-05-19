@@ -1,2 +1,4 @@
+use wproc_macro as TheModule;
 
-include!( "mod.rs" );
+#[ path = "./inc.rs" ]
+mod inc;
