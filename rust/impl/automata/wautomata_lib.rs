@@ -46,3 +46,12 @@ pub mod prelude
   pub use super::canonical::prelude::*;
   pub use super::matrix::prelude::*;
 }
+
+// xxx : implement checks
+// - graph is connected
+// - graph is complete
+// - graph is
+// - node get open neighbourhood?
+// - node get closed neighbourhood?
+// - node get degree ( nodes )
+// - node get size ( edges )
