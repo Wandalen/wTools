@@ -9,6 +9,8 @@
 //   // t.pass( "rust/test/former/test/basic_manual.rs" );
 // }
 
+use super::Former;
+
 mod basic_manual { include!( "./all/basic_manual.rs" ); }
 // mod custom_getter_manual { include!( "./all/custom_getter_manual.rs" ); }
 

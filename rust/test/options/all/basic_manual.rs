@@ -1,10 +1,9 @@
+use super::Former;
+
 mod split
 {
 
-  #[cfg( feature = "in_wtools" )]
-  use wtools::former::Former;
-  #[cfg( not( feature = "in_wtools" ) )]
-  use former::Former;
+  use super::Former;
 
   #[ derive( PartialOrd ) ]
   #[ derive( Former, PartialEq, Debug ) ]

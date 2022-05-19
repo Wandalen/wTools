@@ -18,6 +18,9 @@
 //   mod without_perform;
 // }}
 
+use super::TheModule;
+use super::Former;
+
 mod basic_manual { include!( "./all/basic_manual.rs" ); }
 mod basic { include!( "./all/basic.rs" ); }
 mod without_perform { include!( "./all/without_perform.rs" ); }
