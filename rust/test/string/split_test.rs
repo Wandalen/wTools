@@ -1,12 +1,7 @@
 
 use test_tools::*;
 
-#[cfg( feature = "in_wtools" )]
-use wtools::string as TheModule;
-#[cfg( not( feature = "in_wtools" ) )]
-use wstring_tools as TheModule;
-
-// use TheModule::prelude::*;
+use super::TheModule;
 
 //
 
