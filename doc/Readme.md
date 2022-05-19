@@ -1,4 +1,4 @@
 ## Documentation
 
-- [English](./eng/Readme.md)
-- [Ukrainian](./ukr/Readme.md)
+- [Rust](./rust/Rust.md)
+- [JS](./js/Readme.md)
