@@ -11,7 +11,7 @@
 // ///
 // /// String tools.
 // ///
-// /// # Sample
+// /// ## Sample
 // /// ```
 // /// use wstring_tools as wtools;
 // /// use wstring_tools::prelude::*;

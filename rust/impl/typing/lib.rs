@@ -11,7 +11,7 @@
 ///
 /// Collection of general purpose tools for type checking.
 ///
-// /// # Sample
+// /// ## Sample
 // /// ```
 // /// use typing_tools::*;
 // ///

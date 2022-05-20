@@ -246,7 +246,7 @@ pub( crate ) mod internal
   ///
   /// It produces former. To convert former into options and run algorithm of splitting call `form()`.
   ///
-  /// # Sample
+  /// ## Sample
   /// ```
   ///   let iter = wstring_tools::string::split()
   ///   .src( "abc def" )

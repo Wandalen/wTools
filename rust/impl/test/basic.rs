@@ -8,7 +8,7 @@ mod internal
   ///
   /// Name of test routine should have postfix `*_test`. In the index of test routine the postfix should be ommited.
   ///
-  /// # Sample
+  /// ## Sample
   /// use wtest_basic::*;
   ///
   /// //

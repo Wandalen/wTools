@@ -11,3 +11,5 @@
 #[ path = "./inc.rs" ]
 mod inc;
 pub use inc::*;
+
+// xxx : implement module include_md

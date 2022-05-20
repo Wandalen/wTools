@@ -7,7 +7,7 @@ pub use std::error::Error as ErrorAdapter;
 ///
 /// Macro to generate error.
 ///
-/// # Sample
+/// ## Sample
 /// ```
 /// # use werror::*;
 /// err!( "No attr" );

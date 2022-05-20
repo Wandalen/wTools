@@ -9,8 +9,8 @@ use TheModule::*;
 #[ allow( unused_imports ) ]
 use wtools::meta::prelude::*;
 
-#[ test ]
 #[ rustversion::stable ]
+#[ test ]
 // #[ cfg( not( feature = "nightly" ) ) ]
 fn trybuild_tests()
 {
@@ -19,9 +19,8 @@ fn trybuild_tests()
 
 // stable have different information about error
 // that's why these tests are active only for nightly
-#[ test ]
-// #[ cfg( feature = "nightly" ) ]
 #[ rustversion::nightly ]
+#[ test ]
 fn trybuild_tests()
 {
   use test_tools::dependencies::trybuild;
@@ -37,3 +36,5 @@ mod  basic_runtime_common;
 
 #[ path = "./common_front_test.rs" ]
 mod  common_front_test;
+
+// xxx : qqq : bad!

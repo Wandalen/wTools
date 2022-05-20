@@ -11,7 +11,7 @@ mod internal
   ///
   /// Macro for diagnostics purpose to print both syntax tree and source code behind it.
   ///
-  /// # Sample
+  /// ## Sample
   /// ```
   /// use proc_macro_tools::*;
   /// use quote::quote;
@@ -56,7 +56,7 @@ mod internal
   ///
   /// Macro to generate syn error either with span of a syntax tree element or with default one `proc_macro2::Span::call_site()`.
   ///
-  /// # Sample
+  /// ## Sample
   /// ```
   /// # use proc_macro_tools::*;
   /// syn_err!( "No attr" );
@@ -99,7 +99,7 @@ mod internal
   /// Good to verify `core::option::Option< i32 >` is optional.
   /// Good to verify `alloc::vec::Vec< i32 >` is vector.
   ///
-  /// # Sample
+  /// ## Sample
   /// ```
   /// use proc_macro_tools::*;
   /// use quote::quote;
@@ -130,7 +130,7 @@ mod internal
   ///
   /// Good to getting `i32` from `core::option::Option< i32 >` or `alloc::vec::Vec< i32 >`
   ///
-  /// # Sample
+  /// ## Sample
   /// ```
   /// use proc_macro_tools::*;
   /// use quote::quote;
@@ -177,7 +177,7 @@ mod internal
   /// For attribute like `#[former( default = 31 )]` return key `default` and value `31`,
   /// as well as syn::Meta as the last element of result tuple.
   ///
-  /// # Sample
+  /// ## Sample
   /// ``` ignore
   /// let ( key, val, meta ) = attr_pair_single( &attr )?;
   /// ```

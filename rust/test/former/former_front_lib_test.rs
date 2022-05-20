@@ -35,3 +35,5 @@ use meta_tools::prelude::*;
 
 #[ path = "./common_front_test.rs" ]
 mod  common_front_test;
+
+// xxx : qqq : bad!

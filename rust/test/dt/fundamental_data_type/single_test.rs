@@ -5,7 +5,61 @@ use TheModule::*;
 
 //
 
-fn single_basic_test()
+fn samples_test()
+{
+
+  /* test.case( "single-line" ) */
+  {
+    single!( MySingle : i32 );
+    let x = MySingle( 13 );
+    println!( "x : {}", x.0 );
+  }
+
+  /* test.case( "derives and attributes" ) */
+  {
+    single!
+    {
+      /// This is also attribute and macro understands it.
+      #[ derive( Debug ) ]
+      MySingle : i32;
+    }
+    let x = MySingle( 13 );
+    dbg!( x );
+  }
+
+  /* test.case( "struct instead of macro" ) */
+  {
+    let x = Single::< i32 >( 13 );
+    dbg!( x );
+  }
+
+  /* test.case( "parametrized element" ) */
+  {
+    single!
+    {
+      #[ derive( Debug ) ]
+      MySingle : std::sync::Arc< T : Copy >;
+    }
+    let x = MySingle( std::sync::Arc::new( 13 ) );
+    dbg!( x );
+  }
+
+  /* test.case( "parametrized tuple" ) */
+  {
+    single!
+    {
+      #[ derive( Debug ) ]
+      MySingle : < T : Copy >;
+    }
+    let x = MySingle( 13 );
+    dbg!( x );
+  }
+
+}
+
+//
+
+fn basic_test()
 {
 
   mod mod1
@@ -62,7 +116,7 @@ fn single_basic_test()
 
 //
 
-fn single_empty_parameter_test()
+fn empty_parameter_test()
 {
 
   mod mod1
@@ -119,20 +173,20 @@ fn single_empty_parameter_test()
 
 //
 
-fn single_parametrized_test()
+fn parametrized_test()
 {
 
   mod mod1
   {
 
     #[ derive( Debug, Clone, PartialEq ) ]
-    pub struct Wrap0< T >
+    pub struct Single0< T >
     (
       pub T,
     );
 
     impl< T > core::ops::Deref
-    for Wrap0< T >
+    for Single0< T >
     {
       type Target = T;
       fn deref( &self ) -> &Self::Target
@@ -141,7 +195,7 @@ fn single_parametrized_test()
       }
     }
 
-    impl< T > From< T > for Wrap0< T >
+    impl< T > From< T > for Single0< T >
     {
       fn from( src : T ) -> Self
       {
@@ -160,60 +214,60 @@ fn single_parametrized_test()
 
     #[ derive( Debug, Clone ) ]
     #[ derive( PartialEq ) ]
-    Single : mod1::Wrap0< T >;
+    Single : mod1::Single0< T >;
 
   }
 
   /* test.case( "from f32 / into Single" ) */
-  let instance1 : Single< f32 > = ( mod1::Wrap0::from( 13.0 ) ).into();
-  let instance2 = Single::< f32 >::from( mod1::Wrap0::from( 13.0 ) );
+  let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
+  let instance2 = Single::< f32 >::from( mod1::Single0::from( 13.0 ) );
   assert_eq!( instance1.0.0, 13.0 );
   assert_eq!( instance2.0.0, 13.0 );
   assert_eq!( instance1, instance2 );
 
   /* test.case( "from itself / into itself" ) */
-  let instance1 : Single< f32 > = ( Single::from( mod1::Wrap0::from( 13.0 ) ) ).into();
-  let instance2 = Single::< f32 >::from( Single::from( mod1::Wrap0::from( 13.0 ) ) );
+  let instance1 : Single< f32 > = ( Single::from( mod1::Single0::from( 13.0 ) ) ).into();
+  let instance2 = Single::< f32 >::from( Single::from( mod1::Single0::from( 13.0 ) ) );
   assert_eq!( instance1.0.0, 13.0 );
   assert_eq!( instance2.0.0, 13.0 );
   assert_eq!( instance1, instance2 );
 
   /* test.case( "from Single / into f32" ) */
-  let instance1 : Single< f32 > = ( mod1::Wrap0::from( 13.0 ) ).into();
-  let got : mod1::Wrap0< f32 > = instance1.into();
+  let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
+  let got : mod1::Single0< f32 > = instance1.into();
   assert_eq!( got.0, 13.0 );
-  let instance1 : Single< f32 > = ( mod1::Wrap0::from( 13.0 ) ).into();
-  let got = mod1::Wrap0::< f32 >::from( instance1 );
+  let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
+  let got = mod1::Single0::< f32 >::from( instance1 );
   assert_eq!( got.0, 13.0 );
 
   /* test.case( "clone / eq" ) */
-  let instance1 : Single< f32 > = ( mod1::Wrap0::from( 13.0 ) ).into();
+  let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
   let instance2 = instance1.clone();
-  assert_eq!( instance2.0, mod1::Wrap0::from( 13.0 ) );
+  assert_eq!( instance2.0, mod1::Single0::from( 13.0 ) );
   assert_eq!( instance1, instance2 );
 
   /* test.case( "deref" ) */
-  let got : Single< f32 > = ( mod1::Wrap0::from( 13.5 ) ).into();
+  let got : Single< f32 > = ( mod1::Single0::from( 13.5 ) ).into();
   assert_eq!( got.round(), 14.0 );
 
 }
 
 //
 
-fn single_parametrized_complex_test()
+fn parametrized_complex_test()
 {
 
   mod mod1
   {
 
     #[ derive( Debug, Clone, PartialEq ) ]
-    pub struct Wrap0< T : PartialEq + Copy >
+    pub struct Single0< T : PartialEq + Copy >
     (
       pub T,
     );
 
     impl< T : PartialEq + Copy > core::ops::Deref
-    for Wrap0< T >
+    for Single0< T >
     {
       type Target = T;
       fn deref( &self ) -> &Self::Target
@@ -222,7 +276,7 @@ fn single_parametrized_complex_test()
       }
     }
 
-    impl< T : PartialEq + Copy > From< T > for Wrap0< T >
+    impl< T : PartialEq + Copy > From< T > for Single0< T >
     {
       fn from( src : T ) -> Self
       {
@@ -241,48 +295,79 @@ fn single_parametrized_complex_test()
 
     #[ derive( Debug, Clone ) ]
     #[ derive( PartialEq ) ]
-    Single : mod1::Wrap0< T : PartialEq + std::marker::Copy >;
+    Single : mod1::Single0< T : PartialEq + std::marker::Copy >;
 
   }
 
   /* test.case( "from f32 / into Single" ) */
-  let instance1 : Single< f32 > = ( mod1::Wrap0::from( 13.0 ) ).into();
-  let instance2 = Single::< f32 >::from( mod1::Wrap0::from( 13.0 ) );
+  let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
+  let instance2 = Single::< f32 >::from( mod1::Single0::from( 13.0 ) );
   assert_eq!( instance1.0.0, 13.0 );
   assert_eq!( instance2.0.0, 13.0 );
   assert_eq!( instance1, instance2 );
 
   /* test.case( "from itself / into itself" ) */
-  let instance1 : Single< f32 > = ( Single::from( mod1::Wrap0::from( 13.0 ) ) ).into();
-  let instance2 = Single::< f32 >::from( Single::from( mod1::Wrap0::from( 13.0 ) ) );
+  let instance1 : Single< f32 > = ( Single::from( mod1::Single0::from( 13.0 ) ) ).into();
+  let instance2 = Single::< f32 >::from( Single::from( mod1::Single0::from( 13.0 ) ) );
   assert_eq!( instance1.0.0, 13.0 );
   assert_eq!( instance2.0.0, 13.0 );
   assert_eq!( instance1, instance2 );
 
   /* test.case( "from Single / into f32" ) */
-  let instance1 : Single< f32 > = ( mod1::Wrap0::from( 13.0 ) ).into();
-  let got : mod1::Wrap0< f32 > = instance1.into();
+  let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
+  let got : mod1::Single0< f32 > = instance1.into();
   assert_eq!( got.0, 13.0 );
-  let instance1 : Single< f32 > = ( mod1::Wrap0::from( 13.0 ) ).into();
-  let got = mod1::Wrap0::< f32 >::from( instance1 );
+  let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
+  let got = mod1::Single0::< f32 >::from( instance1 );
   assert_eq!( got.0, 13.0 );
 
   /* test.case( "clone / eq" ) */
-  let instance1 : Single< f32 > = ( mod1::Wrap0::from( 13.0 ) ).into();
+  let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
   let instance2 = instance1.clone();
-  assert_eq!( instance2.0, mod1::Wrap0::from( 13.0 ) );
+  assert_eq!( instance2.0, mod1::Single0::from( 13.0 ) );
   assert_eq!( instance1, instance2 );
 
   /* test.case( "deref" ) */
-  let got : Single< f32 > = ( mod1::Wrap0::from( 13.5 ) ).into();
+  let got : Single< f32 > = ( mod1::Single0::from( 13.5 ) ).into();
   assert_eq!( got.round(), 14.0 );
 
 }
 
 //
 
-fn single_parameter_test()
+fn parametrized_multiple_test()
 {
+
+  mod mod1
+  {
+
+    #[ derive( Debug, Clone, PartialEq ) ]
+    pub struct Single0< T1 : PartialEq + Copy, T2 : Default >
+    (
+      pub T1,
+      pub T2,
+    );
+
+    impl< T1 : PartialEq + Copy, T2 : Default > core::ops::Deref
+    for Single0< T1, T2 >
+    {
+      type Target = T1;
+      fn deref( &self ) -> &Self::Target
+      {
+        &self.0
+      }
+    }
+
+    impl< T1 : PartialEq + Copy, T2 : Default > From< T1 >
+    for Single0< T1, T2 >
+    {
+      fn from( src : T1 ) -> Self
+      {
+        Single0::< T1, T2 >( src, T2::default() )
+      }
+    }
+
+  }
 
   single!
   {
@@ -293,6 +378,58 @@ fn single_parameter_test()
 
     #[ derive( Debug, Clone ) ]
     #[ derive( PartialEq ) ]
+    Single : mod1::Single0< T1 : PartialEq + std::marker::Copy, T2 : Default >;
+
+  }
+
+//   /* test.case( "from f32 / into Single" ) */
+//   let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
+//   let instance2 = Single::< f32 >::from( mod1::Single0::from( 13.0 ) );
+//   assert_eq!( instance1.0.0, 13.0 );
+//   assert_eq!( instance2.0.0, 13.0 );
+//   assert_eq!( instance1, instance2 );
+
+//   /* test.case( "from itself / into itself" ) */
+//   let instance1 : Single< f32 > = ( Single::from( mod1::Single0::from( 13.0 ) ) ).into();
+//   let instance2 = Single::< f32 >::from( Single::from( mod1::Single0::from( 13.0 ) ) );
+//   assert_eq!( instance1.0.0, 13.0 );
+//   assert_eq!( instance2.0.0, 13.0 );
+//   assert_eq!( instance1, instance2 );
+//
+//   /* test.case( "from Single / into f32" ) */
+//   let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
+//   let got : mod1::Single0< f32 > = instance1.into();
+//   assert_eq!( got.0, 13.0 );
+//   let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
+//   let got = mod1::Single0::< f32 >::from( instance1 );
+//   assert_eq!( got.0, 13.0 );
+//
+//   /* test.case( "clone / eq" ) */
+//   let instance1 : Single< f32 > = ( mod1::Single0::from( 13.0 ) ).into();
+//   let instance2 = instance1.clone();
+//   assert_eq!( instance2.0, mod1::Single0::from( 13.0 ) );
+//   assert_eq!( instance1, instance2 );
+//
+//   /* test.case( "deref" ) */
+//   let got : Single< f32 > = ( mod1::Single0::from( 13.5 ) ).into();
+//   assert_eq!( got.round(), 14.0 );
+
+}
+
+//
+
+fn parameter_test()
+{
+
+  single!
+  {
+
+    ///
+    /// Attribute which is inner.
+    ///
+
+    #[ derive( Debug, Clone ) ]
+    #[ derive( PartialEq, Default ) ]
     Single : < T >;
 
   }
@@ -333,9 +470,10 @@ fn single_parameter_test()
 
 //
 
-fn single_parameter_complex_test()
+fn parameter_complex_test()
 {
 
+  // xxx : negative test with several elements
   single!
   {
 
@@ -385,7 +523,7 @@ fn single_parameter_complex_test()
 
 //
 
-fn struct_single_basic_test()
+fn struct_basic_test()
 {
 
   /* test.case( "from f32 / into Single" ) */
@@ -424,7 +562,7 @@ fn struct_single_basic_test()
 
 //
 
-fn struct_single_deaf_test()
+fn struct_deaf_test()
 {
 
   struct Single0< T >( pub T );
@@ -448,20 +586,6 @@ fn struct_single_deaf_test()
   assert_eq!( instance1.0.0, 13.0 );
   assert_eq!( instance2.0.0, 13.0 );
 
-//   // /* test.case( "from Single / into f32" ) */
-//   // let instance1 : Single< f32 > = ( 13.0 ).into();
-//   // let got : f32 = instance1.into();
-//   // assert_eq!( got, 13.0 );
-//   // let instance1 : Single< f32 > = ( 13.0 ).into();
-//   // let got = f32::from( instance1 );
-//   // assert_eq!( got, 13.0 );
-//
-//   /* test.case( "clone / eq" ) */
-//   let instance1 : Single< f32 > = ( 13.0 ).into();
-//   let instance2 = instance1.clone();
-//   assert_eq!( instance2.0, 13.0 );
-//   assert_eq!( instance1, instance2 );
-
   /* test.case( "deref" ) */
   let got : Single< f32 > = ( 13.5 ).into();
   assert_eq!( got.round(), 14.0 );
@@ -473,14 +597,15 @@ fn struct_single_deaf_test()
 test_suite!
 {
 
-  single_basic,
-  single_empty_parameter,
-  single_parametrized,
-  single_parametrized_complex,
-  single_parameter,
-  single_parameter_complex,
-
-  struct_single_basic,
-  struct_single_deaf,
+  samples,
+  basic,
+  empty_parameter,
+  parametrized,
+  parametrized_complex,
+  parametrized_multiple,
+  parameter,
+  parameter_complex,
+  struct_basic,
+  struct_deaf,
 
 }

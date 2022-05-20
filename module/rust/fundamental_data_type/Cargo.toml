@@ -1,6 +1,6 @@
 [package]
 name = "fundamental_data_type"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -32,13 +32,28 @@ path = "rust/impl/dt/fundamental_data_type/lib.rs"
 name = "fundamental_data_type_test"
 path = "rust/test/dt/fundamental_data_type/lib_test.rs"
 
-# [[example]]
-# name = "fundamental_data_type_trivial_sample"
-# path = "sample/rust/fundamental_data_type_trivial_sample/src/main.rs"
-# <!-- xxx : write please -->
+[[example]]
+name = "fundamental_data_type_trivial_sample"
+path = "sample/rust/fundamental_data_type_trivial_sample/src/main.rs"
 
+[[example]]
+name = "fundamental_data_type_derive_and_attr_sample"
+path = "sample/rust/fundamental_data_type_derive_and_attr_sample/src/main.rs"
+
+[[example]]
+name = "fundamental_data_type_struct_sample"
+path = "sample/rust/fundamental_data_type_struct_sample/src/main.rs"
+
+[[example]]
+name = "fundamental_data_type_parametrized_element_sample"
+path = "sample/rust/fundamental_data_type_parametrized_element_sample/src/main.rs"
+
+[[example]]
+name = "fundamental_data_type_parametrized_tuple_sample"
+path = "sample/rust/fundamental_data_type_parametrized_tuple_sample/src/main.rs"
 
 [dependencies]
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+# trybuild = { version = "~1.0", features = [ "diff" ] }

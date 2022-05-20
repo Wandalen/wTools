@@ -26,7 +26,7 @@ mod internal
   /// Good to verify `alloc::vec::Vec< i32 >` is vector.
   /// Good to verify `std::collections::HashMap< i32, i32 >` is hash map.
   ///
-  /// # Sample
+  /// ## Sample
   /// ```
   /// use proc_macro_tools::*;
   /// use quote::quote;
@@ -62,7 +62,7 @@ mod internal
   ///
   /// Good to verify `Option< alloc::vec::Vec< i32 > >` is optional vector.
   ///
-  /// # Sample
+  /// ## Sample
   /// ```
   /// use proc_macro_tools::*;
   /// use quote::quote;
