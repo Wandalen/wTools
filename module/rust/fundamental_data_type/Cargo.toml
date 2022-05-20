@@ -37,6 +37,7 @@ path = "rust/test/dt/fundamental_data_type/lib_test.rs"
 # path = "sample/rust/fundamental_data_type_trivial_sample/src/main.rs"
 # <!-- xxx : write please -->
 
+
 [dependencies]
 
 [dev-dependencies]
