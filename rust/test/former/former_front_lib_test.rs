@@ -21,9 +21,9 @@ fn trybuild_tests()
   use test_tools::dependencies::trybuild;
   println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
   let t = trybuild::TestCases::new();
-  t.compile_fail( "../../../rust/test/former/all/bad_attr.rs" );
-  t.compile_fail( "../../../rust/test/former/all/vector_without_parameter.rs" );
-  t.compile_fail( "../../../rust/test/former/all/hashmap_without_parameter.rs" );
+  t.compile_fail( "../../../rust/test/former/all/former_bad_attr.rs" );
+  t.compile_fail( "../../../rust/test/former/all/former_vector_without_parameter.rs" );
+  t.compile_fail( "../../../rust/test/former/all/former_hashmap_without_parameter.rs" );
 }
 
 #[ allow( unused_imports ) ]
