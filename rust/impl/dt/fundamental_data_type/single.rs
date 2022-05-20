@@ -457,12 +457,12 @@ mod internal
 
     (
       $( #[ $Meta : meta ] )*
-      pair $Name1 : ident
+      pair $Name : ident
       :
       $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*
-      < $( $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? ),* >
+      < $( $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? ),* >,
       $TypeSplit2x1 : ident $( :: $TypeSplit2xN : ident )*
-      < $( $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x2 : path )* )? ),* >
+      < $( $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x2 : path )* )? ),* > $(,)?
       $( ; $( $Rest : tt )* )?
     )
     =>
@@ -485,12 +485,16 @@ mod internal
       >
       core::ops::Deref
       for $Name
-      < $( $ParamName ),* >
+      < $( $ParamName1 ),* $(, $ParamName2 )* >
       {
-        type Target = $TypeSplit1 $( :: $TypeSplitN )* < $( $ParamName ),* >;
+        type Target =
+        (
+          $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
+          $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
+        );
         fn deref( &self ) -> &Self::Target
         {
-          &self.0
+          &self
         }
       }
 
@@ -505,7 +509,7 @@ mod internal
         $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
       )>
       for $Name
-      < $( $ParamName ),* >
+      < $( $ParamName1 ),* $(, $ParamName2 )* >
       {
         fn from
         (
@@ -517,7 +521,7 @@ mod internal
         )
         -> Self
         {
-          Self( src )
+          Self( src.0, src.1 )
         }
       }
 
@@ -527,15 +531,15 @@ mod internal
         $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),*
       >
       From< $Name< $( $ParamName1 ),* $( , $ParamName2 )* > >
-      for $TypeSplit1 $( :: $TypeSplitN )* < $( $ParamName ),* >
+      for
+      (
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
+        $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
+      )
       {
         fn from
         (
-          src : $Name
-          <(
-            $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
-            $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
-          )>
+          src : $Name< $( $ParamName1 ),* $( , $ParamName2 )* >
         )
         -> Self
         {
@@ -546,6 +550,7 @@ mod internal
       $crate::types!{ $( $( $Rest )* )? }
     };
 
+    // xxx : cover test case of lack of args
     // pair Pair : Element;
 
     (
