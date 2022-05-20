@@ -1,24 +1,8 @@
 
-#[cfg( feature = "in_wtools" )]
-use wtools::test::*;
-#[cfg( not( feature = "in_wtools" ) )]
-use wtest_basic::*;
+use super::TheModule;
 
 #[ path = "../dynamic/basic.rs" ]
 mod basic;
-
-// mod basic
-// {
-//   include!( "../dynamic/basic.rs" );
-// }
-
-// #[ path = "../dynamic/composition.rs" ]
-// mod composition;
-
-// mod composition
-// {
-//   include!( "../dynamic/composition.rs" );
-// }
 
 //
 
@@ -32,7 +16,7 @@ fn trybuild_test()
 
 //
 
-test_suite!
+TheModule::test_suite!
 {
   trybuild,
 }

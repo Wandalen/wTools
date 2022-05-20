@@ -1,10 +1,7 @@
 
 use test_tools::*;
 
-#[cfg( feature = "in_wtools" )]
-use wtools::time as TheModule;
-#[cfg( not( feature = "in_wtools" ) )]
-use time_tools as TheModule;
+use super::TheModule;
 
 //
 

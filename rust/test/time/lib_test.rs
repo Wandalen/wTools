@@ -1,2 +1,3 @@
+use time_tools as TheModule;
 
-include!( "mod.rs" );
+mod now_test;

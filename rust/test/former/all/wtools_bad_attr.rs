@@ -1,8 +1,4 @@
-
-#[cfg( feature = "in_wtools" )]
 use wtools::former::Former;
-#[cfg( not( feature = "in_wtools" ) )]
-use former::Former;
 
 #[derive( Former )]
 pub struct Struct1

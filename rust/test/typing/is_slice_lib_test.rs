@@ -1,6 +1,5 @@
-use is_slice as TheModule;
 
-// include!( "./common/is_slice_test.rs" );
+use is_slice as TheModule;
 
 #[ path = "./impls/is_slice_test.rs" ]
 mod is_slice_test;

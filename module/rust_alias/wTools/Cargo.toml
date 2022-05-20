@@ -39,9 +39,8 @@ name = "wtools_alias_test"
 path = "rust/test/wtools_alias_lib_test.rs"
 
 [features]
-in_wtools = [ "wtools/in_wtools" ]
 nightly = [ "wtools/nightly" ]
-default = [ "in_wtools" ]
+default = []
 
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }

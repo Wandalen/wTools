@@ -1,9 +1,6 @@
 
 use test_tools::*;
 
-#[cfg( feature = "in_wtools" )]
-use wtools::interval as TheModule;
-#[cfg( not( feature = "in_wtools" ) )]
 use winterval as TheModule;
 
 //

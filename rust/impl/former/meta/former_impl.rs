@@ -591,8 +591,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       // use;
       // use super::*;
       // use super::#name_ident;
-      #[cfg( feature = "in_wtools" )]
-      use wtools::former;
+      // #[cfg( feature = "in_wtools" )]
+      // use wtools::former;
 
       #[doc = #doc_former_struct]
       #[derive( Debug )]

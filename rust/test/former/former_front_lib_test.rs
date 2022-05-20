@@ -1,18 +1,30 @@
-// mod basic_runtime
-// {
-//   use meta_tools::*;
-//   mod former
-//   {
-//     pub use former_runtime as runtime;
-//   }
-//   include!( "./all/basic_runtime_common.rs" );
-// }
-//
-// include!( "./common_front_test.rs" );
 
 include!( "../_conditional/local_module.rs" );
 
 use former as TheModule;
+
+#[ test ]
+#[ rustversion::stable ]
+// #[ cfg( not( feature = "nightly" ) ) ]
+fn trybuild_tests()
+{
+  println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+}
+
+// stable have different information about error
+// that's why these tests are active only for nightly
+#[ test ]
+// #[ cfg( feature = "nightly" ) ]
+#[ rustversion::nightly ]
+fn trybuild_tests()
+{
+  use test_tools::dependencies::trybuild;
+  println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+  let t = trybuild::TestCases::new();
+  t.compile_fail( "../../../rust/test/former/all/former_bad_attr.rs" );
+  t.compile_fail( "../../../rust/test/former/all/former_vector_without_parameter.rs" );
+  t.compile_fail( "../../../rust/test/former/all/former_hashmap_without_parameter.rs" );
+}
 
 #[ allow( unused_imports ) ]
 use TheModule::prelude::*;
