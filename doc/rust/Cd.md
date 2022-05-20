@@ -17,13 +17,15 @@ To run CD script name should have either:
 
 #### Keyword `Merge`
 
-Example : `Merge branch 'fix' into master`
+Example : `Merge branch 'fix' into master`.
 
-Example : [CD script run](https://github.com/Wandalen/wTools/actions/runs/2343552303)
+Example : [CD script run](https://github.com/Wandalen/wTools/actions/runs/2343552303).
 
 #### Keyword `!build`
 
-Example : `!build rust modules`
+Example : `!build rust modules`.
+
+Example : `some change in module !build`.
 
 #### Keyword with name of the module
 
