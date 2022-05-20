@@ -26,7 +26,7 @@ include = [
 
 [lib]
 name = "template_alias"
-path = "rust/impl/_draft/lib.rs"
+path = "rust/impl/_template/lib.rs"
 
 [[test]]
 name = "template_alias_test"
