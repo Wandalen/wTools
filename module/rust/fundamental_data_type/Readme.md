@@ -187,30 +187,27 @@ It gererates code:
 
 ```rust
 #[ derive( Debug ) ]
-pub struct MySingle( pub i32 );
+pub struct MySingle< T : Copy >( pub T );
 
-impl core::ops::Deref for MySingle
+impl< T : Copy > core::ops::Deref
+for MySingle< T >
 {
-  type Target = i32;
+  type Target = T;
   fn deref( &self ) -> &Self::Target
   {
     &self.0
   }
 }
-impl From< i32 > for MySingle
+
+impl< T : Copy > From< T >
+for MySingle< T >
 {
-  fn from( src : i32 ) -> Self
+  fn from( src : T ) -> Self
   {
     Self( src )
   }
 }
-impl From< MySingle > for i32
-{
-  fn from( src : MySingle ) -> Self
-  {
-    src.0
-  }
-}
+
 let x = MySingle( 13 );
 dbg!( 13 );
 ```

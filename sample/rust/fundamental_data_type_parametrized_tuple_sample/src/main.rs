@@ -3,9 +3,13 @@ use fundamental_data_type::*;
 fn main()
 {
 
-  types!( single MySingle : i32 );
+  types!
+  {
+    #[ derive( Debug ) ]
+    single MySingle : < T : Copy >;
+  }
   let x = MySingle( 13 );
-  println!( "x : {}", x.0 );
+  dbg!( x );
 
 }
 
