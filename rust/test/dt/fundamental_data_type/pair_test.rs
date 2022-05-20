@@ -18,6 +18,15 @@ tests_impls!
       pub use f64;
     }
 
+    trait Round { fn round( &self ) -> Self; };
+    impl Round for ( f32, f64 )
+    {
+      fn round( &self ) -> Self
+      {
+        ( self.0.round(), self.1.round() )
+      }
+    }
+
     // trace_macros!( true );
     types!
     {
@@ -32,15 +41,6 @@ tests_impls!
 
     }
     // trace_macros!( false );
-
-    trait Round { fn round( &self ) -> Self; };
-    impl Round for Pair
-    {
-      fn round( &self ) -> Self
-      {
-        Pair( self.0.round(), self.1.round() )
-      }
-    }
 
     /* test.case( "from f32 / into Pair" ) */
     let instance1 : Pair = ( 13.0, 31.0 ).into();
@@ -67,9 +67,10 @@ tests_impls!
     assert_eq!( instance2.1, 31.0 );
     assert_eq!( instance1, instance2 );
 
-    /* test.case( "deref" ) */
-    let got : Pair = ( 13.5, 31.5 ).into();
-    assert_eq!( got.round(), Pair( 14.0, 32.0 ) );
+    // xxx
+    // /* test.case( "deref" ) */
+    // let got : Pair = ( 13.5, 31.5 ).into();
+    // assert_eq!( got.round(), ( 14.0, 32.0 ) );
 
   }
 
@@ -83,6 +84,16 @@ tests_impls!
     {
       pub use f32;
       pub use f64;
+    }
+
+    trait Round { fn round( &self ) -> Self; };
+    impl Round for ( f32, f64 )
+    {
+      fn round( &self ) -> Self
+      {
+        dbg!( &self );
+        ( self.0.round(), self.1.round() )
+      }
     }
 
     // trace_macros!( true );
@@ -100,15 +111,6 @@ tests_impls!
     }
     // trace_macros!( false );
 
-    trait Round { fn round( &self ) -> Self; };
-    impl Round for Pair
-    {
-      fn round( &self ) -> Self
-      {
-        Pair( self.0.round(), self.1.round() )
-      }
-    }
-
     /* test.case( "from f32 / into Pair" ) */
     let instance1 : Pair = ( 13.0, 31.0 ).into();
     let instance2 = Pair::from( ( 13.0, 31.0 ) );
@@ -134,9 +136,14 @@ tests_impls!
     assert_eq!( instance2.1, 31.0 );
     assert_eq!( instance1, instance2 );
 
-    /* test.case( "deref" ) */
-    let got : Pair = ( 13.5, 31.5 ).into();
-    assert_eq!( got.round(), Pair( 14.0, 32.0 ) );
+    // struct Struct1( i32, i32 );
+    // let e = Struct1( 1, 2 );
+    // let e : Struct1 = ( 1, 2 );
+
+    // xxx
+    // /* test.case( "deref" ) */
+    // let got : Pair = ( 13.5, 31.5 ).into();
+    // assert_eq!( got.round(), ( 14.0, 32.0 ) );
 
   }
 
@@ -177,98 +184,60 @@ tests_impls!
 
     }
 
+    // trace_macros!( true );
+    types!
+    {
 
-//     types!
-//     {
-//
-//       ///
-//       /// Attribute which is inner.
-//       ///
-//
-//       #[ derive( Debug, Clone ) ]
-//       #[ derive( PartialEq ) ]
-//       pair Pair : mod1::Pair0< T1 : PartialEq + std::marker::Copy, T2 : Default >;
-//
-//     }
+      ///
+      /// Attribute which is inner.
+      ///
 
-//     /* test.case( "from f32 / into Pair" ) */
-//     let instance1 : Pair< f32, f64 > = ( mod1::Pair0::from( ( 13.0, 31.0 ) ) ).into();
-//     let instance2 = Pair::< f32, f64 >::from( mod1::Pair0::from( ( 13.0, 31.0 ) ) );
-//     assert_eq!( instance1.0.0, 13.0 );
-//     assert_eq!( instance2.0.0, 13.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "from itself / into itself" ) */
-//     let instance1 : Pair< f32, f64 > = ( Pair::from( mod1::Pair0::from( ( 13.0, 31.0 ) ) ) ).into();
-//     let instance2 = Pair::< f32, f64 >::from( Pair::from( mod1::Pair0::from( ( 13.0, 31.0 ) ) ) );
-//     assert_eq!( instance1.0.0, 13.0 );
-//     assert_eq!( instance2.0.0, 13.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "from Pair / into f32" ) */
-//     let instance1 : Pair< f32, f64 > = ( mod1::Pair0::from( ( 13.0, 31.0 ) ) ).into();
-//     let got : mod1::Pair0< f32, f64 > = instance1.into();
-//     assert_eq!( got.0, 13.0 );
-//     let instance1 : Pair< f32, f64 > = ( mod1::Pair0::from( ( 13.0, 31.0 ) ) ).into();
-//     let got = mod1::Pair0::< f32, f64 >::from( instance1 );
-//     assert_eq!( got.0, 13.0 );
-//
-//     /* test.case( "clone / eq" ) */
-//     let instance1 : Pair< f32, f64 > = ( mod1::Pair0::from( ( 13.0, 31.0 ) ) ).into();
-//     let instance2 = instance1.clone();
-//     assert_eq!( instance2.0, mod1::Pair0::from( ( 13.0, 31.0 ) ) );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "deref" ) */
-//     let got : Pair< f32, f64 > = ( mod1::Pair0::from( 13.5 ) ).into();
-//     assert_eq!( got.round(), 14.0 );
+      #[ derive( Debug, Clone ) ]
+      #[ derive( PartialEq ) ]
+      pair Pair :
+        mod1::Pair0< T1 : PartialEq + std::marker::Copy, T2 : Default >,
+        std::sync::Arc< T : Copy >,
+      ;
+
+    }
+    // trace_macros!( false );
+
+    /* test.case( "from f32 / into Pair" ) */
+    let instance1 : Pair< f32, f64, f32 > =
+    (
+      mod1::Pair0::from( 13.0 ),
+      std::sync::Arc::new( 31.0 ),
+    ).into();
+    let instance2 = Pair::< f32, f64, f32 >::from
+    ((
+      mod1::Pair0::from( 13.0 ),
+      std::sync::Arc::new( 31.0 ),
+    ));
+    assert_eq!( instance1.0.0, 13.0 );
+    assert_eq!( instance2.0.0, 13.0 );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "from Pair / into f32" ) */
+    let instance1 : Pair< f32, f64, f32 > = ( mod1::Pair0::from( 13.0 ), std::sync::Arc::new( 31.0 ) ).into();
+    let got : ( mod1::Pair0< f32, f64 >, _ ) = instance1.into();
+    assert_eq!( got.0.0, 13.0 );
+    let instance1 : Pair< f32, f64, f32 > = ( mod1::Pair0::from( 13.0 ), std::sync::Arc::new( 31.0 ) ).into();
+    let got = < ( mod1::Pair0::< f32, f64 >, _ ) >::from( instance1 );
+    assert_eq!( got.0.0, 13.0 );
+
+    /* test.case( "clone / eq" ) */
+    let instance1 : Pair< f32, f64, f32 > = ( mod1::Pair0::from( 13.0 ), std::sync::Arc::new( 31.0 ) ).into();
+    let instance2 = instance1.clone();
+    assert_eq!( instance2.0, mod1::Pair0::from( 13.0 ) );
+    assert_eq!( instance1, instance2 );
+
+    // xxx
+    // /* test.case( "deref" ) */
+    // let got : Pair< f32, f64, f32 > = ( mod1::Pair0::from( 13.5 ), std::sync::Arc::new( 31.0 ) ).into();
+    // assert_eq!( got.round(), 14.0 );
 
   }
 
-  //
-
-//   fn parameter_test()
-//   {
-//
-//     types!
-//     {
-//
-//       ///
-//       /// Attribute which is inner.
-//       ///
-//
-//       #[ derive( Debug, Clone ) ]
-//       #[ derive( PartialEq, Default ) ]
-//       pair Pair : < T >;
-//
-//     }
-//
-//     /* test.case( "from f32 / into Pair" ) */
-//     let instance1 : Pair< f32 > = ( 13.0, 31.0 ).into();
-//     let instance2 = Pair::< f32 >::from( ( 13.0, 31.0 ) );
-//     assert_eq!( instance1.0, 13.0 );
-//     assert_eq!( instance2.0, 13.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "from itself / into itself" ) */
-//     let instance1 : Pair< f32 > = ( Pair::from( ( 13.0, 31.0 ) ) ).into();
-//     let instance2 = Pair::< f32 >::from( Pair::from( ( 13.0, 31.0 ) ) );
-//     assert_eq!( instance1.0, 13.0 );
-//     assert_eq!( instance2.0, 13.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "clone / eq" ) */
-//     let instance1 : Pair< f32 > = ( 13.0, 31.0 ).into();
-//     let instance2 = instance1.clone();
-//     assert_eq!( instance2.0, 13.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "deref" ) */
-//     let got : Pair< f32 > = ( 13.5 ).into();
-//     assert_eq!( got.round(), 14.0 );
-//
-//   }
-//
 //   //
 //
 //   #[ test ]
@@ -341,7 +310,7 @@ tests_impls!
 //     assert!( !implements!( instance1 => Clone ) );
 //     assert!( !implements!( instance1 => Debug ) );
 //
-//     // xxx : redo implements
+//     // xxx : redo implements of implements
 //
 //     /* test.case( "from f32 / into Single2" ) */
 //     let instance1 : Single2 = ( 13.0, 31.0 ).into();
@@ -514,7 +483,6 @@ tests_index!
   basic_test,
   empty_parameter_test,
   parametrized_multiple_test,
-  // parameter_test,
   // parameter_complex_test,
   // multiple_test,
   // struct_basic_test,

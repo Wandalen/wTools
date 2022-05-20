@@ -18,19 +18,19 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/sketch_alias",
+  "/rust/impl/template_alias",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
 
 [lib]
-name = "sketch_alias"
-path = "rust/impl/sketch_alias/lib.rs"
+name = "template_alias"
+path = "rust/impl/_draft/lib.rs"
 
 [[test]]
-name = "sketch_alias_test"
-path = "rust/test/sketch_alias/lib_test.rs"
+name = "template_alias_test"
+path = "rust/test/template_alias/lib_test.rs"
 
 [dependencies]
 

@@ -375,8 +375,6 @@ mod internal
       $crate::types!{ $( $( $Rest )* )? }
     };
 
-    // xxx
-
     // pair Pair : < T >;
 
     (
@@ -471,7 +469,7 @@ mod internal
       pub struct $Name
       <
         $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
-        $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),*
+        $(, $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )*
       >
       (
         pub $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
@@ -481,7 +479,7 @@ mod internal
       impl
       <
         $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
-        $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),*
+        $(, $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )*
       >
       core::ops::Deref
       for $Name
@@ -494,14 +492,18 @@ mod internal
         );
         fn deref( &self ) -> &Self::Target
         {
-          &self
+          unsafe
+          {
+            std::mem::transmute::< &Self, &Self::Target >( self )
+            // &( self.0, self.1 )
+          }
         }
       }
 
       impl
       <
         $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
-        $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),*
+        $(, $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )*
       >
       From
       <(
@@ -528,7 +530,7 @@ mod internal
       impl
       <
         $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
-        $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),*
+        $(, $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )*
       >
       From< $Name< $( $ParamName1 ),* $( , $ParamName2 )* > >
       for
@@ -551,6 +553,8 @@ mod internal
     };
 
     // xxx : cover test case of lack of args
+    // xxx : cover test case of mix of args with and without <>
+
     // pair Pair : Element;
 
     (
@@ -571,8 +575,6 @@ mod internal
       );
       $crate::types!{ $( $( $Rest )* )? }
     };
-
-    // xxx
 
     // bad syntax
 

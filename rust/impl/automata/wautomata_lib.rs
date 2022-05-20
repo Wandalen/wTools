@@ -50,8 +50,11 @@ pub mod prelude
 // xxx : implement checks
 // - graph is connected
 // - graph is complete
-// - graph is
+// - graph is isomorphic with another graph
+// - graph get regularity degree
+// - graph is bipartite
 // - node get open neighbourhood?
 // - node get closed neighbourhood?
 // - node get degree ( nodes )
 // - node get size ( edges )
+// - g
