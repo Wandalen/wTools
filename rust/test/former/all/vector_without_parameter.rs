@@ -1,7 +1,21 @@
-#[cfg( feature = "wtools_alias" )]
-use wtools_alias::former as former;
+#[ allow( unused_imports ) ]
+use super::*;
 
-use former::Former;
+only_for_wtools!
+{
+  #[ allow( unused_imports ) ]
+  use wtools::meta::*;
+  #[ allow( unused_imports ) ]
+  use wtools::former::Former;
+}
+
+only_for_local_module!
+{
+  #[ allow( unused_imports ) ]
+  use meta_tools::*;
+  #[ allow( unused_imports ) ]
+  use former::Former;
+}
 
 struct Vec
 {

@@ -10,6 +10,9 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
+/// General. To be moved out.
+pub mod a_general;
+
 /// Container kind.
 pub mod container_kind;
 /// Helpers.
@@ -51,6 +54,7 @@ pub mod exposed
 {
   pub use super::prelude::*;
 
+  pub use super::a_general::exposed::*;
   pub use super::container_kind::exposed::*;
   pub use super::helper::exposed::*;
   pub use super::name::exposed::*;
@@ -62,6 +66,9 @@ pub mod exposed
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
+
+  // pub use super::a_general::prelude::wrap;
+  pub use super::a_general::prelude::*;
   pub use super::container_kind::prelude::*;
   pub use super::helper::prelude::*;
   pub use super::name::prelude::*;
@@ -83,7 +90,7 @@ pub mod prelude
     parenthesized,
     parse_macro_input,
     parse_quote,
-    // parse_quote_spanned,
+    parse_quote_spanned,
   };
 
 }
