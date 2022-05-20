@@ -3,8 +3,6 @@ mod internal
 {
   use crate::exposed::*;
 
-  // xxx : module
-
   ///
   /// Macro to declare another type wrapping a single another type into a tuple.
   ///
@@ -135,6 +133,20 @@ mod internal
   }
 
   pub use single;
+}
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+}
+
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.

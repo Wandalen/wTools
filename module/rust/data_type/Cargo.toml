@@ -39,6 +39,7 @@ path = "rust/test/dt/data_type_lib_test.rs"
 
 [dependencies]
 either = "~1.6"
+fundamental_data_type = { version = "~0.1", path = "../../rust/fundamental_data_type" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

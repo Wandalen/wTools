@@ -1,5 +1,4 @@
 
-use wtools::dt as TheModule;
-
 #[ path = "./inc.rs" ]
 mod inc;
+pub use inc::*;

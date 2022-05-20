@@ -1,5 +1,5 @@
 
-use wtools::dt as TheModule;
+use super::TheModule;
 
 #[ path = "./inc.rs" ]
 mod inc;

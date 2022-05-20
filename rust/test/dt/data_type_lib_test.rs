@@ -1,4 +1,5 @@
 
 use data_type as TheModule;
 
-include!( "include.rs" );
+#[ path = "./inc.rs" ]
+mod inc;

@@ -11,14 +11,26 @@
 /// Collection of primal data types.
 pub mod dt;
 
+/// Dependencies.
+pub mod dependencies
+{
+  pub use ::either;
+}
+
 /// Protected namespace of the module.
 pub mod protected
 {
-  pub use super::exposed::*;
+  pub use super::orphan::*;
   pub use super::dt::orphan::*;
 }
 
 pub use protected::*;
+
+/// Shared with parent namespace of the module
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed

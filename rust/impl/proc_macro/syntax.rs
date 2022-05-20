@@ -2,6 +2,7 @@
 mod internal
 {
   use crate::exposed::*;
+  use fundamental_data_type::prelude::*;
 
   single!
   {
