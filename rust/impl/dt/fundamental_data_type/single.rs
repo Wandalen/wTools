@@ -3,20 +3,22 @@ mod internal
 {
   use crate::exposed::*;
 
+  // xxx : write test of wrong kind error
+
   ///
   /// Type constructor to define tuple wrapping a given type.
   ///
   /// Quite often you need to wrap a given type into new one.
   /// For example if orphan rule became and obstacle one should introduce a new type wrapping foreing one.
-  /// Type constructr `single!` does exaclty that and auto-implement traits From, Into and Deref for the constructed type.
+  /// Type constructr `types!` does exaclty that and auto-implement traits From, Into and Deref for the constructed type.
   ///
-  /// ## Sample :: single line.
+  /// ### Sample :: single line single.
   ///
-  /// To define your own single use macro `single!`. Single-line definition looks like that.
+  /// To define your own single use macro `types!`. Single-line definition looks like that.
   ///
   /// ```rust
   /// use fundamental_data_type::prelude::*;
-  /// single!( MySingle : i32 );
+  /// types!( single MySingle : i32 );
   /// let x = MySingle( 13 );
   /// println!( "x : {}", x.0 );
   /// ```
@@ -55,17 +57,17 @@ mod internal
   /// println!( "x : {}", x.0 );
   /// ```
   ///
-  /// ## Sample :: derives and attributes.
+  /// ### Sample :: single with derives and attributes.
   ///
   /// It's possible to define attributes as well as derives.
   ///
   /// ```rust
   /// use fundamental_data_type::prelude::*;
-  /// single!
+  /// types!
   /// {
   ///   /// This is also attribute and macro understands it.
   ///   #[ derive( Debug ) ]
-  ///   MySingle : i32;
+  ///   single MySingle : i32;
   /// }
   /// let x = MySingle( 13 );
   /// dbg!( x );
@@ -107,10 +109,10 @@ mod internal
   /// dbg!( x );
   /// ```
   ///
-  /// ## Sample :: struct instead of macro.
+  /// ### Sample :: single with struct instead of macro.
   ///
   /// Sometimes it's sufficient to use common type instead of defining a brand new.
-  /// You may use paramtetrized struct `Single< T >` instead of macro `single!` if that is the case.
+  /// You may use paramtetrized struct `Single< T >` instead of macro `types!` if that is the case.
   ///
   /// ```rust
   /// use fundamental_data_type::prelude::*;
@@ -118,16 +120,16 @@ mod internal
   /// dbg!( x );
   /// ```
   ///
-  /// ## Sample :: parametrized element.
+  /// ### Sample :: single with parametrized element.
   ///
   /// Element of tuple could be parametrized.
   ///
   /// ```rust
   /// use fundamental_data_type::prelude::*;
-  /// single!
+  /// types!
   /// {
   ///   #[ derive( Debug ) ]
-  ///   MySingle : std::sync::Arc< T : Copy >;
+  ///   single MySingle : std::sync::Arc< T : Copy >;
   /// }
   /// let x = MySingle( std::sync::Arc::new( 13 ) );
   /// dbg!( x );
@@ -166,17 +168,17 @@ mod internal
   /// let x = MySingle( std::sync::Arc::new( 13 ) );
   /// ```
   ///
-  /// ## Sample :: parametrized tuple.
+  /// ### Sample :: single with parametrized tuple.
   ///
   /// Instead of parametrizing the element it's possible to define a parametrized tuple.
   ///
   ///
   /// ```rust
   /// use fundamental_data_type::prelude::*;
-  /// single!
+  /// types!
   /// {
   ///   #[ derive( Debug ) ]
-  ///   MySingle : < T : Copy >;
+  ///   single MySingle : < T : Copy >;
   /// }
   /// let x = MySingle( 13 );
   /// dbg!( x );
@@ -218,16 +220,33 @@ mod internal
   // #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
   #[ macro_export ]
-  macro_rules! single
+  macro_rules! types
   {
 
-    // Single : < T >;
+    // No more.
+
+    (
+    )
+    =>
+    {
+    };
+
+    // No more.
+
+    (
+      ;
+    )
+    =>
+    {
+    };
+
+    // single Single : < T >;
 
     (
       $( #[ $Meta : meta ] )*
-      $Name : ident :
+      single $Name : ident :
       < $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? >
-      $(;)?
+      $( ; $( $Rest : tt )* )?
     )
     =>
     {
@@ -259,13 +278,14 @@ mod internal
 
       // From Single Into Element cant be implemented because of Rust restructions.
 
+      $crate::types!{ $( $( $Rest )* )? }
     };
 
-    // Single : < T1, ... >;
+    // single Single : < T1, ... >;
 
     (
       $( #[ $Meta : meta ] )*
-      $Name : ident :
+      single $Name : ident :
       < $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? ,
       $( $Rest : tt )*
     )
@@ -287,13 +307,13 @@ mod internal
       );
     };
 
-    // Single : Element< T1, T2, ... >;
+    // single Single : Element< T1, T2, ... >;
 
     (
       $( #[ $Meta : meta ] )*
-      $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )*
+      single $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )*
       < $( $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? ),* >
-      $(;)?
+      $( ; $( $Rest : tt )* )?
     )
     =>
     {
@@ -334,38 +354,254 @@ mod internal
         }
       }
 
+      $crate::types!{ $( $( $Rest )* )? }
     };
 
-    // Single : Element;
+    // single Single : Element;
 
     (
       $( #[ $Meta : meta ] )*
-      $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )* $(;)?
-      // $Name : ident : $Type : ty $(;)?
+      single $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )*
+      $( ; $( $Rest : tt )* )?
     )
     =>
     {
-      $crate::single!
+      $crate::types!
       (
         $( #[ $Meta ] )*
-        $Name : $TypeSplit1 $( :: $TypeSplitN )* <>;
+        single $Name : $TypeSplit1 $( :: $TypeSplitN )* <>;
+        // $( ; $( $Rest )* )?
+      );
+      $crate::types!{ $( $( $Rest )* )? }
+    };
+
+    // xxx
+
+    // pair Pair : < T >;
+
+    (
+      $( #[ $Meta : meta ] )*
+      pair $Name : ident :
+      <
+        $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x3 : path )* )?,
+        $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x3 : path )* )? $(,)?
+      >
+      $( ; $( $Rest : tt )* )?
+    )
+    =>
+    {
+      $( #[ $Meta ] )*
+      pub struct $Name
+      < $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      ( pub $ParamName );
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? > core::ops::Deref
+      for $Name
+      < $ParamName >
+      {
+        type Target = $ParamName;
+        fn deref( &self ) -> &Self::Target
+        {
+          &self.0
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? > From< $ParamName >
+      for $Name
+      < $ParamName >
+      {
+        fn from( src : $ParamName ) -> Self
+        {
+          Self( src )
+        }
+      }
+
+      // From Pair Into Element cant be implemented because of Rust restructions.
+
+      $crate::types!{ $( $( $Rest )* )? }
+    };
+
+    // pair Pair : < T1, ... >;
+
+    (
+      $( #[ $Meta : meta ] )*
+      pair $Name : ident :
+      <
+        $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x3 : path )* )?,
+        $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x3 : path )* )?,
+        $ParamName3 : ident
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      compile_error!
+      (
+        concat!
+        (
+          "Parametrized element should be pair, because Pair has exactly two elements\n",
+          stringify!
+          (
+            $( #[ $Meta ] )*
+            pair $Name :
+            <
+              $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
+              $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?,
+              $ParamName3
+            $( $Rest )*
+          )
+        )
+      );
+    };
+
+    // pair Pair : Element1< T1, T2, ... >, Element2< T1, T2, ... >;
+
+    (
+      $( #[ $Meta : meta ] )*
+      pair $Name1 : ident
+      :
+      $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*
+      < $( $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? ),* >
+      $TypeSplit2x1 : ident $( :: $TypeSplit2xN : ident )*
+      < $( $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x2 : path )* )? ),* >
+      $( ; $( $Rest : tt )* )?
+    )
+    =>
+    {
+      $( #[ $Meta ] )*
+      pub struct $Name
+      <
+        $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
+        $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),*
+      >
+      (
+        pub $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
+        pub $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
       );
 
+      impl
+      <
+        $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
+        $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),*
+      >
+      core::ops::Deref
+      for $Name
+      < $( $ParamName ),* >
+      {
+        type Target = $TypeSplit1 $( :: $TypeSplitN )* < $( $ParamName ),* >;
+        fn deref( &self ) -> &Self::Target
+        {
+          &self.0
+        }
+      }
+
+      impl
+      <
+        $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
+        $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),*
+      >
+      From
+      <(
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
+        $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
+      )>
+      for $Name
+      < $( $ParamName ),* >
+      {
+        fn from
+        (
+          src :
+          (
+            $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
+            $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
+          )
+        )
+        -> Self
+        {
+          Self( src )
+        }
+      }
+
+      impl
+      <
+        $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
+        $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),*
+      >
+      From< $Name< $( $ParamName1 ),* $( , $ParamName2 )* > >
+      for $TypeSplit1 $( :: $TypeSplitN )* < $( $ParamName ),* >
+      {
+        fn from
+        (
+          src : $Name
+          <(
+            $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
+            $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
+          )>
+        )
+        -> Self
+        {
+          ( src.0, src.1 )
+        }
+      }
+
+      $crate::types!{ $( $( $Rest )* )? }
+    };
+
+    // pair Pair : Element;
+
+    (
+      $( #[ $Meta : meta ] )*
+      pair $Name : ident :
+        $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*,
+        $TypeSplit2x1 : ident $( :: $TypeSplit2xN : ident )* $(,)?
+      $( ; $( $Rest : tt )* )?
+    )
+    =>
+    {
+      $crate::types!
+      (
+        $( #[ $Meta ] )*
+        pair $Name :
+          $TypeSplit1x1 $( :: $TypeSplit1xN )*<>,
+          $TypeSplit2x1 $( :: $TypeSplit2xN )*<>;
+      );
+      $crate::types!{ $( $( $Rest )* )? }
+    };
+
+    // xxx
+
+    // bad syntax
+
+    (
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      compile_error!
+      (
+        concat!
+        (
+          "Bad syntax. Expects {kind} {name} : {type}, but got\n",
+          stringify!
+          (
+            $( $Rest )*
+          )
+        )
+      );
     };
 
   }
 
-  single!
+  types!
   {
 
     ///
     /// A type wrapping a another type into a tuple.
     ///
     ///
-    /// ## Sample :: struct instead of macro.
+    /// ### Sample :: struct instead of macro.
     ///
     /// Sometimes it's sufficient to use common type instead of defining a brand new one.
-    /// You may use paramtetrized struct `fundamental_data_type::Single< T >` instead of macro `fundamental_data_type::single!` if that is the case.
+    /// You may use paramtetrized struct `fundamental_data_type::Single< T >` instead of macro `fundamental_data_type::types!` if that is the case.
     ///
     /// ```rust
     /// use fundamental_data_type::prelude::*;
@@ -375,11 +611,11 @@ mod internal
     ///
 
     #[ derive( Debug, Clone, PartialEq, Eq ) ]
-    Single : < T >;
+    single Single : < T >;
 
   }
 
-  pub use single;
+  pub use types;
 }
 
 /// Protected namespace of the module.
@@ -409,7 +645,7 @@ pub mod prelude
 {
   pub use super::internal::
   {
-    single,
+    types,
     Single,
   };
 }

@@ -4,7 +4,7 @@ mod internal
   use crate::exposed::*;
   use fundamental_data_type::prelude::*;
 
-  single!
+  types!
   {
 
     ///
@@ -12,7 +12,7 @@ mod internal
     ///
 
     #[ derive( Debug, PartialEq, Eq, Clone ) ]
-    AttributeInner : syn::Attribute;
+    single AttributeInner : syn::Attribute;
 
   }
 

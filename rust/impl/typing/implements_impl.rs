@@ -32,5 +32,5 @@ macro_rules! _implements
     }
     ( &does( &$V ) ).get()
 
-  }}
+  }};
 }

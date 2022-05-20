@@ -10,7 +10,7 @@
 
 /// Macro to answer the question: is it a slice?
 ///
-/// ## Sample
+/// ### Sample
 /// ```
 /// use is_slice::*;
 ///

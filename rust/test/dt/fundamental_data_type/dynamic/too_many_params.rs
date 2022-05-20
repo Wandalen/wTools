@@ -1,10 +1,9 @@
-// use super::TheModule;
 use fundamental_data_type as TheModule;
 use TheModule::prelude::*;
 
-single!
+types!
 {
-  Single : < T1, T2 >;
+  single Single : < T1, T2 >;
 }
 
 fn main()

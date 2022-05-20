@@ -11,7 +11,7 @@
 ///
 /// Collection of general purpose time tools.
 ///
-// /// ## Sample
+// /// ### Sample
 // /// ```
 // /// use time_tools::*;
 // ///

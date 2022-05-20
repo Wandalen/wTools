@@ -57,9 +57,9 @@ mod internal
         @Meta{ $( #[ $Meta ] )* }
         @Vis{ $Vis }
         @Name{ $Name }
-        @Input{ () }
-        @Output{}
-        @Block{ {} }
+        // @Input{ () }
+        // @Output{}
+        // @Block{ {} }
         @Rest
           $( #[ $Meta ] )*
           $Vis fn $Name
@@ -72,9 +72,9 @@ mod internal
       @Meta{ $( #[ $Meta : meta ] )* }
       @Vis{ $Vis : vis }
       @Name{ $Name : ident }
-      @Input{ $Input : tt }
-      @Output{ $( -> $Output : ty )? }
-      @Block{ $Block : block }
+      // @Input{ $Input : tt }
+      // @Output{ $( -> $Output : ty )? }
+      // @Block{ $Block : block }
       @Rest
         $Item : item
         $( $Rest : tt )*
@@ -86,6 +86,75 @@ mod internal
       {
         () =>
         {
+          $Item
+        };
+      }
+
+      $crate::impls1!
+      {
+        $( $Rest )*
+      }
+    };
+
+  }
+
+  // xxx : cover by tests
+  // xxx : document the idea and module
+  // xxx : add section idea to each module
+
+  ///
+  /// Define implementation putting each function under a macro and adding attribute `#[ test ]`.
+  ///
+
+  #[ macro_export ]
+  macro_rules! tests_impls
+  {
+
+    () => {};
+    (
+      $( #[ $Meta : meta ] )*
+      $Vis : vis
+      fn $Name : ident
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      $crate::impls1!
+      {
+        @DefineFn
+        @Meta{ $( #[ $Meta ] )* }
+        @Vis{ $Vis }
+        @Name{ $Name }
+        // @Input{ () }
+        // @Output{}
+        // @Block{ {} }
+        @Rest
+          $( #[ $Meta ] )*
+          $Vis fn $Name
+          $( $Rest )*
+      }
+    };
+
+    (
+      @DefineFn
+      @Meta{ $( #[ $Meta : meta ] )* }
+      @Vis{ $Vis : vis }
+      @Name{ $Name : ident }
+      // @Input{ $Input : tt }
+      // @Output{ $( -> $Output : ty )? }
+      // @Block{ $Block : block }
+      @Rest
+        $Item : item
+        $( $Rest : tt )*
+    )
+    =>
+    {
+      #[ deny( unused_macros ) ]
+      macro_rules! $Name
+      {
+        () =>
+        {
+          #[ test ]
           $Item
         };
       }
@@ -161,7 +230,9 @@ mod internal
   }
 
   pub use index;
+  pub use index as tests_index;
   pub use impls1;
+  pub use tests_impls;
   pub use impls2;
   pub use _impls_callback;
 
@@ -170,7 +241,6 @@ mod internal
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
   pub use super::prelude::*;
 }
 
@@ -179,11 +249,15 @@ pub use exposed::*;
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
-  pub use i::index;
-  pub use i::impls1;
-  pub use i::impls2;
-  pub use i::_impls_callback;
+  pub use super::internal::
+  {
+    index,
+    tests_index,
+    impls1,
+    tests_impls,
+    impls2,
+    _impls_callback,
+  };
   pub use ::impls_index_meta::impls3;
   pub use impls1 as impls;
 }

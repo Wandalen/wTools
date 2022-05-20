@@ -8,7 +8,7 @@ mod internal
   ///
   /// Name of test routine should have postfix `*_test`. In the index of test routine the postfix should be ommited.
   ///
-  /// ## Sample
+  /// ### Sample
   /// use wtest_basic::*;
   ///
   /// //
@@ -57,93 +57,6 @@ mod internal
     };
 
   }
-
-//   ///
-//   /// Internals of a test suite.
-//   ///
-//
-//   #[ macro_export ]
-//   macro_rules! impls
-//   {
-//
-//     // ( $( $Rest : tt )* ) => { fn f1() {} };
-//
-//     () => {};
-//
-//     (
-//       $( #[ $Meta : meta ] )*
-//       fn $Name : ident $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       $crate::test_suite_internals!
-//       {
-//         @DefineFn
-//         @Name $Name
-//         @Rest
-//           $( #[ $Meta ] )*
-//           fn $Name $( $Rest )*
-//       }
-//     };
-//
-//     (
-//       @DefineFn
-//       @Name $Name : ident
-//       @Rest
-//         $Item : item
-//         // $( #[ $Meta : meta ] )*
-//         // fn $Name : ident
-//         // $Parentheses : tt
-//         // $Block : block
-//         $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       macro_rules! $Name
-//       {
-//         () =>
-//         {
-//           $Item
-//         };
-//       }
-//
-//       // macro_rules! $Name
-//       // {
-//       //   $( #[ $Meta ] )*
-//       //   fn $Name
-//       //   $Parentheses
-//       //   $Block
-//       // }
-//
-//       $crate::test_suite_internals!
-//       {
-//         $( $Rest )*
-//       }
-//     };
-//
-//   }
-//
-//   ///
-//   /// Index of items.
-//   ///
-//
-//   #[ macro_export ]
-//   macro_rules! index
-//   {
-//
-//     () => { };
-//
-//     (
-//       $Name : ident ,
-//       $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       $Name!();
-//       $crate::index!( $( $Rest )* );
-//     };
-//
-//   }
 
   // /// Pass only if callback fails either returning error or panicing.
   //
