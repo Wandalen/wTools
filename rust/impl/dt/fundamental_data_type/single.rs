@@ -502,34 +502,6 @@ mod internal
         pub $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
       );
 
-      // xxx : add version for single type
-      // impl
-      // <
-      //   $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
-      //   $(, $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )*
-      // >
-      // core::ops::Deref
-      // for $Name
-      // < $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 )* )? >
-      // {
-      //   type Target =
-      //   (
-      //     $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
-      //     $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
-      //   );
-      //   fn deref( &self ) -> &Self::Target
-      //   {
-      //     // let layout1 = std::alloc::Layout::new::< Self >();
-      //     // let layout2 = std::alloc::Layout::new::< Self::Target >();
-      //     // dbg!( layout1 );
-      //     // dbg!( layout2 );
-      //     unsafe
-      //     {
-      //       std::mem::transmute::< &Self, &Self::Target >( self )
-      //     }
-      //   }
-      // }
-
       impl
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
@@ -582,28 +554,176 @@ mod internal
       $crate::types!{ $( $( $Rest )* )? }
     };
 
-    // xxx : cover test case of lack of args
+    // pair Pair : Element1< T1, T2, ... >;
 
-//     // pair Pair : Element1, Element2;
-//
-//     (
-//       $( #[ $Meta : meta ] )*
-//       pair $Name : ident :
-//         $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*,
-//         $TypeSplit2x1 : ident $( :: $TypeSplit2xN : ident )* $(,)?
-//       $( ; $( $Rest : tt )* )?
-//     )
-//     =>
-//     {
-//       $crate::types!
-//       (
-//         $( #[ $Meta ] )*
-//         pair $Name :
-//           $TypeSplit1x1 $( :: $TypeSplit1xN )*<>,
-//           $TypeSplit2x1 $( :: $TypeSplit2xN )*<>;
-//       );
-//       $crate::types!{ $( $( $Rest )* )? }
-//     };
+    (
+      $( #[ $Meta : meta ] )*
+      pair $Name : ident
+      :
+      $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*
+      $( < $( $( $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? ),+ )? > )?
+      $(,)?
+      $( ; $( $Rest : tt )* )?
+    )
+    =>
+    {
+      $( #[ $Meta ] )*
+      pub struct $Name
+      <
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ )? )?
+      >
+      (
+        pub $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+        pub $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+      );
+
+      // xxx : add version for single type
+      impl
+      <
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+      >
+      core::ops::Deref
+      for $Name
+      < $( $( $( $ParamName1 ),+ , )? )? >
+      {
+        type Target =
+        (
+          $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+          $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+        );
+        fn deref( &self ) -> &Self::Target
+        {
+          let layout1 = std::alloc::Layout::new::< Self >();
+          let layout2 = std::alloc::Layout::new::< Self::Target >();
+          debug_assert_eq!( layout1, layout2 );
+          unsafe
+          {
+            std::mem::transmute::< &Self, &Self::Target >( self )
+          }
+        }
+      }
+
+      impl
+      <
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+      >
+      From
+      <(
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+      )>
+      for $Name
+      < $( $( $( $ParamName1 ),+ , )? )? >
+      {
+        fn from
+        (
+          src :
+          (
+            $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+            $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+          )
+        )
+        -> Self
+        {
+          Self( src.0, src.1 )
+        }
+      }
+
+      impl
+      <
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+      >
+      From< $Name< $( $( $( $ParamName1 ),+ , )? )? > >
+      for
+      (
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+      )
+      {
+        fn from
+        (
+          src : $Name< $( $( $( $ParamName1 ),+ , )? )? >
+        )
+        -> Self
+        {
+          ( src.0, src.1 )
+        }
+      }
+
+      impl
+      <
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+      >
+      From
+      <[
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > ; 2
+      ]>
+      for $Name
+      < $( $( $( $ParamName1 ),+ , )? )? >
+      where
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
+      {
+        fn from
+        (
+          src :
+          [
+            $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > ; 2
+          ]
+        )
+        -> Self
+        {
+          Self( src[ 0 ].clone(), src[ 1 ].clone() )
+        }
+      }
+
+      impl
+      <
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+      >
+      From< $Name< $( $( $( $ParamName1 ),+ , )? )? > >
+      for
+      [
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > ; 2
+      ]
+      {
+        fn from
+        (
+          src : $Name< $( $( $( $ParamName1 ),+ , )? )? >
+        )
+        -> Self
+        {
+          [ src.0, src.1 ]
+        }
+      }
+
+      impl
+      <
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+      >
+      From
+      <&[
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >
+      ]>
+      for $Name
+      < $( $( $( $ParamName1 ),+ , )? )? >
+      where
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
+      {
+        fn from
+        (
+          src :
+          &[
+            $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >
+          ]
+        )
+        -> Self
+        {
+          Self( src[ 0 ].clone(), src[ 1 ].clone() )
+        }
+      }
+
+      $crate::types!{ $( $( $Rest )* )? }
+    };
 
     // bad syntax
 
@@ -658,6 +778,13 @@ mod internal
     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
     pair Pair : < T1, T2 >;
 
+//     ///
+//     /// Type constructor to wrap pair of the same type.
+//     ///
+//
+//     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
+//     pair HomoPair : < T >;
+
   }
 
   pub use types;
@@ -693,5 +820,6 @@ pub mod prelude
     types,
     Single,
     Pair,
+    // HomoPair,
   };
 }

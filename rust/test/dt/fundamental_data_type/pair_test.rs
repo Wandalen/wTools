@@ -43,9 +43,18 @@ tests_impls!
     }
     // trace_macros!( false );
 
-    /* test.case( "from tuple / into Pair" ) */
+    /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair = ( 13.0, 31.0 ).into();
     let instance2 = Pair::from( ( 13.0, 31.0 ) );
+    assert_eq!( instance1.0, 13.0 );
+    assert_eq!( instance1.1, 31.0 );
+    assert_eq!( instance2.0, 13.0 );
+    assert_eq!( instance2.1, 31.0 );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "from pair / into tuple" ) */
+    let instance1 : ( _, _ ) = ( Pair::from( ( 13.0, 31.0 ) ) ).into();
+    let instance2 = < ( _, _ ) >::from( Pair::from( ( 13.0, 31.0 ) ) );
     assert_eq!( instance1.0, 13.0 );
     assert_eq!( instance1.1, 31.0 );
     assert_eq!( instance2.0, 13.0 );
@@ -111,7 +120,7 @@ tests_impls!
     }
     // trace_macros!( false );
 
-    /* test.case( "from tuple / into Pair" ) */
+    /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair = ( 13.0, 31.0 ).into();
     let instance2 = Pair::from( ( 13.0, 31.0 ) );
     assert_eq!( instance1.0, 13.0 );
@@ -201,7 +210,7 @@ tests_impls!
     }
     // trace_macros!( false );
 
-    /* test.case( "from tuple / into Pair" ) */
+    /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64, f32 > =
     (
       mod1::Pair0::from( 13.0 ),
@@ -438,7 +447,7 @@ tests_impls!
 
     }
 
-    /* test.case( "from tuple / into Pair" ) */
+    /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
     let instance2 = Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
     assert_eq!( instance1.0, 13.0 );
@@ -556,7 +565,7 @@ tests_impls!
   fn struct_basic_test()
   {
 
-    /* test.case( "from tuple / into Pair" ) */
+    /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
     let instance2 = Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
     assert_eq!( instance1.0, 13.0 );
@@ -617,7 +626,7 @@ tests_impls!
       { Self( src.0, src.1 ) }
     }
 
-    /* test.case( "from tuple / into Pair" ) */
+    /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< Pair0< f32, f64 >, f32 > = ( Pair0( 13.0, 31.0 ), 131.0 ).into();
     let instance2 = Pair::< Pair0< f32, f64 >, f32 >::from( ( Pair0( 13.0, 31.0 ), 131.0 ) );
     assert_eq!( instance1.0.0, 13.0 );
