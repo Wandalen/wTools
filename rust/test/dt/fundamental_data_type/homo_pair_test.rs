@@ -222,58 +222,137 @@ tests_impls!
   fn parameter_complex_test()
   {
 
-//     types!
-//     {
-//
-//       ///
-//       /// Attribute which is inner.
-//       ///
-//
-//       #[ derive( Debug, Clone ) ]
-//       #[ derive( PartialEq ) ]
-//       pair Pair : < T1 : core::cmp::PartialEq + core::clone::Clone >;
-//
-//     }
+    mod mod1
+    {
+      #[ derive( Debug, Clone, PartialEq ) ]
+      pub struct Float
+      (
+        pub f32,
+      );
+    }
 
-//     /* test.case( "from tuple / into pair" ) */
-//     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
-//     let instance2 = Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
-//     assert_eq!( instance1.0, 13.0 );
-//     assert_eq!( instance1.1, 31.0 );
-//     assert_eq!( instance2.0, 13.0 );
-//     assert_eq!( instance2.1, 31.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "from Pair / into tuple" ) */
-//     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
-//     let instance2 = Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
-//     assert_eq!( instance1.0, 13.0 );
-//     assert_eq!( instance1.1, 31.0 );
-//     assert_eq!( instance2.0, 13.0 );
-//     assert_eq!( instance2.1, 31.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "from itself / into itself" ) */
-//     let instance1 : Pair< f32, f64 > = ( Pair::from( ( 13.0, 31.0 ) ) ).into();
-//     let instance2 = Pair::< f32, f64 >::from( Pair::from( ( 13.0, 31.0 ) ) );
-//     assert_eq!( instance1.0, 13.0 );
-//     assert_eq!( instance1.1, 31.0 );
-//     assert_eq!( instance2.0, 13.0 );
-//     assert_eq!( instance2.1, 31.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "clone / eq" ) */
-//     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
-//     let instance2 = instance1.clone();
-//     assert_eq!( instance1.0, 13.0 );
-//     assert_eq!( instance1.1, 31.0 );
-//     assert_eq!( instance2.0, 13.0 );
-//     assert_eq!( instance2.1, 31.0 );
-//     assert_eq!( instance1, instance2 );
-//
-// //     /* test.case( "deref" ) */
-// //     let got : Pair< f32, f64 > = ( 13.5 ).into();
-// //     assert_eq!( got.round(), 14.0 );
+    // trace_macros!( true );
+    types!
+    {
+
+      ///
+      /// Attribute which is inner.
+      ///
+
+      #[ derive( Debug, Clone ) ]
+      #[ derive( PartialEq ) ]
+      pair Pair : < T1 : core::cmp::PartialEq + core::clone::Clone >;
+
+    }
+    // trace_macros!( false );
+
+    pub trait Round { fn round( &self ) -> ( f32, f32 ); }
+    impl Round
+    for ( mod1::Float, mod1::Float )
+    {
+      fn round( &self ) -> ( f32, f32 )
+      {
+        ( self.0.0.round(), self.1.0.round() )
+      }
+    }
+
+    /* test.case( "from array / into pair" ) */
+    let instance1 : Pair< mod1::Float > = [ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ].into();
+    let instance2 = Pair::< mod1::Float >::from( [ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ] );
+    assert_eq!( instance1.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance1.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance2.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance2.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "from pair / into array" ) */
+    let instance1 : [ _ ; 2 ] = ( Pair::< mod1::Float >::from( [ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ] ) ).into();
+    let instance2 = < [ _ ; 2] >::from( Pair::< mod1::Float >::from( [ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ] ) );
+    assert_eq!( instance1[ 0 ], mod1::Float( 13.0 ) );
+    assert_eq!( instance1[ 1 ], mod1::Float( 31.0 ) );
+    assert_eq!( instance2[ 0 ], mod1::Float( 13.0 ) );
+    assert_eq!( instance2[ 1 ], mod1::Float( 31.0 ) );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "from slice / into pair" ) */
+    let instance1 : Pair< mod1::Float > = ( &[ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ][ .. ] ).into();
+    let instance2 = Pair::< mod1::Float >::from( ( &[ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ][ .. ] ) );
+    assert_eq!( instance1.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance1.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance2.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance2.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "from tuple / into pair" ) */
+    let instance1 : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
+    let instance2 = Pair::< mod1::Float >::from( ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ) );
+    assert_eq!( instance1.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance1.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance2.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance2.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "from Pair / into tuple" ) */
+    let instance1 : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
+    let instance2 = Pair::< mod1::Float >::from( ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ) );
+    assert_eq!( instance1.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance1.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance2.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance2.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "from itself / into itself" ) */
+    let instance1 : Pair< mod1::Float > = ( Pair::from( ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ) ) ).into();
+    let instance2 = Pair::< mod1::Float >::from( Pair::from( ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ) ) );
+    assert_eq!( instance1.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance1.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance2.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance2.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "clone / eq" ) */
+    let instance1 : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
+    let instance2 = instance1.clone();
+    assert_eq!( instance1.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance1.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance2.0, mod1::Float( 13.0 ) );
+    assert_eq!( instance2.1, mod1::Float( 31.0 ) );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "deref" ) */
+    let got : Pair< mod1::Float > = ( mod1::Float( 13.5 ), mod1::Float( 31.5 ) ).into();
+    assert_eq!( got.round(), ( 14.0, 32.0 ) );
+
+    /* test.case( "clone_as_tuple" ) */
+    let src : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
+    let got = src.clone_as_tuple();
+    assert_eq!( got, ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ) );
+    assert!( !mem_same_ptr( &src, &got ) );
+
+    /* test.case( "clone_as_array" ) */
+    let src : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
+    let got = src.clone_as_array();
+    assert_eq!( got, [ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ] );
+    assert!( !mem_same_ptr( &src, &got ) );
+
+    /* test.case( "as_tuple" ) */
+    let src : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
+    let got = src.as_tuple();
+    assert_eq!( got, &( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ) );
+    assert!( !mem_same_ptr( &src, &got ) );
+
+    /* test.case( "as_array" ) */
+    let src : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
+    let got = src.as_array();
+    assert_eq!( got, &[ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ] );
+    assert!( mem_same_region( &src, got ) );
+
+    /* test.case( "as_slice" ) */
+    let src : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
+    let got = src.as_slice();
+    assert_eq!( got, &[ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ][ .. ] );
+    // assert!( mem_same_ptr( &src, got ) );
+    // xxx : make it working
 
   }
 

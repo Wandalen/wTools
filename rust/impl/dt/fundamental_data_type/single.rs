@@ -3,6 +3,63 @@ mod internal
 {
   use crate::exposed::*;
 
+// xxx : add version for single type
+// xxx : implement clone_as_tuple()
+// xxx : implement clone_as_array()
+// xxx : implement as_tuple()
+// xxx : implement as_array()
+// xxx : implement as_slice()
+
+  ///
+  /// Clone as tuple.
+  ///
+
+  pub trait CloneAsTuple< Tuple >
+  {
+    /// Clone as tuple.
+    fn clone_as_tuple( &self ) -> Tuple;
+  }
+
+  ///
+  /// Clone as array.
+  ///
+
+  pub trait CloneAsArray< T, const N : usize >
+  {
+    /// Clone as array.
+    fn clone_as_array( &self ) -> [ T ; N ];
+  }
+
+  ///
+  /// Reinterpret as tuple.
+  ///
+
+  pub trait AsTuple< Tuple >
+  {
+    /// Reinterpret as tuple.
+    fn as_tuple( &self ) -> &Tuple;
+  }
+
+  ///
+  /// Reinterpret as array.
+  ///
+
+  pub trait AsArray< T, const N : usize >
+  {
+    /// Reinterpret as array.
+    fn as_array( &self ) -> &[ T ; N ];
+  }
+
+  ///
+  /// Reinterpret as slice.
+  ///
+
+  pub trait AsSlice< T >
+  {
+    /// Reinterpret as slice.
+    fn as_slice( &self ) -> &[ T ];
+  }
+
   ///
   /// Type constructor to define tuple wrapping a given type.
   ///
@@ -443,6 +500,184 @@ mod internal
       $crate::types!{ $( $( $Rest )* )? }
     };
 
+    // pair Pair : < T1 >;
+
+    (
+      $( #[ $Meta : meta ] )*
+      pair $Name : ident :
+      <
+        $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? $(,)?
+      >
+      $( ; $( $Rest : tt )* )?
+    )
+    =>
+    {
+      $( #[ $Meta ] )*
+      pub struct $Name
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      ( pub $ParamName1, pub $ParamName1 );
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      core::ops::Deref
+      for $Name< $ParamName1 >
+      {
+        type Target = ( $ParamName1, $ParamName1 );
+        fn deref( &self ) -> &Self::Target
+        {
+          // Safety : in case of homopair it is safe to assume that layout is the same.
+          unsafe
+          {
+            std::mem::transmute::< &Self, &Self::Target >( self )
+          }
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      From<( $ParamName1, $ParamName1 )>
+      for $Name< $ParamName1 >
+      {
+        fn from( src : ( $ParamName1, $ParamName1 ) ) -> Self
+        {
+          Self( src.0, src.1 )
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      From< $Name< $ParamName1 > >
+      for ( $ParamName1, $ParamName1 )
+      {
+        fn from( src : $Name< $ParamName1 > ) -> Self
+        {
+          ( src.0, src.1 )
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      From< [ $ParamName1 ; 2 ] >
+      for $Name< $ParamName1 >
+      {
+        fn from( src : [ $ParamName1 ; 2 ] ) -> Self
+        {
+          Self( src[ 0 ].clone(), src[ 1 ].clone() )
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      From< $Name< $ParamName1 > >
+      for [ $ParamName1 ; 2 ]
+      {
+        fn from( src : $Name< $ParamName1 > ) -> Self
+        {
+          [ src.0, src.1 ]
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      From< &[ $ParamName1 ] >
+      for $Name< $ParamName1 >
+      {
+        fn from( src : &[ $ParamName1 ] ) -> Self
+        {
+          Self( src[ 0 ].clone(), src[ 1 ].clone() )
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      CloneAsTuple< ( $ParamName1, $ParamName1 ) >
+      for Pair< $ParamName1 >
+      {
+        fn clone_as_tuple( &self ) -> ( $ParamName1, $ParamName1 )
+        {
+          ( self.0.clone(), self.1.clone() )
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      CloneAsArray< $ParamName1, 2 >
+      for Pair< $ParamName1 >
+      {
+        fn clone_as_array( &self ) -> [ $ParamName1 ; 2 ]
+        {
+          [ self.0.clone(), self.1.clone() ]
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      AsTuple< ( $ParamName1 , $ParamName1 ) >
+      for Pair< $ParamName1 >
+      {
+        fn as_tuple( &self ) -> &( $ParamName1, $ParamName1 )
+        {
+          // Safety : in case of homopair it is safe to assume that layout is the same.
+          unsafe
+          {
+            std::mem::transmute::< &_, &( $ParamName1, $ParamName1 ) >( self )
+          }
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      AsArray< $ParamName1, 2 >
+      for Pair< $ParamName1 >
+      {
+        fn as_array( &self ) -> &[ $ParamName1 ; 2 ]
+        {
+          // Safety : in case of homopair it is safe to assume that layout is the same.
+          unsafe
+          {
+            std::mem::transmute::< &_, &[ $ParamName1 ; 2 ] >( self )
+          }
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      AsSlice< $ParamName1 >
+      for Pair< $ParamName1 >
+      {
+        fn as_slice( &self ) -> &[ $ParamName1 ]
+        {
+          &self.as_array()[ .. ]
+        }
+      }
+
+      $crate::types!{ $( $( $Rest )* )? }
+    };
+
     // pair Pair : < T1, T2, ... >;
 
     (
@@ -460,7 +695,7 @@ mod internal
       (
         concat!
         (
-          "Parametrized element should be pair, because Pair has exactly two elements\n",
+          "Parametrized element should be pair and have either two or single elements\n",
           stringify!
           (
             $( #[ $Meta ] )*
@@ -577,7 +812,6 @@ mod internal
         pub $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
       );
 
-      // xxx : add version for single type
       impl
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
@@ -596,6 +830,7 @@ mod internal
           let layout1 = std::alloc::Layout::new::< Self >();
           let layout2 = std::alloc::Layout::new::< Self::Target >();
           debug_assert_eq!( layout1, layout2 );
+          // Safety : in case of homopair it is safe to assume that layout is the same.
           unsafe
           {
             std::mem::transmute::< &Self, &Self::Target >( self )
@@ -817,9 +1052,18 @@ pub mod prelude
 {
   pub use super::internal::
   {
+
+    CloneAsTuple,
+    CloneAsArray,
+    AsTuple,
+    AsArray,
+    AsSlice,
+
     types,
+
     Single,
     Pair,
     // HomoPair,
+
   };
 }

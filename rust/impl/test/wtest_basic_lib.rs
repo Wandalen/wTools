@@ -10,6 +10,8 @@
 
 /// Basics.
 pub mod basic;
+/// Helpers.
+pub mod helper;
 
 /// Dependencies.
 pub mod dependencies
@@ -20,6 +22,7 @@ pub mod dependencies
   pub use ::rustversion;
   pub use ::meta_tools;
   pub use ::typing_tools;
+  pub use ::num_traits;
 }
 
 pub use dependencies::*;
@@ -31,6 +34,8 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::basic::exposed::*;
+  #[ doc( inline ) ]
+  pub use super::helper::exposed::*;
   #[ doc( inline ) ]
   pub use ::meta_tools::{ impls, impls1, impls2, impls3, index, tests_impls, tests_index };
   #[ doc( inline ) ]
@@ -44,4 +49,6 @@ pub mod prelude
 {
   #[ doc( inline ) ]
   pub use super::basic::prelude::*;
+  #[ doc( inline ) ]
+  pub use super::helper::prelude::*;
 }
