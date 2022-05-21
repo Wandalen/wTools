@@ -486,8 +486,6 @@ tests_impls!
     assert!( !implements!( instance1 => Clone ) );
     assert!( !implements!( instance1 => Debug ) );
 
-    // xxx : redo implements
-
     /* test.case( "from f32 / into Single2" ) */
     let instance1 : Single2 = ( 13.0 ).into();
     let instance2 = Single2::from( 13.0 );
@@ -554,6 +552,10 @@ tests_impls!
     let instance2 = instance1.clone();
     assert_eq!( instance2.0, 13.0 );
     assert_eq!( instance1, instance2 );
+
+    /* test.case( "default" ) */
+    let instance1 : Single< f32 > = Default::default();
+    assert_eq!( instance1.0, 0.0 );
 
     /* test.case( "deref" ) */
     let got : Single< f32 > = ( 13.5 ).into();

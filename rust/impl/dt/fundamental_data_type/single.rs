@@ -3,8 +3,6 @@ mod internal
 {
   use crate::exposed::*;
 
-  // xxx : write test of wrong kind error
-
   ///
   /// Type constructor to define tuple wrapping a given type.
   ///
@@ -372,14 +370,14 @@ mod internal
       $crate::types!{ $( $( $Rest )* )? }
     };
 
-    // pair Pair : < T >;
+    // pair Pair : < T1, T2 >;
 
     (
       $( #[ $Meta : meta ] )*
       pair $Name : ident :
       <
-        $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x3 : path )* )?,
-        $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x3 : path )* )? $(,)?
+        $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )?,
+        $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x2 : path )* )? $(,)?
       >
       $( ; $( $Rest : tt )* )?
     )
@@ -387,27 +385,56 @@ mod internal
     {
       $( #[ $Meta ] )*
       pub struct $Name
-      < $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      ( pub $ParamName );
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
+        $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
+      >
+      ( pub $ParamName1, pub $ParamName2 );
 
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? > core::ops::Deref
-      for $Name
-      < $ParamName >
+      // impl
+      // <
+      //   $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
+      //   $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
+      // >
+      // core::ops::Deref
+      // for $Name< $ParamName1, $ParamName2 >
+      // {
+      //   type Target = ( $ParamName1, $ParamName2 );
+      //   fn deref( &self ) -> &Self::Target
+      //   {
+      //     &( self.0, self.1 )
+      //   }
+      // }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
+        $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
+      >
+      From
+      <(
+        $ParamName1,
+        $ParamName2,
+      )>
+      for $Name< $ParamName1, $ParamName2 >
       {
-        type Target = $ParamName;
-        fn deref( &self ) -> &Self::Target
+        fn from( src : ( $ParamName1, $ParamName2 ) ) -> Self
         {
-          &self.0
+          Self( src.0, src.1 )
         }
       }
 
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? > From< $ParamName >
-      for $Name
-      < $ParamName >
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
+        $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
+      >
+      From < $Name< $ParamName1, $ParamName2 > >
+      for ( $ParamName1, $ParamName2 )
       {
-        fn from( src : $ParamName ) -> Self
+        fn from( src : $Name< $ParamName1, $ParamName2 > ) -> Self
         {
-          Self( src )
+          ( src.0, src.1 )
         }
       }
 
@@ -416,7 +443,7 @@ mod internal
       $crate::types!{ $( $( $Rest )* )? }
     };
 
-    // pair Pair : < T1, ... >;
+    // pair Pair : < T1, T2, ... >;
 
     (
       $( #[ $Meta : meta ] )*
@@ -455,9 +482,11 @@ mod internal
       pair $Name : ident
       :
       $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*
-      < $( $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? ),* >,
+      $( < $( $( $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? ),+ )? > )?
+      ,
       $TypeSplit2x1 : ident $( :: $TypeSplit2xN : ident )*
-      < $( $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x2 : path )* )? ),* > $(,)?
+      $( < $( $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x2 : path )* )? ),* > )?
+      $(,)?
       $( ; $( $Rest : tt )* )?
     )
     =>
@@ -465,57 +494,61 @@ mod internal
       $( #[ $Meta ] )*
       pub struct $Name
       <
-        $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
-        $(, $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )*
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )* )?
       >
       (
-        pub $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
-        pub $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
+        pub $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+        pub $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
       );
 
-      impl
-      <
-        $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
-        $(, $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )*
-      >
-      core::ops::Deref
-      for $Name
-      < $( $ParamName1 ),* $(, $ParamName2 )* >
-      {
-        type Target =
-        (
-          $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
-          $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
-        );
-        fn deref( &self ) -> &Self::Target
-        {
-          unsafe
-          {
-            std::mem::transmute::< &Self, &Self::Target >( self )
-            // &( self.0, self.1 )
-          }
-        }
-      }
+      // xxx : add version for single type
+      // impl
+      // <
+      //   $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+      //   $(, $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )*
+      // >
+      // core::ops::Deref
+      // for $Name
+      // < $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 )* )? >
+      // {
+      //   type Target =
+      //   (
+      //     $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
+      //     $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
+      //   );
+      //   fn deref( &self ) -> &Self::Target
+      //   {
+      //     // let layout1 = std::alloc::Layout::new::< Self >();
+      //     // let layout2 = std::alloc::Layout::new::< Self::Target >();
+      //     // dbg!( layout1 );
+      //     // dbg!( layout2 );
+      //     unsafe
+      //     {
+      //       std::mem::transmute::< &Self, &Self::Target >( self )
+      //     }
+      //   }
+      // }
 
       impl
       <
-        $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
-        $(, $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )*
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )* )?
       >
       From
       <(
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
-        $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+        $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
       )>
       for $Name
-      < $( $ParamName1 ),* $(, $ParamName2 )* >
+      < $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 )* )? >
       {
         fn from
         (
           src :
           (
-            $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
-            $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
+            $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+            $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
           )
         )
         -> Self
@@ -526,19 +559,19 @@ mod internal
 
       impl
       <
-        $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),*
-        $(, $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )*
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )* )?
       >
-      From< $Name< $( $ParamName1 ),* $( , $ParamName2 )* > >
+      From< $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 )* )? > >
       for
       (
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $ParamName1 ),* >,
-        $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $ParamName2 ),* >,
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+        $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
       )
       {
         fn from
         (
-          src : $Name< $( $ParamName1 ),* $( , $ParamName2 )* >
+          src : $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 )* )? >
         )
         -> Self
         {
@@ -550,28 +583,27 @@ mod internal
     };
 
     // xxx : cover test case of lack of args
-    // xxx : cover test case of mix of args with and without <>
 
-    // pair Pair : Element;
-
-    (
-      $( #[ $Meta : meta ] )*
-      pair $Name : ident :
-        $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*,
-        $TypeSplit2x1 : ident $( :: $TypeSplit2xN : ident )* $(,)?
-      $( ; $( $Rest : tt )* )?
-    )
-    =>
-    {
-      $crate::types!
-      (
-        $( #[ $Meta ] )*
-        pair $Name :
-          $TypeSplit1x1 $( :: $TypeSplit1xN )*<>,
-          $TypeSplit2x1 $( :: $TypeSplit2xN )*<>;
-      );
-      $crate::types!{ $( $( $Rest )* )? }
-    };
+//     // pair Pair : Element1, Element2;
+//
+//     (
+//       $( #[ $Meta : meta ] )*
+//       pair $Name : ident :
+//         $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*,
+//         $TypeSplit2x1 : ident $( :: $TypeSplit2xN : ident )* $(,)?
+//       $( ; $( $Rest : tt )* )?
+//     )
+//     =>
+//     {
+//       $crate::types!
+//       (
+//         $( #[ $Meta ] )*
+//         pair $Name :
+//           $TypeSplit1x1 $( :: $TypeSplit1xN )*<>,
+//           $TypeSplit2x1 $( :: $TypeSplit2xN )*<>;
+//       );
+//       $crate::types!{ $( $( $Rest )* )? }
+//     };
 
     // bad syntax
 
@@ -584,11 +616,14 @@ mod internal
       (
         concat!
         (
-          "Bad syntax. Expects {kind} {name} : {type}, but got\n",
+          "Bad syntax.\n",
+          "Expects : {kind} {name} : {type}.\n",
+          "For example : `single MySingle : std::sync::Arc< T : Copy >`.\n",
+          "But got:\n",
           stringify!
           (
             $( $Rest )*
-          )
+          ),
         )
       );
     };
@@ -599,8 +634,7 @@ mod internal
   {
 
     ///
-    /// A type wrapping a another type into a tuple.
-    ///
+    /// Type constructor to wrap a another type into a tuple.
     ///
     /// ### Sample :: struct instead of macro.
     ///
@@ -614,8 +648,15 @@ mod internal
     /// ```
     ///
 
-    #[ derive( Debug, Clone, PartialEq, Eq ) ]
+    #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
     single Single : < T >;
+
+    ///
+    /// Type constructor to wrap two types into a tuple.
+    ///
+
+    #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
+    pair Pair : < T1, T2 >;
 
   }
 
@@ -651,5 +692,6 @@ pub mod prelude
   {
     types,
     Single,
+    Pair,
   };
 }

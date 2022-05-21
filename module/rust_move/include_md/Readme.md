@@ -21,6 +21,6 @@ cargo add include_md
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/include_md_trivial_sample
+cd sample/rust_move/include_md_trivial_sample
 cargo run
 ```
