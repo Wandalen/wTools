@@ -23,12 +23,12 @@ pub mod exposed
 {
   pub use super::prelude::*;
   pub use ::either::Either;
-  pub use ::fundamental_data_type::exposed::*;
+  pub use ::type_constructor::exposed::*;
 }
 
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
   pub use either::*;
-  pub use ::fundamental_data_type::prelude::*;
+  pub use ::type_constructor::prelude::*;
 }
