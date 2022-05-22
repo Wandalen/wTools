@@ -5,24 +5,6 @@ mod internal
 
   /* xxx : qqq : move to mem_tools. discuss */
 
-  // xxx : solve the problem
-//   ///
-//   /// Are two pointers are the same, not taking into accoint type.
-//   ///
-//
-//   pub fn slice_same_ptr< T1, T2 >( src1 : &[ T1 ], src2 : &[ T2 ] ) -> bool
-//   {
-//     unsafe
-//     {
-//       // std::mem::transmute::< _, &[ T1 ] >( src1 )
-//       std::mem::transmute::< _, *const () >( src1 )
-//       ==
-//       std::mem::transmute::< _, *const () >( src2 )
-//       // std::mem::transmute::< _, &[ T1 ] >( src2 )
-//       // std::mem::transmute::< *const T1, *const T2 >( src1 as *const T1 ) == src2 as *const T2
-//     }
-//   }
-
   ///
   /// Are two pointers are the same, not taking into accoint type.
   ///
@@ -78,7 +60,7 @@ mod internal
   /// Are two pointers points on the same region.
   ///
 
-  pub fn mem_same_region< T1, T2 >( src1 : &T1, src2 : &T2 ) -> bool
+  pub fn mem_same_region< T1 : ?Sized, T2 : ?Sized >( src1 : &T1, src2 : &T2 ) -> bool
   {
     mem_same_ptr( src1, src2 ) && mem_same_size( src1, src2 )
   }

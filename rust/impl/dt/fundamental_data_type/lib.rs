@@ -10,6 +10,7 @@
 
 #[ path = "./inc.rs" ]
 mod inc;
+#[ doc( inline ) ]
 pub use inc::*;
 
 // xxx : implement module include_md

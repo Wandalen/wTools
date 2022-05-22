@@ -82,15 +82,9 @@ tests_impls!
 
     types!
     {
-
-      ///
-      /// Attribute which is inner.
-      ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       single Single : mod1::f32<>;
-
     }
 
     /* test.case( "from f32 / into Single" ) */
@@ -164,15 +158,9 @@ tests_impls!
 
     types!
     {
-
-      ///
-      /// Attribute which is inner.
-      ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       single Single : mod1::Single0< T >;
-
     }
 
     /* test.case( "from f32 / into Single" ) */
@@ -328,18 +316,14 @@ tests_impls!
 
     }
 
+    // trace_macros!( true );
     types!
     {
-
-      ///
-      /// Attribute which is inner.
-      ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       single Single : mod1::Single0< T1 : PartialEq + std::marker::Copy, T2 : Default >;
-
     }
+    // trace_macros!( false );
 
     /* test.case( "from f32 / into Single" ) */
     let instance1 : Single< f32, f64 > = ( mod1::Single0::from( 13.0 ) ).into();
@@ -363,6 +347,30 @@ tests_impls!
     let got = mod1::Single0::< f32, f64 >::from( instance1 );
     assert_eq!( got.0, 13.0 );
 
+    /* test.case( "from tuple" ) */
+    let got : Single< f32, f64 > = ( mod1::Single0::from( 13.0 ), ).into();
+    let exp : Single< f32, f64 > = Single::from( mod1::Single0::from( 13.0 ) );
+    assert_eq!( got, exp );
+    let got = Single::< f32, f64 >::from( ( mod1::Single0::from( 13.0 ), ) );
+    let exp : Single< f32, f64 > = Single::from( mod1::Single0::from( 13.0 ) );
+    assert_eq!( got, exp );
+
+    /* test.case( "from array" ) */
+    let got : Single< f32, f64 > = [ mod1::Single0::from( 13.0 ), ].into();
+    let exp : Single< f32, f64 > = Single::from( mod1::Single0::from( 13.0 ) );
+    assert_eq!( got, exp );
+    let got = Single::< f32, f64 >::from( [ mod1::Single0::from( 13.0 ), ] );
+    let exp : Single< f32, f64 > = Single::from( mod1::Single0::from( 13.0 ) );
+    assert_eq!( got, exp );
+
+    /* test.case( "from slice" ) */
+    let got : Single< f32, f64 > = ( &[ mod1::Single0::from( 13.0 ), ][ .. ] ).into();
+    let exp : Single< f32, f64 > = Single::from( mod1::Single0::from( 13.0 ) );
+    assert_eq!( got, exp );
+    let got = Single::< f32, f64 >::from( &[ mod1::Single0::from( 13.0 ), ][ .. ] );
+    let exp : Single< f32, f64 > = Single::from( mod1::Single0::from( 13.0 ) );
+    assert_eq!( got, exp );
+
     /* test.case( "clone / eq" ) */
     let instance1 : Single< f32, f64 > = ( mod1::Single0::from( 13.0 ) ).into();
     let instance2 = instance1.clone();
@@ -372,6 +380,36 @@ tests_impls!
     /* test.case( "deref" ) */
     let got : Single< f32, f64 > = ( mod1::Single0::from( 13.5 ) ).into();
     assert_eq!( got.round(), 14.0 );
+
+    /* test.case( "clone_as_tuple" ) */
+    let src : Single< f32, f64 > = Single::from( mod1::Single0::from( 13.0 ) );
+    let got = src.clone_as_tuple();
+    assert_eq!( got, ( mod1::Single0::from( 13.0 ), ) );
+    assert!( !mem_same_ptr( &src, &got ) );
+
+    /* test.case( "clone_as_array" ) */
+    let src : Single< f32, f64 > = Single::from( mod1::Single0::from( 13.0 ) );
+    let got = src.clone_as_array();
+    assert_eq!( got, [ mod1::Single0::from( 13.0 ), ] );
+    assert!( !mem_same_ptr( &src, &got ) );
+
+    /* test.case( "as_tuple" ) */
+    let src : Single< f32, f64 > = Single::from( mod1::Single0::from( 13.0 ) );
+    let got = src.as_tuple();
+    assert_eq!( got, &( mod1::Single0::from( 13.0 ), ) );
+    assert!( mem_same_region( &src, got ) );
+
+    /* test.case( "as_array" ) */
+    let src : Single< f32, f64 > = Single::from( mod1::Single0::from( 13.0 ) );
+    let got = src.as_array();
+    assert_eq!( got, &[ mod1::Single0::from( 13.0 ), ] );
+    assert!( mem_same_region( &src, got ) );
+
+    /* test.case( "as_slice" ) */
+    let src : Single< f32, f64 > = Single::from( mod1::Single0::from( 13.0 ) );
+    let got = src.as_slice();
+    assert_eq!( got, &[ mod1::Single0::from( 13.0 ), ][ .. ] );
+    assert!( mem_same_region( &src, got ) );
 
   }
 
@@ -409,15 +447,9 @@ tests_impls!
 
     types!
     {
-
-      ///
-      /// Attribute which is inner.
-      ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq, Default ) ]
       single Single : < T >;
-
     }
 
     /* test.case( "from f32 / into Single" ) */
@@ -434,6 +466,36 @@ tests_impls!
     assert_eq!( instance2.0, 13.0 );
     assert_eq!( instance1, instance2 );
 
+    /* test.case( "from tuple" ) */
+    let got : Single< f32 > = ( 13.0, ).into();
+    assert_eq!( got, Single( 13.0 ) );
+    let got = Single::< f32 >::from( ( 13.0, ) );
+    assert_eq!( got, Single( 13.0 ) );
+
+    /* test.case( "to tuple" ) */
+    let got : ( f32, ) = ( Single::< f32 >::from( 13.0 ) ).into();
+    assert_eq!( got, ( 13.0, ) );
+    let got = < ( f32, ) >::from( Single::< f32 >::from( ( 13.0, ) ) );
+    assert_eq!( got, ( 13.0, ) );
+
+    /* test.case( "from array" ) */
+    let got : Single< f32 > = [ 13.0 ].into();
+    assert_eq!( got, Single( 13.0 ) );
+    let got = Single::< f32 >::from( [ 13.0 ] );
+    assert_eq!( got, Single( 13.0 ) );
+
+    /* test.case( "to array" ) */
+    let got : [ f32 ; 1 ] = ( Single::< f32 >::from( 13.0 ) ).into();
+    assert_eq!( got, [ 13.0 ] );
+    let got = < [ f32 ; 1 ] >::from( Single::< f32 >::from( 13.0 ) );
+    assert_eq!( got, [ 13.0 ] );
+
+    /* test.case( "from slice" ) */
+    let got : Single< f32 > = (&[ 13.0 ][ .. ]).into();
+    assert_eq!( got, Single( 13.0 ) );
+    let got = Single::< f32 >::from( (&[ 13.0 ][ .. ]) );
+    assert_eq!( got, Single( 13.0 ) );
+
     /* test.case( "clone / eq" ) */
     let instance1 : Single< f32 > = ( 13.0 ).into();
     let instance2 = instance1.clone();
@@ -443,6 +505,36 @@ tests_impls!
     /* test.case( "deref" ) */
     let got : Single< f32 > = ( 13.5 ).into();
     assert_eq!( got.round(), 14.0 );
+
+    /* test.case( "clone_as_tuple" ) */
+    let src : Single< f32 > = ( 13.0, ).into();
+    let got = src.clone_as_tuple();
+    assert_eq!( got, ( 13.0, ) );
+    assert!( !mem_same_ptr( &src, &got ) );
+
+    /* test.case( "clone_as_array" ) */
+    let src : Single< f32 > = ( 13.0, ).into();
+    let got = src.clone_as_array();
+    assert_eq!( got, [ 13.0, ] );
+    assert!( !mem_same_ptr( &src, &got ) );
+
+    /* test.case( "as_tuple" ) */
+    let src : Single< f32 > = ( 13.0, ).into();
+    let got = src.as_tuple();
+    assert_eq!( got, &( 13.0, ) );
+    assert!( mem_same_region( &src, &got ) );
+
+    /* test.case( "as_array" ) */
+    let src : Single< f32 > = ( 13.0, ).into();
+    let got = src.as_array();
+    assert_eq!( got, &[ 13.0, ] );
+    assert!( mem_same_region( &src, got ) );
+
+    /* test.case( "as_slice" ) */
+    let src : Single< f32 > = ( 13.0, ).into();
+    let got = src.as_slice();
+    assert_eq!( got, &[ 13.0, ][ .. ] );
+    assert!( mem_same_region( &src, got ) );
 
   }
 

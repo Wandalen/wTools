@@ -234,7 +234,7 @@ tests_impls!
     let src : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
     let got = src.as_tuple();
     assert_eq!( got, &( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ) );
-    assert!( !mem_same_ptr( &src, &got ) );
+    assert!( mem_same_region( &src, got ) );
 
     /* test.case( "as_array" ) */
     let src : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
@@ -246,7 +246,7 @@ tests_impls!
     let src : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
     let got = src.as_slice();
     assert_eq!( got, &[ mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ][ .. ] );
-    assert!( mem_same_ptr( &src, got ) );
+    assert!( mem_same_region( &src, got ) );
 
   }
 
@@ -400,7 +400,7 @@ tests_impls!
     let src : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
     let got = src.as_tuple();
     assert_eq!( got, &( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ) );
-    assert!( !mem_same_ptr( &src, &got ) );
+    assert!( mem_same_region( &src, got ) );
 
     /* test.case( "as_array" ) */
     let src : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
@@ -412,7 +412,7 @@ tests_impls!
     let src : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
     let got = src.as_slice();
     assert_eq!( got, &[ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ][ .. ] );
-    assert!( mem_same_ptr( &src, got ) );
+    assert!( mem_same_region( &src, got ) );
 
   }
 
@@ -483,6 +483,15 @@ tests_impls!
     assert_eq!( instance1.1, 31.0 );
     assert_eq!( instance2.0, 13.0 );
     assert_eq!( instance2.1, 31.0 );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "from scalar / into HomoPair" ) */
+    let instance1 : HomoPair< f32 > = ( HomoPair::from( 13.0 ) ).into();
+    let instance2 = HomoPair::< f32 >::from( HomoPair::from( 13.0 ) );
+    assert_eq!( instance1.0, 13.0 );
+    assert_eq!( instance1.1, 13.0 );
+    assert_eq!( instance2.0, 13.0 );
+    assert_eq!( instance2.1, 13.0 );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */

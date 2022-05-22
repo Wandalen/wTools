@@ -6,7 +6,7 @@ mod internal
   ///
   /// Pair type constructor.
   ///
-  /// Should not be used directly. Instead use macro [crate::type!].
+  /// Should not be used directly. Instead use macro [crate::types!].
   ///
 
   #[ macro_export ]
@@ -210,7 +210,7 @@ mod internal
         type Target = ( $ParamName1, $ParamName1 );
         fn deref( &self ) -> &Self::Target
         {
-          // Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)].
+          /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
             std::mem::transmute::< &Self, &Self::Target >( self )
@@ -283,7 +283,23 @@ mod internal
       {
         fn from( src : &[ $ParamName1 ] ) -> Self
         {
+          debug_assert_eq!( src.len(), 2 );
           Self( src[ 0 ].clone(), src[ 1 ].clone() )
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      From< $ParamName1 >
+      for $Name< $ParamName1 >
+      where
+        $ParamName1 : Clone,
+      {
+        fn from( src : $ParamName1 ) -> Self
+        {
+          Self( src.clone(), src.clone() )
         }
       }
 
@@ -326,7 +342,7 @@ mod internal
       {
         fn as_tuple( &self ) -> &( $ParamName1, $ParamName1 )
         {
-          // Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)].
+          /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
             std::mem::transmute::< &_, &( $ParamName1, $ParamName1 ) >( self )
@@ -343,7 +359,7 @@ mod internal
       {
         fn as_array( &self ) -> &[ $ParamName1 ; 2 ]
         {
-          // Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)].
+          /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
             std::mem::transmute::< &_, &[ $ParamName1 ; 2 ] >( self )
@@ -408,7 +424,7 @@ mod internal
           let layout1 = std::alloc::Layout::new::< Self >();
           let layout2 = std::alloc::Layout::new::< Self::Target >();
           debug_assert_eq!( layout1, layout2 );
-          // Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)].
+          /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
             std::mem::transmute::< &Self, &Self::Target >( self )
@@ -602,7 +618,7 @@ mod internal
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
         )
         {
-          // Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)].
+          /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
             std::mem::transmute::< _, _ >( self )
@@ -629,7 +645,7 @@ mod internal
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > ; 2
         ]
         {
-          // Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)].
+          /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
             std::mem::transmute::< _, _ >( self )

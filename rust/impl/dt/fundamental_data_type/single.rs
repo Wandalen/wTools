@@ -3,12 +3,10 @@ mod internal
 {
   use crate::exposed::*;
 
-  // xxx : check doc
-
   ///
   /// Type constructor of single.
   ///
-  /// Should not be used directly. Instead use macro [crate::type!].
+  /// Should not be used directly. Instead use macro [crate::types!].
   ///
 
   #[ macro_export ]
@@ -41,7 +39,8 @@ mod internal
         }
       }
 
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? > From< $ParamName >
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      From< $ParamName >
       for $Name
       < $ParamName >
       {
@@ -51,7 +50,127 @@ mod internal
         }
       }
 
-      // From Single Into Element cant be implemented because of Rust restructions.
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      From< ( $ParamName, ) >
+      for $Name
+      < $ParamName >
+      {
+        fn from( src : ( $ParamName, ) ) -> Self
+        {
+          Self( src.0 )
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      From< $Name< $ParamName > >
+      for ( $ParamName, )
+      {
+        fn from( src : $Name< $ParamName > ) -> Self
+        {
+          ( src.0, )
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      From< [ $ParamName ; 1 ] >
+      for $Name
+      < $ParamName >
+      where
+        $ParamName : Clone,
+      {
+        fn from( src : [ $ParamName ; 1 ] ) -> Self
+        {
+          Self( src[ 0 ].clone() )
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      From< $Name< $ParamName > >
+      for [ $ParamName ; 1 ]
+      {
+        fn from( src : $Name< $ParamName > ) -> Self
+        {
+          [ src.0 ]
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      From< &[ $ParamName ] >
+      for $Name
+      < $ParamName >
+      where
+        $ParamName : Clone,
+      {
+        fn from( src : &[ $ParamName ] ) -> Self
+        {
+          debug_assert_eq!( src.len(), 1 );
+          Self( src[ 0 ].clone() )
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      CloneAsTuple< ( $ParamName, ) >
+      for $Name < $ParamName >
+      where
+        $ParamName : Clone,
+      {
+        fn clone_as_tuple( &self ) -> ( $ParamName, )
+        {
+          ( self.0.clone(), )
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      CloneAsArray< $ParamName, 1 >
+      for $Name < $ParamName >
+      where
+        $ParamName : Clone,
+      {
+        fn clone_as_array( &self ) -> [ $ParamName ; 1 ]
+        {
+          [ self.0.clone() ; 1 ]
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      AsTuple< ( $ParamName, ) >
+      for $Name < $ParamName >
+      {
+        fn as_tuple( &self ) -> &( $ParamName, )
+        {
+          /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
+          unsafe
+          {
+            std::mem::transmute::< _, _ >( self )
+          }
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      AsArray< $ParamName, 1 >
+      for $Name < $ParamName >
+      {
+        fn as_array( &self ) -> &[ $ParamName ; 1 ]
+        {
+          /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
+          unsafe
+          {
+            std::mem::transmute::< _, _ >( self )
+          }
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      AsSlice< $ParamName >
+      for $Name < $ParamName >
+      {
+        fn as_slice( &self ) -> &[ $ParamName ]
+        {
+          &self.as_array()[ .. ]
+        }
+      }
+
+      // From Single Into Element cant be implemented because of Rust restrictions.
 
       $crate::types!{ $( $( $Rest )* )? }
     };
@@ -87,68 +206,196 @@ mod internal
     (
       $( #[ $Meta : meta ] )*
       single $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )*
-      < $( $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? ),* >
+      $( < $( $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? ),* > )?
       $( ; $( $Rest : tt )* )?
     )
     =>
     {
       $( #[ $Meta ] )*
       pub struct $Name
-      < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* >
-      ( pub $TypeSplit1 $( :: $TypeSplitN )* < $( $ParamName ),* > );
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      ( pub $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? );
 
-      impl< $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > core::ops::Deref
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      core::ops::Deref
       for $Name
-      < $( $ParamName ),* >
+      $( < $( $ParamName ),* > )?
       {
-        type Target = $TypeSplit1 $( :: $TypeSplitN )* < $( $ParamName ),* >;
+        type Target = $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?;
         fn deref( &self ) -> &Self::Target
         {
           &self.0
         }
       }
 
-      impl< $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* >
-      From< $TypeSplit1 $( :: $TypeSplitN )* < $( $ParamName ),* > >
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      From
+      < $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
       for $Name
-      < $( $ParamName ),* >
+      $( < $( $ParamName ),* > )?
       {
-        fn from( src : $TypeSplit1 $( :: $TypeSplitN )* < $( $ParamName ),* > ) -> Self
+        fn from( src : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
         {
           Self( src )
         }
       }
 
-      impl< $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* >
-      From< $Name< $( $ParamName ),* > >
-      for $TypeSplit1 $( :: $TypeSplitN )* < $( $ParamName ),* >
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      From
+      < $Name $( < $( $ParamName ),* > )? >
+      for $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?
       {
-        fn from( src : $Name< $( $ParamName ),* > ) -> Self
+        fn from( src : $Name $( < $( $ParamName ),* > )? ) -> Self
         {
           src.0
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      From
+      < ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , ) >
+      for $Name
+      $( < $( $ParamName ),* > )?
+      {
+        fn from( src : ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , ) ) -> Self
+        {
+          Self( src.0 )
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      From
+      < [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; 1 ] >
+      for $Name
+      $( < $( $ParamName ),* > )?
+      where
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      {
+        fn from( src : [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; 1 ] ) -> Self
+        {
+          Self( src[ 0 ].clone() )
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      From
+      < &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ] >
+      for $Name
+      $( < $( $ParamName ),* > )?
+      where
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      {
+        fn from( src : &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ] ) -> Self
+        {
+          debug_assert_eq!( src.len(), 1 );
+          Self( src[ 0 ].clone() )
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      CloneAsTuple< ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, ) >
+      for
+      $Name $( < $( $ParamName ),* > )?
+      where
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      {
+        fn clone_as_tuple( &self ) -> ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, )
+        {
+          ( self.0.clone(), )
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      CloneAsArray< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , 1 >
+      for
+      $Name $( < $( $ParamName ),* > )?
+      where
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      {
+        fn clone_as_array( &self ) -> [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; 1 ]
+        {
+          [ self.0.clone() ]
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      AsTuple< ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, ) >
+      for
+      $Name $( < $( $ParamName ),* > )?
+      where
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      {
+        fn as_tuple( &self ) -> &( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, )
+        {
+          /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
+          unsafe
+          {
+            std::mem::transmute::< _, _ >( self )
+          }
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      AsArray< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , 1 >
+      for
+      $Name $( < $( $ParamName ),* > )?
+      where
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      {
+        fn as_array( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; 1 ]
+        {
+          /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
+          unsafe
+          {
+            std::mem::transmute::< _, _ >( self )
+          }
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      AsSlice< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+      for
+      $Name $( < $( $ParamName ),* > )?
+      where
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      {
+        fn as_slice( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ]
+        {
+          &self.as_array()[ .. ]
         }
       }
 
       $crate::types!{ $( $( $Rest )* )? }
     };
 
-    // single Single : Element;
-
-    (
-      $( #[ $Meta : meta ] )*
-      single $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )*
-      $( ; $( $Rest : tt )* )?
-    )
-    =>
-    {
-      $crate::types!
-      (
-        $( #[ $Meta ] )*
-        single $Name : $TypeSplit1 $( :: $TypeSplitN )* <>;
-        // $( ; $( $Rest )* )?
-      );
-      $crate::types!{ $( $( $Rest )* )? }
-    };
+//     // single Single : Element;
+//
+//     (
+//       $( #[ $Meta : meta ] )*
+//       single $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )*
+//       $( ; $( $Rest : tt )* )?
+//     )
+//     =>
+//     {
+//       $crate::types!
+//       (
+//         $( #[ $Meta ] )*
+//         single $Name : $TypeSplit1 $( :: $TypeSplitN )* <>;
+//         // $( ; $( $Rest )* )?
+//       );
+//       $crate::types!{ $( $( $Rest )* )? }
+//     };
 
   }
 

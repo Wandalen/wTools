@@ -3,15 +3,19 @@ mod internal
 {
   use crate::exposed::*;
 
-// xxx : implement from single for homopair
-// xxx : module type_constructors
-// xxx : redo implements
+  // xxx : module type_constructors
+  // xxx : samples
+  // xxx : redo implements
 
-// xxx : implement clone_as_tuple()
-// xxx : implement clone_as_array()
-// xxx : implement as_tuple()
-// xxx : implement as_array()
-// xxx : implement as_slice()
+  // xxx : implement clone_as_tuple()
+  // xxx : implement clone_as_array()
+  // xxx : implement as_tuple()
+  // xxx : implement as_array()
+  // xxx : implement as_slice()
+
+  // xxx : from type for homopair
+  // xxx : from array for homopair
+  // xxx : from slice for homopair
 
   ///
   /// Type constructor to define tuple wrapping a given type.
@@ -332,6 +336,7 @@ pub use exposed::*;
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use super::internal::
   {
     types,
