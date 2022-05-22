@@ -3,19 +3,10 @@ mod internal
 {
   use crate::exposed::*;
 
+  // xxx : implement type constructor many
   // xxx : module type_constructors
   // xxx : samples
   // xxx : redo implements
-
-  // xxx : implement clone_as_tuple()
-  // xxx : implement clone_as_array()
-  // xxx : implement as_tuple()
-  // xxx : implement as_array()
-  // xxx : implement as_slice()
-
-  // xxx : from type for homopair
-  // xxx : from array for homopair
-  // xxx : from slice for homopair
 
   ///
   /// Type constructor to define tuple wrapping a given type.
