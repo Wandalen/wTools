@@ -11,6 +11,7 @@ tests_impls!
   #[ test ]
   fn basic_test()
   {
+    use core::fmt::Debug;
 
     mod mod1
     {
@@ -36,6 +37,10 @@ tests_impls!
     assert_eq!( instance1.0, 13.0 );
     assert_eq!( instance2.0, 13.0 );
     assert_eq!( instance1, instance2 );
+    assert!( implements!( instance1 => PartialEq ) );
+    assert!( implements!( instance1 => Clone ) );
+    assert!( implements!( instance1 => Debug ) );
+    assert!( !implements!( instance1 => Default ) );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Single = ( Single::from( 13.0 ) ).into();
@@ -372,6 +377,33 @@ tests_impls!
 
   //
 
+  #[ test ]
+  fn parametrized_no_derives_test()
+  {
+
+    mod mod1
+    {
+      pub struct Floats< T1, T2 >
+      (
+        pub T1,
+        pub T2,
+      );
+    }
+
+    // trace_macros!( true );
+    types!
+    {
+      single Single : mod1::Floats< T1, T2 >;
+    }
+    // trace_macros!( false );
+
+    /* test.case( "smoke test" ) */
+    let instance1 = Single::< f32, f64 >( mod1::Floats( 13.0, 31.0 ) );
+
+  }
+
+  //
+
   fn parameter_test()
   {
 
@@ -462,6 +494,33 @@ tests_impls!
   //
 
   #[ test ]
+  fn parameter_no_derives_test()
+  {
+
+    mod mod1
+    {
+      pub struct Floats< T1, T2 >
+      (
+        pub T1,
+        pub T2,
+      );
+    }
+
+    // trace_macros!( true );
+    types!
+    {
+      single Single : < T >;
+    }
+    // trace_macros!( false );
+
+    /* test.case( "smoke test" ) */
+    let instance1 = Single( mod1::Floats( 13.0, 31.0 ) );
+
+  }
+
+  //
+
+  #[ test ]
   fn multiple_test()
   {
     use core::fmt::Debug;
@@ -485,6 +544,7 @@ tests_impls!
     assert!( !implements!( instance1 => PartialEq ) );
     assert!( !implements!( instance1 => Clone ) );
     assert!( !implements!( instance1 => Debug ) );
+    assert!( !implements!( instance1 => Default ) );
 
     /* test.case( "from f32 / into Single2" ) */
     let instance1 : Single2 = ( 13.0 ).into();
@@ -492,6 +552,10 @@ tests_impls!
     assert_eq!( instance1.0, 13.0 );
     assert_eq!( instance2.0, 13.0 );
     assert_eq!( instance1, instance2 );
+    assert!( implements!( instance1 => PartialEq ) );
+    assert!( implements!( instance1 => Clone ) );
+    assert!( implements!( instance1 => Debug ) );
+    assert!( !implements!( instance1 => Default ) );
 
     /* test.case( "from f32 / into Single2" ) */
     let instance1 : Single2 = ( 13.0 ).into();
@@ -566,7 +630,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn struct_deaf_test()
+  fn struct_no_derives_test()
   {
 
     struct Single0< T >( pub T );
@@ -663,11 +727,13 @@ tests_index!
   parametrized_test,
   parametrized_complex_test,
   parametrized_multiple_test,
+  parametrized_no_derives_test,
   parameter_test,
   parameter_complex_test,
+  parameter_no_derives_test,
   multiple_test,
   struct_basic_test,
-  struct_deaf_test,
+  struct_no_derives_test,
   samples_test,
 
 }

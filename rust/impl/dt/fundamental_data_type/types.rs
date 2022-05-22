@@ -3,7 +3,10 @@ mod internal
 {
   use crate::exposed::*;
 
-// xxx : add version for single type
+// xxx : implement from single for homopair
+// xxx : module type_constructors
+// xxx : redo implements
+
 // xxx : implement clone_as_tuple()
 // xxx : implement clone_as_array()
 // xxx : implement as_tuple()
@@ -569,6 +572,8 @@ mod internal
       >
       From< [ $ParamName1 ; 2 ] >
       for $Name< $ParamName1 >
+      where
+        $ParamName1 : Clone,
       {
         fn from( src : [ $ParamName1 ; 2 ] ) -> Self
         {
@@ -595,6 +600,8 @@ mod internal
       >
       From< &[ $ParamName1 ] >
       for $Name< $ParamName1 >
+      where
+        $ParamName1 : Clone,
       {
         fn from( src : &[ $ParamName1 ] ) -> Self
         {
@@ -607,7 +614,9 @@ mod internal
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
       >
       CloneAsTuple< ( $ParamName1, $ParamName1 ) >
-      for Pair< $ParamName1 >
+      for $Name< $ParamName1 >
+      where
+        $ParamName1 : Clone,
       {
         fn clone_as_tuple( &self ) -> ( $ParamName1, $ParamName1 )
         {
@@ -620,7 +629,9 @@ mod internal
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
       >
       CloneAsArray< $ParamName1, 2 >
-      for Pair< $ParamName1 >
+      for $Name< $ParamName1 >
+      where
+        $ParamName1 : Clone,
       {
         fn clone_as_array( &self ) -> [ $ParamName1 ; 2 ]
         {
@@ -633,7 +644,7 @@ mod internal
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
       >
       AsTuple< ( $ParamName1 , $ParamName1 ) >
-      for Pair< $ParamName1 >
+      for $Name< $ParamName1 >
       {
         fn as_tuple( &self ) -> &( $ParamName1, $ParamName1 )
         {
@@ -650,7 +661,7 @@ mod internal
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
       >
       AsArray< $ParamName1, 2 >
-      for Pair< $ParamName1 >
+      for $Name< $ParamName1 >
       {
         fn as_array( &self ) -> &[ $ParamName1 ; 2 ]
         {
@@ -667,7 +678,7 @@ mod internal
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
       >
       AsSlice< $ParamName1 >
-      for Pair< $ParamName1 >
+      for $Name< $ParamName1 >
       {
         fn as_slice( &self ) -> &[ $ParamName1 ]
         {
@@ -730,7 +741,7 @@ mod internal
       pub struct $Name
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
-        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )* )?
+        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
       >
       (
         pub $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
@@ -740,7 +751,7 @@ mod internal
       impl
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
-        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )* )?
+        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
       >
       From
       <(
@@ -748,7 +759,7 @@ mod internal
         $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
       )>
       for $Name
-      < $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 )* )? >
+      < $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? >
       {
         fn from
         (
@@ -767,9 +778,9 @@ mod internal
       impl
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
-        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? )* )?
+        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
       >
-      From< $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 )* )? > >
+      From< $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? > >
       for
       (
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
@@ -778,7 +789,7 @@ mod internal
       {
         fn from
         (
-          src : $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 )* )? >
+          src : $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? >
         )
         -> Self
         {
@@ -940,7 +951,7 @@ mod internal
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >
       ]>
       for $Name
-      < $( $( $( $ParamName1 ),+ , )? )? >
+      < $( $( $( $ParamName1 ),+ )? )? >
       where
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
       {
@@ -956,6 +967,23 @@ mod internal
           Self( src[ 0 ].clone(), src[ 1 ].clone() )
         }
       }
+
+      // impl
+      // <
+      //   $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+      // >
+      // CloneAsTuple< ( $( $( $( $ParamName1 ),+ , )? )? ) >
+      // for $Name
+      // < $( $( $( $ParamName1 ),+ )? )? >
+      // where
+      //   $( $( $( $ParamName1 ),+ )? )?
+      //   $ParamName1 : Clone,
+      // {
+      //   fn clone_as_tuple( &self ) -> ( $ParamName1, $ParamName1 )
+      //   {
+      //     ( self.0.clone(), self.1.clone() )
+      //   }
+      // }
 
       $crate::types!{ $( $( $Rest )* )? }
     };
@@ -1013,12 +1041,12 @@ mod internal
     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
     pair Pair : < T1, T2 >;
 
-//     ///
-//     /// Type constructor to wrap pair of the same type.
-//     ///
-//
-//     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
-//     pair HomoPair : < T >;
+    ///
+    /// Type constructor to wrap pair of the same type.
+    ///
+
+    #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
+    pair HomoPair : < T >;
 
   }
 
@@ -1063,8 +1091,7 @@ pub mod prelude
 
     Single,
     Pair,
-    // HomoPair,
+    HomoPair,
 
   };
 }
-

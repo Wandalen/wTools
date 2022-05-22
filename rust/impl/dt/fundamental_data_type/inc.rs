@@ -1,17 +1,12 @@
 
-/// A type wrapping a another type into a tuple.
-pub mod single;
-/// A type wrapping two types into a tuple.
-pub mod pair;
-// /// A type vector into a tuple.
-// pub mod many;
+/// Type constructors.
+pub mod types;
 
 /// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;
-  pub use super::single::orphan::*;
-  pub use super::pair::orphan::*;
+  pub use super::types::orphan::*;
 }
 
 pub use protected::*;
@@ -26,13 +21,11 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
-  pub use super::single::exposed::*;
-  pub use super::pair::exposed::*;
+  pub use super::types::exposed::*;
 }
 
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
-  pub use super::single::prelude::*;
-  pub use super::pair::prelude::*;
+  pub use super::types::prelude::*;
 }

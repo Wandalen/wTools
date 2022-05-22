@@ -10,6 +10,7 @@ tests_impls!
   #[ test ]
   fn basic_test()
   {
+    use core::fmt::Debug;
 
     mod mod1
     {
@@ -49,6 +50,10 @@ tests_impls!
     assert_eq!( instance2.0, 13.0 );
     assert_eq!( instance2.1, 31.0 );
     assert_eq!( instance1, instance2 );
+    assert!( implements!( instance1 => PartialEq ) );
+    assert!( implements!( instance1 => Clone ) );
+    assert!( implements!( instance1 => Debug ) );
+    assert!( !implements!( instance1 => Default ) );
 
     /* test.case( "from pair / into array" ) */
     let instance1 : [ _ ; 2 ] = ( Pair::from( [ 13.0, 31.0 ] ) ).into();
@@ -118,14 +123,14 @@ tests_impls!
     {
 
       #[ derive( Debug, Clone, PartialEq ) ]
-      pub struct Pair0< T1 : PartialEq + Copy, T2 : Default >
+      pub struct Floats< T1 : PartialEq + Copy, T2 : Default >
       (
         pub T1,
         pub T2,
       );
 
       impl< T1 : PartialEq + Copy, T2 : Default > core::ops::Deref
-      for Pair0< T1, T2 >
+      for Floats< T1, T2 >
       {
         type Target = T1;
         fn deref( &self ) -> &Self::Target
@@ -135,11 +140,11 @@ tests_impls!
       }
 
       impl< T1 : PartialEq + Copy, T2 : Default > From< T1 >
-      for Pair0< T1, T2 >
+      for Floats< T1, T2 >
       {
         fn from( src : T1 ) -> Self
         {
-          Pair0::< T1, T2 >( src, T2::default() )
+          Floats::< T1, T2 >( src, T2::default() )
         }
       }
 
@@ -156,7 +161,7 @@ tests_impls!
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       pair Pair :
-        mod1::Pair0< T1 : PartialEq + std::marker::Copy, T2 : Default >,
+        mod1::Floats< T1 : PartialEq + std::marker::Copy, T2 : Default >,
       ;
 
     }
@@ -164,16 +169,16 @@ tests_impls!
 
     pub trait Round { fn round( &self ) -> Self; }
     impl Round
-    for mod1::Pair0< f32, f64 >
+    for mod1::Floats< f32, f64 >
     {
       fn round( &self ) -> Self
       {
-        mod1::Pair0( self.0.round(), self.1.round() )
+        mod1::Floats( self.0.round(), self.1.round() )
       }
     }
 
     impl Round
-    for ( mod1::Pair0< f32, f64 >, mod1::Pair0< f32, f64 > )
+    for ( mod1::Floats< f32, f64 >, mod1::Floats< f32, f64 > )
     {
       fn round( &self ) -> Self
       {
@@ -184,42 +189,100 @@ tests_impls!
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64 > =
     (
-      mod1::Pair0::from( 13.0 ),
-      mod1::Pair0::from( 31.0 ),
+      mod1::Floats::from( 13.0 ),
+      mod1::Floats::from( 31.0 ),
     ).into();
     let instance2 = Pair::< f32, f64 >::from
     ((
-      mod1::Pair0::from( 13.0 ),
-      mod1::Pair0::from( 31.0 ),
+      mod1::Floats::from( 13.0 ),
+      mod1::Floats::from( 31.0 ),
     ));
     assert_eq!( instance1.0.0, 13.0 );
     assert_eq!( instance2.0.0, 13.0 );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "from Pair / into tuple" ) */
-    let instance1 : Pair< f32, f64 > = ( mod1::Pair0::from( 13.0 ), mod1::Pair0::from( 31.0 ) ).into();
-    let got : ( mod1::Pair0< f32, f64 >, _ ) = instance1.into();
+    let instance1 : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
+    let got : ( mod1::Floats< f32, f64 >, _ ) = instance1.into();
     assert_eq!( got.0.0, 13.0 );
-    let instance1 : Pair< f32, f64 > = ( mod1::Pair0::from( 13.0 ), mod1::Pair0::from( 31.0 ) ).into();
-    let got = < ( mod1::Pair0::< f32, f64 >, _ ) >::from( instance1 );
+    let instance1 : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
+    let got = < ( mod1::Floats::< f32, f64 >, _ ) >::from( instance1 );
     assert_eq!( got.0.0, 13.0 );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : Pair< f32, f64 > = ( mod1::Pair0::from( 13.0 ), mod1::Pair0::from( 31.0 ) ).into();
+    let instance1 : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, mod1::Pair0::from( 13.0 ) );
+    assert_eq!( instance2.0, mod1::Floats::from( 13.0 ) );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "deref" ) */
-    let got : Pair< f32, f64 > = ( mod1::Pair0::from( 13.5 ), mod1::Pair0::from( 31.5 ) ).into();
-    assert_eq!( got.round(), ( mod1::Pair0::from( 14.0 ), mod1::Pair0::from( 32.0 ) ) );
+    let got : Pair< f32, f64 > = ( mod1::Floats::from( 13.5 ), mod1::Floats::from( 31.5 ) ).into();
+    assert_eq!( got.round(), ( mod1::Floats::from( 14.0 ), mod1::Floats::from( 32.0 ) ) );
+
+    /* test.case( "clone_as_tuple" ) */
+    let src : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
+    // let got = src.clone_as_tuple();
+    // assert_eq!( got, ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ) );
+    // assert!( !mem_same_ptr( &src, &got ) );
+
+// xxx
+//     /* test.case( "clone_as_array" ) */
+//     let src : Pair< f32, f64 > = ( mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ).into();
+//     let got = src.clone_as_array();
+//     assert_eq!( got, [ mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ] );
+//     assert!( !mem_same_ptr( &src, &got ) );
+//
+//     /* test.case( "as_tuple" ) */
+//     let src : Pair< f32, f64 > = ( mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ).into();
+//     let got = src.as_tuple();
+//     assert_eq!( got, &( mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ) );
+//     assert!( !mem_same_ptr( &src, &got ) );
+//
+//     /* test.case( "as_array" ) */
+//     let src : Pair< f32, f64 > = ( mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ).into();
+//     let got = src.as_array();
+//     assert_eq!( got, &[ mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ] );
+//     assert!( mem_same_region( &src, got ) );
+//
+//     /* test.case( "as_slice" ) */
+//     let src : Pair< f32, f64 > = ( mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ).into();
+//     let got = src.as_slice();
+//     assert_eq!( got, &[ mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ][ .. ] );
+//     assert!( mem_same_ptr( &src, got ) );
 
   }
 
   //
 
   #[ test ]
-  fn parameter_complex_test()
+  fn parametrized_no_derives_test()
+  {
+
+    mod mod1
+    {
+      pub struct Floats< T1, T2 >
+      (
+        pub T1,
+        pub T2,
+      );
+    }
+
+    // trace_macros!( true );
+    types!
+    {
+      pair Pair : mod1::Floats< T1, T2 >;
+    }
+    // trace_macros!( false );
+
+    /* test.case( "smoke test" ) */
+    let instance1 = Pair( mod1::Floats( 13.0, 31.0 ), mod1::Floats( 13.0, 31.0 ) );
+
+  }
+
+  //
+
+  #[ test ]
+  fn parameter_with_derives_test()
   {
 
     mod mod1
@@ -351,8 +414,33 @@ tests_impls!
     let src : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
     let got = src.as_slice();
     assert_eq!( got, &[ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ][ .. ] );
-    // assert!( mem_same_ptr( &src, got ) );
-    // xxx : make it working
+    assert!( mem_same_ptr( &src, got ) );
+
+  }
+
+  //
+
+  #[ test ]
+  fn parameter_no_derives_test()
+  {
+
+    mod mod1
+    {
+      pub struct Float
+      (
+        pub f32,
+      );
+    }
+
+    // trace_macros!( true );
+    types!
+    {
+      pair Pair : < T1 >;
+    }
+    // trace_macros!( false );
+
+    /* test.case( "smoke test" ) */
+    let instance1 = Pair::< mod1::Float >( mod1::Float( 13.0 ), mod1::Float( 13.0 ) );
 
   }
 
@@ -362,76 +450,78 @@ tests_impls!
   fn struct_basic_test()
   {
 
-//     /* test.case( "from tuple / into pair" ) */
-//     let instance1 : HomoPair< f32 > = ( 13.0, 31.0 ).into();
-//     let instance2 = HomoPair::< f32, f64 >::from( ( 13.0, 31.0 ) );
-//     assert_eq!( instance1.0, 13.0 );
-//     assert_eq!( instance1.1, 31.0 );
-//     assert_eq!( instance2.0, 13.0 );
-//     assert_eq!( instance2.1, 31.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "from Pair / into tuple" ) */
-//     let instance1 : HomoPair< f32 > = ( 13.0, 31.0 ).into();
-//     let instance2 = HomoPair::< f32, f64 >::from( ( 13.0, 31.0 ) );
-//     assert_eq!( instance1.0, 13.0 );
-//     assert_eq!( instance1.1, 31.0 );
-//     assert_eq!( instance2.0, 13.0 );
-//     assert_eq!( instance2.1, 31.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "from itself / into itself" ) */
-//     let instance1 : HomoPair< f32 > = ( Pair::from( ( 13.0, 31.0 ) ) ).into();
-//     let instance2 = HomoPair::< f32, f64 >::from( Pair::from( ( 13.0, 31.0 ) ) );
-//     assert_eq!( instance1.0, 13.0 );
-//     assert_eq!( instance1.1, 31.0 );
-//     assert_eq!( instance2.0, 13.0 );
-//     assert_eq!( instance2.1, 31.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "clone / eq" ) */
-//     let instance1 : HomoPair< f32 > = ( 13.0, 31.0 ).into();
-//     let instance2 = instance1.clone();
-//     assert_eq!( instance1.0, 13.0 );
-//     assert_eq!( instance1.1, 31.0 );
-//     assert_eq!( instance2.0, 13.0 );
-//     assert_eq!( instance2.1, 31.0 );
-//     assert_eq!( instance1, instance2 );
-//
-//     /* test.case( "default" ) */
-//     let instance1 : HomoPair< f32 > = Default::default();
-//     assert_eq!( instance1.0, 0.0 );
-//     assert_eq!( instance1.1, 0.0 );
-//
-// //     /* test.case( "deref" ) */
-// //     let got : Pair< f32, f64 > = ( 13.5 ).into();
-// //     assert_eq!( got.round(), 14.0 );
+    trait Round { fn round( &self ) -> Self; };
+    impl Round for ( f32, f32 )
+    {
+      fn round( &self ) -> Self
+      {
+        // dbg!( &self );
+        ( self.0.round(), self.1.round() )
+      }
+    }
+
+    /* test.case( "from tuple / into pair" ) */
+    let instance1 : HomoPair< f32 > = ( 13.0, 31.0 ).into();
+    let instance2 = HomoPair::< f32 >::from( ( 13.0, 31.0 ) );
+    assert_eq!( instance1.0, 13.0 );
+    assert_eq!( instance1.1, 31.0 );
+    assert_eq!( instance2.0, 13.0 );
+    assert_eq!( instance2.1, 31.0 );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "from HomoPair / into tuple" ) */
+    let instance1 : HomoPair< f32 > = ( 13.0, 31.0 ).into();
+    let instance2 = HomoPair::< f32 >::from( ( 13.0, 31.0 ) );
+    assert_eq!( instance1.0, 13.0 );
+    assert_eq!( instance1.1, 31.0 );
+    assert_eq!( instance2.0, 13.0 );
+    assert_eq!( instance2.1, 31.0 );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "from itself / into itself" ) */
+    let instance1 : HomoPair< f32 > = ( HomoPair::from( ( 13.0, 31.0 ) ) ).into();
+    let instance2 = HomoPair::< f32 >::from( HomoPair::from( ( 13.0, 31.0 ) ) );
+    assert_eq!( instance1.0, 13.0 );
+    assert_eq!( instance1.1, 31.0 );
+    assert_eq!( instance2.0, 13.0 );
+    assert_eq!( instance2.1, 31.0 );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "clone / eq" ) */
+    let instance1 : HomoPair< f32 > = ( 13.0, 31.0 ).into();
+    let instance2 = instance1.clone();
+    assert_eq!( instance1.0, 13.0 );
+    assert_eq!( instance1.1, 31.0 );
+    assert_eq!( instance2.0, 13.0 );
+    assert_eq!( instance2.1, 31.0 );
+    assert_eq!( instance1, instance2 );
+
+    /* test.case( "default" ) */
+    let instance1 : HomoPair< f32 > = Default::default();
+    assert_eq!( instance1.0, 0.0 );
+    assert_eq!( instance1.1, 0.0 );
+
+    /* test.case( "deref" ) */
+    let got : HomoPair< f32 > = ( 13.5, 31.5 ).into();
+    assert_eq!( got.round(), ( 14.0, 32.0 ) );
 
   }
 
   //
 
   #[ test ]
-  fn struct_deaf_test()
+  fn struct_no_derives_test()
   {
 
-//     struct Pair0< T1, T2 >( pub T1, pub T2 );
-//
-//     impl< T1, T2 > Pair0< T1, T2 >
-//     {
-//       pub fn new( src : ( T1, T2 ) ) -> Self
-//       { Self( src.0, src.1 ) }
-//     }
-//
-//     /* test.case( "from tuple / into pair" ) */
-//     let instance1 : HomoPair< Pair0< f32, f64 > > = ( Pair0( 13.0, 31.0 ), 131.0 ).into();
-//     let instance2 = HomoPair::< Pair0< f32, f64 > >::from( ( Pair0( 13.0, 31.0 ), 131.0 ) );
-//     assert_eq!( instance1.0.0, 13.0 );
-//     assert_eq!( instance1.0.1, 31.0 );
-//     assert_eq!( instance1.1, 131.0 );
-//     assert_eq!( instance2.0.0, 13.0 );
-//     assert_eq!( instance2.0.1, 31.0 );
-//     assert_eq!( instance2.1, 131.0 );
+    struct Floats< T1, T2 >( pub T1, pub T2 );
+    impl< T1, T2 > Floats< T1, T2 >
+    {
+      pub fn new( src : ( T1, T2 ) ) -> Self
+      { Self( src.0, src.1 ) }
+    }
+
+    /* test.case( "smoke test" ) */
+    let instance1 = HomoPair( Floats( 13.0, 31.0 ), Floats( 13.0, 31.0 ) );
 
   }
 
@@ -499,9 +589,11 @@ tests_index!
 
   basic_test,
   parametrized_multiple_test,
-  parameter_complex_test,
+  parametrized_no_derives_test,
+  parameter_with_derives_test,
+  parameter_no_derives_test,
   struct_basic_test,
-  struct_deaf_test,
+  struct_no_derives_test,
   // samples_test,
 
 }

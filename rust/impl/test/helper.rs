@@ -1,6 +1,7 @@
 /// Internal namespace.
 mod internal
 {
+  // use meta_tools::*;
 
   /* xxx : qqq : move to mem_tools. discuss */
 
@@ -25,26 +26,53 @@ mod internal
   ///
   /// Are two pointers are the same, not taking into accoint type.
   ///
+  /// Unlike `std::ptr::eq()` does not require arguments to have the same type.
+  ///
 
-  pub fn mem_same_ptr< T1, T2 >( src1 : &T1, src2 : &T2 ) -> bool
+  pub fn mem_same_ptr< T1 : ?Sized, T2 : ?Sized >( src1 : &T1, src2 : &T2 ) -> bool
   {
-    unsafe
-    {
-      std::mem::transmute::< *const T1, *const () >( src1 as *const T1 )
-      ==
-      std::mem::transmute::< *const T2, *const () >( src2 as *const T2 )
-      // std::mem::transmute::< *const T1, *const T2 >( src1 as *const T1 ) == src2 as *const T2
-    }
+    let mem1 = src1 as *const _ as *const ();
+    let mem2 = src2 as *const _ as *const ();
+    // let mem1 = src1.as_ptr().cast::<()>();
+    // let mem2 = src2.as_ptr().cast::<()>();
+    mem1 == mem2
   }
 
   ///
   /// Are two pointers points on data of the same size.
   ///
 
-  pub fn mem_same_size< T1, T2 >( _src1 : &T1, _src2 : &T2 ) -> bool
+  pub fn mem_same_size< T1 : ?Sized, T2 : ?Sized >( _src1 : &T1, _src2 : &T2 ) -> bool
   {
-    core::mem::size_of::< T1 >() == core::mem::size_of::< T2 >()
+    core::mem::size_of_val( _src1 ) == core::mem::size_of_val( _src2 )
   }
+
+//   /// Get size of memory.
+//   trait MemSize< T >
+//   {
+//     /// Get size of memory.
+//     fn size( src : &T ) -> usize;
+//   }
+//
+//   impl< T > MemSize< T > for T
+//   where
+//     T : Sized,
+//   {
+//     fn size( src : &T ) -> usize
+//     {
+//       0
+//     }
+//   }
+//
+//   impl< T > MemSize< T > for T
+//   where
+//     T : ?Sized,
+//   {
+//     fn size( src : &T ) -> usize
+//     {
+//       0
+//     }
+//   }
 
   ///
   /// Are two pointers points on the same region.
@@ -97,7 +125,6 @@ pub mod prelude
 {
   pub use super::internal::
   {
-    // slice_same_ptr,
     mem_same_ptr,
     mem_same_size,
     mem_same_region,
