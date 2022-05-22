@@ -44,7 +44,7 @@ quote = { version = "~1.0", features = [] }
 syn = { version = "~1.0", features = [ "full", "extra-traits" ] }
 # syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }
 winterval = { version = "~0.1", path = "../../rust/winterval" }
-fundamental_data_type = { version = "~0.1", path = "../../rust/fundamental_data_type" }
+type_constructor = { version = "~0.1", path = "../../rust/type_constructor" }
 # inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
 # werror = { path = "../../rust/werror", version = "~0.1" }
 

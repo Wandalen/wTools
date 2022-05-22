@@ -2,7 +2,7 @@
 mod internal
 {
   use crate::exposed::*;
-  use fundamental_data_type::prelude::*;
+  use type_constructor::prelude::*;
 
   types!
   {

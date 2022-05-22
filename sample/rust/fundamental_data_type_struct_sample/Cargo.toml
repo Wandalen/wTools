@@ -1,8 +1,0 @@
-[package]
-name = "fundamental_data_type_struct_sample"
-version = "0.0.0"
-edition = "2021"
-publish = false
-
-[dependencies]
-fundamental_data_type = { version = "*", path = "../../../module/rust/fundamental_data_type" }

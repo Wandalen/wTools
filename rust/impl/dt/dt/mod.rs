@@ -1,7 +1,6 @@
 /// Internal namespace.
 mod internal
 {
-
 }
 
 /// Protected namespace of the module.
