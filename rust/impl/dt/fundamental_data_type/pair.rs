@@ -71,7 +71,117 @@ mod internal
       $crate::types!{ $( $( $Rest )* )? }
     };
 
-    // pair Pair : < T1 >;
+    // pair Pair : < T1, T2, ... >;
+
+    (
+      $( #[ $Meta : meta ] )*
+      pair $Name : ident :
+      <
+        $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x3 : path )* )?,
+        $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x3 : path )* )?,
+        $ParamName3 : ident
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      compile_error!
+      (
+        concat!
+        (
+          "Parametrized element should be pair and have either two or single elements\n",
+          stringify!
+          (
+            $( #[ $Meta ] )*
+            pair $Name :
+            <
+              $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
+              $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?,
+              $ParamName3
+            $( $Rest )*
+          )
+        )
+      );
+    };
+
+    // pair Pair : Element1< T1, T2, ... >, Element2< T1, T2, ... >;
+
+    (
+      $( #[ $Meta : meta ] )*
+      pair $Name : ident
+      :
+      $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*
+      $( < $( $( $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? ),+ )? > )?
+      ,
+      $TypeSplit2x1 : ident $( :: $TypeSplit2xN : ident )*
+      $( < $( $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x2 : path )* )? ),* > )?
+      $(,)?
+      $( ; $( $Rest : tt )* )?
+    )
+    =>
+    {
+      $( #[ $Meta ] )*
+      pub struct $Name
+      <
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
+      >
+      (
+        pub $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+        pub $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
+      );
+
+      impl
+      <
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
+      >
+      From
+      <(
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+        $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
+      )>
+      for $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? >
+      {
+        fn from
+        (
+          src :
+          (
+            $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+            $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
+          )
+        )
+        -> Self
+        {
+          Self( src.0, src.1 )
+        }
+      }
+
+      impl
+      <
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
+      >
+      From< $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? > >
+      for
+      (
+        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+        $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
+      )
+      {
+        fn from
+        (
+          src : $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? >
+        )
+        -> Self
+        {
+          ( src.0, src.1 )
+        }
+      }
+
+      $crate::types!{ $( $( $Rest )* )? }
+    };
+
+    // pair Pair : < T1 >; // homopair
 
     (
       $( #[ $Meta : meta ] )*
@@ -257,117 +367,7 @@ mod internal
       $crate::types!{ $( $( $Rest )* )? }
     };
 
-    // pair Pair : < T1, T2, ... >;
-
-    (
-      $( #[ $Meta : meta ] )*
-      pair $Name : ident :
-      <
-        $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x3 : path )* )?,
-        $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x3 : path )* )?,
-        $ParamName3 : ident
-      $( $Rest : tt )*
-    )
-    =>
-    {
-      compile_error!
-      (
-        concat!
-        (
-          "Parametrized element should be pair and have either two or single elements\n",
-          stringify!
-          (
-            $( #[ $Meta ] )*
-            pair $Name :
-            <
-              $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
-              $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?,
-              $ParamName3
-            $( $Rest )*
-          )
-        )
-      );
-    };
-
-    // pair Pair : Element1< T1, T2, ... >, Element2< T1, T2, ... >;
-
-    (
-      $( #[ $Meta : meta ] )*
-      pair $Name : ident
-      :
-      $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*
-      $( < $( $( $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? ),+ )? > )?
-      ,
-      $TypeSplit2x1 : ident $( :: $TypeSplit2xN : ident )*
-      $( < $( $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x2 : path )* )? ),* > )?
-      $(,)?
-      $( ; $( $Rest : tt )* )?
-    )
-    =>
-    {
-      $( #[ $Meta ] )*
-      pub struct $Name
-      <
-        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
-        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
-      >
-      (
-        pub $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
-        pub $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
-      );
-
-      impl
-      <
-        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
-        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
-      >
-      From
-      <(
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
-        $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
-      )>
-      for $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? >
-      {
-        fn from
-        (
-          src :
-          (
-            $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
-            $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
-          )
-        )
-        -> Self
-        {
-          Self( src.0, src.1 )
-        }
-      }
-
-      impl
-      <
-        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
-        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
-      >
-      From< $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? > >
-      for
-      (
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
-        $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
-      )
-      {
-        fn from
-        (
-          src : $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? >
-        )
-        -> Self
-        {
-          ( src.0, src.1 )
-        }
-      }
-
-      $crate::types!{ $( $( $Rest )* )? }
-    };
-
-    // pair Pair : Element1< T1, T2, ... >;
+    // pair Pair : Element1< T1, T2, ... >; // homopair
 
     (
       $( #[ $Meta : meta ] )*
