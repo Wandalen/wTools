@@ -5,7 +5,6 @@ use TheModule::*;
 
 tests_impls!
 {
-  //
 
   #[ test ]
   fn basic_test()
@@ -221,34 +220,33 @@ tests_impls!
 
     /* test.case( "clone_as_tuple" ) */
     let src : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
-    // let got = src.clone_as_tuple();
-    // assert_eq!( got, ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ) );
-    // assert!( !mem_same_ptr( &src, &got ) );
+    let got = src.clone_as_tuple();
+    assert_eq!( got, ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ) );
+    assert!( !mem_same_ptr( &src, &got ) );
 
-// xxx
-//     /* test.case( "clone_as_array" ) */
-//     let src : Pair< f32, f64 > = ( mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ).into();
-//     let got = src.clone_as_array();
-//     assert_eq!( got, [ mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ] );
-//     assert!( !mem_same_ptr( &src, &got ) );
-//
-//     /* test.case( "as_tuple" ) */
-//     let src : Pair< f32, f64 > = ( mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ).into();
-//     let got = src.as_tuple();
-//     assert_eq!( got, &( mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ) );
-//     assert!( !mem_same_ptr( &src, &got ) );
-//
-//     /* test.case( "as_array" ) */
-//     let src : Pair< f32, f64 > = ( mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ).into();
-//     let got = src.as_array();
-//     assert_eq!( got, &[ mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ] );
-//     assert!( mem_same_region( &src, got ) );
-//
-//     /* test.case( "as_slice" ) */
-//     let src : Pair< f32, f64 > = ( mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ).into();
-//     let got = src.as_slice();
-//     assert_eq!( got, &[ mod1::Float::from( 13.0 ), mod1::Float::from( 31.0 ) ][ .. ] );
-//     assert!( mem_same_ptr( &src, got ) );
+    /* test.case( "clone_as_array" ) */
+    let src : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
+    let got = src.clone_as_array();
+    assert_eq!( got, [ mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ] );
+    assert!( !mem_same_ptr( &src, &got ) );
+
+    /* test.case( "as_tuple" ) */
+    let src : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
+    let got = src.as_tuple();
+    assert_eq!( got, &( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ) );
+    assert!( !mem_same_ptr( &src, &got ) );
+
+    /* test.case( "as_array" ) */
+    let src : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
+    let got = src.as_array();
+    assert_eq!( got, &[ mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ] );
+    assert!( mem_same_region( &src, got ) );
+
+    /* test.case( "as_slice" ) */
+    let src : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
+    let got = src.as_slice();
+    assert_eq!( got, &[ mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ][ .. ] );
+    assert!( mem_same_ptr( &src, got ) );
 
   }
 

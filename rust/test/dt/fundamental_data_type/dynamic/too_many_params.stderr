@@ -8,4 +8,4 @@ error: Parametrized element should be single, because Single has only one elemen
 7 | | }
   | |_^
   |
-  = note: this error originates in the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the macro `$crate::_single` (in Nightly builds, run with -Z macro-backtrace for more info)

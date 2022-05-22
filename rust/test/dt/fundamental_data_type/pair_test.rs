@@ -6,8 +6,6 @@ use TheModule::*;
 tests_impls!
 {
 
-  //
-
   #[ test ]
   fn basic_test()
   {
@@ -200,11 +198,6 @@ tests_impls!
     // trace_macros!( true );
     types!
     {
-
-      ///
-      /// Attribute which is inner.
-      ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       pair Pair :
