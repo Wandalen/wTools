@@ -11,7 +11,18 @@ Quite often you need to wrap a given type into new one.
 For example if orphan rule became and obstacle one should introduce a new type wrapping foreing one.
 Type constructr `types!` does exaclty that and auto-implement traits From, Into and Deref for the constructed type.
 
-## Example :: single line single.
+### Make.
+
+Make is variadic constructor. It's unified interface of arbitrary-length constructor.
+After implementing several traits `Make0`, `Make1` up to `MakeN` one can use macrk `make!` to construct instances.
+
+```rust ignore
+let instance1 : Struct1 = make!();
+let instance2 : Struct1 = make!( 13 );
+let instance3 : Struct1 = make!( 1, 3 );
+```
+
+## Sample :: single line single.
 
 To define your own single use macro `types!`. Single-line definition looks like that.
 
@@ -56,7 +67,7 @@ let x = MySingle( 13 );
 println!( "x : {}", x.0 );
 ```
 
-### Example :: single with derives and attributes.
+### Sample :: single with derives and attributes.
 
 It's possible to define attributes as well as derives.
 
@@ -108,7 +119,7 @@ let x = MySingle( 13 );
 dbg!( x );
 ```
 
-### Example :: single with struct instead of macro.
+### Sample :: single with struct instead of macro.
 
 Sometimes it's sufficient to use common type instead of defining a brand new.
 You may use paramtetrized struct `Single< T >` instead of macro `types!` if that is the case.
@@ -119,7 +130,7 @@ let x = Single::< i32 >( 13 );
 dbg!( x );
 ```
 
-### Example :: single with parametrized element.
+### Sample :: single with parametrized element.
 
 Element of tuple could be parametrized.
 
@@ -167,7 +178,7 @@ impl< T : Copy > From< MySingle< T > > for std::sync::Arc< T >
 let x = MySingle( std::sync::Arc::new( 13 ) );
 ```
 
-### Example :: single with parametrized tuple.
+### Sample :: single with parametrized tuple.
 
 Instead of parametrizing the element it's possible to define a parametrized tuple.
 
@@ -210,6 +221,61 @@ for MySingle< T >
 
 let x = MySingle( 13 );
 dbg!( 13 );
+```
+
+### Sample :: make - variadic constructor
+
+Implement traits [Make0], [Make1] up to MakeN to provide interface to construct your structure with different set of arguments.
+In this example structure Struct1 could be constructed either without arguments, with single argument or with two arguments.
+- Constructor without arguments fills fields with zero.
+- Constructor with single argument sets both fields to value of the argument.
+- Constructor with 2 arguments set individual values of each field.
+
+```rust
+use type_constructor::prelude::*;
+
+#[ derive( Debug, PartialEq ) ]
+struct Struct1
+{
+  a : i32,
+  b : i32,
+}
+
+impl Make0 for Struct1
+{
+  fn make_0() -> Self
+  {
+    Self { a : 0, b : 0 }
+  }
+}
+
+impl Make1< i32 > for Struct1
+{
+  fn make_1( val : i32 ) -> Self
+  {
+    Self { a : val, b : val }
+  }
+}
+
+impl Make2< i32, i32 > for Struct1
+{
+  fn make_2( val1 : i32, val2 : i32 ) -> Self
+  {
+    Self { a : val1, b : val2 }
+  }
+}
+
+let got : Struct1 = make!();
+let exp = Struct1{ a : 0, b : 0 };
+assert_eq!( got, exp );
+
+let got : Struct1 = make!( 13 );
+let exp = Struct1{ a : 13, b : 13 };
+assert_eq!( got, exp );
+
+let got : Struct1 = make!( 1, 3 );
+let exp = Struct1{ a : 1, b : 3 };
+assert_eq!( got, exp );
 ```
 
 ### To add to your project

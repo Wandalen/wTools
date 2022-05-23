@@ -9,7 +9,7 @@ tests_impls!
   #[ test ]
   fn basic_test()
   {
-    use core::fmt::Debug;
+    use core::fmt;
 
     mod mod1
     {
@@ -52,7 +52,7 @@ tests_impls!
     assert_eq!( instance1, instance2 );
     assert!( implements!( instance1 => PartialEq ) );
     assert!( implements!( instance1 => Clone ) );
-    assert!( implements!( instance1 => Debug ) );
+    assert!( implements!( instance1 => fmt::Debug ) );
     assert!( !implements!( instance1 => Default ) );
 
     /* test.case( "from pair / into tuple" ) */
@@ -545,7 +545,7 @@ tests_impls!
   #[ test ]
   fn multiple_test()
   {
-    use core::fmt::Debug;
+    use core::fmt;
 
     types!
     {
@@ -565,7 +565,7 @@ tests_impls!
     assert_eq!( instance2.0, 13.0 );
     assert!( !implements!( instance1 => PartialEq ) );
     assert!( !implements!( instance1 => Clone ) );
-    assert!( !implements!( instance1 => Debug ) );
+    assert!( !implements!( instance1 => fmt::Debug ) );
     assert!( !implements!( instance1 => Default ) );
 
     /* test.case( "from tuple / into Pair2" ) */
@@ -576,7 +576,7 @@ tests_impls!
     assert_eq!( instance1, instance2 );
     assert!( implements!( instance1 => PartialEq ) );
     assert!( implements!( instance1 => Clone ) );
-    assert!( implements!( instance1 => Debug ) );
+    assert!( implements!( instance1 => fmt::Debug ) );
     assert!( !implements!( instance1 => Default ) );
 
     /* test.case( "from tuple / into Pair2" ) */

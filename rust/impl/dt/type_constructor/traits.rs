@@ -1,7 +1,6 @@
 /// Internal namespace.
 mod internal
 {
-  // use crate::exposed::*;
 
   ///
   /// Clone as tuple.

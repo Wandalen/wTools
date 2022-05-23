@@ -3,9 +3,13 @@ mod internal
 {
   use crate::exposed::*;
 
-  // xxx : implement type constructor many
-  // xxx : module type_constructors
+  // xxx : make it working for all kind of pairs
+  //       assert_eq!( got, Pair::make( 14.0, 32.0 ) );
+
+  // xxx : register graph_tools
+  // xxx : no std
   // xxx : samples
+  // qqq : paste generated code for each sample
   // xxx : redo implements
 
   ///
@@ -159,6 +163,23 @@ mod internal
       {
         $( #[ $Meta ] )*
         pair
+        $( $Rest )*
+      }
+    };
+
+    // many
+
+    (
+      $( #[ $Meta : meta ] )*
+      many
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      $crate::_many!
+      {
+        $( #[ $Meta ] )*
+        many
         $( $Rest )*
       }
     };

@@ -39,6 +39,16 @@ mod internal
         }
       }
 
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? > core::ops::DerefMut
+      for $Name
+      < $ParamName >
+      {
+        fn deref_mut( &mut self ) -> &mut Self::Target
+        {
+          &mut self.0
+        }
+      }
+
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       From< $ParamName >
       for $Name
@@ -231,6 +241,18 @@ mod internal
 
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      core::ops::DerefMut
+      for $Name
+      $( < $( $ParamName ),* > )?
+      {
+        fn deref_mut( &mut self ) -> &mut Self::Target
+        {
+          &mut self.0
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       From
       < $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
       for $Name
@@ -378,24 +400,6 @@ mod internal
 
       $crate::types!{ $( $( $Rest )* )? }
     };
-
-//     // single Single : Element;
-//
-//     (
-//       $( #[ $Meta : meta ] )*
-//       single $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )*
-//       $( ; $( $Rest : tt )* )?
-//     )
-//     =>
-//     {
-//       $crate::types!
-//       (
-//         $( #[ $Meta ] )*
-//         single $Name : $TypeSplit1 $( :: $TypeSplitN )* <>;
-//         // $( ; $( $Rest )* )?
-//       );
-//       $crate::types!{ $( $( $Rest )* )? }
-//     };
 
   }
 

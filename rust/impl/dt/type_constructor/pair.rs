@@ -210,10 +210,39 @@ mod internal
         type Target = ( $ParamName1, $ParamName1 );
         fn deref( &self ) -> &Self::Target
         {
+          #[ cfg( debug_assertions ) ]
+          {
+            let layout1 = std::alloc::Layout::new::< Self >();
+            let layout2 = std::alloc::Layout::new::< Self::Target >();
+            debug_assert_eq!( layout1, layout2 );
+          }
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< &Self, &Self::Target >( self )
+            std::mem::transmute::< _, _ >( self )
+          }
+        }
+      }
+
+      impl
+      <
+        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      >
+      core::ops::DerefMut
+      for $Name< $ParamName1 >
+      {
+        fn deref_mut( &mut self ) -> &mut Self::Target
+        {
+          #[ cfg( debug_assertions ) ]
+          {
+            let layout1 = std::alloc::Layout::new::< Self >();
+            let layout2 = std::alloc::Layout::new::< Self::Target >();
+            debug_assert_eq!( layout1, layout2 );
+          }
+          /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
+          unsafe
+          {
+            std::mem::transmute::< _, _ >( self )
           }
         }
       }
@@ -421,13 +450,40 @@ mod internal
         );
         fn deref( &self ) -> &Self::Target
         {
-          let layout1 = std::alloc::Layout::new::< Self >();
-          let layout2 = std::alloc::Layout::new::< Self::Target >();
-          debug_assert_eq!( layout1, layout2 );
+          #[ cfg( debug_assertions ) ]
+          {
+            let layout1 = std::alloc::Layout::new::< Self >();
+            let layout2 = std::alloc::Layout::new::< Self::Target >();
+            debug_assert_eq!( layout1, layout2 );
+          }
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< &Self, &Self::Target >( self )
+            std::mem::transmute::< _, _ >( self )
+          }
+        }
+      }
+
+      impl
+      <
+        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+      >
+      core::ops::DerefMut
+      for $Name
+      < $( $( $( $ParamName1 ),+ )? )? >
+      {
+        fn deref_mut( &mut self ) -> &mut Self::Target
+        {
+          #[ cfg( debug_assertions ) ]
+          {
+            let layout1 = std::alloc::Layout::new::< Self >();
+            let layout2 = std::alloc::Layout::new::< Self::Target >();
+            debug_assert_eq!( layout1, layout2 );
+          }
+          /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
+          unsafe
+          {
+            std::mem::transmute::< _, _ >( self )
           }
         }
       }

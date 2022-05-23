@@ -9,7 +9,7 @@ tests_impls!
   #[ test ]
   fn basic_test()
   {
-    use core::fmt::Debug;
+    use core::fmt;
 
     mod mod1
     {
@@ -21,8 +21,17 @@ tests_impls!
     {
       fn round( &self ) -> Self
       {
-        dbg!( &self );
         ( self.0.round(), self.1.round() )
+      }
+    }
+
+    trait RoundInplace { fn round_inplace( &mut self ); };
+    impl RoundInplace for ( f32, f32 )
+    {
+      fn round_inplace( &mut self )
+      {
+        self.0 = self.0.round();
+        self.1 = self.1.round();
       }
     }
 
@@ -51,7 +60,7 @@ tests_impls!
     assert_eq!( instance1, instance2 );
     assert!( implements!( instance1 => PartialEq ) );
     assert!( implements!( instance1 => Clone ) );
-    assert!( implements!( instance1 => Debug ) );
+    assert!( implements!( instance1 => fmt::Debug ) );
     assert!( !implements!( instance1 => Default ) );
 
     /* test.case( "from pair / into array" ) */
@@ -107,8 +116,10 @@ tests_impls!
     assert_eq!( instance1, instance2 );
 
     /* test.case( "deref" ) */
-    let got : Pair = ( 13.5, 31.5 ).into();
+    let mut got : Pair = ( 13.5, 31.5 ).into();
     assert_eq!( got.round(), ( 14.0, 32.0 ) );
+    got.round_inplace();
+    assert_eq!( got, Pair::from( ( 14.0, 32.0 ) ) );
 
   }
 
@@ -152,17 +163,11 @@ tests_impls!
     // trace_macros!( true );
     types!
     {
-
-      ///
-      /// Attribute which is inner.
-      ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       pair Pair :
         mod1::Floats< T1 : PartialEq + std::marker::Copy, T2 : Default >,
       ;
-
     }
     // trace_macros!( false );
 
@@ -175,13 +180,30 @@ tests_impls!
         mod1::Floats( self.0.round(), self.1.round() )
       }
     }
-
     impl Round
     for ( mod1::Floats< f32, f64 >, mod1::Floats< f32, f64 > )
     {
       fn round( &self ) -> Self
       {
         ( self.0.round(), self.1.round() )
+      }
+    }
+
+    trait RoundInplace { fn round_inplace( &mut self ); };
+    impl RoundInplace for mod1::Floats< f32, f64 >
+    {
+      fn round_inplace( &mut self )
+      {
+        self.0 = self.0.round();
+        self.1 = self.1.round();
+      }
+    }
+    impl RoundInplace for ( mod1::Floats< f32, f64 >, mod1::Floats< f32, f64 > )
+    {
+      fn round_inplace( &mut self )
+      {
+        self.0 = self.0.round();
+        self.1 = self.1.round();
       }
     }
 
@@ -215,8 +237,10 @@ tests_impls!
     assert_eq!( instance1, instance2 );
 
     /* test.case( "deref" ) */
-    let got : Pair< f32, f64 > = ( mod1::Floats::from( 13.5 ), mod1::Floats::from( 31.5 ) ).into();
+    let mut got : Pair< f32, f64 > = ( mod1::Floats::from( 13.5 ), mod1::Floats::from( 31.5 ) ).into();
     assert_eq!( got.round(), ( mod1::Floats::from( 14.0 ), mod1::Floats::from( 32.0 ) ) );
+    got.round_inplace();
+    assert_eq!( got, Pair::from( ( mod1::Floats::from( 14.0 ), mod1::Floats::from( 32.0 ) ) ) );
 
     /* test.case( "clone_as_tuple" ) */
     let src : Pair< f32, f64 > = ( mod1::Floats::from( 13.0 ), mod1::Floats::from( 31.0 ) ).into();
@@ -317,6 +341,16 @@ tests_impls!
       }
     }
 
+    trait RoundInplace { fn round_inplace( &mut self ); };
+    impl RoundInplace for ( mod1::Float, mod1::Float )
+    {
+      fn round_inplace( &mut self )
+      {
+        self.0.0 = self.0.0.round();
+        self.1.0 = self.1.0.round();
+      }
+    }
+
     /* test.case( "from array / into pair" ) */
     let instance1 : Pair< mod1::Float > = [ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ].into();
     let instance2 = Pair::< mod1::Float >::from( [ mod1::Float( 13.0 ), mod1::Float( 31.0 ) ] );
@@ -381,8 +415,11 @@ tests_impls!
     assert_eq!( instance1, instance2 );
 
     /* test.case( "deref" ) */
-    let got : Pair< mod1::Float > = ( mod1::Float( 13.5 ), mod1::Float( 31.5 ) ).into();
+    let mut got : Pair< mod1::Float > = ( mod1::Float( 13.5 ), mod1::Float( 31.5 ) ).into();
     assert_eq!( got.round(), ( 14.0, 32.0 ) );
+    got.round_inplace();
+    assert_eq!( got.0, mod1::Float( 14.0 ) );
+    assert_eq!( got.1, mod1::Float( 32.0 ) );
 
     /* test.case( "clone_as_tuple" ) */
     let src : Pair< mod1::Float > = ( mod1::Float( 13.0 ), mod1::Float( 31.0 ) ).into();
