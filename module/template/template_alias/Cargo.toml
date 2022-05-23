@@ -18,7 +18,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/template_alias",
+  "/rust/impl/_template_blank",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -26,7 +26,7 @@ include = [
 
 [lib]
 name = "template_alias"
-path = "rust/impl/_template/lib.rs"
+path = "rust/impl/_template_blank/lib.rs"
 
 [[test]]
 name = "template_alias_test"
