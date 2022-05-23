@@ -130,6 +130,17 @@ tests_impls!
   fn parametrized_test()
   {
 
+    macro_rules! mk
+    {
+      (
+        $( $Rest : tt )*
+      )
+      =>
+      {
+        mod1::Floats::from( $( $Rest )* )
+      };
+    }
+
     mod mod1
     {
 
@@ -167,35 +178,35 @@ tests_impls!
     }
 
     /* test.case( "from f32 / into Single" ) */
-    let instance1 : Single< f32 > = ( mod1::Floats::from( 13.0 ) ).into();
-    let instance2 = Single::< f32 >::from( mod1::Floats::from( 13.0 ) );
+    let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
+    let instance2 = Single::< f32 >::from( mk!( 13.0 ) );
     assert_eq!( instance1.0.0, 13.0 );
     assert_eq!( instance2.0.0, 13.0 );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
-    let instance1 : Single< f32 > = ( Single::from( mod1::Floats::from( 13.0 ) ) ).into();
-    let instance2 = Single::< f32 >::from( Single::from( mod1::Floats::from( 13.0 ) ) );
+    let instance1 : Single< f32 > = ( Single::from( mk!( 13.0 ) ) ).into();
+    let instance2 = Single::< f32 >::from( Single::from( mk!( 13.0 ) ) );
     assert_eq!( instance1.0.0, 13.0 );
     assert_eq!( instance2.0.0, 13.0 );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "from Single / into f32" ) */
-    let instance1 : Single< f32 > = ( mod1::Floats::from( 13.0 ) ).into();
+    let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let got : mod1::Floats< f32 > = instance1.into();
     assert_eq!( got.0, 13.0 );
-    let instance1 : Single< f32 > = ( mod1::Floats::from( 13.0 ) ).into();
+    let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let got = mod1::Floats::< f32 >::from( instance1 );
     assert_eq!( got.0, 13.0 );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : Single< f32 > = ( mod1::Floats::from( 13.0 ) ).into();
+    let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, mod1::Floats::from( 13.0 ) );
+    assert_eq!( instance2.0, mk!( 13.0 ) );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "deref" ) */
-    let got : Single< f32 > = ( mod1::Floats::from( 13.5 ) ).into();
+    let got : Single< f32 > = ( mk!( 13.5 ) ).into();
     assert_eq!( got.round(), 14.0 );
 
   }
@@ -205,6 +216,17 @@ tests_impls!
   #[ test ]
   fn parametrized_complex_test()
   {
+
+    macro_rules! mk
+    {
+      (
+        $( $Rest : tt )*
+      )
+      =>
+      {
+        mod1::Floats::from( $( $Rest )* )
+      };
+    }
 
     mod mod1
     {
@@ -249,35 +271,35 @@ tests_impls!
     }
 
     /* test.case( "from f32 / into Single" ) */
-    let instance1 : Single< f32 > = ( mod1::Floats::from( 13.0 ) ).into();
-    let instance2 = Single::< f32 >::from( mod1::Floats::from( 13.0 ) );
+    let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
+    let instance2 = Single::< f32 >::from( mk!( 13.0 ) );
     assert_eq!( instance1.0.0, 13.0 );
     assert_eq!( instance2.0.0, 13.0 );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
-    let instance1 : Single< f32 > = ( Single::from( mod1::Floats::from( 13.0 ) ) ).into();
-    let instance2 = Single::< f32 >::from( Single::from( mod1::Floats::from( 13.0 ) ) );
+    let instance1 : Single< f32 > = ( Single::from( mk!( 13.0 ) ) ).into();
+    let instance2 = Single::< f32 >::from( Single::from( mk!( 13.0 ) ) );
     assert_eq!( instance1.0.0, 13.0 );
     assert_eq!( instance2.0.0, 13.0 );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "from Single / into f32" ) */
-    let instance1 : Single< f32 > = ( mod1::Floats::from( 13.0 ) ).into();
+    let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let got : mod1::Floats< f32 > = instance1.into();
     assert_eq!( got.0, 13.0 );
-    let instance1 : Single< f32 > = ( mod1::Floats::from( 13.0 ) ).into();
+    let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let got = mod1::Floats::< f32 >::from( instance1 );
     assert_eq!( got.0, 13.0 );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : Single< f32 > = ( mod1::Floats::from( 13.0 ) ).into();
+    let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, mod1::Floats::from( 13.0 ) );
+    assert_eq!( instance2.0, mk!( 13.0 ) );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "deref" ) */
-    let got : Single< f32 > = ( mod1::Floats::from( 13.5 ) ).into();
+    let got : Single< f32 > = ( mk!( 13.5 ) ).into();
     assert_eq!( got.round(), 14.0 );
 
   }
@@ -287,6 +309,18 @@ tests_impls!
   #[ test ]
   fn parametrized_multiple_test()
   {
+    use core::fmt;
+
+    macro_rules! mk
+    {
+      (
+        $( $Rest : tt )*
+      )
+      =>
+      {
+        mod1::Floats::from( $( $Rest )* )
+      };
+    }
 
     mod mod1
     {
@@ -328,90 +362,103 @@ tests_impls!
     }
     // trace_macros!( false );
 
+    /* test.case( "make1" ) */
+    let got : Single< f32, f64 > = make!( mk!( 13.0 ) );
+    let exp = Single::< f32, f64 >::from( mk!( 13.0 ) );
+    assert_eq!( got, exp );
+
+    /* test.case( "traits" ) */
+    let instance1 = Single::< f32, f64 >::from( mk!( 13.0 ) );
+    assert!( implements!( instance1 => PartialEq ) );
+    assert!( implements!( instance1 => Clone ) );
+    assert!( implements!( instance1 => fmt::Debug ) );
+    assert!( !implements!( instance1 => Default ) );
+    assert!( !implements!( instance1 => fmt::Display ) );
+
     /* test.case( "from f32 / into Single" ) */
-    let instance1 : Single< f32, f64 > = ( mod1::Floats::from( 13.0 ) ).into();
-    let instance2 = Single::< f32, f64 >::from( mod1::Floats::from( 13.0 ) );
+    let instance1 : Single< f32, f64 > = ( mk!( 13.0 ) ).into();
+    let instance2 = Single::< f32, f64 >::from( mk!( 13.0 ) );
     assert_eq!( instance1.0.0, 13.0 );
     assert_eq!( instance2.0.0, 13.0 );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
-    let instance1 : Single< f32, f64 > = ( Single::from( mod1::Floats::from( 13.0 ) ) ).into();
-    let instance2 = Single::< f32, f64 >::from( Single::from( mod1::Floats::from( 13.0 ) ) );
+    let instance1 : Single< f32, f64 > = ( Single::from( mk!( 13.0 ) ) ).into();
+    let instance2 = Single::< f32, f64 >::from( Single::from( mk!( 13.0 ) ) );
     assert_eq!( instance1.0.0, 13.0 );
     assert_eq!( instance2.0.0, 13.0 );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "from Single / into f32" ) */
-    let instance1 : Single< f32, f64 > = ( mod1::Floats::from( 13.0 ) ).into();
+    let instance1 : Single< f32, f64 > = ( mk!( 13.0 ) ).into();
     let got : mod1::Floats< f32, f64 > = instance1.into();
     assert_eq!( got.0, 13.0 );
-    let instance1 : Single< f32, f64 > = ( mod1::Floats::from( 13.0 ) ).into();
+    let instance1 : Single< f32, f64 > = ( mk!( 13.0 ) ).into();
     let got = mod1::Floats::< f32, f64 >::from( instance1 );
     assert_eq!( got.0, 13.0 );
 
     /* test.case( "from tuple" ) */
-    let got : Single< f32, f64 > = ( mod1::Floats::from( 13.0 ), ).into();
-    let exp : Single< f32, f64 > = Single::from( mod1::Floats::from( 13.0 ) );
+    let got : Single< f32, f64 > = ( mk!( 13.0 ), ).into();
+    let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
-    let got = Single::< f32, f64 >::from( ( mod1::Floats::from( 13.0 ), ) );
-    let exp : Single< f32, f64 > = Single::from( mod1::Floats::from( 13.0 ) );
+    let got = Single::< f32, f64 >::from( ( mk!( 13.0 ), ) );
+    let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
 
     /* test.case( "from array" ) */
-    let got : Single< f32, f64 > = [ mod1::Floats::from( 13.0 ), ].into();
-    let exp : Single< f32, f64 > = Single::from( mod1::Floats::from( 13.0 ) );
+    let got : Single< f32, f64 > = [ mk!( 13.0 ), ].into();
+    let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
-    let got = Single::< f32, f64 >::from( [ mod1::Floats::from( 13.0 ), ] );
-    let exp : Single< f32, f64 > = Single::from( mod1::Floats::from( 13.0 ) );
+    let got = Single::< f32, f64 >::from( [ mk!( 13.0 ), ] );
+    let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
 
     /* test.case( "from slice" ) */
-    let got : Single< f32, f64 > = ( &[ mod1::Floats::from( 13.0 ), ][ .. ] ).into();
-    let exp : Single< f32, f64 > = Single::from( mod1::Floats::from( 13.0 ) );
+    let got : Single< f32, f64 > = ( &[ mk!( 13.0 ), ][ .. ] ).into();
+    let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
-    let got = Single::< f32, f64 >::from( &[ mod1::Floats::from( 13.0 ), ][ .. ] );
-    let exp : Single< f32, f64 > = Single::from( mod1::Floats::from( 13.0 ) );
+    let got = Single::< f32, f64 >::from( &[ mk!( 13.0 ), ][ .. ] );
+    let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : Single< f32, f64 > = ( mod1::Floats::from( 13.0 ) ).into();
+    let instance1 : Single< f32, f64 > = ( mk!( 13.0 ) ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, mod1::Floats::from( 13.0 ) );
+    assert_eq!( instance2.0, mk!( 13.0 ) );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "deref" ) */
-    let got : Single< f32, f64 > = ( mod1::Floats::from( 13.5 ) ).into();
+    let got : Single< f32, f64 > = ( mk!( 13.5 ) ).into();
     assert_eq!( got.round(), 14.0 );
 
     /* test.case( "clone_as_tuple" ) */
-    let src : Single< f32, f64 > = Single::from( mod1::Floats::from( 13.0 ) );
+    let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.clone_as_tuple();
-    assert_eq!( got, ( mod1::Floats::from( 13.0 ), ) );
+    assert_eq!( got, ( mk!( 13.0 ), ) );
     assert!( !mem_same_ptr( &src, &got ) );
 
     /* test.case( "clone_as_array" ) */
-    let src : Single< f32, f64 > = Single::from( mod1::Floats::from( 13.0 ) );
+    let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.clone_as_array();
-    assert_eq!( got, [ mod1::Floats::from( 13.0 ), ] );
+    assert_eq!( got, [ mk!( 13.0 ), ] );
     assert!( !mem_same_ptr( &src, &got ) );
 
     /* test.case( "as_tuple" ) */
-    let src : Single< f32, f64 > = Single::from( mod1::Floats::from( 13.0 ) );
+    let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.as_tuple();
-    assert_eq!( got, &( mod1::Floats::from( 13.0 ), ) );
+    assert_eq!( got, &( mk!( 13.0 ), ) );
     assert!( mem_same_region( &src, got ) );
 
     /* test.case( "as_array" ) */
-    let src : Single< f32, f64 > = Single::from( mod1::Floats::from( 13.0 ) );
+    let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.as_array();
-    assert_eq!( got, &[ mod1::Floats::from( 13.0 ), ] );
+    assert_eq!( got, &[ mk!( 13.0 ), ] );
     assert!( mem_same_region( &src, got ) );
 
     /* test.case( "as_slice" ) */
-    let src : Single< f32, f64 > = Single::from( mod1::Floats::from( 13.0 ) );
+    let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.as_slice();
-    assert_eq!( got, &[ mod1::Floats::from( 13.0 ), ][ .. ] );
+    assert_eq!( got, &[ mk!( 13.0 ), ][ .. ] );
     assert!( mem_same_region( &src, got ) );
 
   }
@@ -448,6 +495,7 @@ tests_impls!
   #[ test ]
   fn parameter_test()
   {
+    use core::fmt;
 
     types!
     {
@@ -455,6 +503,19 @@ tests_impls!
       #[ derive( PartialEq, Default ) ]
       single Single : < T >;
     }
+
+    /* test.case( "make1" ) */
+    let got : Single< f32 > = make!( 13.0 );
+    let exp = Single::< f32 >::from( 13.0 );
+    assert_eq!( got, exp );
+
+    /* test.case( "traits" ) */
+    let instance1 = Single::< f32 >::from( 13.0 );
+    assert!( implements!( instance1 => PartialEq ) );
+    assert!( implements!( instance1 => Clone ) );
+    assert!( implements!( instance1 => fmt::Debug ) );
+    assert!( implements!( instance1 => Default ) );
+    assert!( !implements!( instance1 => fmt::Display ) );
 
     /* test.case( "from f32 / into Single" ) */
     let instance1 : Single< f32 > = ( 13.0 ).into();
@@ -720,6 +781,16 @@ tests_impls!
     assert_eq!( got.round(), 14.0 );
     got.add_assign( 1.0 );
     assert_eq!( got.0, 14.5 );
+
+    /* test.case( "make0" ) */
+    let got : Single< f32 > = make!();
+    let exp = Single::< f32 >::from( 0.0 );
+    assert_eq!( got, exp );
+
+    /* test.case( "make1" ) */
+    let got : Single< f32 > = make!( 13.0 );
+    let exp = Single::< f32 >::from( 13.0 );
+    assert_eq!( got, exp );
 
   }
 

@@ -180,6 +180,27 @@ mod internal
         }
       }
 
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      Make0
+      for $Name < $ParamName >
+      where $ParamName : Default
+      {
+        fn make_0() -> Self
+        {
+          Self( Default::default() )
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      Make1< $ParamName >
+      for $Name < $ParamName >
+      {
+        fn make_1( _0 : $ParamName ) -> Self
+        {
+          Self( _0 )
+        }
+      }
+
       // From Single Into Element cant be implemented because of Rust restrictions.
 
       $crate::types!{ $( $( $Rest )* )? }
@@ -398,6 +419,18 @@ mod internal
         }
       }
 
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+      for
+      $Name $( < $( $ParamName ),* > )?
+      {
+        fn make_1( _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
+        {
+          Self( _0 )
+        }
+      }
+
       $crate::types!{ $( $( $Rest )* )? }
     };
 
@@ -425,6 +458,15 @@ mod internal
     single Single : < T >;
 
   }
+
+  // impl< T > Make0 for Single< T >
+  // where T : Default,
+  // {
+  //   fn make_0() -> Self
+  //   {
+  //     Default::default()
+  //   }
+  // }
 
   pub use _single;
 }

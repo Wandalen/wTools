@@ -3,14 +3,14 @@ mod internal
 {
   use crate::exposed::*;
 
-  // xxx : make it working for all kind of pairs
-  //       assert_eq!( got, Pair::make( 14.0, 32.0 ) );
-
   // xxx : register graph_tools
   // xxx : no std
   // xxx : samples
   // qqq : paste generated code for each sample
+  //
   // xxx : redo implements
+  // xxx : add core::fmt to prelude
+  // xxx : write article about the module
 
   ///
   /// Type constructor to define tuple wrapping a given type.

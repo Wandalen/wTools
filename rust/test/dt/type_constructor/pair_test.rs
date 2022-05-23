@@ -148,14 +148,6 @@ tests_impls!
     assert_eq!( instance2.1, 31.0 );
     assert_eq!( instance1, instance2 );
 
-    // struct Struct1( i32, i32 );
-    // let e = Struct1( 1, 2 );
-    // let e : Struct1 = ( 1, 2 );
-
-    // /* test.case( "deref" ) */
-    // let got : Pair = ( 13.5, 31.5 ).into();
-    // assert_eq!( got.round(), ( 14.0, 32.0 ) );
-
   }
 
   //
@@ -163,6 +155,42 @@ tests_impls!
   #[ test ]
   fn parametrized_multiple_test()
   {
+
+    macro_rules! mk1
+    {
+      (
+        $( $Rest : tt )*
+      )
+      =>
+      {
+        mod1::Floats::from( $( $Rest )* )
+      };
+    }
+
+    macro_rules! mk2
+    {
+      (
+        $( $Rest : tt )*
+      )
+      =>
+      {
+        std::sync::Arc::new( $( $Rest )* )
+      };
+    }
+
+    macro_rules! mk
+    {
+      (
+        $( $Rest : tt )*
+      )
+      =>
+      {
+        (
+          mk1!( $( $Rest )* ),
+          mk2!( 31.0 ),
+        )
+      };
+    }
 
     mod mod1
     {
@@ -208,38 +236,32 @@ tests_impls!
     }
     // trace_macros!( false );
 
+    /* test.case( "make2" ) */
+    let got : Pair< f32, f64, f32 > = make!( mk1!( 13.0 ), mk2!( 31.0 ) );
+    let exp = Pair::< f32, f64, f32 >( mk1!( 13.0 ), mk2!( 31.0 ) );
+    assert_eq!( got, exp );
+
     /* test.case( "from tuple / into pair" ) */
-    let instance1 : Pair< f32, f64, f32 > =
-    (
-      mod1::Floats::from( 13.0 ),
-      std::sync::Arc::new( 31.0 ),
-    ).into();
-    let instance2 = Pair::< f32, f64, f32 >::from
-    ((
-      mod1::Floats::from( 13.0 ),
-      std::sync::Arc::new( 31.0 ),
-    ));
+    let instance1 : Pair< f32, f64, f32 > = mk!( 13.0 ).into();
+    let instance2 = Pair::< f32, f64, f32 >::from( mk!( 13.0 ) );
     assert_eq!( instance1.0.0, 13.0 );
     assert_eq!( instance2.0.0, 13.0 );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "from Pair / into tuple" ) */
-    let instance1 : Pair< f32, f64, f32 > = ( mod1::Floats::from( 13.0 ), std::sync::Arc::new( 31.0 ) ).into();
+    let instance1 : Pair< f32, f64, f32 > = mk!( 13.0 ).into();
     let got : ( mod1::Floats< f32, f64 >, _ ) = instance1.into();
     assert_eq!( got.0.0, 13.0 );
-    let instance1 : Pair< f32, f64, f32 > = ( mod1::Floats::from( 13.0 ), std::sync::Arc::new( 31.0 ) ).into();
+    let instance1 : Pair< f32, f64, f32 > = mk!( 13.0 ).into();
     let got = < ( mod1::Floats::< f32, f64 >, _ ) >::from( instance1 );
     assert_eq!( got.0.0, 13.0 );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : Pair< f32, f64, f32 > = ( mod1::Floats::from( 13.0 ), std::sync::Arc::new( 31.0 ) ).into();
+    let instance1 : Pair< f32, f64, f32 > = mk!( 13.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, mod1::Floats::from( 13.0 ) );
+    assert_eq!( instance2.0, mk1!( 13.0 ) );
     assert_eq!( instance1, instance2 );
 
-    // /* test.case( "deref" ) */
-    // let got : Pair< f32, f64, f32 > = ( mod1::Floats::from( 13.5 ), std::sync::Arc::new( 31.0 ) ).into();
-    // assert_eq!( got.round(), 14.0 );
 
   }
 
@@ -457,19 +479,32 @@ tests_impls!
   #[ test ]
   fn parameter_complex_test()
   {
+    use core::fmt;
 
     types!
     {
-
-      ///
-      /// Attribute which is inner.
-      ///
-
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       pair Pair : < T1 : core::cmp::PartialEq + core::clone::Clone, T2 : core::cmp::PartialEq + core::clone::Clone >;
-
     }
+
+    /* test.case( "traits" ) */
+    let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
+    assert!( implements!( instance1 => PartialEq ) );
+    assert!( implements!( instance1 => Clone ) );
+    assert!( implements!( instance1 => fmt::Debug ) );
+    assert!( !implements!( instance1 => Default ) );
+    assert!( !implements!( instance1 => fmt::Display ) );
+
+    /* test.case( "make0" ) */
+    let got : Pair< f32, f64 > = make!();
+    let exp = Pair::< f32, f64 >( 0.0, 0.0 );
+    assert_eq!( got, exp );
+
+    /* test.case( "make2" ) */
+    let got : Pair< f32, f64 > = make!( 13.0, 31.0 );
+    let exp = Pair::< f32, f64 >( 13.0, 31.0 );
+    assert_eq!( got, exp );
 
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
@@ -618,6 +653,16 @@ tests_impls!
   #[ test ]
   fn struct_basic_test()
   {
+
+    /* test.case( "make0" ) */
+    let got : Pair< f32, f64 > = make!();
+    let exp = Pair::< f32, f64 >( 0.0, 0.0 );
+    assert_eq!( got, exp );
+
+    /* test.case( "make2" ) */
+    let got : Pair< f32, f64 > = make!( 13.0, 31.0 );
+    let exp = Pair::< f32, f64 >( 13.0, 31.0 );
+    assert_eq!( got, exp );
 
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();

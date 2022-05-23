@@ -107,7 +107,45 @@ mod internal
         }
       }
 
-      // From Many Into Element cant be implemented because of Rust restrictions.
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      Make0
+      for $Name < $ParamName >
+      {
+        fn make_0() -> Self
+        {
+          Self( std::vec::Vec::new() )
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      Make1< $ParamName >
+      for $Name < $ParamName >
+      {
+        fn make_1( _0 : $ParamName ) -> Self
+        {
+          Self( vec![ _0 ] )
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      Make2< $ParamName, $ParamName >
+      for $Name < $ParamName >
+      {
+        fn make_2( _0 : $ParamName, _1 : $ParamName ) -> Self
+        {
+          Self( vec![ _0, _1 ] )
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      Make3< $ParamName, $ParamName, $ParamName >
+      for $Name < $ParamName >
+      {
+        fn make_3( _0 : $ParamName, _1 : $ParamName, _2 : $ParamName ) -> Self
+        {
+          Self( vec![ _0, _1, _2 ] )
+        }
+      }
 
       $crate::types!{ $( $( $Rest )* )? }
     };
@@ -191,18 +229,6 @@ mod internal
         }
       }
 
-      // impl
-      // $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      // From
-      // < $Name $( < $( $ParamName ),* > )? >
-      // for $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?
-      // {
-      //   fn from( src : $Name $( < $( $ParamName ),* > )? ) -> Self
-      //   {
-      //     src.0
-      //   }
-      // }
-
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       From
@@ -258,6 +284,78 @@ mod internal
         fn as_slice( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ]
         {
           &self[ .. ]
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      Make0
+      for
+      $Name $( < $( $ParamName ),* > )?
+      {
+        fn make_0() -> Self
+        {
+          Self( std::vec::Vec::< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >::new() )
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+      for
+      $Name $( < $( $ParamName ),* > )?
+      {
+        fn make_1
+        (
+          _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+        )
+        -> Self
+        {
+          Self( vec![ _0 ] )
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      Make2
+      <
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+      >
+      for
+      $Name $( < $( $ParamName ),* > )?
+      {
+        fn make_2
+        (
+          _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+          _1 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+        )
+        -> Self
+        {
+          Self( vec![ _0, _1 ] )
+        }
+      }
+
+      impl
+      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      Make3
+      <
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+      >
+      for
+      $Name $( < $( $ParamName ),* > )?
+      {
+        fn make_3
+        (
+          _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+          _1 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+          _2 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+        )
+        -> Self
+        {
+          Self( vec![ _0, _1, _2 ] )
         }
       }
 

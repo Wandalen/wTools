@@ -97,6 +97,17 @@ tests_impls!
   fn parametrized_multiple_test()
   {
 
+    macro_rules! mk
+    {
+      (
+        $( $Rest : tt )*
+      )
+      =>
+      {
+        mod1::Floats::from( $( $Rest )* )
+      };
+    }
+
     mod mod1
     {
 
@@ -137,61 +148,81 @@ tests_impls!
     }
     // trace_macros!( false );
 
+    /* test.case( "make0" ) */
+    let got : Many< f32, f64 > = make!();
+    let exp = Many::< f32, f64 >( std::vec::Vec::new() );
+    assert_eq!( got, exp );
+
+    /* test.case( "make1" ) */
+    let got : Many< f32, f64 > = make!( mk!( 1.0 ) );
+    let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ) ) );
+    assert_eq!( got, exp );
+
+    /* test.case( "make2" ) */
+    let got : Many< f32, f64 > = make!( mk!( 1.0 ), mk!( 1.0 ) );
+    let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ), mk!( 1.0 ) ) );
+    assert_eq!( got, exp );
+
+    /* test.case( "make3" ) */
+    let got : Many< f32, f64 > = make!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
+    let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) ) );
+    assert_eq!( got, exp );
+
     /* test.case( "from f32 / into Many" ) */
-    let instance1 : Many< f32, f64 > = ( mod1::Floats::from( 13.0 ) ).into();
-    let instance2 = Many::< f32, f64 >::from( mod1::Floats::from( 13.0 ) );
-    assert_eq!( instance1.0, vec![ mod1::Floats::from( 13.0 ) ] );
-    assert_eq!( instance2.0, vec![ mod1::Floats::from( 13.0 ) ] );
+    let instance1 : Many< f32, f64 > = ( mk!( 13.0 ) ).into();
+    let instance2 = Many::< f32, f64 >::from( mk!( 13.0 ) );
+    assert_eq!( instance1.0, vec![ mk!( 13.0 ) ] );
+    assert_eq!( instance2.0, vec![ mk!( 13.0 ) ] );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
-    let instance1 : Many< f32, f64 > = ( Many::from( mod1::Floats::from( 13.0 ) ) ).into();
-    let instance2 = Many::< f32, f64 >::from( Many::from( mod1::Floats::from( 13.0 ) ) );
-    assert_eq!( instance1.0, vec![ mod1::Floats::from( 13.0 ) ] );
-    assert_eq!( instance2.0, vec![ mod1::Floats::from( 13.0 ) ] );
+    let instance1 : Many< f32, f64 > = ( Many::from( mk!( 13.0 ) ) ).into();
+    let instance2 = Many::< f32, f64 >::from( Many::from( mk!( 13.0 ) ) );
+    assert_eq!( instance1.0, vec![ mk!( 13.0 ) ] );
+    assert_eq!( instance2.0, vec![ mk!( 13.0 ) ] );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "from tuple" ) */
-    let got : Many< f32, f64 > = ( mod1::Floats::from( 13.0 ), ).into();
-    let exp : Many< f32, f64 > = Many::from( mod1::Floats::from( 13.0 ) );
+    let got : Many< f32, f64 > = ( mk!( 13.0 ), ).into();
+    let exp : Many< f32, f64 > = Many::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
-    let got = Many::< f32, f64 >::from( ( mod1::Floats::from( 13.0 ), ) );
-    let exp : Many< f32, f64 > = Many::from( mod1::Floats::from( 13.0 ) );
+    let got = Many::< f32, f64 >::from( ( mk!( 13.0 ), ) );
+    let exp : Many< f32, f64 > = Many::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
 
     /* test.case( "from array" ) */
-    let got : Many< f32, f64 > = [ mod1::Floats::from( 13.0 ), ].into();
-    let exp : Many< f32, f64 > = Many::from( mod1::Floats::from( 13.0 ) );
+    let got : Many< f32, f64 > = [ mk!( 13.0 ), ].into();
+    let exp : Many< f32, f64 > = Many::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
-    let got = Many::< f32, f64 >::from( [ mod1::Floats::from( 13.0 ), ] );
-    let exp : Many< f32, f64 > = Many::from( mod1::Floats::from( 13.0 ) );
+    let got = Many::< f32, f64 >::from( [ mk!( 13.0 ), ] );
+    let exp : Many< f32, f64 > = Many::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
 
     /* test.case( "from slice" ) */
-    let got : Many< f32, f64 > = ( &[ mod1::Floats::from( 13.0 ), ][ .. ] ).into();
-    let exp : Many< f32, f64 > = Many::from( mod1::Floats::from( 13.0 ) );
+    let got : Many< f32, f64 > = ( &[ mk!( 13.0 ), ][ .. ] ).into();
+    let exp : Many< f32, f64 > = Many::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
-    let got = Many::< f32, f64 >::from( &[ mod1::Floats::from( 13.0 ), ][ .. ] );
-    let exp : Many< f32, f64 > = Many::from( mod1::Floats::from( 13.0 ) );
+    let got = Many::< f32, f64 >::from( &[ mk!( 13.0 ), ][ .. ] );
+    let exp : Many< f32, f64 > = Many::from( mk!( 13.0 ) );
     assert_eq!( got, exp );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : Many< f32, f64 > = ( mod1::Floats::from( 13.0 ) ).into();
+    let instance1 : Many< f32, f64 > = ( mk!( 13.0 ) ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, vec![ mod1::Floats::from( 13.0 ) ] );
+    assert_eq!( instance2.0, vec![ mk!( 13.0 ) ] );
     assert_eq!( instance1, instance2 );
 
     /* test.case( "deref" ) */
-    let mut got : Many< f32, f64 > = ( mod1::Floats::from( 13.0 ) ).into();
+    let mut got : Many< f32, f64 > = ( mk!( 13.0 ) ).into();
     assert_eq!( got.len(), 1 );
-    assert_eq!( got.pop(), Some( mod1::Floats::from( 13.0 ) ) );
+    assert_eq!( got.pop(), Some( mk!( 13.0 ) ) );
 
     /* test.case( "as_slice" ) */
-    let src : Many< f32, f64 > = Many::from( mod1::Floats::from( 13.0 ) );
+    let src : Many< f32, f64 > = Many::from( mk!( 13.0 ) );
     let got = src.as_slice();
-    assert_eq!( got, &[ mod1::Floats::from( 13.0 ), ][ .. ] );
+    assert_eq!( got, &[ mk!( 13.0 ), ][ .. ] );
     let got = &src[ .. ];
-    assert_eq!( got, &[ mod1::Floats::from( 13.0 ), ][ .. ] );
+    assert_eq!( got, &[ mk!( 13.0 ), ][ .. ] );
 
   }
 
@@ -229,6 +260,17 @@ tests_impls!
   {
     use core::fmt;
 
+    macro_rules! mk
+    {
+      (
+        $( $Rest : tt )*
+      )
+      =>
+      {
+        $( $Rest )*
+      };
+    }
+
     // trace_macros!( true );
     types!
     {
@@ -245,6 +287,26 @@ tests_impls!
     assert!( implements!( instance1 => fmt::Debug ) );
     assert!( implements!( instance1 => Default ) );
     assert!( !implements!( instance1 => fmt::Display ) );
+
+    /* test.case( "make0" ) */
+    let got : Many< f32 > = make!();
+    let exp = Many::< f32 >( std::vec::Vec::new() );
+    assert_eq!( got, exp );
+
+    /* test.case( "make1" ) */
+    let got : Many< f32 > = make!( mk!( 1.0 ) );
+    let exp = Many::< f32 >( vec!( mk!( 1.0 ) ) );
+    assert_eq!( got, exp );
+
+    /* test.case( "make2" ) */
+    let got : Many< f32 > = make!( mk!( 1.0 ), mk!( 1.0 ) );
+    let exp = Many::< f32 >( vec!( mk!( 1.0 ), mk!( 1.0 ) ) );
+    assert_eq!( got, exp );
+
+    /* test.case( "make3" ) */
+    let got : Many< f32 > = make!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
+    let exp = Many::< f32 >( vec!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) ) );
+    assert_eq!( got, exp );
 
     /* test.case( "from f32 / into Many" ) */
     let instance1 : Many< f32 > = ( 13.0 ).into();
