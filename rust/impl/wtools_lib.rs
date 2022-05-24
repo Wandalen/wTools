@@ -33,7 +33,9 @@
 /* zzz : introduce tag to run fewer tests */
 
 /// Iter tools.
+#[ cfg( feature = "iter_tools" ) ]
 pub mod iter;
+#[ cfg( feature = "iter_tools" ) ]
 #[ doc( inline ) ]
 pub use iter::exposed::*;
 
@@ -105,7 +107,9 @@ pub mod protected
   #[ cfg( feature = "derive_tools" ) ]
   pub use ::derive_tools as derive;
 
+  #[ cfg( feature = "iter_tools" ) ]
   pub use super::iter;
+  #[ cfg( feature = "iter_tools" ) ]
   pub use iter::exposed::*;
 
   #[ cfg( feature = "meta_tools" ) ]

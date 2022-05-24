@@ -51,7 +51,6 @@ pub use exposed::*;
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
-
   pub use ::itertools::
   {
     Diff,
@@ -64,5 +63,4 @@ pub mod prelude
     /*MultiUnzip,*/
     PeekingNext,
   };
-
 }

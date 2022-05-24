@@ -25,6 +25,12 @@ include = [
   "/License",
 ]
 
+[features]
+itertools_default = [ "itertools/default" ]
+itertools_use_std = [ "itertools/use_std" ]
+itertools_use_alloc = [ "itertools/use_alloc" ]
+default = [ "itertools_default" ]
+
 [lib]
 name = "iter_tools"
 path = "rust/impl/iter/lib.rs"
@@ -38,7 +44,7 @@ name = "iter_tools_trivial"
 path = "sample/rust/iter_tools_trivial/src/main.rs"
 
 [dependencies]
-itertools = "~0.10.3"
+itertools = { version = "~0.10.3", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

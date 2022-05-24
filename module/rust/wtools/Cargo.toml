@@ -52,6 +52,11 @@ former_default = [ "former/default" ]
 former_meta = [ "former/meta" ]
 former_runtime = [ "former/runtime" ]
 
+iter_tools_default = [ "iter_tools/default" ]
+iter_tools_itertools = [ "iter_tools/itertools" ]
+iter_tools_itertools_use_std = [ "iter_tools/itertools_use_std" ]
+iter_tools_itertools_use_alloc = [ "iter_tools/itertools_use_alloc" ]
+
 meta_tools_default = [ "meta_tools/default" ]
 meta_tools_for_each = [ "meta_tools/for_each" ]
 meta_tools_for_each_default = [ "meta_tools/for_each_default" ]
@@ -123,6 +128,7 @@ dt_type_constructor = [ "data_type/type_constructor" ]
 
 default = [
   "former_default",
+  "iter_tools_default",
   "meta_tools_default",
   "impls_index_default",
   "typing_tools_default",
@@ -139,7 +145,7 @@ all-features = true
 [dependencies]
 former = { version = "~0.1", path = "../../rust/former", optional = true, default-features = false }
 woptions = { version = "~0.1", path = "../../rust/woptions" }
-iter_tools = { version = "~0.1", path = "../../rust/iter_tools" }
+iter_tools = { version = "~0.1", path = "../../rust/iter_tools", optional = true, default-features = false }
 
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools", optional = true, default-features = false }
 impls_index = { version = "~0.1", path = "../../rust/impls_index", optional = true, default-features = false } # despite impls_index is imported by meta_tools it should also be imported immediatly
