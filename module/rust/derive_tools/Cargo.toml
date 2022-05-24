@@ -24,6 +24,44 @@ include = [
   "/License",
 ]
 
+[features]
+derive_more_default = [ "derive_more/default" ]
+derive_more_add_assign = [ "derive_more/add_assign" ]
+derive_more_add = [ "derive_more/add" ]
+derive_more_as_mut = [ "derive_more/as_mut" ]
+derive_more_as_ref = [ "derive_more/as_ref" ]
+derive_more_constructor = [ "derive_more/constructor" ]
+derive_more_deref = [ "derive_more/deref" ]
+derive_more_deref_mut = [ "derive_more/deref_mut" ]
+derive_more_display = [ "derive_more/display" ]
+derive_more_error = [ "derive_more/error" ]
+derive_more_from = [ "derive_more/from" ]
+derive_more_from_str = [ "derive_more/from_str" ]
+derive_more_index = [ "derive_more/index" ]
+derive_more_index_mut = [ "derive_more/index_mut" ]
+derive_more_into = [ "derive_more/into" ]
+derive_more_into_iterator = [ "derive_more/into_iterator" ]
+derive_more_iterator = [ "derive_more/iterator" ]
+derive_more_mul_assign = [ "derive_more/mul_assign" ]
+derive_more_mul = [ "derive_more/mul" ]
+derive_more_not = [ "derive_more/not" ]
+derive_more_sum = [ "derive_more/sum" ]
+derive_more_try_into = [ "derive_more/try_into" ]
+derive_more_is_variant = [ "derive_more/is_variant" ]
+derive_more_unwrap = [ "derive_more/unwrap" ]
+derive_more_convert_case = [ "derive_more/convert_case" ]
+derive_more_rustc_version = [ "derive_more/rustc_version" ]
+derive_more_testing_helpers = [ "derive_more/testing-helpers" ]
+derive_more_generate_parsing_rs = [ "derive_more/generate-parsing-rs" ]
+derive_more_peg = [ "derive_more/peg" ]
+derive_more_nightly = [ "derive_more/nightly" ]
+derive_more_track_caller = [ "derive_more/track-caller" ]
+parse_display_default = [ "parse-display/default" ]
+parse_display_std = [ "parse-display/std" ]
+parse_display_regex = [ "parse-display/regex" ]
+parse_display_once_cell = [ "parse-display/once_cell" ]
+default = [ "parse_display_default", "derive_more_default" ]
+
 [lib]
 name = "derive_tools"
 path = "rust/impl/derive/lib.rs"
@@ -38,8 +76,8 @@ path = "rust/test/derive/derive_lib_test.rs"
 # qqq : add please
 
 [dependencies]
-derive_more = { version = "~0.99" }
-parse-display = { version = "~0.5" }
+derive_more = { version = "~0.99", optional = true, default-features = false }
+parse-display = { version = "~0.5", optional = true, default-features = false }
 # former = { version = "~0.1", path = "../../rust/former" }
 # inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
 # is_slice = { version = "~0.1", path = "../../rust/is_slice" }

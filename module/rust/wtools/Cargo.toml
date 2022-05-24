@@ -49,13 +49,51 @@ path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
 # in_wtools = [] # qqq : for Dima : feature still here? # aaa : Dmytro : removed
-dt = [ "data_type" ]
+dt_default = [ "data_type/default" ]
 dt_either = [ "data_type/either" ]
 dt_type_constructor = [ "data_type/type_constructor" ]
-nightly = [ "typing_tools/nightly" ]
+
+derive_tools_default = [ "derive_tools/default" ]
+derive_tools_derive_more_default = [ "derive_tools/derive_more_default" ]
+derive_tools_derive_more_add_assign = [ "derive_tools/derive_more_add_assign" ]
+derive_tools_derive_more_add = [ "derive_tools/derive_more_add" ]
+derive_tools_derive_more_as_mut = [ "derive_tools/derive_more_as_mut" ]
+derive_tools_derive_more_as_ref = [ "derive_tools/derive_more_as_ref" ]
+derive_tools_derive_more_constructor = [ "derive_tools/derive_more_constructor" ]
+derive_tools_derive_more_deref = [ "derive_tools/derive_more_deref" ]
+derive_tools_derive_more_deref_mut = [ "derive_tools/derive_more_deref_mut" ]
+derive_tools_derive_more_display = [ "derive_tools/derive_more_display" ]
+derive_tools_derive_more_error = [ "derive_tools/derive_more_error" ]
+derive_tools_derive_more_from = [ "derive_tools/derive_more_from" ]
+derive_tools_derive_more_from_str = [ "derive_tools/derive_more_from_str" ]
+derive_tools_derive_more_index = [ "derive_tools/derive_more_index" ]
+derive_tools_derive_more_index_mut = [ "derive_tools/derive_more_index_mut" ]
+derive_tools_derive_more_into = [ "derive_tools/derive_more_into" ]
+derive_tools_derive_more_into_iterator = [ "derive_tools/derive_more_into_iterator" ]
+derive_tools_derive_more_iterator = [ "derive_tools/derive_more_iterator" ]
+derive_tools_derive_more_mul_assign = [ "derive_tools/derive_more_mul_assign" ]
+derive_tools_derive_more_mul = [ "derive_tools/derive_more_mul" ]
+derive_tools_derive_more_not = [ "derive_tools/derive_more_not" ]
+derive_tools_derive_more_sum = [ "derive_tools/derive_more_sum" ]
+derive_tools_derive_more_try_into = [ "derive_tools/derive_more_try_into" ]
+derive_tools_derive_more_is_variant = [ "derive_tools/derive_more_is_variant" ]
+derive_tools_derive_more_unwrap = [ "derive_tools/derive_more_unwrap" ]
+derive_tools_derive_more_convert_case = [ "derive_tools/derive_more_convert_case" ]
+derive_tools_derive_more_rustc_version = [ "derive_tools/derive_more_rustc_version" ]
+derive_tools_derive_more_testing_helpers = [ "derive_tools/derive_more_testing_helpers" ]
+derive_tools_derive_more_generate_parsing_rs = [ "derive_tools/derive_more_generate_parsing_rs" ]
+derive_tools_derive_more_peg = [ "derive_tools/derive_more_peg" ]
+derive_tools_derive_more_nightly = [ "derive_tools/derive_more_nightly" ]
+derive_tools_derive_more_track_caller = [ "derive_tools/derive_more_track_caller" ]
+derive_tools_parse_display_default = [ "derive_tools/parse_display_default" ]
+derive_tools_parse_display_std = [ "derive_tools/parse_display_std" ]
+derive_tools_parse_display_regex = [ "derive_tools/parse_display_regex" ]
+derive_tools_parse_display_once_cell = [ "derive_tools/parse_display_once_cell" ]
+
+typing_tools_nightly = [ "typing_tools/nightly" ]
 default = [
-  "dt",
-  "dt_either",
+  "dt_default",
+  "derive_tools_default",
 ]
 
 # qqq : for Dima : discuss features
@@ -78,7 +116,7 @@ time_tools = { version = "~0.1", path = "../../rust/time_tools" }
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
 werror = { version = "~0.1", path = "../../rust/werror" }
 winterval = { version = "~0.1", path = "../../rust/winterval" }
-derive_tools = { version = "~0.1", path = "../../rust/derive_tools" }
+derive_tools = { version = "~0.1", path = "../../rust/derive_tools", optional = true, default-features = false }
 data_type = { version = "~0.1", path = "../../rust/data_type", optional = true, default-features = false }
 
 [dev-dependencies]
