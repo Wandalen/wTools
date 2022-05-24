@@ -25,6 +25,11 @@ include = [
   "/License",
 ]
 
+[features]
+meta = [ "mod_interface_meta" ]
+runtime = [ "mod_interface_runtime" ]
+default = [ "meta", "runtime" ]
+
 [lib]
 name = "mod_interface"
 path = "rust/impl/meta/mod_interface/front/lib.rs"
@@ -38,8 +43,8 @@ path = "rust/test/meta/mod_interface_lib_test.rs"
 # path = "sample/rust/mod_interface_trivial_sample/src/main.rs"
 
 [dependencies]
-mod_interface_meta = { version = "~0.1", path = "../../rust/mod_interface_meta" }
-mod_interface_runtime = { version = "~0.1", path = "../../rust/mod_interface_runtime" }
+mod_interface_meta = { version = "~0.1", path = "../../rust/mod_interface_meta", optional = true, default-features = false }
+mod_interface_runtime = { version = "~0.1", path = "../../rust/mod_interface_runtime", optional = true, default-features = false }
 
 [dev-dependencies]
 # anyhow = "~1.0"

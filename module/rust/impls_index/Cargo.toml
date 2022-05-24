@@ -25,6 +25,10 @@ include = [
   "/License",
 ]
 
+[features]
+meta = [ "impls_index_meta" ]
+default = [ "meta" ]
+
 [lib]
 name = "impls_index"
 path = "rust/impl/meta/impls_index/front/lib.rs"
@@ -39,7 +43,7 @@ path = "rust/test/meta/impls_index_lib_test.rs"
 # qqq : xxx : write please
 
 [dependencies]
-impls_index_meta = { version = "~0.1", path = "../../rust/impls_index_meta" }
+impls_index_meta = { version = "~0.1", path = "../../rust/impls_index_meta", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

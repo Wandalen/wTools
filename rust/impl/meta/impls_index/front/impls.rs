@@ -258,6 +258,7 @@ pub mod prelude
     impls2,
     _impls_callback,
   };
+  #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
   pub use ::impls_index_meta::impls3;
   pub use impls1 as impls;
 }

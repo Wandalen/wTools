@@ -14,7 +14,9 @@
 /// Namespace with dependencies.
 pub mod dependency
 {
+  #[ cfg( any( feature = "runtime", feature = "mod_interface_runtime" ) ) ]
   pub use mod_interface_runtime;
+  #[ cfg( any( feature = "meta", feature = "mod_interface_meta" ) ) ]
   pub use mod_interface_meta;
 }
 
@@ -36,12 +38,15 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
+  #[ cfg( any( feature = "runtime", feature = "mod_interface_runtime" ) ) ]
   pub use mod_interface_runtime as runtime;
+  #[ cfg( any( feature = "meta", feature = "mod_interface_meta" ) ) ]
   pub use mod_interface_meta as meta;
 }
 
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
+  #[ cfg( any( feature = "meta", feature = "mod_interface_meta" ) ) ]
   pub use mod_interface_meta::*;
 }

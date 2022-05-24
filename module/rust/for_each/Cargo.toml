@@ -24,6 +24,9 @@ include = [
   "/License",
 ]
 
+[features]
+default = []
+
 [lib]
 name = "for_each"
 path = "rust/impl/meta/for_each/lib.rs"

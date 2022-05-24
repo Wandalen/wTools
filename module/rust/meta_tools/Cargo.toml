@@ -25,6 +25,21 @@ include = [
   "/License",
 ]
 
+[features]
+for_each_default = [ "for_each/default" ]
+impls_index_default = [ "impls_index/default" ]
+impls_index_meta = [ "impls_index/meta" ]
+mod_interface_default = [ "mod_interface/default" ]
+mod_interface_meta = [ "mod_interface/meta" ]
+mod_interface_runtime = [ "mod_interface/runtime" ]
+container_aliases = [ "literally" ]
+default = [
+  "for_each_default",
+  "impls_index_default",
+  "mod_interface_default",
+  "container_aliases",
+]
+
 [lib]
 name = "meta_tools"
 path = "rust/impl/meta/meta_tools_lib.rs"
@@ -49,10 +64,10 @@ path = "sample/rust/meta_tools_trivial_sample/src/main.rs"
 # werror = { version = "~0.1", path = "../../rust/werror" }
 # winterval = { version = "~0.1", path = "../../rust/winterval" }
 # proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
-for_each = { version = "~0.1", path = "../../rust/for_each" }
-impls_index = { version = "~0.1", path = "../../rust/impls_index" }
-mod_interface = { version = "~0.1", path = "../../rust/mod_interface" }
-literally = "~0.1"
+for_each = { version = "~0.1", path = "../../rust/for_each", optional = true, default-features = false }
+impls_index = { version = "~0.1", path = "../../rust/impls_index", optional = true, default-features = false }
+mod_interface = { version = "~0.1", path = "../../rust/mod_interface", optional = true, default-features = false }
+literally = { version = "~0.1", optional = true, default-features = false }
 # either = "~1.6"
 # # maplit = "~1.0"
 # regex = "1.5.4"
