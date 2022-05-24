@@ -83,6 +83,7 @@ pub mod dependencies
   #[ cfg( feature = "time_tools" ) ]
   pub use ::time_tools;
   pub use ::wstring_tools;
+  #[ cfg( feature = "werror" ) ]
   pub use ::werror;
   pub use ::winterval;
   #[ cfg( feature = "derive_tools" ) ]
@@ -100,6 +101,7 @@ pub mod protected
   #[ cfg( feature = "mod_interface" ) ]
   pub use ::mod_interface::orphan::*;
 
+  #[ cfg( feature = "werror" ) ]
   pub use ::werror as error;
   #[ cfg( feature = "former" ) ]
   pub use ::former as former;
