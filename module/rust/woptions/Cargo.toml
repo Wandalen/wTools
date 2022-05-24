@@ -25,6 +25,11 @@ include = [
   "/License",
 ]
 
+[features]
+meta = [ "woptions_meta" ]
+runtime = [ "woptions_runtime" ]
+default = [ "meta", "runtime", "former" ]
+
 [lib]
 name = "woptions"
 path = "rust/impl/options/front/lib.rs"
@@ -38,9 +43,9 @@ name = "woptions_trivial"
 path = "sample/rust/woptions_trivial/src/main.rs"
 
 [dependencies]
-woptions_meta = { version = "~0.1", path = "../../rust/woptions_meta" }
-woptions_runtime = { version = "~0.1", path = "../../rust/woptions_runtime" }
-former = { version = "~0.1", path = "../../rust/former" }
+woptions_meta = { version = "~0.1", path = "../../rust/woptions_meta", optional = true, default-features = false }
+woptions_runtime = { version = "~0.1", path = "../../rust/woptions_runtime", optional = true, default-features = false }
+former = { version = "~0.1", path = "../../rust/former", optional = true, default-features = false }
 # meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
 
 [dev-dependencies]

@@ -69,6 +69,7 @@ pub mod dependencies
 {
   #[ cfg( feature = "former" ) ]
   pub use ::former;
+  #[ cfg( feature = "woptions" ) ]
   pub use ::woptions;
 
   #[ cfg( feature = "meta_tools" ) ]
@@ -106,6 +107,7 @@ pub mod protected
   pub use ::werror as error;
   #[ cfg( feature = "former" ) ]
   pub use ::former as former;
+  #[ cfg( feature = "woptions" ) ]
   pub use ::woptions as options;
   #[ cfg( feature = "winterval" ) ]
   pub use ::winterval as interval;
