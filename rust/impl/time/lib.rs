@@ -36,6 +36,7 @@
 
 pub mod time
 {
+  #[ cfg( feature = "chrono" ) ]
   include!( "./now.rs" );
 }
 

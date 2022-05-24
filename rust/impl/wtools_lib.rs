@@ -61,6 +61,7 @@ pub mod dt;
 /// Collection of general purpose time tools.
 ///
 
+#[ cfg( feature = "time_tools" ) ]
 pub mod time;
 
 /// Dependencies.
@@ -79,6 +80,7 @@ pub mod dependencies
 
   #[ cfg( feature = "typing_tools" ) ]
   pub use ::typing_tools;
+  #[ cfg( feature = "time_tools" ) ]
   pub use ::time_tools;
   pub use ::wstring_tools;
   pub use ::werror;

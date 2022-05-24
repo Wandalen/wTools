@@ -82,6 +82,9 @@ typing_tools_inspect_type_nightly = [ "typing_tools/inspect_type_nightly" ]
 typing_tools_is_slice = [ "typing_tools/is_slice" ]
 typing_tools_implements = [ "typing_tools/implements" ]
 
+time_tools_default = [ "time_tools/default" ]
+time_tools_chrono = [ "time_tools/chrono" ]
+
 derive_tools_default = [ "derive_tools/default" ]
 derive_tools_derive_more = [ "derive_tools/derive_more" ]
 derive_tools_derive_more_default = [ "derive_tools/derive_more_default" ]
@@ -132,6 +135,7 @@ default = [
   "meta_tools_default",
   "impls_index_default",
   "typing_tools_default",
+  "time_tools_default",
   "derive_tools_default",
   "dt_default",
 ]
@@ -152,7 +156,7 @@ impls_index = { version = "~0.1", path = "../../rust/impls_index", optional = tr
 mod_interface = { version = "~0.1", path = "../../rust/mod_interface", optional = true, default-features = false }
 
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = true, default-features = false }
-time_tools = { version = "~0.1", path = "../../rust/time_tools" }
+time_tools = { version = "~0.1", path = "../../rust/time_tools", optional = true, default-features = false }
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
 werror = { version = "~0.1", path = "../../rust/werror" }
 winterval = { version = "~0.1", path = "../../rust/winterval" }

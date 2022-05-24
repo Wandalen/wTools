@@ -25,6 +25,10 @@ include = [
   "/License",
 ]
 
+[features]
+chrono_default = [ "chrono/default" ]
+default = [ "chrono_default" ]
+
 [lib]
 name = "time_tools"
 path = "rust/impl/time/lib.rs"
@@ -50,7 +54,7 @@ path = "sample/rust/time_tools_trivial/src/main.rs"
 # proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
 # # maplit = "~1.0"
 # regex = "1.5.4"
-chrono = "~0.4"
+chrono = { version = "~0.4", optional = true, default-features = false }
 # paste = "1.0.5"
 # anyhow = "1.0.48"
 
