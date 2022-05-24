@@ -45,7 +45,9 @@ pub mod meta;
 pub use meta::*;
 
 /// Type checking tools.
+#[ cfg( feature = "typing_tools" ) ]
 pub mod typing;
+#[ cfg( feature = "typing_tools" ) ]
 #[ doc( inline ) ]
 pub use typing::*;
 
@@ -73,6 +75,7 @@ pub mod dependencies
   #[ cfg( feature = "mod_interface" ) ]
   pub use ::mod_interface;
 
+  #[ cfg( feature = "typing_tools" ) ]
   pub use ::typing_tools;
   pub use ::time_tools;
   pub use ::wstring_tools;
@@ -109,7 +112,9 @@ pub mod protected
   #[ cfg( feature = "meta_tools" ) ]
   pub use meta::*;
 
+  #[ cfg( feature = "typing_tools" ) ]
   pub use super::typing;
+  #[ cfg( feature = "typing_tools" ) ]
   pub use typing::*;
 
   #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]

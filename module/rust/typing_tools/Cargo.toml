@@ -39,8 +39,8 @@ path = "sample/rust/typing_tools_trivial/src/main.rs"
 # qqq : for Rust dev : please add # aaa : done
 
 [features]
-nightly = [ "inspect_type/nightly" ]
-default = []
+inspect_type_nightly = [ "inspect_type/nightly" ]
+default = [ "implements", "is_slice", "inspect_type" ]
 
 [package.metadata.docs.rs]
 all-features = true
@@ -48,9 +48,9 @@ all-features = true
 
 [dependencies]
 # former = { version = "~0.1", path = "../../rust/former" }
-inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
-is_slice = { version = "~0.1", path = "../../rust/is_slice" }
-implements = { version = "~0.1", path = "../../rust/implements" }
+inspect_type = { version = "~0.1", path = "../../rust/inspect_type", optional = true, default-features = false }
+is_slice = { version = "~0.1", path = "../../rust/is_slice", optional = true, default-features = false }
+implements = { version = "~0.1", path = "../../rust/implements", optional = true, default-features = false }
 # typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
 # typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
 # werror = { version = "~0.1", path = "../../rust/werror" }

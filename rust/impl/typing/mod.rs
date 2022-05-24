@@ -7,4 +7,5 @@
 // pub use is_slice::*;
 // pub use implements::*;
 
+#[ cfg( feature = "typing_tools" ) ]
 pub use typing_tools::*;

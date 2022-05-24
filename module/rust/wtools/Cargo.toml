@@ -53,15 +53,25 @@ former_meta = [ "former/meta" ]
 former_runtime = [ "former/runtime" ]
 
 meta_tools_default = [ "meta_tools/default" ]
+meta_tools_for_each = [ "meta_tools/for_each" ]
 meta_tools_for_each_default = [ "meta_tools/for_each_default" ]
+meta_tools_impls_index = [ "meta_tools/impls_index" ]
 meta_tools_impls_index_default = [ "meta_tools/impls_index_default" ]
 meta_tools_impls_index_meta = [ "meta_tools/impls_index_meta" ]
+meta_tools_mod_interface = [ "meta_tools/mod_interface" ]
 meta_tools_mod_interface_default = [ "meta_tools/mod_interface_default" ]
 meta_tools_mod_interface_meta = [ "meta_tools/mod_interface_meta" ]
 meta_tools_mod_interface_runtime = [ "meta_tools/mod_interface_runtime" ]
 meta_tools_container_aliases = [ "meta_tools/literally" ]
 
+typing_tools_default = [ "typing_tools/default" ]
+typing_tools_inspect_type = [ "typing_tools/inspect_type" ]
+typing_tools_inspect_type_nightly = [ "typing_tools/inspect_type_nightly" ]
+typing_tools_is_slice = [ "typing_tools/is_slice" ]
+typing_tools_implements = [ "typing_tools/implements" ]
+
 derive_tools_default = [ "derive_tools/default" ]
+derive_tools_derive_more = [ "derive_tools/derive_more" ]
 derive_tools_derive_more_default = [ "derive_tools/derive_more_default" ]
 derive_tools_derive_more_add_assign = [ "derive_tools/derive_more_add_assign" ]
 derive_tools_derive_more_add = [ "derive_tools/derive_more_add" ]
@@ -93,6 +103,7 @@ derive_tools_derive_more_generate_parsing_rs = [ "derive_tools/derive_more_gener
 derive_tools_derive_more_peg = [ "derive_tools/derive_more_peg" ]
 derive_tools_derive_more_nightly = [ "derive_tools/derive_more_nightly" ]
 derive_tools_derive_more_track_caller = [ "derive_tools/derive_more_track_caller" ]
+derive_tools_parse_display = [ "derive_tools/parse-display" ]
 derive_tools_parse_display_default = [ "derive_tools/parse_display_default" ]
 derive_tools_parse_display_std = [ "derive_tools/parse_display_std" ]
 derive_tools_parse_display_regex = [ "derive_tools/parse_display_regex" ]
@@ -103,10 +114,10 @@ dt_default = [ "data_type/default" ]
 dt_either = [ "data_type/either" ]
 dt_type_constructor = [ "data_type/type_constructor" ]
 
-typing_tools_nightly = [ "typing_tools/nightly" ]
 default = [
   "former_default",
   "meta_tools_default",
+  "typing_tools_default",
   "derive_tools_default",
   "dt_default",
 ]
@@ -126,7 +137,7 @@ meta_tools = { version = "~0.2", path = "../../rust/meta_tools", optional = true
 impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by meta_tools it should also be imported immediatly
 mod_interface = { version = "~0.1", path = "../../rust/mod_interface" }
 
-typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
+typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = true, default-features = false }
 time_tools = { version = "~0.1", path = "../../rust/time_tools" }
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
 werror = { version = "~0.1", path = "../../rust/werror" }
