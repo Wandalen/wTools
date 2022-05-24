@@ -49,9 +49,14 @@ path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
 # in_wtools = [] # qqq : for Dima : feature still here? # aaa : Dmytro : removed
+dt = [ "data_type" ]
+dt_either = [ "data_type/either" ]
+dt_type_constructor = [ "data_type/type_constructor" ]
 nightly = [ "typing_tools/nightly" ]
-# default = [ "in_wtools" ]
-default = []
+default = [
+  "dt",
+  "dt_either",
+]
 
 # qqq : for Dima : discuss features
 
@@ -74,7 +79,7 @@ wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
 werror = { version = "~0.1", path = "../../rust/werror" }
 winterval = { version = "~0.1", path = "../../rust/winterval" }
 derive_tools = { version = "~0.1", path = "../../rust/derive_tools" }
-data_type = { version = "~0.1", path = "../../rust/data_type" }
+data_type = { version = "~0.1", path = "../../rust/data_type", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

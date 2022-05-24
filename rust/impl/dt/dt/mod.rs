@@ -22,13 +22,17 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
+  #[ cfg( feature = "either" ) ]
   pub use ::either::Either;
+  #[ cfg( feature = "type_constructor" ) ]
   pub use ::type_constructor::exposed::*;
 }
 
 /// Prelude to use: `use wtools::prelude::*`.
 pub mod prelude
 {
+  #[ cfg( feature = "either" ) ]
   pub use either::*;
+  #[ cfg( feature = "type_constructor" ) ]
   pub use ::type_constructor::prelude::*;
 }
