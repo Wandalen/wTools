@@ -93,6 +93,7 @@ pub mod dependencies
 pub mod protected
 {
   pub use super::orphan::*;
+  #[ cfg( feature = "mod_interface" ) ]
   pub use ::mod_interface::orphan::*;
 
   pub use ::werror as error;
@@ -134,6 +135,7 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
+  #[ cfg( feature = "mod_interface" ) ]
   pub use ::mod_interface::exposed::*;
 }
 
