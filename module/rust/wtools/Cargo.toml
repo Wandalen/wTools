@@ -87,6 +87,8 @@ time_tools_chrono = [ "time_tools/chrono" ]
 
 werror_default = [ "werror" ]
 
+winterval_default = [ "winterval" ]
+
 derive_tools_default = [ "derive_tools/default" ]
 derive_tools_derive_more = [ "derive_tools/derive_more" ]
 derive_tools_derive_more_default = [ "derive_tools/derive_more_default" ]
@@ -139,6 +141,7 @@ default = [
   "typing_tools_default",
   "time_tools_default",
   "werror_default",
+  "winterval_default",
   "derive_tools_default",
   "dt_default",
 ]
@@ -162,7 +165,7 @@ typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = 
 time_tools = { version = "~0.1", path = "../../rust/time_tools", optional = true, default-features = false }
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
 werror = { version = "~0.1", path = "../../rust/werror", optional = true, default-features = false }
-winterval = { version = "~0.1", path = "../../rust/winterval" }
+winterval = { version = "~0.1", path = "../../rust/winterval", optional = true, default-features = false }
 derive_tools = { version = "~0.1", path = "../../rust/derive_tools", optional = true, default-features = false }
 data_type = { version = "~0.1", path = "../../rust/data_type", optional = true, default-features = false }
 

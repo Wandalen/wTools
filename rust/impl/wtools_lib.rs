@@ -85,6 +85,7 @@ pub mod dependencies
   pub use ::wstring_tools;
   #[ cfg( feature = "werror" ) ]
   pub use ::werror;
+  #[ cfg( feature = "winterval" ) ]
   pub use ::winterval;
   #[ cfg( feature = "derive_tools" ) ]
   pub use ::derive_tools;
@@ -106,6 +107,7 @@ pub mod protected
   #[ cfg( feature = "former" ) ]
   pub use ::former as former;
   pub use ::woptions as options;
+  #[ cfg( feature = "winterval" ) ]
   pub use ::winterval as interval;
   pub use ::wstring_tools as string;
   #[ cfg( feature = "derive_tools" ) ]
