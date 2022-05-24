@@ -25,6 +25,11 @@ include = [
   "/License",
 ]
 
+[features]
+meta = [ "former_meta" ]
+runtime = [ "former_runtime" ]
+default = [ "meta", "runtime" ]
+
 [lib]
 name = "former"
 path = "rust/impl/former/front/lib.rs"
@@ -38,8 +43,8 @@ name = "former_trivial"
 path = "sample/rust/former_trivial/src/main.rs"
 
 [dependencies]
-former_meta = { version = "~0.1", path = "../../rust/former_meta" }
-former_runtime = { version = "~0.1", path = "../../rust/former_runtime" }
+former_meta = { version = "~0.1", path = "../../rust/former_meta", optional = true, default-features = false }
+former_runtime = { version = "~0.1", path = "../../rust/former_runtime", optional = true, default-features = false }
 
 [dev-dependencies]
 anyhow = "~1.0"

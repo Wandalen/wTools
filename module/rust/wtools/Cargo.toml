@@ -48,11 +48,18 @@ name = "wtools_trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
-# in_wtools = [] # qqq : for Dima : feature still here? # aaa : Dmytro : removed
-dt = [ "data_type" ]
-dt_default = [ "data_type/default" ]
-dt_either = [ "data_type/either" ]
-dt_type_constructor = [ "data_type/type_constructor" ]
+former_default = [ "former/default" ]
+former_meta = [ "former/meta" ]
+former_runtime = [ "former/runtime" ]
+
+meta_tools_default = [ "meta_tools/default" ]
+meta_tools_for_each_default = [ "meta_tools/for_each_default" ]
+meta_tools_impls_index_default = [ "meta_tools/impls_index_default" ]
+meta_tools_impls_index_meta = [ "meta_tools/impls_index_meta" ]
+meta_tools_mod_interface_default = [ "meta_tools/mod_interface_default" ]
+meta_tools_mod_interface_meta = [ "meta_tools/mod_interface_meta" ]
+meta_tools_mod_interface_runtime = [ "meta_tools/mod_interface_runtime" ]
+meta_tools_container_aliases = [ "meta_tools/literally" ]
 
 derive_tools_default = [ "derive_tools/default" ]
 derive_tools_derive_more_default = [ "derive_tools/derive_more_default" ]
@@ -91,20 +98,17 @@ derive_tools_parse_display_std = [ "derive_tools/parse_display_std" ]
 derive_tools_parse_display_regex = [ "derive_tools/parse_display_regex" ]
 derive_tools_parse_display_once_cell = [ "derive_tools/parse_display_once_cell" ]
 
-meta_tools_default = [ "meta_tools/default" ]
-meta_tools_for_each_default = [ "meta_tools/for_each_default" ]
-meta_tools_impls_index_default = [ "meta_tools/impls_index_default" ]
-meta_tools_impls_index_meta = [ "meta_tools/impls_index_meta" ]
-meta_tools_mod_interface_default = [ "meta_tools/mod_interface_default" ]
-meta_tools_mod_interface_meta = [ "meta_tools/mod_interface_meta" ]
-meta_tools_mod_interface_runtime = [ "meta_tools/mod_interface_runtime" ]
-meta_tools_container_aliases = [ "meta_tools/literally" ]
+dt = [ "data_type" ]
+dt_default = [ "data_type/default" ]
+dt_either = [ "data_type/either" ]
+dt_type_constructor = [ "data_type/type_constructor" ]
 
 typing_tools_nightly = [ "typing_tools/nightly" ]
 default = [
-  "dt_default",
-  "derive_tools_default",
+  "former_default",
   "meta_tools_default",
+  "derive_tools_default",
+  "dt_default",
 ]
 
 # qqq : for Dima : discuss features
@@ -114,7 +118,7 @@ all-features = true
 # rustdoc-args = []
 
 [dependencies]
-former = { version = "~0.1", path = "../../rust/former" }
+former = { version = "~0.1", path = "../../rust/former", optional = true, default-features = false }
 woptions = { version = "~0.1", path = "../../rust/woptions" }
 iter_tools = { version = "~0.1", path = "../../rust/iter_tools" }
 

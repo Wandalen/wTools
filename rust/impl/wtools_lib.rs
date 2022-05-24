@@ -38,7 +38,9 @@ pub mod iter;
 pub use iter::exposed::*;
 
 /// Meta tools.
+#[ cfg( feature = "meta_tools" ) ]
 pub mod meta;
+#[ cfg( feature = "meta_tools" ) ]
 #[ doc( inline ) ]
 pub use meta::*;
 
@@ -48,6 +50,7 @@ pub mod typing;
 pub use typing::*;
 
 /// Collection of primal data types
+#[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
 pub mod dt;
 
 ///
@@ -59,12 +62,15 @@ pub mod time;
 /// Dependencies.
 pub mod dependencies
 {
-
+  #[ cfg( feature = "former" ) ]
   pub use ::former;
   pub use ::woptions;
 
+  #[ cfg( feature = "meta_tools" ) ]
   pub use ::meta_tools;
+  #[ cfg( feature = "impls_index" ) ]
   pub use ::impls_index;
+  #[ cfg( feature = "mod_interface" ) ]
   pub use ::mod_interface;
 
   pub use ::typing_tools;
@@ -72,6 +78,7 @@ pub mod dependencies
   pub use ::wstring_tools;
   pub use ::werror;
   pub use ::winterval;
+  #[ cfg( feature = "derive_tools" ) ]
   pub use ::derive_tools;
 
   // #[ cfg( debug_assertions ) ]
@@ -86,21 +93,26 @@ pub mod protected
   pub use ::mod_interface::orphan::*;
 
   pub use ::werror as error;
+  #[ cfg( feature = "former" ) ]
   pub use ::former as former;
   pub use ::woptions as options;
   pub use ::winterval as interval;
   pub use ::wstring_tools as string;
+  #[ cfg( feature = "derive_tools" ) ]
   pub use ::derive_tools as derive;
 
   pub use super::iter;
   pub use iter::exposed::*;
 
+  #[ cfg( feature = "meta_tools" ) ]
   pub use super::meta;
+  #[ cfg( feature = "meta_tools" ) ]
   pub use meta::*;
 
   pub use super::typing;
   pub use typing::*;
 
+  #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
   pub use super::dt;
 
 }
@@ -127,6 +139,7 @@ pub mod prelude
   // pub use ::mod_interface::prelude::*;
 
   // pub use super::*; /* zzz : remove later */
+  #[ cfg( feature = "meta_tools" ) ]
   pub use super::meta::prelude::*;
 
 }
