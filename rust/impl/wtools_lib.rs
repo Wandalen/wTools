@@ -83,6 +83,7 @@ pub mod dependencies
   pub use ::typing_tools;
   #[ cfg( feature = "time_tools" ) ]
   pub use ::time_tools;
+  #[ cfg( feature = "wstring_tools" ) ]
   pub use ::wstring_tools;
   #[ cfg( feature = "werror" ) ]
   pub use ::werror;
@@ -111,6 +112,7 @@ pub mod protected
   pub use ::woptions as options;
   #[ cfg( feature = "winterval" ) ]
   pub use ::winterval as interval;
+  #[ cfg( feature = "wstring_tools" ) ]
   pub use ::wstring_tools as string;
   #[ cfg( feature = "derive_tools" ) ]
   pub use ::derive_tools as derive;
