@@ -6,7 +6,7 @@ Fundamental data types and type constructors, like Single, Pair, Homopair, Many.
 In Rust, you often need to wrap a given type into a new one.
 The role of the orphan rules in particular is basically to prevent you from implementing external traits for external types.
 To overcome the restriction developer usually wrap the external type into a tuple introducing a new type.
-Type constructor does exactly that and auto-implement traits From, Into, and Deref for the constructed type.
+Type constructor does exactly that and auto-implement traits From, Into, Deref and few more for the constructed type.
 
 Besides type constructor for single element there are type constructors for `pair`, `homopair` and `many`:
 
