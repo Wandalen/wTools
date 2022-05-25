@@ -6,11 +6,6 @@ ___
 ### Sample :: trivial
 
 ``` rust
-use template_alias::*;
-
-fn main()
-{
-}
 ```
 
 ### To add to your project
