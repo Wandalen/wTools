@@ -12,13 +12,13 @@ documentation = "https://docs.rs/std_x"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/std_x"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/std_x"
 description = """
-___
+Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/_template",
+  "/rust/impl/std_x_lib",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
