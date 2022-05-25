@@ -30,7 +30,7 @@ include = [
 all-features = true
 
 [lib]
-name = "wtools_alias"
+name = "wTools"
 path = "rust/impl/wtools_alias_lib.rs"
 
 [[test]]
