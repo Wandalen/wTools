@@ -1,7 +1,7 @@
 use super::TheModule;
 use test_tools::*;
 
-impls!
+tests_impls!
 {
 
   //
@@ -924,7 +924,7 @@ impls!
 
 //
 
-index!
+tests_index!
 {
   braces_unwrap_test,
   for_each_test,

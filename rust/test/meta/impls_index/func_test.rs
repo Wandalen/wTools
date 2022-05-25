@@ -1,12 +1,11 @@
-use test_tools::*;
 use super::TheModule;
 use TheModule::prelude::*;
 
 //
 
-fn fn_name_test()
+#[ test ]
+fn fn_name()
 {
-
   let f1 = 13;
 
   let f2 = fn_name!
@@ -18,12 +17,12 @@ fn fn_name_test()
 
   dbg!( f2 );
   assert_eq!( f2, 13 );
-
 }
 
 //
 
-fn fn_rename_test()
+#[ test ]
+fn fn_rename()
 {
 
   fn_rename!
@@ -44,7 +43,8 @@ fn fn_rename_test()
 
 //
 
-fn fns_test()
+#[ test ]
+fn fns()
 {
 
 //   // test.case( "several, trivial syntax" );
@@ -355,13 +355,4 @@ fn fns_test()
     f2( 2 );
   }
 
-}
-
-//
-
-test_suite!
-{
-  fn_name,
-  fn_rename,
-  fns,
 }
