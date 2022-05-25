@@ -18,7 +18,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/std_x_lib",
+  "/rust/impl/std_x_lib.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
