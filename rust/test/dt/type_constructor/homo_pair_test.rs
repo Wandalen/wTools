@@ -634,58 +634,38 @@ tests_impls!
 
   //
 
-//   #[ test ]
-//   fn samples_test()
-//   {
-//
-//     /* test.case( "pair-line" ) */
-//     {
-//       types!( pair MySingle : i32 );
-//       let x = MySingle( 13 );
-//       println!( "x : {}", x.0 );
-//     }
-//
-//     /* test.case( "derives and attributes" ) */
-//     {
-//       types!
-//       {
-//         /// This is also attribute and macro understands it.
-//         #[ derive( Debug ) ]
-//         pair MySingle : i32;
-//       }
-//       let x = MySingle( 13 );
-//       dbg!( x );
-//     }
-//
-//     /* test.case( "struct instead of macro" ) */
-//     {
-//       let x = Pair::< i32 >( 13 );
-//       dbg!( x );
-//     }
-//
-//     /* test.case( "parametrized element" ) */
-//     {
-//       types!
-//       {
-//         #[ derive( Debug ) ]
-//         pair MySingle : std::sync::Arc< T : Copy >;
-//       }
-//       let x = MySingle( std::sync::Arc::new( 13 ) );
-//       dbg!( x );
-//     }
-//
-//     /* test.case( "parametrized tuple" ) */
-//     {
-//       types!
-//       {
-//         #[ derive( Debug ) ]
-//         pair MySingle : < T : Copy >;
-//       }
-//       let x = MySingle( 13 );
-//       dbg!( x );
-//     }
-//
-//   }
+  #[ test ]
+  fn samples_test()
+  {
+
+    /* test.case( "single-line homopair" ) */
+    {
+      types!( pair MyHomoPair : i32 );
+      let x = MyHomoPair( 13, 31 );
+      println!( "x : ( {}, {} )", x.0, x.1 );
+      // prints : x : ( 13, 31 )
+    }
+
+    /* test.case( "parametrized tuple" ) */
+    {
+      use core::fmt;
+      types!
+      {
+        #[ derive( Debug ) ]
+        pair MyHomoPair : < T : fmt::Debug >;
+      }
+      let x = MyHomoPair( 13, 31 );
+      dbg!( &x );
+      // prints : &x = MyHomoPair( 13, 31 )
+      let clone_as_array : [ i32 ; 2 ] = x.clone_as_array();
+      dbg!( &clone_as_array );
+      // prints : &clone_as_array = [ 13, 31 ]
+      let clone_as_tuple : ( i32 , i32 ) = x.clone_as_tuple();
+      dbg!( &clone_as_tuple );
+      // prints : &clone_as_tuple = ( 13, 31 )
+    }
+
+  }
 
 }
 
@@ -701,6 +681,6 @@ tests_index!
   parameter_no_derives_test,
   struct_basic_test,
   struct_no_derives_test,
-  // samples_test,
+  samples_test,
 
 }

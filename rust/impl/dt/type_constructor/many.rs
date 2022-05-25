@@ -243,15 +243,15 @@ mod internal
       }
 
       impl
-      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+      < $( $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? , )* )? const N : usize >
       From
-      < [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; 1 ] >
+      < [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] >
       for $Name
       $( < $( $ParamName ),* > )?
       where
         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
-        fn from( src : [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; 1 ] ) -> Self
+        fn from( src : [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] ) -> Self
         {
           Self( std::vec::Vec::from( src ) )
         }
@@ -268,7 +268,7 @@ mod internal
       {
         fn from( src : &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ] ) -> Self
         {
-          debug_assert_eq!( src.len(), 1 );
+          debug_assert_eq!( src.len(), 1 ); // xxx : add test with long slice
           Self( std::vec::Vec::from( src ) )
         }
       }
