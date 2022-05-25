@@ -13,7 +13,7 @@ Type constructor does exactly that and auto-implement traits From, Into, Deref a
 Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/macro.types.html) is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
 
 ```rust
-use wtools::prelude::*;
+use data_type::prelude::*;
 
 types!
 {
@@ -46,7 +46,7 @@ In this example structure, Struct1 could be constructed either without arguments
 - Constructor with 2 arguments set individual values of each field.
 
 ```rust
-use type_constructor::prelude::*;
+use data_type::prelude::*;
 
 #[ derive( Debug, PartialEq ) ]
 struct Struct1

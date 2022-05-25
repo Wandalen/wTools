@@ -1,6 +1,6 @@
 [package]
 name = "data_type"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -43,4 +43,3 @@ type_constructor = { version = "~0.1", path = "../../rust/type_constructor" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-# trybuild = { version = "~1.0", features = [ "diff" ] }
