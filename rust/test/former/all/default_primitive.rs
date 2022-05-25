@@ -1,6 +1,5 @@
 #[ allow( unused_imports ) ]
 use super::*;
-use test_tools::dependencies::*;
 
 only_for_wtools!
 {
@@ -50,30 +49,30 @@ pub struct Struct1
 
 //
 
-fn test_complex() -> anyhow::Result< () >
+tests_impls!
 {
-
-  let command = Struct1::former().form();
-
-  let expected = Struct1
+  #[ test ]
+  fn test_complex()
   {
-    int_1 : 31,
-    string_1 : "abc".to_string(),
-    int_optional_1 : Some( 31 ),
-    string_optional_1 : Some( "abc".to_string() ),
-    vec_1 : vec![],
-    hashmap_strings_1 : hmap!{},
-    hashset_strings_1 : hset!{},
-  };
-  assert_eq!( command, expected );
+    let command = Struct1::former().form();
 
-  Ok( () )
+    let expected = Struct1
+    {
+      int_1 : 31,
+      string_1 : "abc".to_string(),
+      int_optional_1 : Some( 31 ),
+      string_optional_1 : Some( "abc".to_string() ),
+      vec_1 : vec![],
+      hashmap_strings_1 : hmap!{},
+      hashset_strings_1 : hset!{},
+    };
+    assert_eq!( command, expected );
+  }
 }
 
 //
 
-#[ test ]
-fn main_test()
+tests_index!
 {
-  test_complex().unwrap();
+  test_complex,
 }

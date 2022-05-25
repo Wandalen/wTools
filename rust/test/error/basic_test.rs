@@ -107,7 +107,7 @@ tests_impls!
 
 //
 
-test_index!
+tests_index!
 {
   basic,
   use1,
