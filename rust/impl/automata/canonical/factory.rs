@@ -82,11 +82,23 @@ mod internal
   impl NodeFactory
   {
 
-    index!
-    {
-      make,
-    }
+    // index!
+    // {
+    //   make,
+    // }
 
+  }
+
+  impl Make0 for NodeFactory
+  {
+    fn make_0() -> Self
+    {
+      let id_to_node_map = HashMap::new();
+      Self
+      {
+        id_to_node_map,
+      }
+    }
   }
 
   //

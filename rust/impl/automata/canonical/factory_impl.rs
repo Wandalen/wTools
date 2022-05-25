@@ -11,14 +11,14 @@ impls!
   /// Constructor.
   ///
 
-  pub fn make() -> Self
-  {
-    let id_to_node_map = HashMap::new();
-    Self
-    {
-      id_to_node_map,
-    }
-  }
+  // pub fn make() -> Self
+  // {
+  //   let id_to_node_map = HashMap::new();
+  //   Self
+  //   {
+  //     id_to_node_map,
+  //   }
+  // }
 
   //
 
