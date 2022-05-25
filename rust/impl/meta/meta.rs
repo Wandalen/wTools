@@ -1,13 +1,7 @@
 /// Internal namespace.
 mod internal
 {
-
 }
-
-// /// Several macro on functions.
-// pub mod func;
-// /// Several macro to encourage to write indexed code to improve readibility.
-// pub mod impls;
 
 /* zzz : use name protected */
 /* zzz : use for implementing of macro mod_interface */
