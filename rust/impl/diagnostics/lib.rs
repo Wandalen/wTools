@@ -14,7 +14,7 @@ pub mod diagnostics;
 /// Dependencies.
 pub mod dependencies
 {
-  #[ cfg( feature = "a_pretty" ) ]
+  #[ cfg( feature = "assertions" ) ]
   pub use ::pretty_assertions;
 }
 

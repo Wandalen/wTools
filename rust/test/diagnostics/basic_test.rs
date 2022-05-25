@@ -7,7 +7,7 @@ use TheModule::prelude::*;
 tests_impls!
 {
 
-  #[ cfg( feature = "a_pretty" ) ]
+  #[ cfg( feature = "assertions" ) ]
   #[ test ]
   fn basic()
   {

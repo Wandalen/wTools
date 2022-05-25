@@ -2,6 +2,8 @@
 mod internal
 {
 
+  // xxx : move here test tools
+
   ///
   /// Mechanism to define test suite.
   /// This macro encourages refactoring the code of the test in the most readable way, gathering a list of all test routines at the end of the test file.

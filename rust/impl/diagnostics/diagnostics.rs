@@ -23,10 +23,10 @@ pub mod exposed
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  #[ cfg( feature = "a_pretty" ) ]
+  #[ cfg( feature = "assertions" ) ]
   #[ doc( inline ) ]
   pub use ::pretty_assertions::assert_eq as a_id;
-  #[ cfg( feature = "a_pretty" ) ]
+  #[ cfg( feature = "assertions" ) ]
   #[ doc( inline ) ]
   pub use ::pretty_assertions::assert_ne as a_not_id;
 }

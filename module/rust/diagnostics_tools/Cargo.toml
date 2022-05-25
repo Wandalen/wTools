@@ -1,6 +1,6 @@
 [package]
 name = "diagnostics_tools"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -38,8 +38,8 @@ path = "rust/test/diagnostics/lib_test.rs"
 # zzz : xxx : implement
 
 [features]
-default = [ "a_pretty" ]
-a_pretty = [ "pretty_assertions" ]
+default = [ "assertions" ]
+assertions = [ "pretty_assertions" ]
 
 [package.metadata.docs.rs]
 all-features = true
