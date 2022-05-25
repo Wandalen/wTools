@@ -33,10 +33,12 @@ name = "template_blank_test"
 path = "rust/test/_template/lib_test.rs"
 
 # [[example]]
-# name = "template_blank_trivial_sample"
-# path = "sample/rust/template_blank_trivial_sample/src/main.rs"
+# name = "automata_trivial_sample"
+# path = "sample/rust/automata_trivial_sample/src/main.rs"
 
 [dependencies]
+wtools = { version = "~0.2", path = "../../rust/wtools", features = [] }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+
