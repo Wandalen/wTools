@@ -6,6 +6,9 @@ env :
   CARGO_TERM_COLOR : always
 
 jobs :
+
+  # implements
+
   build :
     if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
     uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
@@ -18,3 +21,16 @@ jobs :
     with :
       manifest_path : 'module/rust/implements/Cargo.toml'
 
+  # instance_of
+
+  build :
+    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
+    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+    with :
+      manifest_path : 'module/rust/instance_of/Cargo.toml'
+
+  build_fast :
+    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'implements' )"
+    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
+    with :
+      manifest_path : 'module/rust/instance_of/Cargo.toml'
