@@ -1,20 +1,20 @@
-name: wca
+name : wca
 
 on : push
 
-env:
-  CARGO_TERM_COLOR: always
+env :
+  CARGO_TERM_COLOR : always
 
-jobs:
-  build:
+jobs :
+  build :
     if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses: Wandalen/wTools/.github/workflows/RustFull.yml@master
-    with:
-      manifest_path: 'module/rust_move/wca/Cargo.toml'
+    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+    with :
+      manifest_path : 'module/rust_move/wca/Cargo.toml'
 
-  build_fast:
+  build_fast :
     if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'wca' )"
-    uses: Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with:
-      manifest_path: 'module/rust_move/wca/Cargo.toml'
+    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
+    with :
+      manifest_path : 'module/rust_move/wca/Cargo.toml'
 

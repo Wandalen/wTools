@@ -1,21 +1,21 @@
-name: include_md
+name : include_md
 
 on : push
 
-env:
-  CARGO_TERM_COLOR: always
+env :
+  CARGO_TERM_COLOR : always
 
-jobs:
+jobs :
 
-  build:
+  build :
     if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses: Wandalen/wTools/.github/workflows/RustFull.yml@master
-    with:
-      manifest_path: 'module/rust_move/include_md/Cargo.toml'
+    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+    with :
+      manifest_path : 'module/rust_move/include_md/Cargo.toml'
 
-  build_fast:
+  build_fast :
     if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'include_md' )"
-    uses: Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with:
-      manifest_path: 'module/rust_move/include_md/Cargo.toml'
+    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
+    with :
+      manifest_path : 'module/rust_move/include_md/Cargo.toml'
 

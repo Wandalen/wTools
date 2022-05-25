@@ -1,11 +1,5 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
 
-<!-- <p align="center">
-  <img width="2245" height="602" style="display: block; margin: 0 auto" src="./asset/img/logo_trans.png">
-</p> -->
-
-<!-- ![wTools](./asset/img/logo_trans.png | width=100) -->
-
 ![wTools](./asset/img/logo_v2_wide_trans.png)
 
 #
