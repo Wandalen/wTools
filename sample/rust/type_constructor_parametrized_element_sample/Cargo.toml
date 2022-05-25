@@ -1,5 +1,5 @@
 [package]
-name = "type_constructor__parametrized_element_sample"
+name = "type_constructor_parametrized_element_sample"
 version = "0.0.0"
 edition = "2021"
 publish = false
