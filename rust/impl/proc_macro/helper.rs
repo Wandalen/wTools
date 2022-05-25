@@ -1,6 +1,7 @@
 /// Internal namespace.
 mod internal
 {
+  // pub use winterval::exposed::*;
 
   ///
   /// Result with syn::Error.

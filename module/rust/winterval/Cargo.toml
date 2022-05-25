@@ -1,6 +1,6 @@
 [package]
 name = "winterval"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -27,7 +27,7 @@ include = [
 
 [lib]
 name = "winterval"
-path = "rust/impl/dt/interval.rs"
+path = "rust/impl/dt/interval_lib.rs"
 
 [[test]]
 name = "interval_test"
@@ -41,3 +41,5 @@ path = "sample/rust/winterval_trivial/src/main.rs"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+
+# xxx : move into dt?
