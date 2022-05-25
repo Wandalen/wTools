@@ -39,7 +39,7 @@ name = "wtools_alias_test"
 path = "rust/test/wtools_alias_lib_test.rs"
 
 [features]
-nightly = [ "wtools/typing_tools_inspect_type_nightly" ]
+nightly = [ "wtools/nightly" ]
 default = []
 
 [dependencies]

@@ -83,7 +83,6 @@ mod_interface_runtime = [ "mod_interface/runtime" ]
 
 typing_tools_default = [ "typing_tools/default" ]
 typing_tools_inspect_type = [ "typing_tools/inspect_type" ]
-typing_tools_inspect_type_nightly = [ "typing_tools/inspect_type_nightly" ]
 typing_tools_is_slice = [ "typing_tools/is_slice" ]
 typing_tools_implements = [ "typing_tools/implements" ]
 
@@ -127,7 +126,6 @@ derive_tools_derive_more_rustc_version = [ "derive_tools/derive_more_rustc_versi
 derive_tools_derive_more_testing_helpers = [ "derive_tools/derive_more_testing_helpers" ]
 derive_tools_derive_more_generate_parsing_rs = [ "derive_tools/derive_more_generate_parsing_rs" ]
 derive_tools_derive_more_peg = [ "derive_tools/derive_more_peg" ]
-derive_tools_derive_more_nightly = [ "derive_tools/derive_more_nightly" ]
 derive_tools_derive_more_track_caller = [ "derive_tools/derive_more_track_caller" ]
 derive_tools_parse_display = [ "derive_tools/parse-display" ]
 derive_tools_parse_display_default = [ "derive_tools/parse_display_default" ]
@@ -140,6 +138,7 @@ dt_default = [ "data_type/default" ]
 dt_either = [ "data_type/either" ]
 dt_type_constructor = [ "data_type/type_constructor" ]
 
+nightly = [ "typing_tools/nightly", "derive_tools/nightly" ]
 default = [
   "former_default",
   "woptions_default",

@@ -39,7 +39,7 @@ path = "sample/rust/typing_tools_trivial/src/main.rs"
 # qqq : for Rust dev : please add # aaa : done
 
 [features]
-inspect_type_nightly = [ "inspect_type/nightly" ]
+nightly = [ "inspect_type/nightly" ]
 default = [ "implements", "is_slice", "inspect_type" ]
 
 [package.metadata.docs.rs]
