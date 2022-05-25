@@ -14,35 +14,35 @@ tests_impls!
   {
     let got = parse::OpType::from( 1 );
     let exp = parse::OpType::Primitive( 1 );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     let got = parse::OpType::from( vec![ 1, 2 ] );
     let exp = parse::OpType::Vector( vec![ 1, 2 ] );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* */
 
     let op = parse::OpType::from( vec![ 1, 2 ] );
     let got : Vec<isize> = op.into();
-    assert_eq!( got, vec![ 1, 2 ] );
+    a_id!( got, vec![ 1, 2 ] );
 
     /* */
 
     let op = parse::OpType::from( 1 );
     let got = op.primitive(); /* qqq : does not work properly, find better way to convert types */
-    assert_eq!( got.unwrap(), 1 );
+    a_id!( got.unwrap(), 1 );
 
     let op = parse::OpType::from( vec![ 1, 2 ] );
     let got : Vec<isize> = op.vector().unwrap();
-    assert_eq!( got, vec![ 1, 2 ] );
+    a_id!( got, vec![ 1, 2 ] );
 
     let op = parse::OpType::from( 1 );
     let got = op.vector();
-    assert_eq!( got, None );
+    a_id!( got, None );
 
     let op : parse::OpType<usize> = parse::OpType::from( vec![ 1, 2 ] );
     let got = op.primitive();
-    assert_eq!( got, None );
+    a_id!( got, None );
   }
 
   //
@@ -57,7 +57,7 @@ tests_impls!
     let mut exp = parse::Request::default();
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = " ";
     let req = TheModule::string::request_parse()
@@ -67,7 +67,7 @@ tests_impls!
     exp.original = " ";
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = "  \t ";
     let req = TheModule::string::request_parse()
@@ -77,7 +77,7 @@ tests_impls!
     exp.original = "  \t ";
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
   }
 
   //
@@ -96,7 +96,7 @@ tests_impls!
     exp.maps = vec![ HashMap::new() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = "subj with space";
     let req = TheModule::string::request_parse()
@@ -109,7 +109,7 @@ tests_impls!
     exp.maps = vec![ HashMap::new() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = "subj v:1";
     let req = TheModule::string::request_parse()
@@ -125,7 +125,7 @@ tests_impls!
     exp.maps = vec![ options.clone() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = "subj v:1 r:some";
     let req = TheModule::string::request_parse()
@@ -142,7 +142,7 @@ tests_impls!
     exp.maps = vec![ options.clone() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     /* */
 
@@ -157,7 +157,7 @@ tests_impls!
     exp.maps = vec![ HashMap::new(), HashMap::new() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = "subj1 v:1 ; subj2";
     let req = TheModule::string::request_parse()
@@ -173,7 +173,7 @@ tests_impls!
     exp.maps = vec![ options.clone(), HashMap::new() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = "subj1 v:1 ; subj2 v:2";
     let req = TheModule::string::request_parse()
@@ -191,7 +191,7 @@ tests_impls!
     exp.maps = vec![ options1.clone(), options2.clone() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = "subj1 v:1 ne:-2 ; subj2 v:2 r:some";
     let req = TheModule::string::request_parse()
@@ -211,7 +211,7 @@ tests_impls!
     exp.maps = vec![ options1.clone(), options2.clone() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
   }
 
   //
@@ -234,7 +234,7 @@ tests_impls!
     exp.maps = vec![ options.clone() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = "subj v:1 v:2";
     let req = TheModule::string::request_parse()
@@ -251,7 +251,7 @@ tests_impls!
     exp.maps = vec![ options.clone() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
   }
 
   //
@@ -274,7 +274,7 @@ tests_impls!
     exp.maps = vec![ options.clone() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = "subj v:[1,2]";
     let req = TheModule::string::request_parse()
@@ -291,7 +291,7 @@ tests_impls!
     exp.maps = vec![ options.clone() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     /* */
 
@@ -311,7 +311,7 @@ tests_impls!
     exp.maps = vec![ options.clone() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = "subj v:3 v:[1,2]";
     let req = TheModule::string::request_parse()
@@ -329,7 +329,7 @@ tests_impls!
     exp.maps = vec![ options.clone() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
 
     let src = "subj v:[1,2] v:[3,4]";
     let req = TheModule::string::request_parse()
@@ -347,7 +347,7 @@ tests_impls!
     exp.maps = vec![ options.clone() ];
     exp.key_val_delimeter = ":";
     exp.commands_delimeter = ";";
-    assert_eq!( req, exp );
+    a_id!( req, exp );
   }
 }
 

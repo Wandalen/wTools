@@ -24,23 +24,23 @@ tests_impls!
 
     dbg!( &command );
 
-    assert_eq!( command.hint, "hint".to_string() );
-    assert_eq!( command.long_hint, "long_hint".to_string() );
-    assert_eq!( command.phrase, "phrase".to_string() );
-    assert_eq!( command.subject_hint, "subject_hint".to_string() );
+    a_id!( command.hint, "hint".to_string() );
+    a_id!( command.long_hint, "long_hint".to_string() );
+    a_id!( command.phrase, "phrase".to_string() );
+    a_id!( command.subject_hint, "subject_hint".to_string() );
 
     let properties_hints = hashmap!
     {
       "prop1".to_string() => "hint of prop1".to_string(),
       "prop2".to_string() => "hint of prop2".to_string(),
     };
-    assert_eq!( command.properties_hints, properties_hints );
+    a_id!( command.properties_hints, properties_hints );
 
     let properties_aliases = hashmap!
     {
       "property_alias".to_string() => vec![ "a1".to_string(), "a2".to_string() ],
     };
-    assert_eq!( command.properties_aliases, properties_aliases );
+    a_id!( command.properties_aliases, properties_aliases );
   }
 
   //
@@ -56,10 +56,10 @@ tests_impls!
 
     dbg!( &command );
 
-    assert_eq!( command.hint, "hint2".to_string() );
-    assert_eq!( command.long_hint, "long_hint2".to_string() );
-    assert_eq!( command.phrase, "".to_string() );
-    assert_eq!( command.subject_hint, "".to_string() );
+    a_id!( command.hint, "hint2".to_string() );
+    a_id!( command.long_hint, "long_hint2".to_string() );
+    a_id!( command.phrase, "".to_string() );
+    a_id!( command.subject_hint, "".to_string() );
   }
 
   //

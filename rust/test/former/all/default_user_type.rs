@@ -1,5 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
 only_for_wtools!
 {
@@ -50,7 +52,7 @@ tests_impls!
       string : String::from( "" ),
     };
 
-    assert_eq!( command, expected );
+    a_id!( command, expected );
   }
 }
 

@@ -7,7 +7,7 @@ tests_impls!
   #[ test ]
   fn basic()
   {
-    assert_eq!( true, true );
+    a_id!( true, true );
   }
 }
 

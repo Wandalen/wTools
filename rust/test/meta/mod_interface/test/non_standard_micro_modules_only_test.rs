@@ -10,43 +10,43 @@ tests_impls!
   {
 
     // {
-    //   assert_eq!( private::has_private(), false );
-    //   assert_eq!( private::has_protected(), false );
-    //   assert_eq!( private::has_orphan(), false );
-    //   assert_eq!( private::has_exposed(), false );
-    //   assert_eq!( private::has_prelude(), false );
+    //   a_id!( private::has_private(), false );
+    //   a_id!( private::has_protected(), false );
+    //   a_id!( private::has_orphan(), false );
+    //   a_id!( private::has_exposed(), false );
+    //   a_id!( private::has_prelude(), false );
     // }
 
     {
-      // assert_eq!( protected::mod_private::has_private(), true );
-      assert_eq!( protected::mod_protected::has_protected(), true );
-      assert_eq!( protected::mod_orphan::has_orphan(), true );
-      assert_eq!( protected::mod_exposed::has_exposed(), true );
-      assert_eq!( protected::mod_prelude::has_prelude(), true );
+      // a_id!( protected::mod_private::has_private(), true );
+      a_id!( protected::mod_protected::has_protected(), true );
+      a_id!( protected::mod_orphan::has_orphan(), true );
+      a_id!( protected::mod_exposed::has_exposed(), true );
+      a_id!( protected::mod_prelude::has_prelude(), true );
     }
 
     {
-      // assert_eq!( orphan::mod_private::has_private(), true );
-      // assert_eq!( orphan::mod_protected::has_protected(), true );
-      assert_eq!( orphan::mod_orphan::has_orphan(), true );
-      assert_eq!( orphan::mod_exposed::has_exposed(), true );
-      assert_eq!( orphan::mod_prelude::has_prelude(), true );
+      // a_id!( orphan::mod_private::has_private(), true );
+      // a_id!( orphan::mod_protected::has_protected(), true );
+      a_id!( orphan::mod_orphan::has_orphan(), true );
+      a_id!( orphan::mod_exposed::has_exposed(), true );
+      a_id!( orphan::mod_prelude::has_prelude(), true );
     }
 
     {
-      // assert_eq!( exposed::mod_private::has_private(), true );
-      // assert_eq!( exposed::mod_protected::has_protected(), true );
-      // assert_eq!( exposed::mod_orphan::has_orphan(), true );
-      assert_eq!( exposed::mod_exposed::has_exposed(), true );
-      assert_eq!( exposed::mod_prelude::has_prelude(), true );
+      // a_id!( exposed::mod_private::has_private(), true );
+      // a_id!( exposed::mod_protected::has_protected(), true );
+      // a_id!( exposed::mod_orphan::has_orphan(), true );
+      a_id!( exposed::mod_exposed::has_exposed(), true );
+      a_id!( exposed::mod_prelude::has_prelude(), true );
     }
 
     {
-      // assert_eq!( prelude::mod_private::has_private(), true );
-      // assert_eq!( prelude::mod_protected::has_protected(), true );
-      // assert_eq!( prelude::mod_orphan::has_orphan(), true );
-      // assert_eq!( prelude::mod_exposed::has_exposed(), true );
-      assert_eq!( prelude::mod_prelude::has_prelude(), true );
+      // a_id!( prelude::mod_private::has_private(), true );
+      // a_id!( prelude::mod_protected::has_protected(), true );
+      // a_id!( prelude::mod_orphan::has_orphan(), true );
+      // a_id!( prelude::mod_exposed::has_exposed(), true );
+      a_id!( prelude::mod_prelude::has_prelude(), true );
     }
 
   }

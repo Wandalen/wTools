@@ -44,16 +44,16 @@ tests_impls!
     // test.case( "one" );
 
     let got = manual1().unwrap();
-    assert_eq!( got, Enum2::A( 1 ) );
+    a_id!( got, Enum2::A( 1 ) );
     let got = auto1().unwrap();
-    assert_eq!( got, Enum2::A( 1 ) );
+    a_id!( got, Enum2::A( 1 ) );
 
     // test.case( "two" );
 
     let got = manual2().unwrap();
-    assert_eq!( got, 1 );
+    a_id!( got, 1 );
     // let got = auto2().unwrap();
-    // assert_eq!( got, 1 );
+    // a_id!( got, 1 );
 
     /* */
 

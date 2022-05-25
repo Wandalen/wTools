@@ -1,5 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
 //
 
@@ -26,7 +28,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "rewriting" );
 
@@ -63,7 +65,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "string : slice" );
 
@@ -82,7 +84,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "string : rewriting" );
 
@@ -119,7 +121,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "none" );
 
@@ -137,7 +139,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "optional : rewriting" );
 
@@ -175,7 +177,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "vector : replace" );
 
@@ -194,7 +196,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "vector : replace and push" );
 
@@ -213,7 +215,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
   }
 
   //
@@ -240,7 +242,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "replace" );
 
@@ -260,7 +262,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "replace and insert" );
 
@@ -280,7 +282,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string(), "k3".to_string() => "v3".to_string() },
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
   }
 
   //
@@ -307,7 +309,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string() },
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "replace" );
 
@@ -327,7 +329,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string() },
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "replace and insert" );
 
@@ -347,7 +349,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string(), "v3".to_string() },
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
   }
 
   //
@@ -370,7 +372,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
   }
 
   //
@@ -397,7 +399,7 @@ tests_impls!
       hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
       hashset_strings_1 : hset!{},
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     #[ cfg( debug_assertions ) ]
     println!("Debugging enabled");

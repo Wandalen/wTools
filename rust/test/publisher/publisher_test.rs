@@ -9,7 +9,7 @@ tests_impls!
   fn basic()
   {
     /* qqq : write tests for modules of wpublisher */
-    assert_eq!( true, true );
+    a_id!( true, true );
   }
 }
 

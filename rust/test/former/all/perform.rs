@@ -1,5 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
 only_for_wtools!
 {
@@ -44,11 +46,11 @@ tests_impls!
   {
     let got = Struct1::former().form();
     let expected = Struct1 { int_1 : 31 };
-    assert_eq!( got, expected );
+    a_id!( got, expected );
 
     let got = Struct1::former().perform();
     let expected = Some( "abc" );
-    assert_eq!( got, expected );
+    a_id!( got, expected );
   }
 }
 

@@ -1,5 +1,6 @@
 use super::TheModule;
 use TheModule::prelude::*;
+use test_tools::*;
 
 //
 
@@ -16,7 +17,7 @@ fn fn_name()
   };
 
   dbg!( f2 );
-  assert_eq!( f2, 13 );
+  a_id!( f2, 13 );
 }
 
 //
@@ -37,7 +38,7 @@ fn fn_rename()
     }
   };
 
-  assert_eq!( f2(), 13 );
+  a_id!( f2(), 13 );
 
 }
 
@@ -77,7 +78,7 @@ fn fns()
 //       }
 //     };
 //
-//     assert_eq!( counter, 2 );
+//     a_id!( counter, 2 );
 //     f1();
 //     f2();
 //   }
@@ -112,7 +113,7 @@ fn fns()
       }
     };
 
-    assert_eq!( counter, 2 );
+    a_id!( counter, 2 );
     f1();
     f2();
   }
@@ -149,7 +150,7 @@ fn fns()
       }
     };
 
-    assert_eq!( counter, 2 );
+    a_id!( counter, 2 );
     f1( 1 );
     f2( 2 );
   }
@@ -181,7 +182,7 @@ fn fns()
       }
     };
 
-    assert_eq!( counter, 1 );
+    a_id!( counter, 1 );
     f1( 1 );
   }
 
@@ -213,7 +214,7 @@ fn fns()
       }
     };
 
-    assert_eq!( counter, 1 );
+    a_id!( counter, 1 );
     f1( 1 );
   }
 
@@ -246,7 +247,7 @@ fn fns()
       }
     };
 
-    assert_eq!( counter, 1 );
+    a_id!( counter, 1 );
     f1( 1 );
   }
 
@@ -279,7 +280,7 @@ fn fns()
       }
     };
 
-    assert_eq!( counter, 1 );
+    a_id!( counter, 1 );
     f1( 1 );
   }
 
@@ -311,7 +312,7 @@ fn fns()
 //       }
 //     };
 //
-//     assert_eq!( counter, 1 );
+//     a_id!( counter, 1 );
 //   }
 
   // test.case( "several, complex syntax" );
@@ -350,7 +351,7 @@ fn fns()
     };
     // trace_macros!( false );
 
-    assert_eq!( counter, 2 );
+    a_id!( counter, 2 );
     f1( 1 );
     f2( 2 );
   }

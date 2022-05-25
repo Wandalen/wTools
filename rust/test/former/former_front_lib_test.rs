@@ -2,6 +2,7 @@
 include!( "../_conditional/local_module.rs" );
 
 use former as TheModule;
+use test_tools::*;
 
 #[ test ]
 #[ rustversion::stable ]

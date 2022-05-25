@@ -15,16 +15,16 @@ tests_impls!
 
     let n1 = factory.node_making( 1 );
     let n1b = factory.node( 1 );
-    assert_eq!( n1, n1b.id() );
+    a_id!( n1, n1b.id() );
     dbg!( &n1 );
 
     let node1a = factory.node( 1 );
     let node1b = factory.node( 1 );
-    assert_eq!( node1a, node1b );
+    a_id!( node1a, node1b );
 
     let node1a = factory.node( &1 );
     let node1b = factory.node( &&1 );
-    assert_eq!( node1a, node1b );
+    a_id!( node1a, node1b );
 
   }
 
@@ -48,11 +48,11 @@ tests_impls!
 
     let exp = hset![ b ];
     let got : HashSet< _ > = factory.out_nodes( a ).collect();
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     let exp = hset![ a, b ];
     let got : HashSet< _ > = factory.out_nodes( b ).collect();
-    assert_eq!( got, exp );
+    a_id!( got, exp );
   }
 
   //
@@ -76,11 +76,11 @@ tests_impls!
 
     let exp = hset![ 2 ];
     let got : HashSet< _ > = factory.out_nodes( 1 ).collect();
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     let exp = hset![ 1, 2 ];
     let got : HashSet< _ > = factory.out_nodes( 2 ).collect();
-    assert_eq!( got, exp );
+    a_id!( got, exp );
   }
 }
 

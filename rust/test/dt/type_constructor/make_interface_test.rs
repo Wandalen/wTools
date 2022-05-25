@@ -52,19 +52,21 @@ tests_impls!
 
     let got : Struct1 = make!();
     let exp = Struct1{ _0 : 0, _1 : 0, _2 : 0 };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     let got : Struct1 = make!( 13 );
     let exp = Struct1{ _0 : 13, _1 : 13, _2 : 13 };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     let got : Struct1 = make!( 0, 1 );
     let exp = Struct1{ _0 : 0, _1 : 1, _2 : 1 };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     let got : Struct1 = make!( 0, 1, 2 );
     let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2 };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
+    let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2 };
+    a_id!( got, exp );
 
   }
 
@@ -107,15 +109,15 @@ tests_impls!
 
     let got : Struct1 = make!();
     let exp = Struct1{ a : 0, b : 0 };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     let got : Struct1 = make!( 13 );
     let exp = Struct1{ a : 13, b : 13 };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     let got : Struct1 = make!( 1, 3 );
     let exp = Struct1{ a : 1, b : 3 };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
   }
 

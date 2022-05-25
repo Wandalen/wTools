@@ -1,5 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
 only_for_wtools!
 {
@@ -69,7 +71,7 @@ tests_impls!
       hashmap_strings : hmap!{ "k1".to_string() => "v1".to_string() },
       hashset_strings : hset!{ "k1".to_string() },
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
   }
 }
 

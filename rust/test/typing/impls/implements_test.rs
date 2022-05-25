@@ -17,31 +17,31 @@ tests_impls!
     impl< T : Sized, const N : usize > Trait1 for [ T; N ] {}
     impl< T : Sized, const N : usize > Trait1 for &[ T; N ] {}
     let src : &[ i32 ] = &[ 1, 2, 3 ];
-    assert_eq!( TheModule::implements!( src => Trait1 ), true );
-    assert_eq!( impl_trait1( &src ), true );
-    assert_eq!( TheModule::implements!( &[ 1, 2, 3 ] => Trait1 ), true );
-    assert_eq!( impl_trait1( &[ 1, 2, 3 ] ), true );
-    assert_eq!( TheModule::implements!( [ 1, 2, 3 ] => Trait1 ), true );
+    a_id!( TheModule::implements!( src => Trait1 ), true );
+    a_id!( impl_trait1( &src ), true );
+    a_id!( TheModule::implements!( &[ 1, 2, 3 ] => Trait1 ), true );
+    a_id!( impl_trait1( &[ 1, 2, 3 ] ), true );
+    a_id!( TheModule::implements!( [ 1, 2, 3 ] => Trait1 ), true );
 
     impl< T : Sized > Trait1 for Vec< T > {}
-    assert_eq!( TheModule::implements!( vec!( 1, 2, 3 ) => Trait1 ), true );
+    a_id!( TheModule::implements!( vec!( 1, 2, 3 ) => Trait1 ), true );
 
     impl Trait1 for f32 {}
-    assert_eq!( TheModule::implements!( 13_f32 => Trait1 ), true );
+    a_id!( TheModule::implements!( 13_f32 => Trait1 ), true );
 
-    assert_eq!( TheModule::implements!( true => Copy ), true );
-    assert_eq!( TheModule::implements!( true => Clone ), true );
+    a_id!( TheModule::implements!( true => Copy ), true );
+    a_id!( TheModule::implements!( true => Clone ), true );
 
     let src = true;
-    assert_eq!( TheModule::implements!( src => Copy ), true );
-    assert_eq!( TheModule::implements!( src => Clone ), true );
+    a_id!( TheModule::implements!( src => Copy ), true );
+    a_id!( TheModule::implements!( src => Clone ), true );
 
     let src = Box::new( true );
-    assert_eq!( TheModule::implements!( src => Copy ), false );
-    assert_eq!( TheModule::implements!( src => Clone ), true );
+    a_id!( TheModule::implements!( src => Copy ), false );
+    a_id!( TheModule::implements!( src => Clone ), true );
 
-    assert_eq!( TheModule::implements!( Box::new( true ) => std::marker::Copy ), false );
-    assert_eq!( TheModule::implements!( Box::new( true ) => std::clone::Clone ), true );
+    a_id!( TheModule::implements!( Box::new( true ) => std::marker::Copy ), false );
+    a_id!( TheModule::implements!( Box::new( true ) => std::clone::Clone ), true );
 
   }
 
@@ -52,8 +52,8 @@ tests_impls!
   {
 
     let src = Box::new( true );
-    assert_eq!( TheModule::instance_of!( src => Copy ), false );
-    assert_eq!( TheModule::instance_of!( src => Clone ), true );
+    a_id!( TheModule::instance_of!( src => Copy ), false );
+    a_id!( TheModule::instance_of!( src => Clone ), true );
 
   }
 
@@ -91,32 +91,32 @@ tests_impls!
 
     /* */
 
-    assert_eq!( TheModule::implements!( _fn => Copy ), true );
-    assert_eq!( TheModule::implements!( _fn => Clone ), true );
-    assert_eq!( TheModule::implements!( _fn => core::ops::Not ), false );
+    a_id!( TheModule::implements!( _fn => Copy ), true );
+    a_id!( TheModule::implements!( _fn => Clone ), true );
+    a_id!( TheModule::implements!( _fn => core::ops::Not ), false );
     let _ = _fn.clone();
 
     /* */
 
-    // assert_eq!( TheModule::implements!( function1 => fn() -> () ), true );
-    // assert_eq!( TheModule::implements!( &function1 => Fn() -> () ), true );
-    // assert_eq!( TheModule::implements!( &function1 => FnMut() -> () ), true );
-    // assert_eq!( TheModule::implements!( &function1 => FnOnce() -> () ), true );
+    // a_id!( TheModule::implements!( function1 => fn() -> () ), true );
+    // a_id!( TheModule::implements!( &function1 => Fn() -> () ), true );
+    // a_id!( TheModule::implements!( &function1 => FnMut() -> () ), true );
+    // a_id!( TheModule::implements!( &function1 => FnOnce() -> () ), true );
 
-    // assert_eq!( TheModule::implements!( _fn => fn() -> () ), true );
-    assert_eq!( TheModule::implements!( _fn => Fn() -> () ), true );
-    assert_eq!( TheModule::implements!( _fn => FnMut() -> () ), true );
-    assert_eq!( TheModule::implements!( _fn => FnOnce() -> () ), true );
+    // a_id!( TheModule::implements!( _fn => fn() -> () ), true );
+    a_id!( TheModule::implements!( _fn => Fn() -> () ), true );
+    a_id!( TheModule::implements!( _fn => FnMut() -> () ), true );
+    a_id!( TheModule::implements!( _fn => FnOnce() -> () ), true );
 
-    // assert_eq!( TheModule::implements!( _fn_mut => fn() -> () ), false );
-    // assert_eq!( TheModule::implements!( _fn_mut => Fn() -> () ), false );
-    assert_eq!( TheModule::implements!( _fn_mut => FnMut() -> () ), true );
-    assert_eq!( TheModule::implements!( _fn_mut => FnOnce() -> () ), true );
+    // a_id!( TheModule::implements!( _fn_mut => fn() -> () ), false );
+    // a_id!( TheModule::implements!( _fn_mut => Fn() -> () ), false );
+    a_id!( TheModule::implements!( _fn_mut => FnMut() -> () ), true );
+    a_id!( TheModule::implements!( _fn_mut => FnOnce() -> () ), true );
 
-    // assert_eq!( TheModule::implements!( _fn_once => fn() -> () ), false );
-    // assert_eq!( TheModule::implements!( _fn_once => Fn() -> () ), false );
-    // assert_eq!( TheModule::implements!( _fn_once => FnMut() -> () ), false );
-    assert_eq!( TheModule::implements!( _fn_once => FnOnce() -> () ), true );
+    // a_id!( TheModule::implements!( _fn_once => fn() -> () ), false );
+    // a_id!( TheModule::implements!( _fn_once => Fn() -> () ), false );
+    // a_id!( TheModule::implements!( _fn_once => FnMut() -> () ), false );
+    a_id!( TheModule::implements!( _fn_once => FnOnce() -> () ), true );
 
     // fn is_f < R >                             ( _x : fn() -> R )      -> bool { true }
     // fn is_fn < R, F : Fn() -> R >             ( _x : &F )             -> bool { true }
@@ -134,11 +134,11 @@ tests_impls!
 
     let pointer_size = std::mem::size_of::< &u8 >();
     dbg!( &pointer_size );
-    assert_eq!( 2 * pointer_size, std::mem::size_of::< &[ u8 ] >() );
-    assert_eq!( 2 * pointer_size, std::mem::size_of::< *const [ u8 ] >() );
-    assert_eq!( 2 * pointer_size, std::mem::size_of::< Box< [ u8 ] > >() );
-    assert_eq!( 2 * pointer_size, std::mem::size_of::< std::rc::Rc< [ u8 ] > >() );
-    assert_eq!( 1 * pointer_size, std::mem::size_of::< &[ u8 ; 20 ] >() );
+    a_id!( 2 * pointer_size, std::mem::size_of::< &[ u8 ] >() );
+    a_id!( 2 * pointer_size, std::mem::size_of::< *const [ u8 ] >() );
+    a_id!( 2 * pointer_size, std::mem::size_of::< Box< [ u8 ] > >() );
+    a_id!( 2 * pointer_size, std::mem::size_of::< std::rc::Rc< [ u8 ] > >() );
+    a_id!( 1 * pointer_size, std::mem::size_of::< &[ u8 ; 20 ] >() );
 
   }
 
@@ -176,30 +176,30 @@ tests_impls!
       println!( "{:?}", x );
     };
 
-    assert_eq!( is_f( function1 ), true );
-    assert_eq!( is_fn( &function1 ), true );
-    assert_eq!( is_fn_mut( &function1 ), true );
-    assert_eq!( is_fn_once( &function1 ), true );
+    a_id!( is_f( function1 ), true );
+    a_id!( is_fn( &function1 ), true );
+    a_id!( is_fn_mut( &function1 ), true );
+    a_id!( is_fn_once( &function1 ), true );
 
-    assert_eq!( is_f( _f ), true );
-    assert_eq!( is_fn( &_f ), true );
-    assert_eq!( is_fn_mut( &_f ), true );
-    assert_eq!( is_fn_once( &_f ), true );
+    a_id!( is_f( _f ), true );
+    a_id!( is_fn( &_f ), true );
+    a_id!( is_fn_mut( &_f ), true );
+    a_id!( is_fn_once( &_f ), true );
 
-    // assert_eq!( is_f( _fn ), true );
-    assert_eq!( is_fn( &_fn ), true );
-    assert_eq!( is_fn_mut( &_fn ), true );
-    assert_eq!( is_fn_once( &_fn ), true );
+    // a_id!( is_f( _fn ), true );
+    a_id!( is_fn( &_fn ), true );
+    a_id!( is_fn_mut( &_fn ), true );
+    a_id!( is_fn_once( &_fn ), true );
 
-    // assert_eq!( is_f( _fn_mut ), true );
-    // assert_eq!( is_fn( &_fn_mut ), true );
-    assert_eq!( is_fn_mut( &_fn_mut ), true );
-    assert_eq!( is_fn_once( &_fn_mut ), true );
+    // a_id!( is_f( _fn_mut ), true );
+    // a_id!( is_fn( &_fn_mut ), true );
+    a_id!( is_fn_mut( &_fn_mut ), true );
+    a_id!( is_fn_once( &_fn_mut ), true );
 
-    // assert_eq!( is_f( _fn_once ), true );
-    // assert_eq!( is_fn( &_fn_once ), true );
-    // assert_eq!( is_fn_mut( &_fn_once ), true );
-    assert_eq!( is_fn_once( &_fn_once ), true );
+    // a_id!( is_f( _fn_once ), true );
+    // a_id!( is_fn( &_fn_once ), true );
+    // a_id!( is_fn_mut( &_fn_once ), true );
+    a_id!( is_fn_once( &_fn_once ), true );
 
     // type Routine< R > = fn() -> R;
     fn is_f < R >                             ( _x : fn() -> R )      -> bool { true }

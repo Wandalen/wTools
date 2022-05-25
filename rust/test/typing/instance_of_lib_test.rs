@@ -14,8 +14,8 @@ fn implements_basic_test()
 {
 
   let src = Box::new( true );
-  assert_eq!( TheModule::implements!( src => Copy ), false );
-  assert_eq!( TheModule::implements!( src => Clone ), true );
+  a_id!( TheModule::implements!( src => Copy ), false );
+  a_id!( TheModule::implements!( src => Clone ), true );
 
 }
 
@@ -25,8 +25,8 @@ fn instance_of_basic_test()
 {
 
   let src = Box::new( true );
-  assert_eq!( TheModule::instance_of!( src => Copy ), false );
-  assert_eq!( TheModule::instance_of!( src => Clone ), true );
+  a_id!( TheModule::instance_of!( src => Copy ), false );
+  a_id!( TheModule::instance_of!( src => Clone ), true );
 
 }
 

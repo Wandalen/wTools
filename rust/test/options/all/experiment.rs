@@ -39,12 +39,12 @@ tests_impls!
     // let options = SomeOptions { int1 : 31 };
     // let got = options.f1();
     // let exp = 13;
-    // assert_eq!( got, exp );
+    // a_id!( got, exp );
 
     // let options = SomeOptions { int1 : 31 };
     // let got = options.int1();
     // let exp = 31;
-    // assert_eq!( got, exp );
+    // a_id!( got, exp );
   }
 }
 

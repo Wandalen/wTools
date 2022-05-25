@@ -17,13 +17,13 @@ tests_impls!
       delimeter : "b",
       left : true,
     };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     // test.case( "split() + perform()" );
 
     let got = split().src( "abc" ).delimeter( "b" ).perform();
     let exp = vec![ "a", "c" ];
-    assert_eq!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
+    a_id!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
 
     // test.case( "bool" );
 
@@ -32,11 +32,11 @@ tests_impls!
 
     let got = split().src( "abc" ).delimeter( "b" ).left( true ).perform();
     let exp = vec![ "a", "c" ];
-    assert_eq!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
+    a_id!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
 
     let got = split().src( "abc" ).delimeter( "b" ).left( false ).perform();
     let exp = vec![ "c", "a" ];
-    assert_eq!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
+    a_id!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
   }
 
   //
@@ -65,14 +65,14 @@ tests_impls!
     {
       use split::prelude::*;
       let got = split().src( "abc" ).delimeter( "b" ).form();
-      assert_eq!( got.src(), "abc" );
+      a_id!( got.src(), "abc" );
     }
 
     // test.case = "SplitOptionsAdapter";
     {
       use split::prelude::SplitOptionsAdapter;
       let got = split().src( "abc" ).delimeter( "b" ).form();
-      assert_eq!( got.src(), "abc" );
+      a_id!( got.src(), "abc" );
     }
   }
 
@@ -84,13 +84,13 @@ tests_impls!
     use split::prelude::*;
     let mut got = split().src( "abc" ).delimeter( "b" ).form();
 
-    assert_eq!( got.src(), "abc" );
+    a_id!( got.src(), "abc" );
     *got.src_mut() = "def";
-    assert_eq!( got.src(), "def" );
+    a_id!( got.src(), "def" );
 
-    assert_eq!( *got.left(), true );
+    a_id!( *got.left(), true );
     *got.left_mut() = false;
-    assert_eq!( *got.left(), false );
+    a_id!( *got.left(), false );
   }
 }
 

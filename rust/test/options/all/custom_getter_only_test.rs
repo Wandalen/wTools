@@ -17,14 +17,14 @@ tests_impls!
       delimeter : "b",
       left : true,
     };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     use split::OptionsAdapter;
-    assert_eq!( *got.left(), false );
+    a_id!( *got.left(), false );
 
     // zzz : uncoment later
     // let exp = vec![ "c", "a" ];
-    // assert_eq!( got.perform().map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
+    // a_id!( got.perform().map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
   }
 }
 

@@ -17,7 +17,7 @@ tests_impls!
       e + 1,
       e - 1,
     )}).multiunzip();
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
   }
 }

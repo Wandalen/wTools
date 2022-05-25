@@ -1,5 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
 //
 
@@ -16,7 +18,7 @@ tests_impls!
     {
       string_slice_1 : "",
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
 
     // test.case( "set value" );
 
@@ -27,7 +29,7 @@ tests_impls!
     {
       string_slice_1 : "abc",
     };
-    assert_eq!( command, expected );
+    a_id!( command, expected );
   }
 }
 

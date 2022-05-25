@@ -21,7 +21,7 @@ tests_impls!
       subject : "".to_string(),
       properties_map : HashMap::new(),
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     let instruction = instruction::instruction_parse()
     .instruction( ".get" )
@@ -33,7 +33,7 @@ tests_impls!
       subject : "".to_string(),
       properties_map : HashMap::new(),
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     let instruction = instruction::instruction_parse()
     .instruction( ".get some" )
@@ -45,7 +45,7 @@ tests_impls!
       subject : "some".to_string(),
       properties_map : HashMap::new(),
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     let instruction = instruction::instruction_parse()
     .instruction( ".get v:1" )
@@ -57,7 +57,7 @@ tests_impls!
       subject : "".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Primitive( "1".to_string() ) ) ]),
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     let instruction = instruction::instruction_parse()
     .instruction( ".get some v:1" )
@@ -69,7 +69,7 @@ tests_impls!
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Primitive( "1".to_string() ) ) ]),
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     let instruction = instruction::instruction_parse()
     .instruction( ".get some v:1 routine:some" )
@@ -86,7 +86,7 @@ tests_impls!
       subject : "some".to_string(),
       properties_map,
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     /* */
 
@@ -107,7 +107,7 @@ tests_impls!
       subject : "some".to_string(),
       properties_map,
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     let mut aggregator_map = HashMap::new();
     aggregator_map.insert( "ne".to_string(), Primitive( "-2".to_string() ) );
@@ -128,7 +128,7 @@ tests_impls!
       subject : "some".to_string(),
       properties_map,
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
   }
 
   //
@@ -147,7 +147,7 @@ tests_impls!
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Primitive( "2".to_string() ) ) ]),
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     let instruction = instruction::instruction_parse()
     .instruction( ".get some v:[1,2]" )
@@ -160,7 +160,7 @@ tests_impls!
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "1".to_string(), "2".to_string() ] ) ) ]),
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     /* */
 
@@ -175,7 +175,7 @@ tests_impls!
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "1".to_string(), "2".to_string() ] ) ) ]),
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     let instruction = instruction::instruction_parse()
     .instruction( ".get some v:[1,2]" )
@@ -188,7 +188,7 @@ tests_impls!
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "1".to_string(), "2".to_string() ] ) ) ]),
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     /* */
 
@@ -203,7 +203,7 @@ tests_impls!
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "1".to_string(), "2".to_string(), "3".to_string() ] ) ) ]),
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
 
     let instruction = instruction::instruction_parse()
     .instruction( ".get some v:3 v:[1,2]" )
@@ -216,7 +216,7 @@ tests_impls!
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "3".to_string(), "1".to_string(), "2".to_string() ] ) ) ]),
     };
-    assert_eq!( instruction, exp );
+    a_id!( instruction, exp );
   }
 }
 

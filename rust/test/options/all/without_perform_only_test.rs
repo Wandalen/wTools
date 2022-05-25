@@ -17,7 +17,7 @@ tests_impls!
       delimeter : "b",
       left : true,
     };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     // test.case( "split() + form()" );
 
@@ -28,7 +28,7 @@ tests_impls!
       delimeter : "b",
       left : true,
     };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     // test.case( "split() + perform()" );
 
@@ -39,7 +39,7 @@ tests_impls!
       delimeter : "b",
       left : true,
     };
-    assert_eq!( got, exp );
+    a_id!( got, exp );
   }
 
   //

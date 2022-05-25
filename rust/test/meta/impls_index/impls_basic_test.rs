@@ -1,5 +1,7 @@
 use super::TheModule;
 use TheModule::prelude::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
 // trace_macros!( true );
 tests_impls!
@@ -7,7 +9,7 @@ tests_impls!
   #[ test ]
   fn pass1_test()
   {
-    assert_eq!( true, true );
+    a_id!( true, true );
   }
 
   //
@@ -15,7 +17,7 @@ tests_impls!
   #[ test ]
   fn fail1_test()
   {
-    // assert_eq!( true, false );
+    // a_id!( true, false );
   }
 
   //

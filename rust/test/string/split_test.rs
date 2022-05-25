@@ -14,7 +14,7 @@ tests_impls!
     let iter = TheModule::string::split()
     .src( src )
     .perform();
-    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "", "", "a", "", "b", "", "c", "", "", ] );
+    a_id!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "", "", "a", "", "b", "", "c", "", "", ] );
   }
 
   //
@@ -29,7 +29,7 @@ tests_impls!
     .preserving_empty( true )
     .stripping( false )
     .perform();
-    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
+    a_id!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
 
     let src = "a b c";
     let iter = TheModule::string::split()
@@ -38,7 +38,7 @@ tests_impls!
     .preserving_empty( false )
     .stripping( false )
     .perform();
-    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
+    a_id!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
 
     /* */
 
@@ -49,7 +49,7 @@ tests_impls!
     .preserving_empty( true )
     .stripping( true )
     .perform();
-    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "", "b", "", "c" ] );
+    a_id!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "", "b", "", "c" ] );
 
     let src = "a b c";
     let iter = TheModule::string::split()
@@ -58,7 +58,7 @@ tests_impls!
     .preserving_empty( false )
     .stripping( true )
     .perform();
-    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
+    a_id!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
   }
 
   //
@@ -73,7 +73,7 @@ tests_impls!
     .preserving_delimeters( true )
     .stripping( false )
     .perform();
-    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
+    a_id!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
 
     let src = "a b c";
     let iter = TheModule::string::split()
@@ -82,7 +82,7 @@ tests_impls!
     .preserving_delimeters( false )
     .stripping( false )
     .perform();
-    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
+    a_id!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
   }
 
   //
@@ -96,7 +96,7 @@ tests_impls!
     .delimeter( " " )
     .stripping( true )
     .perform();
-    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "", "b", "", "c" ] );
+    a_id!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "", "b", "", "c" ] );
 
     let src = "a b c";
     let iter = TheModule::string::split()
@@ -104,7 +104,7 @@ tests_impls!
     .delimeter( " " )
     .stripping( false )
     .perform();
-    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
+    a_id!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", " ", "b", " ", "c" ] );
 
     /* */
 
@@ -114,7 +114,7 @@ tests_impls!
     .delimeter( "b" )
     .stripping( true )
     .perform();
-    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
+    a_id!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
 
     let src = "a b c";
     let iter = TheModule::string::split()
@@ -123,7 +123,7 @@ tests_impls!
     .preserving_delimeters( false )
     .stripping( true )
     .perform();
-    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "c" ] );
+    a_id!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "c" ] );
   }
 }
 

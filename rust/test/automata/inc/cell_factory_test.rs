@@ -24,11 +24,11 @@ tests_impls!
 
     let exp = hset![ b ];
     let got : HashSet< _ > = factory.out_nodes( a ).collect();
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     let exp = hset![ a, b ];
     let got : HashSet< _ > = factory.out_nodes( b ).collect();
-    assert_eq!( got, exp );
+    a_id!( got, exp );
   }
 }
 

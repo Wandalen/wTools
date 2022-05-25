@@ -61,37 +61,37 @@ tests_impls!
       GOT = "".to_string();
       TheModule::braces_unwrap!( test_with, a, b, c );
       let exp = "a, b, c;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!( test_with, { a, b, c } );
       let exp = "a, b, c;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!( test_with, { { a, b, c } } );
       let exp = "{ a, b, c };";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!( test_with, ( a, b, c ) );
       let exp = "(a, b, c);";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!( test_with, ( ( a, b, c ) ) );
       let exp = "((a, b, c));";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!( test_with, [ a, b, c ] );
       let exp = "[a, b, c];";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!( test_with, [ [ a, b, c ] ] );
       let exp = "[[a, b, c]];";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
     }
 
@@ -105,7 +105,7 @@ tests_impls!
         @SRC{ a, b, c }
       );
       let exp = "a, b, c;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -114,7 +114,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "a, b, c;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -123,7 +123,7 @@ tests_impls!
         @SRC{ { { a, b, c } } }
       );
       let exp = "{ a, b, c };";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -132,7 +132,7 @@ tests_impls!
         @SRC{ ( a, b, c ) }
       );
       let exp = "(a, b, c);";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -141,7 +141,7 @@ tests_impls!
         @SRC{ ( ( a, b, c ) ) }
       );
       let exp = "((a, b, c));";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -150,7 +150,7 @@ tests_impls!
         @SRC{ [ a, b, c ] }
       );
       let exp = "[a, b, c];";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -159,7 +159,7 @@ tests_impls!
         @SRC{ [ [ a, b, c ] ] }
       );
       let exp = "[[a, b, c]];";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "prefix and postfix" ) */
@@ -174,7 +174,7 @@ tests_impls!
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -185,7 +185,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -196,7 +196,7 @@ tests_impls!
         @SRC{ { { a, b, c } } }
       );
       let exp = "prefix { a, b, c } postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -207,7 +207,7 @@ tests_impls!
         @SRC{ ( a, b, c ) }
       );
       let exp = "prefix(a, b, c) postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -218,7 +218,7 @@ tests_impls!
         @SRC{ ( ( a, b, c ) ) }
       );
       let exp = "prefix((a, b, c)) postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -229,7 +229,7 @@ tests_impls!
         @SRC{ [ a, b, c ] }
       );
       let exp = "prefix [a, b, c] postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -240,7 +240,7 @@ tests_impls!
         @SRC{ [ [ a, b, c ] ] }
       );
       let exp = "prefix [[a, b, c]] postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
     }
 
@@ -257,7 +257,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 1 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -268,7 +268,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 2 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -279,7 +279,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 3 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -290,7 +290,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 4 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -301,7 +301,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 5 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -312,7 +312,7 @@ tests_impls!
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 6 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -323,7 +323,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 7 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -334,7 +334,7 @@ tests_impls!
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "prefix" ) */
@@ -348,7 +348,7 @@ tests_impls!
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -358,7 +358,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -368,7 +368,7 @@ tests_impls!
         @SRC{ { { a, b, c } } }
       );
       let exp = "prefix { a, b, c };";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -378,7 +378,7 @@ tests_impls!
         @SRC{ ( a, b, c ) }
       );
       let exp = "prefix(a, b, c);";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -388,7 +388,7 @@ tests_impls!
         @SRC{ ( ( a, b, c ) ) }
       );
       let exp = "prefix((a, b, c));";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -398,7 +398,7 @@ tests_impls!
         @SRC{ [ a, b, c ] }
       );
       let exp = "prefix [a, b, c];";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -408,7 +408,7 @@ tests_impls!
         @SRC{ [ [ a, b, c ] ] }
       );
       let exp = "prefix [[a, b, c]];";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
     }
 
@@ -424,7 +424,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 1 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -434,7 +434,7 @@ tests_impls!
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 2 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -444,7 +444,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "prefix a, b, c;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 3 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -454,7 +454,7 @@ tests_impls!
         @SRC{ a, b, c }
       );
       let exp = "prefix a, b, c;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "postfix" ) */
@@ -468,7 +468,7 @@ tests_impls!
         @SRC{ a, b, c }
       );
       let exp = "a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -478,7 +478,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -488,7 +488,7 @@ tests_impls!
         @SRC{ { { a, b, c } } }
       );
       let exp = "{ a, b, c } postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -498,7 +498,7 @@ tests_impls!
         @SRC{ ( a, b, c ) }
       );
       let exp = "(a, b, c) postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -508,7 +508,7 @@ tests_impls!
         @SRC{ ( ( a, b, c ) ) }
       );
       let exp = "((a, b, c)) postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -518,7 +518,7 @@ tests_impls!
         @SRC{ [ a, b, c ] }
       );
       let exp = "[a, b, c] postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -528,7 +528,7 @@ tests_impls!
         @SRC{ [ [ a, b, c ] ] }
       );
       let exp = "[[a, b, c]] postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
 
     }
 
@@ -544,7 +544,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 1 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -554,7 +554,7 @@ tests_impls!
         @SRC{ a, b, c }
       );
       let exp = "a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 2 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -564,7 +564,7 @@ tests_impls!
         @SRC{ { a, b, c } }
       );
       let exp = "a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
       /* 3 */
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -574,7 +574,7 @@ tests_impls!
         @SRC{ a, b, c }
       );
       let exp = "a, b, c postfix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
   }
@@ -660,7 +660,7 @@ tests_impls!
       GOT = "".to_string();
       TheModule::for_each!( test_with, a, b, c );
       let exp = "a+b+c+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "function-style, paths, unwrapping" ) */
@@ -669,7 +669,7 @@ tests_impls!
       GOT = "".to_string();
       TheModule::for_each!( test_with, { std::collections::HashMap }, { std::collections::BTreeMap } );
       let exp = "std :: collections :: HashMap+std :: collections :: BTreeMap+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "function-style, complex, unwrapping" ) */
@@ -678,7 +678,7 @@ tests_impls!
       GOT = "".to_string();
       TheModule::for_each!( test_with, { a _ a }, { b _ b } );
       let exp = "a _ a+b _ b+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "function-style, complex, unwrapping, trailing comma" ) */
@@ -687,7 +687,7 @@ tests_impls!
       GOT = "".to_string();
       TheModule::for_each!( test_with, { a _ a }, { b _ b }, );
       let exp = "a _ a+b _ b+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "function-style, paths, parentheses" ) */
@@ -696,7 +696,7 @@ tests_impls!
       GOT = "".to_string();
       TheModule::for_each!( test_with, ( std::collections::HashMap ), ( std::collections::BTreeMap ) );
       let exp = "(std :: collections :: HashMap)+(std :: collections :: BTreeMap)+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     // callbackless
@@ -712,7 +712,7 @@ tests_impls!
         @Each ( a ) ( b ) ( c )
       };
       let exp = "a+postfix+b+postfix+c+postfix+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "callbackless, prefix" ) */
@@ -725,7 +725,7 @@ tests_impls!
         @Each ( a ) ( b ) ( c )
       };
       let exp = "a+b+c+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "callbackless, postfix" ) */
@@ -738,7 +738,7 @@ tests_impls!
         @Each { test_with!( a ) } { test_with!( b ) } { test_with!( c ) }
       };
       let exp = "a+postfix+b+postfix+c+postfix+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     // map-style
@@ -749,7 +749,7 @@ tests_impls!
       GOT = "".to_string();
       TheModule::for_each!( test_with where @Each a b c );
       let exp = "a+b+c+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "map-style, prefix + postfix" ) */
@@ -758,7 +758,7 @@ tests_impls!
       GOT = "".to_string();
       TheModule::for_each!( test_with where @Prefix prefix @Postfix postfix @Each a b c );
       let exp = "prefix a postfix+prefix b postfix+prefix c postfix+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "map-style, prefix" ) */
@@ -767,7 +767,7 @@ tests_impls!
       GOT = "".to_string();
       TheModule::for_each!( test_with where @Prefix prefix @Each a b c );
       let exp = "prefix a+prefix b+prefix c+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "map-style, postfix" ) */
@@ -776,7 +776,7 @@ tests_impls!
       GOT = "".to_string();
       TheModule::for_each!( test_with where @Postfix postfix @Each a b c );
       let exp = "a postfix+b postfix+c postfix+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     // map-style, complex
@@ -791,7 +791,7 @@ tests_impls!
         @Each { a _ a } { b _ b } { c _ c }
       };
       let exp = "a _ a+b _ b+c _ c+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "map-style, prefix + postfix" ) */
@@ -806,7 +806,7 @@ tests_impls!
         @Each { a _ a } { b _ b } { c _ c }
       };
       let exp = "pre fix a _ a post fix+pre fix b _ b post fix+pre fix c _ c post fix+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "map-style, prefix" ) */
@@ -820,7 +820,7 @@ tests_impls!
         @Each { a _ a } { b _ b } { c _ c }
       };
       let exp = "pre fix a _ a+pre fix b _ b+pre fix c _ c+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "map-style, postfix" ) */
@@ -834,7 +834,7 @@ tests_impls!
         @Each { a _ a } { b _ b } { c _ c }
       };
       let exp = "a _ a post fix+b _ b post fix+c _ c post fix+";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
   }
@@ -883,7 +883,7 @@ tests_impls!
       for_each_float!( test_with where @Prefix { pre fix 1 } @Postfix { post fix } );
       for_each_float!( test_with where @Prefix { pre fix 2 } @Postfix { post fix } );
       let exp = "pre fix 1 f32 post fix;pre fix 1 f64 post fix;pre fix 2 f32 post fix;pre fix 2 f64 post fix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "without fixes" ) */
@@ -898,7 +898,7 @@ tests_impls!
           { test_with where @Prefix { pre fix 2 } @Postfix { post fix } }
       }
       let exp = "pre fix 1 f32 post fix;pre fix 1 f64 post fix;pre fix 2 f32 post fix;pre fix 2 f64 post fix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
     /* test.case( "without fixes" ) */
@@ -915,7 +915,7 @@ tests_impls!
           { { pre fix 2 } }
       }
       let exp = "pre fix 1 f32 post fix;pre fix 1 f64 post fix;pre fix 2 f32 post fix;pre fix 2 f64 post fix;";
-      assert_eq!( GOT, exp );
+      a_id!( GOT, exp );
     }
 
   }
