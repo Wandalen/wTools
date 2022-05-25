@@ -8,8 +8,9 @@ use super::TheModule;
 #[ cfg( feature = "nightly" ) ]
 tests_impls!
 {
+
   #[ test ]
-  fn inspect_to_str_type_of()
+  fn inspect_to_str_type_of_test()
   {
 
     let exp = "sizeof( &[1, 2, 3][..] : &[i32] ) = 16".to_string();
@@ -37,13 +38,14 @@ tests_impls!
     assert_eq!( got, exp );
 
   }
+
 }
 
 //
 
 #[ cfg( feature = "nightly" ) ]
-tests_impls!
+tests_index!
 {
-  inspect_to_str_type_of,
+  inspect_to_str_type_of_test,
   inspect_type_of,
 }

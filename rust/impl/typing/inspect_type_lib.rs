@@ -54,6 +54,8 @@ mod nightly
     }}
   }
 
+  pub use inspect_to_str_type_of;
+  pub use inspect_type_of;
 }
 
 // #[ cfg( feature = "nightly" ) ]

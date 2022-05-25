@@ -2,6 +2,9 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
+// #![ feature( type_name_of_val ) ]
+// #![ feature( trace_macros ) ]
+
 /* qqq : for Dima : wrong header */
 
 //!

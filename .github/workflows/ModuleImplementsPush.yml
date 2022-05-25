@@ -23,13 +23,13 @@ jobs :
 
   # instance_of
 
-  build :
+  build_instance_of :
     if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
     uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
     with :
       manifest_path : 'module/rust/instance_of/Cargo.toml'
 
-  build_fast :
+  build_fast_instance_of :
     if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'implements' )"
     uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
     with :

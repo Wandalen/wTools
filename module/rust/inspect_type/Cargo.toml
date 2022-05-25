@@ -1,6 +1,6 @@
 [package]
 name = "inspect_type"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,7 +31,6 @@ default = []
 
 [package.metadata.docs.rs]
 all-features = true
-# rustdoc-args = []
 
 [lib]
 name = "inspect_type"
@@ -49,4 +48,4 @@ path = "sample/rust/inspect_type_trivial/src/main.rs"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-rustversion = "~1.0"
+# rustversion = "~1.0"
