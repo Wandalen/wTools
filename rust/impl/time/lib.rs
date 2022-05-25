@@ -3,7 +3,7 @@
 #![ warn( missing_docs ) ]
 
 //!
-//! Collection of general purpose time tools.
+//! Collection of time tools.
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
@@ -34,9 +34,44 @@
 // /// }
 // /// ```
 
-pub mod time
+// pub mod time
+// {
+//   include!( "./now.rs" );
+// }
+//
+// pub use time::*;
+
+/// Collection of time tools.
+pub mod time;
+
+/// Dependencies.
+pub mod dependencies
 {
-  include!( "./now.rs" );
 }
 
-pub use time::*;
+/// Protected namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+}
+
+pub use protected::*;
+
+/// Shared with parent namespace of the module
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  pub use super::prelude::*;
+  pub use super::time::exposed::*;
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+pub mod prelude
+{
+  pub use super::time::prelude::*;
+}

@@ -27,34 +27,31 @@
 /* zzz : make sure CD run debug tests and release tests */
 /* zzz : introduce tag to run fewer tests */
 
-/// Iter tools.
-pub mod iter;
-// #[ doc( inline ) ]
-// pub use iter::exposed::*;
-
-/// Meta tools.
-pub mod meta;
-// #[ doc( inline ) ]
-// pub use meta::*;
-
-/// Type checking tools.
-pub mod typing;
-// #[ doc( inline ) ]
-// pub use typing::*;
-
-/// Diagnostics tools.
-pub mod diagnostics;
-// #[ doc( inline ) ]
-// pub use diagnostics::*;
-
-/// Collection of primal data types
-pub mod dt;
-
-///
-/// Collection of general purpose time tools.
-///
-
-pub mod time;
+// /// Iter tools.
+// pub mod iter;
+// // #[ doc( inline ) ]
+// // pub use iter::exposed::*;
+//
+// /// Meta tools.
+// pub mod meta;
+// // #[ doc( inline ) ]
+// // pub use meta::*;
+//
+// /// Type checking tools.
+// pub mod typing;
+// // #[ doc( inline ) ]
+// // pub use typing::*;
+//
+// /// Diagnostics tools.
+// pub mod diagnostics;
+// // #[ doc( inline ) ]
+// // pub use diagnostics::*;
+//
+// /// Collection of primal data types
+// pub mod dt;
+//
+// /// Collection of general purpose time tools.
+// pub mod time;
 
 /// Dependencies.
 pub mod dependencies
@@ -85,8 +82,14 @@ pub mod dependencies
 pub mod protected
 {
   pub use super::orphan::*;
-  pub use ::mod_interface::orphan::*;
+  // pub use ::mod_interface::orphan::*;
 
+  pub use ::iter_tools as iter;
+  pub use ::meta_tools as meta;
+  pub use ::typing_tools as typing;
+  pub use ::diagnostics_tools as diagnostics;
+  pub use ::data_type as dt;
+  pub use ::time_tools as time;
   pub use ::werror as error;
   pub use ::former as former;
   pub use ::woptions as options;
@@ -94,16 +97,16 @@ pub mod protected
   pub use ::wstring_tools as string;
   pub use ::derive_tools as derive;
 
-  pub use super::iter;
-  pub use iter::exposed::*;
-
-  pub use super::meta;
-  pub use meta::*;
-
-  pub use super::typing;
-  pub use typing::*;
-
-  pub use super::dt;
+//   pub use super::iter;
+//   pub use iter::exposed::*;
+//
+//   pub use super::meta;
+//   pub use meta::*;
+//
+//   pub use super::typing;
+//   pub use typing::*;
+//
+//   pub use super::dt;
 
 }
 
@@ -121,20 +124,35 @@ pub mod exposed
   pub use super::prelude::*;
   pub use super::iter::exposed::*;
   pub use super::meta::exposed::*;
-  // pub use ::mod_interface::exposed::*;
   pub use super::typing::exposed::*;
-  pub use super::dt::exposed::*;
   #[ cfg( feature = "diagnostics" ) ]
   pub use super::diagnostics::exposed::*;
+  pub use super::dt::exposed::*;
+  pub use super::time::exposed::*;
+  pub use super::time::exposed::*;
+  pub use super::error::exposed::*;
+  pub use super::former::exposed::*;
+  pub use super::options::exposed::*;
+  pub use super::interval::exposed::*;
+  pub use super::string::exposed::*;
+  pub use super::derive::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  pub use super::meta::prelude::*;
+  pub use super::iter::prelude::*;
   pub use super::meta::prelude::*;
   pub use super::typing::prelude::*;
-  pub use super::dt::prelude::*;
   #[ cfg( feature = "diagnostics" ) ]
   pub use super::diagnostics::prelude::*;
+  pub use super::dt::prelude::*;
+  pub use super::time::prelude::*;
+  pub use super::time::prelude::*;
+  pub use super::error::prelude::*;
+  pub use super::former::prelude::*;
+  pub use super::options::prelude::*;
+  pub use super::interval::prelude::*;
+  pub use super::string::prelude::*;
+  pub use super::derive::prelude::*;
 }
