@@ -1,6 +1,6 @@
 [package]
 name = "woptions_runtime"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -35,10 +35,6 @@ path = "rust/test/options/woptions_runtime_lib_test.rs"
 
 [dependencies]
 former = { version = "~0.1", path = "../../rust/former" }
-# unzip-n = "~0.1"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# # maplit = "~1.0.2"
-anyhow = "~1.0"
