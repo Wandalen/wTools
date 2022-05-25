@@ -66,7 +66,7 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 //   };
 // }
 //
-// /// Prelude to use: `use wtools::prelude::*`.
+// /// Prelude to use essentials: `use my_module::prelude::*`.
 // pub mod prelude
 // {
 //   pub use super::

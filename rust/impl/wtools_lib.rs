@@ -120,7 +120,7 @@ pub mod exposed
   pub use ::mod_interface::exposed::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   // pub use mod_interface::*;

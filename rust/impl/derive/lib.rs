@@ -34,7 +34,7 @@ pub mod exposed
   pub use ::parse_display::Display;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
 }

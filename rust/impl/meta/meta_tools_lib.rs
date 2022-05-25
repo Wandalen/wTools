@@ -41,7 +41,7 @@ pub mod exposed
   pub use super::meta::exposed::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   pub use super::meta::prelude::*;
@@ -63,7 +63,7 @@ pub mod prelude
 //   pub use super::meta::exposed::*;
 // }
 //
-// /// Prelude to use: `use wtools::prelude::*`.
+// /// Prelude to use essentials: `use my_module::prelude::*`.
 // pub mod prelude
 // {
 //   pub use super::meta::prelude::*;

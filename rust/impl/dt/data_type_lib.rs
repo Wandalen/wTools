@@ -39,7 +39,7 @@ pub mod exposed
   pub use super::dt::exposed::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   pub use super::dt::prelude::*;
