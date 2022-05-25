@@ -18,7 +18,7 @@ pub fn impls( _input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 
   // let items = syn::parse::< Items2 >( syn::Item )?;
 
-  let result = quote!
+  let result = qt!
   {
   };
 
