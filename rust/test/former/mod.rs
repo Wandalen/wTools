@@ -9,7 +9,7 @@ use TheModule::*;
 #[ allow( unused_imports ) ]
 use wtools::meta::prelude::*;
 
-#[ rustversion::stable ]
+#[ test_tools::rustversion::stable ]
 #[ test ]
 // #[ cfg( not( feature = "nightly" ) ) ]
 fn trybuild_tests()
@@ -19,7 +19,7 @@ fn trybuild_tests()
 
 // stable have different information about error
 // that's why these tests are active only for nightly
-#[ rustversion::nightly ]
+#[ test_tools::rustversion::nightly ]
 #[ test ]
 fn trybuild_tests()
 {

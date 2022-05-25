@@ -1,6 +1,6 @@
 [package]
 name = "std_x"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -26,13 +26,19 @@ include = [
 
 [lib]
 name = "std_x"
-path = "rust/impl/_template/lib.rs"
+path = "rust/impl/std_x_lib.rs"
 
 [[test]]
-name = "template_alias_test"
-path = "rust/test/_template/lib_test.rs"
+name = "std_x_test"
+path = "rust/test/std_x_lib_test.rs"
+
+[features]
+nightly = [ "wtools/nightly" ]
+default = []
 
 [dependencies]
+wtools = { version = "~0.2", path = "../../rust/wtools" }
+impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by wtools it should also be imported immediatly
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

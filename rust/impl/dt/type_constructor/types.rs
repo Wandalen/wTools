@@ -4,9 +4,9 @@ mod internal
   use crate::exposed::*;
 
   // xxx : no std
+  // qqq : introduce features for type_constructor
   // qqq : for Dima : paste generated code for each sample
   //
-  // xxx : register std_tools and std_x
   // xxx : redo implements
   // xxx : add core::fmt to prelude
   // xxx : write article about the module

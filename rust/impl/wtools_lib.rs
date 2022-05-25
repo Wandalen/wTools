@@ -7,16 +7,8 @@
 //!
 //! wTools - Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 //!
-//! ### Sample
-//! ```
-//! use wtools::*;
-//!
-//! fn main()
-//! {
-//!   println!( "implements!( 13_i32 => Copy ) : {}", implements!( 13_i32 => Copy ) );
-//!   println!( "implements!( Box::new( 13_i32 ) => Copy ) : {}", implements!( Box::new( 13_i32 ) => Copy ) );
-//! }
-//! ```
+
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /* zzz : register error_tools */
 /* zzz : alias werror -> error_tools  */
@@ -118,6 +110,7 @@ pub mod exposed
 {
   pub use super::prelude::*;
   pub use ::mod_interface::exposed::*;
+  pub use super::typing::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -128,6 +121,6 @@ pub mod prelude
 
   // pub use super::*; /* zzz : remove later */
   pub use super::meta::prelude::*;
+  pub use super::typing::prelude::*;
 
 }
-

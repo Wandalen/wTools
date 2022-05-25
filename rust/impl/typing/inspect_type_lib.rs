@@ -56,6 +56,35 @@ mod nightly
 
 }
 
-#[ cfg( feature = "nightly" ) ]
+// #[ cfg( feature = "nightly" ) ]
+// #[ doc( inline ) ]
+// pub use nightly::*;
+
+/// Own namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+}
+
 #[ doc( inline ) ]
-pub use nightly::*;
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  pub use super::prelude::*;
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+pub mod prelude
+{
+  #[ cfg( feature = "nightly" ) ]
+  #[ doc( inline ) ]
+  pub use super::nightly::*;
+}

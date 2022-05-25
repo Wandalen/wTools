@@ -3,7 +3,7 @@
 
 Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 
-### Sample :: implements
+## Sample :: implements
 
 ```rust
 use wtools::prelude::*;
@@ -15,7 +15,7 @@ fn main()
 }
 ```
 
-### Sample :: type constructors
+## Sample :: type constructors
 
 In Rust, you often need to wrap a given type into a new one.
 The role of the orphan rules in particular is basically to prevent you from implementing external traits for external types.
