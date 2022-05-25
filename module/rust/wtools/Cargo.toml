@@ -74,13 +74,6 @@ meta_tools_mod_interface_meta = [ "meta_tools/mod_interface_meta" ]
 meta_tools_mod_interface_runtime = [ "meta_tools/mod_interface_runtime" ]
 meta_tools_container_aliases = [ "meta_tools/literally" ]
 
-impls_index_default = [ "impls_index/default" ]
-impls_index_meta = [ "impls_index/meta" ]
-
-mod_interface_default = [ "mod_interface/default" ]
-mod_interface_meta = [ "mod_interface/meta" ]
-mod_interface_runtime = [ "mod_interface/runtime" ]
-
 typing_tools_default = [ "typing_tools/default" ]
 typing_tools_inspect_type = [ "typing_tools/inspect_type" ]
 typing_tools_is_slice = [ "typing_tools/is_slice" ]
@@ -144,7 +137,6 @@ default = [
   "woptions_default",
   "iter_tools_default",
   "meta_tools_default",
-  "impls_index_default",
   "typing_tools_default",
   "time_tools_default",
   "wstring_tools_default",
@@ -166,8 +158,7 @@ woptions = { version = "~0.1", path = "../../rust/woptions", optional = true, de
 iter_tools = { version = "~0.1", path = "../../rust/iter_tools", optional = true, default-features = false }
 
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools", optional = true, default-features = false }
-impls_index = { version = "~0.1", path = "../../rust/impls_index", optional = true, default-features = false } # despite impls_index is imported by meta_tools it should also be imported immediatly
-mod_interface = { version = "~0.1", path = "../../rust/mod_interface", optional = true, default-features = false }
+impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by meta_tools it should also be imported immediatly
 
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = true, default-features = false }
 time_tools = { version = "~0.1", path = "../../rust/time_tools", optional = true, default-features = false }
