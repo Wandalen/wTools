@@ -27,13 +27,13 @@ jobs :
     if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
     uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
     with :
-      manifest_path : 'module/rust/wproc_macro/Cargo.toml'
+      manifest_path : 'module/rust_alias/wproc_macro/Cargo.toml'
 
   build_fast_wproc_macro :
     if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'proc_macro_tools' )"
     uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
     with :
-      manifest_path : 'module/rust/wproc_macro/Cargo.toml'
+      manifest_path : 'module/rust_alias/wproc_macro/Cargo.toml'
 
   # macro_tools
 
@@ -41,10 +41,10 @@ jobs :
     if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
     uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
     with :
-      manifest_path : 'module/rust/macro_tools/Cargo.toml'
+      manifest_path : 'module/rust_alias/macro_tools/Cargo.toml'
 
   build_fast_macro_tools :
     if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'proc_macro_tools' )"
     uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
     with :
-      manifest_path : 'module/rust/macro_tools/Cargo.toml'
+      manifest_path : 'module/rust_alias/macro_tools/Cargo.toml'
