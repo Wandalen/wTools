@@ -11,6 +11,10 @@ mod internal
   // xxx : add core::fmt to prelude
   // xxx : write article about the module
 
+  // xxx : use
+  // - [pretty_assertions](https://github.com/colin-kiegel/rust-pretty-assertions) by [Colin Kiegel](https://github.com/colin-kiegel) :
+  //  pretty assert_eq
+
   ///
   /// Type constructor to define tuple wrapping a given type.
   ///

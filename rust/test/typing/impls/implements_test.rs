@@ -5,6 +5,7 @@ use super::TheModule;
 
 tests_impls!
 {
+
   #[ test ]
   fn implements_basic()
   {
@@ -35,12 +36,12 @@ tests_impls!
     assert_eq!( TheModule::implements!( src => Copy ), true );
     assert_eq!( TheModule::implements!( src => Clone ), true );
 
-    assert_eq!( TheModule::implements!( Box::new( true ) => Copy ), false );
-    assert_eq!( TheModule::implements!( Box::new( true ) => Clone ), true );
-
     let src = Box::new( true );
     assert_eq!( TheModule::implements!( src => Copy ), false );
     assert_eq!( TheModule::implements!( src => Clone ), true );
+
+    assert_eq!( TheModule::implements!( Box::new( true ) => std::marker::Copy ), false );
+    assert_eq!( TheModule::implements!( Box::new( true ) => std::clone::Clone ), true );
 
   }
 
@@ -207,6 +208,7 @@ tests_impls!
     fn is_fn_mut < R, F : FnMut() -> R >      ( _x : &F )             -> bool { true }
     fn is_fn_once < R, F : FnOnce() -> R >    ( _x : &F )             -> bool { true }
   }
+
 }
 
 //
