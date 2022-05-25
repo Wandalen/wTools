@@ -5,9 +5,8 @@ use TheModule::*;
 
 tests_impls!
 {
-
   #[ test ]
-  fn basic_test()
+  fn basic()
   {
     use core::fmt;
 
@@ -126,7 +125,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parametrized_multiple_test()
+  fn parametrized_multiple()
   {
 
     macro_rules! mk
@@ -298,7 +297,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parametrized_no_derives_test()
+  fn parametrized_no_derives()
   {
 
     mod mod1
@@ -325,7 +324,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parameter_with_derives_test()
+  fn parameter_with_derives()
   {
 
     macro_rules! mk
@@ -498,7 +497,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parameter_no_derives_test()
+  fn parameter_no_derives()
   {
 
     macro_rules! mk
@@ -535,7 +534,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn struct_basic_test()
+  fn struct_basic()
   {
 
     trait Round { fn round( &self ) -> Self; };
@@ -617,7 +616,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn struct_no_derives_test()
+  fn struct_no_derives()
   {
 
     struct Floats< T1, T2 >( pub T1, pub T2 );
@@ -635,7 +634,7 @@ tests_impls!
   //
 
 //   #[ test ]
-//   fn samples_test()
+//   fn samples()
 //   {
 //
 //     /* test.case( "pair-line" ) */
@@ -686,21 +685,18 @@ tests_impls!
 //     }
 //
 //   }
-
 }
 
 //
 
 tests_index!
 {
-
-  basic_test,
-  parametrized_multiple_test,
-  parametrized_no_derives_test,
-  parameter_with_derives_test,
-  parameter_no_derives_test,
-  struct_basic_test,
-  struct_no_derives_test,
-  // samples_test,
-
+  basic,
+  parametrized_multiple,
+  parametrized_no_derives,
+  parameter_with_derives,
+  parameter_no_derives,
+  struct_basic,
+  struct_no_derives,
+  // samples,
 }

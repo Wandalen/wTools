@@ -7,7 +7,7 @@ tests_impls!
 {
 
   #[ test ]
-  fn max_test()
+  fn max()
   {
 
     #[ derive( Debug, PartialEq ) ]
@@ -71,7 +71,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn sample_test()
+  fn sample()
   {
 
     #[ derive( Debug, PartialEq ) ]
@@ -125,8 +125,6 @@ tests_impls!
 
 tests_index!
 {
-
-  max_test,
-  sample_test,
-
+  max,
+  sample,
 }
