@@ -3,7 +3,7 @@
 
 Collection of primal data types.
 
-## Sample :: type constructors
+### Sample :: type constructors
 
 In Rust, you often need to wrap a given type into a new one.
 The role of the orphan rules in particular is basically to prevent you from implementing external traits for external types.
@@ -37,7 +37,7 @@ types!
 }
 ```
 
-## Sample :: make - variadic constructor
+### Sample :: make - variadic constructor
 
 Implement traits [Make0], [Make1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
 In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.

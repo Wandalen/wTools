@@ -3,7 +3,7 @@
 
 Include markdown file or its section.
 
-### Sample :: trivial
+## Sample  :: trivial
 
 ```rust
 use include_md::*;

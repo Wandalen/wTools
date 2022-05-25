@@ -3,7 +3,7 @@
 
 ___
 
-### Sample :: trivial
+## Sample  :: trivial
 
 ``` rust
 ```

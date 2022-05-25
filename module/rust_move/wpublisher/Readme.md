@@ -3,7 +3,7 @@
 
 Utility to publish modules on `crates.io` from a command line.
 
-### Sample
+## Sample
 
 ``` shell
 wpublisher .publish ./ dry:1

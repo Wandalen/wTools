@@ -76,7 +76,7 @@ mod internal
   ///// vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
   ///```
   ///
-  ///## Sample :: homopair with parameters
+  ///### Sample :: homopair with parameters
   ///
   ///Unlike `heteropair` `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or array, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tuple, array, slice, scalar.
   ///
@@ -92,7 +92,7 @@ mod internal
   ///let instance3 : Struct1 = make!( 1, 3 );
   ///```
   ///
-  ///## Sample :: single line single.
+  ///### Sample :: single line single.
   ///
   ///To define your own single-use macro `types!`. The single-line definition looks like that.
   ///
@@ -137,7 +137,7 @@ mod internal
   ///println!( "x : {}", x.0 );
   ///```
   ///
-  ///## Sample :: single with derives and attributes.
+  ///### Sample :: single with derives and attributes.
   ///
   ///It's possible to define attributes as well as derives.
   ///
@@ -189,7 +189,7 @@ mod internal
   ///dbg!( x );
   ///```
   ///
-  ///## Sample :: single with struct instead of macro.
+  ///### Sample :: single with struct instead of macro.
   ///
   ///Sometimes it's sufficient to use a common type instead of defining a brand new one.
   ///You may use parameterized struct `Single< T >` instead of macro `types!` if that is the case.
@@ -200,7 +200,7 @@ mod internal
   ///dbg!( x );
   ///```
   ///
-  ///## Sample :: single with a parametrized element.
+  ///### Sample :: single with a parametrized element.
   ///
   ///Element of tuple could be parametrized.
   ///
@@ -248,7 +248,7 @@ mod internal
   ///let x = MySingle( std::sync::Arc::new( 13 ) );
   ///```
   ///
-  ///## Sample :: single with parametrized tuple.
+  ///### Sample :: single with parametrized tuple.
   ///
   ///Instead of parametrizing the element, it's possible to define a parametrized tuple.
   ///
@@ -293,7 +293,7 @@ mod internal
   ///dbg!( 13 );
   ///```
   ///
-  ///## Sample :: single-line pair
+  ///### Sample :: single-line pair
   ///
   ///Sometimes you need to wrap more than a single element into a tupдe. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
   ///
@@ -311,7 +311,7 @@ mod internal
   ///```rust
   ///```
   ///
-  ///## Sample :: pair with parameters
+  ///### Sample :: pair with parameters
   ///
   ///Just like `single` `pair` may have parameters.
   ///
@@ -334,7 +334,7 @@ mod internal
   ///```rust
   ///```
   ///
-  ///## Sample :: single-line homopair
+  ///### Sample :: single-line homopair
   ///
   ///If you need to wrap pair of elements with the same type use the type constructor `pair`. The same type constructor `pair` for both `pair` and `homopair`, difference in number of types in definition, `homopair` has only one, because both its element has the same type. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
   ///
@@ -352,7 +352,7 @@ mod internal
   ///```rust
   ///```
   ///
-  ///## Sample :: homopair with parameters
+  ///### Sample :: homopair with parameters
   ///
   ///Unlike `heteropair` `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or array, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tuple, array, slice, scalar.
   ///
@@ -381,7 +381,7 @@ mod internal
   ///```rust
   ///```
   ///
-  ///## Sample :: single-line many
+  ///### Sample :: single-line many
   ///
   ///Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has essential traits implemented for it.
   ///

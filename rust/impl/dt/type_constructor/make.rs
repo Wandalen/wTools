@@ -126,7 +126,7 @@ mod internal
   /// assert_eq!( got, exp );
   /// ```
   ///
-  /// ## To add to your project
+  /// ### To add to your project
   ///
   /// ``` shell
   /// cargo add type_constructor
