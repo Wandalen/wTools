@@ -19,7 +19,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/former/meta",
+  "/rust/impl/_blank",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -28,7 +28,7 @@ include = [
 [lib]
 proc-macro = true
 name = "former_derive"
-path = "rust/impl/former/meta/former_derive_lib.rs"
+path = "rust/impl/_blank/empty_lib.rs"
 
 [dependencies]
 # proc-macro2 = "~1.0"
