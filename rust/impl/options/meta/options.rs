@@ -1,8 +1,8 @@
 
 use meta_tools::*;
-use quote::{ quote, ToTokens, TokenStreamExt };
-use syn::parse::*;
-use syn::spanned::Spanned;
+use proc_macro_tools::quote::{ ToTokens, TokenStreamExt };
+use proc_macro_tools::syn::parse::*;
+use proc_macro_tools::syn::spanned::Spanned;
 use proc_macro_tools::*;
 use std::collections::HashMap;
 use iter_tools::{ /* Itertools, */ process_results };
@@ -158,7 +158,7 @@ impl Parse for OptionsDescriptor
         },
         Element::Field( f ) =>
         {
-          let key = f.ident.as_ref().ok_or_else( || syn_err!( &f.clone(), "Field does not have name: {}", quote!{ #f } ) )?.to_string();
+          let key = f.ident.as_ref().ok_or_else( || syn_err!( &f.clone(), "Field does not have name: {}", qt!{ #f } ) )?.to_string();
           fields_map.insert( key, f );
         },
       }
@@ -223,20 +223,20 @@ fn getter_gen( name : &str, field : &syn::Field ) -> Result< AccessorDescriptor 
   }
   else
   {
-    quote!{ & #ty }
+    qt!{ & #ty }
   };
 
-  let attr = quote!
+  let attr = qt!
   {
     #[ inline ]
   };
 
-  let signature = quote!
+  let signature = qt!
   {
     fn #name_ident( &self ) -> #ty2
   };
 
-  let body = quote!
+  let body = qt!
   {
     {
       &self.#name_ident
@@ -266,19 +266,19 @@ fn mutter_gen( name : &str, field : &syn::Field ) -> Result< AccessorDescriptor 
 
   // tree_print!( ty );
 
-  let ty2 = quote!{ &mut #ty };
+  let ty2 = qt!{ &mut #ty };
 
-  let attr = quote!
+  let attr = qt!
   {
     #[ inline ]
   };
 
-  let signature = quote!
+  let signature = qt!
   {
     fn #name_mut_ident( &mut self ) -> #ty2
   };
 
-  let body = quote!
+  let body = qt!
   {
     {
       &mut self.#name_ident
@@ -302,13 +302,13 @@ fn mutter_gen( name : &str, field : &syn::Field ) -> Result< AccessorDescriptor 
 fn perform_gen( options_descriptor : &OptionsDescriptor ) -> ( proc_macro2::TokenStream, proc_macro2::TokenStream )
 {
 
-  let mut perform = quote!{};
-  let mut attr_perform = quote!{};
+  let mut perform = qt!{};
+  let mut attr_perform = qt!{};
   if let Some( perform_fn ) = options_descriptor.methods_map.get( "perform" )
   {
     let sig = &perform_fn.sig;
-    attr_perform = quote!{ #[ perform( #sig ) ] };
-    perform = quote!
+    attr_perform = qt!{ #[ perform( #sig ) ] };
+    perform = qt!
     {
       #[ allow( unused_attributes ) ]
       #[ inline ]
@@ -355,7 +355,7 @@ pub fn options( _attr : proc_macro::TokenStream, item : proc_macro::TokenStream 
   let mutters : Vec< _ > = process_results( mutters, | iter | iter.collect() )?;
   let mutters_signatures : Vec< _ > = mutters.iter().map( | e | e.signature.clone() ).collect();
 
-  let result = quote!
+  let result = qt!
   {
 
     pub mod #name_ident
