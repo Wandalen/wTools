@@ -1,6 +1,6 @@
 [package]
 name = "wautomata"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -38,9 +38,6 @@ path = "rust/test/automata/wautomata_lib_test.rs"
 # path = "sample/rust/wautomata_trivial_sample/src/main.rs"
 
 [dependencies]
-# derive_tools = { version = "~0.1", path = "../../rust/derive_tools" }
-# wtools = { version = "~0.2", features = [ "nightly" ] }
-# wtools = { version = "~0.2", path = "../../rust/wtools", features = [ "nightly" ] }
 wtools = { version = "~0.2", path = "../../rust/wtools", features = [] }
 
 [dev-dependencies]
