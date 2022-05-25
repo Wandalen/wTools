@@ -31,27 +31,26 @@ fn SomeOptions()
 
 //
 
-fn basic() -> anyhow::Result< () >
+tests_impls!
 {
+  #[ test ]
+  fn basic()
+  {
+    // let options = SomeOptions { int1 : 31 };
+    // let got = options.f1();
+    // let exp = 13;
+    // assert_eq!( got, exp );
 
-  // let options = SomeOptions { int1 : 31 };
-  // let got = options.f1();
-  // let exp = 13;
-  // assert_eq!( got, exp );
-
-  // let options = SomeOptions { int1 : 31 };
-  // let got = options.int1();
-  // let exp = 31;
-  // assert_eq!( got, exp );
-
-  Ok( () )
+    // let options = SomeOptions { int1 : 31 };
+    // let got = options.int1();
+    // let exp = 31;
+    // assert_eq!( got, exp );
+  }
 }
 
 //
 
-#[ test ]
-fn main_test() -> anyhow::Result< () >
+tests_index!
 {
-  basic()?;
-  Ok( () )
+  basic,
 }

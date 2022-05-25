@@ -2,9 +2,8 @@ use super::TheModule;
 use TheModule::prelude::*;
 
 // trace_macros!( true );
-impls!
+tests_impls!
 {
-
   #[ test ]
   fn pass1_test()
   {
@@ -36,7 +35,6 @@ impls!
   {
     println!( "always_test" );
   }
-
 }
 // trace_macros!( false );
 
@@ -45,7 +43,7 @@ impls!
 // trace_macros!( false );
 
 // trace_macros!( true );
-index!
+tests_index!
 {
   pass1_test,
   fail1_test,

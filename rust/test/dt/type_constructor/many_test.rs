@@ -9,7 +9,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn basic_test()
+  fn basic()
   {
     use core::fmt;
 
@@ -67,7 +67,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn empty_parameter_test()
+  fn empty_parameter()
   {
 
     mod mod1
@@ -96,7 +96,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parametrized_multiple_test()
+  fn parametrized_multiple()
   {
 
     macro_rules! mk
@@ -239,7 +239,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parametrized_no_derives_test()
+  fn parametrized_no_derives()
   {
 
     mod mod1
@@ -266,7 +266,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parameter_test()
+  fn parameter()
   {
     use core::fmt;
 
@@ -376,7 +376,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parameter_complex_test()
+  fn parameter_complex()
   {
 
     types!
@@ -417,7 +417,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parameter_no_derives_test()
+  fn parameter_no_derives()
   {
 
     mod mod1
@@ -444,7 +444,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn multiple_test()
+  fn multiple()
   {
     use core::fmt;
 
@@ -491,7 +491,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn struct_basic_test()
+  fn struct_basic()
   {
 
     /* test.case( "from f32 / into Many" ) */
@@ -528,7 +528,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn struct_no_derives_test()
+  fn struct_no_derives()
   {
 
     mod mod1
@@ -559,7 +559,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn samples_test()
+  fn samples()
   {
 
     /* test.case( "single-line" ) */
@@ -570,24 +570,21 @@ tests_impls!
     }
 
   }
-
 }
 
 //
 
 tests_index!
 {
-
-  basic_test,
-  empty_parameter_test,
-  parametrized_multiple_test,
-  parametrized_no_derives_test,
-  parameter_test,
-  parameter_complex_test,
-  parameter_no_derives_test,
-  multiple_test,
-  struct_basic_test,
-  struct_no_derives_test,
-  samples_test,
-
+  basic,
+  empty_parameter,
+  parametrized_multiple,
+  parametrized_no_derives,
+  parameter,
+  parameter_complex,
+  parameter_no_derives,
+  multiple,
+  struct_basic,
+  struct_no_derives,
+  samples,
 }
