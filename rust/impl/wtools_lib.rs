@@ -122,5 +122,6 @@ pub mod prelude
   // pub use super::*; /* zzz : remove later */
   pub use super::meta::prelude::*;
   pub use super::typing::prelude::*;
+  pub use super::dt::prelude::*;
 
 }

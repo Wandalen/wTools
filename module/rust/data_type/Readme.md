@@ -103,8 +103,6 @@ cargo add data_type
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/data_type_trivial_sample
+cd sample/rust/type_constructor_multiple_sample
 cargo run
 ```
-
-
