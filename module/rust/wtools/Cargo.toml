@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.2.6"
+version = "0.2.7"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -78,6 +78,6 @@ data_type = { version = "~0.1", path = "../../rust/data_type" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-rustversion = "~1.0"
+# rustversion = "~1.0"
 # trybuild = { version = "~1.0", features = [ "diff" ] }
 # anyhow = "~1.0"
