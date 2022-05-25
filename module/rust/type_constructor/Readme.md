@@ -1,7 +1,62 @@
 # Module :: type_constructor
 [![experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml) [![docs.rs](https://img.shields.io/docsrs/type_constructor?color=e3e8f0&logo=docs.rs)](https://docs.rs/type_constructor) [![discord](https://img.shields.io/discord/872391416519737405?color=e3e8f0&logo=discord&logoColor=e3e8f0)](https://discord.gg/JwTG6d2b)
 
-Fundamental data types and type constructors, like Single, Pair, Many.
+Fundamental data types and type constructors, like Single, Pair, Homopair, Many.
+
+- `Single` to wrap single element.
+- `Pair` to wrap pair of distinct elements.
+- `HomoPair` to wrap pair of elements with the same type.
+- `Many` to wrap `Vec` of elements.
+
+## Macro `types` for type constructing
+
+The same macro `types` is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference is number of constituent types. It is possible to define all types at once.
+
+```rust
+use type_constructor::prelude::*;
+
+types!
+{
+
+  single MySingle : f32;
+  single SingleWithParametrized : std::sync::Arc< T : Copy >;
+  single SingleWithParameter : < T >;
+
+  pair MyPair : f32;
+  pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
+  pair PairWithParameter : < T1, T2 >;
+
+  pair MyHomoPair : f32;
+  pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
+  pair HomoPairWithParameter : < T >;
+
+  many MyMany : f32;
+  many ManyWithParametrized : std::sync::Arc< T : Copy >;
+  many ManyWithParameter : < T >;
+
+}
+```
+
+It generates more than 1000 lines of code, which otherwise you would have to write manually.
+
+## Without macro
+
+Macro `types` is exposed to generate new types, but in some cases it is enough to reuse already generated types of such kind. The library ships such types: Single, Pair, Homopair, Many. Note: avoiding generating of new types you will get in position to been not able to define your own implementation of foraign traits.
+
+```rust
+let i32_in_tuple = type_constructor::Single::< i32 >::from( 13 );
+dbg!( i32_in_tuple );
+// i32_in_tuple = Single( 13 )
+let i32_and_f32_in_tuple = type_constructor::Pair::< i32, f32 >::from( ( 13, 13.0 ) );
+dbg!( i32_and_f32_in_tuple );
+// vec_of_i32_in_tuple = Pair( 13, 13.0 )
+let two_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( ( 13, 31 ) );
+dbg!( two_i32_in_tuple );
+// vec_of_i32_in_tuple = HomoPair( 13, 31 )
+let vec_of_i32_in_tuple = type_constructor::Many::< i32 >::from( [ 1, 2, 3 ] );
+dbg!( vec_of_i32_in_tuple );
+// vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+```
 
 ## Single
 
@@ -9,9 +64,14 @@ Type constructor to define tuple wrapping a given type.
 
 Quite often you need to wrap a given type into new one.
 For example if orphan rule became and obstacle one should introduce a new type wrapping foreing one.
-Type constructr `types!` does exaclty that and auto-implement traits From, Into and Deref for the constructed type.
+Type constructr does exaclty that and auto-implement traits From, Into and Deref for the constructed type.
 
-### Make.
+## Sample :: homopair with parameters
+
+Unlike `heteropair` `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or arrat, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tupe, array, slice, scalar.
+
+
+## Make.
 
 Make is variadic constructor. It's unified interface of arbitrary-length constructor.
 After implementing several traits `Make0`, `Make1` up to `MakeN` one can use macrk `make!` to construct instances.
@@ -67,7 +127,7 @@ let x = MySingle( 13 );
 println!( "x : {}", x.0 );
 ```
 
-### Sample :: single with derives and attributes.
+## Sample :: single with derives and attributes.
 
 It's possible to define attributes as well as derives.
 
@@ -119,7 +179,7 @@ let x = MySingle( 13 );
 dbg!( x );
 ```
 
-### Sample :: single with struct instead of macro.
+## Sample :: single with struct instead of macro.
 
 Sometimes it's sufficient to use common type instead of defining a brand new.
 You may use paramtetrized struct `Single< T >` instead of macro `types!` if that is the case.
@@ -130,7 +190,7 @@ let x = Single::< i32 >( 13 );
 dbg!( x );
 ```
 
-### Sample :: single with parametrized element.
+## Sample :: single with parametrized element.
 
 Element of tuple could be parametrized.
 
@@ -178,7 +238,7 @@ impl< T : Copy > From< MySingle< T > > for std::sync::Arc< T >
 let x = MySingle( std::sync::Arc::new( 13 ) );
 ```
 
-### Sample :: single with parametrized tuple.
+## Sample :: single with parametrized tuple.
 
 Instead of parametrizing the element it's possible to define a parametrized tuple.
 
@@ -223,7 +283,112 @@ let x = MySingle( 13 );
 dbg!( 13 );
 ```
 
-### Sample :: make - variadic constructor
+## Sample :: single-line pair
+
+Sometimes you need to wrap more than single element into a tupe. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
+
+```rust
+use type_constructor::prelude::*;
+
+types!( pair MyPair : i32, i64 );
+let x = MyPair( 13, 31 );
+println!( "x : ( {}, {} )", x.0, x.1 );
+// prints : x : ( 13, 31 )
+```
+
+It gererates code:
+
+```rust
+```
+
+## Sample :: pair with parameters
+
+Just like `single` `pair` may have parameters.
+
+```rust
+use type_constructor::prelude::*;
+
+use core::fmt;
+types!
+{
+  #[ derive( Debug ) ]
+  pair MyPair : < T1 : fmt::Debug, T2 : fmt::Debug >;
+}
+let x = MyPair( 13, 13.0 );
+dbg!( x );
+// prints : x = MyPair( 13, 13.0 )
+```
+
+It gererates code:
+
+```rust
+```
+
+## Sample :: single-line homopair
+
+If you need to wrap pair of elements with the same type use type constructor `pair`. The same type constructor `pair` for both `pair` and `homopair`, difference in number of types in definition, `homopair` has only one, because both its element has the same type. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
+
+```rust
+use type_constructor::prelude::*;
+
+types!( pair MyPair : i32, i64 );
+let x = MyPair( 13, 31 );
+println!( "x : ( {}, {} )", x.0, x.1 );
+// prints : x : ( 13, 31 )
+```
+
+It gererates code:
+
+```rust
+```
+
+## Sample :: homopair with parameters
+
+Unlike `heteropair` `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or arrat, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tupe, array, slice, scalar.
+
+```rust
+use type_constructor::prelude::*;
+
+use core::fmt;
+types!
+{
+  #[ derive( Debug ) ]
+  pair MyHomoPair : < T : fmt::Debug >;
+}
+let x = MyHomoPair( 13, 31 );
+dbg!( &x );
+// prints : &x = MyHomoPair( 13, 31 )
+let clone_as_array : [ i32 ; 2 ] = x.clone_as_array();
+dbg!( &clone_as_array );
+// prints : &clone_as_array = [ 13, 31 ]
+let clone_as_tuple : ( i32 , i32 ) = x.clone_as_tuple();
+dbg!( &clone_as_tuple );
+// prints : &clone_as_tuple = ( 13, 31 )
+```
+
+It gererates code:
+
+```rust
+```
+
+## Sample :: single-line many
+
+Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has essential traits implemented for it.
+
+```rust
+use type_constructor::prelude::*;
+
+types!( many MyMany : i32 );
+let x = MyMany::from( [ 1, 2, 3 ] );
+println!( "x : {:?}", x.0 );
+```
+
+It gererates code:
+
+```rust
+```
+
+## Sample :: make - variadic constructor
 
 Implement traits [Make0], [Make1] up to MakeN to provide interface to construct your structure with different set of arguments.
 In this example structure Struct1 could be constructed either without arguments, with single argument or with two arguments.
@@ -278,13 +443,13 @@ let exp = Struct1{ a : 1, b : 3 };
 assert_eq!( got, exp );
 ```
 
-### To add to your project
+## To add to your project
 
 ``` shell
 cargo add type_constructor
 ```
 
-### Try out from the repository
+## Try out from the repository
 
 ``` shell test
 git clone https://github.com/Wandalen/wTools

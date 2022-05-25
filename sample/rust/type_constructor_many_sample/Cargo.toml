@@ -1,5 +1,5 @@
 [package]
-name = "type_constructor_struct_sample"
+name = "type_constructor_many_sample"
 version = "0.0.0"
 edition = "2021"
 publish = false

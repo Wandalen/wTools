@@ -3,11 +3,10 @@ mod internal
 {
   use crate::exposed::*;
 
-  // xxx : register graph_tools
   // xxx : no std
-  // xxx : samples
-  // qqq : paste generated code for each sample
+  // qqq : for Dima : paste generated code for each sample
   //
+  // xxx : register std_tools and std_x
   // xxx : redo implements
   // xxx : add core::fmt to prelude
   // xxx : write article about the module
