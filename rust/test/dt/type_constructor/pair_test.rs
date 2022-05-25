@@ -739,66 +739,38 @@ tests_impls!
 
   //
 
-//   #[ test ]
-//   fn samples()
-//   {
-//
-//     /* test.case( "pair-line" ) */
-//     {
-//       types!( pair MySingle : i32 );
-//       let x = MySingle( 13 );
-//       println!( "x : {}", x.0 );
-//     }
-//
-//     /* test.case( "derives and attributes" ) */
-//     {
-//       types!
-//       {
-//         /// This is also attribute and macro understands it.
-//         #[ derive( Debug ) ]
-//         pair MySingle : i32;
-//       }
-//       let x = MySingle( 13 );
-//       dbg!( x );
-//     }
-//
-//     /* test.case( "struct instead of macro" ) */
-//     {
-//       let x = Pair::< i32 >( 13 );
-//       dbg!( x );
-//     }
-//
-//     /* test.case( "parametrized element" ) */
-//     {
-//       types!
-//       {
-//         #[ derive( Debug ) ]
-//         pair MySingle : std::sync::Arc< T : Copy >;
-//       }
-//       let x = MySingle( std::sync::Arc::new( 13 ) );
-//       dbg!( x );
-//     }
-//
-//     /* test.case( "parametrized tuple" ) */
-//     {
-//       types!
-//       {
-//         #[ derive( Debug ) ]
-//         pair MySingle : < T : Copy >;
-//       }
-//       let x = MySingle( 13 );
-//       dbg!( x );
-//     }
-//
-//   }
+  #[ test ]
+  fn samples()
+  {
 
+    /* test.case( "single-line" ) */
+    {
+      types!( pair MyPair : i32, i64 );
+      let x = MyPair( 13, 31 );
+      println!( "x : ( {}, {} )", x.0, x.1 );
+      // prints : x : ( 13, 31 )
+    }
+
+    /* test.case( "parametrized tuple" ) */
+    {
+      use core::fmt;
+      types!
+      {
+        #[ derive( Debug ) ]
+        pair MyPair : < T1 : fmt::Debug, T2 : fmt::Debug >;
+      }
+      let x = MyPair( 13, 13.0 );
+      dbg!( x );
+      // prints : x = MyPair( 13, 13.0 )
+    }
+
+  }
 }
 
 //
 
 tests_index!
 {
-
   basic,
   empty_parameter,
   parametrized_multiple,
@@ -809,6 +781,5 @@ tests_index!
   multiple,
   struct_basic,
   struct_no_derives,
-  // samples,
-
+  samples,
 }

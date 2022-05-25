@@ -62,5 +62,3 @@ pub mod prelude
 // - node get degree ( nodes )
 // - node get size ( edges )
 //
-// - Hamilton circuit?
-// -

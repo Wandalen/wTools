@@ -52,6 +52,26 @@ path = "sample/rust/type_constructor_parametrized_element_sample/src/main.rs"
 name = "type_constructor_parametrized_tuple_sample"
 path = "sample/rust/type_constructor_parametrized_tuple_sample/src/main.rs"
 
+[[example]]
+name = "type_constructor_multiple_sample"
+path = "sample/rust/type_constructor_multiple_sample/src/main.rs"
+
+[[example]]
+name = "type_constructor_without_macro_sample"
+path = "sample/rust/type_constructor_without_macro_sample/src/main.rs"
+
+[[example]]
+name = "type_constructor_pair_sample"
+path = "sample/rust/type_constructor_pair_sample/src/main.rs"
+
+[[example]]
+name = "type_constructor_homopair_sample"
+path = "sample/rust/type_constructor_homopair_sample/src/main.rs"
+
+[[example]]
+name = "type_constructor_many_sample"
+path = "sample/rust/type_constructor_many_sample/src/main.rs"
+
 [dependencies]
 
 [dev-dependencies]

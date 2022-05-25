@@ -75,12 +75,14 @@ tests_impls!
       pub use f32;
     }
 
+    // trace_macros!( true );
     types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       many Many : mod1::f32<>;
     }
+    // trace_macros!( false );
 
     /* test.case( "from f32 / into Many" ) */
     let instance1 : Many = ( 13.0 ).into();
@@ -196,6 +198,14 @@ tests_impls!
     assert_eq!( got, exp );
     let got = Many::< f32, f64 >::from( [ mk!( 13.0 ), ] );
     let exp : Many< f32, f64 > = Many::from( mk!( 13.0 ) );
+    assert_eq!( got, exp );
+
+    /* test.case( "from array" ) */
+    let got : Many< f32, f64 > = [ mk!( 1.0 ), mk!( 2.0 ), mk!( 3.0 ), ].into();
+    let exp : Many< f32, f64 > = Many::from( [ mk!( 1.0 ), mk!( 2.0 ), mk!( 3.0 ) ] );
+    assert_eq!( got, exp );
+    let got = Many::< f32, f64 >::from( [ mk!( 1.0 ), mk!( 2.0 ), mk!( 3.0 ) ] );
+    let exp : Many< f32, f64 > = Many::from( [ mk!( 1.0 ), mk!( 2.0 ), mk!( 3.0 ) ] );
     assert_eq!( got, exp );
 
     /* test.case( "from slice" ) */
@@ -546,68 +556,26 @@ tests_impls!
 
   }
 
-//   //
-//
-//   #[ test ]
-//   fn samples()
-//   {
-//
-//     /* test.case( "many-line" ) */
-//     {
-//       types!( many MyMany : i32 );
-//       let x = MyMany( 13 );
-//       println!( "x : {}", x.0 );
-//     }
-//
-//     /* test.case( "derives and attributes" ) */
-//     {
-//       types!
-//       {
-//         /// This is also attribute and macro understands it.
-//         #[ derive( Debug ) ]
-//         many MyMany : i32;
-//       }
-//       let x = MyMany( 13 );
-//       dbg!( x );
-//     }
-//
-//     /* test.case( "struct instead of macro" ) */
-//     {
-//       let x = Many::< i32 >( 13 );
-//       dbg!( x );
-//     }
-//
-//     /* test.case( "parametrized element" ) */
-//     {
-//       types!
-//       {
-//         #[ derive( Debug ) ]
-//         many MyMany : std::sync::Arc< T : Copy >;
-//       }
-//       let x = MyMany( std::sync::Arc::new( 13 ) );
-//       dbg!( x );
-//     }
-//
-//     /* test.case( "parametrized tuple" ) */
-//     {
-//       types!
-//       {
-//         #[ derive( Debug ) ]
-//         many MyMany : < T : Copy >;
-//       }
-//       let x = MyMany( 13 );
-//       dbg!( x );
-//     }
-//
-//   }
+  //
 
+  #[ test ]
+  fn samples()
+  {
+
+    /* test.case( "single-line" ) */
+    {
+      types!( many MyMany : i32 );
+      let x = MyMany::from( [ 1, 2, 3 ] );
+      println!( "x : {:?}", x.0 );
+    }
+
+  }
 }
 
 //
 
 tests_index!
 {
-
   basic,
   empty_parameter,
   parametrized_multiple,
@@ -618,6 +586,5 @@ tests_index!
   multiple,
   struct_basic,
   struct_no_derives,
-  // samples,
-
+  samples,
 }

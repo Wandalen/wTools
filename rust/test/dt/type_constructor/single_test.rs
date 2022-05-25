@@ -836,6 +836,46 @@ tests_impls!
   fn samples()
   {
 
+    /* test.case( "multiple" ) */
+    {
+      types!
+      {
+
+        single MySingle : f32;
+        single SingleWithParametrized : std::sync::Arc< T : Copy >;
+        single SingleWithParameter : < T >;
+
+        pair MyPair : f32;
+        pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
+        pair PairWithParameter : < T1, T2 >;
+
+        pair MyHomoPair : f32;
+        pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
+        pair HomoPairWithParameter : < T >;
+
+        many MyMany : f32;
+        many ManyWithParametrized : std::sync::Arc< T : Copy >;
+        many ManyWithParameter : < T >;
+
+      }
+    }
+
+    /* test.case( "no macro" ) */
+    {
+      let i32_in_tuple = TheModule::Single::< i32 >::from( 13 );
+      dbg!( i32_in_tuple );
+      // i32_in_tuple = Single( 13 )
+      let i32_and_f32_in_tuple = TheModule::Pair::< i32, f32 >::from( ( 13, 13.0 ) );
+      dbg!( i32_and_f32_in_tuple );
+      // vec_of_i32_in_tuple = Pair( 13, 13.0 )
+      let two_i32_in_tuple = TheModule::HomoPair::< i32 >::from( ( 13, 31 ) );
+      dbg!( two_i32_in_tuple );
+      // vec_of_i32_in_tuple = HomoPair( 13, 31 )
+      let vec_of_i32_in_tuple = TheModule::Many::< i32 >::from( [ 1, 2, 3 ] );
+      dbg!( vec_of_i32_in_tuple );
+      // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+    }
+
     /* test.case( "single-line" ) */
     {
       types!( single MySingle : i32 );
