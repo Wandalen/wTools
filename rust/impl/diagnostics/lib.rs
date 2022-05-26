@@ -8,8 +8,10 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-/// Collection of general purpose tools for type checking.
+/// Compile-time asserting.
 pub mod diagnostics;
+/// Compile-time asserting of memory layout.
+pub mod mem;
 
 /// Dependencies.
 pub mod dependencies
@@ -18,5 +20,40 @@ pub mod dependencies
   pub use ::pretty_assertions;
 }
 
+/// Own namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+  #[ doc( inline ) ]
+  pub use super::diagnostics::orphan::*;
+  #[ doc( inline ) ]
+  pub use super::mem::orphan::*;
+}
+
 #[ doc( inline ) ]
-pub use diagnostics::*;
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  pub use super::prelude::*;
+  #[ doc( inline ) ]
+  pub use super::diagnostics::exposed::*;
+  #[ doc( inline ) ]
+  pub use super::mem::exposed::*;
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+pub mod prelude
+{
+  #[ doc( inline ) ]
+  pub use super::diagnostics::prelude::*;
+  #[ doc( inline ) ]
+  pub use super::mem::prelude::*;
+}
