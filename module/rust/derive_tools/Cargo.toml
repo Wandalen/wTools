@@ -28,10 +28,34 @@ include = [
 
 default = [
 
-  "derive_display",
-  "derive_more/default",
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
   "derive_display",
   "derive_from_str",
+  "derive_from_str_std",
+  "derive_from_str_regex",
+  "derive_from_str_once_cell",
 
 ]
 

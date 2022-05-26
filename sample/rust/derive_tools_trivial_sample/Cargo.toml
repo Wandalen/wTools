@@ -6,3 +6,4 @@ publish = false
 
 [dependencies]
 derive_tools = { version = "*", path = "../../../module/rust/derive_tools" }
+parse-display = { version = "~0.5" } # qqq : make possible to remove that
