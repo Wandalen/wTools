@@ -1,6 +1,6 @@
 [package]
 name = "time_tools"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -40,29 +40,9 @@ path = "rust/test/time/lib_test.rs"
 [[example]]
 name = "time_tools_trivial"
 path = "sample/rust/time_tools_trivial/src/main.rs"
-# qqq : for Rust dev : please add # aaa : done
 
 [dependencies]
-# former = { version = "~0.1", path = "../../rust/former" }
-# inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
-# is_slice = { version = "~0.1", path = "../../rust/is_slice" }
-# implements = { version = "~0.1", path = "../../rust/implements" }
-# time_tools = { version = "~0.1", path = "../../rust/time_tools" }
-# time_tools = { version = "~0.1", path = "../../rust/time_tools" }
-# werror = { version = "~0.1", path = "../../rust/werror" }
-# winterval = { version = "~0.1", path = "../../rust/winterval" }
-# proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
-# # maplit = "~1.0"
-# regex = "1.5.4"
-chrono = { version = "~0.4", optional = true, default-features = false }
-# paste = "1.0.5"
-# anyhow = "1.0.48"
+chrono = "~0.4"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-# trybuild = { version = "~1.0", features = [ "diff" ] }
-# anyhow = "~1.0"
-# rustversion = "~1.0"
-# quote = { version = "~1.0" }
-# proc-macro2 = { version = "~1.0" }
-# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }

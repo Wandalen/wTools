@@ -1,20 +1,78 @@
-name: wtools
+name : wtools
 
 on : push
 
-env:
-  CARGO_TERM_COLOR: always
+env :
+  CARGO_TERM_COLOR : always
 
-jobs:
-  build:
+jobs :
+
+  # wtools
+
+  build :
     if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses: Wandalen/wTools/.github/workflows/RustFull.yml@master
-    with:
-      manifest_path: 'module/rust/wtools/Cargo.toml'
+    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+    with :
+      manifest_path : 'module/rust/wtools/Cargo.toml'
 
-  build_fast:
+  build_fast :
     if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'wtools' )"
-    uses: Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with:
-      manifest_path: 'module/rust/wtools/Cargo.toml'
+    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
+    with :
+      manifest_path : 'module/rust/wtools/Cargo.toml'
 
+  # wTools
+
+  build_alias_wtools :
+    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
+    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+    with :
+      manifest_path : 'module/rust_alias/wTools/Cargo.toml'
+
+  build_fast_alias_wtools :
+    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'wtools' )"
+    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
+    with :
+      manifest_path : 'module/rust_alias/wTools/Cargo.toml'
+
+  # std_tools
+
+  build_alias_std_tools :
+    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
+    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+    with :
+      manifest_path : 'module/rust_alias/std_tools/Cargo.toml'
+
+  build_fast_std_tools :
+    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'wtools' )"
+    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
+    with :
+      manifest_path : 'module/rust_alias/std_tools/Cargo.toml'
+
+  # std_x
+
+  build_alias_std_x :
+    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
+    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+    with :
+      manifest_path : 'module/rust_alias/std_x/Cargo.toml'
+
+  build_fast_alias_std_x :
+    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'wtools' )"
+    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
+    with :
+      manifest_path : 'module/rust_alias/std_x/Cargo.toml'
+
+  # non_std
+
+  build_alias_wtools_non_std :
+    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
+    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+    with :
+      manifest_path : 'module/rust_alias/non_std/Cargo.toml'
+
+  build_fast_alias_wtools_non_std :
+    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'wtools' )"
+    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
+    with :
+      manifest_path : 'module/rust_alias/non_std/Cargo.toml'

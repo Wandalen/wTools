@@ -3,21 +3,36 @@
 
 Collection of general purpose meta tools.
 
-### Sample
+### Sample  :: variadic constructor of collections
+
+Among other useful meta tools the module aggregates variadtic constructors of collections. For example macro `hmap!` for constructing a hash map.
 
 ```rust
 use meta_tools::*;
 
-fn main()
-{
-  let meta_map = hmap! { 3 => 13 };
-  let mut std_map = std::collections::HashMap::new();
-  std_map.insert( 3, 13 );
-  assert_eq!( meta_map, std_map );
-}
+let meta_map = hmap! { 3 => 13 };
+let mut std_map = std::collections::HashMap::new();
+std_map.insert( 3, 13 );
+assert_eq!( meta_map, std_map );
 ```
 
-<!-- qqq for Rust dev : please write --> <!-- aaa : done -->
+### Sample :: function-style call
+
+Apply a macro for each element of a list.
+
+Macro `for_each` may be called either in function-style way or in map-style way.
+Pass name of macro to apply to elements as the first arguments and elements after the macro name.
+Use comma as delimiter.
+
+```rust
+use for_each::for_each;
+for_each!( dbg, "a", "b", "c" );
+
+// generates
+dbg!( "a" );
+dbg!( "b" );
+dbg!( "c" );
+```
 
 ### To add to your project
 

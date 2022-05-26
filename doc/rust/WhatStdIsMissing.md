@@ -39,5 +39,3 @@ In Rust situation is better than in C++. [Declarative macroses](https://www.yout
 In JS there is no boundary between stage of generation of a program and program itself and metapgram on JS looks exactly the same as ordinary program. In Rust there is several means to container a metaprogram. [Derive](https://doc.rust-lang.org/stable/reference/attributes/derive.html#derive) is the primaraly mean to do that. Derive is written on Rust and it generates Rust code from Rust code on input.
 
 Rust have many derives shiped with Rust in STD library. Some of them are
-
-

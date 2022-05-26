@@ -3,15 +3,19 @@ use test_tools::*;
 
 //
 
-fn basic_test()
+tests_impls!
 {
-  /* qqq : write tests for modules of wpublisher */
-  assert_eq!( true, true );
+  #[ test ]
+  fn basic()
+  {
+    /* qqq : write tests for modules of wpublisher */
+    a_id!( true, true );
+  }
 }
 
 //
 
-test_suite!
+tests_index!
 {
   basic,
 }

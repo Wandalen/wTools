@@ -4,16 +4,18 @@ use test_tools::*;
 
 //
 
-fn fn_name_test()
+tests_impls!
 {
-
-  // assert!( false );
-
+  #[ test ]
+  fn fn_name()
+  {
+    // assert!( false );
+  }
 }
 
 //
 
-test_suite!
+tests_index!
 {
   fn_name,
 }

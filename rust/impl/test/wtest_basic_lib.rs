@@ -23,6 +23,7 @@ pub mod dependencies
   pub use ::meta_tools;
   pub use ::typing_tools;
   pub use ::num_traits;
+  pub use ::diagnostics_tools;
 }
 
 pub use dependencies::*;
@@ -36,19 +37,31 @@ pub mod exposed
   pub use super::basic::exposed::*;
   #[ doc( inline ) ]
   pub use super::helper::exposed::*;
+
+  #[ doc( inline ) ]
+  pub use ::diagnostics_tools::exposed::*;
   #[ doc( inline ) ]
   pub use ::meta_tools::{ impls, impls1, impls2, impls3, index, tests_impls, tests_index };
   #[ doc( inline ) ]
   pub use ::typing_tools::{ implements };
 }
 
+#[ doc( inline ) ]
 pub use exposed::*;
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   #[ doc( inline ) ]
   pub use super::basic::prelude::*;
   #[ doc( inline ) ]
   pub use super::helper::prelude::*;
+
+  #[ doc( inline ) ]
+  pub use ::diagnostics_tools::prelude::*;
+  #[ doc( inline ) ]
+  pub use ::meta_tools::{ impls, index, tests_impls, tests_index };
+  #[ doc( inline ) ]
+  pub use ::typing_tools::{ implements };
+
 }

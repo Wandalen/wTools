@@ -1,0 +1,44 @@
+[package]
+name = "std_tools"
+version = "0.1.2"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/std_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/std_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/std_tools"
+description = """
+Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+include = [
+  "/rust/impl/std_tools_lib.rs",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[lib]
+name = "std_tools"
+path = "rust/impl/std_tools_lib.rs"
+
+[[test]]
+name = "std_tools_test"
+path = "rust/test/std_tools_lib_test.rs"
+
+[features]
+nightly = [ "wtools/nightly" ]
+default = []
+
+[dependencies]
+wtools = { version = "~0.2", path = "../../rust/wtools" }
+impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by wtools it should also be imported immediatly
+
+[dev-dependencies]
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

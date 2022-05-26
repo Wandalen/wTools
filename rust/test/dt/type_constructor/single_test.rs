@@ -9,7 +9,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn basic_test()
+  fn basic()
   {
     use core::fmt;
 
@@ -34,9 +34,9 @@ tests_impls!
     /* test.case( "from f32 / into Single" ) */
     let instance1 : Single = ( 13.0 ).into();
     let instance2 = Single::from( 13.0 );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
     assert!( implements!( instance1 => PartialEq ) );
     assert!( implements!( instance1 => Clone ) );
     assert!( implements!( instance1 => fmt::Debug ) );
@@ -45,37 +45,37 @@ tests_impls!
     /* test.case( "from itself / into itself" ) */
     let instance1 : Single = ( Single::from( 13.0 ) ).into();
     let instance2 = Single::from( Single::from( 13.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from Single / into f32" ) */
     let instance1 : Single = ( 13.0 ).into();
     let got : f32 = instance1.into();
-    assert_eq!( got, 13.0 );
+    a_id!( got, 13.0 );
     let instance1 : Single = ( 13.0 ).into();
     let got = f32::from( instance1 );
-    assert_eq!( got, 13.0 );
+    a_id!( got, 13.0 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Single = ( 13.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "deref" ) */
     use core::ops::AddAssign;
     let mut got : Single = ( 13.5 ).into();
-    assert_eq!( got.round(), 14.0 );
+    a_id!( got.round(), 14.0 );
     got.add_assign( 1.0 );
-    assert_eq!( got.0, 14.5 );
+    a_id!( got.0, 14.5 );
 
   }
 
   //
 
   #[ test ]
-  fn empty_parameter_test()
+  fn empty_parameter()
   {
 
     mod mod1
@@ -93,41 +93,41 @@ tests_impls!
     /* test.case( "from f32 / into Single" ) */
     let instance1 : Single = ( 13.0 ).into();
     let instance2 = Single::from( 13.0 );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Single = ( Single::from( 13.0 ) ).into();
     let instance2 = Single::from( Single::from( 13.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from Single / into f32" ) */
     let instance1 : Single = ( 13.0 ).into();
     let got : f32 = instance1.into();
-    assert_eq!( got, 13.0 );
+    a_id!( got, 13.0 );
     let instance1 : Single = ( 13.0 ).into();
     let got = f32::from( instance1 );
-    assert_eq!( got, 13.0 );
+    a_id!( got, 13.0 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Single = ( 13.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "deref" ) */
     let got : Single = ( 13.5 ).into();
-    assert_eq!( got.round(), 14.0 );
+    a_id!( got.round(), 14.0 );
 
   }
 
   //
 
   #[ test ]
-  fn parametrized_test()
+  fn parametrized()
   {
 
     macro_rules! mk
@@ -180,41 +180,41 @@ tests_impls!
     /* test.case( "from f32 / into Single" ) */
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let instance2 = Single::< f32 >::from( mk!( 13.0 ) );
-    assert_eq!( instance1.0.0, 13.0 );
-    assert_eq!( instance2.0.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0.0, 13.0 );
+    a_id!( instance2.0.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Single< f32 > = ( Single::from( mk!( 13.0 ) ) ).into();
     let instance2 = Single::< f32 >::from( Single::from( mk!( 13.0 ) ) );
-    assert_eq!( instance1.0.0, 13.0 );
-    assert_eq!( instance2.0.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0.0, 13.0 );
+    a_id!( instance2.0.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from Single / into f32" ) */
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let got : mod1::Floats< f32 > = instance1.into();
-    assert_eq!( got.0, 13.0 );
+    a_id!( got.0, 13.0 );
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let got = mod1::Floats::< f32 >::from( instance1 );
-    assert_eq!( got.0, 13.0 );
+    a_id!( got.0, 13.0 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, mk!( 13.0 ) );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, mk!( 13.0 ) );
+    a_id!( instance1, instance2 );
 
     /* test.case( "deref" ) */
     let got : Single< f32 > = ( mk!( 13.5 ) ).into();
-    assert_eq!( got.round(), 14.0 );
+    a_id!( got.round(), 14.0 );
 
   }
 
   //
 
   #[ test ]
-  fn parametrized_complex_test()
+  fn parametrized_complex()
   {
 
     macro_rules! mk
@@ -273,41 +273,41 @@ tests_impls!
     /* test.case( "from f32 / into Single" ) */
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let instance2 = Single::< f32 >::from( mk!( 13.0 ) );
-    assert_eq!( instance1.0.0, 13.0 );
-    assert_eq!( instance2.0.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0.0, 13.0 );
+    a_id!( instance2.0.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Single< f32 > = ( Single::from( mk!( 13.0 ) ) ).into();
     let instance2 = Single::< f32 >::from( Single::from( mk!( 13.0 ) ) );
-    assert_eq!( instance1.0.0, 13.0 );
-    assert_eq!( instance2.0.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0.0, 13.0 );
+    a_id!( instance2.0.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from Single / into f32" ) */
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let got : mod1::Floats< f32 > = instance1.into();
-    assert_eq!( got.0, 13.0 );
+    a_id!( got.0, 13.0 );
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let got = mod1::Floats::< f32 >::from( instance1 );
-    assert_eq!( got.0, 13.0 );
+    a_id!( got.0, 13.0 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, mk!( 13.0 ) );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, mk!( 13.0 ) );
+    a_id!( instance1, instance2 );
 
     /* test.case( "deref" ) */
     let got : Single< f32 > = ( mk!( 13.5 ) ).into();
-    assert_eq!( got.round(), 14.0 );
+    a_id!( got.round(), 14.0 );
 
   }
 
   //
 
   #[ test ]
-  fn parametrized_multiple_test()
+  fn parametrized_multiple()
   {
     use core::fmt;
 
@@ -365,7 +365,7 @@ tests_impls!
     /* test.case( "make1" ) */
     let got : Single< f32, f64 > = make!( mk!( 13.0 ) );
     let exp = Single::< f32, f64 >::from( mk!( 13.0 ) );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* test.case( "traits" ) */
     let instance1 = Single::< f32, f64 >::from( mk!( 13.0 ) );
@@ -378,87 +378,87 @@ tests_impls!
     /* test.case( "from f32 / into Single" ) */
     let instance1 : Single< f32, f64 > = ( mk!( 13.0 ) ).into();
     let instance2 = Single::< f32, f64 >::from( mk!( 13.0 ) );
-    assert_eq!( instance1.0.0, 13.0 );
-    assert_eq!( instance2.0.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0.0, 13.0 );
+    a_id!( instance2.0.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Single< f32, f64 > = ( Single::from( mk!( 13.0 ) ) ).into();
     let instance2 = Single::< f32, f64 >::from( Single::from( mk!( 13.0 ) ) );
-    assert_eq!( instance1.0.0, 13.0 );
-    assert_eq!( instance2.0.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0.0, 13.0 );
+    a_id!( instance2.0.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from Single / into f32" ) */
     let instance1 : Single< f32, f64 > = ( mk!( 13.0 ) ).into();
     let got : mod1::Floats< f32, f64 > = instance1.into();
-    assert_eq!( got.0, 13.0 );
+    a_id!( got.0, 13.0 );
     let instance1 : Single< f32, f64 > = ( mk!( 13.0 ) ).into();
     let got = mod1::Floats::< f32, f64 >::from( instance1 );
-    assert_eq!( got.0, 13.0 );
+    a_id!( got.0, 13.0 );
 
     /* test.case( "from tuple" ) */
     let got : Single< f32, f64 > = ( mk!( 13.0 ), ).into();
     let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
     let got = Single::< f32, f64 >::from( ( mk!( 13.0 ), ) );
     let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* test.case( "from array" ) */
     let got : Single< f32, f64 > = [ mk!( 13.0 ), ].into();
     let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
     let got = Single::< f32, f64 >::from( [ mk!( 13.0 ), ] );
     let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* test.case( "from slice" ) */
     let got : Single< f32, f64 > = ( &[ mk!( 13.0 ), ][ .. ] ).into();
     let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
     let got = Single::< f32, f64 >::from( &[ mk!( 13.0 ), ][ .. ] );
     let exp : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Single< f32, f64 > = ( mk!( 13.0 ) ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, mk!( 13.0 ) );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, mk!( 13.0 ) );
+    a_id!( instance1, instance2 );
 
     /* test.case( "deref" ) */
     let got : Single< f32, f64 > = ( mk!( 13.5 ) ).into();
-    assert_eq!( got.round(), 14.0 );
+    a_id!( got.round(), 14.0 );
 
     /* test.case( "clone_as_tuple" ) */
     let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.clone_as_tuple();
-    assert_eq!( got, ( mk!( 13.0 ), ) );
+    a_id!( got, ( mk!( 13.0 ), ) );
     assert!( !mem_same_ptr( &src, &got ) );
 
     /* test.case( "clone_as_array" ) */
     let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.clone_as_array();
-    assert_eq!( got, [ mk!( 13.0 ), ] );
+    a_id!( got, [ mk!( 13.0 ), ] );
     assert!( !mem_same_ptr( &src, &got ) );
 
     /* test.case( "as_tuple" ) */
     let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.as_tuple();
-    assert_eq!( got, &( mk!( 13.0 ), ) );
+    a_id!( got, &( mk!( 13.0 ), ) );
     assert!( mem_same_region( &src, got ) );
 
     /* test.case( "as_array" ) */
     let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.as_array();
-    assert_eq!( got, &[ mk!( 13.0 ), ] );
+    a_id!( got, &[ mk!( 13.0 ), ] );
     assert!( mem_same_region( &src, got ) );
 
     /* test.case( "as_slice" ) */
     let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.as_slice();
-    assert_eq!( got, &[ mk!( 13.0 ), ][ .. ] );
+    a_id!( got, &[ mk!( 13.0 ), ][ .. ] );
     assert!( mem_same_region( &src, got ) );
 
   }
@@ -466,7 +466,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parametrized_no_derives_test()
+  fn parametrized_no_derives()
   {
 
     mod mod1
@@ -493,7 +493,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parameter_test()
+  fn parameter()
   {
     use core::fmt;
 
@@ -507,7 +507,7 @@ tests_impls!
     /* test.case( "make1" ) */
     let got : Single< f32 > = make!( 13.0 );
     let exp = Single::< f32 >::from( 13.0 );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* test.case( "traits" ) */
     let instance1 = Single::< f32 >::from( 13.0 );
@@ -520,85 +520,85 @@ tests_impls!
     /* test.case( "from f32 / into Single" ) */
     let instance1 : Single< f32 > = ( 13.0 ).into();
     let instance2 = Single::< f32 >::from( 13.0 );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Single< f32 > = ( Single::from( 13.0 ) ).into();
     let instance2 = Single::< f32 >::from( Single::from( 13.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from tuple" ) */
     let got : Single< f32 > = ( 13.0, ).into();
-    assert_eq!( got, Single( 13.0 ) );
+    a_id!( got, Single( 13.0 ) );
     let got = Single::< f32 >::from( ( 13.0, ) );
-    assert_eq!( got, Single( 13.0 ) );
+    a_id!( got, Single( 13.0 ) );
 
     /* test.case( "to tuple" ) */
     let got : ( f32, ) = ( Single::< f32 >::from( 13.0 ) ).into();
-    assert_eq!( got, ( 13.0, ) );
+    a_id!( got, ( 13.0, ) );
     let got = < ( f32, ) >::from( Single::< f32 >::from( ( 13.0, ) ) );
-    assert_eq!( got, ( 13.0, ) );
+    a_id!( got, ( 13.0, ) );
 
     /* test.case( "from array" ) */
     let got : Single< f32 > = [ 13.0 ].into();
-    assert_eq!( got, Single( 13.0 ) );
+    a_id!( got, Single( 13.0 ) );
     let got = Single::< f32 >::from( [ 13.0 ] );
-    assert_eq!( got, Single( 13.0 ) );
+    a_id!( got, Single( 13.0 ) );
 
     /* test.case( "to array" ) */
     let got : [ f32 ; 1 ] = ( Single::< f32 >::from( 13.0 ) ).into();
-    assert_eq!( got, [ 13.0 ] );
+    a_id!( got, [ 13.0 ] );
     let got = < [ f32 ; 1 ] >::from( Single::< f32 >::from( 13.0 ) );
-    assert_eq!( got, [ 13.0 ] );
+    a_id!( got, [ 13.0 ] );
 
     /* test.case( "from slice" ) */
     let got : Single< f32 > = (&[ 13.0 ][ .. ]).into();
-    assert_eq!( got, Single( 13.0 ) );
+    a_id!( got, Single( 13.0 ) );
     let got = Single::< f32 >::from( (&[ 13.0 ][ .. ]) );
-    assert_eq!( got, Single( 13.0 ) );
+    a_id!( got, Single( 13.0 ) );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Single< f32 > = ( 13.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "deref" ) */
     let got : Single< f32 > = ( 13.5 ).into();
-    assert_eq!( got.round(), 14.0 );
+    a_id!( got.round(), 14.0 );
 
     /* test.case( "clone_as_tuple" ) */
     let src : Single< f32 > = ( 13.0, ).into();
     let got = src.clone_as_tuple();
-    assert_eq!( got, ( 13.0, ) );
+    a_id!( got, ( 13.0, ) );
     assert!( !mem_same_ptr( &src, &got ) );
 
     /* test.case( "clone_as_array" ) */
     let src : Single< f32 > = ( 13.0, ).into();
     let got = src.clone_as_array();
-    assert_eq!( got, [ 13.0, ] );
+    a_id!( got, [ 13.0, ] );
     assert!( !mem_same_ptr( &src, &got ) );
 
     /* test.case( "as_tuple" ) */
     let src : Single< f32 > = ( 13.0, ).into();
     let got = src.as_tuple();
-    assert_eq!( got, &( 13.0, ) );
+    a_id!( got, &( 13.0, ) );
     assert!( mem_same_region( &src, got ) );
 
     /* test.case( "as_array" ) */
     let src : Single< f32 > = ( 13.0, ).into();
     let got = src.as_array();
-    assert_eq!( got, &[ 13.0, ] );
+    a_id!( got, &[ 13.0, ] );
     assert!( mem_same_region( &src, got ) );
 
     /* test.case( "as_slice" ) */
     let src : Single< f32 > = ( 13.0, ).into();
     let got = src.as_slice();
-    assert_eq!( got, &[ 13.0, ][ .. ] );
+    a_id!( got, &[ 13.0, ][ .. ] );
     assert!( mem_same_region( &src, got ) );
 
   }
@@ -606,7 +606,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parameter_complex_test()
+  fn parameter_complex()
   {
 
     types!
@@ -619,36 +619,36 @@ tests_impls!
     /* test.case( "from f32 / into Single" ) */
     let instance1 : Single< f32 > = ( 13.0 ).into();
     let instance2 = Single::< f32 >::from( 13.0 );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Single< f32 > = ( Single::from( 13.0 ) ).into();
     let instance2 = Single::< f32 >::from( Single::from( 13.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Single< f32 > = ( 13.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "deref" ) */
     use core::ops::AddAssign;
     let mut got : Single< f32 > = ( 13.5 ).into();
-    assert_eq!( got.round(), 14.0 );
+    a_id!( got.round(), 14.0 );
     got.add_assign( 1.0 );
-    assert_eq!( got.0, 14.5 );
+    a_id!( got.0, 14.5 );
 
   }
 
   //
 
   #[ test ]
-  fn parameter_no_derives_test()
+  fn parameter_no_derives()
   {
 
     mod mod1
@@ -675,7 +675,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn multiple_test()
+  fn multiple()
   {
     use core::fmt;
 
@@ -693,8 +693,8 @@ tests_impls!
     /* test.case( "from f32 / into Single2" ) */
     let instance1 : Single1 = ( 13.0 ).into();
     let instance2 = Single1::from( 13.0 );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
     assert!( !implements!( instance1 => PartialEq ) );
     assert!( !implements!( instance1 => Clone ) );
     assert!( !implements!( instance1 => fmt::Debug ) );
@@ -703,9 +703,9 @@ tests_impls!
     /* test.case( "from f32 / into Single2" ) */
     let instance1 : Single2 = ( 13.0 ).into();
     let instance2 = Single2::from( 13.0 );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
     assert!( implements!( instance1 => PartialEq ) );
     assert!( implements!( instance1 => Clone ) );
     assert!( implements!( instance1 => fmt::Debug ) );
@@ -714,90 +714,90 @@ tests_impls!
     /* test.case( "from f32 / into Single2" ) */
     let instance1 : Single2 = ( 13.0 ).into();
     let instance2 = Single2::from( 13.0 );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Single2 = ( Single2::from( 13.0 ) ).into();
     let instance2 = Single2::from( Single2::from( 13.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from Single2 / into f32" ) */
     let instance1 : Single2 = ( 13.0 ).into();
     let got : f32 = instance1.into();
-    assert_eq!( got, 13.0 );
+    a_id!( got, 13.0 );
     let instance1 : Single2 = ( 13.0 ).into();
     let got = f32::from( instance1 );
-    assert_eq!( got, 13.0 );
+    a_id!( got, 13.0 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Single2 = ( 13.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "deref" ) */
     let got : Single2 = ( 13.5 ).into();
-    assert_eq!( got.round(), 14.0 );
+    a_id!( got.round(), 14.0 );
 
   }
 
   //
 
   #[ test ]
-  fn struct_basic_test()
+  fn struct_basic()
   {
 
     /* test.case( "from f32 / into Single" ) */
     let instance1 : Single< f32 > = ( 13.0 ).into();
     let instance2 = Single::< f32 >::from( 13.0 );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Single< f32 > = ( Single::from( 13.0 ) ).into();
     let instance2 = Single::< f32 >::from( Single::from( 13.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Single< f32 > = ( 13.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "default" ) */
     let instance1 : Single< f32 > = Default::default();
-    assert_eq!( instance1.0, 0.0 );
+    a_id!( instance1.0, 0.0 );
 
     /* test.case( "deref" ) */
     use core::ops::AddAssign;
     let mut got : Single< f32 > = ( 13.5 ).into();
-    assert_eq!( got.round(), 14.0 );
+    a_id!( got.round(), 14.0 );
     got.add_assign( 1.0 );
-    assert_eq!( got.0, 14.5 );
+    a_id!( got.0, 14.5 );
 
     /* test.case( "make0" ) */
     let got : Single< f32 > = make!();
     let exp = Single::< f32 >::from( 0.0 );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* test.case( "make1" ) */
     let got : Single< f32 > = make!( 13.0 );
     let exp = Single::< f32 >::from( 13.0 );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
   }
 
   //
 
   #[ test ]
-  fn struct_no_derives_test()
+  fn struct_no_derives()
   {
 
     struct Floats< T >( pub T );
@@ -811,29 +811,29 @@ tests_impls!
     /* test.case( "from f32 / into Single" ) */
     let instance1 : Single< Floats< f32 > > = ( Floats( 13.0 ) ).into();
     let instance2 = Single::< Floats< f32 > >::from( Floats( 13.0 ) );
-    assert_eq!( instance1.0.0, 13.0 );
-    assert_eq!( instance2.0.0, 13.0 );
+    a_id!( instance1.0.0, 13.0 );
+    a_id!( instance2.0.0, 13.0 );
 
     /* test.case( "from itself / into itself" ) */
     let val = Floats::< f32 >::new( 13.0 );
     let instance1 : Single< Floats< f32 > > = ( Single::from( val ) ).into();
     let instance2 = Single::< Floats< f32 > >::from( Single::from( Floats( 13.0 ) ) );
-    assert_eq!( instance1.0.0, 13.0 );
-    assert_eq!( instance2.0.0, 13.0 );
+    a_id!( instance1.0.0, 13.0 );
+    a_id!( instance2.0.0, 13.0 );
 
     /* test.case( "deref" ) */
     use core::ops::AddAssign;
     let mut got : Single< f32 > = ( 13.5 ).into();
-    assert_eq!( got.round(), 14.0 );
+    a_id!( got.round(), 14.0 );
     got.add_assign( 1.0 );
-    assert_eq!( got.0, 14.5 );
+    a_id!( got.0, 14.5 );
 
   }
 
   //
 
   #[ test ]
-  fn samples_test()
+  fn samples()
   {
 
     /* test.case( "multiple" ) */
@@ -932,18 +932,18 @@ tests_impls!
 tests_index!
 {
 
-  basic_test,
-  empty_parameter_test,
-  parametrized_test,
-  parametrized_complex_test,
-  parametrized_multiple_test,
-  parametrized_no_derives_test,
-  parameter_test,
-  parameter_complex_test,
-  parameter_no_derives_test,
-  multiple_test,
-  struct_basic_test,
-  struct_no_derives_test,
-  samples_test,
+  basic,
+  empty_parameter,
+  parametrized,
+  parametrized_complex,
+  parametrized_multiple,
+  parametrized_no_derives,
+  parameter,
+  parameter_complex,
+  parameter_no_derives,
+  multiple,
+  struct_basic,
+  struct_no_derives,
+  samples,
 
 }

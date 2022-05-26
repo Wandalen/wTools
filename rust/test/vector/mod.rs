@@ -11,41 +11,41 @@
 //   let mut appender: append_vectors_once<u8> = append_vectors_once::default();
 //   let got = appender.call();
 //   let exp: Vec<u8> = vec![];
-//   assert_eq!( got, exp );
+//   a_id!( got, exp );
 
 //   println!( "dst - filled, src - empty" );
 //   let mut appender: append_vectors_once<u8> = append_vectors_once::default();
 //   appender.dst( vec![ 1, 2 ] );
 //   let got = appender.call();
-//   assert_eq!( got, vec![ 1, 2 ] );
+//   a_id!( got, vec![ 1, 2 ] );
 
 //   println!( "dst - filled, src - filled, all is unical elements" );
 //   let mut appender: append_vectors_once<u8> = append_vectors_once::default();
 //   appender.dst( vec![ 1, 2 ] );
 //   appender.src( vec![ vec![ 3, 4 ], vec![ 5, 6 ] ] );
 //   let got = appender.call();
-//   assert_eq!( *got, vec![ 1, 2, 3, 4, 5, 6 ] );
+//   a_id!( *got, vec![ 1, 2, 3, 4, 5, 6 ] );
 
 //   println!( "dst - filled, src - filled, some is duplicated" );
 //   let mut appender: append_vectors_once<u8> = append_vectors_once::default();
 //   appender.dst( vec![ 1, 2 ] );
 //   appender.src( vec![ vec![ 1, 3 ], vec![ 2, 4 ] ] );
 //   let got = appender.call();
-//   assert_eq!( got, vec![ 1, 2, 3, 4 ] );
+//   a_id!( got, vec![ 1, 2, 3, 4 ] );
 
 //   println!( "dst - filled, src - filled, all is duplicated" );
 //   let mut appender: append_vectors_once<u8> = append_vectors_once::default();
 //   appender.dst( vec![ 1, 2 ] );
 //   appender.src( vec![ vec![ 1, 1 ], vec![ 2, 2 ] ] );
 //   let got = appender.call();
-//   assert_eq!( got, vec![ 1, 2 ] );
+//   a_id!( got, vec![ 1, 2 ] );
 
 //   println!( "dst - filled, src - filled, all is duplicated" );
 //   let mut appender: append_vectors_once<u8> = append_vectors_once::default();
 //   appender.dst( vec![ 1, 2 ] );
 //   appender.src( vec![ vec![ 1, 2 ], vec![ 2, 1 ] ] );
 //   let got = appender.call();
-//   assert_eq!( got, vec![ 1, 2 ] );
+//   a_id!( got, vec![ 1, 2 ] );
 // }
 
 // //
@@ -57,35 +57,35 @@
 //   let mut src : left_index<u8> = left_index::default();
 //   src.ins( 1 );
 //   let got = src.call();
-//   assert_eq!( got, None );
+//   a_id!( got, None );
 
 //   println!( "filled vector, not matches" );
 //   let mut src : left_index<u8> = left_index::default();
 //   src.src( vec![ 1, 2, 3 ] );
 //   src.ins( 4 );
 //   let got = src.call();
-//   assert_eq!( got, None );
+//   a_id!( got, None );
 
 //   println!( "filled vector, matches one" );
 //   let mut src : left_index<u8> = left_index::default();
 //   src.src( vec![ 1, 2, 3 ] );
 //   src.ins( 2 );
 //   let got = src.call();
-//   assert_eq!( got, Some( 1 ) );
+//   a_id!( got, Some( 1 ) );
 
 //   println!( "filled vector, matches several" );
 //   let mut src : left_index<u8> = left_index::default();
 //   src.src( vec![ 1, 2, 2 ] );
 //   src.ins( 2 );
 //   let got = src.call();
-//   assert_eq!( got, Some( 1 ) );
+//   a_id!( got, Some( 1 ) );
 
 //   println!( "filled vector, matches all" );
 //   let mut src : left_index<u8> = left_index::default();
 //   src.src( vec![ 2, 2, 2 ] );
 //   src.ins( 2 );
 //   let got = src.call();
-//   assert_eq!( got, Some( 0 ) );
+//   a_id!( got, Some( 0 ) );
 // }
 
 // //
@@ -105,7 +105,7 @@
 //   src.ins( 1 );
 //   src.on_equalize( equalizer );
 //   let got = src.call();
-//   assert_eq!( got, None );
+//   a_id!( got, None );
 
 //   println!( "filled vector, not matches" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -113,7 +113,7 @@
 //   src.ins( 4 );
 //   src.on_equalize( equalizer );
 //   let got = src.call();
-//   assert_eq!( got, None );
+//   a_id!( got, None );
 
 //   println!( "filled vector, matches one" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -121,7 +121,7 @@
 //   src.ins( 2 );
 //   src.on_equalize( equalizer );
 //   let got = src.call();
-//   assert_eq!( got, Some( 1 ) );
+//   a_id!( got, Some( 1 ) );
 
 //   println!( "filled vector, matches several" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -129,7 +129,7 @@
 //   src.ins( 2 );
 //   src.on_equalize( equalizer );
 //   let got = src.call();
-//   assert_eq!( got, Some( 1 ) );
+//   a_id!( got, Some( 1 ) );
 
 //   println!( "filled vector, matches all" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -137,7 +137,7 @@
 //   src.ins( 2 );
 //   src.on_equalize( equalizer );
 //   let got = src.call();
-//   assert_eq!( got, Some( 0 ) );
+//   a_id!( got, Some( 0 ) );
 // }
 
 // //
@@ -157,7 +157,7 @@
 //   src.ins( 1 );
 //   src.on_evaluate1( evaluator1 );
 //   let got = src.call();
-//   assert_eq!( got, None );
+//   a_id!( got, None );
 
 //   println!( "filled vector, not matches" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -165,7 +165,7 @@
 //   src.ins( 4 );
 //   src.on_evaluate1( evaluator1 );
 //   let got = src.call();
-//   assert_eq!( got, None );
+//   a_id!( got, None );
 
 //   println!( "filled vector, matches one" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -173,7 +173,7 @@
 //   src.ins( 2 );
 //   src.on_evaluate1( evaluator1 );
 //   let got = src.call();
-//   assert_eq!( got, Some( 1 ) );
+//   a_id!( got, Some( 1 ) );
 
 //   println!( "filled vector, matches several" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -181,7 +181,7 @@
 //   src.ins( 2 );
 //   src.on_evaluate1( evaluator1 );
 //   let got = src.call();
-//   assert_eq!( got, Some( 1 ) );
+//   a_id!( got, Some( 1 ) );
 
 //   println!( "filled vector, matches all" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -189,7 +189,7 @@
 //   src.ins( 2 );
 //   src.on_evaluate1( evaluator1 );
 //   let got = src.call();
-//   assert_eq!( got, Some( 0 ) );
+//   a_id!( got, Some( 0 ) );
 // }
 
 // //
@@ -214,7 +214,7 @@
 //   src.on_evaluate1( evaluator1 );
 //   src.on_evaluate1( evaluator2 );
 //   let got = src.call();
-//   assert_eq!( got, None );
+//   a_id!( got, None );
 
 //   println!( "filled vector, not matches" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -223,7 +223,7 @@
 //   src.on_evaluate1( evaluator1 );
 //   src.on_evaluate1( evaluator2 );
 //   let got = src.call();
-//   assert_eq!( got, None );
+//   a_id!( got, None );
 
 //   println!( "filled vector, matches one" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -232,7 +232,7 @@
 //   src.on_evaluate1( evaluator1 );
 //   src.on_evaluate1( evaluator2 );
 //   let got = src.call();
-//   assert_eq!( got, Some( 1 ) );
+//   a_id!( got, Some( 1 ) );
 
 //   println!( "filled vector, matches several" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -241,7 +241,7 @@
 //   src.on_evaluate1( evaluator1 );
 //   src.on_evaluate1( evaluator2 );
 //   let got = src.call();
-//   assert_eq!( got, Some( 1 ) );
+//   a_id!( got, Some( 1 ) );
 
 //   println!( "filled vector, matches all" );
 //   let mut src : left_index<u8> = left_index::default();
@@ -250,7 +250,7 @@
 //   src.on_evaluate1( evaluator1 );
 //   src.on_evaluate1( evaluator2 );
 //   let got = src.call();
-//   assert_eq!( got, Some( 0 ) );
+//   a_id!( got, Some( 0 ) );
 
 // }
 

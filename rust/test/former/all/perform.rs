@@ -1,6 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
-use test_tools::dependencies::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
 only_for_wtools!
 {
@@ -38,25 +39,24 @@ impl Struct1
 
 //
 
-fn basic() -> anyhow::Result< () >
+tests_impls!
 {
+  #[ test ]
+  fn basic()
+  {
+    let got = Struct1::former().form();
+    let expected = Struct1 { int_1 : 31 };
+    a_id!( got, expected );
 
-  let got = Struct1::former().form();
-  let expected = Struct1 { int_1 : 31 };
-  assert_eq!( got, expected );
-
-  let got = Struct1::former().perform();
-  let expected = Some( "abc" );
-  assert_eq!( got, expected );
-
-  Ok( () )
+    let got = Struct1::former().perform();
+    let expected = Some( "abc" );
+    a_id!( got, expected );
+  }
 }
 
 //
 
-#[ test ]
-fn main_test() -> anyhow::Result< () >
+tests_index!
 {
-  basic()?;
-  Ok( () )
+  basic,
 }

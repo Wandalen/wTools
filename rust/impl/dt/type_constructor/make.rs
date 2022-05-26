@@ -73,14 +73,10 @@ mod internal
   ///
   /// Variadic constructor.
   ///
-  /// Unified interface of arbitrary-length constructor.
-  ///
-  /// ### Sample :: make - variadic constructor
-  ///
-  /// Implement traits [Make0], [Make1] up to MakeN to provide interface to construct your structure with different set of arguments.
-  /// In this example structure Struct1 could be constructed either without arguments, with single argument or with two arguments.
+  /// Implement traits [Make0], [Make1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
+  /// In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.
   /// - Constructor without arguments fills fields with zero.
-  /// - Constructor with single argument sets both fields to value of the argument.
+  /// - Constructor with a single argument sets both fields to the value of the argument.
   /// - Constructor with 2 arguments set individual values of each field.
   ///
   /// ```rust
@@ -130,6 +126,20 @@ mod internal
   /// assert_eq!( got, exp );
   /// ```
   ///
+  /// ### To add to your project
+  ///
+  /// ``` shell
+  /// cargo add type_constructor
+  /// ```
+  ///
+  /// ## Try out from the repository
+  ///
+  /// ``` shell test
+  /// git clone https://github.com/Wandalen/wTools
+  /// cd wTools
+  /// cd sample/rust/type_constructor_trivial_sample
+  /// cargo run
+  /// ```
 
   #[ macro_export ]
   macro_rules! make
@@ -214,7 +224,7 @@ pub mod exposed
 
 pub use exposed::*;
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   pub use super::internal::

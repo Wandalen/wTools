@@ -18,19 +18,19 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/_template_blank",
+  "/rust/impl/_blank",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
 
 [lib]
-name = "automata_tools"
-path = "rust/impl/automata/automata_tools_lib.rs"
+name = "template_blank"
+path = "rust/impl/_blank/standard_lib.rs"
 
-# [[test]]
-# name = "automata_tools_test"
-# path = "rust/test/automata/automata_lib_test.rs"
+[[test]]
+name = "template_blank_test"
+path = "rust/test/_blank/lib_test.rs"
 
 # [[example]]
 # name = "automata_trivial_sample"

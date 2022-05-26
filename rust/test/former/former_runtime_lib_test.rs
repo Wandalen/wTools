@@ -2,6 +2,7 @@
 include!( "../_conditional/local_module.rs" );
 
 use former_runtime as TheModule;
+use test_tools::*;
 
 #[ allow( unused_imports ) ]
 use TheModule::prelude::*;

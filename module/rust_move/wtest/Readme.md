@@ -3,7 +3,7 @@
 
 Tools for writing and running tests.
 
-### Sample
+## Sample
 
 ```rust
 use wtest_basic::*;

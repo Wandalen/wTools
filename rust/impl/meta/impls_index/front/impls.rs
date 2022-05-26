@@ -57,9 +57,6 @@ mod internal
         @Meta{ $( #[ $Meta ] )* }
         @Vis{ $Vis }
         @Name{ $Name }
-        // @Input{ () }
-        // @Output{}
-        // @Block{ {} }
         @Rest
           $( #[ $Meta ] )*
           $Vis fn $Name
@@ -72,9 +69,6 @@ mod internal
       @Meta{ $( #[ $Meta : meta ] )* }
       @Vis{ $Vis : vis }
       @Name{ $Name : ident }
-      // @Input{ $Input : tt }
-      // @Output{ $( -> $Output : ty )? }
-      // @Block{ $Block : block }
       @Rest
         $Item : item
         $( $Rest : tt )*
@@ -110,7 +104,16 @@ mod internal
   macro_rules! tests_impls
   {
 
+    // empty
+
+    // () => { type X = i32; };
+
+    // empty
+
     () => {};
+
+    // entry
+
     (
       $( #[ $Meta : meta ] )*
       $Vis : vis
@@ -125,9 +128,6 @@ mod internal
         @Meta{ $( #[ $Meta ] )* }
         @Vis{ $Vis }
         @Name{ $Name }
-        // @Input{ () }
-        // @Output{}
-        // @Block{ {} }
         @Rest
           $( #[ $Meta ] )*
           $Vis fn $Name
@@ -135,14 +135,13 @@ mod internal
       }
     };
 
+    // parsed
+
     (
       @DefineFn
       @Meta{ $( #[ $Meta : meta ] )* }
       @Vis{ $Vis : vis }
       @Name{ $Name : ident }
-      // @Input{ $Input : tt }
-      // @Output{ $( -> $Output : ty )? }
-      // @Block{ $Block : block }
       @Rest
         $Item : item
         $( $Rest : tt )*
@@ -246,7 +245,7 @@ pub mod exposed
 
 pub use exposed::*;
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   pub use super::internal::

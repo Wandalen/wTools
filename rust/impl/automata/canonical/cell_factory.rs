@@ -68,11 +68,23 @@ mod internal
   impl CellNodeFactory
   {
 
-    index!
-    {
-      make,
-    }
+    // index!
+    // {
+    //   make,
+    // }
 
+  }
+
+  impl Make0 for CellNodeFactory
+  {
+    fn make_0() -> Self
+    {
+      let id_to_node_map = HashMap::new();
+      Self
+      {
+        id_to_node_map,
+      }
+    }
   }
 
   //
@@ -153,7 +165,7 @@ pub mod exposed
   // use super::internal as i;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   // use super::internal as i;

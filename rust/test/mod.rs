@@ -14,6 +14,7 @@ mod iter;
 mod string;
 mod time;
 mod typing;
+mod diagnostics;
 
 // #[ cfg( feature = "proc_macro" ) ]
 // mod proc_macro;

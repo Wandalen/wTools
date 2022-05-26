@@ -17,6 +17,21 @@ pub mod dependency
   pub use ::woptions_meta as meta;
 }
 
+/// Own namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+}
+
+#[ doc( inline ) ]
+pub use protected::*;
+
+/// Parented namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
+
 /// Exposed namespace of the module.
 pub mod exposed
 {
@@ -33,9 +48,7 @@ pub mod exposed
   pub use woptions_runtime::exposed::*;
 }
 
-pub use exposed::*;
-
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   #[ cfg( any( feature = "runtime", feature = "woptions_runtime" ) ) ]

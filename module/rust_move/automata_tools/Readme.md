@@ -3,7 +3,7 @@
 
 Automata tools.
 
-### Sample :: trivial
+## Sample  :: trivial
 
 ```rust
 ```

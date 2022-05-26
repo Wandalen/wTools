@@ -3,7 +3,7 @@
 
 ___
 
-### Sample
+## Sample
 
 ```rust
 use procedural_macro::*;

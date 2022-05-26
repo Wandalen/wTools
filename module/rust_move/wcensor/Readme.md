@@ -3,7 +3,7 @@
 
 Utility to operate files from a command line.
 
-### Sample
+## Sample
 
 ```sh
 censor .hlink new_link to_file

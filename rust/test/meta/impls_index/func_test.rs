@@ -1,12 +1,12 @@
-use test_tools::*;
 use super::TheModule;
 use TheModule::prelude::*;
+use test_tools::*;
 
 //
 
-fn fn_name_test()
+#[ test ]
+fn fn_name()
 {
-
   let f1 = 13;
 
   let f2 = fn_name!
@@ -17,13 +17,13 @@ fn fn_name_test()
   };
 
   dbg!( f2 );
-  assert_eq!( f2, 13 );
-
+  a_id!( f2, 13 );
 }
 
 //
 
-fn fn_rename_test()
+#[ test ]
+fn fn_rename()
 {
 
   fn_rename!
@@ -38,13 +38,14 @@ fn fn_rename_test()
     }
   };
 
-  assert_eq!( f2(), 13 );
+  a_id!( f2(), 13 );
 
 }
 
 //
 
-fn fns_test()
+#[ test ]
+fn fns()
 {
 
 //   // test.case( "several, trivial syntax" );
@@ -77,7 +78,7 @@ fn fns_test()
 //       }
 //     };
 //
-//     assert_eq!( counter, 2 );
+//     a_id!( counter, 2 );
 //     f1();
 //     f2();
 //   }
@@ -112,7 +113,7 @@ fn fns_test()
       }
     };
 
-    assert_eq!( counter, 2 );
+    a_id!( counter, 2 );
     f1();
     f2();
   }
@@ -149,7 +150,7 @@ fn fns_test()
       }
     };
 
-    assert_eq!( counter, 2 );
+    a_id!( counter, 2 );
     f1( 1 );
     f2( 2 );
   }
@@ -181,7 +182,7 @@ fn fns_test()
       }
     };
 
-    assert_eq!( counter, 1 );
+    a_id!( counter, 1 );
     f1( 1 );
   }
 
@@ -213,7 +214,7 @@ fn fns_test()
       }
     };
 
-    assert_eq!( counter, 1 );
+    a_id!( counter, 1 );
     f1( 1 );
   }
 
@@ -246,7 +247,7 @@ fn fns_test()
       }
     };
 
-    assert_eq!( counter, 1 );
+    a_id!( counter, 1 );
     f1( 1 );
   }
 
@@ -279,7 +280,7 @@ fn fns_test()
       }
     };
 
-    assert_eq!( counter, 1 );
+    a_id!( counter, 1 );
     f1( 1 );
   }
 
@@ -311,7 +312,7 @@ fn fns_test()
 //       }
 //     };
 //
-//     assert_eq!( counter, 1 );
+//     a_id!( counter, 1 );
 //   }
 
   // test.case( "several, complex syntax" );
@@ -350,18 +351,9 @@ fn fns_test()
     };
     // trace_macros!( false );
 
-    assert_eq!( counter, 2 );
+    a_id!( counter, 2 );
     f1( 1 );
     f2( 2 );
   }
 
-}
-
-//
-
-test_suite!
-{
-  fn_name,
-  fn_rename,
-  fns,
 }

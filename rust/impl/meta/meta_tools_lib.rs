@@ -44,30 +44,8 @@ pub mod exposed
   pub use super::meta::exposed::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   pub use super::meta::prelude::*;
 }
-
-// /// Protected namespace of the module.
-// pub mod protected
-// {
-//   pub use super::exposed::*;
-//   pub use super::meta::orphan::*;
-// }
-//
-// pub use protected::*;
-//
-// /// Exposed namespace of the module.
-// pub mod exposed
-// {
-//   pub use super::prelude::*;
-//   pub use super::meta::exposed::*;
-// }
-//
-// /// Prelude to use: `use wtools::prelude::*`.
-// pub mod prelude
-// {
-//   pub use super::meta::prelude::*;
-// }

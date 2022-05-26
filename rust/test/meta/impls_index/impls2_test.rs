@@ -4,113 +4,117 @@ use TheModule::prelude::impls2;
 
 //
 
-fn impls_basic_test()
+tests_impls!
 {
-
-  // test.case( "impls2 basic" );
+  #[ test ]
+  fn impls_basic()
   {
 
-    impls2!
+    // test.case( "impls2 basic" );
     {
-      fn f1()
+
+      impls2!
       {
-        println!( "f1" );
-      }
-      pub fn f2()
-      {
-        println!( "f2" );
-      }
-    };
-
-    // trace_macros!( true );
-    f1!();
-    f2!();
-    // trace_macros!( false );
-
-    f1();
-    f2();
-
-  }
-
-  // test.case( "impls2 as" );
-  {
-
-    impls2!
-    {
-      fn f1()
-      {
-        println!( "f1" );
-      }
-      pub fn f2()
-      {
-        println!( "f2" );
-      }
-    };
-
-    // trace_macros!( true );
-    f1!( as f1b );
-    f2!( as f2b );
-    // trace_macros!( false );
-
-    f1b();
-    f2b();
-
-  }
-
-  // test.case( "impls2 as index" );
-  {
-
-    impls2!
-    {
-      fn f1()
-      {
-        println!( "f1" );
-      }
-      pub fn f2()
-      {
-        println!( "f2" );
-      }
-    };
-
-    // trace_macros!( true );
-    index!
-    {
-      f1,
-      f2 as f2b,
-    }
-    // trace_macros!( false );
-
-    f1();
-    f2b();
-
-  }
-
-  // test.case( "macro" );
-  {
-
-    impls2!
-    {
-      fn f1()
-      {
-        macro_rules! macro1
+        fn f1()
         {
-          ( $( $Arg : tt )* ) => { };
+          println!( "f1" );
         }
-        macro1!();
-      }
+        pub fn f2()
+        {
+          println!( "f2" );
+        }
+      };
+
+      // trace_macros!( true );
+      f1!();
+      f2!();
+      // trace_macros!( false );
+
+      f1();
+      f2();
+
     }
 
-    // trace_macros!( true );
-    f1!();
-    // trace_macros!( false );
+    // test.case( "impls2 as" );
+    {
+
+      impls2!
+      {
+        fn f1()
+        {
+          println!( "f1" );
+        }
+        pub fn f2()
+        {
+          println!( "f2" );
+        }
+      };
+
+      // trace_macros!( true );
+      f1!( as f1b );
+      f2!( as f2b );
+      // trace_macros!( false );
+
+      f1b();
+      f2b();
+
+    }
+
+    // test.case( "impls2 as index" );
+    {
+
+      impls2!
+      {
+        fn f1()
+        {
+          println!( "f1" );
+        }
+        pub fn f2()
+        {
+          println!( "f2" );
+        }
+      };
+
+      // trace_macros!( true );
+      index!
+      {
+        f1,
+        f2 as f2b,
+      }
+      // trace_macros!( false );
+
+      f1();
+      f2b();
+
+    }
+
+    // test.case( "macro" );
+    {
+
+      impls2!
+      {
+        fn f1()
+        {
+          macro_rules! macro1
+          {
+            ( $( $Arg : tt )* ) => { };
+          }
+          macro1!();
+        }
+      }
+
+      // trace_macros!( true );
+      f1!();
+      // trace_macros!( false );
+
+    }
 
   }
-
 }
 
 //
 
-test_suite!
+tests_index!
 {
   // fns,
   impls_basic,

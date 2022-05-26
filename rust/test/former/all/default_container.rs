@@ -1,6 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
-use test_tools::dependencies::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
 only_for_wtools!
 {
@@ -53,29 +54,31 @@ pub struct Struct1
 
 //
 
-fn test_complex() -> anyhow::Result< () >
+tests_impls!
 {
-
-  let command = Struct1::former().form();
-
-  let expected = Struct1
+  #[ test ]
+  fn test_complex()
   {
-    vec_ints : vec![ 1, 2, 3 ],
-    hashmap_ints : hmap!{ 1 => 11 },
-    hashset_ints : hset!{ 11 },
-    vec_strings : vec![ "abc".to_string(), "def".to_string() ],
-    hashmap_strings : hmap!{ "k1".to_string() => "v1".to_string() },
-    hashset_strings : hset!{ "k1".to_string() },
-  };
-  assert_eq!( command, expected );
 
-  Ok( () )
+    let command = Struct1::former().form();
+
+    let expected = Struct1
+    {
+      vec_ints : vec![ 1, 2, 3 ],
+      hashmap_ints : hmap!{ 1 => 11 },
+      hashset_ints : hset!{ 11 },
+      vec_strings : vec![ "abc".to_string(), "def".to_string() ],
+      hashmap_strings : hmap!{ "k1".to_string() => "v1".to_string() },
+      hashset_strings : hset!{ "k1".to_string() },
+    };
+    a_id!( command, expected );
+  }
 }
 
 //
 
-#[ test ]
-fn main_test()
+tests_index!
 {
-  test_complex().unwrap();
+  test_complex,
 }
+

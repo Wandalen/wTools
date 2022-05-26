@@ -3,7 +3,7 @@
 
 Implementation of automata.
 
-### Sample
+## Sample
 
 ``` rust sample test
 use wautomata::*;

@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.2.3"
+version = "0.2.8"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -21,6 +21,7 @@ keywords = [ "fundamental", "general-purpose" ]
 include = [
   "/rust/impl/wtools_lib.rs",
   "/rust/impl/dt/mod.rs",
+  "/rust/impl/iter/mod.rs",
   "/rust/impl/meta/mod.rs",
   "/rust/impl/typing/mod.rs",
   "/rust/impl/convert/mod.rs",
@@ -48,6 +49,7 @@ name = "wtools_trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
+<<<<<<< HEAD
 former_default = [ "former/default" ]
 former_meta = [ "former/meta" ]
 former_runtime = [ "former/runtime" ]
@@ -132,6 +134,8 @@ dt_either = [ "data_type/either" ]
 dt_type_constructor = [ "data_type/type_constructor" ]
 
 nightly = [ "typing_tools/nightly", "derive_tools/nightly" ]
+diagnostics = [ "diagnostics_tools" ]
+diagnostics_assertions = [ "diagnostics_tools/assertions" ]
 default = [
   "former_default",
   "woptions_default",
@@ -144,6 +148,8 @@ default = [
   "winterval_default",
   "derive_tools_default",
   "dt_default",
+  "diagnostics",
+  "diagnostics_assertions",
 ]
 
 # qqq : for Dima : discuss features
@@ -168,8 +174,10 @@ winterval = { version = "~0.1", path = "../../rust/winterval", optional = true, 
 derive_tools = { version = "~0.1", path = "../../rust/derive_tools", optional = true, default-features = false }
 data_type = { version = "~0.1", path = "../../rust/data_type", optional = true, default-features = false }
 
+diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", optional = true } # xxx : qqq : for Dima : should also be optional
+
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+# rustversion = "~1.0"
 # trybuild = { version = "~1.0", features = [ "diff" ] }
 # anyhow = "~1.0"
-rustversion = "~1.0"

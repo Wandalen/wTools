@@ -3,7 +3,7 @@
 
 The tool to make CLI ( commands user interface ). It is able to aggregate external binary applications, as well as functions, which are written in your language.
 
-### Sample
+## Sample
 
 ```rust
 use wca::*;

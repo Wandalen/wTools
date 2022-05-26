@@ -1,6 +1,6 @@
 
-use quote::{ quote };
-use syn::{ DeriveInput };
+// use quote::{ quote };
+use proc_macro_tools::syn::{ DeriveInput };
 use iter_tools::{ Itertools, process_results };
 use proc_macro_tools::*;
 
@@ -95,7 +95,7 @@ fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
   proc_macro_tools::type_parameters( ty, 0 ..= 0 )
   .first()
   .map( | e | *e )
-  .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", quote!{ #ty } ) )
+  .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", qt!{ #ty } ) )
 }
 
 ///
@@ -106,7 +106,7 @@ fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn
 {
   let on_err = ||
   {
-    syn_err!( ty, "Expects at least two parameters here:\n  {}", quote!{ #ty } )
+    syn_err!( ty, "Expects at least two parameters here:\n  {}", qt!{ #ty } )
   };
   let result = proc_macro_tools::type_parameters( ty, 0 ..= 1 );
   let mut iter = result.iter();
@@ -133,10 +133,10 @@ fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn
 fn field_none_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 {
   let ident = Some( field.ident.clone() );
-  let tokens = quote! { ::core::option::Option::None };
+  let tokens = qt! { ::core::option::Option::None };
   let ty2 : syn::Type = syn::parse2( tokens ).unwrap();
 
-  quote!
+  qt!
   {
     #ident : #ty2
   }
@@ -163,14 +163,14 @@ fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 
   let ty2 = if is_optional( &ty )
   {
-    quote! { #ty }
+    qt! { #ty }
   }
   else
   {
-    quote! { ::core::option::Option< #ty > }
+    qt! { ::core::option::Option< #ty > }
   };
 
-  quote!
+  qt!
   {
     pub #ident : #ty2
   }
@@ -205,7 +205,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
   for attr in field.attrs.iter()
   {
     let key_ident = attr.path.get_ident()
-    .ok_or_else( || syn_err!( attr, "Expects simple key of an attirbute, but got:\n  {}", quote!{ #attr } ) )?;
+    .ok_or_else( || syn_err!( attr, "Expects simple key of an attirbute, but got:\n  {}", qt!{ #attr } ) )?;
     let key_str = format!( "{}", key_ident );
     match key_str.as_ref()
     {
@@ -216,7 +216,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
       }
       _ =>
       {
-        return Err( syn_err!( attr, "Unknown attribute {}", quote!{ #attr } ) );
+        return Err( syn_err!( attr, "Unknown attribute {}", qt!{ #attr } ) );
       }
     }
   }
@@ -226,7 +226,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
     let _else = if default == None
     {
-      quote!
+      qt!
       {
         ::core::option::Option::None
       }
@@ -234,13 +234,13 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
     else
     {
       let default_val = default.unwrap();
-      quote!
+      qt!
       {
         ::core::option::Option::Some( ( #default_val ).into() )
       }
     };
 
-    quote!
+    qt!
     {
       let #ident = if self.#ident.is_some()
       {
@@ -258,7 +258,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
     let _else = if default == None
     {
-      quote!
+      qt!
       {
         let val : #ty = ::core::default::Default::default();
       }
@@ -266,13 +266,13 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
     else
     {
       let default_val = default.unwrap();
-      quote!
+      qt!
       {
         let val : #ty = ( #default_val ).into();
       }
     };
 
-    quote!
+    qt!
     {
       let #ident = if self.#ident.is_some()
       {
@@ -327,7 +327,7 @@ fn field_setter_map( field : &FormerField< '_ >, former_name_ident : &syn::Ident
     proc_macro_tools::ContainerKind::No =>
     {
       let non_optional_ty = &field.non_optional_ty;
-      quote!
+      qt!
       {
         #[inline]
         pub fn #ident< Src >( mut self, src : Src ) -> Self
@@ -343,7 +343,7 @@ fn field_setter_map( field : &FormerField< '_ >, former_name_ident : &syn::Ident
     {
       let ty = &field.ty;
       let internal_ty = parameter_internal_first( ty )?;
-      quote!
+      qt!
       {
         #[inline]
         pub fn #ident( mut self ) -> former::runtime::VectorFormer
@@ -367,7 +367,7 @@ fn field_setter_map( field : &FormerField< '_ >, former_name_ident : &syn::Ident
     {
       let ty = &field.ty;
       let ( k_ty, e_ty ) = parameter_internal_first_two( ty )?;
-      quote!
+      qt!
       {
         #[inline]
         pub fn #ident( mut self ) -> former::runtime::HashMapFormer
@@ -392,7 +392,7 @@ fn field_setter_map( field : &FormerField< '_ >, former_name_ident : &syn::Ident
     {
       let ty = &field.ty;
       let internal_ty = parameter_internal_first( ty )?;
-      quote!
+      qt!
       {
         #[inline]
         pub fn #ident( mut self ) -> former::runtime::HashSetFormer
@@ -481,12 +481,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 
   /* structure attribute */
 
-  let mut perform = quote!
+  let mut perform = qt!
   {
     return result;
   };
-  let mut perform_output = quote!{ #name_ident #generics };
-  let mut perform_generics = quote!{};
+  let mut perform_output = qt!{ #name_ident #generics };
+  let mut perform_generics = qt!{};
   for attr in ast.attrs.iter()
   {
     if let Some( ident ) = attr.path.get_ident()
@@ -497,18 +497,18 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
         let attr_perform = syn::parse2::< AttributeFormAfter >( attr.tokens.clone() )?;
         let signature = &attr_perform.signature;
         let generics = &signature.generics;
-        perform_generics = quote!{ #generics };
+        perform_generics = qt!{ #generics };
         let perform_ident = &signature.ident;
         let output = &signature.output;
         match output
         {
           syn::ReturnType::Type( _, boxed_type ) =>
           {
-            perform_output = quote!{ #boxed_type };
+            perform_output = qt!{ #boxed_type };
           },
           _ => {},
         }
-        perform = quote!
+        perform = qt!
         {
           return result.#perform_ident();
         };
@@ -516,7 +516,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     }
     else
     {
-      return Err( syn_err!( "Unknown structure attribute:\n{}", quote!{ attr } ) );
+      return Err( syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } ) );
     }
   }
 
@@ -530,9 +530,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       {
         &fields_named.named
       },
-      _ => return Err( syn_err!( ast, "Unknown format of data, expected syn::Fields::Named( ref fields_named )\n  {}", quote!{ #ast } ) ),
+      _ => return Err( syn_err!( ast, "Unknown format of data, expected syn::Fields::Named( ref fields_named )\n  {}", qt!{ #ast } ) ),
     },
-    _ => return Err( syn_err!( ast, "Unknown format of data, expected syn::Data::Struct( ref data_struct )\n  {}", quote!{ #ast } ) ),
+    _ => return Err( syn_err!( ast, "Unknown format of data, expected syn::Data::Struct( ref data_struct )\n  {}", qt!{ #ast } ) ),
   };
 
   let former_fields : Vec< Result< FormerField< '_ > > > = fields.iter().map( | field |
@@ -540,7 +540,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     let attrs = &field.attrs;
     let vis = &field.vis;
     let ident = field.ident.as_ref()
-    .ok_or_else( || syn_err!( field, "Expected that each field has key, but some does not:\n  {}", quote!{ #field } ) )?;
+    .ok_or_else( || syn_err!( field, "Expected that each field has key, but some does not:\n  {}", qt!{ #field } ) )?;
     let colon_token = &field.colon_token;
     let ty = &field.ty;
     let is_optional = is_optional( &ty );
@@ -567,7 +567,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
   let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
 
-  let result = quote!
+  let result = qt!
   {
 
     impl #generics #name_ident #generics

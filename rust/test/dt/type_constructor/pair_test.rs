@@ -7,7 +7,7 @@ tests_impls!
 {
 
   #[ test ]
-  fn basic_test()
+  fn basic()
   {
     use core::fmt;
 
@@ -45,11 +45,11 @@ tests_impls!
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair = ( 13.0, 31.0 ).into();
     let instance2 = Pair::from( ( 13.0, 31.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
     assert!( implements!( instance1 => PartialEq ) );
     assert!( implements!( instance1 => Clone ) );
     assert!( implements!( instance1 => fmt::Debug ) );
@@ -58,38 +58,38 @@ tests_impls!
     /* test.case( "from pair / into tuple" ) */
     let instance1 : ( _, _ ) = ( Pair::from( ( 13.0, 31.0 ) ) ).into();
     let instance2 = < ( _, _ ) >::from( Pair::from( ( 13.0, 31.0 ) ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Pair = ( Pair::from( ( 13.0, 31.0 ) ) ).into();
     let instance2 = Pair::from( Pair::from( ( 13.0, 31.0 ) ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Pair = ( 13.0, 31.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     // /* test.case( "deref" ) */
     // let got : Pair = ( 13.5, 31.5 ).into();
-    // assert_eq!( got.round(), ( 14.0, 32.0 ) );
+    // a_id!( got.round(), ( 14.0, 32.0 ) );
 
   }
 
   //
 
   #[ test ]
-  fn empty_parameter_test()
+  fn empty_parameter()
   {
 
     mod mod1
@@ -126,34 +126,34 @@ tests_impls!
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair = ( 13.0, 31.0 ).into();
     let instance2 = Pair::from( ( 13.0, 31.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Pair = ( Pair::from( ( 13.0, 31.0 ) ) ).into();
     let instance2 = Pair::from( Pair::from( ( 13.0, 31.0 ) ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Pair = ( 13.0, 31.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
   }
 
   //
 
   #[ test ]
-  fn parametrized_multiple_test()
+  fn parametrized_multiple()
   {
 
     macro_rules! mk1
@@ -239,28 +239,28 @@ tests_impls!
     /* test.case( "make2" ) */
     let got : Pair< f32, f64, f32 > = make!( mk1!( 13.0 ), mk2!( 31.0 ) );
     let exp = Pair::< f32, f64, f32 >( mk1!( 13.0 ), mk2!( 31.0 ) );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64, f32 > = mk!( 13.0 ).into();
     let instance2 = Pair::< f32, f64, f32 >::from( mk!( 13.0 ) );
-    assert_eq!( instance1.0.0, 13.0 );
-    assert_eq!( instance2.0.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0.0, 13.0 );
+    a_id!( instance2.0.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from Pair / into tuple" ) */
     let instance1 : Pair< f32, f64, f32 > = mk!( 13.0 ).into();
     let got : ( mod1::Floats< f32, f64 >, _ ) = instance1.into();
-    assert_eq!( got.0.0, 13.0 );
+    a_id!( got.0.0, 13.0 );
     let instance1 : Pair< f32, f64, f32 > = mk!( 13.0 ).into();
     let got = < ( mod1::Floats::< f32, f64 >, _ ) >::from( instance1 );
-    assert_eq!( got.0.0, 13.0 );
+    a_id!( got.0.0, 13.0 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Pair< f32, f64, f32 > = mk!( 13.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, mk1!( 13.0 ) );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, mk1!( 13.0 ) );
+    a_id!( instance1, instance2 );
 
 
   }
@@ -268,7 +268,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parametrized_mixed_test()
+  fn parametrized_mixed()
   {
 
     /* test.case( "control case" ) */
@@ -302,7 +302,7 @@ tests_impls!
         std::sync::Arc::new( 13.0 ),
         31.0,
       ));
-      assert_eq!( instance1, instance2 );
+      a_id!( instance1, instance2 );
 
     }
 
@@ -337,7 +337,7 @@ tests_impls!
         std::sync::Arc::new( 13.0 ),
         31.0,
       ));
-      assert_eq!( instance1, instance2 );
+      a_id!( instance1, instance2 );
 
     }
 
@@ -372,7 +372,7 @@ tests_impls!
         std::sync::Arc::new( 13.0 ),
         31.0,
       ));
-      assert_eq!( instance1, instance2 );
+      a_id!( instance1, instance2 );
 
     }
 
@@ -407,7 +407,7 @@ tests_impls!
         31.0,
         std::sync::Arc::new( 13.0 ),
       ));
-      assert_eq!( instance1, instance2 );
+      a_id!( instance1, instance2 );
 
     }
 
@@ -442,7 +442,7 @@ tests_impls!
         31.0,
         std::sync::Arc::new( 13.0 ),
       ));
-      assert_eq!( instance1, instance2 );
+      a_id!( instance1, instance2 );
 
     }
 
@@ -451,7 +451,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parametrized_no_derives_test()
+  fn parametrized_no_derives()
   {
 
     mod mod1
@@ -477,7 +477,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn parameter_complex_test()
+  fn parameter_complex()
   {
     use core::fmt;
 
@@ -499,59 +499,59 @@ tests_impls!
     /* test.case( "make0" ) */
     let got : Pair< f32, f64 > = make!();
     let exp = Pair::< f32, f64 >( 0.0, 0.0 );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* test.case( "make2" ) */
     let got : Pair< f32, f64 > = make!( 13.0, 31.0 );
     let exp = Pair::< f32, f64 >( 13.0, 31.0 );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
     let instance2 = Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from Pair / into tuple" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
     let instance2 = Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Pair< f32, f64 > = ( Pair::from( ( 13.0, 31.0 ) ) ).into();
     let instance2 = Pair::< f32, f64 >::from( Pair::from( ( 13.0, 31.0 ) ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
 //     /* test.case( "deref" ) */
 //     let got : Pair< f32, f64 > = ( 13.5 ).into();
-//     assert_eq!( got.round(), 14.0 );
+//     a_id!( got.round(), 14.0 );
 
   }
 
   //
 
   #[ test ]
-  fn parameter_no_derives_test()
+  fn parameter_no_derives()
   {
 
     mod mod1
@@ -578,7 +578,7 @@ tests_impls!
   //
 
   #[ test ]
-  fn multiple_test()
+  fn multiple()
   {
     use core::fmt;
 
@@ -596,8 +596,8 @@ tests_impls!
     /* test.case( "from tuple / into Pair2" ) */
     let instance1 : Pair1 = ( 13.0, 31.0 ).into();
     let instance2 = Pair1::from( ( 13.0, 31.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
     assert!( !implements!( instance1 => PartialEq ) );
     assert!( !implements!( instance1 => Clone ) );
     assert!( !implements!( instance1 => fmt::Debug ) );
@@ -606,9 +606,9 @@ tests_impls!
     /* test.case( "from tuple / into Pair2" ) */
     let instance1 : Pair2 = ( 13.0, 31.0 ).into();
     let instance2 = Pair2::from( ( 13.0, 31.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
     assert!( implements!( instance1 => PartialEq ) );
     assert!( implements!( instance1 => Clone ) );
     assert!( implements!( instance1 => fmt::Debug ) );
@@ -617,104 +617,104 @@ tests_impls!
     /* test.case( "from tuple / into Pair2" ) */
     let instance1 : Pair2 = ( 13.0, 31.0 ).into();
     let instance2 = Pair2::from( ( 13.0, 31.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Pair2 = ( Pair2::from( ( 13.0, 31.0 ) ) ).into();
     let instance2 = Pair2::from( Pair2::from( ( 13.0, 31.0 ) ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from Pair2 / into tuple" ) */
     let instance1 : Pair2 = ( 13.0, 31.0 ).into();
     let got : ( _, _ ) = instance1.into();
-    assert_eq!( got, ( 13.0, 31.0 ) );
+    a_id!( got, ( 13.0, 31.0 ) );
     let instance1 : Pair2 = ( 13.0, 31.0 ).into();
     let got = <( f32, f64 )>::from( instance1 );
-    assert_eq!( got, ( 13.0, 31.0 ) );
+    a_id!( got, ( 13.0, 31.0 ) );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Pair2 = ( 13.0, 31.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
 
     // /* test.case( "deref" ) */
     // let got : Pair2 = ( 13.5, 15.5 ).into();
-    // assert_eq!( got.round(), 14.0 );
+    // a_id!( got.round(), 14.0 );
 
   }
 
   //
 
   #[ test ]
-  fn struct_basic_test()
+  fn struct_basic()
   {
 
     /* test.case( "make0" ) */
     let got : Pair< f32, f64 > = make!();
     let exp = Pair::< f32, f64 >( 0.0, 0.0 );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* test.case( "make2" ) */
     let got : Pair< f32, f64 > = make!( 13.0, 31.0 );
     let exp = Pair::< f32, f64 >( 13.0, 31.0 );
-    assert_eq!( got, exp );
+    a_id!( got, exp );
 
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
     let instance2 = Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from Pair / into tuple" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
     let instance2 = Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "from itself / into itself" ) */
     let instance1 : Pair< f32, f64 > = ( Pair::from( ( 13.0, 31.0 ) ) ).into();
     let instance2 = Pair::< f32, f64 >::from( Pair::from( ( 13.0, 31.0 ) ) );
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
     let instance2 = instance1.clone();
-    assert_eq!( instance1.0, 13.0 );
-    assert_eq!( instance1.1, 31.0 );
-    assert_eq!( instance2.0, 13.0 );
-    assert_eq!( instance2.1, 31.0 );
-    assert_eq!( instance1, instance2 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance1.1, 31.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance2.1, 31.0 );
+    a_id!( instance1, instance2 );
 
     /* test.case( "default" ) */
     let instance1 : Pair< f32, f64 > = Default::default();
-    assert_eq!( instance1.0, 0.0 );
-    assert_eq!( instance1.1, 0.0 );
+    a_id!( instance1.0, 0.0 );
+    a_id!( instance1.1, 0.0 );
 
 //     /* test.case( "deref" ) */
 //     let got : Pair< f32, f64 > = ( 13.5 ).into();
-//     assert_eq!( got.round(), 14.0 );
+//     a_id!( got.round(), 14.0 );
 
   }
 
   //
 
   #[ test ]
-  fn struct_no_derives_test()
+  fn struct_no_derives()
   {
 
     struct Floats< T1, T2 >( pub T1, pub T2 );
@@ -728,19 +728,19 @@ tests_impls!
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< Floats< f32, f64 >, f32 > = ( Floats( 13.0, 31.0 ), 131.0 ).into();
     let instance2 = Pair::< Floats< f32, f64 >, f32 >::from( ( Floats( 13.0, 31.0 ), 131.0 ) );
-    assert_eq!( instance1.0.0, 13.0 );
-    assert_eq!( instance1.0.1, 31.0 );
-    assert_eq!( instance1.1, 131.0 );
-    assert_eq!( instance2.0.0, 13.0 );
-    assert_eq!( instance2.0.1, 31.0 );
-    assert_eq!( instance2.1, 131.0 );
+    a_id!( instance1.0.0, 13.0 );
+    a_id!( instance1.0.1, 31.0 );
+    a_id!( instance1.1, 131.0 );
+    a_id!( instance2.0.0, 13.0 );
+    a_id!( instance2.0.1, 31.0 );
+    a_id!( instance2.1, 131.0 );
 
   }
 
   //
 
   #[ test ]
-  fn samples_test()
+  fn samples()
   {
 
     /* test.case( "single-line" ) */
@@ -765,24 +765,21 @@ tests_impls!
     }
 
   }
-
 }
 
 //
 
 tests_index!
 {
-
-  basic_test,
-  empty_parameter_test,
-  parametrized_multiple_test,
-  parametrized_mixed_test,
-  parametrized_no_derives_test,
-  parameter_complex_test,
-  parameter_no_derives_test,
-  multiple_test,
-  struct_basic_test,
-  struct_no_derives_test,
-  samples_test,
-
+  basic,
+  empty_parameter,
+  parametrized_multiple,
+  parametrized_mixed,
+  parametrized_no_derives,
+  parameter_complex,
+  parameter_no_derives,
+  multiple,
+  struct_basic,
+  struct_no_derives,
+  samples,
 }

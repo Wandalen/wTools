@@ -1,6 +1,6 @@
 [package]
 name = "woptions_meta"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,15 +31,13 @@ name = "woptions_meta"
 path = "rust/impl/options/meta/lib.rs"
 
 [dependencies]
-proc-macro2 = "~1.0"
-quote = "~1.0"
-convert_case = "~0.5"
-syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
-# itertools = "~0.10"
-# werror = { path = "../../rust/werror", version = "~0.1" }
+# proc-macro2 = "~1.0"
+# quote = "~1.0"
+convert_case = "~0.5" # xxx : move to string_tools
+# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
 proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
 iter_tools = { path = "../../rust/iter_tools", version = "~0.1" }
 
 [dev-dependencies]
-trybuild = { version = "~1.0", features = [ "diff" ] }
+# trybuild = { version = "~1.0", features = [ "diff" ] }

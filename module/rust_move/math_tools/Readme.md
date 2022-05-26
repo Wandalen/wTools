@@ -3,7 +3,7 @@
 
 Math tools.
 
-### Sample :: trivial
+## Sample  :: trivial
 
 ```rust
 use template_blank::*;
