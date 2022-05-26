@@ -87,6 +87,7 @@ pub mod protected
   pub use ::iter_tools as iter;
   pub use ::meta_tools as meta;
   pub use ::typing_tools as typing;
+  #[ cfg( feature = "diagnostics" ) ]
   pub use ::diagnostics_tools as diagnostics;
   pub use ::data_type as dt;
   pub use ::time_tools as time;
