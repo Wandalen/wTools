@@ -1,0 +1,8 @@
+[package]
+name = "derive_tools_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+derive_tools = { version = "*", path = "../../../module/rust/derive_tools" }

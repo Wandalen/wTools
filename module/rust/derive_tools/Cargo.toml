@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -12,7 +12,7 @@ documentation = "https://docs.rs/derive_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/derive_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/derive_tools"
 description = """
-Collection of general purpose derives.
+Collection of derives which extend STD.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
@@ -109,10 +109,9 @@ path = "rust/impl/derive/lib.rs"
 name = "derive_tools_test"
 path = "rust/test/derive/derive_lib_test.rs"
 
-# [[example]]
-# name = "derive_tools_trivial"
-# path = "sample/rust/derive_tools_trivial/src/main.rs"
-# qqq : add please
+[[example]]
+name = "derive_tools_trivial_sample"
+path = "sample/rust/derive_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 derive_more = { version = "~0.99", optional = true, default-features = false }

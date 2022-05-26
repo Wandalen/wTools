@@ -7,7 +7,7 @@
 // #![ feature( type_name_of_val ) ]
 
 //!
-//! Collection of general purpose derives.
+//! Collection of derives which extend STD.
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
