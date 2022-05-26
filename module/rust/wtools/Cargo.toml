@@ -63,33 +63,62 @@ iter_tools_itertools = [ "iter_tools/itertools" ]
 iter_tools_itertools_use_std = [ "iter_tools/itertools_use_std" ]
 iter_tools_itertools_use_alloc = [ "iter_tools/itertools_use_alloc" ]
 
-meta_tools_default = [ "meta_tools/default" ]
-meta_tools_for_each = [ "meta_tools/for_each" ]
-meta_tools_for_each_default = [ "meta_tools/for_each_default" ]
-meta_tools_impls_index = [ "meta_tools/impls_index" ]
-meta_tools_impls_index_default = [ "meta_tools/impls_index_default" ]
-meta_tools_impls_index_meta = [ "meta_tools/impls_index_meta" ]
-meta_tools_mod_interface = [ "meta_tools/mod_interface" ]
-meta_tools_mod_interface_default = [ "meta_tools/mod_interface_default" ]
-meta_tools_mod_interface_meta = [ "meta_tools/mod_interface_meta" ]
-meta_tools_mod_interface_runtime = [ "meta_tools/mod_interface_runtime" ]
-meta_tools_container_aliases = [ "meta_tools/literally" ]
+# meta
 
-typing_tools_default = [ "typing_tools/default" ]
-typing_tools_inspect_type = [ "typing_tools/inspect_type" ]
-typing_tools_is_slice = [ "typing_tools/is_slice" ]
-typing_tools_implements = [ "typing_tools/implements" ]
+meta = [ "meta_tools" ]
+meta_default = [ "meta_tools/default" ]
+meta_all = [
+  "meta_for_each",
+  "meta_impls_index",
+  "meta_mod_interface",
+  "meta_collection_make",
+]
+meta_for_each = [ "meta_tools/for_each" ]
+meta_impls_index = [ "meta_tools/impls_index" ]
+meta_mod_interface = [ "meta_tools/mod_interface" ]
+meta_collection_make = [ "meta_tools/collection_make" ]
 
-time_tools_default = [ "time_tools/default" ]
-time_tools_chrono = [ "time_tools/chrono" ]
+# typing
 
-wstring_tools_default = [ "wstring_tools" ]
+typing = [ "typing_tools" ]
+typing_default = [ "typing", "typing_tools/default" ]
+typing_all = [
+  "typing",
+  "typing_inspect_type",
+  "typing_is_slice",
+  "typing_implements",
+]
+typing_nightly = [ "typing_tools/nightly" ]
+typing_inspect_type = [ "typing", "typing_tools/inspect_type" ]
+typing_is_slice = [ "typing", "typing_tools/is_slice" ]
+typing_implements = [ "typing", "typing_tools/implements" ]
 
-werror_default = [ "werror" ]
+# time
 
-winterval_default = [ "winterval" ]
+time = [ "time_tools/default" ]
+time_default = [ "time" ]
+time_all = [ "time" ]
+time_chrono = [ "time_tools/chrono" ]
 
-# derive_tools
+# string
+
+string = [ "wstring_tools" ]
+string_default = [ "string" ]
+string_all = [ "string" ]
+
+# error
+
+error = [ "werror" ]
+error_default = [ "error" ]
+error_all = [ "error" ]
+
+# interval
+
+interval = [ "winterval" ]
+interval_default = [ "interval" ]
+interval_all = [ "interval" ]
+
+# derive
 
 derive = [ "derive_tools" ]
 derive_all = [
@@ -122,7 +151,14 @@ derive_all = [
   "derive_from_str",
 
 ]
-derive_default = [ "derive_tools", "derive_tools/default" ]
+derive_default = [
+  "derive_tools",
+  "derive_tools/default",
+  "derive_from_str",
+]
+derive_nightly = [
+  "derive_tools/nightly"
+]
 
 derive_enable_track_caller = [
   "derive_tools/enable_track_caller"
@@ -152,8 +188,11 @@ derive_is_variant = [ "derive_tools/derive_is_variant" ]
 derive_unwrap = [ "derive_tools/derive_unwrap" ]
 derive_convert_case = [ "derive_tools/derive_convert_case" ]
 
-derive_display = [ "derive_tools/derive_display" ]
-derive_from_str = [ "derive_tools/derive_from_str" ]
+derive_display = [ "derive_tools/derive_display", "parse-display" ]
+derive_from_str = [ "derive_tools/derive_from_str", "parse-display", "derive_from_str_std", "derive_from_str_regex", "derive_from_str_once_cell" ]
+derive_from_str_std = [ "parse-display/std" ]
+derive_from_str_regex = [ "parse-display/regex" ]
+derive_from_str_once_cell = [ "parse-display/once_cell" ]
 
 # dt
 
@@ -173,38 +212,40 @@ diagnostics_runtime_assertions = [ "diagnostics_tools/runtime_assertions" ]
 diagnostics_compiletime_assertions = [ "diagnostics_tools/compiletime_assertions" ]
 
 nightly = [
-  "typing_tools/nightly",
-  "derive_tools/nightly"
+  "typing_nightly",
+  "derive_nightly"
 ]
 
 all = [
   # "former_all",
   # "woptions_all",
   # "iter_tools_all",
-  # "meta_tools_all",
-  # "typing_tools_all",
-  # "time_tools_all",
-  # "wstring_tools_all",
-  # "werror_all",
-  # "winterval_all",
+  # "meta_all",
+  "typing_all",
+  "time_all",
+  "string_all",
+  "error_all",
+  "interval_all",
   "derive_all",
-  # "dt_all",
-  # "diagnostics_all",
+  "dt_all",
+  "diagnostics_all",
 ]
 
 default = [
   "former_default",
   "woptions_default",
   "iter_tools_default",
-  "meta_tools_default",
-  "typing_tools_default",
-  "time_tools_default",
-  "wstring_tools_default",
-  "werror_default",
-  "winterval_default",
+  "meta_default",
+  "typing_default",
+  "time_default",
+  "string_default",
+  "error_default",
+  "interval_default",
   "derive_default",
   "dt_default",
   "diagnostics_default",
+
+  # "derive_from_str",
 ]
 
 # qqq : for Dima : discuss features
@@ -218,6 +259,7 @@ former = { version = "~0.1", path = "../../rust/former", optional = true, defaul
 woptions = { version = "~0.1", path = "../../rust/woptions", optional = true, default-features = false }
 iter_tools = { version = "~0.1", path = "../../rust/iter_tools", optional = true, default-features = false }
 
+# meta
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools", optional = true, default-features = false }
 impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by meta_tools it should also be imported immediatly
 
@@ -226,10 +268,17 @@ time_tools = { version = "~0.1", path = "../../rust/time_tools", optional = true
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools", optional = true, default-features = false }
 werror = { version = "~0.1", path = "../../rust/werror", optional = true, default-features = false }
 winterval = { version = "~0.1", path = "../../rust/winterval", optional = true, default-features = false }
+
+# derive
 derive_tools = { version = "~0.1", path = "../../rust/derive_tools", optional = true, default-features = false }
+parse-display = { version = "~0.5", optional = true, default-features = false } # have to be here because of problem with FromStr
+
+# data_type
 data_type = { version = "~0.1", path = "../../rust/data_type", optional = true, default-features = false }
 
+# diagnostics_tools
 diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", optional = true } # xxx : qqq : for Dima : should also be optional
+
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

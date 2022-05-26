@@ -1,6 +1,6 @@
 [package]
 name = "meta_tools"
-version = "0.2.9"
+version = "0.2.10"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -26,18 +26,18 @@ include = [
 ]
 
 [features]
-for_each_default = [ "for_each/default" ]
-impls_index_default = [ "impls_index/default" ]
-impls_index_meta = [ "impls_index/meta" ]
-mod_interface_default = [ "mod_interface/default" ]
-mod_interface_meta = [ "mod_interface/meta" ]
-mod_interface_runtime = [ "mod_interface/runtime" ]
-container_aliases = [ "literally" ]
+collection_make = [ "literally" ]
 default = [
-  "for_each_default",
-  "impls_index_default",
-  "mod_interface_default",
-  "container_aliases",
+  "for_each",
+  "impls_index",
+  "mod_interface",
+  "collection_make",
+]
+all = [
+  "for_each",
+  "impls_index",
+  "mod_interface",
+  "collection_make",
 ]
 
 [lib]
@@ -55,25 +55,10 @@ path = "sample/rust/meta_tools_trivial_sample/src/main.rs"
 # - all samples should be in md files and have short descriptions
 
 [dependencies]
-# former = { version = "~0.1", path = "../../rust/former" }
-# inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
-# is_slice = { version = "~0.1", path = "../../rust/is_slice" }
-# implements = { version = "~0.1", path = "../../rust/implements" }
-# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# werror = { version = "~0.1", path = "../../rust/werror" }
-# winterval = { version = "~0.1", path = "../../rust/winterval" }
-# proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
 for_each = { version = "~0.1", path = "../../rust/for_each", optional = true, default-features = false }
 impls_index = { version = "~0.1", path = "../../rust/impls_index", optional = true, default-features = false }
 mod_interface = { version = "~0.1", path = "../../rust/mod_interface", optional = true, default-features = false }
 literally = { version = "~0.1", optional = true, default-features = false }
-# either = "~1.6"
-# # maplit = "~1.0"
-# regex = "1.5.4"
-# chrono = "0.4.19"
-# paste = "1.0.5"
-# anyhow = "1.0.48"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

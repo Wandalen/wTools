@@ -26,9 +26,8 @@ include = [
 ]
 
 [features]
-meta = [ "mod_interface_meta" ]
-runtime = [ "mod_interface_runtime" ]
-default = [ "meta", "runtime" ]
+default = []
+all = []
 
 [lib]
 name = "mod_interface"
@@ -44,8 +43,8 @@ path = "rust/test/meta/mod_interface_lib_test.rs"
 # zzz : write
 
 [dependencies]
-mod_interface_meta = { version = "~0.1", path = "../../rust/mod_interface_meta", optional = true, default-features = false }
-mod_interface_runtime = { version = "~0.1", path = "../../rust/mod_interface_runtime", optional = true, default-features = false }
+mod_interface_meta = { version = "~0.1", path = "../../rust/mod_interface_meta" }
+mod_interface_runtime = { version = "~0.1", path = "../../rust/mod_interface_runtime" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

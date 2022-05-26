@@ -15,7 +15,7 @@ pub mod impls;
 /// Namespace with dependencies.
 pub mod dependency
 {
-  #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
+  // #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
   pub use ::impls_index_meta;
 }
 
@@ -47,6 +47,6 @@ pub mod prelude
 {
   pub use super::impls::prelude::*;
   pub use super::func::prelude::*;
-  #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
+  // #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
   pub use ::impls_index_meta::*;
 }

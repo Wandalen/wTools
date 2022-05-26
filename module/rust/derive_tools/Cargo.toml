@@ -46,7 +46,6 @@ all = [
   "derive_deref_mut",
   "derive_error",
   "derive_from",
-  "derive_from_str",
   "derive_index",
   "derive_index_mut",
   "derive_into",
