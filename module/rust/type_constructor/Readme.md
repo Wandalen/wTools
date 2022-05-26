@@ -22,28 +22,28 @@ The same macro `types` is responsible for generating code for Single, Pair, Homo
 ```rust
 #[ cfg( feature = "types" ) ]
 {
-use type_constructor::prelude::*;
+  use type_constructor::prelude::*;
 
-types!
-{
+  types!
+  {
 
-  single MySingle : f32;
-  single SingleWithParametrized : std::sync::Arc< T : Copy >;
-  single SingleWithParameter : < T >;
+    single MySingle : f32;
+    single SingleWithParametrized : std::sync::Arc< T : Copy >;
+    single SingleWithParameter : < T >;
 
-  pair MyPair : f32;
-  pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
-  pair PairWithParameter : < T1, T2 >;
+    pair MyPair : f32;
+    pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
+    pair PairWithParameter : < T1, T2 >;
 
-  pair MyHomoPair : f32;
-  pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
-  pair HomoPairWithParameter : < T >;
+    pair MyHomoPair : f32;
+    pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
+    pair HomoPairWithParameter : < T >;
 
-  many MyMany : f32;
-  many ManyWithParametrized : std::sync::Arc< T : Copy >;
-  many ManyWithParameter : < T >;
+    many MyMany : f32;
+    many ManyWithParametrized : std::sync::Arc< T : Copy >;
+    many ManyWithParameter : < T >;
 
-}
+  }
 }
 ```
 
@@ -54,18 +54,23 @@ It generates more than 1000 lines of code, which otherwise you would have to wri
 Macro `types` is exposed to generate new types, but in some cases, it is enough to reuse already generated types of such kind. The library ships such types: Single, Pair, Homopair, Many. Note: If you avoid generating new types you will get in a position to be not able to define your own implementation of foreign traits because of orphan rule.
 
 ```rust
-let i32_in_tuple = type_constructor::Single::< i32 >::from( 13 );
-dbg!( i32_in_tuple );
-// i32_in_tuple = Single( 13 )
-let i32_and_f32_in_tuple = type_constructor::Pair::< i32, f32 >::from( ( 13, 13.0 ) );
-dbg!( i32_and_f32_in_tuple );
-// vec_of_i32_in_tuple = Pair( 13, 13.0 )
-let two_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( ( 13, 31 ) );
-dbg!( two_i32_in_tuple );
-// vec_of_i32_in_tuple = HomoPair( 13, 31 )
-let vec_of_i32_in_tuple = type_constructor::Many::< i32 >::from( [ 1, 2, 3 ] );
-dbg!( vec_of_i32_in_tuple );
-// vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+#[ cfg( feature = "types" ) ]
+{
+
+  let i32_in_tuple = type_constructor::Single::< i32 >::from( 13 );
+  dbg!( i32_in_tuple );
+  // i32_in_tuple = Single( 13 )
+  let i32_and_f32_in_tuple = type_constructor::Pair::< i32, f32 >::from( ( 13, 13.0 ) );
+  dbg!( i32_and_f32_in_tuple );
+  // vec_of_i32_in_tuple = Pair( 13, 13.0 )
+  let two_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( ( 13, 31 ) );
+  dbg!( two_i32_in_tuple );
+  // vec_of_i32_in_tuple = HomoPair( 13, 31 )
+  let vec_of_i32_in_tuple = type_constructor::Many::< i32 >::from( [ 1, 2, 3 ] );
+  dbg!( vec_of_i32_in_tuple );
+  // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+
+}
 ```
 
 ### Sample :: homopair with parameters
@@ -79,9 +84,14 @@ Make is the variadic constructor. It's the unified interface of the arbitrary-le
 After implementing several traits `Make0`, `Make1` up to `MakeN` one can use make `make!` to construct instances.
 
 ```rust ignore
-let instance1 : Struct1 = make!();
-let instance2 : Struct1 = make!( 13 );
-let instance3 : Struct1 = make!( 1, 3 );
+#[ cfg( feature = "make" ) ]
+{
+
+  let instance1 : Struct1 = make!();
+  let instance2 : Struct1 = make!( 13 );
+  let instance3 : Struct1 = make!( 1, 3 );
+
+}
 ```
 
 ### Sample :: single line single.
