@@ -25,6 +25,10 @@ include = [
   "/License",
 ]
 
+[features]
+chrono_default = [ "chrono/default" ]
+default = [ "chrono_default" ]
+
 [lib]
 name = "time_tools"
 path = "rust/impl/time/lib.rs"

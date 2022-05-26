@@ -40,15 +40,15 @@ path = "sample/rust/typing_tools_trivial/src/main.rs"
 
 [features]
 nightly = [ "inspect_type/nightly" ]
-default = []
+default = [ "implements", "is_slice", "inspect_type" ]
 
 [package.metadata.docs.rs]
 all-features = true
 
 [dependencies]
-inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
-is_slice = { version = "~0.1", path = "../../rust/is_slice" }
-implements = { version = "~0.1", path = "../../rust/implements" }
+inspect_type = { version = "~0.1", path = "../../rust/inspect_type", optional = true, default-features = false }
+is_slice = { version = "~0.1", path = "../../rust/is_slice", optional = true, default-features = false }
+implements = { version = "~0.1", path = "../../rust/implements", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

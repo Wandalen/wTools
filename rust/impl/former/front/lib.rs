@@ -14,7 +14,9 @@
 /// Namespace with dependencies.
 pub mod dependency
 {
+  #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
   pub use former_runtime;
+  #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   pub use former_meta;
 }
 
@@ -30,8 +32,11 @@ pub use protected::*;
 pub mod exposed
 {
   pub use super::prelude::*;
+  #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
   pub use former_runtime as runtime;
+  #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   pub use former_meta as derive;
+  #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   pub use derive::*;
 }
 

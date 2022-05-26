@@ -41,6 +41,7 @@
 //
 // pub use time::*;
 
+#[ cfg( feature = "chrono" ) ]
 /// Collection of time tools.
 pub mod time;
 
@@ -67,11 +68,13 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
+  #[ cfg( feature = "chrono" ) ]
   pub use super::time::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ cfg( feature = "chrono" ) ]
   pub use super::time::prelude::*;
 }

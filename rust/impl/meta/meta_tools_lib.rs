@@ -11,8 +11,11 @@
 /// Dependencies.
 pub mod dependencies
 {
+  #[ cfg( any( feature = "container_aliases", feature = "literally" ) ) ]
   pub use ::literally;
+  #[ cfg( feature = "for_each" ) ]
   pub use ::for_each;
+  #[ cfg( feature = "impls_index" ) ]
   pub use ::impls_index;
 }
 

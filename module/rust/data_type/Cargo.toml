@@ -24,6 +24,9 @@ include = [
   "/License",
 ]
 
+[features]
+default = [ "either", "type_constructor" ]
+
 [lib]
 name = "data_type"
 path = "rust/impl/dt/data_type_lib.rs"
@@ -38,8 +41,8 @@ path = "rust/test/dt/data_type_lib_test.rs"
 # <!-- zzz : write please -->
 
 [dependencies]
-either = "~1.6"
-type_constructor = { version = "~0.1", path = "../../rust/type_constructor" }
+either = { version = "~1.6", optional = true }
+type_constructor = { version = "~0.1", path = "../../rust/type_constructor", optional = true }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

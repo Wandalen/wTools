@@ -49,14 +49,108 @@ name = "wtools_trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
-# in_wtools = [] # qqq : for Dima : feature still here? # aaa : Dmytro : removed
-nightly = [ "typing_tools/nightly" ]
-# default = [ "in_wtools" ]
-default = [
-  "diagnostics", "diagnostics_assertions",
-]
+<<<<<<< HEAD
+former_default = [ "former/default" ]
+former_meta = [ "former/meta" ]
+former_runtime = [ "former/runtime" ]
+
+woptions_default = [ "woptions/default" ]
+woptions_meta = [ "woptions/meta" ]
+woptions_runtime = [ "woptions/runtime" ]
+woptions_former = [ "woptions/former" ]
+
+iter_tools_default = [ "iter_tools/default" ]
+iter_tools_itertools = [ "iter_tools/itertools" ]
+iter_tools_itertools_use_std = [ "iter_tools/itertools_use_std" ]
+iter_tools_itertools_use_alloc = [ "iter_tools/itertools_use_alloc" ]
+
+meta_tools_default = [ "meta_tools/default" ]
+meta_tools_for_each = [ "meta_tools/for_each" ]
+meta_tools_for_each_default = [ "meta_tools/for_each_default" ]
+meta_tools_impls_index = [ "meta_tools/impls_index" ]
+meta_tools_impls_index_default = [ "meta_tools/impls_index_default" ]
+meta_tools_impls_index_meta = [ "meta_tools/impls_index_meta" ]
+meta_tools_mod_interface = [ "meta_tools/mod_interface" ]
+meta_tools_mod_interface_default = [ "meta_tools/mod_interface_default" ]
+meta_tools_mod_interface_meta = [ "meta_tools/mod_interface_meta" ]
+meta_tools_mod_interface_runtime = [ "meta_tools/mod_interface_runtime" ]
+meta_tools_container_aliases = [ "meta_tools/literally" ]
+
+typing_tools_default = [ "typing_tools/default" ]
+typing_tools_inspect_type = [ "typing_tools/inspect_type" ]
+typing_tools_is_slice = [ "typing_tools/is_slice" ]
+typing_tools_implements = [ "typing_tools/implements" ]
+
+time_tools_default = [ "time_tools/default" ]
+time_tools_chrono = [ "time_tools/chrono" ]
+
+wstring_tools_default = [ "wstring_tools" ]
+
+werror_default = [ "werror" ]
+
+winterval_default = [ "winterval" ]
+
+derive_tools_default = [ "derive_tools/default" ]
+derive_tools_derive_more = [ "derive_tools/derive_more" ]
+derive_tools_derive_more_default = [ "derive_tools/derive_more_default" ]
+derive_tools_derive_more_add_assign = [ "derive_tools/derive_more_add_assign" ]
+derive_tools_derive_more_add = [ "derive_tools/derive_more_add" ]
+derive_tools_derive_more_as_mut = [ "derive_tools/derive_more_as_mut" ]
+derive_tools_derive_more_as_ref = [ "derive_tools/derive_more_as_ref" ]
+derive_tools_derive_more_constructor = [ "derive_tools/derive_more_constructor" ]
+derive_tools_derive_more_deref = [ "derive_tools/derive_more_deref" ]
+derive_tools_derive_more_deref_mut = [ "derive_tools/derive_more_deref_mut" ]
+derive_tools_derive_more_display = [ "derive_tools/derive_more_display" ]
+derive_tools_derive_more_error = [ "derive_tools/derive_more_error" ]
+derive_tools_derive_more_from = [ "derive_tools/derive_more_from" ]
+derive_tools_derive_more_from_str = [ "derive_tools/derive_more_from_str" ]
+derive_tools_derive_more_index = [ "derive_tools/derive_more_index" ]
+derive_tools_derive_more_index_mut = [ "derive_tools/derive_more_index_mut" ]
+derive_tools_derive_more_into = [ "derive_tools/derive_more_into" ]
+derive_tools_derive_more_into_iterator = [ "derive_tools/derive_more_into_iterator" ]
+derive_tools_derive_more_iterator = [ "derive_tools/derive_more_iterator" ]
+derive_tools_derive_more_mul_assign = [ "derive_tools/derive_more_mul_assign" ]
+derive_tools_derive_more_mul = [ "derive_tools/derive_more_mul" ]
+derive_tools_derive_more_not = [ "derive_tools/derive_more_not" ]
+derive_tools_derive_more_sum = [ "derive_tools/derive_more_sum" ]
+derive_tools_derive_more_try_into = [ "derive_tools/derive_more_try_into" ]
+derive_tools_derive_more_is_variant = [ "derive_tools/derive_more_is_variant" ]
+derive_tools_derive_more_unwrap = [ "derive_tools/derive_more_unwrap" ]
+derive_tools_derive_more_convert_case = [ "derive_tools/derive_more_convert_case" ]
+derive_tools_derive_more_rustc_version = [ "derive_tools/derive_more_rustc_version" ]
+derive_tools_derive_more_testing_helpers = [ "derive_tools/derive_more_testing_helpers" ]
+derive_tools_derive_more_generate_parsing_rs = [ "derive_tools/derive_more_generate_parsing_rs" ]
+derive_tools_derive_more_peg = [ "derive_tools/derive_more_peg" ]
+derive_tools_derive_more_track_caller = [ "derive_tools/derive_more_track_caller" ]
+derive_tools_parse_display = [ "derive_tools/parse-display" ]
+derive_tools_parse_display_default = [ "derive_tools/parse_display_default" ]
+derive_tools_parse_display_std = [ "derive_tools/parse_display_std" ]
+derive_tools_parse_display_regex = [ "derive_tools/parse_display_regex" ]
+derive_tools_parse_display_once_cell = [ "derive_tools/parse_display_once_cell" ]
+
+dt = [ "data_type" ]
+dt_default = [ "data_type/default" ]
+dt_either = [ "data_type/either" ]
+dt_type_constructor = [ "data_type/type_constructor" ]
+
+nightly = [ "typing_tools/nightly", "derive_tools/nightly" ]
 diagnostics = [ "diagnostics_tools" ]
 diagnostics_assertions = [ "diagnostics_tools/assertions" ]
+default = [
+  "former_default",
+  "woptions_default",
+  "iter_tools_default",
+  "meta_tools_default",
+  "typing_tools_default",
+  "time_tools_default",
+  "wstring_tools_default",
+  "werror_default",
+  "winterval_default",
+  "derive_tools_default",
+  "dt_default",
+  "diagnostics",
+  "diagnostics_assertions",
+]
 
 # qqq : for Dima : discuss features
 
@@ -65,21 +159,20 @@ all-features = true
 # rustdoc-args = []
 
 [dependencies]
-former = { version = "~0.1", path = "../../rust/former" }
-woptions = { version = "~0.1", path = "../../rust/woptions" }
-iter_tools = { version = "~0.1", path = "../../rust/iter_tools" }
+former = { version = "~0.1", path = "../../rust/former", optional = true, default-features = false }
+woptions = { version = "~0.1", path = "../../rust/woptions", optional = true, default-features = false }
+iter_tools = { version = "~0.1", path = "../../rust/iter_tools", optional = true, default-features = false }
 
-meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
+meta_tools = { version = "~0.2", path = "../../rust/meta_tools", optional = true, default-features = false }
 impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by meta_tools it should also be imported immediatly
-mod_interface = { version = "~0.1", path = "../../rust/mod_interface" }
 
-typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
-time_tools = { version = "~0.1", path = "../../rust/time_tools" }
-wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
-werror = { version = "~0.1", path = "../../rust/werror" }
-winterval = { version = "~0.1", path = "../../rust/winterval" }
-derive_tools = { version = "~0.1", path = "../../rust/derive_tools" }
-data_type = { version = "~0.1", path = "../../rust/data_type" }
+typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = true, default-features = false }
+time_tools = { version = "~0.1", path = "../../rust/time_tools", optional = true, default-features = false }
+wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools", optional = true, default-features = false }
+werror = { version = "~0.1", path = "../../rust/werror", optional = true, default-features = false }
+winterval = { version = "~0.1", path = "../../rust/winterval", optional = true, default-features = false }
+derive_tools = { version = "~0.1", path = "../../rust/derive_tools", optional = true, default-features = false }
+data_type = { version = "~0.1", path = "../../rust/data_type", optional = true, default-features = false }
 
 diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", optional = true } # xxx : qqq : for Dima : should also be optional
 
