@@ -92,7 +92,36 @@ winterval_default = [ "winterval" ]
 # derive_tools
 
 derive = [ "derive_tools" ]
-derive_all = [ "derive_tools", "derive_tools/all" ]
+derive_all = [
+
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_from_str",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_display",
+  "derive_from_str",
+
+]
 derive_default = [ "derive_tools", "derive_tools/default" ]
 
 derive_enable_track_caller = [
@@ -109,7 +138,6 @@ derive_deref = [ "derive_tools/derive_deref" ]
 derive_deref_mut = [ "derive_tools/derive_deref_mut" ]
 derive_error = [ "derive_tools/derive_error" ]
 derive_from = [ "derive_tools/derive_from" ]
-derive_from_str = [ "derive_tools/derive_from_str" ]
 derive_index = [ "derive_tools/derive_index" ]
 derive_index_mut = [ "derive_tools/derive_index_mut" ]
 derive_into = [ "derive_tools/derive_into" ]
@@ -124,10 +152,8 @@ derive_is_variant = [ "derive_tools/derive_is_variant" ]
 derive_unwrap = [ "derive_tools/derive_unwrap" ]
 derive_convert_case = [ "derive_tools/derive_convert_case" ]
 
-derive_parse_display = [ "derive_tools/derive_parse_display" ]
-derive_parse_display_std = [ "derive_tools/derive_parse_display_std" ]
-derive_parse_display_regex = [ "derive_tools/derive_parse_display_regex" ]
-derive_parse_display_once_cell = [ "derive_tools/derive_parse_display_once_cell" ]
+derive_display = [ "derive_tools/derive_display" ]
+derive_from_str = [ "derive_tools/derive_from_str" ]
 
 # dt
 

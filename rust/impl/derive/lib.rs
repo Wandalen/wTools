@@ -33,6 +33,7 @@ pub mod exposed
   pub use ::derive_more::*;
   pub use ::parse_display::*;
   pub use ::parse_display::Display;
+  pub use ::parse_display::FromStr;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

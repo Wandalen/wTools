@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -27,17 +27,51 @@ include = [
 [features]
 
 default = [
-  "derive_parse_display",
+
+  "derive_display",
   "derive_more/default",
+  "derive_display",
+  "derive_from_str",
+
 ]
+
 all = [
+
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_from_str",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_display",
+  "derive_from_str",
+  "derive_from_str_std",
+  "derive_from_str_regex",
+  "derive_from_str_once_cell",
 
 ]
 nightly = [ "derive_more/nightly" ]
 
 enable_track_caller = [ "derive_more/track-caller" ]
 
-# derive_default = [ "derive_more/default" ]
 derive_add_assign = [ "derive_more/add_assign" ]
 derive_add = [ "derive_more/add" ]
 derive_as_mut = [ "derive_more/as_mut" ]
@@ -45,10 +79,8 @@ derive_as_ref = [ "derive_more/as_ref" ]
 derive_constructor = [ "derive_more/constructor" ]
 derive_deref = [ "derive_more/deref" ]
 derive_deref_mut = [ "derive_more/deref_mut" ]
-# derive_display = [ "derive_more/display" ]
 derive_error = [ "derive_more/error" ]
 derive_from = [ "derive_more/from" ]
-derive_from_str = [ "derive_more/from_str" ]
 derive_index = [ "derive_more/index" ]
 derive_index_mut = [ "derive_more/index_mut" ]
 derive_into = [ "derive_more/into" ]
@@ -63,10 +95,11 @@ derive_is_variant = [ "derive_more/is_variant" ]
 derive_unwrap = [ "derive_more/unwrap" ]
 derive_convert_case = [ "derive_more/convert_case" ]
 
-derive_parse_display = [ "parse-display" ]
-derive_parse_display_std = [ "parse-display/std" ]
-derive_parse_display_regex = [ "parse-display/regex" ]
-derive_parse_display_once_cell = [ "parse-display/once_cell" ]
+derive_display = [ "parse-display" ]
+derive_from_str = [ "parse-display", "derive_from_str_std", "derive_from_str_regex", "derive_from_str_once_cell" ]
+derive_from_str_std = [ "parse-display/std" ]
+derive_from_str_regex = [ "parse-display/regex" ]
+derive_from_str_once_cell = [ "parse-display/once_cell" ]
 
 [lib]
 name = "derive_tools"
