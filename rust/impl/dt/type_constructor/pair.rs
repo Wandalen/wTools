@@ -66,6 +66,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
@@ -83,6 +84,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
@@ -209,6 +211,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
@@ -462,6 +465,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
@@ -477,6 +481,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
@@ -492,6 +497,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
@@ -827,6 +833,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
@@ -845,6 +852,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
@@ -890,6 +898,8 @@ mod internal
 
     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
     pair HomoPair : < T >;
+
+    // xxx : samples
 
   }
 

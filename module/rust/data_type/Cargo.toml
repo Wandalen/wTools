@@ -25,7 +25,14 @@ include = [
 ]
 
 [features]
-default = [ "either", "type_constructor" ]
+default = [
+  "either",
+  "type_constructor/default",
+]
+all = [
+  "either",
+  "type_constructor/all",
+]
 
 [lib]
 name = "data_type"

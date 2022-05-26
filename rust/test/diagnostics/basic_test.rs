@@ -9,7 +9,7 @@ use TheModule::prelude::*;
 tests_impls!
 {
 
-  #[ cfg( feature = "assertions" ) ]
+  #[ cfg( feature = "runtime_assertions" ) ]
   #[ test ]
   fn assertions()
   {

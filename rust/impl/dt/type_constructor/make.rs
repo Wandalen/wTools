@@ -1,4 +1,5 @@
 /// Internal namespace.
+#[ cfg( feature = "make" ) ]
 mod internal
 {
 
@@ -227,6 +228,7 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ cfg( feature = "make" ) ]
   pub use super::internal::
   {
 

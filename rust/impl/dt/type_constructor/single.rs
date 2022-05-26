@@ -180,6 +180,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       Make0
       for $Name < $ParamName >
@@ -191,6 +192,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       Make1< $ParamName >
       for $Name < $ParamName >
@@ -419,6 +421,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
@@ -458,15 +461,6 @@ mod internal
     single Single : < T >;
 
   }
-
-  // impl< T > Make0 for Single< T >
-  // where T : Default,
-  // {
-  //   fn make_0() -> Self
-  //   {
-  //     Default::default()
-  //   }
-  // }
 
   pub use _single;
 }

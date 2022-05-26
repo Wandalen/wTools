@@ -107,6 +107,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       Make0
       for $Name < $ParamName >
@@ -117,6 +118,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       Make1< $ParamName >
       for $Name < $ParamName >
@@ -127,6 +129,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       Make2< $ParamName, $ParamName >
       for $Name < $ParamName >
@@ -137,6 +140,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       Make3< $ParamName, $ParamName, $ParamName >
       for $Name < $ParamName >
@@ -287,6 +291,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       Make0
@@ -299,6 +304,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
@@ -315,6 +321,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       Make2
@@ -336,6 +343,7 @@ mod internal
         }
       }
 
+      #[ cfg( feature = "make" ) ]
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       Make3

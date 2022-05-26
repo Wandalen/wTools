@@ -14,6 +14,7 @@ mod internal
   // xxx : use
   // - [pretty_assertions](https://github.com/colin-kiegel/rust-pretty-assertions) by [Colin Kiegel](https://github.com/colin-kiegel) :
   //  pretty assert_eq
+  // xxx : introduce a_is
 
   ///
   /// Type constructor to define tuple wrapping a given type.

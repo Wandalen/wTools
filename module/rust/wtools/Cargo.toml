@@ -91,56 +91,57 @@ winterval_default = [ "winterval" ]
 
 # derive_tools
 
-derive_tools_default = [ "derive_tools/default" ]
-derive_tools_derive_more = [ "derive_tools/derive_more" ]
-derive_tools_derive_more_default = [ "derive_tools/derive_more_default" ]
-derive_tools_derive_more_add_assign = [ "derive_tools/derive_more_add_assign" ]
-derive_tools_derive_more_add = [ "derive_tools/derive_more_add" ]
-derive_tools_derive_more_as_mut = [ "derive_tools/derive_more_as_mut" ]
-derive_tools_derive_more_as_ref = [ "derive_tools/derive_more_as_ref" ]
-derive_tools_derive_more_constructor = [ "derive_tools/derive_more_constructor" ]
-derive_tools_derive_more_deref = [ "derive_tools/derive_more_deref" ]
-derive_tools_derive_more_deref_mut = [ "derive_tools/derive_more_deref_mut" ]
-derive_tools_derive_more_display = [ "derive_tools/derive_more_display" ]
-derive_tools_derive_more_error = [ "derive_tools/derive_more_error" ]
-derive_tools_derive_more_from = [ "derive_tools/derive_more_from" ]
-derive_tools_derive_more_from_str = [ "derive_tools/derive_more_from_str" ]
-derive_tools_derive_more_index = [ "derive_tools/derive_more_index" ]
-derive_tools_derive_more_index_mut = [ "derive_tools/derive_more_index_mut" ]
-derive_tools_derive_more_into = [ "derive_tools/derive_more_into" ]
-derive_tools_derive_more_into_iterator = [ "derive_tools/derive_more_into_iterator" ]
-derive_tools_derive_more_iterator = [ "derive_tools/derive_more_iterator" ]
-derive_tools_derive_more_mul_assign = [ "derive_tools/derive_more_mul_assign" ]
-derive_tools_derive_more_mul = [ "derive_tools/derive_more_mul" ]
-derive_tools_derive_more_not = [ "derive_tools/derive_more_not" ]
-derive_tools_derive_more_sum = [ "derive_tools/derive_more_sum" ]
-derive_tools_derive_more_try_into = [ "derive_tools/derive_more_try_into" ]
-derive_tools_derive_more_is_variant = [ "derive_tools/derive_more_is_variant" ]
-derive_tools_derive_more_unwrap = [ "derive_tools/derive_more_unwrap" ]
-derive_tools_derive_more_convert_case = [ "derive_tools/derive_more_convert_case" ]
-derive_tools_derive_more_rustc_version = [ "derive_tools/derive_more_rustc_version" ]
-derive_tools_derive_more_testing_helpers = [ "derive_tools/derive_more_testing_helpers" ]
-derive_tools_derive_more_generate_parsing_rs = [ "derive_tools/derive_more_generate_parsing_rs" ]
-derive_tools_derive_more_peg = [ "derive_tools/derive_more_peg" ]
-derive_tools_derive_more_track_caller = [ "derive_tools/derive_more_track_caller" ]
-derive_tools_parse_display = [ "derive_tools/parse-display" ]
-derive_tools_parse_display_default = [ "derive_tools/parse_display_default" ]
-derive_tools_parse_display_std = [ "derive_tools/parse_display_std" ]
-derive_tools_parse_display_regex = [ "derive_tools/parse_display_regex" ]
-derive_tools_parse_display_once_cell = [ "derive_tools/parse_display_once_cell" ]
+derive = [ "derive_tools" ]
+derive_all = [ "derive_tools", "derive_tools/all" ]
+derive_default = [ "derive_tools", "derive_tools/default" ]
+
+derive_enable_track_caller = [
+  "derive_tools/enable_track_caller"
+]
+
+derive_more = [ "derive_tools/derive_more" ]
+derive_add_assign = [ "derive_tools/derive_add_assign" ]
+derive_add = [ "derive_tools/derive_add" ]
+derive_as_mut = [ "derive_tools/derive_as_mut" ]
+derive_as_ref = [ "derive_tools/derive_as_ref" ]
+derive_constructor = [ "derive_tools/derive_constructor" ]
+derive_deref = [ "derive_tools/derive_deref" ]
+derive_deref_mut = [ "derive_tools/derive_deref_mut" ]
+derive_error = [ "derive_tools/derive_error" ]
+derive_from = [ "derive_tools/derive_from" ]
+derive_from_str = [ "derive_tools/derive_from_str" ]
+derive_index = [ "derive_tools/derive_index" ]
+derive_index_mut = [ "derive_tools/derive_index_mut" ]
+derive_into = [ "derive_tools/derive_into" ]
+derive_into_iterator = [ "derive_tools/derive_into_iterator" ]
+derive_iterator = [ "derive_tools/derive_iterator" ]
+derive_mul_assign = [ "derive_tools/derive_mul_assign" ]
+derive_mul = [ "derive_tools/derive_mul" ]
+derive_not = [ "derive_tools/derive_not" ]
+derive_sum = [ "derive_tools/derive_sum" ]
+derive_try_into = [ "derive_tools/derive_try_into" ]
+derive_is_variant = [ "derive_tools/derive_is_variant" ]
+derive_unwrap = [ "derive_tools/derive_unwrap" ]
+derive_convert_case = [ "derive_tools/derive_convert_case" ]
+
+derive_parse_display = [ "derive_tools/derive_parse_display" ]
+derive_parse_display_std = [ "derive_tools/derive_parse_display_std" ]
+derive_parse_display_regex = [ "derive_tools/derive_parse_display_regex" ]
+derive_parse_display_once_cell = [ "derive_tools/derive_parse_display_once_cell" ]
 
 # dt
 
 dt = [ "data_type" ]
 dt_default = [ "data_type/default" ]
+dt_all = [ "data_type/all" ]
 dt_either = [ "data_type/either" ]
 dt_type_constructor = [ "data_type/type_constructor" ]
 
-# derive_tools
+# diagnostics
 
 diagnostics = [ "diagnostics_tools" ]
-diagnostics_all = [ "diagnostics_tools/all" ]
-diagnostics_default = [ "diagnostics_tools/default" ]
+diagnostics_all = [ "diagnostics", "diagnostics_tools/all" ]
+diagnostics_default = [ "diagnostics", "diagnostics_tools/default" ]
 diagnostics_runtime_assertions = [ "diagnostics_tools/runtime_assertions" ]
 diagnostics_compiletime_assertions = [ "diagnostics_tools/compiletime_assertions" ]
 
@@ -149,20 +150,20 @@ nightly = [
   "derive_tools/nightly"
 ]
 
-# all = [
-#   "former_all",
-#   "woptions_all",
-#   "iter_tools_all",
-#   "meta_tools_all",
-#   "typing_tools_all",
-#   "time_tools_all",
-#   "wstring_tools_all",
-#   "werror_all",
-#   "winterval_all",
-#   "derive_tools_all",
-#   "dt_all",
-#   "diagnostics_all",
-# ]
+all = [
+  # "former_all",
+  # "woptions_all",
+  # "iter_tools_all",
+  # "meta_tools_all",
+  # "typing_tools_all",
+  # "time_tools_all",
+  # "wstring_tools_all",
+  # "werror_all",
+  # "winterval_all",
+  "derive_all",
+  # "dt_all",
+  # "diagnostics_all",
+]
 
 default = [
   "former_default",
@@ -174,7 +175,7 @@ default = [
   "wstring_tools_default",
   "werror_default",
   "winterval_default",
-  "derive_tools_default",
+  "derive_default",
   "dt_default",
   "diagnostics_default",
 ]

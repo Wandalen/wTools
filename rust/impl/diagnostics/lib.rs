@@ -16,7 +16,7 @@ pub mod layout;
 /// Dependencies.
 pub mod dependencies
 {
-  #[ cfg( feature = "assertions" ) ]
+  #[ cfg( feature = "runtime_assertions" ) ]
   pub use ::pretty_assertions;
 }
 

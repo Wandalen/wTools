@@ -1,9 +1,6 @@
 
 use test_tools::*;
-
 use super::TheModule;
-
-// xxx : qqq : for Dima : removoe the feature? /* aaa : Dmytro : removed */
 
 //
 
