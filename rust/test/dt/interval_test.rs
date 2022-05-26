@@ -1,7 +1,6 @@
 
+use super::TheModule;
 use test_tools::*;
-
-use winterval as TheModule;
 
 //
 

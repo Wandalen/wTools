@@ -1,6 +1,9 @@
 
-use wtools::former as TheModule;
-use wtools::former;
+// use wtools::former as TheModule;
+// use wtools::former;
+
+use super::TheModule::former as TheModule;
+use TheModule;
 
 #[ allow( unused_imports ) ]
 use TheModule::prelude::*;

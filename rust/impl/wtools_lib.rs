@@ -31,27 +31,28 @@
 /// Dependencies.
 pub mod dependencies
 {
-  #[ cfg( feature = "former" ) ]
-  pub use ::former;
-  #[ cfg( feature = "woptions" ) ]
-  pub use ::woptions;
-  #[ cfg( feature = "meta_tools" ) ]
+  #[ cfg( feature = "meta_former" ) ]
+  pub use ::meta_tools::former;
+  #[ cfg( feature = "meta_options" ) ]
+  pub use ::meta_tools::woptions;
+
+  #[ cfg( feature = "meta" ) ]
   pub use ::meta_tools;
-  #[ cfg( feature = "impls_index" ) ]
-  pub use ::impls_index;
-  #[ cfg( feature = "mod_interface" ) ]
-  pub use ::mod_interface;
-  #[ cfg( feature = "typing_tools" ) ]
+  // #[ cfg( feature = "impls_index" ) ]
+  // pub use ::impls_index;
+  // #[ cfg( feature = "mod_interface" ) ]
+  // pub use ::mod_interface;
+  #[ cfg( feature = "typing" ) ]
   pub use ::typing_tools;
-  #[ cfg( feature = "time_tools" ) ]
+  #[ cfg( feature = "time" ) ]
   pub use ::time_tools;
-  #[ cfg( feature = "wstring_tools" ) ]
+  #[ cfg( feature = "string" ) ]
   pub use ::wstring_tools;
-  #[ cfg( feature = "werror" ) ]
+  #[ cfg( feature = "error" ) ]
   pub use ::werror;
-  #[ cfg( feature = "winterval" ) ]
-  pub use ::winterval;
-  #[ cfg( feature = "derive_tools" ) ]
+  // #[ cfg( feature = "winterval" ) ]
+  // pub use ::winterval;
+  #[ cfg( feature = "derive" ) ]
   pub use ::derive_tools;
   #[ cfg( feature = "diagnostics" ) ]
   pub use ::diagnostics_tools;
@@ -63,30 +64,29 @@ pub mod protected
 {
   pub use super::orphan::*;
 
-  #[ cfg( feature = "iter_tools" ) ]
+  #[ cfg( feature = "iter" ) ]
   pub use ::iter_tools as iter;
-  #[ cfg( feature = "meta_tools" ) ]
+  #[ cfg( feature = "meta" ) ]
   pub use ::meta_tools as meta;
-  #[ cfg( feature = "typing_tools" ) ]
+  #[ cfg( feature = "typing" ) ]
   pub use ::typing_tools as typing;
   #[ cfg( feature = "diagnostics" ) ]
   pub use ::diagnostics_tools as diagnostics;
   #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
   pub use ::data_type as dt;
-  #[ cfg( feature = "time_tools" ) ]
+  #[ cfg( feature = "time" ) ]
   pub use ::time_tools as time;
-  #[ cfg( feature = "werror" ) ]
+  #[ cfg( feature = "error" ) ]
   pub use ::werror as error;
-  #[ cfg( feature = "former" ) ]
-  pub use ::former as former;
-  #[ cfg( feature = "woptions" ) ]
-  pub use ::woptions as options;
-  #[ cfg( feature = "winterval" ) ]
-  pub use ::winterval as interval;
-  #[ cfg( feature = "wstring_tools" ) ]
+  #[ cfg( feature = "string" ) ]
   pub use ::wstring_tools as string;
-  #[ cfg( feature = "derive_tools" ) ]
+  #[ cfg( feature = "derive" ) ]
   pub use ::derive_tools as derive;
+
+  #[ cfg( feature = "meta_former" ) ]
+  pub use ::meta_tools::former as former;
+  #[ cfg( feature = "meta_options" ) ]
+  pub use ::meta_tools::woptions as options;
 
 }
 
@@ -102,57 +102,57 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
-  #[ cfg( feature = "iter_tools" ) ]
+  #[ cfg( feature = "iter" ) ]
   pub use super::iter::exposed::*;
-  #[ cfg( feature = "meta_tools" ) ]
+  #[ cfg( feature = "meta" ) ]
   pub use super::meta::exposed::*;
-  #[ cfg( feature = "typing_tools" ) ]
+  #[ cfg( feature = "typing" ) ]
   pub use super::typing::exposed::*;
   #[ cfg( feature = "diagnostics" ) ]
   pub use super::diagnostics::exposed::*;
   #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
   pub use super::dt::exposed::*;
-  #[ cfg( feature = "time_tools" ) ]
+  #[ cfg( feature = "time" ) ]
   pub use super::time::exposed::*;
-  #[ cfg( feature = "werror" ) ]
+  #[ cfg( feature = "error" ) ]
   pub use super::error::exposed::*;
-  #[ cfg( feature = "former" ) ]
-  pub use super::former::exposed::*;
-  #[ cfg( feature = "woptions" ) ]
-  pub use super::options::exposed::*;
-  #[ cfg( feature = "winterval" ) ]
-  pub use super::interval::exposed::*;
-  #[ cfg( feature = "wstring_tools" ) ]
+  #[ cfg( feature = "string" ) ]
   pub use super::string::exposed::*;
-  #[ cfg( feature = "derive_tools" ) ]
+  #[ cfg( feature = "derive" ) ]
   pub use super::derive::exposed::*;
+
+  #[ cfg( feature = "meta_former" ) ]
+  pub use super::former::exposed::*;
+  #[ cfg( feature = "meta_options" ) ]
+  pub use super::options::exposed::*;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  #[ cfg( feature = "iter_tools" ) ]
+  #[ cfg( feature = "iter" ) ]
   pub use super::iter::prelude::*;
-  #[ cfg( feature = "meta_tools" ) ]
+  #[ cfg( feature = "meta" ) ]
   pub use super::meta::prelude::*;
-  #[ cfg( feature = "typing_tools" ) ]
+  #[ cfg( feature = "typing" ) ]
   pub use super::typing::prelude::*;
   #[ cfg( feature = "diagnostics" ) ]
   pub use super::diagnostics::prelude::*;
   #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
   pub use super::dt::prelude::*;
-  #[ cfg( feature = "time_tools" ) ]
+  #[ cfg( feature = "time" ) ]
   pub use super::time::prelude::*;
-  #[ cfg( feature = "werror" ) ]
+  #[ cfg( feature = "error" ) ]
   pub use super::error::prelude::*;
-  #[ cfg( feature = "former" ) ]
-  pub use super::former::prelude::*;
-  #[ cfg( feature = "woptions" ) ]
-  pub use super::options::prelude::*;
-  #[ cfg( feature = "winterval" ) ]
-  pub use super::interval::prelude::*;
-  #[ cfg( feature = "wstring_tools" ) ]
+  #[ cfg( feature = "string" ) ]
   pub use super::string::prelude::*;
-  #[ cfg( feature = "derive_tools" ) ]
+  #[ cfg( feature = "derive" ) ]
   pub use super::derive::prelude::*;
+
+  #[ cfg( feature = "meta_former" ) ]
+  pub use super::former::prelude::*;
+  #[ cfg( feature = "meta_options" ) ]
+  pub use super::options::prelude::*;
+
 }
