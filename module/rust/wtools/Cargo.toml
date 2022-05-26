@@ -136,6 +136,7 @@ dt_default = [ "data_type/default" ]
 dt_all = [ "data_type/all" ]
 dt_either = [ "data_type/either" ]
 dt_type_constructor = [ "data_type/type_constructor" ]
+dt_type_make = [ "data_type/make" ]
 
 # diagnostics
 
