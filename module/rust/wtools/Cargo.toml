@@ -70,8 +70,17 @@ iter_use_alloc = [ "iter_tools/use_alloc" ]
 # meta
 
 meta = [ "meta_tools" ]
-meta_default = [ "meta_tools/default" ]
+meta_default = [
+  "meta",
+  "meta_for_each",
+  "meta_impls_index",
+  "meta_mod_interface",
+  "meta_former",
+  "meta_options",
+  "meta_collection_make",
+]
 meta_all = [
+  "meta",
   "meta_for_each",
   "meta_impls_index",
   "meta_mod_interface",
@@ -131,6 +140,9 @@ error_all = [ "error" ]
 derive = [ "derive_tools" ]
 derive_all = [
 
+  "derive",
+  "derive_nightly",
+
   "derive_add_assign",
   "derive_add",
   "derive_as_mut",
@@ -160,9 +172,37 @@ derive_all = [
 
 ]
 derive_default = [
-  "derive_tools",
-  "derive_tools/default",
+
+  "derive",
+  "derive_nightly",
+
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
   "derive_from_str",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_display",
+  "derive_from_str",
+
 ]
 derive_nightly = [
   "derive_tools/nightly"

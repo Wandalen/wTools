@@ -45,6 +45,12 @@ pub mod exposed
   pub use ::woptions::exposed::*;
   #[ cfg( feature = "former" ) ]
   pub use ::former::exposed::*;
+
+  #[ cfg( feature = "options" ) ]
+  pub use ::woptions as options;
+  #[ cfg( feature = "former" ) ]
+  pub use ::former as former;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

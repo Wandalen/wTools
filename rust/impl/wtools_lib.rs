@@ -34,7 +34,7 @@ pub mod dependencies
   #[ cfg( feature = "meta_former" ) ]
   pub use ::meta_tools::former;
   #[ cfg( feature = "meta_options" ) ]
-  pub use ::meta_tools::woptions;
+  pub use ::meta_tools::options;
 
   #[ cfg( feature = "meta" ) ]
   pub use ::meta_tools;
@@ -86,7 +86,7 @@ pub mod protected
   #[ cfg( feature = "meta_former" ) ]
   pub use ::meta_tools::former as former;
   #[ cfg( feature = "meta_options" ) ]
-  pub use ::meta_tools::woptions as options;
+  pub use ::meta_tools::options as options;
 
 }
 

@@ -3,7 +3,7 @@
 // use wtools::former;
 
 use super::TheModule::former as TheModule;
-use TheModule;
+use TheModule as former;
 
 #[ allow( unused_imports ) ]
 use TheModule::prelude::*;

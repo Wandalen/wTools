@@ -1,5 +1,5 @@
 
-use super::TheModule::dependencies::woptions as TheModule;
+use super::TheModule::options as TheModule;
 use super::TheModule::former::Former;
 
 mod runtime_test;
