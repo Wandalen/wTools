@@ -49,7 +49,6 @@ name = "wtools_trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
-<<<<<<< HEAD
 former_default = [ "former/default" ]
 former_meta = [ "former/meta" ]
 former_runtime = [ "former/runtime" ]
