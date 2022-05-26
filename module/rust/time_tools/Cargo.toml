@@ -42,7 +42,7 @@ name = "time_tools_trivial"
 path = "sample/rust/time_tools_trivial/src/main.rs"
 
 [dependencies]
-chrono = "~0.4"
+chrono = { version = "~0.4", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
