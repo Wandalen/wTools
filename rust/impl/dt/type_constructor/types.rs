@@ -31,32 +31,36 @@ mod internal
   /// - `HomoPair` to wrap pair of elements with the same type.
   /// - `Many` to wrap `Vec` of elements.
   ///
+  ///
   /// ## Macro `types` for type constructing
   ///
   /// The same macro `types` is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
   ///
   /// ```rust
-  /// use type_constructor::prelude::*;
-  ///
-  /// types!
+  /// #[ cfg( feature = "types" ) ]
   /// {
+  ///   use type_constructor::prelude::*;
   ///
-  ///   single MySingle : f32;
-  ///   single SingleWithParametrized : std::sync::Arc< T : Copy >;
-  ///   single SingleWithParameter : < T >;
+  ///   types!
+  ///   {
   ///
-  ///   pair MyPair : f32;
-  ///   pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
-  ///   pair PairWithParameter : < T1, T2 >;
+  ///     single MySingle : f32;
+  ///     single SingleWithParametrized : std::sync::Arc< T : Copy >;
+  ///     single SingleWithParameter : < T >;
   ///
-  ///   pair MyHomoPair : f32;
-  ///   pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
-  ///   pair HomoPairWithParameter : < T >;
+  ///     pair MyPair : f32;
+  ///     pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
+  ///     pair PairWithParameter : < T1, T2 >;
   ///
-  ///   many MyMany : f32;
-  ///   many ManyWithParametrized : std::sync::Arc< T : Copy >;
-  ///   many ManyWithParameter : < T >;
+  ///     pair MyHomoPair : f32;
+  ///     pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
+  ///     pair HomoPairWithParameter : < T >;
   ///
+  ///     many MyMany : f32;
+  ///     many ManyWithParametrized : std::sync::Arc< T : Copy >;
+  ///     many ManyWithParameter : < T >;
+  ///
+  ///   }
   /// }
   /// ```
   ///
@@ -67,6 +71,7 @@ mod internal
   /// Macro `types` is exposed to generate new types, but in some cases, it is enough to reuse already generated types of such kind. The library ships such types: Single, Pair, Homopair, Many. Note: If you avoid generating new types you will get in a position to be not able to define your own implementation of foreign traits because of orphan rule.
   ///
   /// ```rust
+  ///
   /// let i32_in_tuple = type_constructor::Single::< i32 >::from( 13 );
   /// dbg!( i32_in_tuple );
   /// // i32_in_tuple = Single( 13 )
@@ -79,25 +84,10 @@ mod internal
   /// let vec_of_i32_in_tuple = type_constructor::Many::< i32 >::from( [ 1, 2, 3 ] );
   /// dbg!( vec_of_i32_in_tuple );
   /// // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+  ///
   /// ```
   ///
-  /// ### Sample :: homopair with parameters
-  ///
-  /// Unlike `heteropair` `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or array, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tuple, array, slice, scalar.
-  ///
-  ///
-  /// ## Make.
-  ///
-  /// Make is the variadic constructor. It's the unified interface of the arbitrary-length constructor.
-  /// After implementing several traits `Make0`, `Make1` up to `MakeN` one can use make `make!` to construct instances.
-  ///
-  /// ```rust ignore
-  /// let instance1 : Struct1 = make!();
-  /// let instance2 : Struct1 = make!( 13 );
-  /// let instance3 : Struct1 = make!( 1, 3 );
-  /// ```
-  ///
-  /// ### Sample :: single line single.
+  /// ### Sample :: single-line single.
   ///
   /// To define your own single-use macro `types!`. The single-line definition looks like that.
   ///
@@ -269,7 +259,7 @@ mod internal
   /// dbg!( x );
   /// ```
   ///
-  /// It generates code:
+  /// It gererates code:
   ///
   /// ```rust
   /// #[ derive( Debug ) ]
@@ -314,38 +304,7 @@ mod internal
   /// It generates code:
   ///
   /// ```rust
-  /// use type_constructor::prelude::*;
-  ///
-  /// pub struct MyPair( pub i32, pub i64 );
-  ///
-  /// impl From< ( i32, i64 ) > for MyPair
-  /// {
-  ///   fn from( src : ( i32, i64 ) ) -> Self
-  ///   {
-  ///     Self( src.0, src.1 )
-  ///   }
-  /// }
-  ///
-  /// impl From< MyPair > for ( i32, i64 )
-  /// {
-  ///   fn from( src : MyPair ) -> Self
-  ///   {
-  ///     ( src.0, src.1 )
-  ///   }
-  /// }
-  ///
-  /// #[ cfg( feature = "make" ) ]
-  /// impl Make2< i32, i64 > for MyPair
-  /// {
-  ///   fn make_2( _0 : i32, _1 : i64 ) -> Self
-  ///   {
-  ///     Self( _0, _1 )
-  ///   }
-  /// }
-  ///
-  /// let x = MyPair( 13, 31 );
-  /// println!( "x : ( {}, {} )", x.0, x.1 );
-  ///```
+  /// ```
   ///
   /// ### Sample :: pair with parameters
   ///
@@ -402,6 +361,7 @@ mod internal
   ///   fn from( src : MyPair< T1, T2 > ) -> Self { ( src.0, src.1 ) }
   /// }
   ///
+  /// #[ cfg( feature = "make" ) ]
   /// impl< T1 : fmt::Debug, T2 : fmt::Debug > Make0 for MyPair< T1, T2 >
   /// where
   ///   T1 : Default,
@@ -410,6 +370,7 @@ mod internal
   ///   fn make_0() -> Self { Self( Default::default(), Default::default() ) }
   /// }
   ///
+  /// #[ cfg( feature = "make" ) ]
   /// impl< T1 : fmt::Debug, T2 : fmt::Debug > Make2< T1, T2 > for MyPair< T1, T2 >
   /// {
   ///   fn make_2( _0 : T1, _1 : T2 ) -> Self { Self( _0, _1 ) }
@@ -430,9 +391,10 @@ mod internal
   /// types!( pair MyPair : i32, i64 );
   /// let x = MyPair( 13, 31 );
   /// println!( "x : ( {}, {} )", x.0, x.1 );
+  /// // prints : x : ( 13, 31 )
   /// ```
   ///
-  /// It generates code:
+  /// It gererates code:
   ///
   /// ```rust
   /// use type_constructor::prelude::*;
@@ -483,196 +445,9 @@ mod internal
   /// // prints : &clone_as_tuple = ( 13, 31 )
   /// ```
   ///
-  /// It generates code:
+  /// It gererates code:
   ///
   /// ```rust
-  /// use type_constructor::prelude::*;
-  /// use core::fmt;
-  ///
-  /// pub struct MyHomoPair< T : fmt::Debug >( pub T, pub T );
-  ///
-  /// #[ automatically_derived ]
-  /// #[ allow( unused_qualifications ) ]
-  /// impl< T : ::core::fmt::Debug + fmt::Debug > ::core::fmt::Debug for MyHomoPair< T >
-  /// {
-  ///   fn fmt( &self, f : &mut ::core::fmt::Formatter ) -> ::core::fmt::Result
-  ///   {
-  ///     match *self
-  ///     {
-  ///       MyHomoPair( ref __self_0_0, ref __self_0_1 ) =>
-  ///       {
-  ///         let debug_trait_builder = &mut ::core::fmt::Formatter::debug_tuple( f, "MyHomoPair" );
-  ///         let _ = ::core::fmt::DebugTuple::field( debug_trait_builder, &&( *__self_0_0 ) );
-  ///         let _ = ::core::fmt::DebugTuple::field( debug_trait_builder, &&( *__self_0_1 ) );
-  ///         ::core::fmt::DebugTuple::finish( debug_trait_builder )
-  ///       }
-  ///     }
-  ///   }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > core::ops::Deref for MyHomoPair< T >
-  /// {
-  ///   type Target = ( T, T );
-  ///
-  ///   fn deref( &self ) -> &Self::Target
-  ///   {
-  ///     #[ cfg( debug_assertions ) ]
-  ///     {
-  ///       let layout1 = std::alloc::Layout::new::< Self >();
-  ///       let layout2 = std::alloc::Layout::new::< Self::Target >();
-  ///       if true
-  ///       {
-  ///         match ( &layout1, &layout2 )
-  ///         {
-  ///           ( left_val, right_val ) =>
-  ///           {
-  ///             if !( *left_val == *right_val )
-  ///             {
-  ///               let kind = ::core::panicking::AssertKind::Eq;
-  ///               ::core::panicking::assert_failed( kind, &*left_val, &*right_val, ::core::option::Option::None );
-  ///             }
-  ///           }
-  ///         };
-  ///       };
-  ///     }
-  ///     unsafe { std::mem::transmute::< _, _ >( self ) }
-  ///   }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > core::ops::DerefMut for MyHomoPair< T >
-  /// {
-  ///   fn deref_mut( &mut self ) -> &mut Self::Target
-  ///   {
-  ///     #[ cfg( debug_assertions ) ]
-  ///     {
-  ///       let layout1 = std::alloc::Layout::new::< Self >();
-  ///       let layout2 = std::alloc::Layout::new::< Self::Target >();
-  ///       if true
-  ///       {
-  ///         match ( &layout1, &layout2 )
-  ///         {
-  ///           ( left_val, right_val ) =>
-  ///           {
-  ///             if !( *left_val == *right_val )
-  ///             {
-  ///               let kind = ::core::panicking::AssertKind::Eq;
-  ///               ::core::panicking::assert_failed( kind, &*left_val, &*right_val, ::core::option::Option::None );
-  ///             }
-  ///           }
-  ///         };
-  ///       };
-  ///     }
-  ///     unsafe { std::mem::transmute::< _, _ >( self ) }
-  ///   }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > From< ( T, T ) > for MyHomoPair< T >
-  /// {
-  ///   fn from( src : ( T, T ) ) -> Self { Self( src.0, src.1 ) }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > From< MyHomoPair< T > > for ( T, T )
-  /// {
-  ///   fn from( src : MyHomoPair< T > ) -> Self { ( src.0, src.1 ) }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > From< [ T; 2 ] > for MyHomoPair< T >
-  /// where
-  ///   T : Clone,
-  /// {
-  ///   fn from( src : [ T; 2] ) -> Self { Self( src[ 0 ].clone(), src[ 1 ].clone() ) }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > From< MyHomoPair< T > > for [ T; 2 ]
-  /// {
-  ///   fn from( src : MyHomoPair< T > ) -> Self { [ src.0, src.1 ] }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > From< &[ T ] > for MyHomoPair< T >
-  /// where
-  ///   T : Clone,
-  /// {
-  ///   fn from( src : &[ T ] ) -> Self
-  ///   {
-  ///     if true
-  ///     {
-  ///       match ( &src.len(), &2 )
-  ///       {
-  ///         ( left_val, right_val ) =>
-  ///         {
-  ///           if !( *left_val == *right_val )
-  ///           {
-  ///             let kind = ::core::panicking::AssertKind::Eq;
-  ///             ::core::panicking::assert_failed( kind, &*left_val, &*right_val, ::core::option::Option::None );
-  ///           }
-  ///         }
-  ///       };
-  ///     };
-  ///     Self( src[ 0 ].clone(), src[ 1 ].clone() )
-  ///   }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > From< T > for MyHomoPair< T >
-  /// where
-  ///   T : Clone,
-  /// {
-  ///   fn from( src : T ) -> Self { Self( src.clone(), src.clone() ) }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > CloneAsTuple< ( T, T ) > for MyHomoPair< T >
-  /// where
-  ///   T : Clone,
-  /// {
-  ///   fn clone_as_tuple( &self ) -> ( T, T ) { ( self.0.clone(), self.1.clone() ) }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > CloneAsArray< T, 2 > for MyHomoPair< T >
-  /// where
-  ///   T : Clone,
-  /// {
-  ///   fn clone_as_array( &self ) -> [ T; 2 ] { [ self.0.clone(), self.1.clone() ] }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > AsTuple< ( T, T ) > for MyHomoPair< T >
-  /// {
-  ///   fn as_tuple( &self ) -> &( T, T ) { unsafe { std::mem::transmute::< &_, &( T, T ) >( self ) } }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > AsArray< T, 2 > for MyHomoPair< T >
-  /// {
-  ///   fn as_array( &self ) -> &[ T; 2 ] { unsafe { std::mem::transmute::< &_, &[ T; 2 ] >( self ) } }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > AsSlice< T > for MyHomoPair< T >
-  /// {
-  ///   fn as_slice( &self ) -> &[ T ] { &self.as_array()[ .. ] }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > Make0 for MyHomoPair< T >
-  /// where
-  ///   T : Default,
-  /// {
-  ///   fn make_0() -> Self { Self( Default::default(), Default::default() ) }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > Make1< T > for MyHomoPair< T >
-  /// where
-  ///   T : Clone,
-  /// {
-  ///   fn make_1( _0 : T ) -> Self { Self( _0.clone(), _0.clone() ) }
-  /// }
-  ///
-  /// impl< T : fmt::Debug > Make2< T, T > for MyHomoPair< T >
-  /// {
-  ///   fn make_2( _0 : T, _1 : T ) -> Self { Self( _0, _1 ) }
-  /// }
-  ///
-  /// let x = MyHomoPair( 13, 31 );
-  /// dbg!( &x );
-  /// let clone_as_array : [ i32; 2 ] = x.clone_as_array();
-  /// dbg!( &clone_as_array );
-  /// let clone_as_tuple : ( i32, i32 ) = x.clone_as_tuple();
-  /// dbg!( &clone_as_tuple );
   /// ```
   ///
   /// ### Sample :: single-line many
@@ -690,96 +465,64 @@ mod internal
   /// It generates code:
   ///
   /// ```rust
-  /// use type_constructor::prelude::*;
+  /// ```
   ///
-  /// pub struct MyMany( pub std::vec::Vec< i32 > );
+  /// ### Sample :: make - variadic constructor
   ///
-  /// impl core::ops::Deref for MyMany
+  /// Implement traits [Make0], [Make1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
+  /// In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.
+  /// - Constructor without arguments fills fields with zero.
+  /// - Constructor with a single argument sets both fields to the value of the argument.
+  /// - Constructor with 2 arguments set individual values of each field.
+  ///
+  /// ```rust
+  /// #[ cfg( feature = "make" ) ]
   /// {
-  ///   type Target = std::vec::Vec< i32 >;
+  ///   use type_constructor::prelude::*;
   ///
-  ///   fn deref( &self ) -> &Self::Target { &self.0 }
-  /// }
-  ///
-  /// impl core::ops::DerefMut for MyMany
-  /// {
-  ///   fn deref_mut( &mut self ) -> &mut Self::Target { &mut self.0 }
-  /// }
-  ///
-  /// impl From< i32 > for MyMany
-  /// {
-  ///   fn from( src : i32 ) -> Self { Self( < [ _ ] >::into_vec( box [ src ] ) ) }
-  /// }
-  ///
-  /// impl From< ( i32, ) > for MyMany
-  /// {
-  ///   fn from( src : ( i32, ) ) -> Self { Self( < [ _ ] >::into_vec( box [ src.0 ] ) ) }
-  /// }
-  ///
-  /// impl< const N : usize > From< [ i32; N ] > for MyMany
-  /// where
-  ///   i32 : Clone,
-  /// {
-  ///   fn from( src : [ i32; N ] ) -> Self { Self( std::vec::Vec::from( src ) ) }
-  /// }
-  ///
-  /// impl From< &[ i32 ] > for MyMany
-  /// where
-  ///   i32 : Clone,
-  /// {
-  ///   fn from( src : &[ i32 ] ) -> Self
+  ///   #[ derive( Debug, PartialEq ) ]
+  ///   struct Struct1
   ///   {
-  ///     if true
-  ///     {
-  ///       match ( &src.len(), &1 )
-  ///       {
-  ///         ( left_val, right_val ) =>
-  ///         {
-  ///           if !( *left_val == *right_val )
-  ///           {
-  ///             let kind = ::core::panicking::AssertKind::Eq;
-  ///             ::core::panicking::assert_failed( kind, &*left_val, &*right_val, ::core::option::Option::None );
-  ///           }
-  ///         }
-  ///       };
-  ///     };
-  ///     Self( std::vec::Vec::from( src ) )
+  ///     a : i32,
+  ///     b : i32,
   ///   }
-  /// }
   ///
-  /// impl AsSlice< i32 > for MyMany
-  /// where
-  ///   i32 : Clone,
-  /// {
-  ///   fn as_slice( &self ) -> &[ i32 ] { &self[ .. ] }
-  /// }
+  ///   impl Make0 for Struct1
+  ///   {
+  ///     fn make_0() -> Self
+  ///     {
+  ///       Self { a : 0, b : 0 }
+  ///     }
+  ///   }
   ///
-  /// #[ cfg( feature = "make" ) ]
-  /// impl Make0 for MyMany
-  /// {
-  ///   fn make_0( ) -> Self { Self( std::vec::Vec::< i32 >::new( ) ) }
-  /// }
+  ///   impl Make1< i32 > for Struct1
+  ///   {
+  ///     fn make_1( val : i32 ) -> Self
+  ///     {
+  ///       Self { a : val, b : val }
+  ///     }
+  ///   }
   ///
-  /// #[ cfg( feature = "make" ) ]
-  /// impl Make1< i32 > for MyMany
-  /// {
-  ///   fn make_1( _0 : i32 ) -> Self { Self( < [ _ ] >::into_vec( box [ _0 ] ) ) }
-  /// }
+  ///   impl Make2< i32, i32 > for Struct1
+  ///   {
+  ///     fn make_2( val1 : i32, val2 : i32 ) -> Self
+  ///     {
+  ///       Self { a : val1, b : val2 }
+  ///     }
+  ///   }
   ///
-  /// #[ cfg( feature = "make" ) ]
-  /// impl Make2< i32, i32 > for MyMany
-  /// {
-  ///   fn make_2( _0 : i32, _1 : i32 ) -> Self { Self( < [ _ ] >::into_vec( box [ _0, _1 ] ) ) }
-  /// }
+  ///   let got : Struct1 = make!();
+  ///   let exp = Struct1{ a : 0, b : 0 };
+  ///   assert_eq!( got, exp );
   ///
-  /// #[ cfg( feature = "make" ) ]
-  /// impl Make3< i32, i32, i32 > for MyMany
-  /// {
-  ///   fn make_3( _0 : i32, _1 : i32, _2 : i32 ) -> Self { Self( < [ _ ] >::into_vec( box [ _0, _1, _2 ] ) ) }
-  /// }
+  ///   let got : Struct1 = make!( 13 );
+  ///   let exp = Struct1{ a : 13, b : 13 };
+  ///   assert_eq!( got, exp );
   ///
-  /// let x = MyMany::from( [ 1, 2, 3 ] );
-  /// println!( "x : {:?}", x.0 );
+  ///   let got : Struct1 = make!( 1, 3 );
+  ///   let exp = Struct1{ a : 1, b : 3 };
+  ///   assert_eq!( got, exp );
+  /// }
   /// ```
 
   // #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
