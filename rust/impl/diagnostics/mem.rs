@@ -3,6 +3,21 @@ mod internal
 {
 
   ///
+  /// Compile-time assertion that two types have the same size.
+  ///
+
+  #[ cfg( feature = "ct" ) ]
+  #[macro_export]
+  macro_rules! ct_type_same_size
+  {
+    ( $Type1:ty, $Type2:ty $(,)? ) =>
+    {{
+      let _ = core::mem::transmute::< $Type1, $Type2 >;
+      true
+    }}
+  }
+
+  ///
   /// Compile-time assertion that memory behind two references have the same size.
   ///
 
@@ -35,10 +50,11 @@ mod internal
   {
     ( $Ins1:expr, $Ins2:expr $(,)? ) =>
     {{
-      $crate::ct_ptr_same_size!( &$Ins1, &$Ins2 );
+      $crate::ct_ptr_same_size!( &$Ins1, &$Ins2 )
     }}
   }
 
+  pub use ct_type_same_size;
   pub use ct_ptr_same_size;
   pub use ct_mem_same_size;
 }
@@ -69,6 +85,7 @@ pub mod prelude
 {
   pub use super::internal::
   {
+    ct_type_same_size,
     ct_ptr_same_size,
     ct_mem_same_size,
   };
