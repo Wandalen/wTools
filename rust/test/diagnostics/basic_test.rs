@@ -22,60 +22,13 @@ tests_impls!
 
   }
 
-  #[ cfg( feature = "ct" ) ]
+  #[ cfg( feature = "compiletime_assertions" ) ]
   #[ test ]
-  fn ct_true_test()
+  fn cta_true_test()
   {
 
-    ct_true!( all( feature = "ct", all() ) );
-
-  }
-
-  #[ cfg( feature = "ct" ) ]
-  #[ test ]
-  fn ct_type_same_size_test()
-  {
-
-    struct Int( i16 );
-    let got = ct_type_same_size!( Int, i16 );
-    assert!( got );
-    // ct_type_same_size!( Int, i32 );
-
-  }
-
-  #[ cfg( feature = "ct" ) ]
-  #[ test ]
-  fn ct_ptr_same_size_test()
-  {
-
-    struct Int( i16 );
-    let ins1 = Int( 31 );
-    let ins2 = 13_i16;
-    let got = ct_ptr_same_size!( &ins1, &ins2 );
-    assert!( got );
-    let got = ct_ptr_same_size!( &ins1, &ins2 );
-    assert!( got );
-    let got = ct_ptr_same_size!( &ins1, &31_i16 );
-    assert!( got );
-    // ct_ptr_same_size!( &ins1, &13_i32 );
-
-  }
-
-  #[ cfg( feature = "ct" ) ]
-  #[ test ]
-  fn ct_mem_same_size_test()
-  {
-
-    struct Int( i16 );
-    let ins1 = Int( 31 );
-    let ins2 = 13_i16;
-    let got = ct_mem_same_size!( ins1, ins2 );
-    assert!( got );
-    let got = ct_mem_same_size!( ins1, ins2 );
-    assert!( got );
-    let got = ct_mem_same_size!( ins1, 31_i16 );
-    assert!( got );
-    // ct_mem_same_size!( ins1, 13_i32 );
+    cta_true!( all( feature = "compiletime_assertions", all() ) );
+    // xxx : try ( 1 + 2 == 3 )
 
   }
 
@@ -86,8 +39,5 @@ tests_impls!
 tests_index!
 {
   assertions,
-  ct_true_test,
-  ct_type_same_size_test,
-  ct_ptr_same_size_test,
-  ct_mem_same_size_test,
+  cta_true_test,
 }

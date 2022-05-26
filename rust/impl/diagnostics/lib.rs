@@ -11,7 +11,7 @@
 /// Compile-time asserting.
 pub mod diagnostics;
 /// Compile-time asserting of memory layout.
-pub mod mem;
+pub mod layout;
 
 /// Dependencies.
 pub mod dependencies
@@ -27,7 +27,7 @@ pub mod protected
   #[ doc( inline ) ]
   pub use super::diagnostics::orphan::*;
   #[ doc( inline ) ]
-  pub use super::mem::orphan::*;
+  pub use super::layout::orphan::*;
 }
 
 #[ doc( inline ) ]
@@ -46,7 +46,7 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use super::diagnostics::exposed::*;
   #[ doc( inline ) ]
-  pub use super::mem::exposed::*;
+  pub use super::layout::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -55,5 +55,5 @@ pub mod prelude
   #[ doc( inline ) ]
   pub use super::diagnostics::prelude::*;
   #[ doc( inline ) ]
-  pub use super::mem::prelude::*;
+  pub use super::layout::prelude::*;
 }

@@ -38,9 +38,10 @@ path = "rust/test/diagnostics/lib_test.rs"
 # zzz : xxx : implement
 
 [features]
-default = [ "assertions", "ct" ]
-assertions = [ "pretty_assertions" ] # run-time assertions
-ct = [] # compile-time assertions
+default = [ "runtime_assertions", "compiletime_assertions" ]
+all = [ "runtime_assertions", "compiletime_assertions" ]
+runtime_assertions = [ "pretty_assertions" ] # run-time assertions
+compiletime_assertions = [] # compile-time assertions
 
 [package.metadata.docs.rs]
 all-features = true

@@ -1,4 +1,5 @@
 
+#[ cfg( feature = "compiletime_assertions" ) ]
 mod internal
 {
 
@@ -11,9 +12,9 @@ mod internal
   ///
   /// ```
 
-  #[ cfg( feature = "ct" ) ]
-  #[macro_export]
-  macro_rules! ct_true
+  // #[ cfg( feature = "compiletime_assertions" ) ]
+  #[ macro_export ]
+  macro_rules! cta_true
   {
     () => {};
     (
@@ -40,7 +41,8 @@ mod internal
     };
   }
 
-  pub use ct_true;
+  // #[ cfg( feature = "compiletime_assertions" ) ]
+  pub use cta_true;
 }
 
 /// Own namespace of the module.
@@ -74,8 +76,9 @@ pub mod prelude
   #[ doc( inline ) ]
   pub use ::pretty_assertions::assert_ne as a_not_id;
 
+  #[ cfg( feature = "compiletime_assertions" ) ]
   pub use super::internal::
   {
-    ct_true,
+    cta_true,
   };
 }
