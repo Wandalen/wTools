@@ -1,6 +1,6 @@
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
 
-![wTools](./asset/img/logo_v2_wide_trans.png)
+![wTools](./asset/img/logo_v3_trans_wide.png)
 
 #
 

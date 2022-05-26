@@ -273,6 +273,7 @@ tests_impls!
   {
     use core::fmt;
 
+    #[ allow( unused_macros ) ]
     macro_rules! mk
     {
       (

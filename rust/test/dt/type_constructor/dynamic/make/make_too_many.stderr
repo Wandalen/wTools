@@ -2,7 +2,7 @@ error: Variadic constructor supports up to 3 arguments.
        Open an issue if you need more.
        You passed:
        make! (0, 1, 2, 3)
- --> ../../../rust/test/dt/type_constructor/dynamic/types/make_too_many.rs:6:11
+ --> ../../../rust/test/dt/type_constructor/dynamic/make/make_too_many.rs:6:11
   |
 6 |   let x = make!( 0, 1, 2, 3 );
   |           ^^^^^^^^^^^^^^^^^^^
