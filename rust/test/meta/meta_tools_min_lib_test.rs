@@ -7,6 +7,5 @@
 
 include!( "../_conditional/local_module.rs" );
 
-use meta_tools as TheModule;
-
+use meta_tools_min as TheModule;
 mod inc;

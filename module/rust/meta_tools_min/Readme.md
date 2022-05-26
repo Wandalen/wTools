@@ -8,7 +8,7 @@ Collection of general purpose meta tools.
 Among other useful meta tools the module aggregates variadtic constructors of collections. For example macro `hmap!` for constructing a hash map.
 
 ```rust
-use meta_tools::*;
+use meta_tools_min::*;
 
 let meta_map = hmap! { 3 => 13 };
 let mut std_map = std::collections::HashMap::new();
@@ -25,7 +25,7 @@ Pass name of macro to apply to elements as the first arguments and elements afte
 Use comma as delimiter.
 
 ```rust
-use for_each::for_each;
+use meta_tools_min::*;
 for_each!( dbg, "a", "b", "c" );
 
 // generates

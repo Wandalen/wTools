@@ -25,7 +25,7 @@ Pass name of macro to apply to elements as the first arguments and elements afte
 Use comma as delimiter.
 
 ```rust
-use for_each::for_each;
+use meta_tools::*;
 for_each!( dbg, "a", "b", "c" );
 
 // generates
