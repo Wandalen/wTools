@@ -27,12 +27,15 @@ include = [
 [features]
 default = [
   "either",
+  "interval",
   "type_constructor/default",
 ]
 all = [
   "either",
+  "interval",
   "type_constructor/all",
 ]
+interval = [ "winterval" ]
 make = [ "type_constructor/make" ]
 
 [lib]
@@ -51,6 +54,7 @@ path = "rust/test/dt/data_type_lib_test.rs"
 [dependencies]
 either = { version = "~1.6", optional = true }
 type_constructor = { version = "~0.1", path = "../../rust/type_constructor", optional = true }
+winterval = { version = "~0.1", path = "../../rust/winterval", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

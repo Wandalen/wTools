@@ -49,14 +49,15 @@ name = "wtools_trivial"
 path = "sample/rust/wtools_trivial/src/main.rs"
 
 [features]
-former_default = [ "former/default" ]
-former_meta = [ "former/meta" ]
-former_runtime = [ "former/runtime" ]
 
-woptions_default = [ "woptions/default" ]
-woptions_meta = [ "woptions/meta" ]
-woptions_runtime = [ "woptions/runtime" ]
-woptions_former = [ "woptions/former" ]
+# former_default = [ "former/default" ]
+# former_meta = [ "former/meta" ]
+# former_runtime = [ "former/runtime" ]
+#
+# woptions_default = [ "woptions/default" ]
+# woptions_meta = [ "woptions/meta" ]
+# woptions_runtime = [ "woptions/runtime" ]
+# woptions_former = [ "woptions/former" ]
 
 # iter
 
@@ -74,12 +75,16 @@ meta_all = [
   "meta_for_each",
   "meta_impls_index",
   "meta_mod_interface",
+  "meta_former",
+  "meta_options",
   "meta_collection_make",
 ]
 meta_for_each = [ "meta_tools/for_each" ]
 meta_impls_index = [ "meta_tools/impls_index" ]
 meta_mod_interface = [ "meta_tools/mod_interface" ]
 meta_collection_make = [ "meta_tools/collection_make" ]
+meta_former = [ "meta_tools/former" ]
+meta_options = [ "meta_tools/options" ]
 
 # typing
 
@@ -115,11 +120,11 @@ error = [ "werror" ]
 error_default = [ "error" ]
 error_all = [ "error" ]
 
-# interval
-
-interval = [ "winterval" ]
-interval_default = [ "interval" ]
-interval_all = [ "interval" ]
+# # interval
+#
+# interval = [ "winterval" ]
+# interval_default = [ "interval" ]
+# interval_all = [ "interval" ]
 
 # derive
 
@@ -205,6 +210,7 @@ dt_all = [ "data_type/all" ]
 dt_either = [ "data_type/either" ]
 dt_type_constructor = [ "data_type/type_constructor" ]
 dt_make = [ "data_type/make" ]
+dt_internal = [ "data_type/interval" ]
 
 # diagnostics
 
@@ -228,22 +234,22 @@ all = [
   "time_all",
   "string_all",
   "error_all",
-  "interval_all",
+  # "interval_all",
   "derive_all",
   "dt_all",
   "diagnostics_all",
 ]
 
 default = [
-  "former_default",
-  "woptions_default",
+  # "former_default",
+  # "woptions_default",
   "iter_default",
   "meta_default",
   "typing_default",
   "time_default",
   "string_default",
   "error_default",
-  "interval_default",
+  # "interval_default",
   "derive_default",
   "dt_default",
   "diagnostics_default",
@@ -258,19 +264,28 @@ all-features = true
 # rustdoc-args = []
 
 [dependencies]
-former = { version = "~0.1", path = "../../rust/former", optional = true, default-features = false }
-woptions = { version = "~0.1", path = "../../rust/woptions", optional = true, default-features = false }
+
+# former = { version = "~0.1", path = "../../rust/former", optional = true, default-features = false }
+# woptions = { version = "~0.1", path = "../../rust/woptions", optional = true, default-features = false }
+
+# iter
 iter_tools = { version = "~0.1", path = "../../rust/iter_tools", optional = true, default-features = false }
 
 # meta
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools", optional = true, default-features = false }
 impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by meta_tools it should also be imported immediatly
 
+# typing
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = true, default-features = false }
+
+# time
 time_tools = { version = "~0.1", path = "../../rust/time_tools", optional = true, default-features = false }
+
+# sting
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools", optional = true, default-features = false }
+
+# err
 werror = { version = "~0.1", path = "../../rust/werror", optional = true, default-features = false }
-winterval = { version = "~0.1", path = "../../rust/winterval", optional = true, default-features = false }
 
 # derive
 derive_tools = { version = "~0.1", path = "../../rust/derive_tools", optional = true, default-features = false }
@@ -278,10 +293,10 @@ parse-display = { version = "~0.5", optional = true, default-features = false } 
 
 # data_type
 data_type = { version = "~0.1", path = "../../rust/data_type", optional = true, default-features = false }
+# winterval = { version = "~0.1", path = "../../rust/winterval", optional = true, default-features = false }
 
-# diagnostics_tools
+# diagnostics
 diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", optional = true } # xxx : qqq : for Dima : should also be optional
-
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

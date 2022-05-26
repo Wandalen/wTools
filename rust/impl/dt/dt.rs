@@ -26,13 +26,17 @@ pub mod exposed
   pub use ::either::Either;
   #[ cfg( feature = "type_constructor" ) ]
   pub use ::type_constructor::exposed::*;
+  #[ cfg( feature = "interval" ) ]
+  pub use ::winterval::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   #[ cfg( feature = "either" ) ]
-  pub use either::*;
+  pub use ::either::*;
   #[ cfg( feature = "type_constructor" ) ]
   pub use ::type_constructor::prelude::*;
+  #[ cfg( feature = "interval" ) ]
+  pub use ::winterval::prelude::*;
 }

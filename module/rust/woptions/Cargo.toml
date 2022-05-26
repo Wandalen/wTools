@@ -26,9 +26,11 @@ include = [
 ]
 
 [features]
-meta = [ "woptions_meta" ]
-runtime = [ "woptions_runtime" ]
-default = [ "meta", "runtime", "former" ]
+# meta = [ "woptions_meta" ]
+# runtime = [ "woptions_runtime" ]
+# default = [ "meta", "runtime", "former" ]
+default = []
+all = []
 
 [lib]
 name = "woptions"
@@ -43,13 +45,10 @@ name = "woptions_trivial"
 path = "sample/rust/woptions_trivial/src/main.rs"
 
 [dependencies]
-woptions_meta = { version = "~0.1", path = "../../rust/woptions_meta", optional = true, default-features = false }
-woptions_runtime = { version = "~0.1", path = "../../rust/woptions_runtime", optional = true, default-features = false }
-former = { version = "~0.1", path = "../../rust/former", optional = true, default-features = false }
-# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
+woptions_meta = { version = "~0.1", path = "../../rust/woptions_meta" }
+woptions_runtime = { version = "~0.1", path = "../../rust/woptions_runtime" }
+former = { version = "~0.1", path = "../../rust/former" }
+# meta_tools_min = { version = "~0.2", path = "../../rust/meta_tools_min" }
 
 [dev-dependencies]
-# anyhow = "~1.0"
-# trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-# rustversion = "~1.0"

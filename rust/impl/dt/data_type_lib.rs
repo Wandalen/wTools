@@ -15,7 +15,12 @@ pub mod dt;
 /// Dependencies.
 pub mod dependencies
 {
+  #[ cfg( feature = "either" ) ]
   pub use ::either;
+  #[ cfg( feature = "type_constructor" ) ]
+  pub use ::type_constructor;
+  #[ cfg( feature = "interval" ) ]
+  pub use ::winterval;
 }
 
 /// Protected namespace of the module.

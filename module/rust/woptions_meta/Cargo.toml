@@ -31,13 +31,11 @@ name = "woptions_meta"
 path = "rust/impl/options/meta/lib.rs"
 
 [dependencies]
-# proc-macro2 = "~1.0"
-# quote = "~1.0"
 convert_case = "~0.5" # xxx : move to string_tools
-# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
 proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
-meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
+# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
 iter_tools = { path = "../../rust/iter_tools", version = "~0.1" }
+meta_tools_min = { version = "~0.2", path = "../../rust/meta_tools_min" }
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = [ "diff" ] }

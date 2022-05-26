@@ -1,5 +1,5 @@
 
-use meta_tools::*;
+use meta_tools_min::*;
 use proc_macro_tools::quote::{ ToTokens, TokenStreamExt };
 use proc_macro_tools::syn::parse::*;
 use proc_macro_tools::syn::spanned::Spanned;

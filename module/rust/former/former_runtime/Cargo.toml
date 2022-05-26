@@ -37,6 +37,5 @@ path = "rust/test/former/runtime_test.rs"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# maplit = "~1.0.2"
-anyhow = "~1.0"
+meta_tools_min = { version = "~0.2", path = "../../rust/meta_tools_min" }
+# anyhow = "~1.0"

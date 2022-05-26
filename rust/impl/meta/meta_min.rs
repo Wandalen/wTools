@@ -16,10 +16,6 @@ pub mod protected
   pub use ::mod_interface::orphan::*;
   #[ cfg( feature = "for_each" ) ]
   pub use ::for_each::orphan::*;
-  #[ cfg( feature = "options" ) ]
-  pub use ::woptions::orphan::*;
-  #[ cfg( feature = "former" ) ]
-  pub use ::former::orphan::*;
 }
 
 pub use protected::*;
@@ -41,10 +37,6 @@ pub mod exposed
   pub use ::mod_interface::exposed::*;
   #[ cfg( feature = "for_each" ) ]
   pub use ::for_each::exposed::*;
-  #[ cfg( feature = "options" ) ]
-  pub use ::woptions::exposed::*;
-  #[ cfg( feature = "former" ) ]
-  pub use ::former::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -56,10 +48,6 @@ pub mod prelude
   pub use ::mod_interface::prelude::*;
   #[ cfg( feature = "for_each" ) ]
   pub use ::for_each::prelude::*;
-  #[ cfg( feature = "options" ) ]
-  pub use ::woptions::prelude::*;
-  #[ cfg( feature = "former" ) ]
-  pub use ::former::prelude::*;
   #[ cfg( feature = "collection_make" ) ]
   pub use ::literally::*;
 }

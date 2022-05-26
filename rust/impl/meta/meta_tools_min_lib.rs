@@ -4,7 +4,7 @@
 #![ warn( missing_docs ) ]
 
 //!
-//! Collection of general purpose meta tools.
+//! Collection of general purpose meta tools. Minimal Set.
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
@@ -18,13 +18,10 @@ pub mod dependencies
   pub use ::for_each;
   #[ cfg( feature = "impls_index" ) ]
   pub use ::impls_index;
-  #[ cfg( feature = "former" ) ]
-  pub use ::former;
-  #[ cfg( feature = "options" ) ]
-  pub use ::woptions;
 }
 
-/// Collection of general purpose meta tools.
+/// Collection of general purpose meta tools. Minimal Set.
+#[ path = "meta_min.rs" ]
 pub mod meta;
 
 /// Own namespace of the module.
