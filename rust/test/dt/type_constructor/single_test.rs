@@ -362,10 +362,13 @@ tests_impls!
     }
     // trace_macros!( false );
 
-    /* test.case( "make1" ) */
-    let got : Single< f32, f64 > = make!( mk!( 13.0 ) );
-    let exp = Single::< f32, f64 >::from( mk!( 13.0 ) );
-    a_id!( got, exp );
+    #[ cfg( feature = "make" ) ]
+    {
+      /* test.case( "make1" ) */
+      let got : Single< f32, f64 > = make!( mk!( 13.0 ) );
+      let exp = Single::< f32, f64 >::from( mk!( 13.0 ) );
+      a_id!( got, exp );
+    }
 
     /* test.case( "traits" ) */
     let instance1 = Single::< f32, f64 >::from( mk!( 13.0 ) );
@@ -505,9 +508,12 @@ tests_impls!
     }
 
     /* test.case( "make1" ) */
-    let got : Single< f32 > = make!( 13.0 );
-    let exp = Single::< f32 >::from( 13.0 );
-    a_id!( got, exp );
+    #[ cfg( feature = "make" ) ]
+    {
+      let got : Single< f32 > = make!( 13.0 );
+      let exp = Single::< f32 >::from( 13.0 );
+      a_id!( got, exp );
+    }
 
     /* test.case( "traits" ) */
     let instance1 = Single::< f32 >::from( 13.0 );
@@ -783,14 +789,20 @@ tests_impls!
     a_id!( got.0, 14.5 );
 
     /* test.case( "make0" ) */
-    let got : Single< f32 > = make!();
-    let exp = Single::< f32 >::from( 0.0 );
-    a_id!( got, exp );
+    #[ cfg( feature = "make" ) ]
+    {
+      let got : Single< f32 > = make!();
+      let exp = Single::< f32 >::from( 0.0 );
+      a_id!( got, exp );
+    }
 
     /* test.case( "make1" ) */
-    let got : Single< f32 > = make!( 13.0 );
-    let exp = Single::< f32 >::from( 13.0 );
-    a_id!( got, exp );
+    #[ cfg( feature = "make" ) ]
+    {
+      let got : Single< f32 > = make!( 13.0 );
+      let exp = Single::< f32 >::from( 13.0 );
+      a_id!( got, exp );
+    }
 
   }
 

@@ -54,23 +54,20 @@ It generates more than 1000 lines of code, which otherwise you would have to wri
 Macro `types` is exposed to generate new types, but in some cases, it is enough to reuse already generated types of such kind. The library ships such types: Single, Pair, Homopair, Many. Note: If you avoid generating new types you will get in a position to be not able to define your own implementation of foreign traits because of orphan rule.
 
 ```rust
-#[ cfg( feature = "types" ) ]
-{
 
-  let i32_in_tuple = type_constructor::Single::< i32 >::from( 13 );
-  dbg!( i32_in_tuple );
-  // i32_in_tuple = Single( 13 )
-  let i32_and_f32_in_tuple = type_constructor::Pair::< i32, f32 >::from( ( 13, 13.0 ) );
-  dbg!( i32_and_f32_in_tuple );
-  // vec_of_i32_in_tuple = Pair( 13, 13.0 )
-  let two_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( ( 13, 31 ) );
-  dbg!( two_i32_in_tuple );
-  // vec_of_i32_in_tuple = HomoPair( 13, 31 )
-  let vec_of_i32_in_tuple = type_constructor::Many::< i32 >::from( [ 1, 2, 3 ] );
-  dbg!( vec_of_i32_in_tuple );
-  // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+let i32_in_tuple = type_constructor::Single::< i32 >::from( 13 );
+dbg!( i32_in_tuple );
+// i32_in_tuple = Single( 13 )
+let i32_and_f32_in_tuple = type_constructor::Pair::< i32, f32 >::from( ( 13, 13.0 ) );
+dbg!( i32_and_f32_in_tuple );
+// vec_of_i32_in_tuple = Pair( 13, 13.0 )
+let two_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( ( 13, 31 ) );
+dbg!( two_i32_in_tuple );
+// vec_of_i32_in_tuple = HomoPair( 13, 31 )
+let vec_of_i32_in_tuple = type_constructor::Many::< i32 >::from( [ 1, 2, 3 ] );
+dbg!( vec_of_i32_in_tuple );
+// vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
 
-}
 ```
 
 ### Sample :: homopair with parameters
@@ -416,6 +413,7 @@ impl From< MyPair > for ( i32, i64 )
   fn from( src : MyPair ) -> Self { ( src.0, src.1 ) }
 }
 
+#[ cfg( feature = "make" ) ]
 impl Make2< i32, i64 > for MyPair
 {
   fn make_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
@@ -720,21 +718,25 @@ where
   fn as_slice( &self ) -> &[ i32 ] { &self[ .. ] }
 }
 
+#[ cfg( feature = "make" ) ]
 impl Make0 for MyMany
 {
   fn make_0( ) -> Self { Self( std::vec::Vec::< i32 >::new( ) ) }
 }
 
+#[ cfg( feature = "make" ) ]
 impl Make1< i32 > for MyMany
 {
   fn make_1( _0 : i32 ) -> Self { Self( < [ _ ] >::into_vec( box [ _0 ] ) ) }
 }
 
+#[ cfg( feature = "make" ) ]
 impl Make2< i32, i32 > for MyMany
 {
   fn make_2( _0 : i32, _1 : i32 ) -> Self { Self( < [ _ ] >::into_vec( box [ _0, _1 ] ) ) }
 }
 
+#[ cfg( feature = "make" ) ]
 impl Make3< i32, i32, i32 > for MyMany
 {
   fn make_3( _0 : i32, _1 : i32, _2 : i32 ) -> Self { Self( < [ _ ] >::into_vec( box [ _0, _1, _2 ] ) ) }
@@ -762,6 +764,7 @@ struct Struct1
   b : i32,
 }
 
+#[ cfg( feature = "make" ) ]
 impl Make0 for Struct1
 {
   fn make_0() -> Self
@@ -770,6 +773,7 @@ impl Make0 for Struct1
   }
 }
 
+#[ cfg( feature = "make" ) ]
 impl Make1< i32 > for Struct1
 {
   fn make_1( val : i32 ) -> Self
@@ -778,6 +782,7 @@ impl Make1< i32 > for Struct1
   }
 }
 
+#[ cfg( feature = "make" ) ]
 impl Make2< i32, i32 > for Struct1
 {
   fn make_2( val1 : i32, val2 : i32 ) -> Self

@@ -1,6 +1,6 @@
 error: Parametrized element should be single, because Single has only one element
        Single : < T1, T2 > ;
- --> ../../../rust/test/dt/type_constructor/dynamic/single_too_many_params.rs:4:1
+ --> ../../../rust/test/dt/type_constructor/dynamic/types/single_too_many_params.rs:4:1
   |
 4 | / types!
 5 | | {

@@ -269,7 +269,7 @@ mod internal
   /// dbg!( x );
   /// ```
   ///
-  /// It gererates code:
+  /// It generates code:
   ///
   /// ```rust
   /// #[ derive( Debug ) ]
@@ -334,6 +334,7 @@ mod internal
   ///   }
   /// }
   ///
+  /// #[ cfg( feature = "make" ) ]
   /// impl Make2< i32, i64 > for MyPair
   /// {
   ///   fn make_2( _0 : i32, _1 : i64 ) -> Self
@@ -431,7 +432,7 @@ mod internal
   /// println!( "x : ( {}, {} )", x.0, x.1 );
   /// ```
   ///
-  /// It gererates code:
+  /// It generates code:
   ///
   /// ```rust
   /// use type_constructor::prelude::*;
@@ -448,6 +449,7 @@ mod internal
   ///   fn from( src : MyPair ) -> Self { ( src.0, src.1 ) }
   /// }
   ///
+  /// #[ cfg( feature = "make" ) ]
   /// impl Make2< i32, i64 > for MyPair
   /// {
   ///   fn make_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
@@ -481,7 +483,7 @@ mod internal
   /// // prints : &clone_as_tuple = ( 13, 31 )
   /// ```
   ///
-  /// It gererates code:
+  /// It generates code:
   ///
   /// ```rust
   /// use type_constructor::prelude::*;
@@ -752,21 +754,25 @@ mod internal
   ///   fn as_slice( &self ) -> &[ i32 ] { &self[ .. ] }
   /// }
   ///
+  /// #[ cfg( feature = "make" ) ]
   /// impl Make0 for MyMany
   /// {
   ///   fn make_0( ) -> Self { Self( std::vec::Vec::< i32 >::new( ) ) }
   /// }
   ///
+  /// #[ cfg( feature = "make" ) ]
   /// impl Make1< i32 > for MyMany
   /// {
   ///   fn make_1( _0 : i32 ) -> Self { Self( < [ _ ] >::into_vec( box [ _0 ] ) ) }
   /// }
   ///
+  /// #[ cfg( feature = "make" ) ]
   /// impl Make2< i32, i32 > for MyMany
   /// {
   ///   fn make_2( _0 : i32, _1 : i32 ) -> Self { Self( < [ _ ] >::into_vec( box [ _0, _1 ] ) ) }
   /// }
   ///
+  /// #[ cfg( feature = "make" ) ]
   /// impl Make3< i32, i32, i32 > for MyMany
   /// {
   ///   fn make_3( _0 : i32, _1 : i32, _2 : i32 ) -> Self { Self( < [ _ ] >::into_vec( box [ _0, _1, _2 ] ) ) }

@@ -217,15 +217,18 @@ tests_impls!
       }
     }
 
-    /* test.case( "make1" ) */
-    let got : Pair< f32, f64 > = make!( mk!( 13.0 ) );
-    let exp = Pair::< f32, f64 >::from( ( mk!( 13.0 ), mk!( 13.0 ) ) );
-    a_id!( got, exp );
+    #[ cfg( feature = "make" ) ]
+    {
+      /* test.case( "make1" ) */
+      let got : Pair< f32, f64 > = make!( mk!( 13.0 ) );
+      let exp = Pair::< f32, f64 >::from( ( mk!( 13.0 ), mk!( 13.0 ) ) );
+      a_id!( got, exp );
 
-    /* test.case( "make2" ) */
-    let got : Pair< f32, f64 > = make!( mk!( 13.0 ), mk!( 31.0 ) );
-    let exp = Pair::< f32, f64 >::from( ( mk!( 13.0 ), mk!( 31.0 ) ) );
-    a_id!( got, exp );
+      /* test.case( "make2" ) */
+      let got : Pair< f32, f64 > = make!( mk!( 13.0 ), mk!( 31.0 ) );
+      let exp = Pair::< f32, f64 >::from( ( mk!( 13.0 ), mk!( 31.0 ) ) );
+      a_id!( got, exp );
+    }
 
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64 > =
@@ -382,15 +385,18 @@ tests_impls!
       }
     }
 
-    /* test.case( "make1" ) */
-    let instance1 : Pair< mod1::Float > = make!( mk!( 13.0 ) );
-    let instance2 = Pair::< mod1::Float >::from( [ mk!( 13.0 ), mk!( 13.0 ) ] );
-    a_id!( instance1, instance2 );
+    #[ cfg( feature = "make" ) ]
+    {
+      /* test.case( "make1" ) */
+      let instance1 : Pair< mod1::Float > = make!( mk!( 13.0 ) );
+      let instance2 = Pair::< mod1::Float >::from( [ mk!( 13.0 ), mk!( 13.0 ) ] );
+      a_id!( instance1, instance2 );
 
-    /* test.case( "make2" ) */
-    let instance1 : Pair< mod1::Float > = make!( mk!( 13.0 ), mk!( 31.0 ) );
-    let instance2 = Pair::< mod1::Float >::from( [ mk!( 13.0 ), mk!( 31.0 ) ] );
-    a_id!( instance1, instance2 );
+      /* test.case( "make2" ) */
+      let instance1 : Pair< mod1::Float > = make!( mk!( 13.0 ), mk!( 31.0 ) );
+      let instance2 = Pair::< mod1::Float >::from( [ mk!( 13.0 ), mk!( 31.0 ) ] );
+      a_id!( instance1, instance2 );
+    }
 
     /* test.case( "from array / into pair" ) */
     let instance1 : Pair< mod1::Float > = [ mk!( 13.0 ), mk!( 31.0 ) ].into();
@@ -547,15 +553,18 @@ tests_impls!
       }
     }
 
-    /* test.case( "make0" ) */
-    let got : HomoPair< f32 > = make!();
-    let exp = HomoPair::< f32 >( 0.0, 0.0 );
-    a_id!( got, exp );
+    #[ cfg( feature = "make" ) ]
+    {
+      /* test.case( "make0" ) */
+      let got : HomoPair< f32 > = make!();
+      let exp = HomoPair::< f32 >( 0.0, 0.0 );
+      a_id!( got, exp );
 
-    /* test.case( "make2" ) */
-    let got : HomoPair< f32 > = make!( 13.0, 31.0 );
-    let exp = HomoPair::< f32 >( 13.0, 31.0 );
-    a_id!( got, exp );
+      /* test.case( "make2" ) */
+      let got : HomoPair< f32 > = make!( 13.0, 31.0 );
+      let exp = HomoPair::< f32 >( 13.0, 31.0 );
+      a_id!( got, exp );
+    }
 
     /* test.case( "from tuple / into pair" ) */
     let instance1 : HomoPair< f32 > = ( 13.0, 31.0 ).into();

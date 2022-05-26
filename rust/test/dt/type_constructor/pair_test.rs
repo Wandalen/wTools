@@ -236,10 +236,13 @@ tests_impls!
     }
     // trace_macros!( false );
 
-    /* test.case( "make2" ) */
-    let got : Pair< f32, f64, f32 > = make!( mk1!( 13.0 ), mk2!( 31.0 ) );
-    let exp = Pair::< f32, f64, f32 >( mk1!( 13.0 ), mk2!( 31.0 ) );
-    a_id!( got, exp );
+    #[ cfg( feature = "make" ) ]
+    {
+      /* test.case( "make2" ) */
+      let got : Pair< f32, f64, f32 > = make!( mk1!( 13.0 ), mk2!( 31.0 ) );
+      let exp = Pair::< f32, f64, f32 >( mk1!( 13.0 ), mk2!( 31.0 ) );
+      a_id!( got, exp );
+    }
 
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64, f32 > = mk!( 13.0 ).into();
@@ -496,15 +499,18 @@ tests_impls!
     assert!( !implements!( instance1 => Default ) );
     assert!( !implements!( instance1 => fmt::Display ) );
 
-    /* test.case( "make0" ) */
-    let got : Pair< f32, f64 > = make!();
-    let exp = Pair::< f32, f64 >( 0.0, 0.0 );
-    a_id!( got, exp );
+    #[ cfg( feature = "make" ) ]
+    {
+      /* test.case( "make0" ) */
+      let got : Pair< f32, f64 > = make!();
+      let exp = Pair::< f32, f64 >( 0.0, 0.0 );
+      a_id!( got, exp );
 
-    /* test.case( "make2" ) */
-    let got : Pair< f32, f64 > = make!( 13.0, 31.0 );
-    let exp = Pair::< f32, f64 >( 13.0, 31.0 );
-    a_id!( got, exp );
+      /* test.case( "make2" ) */
+      let got : Pair< f32, f64 > = make!( 13.0, 31.0 );
+      let exp = Pair::< f32, f64 >( 13.0, 31.0 );
+      a_id!( got, exp );
+    }
 
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();
@@ -654,15 +660,18 @@ tests_impls!
   fn struct_basic()
   {
 
-    /* test.case( "make0" ) */
-    let got : Pair< f32, f64 > = make!();
-    let exp = Pair::< f32, f64 >( 0.0, 0.0 );
-    a_id!( got, exp );
+    #[ cfg( feature = "make" ) ]
+    {
+      /* test.case( "make0" ) */
+      let got : Pair< f32, f64 > = make!();
+      let exp = Pair::< f32, f64 >( 0.0, 0.0 );
+      a_id!( got, exp );
 
-    /* test.case( "make2" ) */
-    let got : Pair< f32, f64 > = make!( 13.0, 31.0 );
-    let exp = Pair::< f32, f64 >( 13.0, 31.0 );
-    a_id!( got, exp );
+      /* test.case( "make2" ) */
+      let got : Pair< f32, f64 > = make!( 13.0, 31.0 );
+      let exp = Pair::< f32, f64 >( 13.0, 31.0 );
+      a_id!( got, exp );
+    }
 
     /* test.case( "from tuple / into pair" ) */
     let instance1 : Pair< f32, f64 > = ( 13.0, 31.0 ).into();

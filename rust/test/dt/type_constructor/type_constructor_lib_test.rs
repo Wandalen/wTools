@@ -24,6 +24,7 @@ fn trybuild_tests()
   let t = trybuild::TestCases::new();
   #[ cfg( feature = "make" ) ]
   t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/make/*.rs" );
-  #[ cfg( feature = "types" ) ]
+  // #[ cfg( feature = "types" ) ]
   t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/types/*.rs" );
 }
+

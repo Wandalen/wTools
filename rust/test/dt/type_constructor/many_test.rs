@@ -150,25 +150,28 @@ tests_impls!
     }
     // trace_macros!( false );
 
-    /* test.case( "make0" ) */
-    let got : Many< f32, f64 > = make!();
-    let exp = Many::< f32, f64 >( std::vec::Vec::new() );
-    a_id!( got, exp );
+    #[ cfg( feature = "types" ) ]
+    {
+      /* test.case( "make0" ) */
+      let got : Many< f32, f64 > = make!();
+      let exp = Many::< f32, f64 >( std::vec::Vec::new() );
+      a_id!( got, exp );
 
-    /* test.case( "make1" ) */
-    let got : Many< f32, f64 > = make!( mk!( 1.0 ) );
-    let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ) ) );
-    a_id!( got, exp );
+      /* test.case( "make1" ) */
+      let got : Many< f32, f64 > = make!( mk!( 1.0 ) );
+      let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ) ) );
+      a_id!( got, exp );
 
-    /* test.case( "make2" ) */
-    let got : Many< f32, f64 > = make!( mk!( 1.0 ), mk!( 1.0 ) );
-    let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ), mk!( 1.0 ) ) );
-    a_id!( got, exp );
+      /* test.case( "make2" ) */
+      let got : Many< f32, f64 > = make!( mk!( 1.0 ), mk!( 1.0 ) );
+      let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ), mk!( 1.0 ) ) );
+      a_id!( got, exp );
 
-    /* test.case( "make3" ) */
-    let got : Many< f32, f64 > = make!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
-    let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) ) );
-    a_id!( got, exp );
+      /* test.case( "make3" ) */
+      let got : Many< f32, f64 > = make!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
+      let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) ) );
+      a_id!( got, exp );
+    }
 
     /* test.case( "from f32 / into Many" ) */
     let instance1 : Many< f32, f64 > = ( mk!( 13.0 ) ).into();
@@ -298,25 +301,28 @@ tests_impls!
     assert!( implements!( instance1 => Default ) );
     assert!( !implements!( instance1 => fmt::Display ) );
 
-    /* test.case( "make0" ) */
-    let got : Many< f32 > = make!();
-    let exp = Many::< f32 >( std::vec::Vec::new() );
-    a_id!( got, exp );
+    #[ cfg( feature = "make" ) ]
+    {
+      /* test.case( "make0" ) */
+      let got : Many< f32 > = make!();
+      let exp = Many::< f32 >( std::vec::Vec::new() );
+      a_id!( got, exp );
 
-    /* test.case( "make1" ) */
-    let got : Many< f32 > = make!( mk!( 1.0 ) );
-    let exp = Many::< f32 >( vec!( mk!( 1.0 ) ) );
-    a_id!( got, exp );
+      /* test.case( "make1" ) */
+      let got : Many< f32 > = make!( mk!( 1.0 ) );
+      let exp = Many::< f32 >( vec!( mk!( 1.0 ) ) );
+      a_id!( got, exp );
 
-    /* test.case( "make2" ) */
-    let got : Many< f32 > = make!( mk!( 1.0 ), mk!( 1.0 ) );
-    let exp = Many::< f32 >( vec!( mk!( 1.0 ), mk!( 1.0 ) ) );
-    a_id!( got, exp );
+      /* test.case( "make2" ) */
+      let got : Many< f32 > = make!( mk!( 1.0 ), mk!( 1.0 ) );
+      let exp = Many::< f32 >( vec!( mk!( 1.0 ), mk!( 1.0 ) ) );
+      a_id!( got, exp );
 
-    /* test.case( "make3" ) */
-    let got : Many< f32 > = make!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
-    let exp = Many::< f32 >( vec!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) ) );
-    a_id!( got, exp );
+      /* test.case( "make3" ) */
+      let got : Many< f32 > = make!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
+      let exp = Many::< f32 >( vec!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) ) );
+      a_id!( got, exp );
+    }
 
     /* test.case( "from f32 / into Many" ) */
     let instance1 : Many< f32 > = ( 13.0 ).into();
