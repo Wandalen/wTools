@@ -1,6 +1,6 @@
 [package]
 name = "fundamental_data_type"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,6 +23,15 @@ include = [
   "/Readme.md",
   "/License",
 ]
+
+[features]
+default = [
+  "type_constructor/default",
+]
+all = [
+  "type_constructor/all",
+]
+make = [ "type_constructor/make" ]
 
 [lib]
 name = "fundamental_data_type"
