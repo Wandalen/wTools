@@ -101,39 +101,57 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
+  #[ cfg( feature = "iter_tools" ) ]
   pub use super::iter::exposed::*;
   #[ cfg( feature = "meta_tools" ) ]
   pub use super::meta::exposed::*;
+  #[ cfg( feature = "typing_tools" ) ]
   pub use super::typing::exposed::*;
   #[ cfg( feature = "diagnostics" ) ]
   pub use super::diagnostics::exposed::*;
+  #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
   pub use super::dt::exposed::*;
+  #[ cfg( feature = "time_tools" ) ]
   pub use super::time::exposed::*;
-  pub use super::time::exposed::*;
+  #[ cfg( feature = "werror" ) ]
   pub use super::error::exposed::*;
+  #[ cfg( feature = "former" ) ]
   pub use super::former::exposed::*;
+  #[ cfg( feature = "woptions" ) ]
   pub use super::options::exposed::*;
+  #[ cfg( feature = "winterval" ) ]
   pub use super::interval::exposed::*;
+  #[ cfg( feature = "wstring_tools" ) ]
   pub use super::string::exposed::*;
+  #[ cfg( feature = "derive_tools" ) ]
   pub use super::derive::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ cfg( feature = "iter_tools" ) ]
   pub use super::iter::prelude::*;
   #[ cfg( feature = "meta_tools" ) ]
   pub use super::meta::prelude::*;
+  #[ cfg( feature = "typing_tools" ) ]
   pub use super::typing::prelude::*;
   #[ cfg( feature = "diagnostics" ) ]
   pub use super::diagnostics::prelude::*;
+  #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
   pub use super::dt::prelude::*;
+  #[ cfg( feature = "time_tools" ) ]
   pub use super::time::prelude::*;
-  pub use super::time::prelude::*;
+  #[ cfg( feature = "werror" ) ]
   pub use super::error::prelude::*;
+  #[ cfg( feature = "former" ) ]
   pub use super::former::prelude::*;
+  #[ cfg( feature = "woptions" ) ]
   pub use super::options::prelude::*;
+  #[ cfg( feature = "winterval" ) ]
   pub use super::interval::prelude::*;
+  #[ cfg( feature = "wstring_tools" ) ]
   pub use super::string::prelude::*;
+  #[ cfg( feature = "derive_tools" ) ]
   pub use super::derive::prelude::*;
 }
