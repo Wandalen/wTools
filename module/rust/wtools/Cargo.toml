@@ -39,10 +39,10 @@ path = "rust/impl/wtools_lib.rs"
 name = "wtools_test"
 path = "rust/test/wtools_lib_test.rs"
 
-# qqq : for Dima : 3 commands and per-module approach are necessary
-# [[test]]
-# name = "wtools_integration_test"
-# path = "rust/test/integration_test.rs"
+# qqq : for Dima : 3 commands and per-module approach are necessary # aaa : Dmytro : the environment variable `WITH_SMOKE` is used for this purpose
+[[test]]
+name = "wtools_smoke_test"
+path = "rust/test/smoke_test.rs"
 
 [[example]]
 name = "wtools_trivial"
