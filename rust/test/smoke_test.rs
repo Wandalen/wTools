@@ -139,7 +139,7 @@ impl< 'a > SmokeModuleTest< 'a >
 
 //
 
-fn smoke_test( local : bool )
+fn smoke_test_run( local : bool )
 {
   let module_name = std::env::var( "CARGO_PKG_NAME" ).unwrap();
   let module_path = std::env::var( "CARGO_MANIFEST_DIR" ).unwrap();
@@ -172,19 +172,19 @@ fn smoke_test( local : bool )
 //
 
 #[ test ]
-fn integration()
+fn smoke_test()
 {
   if let Ok( value ) = std::env::var( "WITH_SMOKE" )
   {
     match value.as_str()
     {
       "false" => {},
-      "local" => smoke_test( true ),
-      "published" => smoke_test( false ),
+      "local" => smoke_test_run( true ),
+      "published" => smoke_test_run( false ),
       _ =>
       {
-        smoke_test( true );
-        smoke_test( false );
+        smoke_test_run( true );
+        smoke_test_run( false );
       },
     }
   }
