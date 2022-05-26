@@ -413,7 +413,7 @@ mod internal
   ///   fn make_2( _0 : T1, _1 : T2 ) -> Self { Self( _0, _1 ) }
   /// }
   ///
-  /// let x = MyPair(13, 13.0);
+  /// let x = MyPair( 13, 13.0 );
   /// dbg!( x );
   /// // prints : x = MyPair( 13, 13.0 )
   /// ```
