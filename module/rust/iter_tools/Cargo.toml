@@ -1,6 +1,6 @@
 [package]
 name = "iter_tools"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -26,10 +26,10 @@ include = [
 ]
 
 [features]
-itertools_default = [ "itertools/default" ]
-itertools_use_std = [ "itertools/use_std" ]
-itertools_use_alloc = [ "itertools/use_alloc" ]
-default = [ "itertools_default" ]
+use_std = [ "itertools/use_std" ]
+use_alloc = [ "itertools/use_alloc" ]
+default = [ "itertools", "use_std" ]
+all = [ "itertools", "use_std" ]
 
 [lib]
 name = "iter_tools"

@@ -58,10 +58,13 @@ woptions_meta = [ "woptions/meta" ]
 woptions_runtime = [ "woptions/runtime" ]
 woptions_former = [ "woptions/former" ]
 
-iter_tools_default = [ "iter_tools/default" ]
-iter_tools_itertools = [ "iter_tools/itertools" ]
-iter_tools_itertools_use_std = [ "iter_tools/itertools_use_std" ]
-iter_tools_itertools_use_alloc = [ "iter_tools/itertools_use_alloc" ]
+# iter
+
+iter = [ "iter_tools" ]
+iter_default = [ "iter", "iter_tools/default" ]
+iter_all = [ "iter" ]
+iter_use_std = [ "iter_tools/use_std" ]
+iter_use_alloc = [ "iter_tools/use_alloc" ]
 
 # meta
 
@@ -219,7 +222,7 @@ nightly = [
 all = [
   # "former_all",
   # "woptions_all",
-  # "iter_tools_all",
+  # "iter_all",
   # "meta_all",
   "typing_all",
   "time_all",
@@ -234,7 +237,7 @@ all = [
 default = [
   "former_default",
   "woptions_default",
-  "iter_tools_default",
+  "iter_default",
   "meta_default",
   "typing_default",
   "time_default",

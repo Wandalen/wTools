@@ -6,6 +6,7 @@ use test_tools::*;
 
 tests_impls!
 {
+
   #[ test ]
   fn basic()
   {
@@ -18,8 +19,8 @@ tests_impls!
       e - 1,
     )}).multiunzip();
     a_id!( got, exp );
-
   }
+
 }
 
 //
