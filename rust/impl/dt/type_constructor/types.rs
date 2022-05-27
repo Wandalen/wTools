@@ -304,6 +304,28 @@ mod internal
   /// It generates code:
   ///
   /// ```rust
+  /// use type_constructor::prelude::*;
+  ///
+  /// pub struct MyPair( pub i32, pub i64 );
+  ///
+  /// impl From< ( i32, i64 ) > for MyPair
+  /// {
+  ///   fn from( src : ( i32, i64 ) ) -> Self { Self( src.0, src.1 ) }
+  /// }
+  ///
+  /// impl From< MyPair > for ( i32, i64 )
+  /// {
+  ///   fn from( src : MyPair ) -> Self { ( src.0, src.1 ) }
+  /// }
+  ///
+  /// #[cfg( feature = "make" )]
+  /// impl Make2< i32, i64 > for MyPair
+  /// {
+  ///   fn make_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
+  /// }
+  ///
+  /// let x = MyPair( 13, 31 );
+  /// println!( "x : ( {}, {} )", x.0, x.1 );
   /// ```
   ///
   /// ### Sample :: pair with parameters
@@ -330,39 +352,21 @@ mod internal
   /// use type_constructor::prelude::*;
   /// use core::fmt;
   ///
+  /// #[ derive( Debug ) ]
   /// pub struct MyPair< T1 : fmt::Debug, T2 : fmt::Debug >( pub T1, pub T2 );
   ///
-  /// #[ automatically_derived ]
-  /// #[ allow( unused_qualifications ) ]
-  /// impl< T1 : ::core::fmt::Debug + fmt::Debug, T2 : ::core::fmt::Debug + fmt::Debug > ::core::fmt::Debug for MyPair< T1, T2 >
-  /// {
-  ///   fn fmt( &self, f : &mut ::core::fmt::Formatter ) -> ::core::fmt::Result
-  ///   {
-  ///     match *self
-  ///     {
-  ///       MyPair( ref __self_0_0, ref __self_0_1 ) =>
-  ///       {
-  ///         let debug_trait_builder = &mut ::core::fmt::Formatter::debug_tuple( f, "MyPair" );
-  ///         let _ = ::core::fmt::DebugTuple::field( debug_trait_builder, &&( *__self_0_0 ) );
-  ///         let _ = ::core::fmt::DebugTuple::field( debug_trait_builder, &&( *__self_0_1 ) );
-  ///         ::core::fmt::DebugTuple::finish( debug_trait_builder )
-  ///       }
-  ///     }
-  ///   }
-  /// }
-  ///
-  /// impl< T1 : fmt::Debug, T2 : fmt::Debug > From<( T1, T2 )> for MyPair< T1, T2 >
+  /// impl< T1, T2 > From<( T1, T2 )> for MyPair< T1, T2 >
   /// {
   ///   fn from( src : ( T1, T2 ) ) -> Self { Self( src.0, src.1 ) }
   /// }
   ///
-  /// impl< T1 : fmt::Debug, T2 : fmt::Debug > From< MyPair< T1, T2 > > for ( T1, T2 )
+  /// impl< T1, T2 > From< MyPair< T1, T2 > > for ( T1, T2 )
   /// {
   ///   fn from( src : MyPair< T1, T2 > ) -> Self { ( src.0, src.1 ) }
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl< T1 : fmt::Debug, T2 : fmt::Debug > Make0 for MyPair< T1, T2 >
+  /// impl< T1, T2 > Make0 for MyPair< T1, T2 >
   /// where
   ///   T1 : Default,
   ///   T2 : Default,
@@ -371,7 +375,7 @@ mod internal
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl< T1 : fmt::Debug, T2 : fmt::Debug > Make2< T1, T2 > for MyPair< T1, T2 >
+  /// impl< T1, T2 > Make2< T1, T2 > for MyPair< T1, T2 >
   /// {
   ///   fn make_2( _0 : T1, _1 : T2 ) -> Self { Self( _0, _1 ) }
   /// }
@@ -448,6 +452,142 @@ mod internal
   /// It gererates code:
   ///
   /// ```rust
+  /// use type_constructor::prelude::*;
+  /// use core::fmt;
+  ///
+  /// #[ derive( Debug ) ]
+  /// pub struct MyHomoPair< T >( pub T, pub T );
+  ///
+  /// impl< T > core::ops::Deref for MyHomoPair< T >
+  /// {
+  ///   type Target = ( T, T );
+  ///
+  ///   fn deref( &self ) -> &Self::Target
+  ///   {
+  ///     #[ cfg( debug_assertions ) ]
+  ///     {
+  ///       let layout1 = std::alloc::Layout::new::< Self >();
+  ///       let layout2 = std::alloc::Layout::new::< Self::Target >();
+  ///       debug_assert_eq!( layout1, layout2 );
+  ///     }
+  ///     unsafe { std::mem::transmute::< _, _ >( self ) }
+  ///   }
+  /// }
+  ///
+  /// impl< T > core::ops::DerefMut for MyHomoPair< T >
+  /// {
+  ///   fn deref_mut( &mut self ) -> &mut Self::Target
+  ///   {
+  ///     #[ cfg( debug_assertions ) ]
+  ///     {
+  ///       let layout1 = std::alloc::Layout::new::< Self >();
+  ///       let layout2 = std::alloc::Layout::new::< Self::Target >();
+  ///       debug_assert_eq!( layout1, layout2 );
+  ///     }
+  ///     unsafe { std::mem::transmute::< _, _ >( self ) }
+  ///   }
+  /// }
+  ///
+  /// impl< T > From< ( T, T ) > for MyHomoPair< T >
+  /// {
+  ///   fn from( src : ( T, T ) ) -> Self { Self( src.0, src.1 ) }
+  /// }
+  ///
+  /// impl< T > From< MyHomoPair< T >> for ( T, T )
+  /// {
+  ///   fn from( src : MyHomoPair< T > ) -> Self { ( src.0, src.1 ) }
+  /// }
+  ///
+  /// impl< T > From< [ T; 2 ] > for MyHomoPair< T >
+  /// where
+  ///   T : Clone,
+  /// {
+  ///   fn from( src : [ T; 2 ] ) -> Self { Self( src[ 0 ].clone(), src[ 1 ].clone() ) }
+  /// }
+  ///
+  /// impl< T > From< MyHomoPair< T >> for [ T; 2 ]
+  /// {
+  ///   fn from( src : MyHomoPair< T > ) -> Self { [ src.0, src.1 ] }
+  /// }
+  ///
+  /// impl< T > From< &[ T ] > for MyHomoPair< T >
+  /// where
+  ///   T : Clone,
+  /// {
+  ///   fn from( src : &[ T ] ) -> Self
+  ///   {
+  ///     debug_assert_eq!( src.len(), 2 );
+  ///     Self( src[ 0 ].clone(), src[ 1 ].clone() )
+  ///   }
+  /// }
+  ///
+  /// impl< T > From< T > for MyHomoPair< T >
+  /// where
+  ///   T : Clone,
+  /// {
+  ///   fn from( src : T ) -> Self { Self( src.clone(), src.clone() ) }
+  /// }
+  ///
+  /// impl< T > CloneAsTuple< ( T, T ) > for MyHomoPair< T >
+  /// where
+  ///   T : Clone,
+  /// {
+  ///   fn clone_as_tuple( &self ) -> ( T, T ) { ( self.0.clone(), self.1.clone() ) }
+  /// }
+  ///
+  /// impl< T > CloneAsArray< T, 2 > for MyHomoPair< T >
+  /// where
+  ///   T : Clone,
+  /// {
+  ///   fn clone_as_array( &self ) -> [ T; 2 ] { [ self.0.clone(), self.1.clone() ] }
+  /// }
+  ///
+  /// impl< T > AsTuple< ( T, T ) > for MyHomoPair< T >
+  /// {
+  ///   fn as_tuple( &self ) -> &( T, T ) { unsafe { std::mem::transmute::< &_, &( T, T ) >( self ) } }
+  /// }
+  ///
+  /// impl< T > AsArray< T, 2 > for MyHomoPair< T >
+  /// {
+  ///   fn as_array( &self ) -> &[ T; 2 ] { unsafe { std::mem::transmute::< &_, &[ T; 2 ] >( self ) } }
+  /// }
+  ///
+  /// impl< T > AsSlice< T > for MyHomoPair< T >
+  /// {
+  ///   fn as_slice( &self ) -> &[ T ] { &self.as_array()[ .. ] }
+  /// }
+  ///
+  /// #[ cfg( feature = "make" ) ]
+  /// impl< T > Make0 for MyHomoPair< T >
+  /// where
+  ///   T : Default,
+  /// {
+  ///   fn make_0() -> Self { Self( Default::default(), Default::default() ) }
+  /// }
+  ///
+  /// #[ cfg( feature = "make" ) ]
+  /// impl< T > Make1< T > for MyHomoPair< T >
+  /// where
+  ///   T : Clone,
+  /// {
+  ///   fn make_1( _0 : T ) -> Self { Self( _0.clone(), _0.clone() ) }
+  /// }
+  ///
+  /// #[ cfg( feature = "make" ) ]
+  /// impl< T > Make2< T, T > for MyHomoPair< T >
+  /// {
+  ///   fn make_2( _0 : T, _1 : T ) -> Self { Self( _0, _1 ) }
+  /// }
+  ///
+  /// let x = MyHomoPair( 13, 31 );
+  /// dbg!( &x );
+  /// // prints : &x = MyHomoPair( 13, 31 )
+  /// let clone_as_array : [ i32 ; 2 ] = x.clone_as_array();
+  /// dbg!( &clone_as_array );
+  /// // prints : &clone_as_array = [ 13, 31 ]
+  /// let clone_as_tuple : ( i32 , i32 ) = x.clone_as_tuple();
+  /// dbg!( &clone_as_tuple );
+  /// // prints : &clone_as_tuple = ( 13, 31 )
   /// ```
   ///
   /// ### Sample :: single-line many
@@ -465,6 +605,82 @@ mod internal
   /// It generates code:
   ///
   /// ```rust
+  /// use type_constructor::prelude::*;
+  ///
+  /// pub struct MyMany( pub std::vec::Vec< i32 > );
+  ///
+  /// impl core::ops::Deref for MyMany
+  /// {
+  ///   type Target = std::vec::Vec< i32 >;
+  ///
+  ///   fn deref( &self ) -> &Self::Target { &self.0 }
+  /// }
+  ///
+  /// impl core::ops::DerefMut for MyMany
+  /// {
+  ///   fn deref_mut( &mut self ) -> &mut Self::Target { &mut self.0 }
+  /// }
+  ///
+  /// impl From< i32 > for MyMany
+  /// {
+  ///   fn from( src : i32 ) -> Self { Self( vec![ src ] ) }
+  /// }
+  ///
+  /// impl From< ( i32, ) > for MyMany
+  /// {
+  ///   fn from( src : ( i32, ) ) -> Self { Self( vec![ src.0 ] ) }
+  /// }
+  ///
+  /// impl< const N: usize > From< [ i32; N ] > for MyMany
+  /// where
+  ///   i32 : Clone,
+  /// {
+  ///   fn from( src : [ i32; N ] ) -> Self { Self( std::vec::Vec::from( src ) ) }
+  /// }
+  ///
+  /// impl From< &[ i32 ] > for MyMany
+  /// where
+  ///   i32 : Clone,
+  /// {
+  ///   fn from( src : &[ i32 ] ) -> Self
+  ///   {
+  ///     debug_assert_eq!( src.len(), 1 );
+  ///     Self( std::vec::Vec::from( src ) )
+  ///   }
+  /// }
+  ///
+  /// impl AsSlice< i32 > for MyMany
+  /// where
+  ///   i32 : Clone,
+  /// {
+  ///   fn as_slice( &self ) -> &[ i32 ] { &self[ .. ] }
+  /// }
+  ///
+  /// #[ cfg( feature = "make" ) ]
+  /// impl Make0 for MyMany
+  /// {
+  ///   fn make_0() -> Self { Self( std::vec::Vec::< i32 >::new() ) }
+  /// }
+  ///
+  /// #[ cfg( feature = "make" ) ]
+  /// impl Make1< i32 > for MyMany
+  /// {
+  ///   fn make_1( _0 : i32 ) -> Self { Self( vec![ _0 ] ) }
+  /// }
+  ///
+  /// #[ cfg( feature = "make" ) ]
+  /// impl Make2< i32, i32 > for MyMany
+  /// {
+  ///   fn make_2( _0 : i32, _1 : i32 ) -> Self { Self( vec![ _0, _1 ] ) }
+  /// }
+  ///
+  /// #[ cfg( feature = "make" ) ]
+  /// impl Make3< i32, i32, i32 > for MyMany
+  /// {
+  ///   fn make_3( _0 : i32, _1 : i32, _2 : i32 ) -> Self { Self( vec![ _0, _1, _2 ] ) }
+  /// }
+  /// let x = MyMany::from( [ 1, 2, 3 ] );
+  /// println!( "x : {:?}", x.0 );
   /// ```
   ///
   /// ### Sample :: make - variadic constructor
@@ -658,4 +874,5 @@ pub mod prelude
     types,
   };
 }
+
 
