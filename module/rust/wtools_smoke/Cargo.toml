@@ -3,12 +3,6 @@ name = "wtools_smoke"
 version = "0.0.1"
 publish = false
 edition = "2021"
-authors = [
-  "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Volodymyr M. <volodymyr.migdal@gmail.com>",
-  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
-]
-license = "MIT"
 description = """
 Module-wrapper for smoke testing.
 """
