@@ -81,50 +81,54 @@ mod internal
   /// - Constructor with 2 arguments set individual values of each field.
   ///
   /// ```rust
-  /// use type_constructor::prelude::*;
-  ///
-  /// #[ derive( Debug, PartialEq ) ]
-  /// struct Struct1
+  /// #[ cfg( feature = "make" ) ]
   /// {
-  ///   a : i32,
-  ///   b : i32,
-  /// }
+  ///   use type_constructor::prelude::*;
   ///
-  /// impl Make0 for Struct1
-  /// {
-  ///   fn make_0() -> Self
+  ///   #[ derive( Debug, PartialEq ) ]
+  ///   struct Struct1
   ///   {
-  ///     Self { a : 0, b : 0 }
+  ///     a : i32,
+  ///     b : i32,
   ///   }
-  /// }
   ///
-  /// impl Make1< i32 > for Struct1
-  /// {
-  ///   fn make_1( val : i32 ) -> Self
+  ///   impl Make0 for Struct1
   ///   {
-  ///     Self { a : val, b : val }
+  ///     fn make_0() -> Self
+  ///     {
+  ///       Self { a : 0, b : 0 }
+  ///     }
   ///   }
-  /// }
   ///
-  /// impl Make2< i32, i32 > for Struct1
-  /// {
-  ///   fn make_2( val1 : i32, val2 : i32 ) -> Self
+  ///   impl Make1< i32 > for Struct1
   ///   {
-  ///     Self { a : val1, b : val2 }
+  ///     fn make_1( val : i32 ) -> Self
+  ///     {
+  ///       Self { a : val, b : val }
+  ///     }
   ///   }
+  ///
+  ///   impl Make2< i32, i32 > for Struct1
+  ///   {
+  ///     fn make_2( val1 : i32, val2 : i32 ) -> Self
+  ///     {
+  ///       Self { a : val1, b : val2 }
+  ///     }
+  ///   }
+  ///
+  ///   let got : Struct1 = make!();
+  ///   let exp = Struct1{ a : 0, b : 0 };
+  ///   assert_eq!( got, exp );
+  ///
+  ///   let got : Struct1 = make!( 13 );
+  ///   let exp = Struct1{ a : 13, b : 13 };
+  ///   assert_eq!( got, exp );
+  ///
+  ///   let got : Struct1 = make!( 1, 3 );
+  ///   let exp = Struct1{ a : 1, b : 3 };
+  ///   assert_eq!( got, exp );
   /// }
   ///
-  /// let got : Struct1 = make!();
-  /// let exp = Struct1{ a : 0, b : 0 };
-  /// assert_eq!( got, exp );
-  ///
-  /// let got : Struct1 = make!( 13 );
-  /// let exp = Struct1{ a : 13, b : 13 };
-  /// assert_eq!( got, exp );
-  ///
-  /// let got : Struct1 = make!( 1, 3 );
-  /// let exp = Struct1{ a : 1, b : 3 };
-  /// assert_eq!( got, exp );
   /// ```
   ///
   /// ### To add to your project
