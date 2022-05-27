@@ -353,7 +353,7 @@ mod internal
   /// use core::fmt;
   ///
   /// #[ derive( Debug ) ]
-  /// pub struct MyPair< T1 : fmt::Debug, T2 : fmt::Debug >( pub T1, pub T2 );
+  /// pub struct MyPair< T1, T2 >( pub T1, pub T2 );
   ///
   /// impl< T1, T2 > From<( T1, T2 )> for MyPair< T1, T2 >
   /// {
