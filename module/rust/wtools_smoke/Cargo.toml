@@ -7,14 +7,6 @@ description = """
 Module-wrapper for smoke testing.
 """
 
-[lib]
-name = "wtools_smoke"
-path = "src/lib.rs"
-
-[[test]]
-name = "wtools_smoke_test"
-path = "test/wtools_smoke_test.rs"
-
 [dependencies]
 local = { version = "*", path = "../../rust/wtools", package = "wtools" }
 published = { version = "*", package = "wtools" }
