@@ -1,0 +1,12 @@
+[package]
+name = "wtools_smoke"
+version = "0.0.1"
+publish = false
+edition = "2021"
+description = """
+Module-wrapper for smoke testing.
+"""
+
+[dependencies]
+local = { version = "*", path = "../../rust/wtools", package = "wtools" }
+published = { version = "*", package = "wtools" }
