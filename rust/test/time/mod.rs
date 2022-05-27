@@ -1,5 +1,5 @@
-#[ cfg( feature = "chrono" ) ]
+#[ cfg( feature = "time" ) ]
 use wtools::time as TheModule;
 
-#[ cfg( feature = "chrono" ) ]
+#[ cfg( feature = "time" ) ]
 mod now_test;

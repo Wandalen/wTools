@@ -6,10 +6,9 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 ### Sample :: implements
 
 ```rust
-use wtools::prelude::*;
-
-fn main()
+#[ cfg( feature = "typing_default" ) ]
 {
+  use wtools::prelude::*;
   println!( "implements!( 13_i32 => Copy ) : {}", implements!( 13_i32 => Copy ) );
   println!( "implements!( Box::new( 13_i32 ) => Copy ) : {}", implements!( Box::new( 13_i32 ) => Copy ) );
 }
@@ -25,27 +24,30 @@ Type constructor does exactly that and auto-implement traits From, Into, Deref a
 Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/macro.types.html) is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
 
 ```rust
-use wtools::prelude::*;
-
-types!
+#[ cfg( feature = "dt_default" ) ]
 {
+  use wtools::prelude::*;
 
-  single MySingle : f32;
-  single SingleWithParametrized : std::sync::Arc< T : Copy >;
-  single SingleWithParameter : < T >;
+  types!
+  {
 
-  pair MyPair : f32;
-  pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
-  pair PairWithParameter : < T1, T2 >;
+    single MySingle : f32;
+    single SingleWithParametrized : std::sync::Arc< T : Copy >;
+    single SingleWithParameter : < T >;
 
-  pair MyHomoPair : f32;
-  pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
-  pair HomoPairWithParameter : < T >;
+    pair MyPair : f32;
+    pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
+    pair PairWithParameter : < T1, T2 >;
 
-  many MyMany : f32;
-  many ManyWithParametrized : std::sync::Arc< T : Copy >;
-  many ManyWithParameter : < T >;
+    pair MyHomoPair : f32;
+    pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
+    pair HomoPairWithParameter : < T >;
 
+    many MyMany : f32;
+    many ManyWithParametrized : std::sync::Arc< T : Copy >;
+    many ManyWithParameter : < T >;
+
+  }
 }
 ```
 
@@ -58,50 +60,53 @@ In this example structure, Struct1 could be constructed either without arguments
 - Constructor with 2 arguments set individual values of each field.
 
 ```rust
-use wtools::prelude::*;
-
-#[ derive( Debug, PartialEq ) ]
-struct Struct1
+#[ cfg( feature = "dt_default" ) ]
 {
-  a : i32,
-  b : i32,
-}
+  use wtools::prelude::*;
 
-impl Make0 for Struct1
-{
-  fn make_0() -> Self
+  #[ derive( Debug, PartialEq ) ]
+  struct Struct1
   {
-    Self { a : 0, b : 0 }
+    a : i32,
+    b : i32,
   }
-}
 
-impl Make1< i32 > for Struct1
-{
-  fn make_1( val : i32 ) -> Self
+  impl Make0 for Struct1
   {
-    Self { a : val, b : val }
+    fn make_0() -> Self
+    {
+      Self { a : 0, b : 0 }
+    }
   }
-}
 
-impl Make2< i32, i32 > for Struct1
-{
-  fn make_2( val1 : i32, val2 : i32 ) -> Self
+  impl Make1< i32 > for Struct1
   {
-    Self { a : val1, b : val2 }
+    fn make_1( val : i32 ) -> Self
+    {
+      Self { a : val, b : val }
+    }
   }
+
+  impl Make2< i32, i32 > for Struct1
+  {
+    fn make_2( val1 : i32, val2 : i32 ) -> Self
+    {
+      Self { a : val1, b : val2 }
+    }
+  }
+
+  let got : Struct1 = make!();
+  let exp = Struct1{ a : 0, b : 0 };
+  assert_eq!( got, exp );
+
+  let got : Struct1 = make!( 13 );
+  let exp = Struct1{ a : 13, b : 13 };
+  assert_eq!( got, exp );
+
+  let got : Struct1 = make!( 1, 3 );
+  let exp = Struct1{ a : 1, b : 3 };
+  assert_eq!( got, exp );
 }
-
-let got : Struct1 = make!();
-let exp = Struct1{ a : 0, b : 0 };
-assert_eq!( got, exp );
-
-let got : Struct1 = make!( 13 );
-let exp = Struct1{ a : 13, b : 13 };
-assert_eq!( got, exp );
-
-let got : Struct1 = make!( 1, 3 );
-let exp = Struct1{ a : 1, b : 3 };
-assert_eq!( got, exp );
 ```
 
 ### To add to your project
