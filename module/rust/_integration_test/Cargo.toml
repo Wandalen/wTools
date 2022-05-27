@@ -1,12 +1,14 @@
 [package]
-name = "wtools_smoke"
+name = "integration_test"
 version = "0.0.1"
 publish = false
 edition = "2021"
 description = """
-Module-wrapper for smoke testing.
+Integration test.
 """
 
 [dependencies]
+
 local = { version = "*", path = "../../rust/wtools", package = "wtools" }
+
 published = { version = "*", package = "wtools" }
