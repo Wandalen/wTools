@@ -6,10 +6,10 @@ Collection of general purpose tools to iterate. Currently it simply reexport ite
 ### Sample
 
 ```rust
-use iter_tools::*;
 
-fn main()
+#[ cfg( feature = "itertools" ) ]
 {
+  use iter_tools::*;
   /* standard functions */
   let vec = vec![ 5, 1, -2 ];
   let min = min( &vec );
