@@ -10,6 +10,7 @@ on :
 
 env :
   CARGO_TERM_COLOR : always
+  WITH_SMOKE : true
 
 jobs :
 
