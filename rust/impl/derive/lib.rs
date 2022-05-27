@@ -30,9 +30,13 @@ pub use protected::*;
 pub mod exposed
 {
   pub use super::prelude::*;
+  #[ cfg( feature = "derive_more" ) ]
   pub use ::derive_more::*;
+  #[ cfg( feature = "derive_display" ) ]
   pub use ::parse_display::*;
+  #[ cfg( feature = "derive_display" ) ]
   pub use ::parse_display::Display;
+  #[ cfg( feature = "derive_display" ) ]
   pub use ::parse_display::FromStr;
 }
 
