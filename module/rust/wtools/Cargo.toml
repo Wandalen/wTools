@@ -105,7 +105,7 @@ typing_implements = [ "typing", "typing_tools/implements" ]
 time = [ "time_tools/default" ]
 time_default = [ "time" ]
 time_all = [ "time" ]
-time_chrono = [ "time_tools/chrono" ]
+time_chrono = [ "time_tools/chrono_default" ]
 
 # string
 
@@ -223,7 +223,7 @@ derive_convert_case = [ "derive_tools/derive_convert_case" ]
 derive_display = [ "derive_tools/derive_display", "parse-display" ]
 derive_from_str = [ "derive_tools/derive_from_str", "parse-display", "derive_from_str_std", "derive_from_str_regex", "derive_from_str_once_cell" ]
 derive_from_str_std = [ "parse-display/std" ]
-derive_from_str_regex = [ "parse-display/regex" ]
+derive_from_str_regex = [ "parse-display/regex", "parse-display/once_cell" ] # xxx : Dmytro : hack, the module does not compile
 derive_from_str_once_cell = [ "parse-display/once_cell" ]
 
 # dt

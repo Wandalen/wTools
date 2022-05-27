@@ -121,7 +121,7 @@ derive_convert_case = [ "derive_more/convert_case" ]
 derive_display = [ "parse-display" ]
 derive_from_str = [ "parse-display", "derive_from_str_std", "derive_from_str_regex", "derive_from_str_once_cell" ]
 derive_from_str_std = [ "parse-display/std" ]
-derive_from_str_regex = [ "parse-display/regex" ]
+derive_from_str_regex = [ "parse-display/regex", "parse-display/once_cell" ] # xxx : Dmytro : hack, the module does not compile
 derive_from_str_once_cell = [ "parse-display/once_cell" ]
 
 [lib]

@@ -6,10 +6,9 @@ Collection of general purpose time tools.
 ### Sample
 
 ```rust
-use time_tools::*;
-
-fn main()
+#[ cfg( feature = "chrono" ) ]
 {
+  use time_tools::*;
   /* get milliseconds from UNIX epoch */
   let now = time::now();
   println!( "now {}", now );
