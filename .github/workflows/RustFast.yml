@@ -31,3 +31,7 @@ jobs :
       run : cargo build --manifest-path ${{ inputs.manifest_path }}
     - name : Run all tests
       run : cargo test --manifest-path ${{ inputs.manifest_path }}
+    - name: Install cargo-hack
+      run: cargo install cargo-hack
+    - name : Run all tests with each feature
+      run : cargo hack test --manifest-path ${{ inputs.manifest_path }} --each-feature
