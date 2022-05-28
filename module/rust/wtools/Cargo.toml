@@ -41,7 +41,7 @@ path = "rust/test/wtools_lib_test.rs"
 
 [[test]]
 name = "wtools_smoke_test"
-path = "rust/test/smoke_test.rs"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
 name = "wtools_trivial"

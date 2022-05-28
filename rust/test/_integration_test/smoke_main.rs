@@ -1,8 +1,7 @@
 #![ allow( unused_imports ) ]
 
-use local;
-
-use published;
+use wtools_local;
+use wtools_published;
 
 fn main()
 {

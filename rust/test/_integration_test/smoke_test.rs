@@ -1,15 +1,17 @@
 // #[ allow( unused_imports ) ]
 // use test_tools::test_suite;
 
+//
+
 #[ derive( Debug ) ]
 struct SmokeModuleTest< 'a >
 {
-  dependency_name : &'a str,
-  version : &'a str,
-  local_path : &'a str,
-  code : &'a str,
-  test_path : std::path::PathBuf,
-  test_postfix : &'a str,
+  pub dependency_name : &'a str,
+  pub version : &'a str,
+  pub local_path : &'a str,
+  pub code : &'a str,
+  pub test_path : std::path::PathBuf,
+  pub test_postfix : &'a str,
 }
 
 impl< 'a > SmokeModuleTest< 'a >
@@ -42,13 +44,18 @@ impl< 'a > SmokeModuleTest< 'a >
     self
   }
 
+  fn test_postfix( &mut self, src : &'a str )
+  {
+    self.test_postfix = src;
+  }
+
   fn code( &mut self, code : &'a str ) -> &mut SmokeModuleTest< 'a >
   {
     self.code = code;
     self
   }
 
-  fn form( &self ) -> Result<(), &'static str>
+  fn form( &self ) -> Result< (), &'static str >
   {
     std::fs::create_dir( &self.test_path ).unwrap();
 
@@ -135,15 +142,32 @@ impl< 'a > SmokeModuleTest< 'a >
     }
     Ok( () )
   }
+
 }
 
 //
+//   index!
+//   {
+//
+//     new,
+//     version,
+//     local_path,
+//     code,
+//     form,
+//     perform,
+//     clean,
+//
+//   }
+//
+//
 
-fn smoke_test_run( local : bool )
+fn smoke_test_run( test_name : &'static str, local : bool )
 {
   let module_name = std::env::var( "CARGO_PKG_NAME" ).unwrap();
   let module_path = std::env::var( "CARGO_MANIFEST_DIR" ).unwrap();
+
   let mut code_path = std::path::PathBuf::from( module_path.clone() );
+
   code_path.push( "rust" );
   code_path.push( "test" );
   code_path.push( if module_name.starts_with( "w" ) { &module_name[ 1.. ] } else { module_name.as_str() } );
@@ -152,6 +176,7 @@ fn smoke_test_run( local : bool )
 
   let mut t = SmokeModuleTest::new( module_name.as_str() );
   t.clean( true ).unwrap();
+  t.test_postfix( test_name );
 
   let data;
   if code_path.exists()
@@ -159,34 +184,55 @@ fn smoke_test_run( local : bool )
     data = std::fs::read_to_string( code_path ).unwrap();
     t.code( &data );
   }
+
   t.version( "*" );
   if local
   {
     t.local_path( module_path.as_str() );
   }
+
   t.form().unwrap();
   t.perform().unwrap();
   t.clean( false ).unwrap();
+
 }
 
 //
 
+// #[ test ]
+// fn local_smoke_test()
+// {
+//   if let Ok( value ) = std::env::var( "WITH_SMOKE" )
+//   {
+//     match value.as_str()
+//     {
+//       "false" => {},
+//       "local" => smoke_test_run( "local_smoke_test", true ),
+//       "published" => {},
+//       _ =>
+//       {
+//         smoke_test_run( "local_smoke_test", true );
+//       },
+//     }
+//   }
+// }
+
+//
+
 #[ test ]
-fn smoke_test()
+fn published_smoke_test()
 {
   if let Ok( value ) = std::env::var( "WITH_SMOKE" )
   {
     match value.as_str()
     {
       "false" => {},
-      "local" => smoke_test_run( true ),
-      "published" => smoke_test_run( false ),
+      "local" => {},
+      "published" => smoke_test_run( "published_smoke_test", false ),
       _ =>
       {
-        smoke_test_run( true );
-        smoke_test_run( false );
+        smoke_test_run( "published_smoke_test", false );
       },
     }
   }
 }
-

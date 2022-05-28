@@ -48,7 +48,7 @@ jobs :
       run : cargo test --manifest-path ${{ inputs.manifest_path }} --no-default-features
     - name : Run all tests with all features
       run : cargo test --manifest-path ${{ inputs.manifest_path }} --all-features
-    - name: Install cargo-hack
-      run: cargo install cargo-hack
+    - name : Install cargo-hack
+      run : cargo install cargo-hack
     - name : Run all tests with each feature
       run : cargo hack test --manifest-path ${{ inputs.manifest_path }} --each-feature

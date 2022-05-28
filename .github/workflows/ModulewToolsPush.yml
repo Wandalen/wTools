@@ -11,7 +11,7 @@ jobs :
   # wtools
 
   build :
-    # if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
+    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
     uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
     with :
       manifest_path : 'module/rust/wtools/Cargo.toml'

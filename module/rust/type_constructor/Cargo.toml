@@ -44,6 +44,10 @@ path = "rust/impl/dt/type_constructor/type_constructor_lib.rs"
 name = "type_constructor_test"
 path = "rust/test/dt/type_constructor/type_constructor_lib_test.rs"
 
+[[test]]
+name = "type_constructor_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [[example]]
 name = "type_constructor_trivial_sample"
 path = "sample/rust/type_constructor_trivial_sample/src/main.rs"
