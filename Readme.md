@@ -2,8 +2,6 @@
 
 ![wTools](./asset/img/logo_v3_trans_wide.png)
 
-#
-
 <!-- # Repository :: Tools -->
 
 [![discord](https://img.shields.io/discord/872391416519737405?color=e3e8f0&logo=discord&logoColor=e3e8f0)](https://discord.gg/JwTG6d2b)
