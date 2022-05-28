@@ -17,7 +17,7 @@ jobs :
 
   # wproc_macro
 
-  test :
+  test_wproc_macro :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust_alias/wproc_macro/Cargo.toml'
@@ -25,7 +25,7 @@ jobs :
 
   # macro_tools
 
-  test :
+  test_macro_tools :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust_alias/macro_tools/Cargo.toml'
