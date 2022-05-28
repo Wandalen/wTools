@@ -180,26 +180,29 @@ mod internal
         }
       }
 
-      #[ cfg( feature = "make" ) ]
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      Make0
-      for $Name < $ParamName >
-      where $ParamName : Default
+      // #[  cfg( feature = "make" ) ]
+      $crate::_if_make!
       {
-        fn make_0() -> Self
+        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+        Make0
+        for $Name < $ParamName >
+        where $ParamName : Default
         {
-          Self( Default::default() )
+          fn make_0() -> Self
+          {
+            Self( Default::default() )
+          }
         }
-      }
 
-      #[ cfg( feature = "make" ) ]
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      Make1< $ParamName >
-      for $Name < $ParamName >
-      {
-        fn make_1( _0 : $ParamName ) -> Self
+        // #[  cfg( feature = "make" ) ]
+        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+        Make1< $ParamName >
+        for $Name < $ParamName >
         {
-          Self( _0 )
+          fn make_1( _0 : $ParamName ) -> Self
+          {
+            Self( _0 )
+          }
         }
       }
 
@@ -421,16 +424,19 @@ mod internal
         }
       }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
-      for
-      $Name $( < $( $ParamName ),* > )?
+      // #[  cfg( feature = "make" ) ]
+      $crate::_if_make!
       {
-        fn make_1( _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
+        impl
+        $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+        Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+        for
+        $Name $( < $( $ParamName ),* > )?
         {
-          Self( _0 )
+          fn make_1( _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
+          {
+            Self( _0 )
+          }
         }
       }
 

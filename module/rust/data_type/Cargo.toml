@@ -28,11 +28,13 @@ include = [
 default = [
   "either",
   "interval",
+  "make",
   "type_constructor/default",
 ]
 all = [
   "either",
   "interval",
+  "make",
   "type_constructor/all",
 ]
 interval = [ "winterval" ]

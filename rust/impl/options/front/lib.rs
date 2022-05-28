@@ -43,7 +43,7 @@ pub mod exposed
   pub use woptions_meta as meta;
   // #[ cfg( any( feature = "meta", feature = "woptions_meta" ) ) ]
   pub use meta::Options;
-  // #[ cfg( feature = "former" ) ]
+  // #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use former::derive::Former;
   // #[ cfg( any( feature = "runtime", feature = "woptions_runtime" ) ) ]
   pub use woptions_runtime::exposed::*;

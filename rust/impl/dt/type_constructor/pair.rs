@@ -66,37 +66,42 @@ mod internal
         }
       }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      <
-        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
-        $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
-      >
-      Make0
-      for $Name< $ParamName1, $ParamName2 >
-      where
-        $ParamName1 : Default,
-        $ParamName2 : Default,
+      // #[  cfg( feature = "make" ) ]
+      $crate::_if_make!
       {
-        fn make_0() -> Self
-        {
-          Self( Default::default(), Default::default() )
-        }
-      }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      <
-        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
-        $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
-      >
-      Make2 < $ParamName1, $ParamName2 >
-      for $Name< $ParamName1, $ParamName2 >
-      {
-        fn make_2( _0 : $ParamName1, _1 : $ParamName2 ) -> Self
+        impl
+        <
+          $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
+          $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
+        >
+        Make0
+        for $Name< $ParamName1, $ParamName2 >
+        where
+          $ParamName1 : Default,
+          $ParamName2 : Default,
         {
-          Self( _0, _1 )
+          fn make_0() -> Self
+          {
+            Self( Default::default(), Default::default() )
+          }
         }
+
+        // #[  cfg( feature = "make" ) ]
+        impl
+        <
+          $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
+          $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
+        >
+        Make2 < $ParamName1, $ParamName2 >
+        for $Name< $ParamName1, $ParamName2 >
+        {
+          fn make_2( _0 : $ParamName1, _1 : $ParamName2 ) -> Self
+          {
+            Self( _0, _1 )
+          }
+        }
+
       }
 
       // From Pair Into Element cant be implemented because of Rust restructions.
@@ -211,27 +216,32 @@ mod internal
         }
       }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      <
-        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
-        $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
-      >
-      Make2
-      <
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
-        $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
-      >
-      for $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? >
+      $crate::_if_make!
       {
-        fn make_2
-        (
-          _0 : $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
-          _1 : $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
-        ) -> Self
+
+        // #[ cfg( feature = "make" ) ]
+        impl
+        <
+          $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+          $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
+        >
+        Make2
+        <
+          $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+          $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
+        >
+        for $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? >
         {
-          Self( _0, _1 )
+          fn make_2
+          (
+            _0 : $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+            _1 : $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
+          ) -> Self
+          {
+            Self( _0, _1 )
+          }
         }
+
       }
 
       $crate::types!{ $( $( $Rest )* )? }
@@ -465,50 +475,55 @@ mod internal
         }
       }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      <
-        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
-      >
-      Make0
-      for $Name< $ParamName1 >
-      where
-        $ParamName1 : Default,
+      $crate::_if_make!
       {
-        fn make_0() -> Self
-        {
-          Self( Default::default(), Default::default() )
-        }
-      }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      <
-        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
-      >
-      Make1< $ParamName1 >
-      for $Name< $ParamName1 >
-      where
-        $ParamName1 : Clone,
-      {
-        fn make_1( _0 : $ParamName1 ) -> Self
+        // #[ cfg( feature = "make" ) ]
+        impl
+        <
+          $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+        >
+        Make0
+        for $Name< $ParamName1 >
+        where
+          $ParamName1 : Default,
         {
-          Self( _0.clone(), _0.clone() )
+          fn make_0() -> Self
+          {
+            Self( Default::default(), Default::default() )
+          }
         }
-      }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      <
-        $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
-      >
-      Make2< $ParamName1, $ParamName1 >
-      for $Name< $ParamName1 >
-      {
-        fn make_2( _0 : $ParamName1, _1 : $ParamName1 ) -> Self
+        // #[ cfg( feature = "make" ) ]
+        impl
+        <
+          $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+        >
+        Make1< $ParamName1 >
+        for $Name< $ParamName1 >
+        where
+          $ParamName1 : Clone,
         {
-          Self( _0, _1 )
+          fn make_1( _0 : $ParamName1 ) -> Self
+          {
+            Self( _0.clone(), _0.clone() )
+          }
         }
+
+        // #[ cfg( feature = "make" ) ]
+        impl
+        <
+          $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+        >
+        Make2< $ParamName1, $ParamName1 >
+        for $Name< $ParamName1 >
+        {
+          fn make_2( _0 : $ParamName1, _1 : $ParamName1 ) -> Self
+          {
+            Self( _0, _1 )
+          }
+        }
+
       }
 
       $crate::types!{ $( $( $Rest )* )? }
@@ -833,48 +848,53 @@ mod internal
         }
       }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      <
-        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
-      >
-      Make1
-      <
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >
-      >
-      for $Name< $( $( $( $ParamName1 ),+ )? )? >
-      where
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
+      $crate::_if_make!
       {
-        fn make_1( _0 : $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > ) -> Self
-        {
-          Self( _0.clone(), _0.clone() )
-        }
-      }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      <
-        $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
-      >
-      Make2
-      <
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
-      >
-      for $Name< $( $( $( $ParamName1 ),+ )? )? >
-      where
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
-      {
-        fn make_2
-        (
-          _0 : $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
-          _1 : $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
-        )
-        -> Self
+        // #[ cfg( feature = "make" ) ]
+        impl
+        <
+          $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+        >
+        Make1
+        <
+          $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >
+        >
+        for $Name< $( $( $( $ParamName1 ),+ )? )? >
+        where
+          $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
         {
-          Self( _0.clone(), _1.clone() )
+          fn make_1( _0 : $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > ) -> Self
+          {
+            Self( _0.clone(), _0.clone() )
+          }
         }
+
+        // #[ cfg( feature = "make" ) ]
+        impl
+        <
+          $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
+        >
+        Make2
+        <
+          $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+          $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+        >
+        for $Name< $( $( $( $ParamName1 ),+ )? )? >
+        where
+          $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
+        {
+          fn make_2
+          (
+            _0 : $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+            _1 : $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
+          )
+          -> Self
+          {
+            Self( _0.clone(), _1.clone() )
+          }
+        }
+
       }
 
       $crate::types!{ $( $( $Rest )* )? }

@@ -1,5 +1,6 @@
 
 /// Get time right now.
+#[ cfg( feature = "now" ) ]
 #[ path = "./now.rs" ]
 pub mod now;
 
@@ -26,6 +27,7 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
+  #[ cfg( feature = "now" ) ]
   pub use super::now::*;
 }
 

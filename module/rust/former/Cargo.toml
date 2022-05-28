@@ -53,4 +53,6 @@ former_runtime = { version = "~0.1", path = "../../rust/former_runtime" }
 # meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
 # trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-# rustversion = "~1.0"
+# meta_tools_min = { version = "~0.2", path = "../../rust/meta_tools_min" }
+
+

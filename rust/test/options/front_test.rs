@@ -27,6 +27,7 @@ mod basic_manual;
 mod basic;
 #[ path = "./all/without_perform.rs" ]
 mod without_perform;
+
 /* zzz : use macro mod_at */
 // mod custom_getter_manual { include!( "./all/custom_getter_manual.rs" ); }
 // mod custom_getter { include!( "./all/custom_getter.rs" ); }

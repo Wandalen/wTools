@@ -102,10 +102,16 @@ typing_implements = [ "typing", "typing_tools/implements" ]
 
 # time
 
-time = [ "time_tools/default" ]
-time_default = [ "time" ]
-time_all = [ "time" ]
-time_chrono = [ "time_tools/chrono_default" ]
+time = [ "time_tools" ]
+time_default = [
+  "time",
+  "time_now",
+]
+time_all = [
+  "time",
+  "time_now",
+]
+time_now = [ "time_tools/now" ]
 
 # string
 
@@ -229,8 +235,22 @@ derive_from_str_once_cell = [ "parse-display/once_cell" ]
 # dt
 
 dt = [ "data_type" ]
-dt_default = [ "data_type/default" ]
-dt_all = [ "data_type/all" ]
+dt_default = [
+  "dt",
+  "data_type/default",
+  "dt_either",
+  "dt_type_constructor",
+  "dt_make",
+  "dt_internal",
+]
+dt_all = [
+  "dt",
+  "data_type/all",
+  "dt_either",
+  "dt_type_constructor",
+  "dt_make",
+  "dt_internal",
+]
 dt_either = [ "data_type/either" ]
 dt_type_constructor = [ "data_type/type_constructor" ]
 dt_make = [ "data_type/make" ]
@@ -240,7 +260,12 @@ dt_internal = [ "data_type/interval" ]
 
 diagnostics = [ "diagnostics_tools" ]
 diagnostics_all = [ "diagnostics", "diagnostics_tools/all" ]
-diagnostics_default = [ "diagnostics", "diagnostics_tools/default" ]
+diagnostics_default = [
+  "diagnostics",
+  "diagnostics_tools/default",
+  "diagnostics_runtime_assertions",
+  "diagnostics_compiletime_assertions",
+]
 diagnostics_runtime_assertions = [ "diagnostics_tools/runtime_assertions" ]
 diagnostics_compiletime_assertions = [ "diagnostics_tools/compiletime_assertions" ]
 

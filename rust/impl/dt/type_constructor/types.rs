@@ -37,7 +37,6 @@ mod internal
   /// The same macro `types` is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
   ///
   /// ```rust
-  /// #[ cfg( feature = "types" ) ]
   /// {
   ///   use type_constructor::prelude::*;
   ///

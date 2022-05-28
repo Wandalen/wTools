@@ -217,7 +217,7 @@ tests_impls!
       }
     }
 
-    #[ cfg( feature = "make" ) ]
+    #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make1" ) */
       let got : Pair< f32, f64 > = make!( mk!( 13.0 ) );
@@ -385,7 +385,7 @@ tests_impls!
       }
     }
 
-    #[ cfg( feature = "make" ) ]
+    #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make1" ) */
       let instance1 : Pair< mod1::Float > = make!( mk!( 13.0 ) );
@@ -553,7 +553,7 @@ tests_impls!
       }
     }
 
-    #[ cfg( feature = "make" ) ]
+    #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
       let got : HomoPair< f32 > = make!();

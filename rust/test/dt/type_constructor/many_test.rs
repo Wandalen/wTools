@@ -150,7 +150,6 @@ tests_impls!
     }
     // trace_macros!( false );
 
-    #[ cfg( feature = "types" ) ]
     {
       /* test.case( "make0" ) */
       let got : Many< f32, f64 > = make!();
@@ -302,7 +301,7 @@ tests_impls!
     assert!( implements!( instance1 => Default ) );
     assert!( !implements!( instance1 => fmt::Display ) );
 
-    #[ cfg( feature = "make" ) ]
+    #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
       let got : Many< f32 > = make!();

@@ -10,7 +10,7 @@ use TheModule::prelude::*;
 tests_impls!
 {
 
-  #[ cfg( feature = "compiletime_assertions" ) ]
+  #[ cfg( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
   #[ test ]
   fn cta_type_same_size_test()
   {
@@ -22,7 +22,7 @@ tests_impls!
 
   }
 
-  #[ cfg( feature = "compiletime_assertions" ) ]
+  #[ cfg( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
   #[ test ]
   fn cta_type_same_align_test()
   {
@@ -37,7 +37,7 @@ tests_impls!
 
   }
 
-  #[ cfg( feature = "compiletime_assertions" ) ]
+  #[ cfg( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
   #[ test ]
   fn cta_ptr_same_size_test()
   {
@@ -55,7 +55,7 @@ tests_impls!
 
   }
 
-  #[ cfg( feature = "compiletime_assertions" ) ]
+  #[ cfg( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
   #[ test ]
   fn cta_mem_same_size_test()
   {

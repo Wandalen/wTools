@@ -236,7 +236,7 @@ tests_impls!
     }
     // trace_macros!( false );
 
-    #[ cfg( feature = "make" ) ]
+    #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make2" ) */
       let got : Pair< f32, f64, f32 > = make!( mk1!( 13.0 ), mk2!( 31.0 ) );
@@ -499,7 +499,7 @@ tests_impls!
     assert!( !implements!( instance1 => Default ) );
     assert!( !implements!( instance1 => fmt::Display ) );
 
-    #[ cfg( feature = "make" ) ]
+    #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
       let got : Pair< f32, f64 > = make!();
@@ -660,7 +660,7 @@ tests_impls!
   fn struct_basic()
   {
 
-    #[ cfg( feature = "make" ) ]
+    #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
       let got : Pair< f32, f64 > = make!();

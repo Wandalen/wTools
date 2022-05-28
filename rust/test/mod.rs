@@ -4,18 +4,28 @@ use super::TheModule;
 
 include!( "./_conditional/wtools.rs" );
 
+#[ cfg( feature = "dt" ) ]
 mod dt;
+#[ cfg( feature = "error" ) ]
 mod error;
-mod fs;
+#[ cfg( feature = "derive" ) ]
 mod derive;
+#[ cfg( feature = "meta" ) ]
 mod meta;
+#[ cfg( feature = "iter" ) ]
 mod iter;
+#[ cfg( feature = "string" ) ]
 mod string;
+#[ cfg( feature = "time" ) ]
 mod time;
+#[ cfg( feature = "typing" ) ]
 mod typing;
+#[ cfg( feature = "diagnostics" ) ]
 mod diagnostics;
 
+#[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
 mod former;
+#[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
 mod options;
-// xxx : meta should include former and options
 
+// zzz : meta should include former and options

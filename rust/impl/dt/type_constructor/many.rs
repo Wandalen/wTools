@@ -107,48 +107,49 @@ mod internal
         }
       }
 
-      #[ cfg( feature = "make" ) ]
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      Make0
-      for $Name < $ParamName >
+      $crate::_if_make!
       {
-        fn make_0() -> Self
-        {
-          Self( std::vec::Vec::new() )
-        }
-      }
 
-      #[ cfg( feature = "make" ) ]
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      Make1< $ParamName >
-      for $Name < $ParamName >
-      {
-        fn make_1( _0 : $ParamName ) -> Self
+        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+        Make0
+        for $Name < $ParamName >
         {
-          Self( vec![ _0 ] )
+          fn make_0() -> Self
+          {
+            Self( std::vec::Vec::new() )
+          }
         }
-      }
 
-      #[ cfg( feature = "make" ) ]
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      Make2< $ParamName, $ParamName >
-      for $Name < $ParamName >
-      {
-        fn make_2( _0 : $ParamName, _1 : $ParamName ) -> Self
+        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+        Make1< $ParamName >
+        for $Name < $ParamName >
         {
-          Self( vec![ _0, _1 ] )
+          fn make_1( _0 : $ParamName ) -> Self
+          {
+            Self( vec![ _0 ] )
+          }
         }
-      }
 
-      #[ cfg( feature = "make" ) ]
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      Make3< $ParamName, $ParamName, $ParamName >
-      for $Name < $ParamName >
-      {
-        fn make_3( _0 : $ParamName, _1 : $ParamName, _2 : $ParamName ) -> Self
+        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+        Make2< $ParamName, $ParamName >
+        for $Name < $ParamName >
         {
-          Self( vec![ _0, _1, _2 ] )
+          fn make_2( _0 : $ParamName, _1 : $ParamName ) -> Self
+          {
+            Self( vec![ _0, _1 ] )
+          }
         }
+
+        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+        Make3< $ParamName, $ParamName, $ParamName >
+        for $Name < $ParamName >
+        {
+          fn make_3( _0 : $ParamName, _1 : $ParamName, _2 : $ParamName ) -> Self
+          {
+            Self( vec![ _0, _1, _2 ] )
+          }
+        }
+
       }
 
       $crate::types!{ $( $( $Rest )* )? }
@@ -291,80 +292,85 @@ mod internal
         }
       }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      Make0
-      for
-      $Name $( < $( $ParamName ),* > )?
+      $crate::_if_make!
       {
-        fn make_0() -> Self
-        {
-          Self( std::vec::Vec::< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >::new() )
-        }
-      }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
-      for
-      $Name $( < $( $ParamName ),* > )?
-      {
-        fn make_1
-        (
-          _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
-        )
-        -> Self
+        // #[ cfg( feature = "make" ) ]
+        impl
+        $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+        Make0
+        for
+        $Name $( < $( $ParamName ),* > )?
         {
-          Self( vec![ _0 ] )
+          fn make_0() -> Self
+          {
+            Self( std::vec::Vec::< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >::new() )
+          }
         }
-      }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      Make2
-      <
-        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
-        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
-      >
-      for
-      $Name $( < $( $ParamName ),* > )?
-      {
-        fn make_2
-        (
-          _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
-          _1 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
-        )
-        -> Self
+        // #[ cfg( feature = "make" ) ]
+        impl
+        $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+        Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+        for
+        $Name $( < $( $ParamName ),* > )?
         {
-          Self( vec![ _0, _1 ] )
+          fn make_1
+          (
+            _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+          )
+          -> Self
+          {
+            Self( vec![ _0 ] )
+          }
         }
-      }
 
-      #[ cfg( feature = "make" ) ]
-      impl
-      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      Make3
-      <
-        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
-        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
-        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
-      >
-      for
-      $Name $( < $( $ParamName ),* > )?
-      {
-        fn make_3
-        (
-          _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
-          _1 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
-          _2 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
-        )
-        -> Self
+        // #[ cfg( feature = "make" ) ]
+        impl
+        $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+        Make2
+        <
+          $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+          $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+        >
+        for
+        $Name $( < $( $ParamName ),* > )?
         {
-          Self( vec![ _0, _1, _2 ] )
+          fn make_2
+          (
+            _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+            _1 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+          )
+          -> Self
+          {
+            Self( vec![ _0, _1 ] )
+          }
         }
+
+        // #[ cfg( feature = "make" ) ]
+        impl
+        $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+        Make3
+        <
+          $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+          $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+          $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+        >
+        for
+        $Name $( < $( $ParamName ),* > )?
+        {
+          fn make_3
+          (
+            _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+            _1 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+            _2 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
+          )
+          -> Self
+          {
+            Self( vec![ _0, _1, _2 ] )
+          }
+        }
+
       }
 
       $crate::types!{ $( $( $Rest )* )? }

@@ -28,8 +28,8 @@ include = [
 [features]
 use_std = [ "itertools/use_std" ]
 use_alloc = [ "itertools/use_alloc" ]
-default = [ "itertools", "use_std" ]
-all = [ "itertools", "use_std" ]
+default = [ "use_std" ]
+all = [ "use_std" ]
 
 [lib]
 name = "iter_tools"
@@ -44,7 +44,7 @@ name = "iter_tools_trivial"
 path = "sample/rust/iter_tools_trivial/src/main.rs"
 
 [dependencies]
-itertools = { version = "~0.10.3", optional = true, default-features = false }
+itertools = { version = "~0.10.3" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

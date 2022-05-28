@@ -1,12 +1,14 @@
 
 use test_tools::*;
-
+#[ allow( unused_imports ) ]
 use super::TheModule;
 
 //
 
 tests_impls!
 {
+
+  #[ cfg( any( feature = "chrono", feature = "time_chrono" ) ) ]
   #[ test ]
   fn basic()
   {
@@ -32,6 +34,7 @@ tests_impls!
     let got2 = time::s::now();
     a_id!( got1 / 1000, got2 );
   }
+
 }
 
 //

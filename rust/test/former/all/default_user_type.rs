@@ -19,11 +19,6 @@ only_for_local_module!
   use former::Former;
 }
 
-// #[cfg( feature = "in_wtools" )]
-// use wtools::former::Former;
-// #[cfg( not( feature = "in_wtools" ) )]
-// use former::Former;
-
 //
 
 tests_impls!

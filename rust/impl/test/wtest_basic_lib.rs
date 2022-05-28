@@ -42,7 +42,14 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use ::diagnostics_tools::exposed::*;
   #[ doc( inline ) ]
-  pub use ::meta_tools::{ impls, impls1, impls2, impls3, index, tests_impls, tests_index };
+  pub use ::meta_tools::
+  {
+    impls,
+    index,
+    tests_impls,
+    tests_impls_optional,
+    tests_index,
+  };
   #[ doc( inline ) ]
   pub use ::typing_tools::{ implements };
 }
@@ -61,7 +68,14 @@ pub mod prelude
   #[ doc( inline ) ]
   pub use ::diagnostics_tools::prelude::*;
   #[ doc( inline ) ]
-  pub use ::meta_tools::{ impls, index, tests_impls, tests_index };
+  pub use ::meta_tools::
+  {
+    impls,
+    index,
+    tests_impls,
+    tests_impls_optional,
+    tests_index,
+  };
   #[ doc( inline ) ]
   pub use ::typing_tools::{ implements };
 

@@ -31,9 +31,9 @@
 /// Dependencies.
 pub mod dependencies
 {
-  #[ cfg( feature = "meta_former" ) ]
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use ::meta_tools::former;
-  #[ cfg( feature = "meta_options" ) ]
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   pub use ::meta_tools::options;
 
   #[ cfg( feature = "meta" ) ]
@@ -83,9 +83,9 @@ pub mod protected
   #[ cfg( feature = "derive" ) ]
   pub use ::derive_tools as derive;
 
-  #[ cfg( feature = "meta_former" ) ]
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use ::meta_tools::former as former;
-  #[ cfg( feature = "meta_options" ) ]
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   pub use ::meta_tools::options as options;
 
 }
@@ -121,9 +121,9 @@ pub mod exposed
   #[ cfg( feature = "derive" ) ]
   pub use super::derive::exposed::*;
 
-  #[ cfg( feature = "meta_former" ) ]
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use super::former::exposed::*;
-  #[ cfg( feature = "meta_options" ) ]
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   pub use super::options::exposed::*;
 
 }
@@ -150,9 +150,9 @@ pub mod prelude
   #[ cfg( feature = "derive" ) ]
   pub use super::derive::prelude::*;
 
-  #[ cfg( feature = "meta_former" ) ]
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use super::former::prelude::*;
-  #[ cfg( feature = "meta_options" ) ]
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   pub use super::options::prelude::*;
 
 }

@@ -16,9 +16,9 @@ pub mod protected
   pub use ::mod_interface::orphan::*;
   #[ cfg( feature = "for_each" ) ]
   pub use ::for_each::orphan::*;
-  #[ cfg( feature = "options" ) ]
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   pub use ::woptions::orphan::*;
-  #[ cfg( feature = "former" ) ]
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use ::former::orphan::*;
 }
 
@@ -41,14 +41,14 @@ pub mod exposed
   pub use ::mod_interface::exposed::*;
   #[ cfg( feature = "for_each" ) ]
   pub use ::for_each::exposed::*;
-  #[ cfg( feature = "options" ) ]
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   pub use ::woptions::exposed::*;
-  #[ cfg( feature = "former" ) ]
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use ::former::exposed::*;
 
-  #[ cfg( feature = "options" ) ]
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   pub use ::woptions as options;
-  #[ cfg( feature = "former" ) ]
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use ::former as former;
 
 }
@@ -62,9 +62,9 @@ pub mod prelude
   pub use ::mod_interface::prelude::*;
   #[ cfg( feature = "for_each" ) ]
   pub use ::for_each::prelude::*;
-  #[ cfg( feature = "options" ) ]
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   pub use ::woptions::prelude::*;
-  #[ cfg( feature = "former" ) ]
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use ::former::prelude::*;
   #[ cfg( feature = "collection_make" ) ]
   pub use ::literally::*;

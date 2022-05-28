@@ -402,9 +402,9 @@ tests_impls!
     a_id!( command, expected );
 
     #[ cfg( debug_assertions ) ]
-    println!("Debugging enabled");
+    println!( "Debugging enabled" );
     #[ cfg( not( debug_assertions ) ) ]
-    println!("Debugging disabled");
+    println!( "Debugging disabled" );
   }
 }
 

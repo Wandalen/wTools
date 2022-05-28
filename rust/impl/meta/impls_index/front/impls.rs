@@ -99,6 +99,9 @@ mod internal
   ///
   /// Define implementation putting each function under a macro and adding attribute `#[ test ]`.
   ///
+  /// Use [index!] to generate code for each elment.
+  /// Unlike elements of [test_impls_optional!], elements of [test_impls] are mandatory to be used in [index!].
+  ///
 
   #[ macro_export ]
   macro_rules! tests_impls
@@ -122,7 +125,7 @@ mod internal
     )
     =>
     {
-      $crate::impls1!
+      $crate::tests_impls!
       {
         @DefineFn
         @Meta{ $( #[ $Meta ] )* }
@@ -158,7 +161,80 @@ mod internal
         };
       }
 
-      $crate::impls1!
+      $crate::tests_impls!
+      {
+        $( $Rest )*
+      }
+    };
+
+  }
+
+  ///
+  /// Define implementation putting each function under a macro and adding attribute `#[ test ]`.
+  ///
+  /// Use [index!] to generate code for each elment.
+  /// Unlike elements of [test_impls!], elements of [test_impls_optional] are optional to be used in [index!].
+  ///
+
+  #[ macro_export ]
+  macro_rules! tests_impls_optional
+  {
+
+    // empty
+
+    // () => { type X = i32; };
+
+    // empty
+
+    () => {};
+
+    // entry
+
+    (
+      $( #[ $Meta : meta ] )*
+      $Vis : vis
+      fn $Name : ident
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      $crate::tests_impls_optional!
+      {
+        @DefineFn
+        @Meta{ $( #[ $Meta ] )* }
+        @Vis{ $Vis }
+        @Name{ $Name }
+        @Rest
+          $( #[ $Meta ] )*
+          $Vis fn $Name
+          $( $Rest )*
+      }
+    };
+
+    // parsed
+
+    (
+      @DefineFn
+      @Meta{ $( #[ $Meta : meta ] )* }
+      @Vis{ $Vis : vis }
+      @Name{ $Name : ident }
+      @Rest
+        $Item : item
+        $( $Rest : tt )*
+    )
+    =>
+    {
+      #[ allow( unused_macros ) ]
+      macro_rules! $Name
+      {
+        () =>
+        {
+          #[ test ]
+          $Item
+        };
+      }
+
+      $crate::tests_impls_optional!
       {
         $( $Rest )*
       }
@@ -232,6 +308,7 @@ mod internal
   pub use index as tests_index;
   pub use impls1;
   pub use tests_impls;
+  pub use tests_impls_optional;
   pub use impls2;
   pub use _impls_callback;
 
@@ -254,10 +331,10 @@ pub mod prelude
     tests_index,
     impls1,
     tests_impls,
+    tests_impls_optional,
     impls2,
     _impls_callback,
   };
-  // #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
   pub use ::impls_index_meta::impls3;
   pub use impls1 as impls;
 }

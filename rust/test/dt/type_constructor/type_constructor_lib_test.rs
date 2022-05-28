@@ -19,9 +19,8 @@ fn trybuild_tests()
   println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
   #[ allow( unused_variables ) ]
   let t = trybuild::TestCases::new();
-  #[ cfg( feature = "make" ) ]
+  #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
   t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/make/*.rs" );
-  // #[ cfg( feature = "types" ) ]
   t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/types/*.rs" );
 }
 

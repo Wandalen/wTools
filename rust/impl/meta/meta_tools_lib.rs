@@ -18,9 +18,9 @@ pub mod dependencies
   pub use ::for_each;
   #[ cfg( feature = "impls_index" ) ]
   pub use ::impls_index;
-  #[ cfg( feature = "former" ) ]
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use ::former;
-  #[ cfg( feature = "options" ) ]
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   pub use ::woptions;
 }
 

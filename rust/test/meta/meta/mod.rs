@@ -1,7 +1,9 @@
 
-#[ cfg( any( feature = "for_each", feature = "collection_make" ) ) ]
+#[ allow( unused_imports ) ]
 use super::TheModule;
-#[ cfg( feature = "for_each" ) ]
+
+#[ cfg( any( feature = "for_each", feature = "meta_for_each" ) ) ]
 mod for_each_test;
-#[ cfg( feature = "collection_make" ) ]
-mod generator_test;
+
+#[ cfg( any( feature = "collection_make", feature = "meta_collection_make" ) ) ]
+mod collection_make_test;

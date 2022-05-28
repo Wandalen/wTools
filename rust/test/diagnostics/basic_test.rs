@@ -9,7 +9,7 @@ use TheModule::prelude::*;
 tests_impls!
 {
 
-  #[ cfg( feature = "runtime_assertions" ) ]
+  #[ cfg( any( feature = "runtime_assertions", feature = "diagnostics_runtime_assertions" ) ) ]
   #[ test ]
   fn assertions()
   {
@@ -22,12 +22,12 @@ tests_impls!
 
   }
 
-  #[ cfg( feature = "compiletime_assertions" ) ]
+  #[ cfg( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
   #[ test ]
   fn cta_true_test()
   {
 
-    cta_true!( all( feature = "compiletime_assertions", all() ) );
+    cta_true!( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
     // xxx : try ( 1 + 2 == 3 )
 
   }

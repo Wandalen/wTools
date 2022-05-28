@@ -1,5 +1,6 @@
 
 use test_tools::*;
+#[ allow( unused_imports ) ]
 use super::TheModule;
 
 //
@@ -7,6 +8,7 @@ use super::TheModule;
 tests_impls!
 {
 
+  #[ cfg( all( feature = "derive_from", feature = "derive_into", feature = "derive_display", feature = "derive_from_str" ) ) ]
   #[ test ]
   fn samples()
   {
@@ -43,6 +45,7 @@ tests_impls!
 
   //
 
+  #[ cfg( all( feature = "derive_from", feature = "derive_into", feature = "derive_display", feature = "derive_from_str" ) ) ]
   #[ test ]
   fn basic()
   {

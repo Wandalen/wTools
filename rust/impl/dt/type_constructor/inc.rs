@@ -12,6 +12,8 @@ pub mod single;
 // #[ cfg( feature = "types" ) ]
 pub mod types;
 
+/// Macro helpers.
+pub mod helper;
 /// Generic traits.
 pub mod traits;
 /// Variadic constructor.
@@ -35,6 +37,8 @@ pub mod protected
   #[ doc( inline ) ]
   // #[ cfg( feature = "types" ) ]
   pub use super::types::orphan::*;
+  #[ doc( inline ) ]
+  pub use super::helper::orphan::*;
   #[ doc( inline ) ]
   pub use super::traits::orphan::*;
   #[ doc( inline ) ]
@@ -69,6 +73,8 @@ pub mod exposed
   // #[ cfg( feature = "types" ) ]
   pub use super::types::exposed::*;
   #[ doc( inline ) ]
+  pub use super::helper::exposed::*;
+  #[ doc( inline ) ]
   pub use super::traits::exposed::*;
   #[ doc( inline ) ]
   #[ cfg( feature = "make" ) ]
@@ -90,6 +96,8 @@ pub mod prelude
   #[ doc( inline ) ]
   // #[ cfg( feature = "types" ) ]
   pub use super::types::prelude::*;
+  #[ doc( inline ) ]
+  pub use super::helper::prelude::*;
   #[ doc( inline ) ]
   pub use super::traits::prelude::*;
   #[ doc( inline ) ]
