@@ -1,0 +1,16 @@
+name : fs_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # fs_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/rust/fs_tools/Cargo.toml'
+      module_name : 'fs_tools'
