@@ -9,44 +9,24 @@ jobs :
 
   # woptions
 
-  build :
-    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/woptions/Cargo.toml'
-
-  build_fast :
-    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'woptions' )"
-    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with :
-      manifest_path : 'module/rust/woptions/Cargo.toml'
+      module_name : 'woptions'
 
   # woptions_meta
 
-  build_woptions_meta :
-    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/woptions_meta/Cargo.toml'
-
-  build_fast_woptions_meta :
-    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'woptions' )"
-    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with :
-      manifest_path : 'module/rust/woptions_meta/Cargo.toml'
-
+      module_name : 'woptions_meta'
 
   # woptions_runtime
 
-  build_woptions_runtime :
-    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/woptions_runtime/Cargo.toml'
-
-  build_fast_woptions_runtime :
-    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'woptions' )"
-    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with :
-      manifest_path : 'module/rust/woptions_runtime/Cargo.toml'
-
+      module_name : 'woptions_runtime'

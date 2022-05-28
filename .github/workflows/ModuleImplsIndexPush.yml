@@ -9,15 +9,16 @@ jobs :
 
   # impls_index
 
-  build :
-    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/impls_index/Cargo.toml'
+      module_name : 'impls_index'
 
-  build_fast :
-    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'impls_index' )"
-    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
+  # impls_index_meta
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
-      manifest_path : 'module/rust/impls_index/Cargo.toml'
-
+      manifest_path : 'module/rust/impls_index_meta/Cargo.toml'
+      module_name : 'impls_index_meta'

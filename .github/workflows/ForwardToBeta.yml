@@ -1,0 +1,27 @@
+
+name : forward_to_beta
+
+on :
+  workflow_run :
+    workflows : [ 'module1' ]
+    types : [ completed ]
+    branches:
+      - 'alpha'
+
+jobs :
+
+  on-success :
+    runs-on : ubuntu-latest
+    # if : ${{ github.event.workflow_run.conclusion == 'success' }} && ${{ github.workflow == 'workflow_run' }}
+    if : ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps :
+      - run : echo 'Tests passed'
+      - run : echo 'workflow:${{ github.workflow }} action:${{ github.action }} event_name:${{ github.event_name }}'
+
+  on-failure :
+    runs-on : ubuntu-latest
+    # if : ${{ github.event.workflow_run.conclusion == 'failure' }} && ${{ github.workflow == 'workflow_run' }}
+    if : ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps :
+      - run : echo 'Tests failed'
+      - run : echo 'workflow:${{ github.workflow }} action:${{ github.action }} event_name:${{ github.event_name }}'

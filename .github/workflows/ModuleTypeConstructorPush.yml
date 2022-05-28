@@ -9,28 +9,16 @@ jobs :
 
   # type_constructor
 
-  build :
-    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/type_constructor/Cargo.toml'
-
-  build_fast :
-    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'data_type' )"
-    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with :
-      manifest_path : 'module/rust/type_constructor/Cargo.toml'
+      module_name : 'type_constructor'
 
   # fundamental_data_type
 
-  build_fundamental_data_type :
-    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust_alias/fundamental_data_type/Cargo.toml'
-
-  build_fast_fundamental_data_type :
-    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'data_type' )"
-    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with :
-      manifest_path : 'module/rust_alias/fundamental_data_type/Cargo.toml'
+      module_name : 'fundamental_data_type'

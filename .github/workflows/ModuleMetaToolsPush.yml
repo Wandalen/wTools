@@ -9,28 +9,16 @@ jobs :
 
   # meta_tools
 
-  build :
-    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/meta_tools/Cargo.toml'
-
-  build_fast :
-    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'meta_tools' )"
-    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with :
-      manifest_path : 'module/rust/meta_tools/Cargo.toml'
+      module_name : 'meta_tools'
 
   # meta_tools_min
 
-  build_meta_tools_min :
-    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/meta_tools_min/Cargo.toml'
-
-  build_fast_meta_tools_min :
-    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'meta_tools' )"
-    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with :
-      manifest_path : 'module/rust/meta_tools_min/Cargo.toml'
+      module_name : 'meta_tools_min'

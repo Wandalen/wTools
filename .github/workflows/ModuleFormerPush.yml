@@ -9,42 +9,24 @@ jobs :
 
   # former
 
-  build :
-    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/former/Cargo.toml'
-
-  build_fast :
-    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'former' )"
-    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with :
-      manifest_path : 'module/rust/former/Cargo.toml'
+      module_name : 'former'
 
   # former_meta
 
-  build_former_meta :
-    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/former_meta/Cargo.toml'
-
-  build_fast_former_meta :
-    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'former' )"
-    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with :
-      manifest_path : 'module/rust/former_meta/Cargo.toml'
+      module_name : 'former_meta'
 
   # former_runtime
 
-  build_former_runtime :
-    if : "contains( github.event.head_commit.message, '!build' ) || startsWith( github.event.head_commit.message, 'Merge' )"
-    uses : Wandalen/wTools/.github/workflows/RustFull.yml@master
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/former_runtime/Cargo.toml'
-
-  build_fast_former_runtime :
-    if : "!contains( github.event.head_commit.message, '!build' ) && !startsWith( github.event.head_commit.message, 'Merge' ) && contains( github.event.head_commit.message, 'former' )"
-    uses : Wandalen/wTools/.github/workflows/RustFast.yml@master
-    with :
-      manifest_path : 'module/rust/former_runtime/Cargo.toml'
+      module_name : 'former_runtime'
