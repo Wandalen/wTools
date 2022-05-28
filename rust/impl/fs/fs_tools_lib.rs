@@ -21,7 +21,7 @@ pub mod dependencies
 pub mod protected
 {
   pub use super::orphan::*;
-  pub use super::files::orphan::*;
+  pub use super::fs::orphan::*;
 }
 
 pub use protected::*;
@@ -36,11 +36,11 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
-  pub use super::dt::exposed::*;
+  pub use super::fs::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  pub use super::dt::prelude::*;
+  pub use super::fs::prelude::*;
 }

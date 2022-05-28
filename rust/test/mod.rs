@@ -6,6 +6,7 @@ include!( "./_conditional/wtools.rs" );
 
 mod dt;
 mod error;
+mod fs;
 mod derive;
 mod meta;
 mod iter;

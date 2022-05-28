@@ -26,11 +26,11 @@ include = [
 
 [lib]
 name = "fs_tools"
-path = "rust/impl/test/file/fs_tools_lib.rs"
+path = "rust/impl/fs/fs_tools_lib.rs"
 
 [[test]]
 name = "fs_tools_test"
-path = "rust/test/file/fs_tools_lib_test.rs"
+path = "rust/test/fs/fs_tools_lib_test.rs"
 
 # [[example]]
 # name = "fs_tools_trivial_sample"
