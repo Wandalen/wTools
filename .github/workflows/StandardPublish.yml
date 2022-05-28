@@ -2,6 +2,10 @@
 name : publish
 on : [ push ]
 
+concurrency :
+
+  group : standard_publush
+  cancel-in-progress : true
 
 jobs :
 

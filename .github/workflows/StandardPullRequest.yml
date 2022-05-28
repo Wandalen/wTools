@@ -2,16 +2,21 @@
 name : pr
 on : [ pull_request ]
 
+concurrency :
+
+  group : standard_pull_request_${{ github.head_ref }}
+  cancel-in-progress : true
+
 jobs :
 
-  Cancel :
-    name : 'Cancel Previous Runs'
-    runs-on : ubuntu-latest
-    timeout-minutes : 1
-    steps :
-      - uses : styfle/cancel-workflow-action@0.4.0
-        with :
-          access_token : ${{ github.token }}
+  # Cancel :
+  #   name : 'Cancel Previous Runs'
+  #   runs-on : ubuntu-latest
+  #   timeout-minutes : 1
+  #   steps :
+  #     - uses : styfle/cancel-workflow-action@0.4.0
+  #       with :
+  #         access_token : ${{ github.token }}
 
   Fast :
     env :
