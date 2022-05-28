@@ -17,7 +17,7 @@ jobs :
 
   # impls_index_meta
 
-  test :
+  test_impls_index_meta :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/impls_index_meta/Cargo.toml'

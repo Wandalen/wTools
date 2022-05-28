@@ -18,7 +18,7 @@ jobs :
 
   # wTools
 
-  test :
+  test_wTools :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust_alias/wTools/Cargo.toml'
@@ -26,7 +26,7 @@ jobs :
 
   # std_tools
 
-  test :
+  test_std_tools :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust_alias/std_tools/Cargo.toml'
@@ -34,7 +34,7 @@ jobs :
 
   # std_x
 
-  test :
+  test_std_x :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust_alias/std_x/Cargo.toml'
@@ -42,7 +42,7 @@ jobs :
 
   # non_std
 
-  test :
+  test_non_std :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust_alias/non_std/Cargo.toml'

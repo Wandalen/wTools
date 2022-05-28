@@ -17,7 +17,7 @@ jobs :
 
   # fundamental_data_type
 
-  test :
+  test_fundamental_data_type :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust_alias/fundamental_data_type/Cargo.toml'
