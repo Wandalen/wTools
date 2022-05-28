@@ -53,13 +53,13 @@ default = [
 
   "derive_display",
   "derive_from_str",
-  "derive_from_str_std",
-  "derive_from_str_regex",
-  "derive_from_str_once_cell",
+  # "derive_from_str_std",
+  # "derive_from_str_regex",
+  # "derive_from_str_once_cell",
 
 ]
 
-all = [
+full = [
 
   "derive_add_assign",
   "derive_add",
@@ -86,9 +86,9 @@ all = [
 
   "derive_display",
   "derive_from_str",
-  "derive_from_str_std",
-  "derive_from_str_regex",
-  "derive_from_str_once_cell",
+  # "derive_from_str_std",
+  # "derive_from_str_regex",
+  # "derive_from_str_once_cell",
 
 ]
 nightly = [ "derive_more/nightly" ]
@@ -119,10 +119,10 @@ derive_unwrap = [ "derive_more/unwrap" ]
 derive_convert_case = [ "derive_more/convert_case" ]
 
 derive_display = [ "parse-display" ]
-derive_from_str = [ "parse-display", "derive_from_str_std", "derive_from_str_regex", "derive_from_str_once_cell" ]
-derive_from_str_std = [ "parse-display/std" ]
-derive_from_str_regex = [ "parse-display/regex", "parse-display/once_cell" ] # xxx : Dmytro : hack, the module does not compile
-derive_from_str_once_cell = [ "parse-display/once_cell" ]
+derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex", "parse-display/once_cell" ]
+# derive_from_str_std = [ "parse-display/std" ]
+# derive_from_str_regex = [ "parse-display/regex", "parse-display/once_cell" ]
+# derive_from_str_once_cell = [ "parse-display/once_cell" ]
 
 [lib]
 name = "derive_tools"
@@ -137,7 +137,7 @@ name = "derive_tools_trivial_sample"
 path = "sample/rust/derive_tools_trivial_sample/src/main.rs"
 
 [dependencies]
-derive_more = { version = "~0.99", optional = true, default-features = false }
+derive_more = { version = "~0.99", default-features = false }
 parse-display = { version = "~0.5", optional = true, default-features = false }
 
 [dev-dependencies]

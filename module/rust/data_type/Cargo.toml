@@ -31,11 +31,11 @@ default = [
   "make",
   "type_constructor/default",
 ]
-all = [
+full = [
   "either",
   "interval",
   "make",
-  "type_constructor/all",
+  "type_constructor/full",
 ]
 interval = [ "winterval" ]
 make = [ "type_constructor/make" ]

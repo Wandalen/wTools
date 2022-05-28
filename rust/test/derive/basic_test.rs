@@ -45,7 +45,7 @@ tests_impls!
 
   //
 
-  #[ cfg( all( feature = "derive_from", feature = "derive_into", feature = "derive_display", feature = "derive_from_str" ) ) ]
+  #[ cfg( all( feature = "derive_from", feature = "derive_into", feature = "derive_display" ) ) ]
   #[ test ]
   fn basic()
   {

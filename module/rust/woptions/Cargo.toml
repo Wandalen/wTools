@@ -26,11 +26,8 @@ include = [
 ]
 
 [features]
-# meta = [ "woptions_meta" ]
-# runtime = [ "woptions_runtime" ]
-# default = [ "meta", "runtime", "former" ]
 default = []
-all = []
+full = []
 
 [lib]
 name = "woptions"

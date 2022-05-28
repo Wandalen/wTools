@@ -32,7 +32,7 @@ default = [
   "mod_interface",
   "collection_make",
 ]
-all = [
+full = [
   "for_each",
   "impls_index",
   "mod_interface",

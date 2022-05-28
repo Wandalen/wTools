@@ -6,7 +6,7 @@
 use super::TheModule::former as TheModule;
 #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
 use TheModule as former;
-use meta_tools::*;
+use wtools::meta::*;
 
 // #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
 // #[ allow( unused_imports ) ]

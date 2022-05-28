@@ -27,14 +27,11 @@ include = [
 [features]
 default = [
   "make",
-  # "types",
 ]
-all = [
+full = [
   "make",
-  # "types",
 ]
 make = []
-# types = []
 
 [lib]
 name = "type_constructor"

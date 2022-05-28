@@ -27,9 +27,11 @@ include = [
 [features]
 default = [
   "type_constructor/default",
+  "make",
 ]
-all = [
-  "type_constructor/all",
+full = [
+  "type_constructor/full",
+  "make",
 ]
 make = [ "type_constructor/make" ]
 

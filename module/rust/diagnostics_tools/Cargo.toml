@@ -39,7 +39,7 @@ path = "rust/test/diagnostics/lib_test.rs"
 
 [features]
 default = [ "runtime_assertions", "compiletime_assertions" ]
-all = [ "runtime_assertions", "compiletime_assertions" ]
+full = [ "runtime_assertions", "compiletime_assertions" ]
 runtime_assertions = [ "pretty_assertions" ] # run-time assertions
 compiletime_assertions = [] # compile-time assertions
 

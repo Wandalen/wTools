@@ -26,11 +26,8 @@ include = [
 ]
 
 [features]
-# meta = [ "former_meta" ]
-# runtime = [ "former_runtime" ]
-# default = [ "meta", "runtime" ]
 default = []
-all = []
+full = []
 
 [lib]
 name = "former"
@@ -49,10 +46,5 @@ former_meta = { version = "~0.1", path = "../../rust/former_meta" }
 former_runtime = { version = "~0.1", path = "../../rust/former_runtime" }
 
 [dev-dependencies]
-# anyhow = "~1.0"
-# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
 # meta_tools_min = { version = "~0.2", path = "../../rust/meta_tools_min" }
-
-

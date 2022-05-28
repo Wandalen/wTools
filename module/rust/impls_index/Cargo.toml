@@ -27,7 +27,7 @@ include = [
 
 [features]
 default = []
-all = []
+full = []
 
 [lib]
 name = "impls_index"

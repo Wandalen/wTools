@@ -31,6 +31,10 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+# rustdoc-args = []
+
 [lib]
 name = "wtools"
 path = "rust/impl/wtools_lib.rs"
@@ -52,10 +56,18 @@ path = "sample/rust/wtools_trivial/src/main.rs"
 # iter
 
 iter = [ "iter_tools" ]
-iter_default = [ "iter", "iter_tools/default" ]
-iter_all = [ "iter" ]
-iter_use_std = [ "iter_tools/use_std" ]
-iter_use_alloc = [ "iter_tools/use_alloc" ]
+iter_default = [
+  "iter",
+  "iter_use_std",
+  "iter_tools/default"
+]
+iter_full = [
+  "iter",
+  "iter_use_std",
+  "iter_use_alloc",
+]
+iter_use_std = [ "iter", "iter_tools/use_std" ]
+iter_use_alloc = [ "iter", "iter_tools/use_alloc" ]
 
 # meta
 
@@ -69,7 +81,7 @@ meta_default = [
   "meta_options",
   "meta_collection_make",
 ]
-meta_all = [
+meta_full = [
   "meta",
   "meta_for_each",
   "meta_impls_index",
@@ -78,24 +90,29 @@ meta_all = [
   "meta_options",
   "meta_collection_make",
 ]
-meta_for_each = [ "meta_tools/for_each" ]
-meta_impls_index = [ "meta_tools/impls_index" ]
-meta_mod_interface = [ "meta_tools/mod_interface" ]
-meta_collection_make = [ "meta_tools/collection_make" ]
-meta_former = [ "meta_tools/former" ]
-meta_options = [ "meta_tools/options" ]
+meta_for_each = [ "meta", "meta_tools/for_each" ]
+meta_impls_index = [ "meta", "meta_tools/impls_index" ]
+meta_mod_interface = [ "meta", "meta_tools/mod_interface" ]
+meta_collection_make = [ "meta", "meta_tools/collection_make" ]
+meta_former = [ "meta", "meta_tools/former" ]
+meta_options = [ "meta", "meta_tools/options" ]
 
 # typing
 
 typing = [ "typing_tools" ]
-typing_default = [ "typing", "typing_tools/default" ]
-typing_all = [
+typing_default = [
   "typing",
   "typing_inspect_type",
   "typing_is_slice",
   "typing_implements",
 ]
-typing_nightly = [ "typing_tools/nightly" ]
+typing_full = [
+  "typing",
+  "typing_inspect_type",
+  "typing_is_slice",
+  "typing_implements",
+]
+typing_nightly = [ "typing", "nightly", "typing_tools/nightly", ]
 typing_inspect_type = [ "typing", "typing_tools/inspect_type" ]
 typing_is_slice = [ "typing", "typing_tools/is_slice" ]
 typing_implements = [ "typing", "typing_tools/implements" ]
@@ -107,31 +124,31 @@ time_default = [
   "time",
   "time_now",
 ]
-time_all = [
+time_full = [
   "time",
   "time_now",
 ]
-time_now = [ "time_tools/now" ]
+time_now = [ "time", "time_tools/now" ]
 
 # string
 
 string = [ "wstring_tools" ]
 string_default = [ "string" ]
-string_all = [ "string" ]
+string_full = [ "string" ]
 
 # error
 
 error = [ "werror" ]
 error_default = [ "error" ]
-error_all = [ "error" ]
+error_full = [ "error" ]
 
 # derive
 
 derive = [ "derive_tools" ]
-derive_all = [
+derive_full = [
 
   "derive",
-  "derive_nightly",
+  # "derive_nightly",
 
   "derive_add_assign",
   "derive_add",
@@ -142,7 +159,6 @@ derive_all = [
   "derive_deref_mut",
   "derive_error",
   "derive_from",
-  "derive_from_str",
   "derive_index",
   "derive_index_mut",
   "derive_into",
@@ -164,7 +180,7 @@ derive_all = [
 derive_default = [
 
   "derive",
-  "derive_nightly",
+  # "derive_nightly",
 
   "derive_add_assign",
   "derive_add",
@@ -175,7 +191,6 @@ derive_default = [
   "derive_deref_mut",
   "derive_error",
   "derive_from",
-  "derive_from_str",
   "derive_index",
   "derive_index_mut",
   "derive_into",
@@ -193,44 +208,45 @@ derive_default = [
   "derive_display",
   "derive_from_str",
 
-]
-derive_nightly = [
-  "derive_tools/nightly"
-]
+  # "derive_from_str",
+  # "derive_from_str_std",
+  # "derive_from_str_regex",
+  # "derive_from_str_once_cell",
 
-derive_enable_track_caller = [
-  "derive_tools/enable_track_caller"
 ]
 
-derive_more = [ "derive_tools/derive_more" ]
-derive_add_assign = [ "derive_tools/derive_add_assign" ]
-derive_add = [ "derive_tools/derive_add" ]
-derive_as_mut = [ "derive_tools/derive_as_mut" ]
-derive_as_ref = [ "derive_tools/derive_as_ref" ]
-derive_constructor = [ "derive_tools/derive_constructor" ]
-derive_deref = [ "derive_tools/derive_deref" ]
-derive_deref_mut = [ "derive_tools/derive_deref_mut" ]
-derive_error = [ "derive_tools/derive_error" ]
-derive_from = [ "derive_tools/derive_from" ]
-derive_index = [ "derive_tools/derive_index" ]
-derive_index_mut = [ "derive_tools/derive_index_mut" ]
-derive_into = [ "derive_tools/derive_into" ]
-derive_into_iterator = [ "derive_tools/derive_into_iterator" ]
-derive_iterator = [ "derive_tools/derive_iterator" ]
-derive_mul_assign = [ "derive_tools/derive_mul_assign" ]
-derive_mul = [ "derive_tools/derive_mul" ]
-derive_not = [ "derive_tools/derive_not" ]
-derive_sum = [ "derive_tools/derive_sum" ]
-derive_try_into = [ "derive_tools/derive_try_into" ]
-derive_is_variant = [ "derive_tools/derive_is_variant" ]
-derive_unwrap = [ "derive_tools/derive_unwrap" ]
-derive_convert_case = [ "derive_tools/derive_convert_case" ]
+derive_nightly = [ "derive", "nightly", "derive_tools/nightly" ]
+derive_enable_track_caller = [ "derive", "derive_tools/enable_track_caller" ]
 
-derive_display = [ "derive_tools/derive_display", "parse-display" ]
-derive_from_str = [ "derive_tools/derive_from_str", "parse-display", "derive_from_str_std", "derive_from_str_regex", "derive_from_str_once_cell" ]
-derive_from_str_std = [ "parse-display/std" ]
-derive_from_str_regex = [ "parse-display/regex", "parse-display/once_cell" ] # xxx : Dmytro : hack, the module does not compile
-derive_from_str_once_cell = [ "parse-display/once_cell" ]
+# derive_more = [ "derive_tools/derive_more" ]
+derive_add_assign = [ "derive", "derive_tools/derive_add_assign" ]
+derive_add = [ "derive", "derive_tools/derive_add" ]
+derive_as_mut = [ "derive", "derive_tools/derive_as_mut" ]
+derive_as_ref = [ "derive", "derive_tools/derive_as_ref" ]
+derive_constructor = [ "derive", "derive_tools/derive_constructor" ]
+derive_deref = [ "derive", "derive_tools/derive_deref" ]
+derive_deref_mut = [ "derive", "derive_tools/derive_deref_mut" ]
+derive_error = [ "derive", "derive_tools/derive_error" ]
+derive_from = [ "derive", "derive_tools/derive_from" ]
+derive_index = [ "derive", "derive_tools/derive_index" ]
+derive_index_mut = [ "derive", "derive_tools/derive_index_mut" ]
+derive_into = [ "derive", "derive_tools/derive_into" ]
+derive_into_iterator = [ "derive", "derive_tools/derive_into_iterator" ]
+derive_iterator = [ "derive", "derive_tools/derive_iterator" ]
+derive_mul_assign = [ "derive", "derive_tools/derive_mul_assign" ]
+derive_mul = [ "derive", "derive_tools/derive_mul" ]
+derive_not = [ "derive", "derive_tools/derive_not" ]
+derive_sum = [ "derive", "derive_tools/derive_sum" ]
+derive_try_into = [ "derive", "derive_tools/derive_try_into" ]
+derive_is_variant = [ "derive", "derive_tools/derive_is_variant" ]
+derive_unwrap = [ "derive", "derive_tools/derive_unwrap" ]
+derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
+
+derive_display = [ "derive", "derive_tools/derive_display", "parse-display" ]
+derive_from_str = [ "derive", "derive_tools/derive_from_str", "parse-display" ]
+# derive_from_str_std = [ "derive", "parse-display/std" ]
+# derive_from_str_regex = [ "derive", "parse-display/regex", "parse-display/once_cell" ]
+# derive_from_str_once_cell = [ "derive", "parse-display/once_cell" ]
 
 # dt
 
@@ -241,25 +257,29 @@ dt_default = [
   "dt_either",
   "dt_type_constructor",
   "dt_make",
-  "dt_internal",
+  "dt_interval",
 ]
-dt_all = [
+dt_full = [
   "dt",
-  "data_type/all",
+  "data_type/full",
   "dt_either",
   "dt_type_constructor",
   "dt_make",
-  "dt_internal",
+  "dt_interval",
 ]
-dt_either = [ "data_type/either" ]
-dt_type_constructor = [ "data_type/type_constructor" ]
-dt_make = [ "data_type/make" ]
-dt_internal = [ "data_type/interval" ]
+dt_either = [ "dt", "data_type/either" ]
+dt_type_constructor = [ "dt", "data_type/type_constructor" ]
+dt_make = [ "dt", "data_type/make" ]
+dt_interval = [ "dt", "data_type/interval" ]
 
 # diagnostics
 
 diagnostics = [ "diagnostics_tools" ]
-diagnostics_all = [ "diagnostics", "diagnostics_tools/all" ]
+diagnostics_full = [
+  "diagnostics",
+  "diagnostics_runtime_assertions",
+  "diagnostics_compiletime_assertions",
+]
 diagnostics_default = [
   "diagnostics",
   "diagnostics_tools/default",
@@ -269,19 +289,19 @@ diagnostics_default = [
 diagnostics_runtime_assertions = [ "diagnostics_tools/runtime_assertions" ]
 diagnostics_compiletime_assertions = [ "diagnostics_tools/compiletime_assertions" ]
 
-nightly = [
-  "typing_nightly",
-  "derive_nightly"
-]
+# must be empty
+nightly = []
 
-all = [
-  "typing_all",
-  "time_all",
-  "string_all",
-  "error_all",
-  "derive_all",
-  "dt_all",
-  "diagnostics_all",
+full = [
+  "iter_full",
+  "meta_full",
+  "typing_full",
+  "time_full",
+  "string_full",
+  "error_full",
+  "derive_full",
+  "dt_full",
+  "diagnostics_full",
 ]
 
 default = [
@@ -295,10 +315,6 @@ default = [
   "dt_default",
   "diagnostics_default",
 ]
-
-[package.metadata.docs.rs]
-all-features = true
-# rustdoc-args = []
 
 [dependencies]
 
