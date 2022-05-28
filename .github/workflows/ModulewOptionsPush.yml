@@ -17,7 +17,7 @@ jobs :
 
   # woptions_meta
 
-  test :
+  test_woptions_meta :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/woptions_meta/Cargo.toml'
@@ -25,7 +25,7 @@ jobs :
 
   # woptions_runtime
 
-  test :
+  test_woptions_runtime :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/woptions_runtime/Cargo.toml'

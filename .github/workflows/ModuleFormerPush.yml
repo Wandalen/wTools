@@ -17,7 +17,7 @@ jobs :
 
   # former_meta
 
-  test :
+  test_former_meta :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/former_meta/Cargo.toml'
@@ -25,7 +25,7 @@ jobs :
 
   # former_runtime
 
-  test :
+  test_former_runtime :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/former_runtime/Cargo.toml'

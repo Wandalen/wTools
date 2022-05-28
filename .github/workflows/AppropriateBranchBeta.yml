@@ -1,5 +1,5 @@
 
-name : appropriate_branch_master
+name : appropriate_branch_beta
 
 on :
   pull_request_target :

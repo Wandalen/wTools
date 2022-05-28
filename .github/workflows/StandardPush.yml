@@ -2,6 +2,11 @@
 name : push
 on : [ push ]
 
+concurrency :
+
+  group : standard_push_${{ github.ref }}
+  cancel-in-progress : true
+
 jobs :
 
   Fast :
