@@ -1,6 +1,6 @@
 use super::*;
 use TheModule::canonical::NodeFactory as TheFactory;
-include!( "./factory_impl.rs" );
+include!( "./factory_impls.rs" );
 
 //
 

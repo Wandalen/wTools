@@ -89,7 +89,8 @@ pub( crate ) mod private
     index!( fmt );
   }
 
-  // xxx
+  //
+
   impl< Id, Kind > Make0
   for CellNodeFactory< Id, Kind >
   where
