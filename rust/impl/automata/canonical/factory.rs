@@ -4,7 +4,6 @@ pub( crate ) mod private
   use crate::prelude::*;
   use crate::canonical::*;
   use wtools::prelude::*;
-  // use std::collections::HashMap;
   use std::fmt;
   use indexmap::IndexMap;
 
@@ -17,7 +16,7 @@ pub( crate ) mod private
     /// Iterate output nodes of the node.
     ///
 
-    fn node_extend_out_nodes< IntoId1, IntoId2, Iter >
+    fn node_add_out_nodes< IntoId1, IntoId2, Iter >
     (
       &mut self,
       node_id : IntoId1,
@@ -71,13 +70,10 @@ pub( crate ) mod private
 
   }
 
-  // pub type NodeFactory2 = NodeFactory< crate::IdentityWithInt, crate::NodeKindless >;
-
   ///
   /// Node factory.
   ///
 
-  // #[ derive( Debug ) ]
   pub struct NodeFactory< Id = crate::IdentityWithInt, Kind = crate::NodeKindless >
   where
     Id : IdentityInterface,
@@ -88,36 +84,24 @@ pub( crate ) mod private
     pub id_to_node_map : IndexMap< ID!(), crate::canonical::Node< Id, Kind > >,
   }
 
-  impl NodeFactory
-  {
-  }
-
-  // < < Self as NodeFactoryInterface >::NodeHandle as HasId >::Id
-
-  impl< Id, Kind > fmt::Debug for NodeFactory< Id, Kind >
+  impl< Id, Kind > NodeFactory< Id, Kind >
   where
     Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
-    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-    {
-      f.write_fmt( format_args!( "NodeFactory\n" ) )?;
-      let mut first = true;
-      for ( _id, node ) in self.nodes()
-      {
-        if !first
-        {
-          f.write_str( "\n" )?;
-        }
-        first = false;
-        f.write_str( &wtools::string::indentation( "  ", format!( "{:?}", node ), "" ) )?;
-      }
-      f.write_str( "" )
-    }
   }
 
-  // xxx : test
-  impl< Id, Kind > Make0 for NodeFactory< Id, Kind >
+  impl< Id, Kind > fmt::Debug
+  for NodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
+  {
+    index!( fmt );
+  }
+
+  impl< Id, Kind > Make0
+  for NodeFactory< Id, Kind >
   where
     Id : IdentityInterface,
     Kind : NodeKindInterface,
@@ -179,7 +163,7 @@ pub( crate ) mod private
 
     index!
     {
-      node_extend_out_nodes,
+      node_add_out_nodes,
     }
 
   }
@@ -192,7 +176,7 @@ pub( crate ) mod private
     Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
-    type NodeHandle = crate::canonical::Node< Id, Kind >; /* xxx2 : remove? */
+    // type NodeHandle = crate::canonical::Node< Id, Kind >; /* xxx2 : remove? */
   }
 
 }

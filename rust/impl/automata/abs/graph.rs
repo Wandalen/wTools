@@ -62,7 +62,7 @@ pub( crate ) mod private
   {
 
     /// Iterate output nodes of the node.
-    fn node_extend_out_nodes< IntoId1, IntoId2, Iter >
+    fn node_add_out_nodes< IntoId1, IntoId2, Iter >
     (
       &mut self,
       node_id : IntoId1,
@@ -88,7 +88,7 @@ pub( crate ) mod private
       IntoId2 : Into< ID!() >,
       IntoId2 : Clone,
     {
-      self.node_extend_out_nodes( node_id, core::iter::once( out_node_id ) );
+      self.node_add_out_nodes( node_id, core::iter::once( out_node_id ) );
     }
 
   }

@@ -1,7 +1,12 @@
 
+// macro_rules! ID
+// {
+//   () => { < < Self as NodeFactoryInterface >::NodeHandle as HasId >::Id };
+// }
+
 macro_rules! ID
 {
-  () => { < < Self as NodeFactoryInterface >::NodeHandle as HasId >::Id };
+  () => { < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id };
 }
 
 impls!
@@ -99,6 +104,24 @@ impls!
       return result;
     }
     unreachable!( "No node with id {:?} found", id );
+  }
+
+  //
+
+  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  {
+    f.write_fmt( format_args!( "NodeFactory\n" ) )?;
+    let mut first = true;
+    for ( _id, node ) in self.nodes()
+    {
+      if !first
+      {
+        f.write_str( "\n" )?;
+      }
+      first = false;
+      f.write_str( &wtools::string::indentation( "  ", format!( "{:?}", node ), "" ) )?;
+    }
+    f.write_str( "" )
   }
 
 }

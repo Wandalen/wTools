@@ -132,7 +132,8 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind > PartialEq for Node< Id, Kind >
+  impl< Id, Kind > PartialEq
+  for Node< Id, Kind >
   where
     Id : IdentityInterface,
     Kind : NodeKindInterface,
