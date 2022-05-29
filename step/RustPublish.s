@@ -22,7 +22,7 @@ function rustPublish( o )
   [
     'module/rust/*',
     'module/alias/*',
-    'module/rust_move/*',
+    'module/move/*',
   ];
 
   const currentPath = _.path.current();
