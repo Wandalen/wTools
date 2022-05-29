@@ -75,7 +75,6 @@ mod internal
       out_node_id : IntoId2,
     )
     where
-      // Id : ID!(),
       IntoId1 : Into< ID!() >,
       IntoId1 : Clone,
       IntoId2 : Into< ID!() >,
@@ -87,7 +86,7 @@ mod internal
   }
 
   ///
-  /// Graph which allow to add more nodes.
+  /// Graph interface which allow to add more nodes.
   ///
 
   pub trait GraphExtendableInterface
@@ -105,7 +104,7 @@ mod internal
     ;
 
     /// Make edges.
-    fn make_edge_list< IntoIter, Id >( &mut self, into_iter : IntoIter )
+    fn make_with_edge_list< IntoIter, Id >( &mut self, into_iter : IntoIter )
     where
       Id : Into< ID!() >,
       IntoIter : IntoIterator< Item = Id >,

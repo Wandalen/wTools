@@ -56,13 +56,13 @@ tests_impls!
   //
 
   #[ test ]
-  fn make_edge_list()
+  fn make_with_edge_list()
   {
     use TheModule::*;
 
     let mut factory = TheModule::canonical::NodeFactory::make();
 
-    factory.make_edge_list
+    factory.make_with_edge_list
     ([
       1, 2,
       2, 1,
@@ -88,5 +88,5 @@ tests_index!
 {
   node,
   basic,
-  make_edge_list,
+  make_with_edge_list,
 }
