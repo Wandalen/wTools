@@ -15,16 +15,28 @@ mod internal
     /// Iterate output nodes of the node.
     ///
 
-    fn node_extend_out_nodes< Id, Iter >
+    // fn node_extend_out_nodes< Id, Iter >
+    // (
+    //   &mut self,
+    //   node_id : Id,
+    //   out_nodes_iter : Iter,
+    // )
+    // where
+    //   Iter : IntoIterator< Item = Id >,
+    //   Iter::IntoIter : Clone,
+    //   Id : Into< ID!() >
+
+    fn node_extend_out_nodes< IntoId1, IntoId2, Iter >
     (
       &mut self,
-      node_id : Id,
+      node_id : IntoId1,
       out_nodes_iter : Iter,
     )
     where
-      Iter : IntoIterator< Item = Id >,
+      IntoId1 : Into< ID!() >,
+      IntoId2 : Into< ID!() >,
+      Iter : IntoIterator< Item = IntoId2 >,
       Iter::IntoIter : Clone,
-      Id : Into< ID!() >
     {
 
       let iter = out_nodes_iter.into_iter();

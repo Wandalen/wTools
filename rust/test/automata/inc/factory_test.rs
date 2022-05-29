@@ -1,6 +1,4 @@
-use std::collections::HashSet;
-use test_tools::*;
-use wtools::prelude::*;
+use super::*;
 
 //
 
@@ -9,9 +7,9 @@ tests_impls!
   #[ test ]
   fn node()
   {
-    use wautomata::*;
+    use TheModule::*;
 
-    let mut factory = wautomata::canonical::NodeFactory::make();
+    let mut factory = TheModule::canonical::NodeFactory::make();
 
     let n1 = factory.node_making( 1 );
     let n1b = factory.node( 1 );
@@ -33,14 +31,14 @@ tests_impls!
   #[ test ]
   fn basic()
   {
-    use wautomata::*;
+    use TheModule::*;
 
-    let mut factory = wautomata::canonical::NodeFactory::make();
+    let mut factory = TheModule::canonical::NodeFactory::make();
 
     let a = factory.node_making( 1 );
     let b = factory.node_making( 2 );
 
-    factory.node_extend_out_node( a, b );
+    factory.node_add_edge_to_node( a, b );
     factory.node_extend_out_nodes( b, [ a, b ].into_iter() );
 
     dbg!( factory.node( a ) );
@@ -60,9 +58,9 @@ tests_impls!
   #[ test ]
   fn make_edge_list()
   {
-    use wautomata::*;
+    use TheModule::*;
 
-    let mut factory = wautomata::canonical::NodeFactory::make();
+    let mut factory = TheModule::canonical::NodeFactory::make();
 
     factory.make_edge_list
     ([

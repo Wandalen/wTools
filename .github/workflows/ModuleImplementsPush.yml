@@ -20,5 +20,5 @@ jobs :
   test_instance_of :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
-      manifest_path : 'module/rust_alias/instance_of/Cargo.toml'
+      manifest_path : 'module/alias/instance_of/Cargo.toml'
       module_name : 'instance_of'

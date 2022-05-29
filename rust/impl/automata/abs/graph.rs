@@ -54,34 +54,33 @@ mod internal
   {
 
     /// Iterate output nodes of the node.
-    fn node_extend_out_nodes< Id, Iter >
+    fn node_extend_out_nodes< IntoId1, IntoId2, Iter >
     (
       &mut self,
-      node_id : Id,
+      node_id : IntoId1,
       out_nodes_iter : Iter,
     )
     where
-      Id : Into< ID!() >,
-      Iter : IntoIterator< Item = Id >,
+      IntoId1 : Into< ID!() >,
+      IntoId2 : Into< ID!() >,
+      Iter : IntoIterator< Item = IntoId2 >,
       Iter::IntoIter : Clone,
     ;
 
     /// Iterate output nodes of the node.
-    fn node_extend_out_node< Id >
+    fn node_add_edge_to_node< IntoId1, IntoId2 >
     (
       &mut self,
-      node_id : Id,
-      out_node_id : Id,
+      node_id : IntoId1,
+      out_node_id : IntoId2,
     )
     where
-      Id : Into< ID!() >,
-      // ID!() : Into< ID!() >,
-      // Id : < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id,
-      // core::iter::Once< Id > : Clone,
-      Id : Clone,
+      // Id : ID!(),
+      IntoId1 : Into< ID!() >,
+      IntoId1 : Clone,
+      IntoId2 : Into< ID!() >,
+      IntoId2 : Clone,
     {
-      // let out_node_id : ID!() = out_node_id.into();
-      // self.node_extend_out_nodes( node_id, core::iter::once( out_node_id ) );
       self.node_extend_out_nodes( node_id, core::iter::once( out_node_id ) );
     }
 
@@ -123,7 +122,7 @@ mod internal
         let id2 = chunk.next().unwrap().into();
         self.node_making( id1 );
         self.node_making( id2 );
-        self.node_extend_out_node( id1, id2 );
+        self.node_add_edge_to_node( id1, id2 );
         // println!( "{:?} -> {:?}", id1, id2 );
       }
 

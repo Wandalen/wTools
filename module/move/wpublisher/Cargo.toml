@@ -39,7 +39,7 @@ path = "rust/test/publisher/mod.rs"
 
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }
-wca = { version = "~0.1", path = "../../rust_move/wca" }
+wca = { version = "~0.1", path = "../../move/wca" }
 anyhow = "1.0.56"
 toml_edit = "0.14.2"
 cargo_metadata = "0.14.2"

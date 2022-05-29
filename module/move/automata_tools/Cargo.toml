@@ -1,19 +1,18 @@
 [package]
-name = "wautomata"
-version = "0.1.1"
+name = "automata_tools"
+version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Volodymyr M. <volodymyr.migdal@gmail.com>",
   "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/wautomata"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wautomata"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wautomata"
+documentation = "https://docs.rs/automata_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/automata_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/automata_tools"
 description = """
-Implementation of automata.
+Automata tools.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
@@ -26,16 +25,17 @@ include = [
 ]
 
 [lib]
-name = "wautomata"
-path = "rust/impl/automata/wautomata_lib.rs"
+name = "automata_tools"
+path = "rust/impl/automata/automata_tools_lib.rs"
 
 [[test]]
-name = "wautomata_test"
-path = "rust/test/automata/wautomata_lib_test.rs"
+name = "automata_tools_test"
+path = "rust/test/automata/automata_tools_lib_test.rs"
 
 # [[example]]
-# name = "wautomata_trivial_sample"
-# path = "sample/rust/wautomata_trivial_sample/src/main.rs"
+# name = "automata_trivial_sample"
+# path = "sample/rust/automata_trivial_sample/src/main.rs"
+# zzz : write please
 
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools", features = [] }

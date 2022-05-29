@@ -1,35 +1,45 @@
 use test_tools::*;
+use super::*;
 
 //
 
 tests_impls!
 {
+
   #[ test ]
   fn identity_with_int()
   {
-    use wautomata::exposed::*;
+    use TheModule::exposed::*;
 
-    let src1 = IdentityWithInt::make( 3 );
-    let src2 = IdentityWithInt::make( 3 );
-    is_identity( src1 );
-    fn is_identity< T : IdentityInterface >( _ : T ){}
-    a_id!( src1, src2 );
-
-    let src1 = IdentityWithInt::make( 3 );
-    let src2 = IdentityWithInt::make( 1 );
-    assert_ne!( src1, src2 );
-
-    let src = IdentityWithInt::make( 3 );
-    fn check_into< Src >( src : Src ) -> IdentityWithInt
-    where Src : Into< IdentityWithInt >,
+    /* test.case( "basic" ) */
     {
-      src.into()
+      let src1 = IdentityWithInt::make( 3 );
+      let src2 = IdentityWithInt::make( 3 );
+      is_identity( src1 );
+      fn is_identity< T : IdentityInterface >( _ : T ){}
+      a_id!( src1, src2 );
+
+      let src1 = IdentityWithInt::make( 3 );
+      let src2 = IdentityWithInt::make( 1 );
+      assert_ne!( src1, src2 );
     }
-    a_id!( src, check_into( 3 ) );
-    assert_ne!( src, check_into( 1 ) );
-    a_id!( src, check_into( IdentityWithInt::make( 3 ) ) );
-    assert_ne!( src, check_into( IdentityWithInt::make( 1 ) ) );
+
+    /* test.case( "into" ) */
+    {
+      let src = IdentityWithInt::make( 3 );
+      fn check_into< Src >( src : Src ) -> IdentityWithInt
+      where Src : Into< IdentityWithInt >,
+      {
+        src.into()
+      }
+      a_id!( src, check_into( 3 ) );
+      assert_ne!( src, check_into( 1 ) );
+      a_id!( src, check_into( IdentityWithInt::make( 3 ) ) );
+      assert_ne!( src, check_into( IdentityWithInt::make( 1 ) ) );
+    }
+
   }
+
 }
 
 //

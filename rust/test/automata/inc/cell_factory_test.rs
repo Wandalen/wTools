@@ -1,6 +1,4 @@
-use std::collections::HashSet;
-use test_tools::*;
-use wtools::prelude::*;
+use super::*;
 
 //
 
@@ -9,14 +7,14 @@ tests_impls!
   #[ test ]
   fn basic()
   {
-    use wautomata::*;
+    use TheModule::*;
 
-    let mut factory = wautomata::canonical::CellNodeFactory::make();
+    let mut factory = TheModule::canonical::CellNodeFactory::make();
 
     let a = factory.node_making( 1 );
     let b = factory.node_making( 2 );
 
-    factory.node_extend_out_node( a, b );
+    factory.node_add_edge_to_node( a, b );
     factory.node_extend_out_nodes( b, [ a, b ].into_iter() );
 
     dbg!( factory.node( a ) );
