@@ -1,7 +1,12 @@
 
+// macro_rules! ID
+// {
+//   () => { < < Self as NodeFactoryInterface >::NodeHandle as HasId >::Id };
+// }
+
 macro_rules! ID
 {
-  () => { < < Self as NodeFactoryInterface >::NodeHandle as HasId >::Id };
+  () => { < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id };
 }
 
 impls!
@@ -9,9 +14,9 @@ impls!
 
   //
 
-  fn node_making< Id >( &mut self, id : Id ) -> ID!()
+  fn node_making< IntoId >( &mut self, id : IntoId ) -> ID!()
   where
-    Id : Into< ID!() >,
+    IntoId : Into< ID!() >,
   {
     let id = id.into();
 
@@ -52,12 +57,28 @@ impls!
   //   }
   //   unreachable!( "No node with id {:?} found", id );
   // }
+//
+//   //
+//
+//   fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
+//   where
+//     Id : Into< ID!() >,
+//   {
+//     let id = id.into();
+//     let got = self.id_to_node_map.get( &id );
+//     if got.is_some()
+//     {
+//       let result : &Self::NodeHandle = got.unwrap().clone();
+//       return result;
+//     }
+//     unreachable!( "No node with id {:?} found", id );
+//   }
 
   //
 
-  fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
+  fn node< IntoId >( &self, id : IntoId ) -> &Self::NodeHandle
   where
-    Id : Into< ID!() >,
+    IntoId : Into< ID!() >,
   {
     let id = id.into();
     let got = self.id_to_node_map.get( &id );
@@ -71,9 +92,9 @@ impls!
 
   //
 
-  fn node_mut< Id >( &mut self, id : Id ) -> &mut Self::NodeHandle
+  fn node_mut< IntoId >( &mut self, id : IntoId ) -> &mut Self::NodeHandle
   where
-    Id : Into< ID!() >
+    IntoId : Into< ID!() >
   {
     let id = id.into();
     let got = self.id_to_node_map.get_mut( &id );
@@ -83,6 +104,24 @@ impls!
       return result;
     }
     unreachable!( "No node with id {:?} found", id );
+  }
+
+  //
+
+  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  {
+    f.write_fmt( format_args!( "NodeFactory\n" ) )?;
+    let mut first = true;
+    for ( _id, node ) in self.nodes()
+    {
+      if !first
+      {
+        f.write_str( "\n" )?;
+      }
+      first = false;
+      f.write_str( &wtools::string::indentation( "  ", format!( "{:?}", node ), "" ) )?;
+    }
+    f.write_str( "" )
   }
 
 }

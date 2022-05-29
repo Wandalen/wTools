@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   // use crate::prelude::*;
-  use core::fmt::Debug;
+  use core::fmt;
 
   ///
   /// Kind of an edge.
@@ -13,7 +13,7 @@ pub( crate ) mod private
     Self :
       'static +
       Copy +
-      Debug +
+      fmt::Debug +
       PartialEq +
     ,
   {
@@ -24,7 +24,7 @@ pub( crate ) mod private
     T :
       'static +
       Copy +
-      Debug +
+      fmt::Debug +
       PartialEq +
     ,
   {

@@ -14,22 +14,22 @@ pub( crate ) mod private
 
     (
       $Name : ident as $Alias : ident,
-      $( $Rest : tt )*
+      $( , $( $Rest : tt )* )?
     )
     =>
     {
       $Name!( as $Alias );
-      $crate::index!( $( $Rest )* );
+      $crate::index!( $( $( $Rest )* )? );
     };
 
     (
-      $Name : ident ,
-      $( $Rest : tt )*
+      $Name : ident
+      $( , $( $Rest : tt )* )?
     )
     =>
     {
       $Name!();
-      $crate::index!( $( $Rest )* );
+      $crate::index!( $( $( $Rest )* )? );
     };
 
   }
@@ -96,6 +96,66 @@ pub( crate ) mod private
   // xxx : document the idea and module
   // xxx : add section idea to each module
 
+  ///
+  /// Define implementation putting each function under a macro.
+  ///
+  /// Use [index!] to generate code for each elment.
+  /// Unlike elements of [impls_optional!], elements of [impls] are mandatory to be used in [index!].
+  ///
+
+  #[ macro_export ]
+  macro_rules! impls_optional
+  {
+
+    () => {};
+    (
+      $( #[ $Meta : meta ] )*
+      $Vis : vis
+      fn $Name : ident
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      $crate::impls_optional!
+      {
+        @DefineFn
+        @Meta{ $( #[ $Meta ] )* }
+        @Vis{ $Vis }
+        @Name{ $Name }
+        @Rest
+          $( #[ $Meta ] )*
+          $Vis fn $Name
+          $( $Rest )*
+      }
+    };
+
+    (
+      @DefineFn
+      @Meta{ $( #[ $Meta : meta ] )* }
+      @Vis{ $Vis : vis }
+      @Name{ $Name : ident }
+      @Rest
+        $Item : item
+        $( $Rest : tt )*
+    )
+    =>
+    {
+      #[ allow( unused_macros ) ]
+      macro_rules! $Name
+      {
+        () =>
+        {
+          $Item
+        };
+      }
+
+      $crate::impls_optional!
+      {
+        $( $Rest )*
+      }
+    };
+
+  }
   ///
   /// Define implementation putting each function under a macro and adding attribute `#[ test ]`.
   ///
@@ -307,8 +367,9 @@ pub( crate ) mod private
   pub use index;
   pub use index as tests_index;
   pub use impls1;
+  pub use impls_optional; /* qqq : write negative test. discuss please */
   pub use tests_impls;
-  pub use tests_impls_optional;
+  pub use tests_impls_optional; /* qqq : write negative test. discuss please */
   pub use impls2;
   pub use _impls_callback;
 

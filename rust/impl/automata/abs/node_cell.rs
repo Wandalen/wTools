@@ -28,6 +28,7 @@ pub( crate ) mod private
       Self( Arc::new( RefCell::new( src ) ) )
     }
   }
+  // xxx : impl Make1
 
   impl< Node > HasId
   for NodeCell< Node >
@@ -64,6 +65,8 @@ pub( crate ) mod private
     }
   }
 
+  //
+
   impl< Node > Deref
   for NodeCell< Node >
   where
@@ -76,6 +79,8 @@ pub( crate ) mod private
     }
   }
 
+  //
+
   impl< Node > From< Arc< RefCell< Node > > >
   for NodeCell< Node >
   where
@@ -87,6 +92,8 @@ pub( crate ) mod private
     }
   }
 
+  //
+
   impl< Node > From< Node >
   for NodeCell< Node >
   where
@@ -95,6 +102,19 @@ pub( crate ) mod private
     fn from( src : Node ) -> Self
     {
       Self( Arc::new( RefCell::new( src ) ) )
+    }
+  }
+
+  //
+
+  impl< Node > PartialEq
+  for NodeCell< Node >
+  where
+    Node : NodeBasicInterface,
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      self.id() == other.id()
     }
   }
 

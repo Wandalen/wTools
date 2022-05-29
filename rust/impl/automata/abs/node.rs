@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use crate::prelude::*;
-  use core::fmt::Debug;
+  use core::fmt;
   use core::hash::Hash;
 
   ///
@@ -14,7 +14,7 @@ pub( crate ) mod private
     Self :
       'static +
       Copy +
-      Debug +
+      fmt::Debug +
       PartialEq +
       Hash  +
       Default +
@@ -27,7 +27,7 @@ pub( crate ) mod private
     T :
       'static +
       Copy +
-      Debug +
+      fmt::Debug +
       PartialEq +
       Hash  +
       Default +

@@ -1,8 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::prelude::*;
-  use core::fmt::Debug;
+  // use crate::prelude::*;
+  // use core::fmt;
 
   ///
   /// Interface of a type responsible for constructing nodes.
@@ -10,11 +10,12 @@ pub( crate ) mod private
 
   pub trait NodeFactoryInterface
   where
-    Self : Debug,
+    Self : crate::GraphBasicInterface,
+    // Self : Debug + crate::GraphBasicInterface,
   {
-    /// It's not always possible to operate a node directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
-    /// Otherwise NodeHandle is the same as Node.
-    type NodeHandle : NodeBasicInterface;
+    // /// It's not always possible to operate a node directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
+    // /// Otherwise NodeHandle is the same as Node.
+    // type NodeHandle : NodeBasicInterface;
   }
 
 }
