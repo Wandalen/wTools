@@ -94,8 +94,11 @@ pub( crate ) mod private
 
   //
 
-  impl Extend< < Self as HasId >::Id >
-  for Node
+  impl< Id, Kind > Extend< < Self as HasId >::Id >
+  for Node< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
     fn extend< Iter >( &mut self, iter : Iter )
     where

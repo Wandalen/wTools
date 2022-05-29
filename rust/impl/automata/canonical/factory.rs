@@ -55,11 +55,11 @@ pub( crate ) mod private
 
     //
 
-    fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
+    fn out_nodes< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
     Box< dyn Iterator< Item = ID!() > + 'b >
     where
-      Id : Into< ID!() >,
+      IntoId : Into< ID!() >,
       'a : 'b,
     {
       let node = self.node( node_id );
@@ -76,10 +76,14 @@ pub( crate ) mod private
   ///
 
   // #[ derive( Debug ) ]
-  pub struct NodeFactory
+  pub struct NodeFactory< Id = crate::IdentityWithInt, Kind = crate::NodeKindless >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
+    NodeFactory< Id, Kind > : crate::NodeFactoryInterface,
   {
     /// Map id to node.
-    pub id_to_node_map : IndexMap< ID!(), crate::canonical::Node >,
+    pub id_to_node_map : IndexMap< ID!(), crate::canonical::Node< Id, Kind > >,
   }
 
   impl NodeFactory
@@ -88,7 +92,10 @@ pub( crate ) mod private
 
   // < < Self as NodeFactoryInterface >::NodeHandle as HasId >::Id
 
-  impl fmt::Debug for NodeFactory
+  impl< Id, Kind > fmt::Debug for NodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
     {
@@ -108,7 +115,10 @@ pub( crate ) mod private
   }
 
   // xxx : test
-  impl Make0 for NodeFactory
+  impl< Id, Kind > Make0 for NodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
     fn make_0() -> Self
     {
@@ -122,10 +132,13 @@ pub( crate ) mod private
 
   //
 
-  impl GraphBasicInterface
-  for NodeFactory
+  impl< Id, Kind > GraphBasicInterface
+  for NodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
-    type NodeHandle = crate::canonical::Node;
+    type NodeHandle = crate::canonical::Node< Id, Kind >;
 
     index!
     {
@@ -139,8 +152,11 @@ pub( crate ) mod private
 
   //
 
-  impl GraphExtendableInterface
-  for NodeFactory
+  impl< Id, Kind > GraphExtendableInterface
+  for NodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
 
     index!
@@ -152,8 +168,11 @@ pub( crate ) mod private
 
   //
 
-  impl GraphEditableInterface
-  for NodeFactory
+  impl< Id, Kind > GraphEditableInterface
+  for NodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
 
     index!
@@ -165,10 +184,13 @@ pub( crate ) mod private
 
   //
 
-  impl NodeFactoryInterface
-  for NodeFactory
+  impl< Id, Kind > NodeFactoryInterface
+  for NodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
-    type NodeHandle = crate::canonical::Node;
+    type NodeHandle = crate::canonical::Node< Id, Kind >; /* xxx2 : remove? */
   }
 
 }
