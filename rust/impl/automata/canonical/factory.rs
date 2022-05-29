@@ -101,8 +101,8 @@ pub( crate ) mod private
       f.write_fmt( format_args!( "NodeFactory\n" ) )?;
       for ( _id, node ) in self.nodes()
       {
-        f.write_fmt( format_args!( "{:?}\n", node ) )?; // xxx
-        // f.write_fmt( format_args!( "{:?}\n", wtools::string::indentation( "  ", node.to_str(), "" ) ) )?;
+        // f.write_fmt( format_args!( "{:?}\n", node ) )?; // xxx
+        f.write_fmt( format_args!( "{:?}\n", wtools::string::indentation( "  ", node.to_str(), "" ) ) )?;
       }
       f.write_fmt( format_args!( "" ) )
     }
