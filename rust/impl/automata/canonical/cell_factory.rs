@@ -23,8 +23,8 @@ pub( crate ) mod private
       out_nodes_iter : Iter,
     )
     where
-      IntoId1 : Into< ID!() >,
-      IntoId2 : Into< ID!() >,
+      IntoId1 : Into< NODE_ID!() >,
+      IntoId2 : Into< NODE_ID!() >,
       Iter : IntoIterator< Item = IntoId2 >,
       Iter::IntoIter : Clone,
     {
@@ -42,14 +42,14 @@ pub( crate ) mod private
 
     fn out_nodes< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
-    Box< dyn Iterator< Item = ID!() > + 'b >
+    Box< dyn Iterator< Item = NODE_ID!() > + 'b >
     where
-      IntoId : Into< ID!() >,
+      IntoId : Into< NODE_ID!() >,
       'a : 'b,
     {
       let node = self.node( node_id ).borrow();
-      let collected : Vec< ID!() > = node.out_nodes.iter().cloned().collect();
-      let iterator : Box< dyn Iterator< Item = ID!() > > = Box::new( collected.into_iter() );
+      let collected : Vec< NODE_ID!() > = node.out_nodes.iter().cloned().collect();
+      let iterator : Box< dyn Iterator< Item = NODE_ID!() > > = Box::new( collected.into_iter() );
       iterator
     }
 
@@ -66,7 +66,7 @@ pub( crate ) mod private
     CellNodeFactory< Id, Kind > : crate::NodeFactoryInterface,
   {
     /// Map id to node.
-    pub id_to_node_map : IndexMap< ID!(), crate::NodeCell< Node< Id, Kind > > >,
+    pub id_to_node_map : IndexMap< NODE_ID!(), crate::NodeCell< Node< Id, Kind > > >,
   }
 
   //
@@ -89,7 +89,8 @@ pub( crate ) mod private
     index!( fmt );
   }
 
-  // xxx
+  //
+
   impl< Id, Kind > Make0
   for CellNodeFactory< Id, Kind >
   where

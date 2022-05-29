@@ -1,10 +1,5 @@
 
-// macro_rules! ID
-// {
-//   () => { < < Self as NodeFactoryInterface >::NodeHandle as HasId >::Id };
-// }
-
-macro_rules! ID
+macro_rules! NODE_ID
 {
   () => { < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id };
 }
@@ -14,9 +9,9 @@ impls!
 
   //
 
-  fn node_making< IntoId >( &mut self, id : IntoId ) -> ID!()
+  fn node_making< IntoId >( &mut self, id : IntoId ) -> NODE_ID!()
   where
-    IntoId : Into< ID!() >,
+    IntoId : Into< NODE_ID!() >,
   {
     let id = id.into();
 
@@ -31,12 +26,12 @@ impls!
 
   fn nodes< 'a, 'b >( &'a self )
   ->
-  Box< dyn Iterator< Item = ( &ID!(), &Self::NodeHandle ) > + 'b >
+  Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > + 'b >
   where
     'a : 'b,
   {
     let iterator
-      : Box< dyn Iterator< Item = ( &ID!(), &Self::NodeHandle ) > >
+      : Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > >
       = Box::new( self.id_to_node_map.iter() )
     ;
     iterator
@@ -44,41 +39,9 @@ impls!
 
   //
 
-  // fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
-  // where
-  //   Id : Into< ID!() >,
-  // {
-  //   let id = id.into();
-  //   let got = self.id_to_node_map.get( &id );
-  //   if got.is_some()
-  //   {
-  //     let result : &Self::NodeHandle = got.unwrap().clone();
-  //     return result;
-  //   }
-  //   unreachable!( "No node with id {:?} found", id );
-  // }
-//
-//   //
-//
-//   fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
-//   where
-//     Id : Into< ID!() >,
-//   {
-//     let id = id.into();
-//     let got = self.id_to_node_map.get( &id );
-//     if got.is_some()
-//     {
-//       let result : &Self::NodeHandle = got.unwrap().clone();
-//       return result;
-//     }
-//     unreachable!( "No node with id {:?} found", id );
-//   }
-
-  //
-
   fn node< IntoId >( &self, id : IntoId ) -> &Self::NodeHandle
   where
-    IntoId : Into< ID!() >,
+    IntoId : Into< NODE_ID!() >,
   {
     let id = id.into();
     let got = self.id_to_node_map.get( &id );
@@ -94,7 +57,7 @@ impls!
 
   fn node_mut< IntoId >( &mut self, id : IntoId ) -> &mut Self::NodeHandle
   where
-    IntoId : Into< ID!() >
+    IntoId : Into< NODE_ID!() >
   {
     let id = id.into();
     let got = self.id_to_node_map.get_mut( &id );
