@@ -80,6 +80,31 @@ tests_impls!
     let got : HashSet< _ > = factory.out_nodes( 2 ).collect();
     a_id!( got, exp );
   }
+
+  //
+
+  #[ test ]
+  fn graph_print()
+  {
+    use TheModule::*;
+
+    let mut factory = TheModule::canonical::NodeFactory::make();
+
+    factory.make_with_edge_list
+    ([
+      1, 2,
+      2, 1,
+      2, 2,
+    ]);
+
+    let exp = "xxx";
+    let got = format!( "{:?}", factory );
+    println!( "{}", got );
+    a_id!( got, exp );
+    // xxx : implement
+
+  }
+
 }
 
 //
@@ -89,4 +114,5 @@ tests_index!
   node,
   basic,
   make_with_edge_list,
+  graph_print,
 }

@@ -1,5 +1,5 @@
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;

@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   // use crate::prelude::*;
   use core::fmt::Debug;
@@ -225,10 +225,10 @@ mod internal
 
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
-  // use super::internal as i;
+  // // use super::private as i;
   pub use super::orphan::*;
 }
 
@@ -237,24 +237,24 @@ pub use protected::*;
 /// Parented namespace of the module.
 pub mod orphan
 {
-  // use super::internal as i;
+  // // use super::private as i;
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  use super::internal as i;
-  pub use i::IdentityWithPointer;
-  pub use i::IdentityWithName;
-  pub use i::IdentityWithInt;
+  // use super::private as i;
+  pub use super::private::IdentityWithPointer;
+  pub use super::private::IdentityWithName;
+  pub use super::private::IdentityWithInt;
   pub use super::prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
-  pub use i::IdentityInterface;
-  pub use i::HasId;
+  // use super::private as i;
+  pub use super::private::IdentityInterface;
+  pub use super::private::HasId;
 }

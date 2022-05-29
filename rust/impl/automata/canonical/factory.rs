@@ -1,10 +1,11 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   use crate::prelude::*;
   use crate::canonical::*;
-  use std::collections::HashMap;
   use wtools::prelude::*;
+  use std::collections::HashMap;
+  use std::fmt;
 
   include!( "./factory_impl.rs" );
 
@@ -14,17 +15,6 @@ mod internal
     ///
     /// Iterate output nodes of the node.
     ///
-
-    // fn node_extend_out_nodes< Id, Iter >
-    // (
-    //   &mut self,
-    //   node_id : Id,
-    //   out_nodes_iter : Iter,
-    // )
-    // where
-    //   Iter : IntoIterator< Item = Id >,
-    //   Iter::IntoIter : Clone,
-    //   Id : Into< ID!() >
 
     fn node_extend_out_nodes< IntoId1, IntoId2, Iter >
     (
@@ -84,7 +74,7 @@ mod internal
   /// Node factory.
   ///
 
-  #[ derive( Debug ) ]
+  // #[ derive( Debug ) ]
   pub struct NodeFactory
   {
     /// Map id to node.
@@ -101,6 +91,24 @@ mod internal
 
   }
 
+  // < < Self as NodeFactoryInterface >::NodeHandle as HasId >::Id
+
+  // xxx : implement
+  impl fmt::Debug for NodeFactory
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      f.write_fmt( format_args!( "NodeFactory\n" ) )?;
+      for ( _id, node ) in self.nodes()
+      {
+        f.write_fmt( format_args!( "{:?}\n", node ) )?; // xxx
+        // f.write_fmt( format_args!( "{:?}\n", wtools::string::indentation( "  ", node.to_str(), "" ) ) )?;
+      }
+      f.write_fmt( format_args!( "" ) )
+    }
+  }
+
+  // xxx : test
   impl Make0 for NodeFactory
   {
     fn make_0() -> Self
@@ -125,6 +133,7 @@ mod internal
       node,
       node_mut,
       out_nodes,
+      nodes,
     }
 
   }
@@ -165,10 +174,9 @@ mod internal
 
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
-  // use super::internal as i;
   pub use super::orphan::*;
 }
 
@@ -178,19 +186,16 @@ pub use protected::*;
 pub mod orphan
 {
   pub use super::exposed::*;
-  use super::internal as i;
-  pub use i::NodeFactory;
+  pub use super::private::NodeFactory;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
   pub use super::prelude::*;
-  // use super::internal as i;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
 }

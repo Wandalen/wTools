@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   // use crate::prelude::*;
 
@@ -19,7 +19,7 @@ pub mod dfs;
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
+  // // use super::private as i;
   pub use super::prelude::*;
 
   pub use super::dfs::*;
@@ -31,8 +31,8 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
+  // // use super::private as i;
   pub use super::dfs::*;
 
-  // pub use i::GraphInterface;
+  // pub use super::private::GraphInterface;
 }

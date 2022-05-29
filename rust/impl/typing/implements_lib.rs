@@ -13,7 +13,7 @@
 mod implements_impl;
 
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
 
   ///
@@ -64,7 +64,7 @@ mod internal
   pub use instance_of;
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;
@@ -89,7 +89,7 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
-  pub use super::internal::
+  pub use super::private::
   {
     implements,
     instance_of,

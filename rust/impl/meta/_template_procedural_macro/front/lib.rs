@@ -19,7 +19,7 @@ pub mod dependency
   pub use procedural_macro_meta;
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::exposed::*;

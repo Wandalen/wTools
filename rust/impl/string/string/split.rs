@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub( crate ) mod internal
+pub( crate ) mod private
 {
 
   use former::Former;
@@ -264,31 +264,39 @@ pub( crate ) mod internal
 /// Protected namespace of the module.
 pub mod protected
 {
-  use super::internal as i;
-
-  pub use i::Split;
-  pub use i::SplitType;
-  pub use i::SplitIterator;
-  pub use i::SplitOptions;
-  pub use i::SplitOptionsAdapter;
-  pub use i::split;
+  pub use super::orphan::*;
+  pub use super::private::
+  {
+    Split,
+    SplitType,
+    SplitIterator,
+    SplitOptions,
+    SplitOptionsAdapter,
+    split,
+  };
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
+
+/// Parented namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  use super::internal as i;
-
-  pub use i::SplitOptionsAdapter;
-  pub use i::split;
+  pub use super::private::
+  {
+    SplitOptionsAdapter,
+    split,
+  };
 }
 
 /// Namespace of the module to include with `use module::*`.
 pub mod prelude
 {
-  use super::internal as i;
-
-  pub use i::SplitOptionsAdapter;
+  pub use super::private::SplitOptionsAdapter;
 }

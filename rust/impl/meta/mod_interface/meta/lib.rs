@@ -35,7 +35,7 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
   }
 }
 
-// /// Own namespace of the module.
+// /// Protected namespace of the module.
 // pub mod protected
 // {
 //   pub use super::orphan::*;

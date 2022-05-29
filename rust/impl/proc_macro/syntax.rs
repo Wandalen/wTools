@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   use crate::exposed::*;
   use type_constructor::prelude::*;
@@ -243,7 +243,7 @@ mod internal
 pub mod exposed
 {
   pub use super::prelude::*;
-  pub use super::internal::
+  pub use super::private::
   {
     AttributeInner,
     Pair,
@@ -258,5 +258,5 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
+  // // use super::private as i;
 }

@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   use crate::prelude::*;
   use std::collections::HashSet;
@@ -134,10 +134,9 @@ mod internal
 
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
-  // use super::internal as i;
   pub use super::orphan::*;
 }
 
@@ -146,21 +145,17 @@ pub use protected::*;
 /// Parented namespace of the module.
 pub mod orphan
 {
-  use super::internal as i;
   pub use super::exposed::*;
-  // pub use i::NodesIterator;
-  pub use i::Node;
+  pub use super::private::{ Node };
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
   pub use super::prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
 }

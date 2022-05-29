@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   use crate::prelude::*;
 
@@ -18,6 +18,14 @@ mod internal
     /// It's not always possible to operate a node directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
     /// Otherwise NodeHandle could be &Node.
     type NodeHandle : NodeBasicInterface;
+
+    /// Iterate nodes.
+    fn nodes< 'a, 'b >( &'a self )
+    ->
+    Box< dyn Iterator< Item = ( &ID!(), &Self::NodeHandle ) > + 'b >
+    where
+      'a : 'b,
+    ;
 
     /// Get node with id.
     fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
@@ -149,7 +157,7 @@ mod internal
 
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;
@@ -160,14 +168,12 @@ pub use protected::*;
 /// Parented namespace of the module.
 pub mod orphan
 {
-  // use super::internal as i;
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
   pub use super::prelude::*;
 }
 
@@ -176,9 +182,11 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
-  pub use i::GraphBasicInterface;
-  pub use i::GraphEditableInterface;
-  pub use i::GraphExtendableInterface;
-  pub use i::GraphKindGetterInterface;
+  pub use super::private::
+  {
+    GraphBasicInterface,
+    GraphEditableInterface,
+    GraphExtendableInterface,
+    GraphKindGetterInterface,
+  };
 }

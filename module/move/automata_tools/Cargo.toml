@@ -38,7 +38,7 @@ path = "rust/test/automata/automata_tools_lib_test.rs"
 # zzz : write please
 
 [dependencies]
-wtools = { version = "~0.2", path = "../../rust/wtools", features = [] }
+wtools = { version = "~0.2", path = "../../rust/wtools", features = [ "full" ] }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

@@ -1,5 +1,5 @@
 
-mod internal
+pub( crate ) mod private
 {
   use std::collections::HashMap;
   use std::rc::Rc;
@@ -228,11 +228,11 @@ mod internal
 /// Protected namespace of the module.
 pub mod protected
 {
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::OnCommand;
-  pub use i::Command;
-  pub use i::CommandOptions;
+  pub use super::private::OnCommand;
+  pub use super::private::Command;
+  pub use super::private::CommandOptions;
 }
 
 pub use protected::*;
@@ -240,20 +240,20 @@ pub use protected::*;
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::OnCommand;
-  pub use i::Command;
-  pub use i::CommandOptions;
+  pub use super::private::OnCommand;
+  pub use super::private::Command;
+  pub use super::private::CommandOptions;
 }
 
 /// Namespace of the module to include with `use module::*`.
 pub mod prelude
 {
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::OnCommand;
-  pub use i::Command;
-  pub use i::CommandOptions;
+  pub use super::private::OnCommand;
+  pub use super::private::Command;
+  pub use super::private::CommandOptions;
 }
 

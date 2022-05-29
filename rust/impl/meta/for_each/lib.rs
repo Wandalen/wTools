@@ -18,7 +18,7 @@ use module::macro_for_each in module::macro_tools
 */
 
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
 
   #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
@@ -506,8 +506,8 @@ pub mod exposed
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
-  pub use i::for_each;
-  pub use i::braces_unwrap;
-  pub use i::identity;
+  // use super::private as i;
+  pub use super::private::for_each;
+  pub use super::private::braces_unwrap;
+  pub use super::private::identity;
 }
