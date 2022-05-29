@@ -4,8 +4,9 @@ pub( crate ) mod private
   use crate::prelude::*;
   use crate::canonical::*;
   use wtools::prelude::*;
-  use std::collections::HashMap;
+  // use std::collections::HashMap;
   use std::fmt;
+  use indexmap::IndexMap;
 
   include!( "./factory_impl.rs" );
 
@@ -78,33 +79,31 @@ pub( crate ) mod private
   pub struct NodeFactory
   {
     /// Map id to node.
-    pub id_to_node_map : HashMap< ID!(), crate::canonical::Node >,
+    pub id_to_node_map : IndexMap< ID!(), crate::canonical::Node >,
   }
 
   impl NodeFactory
   {
-
-    // index!
-    // {
-    //   make,
-    // }
-
   }
 
   // < < Self as NodeFactoryInterface >::NodeHandle as HasId >::Id
 
-  // xxx : implement
   impl fmt::Debug for NodeFactory
   {
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
     {
       f.write_fmt( format_args!( "NodeFactory\n" ) )?;
+      let mut first = true;
       for ( _id, node ) in self.nodes()
       {
-        f.write_fmt( format_args!( "{:?}\n", node ) )?; // xxx
-        // f.write_fmt( format_args!( "{:?}\n", wtools::string::indentation( "  ", node.to_str(), "" ) ) )?;
+        if !first
+        {
+          f.write_str( "\n" )?;
+        }
+        first = false;
+        f.write_str( &wtools::string::indentation( "  ", format!( "{:?}", node ), "" ) )?;
       }
-      f.write_fmt( format_args!( "" ) )
+      f.write_str( "" )
     }
   }
 
@@ -113,7 +112,7 @@ pub( crate ) mod private
   {
     fn make_0() -> Self
     {
-      let id_to_node_map = HashMap::new();
+      let id_to_node_map = IndexMap::new();
       Self
       {
         id_to_node_map,

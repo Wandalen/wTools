@@ -228,7 +228,6 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
-  // // use super::private as i;
   pub use super::orphan::*;
 }
 
@@ -237,14 +236,12 @@ pub use protected::*;
 /// Parented namespace of the module.
 pub mod orphan
 {
-  // // use super::private as i;
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::private as i;
   pub use super::private::IdentityWithPointer;
   pub use super::private::IdentityWithName;
   pub use super::private::IdentityWithInt;
@@ -254,7 +251,6 @@ pub mod exposed
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::private as i;
   pub use super::private::IdentityInterface;
   pub use super::private::HasId;
 }

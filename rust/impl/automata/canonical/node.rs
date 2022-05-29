@@ -2,7 +2,8 @@
 pub( crate ) mod private
 {
   use crate::prelude::*;
-  use std::collections::HashSet;
+  // use std::collections::HashSet;
+  use indexmap::IndexSet;
   use std::fmt;
 
   ///
@@ -14,7 +15,7 @@ pub( crate ) mod private
     Kind : NodeKindInterface,
   {
     /// Input node.
-    pub out_nodes : HashSet< < Self as HasId >::Id >,
+    pub out_nodes : IndexSet< < Self as HasId >::Id >,
     /// Kind of the node.
     pub kind : Kind,
     /// Name.
@@ -31,7 +32,7 @@ pub( crate ) mod private
     where
       Name : Into< < Self as HasId >::Id >,
     {
-      let out_nodes = HashSet::new();
+      let out_nodes = IndexSet::new();
       let kind = Default::default();
       Self
       {
@@ -42,23 +43,6 @@ pub( crate ) mod private
     }
 
   }
-
-  //
-
-//   impl< Kind > HasId
-//   for Node< Kind >
-//   where
-//     Kind : NodeKindInterface,
-//   {
-//
-//     type Id = crate::IdentityWithName;
-//
-//     fn id( &self ) -> Self::Id
-//     {
-//       self.name
-//     }
-//
-//   }
 
   //
 
@@ -76,6 +60,21 @@ pub( crate ) mod private
     }
 
   }
+
+  //
+
+  // impl< Id, Kind > HasId
+  // for Node< Id, Kind >
+  // where
+  //   Kind : NodeKindInterface,
+  //   Id : IdentityInterface,
+  // {
+  //   type Id = Id;
+  //   fn id( &self ) -> Self::Id
+  //   {
+  //     self.name
+  //   }
+  // }
 
   //
 
