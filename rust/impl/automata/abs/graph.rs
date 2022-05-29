@@ -3,7 +3,7 @@ pub( crate ) mod private
 {
   use crate::prelude::*;
 
-  macro_rules! ID
+  macro_rules! NODE_ID
   {
     () => { < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id };
   }
@@ -15,14 +15,19 @@ pub( crate ) mod private
   pub trait GraphBasicInterface
   {
 
+    /// Handle of a node - entity representing a node or the node itself.
     /// It's not always possible to operate a node directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
     /// Otherwise NodeHandle could be &Node.
     type NodeHandle : NodeBasicInterface;
+    // /// Handle of an edge - entity representing an edge or the edge itself.
+    // /// It's not always possible to operate an edge directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
+    // /// Otherwise EdgeHandle could be &Node.
+    // type EdgeHandle : EdgeBasicInterface;
 
     /// Iterate nodes.
     fn nodes< 'a, 'b >( &'a self )
     ->
-    Box< dyn Iterator< Item = ( &ID!(), &Self::NodeHandle ) > + 'b >
+    Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > + 'b >
     where
       'a : 'b,
     ;
@@ -30,23 +35,32 @@ pub( crate ) mod private
     /// Get node with id.
     fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
     where
-      Id : Into< ID!() >
+      Id : Into< NODE_ID!() >
     ;
 
     /// Get node with id mutably.
     fn node_mut< Id >( &mut self, id : Id ) -> &mut Self::NodeHandle
     where
-      Id : Into< ID!() >
+      Id : Into< NODE_ID!() >
     ;
 
-    /// Iterate output nodes of the node.
+    /// Iterate over neighbourhood of the node.
     fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
     ->
-    Box< dyn Iterator< Item = ID!() > + 'b >
+    Box< dyn Iterator< Item = NODE_ID!() > + 'b >
     where
-      Id : Into< ID!() >,
+      Id : Into< NODE_ID!() >,
       'a : 'b,
     ;
+
+    // /// Iterate over output bodes of the node.
+    // fn out_edges< 'a, 'b, Id >( &'a self, node_id : Id )
+    // ->
+    // Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
+    // where
+    //   Id : Into< NODE_ID!() >,
+    //   'a : 'b,
+    // ;
 
   }
 
@@ -62,15 +76,15 @@ pub( crate ) mod private
   {
 
     /// Iterate output nodes of the node.
-    fn node_extend_out_nodes< IntoId1, IntoId2, Iter >
+    fn node_add_out_nodes< IntoId1, IntoId2, Iter >
     (
       &mut self,
       node_id : IntoId1,
       out_nodes_iter : Iter,
     )
     where
-      IntoId1 : Into< ID!() >,
-      IntoId2 : Into< ID!() >,
+      IntoId1 : Into< NODE_ID!() >,
+      IntoId2 : Into< NODE_ID!() >,
       Iter : IntoIterator< Item = IntoId2 >,
       Iter::IntoIter : Clone,
     ;
@@ -83,12 +97,12 @@ pub( crate ) mod private
       out_node_id : IntoId2,
     )
     where
-      IntoId1 : Into< ID!() >,
+      IntoId1 : Into< NODE_ID!() >,
       IntoId1 : Clone,
-      IntoId2 : Into< ID!() >,
+      IntoId2 : Into< NODE_ID!() >,
       IntoId2 : Clone,
     {
-      self.node_extend_out_nodes( node_id, core::iter::once( out_node_id ) );
+      self.node_add_out_nodes( node_id, core::iter::once( out_node_id ) );
     }
 
   }
@@ -106,23 +120,21 @@ pub( crate ) mod private
   {
 
     /// Either make new or get existing node.
-    fn node_making< Id >( &mut self, id : Id ) -> ID!()
+    fn node_making< Id >( &mut self, id : Id ) -> NODE_ID!()
     where
-      Id : Into< ID!() >
+      Id : Into< NODE_ID!() >
     ;
 
     /// Make edges.
     fn make_with_edge_list< IntoIter, Id >( &mut self, into_iter : IntoIter )
     where
-      Id : Into< ID!() >,
+      Id : Into< NODE_ID!() >,
       IntoIter : IntoIterator< Item = Id >,
       IntoIter::IntoIter : core::iter::ExactSizeIterator< Item = Id >,
     {
       use wtools::iter::prelude::*;
       let iter = into_iter.into_iter();
-
-      // debug_assert_eq!( into_iter.len() % 2, 0 );
-
+      debug_assert_eq!( iter.len() % 2, 0 );
       for mut chunk in &iter.chunks( 2 )
       {
         let id1 = chunk.next().unwrap().into();
@@ -130,13 +142,8 @@ pub( crate ) mod private
         self.node_making( id1 );
         self.node_making( id2 );
         self.node_add_edge_to_node( id1, id2 );
-        // println!( "{:?} -> {:?}", id1, id2 );
       }
 
-      // for id in iter
-      // {
-      //   let id = id.into();
-      // }
     }
 
   }
@@ -152,7 +159,7 @@ pub( crate ) mod private
     /// Enumerate kinds of the node.
     type NodeKind : crate::NodeKindInterface;
     /// Get kind of the node.
-    fn node_kind( &self, node_id : ID!() ) -> Self::NodeKind;
+    fn node_kind( &self, node_id : NODE_ID!() ) -> Self::NodeKind;
   }
 
 }

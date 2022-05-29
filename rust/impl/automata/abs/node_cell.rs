@@ -2,10 +2,11 @@
 pub( crate ) mod private
 {
   use crate::prelude::*;
+  use wtools::prelude::*;
   use std::fmt;
   use core::cell::RefCell;
-  use std::sync::Arc;
   use core::ops::Deref;
+  use std::sync::Arc;
 
   ///
   /// Node in RefCell in Rc.
@@ -21,20 +22,34 @@ pub( crate ) mod private
   where
     Node : NodeBasicInterface,
   {
-    /// Constructor.
-    #[ inline ]
-    pub fn make( src : Node ) -> Self
+    // /// Constructor.
+    // #[ inline ]
+    // pub fn make( src : Node ) -> Self
+    // {
+    //   Self( Arc::new( RefCell::new( src ) ) )
+    // }
+  }
+
+  //
+
+  impl< Node > Make1< Node >
+  for NodeCell< Node >
+  where
+    Node : NodeBasicInterface,
+  {
+    fn make_1( src : Node ) -> Self
     {
       Self( Arc::new( RefCell::new( src ) ) )
     }
   }
+
+  //
 
   impl< Node > HasId
   for NodeCell< Node >
   where
     Node : NodeBasicInterface,
   {
-
     type Id = Node::Id;
 
     fn id( &self ) -> Self::Id
@@ -64,6 +79,8 @@ pub( crate ) mod private
     }
   }
 
+  //
+
   impl< Node > Deref
   for NodeCell< Node >
   where
@@ -76,6 +93,8 @@ pub( crate ) mod private
     }
   }
 
+  //
+
   impl< Node > From< Arc< RefCell< Node > > >
   for NodeCell< Node >
   where
@@ -87,6 +106,8 @@ pub( crate ) mod private
     }
   }
 
+  //
+
   impl< Node > From< Node >
   for NodeCell< Node >
   where
@@ -95,6 +116,19 @@ pub( crate ) mod private
     fn from( src : Node ) -> Self
     {
       Self( Arc::new( RefCell::new( src ) ) )
+    }
+  }
+
+  //
+
+  impl< Node > PartialEq
+  for NodeCell< Node >
+  where
+    Node : NodeBasicInterface,
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      self.id() == other.id()
     }
   }
 

@@ -4,8 +4,8 @@ pub( crate ) mod private
   use crate::prelude::*;
   use crate::canonical::*;
   use wtools::prelude::*;
-  use std::collections::HashMap;
-  // use std::fmt;
+  use indexmap::IndexMap;
+  use std::fmt;
 
   include!( "./factory_impl.rs" );
 
@@ -16,15 +16,15 @@ pub( crate ) mod private
     /// Iterate output nodes of the node.
     ///
 
-    fn node_extend_out_nodes< IntoId1, IntoId2, Iter >
+    fn node_add_out_nodes< IntoId1, IntoId2, Iter >
     (
       &mut self,
       node_id : IntoId1,
       out_nodes_iter : Iter,
     )
     where
-      IntoId1 : Into< ID!() >,
-      IntoId2 : Into< ID!() >,
+      IntoId1 : Into< NODE_ID!() >,
+      IntoId2 : Into< NODE_ID!() >,
       Iter : IntoIterator< Item = IntoId2 >,
       Iter::IntoIter : Clone,
     {
@@ -40,16 +40,16 @@ pub( crate ) mod private
 
     //
 
-    fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
+    fn out_nodes< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
-    Box< dyn Iterator< Item = ID!() > + 'b >
+    Box< dyn Iterator< Item = NODE_ID!() > + 'b >
     where
-      Id : Into< ID!() >,
+      IntoId : Into< NODE_ID!() >,
       'a : 'b,
     {
       let node = self.node( node_id ).borrow();
-      let collected : Vec< ID!() > = node.out_nodes.iter().cloned().collect();
-      let iterator : Box< dyn Iterator< Item = ID!() > > = Box::new( collected.into_iter() );
+      let collected : Vec< NODE_ID!() > = node.out_nodes.iter().cloned().collect();
+      let iterator : Box< dyn Iterator< Item = NODE_ID!() > > = Box::new( collected.into_iter() );
       iterator
     }
 
@@ -59,28 +59,47 @@ pub( crate ) mod private
   /// Node factory.
   ///
 
-  #[ derive( Debug ) ]
-  pub struct CellNodeFactory
+  pub struct CellNodeFactory< Id = crate::IdentityWithInt, Kind = crate::NodeKindless >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
+    CellNodeFactory< Id, Kind > : crate::NodeFactoryInterface,
   {
     /// Map id to node.
-    pub id_to_node_map : HashMap< ID!(), crate::NodeCell< Node > >,
+    pub id_to_node_map : IndexMap< NODE_ID!(), crate::NodeCell< Node< Id, Kind > > >,
   }
 
-  impl CellNodeFactory
+  //
+
+  impl< Id, Kind > CellNodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
-
-    // index!
-    // {
-    //   make,
-    // }
-
   }
 
-  impl Make0 for CellNodeFactory
+  //
+
+  impl< Id, Kind > fmt::Debug
+  for CellNodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
+  {
+    index!( fmt );
+  }
+
+  //
+
+  impl< Id, Kind > Make0
+  for CellNodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
     fn make_0() -> Self
     {
-      let id_to_node_map = HashMap::new();
+      let id_to_node_map = IndexMap::new();
       Self
       {
         id_to_node_map,
@@ -90,14 +109,18 @@ pub( crate ) mod private
 
   //
 
-  impl GraphBasicInterface
-  for CellNodeFactory
+  impl< Id, Kind > GraphBasicInterface
+  for CellNodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
-    type NodeHandle = crate::NodeCell< crate::canonical::Node >;
+    type NodeHandle = crate::NodeCell< crate::canonical::Node< Id, Kind > >;
 
     index!
     {
       node,
+      nodes,
       node_mut,
       out_nodes,
     }
@@ -106,8 +129,11 @@ pub( crate ) mod private
 
   //
 
-  impl GraphExtendableInterface
-  for CellNodeFactory
+  impl< Id, Kind > GraphExtendableInterface
+  for CellNodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
 
     index!
@@ -119,24 +145,28 @@ pub( crate ) mod private
 
   //
 
-  impl GraphEditableInterface
-  for CellNodeFactory
+  impl< Id, Kind > GraphEditableInterface
+  for CellNodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
 
     index!
     {
-      node_extend_out_nodes,
+      node_add_out_nodes,
     }
 
   }
 
   //
 
-  impl NodeFactoryInterface
-  for CellNodeFactory
+  impl< Id, Kind > NodeFactoryInterface
+  for CellNodeFactory< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
-    // type NodeHandle = crate::canonical::Node;
-    type NodeHandle = crate::NodeCell< crate::canonical::Node >;
   }
 
 }
@@ -144,7 +174,6 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
-  // // use super::private as i;
   pub use super::orphan::*;
 }
 
@@ -154,7 +183,6 @@ pub use protected::*;
 pub mod orphan
 {
   pub use super::exposed::*;
-  // use super::private as i;
   pub use super::private::CellNodeFactory;
 }
 
@@ -162,11 +190,9 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
-  // // use super::private as i;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // // use super::private as i;
 }

@@ -2,11 +2,11 @@
 pub( crate ) mod private
 {
   use crate::prelude::*;
-  use core::fmt::Debug;
+  use core::fmt;
   use core::hash::Hash;
 
   ///
-  /// Kind of a ode.
+  /// Kind of a node.
   ///
 
   pub trait NodeKindInterface
@@ -14,7 +14,7 @@ pub( crate ) mod private
     Self :
       'static +
       Copy +
-      Debug +
+      fmt::Debug +
       PartialEq +
       Hash  +
       Default +
@@ -27,7 +27,7 @@ pub( crate ) mod private
     T :
       'static +
       Copy +
-      Debug +
+      fmt::Debug +
       PartialEq +
       Hash  +
       Default +
@@ -52,16 +52,6 @@ pub( crate ) mod private
       HasId +
   {
   }
-
-//   ///
-//   /// Node handle.
-//   ///
-//
-//   pub trait NodeHandleInterface : NodeBasicInterface + HasId
-//   {
-//     /// Node itself.
-//     type Node : NodeBasicInterface + HasId< Id = Self::Id >;
-//   }
 
 }
 
@@ -91,7 +81,9 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  pub use super::private::NodeKindInterface;
-  pub use super::private::NodeBasicInterface;
-  // pub use super::private::NodeHandleInterface;
+  pub use super::private::
+  {
+    NodeKindInterface,
+    NodeBasicInterface,
+  };
 }

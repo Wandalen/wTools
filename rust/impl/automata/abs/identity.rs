@@ -2,10 +2,10 @@
 pub( crate ) mod private
 {
   // use crate::prelude::*;
-  use core::fmt::Debug;
+  use core::fmt;
   use core::hash::Hash;
   use std::cmp::{ PartialEq, Eq };
-  use std::fmt;
+  // use std::fmt;
 
   ///
   /// Interface to identify an instance of somthging, for exampel a node.
@@ -17,7 +17,7 @@ pub( crate ) mod private
       'static +
       Copy +
       Hash +
-      Debug +
+      fmt::Debug +
       PartialEq +
       Eq +
       Hash +
@@ -30,7 +30,7 @@ pub( crate ) mod private
       'static +
       Copy +
       Hash +
-      Debug +
+      fmt::Debug +
       PartialEq +
       Eq +
       Hash +

@@ -21,20 +21,44 @@ pub( crate ) mod private
     pub kind : Kind,
   }
 
-  impl< 'a, Node, Kind > EdgeInterface
-  for Edge< 'a, Node, Kind >
-  where
-    Node : NodeBasicInterface,
-    Kind : EdgeKindInterface,
-  {
-  }
+  //
+
+//   impl< 'a, Id, Kind > HasId
+//   for Edge< 'a, Id, Kind >
+//   where
+//     Id : IdentityInterface,
+//     Kind : NodeKindInterface,
+//   {
+//     type Id = Id;
+//     fn id( &self ) -> Self::Id
+//     {
+//       self.name
+//     }
+//   }
+//
+//   //
+//
+//   impl< 'a, Node, Kind > EdgeBasicInterface
+//   for Edge< 'a, Node, Kind >
+//   where
+//     Node : NodeBasicInterface,
+//     Kind : EdgeKindInterface,
+//   {
+//   }
+
+  // impl< 'a, Node, Kind > EdgeInterface
+  // for Edge< 'a, Node, Kind >
+  // where
+  //   Node : NodeBasicInterface,
+  //   Kind : EdgeKindInterface,
+  // {
+  // }
 
 }
 
 /// Protected namespace of the module.
 pub mod protected
 {
-  // // use super::private as i;
   pub use super::orphan::*;
 }
 
@@ -43,7 +67,6 @@ pub use protected::*;
 /// Parented namespace of the module.
 pub mod orphan
 {
-  // use super::private as i;
   pub use super::exposed::*;
   pub use super::private::Edge;
 }
@@ -51,12 +74,10 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // // use super::private as i;
   pub use super::prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // // use super::private as i;
 }
