@@ -21,7 +21,7 @@ function rustPublish( o )
   o.modulesList =
   [
     'module/rust/*',
-    'module/rust_alias/*',
+    'module/alias/*',
     'module/rust_move/*',
   ];
 

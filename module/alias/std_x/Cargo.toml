@@ -1,18 +1,16 @@
 [package]
-name = "wTools"
-version = "0.1.1"
-publish = false
+name = "std_x"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Volodymyr M. <volodymyr.migdal@gmail.com>",
   "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/wTools"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/wTools"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust_alias/wTools"
+documentation = "https://docs.rs/std_x"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/std_x"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/std_x"
 description = """
 Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 """
@@ -20,7 +18,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/wtools_alias_lib.rs",
+  "/rust/impl/std_x_lib.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -31,12 +29,12 @@ all-features = true
 # rustdoc-args = []
 
 [lib]
-name = "wTools"
-path = "rust/impl/wtools_alias_lib.rs"
+name = "std_x"
+path = "rust/impl/std_x_lib.rs"
 
 [[test]]
-name = "wtools_alias_test"
-path = "rust/test/wtools_alias_lib_test.rs"
+name = "std_x_test"
+path = "rust/test/std_x_lib_test.rs"
 
 [features]
 

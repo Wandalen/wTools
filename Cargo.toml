@@ -2,7 +2,7 @@
 resolver = "2"
 members = [
   "module/rust/*",
-  "module/rust_alias/*",
+  "module/alias/*",
   "module/rust_move/*",
   "sample/rust/*",
 ]
