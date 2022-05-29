@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   use crate::exposed::*;
 
@@ -10,6 +10,7 @@ mod internal
   // zzz : redo implements
   // zzz : add core::fmt to prelude
   // zzz : introduce a_is
+  // xxx : register wlang
 
   ///
   /// Type constructor to define tuple wrapping a given type.
@@ -863,7 +864,7 @@ pub use exposed::*;
 pub mod prelude
 {
   #[ doc( inline ) ]
-  pub use super::internal::
+  pub use super::private::
   {
     types,
   };

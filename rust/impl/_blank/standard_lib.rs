@@ -17,10 +17,10 @@ pub mod dependency
 {
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
-  // use super::internal as i;
+  // // use super::private as i;
   pub use super::orphan::*;
 }
 
@@ -29,7 +29,7 @@ pub use protected::*;
 /// Parented namespace of the module.
 pub mod orphan
 {
-  // use super::internal as i;
+  // // use super::private as i;
   pub use super::exposed::*;
 }
 

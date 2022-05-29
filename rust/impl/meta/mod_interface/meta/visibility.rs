@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   // use super::*;
   use proc_macro_tools::prelude::*;
@@ -377,7 +377,7 @@ mod internal
 
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;
@@ -396,7 +396,7 @@ pub mod exposed
 {
   pub use super::prelude::*;
 
-  pub use super::internal::
+  pub use super::private::
   {
     kw,
     CanBeUsedForNonStandardModInterface,

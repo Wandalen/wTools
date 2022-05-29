@@ -1,6 +1,6 @@
 /// Internal namespace.
 #[ cfg( feature = "make" ) ]
-mod internal
+pub( crate ) mod private
 {
 
   ///
@@ -233,7 +233,7 @@ pub use exposed::*;
 pub mod prelude
 {
   #[ cfg( feature = "make" ) ]
-  pub use super::internal::
+  pub use super::private::
   {
 
     Make0,

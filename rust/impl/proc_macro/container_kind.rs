@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   use crate::exposed::*;
   use crate::type_rightmost;
@@ -100,11 +100,11 @@ mod internal
 pub mod exposed
 {
   pub use super::prelude::*;
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::ContainerKind;
-  pub use i::type_container_kind;
-  pub use i::type_optional_container_kind;
+  pub use super::private::ContainerKind;
+  pub use super::private::type_container_kind;
+  pub use super::private::type_optional_container_kind;
 
 }
 
@@ -113,5 +113,5 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
+  // // use super::private as i;
 }

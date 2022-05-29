@@ -13,7 +13,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
 
   ///
@@ -167,7 +167,7 @@ mod internal
 
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;
@@ -185,7 +185,7 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
-  pub use super::internal::
+  pub use super::private::
   {
     IntervalAdapter,
     Interval,

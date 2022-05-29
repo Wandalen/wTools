@@ -1,8 +1,9 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   use crate::prelude::*;
-  use std::collections::HashSet;
+  // use std::collections::HashSet;
+  use indexmap::IndexSet;
   use std::fmt;
 
   ///
@@ -14,7 +15,7 @@ mod internal
     Kind : NodeKindInterface,
   {
     /// Input node.
-    pub out_nodes : HashSet< < Self as HasId >::Id >,
+    pub out_nodes : IndexSet< < Self as HasId >::Id >,
     /// Kind of the node.
     pub kind : Kind,
     /// Name.
@@ -31,7 +32,7 @@ mod internal
     where
       Name : Into< < Self as HasId >::Id >,
     {
-      let out_nodes = HashSet::new();
+      let out_nodes = IndexSet::new();
       let kind = Default::default();
       Self
       {
@@ -42,23 +43,6 @@ mod internal
     }
 
   }
-
-  //
-
-//   impl< Kind > HasId
-//   for Node< Kind >
-//   where
-//     Kind : NodeKindInterface,
-//   {
-//
-//     type Id = crate::IdentityWithName;
-//
-//     fn id( &self ) -> Self::Id
-//     {
-//       self.name
-//     }
-//
-//   }
 
   //
 
@@ -76,6 +60,21 @@ mod internal
     }
 
   }
+
+  //
+
+  // impl< Id, Kind > HasId
+  // for Node< Id, Kind >
+  // where
+  //   Kind : NodeKindInterface,
+  //   Id : IdentityInterface,
+  // {
+  //   type Id = Id;
+  //   fn id( &self ) -> Self::Id
+  //   {
+  //     self.name
+  //   }
+  // }
 
   //
 
@@ -134,10 +133,9 @@ mod internal
 
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
-  // use super::internal as i;
   pub use super::orphan::*;
 }
 
@@ -146,21 +144,17 @@ pub use protected::*;
 /// Parented namespace of the module.
 pub mod orphan
 {
-  use super::internal as i;
   pub use super::exposed::*;
-  // pub use i::NodesIterator;
-  pub use i::Node;
+  pub use super::private::{ Node };
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
   pub use super::prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
 }

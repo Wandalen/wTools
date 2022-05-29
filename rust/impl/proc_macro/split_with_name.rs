@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
 
 //   #[ allow( unused_imports ) ]
@@ -300,7 +300,7 @@ mod internal
 pub mod exposed
 {
   pub use super::prelude::*;
-  // use super::internal as i;
+  // // use super::private as i;
 }
 
 pub use exposed::*;
@@ -308,6 +308,6 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
-  // pub use i::SplitWithName;
+  // // use super::private as i;
+  // pub use super::private::SplitWithName;
 }

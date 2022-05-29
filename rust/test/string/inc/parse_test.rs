@@ -2,6 +2,8 @@
 use test_tools::*;
 
 use super::TheModule;
+// use wtools::string::parse as parse;
+// use super::TheModule::string::parse as parse;
 use super::TheModule::string::parse as parse;
 use std::collections::HashMap;
 

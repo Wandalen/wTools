@@ -36,7 +36,7 @@ pub mod dependencies
   pub use ::proc_macro2;
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;

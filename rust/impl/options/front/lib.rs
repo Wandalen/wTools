@@ -18,7 +18,7 @@ pub mod dependency
   pub use ::woptions_meta as meta;
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;

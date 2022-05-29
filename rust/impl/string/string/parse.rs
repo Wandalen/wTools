@@ -1,5 +1,5 @@
-
-pub( crate ) mod internal
+/// Internal namespace.
+pub( crate ) mod private
 {
   use former::Former;
   use crate::string::split::*;
@@ -483,30 +483,38 @@ pub( crate ) mod internal
 /// Protected namespace of the module.
 pub mod protected
 {
-  use super::internal as i;
-
-  pub use i::OpType;
-  pub use i::Request;
-  pub use i::ParseOptions;
-  pub use i::ParseOptionsAdapter;
-  pub use i::request_parse;
+  pub use super::orphan::*;
+  pub use super::private::
+  {
+    OpType,
+    Request,
+    ParseOptions,
+    ParseOptionsAdapter,
+    request_parse,
+  };
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
+
+/// Parented namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  use super::internal as i;
-
-  pub use i::ParseOptionsAdapter;
-  pub use i::request_parse;
+  pub use super::private::
+  {
+    ParseOptionsAdapter,
+    request_parse,
+  };
 }
 
 /// Namespace of the module to include with `use module::*`.
 pub mod prelude
 {
-  use super::internal as i;
-
-  pub use i::ParseOptionsAdapter;
+  pub use super::private::ParseOptionsAdapter;
 }

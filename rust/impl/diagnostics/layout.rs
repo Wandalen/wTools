@@ -1,6 +1,6 @@
 
 #[ cfg( feature = "compiletime_assertions" ) ]
-mod internal
+pub( crate ) mod private
 {
 
   ///
@@ -84,7 +84,7 @@ mod internal
   pub use cta_mem_same_size;
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;
@@ -109,7 +109,7 @@ pub mod exposed
 pub mod prelude
 {
   #[ cfg( feature = "compiletime_assertions" ) ]
-  pub use super::internal::
+  pub use super::private::
   {
     cta_type_same_size,
     cta_type_same_align,

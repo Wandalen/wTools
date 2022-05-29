@@ -1,6 +1,6 @@
 
 #[ cfg( feature = "compiletime_assertions" ) ]
-mod internal
+pub( crate ) mod private
 {
 
   ///
@@ -45,7 +45,7 @@ mod internal
   pub use cta_true;
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;
@@ -77,7 +77,7 @@ pub mod prelude
   pub use ::pretty_assertions::assert_ne as a_not_id;
 
   #[ cfg( feature = "compiletime_assertions" ) ]
-  pub use super::internal::
+  pub use super::private::
   {
     cta_true,
   };

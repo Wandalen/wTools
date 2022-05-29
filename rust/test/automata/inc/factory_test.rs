@@ -56,13 +56,13 @@ tests_impls!
   //
 
   #[ test ]
-  fn make_edge_list()
+  fn make_with_edge_list()
   {
     use TheModule::*;
 
     let mut factory = TheModule::canonical::NodeFactory::make();
 
-    factory.make_edge_list
+    factory.make_with_edge_list
     ([
       1, 2,
       2, 1,
@@ -80,6 +80,63 @@ tests_impls!
     let got : HashSet< _ > = factory.out_nodes( 2 ).collect();
     a_id!( got, exp );
   }
+
+  //
+
+  #[ test ]
+  fn make_with_edge_list_string()
+  {
+    use TheModule::*;
+
+    let mut factory = TheModule::canonical::NodeFactory::make();
+
+//     factory.make_with_edge_list
+//     ([
+//       "A", "B",
+//       "B", "A",
+//       "B", "B",
+//     ]);
+//
+//     dbg!( factory.node( "A" ) );
+//     dbg!( factory.node( "B" ) );
+
+//     let exp = hset![ 2 ];
+//     let got : HashSet< _ > = factory.out_nodes( 1 ).collect();
+//     a_id!( got, exp );
+//
+//     let exp = hset![ 1, 2 ];
+//     let got : HashSet< _ > = factory.out_nodes( 2 ).collect();
+//     a_id!( got, exp );
+  }
+
+  //
+
+  #[ test ]
+  fn graph_print()
+  {
+    use TheModule::*;
+
+    let mut factory = TheModule::canonical::NodeFactory::make();
+
+    factory.make_with_edge_list
+    ([
+      1, 2,
+      2, 1,
+      2, 2,
+    ]);
+
+    let exp = r#"NodeFactory
+  node::1
+   - 2
+  node::2
+   - 1
+   - 2"#;
+    let got = format!( "{:?}", factory );
+    println!( "{}", got );
+    a_id!( got, exp );
+
+  }
+
 }
 
 //
@@ -88,5 +145,7 @@ tests_index!
 {
   node,
   basic,
-  make_edge_list,
+  make_with_edge_list,
+  make_with_edge_list_string,
+  graph_print,
 }

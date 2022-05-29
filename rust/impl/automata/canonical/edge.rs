@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   use crate::prelude::*;
 
@@ -31,10 +31,10 @@ mod internal
 
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
-  // use super::internal as i;
+  // // use super::private as i;
   pub use super::orphan::*;
 }
 
@@ -43,20 +43,20 @@ pub use protected::*;
 /// Parented namespace of the module.
 pub mod orphan
 {
-  use super::internal as i;
+  // use super::private as i;
   pub use super::exposed::*;
-  pub use i::Edge;
+  pub use super::private::Edge;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
+  // // use super::private as i;
   pub use super::prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
+  // // use super::private as i;
 }
