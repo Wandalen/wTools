@@ -38,7 +38,7 @@ tests_impls!
     let a = factory.node_making( 1 );
     let b = factory.node_making( 2 );
 
-    factory.node_extend_out_node( a, b );
+    factory.node_add_edge_to_node( a, b );
     factory.node_extend_out_nodes( b, [ a, b ].into_iter() );
 
     dbg!( factory.node( a ) );
