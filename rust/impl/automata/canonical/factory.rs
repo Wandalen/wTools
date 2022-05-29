@@ -23,8 +23,8 @@ pub( crate ) mod private
       out_nodes_iter : Iter,
     )
     where
-      IntoId1 : Into< ID!() >,
-      IntoId2 : Into< ID!() >,
+      IntoId1 : Into< NODE_ID!() >,
+      IntoId2 : Into< NODE_ID!() >,
       Iter : IntoIterator< Item = IntoId2 >,
       Iter::IntoIter : Clone,
     {
@@ -56,14 +56,14 @@ pub( crate ) mod private
 
     fn out_nodes< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
-    Box< dyn Iterator< Item = ID!() > + 'b >
+    Box< dyn Iterator< Item = NODE_ID!() > + 'b >
     where
-      IntoId : Into< ID!() >,
+      IntoId : Into< NODE_ID!() >,
       'a : 'b,
     {
       let node = self.node( node_id );
       let iterator
-        : Box< dyn Iterator< Item = ID!() > >
+        : Box< dyn Iterator< Item = NODE_ID!() > >
         = Box::new( node.out_nodes.iter().cloned() );
       iterator
     }
@@ -81,7 +81,7 @@ pub( crate ) mod private
     NodeFactory< Id, Kind > : crate::NodeFactoryInterface,
   {
     /// Map id to node.
-    pub id_to_node_map : IndexMap< ID!(), crate::canonical::Node< Id, Kind > >,
+    pub id_to_node_map : IndexMap< NODE_ID!(), crate::canonical::Node< Id, Kind > >,
   }
 
   impl< Id, Kind > NodeFactory< Id, Kind >

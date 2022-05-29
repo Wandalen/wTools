@@ -1,11 +1,12 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::prelude::*;
+  use crate::prelude::*;
   use core::fmt;
+  use core::hash::Hash;
 
   ///
-  /// Kind of an edge.
+  /// Kind of a edge.
   ///
 
   pub trait EdgeKindInterface
@@ -15,6 +16,8 @@ pub( crate ) mod private
       Copy +
       fmt::Debug +
       PartialEq +
+      Hash  +
+      Default +
     ,
   {
   }
@@ -26,6 +29,8 @@ pub( crate ) mod private
       Copy +
       fmt::Debug +
       PartialEq +
+      Hash  +
+      Default +
     ,
   {
   }
@@ -37,65 +42,15 @@ pub( crate ) mod private
   #[ derive( Debug, PartialEq, Copy, Clone, Hash, Default ) ]
   pub struct EdgeKindless();
 
-//   ///
-//   /// Edge iterator.
-//   ///
-//
-//   #[ derive( Debug ) ]
-//   pub struct EdgesIterator< Edge >
-//   where
-//     Edge : EdgeInterface,
-//   {
-//     _p : std::marker::PhantomData< Edge >,
-//   }
-//
-//   impl< Edge > EdgesIterator< Edge >
-//   where
-//     Edge : EdgeInterface,
-//   {
-//     pub fn make() -> Self
-//     {
-//       Self
-//       {
-//         _p : std::marker::PhantomData,
-//       }
-//     }
-//   }
-//
-//   impl< Edge > Iterator for EdgesIterator< Edge >
-//   where
-//     Edge : EdgeInterface,
-//   {
-//     type Item = Edge;
-//     fn next( &mut self ) -> Option< Self::Item >
-//     {
-//       None
-//     }
-//   }
-
   ///
   /// Edge of a graph.
   ///
 
-  pub trait EdgeInterface
-  {
-
-    // /// Get kind of the edge.
-    // fn kind< Kind : EdgeKindInterface >() -> Kind;
-
-  }
-
-  ///
-  /// Get kind of an edge .
-  ///
-
-  pub trait EdgeKindGetterInterface< Kind >
+  pub trait EdgeBasicInterface
   where
-    Kind : EdgeKindInterface,
-    Self : EdgeInterface,
+    Self :
+      HasId +
   {
-    /// Get kind of the edge.
-    fn kind() -> Kind;
   }
 
 }
@@ -106,7 +61,6 @@ pub mod protected
   pub use super::orphan::*;
 }
 
-#[ doc( inline ) ]
 pub use protected::*;
 
 /// Parented namespace of the module.
@@ -118,17 +72,18 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::private as i;
   pub use super::prelude::*;
   pub use super::private::EdgeKindless;
-  // pub use super::private::EdgesIterator;
 }
+
+pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::private as i;
-  pub use super::private::EdgeKindInterface;
-  pub use super::private::EdgeInterface;
-  pub use super::private::EdgeKindGetterInterface;
+  pub use super::private::
+  {
+    EdgeKindInterface,
+    EdgeBasicInterface,
+  };
 }
