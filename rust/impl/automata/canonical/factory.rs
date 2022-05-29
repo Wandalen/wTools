@@ -71,6 +71,8 @@ pub( crate ) mod private
 
   }
 
+  // pub type NodeFactory2 = NodeFactory< crate::IdentityWithInt, crate::NodeKindless >;
+
   ///
   /// Node factory.
   ///
@@ -208,6 +210,7 @@ pub mod orphan
 {
   pub use super::exposed::*;
   pub use super::private::NodeFactory;
+  // pub use super::private::NodeFactory2;
 }
 
 /// Exposed namespace of the module.

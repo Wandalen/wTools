@@ -120,9 +120,7 @@ pub( crate ) mod private
     {
       use wtools::iter::prelude::*;
       let iter = into_iter.into_iter();
-
-      // debug_assert_eq!( into_iter.len() % 2, 0 );
-
+      debug_assert_eq!( iter.len() % 2, 0 );
       for mut chunk in &iter.chunks( 2 )
       {
         let id1 = chunk.next().unwrap().into();
@@ -130,13 +128,8 @@ pub( crate ) mod private
         self.node_making( id1 );
         self.node_making( id2 );
         self.node_add_edge_to_node( id1, id2 );
-        // println!( "{:?} -> {:?}", id1, id2 );
       }
 
-      // for id in iter
-      // {
-      //   let id = id.into();
-      // }
     }
 
   }
