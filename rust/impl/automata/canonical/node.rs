@@ -10,21 +10,27 @@ pub( crate ) mod private
   /// Canonical implementation of node.
   ///
 
-  pub struct Node< Kind = crate::NodeKindless >
+  pub struct Node< Id = crate::IdentityWithInt, Kind = crate::NodeKindless >
   where
+    Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
     /// Input node.
-    pub out_nodes : IndexSet< < Self as HasId >::Id >,
+    pub out_nodes : IndexSet< Id >,
+    // pub out_nodes : IndexSet< < Self as HasId >::Id >,
     /// Kind of the node.
     pub kind : Kind,
     /// Name.
-    pub name : < Self as HasId >::Id,
+    pub name : Id,
+    // pub name : < Self as HasId >::Id,
   }
 
   //
 
-  impl Node
+  impl< Id, Kind > Node< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
 
     /// Construct a name instance of the node.
@@ -46,41 +52,42 @@ pub( crate ) mod private
 
   //
 
-  impl< Kind > HasId
-  for Node< Kind >
+//   impl< Kind > HasId
+//   for Node< Kind >
+//   where
+//     Kind : NodeKindInterface,
+//   {
+//
+//     type Id = crate::IdentityWithInt;
+//
+//     fn id( &self ) -> Self::Id
+//     {
+//       self.name
+//     }
+//
+//   }
+
+  //
+
+  impl< Id, Kind > HasId
+  for Node< Id, Kind >
   where
+    Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
-
-    type Id = crate::IdentityWithInt;
-
+    type Id = Id;
     fn id( &self ) -> Self::Id
     {
       self.name
     }
-
   }
 
   //
 
-  // impl< Id, Kind > HasId
-  // for Node< Id, Kind >
-  // where
-  //   Kind : NodeKindInterface,
-  //   Id : IdentityInterface,
-  // {
-  //   type Id = Id;
-  //   fn id( &self ) -> Self::Id
-  //   {
-  //     self.name
-  //   }
-  // }
-
-  //
-
-  impl< Kind > NodeBasicInterface
-  for Node< Kind >
+  impl< Id, Kind > NodeBasicInterface
+  for Node< Id, Kind >
   where
+    Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
   }
@@ -103,9 +110,10 @@ pub( crate ) mod private
 
   //
 
-  impl< Kind > fmt::Debug
-  for Node< Kind >
+  impl< Id, Kind > fmt::Debug
+  for Node< Id, Kind >
   where
+    Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
@@ -121,8 +129,9 @@ pub( crate ) mod private
 
   //
 
-  impl< Kind > PartialEq for Node< Kind >
+  impl< Id, Kind > PartialEq for Node< Id, Kind >
   where
+    Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
     fn eq( &self, other : &Self ) -> bool
