@@ -1,10 +1,11 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   use crate::prelude::*;
   use crate::canonical::*;
-  use std::collections::HashMap;
   use wtools::prelude::*;
+  use std::collections::HashMap;
+  // use std::fmt;
 
   include!( "./factory_impl.rs" );
 
@@ -15,16 +16,17 @@ mod internal
     /// Iterate output nodes of the node.
     ///
 
-    fn node_extend_out_nodes< Id, Iter >
+    fn node_extend_out_nodes< IntoId1, IntoId2, Iter >
     (
       &mut self,
-      node_id : Id,
+      node_id : IntoId1,
       out_nodes_iter : Iter,
     )
     where
-      Iter : IntoIterator< Item = Id >,
+      IntoId1 : Into< ID!() >,
+      IntoId2 : Into< ID!() >,
+      Iter : IntoIterator< Item = IntoId2 >,
       Iter::IntoIter : Clone,
-      Id : Into< ID!() >,
     {
       let out_nodes_iter2 = out_nodes_iter.into_iter()
       .map( | id |
@@ -34,7 +36,6 @@ mod internal
         id
       });
       self.node( node_id.into() ).borrow_mut().extend( out_nodes_iter2 );
-      // self.node_mut( node_id.into() ).extend( out_nodes_iter );
     }
 
     //
@@ -92,7 +93,6 @@ mod internal
   impl GraphBasicInterface
   for CellNodeFactory
   {
-    // type NodeHandle = crate::canonical::Node;
     type NodeHandle = crate::NodeCell< crate::canonical::Node >;
 
     index!
@@ -141,10 +141,10 @@ mod internal
 
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
-  // use super::internal as i;
+  // // use super::private as i;
   pub use super::orphan::*;
 }
 
@@ -154,19 +154,19 @@ pub use protected::*;
 pub mod orphan
 {
   pub use super::exposed::*;
-  use super::internal as i;
-  pub use i::CellNodeFactory;
+  // use super::private as i;
+  pub use super::private::CellNodeFactory;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
   pub use super::prelude::*;
-  // use super::internal as i;
+  // // use super::private as i;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
+  // // use super::private as i;
 }

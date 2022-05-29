@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
 
 //   #[ derive( Debug ) ]
@@ -70,7 +70,7 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
-  // use super::internal::TempDir;
+  // use super::private::TempDir;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

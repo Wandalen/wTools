@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
 
   ///
@@ -342,7 +342,7 @@ mod internal
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
+  // // use super::private as i;
   pub use super::prelude::*;
 }
 
@@ -351,10 +351,10 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
-  pub use i::fn_rename;
-  pub use i::fn_name;
-  pub use i::fns;
-  pub use i::fns2;
-  // pub use i::ignore_macro;
+  // use super::private as i;
+  pub use super::private::fn_rename;
+  pub use super::private::fn_name;
+  pub use super::private::fns;
+  pub use super::private::fns2;
+  // pub use super::private::ignore_macro;
 }

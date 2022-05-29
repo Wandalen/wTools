@@ -1,20 +1,16 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   use crate::exposed::*;
 
   // xxx : no std
-  // qqq : introduce features for type_constructor
   // qqq : for Dima : paste generated code for each sample
-  //
-  // xxx : redo implements
-  // xxx : add core::fmt to prelude
   // xxx : write article about the module
-
-  // xxx : use
-  // - [pretty_assertions](https://github.com/colin-kiegel/rust-pretty-assertions) by [Colin Kiegel](https://github.com/colin-kiegel) :
-  //  pretty assert_eq
-  // xxx : introduce a_is
+  //
+  // zzz : redo implements
+  // zzz : add core::fmt to prelude
+  // zzz : introduce a_is
+  // xxx : register wlang
 
   ///
   /// Type constructor to define tuple wrapping a given type.
@@ -868,11 +864,8 @@ pub use exposed::*;
 pub mod prelude
 {
   #[ doc( inline ) ]
-  pub use super::internal::
+  pub use super::private::
   {
     types,
   };
 }
-
-
-

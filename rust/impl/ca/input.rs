@@ -1,5 +1,5 @@
 
-mod internal
+pub( crate ) mod private
 {
   use std::io;
   use std::io::Write;
@@ -18,9 +18,9 @@ mod internal
 /// Protected namespace of the module.
 pub mod protected
 {
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::ask;
+  pub use super::private::ask;
 }
 
 pub use protected::*;
@@ -28,16 +28,16 @@ pub use protected::*;
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::ask;
+  pub use super::private::ask;
 }
 
 /// Namespace of the module to include with `use module::*`.
 pub mod prelude
 {
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::ask;
+  pub use super::private::ask;
 }
 

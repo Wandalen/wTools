@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   use crate::prelude::*;
   use core::fmt::Debug;
@@ -49,65 +49,23 @@ mod internal
   pub trait NodeBasicInterface
   where
     Self :
-      // Hash +
       HasId +
   {
-
-    // /// Iterate output nodes of the node.
-    // fn out_nodes( &self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + '_ >;
-    // // fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + 'a >;
-
   }
 
 //   ///
-//   /// Node which is extendable
+//   /// Node handle.
 //   ///
 //
-//   pub trait NodeExtendableInterface
-//   where
-//     Self :
-//       Sized +
-//       NodeBasicInterface +
-//       Extend< Self > +
-//     ,
+//   pub trait NodeHandleInterface : NodeBasicInterface + HasId
 //   {
+//     /// Node itself.
+//     type Node : NodeBasicInterface + HasId< Id = Self::Id >;
 //   }
-//
-//   impl< T > NodeExtendableInterface for T
-//   where
-//     T :
-//       NodeBasicInterface +
-//       Extend< Self > +
-//     ,
-//   {
-//   }
-
-//   ///
-//   /// Node which has a kind.
-//   ///
-//
-//   pub trait NodeKindGetterInterface< Kind >
-//   where
-//     Kind : NodeKindInterface,
-//     Self : NodeBasicInterface,
-//   {
-//     /// Get kind of the node.
-//     fn kind() -> Kind;
-//   }
-
-  ///
-  /// Node handle.
-  ///
-
-  pub trait NodeHandleInterface : NodeBasicInterface + HasId
-  {
-    /// Node itself.
-    type Node : NodeBasicInterface + HasId< Id = Self::Id >;
-  }
 
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;
@@ -118,16 +76,14 @@ pub use protected::*;
 /// Parented namespace of the module.
 pub mod orphan
 {
-  // use super::internal as i;
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  use super::internal as i;
   pub use super::prelude::*;
-  pub use i::NodeKindless;
+  pub use super::private::NodeKindless;
 }
 
 pub use exposed::*;
@@ -135,9 +91,7 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
-  pub use i::NodeKindInterface;
-  pub use i::NodeBasicInterface;
-  // pub use i::NodeKindGetterInterface;
-  pub use i::NodeHandleInterface;
+  pub use super::private::NodeKindInterface;
+  pub use super::private::NodeBasicInterface;
+  // pub use super::private::NodeHandleInterface;
 }

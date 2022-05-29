@@ -13,15 +13,15 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::exposed::*;
-  // use super::internal as i;
+  // // use super::private as i;
 }
 
 pub use protected::*;

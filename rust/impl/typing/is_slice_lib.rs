@@ -10,7 +10,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
 
   /// Macro to answer the question: is it a slice?
@@ -68,7 +68,7 @@ mod internal
   pub use is_slice;
 }
 
-/// Own namespace of the module.
+/// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;
@@ -93,7 +93,7 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
-  pub use super::internal::
+  pub use super::private::
   {
     is_slice,
   };

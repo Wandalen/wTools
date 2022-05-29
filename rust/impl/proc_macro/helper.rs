@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod internal
+pub( crate ) mod private
 {
   // pub use winterval::exposed::*;
 
@@ -230,11 +230,11 @@ mod internal
 pub mod exposed
 {
   pub use super::prelude::*;
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::type_rightmost;
-  pub use i::type_parameters;
-  pub use i::attr_pair_single;
+  pub use super::private::type_rightmost;
+  pub use super::private::type_parameters;
+  pub use super::private::attr_pair_single;
 
 }
 
@@ -243,11 +243,11 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::_tree_print as tree_print;
-  pub use i::_tree_export_str as tree_export_str;
-  pub use i::_syn_err as syn_err;
+  pub use super::private::_tree_print as tree_print;
+  pub use super::private::_tree_export_str as tree_export_str;
+  pub use super::private::_syn_err as syn_err;
 
-  pub use i::Result;
+  pub use super::private::Result;
 }
