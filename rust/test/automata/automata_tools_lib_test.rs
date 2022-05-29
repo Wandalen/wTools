@@ -5,6 +5,6 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-use wautomata as TheModule;
+use automata_tools as TheModule;
 
 mod inc;

@@ -1,4 +1,5 @@
 use test_tools::*;
+use super::*;
 
 //
 
@@ -7,7 +8,7 @@ tests_impls!
   #[ test ]
   fn identity_with_int()
   {
-    use wautomata::exposed::*;
+    use TheModule::exposed::*;
 
     let src1 = IdentityWithInt::make( 3 );
     let src2 = IdentityWithInt::make( 3 );

@@ -1,6 +1,4 @@
-use std::collections::HashSet;
-use test_tools::*;
-use wtools::prelude::*;
+use super::*;
 
 //
 
@@ -9,9 +7,9 @@ tests_impls!
   #[ test ]
   fn basic()
   {
-    use wautomata::*;
+    use TheModule::*;
 
-    let mut factory = wautomata::canonical::CellNodeFactory::make();
+    let mut factory = TheModule::canonical::CellNodeFactory::make();
 
     let a = factory.node_making( 1 );
     let b = factory.node_making( 2 );

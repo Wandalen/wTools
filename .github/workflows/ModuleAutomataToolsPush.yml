@@ -7,9 +7,17 @@ env :
 
 jobs :
 
-  # wautomata
+  # automata_tools
 
   test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/rust/automata_tools/Cargo.toml'
+      module_name : 'automata_tools'
+
+  # wautomata
+
+  test_wautomata :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/rust/wautomata/Cargo.toml'
