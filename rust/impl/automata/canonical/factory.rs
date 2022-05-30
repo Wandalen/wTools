@@ -168,9 +168,7 @@ pub( crate ) mod private
 
   }
 
-  //
-
-//   impl< NodeId, EdgeId, Kind > GraphEditableInterface
+//   impl< NodeId, EdgeId, Kind > GraphEdgesExtendableInterface
 //   for NodeFactory< NodeId, EdgeId, Kind >
 //   where
 //     NodeId : IdentityInterface,
@@ -178,10 +176,16 @@ pub( crate ) mod private
 //     Kind : NodeKindInterface,
 //   {
 //
-//     index!
+//     fn _edge_id_make_for( &mut self, node1 : NODE_ID!(), node2 : NODE_ID!() ) -> EDGE_ID!()
 //     {
-//       node_mut,
-//       node_add_out_nodes,
+//       x
+//     }
+//
+//     //
+//
+//     fn _edge_add( &mut self, edge : EDGE_ID!(), node1 : NODE_ID!(), node2 : NODE_ID!() )
+//     {
+//
 //     }
 //
 //   }
