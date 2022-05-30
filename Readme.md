@@ -52,4 +52,4 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 | Module | Stability | Test |
 |--------|------|-----------|
-| [wTools](./module/js/wTools) | [![stable](https://img.shields.io/badge/stability-stable-brightgreen.svg)](https://github.com/emersion/stability-badges#stable) | [![js-status](https://github.com/Wandalen/wTools/actions/workflows/StandardPublish.yml/badge.svg?branch=alpha)](https://github.com/Wandalen/wTools/actions/workflows/StandardPublish.yml) |
+| [wTools](./module/js/wTools) | [![stable](https://img.shields.io/badge/stability-stable-brightgreen.svg)](https://github.com/emersion/stability-badges#stable) | [![js-status](https://github.com/Wandalen/wTools/actions/workflows/StandardJsPublish.yml/badge.svg?branch=alpha)](https://github.com/Wandalen/wTools/actions/workflows/StandarJsdPublish.yml) |
