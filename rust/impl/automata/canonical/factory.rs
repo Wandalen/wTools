@@ -74,32 +74,37 @@ pub( crate ) mod private
   /// Node factory.
   ///
 
-  pub struct NodeFactory< Id = crate::IdentityWithInt, Kind = crate::NodeKindless >
+  pub struct NodeFactory< NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt, Kind = crate::NodeKindless >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
-    NodeFactory< Id, Kind > : crate::NodeFactoryInterface,
+    NodeFactory< NodeId, EdgeId, Kind > : crate::NodeFactoryInterface,
   {
     /// Map id to node.
-    pub id_to_node_map : IndexMap< NODE_ID!(), crate::canonical::Node< Id, Kind > >,
+    pub id_to_node_map : IndexMap< NodeId, crate::canonical::Node< NodeId, Kind > >,
+    /// Map id to edge.
+    pub id_to_edge_map : IndexMap< EdgeId, crate::canonical::Edge< NodeId, EdgeId, Kind > >,
   }
 
-  impl< Id, Kind > NodeFactory< Id, Kind >
+  impl< NodeId, EdgeId, Kind > NodeFactory< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
   }
 
   //
 
-  impl< Id, Kind > GraphNodesInterface
-  for NodeFactory< Id, Kind >
+  impl< NodeId, EdgeId, Kind > GraphNodesInterface
+  for NodeFactory< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
-    type NodeHandle = crate::canonical::Node< Id, Kind >;
+    type NodeHandle = crate::canonical::Node< NodeId, Kind >;
     index!
     {
       node,
@@ -110,27 +115,29 @@ pub( crate ) mod private
 
   //
 
-  // impl< Id, Kind > GraphEdgesInterface
-  // for NodeFactory< Id, Kind >
-  // where
-  //   Id : IdentityInterface,
-  //   Kind : EdgeKindInterface,
-  // {
-  //   type EdgeHandle = crate::canonical::Edge< Id, Kind >;
-  //   index!
-  //   {
-  //     edge,
-  //     out_edges,
-  //     edges,
-  //   }
-  // }
+  impl< NodeId, EdgeId, Kind > GraphEdgesInterface
+  for NodeFactory< NodeId, EdgeId, Kind >
+  where
+    EdgeId : IdentityInterface,
+    NodeId : IdentityInterface,
+    Kind : NodeKindInterface,
+  {
+    type EdgeHandle = crate::canonical::Edge< EdgeId, NodeId, Kind >;
+    index!
+    {
+      // edge,
+      // out_edges,
+      // edges,
+    }
+  }
 
   //
 
-  impl< Id, Kind > GraphExtendableInterface
-  for NodeFactory< Id, Kind >
+  impl< NodeId, EdgeId, Kind > GraphExtendableInterface
+  for NodeFactory< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
 
@@ -143,10 +150,11 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind > GraphEditableInterface
-  for NodeFactory< Id, Kind >
+  impl< NodeId, EdgeId, Kind > GraphEditableInterface
+  for NodeFactory< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
 
@@ -160,21 +168,23 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind > NodeFactoryInterface
-  for NodeFactory< Id, Kind >
+  impl< NodeId, EdgeId, Kind > NodeFactoryInterface
+  for NodeFactory< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
-    // type NodeHandle = crate::canonical::Node< Id, Kind >; /* xxx2 : remove? */
+    // type NodeHandle = crate::canonical::Node< NodeId, Kind >; /* xxx2 : remove? */
   }
 
   //
 
-  impl< Id, Kind > fmt::Debug
-  for NodeFactory< Id, Kind >
+  impl< NodeId, EdgeId, Kind > fmt::Debug
+  for NodeFactory< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
     index!( fmt );
@@ -182,19 +192,16 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind > Make0
-  for NodeFactory< Id, Kind >
+  impl< NodeId, EdgeId, Kind > Make0
+  for NodeFactory< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
-    fn make_0() -> Self
+    index!
     {
-      let id_to_node_map = IndexMap::new();
-      Self
-      {
-        id_to_node_map,
-      }
+      make_0,
     }
   }
 

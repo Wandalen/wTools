@@ -144,6 +144,13 @@ pub( crate ) mod private
     }
   }
 
+  impl< Id, Kind > Eq
+  for Node< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
+  {}
+
 }
 
 /// Protected namespace of the module.

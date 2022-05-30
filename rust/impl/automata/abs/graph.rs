@@ -64,28 +64,28 @@ pub( crate ) mod private
     /// Otherwise EdgeHandle could be &Node.
     type EdgeHandle : EdgeBasicInterface;
 
-    /// Iterate over all edges.
-    fn edges< 'a, 'b >( &'a self )
-    ->
-    Box< dyn Iterator< Item = ( &EDGE_ID!(), &Self::EdgeHandle ) > + 'b >
-    where
-      'a : 'b,
-    ;
+    // /// Iterate over all edges.
+    // fn edges< 'a, 'b >( &'a self )
+    // ->
+    // Box< dyn Iterator< Item = ( &EDGE_ID!(), &Self::EdgeHandle ) > + 'b >
+    // where
+    //   'a : 'b,
+    // ;
 
-    /// Get edge with id.
-    fn edge< Id >( &self, id : Id ) -> &Self::EdgeHandle
-    where
-      Id : Into< EDGE_ID!() >
-    ;
+    // /// Get edge with id.
+    // fn edge< Id >( &self, id : Id ) -> &Self::EdgeHandle
+    // where
+    //   Id : Into< EDGE_ID!() >
+    // ;
 
-    /// Iterate over output edges of the node.
-    fn out_edges< 'a, 'b, Id >( &'a self, node_id : Id )
-    ->
-    Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
-    where
-      Id : Into< EDGE_ID!() >,
-      'a : 'b,
-    ;
+    // /// Iterate over output edges of the node.
+    // fn out_edges< 'a, 'b, Id >( &'a self, node_id : Id )
+    // ->
+    // Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
+    // where
+    //   Id : Into< EDGE_ID!() >,
+    //   'a : 'b,
+    // ;
 
   }
 

@@ -12,33 +12,33 @@ pub( crate ) mod private
   /// Canonical implementation of edge.
   ///
 
-  #[ derive( Debug, PartialEq, Copy, Clone ) ]
-  pub struct Edge< Id = crate::IdentityWithInt, Kind = crate::EdgeKindless, Node = crate::canonical::Node >
+  #[ derive( Debug, Copy, Clone ) ]
+  pub struct Edge< EdgeId = crate::IdentityWithInt, NodeId = crate::IdentityWithInt, Kind = crate::EdgeKindless >
   where
-    Id : IdentityInterface,
+    EdgeId : IdentityInterface,
+    NodeId : IdentityInterface,
     Kind : EdgeKindInterface,
-    Node : NodeBasicInterface,
   {
     /// Input node.
-    pub in_node : < Node as HasId >::Id,
+    pub in_node : NodeId,
     /// Output node.
-    pub out_node : < Node as HasId >::Id,
+    pub out_node : NodeId,
     /// Kind of the edge.
     pub kind : Kind,
     /// Identifier.
-    pub id : Id,
+    pub id : EdgeId,
   }
 
   //
 
-  impl< Id, Kind, Node > HasId
-  for Edge< Id, Kind, Node >
+  impl< EdgeId, NodeId, Kind > HasId
+  for Edge< EdgeId, NodeId, Kind >
   where
-    Id : IdentityInterface,
+    EdgeId : IdentityInterface,
+    NodeId : IdentityInterface,
     Kind : EdgeKindInterface,
-    Node : NodeBasicInterface,
   {
-    type Id = Id;
+    type Id = EdgeId;
     fn id( &self ) -> Self::Id
     {
       self.id
@@ -47,14 +47,37 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind, Node > EdgeBasicInterface
-  for Edge< Id, Kind, Node >
+  impl< EdgeId, NodeId, Kind > EdgeBasicInterface
+  for Edge< EdgeId, NodeId, Kind >
   where
-    Id : IdentityInterface,
+    EdgeId : IdentityInterface,
+    NodeId : IdentityInterface,
     Kind : EdgeKindInterface,
-    Node : NodeBasicInterface,
   {
   }
+
+  //
+
+  impl< EdgeId, NodeId, Kind > PartialEq
+  for Edge< EdgeId, NodeId, Kind >
+  where
+    EdgeId : IdentityInterface,
+    NodeId : IdentityInterface,
+    Kind : EdgeKindInterface,
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      self.id() == other.id()
+    }
+  }
+
+  impl< EdgeId, NodeId, Kind > Eq
+  for Edge< EdgeId, NodeId, Kind >
+  where
+    EdgeId : IdentityInterface,
+    NodeId : IdentityInterface,
+    Kind : EdgeKindInterface,
+  {}
 
 }
 
