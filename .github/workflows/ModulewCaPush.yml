@@ -12,5 +12,5 @@ jobs :
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
-      manifest_path : 'module/rust/wca/Cargo.toml'
+      manifest_path : 'module/move/wca/Cargo.toml'
       module_name : 'wca'
