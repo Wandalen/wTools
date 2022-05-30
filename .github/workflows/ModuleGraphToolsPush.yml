@@ -1,4 +1,4 @@
-name : wproc_macro
+name : graph_tools
 
 on : push
 
@@ -7,10 +7,10 @@ env :
 
 jobs :
 
-  # wproc_macro
+  # graph_tools
 
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
-      manifest_path : 'module/rust/wproc_macro/Cargo.toml'
-      module_name : 'wproc_macro'
+      manifest_path : 'module/move/graph_tools/Cargo.toml'
+      module_name : 'graph_tools'
