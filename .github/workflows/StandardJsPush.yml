@@ -1,27 +1,30 @@
 
-name : publish
+name : js_push
 on : [ push ]
 
 concurrency :
 
-  group : standard_publush
+  group : standard_push_${{ github.ref }}
   cancel-in-progress : true
 
 jobs :
 
-  Full :
+  fast :
+
     env :
       PRIVATE_WTOOLS_BOT_TOKEN : ${{ secrets.PRIVATE_WTOOLS_BOT_TOKEN }}
       PRIVATE_WTOOLS_BOT_SSH_KEY : ${{ secrets.PRIVATE_WTOOLS_BOT_SSH_KEY }}
       PRIVATE_WTOOLS_BOT_NPM_PASS : ${{ secrets.PRIVATE_WTOOLS_BOT_NPM_PASS }}
       PRIVATE_WTOOLS_BOT_EMAIL : ${{ secrets.PRIVATE_WTOOLS_BOT_EMAIL }}
-      NODE_PRE_GYP_GITHUB_TOKEN : ${{ secrets.NODE_PRE_GYP_GITHUB_TOKEN }}
     strategy :
       fail-fast : false
       matrix :
         os : [ ubuntu-latest, windows-latest, macos-latest ]
-        node-version : [ 12.9.1, 14.x, 16.x, 18.x ]
-    if : "startsWith( github.event.head_commit.message, 'version' ) && startsWith( github.ref, 'refs/tags/v' )"
+        node-version : [ 14.x ]
+    if : |
+      !startsWith( github.event.head_commit.message, 'version' )
+      && !startsWith( github.event.head_commit.message, '.' )
+      && !startsWith( github.event.head_commit.message, 'Merge' )
     runs-on : ${{ matrix.os }}
     steps :
     - name : Setup git
