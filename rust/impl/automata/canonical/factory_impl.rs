@@ -14,34 +14,34 @@ impls!
 
   //
 
-  // fn edge< IntoId >( &self, id : IntoId ) -> &Self::EdgeHandle
-  // where
-  //   IntoId : Into< EDGE_ID!() >,
-  // {
-  //   let id = id.into();
-  //   let got = self.id_to_edge_map.get( &id );
-  //   if got.is_some()
-  //   {
-  //     let result : &Self::EdgeHandle = got.unwrap().clone();
-  //     return result;
-  //   }
-  //   unreachable!( "No edge with id {:?} found", id );
-  // }
+  fn edge< IntoId >( &self, id : IntoId ) -> &Self::EdgeHandle
+  where
+    IntoId : Into< EDGE_ID!() >,
+  {
+    let id = id.into();
+    let got = self.id_to_edge_map.get( &id );
+    if got.is_some()
+    {
+      let result : &Self::EdgeHandle = got.unwrap();
+      return result;
+    }
+    unreachable!( "No edge with id {:?} found", id );
+  }
 
   //
 
-  // fn edges< 'a, 'b >( &'a self )
-  // ->
-  // Box< dyn Iterator< Item = ( &EDGE_ID!(), &Self::EdgeHandle ) > + 'b >
-  // where
-  //   'a : 'b,
-  // {
-  //   let iterator
-  //     : Box< dyn Iterator< Item = ( &EDGE_ID!(), &Self::EdgeHandle ) > >
-  //     = Box::new( self.id_to_edge_map.iter() )
-  //   ;
-  //   iterator
-  // }
+  fn edges< 'a, 'b >( &'a self )
+  ->
+  Box< dyn Iterator< Item = ( &EDGE_ID!(), &Self::EdgeHandle ) > + 'b >
+  where
+    'a : 'b,
+  {
+    let iterator
+      : Box< dyn Iterator< Item = ( &EDGE_ID!(), &Self::EdgeHandle ) > >
+      = Box::new( self.id_to_edge_map.iter() )
+    ;
+    iterator
+  }
 
   //
 
@@ -53,7 +53,7 @@ impls!
     let got = self.id_to_node_map.get( &id );
     if got.is_some()
     {
-      let result : &Self::NodeHandle = got.unwrap().clone();
+      let result : &Self::NodeHandle = got.unwrap();
       return result;
     }
     unreachable!( "No node with id {:?} found", id );

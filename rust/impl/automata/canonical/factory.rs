@@ -68,6 +68,22 @@ pub( crate ) mod private
       iterator
     }
 
+    //
+
+    fn out_edges< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
+    ->
+    Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
+    where
+      IntoId : Into< NODE_ID!() >,
+      'a : 'b,
+    {
+      let node = self.node( node_id );
+      let iterator
+        : Box< dyn Iterator< Item = EDGE_ID!() > >
+        = Box::new( node.out_edges.iter().cloned() );
+      iterator
+    }
+
   }
 
   ///
@@ -82,9 +98,9 @@ pub( crate ) mod private
     NodeFactory< NodeId, EdgeId, Kind > : crate::NodeFactoryInterface,
   {
     /// Map id to node.
-    pub id_to_node_map : IndexMap< NodeId, crate::canonical::Node< NodeId, Kind > >,
+    pub id_to_node_map : IndexMap< NodeId, crate::canonical::Node< NodeId, EdgeId, Kind > >,
     /// Map id to edge.
-    pub id_to_edge_map : IndexMap< EdgeId, crate::canonical::Edge< NodeId, EdgeId, Kind > >,
+    pub id_to_edge_map : IndexMap< EdgeId, crate::canonical::Edge< EdgeId, NodeId, Kind > >,
   }
 
   impl< NodeId, EdgeId, Kind > NodeFactory< NodeId, EdgeId, Kind >
@@ -104,7 +120,7 @@ pub( crate ) mod private
     EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
-    type NodeHandle = crate::canonical::Node< NodeId, Kind >;
+    type NodeHandle = crate::canonical::Node< NodeId, EdgeId, Kind >;
     index!
     {
       node,
@@ -125,9 +141,9 @@ pub( crate ) mod private
     type EdgeHandle = crate::canonical::Edge< EdgeId, NodeId, Kind >;
     index!
     {
-      // edge,
-      // out_edges,
-      // edges,
+      edge,
+      edges,
+      out_edges,
     }
   }
 
@@ -175,7 +191,7 @@ pub( crate ) mod private
     EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
-    // type NodeHandle = crate::canonical::Node< NodeId, Kind >; /* xxx2 : remove? */
+    // type NodeHandle = crate::canonical::Node< NodeId, EdgeId, Kind >; /* xxx2 : remove? */
   }
 
   //

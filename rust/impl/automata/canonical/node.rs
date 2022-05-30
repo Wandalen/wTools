@@ -10,26 +10,28 @@ pub( crate ) mod private
   /// Canonical implementation of node.
   ///
 
-  pub struct Node< Id = crate::IdentityWithInt, Kind = crate::NodeKindless >
+  pub struct Node< NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt, Kind = crate::NodeKindless >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
     /// Input node.
-    pub out_nodes : IndexSet< Id >,
+    pub out_nodes : IndexSet< NodeId >,
     /// Input node.
-    pub out_edges : IndexSet< Id >,
+    pub out_edges : IndexSet< EdgeId >,
     /// Kind of the node.
     pub kind : Kind,
     /// Identifier.
-    pub id : Id,
+    pub id : NodeId,
   }
 
   //
 
-  impl< Id, Kind > Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
 
@@ -54,10 +56,11 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind, IntoId > Make1< IntoId >
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind, IntoId > Make1< IntoId >
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
     IntoId : Into< < Self as HasId >::Id >,
   {
@@ -69,13 +72,14 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind > HasId
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > HasId
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
-    type Id = Id;
+    type Id = NodeId;
     fn id( &self ) -> Self::Id
     {
       self.id
@@ -84,20 +88,22 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind > NodeBasicInterface
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > NodeBasicInterface
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
   }
 
   //
 
-  impl< Id, Kind > Extend< < Self as HasId >::Id >
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > Extend< < Self as HasId >::Id >
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
     fn extend< Iter >( &mut self, iter : Iter )
@@ -113,10 +119,11 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind > fmt::Debug
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > fmt::Debug
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
@@ -132,10 +139,11 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind > PartialEq
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > PartialEq
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
     fn eq( &self, other : &Self ) -> bool
@@ -144,10 +152,11 @@ pub( crate ) mod private
     }
   }
 
-  impl< Id, Kind > Eq
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > Eq
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {}
 

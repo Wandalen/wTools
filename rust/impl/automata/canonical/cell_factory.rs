@@ -53,6 +53,23 @@ pub( crate ) mod private
       iterator
     }
 
+    //
+
+    fn out_edges< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
+    ->
+    Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
+    where
+      IntoId : Into< NODE_ID!() >,
+      'a : 'b,
+    {
+      let node = self.node( node_id ).borrow();
+      let collected : Vec< EDGE_ID!() > = node.out_edges.iter().cloned().collect();
+      let iterator : Box< dyn Iterator< Item = EDGE_ID!() > > = Box::new( collected.into_iter() );
+      iterator
+    }
+
+    //
+
   }
 
   ///
@@ -67,7 +84,7 @@ pub( crate ) mod private
     CellNodeFactory< NodeId, EdgeId, Kind > : crate::NodeFactoryInterface,
   {
     /// Map id to node.
-    pub id_to_node_map : IndexMap< NodeId, crate::NodeCell< Node< NodeId, Kind > > >,
+    pub id_to_node_map : IndexMap< NodeId, crate::NodeCell< Node< NodeId, EdgeId, Kind > > >,
     /// Map id to edge.
     pub id_to_edge_map : IndexMap< EdgeId, crate::canonical::Edge< EdgeId, NodeId, Kind > >,
   }
@@ -91,7 +108,7 @@ pub( crate ) mod private
     EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
-    type NodeHandle = crate::NodeCell< crate::canonical::Node< NodeId, Kind > >;
+    type NodeHandle = crate::NodeCell< crate::canonical::Node< NodeId, EdgeId, Kind > >;
     index!
     {
       node,
@@ -105,7 +122,6 @@ pub( crate ) mod private
   impl< NodeId, EdgeId, Kind > GraphEdgesInterface
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
-    // Self : GraphNodesInterface,
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
@@ -113,9 +129,9 @@ pub( crate ) mod private
     type EdgeHandle = crate::canonical::Edge< EdgeId, NodeId, Kind >;
     index!
     {
-      // edge,
-      // out_edges,
-      // edges,
+      edge,
+      edges,
+      out_edges,
     }
   }
 
