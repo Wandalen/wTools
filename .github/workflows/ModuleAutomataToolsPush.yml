@@ -20,5 +20,5 @@ jobs :
   test_wautomata :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
-      manifest_path : 'module/move/wautomata/Cargo.toml'
+      manifest_path : 'module/alias/wautomata/Cargo.toml'
       module_name : 'wautomata'
