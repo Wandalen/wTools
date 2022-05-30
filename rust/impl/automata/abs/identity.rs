@@ -86,29 +86,6 @@ pub( crate ) mod private
     }
   }
 
-  // impl< Src > From< &Src > for IdentityWithPointer
-  // where
-  //   Src : Clone,
-  //   IdentityWithPointer : From< Src >,
-  // {
-  //   fn from( src : &Src ) -> Self
-  //   {
-  //     From::< Src >::from( src.clone() )
-  //   }
-  // }
-
-  #[ test ]
-  fn identity_implemented_for_identity_by_pointer()
-  {
-    let x = 1;
-    let y = 1;
-    let src1 = IdentityWithPointer::make( &x );
-    let src2 = IdentityWithPointer::make( &y );
-    check( src1 );
-    fn check< T : IdentityInterface >( _ : T ){}
-    assert_ne!( src1, src2 );
-  }
-
   ///
   /// Identify an instance by name.
   ///
@@ -156,16 +133,6 @@ pub( crate ) mod private
     }
   }
 
-  #[ test ]
-  fn identity_implemented_for_identity_by_name()
-  {
-    let src1 = IdentityWithName::make( "abc" );
-    let src2 = IdentityWithName::make( "abc" );
-    check( src1 );
-    fn check< T : IdentityInterface >( _ : T ){}
-    assert_eq!( src1, src2 );
-  }
-
   ///
   /// Identify an instance by integer.
   ///
@@ -211,16 +178,6 @@ pub( crate ) mod private
     {
       f.write_fmt( format_args!( "{}", self.0 ) )
     }
-  }
-
-  #[ test ]
-  fn identity_implemented_for_identity_by_int()
-  {
-    let src1 = IdentityWithInt::make( 3 );
-    let src2 = IdentityWithInt::make( 3 );
-    check( src1 );
-    fn check< T : IdentityInterface >( _ : T ){}
-    assert_eq!( src1, src2 );
   }
 
 }

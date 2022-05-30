@@ -8,7 +8,7 @@ pub( crate ) mod private
   ///
 
   #[ derive( Debug, PartialEq, Copy, Clone ) ]
-  pub struct Edge< 'a, Node, Kind = crate::EdgeKindless >
+  pub struct Edge< 'a, Node = crate::canonical::Node, Kind = crate::EdgeKindless >
   where
     Node : NodeBasicInterface,
     Kind : EdgeKindInterface,
@@ -23,33 +23,25 @@ pub( crate ) mod private
 
   //
 
-//   impl< 'a, Id, Kind > HasId
-//   for Edge< 'a, Id, Kind >
-//   where
-//     Id : IdentityInterface,
-//     Kind : NodeKindInterface,
-//   {
-//     type Id = Id;
-//     fn id( &self ) -> Self::Id
-//     {
-//       self.name
-//     }
-//   }
-//
-//   //
-//
-//   impl< 'a, Node, Kind > EdgeBasicInterface
-//   for Edge< 'a, Node, Kind >
-//   where
-//     Node : NodeBasicInterface,
-//     Kind : EdgeKindInterface,
-//   {
-//   }
-
-  // impl< 'a, Node, Kind > EdgeInterface
+  // impl< 'a, Node, Kind > HasId
   // for Edge< 'a, Node, Kind >
   // where
   //   Node : NodeBasicInterface,
+  //   Kind : EdgeKindInterface,
+  // {
+  //   type Id = Id;
+  //   fn id( &self ) -> Self::Id
+  //   {
+  //     self.name
+  //   }
+  // }
+
+  //
+
+  // impl< Edge, Kind > EdgeBasicInterface
+  // for Edge< Edge, Kind >
+  // where
+  //   Edge : EdgeBasicInterface,
   //   Kind : EdgeKindInterface,
   // {
   // }

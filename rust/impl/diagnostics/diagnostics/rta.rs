@@ -1,0 +1,104 @@
+/// Internal namespace.
+pub( crate ) mod private
+{
+
+  ///
+  /// Asserts that a boolean expression is true at runtime.
+  ///
+  /// This will invoke the panic! macro if the provided expression cannot be evaluated to true at runtime.
+  ///
+  /// ### Sample
+  ///
+  /// ``` rust
+  /// use diagnostics_tools::prelude::*;
+  /// a_true!( 1 == 1, "something wrong" );
+  /// ```
+  ///
+
+  #[ macro_export ]
+  macro_rules! a_true
+  {
+    () => {};
+    (
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      assert!( $( $Rest )* );
+    };
+  }
+
+  ///
+  /// Asserts that a boolean expression is true at runtime.
+  ///
+  /// This will invoke the panic! macro if the provided expression cannot be evaluated to true at runtime.
+  /// Like [a_true!], this macro also has a second version, where a custom panic message can be provided.
+  ///
+  /// ### Sample
+  ///
+  /// ``` rust
+  /// use diagnostics_tools::prelude::*;
+  /// a_dbg_true!( 1 == 1, "something wrong" );
+  /// ```
+  ///
+
+  #[ macro_export ]
+  macro_rules! a_dbg_true
+  {
+    () => {};
+    (
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      debug_assert!( $( $Rest )* );
+    };
+  }
+
+  pub use a_true;
+  pub use a_dbg_true;
+}
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+}
+
+#[ doc( inline ) ]
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  pub use super::prelude::*;
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+pub mod prelude
+{
+
+  #[ doc( inline ) ]
+  pub use ::pretty_assertions::assert_eq as a_id;
+  #[ doc( inline ) ]
+  pub use ::pretty_assertions::assert_ne as a_not_id;
+
+  #[ doc( inline ) ]
+  pub use super::private::
+  {
+    a_true,
+    a_dbg_true,
+    // a_dbg_id
+    // a_dbg_not_id,
+  };
+
+  pub use super::private::
+  {
+  };
+}
