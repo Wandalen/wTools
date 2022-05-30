@@ -50,16 +50,9 @@ jobs :
             Please, change base branch taking into account the described system `alpha -> beta -> master`.
       - name : Convert to draft
         if : ${{ steps.validation.outputs.wrong-target == 'true' }}
-<<<<<<< HEAD
-        uses : raviraipuria/convert-to-draft@v1.0.2
-        with :
-          repo-token : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
-          days-before-convert-draft : 0
-=======
         uses: voiceflow/draft-pr@latest
         with:
           token: ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
->>>>>>> 0dd22c3cd7f9b018a1bc13bd7dd435db501bc317
       - name : Failure
         if : ${{ steps.validation.outputs.wrong-target == 'true' }}
         run : exit 1
