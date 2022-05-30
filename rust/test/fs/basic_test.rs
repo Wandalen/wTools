@@ -4,7 +4,7 @@ use super::TheModule;
 
 //
 
-fn basic_test()
+fn basic()
 {
 }
 

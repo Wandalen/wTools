@@ -4,20 +4,20 @@ use wtest_basic::*;
 
 fn main()
 {
-  pass1_test();
-  pass2_test();
+  pass1();
+  pass2();
 }
 
 //
 
-fn pass1_test()
+fn pass1()
 {
   assert_eq!( true, true );
 }
 
 //
 
-fn pass2_test()
+fn pass2()
 {
   assert_eq!( 1, 1 );
 }

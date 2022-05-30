@@ -4,7 +4,7 @@ use super::TheModule;
 
 //
 
-fn basic_test()
+fn basic()
 {
   let left : TheModule::Either< _, () > = TheModule::Either::Left( 13 );
   a_id!( left.flip(), TheModule::Either::Right( 13 ) );

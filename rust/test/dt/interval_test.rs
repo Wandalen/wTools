@@ -4,7 +4,7 @@ use test_tools::*;
 
 //
 
-fn adapter_basic_test()
+fn adapter_basic()
 {
   use TheModule::*;
 
@@ -30,7 +30,7 @@ fn adapter_basic_test()
 
 //
 
-fn adapter_std_closed_open_test()
+fn adapter_std_closed_open()
 {
   use TheModule::*;
 
@@ -56,7 +56,7 @@ fn adapter_std_closed_open_test()
 
 //
 
-fn adapter_std_closed_test()
+fn adapter_std_closed()
 {
   use TheModule::*;
 
@@ -82,7 +82,7 @@ fn adapter_std_closed_test()
 
 //
 
-fn into_interval_test()
+fn into_interval()
 {
   use TheModule::*;
 

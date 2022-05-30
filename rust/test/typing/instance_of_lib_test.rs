@@ -10,7 +10,7 @@ use instance_of as TheModule;
 
 //
 
-fn implements_basic_test()
+fn implements_basic()
 {
 
   let src = Box::new( true );
@@ -21,7 +21,7 @@ fn implements_basic_test()
 
 //
 
-fn instance_of_basic_test()
+fn instance_of_basic()
 {
 
   let src = Box::new( true );
