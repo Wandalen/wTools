@@ -79,7 +79,7 @@ pub( crate ) mod private
   pub struct CellNodeFactory< NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt, Kind = crate::NodeKindless >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityIncInterface,
     Kind : NodeKindInterface,
     CellNodeFactory< NodeId, EdgeId, Kind > : crate::NodeFactoryInterface,
   {
@@ -94,7 +94,7 @@ pub( crate ) mod private
   impl< NodeId, EdgeId, Kind > CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityIncInterface,
     Kind : NodeKindInterface,
   {
   }
@@ -105,7 +105,7 @@ pub( crate ) mod private
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityIncInterface,
     Kind : NodeKindInterface,
   {
     type NodeHandle = crate::NodeCell< crate::canonical::Node< NodeId, EdgeId, Kind > >;
@@ -123,7 +123,7 @@ pub( crate ) mod private
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityIncInterface,
     Kind : NodeKindInterface,
   {
     type EdgeHandle = crate::canonical::Edge< EdgeId, NodeId, Kind >;
@@ -141,7 +141,7 @@ pub( crate ) mod private
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityIncInterface,
     Kind : NodeKindInterface,
   {
 
@@ -160,7 +160,7 @@ pub( crate ) mod private
 //   for CellNodeFactory< NodeId, EdgeId, Kind >
 //   where
 //     NodeId : IdentityInterface,
-//     EdgeId : IdentityInterface,
+//     EdgeId : IdentityInterface + IdentityIncInterface,
 //     Kind : NodeKindInterface,
 //   {
 //
@@ -178,7 +178,7 @@ pub( crate ) mod private
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityIncInterface,
     Kind : NodeKindInterface,
   {
   }
@@ -189,7 +189,7 @@ pub( crate ) mod private
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityIncInterface,
     Kind : NodeKindInterface,
   {
     index!( fmt );
@@ -201,7 +201,7 @@ pub( crate ) mod private
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityIncInterface,
     Kind : NodeKindInterface,
   {
     index!

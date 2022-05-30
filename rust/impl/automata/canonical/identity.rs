@@ -5,6 +5,7 @@ pub( crate ) mod private
   use core::fmt;
   use core::hash::Hash;
   use std::cmp::{ PartialEq, Eq };
+  use wtools::dt::prelude::*;
   // use std::fmt;
 
   ///
@@ -97,6 +98,13 @@ pub( crate ) mod private
   #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
   pub struct IdentityWithInt( pub isize )
   ;
+
+  // types!
+  // {
+  //   /// Identify an instance by integer.
+  //   #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default, Debug ) ]
+  //   single IdentityWithInt : isize;
+  //}
 
   impl IdentityWithInt
   {
