@@ -1,18 +1,18 @@
 
-#[ cfg( feature = "compiletime_assertions" ) ]
 pub( crate ) mod private
 {
 
   ///
-  /// Macro to compar meta condition is true at compile-time.
+  /// Macro to compare meta condition is true at compile-time.
   ///
   /// ### Sample
   ///
   /// ``` rust
-  ///
+  /// use diagnostics_tools::prelude::*;
+  /// cta_true!( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
   /// ```
+  ///
 
-  // #[ cfg( feature = "compiletime_assertions" ) ]
   #[ macro_export ]
   macro_rules! cta_true
   {
@@ -41,7 +41,6 @@ pub( crate ) mod private
     };
   }
 
-  // #[ cfg( feature = "compiletime_assertions" ) ]
   pub use cta_true;
 }
 
@@ -69,14 +68,6 @@ pub mod exposed
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  #[ cfg( feature = "runtime_assertions" ) ]
-  #[ doc( inline ) ]
-  pub use ::pretty_assertions::assert_eq as a_id;
-  #[ cfg( feature = "runtime_assertions" ) ]
-  #[ doc( inline ) ]
-  pub use ::pretty_assertions::assert_ne as a_not_id;
-
-  #[ cfg( feature = "compiletime_assertions" ) ]
   pub use super::private::
   {
     cta_true,
