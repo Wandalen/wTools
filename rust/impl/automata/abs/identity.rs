@@ -8,7 +8,7 @@ pub( crate ) mod private
   // use std::fmt;
 
   ///
-  /// Interface to identify an instance of somthging, for exampel a node.
+  /// Interface to identify an instance of somthing, for exampel a node.
   ///
 
   pub trait IdentityInterface
@@ -39,6 +39,18 @@ pub( crate ) mod private
   }
 
   ///
+  /// Interface to identify an instance of somthing with ability to increase it to generate a new one.
+  ///
+
+  pub trait IdentityIncInterface
+  where
+    Self : IdentityInterface,
+  {
+    /// Generate a new identity based on the current increasing it.
+    fn inc( &self ) -> Self;
+  }
+
+  ///
   /// Instance has an id.
   ///
 
@@ -48,136 +60,6 @@ pub( crate ) mod private
     type Id : IdentityInterface;
     /// Get id.
     fn id( &self ) -> Self::Id;
-  }
-
-  ///
-  /// Identify an instance by its location in memory.
-  ///
-
-  #[ derive( Debug, PartialEq, Eq, Copy, Clone, Hash, Default ) ]
-  pub struct IdentityWithPointer( usize );
-
-  impl IdentityWithPointer
-  {
-
-    /// Construct from an arbitrary reference.
-    #[ inline ]
-    pub fn make< T >( src : &T ) -> Self
-    {
-      // Safety : it differentiate different instances.
-      let ptr = unsafe
-      {
-        std::mem::transmute::< _, usize >( src )
-      };
-      Self( ptr )
-    }
-
-  }
-
-  impl< 'a, T > From< &'a T > for IdentityWithPointer
-  {
-    fn from( src : &'a T ) -> Self
-    {
-      let ptr = unsafe
-      {
-        std::mem::transmute::< _, usize >( src )
-      };
-      Self( ptr )
-    }
-  }
-
-  ///
-  /// Identify an instance by name.
-  ///
-
-  #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
-  pub struct IdentityWithName( pub &'static str )
-  ;
-
-  impl IdentityWithName
-  {
-
-    /// Construct from an arbitrary reference.
-    #[ inline ]
-    pub fn make( val : &'static str ) -> Self
-    {
-      Self( val.into() )
-    }
-
-  }
-
-  impl From< &'static str > for IdentityWithName
-  {
-    fn from( src : &'static str ) -> Self
-    {
-      Self( src )
-    }
-  }
-
-  impl< Src > From< &Src > for IdentityWithName
-  where
-    Src : Clone,
-    IdentityWithName : From< Src >,
-  {
-    fn from( src : &Src ) -> Self
-    {
-      From::< Src >::from( src.clone() )
-    }
-  }
-
-  impl fmt::Debug for IdentityWithName
-  {
-    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-    {
-      f.write_fmt( format_args!( "{}", self.0 ) )
-    }
-  }
-
-  ///
-  /// Identify an instance by integer.
-  ///
-
-  #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
-  pub struct IdentityWithInt( pub isize )
-  ;
-
-  impl IdentityWithInt
-  {
-
-    /// Construct from an arbitrary reference.
-    #[ inline ]
-    pub fn make( val : isize ) -> Self
-    {
-      Self( val.into() )
-    }
-
-  }
-
-  impl From< isize > for IdentityWithInt
-  {
-    fn from( src : isize ) -> Self
-    {
-      Self( src )
-    }
-  }
-
-  impl< Src > From< &Src > for IdentityWithInt
-  where
-    Src : Clone,
-    IdentityWithInt : From< Src >,
-  {
-    fn from( src : &Src ) -> Self
-    {
-      From::< Src >::from( src.clone() )
-    }
-  }
-
-  impl fmt::Debug for IdentityWithInt
-  {
-    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-    {
-      f.write_fmt( format_args!( "{}", self.0 ) )
-    }
   }
 
 }
@@ -199,15 +81,16 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::private::IdentityWithPointer;
-  pub use super::private::IdentityWithName;
-  pub use super::private::IdentityWithInt;
   pub use super::prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  pub use super::private::IdentityInterface;
-  pub use super::private::HasId;
+  pub use super::private::
+  {
+    IdentityInterface,
+    IdentityIncInterface,
+    HasId,
+  };
 }
