@@ -23,6 +23,9 @@ pub( crate ) mod private
   #[ macro_export ]
   macro_rules! _if_make
   {
+    ( $( $Rest : tt )* ) =>
+    {
+    };
   }
 
   pub use _if_make;
