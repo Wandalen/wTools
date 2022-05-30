@@ -5,26 +5,27 @@ pub( crate ) mod private
 
   macro_rules! NODE_ID
   {
-    () => { < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id };
+    () => { < < Self as GraphNodesInterface >::NodeHandle as HasId >::Id };
+  }
+
+  macro_rules! EDGE_ID
+  {
+    () => { < < Self as GraphEdgesInterface >::EdgeHandle as HasId >::Id };
   }
 
   ///
-  /// Graph which know how to iterate output nodes of a given node.
+  /// Graph which know how to iterate neighbourhood of a node and capable to convert id of a node into a node.
   ///
 
-  pub trait GraphBasicInterface
+  pub trait GraphNodesInterface
   {
 
     /// Handle of a node - entity representing a node or the node itself.
     /// It's not always possible to operate a node directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
     /// Otherwise NodeHandle could be &Node.
     type NodeHandle : NodeBasicInterface;
-    // /// Handle of an edge - entity representing an edge or the edge itself.
-    // /// It's not always possible to operate an edge directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
-    // /// Otherwise EdgeHandle could be &Node.
-    // type EdgeHandle : EdgeBasicInterface;
 
-    /// Iterate nodes.
+    /// Iterate over all nodes.
     fn nodes< 'a, 'b >( &'a self )
     ->
     Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > + 'b >
@@ -38,12 +39,6 @@ pub( crate ) mod private
       Id : Into< NODE_ID!() >
     ;
 
-    /// Get node with id mutably.
-    fn node_mut< Id >( &mut self, id : Id ) -> &mut Self::NodeHandle
-    where
-      Id : Into< NODE_ID!() >
-    ;
-
     /// Iterate over neighbourhood of the node.
     fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
     ->
@@ -53,14 +48,44 @@ pub( crate ) mod private
       'a : 'b,
     ;
 
-    // /// Iterate over output bodes of the node.
-    // fn out_edges< 'a, 'b, Id >( &'a self, node_id : Id )
-    // ->
-    // Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
-    // where
-    //   Id : Into< NODE_ID!() >,
-    //   'a : 'b,
-    // ;
+  }
+
+  ///
+  /// Graph which know how to iterate neighbourhood of a node and capable to convert id of a node into a node.
+  ///
+
+  pub trait GraphEdgesInterface
+  where
+    Self : GraphNodesInterface,
+  {
+
+    /// Handle of an edge - entity representing an edge or the edge itself.
+    /// It's not always possible to operate an edge directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
+    /// Otherwise EdgeHandle could be &Node.
+    type EdgeHandle : EdgeBasicInterface;
+
+    /// Iterate over all edges.
+    fn edges< 'a, 'b >( &'a self )
+    ->
+    Box< dyn Iterator< Item = ( &EDGE_ID!(), &Self::EdgeHandle ) > + 'b >
+    where
+      'a : 'b,
+    ;
+
+    /// Get edge with id.
+    fn edge< Id >( &self, id : Id ) -> &Self::EdgeHandle
+    where
+      Id : Into< EDGE_ID!() >
+    ;
+
+    /// Iterate over output edges of the node.
+    fn out_edges< 'a, 'b, Id >( &'a self, node_id : Id )
+    ->
+    Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
+    where
+      Id : Into< EDGE_ID!() >,
+      'a : 'b,
+    ;
 
   }
 
@@ -71,9 +96,15 @@ pub( crate ) mod private
   pub trait GraphEditableInterface
   where
     Self :
-      GraphBasicInterface +
+      GraphNodesInterface +
     ,
   {
+
+    /// Get node with id mutably.
+    fn node_mut< Id >( &mut self, id : Id ) -> &mut Self::NodeHandle
+    where
+      Id : Into< NODE_ID!() >
+    ;
 
     /// Iterate output nodes of the node.
     fn node_add_out_nodes< IntoId1, IntoId2, Iter >
@@ -114,7 +145,7 @@ pub( crate ) mod private
   pub trait GraphExtendableInterface
   where
     Self :
-      GraphBasicInterface +
+      GraphNodesInterface +
       GraphEditableInterface +
     ,
   {
@@ -154,7 +185,7 @@ pub( crate ) mod private
 
   pub trait GraphKindGetterInterface
   where
-    Self : GraphBasicInterface,
+    Self : GraphNodesInterface,
   {
     /// Enumerate kinds of the node.
     type NodeKind : crate::NodeKindInterface;
@@ -191,7 +222,8 @@ pub mod prelude
 {
   pub use super::private::
   {
-    GraphBasicInterface,
+    GraphNodesInterface,
+    GraphEdgesInterface,
     GraphEditableInterface,
     GraphExtendableInterface,
     GraphKindGetterInterface,

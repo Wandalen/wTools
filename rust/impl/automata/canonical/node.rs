@@ -17,10 +17,12 @@ pub( crate ) mod private
   {
     /// Input node.
     pub out_nodes : IndexSet< Id >,
+    /// Input node.
+    pub out_edges : IndexSet< Id >,
     /// Kind of the node.
     pub kind : Kind,
-    /// Name.
-    pub name : Id,
+    /// Identifier.
+    pub id : Id,
   }
 
   //
@@ -31,18 +33,20 @@ pub( crate ) mod private
     Kind : NodeKindInterface,
   {
 
-    /// Construct a name instance of the node.
-    pub fn make_named< Name >( name : Name ) ->Self
+    /// Construct an instance of the node with id.
+    pub fn make_with_id< Name >( id : Name ) ->Self
     where
       Name : Into< < Self as HasId >::Id >,
     {
       let out_nodes = IndexSet::new();
+      let out_edges = IndexSet::new();
       let kind = Default::default();
       Self
       {
         out_nodes,
+        out_edges,
         kind,
-        name : name.into(),
+        id : id.into(),
       }
     }
 
@@ -50,16 +54,16 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind, Name > Make1< Name >
+  impl< Id, Kind, IntoId > Make1< IntoId >
   for Node< Id, Kind >
   where
     Id : IdentityInterface,
     Kind : NodeKindInterface,
-    Name : Into< < Self as HasId >::Id >,
+    IntoId : Into< < Self as HasId >::Id >,
   {
-    fn make_1( name : Name ) -> Self
+    fn make_1( id : IntoId ) -> Self
     {
-      Self::make_named( name )
+      Self::make_with_id( id )
     }
   }
 
@@ -74,7 +78,7 @@ pub( crate ) mod private
     type Id = Id;
     fn id( &self ) -> Self::Id
     {
-      self.name
+      self.id
     }
   }
 

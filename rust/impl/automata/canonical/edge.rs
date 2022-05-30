@@ -3,48 +3,58 @@ pub( crate ) mod private
 {
   use crate::prelude::*;
 
+  // macro_rules! NODE_ID
+  // {
+  //   () => { < Node as HasId >::Id };
+  // }
+
   ///
   /// Canonical implementation of edge.
   ///
 
   #[ derive( Debug, PartialEq, Copy, Clone ) ]
-  pub struct Edge< 'a, Node = crate::canonical::Node, Kind = crate::EdgeKindless >
+  pub struct Edge< Id = crate::IdentityWithInt, Kind = crate::EdgeKindless, Node = crate::canonical::Node >
   where
-    Node : NodeBasicInterface,
+    Id : IdentityInterface,
     Kind : EdgeKindInterface,
+    Node : NodeBasicInterface,
   {
     /// Input node.
-    pub in_node : &'a Node,
+    pub in_node : < Node as HasId >::Id,
     /// Output node.
-    pub out_node : &'a Node,
+    pub out_node : < Node as HasId >::Id,
     /// Kind of the edge.
     pub kind : Kind,
+    /// Identifier.
+    pub id : Id,
   }
 
   //
 
-  // impl< 'a, Node, Kind > HasId
-  // for Edge< 'a, Node, Kind >
-  // where
-  //   Node : NodeBasicInterface,
-  //   Kind : EdgeKindInterface,
-  // {
-  //   type Id = Id;
-  //   fn id( &self ) -> Self::Id
-  //   {
-  //     self.name
-  //   }
-  // }
+  impl< Id, Kind, Node > HasId
+  for Edge< Id, Kind, Node >
+  where
+    Id : IdentityInterface,
+    Kind : EdgeKindInterface,
+    Node : NodeBasicInterface,
+  {
+    type Id = Id;
+    fn id( &self ) -> Self::Id
+    {
+      self.id
+    }
+  }
 
   //
 
-  // impl< Edge, Kind > EdgeBasicInterface
-  // for Edge< Edge, Kind >
-  // where
-  //   Edge : EdgeBasicInterface,
-  //   Kind : EdgeKindInterface,
-  // {
-  // }
+  impl< Id, Kind, Node > EdgeBasicInterface
+  for Edge< Id, Kind, Node >
+  where
+    Id : IdentityInterface,
+    Kind : EdgeKindInterface,
+    Node : NodeBasicInterface,
+  {
+  }
 
 }
 

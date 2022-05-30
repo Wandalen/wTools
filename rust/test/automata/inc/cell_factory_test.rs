@@ -11,7 +11,7 @@ tests_impls!
 
     let node : TheModule::canonical::Node = make!( 13 );
     a_id!( node.id(), 13.into() );
-    let cellnode : < TheModule::canonical::CellNodeFactory as GraphBasicInterface >::NodeHandle = make!( node );
+    let cellnode : < TheModule::canonical::CellNodeFactory as GraphNodesInterface >::NodeHandle = make!( node );
 
   }
 
