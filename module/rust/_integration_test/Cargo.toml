@@ -1,0 +1,25 @@
+[package]
+
+name = "integration_test"
+version = "0.0.1"
+publish = false
+edition = "2021"
+description = """
+Integration test.
+"""
+
+[[bin]]
+name = "integration_test"
+path = "rust/test/_integration_test/smoke_main.rs"
+
+# [[test]]
+# name = "integration_test"
+# path = "rust/test/_integration_test/smoke_test.rs"
+
+[dependencies]
+
+wtools_local = { version = "*", path = "../../rust/wtools", package = "wtools" }
+wtools_published = { version = "*", package = "wtools" }
+# qqq : for Dima : all modules
+# qqq : for Dima : additional test that all modules are here
+

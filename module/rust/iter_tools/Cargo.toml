@@ -1,6 +1,6 @@
 [package]
 name = "iter_tools"
-version = "0.1.1"
+version = "0.1.3"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -25,6 +25,12 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = [ "itertools/use_std" ]
+use_alloc = [ "itertools/use_alloc" ]
+default = [ "use_std" ]
+full = [ "use_std" ]
+
 [lib]
 name = "iter_tools"
 path = "rust/impl/iter/lib.rs"
@@ -38,7 +44,7 @@ name = "iter_tools_trivial"
 path = "sample/rust/iter_tools_trivial/src/main.rs"
 
 [dependencies]
-itertools = "~0.10.3"
+itertools = { version = "~0.10.3" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

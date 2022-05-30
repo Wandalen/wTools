@@ -1,44 +1,31 @@
 
+#[ allow( unused_imports ) ]
+use super::TheModule;
+
+include!( "./_conditional/wtools.rs" );
+
+#[ cfg( feature = "dt" ) ]
 mod dt;
+#[ cfg( feature = "error" ) ]
 mod error;
-
-// xxx : remove include
-mod former
-{
-  include!( "./former/front_test.rs" );
-}
-
+#[ cfg( feature = "derive" ) ]
 mod derive;
+#[ cfg( feature = "meta" ) ]
 mod meta;
-mod options;
+#[ cfg( feature = "iter" ) ]
 mod iter;
+#[ cfg( feature = "string" ) ]
 mod string;
-mod test;
+#[ cfg( feature = "time" ) ]
 mod time;
+#[ cfg( feature = "typing" ) ]
+mod typing;
+#[ cfg( feature = "diagnostics" ) ]
+mod diagnostics;
 
-mod typing
-{
-  // #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
-  mod implements_test
-  {
-    #[ allow( unused_imports ) ]
-    use wtools::typing as TheModule;
-    include!( "./typing/common/implements_test.rs" );
-  }
-  mod is_slice_test
-  {
-    #[ allow( unused_imports ) ]
-    use wtools::typing as TheModule;
-    include!( "./typing/common/is_slice_test.rs" );
-  }
-  mod inspect_type_test
-  {
-    #[ allow( unused_imports ) ]
-    use wtools::typing as TheModule;
-    include!( "./typing/common/inspect_type_test.rs" );
-  }
-}
+#[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+mod former;
+#[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+mod options;
 
-// #[ cfg( feature = "proc_macro" ) ]
-// mod proc_macro;
-// mod vector;
+// zzz : meta should include former and options

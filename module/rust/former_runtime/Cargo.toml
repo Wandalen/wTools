@@ -1,6 +1,6 @@
 [package]
 name = "former_runtime"
-version = "0.1.10"
+version = "0.1.11"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,12 +31,11 @@ path = "rust/impl/former/runtime/lib.rs"
 
 [[test]]
 name = "former_runtime_test"
-path = "rust/test/former/runtime_test.rs"
+path = "rust/test/former/former_runtime_lib_test.rs"
 
 [dependencies]
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# maplit = "~1.0.2"
 anyhow = "~1.0"

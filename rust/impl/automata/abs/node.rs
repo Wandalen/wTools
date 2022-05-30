@@ -1,12 +1,12 @@
 /// Internal namespace.
-pub mod internal
+pub( crate ) mod private
 {
   use crate::prelude::*;
-  use core::fmt::Debug;
+  use core::fmt;
   use core::hash::Hash;
 
   ///
-  /// Kind of a ode.
+  /// Kind of a node.
   ///
 
   pub trait NodeKindInterface
@@ -14,7 +14,7 @@ pub mod internal
     Self :
       'static +
       Copy +
-      Debug +
+      fmt::Debug +
       PartialEq +
       Hash  +
       Default +
@@ -27,7 +27,7 @@ pub mod internal
     T :
       'static +
       Copy +
-      Debug +
+      fmt::Debug +
       PartialEq +
       Hash  +
       Default +
@@ -49,89 +49,41 @@ pub mod internal
   pub trait NodeBasicInterface
   where
     Self :
-      // Hash +
       HasId +
   {
-
-    // /// Iterate output nodes of the node.
-    // fn out_nodes( &self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + '_ >;
-    // // fn out_nodes< 'a >( &'a self ) -> Box< dyn Iterator< Item = < Self as HasId >::Id > + 'a >;
-
-  }
-
-//   ///
-//   /// Node which is extendable
-//   ///
-//
-//   pub trait NodeExtendableInterface
-//   where
-//     Self :
-//       Sized +
-//       NodeBasicInterface +
-//       Extend< Self > +
-//     ,
-//   {
-//   }
-//
-//   impl< T > NodeExtendableInterface for T
-//   where
-//     T :
-//       NodeBasicInterface +
-//       Extend< Self > +
-//     ,
-//   {
-//   }
-
-//   ///
-//   /// Node which has a kind.
-//   ///
-//
-//   pub trait NodeKindGetterInterface< Kind >
-//   where
-//     Kind : NodeKindInterface,
-//     Self : NodeBasicInterface,
-//   {
-//     /// Get kind of the node.
-//     fn kind() -> Kind;
-//   }
-
-  ///
-  /// Node handle.
-  ///
-
-  pub trait NodeHandleInterface : NodeBasicInterface + HasId
-  {
-    /// Node itself.
-    type Node : NodeBasicInterface + HasId< Id = Self::Id >;
   }
 
 }
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+}
+
+pub use protected::*;
 
 /// Parented namespace of the module.
-pub mod parented
+pub mod orphan
 {
-  // use super::internal as i;
   pub use super::exposed::*;
 }
-
-pub use parented::*;
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  use super::internal as i;
   pub use super::prelude::*;
-  pub use i::NodeKindless;
+  pub use super::private::NodeKindless;
 }
 
 pub use exposed::*;
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
-  pub use i::NodeKindInterface;
-  pub use i::NodeBasicInterface;
-  // pub use i::NodeKindGetterInterface;
-  pub use i::NodeHandleInterface;
+  pub use super::private::
+  {
+    NodeKindInterface,
+    NodeBasicInterface,
+  };
 }

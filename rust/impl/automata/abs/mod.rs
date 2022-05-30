@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub mod internal
+pub( crate ) mod private
 {
   // use crate::prelude::*;
 
@@ -32,7 +32,7 @@ pub mod exposed
 
 pub use exposed::*;
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   pub use super::edge::prelude::*;

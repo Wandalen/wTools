@@ -1,112 +1,105 @@
 
-use test_tools::dependencies::*;
+use test_tools::*;
 
 //
 
-fn basic() -> anyhow::Result< () >
+tests_impls!
 {
-
-  // test.case( "former + form()" );
-
-  let got = split::former().src( "abc" ).delimeter( "b" ).form();
-  let exp = split::Options
+  #[ test ]
+  fn basic()
   {
-    src : "abc",
-    delimeter : "b",
-    left : true,
-  };
-  assert_eq!( got, exp );
+    // test.case( "former + form()" );
 
-  // test.case( "split() + perform()" );
+    let got = split::former().src( "abc" ).delimeter( "b" ).form();
+    let exp = split::Options
+    {
+      src : "abc",
+      delimeter : "b",
+      left : true,
+    };
+    a_id!( got, exp );
 
-  let got = split().src( "abc" ).delimeter( "b" ).perform();
-  let exp = vec![ "a", "c" ];
-  assert_eq!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
+    // test.case( "split() + perform()" );
 
-  // test.case( "bool" );
+    let got = split().src( "abc" ).delimeter( "b" ).perform();
+    let exp = vec![ "a", "c" ];
+    a_id!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
 
-  #[ allow( unused_imports ) ]
-  use split::OptionsAdapter;
+    // test.case( "bool" );
 
-  let got = split().src( "abc" ).delimeter( "b" ).left( true ).perform();
-  let exp = vec![ "a", "c" ];
-  assert_eq!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
+    #[ allow( unused_imports ) ]
+    use split::OptionsAdapter;
 
-  let got = split().src( "abc" ).delimeter( "b" ).left( false ).perform();
-  let exp = vec![ "c", "a" ];
-  assert_eq!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
+    let got = split().src( "abc" ).delimeter( "b" ).left( true ).perform();
+    let exp = vec![ "a", "c" ];
+    a_id!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
 
-  Ok( () )
-}
+    let got = split().src( "abc" ).delimeter( "b" ).left( false ).perform();
+    let exp = vec![ "c", "a" ];
+    a_id!( got.map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
+  }
 
-//
+  //
 
-fn derive() -> anyhow::Result< () >
-{
-
-  // test.case( "is PartialOrd implemented" );
-
-  let got = split().src( "abc" ).delimeter( "b" ).form();
-  let exp = split::Options
+  #[ test ]
+  fn derive()
   {
-    src : "abc",
-    delimeter : "b",
-    left : true,
-  };
-  assert!( !( got > exp ) && !( got < exp ) );
+    // test.case( "is PartialOrd implemented" );
 
-  Ok( () )
-}
+    let got = split().src( "abc" ).delimeter( "b" ).form();
+    let exp = split::Options
+    {
+      src : "abc",
+      delimeter : "b",
+      left : true,
+    };
+    assert!( !( got > exp ) && !( got < exp ) );
+  }
 
-//
+  //
 
-fn prelude() -> anyhow::Result< () >
-{
+  #[ test ]
+  fn prelude()
+  {
+    // test.case = "prelude";
+    {
+      use split::prelude::*;
+      let got = split().src( "abc" ).delimeter( "b" ).form();
+      a_id!( got.src(), "abc" );
+    }
 
-  // test.case = "prelude";
+    // test.case = "SplitOptionsAdapter";
+    {
+      use split::prelude::SplitOptionsAdapter;
+      let got = split().src( "abc" ).delimeter( "b" ).form();
+      a_id!( got.src(), "abc" );
+    }
+  }
+
+  //
+
+  #[ test ]
+  fn accessor()
   {
     use split::prelude::*;
-    let got = split().src( "abc" ).delimeter( "b" ).form();
-    assert_eq!( got.src(), "abc" );
-  }
+    let mut got = split().src( "abc" ).delimeter( "b" ).form();
 
-  // test.case = "SplitOptionsAdapter";
-  {
-    use split::prelude::SplitOptionsAdapter;
-    let got = split().src( "abc" ).delimeter( "b" ).form();
-    assert_eq!( got.src(), "abc" );
-  }
+    a_id!( got.src(), "abc" );
+    *got.src_mut() = "def";
+    a_id!( got.src(), "def" );
 
-  Ok( () )
+    a_id!( *got.left(), true );
+    *got.left_mut() = false;
+    a_id!( *got.left(), false );
+  }
 }
 
 //
 
-fn accessor() -> anyhow::Result< () >
+tests_index!
 {
-
-  use split::prelude::*;
-  let mut got = split().src( "abc" ).delimeter( "b" ).form();
-
-  assert_eq!( got.src(), "abc" );
-  *got.src_mut() = "def";
-  assert_eq!( got.src(), "def" );
-
-  assert_eq!( *got.left(), true );
-  *got.left_mut() = false;
-  assert_eq!( *got.left(), false );
-
-  Ok( () )
-}
-
-//
-
-#[ test ]
-fn main_test() -> anyhow::Result< () >
-{
-  basic()?;
-  derive()?;
-  prelude()?;
-  accessor()?;
-  Ok( () )
+  basic,
+  derive,
+  prelude,
+  accessor,
 }

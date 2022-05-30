@@ -1,106 +1,47 @@
 
-macro_rules! ID
+macro_rules! NODE_ID
 {
-  () => { < < Self as NodeFactoryInterface >::NodeHandle as HasId >::Id };
+  () => { < < Self as GraphBasicInterface >::NodeHandle as HasId >::Id };
 }
 
 impls!
 {
 
-  ///
-  /// Constructor.
-  ///
-
-  pub fn make() -> Self
-  {
-    let id_to_node_map = HashMap::new();
-    Self
-    {
-      id_to_node_map,
-    }
-  }
-
   //
 
-  fn node_making< Id >( &mut self, id : Id ) -> ID!()
+  fn node_making< IntoId >( &mut self, id : IntoId ) -> NODE_ID!()
   where
-    Id : Into< ID!() >,
+    IntoId : Into< NODE_ID!() >,
   {
     let id = id.into();
 
     let result = self.id_to_node_map
     .entry( id )
-    .or_insert_with( || Node::make_named( id ) )
+    .or_insert_with( || Node::make_named( id ).into() )
     ;
     result.id()
   }
 
-  ///
-  /// Iterate output nodes of the node.
-  ///
+  //
 
-  fn node_extend_out_nodes< Id, Iter >
-  (
-    &mut self,
-    node_id : Id,
-    out_nodes_iter : Iter,
-  )
+  fn nodes< 'a, 'b >( &'a self )
+  ->
+  Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > + 'b >
   where
-    Iter : IntoIterator< Item = Id >,
-    Iter::IntoIter : Clone,
-    Id : Into< ID!() >
+    'a : 'b,
   {
-
-    // let out_nodes_iter2 = out_nodes_iter.into_iter()
-    // .map( | id |
-    // {
-    //   let id = id.into();
-    //   self.node( id );
-    //   id
-    // })
-    // // .collect()
-    // ;
-    // self.node_mut( node_id.into() ).extend( out_nodes_iter2 );
-
-    // let out_nodes_iter2 : Vec< _ > = out_nodes_iter.into_iter()
-    // .map( | id |
-    // {
-    //   let id = id.into();
-    //   self.node( id );
-    //   id
-    // })
-    // .collect()
-    // ;
-    // self.node_mut( node_id.into() ).extend( out_nodes_iter2 );
-
-    let iter = out_nodes_iter.into_iter();
-    let iter2 = iter.clone();
-
-    #[ cfg( debug_assertions ) ]
-    iter
-    .map( | id |
-    {
-      let node = self.node( id );
-    })
+    let iterator
+      : Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > >
+      = Box::new( self.id_to_node_map.iter() )
     ;
-
-    let iter3 = iter2.into_iter()
-    .map( | id |
-    {
-      let id = id.into();
-      id
-    })
-    ;
-
-    // xxx
-    self.node_mut( node_id.into() ).extend( iter3 );
+    iterator
   }
 
   //
 
-  fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
+  fn node< IntoId >( &self, id : IntoId ) -> &Self::NodeHandle
   where
-    Id : Into< ID!() >,
+    IntoId : Into< NODE_ID!() >,
   {
     let id = id.into();
     let got = self.id_to_node_map.get( &id );
@@ -114,9 +55,9 @@ impls!
 
   //
 
-  fn node_mut< Id >( &mut self, id : Id ) -> &mut Self::NodeHandle
+  fn node_mut< IntoId >( &mut self, id : IntoId ) -> &mut Self::NodeHandle
   where
-    Id : Into< ID!() >
+    IntoId : Into< NODE_ID!() >
   {
     let id = id.into();
     let got = self.id_to_node_map.get_mut( &id );
@@ -130,18 +71,20 @@ impls!
 
   //
 
-  fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
-  ->
-  Box< dyn Iterator< Item = ID!() > + 'b >
-  where
-    Id : Into< ID!() >,
-    'a : 'b,
+  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
   {
-    let node = self.node( node_id );
-    let iterator
-      : Box< dyn Iterator< Item = ID!() > >
-      = Box::new( node.out_nodes.iter().cloned() );
-    iterator
+    f.write_fmt( format_args!( "NodeFactory\n" ) )?;
+    let mut first = true;
+    for ( _id, node ) in self.nodes()
+    {
+      if !first
+      {
+        f.write_str( "\n" )?;
+      }
+      first = false;
+      f.write_str( &wtools::string::indentation( "  ", format!( "{:?}", node ), "" ) )?;
+    }
+    f.write_str( "" )
   }
 
 }

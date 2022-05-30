@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "0.1.8"
+version = "0.1.11"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -25,13 +25,17 @@ include = [
   "/License",
 ]
 
+[features]
+default = []
+full = []
+
 [lib]
 name = "former"
 path = "rust/impl/former/front/lib.rs"
 
 [[test]]
 name = "former_test"
-path = "rust/test/former/front_test.rs"
+path = "rust/test/former/former_front_lib_test.rs"
 
 [[example]]
 name = "former_trivial"
@@ -42,9 +46,5 @@ former_meta = { version = "~0.1", path = "../../rust/former_meta" }
 former_runtime = { version = "~0.1", path = "../../rust/former_runtime" }
 
 [dev-dependencies]
-anyhow = "~1.0"
-meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# maplit = "~1.0"
-trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-rustversion = "~1.0"
+# meta_tools_min = { version = "~0.2", path = "../../rust/meta_tools_min" }

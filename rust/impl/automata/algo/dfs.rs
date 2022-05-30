@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub mod internal
+pub( crate ) mod private
 {
   use crate::prelude::*;
   // use core::fmt::Debug;
@@ -22,24 +22,30 @@ pub mod internal
 
 }
 
-/// Parented namespace of the module.
-pub mod parented
+/// Protected namespace of the module.
+pub mod protected
 {
-  // use super::internal as i;
-  pub use super::exposed::*;
+  pub use super::orphan::*;
 }
 
-pub use parented::*;
+pub use protected::*;
+
+/// Parented namespace of the module.
+pub mod orphan
+{
+  // // use super::private as i;
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
+  // // use super::private as i;
   pub use super::prelude::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
+  // // use super::private as i;
 }

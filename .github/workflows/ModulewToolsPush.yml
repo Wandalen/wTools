@@ -1,0 +1,49 @@
+name : wtools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+  THE_MODULE : wtools
+
+jobs :
+
+  # wtools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/rust/wtools/Cargo.toml'
+      module_name : 'wtools'
+
+  # wTools
+
+  test_wTools :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/alias/wTools/Cargo.toml'
+      module_name : 'wTools'
+
+  # std_tools
+
+  test_std_tools :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/alias/std_tools/Cargo.toml'
+      module_name : 'std_tools'
+
+  # std_x
+
+  test_std_x :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/alias/std_x/Cargo.toml'
+      module_name : 'std_x'
+
+  # non_std
+
+  test_non_std :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/alias/non_std/Cargo.toml'
+      module_name : 'non_std'

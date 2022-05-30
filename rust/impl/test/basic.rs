@@ -1,11 +1,16 @@
 /// Internal namespace.
-pub mod internal
+pub( crate ) mod private
 {
+
+  // xxx : move here test tools
+
   ///
   /// Mechanism to expand and format test case.
   /// This macro encourages refactoring the code of the test in the most readable way, gathering a list of all test routines at the end of the test file.
   ///
-  /// # Sample
+  /// Name of test routine should have postfix `*_test`. In the index of test routine the postfix should be ommited.
+  ///
+  /// ### Sample
   /// use wtest_basic::*;
   ///
   /// //
@@ -76,8 +81,6 @@ pub mod internal
     };
   }
 
-  //
-
   pub use test_case_ as test_case;
   pub use test_routine;
   pub use test_suite::test_suite;
@@ -86,19 +89,15 @@ pub mod internal
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  use super::internal as i;
   pub use super::prelude::*;
-  pub use i::test_case;
-  pub use i::test_routine;
-  pub use i::test_suite;
 }
 
 pub use exposed::*;
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
+  use super::private as i;
   pub use i::test_case;
   pub use i::test_routine;
   pub use i::test_suite;

@@ -1,6 +1,6 @@
 [package]
 name = "implements"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -32,7 +32,7 @@ path = "rust/impl/typing/implements_lib.rs"
 
 [[test]]
 name = "implements_test"
-path = "rust/test/typing/implements_test.rs"
+path = "rust/test/typing/implements_lib_test.rs"
 
 [[example]]
 name = "implements_trivial"

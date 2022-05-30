@@ -1,3 +1,4 @@
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ warn( rust_2018_idioms ) ]
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
@@ -8,17 +9,38 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
+/// Dependencies.
+pub mod dependencies
+{
+  #[ cfg( any( feature = "collection_make", feature = "literally" ) ) ]
+  pub use ::literally;
+  #[ cfg( feature = "for_each" ) ]
+  pub use ::for_each;
+  #[ cfg( feature = "impls_index" ) ]
+  pub use ::impls_index;
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  pub use ::former;
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  pub use ::woptions;
+}
+
 /// Collection of general purpose meta tools.
 pub mod meta;
 
-/// Owned namespace of the module.
-pub mod own
+/// Protected namespace of the module.
+pub mod protected
 {
-  pub use super::exposed::*;
-  pub use super::meta::parented::*;
+  pub use super::orphan::*;
+  pub use super::meta::orphan::*;
 }
 
-pub use own::*;
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed
@@ -27,7 +49,7 @@ pub mod exposed
   pub use super::meta::exposed::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   pub use super::meta::prelude::*;

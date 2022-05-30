@@ -2,6 +2,6 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
-mod include;
+use wtest as TheModule;
 
-// include!( "./include.rs" );
+mod inc;

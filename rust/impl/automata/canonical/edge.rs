@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub mod internal
+pub( crate ) mod private
 {
   use crate::prelude::*;
 
@@ -21,42 +21,63 @@ pub mod internal
     pub kind : Kind,
   }
 
-  impl< 'a, Node, Kind > EdgeInterface
-  for Edge< 'a, Node, Kind >
-  where
-    Node : NodeBasicInterface,
-    Kind : EdgeKindInterface,
-  {
-  }
+  //
+
+//   impl< 'a, Id, Kind > HasId
+//   for Edge< 'a, Id, Kind >
+//   where
+//     Id : IdentityInterface,
+//     Kind : NodeKindInterface,
+//   {
+//     type Id = Id;
+//     fn id( &self ) -> Self::Id
+//     {
+//       self.name
+//     }
+//   }
+//
+//   //
+//
+//   impl< 'a, Node, Kind > EdgeBasicInterface
+//   for Edge< 'a, Node, Kind >
+//   where
+//     Node : NodeBasicInterface,
+//     Kind : EdgeKindInterface,
+//   {
+//   }
+
+  // impl< 'a, Node, Kind > EdgeInterface
+  // for Edge< 'a, Node, Kind >
+  // where
+  //   Node : NodeBasicInterface,
+  //   Kind : EdgeKindInterface,
+  // {
+  // }
 
 }
 
-/// Own namespace of the module.
-pub mod own
+/// Protected namespace of the module.
+pub mod protected
 {
-  // use super::internal as i;
-  pub use super::parented::*;
+  pub use super::orphan::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Parented namespace of the module.
-pub mod parented
+pub mod orphan
 {
-  use super::internal as i;
   pub use super::exposed::*;
-  pub use i::Edge;
+  pub use super::private::Edge;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
   pub use super::prelude::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
 }

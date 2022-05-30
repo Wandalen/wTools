@@ -1,3 +1,4 @@
-
-mod split_test;
-mod parse_test;
+use super::*;
+// use wtools as TheModule;
+#[ cfg( feature = "string" ) ]
+mod inc;

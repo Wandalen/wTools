@@ -1,0 +1,16 @@
+name : wca
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # wca
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/rust/wca/Cargo.toml'
+      module_name : 'wca'

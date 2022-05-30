@@ -21,8 +21,8 @@ function rustPublish( o )
   o.modulesList =
   [
     'module/rust/*',
-    'module/rust_alias/*',
-    'module/rust_move/*',
+    'module/alias/*',
+    'module/move/*',
   ];
 
   const currentPath = _.path.current();

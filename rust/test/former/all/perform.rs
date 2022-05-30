@@ -1,10 +1,23 @@
+#[ allow( unused_imports ) ]
+use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
-use test_tools::dependencies::*;
+only_for_wtools!
+{
+  #[ allow( unused_imports ) ]
+  use wtools::meta::*;
+  #[ allow( unused_imports ) ]
+  use wtools::former::Former;
+}
 
-#[cfg( feature = "in_wtools" )]
-use wtools::former::Former;
-#[cfg( not( feature = "in_wtools" ) )]
-use former::Former;
+only_for_local_module!
+{
+  #[ allow( unused_imports ) ]
+  use meta_tools::*;
+  #[ allow( unused_imports ) ]
+  use former::Former;
+}
 
 #[ derive( Debug, PartialEq, Former ) ]
 #[ perform( fn perform1< 'a >() -> Option< &'a str > ) ]
@@ -26,25 +39,24 @@ impl Struct1
 
 //
 
-fn basic() -> anyhow::Result< () >
+tests_impls!
 {
+  #[ test ]
+  fn basic()
+  {
+    let got = Struct1::former().form();
+    let expected = Struct1 { int_1 : 31 };
+    a_id!( got, expected );
 
-  let got = Struct1::former().form();
-  let expected = Struct1 { int_1 : 31 };
-  assert_eq!( got, expected );
-
-  let got = Struct1::former().perform();
-  let expected = Some( "abc" );
-  assert_eq!( got, expected );
-
-  Ok( () )
+    let got = Struct1::former().perform();
+    let expected = Some( "abc" );
+    a_id!( got, expected );
+  }
 }
 
 //
 
-#[ test ]
-fn main_test() -> anyhow::Result< () >
+tests_index!
 {
-  basic()?;
-  Ok( () )
+  basic,
 }

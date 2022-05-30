@@ -1,32 +1,41 @@
-
-use test_tools::dependencies::*;
+#[ allow( unused_imports ) ]
+use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
 //
 
-#[ test ]
-fn test_complex() -> anyhow::Result< () >
+tests_impls!
 {
-
-  // test.case( "default" );
-
-  let command = Struct1::former()
-  .form();
-  let expected = Struct1
+  #[ test ]
+  fn test_complex()
   {
-    string_slice_1 : "",
-  };
-  assert_eq!( command, expected );
+    // test.case( "default" );
 
-  // test.case( "set value" );
+    let command = Struct1::former()
+    .form();
+    let expected = Struct1
+    {
+      string_slice_1 : "",
+    };
+    a_id!( command, expected );
 
-  let command = Struct1::former()
-  .string_slice_1( "abc" )
-  .form();
-  let expected = Struct1
-  {
-    string_slice_1 : "abc",
-  };
-  assert_eq!( command, expected );
+    // test.case( "set value" );
 
-  Ok( () )
+    let command = Struct1::former()
+    .string_slice_1( "abc" )
+    .form();
+    let expected = Struct1
+    {
+      string_slice_1 : "abc",
+    };
+    a_id!( command, expected );
+  }
+}
+
+//
+
+tests_index!
+{
+  test_complex,
 }

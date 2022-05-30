@@ -1,4 +1,4 @@
-# Sample :: inspect_type_trivial
+### Sample :: inspect_type_trivial
 
 To run this sample, please make sure you are on nightly rustc and switched on feature "nightly"
 

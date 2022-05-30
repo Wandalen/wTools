@@ -5,6 +5,5 @@ edition = "2021"
 publish = false
 
 [dependencies]
-wca = { version = "~0.1", path = "../../../module/rust_move/wca" }
+wca = { version = "~0.1", path = "../../../module/move/wca" }
 wstring_tools = { version = "~0.1", path = "../../../module/rust/wstring_tools" }
-# wca = "*"

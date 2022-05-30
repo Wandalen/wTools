@@ -2,8 +2,6 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
-// #![ feature( trace_macros ) ]
+use wtest_basic as TheModule;
 
-// include!( "include1.rs" );
-
-mod include;
+mod inc;

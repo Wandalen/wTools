@@ -1,0 +1,24 @@
+name : meta_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # meta_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/rust/meta_tools/Cargo.toml'
+      module_name : 'meta_tools'
+
+  # meta_tools_min
+
+  test_meta_tools_min :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/rust/meta_tools_min/Cargo.toml'
+      module_name : 'meta_tools_min'

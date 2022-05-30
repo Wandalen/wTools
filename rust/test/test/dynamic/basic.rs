@@ -5,14 +5,14 @@ use wtest_basic::*;
 
 fn pass1()
 {
-  assert_eq!( true, true );
+  a_id!( true, true );
 }
 
 //
 
 fn fail1()
 {
-  // assert_eq!( true, false );
+  // a_id!( true, false );
 }
 
 //

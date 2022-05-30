@@ -1,6 +1,6 @@
 [package]
 name = "wstring_tools"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -25,13 +25,16 @@ include = [
   "/License",
 ]
 
+[features]
+default = []
+
 [lib]
 name = "wstring_tools"
 path = "rust/impl/string/wstring_tools_lib.rs"
 
 [[test]]
 name = "string_test"
-path = "rust/test/string/test.rs"
+path = "rust/test/string/wstring_tools_lib_test.rs"
 
 [[example]]
 name = "wstring_tools_trivial"
@@ -40,7 +43,7 @@ path = "sample/rust/wstring_tools_trivial/src/main.rs"
 
 [dependencies]
 former = { version = "~0.1", path = "../../rust/former" }
-woptions = { version = "~0.1", path = "../../rust/woptions" }
+# woptions = { version = "~0.1", path = "../../rust/woptions" }
 # wtools = { version = "~0.2", path = "../../rust/wtools" }
 # werror = { version = "~0.1", path = "../../rust/werror" }
 

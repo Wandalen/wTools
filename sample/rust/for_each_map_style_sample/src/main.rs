@@ -6,9 +6,9 @@ fn main()
   for_each!
   {
     dbg where
-    @PREFIX { "prefix".to_string() + }
-    @POSTFIX { + "postfix" }
-    @EACH "a" "b" "c"
+    @Prefix { "prefix".to_string() + }
+    @Postfix { + "postfix" }
+    @Each "a" "b" "c"
   };
 
   // generates

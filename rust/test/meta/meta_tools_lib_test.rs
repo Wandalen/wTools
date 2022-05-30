@@ -1,7 +1,11 @@
-// #![ feature( type_name_of_val ) ]
+#![ warn( rust_2018_idioms ) ]
+#![ warn( missing_debug_implementations ) ]
+#![ warn( missing_docs ) ]
+
 // #![ feature( trace_macros ) ]
-// #![ feature( concat_idents ) ]
+// #![ feature( type_name_of_val ) ]
 
-// mod meta;
+include!( "../_conditional/local_module.rs" );
 
-include!( "include.rs" );
+use meta_tools as TheModule;
+mod inc;

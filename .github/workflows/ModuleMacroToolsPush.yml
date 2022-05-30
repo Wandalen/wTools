@@ -1,0 +1,16 @@
+name : macro_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # macro_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/rust/macro_tools/Cargo.toml'
+      module_name : 'macro_tools'

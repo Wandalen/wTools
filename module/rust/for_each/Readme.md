@@ -1,4 +1,5 @@
 # Module :: for_each
+[![experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleForEachPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleForEachPush.yml) [![docs.rs](https://img.shields.io/docsrs/for_each?color=e3e8f0&logo=docs.rs)](https://docs.rs/for_each) [![discord](https://img.shields.io/discord/872391416519737405?color=e3e8f0&logo=discord&logoColor=e3e8f0)](https://discord.gg/JwTG6d2b)
 
 Apply a macro for each element of a list.
 
@@ -10,7 +11,9 @@ In some cases, the same code may be generated without callback macro, just using
 That's why `$Callback` is also optional.
 To invoke `for_each` without callback use map call style omitting path to callback and keyword `where`.
 
-# Sample :: function-style call
+### Sample :: function-style call
+
+Apply a macro for each element of a list.
 
 Macro `for_each` may be called either in function-style way or in map-style way.
 Pass name of macro to apply to elements as the first arguments and elements after the macro name.
@@ -26,12 +29,12 @@ dbg!( "b" );
 dbg!( "c" );
 ```
 
-# Sample :: map-style call
+### Sample :: map-style call
 
 Macro `for_each` may be called either in function-style way or in map-style way.
-Use keys @PREFIX @POSTFIX @EACH to pass options as entries of a map.
-Options @PREFIX and @POSTFIX are optional and their entries could be ommited, but entry @EACH is mandatory.
-Order of options should always be @PREFIX, @POSTFIX, @EACH.
+Use keys @Prefix @Postfix @Each to pass options as entries of a map.
+Options @Prefix and @Postfix are optional and their entries could be ommited, but entry @Each is mandatory.
+Order of options should always be @Prefix, @Postfix, @Each.
 
 ```rust
 use for_each::for_each;
@@ -39,18 +42,22 @@ use for_each::for_each;
 for_each!
 {
   dbg where
-  @PREFIX { "prefix".to_string() + }
-  @POSTFIX { + "postfix" }
-  @EACH "a" "b" "c"
+  @Prefix { "prefix".to_string() + }
+  @Postfix { + "postfix" }
+  @Each "a" "b" "c"
 };
+```
 
-// generates
+It generates:
+
+```rust
+// generated
 dbg!( "prefix".to_string() + "a" + "postfix" );
 dbg!( "prefix".to_string() + "b" + "postfix" );
 dbg!( "prefix".to_string() + "c" + "postfix" );
 ```
 
-# Sample :: more than single token
+### Sample :: more than single token
 
 Both prefix and postfix have to be token tree ( `tt` ). But if you need something more complex put it into braces `{ ... }`.
 Macros `for_each` will remove outermost braces. Braces are optional in case of prefix/postfix is a singlle token.
@@ -61,9 +68,9 @@ use for_each::for_each;
 for_each!
 {
   dbg where
-  @PREFIX { "prefix".to_string() + }
-  @POSTFIX { + "postfix" }
-  @EACH { "a" + "1" } { "b" + "2" } { "c" + "3" }
+  @Prefix { "prefix".to_string() + }
+  @Postfix { + "postfix" }
+  @Each { "a" + "1" } { "b" + "2" } { "c" + "3" }
 };
 
 // generates
@@ -72,7 +79,7 @@ dbg!( "prefix".to_string() + "b" + "2" + "postfix" );
 dbg!( "prefix".to_string() + "c" + "3" + "postfix" );
 ```
 
-# Sample :: callbackless
+### Sample :: callbackless
 
 Callback macro is optinal.
 Use map call style and omit path to callback macro with keyword `where` to invoke `for_each` without a callback.
@@ -81,8 +88,8 @@ Use map call style and omit path to callback macro with keyword `where` to invok
 use for_each::for_each;
 for_each!
 {
-  @PREFIX { dbg! }
-  @EACH ( "a" ) ( "b" ) ( "c" )
+  @Prefix { dbg! }
+  @Each ( "a" ) ( "b" ) ( "c" )
 };
 // generates
 dbg!( "a" );

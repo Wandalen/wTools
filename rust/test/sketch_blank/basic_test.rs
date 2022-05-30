@@ -2,14 +2,18 @@ use test_tools::*;
 
 //
 
-fn basic_test()
+tests_impls!
 {
-  assert_eq!( true, true );
+  #[ test ]
+  fn basic()
+  {
+    a_id!( true, true );
+  }
 }
 
 //
 
-test_suite!
+tests_index!
 {
   basic,
 }

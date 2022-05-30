@@ -1,8 +1,5 @@
 
-#[cfg( feature = "in_wtools" )]
-use wtools::options::*;
-#[cfg( not( feature = "in_wtools" ) )]
-use woptions::*;
+use super::TheModule::*;
 
 Options!{ split< 'a >
 {
@@ -12,7 +9,6 @@ Options!{ split< 'a >
   #[ default( true ) ]
   pub left : bool;
 
-  /* xxx */
   fn left( &self ) -> &bool
   {
     &!self.left

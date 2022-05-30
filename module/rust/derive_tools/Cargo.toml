@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -12,7 +12,7 @@ documentation = "https://docs.rs/derive_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/derive_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/derive_tools"
 description = """
-Collection of general purpose derives.
+Collection of derives which extend STD.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
@@ -24,6 +24,106 @@ include = [
   "/License",
 ]
 
+[features]
+
+default = [
+
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_display",
+  "derive_from_str",
+  # "derive_from_str_std",
+  # "derive_from_str_regex",
+  # "derive_from_str_once_cell",
+
+]
+
+full = [
+
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_display",
+  "derive_from_str",
+  # "derive_from_str_std",
+  # "derive_from_str_regex",
+  # "derive_from_str_once_cell",
+
+]
+nightly = [ "derive_more/nightly" ]
+
+enable_track_caller = [ "derive_more/track-caller" ]
+
+derive_add_assign = [ "derive_more/add_assign" ]
+derive_add = [ "derive_more/add" ]
+derive_as_mut = [ "derive_more/as_mut" ]
+derive_as_ref = [ "derive_more/as_ref" ]
+derive_constructor = [ "derive_more/constructor" ]
+derive_deref = [ "derive_more/deref" ]
+derive_deref_mut = [ "derive_more/deref_mut" ]
+derive_error = [ "derive_more/error" ]
+derive_from = [ "derive_more/from" ]
+derive_index = [ "derive_more/index" ]
+derive_index_mut = [ "derive_more/index_mut" ]
+derive_into = [ "derive_more/into" ]
+derive_into_iterator = [ "derive_more/into_iterator" ]
+derive_iterator = [ "derive_more/iterator" ]
+derive_mul_assign = [ "derive_more/mul_assign" ]
+derive_mul = [ "derive_more/mul" ]
+derive_not = [ "derive_more/not" ]
+derive_sum = [ "derive_more/sum" ]
+derive_try_into = [ "derive_more/try_into" ]
+derive_is_variant = [ "derive_more/is_variant" ]
+derive_unwrap = [ "derive_more/unwrap" ]
+derive_convert_case = [ "derive_more/convert_case" ]
+
+derive_display = [ "parse-display" ]
+derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex", "parse-display/once_cell" ]
+# derive_from_str_std = [ "parse-display/std" ]
+# derive_from_str_regex = [ "parse-display/regex", "parse-display/once_cell" ]
+# derive_from_str_once_cell = [ "parse-display/once_cell" ]
+
 [lib]
 name = "derive_tools"
 path = "rust/impl/derive/lib.rs"
@@ -32,36 +132,13 @@ path = "rust/impl/derive/lib.rs"
 name = "derive_tools_test"
 path = "rust/test/derive/derive_lib_test.rs"
 
-# [[example]]
-# name = "derive_tools_trivial"
-# path = "sample/rust/derive_tools_trivial/src/main.rs"
-# qqq : add please
+[[example]]
+name = "derive_tools_trivial_sample"
+path = "sample/rust/derive_tools_trivial_sample/src/main.rs"
 
 [dependencies]
-derive_more = { version = "~0.99" }
-parse-display = { version = "~0.5" }
-# former = { version = "~0.1", path = "../../rust/former" }
-# inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
-# is_slice = { version = "~0.1", path = "../../rust/is_slice" }
-# implements = { version = "~0.1", path = "../../rust/implements" }
-# derive_tools = { version = "~0.2", path = "../../rust/derive_tools" }
-# derive_tools = { version = "~0.2", path = "../../rust/derive_tools" }
-# werror = { version = "~0.1", path = "../../rust/werror" }
-# winterval = { version = "~0.1", path = "../../rust/winterval" }
-# proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
-# literally = "~0.1"
-# either = "~1.6"
-# # maplit = "~1.0"
-# regex = "1.5.4"
-# chrono = "0.4.19"
-# paste = "1.0.5"
-# anyhow = "1.0.48"
+derive_more = { version = "~0.99", default-features = false }
+parse-display = { version = "~0.5", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-# trybuild = { version = "~1.0", features = [ "diff" ] }
-# anyhow = "~1.0"
-# rustversion = "~1.0"
-# quote = { version = "~1.0" }
-# proc-macro2 = { version = "~1.0" }
-# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }

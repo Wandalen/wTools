@@ -1,29 +1,34 @@
 /// Internal namespace.
-pub mod internal
+pub( crate ) mod private
 {
   use crate::prelude::*;
-  use std::collections::HashSet;
+  use wtools::prelude::*;
+  use indexmap::IndexSet;
   use std::fmt;
 
   ///
   /// Canonical implementation of node.
   ///
 
-  pub struct Node< Kind = crate::NodeKindless >
+  pub struct Node< Id = crate::IdentityWithInt, Kind = crate::NodeKindless >
   where
+    Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
     /// Input node.
-    pub out_nodes : HashSet< < Self as HasId >::Id >,
+    pub out_nodes : IndexSet< Id >,
     /// Kind of the node.
     pub kind : Kind,
     /// Name.
-    pub name : < Self as HasId >::Id,
+    pub name : Id,
   }
 
   //
 
-  impl Node
+  impl< Id, Kind > Node< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
 
     /// Construct a name instance of the node.
@@ -31,7 +36,7 @@ pub mod internal
     where
       Name : Into< < Self as HasId >::Id >,
     {
-      let out_nodes = HashSet::new();
+      let out_nodes = IndexSet::new();
       let kind = Default::default();
       Self
       {
@@ -45,51 +50,51 @@ pub mod internal
 
   //
 
-//   impl< Kind > HasId
-//   for Node< Kind >
-//   where
-//     Kind : NodeKindInterface,
-//   {
-//
-//     type Id = crate::IdentityWithName;
-//
-//     fn id( &self ) -> Self::Id
-//     {
-//       self.name
-//     }
-//
-//   }
+  impl< Id, Kind, Name > Make1< Name >
+  for Node< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
+    Name : Into< < Self as HasId >::Id >,
+  {
+    fn make_1( name : Name ) -> Self
+    {
+      Self::make_named( name )
+    }
+  }
 
   //
 
-  impl< Kind > HasId
-  for Node< Kind >
+  impl< Id, Kind > HasId
+  for Node< Id, Kind >
   where
+    Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
-
-    type Id = crate::IdentityWithInt;
-
+    type Id = Id;
     fn id( &self ) -> Self::Id
     {
       self.name
     }
-
   }
 
   //
 
-  impl< Kind > NodeBasicInterface
-  for Node< Kind >
+  impl< Id, Kind > NodeBasicInterface
+  for Node< Id, Kind >
   where
+    Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
   }
 
   //
 
-  impl Extend< < Self as HasId >::Id >
-  for Node
+  impl< Id, Kind > Extend< < Self as HasId >::Id >
+  for Node< Id, Kind >
+  where
+    Id : IdentityInterface,
+    Kind : NodeKindInterface,
   {
     fn extend< Iter >( &mut self, iter : Iter )
     where
@@ -104,9 +109,10 @@ pub mod internal
 
   //
 
-  impl< Kind > fmt::Debug
-  for Node< Kind >
+  impl< Id, Kind > fmt::Debug
+  for Node< Id, Kind >
   where
+    Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
@@ -122,8 +128,10 @@ pub mod internal
 
   //
 
-  impl< Kind > PartialEq for Node< Kind >
+  impl< Id, Kind > PartialEq
+  for Node< Id, Kind >
   where
+    Id : IdentityInterface,
     Kind : NodeKindInterface,
   {
     fn eq( &self, other : &Self ) -> bool
@@ -134,33 +142,28 @@ pub mod internal
 
 }
 
-/// Own namespace of the module.
-pub mod own
+/// Protected namespace of the module.
+pub mod protected
 {
-  // use super::internal as i;
-  pub use super::parented::*;
+  pub use super::orphan::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Parented namespace of the module.
-pub mod parented
+pub mod orphan
 {
-  use super::internal as i;
   pub use super::exposed::*;
-  // pub use i::NodesIterator;
-  pub use i::Node;
+  pub use super::private::{ Node };
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::internal as i;
   pub use super::prelude::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::internal as i;
 }

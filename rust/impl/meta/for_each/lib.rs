@@ -1,3 +1,4 @@
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ warn( rust_2018_idioms ) ]
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
@@ -17,7 +18,7 @@ use module::macro_for_each in module::macro_tools
 */
 
 /// Internal namespace.
-pub mod internal
+pub( crate ) mod private
 {
 
   #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
@@ -39,43 +40,43 @@ pub mod internal
     // -- callback-less
 
     (
-      @PREFIX $Prefix : tt
-      @POSTFIX $Postfix : tt
-      @EACH $( $Each : tt )*
+      @Prefix $Prefix : tt
+      @Postfix $Postfix : tt
+      @Each $( $Each : tt )*
     ) =>
     {
       $crate::for_each!
       {
         $crate::identity where
-        @PREFIX $Prefix
-        @POSTFIX $Postfix
-        @EACH $( $Each )*
+        @Prefix $Prefix
+        @Postfix $Postfix
+        @Each $( $Each )*
       }
     };
 
     (
-      @PREFIX $Prefix : tt
-      @EACH $( $Each : tt )*
+      @Prefix $Prefix : tt
+      @Each $( $Each : tt )*
     ) =>
     {
       $crate::for_each!
       {
         $crate::identity where
-        @PREFIX $Prefix
-        @EACH $( $Each )*
+        @Prefix $Prefix
+        @Each $( $Each )*
       }
     };
 
     (
-      @POSTFIX $Postfix : tt
-      @EACH $( $Each : tt )*
+      @Postfix $Postfix : tt
+      @Each $( $Each : tt )*
     ) =>
     {
       $crate::for_each!
       {
         $crate::identity where
-        @POSTFIX $Postfix
-        @EACH $( $Each )*
+        @Postfix $Postfix
+        @Each $( $Each )*
       }
     };
 
@@ -83,7 +84,7 @@ pub mod internal
 
     (
       $Callback : path where
-      @EACH $( $Each : tt )*
+      @Each $( $Each : tt )*
     ) =>
     {
       $(
@@ -94,17 +95,17 @@ pub mod internal
     (
       $Callback : path
       where
-        @PREFIX $Prefix : tt
-        @POSTFIX $Postfix : tt
-        @EACH $( $Each : tt )*
+        @Prefix $Prefix : tt
+        @Postfix $Postfix : tt
+        @Each $( $Each : tt )*
     ) =>
     {
       $(
         $crate::braces_unwrap!
         (
           $Callback where
-          @PREFIX{ $Prefix }
-          @POSTFIX{ $Postfix }
+          @Prefix{ $Prefix }
+          @Postfix{ $Postfix }
           @SRC{ $Each }
         );
       )*
@@ -112,15 +113,15 @@ pub mod internal
 
     (
       $Callback : path where
-      @PREFIX $Prefix : tt
-      @EACH $( $Each : tt )*
+      @Prefix $Prefix : tt
+      @Each $( $Each : tt )*
     ) =>
     {
       $(
         $crate::braces_unwrap!
         (
           $Callback where
-          @PREFIX{ $Prefix }
+          @Prefix{ $Prefix }
           @SRC{ $Each }
         );
       )*
@@ -128,15 +129,15 @@ pub mod internal
 
     (
       $Callback : path where
-      @POSTFIX $Postfix : tt
-      @EACH $( $Each : tt )*
+      @Postfix $Postfix : tt
+      @Each $( $Each : tt )*
     ) =>
     {
       $(
         $crate::braces_unwrap!
         (
           $Callback where
-          @POSTFIX{ $Postfix }
+          @Postfix{ $Postfix }
           @SRC{ $Each }
         );
       )*
@@ -166,8 +167,8 @@ pub mod internal
   /// braces_unwrap!
   /// (
   ///   dbg where
-  ///   @PREFIX{ prefix, }
-  ///   @POSTFIX{ postfix }
+  ///   @Prefix{ prefix, }
+  ///   @Postfix{ postfix }
   ///   @SRC{ { a, b, c, } }
   /// );
   /// // generates :
@@ -175,8 +176,8 @@ pub mod internal
   /// braces_unwrap!
   /// (
   ///   dbg where
-  ///   @PREFIX{ prefix, }
-  ///   @POSTFIX{ postfix }
+  ///   @Prefix{ prefix, }
+  ///   @Postfix{ postfix }
   ///   @SRC{ a, b, c, }
   /// );
   /// // generates :
@@ -237,8 +238,8 @@ pub mod internal
     /* 0 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Prefix{ { $( $Prefix : tt )* } }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -251,8 +252,8 @@ pub mod internal
     /* 1 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Prefix{ { $( $Prefix : tt )* } }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -265,8 +266,8 @@ pub mod internal
     /* 2 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Prefix{ { $( $Prefix : tt )* } }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -279,8 +280,8 @@ pub mod internal
     /* 3 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Prefix{ { $( $Prefix : tt )* } }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -293,8 +294,8 @@ pub mod internal
     /* 4 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Prefix{ $( $Prefix : tt )* }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -307,8 +308,8 @@ pub mod internal
     /* 5 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Prefix{ $( $Prefix : tt )* }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -321,8 +322,8 @@ pub mod internal
     /* 6 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Prefix{ $( $Prefix : tt )* }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -335,8 +336,8 @@ pub mod internal
     /* 7 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Prefix{ $( $Prefix : tt )* }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -352,7 +353,7 @@ pub mod internal
     /* 0 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
+      @Prefix{ { $( $Prefix : tt )* } }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -365,7 +366,7 @@ pub mod internal
     /* 1 */
     (
       $Callback : path where
-      @PREFIX{ { $( $Prefix : tt )* } }
+      @Prefix{ { $( $Prefix : tt )* } }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -378,7 +379,7 @@ pub mod internal
     /* 2 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
+      @Prefix{ $( $Prefix : tt )* }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -391,7 +392,7 @@ pub mod internal
     /* 3 */
     (
       $Callback : path where
-      @PREFIX{ $( $Prefix : tt )* }
+      @Prefix{ $( $Prefix : tt )* }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -407,7 +408,7 @@ pub mod internal
     /* 0 */
     (
       $Callback : path where
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -420,7 +421,7 @@ pub mod internal
     /* 1 */
     (
       $Callback : path where
-      @POSTFIX{ { $( $Postfix : tt )* } }
+      @Postfix{ { $( $Postfix : tt )* } }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -433,7 +434,7 @@ pub mod internal
     /* 2 */
     (
       $Callback : path where
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ { $( $Src : tt )* } }
     )
     =>
@@ -446,7 +447,7 @@ pub mod internal
     /* 3 */
     (
       $Callback : path where
-      @POSTFIX{ $( $Postfix : tt )* }
+      @Postfix{ $( $Postfix : tt )* }
       @SRC{ $( $Src : tt )* }
     )
     =>
@@ -480,7 +481,21 @@ pub mod internal
 
 }
 
-pub use internal::*;
+// pub use internal::*;
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+}
+
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed
@@ -488,11 +503,11 @@ pub mod exposed
   pub use super::prelude::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
-  pub use i::for_each;
-  pub use i::braces_unwrap;
-  pub use i::identity;
+  // use super::private as i;
+  pub use super::private::for_each;
+  pub use super::private::braces_unwrap;
+  pub use super::private::identity;
 }

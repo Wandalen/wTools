@@ -1,0 +1,42 @@
+[package]
+name = "impls_index_meta"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/impls_index_meta"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/impls_index_meta"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/impls_index_meta"
+description = """
+Several of macros to put each function under a named macro to index every function in a class.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
+
+include = [
+  "/rust/impl/meta/impls_index_meta",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[lib]
+proc-macro = true
+name = "impls_index_meta"
+path = "rust/impl/meta/impls_index/meta/lib.rs"
+
+[dependencies]
+proc-macro2 = "~1.0"
+quote = "~1.0"
+syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
+# iter_tools = { path = "../../rust/iter_tools", version = "~0.1" }
+# werror = { path = "../../rust/werror", version = "~0.1" }
+proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
+# xxx
+
+[dev-dependencies]
+# trybuild = { version = "~1.0", features = [ "diff" ] }

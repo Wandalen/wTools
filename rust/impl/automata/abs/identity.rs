@@ -1,11 +1,11 @@
 /// Internal namespace.
-pub mod internal
+pub( crate ) mod private
 {
   // use crate::prelude::*;
-  use core::fmt::Debug;
+  use core::fmt;
   use core::hash::Hash;
   use std::cmp::{ PartialEq, Eq };
-  use std::fmt;
+  // use std::fmt;
 
   ///
   /// Interface to identify an instance of somthging, for exampel a node.
@@ -17,7 +17,7 @@ pub mod internal
       'static +
       Copy +
       Hash +
-      Debug +
+      fmt::Debug +
       PartialEq +
       Eq +
       Hash +
@@ -30,7 +30,7 @@ pub mod internal
       'static +
       Copy +
       Hash +
-      Debug +
+      fmt::Debug +
       PartialEq +
       Eq +
       Hash +
@@ -225,36 +225,32 @@ pub mod internal
 
 }
 
-/// Own namespace of the module.
-pub mod own
+/// Protected namespace of the module.
+pub mod protected
 {
-  // use super::internal as i;
-  pub use super::parented::*;
+  pub use super::orphan::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Parented namespace of the module.
-pub mod parented
+pub mod orphan
 {
-  // use super::internal as i;
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  use super::internal as i;
-  pub use i::IdentityWithPointer;
-  pub use i::IdentityWithName;
-  pub use i::IdentityWithInt;
+  pub use super::private::IdentityWithPointer;
+  pub use super::private::IdentityWithName;
+  pub use super::private::IdentityWithInt;
   pub use super::prelude::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
-  pub use i::IdentityInterface;
-  pub use i::HasId;
+  pub use super::private::IdentityInterface;
+  pub use super::private::HasId;
 }

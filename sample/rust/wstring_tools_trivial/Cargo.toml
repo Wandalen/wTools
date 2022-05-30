@@ -5,5 +5,4 @@ edition = "2021"
 publish = false
 
 [dependencies]
-# wstring_tools = "*" # qqq : xxx : uncomment later to use published version instead of local
-wstring_tools = { path = "../../../module/rust/wstring_tools" }
+wstring_tools = { version = "*", path = "../../../module/rust/wstring_tools" }

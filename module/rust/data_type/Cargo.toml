@@ -1,6 +1,6 @@
 [package]
 name = "data_type"
-version = "0.1.0"
+version = "0.1.4"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,6 +24,22 @@ include = [
   "/License",
 ]
 
+[features]
+default = [
+  "either",
+  "interval",
+  "make",
+  "type_constructor/default",
+]
+full = [
+  "either",
+  "interval",
+  "make",
+  "type_constructor/full",
+]
+interval = [ "winterval" ]
+make = [ "type_constructor/make" ]
+
 [lib]
 name = "data_type"
 path = "rust/impl/dt/data_type_lib.rs"
@@ -35,10 +51,12 @@ path = "rust/test/dt/data_type_lib_test.rs"
 # [[example]]
 # name = "data_type_trivial_sample"
 # path = "sample/rust/data_type_trivial_sample/src/main.rs"
-# <!-- zzz : write please -->
+# <!-- qqq : write please -->
 
 [dependencies]
-either = "~1.6"
+either = { version = "~1.6", optional = true }
+type_constructor = { version = "~0.1", path = "../../rust/type_constructor", optional = true }
+winterval = { version = "~0.1", path = "../../rust/winterval", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

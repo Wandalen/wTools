@@ -1,6 +1,6 @@
 [package]
 name = "wtest_basic"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -41,9 +41,12 @@ path = "sample/rust/wtest_basic_trivial_sample/src/main.rs"
 paste = "~1.0"
 rustversion = "~1.0"
 anyhow = "~1.0"
+num-traits = "~0.2"
 trybuild = { version = "~1.0", features = [ "diff" ] }
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
 test_suite = { path = "rust/impl/test/test_suite" }
+typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
+diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools" }
 
 [dev-dependencies]
 # rustversion = "~1.0"

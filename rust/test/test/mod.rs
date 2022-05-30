@@ -1,4 +1,3 @@
+use wtools::test as TheModule;
 
-// xxx : enable
-// mod include;
-// include!( "./include.rs" );
+mod inc;

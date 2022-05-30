@@ -1,8 +1,8 @@
 /// Internal namespace.
-pub mod internal
+pub( crate ) mod private
 {
-  use crate::prelude::*;
-  use core::fmt::Debug;
+  // use crate::prelude::*;
+  // use core::fmt;
 
   ///
   /// Interface of a type responsible for constructing nodes.
@@ -10,30 +10,23 @@ pub mod internal
 
   pub trait NodeFactoryInterface
   where
-    Self : Debug,
+    Self : crate::GraphBasicInterface,
   {
-    // /// Node of the graph.
-    // type Node : NodeBasicInterface;
-    /// It's not always possible to operate a node directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
-    /// Otherwise NodeHandle is the same as Node.
-    type NodeHandle : NodeBasicInterface;
   }
 
 }
 
-/// Own namespace of the module.
-pub mod own
+/// Protected namespace of the module.
+pub mod protected
 {
-  // use super::internal as i;
-  pub use super::parented::*;
+  pub use super::orphan::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Parented namespace of the module.
-pub mod parented
+pub mod orphan
 {
-  // use super::internal as i;
   pub use super::exposed::*;
 }
 
@@ -41,12 +34,10 @@ pub mod parented
 pub mod exposed
 {
   pub use super::prelude::*;
-  // use super::internal as i;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
-  pub use i::NodeFactoryInterface;
+  pub use super::private::NodeFactoryInterface;
 }

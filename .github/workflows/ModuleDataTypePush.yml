@@ -1,0 +1,16 @@
+name : data_type
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # data_type
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/data_type/Cargo.toml'
+      module_name : 'data_type'

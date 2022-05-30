@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub mod internal
+pub( crate ) mod private
 {
   // use crate::prelude::*;
   // use std::collections::HashSet;
@@ -15,17 +15,17 @@ pub mod factory;
 /// Implements canonical node.
 pub mod node;
 
-/// Own namespace of the module.
-pub mod own
+/// Protected namespace of the module.
+pub mod protected
 {
   pub use super::exposed::*;
-  pub use super::cell_factory::parented::*;
-  pub use super::edge::parented::*;
-  pub use super::factory::parented::*;
-  pub use super::node::parented::*;
+  pub use super::cell_factory::orphan::*;
+  pub use super::edge::orphan::*;
+  pub use super::factory::orphan::*;
+  pub use super::node::orphan::*;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed
@@ -33,11 +33,11 @@ pub mod exposed
   pub use super::prelude::*;
   pub use super::cell_factory::exposed::*;
   pub use super::edge::exposed::*;
-  // pub use super::factory::exposed::*;
+  pub use super::factory::exposed::*;
   pub use super::node::exposed::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   pub use super::cell_factory::prelude::*;

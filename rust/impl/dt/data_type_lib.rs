@@ -1,3 +1,4 @@
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ warn( rust_2018_idioms ) ]
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
@@ -11,14 +12,31 @@
 /// Collection of primal data types.
 pub mod dt;
 
-/// Owned namespace of the module.
-pub mod own
+/// Dependencies.
+pub mod dependencies
 {
-  pub use super::exposed::*;
-  pub use super::dt::parented::*;
+  #[ cfg( feature = "either" ) ]
+  pub use ::either;
+  #[ cfg( feature = "type_constructor" ) ]
+  pub use ::type_constructor;
+  #[ cfg( feature = "interval" ) ]
+  pub use ::winterval;
 }
 
-pub use own::*;
+/// Protected namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+  pub use super::dt::orphan::*;
+}
+
+pub use protected::*;
+
+/// Shared with parent namespace of the module
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed
@@ -27,7 +45,7 @@ pub mod exposed
   pub use super::dt::exposed::*;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   pub use super::dt::prelude::*;

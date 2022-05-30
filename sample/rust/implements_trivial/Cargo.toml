@@ -5,4 +5,4 @@ edition = "2021"
 publish = false
 
 [dependencies]
-implements = "*"
+implements = { version = "*", path = "../../../module/rust/implements" }

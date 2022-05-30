@@ -1,11 +1,12 @@
 /// Internal namespace.
-pub mod internal
+pub( crate ) mod private
 {
-  // use crate::prelude::*;
-  use core::fmt::Debug;
+  use crate::prelude::*;
+  use core::fmt;
+  use core::hash::Hash;
 
   ///
-  /// Kind of an edge.
+  /// Kind of a edge.
   ///
 
   pub trait EdgeKindInterface
@@ -13,8 +14,10 @@ pub mod internal
     Self :
       'static +
       Copy +
-      Debug +
+      fmt::Debug +
       PartialEq +
+      Hash  +
+      Default +
     ,
   {
   }
@@ -24,8 +27,10 @@ pub mod internal
     T :
       'static +
       Copy +
-      Debug +
+      fmt::Debug +
       PartialEq +
+      Hash  +
+      Default +
     ,
   {
   }
@@ -37,92 +42,48 @@ pub mod internal
   #[ derive( Debug, PartialEq, Copy, Clone, Hash, Default ) ]
   pub struct EdgeKindless();
 
-//   ///
-//   /// Edge iterator.
-//   ///
-//
-//   #[ derive( Debug ) ]
-//   pub struct EdgesIterator< Edge >
-//   where
-//     Edge : EdgeInterface,
-//   {
-//     _p : std::marker::PhantomData< Edge >,
-//   }
-//
-//   impl< Edge > EdgesIterator< Edge >
-//   where
-//     Edge : EdgeInterface,
-//   {
-//     pub fn make() -> Self
-//     {
-//       Self
-//       {
-//         _p : std::marker::PhantomData,
-//       }
-//     }
-//   }
-//
-//   impl< Edge > Iterator for EdgesIterator< Edge >
-//   where
-//     Edge : EdgeInterface,
-//   {
-//     type Item = Edge;
-//     fn next( &mut self ) -> Option< Self::Item >
-//     {
-//       None
-//     }
-//   }
-
   ///
   /// Edge of a graph.
   ///
 
-  pub trait EdgeInterface
-  {
-
-    // /// Get kind of the edge.
-    // fn kind< Kind : EdgeKindInterface >() -> Kind;
-
-  }
-
-  ///
-  /// Get kind of an edge .
-  ///
-
-  pub trait EdgeKindGetterInterface< Kind >
+  pub trait EdgeBasicInterface
   where
-    Kind : EdgeKindInterface,
-    Self : EdgeInterface,
+    Self :
+      HasId +
   {
-    /// Get kind of the edge.
-    fn kind() -> Kind;
   }
 
 }
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
+}
+
+pub use protected::*;
 
 /// Parented namespace of the module.
-pub mod parented
+pub mod orphan
 {
-  // use super::internal as i;
   pub use super::exposed::*;
 }
-
-pub use parented::*;
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  use super::internal as i;
   pub use super::prelude::*;
-  pub use i::EdgeKindless;
-  // pub use i::EdgesIterator;
+  pub use super::private::EdgeKindless;
 }
 
-/// Prelude to use: `use wtools::prelude::*`.
+pub use exposed::*;
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  use super::internal as i;
-  pub use i::EdgeKindInterface;
-  pub use i::EdgeInterface;
-  pub use i::EdgeKindGetterInterface;
+  pub use super::private::
+  {
+    EdgeKindInterface,
+    EdgeBasicInterface,
+  };
 }

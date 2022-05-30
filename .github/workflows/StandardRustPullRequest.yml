@@ -1,0 +1,38 @@
+
+name : rust_pull_request
+
+on : [ pull_request ]
+
+env :
+  CARGO_TERM_COLOR : always
+
+concurrency :
+  group : standard_rust_pull_request_${{ github.base_ref }}
+  cancel-in-progress : true
+
+jobs :
+
+  tested :
+    runs-on : ubuntu-latest
+    steps :
+      - name : List commits on the pull request
+        run : |
+          response=$(curl --request GET \
+          --url 'https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits' \
+          --header 'Authorization: token ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'Accept: application/vnd.github.v3+json' \
+          --header 'Content-Type: application/json')
+          echo $response > response.json
+      - name : Get latest commit
+        id : message
+        run : |
+          length=$(jq 'length' response.json)
+          index=$(($length - 1))
+          latest_commit=$(jq --argjson index $index '.[$index]' response.json)
+          latest_commit_message=$(echo "$latest_commit" | jq -r '.commit.message')
+          echo "::set-output name=message::$latest_commit_message"
+      - name : Exit with fail
+        id : run
+        if : "!startsWith( steps.message.outputs.message, 'Merge ' ) && !contains( steps.message.outputs.message, '!test' )"
+        run : |
+          exit 1

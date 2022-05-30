@@ -5,4 +5,4 @@ edition = "2021"
 publish = false
 
 [dependencies]
-meta_tools = "*"
+meta_tools = { version = "*", path = "../../../module/rust/meta_tools" }

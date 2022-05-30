@@ -1,6 +1,6 @@
 [package]
 name = "meta_tools"
-version = "0.2.6"
+version = "0.2.12"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -25,6 +25,26 @@ include = [
   "/License",
 ]
 
+[features]
+collection_make = [ "literally" ]
+options = [ "woptions" ]
+default = [
+  "for_each",
+  "impls_index",
+  "mod_interface",
+  "former",
+  "options",
+  "collection_make",
+]
+full = [
+  "for_each",
+  "impls_index",
+  "mod_interface",
+  "former",
+  "options",
+  "collection_make",
+]
+
 [lib]
 name = "meta_tools"
 path = "rust/impl/meta/meta_tools_lib.rs"
@@ -40,29 +60,12 @@ path = "sample/rust/meta_tools_trivial_sample/src/main.rs"
 # - all samples should be in md files and have short descriptions
 
 [dependencies]
-# former = { version = "~0.1", path = "../../rust/former" }
-# inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
-# is_slice = { version = "~0.1", path = "../../rust/is_slice" }
-# implements = { version = "~0.1", path = "../../rust/implements" }
-# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# werror = { version = "~0.1", path = "../../rust/werror" }
-# winterval = { version = "~0.1", path = "../../rust/winterval" }
-# proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
-for_each = { version = "~0.1", path = "../../rust/for_each" }
-literally = "~0.1"
-# either = "~1.6"
-# # maplit = "~1.0"
-# regex = "1.5.4"
-# chrono = "0.4.19"
-# paste = "1.0.5"
-# anyhow = "1.0.48"
+for_each = { version = "~0.1", path = "../../rust/for_each", optional = true, default-features = false }
+impls_index = { version = "~0.1", path = "../../rust/impls_index", optional = true, default-features = false }
+mod_interface = { version = "~0.1", path = "../../rust/mod_interface", optional = true, default-features = false }
+former = { version = "~0.1", path = "../../rust/former", optional = true, default-features = false }
+woptions = { version = "~0.1", path = "../../rust/woptions", optional = true, default-features = false }
+literally = { version = "~0.1", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-# trybuild = { version = "~1.0", features = [ "diff" ] }
-# anyhow = "~1.0"
-# rustversion = "~1.0"
-# quote = { version = "~1.0" }
-# proc-macro2 = { version = "~1.0" }
-# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }

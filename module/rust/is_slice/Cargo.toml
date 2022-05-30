@@ -1,6 +1,6 @@
 [package]
 name = "is_slice"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,7 +31,7 @@ path = "rust/impl/typing/is_slice_lib.rs"
 
 [[test]]
 name = "is_slice_test"
-path = "rust/test/typing/is_slice_test.rs"
+path = "rust/test/typing/is_slice_lib_test.rs"
 
 [[example]]
 name = "is_slice_trivial"

@@ -1,6 +1,6 @@
 [package]
 name = "for_each"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,6 +23,9 @@ include = [
   "/Readme.md",
   "/License",
 ]
+
+[features]
+default = []
 
 [lib]
 name = "for_each"
