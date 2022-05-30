@@ -137,24 +137,7 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphExtendableInterface
-  for CellNodeFactory< NodeId, EdgeId, Kind >
-  where
-    NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
-    Kind : NodeKindInterface,
-  {
-
-    index!
-    {
-      node_making,
-    }
-
-  }
-
-  //
-
-  impl< NodeId, EdgeId, Kind > GraphEditableInterface
+  impl< NodeId, EdgeId, Kind > GraphNodesExtendableInterface
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
@@ -166,9 +149,28 @@ pub( crate ) mod private
     {
       node_mut,
       node_add_out_nodes,
+      node_making,
     }
 
   }
+
+  //
+
+//   impl< NodeId, EdgeId, Kind > GraphEditableInterface
+//   for CellNodeFactory< NodeId, EdgeId, Kind >
+//   where
+//     NodeId : IdentityInterface,
+//     EdgeId : IdentityInterface,
+//     Kind : NodeKindInterface,
+//   {
+//
+//     index!
+//     {
+//       node_mut,
+//       node_add_out_nodes,
+//     }
+//
+//   }
 
   //
 

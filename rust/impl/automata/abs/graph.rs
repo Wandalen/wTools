@@ -89,14 +89,64 @@ pub( crate ) mod private
 
   }
 
+//   ///
+//   /// Graph which allow to add more edges between nodes.
+//   ///
+//
+//   pub trait GraphEditableInterface
+//   where
+//     Self :
+//       GraphNodesInterface +
+//     ,
+//   {
+//
+//     /// Get node with id mutably.
+//     fn node_mut< Id >( &mut self, id : Id ) -> &mut Self::NodeHandle
+//     where
+//       Id : Into< NODE_ID!() >
+//     ;
+//
+//     /// Add out nodes to the node.
+//     fn node_add_out_nodes< IntoId1, IntoId2, Iter >
+//     (
+//       &mut self,
+//       node_id : IntoId1,
+//       out_nodes_iter : Iter,
+//     )
+//     where
+//       IntoId1 : Into< NODE_ID!() >,
+//       IntoId2 : Into< NODE_ID!() >,
+//       Iter : IntoIterator< Item = IntoId2 >,
+//       Iter::IntoIter : Clone,
+//     ;
+//
+//     // /// Add out edges to the node.
+//     // fn node_add_out_node< IntoId1, IntoId2 >
+//     // (
+//     //   &mut self,
+//     //   node_id : IntoId1,
+//     //   out_node_id : IntoId2,
+//     // )
+//     // where
+//     //   IntoId1 : Into< NODE_ID!() >,
+//     //   IntoId1 : Clone,
+//     //   IntoId2 : Into< NODE_ID!() >,
+//     //   IntoId2 : Clone,
+//     // {
+//     //   self.node_add_out_nodes( node_id, core::iter::once( out_node_id ) );
+//     // }
+//
+//   }
+
   ///
-  /// Graph which allow to add more edges between nodes.
+  /// Graph interface which allow to add more nodes. Know nothing about edges.
   ///
 
-  pub trait GraphEditableInterface
+  pub trait GraphNodesExtendableInterface
   where
     Self :
       GraphNodesInterface +
+      // GraphEditableInterface +
     ,
   {
 
@@ -106,7 +156,7 @@ pub( crate ) mod private
       Id : Into< NODE_ID!() >
     ;
 
-    /// Iterate output nodes of the node.
+    /// Add out nodes to the node.
     fn node_add_out_nodes< IntoId1, IntoId2, Iter >
     (
       &mut self,
@@ -120,8 +170,8 @@ pub( crate ) mod private
       Iter::IntoIter : Clone,
     ;
 
-    /// Iterate output nodes of the node.
-    fn node_add_edge_to_node< IntoId1, IntoId2 >
+    /// Add out edges to the node.
+    fn node_add_out_node< IntoId1, IntoId2 >
     (
       &mut self,
       node_id : IntoId1,
@@ -135,20 +185,6 @@ pub( crate ) mod private
     {
       self.node_add_out_nodes( node_id, core::iter::once( out_node_id ) );
     }
-
-  }
-
-  ///
-  /// Graph interface which allow to add more nodes.
-  ///
-
-  pub trait GraphExtendableInterface
-  where
-    Self :
-      GraphNodesInterface +
-      GraphEditableInterface +
-    ,
-  {
 
     /// Either make new or get existing node.
     fn node_making< Id >( &mut self, id : Id ) -> NODE_ID!()
@@ -172,10 +208,32 @@ pub( crate ) mod private
         let id2 = chunk.next().unwrap().into();
         self.node_making( id1 );
         self.node_making( id2 );
-        self.node_add_edge_to_node( id1, id2 );
+        self.node_add_out_node( id1, id2 );
       }
 
     }
+
+  }
+
+  ///
+  /// Graph interface which allow to add more edges.
+  ///
+
+  pub trait GraphEdgesExtendableInterface
+  where
+    Self :
+      GraphNodesInterface +
+      GraphEdgesInterface +
+      // GraphEditableInterface +
+      GraphNodesExtendableInterface +
+    ,
+  {
+
+    /// Either make new or get existing node.
+    fn edge_making_for_nodes< IntoNodeId >( &mut self, node1 : IntoNodeId, node2 : IntoNodeId ) -> EDGE_ID!()
+    where
+      IntoNodeId : Into< NODE_ID!() >,
+    ;
 
   }
 
@@ -224,8 +282,9 @@ pub mod prelude
   {
     GraphNodesInterface,
     GraphEdgesInterface,
-    GraphEditableInterface,
-    GraphExtendableInterface,
+    // GraphEditableInterface,
+    GraphNodesExtendableInterface,
+    GraphEdgesExtendableInterface,
     GraphKindGetterInterface,
   };
 }

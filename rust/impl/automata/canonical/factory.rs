@@ -29,6 +29,7 @@ pub( crate ) mod private
       Iter::IntoIter : Clone,
     {
 
+      let node_id = node_id.into();
       let iter = out_nodes_iter.into_iter();
       let iter2 = iter.clone();
 
@@ -46,10 +47,11 @@ pub( crate ) mod private
       {
         let id = id.into();
         id
+        // self.edge_making_for_nodes( node_id, id )
       })
       ;
 
-      self.node_mut( node_id.into() ).extend( iter3 );
+      self.node_mut( node_id ).extend( iter3 );
     }
 
     //
@@ -149,24 +151,7 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphExtendableInterface
-  for NodeFactory< NodeId, EdgeId, Kind >
-  where
-    NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
-    Kind : NodeKindInterface,
-  {
-
-    index!
-    {
-      node_making,
-    }
-
-  }
-
-  //
-
-  impl< NodeId, EdgeId, Kind > GraphEditableInterface
+  impl< NodeId, EdgeId, Kind > GraphNodesExtendableInterface
   for NodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
@@ -178,9 +163,28 @@ pub( crate ) mod private
     {
       node_mut,
       node_add_out_nodes,
+      node_making,
     }
 
   }
+
+  //
+
+//   impl< NodeId, EdgeId, Kind > GraphEditableInterface
+//   for NodeFactory< NodeId, EdgeId, Kind >
+//   where
+//     NodeId : IdentityInterface,
+//     EdgeId : IdentityInterface,
+//     Kind : NodeKindInterface,
+//   {
+//
+//     index!
+//     {
+//       node_mut,
+//       node_add_out_nodes,
+//     }
+//
+//   }
 
   //
 
