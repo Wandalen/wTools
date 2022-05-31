@@ -150,6 +150,7 @@ tests_impls!
     }
     // trace_macros!( false );
 
+    #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
       let got : Many< f32, f64 > = make!();

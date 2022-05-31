@@ -4,7 +4,7 @@ pub( crate ) mod private
   use crate::exposed::*;
 
   ///
-  /// Generate cod only if feature::make is enabled.
+  /// Generate code only if feature::make is enabled.
   ///
   /// Do not use manually.
   ///
@@ -18,6 +18,12 @@ pub( crate ) mod private
       $( $Rest )*
     };
   }
+
+  ///
+  /// Generate code only if feature::make is disabled.
+  ///
+  /// Do not use manually.
+  ///
 
   #[ cfg( not( feature = "make" ) ) ]
   #[ macro_export ]
