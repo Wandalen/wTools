@@ -26,9 +26,11 @@ include = [
 
 [features]
 default = [
+  "use_std",
   "make",
 ]
 full = [
+  "use_std",
   "make",
 ]
 make = []
