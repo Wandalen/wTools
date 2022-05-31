@@ -17,6 +17,9 @@ Diagnostics tools.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/diagnostics",
   "/Cargo.toml",
@@ -32,6 +35,10 @@ path = "rust/impl/diagnostics/lib.rs"
 name = "diagnostics_tools_test"
 path = "rust/test/diagnostics/lib_test.rs"
 
+[[test]]
+name = "diagnostics_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 # [[example]]
 # name = "diagnostics_tools_trivial"
 # path = "sample/rust/diagnostics_tools_trivial/src/main.rs"
@@ -42,9 +49,6 @@ default = [ "runtime_assertions", "compiletime_assertions" ]
 full = [ "runtime_assertions", "compiletime_assertions" ]
 runtime_assertions = [ "pretty_assertions" ] # run-time assertions
 compiletime_assertions = [] # compile-time assertions
-
-[package.metadata.docs.rs]
-all-features = true
 
 [dependencies]
 pretty_assertions = { version = "~1.2", optional = true }

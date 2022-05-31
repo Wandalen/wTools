@@ -12,7 +12,7 @@ pub( crate ) mod private
     ///
 
     #[ derive( Debug, PartialEq, Eq, Clone ) ]
-    single AttributeInner : syn::Attribute;
+    pub single AttributeInner : syn::Attribute;
 
   }
 

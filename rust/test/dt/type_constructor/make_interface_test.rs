@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::TheModule;
 use test_tools::*;
-use TheModule::*;
+// use TheModule::*;
 
 tests_impls!
 {
@@ -18,7 +18,7 @@ tests_impls!
       _2 : i32,
     }
 
-    impl Make0 for Struct1
+    impl TheModule::Make0 for Struct1
     {
       fn make_0() -> Self
       {
@@ -26,7 +26,7 @@ tests_impls!
       }
     }
 
-    impl Make1< i32 > for Struct1
+    impl TheModule::Make1< i32 > for Struct1
     {
       fn make_1( val : i32 ) -> Self
       {
@@ -34,7 +34,7 @@ tests_impls!
       }
     }
 
-    impl Make2< i32, i32 > for Struct1
+    impl TheModule::Make2< i32, i32 > for Struct1
     {
       fn make_2( val0 : i32, val1 : i32 ) -> Self
       {
@@ -42,7 +42,7 @@ tests_impls!
       }
     }
 
-    impl Make3< i32, i32, i32 > for Struct1
+    impl TheModule::Make3< i32, i32, i32 > for Struct1
     {
       fn make_3( val0 : i32, val1 : i32, val2 : i32 ) -> Self
       {
@@ -50,19 +50,19 @@ tests_impls!
       }
     }
 
-    let got : Struct1 = make!();
+    let got : Struct1 = TheModule::make!();
     let exp = Struct1{ _0 : 0, _1 : 0, _2 : 0 };
     a_id!( got, exp );
 
-    let got : Struct1 = make!( 13 );
+    let got : Struct1 = TheModule::make!( 13 );
     let exp = Struct1{ _0 : 13, _1 : 13, _2 : 13 };
     a_id!( got, exp );
 
-    let got : Struct1 = make!( 0, 1 );
+    let got : Struct1 = TheModule::make!( 0, 1 );
     let exp = Struct1{ _0 : 0, _1 : 1, _2 : 1 };
     a_id!( got, exp );
 
-    let got : Struct1 = make!( 0, 1, 2 );
+    let got : Struct1 = TheModule::make!( 0, 1, 2 );
     let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2 };
     a_id!( got, exp );
     let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2 };
@@ -83,7 +83,7 @@ tests_impls!
       b : i32,
     }
 
-    impl Make0 for Struct1
+    impl TheModule::Make0 for Struct1
     {
       fn make_0() -> Self
       {
@@ -91,7 +91,7 @@ tests_impls!
       }
     }
 
-    impl Make1< i32 > for Struct1
+    impl TheModule::Make1< i32 > for Struct1
     {
       fn make_1( val : i32 ) -> Self
       {
@@ -99,7 +99,7 @@ tests_impls!
       }
     }
 
-    impl Make2< i32, i32 > for Struct1
+    impl TheModule::Make2< i32, i32 > for Struct1
     {
       fn make_2( val1 : i32, val2 : i32 ) -> Self
       {
@@ -107,15 +107,15 @@ tests_impls!
       }
     }
 
-    let got : Struct1 = make!();
+    let got : Struct1 = TheModule::make!();
     let exp = Struct1{ a : 0, b : 0 };
     a_id!( got, exp );
 
-    let got : Struct1 = make!( 13 );
+    let got : Struct1 = TheModule::make!( 13 );
     let exp = Struct1{ a : 13, b : 13 };
     a_id!( got, exp );
 
-    let got : Struct1 = make!( 1, 3 );
+    let got : Struct1 = TheModule::make!( 1, 3 );
     let exp = Struct1{ a : 1, b : 3 };
     a_id!( got, exp );
 

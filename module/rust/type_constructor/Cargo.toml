@@ -1,6 +1,6 @@
 [package]
 name = "type_constructor"
-version = "0.1.13"
+version = "0.1.16"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -17,6 +17,9 @@ Fundamental data types and type constructors, like Single, Pair, Many.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/dt/type_constructor",
   "/Cargo.toml",
@@ -26,12 +29,19 @@ include = [
 
 [features]
 default = [
+  "use_std",
+  "many",
   "make",
 ]
 full = [
+  "use_std",
+  "many",
   "make",
 ]
+many = []
 make = []
+use_std = []
+use_alloc = []
 
 [lib]
 name = "type_constructor"
@@ -48,52 +58,45 @@ path = "rust/test/_integration_test/smoke_test.rs"
 [[example]]
 name = "type_constructor_trivial_sample"
 path = "sample/rust/type_constructor_trivial_sample/src/main.rs"
-# required-features = [ "types" ]
 
 [[example]]
 name = "type_constructor_derive_and_attr_sample"
 path = "sample/rust/type_constructor_derive_and_attr_sample/src/main.rs"
-# required-features = [ "types" ]
 
 [[example]]
 name = "type_constructor_struct_sample"
 path = "sample/rust/type_constructor_struct_sample/src/main.rs"
-# required-features = [ "types" ]
 
 [[example]]
 name = "type_constructor_parametrized_element_sample"
 path = "sample/rust/type_constructor_parametrized_element_sample/src/main.rs"
-# required-features = [ "types" ]
 
 [[example]]
 name = "type_constructor_parametrized_tuple_sample"
 path = "sample/rust/type_constructor_parametrized_tuple_sample/src/main.rs"
-# required-features = [ "types" ]
 
 [[example]]
 name = "type_constructor_multiple_sample"
 path = "sample/rust/type_constructor_multiple_sample/src/main.rs"
-# required-features = [ "types" ]
+required-features = [ "many" ]
 
 [[example]]
 name = "type_constructor_without_macro_sample"
 path = "sample/rust/type_constructor_without_macro_sample/src/main.rs"
-# required-features = [ "types" ]
+required-features = [ "many" ]
 
 [[example]]
 name = "type_constructor_pair_sample"
 path = "sample/rust/type_constructor_pair_sample/src/main.rs"
-# required-features = [ "types" ]
 
 [[example]]
 name = "type_constructor_homopair_sample"
 path = "sample/rust/type_constructor_homopair_sample/src/main.rs"
-# required-features = [ "types" ]
 
 [[example]]
 name = "type_constructor_many_sample"
 path = "sample/rust/type_constructor_many_sample/src/main.rs"
-# required-features = [ "types" ]
+required-features = [ "many" ]
 
 [dependencies]
 

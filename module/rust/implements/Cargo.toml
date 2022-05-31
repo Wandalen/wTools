@@ -34,6 +34,10 @@ path = "rust/impl/typing/implements_lib.rs"
 name = "implements_test"
 path = "rust/test/typing/implements_lib_test.rs"
 
+[[test]]
+name = "implements_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [[example]]
 name = "implements_trivial"
 path = "sample/rust/implements_trivial/src/main.rs"

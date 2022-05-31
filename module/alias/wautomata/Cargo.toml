@@ -32,6 +32,10 @@ path = "rust/impl/automata/wautomata_lib.rs"
 name = "wautomata_test"
 path = "rust/test/automata/wautomata_lib_test.rs"
 
+[[test]]
+name = "wautomata_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 # [[example]]
 # name = "wautomata_trivial_sample"
 # path = "sample/rust/wautomata_trivial_sample/src/main.rs"

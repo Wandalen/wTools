@@ -39,6 +39,10 @@ path = "rust/impl/iter/lib.rs"
 name = "iter_tools_test"
 path = "rust/test/iter/lib_test.rs"
 
+[[test]]
+name = "iter_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [[example]]
 name = "iter_tools_trivial"
 path = "sample/rust/iter_tools_trivial/src/main.rs"

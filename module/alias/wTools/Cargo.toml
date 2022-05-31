@@ -38,6 +38,10 @@ path = "rust/impl/wtools_alias_lib.rs"
 name = "wtools_alias_test"
 path = "rust/test/wtools_alias_lib_test.rs"
 
+[[test]]
+name = "wTools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [features]
 
 # iter

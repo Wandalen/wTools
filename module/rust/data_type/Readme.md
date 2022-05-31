@@ -20,21 +20,21 @@ Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/mac
   types!
   {
 
-    single MySingle : f32;
-    single SingleWithParametrized : std::sync::Arc< T : Copy >;
-    single SingleWithParameter : < T >;
+    pub single MySingle : f32;
+    pub single SingleWithParametrized : std::sync::Arc< T : Copy >;
+    pub single SingleWithParameter : < T >;
 
-    pair MyPair : f32;
-    pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
-    pair PairWithParameter : < T1, T2 >;
+    pub pair MyPair : f32;
+    pub pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
+    pub pair PairWithParameter : < T1, T2 >;
 
-    pair MyHomoPair : f32;
-    pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
-    pair HomoPairWithParameter : < T >;
+    pub pair MyHomoPair : f32;
+    pub pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
+    pub pair HomoPairWithParameter : < T >;
 
-    many MyMany : f32;
-    many ManyWithParametrized : std::sync::Arc< T : Copy >;
-    many ManyWithParameter : < T >;
+    pub many MyMany : f32;
+    pub many ManyWithParametrized : std::sync::Arc< T : Copy >;
+    pub many ManyWithParameter : < T >;
 
   }
 }

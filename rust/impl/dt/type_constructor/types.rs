@@ -3,8 +3,6 @@ pub( crate ) mod private
 {
   use crate::exposed::*;
 
-  // xxx : allow to use visibility prefix
-  // xxx : no std
   // xxx : write article about the module
   //
   // zzz : redo implements
@@ -27,33 +25,32 @@ pub( crate ) mod private
   /// - `HomoPair` to wrap pair of elements with the same type.
   /// - `Many` to wrap `Vec` of elements.
   ///
-  ///
   /// ## Macro `types` for type constructing
   ///
-  /// The same macro `types` is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
+  /// Macro `types` is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
   ///
-  /// ```rust
+  /// ```rust ignore
   /// {
   ///   use type_constructor::prelude::*;
   ///
   ///   types!
   ///   {
   ///
-  ///     single MySingle : f32;
-  ///     single SingleWithParametrized : std::sync::Arc< T : Copy >;
-  ///     single SingleWithParameter : < T >;
+  ///     pub single MySingle : f32;
+  ///     pub single SingleWithParametrized : std::sync::Arc< T : Copy >;
+  ///     pub single SingleWithParameter : < T >;
   ///
-  ///     pair MyPair : f32;
-  ///     pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
-  ///     pair PairWithParameter : < T1, T2 >;
+  ///     pub pair MyPair : f32;
+  ///     pub pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
+  ///     pub pair PairWithParameter : < T1, T2 >;
   ///
-  ///     pair MyHomoPair : f32;
-  ///     pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
-  ///     pair HomoPairWithParameter : < T >;
+  ///     pub pair MyHomoPair : f32;
+  ///     pub pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
+  ///     pub pair HomoPairWithParameter : < T >;
   ///
-  ///     many MyMany : f32;
-  ///     many ManyWithParametrized : std::sync::Arc< T : Copy >;
-  ///     many ManyWithParameter : < T >;
+  ///     pub many MyMany : f32;
+  ///     pub many ManyWithParametrized : std::sync::Arc< T : Copy >;
+  ///     pub many ManyWithParameter : < T >;
   ///
   ///   }
   /// }
@@ -65,7 +62,7 @@ pub( crate ) mod private
   ///
   /// Macro `types` is exposed to generate new types, but in some cases, it is enough to reuse already generated types of such kind. The library ships such types: Single, Pair, Homopair, Many. Note: If you avoid generating new types you will get in a position to be not able to define your own implementation of foreign traits because of orphan rule.
   ///
-  /// ```rust
+  /// ```rust ignore
   ///
   /// let i32_in_tuple = type_constructor::Single::< i32 >::from( 13 );
   /// dbg!( i32_in_tuple );
@@ -82,13 +79,30 @@ pub( crate ) mod private
   ///
   /// ```
   ///
+  /// ## Make.
+  ///
+  /// Make is the variadic constructor. It's the unified interface of the arbitrary-length constructor.
+  /// After implementing several traits `Make0`, `Make1` up to `MakeN` one can use make `make!` to construct instances.
+  ///
+  /// ```rust ignore
+  /// #[ cfg( feature = "make" ) ]
+  /// {
+  ///   use type_constructor::prelude::*;
+  ///
+  ///   let instance1 : Struct1 = make!();
+  ///   let instance2 : Struct1 = make!( 13 );
+  ///   let instance3 : Struct1 = make!( 1, 3 );
+  ///
+  /// }
+  /// ```
+  ///
   /// ### Sample :: single-line single.
   ///
   /// To define your own single-use macro `types!`. The single-line definition looks like that.
   ///
   /// ```rust
   /// use type_constructor::prelude::*;
-  /// types!( single MySingle : i32 );
+  /// types!( pub single MySingle : i32 );
   /// let x = MySingle( 13 );
   /// println!( "x : {}", x.0 );
   /// ```
@@ -123,6 +137,8 @@ pub( crate ) mod private
   ///   }
   /// }
   ///
+  /// /* ... */
+  ///
   /// let x = MySingle( 13 );
   /// println!( "x : {}", x.0 );
   /// ```
@@ -137,7 +153,7 @@ pub( crate ) mod private
   /// {
   ///   /// This is also attribute and macro understands it.
   ///   #[ derive( Debug ) ]
-  ///   single MySingle : i32;
+  ///   pub single MySingle : i32;
   /// }
   /// let x = MySingle( 13 );
   /// dbg!( x );
@@ -175,6 +191,8 @@ pub( crate ) mod private
   ///   }
   /// }
   ///
+  /// /* ... */
+  ///
   /// let x = MySingle( 13 );
   /// dbg!( x );
   /// ```
@@ -199,7 +217,7 @@ pub( crate ) mod private
   /// types!
   /// {
   ///   #[ derive( Debug ) ]
-  ///   single MySingle : std::sync::Arc< T : Copy >;
+  ///   pub single MySingle : std::sync::Arc< T : Copy >;
   /// }
   /// let x = MySingle( std::sync::Arc::new( 13 ) );
   /// dbg!( x );
@@ -235,6 +253,8 @@ pub( crate ) mod private
   ///   }
   /// }
   ///
+  /// /* ... */
+  ///
   /// let x = MySingle( std::sync::Arc::new( 13 ) );
   /// ```
   ///
@@ -248,7 +268,7 @@ pub( crate ) mod private
   /// types!
   /// {
   ///   #[ derive( Debug ) ]
-  ///   single MySingle : < T : Copy >;
+  ///   pub single MySingle : < T : Copy >;
   /// }
   /// let x = MySingle( 13 );
   /// dbg!( x );
@@ -290,7 +310,7 @@ pub( crate ) mod private
   /// ```rust
   /// use type_constructor::prelude::*;
   ///
-  /// types!( pair MyPair : i32, i64 );
+  /// types!( pub pair MyPair : i32, i64 );
   /// let x = MyPair( 13, 31 );
   /// println!( "x : ( {}, {} )", x.0, x.1 );
   /// // prints : x : ( 13, 31 )
@@ -319,6 +339,8 @@ pub( crate ) mod private
   ///   fn make_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
   /// }
   ///
+  /// /* ... */
+  ///
   /// let x = MyPair( 13, 31 );
   /// println!( "x : ( {}, {} )", x.0, x.1 );
   /// ```
@@ -334,7 +356,7 @@ pub( crate ) mod private
   /// types!
   /// {
   ///   #[ derive( Debug ) ]
-  ///   pair MyPair : < T1 : fmt::Debug, T2 : fmt::Debug >;
+  ///   pub pair MyPair : < T1 : fmt::Debug, T2 : fmt::Debug >;
   /// }
   /// let x = MyPair( 13, 13.0 );
   /// dbg!( x );
@@ -375,6 +397,8 @@ pub( crate ) mod private
   ///   fn make_2( _0 : T1, _1 : T2 ) -> Self { Self( _0, _1 ) }
   /// }
   ///
+  /// /* ... */
+  ///
   /// let x = MyPair( 13, 13.0 );
   /// dbg!( x );
   /// // prints : x = MyPair( 13, 13.0 )
@@ -387,7 +411,7 @@ pub( crate ) mod private
   /// ```rust
   /// use type_constructor::prelude::*;
   ///
-  /// types!( pair MyPair : i32, i64 );
+  /// types!( pub pair MyPair : i32, i64 );
   /// let x = MyPair( 13, 31 );
   /// println!( "x : ( {}, {} )", x.0, x.1 );
   /// // prints : x : ( 13, 31 )
@@ -416,6 +440,8 @@ pub( crate ) mod private
   ///   fn make_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
   /// }
   ///
+  /// /* ... */
+  ///
   /// let x = MyPair( 13, 31 );
   /// println!( "x : ( {}, {} )", x.0, x.1 );
   /// ```
@@ -431,7 +457,7 @@ pub( crate ) mod private
   /// types!
   /// {
   ///   #[ derive( Debug ) ]
-  ///   pair MyHomoPair : < T : fmt::Debug >;
+  ///   pub pair MyHomoPair : < T : fmt::Debug >;
   /// }
   /// let x = MyHomoPair( 13, 31 );
   /// dbg!( &x );
@@ -461,11 +487,11 @@ pub( crate ) mod private
   ///   {
   ///     #[ cfg( debug_assertions ) ]
   ///     {
-  ///       let layout1 = std::alloc::Layout::new::< Self >();
-  ///       let layout2 = std::alloc::Layout::new::< Self::Target >();
+  ///       let layout1 = core::alloc::Layout::new::< Self >();
+  ///       let layout2 = core::alloc::Layout::new::< Self::Target >();
   ///       debug_assert_eq!( layout1, layout2 );
   ///     }
-  ///     unsafe { std::mem::transmute::< _, _ >( self ) }
+  ///     unsafe { core::mem::transmute::< _, _ >( self ) }
   ///   }
   /// }
   ///
@@ -475,11 +501,11 @@ pub( crate ) mod private
   ///   {
   ///     #[ cfg( debug_assertions ) ]
   ///     {
-  ///       let layout1 = std::alloc::Layout::new::< Self >();
-  ///       let layout2 = std::alloc::Layout::new::< Self::Target >();
+  ///       let layout1 = core::alloc::Layout::new::< Self >();
+  ///       let layout2 = core::alloc::Layout::new::< Self::Target >();
   ///       debug_assert_eq!( layout1, layout2 );
   ///     }
-  ///     unsafe { std::mem::transmute::< _, _ >( self ) }
+  ///     unsafe { core::mem::transmute::< _, _ >( self ) }
   ///   }
   /// }
   ///
@@ -539,12 +565,12 @@ pub( crate ) mod private
   ///
   /// impl< T > AsTuple< ( T, T ) > for MyHomoPair< T >
   /// {
-  ///   fn as_tuple( &self ) -> &( T, T ) { unsafe { std::mem::transmute::< &_, &( T, T ) >( self ) } }
+  ///   fn as_tuple( &self ) -> &( T, T ) { unsafe { core::mem::transmute::< &_, &( T, T ) >( self ) } }
   /// }
   ///
   /// impl< T > AsArray< T, 2 > for MyHomoPair< T >
   /// {
-  ///   fn as_array( &self ) -> &[ T; 2 ] { unsafe { std::mem::transmute::< &_, &[ T; 2 ] >( self ) } }
+  ///   fn as_array( &self ) -> &[ T; 2 ] { unsafe { core::mem::transmute::< &_, &[ T; 2 ] >( self ) } }
   /// }
   ///
   /// impl< T > AsSlice< T > for MyHomoPair< T >
@@ -574,6 +600,8 @@ pub( crate ) mod private
   ///   fn make_2( _0 : T, _1 : T ) -> Self { Self( _0, _1 ) }
   /// }
   ///
+  /// /* ... */
+  ///
   /// let x = MyHomoPair( 13, 31 );
   /// dbg!( &x );
   /// // prints : &x = MyHomoPair( 13, 31 )
@@ -589,10 +617,10 @@ pub( crate ) mod private
   ///
   /// Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has essential traits implemented for it.
   ///
-  /// ```rust
+  /// ```rust ignore
   /// use type_constructor::prelude::*;
   ///
-  /// types!( many MyMany : i32 );
+  /// types!( pub many MyMany : i32 );
   /// let x = MyMany::from( [ 1, 2, 3 ] );
   /// println!( "x : {:?}", x.0 );
   /// ```
@@ -674,66 +702,11 @@ pub( crate ) mod private
   /// {
   ///   fn make_3( _0 : i32, _1 : i32, _2 : i32 ) -> Self { Self( vec![ _0, _1, _2 ] ) }
   /// }
+  ///
+  /// /* ... */
+  ///
   /// let x = MyMany::from( [ 1, 2, 3 ] );
   /// println!( "x : {:?}", x.0 );
-  /// ```
-  ///
-  /// ### Sample :: make - variadic constructor
-  ///
-  /// Implement traits [Make0], [Make1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
-  /// In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.
-  /// - Constructor without arguments fills fields with zero.
-  /// - Constructor with a single argument sets both fields to the value of the argument.
-  /// - Constructor with 2 arguments set individual values of each field.
-  ///
-  /// ```rust
-  /// #[ cfg( feature = "make" ) ]
-  /// {
-  ///   use type_constructor::prelude::*;
-  ///
-  ///   #[ derive( Debug, PartialEq ) ]
-  ///   struct Struct1
-  ///   {
-  ///     a : i32,
-  ///     b : i32,
-  ///   }
-  ///
-  ///   impl Make0 for Struct1
-  ///   {
-  ///     fn make_0() -> Self
-  ///     {
-  ///       Self { a : 0, b : 0 }
-  ///     }
-  ///   }
-  ///
-  ///   impl Make1< i32 > for Struct1
-  ///   {
-  ///     fn make_1( val : i32 ) -> Self
-  ///     {
-  ///       Self { a : val, b : val }
-  ///     }
-  ///   }
-  ///
-  ///   impl Make2< i32, i32 > for Struct1
-  ///   {
-  ///     fn make_2( val1 : i32, val2 : i32 ) -> Self
-  ///     {
-  ///       Self { a : val1, b : val2 }
-  ///     }
-  ///   }
-  ///
-  ///   let got : Struct1 = make!();
-  ///   let exp = Struct1{ a : 0, b : 0 };
-  ///   assert_eq!( got, exp );
-  ///
-  ///   let got : Struct1 = make!( 13 );
-  ///   let exp = Struct1{ a : 13, b : 13 };
-  ///   assert_eq!( got, exp );
-  ///
-  ///   let got : Struct1 = make!( 1, 3 );
-  ///   let exp = Struct1{ a : 1, b : 3 };
-  ///   assert_eq!( got, exp );
-  /// }
   /// ```
 
   // #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
@@ -763,6 +736,7 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
+      $Vis : vis
       single
       $( $Rest : tt )*
     )
@@ -771,7 +745,7 @@ pub( crate ) mod private
       $crate::_single!
       {
         $( #[ $Meta ] )*
-        single
+        $Vis single
         $( $Rest )*
       }
     };
@@ -780,6 +754,7 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
+      $Vis : vis
       pair
       $( $Rest : tt )*
     )
@@ -788,7 +763,7 @@ pub( crate ) mod private
       $crate::_pair!
       {
         $( #[ $Meta ] )*
-        pair
+        $Vis pair
         $( $Rest )*
       }
     };
@@ -797,6 +772,7 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
+      $Vis : vis
       many
       $( $Rest : tt )*
     )
@@ -805,7 +781,7 @@ pub( crate ) mod private
       $crate::_many!
       {
         $( #[ $Meta ] )*
-        many
+        $Vis many
         $( $Rest )*
       }
     };
@@ -823,7 +799,7 @@ pub( crate ) mod private
         (
           "Bad syntax.\n",
           "Expects : {kind} {name} : {type}.\n",
-          "For example : `single MySingle : std::sync::Arc< T : Copy >`.\n",
+          "For example : `pub single MySingle : std::sync::Arc< T : Copy >`.\n",
           "But got:\n",
           stringify!
           (

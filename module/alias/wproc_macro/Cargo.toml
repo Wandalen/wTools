@@ -33,6 +33,10 @@ path = "rust/impl/proc_macro/wproc_macro_lib.rs"
 name = "macro_tools_test"
 path = "rust/test/proc_macro/wproc_macro_lib_test.rs"
 
+[[test]]
+name = "wproc_macro_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [dependencies]
 proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
 

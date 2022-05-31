@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::TheModule;
 use test_tools::*;
-use TheModule::*;
+// use TheModule::*;
 
 tests_impls_optional!
 {
@@ -18,7 +18,7 @@ tests_impls_optional!
       pub use f32;
     }
 
-    types!
+    TheModule::types!
     {
 
       ///
@@ -31,7 +31,7 @@ tests_impls_optional!
 
     }
 
-    /* test.case( "from f32 / into Single" ) */
+    /* test.case( "from f32 into Single" ) */
     let instance1 : Single = ( 13.0 ).into();
     let instance2 = Single::from( 13.0 );
     a_id!( instance1.0, 13.0 );
@@ -42,14 +42,14 @@ tests_impls_optional!
     assert!( implements!( instance1 => fmt::Debug ) );
     assert!( !implements!( instance1 => Default ) );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from itself into itself" ) */
     let instance1 : Single = ( Single::from( 13.0 ) ).into();
     let instance2 = Single::from( Single::from( 13.0 ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from Single / into f32" ) */
+    /* test.case( "from Single into f32" ) */
     let instance1 : Single = ( 13.0 ).into();
     let got : f32 = instance1.into();
     a_id!( got, 13.0 );
@@ -75,6 +75,32 @@ tests_impls_optional!
   //
 
   #[ test ]
+  fn vis()
+  {
+
+    mod mod1
+    {
+      use super::*;
+      TheModule::types!
+      {
+        #[ derive( Debug, Clone ) ]
+        pub single Public1 : f32;
+        #[ derive( Debug, Clone ) ]
+        single Private1 : f32;
+      }
+    }
+
+    let instance1 : mod1::Public1 = ( 13.0 ).into();
+    a_id!( instance1.0, 13.0 );
+    // let instance1 : mod1::Private1 = ( 13.0 ).into();
+    // a_id!( instance1.0, 13.0 );
+    // qqq : add negative tests
+
+  }
+
+  //
+
+  #[ test ]
   fn empty_parameter()
   {
 
@@ -83,28 +109,28 @@ tests_impls_optional!
       pub use f32;
     }
 
-    types!
+    TheModule::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       single Single : mod1::f32<>;
     }
 
-    /* test.case( "from f32 / into Single" ) */
+    /* test.case( "from f32 into Single" ) */
     let instance1 : Single = ( 13.0 ).into();
     let instance2 = Single::from( 13.0 );
     a_id!( instance1.0, 13.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from itself into itself" ) */
     let instance1 : Single = ( Single::from( 13.0 ) ).into();
     let instance2 = Single::from( Single::from( 13.0 ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from Single / into f32" ) */
+    /* test.case( "from Single into f32" ) */
     let instance1 : Single = ( 13.0 ).into();
     let got : f32 = instance1.into();
     a_id!( got, 13.0 );
@@ -170,28 +196,28 @@ tests_impls_optional!
 
     }
 
-    types!
+    TheModule::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       single Single : mod1::Floats< T >;
     }
 
-    /* test.case( "from f32 / into Single" ) */
+    /* test.case( "from f32 into Single" ) */
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let instance2 = Single::< f32 >::from( mk!( 13.0 ) );
     a_id!( instance1.0.0, 13.0 );
     a_id!( instance2.0.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from itself into itself" ) */
     let instance1 : Single< f32 > = ( Single::from( mk!( 13.0 ) ) ).into();
     let instance2 = Single::< f32 >::from( Single::from( mk!( 13.0 ) ) );
     a_id!( instance1.0.0, 13.0 );
     a_id!( instance2.0.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from Single / into f32" ) */
+    /* test.case( "from Single into f32" ) */
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let got : mod1::Floats< f32 > = instance1.into();
     a_id!( got.0, 13.0 );
@@ -257,7 +283,7 @@ tests_impls_optional!
 
     }
 
-    types!
+    TheModule::types!
     {
 
       ///
@@ -270,21 +296,21 @@ tests_impls_optional!
 
     }
 
-    /* test.case( "from f32 / into Single" ) */
+    /* test.case( "from f32 into Single" ) */
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let instance2 = Single::< f32 >::from( mk!( 13.0 ) );
     a_id!( instance1.0.0, 13.0 );
     a_id!( instance2.0.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from itself into itself" ) */
     let instance1 : Single< f32 > = ( Single::from( mk!( 13.0 ) ) ).into();
     let instance2 = Single::< f32 >::from( Single::from( mk!( 13.0 ) ) );
     a_id!( instance1.0.0, 13.0 );
     a_id!( instance2.0.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from Single / into f32" ) */
+    /* test.case( "from Single into f32" ) */
     let instance1 : Single< f32 > = ( mk!( 13.0 ) ).into();
     let got : mod1::Floats< f32 > = instance1.into();
     a_id!( got.0, 13.0 );
@@ -310,6 +336,14 @@ tests_impls_optional!
   fn parametrized_multiple()
   {
     use core::fmt;
+    use TheModule::
+    {
+      CloneAsTuple,
+      CloneAsArray,
+      AsTuple,
+      AsArray,
+      AsSlice,
+    };
 
     macro_rules! mk
     {
@@ -354,7 +388,7 @@ tests_impls_optional!
     }
 
     // trace_macros!( true );
-    types!
+    TheModule::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
@@ -365,7 +399,7 @@ tests_impls_optional!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make1" ) */
-      let got : Single< f32, f64 > = make!( mk!( 13.0 ) );
+      let got : Single< f32, f64 > = TheModule::make!( mk!( 13.0 ) );
       let exp = Single::< f32, f64 >::from( mk!( 13.0 ) );
       a_id!( got, exp );
     }
@@ -378,21 +412,28 @@ tests_impls_optional!
     assert!( !implements!( instance1 => Default ) );
     assert!( !implements!( instance1 => fmt::Display ) );
 
-    /* test.case( "from f32 / into Single" ) */
+    /* test.case( "from f32 into Single" ) */
     let instance1 : Single< f32, f64 > = ( mk!( 13.0 ) ).into();
     let instance2 = Single::< f32, f64 >::from( mk!( 13.0 ) );
     a_id!( instance1.0.0, 13.0 );
     a_id!( instance2.0.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from &f32 into Single" ) */
+    let instance1 : Single< f32, f64 > = ( &mk!( 13.0 ) ).into();
+    let instance2 = Single::< f32, f64 >::from( &mk!( 13.0 ) );
+    a_id!( instance1.0.0, 13.0 );
+    a_id!( instance2.0.0, 13.0 );
+    a_id!( instance1, instance2 );
+
+    /* test.case( "from itself into itself" ) */
     let instance1 : Single< f32, f64 > = ( Single::from( mk!( 13.0 ) ) ).into();
     let instance2 = Single::< f32, f64 >::from( Single::from( mk!( 13.0 ) ) );
     a_id!( instance1.0.0, 13.0 );
     a_id!( instance2.0.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from Single / into f32" ) */
+    /* test.case( "from Single into f32" ) */
     let instance1 : Single< f32, f64 > = ( mk!( 13.0 ) ).into();
     let got : mod1::Floats< f32, f64 > = instance1.into();
     a_id!( got.0, 13.0 );
@@ -482,7 +523,7 @@ tests_impls_optional!
     }
 
     // trace_macros!( true );
-    types!
+    TheModule::types!
     {
       single Single : mod1::Floats< T1, T2 >;
     }
@@ -499,8 +540,16 @@ tests_impls_optional!
   fn parameter()
   {
     use core::fmt;
+    use TheModule::
+    {
+      CloneAsTuple,
+      CloneAsArray,
+      AsTuple,
+      AsArray,
+      AsSlice,
+    };
 
-    types!
+    TheModule::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq, Default ) ]
@@ -510,7 +559,7 @@ tests_impls_optional!
     /* test.case( "make1" ) */
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
-      let got : Single< f32 > = make!( 13.0 );
+      let got : Single< f32 > = TheModule::make!( 13.0 );
       let exp = Single::< f32 >::from( 13.0 );
       a_id!( got, exp );
     }
@@ -523,14 +572,21 @@ tests_impls_optional!
     assert!( implements!( instance1 => Default ) );
     assert!( !implements!( instance1 => fmt::Display ) );
 
-    /* test.case( "from f32 / into Single" ) */
+    /* test.case( "from f32 into Single" ) */
     let instance1 : Single< f32 > = ( 13.0 ).into();
     let instance2 = Single::< f32 >::from( 13.0 );
     a_id!( instance1.0, 13.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from &f32 into Single" ) */
+    let instance1 : Single< f32 > = ( &13.0 ).into();
+    let instance2 = Single::< f32 >::from( &13.0 );
+    a_id!( instance1.0, 13.0 );
+    a_id!( instance2.0, 13.0 );
+    a_id!( instance1, instance2 );
+
+    /* test.case( "from itself into itself" ) */
     let instance1 : Single< f32 > = ( Single::from( 13.0 ) ).into();
     let instance2 = Single::< f32 >::from( Single::from( 13.0 ) );
     a_id!( instance1.0, 13.0 );
@@ -615,21 +671,21 @@ tests_impls_optional!
   fn parameter_complex()
   {
 
-    types!
+    TheModule::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       single Single : < T : core::cmp::PartialEq + core::clone::Clone >;
     }
 
-    /* test.case( "from f32 / into Single" ) */
+    /* test.case( "from f32 into Single" ) */
     let instance1 : Single< f32 > = ( 13.0 ).into();
     let instance2 = Single::< f32 >::from( 13.0 );
     a_id!( instance1.0, 13.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from itself into itself" ) */
     let instance1 : Single< f32 > = ( Single::from( 13.0 ) ).into();
     let instance2 = Single::< f32 >::from( Single::from( 13.0 ) );
     a_id!( instance1.0, 13.0 );
@@ -667,7 +723,7 @@ tests_impls_optional!
     }
 
     // trace_macros!( true );
-    types!
+    TheModule::types!
     {
       single Single : < T >;
     }
@@ -681,11 +737,38 @@ tests_impls_optional!
   //
 
   #[ test ]
+  fn parameter_vis()
+  {
+
+    mod mod1
+    {
+      use super::*;
+      TheModule::types!
+      {
+        #[ derive( Debug, Clone ) ]
+        pub single Public1 : < T >;
+        #[ derive( Debug, Clone ) ]
+        single Private1 : < T >;
+      }
+    }
+
+    let instance1 : mod1::Public1< f32 > = ( 13.0 ).into();
+    a_id!( instance1.0, 13.0 );
+    // let instance1 : mod1::Private1< f32 > = ( 13.0 ).into();
+    // a_id!( instance1.0, 13.0 );
+    // qqq : add negative tests
+    // qqq : add negative tests for pair, homopair and many
+
+  }
+
+  //
+
+  #[ test ]
   fn multiple()
   {
     use core::fmt;
 
-    types!
+    TheModule::types!
     {
 
       single Single1 : f32;
@@ -696,7 +779,7 @@ tests_impls_optional!
 
     }
 
-    /* test.case( "from f32 / into Single2" ) */
+    /* test.case( "from f32 into Single2" ) */
     let instance1 : Single1 = ( 13.0 ).into();
     let instance2 = Single1::from( 13.0 );
     a_id!( instance1.0, 13.0 );
@@ -706,7 +789,7 @@ tests_impls_optional!
     assert!( !implements!( instance1 => fmt::Debug ) );
     assert!( !implements!( instance1 => Default ) );
 
-    /* test.case( "from f32 / into Single2" ) */
+    /* test.case( "from f32 into Single2" ) */
     let instance1 : Single2 = ( 13.0 ).into();
     let instance2 = Single2::from( 13.0 );
     a_id!( instance1.0, 13.0 );
@@ -717,21 +800,21 @@ tests_impls_optional!
     assert!( implements!( instance1 => fmt::Debug ) );
     assert!( !implements!( instance1 => Default ) );
 
-    /* test.case( "from f32 / into Single2" ) */
+    /* test.case( "from f32 into Single2" ) */
     let instance1 : Single2 = ( 13.0 ).into();
     let instance2 = Single2::from( 13.0 );
     a_id!( instance1.0, 13.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from itself into itself" ) */
     let instance1 : Single2 = ( Single2::from( 13.0 ) ).into();
     let instance2 = Single2::from( Single2::from( 13.0 ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from Single2 / into f32" ) */
+    /* test.case( "from Single2 into f32" ) */
     let instance1 : Single2 = ( 13.0 ).into();
     let got : f32 = instance1.into();
     a_id!( got, 13.0 );
@@ -757,33 +840,33 @@ tests_impls_optional!
   fn struct_basic()
   {
 
-    /* test.case( "from f32 / into Single" ) */
-    let instance1 : Single< f32 > = ( 13.0 ).into();
-    let instance2 = Single::< f32 >::from( 13.0 );
+    /* test.case( "from f32 into Single" ) */
+    let instance1 : TheModule::Single< f32 > = ( 13.0 ).into();
+    let instance2 = TheModule::Single::< f32 >::from( 13.0 );
     a_id!( instance1.0, 13.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
-    let instance1 : Single< f32 > = ( Single::from( 13.0 ) ).into();
-    let instance2 = Single::< f32 >::from( Single::from( 13.0 ) );
+    /* test.case( "from itself into itself" ) */
+    let instance1 : TheModule::Single< f32 > = ( TheModule::Single::from( 13.0 ) ).into();
+    let instance2 = TheModule::Single::< f32 >::from( TheModule::Single::from( 13.0 ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : Single< f32 > = ( 13.0 ).into();
+    let instance1 : TheModule::Single< f32 > = ( 13.0 ).into();
     let instance2 = instance1.clone();
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
     /* test.case( "default" ) */
-    let instance1 : Single< f32 > = Default::default();
+    let instance1 : TheModule::Single< f32 > = Default::default();
     a_id!( instance1.0, 0.0 );
 
     /* test.case( "deref" ) */
     use core::ops::AddAssign;
-    let mut got : Single< f32 > = ( 13.5 ).into();
+    let mut got : TheModule::Single< f32 > = ( 13.5 ).into();
     a_id!( got.round(), 14.0 );
     got.add_assign( 1.0 );
     a_id!( got.0, 14.5 );
@@ -791,16 +874,16 @@ tests_impls_optional!
     /* test.case( "make0" ) */
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
-      let got : Single< f32 > = make!();
-      let exp = Single::< f32 >::from( 0.0 );
+      let got : TheModule::Single< f32 > = TheModule::make!();
+      let exp = TheModule::Single::< f32 >::from( 0.0 );
       a_id!( got, exp );
     }
 
     /* test.case( "make1" ) */
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
-      let got : Single< f32 > = make!( 13.0 );
-      let exp = Single::< f32 >::from( 13.0 );
+      let got : TheModule::Single< f32 > = TheModule::make!( 13.0 );
+      let exp = TheModule::Single::< f32 >::from( 13.0 );
       a_id!( got, exp );
     }
 
@@ -820,22 +903,22 @@ tests_impls_optional!
       { Self( src ) }
     }
 
-    /* test.case( "from f32 / into Single" ) */
-    let instance1 : Single< Floats< f32 > > = ( Floats( 13.0 ) ).into();
-    let instance2 = Single::< Floats< f32 > >::from( Floats( 13.0 ) );
+    /* test.case( "from f32 into Single" ) */
+    let instance1 : TheModule::Single< Floats< f32 > > = ( Floats( 13.0 ) ).into();
+    let instance2 = TheModule::Single::< Floats< f32 > >::from( Floats( 13.0 ) );
     a_id!( instance1.0.0, 13.0 );
     a_id!( instance2.0.0, 13.0 );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from itself into itself" ) */
     let val = Floats::< f32 >::new( 13.0 );
-    let instance1 : Single< Floats< f32 > > = ( Single::from( val ) ).into();
-    let instance2 = Single::< Floats< f32 > >::from( Single::from( Floats( 13.0 ) ) );
+    let instance1 : TheModule::Single< Floats< f32 > > = ( TheModule::Single::from( val ) ).into();
+    let instance2 = TheModule::Single::< Floats< f32 > >::from( TheModule::Single::from( Floats( 13.0 ) ) );
     a_id!( instance1.0.0, 13.0 );
     a_id!( instance2.0.0, 13.0 );
 
     /* test.case( "deref" ) */
     use core::ops::AddAssign;
-    let mut got : Single< f32 > = ( 13.5 ).into();
+    let mut got : TheModule::Single< f32 > = ( 13.5 ).into();
     a_id!( got.round(), 14.0 );
     got.add_assign( 1.0 );
     a_id!( got.0, 14.5 );
@@ -850,7 +933,7 @@ tests_impls_optional!
 
     /* test.case( "multiple" ) */
     {
-      types!
+      TheModule::types!
       {
 
         single MySingle : f32;
@@ -865,10 +948,33 @@ tests_impls_optional!
         pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
         pair HomoPairWithParameter : < T >;
 
-        many MyMany : f32;
-        many ManyWithParametrized : std::sync::Arc< T : Copy >;
-        many ManyWithParameter : < T >;
-
+        // #[ cfg
+        // (
+        //   all
+        //   (
+        //     feature = "many",
+        //     any( feature = "use_std", feature = "use_alloc" ),
+        //   )
+        // )]
+        // many MyMany : f32;
+        // #[ cfg
+        // (
+        //   all
+        //   (
+        //     feature = "many",
+        //     any( feature = "use_std", feature = "use_alloc" ),
+        //   )
+        // )]
+        // many ManyWithParametrized : std::sync::Arc< T : Copy >;
+        // #[ cfg
+        // (
+        //   all
+        //   (
+        //     feature = "many",
+        //     any( feature = "use_std", feature = "use_alloc" ),
+        //   )
+        // )]
+        // many ManyWithParameter : < T >;
       }
     }
 
@@ -883,21 +989,31 @@ tests_impls_optional!
       let two_i32_in_tuple = TheModule::HomoPair::< i32 >::from( ( 13, 31 ) );
       dbg!( two_i32_in_tuple );
       // vec_of_i32_in_tuple = HomoPair( 13, 31 )
-      let vec_of_i32_in_tuple = TheModule::Many::< i32 >::from( [ 1, 2, 3 ] );
-      dbg!( vec_of_i32_in_tuple );
-      // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+      #[ cfg
+      (
+        all
+        (
+          feature = "many",
+          any( feature = "use_std", feature = "use_alloc" ),
+        )
+      )]
+      {
+        let vec_of_i32_in_tuple = TheModule::Many::< i32 >::from( [ 1, 2, 3 ] );
+        dbg!( vec_of_i32_in_tuple );
+        // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+      }
     }
 
     /* test.case( "single-line" ) */
     {
-      types!( single MySingle : i32 );
+      TheModule::types!( single MySingle : i32 );
       let x = MySingle( 13 );
       println!( "x : {}", x.0 );
     }
 
     /* test.case( "derives and attributes" ) */
     {
-      types!
+      TheModule::types!
       {
         /// This is also attribute and macro understands it.
         #[ derive( Debug ) ]
@@ -909,13 +1025,13 @@ tests_impls_optional!
 
     /* test.case( "struct instead of macro" ) */
     {
-      let x = Single::< i32 >( 13 );
+      let x = TheModule::Single::< i32 >( 13 );
       dbg!( x );
     }
 
     /* test.case( "parametrized element" ) */
     {
-      types!
+      TheModule::types!
       {
         #[ derive( Debug ) ]
         single MySingle : std::sync::Arc< T : Copy >;
@@ -926,7 +1042,7 @@ tests_impls_optional!
 
     /* test.case( "parametrized tuple" ) */
     {
-      types!
+      TheModule::types!
       {
         #[ derive( Debug ) ]
         single MySingle : < T : Copy >;
@@ -945,6 +1061,7 @@ tests_index!
 {
 
   basic,
+  vis,
   empty_parameter,
   parametrized,
   parametrized_complex,
@@ -953,6 +1070,7 @@ tests_index!
   parameter,
   parameter_complex,
   parameter_no_derives,
+  parameter_vis,
   multiple,
   struct_basic,
   struct_no_derives,

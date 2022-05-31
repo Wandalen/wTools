@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::TheModule;
 use test_tools::*;
-use TheModule::*;
+// use TheModule::*;
 
 tests_impls!
 {
@@ -19,7 +19,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    types!
+    TheModule::types!
     {
 
       ///
@@ -33,7 +33,7 @@ tests_impls!
     }
     // trace_macros!( false );
 
-    /* test.case( "from f32 / into Many" ) */
+    /* test.case( "from f32 into Many" ) */
     let instance1 : Many = ( 13.0 ).into();
     let instance2 = Many::from( 13.0 );
     a_id!( instance1.0, vec![ 13.0 ] );
@@ -44,7 +44,7 @@ tests_impls!
     assert!( implements!( instance1 => fmt::Debug ) );
     assert!( !implements!( instance1 => Default ) );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from itself into itself" ) */
     let instance1 : Many = ( Many::from( 13.0 ) ).into();
     let instance2 = Many::from( Many::from( 13.0 ) );
     a_id!( instance1.0, vec![ 13.0 ] );
@@ -76,7 +76,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    types!
+    TheModule::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
@@ -84,7 +84,7 @@ tests_impls!
     }
     // trace_macros!( false );
 
-    /* test.case( "from f32 / into Many" ) */
+    /* test.case( "from f32 into Many" ) */
     let instance1 : Many = ( 13.0 ).into();
     let instance2 = Many::from( 13.0 );
     a_id!( instance1.0, vec![ 13.0 ] );
@@ -142,7 +142,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    types!
+    TheModule::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
@@ -153,34 +153,41 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
-      let got : Many< f32, f64 > = make!();
+      let got : Many< f32, f64 > = TheModule::make!();
       let exp = Many::< f32, f64 >( std::vec::Vec::new() );
       a_id!( got, exp );
 
       /* test.case( "make1" ) */
-      let got : Many< f32, f64 > = make!( mk!( 1.0 ) );
+      let got : Many< f32, f64 > = TheModule::make!( mk!( 1.0 ) );
       let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ) ) );
       a_id!( got, exp );
 
       /* test.case( "make2" ) */
-      let got : Many< f32, f64 > = make!( mk!( 1.0 ), mk!( 1.0 ) );
+      let got : Many< f32, f64 > = TheModule::make!( mk!( 1.0 ), mk!( 1.0 ) );
       let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ), mk!( 1.0 ) ) );
       a_id!( got, exp );
 
       /* test.case( "make3" ) */
-      let got : Many< f32, f64 > = make!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
+      let got : Many< f32, f64 > = TheModule::make!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
       let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) ) );
       a_id!( got, exp );
     }
 
-    /* test.case( "from f32 / into Many" ) */
+    /* test.case( "from f32 into Many" ) */
     let instance1 : Many< f32, f64 > = ( mk!( 13.0 ) ).into();
     let instance2 = Many::< f32, f64 >::from( mk!( 13.0 ) );
     a_id!( instance1.0, vec![ mk!( 13.0 ) ] );
     a_id!( instance2.0, vec![ mk!( 13.0 ) ] );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from &f32 into Many" ) */
+    let instance1 : Many< f32, f64 > = ( &mk!( 13.0 ) ).into();
+    let instance2 = Many::< f32, f64 >::from( &mk!( 13.0 ) );
+    a_id!( instance1.0, vec![ mk!( 13.0 ) ] );
+    a_id!( instance2.0, vec![ mk!( 13.0 ) ] );
+    a_id!( instance1, instance2 );
+
+    /* test.case( "from itself into itself" ) */
     let instance1 : Many< f32, f64 > = ( Many::from( mk!( 13.0 ) ) ).into();
     let instance2 = Many::< f32, f64 >::from( Many::from( mk!( 13.0 ) ) );
     a_id!( instance1.0, vec![ mk!( 13.0 ) ] );
@@ -219,6 +226,14 @@ tests_impls!
     let exp : Many< f32, f64 > = Many::from( mk!( 13.0 ) );
     a_id!( got, exp );
 
+    /* test.case( "from slice" ) */
+    let got : Many< f32, f64 > = ( &[ mk!( 1.0 ), mk!( 2.0 ), mk!( 3.0 ) ][ .. ] ).into();
+    let exp : Many< f32, f64 > = Many::from( [ mk!( 1.0 ), mk!( 2.0 ), mk!( 3.0 ) ] );
+    a_id!( got, exp );
+    let got = Many::< f32, f64 >::from( &[ mk!( 1.0 ), mk!( 2.0 ), mk!( 3.0 ) ][ .. ] );
+    let exp : Many< f32, f64 > = Many::from( [ mk!( 1.0 ), mk!( 2.0 ), mk!( 3.0 ) ] );
+    a_id!( got, exp );
+
     /* test.case( "clone / eq" ) */
     let instance1 : Many< f32, f64 > = ( mk!( 13.0 ) ).into();
     let instance2 = instance1.clone();
@@ -255,7 +270,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    types!
+    TheModule::types!
     {
       many Many : mod1::Floats< T1, T2 >;
     }
@@ -286,7 +301,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    types!
+    TheModule::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq, Default ) ]
@@ -305,34 +320,41 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
-      let got : Many< f32 > = make!();
+      let got : Many< f32 > = TheModule::make!();
       let exp = Many::< f32 >( std::vec::Vec::new() );
       a_id!( got, exp );
 
       /* test.case( "make1" ) */
-      let got : Many< f32 > = make!( mk!( 1.0 ) );
+      let got : Many< f32 > = TheModule::make!( mk!( 1.0 ) );
       let exp = Many::< f32 >( vec!( mk!( 1.0 ) ) );
       a_id!( got, exp );
 
       /* test.case( "make2" ) */
-      let got : Many< f32 > = make!( mk!( 1.0 ), mk!( 1.0 ) );
+      let got : Many< f32 > = TheModule::make!( mk!( 1.0 ), mk!( 1.0 ) );
       let exp = Many::< f32 >( vec!( mk!( 1.0 ), mk!( 1.0 ) ) );
       a_id!( got, exp );
 
       /* test.case( "make3" ) */
-      let got : Many< f32 > = make!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
+      let got : Many< f32 > = TheModule::make!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
       let exp = Many::< f32 >( vec!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) ) );
       a_id!( got, exp );
     }
 
-    /* test.case( "from f32 / into Many" ) */
+    /* test.case( "from f32 into Many" ) */
     let instance1 : Many< f32 > = ( 13.0 ).into();
     let instance2 = Many::< f32 >::from( 13.0 );
     a_id!( instance1.0, vec!( 13.0 ) );
     a_id!( instance2.0, vec!( 13.0 ) );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from &f32 into Many" ) */
+    let instance1 : Many< f32 > = ( &13.0 ).into();
+    let instance2 = Many::< f32 >::from( &13.0 );
+    a_id!( instance1.0, vec!( 13.0 ) );
+    a_id!( instance2.0, vec!( 13.0 ) );
+    a_id!( instance1, instance2 );
+
+    /* test.case( "from itself into itself" ) */
     let instance1 : Many< f32 > = ( Many::from( 13.0 ) ).into();
     let instance2 = Many::< f32 >::from( Many::from( 13.0 ) );
     a_id!( instance1.0, vec!( 13.0 ) );
@@ -356,6 +378,12 @@ tests_impls!
     a_id!( got, Many::from( 13.0 ) );
     let got = Many::< f32 >::from( (&[ 13.0 ][ .. ]) );
     a_id!( got, Many::from( 13.0 ) );
+
+    /* test.case( "from slice" ) */
+    let got : Many< f32 > = (&[ 1.0, 2.0, 3.0 ][ .. ]).into();
+    a_id!( got, Many::from( [ 1.0, 2.0, 3.0 ] ) );
+    let got = Many::< f32 >::from( (&[ 1.0, 2.0, 3.0 ][ .. ]) );
+    a_id!( got, Many::from( [ 1.0, 2.0, 3.0 ] ) );
 
     /* test.case( "clone / eq" ) */
     let instance1 : Many< f32 > = ( 13.0 ).into();
@@ -386,21 +414,21 @@ tests_impls!
   fn parameter_complex()
   {
 
-    types!
+    TheModule::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
       many Many : < T : core::cmp::PartialEq + core::clone::Clone >;
     }
 
-    /* test.case( "from f32 / into Many" ) */
+    /* test.case( "from f32 into Many" ) */
     let instance1 : Many< f32 > = ( 13.0 ).into();
     let instance2 = Many::< f32 >::from( 13.0 );
     a_id!( instance1.0, vec![ 13.0 ] );
     a_id!( instance2.0, vec![ 13.0 ] );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
+    /* test.case( "from itself into itself" ) */
     let instance1 : Many< f32 > = ( Many::from( 13.0 ) ).into();
     let instance2 = Many::< f32 >::from( Many::from( 13.0 ) );
     a_id!( instance1.0, vec![ 13.0 ] );
@@ -437,7 +465,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    types!
+    TheModule::types!
     {
       many Many : < T >;
     }
@@ -455,7 +483,7 @@ tests_impls!
   {
     use core::fmt;
 
-    types!
+    TheModule::types!
     {
 
       many Many1 : f32;
@@ -466,7 +494,7 @@ tests_impls!
 
     }
 
-    /* test.case( "from f32 / into Many2" ) */
+    /* test.case( "from f32 into Many2" ) */
     let instance1 : Many1 = ( 13.0 ).into();
     let instance2 = Many1::from( 13.0 );
     a_id!( instance1.0, vec![ 13.0 ] );
@@ -476,7 +504,7 @@ tests_impls!
     assert!( !implements!( instance1 => fmt::Debug ) );
     assert!( !implements!( instance1 => Default ) );
 
-    /* test.case( "from f32 / into Many2" ) */
+    /* test.case( "from f32 into Many2" ) */
     let instance1 : Many2 = ( 13.0 ).into();
     let instance2 = Many2::from( 13.0 );
     a_id!( instance1.0, vec![ 13.0 ] );
@@ -501,32 +529,32 @@ tests_impls!
   fn struct_basic()
   {
 
-    /* test.case( "from f32 / into Many" ) */
-    let instance1 : Many< f32 > = ( 13.0 ).into();
-    let instance2 = Many::< f32 >::from( 13.0 );
+    /* test.case( "from f32 into Many" ) */
+    let instance1 : TheModule::Many< f32 > = ( 13.0 ).into();
+    let instance2 = TheModule::Many::< f32 >::from( 13.0 );
     a_id!( instance1.0, vec![ 13.0 ] );
     a_id!( instance2.0, vec![ 13.0 ] );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from itself / into itself" ) */
-    let instance1 : Many< f32 > = ( Many::from( 13.0 ) ).into();
-    let instance2 = Many::< f32 >::from( Many::from( 13.0 ) );
+    /* test.case( "from itself into itself" ) */
+    let instance1 : TheModule::Many< f32 > = ( TheModule::Many::from( 13.0 ) ).into();
+    let instance2 = TheModule::Many::< f32 >::from( TheModule::Many::from( 13.0 ) );
     a_id!( instance1.0, vec![ 13.0 ] );
     a_id!( instance2.0, vec![ 13.0 ] );
     a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : Many< f32 > = ( 13.0 ).into();
+    let instance1 : TheModule::Many< f32 > = ( 13.0 ).into();
     let instance2 = instance1.clone();
     a_id!( instance2.0, vec![ 13.0 ] );
     a_id!( instance1, instance2 );
 
     /* test.case( "default" ) */
-    let instance1 : Many< f32 > = Default::default();
+    let instance1 : TheModule::Many< f32 > = Default::default();
     a_id!( instance1.0, std::vec::Vec::< f32 >::new() );
 
     /* test.case( "deref" ) */
-    let mut got : Many< f32 > = ( 13.0 ).into();
+    let mut got : TheModule::Many< f32 > = ( 13.0 ).into();
     a_id!( got.len(), 1 );
     a_id!( got.pop(), Some( 13.0 ) );
 
@@ -548,16 +576,16 @@ tests_impls!
       }
     }
 
-    /* test.case( "from f32 / into Many" ) */
-    let instance1 : Many< mod1::Floats< f32 > > = ( mod1::Floats( 13.0 ) ).into();
-    let instance2 = Many::< mod1::Floats< f32 > >::from( mod1::Floats( 13.0 ) );
+    /* test.case( "from f32 into Many" ) */
+    let instance1 : TheModule::Many< mod1::Floats< f32 > > = ( mod1::Floats( 13.0 ) ).into();
+    let instance2 = TheModule::Many::< mod1::Floats< f32 > >::from( mod1::Floats( 13.0 ) );
     a_id!( instance1.0[ 0 ].0, 13.0 );
     a_id!( instance1.len(), 1 );
     a_id!( instance2.0[ 0 ].0, 13.0 );
     a_id!( instance2.len(), 1 );
 
     /* test.case( "deref" ) */
-    let mut got : Many< f32 > = ( 13.0 ).into();
+    let mut got : TheModule::Many< f32 > = ( 13.0 ).into();
     a_id!( got.len(), 1 );
     a_id!( got.pop(), Some( 13.0 ) );
 
@@ -571,7 +599,7 @@ tests_impls!
 
     /* test.case( "single-line" ) */
     {
-      types!( many MyMany : i32 );
+      TheModule::types!( many MyMany : i32 );
       let x = MyMany::from( [ 1, 2, 3 ] );
       println!( "x : {:?}", x.0 );
     }

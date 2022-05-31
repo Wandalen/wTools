@@ -1,6 +1,6 @@
 [package]
 name = "data_type"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -47,6 +47,10 @@ path = "rust/impl/dt/data_type_lib.rs"
 [[test]]
 name = "data_type_test"
 path = "rust/test/dt/data_type_lib_test.rs"
+
+[[test]]
+name = "data_type_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "data_type_trivial_sample"
