@@ -29,6 +29,10 @@ path = "rust/impl/ca/wca_lib.rs"
 name = "wca_test"
 path = "rust/test/ca/mod.rs"
 
+[[test]]
+name = "wca_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }
 former = { version = "~0.1", path = "../../rust/former" }

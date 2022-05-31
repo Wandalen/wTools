@@ -43,6 +43,10 @@ path = "rust/impl/dt/type_constructor/fundamental_data_type_lib.rs"
 name = "fundamental_data_type_test"
 path = "rust/test/dt/type_constructor/fundamental_data_type_lib_test.rs"
 
+[[test]]
+name = "fundamental_data_type_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [dependencies]
 type_constructor = { version = "~0.1", path = "../../rust/type_constructor" }
 

@@ -33,6 +33,10 @@ path = "rust/impl/error/lib.rs"
 name = "error_test"
 path = "rust/test/error/lib_test.rs"
 
+[[test]]
+name = "werror_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [[example]]
 name = "error_trivial"
 path = "sample/rust/error_trivial/src/main.rs"

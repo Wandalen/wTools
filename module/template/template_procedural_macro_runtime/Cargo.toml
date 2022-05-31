@@ -33,6 +33,10 @@ path = "rust/impl/meta/procedural_macro/runtime/lib.rs"
 name = "procedural_macro_runtime_test"
 path = "rust/test/meta/procedural_macro_runtime_lib_test.rs"
 
+[[test]]
+name = "procedural_macro_runtime_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [dependencies]
 
 [dev-dependencies]

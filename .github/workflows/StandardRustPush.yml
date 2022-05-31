@@ -11,6 +11,10 @@ on :
       module_name :
         required : true
         type : string
+      with_smoke :
+        required : false
+        type : string
+        default : true
 
 concurrency :
 
@@ -19,7 +23,7 @@ concurrency :
 
 env :
 
-  CARGO_TERM_COLOR : always
+  CARGO_TERM_COLOR : ${{ inputs.with_smoke }}
   WITH_SMOKE : false
 
 jobs :

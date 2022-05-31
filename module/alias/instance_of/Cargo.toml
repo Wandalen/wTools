@@ -33,6 +33,10 @@ path = "rust/impl/typing/instance_of_lib.rs"
 name = "instance_of_test"
 path = "rust/test/typing/instance_of_lib_test.rs"
 
+[[test]]
+name = "instance_of_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [[example]]
 name = "instance_of_trivial"
 path = "sample/rust/instance_of_trivial/src/main.rs"

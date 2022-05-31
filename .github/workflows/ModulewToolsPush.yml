@@ -22,7 +22,9 @@ jobs :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/alias/wTools/Cargo.toml'
-      module_name : 'wTools'
+      # module_name : 'wTools'
+      module_name : 'wtools_alias'
+      with_smoke : local
 
   # std_tools
 

@@ -37,6 +37,10 @@ path = "rust/impl/time/lib.rs"
 name = "time_tools_test"
 path = "rust/test/time/lib_test.rs"
 
+[[test]]
+name = "time_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [[example]]
 name = "time_tools_trivial"
 path = "sample/rust/time_tools_trivial/src/main.rs"

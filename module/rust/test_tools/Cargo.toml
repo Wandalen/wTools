@@ -33,6 +33,10 @@ path = "rust/impl/test/test_tools_lib.rs"
 name = "test_tools_test"
 path = "rust/test/test/test_tools_lib_test.rs"
 
+[[test]]
+name = "test_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 # zzz : add sample
 # [[example]]
 # name = "test_tools_trivial"
