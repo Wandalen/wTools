@@ -3,8 +3,8 @@ pub( crate ) mod private
 {
   use crate::exposed::*;
 
+  // xxx : allow to use visibility prefix
   // xxx : no std
-  // qqq : for Dima : paste generated code for each sample
   // xxx : write article about the module
   //
   // zzz : redo implements

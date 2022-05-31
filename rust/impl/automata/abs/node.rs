@@ -16,6 +16,7 @@ pub( crate ) mod private
       Copy +
       fmt::Debug +
       PartialEq +
+      // Eq +
       Hash  +
       Default +
     ,
@@ -29,6 +30,7 @@ pub( crate ) mod private
       Copy +
       fmt::Debug +
       PartialEq +
+      // Eq +
       Hash  +
       Default +
     ,
@@ -39,7 +41,7 @@ pub( crate ) mod private
   /// No kind for nodes.
   ///
 
-  #[ derive( Debug, PartialEq, Copy, Clone, Hash, Default ) ]
+  #[ derive( Debug, PartialEq, Eq, Copy, Clone, Hash, Default ) ]
   pub struct NodeKindless();
 
   ///

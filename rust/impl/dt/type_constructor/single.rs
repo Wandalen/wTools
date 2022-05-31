@@ -119,7 +119,7 @@ pub( crate ) mod private
       }
 
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      CloneAsTuple< ( $ParamName, ) >
+      $crate::CloneAsTuple< ( $ParamName, ) >
       for $Name < $ParamName >
       where
         $ParamName : Clone,
@@ -348,7 +348,7 @@ pub( crate ) mod private
 
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      CloneAsTuple< ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, ) >
+      $crate::CloneAsTuple< ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, ) > // xxx
       for
       $Name $( < $( $ParamName ),* > )?
       where

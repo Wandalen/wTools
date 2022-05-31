@@ -10,7 +10,7 @@ pub( crate ) mod private
 
   pub trait NodeFactoryInterface
   where
-    Self : crate::GraphBasicInterface,
+    Self : crate::GraphNodesInterface,
   {
   }
 
