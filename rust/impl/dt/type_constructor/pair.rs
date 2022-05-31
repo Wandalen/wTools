@@ -277,14 +277,14 @@ pub( crate ) mod private
         {
           #[ cfg( debug_assertions ) ]
           {
-            let layout1 = std::alloc::Layout::new::< Self >();
-            let layout2 = std::alloc::Layout::new::< Self::Target >();
+            let layout1 = core::alloc::Layout::new::< Self >();
+            let layout2 = core::alloc::Layout::new::< Self::Target >();
             debug_assert_eq!( layout1, layout2 );
           }
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
@@ -300,14 +300,14 @@ pub( crate ) mod private
         {
           #[ cfg( debug_assertions ) ]
           {
-            let layout1 = std::alloc::Layout::new::< Self >();
-            let layout2 = std::alloc::Layout::new::< Self::Target >();
+            let layout1 = core::alloc::Layout::new::< Self >();
+            let layout2 = core::alloc::Layout::new::< Self::Target >();
             debug_assert_eq!( layout1, layout2 );
           }
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
@@ -439,7 +439,7 @@ pub( crate ) mod private
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< &_, &( $ParamName1, $ParamName1 ) >( self )
+            core::mem::transmute::< &_, &( $ParamName1, $ParamName1 ) >( self )
           }
         }
       }
@@ -456,7 +456,7 @@ pub( crate ) mod private
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< &_, &[ $ParamName1 ; 2 ] >( self )
+            core::mem::transmute::< &_, &[ $ParamName1 ; 2 ] >( self )
           }
         }
       }
@@ -565,14 +565,14 @@ pub( crate ) mod private
         {
           #[ cfg( debug_assertions ) ]
           {
-            let layout1 = std::alloc::Layout::new::< Self >();
-            let layout2 = std::alloc::Layout::new::< Self::Target >();
+            let layout1 = core::alloc::Layout::new::< Self >();
+            let layout2 = core::alloc::Layout::new::< Self::Target >();
             debug_assert_eq!( layout1, layout2 );
           }
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
@@ -589,14 +589,14 @@ pub( crate ) mod private
         {
           #[ cfg( debug_assertions ) ]
           {
-            let layout1 = std::alloc::Layout::new::< Self >();
-            let layout2 = std::alloc::Layout::new::< Self::Target >();
+            let layout1 = core::alloc::Layout::new::< Self >();
+            let layout2 = core::alloc::Layout::new::< Self::Target >();
             debug_assert_eq!( layout1, layout2 );
           }
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
@@ -790,7 +790,7 @@ pub( crate ) mod private
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
@@ -817,7 +817,7 @@ pub( crate ) mod private
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }

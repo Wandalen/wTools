@@ -25,7 +25,7 @@ pub( crate ) mod private
       // Safety : it differentiate different instances.
       let ptr = unsafe
       {
-        std::mem::transmute::< _, usize >( src )
+        core::mem::transmute::< _, usize >( src )
       };
       Self( ptr )
     }
@@ -38,7 +38,7 @@ pub( crate ) mod private
     {
       let ptr = unsafe
       {
-        std::mem::transmute::< _, usize >( src )
+        core::mem::transmute::< _, usize >( src )
       };
       Self( ptr )
     }

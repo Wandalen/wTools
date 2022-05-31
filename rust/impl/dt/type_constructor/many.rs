@@ -5,7 +5,7 @@ pub( crate ) mod private
 
   // yyy
   // extern crate alloc;
-  // use alloc::vec;
+  // use std::vec;
 
   ///
   /// Type constructor of many.

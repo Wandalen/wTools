@@ -164,7 +164,7 @@ pub( crate ) mod private
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
@@ -178,7 +178,7 @@ pub( crate ) mod private
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
@@ -415,7 +415,7 @@ pub( crate ) mod private
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
@@ -433,7 +433,7 @@ pub( crate ) mod private
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }

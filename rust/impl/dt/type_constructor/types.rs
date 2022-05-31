@@ -488,11 +488,11 @@ pub( crate ) mod private
   ///   {
   ///     #[ cfg( debug_assertions ) ]
   ///     {
-  ///       let layout1 = std::alloc::Layout::new::< Self >();
-  ///       let layout2 = std::alloc::Layout::new::< Self::Target >();
+  ///       let layout1 = core::alloc::Layout::new::< Self >();
+  ///       let layout2 = core::alloc::Layout::new::< Self::Target >();
   ///       debug_assert_eq!( layout1, layout2 );
   ///     }
-  ///     unsafe { std::mem::transmute::< _, _ >( self ) }
+  ///     unsafe { core::mem::transmute::< _, _ >( self ) }
   ///   }
   /// }
   ///
@@ -502,11 +502,11 @@ pub( crate ) mod private
   ///   {
   ///     #[ cfg( debug_assertions ) ]
   ///     {
-  ///       let layout1 = std::alloc::Layout::new::< Self >();
-  ///       let layout2 = std::alloc::Layout::new::< Self::Target >();
+  ///       let layout1 = core::alloc::Layout::new::< Self >();
+  ///       let layout2 = core::alloc::Layout::new::< Self::Target >();
   ///       debug_assert_eq!( layout1, layout2 );
   ///     }
-  ///     unsafe { std::mem::transmute::< _, _ >( self ) }
+  ///     unsafe { core::mem::transmute::< _, _ >( self ) }
   ///   }
   /// }
   ///
@@ -566,12 +566,12 @@ pub( crate ) mod private
   ///
   /// impl< T > AsTuple< ( T, T ) > for MyHomoPair< T >
   /// {
-  ///   fn as_tuple( &self ) -> &( T, T ) { unsafe { std::mem::transmute::< &_, &( T, T ) >( self ) } }
+  ///   fn as_tuple( &self ) -> &( T, T ) { unsafe { core::mem::transmute::< &_, &( T, T ) >( self ) } }
   /// }
   ///
   /// impl< T > AsArray< T, 2 > for MyHomoPair< T >
   /// {
-  ///   fn as_array( &self ) -> &[ T; 2 ] { unsafe { std::mem::transmute::< &_, &[ T; 2 ] >( self ) } }
+  ///   fn as_array( &self ) -> &[ T; 2 ] { unsafe { core::mem::transmute::< &_, &[ T; 2 ] >( self ) } }
   /// }
   ///
   /// impl< T > AsSlice< T > for MyHomoPair< T >
