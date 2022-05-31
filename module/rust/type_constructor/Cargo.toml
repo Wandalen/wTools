@@ -32,6 +32,8 @@ full = [
   "make",
 ]
 make = []
+use_std = []
+use_alloc = []
 
 [lib]
 name = "type_constructor"
@@ -48,52 +50,52 @@ path = "rust/test/_integration_test/smoke_test.rs"
 [[example]]
 name = "type_constructor_trivial_sample"
 path = "sample/rust/type_constructor_trivial_sample/src/main.rs"
-# required-features = [ "types" ]
+
 
 [[example]]
 name = "type_constructor_derive_and_attr_sample"
 path = "sample/rust/type_constructor_derive_and_attr_sample/src/main.rs"
-# required-features = [ "types" ]
+
 
 [[example]]
 name = "type_constructor_struct_sample"
 path = "sample/rust/type_constructor_struct_sample/src/main.rs"
-# required-features = [ "types" ]
+
 
 [[example]]
 name = "type_constructor_parametrized_element_sample"
 path = "sample/rust/type_constructor_parametrized_element_sample/src/main.rs"
-# required-features = [ "types" ]
+
 
 [[example]]
 name = "type_constructor_parametrized_tuple_sample"
 path = "sample/rust/type_constructor_parametrized_tuple_sample/src/main.rs"
-# required-features = [ "types" ]
+
 
 [[example]]
 name = "type_constructor_multiple_sample"
 path = "sample/rust/type_constructor_multiple_sample/src/main.rs"
-# required-features = [ "types" ]
+
 
 [[example]]
 name = "type_constructor_without_macro_sample"
 path = "sample/rust/type_constructor_without_macro_sample/src/main.rs"
-# required-features = [ "types" ]
+
 
 [[example]]
 name = "type_constructor_pair_sample"
 path = "sample/rust/type_constructor_pair_sample/src/main.rs"
-# required-features = [ "types" ]
+
 
 [[example]]
 name = "type_constructor_homopair_sample"
 path = "sample/rust/type_constructor_homopair_sample/src/main.rs"
-# required-features = [ "types" ]
+
 
 [[example]]
 name = "type_constructor_many_sample"
 path = "sample/rust/type_constructor_many_sample/src/main.rs"
-# required-features = [ "types" ]
+
 
 [dependencies]
 
