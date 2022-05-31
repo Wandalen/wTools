@@ -1,5 +1,5 @@
 # Module :: graphs_tools
-[![experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleGraphToolsPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleGraphToolsPush.yml) [![docs.rs](https://img.shields.io/docsrs/template_blank?color=e3e8f0&logo=docs.rs)](https://docs.rs/template_blank) [![discord](https://img.shields.io/discord/872391416519737405?color=e3e8f0&logo=discord&logoColor=e3e8f0)](https://discord.gg/JwTG6d2b)
+[![experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleGraphsToolsPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleGraphsToolsPush.yml) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleGraphsToolsPush.yml/badge.svg?branch=alpha)](https://github.com/Wandalen/wTools/actions/workflows/ModuleGraphsToolsPush.yml) [![docs.rs](../../../asset/img/docsrs.svg)](https://docs.rs/graphs_tools)
 
 Graphs tools.
 
