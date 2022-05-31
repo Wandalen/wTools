@@ -19,7 +19,7 @@ Besides type constructor for single element there are type constructors for `pai
 
 Macro `types` is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
 
-```rust
+```rust ignore
 {
   use type_constructor::prelude::*;
 
@@ -52,7 +52,7 @@ It generates more than 1000 lines of code, which otherwise you would have to wri
 
 Macro `types` is exposed to generate new types, but in some cases, it is enough to reuse already generated types of such kind. The library ships such types: Single, Pair, Homopair, Many. Note: If you avoid generating new types you will get in a position to be not able to define your own implementation of foreign traits because of orphan rule.
 
-```rust
+```rust ignore
 
 let i32_in_tuple = type_constructor::Single::< i32 >::from( 13 );
 dbg!( i32_in_tuple );
@@ -608,11 +608,21 @@ dbg!( &clone_as_tuple );
 Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has essential traits implemented for it.
 
 ```rust
-use type_constructor::prelude::*;
-
-types!( pub many MyMany : i32 );
-let x = MyMany::from( [ 1, 2, 3 ] );
-println!( "x : {:?}", x.0 );
+// #[ cfg
+// (
+//   all
+//   (
+//     feature = "many",
+//     any( feature = "use_std", feature = "use_alloc" ),
+//   )
+// )]
+// {
+//   use type_constructor::prelude::*;
+//
+//   types!( pub many MyMany : i32 );
+//   let x = MyMany::from( [ 1, 2, 3 ] );
+//   println!( "x : {:?}", x.0 );
+// }
 ```
 
 It generates code:

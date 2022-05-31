@@ -1,17 +1,32 @@
 
 /// Type constructor of many.
-// #[ cfg( feature = "types" ) ]
+#[ cfg
+(
+  all
+  (
+    feature = "many",
+    any( feature = "use_std", feature = "use_alloc" ),
+  )
+)]
 pub mod many;
+/// Type constructor of many.
+#[ cfg
+(
+  any
+  (
+    not( feature = "many" ),
+    all( not( feature = "use_std" ), not( feature = "use_alloc" ) ),
+  )
+)]
+#[ path = "./no_many.rs" ]
+pub mod many;
+
 /// Type constructor of pair.
-// #[ cfg( feature = "types" ) ]
 pub mod pair;
 /// Type constructor of single.
-// #[ cfg( feature = "types" ) ]
 pub mod single;
 /// Type constructors.
-// #[ cfg( feature = "types" ) ]
 pub mod types;
-
 /// Macro helpers.
 pub mod helper;
 /// Generic traits.
@@ -26,16 +41,16 @@ pub mod protected
   #[ doc( inline ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::many::orphan::*;
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::pair::orphan::*;
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::single::orphan::*;
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::types::orphan::*;
   #[ doc( inline ) ]
   pub use super::helper::orphan::*;
@@ -61,16 +76,16 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::many::exposed::*;
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::pair::exposed::*;
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::single::exposed::*;
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::types::exposed::*;
   #[ doc( inline ) ]
   pub use super::helper::exposed::*;
@@ -85,16 +100,16 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::many::prelude::*;
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::pair::prelude::*;
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::single::prelude::*;
   #[ doc( inline ) ]
-  // #[ cfg( feature = "types" ) ]
+
   pub use super::types::prelude::*;
   #[ doc( inline ) ]
   pub use super::helper::prelude::*;

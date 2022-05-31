@@ -23,8 +23,8 @@ concurrency :
 
 env :
 
-  CARGO_TERM_COLOR : ${{ inputs.with_smoke }}
-  WITH_SMOKE : false
+  CARGO_TERM_COLOR : always
+  WITH_SMOKE : ${{ inputs.with_smoke }}
 
 jobs :
 

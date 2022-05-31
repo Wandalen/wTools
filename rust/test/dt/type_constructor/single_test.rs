@@ -948,10 +948,33 @@ tests_impls_optional!
         pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
         pair HomoPairWithParameter : < T >;
 
-        many MyMany : f32;
-        many ManyWithParametrized : std::sync::Arc< T : Copy >;
-        many ManyWithParameter : < T >;
-
+        // #[ cfg
+        // (
+        //   all
+        //   (
+        //     feature = "many",
+        //     any( feature = "use_std", feature = "use_alloc" ),
+        //   )
+        // )]
+        // many MyMany : f32;
+        // #[ cfg
+        // (
+        //   all
+        //   (
+        //     feature = "many",
+        //     any( feature = "use_std", feature = "use_alloc" ),
+        //   )
+        // )]
+        // many ManyWithParametrized : std::sync::Arc< T : Copy >;
+        // #[ cfg
+        // (
+        //   all
+        //   (
+        //     feature = "many",
+        //     any( feature = "use_std", feature = "use_alloc" ),
+        //   )
+        // )]
+        // many ManyWithParameter : < T >;
       }
     }
 
@@ -966,9 +989,19 @@ tests_impls_optional!
       let two_i32_in_tuple = TheModule::HomoPair::< i32 >::from( ( 13, 31 ) );
       dbg!( two_i32_in_tuple );
       // vec_of_i32_in_tuple = HomoPair( 13, 31 )
-      let vec_of_i32_in_tuple = TheModule::Many::< i32 >::from( [ 1, 2, 3 ] );
-      dbg!( vec_of_i32_in_tuple );
-      // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+      #[ cfg
+      (
+        all
+        (
+          feature = "many",
+          any( feature = "use_std", feature = "use_alloc" ),
+        )
+      )]
+      {
+        let vec_of_i32_in_tuple = TheModule::Many::< i32 >::from( [ 1, 2, 3 ] );
+        dbg!( vec_of_i32_in_tuple );
+        // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+      }
     }
 
     /* test.case( "single-line" ) */
