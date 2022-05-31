@@ -44,8 +44,12 @@ name = "meta_tools_min"
 path = "rust/impl/meta/meta_tools_min_lib.rs"
 
 [[test]]
-name = "meta_tools_test"
+name = "meta_tools_min_test"
 path = "rust/test/meta/meta_tools_min_lib_test.rs"
+
+[[test]]
+name = "meta_tools_min_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "meta_tools_trivial_sample"

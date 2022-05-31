@@ -37,6 +37,10 @@ path = "rust/impl/censor/entry.rs"
 name = "censor_test"
 path = "rust/test/censor/censor_test.rs"
 
+[[test]]
+name = "censor_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 # [[example]]
 # name = "censor_trivial"
 # path = "sample/rust/censor_trivial/src/main.rs"

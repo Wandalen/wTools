@@ -132,6 +132,10 @@ path = "rust/impl/derive/lib.rs"
 name = "derive_tools_test"
 path = "rust/test/derive/derive_lib_test.rs"
 
+[[test]]
+name = "derive_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [[example]]
 name = "derive_tools_trivial_sample"
 path = "sample/rust/derive_tools_trivial_sample/src/main.rs"

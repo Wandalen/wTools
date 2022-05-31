@@ -48,6 +48,10 @@ path = "rust/impl/dt/data_type_lib.rs"
 name = "data_type_test"
 path = "rust/test/dt/data_type_lib_test.rs"
 
+[[test]]
+name = "data_type_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 # [[example]]
 # name = "data_type_trivial_sample"
 # path = "sample/rust/data_type_trivial_sample/src/main.rs"

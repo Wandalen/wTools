@@ -33,6 +33,10 @@ path = "rust/impl/test/wtest_basic_lib.rs"
 name = "wtest_basic_test"
 path = "rust/test/test/wtest_basic_lib_test.rs"
 
+[[test]]
+name = "wtest_basic_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [[example]]
 name = "wtest_basic_trivial_sample"
 path = "sample/rust/wtest_basic_trivial_sample/src/main.rs"

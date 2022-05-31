@@ -32,6 +32,10 @@ path = "rust/impl/diagnostics/lib.rs"
 name = "diagnostics_tools_test"
 path = "rust/test/diagnostics/lib_test.rs"
 
+[[test]]
+name = "diagnostics_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 # [[example]]
 # name = "diagnostics_tools_trivial"
 # path = "sample/rust/diagnostics_tools_trivial/src/main.rs"

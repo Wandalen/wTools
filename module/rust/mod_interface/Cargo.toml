@@ -37,6 +37,10 @@ path = "rust/impl/meta/mod_interface/front/lib.rs"
 name = "mod_interface_test"
 path = "rust/test/meta/mod_interface_lib_test.rs"
 
+[[test]]
+name = "mod_interface_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 # [[example]]
 # name = "mod_interface_trivial"
 # path = "sample/rust/mod_interface_trivial_sample/src/main.rs"

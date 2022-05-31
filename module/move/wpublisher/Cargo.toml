@@ -33,6 +33,10 @@ path = "rust/impl/publisher/entry.rs"
 name = "publisher_test"
 path = "rust/test/publisher/mod.rs"
 
+[[test]]
+name = "publisher_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 # [[example]]
 # name = "publisher_trivial"
 # path = "sample/rust/publisher_trivial/src/main.rs"
