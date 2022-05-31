@@ -3,14 +3,44 @@ pub( crate ) mod private
 {
   use crate::exposed::*;
 
-  // yyy
-  // extern crate alloc;
-  // use std::vec;
+  #[ cfg( not( feature = "use_std" ) ) ]
+  extern crate core;
+  #[ cfg( all( not( feature = "use_std" ), feature = "use_alloc" ) ) ]
+  extern crate alloc;
+
+  #[ cfg( any( feature = "use_std", not( feature = "use_alloc" ) ) ) ]
+  /// Alias of Vec for internal usage.
+  pub use std::vec::Vec as _Vec;
+  #[ cfg( all( not( feature = "use_std" ), feature = "use_alloc" ) ) ]
+  /// Alias of Vec for internal usage.
+  pub use alloc::vec::Vec as _Vec;
+
+  /// Alias of Vec for internal usage.
+  #[ macro_export ]
+  macro_rules! _vec
+  {
+    ( $( $Rest:tt )* )
+    =>
+    {{
+      let result;
+      #[ cfg( any( feature = "use_std", not( feature = "use_alloc" ) ) ) ]
+      {
+        result = std::vec!( $( $Rest )* );
+      }
+      #[ cfg( all( not( feature = "use_std" ), feature = "use_alloc" ) ) ]
+      {
+        extern crate alloc;
+        result = alloc::vec!( $( $Rest )* );
+      }
+      result
+    }}
+  }
 
   ///
   /// Type constructor of many.
   ///
   /// Should not be used directly. Instead use macro [crate::types!].
+  /// Type constructor `many` is available if eiter feature `use_std` or feature `use_alloc` is enabled. Also feature `many` should be enabled.
   ///
 
   #[ macro_export ]
@@ -30,13 +60,13 @@ pub( crate ) mod private
       $( #[ $Meta ] )*
       $Vis struct $Name
       < $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      ( pub std::vec::Vec< $ParamName > );
+      ( pub $crate::_Vec< $ParamName > );
 
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? > core::ops::Deref
       for $Name
       < $ParamName >
       {
-        type Target = std::vec::Vec< $ParamName >;
+        type Target = $crate::_Vec< $ParamName >;
         fn deref( &self ) -> &Self::Target
         {
           &self.0
@@ -60,7 +90,7 @@ pub( crate ) mod private
       {
         fn from( src : $ParamName ) -> Self
         {
-          Self( vec![ src ] )
+          Self( $crate::_vec![ src ] )
         }
       }
 
@@ -73,7 +103,7 @@ pub( crate ) mod private
       {
         fn from( src : &$ParamName ) -> Self
         {
-          Self( vec![ src.clone() ] )
+          Self( $crate::_vec![ src.clone() ] )
         }
       }
 
@@ -84,7 +114,7 @@ pub( crate ) mod private
       {
         fn from( src : ( $ParamName, ) ) -> Self
         {
-          Self( vec![ src.0 ] )
+          Self( $crate::_vec![ src.0 ] )
         }
       }
 
@@ -97,7 +127,7 @@ pub( crate ) mod private
       {
         fn from( src : [ $ParamName ; N ] ) -> Self
         {
-          Self( std::vec::Vec::from( src ) )
+          Self( $crate::_Vec::from( src ) )
         }
       }
 
@@ -110,7 +140,7 @@ pub( crate ) mod private
       {
         fn from( src : &[ $ParamName ] ) -> Self
         {
-          Self( std::vec::Vec::from( src ) )
+          Self( $crate::_Vec::from( src ) )
         }
       }
 
@@ -133,7 +163,7 @@ pub( crate ) mod private
         {
           fn make_0() -> Self
           {
-            Self( std::vec::Vec::new() )
+            Self( $crate::_Vec::new() )
           }
         }
 
@@ -143,7 +173,7 @@ pub( crate ) mod private
         {
           fn make_1( _0 : $ParamName ) -> Self
           {
-            Self( vec![ _0 ] )
+            Self( $crate::_vec![ _0 ] )
           }
         }
 
@@ -153,7 +183,7 @@ pub( crate ) mod private
         {
           fn make_2( _0 : $ParamName, _1 : $ParamName ) -> Self
           {
-            Self( vec![ _0, _1 ] )
+            Self( $crate::_vec![ _0, _1 ] )
           }
         }
 
@@ -163,7 +193,7 @@ pub( crate ) mod private
         {
           fn make_3( _0 : $ParamName, _1 : $ParamName, _2 : $ParamName ) -> Self
           {
-            Self( vec![ _0, _1, _2 ] )
+            Self( $crate::_vec![ _0, _1, _2 ] )
           }
         }
 
@@ -211,7 +241,7 @@ pub( crate ) mod private
       $( #[ $Meta ] )*
       $Vis struct $Name
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      ( pub std::vec::Vec< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? > );
+      ( pub $crate::_Vec< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? > );
 
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
@@ -219,7 +249,7 @@ pub( crate ) mod private
       for $Name
       $( < $( $ParamName ),* > )?
       {
-        type Target = std::vec::Vec< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >;
+        type Target = $crate::_Vec< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >;
         fn deref( &self ) -> &Self::Target
         {
           &self.0
@@ -247,7 +277,7 @@ pub( crate ) mod private
       {
         fn from( src : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
         {
-          Self( vec![ src ] )
+          Self( $crate::_vec![ src ] )
         }
       }
 
@@ -276,7 +306,7 @@ pub( crate ) mod private
       {
         fn from( src : ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , ) ) -> Self
         {
-          Self( vec![ src.0 ] )
+          Self( $crate::_vec![ src.0 ] )
         }
       }
 
@@ -291,7 +321,7 @@ pub( crate ) mod private
       {
         fn from( src : [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] ) -> Self
         {
-          Self( std::vec::Vec::from( src ) )
+          Self( $crate::_Vec::from( src ) )
         }
       }
 
@@ -306,7 +336,7 @@ pub( crate ) mod private
       {
         fn from( src : &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ] ) -> Self
         {
-          Self( std::vec::Vec::from( src ) )
+          Self( $crate::_Vec::from( src ) )
         }
       }
 
@@ -336,7 +366,7 @@ pub( crate ) mod private
         {
           fn make_0() -> Self
           {
-            Self( std::vec::Vec::< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >::new() )
+            Self( $crate::_Vec::< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >::new() )
           }
         }
 
@@ -353,7 +383,7 @@ pub( crate ) mod private
           )
           -> Self
           {
-            Self( vec![ _0 ] )
+            Self( $crate::_vec![ _0 ] )
           }
         }
 
@@ -375,7 +405,7 @@ pub( crate ) mod private
           )
           -> Self
           {
-            Self( vec![ _0, _1 ] )
+            Self( $crate::_vec![ _0, _1 ] )
           }
         }
 
@@ -399,7 +429,7 @@ pub( crate ) mod private
           )
           -> Self
           {
-            Self( vec![ _0, _1, _2 ] )
+            Self( $crate::_vec![ _0, _1, _2 ] )
           }
         }
 
@@ -429,6 +459,7 @@ pub( crate ) mod private
 
   }
 
+  pub use _vec;
   pub use _many;
 }
 
@@ -450,6 +481,14 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
+
+  pub use super::private::
+  {
+    _many,
+    _vec,
+    _Vec,
+  };
+
 }
 
 pub use exposed::*;
@@ -459,9 +498,6 @@ pub mod prelude
 {
   pub use super::private::
   {
-
-    _many,
     Many,
-
   };
 }
