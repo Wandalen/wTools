@@ -12,5 +12,5 @@ jobs :
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
-      manifest_path : 'module/move/graph_tools/Cargo.toml'
+      manifest_path : 'module/move/graphs_tools/Cargo.toml'
       module_name : 'graph_tools'

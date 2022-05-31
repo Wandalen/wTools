@@ -12,6 +12,8 @@ pub mod cell_factory;
 pub mod edge;
 /// Implements canonical factory.
 pub mod factory;
+/// Implements several identities.
+pub mod identity;
 /// Implements canonical node.
 pub mod node;
 
@@ -22,6 +24,7 @@ pub mod protected
   pub use super::cell_factory::orphan::*;
   pub use super::edge::orphan::*;
   pub use super::factory::orphan::*;
+  pub use super::identity::orphan::*;
   pub use super::node::orphan::*;
 }
 
@@ -34,6 +37,7 @@ pub mod exposed
   pub use super::cell_factory::exposed::*;
   pub use super::edge::exposed::*;
   pub use super::factory::exposed::*;
+  pub use super::identity::exposed::*;
   pub use super::node::exposed::*;
 }
 
@@ -43,5 +47,6 @@ pub mod prelude
   pub use super::cell_factory::prelude::*;
   pub use super::edge::prelude::*;
   pub use super::factory::prelude::*;
+  pub use super::identity::prelude::*;
   pub use super::node::prelude::*;
 }

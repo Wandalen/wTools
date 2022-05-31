@@ -8,13 +8,11 @@ String tools.
 ### Sample
 
 ```rust
-use wstring_tools::*;
-
-fn main()
+#[ cfg( feature = "split" ) ]
 {
   /* delimeter exists */
   let src = "abc def";
-  let iter = string::split()
+  let iter = wstring_tools::string::split()
   .src( src )
   .delimeter( " " )
   .stripping( false )
@@ -24,7 +22,7 @@ fn main()
 
   /* delimeter no exists */
   let src = "abc def";
-  let iter = string::split()
+  let iter = wstring_tools::string::split()
   .src( src )
   .delimeter( "g" )
   .perform();

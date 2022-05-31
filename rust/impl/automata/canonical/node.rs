@@ -10,39 +10,45 @@ pub( crate ) mod private
   /// Canonical implementation of node.
   ///
 
-  pub struct Node< Id = crate::IdentityWithInt, Kind = crate::NodeKindless >
+  pub struct Node< NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt, Kind = crate::NodeKindless >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
     /// Input node.
-    pub out_nodes : IndexSet< Id >,
+    pub out_nodes : IndexSet< NodeId >,
+    /// Input node.
+    pub out_edges : IndexSet< EdgeId >,
     /// Kind of the node.
     pub kind : Kind,
-    /// Name.
-    pub name : Id,
+    /// Identifier.
+    pub id : NodeId,
   }
 
   //
 
-  impl< Id, Kind > Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
 
-    /// Construct a name instance of the node.
-    pub fn make_named< Name >( name : Name ) ->Self
+    /// Construct an instance of the node with id.
+    pub fn make_with_id< Name >( id : Name ) ->Self
     where
       Name : Into< < Self as HasId >::Id >,
     {
       let out_nodes = IndexSet::new();
+      let out_edges = IndexSet::new();
       let kind = Default::default();
       Self
       {
         out_nodes,
+        out_edges,
         kind,
-        name : name.into(),
+        id : id.into(),
       }
     }
 
@@ -50,50 +56,54 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind, Name > Make1< Name >
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind, IntoId > Make1< IntoId >
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
-    Name : Into< < Self as HasId >::Id >,
+    IntoId : Into< < Self as HasId >::Id >,
   {
-    fn make_1( name : Name ) -> Self
+    fn make_1( id : IntoId ) -> Self
     {
-      Self::make_named( name )
+      Self::make_with_id( id )
     }
   }
 
   //
 
-  impl< Id, Kind > HasId
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > HasId
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
-    type Id = Id;
+    type Id = NodeId;
     fn id( &self ) -> Self::Id
     {
-      self.name
+      self.id
     }
   }
 
   //
 
-  impl< Id, Kind > NodeBasicInterface
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > NodeBasicInterface
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
   }
 
   //
 
-  impl< Id, Kind > Extend< < Self as HasId >::Id >
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > Extend< < Self as HasId >::Id >
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
     fn extend< Iter >( &mut self, iter : Iter )
@@ -109,10 +119,11 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind > fmt::Debug
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > fmt::Debug
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
@@ -128,10 +139,11 @@ pub( crate ) mod private
 
   //
 
-  impl< Id, Kind > PartialEq
-  for Node< Id, Kind >
+  impl< NodeId, EdgeId, Kind > PartialEq
+  for Node< NodeId, EdgeId, Kind >
   where
-    Id : IdentityInterface,
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
     fn eq( &self, other : &Self ) -> bool
@@ -139,6 +151,14 @@ pub( crate ) mod private
       self.id() == other.id()
     }
   }
+
+  impl< NodeId, EdgeId, Kind > Eq
+  for Node< NodeId, EdgeId, Kind >
+  where
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface,
+    Kind : NodeKindInterface,
+  {}
 
 }
 

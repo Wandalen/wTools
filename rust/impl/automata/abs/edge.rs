@@ -39,7 +39,7 @@ pub( crate ) mod private
   /// No kind for edges.
   ///
 
-  #[ derive( Debug, PartialEq, Copy, Clone, Hash, Default ) ]
+  #[ derive( Debug, PartialEq, Eq, Copy, Clone, Hash, Default ) ]
   pub struct EdgeKindless();
 
   ///
