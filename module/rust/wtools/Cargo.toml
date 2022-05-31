@@ -133,8 +133,19 @@ time_now = [ "time", "time_tools/now" ]
 # string
 
 string = [ "wstring_tools" ]
-string_default = [ "string" ]
-string_full = [ "string" ]
+string_indentation = [ "wstring_tools/indentation" ]
+string_parse = [ "wstring_tools/parse" ]
+string_split = [ "wstring_tools/split" ]
+string_default = [
+  "string_indentation",
+  "string_parse",
+  "string_split",
+]
+string_full = [
+  "string_indentation",
+  "string_parse",
+  "string_split",
+]
 
 # error
 

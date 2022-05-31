@@ -26,7 +26,11 @@ include = [
 ]
 
 [features]
-default = []
+indentation = []
+parse  = [ "split" ]
+split = []
+default = [ "indentation", "parse", "split" ]
+full = [ "indentation", "parse", "split" ]
 
 [lib]
 name = "wstring_tools"
