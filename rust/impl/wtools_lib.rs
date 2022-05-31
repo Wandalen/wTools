@@ -25,10 +25,6 @@
 /* zzz : use skeptic? */
 /* zzz : rename dt -> adt */
 
-/* zzz : make sure CD run test on both stable and nightly channels */
-/* zzz : make sure CD run debug tests and release tests */
-/* zzz : introduce tag to run fewer tests */
-
 /// Dependencies.
 pub mod dependencies
 {
