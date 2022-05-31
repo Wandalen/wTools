@@ -40,6 +40,10 @@ include = [
 # name = "select_matching_test"
 # path = "rust/test/meta/select_matching_test.rs"
 
+# [[test]]
+# name = "select_matching_smoke_test"
+# path = "rust/test/_integration_test/smoke_test.rs"
+
 # [[example]]
 # name = "trivial"
 # path = "sample/rust/select_matching_trivial/src/main.rs"

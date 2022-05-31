@@ -37,6 +37,10 @@ path = "rust/impl/meta/impls_index/front/lib.rs"
 name = "impls_index_test"
 path = "rust/test/meta/impls_index_lib_test.rs"
 
+[[test]]
+name = "impls_index_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 # [[example]]
 # name = "impls_index_trivial_sample"
 # path = "sample/rust/impls_index_trivial_sample/src/main.rs"

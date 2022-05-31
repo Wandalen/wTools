@@ -95,7 +95,7 @@ pub( crate ) mod private
   pub struct NodeFactory< NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt, Kind = crate::NodeKindless >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface + IdentityIncInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
     NodeFactory< NodeId, EdgeId, Kind > : crate::NodeFactoryInterface,
   {
@@ -108,7 +108,7 @@ pub( crate ) mod private
   impl< NodeId, EdgeId, Kind > NodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface + IdentityIncInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
   {
   }
@@ -119,7 +119,7 @@ pub( crate ) mod private
   for NodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface + IdentityIncInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
   {
     type NodeHandle = crate::canonical::Node< NodeId, EdgeId, Kind >;
@@ -136,7 +136,7 @@ pub( crate ) mod private
   impl< NodeId, EdgeId, Kind > GraphEdgesInterface
   for NodeFactory< NodeId, EdgeId, Kind >
   where
-    EdgeId : IdentityInterface + IdentityIncInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
     NodeId : IdentityInterface,
     Kind : NodeKindInterface,
   {
@@ -155,7 +155,7 @@ pub( crate ) mod private
   for NodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface + IdentityIncInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
   {
 
@@ -172,7 +172,7 @@ pub( crate ) mod private
 //   for NodeFactory< NodeId, EdgeId, Kind >
 //   where
 //     NodeId : IdentityInterface,
-//     EdgeId : IdentityInterface + IdentityIncInterface,
+//     EdgeId : IdentityInterface + IdentityGenerableInterface,
 //     Kind : NodeKindInterface,
 //   {
 //
@@ -196,7 +196,7 @@ pub( crate ) mod private
   for NodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface + IdentityIncInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
   {
     // type NodeHandle = crate::canonical::Node< NodeId, EdgeId, Kind >; /* xxx2 : remove? */
@@ -208,7 +208,7 @@ pub( crate ) mod private
   for NodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface + IdentityIncInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
   {
     index!( fmt );
@@ -220,7 +220,7 @@ pub( crate ) mod private
   for NodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
-    EdgeId : IdentityInterface + IdentityIncInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
   {
     index!

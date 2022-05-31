@@ -32,6 +32,10 @@ path = "rust/impl/fs/fs_tools_lib.rs"
 name = "fs_tools_test"
 path = "rust/test/fs/fs_tools_lib_test.rs"
 
+[[test]]
+name = "fs_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 # [[example]]
 # name = "fs_tools_trivial_sample"
 # path = "sample/rust/fs_tools_trivial_sample/src/main.rs"

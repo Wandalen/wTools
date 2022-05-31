@@ -42,12 +42,16 @@ pub( crate ) mod private
   /// Interface to identify an instance of somthing with ability to increase it to generate a new one.
   ///
 
-  pub trait IdentityIncInterface
+  pub trait IdentityGenerableInterface
   where
     Self : IdentityInterface,
   {
     /// Generate a new identity based on the current increasing it.
-    fn inc( &self ) -> Self;
+    fn next( &self ) -> Self;
+    /// Generate the first identity.
+    fn first() -> Self;
+    /// Check is the identity valid.
+    fn is_valid( &self ) -> bool;
   }
 
   ///
@@ -90,7 +94,7 @@ pub mod prelude
   pub use super::private::
   {
     IdentityInterface,
-    IdentityIncInterface,
+    IdentityGenerableInterface,
     HasId,
   };
 }

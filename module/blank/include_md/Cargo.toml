@@ -32,6 +32,10 @@ path = "rust/impl/_blank/standard_lib.rs"
 # name = "include_md_test"
 # path = "rust/test/include_md/include_md_lib_test.rs"
 
+# [[test]]
+# name = "include_md_smoke_test"
+# path = "rust/test/_integration_test/smoke_test.rs"
+
 # [[example]]
 # name = "include_md_trivial_sample"
 # path = "sample/move/include_md_trivial_sample/src/main.rs"

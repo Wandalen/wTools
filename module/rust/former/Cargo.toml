@@ -37,6 +37,10 @@ path = "rust/impl/former/front/lib.rs"
 name = "former_test"
 path = "rust/test/former/former_front_lib_test.rs"
 
+[[test]]
+name = "former_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [[example]]
 name = "former_trivial"
 path = "sample/rust/former_trivial/src/main.rs"

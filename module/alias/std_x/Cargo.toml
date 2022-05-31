@@ -36,6 +36,10 @@ path = "rust/impl/std_x_lib.rs"
 name = "std_x_test"
 path = "rust/test/std_x_lib_test.rs"
 
+[[test]]
+name = "std_x_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [features]
 
 # iter

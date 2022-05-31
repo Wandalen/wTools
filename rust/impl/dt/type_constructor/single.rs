@@ -13,18 +13,18 @@ pub( crate ) mod private
   macro_rules! _single
   {
 
-    // single Single : < T >;
+    // pub single Single : < T >;
 
     (
       $( #[ $Meta : meta ] )*
-      single $Name : ident :
+      $Vis : vis single $Name : ident :
       < $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? >
       $( ; $( $Rest : tt )* )?
     )
     =>
     {
       $( #[ $Meta ] )*
-      pub struct $Name
+      $Vis struct $Name
       < $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       ( pub $ParamName );
 
@@ -57,6 +57,19 @@ pub( crate ) mod private
         fn from( src : $ParamName ) -> Self
         {
           Self( src )
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      From< &$ParamName >
+      for $Name
+      < $ParamName >
+      where
+        $ParamName : Clone,
+      {
+        fn from( src : &$ParamName ) -> Self
+        {
+          Self( src.clone() )
         }
       }
 
@@ -131,7 +144,7 @@ pub( crate ) mod private
       }
 
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      CloneAsArray< $ParamName, 1 >
+      $crate::CloneAsArray< $ParamName, 1 >
       for $Name < $ParamName >
       where
         $ParamName : Clone,
@@ -143,7 +156,7 @@ pub( crate ) mod private
       }
 
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      AsTuple< ( $ParamName, ) >
+      $crate::AsTuple< ( $ParamName, ) >
       for $Name < $ParamName >
       {
         fn as_tuple( &self ) -> &( $ParamName, )
@@ -151,13 +164,13 @@ pub( crate ) mod private
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
 
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      AsArray< $ParamName, 1 >
+      $crate::AsArray< $ParamName, 1 >
       for $Name < $ParamName >
       {
         fn as_array( &self ) -> &[ $ParamName ; 1 ]
@@ -165,26 +178,25 @@ pub( crate ) mod private
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
 
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      AsSlice< $ParamName >
+      $crate::AsSlice< $ParamName >
       for $Name < $ParamName >
       {
         fn as_slice( &self ) -> &[ $ParamName ]
         {
-          &self.as_array()[ .. ]
+          &$crate::AsArray::as_array( self )[ .. ]
         }
       }
 
-      // #[  cfg( feature = "make" ) ]
       $crate::_if_make!
       {
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        Make0
+        $crate::Make0
         for $Name < $ParamName >
         where $ParamName : Default
         {
@@ -194,9 +206,9 @@ pub( crate ) mod private
           }
         }
 
-        // #[  cfg( feature = "make" ) ]
+
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        Make1< $ParamName >
+        $crate::Make1< $ParamName >
         for $Name < $ParamName >
         {
           fn make_1( _0 : $ParamName ) -> Self
@@ -211,7 +223,7 @@ pub( crate ) mod private
       $crate::types!{ $( $( $Rest )* )? }
     };
 
-    // single Single : < T1, ... >;
+    // pub single Single : < T1, ... >;
 
     (
       $( #[ $Meta : meta ] )*
@@ -237,18 +249,18 @@ pub( crate ) mod private
       );
     };
 
-    // single Single : Element< T1, T2, ... >;
+    // pub single Single : Element< T1, T2, ... >;
 
     (
       $( #[ $Meta : meta ] )*
-      single $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )*
+      $Vis : vis single $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )*
       $( < $( $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? ),* > )?
       $( ; $( $Rest : tt )* )?
     )
     =>
     {
       $( #[ $Meta ] )*
-      pub struct $Name
+      $Vis struct $Name
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       ( pub $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? );
 
@@ -287,6 +299,22 @@ pub( crate ) mod private
         fn from( src : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
         {
           Self( src )
+        }
+      }
+
+      impl
+      < __FromRef $( , $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* )? >
+      From
+      < &__FromRef >
+      for $Name
+      $( < $( $ParamName ),* > )?
+      where
+        __FromRef : Clone,
+        Self : From< __FromRef >,
+      {
+        fn from( src : &__FromRef ) -> Self
+        {
+          From::from( ( *src ).clone() )
         }
       }
 
@@ -348,7 +376,7 @@ pub( crate ) mod private
 
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      $crate::CloneAsTuple< ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, ) > // xxx
+      $crate::CloneAsTuple< ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, ) >
       for
       $Name $( < $( $ParamName ),* > )?
       where
@@ -362,7 +390,7 @@ pub( crate ) mod private
 
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      CloneAsArray< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , 1 >
+      $crate::CloneAsArray< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , 1 >
       for
       $Name $( < $( $ParamName ),* > )?
       where
@@ -376,7 +404,7 @@ pub( crate ) mod private
 
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      AsTuple< ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, ) >
+      $crate::AsTuple< ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, ) >
       for
       $Name $( < $( $ParamName ),* > )?
       where
@@ -387,14 +415,14 @@ pub( crate ) mod private
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
 
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      AsArray< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , 1 >
+      $crate::AsArray< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , 1 >
       for
       $Name $( < $( $ParamName ),* > )?
       where
@@ -405,14 +433,14 @@ pub( crate ) mod private
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
           unsafe
           {
-            std::mem::transmute::< _, _ >( self )
+            core::mem::transmute::< _, _ >( self )
           }
         }
       }
 
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      AsSlice< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+      $crate::AsSlice< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
       for
       $Name $( < $( $ParamName ),* > )?
       where
@@ -420,16 +448,15 @@ pub( crate ) mod private
       {
         fn as_slice( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ]
         {
-          &self.as_array()[ .. ]
+          &$crate::AsArray::as_array( self )[ .. ]
         }
       }
 
-      // #[  cfg( feature = "make" ) ]
       $crate::_if_make!
       {
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-        Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+        $crate::Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
         for
         $Name $( < $( $ParamName ),* > )?
         {
@@ -464,7 +491,7 @@ pub( crate ) mod private
     ///
 
     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
-    single Single : < T >;
+    pub single Single : < T >;
 
   }
 

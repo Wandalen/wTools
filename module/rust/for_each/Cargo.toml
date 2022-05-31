@@ -35,6 +35,10 @@ path = "rust/impl/meta/for_each/lib.rs"
 name = "for_each_test"
 path = "rust/test/meta/for_each_lib_test.rs"
 
+[[test]]
+name = "for_each_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
 [[example]]
 name = "for_each_trivial_sample"
 path = "sample/rust/for_each_trivial_sample/src/main.rs"

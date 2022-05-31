@@ -19,7 +19,7 @@ impl Default for BoolLike
 
 impl From< BoolLike > for bool
 {
-  fn from( bool_like: BoolLike ) -> Self
+  fn from( bool_like : BoolLike ) -> Self
   {
     match bool_like
     {
