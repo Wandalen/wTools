@@ -17,7 +17,7 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
-      pair $Name : ident :
+      $Vis : vis pair $Name : ident :
       <
         $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )?,
         $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x2 : path )* )? $(,)?
@@ -27,7 +27,7 @@ pub( crate ) mod private
     =>
     {
       $( #[ $Meta ] )*
-      pub struct $Name
+      $Vis struct $Name
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
         $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
@@ -66,7 +66,7 @@ pub( crate ) mod private
         }
       }
 
-      // #[  cfg( feature = "make" ) ]
+
       $crate::_if_make!
       {
 
@@ -75,7 +75,7 @@ pub( crate ) mod private
           $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
           $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
         >
-        Make0
+        $crate::Make0
         for $Name< $ParamName1, $ParamName2 >
         where
           $ParamName1 : Default,
@@ -87,13 +87,13 @@ pub( crate ) mod private
           }
         }
 
-        // #[  cfg( feature = "make" ) ]
+
         impl
         <
           $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
           $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
         >
-        Make2 < $ParamName1, $ParamName2 >
+        $crate::Make2 < $ParamName1, $ParamName2 >
         for $Name< $ParamName1, $ParamName2 >
         {
           fn make_2( _0 : $ParamName1, _1 : $ParamName2 ) -> Self
@@ -113,7 +113,7 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
-      pair $Name : ident :
+      $Vis : vis pair $Name : ident :
       <
         $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x3 : path )* )?,
         $ParamName2 : ident $( : $ParamTy2x1 : ident $( :: $ParamTy2xN : ident )* $( + $ParamTy2x3 : path )* )?,
@@ -130,7 +130,7 @@ pub( crate ) mod private
           stringify!
           (
             $( #[ $Meta ] )*
-            pair $Name :
+            $Vis pair $Name :
             <
               $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
               $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?,
@@ -145,7 +145,7 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
-      pair $Name : ident
+      $Vis : vis pair $Name : ident
       :
       $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*
       $( < $( $( $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? ),+ )? > )?
@@ -158,7 +158,7 @@ pub( crate ) mod private
     =>
     {
       $( #[ $Meta ] )*
-      pub struct $Name
+      $Vis struct $Name
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
         $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
@@ -219,13 +219,12 @@ pub( crate ) mod private
       $crate::_if_make!
       {
 
-        // #[ cfg( feature = "make" ) ]
         impl
         <
           $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
           $( $( $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )? ),* )?
         >
-        Make2
+        $crate::Make2
         <
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
           $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
@@ -251,7 +250,7 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
-      pair $Name : ident :
+      $Vis : vis pair $Name : ident :
       <
         $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? $(,)?
       >
@@ -260,7 +259,7 @@ pub( crate ) mod private
     =>
     {
       $( #[ $Meta ] )*
-      pub struct $Name
+      $Vis struct $Name
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
       >
@@ -402,7 +401,7 @@ pub( crate ) mod private
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
       >
-      CloneAsTuple< ( $ParamName1, $ParamName1 ) >
+      $crate::CloneAsTuple< ( $ParamName1, $ParamName1 ) >
       for $Name< $ParamName1 >
       where
         $ParamName1 : Clone,
@@ -417,7 +416,7 @@ pub( crate ) mod private
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
       >
-      CloneAsArray< $ParamName1, 2 >
+      $crate::CloneAsArray< $ParamName1, 2 >
       for $Name< $ParamName1 >
       where
         $ParamName1 : Clone,
@@ -432,7 +431,7 @@ pub( crate ) mod private
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
       >
-      AsTuple< ( $ParamName1 , $ParamName1 ) >
+      $crate::AsTuple< ( $ParamName1 , $ParamName1 ) >
       for $Name< $ParamName1 >
       {
         fn as_tuple( &self ) -> &( $ParamName1, $ParamName1 )
@@ -449,7 +448,7 @@ pub( crate ) mod private
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
       >
-      AsArray< $ParamName1, 2 >
+      $crate::AsArray< $ParamName1, 2 >
       for $Name< $ParamName1 >
       {
         fn as_array( &self ) -> &[ $ParamName1 ; 2 ]
@@ -466,24 +465,23 @@ pub( crate ) mod private
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
       >
-      AsSlice< $ParamName1 >
+      $crate::AsSlice< $ParamName1 >
       for $Name< $ParamName1 >
       {
         fn as_slice( &self ) -> &[ $ParamName1 ]
         {
-          &self.as_array()[ .. ]
+          &$crate::AsArray::as_array( self )[ .. ]
         }
       }
 
       $crate::_if_make!
       {
 
-        // #[ cfg( feature = "make" ) ]
         impl
         <
           $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
         >
-        Make0
+        $crate::Make0
         for $Name< $ParamName1 >
         where
           $ParamName1 : Default,
@@ -494,12 +492,11 @@ pub( crate ) mod private
           }
         }
 
-        // #[ cfg( feature = "make" ) ]
         impl
         <
           $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
         >
-        Make1< $ParamName1 >
+        $crate::Make1< $ParamName1 >
         for $Name< $ParamName1 >
         where
           $ParamName1 : Clone,
@@ -510,12 +507,11 @@ pub( crate ) mod private
           }
         }
 
-        // #[ cfg( feature = "make" ) ]
         impl
         <
           $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
         >
-        Make2< $ParamName1, $ParamName1 >
+        $crate::Make2< $ParamName1, $ParamName1 >
         for $Name< $ParamName1 >
         {
           fn make_2( _0 : $ParamName1, _1 : $ParamName1 ) -> Self
@@ -533,7 +529,7 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
-      pair $Name : ident
+      $Vis : vis pair $Name : ident
       :
       $TypeSplit1x1 : ident $( :: $TypeSplit1xN : ident )*
       $( < $( $( $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )? ),+ )? > )?
@@ -543,7 +539,7 @@ pub( crate ) mod private
     =>
     {
       $( #[ $Meta ] )*
-      pub struct $Name
+      $Vis struct $Name
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ )? )?
       >
@@ -728,7 +724,7 @@ pub( crate ) mod private
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
       >
-      CloneAsTuple
+      $crate::CloneAsTuple
       <(
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
@@ -752,7 +748,7 @@ pub( crate ) mod private
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
       >
-      CloneAsArray
+      $crate::CloneAsArray
       <
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
         2
@@ -775,7 +771,7 @@ pub( crate ) mod private
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
       >
-      AsTuple
+      $crate::AsTuple
       <(
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
@@ -803,7 +799,7 @@ pub( crate ) mod private
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
       >
-      AsArray
+      $crate::AsArray
       <
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
         2
@@ -830,7 +826,7 @@ pub( crate ) mod private
       <
         $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
       >
-      AsSlice
+      $crate::AsSlice
       <
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >
       >
@@ -844,19 +840,19 @@ pub( crate ) mod private
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >
         ]
         {
-          &self.as_array()[ .. ]
+          &$crate::AsArray::as_array( self )[ .. ]
         }
       }
 
       $crate::_if_make!
       {
 
-        // #[ cfg( feature = "make" ) ]
+        // #[ cfg( feature = $crate::Make" ) ]
         impl
         <
           $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
         >
-        Make1
+        $crate::Make1
         <
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >
         >
@@ -870,12 +866,12 @@ pub( crate ) mod private
           }
         }
 
-        // #[ cfg( feature = "make" ) ]
+        // #[ cfg( feature = $crate::Make" ) ]
         impl
         <
           $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
         >
-        Make2
+        $crate::Make2
         <
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
@@ -908,18 +904,30 @@ pub( crate ) mod private
     ///
     /// Type constructor to wrap two types into a tuple.
     ///
+    /// ### Sample
+    /// ```
+    /// let i32_and_f32_in_tuple = type_constructor::Pair::< i32, f32 >::from( ( 13, 13.0 ) );
+    /// dbg!( i32_and_f32_in_tuple );
+    /// // vec_of_i32_in_tuple = Pair( 13, 13.0 )
+    /// ```
+    ///
 
     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
-    pair Pair : < T1, T2 >;
+    pub pair Pair : < T1, T2 >;
 
     ///
     /// Type constructor to wrap pair of the same type.
     ///
+    /// ### Sample
+    /// ```
+    /// let two_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( ( 13, 31 ) );
+    /// dbg!( two_i32_in_tuple );
+    /// // vec_of_i32_in_tuple = HomoPair( 13, 31 )
+    /// ```
+    ///
 
     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
-    pair HomoPair : < T >;
-
-    // xxx : samples
+    pub pair HomoPair : < T >;
 
   }
 

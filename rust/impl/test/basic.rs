@@ -96,4 +96,5 @@ pub mod prelude
 {
   // use super::private as i;
   pub use super::private::test_suite;
+  pub use core::fmt; // zzz : add to prelude of wtools under feature fair_context
 }

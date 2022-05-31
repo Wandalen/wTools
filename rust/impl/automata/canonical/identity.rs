@@ -99,6 +99,7 @@ pub( crate ) mod private
   pub struct IdentityWithInt( pub isize )
   ;
 
+  // xxx
   // types!
   // {
   //   /// Identify an instance by integer.
@@ -115,19 +116,30 @@ pub( crate ) mod private
     {
       Self( val.into() )
     }
-    // xxx : make?
 
   }
 
-  // xxx : implement IdentityIncInterface for other identities
-  impl IdentityIncInterface for IdentityWithInt
+  // xxx : implement IdentityGenerableInterface for other identities
+  impl IdentityGenerableInterface for IdentityWithInt
   {
-    fn inc( &self ) -> Self
+
+    fn next( &self ) -> Self
     {
       let result = Self( self.0 + 1 );
-      assert!( result.0 > 0 );
+      assert!( self.is_valid() );
       result
     }
+
+    fn first() -> Self
+    {
+      Self( 1 )
+    }
+
+    fn is_valid( &self ) -> bool
+    {
+      self.0 > 0
+    }
+
   }
 
   impl From< isize > for IdentityWithInt
@@ -176,9 +188,12 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::private::IdentityWithPointer;
-  pub use super::private::IdentityWithName;
-  pub use super::private::IdentityWithInt;
+  pub use super::private::
+  {
+    IdentityWithPointer,
+    IdentityWithName,
+    IdentityWithInt,
+  };
   pub use super::prelude::*;
 }
 
@@ -186,4 +201,3 @@ pub mod exposed
 pub mod prelude
 {
 }
-

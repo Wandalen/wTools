@@ -9,6 +9,8 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
+// #![ no_std ]
+
 #[ path = "./inc.rs" ]
 mod inc;
 #[ doc( inline ) ]

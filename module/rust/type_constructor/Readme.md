@@ -17,7 +17,7 @@ Besides type constructor for single element there are type constructors for `pai
 
 ## Macro `types` for type constructing
 
-The same macro `types` is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
+Macro `types` is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
 
 ```rust
 {
@@ -26,21 +26,21 @@ The same macro `types` is responsible for generating code for Single, Pair, Homo
   types!
   {
 
-    single MySingle : f32;
-    single SingleWithParametrized : std::sync::Arc< T : Copy >;
-    single SingleWithParameter : < T >;
+    pub single MySingle : f32;
+    pub single SingleWithParametrized : std::sync::Arc< T : Copy >;
+    pub single SingleWithParameter : < T >;
 
-    pair MyPair : f32;
-    pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
-    pair PairWithParameter : < T1, T2 >;
+    pub pair MyPair : f32;
+    pub pair PairWithParametrized : std::sync::Arc< T1 : Copy >, std::sync::Arc< T2 : Copy >;
+    pub pair PairWithParameter : < T1, T2 >;
 
-    pair MyHomoPair : f32;
-    pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
-    pair HomoPairWithParameter : < T >;
+    pub pair MyHomoPair : f32;
+    pub pair HomoPairWithParametrized : std::sync::Arc< T : Copy >;
+    pub pair HomoPairWithParameter : < T >;
 
-    many MyMany : f32;
-    many ManyWithParametrized : std::sync::Arc< T : Copy >;
-    many ManyWithParameter : < T >;
+    pub many MyMany : f32;
+    pub many ManyWithParametrized : std::sync::Arc< T : Copy >;
+    pub many ManyWithParameter : < T >;
 
   }
 }
@@ -92,7 +92,7 @@ To define your own single-use macro `types!`. The single-line definition looks l
 
 ```rust
 use type_constructor::prelude::*;
-types!( single MySingle : i32 );
+types!( pub single MySingle : i32 );
 let x = MySingle( 13 );
 println!( "x : {}", x.0 );
 ```
@@ -127,6 +127,8 @@ impl From< MySingle > for i32
   }
 }
 
+/* ... */
+
 let x = MySingle( 13 );
 println!( "x : {}", x.0 );
 ```
@@ -141,7 +143,7 @@ types!
 {
   /// This is also attribute and macro understands it.
   #[ derive( Debug ) ]
-  single MySingle : i32;
+  pub single MySingle : i32;
 }
 let x = MySingle( 13 );
 dbg!( x );
@@ -179,6 +181,8 @@ impl From< MySingle > for i32
   }
 }
 
+/* ... */
+
 let x = MySingle( 13 );
 dbg!( x );
 ```
@@ -203,7 +207,7 @@ use type_constructor::prelude::*;
 types!
 {
   #[ derive( Debug ) ]
-  single MySingle : std::sync::Arc< T : Copy >;
+  pub single MySingle : std::sync::Arc< T : Copy >;
 }
 let x = MySingle( std::sync::Arc::new( 13 ) );
 dbg!( x );
@@ -239,6 +243,8 @@ impl< T : Copy > From< MySingle< T > > for std::sync::Arc< T >
   }
 }
 
+/* ... */
+
 let x = MySingle( std::sync::Arc::new( 13 ) );
 ```
 
@@ -252,7 +258,7 @@ use type_constructor::prelude::*;
 types!
 {
   #[ derive( Debug ) ]
-  single MySingle : < T : Copy >;
+  pub single MySingle : < T : Copy >;
 }
 let x = MySingle( 13 );
 dbg!( x );
@@ -294,7 +300,7 @@ Sometimes you need to wrap more than a single element into a tupдe. If types of
 ```rust
 use type_constructor::prelude::*;
 
-types!( pair MyPair : i32, i64 );
+types!( pub pair MyPair : i32, i64 );
 let x = MyPair( 13, 31 );
 println!( "x : ( {}, {} )", x.0, x.1 );
 // prints : x : ( 13, 31 )
@@ -323,6 +329,8 @@ impl Make2< i32, i64 > for MyPair
   fn make_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
 }
 
+/* ... */
+
 let x = MyPair( 13, 31 );
 println!( "x : ( {}, {} )", x.0, x.1 );
 ```
@@ -338,7 +346,7 @@ use core::fmt;
 types!
 {
   #[ derive( Debug ) ]
-  pair MyPair : < T1 : fmt::Debug, T2 : fmt::Debug >;
+  pub pair MyPair : < T1 : fmt::Debug, T2 : fmt::Debug >;
 }
 let x = MyPair( 13, 13.0 );
 dbg!( x );
@@ -379,6 +387,8 @@ impl< T1, T2 > Make2< T1, T2 > for MyPair< T1, T2 >
   fn make_2( _0 : T1, _1 : T2 ) -> Self { Self( _0, _1 ) }
 }
 
+/* ... */
+
 let x = MyPair( 13, 13.0 );
 dbg!( x );
 // prints : x = MyPair( 13, 13.0 )
@@ -391,7 +401,7 @@ If you need to wrap pair of elements with the same type use the type constructor
 ```rust
 use type_constructor::prelude::*;
 
-types!( pair MyPair : i32, i64 );
+types!( pub pair MyPair : i32, i64 );
 let x = MyPair( 13, 31 );
 println!( "x : ( {}, {} )", x.0, x.1 );
 // prints : x : ( 13, 31 )
@@ -420,6 +430,8 @@ impl Make2< i32, i64 > for MyPair
   fn make_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
 }
 
+/* ... */
+
 let x = MyPair( 13, 31 );
 println!( "x : ( {}, {} )", x.0, x.1 );
 ```
@@ -435,7 +447,7 @@ use core::fmt;
 types!
 {
   #[ derive( Debug ) ]
-  pair MyHomoPair : < T : fmt::Debug >;
+  pub pair MyHomoPair : < T : fmt::Debug >;
 }
 let x = MyHomoPair( 13, 31 );
 dbg!( &x );
@@ -578,6 +590,8 @@ impl< T > Make2< T, T > for MyHomoPair< T >
   fn make_2( _0 : T, _1 : T ) -> Self { Self( _0, _1 ) }
 }
 
+/* ... */
+
 let x = MyHomoPair( 13, 31 );
 dbg!( &x );
 // prints : &x = MyHomoPair( 13, 31 )
@@ -596,7 +610,7 @@ Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has
 ```rust
 use type_constructor::prelude::*;
 
-types!( many MyMany : i32 );
+types!( pub many MyMany : i32 );
 let x = MyMany::from( [ 1, 2, 3 ] );
 println!( "x : {:?}", x.0 );
 ```
@@ -678,6 +692,9 @@ impl Make3< i32, i32, i32 > for MyMany
 {
   fn make_3( _0 : i32, _1 : i32, _2 : i32 ) -> Self { Self( vec![ _0, _1, _2 ] ) }
 }
+
+/* ... */
+
 let x = MyMany::from( [ 1, 2, 3 ] );
 println!( "x : {:?}", x.0 );
 ```

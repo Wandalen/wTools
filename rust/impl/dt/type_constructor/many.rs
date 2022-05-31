@@ -3,6 +3,10 @@ pub( crate ) mod private
 {
   use crate::exposed::*;
 
+  // yyy
+  // extern crate alloc;
+  // use alloc::vec;
+
   ///
   /// Type constructor of many.
   ///
@@ -17,14 +21,14 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
-      many $Name : ident :
+      $Vis : vis many $Name : ident :
       < $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? >
       $( ; $( $Rest : tt )* )?
     )
     =>
     {
       $( #[ $Meta ] )*
-      pub struct $Name
+      $Vis struct $Name
       < $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       ( pub std::vec::Vec< $ParamName > );
 
@@ -57,6 +61,19 @@ pub( crate ) mod private
         fn from( src : $ParamName ) -> Self
         {
           Self( vec![ src ] )
+        }
+      }
+
+      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      From< &$ParamName >
+      for $Name
+      < $ParamName >
+      where
+        $ParamName : Clone,
+      {
+        fn from( src : &$ParamName ) -> Self
+        {
+          Self( vec![ src.clone() ] )
         }
       }
 
@@ -98,7 +115,7 @@ pub( crate ) mod private
       }
 
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      AsSlice< $ParamName >
+      $crate::AsSlice< $ParamName >
       for $Name < $ParamName >
       {
         fn as_slice( &self ) -> &[ $ParamName ]
@@ -111,7 +128,7 @@ pub( crate ) mod private
       {
 
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        Make0
+        $crate::Make0
         for $Name < $ParamName >
         {
           fn make_0() -> Self
@@ -121,7 +138,7 @@ pub( crate ) mod private
         }
 
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        Make1< $ParamName >
+        $crate::Make1< $ParamName >
         for $Name < $ParamName >
         {
           fn make_1( _0 : $ParamName ) -> Self
@@ -131,7 +148,7 @@ pub( crate ) mod private
         }
 
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        Make2< $ParamName, $ParamName >
+        $crate::Make2< $ParamName, $ParamName >
         for $Name < $ParamName >
         {
           fn make_2( _0 : $ParamName, _1 : $ParamName ) -> Self
@@ -141,7 +158,7 @@ pub( crate ) mod private
         }
 
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        Make3< $ParamName, $ParamName, $ParamName >
+        $crate::Make3< $ParamName, $ParamName, $ParamName >
         for $Name < $ParamName >
         {
           fn make_3( _0 : $ParamName, _1 : $ParamName, _2 : $ParamName ) -> Self
@@ -185,14 +202,14 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
-      many $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )*
+      $Vis : vis many $Name : ident : $TypeSplit1 : ident $( :: $TypeSplitN : ident )*
       $( < $( $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? ),* > )?
       $( ; $( $Rest : tt )* )?
     )
     =>
     {
       $( #[ $Meta ] )*
-      pub struct $Name
+      $Vis struct $Name
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       ( pub std::vec::Vec< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? > );
 
@@ -235,6 +252,22 @@ pub( crate ) mod private
       }
 
       impl
+      < __FromRef $( , $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* )? >
+      From
+      < &__FromRef >
+      for $Name
+      $( < $( $ParamName ),* > )?
+      where
+        __FromRef : Clone,
+        Self : From< __FromRef >,
+      {
+        fn from( src : &__FromRef ) -> Self
+        {
+          From::from( ( *src ).clone() )
+        }
+      }
+
+      impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       From
       < ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , ) >
@@ -273,14 +306,13 @@ pub( crate ) mod private
       {
         fn from( src : &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ] ) -> Self
         {
-          debug_assert_eq!( src.len(), 1 ); // xxx : add test with long slice
           Self( std::vec::Vec::from( src ) )
         }
       }
 
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      AsSlice< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+      $crate::AsSlice< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
       for
       $Name $( < $( $ParamName ),* > )?
       where
@@ -295,10 +327,10 @@ pub( crate ) mod private
       $crate::_if_make!
       {
 
-        // #[ cfg( feature = "make" ) ]
+        // #[ cfg( feature = $crate::Make" ) ]
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-        Make0
+        $crate::Make0
         for
         $Name $( < $( $ParamName ),* > )?
         {
@@ -308,10 +340,10 @@ pub( crate ) mod private
           }
         }
 
-        // #[ cfg( feature = "make" ) ]
+        // #[ cfg( feature = $crate::Make" ) ]
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-        Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+        $crate::Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
         for
         $Name $( < $( $ParamName ),* > )?
         {
@@ -325,10 +357,10 @@ pub( crate ) mod private
           }
         }
 
-        // #[ cfg( feature = "make" ) ]
+        // #[ cfg( feature = $crate::Make" ) ]
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-        Make2
+        $crate::Make2
         <
           $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
           $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
@@ -347,10 +379,10 @@ pub( crate ) mod private
           }
         }
 
-        // #[ cfg( feature = "make" ) ]
+        // #[ cfg( feature = $crate::Make" ) ]
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-        Make3
+        $crate::Make3
         <
           $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
           $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
@@ -382,13 +414,18 @@ pub( crate ) mod private
   {
 
     ///
-    /// Type constructor to wrap a another type into a tuple.
+    /// Type constructor to wrap a vector.
+    ///
+    /// ### Sample
+    /// ```rust
+    /// let vec_of_i32_in_tuple = type_constructor::Many::< i32 >::from( [ 1, 2, 3 ] );
+    /// dbg!( vec_of_i32_in_tuple );
+    /// // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+    /// ```
     ///
 
-    // xxx : sample
-
     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
-    many Many : < T >;
+    pub many Many : < T >;
 
   }
 
