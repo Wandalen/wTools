@@ -25,6 +25,25 @@ pub( crate ) mod private
     /// Otherwise NodeHandle could be &Node.
     type NodeHandle : NodeBasicInterface;
 
+    /// Convert argument into node id.
+    #[ allow( non_snake_case ) ]
+    #[ inline ]
+    fn NodeId< Id >( id : Id ) -> NODE_ID!()
+    where
+      Id : Into< NODE_ID!() >
+    {
+      id.into()
+    }
+
+    /// Convert argument into node id.
+    #[ inline ]
+    fn node_id< Id >( &self, id : Id ) -> NODE_ID!()
+    where
+      Id : Into< NODE_ID!() >
+    {
+      id.into()
+    }
+
     /// Get node with id.
     fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
     where
@@ -69,6 +88,25 @@ pub( crate ) mod private
     /// It's not always possible to operate an edge directly, for example it it has to be wrapped by cell ref. For that use NodeHandle.
     /// Otherwise EdgeHandle could be &Node.
     type EdgeHandle : EdgeBasicInterface;
+
+    /// Convert argument into edge id.
+    #[ allow( non_snake_case ) ]
+    #[ inline ]
+    fn EdgeId< Id >( id : Id ) -> EDGE_ID!()
+    where
+      Id : Into< EDGE_ID!() >
+    {
+      id.into()
+    }
+
+    /// Convert argument into edge id.
+    #[ inline ]
+    fn edge_id< Id >( &self, id : Id ) -> EDGE_ID!()
+    where
+      Id : Into< EDGE_ID!() >
+    {
+      Self::EdgeId( id )
+    }
 
     /// Get edge with id.
     fn edge< Id >( &self, id : Id ) -> &Self::EdgeHandle
