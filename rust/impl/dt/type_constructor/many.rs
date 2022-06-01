@@ -67,6 +67,7 @@ pub( crate ) mod private
       < $ParamName >
       {
         type Target = $crate::_Vec< $ParamName >;
+        #[ inline ]
         fn deref( &self ) -> &Self::Target
         {
           &self.0
@@ -77,6 +78,7 @@ pub( crate ) mod private
       for $Name
       < $ParamName >
       {
+        #[ inline ]
         fn deref_mut( &mut self ) -> &mut Self::Target
         {
           &mut self.0
@@ -88,6 +90,7 @@ pub( crate ) mod private
       for $Name
       < $ParamName >
       {
+        #[ inline ]
         fn from( src : $ParamName ) -> Self
         {
           Self( $crate::_vec![ src ] )
@@ -101,6 +104,7 @@ pub( crate ) mod private
       where
         $ParamName : Clone,
       {
+        #[ inline ]
         fn from( src : &$ParamName ) -> Self
         {
           Self( $crate::_vec![ src.clone() ] )
@@ -112,6 +116,7 @@ pub( crate ) mod private
       for $Name
       < $ParamName >
       {
+        #[ inline ]
         fn from( src : ( $ParamName, ) ) -> Self
         {
           Self( $crate::_vec![ src.0 ] )
@@ -125,6 +130,7 @@ pub( crate ) mod private
       where
         $ParamName : Clone,
       {
+        #[ inline ]
         fn from( src : [ $ParamName ; N ] ) -> Self
         {
           Self( $crate::_Vec::from( src ) )
@@ -138,6 +144,7 @@ pub( crate ) mod private
       where
         $ParamName : Clone,
       {
+        #[ inline ]
         fn from( src : &[ $ParamName ] ) -> Self
         {
           Self( $crate::_Vec::from( src ) )
@@ -148,6 +155,7 @@ pub( crate ) mod private
       $crate::AsSlice< $ParamName >
       for $Name < $ParamName >
       {
+        #[ inline ]
         fn as_slice( &self ) -> &[ $ParamName ]
         {
           &self[ .. ]
@@ -161,6 +169,7 @@ pub( crate ) mod private
         $crate::Make0
         for $Name < $ParamName >
         {
+          #[ inline ]
           fn make_0() -> Self
           {
             Self( $crate::_Vec::new() )
@@ -171,6 +180,7 @@ pub( crate ) mod private
         $crate::Make1< $ParamName >
         for $Name < $ParamName >
         {
+          #[ inline ]
           fn make_1( _0 : $ParamName ) -> Self
           {
             Self( $crate::_vec![ _0 ] )
@@ -181,6 +191,7 @@ pub( crate ) mod private
         $crate::Make2< $ParamName, $ParamName >
         for $Name < $ParamName >
         {
+          #[ inline ]
           fn make_2( _0 : $ParamName, _1 : $ParamName ) -> Self
           {
             Self( $crate::_vec![ _0, _1 ] )
@@ -191,6 +202,7 @@ pub( crate ) mod private
         $crate::Make3< $ParamName, $ParamName, $ParamName >
         for $Name < $ParamName >
         {
+          #[ inline ]
           fn make_3( _0 : $ParamName, _1 : $ParamName, _2 : $ParamName ) -> Self
           {
             Self( $crate::_vec![ _0, _1, _2 ] )
@@ -250,6 +262,7 @@ pub( crate ) mod private
       $( < $( $ParamName ),* > )?
       {
         type Target = $crate::_Vec< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >;
+        #[ inline ]
         fn deref( &self ) -> &Self::Target
         {
           &self.0
@@ -262,6 +275,7 @@ pub( crate ) mod private
       for $Name
       $( < $( $ParamName ),* > )?
       {
+        #[ inline ]
         fn deref_mut( &mut self ) -> &mut Self::Target
         {
           &mut self.0
@@ -275,6 +289,7 @@ pub( crate ) mod private
       for $Name
       $( < $( $ParamName ),* > )?
       {
+        #[ inline ]
         fn from( src : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
         {
           Self( $crate::_vec![ src ] )
@@ -291,6 +306,7 @@ pub( crate ) mod private
         __FromRef : Clone,
         Self : From< __FromRef >,
       {
+        #[ inline ]
         fn from( src : &__FromRef ) -> Self
         {
           From::from( ( *src ).clone() )
@@ -304,6 +320,7 @@ pub( crate ) mod private
       for $Name
       $( < $( $ParamName ),* > )?
       {
+        #[ inline ]
         fn from( src : ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , ) ) -> Self
         {
           Self( $crate::_vec![ src.0 ] )
@@ -319,6 +336,7 @@ pub( crate ) mod private
       where
         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
+        #[ inline ]
         fn from( src : [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] ) -> Self
         {
           Self( $crate::_Vec::from( src ) )
@@ -334,6 +352,7 @@ pub( crate ) mod private
       where
         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
+        #[ inline ]
         fn from( src : &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ] ) -> Self
         {
           Self( $crate::_Vec::from( src ) )
@@ -348,6 +367,7 @@ pub( crate ) mod private
       where
         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
+        #[ inline ]
         fn as_slice( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ]
         {
           &self[ .. ]
@@ -364,6 +384,7 @@ pub( crate ) mod private
         for
         $Name $( < $( $ParamName ),* > )?
         {
+          #[ inline ]
           fn make_0() -> Self
           {
             Self( $crate::_Vec::< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >::new() )
@@ -377,6 +398,7 @@ pub( crate ) mod private
         for
         $Name $( < $( $ParamName ),* > )?
         {
+          #[ inline ]
           fn make_1
           (
             _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
@@ -398,6 +420,7 @@ pub( crate ) mod private
         for
         $Name $( < $( $ParamName ),* > )?
         {
+          #[ inline ]
           fn make_2
           (
             _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
@@ -421,6 +444,7 @@ pub( crate ) mod private
         for
         $Name $( < $( $ParamName ),* > )?
         {
+          #[ inline ]
           fn make_3
           (
             _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
@@ -481,14 +505,12 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
-
   pub use super::private::
   {
     _many,
     _vec,
     _Vec,
   };
-
 }
 
 pub use exposed::*;
@@ -501,3 +523,5 @@ pub mod prelude
     Many,
   };
 }
+
+

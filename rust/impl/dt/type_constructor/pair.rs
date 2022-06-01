@@ -46,6 +46,7 @@ pub( crate ) mod private
       )>
       for $Name< $ParamName1, $ParamName2 >
       {
+        #[ inline ]
         fn from( src : ( $ParamName1, $ParamName2 ) ) -> Self
         {
           Self( src.0, src.1 )
@@ -60,6 +61,7 @@ pub( crate ) mod private
       From < $Name< $ParamName1, $ParamName2 > >
       for ( $ParamName1, $ParamName2 )
       {
+        #[ inline ]
         fn from( src : $Name< $ParamName1, $ParamName2 > ) -> Self
         {
           ( src.0, src.1 )
@@ -81,6 +83,7 @@ pub( crate ) mod private
           $ParamName1 : Default,
           $ParamName2 : Default,
         {
+          #[ inline ]
           fn make_0() -> Self
           {
             Self( Default::default(), Default::default() )
@@ -96,6 +99,7 @@ pub( crate ) mod private
         $crate::Make2 < $ParamName1, $ParamName2 >
         for $Name< $ParamName1, $ParamName2 >
         {
+          #[ inline ]
           fn make_2( _0 : $ParamName1, _1 : $ParamName2 ) -> Self
           {
             Self( _0, _1 )
@@ -180,6 +184,7 @@ pub( crate ) mod private
       )>
       for $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? >
       {
+        #[ inline ]
         fn from
         (
           src :
@@ -206,6 +211,7 @@ pub( crate ) mod private
         $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
       )
       {
+        #[ inline ]
         fn from
         (
           src : $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? >
@@ -231,6 +237,7 @@ pub( crate ) mod private
         >
         for $Name< $( $( $( $ParamName1 ),+ , )? )? $( $( $ParamName2 ),* )? >
         {
+          #[ inline ]
           fn make_2
           (
             _0 : $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
@@ -273,6 +280,7 @@ pub( crate ) mod private
       for $Name< $ParamName1 >
       {
         type Target = ( $ParamName1, $ParamName1 );
+        #[ inline ]
         fn deref( &self ) -> &Self::Target
         {
           #[ cfg( debug_assertions ) ]
@@ -296,6 +304,7 @@ pub( crate ) mod private
       core::ops::DerefMut
       for $Name< $ParamName1 >
       {
+        #[ inline ]
         fn deref_mut( &mut self ) -> &mut Self::Target
         {
           #[ cfg( debug_assertions ) ]
@@ -319,6 +328,7 @@ pub( crate ) mod private
       From<( $ParamName1, $ParamName1 )>
       for $Name< $ParamName1 >
       {
+        #[ inline ]
         fn from( src : ( $ParamName1, $ParamName1 ) ) -> Self
         {
           Self( src.0, src.1 )
@@ -332,6 +342,7 @@ pub( crate ) mod private
       From< $Name< $ParamName1 > >
       for ( $ParamName1, $ParamName1 )
       {
+        #[ inline ]
         fn from( src : $Name< $ParamName1 > ) -> Self
         {
           ( src.0, src.1 )
@@ -347,6 +358,7 @@ pub( crate ) mod private
       where
         $ParamName1 : Clone,
       {
+        #[ inline ]
         fn from( src : [ $ParamName1 ; 2 ] ) -> Self
         {
           Self( src[ 0 ].clone(), src[ 1 ].clone() )
@@ -360,6 +372,7 @@ pub( crate ) mod private
       From< $Name< $ParamName1 > >
       for [ $ParamName1 ; 2 ]
       {
+        #[ inline ]
         fn from( src : $Name< $ParamName1 > ) -> Self
         {
           [ src.0, src.1 ]
@@ -375,6 +388,7 @@ pub( crate ) mod private
       where
         $ParamName1 : Clone,
       {
+        #[ inline ]
         fn from( src : &[ $ParamName1 ] ) -> Self
         {
           debug_assert_eq!( src.len(), 2 );
@@ -391,6 +405,7 @@ pub( crate ) mod private
       where
         $ParamName1 : Clone,
       {
+        #[ inline ]
         fn from( src : $ParamName1 ) -> Self
         {
           Self( src.clone(), src.clone() )
@@ -406,6 +421,7 @@ pub( crate ) mod private
       where
         $ParamName1 : Clone,
       {
+        #[ inline ]
         fn clone_as_tuple( &self ) -> ( $ParamName1, $ParamName1 )
         {
           ( self.0.clone(), self.1.clone() )
@@ -421,6 +437,7 @@ pub( crate ) mod private
       where
         $ParamName1 : Clone,
       {
+        #[ inline ]
         fn clone_as_array( &self ) -> [ $ParamName1 ; 2 ]
         {
           [ self.0.clone(), self.1.clone() ]
@@ -434,6 +451,7 @@ pub( crate ) mod private
       $crate::AsTuple< ( $ParamName1 , $ParamName1 ) >
       for $Name< $ParamName1 >
       {
+        #[ inline ]
         fn as_tuple( &self ) -> &( $ParamName1, $ParamName1 )
         {
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
@@ -451,6 +469,7 @@ pub( crate ) mod private
       $crate::AsArray< $ParamName1, 2 >
       for $Name< $ParamName1 >
       {
+        #[ inline ]
         fn as_array( &self ) -> &[ $ParamName1 ; 2 ]
         {
           /* Safety : in case of homopair it is safe to assume that layout is the same. Homopair does not have to have #[repr(C)]. */
@@ -468,6 +487,7 @@ pub( crate ) mod private
       $crate::AsSlice< $ParamName1 >
       for $Name< $ParamName1 >
       {
+        #[ inline ]
         fn as_slice( &self ) -> &[ $ParamName1 ]
         {
           &$crate::AsArray::as_array( self )[ .. ]
@@ -486,6 +506,7 @@ pub( crate ) mod private
         where
           $ParamName1 : Default,
         {
+          #[ inline ]
           fn make_0() -> Self
           {
             Self( Default::default(), Default::default() )
@@ -501,6 +522,7 @@ pub( crate ) mod private
         where
           $ParamName1 : Clone,
         {
+          #[ inline ]
           fn make_1( _0 : $ParamName1 ) -> Self
           {
             Self( _0.clone(), _0.clone() )
@@ -514,6 +536,7 @@ pub( crate ) mod private
         $crate::Make2< $ParamName1, $ParamName1 >
         for $Name< $ParamName1 >
         {
+          #[ inline ]
           fn make_2( _0 : $ParamName1, _1 : $ParamName1 ) -> Self
           {
             Self( _0, _1 )
@@ -561,6 +584,7 @@ pub( crate ) mod private
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
         );
+        #[ inline ]
         fn deref( &self ) -> &Self::Target
         {
           #[ cfg( debug_assertions ) ]
@@ -585,6 +609,7 @@ pub( crate ) mod private
       for $Name
       < $( $( $( $ParamName1 ),+ )? )? >
       {
+        #[ inline ]
         fn deref_mut( &mut self ) -> &mut Self::Target
         {
           #[ cfg( debug_assertions ) ]
@@ -613,6 +638,7 @@ pub( crate ) mod private
       for $Name
       < $( $( $( $ParamName1 ),+ )? )? >
       {
+        #[ inline ]
         fn from
         (
           src :
@@ -638,6 +664,7 @@ pub( crate ) mod private
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
       )
       {
+        #[ inline ]
         fn from
         (
           src : $Name< $( $( $( $ParamName1 ),+ )? )? >
@@ -661,6 +688,7 @@ pub( crate ) mod private
       where
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
       {
+        #[ inline ]
         fn from
         (
           src :
@@ -684,6 +712,7 @@ pub( crate ) mod private
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > ; 2
       ]
       {
+        #[ inline ]
         fn from
         (
           src : $Name< $( $( $( $ParamName1 ),+ )? )? >
@@ -707,6 +736,7 @@ pub( crate ) mod private
       where
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
       {
+        #[ inline ]
         fn from
         (
           src :
@@ -734,6 +764,7 @@ pub( crate ) mod private
       where
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
       {
+        #[ inline ]
         fn clone_as_tuple( &self ) ->
         (
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
@@ -758,6 +789,7 @@ pub( crate ) mod private
       where
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
       {
+        #[ inline ]
         fn clone_as_array( &self ) ->
         [
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > ; 2
@@ -781,6 +813,7 @@ pub( crate ) mod private
       where
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
       {
+        #[ inline ]
         fn as_tuple( &self ) ->
         &(
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
@@ -809,6 +842,7 @@ pub( crate ) mod private
       where
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
       {
+        #[ inline ]
         fn as_array( &self ) ->
         &[
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > ; 2
@@ -835,6 +869,7 @@ pub( crate ) mod private
       where
         $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
       {
+        #[ inline ]
         fn as_slice( &self ) ->
         &[
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >
@@ -860,6 +895,7 @@ pub( crate ) mod private
         where
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
         {
+          #[ inline ]
           fn make_1( _0 : $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > ) -> Self
           {
             Self( _0.clone(), _0.clone() )
@@ -880,6 +916,7 @@ pub( crate ) mod private
         where
           $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
         {
+          #[ inline ]
           fn make_2
           (
             _0 : $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
@@ -952,6 +989,10 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
+  pub use super::private::
+  {
+    _pair,
+  };
 }
 
 pub use exposed::*;
@@ -961,11 +1002,7 @@ pub mod prelude
 {
   pub use super::private::
   {
-
-    _pair,
-
     Pair,
     HomoPair,
-
   };
 }

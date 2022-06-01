@@ -1,7 +1,10 @@
+// #![ cfg_attr( not( feature = "use_std"), no_std ) ] // zzz
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico")]
+#![ doc( html_root_url = "https://docs.rs/fundamental_data_type/latest/fundamental_data_type/")]
 #![ warn( rust_2018_idioms ) ]
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v2_trans_rect_small.png" ) ]
 
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
@@ -21,10 +24,6 @@
 
 /* zzz : use skeptic? */
 /* zzz : rename dt -> adt */
-
-/* zzz : make sure CD run test on both stable and nightly channels */
-/* zzz : make sure CD run debug tests and release tests */
-/* zzz : introduce tag to run fewer tests */
 
 /// Dependencies.
 pub mod dependencies
