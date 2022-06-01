@@ -142,21 +142,6 @@ impls!
       }
     });
 
-    // let node = self.node( in_node );
-    // node
-    // .entry( edge_id )
-    // .and_modify( | _ | { panic!( "Edge {:?} already exists", edge_id ) } )
-    // .or_insert_with( ||
-    // {
-    //   canonical::Edge
-    //   {
-    //     id : edge_id,
-    //     in_node,
-    //     out_node,
-    //     kind : Default::default(),
-    //   }
-    // });
-
   }
 
   //
