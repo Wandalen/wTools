@@ -17,6 +17,9 @@ ___
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/meta/procedural_macro_runtime_lib.rs",
   "/rust/impl/meta/procedural_macro/runtime",
@@ -24,6 +27,12 @@ include = [
   "/Readme.md",
   "/License",
 ]
+
+[features]
+default = [ "use_std" ]
+full = [ "use_std" ]
+use_std = []
+use_alloc = []
 
 [lib]
 name = "procedural_macro_runtime"

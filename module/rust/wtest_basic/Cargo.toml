@@ -1,6 +1,6 @@
 [package]
 name = "wtest_basic"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,12 +18,21 @@ Tools for writing tests. The most basic things.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "testing" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/test",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
+
+[features]
+default = [ "use_std" ]
+full = [ "use_std" ]
+use_std = []
+use_alloc = []
 
 [lib]
 name = "wtest_basic"

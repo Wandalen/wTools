@@ -1,6 +1,6 @@
 [package]
 name = "impls_index"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -17,6 +17,9 @@ Several of macros to put each function under a named macro to index every functi
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/meta/impls_index_lib.rs",
   "/rust/impl/meta/impls_index",
@@ -26,8 +29,10 @@ include = [
 ]
 
 [features]
-default = []
-full = []
+default = [ "use_std" ]
+full = [ "use_std" ]
+use_std = []
+use_alloc = []
 
 [lib]
 name = "impls_index"

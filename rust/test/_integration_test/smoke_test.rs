@@ -121,9 +121,10 @@ impl< 'a > SmokeModuleTest< 'a >
     .args([ "run", "--release" ])
     .output()
     .unwrap();
-    assert!( output.status.success(), "Smoke test failed" );
+    println!( "status : {}", output.status );
     println!( "{}", std::str::from_utf8( &output.stdout ).expect( "Found invalid UTF-8" ) );
     println!( "{}", std::str::from_utf8( &output.stderr ).expect( "Found invalid UTF-8" ) );
+    assert!( output.status.success(), "Smoke test failed" );
 
     Ok( () )
   }

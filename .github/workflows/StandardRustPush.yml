@@ -26,6 +26,7 @@ concurrency :
 
 env :
 
+  RUST_BACKTRACE : 1
   CARGO_TERM_COLOR : always
   WITH_SMOKE : ${{ inputs.with_smoke }}
 

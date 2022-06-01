@@ -2,7 +2,8 @@
 pub( crate ) mod private
 {
   use crate::prelude::*;
-  use crate::canonical::*;
+  // use crate::canonical::*;
+  use crate::canonical;
   use wtools::prelude::*;
   use indexmap::IndexMap;
   use std::fmt;
@@ -19,7 +20,7 @@ pub( crate ) mod private
     fn node_add_out_nodes< IntoId1, IntoId2, Iter >
     (
       &mut self,
-      node_id : IntoId1,
+      in_node_id : IntoId1,
       out_nodes_iter : Iter,
     )
     where
@@ -28,19 +29,35 @@ pub( crate ) mod private
       Iter : IntoIterator< Item = IntoId2 >,
       Iter::IntoIter : Clone,
     {
-      let out_nodes_iter2 = out_nodes_iter.into_iter()
-      .map( | id |
+
+      let in_node_id = in_node_id.into();
+      let iter = out_nodes_iter.into_iter();
+
+      let out_ids : Vec< _ > = iter
+      .map( | out_node_id |
       {
-        let id = id.into();
-        self.node( id );
-        id
-      });
-      self.node( node_id.into() ).borrow_mut().extend( out_nodes_iter2 );
+        let out_node_id = out_node_id.into();
+        #[ cfg( debug_assertions ) ]
+        let node = self.node( out_node_id );
+        let out_edge_id = self._edge_make_for_nodes( in_node_id, out_node_id );
+        ( out_edge_id, out_node_id )
+      })
+      .collect()
+      ;
+
+      let mut in_node = self.node( in_node_id ).borrow_mut();;
+
+      for out_id in out_ids
+      {
+        in_node.out_edges.insert( out_id.0 );
+        in_node.out_nodes.insert( out_id.1 );
+      }
+
     }
 
     //
 
-    fn out_nodes< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
+    fn out_nodes_ids< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
     Box< dyn Iterator< Item = NODE_ID!() > + 'b >
     where
@@ -55,7 +72,7 @@ pub( crate ) mod private
 
     //
 
-    fn out_edges< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
+    fn out_edges_ids< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
     Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
     where
@@ -84,9 +101,11 @@ pub( crate ) mod private
     CellNodeFactory< NodeId, EdgeId, Kind > : crate::NodeFactoryInterface,
   {
     /// Map id to node.
-    pub id_to_node_map : IndexMap< NodeId, crate::NodeCell< Node< NodeId, EdgeId, Kind > > >,
+    pub id_to_node_map : IndexMap< NodeId, crate::NodeCell< canonical::Node< NodeId, EdgeId, Kind > > >,
     /// Map id to edge.
-    pub id_to_edge_map : IndexMap< EdgeId, crate::canonical::Edge< EdgeId, NodeId, Kind > >,
+    pub id_to_edge_map : IndexMap< EdgeId, canonical::Edge< EdgeId, NodeId, Kind > >,
+    /// Generator of edge ids.
+    pub _current_edge_id : EdgeId,
   }
 
   //
@@ -101,7 +120,7 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphNodesInterface
+  impl< NodeId, EdgeId, Kind > GraphNodesNominalInterface
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
@@ -112,14 +131,13 @@ pub( crate ) mod private
     index!
     {
       node,
-      nodes,
-      out_nodes,
+      out_nodes_ids,
     }
   }
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphEdgesInterface
+  impl< NodeId, EdgeId, Kind > GraphEdgesNominalInterface
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
@@ -130,8 +148,39 @@ pub( crate ) mod private
     index!
     {
       edge,
+      out_edges_ids,
+    }
+  }
+
+  //
+
+  impl< NodeId, EdgeId, Kind > GraphNodesEnumerableInterface
+  for CellNodeFactory< NodeId, EdgeId, Kind >
+  where
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
+    Kind : NodeKindInterface,
+  {
+    index!
+    {
+      nodes,
+      nnodes,
+    }
+  }
+
+  //
+
+  impl< NodeId, EdgeId, Kind > GraphEdgesEnumerableInterface
+  for CellNodeFactory< NodeId, EdgeId, Kind >
+  where
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
+    Kind : NodeKindInterface,
+  {
+    index!
+    {
       edges,
-      out_edges,
+      nedges,
     }
   }
 
@@ -156,21 +205,21 @@ pub( crate ) mod private
 
   //
 
-//   impl< NodeId, EdgeId, Kind > GraphEditableInterface
-//   for CellNodeFactory< NodeId, EdgeId, Kind >
-//   where
-//     NodeId : IdentityInterface,
-//     EdgeId : IdentityInterface + IdentityGenerableInterface,
-//     Kind : NodeKindInterface,
-//   {
-//
-//     index!
-//     {
-//       node_mut,
-//       node_add_out_nodes,
-//     }
-//
-//   }
+  impl< NodeId, EdgeId, Kind > GraphEdgesExtendableInterface
+  for CellNodeFactory< NodeId, EdgeId, Kind >
+  where
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
+    Kind : NodeKindInterface,
+  {
+
+    index!
+    {
+      _edge_id_generate,
+      _edge_add,
+    }
+
+  }
 
   //
 

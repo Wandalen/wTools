@@ -29,6 +29,10 @@ pub mod single;
 pub mod types;
 /// Macro helpers.
 pub mod helper;
+
+/// From/Into traits.
+#[ cfg( feature = "vectorized_from" ) ]
+pub mod vectorized_from;
 /// Generic traits.
 pub mod traits;
 /// Variadic constructor.
@@ -41,17 +45,17 @@ pub mod protected
   #[ doc( inline ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
-
   pub use super::many::orphan::*;
   #[ doc( inline ) ]
-
   pub use super::pair::orphan::*;
   #[ doc( inline ) ]
-
   pub use super::single::orphan::*;
   #[ doc( inline ) ]
-
   pub use super::types::orphan::*;
+
+  #[ doc( inline ) ]
+  #[ cfg( feature = "vectorized_from" ) ]
+  pub use super::vectorized_from::orphan::*;
   #[ doc( inline ) ]
   pub use super::helper::orphan::*;
   #[ doc( inline ) ]
@@ -76,17 +80,17 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
-
   pub use super::many::exposed::*;
   #[ doc( inline ) ]
-
   pub use super::pair::exposed::*;
   #[ doc( inline ) ]
-
   pub use super::single::exposed::*;
   #[ doc( inline ) ]
-
   pub use super::types::exposed::*;
+
+  #[ doc( inline ) ]
+  #[ cfg( feature = "vectorized_from" ) ]
+  pub use super::vectorized_from::exposed::*;
   #[ doc( inline ) ]
   pub use super::helper::exposed::*;
   #[ doc( inline ) ]
@@ -100,17 +104,17 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
-
   pub use super::many::prelude::*;
   #[ doc( inline ) ]
-
   pub use super::pair::prelude::*;
   #[ doc( inline ) ]
-
   pub use super::single::prelude::*;
   #[ doc( inline ) ]
-
   pub use super::types::prelude::*;
+
+  #[ doc( inline ) ]
+  #[ cfg( feature = "vectorized_from" ) ]
+  pub use super::vectorized_from::prelude::*;
   #[ doc( inline ) ]
   pub use super::helper::prelude::*;
   #[ doc( inline ) ]

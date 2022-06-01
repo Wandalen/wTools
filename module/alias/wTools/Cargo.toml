@@ -19,15 +19,15 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/wtools_alias_lib.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
-
-[package.metadata.docs.rs]
-all-features = true
 # rustdoc-args = []
 
 [lib]
@@ -123,8 +123,21 @@ time_now = [ "time", "wtools/time_now" ]
 # string
 
 string = [ "wtools/string" ]
-string_default = [ "string" ]
-string_full = [ "string" ]
+string_indentation = [ "string", "wtools/string_indentation" ]
+string_parse = [ "string", "wtools/string_parse" ]
+string_split = [ "string", "wtools/string_split" ]
+string_default = [
+  "string",
+  "string_indentation",
+  "string_parse",
+  "string_split",
+]
+string_full = [
+  "string",
+  "string_indentation",
+  "string_parse",
+  "string_split",
+]
 
 # error
 
@@ -240,6 +253,7 @@ dt_default = [
   "dt_either",
   "dt_type_constructor",
   "dt_make",
+  "dt_vectorized_from",
   "dt_interval",
 ]
 dt_full = [
@@ -247,11 +261,13 @@ dt_full = [
   "dt_either",
   "dt_type_constructor",
   "dt_make",
+  "dt_vectorized_from",
   "dt_interval",
 ]
 dt_either = [ "dt", "wtools/dt_either" ]
 dt_type_constructor = [ "dt", "wtools/dt_type_constructor" ]
 dt_make = [ "dt", "wtools/dt_make" ]
+dt_vectorized_from = [ "dt", "wtools/dt_vectorized_from" ]
 dt_interval = [ "dt", "wtools/dt_interval" ]
 
 # diagnostics

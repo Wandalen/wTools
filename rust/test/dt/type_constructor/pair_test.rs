@@ -749,6 +749,44 @@ tests_impls!
   //
 
   #[ test ]
+  fn struct_transitive_from()
+  {
+    // use TheModule::{ Make2 };
+
+    /* test.case( "from tuple" ) */
+    {
+      TheModule::types!
+      {
+        #[ derive( PartialEq, Debug ) ]
+        single MySingle : i32
+      };
+      let src = ( 1, 3 );
+      let got : TheModule::Pair< MySingle, MySingle > = src.into();
+      let exp = TheModule::Pair::from( ( MySingle::from( 1 ), MySingle::from( 3 ) ) );
+      a_id!( got, exp );
+    }
+    // xxx : implement similar test for other type constructors
+
+    // /* test.case( "from pair" ) */
+    // {
+    //   // trace_macros!( true );
+    //   TheModule::types!
+    //   {
+    //     #[ derive( PartialEq, Debug ) ]
+    //     single MySingle : i32
+    //   };
+    //   // trace_macros!( false );
+    //   let src = TheModule::Pair::make_2( 1, 3 );
+    //   // let got : TheModule::Pair< MySingle, MySingle > = src.into();
+    //   let exp = TheModule::Pair::make_2( MySingle::make_1( 1 ), MySingle::make_1( 3 ) );
+    //   // a_id!( got, exp );
+    // }
+
+  }
+
+  //
+
+  #[ test ]
   fn samples()
   {
 
@@ -790,5 +828,6 @@ tests_index!
   multiple,
   struct_basic,
   struct_no_derives,
+  struct_transitive_from,
   samples,
 }

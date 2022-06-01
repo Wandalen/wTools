@@ -17,12 +17,21 @@ ___
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/_blank",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
+
+[features]
+default = [ "use_std" ]
+full = [ "use_std" ]
+use_std = []
+use_alloc = []
 
 [lib]
 name = "template_blank"

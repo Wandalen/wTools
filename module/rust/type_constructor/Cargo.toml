@@ -1,6 +1,6 @@
 [package]
 name = "type_constructor"
-version = "0.1.16"
+version = "0.1.17"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -32,14 +32,17 @@ default = [
   "use_std",
   "many",
   "make",
+  "vectorized_from",
 ]
 full = [
   "use_std",
   "many",
   "make",
+  "vectorized_from",
 ]
 many = []
 make = []
+vectorized_from = []
 use_std = []
 use_alloc = []
 

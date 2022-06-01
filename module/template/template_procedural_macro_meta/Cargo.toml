@@ -17,6 +17,9 @@ ___
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/meta/procedural_macro_meta_lib.rs",
   "/rust/impl/meta/procedural_macro/meta",
@@ -24,6 +27,10 @@ include = [
   "/Readme.md",
   "/License",
 ]
+
+[features]
+default = []
+full = []
 
 [lib]
 proc-macro = true
