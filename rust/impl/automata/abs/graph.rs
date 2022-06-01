@@ -98,6 +98,12 @@ pub( crate ) mod private
       'a : 'b,
     ;
 
+    /// Number of nodes. Order of the graph.
+    fn nnodes( &self ) -> usize
+    {
+      self.nodes().count()
+    }
+
   }
 
   ///
@@ -119,6 +125,12 @@ pub( crate ) mod private
     where
       'a : 'b,
     ;
+
+    /// Number of edges. Size of the graph.
+    fn nedges( &self ) -> usize
+    {
+      self.edges().count()
+    }
 
   }
 

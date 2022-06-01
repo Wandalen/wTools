@@ -162,6 +162,7 @@ pub( crate ) mod private
     index!
     {
       nodes,
+      nnodes,
     }
   }
 
@@ -177,6 +178,7 @@ pub( crate ) mod private
     index!
     {
       edges,
+      nedges,
     }
   }
 

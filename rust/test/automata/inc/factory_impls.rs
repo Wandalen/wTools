@@ -51,7 +51,8 @@ tests_impls!
     factory.node_add_out_node( a, b );
     factory.node_add_out_nodes( b, [ a, b ].into_iter() );
 
-    // a_id!( factory., exp );
+    a_id!( factory.nnodes(), 2 );
+    a_id!( factory.nedges(), 3 );
 
     dbg!( factory.node( a ) );
     dbg!( factory.node( b ) );
