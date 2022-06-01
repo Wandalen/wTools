@@ -18,6 +18,9 @@ Diagnostic-purpose tools to inspect type of a variable and its size.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "diagnostic-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/typing/inspect_type_lib.rs",
   "/Cargo.toml",
@@ -28,9 +31,6 @@ include = [
 [features]
 nightly = []
 default = []
-
-[package.metadata.docs.rs]
-all-features = true
 
 [lib]
 name = "inspect_type"

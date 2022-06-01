@@ -18,6 +18,9 @@ Tools for writing procedural macroses.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/proc_macro/macro_tools_lib.rs",
   "/Cargo.toml",

@@ -18,6 +18,9 @@ Macro to answer the question: is it a slice?
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/typing/is_slice_lib.rs",
   "/Cargo.toml",
