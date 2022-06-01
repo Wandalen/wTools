@@ -28,6 +28,10 @@ include = [
   "/License",
 ]
 
+[features]
+default = []
+full = []
+
 [lib]
 proc-macro = true
 name = "procedural_macro_meta"

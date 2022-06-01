@@ -1,6 +1,6 @@
 [package]
 name = "impls_index"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -29,8 +29,10 @@ include = [
 ]
 
 [features]
-default = []
-full = []
+default = [ "use_std" ]
+full = [ "use_std" ]
+use_std = []
+use_alloc = []
 
 [lib]
 name = "impls_index"

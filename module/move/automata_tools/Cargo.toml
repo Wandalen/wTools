@@ -1,6 +1,6 @@
 [package]
 name = "automata_tools"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -21,19 +21,26 @@ keywords = [ "fundamental", "general-purpose" ]
 all-features = true
 
 include = [
-  "/rust/impl/automata",
+  "/rust/impl/graph/automata_tools_lib.rs",
+  "/rust/impl/graph/automata",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
 
+[features]
+default = [ "use_std" ]
+full = [ "use_std" ]
+use_std = []
+use_alloc = []
+
 [lib]
 name = "automata_tools"
-path = "rust/impl/automata/automata_tools_lib.rs"
+path = "rust/impl/graph/automata_tools_lib.rs"
 
 [[test]]
 name = "automata_tools_test"
-path = "rust/test/automata/automata_tools_lib_test.rs"
+path = "rust/test/graph/automata_tools_lib_test.rs"
 
 [[test]]
 name = "automata_tools_smoke_test"
@@ -45,8 +52,8 @@ path = "rust/test/_integration_test/smoke_test.rs"
 # zzz : write please
 
 [dependencies]
-indexmap = "~1.8"
-wtools = { version = "~0.2", path = "../../rust/wtools", features = [ "full" ] }
+graphs_tools = { version = "~0.1", path = "../../move/graphs_tools", features = [ "full" ] }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+wtools = { version = "~0.2", path = "../../rust/wtools", features = [ "full" ] }
