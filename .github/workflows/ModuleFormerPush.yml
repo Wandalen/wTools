@@ -14,6 +14,7 @@ jobs :
     with :
       manifest_path : 'module/rust/former/Cargo.toml'
       module_name : 'former'
+      commit_message : ${{ github.event.head_commit.message }}
 
   # former_meta
 
@@ -22,6 +23,7 @@ jobs :
     with :
       manifest_path : 'module/rust/former_meta/Cargo.toml'
       module_name : 'former_meta'
+      commit_message : ${{ github.event.head_commit.message }}
 
   # former_runtime
 
@@ -30,3 +32,4 @@ jobs :
     with :
       manifest_path : 'module/rust/former_runtime/Cargo.toml'
       module_name : 'former_runtime'
+      commit_message : ${{ github.event.head_commit.message }}

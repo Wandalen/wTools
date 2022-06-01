@@ -14,3 +14,4 @@ jobs :
     with :
       manifest_path : 'module/move/wpublisher/Cargo.toml'
       module_name : 'wpublisher'
+      commit_message : ${{ github.event.head_commit.message }}

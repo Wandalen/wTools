@@ -14,3 +14,4 @@ jobs :
     with :
       manifest_path : 'module/rust/for_each/Cargo.toml'
       module_name : 'for_each'
+      commit_message : ${{ github.event.head_commit.message }}
