@@ -25,6 +25,7 @@ jobs :
       PRIVATE_WTOOLS_BOT_SSH_KEY : ${{ secrets.PRIVATE_WTOOLS_BOT_SSH_KEY }}
       PRIVATE_WTOOLS_BOT_NPM_PASS : ${{ secrets.PRIVATE_WTOOLS_BOT_NPM_PASS }}
       PRIVATE_WTOOLS_BOT_EMAIL : ${{ secrets.PRIVATE_WTOOLS_BOT_EMAIL }}
+      PRIVATE_NPM_TOKEN : ${{ secrets.PRIVATE_NPM_TOKEN }}
       NODE_PRE_GYP_GITHUB_TOKEN : ${{ secrets.NODE_PRE_GYP_GITHUB_TOKEN }}
     strategy :
       fail-fast : false
