@@ -108,6 +108,27 @@ pub( crate ) mod private
       Self::EdgeId( id )
     }
 
+//     /// Convert argument into edges ids.
+//     #[ allow( non_snake_case ) ]
+//     #[ inline ]
+//     fn EdgesIds< In, Out >( src : In< EDGE_ID!() > ) -> Out< EDGE_ID!() >
+//     where
+//       In : IdsFromCollection,
+//       Out : IdsCollection,
+//     {
+//       src.into()
+//     }
+//
+//     /// Get edges with ids.
+//     #[ inline ]
+//     fn edges_ids< In, Out >( &self, src : In< EDGE_ID!() > ) -> Out< EDGE_ID!() >
+//     where
+//       In : IdsFromCollection,
+//       Out : IdsCollection,
+//     {
+//       Self::EdgesIds( src )
+//     }
+
     /// Get edge with id.
     fn edge< Id >( &self, id : Id ) -> &Self::EdgeHandle
     where

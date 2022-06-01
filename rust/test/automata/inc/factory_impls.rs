@@ -105,6 +105,7 @@ tests_impls!
     let got : HashSet< _ > = factory.out_edges( 2 ).map( | el | ( el.1.in_node, el.1.out_node ) ).collect();
     let exp = hset![ ( factory.edge_id( 2 ), factory.edge_id( 1 ) ), ( factory.edge_id( 2 ), factory.edge_id( 2 ) ) ];
     // let exp = hset![ factory.edge_ids( 2, 1 ), factory.edge_ids( 2, 2 ) ];
+    // let exp : HashSet< ( TheModule::IdentityWithInt, TheModule::IdentityWithInt ) > = hset![ ( 2, 1 ).into(), ( 2, 2 ).into() ];
     a_id!( got, exp );
 
   }
