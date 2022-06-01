@@ -18,7 +18,7 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 include = [
-  "/rust/impl/graph/automata_tools_lib",
+  "/rust/impl/graph/automata_tools_lib.rs",
   "/rust/impl/graph/automata",
   "/Cargo.toml",
   "/Readme.md",
