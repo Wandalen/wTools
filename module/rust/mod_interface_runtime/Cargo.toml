@@ -26,6 +26,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "mod_interface_runtime"
 path = "rust/impl/meta/mod_interface/runtime/lib.rs"

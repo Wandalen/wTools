@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 proc-macro = true
 name = "woptions_meta"

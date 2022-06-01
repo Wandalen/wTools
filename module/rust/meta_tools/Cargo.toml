@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [features]
 collection_make = [ "literally" ]
 options = [ "woptions" ]

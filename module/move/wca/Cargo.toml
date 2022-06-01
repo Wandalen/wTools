@@ -21,6 +21,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "wca"
 path = "rust/impl/ca/wca_lib.rs"

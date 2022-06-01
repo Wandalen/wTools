@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "wtest_basic"
 path = "rust/impl/test/wtest_basic_lib.rs"

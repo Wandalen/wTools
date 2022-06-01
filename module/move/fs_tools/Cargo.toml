@@ -24,6 +24,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "fs_tools"
 path = "rust/impl/fs/fs_tools_lib.rs"

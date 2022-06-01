@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [features]
 use_std = [ "itertools/use_std" ]
 use_alloc = [ "itertools/use_alloc" ]

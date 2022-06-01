@@ -24,6 +24,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "wlang"
 path = "rust/impl/_blank/standard_lib.rs"

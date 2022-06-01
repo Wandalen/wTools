@@ -26,6 +26,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "implements"
 path = "rust/impl/typing/implements_lib.rs"

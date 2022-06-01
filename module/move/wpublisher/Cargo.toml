@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [[bin]]
 name = "wpublisher"
 path = "rust/impl/publisher/entry.rs"

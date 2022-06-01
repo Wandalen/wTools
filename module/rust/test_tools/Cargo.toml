@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "test_tools"
 path = "rust/impl/test/test_tools_lib.rs"

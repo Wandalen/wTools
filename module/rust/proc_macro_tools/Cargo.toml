@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "proc_macro_tools"
 path = "rust/impl/proc_macro/lib.rs"

@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "procedural_macro_runtime"
 path = "rust/impl/meta/procedural_macro/runtime/lib.rs"

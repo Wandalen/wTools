@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "instance_of"
 path = "rust/impl/typing/instance_of_lib.rs"

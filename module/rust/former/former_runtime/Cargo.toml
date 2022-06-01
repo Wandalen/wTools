@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "former_runtime"
 path = "rust/impl/former/runtime/lib.rs"

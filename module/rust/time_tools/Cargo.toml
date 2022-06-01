@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [features]
 now = [ "chrono", "chrono/default" ]
 default = [ "now" ]

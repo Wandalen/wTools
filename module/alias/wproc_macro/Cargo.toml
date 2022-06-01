@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "wproc_macro"
 path = "rust/impl/proc_macro/wproc_macro_lib.rs"

@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "woptions_runtime"
 path = "rust/impl/options/runtime/lib.rs"

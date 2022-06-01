@@ -25,6 +25,9 @@ include = [
   "/License",
 ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [lib]
 name = "is_slice"
 path = "rust/impl/typing/is_slice_lib.rs"
