@@ -51,6 +51,8 @@ tests_impls!
     factory.node_add_out_node( a, b );
     factory.node_add_out_nodes( b, [ a, b ].into_iter() );
 
+    // a_id!( factory., exp );
+
     dbg!( factory.node( a ) );
     dbg!( factory.node( b ) );
 
@@ -60,7 +62,7 @@ tests_impls!
 
     // let exp = hset![ b ];
     let got : HashSet< _ > = factory.out_edges( a ).collect();
-    // a_id!( got.len(), 1 );
+    a_id!( got.len(), 1 );
     // a_id!( got, exp );
 
     let exp = hset![ a, b ];

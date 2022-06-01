@@ -32,55 +32,27 @@ pub( crate ) mod private
 
       let in_node_id = in_node_id.into();
       let iter = out_nodes_iter.into_iter();
-      // let iter2 = iter.clone();
 
-      let out_edges : Vec< NODE_ID!() > = iter
+      let out_ids : Vec< _ > = iter
       .map( | out_node_id |
       {
         let out_node_id = out_node_id.into();
         #[ cfg( debug_assertions ) ]
         let node = self.node( out_node_id );
-        self._edge_make_for_nodes( in_node_id, out_node_id );
-        out_node_id
+        let out_edge_id = self._edge_make_for_nodes( in_node_id, out_node_id );
+        ( out_edge_id, out_node_id )
       })
       .collect()
       ;
 
-      // self.node_mut( in_node_id ).extend( ids );
       let in_node = self.node_mut( in_node_id );
 
-      for out_node_id in out_edges
+      for out_id in out_ids
       {
-        in_node.out_nodes.insert( out_node_id );
+        in_node.out_edges.insert( out_id.0 );
+        in_node.out_nodes.insert( out_id.1 );
       }
 
-      // let iter3 = iter2.into_iter()
-      // .map( | out_node_id |
-      // {
-      //   let out_node_id = out_node_id.into();
-      //   out_node_id
-      // })
-      // ;
-
-//       #[ cfg( debug_assertions ) ]
-//       iter
-//       .map( | out_node_id |
-//       {
-//         let node = self.node( out_node_id );
-//       })
-//       .fold( (), | acc, e | () )
-//       ;
-//
-//       let iter3 = iter2.into_iter()
-//       .map( | out_node_id |
-//       {
-//         let out_node_id = out_node_id.into();
-//         // self._edge_make_for_nodes( node_id, out_node_id );
-//         out_node_id
-//       })
-//       ;
-//
-//       self.node_mut( node_id ).extend( iter3 );
     }
 
     //

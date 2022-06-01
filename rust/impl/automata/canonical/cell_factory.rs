@@ -29,22 +29,46 @@ pub( crate ) mod private
       Iter : IntoIterator< Item = IntoId2 >,
       Iter::IntoIter : Clone,
     {
-      let out_edges = out_nodes_iter.into_iter()
+
+      let in_node_id = in_node_id.into();
+      let iter = out_nodes_iter.into_iter();
+
+      let out_ids : Vec< _ > = iter
       .map( | out_node_id |
       {
         let out_node_id = out_node_id.into();
         #[ cfg( debug_assertions ) ]
         let node = self.node( out_node_id );
-        // self._edge_make_for_nodes( node_id, out_node_id );
-        out_node_id
-      });
-      // self.node( node_id.into() ).borrow_mut().extend( out_nodes_iter2 );
+        let out_edge_id = self._edge_make_for_nodes( in_node_id, out_node_id );
+        ( out_edge_id, out_node_id )
+      })
+      .collect()
+      ;
 
-      let mut in_node = self.node( in_node_id ).borrow_mut();
-      for out_node_id in out_edges
+      let mut in_node = self.node( in_node_id ).borrow_mut();;
+
+      for out_id in out_ids
       {
-        in_node.out_nodes.insert( out_node_id );
+        in_node.out_edges.insert( out_id.0 );
+        in_node.out_nodes.insert( out_id.1 );
       }
+
+//       let out_edges = out_nodes_iter.into_iter()
+//       .map( | out_node_id |
+//       {
+//         let out_node_id = out_node_id.into();
+//         #[ cfg( debug_assertions ) ]
+//         let node = self.node( out_node_id );
+//         // self._edge_make_for_nodes( node_id, out_node_id );
+//         out_node_id
+//       });
+//       // self.node( node_id.into() ).borrow_mut().extend( out_nodes_iter2 );
+//
+//       let mut in_node = self.node( in_node_id ).borrow_mut();
+//       for out_node_id in out_edges
+//       {
+//         in_node.out_nodes.insert( out_node_id );
+//       }
 
     }
 
