@@ -31,15 +31,7 @@ pub( crate ) mod private
       Id : Into< NODE_ID!() >
     ;
 
-    // /// Iterate over all nodes.
-    // fn nodes< 'a, 'b >( &'a self )
-    // ->
-    // Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > + 'b >
-    // where
-    //   'a : 'b,
-    // ;
-
-    /// Iterate over neighbourhood of the node.
+    /// Iterate over neighbourhood of the node. Callback gets ids of nodes in neighbourhood of a picked node.
     fn out_nodes_ids< 'a, 'b, Id >( &'a self, node_id : Id )
     ->
     Box< dyn Iterator< Item = NODE_ID!() > + 'b >
@@ -47,6 +39,20 @@ pub( crate ) mod private
       Id : Into< NODE_ID!() >,
       'a : 'b,
     ;
+
+    /// Iterate over neighbourhood of the node. Callback gets ids and reference on itself of nodes in neighbourhood of a picked node.
+    fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
+    ->
+    Box< dyn Iterator< Item = ( NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
+    where
+      Id : Into< NODE_ID!() >,
+      'a : 'b,
+    {
+      Box::new( self.out_nodes_ids( node_id ).map( | id |
+      {
+        ( id, self.node( id ) )
+      }))
+    }
 
   }
 
@@ -70,7 +76,7 @@ pub( crate ) mod private
       Id : Into< EDGE_ID!() >
     ;
 
-    /// Iterate over output edges of the node.
+    /// Iterate over output edges of the node. Callback gets ids of nodes in neighbourhood of a picked node.
     fn out_edges_ids< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
     Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
@@ -79,15 +85,19 @@ pub( crate ) mod private
       'a : 'b,
     ;
 
-    // /// Iterate over output edges of the node.
-    // fn out_edges< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
-    // ->
-    // Box< dyn Iterator< Item = ( &NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
-    // // Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
-    // where
-    //   IntoId : Into< NODE_ID!() >,
-    //   'a : 'b,
-    // ;
+    /// Iterate over output edges of the node. Callback gets ids and references of edges in neighbourhood of a picked node.
+    fn out_edges< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
+    ->
+    Box< dyn Iterator< Item = ( EDGE_ID!(), &< Self as GraphEdgesNominalInterface >::EdgeHandle ) > + 'b >
+    where
+      IntoId : Into< NODE_ID!() >,
+      'a : 'b,
+    {
+      Box::new( self.out_edges_ids( node_id ).map( | id |
+      {
+        ( id, self.edge( id ) )
+      }))
+    }
 
   }
 
