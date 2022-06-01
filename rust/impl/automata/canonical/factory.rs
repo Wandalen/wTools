@@ -2,7 +2,8 @@
 pub( crate ) mod private
 {
   use crate::prelude::*;
-  use crate::canonical::*;
+  // use crate::canonical::*;
+  use crate::canonical;
   use wtools::prelude::*;
   use std::fmt;
   use indexmap::IndexMap;
@@ -19,7 +20,7 @@ pub( crate ) mod private
     fn node_add_out_nodes< IntoId1, IntoId2, Iter >
     (
       &mut self,
-      node_id : IntoId1,
+      in_node_id : IntoId1,
       out_nodes_iter : Iter,
     )
     where
@@ -29,29 +30,57 @@ pub( crate ) mod private
       Iter::IntoIter : Clone,
     {
 
-      let node_id = node_id.into();
+      let in_node_id = in_node_id.into();
       let iter = out_nodes_iter.into_iter();
-      let iter2 = iter.clone();
+      // let iter2 = iter.clone();
 
-      #[ cfg( debug_assertions ) ]
-      iter
-      .map( | id |
+      let out_edges : Vec< NODE_ID!() > = iter
+      .map( | out_node_id |
       {
-        let node = self.node( id );
+        let out_node_id = out_node_id.into();
+        #[ cfg( debug_assertions ) ]
+        let node = self.node( out_node_id );
+        self._edge_make_for_nodes( in_node_id, out_node_id );
+        out_node_id
       })
-      .fold( (), | acc, e | () )
+      .collect()
       ;
 
-      let iter3 = iter2.into_iter()
-      .map( | id |
-      {
-        let id = id.into();
-        id
-        // self.edge_making_for_nodes( node_id, id )
-      })
-      ;
+      // self.node_mut( in_node_id ).extend( ids );
+      let in_node = self.node_mut( in_node_id );
 
-      self.node_mut( node_id ).extend( iter3 );
+      for out_node_id in out_edges
+      {
+        in_node.out_nodes.insert( out_node_id );
+      }
+
+      // let iter3 = iter2.into_iter()
+      // .map( | out_node_id |
+      // {
+      //   let out_node_id = out_node_id.into();
+      //   out_node_id
+      // })
+      // ;
+
+//       #[ cfg( debug_assertions ) ]
+//       iter
+//       .map( | out_node_id |
+//       {
+//         let node = self.node( out_node_id );
+//       })
+//       .fold( (), | acc, e | () )
+//       ;
+//
+//       let iter3 = iter2.into_iter()
+//       .map( | out_node_id |
+//       {
+//         let out_node_id = out_node_id.into();
+//         // self._edge_make_for_nodes( node_id, out_node_id );
+//         out_node_id
+//       })
+//       ;
+//
+//       self.node_mut( node_id ).extend( iter3 );
     }
 
     //
@@ -170,27 +199,23 @@ pub( crate ) mod private
 
   }
 
-//   impl< NodeId, EdgeId, Kind > GraphEdgesExtendableInterface
-//   for NodeFactory< NodeId, EdgeId, Kind >
-//   where
-//     NodeId : IdentityInterface,
-//     EdgeId : IdentityInterface + IdentityGenerableInterface,
-//     Kind : NodeKindInterface,
-//   {
-//
-//     fn _edge_id_make_for( &mut self, node1 : NODE_ID!(), node2 : NODE_ID!() ) -> EDGE_ID!()
-//     {
-//       x
-//     }
-//
-//     //
-//
-//     fn _edge_add( &mut self, edge : EDGE_ID!(), node1 : NODE_ID!(), node2 : NODE_ID!() )
-//     {
-//
-//     }
-//
-//   }
+  //
+
+  impl< NodeId, EdgeId, Kind > GraphEdgesExtendableInterface
+  for NodeFactory< NodeId, EdgeId, Kind >
+  where
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
+    Kind : NodeKindInterface,
+  {
+
+    index!
+    {
+      _edge_id_generate,
+      _edge_add,
+    }
+
+  }
 
   //
 

@@ -2,7 +2,8 @@
 pub( crate ) mod private
 {
   use crate::prelude::*;
-  use crate::canonical::*;
+  // use crate::canonical::*;
+  use crate::canonical;
   use wtools::prelude::*;
   use indexmap::IndexMap;
   use std::fmt;
@@ -19,7 +20,7 @@ pub( crate ) mod private
     fn node_add_out_nodes< IntoId1, IntoId2, Iter >
     (
       &mut self,
-      node_id : IntoId1,
+      in_node_id : IntoId1,
       out_nodes_iter : Iter,
     )
     where
@@ -28,14 +29,23 @@ pub( crate ) mod private
       Iter : IntoIterator< Item = IntoId2 >,
       Iter::IntoIter : Clone,
     {
-      let out_nodes_iter2 = out_nodes_iter.into_iter()
-      .map( | id |
+      let out_edges = out_nodes_iter.into_iter()
+      .map( | out_node_id |
       {
-        let id = id.into();
-        self.node( id );
-        id
+        let out_node_id = out_node_id.into();
+        #[ cfg( debug_assertions ) ]
+        let node = self.node( out_node_id );
+        // self._edge_make_for_nodes( node_id, out_node_id );
+        out_node_id
       });
-      self.node( node_id.into() ).borrow_mut().extend( out_nodes_iter2 );
+      // self.node( node_id.into() ).borrow_mut().extend( out_nodes_iter2 );
+
+      let mut in_node = self.node( in_node_id ).borrow_mut();
+      for out_node_id in out_edges
+      {
+        in_node.out_nodes.insert( out_node_id );
+      }
+
     }
 
     //
@@ -84,9 +94,9 @@ pub( crate ) mod private
     CellNodeFactory< NodeId, EdgeId, Kind > : crate::NodeFactoryInterface,
   {
     /// Map id to node.
-    pub id_to_node_map : IndexMap< NodeId, crate::NodeCell< Node< NodeId, EdgeId, Kind > > >,
+    pub id_to_node_map : IndexMap< NodeId, crate::NodeCell< canonical::Node< NodeId, EdgeId, Kind > > >,
     /// Map id to edge.
-    pub id_to_edge_map : IndexMap< EdgeId, crate::canonical::Edge< EdgeId, NodeId, Kind > >,
+    pub id_to_edge_map : IndexMap< EdgeId, canonical::Edge< EdgeId, NodeId, Kind > >,
     /// Generator of edge ids.
     pub _current_edge_id : EdgeId,
   }
@@ -152,6 +162,24 @@ pub( crate ) mod private
       node_mut,
       node_add_out_nodes,
       node_making,
+    }
+
+  }
+
+  //
+
+  impl< NodeId, EdgeId, Kind > GraphEdgesExtendableInterface
+  for CellNodeFactory< NodeId, EdgeId, Kind >
+  where
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
+    Kind : NodeKindInterface,
+  {
+
+    index!
+    {
+      _edge_id_generate,
+      _edge_add,
     }
 
   }

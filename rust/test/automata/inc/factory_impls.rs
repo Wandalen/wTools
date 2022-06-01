@@ -58,9 +58,15 @@ tests_impls!
     let got : HashSet< _ > = factory.out_nodes( a ).collect();
     a_id!( got, exp );
 
+    // let exp = hset![ b ];
+    let got : HashSet< _ > = factory.out_edges( a ).collect();
+    // a_id!( got.len(), 1 );
+    // a_id!( got, exp );
+
     let exp = hset![ a, b ];
     let got : HashSet< _ > = factory.out_nodes( b ).collect();
     a_id!( got, exp );
+
   }
 
   //

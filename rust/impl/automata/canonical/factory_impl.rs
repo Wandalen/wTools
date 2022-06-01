@@ -100,9 +100,57 @@ impls!
 
     let result = self.id_to_node_map
     .entry( id )
-    .or_insert_with( || Node::make_with_id( id ).into() )
+    .or_insert_with( || canonical::Node::make_with_id( id ).into() )
     ;
     result.id()
+  }
+
+  //
+
+  fn _edge_id_generate( &mut self, _in_node : NODE_ID!(), _out_node : NODE_ID!() ) -> EDGE_ID!()
+  {
+    while self.id_to_edge_map.contains_key( &self._current_edge_id )
+    {
+      self._current_edge_id = self._current_edge_id.next();
+      assert!( self._current_edge_id.is_valid(), "Not more space for ids" );
+    }
+    self._current_edge_id
+  }
+
+  //
+
+  fn _edge_add( &mut self, edge_id : EDGE_ID!(), in_node : NODE_ID!(), out_node : NODE_ID!() )
+  {
+
+    self.id_to_edge_map
+    .entry( edge_id )
+    .and_modify( | _ | { panic!( "Edge {:?} already exists", edge_id ) } )
+    .or_insert_with( ||
+    {
+      canonical::Edge
+      {
+        id : edge_id,
+        in_node,
+        out_node,
+        kind : Default::default(),
+      }
+    });
+
+    // let node = self.node( in_node );
+    // node
+    // .entry( edge_id )
+    // .and_modify( | _ | { panic!( "Edge {:?} already exists", edge_id ) } )
+    // .or_insert_with( ||
+    // {
+    //   canonical::Edge
+    //   {
+    //     id : edge_id,
+    //     in_node,
+    //     out_node,
+    //     kind : Default::default(),
+    //   }
+    // });
+
   }
 
   //
@@ -111,10 +159,12 @@ impls!
   {
     let id_to_node_map = IndexMap::new();
     let id_to_edge_map = IndexMap::new();
+    let _current_edge_id = EdgeId::first();
     Self
     {
       id_to_node_map,
       id_to_edge_map,
+      _current_edge_id,
     }
   }
 

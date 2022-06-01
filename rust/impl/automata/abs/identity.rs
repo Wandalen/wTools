@@ -44,12 +44,15 @@ pub( crate ) mod private
 
   pub trait IdentityGenerableInterface
   where
-    Self : IdentityInterface,
+    Self : IdentityInterface + Default,
   {
     /// Generate a new identity based on the current increasing it.
     fn next( &self ) -> Self;
     /// Generate the first identity.
-    fn first() -> Self;
+    fn first() -> Self
+    {
+      Default::default()
+    }
     /// Check is the identity valid.
     fn is_valid( &self ) -> bool;
   }

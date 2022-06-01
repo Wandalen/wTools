@@ -8,6 +8,13 @@ pub( crate ) mod private
   use wtools::dt::prelude::*;
   // use std::fmt;
 
+  // types!
+  // {
+  //   /// Identify an instance by name.
+  //   #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default, Debug ) ]
+  //   pub single IdentityWithPointer : usize;
+  // }
+
   ///
   /// Identify an instance by its location in memory.
   ///
@@ -44,11 +51,22 @@ pub( crate ) mod private
     }
   }
 
+  //
+
+  // xxx : implement IdentityGenerableInterface for other identities. make it working
+
+  // types!
+  // {
+  //   /// Identify an instance by name.
+  //   #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
+  //   pub single IdentityWithName : &'static str;
+  // }
+
   ///
   /// Identify an instance by name.
   ///
 
-  #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
+  #[ derive( PartialEq, Eq, Copy, Clone, Hash ) ]
   pub struct IdentityWithName( pub &'static str )
   ;
 
@@ -91,22 +109,15 @@ pub( crate ) mod private
     }
   }
 
-//   ///
-//   /// Identify an instance by integer.
-//   ///
-//
-//   #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
-//   pub struct IdentityWithInt( pub isize )
-//   ;
+  //
 
   types!
   {
     /// Identify an instance by integer.
-    #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
+    #[ derive( PartialEq, Eq, Copy, Clone, Hash ) ]
     pub single IdentityWithInt : isize;
   }
 
-  // xxx : implement IdentityGenerableInterface for other identities
   impl IdentityGenerableInterface for IdentityWithInt
   {
 
@@ -117,16 +128,21 @@ pub( crate ) mod private
       result
     }
 
-    fn first() -> Self
-    {
-      Self( 1 )
-    }
+    // fn first() -> Self
+    // {
+    //   Self( 1 )
+    // }
 
     fn is_valid( &self ) -> bool
     {
       self.0 > 0
     }
 
+  }
+
+  impl Default for IdentityWithInt
+  {
+    fn default() -> Self { Self( 1 ) }
   }
 
   impl fmt::Debug for IdentityWithInt

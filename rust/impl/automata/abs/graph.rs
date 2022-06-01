@@ -179,20 +179,20 @@ pub( crate ) mod private
   {
 
     /// Either make new or get existing edge for specified nodes.
-    fn _edge_id_make_for( &mut self, node1 : NODE_ID!(), node2 : NODE_ID!() ) -> EDGE_ID!();
+    fn _edge_id_generate( &mut self, node1 : NODE_ID!(), node2 : NODE_ID!() ) -> EDGE_ID!();
 
     /// Either make new or get existing edge for specified nodes.
-    fn _edge_add( &mut self, edge : EDGE_ID!(), node1 : NODE_ID!(), node2 : NODE_ID!() );
+    fn _edge_add( &mut self, edge_id : EDGE_ID!(), node1 : NODE_ID!(), node2 : NODE_ID!() );
 
     /// Either make new or get existing edge for specified nodes.
-    fn edge_make_for_nodes< IntoNodeId1, IntoNodeId2 >( &mut self, node1 : IntoNodeId1, node2 : IntoNodeId2 ) -> EDGE_ID!()
+    fn _edge_make_for_nodes< IntoNodeId1, IntoNodeId2 >( &mut self, node1 : IntoNodeId1, node2 : IntoNodeId2 ) -> EDGE_ID!()
     where
       IntoNodeId1 : Into< NODE_ID!() >,
       IntoNodeId2 : Into< NODE_ID!() >,
     {
       let node1 = node1.into();
       let node2 = node2.into();
-      let edge = self._edge_id_make_for( node1, node2 );
+      let edge = self._edge_id_generate( node1, node2 );
       self._edge_add( edge, node1, node2 );
       edge
     }
