@@ -87,6 +87,8 @@ pub( crate ) mod private
     pub id_to_node_map : IndexMap< NodeId, crate::NodeCell< Node< NodeId, EdgeId, Kind > > >,
     /// Map id to edge.
     pub id_to_edge_map : IndexMap< EdgeId, crate::canonical::Edge< EdgeId, NodeId, Kind > >,
+    /// Generator of edge ids.
+    pub _current_edge_id : EdgeId,
   }
 
   //
@@ -153,24 +155,6 @@ pub( crate ) mod private
     }
 
   }
-
-  //
-
-//   impl< NodeId, EdgeId, Kind > GraphEditableInterface
-//   for CellNodeFactory< NodeId, EdgeId, Kind >
-//   where
-//     NodeId : IdentityInterface,
-//     EdgeId : IdentityInterface + IdentityGenerableInterface,
-//     Kind : NodeKindInterface,
-//   {
-//
-//     index!
-//     {
-//       node_mut,
-//       node_add_out_nodes,
-//     }
-//
-//   }
 
   //
 
