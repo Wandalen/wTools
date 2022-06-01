@@ -55,3 +55,4 @@ automata_tools = { version = "~0.1", path = "../../move/automata_tools", feature
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
 wtools = { version = "~0.2", path = "../../rust/wtools", features = [ "full" ] }
+
