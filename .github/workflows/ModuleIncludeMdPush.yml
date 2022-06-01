@@ -14,3 +14,4 @@ jobs :
     with :
       manifest_path : 'module/move/include_md/Cargo.toml'
       module_name : 'include_md'
+      commit_message : ${{ github.event.head_commit.message }}

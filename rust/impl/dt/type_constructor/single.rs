@@ -33,6 +33,7 @@ pub( crate ) mod private
       < $ParamName >
       {
         type Target = $ParamName;
+        #[ inline ]
         fn deref( &self ) -> &Self::Target
         {
           &self.0
@@ -43,6 +44,7 @@ pub( crate ) mod private
       for $Name
       < $ParamName >
       {
+        #[ inline ]
         fn deref_mut( &mut self ) -> &mut Self::Target
         {
           &mut self.0
@@ -54,6 +56,7 @@ pub( crate ) mod private
       for $Name
       < $ParamName >
       {
+        #[ inline ]
         fn from( src : $ParamName ) -> Self
         {
           Self( src )
@@ -67,6 +70,7 @@ pub( crate ) mod private
       where
         $ParamName : Clone,
       {
+        #[ inline ]
         fn from( src : &$ParamName ) -> Self
         {
           Self( src.clone() )
@@ -78,6 +82,7 @@ pub( crate ) mod private
       for $Name
       < $ParamName >
       {
+        #[ inline ]
         fn from( src : ( $ParamName, ) ) -> Self
         {
           Self( src.0 )
@@ -88,6 +93,7 @@ pub( crate ) mod private
       From< $Name< $ParamName > >
       for ( $ParamName, )
       {
+        #[ inline ]
         fn from( src : $Name< $ParamName > ) -> Self
         {
           ( src.0, )
@@ -101,6 +107,7 @@ pub( crate ) mod private
       where
         $ParamName : Clone,
       {
+        #[ inline ]
         fn from( src : [ $ParamName ; 1 ] ) -> Self
         {
           Self( src[ 0 ].clone() )
@@ -111,6 +118,7 @@ pub( crate ) mod private
       From< $Name< $ParamName > >
       for [ $ParamName ; 1 ]
       {
+        #[ inline ]
         fn from( src : $Name< $ParamName > ) -> Self
         {
           [ src.0 ]
@@ -124,6 +132,7 @@ pub( crate ) mod private
       where
         $ParamName : Clone,
       {
+        #[ inline ]
         fn from( src : &[ $ParamName ] ) -> Self
         {
           debug_assert_eq!( src.len(), 1 );
@@ -137,6 +146,7 @@ pub( crate ) mod private
       where
         $ParamName : Clone,
       {
+        #[ inline ]
         fn clone_as_tuple( &self ) -> ( $ParamName, )
         {
           ( self.0.clone(), )
@@ -149,6 +159,7 @@ pub( crate ) mod private
       where
         $ParamName : Clone,
       {
+        #[ inline ]
         fn clone_as_array( &self ) -> [ $ParamName ; 1 ]
         {
           [ self.0.clone() ; 1 ]
@@ -159,6 +170,7 @@ pub( crate ) mod private
       $crate::AsTuple< ( $ParamName, ) >
       for $Name < $ParamName >
       {
+        #[ inline ]
         fn as_tuple( &self ) -> &( $ParamName, )
         {
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
@@ -173,6 +185,7 @@ pub( crate ) mod private
       $crate::AsArray< $ParamName, 1 >
       for $Name < $ParamName >
       {
+        #[ inline ]
         fn as_array( &self ) -> &[ $ParamName ; 1 ]
         {
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
@@ -187,6 +200,7 @@ pub( crate ) mod private
       $crate::AsSlice< $ParamName >
       for $Name < $ParamName >
       {
+        #[ inline ]
         fn as_slice( &self ) -> &[ $ParamName ]
         {
           &$crate::AsArray::as_array( self )[ .. ]
@@ -200,6 +214,7 @@ pub( crate ) mod private
         for $Name < $ParamName >
         where $ParamName : Default
         {
+          #[ inline ]
           fn make_0() -> Self
           {
             Self( Default::default() )
@@ -211,6 +226,7 @@ pub( crate ) mod private
         $crate::Make1< $ParamName >
         for $Name < $ParamName >
         {
+          #[ inline ]
           fn make_1( _0 : $ParamName ) -> Self
           {
             Self( _0 )
@@ -271,6 +287,7 @@ pub( crate ) mod private
       $( < $( $ParamName ),* > )?
       {
         type Target = $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?;
+        #[ inline ]
         fn deref( &self ) -> &Self::Target
         {
           &self.0
@@ -283,6 +300,7 @@ pub( crate ) mod private
       for $Name
       $( < $( $ParamName ),* > )?
       {
+        #[ inline ]
         fn deref_mut( &mut self ) -> &mut Self::Target
         {
           &mut self.0
@@ -296,6 +314,7 @@ pub( crate ) mod private
       for $Name
       $( < $( $ParamName ),* > )?
       {
+        #[ inline ]
         fn from( src : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
         {
           Self( src )
@@ -312,6 +331,7 @@ pub( crate ) mod private
         __FromRef : Clone,
         Self : From< __FromRef >,
       {
+        #[ inline ]
         fn from( src : &__FromRef ) -> Self
         {
           From::from( ( *src ).clone() )
@@ -324,6 +344,7 @@ pub( crate ) mod private
       < $Name $( < $( $ParamName ),* > )? >
       for $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?
       {
+        #[ inline ]
         fn from( src : $Name $( < $( $ParamName ),* > )? ) -> Self
         {
           src.0
@@ -337,6 +358,7 @@ pub( crate ) mod private
       for $Name
       $( < $( $ParamName ),* > )?
       {
+        #[ inline ]
         fn from( src : ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , ) ) -> Self
         {
           Self( src.0 )
@@ -352,6 +374,7 @@ pub( crate ) mod private
       where
         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
+        #[ inline ]
         fn from( src : [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; 1 ] ) -> Self
         {
           Self( src[ 0 ].clone() )
@@ -367,6 +390,7 @@ pub( crate ) mod private
       where
         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
+        #[ inline ]
         fn from( src : &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ] ) -> Self
         {
           debug_assert_eq!( src.len(), 1 );
@@ -382,6 +406,7 @@ pub( crate ) mod private
       where
         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
+        #[ inline ]
         fn clone_as_tuple( &self ) -> ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, )
         {
           ( self.0.clone(), )
@@ -396,6 +421,7 @@ pub( crate ) mod private
       where
         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
+        #[ inline ]
         fn clone_as_array( &self ) -> [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; 1 ]
         {
           [ self.0.clone() ]
@@ -410,6 +436,7 @@ pub( crate ) mod private
       where
         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
+        #[ inline ]
         fn as_tuple( &self ) -> &( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, )
         {
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
@@ -428,6 +455,7 @@ pub( crate ) mod private
       where
         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
+        #[ inline ]
         fn as_array( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; 1 ]
         {
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
@@ -446,6 +474,7 @@ pub( crate ) mod private
       where
         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
+        #[ inline ]
         fn as_slice( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ]
         {
           &$crate::AsArray::as_array( self )[ .. ]
@@ -460,6 +489,7 @@ pub( crate ) mod private
         for
         $Name $( < $( $ParamName ),* > )?
         {
+          #[ inline ]
           fn make_1( _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
           {
             Self( _0 )
@@ -516,6 +546,10 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
+  pub use super::private::
+  {
+    _single,
+  };
 }
 
 pub use exposed::*;
@@ -525,9 +559,6 @@ pub mod prelude
 {
   pub use super::private::
   {
-
-    _single,
     Single,
-
   };
 }

@@ -30,11 +30,11 @@ path = "rust/impl/_blank/standard_lib.rs"
 
 [[test]]
 name = "template_blank_test"
-path = "rust/test/template_blank/template_blank_lib_test.rs"
+path = "rust/test/_blank/lib_test.rs"
 
-[[test]]
-name = "template_blank_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
+# [[test]]
+# name = "template_blank_smoke_test"
+# path = "rust/test/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "template_blank_trivial_sample"

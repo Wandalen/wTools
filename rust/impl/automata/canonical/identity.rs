@@ -91,32 +91,19 @@ pub( crate ) mod private
     }
   }
 
-  ///
-  /// Identify an instance by integer.
-  ///
+//   ///
+//   /// Identify an instance by integer.
+//   ///
+//
+//   #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
+//   pub struct IdentityWithInt( pub isize )
+//   ;
 
-  #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
-  pub struct IdentityWithInt( pub isize )
-  ;
-
-  // xxx
-  // types!
-  // {
-  //   /// Identify an instance by integer.
-  //   #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default, Debug ) ]
-  //   single IdentityWithInt : isize;
-  //}
-
-  impl IdentityWithInt
+  types!
   {
-
-    /// Construct from an arbitrary reference.
-    #[ inline ]
-    pub fn make( val : isize ) -> Self
-    {
-      Self( val.into() )
-    }
-
+    /// Identify an instance by integer.
+    #[ derive( PartialEq, Eq, Copy, Clone, Hash, Default ) ]
+    pub single IdentityWithInt : isize;
   }
 
   // xxx : implement IdentityGenerableInterface for other identities
@@ -140,25 +127,6 @@ pub( crate ) mod private
       self.0 > 0
     }
 
-  }
-
-  impl From< isize > for IdentityWithInt
-  {
-    fn from( src : isize ) -> Self
-    {
-      Self( src )
-    }
-  }
-
-  impl< Src > From< &Src > for IdentityWithInt
-  where
-    Src : Clone,
-    IdentityWithInt : From< Src >,
-  {
-    fn from( src : &Src ) -> Self
-    {
-      From::< Src >::from( src.clone() )
-    }
   }
 
   impl fmt::Debug for IdentityWithInt

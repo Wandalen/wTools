@@ -14,6 +14,7 @@ jobs :
     with :
       manifest_path : 'module/move/automata_tools/Cargo.toml'
       module_name : 'automata_tools'
+      commit_message : ${{ github.event.head_commit.message }}
 
   # wautomata
 
@@ -22,3 +23,4 @@ jobs :
     with :
       manifest_path : 'module/alias/wautomata/Cargo.toml'
       module_name : 'wautomata'
+      commit_message : ${{ github.event.head_commit.message }}

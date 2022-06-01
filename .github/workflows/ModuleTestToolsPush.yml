@@ -14,3 +14,4 @@ jobs :
     with :
       manifest_path : 'module/rust/test_tools/Cargo.toml'
       module_name : 'test_tools'
+      commit_message : ${{ github.event.head_commit.message }}

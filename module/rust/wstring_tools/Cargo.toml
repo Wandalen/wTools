@@ -1,6 +1,6 @@
 [package]
 name = "wstring_tools"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -47,7 +47,7 @@ path = "rust/test/_integration_test/smoke_test.rs"
 [[example]]
 name = "wstring_tools_trivial"
 path = "sample/rust/wstring_tools_trivial/src/main.rs"
-# xxx # aaa : done
+# zzz : check
 
 [dependencies]
 former = { version = "~0.1", path = "../../rust/former" }

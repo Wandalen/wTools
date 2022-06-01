@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.2.9"
+version = "0.2.11"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -20,12 +20,13 @@ keywords = [ "fundamental", "general-purpose" ]
 
 include = [
   "/rust/impl/wtools_lib.rs",
-  "/rust/impl/dt/mod.rs",
-  "/rust/impl/iter/mod.rs",
-  "/rust/impl/meta/mod.rs",
-  "/rust/impl/typing/mod.rs",
-  "/rust/impl/convert/mod.rs",
-  "/rust/impl/time/mod.rs",
+  # "/rust/impl/dt/mod.rs",
+  # "/rust/impl/iter/mod.rs",
+  # "/rust/impl/meta/mod.rs",
+  # "/rust/impl/typing/mod.rs",
+  # "/rust/impl/convert/mod.rs",
+  # "/rust/impl/time/mod.rs",
+  # xxx : check
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -133,15 +134,17 @@ time_now = [ "time", "time_tools/now" ]
 # string
 
 string = [ "wstring_tools" ]
-string_indentation = [ "wstring_tools/indentation" ]
-string_parse = [ "wstring_tools/parse" ]
-string_split = [ "wstring_tools/split" ]
+string_indentation = [ "string", "wstring_tools/indentation" ]
+string_parse = [ "string", "wstring_tools/parse" ]
+string_split = [ "string", "wstring_tools/split" ]
 string_default = [
+  "string",
   "string_indentation",
   "string_parse",
   "string_split",
 ]
 string_full = [
+  "string",
   "string_indentation",
   "string_parse",
   "string_split",

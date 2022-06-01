@@ -1,4 +1,4 @@
-name : time_tools
+name : wlang
 
 on : push
 
@@ -7,11 +7,11 @@ env :
 
 jobs :
 
-  # time_tools
+  # wlang
 
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
-      manifest_path : 'module/rust/time_tools/Cargo.toml'
-      module_name : 'time_tools'
+      manifest_path : 'module/rust/wlang/Cargo.toml'
+      module_name : 'wlang'
       commit_message : ${{ github.event.head_commit.message }}
