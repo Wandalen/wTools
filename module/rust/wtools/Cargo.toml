@@ -18,6 +18,9 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/wtools_lib.rs",
   # "/rust/impl/dt/mod.rs",
@@ -31,9 +34,6 @@ include = [
   "/Readme.md",
   "/License",
 ]
-
-[package.metadata.docs.rs]
-all-features = true
 # rustdoc-args = []
 
 [lib]
@@ -232,7 +232,6 @@ derive_default = [
 derive_nightly = [ "derive", "nightly", "derive_tools/nightly" ]
 derive_enable_track_caller = [ "derive", "derive_tools/enable_track_caller" ]
 
-# derive_more = [ "derive_tools/derive_more" ]
 derive_add_assign = [ "derive", "derive_tools/derive_add_assign" ]
 derive_add = [ "derive", "derive_tools/derive_add" ]
 derive_as_mut = [ "derive", "derive_tools/derive_as_mut" ]
@@ -271,6 +270,7 @@ dt_default = [
   "dt_either",
   "dt_type_constructor",
   "dt_make",
+  "dt_vectorized_from",
   "dt_interval",
 ]
 dt_full = [
@@ -279,11 +279,13 @@ dt_full = [
   "dt_either",
   "dt_type_constructor",
   "dt_make",
+  "dt_vectorized_from",
   "dt_interval",
 ]
 dt_either = [ "dt", "data_type/either" ]
 dt_type_constructor = [ "dt", "data_type/type_constructor" ]
 dt_make = [ "dt", "data_type/make" ]
+dt_vectorized_from = [ "dt", "data_type/vectorized_from" ]
 dt_interval = [ "dt", "data_type/interval" ]
 
 # diagnostics

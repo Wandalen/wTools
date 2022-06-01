@@ -18,6 +18,9 @@ Interval adapter for both open/closed implementations of intervals ( ranges ).
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/dt/interval_lib.rs",
   "/Cargo.toml",

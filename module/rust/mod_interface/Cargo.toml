@@ -17,6 +17,9 @@ Protocol of modularity unifying interface of a module.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/meta/mod_interface_lib.rs",
   "/rust/impl/meta/mod_interface/front",

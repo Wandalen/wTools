@@ -18,3 +18,6 @@ mod many_test;
 
 #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
 mod make_interface_test;
+
+#[ cfg( any( feature = "vectorized_from", feature = "dt_vectorized_from" ) ) ]
+mod vectorized_from_test;

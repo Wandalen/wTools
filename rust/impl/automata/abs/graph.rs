@@ -5,19 +5,19 @@ pub( crate ) mod private
 
   macro_rules! NODE_ID
   {
-    () => { < < Self as GraphNodesInterface >::NodeHandle as HasId >::Id };
+    () => { < < Self as GraphNodesNominalInterface >::NodeHandle as HasId >::Id };
   }
 
   macro_rules! EDGE_ID
   {
-    () => { < < Self as GraphEdgesInterface >::EdgeHandle as HasId >::Id };
+    () => { < < Self as GraphEdgesNominalInterface >::EdgeHandle as HasId >::Id };
   }
 
   ///
   /// Graph which know how to iterate neighbourhood of a node and capable to convert id of a node into a node.
   ///
 
-  pub trait GraphNodesInterface
+  pub trait GraphNodesNominalInterface
   {
 
     /// Handle of a node - entity representing a node or the node itself.
@@ -25,22 +25,33 @@ pub( crate ) mod private
     /// Otherwise NodeHandle could be &Node.
     type NodeHandle : NodeBasicInterface;
 
+    /// Convert argument into node id.
+    #[ allow( non_snake_case ) ]
+    #[ inline ]
+    fn NodeId< Id >( id : Id ) -> NODE_ID!()
+    where
+      Id : Into< NODE_ID!() >
+    {
+      id.into()
+    }
+
+    /// Convert argument into node id.
+    #[ inline ]
+    fn node_id< Id >( &self, id : Id ) -> NODE_ID!()
+    where
+      Id : Into< NODE_ID!() >
+    {
+      id.into()
+    }
+
     /// Get node with id.
     fn node< Id >( &self, id : Id ) -> &Self::NodeHandle
     where
       Id : Into< NODE_ID!() >
     ;
 
-    /// Iterate over all nodes.
-    fn nodes< 'a, 'b >( &'a self )
-    ->
-    Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > + 'b >
-    where
-      'a : 'b,
-    ;
-
-    /// Iterate over neighbourhood of the node.
-    fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
+    /// Iterate over neighbourhood of the node. Callback gets ids of nodes in neighbourhood of a picked node.
+    fn out_nodes_ids< 'a, 'b, Id >( &'a self, node_id : Id )
     ->
     Box< dyn Iterator< Item = NODE_ID!() > + 'b >
     where
@@ -48,15 +59,29 @@ pub( crate ) mod private
       'a : 'b,
     ;
 
+    /// Iterate over neighbourhood of the node. Callback gets ids and reference on itself of nodes in neighbourhood of a picked node.
+    fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
+    ->
+    Box< dyn Iterator< Item = ( NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
+    where
+      Id : Into< NODE_ID!() >,
+      'a : 'b,
+    {
+      Box::new( self.out_nodes_ids( node_id ).map( | id |
+      {
+        ( id, self.node( id ) )
+      }))
+    }
+
   }
 
   ///
   /// Graph which know how to iterate neighbourhood of a node and capable to convert id of a node into a node.
   ///
 
-  pub trait GraphEdgesInterface
+  pub trait GraphEdgesNominalInterface
   where
-    Self : GraphNodesInterface,
+    Self : GraphNodesNominalInterface,
   {
 
     /// Handle of an edge - entity representing an edge or the edge itself.
@@ -64,28 +89,127 @@ pub( crate ) mod private
     /// Otherwise EdgeHandle could be &Node.
     type EdgeHandle : EdgeBasicInterface;
 
+    /// Convert argument into edge id.
+    #[ allow( non_snake_case ) ]
+    #[ inline ]
+    fn EdgeId< Id >( id : Id ) -> EDGE_ID!()
+    where
+      Id : Into< EDGE_ID!() >
+    {
+      id.into()
+    }
+
+    /// Convert argument into edge id.
+    #[ inline ]
+    fn edge_id< Id >( &self, id : Id ) -> EDGE_ID!()
+    where
+      Id : Into< EDGE_ID!() >
+    {
+      Self::EdgeId( id )
+    }
+
+//     /// Convert argument into edges ids.
+//     #[ allow( non_snake_case ) ]
+//     #[ inline ]
+//     fn EdgesIds< In, Out >( src : In< EDGE_ID!() > ) -> Out< EDGE_ID!() >
+//     where
+//       In : IdsFromCollection,
+//       Out : IdsCollection,
+//     {
+//       src.into()
+//     }
+//
+//     /// Get edges with ids.
+//     #[ inline ]
+//     fn edges_ids< In, Out >( &self, src : In< EDGE_ID!() > ) -> Out< EDGE_ID!() >
+//     where
+//       In : IdsFromCollection,
+//       Out : IdsCollection,
+//     {
+//       Self::EdgesIds( src )
+//     }
+
     /// Get edge with id.
     fn edge< Id >( &self, id : Id ) -> &Self::EdgeHandle
     where
       Id : Into< EDGE_ID!() >
     ;
 
-    /// Iterate over all edges.
-    fn edges< 'a, 'b >( &'a self )
-    ->
-    Box< dyn Iterator< Item = ( &EDGE_ID!(), &Self::EdgeHandle ) > + 'b >
-    where
-      'a : 'b,
-    ;
-
-    /// Iterate over output edges of the node.
-    fn out_edges< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
+    /// Iterate over output edges of the node. Callback gets ids of nodes in neighbourhood of a picked node.
+    fn out_edges_ids< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
     Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
     where
       IntoId : Into< NODE_ID!() >,
       'a : 'b,
     ;
+
+    /// Iterate over output edges of the node. Callback gets ids and references of edges in neighbourhood of a picked node.
+    fn out_edges< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
+    ->
+    Box< dyn Iterator< Item = ( EDGE_ID!(), &< Self as GraphEdgesNominalInterface >::EdgeHandle ) > + 'b >
+    where
+      IntoId : Into< NODE_ID!() >,
+      'a : 'b,
+    {
+      Box::new( self.out_edges_ids( node_id ).map( | id |
+      {
+        ( id, self.edge( id ) )
+      }))
+    }
+
+  }
+
+  ///
+  /// Graph nodes of which is possible to enumerate.
+  ///
+
+  pub trait GraphNodesEnumerableInterface
+  where
+    Self : GraphNodesNominalInterface,
+  {
+
+    /// Iterate over all nodes.
+    fn nodes< 'a, 'b >( &'a self )
+    ->
+    Box< dyn Iterator< Item = ( NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
+    where
+      'a : 'b,
+    ;
+
+    /// Number of nodes. Order of the graph.
+    fn nnodes( &self ) -> usize
+    {
+      self.nodes().count()
+    }
+
+  }
+
+  ///
+  /// Graph edges of which is possible to enumerate.
+  ///
+
+  pub trait GraphEdgesEnumerableInterface
+  where
+    Self :
+      GraphNodesNominalInterface +
+      GraphEdgesNominalInterface +
+    ,
+  {
+
+    /// Iterate over all edges.
+    fn edges< 'a, 'b >( &'a self )
+    ->
+    Box< dyn Iterator< Item = ( EDGE_ID!(), &< Self as GraphEdgesNominalInterface >::EdgeHandle ) > + 'b >
+    where
+      'a : 'b,
+    ;
+
+    /// Number of edges. Size of the graph.
+    fn nedges( &self ) -> usize
+    {
+      self.edges().count()
+    }
 
   }
 
@@ -96,7 +220,7 @@ pub( crate ) mod private
   pub trait GraphNodesExtendableInterface
   where
     Self :
-      GraphNodesInterface +
+      GraphNodesNominalInterface +
     ,
   {
 
@@ -172,27 +296,27 @@ pub( crate ) mod private
   pub trait GraphEdgesExtendableInterface
   where
     Self :
-      GraphNodesInterface +
-      GraphEdgesInterface +
+      GraphNodesNominalInterface +
+      GraphEdgesNominalInterface +
       GraphNodesExtendableInterface +
     ,
   {
 
     /// Either make new or get existing edge for specified nodes.
-    fn _edge_id_make_for( &mut self, node1 : NODE_ID!(), node2 : NODE_ID!() ) -> EDGE_ID!();
+    fn _edge_id_generate( &mut self, node1 : NODE_ID!(), node2 : NODE_ID!() ) -> EDGE_ID!();
 
     /// Either make new or get existing edge for specified nodes.
-    fn _edge_add( &mut self, edge : EDGE_ID!(), node1 : NODE_ID!(), node2 : NODE_ID!() );
+    fn _edge_add( &mut self, edge_id : EDGE_ID!(), node1 : NODE_ID!(), node2 : NODE_ID!() );
 
     /// Either make new or get existing edge for specified nodes.
-    fn edge_make_for_nodes< IntoNodeId1, IntoNodeId2 >( &mut self, node1 : IntoNodeId1, node2 : IntoNodeId2 ) -> EDGE_ID!()
+    fn _edge_make_for_nodes< IntoNodeId1, IntoNodeId2 >( &mut self, node1 : IntoNodeId1, node2 : IntoNodeId2 ) -> EDGE_ID!()
     where
       IntoNodeId1 : Into< NODE_ID!() >,
       IntoNodeId2 : Into< NODE_ID!() >,
     {
       let node1 = node1.into();
       let node2 = node2.into();
-      let edge = self._edge_id_make_for( node1, node2 );
+      let edge = self._edge_id_generate( node1, node2 );
       self._edge_add( edge, node1, node2 );
       edge
     }
@@ -203,14 +327,31 @@ pub( crate ) mod private
   /// Graph nodes of which has a kind.
   ///
 
-  pub trait GraphKindGetterInterface
+  pub trait GraphNodesKindGetterInterface
   where
-    Self : GraphNodesInterface,
+    Self : GraphNodesNominalInterface,
   {
     /// Enumerate kinds of the node.
     type NodeKind : crate::NodeKindInterface;
     /// Get kind of the node.
     fn node_kind( &self, node_id : NODE_ID!() ) -> Self::NodeKind;
+  }
+
+  ///
+  /// Graph nodes of which has a kind.
+  ///
+
+  pub trait GraphEdgesKindGetterInterface
+  where
+    Self :
+      GraphNodesNominalInterface +
+      GraphEdgesNominalInterface +
+    ,
+  {
+    /// Enumerate kinds of the node.
+    type EdgeKind : crate::EdgeKindInterface;
+    /// Get kind of the node.
+    fn node_kind( &self, node_id : EDGE_ID!() ) -> Self::EdgeKind;
   }
 
 }
@@ -242,10 +383,13 @@ pub mod prelude
 {
   pub use super::private::
   {
-    GraphNodesInterface,
-    GraphEdgesInterface,
+    GraphNodesNominalInterface,
+    GraphEdgesNominalInterface,
+    GraphNodesEnumerableInterface,
+    GraphEdgesEnumerableInterface,
     GraphNodesExtendableInterface,
     GraphEdgesExtendableInterface,
-    GraphKindGetterInterface,
+    GraphNodesKindGetterInterface,
+    GraphEdgesKindGetterInterface,
   };
 }

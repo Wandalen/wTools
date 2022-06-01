@@ -18,6 +18,9 @@ Basic exceptions handling mechanism.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/error",
   "/Cargo.toml",

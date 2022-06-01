@@ -30,28 +30,63 @@ pub( crate ) mod private
       $Vis struct $Name
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
-        $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
+        $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?,
       >
       ( pub $ParamName1, pub $ParamName2 );
+
+      // impl
+      // <
+      //   $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
+      //   $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?,
+      // >
+      // From
+      // <(
+      //   $ParamName1,
+      //   $ParamName2,
+      // )>
+      // for $Name< $ParamName1, $ParamName2 >
+      // {
+      //   #[ inline ]
+      //   fn from( src : ( $ParamName1, $ParamName2 ) ) -> Self
+      //   {
+      //     Self( src.0, src.1 )
+      //   }
+      // }
 
       impl
       <
         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
-        $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
+        $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?,
+        Into1 : Into< $ParamName1 >,
+        Into2 : Into< $ParamName2 >,
       >
       From
       <(
-        $ParamName1,
-        $ParamName2,
+        Into1,
+        Into2,
       )>
       for $Name< $ParamName1, $ParamName2 >
       {
         #[ inline ]
-        fn from( src : ( $ParamName1, $ParamName2 ) ) -> Self
+        fn from( src : ( Into1, Into2 ) ) -> Self
         {
-          Self( src.0, src.1 )
+          Self( src.0.into(), src.1.into() )
         }
       }
+
+      // xxx : make the same changes for other type constructors
+      // impl< Into1, Into2, Id > From< ( Into1, Into2 ) >
+      // for ( Id, Id )
+      // where
+      //   Id : IdentityInterface,
+      //   Into1 : Into< Id >,
+      //   Into2 : Into< Id >,
+      // {
+      //   fn from( src : ( Into1, Into2 ) ) -> Self
+      //   {
+      //     ( src.0.into(), src.1.into() )
+      //   }
+      // }
 
       impl
       <
@@ -935,6 +970,37 @@ pub( crate ) mod private
 
   }
 
+//
+
+// #[derive(Debug, Clone, PartialEq, Eq, Default)] pub  struct Pair < T1, T2, >
+// (pub T1, pub T2) ;
+//
+// //
+//
+// impl < T1, T2, Into1 : Into < T1 >, Into2 : Into < T2 >, >
+// From < (Into1, Into2,) > for Pair < T1, T2 >
+// {
+//     #[inline] fn from(src : (Into1, Into2)) -> Self
+//     { Self(src.0.into(), src.1.into()) }
+// }
+//
+// //
+//
+// impl < T1, T2, Into1 : Into < T1 >, Into2 : Into < T2 >, > From < Pair <
+// Into1, Into2, > > for Pair < T1, T2 >
+// {
+//     #[inline] fn from(src : (Into1, Into2)) -> Self
+//     { Self(src.0.into(), src.1.into()) }
+// }
+//
+// //
+//
+// impl < T1, T2 > From < Pair < T1, T2 > > for(T1, T2)
+// { #[inline] fn from(src : Pair < T1, T2 >) -> Self { (src.0, src.1) } }
+
+//
+
+  // trace_macros!( true );
   types!
   {
 
@@ -967,6 +1033,26 @@ pub( crate ) mod private
     pub pair HomoPair : < T >;
 
   }
+  // trace_macros!( false );
+
+//   types!
+//   {
+//
+//     ///
+//     /// Type constructor to wrap pair of the same type.
+//     ///
+//     /// ### Sample
+//     /// ```
+//     /// let two_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( ( 13, 31 ) );
+//     /// dbg!( two_i32_in_tuple );
+//     /// // vec_of_i32_in_tuple = HomoPair( 13, 31 )
+//     /// ```
+//     ///
+//
+//     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
+//     pub pair HomoPair : < T >;
+//
+//   }
 
   pub use _pair;
 }

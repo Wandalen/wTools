@@ -50,6 +50,9 @@ pub mod prelude
 
 // xxx : implement checks
 //
+// - graph order - number of nodes
+// - graph size - number of edges
+//
 // - graph is connected
 // - graph is complete
 // - graph is isomorphic with another graph

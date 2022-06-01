@@ -99,23 +99,23 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > Extend< < Self as HasId >::Id >
-  for Node< NodeId, EdgeId, Kind >
-  where
-    NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
-    Kind : NodeKindInterface,
-  {
-    fn extend< Iter >( &mut self, iter : Iter )
-    where
-      Iter : IntoIterator< Item = < Self as HasId >::Id >
-    {
-      for node in iter
-      {
-        self.out_nodes.insert( node );
-      }
-    }
-  }
+  // impl< NodeId, EdgeId, Kind > Extend< < Self as HasId >::Id >
+  // for Node< NodeId, EdgeId, Kind >
+  // where
+  //   NodeId : IdentityInterface,
+  //   EdgeId : IdentityInterface,
+  //   Kind : NodeKindInterface,
+  // {
+  //   fn extend< Iter >( &mut self, iter : Iter )
+  //   where
+  //     Iter : IntoIterator< Item = < Self as HasId >::Id >
+  //   {
+  //     for node_id in iter
+  //     {
+  //       self.out_nodes.insert( node_id );
+  //     }
+  //   }
+  // }
 
   //
 

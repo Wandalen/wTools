@@ -25,7 +25,7 @@ tests_impls!
       a_not_id!( src1, src2 );
     }
 
-    /* test.case( "into" ) */
+    /* test.case( "from" ) */
     {
       let src = IdentityWithInt::make( 3 );
       fn check_into< Src >( src : Src ) -> IdentityWithInt
@@ -38,6 +38,39 @@ tests_impls!
       a_id!( src, check_into( IdentityWithInt::make( 3 ) ) );
       a_not_id!( src, check_into( IdentityWithInt::make( 1 ) ) );
     }
+
+    // xxx
+    // /* test.case( "from pair" ) */
+    // {
+    //   let src = Pair::make_2( 1, 3 );
+    //   let got : Pair< IdentityWithInt, IdentityWithInt > = src.into();
+    //   let exp = Pair::make_2( IdentityWithInt::make( 1 ), IdentityWithInt::make( 3 ) );
+    //   a_id!( got, exp );
+    // }
+
+    // /* test.case( "from x1 tupple" ) */
+    // {
+    //   let src = ( 1, );
+    //   let got : ( IdentityWithInt, ) = src.into();
+    //   let exp = ( IdentityWithInt::make( 1 ) );
+    //   a_id!( got, exp );
+    // }
+
+    /* test.case( "from x2 tupple" ) */
+    {
+      let src = ( 1, 3 );
+      let got : ( IdentityWithInt, IdentityWithInt ) = src.vectorized_into();
+      let exp = ( IdentityWithInt::make( 1 ), IdentityWithInt::make( 3 ) );
+      a_id!( got, exp );
+    }
+
+    // /* test.case( "from x3 tupple" ) */
+    // {
+    //   let src = ( 1, 2, 3 );
+    //   let got : ( IdentityWithInt, IdentityWithInt, IdentityWithInt ) = src.into();
+    //   let exp = ( IdentityWithInt::make( 1 ), IdentityWithInt::make( 2 ), IdentityWithInt::make( 3 ) );
+    //   a_id!( got, exp );
+    // }
 
   }
 

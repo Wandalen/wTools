@@ -1,6 +1,6 @@
 [package]
 name = "data_type"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -17,6 +17,9 @@ Collection of primal data types.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/dt",
   "/Cargo.toml",
@@ -29,16 +32,20 @@ default = [
   "either",
   "interval",
   "make",
+  "vectorized_from",
   "type_constructor/default",
 ]
 full = [
   "either",
   "interval",
   "make",
+  "vectorized_from",
   "type_constructor/full",
 ]
 interval = [ "winterval" ]
 make = [ "type_constructor/make" ]
+vectorized_from = [ "type_constructor/vectorized_from" ]
+# zzz : use_std
 
 [lib]
 name = "data_type"
