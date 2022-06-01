@@ -47,7 +47,7 @@ path = "rust/test/_integration_test/smoke_test.rs"
 # path = "sample/rust/wautomata_trivial_sample/src/main.rs"
 
 [dependencies]
-automata_tools = { version = "~0.1", path = "../../move/automata_tools", features = [] }
+automata_tools = { version = "~0.1", path = "../../move/automata_tools", features = [ "full" ] }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
