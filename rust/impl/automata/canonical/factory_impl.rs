@@ -1,12 +1,12 @@
 
 macro_rules! NODE_ID
 {
-  () => { < < Self as GraphNodesInterface >::NodeHandle as HasId >::Id };
+  () => { < < Self as GraphNodesNominalInterface >::NodeHandle as HasId >::Id };
 }
 
 macro_rules! EDGE_ID
 {
-  () => { < < Self as GraphEdgesInterface >::EdgeHandle as HasId >::Id };
+  () => { < < Self as GraphEdgesNominalInterface >::EdgeHandle as HasId >::Id };
 }
 
 impls!

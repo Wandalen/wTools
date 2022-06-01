@@ -53,23 +53,6 @@ pub( crate ) mod private
         in_node.out_nodes.insert( out_id.1 );
       }
 
-//       let out_edges = out_nodes_iter.into_iter()
-//       .map( | out_node_id |
-//       {
-//         let out_node_id = out_node_id.into();
-//         #[ cfg( debug_assertions ) ]
-//         let node = self.node( out_node_id );
-//         // self._edge_make_for_nodes( node_id, out_node_id );
-//         out_node_id
-//       });
-//       // self.node( node_id.into() ).borrow_mut().extend( out_nodes_iter2 );
-//
-//       let mut in_node = self.node( in_node_id ).borrow_mut();
-//       for out_node_id in out_edges
-//       {
-//         in_node.out_nodes.insert( out_node_id );
-//       }
-
     }
 
     //
@@ -137,7 +120,7 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphNodesInterface
+  impl< NodeId, EdgeId, Kind > GraphNodesNominalInterface
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
@@ -148,14 +131,13 @@ pub( crate ) mod private
     index!
     {
       node,
-      nodes,
       out_nodes,
     }
   }
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphEdgesInterface
+  impl< NodeId, EdgeId, Kind > GraphEdgesNominalInterface
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
@@ -166,8 +148,37 @@ pub( crate ) mod private
     index!
     {
       edge,
-      edges,
       out_edges,
+    }
+  }
+
+  //
+
+  impl< NodeId, EdgeId, Kind > GraphNodesEnumerableInterface
+  for CellNodeFactory< NodeId, EdgeId, Kind >
+  where
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
+    Kind : NodeKindInterface,
+  {
+    index!
+    {
+      nodes,
+    }
+  }
+
+  //
+
+  impl< NodeId, EdgeId, Kind > GraphEdgesEnumerableInterface
+  for CellNodeFactory< NodeId, EdgeId, Kind >
+  where
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
+    Kind : NodeKindInterface,
+  {
+    index!
+    {
+      edges,
     }
   }
 

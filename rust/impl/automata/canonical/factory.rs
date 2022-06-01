@@ -118,7 +118,7 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphNodesInterface
+  impl< NodeId, EdgeId, Kind > GraphNodesNominalInterface
   for NodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
@@ -130,13 +130,12 @@ pub( crate ) mod private
     {
       node,
       out_nodes,
-      nodes,
     }
   }
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphEdgesInterface
+  impl< NodeId, EdgeId, Kind > GraphEdgesNominalInterface
   for NodeFactory< NodeId, EdgeId, Kind >
   where
     EdgeId : IdentityInterface + IdentityGenerableInterface,
@@ -147,8 +146,37 @@ pub( crate ) mod private
     index!
     {
       edge,
-      edges,
       out_edges,
+    }
+  }
+
+  //
+
+  impl< NodeId, EdgeId, Kind > GraphNodesEnumerableInterface
+  for NodeFactory< NodeId, EdgeId, Kind >
+  where
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
+    Kind : NodeKindInterface,
+  {
+    index!
+    {
+      nodes,
+    }
+  }
+
+  //
+
+  impl< NodeId, EdgeId, Kind > GraphEdgesEnumerableInterface
+  for NodeFactory< NodeId, EdgeId, Kind >
+  where
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
+    NodeId : IdentityInterface,
+    Kind : NodeKindInterface,
+  {
+    index!
+    {
+      edges,
     }
   }
 

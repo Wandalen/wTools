@@ -5,19 +5,19 @@ pub( crate ) mod private
 
   macro_rules! NODE_ID
   {
-    () => { < < Self as GraphNodesInterface >::NodeHandle as HasId >::Id };
+    () => { < < Self as GraphNodesNominalInterface >::NodeHandle as HasId >::Id };
   }
 
   macro_rules! EDGE_ID
   {
-    () => { < < Self as GraphEdgesInterface >::EdgeHandle as HasId >::Id };
+    () => { < < Self as GraphEdgesNominalInterface >::EdgeHandle as HasId >::Id };
   }
 
   ///
   /// Graph which know how to iterate neighbourhood of a node and capable to convert id of a node into a node.
   ///
 
-  pub trait GraphNodesInterface
+  pub trait GraphNodesNominalInterface
   {
 
     /// Handle of a node - entity representing a node or the node itself.
@@ -31,13 +31,13 @@ pub( crate ) mod private
       Id : Into< NODE_ID!() >
     ;
 
-    /// Iterate over all nodes.
-    fn nodes< 'a, 'b >( &'a self )
-    ->
-    Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > + 'b >
-    where
-      'a : 'b,
-    ;
+    // /// Iterate over all nodes.
+    // fn nodes< 'a, 'b >( &'a self )
+    // ->
+    // Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > + 'b >
+    // where
+    //   'a : 'b,
+    // ;
 
     /// Iterate over neighbourhood of the node.
     fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
@@ -54,9 +54,9 @@ pub( crate ) mod private
   /// Graph which know how to iterate neighbourhood of a node and capable to convert id of a node into a node.
   ///
 
-  pub trait GraphEdgesInterface
+  pub trait GraphEdgesNominalInterface
   where
-    Self : GraphNodesInterface,
+    Self : GraphNodesNominalInterface,
   {
 
     /// Handle of an edge - entity representing an edge or the edge itself.
@@ -68,14 +68,6 @@ pub( crate ) mod private
     fn edge< Id >( &self, id : Id ) -> &Self::EdgeHandle
     where
       Id : Into< EDGE_ID!() >
-    ;
-
-    /// Iterate over all edges.
-    fn edges< 'a, 'b >( &'a self )
-    ->
-    Box< dyn Iterator< Item = ( &EDGE_ID!(), &Self::EdgeHandle ) > + 'b >
-    where
-      'a : 'b,
     ;
 
     /// Iterate over output edges of the node.
@@ -90,13 +82,54 @@ pub( crate ) mod private
   }
 
   ///
+  /// Graph nodes of which is possible to enumerate.
+  ///
+
+  pub trait GraphNodesEnumerableInterface
+  where
+    Self : GraphNodesNominalInterface,
+  {
+
+    /// Iterate over all nodes.
+    fn nodes< 'a, 'b >( &'a self )
+    ->
+    Box< dyn Iterator< Item = ( &NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
+    where
+      'a : 'b,
+    ;
+
+  }
+
+  ///
+  /// Graph edges of which is possible to enumerate.
+  ///
+
+  pub trait GraphEdgesEnumerableInterface
+  where
+    Self :
+      GraphNodesNominalInterface +
+      GraphEdgesNominalInterface +
+    ,
+  {
+
+    /// Iterate over all edges.
+    fn edges< 'a, 'b >( &'a self )
+    ->
+    Box< dyn Iterator< Item = ( &EDGE_ID!(), &< Self as GraphEdgesNominalInterface >::EdgeHandle ) > + 'b >
+    where
+      'a : 'b,
+    ;
+
+  }
+
+  ///
   /// Graph interface which allow to add more nodes. Know nothing about edges.
   ///
 
   pub trait GraphNodesExtendableInterface
   where
     Self :
-      GraphNodesInterface +
+      GraphNodesNominalInterface +
     ,
   {
 
@@ -172,8 +205,8 @@ pub( crate ) mod private
   pub trait GraphEdgesExtendableInterface
   where
     Self :
-      GraphNodesInterface +
-      GraphEdgesInterface +
+      GraphNodesNominalInterface +
+      GraphEdgesNominalInterface +
       GraphNodesExtendableInterface +
     ,
   {
@@ -205,7 +238,7 @@ pub( crate ) mod private
 
   pub trait GraphKindGetterInterface
   where
-    Self : GraphNodesInterface,
+    Self : GraphNodesNominalInterface,
   {
     /// Enumerate kinds of the node.
     type NodeKind : crate::NodeKindInterface;
@@ -242,8 +275,10 @@ pub mod prelude
 {
   pub use super::private::
   {
-    GraphNodesInterface,
-    GraphEdgesInterface,
+    GraphNodesNominalInterface,
+    GraphEdgesNominalInterface,
+    GraphNodesEnumerableInterface,
+    GraphEdgesEnumerableInterface,
     GraphNodesExtendableInterface,
     GraphEdgesExtendableInterface,
     GraphKindGetterInterface,
