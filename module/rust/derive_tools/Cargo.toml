@@ -17,15 +17,15 @@ Collection of derives which extend STD.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/derive",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
-
-[package.metadata.docs.rs]
-all-features = true
 
 [features]
 

@@ -17,6 +17,9 @@ Protocol of modularity unifying interface of a module.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 # xxx : unify structure with other procedural macroses
 include = [
   "/rust/impl/meta/mod_interface_runtime_lib.rs",
@@ -25,9 +28,6 @@ include = [
   "/Readme.md",
   "/License",
 ]
-
-[package.metadata.docs.rs]
-all-features = true
 
 [lib]
 name = "mod_interface_runtime"

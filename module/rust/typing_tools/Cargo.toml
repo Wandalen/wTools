@@ -19,6 +19,9 @@ Collection of general purpose tools for type checking.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/typing",
   "/Cargo.toml",
@@ -45,9 +48,6 @@ path = "sample/rust/typing_tools_trivial/src/main.rs"
 [features]
 nightly = [ "inspect_type/nightly" ]
 default = [ "implements", "is_slice", "inspect_type" ]
-
-[package.metadata.docs.rs]
-all-features = true
 
 [dependencies]
 inspect_type = { version = "~0.1", path = "../../rust/inspect_type", optional = true, default-features = false }
