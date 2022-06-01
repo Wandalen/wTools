@@ -18,6 +18,9 @@ Macro to answer the question: does it implement a trait?
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/typing/instance_of_lib.rs",
   "/Cargo.toml",

@@ -18,6 +18,9 @@ Mechanism to define map of options for a fuction and its defaults laconically. I
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/options/meta",
   "/Cargo.toml",

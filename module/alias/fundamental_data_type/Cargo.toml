@@ -17,6 +17,9 @@ Fundamental data types and type constructors, like Single, Pair, Many.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/dt/type_constructor/fundamental_data_type_lib.rs",
   "/Cargo.toml",
