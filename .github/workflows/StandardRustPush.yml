@@ -31,7 +31,8 @@ jobs :
   fast :
     if : "!contains( github.event.head_commit.message, '!test' )
       && !startsWith( github.event.head_commit.message, 'Merge' )
-      && contains( github.event.head_commit.message, inputs.module_name )"
+      && contains( github.event.head_commit.message, inputs.module_name )
+      && !contains( github.event.head_commit.message, '!only_js' )"
     strategy :
       fail-fast : false
       matrix :
@@ -53,8 +54,8 @@ jobs :
 
   full :
 
-    if : "contains( github.event.head_commit.message, '!test' )
-      || startsWith( github.event.head_commit.message, 'Merge' )"
+    if : "startsWith( github.event.head_commit.message, 'Merge' )
+      || ( contains( github.event.head_commit.message, '!test' ) && !contains( github.event.head_commit.message, '!only_js' ) )"
     strategy :
       fail-fast : false
       matrix :
