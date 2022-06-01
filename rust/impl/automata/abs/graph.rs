@@ -306,7 +306,7 @@ pub( crate ) mod private
   /// Graph nodes of which has a kind.
   ///
 
-  pub trait GraphKindGetterInterface
+  pub trait GraphNodesKindGetterInterface
   where
     Self : GraphNodesNominalInterface,
   {
@@ -314,6 +314,23 @@ pub( crate ) mod private
     type NodeKind : crate::NodeKindInterface;
     /// Get kind of the node.
     fn node_kind( &self, node_id : NODE_ID!() ) -> Self::NodeKind;
+  }
+
+  ///
+  /// Graph nodes of which has a kind.
+  ///
+
+  pub trait GraphEdgesKindGetterInterface
+  where
+    Self :
+      GraphNodesNominalInterface +
+      GraphEdgesNominalInterface +
+    ,
+  {
+    /// Enumerate kinds of the node.
+    type EdgeKind : crate::EdgeKindInterface;
+    /// Get kind of the node.
+    fn node_kind( &self, node_id : EDGE_ID!() ) -> Self::EdgeKind;
   }
 
 }
@@ -351,6 +368,7 @@ pub mod prelude
     GraphEdgesEnumerableInterface,
     GraphNodesExtendableInterface,
     GraphEdgesExtendableInterface,
-    GraphKindGetterInterface,
+    GraphNodesKindGetterInterface,
+    GraphEdgesKindGetterInterface,
   };
 }
