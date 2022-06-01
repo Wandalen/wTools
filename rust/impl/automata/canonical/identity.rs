@@ -106,18 +106,6 @@ pub( crate ) mod private
     pub single IdentityWithInt : isize;
   }
 
-//   impl IdentityWithInt
-//   {
-//
-//     /// Construct from an arbitrary reference.
-//     #[ inline ]
-//     pub fn make( val : isize ) -> Self
-//     {
-//       Self( val.into() )
-//     }
-//
-//   }
-
   // xxx : implement IdentityGenerableInterface for other identities
   impl IdentityGenerableInterface for IdentityWithInt
   {
@@ -140,25 +128,6 @@ pub( crate ) mod private
     }
 
   }
-
-//   impl From< isize > for IdentityWithInt
-//   {
-//     fn from( src : isize ) -> Self
-//     {
-//       Self( src )
-//     }
-//   }
-//
-//   impl< Src > From< &Src > for IdentityWithInt
-//   where
-//     Src : Clone,
-//     IdentityWithInt : From< Src >,
-//   {
-//     fn from( src : &Src ) -> Self
-//     {
-//       From::< Src >::from( src.clone() )
-//     }
-//   }
 
   impl fmt::Debug for IdentityWithInt
   {
