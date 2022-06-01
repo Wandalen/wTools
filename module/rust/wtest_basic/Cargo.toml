@@ -1,6 +1,6 @@
 [package]
 name = "wtest_basic"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,6 +24,12 @@ include = [
   "/Readme.md",
   "/License",
 ]
+
+[features]
+default = [ "use_std" ]
+full = [ "use_std" ]
+use_std = []
+use_alloc = []
 
 [lib]
 name = "wtest_basic"
