@@ -57,7 +57,7 @@ pub( crate ) mod private
 
     //
 
-    fn out_nodes< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
+    fn out_nodes_ids< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
     Box< dyn Iterator< Item = NODE_ID!() > + 'b >
     where
@@ -72,7 +72,7 @@ pub( crate ) mod private
 
     //
 
-    fn out_edges< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
+    fn out_edges_ids< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
     Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
     where
@@ -131,7 +131,7 @@ pub( crate ) mod private
     index!
     {
       node,
-      out_nodes,
+      out_nodes_ids,
     }
   }
 
@@ -148,7 +148,7 @@ pub( crate ) mod private
     index!
     {
       edge,
-      out_edges,
+      out_edges_ids,
     }
   }
 

@@ -58,17 +58,21 @@ tests_impls!
     dbg!( factory.node( b ) );
 
     let exp = hset![ b ];
-    let got : HashSet< _ > = factory.out_nodes( a ).collect();
+    let got : HashSet< _ > = factory.out_nodes_ids( a ).collect();
     a_id!( got, exp );
 
-    // let exp = hset![ b ];
-    let got : HashSet< _ > = factory.out_edges( a ).collect();
+    let got : HashSet< _ > = factory.out_edges_ids( a ).collect();
     a_id!( got.len(), 1 );
+    // let exp = hset![ ( a, b ) ];
+    // let got : HashSet< _ > = factory.out_edges( a ).map( | el | ( el.1.in_node, el.1.out_node ) );
     // a_id!( got, exp );
 
     let exp = hset![ a, b ];
-    let got : HashSet< _ > = factory.out_nodes( b ).collect();
+    let got : HashSet< _ > = factory.out_nodes_ids( b ).collect();
     a_id!( got, exp );
+
+    let got : HashSet< _ > = factory.out_edges_ids( b ).collect();
+    a_id!( got.len(), 2 );
 
   }
 
@@ -92,11 +96,11 @@ tests_impls!
     dbg!( factory.node( 2 ) );
 
     let exp = hset![ 2 ];
-    let got : HashSet< _ > = factory.out_nodes( 1 ).collect();
+    let got : HashSet< _ > = factory.out_nodes_ids( 1 ).collect();
     a_id!( got, exp );
 
     let exp = hset![ 1, 2 ];
-    let got : HashSet< _ > = factory.out_nodes( 2 ).collect();
+    let got : HashSet< _ > = factory.out_nodes_ids( 2 ).collect();
     a_id!( got, exp );
   }
 
@@ -120,11 +124,11 @@ tests_impls!
     dbg!( factory.node( "B" ) );
 
     let exp = hset![ "B" ];
-    let got : HashSet< _ > = factory.out_nodes( "A" ).collect();
+    let got : HashSet< _ > = factory.out_nodes_ids( "A" ).collect();
     a_id!( got, exp );
 
     let exp = hset![ "A", "B" ];
-    let got : HashSet< _ > = factory.out_nodes( "B" ).collect();
+    let got : HashSet< _ > = factory.out_nodes_ids( "B" ).collect();
     a_id!( got, exp );
   }
 

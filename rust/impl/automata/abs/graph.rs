@@ -40,7 +40,7 @@ pub( crate ) mod private
     // ;
 
     /// Iterate over neighbourhood of the node.
-    fn out_nodes< 'a, 'b, Id >( &'a self, node_id : Id )
+    fn out_nodes_ids< 'a, 'b, Id >( &'a self, node_id : Id )
     ->
     Box< dyn Iterator< Item = NODE_ID!() > + 'b >
     where
@@ -71,13 +71,23 @@ pub( crate ) mod private
     ;
 
     /// Iterate over output edges of the node.
-    fn out_edges< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
+    fn out_edges_ids< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
     Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
     where
       IntoId : Into< NODE_ID!() >,
       'a : 'b,
     ;
+
+    // /// Iterate over output edges of the node.
+    // fn out_edges< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
+    // ->
+    // Box< dyn Iterator< Item = ( &NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
+    // // Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
+    // where
+    //   IntoId : Into< NODE_ID!() >,
+    //   'a : 'b,
+    // ;
 
   }
 
