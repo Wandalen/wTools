@@ -32,15 +32,11 @@ impls!
 
   fn nodes< 'a, 'b >( &'a self )
   ->
-  Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > + 'b >
+  Box< dyn Iterator< Item = ( NODE_ID!(), &Self::NodeHandle ) > + 'b >
   where
     'a : 'b,
   {
-    let iterator
-      : Box< dyn Iterator< Item = ( &NODE_ID!(), &Self::NodeHandle ) > >
-      = Box::new( self.id_to_node_map.iter() )
-    ;
-    iterator
+    Box::new( self.id_to_node_map.iter().map( | el | ( *el.0, el.1 ) ) )
   }
 
   //
@@ -70,15 +66,11 @@ impls!
 
   fn edges< 'a, 'b >( &'a self )
   ->
-  Box< dyn Iterator< Item = ( &EDGE_ID!(), &Self::EdgeHandle ) > + 'b >
+  Box< dyn Iterator< Item = ( EDGE_ID!(), &Self::EdgeHandle ) > + 'b >
   where
     'a : 'b,
   {
-    let iterator
-      : Box< dyn Iterator< Item = ( &EDGE_ID!(), &Self::EdgeHandle ) > >
-      = Box::new( self.id_to_edge_map.iter() )
-    ;
-    iterator
+    Box::new( self.id_to_edge_map.iter().map( | el | ( *el.0, el.1 ) ) )
   }
 
   //

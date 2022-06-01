@@ -113,7 +113,7 @@ pub( crate ) mod private
     /// Iterate over all nodes.
     fn nodes< 'a, 'b >( &'a self )
     ->
-    Box< dyn Iterator< Item = ( &NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
+    Box< dyn Iterator< Item = ( NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
     where
       'a : 'b,
     ;
@@ -141,7 +141,7 @@ pub( crate ) mod private
     /// Iterate over all edges.
     fn edges< 'a, 'b >( &'a self )
     ->
-    Box< dyn Iterator< Item = ( &EDGE_ID!(), &< Self as GraphEdgesNominalInterface >::EdgeHandle ) > + 'b >
+    Box< dyn Iterator< Item = ( EDGE_ID!(), &< Self as GraphEdgesNominalInterface >::EdgeHandle ) > + 'b >
     where
       'a : 'b,
     ;
