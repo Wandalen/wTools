@@ -24,6 +24,12 @@ include = [
   "/License",
 ]
 
+[features]
+default = [ "use_std" ]
+full = [ "use_std" ]
+use_std = []
+use_alloc = []
+
 [lib]
 name = "template_blank"
 path = "rust/impl/_blank/standard_lib.rs"
