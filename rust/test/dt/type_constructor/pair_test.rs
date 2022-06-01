@@ -751,9 +751,7 @@ tests_impls!
   #[ test ]
   fn struct_transitive_from()
   {
-    use TheModule::Make2;
-    use TheModule::Make1;
-
+    // use TheModule::{ Make2 };
 
     /* test.case( "from tuple" ) */
     {
@@ -764,7 +762,7 @@ tests_impls!
       };
       let src = ( 1, 3 );
       let got : TheModule::Pair< MySingle, MySingle > = src.into();
-      let exp = TheModule::Pair::make_2( MySingle::make_1( 1 ), MySingle::make_1( 3 ) );
+      let exp = TheModule::Pair::from( ( MySingle::from( 1 ), MySingle::from( 3 ) ) );
       a_id!( got, exp );
     }
     // xxx : implement similar test for other type constructors

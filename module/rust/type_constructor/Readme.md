@@ -15,7 +15,7 @@ Besides type constructor for single element there are type constructors for `pai
 - `HomoPair` to wrap pair of elements with the same type.
 - `Many` to wrap `Vec` of elements.
 
-## Macro `types` for type constructing
+### Macro `types` for type constructing
 
 Macro `types` is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
 
@@ -48,7 +48,7 @@ Macro `types` is responsible for generating code for Single, Pair, Homopair, Man
 
 It generates more than 1000 lines of code, which otherwise you would have to write manually.
 
-## Without macro
+### Without macro
 
 Macro `types` is exposed to generate new types, but in some cases, it is enough to reuse already generated types of such kind. The library ships such types: Single, Pair, Homopair, Many. Note: If you avoid generating new types you will get in a position to be not able to define your own implementation of foreign traits because of orphan rule.
 
@@ -69,7 +69,7 @@ dbg!( vec_of_i32_in_tuple );
 
 ```
 
-## Make.
+### Make.
 
 Make is the variadic constructor. It's the unified interface of the arbitrary-length constructor.
 After implementing several traits `Make0`, `Make1` up to `MakeN` one can use make `make!` to construct instances.
@@ -83,6 +83,22 @@ After implementing several traits `Make0`, `Make1` up to `MakeN` one can use mak
   let instance2 : Struct1 = make!( 13 );
   let instance3 : Struct1 = make!( 1, 3 );
 
+}
+```
+
+### VectorizedFrom
+
+Standard `From` unfortunately is not autoimplemented for tuples and arrays and cant be implemented for them because of orphans restrictions.
+That how pair of traits `VectorizedFrom`/`VectorizedInto` could be useful. They are implemented for tuples and arrays.
+Their implementation is based on standard `From`, if `From` is implemented for elements of a tuple then `VectorizedFrom`/`VectorizedInto` implemented for collection containing them.
+
+```rust
+#[ cfg( feature = "vectorized_from" ) ]
+{
+  use type_constructor::prelude::*;
+  types!( single Single1 : i32 );
+  let src = ( 1, 3 );
+  let got = <( Single1, Single1 )>::vectorized_from( src );
 }
 ```
 
