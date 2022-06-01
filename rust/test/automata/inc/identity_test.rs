@@ -59,7 +59,7 @@ tests_impls!
     /* test.case( "from x2 tupple" ) */
     {
       let src = ( 1, 3 );
-      let got : ( IdentityWithInt, IdentityWithInt ) = src.collection_into();
+      let got : ( IdentityWithInt, IdentityWithInt ) = src.vectorized_into();
       let exp = ( IdentityWithInt::make( 1 ), IdentityWithInt::make( 3 ) );
       a_id!( got, exp );
     }

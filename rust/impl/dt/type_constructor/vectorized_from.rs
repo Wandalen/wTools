@@ -3,45 +3,47 @@ pub( crate ) mod private
 {
 
   ///
-  /// Alternative implementation of trait From.
+  /// Implementation of trait From to vectorize into/from.
   ///
 
-  pub trait CollectionFrom< T > : Sized
+  pub trait VectorizedFrom< T > : Sized
   {
     /// Performs the conversion.
-    fn collection_from( src : T ) -> Self;
+    fn vectorized_from( src : T ) -> Self;
   }
 
   ///
-  /// Alternative implementation of trait Into.
+  /// Implementation of trait Into to vectorize into/from.
   ///
 
-  pub trait CollectionInto< T > : Sized
+  pub trait VectorizedInto< T > : Sized
   {
     /// Performs the conversion.
-    fn collection_into( self ) -> T;
+    fn vectorized_into( self ) -> T;
   }
 
-  impl< Target, Original > CollectionInto< Target > for Original
+  //
+
+  impl< Target, Original > VectorizedInto< Target > for Original
   where
-    Target : CollectionFrom< Original >,
+    Target : VectorizedFrom< Original >,
   {
-    fn collection_into( self ) -> Target
+    fn vectorized_into( self ) -> Target
     {
-      Target::collection_from( self )
+      Target::vectorized_from( self )
     }
   }
 
   //
 
-  impl< Into1, CollectionInto, Id >
-  CollectionFrom< ( Into1, CollectionInto ) >
+  impl< Into1, VectorizedInto, Id >
+  VectorizedFrom< ( Into1, VectorizedInto ) >
   for ( Id, Id )
   where
     Into1 : Into< Id >,
-    CollectionInto : Into< Id >,
+    VectorizedInto : Into< Id >,
   {
-    fn collection_from( src : ( Into1, CollectionInto ) ) -> Self
+    fn vectorized_from( src : ( Into1, VectorizedInto ) ) -> Self
     {
       ( src.0.into(), src.1.into() )
     }
@@ -79,7 +81,7 @@ pub mod prelude
 {
   pub use super::private::
   {
-    CollectionFrom,
-    CollectionInto,
+    VectorizedFrom,
+    VectorizedInto,
   };
 }

@@ -31,7 +31,8 @@ pub mod types;
 pub mod helper;
 
 /// From/Into traits.
-pub mod from;
+#[ cfg( feature = "vectorized_from" ) ]
+pub mod vectorized_from;
 /// Generic traits.
 pub mod traits;
 /// Variadic constructor.
@@ -53,7 +54,8 @@ pub mod protected
   pub use super::types::orphan::*;
 
   #[ doc( inline ) ]
-  pub use super::from::orphan::*;
+  #[ cfg( feature = "vectorized_from" ) ]
+  pub use super::vectorized_from::orphan::*;
   #[ doc( inline ) ]
   pub use super::helper::orphan::*;
   #[ doc( inline ) ]
@@ -87,7 +89,8 @@ pub mod exposed
   pub use super::types::exposed::*;
 
   #[ doc( inline ) ]
-  pub use super::from::exposed::*;
+  #[ cfg( feature = "vectorized_from" ) ]
+  pub use super::vectorized_from::exposed::*;
   #[ doc( inline ) ]
   pub use super::helper::exposed::*;
   #[ doc( inline ) ]
@@ -110,7 +113,8 @@ pub mod prelude
   pub use super::types::prelude::*;
 
   #[ doc( inline ) ]
-  pub use super::from::prelude::*;
+  #[ cfg( feature = "vectorized_from" ) ]
+  pub use super::vectorized_from::prelude::*;
   #[ doc( inline ) ]
   pub use super::helper::prelude::*;
   #[ doc( inline ) ]

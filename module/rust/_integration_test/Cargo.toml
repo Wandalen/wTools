@@ -14,7 +14,7 @@ path = "rust/test/_integration_test/smoke_main.rs"
 
 [[test]]
 name = "integration_test"
-path = "rust/test/_integration_test/_integration_test_test.rs"
+path = "rust/test/_integration_test/_integration_test.rs"
 
 [dependencies]
 
