@@ -254,7 +254,7 @@ dt_full = [
 dt_either = [ "dt", "wtools/dt_either" ]
 dt_type_constructor = [ "dt", "wtools/dt_type_constructor" ]
 dt_make = [ "dt", "wtools/dt_make" ]
-dt_vectorized_from = [ "dt", "wtools/vectorized_from" ]
+dt_vectorized_from = [ "dt", "wtools/dt_vectorized_from" ]
 dt_interval = [ "dt", "wtools/dt_interval" ]
 
 # diagnostics
