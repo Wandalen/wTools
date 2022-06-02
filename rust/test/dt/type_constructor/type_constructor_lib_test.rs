@@ -10,7 +10,7 @@ use type_constructor as TheModule;
 mod inc;
 
 // zzz : move to inc after implementing macro to check presence of a dependency
-
+#[ cfg( not( feature = "use_std" ) ) ]
 #[ test_tools::rustversion::nightly ]
 #[ test ]
 fn trybuild_tests()
