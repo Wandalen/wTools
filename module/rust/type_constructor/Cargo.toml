@@ -36,6 +36,7 @@ default = [
 ]
 full = [
   "use_std",
+  "use_alloc",
   "many",
   "make",
   "vectorized_from",

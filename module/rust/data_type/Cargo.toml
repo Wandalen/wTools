@@ -34,6 +34,7 @@ default = [
   "make",
   "vectorized_from",
   "type_constructor/default",
+  "use_std",
 ]
 full = [
   "either",
@@ -41,7 +42,11 @@ full = [
   "make",
   "vectorized_from",
   "type_constructor/full",
+  "use_std",
+  "use_alloc",
 ]
+use_std = []
+use_alloc = []
 interval = [ "winterval" ]
 make = [ "type_constructor/make" ]
 vectorized_from = [ "type_constructor/vectorized_from" ]
