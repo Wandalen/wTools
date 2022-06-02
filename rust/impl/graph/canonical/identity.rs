@@ -4,9 +4,8 @@ pub( crate ) mod private
   use crate::prelude::*;
   use core::fmt;
   use core::hash::Hash;
-  use std::cmp::{ PartialEq, Eq };
+  use core::cmp::{ PartialEq, Eq };
   use wtools::dt::prelude::*;
-  // use std::fmt;
 
   // types!
   // {
@@ -127,11 +126,6 @@ pub( crate ) mod private
       assert!( self.is_valid() );
       result
     }
-
-    // fn first() -> Self
-    // {
-    //   Self( 1 )
-    // }
 
     fn is_valid( &self ) -> bool
     {

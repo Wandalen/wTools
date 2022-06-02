@@ -4,7 +4,7 @@ pub( crate ) mod private
   use crate::prelude::*;
   use wtools::prelude::*;
   use indexmap::IndexSet;
-  use std::fmt;
+  use core::fmt;
 
   ///
   /// Canonical implementation of node.

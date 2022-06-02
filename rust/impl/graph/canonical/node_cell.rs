@@ -3,7 +3,7 @@ pub( crate ) mod private
 {
   use crate::prelude::*;
   use wtools::prelude::*;
-  use std::fmt;
+  use core::fmt;
   use core::cell::RefCell;
   use core::ops::Deref;
   use std::sync::Arc;
