@@ -5,7 +5,7 @@ pub( crate ) mod private
   // use crate::canonical::*;
   use crate::canonical;
   use wtools::prelude::*;
-  use std::fmt;
+  use core::fmt;
   use indexmap::IndexMap;
 
   include!( "./factory_impl.rs" );

@@ -5,7 +5,7 @@
 
 pub trait HashMapLike< K, E >
 where
-  K : std::cmp::Eq + std::hash::Hash,
+  K : core::cmp::Eq + core::hash::Hash,
 {
   /// Inserts a key-value pair into the map.
   fn insert( &mut self, k : K, e : E ) -> Option< E >;
@@ -13,7 +13,7 @@ where
 
 impl< K, E > HashMapLike< K, E > for std::collections::HashMap< K, E >
 where
-  K : std::cmp::Eq + std::hash::Hash,
+  K : core::cmp::Eq + core::hash::Hash,
 {
   fn insert( &mut self, k : K, e : E ) -> Option< E >
   {
@@ -28,7 +28,7 @@ where
 #[derive( Debug, Default )]
 pub struct HashMapFormer< K, E, HashMap, Former, ContainerEnd >
 where
-  K : std::cmp::Eq + std::hash::Hash,
+  K : core::cmp::Eq + core::hash::Hash,
   HashMap : HashMapLike< K, E > + std::default::Default,
   ContainerEnd : Fn( &mut Former, core::option::Option< HashMap > ),
 {
@@ -42,7 +42,7 @@ where
 impl< K, E, HashMap, Former, ContainerEnd >
 HashMapFormer< K, E, HashMap, Former, ContainerEnd >
 where
-  K : std::cmp::Eq + std::hash::Hash,
+  K : core::cmp::Eq + core::hash::Hash,
   HashMap : HashMapLike< K, E > + std::default::Default,
   ContainerEnd : Fn( &mut Former, core::option::Option< HashMap > ),
 {

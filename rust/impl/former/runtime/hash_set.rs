@@ -5,7 +5,7 @@
 
 pub trait HashSetLike< E >
 where
-  E : std::cmp::Eq + std::hash::Hash,
+  E : core::cmp::Eq + core::hash::Hash,
 {
   /// Inserts a key-value pair into the map.
   fn insert( &mut self, e : E ) -> Option< E >;
@@ -13,7 +13,7 @@ where
 
 impl< E > HashSetLike< E > for std::collections::HashSet< E >
 where
-  E : std::cmp::Eq + std::hash::Hash,
+  E : core::cmp::Eq + core::hash::Hash,
 {
   fn insert( &mut self, e : E ) -> Option< E >
   {
@@ -28,7 +28,7 @@ where
 #[derive( Debug, Default )]
 pub struct HashSetFormer< E, HashSet, Former, ContainerEnd >
 where
-  E : std::cmp::Eq + std::hash::Hash,
+  E : core::cmp::Eq + core::hash::Hash,
   HashSet : HashSetLike< E > + std::default::Default,
   ContainerEnd : Fn( &mut Former, core::option::Option< HashSet > ),
 {
@@ -41,7 +41,7 @@ where
 impl< E, HashSet, Former, ContainerEnd >
 HashSetFormer< E, HashSet, Former, ContainerEnd >
 where
-  E : std::cmp::Eq + std::hash::Hash,
+  E : core::cmp::Eq + core::hash::Hash,
   HashSet : HashSetLike< E > + std::default::Default,
   ContainerEnd : Fn( &mut Former, core::option::Option< HashSet > ),
 {

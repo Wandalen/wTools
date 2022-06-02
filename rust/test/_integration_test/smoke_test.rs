@@ -227,7 +227,7 @@ fn published_smoke_test()
   {
     match value.as_str()
     {
-      "false" => {},
+      "false" | "0" => {},
       "local" => {},
       "published" => smoke_test_run( "published_smoke_test", false ),
       _ =>
