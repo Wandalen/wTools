@@ -13,11 +13,11 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /// Commands aggregator library.
-pub mod ca
-{
-  include!( "./lib.rs" );
-}
+#[ cfg( feature = "use_std" ) ]
+#[ path = "./lib.rs" ]
+pub mod ca;
 
+#[ cfg( feature = "use_std" ) ]
 #[ doc( inline ) ]
 pub use ca::*;
 
@@ -30,5 +30,6 @@ pub use exposed::*;
 /// Namespace of the module to include with `use module::*`.
 pub mod prelude
 {
+  #[ cfg( feature = "use_std" ) ]
   pub use super::ca::prelude::*;
 }
