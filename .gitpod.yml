@@ -3,7 +3,7 @@ tasks:
   - init: |
       cargo build --manifest-path module/rust/wtools/Cargo.toml
     command: |
-      cargo test --manifest-path module/rust/wtools/Cargo.toml
+      cargo build --manifest-path module/rust/wtools/Cargo.toml
 
 vscode:
   extensions:
