@@ -10,7 +10,7 @@ use type_constructor as TheModule;
 mod inc;
 
 // zzz : move to inc after implementing macro to check presence of a dependency
-#[ cfg( not( feature = "use_std" ) ) ]
+#[ cfg( feature = "use_std" ) ]
 #[ test_tools::rustversion::nightly ]
 #[ test ]
 fn trybuild_tests()
@@ -21,6 +21,7 @@ fn trybuild_tests()
   let t = trybuild::TestCases::new();
   #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
   t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/make/*.rs" );
+  /* xxx : rewiew */
   t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/types/*.rs" );
 }
 
