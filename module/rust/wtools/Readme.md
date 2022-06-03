@@ -120,6 +120,6 @@ cargo add wtools
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/wtools_trivial
+cd sample/rust/wtools_trivial_sample
 cargo run
 ```
