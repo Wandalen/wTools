@@ -9,6 +9,7 @@ tasks :
       cargo run $RUN_POSTFIX
     command : |
       code $SAMPLE_FILE
+      echo $SAMPLE_FILE
       cargo run $RUN_POSTFIX
       echo 'To get list of sample in the repostitory try running from the root:'
       echo 'cargo run --example'
