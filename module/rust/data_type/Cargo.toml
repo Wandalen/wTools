@@ -47,7 +47,7 @@ full = [
 ]
 use_std = []
 use_alloc = []
-interval = [ "winterval" ]
+interval = [ "winterval", "winterval/use_std" ]
 make = [ "type_constructor/make" ]
 vectorized_from = [ "type_constructor/vectorized_from" ]
 # zzz : use_std
