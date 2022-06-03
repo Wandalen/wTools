@@ -48,7 +48,7 @@ https://img.shields.io/github/workflow/status/Wandalen/wTools/wtools/alpha?label
 
 ### Rust modules to be moved out to other repositories
 
-| Module | Stability | Master | Alpha | Documentation |
+| Module | Stability | Master | Alpha | Docs |
 |--------|-----------|------|------|---------------|
 | [automata_tools](./module/move/automata_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/automata_tools?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModuleAutomataToolsPush.yml) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/automata_tools/alpha?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModuleAutomataToolsPush.yml) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/automata_tools) |
 | [graphs_tools](./module/move/graphs_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/graphs_tools?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModuleGraphsToolsPush.yml) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/graphs_tools/alpha?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModuleGraphsToolsPush.yml) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/graphs_tools) |
