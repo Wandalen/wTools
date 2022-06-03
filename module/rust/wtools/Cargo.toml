@@ -154,7 +154,7 @@ string_full = [
 
 error = [ "werror" ]
 error_default = [ "error", 'werror/use_std' ]
-error_full = [ "error" ]
+error_full = [ "error", 'werror/use_std' ]
 
 # derive
 
