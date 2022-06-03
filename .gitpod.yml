@@ -1,11 +1,22 @@
 
-tasks:
-  - init: |
+checkoutLocation : "."
+workspaceLocation : "."
+
+tasks :
+  - init : |
       cargo build --manifest-path module/rust/wtools/Cargo.toml
       cargo run --example wtools_trivial_sample
-    command: |
+      echo "init"
+    command : |
       cargo run --example wtools_trivial_sample
+      cargo run --examples # list examples
+      echo "command"
 
-vscode:
-  extensions:
+vscode :
+  extensions :
     - matklad.rust-analyzer
+
+github :
+  prebuilds :
+    addBadge : true
+    pullRequests : true

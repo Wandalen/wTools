@@ -1,4 +1,7 @@
 
+checkoutLocation : "."
+workspaceLocation : "./sample/rust/wtools_trivial_sample"
+
 tasks :
   - init : |
       cargo build --manifest-path module/rust/wtools/Cargo.toml
