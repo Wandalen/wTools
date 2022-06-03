@@ -60,6 +60,7 @@ default = [
   # "derive_from_str_regex",
   # "derive_from_str_once_cell",
 
+  "use_std",
 ]
 
 full = [
@@ -93,6 +94,8 @@ full = [
   # "derive_from_str_regex",
   # "derive_from_str_once_cell",
 
+  "use_std",
+  "use_alloc",
 ]
 nightly = [ "derive_more/nightly" ]
 
@@ -126,6 +129,9 @@ derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex",
 # derive_from_str_std = [ "parse-display/std" ]
 # derive_from_str_regex = [ "parse-display/regex", "parse-display/once_cell" ]
 # derive_from_str_once_cell = [ "parse-display/once_cell" ]
+
+use_std = []
+use_alloc = []
 
 [lib]
 name = "derive_tools"

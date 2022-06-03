@@ -28,6 +28,11 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
 [lib]
 name = "macro_tools"
 path = "rust/impl/proc_macro/macro_tools_lib.rs"

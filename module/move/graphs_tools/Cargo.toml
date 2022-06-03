@@ -28,8 +28,16 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std" ]
+default = [
+  "use_std",
+  "cell_factory",
+]
+full = [
+  "use_std",
+  "use_alloc",
+  "cell_factory",
+]
+cell_factory = []
 use_std = []
 use_alloc = []
 

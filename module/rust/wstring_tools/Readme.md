@@ -8,7 +8,7 @@ String tools.
 ### Sample
 
 ```rust
-#[ cfg( feature = "split" ) ]
+#[ cfg( all( feature = "split", feature = "use_std" ) ) ]
 {
   /* delimeter exists */
   let src = "abc def";

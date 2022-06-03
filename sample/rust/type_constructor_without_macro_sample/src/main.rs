@@ -11,8 +11,11 @@ fn main()
   let two_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( ( 13, 31 ) );
   dbg!( two_i32_in_tuple );
   // vec_of_i32_in_tuple = HomoPair( 13, 31 )
-  let vec_of_i32_in_tuple = type_constructor::Many::< i32 >::from( [ 1, 2, 3 ] );
-  dbg!( vec_of_i32_in_tuple );
-  // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+  #[ cfg( all( feature = "many", feature = "use_std" ) ) ]
+  {
+    let vec_of_i32_in_tuple = type_constructor::Many::< i32 >::from( [ 1, 2, 3 ] );
+    dbg!( vec_of_i32_in_tuple );
+    // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
+  }
 
 }

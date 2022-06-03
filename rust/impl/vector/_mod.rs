@@ -4,7 +4,7 @@
 #![ warn( missing_docs ) ]
 // #![ allow( non_camel_case_types ) ]
 
-// use std::cmp::PartialEq;
+// use core::cmp::PartialEq;
 
 // //
 

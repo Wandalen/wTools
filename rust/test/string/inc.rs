@@ -2,9 +2,9 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ cfg( any( feature = "indentation", feature = "string_indentation" ) ) ]
+#[ cfg( all( any( feature = "indentation", feature = "string_indentation" ), feature = "use_std" ) ) ]
 mod indentation_test;
-#[ cfg( any( feature = "parse", feature = "string_parse" ) ) ]
+#[ cfg( all( any( feature = "parse", feature = "string_parse" ), feature = "use_std" ) ) ]
 mod parse_test;
-#[ cfg( any( feature = "split", feature = "string_split" ) ) ]
+#[ cfg( all( any( feature = "split", feature = "string_split" ), feature = "use_std" ) ) ]
 mod split_test;

@@ -95,7 +95,7 @@ For example: `.struct1 subject key1:val key2:val2`."#
   /* zzz : make it accept also vector */
   fn parse_from_splits< I >( &self, mut splits : I ) -> Instruction
   where
-    < I as Iterator >::Item : std::fmt::Display,
+    < I as Iterator >::Item : core::fmt::Display,
     < I as Iterator >::Item : AsRef< str >,
     I : core::iter::Iterator,
   {
@@ -188,7 +188,7 @@ impl InstructionParseParamsAdapter for InstructionParseParams
 
 pub fn parse_from_splits< I >( splits : I ) -> Instruction
 where
-  < I as Iterator >::Item : std::fmt::Display,
+  < I as Iterator >::Item : core::fmt::Display,
   < I as Iterator >::Item : AsRef< str >,
   I : core::iter::Iterator,
 {

@@ -4,7 +4,7 @@ use crate::wpublisher::bool::*;
 use wca::*;
 use std::env;
 use std::fs;
-use std::fmt::Write;
+use core::fmt::Write;
 use std::path::PathBuf;
 use toml_edit::value;
 use cargo_metadata::MetadataCommand;

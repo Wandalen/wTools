@@ -4,7 +4,7 @@
 
 use ureq::Agent;
 use std::time::Duration;
-use std::fmt::Write;
+use core::fmt::Write;
 use std::io::Read;
 
 ///
