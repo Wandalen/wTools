@@ -4,7 +4,7 @@
 
 <!-- # Repository :: Tools -->
 
-[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee)](https://discord.gg/JwTG6d2b)
+[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=discuss)](https://discord.gg/JwTG6d2b)
 [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.#RUN_POSTFIX=--example%20wtools_trivial_sample/https://github.com/Wandalen/wTools/tree/alpha)
 [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/wtools)
 
