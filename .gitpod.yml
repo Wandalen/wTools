@@ -4,12 +4,12 @@ workspaceLocation : "."
 
 tasks :
   - init : |
-      cargo build --manifest-path module/rust/wtools/Cargo.toml
-      cargo run --example wtools_trivial_sample
+      cd $RUN_PATH
+      cargo build
+      cargo run $RUN_POSTFIX
     command : |
-      # cargo run --example wtools_trivial_sample
-      # cargo run --example # list examples
-      echo $SAMPLE_PATH
+      if [[ "${HAS_SAMPLES}" == "true" ]] || [[ "${HAS_SAMPLES}" == "1" ]]; then cargo run --example # list examples; fi
+      echo $RUN_PATH
 
 vscode :
   extensions :
