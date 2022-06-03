@@ -4,7 +4,8 @@
 
 <!-- # Repository :: Tools -->
 
-[![discord](https://img.shields.io/discord/872391416519737405?color=e3e8f0&logo=discord&logoColor=e3e8f0)](https://discord.gg/JwTG6d2b)
+<!-- [![discord](https://img.shields.io/discord/872391416519737405?color=e3e8f0&logo=discord&logoColor=e3e8f0)](https://discord.gg/JwTG6d2b) -->
+[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee)](https://discord.gg/JwTG6d2b)
 [![Open in Gitpod](https://img.shields.io/static/v1?label=try&message=online&color=white&logo=gitpod&logoColor=white)](https://gitpod.io/#RUN_PATH=.#RUN_POSTFIX=--example%20wtools_trivial_sample/https://github.com/Wandalen/wTools/tree/alpha)
 
 Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
