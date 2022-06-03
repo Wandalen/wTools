@@ -1,7 +1,11 @@
 use super::*;
+#[ cfg( feature = "canonical" ) ]
 use TheModule::canonical::CellNodeFactory as TheFactory;
+
+#[ cfg( feature = "canonical" ) ]
 include!( "./factory_impls.rs" );
 
+#[ cfg( feature = "canonical" ) ]
 tests_impls!
 {
 
@@ -19,6 +23,7 @@ tests_impls!
 
 //
 
+#[ cfg( feature = "canonical" ) ]
 tests_index!
 {
 

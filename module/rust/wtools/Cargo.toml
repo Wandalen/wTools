@@ -134,9 +134,9 @@ time_now = [ "time", "time_tools/now" ]
 # string
 
 string = [ "wstring_tools" ]
-string_indentation = [ "string", "wstring_tools/indentation" ]
-string_parse = [ "string", "wstring_tools/parse" ]
-string_split = [ "string", "wstring_tools/split" ]
+string_indentation = [ "string", "wstring_tools/indentation", "wstring_tools/use_std" ]
+string_parse = [ "string", "wstring_tools/parse", "wstring_tools/use_std" ]
+string_split = [ "string", "wstring_tools/split", "wstring_tools/use_std" ]
 string_default = [
   "string",
   "string_indentation",

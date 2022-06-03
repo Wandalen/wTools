@@ -16,10 +16,13 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /// Abstract layer.
+#[ cfg( feature = "use_std" ) ]
 pub mod abs;
 /// Canonical representation.
+#[ cfg( feature = "use_std" ) ]
 pub mod canonical;
 /// Algorithms.
+#[ cfg( feature = "use_std" ) ]
 pub mod algo;
 // /// Matrix representation.
 // pub mod matrix;
@@ -33,9 +36,12 @@ pub mod dependency
 pub mod exposed
 {
   pub use super::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::abs::exposed::*;
   pub use super::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::algo::exposed::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::canonical::exposed::*;
   // pub use super::matrix::exposed::*;
 }
@@ -45,8 +51,11 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ cfg( feature = "use_std" ) ]
   pub use super::abs::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::algo::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::canonical::prelude::*;
   // pub use super::matrix::prelude::*;
 }
