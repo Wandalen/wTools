@@ -29,8 +29,10 @@ include = [
 ]
 
 [features]
-default = []
-full = []
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "woptions"

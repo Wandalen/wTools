@@ -3,7 +3,7 @@ pub( crate ) mod private
 {
   use std::collections::HashMap;
   use std::rc::Rc;
-  use std::fmt;
+  use core::fmt;
   use crate::*;
   use wtools::error::Error;
 

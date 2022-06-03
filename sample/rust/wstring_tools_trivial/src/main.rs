@@ -3,7 +3,7 @@ use wstring_tools::*; /* qqq : xxx : use rather prelude. discuss first, please *
 
 fn main()
 {
-  #[ cfg( feature = "split" ) ]
+  #[ cfg( all( feature = "split", feature = "use_std" ) ) ]
   {
     /* delimeter exists */
     let src = "abc def";

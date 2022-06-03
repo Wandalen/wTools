@@ -6,7 +6,7 @@ pub( crate ) mod private
   use crate::canonical;
   use wtools::prelude::*;
   use indexmap::IndexMap;
-  use std::fmt;
+  use core::fmt;
 
   include!( "./factory_impl.rs" );
 
@@ -155,6 +155,8 @@ pub( crate ) mod private
   //
 
   impl< NodeId, EdgeId, Kind > GraphNodesEnumerableInterface
+  // impl< 'it, NodeId, EdgeId, Kind >
+  // GraphNodesEnumerableInterface< 'it, core::slice::Iter< 'it, ( NODE_ID!(), &'it < Self as GraphNodesNominalInterface >::NodeHandle ) > >
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,

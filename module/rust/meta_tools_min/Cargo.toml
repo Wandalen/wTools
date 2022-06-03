@@ -29,17 +29,22 @@ include = [
 
 [features]
 collection_make = [ "literally" ]
+use_std = []
+use_alloc = []
 default = [
   "for_each",
   "impls_index",
   "mod_interface",
   "collection_make",
+  "use_std",
 ]
 full = [
   "for_each",
   "impls_index",
   "mod_interface",
   "collection_make",
+  "use_std",
+  "use_alloc",
 ]
 
 [lib]

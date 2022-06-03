@@ -6,11 +6,14 @@ Basic exceptions handling mechanism.
 ### Sample
 
 ```rust
-use werror::*;
+#[ cfg( feature = "use_std" ) ]
+{
+  use werror::*;
 
-let err1 = Error::new( "Some error" );
-println!( "err1 : {}", err1 );
-// < err1 : Some error
+  let err1 = Error::new( "Some error" );
+  println!( "err1 : {}", err1 );
+  // < err1 : Some error
+}
 ```
 
 ### To add to your project

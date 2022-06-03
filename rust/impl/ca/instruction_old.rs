@@ -6,7 +6,7 @@
 
 // use std::collections::hash_map::HashMap;
 // use std::rc::Rc;
-// use std::fmt;
+// use core::fmt;
 
 // #[derive( Default, Debug, Clone )]
 // pub struct InstructionsParse

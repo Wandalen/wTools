@@ -1,4 +1,4 @@
-#[ cfg( all( feature = "derive_from", feature = "derive_into", feature = "derive_display", feature = "derive_from_str" ) ) ]
+#[ allow( unused_imports ) ]
 use derive_tools::*;
 
 fn main()

@@ -7,18 +7,21 @@
 /// Publish module.
 ///
 
+#[ cfg( feature = "use_std" ) ]
 mod publish;
 
 ///
 /// List packages.
 ///
 
+#[ cfg( feature = "use_std" ) ]
 mod list;
 
 ///
 /// Form CA commands.
 ///
 
+#[ cfg( feature = "use_std" ) ]
 pub fn commands_form() -> std::collections::HashMap<String, wca::command::Command>
 {
   let publish_command = wca::CommandOptions::default()
@@ -53,6 +56,7 @@ pub fn commands_form() -> std::collections::HashMap<String, wca::command::Comman
 /// Print help from map of commands.
 ///
 
+#[ cfg( feature = "use_std" ) ]
 pub fn print_help( ca_map : &std::collections::HashMap<String, wca::Command> ) -> Result<(), wtools::error::Error>
 {
   println!( "Illformed command" );
