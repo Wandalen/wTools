@@ -18,14 +18,19 @@
 // pub mod a_general;
 
 /// Container kind.
+#[ cfg( feature = "use_std" ) ]
 pub mod container_kind;
 /// Helpers.
+#[ cfg( feature = "use_std" ) ]
 pub mod helper;
 /// Trait name.
+#[ cfg( feature = "use_std" ) ]
 pub mod name;
 /// Split with name.
+#[ cfg( feature = "use_std" ) ]
 pub mod split_with_name;
 /// Syntax.
+#[ cfg( feature = "use_std" ) ]
 pub mod syntax;
 
 ///
@@ -59,10 +64,15 @@ pub mod exposed
   pub use super::prelude::*;
 
   // pub use super::a_general::exposed::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::container_kind::exposed::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::helper::exposed::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::name::exposed::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::split_with_name::exposed::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::syntax::exposed::*;
 
 }
@@ -73,10 +83,15 @@ pub mod prelude
 
   // pub use super::a_general::prelude::wrap;
   // pub use super::a_general::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::container_kind::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::helper::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::name::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::split_with_name::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::syntax::prelude::*;
 
   pub use ::syn;
