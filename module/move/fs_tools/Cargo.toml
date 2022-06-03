@@ -27,6 +27,11 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
 [lib]
 name = "fs_tools"
 path = "rust/impl/fs/fs_tools_lib.rs"

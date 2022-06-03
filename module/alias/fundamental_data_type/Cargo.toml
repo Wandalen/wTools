@@ -31,12 +31,17 @@ include = [
 default = [
   "type_constructor/default",
   "make",
+  "use_std",
 ]
 full = [
   "type_constructor/full",
   "make",
+  "use_std",
+  "use_alloc",
 ]
 make = [ "type_constructor/make" ]
+use_std = []
+use_alloc = []
 
 [lib]
 name = "fundamental_data_type"

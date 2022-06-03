@@ -28,6 +28,11 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
 [lib]
 name = "instance_of"
 path = "rust/impl/typing/instance_of_lib.rs"
