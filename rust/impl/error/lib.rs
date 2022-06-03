@@ -13,6 +13,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 mod assert;
+#[ cfg( feature = "use_std" ) ]
 mod error;
 
 /// Dependencies.
@@ -38,11 +39,9 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
-  pub use super::
-  {
-    assert::*,
-    error::*,
-  };
+  pub use super::assert::*;
+  #[ cfg( feature = "use_std" ) ]
+  pub use super::error::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
