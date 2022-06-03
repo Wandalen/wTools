@@ -8,7 +8,8 @@ tasks :
       cargo build
       cargo run $RUN_POSTFIX
     command : |
-      if [[ "${HAS_SAMPLES}" == "true" ]] || [[ "${HAS_SAMPLES}" == "1" ]]; then cargo run --example # list examples; fi
+      # list examples
+      if [[ "${HAS_SAMPLES}" == "true" ]] || [[ "${HAS_SAMPLES}" == "1" ]]; then cargo run --example; fi
       echo $RUN_PATH
 
 vscode :
