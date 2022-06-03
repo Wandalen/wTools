@@ -5,6 +5,7 @@ tasks :
       cargo run --example wtools_trivial_sample
     command : |
       cargo run --example wtools_trivial_sample
+      cargo run --examples # list examples
 
 vscode :
   extensions :
