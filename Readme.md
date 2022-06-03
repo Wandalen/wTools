@@ -20,7 +20,7 @@ https://img.shields.io/github/workflow/status/Wandalen/wTools/wtools/alpha?label
 
 ### Rust tools
 
-| Module | Stability | Master | Alpha | Documentation |
+| Module | Stability | Master | Alpha | Docs |
 |--------|-----------|------|------|---------------|
 | [wtools](./module/rust/wtools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/wtools?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModulewToolsPush.yml) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/wtools/alpha?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModulewToolsPush.yml) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/wtools) |
 | [data_type](./module/rust/data_type) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/data_type?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModuleDataTypePush.yml) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/data_type/alpha?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModuleDataTypePush.yml) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/data_type) |
