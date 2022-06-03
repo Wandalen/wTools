@@ -15,12 +15,16 @@
 mod wpublisher;
 mod commands;
 
+#[ cfg( feature = "use_std" ) ]
 use std::env;
+#[ allow( unused_imports ) ]
 use wca::instruction;
+#[ allow( unused_imports ) ]
 use wpublisher::*;
 
 //
 
+#[ cfg( feature = "use_std" ) ]
 fn main() -> Result<(), wtools::error::Error>
 {
 
@@ -40,3 +44,7 @@ fn main() -> Result<(), wtools::error::Error>
   result
 }
 
+#[ cfg( not( feature = "use_std" ) ) ]
+fn main()
+{
+}
