@@ -8,8 +8,8 @@ tasks :
       cargo build
       cargo run $RUN_POSTFIX
     command : |
-      # list examples
-      # if [[ "${HAS_SAMPLES}" == "true" ]] || [[ "${HAS_SAMPLES}" == "1" ]]; then cargo run --example; fi
+      code $SAMPLE_FILE
+      cargo run $RUN_POSTFIX
       echo 'To get list of sample in the repostitory try running from the root:'
       echo 'cargo run --example'
 
@@ -21,3 +21,8 @@ github :
   prebuilds :
     addBadge : true
     pullRequests : true
+
+#
+# # to list examples
+# if [[ "${HAS_SAMPLES}" == "true" ]] || [[ "${HAS_SAMPLES}" == "1" ]]; then cargo run --example; fi
+#
