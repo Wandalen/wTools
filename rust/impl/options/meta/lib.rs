@@ -14,6 +14,7 @@
 
 // extern crate proc_macro_tools;
 // mod former;
+#[ cfg( feature = "use_std" ) ]
 mod options;
 
 // ///
@@ -36,6 +37,7 @@ mod options;
 /// Function-like macro to generate options adapter and its implementation for structure option.
 ///
 
+#[ cfg( feature = "use_std" ) ]
 #[ allow( non_snake_case ) ]
 #[ proc_macro ]
 pub fn Options( item : proc_macro::TokenStream ) -> proc_macro::TokenStream
