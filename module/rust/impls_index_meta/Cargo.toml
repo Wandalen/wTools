@@ -27,6 +27,11 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
 [lib]
 proc-macro = true
 name = "impls_index_meta"

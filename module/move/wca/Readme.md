@@ -6,11 +6,11 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 ## Sample
 
 ```rust
-use wca::*;
-use wstring_tools::string::parse::OpType;
-
-fn main()
+#[ cfg( feature = "use_std" ) ]
 {
+  use wca::*;
+  use wstring_tools::string::parse::OpType;
+
   let instruction = instruction::instruction_parse()
   .instruction( ".get some v:1" )
   .perform();

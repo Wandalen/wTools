@@ -32,7 +32,7 @@ include = [
 use_std = [ "itertools/use_std" ]
 use_alloc = [ "itertools/use_alloc" ]
 default = [ "use_std" ]
-full = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "iter_tools"

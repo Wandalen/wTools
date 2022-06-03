@@ -109,8 +109,11 @@ wca_local = { version = "*", path = "../../move/wca", package = "wca" }
 wca_published = { version = "*", package = "wca" }
 wcensor_local = { version = "*", path = "../../move/wcensor", package = "wcensor" }
 wcensor_published = { version = "*", package = "wcensor" }
-wpublisher_local = { version = "*", path = "../../move/wpublisher", package = "wpublisher" }
-wpublisher_published = { version = "*", package = "wpublisher" }
+
+wlang_local = { version = "*", path = "../../move/wlang", package = "wlang" }
+wlang_published = { version = "*", package = "wlang" }
+wpublisher_local = { version = "*", path = "../../move/wpublisher", package = "wpublisher", optional = true }
+wpublisher_published = { version = "*", package = "wpublisher", optional = true }
 wtest_local = { version = "*", path = "../../move/wtest", package = "wtest" }
 wtest_published = { version = "*", package = "wtest" }
 

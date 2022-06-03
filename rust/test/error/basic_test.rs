@@ -1,10 +1,12 @@
 #![ allow( deprecated ) ]
+#![ allow( unused_imports ) ]
 
 use test_tools::*;
 use super::TheModule;
 
 //
 
+#[ cfg( feature = "use_std" ) ]
 tests_impls!
 {
   #[ test ]
@@ -107,6 +109,7 @@ tests_impls!
 
 //
 
+#[ cfg( feature = "use_std" ) ]
 tests_index!
 {
   basic,

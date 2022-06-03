@@ -28,10 +28,10 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std" ]
 use_std = []
 use_alloc = []
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "template_blank"
