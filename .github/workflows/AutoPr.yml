@@ -32,5 +32,5 @@ jobs :
         env :
           GITHUB_TOKEN : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
           PULL_REQUEST_BRANCH : ${{ inputs.dst_branch }}
-          PULL_REQUEST_TITLE : 'NOT READY : Forward from ${{ inputs.src_branch }} to ${{ inputs.dst_branch }}'
+          PULL_REQUEST_TITLE : 'AUTO : Forward from ${{ inputs.src_branch }} to ${{ inputs.dst_branch }}'
           PASS_IF_EXISTS : true
