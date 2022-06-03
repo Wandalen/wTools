@@ -4,13 +4,10 @@ workspaceLocation : "./sample/rust/wtools_trivial_sample"
 
 tasks :
   - init : |
-      cargo build --manifest-path module/rust/wtools/Cargo.toml
-      cargo run --example wtools_trivial_sample
-      echo "init"
+      cargo build
+      cargo run
     command : |
-      cargo run --example wtools_trivial_sample
-      cargo run --examples # list examples
-      echo "command"
+      cargo run
 
 vscode :
   extensions :
