@@ -16,6 +16,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /// Internal namespace.
+#[ cfg( feature = "use_std" ) ]
 pub( crate ) mod private
 {
 
@@ -188,6 +189,7 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::private::
   {
     IntervalAdapter,
