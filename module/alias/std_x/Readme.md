@@ -1,5 +1,5 @@
 # Module :: std_x
-[![experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleStdXPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleStdXPush.yml) [![docs.rs](https://img.shields.io/docsrs/std_x?color=e3e8f0&logo=docs.rs)](https://docs.rs/std_x) [![discord](https://img.shields.io/discord/872391416519737405?color=e3e8f0&logo=discord&logoColor=e3e8f0)](https://discord.gg/JwTG6d2b)
+[![experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleStdXPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleStdXPush.yml) [![docs.rs](https://img.shields.io/docsrs/std_x?color=e3e8f0&logo=docs.rs)](https://docs.rs/std_x) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee)](https://discord.gg/JwTG6d2b)
 
 Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 
