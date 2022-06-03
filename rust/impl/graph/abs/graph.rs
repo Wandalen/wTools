@@ -108,6 +108,7 @@ pub( crate ) mod private
       Self::EdgeId( id )
     }
 
+// xxx
 //     /// Convert argument into edges ids.
 //     #[ allow( non_snake_case ) ]
 //     #[ inline ]
@@ -164,17 +165,23 @@ pub( crate ) mod private
   /// Graph nodes of which is possible to enumerate.
   ///
 
+  // pub trait GraphNodesEnumerableInterface< 'it, It >
   pub trait GraphNodesEnumerableInterface
   where
     Self : GraphNodesNominalInterface,
+    // It : Iterator< Item = ( NODE_ID!(), &'it < Self as GraphNodesNominalInterface >::NodeHandle ) >,
+    // < Self as GraphNodesNominalInterface >::NodeHandle : 'it
   {
 
     /// Iterate over all nodes.
     fn nodes< 'a, 'b >( &'a self )
     ->
+    // impl Iterator< Item = ( NODE_ID!(), &'b < Self as GraphNodesNominalInterface >::NodeHandle ) >
     Box< dyn Iterator< Item = ( NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
+    // It
     where
       'a : 'b,
+      // It : Iterator< Item = ( NODE_ID!(), &'b < Self as GraphNodesNominalInterface >::NodeHandle ) >,
     ;
 
     /// Number of nodes. Order of the graph.
@@ -351,7 +358,7 @@ pub( crate ) mod private
     /// Enumerate kinds of the node.
     type EdgeKind : crate::EdgeKindInterface;
     /// Get kind of the node.
-    fn node_kind( &self, node_id : EDGE_ID!() ) -> Self::EdgeKind;
+    fn edge_kind( &self, edge_id : EDGE_ID!() ) -> Self::EdgeKind;
   }
 
 }
