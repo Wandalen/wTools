@@ -43,7 +43,7 @@ path = "rust/impl/string/wstring_tools_lib.rs"
 
 [[test]]
 name = "string_test"
-path = "rust/test/string/wstring_tools_lib_test.rs"
+path = "rust/test/string/wstring_tools_tests.rs"
 
 [[test]]
 name = "string_smoke_test"

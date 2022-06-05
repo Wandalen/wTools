@@ -40,7 +40,7 @@ path = "rust/impl/iter/lib.rs"
 
 [[test]]
 name = "iter_tools_test"
-path = "rust/test/iter/lib_test.rs"
+path = "rust/test/iter/tests.rs"
 
 [[test]]
 name = "iter_tools_smoke_test"

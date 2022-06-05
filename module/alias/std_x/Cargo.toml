@@ -34,7 +34,7 @@ path = "rust/impl/std_x_lib.rs"
 
 [[test]]
 name = "std_x_test"
-path = "rust/test/std_x_lib_test.rs"
+path = "rust/test/std_x_tests.rs"
 
 [[test]]
 name = "std_x_smoke_test"

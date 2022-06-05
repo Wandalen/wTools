@@ -1,3 +1,4 @@
+#[ allow( unused_imports ) ]
 use type_constructor::prelude::*;
 
 #[ cfg( all( feature = "many", feature = "use_std" ) ) ]

@@ -1,6 +1,6 @@
 
 #[ allow( unused_imports ) ]
-use super::TheModule;
+use super::*;
 
 mod single_test;
 mod pair_test;

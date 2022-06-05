@@ -41,7 +41,7 @@ path = "rust/impl/typing/lib.rs"
 
 [[test]]
 name = "typing_tools_test"
-path = "rust/test/typing/lib_test.rs"
+path = "rust/test/typing/tests.rs"
 
 [[test]]
 name = "typing_tools_smoke_test"

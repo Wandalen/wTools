@@ -75,18 +75,6 @@ pub( crate ) mod private
       }
 
       // xxx : make the same changes for other type constructors
-      // impl< Into1, Into2, Id > From< ( Into1, Into2 ) >
-      // for ( Id, Id )
-      // where
-      //   Id : IdentityInterface,
-      //   Into1 : Into< Id >,
-      //   Into2 : Into< Id >,
-      // {
-      //   fn from( src : ( Into1, Into2 ) ) -> Self
-      //   {
-      //     ( src.0.into(), src.1.into() )
-      //   }
-      // }
 
       impl
       <

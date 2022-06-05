@@ -41,7 +41,7 @@ path = "rust/impl/diagnostics/lib.rs"
 
 [[test]]
 name = "diagnostics_tools_test"
-path = "rust/test/diagnostics/lib_test.rs"
+path = "rust/test/diagnostics/tests.rs"
 
 [[test]]
 name = "diagnostics_tools_smoke_test"

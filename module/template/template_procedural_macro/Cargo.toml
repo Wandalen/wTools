@@ -40,7 +40,7 @@ path = "rust/impl/meta/procedural_macro/front/lib.rs"
 
 [[test]]
 name = "procedural_macro_test"
-path = "rust/test/meta/procedural_macro_lib_test.rs"
+path = "rust/test/meta/procedural_macro_tests.rs"
 
 [[test]]
 name = "procedural_macro_smoke_test"

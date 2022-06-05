@@ -40,7 +40,7 @@ path = "rust/impl/meta/mod_interface/runtime/lib.rs"
 
 [[test]]
 name = "mod_interface_runtime_test"
-path = "rust/test/meta/mod_interface_runtime_lib_test.rs"
+path = "rust/test/meta/mod_interface_runtime_tests.rs"
 
 [dependencies]
 

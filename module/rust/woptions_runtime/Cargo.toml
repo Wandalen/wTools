@@ -39,7 +39,7 @@ path = "rust/impl/options/runtime/lib.rs"
 
 [[test]]
 name = "options_runtime_test"
-path = "rust/test/options/woptions_runtime_lib_test.rs"
+path = "rust/test/options/woptions_runtime_tests.rs"
 
 [dependencies]
 former = { version = "~0.1", path = "../../rust/former" }

@@ -1,6 +1,6 @@
 error: Bad syntax.
        Expects : {kind} {name} : {type}.
-       For example : `single MySingle : std::sync::Arc< T : Copy >`.
+       For example : `pub single MySingle : std::sync::Arc< T : Copy >`.
        But got:
        wrong_kind Single : std :: sync :: Arc < T : Copy > ;
  --> ../../../rust/test/dt/type_constructor/dynamic/types/wrong_kind.rs:4:1

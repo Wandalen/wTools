@@ -10,11 +10,11 @@ Integration test.
 
 [[bin]]
 name = "integration_test"
-path = "rust/test/_integration_test/smoke_main.rs"
+path = "rust/test/_integration_test/smoke_entry.rs"
 
 [[test]]
 name = "integration_test"
-path = "rust/test/_integration_test/_integration_test.rs"
+path = "rust/test/_integration_test/integration_tests.rs"
 
 [dependencies]
 

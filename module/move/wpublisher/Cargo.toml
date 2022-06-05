@@ -33,13 +33,17 @@ use_std = []
 use_alloc = []
 default = [ "use_std" ]
 
+[lib]
+name = "wpublisher"
+path = "rust/impl/publisher/lib.rs"
+
 [[bin]]
 name = "wpublisher"
 path = "rust/impl/publisher/entry.rs"
 
 [[test]]
 name = "publisher_test"
-path = "rust/test/publisher/mod.rs"
+path = "rust/test/publisher/wpublisher_tests.rs"
 
 [[test]]
 name = "publisher_smoke_test"

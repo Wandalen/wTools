@@ -38,7 +38,7 @@ path = "rust/impl/_blank/standard_lib.rs"
 
 [[test]]
 name = "wlang_test"
-path = "rust/test/_blank/lib_test.rs"
+path = "rust/test/_blank/tests.rs"
 
 [[test]]
 name = "wlang_smoke_test"

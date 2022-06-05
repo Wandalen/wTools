@@ -1,10 +1,10 @@
-error: Parametrized element should be many, because Many has only one element
-       Many : < T1, T2 > ;
+error: Parametrized element should be single, because Many has only one element
+       pub  many Many : < T1, T2 > ;
  --> ../../../rust/test/dt/type_constructor/dynamic/types/many_too_many_params.rs:4:1
   |
 4 | / types!
 5 | | {
-6 | |   many Many : < T1, T2 >;
+6 | |   pub many Many : < T1, T2 >;
 7 | | }
   | |_^
   |

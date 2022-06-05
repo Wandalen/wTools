@@ -139,7 +139,7 @@ path = "rust/impl/derive/lib.rs"
 
 [[test]]
 name = "derive_tools_test"
-path = "rust/test/derive/derive_lib_test.rs"
+path = "rust/test/derive/derive_tests.rs"
 
 [[test]]
 name = "derive_tools_smoke_test"

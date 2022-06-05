@@ -1,8 +1,9 @@
 
-#[ cfg( feature = "typing" ) ]
+#[ cfg( feature = "diagnostics" ) ]
 use wtools::typing as TheModule;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
-#[ cfg( feature = "typing" ) ]
-#[ path = "./inc.rs" ]
+#[ cfg( feature = "diagnostics" ) ]
+// #[ path = "./inc.rs" ]
 mod inc;
-

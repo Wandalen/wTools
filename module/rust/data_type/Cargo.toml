@@ -58,7 +58,7 @@ path = "rust/impl/dt/data_type_lib.rs"
 
 [[test]]
 name = "data_type_test"
-path = "rust/test/dt/data_type_lib_test.rs"
+path = "rust/test/dt/data_type_tests.rs"
 
 [[test]]
 name = "data_type_smoke_test"

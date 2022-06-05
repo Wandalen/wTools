@@ -243,7 +243,7 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
-      single $Name : ident :
+      $Vis : vis single $Name : ident :
       < $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? ,
       $( $Rest : tt )*
     )
@@ -257,7 +257,7 @@ pub( crate ) mod private
           stringify!
           (
             $( #[ $Meta ] )*
-            $Name :
+            $Vis single $Name :
             < $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ,
             $( $Rest )*
           )

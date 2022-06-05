@@ -3,7 +3,7 @@ use TheModule::prelude::*;
 
 types!
 {
-  many Many : < T1, T2 >;
+  pub many Many : < T1, T2 >;
 }
 
 fn main()

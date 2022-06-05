@@ -202,6 +202,7 @@ fn smoke_test_run( test_name : &'static str, local : bool )
 
 //
 
+// qqq : make it working
 // #[ test ]
 // fn local_smoke_test()
 // {

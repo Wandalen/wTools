@@ -12,15 +12,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-mod wpublisher;
-mod commands;
-
-#[ cfg( feature = "use_std" ) ]
-use std::env;
-#[ allow( unused_imports ) ]
-use wca::instruction;
-#[ allow( unused_imports ) ]
-use wpublisher::*;
+use ::wpublisher::*;
 
 //
 

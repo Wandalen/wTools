@@ -53,7 +53,7 @@ path = "rust/impl/meta/meta_tools_min_lib.rs"
 
 [[test]]
 name = "meta_tools_min_test"
-path = "rust/test/meta/meta_tools_min_lib_test.rs"
+path = "rust/test/meta/meta_tools_min_tests.rs"
 
 [[test]]
 name = "meta_tools_min_smoke_test"

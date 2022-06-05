@@ -39,7 +39,7 @@ path = "rust/impl/proc_macro/macro_tools_lib.rs"
 
 [[test]]
 name = "macro_tools_test"
-path = "rust/test/proc_macro/macro_tools_lib_test.rs"
+path = "rust/test/proc_macro/macro_tools_tests.rs"
 
 [[test]]
 name = "macro_tools_smoke_test"
