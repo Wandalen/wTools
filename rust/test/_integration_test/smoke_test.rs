@@ -89,6 +89,7 @@ impl< 'a > SmokeModuleTest< 'a >
     );
     let mut config_path = test_path.clone();
     config_path.push( "Cargo.toml" );
+    dbg!( &config_data );
     std::fs::write( config_path, config_data ).unwrap();
 
     /* write code */
@@ -96,7 +97,7 @@ impl< 'a > SmokeModuleTest< 'a >
     test_path.push( "main.rs" );
     if self.code == ""
     {
-      self.code = format!( "use {}::*;", self.dependency_name );
+      self.code = format!( "use ::{}::*;", self.dependency_name );
     }
     let code = format!
     (
@@ -107,6 +108,7 @@ impl< 'a > SmokeModuleTest< 'a >
       }}",
       self.code
     );
+    dbg!( &code );
     std::fs::write( &test_path, code ).unwrap();
 
     Ok( () )

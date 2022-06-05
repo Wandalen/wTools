@@ -154,4 +154,3 @@ tests_index!
   perform_with_subject,
   perform_with_props,
 }
-

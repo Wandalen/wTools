@@ -17,14 +17,16 @@ mod inc;
 #[ test ]
 fn trybuild_tests()
 {
-  // xxx;
   use test_tools::trybuild;
   println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
   #[ allow( unused_variables ) ]
   let t = trybuild::TestCases::new();
   #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
   t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/make/*.rs" );
-  /* xxx : rewiew */
-  t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/types/*.rs" );
-}
 
+  #[ cfg( all( any( feature = "use_std", feature = "use_alloc" ), feature = "many" ) ) ]
+  t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/types_many_yes/*.rs" );
+
+  #[ cfg( any( not( any( feature = "use_std", feature = "use_alloc" ) ), not( feature = "many" ) ) ) ]
+  t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/types_many_no/*.rs" );
+}
