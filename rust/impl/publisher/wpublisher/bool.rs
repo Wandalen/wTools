@@ -4,11 +4,14 @@
 
 ///
 /// Get bool like value.
+///
 
 #[ derive( Debug, PartialEq ) ]
 pub enum BoolLike
 {
+  /// Variant for true-like values.
   True,
+  /// Variant for false-like values.
   False,
 }
 
@@ -45,12 +48,12 @@ impl ToBoolLike for &str
 {
   fn to_bool_like( &self ) -> BoolLike
   {
-    let bool_like = match self.parse::<bool>()
+    let bool_like = match self.parse::< bool >()
     {
       Ok( x ) => if x { BoolLike::True } else { BoolLike::False },
-      Err(_) =>
+      Err( _ ) =>
       {
-        match self.parse::<i32>()
+        match self.parse::< i32 >()
         {
           Ok( y ) => if y == 1 { BoolLike::True } else { BoolLike::False },
           Err(_err) => BoolLike::False,
@@ -68,15 +71,15 @@ impl ToBoolLike for String
 {
   fn to_bool_like( &self ) -> BoolLike
   {
-    let bool_like = match self.parse::<bool>()
+    let bool_like = match self.parse::< bool >()
     {
       Ok( x ) => if x { BoolLike::True } else { BoolLike::False },
-      Err(_) =>
+      Err( _ ) =>
       {
-        match self.parse::<i32>()
+        match self.parse::< i32 >()
         {
           Ok( y ) => if y == 1 { BoolLike::True } else { BoolLike::False },
-          Err(_err) => BoolLike::False,
+          Err( _err ) => BoolLike::False,
         }
       },
     };
