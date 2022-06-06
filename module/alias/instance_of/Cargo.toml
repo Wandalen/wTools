@@ -46,8 +46,8 @@ name = "instance_of_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "instance_of_trivial"
-path = "sample/rust/instance_of_trivial/src/main.rs"
+name = "instance_of_trivial_sample"
+path = "sample/rust/instance_of_trivial_sample/src/main.rs"
 
 [dependencies]
 implements = { version = "~0.1", path = "../../rust/implements" }
