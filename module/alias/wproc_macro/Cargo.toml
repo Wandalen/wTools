@@ -28,13 +28,18 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
 [lib]
 name = "wproc_macro"
 path = "rust/impl/proc_macro/wproc_macro_lib.rs"
 
 [[test]]
 name = "macro_tools_test"
-path = "rust/test/proc_macro/wproc_macro_lib_test.rs"
+path = "rust/test/proc_macro/wproc_macro_tests.rs"
 
 [[test]]
 name = "wproc_macro_smoke_test"

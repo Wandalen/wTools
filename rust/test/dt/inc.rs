@@ -1,6 +1,6 @@
 
 #[ allow( unused_imports ) ]
-use super::TheModule;
+use super::*;
 
 #[ cfg( any( feature = "either", feature = "dt_either" ) ) ]
 mod either_test;

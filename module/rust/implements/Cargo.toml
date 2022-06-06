@@ -29,13 +29,18 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
 [lib]
 name = "implements"
 path = "rust/impl/typing/implements_lib.rs"
 
 [[test]]
 name = "implements_test"
-path = "rust/test/typing/implements_lib_test.rs"
+path = "rust/test/typing/implements_tests.rs"
 
 [[test]]
 name = "implements_smoke_test"

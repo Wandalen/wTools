@@ -1,6 +1,12 @@
 
 #[ allow( unused_imports ) ]
-use super::TheModule;
+use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
+use TheModule::prelude::*;
+use TheModule::qt;
+
+#[ cfg( feature = "use_std" ) ]
 mod basic_test;
 // mod a_general_test;

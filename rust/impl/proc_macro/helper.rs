@@ -14,10 +14,9 @@ pub( crate ) mod private
   ///
   /// ### Sample
   /// ```
-  /// use proc_macro_tools::*;
-  /// use quote::quote;
+  /// use proc_macro_tools::prelude::*;
   ///
-  /// let code = quote!( std::collections::HashMap< i32, i32 > );
+  /// let code = qt!( std::collections::HashMap< i32, i32 > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
   /// tree_print!( tree_type );
   /// ```
@@ -50,7 +49,7 @@ pub( crate ) mod private
     ( $src : expr ) =>
     {{
       let src2 = &$src;
-      format!( "{} : {} :\n{:#?}", stringify!( $src ), quote!{ #src2 }, $src )
+      format!( "{} : {} :\n{:#?}", stringify!( $src ), $crate::qt!{ #src2 }, $src )
     }};
   }
 
@@ -103,9 +102,8 @@ pub( crate ) mod private
   /// ### Sample
   /// ```
   /// use proc_macro_tools::*;
-  /// use quote::quote;
   ///
-  /// let code = quote!( core::option::Option< i32 > );
+  /// let code = qt!( core::option::Option< i32 > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
   /// let got = type_rightmost( &tree_type );
   /// assert_eq!( got, Some( "Option".to_string() ) );
@@ -134,12 +132,11 @@ pub( crate ) mod private
   /// ### Sample
   /// ```
   /// use proc_macro_tools::*;
-  /// use quote::quote;
   ///
-  /// let code = quote!( core::option::Option< i8, i16, i32, i64 > );
+  /// let code = qt!( core::option::Option< i8, i16, i32, i64 > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
   /// let got = type_parameters( &tree_type, 0..=2 );
-  /// got.iter().for_each( | e | println!( "{}", quote!( #e ) ) );
+  /// got.iter().for_each( | e | println!( "{}", qt!( #e ) ) );
   /// // < i8
   /// // < i16
   /// // < i32

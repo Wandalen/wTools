@@ -32,7 +32,8 @@ impls!
 
   fn nodes< 'a, 'b >( &'a self )
   ->
-  Box< dyn Iterator< Item = ( NODE_ID!(), &Self::NodeHandle ) > + 'b >
+  Box< dyn Iterator< Item = ( NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
+  // core::slice::Iter< 'a, ( NODE_ID!(), &'b < Self as GraphNodesNominalInterface >::NodeHandle ) >
   where
     'a : 'b,
   {
@@ -178,3 +179,4 @@ impls!
   }
 
 }
+

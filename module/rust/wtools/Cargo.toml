@@ -42,15 +42,15 @@ path = "rust/impl/wtools_lib.rs"
 
 [[test]]
 name = "wtools_test"
-path = "rust/test/wtools_lib_test.rs"
+path = "rust/test/wtools_tests.rs"
 
 [[test]]
 name = "wtools_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "wtools_trivial"
-path = "sample/rust/wtools_trivial/src/main.rs"
+name = "wtools_trivial_sample"
+path = "sample/rust/wtools_trivial_sample/src/main.rs"
 
 [features]
 
@@ -134,9 +134,9 @@ time_now = [ "time", "time_tools/now" ]
 # string
 
 string = [ "wstring_tools" ]
-string_indentation = [ "string", "wstring_tools/indentation" ]
-string_parse = [ "string", "wstring_tools/parse" ]
-string_split = [ "string", "wstring_tools/split" ]
+string_indentation = [ "string", "wstring_tools/indentation", "wstring_tools/use_std" ]
+string_parse = [ "string", "wstring_tools/parse", "wstring_tools/use_std" ]
+string_split = [ "string", "wstring_tools/split", "wstring_tools/use_std" ]
 string_default = [
   "string",
   "string_indentation",
@@ -153,8 +153,8 @@ string_full = [
 # error
 
 error = [ "werror" ]
-error_default = [ "error" ]
-error_full = [ "error" ]
+error_default = [ "error", 'werror/use_std' ]
+error_full = [ "error", 'werror/use_std' ]
 
 # derive
 
@@ -308,6 +308,9 @@ diagnostics_compiletime_assertions = [ "diagnostics_tools/compiletime_assertions
 # must be empty
 nightly = []
 
+use_std = []
+use_alloc = []
+
 full = [
   "iter_full",
   "meta_full",
@@ -318,6 +321,8 @@ full = [
   "derive_full",
   "dt_full",
   "diagnostics_full",
+  "use_std",
+  # "use_alloc",
 ]
 
 default = [
@@ -330,6 +335,7 @@ default = [
   "derive_default",
   "dt_default",
   "diagnostics_default",
+  "use_std",
 ]
 
 [dependencies]

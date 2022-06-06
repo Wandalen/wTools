@@ -1,23 +1,23 @@
 
 /// Add indentation to each line.
-#[ cfg( feature = "indentation" ) ]
+#[ cfg( all( feature = "indentation", feature = "use_std" ) ) ]
 pub mod indentation;
 /// Spit string with a delimeter.
-#[ cfg( feature = "split" ) ]
+#[ cfg( all( feature = "split", feature = "use_std" ) ) ]
 pub mod split;
 /// Parse string.
-#[ cfg( feature = "parse" ) ]
+#[ cfg( all( feature = "parse", feature = "use_std" ) ) ]
 pub mod parse;
 
 /// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;
-  #[ cfg( feature = "indentation" ) ]
+  #[ cfg( all( feature = "indentation", feature = "use_std" ) ) ]
   pub use super::indentation::orphan::*;
-  #[ cfg( feature = "split" ) ]
+  #[ cfg( all( feature = "split", feature = "use_std" ) ) ]
   pub use super::split::orphan::*;
-  #[ cfg( feature = "parse" ) ]
+  #[ cfg( all( feature = "parse", feature = "use_std" ) ) ]
   pub use super::parse::orphan::*;
 }
 
@@ -33,11 +33,11 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  #[ cfg( feature = "indentation" ) ]
+  #[ cfg( all( feature = "indentation", feature = "use_std" ) ) ]
   pub use super::indentation::exposed::*;
-  #[ cfg( feature = "split" ) ]
+  #[ cfg( all( feature = "split", feature = "use_std" ) ) ]
   pub use super::split::exposed::*;
-  #[ cfg( feature = "parse" ) ]
+  #[ cfg( all( feature = "parse", feature = "use_std" ) ) ]
   pub use super::parse::exposed::*;
 }
 
@@ -46,10 +46,10 @@ pub use exposed::*;
 /// Namespace of the module to include with `use module::*`.
 pub mod prelude
 {
-  #[ cfg( feature = "indentation" ) ]
+  #[ cfg( all( feature = "indentation", feature = "use_std" ) ) ]
   pub use super::indentation::prelude::*;
-  #[ cfg( feature = "split" ) ]
+  #[ cfg( all( feature = "split", feature = "use_std" ) ) ]
   pub use super::split::prelude::*;
-  #[ cfg( feature = "parse" ) ]
+  #[ cfg( all( feature = "parse", feature = "use_std" ) ) ]
   pub use super::parse::prelude::*;
 }

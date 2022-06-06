@@ -1,11 +1,14 @@
 // #![ feature( proc_macro_span ) ]
 // #![ feature( type_name_of_val ) ]
 
-use test_tools::*;
-use proc_macro_tools as TheModule;
-use quote::*;
+// use test_tools::*;
+// use proc_macro_tools as TheModule;
+// #[ allow( unused_imports ) ]
+// use test_tools::*;
 
-use proc_macro_tools::dependencies::*;
+use super::*;
+// use qt::*;
+// use proc_macro_tools::dependencies::*;
 
 //
 
@@ -61,7 +64,7 @@ TokenStream [
         spacing: Alone,
     },
 ]"#;
-    let code = quote!( std::collections::HashMap< i32, i32 > );
+    let code = qt!( std::collections::HashMap< i32, i32 > );
     let got = TheModule::tree_export_str!( code );
     // println!( "{}", got );
     a_id!( got, exp );
@@ -82,14 +85,14 @@ TokenStream [
     a_id!( err.to_string(), "abc" );
 
     // test.case( "with span" );
-    let code = quote!( core::option::Option< i32 > );
+    let code = qt!( core::option::Option< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let err = TheModule::syn_err!( tree_type, "abc" );
     a_id!( err.to_string(), "abc" );
     // a_id!( err.span(), syn::spanned::Spanned::span( &tree_type ) );
 
     // test.case( "with span and args" );
-    let code = quote!( core::option::Option< i32 > );
+    let code = qt!( core::option::Option< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let err = TheModule::syn_err!( tree_type, "abc{}{}", "def", "ghi" );
     a_id!( err.to_string(), "abcdefghi" );
@@ -112,67 +115,67 @@ TokenStream [
   {
 
     // test.case( "core::option::Option< i32 >" );
-    let code = quote!( core::option::Option< i32 > );
+    let code = qt!( core::option::Option< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_container_kind( &tree_type );
     a_id!( got, TheModule::ContainerKind::No );
 
     // test.case( "core::option::Option< Vec >" );
-    let code = quote!( core::option::Option< Vec > );
+    let code = qt!( core::option::Option< Vec > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_container_kind( &tree_type );
     a_id!( got, TheModule::ContainerKind::No );
 
     // test.case( "alloc::vec::Vec< i32 >" );
-    let code = quote!( alloc::vec::Vec< i32 > );
+    let code = qt!( alloc::vec::Vec< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_container_kind( &tree_type );
     a_id!( got, TheModule::ContainerKind::Vector );
 
     // test.case( "alloc::vec::Vec" );
-    let code = quote!( alloc::vec::Vec );
+    let code = qt!( alloc::vec::Vec );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_container_kind( &tree_type );
     a_id!( got, TheModule::ContainerKind::Vector );
 
     // test.case( "std::vec::Vec< i32 >" );
-    let code = quote!( std::vec::Vec< i32 > );
+    let code = qt!( std::vec::Vec< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_container_kind( &tree_type );
     a_id!( got, TheModule::ContainerKind::Vector );
 
     // test.case( "std::vec::Vec" );
-    let code = quote!( std::vec::Vec );
+    let code = qt!( std::vec::Vec );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_container_kind( &tree_type );
     a_id!( got, TheModule::ContainerKind::Vector );
 
     // test.case( "std::Vec< i32 >" );
-    let code = quote!( std::Vec< i32 > );
+    let code = qt!( std::Vec< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_container_kind( &tree_type );
     a_id!( got, TheModule::ContainerKind::Vector );
 
     // test.case( "std::Vec" );
-    let code = quote!( std::Vec );
+    let code = qt!( std::Vec );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_container_kind( &tree_type );
     a_id!( got, TheModule::ContainerKind::Vector );
 
     // test.case( "not vector" );
-    let code = quote!( std::SomeVector< i32, i32 > );
+    let code = qt!( std::SomeVector< i32, i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_container_kind( &tree_type );
     a_id!( got, TheModule::ContainerKind::No );
 
     // test.case( "hash map" );
-    let code = quote!( std::collections::HashMap< i32, i32 > );
+    let code = qt!( std::collections::HashMap< i32, i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_container_kind( &tree_type );
     a_id!( got, TheModule::ContainerKind::HashMap );
 
     // test.case( "hash set" );
-    let code = quote!( std::collections::HashSet< i32 > );
+    let code = qt!( std::collections::HashSet< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_container_kind( &tree_type );
     a_id!( got, TheModule::ContainerKind::HashSet );
@@ -186,76 +189,76 @@ TokenStream [
   {
 
     // test.case( "non optional not container" );
-    let code = quote!( i32 );
+    let code = qt!( i32 );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::No, false ) );
 
     // test.case( "optional not container" );
-    let code = quote!( core::option::Option< i32 > );
+    let code = qt!( core::option::Option< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::No, true ) );
 
     // test.case( "optional not container" );
-    let code = quote!( Option< i32 > );
+    let code = qt!( Option< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::No, true ) );
 
 
     // test.case( "optional vector" );
-    let code = quote!( core::option::Option< Vec > );
+    let code = qt!( core::option::Option< Vec > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::Vector, true ) );
 
     // test.case( "optional vector" );
-    let code = quote!( Option< Vec > );
+    let code = qt!( Option< Vec > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::Vector, true ) );
 
     // test.case( "non optional vector" );
-    let code = quote!( std::Vec< i32 > );
+    let code = qt!( std::Vec< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::Vector, false ) );
 
 
     // test.case( "optional vector" );
-    let code = quote!( core::option::Option< std::collections::HashMap< i32, i32 > > );
+    let code = qt!( core::option::Option< std::collections::HashMap< i32, i32 > > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::HashMap, true ) );
 
     // test.case( "optional vector" );
-    let code = quote!( Option< HashMap > );
+    let code = qt!( Option< HashMap > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::HashMap, true ) );
 
     // test.case( "non optional vector" );
-    let code = quote!( HashMap< i32, i32 > );
+    let code = qt!( HashMap< i32, i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::HashMap, false ) );
 
 
     // test.case( "optional vector" );
-    let code = quote!( core::option::Option< std::collections::HashSet< i32, i32 > > );
+    let code = qt!( core::option::Option< std::collections::HashSet< i32, i32 > > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::HashSet, true ) );
 
     // test.case( "optional vector" );
-    let code = quote!( Option< HashSet > );
+    let code = qt!( Option< HashSet > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::HashSet, true ) );
 
     // test.case( "non optional vector" );
-    let code = quote!( HashSet< i32, i32 > );
+    let code = qt!( HashSet< i32, i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_optional_container_kind( &tree_type );
     a_id!( got, ( TheModule::ContainerKind::HashSet, false ) );
@@ -269,7 +272,7 @@ TokenStream [
   {
 
     // test.case( "core::option::Option< i32 >" );
-    let code = quote!( core::option::Option< i32 > );
+    let code = qt!( core::option::Option< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
     let got = TheModule::type_rightmost( &tree_type );
     a_id!( got, Some( "Option".to_string() ) );
@@ -286,12 +289,12 @@ TokenStream [
     {
       ( $( $Src : tt )+ ) =>
       {
-        syn::parse2::< syn::Type >( quote!( $( $Src )+ ) ).unwrap()
+        syn::parse2::< syn::Type >( qt!( $( $Src )+ ) ).unwrap()
       }
     }
 
     // test.case( "core::option::Option< i8, i16, i32, i64 >" );
-    let code = quote!( core::option::Option< i8, i16, i32, i64 > );
+    let code = qt!( core::option::Option< i8, i16, i32, i64 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
 
     let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..=0 ).into_iter().cloned().collect();
@@ -326,7 +329,7 @@ TokenStream [
   //   use syn::spanned::Spanned;
   //
   //   // test.case( "basic" );
-  //   let input = quote!
+  //   let input = qt!
   //   {
   //     #[derive( Former )]
   //     pub struct Struct1
@@ -359,7 +362,7 @@ TokenStream [
   //
   //   let ( key, val, meta ) = TheModule::attr_pair_single( &attr )?;
   //   a_id!( key, "default".to_string() );
-  //   a_id!( quote!( #val ).to_string(), "31".to_string() );
+  //   a_id!( qt!( #val ).to_string(), "31".to_string() );
   //   let is = match meta
   //   {
   //     syn::Meta::List( _ ) => true,
@@ -381,7 +384,7 @@ TokenStream [
   // fn path_of() -> Result< (), syn::Error >
   // {
   //
-  //   let input = quote!
+  //   let input = qt!
   //   {
   //     This::is::path
   //   };

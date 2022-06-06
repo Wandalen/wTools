@@ -155,11 +155,14 @@ pub( crate ) mod private
   //
 
   impl< NodeId, EdgeId, Kind > GraphNodesEnumerableInterface
+  // impl< 'it, 'it2, NodeId, EdgeId, Kind >
+  // GraphNodesEnumerableInterface< 'it, 'it2, core::slice::Iter< 'it, ( NODE_ID!(), &'it < Self as GraphNodesNominalInterface >::NodeHandle ) > >
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
+    // 'it2 : 'it,
   {
     index!
     {

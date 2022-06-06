@@ -29,8 +29,10 @@ include = [
 ]
 
 [features]
-now = [ "chrono", "chrono/default" ]
-default = [ "now" ]
+use_std = []
+use_alloc = []
+now = [ "chrono", "chrono/default", "use_std" ]
+default = [ "now", "use_std", "use_alloc" ]
 
 [lib]
 name = "time_tools"
@@ -38,7 +40,7 @@ path = "rust/impl/time/lib.rs"
 
 [[test]]
 name = "time_tools_test"
-path = "rust/test/time/lib_test.rs"
+path = "rust/test/time/tests.rs"
 
 [[test]]
 name = "time_tools_smoke_test"

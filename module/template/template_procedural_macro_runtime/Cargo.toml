@@ -29,10 +29,10 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std" ]
 use_std = []
 use_alloc = []
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "procedural_macro_runtime"
@@ -40,7 +40,7 @@ path = "rust/impl/meta/procedural_macro/runtime/lib.rs"
 
 [[test]]
 name = "procedural_macro_runtime_test"
-path = "rust/test/meta/procedural_macro_runtime_lib_test.rs"
+path = "rust/test/meta/procedural_macro_runtime_tests.rs"
 
 [[test]]
 name = "procedural_macro_runtime_smoke_test"

@@ -28,10 +28,10 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std" ]
 use_std = []
 use_alloc = []
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "wautomata"
@@ -39,7 +39,7 @@ path = "rust/impl/graph/wautomata_lib.rs"
 
 [[test]]
 name = "wautomata_test"
-path = "rust/test/graph/wautomata_lib_test.rs"
+path = "rust/test/graph/wautomata_tests.rs"
 
 [[test]]
 name = "wautomata_smoke_test"

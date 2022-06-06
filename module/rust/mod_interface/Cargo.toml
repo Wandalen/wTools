@@ -29,8 +29,10 @@ include = [
 ]
 
 [features]
-default = []
-full = []
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "mod_interface"
@@ -38,7 +40,7 @@ path = "rust/impl/meta/mod_interface/front/lib.rs"
 
 [[test]]
 name = "mod_interface_test"
-path = "rust/test/meta/mod_interface_lib_test.rs"
+path = "rust/test/meta/mod_interface_tests.rs"
 
 [[test]]
 name = "mod_interface_smoke_test"

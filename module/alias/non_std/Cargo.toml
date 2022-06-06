@@ -33,7 +33,7 @@ path = "rust/impl/non_std_lib.rs"
 
 [[test]]
 name = "non_std_test"
-path = "rust/test/non_std_lib_test.rs"
+path = "rust/test/non_std_tests.rs"
 
 [[test]]
 name = "non_std_smoke_test"
@@ -286,6 +286,9 @@ diagnostics_compiletime_assertions = [ "diagnostics", "wtools/diagnostics_compil
 # must be empty
 nightly = []
 
+use_std = []
+use_alloc = []
+
 full = [
   "iter_full",
   "meta_full",
@@ -296,6 +299,8 @@ full = [
   "derive_full",
   "dt_full",
   "diagnostics_full",
+  "use_std",
+  "use_alloc",
 ]
 
 default = [
@@ -308,6 +313,7 @@ default = [
   "derive_default",
   "dt_default",
   "diagnostics_default",
+  "use_std",
 ]
 
 [dependencies]

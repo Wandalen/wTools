@@ -1,5 +1,5 @@
 
-use super::TheModule;
+use super::*;
 
 #[ path = "../dynamic/basic.rs" ]
 mod basic;

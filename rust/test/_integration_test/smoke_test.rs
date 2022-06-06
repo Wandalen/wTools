@@ -9,7 +9,7 @@ struct SmokeModuleTest< 'a >
   pub dependency_name : &'a str,
   pub version : &'a str,
   pub local_path : &'a str,
-  pub code : &'a str,
+  pub code : String,
   pub test_path : std::path::PathBuf,
   pub test_postfix : &'a str,
 }
@@ -26,7 +26,7 @@ impl< 'a > SmokeModuleTest< 'a >
       dependency_name,
       version : "*",
       local_path : "",
-      code : "",
+      code : "".to_string(),
       test_path,
       test_postfix : "_smoke_test",
     }
@@ -49,13 +49,13 @@ impl< 'a > SmokeModuleTest< 'a >
     self.test_postfix = src;
   }
 
-  fn code( &mut self, code : &'a str ) -> &mut SmokeModuleTest< 'a >
+  fn code( &mut self, code : String ) -> &mut SmokeModuleTest< 'a >
   {
     self.code = code;
     self
   }
 
-  fn form( &self ) -> Result< (), &'static str >
+  fn form( &mut self ) -> Result< (), &'static str >
   {
     std::fs::create_dir( &self.test_path ).unwrap();
 
@@ -89,22 +89,26 @@ impl< 'a > SmokeModuleTest< 'a >
     );
     let mut config_path = test_path.clone();
     config_path.push( "Cargo.toml" );
+    dbg!( &config_data );
     std::fs::write( config_path, config_data ).unwrap();
 
     /* write code */
     test_path.push( "src" );
     test_path.push( "main.rs" );
+    if self.code == ""
+    {
+      self.code = format!( "use ::{}::*;", self.dependency_name );
+    }
     let code = format!
     (
       "#[ allow( unused_imports ) ]\n\
       fn main()\n\
       {{\n  \
-        use {}::*;\n  \
         {}\n\
       }}",
-      self.dependency_name,
       self.code
     );
+    dbg!( &code );
     std::fs::write( &test_path, code ).unwrap();
 
     Ok( () )
@@ -183,7 +187,7 @@ fn smoke_test_run( test_name : &'static str, local : bool )
   if code_path.exists()
   {
     data = std::fs::read_to_string( code_path ).unwrap();
-    t.code( &data );
+    t.code( data );
   }
 
   t.version( "*" );
@@ -200,6 +204,7 @@ fn smoke_test_run( test_name : &'static str, local : bool )
 
 //
 
+// qqq : make it working
 // #[ test ]
 // fn local_smoke_test()
 // {

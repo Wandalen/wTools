@@ -27,13 +27,21 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+runtime_assertions = [ "pretty_assertions" ] # run-time assertions
+compiletime_assertions = [] # compile-time assertions
+default = [ "runtime_assertions", "compiletime_assertions", "use_std" ]
+full = [ "runtime_assertions", "compiletime_assertions", "use_std", "use_alloc" ]
+
 [lib]
 name = "diagnostics_tools"
 path = "rust/impl/diagnostics/lib.rs"
 
 [[test]]
 name = "diagnostics_tools_test"
-path = "rust/test/diagnostics/lib_test.rs"
+path = "rust/test/diagnostics/tests.rs"
 
 [[test]]
 name = "diagnostics_tools_smoke_test"
@@ -43,12 +51,6 @@ path = "rust/test/_integration_test/smoke_test.rs"
 # name = "diagnostics_tools_trivial"
 # path = "sample/rust/diagnostics_tools_trivial/src/main.rs"
 # zzz : xxx : implement
-
-[features]
-default = [ "runtime_assertions", "compiletime_assertions" ]
-full = [ "runtime_assertions", "compiletime_assertions" ]
-runtime_assertions = [ "pretty_assertions" ] # run-time assertions
-compiletime_assertions = [] # compile-time assertions
 
 [dependencies]
 pretty_assertions = { version = "~1.2", optional = true }

@@ -1,5 +1,5 @@
 #[ allow( unused_imports ) ]
-use super::*;
+use test_tools::*;
 
 only_for_wtools!
 {

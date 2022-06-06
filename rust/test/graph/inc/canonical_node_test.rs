@@ -1,5 +1,6 @@
 use super::*;
 
+#[ cfg( feature = "cell_factory" ) ]
 tests_impls!
 {
 
@@ -26,6 +27,7 @@ tests_impls!
 
 //
 
+#[ cfg( feature = "cell_factory" ) ]
 tests_index!
 {
 

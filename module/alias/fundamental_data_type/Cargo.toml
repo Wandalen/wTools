@@ -31,12 +31,17 @@ include = [
 default = [
   "type_constructor/default",
   "make",
+  "use_std",
 ]
 full = [
   "type_constructor/full",
   "make",
+  "use_std",
+  "use_alloc",
 ]
 make = [ "type_constructor/make" ]
+use_std = []
+use_alloc = []
 
 [lib]
 name = "fundamental_data_type"
@@ -44,7 +49,7 @@ path = "rust/impl/dt/type_constructor/fundamental_data_type_lib.rs"
 
 [[test]]
 name = "fundamental_data_type_test"
-path = "rust/test/dt/type_constructor/fundamental_data_type_lib_test.rs"
+path = "rust/test/dt/type_constructor/fundamental_data_type_tests.rs"
 
 [[test]]
 name = "fundamental_data_type_smoke_test"

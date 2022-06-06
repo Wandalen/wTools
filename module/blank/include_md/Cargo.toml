@@ -27,13 +27,18 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
 [lib]
 name = "include_md"
 path = "rust/impl/_blank/standard_lib.rs"
 
 # [[test]]
 # name = "include_md_test"
-# path = "rust/test/include_md/include_md_lib_test.rs"
+# path = "rust/test/include_md/include_md_tests.rs"
 
 # [[test]]
 # name = "include_md_smoke_test"

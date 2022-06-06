@@ -32,8 +32,10 @@ include = [
 indentation = []
 parse  = [ "split" ]
 split = []
-default = [ "indentation", "parse", "split" ]
-full = [ "indentation", "parse", "split" ]
+use_std = []
+use_alloc = []
+default = [ "indentation", "parse", "split", "use_std" ]
+full = [ "indentation", "parse", "split", "use_alloc" ]
 
 [lib]
 name = "wstring_tools"
@@ -41,7 +43,7 @@ path = "rust/impl/string/wstring_tools_lib.rs"
 
 [[test]]
 name = "string_test"
-path = "rust/test/string/wstring_tools_lib_test.rs"
+path = "rust/test/string/wstring_tools_tests.rs"
 
 [[test]]
 name = "string_smoke_test"

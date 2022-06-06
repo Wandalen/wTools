@@ -1,6 +1,6 @@
 [package]
 name = "wpublisher"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,13 +28,22 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
+[lib]
+name = "wpublisher"
+path = "rust/impl/publisher/lib.rs"
+
 [[bin]]
 name = "wpublisher"
 path = "rust/impl/publisher/entry.rs"
 
 [[test]]
 name = "publisher_test"
-path = "rust/test/publisher/mod.rs"
+path = "rust/test/publisher/wpublisher_tests.rs"
 
 [[test]]
 name = "publisher_smoke_test"
@@ -56,3 +65,4 @@ globwalk = "0.8.1"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+

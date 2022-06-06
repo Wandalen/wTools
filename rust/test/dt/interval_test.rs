@@ -1,9 +1,10 @@
-
-use super::TheModule;
-use test_tools::*;
+#[ allow( unused_imports ) ]
+use super::*;
+// use test_tools::*;
 
 //
 
+#[ cfg( feature = "use_std" ) ]
 fn adapter_basic_test()
 {
   use TheModule::*;
@@ -30,6 +31,7 @@ fn adapter_basic_test()
 
 //
 
+#[ cfg( feature = "use_std" ) ]
 fn adapter_std_closed_open_test()
 {
   use TheModule::*;
@@ -56,6 +58,7 @@ fn adapter_std_closed_open_test()
 
 //
 
+#[ cfg( feature = "use_std" ) ]
 fn adapter_std_closed_test()
 {
   use TheModule::*;
@@ -82,6 +85,7 @@ fn adapter_std_closed_test()
 
 //
 
+#[ cfg( feature = "use_std" ) ]
 fn into_interval_test()
 {
   use TheModule::*;
@@ -106,8 +110,12 @@ fn into_interval_test()
 
 test_suite!
 {
+  #[ cfg( feature = "use_std" ) ]
   adapter_basic,
+  #[ cfg( feature = "use_std" ) ]
   adapter_std_closed,
+  #[ cfg( feature = "use_std" ) ]
   adapter_std_closed_open,
+  #[ cfg( feature = "use_std" ) ]
   into_interval,
 }

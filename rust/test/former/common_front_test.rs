@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 // #[ allow( unused_imports ) ]
-// use test_tools::*;
+// // use test_tools::*;
 
 #[ path = "./all/basic.rs" ]
 mod basic;
@@ -32,7 +32,7 @@ fn trybuild_tests()
 
 // stable have different information about error
 // that's why these tests are active only for nightly
-#[ cfg( any( feature = "meta_former", feature = "former" ) ) ]
+#[ cfg( all( not( feature = "use_std" ), any( feature = "meta_former", feature = "former" ) ) ) ]
 #[ test_tools::rustversion::nightly ]
 #[ test ]
 fn trybuild_tests()

@@ -29,10 +29,10 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std" ]
 use_std = []
 use_alloc = []
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "wtest_basic"
@@ -40,7 +40,7 @@ path = "rust/impl/test/wtest_basic_lib.rs"
 
 [[test]]
 name = "wtest_basic_test"
-path = "rust/test/test/wtest_basic_lib_test.rs"
+path = "rust/test/test/wtest_basic_tests.rs"
 
 [[test]]
 name = "wtest_basic_smoke_test"

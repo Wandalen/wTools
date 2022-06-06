@@ -1,6 +1,6 @@
 
 #[ allow( unused_imports ) ]
-use super::TheModule;
+use super::*;
 
 #[ cfg( any( feature = "for_each", feature = "meta_for_each" ) ) ]
 mod for_each_test;

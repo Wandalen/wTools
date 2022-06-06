@@ -1,6 +1,6 @@
 [package]
 name = "graphs_tools"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -34,6 +34,7 @@ default = [
 ]
 full = [
   "use_std",
+  "use_alloc",
   "cell_factory",
 ]
 cell_factory = []
@@ -46,7 +47,7 @@ path = "rust/impl/graph/graphs_tools_lib.rs"
 
 [[test]]
 name = "graphs_tools_test"
-path = "rust/test/graph/graphs_tools_lib_test.rs"
+path = "rust/test/graph/graphs_tools_tests.rs"
 
 [[test]]
 name = "graphs_tools_smoke_test"

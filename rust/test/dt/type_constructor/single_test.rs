@@ -1,7 +1,6 @@
 #[ allow( unused_imports ) ]
-use super::TheModule;
-use test_tools::*;
-// use TheModule::*;
+use super::*;
+// // use test_tools::*;
 
 tests_impls_optional!
 {
@@ -18,6 +17,7 @@ tests_impls_optional!
       pub use f32;
     }
 
+    // trace_macros!( true );
     TheModule::types!
     {
 
@@ -30,6 +30,8 @@ tests_impls_optional!
       single Single : mod1::f32;
 
     }
+    // trace_macros!( false );
+
 
     /* test.case( "from f32 into Single" ) */
     let instance1 : Single = ( 13.0 ).into();

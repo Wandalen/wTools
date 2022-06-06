@@ -29,7 +29,9 @@ include = [
 ]
 
 [features]
-default = []
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
 full = []
 
 [lib]
@@ -38,7 +40,7 @@ path = "rust/impl/former/front/lib.rs"
 
 [[test]]
 name = "former_test"
-path = "rust/test/former/former_front_lib_test.rs"
+path = "rust/test/former/former_front_tests.rs"
 
 [[test]]
 name = "former_smoke_test"

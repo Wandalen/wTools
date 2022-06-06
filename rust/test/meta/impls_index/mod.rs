@@ -1,5 +1,5 @@
 
-use super::TheModule;
+use super::*;
 
 mod func_test;
 mod impls_basic_test;

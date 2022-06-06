@@ -28,13 +28,18 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
 [lib]
 name = "wtest"
 path = "rust/impl/test/wtest_lib.rs"
 
 [[test]]
 name = "wtest_test"
-path = "rust/test/test/wtest_lib_test.rs"
+path = "rust/test/test/wtest_tests.rs"
 
 [[test]]
 name = "wtest_smoke_test"

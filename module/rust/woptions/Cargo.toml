@@ -29,8 +29,10 @@ include = [
 ]
 
 [features]
-default = []
-full = []
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "woptions"
@@ -38,7 +40,7 @@ path = "rust/impl/options/front/lib.rs"
 
 [[test]]
 name = "woptions_test"
-path = "rust/test/options/woptions_lib_test.rs"
+path = "rust/test/options/woptions_tests.rs"
 
 [[test]]
 name = "woptions_smoke_test"

@@ -29,8 +29,10 @@ include = [
 ]
 
 [features]
+use_std = []
+use_alloc = []
 nightly = []
-default = []
+default = [ "use_std" ]
 
 [lib]
 name = "inspect_type"
@@ -38,7 +40,7 @@ path = "rust/impl/typing/inspect_type_lib.rs"
 
 [[test]]
 name = "inspect_type_test"
-path = "rust/test/typing/inspect_type_lib_test.rs"
+path = "rust/test/typing/inspect_type_tests.rs"
 
 [[test]]
 name = "inspect_type_smoke_test"
