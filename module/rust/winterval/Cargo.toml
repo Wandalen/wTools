@@ -46,8 +46,8 @@ name = "winterval_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "winterval_trivial"
-path = "sample/rust/winterval_trivial/src/main.rs"
+name = "winterval_trivial_sample"
+path = "sample/rust/winterval_trivial_sample/src/main.rs"
 
 [dependencies]
 

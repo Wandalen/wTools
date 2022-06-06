@@ -46,8 +46,8 @@ name = "werror_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "error_trivial"
-path = "sample/rust/error_trivial/src/main.rs"
+name = "error_trivial_sample"
+path = "sample/rust/error_trivial_sample/src/main.rs"
 
 [dependencies]
 

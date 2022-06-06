@@ -47,8 +47,8 @@ name = "iter_tools_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "iter_tools_trivial"
-path = "sample/rust/iter_tools_trivial/src/main.rs"
+name = "iter_tools_trivial_sample"
+path = "sample/rust/iter_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 itertools = { version = "~0.10.3" }

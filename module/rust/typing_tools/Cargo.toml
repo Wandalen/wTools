@@ -48,8 +48,8 @@ name = "typing_tools_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "typing_tools_trivial"
-path = "sample/rust/typing_tools_trivial/src/main.rs"
+name = "typing_tools_trivial_sample"
+path = "sample/rust/typing_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 inspect_type = { version = "~0.1", path = "../../rust/inspect_type", optional = true, default-features = false }
