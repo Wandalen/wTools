@@ -49,7 +49,7 @@ path = "rust/impl/dt/type_constructor/fundamental_data_type_lib.rs"
 
 [[test]]
 name = "fundamental_data_type_test"
-path = "rust/test/dt/type_constructor/fundamental_data_type_lib_test.rs"
+path = "rust/test/dt/type_constructor/fundamental_data_type_tests.rs"
 
 [[test]]
 name = "fundamental_data_type_smoke_test"

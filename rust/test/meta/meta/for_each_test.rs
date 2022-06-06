@@ -1,5 +1,5 @@
-use super::TheModule;
-use test_tools::*;
+use super::*;
+// use test_tools::*;
 
 tests_impls_optional!
 {

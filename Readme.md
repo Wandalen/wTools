@@ -10,15 +10,9 @@
 
 Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 
-<!--
-https://github.com/Wandalen/wTools/actions/workflows/ModulewToolsPush.yml/badge.svg
-https://img.shields.io/github/workflow/status/Wandalen/wTools/wtools?label=
-
-https://github.com/Wandalen/wTools/actions/workflows/ModulewToolsPush.yml/badge.svg?branch=alpha
-https://img.shields.io/github/workflow/status/Wandalen/wTools/wtools/alpha?label=
- -->
-
 ### Rust tools
+
+<!-- {{# generate.modules_index{} #}} -->
 
 | Module | Stability | Master | Alpha | Docs |
 |--------|-----------|------|------|---------------|

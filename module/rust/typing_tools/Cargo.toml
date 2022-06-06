@@ -37,19 +37,19 @@ default = [ "implements", "is_slice", "inspect_type", "use_std" ]
 
 [lib]
 name = "typing_tools"
-path = "rust/impl/typing/lib.rs"
+path = "rust/impl/typing/typing_tools_lib.rs"
 
 [[test]]
 name = "typing_tools_test"
-path = "rust/test/typing/lib_test.rs"
+path = "rust/test/typing/tests.rs"
 
 [[test]]
 name = "typing_tools_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "typing_tools_trivial"
-path = "sample/rust/typing_tools_trivial/src/main.rs"
+name = "typing_tools_trivial_sample"
+path = "sample/rust/typing_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 inspect_type = { version = "~0.1", path = "../../rust/inspect_type", optional = true, default-features = false }

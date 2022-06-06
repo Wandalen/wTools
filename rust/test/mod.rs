@@ -1,6 +1,6 @@
 
 #[ allow( unused_imports ) ]
-use super::TheModule;
+use super::*;
 
 include!( "./_conditional/wtools.rs" );
 

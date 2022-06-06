@@ -53,7 +53,7 @@ path = "rust/impl/dt/type_constructor/type_constructor_lib.rs"
 
 [[test]]
 name = "type_constructor_test"
-path = "rust/test/dt/type_constructor/type_constructor_lib_test.rs"
+path = "rust/test/dt/type_constructor/type_constructor_tests.rs"
 
 [[test]]
 name = "type_constructor_smoke_test"

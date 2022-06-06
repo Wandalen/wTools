@@ -40,15 +40,15 @@ path = "rust/impl/typing/inspect_type_lib.rs"
 
 [[test]]
 name = "inspect_type_test"
-path = "rust/test/typing/inspect_type_lib_test.rs"
+path = "rust/test/typing/inspect_type_tests.rs"
 
 [[test]]
 name = "inspect_type_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "inspect_type_trivial"
-path = "sample/rust/inspect_type_trivial/src/main.rs"
+name = "inspect_type_trivial_sample"
+path = "sample/rust/inspect_type_trivial_sample/src/main.rs"
 
 [dependencies]
 

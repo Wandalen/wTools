@@ -39,7 +39,7 @@ path = "rust/impl/test/test_tools_lib.rs"
 
 [[test]]
 name = "test_tools_test"
-path = "rust/test/test/test_tools_lib_test.rs"
+path = "rust/test/test/test_tools_tests.rs"
 
 [[test]]
 name = "test_tools_smoke_test"

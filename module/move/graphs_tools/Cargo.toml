@@ -47,7 +47,7 @@ path = "rust/impl/graph/graphs_tools_lib.rs"
 
 [[test]]
 name = "graphs_tools_test"
-path = "rust/test/graph/graphs_tools_lib_test.rs"
+path = "rust/test/graph/graphs_tools_tests.rs"
 
 [[test]]
 name = "graphs_tools_smoke_test"

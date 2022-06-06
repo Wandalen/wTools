@@ -35,11 +35,11 @@ default = [ "use_std" ]
 
 [lib]
 name = "former_runtime"
-path = "rust/impl/former/runtime/lib.rs"
+path = "rust/impl/former/runtime/former_lib.rs"
 
 [[test]]
 name = "former_runtime_test"
-path = "rust/test/former/former_runtime_lib_test.rs"
+path = "rust/test/former/former_runtime_tests.rs"
 
 [dependencies]
 

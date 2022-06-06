@@ -37,7 +37,7 @@ full = [ "use_std", "use_alloc" ]
 [lib]
 proc-macro = true
 name = "procedural_macro_meta"
-path = "rust/impl/meta/procedural_macro/meta/lib.rs"
+path = "rust/impl/meta/procedural_macro/meta/procedural_macro_lib.rs"
 
 [dependencies]
 proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }

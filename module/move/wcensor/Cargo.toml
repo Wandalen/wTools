@@ -35,15 +35,15 @@ default = [ "use_std" ]
 
 [lib]
 name = "wcensor"
-path = "rust/impl/censor/lib.rs"
+path = "rust/impl/censor/censor_lib.rs"
 
 [[bin]]
 name = "wcensor"
-path = "rust/impl/censor/entry.rs"
+path = "rust/impl/censor/censor_entry.rs"
 
 [[test]]
 name = "censor_test"
-path = "rust/test/censor/censor_test.rs"
+path = "rust/test/censor/tests.rs"
 
 [[test]]
 name = "censor_smoke_test"

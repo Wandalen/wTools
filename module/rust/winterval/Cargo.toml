@@ -39,15 +39,15 @@ path = "rust/impl/dt/interval_lib.rs"
 
 [[test]]
 name = "interval_test"
-path = "rust/test/dt/interval_lib_test.rs"
+path = "rust/test/dt/interval_tests.rs"
 
 [[test]]
 name = "winterval_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "winterval_trivial"
-path = "sample/rust/winterval_trivial/src/main.rs"
+name = "winterval_trivial_sample"
+path = "sample/rust/winterval_trivial_sample/src/main.rs"
 
 [dependencies]
 

@@ -32,13 +32,10 @@ impls!
 
   fn nodes< 'a, 'b >( &'a self )
   ->
-  // impl Iterator< Item = ( NODE_ID!(), &'b < Self as GraphNodesNominalInterface >::NodeHandle ) >
   Box< dyn Iterator< Item = ( NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
-  // It
   // core::slice::Iter< 'a, ( NODE_ID!(), &'b < Self as GraphNodesNominalInterface >::NodeHandle ) >
   where
     'a : 'b,
-    // It : Iterator< Item = ( NODE_ID!(), &'b < Self as GraphNodesNominalInterface >::NodeHandle ) >,
   {
     Box::new( self.id_to_node_map.iter().map( | el | ( *el.0, el.1 ) ) )
   }

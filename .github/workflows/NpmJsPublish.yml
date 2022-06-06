@@ -1,0 +1,45 @@
+
+name : npm_publish
+on : [ push ]
+
+jobs :
+  publish :
+    if : |
+      contains( github.event.head_commit.message, '!publish' )
+      && contains( github.event.head_commit.message, '!only_js' )
+    strategy :
+      fail-fast : false
+    runs-on : ubuntu-latest
+    steps :
+      - name : Validate tag
+        if : !contains( github.event.head_commit.message, '!tag:' )
+        run : |
+          echo "Invalid commit message. Add directive `!tag` with tag name in format `!tag:[tag_name]`"
+          exit 1
+      - name : Extract tag
+        id : tag
+        run : |
+          tag=$(awk '{ sub(/.*!tag:/, ""); sub(/\s+.*/, ""); print }' <<< ${{ github.event.head_commit.message }})
+          echo "::set-output name=tag::$tag"
+      - uses : actions/checkout@v2
+      - name : Setup node and registry
+        uses : Wandalen/wretry.action@v1.0.15
+        with :
+          action : actions/setup-node@v3
+          with : |
+            node-version : 16.x
+            registry-url: 'https://registry.npmjs.org'
+          attempt_limit : 3
+          attempt_delay : 10000
+      - name : Install willbe
+        uses : Wandalen/wretry.action@v1.0.15
+        with :
+          command : npm i -g willbe@latest
+          attempt_limit : 3
+          attempt_delay : 10000
+
+      - name : Publish module
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PRIVATE_NPM_TOKEN }}
+        run : will .imply withSubmodules:0 .npm.publish tag:${{ steps.tag.outputs.tag }} withDisabledSubmodules:1 force:1
+

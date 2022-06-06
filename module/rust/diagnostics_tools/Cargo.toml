@@ -37,11 +37,11 @@ full = [ "runtime_assertions", "compiletime_assertions", "use_std", "use_alloc" 
 
 [lib]
 name = "diagnostics_tools"
-path = "rust/impl/diagnostics/lib.rs"
+path = "rust/impl/diagnostics/diagnostics_tools_lib.rs"
 
 [[test]]
 name = "diagnostics_tools_test"
-path = "rust/test/diagnostics/lib_test.rs"
+path = "rust/test/diagnostics/tests.rs"
 
 [[test]]
 name = "diagnostics_tools_smoke_test"

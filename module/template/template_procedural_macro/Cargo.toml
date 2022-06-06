@@ -36,11 +36,11 @@ full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "procedural_macro"
-path = "rust/impl/meta/procedural_macro/front/lib.rs"
+path = "rust/impl/meta/procedural_macro/front/procedural_macro_lib.rs"
 
 [[test]]
 name = "procedural_macro_test"
-path = "rust/test/meta/procedural_macro_lib_test.rs"
+path = "rust/test/meta/procedural_macro_tests.rs"
 
 [[test]]
 name = "procedural_macro_smoke_test"

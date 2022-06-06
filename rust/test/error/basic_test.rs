@@ -1,8 +1,8 @@
 #![ allow( deprecated ) ]
 #![ allow( unused_imports ) ]
 
-use test_tools::*;
-use super::TheModule;
+// use test_tools::*;
+use super::*;
 
 //
 

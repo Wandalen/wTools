@@ -218,7 +218,7 @@ pub( crate ) mod private
 
     (
       $( #[ $Meta : meta ] )*
-      many $Name : ident :
+      $Vis : vis many $Name : ident :
       < $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? ,
       $( $Rest : tt )*
     )
@@ -228,11 +228,11 @@ pub( crate ) mod private
       (
         concat!
         (
-          "Parametrized element should be many, because Many has only one element\n",
+          "Parametrized element should be single, because Many has only one element\n",
           stringify!
           (
             $( #[ $Meta ] )*
-            $Name :
+            $Vis many $Name :
             < $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ,
             $( $Rest )*
           )
@@ -377,7 +377,6 @@ pub( crate ) mod private
       $crate::_if_make!
       {
 
-        // #[ cfg( feature = $crate::Make" ) ]
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
         $crate::Make0
@@ -391,7 +390,6 @@ pub( crate ) mod private
           }
         }
 
-        // #[ cfg( feature = $crate::Make" ) ]
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
         $crate::Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
@@ -409,7 +407,6 @@ pub( crate ) mod private
           }
         }
 
-        // #[ cfg( feature = $crate::Make" ) ]
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
         $crate::Make2
@@ -432,7 +429,6 @@ pub( crate ) mod private
           }
         }
 
-        // #[ cfg( feature = $crate::Make" ) ]
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
         $crate::Make3
