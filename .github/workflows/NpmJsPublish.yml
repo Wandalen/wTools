@@ -7,8 +7,6 @@ jobs :
     if : |
       contains( github.event.head_commit.message, '!publish' )
       && contains( github.event.head_commit.message, '!only_js' )
-    env :
-      PRIVATE_NPM_TOKEN : ${{ secrets.PRIVATE_NPM_TOKEN }}
     strategy :
       fail-fast : false
     runs-on : ubuntu-latest
@@ -24,12 +22,13 @@ jobs :
           tag=$(awk '{ sub(/.*!tag:/, ""); sub(/\s+.*/, ""); print }' <<< ${{ github.event.head_commit.message }})
           echo "::set-output name=tag::$tag"
       - uses : actions/checkout@v2
-      - name : ${{ matrix.node-version }}
+      - name : Setup node and registry
         uses : Wandalen/wretry.action@v1.0.15
         with :
-          action : actions/setup-node@v2
+          action : actions/setup-node@v3
           with : |
             node-version : 16.x
+            registry-url: 'https://registry.npmjs.org'
           attempt_limit : 3
           attempt_delay : 10000
       - name : Install willbe
@@ -40,5 +39,7 @@ jobs :
           attempt_delay : 10000
 
       - name : Publish module
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PRIVATE_NPM_TOKEN }}
         run : will .imply withSubmodules:0 .npm.publish tag:${{ steps.tag.outputs.tag }} withDisabledSubmodules:1 force:1
 
