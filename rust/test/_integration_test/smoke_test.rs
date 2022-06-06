@@ -18,8 +18,10 @@ impl< 'a > SmokeModuleTest< 'a >
 {
   fn new( dependency_name : &'a str ) -> SmokeModuleTest< 'a >
   {
+    let test_postfix = "_smoke_test";
+    let smoke_test_path = format!( "{}{}", dependency_name, test_postfix );
     let mut test_path = std::env::temp_dir();
-    test_path.push( dependency_name );
+    test_path.push( smoke_test_path );
 
     SmokeModuleTest
     {
@@ -28,7 +30,7 @@ impl< 'a > SmokeModuleTest< 'a >
       local_path : "",
       code : "".to_string(),
       test_path,
-      test_postfix : "_smoke_test",
+      test_postfix,
     }
   }
 
@@ -44,9 +46,13 @@ impl< 'a > SmokeModuleTest< 'a >
     self
   }
 
-  fn test_postfix( &mut self, src : &'a str )
+  fn test_postfix( &mut self, test_postfix : &'a str ) -> &mut SmokeModuleTest< 'a >
   {
-    self.test_postfix = src;
+    self.test_postfix = test_postfix;
+    let smoke_test_path = format!( "{}{}", self.dependency_name, test_postfix );
+    self.test_path.pop();
+    self.test_path.push( smoke_test_path );
+    self
   }
 
   fn code( &mut self, code : String ) -> &mut SmokeModuleTest< 'a >
@@ -77,12 +83,12 @@ impl< 'a > SmokeModuleTest< 'a >
     let dependencies_section = format!( "{} = {{ version = \"{}\"{} }}", self.dependency_name, self.version, &local_path );
     let config_data = format!
     (
-      "[package]\n\
-      edition = \"2018\"\n\
-      name = \"{}_smoke_test\"\n\
-      version = \"0.0.1\"\n\
-      \n\
-      [dependencies]\n\
+      "[package]
+      edition = \"2018\"
+      name = \"{}_smoke_test\"
+      version = \"0.0.1\"
+
+      [dependencies]
       {}",
       &self.dependency_name,
       &dependencies_section
@@ -101,10 +107,10 @@ impl< 'a > SmokeModuleTest< 'a >
     }
     let code = format!
     (
-      "#[ allow( unused_imports ) ]\n\
-      fn main()\n\
-      {{\n  \
-        {}\n\
+      "#[ allow( unused_imports ) ]
+      fn main()
+      {{
+        {}
       }}",
       self.code
     );
@@ -147,7 +153,6 @@ impl< 'a > SmokeModuleTest< 'a >
     }
     Ok( () )
   }
-
 }
 
 //
@@ -172,7 +177,6 @@ fn smoke_test_run( test_name : &'static str, local : bool )
   let module_path = std::env::var( "CARGO_MANIFEST_DIR" ).unwrap();
 
   let mut code_path = std::path::PathBuf::from( module_path.clone() );
-
   code_path.push( "rust" );
   code_path.push( "test" );
   code_path.push( if module_name.starts_with( "w" ) { &module_name[ 1.. ] } else { module_name.as_str() } );
@@ -180,8 +184,8 @@ fn smoke_test_run( test_name : &'static str, local : bool )
   code_path.push( "smoke.rs" );
 
   let mut t = SmokeModuleTest::new( module_name.as_str() );
-  t.clean( true ).unwrap();
   t.test_postfix( test_name );
+  t.clean( true ).unwrap();
 
   let data;
   if code_path.exists()
@@ -199,29 +203,28 @@ fn smoke_test_run( test_name : &'static str, local : bool )
   t.form().unwrap();
   t.perform().unwrap();
   t.clean( false ).unwrap();
-
 }
 
 //
 
 // qqq : make it working
-// #[ test ]
-// fn local_smoke_test()
-// {
-//   if let Ok( value ) = std::env::var( "WITH_SMOKE" )
-//   {
-//     match value.as_str()
-//     {
-//       "false" => {},
-//       "local" => smoke_test_run( "local_smoke_test", true ),
-//       "published" => {},
-//       _ =>
-//       {
-//         smoke_test_run( "local_smoke_test", true );
-//       },
-//     }
-//   }
-// }
+#[ test ]
+fn local_smoke_test()
+{
+  if let Ok( value ) = std::env::var( "WITH_SMOKE" )
+  {
+    match value.as_str()
+    {
+      "false" => {},
+      "local" => smoke_test_run( "_local_smoke_test", true ),
+      "published" => {},
+      _ =>
+      {
+        smoke_test_run( "_local_smoke_test", true );
+      },
+    }
+  }
+}
 
 //
 
@@ -234,10 +237,10 @@ fn published_smoke_test()
     {
       "false" | "0" => {},
       "local" => {},
-      "published" => smoke_test_run( "published_smoke_test", false ),
+      "published" => smoke_test_run( "_published_smoke_test", false ),
       _ =>
       {
-        smoke_test_run( "published_smoke_test", false );
+        smoke_test_run( "_published_smoke_test", false );
       },
     }
   }
