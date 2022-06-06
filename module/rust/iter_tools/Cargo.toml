@@ -36,7 +36,7 @@ full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "iter_tools"
-path = "rust/impl/iter/lib.rs"
+path = "rust/impl/iter/iter_tools_lib.rs"
 
 [[test]]
 name = "iter_tools_test"

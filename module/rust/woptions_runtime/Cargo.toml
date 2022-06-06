@@ -35,7 +35,7 @@ default = [ "use_std" ]
 
 [lib]
 name = "woptions_runtime"
-path = "rust/impl/options/runtime/lib.rs"
+path = "rust/impl/options/runtime/woptions_lib.rs"
 
 [[test]]
 name = "options_runtime_test"

@@ -36,7 +36,7 @@ full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "woptions"
-path = "rust/impl/options/front/lib.rs"
+path = "rust/impl/options/front/woptions_lib.rs"
 
 [[test]]
 name = "woptions_test"

@@ -35,11 +35,11 @@ default = [ "use_std" ]
 
 [lib]
 name = "wpublisher"
-path = "rust/impl/publisher/lib.rs"
+path = "rust/impl/publisher/wpublisher_lib.rs"
 
 [[bin]]
 name = "wpublisher"
-path = "rust/impl/publisher/entry.rs"
+path = "rust/impl/publisher/wpublisher_entry.rs"
 
 [[test]]
 name = "publisher_test"

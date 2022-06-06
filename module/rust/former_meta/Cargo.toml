@@ -36,7 +36,7 @@ default = [ "use_std" ]
 [lib]
 proc-macro = true
 name = "former_meta"
-path = "rust/impl/former/meta/lib.rs"
+path = "rust/impl/former/meta/former_lib.rs"
 
 [dependencies]
 proc-macro2 = "~1.0"

@@ -36,7 +36,7 @@ default = [ "now", "use_std", "use_alloc" ]
 
 [lib]
 name = "time_tools"
-path = "rust/impl/time/lib.rs"
+path = "rust/impl/time/time_tools_lib.rs"
 
 [[test]]
 name = "time_tools_test"

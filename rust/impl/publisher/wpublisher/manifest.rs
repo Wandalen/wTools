@@ -17,7 +17,7 @@ pub struct Manifest
   /// Path to `Cargo.toml`
   pub manifest_path : PathBuf,
   /// Strict type of `Cargo.toml` manifest.
-  pub manifest_data : Option<toml_edit::Document>,
+  pub manifest_data : Option< toml_edit::Document >,
 }
 
 impl Manifest
@@ -33,7 +33,7 @@ impl Manifest
   }
 
   /// Join manifest path.
-  pub fn manifest_path_from_str( &mut self, path : impl Into<PathBuf> ) -> anyhow::Result<PathBuf>
+  pub fn manifest_path_from_str( &mut self, path : impl Into< PathBuf > ) -> anyhow::Result< PathBuf >
   {
     let mut path_buf : PathBuf = path.into();
     if path_buf.is_relative()
@@ -52,16 +52,16 @@ impl Manifest
   }
 
   /// Load manifest from path.
-  pub fn load( &mut self ) -> anyhow::Result<()>
+  pub fn load( &mut self ) -> anyhow::Result< () >
   {
     let read = fs::read_to_string( &self.manifest_path )?;
-    let result = read.parse::<toml_edit::Document>()?;
+    let result = read.parse::< toml_edit::Document >()?;
     self.manifest_data = Some( result );
     Ok( () )
   }
 
   /// Store manifest.
-  pub fn store( &self ) -> anyhow::Result<()>
+  pub fn store( &self ) -> anyhow::Result< () >
   {
     let data = self.manifest_data.as_ref().unwrap().to_string();
     println!( "Saved manifest data to {:?}\n", &self.manifest_path );
@@ -78,6 +78,7 @@ impl Manifest
     Ok( () )
   }
 
+  /// Check that current manifest is manifest for a package.
   pub fn package_is( &self ) -> bool
   {
     let data = self.manifest_data.as_ref().unwrap();
@@ -88,6 +89,7 @@ impl Manifest
     false
   }
 
+  /// Check that module is local.
   pub fn local_is( &self ) -> bool
   {
     let data = self.manifest_data.as_ref().unwrap();

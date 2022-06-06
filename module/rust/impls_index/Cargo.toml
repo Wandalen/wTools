@@ -36,7 +36,7 @@ full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "impls_index"
-path = "rust/impl/meta/impls_index/front/lib.rs"
+path = "rust/impl/meta/impls_index/front/impls_index_lib.rs"
 
 [[test]]
 name = "impls_index_test"

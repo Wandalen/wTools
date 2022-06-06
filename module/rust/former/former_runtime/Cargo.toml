@@ -30,7 +30,7 @@ include = [
 
 [lib]
 name = "former_runtime"
-path = "rust/impl/former/runtime/lib.rs"
+path = "rust/impl/former/runtime/former_lib.rs"
 
 [[test]]
 name = "former_runtime_test"
