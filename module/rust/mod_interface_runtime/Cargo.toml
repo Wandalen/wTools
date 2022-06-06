@@ -36,7 +36,7 @@ default = [ "use_std" ]
 
 [lib]
 name = "mod_interface_runtime"
-path = "rust/impl/meta/mod_interface/runtime/lib.rs"
+path = "rust/impl/meta/mod_interface/runtime/mod_interface_runtime_lib.rs"
 
 [[test]]
 name = "mod_interface_runtime_test"

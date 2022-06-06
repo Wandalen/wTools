@@ -34,7 +34,7 @@ default = [ "use_std" ]
 
 [lib]
 name = "for_each"
-path = "rust/impl/meta/for_each/lib.rs"
+path = "rust/impl/meta/for_each/for_each_lib.rs"
 
 [[test]]
 name = "for_each_test"

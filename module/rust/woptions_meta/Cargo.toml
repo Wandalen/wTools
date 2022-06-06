@@ -36,7 +36,7 @@ default = [ "use_std" ]
 [lib]
 proc-macro = true
 name = "woptions_meta"
-path = "rust/impl/options/meta/lib.rs"
+path = "rust/impl/options/meta/woptions_lib.rs"
 
 [dependencies]
 convert_case = "~0.5" # xxx : move to string_tools

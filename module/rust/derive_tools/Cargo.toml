@@ -135,7 +135,7 @@ use_alloc = []
 
 [lib]
 name = "derive_tools"
-path = "rust/impl/derive/lib.rs"
+path = "rust/impl/derive/derive_tools_lib.rs"
 
 [[test]]
 name = "derive_tools_test"

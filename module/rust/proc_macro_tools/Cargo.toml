@@ -35,7 +35,7 @@ default = [ "use_std" ]
 
 [lib]
 name = "proc_macro_tools"
-path = "rust/impl/proc_macro/lib.rs"
+path = "rust/impl/proc_macro/proc_macro_tools_lib.rs"
 
 [[test]]
 name = "proc_macro_tools_test"

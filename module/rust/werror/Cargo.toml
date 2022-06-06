@@ -35,7 +35,7 @@ default = [ "use_std" ]
 
 [lib]
 name = "werror"
-path = "rust/impl/error/lib.rs"
+path = "rust/impl/error/werror_lib.rs"
 
 [[test]]
 name = "error_test"

@@ -37,7 +37,7 @@ default = [ "implements", "is_slice", "inspect_type", "use_std" ]
 
 [lib]
 name = "typing_tools"
-path = "rust/impl/typing/lib.rs"
+path = "rust/impl/typing/typing_tools_lib.rs"
 
 [[test]]
 name = "typing_tools_test"

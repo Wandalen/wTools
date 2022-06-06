@@ -36,7 +36,7 @@ default = [ "use_std" ]
 [lib]
 proc-macro = true
 name = "mod_interface_meta"
-path = "rust/impl/meta/mod_interface/meta/lib.rs"
+path = "rust/impl/meta/mod_interface/meta/mod_interface_meta_lib.rs"
 
 [dependencies]
 proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
