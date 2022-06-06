@@ -42,7 +42,7 @@ path = "rust/impl/wtools_lib.rs"
 
 [[test]]
 name = "wtools_test"
-path = "rust/test/wtools_lib_test.rs"
+path = "rust/test/wtools_tests.rs"
 
 [[test]]
 name = "wtools_smoke_test"
@@ -322,7 +322,7 @@ full = [
   "dt_full",
   "diagnostics_full",
   "use_std",
-  "use_alloc",
+  # "use_alloc",
 ]
 
 default = [

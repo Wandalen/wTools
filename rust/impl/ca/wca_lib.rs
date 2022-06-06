@@ -14,7 +14,7 @@
 
 /// Commands aggregator library.
 #[ cfg( feature = "use_std" ) ]
-#[ path = "./lib.rs" ]
+#[ path = "./inc.rs" ]
 pub mod ca;
 
 #[ cfg( feature = "use_std" ) ]

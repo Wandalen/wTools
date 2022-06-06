@@ -36,7 +36,7 @@ path = "rust/impl/wtools_alias_lib.rs"
 
 [[test]]
 name = "wtools_alias_test"
-path = "rust/test/wtools_alias_lib_test.rs"
+path = "rust/test/wtools_alias_tests.rs"
 
 [[test]]
 name = "wtools_alias_smoke_test"

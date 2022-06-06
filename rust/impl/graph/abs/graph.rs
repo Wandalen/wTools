@@ -165,23 +165,22 @@ pub( crate ) mod private
   /// Graph nodes of which is possible to enumerate.
   ///
 
-  // pub trait GraphNodesEnumerableInterface< 'it, It >
+  // pub trait GraphNodesEnumerableInterface< 'it, 'it2, It >
   pub trait GraphNodesEnumerableInterface
   where
     Self : GraphNodesNominalInterface,
-    // It : Iterator< Item = ( NODE_ID!(), &'it < Self as GraphNodesNominalInterface >::NodeHandle ) >,
-    // < Self as GraphNodesNominalInterface >::NodeHandle : 'it
+    // It : Iterator< Item = &'it2 ( NODE_ID!(), &'it < Self as GraphNodesNominalInterface >::NodeHandle ) >,
+    // < Self as GraphNodesNominalInterface >::NodeHandle : 'it,
+    // 'it : 'it2,
   {
 
     /// Iterate over all nodes.
     fn nodes< 'a, 'b >( &'a self )
     ->
-    // impl Iterator< Item = ( NODE_ID!(), &'b < Self as GraphNodesNominalInterface >::NodeHandle ) >
     Box< dyn Iterator< Item = ( NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
     // It
     where
       'a : 'b,
-      // It : Iterator< Item = ( NODE_ID!(), &'b < Self as GraphNodesNominalInterface >::NodeHandle ) >,
     ;
 
     /// Number of nodes. Order of the graph.

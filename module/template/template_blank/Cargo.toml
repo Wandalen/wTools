@@ -39,7 +39,7 @@ path = "rust/impl/_blank/standard_lib.rs"
 
 [[test]]
 name = "template_blank_test"
-path = "rust/test/_blank/lib_test.rs"
+path = "rust/test/_blank/tests.rs"
 
 # [[test]]
 # name = "template_blank_smoke_test"

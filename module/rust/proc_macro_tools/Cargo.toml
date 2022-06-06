@@ -35,11 +35,11 @@ default = [ "use_std" ]
 
 [lib]
 name = "proc_macro_tools"
-path = "rust/impl/proc_macro/lib.rs"
+path = "rust/impl/proc_macro/proc_macro_tools_lib.rs"
 
 [[test]]
 name = "proc_macro_tools_test"
-path = "rust/test/proc_macro/proc_macro_tools_lib_test.rs"
+path = "rust/test/proc_macro/proc_macro_tools_tests.rs"
 
 [[test]]
 name = "proc_macro_tools_smoke_test"
@@ -47,7 +47,7 @@ path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
 name = "proc_macro_trivial_sample"
-path = "sample/rust/proc_macro_tools_trivial/src/main.rs"
+path = "sample/rust/proc_macro_tools_trivial_sample/src/main.rs"
 # qqq : for Dima : normalize names of samples, missing postfix _sample
 
 [dependencies]

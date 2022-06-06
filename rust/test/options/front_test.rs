@@ -18,7 +18,7 @@
 //   mod without_perform;
 // }}
 
-use super::TheModule;
+use super::*;
 use super::Former;
 
 #[ path = "./all/basic_manual.rs" ]

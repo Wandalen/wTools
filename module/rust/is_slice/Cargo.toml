@@ -39,15 +39,15 @@ path = "rust/impl/typing/is_slice_lib.rs"
 
 [[test]]
 name = "is_slice_test"
-path = "rust/test/typing/is_slice_lib_test.rs"
+path = "rust/test/typing/is_slice_tests.rs"
 
 [[test]]
 name = "is_slice_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "is_slice_trivial"
-path = "sample/rust/is_slice_trivial/src/main.rs"
+name = "is_slice_trivial_sample"
+path = "sample/rust/is_slice_trivial_sample/src/main.rs"
 
 [dependencies]
 

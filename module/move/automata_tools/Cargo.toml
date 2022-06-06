@@ -40,7 +40,7 @@ path = "rust/impl/graph/automata_tools_lib.rs"
 
 [[test]]
 name = "automata_tools_test"
-path = "rust/test/graph/automata_tools_lib_test.rs"
+path = "rust/test/graph/automata_tools_tests.rs"
 
 [[test]]
 name = "automata_tools_smoke_test"

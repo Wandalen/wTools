@@ -36,19 +36,19 @@ full = []
 
 [lib]
 name = "former"
-path = "rust/impl/former/front/lib.rs"
+path = "rust/impl/former/front/former_lib.rs"
 
 [[test]]
 name = "former_test"
-path = "rust/test/former/former_front_lib_test.rs"
+path = "rust/test/former/former_front_tests.rs"
 
 [[test]]
 name = "former_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "former_trivial"
-path = "sample/rust/former_trivial/src/main.rs"
+name = "former_trivial_sample"
+path = "sample/rust/former_trivial_sample/src/main.rs"
 
 [dependencies]
 former_meta = { version = "~0.1", path = "../../rust/former_meta" }

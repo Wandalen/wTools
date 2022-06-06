@@ -11,6 +11,6 @@ wpublisher .publish ./ dry:1
 
 ### To install
 
-```
+``` shell
 cargo install wpublisher
 ```

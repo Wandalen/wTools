@@ -36,19 +36,19 @@ default = [ "now", "use_std", "use_alloc" ]
 
 [lib]
 name = "time_tools"
-path = "rust/impl/time/lib.rs"
+path = "rust/impl/time/time_tools_lib.rs"
 
 [[test]]
 name = "time_tools_test"
-path = "rust/test/time/lib_test.rs"
+path = "rust/test/time/tests.rs"
 
 [[test]]
 name = "time_tools_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "time_tools_trivial"
-path = "sample/rust/time_tools_trivial/src/main.rs"
+name = "time_tools_trivial_sample"
+path = "sample/rust/time_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 chrono = { version = "~0.4", optional = true, default-features = false }

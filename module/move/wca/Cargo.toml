@@ -35,7 +35,7 @@ path = "rust/impl/ca/wca_lib.rs"
 
 [[test]]
 name = "wca_test"
-path = "rust/test/ca/mod.rs"
+path = "rust/test/ca/wca_tests.rs"
 
 [[test]]
 name = "wca_smoke_test"
@@ -45,7 +45,7 @@ path = "rust/test/_integration_test/smoke_test.rs"
 wtools = { version = "~0.2", path = "../../rust/wtools" }
 former = { version = "~0.1", path = "../../rust/former" }
 wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
-maplit = "1.0.2"
+# maplit = "1.0.2"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

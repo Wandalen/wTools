@@ -36,19 +36,19 @@ full = [ "use_std", "use_alloc" ]
 
 [lib]
 name = "woptions"
-path = "rust/impl/options/front/lib.rs"
+path = "rust/impl/options/front/woptions_lib.rs"
 
 [[test]]
 name = "woptions_test"
-path = "rust/test/options/woptions_lib_test.rs"
+path = "rust/test/options/woptions_tests.rs"
 
 [[test]]
 name = "woptions_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "woptions_trivial"
-path = "sample/rust/woptions_trivial/src/main.rs"
+name = "woptions_trivial_sample"
+path = "sample/rust/woptions_trivial_sample/src/main.rs"
 
 [dependencies]
 woptions_meta = { version = "~0.1", path = "../../rust/woptions_meta" }
