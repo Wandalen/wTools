@@ -1,6 +1,6 @@
 
 #[ cfg( feature = "diagnostics" ) ]
-use wtools::typing as TheModule;
+use wtools::diagnostics as TheModule;
 #[ allow( unused_imports ) ]
 use test_tools::*;
 
