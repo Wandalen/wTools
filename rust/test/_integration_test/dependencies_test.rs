@@ -56,7 +56,7 @@ tests_impls!
     {
       let header = format!
       (
-        "\nManifest of integration test at {:?} has some missed dependencies.\nPlease, insert next code to manifest:\n```",
+        "\nManifest of integration test at {:?} has some missed dependencies.\nPlease, insert next code to the manifest:\n```",
         manifest_path.to_str().unwrap()
       );
       let mut msg = String::from( header );

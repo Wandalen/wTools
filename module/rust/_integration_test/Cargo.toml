@@ -98,6 +98,10 @@ wautomata_published = { version = "*", package = "wautomata" }
 wproc_macro_local = { version = "*", path = "../../alias/wproc_macro", package = "wproc_macro" }
 wproc_macro_published = { version = "*", package = "wproc_macro" }
 wTools_local = { version = "*", path = "../../alias/wTools", package = "wTools" }
+willbe_local = { version = "*", path = "../../move/willbe", package = "willbe" }
+willbe_published = { version = "*", package = "willbe" }
+willbe2_local = { version = "*", path = "../../alias/willbe2", package = "willbe2" }
+willbe2_published = { version = "*", package = "willbe2" }
 
 automata_tools_local = { version = "*", path = "../../move/automata_tools", package = "automata_tools" }
 automata_tools_published = { version = "*", package = "automata_tools" }
