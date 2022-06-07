@@ -250,6 +250,8 @@ pub( crate ) mod private
     stripping : bool,
     preserving_empty : bool,
     preserving_delimeters : bool,
+    #[ allow( dead_code ) ]
+    preserving_quoting : bool,
     quoting : bool,
     quoting_prefixes : Vec< &'a str >,
     quoting_postfixes : Vec< &'a str >,
@@ -306,6 +308,7 @@ pub( crate ) mod private
         stripping : o.stripping(),
         preserving_empty : o.preserving_empty(),
         preserving_delimeters : o.preserving_delimeters(),
+        preserving_quoting : o.preserving_quoting(),
         quoting : o.quoting(),
         quoting_prefixes : o.quoting_prefixes().clone(),
         quoting_postfixes : o.quoting_postfixes().clone(),
@@ -398,9 +401,16 @@ pub( crate ) mod private
           }
           else
           {
-            let end = end.unwrap() + 1;
+            let end = end.unwrap();
             while self.iterator.next().unwrap().string != postfix {}
-            return Split { string : &self.src[ start..pos + end ], typ : SplitType::Delimeted };
+            if self.preserving_quoting
+            {
+              return Split { string : &self.src[ start..pos + end + postfix.len() ], typ : SplitType::Delimeted };
+            }
+            else
+            {
+              return Split { string : &self.src[ start + split_str.len() ..pos + end ], typ : SplitType::Delimeted };
+            }
           }
         },
         None => Split { string : split_str, typ : SplitType::Delimeted },
@@ -421,6 +431,7 @@ pub( crate ) mod private
     delimeter : D,
     preserving_empty : bool,
     preserving_delimeters : bool,
+    preserving_quoting : bool,
     stripping : bool,
     quoting : bool,
     quoting_prefixes : Vec< &'a str >,
@@ -467,6 +478,8 @@ pub( crate ) mod private
     fn preserving_empty( &self ) -> bool;
     /// Preserving or dropping delimeters.
     fn preserving_delimeters( &self ) -> bool;
+    /// Preserving or dropping quotes.
+    fn preserving_quoting( &self ) -> bool;
     /// Stripping.
     fn stripping( &self ) -> bool;
     /// Quoting.
@@ -496,6 +509,10 @@ pub( crate ) mod private
     fn preserving_delimeters( &self ) -> bool
     {
       self.preserving_delimeters
+    }
+    fn preserving_quoting( &self ) -> bool
+    {
+      self.preserving_quoting
     }
     fn stripping( &self ) -> bool
     {
@@ -550,6 +567,7 @@ pub( crate ) mod private
             delimeter : self.delimeter.clone().vector().unwrap(),
             preserving_empty : self.preserving_empty,
             preserving_delimeters : self.preserving_delimeters,
+            preserving_quoting : self.preserving_quoting,
             stripping : self.stripping,
             quoting : self.quoting,
             quoting_prefixes : self.quoting_prefixes.clone(),
@@ -571,6 +589,7 @@ pub( crate ) mod private
     delimeter : OpType< &'a str >,
     preserving_empty : bool,
     preserving_delimeters : bool,
+    preserving_quoting : bool,
     stripping : bool,
     quoting : bool,
     quoting_prefixes : Vec< &'a str >,
@@ -582,6 +601,7 @@ pub( crate ) mod private
     ( src, &'a str ),
     ( preserving_empty, bool ),
     ( preserving_delimeters, bool ),
+    ( preserving_quoting, bool ),
     ( stripping, bool ),
     ( quoting, bool ),
     ( quoting_prefixes, Vec< &'a str > ),
@@ -599,6 +619,7 @@ pub( crate ) mod private
         delimeter : op_vec.append( delimeter.into() ),
         preserving_empty : true,
         preserving_delimeters : true,
+        preserving_quoting : true,
         stripping : true,
         quoting : true,
         quoting_prefixes : vec![],
