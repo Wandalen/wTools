@@ -32,10 +32,11 @@ include = [
 indentation = []
 parse  = [ "split" ]
 split = []
+isolate = []
 use_std = []
 use_alloc = []
-default = [ "indentation", "parse", "split", "use_std" ]
-full = [ "indentation", "parse", "split", "use_alloc" ]
+default = [ "indentation", "isolate", "parse", "split", "use_std" ]
+full = [ "indentation", "isolate", "parse", "split", "use_alloc" ]
 
 [lib]
 name = "wstring_tools"
