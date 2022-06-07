@@ -61,8 +61,7 @@ tests_impls!
 
   fn use2()
   {
-
-    use TheModule::*;
+    use TheModule::{ Error, ErrorAdapter };
 
     // test.case( "basic" );
 
@@ -71,7 +70,6 @@ tests_impls!
     a_id!( err1.description(), "Some error" );
     a_id!( err1.msg(), "Some error" );
     a_id!( format!( "err1 : {}", err1 ), "err1 : Some error" );
-
   }
 
   //
