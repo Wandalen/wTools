@@ -101,6 +101,59 @@ tests_impls!
 
   //
 
+  fn split_with_option_preserving_quoting()
+  {
+    let src = "a 'b' c";
+    let iter = TheModule::string::split()
+    .src( src )
+    .delimeter( " " )
+    .quoting( false )
+    .preserving_delimeters( false )
+    .preserving_empty( false )
+    .preserving_quoting( true )
+    .stripping( true )
+    .perform();
+    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "'b'", "c" ] );
+
+    let src = "a 'b' c";
+    let iter = TheModule::string::split()
+    .src( src )
+    .delimeter( " " )
+    .quoting( false )
+    .preserving_delimeters( false )
+    .preserving_empty( false )
+    .preserving_quoting( false )
+    .stripping( true )
+    .perform();
+    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "'b'", "c" ] );
+
+    let src = "a 'b' c";
+    let iter = TheModule::string::split()
+    .src( src )
+    .delimeter( " " )
+    .quoting( true )
+    .preserving_delimeters( false )
+    .preserving_empty( false )
+    .preserving_quoting( true )
+    .stripping( true )
+    .perform();
+    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "'b'", "c" ] );
+
+    let src = "a 'b' c";
+    let iter = TheModule::string::split()
+    .src( src )
+    .delimeter( " " )
+    .quoting( true )
+    .preserving_delimeters( false )
+    .preserving_empty( false )
+    .preserving_quoting( false )
+    .stripping( true )
+    .perform();
+    assert_eq!( iter.map( | e | String::from( e ) ).collect::< Vec< _ > >(), vec![ "a", "b", "c" ] );
+  }
+
+  //
+
   fn split_with_option_stripping()
   {
     let src = "a b c";
@@ -335,6 +388,7 @@ tests_index!
   basic_form_and_methods,
   split_with_option_preserving_empty,
   split_with_option_preserving_delimeters,
+  split_with_option_preserving_quoting,
   split_with_option_stripping,
   split_with_option_quoting,
   basic_split_with_vector,
