@@ -1,2 +1,7 @@
 
-mod now_test;
+#[ cfg( feature = "time" ) ]
+#[ allow( unused_imports ) ]
+use wtools::time as TheModule;
+
+#[ cfg( feature = "time" ) ]
+mod inc;

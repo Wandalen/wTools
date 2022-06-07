@@ -1,0 +1,14 @@
+
+name : js_push
+on : [ push ]
+
+jobs :
+  test :
+    if : |
+      contains( github.event.head_commit.message, '!test' )
+      && !contains( github.event.head_commit.message, '!only_rust' )
+      && !startsWith( github.event.head_commit.message, 'Merge' )
+    uses : Wandalen/wTools/.github/workflows/StandardJsCommon.yml@master
+    with :
+      matrix : '{ "os" : [ "ubuntu-latest", "windows-latest", "macos-latest" ], "node-version" : [ "14.x" ] }'
+      group : standard_push_${{ github.ref }}

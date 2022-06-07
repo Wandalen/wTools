@@ -1,0 +1,26 @@
+name : type_constructor
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # type_constructor
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/rust/type_constructor/Cargo.toml'
+      module_name : 'type_constructor'
+      commit_message : ${{ github.event.head_commit.message }}
+
+  # fundamental_data_type
+
+  test_fundamental_data_type :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/alias/fundamental_data_type/Cargo.toml'
+      module_name : 'fundamental_data_type'
+      commit_message : ${{ github.event.head_commit.message }}

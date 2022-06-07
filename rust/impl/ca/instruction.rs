@@ -1,7 +1,5 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
 
-mod internal
+pub( crate ) mod private
 {
   pub use wtools::error::*;
   pub use wstring_tools::string::parse;
@@ -159,33 +157,33 @@ mod internal
   }
 }
 
-/// Owned namespace of the module.
-pub mod own
+/// Protected namespace of the module.
+pub mod protected
 {
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::Instruction;
-  pub use i::InstructionParseParams;
-  pub use i::InstructionParseParamsAdapter;
-  pub use i::instruction_parse;
+  pub use super::private::Instruction;
+  pub use super::private::InstructionParseParams;
+  pub use super::private::InstructionParseParamsAdapter;
+  pub use super::private::instruction_parse;
 }
 
-pub use own::*;
+pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::InstructionParseParamsAdapter;
-  pub use i::instruction_parse;
+  pub use super::private::InstructionParseParamsAdapter;
+  pub use super::private::instruction_parse;
 }
 
 /// Namespace of the module to include with `use module::*`.
 pub mod prelude
 {
-  use super::internal as i;
+  // use super::private as i;
 
-  pub use i::InstructionParseParamsAdapter;
+  pub use super::private::InstructionParseParamsAdapter;
 }
 

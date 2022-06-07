@@ -1,4 +1,3 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
 
+#[ cfg( feature = "meta_tools" ) ]
 pub use meta_tools::*;

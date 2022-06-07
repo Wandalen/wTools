@@ -1,8 +1,8 @@
-# module::select_matching
+# Module :: select_matching
 
 <!-- qqq2 : for rust : write --> <!-- Dmytro : maybe, it is implemented and documented in module `rust/inspect_type`. Please, review the task  -->
 
-### Sample
+## Sample
 
 ``` rust sample test
 use select_matching::*;

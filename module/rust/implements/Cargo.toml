@@ -1,6 +1,6 @@
 [package]
 name = "implements"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,6 +18,9 @@ Macro to answer the question: does it implement a trait?
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/typing/implements_impl.rs",
   "/rust/impl/typing/implements_lib.rs",
@@ -26,20 +29,29 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
 [lib]
 name = "implements"
 path = "rust/impl/typing/implements_lib.rs"
 
 [[test]]
 name = "implements_test"
-path = "rust/test/typing/implements_test.rs"
+path = "rust/test/typing/implements_tests.rs"
+
+[[test]]
+name = "implements_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "implements_trivial"
-path = "sample/rust/implements_trivial/src/main.rs"
+name = "implements_trivial_sample"
+path = "sample/rust/implements_trivial_sample/src/main.rs"
 
 [dependencies]
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = [ "diff" ] }
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

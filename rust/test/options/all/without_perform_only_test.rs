@@ -1,72 +1,69 @@
 
-use wtest_basic::dependencies::*;
+use test_tools::*;
 
 //
 
-fn basic() -> anyhow::Result< () >
+tests_impls!
 {
-
-  // test.case( "former + form()" );
-
-  let got = split::former().src( "abc" ).delimeter( "b" ).form();
-  let exp = split::Options
+  #[ test ]
+  fn basic()
   {
-    src : "abc",
-    delimeter : "b",
-    left : true,
-  };
-  assert_eq!( got, exp );
+    // test.case( "former + form()" );
 
-  // test.case( "split() + form()" );
+    let got = split::former().src( "abc" ).delimeter( "b" ).form();
+    let exp = split::Options
+    {
+      src : "abc",
+      delimeter : "b",
+      left : true,
+    };
+    a_id!( got, exp );
 
-  let got = split().src( "abc" ).delimeter( "b" ).form();
-  let exp = split::Options
+    // test.case( "split() + form()" );
+
+    let got = split().src( "abc" ).delimeter( "b" ).form();
+    let exp = split::Options
+    {
+      src : "abc",
+      delimeter : "b",
+      left : true,
+    };
+    a_id!( got, exp );
+
+    // test.case( "split() + perform()" );
+
+    let got = split().src( "abc" ).delimeter( "b" ).perform();
+    let exp = split::Options
+    {
+      src : "abc",
+      delimeter : "b",
+      left : true,
+    };
+    a_id!( got, exp );
+  }
+
+  //
+
+  #[ test ]
+  fn derive()
   {
-    src : "abc",
-    delimeter : "b",
-    left : true,
-  };
-  assert_eq!( got, exp );
+    // test.case( "is PartialOrd implemented" );
 
-  // test.case( "split() + perform()" );
-
-  let got = split().src( "abc" ).delimeter( "b" ).perform();
-  let exp = split::Options
-  {
-    src : "abc",
-    delimeter : "b",
-    left : true,
-  };
-  assert_eq!( got, exp );
-
-  Ok( () )
+    let got = split().src( "abc" ).delimeter( "b" ).perform();
+    let exp = split::Options
+    {
+      src : "abc",
+      delimeter : "b",
+      left : true,
+    };
+    assert!( !( got > exp ) && !( got < exp ) );
+  }
 }
 
 //
 
-fn derive() -> anyhow::Result< () >
+tests_index!
 {
-
-  // test.case( "is PartialOrd implemented" );
-
-  let got = split().src( "abc" ).delimeter( "b" ).perform();
-  let exp = split::Options
-  {
-    src : "abc",
-    delimeter : "b",
-    left : true,
-  };
-  assert!( !( got > exp ) && !( got < exp ) );
-
-  Ok( () )
-}
-
-//
-
-#[ test ]
-fn main_test() -> anyhow::Result< () >
-{
-  basic()?;
-  derive()?;
-  Ok( () )
+  basic,
+  derive,
 }

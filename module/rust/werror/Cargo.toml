@@ -1,6 +1,6 @@
 [package]
 name = "werror"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,6 +18,9 @@ Basic exceptions handling mechanism.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/error",
   "/Cargo.toml",
@@ -25,19 +28,28 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
 [lib]
 name = "werror"
-path = "rust/impl/error/lib.rs"
+path = "rust/impl/error/werror_lib.rs"
 
 [[test]]
 name = "error_test"
-path = "rust/test/error/lib_test.rs"
+path = "rust/test/error/tests.rs"
+
+[[test]]
+name = "werror_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "error_trivial"
-path = "sample/rust/error_trivial/src/main.rs"
+name = "error_trivial_sample"
+path = "sample/rust/error_trivial_sample/src/main.rs"
 
 [dependencies]
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

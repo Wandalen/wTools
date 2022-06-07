@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.2.1"
+version = "0.2.11"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,16 +18,23 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/wtools_lib.rs",
-  "/rust/impl/meta/mod.rs",
-  "/rust/impl/typing/mod.rs",
-  "/rust/impl/convert/mod.rs",
-  "/rust/impl/time/mod.rs",
+  # "/rust/impl/dt/mod.rs",
+  # "/rust/impl/iter/mod.rs",
+  # "/rust/impl/meta/mod.rs",
+  # "/rust/impl/typing/mod.rs",
+  # "/rust/impl/convert/mod.rs",
+  # "/rust/impl/time/mod.rs",
+  # xxx : check
   "/Cargo.toml",
   "/Readme.md",
   "/License",
 ]
+# rustdoc-args = []
 
 [lib]
 name = "wtools"
@@ -35,36 +42,335 @@ path = "rust/impl/wtools_lib.rs"
 
 [[test]]
 name = "wtools_test"
-path = "rust/test/wtools_lib_test.rs"
+path = "rust/test/wtools_tests.rs"
+
+[[test]]
+name = "wtools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "wtools_trivial"
-path = "sample/rust/wtools_trivial/src/main.rs"
+name = "wtools_trivial_sample"
+path = "sample/rust/wtools_trivial_sample/src/main.rs"
 
 [features]
-in_wtools = [] # qqq : for Dima : feature still here?
-nightly = [ "typing_tools/nightly" ]
-default = [ "in_wtools" ]
 
-[package.metadata.docs.rs]
-all-features = true
-# rustdoc-args = []
+# iter
+
+iter = [ "iter_tools" ]
+iter_default = [
+  "iter",
+  "iter_use_std",
+  "iter_tools/default"
+]
+iter_full = [
+  "iter",
+  "iter_use_std",
+  "iter_use_alloc",
+]
+iter_use_std = [ "iter", "iter_tools/use_std" ]
+iter_use_alloc = [ "iter", "iter_tools/use_alloc" ]
+
+# meta
+
+meta = [ "meta_tools" ]
+meta_default = [
+  "meta",
+  "meta_for_each",
+  "meta_impls_index",
+  "meta_mod_interface",
+  "meta_former",
+  "meta_options",
+  "meta_collection_make",
+]
+meta_full = [
+  "meta",
+  "meta_for_each",
+  "meta_impls_index",
+  "meta_mod_interface",
+  "meta_former",
+  "meta_options",
+  "meta_collection_make",
+]
+meta_for_each = [ "meta", "meta_tools/for_each" ]
+meta_impls_index = [ "meta", "meta_tools/impls_index" ]
+meta_mod_interface = [ "meta", "meta_tools/mod_interface" ]
+meta_collection_make = [ "meta", "meta_tools/collection_make" ]
+meta_former = [ "meta", "meta_tools/former" ]
+meta_options = [ "meta", "meta_tools/options" ]
+
+# typing
+
+typing = [ "typing_tools" ]
+typing_default = [
+  "typing",
+  "typing_inspect_type",
+  "typing_is_slice",
+  "typing_implements",
+]
+typing_full = [
+  "typing",
+  "typing_inspect_type",
+  "typing_is_slice",
+  "typing_implements",
+]
+typing_nightly = [ "typing", "nightly", "typing_tools/nightly", ]
+typing_inspect_type = [ "typing", "typing_tools/inspect_type" ]
+typing_is_slice = [ "typing", "typing_tools/is_slice" ]
+typing_implements = [ "typing", "typing_tools/implements" ]
+
+# time
+
+time = [ "time_tools" ]
+time_default = [
+  "time",
+  "time_now",
+]
+time_full = [
+  "time",
+  "time_now",
+]
+time_now = [ "time", "time_tools/now" ]
+
+# string
+
+string = [ "wstring_tools" ]
+string_indentation = [ "string", "wstring_tools/indentation", "wstring_tools/use_std" ]
+string_parse = [ "string", "wstring_tools/parse", "wstring_tools/use_std" ]
+string_split = [ "string", "wstring_tools/split", "wstring_tools/use_std" ]
+string_default = [
+  "string",
+  "string_indentation",
+  "string_parse",
+  "string_split",
+]
+string_full = [
+  "string",
+  "string_indentation",
+  "string_parse",
+  "string_split",
+]
+
+# error
+
+error = [ "werror" ]
+error_default = [ "error", 'werror/use_std' ]
+error_full = [ "error", 'werror/use_std' ]
+
+# derive
+
+derive = [ "derive_tools" ]
+derive_full = [
+
+  "derive",
+  # "derive_nightly",
+
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_display",
+  "derive_from_str",
+
+]
+derive_default = [
+
+  "derive",
+  # "derive_nightly",
+
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_display",
+  "derive_from_str",
+
+  # "derive_from_str",
+  # "derive_from_str_std",
+  # "derive_from_str_regex",
+  # "derive_from_str_once_cell",
+
+]
+
+derive_nightly = [ "derive", "nightly", "derive_tools/nightly" ]
+derive_enable_track_caller = [ "derive", "derive_tools/enable_track_caller" ]
+
+derive_add_assign = [ "derive", "derive_tools/derive_add_assign" ]
+derive_add = [ "derive", "derive_tools/derive_add" ]
+derive_as_mut = [ "derive", "derive_tools/derive_as_mut" ]
+derive_as_ref = [ "derive", "derive_tools/derive_as_ref" ]
+derive_constructor = [ "derive", "derive_tools/derive_constructor" ]
+derive_deref = [ "derive", "derive_tools/derive_deref" ]
+derive_deref_mut = [ "derive", "derive_tools/derive_deref_mut" ]
+derive_error = [ "derive", "derive_tools/derive_error" ]
+derive_from = [ "derive", "derive_tools/derive_from" ]
+derive_index = [ "derive", "derive_tools/derive_index" ]
+derive_index_mut = [ "derive", "derive_tools/derive_index_mut" ]
+derive_into = [ "derive", "derive_tools/derive_into" ]
+derive_into_iterator = [ "derive", "derive_tools/derive_into_iterator" ]
+derive_iterator = [ "derive", "derive_tools/derive_iterator" ]
+derive_mul_assign = [ "derive", "derive_tools/derive_mul_assign" ]
+derive_mul = [ "derive", "derive_tools/derive_mul" ]
+derive_not = [ "derive", "derive_tools/derive_not" ]
+derive_sum = [ "derive", "derive_tools/derive_sum" ]
+derive_try_into = [ "derive", "derive_tools/derive_try_into" ]
+derive_is_variant = [ "derive", "derive_tools/derive_is_variant" ]
+derive_unwrap = [ "derive", "derive_tools/derive_unwrap" ]
+derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
+
+derive_display = [ "derive", "derive_tools/derive_display", "parse-display" ]
+derive_from_str = [ "derive", "derive_tools/derive_from_str", "parse-display" ]
+# derive_from_str_std = [ "derive", "parse-display/std" ]
+# derive_from_str_regex = [ "derive", "parse-display/regex", "parse-display/once_cell" ]
+# derive_from_str_once_cell = [ "derive", "parse-display/once_cell" ]
+
+# dt
+
+dt = [ "data_type" ]
+dt_default = [
+  "dt",
+  "data_type/default",
+  "dt_either",
+  "dt_type_constructor",
+  "dt_make",
+  "dt_vectorized_from",
+  "dt_interval",
+]
+dt_full = [
+  "dt",
+  "data_type/full",
+  "dt_either",
+  "dt_type_constructor",
+  "dt_make",
+  "dt_vectorized_from",
+  "dt_interval",
+]
+dt_either = [ "dt", "data_type/either" ]
+dt_type_constructor = [ "dt", "data_type/type_constructor" ]
+dt_make = [ "dt", "data_type/make" ]
+dt_vectorized_from = [ "dt", "data_type/vectorized_from" ]
+dt_interval = [ "dt", "data_type/interval" ]
+
+# diagnostics
+
+diagnostics = [ "diagnostics_tools" ]
+diagnostics_full = [
+  "diagnostics",
+  "diagnostics_runtime_assertions",
+  "diagnostics_compiletime_assertions",
+]
+diagnostics_default = [
+  "diagnostics",
+  "diagnostics_tools/default",
+  "diagnostics_runtime_assertions",
+  "diagnostics_compiletime_assertions",
+]
+diagnostics_runtime_assertions = [ "diagnostics_tools/runtime_assertions" ]
+diagnostics_compiletime_assertions = [ "diagnostics_tools/compiletime_assertions" ]
+
+# must be empty
+nightly = []
+
+use_std = []
+use_alloc = []
+
+full = [
+  "iter_full",
+  "meta_full",
+  "typing_full",
+  "time_full",
+  "string_full",
+  "error_full",
+  "derive_full",
+  "dt_full",
+  "diagnostics_full",
+  "use_std",
+  # "use_alloc",
+]
+
+default = [
+  "iter_default",
+  "meta_default",
+  "typing_default",
+  "time_default",
+  "string_default",
+  "error_default",
+  "derive_default",
+  "dt_default",
+  "diagnostics_default",
+  "use_std",
+]
 
 [dependencies]
-former = { version = "~0.1", path = "../../rust/former" }
-woptions = { version = "~0.1", path = "../../rust/woptions" }
-meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
-time_tools = { version = "~0.1", path = "../../rust/time_tools" }
-wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
-werror = { version = "~0.1", path = "../../rust/werror" }
-winterval = { version = "~0.1", path = "../../rust/winterval" }
-derive_tools = { version = "~0.1", path = "../../rust/derive_tools" }
-# parse-display = { version = "~0.5" } # xxx : add test? # xxx : move
+
+# iter
+iter_tools = { version = "~0.1", path = "../../rust/iter_tools", optional = true, default-features = false }
+
+# meta
+meta_tools = { version = "~0.2", path = "../../rust/meta_tools", optional = true, default-features = false }
+impls_index = { version = "~0.1", path = "../../rust/impls_index" }
+# despite impls_index is imported by meta_tools it should also be imported immediatly
+
+# typing
+typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = true, default-features = false }
+
+# time
+time_tools = { version = "~0.1", path = "../../rust/time_tools", optional = true, default-features = false }
+
+# sting
+wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools", optional = true, default-features = false }
+
+# err
+werror = { version = "~0.1", path = "../../rust/werror", optional = true, default-features = false }
+
+# derive
+derive_tools = { version = "~0.1", path = "../../rust/derive_tools", optional = true, default-features = false }
+parse-display = { version = "~0.5", optional = true, default-features = false }
+# have to be here because of problem with FromStr
+
+# data_type
+data_type = { version = "~0.1", path = "../../rust/data_type", optional = true, default-features = false }
+
+# diagnostics
+diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", optional = true }
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
-# trybuild = { version = "~1.0", features = [ "diff" ] }
-# anyhow = "~1.0"
-rustversion = "~1.0"
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }
 

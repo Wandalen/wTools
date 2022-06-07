@@ -1,14 +1,13 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
-
+///
 /// Alias for std::error::Error.
+///
 
 pub use std::error::Error as ErrorAdapter;
 
 ///
 /// Macro to generate error.
 ///
-/// # Sample
+/// ### Sample
 /// ```
 /// # use werror::*;
 /// err!( "No attr" );
@@ -54,7 +53,7 @@ impl Error
 
 impl core::fmt::Display for Error
 {
-  fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result
+  fn fmt(&self, f: &mut core::fmt::Formatter< '_ >) -> core::fmt::Result
   {
     write!( f, "{}", self.msg )
   }

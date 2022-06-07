@@ -1,0 +1,8 @@
+[package]
+name = "wtest_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+wtest = { version = "*", path = "../../../module/move/wtest" }

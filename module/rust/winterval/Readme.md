@@ -1,17 +1,21 @@
-# module::winterval
+# Module :: winterval
+[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModulewIntervalPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModulewIntervalPush.yml) [![docs.rs](https://img.shields.io/docsrs/winterval?color=e3e8f0&logo=docs.rs)](https://docs.rs/winterval) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
 Interval adapter for both open/closed implementations of intervals ( ranges ).
 
 ### Sample
 
 ```rust
-use winterval::*;
+#[ cfg( feature = "use_std" ) ]
+{
+  use winterval::*;
 
-let src = 2..5;
-assert_eq!( src.closed(), ( 2, 4 ) );
+  let src = 2..5;
+  assert_eq!( src.closed(), ( 2, 4 ) );
 
-let src = 2..=4;
-assert_eq!( src.closed(), ( 2, 4 ) );
+  let src = 2..=4;
+  assert_eq!( src.closed(), ( 2, 4 ) );
+}
 ```
 
 ### To add to your project

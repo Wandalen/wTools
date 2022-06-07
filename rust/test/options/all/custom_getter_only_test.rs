@@ -1,37 +1,36 @@
 
-use wtest_basic::dependencies::*;
+use test_tools::*;
 
 //
 
-fn basic() -> anyhow::Result< () >
+tests_impls!
 {
-
-  // test.case( "basic" );
-
-  let got = split().src( "abc" ).delimeter( "b" ).left( true ).form();
-  let exp = split::Options
+  #[ test ]
+  fn basic()
   {
-    src : "abc",
-    delimeter : "b",
-    left : true,
-  };
-  assert_eq!( got, exp );
+    // test.case( "basic" );
 
-  use split::OptionsAdapter;
-  assert_eq!( *got.left(), false );
+    let got = split().src( "abc" ).delimeter( "b" ).left( true ).form();
+    let exp = split::Options
+    {
+      src : "abc",
+      delimeter : "b",
+      left : true,
+    };
+    a_id!( got, exp );
 
-  // xxx : uncoment later
-  // let exp = vec![ "c", "a" ];
-  // assert_eq!( got.perform().map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
+    use split::OptionsAdapter;
+    a_id!( *got.left(), false );
 
-  Ok( () )
+    // zzz : uncoment later
+    // let exp = vec![ "c", "a" ];
+    // a_id!( got.perform().map( | e | String::from( e ) ).collect::< Vec< _ > >(), exp );
+  }
 }
 
 //
 
-#[ test ]
-fn main_test() -> anyhow::Result< () >
+tests_index!
 {
-  basic()?;
-  Ok( () )
+  basic,
 }

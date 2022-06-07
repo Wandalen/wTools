@@ -1,3 +1,6 @@
+#[ allow( unused_imports ) ]
+use super::*;
+// use TheModule::*;
 
 #[derive( Debug, PartialEq )]
 pub struct Struct1

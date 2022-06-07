@@ -1,47 +1,88 @@
 
-use wtest_basic::*;
-
-// xxx qqq : removoe the feature?
-#[cfg( feature = "in_wtools" )]
-use wtools::derive as TheModule;
-#[cfg( not( feature = "in_wtools" ) )]
-use derive_tools as TheModule;
+// use test_tools::*;
+#[ allow( unused_imports ) ]
+use super::*;
 
 //
 
-fn _basic()
+tests_impls!
 {
-  use TheModule::*;
 
-  #[ derive( From, Into, Display ) ]
-  #[ display( "{a}-{b}" ) ]
-  struct Struct1
+  #[ cfg( all( feature = "derive_from", feature = "derive_into", feature = "derive_display", feature = "derive_from_str" ) ) ]
+  #[ test ]
+  fn samples()
   {
-    a : i32,
-    b : i32,
+    use TheModule::*;
+
+    #[ derive( From, Into, Display, FromStr, PartialEq, Debug ) ]
+    #[ display( "{a}-{b}" ) ]
+    struct Struct1
+    {
+      a : i32,
+      b : i32,
+    }
+
+    // derived Into
+    let src = Struct1 { a : 1, b : 3 };
+    let got : ( i32, i32 ) = src.into();
+    let exp = ( 1, 3 );
+    assert_eq!( got, exp );
+
+    // derived Display
+    let src = Struct1 { a : 1, b : 3 };
+    let got = format!( "{}", src );
+    let exp = "1-3";
+    println!( "{}", got );
+    assert_eq!( got, exp );
+
+    // derived FromStr
+    use std::str::FromStr;
+    let src = Struct1::from_str( "1-3" );
+    let exp = Ok( Struct1 { a : 1, b : 3 } );
+    assert_eq!( src, exp );
+
   }
 
-  let src = Struct1 { a : 1, b : 3 };
-  let got : ( i32, i32 ) = src.into();
-  let exp = ( 1, 3 );
-  assert_eq!( got, exp );
+  //
 
-  // let src = Struct1 { a : 1, b : 3 };
-  // let got : [ i32 ; 2 ] = src.into();
-  // let exp = ( 1, 3 );
-  // assert_eq!( got, exp );
-  /* zzz : make it working */
+  #[ cfg( all( feature = "derive_from", feature = "derive_into", feature = "derive_display" ) ) ]
+  #[ test ]
+  fn basic()
+  {
+    use TheModule::*;
 
-  let src = Struct1 { a : 1, b : 3 };
-  let got = format!( "{}", src );
-  let exp = "1-3";
-  assert_eq!( got, exp );
+    #[ derive( From, Into, Display ) ]
+    #[ display( "{a}-{b}" ) ]
+    struct Struct1
+    {
+      a : i32,
+      b : i32,
+    }
+
+    let src = Struct1 { a : 1, b : 3 };
+    let got : ( i32, i32 ) = src.into();
+    let exp = ( 1, 3 );
+    a_id!( got, exp );
+
+    // let src = Struct1 { a : 1, b : 3 };
+    // let got : [ i32 ; 2 ] = src.into();
+    // let exp = ( 1, 3 );
+    // a_id!( got, exp );
+    /* zzz : make it working */
+
+    let src = Struct1 { a : 1, b : 3 };
+    let got = format!( "{}", src );
+    let exp = "1-3";
+    a_id!( got, exp );
+
+  }
 
 }
 
 //
 
-test_suite!
+tests_index!
 {
+  samples,
   basic,
 }

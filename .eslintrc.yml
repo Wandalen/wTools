@@ -178,7 +178,7 @@ rules :
   no-empty-function : off
   no-eq-null : error
   no-eval : error
-  no-extend-foreign : error
+  no-extend-native : error
   no-extra-bind : error
   no-extra-label : error
   no-extra-parens :
@@ -216,7 +216,7 @@ rules :
         ImportDeclaration : true
   no-multi-str : error
   no-multiple-empty-lines : error
-  no-foreign-reassign : error
+  no-native-reassign : error
   no-negated-condition : error
   no-negated-in-lhs : error
   no-nested-ternary : error

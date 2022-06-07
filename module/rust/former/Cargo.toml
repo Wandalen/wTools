@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "0.1.8"
+version = "0.1.11"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,6 +18,9 @@ Former - variation of builder pattern.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/former/front",
   "/Cargo.toml",
@@ -25,26 +28,32 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+full = []
+
 [lib]
 name = "former"
-path = "rust/impl/former/front/lib.rs"
+path = "rust/impl/former/front/former_lib.rs"
 
 [[test]]
 name = "former_test"
-path = "rust/test/former/front_test.rs"
+path = "rust/test/former/former_front_tests.rs"
+
+[[test]]
+name = "former_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "former_trivial"
-path = "sample/rust/former_trivial/src/main.rs"
+name = "former_trivial_sample"
+path = "sample/rust/former_trivial_sample/src/main.rs"
 
 [dependencies]
 former_meta = { version = "~0.1", path = "../../rust/former_meta" }
 former_runtime = { version = "~0.1", path = "../../rust/former_runtime" }
 
 [dev-dependencies]
-anyhow = "~1.0"
-meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# maplit = "~1.0"
-trybuild = { version = "~1.0", features = [ "diff" ] }
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
-rustversion = "~1.0"
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+# meta_tools_min = { version = "~0.2", path = "../../rust/meta_tools_min" }

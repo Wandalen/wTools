@@ -1,0 +1,17 @@
+name : diagnostics_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # diagnostics_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/rust/diagnostics_tools/Cargo.toml'
+      module_name : 'diagnostics_tools'
+      commit_message : ${{ github.event.head_commit.message }}

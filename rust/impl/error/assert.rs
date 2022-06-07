@@ -1,11 +1,8 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
-
 ///
 /// Macro asserts that two expressions are identical to each other. Unlike std::assert_eq it is removed from a release build.
 ///
 
-#[macro_export]
+#[ macro_export ]
 macro_rules! debug_assert_id
 {
   ( $( $arg : tt )+ ) =>
@@ -59,7 +56,7 @@ macro_rules! debug_assert_id
 
 /// Macro asserts that two expressions are identical to each other. Unlike std::assert_eq it is removed from a release build. Alias of debug_assert_id.
 
-#[macro_export]
+#[ macro_export ]
 macro_rules! debug_assert_identical
 {
   ( $( $arg : tt )+ ) =>
@@ -71,7 +68,7 @@ macro_rules! debug_assert_identical
 
 /// Macro asserts that two expressions are not identical to each other. Unlike std::assert_eq it is removed from a release build.
 
-#[macro_export]
+#[ macro_export ]
 macro_rules! debug_assert_ni
 {
   ( $( $arg : tt )+ ) =>
@@ -83,7 +80,7 @@ macro_rules! debug_assert_ni
 
 /// Macro asserts that two expressions are not identical to each other. Unlike std::assert_eq it is removed from a release build.
 
-#[macro_export]
+#[ macro_export ]
 macro_rules! debug_assert_not_identical
 {
   ( $( $arg : tt )+ ) =>
@@ -95,7 +92,7 @@ macro_rules! debug_assert_not_identical
 
 // /// Macro asserts that expression is ture. Unlike std::assert it is removed from a release build.
 //
-// #[macro_export]
+// #[ macro_export ]
 // macro_rules! debug_assert
 // {
 //   ( $( $arg : tt )+ ) =>

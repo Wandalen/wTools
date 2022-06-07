@@ -161,7 +161,7 @@ function _production_functor( command )
     function environmentsGet()
     {
       /* object process.env is not an auxiliary element ( new implemented check ) */
-      return __.filter_( null, __.props.extend( null, process.env ), ( element, key ) => /* xxx */
+      return __.filter_( null, __.props.extend( null, process.env ), ( element, key ) =>
       {
         if( __.strBegins( key, 'PRIVATE_' ) )
         return;

@@ -1,13 +1,10 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
-
 //!
 //! Work with crate on `crates.io`.
 //!
 
 use ureq::Agent;
 use std::time::Duration;
-use std::fmt::Write;
+use core::fmt::Write;
 use std::io::Read;
 
 ///

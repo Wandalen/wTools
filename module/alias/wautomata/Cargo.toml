@@ -1,0 +1,58 @@
+[package]
+name = "wautomata"
+version = "0.1.2"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/wautomata"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wautomata"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wautomata"
+description = """
+Implementation of automata.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/graph/wautomata_lib.rs",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
+
+[lib]
+name = "wautomata"
+path = "rust/impl/graph/wautomata_lib.rs"
+
+[[test]]
+name = "wautomata_test"
+path = "rust/test/graph/wautomata_tests.rs"
+
+[[test]]
+name = "wautomata_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
+# [[example]]
+# name = "wautomata_trivial_sample"
+# path = "sample/rust/wautomata_trivial_sample/src/main.rs"
+
+[dependencies]
+automata_tools = { version = "~0.1", path = "../../move/automata_tools", features = [ "full" ] }
+
+[dev-dependencies]
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+wtools = { version = "~0.2", path = "../../rust/wtools", features = [ "full" ] }
+

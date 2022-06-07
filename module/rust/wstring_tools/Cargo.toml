@@ -1,6 +1,6 @@
 [package]
 name = "wstring_tools"
-version = "0.1.0"
+version = "0.1.3"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,6 +18,9 @@ String tools.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/string",
   "/Cargo.toml",
@@ -25,24 +28,37 @@ include = [
   "/License",
 ]
 
+[features]
+indentation = []
+parse  = [ "split" ]
+split = []
+use_std = []
+use_alloc = []
+default = [ "indentation", "parse", "split", "use_std" ]
+full = [ "indentation", "parse", "split", "use_alloc" ]
+
 [lib]
 name = "wstring_tools"
 path = "rust/impl/string/wstring_tools_lib.rs"
 
 [[test]]
 name = "string_test"
-path = "rust/test/string/test.rs"
+path = "rust/test/string/wstring_tools_tests.rs"
+
+[[test]]
+name = "string_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "wstring_tools_trivial"
-path = "sample/rust/wstring_tools_trivial/src/main.rs"
-# xxx # aaa : done
+name = "wstring_tools_trivial_sample"
+path = "sample/rust/wstring_tools_trivial_sample/src/main.rs"
+# zzz : check
 
 [dependencies]
 former = { version = "~0.1", path = "../../rust/former" }
-woptions = { version = "~0.1", path = "../../rust/woptions" }
+# woptions = { version = "~0.1", path = "../../rust/woptions" }
 # wtools = { version = "~0.2", path = "../../rust/wtools" }
 # werror = { version = "~0.1", path = "../../rust/werror" }
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

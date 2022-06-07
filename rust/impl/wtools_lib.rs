@@ -1,187 +1,155 @@
-#![ warn( missing_docs ) ]
+#![ cfg_attr( not( feature = "use_std"), no_std ) ] // zzz
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico")]
+#![ doc( html_root_url = "https://docs.rs/wtools/latest/wtools/")]
+#![ warn( rust_2018_idioms ) ]
 #![ warn( missing_debug_implementations ) ]
-// #![ feature( concat_idents ) ]
+#![ warn( missing_docs ) ]
+
+// #![ feature( type_name_of_val ) ]
+// #![ feature( trace_macros ) ]
 
 //!
 //! wTools - Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 //!
-//! # Sample
-//! ```
-//! use wtools::*;
-//!
-//! fn main()
-//! {
-//!   println!( "implements!( 13_i32 => Copy ) : {}", implements!( 13_i32 => Copy ) );
-//!   println!( "implements!( Box::new( 13_i32 ) => Copy ) : {}", implements!( Box::new( 13_i32 ) => Copy ) );
-//! }
-//! ```
 
-///
-/// Meta tools.
-///
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-pub mod meta;
-pub use meta::*;
+/* zzz : register error_tools */
+/* zzz : alias werror -> error_tools  */
+/* zzz : register text_tools as alias for wstring */
 
-///
-/// Type checking tools.
-///
+/* zzz : implement module::mod_at */
+/* zzz : implement and publish mod_expose */
 
-pub mod typing;
-pub use typing::*;
+/* zzz : use skeptic? */
+/* zzz : rename dt -> adt */
 
-// ///
-// /// Exporting/importing serialize/deserialize encoding/decoding macros, algorithms and structures for that.
-// ///
-//
-// pub mod convert;
-// pub use convert::*;
-
-///
-/// Collection of general purpose time tools.
-///
-
-pub mod time;
-
-//
-
-pub use werror as error;
-
-// #[ cfg( feature = "with_proc_macro" ) ]
-// pub use proc_macro_tools as proc_macro;
-
-pub use former as former;
-pub use woptions as options;
-pub use winterval as interval;
-pub use wstring_tools as string;
-pub use derive_tools as derive;
-
-///
-/// Prelude to use: `use wtools::prelude::*`.
-///
-
-pub mod prelude
-{
-  pub use super::*;
-}
-
-///
 /// Dependencies.
-///
-
 pub mod dependencies
 {
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  pub use ::meta_tools::former;
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  pub use ::meta_tools::options;
 
-  pub use ::former;
-  pub use ::woptions;
+  #[ cfg( feature = "meta" ) ]
   pub use ::meta_tools;
+  // #[ cfg( feature = "impls_index" ) ]
+  // pub use ::impls_index;
+  // #[ cfg( feature = "mod_interface" ) ]
+  // pub use ::mod_interface;
+  #[ cfg( feature = "typing" ) ]
   pub use ::typing_tools;
+  #[ cfg( feature = "time" ) ]
   pub use ::time_tools;
+  #[ cfg( feature = "string" ) ]
   pub use ::wstring_tools;
+  #[ cfg( feature = "error" ) ]
   pub use ::werror;
-  pub use ::winterval;
+  // #[ cfg( feature = "winterval" ) ]
+  // pub use ::winterval;
+  #[ cfg( feature = "derive" ) ]
   pub use ::derive_tools;
-
-  // pub use ::parse_display; /* xxx : move to stringing */
-
-  // #[ cfg( debug_assertions ) ]
-  // pub use ::wtest_basic;
+  #[ cfg( feature = "diagnostics" ) ]
+  pub use ::diagnostics_tools;
 
 }
 
-// xxx : try to use instead of feature::nightly
-// #![cfg_attr(feature = "nightly", feature(unsize))]
+/// Protected namespace of the module.
+pub mod protected
+{
+  pub use super::orphan::*;
 
-// /// Internal namespace.
-// pub mod internal
-// {
-//
-//   /// X2 Vector of cgmath
-//   pub type X2< Scalar > = cgmath::Vector2< Scalar >;
-//
-// }
-//
-// /// Trait to interpret math data structures of other math libs as their analogs in cgmath to use operations of cgmath.
-// pub mod as_native;
-// #[
-//   cfg( all
-//   (
-//     not( feature = "nalgebra_ops" ),
-//     not( all( feature = "default_ops", feature = "nalgebra" ) ),
-//     any( feature = "default_ops", feature = "cgmath_ops" ),
-//   ))
-// ]
-// /// Use cgmath's operations.
-// pub mod ops;
-// /// Implement interfaces for objects of the math library.
-// pub mod x2;
-//
-// /// Own namespace of the module.
-// pub mod own
-// {
-//   pub use super::exposed::*;
-//   use super::internal as i;
-//   pub use i::X2;
-// }
-//
-// pub use own::*;
-//
-// /// Exposed namespace of the module.
-// pub mod exposed
-// {
-//   pub use super::prelude::*;
-//   pub use super::as_native::exposed::*;
-//   #[
-//     cfg( all
-//     (
-//       not( feature = "nalgebra_ops" ),
-//       not( all( feature = "default_ops", feature = "nalgebra" ) ),
-//       any( feature = "default_ops", feature = "cgmath_ops" ),
-//     ))
-//   ]
-//   pub use super::ops::exposed::*;
-//   pub use super::x2::exposed::*;
-// }
-//
-// pub use exposed::*;
-//
-// /// Prelude to use: `use wtools::prelude::*`.
-// pub mod prelude
-// {
-//   pub use super::as_native::prelude::*;
-//   #[
-//     cfg( all
-//     (
-//       not( feature = "nalgebra_ops" ),
-//       not( all( feature = "default_ops", feature = "nalgebra" ) ),
-//       any( feature = "default_ops", feature = "cgmath_ops" ),
-//     ))
-//   ]
-//   pub use super::ops::prelude::*;
-//   pub use super::x2::prelude::*;
-// }
-//
-// /* zzz : implement macro mod_adopt? */
-// mod_adopt!
-// {
-//
-//   /// Trait to interpret math data structures of other math libs as their analogs in cgmath to use operations of cgmath.
-//   mod as_native;
-//
-//   #[
-//     cfg( all
-//     (
-//       not( feature = "nalgebra_ops" ),
-//       not( all( feature = "default_ops", feature = "nalgebra" ) ),
-//       any( feature = "default_ops", feature = "cgmath_ops" ),
-//     ))
-//   ]
-//   /// Use cgmath's operations.
-//   mod ops;
-//
-//   /// Implement interfaces for objects of the math library.
-//   mod x2;
-//
-//   own X2;
-//
-// }
+  #[ cfg( feature = "iter" ) ]
+  pub use ::iter_tools as iter;
+  #[ cfg( feature = "meta" ) ]
+  pub use ::meta_tools as meta;
+  #[ cfg( feature = "typing" ) ]
+  pub use ::typing_tools as typing;
+  #[ cfg( feature = "diagnostics" ) ]
+  pub use ::diagnostics_tools as diagnostics;
+  #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
+  pub use ::data_type as dt;
+  #[ cfg( feature = "time" ) ]
+  pub use ::time_tools as time;
+  #[ cfg( feature = "error" ) ]
+  pub use ::werror as error;
+  #[ cfg( feature = "string" ) ]
+  pub use ::wstring_tools as string;
+  #[ cfg( feature = "derive" ) ]
+  pub use ::derive_tools as derive;
+
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  pub use ::meta_tools::former as former;
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  pub use ::meta_tools::options as options;
+
+}
+
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  pub use super::prelude::*;
+  #[ cfg( feature = "iter" ) ]
+  pub use super::iter::exposed::*;
+  #[ cfg( feature = "meta" ) ]
+  pub use super::meta::exposed::*;
+  #[ cfg( feature = "typing" ) ]
+  pub use super::typing::exposed::*;
+  #[ cfg( feature = "diagnostics" ) ]
+  pub use super::diagnostics::exposed::*;
+  #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
+  pub use super::dt::exposed::*;
+  #[ cfg( feature = "time" ) ]
+  pub use super::time::exposed::*;
+  #[ cfg( feature = "error" ) ]
+  pub use super::error::exposed::*;
+  #[ cfg( feature = "string" ) ]
+  pub use super::string::exposed::*;
+  #[ cfg( feature = "derive" ) ]
+  pub use super::derive::exposed::*;
+
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  pub use super::former::exposed::*;
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  pub use super::options::exposed::*;
+
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+pub mod prelude
+{
+  #[ cfg( feature = "iter" ) ]
+  pub use super::iter::prelude::*;
+  #[ cfg( feature = "meta" ) ]
+  pub use super::meta::prelude::*;
+  #[ cfg( feature = "typing" ) ]
+  pub use super::typing::prelude::*;
+  #[ cfg( feature = "diagnostics" ) ]
+  pub use super::diagnostics::prelude::*;
+  #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
+  pub use super::dt::prelude::*;
+  #[ cfg( feature = "time" ) ]
+  pub use super::time::prelude::*;
+  #[ cfg( feature = "error" ) ]
+  pub use super::error::prelude::*;
+  #[ cfg( feature = "string" ) ]
+  pub use super::string::prelude::*;
+  #[ cfg( feature = "derive" ) ]
+  pub use super::derive::prelude::*;
+
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  pub use super::former::prelude::*;
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  pub use super::options::prelude::*;
+
+}

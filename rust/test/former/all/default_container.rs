@@ -1,15 +1,23 @@
+#[ allow( unused_imports ) ]
+use super::*;
+#[ allow( unused_imports ) ]
+use test_tools::*;
 
-use wtest_basic::dependencies::*;
+only_for_wtools!
+{
+  #[ allow( unused_imports ) ]
+  use wtools::meta::*;
+  #[ allow( unused_imports ) ]
+  use wtools::former::Former;
+}
 
-#[cfg( feature = "in_wtools" )]
-use wtools::meta::*;
-#[cfg( not( feature = "in_wtools" ) )]
-use meta_tools::*;
-
-#[cfg( feature = "in_wtools" )]
-use wtools::former::Former;
-#[cfg( not( feature = "in_wtools" ) )]
-use former::Former;
+only_for_local_module!
+{
+  #[ allow( unused_imports ) ]
+  use meta_tools::*;
+  #[ allow( unused_imports ) ]
+  use former::Former;
+}
 
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -36,29 +44,31 @@ pub struct Struct1
 
 //
 
-fn test_complex() -> anyhow::Result< () >
+tests_impls!
 {
-
-  let command = Struct1::former().form();
-
-  let expected = Struct1
+  #[ test ]
+  fn test_complex()
   {
-    vec_ints : vec![ 1, 2, 3 ],
-    hashmap_ints : hmap!{ 1 => 11 },
-    hashset_ints : hset!{ 11 },
-    vec_strings : vec![ "abc".to_string(), "def".to_string() ],
-    hashmap_strings : hmap!{ "k1".to_string() => "v1".to_string() },
-    hashset_strings : hset!{ "k1".to_string() },
-  };
-  assert_eq!( command, expected );
 
-  Ok( () )
+    let command = Struct1::former().form();
+
+    let expected = Struct1
+    {
+      vec_ints : vec![ 1, 2, 3 ],
+      hashmap_ints : hmap!{ 1 => 11 },
+      hashset_ints : hset!{ 11 },
+      vec_strings : vec![ "abc".to_string(), "def".to_string() ],
+      hashmap_strings : hmap!{ "k1".to_string() => "v1".to_string() },
+      hashset_strings : hset!{ "k1".to_string() },
+    };
+    a_id!( command, expected );
+  }
 }
 
 //
 
-#[ test ]
-fn main_test()
+tests_index!
 {
-  test_complex().unwrap();
+  test_complex,
 }
+

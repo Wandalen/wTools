@@ -1,0 +1,51 @@
+[package]
+name = "mod_interface_runtime"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/mod_interface_runtime"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/mod_interface_runtime"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/mod_interface_runtime"
+description = """
+Protocol of modularity unifying interface of a module.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+# xxx : unify structure with other procedural macroses
+include = [
+  "/rust/impl/meta/mod_interface_runtime_lib.rs",
+  "/rust/impl/meta/mod_interface/runtime",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+
+[lib]
+name = "mod_interface_runtime"
+path = "rust/impl/meta/mod_interface/runtime/mod_interface_runtime_lib.rs"
+
+[[test]]
+name = "mod_interface_runtime_test"
+path = "rust/test/meta/mod_interface_runtime_tests.rs"
+
+[dependencies]
+
+[dev-dependencies]
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
+# maplit = "~1.0.2"
+# anyhow = "~1.0"

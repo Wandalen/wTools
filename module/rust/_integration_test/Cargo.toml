@@ -1,0 +1,130 @@
+[package]
+
+name = "integration_test"
+version = "0.0.1"
+publish = false
+edition = "2021"
+description = """
+Integration test.
+"""
+
+[[bin]]
+name = "integration_test"
+path = "rust/test/_integration_test/smoke_entry.rs"
+
+[[test]]
+name = "integration_test"
+path = "rust/test/_integration_test/integration_tests.rs"
+
+[dependencies]
+
+wtools_local = { version = "*", path = "../../rust/wtools", package = "wtools" }
+wtools_published = { version = "*", package = "wtools" }
+data_type_local = { version = "*", path = "../../rust/data_type", package = "data_type" }
+data_type_published = { version = "*", package = "data_type" }
+derive_tools_local = { version = "*", path = "../../rust/derive_tools", package = "derive_tools" }
+derive_tools_published = { version = "*", package = "derive_tools" }
+diagnostics_tools_local = { version = "*", path = "../../rust/diagnostics_tools", package = "diagnostics_tools" }
+diagnostics_tools_published = { version = "*", package = "diagnostics_tools" }
+for_each_local = { version = "*", path = "../../rust/for_each", package = "for_each" }
+for_each_published = { version = "*", package = "for_each" }
+former_local = { version = "*", path = "../../rust/former", package = "former" }
+former_published = { version = "*", package = "former" }
+former_meta_local = { version = "*", path = "../../rust/former_meta", package = "former_meta" }
+former_meta_published = { version = "*", package = "former_meta" }
+former_runtime_local = { version = "*", path = "../../rust/former_runtime", package = "former_runtime" }
+former_runtime_published = { version = "*", package = "former_runtime" }
+implements_local = { version = "*", path = "../../rust/implements", package = "implements" }
+implements_published = { version = "*", package = "implements" }
+impls_index_local = { version = "*", path = "../../rust/impls_index", package = "impls_index" }
+impls_index_published = { version = "*", package = "impls_index" }
+impls_index_meta_local = { version = "*", path = "../../rust/impls_index_meta", package = "impls_index_meta" }
+impls_index_meta_published = { version = "*", package = "impls_index_meta" }
+inspect_type_local = { version = "*", path = "../../rust/inspect_type", package = "inspect_type" }
+inspect_type_published = { version = "*", package = "inspect_type" }
+is_slice_local = { version = "*", path = "../../rust/is_slice", package = "is_slice" }
+is_slice_published = { version = "*", package = "is_slice" }
+iter_tools_local = { version = "*", path = "../../rust/iter_tools", package = "iter_tools" }
+iter_tools_published = { version = "*", package = "iter_tools" }
+meta_tools_local = { version = "*", path = "../../rust/meta_tools", package = "meta_tools" }
+meta_tools_published = { version = "*", package = "meta_tools" }
+meta_tools_min_local = { version = "*", path = "../../rust/meta_tools_min", package = "meta_tools_min" }
+meta_tools_min_published = { version = "*", package = "meta_tools_min" }
+mod_interface_local = { version = "*", path = "../../rust/mod_interface", package = "mod_interface" }
+mod_interface_published = { version = "*", package = "mod_interface" }
+mod_interface_meta_local = { version = "*", path = "../../rust/mod_interface_meta", package = "mod_interface_meta" }
+mod_interface_meta_published = { version = "*", package = "mod_interface_meta" }
+mod_interface_runtime_local = { version = "*", path = "../../rust/mod_interface_runtime", package = "mod_interface_runtime" }
+mod_interface_runtime_published = { version = "*", package = "mod_interface_runtime" }
+proc_macro_tools_local = { version = "*", path = "../../rust/proc_macro_tools", package = "proc_macro_tools" }
+proc_macro_tools_published = { version = "*", package = "proc_macro_tools" }
+test_tools_local = { version = "*", path = "../../rust/test_tools", package = "test_tools" }
+test_tools_published = { version = "*", package = "test_tools" }
+time_tools_local = { version = "*", path = "../../rust/time_tools", package = "time_tools" }
+time_tools_published = { version = "*", package = "time_tools" }
+type_constructor_local = { version = "*", path = "../../rust/type_constructor", package = "type_constructor" }
+type_constructor_published = { version = "*", package = "type_constructor" }
+typing_tools_local = { version = "*", path = "../../rust/typing_tools", package = "typing_tools" }
+typing_tools_published = { version = "*", package = "typing_tools" }
+werror_local = { version = "*", path = "../../rust/werror", package = "werror" }
+werror_published = { version = "*", package = "werror" }
+winterval_local = { version = "*", path = "../../rust/winterval", package = "winterval" }
+winterval_published = { version = "*", package = "winterval" }
+woptions_local = { version = "*", path = "../../rust/woptions", package = "woptions" }
+woptions_published = { version = "*", package = "woptions" }
+woptions_meta_local = { version = "*", path = "../../rust/woptions_meta", package = "woptions_meta" }
+woptions_meta_published = { version = "*", package = "woptions_meta" }
+woptions_runtime_local = { version = "*", path = "../../rust/woptions_runtime", package = "woptions_runtime" }
+woptions_runtime_published = { version = "*", package = "woptions_runtime" }
+wstring_tools_local = { version = "*", path = "../../rust/wstring_tools", package = "wstring_tools" }
+wstring_tools_published = { version = "*", package = "wstring_tools" }
+wtest_basic_local = { version = "*", path = "../../rust/wtest_basic", package = "wtest_basic" }
+wtest_basic_published = { version = "*", package = "wtest_basic" }
+
+fundamental_data_type_local = { version = "*", path = "../../alias/fundamental_data_type", package = "fundamental_data_type" }
+fundamental_data_type_published = { version = "*", package = "fundamental_data_type" }
+instance_of_local = { version = "*", path = "../../alias/instance_of", package = "instance_of" }
+instance_of_published = { version = "*", package = "instance_of" }
+macro_tools_local = { version = "*", path = "../../alias/macro_tools", package = "macro_tools" }
+macro_tools_published = { version = "*", package = "macro_tools" }
+non_std_local = { version = "*", path = "../../alias/non_std", package = "non_std" }
+non_std_published = { version = "*", package = "non_std" }
+std_tools_local = { version = "*", path = "../../alias/std_tools", package = "std_tools" }
+std_tools_published = { version = "*", package = "std_tools" }
+std_x_local = { version = "*", path = "../../alias/std_x", package = "std_x" }
+std_x_published = { version = "*", package = "std_x" }
+wautomata_local = { version = "*", path = "../../alias/wautomata", package = "wautomata" }
+wautomata_published = { version = "*", package = "wautomata" }
+wproc_macro_local = { version = "*", path = "../../alias/wproc_macro", package = "wproc_macro" }
+wproc_macro_published = { version = "*", package = "wproc_macro" }
+wTools_local = { version = "*", path = "../../alias/wTools", package = "wTools" }
+willbe_local = { version = "*", path = "../../move/willbe", package = "willbe" }
+willbe_published = { version = "*", package = "willbe" }
+willbe2_local = { version = "*", path = "../../alias/willbe2", package = "willbe2" }
+willbe2_published = { version = "*", package = "willbe2" }
+
+automata_tools_local = { version = "*", path = "../../move/automata_tools", package = "automata_tools" }
+automata_tools_published = { version = "*", package = "automata_tools" }
+fs_tools_local = { version = "*", path = "../../move/fs_tools", package = "fs_tools" }
+fs_tools_published = { version = "*", package = "fs_tools" }
+graphs_tools_local = { version = "*", path = "../../move/graphs_tools", package = "graphs_tools" }
+graphs_tools_published = { version = "*", package = "graphs_tools" }
+wca_local = { version = "*", path = "../../move/wca", package = "wca" }
+wca_published = { version = "*", package = "wca" }
+wcensor_local = { version = "*", path = "../../move/wcensor", package = "wcensor" }
+wcensor_published = { version = "*", package = "wcensor" }
+
+wlang_local = { version = "*", path = "../../move/wlang", package = "wlang" }
+wlang_published = { version = "*", package = "wlang" }
+wpublisher_local = { version = "*", path = "../../move/wpublisher", package = "wpublisher", optional = true }
+wpublisher_published = { version = "*", package = "wpublisher", optional = true }
+wtest_local = { version = "*", path = "../../move/wtest", package = "wtest" }
+wtest_published = { version = "*", package = "wtest" }
+
+[dev-dependencies]
+# test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+toml_edit = { version = "~0.14" }
+
+# qqq : for Dima : all modules # aaa : Dmytro : done
+# qqq : for Dima : additional test that all modules are here
+

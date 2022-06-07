@@ -1,6 +1,6 @@
 [package]
 name = "wtest_basic"
-version = "0.1.1"
+version = "0.1.6"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,6 +18,9 @@ Tools for writing tests. The most basic things.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "testing" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/test",
   "/Cargo.toml",
@@ -25,23 +28,37 @@ include = [
   "/License",
 ]
 
+[features]
+use_std = []
+use_alloc = []
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
+
 [lib]
 name = "wtest_basic"
-path = "rust/impl/test/basic_lib.rs"
+path = "rust/impl/test/wtest_basic_lib.rs"
 
 [[test]]
 name = "wtest_basic_test"
-path = "rust/test/test/wtest_basic_test.rs"
+path = "rust/test/test/wtest_basic_tests.rs"
+
+[[test]]
+name = "wtest_basic_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "wtest_basic_trivial"
-path = "sample/rust/wtest_basic_trivial/src/main.rs"
+name = "wtest_basic_trivial_sample"
+path = "sample/rust/wtest_basic_trivial_sample/src/main.rs"
 
 [dependencies]
 paste = "~1.0"
 rustversion = "~1.0"
-trybuild = { version = "~1.0", features = [ "diff" ] }
 anyhow = "~1.0"
+num-traits = "~0.2"
+trybuild = { version = "~1.0", features = [ "diff" ] }
+meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
+typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
+diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools" }
 
 [dev-dependencies]
 # rustversion = "~1.0"
