@@ -1,6 +1,5 @@
 use super::*;
-use wca::*;
-// qqq : for Dima : bad
+// qqq : for Dima : bad /* aaa : Dmytro : fixed */
 
 //
 
@@ -9,7 +8,7 @@ tests_impls!
   #[ test ]
   fn basic()
   {
-    let command = CommandOptions::default()
+    let command = wca::CommandOptions::default()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "phrase" )
@@ -18,7 +17,7 @@ tests_impls!
     .property_hint( "prop2", "hint of prop2" )
     .property_alias( "property_alias", "a1" )
     .property_alias( "property_alias", "a2" )
-    .routine( &| _i : &instruction::Instruction | { println!( "hello" ); Ok( () ) } )
+    .routine( &| _i : &wca::instruction::Instruction | { println!( "hello" ); Ok( () ) } )
     .form();
 
     dbg!( &command );
@@ -47,10 +46,10 @@ tests_impls!
   #[ test ]
   fn shortcut()
   {
-    let command = CommandOptions::default()
+    let command = wca::CommandOptions::default()
     .h( "hint2" )
     .lh( "long_hint2" )
-    .ro( &| _i : &instruction::Instruction | { println!( "hello" ); Ok( () ) } )
+    .ro( &| _i : &wca::instruction::Instruction | { println!( "hello" ); Ok( () ) } )
     .form();
 
     dbg!( &command );
@@ -66,7 +65,7 @@ tests_impls!
   #[ test ]
   fn perform_trivial()
   {
-    let command = CommandOptions::default()
+    let command = wca::CommandOptions::default()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "phrase" )
@@ -75,10 +74,10 @@ tests_impls!
     .property_hint( "prop2", "hint of prop2" )
     .property_alias( "property_alias", "a1" )
     .property_alias( "property_alias", "a2" )
-    .routine( &| _i : &instruction::Instruction | { println!( "hello" ); Ok( () ) } )
+    .routine( &| _i : &wca::instruction::Instruction | { println!( "hello" ); Ok( () ) } )
     .form();
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( "" )
     .perform();
     let perform = command.perform( &instruction );
@@ -90,23 +89,23 @@ tests_impls!
   #[ test ]
   fn perform_with_subject()
   {
-    let command = CommandOptions::default()
+    let command = wca::CommandOptions::default()
     .hint( "hint" )
     .subject_hint( "" )
-    .routine( &| _i : &instruction::Instruction | { println!( "hello" ); Ok( () ) } )
+    .routine( &| _i : &wca::instruction::Instruction | { println!( "hello" ); Ok( () ) } )
     .form();
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get subj" )
     .perform();
     let perform = command.perform( &instruction );
     assert!( perform.is_err() );
 
-    let command = CommandOptions::default()
+    let command = wca::CommandOptions::default()
     .hint( "hint" )
     .subject_hint( "subject" )
-    .routine( &| _i : &instruction::Instruction | { println!( "hello" ); Ok( () ) } )
+    .routine( &| _i : &wca::instruction::Instruction | { println!( "hello" ); Ok( () ) } )
     .form();
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get subj" )
     .perform();
     let perform = command.perform( &instruction );
@@ -118,7 +117,7 @@ tests_impls!
   #[ test ]
   fn perform_with_props()
   {
-    let command = CommandOptions::default()
+    let command = wca::CommandOptions::default()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "phrase" )
@@ -127,16 +126,16 @@ tests_impls!
     .property_hint( "prop2", "hint of prop2" )
     .property_alias( "property_alias", "a1" )
     .property_alias( "property_alias", "a2" )
-    .routine( &| _i : &instruction::Instruction | { println!( "hello" ); Ok( () ) } )
+    .routine( &| _i : &wca::instruction::Instruction | { println!( "hello" ); Ok( () ) } )
     .form();
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get subj prop1:1" )
     .perform();
     let perform = command.perform( &instruction );
     assert!( perform.is_ok() );
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get subj unknown:1" )
     .perform();
     let perform = command.perform( &instruction );

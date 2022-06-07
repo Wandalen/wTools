@@ -79,6 +79,9 @@ impl< 'a > SmokeModuleTest< 'a >
     test_path.push( test_name );
 
     /* setup config */
+    #[ cfg( target_os = "windows" ) ]
+    let local_path = if self.local_path == "" { "".to_string() } else { format!( ", path = \"{}\"", self.local_path.escape_default() ) };
+    #[ cfg( not( target_os = "windows" ) ) ]
     let local_path = if self.local_path == "" { "".to_string() } else { format!( ", path = \"{}\"", self.local_path ) };
     let dependencies_section = format!( "{} = {{ version = \"{}\"{} }}", self.dependency_name, self.version, &local_path );
     let config_data = format!
