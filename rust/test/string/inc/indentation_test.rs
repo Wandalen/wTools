@@ -6,8 +6,6 @@ use super::*;
 
 tests_impls!
 {
-
-  #[ test ]
   fn basic()
   {
     use TheModule::string::indentation;
@@ -37,7 +35,6 @@ tests_impls!
     }
 
   }
-
 }
 
 //

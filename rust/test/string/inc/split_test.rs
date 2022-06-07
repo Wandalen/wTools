@@ -5,7 +5,6 @@ use super::*;
 
 tests_impls!
 {
-  #[ test ]
   fn basic()
   {
     let src = "abc";
@@ -17,7 +16,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn basic_form_and_methods()
   {
     let src = "abc";
@@ -37,7 +35,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn split_with_option_preserving_empty()
   {
     let src = "a b c";
@@ -81,7 +78,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn split_with_option_preserving_delimeters()
   {
     let src = "a b c";
@@ -105,7 +101,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn split_with_option_stripping()
   {
     let src = "a b c";
@@ -146,7 +141,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn split_with_option_quoting()
   {
     let src = "a b c d";
@@ -308,7 +302,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn basic_split_with_vector()
   {
     let src = "abc";
