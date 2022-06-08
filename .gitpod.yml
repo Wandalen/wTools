@@ -6,8 +6,8 @@ tasks :
   - init : |
       rustup toolchain default nightly
       cd $RUN_PATH
-      cargo build
-      cargo run $RUN_POSTFIX
+      # cargo build
+      # cargo run $RUN_POSTFIX
     command : |
       code $SAMPLE_FILE
       cargo run $RUN_POSTFIX
