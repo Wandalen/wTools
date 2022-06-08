@@ -46,29 +46,93 @@ pub( crate ) mod private
   {
     fn isolate( &self ) -> ( &'a str, Option<&'a str>, &'a str )
     {
+      let times = self.times + 1;
       let result;
-      if self.left
+
+      /* */
+
+      let left_none_result = | src : &'a str | -> ( &'a str, Option<&'a str>, &'a str )
       {
-        let parts : Vec<&str> = self.src.trim().splitn( self.times.into(), self.delimeter ).collect();
-        if parts.len() == 1
+        if self.none
         {
-          result = ( parts[ 0 ], None, "" );
+          return ( "", None, src );
         }
         else
         {
-          result = ( parts[ 0 ], Some( self.delimeter ), parts[ parts.len() - 1 ] )
+          return ( src, None, "" );
+        }
+      };
+
+      /* */
+
+      let right_none_result = | src : &'a str | -> ( &'a str, Option<&'a str>, &'a str )
+      {
+        if self.none
+        {
+          return ( src, None, "" );
+        }
+        else
+        {
+          return ( "", None, src );
+        }
+      };
+
+      /* */
+
+      let count_parts_len = | parts : &Vec<&str> | -> usize
+      {
+        let mut len = 0;
+        for i in 0..self.times
+        {
+          let i = i as usize;
+          if i > 0
+          {
+            len += self.delimeter.len();
+          }
+          len += parts[ i ].len();
+        }
+        len
+      };
+
+      if self.left
+      {
+        let parts : Vec<&str> = self.src.trim().splitn( times.into(), self.delimeter ).collect();
+        if parts.len() == 1
+        {
+          result = left_none_result( parts[ 0 ] );
+        }
+        else
+        {
+          let len = count_parts_len( &parts );
+          let max_len = len + self.delimeter.len();
+          if max_len <= self.src.len()
+          {
+            result = ( &self.src[ 0..len ], Some( self.delimeter ), &self.src[ max_len.. ] );
+          }
+          else
+          {
+            result = left_none_result( self.src );
+          }
         }
       }
       else
       {
-        let parts : Vec<&str> = self.src.trim().rsplitn( self.times.into(), self.delimeter ).collect();
+        let parts : Vec<&str> = self.src.trim().rsplitn( times.into(), self.delimeter ).collect();
         if parts.len() == 1
         {
-          result = ( "", None, parts[ 0 ] );
+          result = right_none_result( parts[ 0 ] );
         }
         else
         {
-          result = ( parts[ parts.len() - 1 ], Some( self.delimeter ), parts[ 0 ] )
+          let len = count_parts_len( &parts );
+          if len + self.delimeter.len() <= self.src.len()
+          {
+            result = ( parts[ parts.len() - 1 ], Some( self.delimeter ), &self.src[ self.src.len() - len.. ] );
+          }
+          else
+          {
+            result = right_none_result( self.src );
+          }
         }
       }
 
@@ -77,7 +141,18 @@ pub( crate ) mod private
   }
 
   ///
-  /// Function to parse a string with command request.
+  /// Function to split a string with some delimeter.
+  ///
+  /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
+  ///
+
+  pub fn isolate<'a>() -> IsolateOptionsFormer<'a>
+  {
+    IsolateOptions::former()
+  }
+
+  ///
+  /// Function to split a string with some delimeter. Routine splits string from left.
   ///
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///
@@ -85,6 +160,19 @@ pub( crate ) mod private
   pub fn isolate_left<'a>() -> IsolateOptionsFormer<'a>
   {
     IsolateOptions::former()
+    .left( true )
+  }
+
+  ///
+  /// Function to split a string with some delimeter. Routine splits string from right.
+  ///
+  /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
+  ///
+
+  pub fn isolate_right<'a>() -> IsolateOptionsFormer<'a>
+  {
+    IsolateOptions::former()
+    .left( false )
   }
 }
 
@@ -95,7 +183,9 @@ pub mod protected
 
   pub use i::IsolateOptions;
   pub use i::IsolateOptionsAdapter;
+  pub use i::isolate;
   pub use i::isolate_left;
+  pub use i::isolate_right;
 }
 
 pub use protected::*;
@@ -112,7 +202,9 @@ pub mod exposed
   use super::private as i;
 
   pub use i::IsolateOptionsAdapter;
+  pub use i::isolate;
   pub use i::isolate_left;
+  pub use i::isolate_right;
 }
 
 /// Namespace of the module to include with `use module::*`.
