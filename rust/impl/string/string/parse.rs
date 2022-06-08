@@ -302,7 +302,7 @@ pub( crate ) mod private
           let subject_and_key = isolate_right()
           .src( map_entries.0.trim() )
           .delimeter( " " )
-          .none( true )
+          .none( false )
           .perform();
           subject = subject_and_key.0;
           map_entries.0 = subject_and_key.2;
@@ -333,7 +333,7 @@ pub( crate ) mod private
               let cuts = isolate_right()
               .src( right.trim() )
               .delimeter( " " )
-              .none( true )
+              .none( false )
               .perform();
 
               if cuts.1.is_none()
