@@ -7,7 +7,6 @@ use wstring_tools::string::parse::OpType::{ Primitive, Vector };
 
 tests_impls!
 {
-  #[ test ]
   fn basic()
   {
     let instruction = wca::instruction::instruction_parse()
@@ -132,7 +131,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn with_several_values()
   {
     let instruction = wca::instruction::instruction_parse()
