@@ -1,0 +1,8 @@
+[package]
+name = "graphs_tools_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+graphs_tools = { version = "~0.1", path = "../../../module/move/graphs_tools" }
