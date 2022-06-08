@@ -19,7 +19,6 @@ Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/mac
 
   types!
   {
-
     pub single MySingle : f32;
     pub single SingleWithParametrized : std::sync::Arc< T : Copy >;
     pub single SingleWithParameter : < T >;
@@ -35,7 +34,6 @@ Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/mac
     pub many MyMany : f32;
     pub many ManyWithParametrized : std::sync::Arc< T : Copy >;
     pub many ManyWithParameter : < T >;
-
   }
 }
 ```
