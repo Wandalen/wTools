@@ -1,5 +1,5 @@
 [package]
-name = "graphs_tools_trivial_sample"
+name = "automata_tools_trivial_sample"
 version = "0.0.0"
 edition = "2021"
 publish = false
