@@ -49,9 +49,9 @@ path = "rust/test/publisher/wpublisher_tests.rs"
 name = "publisher_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-# [[example]]
-# name = "publisher_trivial"
-# path = "sample/rust/publisher_trivial/src/main.rs"
+[[example]]
+name = "wpublisher_trivial_sample"
+path = "sample/rust/wpublisher_trivial_sample/src/main.rs"
 
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }
