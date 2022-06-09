@@ -4,7 +4,9 @@ version = "0.0.0"
 edition = "2021"
 publish = false
 
+[features]
+chrono = []
+default = [ "chrono" ]
+
 [dependencies]
 time_tools = { version = "*", path = "../../../module/rust/time_tools" }
-# time_tools = "*"
-# chrono = "*"
