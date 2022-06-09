@@ -5,5 +5,5 @@ edition = "2021"
 publish = false
 
 [dependencies]
-graphs_tools = { version = "*", path = "../../../module/move/graphs_tools" }
+automata_tools = { version = "*", path = "../../../module/move/automata_tools" }
 wtools = { version = "*", path = "../../../module/rust/wtools" }
