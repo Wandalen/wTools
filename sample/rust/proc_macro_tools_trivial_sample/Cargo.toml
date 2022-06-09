@@ -4,7 +4,9 @@ version = "0.0.0"
 edition = "2021"
 publish = false
 
+[features]
+use_std = []
+default = [ "use_std" ]
+
 [dependencies]
 proc_macro_tools = { version = "*", path = "../../../module/rust/proc_macro_tools" }
-syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }
-quote = "~1.0"

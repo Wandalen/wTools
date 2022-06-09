@@ -45,10 +45,10 @@ path = "rust/test/test/test_tools_tests.rs"
 name = "test_tools_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-# zzz : add sample
-# [[example]]
-# name = "test_tools_trivial"
-# path = "sample/rust/test_tools_trivial/src/main.rs"
+# zzz : add sample # aaa : Dmytro : added
+[[example]]
+name = "test_tools_trivial_sample"
+path = "sample/rust/test_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }

@@ -64,10 +64,10 @@ path = "rust/test/dt/data_type_tests.rs"
 name = "data_type_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-# [[example]]
-# name = "data_type_trivial_sample"
-# path = "sample/rust/data_type_trivial_sample/src/main.rs"
-# <!-- qqq : write please -->
+[[example]]
+name = "data_type_trivial_sample"
+path = "sample/rust/data_type_trivial_sample/src/main.rs"
+# <!-- qqq : write please --> # aaa : Dmytro : added
 
 [dependencies]
 either = { version = "~1.6", optional = true }

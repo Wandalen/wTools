@@ -1,10 +1,10 @@
-#[ allow( unused_imports ) ]
-use derive_tools::*;
 
 fn main()
 {
   #[ cfg( all( feature = "derive_from", feature = "derive_into", feature = "derive_display", feature = "derive_from_str" ) ) ]
   {
+    use derive_tools::*;
+
     #[ derive( From, Into, Display, FromStr, PartialEq, Debug ) ]
     #[ display( "{a}-{b}" ) ]
     struct Struct1

@@ -19,17 +19,14 @@ pub struct Structure1
   string_optional_1 : Option< String >,
 }
 
-fn main()
-{
-
-  let struct1 = Structure1::former()
-  .int_1( 13 )
-  .string_1( "Abcd".to_string() )
-  .vec_1().replace( vec![ 1, 3 ] ).end()
-  .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
-  .string_optional_1( "dir1" )
-  .form();
-  dbg!( &struct1 );
+let struct1 = Structure1::former()
+.int_1( 13 )
+.string_1( "Abcd".to_string() )
+.vec_1().replace( vec![ 1, 3 ] ).end()
+.hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
+.string_optional_1( "dir1" )
+.form();
+dbg!( &struct1 );
 
 // <  &struct1 = Structure1 {
 // <   int_1: 13,
@@ -47,8 +44,6 @@ fn main()
 // <       "dir1",
 // <   ),
 // < }
-
-}
 ```
 
 ### To add to your project

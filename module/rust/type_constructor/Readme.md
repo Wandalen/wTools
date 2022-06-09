@@ -108,6 +108,7 @@ To define your own single-use macro `types!`. The single-line definition looks l
 
 ```rust
 use type_constructor::prelude::*;
+
 types!( pub single MySingle : i32 );
 let x = MySingle( 13 );
 println!( "x : {}", x.0 );

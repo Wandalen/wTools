@@ -5,10 +5,25 @@ Protocol of modularity unifying interface of a module.
 
 ### Sample
 
-```rust
-use mod_interface::*;
+```ignore
+use mod_interface::mod_interface;
 
+//
+
+mod_interface!
+{
+  exposed mod inner;
+}
+
+//
+
+fn main()
+{
+  assert_eq!( exposed::inner::inner_is(), true );
+}
 ```
+
+Full sample see at [sample directory](https://github.com/Wandalen/wTools/tree/master/sample/rust/mod_interface_trivial_sample).
 
 ### To add to your project
 
