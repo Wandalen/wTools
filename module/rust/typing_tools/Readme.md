@@ -8,12 +8,9 @@ Collection of general purpose tools for type checking.
 ```rust
 use typing_tools::*;
 
-fn main()
-{
-  let src = Box::new( true );
-  assert_eq!( implements!( src => Copy ), false );
-  assert_eq!( implements!( src => Clone ), true );
-}
+let src = Box::new( true );
+assert_eq!( implements!( src => Copy ), false );
+assert_eq!( implements!( src => Clone ), true );
 ```
 
 <!-- # qqq : for Rust dev : please add --> <!-- aaa : done -->

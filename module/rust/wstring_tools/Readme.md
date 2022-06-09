@@ -20,7 +20,7 @@ String tools.
   let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
   assert_eq!( iterated, vec![ "abc", " ", "def" ] );
 
-  /* delimeter no exists */
+  /* delimeter not exists */
   let src = "abc def";
   let iter = wstring_tools::string::split()
   .src( src )
