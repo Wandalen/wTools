@@ -46,10 +46,10 @@ path = "rust/test/meta/mod_interface_tests.rs"
 name = "mod_interface_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-# [[example]]
-# name = "mod_interface_trivial"
-# path = "sample/rust/mod_interface_trivial_sample/src/main.rs"
-# zzz : write
+[[example]]
+name = "mod_interface_trivial_sample"
+path = "sample/rust/mod_interface_trivial_sample/src/main.rs"
+# zzz : write # aaa : Dmytro : added
 
 [dependencies]
 mod_interface_meta = { version = "~0.1", path = "../../rust/mod_interface_meta" }
