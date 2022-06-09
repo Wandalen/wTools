@@ -4,5 +4,9 @@ version = "0.0.0"
 edition = "2021"
 publish = false
 
+[features]
+type_constructor = []
+default = [ "type_constructor" ]
+
 [dependencies]
  data_type = { version = "*", path = "../../../module/rust/data_type" }
