@@ -11,6 +11,12 @@ on :
       - '!main'
       - '!alpha'
       - '!beta'
+      - '!*test*'
+      - '!*test*/*'
+      - '!*/*test*'
+      - '!*experiment*'
+      - '!*experiment*/*'
+      - '!*/*experiment*'
 
 jobs :
 
