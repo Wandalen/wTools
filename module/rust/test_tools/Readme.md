@@ -8,23 +8,24 @@ Tools for writing and running tests.
 ```rust
 use test_tools::*;
 
-//
-
-fn _pass1()
+tests_impls!
 {
-  assert_eq!( true, true );
+  fn pass1()
+  {
+    assert_eq!( true, true );
+  }
+
+  //
+
+  fn pass2()
+  {
+    assert_eq!( 1, 1 );
+  }
 }
 
 //
 
-fn _pass2()
-{
-  assert_eq!( 1, 1 );
-}
-
-//
-
-test_suite!
+tests_index!
 {
   pass1,
   pass2,

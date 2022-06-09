@@ -1,5 +1,5 @@
 [package]
-name = "wtest_trivial_sample"
+name = "test_tools_trivial_sample"
 version = "0.0.0"
 edition = "2021"
 publish = false
@@ -9,4 +9,4 @@ name = "trivial_test"
 path = "test/trivial_test.rs"
 
 [dependencies]
-wtest = { version = "*", path = "../../../module/move/wtest" }
+test_tools = { version = "*", path = "../../../module/rust/test_tools" }
