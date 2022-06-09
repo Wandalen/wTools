@@ -9,6 +9,7 @@ Collection of general purpose time tools.
 #[ cfg( feature = "chrono" ) ]
 {
   use time_tools::*;
+
   /* get milliseconds from UNIX epoch */
   let now = time::now();
   println!( "now {}", now );

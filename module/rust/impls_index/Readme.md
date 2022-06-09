@@ -5,6 +5,29 @@ Several of macros to put each function under a named macro to index every functi
 
 It encourages writing better code, having index of components stripped of details of implementation is very important for comprehension of the code and ability to see the big picture.
 
+### Sample
+
+```rust
+use ::impls_index::*;
+
+impls1!
+{
+  fn f1() -> i32
+  {
+    println!( "f1() : 13" );
+    13
+  }
+};
+
+index!
+{
+  f1,
+}
+
+assert_eq!( f1(), 13 );
+/* print : f1() : 13 */
+```
+
 ### To add to your project
 
 ```sh

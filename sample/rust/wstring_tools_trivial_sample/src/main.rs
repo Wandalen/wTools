@@ -10,11 +10,12 @@ fn main()
     let iter = string::split()
     .src( src )
     .delimeter( " " )
+    .stripping( false )
     .perform();
     let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
     assert_eq!( iterated, vec![ "abc", " ", "def" ] );
 
-    /* delimeter no exists */
+    /* delimeter not exists */
     let src = "abc def";
     let iter = string::split()
     .src( src )

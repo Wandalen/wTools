@@ -1,18 +1,18 @@
-use former::Former;
-
-#[derive( Debug, PartialEq, Former )]
-pub struct Structure1
-{
-  int_1 : i32,
-  string_1 : String,
-  vec_1 : Vec< u32 >,
-  hashmap_strings_1 : std::collections::HashMap< String, String >,
-  int_optional_1 : core::option::Option< i32 >,
-  string_optional_1 : Option< String >,
-}
 
 fn main()
 {
+  use former::Former;
+
+  #[derive( Debug, PartialEq, Former )]
+  pub struct Structure1
+  {
+    int_1 : i32,
+    string_1 : String,
+    vec_1 : Vec< u32 >,
+    hashmap_strings_1 : std::collections::HashMap< String, String >,
+    int_optional_1 : core::option::Option< i32 >,
+    string_optional_1 : Option< String >,
+  }
 
   let struct1 = Structure1::former()
   .int_1( 13 )
