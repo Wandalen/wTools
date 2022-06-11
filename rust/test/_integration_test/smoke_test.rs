@@ -87,7 +87,7 @@ impl< 'a > SmokeModuleTest< 'a >
     let config_data = format!
     (
       "[package]
-      edition = \"2018\"
+      edition = \"2021\"
       name = \"{}_smoke_test\"
       version = \"0.0.1\"
 
@@ -98,7 +98,7 @@ impl< 'a > SmokeModuleTest< 'a >
     );
     let mut config_path = test_path.clone();
     config_path.push( "Cargo.toml" );
-    dbg!( &config_data );
+    println!( "\n{}\n", config_data );
     std::fs::write( config_path, config_data ).unwrap();
 
     /* write code */
@@ -115,9 +115,9 @@ impl< 'a > SmokeModuleTest< 'a >
       {{
         {}
       }}",
-      self.code
+      self.code,
     );
-    dbg!( &code );
+    println!( "\n{}\n", code );
     std::fs::write( &test_path, code ).unwrap();
 
     Ok( () )
