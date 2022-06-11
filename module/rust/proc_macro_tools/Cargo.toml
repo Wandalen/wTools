@@ -48,7 +48,6 @@ path = "rust/test/_integration_test/smoke_test.rs"
 [[example]]
 name = "proc_macro_trivial_sample"
 path = "sample/rust/proc_macro_tools_trivial_sample/src/main.rs"
-# qqq : for Dima : normalize names of samples, missing postfix _sample
 
 [dependencies]
 proc-macro2 = { version = "~1.0", features = [] }
