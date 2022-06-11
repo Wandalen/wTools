@@ -1,7 +1,5 @@
 
 use super::*;
-use wca::*;
-// qqq : for Dima : bad
 use wstring_tools::string::parse::OpType::{ Primitive, Vector };
 
 //
@@ -12,11 +10,10 @@ tests_impls!
   #[ test ]
   fn basic()
   {
-
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( "" )
     .perform();
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : Some( wtools::error::Error::new( "Invalid command" ) ),
       command_name : "".to_string(),
@@ -25,10 +22,10 @@ tests_impls!
     };
     a_id!( instruction, exp );
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get" )
     .perform();
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -37,10 +34,10 @@ tests_impls!
     };
     a_id!( instruction, exp );
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get some" )
     .perform();
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -49,10 +46,10 @@ tests_impls!
     };
     a_id!( instruction, exp );
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get v:1" )
     .perform();
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -61,10 +58,10 @@ tests_impls!
     };
     a_id!( instruction, exp );
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get some v:1" )
     .perform();
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -73,7 +70,7 @@ tests_impls!
     };
     a_id!( instruction, exp );
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get some v:1 routine:some" )
     .perform();
     let properties_map = HashMap::from
@@ -81,7 +78,7 @@ tests_impls!
       ( "v".to_string(), Primitive( "1".to_string() ) ),
       ( "routine".to_string(), Primitive( "some".to_string() ) ),
     ]);
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -93,7 +90,7 @@ tests_impls!
     /* */
 
     let aggregator_map = HashMap::new();
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get some v:1 routine:some" )
     .properties_map( aggregator_map )
     .perform();
@@ -102,7 +99,7 @@ tests_impls!
       ( "v".to_string(), Primitive( "1".to_string() ) ),
       ( "routine".to_string(), Primitive( "some".to_string() ) ),
     ]);
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -113,7 +110,7 @@ tests_impls!
 
     let mut aggregator_map = HashMap::new();
     aggregator_map.insert( "ne".to_string(), Primitive( "-2".to_string() ) );
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get some v:1 routine:some" )
     .properties_map( aggregator_map )
     .perform();
@@ -123,7 +120,7 @@ tests_impls!
       ( "routine".to_string(), Primitive( "some".to_string() ) ),
       ( "ne".to_string(), Primitive( "-2".to_string() ) ),
     ]);
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -138,11 +135,11 @@ tests_impls!
   #[ test ]
   fn with_several_values()
   {
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get some v:1 v:2" )
     .several_values( false )
     .perform();
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -151,11 +148,11 @@ tests_impls!
     };
     a_id!( instruction, exp );
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get some v:[1,2]" )
     .several_values( false )
     .perform();
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -166,11 +163,11 @@ tests_impls!
 
     /* */
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get some v:1 v:2" )
     .several_values( true )
     .perform();
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -179,11 +176,11 @@ tests_impls!
     };
     a_id!( instruction, exp );
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get some v:[1,2]" )
     .several_values( true )
     .perform();
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -194,11 +191,11 @@ tests_impls!
 
     /* */
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get some v:[1,2] v:3" )
     .several_values( true )
     .perform();
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),
@@ -207,11 +204,11 @@ tests_impls!
     };
     a_id!( instruction, exp );
 
-    let instruction = instruction::instruction_parse()
+    let instruction = wca::instruction::instruction_parse()
     .instruction( ".get some v:3 v:[1,2]" )
     .several_values( true )
     .perform();
-    let exp = instruction::Instruction
+    let exp = wca::instruction::Instruction
     {
       err : None,
       command_name : ".get".to_string(),

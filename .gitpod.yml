@@ -4,14 +4,12 @@ workspaceLocation : "."
 
 tasks :
   - init : |
-      rustup toolchain default nightly
+      rustup default nightly
       cd $RUN_PATH
-      cargo build
-      cargo run $RUN_POSTFIX
     command : |
       code $SAMPLE_FILE
       cargo run $RUN_POSTFIX
-      echo 'To get list of sample in the repostitory try running from the root:'
+      echo 'To get list of samples in the repository try running from the root:'
       echo 'cargo run --example'
 
 vscode :

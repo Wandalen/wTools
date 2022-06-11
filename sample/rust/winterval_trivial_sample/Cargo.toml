@@ -4,5 +4,9 @@ version = "0.0.0"
 edition = "2021"
 publish = false
 
+[features]
+use_std = []
+default = [ "use_std" ]
+
 [dependencies]
 winterval = { version = "*", path = "../../../module/rust/winterval" }

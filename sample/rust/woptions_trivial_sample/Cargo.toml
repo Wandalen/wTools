@@ -6,3 +6,4 @@ publish = false
 
 [dependencies]
 woptions = { version = "*", path = "../../../module/rust/woptions" }
+former = { version = "*", path = "../../../module/rust/former" }

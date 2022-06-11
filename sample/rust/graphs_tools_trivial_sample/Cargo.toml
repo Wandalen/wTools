@@ -1,0 +1,14 @@
+[package]
+name = "graphs_tools_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[features]
+use_std = []
+cell_factory = []
+default = [ "use_std", "cell_factory" ]
+
+[dependencies]
+graphs_tools = { version = "*", path = "../../../module/move/graphs_tools" }
+wtools = { version = "*", path = "../../../module/rust/wtools" }
