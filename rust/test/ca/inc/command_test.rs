@@ -6,6 +6,7 @@ use wca::*;
 
 tests_impls!
 {
+
   #[ test ]
   fn basic()
   {

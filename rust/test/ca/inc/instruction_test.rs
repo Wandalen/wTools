@@ -8,9 +8,11 @@ use wstring_tools::string::parse::OpType::{ Primitive, Vector };
 
 tests_impls!
 {
+
   #[ test ]
   fn basic()
   {
+
     let instruction = instruction::instruction_parse()
     .instruction( "" )
     .perform();
@@ -218,6 +220,7 @@ tests_impls!
     };
     a_id!( instruction, exp );
   }
+
 }
 
 //
