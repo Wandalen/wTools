@@ -305,8 +305,9 @@ diagnostics_default = [
 diagnostics_runtime_assertions = [ "diagnostics_tools/runtime_assertions" ]
 diagnostics_compiletime_assertions = [ "diagnostics_tools/compiletime_assertions" ]
 
-# must be empty
-nightly = []
+# common
+
+nightly = [] # must be empty
 
 use_std = []
 use_alloc = []
@@ -369,8 +370,7 @@ parse-display = { version = "~0.5", optional = true, default-features = false }
 data_type = { version = "~0.1", path = "../../rust/data_type", optional = true, default-features = false }
 
 # diagnostics
-diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", optional = true }
+diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-
