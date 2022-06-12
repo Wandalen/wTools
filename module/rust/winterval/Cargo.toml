@@ -1,6 +1,6 @@
 [package]
 name = "winterval"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,7 +31,12 @@ include = [
 [features]
 use_std = []
 use_alloc = []
-default = [ "use_std" ]
+default = [
+  "use_std",
+]
+full = [
+  "use_std",
+]
 
 [lib]
 name = "winterval"
