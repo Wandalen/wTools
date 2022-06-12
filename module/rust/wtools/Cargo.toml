@@ -52,6 +52,8 @@ path = "rust/test/_integration_test/smoke_test.rs"
 name = "wtools_trivial_sample"
 path = "sample/rust/wtools_trivial_sample/src/main.rs"
 
+# = features
+
 [features]
 
 # iter
@@ -374,3 +376,8 @@ diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", o
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+
+# xxx : import
+# anyhow = { version = "~1.0" }
+# lexical = { version = "~6.1" }
+# thiserror = { version = "1.0.31" }

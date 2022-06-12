@@ -1,6 +1,6 @@
 [package]
 name = "test_tools"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,10 +28,24 @@ include = [
   "/License",
 ]
 
+# = features
+
 [features]
+
+# common
+
+nightly = [] # must be empty
+
 use_std = []
 use_alloc = []
-default = [ "use_std" ]
+
+full = [
+  "use_std",
+]
+
+default = [
+  "use_std",
+]
 
 [lib]
 name = "test_tools"
@@ -45,7 +59,6 @@ path = "rust/test/test/test_tools_tests.rs"
 name = "test_tools_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-# zzz : add sample # aaa : Dmytro : added
 [[example]]
 name = "test_tools_trivial_sample"
 path = "sample/rust/test_tools_trivial_sample/src/main.rs"
