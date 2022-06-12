@@ -64,8 +64,6 @@ type_constructor_local = { version = "*", path = "../../rust/type_constructor", 
 type_constructor_published = { version = "*", package = "type_constructor" }
 typing_tools_local = { version = "*", path = "../../rust/typing_tools", package = "typing_tools" }
 typing_tools_published = { version = "*", package = "typing_tools" }
-werror_local = { version = "*", path = "../../rust/werror", package = "werror" }
-werror_published = { version = "*", package = "werror" }
 winterval_local = { version = "*", path = "../../rust/winterval", package = "winterval" }
 winterval_published = { version = "*", package = "winterval" }
 woptions_local = { version = "*", path = "../../rust/woptions", package = "woptions" }
@@ -74,6 +72,14 @@ woptions_meta_local = { version = "*", path = "../../rust/woptions_meta", packag
 woptions_meta_published = { version = "*", package = "woptions_meta" }
 woptions_runtime_local = { version = "*", path = "../../rust/woptions_runtime", package = "woptions_runtime" }
 woptions_runtime_published = { version = "*", package = "woptions_runtime" }
+
+# error
+
+error_tools_local = { version = "*", path = "../../rust/error_tools", package = "error_tools" }
+# error_tools_published = { version = "*", package = "error_tools" } xxx2
+werror_local = { version = "*", path = "../../alias/werror", package = "werror" }
+werror_published = { version = "*", package = "werror" }
+
 
 # strs
 

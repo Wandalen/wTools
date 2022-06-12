@@ -1,0 +1,26 @@
+name : strs_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # strs_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/rust/strs_tools/Cargo.toml'
+      module_name : 'strs_tools'
+      commit_message : ${{ github.event.head_commit.message }}
+
+  # wstring_tools
+
+  test_wstring_tools :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/rust/wstring_tools/Cargo.toml'
+      module_name : 'wstring_tools'
+      commit_message : ${{ github.event.head_commit.message }}

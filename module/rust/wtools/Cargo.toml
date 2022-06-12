@@ -154,9 +154,24 @@ string_full = [
 
 # error
 
-error = [ "werror" ]
-error_default = [ "error", 'werror/use_std' ]
-error_full = [ "error", 'werror/use_std' ]
+error = [ "error_tools" ]
+error_default = [
+  "error",
+  "error_handling_for_lib",
+  "error_handling_for_app",
+  "error_tools_use_std",
+]
+error_full = [
+  "error",
+  "error_handling_for_lib",
+  "error_handling_for_app",
+  "error_tools_use_std",
+]
+
+error_tools_use_std = [ "error", "error_tools/use_std" ]
+error_tools_use_alloc = [ "error", "error_tools/use_alloc" ]
+error_handling_for_lib = [ "error", "error_tools/error_handling_for_lib" ]
+error_handling_for_app = [ "error", "error_tools/error_handling_for_app" ]
 
 # derive
 
@@ -361,7 +376,7 @@ time_tools = { version = "~0.1", path = "../../rust/time_tools", optional = true
 strs_tools = { version = "~0.1", path = "../../rust/strs_tools", optional = true, default-features = false }
 
 # err
-werror = { version = "~0.1", path = "../../rust/werror", optional = true, default-features = false }
+error_tools = { version = "~0.1", path = "../../rust/error_tools", optional = true, default-features = false }
 
 # derive
 derive_tools = { version = "~0.1", path = "../../rust/derive_tools", optional = true, default-features = false }
@@ -378,6 +393,4 @@ diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", o
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
 
 # xxx : import
-# anyhow = { version = "~1.0" }
 # lexical = { version = "~6.1" }
-# thiserror = { version = "1.0.31" }

@@ -8,9 +8,9 @@ Basic exceptions handling mechanism.
 ```rust
 #[ cfg( feature = "use_std" ) ]
 {
-  use werror::*;
+  use error_tools::*;
 
-  let err1 = Error::new( "Some error" );
+  let err1 = BasicError::new( "Some error" );
   println!( "err1 : {}", err1 );
   // < err1 : Some error
 }
@@ -27,6 +27,6 @@ cargo add werror
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/werror_trivial
+cd sample/rust/error_tools_trivial
 cargo run
 ```

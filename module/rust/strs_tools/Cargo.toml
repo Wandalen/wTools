@@ -71,7 +71,7 @@ former = { version = "~0.1", path = "../../rust/former" }
 lexical = { version = "~6.1", optional = true }
 # woptions = { version = "~0.1", path = "../../rust/woptions" }
 # wtools = { version = "~0.2", path = "../../rust/wtools" }
-# werror = { version = "~0.1", path = "../../rust/werror" }
+# error_tools = { version = "~0.1", path = "../../rust/error_tools" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

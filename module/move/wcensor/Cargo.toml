@@ -55,7 +55,6 @@ path = "rust/test/_integration_test/smoke_test.rs"
 
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }
-# werror = { version = "~0.1", path = "../../rust/werror" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
