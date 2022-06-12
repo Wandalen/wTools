@@ -76,7 +76,7 @@ woptions_runtime_published = { version = "*", package = "woptions_runtime" }
 # error
 
 error_tools_local = { version = "*", path = "../../rust/error_tools", package = "error_tools" }
-# error_tools_published = { version = "*", package = "error_tools" } xxx2
+error_tools_published = { version = "*", package = "error_tools" }
 werror_local = { version = "*", path = "../../alias/werror", package = "werror" }
 werror_published = { version = "*", package = "werror" }
 

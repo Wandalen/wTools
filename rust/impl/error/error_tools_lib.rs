@@ -84,7 +84,7 @@ pub mod exposed
   pub use super::error::*;
   // #[ cfg( feature = "use_std" ) ]
   // #[ doc( inline ) ]
-  // pub use super::error::Error;
+  // pub use super::error::BasicError;
 
 }
 

@@ -17,7 +17,7 @@ use ::wpublisher::*;
 //
 
 #[ cfg( feature = "use_std" ) ]
-fn main() -> Result<(), wtools::error::Error>
+fn main() -> Result<(), wtools::error::BasicError>
 {
 
   let ca_map = commands::commands_form();

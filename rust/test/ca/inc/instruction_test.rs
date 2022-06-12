@@ -1,6 +1,6 @@
 
 use super::*;
-use wstring_tools::string::parse::OpType::{ Primitive, Vector };
+use wca::string::parse::OpType::{ Primitive, Vector }; // qqq : this line should be ok
 
 //
 
@@ -15,7 +15,7 @@ tests_impls!
     .perform();
     let exp = wca::instruction::Instruction
     {
-      err : Some( wtools::error::Error::new( "Invalid command" ) ),
+      err : Some( wtools::error::BasicError::new( "Invalid command" ) ),
       command_name : "".to_string(),
       subject : "".to_string(),
       properties_map : HashMap::new(),
