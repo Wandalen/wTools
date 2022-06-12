@@ -52,6 +52,23 @@ pub mod exposed
 pub mod prelude
 {
   pub use super::dt::prelude::*;
+
+  #[ cfg( feature = "use_std" ) ]
+  #[ cfg( feature = "prelude" ) ]
+  #[ doc( inline ) ]
+  pub use std::collections::
+  {
+    HashMap as Map,
+    HashSet as Set,
+    HashMap,
+    HashSet,
+    BTreeMap,
+    BTreeSet,
+    BinaryHeap,
+    LinkedList,
+    VecDeque,
+  };
+
 }
 
 // zzz : use

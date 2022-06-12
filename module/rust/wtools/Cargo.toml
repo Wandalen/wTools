@@ -20,6 +20,7 @@ keywords = [ "fundamental", "general-purpose" ]
 
 [package.metadata.docs.rs]
 all-features = true
+# rustdoc-args = []
 
 include = [
   "/rust/impl/wtools_lib.rs",
@@ -34,7 +35,6 @@ include = [
   "/Readme.md",
   "/License",
 ]
-# rustdoc-args = []
 
 [lib]
 name = "wtools"
@@ -289,8 +289,10 @@ derive_from_str = [ "derive", "derive_tools/derive_from_str", "parse-display" ]
 dt = [ "data_type" ]
 dt_default = [
   "dt",
+  "dt_use_std",
   "data_type/default",
   "dt_either",
+  "dt_prelude",
   "dt_type_constructor",
   "dt_make",
   "dt_vectorized_from",
@@ -298,14 +300,20 @@ dt_default = [
 ]
 dt_full = [
   "dt",
+  "dt_use_std",
   "data_type/full",
   "dt_either",
+  "dt_prelude",
   "dt_type_constructor",
   "dt_make",
   "dt_vectorized_from",
   "dt_interval",
 ]
+dt_use_std = [ "dt", "data_type/use_std" ]
+dt_use_alloc = [ "dt", "data_type/use_alloc" ]
+
 dt_either = [ "dt", "data_type/either" ]
+dt_prelude = [ "dt", "data_type/prelude" ]
 dt_type_constructor = [ "dt", "data_type/type_constructor" ]
 dt_make = [ "dt", "data_type/make" ]
 dt_vectorized_from = [ "dt", "data_type/vectorized_from" ]
