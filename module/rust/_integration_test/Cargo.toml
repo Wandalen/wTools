@@ -78,7 +78,7 @@ woptions_runtime_published = { version = "*", package = "woptions_runtime" }
 # strs
 
 strs_tools_local = { version = "*", path = "../../rust/strs_tools", package = "strs_tools" }
-# strs_tools_published = { version = "*", package = "strs_tools" }
+strs_tools_published = { version = "*", package = "strs_tools" }
 wstring_tools_local = { version = "*", path = "../../alias/wstring_tools", package = "wstring_tools" }
 wstring_tools_published = { version = "*", package = "wstring_tools" }
 
