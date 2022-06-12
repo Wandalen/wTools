@@ -40,6 +40,7 @@ pub mod for_lib
   pub use ::thiserror::*;
 }
 
+// qqq : cover by simple test
 /// Exceptions handling mechanism for apps.
 pub mod for_app
 {
@@ -48,6 +49,7 @@ pub mod for_app
   pub use ::anyhow::*;
 }
 
+// qqq : cover by simple test
 /// Protected namespace of the module.
 pub mod protected
 {
