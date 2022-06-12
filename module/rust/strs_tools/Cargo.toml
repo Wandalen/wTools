@@ -1,6 +1,6 @@
 [package]
 name = "strs_tools"
-version = "0.1.0"
+version = "0.1.5"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,10 +28,6 @@ include = [
 ]
 
 [features]
-indentation = []
-parse  = [ "split" ]
-split = []
-number_paraser = [ "lexical" ]
 use_std = []
 use_alloc = []
 default = [
@@ -39,15 +35,20 @@ default = [
   "indentation",
   "parse",
   "split",
-  "number_paraser",
+  "parse_number",
 ]
 full = [
   "use_std",
   "indentation",
   "parse",
   "split",
-  "number_paraser",
+  "parse_number",
 ]
+
+indentation = []
+parse  = [ "split", "parse_number" ]
+parse_number = [ "lexical" ]
+split = []
 
 [lib]
 name = "strs_tools"

@@ -1,6 +1,6 @@
 [package]
 name = "wstring_tools"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,13 +28,27 @@ include = [
 ]
 
 [features]
-indentation = []
-parse  = [ "split" ]
-split = []
-use_std = []
-use_alloc = []
-default = [ "indentation", "parse", "split", "use_std" ]
-full = [ "indentation", "parse", "split", "use_alloc" ]
+use_std = [ "strs_tools/use_std" ]
+use_alloc = [ "strs_tools/use_alloc" ]
+default = [
+  "use_std",
+  "indentation",
+  "parse",
+  "split",
+  "parse_number",
+]
+full = [
+  "use_std",
+  "indentation",
+  "parse",
+  "split",
+  "parse_number",
+]
+
+indentation = [ "strs_tools/indentation" ]
+parse  = [ "split", "parse_number" ]
+parse_number = [ "strs_tools/parse_number" ]
+split = [ "strs_tools/split" ]
 
 [lib]
 name = "wstring_tools"
