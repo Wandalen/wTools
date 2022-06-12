@@ -1,7 +1,7 @@
 [package]
 name = "wTools"
-version = "0.1.1"
-publish = false
+version = "0.1.3"
+# publish = false
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -140,10 +140,10 @@ string_full = [
 string_use_std = [ "error", "wtools/use_std" ]
 string_use_alloc = [ "error", "wtools/use_alloc" ]
 
-string_indentation = [ "string", "string_use_std", "wtools/indentation" ]
-string_parse = [ "string", "string_use_std", "wtools/parse" ]
-string_parse_number = [ "string", "string_use_std", "wtools/parse_number" ]
-string_split = [ "string", "string_use_std", "wtools/split" ]
+string_indentation = [ "string", "string_use_std", "wtools/string_indentation" ]
+string_parse = [ "string", "string_use_std", "wtools/string_parse" ]
+string_parse_number = [ "string", "string_use_std", "wtools/string_parse_number" ]
+string_split = [ "string", "string_use_std", "wtools/string_split" ]
 
 # error
 
@@ -160,7 +160,6 @@ error_full = [
   "error_handling_for_app",
   "error_use_std",
 ]
-
 error_use_std = [ "error", "wtools/error_use_std" ]
 error_use_alloc = [ "error", "wtools/error_use_alloc" ]
 
