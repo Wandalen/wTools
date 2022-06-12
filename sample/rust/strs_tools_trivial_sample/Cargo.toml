@@ -10,4 +10,4 @@ split = []
 default = [ "use_std", "split" ]
 
 [dependencies]
-wstring_tools = { version = "*", path = "../../../module/rust/wstring_tools" }
+strs_tools = { version = "*", path = "../../../module/rust/strs_tools" }

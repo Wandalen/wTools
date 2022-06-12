@@ -1,0 +1,59 @@
+[package]
+name = "wstring_tools"
+version = "0.1.4"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/wstring_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/wstring_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/wstring_tools"
+description = """
+Tools to manipulate strings.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/wstring_tools_lib.rs",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+indentation = []
+parse  = [ "split" ]
+split = []
+use_std = []
+use_alloc = []
+default = [ "indentation", "parse", "split", "use_std" ]
+full = [ "indentation", "parse", "split", "use_alloc" ]
+
+[lib]
+name = "wstring_tools"
+path = "rust/impl/string/wstring_tools_lib.rs"
+
+[[test]]
+name = "string_test"
+path = "rust/test/string/wstring_tools_tests.rs"
+
+[[test]]
+name = "string_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
+# [[example]]
+# name = "wstring_tools_trivial_sample"
+# path = "sample/rust/strs_tools_trivial_sample/src/main.rs"
+
+[dependencies]
+strs_tools = { version = "~0.1", path = "../../rust/strs_tools" }
+
+[dev-dependencies]
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

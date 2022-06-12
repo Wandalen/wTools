@@ -135,10 +135,10 @@ time_now = [ "time", "time_tools/now" ]
 
 # string
 
-string = [ "wstring_tools" ]
-string_indentation = [ "string", "wstring_tools/indentation", "wstring_tools/use_std" ]
-string_parse = [ "string", "wstring_tools/parse", "wstring_tools/use_std" ]
-string_split = [ "string", "wstring_tools/split", "wstring_tools/use_std" ]
+string = [ "strs_tools" ]
+string_indentation = [ "string", "strs_tools/indentation", "strs_tools/use_std" ]
+string_parse = [ "string", "strs_tools/parse", "strs_tools/use_std" ]
+string_split = [ "string", "strs_tools/split", "strs_tools/use_std" ]
 string_default = [
   "string",
   "string_indentation",
@@ -358,7 +358,7 @@ typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = 
 time_tools = { version = "~0.1", path = "../../rust/time_tools", optional = true, default-features = false }
 
 # sting
-wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools", optional = true, default-features = false }
+strs_tools = { version = "~0.1", path = "../../rust/strs_tools", optional = true, default-features = false }
 
 # err
 werror = { version = "~0.1", path = "../../rust/werror", optional = true, default-features = false }

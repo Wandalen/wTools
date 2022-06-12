@@ -58,8 +58,6 @@ mod_interface_runtime_local = { version = "*", path = "../../rust/mod_interface_
 mod_interface_runtime_published = { version = "*", package = "mod_interface_runtime" }
 proc_macro_tools_local = { version = "*", path = "../../rust/proc_macro_tools", package = "proc_macro_tools" }
 proc_macro_tools_published = { version = "*", package = "proc_macro_tools" }
-test_tools_local = { version = "*", path = "../../rust/test_tools", package = "test_tools" }
-test_tools_published = { version = "*", package = "test_tools" }
 time_tools_local = { version = "*", path = "../../rust/time_tools", package = "time_tools" }
 time_tools_published = { version = "*", package = "time_tools" }
 type_constructor_local = { version = "*", path = "../../rust/type_constructor", package = "type_constructor" }
@@ -76,10 +74,13 @@ woptions_meta_local = { version = "*", path = "../../rust/woptions_meta", packag
 woptions_meta_published = { version = "*", package = "woptions_meta" }
 woptions_runtime_local = { version = "*", path = "../../rust/woptions_runtime", package = "woptions_runtime" }
 woptions_runtime_published = { version = "*", package = "woptions_runtime" }
-wstring_tools_local = { version = "*", path = "../../rust/wstring_tools", package = "wstring_tools" }
+
+# strs
+
+strs_tools_local = { version = "*", path = "../../rust/strs_tools", package = "strs_tools" }
+# strs_tools_published = { version = "*", package = "strs_tools" }
+wstring_tools_local = { version = "*", path = "../../alias/wstring_tools", package = "wstring_tools" }
 wstring_tools_published = { version = "*", package = "wstring_tools" }
-wtest_basic_local = { version = "*", path = "../../rust/wtest_basic", package = "wtest_basic" }
-wtest_basic_published = { version = "*", package = "wtest_basic" }
 
 fundamental_data_type_local = { version = "*", path = "../../alias/fundamental_data_type", package = "fundamental_data_type" }
 fundamental_data_type_published = { version = "*", package = "fundamental_data_type" }
@@ -118,8 +119,15 @@ wlang_local = { version = "*", path = "../../move/wlang", package = "wlang" }
 wlang_published = { version = "*", package = "wlang" }
 wpublisher_local = { version = "*", path = "../../move/wpublisher", package = "wpublisher", optional = true }
 wpublisher_published = { version = "*", package = "wpublisher", optional = true }
+
+# test
+
+wtest_basic_local = { version = "*", path = "../../rust/wtest_basic", package = "wtest_basic" }
+wtest_basic_published = { version = "*", package = "wtest_basic" }
 wtest_local = { version = "*", path = "../../move/wtest", package = "wtest" }
 wtest_published = { version = "*", package = "wtest" }
+test_tools_local = { version = "*", path = "../../rust/test_tools", package = "test_tools" }
+test_tools_published = { version = "*", package = "test_tools" }
 
 [dev-dependencies]
 # test_tools = { version = "~0.1", path = "../../rust/test_tools" }
