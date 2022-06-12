@@ -19,7 +19,7 @@ Basic exceptions handling mechanism.
 ### To add to your project
 
 ```sh
-cargo add werror
+cargo add error_tools
 ```
 
 ### Try out from the repository
