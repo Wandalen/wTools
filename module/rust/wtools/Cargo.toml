@@ -24,13 +24,6 @@ all-features = true
 
 include = [
   "/rust/impl/wtools_lib.rs",
-  # "/rust/impl/dt/mod.rs",
-  # "/rust/impl/iter/mod.rs",
-  # "/rust/impl/meta/mod.rs",
-  # "/rust/impl/typing/mod.rs",
-  # "/rust/impl/convert/mod.rs",
-  # "/rust/impl/time/mod.rs",
-  # xxx : check
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -422,6 +415,3 @@ diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", o
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-
-# xxx : import
-# lexical = { version = "~6.1" }
