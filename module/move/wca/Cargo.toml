@@ -25,9 +25,10 @@ include = [
 ]
 
 [features]
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
 use_std = []
 use_alloc = []
-default = [ "use_std" ]
 
 [lib]
 name = "wca"
@@ -44,7 +45,6 @@ path = "rust/test/_integration_test/smoke_test.rs"
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }
 former = { version = "~0.1", path = "../../rust/former" }
-strs_tools = { version = "~0.1", path = "../../rust/strs_tools" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

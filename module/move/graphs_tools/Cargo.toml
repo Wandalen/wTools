@@ -37,9 +37,10 @@ full = [
   "use_alloc",
   "cell_factory",
 ]
-cell_factory = []
 use_std = []
 use_alloc = []
+
+cell_factory = []
 
 [lib]
 name = "graphs_tools"

@@ -17,6 +17,13 @@
 #[ path = "./inc.rs" ]
 pub mod ca;
 
+/// Parser.
+#[ cfg( feature = "use_std" ) ]
+pub mod string
+{
+  pub use wtools::string::*;
+}
+
 #[ cfg( feature = "use_std" ) ]
 #[ doc( inline ) ]
 pub use ca::*;

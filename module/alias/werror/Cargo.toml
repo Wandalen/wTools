@@ -31,24 +31,22 @@ include = [
 # = features
 
 [features]
-
-error_handling_for_lib = [ "error_tools/error_handling_for_lib" ]
-error_handling_for_app = [ "error_tools/error_handling_for_app" ]
-
-# common
-
-use_std = [ "error_tools/use_std" ]
-use_alloc = [ "error_tools/use_alloc" ]
 default = [
   "use_std",
   "error_handling_for_lib",
-  "error_handling_for_app",
+  "error_handling_for_app"
 ]
 full = [
   "use_std",
+  "use_alloc",
   "error_handling_for_lib",
-  "error_handling_for_app",
+  "error_handling_for_app"
 ]
+use_std = []
+use_alloc = []
+
+error_handling_for_lib = [ "error_tools/error_handling_for_lib" ]
+error_handling_for_app = [ "error_tools/error_handling_for_app" ]
 
 # = entry
 

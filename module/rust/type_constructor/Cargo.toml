@@ -41,11 +41,12 @@ full = [
   "make",
   "vectorized_from",
 ]
+use_std = []
+use_alloc = []
+
 many = []
 make = []
 vectorized_from = []
-use_std = []
-use_alloc = []
 
 [lib]
 name = "type_constructor"

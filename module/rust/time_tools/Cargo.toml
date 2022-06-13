@@ -29,10 +29,19 @@ include = [
 ]
 
 [features]
+default = [
+  "use_std",
+  "now",
+]
+full = [
+  "use_std",
+  "use_alloc",
+  "now",
+]
 use_std = []
 use_alloc = []
-now = [ "chrono", "chrono/default", "use_std" ]
-default = [ "now", "use_std", "use_alloc" ]
+
+now = [ "use_std", "chrono", "chrono/default" ]
 
 [lib]
 name = "time_tools"
