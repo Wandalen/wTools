@@ -62,11 +62,20 @@ pub mod prelude
     HashSet as Set,
     HashMap,
     HashSet,
+    VecDeque,
     BTreeMap,
     BTreeSet,
     BinaryHeap,
     LinkedList,
-    VecDeque,
+  };
+
+  #[ cfg( any( feature = "use_std", feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "prelude" ) ]
+  #[ doc( inline ) ]
+  pub use std::vec::
+  {
+    Vec,
+    Vec as DynArray,
   };
 
 }

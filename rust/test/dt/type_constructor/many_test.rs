@@ -550,6 +550,7 @@ tests_impls!
 
   //
 
+  // xxx : extend
   #[ test ]
   fn struct_basic()
   {
@@ -582,6 +583,16 @@ tests_impls!
     let mut got : TheModule::Many< f32 > = ( 13.0 ).into();
     a_id!( got.len(), 1 );
     a_id!( got.pop(), Some( 13.0 ) );
+
+    /* test.case( "iterate" ) */
+    // let mut got : TheModule::Many< f32 > = [ 1.0, 2.0, 3.0 ].into();
+    // a_id!( got.len(), 3 );
+    // for e in got
+    // {
+    //   dbg!( e );
+    // }
+    // a_id!( got.len(), 3 );
+    // xxx
 
   }
 

@@ -127,8 +127,6 @@ pub( crate ) mod private
       From< [ $ParamName ; N ] >
       for $Name
       < $ParamName >
-      // where
-      //   $ParamName : Clone,
       {
         #[ inline ]
         fn from( src : [ $ParamName ; N ] ) -> Self

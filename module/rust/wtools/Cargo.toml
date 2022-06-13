@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.2.13"
+version = "0.2.15"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -150,6 +150,7 @@ string_default = [
   "string_use_std",
   "string_indentation",
   "string_parse",
+  "string_parse_number",
   "string_split",
 ]
 string_full = [
@@ -157,6 +158,7 @@ string_full = [
   "string_use_std",
   "string_indentation",
   "string_parse",
+  "string_parse_number",
   "string_split",
 ]
 string_use_std = [ "error", "strs_tools/use_std" ]
