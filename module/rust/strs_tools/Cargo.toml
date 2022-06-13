@@ -28,8 +28,6 @@ include = [
 ]
 
 [features]
-use_std = []
-use_alloc = []
 default = [
   "use_std",
   "indentation",
@@ -44,6 +42,8 @@ full = [
   "split",
   "parse_number",
 ]
+use_std = []
+use_alloc = []
 
 indentation = []
 parse  = [ "split", "parse_number" ]

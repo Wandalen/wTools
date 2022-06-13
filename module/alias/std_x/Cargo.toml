@@ -48,7 +48,7 @@ path = "rust/test/_integration_test/smoke_test.rs"
 iter = [ "wtools/iter" ]
 iter_default = [
   "iter",
-  "wtools/iter_default"
+  "wtools/iter_default",
 ]
 iter_full = [
   "wtools/iter_full",
@@ -79,6 +79,9 @@ meta_full = [
   "meta_options",
   "meta_collection_make",
 ]
+meta_use_std = [ "wtools/meta_use_std" ]
+meta_use_alloc = [ "wtools/meta_use_alloc" ]
+
 meta_for_each = [ "meta", "wtools/meta_for_each" ]
 meta_impls_index = [ "meta", "wtools/meta_impls_index" ]
 meta_mod_interface = [ "meta", "wtools/meta_mod_interface" ]
@@ -101,6 +104,9 @@ typing_full = [
   "typing_is_slice",
   "typing_implements",
 ]
+typing_use_std = [ "wtools/typing_use_std" ]
+typing_use_alloc = [ "wtools/typing_use_alloc" ]
+
 typing_nightly = [ "typing", "nightly", "wtools/typing_nightly" ]
 typing_inspect_type = [ "typing", "wtools/typing_inspect_type" ]
 typing_is_slice = [ "typing", "wtools/typing_is_slice" ]
@@ -117,6 +123,9 @@ time_full = [
   "time",
   "time_now",
 ]
+time_use_std = [ "wtools/time_use_std" ]
+time_use_alloc = [ "wtools/time_use_alloc" ]
+
 time_now = [ "time", "wtools/time_now" ]
 
 # string
@@ -232,6 +241,9 @@ derive_default = [
   "derive_from_str",
 
 ]
+derive_use_std = [ "wtools/derive_use_std" ]
+derive_use_alloc = [ "wtools/derive_use_alloc" ]
+
 derive_nightly = [ "derive", "nightly", "wtools/derive_nightly" ]
 derive_enable_track_caller = [ "derive", "wtools/derive_enable_track_caller" ]
 
@@ -284,6 +296,9 @@ dt_full = [
   "dt_vectorized_from",
   "dt_interval",
 ]
+dt_use_std = [ "wtools/dt_use_std" ]
+dt_use_alloc = [ "wtools/dt_use_alloc" ]
+
 dt_either = [ "dt", "wtools/dt_either" ]
 dt_type_constructor = [ "dt", "wtools/dt_type_constructor" ]
 dt_make = [ "dt", "wtools/dt_make" ]
@@ -303,28 +318,14 @@ diagnostics_default = [
   "diagnostics_runtime_assertions",
   "diagnostics_compiletime_assertions",
 ]
+diagnostics_use_std = [ "wtools/diagnostics_use_std" ]
+diagnostics_use_alloc = [ "wtools/diagnostics_use_alloc" ]
+
 diagnostics_runtime_assertions = [ "diagnostics", "wtools/diagnostics_runtime_assertions" ]
 diagnostics_compiletime_assertions = [ "diagnostics", "wtools/diagnostics_compiletime_assertions" ]
 
 # must be empty
 nightly = []
-
-use_std = []
-use_alloc = []
-
-full = [
-  "iter_full",
-  "meta_full",
-  "typing_full",
-  "time_full",
-  "string_full",
-  "error_full",
-  "derive_full",
-  "dt_full",
-  "diagnostics_full",
-  "use_std",
-  "use_alloc",
-]
 
 default = [
   "iter_default",
@@ -338,6 +339,21 @@ default = [
   "diagnostics_default",
   "use_std",
 ]
+full = [
+  "iter_full",
+  "meta_full",
+  "typing_full",
+  "time_full",
+  "string_full",
+  "error_full",
+  "derive_full",
+  "dt_full",
+  "diagnostics_full",
+  "use_std",
+  "use_alloc",
+]
+use_std = []
+use_alloc = []
 
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }

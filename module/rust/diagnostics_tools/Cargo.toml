@@ -28,12 +28,22 @@ include = [
 ]
 
 [features]
+default = [
+  "runtime_assertions",
+  "compiletime_assertions",
+  "use_std"
+]
+full = [
+  "runtime_assertions",
+  "compiletime_assertions",
+  "use_std",
+  "use_alloc"
+]
 use_std = []
 use_alloc = []
+
 runtime_assertions = [ "pretty_assertions" ] # run-time assertions
 compiletime_assertions = [] # compile-time assertions
-default = [ "runtime_assertions", "compiletime_assertions", "use_std" ]
-full = [ "runtime_assertions", "compiletime_assertions", "use_std", "use_alloc" ]
 
 [lib]
 name = "diagnostics_tools"

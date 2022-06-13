@@ -31,21 +31,12 @@ include = [
 # = features
 
 [features]
-
-# common
-
-nightly = [] # must be empty
-
+default = [ "use_std" ]
+full = [ "use_std" ]
 use_std = []
 use_alloc = []
 
-full = [
-  "use_std",
-]
-
-default = [
-  "use_std",
-]
+nightly = [] # must be empty
 
 [lib]
 name = "test_tools"

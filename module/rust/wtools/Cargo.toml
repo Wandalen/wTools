@@ -62,7 +62,7 @@ iter = [ "iter_tools" ]
 iter_default = [
   "iter",
   "iter_use_std",
-  "iter_tools/default"
+  "iter_tools/default",
 ]
 iter_full = [
   "iter",
@@ -93,6 +93,9 @@ meta_full = [
   "meta_options",
   "meta_collection_make",
 ]
+meta_use_std = [ "meta", "meta_tools/use_std" ]
+meta_use_alloc = [ "meta", "meta_tools/use_alloc" ]
+
 meta_for_each = [ "meta", "meta_tools/for_each" ]
 meta_impls_index = [ "meta", "meta_tools/impls_index" ]
 meta_mod_interface = [ "meta", "meta_tools/mod_interface" ]
@@ -115,6 +118,9 @@ typing_full = [
   "typing_is_slice",
   "typing_implements",
 ]
+typing_use_std = [ "typing", "typing_tools/use_std" ]
+typing_use_alloc = [ "typing", "typing_tools/use_alloc" ]
+
 typing_nightly = [ "typing", "nightly", "typing_tools/nightly", ]
 typing_inspect_type = [ "typing", "typing_tools/inspect_type" ]
 typing_is_slice = [ "typing", "typing_tools/is_slice" ]
@@ -131,6 +137,9 @@ time_full = [
   "time",
   "time_now",
 ]
+time_use_std = [ "time", "time_tools/use_std" ]
+time_use_alloc = [ "time", "time_tools/use_alloc" ]
+
 time_now = [ "time", "time_tools/now" ]
 
 # string
@@ -252,6 +261,9 @@ derive_default = [
 
 ]
 
+derive_use_std = [ "derive", "derive_tools/use_std" ]
+derive_use_alloc = [ "derive", "derive_tools/use_alloc" ]
+
 derive_nightly = [ "derive", "nightly", "derive_tools/nightly" ]
 derive_enable_track_caller = [ "derive", "derive_tools/enable_track_caller" ]
 
@@ -333,6 +345,9 @@ diagnostics_default = [
   "diagnostics_runtime_assertions",
   "diagnostics_compiletime_assertions",
 ]
+diagnostics_use_std = [ "diagnostics", "diagnostics_tools/use_std" ]
+diagnostics_use_alloc = [ "diagnostics", "diagnostics_tools/use_alloc" ]
+
 diagnostics_runtime_assertions = [ "diagnostics_tools/runtime_assertions" ]
 diagnostics_compiletime_assertions = [ "diagnostics_tools/compiletime_assertions" ]
 

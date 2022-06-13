@@ -30,10 +30,23 @@ include = [
 ]
 
 [features]
+default = [
+  "use_std",
+  "implements",
+  "is_slice",
+  "inspect_type",
+]
+full = [
+  "use_std",
+  "use_alloc",
+  "implements",
+  "is_slice",
+  "inspect_type",
+]
 use_std = []
 use_alloc = []
+
 nightly = [ "inspect_type/nightly" ]
-default = [ "implements", "is_slice", "inspect_type", "use_std" ]
 
 [lib]
 name = "typing_tools"
