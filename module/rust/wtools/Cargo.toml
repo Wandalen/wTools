@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.2.15"
+version = "0.2.16"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -249,11 +249,6 @@ derive_default = [
   "derive_display",
   "derive_from_str",
 
-  # "derive_from_str",
-  # "derive_from_str_std",
-  # "derive_from_str_regex",
-  # "derive_from_str_once_cell",
-
 ]
 
 derive_use_std = [ "derive", "derive_tools/use_std" ]
@@ -287,9 +282,6 @@ derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
 
 derive_display = [ "derive", "derive_tools/derive_display", "parse-display" ]
 derive_from_str = [ "derive", "derive_tools/derive_from_str", "parse-display" ]
-# derive_from_str_std = [ "derive", "parse-display/std" ]
-# derive_from_str_regex = [ "derive", "parse-display/regex", "parse-display/once_cell" ]
-# derive_from_str_once_cell = [ "derive", "parse-display/once_cell" ]
 
 # dt
 
@@ -387,8 +379,7 @@ iter_tools = { version = "~0.1", path = "../../rust/iter_tools", optional = true
 
 # meta
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools", optional = true, default-features = false }
-impls_index = { version = "~0.1", path = "../../rust/impls_index" }
-# despite impls_index is imported by meta_tools it should also be imported immediatly
+impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by meta_tools it should also be imported immediatly
 
 # typing
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = true, default-features = false }
@@ -404,8 +395,7 @@ error_tools = { version = "~0.1", path = "../../rust/error_tools", optional = tr
 
 # derive
 derive_tools = { version = "~0.1", path = "../../rust/derive_tools", optional = true, default-features = false }
-parse-display = { version = "~0.5", optional = true, default-features = false }
-# have to be here because of problem with FromStr
+parse-display = { version = "~0.5", optional = true, default-features = false } # have to be here because of problem with FromStr
 
 # data_type
 data_type = { version = "~0.1", path = "../../rust/data_type", optional = true, default-features = false }
