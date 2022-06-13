@@ -126,6 +126,7 @@ string_default = [
   "string_use_std",
   "string_indentation",
   "string_parse",
+  "string_parse_number",
   "string_split",
 ]
 string_full = [
@@ -133,6 +134,7 @@ string_full = [
   "string_use_std",
   "string_indentation",
   "string_parse",
+  "string_parse_number",
   "string_split",
 ]
 string_use_std = [ "error", "wtools/use_std" ]
