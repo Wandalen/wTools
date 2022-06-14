@@ -4,7 +4,7 @@
 
 <!-- # Repository :: Tools -->
 
-<!-- {{# generate.module_header{} #}} -->
+<!-- {{# generate.main_header{} #}} -->
 
 [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fwtools_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20wtools_trivial_sample/https://github.com/Wandalen/wTools)
@@ -12,9 +12,9 @@
 
 Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 
-### Rust tools
-
 <!-- {{# generate.modules_index{} #}} -->
+
+### Rust tools
 
 | Module | Stability | Master | Alpha | Docs | Sample |
 |--------|-----------|--------|-------|:----:|:------:|
@@ -44,8 +44,6 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 ### Rust modules to be moved out to other repositories
 
-<!-- {{# generate.modules_index{} #}} -->
-
 | Module | Stability | Master | Alpha | Docs | Sample |
 |--------|-----------|--------|-------|:----:|:------:|
 | [automata_tools](./module/move/automata_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/automata_tools?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModuleAutomataToolsPush.yml) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/automata_tools/alpha?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModuleAutomataToolsPush.yml) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/automata_tools) |  [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fautomata_tools_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20automata_tools_trivial_sample/https://github.com/Wandalen/wTools) |
@@ -56,9 +54,9 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 | [fs_tools](./module/move/fs_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/fs_tools?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModuleFsToolsPush.yml) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/fs_tools/alpha?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModuleFsToolsPush.yml) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/fs_tools) | [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ffs_tools_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20fs_tools_trivial_sample/https://github.com/Wandalen/wTools) |
 | [wlang](./module/move/wlang) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/wlang?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModuleFsToolsPush.yml) | [![rust-status](https://img.shields.io/github/workflow/status/Wandalen/wTools/wlang/alpha?label=)](https://github.com/Wandalen/wTools/actions/workflows/ModulewLangPush.yml) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/wlang) | [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fwlang_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20wlang_trivial_sample/https://github.com/Wandalen/wTools) |
 
-### JavaScript tools
+<!-- {{# generate.js_modules_index{} #}} -->
 
-<!-- {{# generate.modules_index{} #}} -->
+### JavaScript tools
 
 | Module | Stability | Master |
 |--------|-----------|--------|

@@ -8,6 +8,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 ### Sample :: implements
 
 <!-- {{# generate.module_sample{} #}} -->
+<!-- generates sample in directory `./sample/rust` using data about samples in `Cargo.toml` -->
 
 ```rust,editable
 #[ cfg( feature = "typing_default" ) ]
