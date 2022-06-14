@@ -833,8 +833,8 @@ pub( crate ) mod private
       )>
       for $Name
       < $( $( $( $ParamName1 ),+ )? )? >
-      where
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
+      // where
+      //   $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
       {
         #[ inline ]
         fn as_tuple( &self ) ->
@@ -862,8 +862,8 @@ pub( crate ) mod private
       >
       for $Name
       < $( $( $( $ParamName1 ),+ )? )? >
-      where
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
+      // where
+      //   $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
       {
         #[ inline ]
         fn as_array( &self ) ->
@@ -889,8 +889,8 @@ pub( crate ) mod private
       >
       for $Name
       < $( $( $( $ParamName1 ),+ )? )? >
-      where
-        $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
+      // where
+      //   $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? > : Clone,
       {
         #[ inline ]
         fn as_slice( &self ) ->
@@ -905,7 +905,6 @@ pub( crate ) mod private
       $crate::_if_make!
       {
 
-        // #[ cfg( feature = $crate::Make" ) ]
         impl
         <
           $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
@@ -925,7 +924,6 @@ pub( crate ) mod private
           }
         }
 
-        // #[ cfg( feature = $crate::Make" ) ]
         impl
         <
           $( $( $( $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )? ),+ , )? )?
@@ -957,34 +955,6 @@ pub( crate ) mod private
     };
 
   }
-
-//
-
-// #[derive(Debug, Clone, PartialEq, Eq, Default)] pub  struct Pair < T1, T2, >
-// (pub T1, pub T2) ;
-//
-// //
-//
-// impl < T1, T2, Into1 : Into < T1 >, Into2 : Into < T2 >, >
-// From < (Into1, Into2,) > for Pair < T1, T2 >
-// {
-//     #[inline] fn from(src : (Into1, Into2)) -> Self
-//     { Self(src.0.into(), src.1.into()) }
-// }
-//
-// //
-//
-// impl < T1, T2, Into1 : Into < T1 >, Into2 : Into < T2 >, > From < Pair <
-// Into1, Into2, > > for Pair < T1, T2 >
-// {
-//     #[inline] fn from(src : (Into1, Into2)) -> Self
-//     { Self(src.0.into(), src.1.into()) }
-// }
-//
-// //
-//
-// impl < T1, T2 > From < Pair < T1, T2 > > for(T1, T2)
-// { #[inline] fn from(src : Pair < T1, T2 >) -> Self { (src.0, src.1) } }
 
 //
 
@@ -1022,25 +992,6 @@ pub( crate ) mod private
 
   }
   // trace_macros!( false );
-
-//   types!
-//   {
-//
-//     ///
-//     /// Type constructor to wrap pair of the same type.
-//     ///
-//     /// ### Sample
-//     /// ```
-//     /// let two_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( ( 13, 31 ) );
-//     /// dbg!( two_i32_in_tuple );
-//     /// // vec_of_i32_in_tuple = HomoPair( 13, 31 )
-//     /// ```
-//     ///
-//
-//     #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
-//     pub pair HomoPair : < T >;
-//
-//   }
 
   pub use _pair;
 }

@@ -5,15 +5,16 @@ pub( crate ) mod private
   use std::rc::Rc;
   use core::fmt;
   use crate::*;
-  use wtools::error::Error;
+  use wtools::error::BasicError;
 
-  //
+  // qqq : for Dima : adjust formatting
 
   ///
   /// Handle for command routine.
   ///
 
-  pub struct OnCommand( Option<Rc<dyn Fn( &instruction::Instruction ) -> Result<(), Error>>> );
+  // qqq : for Dima : make alias for Result with BasicError
+  pub struct OnCommand( Option< Rc< dyn Fn( &instruction::Instruction ) -> Result< (), BasicError > > > );
 
   impl OnCommand
   {
@@ -30,7 +31,7 @@ pub( crate ) mod private
       }
     }
     /// Perform callback.
-    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result<(), Error>
+    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result< (), BasicError >
     {
       if self.0.is_some()
       {
@@ -50,9 +51,9 @@ pub( crate ) mod private
     }
   }
 
-  impl From<&'static dyn Fn( &instruction::Instruction ) -> Result<(), Error>> for OnCommand
+  impl From<&'static dyn Fn( &instruction::Instruction ) -> Result< (), BasicError >> for OnCommand
   {
-    fn from( src : &'static dyn Fn( &instruction::Instruction ) -> Result<(), Error> ) -> Self
+    fn from( src : &'static dyn Fn( &instruction::Instruction ) -> Result< (), BasicError > ) -> Self
     {
       OnCommand( Some( Rc::new( src ) ) )
     }
@@ -108,18 +109,18 @@ pub( crate ) mod private
   impl Command
   {
     /// Execute callback.
-    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result<(), Error>
+    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result< (), BasicError >
     {
       if self.subject_hint.len() == 0 && instruction.subject.len() != 0
       {
-        return Err( Error::new( "Unexpected subject." ) );
+        return Err( BasicError::new( "Unexpected subject." ) );
       }
 
       for ( key, _value ) in &instruction.properties_map
       {
         if self.properties_hints.get( key.as_str() ).is_none()
         {
-          return Err( Error::new( "Unknown option." ) );
+          return Err( BasicError::new( "Unknown option." ) );
         }
       }
       if self.routine.callable()

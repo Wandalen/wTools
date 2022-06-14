@@ -155,6 +155,33 @@ tests_impls_optional!
   //
 
   #[ test ]
+  fn no_parameter_no_derive()
+  {
+
+    mod mod1
+    {
+      #[ derive( Clone ) ]
+      pub struct Float
+      (
+        pub f32,
+      );
+    }
+
+    // trace_macros!( true );
+    TheModule::types!
+    {
+      single Single : mod1::Float;
+    }
+    // trace_macros!( false );
+
+    /* test.case( "smoke test" ) */
+    let instance1 = Single( mod1::Float( 13.0 ) );
+
+  }
+
+  //
+
+  #[ test ]
   fn parametrized()
   {
 
@@ -1065,6 +1092,7 @@ tests_index!
   basic,
   vis,
   empty_parameter,
+  no_parameter_no_derive,
   parametrized,
   parametrized_complex,
   parametrized_multiple,

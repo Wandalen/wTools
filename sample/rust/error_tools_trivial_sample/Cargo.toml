@@ -1,5 +1,5 @@
 [package]
-name = "werror_trivial_sample"
+name = "error_tools_trivial_sample"
 version = "0.0.0"
 edition = "2021"
 publish = false
@@ -9,4 +9,4 @@ use_std = []
 default = [ "use_std" ]
 
 [dependencies]
-werror = { version = "*", path = "../../../module/rust/werror" }
+error_tools = { version = "*", path = "../../../module/rust/error_tools" }

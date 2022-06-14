@@ -433,8 +433,8 @@ pub( crate ) mod private
       $crate::AsTuple< ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, ) >
       for
       $Name $( < $( $ParamName ),* > )?
-      where
-        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      // where
+      //   $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
         #[ inline ]
         fn as_tuple( &self ) -> &( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, )
@@ -452,8 +452,8 @@ pub( crate ) mod private
       $crate::AsArray< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , 1 >
       for
       $Name $( < $( $ParamName ),* > )?
-      where
-        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      // where
+      //   $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
         #[ inline ]
         fn as_array( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; 1 ]
@@ -471,8 +471,8 @@ pub( crate ) mod private
       $crate::AsSlice< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
       for
       $Name $( < $( $ParamName ),* > )?
-      where
-        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      // where
+      //   $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
         #[ inline ]
         fn as_slice( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ]

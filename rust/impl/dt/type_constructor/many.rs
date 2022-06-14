@@ -127,8 +127,6 @@ pub( crate ) mod private
       From< [ $ParamName ; N ] >
       for $Name
       < $ParamName >
-      where
-        $ParamName : Clone,
       {
         #[ inline ]
         fn from( src : [ $ParamName ; N ] ) -> Self
@@ -333,8 +331,8 @@ pub( crate ) mod private
       < [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] >
       for $Name
       $( < $( $ParamName ),* > )?
-      where
-        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      // where
+      //   $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
         #[ inline ]
         fn from( src : [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] ) -> Self
@@ -364,8 +362,8 @@ pub( crate ) mod private
       $crate::AsSlice< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
       for
       $Name $( < $( $ParamName ),* > )?
-      where
-        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+      // where
+      //   $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
         #[ inline ]
         fn as_slice( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ]

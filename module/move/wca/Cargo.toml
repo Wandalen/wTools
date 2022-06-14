@@ -1,6 +1,6 @@
 [package]
 name = "wca"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2018"
 authors = ["Kostiantyn Wandalen <wandalen@obox.systems>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>" ]
 license = "MIT"
@@ -25,9 +25,10 @@ include = [
 ]
 
 [features]
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
 use_std = []
 use_alloc = []
-default = [ "use_std" ]
 
 [lib]
 name = "wca"
@@ -44,8 +45,6 @@ path = "rust/test/_integration_test/smoke_test.rs"
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }
 former = { version = "~0.1", path = "../../rust/former" }
-wstring_tools = { version = "~0.1", path = "../../rust/wstring_tools" }
-# maplit = "1.0.2"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

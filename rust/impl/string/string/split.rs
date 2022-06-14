@@ -248,7 +248,7 @@ pub( crate ) mod private
   ///
   /// ### Sample
   /// ```
-  ///   let iter = wstring_tools::string::split()
+  ///   let iter = strs_tools::string::split()
   ///   .src( "abc def" )
   ///   .delimeter( " " )
   ///   .perform();

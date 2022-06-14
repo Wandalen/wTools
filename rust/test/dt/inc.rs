@@ -8,3 +8,5 @@ mod either_test;
 mod type_constructor;
 #[ cfg( any( feature = "interval", feature = "dt_interval" ) ) ]
 mod interval_test;
+#[ cfg( any( feature = "prelude", feature = "dt_prelude" ) ) ]
+mod prelude_test;

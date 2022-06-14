@@ -1,4 +1,4 @@
-#![ cfg_attr( not( feature = "use_std"), no_std ) ]
+#![ cfg_attr( not( feature = "use_std" ), no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/graph_logo_v1_trans.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/graph_logo_v1_trans.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/wautomata/latest/wautomata/" ) ]

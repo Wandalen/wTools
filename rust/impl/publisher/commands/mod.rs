@@ -57,7 +57,7 @@ pub fn commands_form() -> std::collections::HashMap<String, wca::command::Comman
 ///
 
 #[ cfg( feature = "use_std" ) ]
-pub fn print_help( ca_map : &std::collections::HashMap<String, wca::Command> ) -> Result<(), wtools::error::Error>
+pub fn print_help( ca_map : &std::collections::HashMap<String, wca::Command> ) -> Result<(), wtools::error::BasicError>
 {
   println!( "Illformed command" );
   for ( command_name, command_descriptor ) in ca_map.iter()

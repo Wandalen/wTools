@@ -1,6 +1,6 @@
 [package]
 name = "proc_macro_tools"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -29,9 +29,10 @@ include = [
 ]
 
 [features]
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
 use_std = []
 use_alloc = []
-default = [ "use_std" ]
 
 [lib]
 name = "proc_macro_tools"
@@ -46,9 +47,8 @@ name = "proc_macro_tools_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "proc_macro_trivial_sample"
+name = "proc_macro_tools_trivial_sample"
 path = "sample/rust/proc_macro_tools_trivial_sample/src/main.rs"
-# qqq : for Dima : normalize names of samples, missing postfix _sample
 
 [dependencies]
 proc-macro2 = { version = "~1.0", features = [] }
