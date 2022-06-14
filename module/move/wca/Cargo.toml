@@ -1,6 +1,6 @@
 [package]
 name = "wca"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2018"
 authors = ["Kostiantyn Wandalen <wandalen@obox.systems>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>" ]
 license = "MIT"
