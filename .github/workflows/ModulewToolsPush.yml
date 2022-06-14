@@ -17,17 +17,6 @@ jobs :
       module_name : 'wtools'
       commit_message : ${{ github.event.head_commit.message }}
 
-  # wTools
-
-  test_wTools :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
-    with :
-      manifest_path : 'module/alias/wTools/Cargo.toml'
-      # module_name : 'wTools'
-      module_name : 'wtools_alias'
-      commit_message : ${{ github.event.head_commit.message }}
-      with_smoke : local
-
   # std_tools
 
   test_std_tools :

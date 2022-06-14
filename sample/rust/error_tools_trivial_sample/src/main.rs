@@ -1,11 +1,11 @@
 #[ cfg( feature = "use_std" ) ]
-use werror::*;
+use error_tools::*;
 
 fn main()
 {
   #[ cfg( feature = "use_std" ) ]
   {
-    let err1 = Error::new( "Some error" );
+    let err1 = BasicError::new( "Some error" );
     println!( "err1 : {}", err1 );
     // < err1 : Some error
   }

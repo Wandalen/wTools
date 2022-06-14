@@ -1,4 +1,4 @@
-#![ cfg_attr( not( feature = "use_std"), no_std ) ]
+#![ cfg_attr( not( feature = "use_std" ), no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/data_type/latest/data_type/" ) ]
@@ -52,6 +52,32 @@ pub mod exposed
 pub mod prelude
 {
   pub use super::dt::prelude::*;
+
+  #[ cfg( feature = "use_std" ) ]
+  #[ cfg( feature = "prelude" ) ]
+  #[ doc( inline ) ]
+  pub use std::collections::
+  {
+    HashMap as Map,
+    HashSet as Set,
+    HashMap,
+    HashSet,
+    VecDeque,
+    BTreeMap,
+    BTreeSet,
+    BinaryHeap,
+    LinkedList,
+  };
+
+  #[ cfg( any( feature = "use_std", feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "prelude" ) ]
+  #[ doc( inline ) ]
+  pub use std::vec::
+  {
+    Vec,
+    Vec as DynArray,
+  };
+
 }
 
 // zzz : use

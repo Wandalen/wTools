@@ -1,7 +1,5 @@
 #![ allow( deprecated ) ]
 #![ allow( unused_imports ) ]
-
-// use test_tools::*;
 use super::*;
 
 //
@@ -17,7 +15,7 @@ tests_impls!
 
     // test.case( "basic" );
 
-    let err1 = TheModule::Error::new( "Some error" );
+    let err1 = TheModule::BasicError::new( "Some error" );
     a_id!( err1.to_string(), "Some error" );
     a_id!( err1.description(), "Some error" );
     a_id!( err1.msg(), "Some error" );
@@ -25,14 +23,14 @@ tests_impls!
 
     // test.case( "compare" );
 
-    let err1 = TheModule::Error::new( "Some error" );
-    let err2 = TheModule::Error::new( "Some error" );
+    let err1 = TheModule::BasicError::new( "Some error" );
+    let err2 = TheModule::BasicError::new( "Some error" );
     a_id!( err1, err2 );
     a_id!( err1.description(), err2.description() );
 
     // test.case( "clone" );
 
-    let err1 = TheModule::Error::new( "Some error" );
+    let err1 = TheModule::BasicError::new( "Some error" );
     let err2 = err1.clone();
     a_id!( err1, err2 );
     a_id!( err1.description(), err2.description() );
@@ -44,8 +42,8 @@ tests_impls!
   fn use1()
   {
 
-    use std::error::Error as ErrorAdapter;
-    use TheModule::Error;
+    use std::error::Error as ErrorInterface;
+    use TheModule::BasicError as Error;
 
     // test.case( "basic" );
 
@@ -61,11 +59,11 @@ tests_impls!
 
   fn use2()
   {
-    use TheModule::{ Error, ErrorAdapter };
+    use TheModule::{ BasicError, ErrorInterface };
 
     // test.case( "basic" );
 
-    let err1 = Error::new( "Some error" );
+    let err1 = BasicError::new( "Some error" );
     a_id!( err1.to_string(), "Some error" );
     a_id!( err1.description(), "Some error" );
     a_id!( err1.msg(), "Some error" );
@@ -81,7 +79,7 @@ tests_impls!
 
     // test.case( "basic" );
 
-    let err1 = TheModule::Error::new( "Some error" );
+    let err1 = TheModule::BasicError::new( "Some error" );
     a_id!( err1.to_string(), "Some error" );
     a_id!( err1.description(), "Some error" );
     a_id!( err1.msg(), "Some error" );

@@ -1,5 +1,5 @@
 [package]
-name = "wstring_tools_trivial_sample"
+name = "strs_tools_trivial_sample"
 version = "0.0.0"
 edition = "2021"
 publish = false
@@ -10,4 +10,4 @@ split = []
 default = [ "use_std", "split" ]
 
 [dependencies]
-wstring_tools = { version = "*", path = "../../../module/rust/wstring_tools" }
+strs_tools = { version = "*", path = "../../../module/rust/strs_tools" }

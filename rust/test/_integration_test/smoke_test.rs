@@ -8,7 +8,7 @@ struct SmokeModuleTest< 'a >
 {
   pub dependency_name : &'a str,
   pub version : &'a str,
-  pub local_path : &'a str,
+  pub local_path_clause : &'a str,
   pub code : String,
   pub test_path : std::path::PathBuf,
   pub test_postfix : &'a str,
@@ -27,7 +27,7 @@ impl< 'a > SmokeModuleTest< 'a >
     {
       dependency_name,
       version : "*",
-      local_path : "",
+      local_path_clause : "",
       code : "".to_string(),
       test_path,
       test_postfix,
@@ -40,9 +40,9 @@ impl< 'a > SmokeModuleTest< 'a >
     self
   }
 
-  fn local_path( &mut self, local_path : &'a str ) -> &mut SmokeModuleTest< 'a >
+  fn local_path_clause( &mut self, local_path_clause : &'a str ) -> &mut SmokeModuleTest< 'a >
   {
-    self.local_path = local_path;
+    self.local_path_clause = local_path_clause;
     self
   }
 
@@ -80,14 +80,14 @@ impl< 'a > SmokeModuleTest< 'a >
 
     /* setup config */
     #[ cfg( target_os = "windows" ) ]
-    let local_path = if self.local_path == "" { "".to_string() } else { format!( ", path = \"{}\"", self.local_path.escape_default() ) };
+    let local_path_clause = if self.local_path_clause == "" { "".to_string() } else { format!( ", path = \"{}\"", self.local_path_clause.escape_default() ) };
     #[ cfg( not( target_os = "windows" ) ) ]
-    let local_path = if self.local_path == "" { "".to_string() } else { format!( ", path = \"{}\"", self.local_path ) };
-    let dependencies_section = format!( "{} = {{ version = \"{}\"{} }}", self.dependency_name, self.version, &local_path );
+    let local_path_clause = if self.local_path_clause == "" { "".to_string() } else { format!( ", path = \"{}\"", self.local_path_clause ) };
+    let dependencies_section = format!( "{} = {{ version = \"{}\" {} }}", self.dependency_name, self.version, &local_path_clause );
     let config_data = format!
     (
       "[package]
-      edition = \"2018\"
+      edition = \"2021\"
       name = \"{}_smoke_test\"
       version = \"0.0.1\"
 
@@ -98,7 +98,7 @@ impl< 'a > SmokeModuleTest< 'a >
     );
     let mut config_path = test_path.clone();
     config_path.push( "Cargo.toml" );
-    dbg!( &config_data );
+    println!( "\n{}\n", config_data );
     std::fs::write( config_path, config_data ).unwrap();
 
     /* write code */
@@ -115,9 +115,9 @@ impl< 'a > SmokeModuleTest< 'a >
       {{
         {}
       }}",
-      self.code
+      self.code,
     );
-    dbg!( &code );
+    println!( "\n{}\n", code );
     std::fs::write( &test_path, code ).unwrap();
 
     Ok( () )
@@ -164,7 +164,7 @@ impl< 'a > SmokeModuleTest< 'a >
 //
 //     new,
 //     version,
-//     local_path,
+//     local_path_clause,
 //     code,
 //     form,
 //     perform,
@@ -200,7 +200,7 @@ fn smoke_test_run( test_name : &'static str, local : bool )
   t.version( "*" );
   if local
   {
-    t.local_path( module_path.as_str() );
+    t.local_path_clause( module_path.as_str() );
   }
 
   t.form().unwrap();

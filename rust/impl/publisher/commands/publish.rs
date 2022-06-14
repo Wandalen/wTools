@@ -8,13 +8,13 @@ use core::fmt::Write;
 use std::path::PathBuf;
 use toml_edit::value;
 use cargo_metadata::MetadataCommand;
-use wtools::error::Error;
+use wtools::error::BasicError;
 
 ///
 /// Publish package.
 ///
 
-pub fn publish( instruction : &instruction::Instruction ) -> Result<(), Error>
+pub fn publish( instruction : &instruction::Instruction ) -> Result< (), BasicError >
 {
   let current_path = env::current_dir().unwrap();
 

@@ -1,5 +1,5 @@
 #[ allow( unused_imports ) ]
-use wstring_tools::*; /* qqq : xxx : use rather prelude. discuss first, please */
+use strs_tools::*;
 
 fn main()
 {

@@ -96,7 +96,7 @@ macro_rules! field_routine
   ( $name:ident ) =>
   {
     #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
-    pub fn $name( &mut self, routine : &'static dyn Fn( &instruction::Instruction ) -> Result<(), Error> ) -> &mut Self
+    pub fn $name( &mut self, routine : &'static dyn Fn( &instruction::Instruction ) -> Result< (), BasicError > ) -> &mut Self
     {
       self.ins.$name = routine.into();
       self
@@ -105,7 +105,7 @@ macro_rules! field_routine
   ( $name1:ident, $name2:ident ) =>
   {
     #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
-    pub fn $name2( &mut self, routine : &'static dyn Fn( &instruction::Instruction ) -> Result<(), Error> ) -> &mut Self
+    pub fn $name2( &mut self, routine : &'static dyn Fn( &instruction::Instruction ) -> Result< (), BasicError > ) -> &mut Self
     {
       self.ins.$name1 = routine.into();
       self
