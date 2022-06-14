@@ -1,6 +1,6 @@
 [package]
 name = "strs_tools"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,8 +28,6 @@ include = [
 ]
 
 [features]
-use_std = []
-use_alloc = []
 default = [
   "use_std",
   "indentation",
@@ -44,6 +42,8 @@ full = [
   "split",
   "parse_number",
 ]
+use_std = []
+use_alloc = []
 
 indentation = []
 parse  = [ "split", "parse_number" ]

@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.2.13"
+version = "0.2.16"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,13 +24,6 @@ all-features = true
 
 include = [
   "/rust/impl/wtools_lib.rs",
-  # "/rust/impl/dt/mod.rs",
-  # "/rust/impl/iter/mod.rs",
-  # "/rust/impl/meta/mod.rs",
-  # "/rust/impl/typing/mod.rs",
-  # "/rust/impl/convert/mod.rs",
-  # "/rust/impl/time/mod.rs",
-  # xxx : check
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -62,7 +55,7 @@ iter = [ "iter_tools" ]
 iter_default = [
   "iter",
   "iter_use_std",
-  "iter_tools/default"
+  "iter_tools/default",
 ]
 iter_full = [
   "iter",
@@ -93,6 +86,9 @@ meta_full = [
   "meta_options",
   "meta_collection_make",
 ]
+meta_use_std = [ "meta", "meta_tools/use_std" ]
+meta_use_alloc = [ "meta", "meta_tools/use_alloc" ]
+
 meta_for_each = [ "meta", "meta_tools/for_each" ]
 meta_impls_index = [ "meta", "meta_tools/impls_index" ]
 meta_mod_interface = [ "meta", "meta_tools/mod_interface" ]
@@ -115,6 +111,9 @@ typing_full = [
   "typing_is_slice",
   "typing_implements",
 ]
+typing_use_std = [ "typing", "typing_tools/use_std" ]
+typing_use_alloc = [ "typing", "typing_tools/use_alloc" ]
+
 typing_nightly = [ "typing", "nightly", "typing_tools/nightly", ]
 typing_inspect_type = [ "typing", "typing_tools/inspect_type" ]
 typing_is_slice = [ "typing", "typing_tools/is_slice" ]
@@ -131,6 +130,9 @@ time_full = [
   "time",
   "time_now",
 ]
+time_use_std = [ "time", "time_tools/use_std" ]
+time_use_alloc = [ "time", "time_tools/use_alloc" ]
+
 time_now = [ "time", "time_tools/now" ]
 
 # string
@@ -141,6 +143,7 @@ string_default = [
   "string_use_std",
   "string_indentation",
   "string_parse",
+  "string_parse_number",
   "string_split",
 ]
 string_full = [
@@ -148,6 +151,7 @@ string_full = [
   "string_use_std",
   "string_indentation",
   "string_parse",
+  "string_parse_number",
   "string_split",
 ]
 string_use_std = [ "error", "strs_tools/use_std" ]
@@ -245,12 +249,10 @@ derive_default = [
   "derive_display",
   "derive_from_str",
 
-  # "derive_from_str",
-  # "derive_from_str_std",
-  # "derive_from_str_regex",
-  # "derive_from_str_once_cell",
-
 ]
+
+derive_use_std = [ "derive", "derive_tools/use_std" ]
+derive_use_alloc = [ "derive", "derive_tools/use_alloc" ]
 
 derive_nightly = [ "derive", "nightly", "derive_tools/nightly" ]
 derive_enable_track_caller = [ "derive", "derive_tools/enable_track_caller" ]
@@ -280,9 +282,6 @@ derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
 
 derive_display = [ "derive", "derive_tools/derive_display", "parse-display" ]
 derive_from_str = [ "derive", "derive_tools/derive_from_str", "parse-display" ]
-# derive_from_str_std = [ "derive", "parse-display/std" ]
-# derive_from_str_regex = [ "derive", "parse-display/regex", "parse-display/once_cell" ]
-# derive_from_str_once_cell = [ "derive", "parse-display/once_cell" ]
 
 # dt
 
@@ -333,6 +332,9 @@ diagnostics_default = [
   "diagnostics_runtime_assertions",
   "diagnostics_compiletime_assertions",
 ]
+diagnostics_use_std = [ "diagnostics", "diagnostics_tools/use_std" ]
+diagnostics_use_alloc = [ "diagnostics", "diagnostics_tools/use_alloc" ]
+
 diagnostics_runtime_assertions = [ "diagnostics_tools/runtime_assertions" ]
 diagnostics_compiletime_assertions = [ "diagnostics_tools/compiletime_assertions" ]
 
@@ -377,8 +379,7 @@ iter_tools = { version = "~0.1", path = "../../rust/iter_tools", optional = true
 
 # meta
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools", optional = true, default-features = false }
-impls_index = { version = "~0.1", path = "../../rust/impls_index" }
-# despite impls_index is imported by meta_tools it should also be imported immediatly
+impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by meta_tools it should also be imported immediatly
 
 # typing
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = true, default-features = false }
@@ -394,8 +395,7 @@ error_tools = { version = "~0.1", path = "../../rust/error_tools", optional = tr
 
 # derive
 derive_tools = { version = "~0.1", path = "../../rust/derive_tools", optional = true, default-features = false }
-parse-display = { version = "~0.5", optional = true, default-features = false }
-# have to be here because of problem with FromStr
+parse-display = { version = "~0.5", optional = true, default-features = false } # have to be here because of problem with FromStr
 
 # data_type
 data_type = { version = "~0.1", path = "../../rust/data_type", optional = true, default-features = false }
@@ -406,5 +406,3 @@ diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", o
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
 
-# xxx : import
-# lexical = { version = "~6.1" }

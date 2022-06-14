@@ -31,14 +31,6 @@ include = [
 # = features
 
 [features]
-
-error_handling_for_lib = [ "thiserror" ]
-error_handling_for_app = [ "anyhow" ]
-
-# common
-
-use_std = []
-use_alloc = []
 default = [
   "use_std",
   "error_handling_for_lib",
@@ -46,9 +38,15 @@ default = [
 ]
 full = [
   "use_std",
+  "use_alloc",
   "error_handling_for_lib",
   "error_handling_for_app",
 ]
+use_std = []
+use_alloc = []
+
+error_handling_for_lib = [ "thiserror" ]
+error_handling_for_app = [ "anyhow" ]
 
 # = entry
 

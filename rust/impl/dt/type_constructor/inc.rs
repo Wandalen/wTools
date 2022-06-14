@@ -35,6 +35,8 @@ pub mod helper;
 pub mod vectorized_from;
 /// Generic traits.
 pub mod traits;
+/// Traits Enumerable.
+pub mod enumerable;
 /// Variadic constructor.
 #[ cfg( feature = "make" ) ]
 pub mod make;
@@ -60,6 +62,8 @@ pub mod protected
   pub use super::helper::orphan::*;
   #[ doc( inline ) ]
   pub use super::traits::orphan::*;
+  #[ doc( inline ) ]
+  pub use super::enumerable::orphan::*;
   #[ doc( inline ) ]
   #[ cfg( feature = "make" ) ]
   pub use super::make::orphan::*;
@@ -96,6 +100,8 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use super::traits::exposed::*;
   #[ doc( inline ) ]
+  pub use super::enumerable::orphan::*;
+  #[ doc( inline ) ]
   #[ cfg( feature = "make" ) ]
   pub use super::make::exposed::*;
 }
@@ -119,6 +125,8 @@ pub mod prelude
   pub use super::helper::prelude::*;
   #[ doc( inline ) ]
   pub use super::traits::prelude::*;
+  #[ doc( inline ) ]
+  pub use super::enumerable::orphan::*;
   #[ doc( inline ) ]
   #[ cfg( feature = "make" ) ]
   pub use super::make::prelude::*;

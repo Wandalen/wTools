@@ -6,6 +6,14 @@ fn basic_test()
 {
   use TheModule::prelude::*;
 
+  /* test.case( "Vec" ) */
+  let src = Vec::< i32 >::new();
+  a_true!( src.is_empty() );
+
+  /* test.case( "DynArray" ) */
+  let src = DynArray::< i32 >::new();
+  a_true!( src.is_empty() );
+
   /* test.case( "HashMap" ) */
   let src = HashMap::< i32, i32 >::new();
   a_true!( src.is_empty() );
