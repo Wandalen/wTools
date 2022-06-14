@@ -4,7 +4,7 @@
 
 <!-- # Repository :: Tools -->
 
-<!-- {{# generate.module_header{ current_dir : "./module/rust/wtools", type : "rust" } #}} -->
+<!-- {{# generate.module_header{} #}} -->
 
 [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fwtools_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20wtools_trivial_sample/https://github.com/Wandalen/wTools)
@@ -14,10 +14,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 ### Rust tools
 
-<!-- original -->
 <!-- {{# generate.modules_index{} #}} -->
-<!-- alternative -->
-<!-- {{# generate.modules_index{ current_dir : "./module/rust", type : "rust" } #}} -->
 
 | Module | Stability | Master | Alpha | Docs | Sample |
 |--------|-----------|--------|-------|:----:|:------:|
@@ -47,7 +44,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 ### Rust modules to be moved out to other repositories
 
-<!-- {{# generate.modules_index{ current_dir : "./module/move", type : "rust" } #}} -->
+<!-- {{# generate.modules_index{} #}} -->
 
 | Module | Stability | Master | Alpha | Docs | Sample |
 |--------|-----------|--------|-------|:----:|:------:|
@@ -61,7 +58,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 ### JavaScript tools
 
-<!-- {{# generate.modules_index{ current_dir : "./module/js", type : "js" } #}} -->
+<!-- {{# generate.modules_index{} #}} -->
 
 | Module | Stability | Master |
 |--------|-----------|--------|
