@@ -21,3 +21,5 @@ mod make_interface_test;
 
 #[ cfg( any( feature = "vectorized_from", feature = "dt_vectorized_from" ) ) ]
 mod vectorized_from_test;
+
+mod enumerable_test;

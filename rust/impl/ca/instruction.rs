@@ -2,8 +2,8 @@
 pub( crate ) mod private
 {
   pub use wtools::error::*;
-  pub use wstring_tools::string::parse;
-  pub use wstring_tools::string::parse::OpType;
+  pub use wtools::string::parse;
+  pub use wtools::string::parse::OpType;
   pub use former::Former;
   use std::collections::HashMap;
 
@@ -15,7 +15,7 @@ pub( crate ) mod private
   pub struct Instruction
   {
     /// Error of Instruction forming.
-    pub err : Option<Error>,
+    pub err : Option< BasicError >,
     /// Name of command
     pub command_name : String,
     /// Subject.
@@ -104,7 +104,7 @@ pub( crate ) mod private
       if !self.command_name_is_valid( &result.command_name[ .. ] )
       {
         self.about_command_format();
-        result.err = Some( Error::new( "Invalid command" ) );
+        result.err = Some( BasicError::new( "Invalid command" ) );
         return result;
       }
 
@@ -118,7 +118,7 @@ pub( crate ) mod private
 
       if request.subjects.len() > 1
       {
-        result.err = Some( Error::new( "Too many instructions" ) );
+        result.err = Some( BasicError::new( "Too many instructions" ) );
         return result;
       }
 

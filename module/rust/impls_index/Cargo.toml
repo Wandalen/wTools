@@ -29,10 +29,10 @@ include = [
 ]
 
 [features]
-use_std = []
-use_alloc = []
 default = [ "use_std" ]
 full = [ "use_std", "use_alloc" ]
+use_std = []
+use_alloc = []
 
 [lib]
 name = "impls_index"
@@ -46,10 +46,10 @@ path = "rust/test/meta/impls_index_tests.rs"
 name = "impls_index_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-# [[example]]
-# name = "impls_index_trivial_sample"
-# path = "sample/rust/impls_index_trivial_sample/src/main.rs"
-# qqq : xxx : write please
+[[example]]
+name = "impls_index_trivial_sample"
+path = "sample/rust/impls_index_trivial_sample/src/main.rs"
+# qqq : xxx : write please # aaa : Dmytro : added
 
 [dependencies]
 impls_index_meta = { version = "~0.1", path = "../../rust/impls_index_meta" }

@@ -1,8 +1,3 @@
-// #![ allow( dead_code ) ]
-// #![ feature( trace_macros ) ]
-
-// use test_tools::*;
-// use werror::*;
 use select_matching as TheModule;
 #[ allow( unused_imports ) ]
 use test_tools::*;

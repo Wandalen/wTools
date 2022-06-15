@@ -1,7 +1,7 @@
 
 [package]
 name = "typing_tools"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -30,10 +30,23 @@ include = [
 ]
 
 [features]
+default = [
+  "use_std",
+  "implements",
+  "is_slice",
+  "inspect_type",
+]
+full = [
+  "use_std",
+  "use_alloc",
+  "implements",
+  "is_slice",
+  "inspect_type",
+]
 use_std = []
 use_alloc = []
+
 nightly = [ "inspect_type/nightly" ]
-default = [ "implements", "is_slice", "inspect_type", "use_std" ]
 
 [lib]
 name = "typing_tools"

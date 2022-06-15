@@ -1,6 +1,6 @@
 [package]
 name = "data_type"
-version = "0.1.6"
+version = "0.1.7"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -27,30 +27,37 @@ include = [
   "/License",
 ]
 
+# = features
+
 [features]
+
 default = [
+  "use_std",
   "either",
+  "prelude",
   "interval",
   "make",
   "vectorized_from",
   "type_constructor/default",
-  "use_std",
 ]
 full = [
+  "use_std",
   "either",
+  "prelude",
   "interval",
   "make",
   "vectorized_from",
   "type_constructor/full",
-  "use_std",
-  "use_alloc",
 ]
 use_std = []
 use_alloc = []
+
+prelude = []
 interval = [ "winterval", "winterval/use_std" ]
 make = [ "type_constructor/make" ]
 vectorized_from = [ "type_constructor/vectorized_from" ]
-# zzz : use_std
+
+# = entries
 
 [lib]
 name = "data_type"
@@ -64,10 +71,9 @@ path = "rust/test/dt/data_type_tests.rs"
 name = "data_type_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-# [[example]]
-# name = "data_type_trivial_sample"
-# path = "sample/rust/data_type_trivial_sample/src/main.rs"
-# <!-- qqq : write please -->
+[[example]]
+name = "data_type_trivial_sample"
+path = "sample/rust/data_type_trivial_sample/src/main.rs"
 
 [dependencies]
 either = { version = "~1.6", optional = true }

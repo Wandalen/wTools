@@ -1,4 +1,4 @@
-#![ cfg_attr( not( feature = "use_std"), no_std ) ] // zzz
+#![ cfg_attr( not( feature = "use_std" ), no_std ) ] // zzz
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico")]
 #![ doc( html_root_url = "https://docs.rs/wtools/latest/wtools/")]
@@ -16,14 +16,14 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /* zzz : register error_tools */
-/* zzz : alias werror -> error_tools  */
-/* zzz : register text_tools as alias for wstring */
+/* zzz : alias error_tools -> error_tools  */
+/* zzz : register text_tools as alias for strs_tools */
 
 /* zzz : implement module::mod_at */
 /* zzz : implement and publish mod_expose */
 
 /* zzz : use skeptic? */
-/* zzz : rename dt -> adt */
+/* zzz : rename dt -> adt? */
 
 /// Dependencies.
 pub mod dependencies
@@ -44,9 +44,9 @@ pub mod dependencies
   #[ cfg( feature = "time" ) ]
   pub use ::time_tools;
   #[ cfg( feature = "string" ) ]
-  pub use ::wstring_tools;
+  pub use ::strs_tools;
   #[ cfg( feature = "error" ) ]
-  pub use ::werror;
+  pub use ::error_tools;
   // #[ cfg( feature = "winterval" ) ]
   // pub use ::winterval;
   #[ cfg( feature = "derive" ) ]
@@ -74,9 +74,9 @@ pub mod protected
   #[ cfg( feature = "time" ) ]
   pub use ::time_tools as time;
   #[ cfg( feature = "error" ) ]
-  pub use ::werror as error;
+  pub use ::error_tools as error;
   #[ cfg( feature = "string" ) ]
-  pub use ::wstring_tools as string;
+  pub use ::strs_tools as string;
   #[ cfg( feature = "derive" ) ]
   pub use ::derive_tools as derive;
 

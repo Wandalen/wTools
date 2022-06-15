@@ -1,5 +1,5 @@
 use wca::*;
-use wstring_tools::string::parse::OpType;
+use wca::string::parse::OpType; /* qqq : this should work. if does not then fix not this line */
 
 fn main()
 {
@@ -16,4 +16,3 @@ fn main()
   };
   assert_eq!( instruction, exp );
 }
-

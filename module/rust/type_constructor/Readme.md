@@ -1,5 +1,5 @@
 # Module :: type_constructor
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml) [![docs.rs](https://img.shields.io/docsrs/type_constructor?color=e3e8f0&logo=docs.rs)](https://docs.rs/type_constructor) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml) [![docs.rs](https://img.shields.io/docsrs/type_constructor?color=e3e8f0&logo=docs.rs)](https://docs.rs/type_constructor) [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftype_constructor_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20type_constructor_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
 Fundamental data types and type constructors, like Single, Pair, Homopair, Many.
 
@@ -108,6 +108,7 @@ To define your own single-use macro `types!`. The single-line definition looks l
 
 ```rust
 use type_constructor::prelude::*;
+
 types!( pub single MySingle : i32 );
 let x = MySingle( 13 );
 println!( "x : {}", x.0 );

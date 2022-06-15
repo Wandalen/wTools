@@ -29,10 +29,10 @@ include = [
 ]
 
 [features]
-use_std = []
-use_alloc = []
 default = [ "use_std" ]
 full = [ "use_std", "use_alloc" ]
+use_std = []
+use_alloc = []
 
 [lib]
 name = "automata_tools"
@@ -46,10 +46,10 @@ path = "rust/test/graph/automata_tools_tests.rs"
 name = "automata_tools_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-# [[example]]
-# name = "automata_trivial_sample"
-# path = "sample/rust/automata_trivial_sample/src/main.rs"
-# zzz : write please
+[[example]]
+name = "automata_tools_trivial_sample"
+path = "sample/rust/automata_tools_trivial_sample/src/main.rs"
+# zzz : write please # aaa : Dmytro : added
 
 [dependencies]
 graphs_tools = { version = "~0.1", path = "../../move/graphs_tools", features = [ "full" ] }

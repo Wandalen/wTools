@@ -39,9 +39,10 @@ full = [
   "use_std",
   "use_alloc",
 ]
-make = [ "type_constructor/make" ]
 use_std = []
 use_alloc = []
+
+make = [ "type_constructor/make" ]
 
 [lib]
 name = "fundamental_data_type"

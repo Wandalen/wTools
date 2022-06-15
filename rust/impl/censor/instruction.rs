@@ -1,5 +1,4 @@
 
-// pub use werror::*;
 pub use wtools::error::*;
 use std::collections::HashMap;
 
@@ -11,7 +10,7 @@ use std::collections::HashMap;
 pub struct Instruction
 {
   /// Error of parsing an instruction.
-  pub err : Option< Error >,
+  pub err : Option< BasicError >,
   /// Command name.
   pub command_name : Box< str >,
   /// Subject of command.

@@ -37,9 +37,10 @@ full = [
   "use_alloc",
   "cell_factory",
 ]
-cell_factory = []
 use_std = []
 use_alloc = []
+
+cell_factory = []
 
 [lib]
 name = "graphs_tools"
@@ -53,9 +54,9 @@ path = "rust/test/graph/graphs_tools_tests.rs"
 name = "graphs_tools_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-# [[example]]
-# name = "graphs_tools_trivial_sample"
-# path = "sample/rust/graphs_tools_trivial_sample/src/main.rs"
+[[example]]
+name = "graphs_tools_trivial_sample"
+path = "sample/rust/graphs_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 indexmap = "~1.8"

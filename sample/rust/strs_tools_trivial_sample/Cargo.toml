@@ -1,0 +1,13 @@
+[package]
+name = "strs_tools_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[features]
+use_std = []
+split = []
+default = [ "use_std", "split" ]
+
+[dependencies]
+strs_tools = { version = "*", path = "../../../module/rust/strs_tools" }
