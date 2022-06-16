@@ -6,8 +6,6 @@ use wca::string::parse::OpType::{ Primitive, Vector }; // qqq : this line should
 
 tests_impls!
 {
-
-  #[ test ]
   fn basic()
   {
     let instruction = wca::instruction::instruction_parse()
@@ -132,7 +130,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn with_several_values()
   {
     let instruction = wca::instruction::instruction_parse()

@@ -46,6 +46,7 @@ use_std = [ "strs_tools/use_std" ]
 use_alloc = [ "strs_tools/use_alloc" ]
 
 indentation = [ "strs_tools/indentation" ]
+isolate = [ "strs_tools/isolate" ]
 parse  = [ "split", "parse_number" ]
 parse_number = [ "strs_tools/parse_number" ]
 split = [ "strs_tools/split" ]

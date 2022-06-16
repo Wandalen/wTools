@@ -11,7 +11,6 @@ use std::collections::HashMap;
 
 tests_impls!
 {
-  #[ test ]
   fn op_type_from_into()
   {
     let got = parse::OpType::from( 1 );
@@ -49,7 +48,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn basic()
   {
     let src = "";
@@ -84,7 +82,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn with_subject_and_map()
   {
     let src = "subj";
@@ -218,7 +215,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn with_several_values()
   {
     let src = "subj v:1 v:2";
@@ -258,7 +254,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn with_parsing_arrays()
   {
     let src = "subj v:[1,2]";
