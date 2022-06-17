@@ -2,6 +2,7 @@
 pub( crate ) mod private
 {
   use crate::command::*;
+  use wtools::meta::*;
   use wtools::former::Former;
 
   ///
@@ -40,7 +41,7 @@ pub( crate ) mod private
     #[ default( true ) ]
     pub changing_exit_code : bool,
     // logger : Option<Logger>, /* qqq : implement */
-    pub commands : Vec< Command >,
+    pub commands : std::collections::HashMap< String, Command >,
     // pub vocabulary : Option<Logger>, /* qqq : implement */
   }
 
