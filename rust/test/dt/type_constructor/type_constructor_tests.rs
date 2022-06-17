@@ -3,6 +3,7 @@
 #![ warn( missing_docs ) ]
 
 // #![ feature( trace_macros ) ]
+#![ feature( type_name_of_val ) ]
 
 use type_constructor as TheModule;
 #[ allow( unused_imports ) ]

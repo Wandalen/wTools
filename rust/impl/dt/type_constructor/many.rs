@@ -85,10 +85,33 @@ pub( crate ) mod private
         }
       }
 
+      // impl< Collection > From< Collection > for Polygons
+      // where
+      //   Collection : IntoIterator< Item = Polygon >,
+      // {
+      //   fn from( src : Collection ) -> Self
+      //   {
+      //     Self( src.into_iter().collect::< Vec< Polygon > >() )
+      //   }
+      // }
+      // xxx
+
+      // impl< Collection, $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      // From< Collection >
+      // for $Name< $ParamName >
+      // where
+      //   Collection : IntoIterator< Item = $ParamName >,
+      // {
+      // #[ inline ]
+      //   fn from( src : Collection ) -> Self
+      //   {
+      //     Self( src.into_iter().collect::< Vec< $ParamName > >() )
+      //   }
+      // }
+
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       From< $ParamName >
-      for $Name
-      < $ParamName >
+      for $Name< $ParamName >
       {
         #[ inline ]
         fn from( src : $ParamName ) -> Self
@@ -280,6 +303,48 @@ pub( crate ) mod private
         }
       }
 
+      // xxx
+      // impl
+      // < Collection, Item, $( $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* )? >
+      // From< Collection >
+      // for $Name
+      // $( < $( $ParamName ),* > )?
+      // where
+      //   Collection : IntoIterator< Item = Item >,
+      //   Item : Into< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >,
+      // {
+      //   #[ inline ]
+      //   fn from( src : Collection ) -> Self
+      //   {
+      //     let src2 = src
+      //     .into_iter()
+      //     // .cloned()
+      //     .map( | e | e.into() )
+      //     .collect::< $crate::_Vec< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? > >();
+      //     Self( src2 )
+      //   }
+      // }
+
+      // impl
+      // < 'a, Collection, $( $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* )? >
+      // From< Collection >
+      // for $Name
+      // $( < $( $ParamName ),* > )?
+      // where
+      //   Collection : IntoIterator< Item = &'a $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >,
+      // {
+      //   #[ inline ]
+      //   fn from( src : Collection ) -> Self
+      //   {
+      //     let src2 = src
+      //     .into_iter()
+      //     .map( | e | *e )
+      //     .collect::< $crate::_Vec< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? > >();
+      //     Self( src2 )
+      //   }
+      // }
+
+      // yyy
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       From
@@ -331,8 +396,6 @@ pub( crate ) mod private
       < [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] >
       for $Name
       $( < $( $ParamName ),* > )?
-      // where
-      //   $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
         #[ inline ]
         fn from( src : [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] ) -> Self
@@ -356,14 +419,13 @@ pub( crate ) mod private
           Self( $crate::_Vec::from( src ) )
         }
       }
+      // yyy
 
       impl
       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
       $crate::AsSlice< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
       for
       $Name $( < $( $ParamName ),* > )?
-      // where
-      //   $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
       {
         #[ inline ]
         fn as_slice( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ]
