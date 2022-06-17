@@ -43,7 +43,7 @@ jobs :
   tested :
     needs: check
     if : ${{ needs.check.outputs.should_run == 'true' }}
-    uses : Wandalen/RustModuleCdCi/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : './Cargo.toml'
       module_name : ${{ needs.check.outputs.commit_message }}

@@ -104,6 +104,7 @@ path = "sample/rust/type_constructor_many_sample/src/main.rs"
 required-features = [ "many" ]
 
 [dependencies]
+# inspect_type = { version = "~0.1", path = "../../rust/inspect_type", features = [ "nightly", "use_std" ] }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
