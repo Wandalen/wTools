@@ -2,7 +2,9 @@
 pub( crate ) mod private
 {
   use crate::command::*;
+  use crate::instruction::*;
   use wtools::meta::*;
+  use wtools::error::*;
   use wtools::former::Former;
 
   ///
@@ -16,7 +18,6 @@ pub( crate ) mod private
 
   #[ derive( Debug, PartialEq ) ]
   #[ derive( Former ) ]
-  // #[ perform( fn run( &self ) -> Result<(), &'static str> ) ]
   #[ allow( missing_docs ) ]
   pub struct CommandsAggregator
   {
@@ -44,6 +45,62 @@ pub( crate ) mod private
     // logger : Option<Logger>, /* qqq : implement */
     pub commands : std::collections::HashMap< String, Command >,
     // pub vocabulary : Option<Logger>, /* qqq : implement */
+  }
+
+  impl CommandsAggregator
+  {
+    /// Perform instructions queue as single program.
+    pub fn program_perform( &self, _program : &str ) -> Result< (), BasicError >
+    {
+      unimplemented!( "not implemented" );
+      // let parsed = program_parse( program );
+    }
+
+    /// Perform instruction.
+    pub fn instruction_perform( &self, instruction : &str ) -> Result< (), BasicError >
+    {
+      let parsed : Instruction = instruction_parse()
+      .instruction( instruction )
+      .perform();
+
+      let result = match self.command_resolve( &parsed )
+      {
+        Some( command ) =>
+        {
+          command.perform( &parsed )
+        },
+        None =>
+        {
+          if self.with_help
+          {
+            self.print_help();
+          }
+          if self.changing_exit_code
+          {
+            std::process::exit( 1 );
+          }
+          Ok( () )
+        },
+      };
+
+      result
+    }
+
+    /// Print help information.
+    fn print_help( &self )
+    {
+      println!( "Illformed command" );
+      for ( command_name, command_descriptor ) in self.commands.iter()
+      {
+        println!( "{} - {}", command_name, command_descriptor.hint );
+      }
+    }
+
+    /// Find command in dictionary.
+    fn command_resolve( &self, instruction : &Instruction ) -> Option<&Command>
+    {
+      self.commands.get( &instruction.command_name )
+    }
   }
 
   //
