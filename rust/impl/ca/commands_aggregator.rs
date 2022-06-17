@@ -44,7 +44,7 @@ pub( crate ) mod private
     pub changing_exit_code : bool,
     // logger : Option<Logger>, /* qqq : implement */
     pub commands : std::collections::HashMap< String, Command >,
-    // pub vocabulary : Option<Logger>, /* qqq : implement */
+    // pub vocabulary : Option<vocabulary>, /* qqq : implement */
   }
 
   impl CommandsAggregator
@@ -57,10 +57,14 @@ pub( crate ) mod private
     }
 
     /// Perform instruction.
-    pub fn instruction_perform( &self, instruction : &str ) -> Result< (), BasicError >
+    pub fn instruction_perform( &self, instruction : impl AsRef< str > ) -> Result< (), BasicError >
     {
       let parsed : Instruction = instruction_parse()
-      .instruction( instruction )
+      .instruction( instruction.as_ref() )
+      .several_values( self.several_values )
+      .properties_map_parsing( self.properties_map_parsing )
+      .quoting( true )
+      .unquoting( true )
       .perform();
 
       let result = match self.command_resolve( &parsed )
