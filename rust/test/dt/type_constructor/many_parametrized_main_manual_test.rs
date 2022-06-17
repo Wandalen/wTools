@@ -103,7 +103,7 @@ for Many < T1, T2 >
 // }
 
 // impl
-// < 'a, Collection, T1 : PartialEq, T2 : Default >
+// < 'a, Collection, T1 : PartialEq + 'a, T2 : Default + 'a >
 // From< Collection >
 // for Many
 // < T1, T2 >
@@ -132,6 +132,7 @@ for Many < T1, T2 >
   }
 }
 
+// yyy
 impl < __FromRef, T1 : PartialEq, T2 : Default >
 From < & __FromRef >
 for Many < T1, T2 >
@@ -178,6 +179,7 @@ where
     Self( TheModule::_Vec::from( src ) )
   }
 }
+// yyy
 
 impl < T1 : PartialEq, T2 : Default >
 TheModule::AsSlice
