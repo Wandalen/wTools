@@ -17,9 +17,10 @@ pub( crate ) mod private
   #[ derive( Debug, PartialEq ) ]
   #[ derive( Former ) ]
   // #[ perform( fn run( &self ) -> Result<(), &'static str> ) ]
+  #[ allow( missing_docs ) ]
   pub struct CommandsAggregator
   {
-    pub base_path : std::path::PathBuf,
+    pub base_path : Option<std::path::PathBuf>,
     #[ default( "".to_string() ) ]
     pub command_prefix : String,
     #[ default( vec![ ".".to_string(), " ".to_string() ] ) ]
