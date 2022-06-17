@@ -214,7 +214,6 @@ tests_impls!
     };
     a_id!( instruction, exp );
   }
-
 }
 
 //

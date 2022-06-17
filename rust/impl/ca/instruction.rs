@@ -4,7 +4,7 @@ pub( crate ) mod private
   pub use wtools::error::*;
   pub use wtools::string::parse;
   pub use wtools::string::parse::OpType;
-  pub use former::Former;
+  pub use wtools::former::Former;
   use std::collections::HashMap;
 
   ///
