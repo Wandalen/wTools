@@ -31,14 +31,16 @@ include = [
 default = [
   "use_std",
   "indentation",
-  "parse",
+  "isolate",
+  "parse_request",
   "split",
   "parse_number",
 ]
 full = [
   "use_std",
   "indentation",
-  "parse",
+  "isolate",
+  "parse_request",
   "split",
   "parse_number",
 ]
@@ -46,7 +48,8 @@ use_std = [ "strs_tools/use_std" ]
 use_alloc = [ "strs_tools/use_alloc" ]
 
 indentation = [ "strs_tools/indentation" ]
-parse  = [ "split", "parse_number" ]
+isolate = [ "strs_tools/isolate" ]
+parse_request  = [ "split", "isolate", "strs_tools/parse_request" ]
 parse_number = [ "strs_tools/parse_number" ]
 split = [ "strs_tools/split" ]
 

@@ -1,13 +1,11 @@
 
 use super::*;
-use wca::string::parse::OpType::{ Primitive, Vector }; // qqq : this line should be ok
+use wca::string::parse_request::OpType::{ Primitive, Vector }; // qqq : this line should be ok
 
 //
 
 tests_impls!
 {
-
-  #[ test ]
   fn basic()
   {
     let instruction = wca::instruction::instruction_parse()
@@ -132,7 +130,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn with_several_values()
   {
     let instruction = wca::instruction::instruction_parse()
@@ -217,7 +214,6 @@ tests_impls!
     };
     a_id!( instruction, exp );
   }
-
 }
 
 //

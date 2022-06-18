@@ -1,3 +1,5 @@
+<!-- {{# generate.module_header{} #}} -->
+
 # Module :: type_constructor
 [![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml) [![docs.rs](https://img.shields.io/docsrs/type_constructor?color=e3e8f0&logo=docs.rs)](https://docs.rs/type_constructor) [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftype_constructor_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20type_constructor_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
@@ -18,6 +20,8 @@ Besides type constructor for single element there are type constructors for `pai
 ### Macro `types` for type constructing
 
 Macro `types` is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust ignore
 {
@@ -52,6 +56,8 @@ It generates more than 1000 lines of code, which otherwise you would have to wri
 
 Macro `types` is exposed to generate new types, but in some cases, it is enough to reuse already generated types of such kind. The library ships such types: Single, Pair, Homopair, Many. Note: If you avoid generating new types you will get in a position to be not able to define your own implementation of foreign traits because of orphan rule.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust ignore
 
 let i32_in_tuple = type_constructor::Single::< i32 >::from( 13 );
@@ -74,6 +80,8 @@ dbg!( vec_of_i32_in_tuple );
 Make is the variadic constructor. It's the unified interface of the arbitrary-length constructor.
 After implementing several traits `Make0`, `Make1` up to `MakeN` one can use make `make!` to construct instances.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust ignore
 #[ cfg( feature = "make" ) ]
 {
@@ -92,6 +100,8 @@ Standard `From` unfortunately is not autoimplemented for tuples and arrays and c
 That how pair of traits `VectorizedFrom`/`VectorizedInto` could be useful. They are implemented for tuples and arrays.
 Their implementation is based on standard `From`, if `From` is implemented for elements of a tuple then `VectorizedFrom`/`VectorizedInto` implemented for collection containing them.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust
 #[ cfg( feature = "vectorized_from" ) ]
 {
@@ -105,6 +115,8 @@ Their implementation is based on standard `From`, if `From` is implemented for e
 ### Sample :: single-line single.
 
 To define your own single-use macro `types!`. The single-line definition looks like that.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use type_constructor::prelude::*;
@@ -153,6 +165,8 @@ println!( "x : {}", x.0 );
 ### Sample :: single with derives and attributes.
 
 It's possible to define attributes as well as derives.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use type_constructor::prelude::*;
@@ -209,6 +223,8 @@ dbg!( x );
 Sometimes it's sufficient to use a common type instead of defining a brand new one.
 You may use parameterized struct `Single< T >` instead of macro `types!` if that is the case.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust
 use type_constructor::prelude::*;
 let x = Single::< i32 >( 13 );
@@ -218,6 +234,8 @@ dbg!( x );
 ### Sample :: single with a parametrized element.
 
 Element of tuple could be parametrized.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use type_constructor::prelude::*;
@@ -270,6 +288,8 @@ let x = MySingle( std::sync::Arc::new( 13 ) );
 Instead of parametrizing the element, it's possible to define a parametrized tuple.
 
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust
 use type_constructor::prelude::*;
 types!
@@ -282,6 +302,8 @@ dbg!( x );
 ```
 
 It gererates code:
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 #[ derive( Debug ) ]
@@ -313,6 +335,8 @@ dbg!( 13 );
 ### Sample :: single-line pair
 
 Sometimes you need to wrap more than a single element into a tupдe. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use type_constructor::prelude::*;
@@ -355,6 +379,8 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 ### Sample :: pair with parameters
 
 Just like `single` `pair` may have parameters.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use type_constructor::prelude::*;
@@ -415,6 +441,8 @@ dbg!( x );
 
 If you need to wrap pair of elements with the same type use the type constructor `pair`. The same type constructor `pair` for both `pair` and `homopair`, difference in number of types in definition, `homopair` has only one, because both its element has the same type. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust
 use type_constructor::prelude::*;
 
@@ -425,6 +453,8 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 ```
 
 It gererates code:
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use type_constructor::prelude::*;
@@ -457,6 +487,8 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 
 Unlike `heteropair` `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or array, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tuple, array, slice, scalar.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust
 use type_constructor::prelude::*;
 
@@ -478,6 +510,8 @@ dbg!( &clone_as_tuple );
 ```
 
 It gererates code:
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use type_constructor::prelude::*;
@@ -624,6 +658,8 @@ dbg!( &clone_as_tuple );
 
 Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has essential traits implemented for it.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust
 // #[ cfg
 // (
@@ -733,6 +769,8 @@ In this example structure, Struct1 could be constructed either without arguments
 - Constructor without arguments fills fields with zero.
 - Constructor with a single argument sets both fields to the value of the argument.
 - Constructor with 2 arguments set individual values of each field.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 #[ cfg( feature = "make" ) ]

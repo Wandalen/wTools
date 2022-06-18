@@ -5,8 +5,6 @@ use super::*;
 
 tests_impls!
 {
-
-  #[ test ]
   fn basic()
   {
     let command = wca::CommandOptions::default()
@@ -44,7 +42,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn shortcut()
   {
     let command = wca::CommandOptions::default()
@@ -63,7 +60,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn perform_trivial()
   {
     let command = wca::CommandOptions::default()
@@ -87,7 +83,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn perform_with_subject()
   {
     let command = wca::CommandOptions::default()
@@ -115,7 +110,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn perform_with_props()
   {
     let command = wca::CommandOptions::default()

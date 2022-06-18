@@ -1,18 +1,21 @@
-// use test_tools::*;
-
 use super::*;
 
 //
 
-fn basic_test()
+tests_impls!
 {
-  let left : TheModule::Either< _, () > = TheModule::Either::Left( 13 );
-  a_id!( left.flip(), TheModule::Either::Right( 13 ) );
+
+  fn basic_test()
+  {
+    let left : TheModule::Either< _, () > = TheModule::Either::Left( 13 );
+    a_id!( left.flip(), TheModule::Either::Right( 13 ) );
+  }
+
 }
 
 //
 
-test_suite!
+tests_index!
 {
-  basic,
+  basic_test,
 }

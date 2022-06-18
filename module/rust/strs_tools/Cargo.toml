@@ -31,22 +31,26 @@ include = [
 default = [
   "use_std",
   "indentation",
-  "parse",
-  "split",
+  "isolate",
+  "parse_request",
   "parse_number",
+  "split",
 ]
 full = [
   "use_std",
+  "use_alloc",
   "indentation",
-  "parse",
-  "split",
+  "isolate",
+  "parse_request",
   "parse_number",
+  "split",
 ]
 use_std = []
 use_alloc = []
 
 indentation = []
-parse  = [ "split", "parse_number" ]
+isolate = []
+parse_request  = [ "split", "isolate" ]
 parse_number = [ "lexical" ]
 split = []
 

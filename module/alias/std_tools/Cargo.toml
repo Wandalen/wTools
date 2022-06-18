@@ -135,7 +135,8 @@ string_default = [
   "string",
   "string_use_std",
   "string_indentation",
-  "string_parse",
+  "string_isolate",
+  "string_parse_request",
   "string_parse_number",
   "string_split",
 ]
@@ -143,7 +144,8 @@ string_full = [
   "string",
   "string_use_std",
   "string_indentation",
-  "string_parse",
+  "string_isolate",
+  "string_parse_request",
   "string_parse_number",
   "string_split",
 ]
@@ -151,7 +153,8 @@ string_use_std = [ "error", "wtools/use_std" ]
 string_use_alloc = [ "error", "wtools/use_alloc" ]
 
 string_indentation = [ "string", "string_use_std", "wtools/string_indentation" ]
-string_parse = [ "string", "string_use_std", "wtools/string_parse" ]
+string_isolate = [ "string", "string_use_std", "wtools/string_isolate" ]
+string_parse_request = [ "string", "string_use_std", "string_isolate", "wtools/string_parse_request" ]
 string_parse_number = [ "string", "string_use_std", "wtools/string_parse_number" ]
 string_split = [ "string", "string_use_std", "wtools/string_split" ]
 
@@ -356,6 +359,8 @@ full = [
 ]
 use_std = []
 use_alloc = []
+
+# = dependencies
 
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }

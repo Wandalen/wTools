@@ -106,6 +106,17 @@ pub( crate ) mod private
     pub routine : OnCommand,
   }
 
+  impl PartialEq for Command
+  {
+    /* qqq : for Dmytro : extend */
+    fn eq( &self, other: &Self ) -> bool
+    {
+      self.hint == other.hint
+      && self.long_hint == other.long_hint
+      && self.subject_hint == other.subject_hint
+    }
+  }
+
   impl Command
   {
     /// Execute callback.
@@ -162,56 +173,6 @@ pub( crate ) mod private
     field_routine!{ routine }
     field_routine!{ routine, ro }
 
-    // pub fn hint< Str : AsRef< str > >( &mut self, src : Str ) -> &mut Self
-    // where
-    //   String : From<Str>
-    // {
-    //   self.ins.hint = src.into();
-    //   self
-    // }
-    // pub fn long_hint< Str : AsRef< str > >( &mut self, src : Str ) -> &mut Self
-    // where
-    //   String : From<Str>
-    // {
-    //   self.ins.long_hint = src.into();
-    //   self
-    // }
-    // pub fn phrase< Str : AsRef< str > >( &mut self, src : Str ) -> &mut Self
-    // where
-    //   String : From<Str>
-    // {
-    //   self.ins.phrase = src.into();
-    //   self
-    // }
-    // pub fn subject_hint< Str : AsRef< str > >( &mut self, src : Str ) -> &mut Self
-    // where
-    //   String : From<Str>
-    // {
-    //   self.ins.subject_hint = src.into();
-    //   self
-    // }
-    // pub fn property_hint< Str : AsRef< str > >( &mut self, property : Str, hint : Str ) -> &mut Self
-    // where
-    //   String : From<Str>
-    // {
-    //   self.ins.properties_hints.insert( property.into(), hint.into() );
-    //   self
-    // }
-    // pub fn property_alias< Str : AsRef< str > >( &mut self, property : Str, alias : Str ) -> &mut Self
-    // where
-    //   String : From<Str>
-    // {
-    //   let entry = self.ins.properties_aliases.entry( property.into() ).or_insert_with( || -> Vec< String > { vec![] } );
-    //   entry.push( alias.into() );
-    //   self
-    // }
-    //
-    // pub fn routine( &mut self, routine : &'static dyn Fn() ) -> &mut Self
-    // {
-    //   self.ins.routine = routine.into();
-    //   self
-    // }
-
     /// Command former.
     pub fn form( &self ) -> Command
     {
@@ -219,18 +180,11 @@ pub( crate ) mod private
     }
 
   }
-
-  // impl Options for CommandOptions
-  // {
-  //   type For = Command;
-  // }
 }
 
 /// Protected namespace of the module.
 pub mod protected
 {
-  // use super::private as i;
-
   pub use super::private::OnCommand;
   pub use super::private::Command;
   pub use super::private::CommandOptions;
@@ -241,8 +195,6 @@ pub use protected::*;
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::private as i;
-
   pub use super::private::OnCommand;
   pub use super::private::Command;
   pub use super::private::CommandOptions;
@@ -251,8 +203,6 @@ pub mod exposed
 /// Namespace of the module to include with `use module::*`.
 pub mod prelude
 {
-  // use super::private as i;
-
   pub use super::private::OnCommand;
   pub use super::private::Command;
   pub use super::private::CommandOptions;

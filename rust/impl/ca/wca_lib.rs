@@ -17,7 +17,7 @@
 #[ path = "./inc.rs" ]
 pub mod ca;
 
-/// Parser.
+/// Requests parser.
 #[ cfg( feature = "use_std" ) ]
 pub mod string
 {

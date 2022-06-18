@@ -12,8 +12,5 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-// pub use wtest_basic as basic;
-// pub use basic::*;
-
 #[ doc( inline ) ]
 pub use test_tools::*;

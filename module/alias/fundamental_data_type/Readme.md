@@ -1,3 +1,5 @@
+<!-- {{# generate.module_header{} #}} -->
+
 # Module :: fundamental_data_type
 [![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml) [![docs.rs](https://img.shields.io/docsrs/fundamental_data_type?color=e3e8f0&logo=docs.rs)](https://docs.rs/fundamental_data_type) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
@@ -18,6 +20,8 @@ Besides type constructor for single element there are type constructors for `pai
 ## Macro `types` for type constructing
 
 Macro `types` is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 {
@@ -52,6 +56,8 @@ It generates more than 1000 lines of code, which otherwise you would have to wri
 
 Macro `types` is exposed to generate new types, but in some cases, it is enough to reuse already generated types of such kind. The library ships such types: Single, Pair, Homopair, Many. Note: If you avoid generating new types you will get in a position to be not able to define your own implementation of foreign traits because of orphan rule.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust
 
 let i32_in_tuple = fundamental_data_type::Single::< i32 >::from( 13 );
@@ -74,6 +80,8 @@ dbg!( vec_of_i32_in_tuple );
 Make is the variadic constructor. It's the unified interface of the arbitrary-length constructor.
 After implementing several traits `Make0`, `Make1` up to `MakeN` one can use make `make!` to construct instances.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust ignore
 #[ cfg( feature = "make" ) ]
 {
@@ -89,6 +97,8 @@ After implementing several traits `Make0`, `Make1` up to `MakeN` one can use mak
 ### Sample :: single-line single.
 
 To define your own single-use macro `types!`. The single-line definition looks like that.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use fundamental_data_type::prelude::*;
@@ -136,6 +146,8 @@ println!( "x : {}", x.0 );
 ### Sample :: single with derives and attributes.
 
 It's possible to define attributes as well as derives.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use fundamental_data_type::prelude::*;
@@ -192,6 +204,8 @@ dbg!( x );
 Sometimes it's sufficient to use a common type instead of defining a brand new one.
 You may use parameterized struct `Single< T >` instead of macro `types!` if that is the case.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust
 use fundamental_data_type::prelude::*;
 let x = Single::< i32 >( 13 );
@@ -201,6 +215,8 @@ dbg!( x );
 ### Sample :: single with a parametrized element.
 
 Element of tuple could be parametrized.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use fundamental_data_type::prelude::*;
@@ -252,6 +268,7 @@ let x = MySingle( std::sync::Arc::new( 13 ) );
 
 Instead of parametrizing the element, it's possible to define a parametrized tuple.
 
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use fundamental_data_type::prelude::*;
@@ -297,6 +314,8 @@ dbg!( 13 );
 
 Sometimes you need to wrap more than a single element into a tupдe. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust
 use fundamental_data_type::prelude::*;
 
@@ -338,6 +357,8 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 ### Sample :: pair with parameters
 
 Just like `single` `pair` may have parameters.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use fundamental_data_type::prelude::*;
@@ -398,6 +419,8 @@ dbg!( x );
 
 If you need to wrap pair of elements with the same type use the type constructor `pair`. The same type constructor `pair` for both `pair` and `homopair`, difference in number of types in definition, `homopair` has only one, because both its element has the same type. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust
 use fundamental_data_type::prelude::*;
 
@@ -439,6 +462,8 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 ### Sample :: homopair with parameters
 
 Unlike `heteropair` `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or array, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tuple, array, slice, scalar.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 use fundamental_data_type::prelude::*;
@@ -607,6 +632,8 @@ dbg!( &clone_as_tuple );
 
 Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has essential traits implemented for it.
 
+<!-- {{# generate.module_sample{} #}} -->
+
 ```rust
 use fundamental_data_type::prelude::*;
 
@@ -706,6 +733,8 @@ In this example structure, Struct1 could be constructed either without arguments
 - Constructor without arguments fills fields with zero.
 - Constructor with a single argument sets both fields to the value of the argument.
 - Constructor with 2 arguments set individual values of each field.
+
+<!-- {{# generate.module_sample{} #}} -->
 
 ```rust
 #[ cfg( feature = "make" ) ]
