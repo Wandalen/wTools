@@ -14,21 +14,26 @@ use wtest_basic::*;
 
 //
 
-fn pass1_test()
+tests_impls!
 {
-  assert_eq!( true, true );
+
+  fn pass1()
+  {
+    assert_eq!( true, true );
+  }
+
+  //
+
+  fn pass2()
+  {
+    assert_eq!( 1, 1 );
+  }
+
 }
 
 //
 
-fn pass2_test()
-{
-  assert_eq!( 1, 1 );
-}
-
-//
-
-test_suite!
+tests_index!
 {
   pass1,
   pass2,
