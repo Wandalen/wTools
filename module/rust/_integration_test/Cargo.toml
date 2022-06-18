@@ -188,7 +188,3 @@ plot_interface_published = { version = "*", package = "plot_interface" }
 [dev-dependencies]
 # test_tools = { version = "~0.1", path = "../../rust/test_tools" }
 toml_edit = { version = "~0.14" }
-
-# qqq : for Dima : all modules # aaa : Dmytro : done
-# qqq : for Dima : additional test that all modules are here
-
