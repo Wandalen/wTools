@@ -1,6 +1,6 @@
 [package]
 name = "plot_interface"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -12,7 +12,7 @@ documentation = "https://docs.rs/plot_interface"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/plot_interface"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/plot_interface"
 description = """
-Wlang.
+Plot interface.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
