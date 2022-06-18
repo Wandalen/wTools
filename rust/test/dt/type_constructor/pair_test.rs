@@ -1,7 +1,5 @@
 #[ allow( unused_imports ) ]
 use super::*;
-// use test_tools::*;
-// use TheModule::*;
 
 tests_impls!
 {

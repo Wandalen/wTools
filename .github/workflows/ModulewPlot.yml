@@ -18,7 +18,7 @@ jobs :
 
   # plot_interface
 
-  test :
+  test_plot_interface :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
       manifest_path : 'module/move/plot_interface/Cargo.toml'
