@@ -15,15 +15,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-/* zzz : register error_tools */
-/* zzz : alias error_tools -> error_tools  */
-/* zzz : register text_tools as alias for strs_tools */
-
-/* zzz : implement module::mod_at */
-/* zzz : implement and publish mod_expose */
-
 /* zzz : use skeptic? */
-/* zzz : rename dt -> adt? */
 
 /// Dependencies.
 pub mod dependencies
@@ -35,6 +27,7 @@ pub mod dependencies
 
   #[ cfg( feature = "meta" ) ]
   pub use ::meta_tools;
+  // zzz
   // #[ cfg( feature = "impls_index" ) ]
   // pub use ::impls_index;
   // #[ cfg( feature = "mod_interface" ) ]

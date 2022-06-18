@@ -1,10 +1,5 @@
-
-// use test_tools::*;
-
 use super::*;
-// use wtools::string::parse as parse;
-// use super::TheModule::string::parse as parse;
-use super::TheModule::string::parse as parse;
+use super::TheModule::string::parse_request as parse;
 use std::collections::HashMap;
 
 //

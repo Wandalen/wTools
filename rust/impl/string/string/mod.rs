@@ -9,8 +9,8 @@ pub mod isolate;
 #[ cfg( all( feature = "parse_number", feature = "use_std" ) ) ]
 pub mod number;
 /// Parse string.
-#[ cfg( all( feature = "parse", feature = "use_std" ) ) ]
-pub mod parse;
+#[ cfg( all( feature = "parse_request", feature = "use_std" ) ) ]
+pub mod parse_request;
 /// Spit string with a delimeter.
 #[ cfg( all( feature = "split", feature = "use_std" ) ) ]
 pub mod split;
@@ -25,8 +25,8 @@ pub mod protected
   pub use super::isolate::orphan::*;
   #[ cfg( all( feature = "parse_number", feature = "use_std" ) ) ]
   pub use super::number::orphan::*;
-  #[ cfg( all( feature = "parse", feature = "use_std" ) ) ]
-  pub use super::parse::orphan::*;
+  #[ cfg( all( feature = "parse_request", feature = "use_std" ) ) ]
+  pub use super::parse_request::orphan::*;
   #[ cfg( all( feature = "split", feature = "use_std" ) ) ]
   pub use super::split::orphan::*;
 }
@@ -49,8 +49,8 @@ pub mod exposed
   pub use super::isolate::exposed::*;
   #[ cfg( all( feature = "parse_number", feature = "use_std" ) ) ]
   pub use super::number::exposed::*;
-  #[ cfg( all( feature = "parse", feature = "use_std" ) ) ]
-  pub use super::parse::exposed::*;
+  #[ cfg( all( feature = "parse_request", feature = "use_std" ) ) ]
+  pub use super::parse_request::exposed::*;
   #[ cfg( all( feature = "split", feature = "use_std" ) ) ]
   pub use super::split::exposed::*;
 }
@@ -64,8 +64,8 @@ pub mod prelude
   pub use super::isolate::prelude::*;
   #[ cfg( all( feature = "parse_number", feature = "use_std" ) ) ]
   pub use super::number::prelude::*;
-  #[ cfg( all( feature = "parse", feature = "use_std" ) ) ]
-  pub use super::parse::prelude::*;
+  #[ cfg( all( feature = "parse_request", feature = "use_std" ) ) ]
+  pub use super::parse_request::prelude::*;
   #[ cfg( all( feature = "split", feature = "use_std" ) ) ]
   pub use super::split::prelude::*;
 }

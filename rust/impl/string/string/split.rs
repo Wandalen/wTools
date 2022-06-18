@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
 
-  use crate::string::parse::OpType;
+  use crate::string::parse_request::OpType;
 
   ///
   /// Either delimeter or delimeted with the slice on its string.

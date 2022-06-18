@@ -13,7 +13,7 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 #[ cfg( feature = "use_std" ) ]
 {
   use wca::*;
-  use wca::string::parse::OpType;
+  use wca::string::parse_request::OpType;
 
   let instruction = instruction::instruction_parse()
   .instruction( ".get some v:1" )

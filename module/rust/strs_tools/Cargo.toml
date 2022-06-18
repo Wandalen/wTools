@@ -32,7 +32,7 @@ default = [
   "use_std",
   "indentation",
   "isolate",
-  "parse",
+  "parse_request",
   "parse_number",
   "split",
 ]
@@ -41,16 +41,16 @@ full = [
   "use_alloc",
   "indentation",
   "isolate",
-  "parse",
-  "split",
+  "parse_request",
   "parse_number",
+  "split",
 ]
 use_std = []
 use_alloc = []
 
 indentation = []
 isolate = []
-parse  = [ "split", "parse_number" ]
+parse_request  = [ "split", "isolate" ]
 parse_number = [ "lexical" ]
 split = []
 

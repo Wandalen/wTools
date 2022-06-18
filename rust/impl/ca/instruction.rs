@@ -2,8 +2,8 @@
 pub( crate ) mod private
 {
   pub use wtools::error::*;
-  pub use wtools::string::parse;
-  pub use wtools::string::parse::OpType;
+  pub use wtools::string::parse_request;
+  pub use wtools::string::parse_request::OpType;
   pub use wtools::former::Former;
   use std::collections::HashMap;
 
@@ -108,7 +108,7 @@ pub( crate ) mod private
         return result;
       }
 
-      let request = parse::request_parse()
+      let request = parse_request::request_parse()
       .src( request )
       .several_values( self.several_values )
       .quoting( self.quoting )
