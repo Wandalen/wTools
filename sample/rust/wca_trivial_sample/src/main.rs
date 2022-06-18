@@ -1,5 +1,5 @@
 use wca::*;
-use wca::string::parse::OpType; /* qqq : this should work. if does not then fix not this line */
+use wca::string::parse_request::OpType; /* qqq : this should work. if does not then fix not this line */
 
 fn main()
 {

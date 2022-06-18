@@ -10,32 +10,37 @@ use instance_of as TheModule;
 #[ allow( unused_imports ) ]
 use test_tools::*;
 
-//
-
-fn implements_basic_test()
+tests_impls!
 {
 
-  let src = Box::new( true );
-  a_id!( TheModule::implements!( src => Copy ), false );
-  a_id!( TheModule::implements!( src => Clone ), true );
+  //
+
+  fn implements_basic_test()
+  {
+
+    let src = Box::new( true );
+    a_id!( TheModule::implements!( src => Copy ), false );
+    a_id!( TheModule::implements!( src => Clone ), true );
+
+  }
+
+  //
+
+  fn instance_of_basic_test()
+  {
+
+    let src = Box::new( true );
+    a_id!( TheModule::instance_of!( src => Copy ), false );
+    a_id!( TheModule::instance_of!( src => Clone ), true );
+
+  }
 
 }
 
 //
 
-fn instance_of_basic_test()
+tests_index!
 {
-
-  let src = Box::new( true );
-  a_id!( TheModule::instance_of!( src => Copy ), false );
-  a_id!( TheModule::instance_of!( src => Clone ), true );
-
-}
-
-//
-
-test_suite!
-{
-  implements_basic,
-  instance_of_basic,
+  implements_basic_test,
+  instance_of_basic_test,
 }

@@ -6,17 +6,22 @@ mod basic;
 
 //
 
-fn trybuild_test()
+TheModule::tests_impls!
 {
 
-  // let t = trybuild::TestCases::new();
-  // t.pass( "../../../rust/test/test/dynamic/basic.rs" );
+  fn trybuild_test()
+  {
+
+    // let t = trybuild::TestCases::new();
+    // t.pass( "../../../rust/test/test/dynamic/basic.rs" );
+
+  }
 
 }
 
 //
 
-TheModule::test_suite!
+TheModule::tests_index!
 {
-  trybuild,
+  trybuild_test,
 }

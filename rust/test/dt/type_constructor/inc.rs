@@ -14,7 +14,17 @@ mod homo_pair_test;
     any( feature = "use_std", feature = "use_alloc" ),
   )
 )]
-mod many_test;
+#[ path = "." ]
+mod many
+{
+  use super::*;
+  mod many_parameter_main_manual_test;
+  mod many_parameter_main_gen_test;
+  mod many_parameter_test;
+  mod many_parametrized_main_manual_test;
+  mod many_parametrized_main_gen_test;
+  mod many_parametrized_test;
+}
 
 #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
 mod make_interface_test;
@@ -23,3 +33,4 @@ mod make_interface_test;
 mod vectorized_from_test;
 
 mod enumerable_test;
+

@@ -3,6 +3,8 @@ use wtools::meta::prelude::*;
 use std::collections::HashMap;
 
 #[ cfg( feature = "use_std" ) ]
+mod commands_aggregator_test;
+#[ cfg( feature = "use_std" ) ]
 mod command_test;
 #[ cfg( feature = "use_std" ) ]
 mod instruction_test;

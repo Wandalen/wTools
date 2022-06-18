@@ -3,6 +3,7 @@ pub( crate ) mod private
 {
   use former::Former;
   use crate::string::split::*;
+  use crate::string::isolate::isolate_right;
   use std::collections::HashMap;
 
   ///
@@ -266,11 +267,10 @@ pub( crate ) mod private
       }
       else
       {
-        /* qqq : should use quoting */
         let iter = split()
         .src( self.src() )
         .delimeter( self.commands_delimeter() )
-        // .quoting( self.quoting() )
+        .quoting( self.quoting() )
         .stripping( true )
         .preserving_empty( false )
         .preserving_delimeters( false )
@@ -299,8 +299,11 @@ pub( crate ) mod private
 
         if map_entries.1.is_some()
         {
-          /* qqq : should be isolate_right* with option quoting */
-          let subject_and_key = isolate_right_or_none( map_entries.0.trim(), " " );
+          let subject_and_key = isolate_right()
+          .src( map_entries.0.trim() )
+          .delimeter( " " )
+          .none( false )
+          .perform();
           subject = subject_and_key.0;
           map_entries.0 = subject_and_key.2;
 
@@ -308,15 +311,14 @@ pub( crate ) mod private
           join.push_str( map_entries.1.unwrap() );
           join.push_str( map_entries.2 );
 
-          /* qqq : implement preserving_quoting */
           let mut splits = split()
           .src( join.as_str() )
           .delimeter( self.key_val_delimeter )
           .stripping( false )
-          // .quoting( self.quoting )
+          .quoting( self.quoting )
           .preserving_empty( true )
           .preserving_delimeters( true )
-          // .preserving_quoting( true )
+          .preserving_quoting( true )
           .perform()
           .map( | e | String::from( e ) ).collect::< Vec< _ > >();
 
@@ -328,7 +330,11 @@ pub( crate ) mod private
 
             while a < ( splits.len() - 3 )
             {
-              let cuts = isolate_right_or_none( &right.trim(), " " );
+              let cuts = isolate_right()
+              .src( right.trim() )
+              .delimeter( " " )
+              .none( false )
+              .perform();
 
               if cuts.1.is_none()
               {
@@ -377,10 +383,10 @@ pub( crate ) mod private
             .src( &src[ 1..src.len() - 1 ] )
             .delimeter( "," )
             .stripping( true )
-            // .quoting( self.quoting )
+            .quoting( self.quoting )
             .preserving_empty( false )
             .preserving_delimeters( false )
-            // .preserving_quoting( false )
+            .preserving_quoting( false )
             .perform()
             .map( | e | String::from( e ).trim().to_owned() ).collect::< Vec<String> >();
 
@@ -456,16 +462,6 @@ pub( crate ) mod private
 
       result
     }
-  }
-
-  fn isolate_right_or_none<'a>( src : &'a str, delimeter : &'a str ) -> ( &'a str, Option<&'a str>, &'a str )
-  {
-    let result = match src.trim().rsplit_once( delimeter )
-    {
-      Some( entries ) => ( entries.0, Some( delimeter ), entries.1 ),
-      None => ( "", None, src ),
-    };
-    result
   }
 
   ///

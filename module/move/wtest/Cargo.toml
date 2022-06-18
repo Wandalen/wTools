@@ -1,6 +1,6 @@
 [package]
 name = "wtest"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -51,10 +51,8 @@ name = "wtest_trivial_sample"
 path = "sample/rust/wtest_trivial_sample/src/main.rs"
 
 [dependencies]
-# paste = "~1.0"
-# anyhow = "~1.0"
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+# wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = [ "diff" ] }

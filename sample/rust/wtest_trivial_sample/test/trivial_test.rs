@@ -1,23 +1,26 @@
 use wtest::*;
 
-//
-
-fn pass1_test()
+tests_impls!
 {
-  assert_eq!( true, true );
+
+  fn pass1_test()
+  {
+    assert_eq!( true, true );
+  }
+
+  //
+
+  fn pass2_test()
+  {
+    assert_eq!( 1, 1 );
+  }
+
 }
 
 //
 
-fn pass2_test()
+tests_index!
 {
-  assert_eq!( 1, 1 );
-}
-
-//
-
-test_suite!
-{
-  pass1,
-  pass2,
+  pass1_test,
+  pass2_test,
 }

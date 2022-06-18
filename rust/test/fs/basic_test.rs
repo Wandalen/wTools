@@ -4,13 +4,18 @@ use super::*;
 
 //
 
-fn basic_test()
+tests_impls!
 {
+
+  fn basic_test()
+  {
+  }
+
 }
 
 //
 
-test_suite!
+tests_index!
 {
-  basic,
+  basic_test,
 }
