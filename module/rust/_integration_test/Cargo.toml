@@ -125,6 +125,20 @@ strs_tools_published = { version = "*", package = "strs_tools" }
 wstring_tools_local = { version = "*", path = "../../alias/wstring_tools", package = "wstring_tools" }
 wstring_tools_published = { version = "*", package = "wstring_tools" }
 
+# fs
+
+fs_tools_local = { version = "*", path = "../../move/fs_tools", package = "fs_tools" }
+fs_tools_published = { version = "*", package = "fs_tools" }
+
+# test
+
+wtest_basic_local = { version = "*", path = "../../rust/wtest_basic", package = "wtest_basic" }
+wtest_basic_published = { version = "*", package = "wtest_basic" }
+wtest_local = { version = "*", path = "../../move/wtest", package = "wtest" }
+wtest_published = { version = "*", package = "wtest" }
+test_tools_local = { version = "*", path = "../../rust/test_tools", package = "test_tools" }
+test_tools_published = { version = "*", package = "test_tools" }
+
 # willbe
 
 willbe_local = { version = "*", path = "../../move/willbe", package = "willbe" }
@@ -143,11 +157,6 @@ wautomata_published = { version = "*", package = "wautomata" }
 
 graphs_tools_local = { version = "*", path = "../../move/graphs_tools", package = "graphs_tools" }
 graphs_tools_published = { version = "*", package = "graphs_tools" }
-
-# fs
-
-fs_tools_local = { version = "*", path = "../../move/fs_tools", package = "fs_tools" }
-fs_tools_published = { version = "*", package = "fs_tools" }
 
 # ca
 
@@ -169,14 +178,12 @@ wlang_published = { version = "*", package = "wlang" }
 wpublisher_local = { version = "*", path = "../../move/wpublisher", package = "wpublisher", optional = true }
 wpublisher_published = { version = "*", package = "wpublisher", optional = true }
 
-# test
+# plot
 
-wtest_basic_local = { version = "*", path = "../../rust/wtest_basic", package = "wtest_basic" }
-wtest_basic_published = { version = "*", package = "wtest_basic" }
-wtest_local = { version = "*", path = "../../move/wtest", package = "wtest" }
-wtest_published = { version = "*", package = "wtest" }
-test_tools_local = { version = "*", path = "../../rust/test_tools", package = "test_tools" }
-test_tools_published = { version = "*", package = "test_tools" }
+wplot_local = { version = "*", path = "../../move/wplot", package = "wplot" }
+wplot_published = { version = "*", package = "wplot" }
+plot_interface_local = { version = "*", path = "../../move/plot_interface", package = "plot_interface" }
+plot_interface_published = { version = "*", package = "plot_interface" }
 
 [dev-dependencies]
 # test_tools = { version = "~0.1", path = "../../rust/test_tools" }
