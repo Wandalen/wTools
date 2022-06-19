@@ -44,6 +44,11 @@ path = "rust/test/_integration_test/smoke_test.rs"
 
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }
+image = { version = "~0.24" }
+open = { version = "~3.0" }
+wmath = { version = "~0.3" }
+
+# total_float_wrap = { version = "~0.1" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
