@@ -1,5 +1,5 @@
 #[ allow( unused_imports ) ]
-use wtest_basic::*;
+use super::TheModule::*;
 
 tests_impls!
 {
