@@ -78,6 +78,14 @@ pub mod prelude
     Vec as DynArray,
   };
 
+  #[ cfg( any( feature = "use_std", feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "prelude" ) ]
+  #[ doc( inline ) ]
+  pub use core::
+  {
+    fmt,
+  };
+
 }
 
 // zzz : use

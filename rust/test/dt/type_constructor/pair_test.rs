@@ -857,3 +857,4 @@ tests_index!
   struct_transitive_from,
   samples,
 }
+
