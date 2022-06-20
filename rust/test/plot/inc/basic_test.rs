@@ -52,11 +52,12 @@ tests_impls!
     use TheModule::math::X2;
     use TheModule::prelude::*;
 
-    let c = TheModule::context();
+    // let c = TheModule::context::make();
+    let mut c = TheModule::context();
     // let c = TheModule::context().new();
 
-//     // c.canvas.size( make!( 32, 32 ) );
-//     c.stroke().color( [ 1.0, 0.0, 1.0 ] );
+    // c.canvas.size( make!( 32, 32 ) );
+    c.stroke().color( [ 1.0, 0.0, 1.0 ] );
 //     // c.draw().begin();
 //     // c.draw().name( "drawing1" );
 //     c.draw().rect();

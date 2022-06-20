@@ -21,8 +21,10 @@ pub mod color;
 pub mod context;
 /// Draw commands.
 pub mod draw;
-/// Brush.
-pub mod brush;
+/// Identity of resource.
+pub mod identity;
+/// Brush stroke.
+pub mod stroke_brush;
 /// Target to draw.
 pub mod target;
 
@@ -44,7 +46,8 @@ pub mod protected
     color::orphan::*,
     context::orphan::*,
     draw::orphan::*,
-    brush::orphan::*,
+    identity::orphan::*,
+    stroke_brush::orphan::*,
     target::orphan::*,
   };
 }
@@ -66,7 +69,8 @@ pub mod exposed
     color::exposed::*,
     context::exposed::*,
     draw::exposed::*,
-    brush::exposed::*,
+    identity::exposed::*,
+    stroke_brush::exposed::*,
     target::exposed::*,
   };
 }
@@ -79,7 +83,8 @@ pub mod prelude
     color::prelude::*,
     context::prelude::*,
     draw::prelude::*,
-    brush::prelude::*,
+    identity::prelude::*,
+    stroke_brush::prelude::*,
     target::prelude::*,
   };
   pub use ::wmath::prelude::*;

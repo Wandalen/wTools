@@ -1,36 +1,39 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::*;
+  use crate::*;
   use once_cell::sync::Lazy;
   use std::sync::Mutex;
   use dashmap::DashMap;
 
-  static mut CONTEXTS : Lazy< DashMap< String, Context > > = Lazy::new( ||
+  /// Registry of contexts.
+  #[ derive( Debug ) ]
+  pub struct Registry
   {
-    DashMap::new()
-  });
-
-  static mut CURRENT_CONTEXT : Lazy< Mutex< Option< String > > > = Lazy::new( ||
-  {
-    Mutex::new( None )
-  });
-
-  /// Reference on context.
-  #[ derive( Debug, Clone, Copy ) ]
-  pub struct ContextId
-  {
-    #[ allow( dead_code ) ]
-    tp_id : i32,
-    #[ allow( dead_code ) ]
-    in_id : i32,
+    contexts : DashMap< Id, Context >,
+    contexts_with_name : DashMap< String, Id >,
+    current_context_name : Option< String >,
   }
+
+  static mut REGISTRY : Lazy< Mutex< Registry > > = Lazy::new( ||
+  {
+    let contexts = DashMap::new();
+    let contexts_with_name = DashMap::new();
+    let current_context_name = None;
+    Mutex::new( Registry
+    {
+      contexts,
+      contexts_with_name,
+      current_context_name,
+    })
+  });
 
   /// Context.
   #[ derive( Debug, Clone ) ]
   pub struct Context
   {
-    id : ContextId,
+    id : Id,
+    stroke : Option< StrokeBrush >,
   }
 
   impl Context
@@ -38,14 +41,29 @@ pub( crate ) mod private
     /// Constructor.
     fn _new() -> Self
     {
-      let id = ContextId { tp_id : 1, in_id : 1 };
+      let id = Id::new::< Self >();
+      let stroke = None;
       Self
       {
-        id
+        id,
+        stroke,
       }
     }
-    /// Get id.
-    pub fn id( &self ) -> ContextId
+    /// Parameters of stroke.
+    pub fn stroke( &mut self ) -> StrokeBrush
+    {
+      if self.stroke.is_none()
+      {
+        self.stroke = Some( StrokeBrush::new() );
+      }
+      self.stroke.as_ref().unwrap().clone()
+    }
+  }
+
+  impl HasIdInterface for Context
+  {
+    #[ inline ]
+    fn id( &self ) -> Id
     {
       self.id
     }
@@ -56,14 +74,18 @@ pub( crate ) mod private
   {
     unsafe
     {
-      let current_name : Option< String > = CURRENT_CONTEXT.lock().unwrap().clone();
+      let registry = REGISTRY.lock().unwrap();
+      let current_name : Option< String > = registry.current_context_name.clone();
+      /* xxx : redo */
       if current_name.is_none()
       {
+        drop( registry );
         make()
       }
       else
       {
-        ( *CONTEXTS.get( &current_name.unwrap() ).unwrap().value() ).clone()
+        let id = *registry.contexts_with_name.get( &current_name.unwrap() ).unwrap().value();
+        ( *registry.contexts.get( &id ).unwrap().value() ).clone()
       }
     }
   }
@@ -73,21 +95,25 @@ pub( crate ) mod private
   {
     unsafe
     {
-      let mut current_name : Option< String > = CURRENT_CONTEXT.lock().unwrap().clone();
+      let registry = REGISTRY.lock().unwrap();
+      let mut current_name : Option< String > = registry.current_context_name.clone();
       if current_name.is_none()
       {
         current_name = Some( "default".into() )
       }
       let current_name = current_name.unwrap();
-      if CONTEXTS.contains_key( &current_name )
+      if registry.contexts_with_name.contains_key( &current_name )
       {
-        ( *CONTEXTS.get( &current_name ).unwrap().value() ).clone()
+        let id = *registry.contexts_with_name.get( &current_name ).unwrap().value();
+        ( *registry.contexts.get( &id ).unwrap().value() ).clone()
       }
       else
       {
         let context = Context::_new();
-        CONTEXTS.insert( current_name.clone(), context );
-        ( *CONTEXTS.get( &current_name ).unwrap().value() ).clone()
+        let id = context.id();
+        registry.contexts_with_name.insert( current_name.clone(), context.id() );
+        registry.contexts.insert( id, context );
+        ( *registry.contexts.get( &id ).unwrap().value() ).clone()
       }
     }
   }
@@ -102,6 +128,8 @@ pub mod protected
     orphan::*,
     private::current,
     private::make,
+    private:: Registry,
+    private::Context,
   };
 }
 
