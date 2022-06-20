@@ -3,16 +3,20 @@ pub( crate ) mod private
 {
   use crate::*;
 
+  /// Command to draw rectangle.
   #[ derive( Debug ) ]
   pub struct Rect
   {
+    /// Left-top corner.
     pub left_top : X2< i32 >,
+    /// Right-bottom corner.
     pub right_bottom : X2< i32 >,
   }
 
   impl Rect
   {
 
+    /// Constructor
     pub fn new( left_top : X2< i32 >, right_bottom : X2< i32 > ) -> Self
     {
       Self{ left_top, right_bottom }

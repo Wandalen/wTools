@@ -8,11 +8,13 @@ pub( crate ) mod private
   #[ derive( Debug ) ]
   pub struct Queue
   {
+    /// Container to store commands.
     pub container : Vec< Box< dyn DrawCommandInterface > >,
   }
 
   impl Queue
   {
+    /// Constructor.
     pub fn new() -> Self
     {
       let container = Vec::new();

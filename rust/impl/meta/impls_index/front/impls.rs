@@ -92,9 +92,9 @@ pub( crate ) mod private
 
   }
 
-  // xxx : cover by tests
-  // xxx : document the idea and module
-  // xxx : add section idea to each module
+  // qqq : cover by tests
+  // qqq : document the idea and module
+  // qqq : add section idea to each module
 
   ///
   /// Define implementation putting each function under a macro.

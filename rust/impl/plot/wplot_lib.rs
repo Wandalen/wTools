@@ -15,6 +15,10 @@
 pub use wmath as math;
 pub use wtools::prelude::*;
 
+/// Describe colors.
+pub mod color;
+/// Main aggregating object.
+pub mod context;
 /// Draw commands.
 pub mod draw;
 /// Brush.
@@ -28,6 +32,7 @@ pub mod dependency
   pub use ::image;
   pub use ::open;
   pub use ::wmath;
+  pub use ::rgb;
 }
 
 /// Protected namespace of the module.
@@ -36,6 +41,8 @@ pub mod protected
   pub use super::
   {
     orphan::*,
+    color::orphan::*,
+    context::orphan::*,
     draw::orphan::*,
     brush::orphan::*,
     target::orphan::*,
@@ -56,6 +63,8 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
+    color::exposed::*,
+    context::exposed::*,
     draw::exposed::*,
     brush::exposed::*,
     target::exposed::*,
@@ -67,6 +76,8 @@ pub mod prelude
 {
   pub use super::
   {
+    color::prelude::*,
+    context::prelude::*,
     draw::prelude::*,
     brush::prelude::*,
     target::prelude::*,
