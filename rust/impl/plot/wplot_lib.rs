@@ -12,23 +12,75 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-/// Core module.
-// pub mod plot;
+pub use wmath as math;
+pub use wtools::prelude::*;
+
+/// Describe colors.
+pub mod color;
+/// Main aggregating object.
+pub mod context;
+/// Draw commands.
+pub mod draw;
+/// Brush.
+pub mod brush;
+/// Target to draw.
+pub mod target;
 
 /// Namespace with dependencies.
 pub mod dependency
 {
+  pub use ::image;
+  pub use ::open;
+  pub use ::wmath;
+  pub use ::rgb;
+}
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  pub use super::
+  {
+    orphan::*,
+    color::orphan::*,
+    context::orphan::*,
+    draw::orphan::*,
+    brush::orphan::*,
+    target::orphan::*,
+  };
+}
+
+pub use protected::*;
+
+/// Parented namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::prelude::*;
+  pub use super::
+  {
+    prelude::*,
+    color::exposed::*,
+    context::exposed::*,
+    draw::exposed::*,
+    brush::exposed::*,
+    target::exposed::*,
+  };
 }
-
-pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  pub use super::
+  {
+    color::prelude::*,
+    context::prelude::*,
+    draw::prelude::*,
+    brush::prelude::*,
+    target::prelude::*,
+  };
+  pub use ::wmath::prelude::*;
 }
