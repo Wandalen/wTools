@@ -42,6 +42,10 @@ path = "rust/test/ca/wca_tests.rs"
 name = "wca_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
+[[example]]
+name = "wca_trivial_sample"
+path = "sample/rust/wca_trivial_sample/src/main.rs"
+
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }
 former = { version = "~0.1", path = "../../rust/former" } # zzz : remove. fix
