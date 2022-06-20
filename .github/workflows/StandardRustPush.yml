@@ -19,10 +19,12 @@ on :
         type : string
         default : true
 
-# concurrency :
-#
-#   group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}
-#   cancel-in-progress : true
+concurrency :
+
+  group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_
+    ${{ contains( inputs.commit_message, '!test' ) || startsWith( inputs.commit_message, 'Merge' ) || contains( inputs.commit_message, inputs.module_name ) }}_
+    ${{ !contains( inputs.commit_message, '!only_js' )}}
+  cancel-in-progress : true
 
 env :
 
