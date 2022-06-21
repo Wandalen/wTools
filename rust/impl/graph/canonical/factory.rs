@@ -7,6 +7,7 @@ pub( crate ) mod private
   use wtools::prelude::*;
   use core::fmt;
   use indexmap::IndexMap;
+  use core::ops::Deref;
 
   include!( "./factory_impl.rs" );
 
@@ -93,12 +94,12 @@ pub( crate ) mod private
   /// Node factory.
   ///
 
-  pub struct NodeFactory< NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt, Kind = crate::NodeKindless >
+  pub struct NodeFactory< 'it, NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt, Kind = crate::NodeKindless >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
-    NodeFactory< NodeId, EdgeId, Kind > : crate::NodeFactoryInterface,
+    NodeFactory< 'it, NodeId, EdgeId, Kind > : crate::NodeFactoryInterface,
   {
     /// Map id to node.
     pub id_to_node_map : IndexMap< NodeId, crate::canonical::Node< NodeId, EdgeId, Kind > >,
@@ -106,9 +107,11 @@ pub( crate ) mod private
     pub id_to_edge_map : IndexMap< EdgeId, crate::canonical::Edge< EdgeId, NodeId, Kind > >,
     /// Generator of edge ids.
     pub _current_edge_id : EdgeId,
+    /// Phantom.
+    _p : core::marker::PhantomData< &'it i32 >,
   }
 
-  impl< NodeId, EdgeId, Kind > NodeFactory< NodeId, EdgeId, Kind >
+  impl< 'it, NodeId, EdgeId, Kind > NodeFactory< 'it, NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,
@@ -118,12 +121,29 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphNodesNominalInterface
-  for NodeFactory< NodeId, EdgeId, Kind >
+  impl< 'it, NodeId, EdgeId, Kind >
+  AsRef< NodeFactory< 'it, NodeId, EdgeId, Kind > >
+  for NodeFactory< 'it, NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
+  {
+    fn as_ref( &self ) -> &Self
+    {
+      self
+    }
+  }
+
+  //
+
+  impl< 'it, NodeId, EdgeId, Kind > GraphNodesNominalInterface
+  for NodeFactory< 'it, NodeId, EdgeId, Kind >
+  where
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
+    Kind : NodeKindInterface,
+    // Self : 'it,
   {
     type NodeHandle = crate::canonical::Node< NodeId, EdgeId, Kind >;
     index!
@@ -132,19 +152,77 @@ pub( crate ) mod private
       out_nodes_ids,
     }
 
-    // type OutNodesIteratorItem = NODE_ID!();
-    // type OutNodesIterator = core::slice::Iter< 'it, NODE_ID!() >;
-    // fn out_nodes_ids( self ) -> Self::OutNodesIterator
+    // type NodeId = NODE_ID!();
+    // // type OutNodesIdsIterator = core::slice::Iter< 'it, Self::NodeId >;
+    // type OutNodesIdsIterator = core::iter::Cloned< indexmap::set::Iter< 'it, Self::NodeId > >;
+    // fn out_nodes_ids_2< Id >( &self, node_id : Id ) -> Self::OutNodesIdsIterator
+    // where
+    //   Id : Into< NODE_ID!() >,
+    //   // Self : 'it,
+    // {
+    //   let node = self.node( node_id );
+    //   let iterator = node.out_nodes.iter().cloned();
+    //   // let iterator = node.out_nodes.iter();
+    //   iterator
+    // }
+
+    // type NodeId = NODE_ID!();
+    // type OutNodesIdsIterator = core::slice::Iter< 'it, NODE_ID!() >;
+    // fn out_nodes_ids( self ) -> Self::OutNodesIdsIterator
     // {
     //   self.map.iter()
     // }
 
   }
 
+  impl< 'it, NodeId, EdgeId, Kind >
+  GraphNodesNominalInterface2< NodeFactory< 'it, NodeId, EdgeId, Kind > >
+  for &'it NodeFactory< 'it, NodeId, EdgeId, Kind >
+  where
+    NodeId : IdentityInterface,
+    EdgeId : IdentityInterface + IdentityGenerableInterface,
+    Kind : NodeKindInterface,
+    Self : Deref< Target = NodeFactory< 'it, NodeId, EdgeId, Kind > >,
+  {
+
+    type OutNodesIdsIterator = core::iter::Cloned< indexmap::set::Iter< 'it, NodeId > >;
+    fn out_nodes_ids_2< Id >( self, node_id : Id ) -> Self::OutNodesIdsIterator
+    where
+      Id : Into< NodeId >
+    {
+      let node = self.node( node_id.into() );
+      let iterator = node.out_nodes.iter().cloned();
+      iterator
+    }
+
+    type RefNode = < NodeFactory< 'it, NodeId, EdgeId, Kind > as GraphNodesNominalInterface >::NodeHandle;
+
+    type OutNodesIterator = core::iter::Map
+    <
+      indexmap::set::Iter< 'it, NodeId >,
+      Box< dyn FnMut ( &NodeId ) -> ( NodeId, Self::RefNode ) >,
+    >;
+
+//     fn out_nodes_2< Id >( self, node_id : Id )
+//     ->
+//     Self::OutNodesIterator
+//     where
+//       Self : Sized,
+//       Id : Into< NodeId >
+//     {
+//       self.out_nodes_ids_2( node_id ).map( | id |
+//       {
+//         13_i32
+//         // ( id, self.node( id ) )
+//       })
+//     }
+
+  }
+
   //
 
-  impl< NodeId, EdgeId, Kind > GraphEdgesNominalInterface
-  for NodeFactory< NodeId, EdgeId, Kind >
+  impl< 'it, NodeId, EdgeId, Kind > GraphEdgesNominalInterface
+  for NodeFactory< 'it, NodeId, EdgeId, Kind >
   where
     EdgeId : IdentityInterface + IdentityGenerableInterface,
     NodeId : IdentityInterface,
@@ -160,8 +238,8 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphNodesEnumerableInterface
-  for NodeFactory< NodeId, EdgeId, Kind >
+  impl< 'it, NodeId, EdgeId, Kind > GraphNodesEnumerableInterface
+  for NodeFactory< 'it, NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,
@@ -186,8 +264,8 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphEdgesEnumerableInterface
-  for NodeFactory< NodeId, EdgeId, Kind >
+  impl< 'it, NodeId, EdgeId, Kind > GraphEdgesEnumerableInterface
+  for NodeFactory< 'it, NodeId, EdgeId, Kind >
   where
     EdgeId : IdentityInterface + IdentityGenerableInterface,
     NodeId : IdentityInterface,
@@ -202,8 +280,8 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphNodesExtendableInterface
-  for NodeFactory< NodeId, EdgeId, Kind >
+  impl< 'it, NodeId, EdgeId, Kind > GraphNodesExtendableInterface
+  for NodeFactory< 'it, NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,
@@ -221,8 +299,8 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > GraphEdgesExtendableInterface
-  for NodeFactory< NodeId, EdgeId, Kind >
+  impl< 'it, NodeId, EdgeId, Kind > GraphEdgesExtendableInterface
+  for NodeFactory< 'it, NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,
@@ -239,8 +317,8 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > NodeFactoryInterface
-  for NodeFactory< NodeId, EdgeId, Kind >
+  impl< 'it, NodeId, EdgeId, Kind > NodeFactoryInterface
+  for NodeFactory< 'it, NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,
@@ -251,8 +329,8 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > fmt::Debug
-  for NodeFactory< NodeId, EdgeId, Kind >
+  impl< 'it, NodeId, EdgeId, Kind > fmt::Debug
+  for NodeFactory< 'it, NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,
@@ -263,8 +341,8 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId, Kind > Make0
-  for NodeFactory< NodeId, EdgeId, Kind >
+  impl< 'it, NodeId, EdgeId, Kind > Make0
+  for NodeFactory< 'it, NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,

@@ -6,7 +6,8 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
-// #![ feature( type_name_of_val ) ]
+#![ feature( type_name_of_val ) ]
+#![ feature( type_alias_impl_trait ) ]
 // #![ feature( trace_macros ) ]
 
 //!
