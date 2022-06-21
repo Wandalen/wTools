@@ -59,7 +59,6 @@ pub( crate ) mod private
     //   Id : Into< NODE_ID!() >
     // ;
 
-
     /// Iterate over neighbourhood of the node. Callback gets ids of nodes in neighbourhood of a picked node.
     fn out_nodes_ids< 'a, 'b, Id >( &'a self, node_id : Id )
     ->
@@ -117,28 +116,6 @@ pub( crate ) mod private
     {
       Self::EdgeId( id )
     }
-
-// xxx
-//     /// Convert argument into edges ids.
-//     #[ allow( non_snake_case ) ]
-//     #[ inline ]
-//     fn EdgesIds< In, Out >( src : In< EDGE_ID!() > ) -> Out< EDGE_ID!() >
-//     where
-//       In : IdsFromCollection,
-//       Out : IdsCollection,
-//     {
-//       src.into()
-//     }
-//
-//     /// Get edges with ids.
-//     #[ inline ]
-//     fn edges_ids< In, Out >( &self, src : In< EDGE_ID!() > ) -> Out< EDGE_ID!() >
-//     where
-//       In : IdsFromCollection,
-//       Out : IdsCollection,
-//     {
-//       Self::EdgesIds( src )
-//     }
 
     /// Get edge with id.
     fn edge< Id >( &self, id : Id ) -> &Self::EdgeHandle
