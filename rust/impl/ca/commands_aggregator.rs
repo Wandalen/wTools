@@ -77,7 +77,7 @@ pub( crate ) mod private
         {
           if self.with_help
           {
-            self.print_help();
+            self.on_get_help().unwrap();
           }
           if self.changing_exit_code
           {
@@ -90,13 +90,23 @@ pub( crate ) mod private
       result
     }
 
-    /// Print help information.
-    fn print_help( &self )
+    /// Print help for command.
+    fn command_help( &self, command : impl AsRef< str > )
     {
-      println!( "Illformed command" );
-      for ( command_name, command_descriptor ) in self.commands.iter()
+      /* qqq : command should print help, not CA */
+      if command.as_ref() == ""
       {
-        println!( "{} - {}", command_name, command_descriptor.hint );
+        for ( command_name, command_descriptor ) in self.commands.iter()
+        {
+          println!( "{} - {}", command_name, command_descriptor.hint );
+        }
+      }
+      else
+      {
+        if let Some( command_descriptor ) = self.commands.get( command.as_ref() )
+        {
+          println!( "{} - {}", command.as_ref(), command_descriptor.hint );
+        }
       }
     }
 
@@ -104,6 +114,110 @@ pub( crate ) mod private
     fn command_resolve( &self, instruction : &Instruction ) -> Option<&Command>
     {
       self.commands.get( &instruction.command_name )
+    }
+  }
+
+  //
+
+  ///
+  /// Implement helper routines for CommandsAggregator.
+  ///
+
+  pub trait CommandsAggregatorHandlers
+  {
+    /// Handle error.
+    fn on_error( &self, err : BasicError ) -> Result< (), BasicError >;
+    /// Handle syntax error.
+    fn on_syntax_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >;
+    /// Handle ambiguity.
+    fn on_ambiguity( &self, command : impl AsRef< str > ) -> Result< (), BasicError >;
+    /// Handle unknown command error.
+    fn on_unknown_command_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >;
+    /// Get help.
+    fn on_get_help( &self ) -> Result< (), BasicError >;
+    /// Print all commands.
+    fn on_print_commands( &self ) -> Result< (), BasicError >;
+  }
+
+  /* qqq : make optional and export trait */
+  impl CommandsAggregatorHandlers for CommandsAggregator
+  {
+    /// Handle error.
+    fn on_error( &self, err : BasicError ) -> Result< (), BasicError >
+    {
+      if self.changing_exit_code
+      {
+        unimplemented!();
+      }
+      Err( err )
+    }
+
+    /// Handle syntax error.
+    fn on_syntax_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >
+    {
+      let err_formatted = format!( "Illformed command \"{}\"", command.as_ref() );
+      eprintln!( "{}", err_formatted );
+      self.on_get_help().unwrap();
+
+      let err = BasicError::new( err_formatted );
+      return self.on_error( err );
+    }
+
+    /// Handle ambiguity.
+    fn on_ambiguity( &self, command : impl AsRef< str > ) -> Result< (), BasicError >
+    {
+      eprintln!( "Ambiguity. Did you mean?" );
+      self.command_help( command.as_ref() );
+      println!( "" );
+
+      let err_formatted = format!( "Ambiguity \"{}\"", command.as_ref() );
+      let err = BasicError::new( err_formatted );
+      return self.on_error( err );
+    }
+
+    /// Handle unknown command error.
+    fn on_unknown_command_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >
+    {
+      let mut err_formatted = format!( "Unknown command \"{}\"", command.as_ref() );
+
+      let instruction = instruction_parse()
+      .instruction( ".help" )
+      .perform();
+      if self.command_resolve( &instruction ).is_some()
+      {
+        err_formatted.push_str( "\nTry \".help\"" );
+      }
+      let err = BasicError::new( err_formatted );
+      return self.on_error( err );
+    }
+
+    /// Get help.
+    fn on_get_help( &self ) -> Result< (), BasicError >
+    {
+      let instruction = instruction_parse()
+      .instruction( ".help" )
+      .perform();
+      if let Some( command ) = self.command_resolve( &instruction )
+      {
+        let instruction = instruction_parse()
+        .instruction( "" )
+        .perform();
+        return command.perform( &instruction );
+      }
+      else
+      {
+        self.command_help( "" );
+        return Ok( () );
+      }
+    }
+
+    /// Print all commands.
+    fn on_print_commands( &self ) -> Result< (), BasicError >
+    {
+      println!( "" );
+      self.command_help( "" );
+      println!( "" );
+      Ok( () )
     }
   }
 
