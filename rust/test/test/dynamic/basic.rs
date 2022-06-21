@@ -45,10 +45,3 @@ tests_index!
   never_test,
   always_test,
 }
-
-//
-
-#[ allow( dead_code ) ]
-fn main()
-{
-}
