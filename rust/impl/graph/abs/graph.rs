@@ -59,6 +59,7 @@ pub( crate ) mod private
     //   Id : Into< NODE_ID!() >
     // ;
 
+
     /// Iterate over neighbourhood of the node. Callback gets ids of nodes in neighbourhood of a picked node.
     fn out_nodes_ids< 'a, 'b, Id >( &'a self, node_id : Id )
     ->
