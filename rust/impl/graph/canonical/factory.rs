@@ -73,23 +73,6 @@ pub( crate ) mod private
 
     //
 
-    // fn out_edges< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
-    // ->
-    // Box< dyn Iterator< Item = ( &NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
-    // where
-    //   IntoId : Into< NODE_ID!() >,
-    //   'a : 'b,
-    // {
-    //   let node = self.node( node_id );
-    //   let iterator
-    //     : Box< dyn Iterator< Item = ( &NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > >
-    //     = Box::new( node.out_edges.iter().map( | el |
-    //     {
-    //       self.node(  )
-    //     }));
-    //   iterator
-    // }
-
     fn out_edges_ids< 'a, 'b, IntoId >( &'a self, node_id : IntoId )
     ->
     Box< dyn Iterator< Item = EDGE_ID!() > + 'b >
@@ -148,6 +131,14 @@ pub( crate ) mod private
       node,
       out_nodes_ids,
     }
+
+    // type OutNodesIteratorItem = NODE_ID!();
+    // type OutNodesIterator = core::slice::Iter< 'it, NODE_ID!() >;
+    // fn out_nodes_ids( self ) -> Self::OutNodesIterator
+    // {
+    //   self.map.iter()
+    // }
+
   }
 
   //
@@ -170,20 +161,27 @@ pub( crate ) mod private
   //
 
   impl< NodeId, EdgeId, Kind > GraphNodesEnumerableInterface
-  // impl< 'it, 'it2, NodeId, EdgeId, Kind >
-  // GraphNodesEnumerableInterface< 'it, 'it2, core::slice::Iter< 'it, ( NODE_ID!(), &'it < Self as GraphNodesNominalInterface >::NodeHandle ) > >
   for NodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
-    // 'it2 : 'it,
   {
     index!
     {
       nodes,
       nnodes,
     }
+
+    //
+
+    // type NodesIteratorItem = ( &'it NODE_ID!(), &'it < Self as GraphNodesNominalInterface >::NodeHandle );
+    // type NodesIterator = std::collections::hash_map::Iter< 'it, NODE_ID!(), < Self as GraphNodesNominalInterface >::NodeHandle >;
+    // fn nodes( self ) -> Self::NodesIterator
+    // {
+    //   self.map.iter()
+    // }
+
   }
 
   //
