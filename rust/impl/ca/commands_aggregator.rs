@@ -120,27 +120,77 @@ pub( crate ) mod private
   //
 
   ///
-  /// Implement helper routines for CommandsAggregator.
+  /// On error helper.
   ///
 
-  pub trait CommandsAggregatorHandlers
+  pub trait OnError
   {
     /// Handle error.
     fn on_error( &self, err : BasicError ) -> Result< (), BasicError >;
+  }
+
+  ///
+  /// On syntax error helper.
+  ///
+
+  pub trait OnSyntaxError
+  {
     /// Handle syntax error.
     fn on_syntax_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >;
+  }
+
+  ///
+  /// On ambiguity helper.
+  ///
+
+  pub trait OnAmbiguity
+  {
     /// Handle ambiguity.
     fn on_ambiguity( &self, command : impl AsRef< str > ) -> Result< (), BasicError >;
+  }
+
+  ///
+  /// On unknown command error helper.
+  ///
+
+  pub trait OnUnknownCommandError
+  {
     /// Handle unknown command error.
     fn on_unknown_command_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >;
+  }
+
+  ///
+  /// Help helper.
+  ///
+
+  pub trait OnGetHelp
+  {
     /// Get help.
     fn on_get_help( &self ) -> Result< (), BasicError >;
+  }
+
+  ///
+  /// Printing commands helper.
+  ///
+
+  pub trait OnPrintCommands
+  {
     /// Print all commands.
     fn on_print_commands( &self ) -> Result< (), BasicError >;
   }
 
-  /* qqq : make optional and export trait */
-  impl CommandsAggregatorHandlers for CommandsAggregator
+  ///
+  /// Super trait that checks that all helpers are implemented.
+  ///
+
+  pub trait CommandsAggregatorHandlers : OnError + OnSyntaxError + OnAmbiguity + OnUnknownCommandError + OnGetHelp + OnPrintCommands
+  {
+  }
+
+  impl CommandsAggregatorHandlers for CommandsAggregator {}
+
+  #[ cfg( feature = "on_error_default" ) ]
+  impl OnError for CommandsAggregator
   {
     /// Handle error.
     fn on_error( &self, err : BasicError ) -> Result< (), BasicError >
@@ -151,7 +201,11 @@ pub( crate ) mod private
       }
       Err( err )
     }
+  }
 
+  #[ cfg( feature = "on_syntax_error_default" ) ]
+  impl OnSyntaxError for CommandsAggregator
+  {
     /// Handle syntax error.
     fn on_syntax_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >
     {
@@ -162,7 +216,11 @@ pub( crate ) mod private
       let err = BasicError::new( err_formatted );
       return self.on_error( err );
     }
+  }
 
+  #[ cfg( feature = "on_ambiguity_default" ) ]
+  impl OnAmbiguity for CommandsAggregator
+  {
     /// Handle ambiguity.
     fn on_ambiguity( &self, command : impl AsRef< str > ) -> Result< (), BasicError >
     {
@@ -174,7 +232,11 @@ pub( crate ) mod private
       let err = BasicError::new( err_formatted );
       return self.on_error( err );
     }
+  }
 
+  #[ cfg( feature = "on_unknown_command_error_default" ) ]
+  impl OnUnknownCommandError for CommandsAggregator
+  {
     /// Handle unknown command error.
     fn on_unknown_command_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >
     {
@@ -190,7 +252,11 @@ pub( crate ) mod private
       let err = BasicError::new( err_formatted );
       return self.on_error( err );
     }
+  }
 
+  #[ cfg( feature = "on_get_help_default" ) ]
+  impl OnGetHelp for CommandsAggregator
+  {
     /// Get help.
     fn on_get_help( &self ) -> Result< (), BasicError >
     {
@@ -210,7 +276,11 @@ pub( crate ) mod private
         return Ok( () );
       }
     }
+  }
 
+  #[ cfg( feature = "on_print_commands_default" ) ]
+  impl OnPrintCommands for CommandsAggregator
+  {
     /// Print all commands.
     fn on_print_commands( &self ) -> Result< (), BasicError >
     {
