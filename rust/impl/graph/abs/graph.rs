@@ -171,30 +171,30 @@ pub( crate ) mod private
 
   }
 
-  /// Into iterator of nodes.
-
-  pub trait IntoIteratorOfNodes
-  {
-    type NodesIteratorItem;
-    type NodesIterator : Iterator< Item = Self::NodesIteratorItem >;
-    // /// Iterate over all nodes.
-    // fn nodes( self ) -> Self::NodesIterator;
-  }
-
-  //
-
-  impl< 'it, Graph > IntoIteratorOfNodes
-  for &'it Graph
-  where
-    Graph : GraphNodesNominalInterface,
-  {
-    type NodesIteratorItem = ( &'it < Graph::NodeHandle as HasId >::Id, &'it Graph::NodeHandle );
-    type NodesIterator = std::collections::hash_map::Iter< 'it, < Graph::NodeHandle as HasId >::Id, Graph::NodeHandle >;
-    // fn nodes( self ) -> Self::NodesIterator
-    // {
-    //   self.map.iter()
-    // }
-  }
+//   /// Into iterator of nodes.
+//
+//   pub trait IntoIteratorOfNodes
+//   {
+//     type NodesIteratorItem;
+//     type NodesIterator : Iterator< Item = Self::NodesIteratorItem >;
+//     // /// Iterate over all nodes.
+//     // fn nodes( self ) -> Self::NodesIterator;
+//   }
+//
+//   //
+//
+//   impl< 'it, Graph > IntoIteratorOfNodes
+//   for &'it Graph
+//   where
+//     Graph : GraphNodesNominalInterface,
+//   {
+//     type NodesIteratorItem = ( &'it < Graph::NodeHandle as HasId >::Id, &'it Graph::NodeHandle );
+//     type NodesIterator = std::collections::hash_map::Iter< 'it, < Graph::NodeHandle as HasId >::Id, Graph::NodeHandle >;
+//     // fn nodes( self ) -> Self::NodesIterator
+//     // {
+//     //   self.map.iter()
+//     // }
+//   }
 
   ///
   /// Graph nodes of which is possible to enumerate.
