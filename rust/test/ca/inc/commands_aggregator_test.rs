@@ -57,6 +57,65 @@ tests_impls!
     a_id!( ca.commands, std::collections::HashMap::new() );
   }
 
+  //
+
+  fn program_perform_basic()
+  {
+    /* single command, returns Ok */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".help" );
+    a_id!( got, Ok( () ) );
+
+    /* single command, returns Err */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".error" );
+    a_id!( got, Err( BasicError::new( "err" ) ) );
+
+    /* */
+
+    /* two commands, explicit delimeter, returns Ok */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".help ; .list" );
+    a_id!( got, Ok( () ) );
+
+    /* two commands, explicit delimeter, second command returns Err */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".list ; .error" );
+    a_id!( got, Err( BasicError::new( "err" ) ) );
+
+    /* */
+
+    /* two commands, implicit delimeter, returns Ok */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".help .list" );
+    a_id!( got, Ok( () ) );
+
+    /* two commands, implicit delimeter, second command returns Err */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".list .error" );
+    a_id!( got, Err( BasicError::new( "err" ) ) );
+  }
+
+  //
+
   fn instruction_perform_basic()
   {
     /* no commands in aggregator */
@@ -250,6 +309,7 @@ tests_impls!
 tests_index!
 {
   basic,
+  program_perform_basic,
   instruction_perform_basic,
   instructions_parse_basic,
 }
