@@ -148,8 +148,8 @@ string_full = [
   "string_parse_number",
   "string_split",
 ]
-string_use_std = [ "error", "wtools/use_std" ]
-string_use_alloc = [ "error", "wtools/use_alloc" ]
+string_use_std = [ "string", "wtools/string_use_std" ]
+string_use_alloc = [ "string", "wtools/string_use_alloc" ]
 
 string_indentation = [ "string", "string_use_std", "wtools/string_indentation" ]
 string_isolate = [ "string", "string_use_std", "wtools/string_isolate" ]
