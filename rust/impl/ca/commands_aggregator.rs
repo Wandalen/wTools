@@ -5,6 +5,7 @@ pub( crate ) mod private
   use crate::instruction::*;
   use wtools::meta::*;
   use wtools::error::*;
+  use wtools::string::split;
   use wtools::former::Former;
 
   ///
@@ -114,6 +115,73 @@ pub( crate ) mod private
     fn command_resolve( &self, instruction : &Instruction ) -> Option<&Command>
     {
       self.commands.get( &instruction.command_name )
+    }
+
+    /// Parse multiple instructions.
+    pub fn instructions_parse( &self, program : impl AsRef< str > ) -> Vec< Instruction >
+    {
+      let commands = split()
+      .src( program.as_ref().trim() )
+      .delimeter( self.command_explicit_delimeter.as_str() )
+      .preserving_empty( false )
+      .preserving_delimeters( false )
+      .preserving_quoting( false )
+      .perform();
+      let commands = commands.map( | e | String::from( e ) ).collect::< Vec< _ > >();
+
+      let mut string_commands = vec![];
+      for command in commands
+      {
+        let splitted = split()
+        .src( command.trim() )
+        .delimeter( self.command_implicit_delimeter.as_str() )
+        .preserving_empty( false )
+        .preserving_delimeters( false )
+        .preserving_quoting( false )
+        .perform();
+        let splitted = splitted.map( | e | String::from( e ) ).collect::< Vec< _ > >();
+
+        if self.command_implicit_delimeter == " "
+        {
+          let start_index = if splitted[ 0 ].is_empty() { 1 } else { 0 };
+          let mut string_command = String::from( &splitted[ start_index ] );
+
+          for i in start_index + 1 .. splitted.len()
+          {
+            let part = splitted[ i ].trim();
+            if part.starts_with( '.' )
+            {
+              string_commands.push( string_command );
+              string_command = String::from( part );
+            }
+            else
+            {
+              string_command.push( ' ' );
+              string_command.push_str( part );
+            }
+          }
+
+          string_commands.push( string_command );
+        }
+        else
+        {
+          for command in splitted
+          {
+            string_commands.push( String::from( command.trim() ) );
+          }
+        }
+      }
+
+      let instructions = string_commands.iter().map( | instruction |
+      {
+        instruction_parse()
+        .instruction( instruction.as_str() )
+        .properties_map_parsing( true )
+        .several_values( true )
+        .perform()
+      }).collect::< Vec< Instruction > >();
+
+      instructions
     }
   }
 
@@ -308,6 +376,12 @@ pub( crate ) mod private
 pub mod protected
 {
   pub use super::private::CommandsAggregator;
+  pub use super::private::OnError;
+  pub use super::private::OnSyntaxError;
+  pub use super::private::OnAmbiguity;
+  pub use super::private::OnUnknownCommandError;
+  pub use super::private::OnGetHelp;
+  pub use super::private::OnPrintCommands;
   pub use super::private::commands_aggregator;
 }
 
@@ -323,6 +397,12 @@ pub mod exposed
 pub mod prelude
 {
   pub use super::private::CommandsAggregator;
+  pub use super::private::OnError;
+  pub use super::private::OnSyntaxError;
+  pub use super::private::OnAmbiguity;
+  pub use super::private::OnUnknownCommandError;
+  pub use super::private::OnGetHelp;
+  pub use super::private::OnPrintCommands;
   pub use super::private::commands_aggregator;
 }
 
