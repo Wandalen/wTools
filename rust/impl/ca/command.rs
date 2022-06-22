@@ -119,6 +119,20 @@ pub( crate ) mod private
 
   impl Command
   {
+    /// Generate short help for command.
+    pub fn help_short( &self ) -> String
+    {
+      format!( "{} - {}", self.phrase, self.hint )
+    }
+
+    /// Generate short help for command.
+    pub fn help_long( &self ) -> String
+    {
+      let properties_hints = self.properties_hints.iter().map( | ( key, value ) | format!( "  {} - {}", key, value ) ).collect::< Vec< _ > >();
+      let properties_hints = properties_hints.join( "\n" );
+      format!( "{} - {}\n{}", self.phrase, self.long_hint, properties_hints )
+    }
+
     /// Execute callback.
     pub fn perform( &self, instruction : &instruction::Instruction ) -> Result< (), BasicError >
     {

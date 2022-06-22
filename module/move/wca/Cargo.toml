@@ -27,8 +27,24 @@ include = [
 [features]
 default = [ "use_std" ]
 full = [ "use_std", "use_alloc" ]
-use_std = []
+use_std = [ "default_handlers" ]
 use_alloc = []
+
+default_handlers = [
+  "on_error_default",
+  "on_syntax_error_default",
+  "on_ambiguity_default",
+  "on_unknown_command_error_default",
+  "on_get_help_default",
+  "on_print_commands_default",
+]
+
+on_error_default = []
+on_syntax_error_default = []
+on_ambiguity_default = []
+on_unknown_command_error_default = []
+on_get_help_default = []
+on_print_commands_default = []
 
 [lib]
 name = "wca"
