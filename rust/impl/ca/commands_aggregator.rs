@@ -107,7 +107,10 @@ pub( crate ) mod private
         {
           if self.with_help
           {
-            self.on_get_help().unwrap();
+            match self.on_ambiguity( instruction.command_name.as_str() )
+            {
+              _ => (),
+            }
           }
           if self.changing_exit_code
           {
@@ -123,19 +126,25 @@ pub( crate ) mod private
     /// Print help for command.
     fn command_help( &self, command : impl AsRef< str > )
     {
-      /* qqq : command should print help, not CA */
       if command.as_ref() == ""
       {
-        for ( command_name, command_descriptor ) in self.commands.iter()
+        for ( _name, command_descriptor ) in self.commands.iter()
         {
-          println!( "{} - {}", command_name, command_descriptor.hint );
+          println!( "{}", command_descriptor.help_short() );
         }
       }
       else
       {
         if let Some( command_descriptor ) = self.commands.get( command.as_ref() )
         {
-          println!( "{} - {}", command.as_ref(), command_descriptor.hint );
+          println!( "{}", command_descriptor.help_long() );
+        }
+        else
+        {
+          match self.on_unknown_command_error( command.as_ref() )
+          {
+            _ => ()
+          };
         }
       }
     }
