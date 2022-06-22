@@ -50,6 +50,7 @@ wmath = { version = "~0.3" }
 rgb = { version = "~0.8" }
 once_cell = { version = "~1.12" }
 dashmap = { version = "~5.3" }
+num-traits = { version = "~0.2" }
 
 # total_float_wrap = { version = "~0.1" }
 

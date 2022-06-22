@@ -17,23 +17,15 @@ use ::wpublisher::*;
 //
 
 #[ cfg( feature = "use_std" ) ]
-fn main() -> Result<(), wtools::error::BasicError>
+fn main() -> Result< (), wtools::error::BasicError >
 {
+  let args = env::args().skip( 1 ).collect::< Vec< String > >();
 
-  let ca_map = commands::commands_form();
-
-  let args = env::args().skip( 1 ).collect::<Vec<String>>();
-  let instruction = instruction::instruction_parse()
-  .instruction( args.join( " " ).as_str() )
-  .perform();
-
-  let result = match ca_map.get( &instruction.command_name )
-  {
-    Some( command ) => command.perform( &instruction ),
-    None => commands::print_help( &ca_map ),
-  };
-
-  result
+  let ca = wca::commands_aggregator()
+  .changing_exit_code( true )
+  .commands().replace( commands::commands_form() ).end()
+  .form();
+  ca.instruction_perform( args.join( " " ).as_str() )
 }
 
 #[ cfg( not( feature = "use_std" ) ) ]

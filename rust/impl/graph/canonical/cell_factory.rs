@@ -155,20 +155,27 @@ pub( crate ) mod private
   //
 
   impl< NodeId, EdgeId, Kind > GraphNodesEnumerableInterface
-  // impl< 'it, 'it2, NodeId, EdgeId, Kind >
-  // GraphNodesEnumerableInterface< 'it, 'it2, core::slice::Iter< 'it, ( NODE_ID!(), &'it < Self as GraphNodesNominalInterface >::NodeHandle ) > >
   for CellNodeFactory< NodeId, EdgeId, Kind >
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
-    // 'it2 : 'it,
   {
     index!
     {
       nodes,
       nnodes,
     }
+
+    //
+
+    // type NodesIteratorItem = ( &'it NODE_ID!(), &'it < Self as GraphNodesNominalInterface >::NodeHandle );
+    // type NodesIterator = std::collections::hash_map::Iter< 'it, NODE_ID!(), < Self as GraphNodesNominalInterface >::NodeHandle >;
+    // fn nodes( self ) -> Self::NodesIterator
+    // {
+    //   self.map.iter()
+    // }
+
   }
 
   //
