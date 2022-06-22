@@ -50,6 +50,16 @@ pub( crate ) mod private
       Id : Into< NODE_ID!() >
     ;
 
+    // type OutNodesIteratorItem;
+    // // type OutNodesIterator : Iterator< Item = ( &'it < Graph::NodeHandle as HasId >::Id, &'it Graph::NodeHandle ) >;
+    // type OutNodesIterator : Iterator< Item = Self::OutNodesIteratorItem >;
+    // /// Iterate over all nodes.
+    // fn out_nodes_ids< Id >( &self, node_id : Id ) -> Self::OutNodesIterator
+    // where
+    //   Id : Into< NODE_ID!() >
+    // ;
+
+
     /// Iterate over neighbourhood of the node. Callback gets ids of nodes in neighbourhood of a picked node.
     fn out_nodes_ids< 'a, 'b, Id >( &'a self, node_id : Id )
     ->
@@ -161,6 +171,31 @@ pub( crate ) mod private
 
   }
 
+  /// Into iterator of nodes.
+
+  pub trait IntoIteratorOfNodes
+  {
+    type NodesIteratorItem;
+    type NodesIterator : Iterator< Item = Self::NodesIteratorItem >;
+    // /// Iterate over all nodes.
+    // fn nodes( self ) -> Self::NodesIterator;
+  }
+
+  //
+
+  impl< 'it, Graph > IntoIteratorOfNodes
+  for &'it Graph
+  where
+    Graph : GraphNodesNominalInterface,
+  {
+    type NodesIteratorItem = ( &'it < Graph::NodeHandle as HasId >::Id, &'it Graph::NodeHandle );
+    type NodesIterator = std::collections::hash_map::Iter< 'it, < Graph::NodeHandle as HasId >::Id, Graph::NodeHandle >;
+    // fn nodes( self ) -> Self::NodesIterator
+    // {
+    //   self.map.iter()
+    // }
+  }
+
   ///
   /// Graph nodes of which is possible to enumerate.
   ///
@@ -174,11 +209,16 @@ pub( crate ) mod private
     // 'it : 'it2,
   {
 
+    // type NodesIteratorItem;
+    // // type NodesIterator : Iterator< Item = ( &'it < Graph::NodeHandle as HasId >::Id, &'it Graph::NodeHandle ) >;
+    // type NodesIterator : Iterator< Item = Self::NodesIteratorItem >;
+    // /// Iterate over all nodes.
+    // fn nodes( self ) -> Self::NodesIterator;
+
     /// Iterate over all nodes.
     fn nodes< 'a, 'b >( &'a self )
     ->
     Box< dyn Iterator< Item = ( NODE_ID!(), &< Self as GraphNodesNominalInterface >::NodeHandle ) > + 'b >
-    // It
     where
       'a : 'b,
     ;
