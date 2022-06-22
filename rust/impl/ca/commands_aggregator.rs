@@ -51,10 +51,32 @@ pub( crate ) mod private
   impl CommandsAggregator
   {
     /// Perform instructions queue as single program.
-    pub fn program_perform( &self, _program : &str ) -> Result< (), BasicError >
+    pub fn program_perform( &self, program : impl AsRef< str > ) -> Result< (), BasicError >
     {
-      unimplemented!( "not implemented" );
-      // let parsed = program_parse( program );
+      let program = program.as_ref().trim();
+
+      if !program.starts_with( '.' /* aggregator.vocabulary.default_delimeter */ )
+        || program.starts_with( "./" /* `${aggregator.vocabulary.default_delimeter}/` */ )
+        || program.starts_with( ".\\" /* `${aggregator.vocabulary.default_delimeter}\\` */ )
+      {
+        return self.on_syntax_error( program );
+      }
+
+      /* should use logger and condition */
+      println!( "Command \"{}\"", program );
+
+      let instructions = self.instructions_parse( program );
+
+      for instruction in &instructions
+      {
+        match self._instruction_perform( instruction )
+        {
+          Ok( _ ) => {},
+          Err( err ) => { return Err( err ) }
+        }
+      }
+
+      Ok( () )
     }
 
     /// Perform instruction.
@@ -68,11 +90,18 @@ pub( crate ) mod private
       .unquoting( true )
       .perform();
 
-      let result = match self.command_resolve( &parsed )
+      self._instruction_perform( &parsed )
+    }
+
+    //
+
+    fn _instruction_perform( &self, instruction : &Instruction ) -> Result< (), BasicError >
+    {
+      let result = match self.command_resolve( instruction )
       {
         Some( command ) =>
         {
-          command.perform( &parsed )
+          command.perform( instruction )
         },
         None =>
         {
