@@ -56,12 +56,9 @@ path = "sample/rust/wtest_trivial_sample/src/main.rs"
 
 [dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-# wtools = { version = "~0.2", path = "../../rust/wtools" }
-wtools = { version = "~0.2", git = "https://github.com/dmvict/wTools.git", branch = "fix" }
-# wca = { version = "~0.1", path = "../../move/wca" }
-wca = { version = "~0.1", git = "https://github.com/dmvict/wTools.git", branch = "fix" }
-# wpublisher = { version = "~0.1", path = "../../move/wca" }
-wpublisher = { version = "~0.1", git = "https://github.com/dmvict/wTools.git", branch = "fix" }
+wtools = { version = "~0.2", path = "../../rust/wtools" }
+wca = { version = "~0.1", path = "../../move/wca" }
+wpublisher = { version = "~0.1", path = "../../move/wpublisher" }
 anyhow = "~1.0.56"
 
 [dev-dependencies]
