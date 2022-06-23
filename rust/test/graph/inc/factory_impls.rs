@@ -64,12 +64,12 @@ tests_impls!
     let exp = hset![ a, b ];
     a_id!( got, exp );
 
-    let got : HashSet< _ > = factory.out_nodes_ids_2( a ).collect();
-    let exp = hset![ b ];
-    a_id!( got, exp );
-    let got : HashSet< _ > = factory.out_nodes_ids_2( b ).collect();
-    let exp = hset![ a, b ];
-    a_id!( got, exp );
+    // let got : HashSet< _ > = factory.out_nodes_ids_2( a ).collect();
+    // let exp = hset![ b ];
+    // a_id!( got, exp );
+    // let got : HashSet< _ > = factory.out_nodes_ids_2( b ).collect();
+    // let exp = hset![ a, b ];
+    // a_id!( got, exp );
 
     let got : HashSet< _ > = factory.out_edges( a ).map( | el | ( el.1.in_node, el.1.out_node ) ).collect();
     let exp = hset![ ( a, b ) ];
@@ -78,13 +78,13 @@ tests_impls!
     let exp = hset![ ( b, a ), ( b, b ) ];
     a_id!( got, exp );
 
-    let got = factory.out_nodes_ids_2( a ).map( | id |
-    {
-      13_i32
-      // ( id, factory.node( id ) )
-    });
-    use test_tools::inspect_type_of;
-    inspect_type_of!( got );
+    // let got = factory.out_nodes_ids_2( a ).map( | id |
+    // {
+    //   // 13_i32
+    //   ( id, factory.node( id ) )
+    // });
+    // use test_tools::inspect_type_of;
+    // inspect_type_of!( got );
 
   }
 
