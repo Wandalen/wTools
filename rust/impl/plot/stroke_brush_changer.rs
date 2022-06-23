@@ -7,39 +7,38 @@ pub( crate ) mod private
   // use dashmap::DashMap;
   // use std::sync::Arc;
 
-  /// Context.
+  /// Changer of brush stroke.
   #[ derive( Debug, Clone ) ]
-  pub struct Context
+  pub struct StrokeBrushChanger
   {
-    id : Id,
-    stroke : Option< StrokeBrush >,
+    pub( crate ) id : Id,
+    pub( crate ) context_changer : ContextChanger,
   }
 
-  impl Context
+  impl StrokeBrushChanger
   {
     /// Constructor.
-    pub( crate ) fn _new() -> Self
+    pub( crate ) fn _new( mut context_changer : ContextChanger ) -> Self
     {
-      let id = Id::new::< Self >();
-      let stroke = None;
+      let id = &mut context_changer.stroke;
+      if id.is_none()
+      {
+        *id = Some( Id::new::< StrokeBrush >() );
+      }
+      let id = id.take().unwrap();
       Self
       {
         id,
-        stroke,
+        context_changer,
       }
-    }
-    /// Parameters of stroke.
-    pub fn stroke( &mut self ) -> StrokeBrush
-    {
-      if self.stroke.is_none()
-      {
-        self.stroke = Some( StrokeBrush::new() );
-      }
-      self.stroke.as_ref().unwrap().clone()
     }
   }
 
-  impl HasIdInterface for Context
+  impl Changer for StrokeBrushChanger
+  {
+  }
+
+  impl HasIdInterface for StrokeBrushChanger
   {
     #[ inline ]
     fn id( &self ) -> Id
@@ -73,7 +72,7 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
-    private::Context,
+    private::StrokeBrushChanger,
   };
 }
 
