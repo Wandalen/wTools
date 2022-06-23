@@ -12,6 +12,7 @@ fn commands_form() -> std::collections::HashMap< String, Command >
   .hint( "Get help." )
   .long_hint( "Get help for command [command]" )
   .phrase( ".help" )
+  .subject_hint( "some command" )
   .routine( &| _i : &Instruction | { println!( "this is help" ); Ok( () ) } )
   .form();
   let list_command : Command = wca::CommandOptions::default()
@@ -112,6 +113,69 @@ tests_impls!
     .form();
     let got = ca.program_perform( ".list .error" );
     a_id!( got, Err( BasicError::new( "err" ) ) );
+  }
+
+  //
+
+  fn program_perform_with_dotted_paths()
+  {
+    /* single command with subject as single dot */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".list ." );
+    a_id!( got, Ok( () ) );
+
+    /* single command with subject as double dot */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".list .." );
+    a_id!( got, Ok( () ) );
+
+    /* single command with subject as dot and slash */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".list ./" );
+    a_id!( got, Ok( () ) );
+
+    /* single command with subject as double dot and slash */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".list ../" );
+    a_id!( got, Ok( () ) );
+
+    /* single command with subject as dot and backslash */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".list .\\" );
+    a_id!( got, Ok( () ) );
+
+    /* single command with subject as double dot and backslash */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".list ..\\" );
+    a_id!( got, Ok( () ) );
+
+    /* */
+
+    /* two commands with subjects with dots */
+    let ca = wca::commands_aggregator()
+    .changing_exit_code( false )
+    .commands().replace( commands_form() ).end()
+    .form();
+    let got = ca.program_perform( ".list ..\\ .help ./some" );
+    a_id!( got, Ok( () ) );
   }
 
   //
@@ -310,6 +374,7 @@ tests_index!
 {
   basic,
   program_perform_basic,
+  program_perform_with_dotted_paths,
   instruction_perform_basic,
   instructions_parse_basic,
 }
