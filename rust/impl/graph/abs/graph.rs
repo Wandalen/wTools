@@ -116,15 +116,14 @@ pub( crate ) mod private
     /// Iterator to iterate pairs id - node
     type OutNodesIterator : Iterator< Item = ( < < T as GraphNodesNominalInterface >::NodeHandle as HasId >::Id, Self::RefNode ) >;
 
-    // /// Iterate over neighbourhood of the node. Callback gets ids and reference on itself of nodes in neighbourhood of a picked node.
-    // fn out_nodes_2< Id >( self, node_id : Id )
-    // ->
-    // Self::OutNodesIdsIterator
-    // where
-    //   Self : Sized,
-    //   Id : Into< < < T as GraphNodesNominalInterface >::NodeHandle as HasId >::Id >
-    // ;
-
+    /// Iterate over neighbourhood of the node. Callback gets ids and reference on itself of nodes in neighbourhood of a picked node.
+    fn out_nodes_2< Id >( self, node_id : Id )
+    ->
+    Self::OutNodesIdsIterator
+    where
+      Self : Sized,
+      Id : Into< < < T as GraphNodesNominalInterface >::NodeHandle as HasId >::Id >
+    ;
 
   }
 
