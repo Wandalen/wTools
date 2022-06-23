@@ -72,7 +72,18 @@ pub( crate ) mod private
         match self._instruction_perform( instruction )
         {
           Ok( _ ) => {},
-          Err( err ) => { return Err( err ) }
+          Err( err ) =>
+          {
+            if self.changing_exit_code
+            {
+              eprintln!( "{}", err.to_string() );
+              std::process::exit( 1 );
+            }
+            else
+            {
+              return Err( err )
+            }
+          }
         }
       }
 
@@ -187,7 +198,7 @@ pub( crate ) mod private
           for i in start_index + 1 .. splitted.len()
           {
             let part = splitted[ i ].trim();
-            if part.starts_with( '.' )
+            if part.starts_with( '.' ) && !self.dotted_path_is( part )
             {
               string_commands.push( string_command );
               string_command = String::from( part );
@@ -220,6 +231,26 @@ pub( crate ) mod private
       }).collect::< Vec< Instruction > >();
 
       instructions
+    }
+
+    //
+
+    fn dotted_path_is( &self, src : impl AsRef< str > ) -> bool
+    {
+      let part = src.as_ref();
+
+      if part == "." || part == ".."
+      {
+        return true;
+      }
+
+      if part.starts_with( "./" ) || part.starts_with( "../" )
+      || part.starts_with( ".\\" ) || part.starts_with( "..\\" )
+      {
+        return true;
+      }
+
+      false
     }
   }
 
