@@ -122,7 +122,7 @@ pub( crate ) mod private
     /// Generate short help for command.
     pub fn help_short( &self ) -> String
     {
-      format!( ".{} - {}", self.phrase.split( " " ).collect::< Vec< _ > >().join( "." ), self.hint )
+      format!( ".{} - {}", self.phrase.replace( " ", "." ), self.hint )
     }
 
     /// Generate short help for command.
@@ -130,7 +130,7 @@ pub( crate ) mod private
     {
       let properties_hints = self.properties_hints.iter().map( | ( key, value ) | format!( "  {} - {}", key, value ) ).collect::< Vec< _ > >();
       let properties_hints = properties_hints.join( "\n" );
-      format!( ".{} - {}\n{}", self.phrase.split( " " ).collect::< Vec< _ > >().join( "." ), self.long_hint, properties_hints )
+      format!( ".{} - {}\n{}", self.phrase.replace( " ", "." ), self.long_hint, properties_hints )
     }
 
     /// Execute callback.
