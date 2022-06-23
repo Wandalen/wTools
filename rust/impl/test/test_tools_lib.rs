@@ -12,6 +12,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
+#[ doc( inline ) ]
 pub use wtest_basic as basic;
 #[ doc( inline ) ]
 pub use basic::*;

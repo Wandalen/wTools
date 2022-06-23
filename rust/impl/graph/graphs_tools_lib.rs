@@ -6,7 +6,8 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
-// #![ feature( type_name_of_val ) ]
+#![ feature( type_name_of_val ) ]
+#![ feature( type_alias_impl_trait ) ]
 // #![ feature( trace_macros ) ]
 
 //!
@@ -14,6 +15,42 @@
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+
+// xxx : move
+
+pub struct IteratorAdapter< Item >
+{
+  iterator : Box< dyn Iterator< Item = Item > >
+}
+
+impl< Item > core::iter::Iterator
+for IteratorAdapter< Item >
+{
+  type Item = Item;
+  fn next( &mut self ) -> Option< Self::Item >
+  {
+    self.iterator.next()
+  }
+}
+
+trait IntoIteratorAdapter
+where
+  Self : Iterator + 'static,
+{
+  fn into_iter_adapter( self ) -> IteratorAdapter< < Self as Iterator >::Item >
+  where
+    Self : Sized,
+  {
+    let iterator : Box< dyn Iterator< Item = < Self as Iterator >::Item > > = Box::new( self );
+    IteratorAdapter::< < Self as Iterator >::Item > { iterator }
+  }
+}
+
+impl< T > IntoIteratorAdapter for T
+where
+  T : Iterator + 'static,
+{
+}
 
 /// Abstract layer.
 #[ cfg( feature = "use_std" ) ]

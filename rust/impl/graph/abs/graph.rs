@@ -2,6 +2,7 @@
 pub( crate ) mod private
 {
   use crate::prelude::*;
+  use core::ops::Deref;
 
   macro_rules! NODE_ID
   {
@@ -50,15 +51,22 @@ pub( crate ) mod private
       Id : Into< NODE_ID!() >
     ;
 
-    // type OutNodesIteratorItem;
-    // // type OutNodesIterator : Iterator< Item = ( &'it < Graph::NodeHandle as HasId >::Id, &'it Graph::NodeHandle ) >;
-    // type OutNodesIterator : Iterator< Item = Self::OutNodesIteratorItem >;
+    // type NodeId;
+    // // type OutNodesIdsIterator : Iterator< Item = ( &'it < Graph::NodeHandle as HasId >::Id, &'it Graph::NodeHandle ) >;
+    // type OutNodesIdsIterator : Iterator< Item = Self::NodeId >;
     // /// Iterate over all nodes.
-    // fn out_nodes_ids< Id >( &self, node_id : Id ) -> Self::OutNodesIterator
+    // fn out_nodes_ids< Id >( &self, node_id : Id ) -> Self::OutNodesIdsIterator
     // where
     //   Id : Into< NODE_ID!() >
     // ;
 
+    // type NodeId;
+    // type OutNodesIdsIterator : Iterator< Item = Self::NodeId >;
+    // /// Iterate over all nodes.
+    // fn out_nodes_ids_2< Id >( &self, node_id : Id ) -> Self::OutNodesIdsIterator
+    // where
+    //   Id : Into< NODE_ID!() >
+    // ;
 
     /// Iterate over neighbourhood of the node. Callback gets ids of nodes in neighbourhood of a picked node.
     fn out_nodes_ids< 'a, 'b, Id >( &'a self, node_id : Id )
@@ -82,6 +90,40 @@ pub( crate ) mod private
         ( id, self.node( id ) )
       }))
     }
+
+  }
+
+  ///
+  /// Graph which know how to iterate neighbourhood of a node and capable to convert id of a node into a node.
+  ///
+
+  pub trait GraphNodesNominalInterface2< T >
+  where
+    Self : Deref< Target = T >,
+    T : GraphNodesNominalInterface,
+  {
+
+    /// Iterator to iterate ids of nodes.
+    type OutNodesIdsIterator : Iterator< Item = < < T as GraphNodesNominalInterface >::NodeHandle as HasId >::Id >;
+    /// Iterate over all nodes.
+    fn out_nodes_ids_2< Id >( self, node_id : Id ) -> Self::OutNodesIdsIterator
+    where
+      Id : Into< < < T as GraphNodesNominalInterface >::NodeHandle as HasId >::Id >
+    ;
+
+    /// Reference on a node handle.
+    type RefNode;
+    /// Iterator to iterate pairs id - node
+    type OutNodesIterator : Iterator< Item = ( < < T as GraphNodesNominalInterface >::NodeHandle as HasId >::Id, Self::RefNode ) >;
+
+    // /// Iterate over neighbourhood of the node. Callback gets ids and reference on itself of nodes in neighbourhood of a picked node.
+    // fn out_nodes_2< Id >( self, node_id : Id )
+    // ->
+    // Self::OutNodesIdsIterator
+    // where
+    //   Self : Sized,
+    //   Id : Into< < < T as GraphNodesNominalInterface >::NodeHandle as HasId >::Id >
+    // ;
 
   }
 
@@ -118,28 +160,6 @@ pub( crate ) mod private
       Self::EdgeId( id )
     }
 
-// xxx
-//     /// Convert argument into edges ids.
-//     #[ allow( non_snake_case ) ]
-//     #[ inline ]
-//     fn EdgesIds< In, Out >( src : In< EDGE_ID!() > ) -> Out< EDGE_ID!() >
-//     where
-//       In : IdsFromCollection,
-//       Out : IdsCollection,
-//     {
-//       src.into()
-//     }
-//
-//     /// Get edges with ids.
-//     #[ inline ]
-//     fn edges_ids< In, Out >( &self, src : In< EDGE_ID!() > ) -> Out< EDGE_ID!() >
-//     where
-//       In : IdsFromCollection,
-//       Out : IdsCollection,
-//     {
-//       Self::EdgesIds( src )
-//     }
-
     /// Get edge with id.
     fn edge< Id >( &self, id : Id ) -> &Self::EdgeHandle
     where
@@ -171,30 +191,30 @@ pub( crate ) mod private
 
   }
 
-  /// Into iterator of nodes.
-
-  pub trait IntoIteratorOfNodes
-  {
-    type NodesIteratorItem;
-    type NodesIterator : Iterator< Item = Self::NodesIteratorItem >;
-    // /// Iterate over all nodes.
-    // fn nodes( self ) -> Self::NodesIterator;
-  }
-
-  //
-
-  impl< 'it, Graph > IntoIteratorOfNodes
-  for &'it Graph
-  where
-    Graph : GraphNodesNominalInterface,
-  {
-    type NodesIteratorItem = ( &'it < Graph::NodeHandle as HasId >::Id, &'it Graph::NodeHandle );
-    type NodesIterator = std::collections::hash_map::Iter< 'it, < Graph::NodeHandle as HasId >::Id, Graph::NodeHandle >;
-    // fn nodes( self ) -> Self::NodesIterator
-    // {
-    //   self.map.iter()
-    // }
-  }
+//   /// Into iterator of nodes.
+//
+//   pub trait IntoIteratorOfNodes
+//   {
+//     type NodesIteratorItem;
+//     type NodesIterator : Iterator< Item = Self::NodesIteratorItem >;
+//     // /// Iterate over all nodes.
+//     // fn nodes( self ) -> Self::NodesIterator;
+//   }
+//
+//   //
+//
+//   impl< 'it, Graph > IntoIteratorOfNodes
+//   for &'it Graph
+//   where
+//     Graph : GraphNodesNominalInterface,
+//   {
+//     type NodesIteratorItem = ( &'it < Graph::NodeHandle as HasId >::Id, &'it Graph::NodeHandle );
+//     type NodesIterator = std::collections::hash_map::Iter< 'it, < Graph::NodeHandle as HasId >::Id, Graph::NodeHandle >;
+//     // fn nodes( self ) -> Self::NodesIterator
+//     // {
+//     //   self.map.iter()
+//     // }
+//   }
 
   ///
   /// Graph nodes of which is possible to enumerate.
@@ -430,6 +450,7 @@ pub mod prelude
   pub use super::private::
   {
     GraphNodesNominalInterface,
+    GraphNodesNominalInterface2,
     GraphEdgesNominalInterface,
     GraphNodesEnumerableInterface,
     GraphEdgesEnumerableInterface,

@@ -36,7 +36,8 @@ full = [ "use_std" ]
 use_std = []
 use_alloc = []
 
-nightly = [] # must be empty
+# nightly = [] # must be empty
+nightly = [ "wtest_basic/nightly" ]
 
 [lib]
 name = "test_tools"

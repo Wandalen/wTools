@@ -33,6 +33,7 @@ default = [ "use_std" ]
 full = [ "use_std", "use_alloc" ]
 use_std = []
 use_alloc = []
+nightly = [ "inspect_type/nightly" ]
 
 [lib]
 name = "wtest_basic"
@@ -59,6 +60,7 @@ trybuild = { version = "~1.0", features = [ "diff" ] }
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
 diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools" }
+inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
 
 [dev-dependencies]
 # rustversion = "~1.0"

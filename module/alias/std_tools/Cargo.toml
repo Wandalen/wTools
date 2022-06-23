@@ -149,8 +149,8 @@ string_full = [
   "string_parse_number",
   "string_split",
 ]
-string_use_std = [ "error", "wtools/use_std" ]
-string_use_alloc = [ "error", "wtools/use_alloc" ]
+string_use_std = [ "string", "wtools/string_use_std" ]
+string_use_alloc = [ "string", "wtools/string_use_alloc" ]
 
 string_indentation = [ "string", "string_use_std", "wtools/string_indentation" ]
 string_isolate = [ "string", "string_use_std", "wtools/string_isolate" ]
@@ -287,6 +287,7 @@ derive_from_str = [ "derive", "wtools/derive_from_str", "parse-display" ]
 dt = [ "wtools/dt" ]
 dt_default = [
   "dt",
+  "dt_use_std",
   "dt_either",
   "dt_type_constructor",
   "dt_make",
@@ -301,8 +302,8 @@ dt_full = [
   "dt_vectorized_from",
   "dt_interval",
 ]
-dt_use_std = [ "wtools/dt_use_std" ]
-dt_use_alloc = [ "wtools/dt_use_alloc" ]
+dt_use_std = [ "dt", "wtools/dt_use_std" ]
+dt_use_alloc = [ "dt", "wtools/dt_use_alloc" ]
 
 dt_either = [ "dt", "wtools/dt_either" ]
 dt_type_constructor = [ "dt", "wtools/dt_type_constructor" ]
