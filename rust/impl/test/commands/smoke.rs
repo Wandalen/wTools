@@ -80,38 +80,57 @@ pub fn smoke( instruction : &Instruction ) -> Result< (), BasicError >
 
   if smoke != "false" && smoke != "0"
   {
-
+    let mut threads = vec![];
     if smoke == "local" || smoke != "published"
     {
-      let mut t = SmokeModuleTest::new( module_name );
-      t.test_postfix( "_test_local" );
-      if data.is_some()
+      let module_name = module_name.clone().to_owned();
+      let data = data.clone();
+      let version = version.clone();
+      let thread = std::thread::spawn( move ||
       {
-        t.code( data.as_ref().unwrap() );
-      }
-      t.version( version.as_str() );
-      t.local_path_clause( module_path.to_str().unwrap() );
+        let mut t = SmokeModuleTest::new( module_name );
+        t.test_postfix( "_test_local" );
+        if data.is_some()
+        {
+          t.code( data.as_ref().unwrap() );
+        }
+        t.version( version.as_str() );
+        t.local_path_clause( module_path.to_str().unwrap() );
 
-      t.clean( true ).unwrap();
-      t.form().unwrap();
-      t.perform().unwrap();
-      t.clean( false ).unwrap();
+        t.clean( true ).unwrap();
+        t.form().unwrap();
+        t.perform().unwrap();
+        t.clean( false ).unwrap();
+      });
+      threads.push( thread );
     }
 
     if smoke == "published" || smoke != "local"
     {
-      let mut t = SmokeModuleTest::new( module_name );
-      t.test_postfix( "_test_published" );
-      if data.is_some()
+      let module_name = module_name.clone().to_owned();
+      let data = data.clone();
+      let version = version.clone();
+      let thread = std::thread::spawn( move ||
       {
-        t.code( data.as_ref().unwrap() );
-      }
-      t.version( version.as_str() );
+        let mut t = SmokeModuleTest::new( module_name );
+        t.test_postfix( "_test_published" );
+        if data.is_some()
+        {
+          t.code( data.as_ref().unwrap() );
+        }
+        t.version( version.as_str() );
 
-      t.clean( true ).unwrap();
-      t.form().unwrap();
-      t.perform().unwrap();
-      t.clean( false ).unwrap();
+        t.clean( true ).unwrap();
+        t.form().unwrap();
+        t.perform().unwrap();
+        t.clean( false ).unwrap();
+      });
+      threads.push( thread );
+    }
+
+    for thread in threads
+    {
+      thread.join().unwrap();
     }
   }
 
@@ -123,7 +142,7 @@ pub fn smoke( instruction : &Instruction ) -> Result< (), BasicError >
 #[ derive( Debug ) ]
 struct SmokeModuleTest< 'a >
 {
-  pub dependency_name : &'a str,
+  pub dependency_name : String,
   pub version : &'a str,
   pub local_path_clause : &'a str,
   pub code : String,
@@ -133,7 +152,7 @@ struct SmokeModuleTest< 'a >
 
 impl< 'a > SmokeModuleTest< 'a >
 {
-  fn new( dependency_name : &'a str ) -> SmokeModuleTest< 'a >
+  fn new( dependency_name : String ) -> SmokeModuleTest< 'a >
   {
     let test_postfix = "_smoke_test";
     let smoke_test_path = format!( "{}{}", dependency_name, test_postfix );
@@ -191,9 +210,9 @@ impl< 'a > SmokeModuleTest< 'a >
     .args([ "new", "--bin", &test_name ])
     .output()
     .expect( "Failed to execute command" );
-    println!( "{}", std::str::from_utf8( &output.stderr ).expect( "Found invalid UTF-8" ) );
+    println!( "Creating smoke binary module :\n\n{}", std::str::from_utf8( &output.stderr ).expect( "Found invalid UTF-8" ) );
 
-    test_path.push( test_name );
+    test_path.push( &test_name );
 
     /* setup config */
     #[ cfg( target_os = "windows" ) ]
@@ -215,7 +234,7 @@ impl< 'a > SmokeModuleTest< 'a >
     );
     let mut config_path = test_path.clone();
     config_path.push( "Cargo.toml" );
-    println!( "\n{}\n", config_data );
+    println!( "Manifest of module \"{}\" :\n\n      {}\n", test_name, config_data );
     std::fs::write( config_path, config_data ).unwrap();
 
     /* write code */
@@ -234,8 +253,8 @@ impl< 'a > SmokeModuleTest< 'a >
       }}",
       self.code,
     );
-    println!( "\n{}\n", code );
-    std::fs::write( &test_path, code ).unwrap();
+    self.code = code;
+    std::fs::write( &test_path, &self.code ).unwrap();
 
     Ok( () )
   }
@@ -251,9 +270,11 @@ impl< 'a > SmokeModuleTest< 'a >
     .args([ "run", "--release" ])
     .output()
     .unwrap();
-    println!( "status : {}", output.status );
     println!( "{}", std::str::from_utf8( &output.stdout ).expect( "Found invalid UTF-8" ) );
     println!( "{}", std::str::from_utf8( &output.stderr ).expect( "Found invalid UTF-8" ) );
+    println!( "Process status :\n  {}\n", output.status );
+    println!( "Code :\n\n      {}\n", self.code );
+
     if !output.status.success()
     {
       return Err( BasicError::new( "Smoke test failed" ) );
