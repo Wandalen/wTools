@@ -28,7 +28,7 @@ pub fn smoke( instruction : &Instruction ) -> Result< (), BasicError >
 
   if !manifest_path.exists()
   {
-    let msg = format!( "Current directory \"{:?}\" has no file \"Cargo.toml\"", module_path );
+    let msg = format!( "Current directory {:?} has no file \"Cargo.toml\"", module_path.canonicalize().unwrap() );
     return Err( BasicError::new( msg ) );
   }
 
