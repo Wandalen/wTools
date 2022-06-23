@@ -303,7 +303,8 @@ pub( crate ) mod private
     {
       if self.changing_exit_code
       {
-        unimplemented!();
+        /* qqq : implement */
+        // unimplemented!();
       }
       Err( err )
     }
