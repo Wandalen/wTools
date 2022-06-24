@@ -9,37 +9,50 @@ pub( crate ) mod private
 
   /// Context.
   #[ derive( Debug, Clone ) ]
-  pub struct Context
+  pub struct ContextChanger
+  // where
+  //   Box< dyn Change > : Clone,
   {
-    id : Id,
-    stroke : Option< StrokeBrush >,
+    pub( crate ) id : Id,
+    pub( crate ) stroke : Option< Id >,
+    // pub( crate ) changes : Vec< Box< dyn Change > >,
   }
 
-  impl Context
+  // impl< T > Clone for Generate< T >
+  // {
+  //   fn clone( &self ) -> Self
+  //   {
+  //     *self
+  //   }
+  // }
+
+  impl ContextChanger
   {
     /// Constructor.
-    pub( crate ) fn _new() -> Self
+    pub( crate ) fn _new( id : Id ) -> Self
     {
-      let id = Id::new::< Self >();
+      // let changes = Vec::new();
       let stroke = None;
       Self
       {
         id,
         stroke,
+        // changes,
       }
     }
     /// Parameters of stroke.
-    pub fn stroke( &mut self ) -> StrokeBrush
+    pub fn stroke( self ) -> StrokeBrushChanger
     {
-      if self.stroke.is_none()
-      {
-        self.stroke = Some( StrokeBrush::new() );
-      }
-      self.stroke.as_ref().unwrap().clone()
+      let changer = StrokeBrushChanger::_new( self );
+      changer
     }
   }
 
-  impl HasIdInterface for Context
+  impl Changer for ContextChanger
+  {
+  }
+
+  impl HasIdInterface for ContextChanger
   {
     #[ inline ]
     fn id( &self ) -> Id
@@ -73,7 +86,7 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
-    private::Context,
+    private::ContextChanger,
   };
 }
 

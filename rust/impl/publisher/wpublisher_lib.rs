@@ -23,3 +23,24 @@ pub use wca::instruction;
 pub use crate::wpublisher::*;
 
 // qqq : for Dima : mod interface
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  pub use super::exposed::*;
+  pub use super::commands::*;
+}
+
+pub use protected::*;
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  pub use super::prelude::*;
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+pub mod prelude
+{
+  pub use super::wpublisher::*;
+}

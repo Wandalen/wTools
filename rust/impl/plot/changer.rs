@@ -1,14 +1,28 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::prelude::*;
+  use crate::*;
+
+  /// Context.
+  pub trait Changer
+  where
+    Self :
+      fmt::Debug +
+      // Clone +
+      // ?Sized +
+    ,
+  {
+  }
 
 }
 
 /// Protected namespace of the module.
 pub mod protected
 {
-  pub use super::orphan::*;
+  pub use super::
+  {
+    orphan::*,
+  };
 }
 
 pub use protected::*;
@@ -22,7 +36,10 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::prelude::*;
+  pub use super::
+  {
+    prelude::*,
+  };
 }
 
 pub use exposed::*;
@@ -30,7 +47,8 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  pub use super::private::
+  pub use super::
   {
+    private::Changer,
   };
 }

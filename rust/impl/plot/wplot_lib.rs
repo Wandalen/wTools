@@ -15,14 +15,26 @@
 pub use wmath as math;
 pub use wtools::prelude::*;
 
+/// Describe change.
+pub mod change;
+/// Describe changer.
+pub mod changer;
 /// Describe colors.
 pub mod color;
 /// Main aggregating object.
 pub mod context;
+/// Context changer.
+pub mod context_changer;
 /// Draw commands.
 pub mod draw;
-/// Brush.
-pub mod brush;
+/// Identity of resource.
+pub mod identity;
+/// Registry.
+pub mod registry;
+/// Brush stroke.
+pub mod stroke_brush;
+/// Changer of brush stroke.
+pub mod stroke_brush_changer;
 /// Target to draw.
 pub mod target;
 
@@ -41,10 +53,16 @@ pub mod protected
   pub use super::
   {
     orphan::*,
+    change::orphan::*,
+    changer::orphan::*,
     color::orphan::*,
     context::orphan::*,
+    context_changer::orphan::*,
     draw::orphan::*,
-    brush::orphan::*,
+    identity::orphan::*,
+    registry::orphan::*,
+    stroke_brush::orphan::*,
+    stroke_brush_changer::orphan::*,
     target::orphan::*,
   };
 }
@@ -63,10 +81,16 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
+    change::exposed::*,
+    changer::exposed::*,
     color::exposed::*,
     context::exposed::*,
+    context_changer::exposed::*,
     draw::exposed::*,
-    brush::exposed::*,
+    identity::exposed::*,
+    registry::orphan::*,
+    stroke_brush::exposed::*,
+    stroke_brush_changer::exposed::*,
     target::exposed::*,
   };
 }
@@ -76,10 +100,16 @@ pub mod prelude
 {
   pub use super::
   {
+    change::prelude::*,
+    changer::prelude::*,
     color::prelude::*,
     context::prelude::*,
+    context_changer::prelude::*,
     draw::prelude::*,
-    brush::prelude::*,
+    identity::prelude::*,
+    registry::orphan::*,
+    stroke_brush::prelude::*,
+    stroke_brush_changer::prelude::*,
     target::prelude::*,
   };
   pub use ::wmath::prelude::*;

@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.2.16"
+version = "0.2.17"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -156,14 +156,14 @@ string_full = [
   "string_parse_number",
   "string_split",
 ]
-string_use_std = [ "error", "strs_tools/use_std" ]
-string_use_alloc = [ "error", "strs_tools/use_alloc" ]
+string_use_std = [ "string", "strs_tools/use_std" ]
+string_use_alloc = [ "string", "strs_tools/use_alloc" ]
 
 string_indentation = [ "string", "string_use_std", "strs_tools/indentation" ]
 string_isolate = [ "string", "string_use_std", "strs_tools/isolate" ]
 string_parse_request = [ "string", "string_use_std", "string_isolate", "strs_tools/parse_request" ]
 string_parse_number = [ "string", "string_use_std", "strs_tools/parse_number" ]
-string_split = [ "string", "string_use_std", "strs_tools/split" ]
+string_split = [ "string", "string_use_std", "strs_tools/split", "strs_tools/parse_request" ]
 
 # error
 
@@ -408,4 +408,5 @@ diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", o
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+
 

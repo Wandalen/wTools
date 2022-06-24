@@ -55,6 +55,9 @@ pub mod exposed
   };
   #[ doc( inline ) ]
   pub use ::typing_tools::{ implements };
+
+  #[ doc( inline ) ]
+  pub use ::inspect_type::*;
 }
 
 #[ doc( inline ) ]

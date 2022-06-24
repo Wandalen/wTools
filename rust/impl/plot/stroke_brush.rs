@@ -2,44 +2,40 @@
 pub( crate ) mod private
 {
   use crate::*;
-  // use once_cell::sync::Lazy;
-  // use std::sync::Mutex;
-  // use dashmap::DashMap;
-  // use std::sync::Arc;
 
-  /// Context.
+  /// StrokeBrush.
   #[ derive( Debug, Clone ) ]
-  pub struct Context
+  pub struct StrokeBrush
   {
     id : Id,
-    stroke : Option< StrokeBrush >,
+    color : Rgba,
   }
 
-  impl Context
+  impl StrokeBrush
   {
     /// Constructor.
-    pub( crate ) fn _new() -> Self
+    pub fn new() -> Self
     {
       let id = Id::new::< Self >();
-      let stroke = None;
+      let color = Default::default();
       Self
       {
+        color,
         id,
-        stroke,
       }
     }
-    /// Parameters of stroke.
-    pub fn stroke( &mut self ) -> StrokeBrush
+    /// Change color.
+    #[ inline ]
+    pub fn color< Color >( mut self, color : Color ) -> Self
+    where
+      Color : RgbaInterface< f32 >,
     {
-      if self.stroke.is_none()
-      {
-        self.stroke = Some( StrokeBrush::new() );
-      }
-      self.stroke.as_ref().unwrap().clone()
+      self.color = color.into_rgba();
+      self
     }
   }
 
-  impl HasIdInterface for Context
+  impl HasIdInterface for StrokeBrush
   {
     #[ inline ]
     fn id( &self ) -> Id
@@ -73,7 +69,7 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
-    private::Context,
+    private::StrokeBrush,
   };
 }
 
