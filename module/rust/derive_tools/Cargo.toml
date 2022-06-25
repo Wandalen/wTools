@@ -55,9 +55,9 @@ default = [
 
   "derive_display",
   "derive_from_str",
-  # "derive_from_str_std",
-  # "derive_from_str_regex",
-  # "derive_from_str_once_cell",
+
+  "derive_clone_dyn",
+  "derive_clone_dyn_use_std",
 
   "use_std",
 ]
@@ -88,12 +88,11 @@ full = [
 
   "derive_display",
   "derive_from_str",
-  # "derive_from_str_std",
-  # "derive_from_str_regex",
-  # "derive_from_str_once_cell",
+
+  "derive_clone_dyn",
+  "derive_clone_dyn_use_std",
 
   "use_std",
-  "use_alloc",
 ]
 use_std = []
 use_alloc = []
@@ -127,9 +126,10 @@ derive_convert_case = [ "derive_more/convert_case" ]
 
 derive_display = [ "parse-display" ]
 derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex", "parse-display/once_cell" ]
-# derive_from_str_std = [ "parse-display/std" ]
-# derive_from_str_regex = [ "parse-display/regex", "parse-display/once_cell" ]
-# derive_from_str_once_cell = [ "parse-display/once_cell" ]
+
+derive_clone_dyn = [ "clone_dyn" ]
+derive_clone_dyn_use_std = [ "derive_clone_dyn", "clone_dyn/use_std" ]
+derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
 
 [lib]
 name = "derive_tools"
@@ -150,6 +150,7 @@ path = "sample/rust/derive_tools_trivial_sample/src/main.rs"
 [dependencies]
 derive_more = { version = "~0.99", default-features = false }
 parse-display = { version = "~0.5", optional = true, default-features = false }
+clone_dyn = { version = "~0.1", path = "../../rust/clone_dyn", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

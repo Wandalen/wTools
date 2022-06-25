@@ -112,10 +112,10 @@ tests_impls!
     let src : Many< f32 > = ( 13.0, ).into();
     let got = src.as_slice();
     a_id!( got, &[ 13.0, ][ .. ] );
-    assert!( !mem_same_ptr( &src, got ) );
+    assert!( !mem::same_ptr( &src, got ) );
     let got = &src[ .. ];
     a_id!( got, &[ 13.0, ][ .. ] );
-    assert!( !mem_same_ptr( &src, got ) );
+    assert!( !mem::same_ptr( &src, got ) );
 
   }
 

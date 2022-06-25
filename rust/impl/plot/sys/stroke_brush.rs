@@ -7,8 +7,8 @@ pub( crate ) mod private
   #[ derive( Debug, Clone ) ]
   pub struct StrokeBrush
   {
-    id : Id,
-    color : Rgba,
+    pub( crate ) id : Id,
+    pub( crate ) color : Rgba,
   }
 
   impl StrokeBrush
@@ -24,7 +24,7 @@ pub( crate ) mod private
         id,
       }
     }
-    /// Change color.
+    /// ChangeInterface color.
     #[ inline ]
     pub fn color< Color >( mut self, color : Color ) -> Self
     where

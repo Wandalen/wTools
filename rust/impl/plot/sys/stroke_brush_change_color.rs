@@ -3,14 +3,26 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  /// Context.
-  pub trait Changer
-  where
-    Self :
-      fmt::Debug +
-      // Clone +
-      // ?Sized +
-    ,
+  /// ChangerInterface of brush stroke.
+  #[ allow( dead_code ) ]
+  #[ derive( Debug, Clone ) ]
+  pub struct StrokeBrushChangeColor
+  {
+    pub( crate ) color : Rgba< f32 >,
+  }
+
+  impl StrokeBrushChangeColor
+  {
+    /// Constructor.
+    pub fn new< Color >( color : Color ) -> Self
+    where
+      Color : RgbaInterface< f32 >,
+    {
+      Self{ color : color.into_rgba() }
+    }
+  }
+
+  impl ChangeInterface for StrokeBrushChangeColor
   {
   }
 
@@ -39,6 +51,7 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
+    private::StrokeBrushChangeColor,
   };
 }
 
@@ -47,8 +60,7 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  pub use super::
+  pub use super::private::
   {
-    private::Changer,
   };
 }

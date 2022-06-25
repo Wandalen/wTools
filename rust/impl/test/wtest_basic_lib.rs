@@ -25,6 +25,7 @@ pub mod dependencies
   pub use ::anyhow;
   pub use ::rustversion;
   pub use ::meta_tools;
+  pub use ::mem_tools;
   pub use ::typing_tools;
   pub use ::num_traits;
   pub use ::diagnostics_tools;
@@ -32,6 +33,7 @@ pub mod dependencies
 
 pub use dependencies::*;
 pub use ::meta_tools as meta;
+pub use ::mem_tools as mem;
 pub use ::typing_tools as typing;
 
 /// Exposed namespace of the module.

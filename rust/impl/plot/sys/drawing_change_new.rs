@@ -3,25 +3,25 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  /// Command to draw rectangle.
-  #[ derive( Debug ) ]
-  pub struct Rect
+  /// ChangerInterface of brush stroke.
+  #[ allow( dead_code ) ]
+  #[ derive( Debug, Clone ) ]
+  pub struct DrawingChangeNew
   {
-    /// Left-top corner.
-    pub left_top : X2< i32 >,
-    /// Right-bottom corner.
-    pub right_bottom : X2< i32 >,
+    id : Id,
   }
 
-  impl Rect
+  impl DrawingChangeNew
   {
-
-    /// Constructor
-    pub fn new( left_top : X2< i32 >, right_bottom : X2< i32 > ) -> Self
+    /// Constructor.
+    pub fn new( id : Id ) -> Self
     {
-      Self{ left_top, right_bottom }
+      Self{ id }
     }
+  }
 
+  impl ChangeInterface for DrawingChangeNew
+  {
   }
 
 }
@@ -29,7 +29,10 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
-  pub use super::orphan::*;
+  pub use super::
+  {
+    orphan::*,
+  };
 }
 
 pub use protected::*;
@@ -37,11 +40,7 @@ pub use protected::*;
 /// Parented namespace of the module.
 pub mod orphan
 {
-  pub use super::
-  {
-    exposed::*,
-    private::Rect,
-  };
+  pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -50,6 +49,7 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
+    private::DrawingChangeNew,
   };
 }
 

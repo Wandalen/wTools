@@ -2,44 +2,28 @@
 pub( crate ) mod private
 {
   use crate::*;
-  // use once_cell::sync::Lazy;
-  // use std::sync::Mutex;
-  // use dashmap::DashMap;
-  // use std::sync::Arc;
 
-  /// Context.
+  /// Drawing.
   #[ derive( Debug, Clone ) ]
-  pub struct Context
+  pub struct Drawing
   {
-    id : Id,
-    stroke : Option< StrokeBrush >,
+    pub( crate ) id : Id,
   }
 
-  impl Context
+  impl Drawing
   {
     /// Constructor.
-    pub( crate ) fn _new() -> Self
+    pub fn new() -> Self
     {
       let id = Id::new::< Self >();
-      let stroke = None;
       Self
       {
         id,
-        stroke,
       }
-    }
-    /// Parameters of stroke.
-    pub fn stroke( &mut self ) -> StrokeBrush
-    {
-      if self.stroke.is_none()
-      {
-        self.stroke = Some( StrokeBrush::new() );
-      }
-      self.stroke.as_ref().unwrap().clone()
     }
   }
 
-  impl HasIdInterface for Context
+  impl HasIdInterface for Drawing
   {
     #[ inline ]
     fn id( &self ) -> Id
@@ -50,12 +34,25 @@ pub( crate ) mod private
 
 }
 
+/// Draw command.
+mod command;
+/// Draw queue.
+mod queue;
+/// Rectangle change.
+mod rect_change;
+/// Rectangle change.
+mod rect_changer;
+
 /// Protected namespace of the module.
 pub mod protected
 {
   pub use super::
   {
     orphan::*,
+    command::orphan::*,
+    queue::orphan::*,
+    rect_change::orphan::*,
+    rect_changer::orphan::*,
   };
 }
 
@@ -73,7 +70,11 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
-    private::Context,
+    command::exposed::*,
+    queue::exposed::*,
+    rect_change::exposed::*,
+    rect_changer::exposed::*,
+    private::Drawing,
   };
 }
 
@@ -82,7 +83,11 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  pub use super::private::
+  pub use super::
   {
+    command::prelude::*,
+    queue::prelude::*,
+    rect_change::prelude::*,
+    rect_changer::prelude::*,
   };
 }

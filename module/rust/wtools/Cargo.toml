@@ -96,6 +96,18 @@ meta_collection_make = [ "meta", "meta_tools/collection_make" ]
 meta_former = [ "meta", "meta_tools/former" ]
 meta_options = [ "meta", "meta_tools/options" ]
 
+# mem
+
+mem = [ "mem_tools" ]
+mem_default = [
+  "mem",
+]
+mem_full = [
+  "mem",
+]
+mem_use_std = [ "mem", "mem_tools/use_std" ]
+mem_use_alloc = [ "mem", "mem_tools/use_alloc" ]
+
 # typing
 
 typing = [ "typing_tools" ]
@@ -220,6 +232,9 @@ derive_full = [
   "derive_display",
   "derive_from_str",
 
+  "derive_clone_dyn",
+  "derive_clone_dyn_use_std",
+
 ]
 derive_default = [
 
@@ -251,6 +266,9 @@ derive_default = [
 
   "derive_display",
   "derive_from_str",
+
+  "derive_clone_dyn",
+  "derive_clone_dyn_use_std",
 
 ]
 
@@ -285,6 +303,10 @@ derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
 
 derive_display = [ "derive", "derive_tools/derive_display", "parse-display" ]
 derive_from_str = [ "derive", "derive_tools/derive_from_str", "parse-display" ]
+
+derive_clone_dyn = [ "derive", "derive_tools/derive_clone_dyn" ]
+derive_clone_dyn_use_std = [ "derive_clone_dyn", "derive_tools/derive_clone_dyn_use_std" ]
+derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "derive_tools/derive_clone_dyn_use_alloc" ]
 
 # dt
 
@@ -351,6 +373,7 @@ use_alloc = []
 full = [
   "iter_full",
   "meta_full",
+  "mem_full",
   "typing_full",
   "time_full",
   "string_full",
@@ -365,6 +388,7 @@ full = [
 default = [
   "iter_default",
   "meta_default",
+  "mem_default",
   "typing_default",
   "time_default",
   "string_default",
@@ -383,6 +407,9 @@ iter_tools = { version = "~0.1", path = "../../rust/iter_tools", optional = true
 # meta
 meta_tools = { version = "~0.2", path = "../../rust/meta_tools", optional = true, default-features = false }
 impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by meta_tools it should also be imported immediatly
+
+# mem
+mem_tools = { version = "~0.2", path = "../../rust/mem_tools", optional = true, default-features = false }
 
 # typing
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = true, default-features = false }

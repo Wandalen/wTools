@@ -6,6 +6,8 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
+#![ feature( trace_macros ) ]
+
 //!
 //! Collection of general purpose tools to iterate. Currently it simply reexport itertools.
 //!
@@ -15,28 +17,45 @@
 pub use wmath as math;
 pub use wtools::prelude::*;
 
-/// Describe change.
-pub mod change;
-/// Describe changer.
-pub mod changer;
 /// Describe colors.
 pub mod color;
-/// Main aggregating object.
-pub mod context;
-/// Context changer.
-pub mod context_changer;
-/// Draw commands.
-pub mod draw;
-/// Identity of resource.
-pub mod identity;
-/// Registry.
-pub mod registry;
-/// Brush stroke.
-pub mod stroke_brush;
-/// Changer of brush stroke.
-pub mod stroke_brush_changer;
-/// Target to draw.
-pub mod target;
+/// Abstraction.
+pub mod abs;
+/// Concrete system.
+pub mod sys;
+
+// /// Describe change.
+// pub mod change;
+// /// Describe changer.
+// pub mod changer;
+// /// Describe colors.
+// pub mod color;
+// /// Main aggregating object.
+// pub mod context;
+// /// Context changer.
+// pub mod context_changer;
+//
+// /// Draw changer.
+// pub mod drawing;
+// /// Draw changer.
+// pub mod drawing_changer;
+// /// ChangeInterface for drawing constructor.
+// pub mod drawing_change_new;
+//
+// /// Identity of resource.
+// pub mod identity;
+// /// Registry.
+// pub mod registry;
+// /// Brush stroke.
+// pub mod stroke_brush;
+// /// ChangerInterface of brush stroke.
+// pub mod stroke_brush_changer;
+// /// ChangeInterface of brush stroke constructor.
+// pub mod stroke_brush_change_new;
+// /// ChangeInterface of brush stroke color.
+// pub mod stroke_brush_change_color;
+// /// Target to draw.
+// pub mod target;
 
 /// Namespace with dependencies.
 pub mod dependency
@@ -53,17 +72,9 @@ pub mod protected
   pub use super::
   {
     orphan::*,
-    change::orphan::*,
-    changer::orphan::*,
+    sys::orphan::*,
+    abs::orphan::*,
     color::orphan::*,
-    context::orphan::*,
-    context_changer::orphan::*,
-    draw::orphan::*,
-    identity::orphan::*,
-    registry::orphan::*,
-    stroke_brush::orphan::*,
-    stroke_brush_changer::orphan::*,
-    target::orphan::*,
   };
 }
 
@@ -81,17 +92,9 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
-    change::exposed::*,
-    changer::exposed::*,
+    sys::exposed::*,
+    abs::exposed::*,
     color::exposed::*,
-    context::exposed::*,
-    context_changer::exposed::*,
-    draw::exposed::*,
-    identity::exposed::*,
-    registry::orphan::*,
-    stroke_brush::exposed::*,
-    stroke_brush_changer::exposed::*,
-    target::exposed::*,
   };
 }
 
@@ -100,17 +103,9 @@ pub mod prelude
 {
   pub use super::
   {
-    change::prelude::*,
-    changer::prelude::*,
+    sys::prelude::*,
+    abs::prelude::*,
     color::prelude::*,
-    context::prelude::*,
-    context_changer::prelude::*,
-    draw::prelude::*,
-    identity::prelude::*,
-    registry::orphan::*,
-    stroke_brush::prelude::*,
-    stroke_brush_changer::prelude::*,
-    target::prelude::*,
   };
   pub use ::wmath::prelude::*;
 }
