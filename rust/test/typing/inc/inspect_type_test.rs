@@ -1,5 +1,3 @@
-// #[ allow( unused_imports ) ]
-// use test_tools::*;
 #[ allow( unused_imports ) ]
 use super::*;
 
@@ -9,7 +7,6 @@ use super::*;
 tests_impls!
 {
 
-  #[ test ]
   fn inspect_to_str_type_of_test()
   {
 
@@ -25,7 +22,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn inspect_type_of()
   {
 
