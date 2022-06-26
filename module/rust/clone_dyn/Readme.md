@@ -8,7 +8,7 @@ The purpose of the crate is very simple, making `dyn< Trait >` clonable with min
 
 ### Alternative
 
-There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [https://github.com/kardeiz/objekt-clonable](dyn-clonable). Unlike alternatives, this solution is more compact and requires fewer efforts to use without loss of quality of the solution. Also, you can ask an inquiry and get answers, which is problematic in the case of alternatives.
+There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [dyn-clonable](https://github.com/kardeiz/objekt-clonable). Unlike alternatives, this solution is more compact and requires fewer efforts to use without loss of quality of the solution. Also, you can ask an inquiry and get answers, which is problematic in the case of alternatives.
 
 ### Sample
 
