@@ -1,0 +1,8 @@
+[package]
+name = "clone_dyn_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+clone_dyn = { version = "~0.1", path = "../../../module/rust/clone_dyn" }

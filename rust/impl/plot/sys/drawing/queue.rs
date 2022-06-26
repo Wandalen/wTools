@@ -2,25 +2,25 @@
 pub( crate ) mod private
 {
   // use crate::*;
-  use crate::draw::*;
-
-  /// Queue of draw commands.
-  #[ derive( Debug ) ]
-  pub struct Queue
-  {
-    /// Container to store commands.
-    pub container : Vec< Box< dyn DrawCommandInterface > >,
-  }
-
-  impl Queue
-  {
-    /// Constructor.
-    pub fn new() -> Self
-    {
-      let container = Vec::new();
-      Self { container }
-    }
-  }
+//   use crate::drawing_changer::*;
+//
+//   /// Queue of draw commands.
+//   #[ derive( Debug ) ]
+//   pub struct Queue
+//   {
+//     /// Container to store commands.
+//     pub container : Vec< Box< dyn DrawCommandInterface > >,
+//   }
+//
+//   impl Queue
+//   {
+//     /// Constructor.
+//     pub fn new() -> Self
+//     {
+//       let container = Vec::new();
+//       Self { container }
+//     }
+//   }
 
 }
 
@@ -38,7 +38,7 @@ pub mod orphan
   pub use super::
   {
     exposed::*,
-    private::Queue,
+    // private::Queue,
   };
 }
 

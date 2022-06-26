@@ -3,39 +3,27 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  /// StrokeBrush.
+  /// Drawing.
   #[ derive( Debug, Clone ) ]
-  pub struct StrokeBrush
+  pub struct Drawing
   {
-    id : Id,
-    color : Rgba,
+    pub( crate ) id : Id,
   }
 
-  impl StrokeBrush
+  impl Drawing
   {
     /// Constructor.
     pub fn new() -> Self
     {
       let id = Id::new::< Self >();
-      let color = Default::default();
       Self
       {
-        color,
         id,
       }
     }
-    /// Change color.
-    #[ inline ]
-    pub fn color< Color >( mut self, color : Color ) -> Self
-    where
-      Color : RgbaInterface< f32 >,
-    {
-      self.color = color.into_rgba();
-      self
-    }
   }
 
-  impl HasIdInterface for StrokeBrush
+  impl HasIdInterface for Drawing
   {
     #[ inline ]
     fn id( &self ) -> Id
@@ -46,12 +34,25 @@ pub( crate ) mod private
 
 }
 
+/// Draw command.
+mod command;
+/// Draw queue.
+mod queue;
+/// Rectangle change.
+mod rect_change;
+/// Rectangle change.
+mod rect_changer;
+
 /// Protected namespace of the module.
 pub mod protected
 {
   pub use super::
   {
     orphan::*,
+    command::orphan::*,
+    queue::orphan::*,
+    rect_change::orphan::*,
+    rect_changer::orphan::*,
   };
 }
 
@@ -69,7 +70,11 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
-    private::StrokeBrush,
+    command::exposed::*,
+    queue::exposed::*,
+    rect_change::exposed::*,
+    rect_changer::exposed::*,
+    private::Drawing,
   };
 }
 
@@ -78,7 +83,11 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  pub use super::private::
+  pub use super::
   {
+    command::prelude::*,
+    queue::prelude::*,
+    rect_change::prelude::*,
+    rect_changer::prelude::*,
   };
 }

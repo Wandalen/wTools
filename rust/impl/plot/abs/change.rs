@@ -1,18 +1,30 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::prelude::*;
+  use crate::*;
 
+  /// Context.
+  #[ clone_dyn ]
+  pub trait ChangeInterface
+  where
+    Self :
+      fmt::Debug +
+    ,
+  {
 
+    /// Add change to queue of events.
+    fn add_to< C : ChangerInterface >( self, changer : &mut C ) -> &mut C
+    where
+      Self : Sized + 'static,
+    {
+      changer.change_add( self )
+    }
+
+  }
+
+  //
 
 }
-
-/// Draw command.
-mod command;
-/// Draw queue.
-mod queue;
-/// Draw rect.
-mod rect;
 
 /// Protected namespace of the module.
 pub mod protected
@@ -20,11 +32,7 @@ pub mod protected
   pub use super::
   {
     orphan::*,
-    command::orphan::*,
-    queue::orphan::*,
-    rect::orphan::*,
   };
-
 }
 
 pub use protected::*;
@@ -41,19 +49,16 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
-    command::exposed::*,
-    queue::exposed::*,
-    rect::exposed::*,
   };
 }
+
+pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   pub use super::
   {
-    command::prelude::*,
-    queue::prelude::*,
-    rect::prelude::*,
+    private::ChangeInterface,
   };
 }

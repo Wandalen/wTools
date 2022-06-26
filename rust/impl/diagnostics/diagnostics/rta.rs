@@ -29,6 +29,32 @@ pub( crate ) mod private
   }
 
   ///
+  /// Asserts that a boolean expression is false at runtime.
+  ///
+  /// This will invoke the panic! macro if the provided expression cannot be evaluated to false at runtime.
+  ///
+  /// ### Sample
+  ///
+  /// ``` rust
+  /// use diagnostics_tools::prelude::*;
+  /// a_true!( 1 == 2, "something wrong" );
+  /// ```
+  ///
+
+  #[ macro_export ]
+  macro_rules! a_false
+  {
+    () => {};
+    (
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      assert!( ! $( $Rest )* );
+    };
+  }
+
+  ///
   /// Asserts that a boolean expression is true at runtime.
   ///
   /// This will invoke the panic! macro if the provided expression cannot be evaluated to true at runtime.
@@ -52,6 +78,33 @@ pub( crate ) mod private
     =>
     {
       debug_assert!( $( $Rest )* );
+    };
+  }
+
+  ///
+  /// Asserts that a boolean expression is false at runtime.
+  ///
+  /// This will invoke the panic! macro if the provided expression cannot be evaluated to false at runtime.
+  /// Like [a_false!], this macro also has a second version, where a custom panic message can be provided.
+  ///
+  /// ### Sample
+  ///
+  /// ``` rust
+  /// use diagnostics_tools::prelude::*;
+  /// a_dbg_true!( 1 == 2, "something wrong" );
+  /// ```
+  ///
+
+  #[ macro_export ]
+  macro_rules! a_dbg_false
+  {
+    () => {};
+    (
+      $( $Rest : tt )*
+    )
+    =>
+    {
+      debug_assert!( ! $( $Rest )* );
     };
   }
 
@@ -116,7 +169,9 @@ pub( crate ) mod private
   }
 
   pub use a_true;
+  pub use a_false;
   pub use a_dbg_true;
+  pub use a_dbg_false;
   pub use a_dbg_id;
   pub use a_dbg_not_id;
 }
@@ -155,7 +210,9 @@ pub mod prelude
   pub use super::private::
   {
     a_true,
+    a_false,
     a_dbg_true,
+    a_dbg_false,
     a_dbg_id,
     a_dbg_not_id,
   };

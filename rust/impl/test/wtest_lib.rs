@@ -14,3 +14,7 @@
 
 #[ doc( inline ) ]
 pub use test_tools::*;
+
+/// Commands of binary target.
+#[ cfg( feature = "use_std" ) ]
+pub mod commands;

@@ -1,8 +1,6 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::prelude::*;
-  // use std::collections::HashSet;
 
 }
 
@@ -20,7 +18,6 @@ pub mod node;
 /// Implements node cell.
 #[ cfg( feature = "cell_factory" ) ]
 pub mod node_cell;
-
 
 /// Protected namespace of the module.
 pub mod protected

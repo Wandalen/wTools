@@ -20,29 +20,36 @@ pub( crate ) mod private
 {
 }
 
+/// Dependencies.
+pub mod dependencies
+{
+  pub use ::derive_more;
+  pub use ::parse_display;
+  pub use ::clone_dyn;
+}
+
 /// Protected namespace of the module.
 pub mod protected
 {
-  pub use super::exposed::*;
-  // // use super::private as i;
+  pub use super::orphan::*;
+  #[ cfg( feature = "derive_clone_dyn" ) ]
+  pub use ::clone_dyn::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
   pub use super::prelude::*;
   pub use ::derive_more::*;
-  // #[ cfg( any( feature = "derive_display", feature = "derive_from_str" ) ) ]
-  // pub use ::parse_display::
-  // {
-  //   *,
-  //   #[ cfg( feature = "display" ) ]
-  //   Display,
-  //   #[ cfg( feature = "derive_from_str" ) ]
-  //   FromStr,
-  // };
 
   #[ cfg( feature = "derive_display" ) ]
   pub use ::parse_display::Display;
@@ -50,9 +57,20 @@ pub mod exposed
   #[ cfg( feature = "derive_from_str" ) ]
   pub use ::parse_display::FromStr;
 
+  #[ cfg( feature = "derive_clone_dyn" ) ]
+  pub use ::clone_dyn::exposed::*;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+
+  #[ cfg( feature = "derive_clone_dyn" ) ]
+  pub use ::clone_dyn;
+  #[ cfg( feature = "derive_clone_dyn" ) ]
+  pub use ::clone_dyn::prelude::*;
+  #[ cfg( feature = "derive_clone_dyn" ) ]
+  pub use ::clone_dyn::clone_dyn;
+
 }

@@ -1,6 +1,6 @@
 [package]
 name = "non_std"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -148,8 +148,8 @@ string_full = [
   "string_parse_number",
   "string_split",
 ]
-string_use_std = [ "error", "wtools/use_std" ]
-string_use_alloc = [ "error", "wtools/use_alloc" ]
+string_use_std = [ "string", "wtools/string_use_std" ]
+string_use_alloc = [ "string", "wtools/string_use_alloc" ]
 
 string_indentation = [ "string", "string_use_std", "wtools/string_indentation" ]
 string_isolate = [ "string", "string_use_std", "wtools/string_isolate" ]
@@ -212,6 +212,9 @@ derive_full = [
   "derive_display",
   "derive_from_str",
 
+  "derive_clone_dyn",
+  "derive_clone_dyn_use_std",
+
 ]
 derive_default = [
 
@@ -244,7 +247,11 @@ derive_default = [
   "derive_display",
   "derive_from_str",
 
+  "derive_clone_dyn",
+  "derive_clone_dyn_use_std",
+
 ]
+
 derive_use_std = [ "wtools/derive_use_std" ]
 derive_use_alloc = [ "wtools/derive_use_alloc" ]
 
@@ -277,9 +284,10 @@ derive_convert_case = [ "derive", "wtools/derive_convert_case" ]
 
 derive_display = [ "derive", "wtools/derive_display", "parse-display" ]
 derive_from_str = [ "derive", "wtools/derive_from_str", "parse-display" ]
-# derive_from_str_std = [ "derive", "wtools/derive_from_str_std", "parse-display/std" ]
-# derive_from_str_regex = [ "derive", "wtools/derive_from_str_regex", "parse-display/regex", "parse-display/once_cell" ]
-# derive_from_str_once_cell = [ "derive", "wtools/derive_from_str_once_cell", "parse-display/once_cell" ]
+
+derive_clone_dyn = [ "derive", "wtools/derive_clone_dyn" ]
+derive_clone_dyn_use_std = [ "derive_clone_dyn", "wtools/derive_clone_dyn_use_std" ]
+derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "wtools/derive_clone_dyn_use_alloc" ]
 
 # dt
 

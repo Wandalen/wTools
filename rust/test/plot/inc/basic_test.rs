@@ -57,17 +57,21 @@ tests_impls!
     // let c = TheModule::context().new();
 
     // c.canvas.size( make!( 32, 32 ) );
-    c.stroke().color( [ 1.0, 0.0, 1.0 ] );
-//     // c.draw().begin();
-//     // c.draw().name( "drawing1" );
-//     c.draw().rect();
-//     // c.draw().rect().region( make!( 0.0, 0.0 ), make!( 1.0, 1.0 ) );
-//     // c.draw().end();
-//     // c.draw().now();
-//
+    let c = c
+    .stroke().color( [ 1.0, 0.0, 1.0 ] ).end()
+    // c.draw().begin();
+    // c.draw().name( "drawing1" );
+    .draw().rect().context()
+    // c.draw().rect().region( make!( 0.0, 0.0 ), make!( 1.0, 1.0 ) ).context();
+    // c.draw().end();
+    // c.draw().now();
+    ;
+
 //     // c.canvas().storing_to_file_path( file_name );
 //     // c.canvas().showing_file( true );
 //     c.canvas().store_to_file();
+
+    println!( "{:?}", c.changes );
 
   }
 

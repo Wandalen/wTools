@@ -2,7 +2,6 @@
 pub( crate ) mod private
 {
   use crate::prelude::*;
-  // use crate::canonical::*;
   use crate::canonical;
   use wtools::prelude::*;
   use indexmap::IndexMap;
@@ -283,7 +282,7 @@ pub use protected::*;
 pub mod orphan
 {
   pub use super::exposed::*;
-  pub use super::private::CellNodeFactory;
+  // pub use super::private::CellNodeFactory;
 }
 
 /// Exposed namespace of the module.

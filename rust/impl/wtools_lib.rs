@@ -24,9 +24,10 @@ pub mod dependencies
   pub use ::meta_tools::former;
   #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   pub use ::meta_tools::options;
-
   #[ cfg( feature = "meta" ) ]
   pub use ::meta_tools;
+  #[ cfg( feature = "mem" ) ]
+  pub use ::mem_tools;
   // zzz
   // #[ cfg( feature = "impls_index" ) ]
   // pub use ::impls_index;
@@ -58,6 +59,8 @@ pub mod protected
   pub use ::iter_tools as iter;
   #[ cfg( feature = "meta" ) ]
   pub use ::meta_tools as meta;
+  #[ cfg( feature = "mem" ) ]
+  pub use ::mem_tools as mem;
   #[ cfg( feature = "typing" ) ]
   pub use ::typing_tools as typing;
   #[ cfg( feature = "diagnostics" ) ]
@@ -96,6 +99,8 @@ pub mod exposed
   pub use super::iter::exposed::*;
   #[ cfg( feature = "meta" ) ]
   pub use super::meta::exposed::*;
+  #[ cfg( feature = "mem" ) ]
+  pub use super::mem::exposed::*;
   #[ cfg( feature = "typing" ) ]
   pub use super::typing::exposed::*;
   #[ cfg( feature = "diagnostics" ) ]
@@ -125,6 +130,8 @@ pub mod prelude
   pub use super::iter::prelude::*;
   #[ cfg( feature = "meta" ) ]
   pub use super::meta::prelude::*;
+  #[ cfg( feature = "mem" ) ]
+  pub use super::mem::prelude::*;
   #[ cfg( feature = "typing" ) ]
   pub use super::typing::prelude::*;
   #[ cfg( feature = "diagnostics" ) ]
@@ -137,8 +144,12 @@ pub mod prelude
   pub use super::error::prelude::*;
   #[ cfg( feature = "string" ) ]
   pub use super::string::prelude::*;
+
   #[ cfg( feature = "derive" ) ]
   pub use super::derive::prelude::*;
+  // xxx
+  // #[ cfg( all( feature = "derive", feature = "derive_clone_dyn" ) ) ]
+  pub use super::derive::prelude::clone_dyn;
 
   #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use super::former::prelude::*;

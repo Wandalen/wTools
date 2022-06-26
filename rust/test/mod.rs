@@ -22,6 +22,8 @@ mod time;
 mod typing;
 #[ cfg( feature = "diagnostics" ) ]
 mod diagnostics;
+#[ cfg( feature = "mem_tools" ) ]
+mod mem;
 
 #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
 mod former;
