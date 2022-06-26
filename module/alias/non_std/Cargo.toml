@@ -282,12 +282,12 @@ derive_is_variant = [ "derive", "wtools/derive_is_variant" ]
 derive_unwrap = [ "derive", "wtools/derive_unwrap" ]
 derive_convert_case = [ "derive", "wtools/derive_convert_case" ]
 
-derive_display = [ "derive", "derive_tools/derive_display", "parse-display" ]
-derive_from_str = [ "derive", "derive_tools/derive_from_str", "parse-display" ]
+derive_display = [ "derive", "wtools/derive_display", "parse-display" ]
+derive_from_str = [ "derive", "wtools/derive_from_str", "parse-display" ]
 
-derive_clone_dyn = [ "derive", "derive_tools/derive_clone_dyn" ]
-derive_clone_dyn_use_std = [ "derive_clone_dyn", "derive_tools/derive_clone_dyn_use_std" ]
-derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "derive_tools/derive_clone_dyn_use_alloc" ]
+derive_clone_dyn = [ "derive", "wtools/derive_clone_dyn" ]
+derive_clone_dyn_use_std = [ "derive_clone_dyn", "wtools/derive_clone_dyn_use_std" ]
+derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "wtools/derive_clone_dyn_use_alloc" ]
 
 # dt
 
