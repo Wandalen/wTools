@@ -1,6 +1,6 @@
 [package]
 name = "clone_dyn_meta"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -30,25 +30,17 @@ include = [
 [features]
 
 default = [
-  # "use_std",
 ]
 
 full = [
-  # "use_std",
 ]
 use_std = []
 use_alloc = []
-
-# nightly = []
 
 [lib]
 proc-macro = true
 name = "clone_dyn_meta"
 path = "rust/impl/derive/clone_dyn_meta/clone_dyn_meta_lib.rs"
-
-[[test]]
-name = "clone_dyn_meta_test"
-path = "rust/test/derive/clone_dyn_meta_lib_tests.rs"
 
 [[test]]
 name = "clone_dyn_meta_smoke_test"
