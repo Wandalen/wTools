@@ -42,6 +42,15 @@ winterval_published = { version = "*", package = "winterval" }
 
 derive_tools_local = { version = "*", path = "../../rust/derive_tools", package = "derive_tools" }
 derive_tools_published = { version = "*", package = "derive_tools" }
+clone_dyn_local = { version = "*", path = "../../rust/clone_dyn", package = "clone_dyn" }
+clone_dyn_published = { version = "*", package = "clone_dyn" }
+clone_dyn_meta_local = { version = "*", path = "../../rust/clone_dyn_meta", package = "clone_dyn_meta" }
+clone_dyn_meta_published = { version = "*", package = "clone_dyn_meta" }
+
+# mem
+
+mem_tools_local = { version = "*", path = "../../rust/mem_tools", package = "mem_tools" }
+mem_tools_published = { version = "*", package = "mem_tools" }
 
 # diagnostics
 
