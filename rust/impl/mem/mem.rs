@@ -29,7 +29,9 @@ pub( crate ) mod private
   }
 
   ///
-  /// Are two pointers points on the same region.
+  /// Are two pointers points on the same region, ie same size and same pointer.
+  ///
+  /// Does not require arguments to have the same type.
   ///
 
   pub fn same_region< T1 : ?Sized, T2 : ?Sized >( src1 : &T1, src2 : &T2 ) -> bool

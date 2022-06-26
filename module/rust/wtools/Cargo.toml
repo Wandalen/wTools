@@ -409,7 +409,7 @@ meta_tools = { version = "~0.2", path = "../../rust/meta_tools", optional = true
 impls_index = { version = "~0.1", path = "../../rust/impls_index" } # despite impls_index is imported by meta_tools it should also be imported immediatly
 
 # mem
-mem_tools = { version = "~0.2", path = "../../rust/mem_tools", optional = true, default-features = false }
+mem_tools = { version = "~0.1", path = "../../rust/mem_tools", optional = true, default-features = false }
 
 # typing
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools", optional = true, default-features = false }

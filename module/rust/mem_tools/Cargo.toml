@@ -1,6 +1,6 @@
 [package]
 name = "mem_tools"
-version = "0.2.1"
+version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -50,9 +50,9 @@ path = "rust/test/mem/mem_tools_tests.rs"
 name = "mem_tools_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-# [[example]]
-# name = "mem_tools_trivial_sample"
-# path = "sample/rust/mem_tools_trivial_sample/src/main.rs"
+[[example]]
+name = "mem_tools_trivial_sample"
+path = "sample/rust/mem_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 
