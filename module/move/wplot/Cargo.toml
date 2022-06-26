@@ -9,7 +9,7 @@ documentation = "https://docs.rs/wplot"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/wplot"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/wplot/Readme.md"
 description = """
-Plot interface
+Plot interface.
 """
 categories = [ "command-line-interface", "command-line-utilities" ]
 keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
@@ -56,3 +56,4 @@ num-traits = { version = "~0.2" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+
