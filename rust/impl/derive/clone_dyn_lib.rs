@@ -15,10 +15,15 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
+#[ cfg( all( not( feature = "use_std" ), feature = "use_alloc" ) ) ]
+extern crate alloc;
+
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use alloc::boxed::Box;
+  #[ cfg( all( not( feature = "use_std" ), feature = "use_alloc" ) ) ]
+  use alloc::boxed::Box;
+  #[ cfg( all( feature = "use_std", not( feature = "use_alloc" ) ) ) ]
   use std::boxed::Box;
 
   /// Clone boxed dyn.
