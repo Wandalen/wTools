@@ -4,6 +4,7 @@ pub( crate ) mod private
   use crate::*;
 
   /// Context.
+  #[ clone_dyn ]
   pub trait ChangeInterface
   where
     Self :
