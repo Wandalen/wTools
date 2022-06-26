@@ -144,8 +144,12 @@ pub mod prelude
   pub use super::error::prelude::*;
   #[ cfg( feature = "string" ) ]
   pub use super::string::prelude::*;
+
   #[ cfg( feature = "derive" ) ]
   pub use super::derive::prelude::*;
+  // xxx
+  // #[ cfg( all( feature = "derive", feature = "derive_clone_dyn" ) ) ]
+  pub use super::derive::prelude::clone_dyn;
 
   #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use super::former::prelude::*;

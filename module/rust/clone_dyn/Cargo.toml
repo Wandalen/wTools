@@ -53,10 +53,9 @@ path = "rust/test/derive/clone_dyn_tests.rs"
 name = "clone_dyn_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-# [[example]]
-# name = "clone_dyn_trivial_sample"
-# path = "sample/rust/clone_dyn_trivial_sample/src/main.rs"
-# xxx : write it
+[[example]]
+name = "clone_dyn_trivial_sample"
+path = "sample/rust/clone_dyn_trivial_sample/src/main.rs"
 
 [dependencies]
 clone_dyn_meta = { version = "~0.1", path = "../../rust/clone_dyn_meta" }

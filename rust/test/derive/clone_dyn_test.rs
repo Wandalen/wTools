@@ -73,7 +73,6 @@ tests_impls!
 
   fn basic()
   {
-    // use TheModule::prelude::*;
     use TheModule::clone_dyn;
 
     #[ clone_dyn ]
@@ -86,7 +85,60 @@ tests_impls!
     let vec = Vec::< Box< dyn Trait1 > >::new();
     let vec2 = vec.clone();
 
-    // xxx
+  }
+
+  //
+
+  fn prelude()
+  {
+    use TheModule::prelude::*;
+
+    #[ clone_dyn ]
+    trait Trait1
+    {
+    }
+
+    //
+
+    let vec = Vec::< Box< dyn Trait1 > >::new();
+    let vec2 = vec.clone();
+
+  }
+
+  //
+
+  fn parametrized()
+  {
+    use TheModule::clone_dyn;
+
+    #[ clone_dyn ]
+    trait Trait2< T1 : Copy, T2 : Copy >
+    where
+      T2 : Clone + fmt::Debug,
+    {
+    }
+
+    //
+
+    let vec = Vec::< Box< dyn Trait2< i32, f32 > > >::new();
+    let vec2 = vec.clone();
+
+  }
+
+  //
+
+  fn sample()
+  {
+    use TheModule::clone_dyn;
+
+    #[ clone_dyn ]
+    trait Trait1
+    {
+    }
+
+    let vec = Vec::< Box< dyn Trait1 > >::new();
+    let vec2 = vec.clone(); /* <- it does not work without `clone_dyn` */
+
   }
 
 }
@@ -97,4 +149,7 @@ tests_index!
 {
   manual,
   basic,
+  prelude,
+  parametrized,
+  sample,
 }

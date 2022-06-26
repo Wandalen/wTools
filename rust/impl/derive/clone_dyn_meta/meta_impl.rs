@@ -14,34 +14,47 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
   };
 
   let name_ident = &item_parsed.ident;
+  // let generics = &item_parsed.generics;
+  let generics_analyzed = item_parsed.generics_analyze();
+  let generics_params = &generics_analyzed.generics.params;
+  let generics_where = &generics_analyzed.generics.where_clause;
+  let generics_names = &generics_analyzed.names;
 
   let result = qt!
   {
     #item_parsed
 
-    impl < 'c > Clone
-    for Box< dyn #name_ident + 'c >
+    impl < 'c, #generics_params > Clone
+    for Box< dyn #name_ident< #( #generics_names ),* > + 'c >
+    // where
+      #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::_clone_boxed( &**self ) }
     }
 
-    impl < 'c > Clone
-    for Box< dyn #name_ident + Send + 'c >
+    impl < 'c, #generics_params > Clone
+    for Box< dyn #name_ident< #( #generics_names ),* > + Send + 'c >
+    // where
+      #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::_clone_boxed( &**self ) }
     }
 
-    impl < 'c > Clone
-    for Box< dyn #name_ident + Sync + 'c >
+    impl < 'c, #generics_params > Clone
+    for Box< dyn #name_ident< #( #generics_names ),* > + Sync + 'c >
+    // where
+      #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::_clone_boxed( &**self ) }
     }
 
-    impl < 'c > Clone
-    for Box< dyn #name_ident + Send + Sync + 'c >
+    impl < 'c, #generics_params > Clone
+    for Box< dyn #name_ident< #( #generics_names ),* > + Send + Sync + 'c >
+    // where
+      #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::_clone_boxed( &**self ) }

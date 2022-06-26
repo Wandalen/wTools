@@ -4,14 +4,28 @@
 
 Derive to clone dyn structures.
 
+The purpose of the crate is very simple, making `dyn< Trait >` clonable with minimum efforts and complexity, simply by applying to derive to the trait.
+
+### Alternative
+
+There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [https://github.com/kardeiz/objekt-clonable](dyn-clonable). Unlike alternatives, this solution is more compact and requires fewer efforts to use without loss of quality of the solution. Also, you can ask an inquiry and get answers, which is problematic in the case of alternatives.
+
 ### Sample
 
 <!-- {{# generate.module_sample{} #}} -->
 
 ```rust
+use clone_dyn::clone_dyn;
+
+#[ clone_dyn ]
+trait Trait1
+{
+}
+
+let vec = Vec::< Box< dyn Trait1 > >::new();
+let vec2 = vec.clone(); /* <- it does not work without `clone_dyn` */
 
 ```
-<!-- xxx : write it -->
 
 ### To add to your project
 
