@@ -5,7 +5,6 @@ use super::*;
 
 tests_impls!
 {
-  #[ test ]
   fn fn_name()
   {
     // assert!( false );

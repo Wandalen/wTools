@@ -508,31 +508,31 @@ tests_impls_optional!
     let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.clone_as_tuple();
     a_id!( got, ( mk!( 13.0 ), ) );
-    assert!( !mem_same_ptr( &src, &got ) );
+    assert!( !mem::same_ptr( &src, &got ) );
 
     /* test.case( "clone_as_array" ) */
     let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.clone_as_array();
     a_id!( got, [ mk!( 13.0 ), ] );
-    assert!( !mem_same_ptr( &src, &got ) );
+    assert!( !mem::same_ptr( &src, &got ) );
 
     /* test.case( "as_tuple" ) */
     let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.as_tuple();
     a_id!( got, &( mk!( 13.0 ), ) );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
     /* test.case( "as_array" ) */
     let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.as_array();
     a_id!( got, &[ mk!( 13.0 ), ] );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
     /* test.case( "as_slice" ) */
     let src : Single< f32, f64 > = Single::from( mk!( 13.0 ) );
     let got = src.as_slice();
     a_id!( got, &[ mk!( 13.0 ), ][ .. ] );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
   }
 
@@ -666,31 +666,31 @@ tests_impls_optional!
     let src : Single< f32 > = ( 13.0, ).into();
     let got = src.clone_as_tuple();
     a_id!( got, ( 13.0, ) );
-    assert!( !mem_same_ptr( &src, &got ) );
+    assert!( !mem::same_ptr( &src, &got ) );
 
     /* test.case( "clone_as_array" ) */
     let src : Single< f32 > = ( 13.0, ).into();
     let got = src.clone_as_array();
     a_id!( got, [ 13.0, ] );
-    assert!( !mem_same_ptr( &src, &got ) );
+    assert!( !mem::same_ptr( &src, &got ) );
 
     /* test.case( "as_tuple" ) */
     let src : Single< f32 > = ( 13.0, ).into();
     let got = src.as_tuple();
     a_id!( got, &( 13.0, ) );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
     /* test.case( "as_array" ) */
     let src : Single< f32 > = ( 13.0, ).into();
     let got = src.as_array();
     a_id!( got, &[ 13.0, ] );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
     /* test.case( "as_slice" ) */
     let src : Single< f32 > = ( 13.0, ).into();
     let got = src.as_slice();
     a_id!( got, &[ 13.0, ][ .. ] );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
   }
 

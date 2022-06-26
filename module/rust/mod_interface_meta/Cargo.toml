@@ -41,6 +41,5 @@ path = "rust/impl/meta/mod_interface/meta/mod_interface_meta_lib.rs"
 
 [dependencies]
 proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
-# xxx : unify dependencies of other procedural macroses
 
 [dev-dependencies]

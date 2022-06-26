@@ -305,31 +305,31 @@ tests_impls!
     let src : Pair< f32, f64 > = ( mk!( 13.0 ), mk!( 31.0 ) ).into();
     let got = src.clone_as_tuple();
     a_id!( got, ( mk!( 13.0 ), mk!( 31.0 ) ) );
-    assert!( !mem_same_ptr( &src, &got ) );
+    assert!( !mem::same_ptr( &src, &got ) );
 
     /* test.case( "clone_as_array" ) */
     let src : Pair< f32, f64 > = ( mk!( 13.0 ), mk!( 31.0 ) ).into();
     let got = src.clone_as_array();
     a_id!( got, [ mk!( 13.0 ), mk!( 31.0 ) ] );
-    assert!( !mem_same_ptr( &src, &got ) );
+    assert!( !mem::same_ptr( &src, &got ) );
 
     /* test.case( "as_tuple" ) */
     let src : Pair< f32, f64 > = ( mk!( 13.0 ), mk!( 31.0 ) ).into();
     let got = src.as_tuple();
     a_id!( got, &( mk!( 13.0 ), mk!( 31.0 ) ) );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
     /* test.case( "as_array" ) */
     let src : Pair< f32, f64 > = ( mk!( 13.0 ), mk!( 31.0 ) ).into();
     let got = src.as_array();
     a_id!( got, &[ mk!( 13.0 ), mk!( 31.0 ) ] );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
     /* test.case( "as_slice" ) */
     let src : Pair< f32, f64 > = ( mk!( 13.0 ), mk!( 31.0 ) ).into();
     let got = src.as_slice();
     a_id!( got, &[ mk!( 13.0 ), mk!( 31.0 ) ][ .. ] );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
   }
 
@@ -516,31 +516,31 @@ tests_impls!
     let src : Pair< mod1::Float > = ( mk!( 13.0 ), mk!( 31.0 ) ).into();
     let got = src.clone_as_tuple();
     a_id!( got, ( mk!( 13.0 ), mk!( 31.0 ) ) );
-    assert!( !mem_same_ptr( &src, &got ) );
+    assert!( !mem::same_ptr( &src, &got ) );
 
     /* test.case( "clone_as_array" ) */
     let src : Pair< mod1::Float > = ( mk!( 13.0 ), mk!( 31.0 ) ).into();
     let got = src.clone_as_array();
     a_id!( got, [ mk!( 13.0 ), mk!( 31.0 ) ] );
-    assert!( !mem_same_ptr( &src, &got ) );
+    assert!( !mem::same_ptr( &src, &got ) );
 
     /* test.case( "as_tuple" ) */
     let src : Pair< mod1::Float > = ( mk!( 13.0 ), mk!( 31.0 ) ).into();
     let got = src.as_tuple();
     a_id!( got, &( mk!( 13.0 ), mk!( 31.0 ) ) );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
     /* test.case( "as_array" ) */
     let src : Pair< mod1::Float > = ( mk!( 13.0 ), mk!( 31.0 ) ).into();
     let got = src.as_array();
     a_id!( got, &[ mk!( 13.0 ), mk!( 31.0 ) ] );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
     /* test.case( "as_slice" ) */
     let src : Pair< mod1::Float > = ( mk!( 13.0 ), mk!( 31.0 ) ).into();
     let got = src.as_slice();
     a_id!( got, &[ mk!( 13.0 ), mk!( 31.0 ) ][ .. ] );
-    assert!( mem_same_region( &src, got ) );
+    assert!( mem::same_region( &src, got ) );
 
   }
 

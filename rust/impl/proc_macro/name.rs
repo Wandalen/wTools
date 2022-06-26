@@ -224,7 +224,6 @@ pub( crate ) mod private
 pub mod exposed
 {
   pub use super::prelude::*;
-  // // use super::private as i;
 }
 
 pub use exposed::*;
@@ -232,6 +231,5 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::private as i;
   pub use super::private::Name;
 }
