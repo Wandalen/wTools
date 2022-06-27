@@ -13,13 +13,13 @@ tests_impls!
   fn basic()
   {
 
-    // {
-    //   a_id!( private::has_private(), false );
-    //   a_id!( private::has_protected(), false );
-    //   a_id!( private::has_orphan(), false );
-    //   a_id!( private::has_exposed(), false );
-    //   a_id!( private::has_prelude(), false );
-    // }
+    {
+      // a_id!( protected::mod_private::has_private(), true );
+      a_id!( mod_protected::has_protected(), true );
+      a_id!( mod_orphan::has_orphan(), true );
+      a_id!( mod_exposed::has_exposed(), true );
+      a_id!( mod_prelude::has_prelude(), true );
+    }
 
     {
       // a_id!( protected::mod_private::has_private(), true );

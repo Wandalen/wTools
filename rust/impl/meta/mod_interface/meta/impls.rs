@@ -1,23 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::exposed::*;
-  // use crate::*;
   use crate::*;
-  // use proc_macro_tools::prelude::*;
-  // use core::hash::{ Hash, Hasher };
-
-  // #[ allow( unused_imports ) ]
   use proc_macro_tools::exposed::*;
-  // #[ allow( unused_imports ) ]
-  // use proc_macro_tools::{ Result };
-
-  // use proc_macro_tools::syn::
-  // {
-  //   ext::IdentExt,
-  //   parse::discouraged::Speculative,
-  // };
-  // use core::hash::{ Hash, Hasher };
 
   ///
   /// Protocol of modularity unifying interface of a module.
@@ -28,8 +13,6 @@ pub( crate ) mod private
     use std::collections::HashMap; /* xxx : include into prelude of wtools */
 
     let records = syn::parse::< Records >( input )?;
-
-    //let mut mods = vec![];
     let mut immediates : Vec< proc_macro2::TokenStream > = vec![];
 
     // use inspect_type::*;
@@ -48,9 +31,8 @@ pub( crate ) mod private
     {
       record.elements.iter().for_each( | element |
       {
-        //mods.push( record.ident.clone() );
-  //      let ident = &record.ident;
-        let ident = &element.1;
+        // let ident = element.first().unwrap();
+        let ident = element;
 
         if record.mod_token.is_some()
         {
@@ -67,6 +49,7 @@ pub( crate ) mod private
               qt!{ #record }
             ));
           }
+
         }
       });
 

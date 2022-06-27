@@ -1,24 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::exposed::*;
-  // use super::*;
   use crate::*;
   use proc_macro_tools::exposed::*;
-
-  // use core::hash::{ Hash, Hasher };
-
-  // #[ allow( unused_imports ) ]
-  // use proc_macro_tools::prelude::*;
-//   #[ allow( unused_imports ) ]
-//   use proc_macro_tools::{ Result };
-//
-//   use proc_macro_tools::syn::
-//   {
-//     ext::IdentExt,
-//     parse::discouraged::Speculative,
-//   };
-//   use core::hash::{ Hash, Hasher };
 
   ///
   /// Record.
@@ -30,14 +14,12 @@ pub( crate ) mod private
     pub attrs : Vec< syn::Attribute >,
     pub vis : Visibility,
     pub mod_token : Option< syn::token::Mod >,
-    pub elements : Many< AttributedIdent >,
-    // pub ident : syn::Ident,
-    // pub content : Option< ( syn::token::Brace, Vec< Record > ) >,
+    pub elements : syn::punctuated::Punctuated< syn::Ident, syn::token::Comma >,
     pub semi : Option< syn::token::Semi >,
   }
 
   //
-//
+
 //   pub fn attrs_parse_inner_single( input : ParseStream< '_ > ) -> Result< syn::Attribute >
 //   {
 //     let input2;
@@ -53,7 +35,12 @@ pub( crate ) mod private
 //
 //   //
 //
-//   pub fn attrs_parse_inner_as_much_as_possible( input : ParseStream< '_ >, attrs : &mut Vec< syn::Attribute > ) -> Result< () >
+//   pub fn attrs_parse_inner_as_much_as_possible
+//   (
+//     input : ParseStream< '_ >,
+//     attrs : &mut Vec< syn::Attribute >,
+//   )
+//   -> Result< () >
 //   {
 //     while input.peek( Token![ # ] ) && input.peek2( Token![ ! ] )
 //     {
@@ -67,84 +54,139 @@ pub( crate ) mod private
 
   impl syn::parse::Parse for Record
   {
+
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
 
       let attrs = input.call( syn::Attribute::parse_outer )?;
       let vis : Visibility = input.parse()?;
-
-      // let mod_token : Token![ mod ] = input.parse()?;
-
       let mod_token : Option< Token![ mod ] > = input.parse()?;
+      let mut elements;
 
-  //     if lookahead.peek( syn::token::Brace )
-  //     {
-  //       let input2;
-  //       let brace_token = syn::braced!( input2 in input );
-  //       // attrs_parse_inner_as_much_as_possible( &input2, &mut attrs )?;
-  //       // xxx : test with attributes
-  //
-  //       let mut elements = Vec::new();
-  //       while !input2.is_empty()
-  //       {
-  //         elements.push( input2.parse()? );
-  //       }
-  //
-  //       Ok( Record
-  //       {
-  //         attrs,
-  //         vis,
-  //         mod_token,
-  //         elements,
-  //         // ident,
-  //         // content : Some( ( brace_token, items ) ),
-  //         semi : None,
-  //       })
-  //     }
-
-      let ident : syn::Ident = input.parse()?;
       let lookahead = input.lookahead1();
-      if lookahead.peek( Token![ ; ] )
+      if lookahead.peek( syn::token::Brace )
       {
-        Ok( Record
-        {
-          attrs,
-          vis,
-          mod_token,
-          elements : vec!( ident.into() ).into(),
-          // content : None,
-          semi : Some( input.parse()? ),
-        })
+        let input2;
+        let _brace_token = syn::braced!( input2 in input );
+        elements = syn::punctuated::Punctuated::< _, _ >::parse_terminated( &input2 )?;
       }
-  //     else if lookahead.peek( syn::token::Brace )
-  //     {
-  //       let input2;
-  //       let brace_token = syn::braced!( input2 in input );
-  //       attrs_parse_inner_as_much_as_possible( &input2, &mut attrs )?;
-  //
-  //       let mut items = Vec::new();
-  //       while !input2.is_empty()
-  //       {
-  //         items.push( input2.parse()? );
-  //       }
-  //
-  //       Ok( Record
-  //       {
-  //         attrs,
-  //         vis,
-  //         mod_token,
-  //         ident,
-  //         content : Some( ( brace_token, items ) ),
-  //         semi : None,
-  //       })
-  //     }
       else
       {
-        Err( lookahead.error() )
+        let ident : syn::Ident = input.parse()?;
+        elements = syn::punctuated::Punctuated::new();
+        elements.push( ident );
       }
 
+      let lookahead = input.lookahead1();
+      if !lookahead.peek( Token![ ; ] )
+      {
+        return Err( lookahead.error() );
+      }
+
+      let semi = Some( input.parse()? );
+      return Ok( Record
+      {
+        attrs,
+        vis,
+        mod_token,
+        elements,
+        semi,
+      })
+
+      // {
+      //   let mut elements = syn::punctuated::Punctuated::new();
+      //   elements.push( ident );
+      //   Ok( Record
+      //   {
+      //     attrs,
+      //     vis,
+      //     mod_token,
+      //     elements,
+      //     semi : Some( input.parse()? ),
+      //   })
+      // }
+      // else
+      // {
+      // }
+
     }
+
   }
+
+//   impl syn::parse::Parse for Record
+//   {
+//     fn parse( input : ParseStream< '_ > ) -> Result< Self >
+//     {
+//
+//       let attrs = input.call( syn::Attribute::parse_outer )?;
+//       let vis : Visibility = input.parse()?;
+//       let mod_token : Option< Token![ mod ] > = input.parse()?;
+//
+//       let lookahead = input.lookahead1();
+//       if lookahead.peek( syn::token::Brace )
+//       {
+//         let input2;
+//         let _brace_token = syn::braced!( input2 in input );
+//         let elements = syn::punctuated::Punctuated::< _, _ >::parse_terminated( &input2 )?;
+//
+//         let semi = Some( input.parse()? );
+//
+//         return Ok( Record
+//         {
+//           attrs,
+//           vis,
+//           mod_token,
+//           elements,
+//           semi,
+//         })
+//       }
+//
+//       let ident : syn::Ident = input.parse()?;
+//       let lookahead = input.lookahead1();
+//       if lookahead.peek( Token![ ; ] )
+//       {
+//         let mut elements = syn::punctuated::Punctuated::new();
+//         elements.push( ident );
+//
+//         Ok( Record
+//         {
+//           attrs,
+//           vis,
+//           mod_token,
+//           elements,
+//           semi : Some( input.parse()? ),
+//         })
+//       }
+// //       else if lookahead.peek( syn::token::Brace )
+// //       {
+// //         let input2;
+// //         let brace_token = syn::braced!( input2 in input );
+// //         attrs_parse_inner_as_much_as_possible( &input2, &mut attrs )?;
+// //
+// //         let mut items = Vec::new();
+// //         while !input2.is_empty()
+// //         {
+// //           items.push( input2.parse()? );
+// //         }
+// //
+// //         Ok( Record
+// //         {
+// //           attrs,
+// //           vis,
+// //           mod_token,
+// //           ident,
+// //           content : Some( ( brace_token, items ) ),
+// //           semi : None,
+// //         })
+// //       }
+//       else
+//       {
+//         Err( lookahead.error() )
+//       }
+//
+//     }
+//
+//   }
 
   //
 

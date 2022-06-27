@@ -42,7 +42,6 @@ pub mod exposed
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-
   pub use super::mod_prelude;
 }
 
