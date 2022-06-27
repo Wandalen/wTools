@@ -148,7 +148,7 @@ pub mod prelude
   #[ cfg( feature = "derive" ) ]
   pub use super::derive::prelude::*;
   // xxx
-  // #[ cfg( all( feature = "derive", feature = "derive_clone_dyn" ) ) ]
+  #[ cfg( feature = "derive_clone_dyn" ) ]
   pub use super::derive::prelude::clone_dyn;
 
   #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
