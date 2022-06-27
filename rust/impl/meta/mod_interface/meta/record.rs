@@ -2,7 +2,58 @@
 pub( crate ) mod private
 {
   use crate::*;
+  use derive_tools::IsVariant;
   use proc_macro_tools::exposed::*;
+
+  ///
+  /// Kind of element.
+  ///
+
+  #[ derive( IsVariant, Debug, PartialEq, Eq, Clone, Copy ) ]
+  pub enum ElementType
+  {
+    MicroModule( syn::token::Mod ),
+    MacroModule( syn::token::Macro ),
+  }
+
+  //
+
+  impl syn::parse::Parse for ElementType
+  {
+
+    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    {
+      let element_type;
+      let lookahead = input.lookahead1();
+
+      if lookahead.peek( syn::token::Mod )
+      {
+        element_type = ElementType::MicroModule( input.parse()? );
+      }
+      else
+      {
+        element_type = ElementType::MacroModule( input.parse()? );
+      }
+
+      Ok( element_type )
+    }
+
+  }
+
+  //
+
+  impl quote::ToTokens for ElementType
+  {
+    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+    {
+      use ElementType::*;
+      match self
+      {
+        MicroModule( e ) => e.to_tokens( tokens ),
+        MacroModule( e ) => e.to_tokens( tokens ),
+      }
+    }
+  }
 
   ///
   /// Record.
@@ -13,7 +64,8 @@ pub( crate ) mod private
   {
     pub attrs : Vec< syn::Attribute >,
     pub vis : Visibility,
-    pub mod_token : Option< syn::token::Mod >,
+    // pub mod_token : Option< syn::token::Mod >,
+    pub element_type : ElementType,
     pub elements : syn::punctuated::Punctuated< syn::Ident, syn::token::Comma >,
     pub semi : Option< syn::token::Semi >,
   }
@@ -60,7 +112,10 @@ pub( crate ) mod private
 
       let attrs = input.call( syn::Attribute::parse_outer )?;
       let vis : Visibility = input.parse()?;
-      let mod_token : Option< Token![ mod ] > = input.parse()?;
+
+      // let mod_token : Option< Token![ mod ] > = input.parse()?;
+      let element_type : ElementType = input.parse()?;
+
       let mut elements;
 
       let lookahead = input.lookahead1();
@@ -88,26 +143,10 @@ pub( crate ) mod private
       {
         attrs,
         vis,
-        mod_token,
+        element_type,
         elements,
         semi,
       })
-
-      // {
-      //   let mut elements = syn::punctuated::Punctuated::new();
-      //   elements.push( ident );
-      //   Ok( Record
-      //   {
-      //     attrs,
-      //     vis,
-      //     mod_token,
-      //     elements,
-      //     semi : Some( input.parse()? ),
-      //   })
-      // }
-      // else
-      // {
-      // }
 
     }
 
@@ -197,10 +236,8 @@ pub( crate ) mod private
       use proc_macro_tools::quote::TokenStreamExt;
       tokens.append_all( &self.attrs );
       self.vis.to_tokens( tokens );
-      self.mod_token.to_tokens( tokens );
-      // self.ident.to_tokens( tokens );
-      // self.content.to_tokens( tokens );
-      self.elements.to_tokens( tokens ); // xxx : problem
+      self.element_type.to_tokens( tokens );
+      self.elements.to_tokens( tokens );
       self.semi.to_tokens( tokens );
     }
   }
