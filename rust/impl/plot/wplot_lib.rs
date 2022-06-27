@@ -20,8 +20,10 @@ pub use wtools::prelude::*;
 /// Describe colors.
 pub mod color;
 /// Abstraction.
+#[ cfg( feature = "use_std" ) ]
 pub mod abs;
 /// Concrete system.
+#[ cfg( feature = "use_std" ) ]
 pub mod sys;
 
 // /// Describe change.
@@ -69,9 +71,10 @@ pub mod dependency
 /// Protected namespace of the module.
 pub mod protected
 {
+  pub use super::orphan::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::
   {
-    orphan::*,
     sys::orphan::*,
     abs::orphan::*,
     color::orphan::*,
@@ -89,9 +92,10 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
   pub use super::
   {
-    prelude::*,
     sys::exposed::*,
     abs::exposed::*,
     color::exposed::*,
@@ -101,6 +105,7 @@ pub mod exposed
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ cfg( feature = "use_std" ) ]
   pub use super::
   {
     sys::prelude::*,
