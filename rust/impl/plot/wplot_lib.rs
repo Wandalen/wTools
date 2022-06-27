@@ -6,7 +6,7 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
-#![ feature( trace_macros ) ]
+// #![ feature( trace_macros ) ]
 
 //!
 //! Collection of general purpose tools to iterate. Currently it simply reexport itertools.
