@@ -15,16 +15,18 @@ There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [d
 <!-- {{# generate.module_sample{} #}} -->
 
 ```rust
-use clone_dyn::clone_dyn;
-
-#[ clone_dyn ]
-trait Trait1
+#[ cfg( any( feature = "use_std", feature = "use_alloc" ) ) ]
 {
+  use clone_dyn::clone_dyn;
+
+  #[ clone_dyn ]
+  trait Trait1
+  {
+  }
+
+  let vec = Vec::< Box< dyn Trait1 > >::new();
+  let vec2 = vec.clone(); /* <- it does not work without `clone_dyn` */
 }
-
-let vec = Vec::< Box< dyn Trait1 > >::new();
-let vec2 = vec.clone(); /* <- it does not work without `clone_dyn` */
-
 ```
 
 ### To add to your project
