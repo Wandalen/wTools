@@ -6,6 +6,7 @@ fn main()
 
   #[ cfg( any( feature = "use_std", feature = "use_alloc" ) ) ]
   {
+
     #[ clone_dyn ]
     trait Trait1
     {
@@ -13,6 +14,7 @@ fn main()
 
     let vec = Vec::< Box< dyn Trait1 > >::new();
     let _vec2 = vec.clone(); /* <- it does not work without `clone_dyn` */
+
   }
 
 }
