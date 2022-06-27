@@ -19,6 +19,7 @@
 extern crate alloc;
 
 /// Internal namespace.
+#[ cfg( any( feature = "use_std", feature = "use_alloc" ) ) ]
 pub( crate ) mod private
 {
   #[ cfg( all( not( feature = "use_std" ), feature = "use_alloc" ) ) ]
@@ -75,5 +76,6 @@ pub mod exposed
 pub mod prelude
 {
   pub use ::clone_dyn_meta::clone_dyn;
+  #[ cfg( any( feature = "use_std", feature = "use_alloc" ) ) ]
   pub use super::private::_clone_boxed;
 }
