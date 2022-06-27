@@ -1,5 +1,5 @@
 [package]
-name = "mod_interface"
+name = "multilayer"
 version = "0.1.3"
 edition = "2021"
 authors = [
@@ -8,9 +8,9 @@ authors = [
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/mod_interface"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/mod_interface"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/mod_interface"
+documentation = "https://docs.rs/multilayer"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/multilayer"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/multilayer"
 description = """
 Protocol of modularity unifying interface of a module and introducing layers.
 """
@@ -21,8 +21,7 @@ keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 all-features = true
 
 include = [
-  "/rust/impl/meta/mod_interface_lib.rs",
-  "/rust/impl/meta/mod_interface/front",
+  "/rust/impl/meta/mod_interface/front/multilayer_lib.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -35,24 +34,23 @@ use_std = []
 use_alloc = []
 
 [lib]
-name = "mod_interface"
-path = "rust/impl/meta/mod_interface/front/mod_interface_lib.rs"
+name = "multilayer"
+path = "rust/impl/meta/mod_interface/front/multilayer_lib.rs"
 
 [[test]]
 name = "mod_interface_test"
-path = "rust/test/meta/mod_interface_tests.rs"
+path = "rust/test/meta/multilayer_tests.rs"
 
 [[test]]
 name = "mod_interface_smoke_test"
 path = "rust/test/_integration_test/smoke_test.rs"
 
-[[example]]
-name = "mod_interface_trivial_sample"
-path = "sample/rust/mod_interface_trivial_sample/src/main.rs"
+# [[example]]
+# name = "multilayer_trivial_sample"
+# path = "sample/rust/multilayer_trivial_sample/src/main.rs"
 
 [dependencies]
-mod_interface_meta = { version = "~0.1", path = "../../rust/mod_interface_meta" }
-mod_interface_runtime = { version = "~0.1", path = "../../rust/mod_interface_runtime" }
+mod_interface = { version = "~0.1", path = "../../rust/mod_interface" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

@@ -10,15 +10,6 @@ mod private
 mod_interface!
 {
 
-//   mod mod1;
-//   mod mod2;
-//
-//   protected1 protected1;
-//   orphan orphan1;
-//   exposed exposed1;
-//   prelude prelude1;
-
-  // private mod mod_private;
   protected mod mod_protected;
   orphan mod mod_orphan;
   exposed mod mod_exposed;

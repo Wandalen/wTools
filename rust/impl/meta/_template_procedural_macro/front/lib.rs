@@ -10,7 +10,7 @@
 // #![ feature( trace_macros ) ]
 
 //!
-//! Protocol of modularity unifying interface of a module.
+//! Template.
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]

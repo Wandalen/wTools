@@ -9,11 +9,16 @@ pub( crate ) mod private
   /// Kind of element.
   ///
 
+  mod kw
+  {
+    super::syn::custom_keyword!( macro_mod );
+  }
+
   #[ derive( IsVariant, Debug, PartialEq, Eq, Clone, Copy ) ]
   pub enum ElementType
   {
     MicroModule( syn::token::Mod ),
-    MacroModule( syn::token::Macro ),
+    MacroModule( kw::macro_mod ),
   }
 
   //
@@ -64,7 +69,6 @@ pub( crate ) mod private
   {
     pub attrs : Vec< syn::Attribute >,
     pub vis : Visibility,
-    // pub mod_token : Option< syn::token::Mod >,
     pub element_type : ElementType,
     pub elements : syn::punctuated::Punctuated< syn::Ident, syn::token::Comma >,
     pub semi : Option< syn::token::Semi >,
@@ -112,10 +116,7 @@ pub( crate ) mod private
 
       let attrs = input.call( syn::Attribute::parse_outer )?;
       let vis : Visibility = input.parse()?;
-
-      // let mod_token : Option< Token![ mod ] > = input.parse()?;
       let element_type : ElementType = input.parse()?;
-
       let mut elements;
 
       let lookahead = input.lookahead1();

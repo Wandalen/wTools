@@ -90,7 +90,7 @@ pub( crate ) mod private
   // prelude mod { mod_prelude1, mod_prelude2 };
 
   ///
-  /// Protocol of modularity unifying interface of a module.
+  /// Protocol of modularity unifying interface of a module and introducing layers.
   ///
 
   pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >

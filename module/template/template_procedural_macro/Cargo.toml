@@ -12,7 +12,7 @@ documentation = "https://docs.rs/procedural_macro"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/procedural_macro"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/procedural_macro"
 description = """
-Protocol of modularity unifying interface of a module.
+Template.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
