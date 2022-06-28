@@ -13,6 +13,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 use ::wtest::*;
+#[ cfg( feature = "use_std" ) ]
 use std::env;
 
 //
