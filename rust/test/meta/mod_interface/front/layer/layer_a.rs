@@ -1,25 +1,19 @@
 
-use super::*;
-
 /// Private namespace of the module.
 mod private
 {
 }
-
-/// layer_a
-pub mod layer_a;
-/// layer_b
-pub mod layer_b;
 
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
-  #[ doc( inline ) ]
-  pub use super::layer_a::orphan::*;
-  #[ doc( inline ) ]
-  pub use super::layer_b::orphan::*;
+  /// layer_a_protected
+  pub fn layer_a_protected() -> bool
+  {
+    true
+  }
 }
 
 #[ doc( inline ) ]
@@ -30,6 +24,11 @@ pub mod orphan
 {
   #[ doc( inline ) ]
   pub use super::exposed::*;
+  /// layer_a_orphan
+  pub fn layer_a_orphan() -> bool
+  {
+    true
+  }
 }
 
 /// Exposed namespace of the module.
@@ -37,21 +36,19 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::prelude::*;
-  #[ doc( inline ) ]
-  pub use super::layer_a::exposed::*;
-  #[ doc( inline ) ]
-  pub use super::layer_b::exposed::*;
+  /// layer_a_exposed
+  pub fn layer_a_exposed() -> bool
+  {
+    true
+  }
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  #[ doc( inline ) ]
-  pub use super::layer_a::prelude::*;
-  #[ doc( inline ) ]
-  pub use super::layer_b::prelude::*;
+  /// layer_a_prelude
+  pub fn layer_a_prelude() -> bool
+  {
+    true
+  }
 }
-
-//
-
-include!( "../../only_test/layer_simple_only_test.rs" );
