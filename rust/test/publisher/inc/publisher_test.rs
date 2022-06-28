@@ -7,7 +7,10 @@ tests_impls!
 {
   fn basic_no_args()
   {
+    #[ cfg( debug_assertions ) ]
     let path = std::ffi::OsStr::new( "../../../target/debug/wpublisher" );
+    #[ cfg( not( debug_assertions ) ) ]
+    let path = std::ffi::OsStr::new( "../../../target/release/wpublisher" );
     let proc = std::process::Command::new( path ).output().unwrap();
     assert!( !proc.status.success() );
     let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
@@ -20,7 +23,10 @@ tests_impls!
 
   fn basic_with_args()
   {
+    #[ cfg( debug_assertions ) ]
     let path = std::ffi::OsStr::new( "../../../target/debug/wpublisher" );
+    #[ cfg( not( debug_assertions ) ) ]
+    let path = std::ffi::OsStr::new( "../../../target/release/wpublisher" );
     let proc = std::process::Command::new( path ).arg( ".list" ).output().unwrap();
     assert!( proc.status.success() );
     let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
