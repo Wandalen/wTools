@@ -39,7 +39,7 @@ name = "mod_interface"
 path = "rust/impl/meta/mod_interface/front/mod_interface_lib.rs"
 
 [[test]]
-name = "mod_interface_test"
+name = "mod_interface_tests"
 path = "rust/test/meta/mod_interface_tests.rs"
 
 [[test]]

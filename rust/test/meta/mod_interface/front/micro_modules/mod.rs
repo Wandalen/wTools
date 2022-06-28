@@ -1,6 +1,5 @@
 
-use super::TheModule;
-use TheModule::prelude::*;
+use super::*;
 
 /// Private namespace of the module.
 mod private
@@ -19,4 +18,4 @@ mod_interface!
 
 //
 
-include!( "../../test/non_standard_micro_modules_only_test.rs" );
+include!( "../../only_test/micro_modules_only_test.rs" );

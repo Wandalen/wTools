@@ -6,23 +6,20 @@ mod private
 {
 }
 
-pub mod mod_protected1;
-pub mod mod_orphan1;
-pub mod mod_exposed1;
-pub mod mod_prelude1;
-
-pub mod mod_protected2;
-pub mod mod_orphan2;
-pub mod mod_exposed2;
-pub mod mod_prelude2;
+/// layer_a
+pub mod layer_a;
+/// layer_b
+pub mod layer_b;
 
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
-  pub use super::mod_protected1;
-  pub use super::mod_protected2;
+  #[ doc( inline ) ]
+  pub use super::layer_a::orphan::*;
+  #[ doc( inline ) ]
+  pub use super::layer_b::orphan::*;
 }
 
 #[ doc( inline ) ]
@@ -33,8 +30,6 @@ pub mod orphan
 {
   #[ doc( inline ) ]
   pub use super::exposed::*;
-  pub use super::mod_orphan1;
-  pub use super::mod_orphan2;
 }
 
 /// Exposed namespace of the module.
@@ -42,17 +37,21 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::prelude::*;
-  pub use super::mod_exposed1;
-  pub use super::mod_exposed2;
+  #[ doc( inline ) ]
+  pub use super::layer_a::exposed::*;
+  #[ doc( inline ) ]
+  pub use super::layer_b::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  pub use super::mod_prelude1;
-  pub use super::mod_prelude2;
+  #[ doc( inline ) ]
+  pub use super::layer_a::prelude::*;
+  #[ doc( inline ) ]
+  pub use super::layer_b::prelude::*;
 }
 
 //
 
-include!( "../../only_test/micro_modules_two_only_test.rs" );
+include!( "../../onlt_test/layer_simple_only_test.rs" );

@@ -1,23 +1,19 @@
 
-// #[ allow( unused_imports ) ]
-// use super::*;
-
 /// Private namespace of the module.
 mod private
 {
 }
-
-pub mod mod_protected;
-pub mod mod_orphan;
-pub mod mod_exposed;
-pub mod mod_prelude;
 
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
-  pub use super::mod_protected;
+  /// layer_b_protected
+  pub fn layer_b_protected() -> bool
+  {
+    true
+  }
 }
 
 #[ doc( inline ) ]
@@ -28,7 +24,11 @@ pub mod orphan
 {
   #[ doc( inline ) ]
   pub use super::exposed::*;
-  pub use super::mod_orphan;
+  /// layer_b_orphan
+  pub fn layer_b_orphan() -> bool
+  {
+    true
+  }
 }
 
 /// Exposed namespace of the module.
@@ -36,15 +36,19 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::prelude::*;
-  pub use super::mod_exposed;
+  /// layer_b_exposed
+  pub fn layer_b_exposed() -> bool
+  {
+    true
+  }
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  pub use super::mod_prelude;
+  /// layer_b_prelude
+  pub fn layer_b_prelude() -> bool
+  {
+    true
+  }
 }
-
-//
-
-include!( "../../test/non_standard_micro_modules_only_test.rs" );
