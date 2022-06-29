@@ -10,7 +10,7 @@ jobs :
   # wpublisher
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/move/wpublisher/Cargo.toml'
       module_name : 'wpublisher'
