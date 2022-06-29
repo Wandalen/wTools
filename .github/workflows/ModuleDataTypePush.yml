@@ -10,7 +10,7 @@ jobs :
   # data_type
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/data_type/Cargo.toml'
       module_name : 'data_type'

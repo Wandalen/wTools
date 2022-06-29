@@ -10,7 +10,7 @@ jobs :
   # automata_tools
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/move/automata_tools/Cargo.toml'
       module_name : 'automata_tools'
@@ -19,7 +19,7 @@ jobs :
   # wautomata
 
   test_wautomata :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/alias/wautomata/Cargo.toml'
       module_name : 'wautomata'

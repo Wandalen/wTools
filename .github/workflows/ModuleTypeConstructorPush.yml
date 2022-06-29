@@ -10,7 +10,7 @@ jobs :
   # type_constructor
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/type_constructor/Cargo.toml'
       module_name : 'type_constructor'
@@ -19,7 +19,7 @@ jobs :
   # fundamental_data_type
 
   test_fundamental_data_type :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/alias/fundamental_data_type/Cargo.toml'
       module_name : 'fundamental_data_type'

@@ -10,7 +10,7 @@ jobs :
   # mod_interface
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/mod_interface/Cargo.toml'
       module_name : 'mod_interface'
@@ -19,7 +19,7 @@ jobs :
   # mod_interface_meta
 
   test_mod_interface_meta :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/mod_interface_meta/Cargo.toml'
       module_name : 'mod_interface_meta'
@@ -28,7 +28,7 @@ jobs :
   # mod_interface_runtime
 
   test_mod_interface_runtime :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/mod_interface_runtime/Cargo.toml'
       module_name : 'mod_interface_runtime'
@@ -37,7 +37,7 @@ jobs :
   # multilayer
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/alias/multilayer/Cargo.toml'
       module_name : 'multilayer'

@@ -9,7 +9,9 @@ mod private
 TheModule::mod_interface!
 {
 
+  /// layer_a
   layer layer_a;
+  /// layer_b
   layer layer_b;
 
 }

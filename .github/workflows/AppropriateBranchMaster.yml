@@ -10,7 +10,7 @@ on :
 jobs :
 
   appropriate_branch :
-    uses : Wandalen/wTools/.github/workflows/AppropriateBranch.yml@master
+    uses : Wandalen/wTools/.github/workflows/AppropriateBranch.yml@alpha
     with :
       src_branch : 'beta'
       dst_branch : '${{ github.base_ref }}'

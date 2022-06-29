@@ -10,7 +10,7 @@ jobs :
   # implements
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/implements/Cargo.toml'
       module_name : 'implements'
@@ -19,7 +19,7 @@ jobs :
   # instance_of
 
   test_instance_of :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/alias/instance_of/Cargo.toml'
       module_name : 'instance_of'

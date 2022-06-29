@@ -10,7 +10,7 @@ jobs :
   # meta_tools
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/meta_tools/Cargo.toml'
       module_name : 'meta_tools'
@@ -19,7 +19,7 @@ jobs :
   # meta_tools_min
 
   test_meta_tools_min :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/meta_tools_min/Cargo.toml'
       module_name : 'meta_tools_min'
