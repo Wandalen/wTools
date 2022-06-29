@@ -24,7 +24,9 @@ pub( crate ) mod private
 pub mod dependencies
 {
   pub use ::derive_more;
+  #[ cfg( feature = "parse_display" ) ]
   pub use ::parse_display;
+  #[ cfg( feature = "clone_dyn" ) ]
   pub use ::clone_dyn;
 }
 

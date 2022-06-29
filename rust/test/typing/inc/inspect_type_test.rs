@@ -22,7 +22,7 @@ tests_impls!
 
   //
 
-  fn inspect_type_of()
+  fn inspect_type_of_macro()
   {
 
     let exp = "sizeof( &[1, 2, 3][..] : &[i32] ) = 16".to_string();
@@ -43,5 +43,5 @@ tests_impls!
 tests_index!
 {
   inspect_to_str_type_of_test,
-  inspect_type_of,
+  inspect_type_of_macro,
 }

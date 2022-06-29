@@ -1,26 +1,96 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::exposed::*;
-  // use crate::*;
   use crate::*;
-  // use proc_macro_tools::prelude::*;
-  // use core::hash::{ Hash, Hasher };
-
-  // #[ allow( unused_imports ) ]
   use proc_macro_tools::exposed::*;
-  // #[ allow( unused_imports ) ]
-  // use proc_macro_tools::{ Result };
 
-  // use proc_macro_tools::syn::
-  // {
-  //   ext::IdentExt,
-  //   parse::discouraged::Speculative,
-  // };
-  // use core::hash::{ Hash, Hasher };
+
+// = use
+
+  // x
+  // use private::Type1;
+  // use private::{ Type1, Type2 };
+  // protected use private::Type1;
+  // prelude use private::Type1;
+
+// = ?
+
+  // x
+  // protected protected1;
+  // orphan orphan1;
+  // exposed exposed1;
+  // prelude prelude1;
+  // prelude { prelude1, prelude2 };
+
+// = macro module
+
+  // x
+  // macromod mod1;
+  // macromod mod2;
+  // macromod { mod1, mod2 };
+
+  // - narrowing
+
+  // x
+  // orphan macromod mod_orphan1;
+  // : protected -> protected
+  // : orphan -> orphan
+  // : exposed -> orphan
+  // : prelude -> orphan
+
+  // - extending
+
+  // x
+  // prelude exposed macromod mod_protected1;
+  // : protected -> exposed
+  // : orphan -> exposed
+  // : exposed -> exposed
+  // : prelude -> prelude
+
+  // x
+  // prelude protected macromod mod_exposed1;
+  // : protected -> protected
+  // : orphan -> orphan
+  // : exposed -> exposed
+  // : prelude -> prelude
+
+  // - selective
+
+  // x
+  // exposed exposed macromod mod_exposed1;
+  // : protected -> exposed
+  // : orphan -> exposed
+  // : exposed -> exposed
+  // : prelude -> exposed
+
+  // x
+  // exposed orphan macromod mod_exposed1;
+  // : protected -> orphan
+  // : orphan -> orphan
+  // : exposed -> exposed
+  // : prelude -> exposed
+
+// = micro module
+
+  // x
+  // mod mod1;
+  // mod mod2;
+  // mod { mod1, mod2 };
+
+  // +
+  // protected mod mod_protected1;
+  // orphan mod mod_orphan1;
+  // exposed mod mod_exposed1;
+  // prelude mod mod_prelude1;
+
+  // +
+  // protected mod { mod_protected1, mod_protected2 };
+  // orphan mod { mod_orphan1, mod_orphan2 };
+  // exposed mod { mod_exposed1, mod_exposed2 };
+  // prelude mod { mod_prelude1, mod_prelude2 };
 
   ///
-  /// Protocol of modularity unifying interface of a module.
+  /// Protocol of modularity unifying interface of a module and introducing layers.
   ///
 
   pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
@@ -28,8 +98,6 @@ pub( crate ) mod private
     use std::collections::HashMap; /* xxx : include into prelude of wtools */
 
     let records = syn::parse::< Records >( input )?;
-
-    //let mut mods = vec![];
     let mut immediates : Vec< proc_macro2::TokenStream > = vec![];
 
     // use inspect_type::*;
@@ -48,11 +116,10 @@ pub( crate ) mod private
     {
       record.elements.iter().for_each( | element |
       {
-        //mods.push( record.ident.clone() );
-  //      let ident = &record.ident;
-        let ident = &element.1;
+        // let ident = element.first().unwrap();
+        let ident = element;
 
-        if record.mod_token.is_some()
+        if record.element_type.is_micro_module()
         {
           immediates.push( qt!{ pub mod #ident; } );
           let fixes = fixes.get_mut( &record.vis.kind() ).unwrap();
@@ -67,6 +134,7 @@ pub( crate ) mod private
               qt!{ #record }
             ));
           }
+
         }
       });
 

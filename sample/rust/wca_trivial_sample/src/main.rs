@@ -1,18 +1,26 @@
-use wca::*;
-use wca::string::parse_request::OpType; /* qqq : this should work. if does not then fix not this line */
-
 fn main()
 {
-  let instruction = instruction::instruction_parse()
-  .instruction( ".get some v:1" )
-  .perform();
-  let properties_map = std::collections::HashMap::from([ ( "v".to_string(), OpType::Primitive( "1".to_string() ) ) ]);
-  let exp = instruction::Instruction
+  #[ cfg( feature = "use_std" ) ]
   {
-    err : None,
-    command_name : ".get".to_string(),
-    subject : "some".to_string(),
-    properties_map,
-  };
-  assert_eq!( instruction, exp );
+    use wca::*;
+    use wca::instruction::Instruction;
+
+    let help_command : Command = wca::CommandOptions::default()
+    .hint( "Get help." )
+    .long_hint( "Get help for command [command]" )
+    .phrase( ".help" )
+    .routine( &| _i : &Instruction | { println!( "this is help" ); Ok( () ) } )
+    .form();
+
+    let commands = std::collections::HashMap::from([ ( ".help".to_string(), help_command ) ]);
+
+    /* */
+
+    let ca = wca::commands_aggregator()
+    .commands().replace( commands ).end()
+    .form();
+    let got = ca.instruction_perform( ".help" );
+    /* print : this is help */
+    assert_eq!( got, Ok( () ) );
+  }
 }

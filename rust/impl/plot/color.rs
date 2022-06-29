@@ -95,18 +95,14 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::
-  {
-    prelude::*,
-    private::Rgba,
-  };
+  pub use super::prelude::*;
+  #[ cfg( feature = "use_std" ) ]
+  pub use super::private::Rgba;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  pub use super::
-  {
-    private::RgbaInterface,
-  };
+  #[ cfg( feature = "use_std" ) ]
+  pub use super::private::RgbaInterface;
 }

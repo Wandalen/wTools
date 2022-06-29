@@ -21,6 +21,6 @@ jobs :
   test_clone_dyn_meta :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
     with :
-      manifest_path : 'module/alias/clone_dyn_meta/Cargo.toml'
+      manifest_path : 'module/rust/clone_dyn_meta/Cargo.toml'
       module_name : 'clone_dyn_meta'
       commit_message : ${{ github.event.head_commit.message }}

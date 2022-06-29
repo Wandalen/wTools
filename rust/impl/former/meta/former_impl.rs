@@ -1,6 +1,4 @@
 
-// use quote::{ quote };
-use proc_macro_tools::syn::{ DeriveInput };
 use iter_tools::{ Itertools, process_results };
 use proc_macro_tools::*;
 
@@ -461,9 +459,8 @@ For specifing custom default value use attribute `default`. For example:
 
 pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
-  // let ast = parse_macro_input!( input as DeriveInput );
 
-  let ast = match syn::parse::< DeriveInput >( input )
+  let ast = match syn::parse::< syn::DeriveInput >( input )
   {
     Ok( syntax_tree ) => syntax_tree,
     Err( err ) => return Err( err ),

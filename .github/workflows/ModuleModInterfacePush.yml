@@ -33,3 +33,12 @@ jobs :
       manifest_path : 'module/rust/mod_interface_runtime/Cargo.toml'
       module_name : 'mod_interface_runtime'
       commit_message : ${{ github.event.head_commit.message }}
+
+  # multilayer
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    with :
+      manifest_path : 'module/alias/multilayer/Cargo.toml'
+      module_name : 'multilayer'
+      commit_message : ${{ github.event.head_commit.message }}
