@@ -21,7 +21,7 @@ on :
 jobs :
 
   forward :
-    uses : Wandalen/wTools/.github/workflows/AutoPr.yml@master
+    uses : Wandalen/wTools/.github/workflows/AutoPr.yml@alpha
     with :
       src_branch : '${{ github.ref_name }}'
       dst_branch : 'alpha'

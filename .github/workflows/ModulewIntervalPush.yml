@@ -10,7 +10,7 @@ jobs :
   # winterval
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/winterval/Cargo.toml'
       module_name : 'winterval'

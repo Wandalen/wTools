@@ -10,7 +10,7 @@ jobs :
   # impls_index
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/impls_index/Cargo.toml'
       module_name : 'impls_index'
@@ -19,7 +19,7 @@ jobs :
   # impls_index_meta
 
   test_impls_index_meta :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/impls_index_meta/Cargo.toml'
       module_name : 'impls_index_meta'

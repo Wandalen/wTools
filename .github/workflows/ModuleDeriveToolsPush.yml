@@ -10,7 +10,7 @@ jobs :
   # derive_tools
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/derive_tools/Cargo.toml'
       module_name : 'derive_tools'

@@ -10,7 +10,7 @@ jobs :
   # iter_tools
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/iter_tools/Cargo.toml'
       module_name : 'iter_tools'
