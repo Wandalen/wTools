@@ -25,7 +25,7 @@ pub( crate ) mod private
 
   pub trait CanBeUsedForNonStandardModInterface
   {
-    fn can_be_used_for_non_standard_mod( &self ) -> bool { false }
+    fn can_be_used_for_micro_mod( &self ) -> bool { false }
   }
 
   //
@@ -33,7 +33,7 @@ pub( crate ) mod private
   macro_rules! Vis
   {
 
-    ( $Name1 : tt, $Name2 : tt, $Kind : literal ) =>
+    ( $Name1:tt, $Name2:tt, $Kind:literal ) =>
     {
 
       #[ derive( Debug, PartialEq, Eq, Clone ) ]
@@ -79,12 +79,12 @@ pub( crate ) mod private
   macro_rules! impl_can_be_non_standard
   {
 
-    ( $Name1 : tt, $Val : literal ) =>
+    ( $Name1:tt, $Val:literal ) =>
     {
 
       impl CanBeUsedForNonStandardModInterface for $Name1
       {
-        fn can_be_used_for_non_standard_mod( &self ) -> bool
+        fn can_be_used_for_micro_mod( &self ) -> bool
         {
           $Val
         }
@@ -357,15 +357,15 @@ pub( crate ) mod private
 
   impl CanBeUsedForNonStandardModInterface for Visibility
   {
-    fn can_be_used_for_non_standard_mod( &self ) -> bool
+    fn can_be_used_for_micro_mod( &self ) -> bool
     {
       match self
       {
-        Visibility::Private( e ) => e.can_be_used_for_non_standard_mod(),
-        Visibility::Protected( e ) => e.can_be_used_for_non_standard_mod(),
-        Visibility::Orphan( e ) => e.can_be_used_for_non_standard_mod(),
-        Visibility::Exposed( e ) => e.can_be_used_for_non_standard_mod(),
-        Visibility::Prelude( e ) => e.can_be_used_for_non_standard_mod(),
+        Visibility::Private( e ) => e.can_be_used_for_micro_mod(),
+        Visibility::Protected( e ) => e.can_be_used_for_micro_mod(),
+        Visibility::Orphan( e ) => e.can_be_used_for_micro_mod(),
+        Visibility::Exposed( e ) => e.can_be_used_for_micro_mod(),
+        Visibility::Prelude( e ) => e.can_be_used_for_micro_mod(),
         Visibility::Public( _ ) => false,
         Visibility::Crate( _ ) => false,
         Visibility::Restricted( _ ) => false,
