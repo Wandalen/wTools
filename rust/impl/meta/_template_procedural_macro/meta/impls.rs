@@ -10,7 +10,7 @@ use proc_macro_tools::prelude::*;
 use proc_macro_tools::{ Result };
 
 ///
-/// Protocol of modularity unifying interface of a module.
+/// Template.
 ///
 
 pub fn impls( _input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >

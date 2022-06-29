@@ -5,9 +5,9 @@ use super::*;
 
 tests_impls!
 {
-  fn fn_name()
+  fn basic()
   {
-    // assert!( false );
+    // a_true!( true );
   }
 }
 
@@ -15,5 +15,5 @@ tests_impls!
 
 tests_index!
 {
-  fn_name,
+  basic,
 }

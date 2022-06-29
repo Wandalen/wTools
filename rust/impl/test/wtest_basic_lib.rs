@@ -59,7 +59,10 @@ pub mod exposed
   pub use ::typing_tools::{ implements };
 
   #[ doc( inline ) ]
-  pub use ::inspect_type::*;
+  pub use ::inspect_type::exposed::*;
+  // pub use ::inspect_type;
+  // qqq : xxx : add negative test that wtest_basic::exposed::exposed does not exist
+
 }
 
 #[ doc( inline ) ]

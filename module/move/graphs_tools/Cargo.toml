@@ -61,7 +61,7 @@ path = "sample/rust/graphs_tools_trivial_sample/src/main.rs"
 [dependencies]
 indexmap = "~1.8"
 wtools = { version = "~0.2", path = "../../rust/wtools", features = [ "full" ] }
-inspect_type = { version = "~0.1", path = "../../rust/inspect_type", features = [ "nightly" ]  }
+inspect_type = { version = "~0.1", path = "../../rust/inspect_type"  }
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools", features = [ "nightly" ] }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

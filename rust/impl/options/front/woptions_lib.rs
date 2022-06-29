@@ -15,9 +15,7 @@
 /// Namespace with dependencies.
 pub mod dependency
 {
-  // #[ cfg( any( feature = "runtime", feature = "woptions_runtime" ) ) ]
   pub use ::woptions_runtime as runtime;
-  // #[ cfg( any( feature = "meta", feature = "woptions_meta" ) ) ]
   pub use ::woptions_meta as meta;
 }
 
@@ -40,21 +38,15 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
-  // #[ cfg( any( feature = "runtime", feature = "woptions_runtime" ) ) ]
   pub use woptions_runtime as runtime;
-  // #[ cfg( any( feature = "meta", feature = "woptions_meta" ) ) ]
   pub use woptions_meta as meta;
-  // #[ cfg( any( feature = "meta", feature = "woptions_meta" ) ) ]
   pub use meta::Options;
-  // #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use former::derive::Former;
-  // #[ cfg( any( feature = "runtime", feature = "woptions_runtime" ) ) ]
   pub use woptions_runtime::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // #[ cfg( any( feature = "runtime", feature = "woptions_runtime" ) ) ]
   pub use woptions_runtime::prelude::*;
 }

@@ -47,6 +47,7 @@ pub( crate ) mod private
   /// Pair of syntax elements.
   ///
 
+  // zzz : use pair
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
   pub struct Pair< T1, T2 >
   ( pub T1, pub T2 )
@@ -201,6 +202,23 @@ pub( crate ) mod private
     }
   }
 
+//   impl syn::parse::Parse for AttributedIdent
+//   {
+//     fn parse( input : ParseStream< '_ > ) -> Result< Self >
+//     {
+//       Ok( Self( input.parse()?, input.parse()? ) )
+//     }
+//   }
+//
+//   impl quote::ToTokens for AttributedIdent
+//   {
+//     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+//     {
+//       self.0.to_tokens( tokens );
+//       self.1.to_tokens( tokens );
+//     }
+//   }
+
   ///
   /// Many items.
   ///
@@ -258,5 +276,4 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // // use super::private as i;
 }

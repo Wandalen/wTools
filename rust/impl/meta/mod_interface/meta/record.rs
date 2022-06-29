@@ -1,24 +1,64 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::exposed::*;
-  // use super::*;
   use crate::*;
+  use derive_tools::IsVariant;
   use proc_macro_tools::exposed::*;
 
-  // use core::hash::{ Hash, Hasher };
+  ///
+  /// Kind of element.
+  ///
 
-  // #[ allow( unused_imports ) ]
-  // use proc_macro_tools::prelude::*;
-//   #[ allow( unused_imports ) ]
-//   use proc_macro_tools::{ Result };
-//
-//   use proc_macro_tools::syn::
-//   {
-//     ext::IdentExt,
-//     parse::discouraged::Speculative,
-//   };
-//   use core::hash::{ Hash, Hasher };
+  mod kw
+  {
+    super::syn::custom_keyword!( layer );
+  }
+
+  #[ derive( IsVariant, Debug, PartialEq, Eq, Clone, Copy ) ]
+  pub enum ElementType
+  {
+    MicroModule( syn::token::Mod ),
+    MacroModule( kw::layer ),
+  }
+
+  //
+
+  impl syn::parse::Parse for ElementType
+  {
+
+    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    {
+      let element_type;
+      let lookahead = input.lookahead1();
+
+      if lookahead.peek( syn::token::Mod )
+      {
+        element_type = ElementType::MicroModule( input.parse()? );
+      }
+      else
+      {
+        element_type = ElementType::MacroModule( input.parse()? );
+      }
+
+      Ok( element_type )
+    }
+
+  }
+
+  //
+
+  impl quote::ToTokens for ElementType
+  {
+    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+    {
+      use ElementType::*;
+      match self
+      {
+        MicroModule( e ) => e.to_tokens( tokens ),
+        MacroModule( e ) => e.to_tokens( tokens ),
+      }
+    }
+  }
 
   ///
   /// Record.
@@ -29,15 +69,13 @@ pub( crate ) mod private
   {
     pub attrs : Vec< syn::Attribute >,
     pub vis : Visibility,
-    pub mod_token : Option< syn::token::Mod >,
-    pub elements : Many< AttributedIdent >,
-    // pub ident : syn::Ident,
-    // pub content : Option< ( syn::token::Brace, Vec< Record > ) >,
+    pub element_type : ElementType,
+    pub elements : syn::punctuated::Punctuated< syn::Ident, syn::token::Comma >,
     pub semi : Option< syn::token::Semi >,
   }
 
   //
-//
+
 //   pub fn attrs_parse_inner_single( input : ParseStream< '_ > ) -> Result< syn::Attribute >
 //   {
 //     let input2;
@@ -53,7 +91,12 @@ pub( crate ) mod private
 //
 //   //
 //
-//   pub fn attrs_parse_inner_as_much_as_possible( input : ParseStream< '_ >, attrs : &mut Vec< syn::Attribute > ) -> Result< () >
+//   pub fn attrs_parse_inner_as_much_as_possible
+//   (
+//     input : ParseStream< '_ >,
+//     attrs : &mut Vec< syn::Attribute >,
+//   )
+//   -> Result< () >
 //   {
 //     while input.peek( Token![ # ] ) && input.peek2( Token![ ! ] )
 //     {
@@ -67,84 +110,123 @@ pub( crate ) mod private
 
   impl syn::parse::Parse for Record
   {
+
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
 
       let attrs = input.call( syn::Attribute::parse_outer )?;
       let vis : Visibility = input.parse()?;
+      let element_type : ElementType = input.parse()?;
+      let mut elements;
 
-      // let mod_token : Token![ mod ] = input.parse()?;
-
-      let mod_token : Option< Token![ mod ] > = input.parse()?;
-
-  //     if lookahead.peek( syn::token::Brace )
-  //     {
-  //       let input2;
-  //       let brace_token = syn::braced!( input2 in input );
-  //       // attrs_parse_inner_as_much_as_possible( &input2, &mut attrs )?;
-  //       // xxx : test with attributes
-  //
-  //       let mut elements = Vec::new();
-  //       while !input2.is_empty()
-  //       {
-  //         elements.push( input2.parse()? );
-  //       }
-  //
-  //       Ok( Record
-  //       {
-  //         attrs,
-  //         vis,
-  //         mod_token,
-  //         elements,
-  //         // ident,
-  //         // content : Some( ( brace_token, items ) ),
-  //         semi : None,
-  //       })
-  //     }
-
-      let ident : syn::Ident = input.parse()?;
       let lookahead = input.lookahead1();
-      if lookahead.peek( Token![ ; ] )
+      if lookahead.peek( syn::token::Brace )
       {
-        Ok( Record
-        {
-          attrs,
-          vis,
-          mod_token,
-          elements : vec!( ident.into() ).into(),
-          // content : None,
-          semi : Some( input.parse()? ),
-        })
+        let input2;
+        let _brace_token = syn::braced!( input2 in input );
+        elements = syn::punctuated::Punctuated::< _, _ >::parse_terminated( &input2 )?;
       }
-  //     else if lookahead.peek( syn::token::Brace )
-  //     {
-  //       let input2;
-  //       let brace_token = syn::braced!( input2 in input );
-  //       attrs_parse_inner_as_much_as_possible( &input2, &mut attrs )?;
-  //
-  //       let mut items = Vec::new();
-  //       while !input2.is_empty()
-  //       {
-  //         items.push( input2.parse()? );
-  //       }
-  //
-  //       Ok( Record
-  //       {
-  //         attrs,
-  //         vis,
-  //         mod_token,
-  //         ident,
-  //         content : Some( ( brace_token, items ) ),
-  //         semi : None,
-  //       })
-  //     }
       else
       {
-        Err( lookahead.error() )
+        let ident : syn::Ident = input.parse()?;
+        elements = syn::punctuated::Punctuated::new();
+        elements.push( ident );
       }
 
+      let lookahead = input.lookahead1();
+      if !lookahead.peek( Token![ ; ] )
+      {
+        return Err( lookahead.error() );
+      }
+
+      let semi = Some( input.parse()? );
+      return Ok( Record
+      {
+        attrs,
+        vis,
+        element_type,
+        elements,
+        semi,
+      })
+
     }
+
   }
+
+//   impl syn::parse::Parse for Record
+//   {
+//     fn parse( input : ParseStream< '_ > ) -> Result< Self >
+//     {
+//
+//       let attrs = input.call( syn::Attribute::parse_outer )?;
+//       let vis : Visibility = input.parse()?;
+//       let mod_token : Option< Token![ mod ] > = input.parse()?;
+//
+//       let lookahead = input.lookahead1();
+//       if lookahead.peek( syn::token::Brace )
+//       {
+//         let input2;
+//         let _brace_token = syn::braced!( input2 in input );
+//         let elements = syn::punctuated::Punctuated::< _, _ >::parse_terminated( &input2 )?;
+//
+//         let semi = Some( input.parse()? );
+//
+//         return Ok( Record
+//         {
+//           attrs,
+//           vis,
+//           mod_token,
+//           elements,
+//           semi,
+//         })
+//       }
+//
+//       let ident : syn::Ident = input.parse()?;
+//       let lookahead = input.lookahead1();
+//       if lookahead.peek( Token![ ; ] )
+//       {
+//         let mut elements = syn::punctuated::Punctuated::new();
+//         elements.push( ident );
+//
+//         Ok( Record
+//         {
+//           attrs,
+//           vis,
+//           mod_token,
+//           elements,
+//           semi : Some( input.parse()? ),
+//         })
+//       }
+// //       else if lookahead.peek( syn::token::Brace )
+// //       {
+// //         let input2;
+// //         let brace_token = syn::braced!( input2 in input );
+// //         attrs_parse_inner_as_much_as_possible( &input2, &mut attrs )?;
+// //
+// //         let mut items = Vec::new();
+// //         while !input2.is_empty()
+// //         {
+// //           items.push( input2.parse()? );
+// //         }
+// //
+// //         Ok( Record
+// //         {
+// //           attrs,
+// //           vis,
+// //           mod_token,
+// //           ident,
+// //           content : Some( ( brace_token, items ) ),
+// //           semi : None,
+// //         })
+// //       }
+//       else
+//       {
+//         Err( lookahead.error() )
+//       }
+//
+//     }
+//
+//   }
 
   //
 
@@ -155,10 +237,8 @@ pub( crate ) mod private
       use proc_macro_tools::quote::TokenStreamExt;
       tokens.append_all( &self.attrs );
       self.vis.to_tokens( tokens );
-      self.mod_token.to_tokens( tokens );
-      // self.ident.to_tokens( tokens );
-      // self.content.to_tokens( tokens );
-      self.elements.to_tokens( tokens ); // xxx : problem
+      self.element_type.to_tokens( tokens );
+      self.elements.to_tokens( tokens );
       self.semi.to_tokens( tokens );
     }
   }

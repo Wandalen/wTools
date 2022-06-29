@@ -35,7 +35,7 @@ pub( crate ) mod private
   ///
   /// ### Sample
   ///
-  /// ``` rust
+  /// ``` should_panic
   /// use diagnostics_tools::prelude::*;
   /// a_true!( 1 == 2, "something wrong" );
   /// ```
@@ -89,7 +89,7 @@ pub( crate ) mod private
   ///
   /// ### Sample
   ///
-  /// ``` rust
+  /// ``` should_panic
   /// use diagnostics_tools::prelude::*;
   /// a_dbg_true!( 1 == 2, "something wrong" );
   /// ```

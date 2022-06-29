@@ -86,6 +86,8 @@ mod_interface_meta_local = { version = "*", path = "../../rust/mod_interface_met
 mod_interface_meta_published = { version = "*", package = "mod_interface_meta" }
 mod_interface_runtime_local = { version = "*", path = "../../rust/mod_interface_runtime", package = "mod_interface_runtime" }
 mod_interface_runtime_published = { version = "*", package = "mod_interface_runtime" }
+multilayer_local = { version = "*", path = "../../alias/multilayer", package = "multilayer" }
+multilayer_published = { version = "*", package = "multilayer" }
 woptions_local = { version = "*", path = "../../rust/woptions", package = "woptions" }
 woptions_published = { version = "*", package = "woptions" }
 woptions_meta_local = { version = "*", path = "../../rust/woptions_meta", package = "woptions_meta" }
