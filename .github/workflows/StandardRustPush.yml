@@ -49,21 +49,22 @@ jobs :
         os : [ ubuntu-latest ]
     runs-on : ${{ matrix.os }}
     steps :
-    - name : Install latest stable toolchain
-      uses : actions-rs/toolchain@v1
-      with :
-        toolchain : stable
-        override : true
-    - uses : actions/checkout@v2
-    - name : Install cargo-hack
-      run : cargo install cargo-hack
-    - name : Run all tests
-      run : cargo test --manifest-path ${{ inputs.manifest_path }}
-    - name : Run all tests with each feature
-      run : cargo hack test --manifest-path ${{ inputs.manifest_path }} --each-feature
+      - name : Install latest stable toolchain
+        uses : Wandalen/wretry.action@alpha
+        with :
+          action : actions-rs/toolchain@v1
+          with : |
+            toolchain : stable
+            override : true
+          attempt_limit : 3
+          attempt_delay: 10000
+      - uses : actions/checkout@v2
+      - name : Run tests with default features
+        run : cargo test --manifest-path ${{ inputs.manifest_path }}
+      - name : Run tests without default features
+        run : cargo test --manifest-path ${{ inputs.manifest_path }} --no-default-features
 
   full :
-
     if : |
       startsWith( inputs.commit_message, 'Merge' )
       || ( contains( inputs.commit_message, '!test' ) && !contains( inputs.commit_message, '!only_js' ) )
@@ -76,28 +77,29 @@ jobs :
         os : [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on : ${{ matrix.os }}
     steps :
-    - name : Install latest stable toolchain
-      uses : actions-rs/toolchain@v1
-      with :
-        toolchain : stable
-        override : true
-    - uses : actions/checkout@v2
-    - name : Run all tests without features
-      run : cargo test --manifest-path ${{ inputs.manifest_path }} --release
+      - name : Install latest stable toolchain
+        uses : Wandalen/wretry.action@alpha
+        with :
+          action : actions-rs/toolchain@v1
+          with : |
+            toolchain : stable
+            override : true
+          attempt_limit : 3
+          attempt_delay: 10000
+      - uses : actions/checkout@v2
+      - name : Run tests in release mode
+        run : cargo test --manifest-path ${{ inputs.manifest_path }} --release
+      - name : Install latest nightly toolchain
+        uses : Wandalen/wretry.action@alpha
+        with :
+          action : actions-rs/toolchain@v1
+          with : |
+            toolchain : nightly
+            override : true
+          attempt_limit : 3
+          attempt_delay: 10000
+      - name : Install cargo-hack
+        run : cargo install cargo-hack
+      - name : Run tests with each feature
+        run : cargo hack test --manifest-path ${{ inputs.manifest_path }} --each-feature
 
-    - name : Install latest nightly toolchain
-      uses : actions-rs/toolchain@v1
-      with :
-        toolchain : nightly
-        override : true
-    - uses : actions/checkout@v2
-    - name : Install cargo-hack
-      run : cargo install cargo-hack
-    - name : Run all tests with default features
-      run : cargo test --manifest-path ${{ inputs.manifest_path }}
-    - name : Run all tests without default features
-      run : cargo test --manifest-path ${{ inputs.manifest_path }} --no-default-features
-    - name : Run all tests with all features
-      run : cargo test --manifest-path ${{ inputs.manifest_path }} --all-features
-    - name : Run all tests with each feature
-      run : cargo hack test --manifest-path ${{ inputs.manifest_path }} --each-feature

@@ -10,7 +10,7 @@ jobs :
   # clone_dyn
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/clone_dyn/Cargo.toml'
       module_name : 'clone_dyn'
@@ -19,7 +19,7 @@ jobs :
   # clone_dyn_meta
 
   test_clone_dyn_meta :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/clone_dyn_meta/Cargo.toml'
       module_name : 'clone_dyn_meta'

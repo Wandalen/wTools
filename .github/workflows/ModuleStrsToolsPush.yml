@@ -10,7 +10,7 @@ jobs :
   # strs_tools
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/strs_tools/Cargo.toml'
       module_name : 'strs_tools'
@@ -19,7 +19,7 @@ jobs :
   # wstring_tools
 
   test_wstring_tools :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/alias/wstring_tools/Cargo.toml'
       module_name : 'wstring_tools'

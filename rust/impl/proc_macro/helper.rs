@@ -26,13 +26,13 @@ pub( crate ) mod private
   // #[ macro_use ]
   macro_rules! _tree_print
   {
-    ( $src : expr ) =>
+    ( $src:expr ) =>
     {{
       let result = $crate::tree_export_str!( $src );
       println!( "{}", result );
       result
     }};
-    ( $( $src : expr ),+ $(,)? ) =>
+    ( $( $src:expr ),+ $(,)? ) =>
     {{
       $( $crate::tree_print!( $src ) );+
     }};
@@ -46,7 +46,7 @@ pub( crate ) mod private
   // #[ macro_use ]
   macro_rules! _tree_export_str
   {
-    ( $src : expr ) =>
+    ( $src:expr ) =>
     {{
       let src2 = &$src;
       format!( "{} : {} :\n{:#?}", stringify!( $src ), $crate::qt!{ #src2 }, $src )
@@ -65,29 +65,26 @@ pub( crate ) mod private
   ///
 
   #[ macro_export ]
-  // #[ macro_use ]
   macro_rules! _syn_err
   {
 
-    ( $msg : expr ) =>
+    ( $msg:expr $(,)? ) =>
     {
       syn::Error::new( proc_macro2::Span::call_site(), $msg )
     };
-    ( _, $msg : expr ) =>
+    ( _, $msg:expr $(,)? ) =>
     {
       syn::Error::new( proc_macro2::Span::call_site(), $msg )
     };
-    ( $span : expr, $msg : expr ) =>
+    ( $span:expr, $msg:expr $(,)? ) =>
     {
-      // syn::Error::new( ( $span ).span(), $msg )
       syn::Error::new( syn::spanned::Spanned::span( &( $span ) ), $msg )
     };
-    ( $span : expr, $msg : expr, $( $arg : expr ),+ ) =>
+    ( $span:expr, $msg:expr, $( $arg:expr ),+ $(,)? ) =>
     {
-      // syn::Error::new( ( $span ).span(), format!( $msg, $( $arg ),+ ) )
       syn::Error::new( syn::spanned::Spanned::span( &( $span ) ), format!( $msg, $( $arg ),+ ) )
     };
-    ( _, $msg : expr, $( $arg : expr ),+ ) =>
+    ( _, $msg:expr, $( $arg:expr ),+ $(,)? ) =>
     {
       syn::Error::new( proc_macro2::Span::call_site(), format!( $msg, $( $arg ),+ ) )
     };

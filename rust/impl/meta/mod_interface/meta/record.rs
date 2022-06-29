@@ -5,20 +5,18 @@ pub( crate ) mod private
   use derive_tools::IsVariant;
   use proc_macro_tools::exposed::*;
 
-  ///
-  /// Kind of element.
-  ///
-
-  mod kw
+  /// Custom keywords.
+  pub mod kw
   {
     super::syn::custom_keyword!( layer );
   }
 
+  /// Kind of element.
   #[ derive( IsVariant, Debug, PartialEq, Eq, Clone, Copy ) ]
   pub enum ElementType
   {
     MicroModule( syn::token::Mod ),
-    MacroModule( kw::layer ),
+    Layer( kw::layer ),
   }
 
   //
@@ -37,7 +35,7 @@ pub( crate ) mod private
       }
       else
       {
-        element_type = ElementType::MacroModule( input.parse()? );
+        element_type = ElementType::Layer( input.parse()? );
       }
 
       Ok( element_type )
@@ -55,7 +53,7 @@ pub( crate ) mod private
       match self
       {
         MicroModule( e ) => e.to_tokens( tokens ),
-        MacroModule( e ) => e.to_tokens( tokens ),
+        Layer( e ) => e.to_tokens( tokens ),
       }
     }
   }
@@ -304,6 +302,7 @@ pub mod exposed
   {
     Record,
     Records,
+    ElementType,
   };
 }
 

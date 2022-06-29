@@ -10,7 +10,7 @@ jobs :
   # for_each
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@master
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/for_each/Cargo.toml'
       module_name : 'for_each'

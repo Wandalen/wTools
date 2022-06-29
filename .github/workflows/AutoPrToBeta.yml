@@ -8,7 +8,7 @@ on :
 jobs :
 
   forward :
-    uses : Wandalen/wTools/.github/workflows/AutoPr.yml@master
+    uses : Wandalen/wTools/.github/workflows/AutoPr.yml@alpha
     with :
       src_branch : 'alpha'
       dst_branch : 'beta'
