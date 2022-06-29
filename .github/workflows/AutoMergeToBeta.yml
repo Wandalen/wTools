@@ -1,0 +1,162 @@
+
+name : auto_merge_to_beta
+
+on :
+  push :
+    branches : [ alpha ]
+
+jobs :
+  wait_for_modules :
+    if : ${{ startsWith( github.ref, 'refs/heads' ) }}
+    runs-on : ubuntu-latest
+    steps :
+      - name : Waiting ...
+        uses : willgarcia/workflow-wait-action@main
+        with :
+          timeout : 21000
+          interval : 60
+          initial_delay : 600
+          workflows : |
+            automata_tools
+            clone_dyn
+            data_type
+            derive_tools
+            diagnostics_tools
+            error_tools
+            for_each
+            former
+            fs_tools
+            graphs_tools
+            implements
+            impls_index
+            inspect_type
+            is_slice
+            iter_tools
+            mem_tools
+            meta_tools
+            mod_interface
+            proc_macro_tools
+            strs_tools
+            test_tools
+            time_tools
+            type_constructor
+            typing_tools
+            wca
+            winterval
+            wlang
+            woptions
+            wplot
+            wpublisher
+            wtestbasic
+            wtest
+            wtools
+
+  check :
+    needs : wait_for_modules
+    strategy :
+      matrix :
+        modules :
+          - ModuleAutomataToolsPush
+          - ModuleCloneDynPush
+          - ModuleDataTypePush
+          - ModuleDeriveToolsPush
+          - ModuleDiagnosticsToolsPush
+          - ModuleErrorToolsPush
+          - ModuleForEachPush
+          - ModuleFormerPush
+          - ModuleFsToolsPush
+          - ModuleGraphsToolsPush
+          - ModuleImplementsPush
+          - ModuleImplsIndexPush
+          - ModuleInspectTypePush
+          - ModuleIsSlicePush
+          - ModuleIterToolsPush
+          - ModuleMemToolsPush
+          - ModuleMetaToolsPush
+          - ModuleModInterfacePush
+          - ModuleProcMacroToolsPush
+          - ModuleStrsToolsPush
+          - ModuleTestToolsPush
+          - ModuleTimeToolsPush
+          - ModuleTypeConstructorPush
+          - ModuleTypingToolsPush
+          - ModulewCaPush
+          - ModulewIntervalPush
+          - ModulewLangPush
+          - ModulewOptionsPush
+          - ModulewPlotPush
+          - ModulewPublisherPush
+          - ModulewTestBasicPush
+          - ModulewTestPush
+          - ModulewToolsPush
+    outputs :
+      has_succeeded_runs : ${{ steps.success.outputs.success }}
+    runs-on : ubuntu-latest
+    steps :
+      - name : Check workflow run status
+        id : check_ci
+        uses :  LASER-Yi/workflow-status@v0.1.0
+        with :
+          token : ${{ secrets.GITHUB_TOKEN }}
+          workflow : ${{ matrix.modules }}.yml
+          event : push
+          branch : alpha
+      - name : Check failure conclusion
+        if : ${{ steps.check_ci.outputs.conclusion == 'failure' }}
+        run : exit 1
+      - name : Check cancelled conclusion
+        if : ${{ steps.check_ci.outputs.conclusion == 'cancelled' }}
+        run : exit 1
+      - name : Check success conclusion and setup output
+        if : ${{ steps.check_ci.outputs.conclusion == 'success' }}
+        id : success
+        run: echo "::set-output name=success::true"
+
+  merge :
+    needs : check
+    if : ${{ success() && needs.check.outputs.has_succeeded_runs == 'true' }}
+    runs-on : ubuntu-latest
+    steps :
+      - name : Find PR number for current commit
+        uses : jwalton/gh-find-current-pr@v1
+        id : find
+        with :
+          state: open
+      - name: Automerge passed pull request
+        if : ${{ success() }}
+        uses: juliangruber/merge-pull-request-action@v1
+        with:
+          github-token: ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
+          number: ${{ steps.find.outputs.number }}
+          method: merge
+
+  convert_to_draft :
+    needs : check
+    if : |
+      failure()
+      || needs.check.outputs.has_succeeded_runs != 'true'
+    runs-on : ubuntu-latest
+    steps :
+      - name : Find PR number for current commit
+        uses : jwalton/gh-find-current-pr@v1
+        id : find
+        with :
+          state: open
+      - name : Get PR node id
+        id : node_id
+        run : |
+          node_id=$(curl --request GET \
+          --url 'https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.find.outputs.number }}' \
+          --header 'Accept: application/vnd.github.v3+json' \
+          --header 'Authorization: token ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}' \
+          --header 'Content-Type: application/json' \
+          | jq -r .node_id)
+          echo $node_id
+          echo "::set-output name=id::$node_id"
+      - name: Convert to draft
+        if : ${{ success() }}
+        uses : voiceflow/draft-pr@latest
+        with :
+          token : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
+          pull-request-node-id : ${{ steps.node_id.outputs.id }}
+
