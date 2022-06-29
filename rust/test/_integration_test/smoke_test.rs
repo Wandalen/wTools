@@ -1,3 +1,4 @@
+#![ allow( dead_code ) ]
 
 //
 
@@ -208,7 +209,8 @@ fn smoke_test_run( test_name : &'static str, local : bool )
 
 //
 
-// qqq : make it working
+// qqq : make it working /* aaa : Dmytro : done */
+#[ cfg( feature = "default" ) ]
 #[ test ]
 fn local_smoke_test()
 {
@@ -229,6 +231,7 @@ fn local_smoke_test()
 
 //
 
+#[ cfg( feature = "default" ) ]
 #[ test ]
 fn published_smoke_test()
 {
