@@ -126,7 +126,13 @@ pub( crate ) mod private
           MicroModule( _ ) =>
           {
 
-            immediates.push( qt!{ pub mod #ident; } );
+            let attrs = &record.attrs;
+            immediates.push( qt!
+            {
+              #( #attrs )*
+              pub mod #ident;
+            });
+
             let fixes_list = fixes_map.get_mut( &record.vis.kind() ).unwrap();
             fixes_list.push( qt!{ pub use super::#ident; } );
 
@@ -137,7 +143,7 @@ pub( crate ) mod private
               (
                 record,
                 "To include a non-standard module use either [ protected, orphan, exposed, prelude ] visibility:\n  {}",
-                qt!{ #record }
+                qt!{ #record },
               ));
             }
 
@@ -145,27 +151,30 @@ pub( crate ) mod private
           Layer( _ ) =>
           {
 
-            immediates.push( qt!{ pub mod #ident; } );
+            let attrs = &record.attrs;
+            immediates.push( qt!
+            {
+              #( #attrs )*
+              pub mod #ident;
+            });
 
-  // #[ derive( Debug, PartialEq, Eq, Clone ) ]
-  // pub enum Visibility
-  // {
-  //   Private( VisPrivate ),
-  //   Protected( VisProtected ),
-  //   Orphan( VisOrphan ),
-  //   Exposed( VisExposed ),
-  //   Prelude( VisPrelude ),
-  //   Public( syn::VisPublic ),
-  //   Crate( syn::VisCrate ),
-  //   Restricted( syn::VisRestricted ),
-  //   Inherited,
-  // }
+            fixes_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
+            {
+              #[ doc( inline ) ]
+              pub use super::#ident::orphan::*;
+            });
 
-            // fixes_map.get_mut( &Visibility::Protected( Protected::new() ) ).unwrap().push( qt!
-            // {
-            //   #[ doc( inline ) ]
-            //   pub use super::#ident::*;
-            // });
+            fixes_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
+            {
+              #[ doc( inline ) ]
+              pub use super::#ident::exposed::*;
+            });
+
+            fixes_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
+            {
+              #[ doc( inline ) ]
+              pub use super::#ident::prelude::*;
+            });
 
           },
         }
