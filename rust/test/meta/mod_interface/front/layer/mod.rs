@@ -6,7 +6,7 @@ mod private
 {
 }
 
-mod_interface!
+TheModule::mod_interface!
 {
 
   layer layer_a;

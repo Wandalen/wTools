@@ -11,14 +11,14 @@ pub( crate ) mod private
 
   mod kw
   {
-    super::syn::custom_keyword!( macro_mod );
+    super::syn::custom_keyword!( layer );
   }
 
   #[ derive( IsVariant, Debug, PartialEq, Eq, Clone, Copy ) ]
   pub enum ElementType
   {
     MicroModule( syn::token::Mod ),
-    MacroModule( kw::macro_mod ),
+    MacroModule( kw::layer ),
   }
 
   //
