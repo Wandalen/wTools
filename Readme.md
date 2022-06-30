@@ -6,6 +6,7 @@
 
 <!-- {{# generate.main_header{} #}} -->
 
+[![alpha](https://img.shields.io/github/workflow/status/Wandalen/wTools/auto_merge_to_beta/alpha?label=alpha&logo=github)](https://github.com/Wandalen/wTools/actions/workflows/AutoMergeToBeta.yml)
 [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fwtools_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20wtools_trivial_sample/https://github.com/Wandalen/wTools)
 [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/wtools)
@@ -15,6 +16,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 <!-- {{# generate.modules_index{} #}} -->
 
 ### Rust tools
+
 
 | Module | Stability | Master | Alpha | Docs | Sample |
 |--------|-----------|--------|-------|:----:|:------:|
