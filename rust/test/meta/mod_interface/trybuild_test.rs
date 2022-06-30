@@ -14,6 +14,9 @@ tests_impls!
     let t = trybuild::TestCases::new();
 
     t.pass( "../../../rust/test/meta/mod_interface/front/layer/trybuild.rs" );
+    t.pass( "../../../rust/test/meta/mod_interface/front/micro_modules/trybuild.rs" );
+    t.pass( "../../../rust/test/meta/mod_interface/front/micro_modules_two/trybuild.rs" );
+    // t.pass( "../../../rust/test/meta/mod_interface/front/micro_modules_two_joined/trybuild.rs" );
 
     // t.compile_fail( "../../../rust/test/former/all/wtools_vector_without_parameter.rs" );
   }
