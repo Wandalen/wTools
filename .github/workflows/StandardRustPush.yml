@@ -50,7 +50,7 @@ jobs :
     runs-on : ${{ matrix.os }}
     steps :
       - name : Install latest stable toolchain
-        uses : Wandalen/wretry.action@alpha
+        uses : Wandalen/wretry.action@master
         with :
           action : actions-rs/toolchain@v1
           with : |
@@ -78,7 +78,7 @@ jobs :
     runs-on : ${{ matrix.os }}
     steps :
       - name : Install latest stable toolchain
-        uses : Wandalen/wretry.action@alpha
+        uses : Wandalen/wretry.action@master
         with :
           action : actions-rs/toolchain@v1
           with : |
@@ -90,7 +90,7 @@ jobs :
       - name : Run tests in release mode
         run : cargo test --manifest-path ${{ inputs.manifest_path }} --release
       - name : Install latest nightly toolchain
-        uses : Wandalen/wretry.action@alpha
+        uses : Wandalen/wretry.action@master
         with :
           action : actions-rs/toolchain@v1
           with : |
