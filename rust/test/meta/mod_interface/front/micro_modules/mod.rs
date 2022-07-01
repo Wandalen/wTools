@@ -9,9 +9,13 @@ mod private
 TheModule::mod_interface!
 {
 
+  /// mod_protected
   protected mod mod_protected;
+  /// mod_orphan
   orphan mod mod_orphan;
+  /// mod_exposed
   exposed mod mod_exposed;
+  /// mod_prelude
   prelude mod mod_prelude;
 
 }
