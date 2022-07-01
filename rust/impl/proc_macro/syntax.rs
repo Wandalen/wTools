@@ -4,11 +4,15 @@ pub( crate ) mod private
   use crate::exposed::*;
   use type_constructor::prelude::*;
 
+  //
+
   types!
   {
 
     ///
     /// Attribute which is inner.
+    ///
+    /// For example: `#![ warn( missing_docs ) ]`.
     ///
 
     #[ derive( Debug, PartialEq, Eq, Clone ) ]
@@ -43,6 +47,50 @@ pub( crate ) mod private
     }
   }
 
+  //
+
+  types!
+  {
+
+    ///
+    /// Attribute which is outer.
+    ///
+    /// For example: `#[ derive( Copy ) ]`.
+    ///
+
+    #[ derive( Debug, PartialEq, Eq, Clone ) ]
+    pub single AttributeOuter : syn::Attribute;
+
+  }
+
+  impl syn::parse::Parse
+  for AttributeOuter
+  {
+    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    {
+      let input2;
+      // println!( "AttributeOuter::parse::a" );
+      Ok( Self( syn::Attribute
+      {
+        pound_token : input.parse()?,
+        style : syn::AttrStyle::Outer,
+        bracket_token : bracketed!( input2 in input ),
+        path : input2.call( syn::Path::parse_mod_style )?,
+        tokens : input2.parse()?,
+      }))
+      // Ok( ( input.call( syn::Attribute::parse_inner )? ).into() )
+    }
+  }
+
+  impl quote::ToTokens
+  for AttributeOuter
+  {
+    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+    {
+      self.0.to_tokens( tokens );
+    }
+  }
+
   ///
   /// Pair of syntax elements.
   ///
@@ -55,6 +103,18 @@ pub( crate ) mod private
     T1 : syn::parse::Parse + quote::ToTokens,
     T2 : syn::parse::Parse + quote::ToTokens,
   ;
+
+  impl< T1, T2 > Pair< T1, T2 >
+  where
+    T1 : syn::parse::Parse + quote::ToTokens,
+    T2 : syn::parse::Parse + quote::ToTokens,
+  {
+    /// Constructor.
+    pub fn new( src1 : T1, src2 : T2 ) -> Self
+    {
+      Self( src1, src2 )
+    }
+  }
 
   impl< T1, T2 > syn::parse::Parse for Pair< T1, T2 >
   where
@@ -115,20 +175,49 @@ pub( crate ) mod private
     }
   }
 
+  // xxx : qqq : cover by test
   impl syn::parse::Parse
   for Many< AttributeInner >
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
       let mut result = Self::new();
-      while input.peek( Token![ # ] )
+      loop
       {
+        let lookahead = input.lookahead1();
+        if !lookahead.peek( Token![ # ] )
+        {
+          break;
+        }
         result.0.push( input.parse()? );
       }
       Ok( result )
     }
   }
 
+  // xxx : qqq : cover by test
+  impl syn::parse::Parse
+  for Many< AttributeOuter >
+  {
+    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    {
+      // println!( "Many< AttributeOuter >::parse::a" );
+      let mut result = Self::new();
+      loop
+      {
+        let lookahead = input.lookahead1();
+        if !lookahead.peek( Token![ # ] )
+        {
+          break;
+        }
+        // println!( "Many< AttributeOuter >::parse::b" );
+        result.0.push( input.parse()? );
+      }
+      Ok( result )
+    }
+  }
+
+  // xxx : qqq : cover by test
   impl syn::parse::Parse
   for Many< syn::Item >
   {
@@ -146,7 +235,26 @@ pub( crate ) mod private
     }
   }
 
-  // xxx : macro?
+//   impl< T > syn::parse::Parse
+//   for Many< T >
+//   where
+//     T : syn::parse::Parse,
+//   {
+//     fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+//     {
+//
+//       let mut items = vec![];
+//       while !input.is_empty()
+//       {
+//         let item : T = input.parse()?;
+//         items.push( item );
+//       }
+//
+//       Ok( Self( items ) )
+//     }
+//   }
+
+  // zzz : macro?
   impl< T > core::ops::Deref
   for Many< T >
   where
@@ -159,7 +267,7 @@ pub( crate ) mod private
     }
   }
 
-  // xxx : macro?
+  // zzz : macro?
   impl< T > From< Vec< T > > for Many< T >
   where
     T : quote::ToTokens,
@@ -223,6 +331,7 @@ pub( crate ) mod private
   /// Many items.
   ///
 
+  // xxx : use Many instead
   // #[ allow( dead_code ) ]
   #[ derive( Debug ) ]
   pub struct Items
@@ -264,6 +373,7 @@ pub mod exposed
   pub use super::private::
   {
     AttributeInner,
+    AttributeOuter,
     Pair,
     Many,
     AttributedIdent,

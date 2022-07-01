@@ -9,5 +9,5 @@ include!( "../_conditional/local_module.rs" );
 
 mod mod_interface;
 
-#[ path = "./mod_interface/trybuild_test.rs" ]
-mod trybuild_test;
+// #[ path = "./mod_interface/trybuild_test.rs" ]
+// mod trybuild_test;

@@ -23,7 +23,7 @@ pub( crate ) mod private
   /// Trait answering question can the visibility be used for non-standard module.
   ///
 
-  pub trait CanBeUsedForNonStandardModInterface
+  pub trait CanBeUsedForMicroModInterface
   {
     fn can_be_used_for_micro_mod( &self ) -> bool { false }
   }
@@ -82,7 +82,7 @@ pub( crate ) mod private
     ( $Name1:tt, $Val:literal ) =>
     {
 
-      impl CanBeUsedForNonStandardModInterface for $Name1
+      impl CanBeUsedForMicroModInterface for $Name1
       {
         fn can_be_used_for_micro_mod( &self ) -> bool
         {
@@ -355,7 +355,7 @@ pub( crate ) mod private
     }
   }
 
-  impl CanBeUsedForNonStandardModInterface for Visibility
+  impl CanBeUsedForMicroModInterface for Visibility
   {
     fn can_be_used_for_micro_mod( &self ) -> bool
     {
@@ -399,7 +399,7 @@ pub mod exposed
   pub use super::private::
   {
     kw,
-    CanBeUsedForNonStandardModInterface,
+    CanBeUsedForMicroModInterface,
     VisPrivate,
     VisProtected,
     VisOrphan,
