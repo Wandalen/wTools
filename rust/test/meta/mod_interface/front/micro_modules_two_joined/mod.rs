@@ -9,6 +9,7 @@ mod private
 TheModule::mod_interface!
 {
 
+
   protected mod
   {
     // /// mod_protected1
@@ -37,4 +38,3 @@ TheModule::mod_interface!
 //
 
 include!( "../../only_test/micro_modules_two_only_test.rs" );
-
