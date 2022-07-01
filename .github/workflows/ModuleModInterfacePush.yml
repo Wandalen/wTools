@@ -9,7 +9,7 @@ jobs :
 
   # mod_interface
 
-  test :
+  test_mod_interface :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/rust/mod_interface/Cargo.toml'
@@ -36,7 +36,7 @@ jobs :
 
   # multilayer
 
-  test :
+  test_multilayer :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/alias/multilayer/Cargo.toml'
