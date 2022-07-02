@@ -265,14 +265,14 @@ pub( crate ) mod private
       let mut result : Self = make!();
       loop
       {
-        println!( "lookahead1" );
+        // println!( "lookahead1" );
         let lookahead = input.lookahead1();
         if !lookahead.peek( Token![ # ] )
         {
           // dbg!( &input );
           break;
         }
-        println!( "lookahead1 : yes" );
+        // println!( "lookahead1 : yes" );
         let input2;
         let element = syn::Attribute
         {
