@@ -163,7 +163,7 @@ pub( crate ) mod private
   }
 
   impl syn::parse::Parse
-  for Many< AttributeOuter >
+  for Many< AttributesOuter >
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
@@ -253,37 +253,59 @@ pub( crate ) mod private
     ///
 
     #[ derive( Debug, PartialEq, Eq, Clone ) ]
-    pub many AttributeOuter : syn::Attribute;
+    pub many AttributesOuter : syn::Attribute;
 
   }
 
   impl syn::parse::Parse
-  for AttributeOuter
+  for AttributesOuter
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
-      let input2;
-      // println!( "AttributeOuter::parse::a" );
-      Ok( Self( vec![ syn::Attribute
+      let mut result : Self = make!();
+      loop
       {
-        pound_token : input.parse()?,
-        style : syn::AttrStyle::Outer,
-        bracket_token : bracketed!( input2 in input ),
-        path : input2.call( syn::Path::parse_mod_style )?,
-        tokens : input2.parse()?,
-      }]))
-      // Ok( ( input.call( syn::Attribute::parse_inner )? ).into() )
+        println!( "lookahead1" );
+        let lookahead = input.lookahead1();
+        if !lookahead.peek( Token![ # ] )
+        {
+          // dbg!( &input );
+          break;
+        }
+        println!( "lookahead1 : yes" );
+        let input2;
+        let element = syn::Attribute
+        {
+          pound_token : input.parse()?,
+          style : syn::AttrStyle::Outer,
+          bracket_token : bracketed!( input2 in input ),
+          path : input2.call( syn::Path::parse_mod_style )?,
+          tokens : input2.parse()?,
+        };
+        result.0.push( element );
+      }
+      Ok( result )
+      // let input2;
+      // // println!( "AttributesOuter::parse::a" );
+      // Ok( Self( vec![ syn::Attribute
+      // {
+      //   pound_token : input.parse()?,
+      //   style : syn::AttrStyle::Outer,
+      //   bracket_token : bracketed!( input2 in input ),
+      //   path : input2.call( syn::Path::parse_mod_style )?,
+      //   tokens : input2.parse()?,
+      // }]))
+      // // Ok( ( input.call( syn::Attribute::parse_inner )? ).into() )
     }
   }
 
   impl quote::ToTokens
-  for AttributeOuter
+  for AttributesOuter
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
       use crate::quote::TokenStreamExt;
       tokens.append_all( self.0.iter() );
-      // self.0.to_tokens( tokens );
     }
   }
 
@@ -313,7 +335,7 @@ pub( crate ) mod private
 //   /// Many items.
 //   ///
 //
-//   // xxx : use Many instead
+//   // zzz : use Many instead
 //   // #[ allow( dead_code ) ]
 //   #[ derive( Debug ) ]
 //   pub struct Items
@@ -357,7 +379,7 @@ pub mod exposed
     Pair,
     Many,
     AttributeInner,
-    AttributeOuter,
+    AttributesOuter,
     AttributedIdent,
     // Items,
   };

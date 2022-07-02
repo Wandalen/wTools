@@ -9,16 +9,67 @@ tests_impls!
 
   fn pair() -> Result< () >
   {
+    use proc_macro_tools::syn::parse::Parser;
 
     // test.case( "basic" );
     let code = qt!( x core::option::Option< i32 > );
-    let got = syn::parse2::< TheModule::Pair< syn::Ident, syn::Type > >( code ).unwrap();
+    let got = syn::parse2::< TheModule::Pair< syn::Ident, syn::Type > >( code )?;
     let exp = TheModule::Pair::< syn::Ident, syn::Type >::new
     (
       syn::Ident::new( "x", proc_macro2::Span::call_site() ),
       syn::parse2::< syn::Type >( qt!( core::option::Option< i32 > ) )?,
     );
     a_id!( got, exp );
+
+    // test.case( "pair of many" );
+    let code = qt!
+    {
+      #[ derive( Copy ) ]
+      x1
+      // #[ derive( Clone ) ]
+      // x2
+    };
+    let got = syn::parse2::< TheModule::Pair< TheModule::Many< TheModule::AttributesOuter >, syn::Ident > >( code )?;
+    let exp = TheModule::Pair::< TheModule::Many< TheModule::AttributesOuter >, syn::Ident >
+    (
+      TheModule::Many( vec![ TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Copy ) ] ) )? ) ] ),
+      syn::Ident::new( "x1", proc_macro2::Span::call_site() ),
+    );
+    a_id!( got, exp );
+
+    // test.case( "punctuated of pairs" );
+    let code = qt!
+    {
+      #[ derive( Copy ) ]
+      x1,
+      #[ derive( Clone ) ]
+      x2
+    };
+    type PunctuatedPairs = syn::punctuated::Punctuated
+    <
+      TheModule::Pair
+      <
+        TheModule::Many< TheModule::AttributesOuter >,
+        syn::Ident,
+      >,
+      syn::token::Comma
+    >;
+
+    let got = PunctuatedPairs::parse_terminated.parse2( code )?;
+    let mut exp = PunctuatedPairs::new();
+    exp.push( TheModule::Pair::new
+    (
+      TheModule::Many( vec![ TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Copy ) ] ) )? ) ] ),
+      syn::Ident::new( "x1", proc_macro2::Span::call_site() ),
+    ));
+    exp.push( TheModule::Pair::new
+    (
+      TheModule::Many( vec![ TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Clone ) ] ) )? ) ] ),
+      syn::Ident::new( "x2", proc_macro2::Span::call_site() ),
+    ));
+    a_id!( got, exp );
+
+    //
 
     Ok( () )
   }
@@ -29,19 +80,19 @@ tests_impls!
   {
     use proc_macro_tools::syn::parse::Parser;
 
-    // test.case( "AttributeOuter" );
+    // test.case( "AttributesOuter" );
     let code = qt!
     {
       #[ derive( Copy ) ]
       #[ derive( Clone ) ]
       #[ derive( Debug ) ]
     };
-    let got = syn::parse2::< TheModule::Many< TheModule::AttributeOuter > >( code ).unwrap();
-    let exp = TheModule::Many::< TheModule::AttributeOuter >::new_with( vec!
+    let got = syn::parse2::< TheModule::Many< TheModule::AttributesOuter > >( code ).unwrap();
+    let exp = TheModule::Many::< TheModule::AttributesOuter >::new_with( vec!
     [
-      TheModule::AttributeOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Copy ) ] ) )? ),
-      TheModule::AttributeOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Clone ) ] ) )? ),
-      TheModule::AttributeOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Debug ) ] ) )? ),
+      TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Copy ) ] ) )? ),
+      TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Clone ) ] ) )? ),
+      TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Debug ) ] ) )? ),
     ]);
     a_id!( got, exp );
 

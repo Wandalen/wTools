@@ -9,7 +9,6 @@ mod private
 TheModule::mod_interface!
 {
 
-
   protected mod
   {
     // /// mod_protected1

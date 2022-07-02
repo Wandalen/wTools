@@ -35,14 +35,18 @@ pub mod dependencies
   pub use ::syn;
   pub use ::quote;
   pub use ::proc_macro2;
+  pub use ::winterval;
+  pub use ::type_constructor;
 }
 
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Parented namespace of the module.
@@ -54,6 +58,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::
   {
     prelude::*,
@@ -64,28 +69,35 @@ pub mod exposed
     split_with_name::exposed::*,
     syntax::exposed::*,
   };
+  #[ doc( inline ) ]
+  pub use super::syntax::
+  {
+    Pair,
+    Many,
+  };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
 
-  pub use super::
-  {
-    container_kind::prelude::*,
-    generic_analyze::prelude::*,
-    helper::prelude::*,
-    name::prelude::*,
-    split_with_name::prelude::*,
-    syntax::prelude::*,
-  };
+  #[ doc( inline ) ]
+  pub use ::winterval::prelude::*;
+  #[ doc( inline ) ]
+  pub use ::type_constructor::prelude::*;
 
+  #[ doc( inline ) ]
   pub use ::syn;
+  #[ doc( inline ) ]
   pub use ::proc_macro2;
+  #[ doc( inline ) ]
   pub use ::quote;
+  #[ doc( inline ) ]
   pub use ::quote::quote as qt;
+  #[ doc( inline ) ]
   pub use ::syn::parse_quote as parse_qt;
 
+  #[ doc( inline ) ]
   pub use syn::
   {
     parse::ParseStream,
@@ -98,6 +110,17 @@ pub mod prelude
     parse_macro_input,
     parse_quote,
     parse_quote_spanned,
+  };
+
+  #[ doc( inline ) ]
+  pub use super::
+  {
+    container_kind::prelude::*,
+    generic_analyze::prelude::*,
+    helper::prelude::*,
+    name::prelude::*,
+    split_with_name::prelude::*,
+    syntax::prelude::*,
   };
 
 }

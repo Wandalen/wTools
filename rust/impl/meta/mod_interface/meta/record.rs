@@ -69,7 +69,8 @@ pub( crate ) mod private
     pub vis : Visibility,
     pub element_type : ElementType,
     // pub elements : syn::punctuated::Punctuated< syn::Ident, syn::token::Comma >,
-    pub elements : syn::punctuated::Punctuated< Pair< Many< AttributeOuter >, syn::Ident >, syn::token::Comma >,
+    // pub elements : syn::punctuated::Punctuated< Pair< Many< AttributesOuter >, syn::Ident >, syn::token::Comma >,
+    pub elements : syn::punctuated::Punctuated< Pair< AttributesOuter, syn::Ident >, syn::token::Comma >,
     pub semi : Option< syn::token::Semi >,
   }
 
@@ -91,13 +92,15 @@ pub( crate ) mod private
       {
         let input2;
         let _brace_token = syn::braced!( input2 in input );
+        // println!( "syn::punctuated::Punctuated" );
         elements = syn::punctuated::Punctuated::< _, _ >::parse_terminated( &input2 )?;
       }
       else
       {
         let ident : syn::Ident = input.parse()?;
         elements = syn::punctuated::Punctuated::new();
-        elements.push( Pair::new( Many::new(), ident ) );
+        // elements.push( Pair::new( Many::new(), ident ) );
+        elements.push( Pair::new( make!(), ident ) );
       }
 
       let lookahead = input.lookahead1();
