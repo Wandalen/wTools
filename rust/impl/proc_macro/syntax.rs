@@ -4,93 +4,6 @@ pub( crate ) mod private
   use crate::exposed::*;
   use type_constructor::prelude::*;
 
-  //
-
-  types!
-  {
-
-    ///
-    /// Attribute which is inner.
-    ///
-    /// For example: `#![ warn( missing_docs ) ]`.
-    ///
-
-    #[ derive( Debug, PartialEq, Eq, Clone ) ]
-    pub single AttributeInner : syn::Attribute;
-
-  }
-
-  impl syn::parse::Parse
-  for AttributeInner
-  {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
-    {
-      let input2;
-      Ok( Self( syn::Attribute
-      {
-        pound_token : input.parse()?,
-        style : syn::AttrStyle::Inner( input.parse()? ),
-        bracket_token : bracketed!( input2 in input ),
-        path : input2.call( syn::Path::parse_mod_style )?,
-        tokens : input2.parse()?,
-      }))
-      // Ok( ( input.call( syn::Attribute::parse_inner )? ).into() )
-    }
-  }
-
-  impl quote::ToTokens
-  for AttributeInner
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
-      self.0.to_tokens( tokens );
-    }
-  }
-
-  //
-
-  types!
-  {
-
-    ///
-    /// Attribute which is outer.
-    ///
-    /// For example: `#[ derive( Copy ) ]`.
-    ///
-
-    #[ derive( Debug, PartialEq, Eq, Clone ) ]
-    pub single AttributeOuter : syn::Attribute;
-
-  }
-
-  impl syn::parse::Parse
-  for AttributeOuter
-  {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
-    {
-      let input2;
-      // println!( "AttributeOuter::parse::a" );
-      Ok( Self( syn::Attribute
-      {
-        pound_token : input.parse()?,
-        style : syn::AttrStyle::Outer,
-        bracket_token : bracketed!( input2 in input ),
-        path : input2.call( syn::Path::parse_mod_style )?,
-        tokens : input2.parse()?,
-      }))
-      // Ok( ( input.call( syn::Attribute::parse_inner )? ).into() )
-    }
-  }
-
-  impl quote::ToTokens
-  for AttributeOuter
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
-      self.0.to_tokens( tokens );
-    }
-  }
-
   ///
   /// Pair of syntax elements.
   ///
@@ -139,14 +52,12 @@ pub( crate ) mod private
     }
   }
 
-  // zzz : publish module cotainer with good prelude
-
   ///
   /// Parse as much elements as possible.
   ///
 
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
-  pub struct Many< T > ( Vec< T > )
+  pub struct Many< T > ( pub Vec< T > )
   where
     T : quote::ToTokens,
   ;
@@ -160,6 +71,11 @@ pub( crate ) mod private
     {
       Self( Vec::new() )
     }
+    /// Constructor.
+    pub fn new_with( src : Vec< T > ) -> Self
+    {
+      Self( src )
+    }
   }
 
   impl< T > quote::ToTokens
@@ -171,7 +87,6 @@ pub( crate ) mod private
     {
       use crate::quote::TokenStreamExt;
       tokens.append_all( self.0.iter() );
-      // self.0.to_tokens( tokens );
     }
   }
 
@@ -235,25 +150,6 @@ pub( crate ) mod private
     }
   }
 
-//   impl< T > syn::parse::Parse
-//   for Many< T >
-//   where
-//     T : syn::parse::Parse,
-//   {
-//     fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-//     {
-//
-//       let mut items = vec![];
-//       while !input.is_empty()
-//       {
-//         let item : T = input.parse()?;
-//         items.push( item );
-//       }
-//
-//       Ok( Self( items ) )
-//     }
-//   }
-
   // zzz : macro?
   impl< T > core::ops::Deref
   for Many< T >
@@ -288,6 +184,97 @@ pub( crate ) mod private
     }
   }
 
+  // =
+
+  types!
+  {
+
+    ///
+    /// Attribute which is inner.
+    ///
+    /// For example: `#![ warn( missing_docs ) ]`.
+    ///
+
+    #[ derive( Debug, PartialEq, Eq, Clone ) ]
+    pub many AttributeInner : syn::Attribute;
+
+  }
+
+  impl syn::parse::Parse
+  for AttributeInner
+  {
+    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    {
+      let input2;
+      Ok( Self( vec![ syn::Attribute
+      {
+        pound_token : input.parse()?,
+        style : syn::AttrStyle::Inner( input.parse()? ),
+        bracket_token : bracketed!( input2 in input ),
+        path : input2.call( syn::Path::parse_mod_style )?,
+        tokens : input2.parse()?,
+      }]))
+      // Ok( ( input.call( syn::Attribute::parse_inner )? ).into() )
+    }
+  }
+
+  impl quote::ToTokens
+  for AttributeInner
+  {
+    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+    {
+      use crate::quote::TokenStreamExt;
+      tokens.append_all( self.0.iter() );
+      // self.0.to_tokens( tokens );
+    }
+  }
+
+  //
+
+  types!
+  {
+
+    ///
+    /// Attribute which is outer.
+    ///
+    /// For example: `#[ derive( Copy ) ]`.
+    ///
+
+    #[ derive( Debug, PartialEq, Eq, Clone ) ]
+    pub many AttributeOuter : syn::Attribute;
+
+  }
+
+  impl syn::parse::Parse
+  for AttributeOuter
+  {
+    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    {
+      let input2;
+      // println!( "AttributeOuter::parse::a" );
+      Ok( Self( vec![ syn::Attribute
+      {
+        pound_token : input.parse()?,
+        style : syn::AttrStyle::Outer,
+        bracket_token : bracketed!( input2 in input ),
+        path : input2.call( syn::Path::parse_mod_style )?,
+        tokens : input2.parse()?,
+      }]))
+      // Ok( ( input.call( syn::Attribute::parse_inner )? ).into() )
+    }
+  }
+
+  impl quote::ToTokens
+  for AttributeOuter
+  {
+    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+    {
+      use crate::quote::TokenStreamExt;
+      tokens.append_all( self.0.iter() );
+      // self.0.to_tokens( tokens );
+    }
+  }
+
   ///
   /// Attribute and ident.
   ///
@@ -309,23 +296,6 @@ pub( crate ) mod private
       src.1
     }
   }
-
-//   impl syn::parse::Parse for AttributedIdent
-//   {
-//     fn parse( input : ParseStream< '_ > ) -> Result< Self >
-//     {
-//       Ok( Self( input.parse()?, input.parse()? ) )
-//     }
-//   }
-//
-//   impl quote::ToTokens for AttributedIdent
-//   {
-//     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-//     {
-//       self.0.to_tokens( tokens );
-//       self.1.to_tokens( tokens );
-//     }
-//   }
 
   ///
   /// Many items.
@@ -372,10 +342,10 @@ pub mod exposed
   pub use super::prelude::*;
   pub use super::private::
   {
-    AttributeInner,
-    AttributeOuter,
     Pair,
     Many,
+    AttributeInner,
+    AttributeOuter,
     AttributedIdent,
     Items,
   };
