@@ -52,15 +52,34 @@ pub( crate ) mod private
     }
   }
 
-  ///
-  /// Parse as much elements as possible.
-  ///
+//   ///
+//   /// Parse as much elements as possible.
+//   ///
+//
+//   #[ derive( Debug, PartialEq, Eq, Clone ) ]
+//   pub struct Many< T > ( pub Vec< T > )
+//   where
+//     T : quote::ToTokens,
+//   ;
 
-  #[ derive( Debug, PartialEq, Eq, Clone ) ]
-  pub struct Many< T > ( pub Vec< T > )
-  where
-    T : quote::ToTokens,
-  ;
+  types!
+  {
+    ///
+    /// Parse as much elements as possible.
+    ///
+
+    #[ derive( Debug, PartialEq, Eq, Clone ) ]
+    pub many Many : < T : quote::ToTokens >
+  }
+
+//   ///
+//   /// Attribute which is inner.
+//   ///
+//   /// For example: `#![ warn( missing_docs ) ]`.
+//   ///
+//
+//   #[ derive( Debug, PartialEq, Eq, Clone ) ]
+//   pub many AttributeInner : syn::Attribute;
 
   impl< T > Many< T >
   where
@@ -90,7 +109,40 @@ pub( crate ) mod private
     }
   }
 
-  // xxx : qqq : cover by test
+//   // zzz : macro?
+//   impl< T > core::ops::Deref
+//   for Many< T >
+//   where
+//     T : quote::ToTokens,
+//   {
+//     type Target = Vec< T >;
+//     fn deref( &self ) -> &Self::Target
+//     {
+//       &self.0
+//     }
+//   }
+//
+//   // zzz : macro?
+//   impl< T > From< Vec< T > > for Many< T >
+//   where
+//     T : quote::ToTokens,
+//   {
+//     fn from( src : Vec< T > ) -> Self
+//     {
+//       Self( src )
+//     }
+//   }
+
+  impl< T > From< Many< T > > for Vec< T >
+  where
+    T : quote::ToTokens,
+  {
+    fn from( src : Many< T > ) -> Self
+    {
+      src.0
+    }
+  }
+
   impl syn::parse::Parse
   for Many< AttributeInner >
   {
@@ -110,13 +162,11 @@ pub( crate ) mod private
     }
   }
 
-  // xxx : qqq : cover by test
   impl syn::parse::Parse
   for Many< AttributeOuter >
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
-      // println!( "Many< AttributeOuter >::parse::a" );
       let mut result = Self::new();
       loop
       {
@@ -125,62 +175,24 @@ pub( crate ) mod private
         {
           break;
         }
-        // println!( "Many< AttributeOuter >::parse::b" );
         result.0.push( input.parse()? );
       }
       Ok( result )
     }
   }
 
-  // xxx : qqq : cover by test
   impl syn::parse::Parse
   for Many< syn::Item >
   {
     fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
     {
-
       let mut items = vec![];
       while !input.is_empty()
       {
         let item : syn::Item = input.parse()?;
         items.push( item );
       }
-
       Ok( Self( items ) )
-    }
-  }
-
-  // zzz : macro?
-  impl< T > core::ops::Deref
-  for Many< T >
-  where
-    T : quote::ToTokens,
-  {
-    type Target = Vec< T >;
-    fn deref( &self ) -> &Self::Target
-    {
-      &self.0
-    }
-  }
-
-  // zzz : macro?
-  impl< T > From< Vec< T > > for Many< T >
-  where
-    T : quote::ToTokens,
-  {
-    fn from( src : Vec< T > ) -> Self
-    {
-      Self( src )
-    }
-  }
-
-  impl< T > From< Many< T > > for Vec< T >
-  where
-    T : quote::ToTokens,
-  {
-    fn from( src : Many< T > ) -> Self
-    {
-      src.0
     }
   }
 
@@ -285,7 +297,7 @@ pub( crate ) mod private
   {
     fn from( src : syn::Ident ) -> Self
     {
-      Self( Vec::new().into(), src )
+      Self( Vec::< AttributeInner >::new().into(), src )
     }
   }
 
@@ -297,42 +309,42 @@ pub( crate ) mod private
     }
   }
 
-  ///
-  /// Many items.
-  ///
-
-  // xxx : use Many instead
-  // #[ allow( dead_code ) ]
-  #[ derive( Debug ) ]
-  pub struct Items
-  (
-    pub Vec< syn::Item >,
-  );
-
-  impl syn::parse::Parse for Items
-  {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-    {
-
-      let mut items = vec![];
-      while !input.is_empty()
-      {
-        let item : syn::Item = input.parse()?;
-        items.push( item );
-      }
-
-      Ok( Self( items ) )
-    }
-  }
-
-  impl quote::ToTokens for Items
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
-      // use quote::ToTokens;
-      self.0.iter().for_each( | item | item.to_tokens( tokens ) );
-    }
-  }
+//   ///
+//   /// Many items.
+//   ///
+//
+//   // xxx : use Many instead
+//   // #[ allow( dead_code ) ]
+//   #[ derive( Debug ) ]
+//   pub struct Items
+//   (
+//     pub Vec< syn::Item >,
+//   );
+//
+//   impl syn::parse::Parse for Items
+//   {
+//     fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+//     {
+//
+//       let mut items = vec![];
+//       while !input.is_empty()
+//       {
+//         let item : syn::Item = input.parse()?;
+//         items.push( item );
+//       }
+//
+//       Ok( Self( items ) )
+//     }
+//   }
+//
+//   impl quote::ToTokens for Items
+//   {
+//     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+//     {
+//       // use quote::ToTokens;
+//       self.0.iter().for_each( | item | item.to_tokens( tokens ) );
+//     }
+//   }
 
 }
 
@@ -347,7 +359,7 @@ pub mod exposed
     AttributeInner,
     AttributeOuter,
     AttributedIdent,
-    Items,
+    // Items,
   };
 }
 

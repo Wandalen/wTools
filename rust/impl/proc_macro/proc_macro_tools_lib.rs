@@ -82,8 +82,10 @@ pub mod prelude
 
   pub use ::syn;
   pub use ::proc_macro2;
-  pub use quote;
-  pub use quote::quote as qt;
+  pub use ::quote;
+  pub use ::quote::quote as qt;
+  pub use ::syn::parse_quote as parse_qt;
+
   pub use syn::
   {
     parse::ParseStream,

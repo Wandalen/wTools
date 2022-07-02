@@ -6,7 +6,8 @@ use syn::{ parse_quote };
 #[ allow( unused_imports ) ]
 use proc_macro_tools::prelude::*;
 #[ allow( unused_imports ) ]
-use proc_macro_tools::{ Result, Items };
+// use proc_macro_tools::{ Result, Items };
+use proc_macro_tools::{ Result, Many, syn };
 
 ///
 /// Module-specific item.
@@ -18,9 +19,20 @@ pub struct Items2
   pub Vec< syn::Item >,
 );
 
-impl From< Items > for Items2
+// zzz : use?
+// types!
+// {
+//   ///
+//   /// Module-specific item.
+//   ///
+//
+//   #[ derive( Debug, PartialEq, Eq, Clone ) ]
+//   pub many Many : syn::Item
+// }
+
+impl From< Many< syn::Item > > for Items2
 {
-  fn from( src : Items ) -> Self
+  fn from( src : Many< syn::Item > ) -> Self
   {
     Self( src.0 )
   }
