@@ -262,7 +262,7 @@ tests_impls!
 
     /* test.case( "from f32 into Many2" ) */
     let instance1 : Many1 = [ 13.0 ].into();
-    let instance2 = Many1::from( 13.0 );
+    let instance2 = Many1::from( core::iter::once( 13.0 ) );
     a_id!( instance1.0, vec![ 13.0 ] );
     a_id!( instance2.0, vec![ 13.0 ] );
     assert!( !implements!( instance1 => PartialEq ) );
@@ -272,7 +272,7 @@ tests_impls!
 
     /* test.case( "from f32 into Many2" ) */
     let instance1 : Many2 = [ 13.0 ].into();
-    let instance2 = Many2::from( 13.0 );
+    let instance2 = Many2::from( core::iter::once( 13.0 ) );
     a_id!( instance1.0, vec![ 13.0 ] );
     a_id!( instance2.0, vec![ 13.0 ] );
     a_id!( instance1, instance2 );

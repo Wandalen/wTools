@@ -5,5 +5,3 @@ fn main()
 {
   let x = make!( 0, 1, 2, 3 );
 }
-
-/* xxx : does not work properly currently */

@@ -780,11 +780,26 @@ tests_impls!
 
     /* test.case( "from tuple" ) */
     {
-      TheModule::types!
+      // TheModule::types!
+      // {
+      //   #[ derive( PartialEq, Debug ) ]
+      //   single MySingle : i32
+      // };
+      #[ derive( PartialEq, Debug ) ]
+      struct MySingle
+      (
+        pub i32,
+      );
+
+      impl From< i32 >
+      for MySingle
       {
-        #[ derive( PartialEq, Debug ) ]
-        single MySingle : i32
-      };
+        fn from( src : i32 ) -> Self
+        {
+          MySingle( src )
+        }
+      }
+
       let src = ( 1, 3 );
       let got : TheModule::Pair< MySingle, MySingle > = src.into();
       let exp = TheModule::Pair::from( ( MySingle::from( 1 ), MySingle::from( 3 ) ) );
@@ -857,4 +872,3 @@ tests_index!
   struct_transitive_from,
   samples,
 }
-
