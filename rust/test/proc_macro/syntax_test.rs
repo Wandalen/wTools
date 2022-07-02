@@ -45,8 +45,10 @@ tests_impls!
     let exp = TheModule::Many::< TheModule::AttributeOuter >::new_with( vec!
     [
       TheModule::AttributeOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Copy ) ] ) )? ),
+      TheModule::AttributeOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Clone ) ] ) )? ),
+      TheModule::AttributeOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Debug ) ] ) )? ),
     ]);
-    // a_id!( got, exp );
+    a_id!( got, exp );
 
     Ok( () )
   }
@@ -60,3 +62,4 @@ tests_index!
   pair,
   many,
 }
+
