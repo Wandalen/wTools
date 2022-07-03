@@ -89,9 +89,12 @@ tests_impls!
     let got = syn::parse2::< TheModule::Many< TheModule::AttributesOuter > >( code ).unwrap();
     let exp = TheModule::Many::< TheModule::AttributesOuter >::new_with( vec!
     [
-      TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Copy ) ] ) )? ),
-      TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Clone ) ] ) )? ),
-      TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Debug ) ] ) )? ),
+      TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!
+      {
+        #[ derive( Copy ) ]
+        #[ derive( Clone ) ]
+        #[ derive( Debug ) ]
+      } )? ),
     ]);
     a_id!( got, exp );
 
