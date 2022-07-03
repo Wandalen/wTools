@@ -12,7 +12,7 @@ TheModule::mod_interface!
   protected mod
   {
     // /// mod_protected1
-    // #[ doc( inline ) ]
+    #[ doc( inline ) ]
     mod_protected1,
     mod_protected2,
   };
