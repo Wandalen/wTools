@@ -6,7 +6,6 @@ use super::*;
 tests_impls!
 {
 
-
   fn pair() -> Result< () >
   {
     use proc_macro_tools::syn::parse::Parser;
