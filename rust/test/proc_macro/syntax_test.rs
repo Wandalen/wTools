@@ -96,17 +96,17 @@ tests_impls!
     ]);
     a_id!( got, exp );
 
-    // test.case( "AttributeInner" );
+    // test.case( "AttributesInner" );
     let code = qt!
     {
       #![ warn( missing_docs ) ]
       #![ warn( something ) ]
     };
-    let got = syn::parse2::< TheModule::Many< TheModule::AttributeInner > >( code ).unwrap();
-    let exp = TheModule::Many::< TheModule::AttributeInner >::new_with( vec!
+    let got = syn::parse2::< TheModule::Many< TheModule::AttributesInner > >( code ).unwrap();
+    let exp = TheModule::Many::< TheModule::AttributesInner >::new_with( vec!
     [
-      TheModule::AttributeInner::from( syn::Attribute::parse_inner.parse2( qt!( #![ warn( missing_docs ) ] ) )? ),
-      TheModule::AttributeInner::from( syn::Attribute::parse_inner.parse2( qt!( #![ warn( something ) ] ) )? ),
+      TheModule::AttributesInner::from( syn::Attribute::parse_inner.parse2( qt!( #![ warn( missing_docs ) ] ) )? ),
+      TheModule::AttributesInner::from( syn::Attribute::parse_inner.parse2( qt!( #![ warn( something ) ] ) )? ),
     ]);
     a_id!( got, exp );
 

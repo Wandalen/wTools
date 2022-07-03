@@ -79,7 +79,7 @@ pub( crate ) mod private
 //   ///
 //
 //   #[ derive( Debug, PartialEq, Eq, Clone ) ]
-//   pub many AttributeInner : syn::Attribute;
+//   pub many AttributesInner : syn::Attribute;
 
   impl< T > Many< T >
   where
@@ -144,7 +144,7 @@ pub( crate ) mod private
   }
 
   impl syn::parse::Parse
-  for Many< AttributeInner >
+  for Many< AttributesInner >
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
@@ -208,12 +208,12 @@ pub( crate ) mod private
     ///
 
     #[ derive( Debug, PartialEq, Eq, Clone ) ]
-    pub many AttributeInner : syn::Attribute;
+    pub many AttributesInner : syn::Attribute;
 
   }
 
   impl syn::parse::Parse
-  for AttributeInner
+  for AttributesInner
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
@@ -231,7 +231,7 @@ pub( crate ) mod private
   }
 
   impl quote::ToTokens
-  for AttributeInner
+  for AttributesInner
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
@@ -313,13 +313,13 @@ pub( crate ) mod private
   /// Attribute and ident.
   ///
 
-  pub type AttributedIdent = Pair< Many< AttributeInner >, syn::Ident >;
+  pub type AttributedIdent = Pair< Many< AttributesInner >, syn::Ident >;
 
   impl From< syn::Ident > for AttributedIdent
   {
     fn from( src : syn::Ident ) -> Self
     {
-      Self( Vec::< AttributeInner >::new().into(), src )
+      Self( Vec::< AttributesInner >::new().into(), src )
     }
   }
 
@@ -378,7 +378,7 @@ pub mod exposed
   {
     Pair,
     Many,
-    AttributeInner,
+    AttributesInner,
     AttributesOuter,
     AttributedIdent,
     // Items,
