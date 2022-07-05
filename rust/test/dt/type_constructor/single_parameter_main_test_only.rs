@@ -1,8 +1,5 @@
 tests_impls!
 {
-
-  //
-
   fn main()
   {
     use core::fmt;

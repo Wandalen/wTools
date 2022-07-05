@@ -14,10 +14,6 @@
 
 tests_impls!
 {
-
-  //
-
-  #[ test ]
   fn main()
   {
 

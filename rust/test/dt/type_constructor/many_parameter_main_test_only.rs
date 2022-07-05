@@ -14,10 +14,6 @@ for f32
 
 tests_impls!
 {
-
-  //
-
-  #[ test ]
   fn main()
   {
     use core::fmt;
@@ -150,7 +146,6 @@ tests_impls!
     assert!( !mem::same_ptr( &src, got ) );
 
   }
-
 }
 
 //
