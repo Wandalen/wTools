@@ -6,89 +6,51 @@ on :
     branches : [ alpha ]
 
 jobs :
+
+  get_modules:
+    outputs :
+      workflow_files: ${{ steps.workflow_files.outputs.files }}
+      workflow_names: ${{ steps.workflow_names.outputs.names }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - id: workflow_files
+        run: |
+          WORKFLOWS=$(ls .github/workflows | grep Module)
+          for WORKFLOW in $WORKFLOWS ; do
+            NAME=$(echo $WORKFLOW | sed 's/\(\S\+\).yml/\1/')
+            NAMES="$NAMES $NAME"
+          done;
+          NAMES=$(sed 's/\s\+/\n/g' <<< $NAMES)
+          OUTPUT=$(echo "$NAMES" | jq -R -s -c 'split("\n")[1:-1]')
+          echo "::set-output name=files::{\"modules\":$OUTPUT}"
+      - id: workflow_names
+        run: |
+          WORKFLOWS=$(ls .github/workflows | grep Module)
+          for WORKFLOW in $WORKFLOWS ; do
+            NAME=$(cat .github/workflows/$WORKFLOW | grep -G '^name :' | sed 's/name\s*:\s\+\(\S*\)/\1/')
+            NAMES="$NAMES%0A$NAME"
+          done;
+          echo "::set-output name=names::$NAMES"
+
   wait_for_modules :
-    if : ${{ startsWith( github.ref, 'refs/heads' ) }}
+    needs : get_modules
     runs-on : ubuntu-latest
     steps :
       - name : Waiting ...
         uses : willgarcia/workflow-wait-action@main
         with :
-          timeout : 21000
+          timeout : 21600
           interval : 60
-          initial_delay : 600
-          workflows : |
-            automata_tools
-            clone_dyn
-            data_type
-            derive_tools
-            diagnostics_tools
-            error_tools
-            for_each
-            former
-            fs_tools
-            graphs_tools
-            implements
-            impls_index
-            inspect_type
-            is_slice
-            iter_tools
-            mem_tools
-            meta_tools
-            mod_interface
-            proc_macro_tools
-            strs_tools
-            test_tools
-            time_tools
-            type_constructor
-            typing_tools
-            wca
-            winterval
-            wlang
-            woptions
-            wplot
-            wpublisher
-            wtestbasic
-            wtest
-            wtools
+          initial_delay : 60
+          workflows : ${{ needs.get_modules.outputs.workflow_names }}
 
   check :
-    needs : wait_for_modules
+    needs :
+      - get_modules
+      - wait_for_modules
     strategy :
-      matrix :
-        modules :
-          - ModuleAutomataToolsPush
-          - ModuleCloneDynPush
-          - ModuleDataTypePush
-          - ModuleDeriveToolsPush
-          - ModuleDiagnosticsToolsPush
-          - ModuleErrorToolsPush
-          - ModuleForEachPush
-          - ModuleFormerPush
-          - ModuleFsToolsPush
-          - ModuleGraphsToolsPush
-          - ModuleImplementsPush
-          - ModuleImplsIndexPush
-          - ModuleInspectTypePush
-          - ModuleIsSlicePush
-          - ModuleIterToolsPush
-          - ModuleMemToolsPush
-          - ModuleMetaToolsPush
-          - ModuleModInterfacePush
-          - ModuleProcMacroToolsPush
-          - ModuleStrsToolsPush
-          - ModuleTestToolsPush
-          - ModuleTimeToolsPush
-          - ModuleTypeConstructorPush
-          - ModuleTypingToolsPush
-          - ModulewCaPush
-          - ModulewIntervalPush
-          - ModulewLangPush
-          - ModulewOptionsPush
-          - ModulewPlotPush
-          - ModulewPublisherPush
-          - ModulewTestBasicPush
-          - ModulewTestPush
-          - ModulewToolsPush
+      matrix : ${{ fromJSON( needs.get_modules.outputs.workflow_files ) }}
     outputs :
       has_succeeded_runs : ${{ steps.success.outputs.success }}
     runs-on : ubuntu-latest
@@ -129,34 +91,4 @@ jobs :
           github-token: ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
           number: ${{ steps.find.outputs.number }}
           method: merge
-
-  convert_to_draft :
-    needs : check
-    if : |
-      failure()
-      || needs.check.outputs.has_succeeded_runs != 'true'
-    runs-on : ubuntu-latest
-    steps :
-      - name : Find PR number for current commit
-        uses : jwalton/gh-find-current-pr@v1
-        id : find
-        with :
-          state: open
-      - name : Get PR node id
-        id : node_id
-        run : |
-          node_id=$(curl --request GET \
-          --url 'https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.find.outputs.number }}' \
-          --header 'Accept: application/vnd.github.v3+json' \
-          --header 'Authorization: token ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}' \
-          --header 'Content-Type: application/json' \
-          | jq -r .node_id)
-          echo $node_id
-          echo "::set-output name=id::$node_id"
-      - name: Convert to draft
-        if : ${{ success() }}
-        uses : voiceflow/draft-pr@latest
-        with :
-          token : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
-          pull-request-node-id : ${{ steps.node_id.outputs.id }}
 
