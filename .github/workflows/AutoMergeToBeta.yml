@@ -5,6 +5,11 @@ on :
   push :
     branches : [ alpha ]
 
+concurrency :
+
+  group : auto_merge_to_beta
+  cancel-in-progress : true
+
 jobs :
 
   get_modules:
