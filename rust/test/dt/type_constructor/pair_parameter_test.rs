@@ -3,87 +3,6 @@ use super::*;
 
 tests_impls!
 {
-  fn basic()
-  {
-    use core::fmt;
-
-    mod mod1
-    {
-      pub use f32;
-      pub use f64;
-    }
-
-    trait Round { fn round( &self ) -> Self; };
-    impl Round for ( f32, f64 )
-    {
-      fn round( &self ) -> Self
-      {
-        dbg!( &self );
-        ( self.0.round(), self.1.round() )
-      }
-    }
-
-    // trace_macros!( true );
-    TheModule::types!
-    {
-
-      ///
-      /// Attribute which is inner.
-      ///
-
-      #[ derive( Debug, Clone ) ]
-      #[ derive( PartialEq ) ]
-      pair Pair : mod1::f32, mod1::f64;
-
-    }
-    // trace_macros!( false );
-
-    /* test.case( "from tuple into pair" ) */
-    let instance1 : Pair = ( 13.0, 31.0 ).into();
-    let instance2 = Pair::from( ( 13.0, 31.0 ) );
-    a_id!( instance1.0, 13.0 );
-    a_id!( instance1.1, 31.0 );
-    a_id!( instance2.0, 13.0 );
-    a_id!( instance2.1, 31.0 );
-    a_id!( instance1, instance2 );
-    assert!( implements!( instance1 => PartialEq ) );
-    assert!( implements!( instance1 => Clone ) );
-    assert!( implements!( instance1 => fmt::Debug ) );
-    assert!( !implements!( instance1 => Default ) );
-
-    /* test.case( "from pair into tuple" ) */
-    let instance1 : ( _, _ ) = ( Pair::from( ( 13.0, 31.0 ) ) ).into();
-    let instance2 = < ( _, _ ) >::from( Pair::from( ( 13.0, 31.0 ) ) );
-    a_id!( instance1.0, 13.0 );
-    a_id!( instance1.1, 31.0 );
-    a_id!( instance2.0, 13.0 );
-    a_id!( instance2.1, 31.0 );
-    a_id!( instance1, instance2 );
-
-    /* test.case( "from itself into itself" ) */
-    let instance1 : Pair = ( Pair::from( ( 13.0, 31.0 ) ) ).into();
-    let instance2 = Pair::from( Pair::from( ( 13.0, 31.0 ) ) );
-    a_id!( instance1.0, 13.0 );
-    a_id!( instance1.1, 31.0 );
-    a_id!( instance2.0, 13.0 );
-    a_id!( instance2.1, 31.0 );
-    a_id!( instance1, instance2 );
-
-    /* test.case( "clone / eq" ) */
-    let instance1 : Pair = ( 13.0, 31.0 ).into();
-    let instance2 = instance1.clone();
-    a_id!( instance2.0, 13.0 );
-    a_id!( instance2.1, 31.0 );
-    a_id!( instance1, instance2 );
-
-    // /* test.case( "deref" ) */
-    // let got : Pair = ( 13.5, 31.5 ).into();
-    // a_id!( got.round(), ( 14.0, 32.0 ) );
-
-  }
-
-  //
-
   fn empty_parameter()
   {
 
@@ -486,41 +405,12 @@ tests_impls!
     // }
 
   }
-
-  //
-
-  fn samples()
-  {
-
-    /* test.case( "single-line" ) */
-    {
-      TheModule::types!( pair MyPair : i32, i64 );
-      let x = MyPair( 13, 31 );
-      println!( "x : ( {}, {} )", x.0, x.1 );
-      // prints : x : ( 13, 31 )
-    }
-
-    /* test.case( "parametrized tuple" ) */
-    {
-      use core::fmt;
-      TheModule::types!
-      {
-        #[ derive( Debug ) ]
-        pair MyPair : < T1 : fmt::Debug, T2 : fmt::Debug >;
-      }
-      let x = MyPair( 13, 13.0 );
-      dbg!( x );
-      // prints : x = MyPair( 13, 13.0 )
-    }
-
-  }
 }
 
 //
 
 tests_index!
 {
-  basic,
   empty_parameter,
   no_parameter_no_derive,
   parameter_complex,
@@ -529,5 +419,4 @@ tests_index!
   struct_basic,
   struct_no_derives,
   struct_transitive_from,
-  samples,
 }

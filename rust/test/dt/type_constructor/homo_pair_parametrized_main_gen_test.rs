@@ -3,6 +3,7 @@ use super::*;
 
 mod mod1
 {
+
   #[ derive( Debug, Clone, PartialEq ) ]
   pub struct Floats< T1 : PartialEq + Copy, T2 : Default >
   (
@@ -28,6 +29,7 @@ mod mod1
       Floats::< T1, T2 >( src, T2::default() )
     }
   }
+
 }
 
 // trace_macros!( true );
@@ -37,9 +39,8 @@ TheModule::types!
   #[ derive( PartialEq ) ]
   pair Pair :
     mod1::Floats< T1 : PartialEq + std::marker::Copy, T2 : Default >,
-    std::sync::Arc< T : Copy >,
   ;
 }
 // trace_macros!( false );
 
-include!( "./pair_parametrized_main_test_only.rs" );
+include!( "./homo_pair_parametrized_main_test_only.rs" );

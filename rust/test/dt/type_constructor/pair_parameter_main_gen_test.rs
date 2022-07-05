@@ -1,6 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
+// trace_macros!( true );
 TheModule::types!
 {
 
@@ -11,5 +12,6 @@ TheModule::types!
   pair Pair2 : f32, f64;
 
 }
+// trace_macros!( false );
 
 include!( "./pair_parameter_main_test_only.rs" );
