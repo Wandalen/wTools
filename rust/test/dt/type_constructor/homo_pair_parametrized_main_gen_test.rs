@@ -1,17 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-macro_rules! mk
-{
-  (
-    $( $Rest : tt )*
-  )
-  =>
-  {
-    mod1::Floats::from( $( $Rest )* )
-  };
-}
-
 mod mod1
 {
 
@@ -48,8 +37,10 @@ TheModule::types!
 {
   #[ derive( Debug, Clone ) ]
   #[ derive( PartialEq ) ]
-  many Many : mod1::Floats< T1 : PartialEq + std::marker::Copy, T2 : Default >;
+  pair Pair :
+    mod1::Floats< T1 : PartialEq + std::marker::Copy, T2 : Default >,
+  ;
 }
 // trace_macros!( false );
 
-include!( "./many_parametrized_main_test_only.rs" );
+include!( "./homo_pair_parametrized_main_test_only.rs" );

@@ -96,81 +96,82 @@ pub( crate ) mod private
       // }
       // xxx
 
-      // impl< Collection, $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      // From< Collection >
-      // for $Name< $ParamName >
-      // where
-      //   Collection : IntoIterator< Item = $ParamName >,
-      // {
-      // #[ inline ]
-      //   fn from( src : Collection ) -> Self
-      //   {
-      //     Self( src.into_iter().collect::< Vec< $ParamName > >() )
-      //   }
-      // }
-
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      From< $ParamName >
+      impl< Collection, IntoT, $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      From< Collection >
       for $Name< $ParamName >
-      {
-        #[ inline ]
-        fn from( src : $ParamName ) -> Self
-        {
-          Self( $crate::_vec![ src ] )
-        }
-      }
-
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      From< &$ParamName >
-      for $Name
-      < $ParamName >
       where
-        $ParamName : Clone,
+        Collection : IntoIterator< Item = IntoT >,
+        IntoT : Into< $ParamName >,
       {
         #[ inline ]
-        fn from( src : &$ParamName ) -> Self
+        fn from( src : Collection ) -> Self
         {
-          Self( $crate::_vec![ src.clone() ] )
+          Self( src.into_iter().map( | e | e.into() ).collect::< Vec< $ParamName > >() )
         }
       }
 
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      From< ( $ParamName, ) >
-      for $Name
-      < $ParamName >
-      {
-        #[ inline ]
-        fn from( src : ( $ParamName, ) ) -> Self
-        {
-          Self( $crate::_vec![ src.0 ] )
-        }
-      }
-
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )?, const N : usize >
-      From< [ $ParamName ; N ] >
-      for $Name
-      < $ParamName >
-      {
-        #[ inline ]
-        fn from( src : [ $ParamName ; N ] ) -> Self
-        {
-          Self( $crate::_Vec::from( src ) )
-        }
-      }
-
-      impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-      From< &[ $ParamName ] >
-      for $Name
-      < $ParamName >
-      where
-        $ParamName : Clone,
-      {
-        #[ inline ]
-        fn from( src : &[ $ParamName ] ) -> Self
-        {
-          Self( $crate::_Vec::from( src ) )
-        }
-      }
+//       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+//       From< $ParamName >
+//       for $Name< $ParamName >
+//       {
+//         #[ inline ]
+//         fn from( src : $ParamName ) -> Self
+//         {
+//           Self( $crate::_vec![ src ] )
+//         }
+//       }
+//
+//       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+//       From< &$ParamName >
+//       for $Name
+//       < $ParamName >
+//       where
+//         $ParamName : Clone,
+//       {
+//         #[ inline ]
+//         fn from( src : &$ParamName ) -> Self
+//         {
+//           Self( $crate::_vec![ src.clone() ] )
+//         }
+//       }
+//
+//       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+//       From< ( $ParamName, ) >
+//       for $Name
+//       < $ParamName >
+//       {
+//         #[ inline ]
+//         fn from( src : ( $ParamName, ) ) -> Self
+//         {
+//           Self( $crate::_vec![ src.0 ] )
+//         }
+//       }
+//
+//       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )?, const N : usize >
+//       From< [ $ParamName ; N ] >
+//       for $Name
+//       < $ParamName >
+//       {
+//         #[ inline ]
+//         fn from( src : [ $ParamName ; N ] ) -> Self
+//         {
+//           Self( $crate::_Vec::from( src ) )
+//         }
+//       }
+//
+//       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+//       From< &[ $ParamName ] >
+//       for $Name
+//       < $ParamName >
+//       where
+//         $ParamName : Clone,
+//       {
+//         #[ inline ]
+//         fn from( src : &[ $ParamName ] ) -> Self
+//         {
+//           Self( $crate::_Vec::from( src ) )
+//         }
+//       }
 
       impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       $crate::AsSlice< $ParamName >
@@ -303,27 +304,25 @@ pub( crate ) mod private
         }
       }
 
-      // xxx
-      // impl
-      // < Collection, Item, $( $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* )? >
-      // From< Collection >
-      // for $Name
-      // $( < $( $ParamName ),* > )?
-      // where
-      //   Collection : IntoIterator< Item = Item >,
-      //   Item : Into< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >,
-      // {
-      //   #[ inline ]
-      //   fn from( src : Collection ) -> Self
-      //   {
-      //     let src2 = src
-      //     .into_iter()
-      //     // .cloned()
-      //     .map( | e | e.into() )
-      //     .collect::< $crate::_Vec< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? > >();
-      //     Self( src2 )
-      //   }
-      // }
+      impl
+      < Collection, Item, $( $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* )? >
+      From< Collection >
+      for $Name
+      $( < $( $ParamName ),* > )?
+      where
+        Collection : IntoIterator< Item = Item >,
+        Item : Into< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >,
+      {
+        #[ inline ]
+        fn from( src : Collection ) -> Self
+        {
+          let src2 = src
+          .into_iter()
+          .map( | e | e.into() )
+          .collect::< $crate::_Vec< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? > >();
+          Self( src2 )
+        }
+      }
 
       // impl
       // < 'a, Collection, $( $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* )? >
@@ -345,80 +344,80 @@ pub( crate ) mod private
       // }
 
       // yyy
-      impl
-      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      From
-      < $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
-      for $Name
-      $( < $( $ParamName ),* > )?
-      {
-        #[ inline ]
-        fn from( src : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
-        {
-          Self( $crate::_vec![ src ] )
-        }
-      }
-
-      impl
-      < __FromRef $( , $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* )? >
-      From
-      < &__FromRef >
-      for $Name
-      $( < $( $ParamName ),* > )?
-      where
-        __FromRef : Clone,
-        Self : From< __FromRef >,
-      {
-        #[ inline ]
-        fn from( src : &__FromRef ) -> Self
-        {
-          From::from( ( *src ).clone() )
-        }
-      }
-
-      impl
-      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      From
-      < ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , ) >
-      for $Name
-      $( < $( $ParamName ),* > )?
-      {
-        #[ inline ]
-        fn from( src : ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , ) ) -> Self
-        {
-          Self( $crate::_vec![ src.0 ] )
-        }
-      }
-
-      impl
-      < $( $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? , )* )? const N : usize >
-      From
-      < [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] >
-      for $Name
-      $( < $( $ParamName ),* > )?
-      {
-        #[ inline ]
-        fn from( src : [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] ) -> Self
-        {
-          Self( $crate::_Vec::from( src ) )
-        }
-      }
-
-      impl
-      $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-      From
-      < &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ] >
-      for $Name
-      $( < $( $ParamName ),* > )?
-      where
-        $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
-      {
-        #[ inline ]
-        fn from( src : &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ] ) -> Self
-        {
-          Self( $crate::_Vec::from( src ) )
-        }
-      }
+//       impl
+//       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+//       From
+//       < $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+//       for $Name
+//       $( < $( $ParamName ),* > )?
+//       {
+//         #[ inline ]
+//         fn from( src : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
+//         {
+//           Self( $crate::_vec![ src ] )
+//         }
+//       }
+//
+//       impl
+//       < __FromRef $( , $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* )? >
+//       From
+//       < &__FromRef >
+//       for $Name
+//       $( < $( $ParamName ),* > )?
+//       where
+//         __FromRef : Clone,
+//         Self : From< __FromRef >,
+//       {
+//         #[ inline ]
+//         fn from( src : &__FromRef ) -> Self
+//         {
+//           From::from( ( *src ).clone() )
+//         }
+//       }
+//
+//       impl
+//       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+//       From
+//       < ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , ) >
+//       for $Name
+//       $( < $( $ParamName ),* > )?
+//       {
+//         #[ inline ]
+//         fn from( src : ( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? , ) ) -> Self
+//         {
+//           Self( $crate::_vec![ src.0 ] )
+//         }
+//       }
+//
+//       impl
+//       < $( $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? , )* )? const N : usize >
+//       From
+//       < [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] >
+//       for $Name
+//       $( < $( $ParamName ),* > )?
+//       {
+//         #[ inline ]
+//         fn from( src : [ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; N ] ) -> Self
+//         {
+//           Self( $crate::_Vec::from( src ) )
+//         }
+//       }
+//
+//       impl
+//       $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
+//       From
+//       < &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ] >
+//       for $Name
+//       $( < $( $ParamName ),* > )?
+//       where
+//         $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? : Clone,
+//       {
+//         #[ inline ]
+//         fn from( src : &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ] ) -> Self
+//         {
+//           Self( $crate::_Vec::from( src ) )
+//         }
+//       }
       // yyy
 
       impl

@@ -2,9 +2,27 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-mod single_test;
-mod pair_test;
-mod homo_pair_test;
+mod single_parameter_main_gen_test;
+mod single_parameter_main_manual_test;
+mod single_parameter_test;
+mod single_parametrized_main_gen_test;
+mod single_parametrized_main_manual_test;
+mod single_parametrized_test;
+
+/* qqq : for Dima : split this tests */
+mod pair_parameter_main_gen_test;
+mod pair_parameter_main_manual_test;
+mod pair_parameter_test;
+mod pair_parametrized_main_gen_test;
+mod pair_parametrized_main_manual_test;
+mod pair_parametrized_test;
+
+mod homo_pair_parameter_main_gen_test;
+mod homo_pair_parameter_main_manual_test;
+mod homo_pair_parameter_test;
+mod homo_pair_parametrized_main_gen_test;
+mod homo_pair_parametrized_main_manual_test;
+mod homo_pair_parametrized_test;
 
 #[ cfg
 (
@@ -33,4 +51,3 @@ mod make_interface_test;
 mod vectorized_from_test;
 
 mod enumerable_test;
-

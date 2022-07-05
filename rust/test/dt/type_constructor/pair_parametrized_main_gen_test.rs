@@ -1,20 +1,8 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-macro_rules! mk
-{
-  (
-    $( $Rest : tt )*
-  )
-  =>
-  {
-    mod1::Floats::from( $( $Rest )* )
-  };
-}
-
 mod mod1
 {
-
   #[ derive( Debug, Clone, PartialEq ) ]
   pub struct Floats< T1 : PartialEq + Copy, T2 : Default >
   (
@@ -40,7 +28,6 @@ mod mod1
       Floats::< T1, T2 >( src, T2::default() )
     }
   }
-
 }
 
 // trace_macros!( true );
@@ -48,8 +35,11 @@ TheModule::types!
 {
   #[ derive( Debug, Clone ) ]
   #[ derive( PartialEq ) ]
-  many Many : mod1::Floats< T1 : PartialEq + std::marker::Copy, T2 : Default >;
+  pair Pair :
+    mod1::Floats< T1 : PartialEq + std::marker::Copy, T2 : Default >,
+    std::sync::Arc< T : Copy >,
+  ;
 }
 // trace_macros!( false );
 
-include!( "./many_parametrized_main_test_only.rs" );
+include!( "./pair_parametrized_main_test_only.rs" );

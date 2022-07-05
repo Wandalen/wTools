@@ -82,25 +82,23 @@ for Many < T1, T2 >
   }
 }
 
-// impl
-// < Collection, Item, T1 : PartialEq, T2 : Default >
-// From< Collection >
-// for Many
-// < T1, T2 >
-// where
-//   Collection : IntoIterator< Item = Item >,
-//   Item : Into< mod1::Floats< T1, T2 > >,
-// {
-//   #[ inline ]
-//   fn from( src : Collection ) -> Self
-//   {
-//     let src2 = src
-//     .into_iter()
-//     .map( | e | e.into() )
-//     .collect::< TheModule::_Vec< mod1::Floats< T1, T2 > > >();
-//     Self( src2 )
-//   }
-// }
+impl< Collection, Item, T1 : PartialEq, T2 : Default >
+From< Collection >
+for Many< T1, T2 >
+where
+  Collection : IntoIterator< Item = Item >,
+  Item : Into< mod1::Floats< T1, T2 > >,
+{
+  #[ inline ]
+  fn from( src : Collection ) -> Self
+  {
+    let src2 = src
+    .into_iter()
+    .map( | e | e.into() )
+    .collect::< TheModule::_Vec< mod1::Floats< T1, T2 > > >();
+    Self( src2 )
+  }
+}
 
 // impl
 // < 'a, Collection, T1 : PartialEq + 'a, T2 : Default + 'a >
@@ -133,52 +131,52 @@ for Many < T1, T2 >
 }
 
 // yyy
-impl < __FromRef, T1 : PartialEq, T2 : Default >
-From < & __FromRef >
-for Many < T1, T2 >
-where
-  __FromRef : Clone, Self : From < __FromRef >,
-{
-  #[ inline ]
-  fn from( src : & __FromRef ) -> Self
-  {
-    From::from( ( * src ).clone() )
-  }
-}
+// impl < __FromRef, T1 : PartialEq, T2 : Default >
+// From < & __FromRef >
+// for Many < T1, T2 >
+// where
+//   __FromRef : Clone, Self : From < __FromRef >,
+// {
+//   #[ inline ]
+//   fn from( src : & __FromRef ) -> Self
+//   {
+//     From::from( ( * src ).clone() )
+//   }
+// }
 
-impl < T1 : PartialEq, T2 : Default >
-From < ( mod1::Floats < T1, T2 >, ) >
-for Many < T1, T2 >
-{
-  #[ inline ]
-  fn from( src : ( mod1::Floats < T1, T2 >, ) ) -> Self
-  {
-    Self( TheModule::_vec![  src.0  ] )
-  }
-}
+// impl < T1 : PartialEq, T2 : Default >
+// From < ( mod1::Floats < T1, T2 >, ) >
+// for Many < T1, T2 >
+// {
+//   #[ inline ]
+//   fn from( src : ( mod1::Floats < T1, T2 >, ) ) -> Self
+//   {
+//     Self( TheModule::_vec![  src.0  ] )
+//   }
+// }
 
-impl < T1 : PartialEq, T2 : Default, const N : usize >
-From < [ mod1::Floats < T1, T2 > ; N ] >
-for Many < T1, T2 >
-{
-  #[ inline ] fn from( src : [ mod1::Floats < T1, T2 > ; N ] ) -> Self
-  {
-    Self( TheModule::_Vec::from( src ) )
-  }
-}
+// impl < T1 : PartialEq, T2 : Default, const N : usize >
+// From < [ mod1::Floats < T1, T2 > ; N ] >
+// for Many < T1, T2 >
+// {
+//   #[ inline ] fn from( src : [ mod1::Floats < T1, T2 > ; N ] ) -> Self
+//   {
+//     Self( TheModule::_Vec::from( src ) )
+//   }
+// }
 
-impl < T1 : PartialEq, T2 : Default >
-From < &[ mod1::Floats < T1, T2 > ] >
-for Many < T1, T2 >
-where
-  mod1::Floats < T1, T2 > : Clone,
-{
-  #[ inline ]
-  fn from( src : & [ mod1::Floats < T1, T2 > ] ) -> Self
-  {
-    Self( TheModule::_Vec::from( src ) )
-  }
-}
+// impl < T1 : PartialEq, T2 : Default >
+// From < &[ mod1::Floats < T1, T2 > ] >
+// for Many < T1, T2 >
+// where
+//   mod1::Floats < T1, T2 > : Clone,
+// {
+//   #[ inline ]
+//   fn from( src : & [ mod1::Floats < T1, T2 > ] ) -> Self
+//   {
+//     Self( TheModule::_Vec::from( src ) )
+//   }
+// }
 // yyy
 
 impl < T1 : PartialEq, T2 : Default >

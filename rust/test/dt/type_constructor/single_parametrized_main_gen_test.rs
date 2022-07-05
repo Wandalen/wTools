@@ -48,8 +48,8 @@ TheModule::types!
 {
   #[ derive( Debug, Clone ) ]
   #[ derive( PartialEq ) ]
-  many Many : mod1::Floats< T1 : PartialEq + std::marker::Copy, T2 : Default >;
+  single Single : mod1::Floats< T1 : PartialEq + std::marker::Copy, T2 : Default >;
 }
 // trace_macros!( false );
 
-include!( "./many_parametrized_main_test_only.rs" );
+include!( "./single_parametrized_main_test_only.rs" );
