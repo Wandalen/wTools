@@ -5,7 +5,6 @@ use super::*;
 
 tests_impls!
 {
-  #[ test ]
   fn basic()
   {
     use core::fmt;
@@ -124,7 +123,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn no_parameter_no_derive()
   {
 
@@ -151,7 +149,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn parametrized_multiple()
   {
 
@@ -335,7 +332,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn parametrized_no_derives()
   {
 
@@ -362,7 +358,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn parameter_with_derives()
   {
     use TheModule::
@@ -546,7 +541,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn parameter_no_derives()
   {
 
@@ -583,7 +577,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn struct_basic()
   {
 
@@ -668,7 +661,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn struct_no_derives()
   {
 
@@ -686,7 +678,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn samples()
   {
     use TheModule::

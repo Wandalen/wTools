@@ -3,10 +3,6 @@ use super::*;
 
 tests_impls!
 {
-
-  //
-
-  #[ test ]
   fn parameter_complex()
   {
 
@@ -47,7 +43,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn parameter_no_derives()
   {
 
@@ -74,7 +69,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn struct_basic()
   {
 
@@ -122,7 +116,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn struct_no_derives()
   {
 
