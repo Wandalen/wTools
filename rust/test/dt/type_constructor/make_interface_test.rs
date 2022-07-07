@@ -6,7 +6,6 @@ use super::*;
 tests_impls!
 {
 
-  #[ test ]
   fn max()
   {
 
@@ -72,7 +71,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn sample()
   {
 

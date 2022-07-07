@@ -33,51 +33,65 @@ impl< T > core::ops::DerefMut for Many< T >
   }
 }
 
-impl< T > From < T > for Many< T >
+impl< Collection, T, IntoT >
+From< Collection >
+for Many< T >
+where
+  Collection : IntoIterator< Item = IntoT >,
+  IntoT : Into< T >,
 {
-  #[inline]
-  fn from( src : T ) -> Self
+  #[ inline ]
+  fn from( src : Collection ) -> Self
   {
-    Self( TheModule::_vec![ src ] )
+    Self( src.into_iter().map( | e | e.into() ).collect::< Vec< T > >() )
   }
 }
 
-impl < T > From < & T > for Many< T >
-where T : Clone,
-{
-  #[inline]
-  fn from( src : &T ) -> Self
-  {
-    Self( TheModule::_vec![ src.clone() ] )
-  }
-}
-
-impl< T > From < ( T, ) > for Many< T >
-{
-  #[inline]
-  fn from( src : ( T, ) ) -> Self
-  {
-    Self( TheModule::_vec![ src.0 ] )
-  }
-}
-
-impl < T, const N : usize > From < [T ; N] > for Many< T >
-{
-  #[inline]
-  fn from( src : [ T ; N ] ) -> Self
-  {
-    Self( TheModule::_Vec::from( src ) )
-  }
-}
-
-impl< T > From < &[ T ] > for Many< T > where T : Clone,
-{
-  #[inline]
-  fn from( src : &[ T ] ) -> Self
-  {
-    Self( TheModule::_Vec::from( src ) )
-  }
-}
+// impl< T > From < T > for Many< T >
+// {
+//   #[inline]
+//   fn from( src : T ) -> Self
+//   {
+//     Self( TheModule::_vec![ src ] )
+//   }
+// }
+//
+// impl < T > From < & T > for Many< T >
+// where T : Clone,
+// {
+//   #[inline]
+//   fn from( src : &T ) -> Self
+//   {
+//     Self( TheModule::_vec![ src.clone() ] )
+//   }
+// }
+//
+// impl< T > From < ( T, ) > for Many< T >
+// {
+//   #[inline]
+//   fn from( src : ( T, ) ) -> Self
+//   {
+//     Self( TheModule::_vec![ src.0 ] )
+//   }
+// }
+//
+// impl < T, const N : usize > From < [T ; N] > for Many< T >
+// {
+//   #[inline]
+//   fn from( src : [ T ; N ] ) -> Self
+//   {
+//     Self( TheModule::_Vec::from( src ) )
+//   }
+// }
+//
+// impl< T > From < &[ T ] > for Many< T > where T : Clone,
+// {
+//   #[inline]
+//   fn from( src : &[ T ] ) -> Self
+//   {
+//     Self( TheModule::_Vec::from( src ) )
+//   }
+// }
 
 impl< T > TheModule::AsSlice< T > for Many< T >
 {
@@ -89,6 +103,7 @@ impl< T > TheModule::AsSlice< T > for Many< T >
 
 TheModule::_if_make!
 {
+
   impl< T > TheModule::Make0 for Many< T >
   {
     #[inline]
@@ -123,6 +138,7 @@ TheModule::_if_make!
       Self( TheModule::_vec![ _0, _1, _2 ] )
     }
   }
+
 }
 
 include!( "./many_parameter_main_test_only.rs" );
