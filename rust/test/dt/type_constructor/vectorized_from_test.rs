@@ -4,10 +4,6 @@ use super::*;
 
 tests_impls!
 {
-
-  //
-
-  #[ test ]
   fn basic()
   {
     use TheModule::{ VectorizedInto, VectorizedFrom };

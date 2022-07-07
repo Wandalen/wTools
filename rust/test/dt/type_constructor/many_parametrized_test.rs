@@ -6,7 +6,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn basic()
   {
     use core::fmt;
@@ -64,7 +63,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn empty_parameter()
   {
 
@@ -93,7 +91,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn no_parameter_no_derive()
   {
 
@@ -120,7 +117,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn parametrized_no_derives()
   {
 
@@ -147,7 +143,6 @@ tests_impls!
 
   // xxx
 
-//   #[ test ]
 //   fn problem1()
 //   {
 //
@@ -244,7 +239,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn multiple()
   {
     use core::fmt;
@@ -291,7 +285,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn samples()
   {
 
