@@ -28,6 +28,24 @@ pub( crate ) mod private
     fn can_be_used_for_micro_mod( &self ) -> bool { false }
   }
 
+  /// Has kind.
+  pub trait HasKind
+  {
+
+    /// Static function to get kind of the visibility.
+    #[ allow( non_snake_case ) ]
+    #[ allow( dead_code ) ]
+    fn Kind() -> u32;
+
+    /// Method to get kind of the visibility.
+    #[ allow( dead_code ) ]
+    fn kind( &self ) -> u32
+    {
+      Self::Kind()
+    }
+
+  }
+
   //
 
   macro_rules! Vis
@@ -49,16 +67,15 @@ pub( crate ) mod private
         {
           Self { token : kw::$Name2( proc_macro2::Span::call_site() ) }
         }
+      }
+
+      impl HasKind for $Name1
+      {
         #[ allow( non_snake_case ) ]
         #[ allow( dead_code ) ]
-        pub fn Kind() -> u32
+        fn Kind() -> u32
         {
           $Kind
-        }
-        #[ allow( dead_code ) ]
-        pub fn kind( &self ) -> u32
-        {
-          Self::Kind()
         }
       }
 
@@ -67,6 +84,28 @@ pub( crate ) mod private
         fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
         {
           self.token.to_tokens( tokens );
+        }
+      }
+
+    }
+
+  }
+
+  //
+
+  macro_rules! HasKind
+  {
+
+    ( $Name1:path, $Kind:literal ) =>
+    {
+
+      impl HasKind for $Name1
+      {
+        #[ allow( non_snake_case ) ]
+        #[ allow( dead_code ) ]
+        fn Kind() -> u32
+        {
+          $Kind
         }
       }
 
@@ -99,6 +138,9 @@ pub( crate ) mod private
   Vis!( VisOrphan, orphan, 3 );
   Vis!( VisExposed, exposed, 4 );
   Vis!( VisPrelude, prelude, 5 );
+  HasKind!( syn::VisPublic, 6 );
+  HasKind!( syn::VisCrate, 7 );
+  HasKind!( syn::VisRestricted, 8 );
 
   impl_can_be_non_standard!( VisPrivate, false );
   impl_can_be_non_standard!( VisProtected, true );
@@ -195,8 +237,8 @@ pub( crate ) mod private
             {
               pub_token,
               paren_token,
-              in_token: None,
-              path: Box::new( syn::Path::from( path ) ),
+              in_token : None,
+              path : Box::new( syn::Path::from( path ) ),
             }));
           }
         }
@@ -204,7 +246,6 @@ pub( crate ) mod private
         {
           let in_token : Token![ in ] = content.parse()?;
           let path = content.call( syn::Path::parse_mod_style )?;
-
           input.advance_to( &ahead );
           return Ok
           (
@@ -240,7 +281,6 @@ pub( crate ) mod private
       }
     }
 
-    // #[ allow( non_snake_case ) ]
     #[ allow( dead_code ) ]
     pub fn kind( &self ) -> u32
     {
@@ -251,11 +291,10 @@ pub( crate ) mod private
         Visibility::Orphan( e ) => e.kind(),
         Visibility::Exposed( e ) => e.kind(),
         Visibility::Prelude( e ) => e.kind(),
-        Visibility::Public( _ ) => 6,
-        Visibility::Crate( _ ) => 7,
-        Visibility::Restricted( _ ) => 8,
+        Visibility::Public( e ) => e.kind(),
+        Visibility::Crate( e ) => e.kind(),
+        Visibility::Restricted( e ) => e.kind(),
         Visibility::Inherited => 9,
-        // _ => (),
       }
     }
 
@@ -278,6 +317,8 @@ pub( crate ) mod private
       //     return Ok( Visibility::Inherited );
       //   }
       // }
+
+      // xxx : use match maybe
 
       if input.peek( kw::private )
       {
@@ -400,6 +441,7 @@ pub mod exposed
   {
     kw,
     CanBeUsedForMicroModInterface,
+    HasKind,
     VisPrivate,
     VisProtected,
     VisOrphan,

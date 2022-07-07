@@ -265,14 +265,11 @@ pub( crate ) mod private
       let mut result : Self = make!();
       loop
       {
-        // println!( "lookahead1" );
         let lookahead = input.lookahead1();
         if !lookahead.peek( Token![ # ] )
         {
-          // dbg!( &input );
           break;
         }
-        // println!( "lookahead1 : yes" );
         let input2;
         let element = syn::Attribute
         {
@@ -283,6 +280,7 @@ pub( crate ) mod private
           tokens : input2.parse()?,
         };
         result.0.push( element );
+        // println!( "AttributesOuter::a" );
       }
       Ok( result )
       // let input2;

@@ -5,7 +5,7 @@ use super::*;
 use TheModule::prelude::*;
 
 // qqq : do negative testing
-// xxx2 : continue here
+// xxx : continue here
 
 tests_impls!
 {
