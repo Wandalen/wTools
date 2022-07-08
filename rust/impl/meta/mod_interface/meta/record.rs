@@ -17,6 +17,7 @@ pub( crate ) mod private
   {
     MicroModule( syn::token::Mod ),
     Layer( kw::layer ),
+    Use( syn::token::Use ),
   }
 
   //
@@ -26,17 +27,26 @@ pub( crate ) mod private
 
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
-      let element_type;
       let lookahead = input.lookahead1();
-
-      if lookahead.peek( syn::token::Mod )
+      let element_type = match()
       {
-        element_type = ElementType::MicroModule( input.parse()? );
-      }
-      else
-      {
-        element_type = ElementType::Layer( input.parse()? );
-      }
+        _case if lookahead.peek( syn::token::Mod ) =>
+        {
+          ElementType::MicroModule( input.parse()? )
+        },
+        _case if lookahead.peek( syn::token::Use ) =>
+        {
+          ElementType::Use( input.parse()? )
+        },
+        _case if lookahead.peek( kw::layer ) =>
+        {
+          ElementType::Layer( input.parse()? )
+        },
+        _default =>
+        {
+          return Err( lookahead.error() )
+        },
+      };
 
       Ok( element_type )
     }
@@ -53,6 +63,7 @@ pub( crate ) mod private
       match self
       {
         MicroModule( e ) => e.to_tokens( tokens ),
+        Use( e ) => e.to_tokens( tokens ),
         Layer( e ) => e.to_tokens( tokens ),
       }
     }
@@ -65,12 +76,10 @@ pub( crate ) mod private
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
   pub struct Record
   {
-    pub attrs : Vec< syn::Attribute >,
+    pub attrs : AttributesOuter,
     pub vis : Visibility,
     pub element_type : ElementType,
-    // pub elements : syn::punctuated::Punctuated< syn::Ident, syn::token::Comma >,
-    // pub elements : syn::punctuated::Punctuated< Pair< Many< AttributesOuter >, syn::Ident >, syn::token::Comma >,
-    pub elements : syn::punctuated::Punctuated< Pair< AttributesOuter, syn::Ident >, syn::token::Comma >,
+    pub elements : syn::punctuated::Punctuated< Pair< AttributesOuter, syn::Path >, syn::token::Comma >,
     pub semi : Option< syn::token::Semi >,
   }
 
@@ -82,9 +91,9 @@ pub( crate ) mod private
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
 
-      let attrs = input.call( syn::Attribute::parse_outer )?;
-      let vis : Visibility = input.parse()?;
-      let element_type : ElementType = input.parse()?;
+      let attrs = input.parse()?;
+      let vis = input.parse()?;
+      let element_type = input.parse()?;
       let mut elements;
 
       let lookahead = input.lookahead1();
@@ -92,14 +101,12 @@ pub( crate ) mod private
       {
         let input2;
         let _brace_token = syn::braced!( input2 in input );
-        // println!( "syn::punctuated::Punctuated" );
-        elements = syn::punctuated::Punctuated::< _, _ >::parse_terminated( &input2 )?;
+        elements = syn::punctuated::Punctuated::parse_terminated( &input2 )?;
       }
       else
       {
-        let ident : syn::Ident = input.parse()?;
+        let ident = input.parse()?;
         elements = syn::punctuated::Punctuated::new();
-        // elements.push( Pair::new( Many::new(), ident ) );
         elements.push( Pair::new( make!(), ident ) );
       }
 
@@ -129,8 +136,7 @@ pub( crate ) mod private
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
-      use proc_macro_tools::quote::TokenStreamExt;
-      tokens.append_all( &self.attrs );
+      self.attrs.to_tokens( tokens );
       self.vis.to_tokens( tokens );
       self.element_type.to_tokens( tokens );
       self.elements.to_tokens( tokens );

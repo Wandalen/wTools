@@ -24,14 +24,20 @@ tests_impls!
     let code = qt!
     {
       #[ derive( Copy ) ]
+      #[ derive( Clone ) ]
       x1
-      // #[ derive( Clone ) ]
-      // x2
     };
     let got = syn::parse2::< TheModule::Pair< TheModule::Many< TheModule::AttributesOuter >, syn::Ident > >( code )?;
     let exp = TheModule::Pair::< TheModule::Many< TheModule::AttributesOuter >, syn::Ident >
     (
-      TheModule::Many( vec![ TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Copy ) ] ) )? ) ] ),
+      TheModule::Many( vec!
+      [
+        TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!
+        {
+          #[ derive( Copy ) ]
+          #[ derive( Clone ) ]
+        } )? ),
+      ]),
       syn::Ident::new( "x1", proc_macro2::Span::call_site() ),
     );
     a_id!( got, exp );
@@ -42,13 +48,14 @@ tests_impls!
       #[ derive( Copy ) ]
       x1,
       #[ derive( Clone ) ]
-      x2
+      x2,
+      x3
     };
     type PunctuatedPairs = syn::punctuated::Punctuated
     <
       TheModule::Pair
       <
-        TheModule::Many< TheModule::AttributesOuter >,
+        TheModule::AttributesOuter,
         syn::Ident,
       >,
       syn::token::Comma
@@ -58,13 +65,18 @@ tests_impls!
     let mut exp = PunctuatedPairs::new();
     exp.push( TheModule::Pair::new
     (
-      TheModule::Many( vec![ TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Copy ) ] ) )? ) ] ),
+      TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Copy ) ] ) )? ),
       syn::Ident::new( "x1", proc_macro2::Span::call_site() ),
     ));
     exp.push( TheModule::Pair::new
     (
-      TheModule::Many( vec![ TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Clone ) ] ) )? ) ] ),
+      TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!( #[ derive( Clone ) ] ) )? ),
       syn::Ident::new( "x2", proc_macro2::Span::call_site() ),
+    ));
+    exp.push( TheModule::Pair::new
+    (
+      make!(),
+      syn::Ident::new( "x3", proc_macro2::Span::call_site() ),
     ));
     a_id!( got, exp );
 
@@ -140,4 +152,3 @@ tests_index!
   pair,
   many,
 }
-
