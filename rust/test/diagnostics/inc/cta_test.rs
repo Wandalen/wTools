@@ -15,15 +15,26 @@ tests_impls!
     cta_true!( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
     // xxx : try ( 1 + 2 == 3 )
   }
+}
 
-  #[ cfg( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
-  #[ test_tools::rustversion::nightly ]
-  fn cta_trybuild_tests()
-  {
-    use test_tools::dependencies::trybuild;
-    let t = trybuild::TestCases::new();
-    t.compile_fail( "../../../rust/test/diagnostics/inc/cta_true_fail.rs" );
-  }
+#[ cfg( feature = "compiletime_assertions" ) ]
+#[ test_tools::rustversion::nightly ]
+#[ test ]
+fn cta_trybuild_tests()
+{
+  use test_tools::dependencies::trybuild;
+  let t = trybuild::TestCases::new();
+  t.compile_fail( "../../../rust/test/diagnostics/inc/cta_true_fail.rs" );
+}
+
+#[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
+#[ test_tools::rustversion::nightly ]
+#[ test ]
+fn cta_trybuild_tests()
+{
+  use test_tools::dependencies::trybuild;
+  let t = trybuild::TestCases::new();
+  t.compile_fail( "../../../rust/test/diagnostics/inc/wtools_cta_true_fail.rs" );
 }
 
 //
@@ -31,5 +42,4 @@ tests_impls!
 tests_index!
 {
   cta_true_pass,
-  cta_trybuild_tests,
 }
