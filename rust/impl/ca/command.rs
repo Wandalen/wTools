@@ -5,7 +5,7 @@ pub( crate ) mod private
   use std::rc::Rc;
   use core::fmt;
   use crate::*;
-  use wtools::error::BasicError;
+  use wtools::error::{ Result, BasicError };
 
   // qqq : for Dima : adjust formatting /* aaa : Dmytro : adjusted */
 
@@ -14,7 +14,7 @@ pub( crate ) mod private
   ///
 
   // qqq : for Dima : make alias for Result with BasicError
-  pub struct OnCommand( Option< Rc< dyn Fn( &instruction::Instruction ) -> Result< (), BasicError > > > );
+  pub struct OnCommand( Option< Rc< dyn Fn( &instruction::Instruction ) -> Result< () > > > );
 
   impl OnCommand
   {
@@ -31,7 +31,7 @@ pub( crate ) mod private
       }
     }
     /// Perform callback.
-    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result< (), BasicError >
+    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result< () >
     {
       if self.0.is_some()
       {
@@ -51,9 +51,9 @@ pub( crate ) mod private
     }
   }
 
-  impl From<&'static dyn Fn( &instruction::Instruction ) -> Result< (), BasicError >> for OnCommand
+  impl From<&'static dyn Fn( &instruction::Instruction ) -> Result< () >> for OnCommand
   {
-    fn from( src : &'static dyn Fn( &instruction::Instruction ) -> Result< (), BasicError > ) -> Self
+    fn from( src : &'static dyn Fn( &instruction::Instruction ) -> Result< () > ) -> Self
     {
       OnCommand( Some( Rc::new( src ) ) )
     }
@@ -134,7 +134,7 @@ pub( crate ) mod private
     }
 
     /// Execute callback.
-    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result< (), BasicError >
+    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result< () >
     {
       if self.subject_hint.len() == 0 && instruction.subject.len() != 0
       {

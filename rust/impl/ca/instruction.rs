@@ -1,7 +1,7 @@
 
 pub( crate ) mod private
 {
-  pub use wtools::error::*;
+  pub use wtools::error::BasicError;
   pub use wtools::string::parse_request;
   pub use wtools::string::parse_request::OpType;
   pub use wtools::former::Former;
