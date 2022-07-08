@@ -3,13 +3,6 @@ use super::*;
 
 //
 
-// fn unit_or_err() -> Result< (), TheModule::for_app::Error >
-// {
-//   TheModule::for_app::Error::from( Err( "err" ) )
-// }
-
-//
-
 #[ cfg( feature = "error_handling_for_app" ) ]
 tests_impls!
 {

@@ -40,7 +40,7 @@ pub mod for_lib
   pub use ::thiserror::*;
 }
 
-// qqq : cover by simple test
+// qqq : cover by simple test /* aaa : Dmytro : added trivial test routine `basic` */
 /// Exceptions handling mechanism for apps.
 pub mod for_app
 {
@@ -49,7 +49,7 @@ pub mod for_app
   pub use ::anyhow::*;
 }
 
-// qqq : cover by simple test
+// qqq : cover by simple test /* aaa : Dmytro : added trivial test routines in test suite `assert` */
 /// Protected namespace of the module.
 pub mod protected
 {
@@ -85,7 +85,6 @@ pub mod exposed
   // #[ cfg( feature = "use_std" ) ]
   // #[ doc( inline ) ]
   // pub use super::error::BasicError;
-
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
