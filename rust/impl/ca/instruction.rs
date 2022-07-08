@@ -21,7 +21,7 @@ pub( crate ) mod private
     /// Subject.
     pub subject : String,
     /// Properties map.
-    pub properties_map : HashMap<String, OpType<String>>,
+    pub properties_map : HashMap< String, OpType< String > >,
   }
 
   ///
@@ -31,11 +31,11 @@ pub( crate ) mod private
   #[ derive( Debug ) ]
   #[ derive( Former ) ]
   #[ perform( fn parse( &self ) -> Instruction ) ]
-  pub struct InstructionParseParams<'a>
+  pub struct InstructionParseParams< 'a >
   {
     #[ default( "" ) ]
     instruction : &'a str,
-    properties_map : Option<HashMap<String, OpType<String>>>,
+    properties_map : Option< HashMap< String, OpType< String > > >,
     #[ default( true ) ]
     properties_map_parsing : bool,
     #[ default( true ) ]
@@ -48,10 +48,10 @@ pub( crate ) mod private
     subject_win_paths_maybe : bool,
   }
 
-  impl<'a> InstructionParseParams<'a>
+  impl< 'a > InstructionParseParams< 'a >
   {
     /// Set not default builder field `properties_map`.
-    pub fn properties_map( mut self, properties_map : HashMap<String, OpType<String>> ) -> InstructionParseParams<'a>
+    pub fn properties_map( mut self, properties_map : HashMap< String, OpType< String > > ) -> InstructionParseParams< 'a >
     {
       self.properties_map = Some( properties_map );
       self
@@ -76,7 +76,7 @@ pub( crate ) mod private
 
   //
 
-  impl <'a>InstructionParseParamsAdapter for InstructionParseParams<'a>
+  impl < 'a >InstructionParseParamsAdapter for InstructionParseParams< 'a >
   {
     fn about_command_format( &self ) -> &'static str
     {
@@ -151,7 +151,7 @@ pub( crate ) mod private
   /// Get instruction parser builder.
   ///
 
-  pub fn instruction_parse<'a>() -> InstructionParseParamsFormer<'a>
+  pub fn instruction_parse< 'a >() -> InstructionParseParamsFormer< 'a >
   {
     InstructionParseParams::former()
   }

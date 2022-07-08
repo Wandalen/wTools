@@ -7,7 +7,7 @@ pub( crate ) mod private
   use crate::*;
   use wtools::error::BasicError;
 
-  // qqq : for Dima : adjust formatting
+  // qqq : for Dima : adjust formatting /* aaa : Dmytro : adjusted */
 
   ///
   /// Handle for command routine.
