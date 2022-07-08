@@ -17,6 +17,8 @@ pub mod assert;
 #[ cfg( feature = "use_std" ) ]
 /// Default error object.
 pub mod error;
+/// An alias for Result.
+pub mod result;
 
 /// Dependencies.
 pub mod dependencies
@@ -82,6 +84,10 @@ pub mod exposed
   #[ cfg( feature = "use_std" ) ]
   #[ doc( inline ) ]
   pub use super::error::*;
+
+  #[ cfg( feature = "use_std" ) ]
+  #[ doc( inline ) ]
+  pub use super::result::*;
   // #[ cfg( feature = "use_std" ) ]
   // #[ doc( inline ) ]
   // pub use super::error::BasicError;
