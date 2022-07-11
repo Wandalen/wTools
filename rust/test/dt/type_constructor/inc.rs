@@ -9,7 +9,7 @@ mod single_parametrized_main_gen_test;
 mod single_parametrized_main_manual_test;
 mod single_parametrized_test;
 
-/* qqq : for Dima : split this tests */
+/* qqq : for Dima : split this tests */ /* aaa : Dmytro : done */
 #[ cfg
 (
   all
