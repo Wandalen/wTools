@@ -29,33 +29,42 @@ pub mod dependencies
   pub use ::woptions;
 }
 
-/// Collection of general purpose meta tools.
-pub mod meta;
+//
 
-/// Protected namespace of the module.
-pub mod protected
+mod_interface::mod_interface!
 {
-  pub use super::orphan::*;
-  pub use super::meta::orphan::*;
+  prelude layer meta;
 }
-
 pub use protected::*;
 
-/// Orphan namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-  pub use super::meta::exposed::*;
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::meta::prelude::*;
-}
+//
+// /// Collection of general purpose meta tools.
+// pub mod meta;
+//
+// /// Protected namespace of the module.
+// pub mod protected
+// {
+//   pub use super::orphan::*;
+//   pub use super::meta::orphan::*;
+// }
+//
+// pub use protected::*;
+//
+// /// Orphan namespace of the module.
+// pub mod orphan
+// {
+//   pub use super::exposed::*;
+// }
+//
+// /// Exposed namespace of the module.
+// pub mod exposed
+// {
+//   pub use super::prelude::*;
+//   pub use super::meta::exposed::*;
+// }
+//
+// /// Prelude to use essentials: `use my_module::prelude::*`.
+// pub mod prelude
+// {
+//   pub use super::meta::prelude::*;
+// }
