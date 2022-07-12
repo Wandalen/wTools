@@ -13,6 +13,7 @@ tests_impls!
 
   //
 
+  #[ cfg( debug_assertions ) ]
   #[ should_panic ]
   fn debug_assert_id_fail()
   {
@@ -30,6 +31,7 @@ tests_impls!
 
   //
 
+  #[ cfg( debug_assertions ) ]
   #[ should_panic ]
   fn debug_assert_identical_fail()
   {
@@ -47,6 +49,7 @@ tests_impls!
 
   //
 
+  #[ cfg( debug_assertions ) ]
   #[ should_panic ]
   fn debug_assert_ni_fail()
   {
@@ -64,6 +67,7 @@ tests_impls!
 
   //
 
+  #[ cfg( debug_assertions ) ]
   #[ should_panic ]
   fn debug_assert_not_identical_fail()
   {
