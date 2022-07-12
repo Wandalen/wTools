@@ -4,7 +4,7 @@ pub( crate ) mod private
   use crate::command::*;
   use crate::instruction::*;
   use wtools::meta::*;
-  use wtools::error::*;
+  use wtools::error::{ Result, BasicError };
   use wtools::string::split;
   use wtools::former::Former;
 
@@ -51,7 +51,7 @@ pub( crate ) mod private
   impl CommandsAggregator
   {
     /// Perform instructions queue as single program.
-    pub fn program_perform( &self, program : impl AsRef< str > ) -> Result< (), BasicError >
+    pub fn program_perform( &self, program : impl AsRef< str > ) -> Result< () >
     {
       let program = program.as_ref().trim();
 
@@ -91,7 +91,7 @@ pub( crate ) mod private
     }
 
     /// Perform instruction.
-    pub fn instruction_perform( &self, instruction : impl AsRef< str > ) -> Result< (), BasicError >
+    pub fn instruction_perform( &self, instruction : impl AsRef< str > ) -> Result< () >
     {
       let parsed : Instruction = instruction_parse()
       .instruction( instruction.as_ref() )
@@ -106,7 +106,7 @@ pub( crate ) mod private
 
     //
 
-    fn _instruction_perform( &self, instruction : &Instruction ) -> Result< (), BasicError >
+    fn _instruction_perform( &self, instruction : &Instruction ) -> Result< () >
     {
       let result = match self.command_resolve( instruction )
       {
@@ -263,7 +263,7 @@ pub( crate ) mod private
   pub trait OnError
   {
     /// Handle error.
-    fn on_error( &self, err : BasicError ) -> Result< (), BasicError >;
+    fn on_error( &self, err : BasicError ) -> Result< () >;
   }
 
   ///
@@ -273,7 +273,7 @@ pub( crate ) mod private
   pub trait OnSyntaxError
   {
     /// Handle syntax error.
-    fn on_syntax_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >;
+    fn on_syntax_error( &self, command : impl AsRef< str > ) -> Result< () >;
   }
 
   ///
@@ -283,7 +283,7 @@ pub( crate ) mod private
   pub trait OnAmbiguity
   {
     /// Handle ambiguity.
-    fn on_ambiguity( &self, command : impl AsRef< str > ) -> Result< (), BasicError >;
+    fn on_ambiguity( &self, command : impl AsRef< str > ) -> Result< () >;
   }
 
   ///
@@ -293,7 +293,7 @@ pub( crate ) mod private
   pub trait OnUnknownCommandError
   {
     /// Handle unknown command error.
-    fn on_unknown_command_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >;
+    fn on_unknown_command_error( &self, command : impl AsRef< str > ) -> Result< () >;
   }
 
   ///
@@ -303,7 +303,7 @@ pub( crate ) mod private
   pub trait OnGetHelp
   {
     /// Get help.
-    fn on_get_help( &self ) -> Result< (), BasicError >;
+    fn on_get_help( &self ) -> Result< () >;
   }
 
   ///
@@ -313,7 +313,7 @@ pub( crate ) mod private
   pub trait OnPrintCommands
   {
     /// Print all commands.
-    fn on_print_commands( &self ) -> Result< (), BasicError >;
+    fn on_print_commands( &self ) -> Result< () >;
   }
 
   ///
@@ -330,7 +330,7 @@ pub( crate ) mod private
   impl OnError for CommandsAggregator
   {
     /// Handle error.
-    fn on_error( &self, err : BasicError ) -> Result< (), BasicError >
+    fn on_error( &self, err : BasicError ) -> Result< () >
     {
       if self.changing_exit_code
       {
@@ -345,7 +345,7 @@ pub( crate ) mod private
   impl OnSyntaxError for CommandsAggregator
   {
     /// Handle syntax error.
-    fn on_syntax_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >
+    fn on_syntax_error( &self, command : impl AsRef< str > ) -> Result< () >
     {
       let err_formatted = format!( "Illformed command \"{}\"", command.as_ref() );
       eprintln!( "{}", err_formatted );
@@ -360,7 +360,7 @@ pub( crate ) mod private
   impl OnAmbiguity for CommandsAggregator
   {
     /// Handle ambiguity.
-    fn on_ambiguity( &self, command : impl AsRef< str > ) -> Result< (), BasicError >
+    fn on_ambiguity( &self, command : impl AsRef< str > ) -> Result< () >
     {
       eprintln!( "Ambiguity. Did you mean?" );
       self.command_help( command.as_ref() );
@@ -376,7 +376,7 @@ pub( crate ) mod private
   impl OnUnknownCommandError for CommandsAggregator
   {
     /// Handle unknown command error.
-    fn on_unknown_command_error( &self, command : impl AsRef< str > ) -> Result< (), BasicError >
+    fn on_unknown_command_error( &self, command : impl AsRef< str > ) -> Result< () >
     {
       let mut err_formatted = format!( "Unknown command \"{}\"", command.as_ref() );
 
@@ -396,7 +396,7 @@ pub( crate ) mod private
   impl OnGetHelp for CommandsAggregator
   {
     /// Get help.
-    fn on_get_help( &self ) -> Result< (), BasicError >
+    fn on_get_help( &self ) -> Result< () >
     {
       let instruction = instruction_parse()
       .instruction( ".help" )
@@ -420,7 +420,7 @@ pub( crate ) mod private
   impl OnPrintCommands for CommandsAggregator
   {
     /// Print all commands.
-    fn on_print_commands( &self ) -> Result< (), BasicError >
+    fn on_print_commands( &self ) -> Result< () >
     {
       println!( "" );
       self.command_help( "" );

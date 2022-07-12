@@ -7,10 +7,8 @@ use super::*;
 #[ cfg( feature = "use_std" ) ]
 tests_impls!
 {
-  #[ test ]
   fn basic()
   {
-
     use std::error::Error;
 
     // test.case( "basic" );
@@ -34,14 +32,12 @@ tests_impls!
     let err2 = err1.clone();
     a_id!( err1, err2 );
     a_id!( err1.description(), err2.description() );
-
   }
 
   //
 
   fn use1()
   {
-
     use std::error::Error as ErrorInterface;
     use TheModule::BasicError as Error;
 
@@ -52,7 +48,6 @@ tests_impls!
     a_id!( err1.description(), "Some error" );
     a_id!( err1.msg(), "Some error" );
     a_id!( format!( "err1 : {}", err1 ), "err1 : Some error" );
-
   }
 
   //
@@ -74,7 +69,6 @@ tests_impls!
 
   fn use3()
   {
-
     use std::error::Error;
 
     // test.case( "basic" );
@@ -84,14 +78,12 @@ tests_impls!
     a_id!( err1.description(), "Some error" );
     a_id!( err1.msg(), "Some error" );
     a_id!( format!( "err1 : {}", err1 ), "err1 : Some error" );
-
   }
 
   //
 
   fn err_basic()
   {
-
     // test.case( "basic" );
     let err = TheModule::err!( "abc" );
     a_id!( err.to_string(), "abc" );
@@ -99,7 +91,6 @@ tests_impls!
     // test.case( "with args" );
     let err = TheModule::err!( "abc{}{}", "def", "ghi" );
     a_id!( err.to_string(), "abcdefghi" );
-
   }
 }
 

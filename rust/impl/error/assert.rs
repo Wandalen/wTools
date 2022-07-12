@@ -8,7 +8,8 @@ macro_rules! debug_assert_id
   ( $( $arg : tt )+ ) =>
   {
     #[cfg(debug_assertions)]
-    $crate::assert_eq!( $( $arg )+ );
+    // $crate::assert_eq!( $( $arg )+ );
+    std::assert_eq!( $( $arg )+ );
   };
   // ( $left : expr, $right : expr $(,)? ) =>
   // {{
@@ -74,7 +75,8 @@ macro_rules! debug_assert_ni
   ( $( $arg : tt )+ ) =>
   {
     #[cfg(debug_assertions)]
-    $crate::assert_ne!( $( $arg )+ );
+    // $crate::assert_ne!( $( $arg )+ );
+    std::assert_ne!( $( $arg )+ );
   };
 }
 
@@ -86,7 +88,8 @@ macro_rules! debug_assert_not_identical
   ( $( $arg : tt )+ ) =>
   {
     #[cfg(debug_assertions)]
-    $crate::assert_ne!( $( $arg )+ );
+    // $crate::assert_ne!( $( $arg )+ );
+    $crate::debug_assert_ni!( $( $arg )+ );
   };
 }
 
