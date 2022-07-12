@@ -12,6 +12,8 @@ tests_impls!
       a_id!( layer_b::protected::Vec::< i32 >::new(), layer_b::protected::Vec::< i32 >::new() );
       a_id!( layer_b::protected::SuperStruct1{}, layer_b::protected::SuperStruct1{} );
       a_id!( layer_b::protected::SuperStruct2{}, layer_b::protected::SuperStruct2{} );
+      a_id!( layer_b::protected::SuperStruct3{}, layer_b::protected::SuperStruct3{} );
+      a_id!( layer_b::protected::SuperStruct4{}, layer_b::protected::SuperStruct4{} );
     }
 
     /* test.case( "root" ); */

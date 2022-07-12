@@ -46,55 +46,6 @@ crate::mod_interface!
   /// Rectangle change.
   layer rect_changer;
 
-  exposed use private::Drawing;
+  exposed use Drawing;
 
 }
-
-// /// Protected namespace of the module.
-// pub mod protected
-// {
-//   pub use super::
-//   {
-//     orphan::*,
-//     command::orphan::*,
-//     queue::orphan::*,
-//     rect_change::orphan::*,
-//     rect_changer::orphan::*,
-//   };
-// }
-//
-// pub use protected::*;
-//
-// /// Parented namespace of the module.
-// pub mod orphan
-// {
-//   pub use super::exposed::*;
-// }
-//
-// /// Exposed namespace of the module.
-// pub mod exposed
-// {
-//   pub use super::
-//   {
-//     prelude::*,
-//     command::exposed::*,
-//     queue::exposed::*,
-//     rect_change::exposed::*,
-//     rect_changer::exposed::*,
-//     private::Drawing,
-//   };
-// }
-//
-// pub use exposed::*;
-//
-// /// Prelude to use essentials: `use my_module::prelude::*`.
-// pub mod prelude
-// {
-//   pub use super::
-//   {
-//     command::prelude::*,
-//     queue::prelude::*,
-//     rect_change::prelude::*,
-//     rect_changer::prelude::*,
-//   };
-// }

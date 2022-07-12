@@ -37,16 +37,29 @@ pub struct SuperStruct2
 {
 }
 
+/// Super struct.
+#[ derive( Debug, PartialEq ) ]
+pub struct SuperStruct3
+{
+}
+
+/// Super struct.
+#[ derive( Debug, PartialEq ) ]
+pub struct SuperStruct4
+{
+}
+
 //
 
 TheModule::mod_interface!
 {
 
-  use ::std::vec::Vec;
-  use super::super::SuperStruct1;
-  use super::SuperStruct2;
+  protected use ::std::vec::Vec;
+  protected use super::super::SuperStruct1;
+  protected use super::SuperStruct2;
+  protected use super::{ SuperStruct3, SuperStruct4 };
 
-  use layer_b_protected;
+  protected use layer_b_protected;
   orphan use { layer_b_orphan };
   exposed use { layer_b_exposed };
   prelude use layer_b_prelude;

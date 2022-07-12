@@ -11,14 +11,11 @@ mod private
 {
 }
 
-/// Super struct.
-#[ derive( Debug, PartialEq ) ]
-pub struct SuperStruct1
-{
-}
-
 TheModule::mod_interface!
 {
+
+  // xxx : test with `layer { layer_a, layer_a };`
+  // xxx : test with `use { layer_a, layer_a };`
 
   /// layer_a
   layer layer_a;
@@ -29,5 +26,5 @@ TheModule::mod_interface!
 
 //
 
-include!( "../../only_test/layer_divergent_only_test.rs" );
+// include!( "../../only_test/layer_divergent_only_test.rs" );
 include!( "../../only_test/layer_simple_only_test.rs" );

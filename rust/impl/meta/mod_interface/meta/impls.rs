@@ -124,43 +124,75 @@ pub( crate ) mod private
           let attrs1 = &record.attrs;
           let path = record.use_elements.as_ref().unwrap();
 
-          let mut vis = record.vis.clone();
+          let vis = record.vis.clone();
           if vis == Visibility::Inherited
           {
-            vis = Visibility::Protected( VisProtected::new() );
-          }
+            // vis = Visibility::Protected( VisProtected::new() );
 
-          // xxx : test
-          if !vis.can_be_used_for_micro_mod()
-          {
-            err = Some( syn_err!
-            (
-              record,
-              "Use either [ protected, orphan, exposed, prelude ] visibility:\n  {}",
-              qt!{ #record },
-            ));
-          }
-
-          let fixes_list = fixes_map.get_mut( &vis.kind() ).unwrap();
-
-          // if path.leading_colon.is_some()
-          if path.to_add_prefix()
-          {
-            fixes_list.push( qt!
+            let _path;
+            let path2 = if path.to_add_prefix()
             {
-              #attrs1
+              _path = parse_qt!{ super::private::#path };
+              &_path
+            }
+            else
+            {
+              path
+            };
+
+            fixes_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
+            {
               #[ doc( inline ) ]
-              pub use super::private::#path;
+              pub use #path2::orphan::*;
             });
+
+            fixes_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
+            {
+              #[ doc( inline ) ]
+              pub use #path2::exposed::*;
+            });
+
+            fixes_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
+            {
+              #[ doc( inline ) ]
+              pub use #path2::prelude::*;
+            });
+
           }
           else
           {
-            fixes_list.push( qt!
+
+            // xxx : test
+            if !vis.can_be_used_for_micro_mod()
             {
-              #attrs1
-              #[ doc( inline ) ]
-              pub use #path;
-            });
+              err = Some( syn_err!
+              (
+                record,
+                "Use either [ protected, orphan, exposed, prelude ] visibility:\n  {}",
+                qt!{ #record },
+              ));
+            }
+
+            let fixes_list = fixes_map.get_mut( &vis.kind() ).unwrap();
+
+            if path.to_add_prefix()
+            {
+              fixes_list.push( qt!
+              {
+                #attrs1
+                #[ doc( inline ) ]
+                pub use super::private::#path;
+              });
+            }
+            else
+            {
+              fixes_list.push( qt!
+              {
+                #attrs1
+                #[ doc( inline ) ]
+                pub use #path;
+              });
+            }
           }
 
         },

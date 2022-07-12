@@ -31,14 +31,20 @@ mod private
 
 }
 
+/// Super struct.
+#[ derive( Debug, PartialEq ) ]
+pub struct SuperStruct2
+{
+}
+
 //
 
 TheModule::mod_interface!
 {
 
   protected use layer_b_protected;
-  orphan use layer_b_orphan;
-  exposed use layer_b_exposed;
+  orphan use { layer_b_orphan };
+  exposed use { layer_b_exposed };
   prelude use layer_b_prelude;
 
 }

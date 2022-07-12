@@ -44,7 +44,7 @@ TheModule::mod_interface!
   //   prelude where layer_a_prelude,
   // };
 
-  protected use layer_a_protected;
+  protected use { layer_a_protected };
   orphan use layer_a_orphan;
   exposed use layer_a_exposed;
   prelude use layer_a_prelude;
