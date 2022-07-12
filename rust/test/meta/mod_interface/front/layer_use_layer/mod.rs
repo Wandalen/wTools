@@ -14,9 +14,6 @@ mod private
 TheModule::mod_interface!
 {
 
-  // xxx : test with `layer { layer_a, layer_a };`
-  // xxx : test with `use { layer_a, layer_a };`
-
   /// layer_a
   layer layer_a;
   /// layer_b
