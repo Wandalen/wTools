@@ -10,6 +10,31 @@ pub( crate ) mod private
     pub tree : syn::UseTree,
   }
 
+  impl UseTree
+  {
+
+    /// Is adding prefix to the tree path required?
+    pub fn to_add_prefix( &self ) -> bool
+    {
+      use syn::UseTree::*;
+      if self.leading_colon.is_some()
+      {
+        return false;
+      }
+      match &self.tree
+      {
+        Path( e ) => e.ident.to_string() != "super",
+        Rename( e ) =>
+        {
+          println!( "!!!!!!!!!!!!!!!!" );
+          e.ident.to_string() != "super"
+        },
+        _ => true,
+      }
+    }
+
+  }
+
   impl syn::parse::Parse for UseTree
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >

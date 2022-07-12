@@ -142,13 +142,15 @@ pub( crate ) mod private
           }
 
           let fixes_list = fixes_map.get_mut( &vis.kind() ).unwrap();
-          if path.leading_colon.is_some()
+
+          // if path.leading_colon.is_some()
+          if path.to_add_prefix()
           {
             fixes_list.push( qt!
             {
               #attrs1
               #[ doc( inline ) ]
-              pub use #path;
+              pub use super::private::#path;
             });
           }
           else
@@ -157,7 +159,7 @@ pub( crate ) mod private
             {
               #attrs1
               #[ doc( inline ) ]
-              pub use super::#path;
+              pub use #path;
             });
           }
 

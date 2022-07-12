@@ -32,30 +32,37 @@ pub mod dependencies
 /// Collection of general purpose meta tools.
 pub mod meta;
 
+#[ doc( inline ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
+  #[ doc( inline ) ]
   pub use super::meta::orphan::*;
 }
-
-pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
+  #[ doc( inline ) ]
   pub use super::meta::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use super::meta::prelude::*;
 }

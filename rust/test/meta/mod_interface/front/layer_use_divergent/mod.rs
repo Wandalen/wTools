@@ -30,3 +30,4 @@ TheModule::mod_interface!
 //
 
 include!( "../../only_test/layer_divergent_only_test.rs" );
+include!( "../../only_test/layer_simple_only_test.rs" );

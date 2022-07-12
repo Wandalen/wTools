@@ -81,16 +81,6 @@ pub( crate ) mod private
     }
   }
 
-  // /// Obtain a new context.
-  // pub fn obtain() -> ContextChanger
-  // {
-  //   // Safety : under mutex.
-  //   unsafe
-  //   {
-  //     Registry::< Context >::obtain( &mut REGISTRY )
-  //   }
-  // }
-
 }
 
 /// Protected namespace of the module.
@@ -101,7 +91,6 @@ pub mod protected
     orphan::*,
     private::REGISTRY,
     private::current,
-    // private::obtain,
   };
 }
 

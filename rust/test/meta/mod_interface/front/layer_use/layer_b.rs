@@ -36,9 +36,9 @@ mod private
 TheModule::mod_interface!
 {
 
-  protected use private::layer_b_protected;
-  orphan use private::layer_b_orphan;
-  exposed use private::layer_b_exposed;
-  prelude use private::layer_b_prelude;
+  protected use layer_b_protected;
+  orphan use layer_b_orphan;
+  exposed use layer_b_exposed;
+  prelude use layer_b_prelude;
 
 }

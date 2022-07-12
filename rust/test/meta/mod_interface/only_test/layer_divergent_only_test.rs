@@ -11,6 +11,7 @@ tests_impls!
     {
       a_id!( layer_b::protected::Vec::< i32 >::new(), layer_b::protected::Vec::< i32 >::new() );
       a_id!( layer_b::protected::SuperStruct1{}, layer_b::protected::SuperStruct1{} );
+      a_id!( layer_b::protected::SuperStruct2{}, layer_b::protected::SuperStruct2{} );
     }
 
     /* test.case( "root" ); */
@@ -44,5 +45,3 @@ tests_index!
 {
   divergent,
 }
-
-include!( "./layer_simple_only_test.rs" );
