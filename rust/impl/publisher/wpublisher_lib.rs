@@ -12,8 +12,8 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-pub mod wpublisher;
-pub mod commands;
+// pub mod wpublisher;
+// pub mod commands;
 
 #[ cfg( feature = "use_std" ) ]
 pub use std::env;
@@ -22,25 +22,30 @@ pub use wca::instruction;
 #[ allow( unused_imports ) ]
 pub use crate::wpublisher::*;
 
-// qqq : for Dima : mod interface
-
-/// Protected namespace of the module.
-pub mod protected
+// qqq : for Dima : mod interface /* aaa : Dmytro : replaced */
+wtools::mod_interface!
 {
-  pub use super::exposed::*;
-  pub use super::commands::*;
+  prelude mod wpublisher;
+  prelude mod commands;
 }
 
-pub use protected::*;
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::wpublisher::*;
-}
+// /// Protected namespace of the module.
+// pub mod protected
+// {
+//   pub use super::exposed::*;
+//   pub use super::commands::*;
+// }
+//
+// pub use protected::*;
+//
+// /// Exposed namespace of the module.
+// pub mod exposed
+// {
+//   pub use super::prelude::*;
+// }
+//
+// /// Prelude to use essentials: `use my_module::prelude::*`.
+// pub mod prelude
+// {
+//   pub use super::wpublisher::*;
+// }

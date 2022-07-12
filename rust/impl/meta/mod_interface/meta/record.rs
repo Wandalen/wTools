@@ -80,6 +80,7 @@ pub( crate ) mod private
     pub vis : Visibility,
     pub element_type : ElementType,
     pub elements : syn::punctuated::Punctuated< Pair< AttributesOuter, syn::Path >, syn::token::Comma >,
+    pub use_elements : Option< crate::UseTree >,
     pub semi : Option< syn::token::Semi >,
   }
 
@@ -95,20 +96,33 @@ pub( crate ) mod private
       let vis = input.parse()?;
       let element_type = input.parse()?;
       let mut elements;
+      let mut use_elements = None;
 
-      let lookahead = input.lookahead1();
-      if lookahead.peek( syn::token::Brace )
+      match element_type
       {
-        let input2;
-        let _brace_token = syn::braced!( input2 in input );
-        elements = syn::punctuated::Punctuated::parse_terminated( &input2 )?;
+        ElementType::Use( _ ) =>
+        {
+          use_elements = Some( input.parse()? );
+          elements = syn::punctuated::Punctuated::new();
+        },
+        _ =>
+        {
+          let lookahead = input.lookahead1();
+          if lookahead.peek( syn::token::Brace )
+          {
+            let input2;
+            let _brace_token = syn::braced!( input2 in input );
+            elements = syn::punctuated::Punctuated::parse_terminated( &input2 )?;
+          }
+          else
+          {
+            let ident = input.parse()?;
+            elements = syn::punctuated::Punctuated::new();
+            elements.push( Pair::new( make!(), ident ) );
+          }
+        },
       }
-      else
-      {
-        let ident = input.parse()?;
-        elements = syn::punctuated::Punctuated::new();
-        elements.push( Pair::new( make!(), ident ) );
-      }
+
 
       let lookahead = input.lookahead1();
       if !lookahead.peek( Token![ ; ] )
@@ -123,6 +137,7 @@ pub( crate ) mod private
         vis,
         element_type,
         elements,
+        use_elements,
         semi,
       })
 

@@ -28,11 +28,12 @@ Diff < left / right > :
   */
 }
 ```
-<!-- zzz : qqq : add -->
+<!-- zzz : qqq : add --> <!-- aaa : added -->
 
 ### To add to your project
 
 ```sh
+cargo add diagnostics_tools
 ```
 
 ### Try out from the repository
