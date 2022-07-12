@@ -77,5 +77,3 @@ mod make_interface_test;
 mod vectorized_from_test;
 
 mod enumerable_test;
-
-

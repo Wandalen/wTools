@@ -11,6 +11,12 @@ mod private
 {
 }
 
+/// Super struct.
+#[ derive( Debug, PartialEq ) ]
+pub struct SuperStruct1
+{
+}
+
 TheModule::mod_interface!
 {
 
@@ -23,4 +29,4 @@ TheModule::mod_interface!
 
 //
 
-include!( "../../only_test/layer_simple_only_test.rs" );
+include!( "../../only_test/layer_divergent_only_test.rs" );
