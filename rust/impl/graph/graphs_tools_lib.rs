@@ -16,85 +16,19 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-// // xxx : move
-//
-// pub struct IteratorAdapter< Item >
-// {
-//   iterator : Box< dyn Iterator< Item = Item > >
-// }
-//
-// impl< Item > core::iter::Iterator
-// for IteratorAdapter< Item >
-// {
-//   type Item = Item;
-//   fn next( &mut self ) -> Option< Self::Item >
-//   {
-//     self.iterator.next()
-//   }
-// }
-//
-// trait IntoIteratorAdapter
-// where
-//   Self : Iterator + 'static,
-// {
-//   fn into_iter_adapter( self ) -> IteratorAdapter< < Self as Iterator >::Item >
-//   where
-//     Self : Sized,
-//   {
-//     let iterator : Box< dyn Iterator< Item = < Self as Iterator >::Item > > = Box::new( self );
-//     IteratorAdapter::< < Self as Iterator >::Item > { iterator }
-//   }
-// }
-//
-// impl< T > IntoIteratorAdapter for T
-// where
-//   T : Iterator + 'static,
-// {
-// }
-
-/// Abstract layer.
 #[ cfg( feature = "use_std" ) ]
-pub mod abs;
-/// Canonical representation.
-#[ cfg( feature = "use_std" ) ]
-pub mod canonical;
-/// Algorithms.
-#[ cfg( feature = "use_std" ) ]
-pub mod algo;
-// /// Matrix representation.
-// pub mod matrix;
-
-/// Namespace with dependencies.
-pub mod dependency
+wtools::meta::mod_interface!
 {
+  /// Abstract layer.
+  layer abs;
+  /// Canonical representation.
+  layer canonical;
+  /// Algorithms.
+  layer algo;
 }
-
-/// Exposed namespace of the module.
-pub mod exposed
+#[ cfg( not( feature = "use_std" ) ) ]
+wtools::meta::mod_interface!
 {
-  pub use super::prelude::*;
-  #[ cfg( feature = "use_std" ) ]
-  pub use super::abs::exposed::*;
-  pub use super::prelude::*;
-  #[ cfg( feature = "use_std" ) ]
-  pub use super::algo::exposed::*;
-  #[ cfg( feature = "use_std" ) ]
-  pub use super::canonical::exposed::*;
-  // pub use super::matrix::exposed::*;
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  #[ cfg( feature = "use_std" ) ]
-  pub use super::abs::prelude::*;
-  #[ cfg( feature = "use_std" ) ]
-  pub use super::algo::prelude::*;
-  #[ cfg( feature = "use_std" ) ]
-  pub use super::canonical::prelude::*;
-  // pub use super::matrix::prelude::*;
 }
 
 // xxx : implement checks
