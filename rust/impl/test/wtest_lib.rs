@@ -15,6 +15,9 @@
 #[ doc( inline ) ]
 pub use test_tools::*;
 
-/// Commands of binary target.
 #[ cfg( feature = "use_std" ) ]
-pub mod commands;
+wtools::meta::mod_interface!
+{
+  /// Commands of binary target.
+  layer commands;
+}
