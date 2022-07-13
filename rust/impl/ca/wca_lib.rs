@@ -12,11 +12,6 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-/// Commands aggregator library.
-#[ cfg( feature = "use_std" ) ]
-#[ path = "./inc.rs" ]
-pub mod ca;
-
 /// Requests parser.
 #[ cfg( feature = "use_std" ) ]
 pub mod string
@@ -25,18 +20,22 @@ pub mod string
 }
 
 #[ cfg( feature = "use_std" ) ]
-#[ doc( inline ) ]
-pub use ca::*;
-
-/// Exposed namespace of the module.
-pub mod exposed
+wtools::meta::mod_interface!
+{
+  /// Commands aggregator library.
+  layer ca;
+}
+#[ cfg( not( feature = "use_std" ) ) ]
+wtools::meta::mod_interface!
 {
 }
-pub use exposed::*;
 
-/// Namespace of the module to include with `use module::*`.
-pub mod prelude
+#[ cfg( feature = "use_std" ) ]
+pub use ca::
 {
-  #[ cfg( feature = "use_std" ) ]
-  pub use super::ca::prelude::*;
-}
+  commands_aggregator,
+  common,
+  command,
+  input,
+  instruction,
+};
