@@ -39,9 +39,9 @@ crate::mod_interface!
   #[ cfg( feature = "use_std" ) ]
   layer sys;
 
-  use super::math;
-  // prelude use super::math::prelude::*;
-  // exposed use super::math::exposed::*;
+  // use super::math;
+  prelude use super::math::prelude::*;
+  exposed use super::math::exposed::*;
 
 }
 
