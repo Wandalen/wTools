@@ -57,7 +57,7 @@ jobs :
     strategy :
       matrix : ${{ fromJSON( needs.get_modules.outputs.workflow_files ) }}
     outputs :
-      has_succeeded_runs : ${{ steps.success.outputs.success }}
+      has_skipped_runs : ${{ steps.success.outputs.skipped }}
     runs-on : ubuntu-latest
     steps :
       - name : Check workflow run status
@@ -75,13 +75,24 @@ jobs :
         if : ${{ steps.check_ci.outputs.conclusion == 'cancelled' }}
         run : exit 1
       - name : Check success conclusion and setup output
-        if : ${{ steps.check_ci.outputs.conclusion == 'success' }}
-        id : success
-        run: echo "::set-output name=success::true"
+        if : ${{ steps.check_ci.outputs.conclusion == 'skipped' }}
+        id : skipped
+        run: echo "::set-output name=skipped::true"
+
+  skipped_runs_check :
+    needs : check
+    if : ${{ success() }}
+    runs-on : ubuntu-latest
+    steps :
+      - name : Failure if some skipped runs exists
+        if : ${{ needs.check.outputs.has_skipped_runs == 'true' }}
+        run : exit 1
+      - name : Success if no skipped runs
+        if : ${{ needs.check.outputs.has_skipped_runs != 'true' }}
+        run : exit 0
 
   merge :
-    needs : check
-    if : ${{ success() && needs.check.outputs.has_succeeded_runs == 'true' }}
+    needs : skipped_runs_check
     runs-on : ubuntu-latest
     steps :
       - name : Find PR number for current commit
@@ -96,15 +107,3 @@ jobs :
           github-token: ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
           number: ${{ steps.find.outputs.number }}
           method: merge
-
-  skipped_runs_check :
-    needs : check
-    if : ${{ success() }}
-    runs-on : ubuntu-latest
-    steps :
-      - name : Failure if skipped
-        if : ${{ needs.check.outputs.has_succeeded_runs != 'true' }}
-        run : exit 1
-      - name : Success if not skipped
-        if : ${{ needs.check.outputs.has_succeeded_runs == 'true' }}
-        run : exit 0
