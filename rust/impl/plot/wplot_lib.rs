@@ -45,6 +45,10 @@ crate::mod_interface!
 
 }
 
+// xxx : fix this
+pub use wmath::X2;
+pub use wmath::X2BasicInterface;
+
 // /// Protected namespace of the module.
 // layer protected
 // {
