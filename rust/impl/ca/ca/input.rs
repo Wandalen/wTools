@@ -18,26 +18,26 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
-  // use super::private as i;
-
-  pub use super::private::ask;
+  pub use super::orphan::*;
 }
 
 pub use protected::*;
 
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
+
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::private as i;
-
-  pub use super::private::ask;
+  pub use super::prelude::*;
 }
 
 /// Namespace of the module to include with `use module::*`.
 pub mod prelude
 {
-  // use super::private as i;
-
   pub use super::private::ask;
 }
 

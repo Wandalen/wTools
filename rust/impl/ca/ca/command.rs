@@ -13,7 +13,7 @@ pub( crate ) mod private
   /// Handle for command routine.
   ///
 
-  // qqq : for Dima : make alias for Result with BasicError
+  // qqq : for Dima : make alias for Result with BasicError /* aaa : Dmytro : done */
   pub struct OnCommand( Option< Rc< dyn Fn( &instruction::Instruction ) -> Result< () > > > );
 
   impl OnCommand
@@ -199,19 +199,21 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
-  pub use super::private::OnCommand;
-  pub use super::private::Command;
-  pub use super::private::CommandOptions;
+  pub use super::orphan::*;
 }
 
 pub use protected::*;
 
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
+
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::private::OnCommand;
-  pub use super::private::Command;
-  pub use super::private::CommandOptions;
+  pub use super::prelude::*;
 }
 
 /// Namespace of the module to include with `use module::*`.

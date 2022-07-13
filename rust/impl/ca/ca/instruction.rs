@@ -164,26 +164,27 @@ pub mod protected
 
   pub use super::private::Instruction;
   pub use super::private::InstructionParseParams;
-  pub use super::private::InstructionParseParamsAdapter;
-  pub use super::private::instruction_parse;
+  pub use super::orphan::*;
 }
 
 pub use protected::*;
 
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  pub use super::exposed::*;
+}
+
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // use super::private as i;
-
-  pub use super::private::InstructionParseParamsAdapter;
+  pub use super::prelude::*;
   pub use super::private::instruction_parse;
 }
 
 /// Namespace of the module to include with `use module::*`.
 pub mod prelude
 {
-  // use super::private as i;
-
   pub use super::private::InstructionParseParamsAdapter;
 }
 

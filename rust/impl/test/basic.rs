@@ -81,6 +81,16 @@ pub( crate ) mod private
   // pub use index;
 }
 
+/// Protected namespace of the module.
+pub mod protected
+{
+}
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+}
+
 /// Exposed namespace of the module.
 pub mod exposed
 {
