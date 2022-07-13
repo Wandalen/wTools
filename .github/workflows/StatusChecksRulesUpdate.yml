@@ -53,7 +53,7 @@ jobs :
           CONTEXT=$(echo $WORKFLOW | sed 's/\(\S\+\).yml/{"context":"check (\1)","app_id":null}/')
             CONTEXTS="$CONTEXTS,$CONTEXT"
           done;
-          CHECKS="[$(sed 's/^,//g' <<< $CONTEXTS),{\"context\":\"skipped_runs_check\",\"app_id\":null}]"
+          CHECKS="[$(sed 's/^,//g' <<< $CONTEXTS),{\"context\":\"runs_check\",\"app_id\":null}]"
           echo "::set-output name=options::{\"required_status_checks\":{\"strict\":false,\"checks\":$CHECKS},\"enforce_admins\":false,\"required_pull_request_reviews\":null,\"restrictions\":null}"
       - name : Setup rules for beta
         run : |
