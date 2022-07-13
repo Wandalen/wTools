@@ -21,6 +21,7 @@ tests_impls!
     t.pass( "../../../rust/test/meta/mod_interface/front/layer/trybuild.rs" );
     t.pass( "../../../rust/test/meta/mod_interface/front/layer_use_layer/trybuild.rs" );
     t.pass( "../../../rust/test/meta/mod_interface/front/layer_use_non_layer/trybuild.rs" );
+    t.pass( "../../../rust/test/meta/mod_interface/front/layer_use_layer_separate_include/trybuild.rs" );
 
     t.compile_fail( "../../../rust/test/meta/mod_interface/front/micro_modules_bad_vis/trybuild.rs" );
     t.compile_fail( "../../../rust/test/meta/mod_interface/front/micro_modules_unknown_vis/trybuild.rs" );
