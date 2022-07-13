@@ -50,14 +50,12 @@ jobs :
           initial_delay : 60
           workflows : ${{ needs.get_modules.outputs.workflow_names }}
 
-  check :
+  runs_check :
     needs :
       - get_modules
       - wait_for_modules
     strategy :
       matrix : ${{ fromJSON( needs.get_modules.outputs.workflow_files ) }}
-    outputs :
-      has_skipped_runs : ${{ steps.success.outputs.skipped }}
     runs-on : ubuntu-latest
     steps :
       - name : Check workflow run status
@@ -74,22 +72,9 @@ jobs :
       - name : Check cancelled conclusion
         if : ${{ steps.check_ci.outputs.conclusion == 'cancelled' }}
         run : exit 1
-      - name : Check success conclusion and setup output
+      - name : Check skipped conclusion
         if : ${{ steps.check_ci.outputs.conclusion == 'skipped' }}
-        id : skipped
-        run: echo "::set-output name=skipped::true"
-
-  skipped_runs_check :
-    needs : check
-    if : ${{ success() }}
-    runs-on : ubuntu-latest
-    steps :
-      - name : Failure if some skipped runs exists
-        if : ${{ needs.check.outputs.has_skipped_runs == 'true' }}
         run : exit 1
-      - name : Success if no skipped runs
-        if : ${{ needs.check.outputs.has_skipped_runs != 'true' }}
-        run : exit 0
 
   merge :
     needs : skipped_runs_check
