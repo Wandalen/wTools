@@ -3,6 +3,26 @@
 //! Library of utility to operate packages from a command line.
 //!
 
+/// Protected namespace of the module.
+pub mod protected
+{
+}
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+}
+
+/// Prelude namespace of the module.
+pub mod prelude
+{
+}
+
 ///
 /// Work with bools.
 ///
