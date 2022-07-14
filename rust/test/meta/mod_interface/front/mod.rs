@@ -1,5 +1,5 @@
 
-use super::*;
+use super::{ TheModule, tests_impls, tests_index, a_id };
 
 mod micro_modules;
 mod micro_modules_two;

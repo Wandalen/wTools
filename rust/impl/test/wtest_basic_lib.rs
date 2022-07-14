@@ -12,11 +12,6 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-/// Basics.
-pub mod basic;
-/// Helpers.
-pub mod helper;
-
 /// Dependencies.
 pub mod dependencies
 {
@@ -36,18 +31,15 @@ pub use ::meta_tools as meta;
 pub use ::mem_tools as mem;
 pub use ::typing_tools as typing;
 
-/// Exposed namespace of the module.
-pub mod exposed
+meta::mod_interface!
 {
-  #[ doc( inline ) ]
-  pub use super::basic::exposed::*;
-  #[ doc( inline ) ]
-  pub use super::helper::exposed::*;
+  /// Basics.
+  layer basic;
+  /// Helpers.
+  layer helper;
 
-  #[ doc( inline ) ]
-  pub use ::diagnostics_tools::exposed::*;
-  #[ doc( inline ) ]
-  pub use ::meta_tools::
+  exposed use ::diagnostics_tools::exposed::*;
+  exposed use ::meta_tools::
   {
     impls,
     index,
@@ -55,31 +47,11 @@ pub mod exposed
     tests_impls_optional,
     tests_index,
   };
-  #[ doc( inline ) ]
-  pub use ::typing_tools::{ implements };
+  exposed use ::typing_tools::{ implements };
+  exposed use ::inspect_type::exposed::*;
 
-  #[ doc( inline ) ]
-  pub use ::inspect_type::exposed::*;
-  // pub use ::inspect_type;
-  // qqq : xxx : add negative test that wtest_basic::exposed::exposed does not exist
-
-}
-
-#[ doc( inline ) ]
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  #[ doc( inline ) ]
-  pub use super::basic::prelude::*;
-  #[ doc( inline ) ]
-  pub use super::helper::prelude::*;
-
-  #[ doc( inline ) ]
-  pub use ::diagnostics_tools::prelude::*;
-  #[ doc( inline ) ]
-  pub use ::meta_tools::
+  prelude use ::diagnostics_tools::prelude::*;
+  prelude use ::meta_tools::
   {
     impls,
     index,
@@ -87,7 +59,6 @@ pub mod prelude
     tests_impls_optional,
     tests_index,
   };
-  #[ doc( inline ) ]
-  pub use ::typing_tools::{ implements };
-
+  prelude use ::typing_tools::{ implements };
 }
+// qqq : xxx : add negative test that wtest_basic::exposed::exposed does not exist
