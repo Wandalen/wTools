@@ -1,37 +1,12 @@
 
-/// Perform smoke testing.
-#[ cfg( feature = "use_std" ) ]
-mod smoke;
-
-/// Init aggregator commands.
-#[ cfg( feature = "use_std" ) ]
-mod init;
-
-/// Protected namespace of the module.
-pub mod protected
+wtools::meta::mod_interface!
 {
-  pub use super::orphan::*;
-}
-
-pub use protected::*;
-
-/// Orphan namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-}
-
-/// Prelude namespace of the module.
-pub mod prelude
-{
+  /// Perform smoke testing.
   #[ cfg( feature = "use_std" ) ]
-  pub use super::smoke::*;
+  prelude mod smoke;
+  /// Init aggregator commands.
   #[ cfg( feature = "use_std" ) ]
-  pub use super::init::*;
+  prelude mod init;
 }
+
+pub use init::*;

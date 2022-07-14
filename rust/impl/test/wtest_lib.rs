@@ -12,10 +12,10 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-#[ cfg( feature = "use_std" ) ]
 wtools::meta::mod_interface!
 {
   /// Commands of binary target.
+  #[ cfg( feature = "use_std" ) ]
   layer commands;
   use ::test_tools;
 }
