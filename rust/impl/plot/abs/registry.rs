@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use crate::abs::*;
+  // use crate::abs::*;
   use once_cell::sync::Lazy;
   use std::sync::Mutex;
   use dashmap::DashMap;
@@ -70,46 +70,9 @@ pub( crate ) mod private
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::
-  {
-    orphan::*,
-    // private::current,
-    // private::obtain,
-    // private:: Registry,
-  };
-}
 
-pub use protected::*;
+  orphan use Registry;
 
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::
-  {
-    exposed::*,
-    private:: Registry,
-  };
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::
-  {
-    prelude::*,
-    // private::current as context,
-  };
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::private::
-  {
-  };
 }

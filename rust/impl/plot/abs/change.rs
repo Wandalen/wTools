@@ -26,39 +26,9 @@ pub( crate ) mod private
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::
-  {
-    orphan::*,
-  };
-}
 
-pub use protected::*;
+  prelude use ChangeInterface;
 
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::
-  {
-    prelude::*,
-  };
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::
-  {
-    private::ChangeInterface,
-  };
 }
