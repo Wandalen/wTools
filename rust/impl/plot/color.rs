@@ -74,35 +74,15 @@ pub( crate ) mod private
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::
-  {
-    orphan::*,
-  };
-  pub use ::rgb::*;
-}
 
-pub use protected::*;
+  protected use ::rgb::*;
 
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
   #[ cfg( feature = "use_std" ) ]
-  pub use super::private::Rgba;
-}
+  exposed use Rgba;
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
   #[ cfg( feature = "use_std" ) ]
-  pub use super::private::RgbaInterface;
+  prelude use RgbaInterface;
+
 }
