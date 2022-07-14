@@ -16,12 +16,15 @@ TheModule::mod_interface!
 
   /// layer_a
   layer layer_a;
+  #[ cfg( all() ) ]
   /// layer_b
   layer layer_b;
+  #[ cfg( any() ) ]
+  /// layer_c
+  layer layer_c;
 
 }
 
 //
 
-// include!( "../../only_test/layer_divergent_only_test.rs" );
 include!( "../../only_test/layer_simple_only_test.rs" );

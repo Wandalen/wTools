@@ -19,16 +19,29 @@ mod layer_b;
 TheModule::mod_interface!
 {
 
-  /// layer_a
+  // zzz : test with `layer { layer_a, layer_a };`
+  // zzz : test with `use { layer_a, layer_a };`
+
+  // zzz : make it working
+  // use super::
+  // {
+  //   layer_a,
+  //   layer_b,
+  // };
+
   use super::layer_a;
-  /// layer_b
   use super::layer_b;
+
+}
+
+mod mod1
+{
+
+  // use super::{ layer_b };
+  // pub use super::{ layer_b }::orphan::*;
 
 }
 
 //
 
 include!( "../../only_test/layer_simple_only_test.rs" );
-
-// xxx : test with `layer { layer_a, layer_a };`
-// xxx : test with `use { layer_a, layer_a };`
