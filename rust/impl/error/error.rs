@@ -67,4 +67,4 @@ impl ErrorInterface for BasicError
   }
 }
 
-// xxx : mod interface
+// qqq : write standard mod interface without using mod_interface

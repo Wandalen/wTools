@@ -37,12 +37,18 @@ pub( crate ) mod private
 crate::mod_interface!
 {
 
+  /// Draw changer.
+  layer changer;
+  /// ChangeInterface for drawing constructor.
+  layer change_new;
   /// Draw command.
   layer command;
   /// Draw queue.
   layer queue;
-  /// Rectangle change.
-  layer rect_change;
+  /// New shape : rectangle.
+  layer rect_change_new;
+  /// Change region of the rectangle.
+  layer rect_change_region;
   /// Rectangle change.
   layer rect_changer;
 

@@ -5,7 +5,6 @@ pub( crate ) mod private
 
   // xxx : write article about the module
   // zzz : extend diagnostics_tools
-  // zzz : add core::fmt to prelude
 
   ///
   /// Type constructor to define tuple wrapping a given type.

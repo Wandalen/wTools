@@ -6,7 +6,7 @@ pub( crate ) mod private
   /// Command to draw rectangle.
   #[ allow( dead_code ) ]
   #[ derive( Debug, Clone ) ]
-  pub struct RectChange
+  pub struct RectChangeRegion
   {
     /// Id.
     pub( crate ) id : Id,
@@ -16,7 +16,7 @@ pub( crate ) mod private
     pub( crate )  right_bottom : X2< f32 >,
   }
 
-  impl RectChange
+  impl RectChangeRegion
   {
 
     /// Constructor
@@ -37,7 +37,7 @@ pub( crate ) mod private
 
   }
 
-  impl ChangeInterface for RectChange
+  impl ChangeInterface for RectChangeRegion
   {
   }
 
@@ -45,5 +45,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  exposed use RectChange;
+  exposed use RectChangeRegion;
 }

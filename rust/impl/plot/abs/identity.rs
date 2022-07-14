@@ -24,8 +24,6 @@ pub( crate ) mod private
       Hash +
     ,
   {
-    // fn tp_id() -> i32;
-    // fn in_id() -> i32;
   }
 
   /// Has id.
@@ -39,7 +37,7 @@ pub( crate ) mod private
   }
 
   /// Reference on context.
-  #[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
+  #[ derive( Clone, Copy, PartialEq, Eq, Hash ) ]
   pub struct Id
   {
     // #[ allow( dead_code ) ]
@@ -60,16 +58,21 @@ pub( crate ) mod private
       *c += 1;
       Self
       {
-        // tp_id : TypeId::of::< T >(),
         in_id : *c,
       }
     }
   }
 
   impl IdInterface for Id
-  // where
-  //   T : core::any::Any,
   {
+  }
+
+  impl fmt::Debug for Id
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      f.write_fmt( format_args!( "id::{:?}", self.in_id ) )
+    }
   }
 
 }

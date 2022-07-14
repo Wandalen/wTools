@@ -5,7 +5,7 @@ pub( crate ) mod private
 
   /// Context.
   #[ allow( dead_code ) ]
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Clone ) ]
   pub struct ContextChanger
   {
     /// Id.
@@ -33,6 +33,19 @@ pub( crate ) mod private
     {
       let changer = DrawChanger::_new( self );
       changer
+    }
+  }
+
+  impl fmt::Debug for ContextChanger
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      f.write_str( "ContextChanger" )?;
+      for ( _i, e ) in self.changes.iter().enumerate()
+      {
+        f.write_str( &wtools::string::indentation( "  ", format!( "\n{:?}", e ), "" ) )?;
+      }
+      Ok( () )
     }
   }
 

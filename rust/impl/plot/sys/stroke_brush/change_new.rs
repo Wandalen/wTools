@@ -8,7 +8,7 @@ pub( crate ) mod private
   #[ derive( Debug, Clone ) ]
   pub struct StrokeBrushChangeNew
   {
-    id : Id,
+    pub( crate ) id : Id,
   }
 
   impl StrokeBrushChangeNew

@@ -8,17 +8,18 @@ pub( crate ) mod private
   #[ derive( Debug, Clone ) ]
   pub struct StrokeBrushChangeColor
   {
-    pub( crate ) color : Rgba< f32 >,
+    pub( crate ) id : Id,
+    pub( crate ) val : Rgba< f32 >,
   }
 
   impl StrokeBrushChangeColor
   {
     /// Constructor.
-    pub fn new< Color >( color : Color ) -> Self
+    pub fn new< Color >( id : Id, val : Color ) -> Self
     where
       Color : RgbaInterface< f32 >,
     {
-      Self{ color : color.into_rgba() }
+      Self{ id, val : val.into_rgba() }
     }
   }
 

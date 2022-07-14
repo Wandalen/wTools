@@ -22,7 +22,7 @@ pub( crate ) mod private
     pub fn _new( draw : DrawChanger ) -> Self
     {
       let id = Id::new::< Self >();
-      let change = RectChange::new( id );
+      let change = RectChangeNew::new( id );
       let mut result = Self{ id, draw };
       change.add_to( &mut result );
       result
@@ -32,7 +32,7 @@ pub( crate ) mod private
     #[ inline ]
     pub fn region( mut self, left_top : X2< f32 >, right_bottom : X2< f32 > ) -> Self
     {
-      let change = RectChange::new( self.id() ).region( left_top, right_bottom );
+      let change = RectChangeRegion::new( self.id() ).region( left_top, right_bottom );
       self.change_add( change );
       self
     }
