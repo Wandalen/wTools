@@ -31,7 +31,7 @@ wtools::meta::mod_interface!
 {
 }
 
-// xxx : implement checks
+// zzz : implement checks
 //
 // - graph is connected
 // - graph is complete

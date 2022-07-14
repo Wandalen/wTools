@@ -22,7 +22,7 @@ pub mod error;
 pub mod result;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
 
   #[ doc( inline ) ]

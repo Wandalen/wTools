@@ -1,8 +1,8 @@
 use super::*;
 
-// xxx : remove
-pub use wmath::X2;
-pub use wmath::X2BasicInterface;
+// zzz : remove
+// pub use wmath::X2;
+// pub use wmath::X2BasicInterface;
 
 //
 

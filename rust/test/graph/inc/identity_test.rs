@@ -39,7 +39,7 @@ tests_impls!
       a_not_id!( src, check_into( IdentityWithInt::make( 1 ) ) );
     }
 
-    // xxx
+    // zzz
     // /* test.case( "from pair" ) */
     // {
     //   let src = Pair::make_2( 1, 3 );

@@ -49,7 +49,7 @@
 pub mod time;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
 }
 

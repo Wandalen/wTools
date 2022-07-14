@@ -94,7 +94,7 @@ pub( crate ) mod private
       //     Self( src.into_iter().collect::< Vec< Polygon > >() )
       //   }
       // }
-      // xxx
+      // zzz
 
       impl< Collection, IntoT, $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
       From< Collection >

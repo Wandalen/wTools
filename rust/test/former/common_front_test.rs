@@ -37,7 +37,7 @@ fn trybuild_tests()
 #[ test ]
 fn trybuild_tests()
 {
-  use test_tools::dependencies::trybuild;
+  use test_tools::dependency::trybuild;
   println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
   let t = trybuild::TestCases::new();
   t.compile_fail( "../../../rust/test/former/all/wtools_bad_attr.rs" );

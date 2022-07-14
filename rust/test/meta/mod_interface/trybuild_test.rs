@@ -10,7 +10,7 @@ tests_impls!
 
   fn trybuild_tests()
   {
-    use test_tools::dependencies::trybuild;
+    use test_tools::dependency::trybuild;
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
     let t = trybuild::TestCases::new();
 

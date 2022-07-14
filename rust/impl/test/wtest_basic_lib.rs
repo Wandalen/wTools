@@ -13,7 +13,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   pub use ::paste;
   pub use ::trybuild;
@@ -26,7 +26,7 @@ pub mod dependencies
   pub use ::diagnostics_tools;
 }
 
-pub use dependencies::*;
+pub use dependency::*;
 use ::meta_tools::mod_interface;
 // pub use ::meta_tools as meta;
 // pub use ::mem_tools as mem;
@@ -67,4 +67,5 @@ mod_interface!
   prelude use ::typing_tools::{ implements };
 }
 
+// use exposed::exposed;
 // qqq : for Dima : add negative test that wtest_basic::exposed::exposed does not exist

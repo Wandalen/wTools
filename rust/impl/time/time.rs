@@ -5,7 +5,7 @@
 pub mod now;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
 }
 

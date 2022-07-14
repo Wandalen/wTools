@@ -18,7 +18,7 @@
 /* zzz : use skeptic? */
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use ::meta_tools::former;

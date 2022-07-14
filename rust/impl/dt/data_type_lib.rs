@@ -16,7 +16,7 @@
 pub mod dt;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   #[ cfg( feature = "either" ) ]
   pub use ::either;

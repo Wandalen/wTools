@@ -67,7 +67,7 @@ tests_impls!
 #[ test ]
 fn cta_trybuild_tests()
 {
-  use test_tools::dependencies::trybuild;
+  use test_tools::dependency::trybuild;
   let t = trybuild::TestCases::new();
   t.compile_fail( "../../../rust/test/diagnostics/inc/cta_type_same_size_fail.rs" );
   t.compile_fail( "../../../rust/test/diagnostics/inc/cta_type_same_align_fail.rs" );
@@ -80,7 +80,7 @@ fn cta_trybuild_tests()
 #[ test ]
 fn cta_trybuild_tests()
 {
-  use test_tools::dependencies::trybuild;
+  use test_tools::dependency::trybuild;
   let t = trybuild::TestCases::new();
   t.compile_fail( "../../../rust/test/diagnostics/inc/wtools_cta_type_same_size_fail.rs" );
   t.compile_fail( "../../../rust/test/diagnostics/inc/wtools_cta_type_same_align_fail.rs" );
