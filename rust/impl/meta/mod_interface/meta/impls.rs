@@ -144,21 +144,21 @@ pub( crate ) mod private
 
             fixes_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
             {
-              // #attrs1
+              #attrs1
               #[ doc( inline ) ]
               pub use #path2::orphan::*;
             });
 
             fixes_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
             {
-              // #attrs1
+              #attrs1
               #[ doc( inline ) ]
               pub use #path2::exposed::*;
             });
 
             fixes_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
             {
-              // #attrs1
+              #attrs1
               #[ doc( inline ) ]
               pub use #path2::prelude::*;
             });
