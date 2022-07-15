@@ -1,7 +1,6 @@
 
 use crate::*;
 use crate::wpublisher::bool::*;
-use wca::*;
 use std::env;
 use std::fs;
 use core::fmt::Write;
@@ -124,6 +123,9 @@ fn package_publish( current_path : &PathBuf, path : &PathBuf, dry : &BoolLike ) 
       process::log_output( &output );
 
       let output = process::start_sync( "cargo publish --dry-run --allow-dirty", &package_dir ).unwrap();
+      process::log_output( &output );
+
+      let output = process::start_sync( &format!( "git checkout {:?}", &package_dir ), &current_path ).unwrap();
       process::log_output( &output );
     }
     else
