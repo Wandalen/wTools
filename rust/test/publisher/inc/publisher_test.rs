@@ -114,7 +114,8 @@ tests_impls!
     let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
     assert!( stdout.contains( "Saved manifest data to" ) );
     let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
-    assert!( stderr.contains( "warning: aborting upload due to dry run" ) );
+    assert!( stderr.contains( "Uploading module1" ) );
+    assert!( stderr.contains( "Uploading module2" ) );
     asset_clean_tmp( "workspace" ).unwrap();
   }
 }
