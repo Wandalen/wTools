@@ -21,7 +21,7 @@ pub( crate ) mod private
 }
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   pub use ::derive_more;
   #[ cfg( feature = "parse_display" ) ]

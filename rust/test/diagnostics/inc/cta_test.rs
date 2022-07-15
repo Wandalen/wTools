@@ -1,6 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
-// use test_tools::*;
+// use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
 use TheModule::prelude::*;
 
@@ -13,7 +13,7 @@ tests_impls!
   {
     // test.case( "check feature, true" );
     cta_true!( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
-    // xxx : try ( 1 + 2 == 3 )
+    // zzz : try ( 1 + 2 == 3 )
   }
 }
 
@@ -22,7 +22,7 @@ tests_impls!
 #[ test ]
 fn cta_trybuild_tests()
 {
-  use test_tools::dependencies::trybuild;
+  use test_tools::dependency::trybuild;
   let t = trybuild::TestCases::new();
   t.compile_fail( "../../../rust/test/diagnostics/inc/cta_true_fail.rs" );
 }
@@ -32,7 +32,7 @@ fn cta_trybuild_tests()
 #[ test ]
 fn cta_trybuild_tests()
 {
-  use test_tools::dependencies::trybuild;
+  use test_tools::dependency::trybuild;
   let t = trybuild::TestCases::new();
   t.compile_fail( "../../../rust/test/diagnostics/inc/wtools_cta_true_fail.rs" );
 }

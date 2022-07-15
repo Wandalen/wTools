@@ -3,8 +3,7 @@ pub( crate ) mod private
 {
   // use crate::*;
 
-  /* xxx : qqq : move to mem_tools. discuss */
-  /* zzz : qqq : implement mem_same_region, comparing also data */
+  /* zzz : qqq : implement mem_same_region, comparing also data. discuss */
 
   ///
   /// Are two pointers are the same, not taking into accoint type.

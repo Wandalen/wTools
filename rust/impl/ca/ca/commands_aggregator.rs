@@ -457,6 +457,11 @@ pub mod protected
 
 pub use protected::*;
 
+/// Orphan namespace of the module.
+pub mod orphan
+{
+}
+
 /// Exposed namespace of the module.
 pub mod exposed
 {

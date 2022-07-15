@@ -110,7 +110,7 @@ pub( crate ) mod private
     fixes_map.insert( VisExposed::Kind(), Vec::new() );
     fixes_map.insert( VisPrelude::Kind(), Vec::new() );
 
-    // xxx : test case with several attrs
+    // zzz : test case with several attrs
 
     let mut err = None;
 
@@ -140,20 +140,25 @@ pub( crate ) mod private
               path
             };
 
+            // println!( "path2 : {}", qt!{ #path2 } );
+
             fixes_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
             {
+              #attrs1
               #[ doc( inline ) ]
               pub use #path2::orphan::*;
             });
 
             fixes_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
             {
+              #attrs1
               #[ doc( inline ) ]
               pub use #path2::exposed::*;
             });
 
             fixes_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
             {
+              #attrs1
               #[ doc( inline ) ]
               pub use #path2::prelude::*;
             });
@@ -162,7 +167,7 @@ pub( crate ) mod private
           else
           {
 
-            // xxx : test
+            // zzz : test
             if !vis.can_be_used_for_micro_mod()
             {
               err = Some( syn_err!
@@ -243,18 +248,24 @@ pub( crate ) mod private
 
                 fixes_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
                 {
+                  #attrs1
+                  #attrs2
                   #[ doc( inline ) ]
                   pub use super::#path::orphan::*;
                 });
 
                 fixes_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
                 {
+                  #attrs1
+                  #attrs2
                   #[ doc( inline ) ]
                   pub use super::#path::exposed::*;
                 });
 
                 fixes_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
                 {
+                  #attrs1
+                  #attrs2
                   #[ doc( inline ) ]
                   pub use super::#path::prelude::*;
                 });
@@ -329,6 +340,8 @@ pub( crate ) mod private
       }
 
     };
+
+    // println!( "\n = result : \n{}\n\n", qt!{ #result } );
 
     Ok( result )
   }

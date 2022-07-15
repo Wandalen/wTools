@@ -8,12 +8,13 @@
 include!( "../_conditional/local_module.rs" );
 
 #[ allow( unused_imports ) ]
-use test_tools::*;
+use test_tools::exposed::*;
+// use test_tools::*;
+
 #[ allow( unused_imports ) ]
 use former_runtime as TheModule;
 #[ allow( unused_imports ) ]
 use meta_tools::prelude::*;
-// use test_tools::*;
 
 mod former
 {

@@ -14,6 +14,7 @@ pub( crate ) mod private
 
   impl StrokeBrushChanger
   {
+
     /// Constructor.
     #[ inline ]
     pub( crate ) fn _new( mut context_changer : ContextChanger ) -> Self
@@ -31,22 +32,36 @@ pub( crate ) mod private
         context_changer,
       }
     }
-    /// Get back to context.
-    #[ inline ]
-    pub fn context( self ) -> ContextChanger
-    {
-      self.context_changer
-    }
+
+    // /// Get back to context.
+    // #[ inline ]
+    // pub fn context( self ) -> ContextChanger
+    // {
+    //   self.context_changer
+    // }
+
     /// ChangeInterface color.
     #[ inline ]
     pub fn color< Color >( mut self, color : Color ) -> Self
     where
       Color : RgbaInterface< f32 >,
     {
-      let change = StrokeBrushChangeColor::new( color.into_rgba() );
+      let id = self.id;
+      let change = StrokeBrushChangeColor::new( id, color.into_rgba() );
       self.change_add( change );
       self
     }
+
+    /// Width.
+    #[ inline ]
+    pub fn width( mut self, val : f32 ) -> Self
+    {
+      let id = self.id;
+      let change = StrokeBrushChangeWidth::new( id, val );
+      self.change_add( change );
+      self
+    }
+
   }
 
   impl ChangerInterface for StrokeBrushChanger
@@ -83,39 +98,7 @@ pub( crate ) mod private
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::
-  {
-    orphan::*,
-  };
-}
-
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::
-  {
-    prelude::*,
-    private::StrokeBrushChanger,
-  };
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::private::
-  {
-  };
+  exposed use StrokeBrushChanger;
 }

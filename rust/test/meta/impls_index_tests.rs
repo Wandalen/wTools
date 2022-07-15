@@ -3,7 +3,7 @@
 
 use ::impls_index as TheModule;
 #[ allow( unused_imports ) ]
-use test_tools::*;
+use test_tools::exposed::*;
 
 #[ path = "./impls_index/mod.rs" ]
 mod impls_index;

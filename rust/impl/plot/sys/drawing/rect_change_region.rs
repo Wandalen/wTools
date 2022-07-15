@@ -6,7 +6,7 @@ pub( crate ) mod private
   /// Command to draw rectangle.
   #[ allow( dead_code ) ]
   #[ derive( Debug, Clone ) ]
-  pub struct RectChange
+  pub struct RectChangeRegion
   {
     /// Id.
     pub( crate ) id : Id,
@@ -16,7 +16,7 @@ pub( crate ) mod private
     pub( crate )  right_bottom : X2< f32 >,
   }
 
-  impl RectChange
+  impl RectChangeRegion
   {
 
     /// Constructor
@@ -37,45 +37,13 @@ pub( crate ) mod private
 
   }
 
-  impl ChangeInterface for RectChange
+  impl ChangeInterface for RectChangeRegion
   {
   }
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::orphan::*;
-}
-
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::
-  {
-    exposed::*,
-  };
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::
-  {
-    prelude::*,
-    private::RectChange,
-  };
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::private::
-  {
-  };
+  exposed use RectChangeRegion;
 }

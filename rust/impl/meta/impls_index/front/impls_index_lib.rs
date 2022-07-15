@@ -17,7 +17,7 @@
 pub mod impls_index;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   // pub use ::literally;
   // pub use ::for_each;

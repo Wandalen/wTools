@@ -11,17 +11,26 @@ mod private
 {
 }
 
+/// layer_a
+mod layer_a;
+/// layer_b
+mod layer_b;
+
 TheModule::mod_interface!
 {
 
   /// layer_a
-  layer layer_a;
+  use super::layer_a;
+  #[ cfg( all() ) ]
   /// layer_b
-  layer layer_b;
+  use super::layer_b;
+  #[ cfg( any() ) ]
+  /// layer_c
+  use super::layer_c;
 
 }
 
 //
 
-// include!( "../../only_test/layer_divergent_only_test.rs" );
 include!( "../../only_test/layer_simple_only_test.rs" );
+

@@ -40,54 +40,5 @@ crate::mod_interface!
   layer sys;
 
   use super::math;
-  // prelude use super::math::prelude::*;
-  // exposed use super::math::exposed::*;
 
 }
-
-// /// Protected namespace of the module.
-// layer protected
-// {
-//   pub use super::orphan::*;
-//   #[ cfg( feature = "use_std" ) ]
-//   pub use super::
-//   {
-//     sys::orphan::*,
-//     abs::orphan::*,
-//     color::orphan::*,
-//   };
-// }
-//
-// pub use protected::*;
-//
-// /// Parented namespace of the module.
-// layer orphan
-// {
-//   pub use super::exposed::*;
-// }
-//
-// /// Exposed namespace of the module.
-// layer exposed
-// {
-//   pub use super::prelude::*;
-//   #[ cfg( feature = "use_std" ) ]
-//   pub use super::
-//   {
-//     sys::exposed::*,
-//     abs::exposed::*,
-//     color::exposed::*,
-//   };
-// }
-//
-// /// Prelude to use essentials: `use my_module::prelude::*`.
-// layer prelude
-// {
-//   #[ cfg( feature = "use_std" ) ]
-//   pub use super::
-//   {
-//     sys::prelude::*,
-//     abs::prelude::*,
-//     color::prelude::*,
-//   };
-//   pub use ::wmath::prelude::*;
-// }

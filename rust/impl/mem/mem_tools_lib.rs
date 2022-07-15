@@ -13,7 +13,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
 }
 

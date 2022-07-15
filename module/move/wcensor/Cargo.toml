@@ -44,7 +44,7 @@ path = "rust/impl/censor/censor_entry.rs"
 
 [[test]]
 name = "censor_test"
-path = "rust/test/censor/tests.rs"
+path = "rust/test/censor/censor_tests.rs"
 
 [[test]]
 name = "censor_smoke_test"

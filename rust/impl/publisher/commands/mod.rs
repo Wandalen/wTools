@@ -3,6 +3,27 @@
 //! Library of utility to work with commands.
 //!
 
+/// Protected namespace of the module.
+pub mod protected
+{
+}
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+}
+
+/// Prelude namespace of the module.
+pub mod prelude
+{
+}
+
+
 /// Publish module.
 #[ cfg( feature = "use_std" ) ]
 mod publish;

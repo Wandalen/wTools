@@ -14,14 +14,15 @@
 
 /// Assertions.
 pub mod assert;
-#[ cfg( feature = "use_std" ) ]
 /// Default error object.
+#[ cfg( feature = "use_std" ) ]
 pub mod error;
 /// An alias for Result.
+#[ cfg( feature = "use_std" ) ]
 pub mod result;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
 
   #[ doc( inline ) ]

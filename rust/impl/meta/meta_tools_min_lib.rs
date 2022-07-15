@@ -13,7 +13,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   #[ cfg( any( feature = "collection_make", feature = "literally" ) ) ]
   pub use ::literally;
