@@ -211,27 +211,9 @@ pub( crate ) mod private
   // };
 }
 
-/// Protected namespace of the module.
-pub mod protected
-{
-  pub use super::orphan::*;
-}
-pub use protected::*;
+//
 
-/// Orphan namespace of the module.
-pub mod orphan
+wtools::meta::mod_interface!
 {
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-}
-
-/// Prelude namespace of the module.
-pub mod prelude
-{
-  pub use super::private::*;
+  prelude use super::private::*;
 }

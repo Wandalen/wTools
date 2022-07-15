@@ -12,15 +12,12 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-#[ cfg( feature = "use_std" ) ]
 wtools::meta::mod_interface!
 {
   /// Result of parsing.
+  #[ cfg( feature = "use_std" ) ]
   layer instruction;
   /// Properties parsing.
+  #[ cfg( feature = "use_std" ) ]
   layer props;
-}
-#[ cfg( not( feature = "use_std" ) ) ]
-wtools::meta::mod_interface!
-{
 }
