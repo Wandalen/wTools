@@ -19,15 +19,11 @@ pub mod string
   pub use wtools::string::*;
 }
 
-#[ cfg( feature = "use_std" ) ]
 wtools::meta::mod_interface!
 {
   /// Commands aggregator library.
+  #[ cfg( feature = "use_std" ) ]
   layer ca;
-}
-#[ cfg( not( feature = "use_std" ) ) ]
-wtools::meta::mod_interface!
-{
 }
 
 #[ cfg( feature = "use_std" ) ]
