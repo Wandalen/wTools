@@ -20,6 +20,20 @@ pub( crate ) mod private
     fn element_copy( &self, index : usize ) -> Self::Item;
   }
 
+  ///
+  /// Has length and indexed access, including mutable access.
+  ///
+
+  pub trait EnumerableMut
+  where
+    Self : Enumerable,
+  {
+    /// Length.
+    fn element_mut< 'a, 'b >( &'a mut self, index : usize ) -> &'b mut < Self as Enumerable >::Item
+    where
+      'b : 'a;
+  }
+
 //     impl IntoIterator for Pair
 //     {
 //       type Item = < Pair as Enumerable >::Item;
@@ -33,10 +47,10 @@ pub( crate ) mod private
 //     impl< 'a > IntoIterator for &'a Pair
 //     {
 //       type Item = &'a < Pair as Enumerable >::Item;
-//       type IntoIter = TheModule::EnumerableIteratorNonCopy< 'a, Pair >;
+//       type IntoIter = TheModule::EnumerableIteratorRef< 'a, Pair >;
 //       fn into_iter( self ) -> Self::IntoIter
 //       {
-//         TheModule::EnumerableIteratorNonCopy::new( self )
+//         TheModule::EnumerableIteratorRef::new( self )
 //       }
 //     }
 
@@ -82,10 +96,12 @@ pub( crate ) mod private
     }
   }
 
-  /// Iterator for enumerable.
+  ///
+  /// Ref iterator for enumerable.
+  ///
 
   #[ derive( Debug ) ]
-  pub struct EnumerableIteratorNonCopy< 'a, En >
+  pub struct EnumerableIteratorRef< 'a, En >
   where
     En : Enumerable,
   {
@@ -93,7 +109,7 @@ pub( crate ) mod private
     last_index : usize,
   }
 
-  impl< 'a, En > EnumerableIteratorNonCopy< 'a, En >
+  impl< 'a, En > EnumerableIteratorRef< 'a, En >
   where
     En : Enumerable,
   {
@@ -105,7 +121,7 @@ pub( crate ) mod private
   }
 
   impl< 'a, En > Iterator
-  for EnumerableIteratorNonCopy< 'a, En >
+  for EnumerableIteratorRef< 'a, En >
   where
     En : Enumerable,
   {
@@ -116,6 +132,50 @@ pub( crate ) mod private
       {
         self.last_index += 1;
         Some( self.ins.element( self.last_index - 1 ) )
+      }
+      else
+      {
+        None
+      }
+    }
+  }
+
+  ///
+  /// Mut iterator for enumerable.
+  ///
+
+  #[ derive( Debug ) ]
+  pub struct EnumerableIteratorMut< 'a, En >
+  where
+    En : EnumerableMut,
+  {
+    ins : &'a mut En,
+    last_index : usize,
+  }
+
+  impl< 'a, En > EnumerableIteratorMut< 'a, En >
+  where
+    En : EnumerableMut,
+  {
+    /// Constructor.
+    pub fn new( ins : &'a mut En ) -> Self
+    {
+      Self { ins, last_index : 0 }
+    }
+  }
+
+  impl< 'a, En > Iterator
+  for EnumerableIteratorMut< 'a, En >
+  where
+    En : EnumerableMut,
+  {
+    type Item = &'a mut < En as Enumerable >::Item;
+    fn next( &mut self ) -> Option< Self::Item >
+    {
+      if self.last_index < self.ins.len()
+      {
+        self.last_index += 1;
+        Some( self.ins.element_mut( self.last_index - 1 ) )
       }
       else
       {
@@ -147,7 +207,8 @@ pub mod exposed
   pub use super::private::
   {
     EnumerableIteratorCopy,
-    EnumerableIteratorNonCopy,
+    EnumerableIteratorRef,
+    EnumerableIteratorMut,
   };
 }
 
@@ -159,5 +220,6 @@ pub mod prelude
   pub use super::private::
   {
     Enumerable,
+    EnumerableMut,
   };
 }

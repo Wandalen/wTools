@@ -3,6 +3,7 @@ use super::*;
 
 tests_impls!
 {
+
   fn basic()
   {
     use TheModule::prelude::*;
@@ -55,10 +56,10 @@ tests_impls!
     impl< 'a > IntoIterator for &'a Pair
     {
       type Item = &'a < Pair as Enumerable >::Item;
-      type IntoIter = TheModule::EnumerableIteratorNonCopy< 'a, Pair >;
+      type IntoIter = TheModule::EnumerableIteratorRef< 'a, Pair >;
       fn into_iter( self ) -> Self::IntoIter
       {
-        TheModule::EnumerableIteratorNonCopy::new( self )
+        TheModule::EnumerableIteratorRef::new( self )
       }
     }
 
@@ -89,6 +90,7 @@ tests_impls!
     a_id!( pair.len(), 2 );
 
   }
+
 }
 
 //
