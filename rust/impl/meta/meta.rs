@@ -16,9 +16,15 @@ mod_interface::mod_interface!
   #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   #[ doc( inline ) ]
   prelude use ::woptions::prelude::*;
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  #[ doc( inline ) ]
+  prelude use ::woptions as options;
   #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   #[ doc( inline ) ]
   prelude use ::former::prelude::*;
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  #[ doc( inline ) ]
+  prelude use ::former as former;
   #[ cfg( feature = "collection_make" ) ]
   #[ doc( inline ) ]
   prelude use ::literally::*;
