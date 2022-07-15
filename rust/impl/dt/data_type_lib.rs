@@ -78,7 +78,7 @@ pub mod prelude
     Vec as DynArray,
   };
 
-  #[ cfg( any( feature = "use_std", feature = "use_alloc" ) ) ]
+  // #[ cfg( any( feature = "use_std", feature = "use_alloc" ) ) ]
   #[ cfg( feature = "prelude" ) ]
   #[ doc( inline ) ]
   pub use core::
@@ -88,5 +88,6 @@ pub mod prelude
 
 }
 
-// zzz : use
+// zzz : use maybe
 // https://github.com/CAD97/pointer-utils/tree/master/crates/slice-dst
+// zzz : add once_cell maybe

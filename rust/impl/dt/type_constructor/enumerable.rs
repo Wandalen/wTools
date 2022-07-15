@@ -2,6 +2,8 @@
 pub( crate ) mod private
 {
 
+  // xxx : use type_constructor::Enumberable for indexed access to color components
+
   ///
   /// Has length and indexed access.
   ///

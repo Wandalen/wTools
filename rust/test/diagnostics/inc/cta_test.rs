@@ -13,7 +13,7 @@ tests_impls!
   {
     // test.case( "check feature, true" );
     cta_true!( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
-    // xxx : try ( 1 + 2 == 3 )
+    // zzz : try ( 1 + 2 == 3 )
   }
 }
 

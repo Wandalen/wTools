@@ -110,7 +110,7 @@ pub( crate ) mod private
     fixes_map.insert( VisExposed::Kind(), Vec::new() );
     fixes_map.insert( VisPrelude::Kind(), Vec::new() );
 
-    // xxx : test case with several attrs
+    // zzz : test case with several attrs
 
     let mut err = None;
 
@@ -167,7 +167,7 @@ pub( crate ) mod private
           else
           {
 
-            // xxx : test
+            // zzz : test
             if !vis.can_be_used_for_micro_mod()
             {
               err = Some( syn_err!

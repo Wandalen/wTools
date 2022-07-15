@@ -4,7 +4,7 @@ use super::*;
 use TheModule::prelude::*;
 
 // qqq : do negative testing /* aaa : Dmytro : done */
-// xxx : continue here
+// zzz : continue here
 
 tests_impls!
 {

@@ -318,7 +318,7 @@ pub( crate ) mod private
       //   }
       // }
 
-      // xxx : use match maybe
+      // zzz : use match maybe
 
       if input.peek( kw::private )
       {
