@@ -28,7 +28,7 @@ tests_impls!
           &self.1
         }
       }
-      fn element_take( &self, index : usize ) -> Self::Item
+      fn element_copy( &self, index : usize ) -> Self::Item
       {
         debug_assert!( index < 2 );
         if index == 0
@@ -45,28 +45,28 @@ tests_impls!
     impl IntoIterator for Pair
     {
       type Item = < Pair as Enumerable >::Item;
-      type IntoIter = TheModule::EnumerableIteratorConsumable< Self >;
+      type IntoIter = TheModule::EnumerableIteratorCopy< Self >;
       fn into_iter( self ) -> Self::IntoIter
       {
-        TheModule::EnumerableIteratorConsumable::new( self )
+        TheModule::EnumerableIteratorCopy::new( self )
       }
     }
 
     impl< 'a > IntoIterator for &'a Pair
     {
       type Item = &'a < Pair as Enumerable >::Item;
-      type IntoIter = TheModule::EnumerableIteratorNonConsumable< 'a, Pair >;
+      type IntoIter = TheModule::EnumerableIteratorNonCopy< 'a, Pair >;
       fn into_iter( self ) -> Self::IntoIter
       {
-        TheModule::EnumerableIteratorNonConsumable::new( self )
+        TheModule::EnumerableIteratorNonCopy::new( self )
       }
     }
 
     /* test.case( "basic" ); */
     let pair = Pair( 13, 31 );
     a_id!( pair.len(), 2 );
-    a_id!( pair.element_take( 0 ), 13 );
-    a_id!( pair.element_take( 1 ), 31 );
+    a_id!( pair.element_copy( 0 ), 13 );
+    a_id!( pair.element_copy( 1 ), 31 );
     a_id!( pair.element( 0 ), &13 );
     a_id!( pair.element( 1 ), &31 );
 

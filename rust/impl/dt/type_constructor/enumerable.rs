@@ -17,33 +17,33 @@ pub( crate ) mod private
     /// Get element.
     fn element( &self, index : usize ) -> &Self::Item;
     /// Get element.
-    fn element_take( &self, index : usize ) -> Self::Item;
+    fn element_copy( &self, index : usize ) -> Self::Item;
   }
 
 //     impl IntoIterator for Pair
 //     {
 //       type Item = < Pair as Enumerable >::Item;
-//       type IntoIter = TheModule::EnumerableIteratorConsumable< Self >;
+//       type IntoIter = TheModule::EnumerableIteratorCopy< Self >;
 //       fn into_iter( self ) -> Self::IntoIter
 //       {
-//         TheModule::EnumerableIteratorConsumable::new( self )
+//         TheModule::EnumerableIteratorCopy::new( self )
 //       }
 //     }
 //
 //     impl< 'a > IntoIterator for &'a Pair
 //     {
 //       type Item = &'a < Pair as Enumerable >::Item;
-//       type IntoIter = TheModule::EnumerableIteratorNonConsumable< 'a, Pair >;
+//       type IntoIter = TheModule::EnumerableIteratorNonCopy< 'a, Pair >;
 //       fn into_iter( self ) -> Self::IntoIter
 //       {
-//         TheModule::EnumerableIteratorNonConsumable::new( self )
+//         TheModule::EnumerableIteratorNonCopy::new( self )
 //       }
 //     }
 
   /// Iterator for enumerable.
 
   #[ derive( Debug ) ]
-  pub struct EnumerableIteratorConsumable< En >
+  pub struct EnumerableIteratorCopy< En >
   where
     En : Enumerable,
   {
@@ -51,7 +51,7 @@ pub( crate ) mod private
     last_index : usize,
   }
 
-  impl< En > EnumerableIteratorConsumable< En >
+  impl< En > EnumerableIteratorCopy< En >
   where
     En : Enumerable,
   {
@@ -63,7 +63,7 @@ pub( crate ) mod private
   }
 
   impl< En > Iterator
-  for EnumerableIteratorConsumable< En >
+  for EnumerableIteratorCopy< En >
   where
     En : Enumerable,
   {
@@ -73,7 +73,7 @@ pub( crate ) mod private
       if self.last_index < self.ins.len()
       {
         self.last_index += 1;
-        Some( self.ins.element_take( self.last_index - 1 ) )
+        Some( self.ins.element_copy( self.last_index - 1 ) )
       }
       else
       {
@@ -85,7 +85,7 @@ pub( crate ) mod private
   /// Iterator for enumerable.
 
   #[ derive( Debug ) ]
-  pub struct EnumerableIteratorNonConsumable< 'a, En >
+  pub struct EnumerableIteratorNonCopy< 'a, En >
   where
     En : Enumerable,
   {
@@ -93,7 +93,7 @@ pub( crate ) mod private
     last_index : usize,
   }
 
-  impl< 'a, En > EnumerableIteratorNonConsumable< 'a, En >
+  impl< 'a, En > EnumerableIteratorNonCopy< 'a, En >
   where
     En : Enumerable,
   {
@@ -105,7 +105,7 @@ pub( crate ) mod private
   }
 
   impl< 'a, En > Iterator
-  for EnumerableIteratorNonConsumable< 'a, En >
+  for EnumerableIteratorNonCopy< 'a, En >
   where
     En : Enumerable,
   {
@@ -146,8 +146,8 @@ pub mod exposed
   pub use super::prelude::*;
   pub use super::private::
   {
-    EnumerableIteratorConsumable,
-    EnumerableIteratorNonConsumable,
+    EnumerableIteratorCopy,
+    EnumerableIteratorNonCopy,
   };
 }
 
