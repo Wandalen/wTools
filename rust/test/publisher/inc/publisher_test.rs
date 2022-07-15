@@ -12,6 +12,7 @@ fn tmp_dir_get( prefix : impl AsRef<str> ) -> PathBuf
 fn asset_copy_to_tmp( asset_dir : impl AsRef<str>, prefix : impl AsRef<str> ) -> std::io::Result< () >
 {
   let tmp_dir = tmp_dir_get( prefix.as_ref() );
+  std::fs::create_dir( &tmp_dir )?;
   let module_path = std::env::var( "CARGO_MANIFEST_DIR" ).unwrap();
   let mut current_dir = PathBuf::from( module_path );
   current_dir.push( "rust" );
