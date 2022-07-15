@@ -13,7 +13,6 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
 // zzz : expose one_cell
-// xxx : rename dependencies -> dependency
 
 /// Dependencies.
 pub mod dependency

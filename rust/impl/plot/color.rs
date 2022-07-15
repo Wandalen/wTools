@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use num_traits::{ Zero }; /* xxx : consider for wtools */
+  use num_traits::{ Zero }; /* zzz : consider as submodule for wtools */
 
   /// Convertable into RGBA.
   pub trait RgbaInterface< T >
@@ -13,7 +13,7 @@ pub( crate ) mod private
     fn into_rgba( self ) -> Rgba< T >;
   }
 
-  // xxx : here type_constructor's derives should be used
+  // xxx : use type_constructor::Enumberable for indexed access to color components
 
   /// RGBA
   #[ derive( Debug, Clone ) ]
@@ -68,6 +68,21 @@ pub( crate ) mod private
         g : self[ 1 ],
         b : self[ 2 ],
         a : 1.0,
+      }
+    }
+  }
+
+  impl RgbaInterface< f32 >
+  for [ f32 ; 4 ]
+  {
+    fn into_rgba( self ) -> Rgba< f32 >
+    {
+      Rgba::< f32 >
+      {
+        r : self[ 0 ],
+        g : self[ 1 ],
+        b : self[ 2 ],
+        a : self[ 3 ],
       }
     }
   }

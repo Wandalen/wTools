@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use once_cell::sync::Lazy; /* xxx : move to wtools */
+  use once_cell::sync::Lazy;
   use std::sync::Mutex;
   use core::hash::Hash;
   // use core::any::TypeId;

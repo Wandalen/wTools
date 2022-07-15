@@ -52,7 +52,8 @@ pub( crate ) mod private
 
   //
 
-  // xxx : implement IdentityGenerableInterface for other identities. make it working
+  // zzz : implement IdentityGenerableInterface for other identities. make it working
+  // zzz : use type constructors
 
   // types!
   // {

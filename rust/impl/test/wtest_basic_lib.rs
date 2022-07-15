@@ -28,9 +28,6 @@ pub mod dependency
 
 pub use dependency::*;
 use ::meta_tools::mod_interface;
-// pub use ::meta_tools as meta;
-// pub use ::mem_tools as mem;
-// pub use ::typing_tools as typing;
 
 mod_interface!
 {
@@ -39,23 +36,18 @@ mod_interface!
   /// Helpers.
   layer helper;
 
-  exposed use ::meta_tools as meta;
-  exposed use ::mem_tools as mem;
-  exposed use ::typing_tools as typing;
+  prelude use ::meta_tools as meta;
+  prelude use ::mem_tools as mem;
+  prelude use ::typing_tools as typing;
+  prelude use ::data_type as dt;
+  prelude use ::diagnostics_tools as diagnostics;
 
-  exposed use ::diagnostics_tools::exposed::*;
-  exposed use ::meta_tools::
-  {
-    impls,
-    index,
-    tests_impls,
-    tests_impls_optional,
-    tests_index,
-  };
-  exposed use ::typing_tools::{ implements };
-  exposed use ::inspect_type::exposed::*;
+  // use super::exposed::meta;
+  use super::exposed::mem;
+  use super::exposed::typing;
+  use super::exposed::dt;
+  use super::exposed::diagnostics;
 
-  prelude use ::diagnostics_tools::prelude::*;
   prelude use ::meta_tools::
   {
     impls,
@@ -67,8 +59,4 @@ mod_interface!
   prelude use ::typing_tools::{ implements };
 }
 
-// use ::diagnostics_tools::exposed::exposed;
-// use ::diagnostics_tools::exposed::exposed;
-
-// use exposed::exposed;
 // qqq : for Dima : add negative test that wtest_basic::exposed::exposed does not exist

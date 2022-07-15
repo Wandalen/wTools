@@ -1,4 +1,3 @@
-
 pub( crate ) mod private
 {
   use std::collections::HashMap;
@@ -6,8 +5,6 @@ pub( crate ) mod private
   use core::fmt;
   use crate::*;
   use wtools::error::{ Result, BasicError };
-
-  // qqq : for Dima : adjust formatting /* aaa : Dmytro : adjusted */
 
   ///
   /// Handle for command routine.
