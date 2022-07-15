@@ -81,30 +81,9 @@ pub( crate ) mod private
   // pub use index;
 }
 
-/// Protected namespace of the module.
-pub mod protected
-{
-}
+//
 
-/// Orphan namespace of the module.
-pub mod orphan
+meta_tools::mod_interface!
 {
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  // use super::private as i;
-  pub use super::prelude::*;
-  // pub use super::private::test_suite;
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  // use super::private as i;
-  // pub use super::private::test_suite;
-  pub use core::fmt; // zzz : add to prelude of wtools under feature fair_context
+  prelude use ::core::fmt; // zzz : add to prelude of wtools under feature fair_context
 }

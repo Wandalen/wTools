@@ -65,32 +65,9 @@ pub( crate ) mod private
   pub use num;
 }
 
-/// Protected namespace of the module.
-pub mod protected
-{
-}
+//
 
-/// Orphan namespace of the module.
-pub mod orphan
+meta_tools::mod_interface!
 {
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::private::
-  {
-    // mem_same_ptr,
-    // mem_same_size,
-    // mem_same_region,
-    num,
-  };
+  prelude use num;
 }
