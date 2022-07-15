@@ -31,7 +31,7 @@ pub use protected::*;
 pub mod orphan
 {
   pub use super::exposed::*;
-  // pub use super::dependencies;
+  // pub use super::dependency;
 }
 
 /// Exposed namespace of the module.

@@ -9,6 +9,6 @@ use ::multilayer as TheModule;
 
 include!( "../_conditional/local_module.rs" );
 #[ allow( unused_imports ) ]
-use test_tools::*;
+use test_tools::exposed::*;
 
 mod mod_interface;

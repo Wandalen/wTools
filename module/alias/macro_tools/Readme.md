@@ -11,7 +11,7 @@ Tools for writing procedural macroses.
 
 ```rust
 use macro_tools::*;
-use macro_tools::dependencies::*;
+use macro_tools::dependency::*;
 use quote::quote;
 
 fn main()

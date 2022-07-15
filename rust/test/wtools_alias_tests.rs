@@ -7,7 +7,7 @@
 #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 
 use wTools as TheModule;
-use test_tools::*;
+use test_tools::exposed::*;
 
 #[ path = "./mod.rs" ]
 mod tests;

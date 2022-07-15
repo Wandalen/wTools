@@ -2,7 +2,7 @@
 #[ allow( unused_imports ) ]
 use wtest as TheModule;
 #[ allow( unused_imports ) ]
-use test_tools::*;
+use test_tools::exposed::*;
 
 #[ cfg( feature = "use_std" ) ]
 mod inc;

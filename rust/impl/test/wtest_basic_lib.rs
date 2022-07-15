@@ -67,5 +67,8 @@ mod_interface!
   prelude use ::typing_tools::{ implements };
 }
 
+// use ::diagnostics_tools::exposed::exposed;
+// use ::diagnostics_tools::exposed::exposed;
+
 // use exposed::exposed;
 // qqq : for Dima : add negative test that wtest_basic::exposed::exposed does not exist

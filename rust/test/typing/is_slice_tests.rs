@@ -7,7 +7,7 @@
 
 use is_slice as TheModule;
 #[ allow( unused_imports ) ]
-use test_tools::*;
+use test_tools::exposed::*;
 
 #[ path = "./inc/is_slice_test.rs" ]
 mod is_slice_test;

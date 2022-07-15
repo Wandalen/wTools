@@ -5,10 +5,10 @@
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
 
-// use test_tools::*;
+// use test_tools::exposed::*;
 use instance_of as TheModule;
 #[ allow( unused_imports ) ]
-use test_tools::*;
+use test_tools::exposed::*;
 
 tests_impls!
 {
