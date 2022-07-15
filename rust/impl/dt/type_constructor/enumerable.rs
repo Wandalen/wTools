@@ -34,6 +34,18 @@ pub( crate ) mod private
       'b : 'a;
   }
 
+  // impl< E > IntoIterator for E
+  // where
+  //   E : Enumerable,
+  // {
+  //   type Item = < E as Enumerable >::Item;
+  //   type IntoIter = EnumerableIteratorCopy< Self >;
+  //   fn into_iter( self ) -> Self::IntoIter
+  //   {
+  //     EnumerableIteratorCopy::new( self )
+  //   }
+  // }
+
 //     impl IntoIterator for Pair
 //     {
 //       type Item = < Pair as Enumerable >::Item;
