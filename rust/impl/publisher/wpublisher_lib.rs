@@ -16,21 +16,9 @@
 pub use std::env;
 #[ allow( unused_imports ) ]
 pub use wca::instruction;
-#[ cfg( feature = "use_std" ) ]
-pub use crate::wpublisher::
-{
-  bool,
-  digest,
-  files,
-  http,
-  manifest,
-  process,
-};
 
-// qqq : for Dima : mod interface /* aaa : Dmytro : replaced */
 wtools::mod_interface!
 {
   layer wpublisher;
   layer commands;
 }
-

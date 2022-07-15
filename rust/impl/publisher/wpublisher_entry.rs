@@ -12,6 +12,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
+#[ allow( unused_imports ) ]
 use ::wpublisher::*;
 
 //
