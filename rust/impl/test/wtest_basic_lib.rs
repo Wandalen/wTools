@@ -42,11 +42,17 @@ mod_interface!
   exposed use ::data_type as dt;
   exposed use ::diagnostics_tools as diagnostics;
 
-  // use ::meta_tools;
-  use ::mem_tools;
-  use ::typing_tools;
-  use ::data_type;
-  use ::diagnostics_tools;
+  // use super::exposed::meta;
+  use super::exposed::mem;
+  use super::exposed::typing;
+  use super::exposed::dt;
+  use super::exposed::diagnostics;
+
+  // // use ::meta_tools;
+  // use ::mem_tools;
+  // use ::typing_tools;
+  // use ::data_type;
+  // use ::diagnostics_tools;
 
   prelude use ::meta_tools::
   {
