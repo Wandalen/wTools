@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use num_traits::{ Zero }; /* xxx : consider for wtools */
+  use num_traits::{ Zero }; /* zzz : consider as submodule for wtools */
 
   /// Convertable into RGBA.
   pub trait RgbaInterface< T >

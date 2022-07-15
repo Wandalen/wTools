@@ -36,23 +36,17 @@ mod_interface!
   /// Helpers.
   layer helper;
 
-  exposed use ::meta_tools as meta;
-  exposed use ::mem_tools as mem;
-  exposed use ::typing_tools as typing;
-  exposed use ::data_type as dt;
-  exposed use ::diagnostics_tools as diagnostics;
+  prelude use ::meta_tools as meta;
+  prelude use ::mem_tools as mem;
+  prelude use ::typing_tools as typing;
+  prelude use ::data_type as dt;
+  prelude use ::diagnostics_tools as diagnostics;
 
   // use super::exposed::meta;
   use super::exposed::mem;
   use super::exposed::typing;
   use super::exposed::dt;
   use super::exposed::diagnostics;
-
-  // // use ::meta_tools;
-  // use ::mem_tools;
-  // use ::typing_tools;
-  // use ::data_type;
-  // use ::diagnostics_tools;
 
   prelude use ::meta_tools::
   {

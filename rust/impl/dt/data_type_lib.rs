@@ -12,6 +12,8 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
+// zzz : proc macro for standard lib epilogue
+
 /// Collection of primal data types.
 pub mod dt;
 

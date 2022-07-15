@@ -1,6 +1,6 @@
 [package]
 name = "wtest_basic"
-version = "0.1.12"
+version = "0.1.13"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -67,4 +67,3 @@ diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools" }
 
 [dev-dependencies]
 # rustversion = "~1.0"
-
