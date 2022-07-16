@@ -12,10 +12,10 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-// xxx : expose one_cell
+// zzz : expose one_cell
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   #[ cfg( any( feature = "collection_make", feature = "literally" ) ) ]
   pub use ::literally;
@@ -29,33 +29,11 @@ pub mod dependencies
   pub use ::woptions;
 }
 
-/// Collection of general purpose meta tools.
-pub mod meta;
+//
 
-/// Protected namespace of the module.
-pub mod protected
+mod_interface::mod_interface!
 {
-  pub use super::orphan::*;
-  pub use super::meta::orphan::*;
+  /// Collection of general purpose meta tools.
+  prelude layer meta;
 }
-
 pub use protected::*;
-
-/// Orphan namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-  pub use super::meta::exposed::*;
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::meta::prelude::*;
-}

@@ -18,7 +18,7 @@ pub mod diagnostics;
 pub mod layout;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   #[ cfg( feature = "runtime_assertions" ) ]
   pub use ::pretty_assertions;

@@ -19,14 +19,14 @@ tests_impls!
     let instruction = TheModule::instruction::parse_from_splits( args.iter() );
     a_id!( instruction.command_name.as_ref(), ".struct1" );
     a_id!( vec_as_ref( &instruction.subject ), vec![ "subject1", "subject2" ] );
-    a_id!( instruction.properties_map, hmap!{} );
+    a_id!( instruction.properties_map, std::collections::HashMap::new() );
 
     // // test.case( "basic comand, subject map" );
     // let args = vec![ ".struct1", "subject1", "k1:v1" ];
     // let instruction = TheModule::instruction::parse_from_splits( args.iter() );
     // a_id!( instruction.command_name.as_ref(), ".struct1" );
     // a_id!( vec_as_ref( &instruction.subject ), vec![ "subject1" ] );
-    // a_id!( instruction.properties_map, hmap!{} );
+    // a_id!( instruction.properties_map, std::collections::HashMap::new() );
   }
 
   //

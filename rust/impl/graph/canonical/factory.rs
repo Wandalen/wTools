@@ -429,7 +429,6 @@ pub( crate ) mod private
     EdgeId : IdentityInterface + IdentityGenerableInterface,
     Kind : NodeKindInterface,
   {
-    // type NodeHandle = crate::canonical::Node< NodeId, EdgeId, Kind >; /* xxx2 : remove? */
   }
 
   //

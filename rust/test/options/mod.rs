@@ -1,7 +1,7 @@
 
 use super::TheModule::options as TheModule;
 #[ allow( unused_imports ) ]
-use test_tools::*;
+use test_tools::exposed::*;
 
 use super::TheModule::former::Former;
 

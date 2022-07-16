@@ -18,7 +18,7 @@
 /* zzz : use skeptic? */
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   pub use ::meta_tools::former;
@@ -147,7 +147,7 @@ pub mod prelude
 
   #[ cfg( feature = "derive" ) ]
   pub use super::derive::prelude::*;
-  // xxx
+  // zzz
   #[ cfg( feature = "derive_clone_dyn" ) ]
   pub use super::derive::prelude::clone_dyn;
 

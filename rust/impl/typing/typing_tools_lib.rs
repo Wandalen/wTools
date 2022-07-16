@@ -16,7 +16,7 @@
 pub mod typing;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   pub use ::inspect_type;
   pub use ::is_slice;

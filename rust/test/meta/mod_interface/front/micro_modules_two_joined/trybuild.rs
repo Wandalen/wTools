@@ -4,7 +4,9 @@
 
 //! Trybuild tests.
 
+#[ allow( unused_imports ) ]
 use mod_interface as TheModule;
+#[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 
 /// Test module.

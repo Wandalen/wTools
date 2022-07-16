@@ -12,19 +12,15 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-// #![feature( pattern )]
-
-// use wtools::former::Former;
-
-///
-/// Result of parsing.
-///
-
-pub mod instruction;
-
-///
-/// Properties parsing.
-///
-
-pub mod props;
-// pub mod string;
+#[ cfg( feature = "use_std" ) ]
+wtools::meta::mod_interface!
+{
+  /// Result of parsing.
+  layer instruction;
+  /// Properties parsing.
+  layer props;
+}
+#[ cfg( not( feature = "use_std" ) ) ]
+wtools::meta::mod_interface!
+{
+}

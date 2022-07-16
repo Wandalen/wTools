@@ -3,9 +3,8 @@ pub( crate ) mod private
 {
   use crate::exposed::*;
 
-  // xxx : write article about the module
+  // zzz : write article about the module
   // zzz : extend diagnostics_tools
-  // zzz : add core::fmt to prelude
 
   ///
   /// Type constructor to define tuple wrapping a given type.

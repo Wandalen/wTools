@@ -6,7 +6,7 @@
 
 use fundamental_data_type as TheModule;
 #[ allow( unused_imports ) ]
-use test_tools::*;
+use test_tools::exposed::*;
 
 #[ path = "./inc.rs" ]
 mod inc;

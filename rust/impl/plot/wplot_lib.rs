@@ -17,15 +17,6 @@
 pub use wmath as math;
 pub use wtools::prelude::*;
 
-/// Describe colors.
-pub mod color;
-/// Abstraction.
-#[ cfg( feature = "use_std" ) ]
-pub mod abs;
-/// Concrete system.
-#[ cfg( feature = "use_std" ) ]
-pub mod sys;
-
 /// Namespace with dependencies.
 pub mod dependency
 {
@@ -35,49 +26,19 @@ pub mod dependency
   pub use ::rgb;
 }
 
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::orphan::*;
+
+  /// Describe colors.
   #[ cfg( feature = "use_std" ) ]
-  pub use super::
-  {
-    sys::orphan::*,
-    abs::orphan::*,
-    color::orphan::*,
-  };
-}
-
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
+  layer color;
+  /// Abstraction.
   #[ cfg( feature = "use_std" ) ]
-  pub use super::
-  {
-    sys::exposed::*,
-    abs::exposed::*,
-    color::exposed::*,
-  };
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
+  layer abs;
+  /// Concrete system.
   #[ cfg( feature = "use_std" ) ]
-  pub use super::
-  {
-    sys::prelude::*,
-    abs::prelude::*,
-    color::prelude::*,
-  };
-  pub use ::wmath::prelude::*;
+  layer sys;
+
+  use super::math;
+
 }

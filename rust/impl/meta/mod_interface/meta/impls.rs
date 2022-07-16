@@ -94,7 +94,7 @@ pub( crate ) mod private
 
   pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
   {
-    use std::collections::HashMap; /* xxx : include into prelude of wtools */
+    use std::collections::HashMap;
     use ElementType::*;
 
     let records = syn::parse::< Records >( input )?;
@@ -110,78 +110,177 @@ pub( crate ) mod private
     fixes_map.insert( VisExposed::Kind(), Vec::new() );
     fixes_map.insert( VisPrelude::Kind(), Vec::new() );
 
+    // zzz : test case with several attrs
+
     let mut err = None;
 
     records.0.iter().for_each( | record |
     {
-      record.elements.iter().for_each( | element |
+
+      match record.element_type
       {
-        // let ident = element.first().unwrap();
-        let ident = element;
-
-        match record.element_type
-        // if record.element_type.is_micro_module()
+        Use( _ ) =>
         {
+          let attrs1 = &record.attrs;
+          let path = record.use_elements.as_ref().unwrap();
 
-          MicroModule( _ ) =>
+          let vis = record.vis.clone();
+          if vis == Visibility::Inherited
           {
+            // vis = Visibility::Protected( VisProtected::new() );
 
-            let attrs = &record.attrs;
-            immediates.push( qt!
+            let _path;
+            let path2 = if path.to_add_prefix()
             {
-              #( #attrs )*
-              pub mod #ident;
-            });
-
-            let fixes_list = fixes_map.get_mut( &record.vis.kind() ).unwrap();
-            fixes_list.push( qt!{ pub use super::#ident; } );
-
-            // xxx : test
-            if !record.vis.can_be_used_for_micro_mod()
-            {
-              err = Some( syn_err!
-              (
-                record,
-                "To include a non-standard module use either [ protected, orphan, exposed, prelude ] visibility:\n  {}",
-                qt!{ #record },
-              ));
+              _path = parse_qt!{ super::private::#path };
+              &_path
             }
-
-          },
-          Layer( _ ) =>
-          {
-
-            let attrs = &record.attrs;
-            immediates.push( qt!
+            else
             {
-              #( #attrs )*
-              pub mod #ident;
-            });
+              path
+            };
+
+            // println!( "path2 : {}", qt!{ #path2 } );
 
             fixes_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
             {
+              #attrs1
               #[ doc( inline ) ]
-              pub use super::#ident::orphan::*;
+              pub use #path2::orphan::*;
             });
 
             fixes_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
             {
+              #attrs1
               #[ doc( inline ) ]
-              pub use super::#ident::exposed::*;
+              pub use #path2::exposed::*;
             });
 
             fixes_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
             {
+              #attrs1
               #[ doc( inline ) ]
-              pub use super::#ident::prelude::*;
+              pub use #path2::prelude::*;
             });
 
-          },
-        }
+          }
+          else
+          {
 
-      });
+            // zzz : test
+            if !vis.can_be_used_for_micro_mod()
+            {
+              err = Some( syn_err!
+              (
+                record,
+                "Use either [ protected, orphan, exposed, prelude ] visibility:\n  {}",
+                qt!{ #record },
+              ));
+            }
+
+            let fixes_list = fixes_map.get_mut( &vis.kind() ).unwrap();
+
+            if path.to_add_prefix()
+            {
+              fixes_list.push( qt!
+              {
+                #attrs1
+                #[ doc( inline ) ]
+                pub use super::private::#path;
+              });
+            }
+            else
+            {
+              fixes_list.push( qt!
+              {
+                #attrs1
+                #[ doc( inline ) ]
+                pub use #path;
+              });
+            }
+          }
+
+        },
+        _ =>
+        {
+
+          record.elements.iter().for_each( | element |
+          {
+            let attrs1 = &record.attrs;
+            let attrs2 = &element.0;
+            let path = &element.1;
+
+            match record.element_type
+            {
+              MicroModule( _ ) =>
+              {
+
+                immediates.push( qt!
+                {
+                  #attrs1
+                  #attrs2
+                  pub mod #path;
+                });
+
+                let fixes_list = fixes_map.get_mut( &record.vis.kind() ).unwrap();
+                fixes_list.push( qt!{ pub use super::#path; } );
+
+                if !record.vis.can_be_used_for_micro_mod()
+                {
+                  err = Some( syn_err!
+                  (
+                    record,
+                    "To include a non-standard module use either [ protected, orphan, exposed, prelude ] visibility:\n  {}",
+                    qt!{ #record },
+                  ));
+                }
+
+              },
+              Layer( _ ) =>
+              {
+
+                immediates.push( qt!
+                {
+                  #attrs1
+                  #attrs2
+                  pub mod #path;
+                });
+
+                fixes_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
+                {
+                  #attrs1
+                  #attrs2
+                  #[ doc( inline ) ]
+                  pub use super::#path::orphan::*;
+                });
+
+                fixes_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
+                {
+                  #attrs1
+                  #attrs2
+                  #[ doc( inline ) ]
+                  pub use super::#path::exposed::*;
+                });
+
+                fixes_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
+                {
+                  #attrs1
+                  #attrs2
+                  #[ doc( inline ) ]
+                  pub use super::#path::prelude::*;
+                });
+
+              },
+              Use( _ ) =>
+              {
+              },
+            }
+          });
+        }
+      };
 
     });
+
 
     if let Some( _err ) = err
     {
@@ -199,6 +298,9 @@ pub( crate ) mod private
 
       #( #immediates )*
 
+      #[ doc( inline ) ]
+      pub use protected::*;
+
       /// Protected namespace of the module.
       pub mod protected
       {
@@ -208,9 +310,6 @@ pub( crate ) mod private
         #( #protected_fix )*
 
       }
-
-      #[ doc( inline ) ]
-      pub use protected::*;
 
       /// Orphan namespace of the module.
       pub mod orphan
@@ -241,6 +340,8 @@ pub( crate ) mod private
       }
 
     };
+
+    // println!( "\n = result : \n{}\n\n", qt!{ #result } );
 
     Ok( result )
   }

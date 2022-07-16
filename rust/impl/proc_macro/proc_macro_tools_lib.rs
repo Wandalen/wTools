@@ -30,7 +30,7 @@ pub mod generic_analyze;
 /// Dependencies of the module.
 ///
 
-pub mod dependencies
+pub mod dependency
 {
   pub use ::syn;
   pub use ::quote;

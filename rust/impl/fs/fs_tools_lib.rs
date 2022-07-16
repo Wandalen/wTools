@@ -16,7 +16,7 @@
 pub mod fs;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
 }
 

@@ -1,5 +1,9 @@
 use super::*;
 
+// zzz : remove
+// pub use wmath::X2;
+// pub use wmath::X2BasicInterface;
+
 //
 
 tests_impls!
@@ -58,7 +62,8 @@ tests_impls!
 
     // c.canvas.size( make!( 32, 32 ) );
     let c = c
-    .stroke().color( [ 1.0, 0.0, 1.0 ] ).end()
+    // .stroke().color( [ 1.0, 0.0, 1.0 ] ).end()
+    .stroke().width( 2.0 ).color( [ 1.0, 0.0, 1.0 ] ).context()
     // c.draw().begin();
     // c.draw().name( "drawing1" );
     .draw().rect().context()
@@ -71,7 +76,7 @@ tests_impls!
 //     // c.canvas().showing_file( true );
 //     c.canvas().store_to_file();
 
-    println!( "{:?}", c.changes );
+    println!( "{:?}", c );
 
   }
 
@@ -84,4 +89,3 @@ tests_index!
   without,
   basic,
 }
-

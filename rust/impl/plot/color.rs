@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use num_traits::{ Zero }; /* xxx : consider for wtools */
+  use num_traits::{ Zero }; /* zzz : consider as submodule for wtools */
 
   /// Convertable into RGBA.
   pub trait RgbaInterface< T >
@@ -13,7 +13,7 @@ pub( crate ) mod private
     fn into_rgba( self ) -> Rgba< T >;
   }
 
-  // xxx : here type_constructor's derives should be used
+  // xxx : use type_constructor::Enumberable for indexed access to color components
 
   /// RGBA
   #[ derive( Debug, Clone ) ]
@@ -72,37 +72,32 @@ pub( crate ) mod private
     }
   }
 
-}
-
-/// Protected namespace of the module.
-pub mod protected
-{
-  pub use super::
+  impl RgbaInterface< f32 >
+  for [ f32 ; 4 ]
   {
-    orphan::*,
-  };
-  pub use ::rgb::*;
+    fn into_rgba( self ) -> Rgba< f32 >
+    {
+      Rgba::< f32 >
+      {
+        r : self[ 0 ],
+        g : self[ 1 ],
+        b : self[ 2 ],
+        a : self[ 3 ],
+      }
+    }
+  }
+
 }
 
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
+crate::mod_interface!
 {
-  pub use super::exposed::*;
-}
 
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
+  protected use ::rgb::*;
+
   #[ cfg( feature = "use_std" ) ]
-  pub use super::private::Rgba;
-}
+  exposed use Rgba;
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
   #[ cfg( feature = "use_std" ) ]
-  pub use super::private::RgbaInterface;
+  prelude use RgbaInterface;
+
 }
