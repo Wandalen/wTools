@@ -77,7 +77,7 @@ jobs :
         run : exit 1
 
   merge :
-    needs : skipped_runs_check
+    needs : runs_check
     runs-on : ubuntu-latest
     steps :
       - name : Find PR number for current commit
