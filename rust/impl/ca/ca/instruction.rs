@@ -145,8 +145,6 @@ pub( crate ) mod private
     }
   }
 
-  //
-
   ///
   /// Get instruction parser builder.
   ///
@@ -157,34 +155,12 @@ pub( crate ) mod private
   }
 }
 
-/// Protected namespace of the module.
-pub mod protected
+//
+
+wtools::meta::mod_interface!
 {
-  // use super::private as i;
-
-  pub use super::private::Instruction;
-  pub use super::private::InstructionParseParams;
-  pub use super::orphan::*;
+  protected use Instruction;
+  protected use InstructionParseParams;
+  exposed use instruction_parse;
+  prelude use InstructionParseParamsAdapter;
 }
-
-pub use protected::*;
-
-/// Orphan namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-  pub use super::private::instruction_parse;
-}
-
-/// Namespace of the module to include with `use module::*`.
-pub mod prelude
-{
-  pub use super::private::InstructionParseParamsAdapter;
-}
-

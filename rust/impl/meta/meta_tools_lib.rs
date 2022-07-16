@@ -36,4 +36,3 @@ mod_interface::mod_interface!
   /// Collection of general purpose meta tools.
   prelude layer meta;
 }
-pub use protected::*;

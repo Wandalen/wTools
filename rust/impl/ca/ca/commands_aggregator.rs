@@ -442,42 +442,14 @@ pub( crate ) mod private
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
+wtools::meta::mod_interface!
 {
-  pub use super::private::CommandsAggregator;
-  pub use super::private::OnError;
-  pub use super::private::OnSyntaxError;
-  pub use super::private::OnAmbiguity;
-  pub use super::private::OnUnknownCommandError;
-  pub use super::private::OnGetHelp;
-  pub use super::private::OnPrintCommands;
-  pub use super::private::commands_aggregator;
+  prelude use CommandsAggregator;
+  prelude use OnError;
+  prelude use OnSyntaxError;
+  prelude use OnAmbiguity;
+  prelude use OnUnknownCommandError;
+  prelude use OnGetHelp;
+  prelude use OnPrintCommands;
+  prelude use commands_aggregator;
 }
-
-pub use protected::*;
-
-/// Orphan namespace of the module.
-pub mod orphan
-{
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-}
-
-/// Namespace of the module to include with `use module::*`.
-pub mod prelude
-{
-  pub use super::private::CommandsAggregator;
-  pub use super::private::OnError;
-  pub use super::private::OnSyntaxError;
-  pub use super::private::OnAmbiguity;
-  pub use super::private::OnUnknownCommandError;
-  pub use super::private::OnGetHelp;
-  pub use super::private::OnPrintCommands;
-  pub use super::private::commands_aggregator;
-}
-

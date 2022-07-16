@@ -29,7 +29,9 @@ pub( crate ) mod private
   pub use num;
 }
 
-crate::mod_interface!
+//
+
+meta_tools::mod_interface!
 {
-  prelude use super::private::num;
+  prelude use num;
 }

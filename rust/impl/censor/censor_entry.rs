@@ -13,7 +13,7 @@
 #[ cfg( feature = "use_std" ) ]
 use std::env;
 #[ allow( unused_imports ) ]
-use wcensor::*;
+use ::wcensor::*;
 
 #[ cfg( feature = "use_std" ) ]
 fn main()
