@@ -12,8 +12,6 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-// zzz : expose one_cell
-
 /// Dependencies.
 pub mod dependency
 {
@@ -34,5 +32,5 @@ pub mod dependency
 mod_interface::mod_interface!
 {
   /// Collection of general purpose meta tools.
-  prelude layer meta;
+  layer meta;
 }

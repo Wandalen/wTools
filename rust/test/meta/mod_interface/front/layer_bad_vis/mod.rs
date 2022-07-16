@@ -4,7 +4,7 @@ use super::*;
 TheModule::mod_interface!
 {
 
-  /// mod_exposed
-  pub mod mod_exposed;
+  /// layer_a
+  pub layer layer_a;
 
 }

@@ -47,7 +47,6 @@ pub( crate ) mod private
           return Err( lookahead.error() )
         },
       };
-
       Ok( element_type )
     }
 
@@ -108,8 +107,8 @@ pub( crate ) mod private
         },
         _ =>
         {
-          let lookahead = input.lookahead1();
-          if lookahead.peek( syn::token::Brace )
+          // let lookahead = input.lookahead1();
+          if input.peek( syn::token::Brace )
           {
             let input2;
             let _brace_token = syn::braced!( input2 in input );

@@ -1,0 +1,5 @@
+error: expected one of: `mod`, `use`, `layer`
+  --> ../../../rust/test/meta/mod_interface/front/use_unknown_vis/mod.rs
+   |
+   |   xyz use f1;
+   |   ^^^

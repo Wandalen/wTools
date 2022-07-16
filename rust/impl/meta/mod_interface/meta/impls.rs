@@ -3,6 +3,7 @@ pub( crate ) mod private
 {
   use crate::*;
   use proc_macro_tools::exposed::*;
+  use std::collections::HashMap;
 
 // = use
 
@@ -89,214 +90,326 @@ pub( crate ) mod private
   // prelude mod { mod_prelude1, mod_prelude2 };
 
   ///
+  /// Get vector of a clause.
+  ///
+
+  macro_rules! clause
+  {
+    (
+      $ClauseMap:ident,
+      $( $Key:tt )+
+    )
+    =>
+    {
+      $ClauseMap.get_mut( &$( $Key )+() ).unwrap()
+    };
+  }
+  // zzz : clause should not expect the first argument
+
+  ///
+  /// Handle record "use" with implicit visibility.
+  ///
+
+  fn record_use_implicit
+  (
+    record : &Record,
+    clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
+  )
+  ->
+  Result< () >
+  {
+
+    let attrs1 = &record.attrs;
+    let path = record.use_elements.as_ref().unwrap();
+    // let vis = record.vis.clone();
+
+    // if vis == Visibility::Inherited
+
+    let _path;
+    let path2 = if path.to_add_prefix()
+    {
+      _path = parse_qt!{ super::private::#path };
+      &_path
+    }
+    else
+    {
+      path
+    };
+
+    // println!( "path2 : {}", qt!{ #path2 } );
+
+    // clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
+    clause!( clauses_map, VisProtected::Kind ).push( qt!
+    {
+      #attrs1
+      #[ doc( inline ) ]
+      pub use #path2::orphan::*;
+    });
+
+    // clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
+    clause!( clauses_map, VisExposed::Kind ).push( qt!
+    {
+      #attrs1
+      #[ doc( inline ) ]
+      pub use #path2::exposed::*;
+    });
+
+    // clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
+    clause!( clauses_map, VisPrelude::Kind ).push( qt!
+    {
+      #attrs1
+      #[ doc( inline ) ]
+      pub use #path2::prelude::*;
+    });
+
+    Ok( () )
+  }
+
+  ///
+  /// Handle record "use" with explicit visibility.
+  ///
+
+  fn record_use_explicit
+  (
+    record : &Record,
+    clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
+  )
+  ->
+  Result< () >
+  {
+    let attrs1 = &record.attrs;
+    let path = record.use_elements.as_ref().unwrap();
+    let vis = record.vis.clone();
+
+    if !vis.valid_sub_namespace()
+    {
+      return Err( syn_err!
+      (
+        record,
+        "Use either {} visibility:\n  {}",
+        VALID_VISIBILITY_LIST_STR,
+        qt!{ #record },
+      ));
+    }
+
+    let path2 = if path.to_add_prefix()
+    {
+      qt!{ super::private::#path }
+    }
+    else
+    {
+      qt!{ #path }
+    };
+
+    let vis2 = if vis.restriction().is_some()
+    {
+      qt!{ pub( crate ) }
+    }
+    else
+    {
+      qt!{ pub }
+    };
+
+    // clauses_map.get_mut( &vis.kind() ).unwrap().push( qt!
+    clause!( clauses_map, vis.kind ).push( qt!
+    {
+      #attrs1
+      #[ doc( inline ) ]
+      #vis2 use #path2;
+    });
+
+    Ok( () )
+  }
+
+  ///
+  /// Handle record micro module.
+  ///
+
+  fn record_micro_module
+  (
+    record : &Record,
+    element : &Pair< AttributesOuter, syn::Path >,
+    clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
+  )
+  ->
+  Result< () >
+  {
+    let attrs1 = &record.attrs;
+    let attrs2 = &element.0;
+    let path = &element.1;
+
+    // clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
+    clause!( clauses_map, ClauseImmediates::Kind ).push( qt!
+    {
+      #attrs1
+      #attrs2
+      pub mod #path;
+    });
+
+    if !record.vis.valid_sub_namespace()
+    {
+      return Err( syn_err!
+      (
+        record,
+        "To include a non-standard module use either {} visibility:\n  {}",
+        VALID_VISIBILITY_LIST_STR,
+        qt!{ #record },
+      ));
+    }
+
+    // println!( "clauses_map.contains_key( {} ) : {}", record.vis.kind(), clauses_map.contains_key( &record.vis.kind() ) );
+    // let fixes_list = clauses_map.get_mut( &record.vis.kind() ).ok_or_else( || syn_err!( "Error!" ) )?;
+    // clauses_map.get_mut( &record.vis.kind() ).unwrap().push( qt!
+    clause!( clauses_map, record.vis.kind ).push( qt!
+    {
+      #[ doc( inline ) ]
+      pub use super::#path;
+    });
+
+    Ok( () )
+  }
+
+  ///
+  /// Handle record micro module.
+  ///
+
+  fn record_layer
+  (
+    record : &Record,
+    element : &Pair< AttributesOuter, syn::Path >,
+    clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
+  )
+  ->
+  Result< () >
+  {
+    let attrs1 = &record.attrs;
+    let attrs2 = &element.0;
+    let path = &element.1;
+
+    if record.vis != Visibility::Inherited
+    {
+      return Err( syn_err!
+      (
+        record,
+        "Layer should not have explicitly defined visibility because all its subnamespaces are used.\n  {}",
+        qt!{ #record },
+      ));
+    }
+
+    // clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
+    clause!( clauses_map, ClauseImmediates::Kind ).push( qt!
+    {
+      #attrs1
+      #attrs2
+      pub mod #path;
+    });
+
+    // clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
+    clause!( clauses_map, VisProtected::Kind ).push( qt!
+    {
+      #attrs1
+      #attrs2
+      #[ doc( inline ) ]
+      pub use super::#path::orphan::*;
+    });
+
+    // clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
+    clause!( clauses_map, VisExposed::Kind ).push( qt!
+    {
+      #attrs1
+      #attrs2
+      #[ doc( inline ) ]
+      pub use super::#path::exposed::*;
+    });
+
+    // clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
+    clause!( clauses_map, VisPrelude::Kind ).push( qt!
+    {
+      #attrs1
+      #attrs2
+      #[ doc( inline ) ]
+      pub use super::#path::prelude::*;
+    });
+
+    Ok( () )
+  }
+
+  ///
   /// Protocol of modularity unifying interface of a module and introducing layers.
   ///
 
   pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
   {
-    use std::collections::HashMap;
     use ElementType::*;
 
     let records = syn::parse::< Records >( input )?;
-    let mut immediates : Vec< proc_macro2::TokenStream > = vec![];
 
     // use inspect_type::*;
     // inspect_type_of!( immediates );
 
-    let mut fixes_map : HashMap< _ , Vec< proc_macro2::TokenStream > > = HashMap::new();
-    fixes_map.insert( VisPrivate::Kind(), Vec::new() );
-    fixes_map.insert( VisProtected::Kind(), Vec::new() );
-    fixes_map.insert( VisOrphan::Kind(), Vec::new() );
-    fixes_map.insert( VisExposed::Kind(), Vec::new() );
-    fixes_map.insert( VisPrelude::Kind(), Vec::new() );
+    let mut clauses_map : HashMap< _ , Vec< proc_macro2::TokenStream > > = HashMap::new();
+    clauses_map.insert( ClauseImmediates::Kind(), Vec::new() );
+    //clauses_map.insert( VisPrivate::Kind(), Vec::new() );
+    clauses_map.insert( VisProtected::Kind(), Vec::new() );
+    clauses_map.insert( VisOrphan::Kind(), Vec::new() );
+    clauses_map.insert( VisExposed::Kind(), Vec::new() );
+    clauses_map.insert( VisPrelude::Kind(), Vec::new() );
 
     // zzz : test case with several attrs
 
-    let mut err = None;
-
-    records.0.iter().for_each( | record |
+    records.0.iter().try_for_each( | record |
     {
 
       match record.element_type
       {
         Use( _ ) =>
         {
-          let attrs1 = &record.attrs;
-          let path = record.use_elements.as_ref().unwrap();
-
-          let vis = record.vis.clone();
-          if vis == Visibility::Inherited
+          let vis = &record.vis;
+          if vis == &Visibility::Inherited
           {
-            // vis = Visibility::Protected( VisProtected::new() );
-
-            let _path;
-            let path2 = if path.to_add_prefix()
-            {
-              _path = parse_qt!{ super::private::#path };
-              &_path
-            }
-            else
-            {
-              path
-            };
-
-            // println!( "path2 : {}", qt!{ #path2 } );
-
-            fixes_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
-            {
-              #attrs1
-              #[ doc( inline ) ]
-              pub use #path2::orphan::*;
-            });
-
-            fixes_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
-            {
-              #attrs1
-              #[ doc( inline ) ]
-              pub use #path2::exposed::*;
-            });
-
-            fixes_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
-            {
-              #attrs1
-              #[ doc( inline ) ]
-              pub use #path2::prelude::*;
-            });
-
+            record_use_implicit( record, &mut clauses_map )?;
           }
           else
           {
-
-            // zzz : test
-            if !vis.can_be_used_for_micro_mod()
-            {
-              err = Some( syn_err!
-              (
-                record,
-                "Use either [ protected, orphan, exposed, prelude ] visibility:\n  {}",
-                qt!{ #record },
-              ));
-            }
-
-            let fixes_list = fixes_map.get_mut( &vis.kind() ).unwrap();
-
-            if path.to_add_prefix()
-            {
-              fixes_list.push( qt!
-              {
-                #attrs1
-                #[ doc( inline ) ]
-                pub use super::private::#path;
-              });
-            }
-            else
-            {
-              fixes_list.push( qt!
-              {
-                #attrs1
-                #[ doc( inline ) ]
-                pub use #path;
-              });
-            }
+            record_use_explicit( record, &mut clauses_map )?;
           }
-
         },
         _ =>
         {
-
-          record.elements.iter().for_each( | element |
+          record.elements.iter().try_for_each( | element | -> Result::< () >
           {
-            let attrs1 = &record.attrs;
-            let attrs2 = &element.0;
-            let path = &element.1;
-
             match record.element_type
             {
               MicroModule( _ ) =>
               {
-
-                immediates.push( qt!
-                {
-                  #attrs1
-                  #attrs2
-                  pub mod #path;
-                });
-
-                let fixes_list = fixes_map.get_mut( &record.vis.kind() ).unwrap();
-                fixes_list.push( qt!{ pub use super::#path; } );
-
-                if !record.vis.can_be_used_for_micro_mod()
-                {
-                  err = Some( syn_err!
-                  (
-                    record,
-                    "To include a non-standard module use either [ protected, orphan, exposed, prelude ] visibility:\n  {}",
-                    qt!{ #record },
-                  ));
-                }
-
+                record_micro_module( record, element, &mut clauses_map )?;
               },
               Layer( _ ) =>
               {
-
-                immediates.push( qt!
-                {
-                  #attrs1
-                  #attrs2
-                  pub mod #path;
-                });
-
-                fixes_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
-                {
-                  #attrs1
-                  #attrs2
-                  #[ doc( inline ) ]
-                  pub use super::#path::orphan::*;
-                });
-
-                fixes_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
-                {
-                  #attrs1
-                  #attrs2
-                  #[ doc( inline ) ]
-                  pub use super::#path::exposed::*;
-                });
-
-                fixes_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
-                {
-                  #attrs1
-                  #attrs2
-                  #[ doc( inline ) ]
-                  pub use super::#path::prelude::*;
-                });
-
+                record_layer( record, element, &mut clauses_map )?;
               },
               Use( _ ) =>
               {
               },
             }
-          });
+            Result::Ok( () )
+          })?;
         }
       };
 
-    });
+      Result::Ok( () )
+    })?;
 
-
-    if let Some( _err ) = err
-    {
-      return Err( _err );
-    }
-
-    let _private_fix = fixes_map.get( &VisPrivate::Kind() ).unwrap();
-    let protected_fix = fixes_map.get( &VisProtected::Kind() ).unwrap();
-    let orphan_fix = fixes_map.get( &VisOrphan::Kind() ).unwrap();
-    let exposed_fix = fixes_map.get( &VisExposed::Kind() ).unwrap();
-    let prelude_fix = fixes_map.get( &VisPrelude::Kind() ).unwrap();
+    let immediates_clause = clauses_map.get( &ClauseImmediates::Kind() ).unwrap();
+    let protected_clause = clauses_map.get( &VisProtected::Kind() ).unwrap();
+    let orphan_clause = clauses_map.get( &VisOrphan::Kind() ).unwrap();
+    let exposed_clause = clauses_map.get( &VisExposed::Kind() ).unwrap();
+    let prelude_clause = clauses_map.get( &VisPrelude::Kind() ).unwrap();
 
     let result = qt!
     {
 
-      #( #immediates )*
+      #( #immediates_clause )*
 
       #[ doc( inline ) ]
       pub use protected::*;
@@ -306,9 +419,7 @@ pub( crate ) mod private
       {
         #[ doc( inline ) ]
         pub use super::orphan::*;
-
-        #( #protected_fix )*
-
+        #( #protected_clause )*
       }
 
       /// Orphan namespace of the module.
@@ -316,9 +427,7 @@ pub( crate ) mod private
       {
         #[ doc( inline ) ]
         pub use super::exposed::*;
-
-        #( #orphan_fix )*
-
+        #( #orphan_clause )*
       }
 
       /// Exposed namespace of the module.
@@ -326,17 +435,13 @@ pub( crate ) mod private
       {
         #[ doc( inline ) ]
         pub use super::prelude::*;
-
-        #( #exposed_fix )*
-
+        #( #exposed_clause )*
       }
 
       /// Prelude to use essentials: `use my_module::prelude::*`.
       pub mod prelude
       {
-
-        #( #prelude_fix )*
-
+        #( #prelude_clause )*
       }
 
     };
@@ -366,11 +471,9 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
-
   pub use super::private::
   {
   };
-
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -381,3 +484,5 @@ pub mod prelude
     mod_interface,
   };
 }
+
+// qqq : rewrite sample for the module
