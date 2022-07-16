@@ -16,19 +16,17 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-#[ cfg( feature = "use_std" ) ]
 wtools::meta::mod_interface!
 {
   /// Abstract layer.
+  #[ cfg( feature = "use_std" ) ]
   layer abs;
   /// Canonical representation.
+  #[ cfg( feature = "use_std" ) ]
   layer canonical;
   /// Algorithms.
+  #[ cfg( feature = "use_std" ) ]
   layer algo;
-}
-#[ cfg( not( feature = "use_std" ) ) ]
-wtools::meta::mod_interface!
-{
 }
 
 // zzz : implement checks

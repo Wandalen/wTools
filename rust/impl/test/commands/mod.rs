@@ -9,4 +9,5 @@ wtools::meta::mod_interface!
   prelude mod init;
 }
 
+#[ cfg( feature = "use_std" ) ]
 pub use init::*;
