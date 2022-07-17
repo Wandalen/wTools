@@ -13,7 +13,7 @@
 //! Derive to clone dyn structures.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ cfg( all( not( feature = "use_std" ), feature = "use_alloc" ) ) ]
 extern crate alloc;

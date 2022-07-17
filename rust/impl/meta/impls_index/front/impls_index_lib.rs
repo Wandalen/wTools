@@ -10,7 +10,7 @@
 //! Several of macros to put each function under a named macro to index every function in a class.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Collection of general purpose meta tools.
 #[ path = "./mod.rs" ]

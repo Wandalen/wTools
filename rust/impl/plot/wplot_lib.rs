@@ -12,7 +12,7 @@
 //! Plot interface.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 // pub use ::wmath as math;
 // use ::wtools::prelude::*;

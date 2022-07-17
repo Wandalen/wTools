@@ -10,7 +10,7 @@
 //! Collection of primal data types.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 // zzz : proc macro for standard lib epilogue
 // zzz : expose one_cell

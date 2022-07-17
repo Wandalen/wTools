@@ -14,7 +14,7 @@
 //! Apply macro for each element of a list.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /* zzz :
 use module::macro_for_each in module::macro_tools

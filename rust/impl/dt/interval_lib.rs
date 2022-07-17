@@ -13,7 +13,7 @@
 //! Interval adapter for both open/closed implementations of intervals ( ranges ).
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Internal namespace.
 #[ cfg( feature = "use_std" ) ]

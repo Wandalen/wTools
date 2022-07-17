@@ -10,7 +10,7 @@
 //! Diagnostic-purpose tools to inspect type of a variable and its size.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ cfg( feature = "nightly" ) ]
 mod nightly

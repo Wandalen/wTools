@@ -10,7 +10,7 @@
 //! Collection of general purpose tools to iterate. Currently it simply reexport itertools.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Core module.
 pub mod iter;

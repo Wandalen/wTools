@@ -236,7 +236,7 @@ pub( crate ) mod private
     use syn::spanned::Spanned;
     let meta = attr.parse_meta()?;
 
-    // zzz : try to use helper
+    // zzz : try to use helper from toolbox
     let ( key, val );
     match meta
     {

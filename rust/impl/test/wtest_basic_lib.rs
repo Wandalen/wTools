@@ -10,7 +10,9 @@
 //! Tools for writing and running tests.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+
+// doc_file_test!( "rust/test/test/asset/Test.md" );
 
 /// Dependencies.
 pub mod dependency
@@ -26,27 +28,27 @@ pub mod dependency
   pub use ::diagnostics_tools;
 }
 
-pub use dependency::*;
 use ::meta_tools::mod_interface;
 
 mod_interface!
 {
   /// Basics.
   layer basic;
-  /// Helpers.
-  layer helper;
-
-  prelude use ::meta_tools as meta;
-  prelude use ::mem_tools as mem;
-  prelude use ::typing_tools as typing;
-  prelude use ::data_type as dt;
-  prelude use ::diagnostics_tools as diagnostics;
 
   // use super::exposed::meta;
   use super::exposed::mem;
   use super::exposed::typing;
   use super::exposed::dt;
   use super::exposed::diagnostics;
+
+  protected use super::dependency;
+  protected use super::dependency::*;
+
+  prelude use ::meta_tools as meta;
+  prelude use ::mem_tools as mem;
+  prelude use ::typing_tools as typing;
+  prelude use ::data_type as dt;
+  prelude use ::diagnostics_tools as diagnostics;
 
   prelude use ::meta_tools::
   {
@@ -57,6 +59,7 @@ mod_interface!
     tests_index,
   };
   prelude use ::typing_tools::{ implements };
+
 }
 
 // qqq : for Dima : add negative test that wtest_basic::exposed::exposed does not exist

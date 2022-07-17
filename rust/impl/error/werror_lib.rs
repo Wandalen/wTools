@@ -10,7 +10,7 @@
 //! Basic exceptions handling mechanism.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ doc( inline ) ]
 pub use error_tools::*;

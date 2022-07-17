@@ -11,7 +11,7 @@
 //! Fundamental data types and type constructors, like Single, Pair, Many.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ doc( inline ) ]
 pub use ::type_constructor::*;

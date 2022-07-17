@@ -10,7 +10,7 @@
 //! Collection of general purpose meta tools.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Dependencies.
 pub mod dependency
@@ -33,4 +33,7 @@ mod_interface::mod_interface!
 {
   /// Collection of general purpose meta tools.
   layer meta;
+
+  // exposed use super::doc_file_test;
+
 }
