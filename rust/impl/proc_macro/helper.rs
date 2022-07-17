@@ -1,3 +1,7 @@
+//!
+//! Macro helpers.
+//!
+
 /// Internal namespace.
 pub( crate ) mod private
 {
@@ -280,11 +284,30 @@ pub( crate ) mod private
 
 }
 
+#[ doc( inline ) ]
+pub use protected::*;
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  #[ doc( inline ) ]
+  pub use super::orphan::*;
+}
+
+/// Parented namespace of the module.
+pub mod orphan
+{
+  #[ doc( inline ) ]
+  pub use super::exposed::*;
+}
+
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 
+  #[ doc( inline ) ]
   pub use super::private::
   {
     type_rightmost,
@@ -294,12 +317,11 @@ pub mod exposed
 
 }
 
-pub use exposed::*;
-
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
 
+  #[ doc( inline ) ]
   pub use super::private::
   {
     tree_print,
@@ -310,5 +332,6 @@ pub mod prelude
     syn_err,
   };
 
+  #[ doc( inline ) ]
   pub use super::private::Result;
 }

@@ -1,6 +1,6 @@
 [package]
 name = "proc_macro_tools"
-version = "0.1.15"
+version = "0.1.16"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",

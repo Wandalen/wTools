@@ -1,3 +1,7 @@
+//!
+//! Quantifiers like Pair and Many.
+//!
+
 /// Internal namespace.
 pub( crate ) mod private
 {

@@ -5,7 +5,7 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
-// #![ feature( type_name_of_val ) ]
+#![ feature( type_name_of_val ) ]
 
 //!
 //! Tools for writing procedural macroses.
@@ -13,19 +13,11 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Container kind.
 pub mod container_kind;
-/// Helpers.
 pub mod helper;
-/// Trait name.
 pub mod name;
-/// Split with name.
-pub mod split_with_name;
-/// Quantifiers like Pair and Many.
 pub mod quantifier;
-/// Syntax.
 pub mod syntax;
-/// Analyze generic to provide more information.
 pub mod generic_analyze;
 
 ///
@@ -54,6 +46,7 @@ pub mod protected
 /// Parented namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
@@ -68,7 +61,7 @@ pub mod exposed
     generic_analyze::exposed::*,
     helper::exposed::*,
     name::exposed::*,
-    split_with_name::exposed::*,
+    // split_with_name::exposed::*,
     quantifier::exposed::*,
     syntax::exposed::*,
   };
@@ -115,7 +108,6 @@ pub mod prelude
     parse_quote_spanned,
   };
 
-  // xxx : experiment with `doc( inline )`
   #[ doc( inline ) ]
   pub use super::
   {
@@ -123,7 +115,7 @@ pub mod prelude
     generic_analyze::prelude::*,
     helper::prelude::*,
     name::prelude::*,
-    split_with_name::prelude::*,
+    // split_with_name::prelude::*,
     quantifier::prelude::*,
     syntax::prelude::*,
   };

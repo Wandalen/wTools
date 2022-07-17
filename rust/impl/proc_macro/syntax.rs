@@ -1,3 +1,7 @@
+//!
+//! Advanced syntax elements.
+//!
+
 /// Internal namespace.
 pub( crate ) mod private
 {

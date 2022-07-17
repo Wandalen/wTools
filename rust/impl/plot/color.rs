@@ -13,7 +13,7 @@ pub( crate ) mod private
     fn into_rgba( self ) -> Rgba< T >;
   }
 
-  // xxx : use type_constructor::Enumberable for indexed access to color components
+  // zzz : use type_constructor::Enumberable for indexed access to color components
 
   /// RGBA
   #[ derive( Debug, Clone ) ]
