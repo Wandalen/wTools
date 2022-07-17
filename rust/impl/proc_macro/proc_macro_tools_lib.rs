@@ -21,6 +21,8 @@ pub mod helper;
 pub mod name;
 /// Split with name.
 pub mod split_with_name;
+/// Quantifiers like Pair and Many.
+pub mod quantifier;
 /// Syntax.
 pub mod syntax;
 /// Analyze generic to provide more information.
@@ -39,15 +41,15 @@ pub mod dependency
   pub use ::type_constructor;
 }
 
+#[ doc( inline ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
 }
-
-#[ doc( inline ) ]
-pub use protected::*;
 
 /// Parented namespace of the module.
 pub mod orphan
@@ -67,10 +69,11 @@ pub mod exposed
     helper::exposed::*,
     name::exposed::*,
     split_with_name::exposed::*,
+    quantifier::exposed::*,
     syntax::exposed::*,
   };
   #[ doc( inline ) ]
-  pub use super::syntax::
+  pub use super::quantifier::
   {
     Pair,
     Many,
@@ -112,6 +115,7 @@ pub mod prelude
     parse_quote_spanned,
   };
 
+  // xxx : experiment with `doc( inline )`
   #[ doc( inline ) ]
   pub use super::
   {
@@ -120,6 +124,7 @@ pub mod prelude
     helper::prelude::*,
     name::prelude::*,
     split_with_name::prelude::*,
+    quantifier::prelude::*,
     syntax::prelude::*,
   };
 

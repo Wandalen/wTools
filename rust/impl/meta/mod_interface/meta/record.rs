@@ -159,8 +159,10 @@ pub( crate ) mod private
   }
 
   ///
-  /// Module-specific item.
+  /// Many records.
   ///
+
+  // pub type Records = Many< Record >;
 
   #[ derive( Debug ) ]
   pub struct Records
