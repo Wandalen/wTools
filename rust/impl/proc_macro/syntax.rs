@@ -16,7 +16,7 @@ pub( crate ) mod private
     /// For example: `#![ warn( missing_docs ) ]`.
     ///
 
-    #[ derive( Debug, PartialEq, Eq, Clone ) ]
+    #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
     pub many AttributesInner : syn::Attribute;
 
   }
@@ -29,7 +29,7 @@ pub( crate ) mod private
       let mut result : Self = make!();
       loop
       {
-        if !input.peek( Token![ # ] )
+        if !input.peek( Token![ # ] ) || !input.peek2( Token![ ! ] )
         {
           break;
         }
@@ -69,7 +69,7 @@ pub( crate ) mod private
     /// For example: `#[ derive( Copy ) ]`.
     ///
 
-    #[ derive( Debug, PartialEq, Eq, Clone ) ]
+    #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
     pub many AttributesOuter : syn::Attribute;
 
   }
@@ -82,7 +82,7 @@ pub( crate ) mod private
       let mut result : Self = make!();
       loop
       {
-        if !input.peek( Token![ # ] )
+        if !input.peek( Token![ # ] ) || input.peek2( Token![ ! ] )
         {
           break;
         }

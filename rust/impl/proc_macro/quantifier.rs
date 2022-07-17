@@ -15,18 +15,28 @@ pub( crate ) mod private
   //   type Delimiter : syn::token::Token + Default + Copy + Into< Self::Peek >;
   // }
 
-  ///
-  /// Pair of syntax elements.
-  ///
+//   ///
+//   /// Pair of syntax elements.
+//   ///
+//
+//   zzz : use pair
+//   #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+//   pub struct Pair< T1, T2 >
+//   ( pub T1, pub T2 )
+//   where
+//     T1 : syn::parse::Parse + quote::ToTokens,
+//     T2 : syn::parse::Parse + quote::ToTokens,
+//   ;
 
-  // zzz : use pair
-  #[ derive( Debug, PartialEq, Eq, Clone ) ]
-  pub struct Pair< T1, T2 >
-  ( pub T1, pub T2 )
-  where
-    T1 : syn::parse::Parse + quote::ToTokens,
-    T2 : syn::parse::Parse + quote::ToTokens,
-  ;
+  types!
+  {
+    ///
+    /// Parse as much elements as possible.
+    ///
+
+    #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+    pub pair Pair : < T1 : syn::parse::Parse + quote::ToTokens, T2 : syn::parse::Parse + quote::ToTokens >
+  }
 
   impl< T1, T2 > Pair< T1, T2 >
   where
@@ -71,7 +81,7 @@ pub( crate ) mod private
     /// Parse as much elements as possible.
     ///
 
-    #[ derive( Debug, PartialEq, Eq, Clone ) ]
+    #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
     pub many Many : < T : quote::ToTokens >
   }
 
@@ -203,22 +213,22 @@ pub( crate ) mod private
     }
   }
 
-  // impl AsMuchAsPossibleNoDelimiter for syn::Item {}
+  impl AsMuchAsPossibleNoDelimiter for syn::Item {}
 
-  impl syn::parse::Parse
-  for Many< syn::Item >
-  {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-    {
-      let mut items = vec![];
-      while !input.is_empty()
-      {
-        let item : syn::Item = input.parse()?;
-        items.push( item );
-      }
-      Ok( Self( items ) )
-    }
-  }
+  // impl syn::parse::Parse
+  // for Many< syn::Item >
+  // {
+  //   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+  //   {
+  //     let mut items = vec![];
+  //     while !input.is_empty()
+  //     {
+  //       let item : syn::Item = input.parse()?;
+  //       items.push( item );
+  //     }
+  //     Ok( Self( items ) )
+  //   }
+  // }
 
 }
 
@@ -241,4 +251,9 @@ pub mod exposed
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
+  pub use super::private::
+  {
+    AsMuchAsPossibleNoDelimiter,
+  };
 }

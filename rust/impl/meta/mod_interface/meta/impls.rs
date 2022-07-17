@@ -342,7 +342,7 @@ pub( crate ) mod private
   {
     use ElementType::*;
 
-    let records = syn::parse::< Records >( input )?;
+    let document = syn::parse::< Document >( input )?;
 
     // use inspect_type::*;
     // inspect_type_of!( immediates );
@@ -357,7 +357,7 @@ pub( crate ) mod private
 
     // zzz : test case with several attrs
 
-    records.0.iter().try_for_each( | record |
+    document.records.0.iter().try_for_each( | record |
     {
 
       match record.element_type

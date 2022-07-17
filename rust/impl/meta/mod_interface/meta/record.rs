@@ -5,13 +5,19 @@ pub( crate ) mod private
   use derive_tools::IsVariant;
   use proc_macro_tools::exposed::*;
 
+  ///
   /// Custom keywords.
+  ///
+
   pub mod kw
   {
     super::syn::custom_keyword!( layer );
   }
 
+  ///
   /// Kind of element.
+  ///
+
   #[ derive( IsVariant, Debug, PartialEq, Eq, Clone, Copy ) ]
   pub enum ElementType
   {
@@ -102,12 +108,10 @@ pub( crate ) mod private
         ElementType::Use( _ ) =>
         {
           use_elements = Some( input.parse()? );
-          // println!( "{}", qt!{ #use_elements } );
           elements = syn::punctuated::Punctuated::new();
         },
         _ =>
         {
-          // let lookahead = input.lookahead1();
           if input.peek( syn::token::Brace )
           {
             let input2;
@@ -162,38 +166,46 @@ pub( crate ) mod private
   /// Many records.
   ///
 
-  // pub type Records = Many< Record >;
+  pub type Records = Many< Record >;
 
-  #[ derive( Debug ) ]
-  pub struct Records
-  (
-    pub Vec< Record >,
-  );
+  impl AsMuchAsPossibleNoDelimiter for Record {}
+
+  ///
+  /// Document.
+  ///
+
+  #[ derive( Debug, PartialEq, Eq, Clone ) ]
+  pub struct Document
+  {
+    pub head : AttributesInner,
+    pub records : Records,
+  }
 
   //
 
-  impl syn::parse::Parse for Records
+  impl syn::parse::Parse for Document
   {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
-      let mut items = vec![];
-      while !input.is_empty()
+      // let head = input.parse()?;
+      let head = Default::default();
+      let records = input.parse()?;
+      return Ok( Document
       {
-        let item : Record = input.parse()?;
-        items.push( item );
-      }
-      Ok( Self( items ) )
+        head,
+        records,
+      })
     }
   }
 
   //
 
-  impl quote::ToTokens for Records
+  impl quote::ToTokens for Document
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
-      use proc_macro_tools::quote::TokenStreamExt;
-      tokens.append_all( &self.0 )
+      self.head.to_tokens( tokens );
+      self.records.to_tokens( tokens );
     }
   }
 
@@ -219,9 +231,10 @@ pub mod exposed
   pub use super::prelude::*;
   pub use super::private::
   {
+    ElementType,
     Record,
     Records,
-    ElementType,
+    Document,
   };
 }
 
