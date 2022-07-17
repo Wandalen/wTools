@@ -9,6 +9,12 @@ use mod_interface as TheModule;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 
+/// CrateStructForTesting.
+#[ derive( Debug, PartialEq ) ]
+pub struct CrateStructForTesting1
+{
+}
+
 /// Test module.
 #[ path = "mod.rs" ]
 pub mod test;

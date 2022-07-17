@@ -7,6 +7,12 @@
 
 include!( "../_conditional/local_module.rs" );
 
+/// CrateStructForTesting.
+#[ derive( Debug, PartialEq ) ]
+pub struct CrateStructForTesting1
+{
+}
+
 use meta_tools as TheModule;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;

@@ -5,5 +5,11 @@
 use wtools as TheModule;
 use test_tools::exposed::*;
 
+/// CrateStructForTesting.
+#[ derive( Debug, PartialEq ) ]
+pub struct CrateStructForTesting1
+{
+}
+
 #[ path = "./mod.rs" ]
 mod tests;

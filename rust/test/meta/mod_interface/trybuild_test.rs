@@ -25,7 +25,6 @@ tests_impls!
     // layer
 
     t.pass( "../../../rust/test/meta/mod_interface/front/layer/trybuild.rs" );
-    t.pass( "../../../rust/test/meta/mod_interface/front/layer_have_non_layer/trybuild.rs" );
     t.pass( "../../../rust/test/meta/mod_interface/front/layer_have_layer/trybuild.rs" );
     t.pass( "../../../rust/test/meta/mod_interface/front/layer_have_layer_separate_use/trybuild.rs" );
     t.pass( "../../../rust/test/meta/mod_interface/front/layer_have_layer_separate_use_two/trybuild.rs" );
@@ -38,6 +37,7 @@ tests_impls!
     // etc
 
     t.pass( "../../../rust/test/meta/mod_interface/front/attr_debug/trybuild.rs" );
+    t.pass( "../../../rust/test/meta/mod_interface/front/use_non_layer/trybuild.rs" );
     t.compile_fail( "../../../rust/test/meta/mod_interface/front/use_bad_vis/trybuild.rs" );
     t.compile_fail( "../../../rust/test/meta/mod_interface/front/use_unknown_vis/trybuild.rs" );
 

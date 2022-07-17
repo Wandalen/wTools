@@ -451,6 +451,8 @@ pub( crate ) mod private
 
     if has_debug
     {
+
+      // zzz : implement maybe
       // let sections = Sections::new
       // ( vec![
       //   ( "original", original_input ),
@@ -458,8 +460,8 @@ pub( crate ) mod private
       // ]);
       // println!( "{}", sections );
 
-      println!( "\n = original : \n{}\n", original_input );
-      println!( "\n = result : \n{}\n", qt!{ #result } );
+      println!( "\n = original : \n\n{}\n", original_input );
+      println!( "\n = result : \n\n{}\n", qt!{ #result } );
     }
 
     Ok( result )

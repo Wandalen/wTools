@@ -11,7 +11,7 @@ mod private
 {
 }
 
-/// Super struct.
+/// SuperStruct1.
 #[ derive( Debug, PartialEq ) ]
 pub struct SuperStruct1
 {
@@ -22,12 +22,9 @@ TheModule::mod_interface!
 
   /// layer_a
   layer layer_a;
-  /// layer_b
-  layer layer_b;
 
 }
 
 //
 
-include!( "../../only_test/layer_non_layer_only_test.rs" );
-include!( "../../only_test/layer_simple_only_test.rs" );
+include!( "../../only_test/use_non_layer_only_test.rs" );
