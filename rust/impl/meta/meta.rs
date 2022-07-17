@@ -5,7 +5,7 @@ pub( crate ) mod private
 }
 
 //
-// xxx : optimize
+
 mod_interface::mod_interface!
 {
 
