@@ -119,8 +119,11 @@ tests_impls!
     let got = syn::parse2::< TheModule::Many< TheModule::AttributesInner > >( code ).unwrap();
     let exp = TheModule::Many::< TheModule::AttributesInner >::new_with( vec!
     [
-      TheModule::AttributesInner::from( syn::Attribute::parse_inner.parse2( qt!( #![ warn( missing_docs ) ] ) )? ),
-      TheModule::AttributesInner::from( syn::Attribute::parse_inner.parse2( qt!( #![ warn( something ) ] ) )? ),
+      TheModule::AttributesInner::from( syn::Attribute::parse_inner.parse2( qt!
+      {
+        #![ warn( missing_docs ) ]
+        #![ warn( something ) ]
+      } )? ),
     ]);
     a_id!( got, exp );
 

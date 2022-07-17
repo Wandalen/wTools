@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  use crate::protected::*;
   // use crate::abs::*;
   // use once_cell::sync::Lazy;
   // use std::sync::Mutex;

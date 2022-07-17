@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::*;
+  // use crate::protected::*;
 
   /* zzz : qqq : implement mem_same_region, comparing also data. discuss */
 

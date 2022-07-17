@@ -1,7 +1,6 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // xxx : replace all `use crate::*;`
   use type_constructor::prelude::*;
   use crate::exposed::*;
   use crate::exposed::{ Pair, Many };
@@ -27,15 +26,25 @@ pub( crate ) mod private
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
-      let input2;
-      Ok( Self( vec![ syn::Attribute
+      let mut result : Self = make!();
+      loop
       {
-        pound_token : input.parse()?,
-        style : syn::AttrStyle::Inner( input.parse()? ),
-        bracket_token : bracketed!( input2 in input ),
-        path : input2.call( syn::Path::parse_mod_style )?,
-        tokens : input2.parse()?,
-      }]))
+        if !input.peek( Token![ # ] )
+        {
+          break;
+        }
+        let input2;
+        let element = syn::Attribute
+        {
+          pound_token : input.parse()?,
+          style : syn::AttrStyle::Inner( input.parse()? ),
+          bracket_token : bracketed!( input2 in input ),
+          path : input2.call( syn::Path::parse_mod_style )?,
+          tokens : input2.parse()?,
+        };
+        result.0.push( element );
+      }
+      Ok( result )
     }
   }
 
@@ -46,7 +55,6 @@ pub( crate ) mod private
     {
       use crate::quote::TokenStreamExt;
       tokens.append_all( self.0.iter() );
-      // self.0.to_tokens( tokens );
     }
   }
 
@@ -74,7 +82,6 @@ pub( crate ) mod private
       let mut result : Self = make!();
       loop
       {
-        // let lookahead = input.lookahead1();
         if !input.peek( Token![ # ] )
         {
           break;

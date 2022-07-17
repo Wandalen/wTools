@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  use crate::protected::*;
 
   /// Context.
   pub trait ChangerInterface
