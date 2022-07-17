@@ -442,7 +442,7 @@ pub( crate ) mod private
 
 }
 
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
   prelude use CommandsAggregator;
   prelude use OnError;

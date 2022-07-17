@@ -157,7 +157,7 @@ pub( crate ) mod private
 
 //
 
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
   protected use Instruction;
   protected use InstructionParseParams;

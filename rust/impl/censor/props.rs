@@ -67,7 +67,8 @@ pub( crate ) mod private
 
 //
 
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
+  // qqq : for Dima : bad : list all elements, don't use * for private
   prelude use super::private::*;
 }

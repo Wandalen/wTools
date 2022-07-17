@@ -3,15 +3,22 @@ pub( crate ) mod private
   use std::collections::HashMap;
   use std::rc::Rc;
   use core::fmt;
-  use crate::protected::*;
   use wtools::error::{ Result, BasicError };
+  use crate::protected::*;
+  // use crate::
+  // {
+  //   field_str,
+  //   field_map_str_str,
+  //   field_map_str_vec_str,
+  //   field_routine,
+  // };
 
   ///
   /// Handle for command routine.
   ///
 
   // qqq : for Dima : make alias for Result with BasicError /* aaa : Dmytro : done */
-  pub struct OnCommand( Option< Rc< dyn Fn( &instruction::Instruction ) -> Result< () > > > );
+  pub struct OnCommand( Option< Rc< dyn Fn( &crate::instruction::Instruction ) -> Result< () > > > );
 
   impl OnCommand
   {
@@ -28,7 +35,7 @@ pub( crate ) mod private
       }
     }
     /// Perform callback.
-    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result< () >
+    pub fn perform( &self, instruction : &crate::instruction::Instruction ) -> Result< () >
     {
       if self.0.is_some()
       {
@@ -48,9 +55,9 @@ pub( crate ) mod private
     }
   }
 
-  impl From<&'static dyn Fn( &instruction::Instruction ) -> Result< () >> for OnCommand
+  impl From<&'static dyn Fn( &crate::instruction::Instruction ) -> Result< () >> for OnCommand
   {
-    fn from( src : &'static dyn Fn( &instruction::Instruction ) -> Result< () > ) -> Self
+    fn from( src : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> Self
     {
       OnCommand( Some( Rc::new( src ) ) )
     }
@@ -131,7 +138,7 @@ pub( crate ) mod private
     }
 
     /// Execute callback.
-    pub fn perform( &self, instruction : &instruction::Instruction ) -> Result< () >
+    pub fn perform( &self, instruction : &crate::instruction::Instruction ) -> Result< () >
     {
       if self.subject_hint.len() == 0 && instruction.subject.len() != 0
       {
@@ -195,7 +202,7 @@ pub( crate ) mod private
 
 //
 
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
   prelude use OnCommand;
   prelude use Command;

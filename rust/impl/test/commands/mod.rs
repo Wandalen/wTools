@@ -1,5 +1,5 @@
 
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
   /// Perform smoke testing.
   #[ cfg( feature = "use_std" ) ]

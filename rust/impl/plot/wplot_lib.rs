@@ -14,8 +14,9 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-pub use wmath as math;
-pub use wtools::prelude::*;
+// pub use ::wmath as math;
+// use ::wtools::prelude::*;
+use ::wtools::mod_interface;
 
 /// Namespace with dependencies.
 pub mod dependency
@@ -40,5 +41,7 @@ crate::mod_interface!
   layer sys;
 
   use super::math;
+  protected use ::wmath as math;
+  protected( crate ) use ::wtools::prelude::*;
 
 }

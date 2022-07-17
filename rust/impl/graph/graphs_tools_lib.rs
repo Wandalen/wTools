@@ -16,7 +16,9 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-wtools::meta::mod_interface!
+use wtools::meta::mod_interface;
+
+crate::mod_interface!
 {
   /// Abstract layer.
   #[ cfg( feature = "use_std" ) ]

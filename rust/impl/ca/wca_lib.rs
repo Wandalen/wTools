@@ -19,11 +19,22 @@ pub mod string
   pub use wtools::string::*;
 }
 
-wtools::meta::mod_interface!
+use wtools::meta::mod_interface;
+
+crate::mod_interface!
 {
   /// Commands aggregator library.
   #[ cfg( feature = "use_std" ) ]
   layer ca;
+
+  // protected( crate ) use super::
+  // {
+  //   field_str,
+  //   field_map_str_str,
+  //   field_map_str_vec_str,
+  //   field_routine,
+  // };
+
 }
 
 #[ cfg( feature = "use_std" ) ]

@@ -12,7 +12,9 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
 
-wtools::meta::mod_interface!
+use wtools::meta::mod_interface;
+
+crate::mod_interface!
 {
   /// Result of parsing.
   #[ cfg( feature = "use_std" ) ]

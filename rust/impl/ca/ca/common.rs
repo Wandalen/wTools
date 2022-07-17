@@ -83,7 +83,7 @@ pub( crate ) mod private
     ( $name:ident ) =>
     {
       #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
-      pub fn $name( &mut self, routine : &'static dyn Fn( &instruction::Instruction ) -> Result< () > ) -> &mut Self
+      pub fn $name( &mut self, routine : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> &mut Self
       {
         self.ins.$name = routine.into();
         self
@@ -92,19 +92,25 @@ pub( crate ) mod private
     ( $name1:ident, $name2:ident ) =>
     {
       #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
-      pub fn $name2( &mut self, routine : &'static dyn Fn( &instruction::Instruction ) -> Result< () > ) -> &mut Self
+      pub fn $name2( &mut self, routine : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> &mut Self
       {
         self.ins.$name1 = routine.into();
         self
       }
     };
   }
+
+  pub( crate ) use field_str;
+  pub( crate ) use field_map_str_str;
+  pub( crate ) use field_map_str_vec_str;
+  pub( crate ) use field_routine;
+
 }
 
 //
 
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
-  prelude use super::private::*;
+  // qqq : for Dima : bad : list all elements, don't use * for private
+  prelude( crate ) use super::private::*;
 }
-

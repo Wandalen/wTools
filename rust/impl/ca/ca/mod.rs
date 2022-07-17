@@ -1,5 +1,5 @@
 
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
   /// Command aggregator.
   layer commands_aggregator;
