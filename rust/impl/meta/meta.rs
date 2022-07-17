@@ -20,13 +20,13 @@ mod_interface::mod_interface!
 
   #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   use ::woptions;
-  // #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
-  // prelude use ::woptions as options;
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  prelude use ::woptions as options;
 
   #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   use ::former;
-  // #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-  // prelude use ::former as former;
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  prelude use ::former as former;
 
   #[ cfg( feature = "collection_make" ) ]
   prelude use ::literally::*;
