@@ -3,7 +3,7 @@ use super::*;
 
 TheModule::mod_interface!
 {
-  // #![ debug ]
+  #![ debug ]
 
   /// layer_a
   layer layer_a;

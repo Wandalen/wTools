@@ -19,7 +19,6 @@ pub( crate ) mod private
 //   /// Pair of syntax elements.
 //   ///
 //
-//   zzz : use pair
 //   #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
 //   pub struct Pair< T1, T2 >
 //   ( pub T1, pub T2 )

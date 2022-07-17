@@ -10,7 +10,7 @@ pub( crate ) mod private
   pub type Result< T > = std::result::Result< T, syn::Error >;
 
   ///
-  /// Macro for diagnostics purpose to print both syntax tree and source code behind it.
+  /// Macro for diagnostics purpose to print both syntax tree and source code behind it with syntax tree.
   ///
   /// ### Sample
   /// ```
@@ -23,12 +23,11 @@ pub( crate ) mod private
   ///
 
   #[ macro_export ]
-  // #[ macro_use ]
-  macro_rules! _tree_print
+  macro_rules! tree_print
   {
     ( $src:expr ) =>
     {{
-      let result = $crate::tree_export_str!( $src );
+      let result = $crate::tree_diagnostics_str!( $src );
       println!( "{}", result );
       result
     }};
@@ -39,17 +38,72 @@ pub( crate ) mod private
   }
 
   ///
-  /// Macro for diagnostics purpose to export both syntax tree and source code behind it into string.
+  /// Macro for diagnostics purpose to print both syntax tree and source code behind it without syntax tree.
+  ///
+  /// ### Sample
+  /// ```
+  /// use proc_macro_tools::prelude::*;
+  ///
+  /// let code = qt!( std::collections::HashMap< i32, i32 > );
+  /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+  /// tree_print!( tree_type );
+  /// ```
   ///
 
   #[ macro_export ]
-  // #[ macro_use ]
-  macro_rules! _tree_export_str
+  macro_rules! code_print
+  {
+    ( $src:expr ) =>
+    {{
+      let result = $crate::code_diagnostics_str!( $src );
+      println!( "{}", result );
+      result
+    }};
+    ( $( $src:expr ),+ $(,)? ) =>
+    {{
+      $( $crate::code_print!( $src ) );+
+    }};
+  }
+
+  ///
+  /// Macro for diagnostics purpose to export both syntax tree and source code behind it into a string.
+  ///
+
+  #[ macro_export ]
+  macro_rules! tree_diagnostics_str
   {
     ( $src:expr ) =>
     {{
       let src2 = &$src;
       format!( "{} : {} :\n{:#?}", stringify!( $src ), $crate::qt!{ #src2 }, $src )
+    }};
+  }
+
+  ///
+  /// Macro for diagnostics purpose to diagnose source code behind it and export it into a string.
+  ///
+
+  #[ macro_export ]
+  macro_rules! code_diagnostics_str
+  {
+    ( $src:expr ) =>
+    {{
+      let src2 = &$src;
+      format!( "{} : {}", stringify!( $src ), $crate::qt!{ #src2 } )
+    }};
+  }
+
+  ///
+  /// Macro to export source code behind a syntax tree into a string.
+  ///
+
+  #[ macro_export ]
+  macro_rules! code_export_str
+  {
+    ( $src:expr ) =>
+    {{
+      let src2 = &$src;
+      format!( "{}", $crate::qt!{ #src2 } )
     }};
   }
 
@@ -65,7 +119,7 @@ pub( crate ) mod private
   ///
 
   #[ macro_export ]
-  macro_rules! _syn_err
+  macro_rules! syn_err
   {
 
     ( $msg:expr $(,)? ) =>
@@ -214,9 +268,15 @@ pub( crate ) mod private
     Ok( ( key, val, meta ) )
   }
 
-  pub use _tree_print;
-  pub use _tree_export_str;
-  pub use _syn_err;
+  pub use
+  {
+    tree_print,
+    code_print,
+    tree_diagnostics_str,
+    code_diagnostics_str,
+    code_export_str,
+    syn_err,
+  };
 
 }
 
@@ -224,11 +284,13 @@ pub( crate ) mod private
 pub mod exposed
 {
   pub use super::prelude::*;
-  // use super::private as i;
 
-  pub use super::private::type_rightmost;
-  pub use super::private::type_parameters;
-  pub use super::private::attr_pair_single;
+  pub use super::private::
+  {
+    type_rightmost,
+    type_parameters,
+    attr_pair_single,
+  };
 
 }
 
@@ -237,11 +299,16 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::private as i;
 
-  pub use super::private::_tree_print as tree_print;
-  pub use super::private::_tree_export_str as tree_export_str;
-  pub use super::private::_syn_err as syn_err;
+  pub use super::private::
+  {
+    tree_print,
+    code_print,
+    tree_diagnostics_str,
+    code_diagnostics_str,
+    code_export_str,
+    syn_err,
+  };
 
   pub use super::private::Result;
 }

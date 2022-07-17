@@ -342,7 +342,9 @@ pub( crate ) mod private
   {
     use ElementType::*;
 
-    let document = syn::parse::< Document >( input )?;
+    let original_input = input.clone();
+    let document = syn::parse::< Thesis >( input )?;
+    document.inner_attributes_validate()?;
 
     // use inspect_type::*;
     // inspect_type_of!( immediates );
@@ -400,6 +402,7 @@ pub( crate ) mod private
       Result::Ok( () )
     })?;
 
+    let has_debug = document.has_debug();
     let immediates_clause = clauses_map.get( &ClauseImmediates::Kind() ).unwrap();
     let protected_clause = clauses_map.get( &VisProtected::Kind() ).unwrap();
     let orphan_clause = clauses_map.get( &VisOrphan::Kind() ).unwrap();
@@ -446,7 +449,18 @@ pub( crate ) mod private
 
     };
 
-    // println!( "\n = result : \n{}\n\n", qt!{ #result } );
+    if has_debug
+    {
+      // let sections = Sections::new
+      // ( vec![
+      //   ( "original", original_input ),
+      //   ( "result", qt!{ #result } ),
+      // ]);
+      // println!( "{}", sections );
+
+      println!( "\n = original : \n{}\n", original_input );
+      println!( "\n = result : \n{}\n", qt!{ #result } );
+    }
 
     Ok( result )
   }
@@ -485,4 +499,7 @@ pub mod prelude
   };
 }
 
-// qqq : rewrite sample for the module
+// qqq : for Dima : rewrite sample for the module
+// qqq : for Dima : write description for the module, it should have
+// - example based on simpified version of test::layer_have_layer with single sublayer
+// - example with attribute `#![ debug ]`

@@ -16,6 +16,7 @@ tests_impls!
 
     //
 
+    // t.pass( "../../../rust/test/meta/mod_interface/front/attr_debug/trybuild.rs" );
     t.compile_fail( "../../../rust/test/meta/mod_interface/front/use_bad_vis/trybuild.rs" );
     t.compile_fail( "../../../rust/test/meta/mod_interface/front/use_unknown_vis/trybuild.rs" );
 

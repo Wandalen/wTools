@@ -171,11 +171,11 @@ pub( crate ) mod private
   impl AsMuchAsPossibleNoDelimiter for Record {}
 
   ///
-  /// Document.
+  /// Thesis.
   ///
 
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
-  pub struct Document
+  pub struct Thesis
   {
     pub head : AttributesInner,
     pub records : Records,
@@ -183,14 +183,55 @@ pub( crate ) mod private
 
   //
 
-  impl syn::parse::Parse for Document
+  impl Thesis
+  {
+    /// Validate each inner attribute of the thesis.
+    pub fn inner_attributes_validate( &self ) -> Result< () >
+    {
+      self.head.iter().try_for_each( | attr |
+      {
+        // code_print!( attr.path );
+        // code_print!( attr.tokens );
+
+        let good = true
+          && code_export_str!( attr.path ) == "debug"
+          && code_export_str!( attr.tokens ) == ""
+        ;
+
+        if !good
+        {
+          return Err( syn_err!
+          (
+            attr,
+            "Unknown inner attribute:\n{}",
+            tree_diagnostics_str!( attr ),
+          ));
+        }
+
+        Result::Ok( () )
+      })?;
+      Ok( () )
+    }
+    /// Does the thesis has debug inner attribute.
+    pub fn has_debug( &self ) -> bool
+    {
+      self.head.iter().any( | attr |
+      {
+        code_export_str!( attr.path ) == "debug"
+      })
+    }
+  }
+
+  //
+
+  impl syn::parse::Parse for Thesis
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
-      // let head = input.parse()?;
-      let head = Default::default();
+      let head = input.parse()?;
+      // let head = Default::default();
       let records = input.parse()?;
-      return Ok( Document
+      return Ok( Thesis
       {
         head,
         records,
@@ -200,7 +241,7 @@ pub( crate ) mod private
 
   //
 
-  impl quote::ToTokens for Document
+  impl quote::ToTokens for Thesis
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
@@ -234,7 +275,7 @@ pub mod exposed
     ElementType,
     Record,
     Records,
-    Document,
+    Thesis,
   };
 }
 
