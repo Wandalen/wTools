@@ -141,24 +141,24 @@ pub( crate ) mod private
     // clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
     clause!( clauses_map, VisProtected::Kind ).push( qt!
     {
-      #attrs1
       #[ doc( inline ) ]
+      #attrs1
       pub use #path2::orphan::*;
     });
 
     // clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
     clause!( clauses_map, VisExposed::Kind ).push( qt!
     {
-      #attrs1
       #[ doc( inline ) ]
+      #attrs1
       pub use #path2::exposed::*;
     });
 
     // clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
     clause!( clauses_map, VisPrelude::Kind ).push( qt!
     {
-      #attrs1
       #[ doc( inline ) ]
+      #attrs1
       pub use #path2::prelude::*;
     });
 
@@ -213,8 +213,8 @@ pub( crate ) mod private
     // clauses_map.get_mut( &vis.kind() ).unwrap().push( qt!
     clause!( clauses_map, vis.kind ).push( qt!
     {
-      #attrs1
       #[ doc( inline ) ]
+      #attrs1
       #vis2 use #path2;
     });
 
@@ -263,6 +263,8 @@ pub( crate ) mod private
     clause!( clauses_map, record.vis.kind ).push( qt!
     {
       #[ doc( inline ) ]
+      #attrs1
+      #attrs2
       pub use super::#path;
     });
 
@@ -307,27 +309,27 @@ pub( crate ) mod private
     // clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
     clause!( clauses_map, VisProtected::Kind ).push( qt!
     {
+      #[ doc( inline ) ]
       #attrs1
       #attrs2
-      #[ doc( inline ) ]
       pub use super::#path::orphan::*;
     });
 
     // clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
     clause!( clauses_map, VisExposed::Kind ).push( qt!
     {
+      #[ doc( inline ) ]
       #attrs1
       #attrs2
-      #[ doc( inline ) ]
       pub use super::#path::exposed::*;
     });
 
     // clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
     clause!( clauses_map, VisPrelude::Kind ).push( qt!
     {
+      #[ doc( inline ) ]
       #attrs1
       #attrs2
-      #[ doc( inline ) ]
       pub use super::#path::prelude::*;
     });
 

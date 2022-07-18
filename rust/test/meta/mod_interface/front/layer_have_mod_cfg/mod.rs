@@ -14,17 +14,17 @@ mod private
 TheModule::mod_interface!
 {
 
-  /// layer_a
-  layer layer_a;
+  /// mod_a
+  orphan mod mod_a;
   #[ cfg( all() ) ]
-  /// layer_b
-  layer layer_b;
+  /// mod_b
+  orphan mod mod_b;
   #[ cfg( any() ) ]
-  /// layer_c
-  layer layer_c;
+  /// mod_c
+  orphan mod mod_c;
 
 }
 
 //
 
-include!( "../../only_test/layer_simple_only_test.rs" );
+include!( "../../only_test/layer_have_mod_cfg_test_only.rs" );

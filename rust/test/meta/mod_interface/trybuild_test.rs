@@ -30,6 +30,7 @@ tests_impls!
     t.pass( "../../../rust/test/meta/mod_interface/front/layer_have_layer_separate_use_two/trybuild.rs" );
     t.pass( "../../../rust/test/meta/mod_interface/front/layer_have_layer_cfg/trybuild.rs" );
     t.pass( "../../../rust/test/meta/mod_interface/front/layer_use_cfg/trybuild.rs" );
+    t.pass( "../../../rust/test/meta/mod_interface/front/layer_have_mod_cfg/trybuild.rs" );
     t.pass( "../../../rust/test/meta/mod_interface/front/layer_use_macro/trybuild.rs" );
     t.compile_fail( "../../../rust/test/meta/mod_interface/front/layer_bad_vis/trybuild.rs" );
     t.compile_fail( "../../../rust/test/meta/mod_interface/front/layer_unknown_vis/trybuild.rs" );
