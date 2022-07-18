@@ -3,10 +3,9 @@
 //! Library of utility to operate packages from a command line.
 //!
 
+#[ cfg( feature = "use_std" ) ]
 crate::mod_interface!
 {
-
-  #[ cfg( feature = "use_std" ) ]
   orphan mod
   {
     bool,
@@ -16,5 +15,8 @@ crate::mod_interface!
     process,
     digest,
   };
-
+}
+#[ cfg( not( feature = "use_std" ) ) ]
+crate::mod_interface!
+{
 }
