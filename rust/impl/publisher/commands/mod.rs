@@ -3,6 +3,7 @@
 //! Library of utility to work with commands.
 //!
 
+#[ cfg( feature = "use_std" ) ]
 crate::mod_interface!
 {
   /// Publish module.
@@ -17,7 +18,10 @@ crate::mod_interface!
 
   #[ cfg( feature = "use_std" ) ]
   protected use super::init::*;
-
+}
+#[ cfg( not( feature = "use_std" ) ) ]
+crate::mod_interface!
+{
 }
 
 // qqq : for Dima : remove. that could be inside mod_interface
