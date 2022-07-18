@@ -53,47 +53,62 @@ pub mod dependency
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 
   #[ cfg( feature = "iter" ) ]
+  #[ doc( inline ) ]
   pub use ::iter_tools as iter;
   #[ cfg( feature = "meta" ) ]
+  #[ doc( inline ) ]
   pub use ::meta_tools as meta;
   #[ cfg( feature = "mem" ) ]
+  #[ doc( inline ) ]
   pub use ::mem_tools as mem;
   #[ cfg( feature = "typing" ) ]
+  #[ doc( inline ) ]
   pub use ::typing_tools as typing;
   #[ cfg( feature = "diagnostics" ) ]
+  #[ doc( inline ) ]
   pub use ::diagnostics_tools as diagnostics;
   #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
+  #[ doc( inline ) ]
   pub use ::data_type as dt;
   #[ cfg( feature = "time" ) ]
+  #[ doc( inline ) ]
   pub use ::time_tools as time;
   #[ cfg( feature = "error" ) ]
+  #[ doc( inline ) ]
   pub use ::error_tools as error;
   #[ cfg( feature = "string" ) ]
+  #[ doc( inline ) ]
   pub use ::strs_tools as string;
   #[ cfg( feature = "derive" ) ]
+  #[ doc( inline ) ]
   pub use ::derive_tools as derive;
 
   #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  #[ doc( inline ) ]
   pub use ::meta_tools::former as former;
   #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  #[ doc( inline ) ]
   pub use ::meta_tools::options as options;
-
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
   #[ cfg( feature = "iter" ) ]
   pub use super::iter::exposed::*;
@@ -127,33 +142,45 @@ pub mod exposed
 pub mod prelude
 {
   #[ cfg( feature = "iter" ) ]
+  #[ doc( inline ) ]
   pub use super::iter::prelude::*;
   #[ cfg( feature = "meta" ) ]
+  #[ doc( inline ) ]
   pub use super::meta::prelude::*;
   #[ cfg( feature = "mem" ) ]
+  #[ doc( inline ) ]
   pub use super::mem::prelude::*;
   #[ cfg( feature = "typing" ) ]
+  #[ doc( inline ) ]
   pub use super::typing::prelude::*;
   #[ cfg( feature = "diagnostics" ) ]
+  #[ doc( inline ) ]
   pub use super::diagnostics::prelude::*;
   #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
+  #[ doc( inline ) ]
   pub use super::dt::prelude::*;
   #[ cfg( feature = "time" ) ]
+  #[ doc( inline ) ]
   pub use super::time::prelude::*;
   #[ cfg( feature = "error" ) ]
+  #[ doc( inline ) ]
   pub use super::error::prelude::*;
   #[ cfg( feature = "string" ) ]
+  #[ doc( inline ) ]
   pub use super::string::prelude::*;
 
   #[ cfg( feature = "derive" ) ]
+  #[ doc( inline ) ]
   pub use super::derive::prelude::*;
   // zzz
   #[ cfg( feature = "derive_clone_dyn" ) ]
+  #[ doc( inline ) ]
   pub use super::derive::prelude::clone_dyn;
 
   #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  #[ doc( inline ) ]
   pub use super::former::prelude::*;
   #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  #[ doc( inline ) ]
   pub use super::options::prelude::*;
-
 }
