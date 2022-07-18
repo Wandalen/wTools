@@ -111,6 +111,9 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  // qqq : for Dima : bad : list all elements, don't use * for private
-  prelude( crate ) use super::private::*;
+  // qqq : for Dima : bad : list all elements, don't use * for private /* aaa : Dmytro : expanded */
+  prelude( crate ) use field_str;
+  prelude( crate ) use field_map_str_str;
+  prelude( crate ) use field_map_str_vec_str;
+  prelude( crate ) use field_routine;
 }
