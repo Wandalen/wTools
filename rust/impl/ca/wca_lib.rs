@@ -38,6 +38,7 @@ crate::mod_interface!
 }
 
 #[ cfg( feature = "use_std" ) ]
+#[ doc( inline ) ]
 pub use ca::
 {
   commands_aggregator,
