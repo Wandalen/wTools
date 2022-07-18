@@ -5,7 +5,7 @@
 use wtools as TheModule;
 use test_tools::exposed::*;
 
-/// CrateStructForTesting.
+///  A struct for testing purpose.
 #[ derive( Debug, PartialEq ) ]
 pub struct CrateStructForTesting1
 {

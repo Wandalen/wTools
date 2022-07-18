@@ -7,7 +7,7 @@
 
 include!( "../_conditional/local_module.rs" );
 
-/// CrateStructForTesting.
+///  A struct for testing purpose.
 #[ derive( Debug, PartialEq ) ]
 pub struct CrateStructForTesting1
 {

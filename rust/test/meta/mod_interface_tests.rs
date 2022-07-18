@@ -2,7 +2,7 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-/// CrateStructForTesting.
+///  A struct for testing purpose.
 #[ derive( Debug, PartialEq ) ]
 pub struct CrateStructForTesting1
 {
