@@ -74,6 +74,7 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
@@ -83,12 +84,14 @@ pub use protected::*;
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 }
 

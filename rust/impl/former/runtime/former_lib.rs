@@ -27,17 +27,23 @@ mod hash_set;
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
+  #[ doc( inline ) ]
   pub use super::vector::*;
+  #[ doc( inline ) ]
   pub use super::hash_map::*;
+  #[ doc( inline ) ]
   pub use super::hash_set::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 }
 

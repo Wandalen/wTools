@@ -35,8 +35,10 @@ pub mod dependency
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
   #[ cfg( feature = "derive_clone_dyn" ) ]
+  #[ doc( inline ) ]
   pub use ::clone_dyn::orphan::*;
 }
 
@@ -46,24 +48,29 @@ pub use protected::*;
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
+  #[ doc( inline ) ]
   pub use ::derive_more::*;
 
   #[ cfg( feature = "derive_display" ) ]
+  #[ doc( inline ) ]
   pub use ::parse_display::Display;
 
   #[ cfg( feature = "derive_from_str" ) ]
+  #[ doc( inline ) ]
   pub use ::parse_display::FromStr;
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
+  #[ doc( inline ) ]
   pub use ::clone_dyn::exposed::*;
-
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -71,10 +78,13 @@ pub mod prelude
 {
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
+  #[ doc( inline ) ]
   pub use ::clone_dyn;
   #[ cfg( feature = "derive_clone_dyn" ) ]
+  #[ doc( inline ) ]
   pub use ::clone_dyn::prelude::*;
   #[ cfg( feature = "derive_clone_dyn" ) ]
+  #[ doc( inline ) ]
   pub use ::clone_dyn::clone_dyn;
 
 }

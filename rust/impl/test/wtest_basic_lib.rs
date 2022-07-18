@@ -17,14 +17,23 @@
 /// Dependencies.
 pub mod dependency
 {
+  #[ doc( inline ) ]
   pub use ::paste;
+  #[ doc( inline ) ]
   pub use ::trybuild;
+  #[ doc( inline ) ]
   pub use ::anyhow;
+  #[ doc( inline ) ]
   pub use ::rustversion;
+  #[ doc( inline ) ]
   pub use ::meta_tools;
+  #[ doc( inline ) ]
   pub use ::mem_tools;
+  #[ doc( inline ) ]
   pub use ::typing_tools;
+  #[ doc( inline ) ]
   pub use ::num_traits;
+  #[ doc( inline ) ]
   pub use ::diagnostics_tools;
 }
 

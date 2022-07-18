@@ -137,24 +137,30 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Parented namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
+  #[ doc( inline ) ]
   pub use super::private::NodeCell;
 }
 
+#[ doc( inline ) ]
 pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

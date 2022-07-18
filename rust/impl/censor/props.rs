@@ -69,6 +69,8 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  // qqq : for Dima : bad : list all elements, don't use * for private
-  prelude use super::private::*;
+  // qqq : for Dima : bad : list all elements, don't use * for private /* aaa : Dmytro : expanded */
+  prelude use PropsParseOptionsAdapter;
+  prelude use PropsParseOptions;
+  prelude use parse_from_splits;
 }

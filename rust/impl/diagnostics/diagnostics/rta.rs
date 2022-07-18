@@ -179,6 +179,7 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
@@ -188,12 +189,14 @@ pub use protected::*;
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 }
 
@@ -215,10 +218,6 @@ pub mod prelude
     a_dbg_false,
     a_dbg_id,
     a_dbg_not_id,
-  };
-
-  pub use super::private::
-  {
   };
 }
 
