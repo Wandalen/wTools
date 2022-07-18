@@ -1,3 +1,7 @@
+//!
+//! Collection of general purpose meta tools.
+//!
+
 /// Internal namespace.
 pub( crate ) mod private
 {
@@ -17,18 +21,19 @@ mod_interface::mod_interface!
   use ::mod_interface;
   #[ cfg( feature = "mod_interface" ) ]
   prelude use ::mod_interface::mod_interface;
-
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
-  use ::woptions;
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
-  prelude use ::woptions as options;
-
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-  use ::former;
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-  prelude use ::former as former;
-
   #[ cfg( feature = "collection_make" ) ]
   prelude use ::literally::*;
+  #[ cfg( feature = "idents_concat" ) ]
+  prelude use ::paste::paste as idents_concat;
+
+  #[ cfg( feature = "options" ) ]
+  use ::woptions;
+  #[ cfg( feature = "options" ) ]
+  prelude use ::woptions as options;
+
+  #[ cfg( feature = "former" ) ]
+  use ::former;
+  #[ cfg( feature = "former" ) ]
+  prelude use ::former as former;
 
 }

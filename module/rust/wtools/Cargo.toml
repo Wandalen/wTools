@@ -76,6 +76,7 @@ meta_default = [
   "meta_former",
   "meta_options",
   "meta_collection_make",
+  "meta_idents_concat",
 ]
 meta_full = [
   "meta",
@@ -85,6 +86,7 @@ meta_full = [
   "meta_former",
   "meta_options",
   "meta_collection_make",
+  "meta_idents_concat",
 ]
 meta_use_std = [ "meta", "meta_tools/use_std" ]
 meta_use_alloc = [ "meta", "meta_tools/use_alloc" ]
@@ -93,6 +95,7 @@ meta_for_each = [ "meta", "meta_tools/for_each" ]
 meta_impls_index = [ "meta", "meta_tools/impls_index" ]
 meta_mod_interface = [ "meta", "meta_tools/mod_interface" ]
 meta_collection_make = [ "meta", "meta_tools/collection_make" ]
+meta_idents_concat = [ "meta", "meta_tools/idents_concat" ]
 meta_former = [ "meta", "meta_tools/former" ]
 meta_options = [ "meta", "meta_tools/options" ]
 

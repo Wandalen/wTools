@@ -15,25 +15,30 @@
 /// Dependencies.
 pub mod dependency
 {
-  #[ cfg( any( feature = "collection_make", feature = "literally" ) ) ]
-  pub use ::literally;
+
   #[ cfg( feature = "for_each" ) ]
   pub use ::for_each;
   #[ cfg( feature = "impls_index" ) ]
   pub use ::impls_index;
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  #[ cfg( feature = "collection_make" ) ]
+  pub use ::literally;
+  #[ cfg( feature = "idents_concat" ) ]
+  pub use ::paste;
+
+  #[ cfg( feature = "former" ) ]
   pub use ::former;
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  #[ cfg( feature = "options" ) ]
   pub use ::woptions;
+
 }
 
 //
 
 mod_interface::mod_interface!
 {
-  /// Collection of general purpose meta tools.
+
   layer meta;
 
-  // exposed use super::doc_file_test;
-
 }
+
+// xxx : use `paste::paste`

@@ -7,7 +7,7 @@
 #![ warn( missing_docs ) ]
 
 //!
-//! Collection of general purpose tools to iterate. Currently it simply reexport itertools.
+//! Collection of general purpose tools to iterate. Currently it simply reexports itertools.
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
