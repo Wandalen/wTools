@@ -6,6 +6,7 @@ use super::*;
 mod micro_modules;
 mod micro_modules_two;
 mod micro_modules_two_joined;
+mod micro_modules_with_feature;
 
 mod layer;
 mod layer_have_layer;
