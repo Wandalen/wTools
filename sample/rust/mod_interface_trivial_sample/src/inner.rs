@@ -1,4 +1,15 @@
-pub fn inner_is() -> bool
+pub( crate ) mod private
 {
-  true
+  /// Routine of inner module.
+  pub fn inner_is() -> bool
+  {
+    true
+  }
+}
+
+//
+
+mod_interface::mod_interface!
+{
+  prelude use inner_is;
 }

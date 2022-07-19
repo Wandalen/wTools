@@ -7,8 +7,145 @@ Protocol of modularity unifying interface of a module and introducing layers.
 
 ### Sample
 
-```ignore
+Library file with code `inner.rs`:
+
+```rust ignore
+pub( crate ) mod private
+{
+  /// Routine of inner module.
+  pub fn inner_is() -> bool
+  {
+    true
+  }
+}
+
+//
+
+mod_interface::mod_interface!
+{
+  prelude use inner_is;
+}
 ```
+
+Main file that generates modules and namespaces `main.rs` :
+```rust ignore
+mod_interface::mod_interface!
+{
+  /// Inner.
+  layer inner;
+}
+
+//
+
+fn main()
+{
+  /* test public namespaces */
+  assert_eq!( prelude::inner_is(), true );
+  assert_eq!( exposed::inner_is(), true );
+  assert_eq!( orphan::inner_is(), true );
+  assert_eq!( protected::inner_is(), true );
+
+  /* test public module `inner` */
+  assert_eq!( inner::prelude::inner_is(), true );
+  assert_eq!( inner::exposed::inner_is(), true );
+  assert_eq!( inner::orphan::inner_is(), true );
+  assert_eq!( inner::protected::inner_is(), true );
+}
+```
+
+It generates code :
+
+```rust
+/// Inner.
+pub mod inner
+{
+  pub( crate ) mod private
+  {
+    /// Routine of inner module.
+    pub fn inner_is() -> bool { true }
+  }
+
+  /// Protected namespace of the module.
+  pub mod protected
+  {
+    #[ doc( inline ) ]
+    pub use super::orphan::*;
+  }
+  #[ doc( inline ) ]
+  pub use protected::*;
+
+  /// Orphan namespace of the module.
+  pub mod orphan
+  {
+    #[ doc( inline ) ]
+    pub use super::exposed::*;
+  }
+
+  /// Exposed namespace of the module.
+  pub mod exposed
+  {
+    #[ doc( inline ) ]
+    pub use super::prelude::*;
+  }
+
+  /// Prelude to use essentials: `use my_module::prelude::*`.
+  pub mod prelude
+  {
+    #[ doc( inline ) ]
+    pub use super::private::inner_is;
+  }
+}
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  #[ doc( inline ) ]
+  pub use super::orphan::*;
+  #[ doc( inline ) ]
+  pub use super::inner::orphan::*;
+}
+#[ doc( inline ) ]
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  #[ doc( inline ) ]
+  pub use super::exposed::*;
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  #[ doc( inline ) ]
+  pub use super::prelude::*;
+  #[ doc( inline ) ]
+  pub use super::inner::exposed::*;
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+pub mod prelude
+{
+  #[ doc( inline ) ]
+  pub use super::inner::prelude::*;
+}
+
+fn main()
+{
+  /* test public namespaces */
+  assert_eq!( prelude::inner_is(), true );
+  assert_eq!( exposed::inner_is(), true );
+  assert_eq!( orphan::inner_is(), true );
+  assert_eq!( protected::inner_is(), true );
+
+  /* test public module `inner` */
+  assert_eq!( inner::prelude::inner_is(), true );
+  assert_eq!( inner::exposed::inner_is(), true );
+  assert_eq!( inner::orphan::inner_is(), true );
+  assert_eq!( inner::protected::inner_is(), true );
+}
+```
+
 <!-- xxx : rewrite -->
 
 Full sample see at [sample directory](https://github.com/Wandalen/wTools/tree/master/sample/rust/mod_interface_trivial_sample).
