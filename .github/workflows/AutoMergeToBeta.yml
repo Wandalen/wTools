@@ -90,5 +90,6 @@ jobs :
         uses: juliangruber/merge-pull-request-action@v1
         with:
           github-token: ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
+          repo: ${{ github.repository }}
           number: ${{ steps.find.outputs.number }}
           method: merge
