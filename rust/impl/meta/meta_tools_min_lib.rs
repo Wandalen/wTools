@@ -32,59 +32,49 @@ pub mod dependency
 
 //
 
-mod_interface::mod_interface!
+/* mod_interface is the optional dependency, we cannot use it for all cases */
+// mod_interface::mod_interface!
+// {
+//
+//   layer meta_min;
+//
+// }
+
+/// Collection of general purpose meta tools. Minimal Set.
+#[ path = "meta_min.rs" ]
+pub mod meta;
+
+/// Protected namespace of the module.
+pub mod protected
 {
-
-  layer meta_min;
-
+  #[ doc( inline ) ]
+  pub use super::orphan::*;
+  #[ doc( inline ) ]
+  pub use super::meta::orphan::*;
 }
 
-// /// Dependencies.
-// pub mod dependency
-// {
-//   #[ cfg( any( feature = "collection_make", feature = "literally" ) ) ]
-//   pub use ::literally;
-//   #[ cfg( feature = "for_each" ) ]
-//   pub use ::for_each;
-//   #[ cfg( feature = "impls_index" ) ]
-//   pub use ::impls_index;
-// }
-//
-// /// Collection of general purpose meta tools. Minimal Set.
-// #[ path = "meta_min.rs" ]
-// pub mod meta;
-//
-// /// Protected namespace of the module.
-// pub mod protected
-// {
-//   #[ doc( inline ) ]
-//   pub use super::orphan::*;
-//   #[ doc( inline ) ]
-//   pub use super::meta::orphan::*;
-// }
-//
-// #[ doc( inline ) ]
-// pub use protected::*;
-//
-// /// Orphan namespace of the module.
-// pub mod orphan
-// {
-//   #[ doc( inline ) ]
-//   pub use super::exposed::*;
-// }
-//
-// /// Exposed namespace of the module.
-// pub mod exposed
-// {
-//   #[ doc( inline ) ]
-//   pub use super::prelude::*;
-//   #[ doc( inline ) ]
-//   pub use super::meta::exposed::*;
-// }
-//
-// /// Prelude to use essentials: `use my_module::prelude::*`.
-// pub mod prelude
-// {
-//   #[ doc( inline ) ]
-//   pub use super::meta::prelude::*;
-// }
+#[ doc( inline ) ]
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  #[ doc( inline ) ]
+  pub use super::exposed::*;
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  #[ doc( inline ) ]
+  pub use super::prelude::*;
+  #[ doc( inline ) ]
+  pub use super::meta::exposed::*;
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+pub mod prelude
+{
+  #[ doc( inline ) ]
+  pub use super::meta::prelude::*;
+}
