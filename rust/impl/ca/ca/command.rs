@@ -17,7 +17,6 @@ pub( crate ) mod private
   /// Handle for command routine.
   ///
 
-  // qqq : for Dima : make alias for Result with BasicError /* aaa : Dmytro : done */
   pub struct OnCommand( Option< Rc< dyn Fn( &crate::instruction::Instruction ) -> Result< () > > > );
 
   impl OnCommand
