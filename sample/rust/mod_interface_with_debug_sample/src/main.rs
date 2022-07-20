@@ -1,6 +1,7 @@
 
 mod_interface::mod_interface!
 {
+  #![ debug ]
   /// Inner.
   layer inner;
 }
