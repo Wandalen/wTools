@@ -11,7 +11,7 @@ tests_impls!
     let ( width, height ) = ( 100, 100 );
     let mut states : [ u8; 10_000 ] = [ 0; 10_000 ];
 
-    let mut image = File::create( "../../../target/beacon.gif" ).unwrap();
+    let mut image = File::create( "../../../target/out.gif" ).unwrap();
     let mut encoder = Encoder::new( &mut image, width, height, color_map ).unwrap();
     encoder.set_repeat( Repeat::Infinite ).unwrap();
 
@@ -27,6 +27,8 @@ tests_impls!
       let frame = Frame::from_indexed_pixels( width, height, &states, None );
       encoder.write_frame( &frame ).unwrap();
     }
+
+    assert!( true );
   }
 }
 
