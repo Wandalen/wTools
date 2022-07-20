@@ -28,6 +28,7 @@ mod_interface::mod_interface!
 ```
 
 Main file that generates modules and namespaces `main.rs` :
+
 ```rust ignore
 mod_interface::mod_interface!
 {
@@ -146,7 +147,46 @@ fn main()
 }
 ```
 
+To debug module interface use directive `#![ debug ]` in macro `mod_interface`. Let's update the main file of the example :
+
+```rust ignore
+mod_interface::mod_interface!
+{
+  #![ debug ]
+  /// Inner.
+  layer inner;
+}
+```
+
+The directive adds stdout output with module structure. For the case above output looks :
+
+```ignore
+ = original :
+
+#! [debug] /// Inner.
+layer inner ;
+
+
+ = result :
+
+#[doc = " Inner."] pub mod inner ; #[doc(inline)] pub use protected :: * ;
+#[doc = r" Protected namespace of the module."] pub mod protected
+{
+    #[doc(inline)] pub use super :: orphan :: * ; #[doc(inline)]
+    #[doc = " Inner."] pub use super :: inner :: orphan :: * ;
+} #[doc = r" Orphan namespace of the module."] pub mod orphan
+{ #[doc(inline)] pub use super :: exposed :: * ; }
+#[doc = r" Exposed namespace of the module."] pub mod exposed
+{
+    #[doc(inline)] pub use super :: prelude :: * ; #[doc(inline)]
+    #[doc = " Inner."] pub use super :: inner :: exposed :: * ;
+} #[doc = r" Prelude to use essentials: `use my_module::prelude::*`."] pub mod
+prelude
+{ #[doc(inline)] #[doc = " Inner."] pub use super :: inner :: prelude :: * ; }
+```
+
 <!-- xxx : rewrite -->
+<!-- aaa : Dmytro : added new samples -->
 
 Full sample see at [sample directory](https://github.com/Wandalen/wTools/tree/master/sample/rust/mod_interface_trivial_sample).
 
