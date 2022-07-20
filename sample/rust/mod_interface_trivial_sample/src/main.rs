@@ -1,25 +1,19 @@
-
-mod_interface::mod_interface!
-{
-  /// Inner.
-  layer inner;
-}
+use mod_interface::mod_interface;
 
 //
 
 fn main()
 {
-  /* test public namespaces */
-  assert_eq!( prelude::inner_is(), true );
-  assert_eq!( exposed::inner_is(), true );
-  assert_eq!( orphan::inner_is(), true );
-  assert_eq!( protected::inner_is(), true );
+  assert_eq!( prelude::inner_is(), inner::prelude::inner_is() );
+}
 
-  /* test public module `inner` */
-  assert_eq!( inner::prelude::inner_is(), true );
-  assert_eq!( inner::exposed::inner_is(), true );
-  assert_eq!( inner::orphan::inner_is(), true );
-  assert_eq!( inner::protected::inner_is(), true );
+//
+
+mod_interface!
+{
+  /// Inner.
+  layer inner;
 }
 
 // qqq : rewrite sample
+/* aaa : Dmytro : sample with layer */

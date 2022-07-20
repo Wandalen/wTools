@@ -30,33 +30,38 @@ mod_interface::mod_interface!
 Main file that generates modules and namespaces `main.rs` :
 
 ```rust ignore
-mod_interface::mod_interface!
-{
-  /// Inner.
-  layer inner;
-}
+use mod_interface::mod_interface;
 
 //
 
 fn main()
 {
-  /* test public namespaces */
-  assert_eq!( prelude::inner_is(), true );
-  assert_eq!( exposed::inner_is(), true );
-  assert_eq!( orphan::inner_is(), true );
-  assert_eq!( protected::inner_is(), true );
+  assert_eq!( prelude::inner_is(), inner::prelude::inner_is() );
+}
 
-  /* test public module `inner` */
-  assert_eq!( inner::prelude::inner_is(), true );
-  assert_eq!( inner::exposed::inner_is(), true );
-  assert_eq!( inner::orphan::inner_is(), true );
-  assert_eq!( inner::protected::inner_is(), true );
+//
+
+mod_interface::mod_interface!
+{
+  /// Inner.
+  layer inner;
 }
 ```
 
 It generates code :
 
 ```rust
+use mod_interface::mod_interface;
+
+//
+
+fn main()
+{
+  assert_eq!( prelude::inner_is(), inner::prelude::inner_is() );
+}
+
+//
+
 /// Inner.
 pub mod inner
 {
@@ -130,21 +135,6 @@ pub mod prelude
   #[ doc( inline ) ]
   pub use super::inner::prelude::*;
 }
-
-fn main()
-{
-  /* test public namespaces */
-  assert_eq!( prelude::inner_is(), true );
-  assert_eq!( exposed::inner_is(), true );
-  assert_eq!( orphan::inner_is(), true );
-  assert_eq!( protected::inner_is(), true );
-
-  /* test public module `inner` */
-  assert_eq!( inner::prelude::inner_is(), true );
-  assert_eq!( inner::exposed::inner_is(), true );
-  assert_eq!( inner::orphan::inner_is(), true );
-  assert_eq!( inner::protected::inner_is(), true );
-}
 ```
 
 To debug module interface use directive `#![ debug ]` in macro `mod_interface`. Let's update the main file of the example :
@@ -169,20 +159,45 @@ layer inner ;
 
  = result :
 
-#[doc = " Inner."] pub mod inner ; #[doc(inline)] pub use protected :: * ;
-#[doc = r" Protected namespace of the module."] pub mod protected
+#[doc = " Inner."]
+pub mod inner ;
+#[doc(inline)]
+pub use protected :: * ;
+
+#[doc = r" Protected namespace of the module."]
+pub mod protected
 {
-    #[doc(inline)] pub use super :: orphan :: * ; #[doc(inline)]
-    #[doc = " Inner."] pub use super :: inner :: orphan :: * ;
-} #[doc = r" Orphan namespace of the module."] pub mod orphan
-{ #[doc(inline)] pub use super :: exposed :: * ; }
-#[doc = r" Exposed namespace of the module."] pub mod exposed
+  #[doc(inline)]
+  pub use super :: orphan :: * ;
+  #[doc(inline)]
+  #[doc = " Inner."]
+  pub use super :: inner :: orphan :: * ;
+}
+
+#[doc = r" Orphan namespace of the module."]
+pub mod orphan
 {
-    #[doc(inline)] pub use super :: prelude :: * ; #[doc(inline)]
-    #[doc = " Inner."] pub use super :: inner :: exposed :: * ;
-} #[doc = r" Prelude to use essentials: `use my_module::prelude::*`."] pub mod
-prelude
-{ #[doc(inline)] #[doc = " Inner."] pub use super :: inner :: prelude :: * ; }
+  #[doc(inline)]
+  pub use super :: exposed :: * ;
+}
+
+#[doc = r" Exposed namespace of the module."]
+pub mod exposed
+{
+    #[doc(inline)]
+    pub use super :: prelude :: * ;
+    #[doc(inline)]
+    #[doc = " Inner."]
+    pub use super :: inner :: exposed :: * ;
+}
+
+#[doc = r" Prelude to use essentials: `use my_module::prelude::*`."]
+pub mod prelude
+{
+  #[doc(inline)]
+  #[doc = " Inner."]
+  pub use super :: inner :: prelude :: * ;
+}
 ```
 
 <!-- xxx : rewrite -->
