@@ -16,7 +16,7 @@ pub( crate ) mod private
   }
 
   /// Select color encoding.
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( Debug, Clone, PartialEq ) ]
   pub enum ColorType
   {
     /// RGB color encoding.

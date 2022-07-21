@@ -19,6 +19,8 @@ pub( crate ) mod private
     frame_rate : usize,
     /// Color encoding.
     color_type : ColorType,
+    /// Repeat animation. For animated images formats.
+    repeat : Option<usize>,
 
     /// Type of output format.
     encoder_type : EncoderType,
@@ -50,7 +52,7 @@ pub( crate ) mod private
     T : EncodeData
   {
     /// Create an instance.
-    pub fn new( width : usize, height : usize, frame_rate : usize, encoder_type : EncoderType, filename : impl AsRef< str > ) -> Self
+    pub fn new( width : usize, height : usize, frame_rate : usize, repeat : Option< usize >, encoder_type : EncoderType, filename : impl AsRef< str > ) -> Self
     {
       unimplemented!( "not implemented" );
       // let color_type = ColorType::Rgb;
@@ -62,6 +64,7 @@ pub( crate ) mod private
       //   height,
       //   frame_rate,
       //   color_type,
+      //   repeat,
       //   encoder_type,
       //   encoder : Box::new( encoder ),
       //   output_filename : std::path::PathBuf::from( filename.as_ref() ),
