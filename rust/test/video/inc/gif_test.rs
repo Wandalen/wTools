@@ -36,6 +36,29 @@ tests_impls!
 
     assert!( true );
   }
+
+  fn basic_with_encoder()
+  {
+    let mut encoder = super::encoders::Gif::new( 100, 100, 1, None, &ColorType::Rgb, "../../../target/out_encoder.gif" ).unwrap();
+    let mut buf = [ 255u8; 30_000 ];
+    buf[ 0 ] = 0;
+    buf[ 1 ] = 0;
+    buf[ 2 ] = 0;
+    encoder.encode( &buf ).unwrap();
+
+    for i in 1..100
+    {
+      buf[ ( i - 1 ) * 3 + ( i - 1 ) * 300 ] = 255;
+      buf[ ( i - 1 ) * 3 + 1 + ( i - 1 ) * 300 ] = 255;
+      buf[ ( i - 1 ) * 3 + 2 + ( i - 1 ) * 300 ] = 255;
+
+      buf[ i * 3 + i * 300 ] = 0;
+      buf[ i * 3 + 1 + i * 300 ] = 0;
+      buf[ i * 3 + 2 + i * 300 ] = 0;
+      encoder.encode( &buf ).unwrap();
+    }
+    encoder.flush().unwrap();
+  }
 }
 
 //
@@ -43,4 +66,5 @@ tests_impls!
 tests_index!
 {
   basic,
+  basic_with_encoder,
 }
