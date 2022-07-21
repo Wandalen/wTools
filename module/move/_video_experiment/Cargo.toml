@@ -53,6 +53,9 @@ path = "rust/test/video/video_experiment_tests.rs"
 gif = "~0.11"
 apng = "~0.2.0"
 png = "~0.16.3"
+minimp4 = "~0.1"
+ac-ffmpeg = "~0.17"
+openh264 = "~0.2"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
