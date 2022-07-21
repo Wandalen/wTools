@@ -7,25 +7,31 @@ tests_impls!
     use super::gif::{ Frame, Repeat, Encoder };
     use std::fs::File;
 
-    let color_map = &[ 0xFF, 0xFF, 0xFF, 0, 0, 0 ];
+    // let color_map = &[ 0xFF, 0xFF, 0xFF, 0, 0, 0 ];
     let ( width, height ) = ( 100, 100 );
-    let mut states : [ u8; 10_000 ] = [ 0; 10_000 ];
 
     let mut image = File::create( "../../../target/out.gif" ).unwrap();
-    let mut encoder = Encoder::new( &mut image, width, height, color_map ).unwrap();
+    let mut encoder = Encoder::new( &mut image, width, height, /* color_map */ &[] ).unwrap();
     encoder.set_repeat( Repeat::Infinite ).unwrap();
 
-    /* first frame */
-    states[ 0 ] = 1;
-    let frame = Frame::from_indexed_pixels( width, height, &states, None );
-    encoder.write_frame( &frame ).unwrap();
+    let mut frame = [ 255u8; 30_000 ];
+    frame[ 0 ] = 0;
+    frame[ 1 ] = 0;
+    frame[ 2 ] = 0;
+    let buf = Frame::from_rgb( width, height, &frame );
+    encoder.write_frame( &buf ).unwrap();
 
     for i in 1..100
     {
-      states[ i - 1 + ( i - 1 ) * 100 ] = 0;
-      states[ i + i * 100 ] = 1;
-      let frame = Frame::from_indexed_pixels( width, height, &states, None );
-      encoder.write_frame( &frame ).unwrap();
+      frame[ ( i - 1 ) * 3 + ( i - 1 ) * 300 ] = 255;
+      frame[ ( i - 1 ) * 3 + 1 + ( i - 1 ) * 300 ] = 255;
+      frame[ ( i - 1 ) * 3 + 2 + ( i - 1 ) * 300 ] = 255;
+
+      frame[ i * 3 + i * 300 ] = 0;
+      frame[ i * 3 + 1 + i * 300 ] = 0;
+      frame[ i * 3 + 2 + i * 300 ] = 0;
+      let buf = Frame::from_rgb( width, height, &frame );
+      encoder.write_frame( &buf ).unwrap();
     }
 
     assert!( true );
