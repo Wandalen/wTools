@@ -9,3 +9,13 @@ pub mod dependency
   pub use ::ac_ffmpeg;
   pub use ::openh264;
 }
+
+//
+
+wtools::meta::mod_interface!
+{
+  /// Encoders.
+  layer encoders;
+  /// Common interface for animation.
+  layer encoder_strategy;
+}

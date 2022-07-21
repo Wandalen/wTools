@@ -114,7 +114,7 @@ tests_impls! {
     let mut muxer = open_output( "../../../target/out_ac_ffmpeg.mp4", &codec_parameters ).unwrap();
     let mut buf = vec![];
 
-    let time_base = TimeBase::new( 1, 25 );
+    let time_base = TimeBase::new( 1, 60 );
     let mut frame_idx = 0;
     let mut frame_timestamp = Timestamp::new( frame_idx, time_base );
 
