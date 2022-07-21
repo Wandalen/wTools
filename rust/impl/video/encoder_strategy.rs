@@ -2,36 +2,7 @@
 pub( crate ) mod private
 {
   use wtools::error::Result;
-
-  /// Select strategy for the output format.
-  #[ derive( Debug, PartialEq ) ]
-  pub enum EncoderType
-  {
-    /// Convert to gif.
-    Gif,
-    /// Convert to apng.
-    Png,
-    /// Convert to mp4.
-    Mp4,
-  }
-
-  /// Select color encoding.
-  #[ derive( Debug, PartialEq ) ]
-  pub enum ColorType
-  {
-    /// RGB color encoding.
-    Rgb,
-    // qqq : extend
-  }
-
-  /// Trait for encoders.
-  pub trait EncodeData
-  {
-    /// Encode bytes buffer to output.
-    fn encode( &mut self, data : impl AsRef< [ u8 ] > ) -> Result< () >;
-    /// Finish encoding.
-    fn flush( &self ) -> Result< () >;
-  }
+  use crate::common::prelude::*;
 
   /// Encoder for the buffer.
 
@@ -55,7 +26,7 @@ pub( crate ) mod private
     encoder : Box< T >,
 
     /// Output filename.
-    output_file : std::path::Path,
+    output_filename : std::path::PathBuf,
   }
 
   impl< T > EncodeData for Encoder< T >
@@ -79,7 +50,7 @@ pub( crate ) mod private
     T : EncodeData
   {
     /// Create an instance.
-    pub fn new( width : usize, height : usize, frame_rate : usize, encoder_type : EncoderType, output_filename : impl AsRef< str > ) -> Self
+    pub fn new( width : usize, height : usize, frame_rate : usize, encoder_type : EncoderType, filename : impl AsRef< str > ) -> Self
     {
       unimplemented!( "not implemented" );
       // let color_type = ColorType::Rgb;
@@ -93,7 +64,7 @@ pub( crate ) mod private
       //   color_type,
       //   encoder_type,
       //   encoder : Box::new( encoder ),
-      //   output_file : std::path::Path::from( output_filename.as_ref() ),
+      //   output_filename : std::path::PathBuf::from( filename.as_ref() ),
       // }
     }
 
@@ -114,7 +85,4 @@ pub( crate ) mod private
 wtools::meta::mod_interface!
 {
   prelude use Encoder;
-  prelude use EncoderType;
-  prelude use ColorType;
-  prelude use EncodeData;
 }
