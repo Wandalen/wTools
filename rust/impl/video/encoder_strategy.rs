@@ -1,11 +1,11 @@
 /// Private namespace.
 pub( crate ) mod private
 {
-  use wtools::error::Result;
   use crate::common::prelude::*;
 
   /// Encoder for the buffer.
 
+  #[ allow( dead_code ) ]
   #[ derive( Debug ) ]
   pub struct Encoder< T >
   where
@@ -36,12 +36,12 @@ pub( crate ) mod private
     T : EncodeData
   {
     /// Encode bytes buffer to output.
-    fn encode( &mut self, data : impl AsRef< [ u8 ] > ) -> Result< () >
+    fn encode( &mut self, data : impl AsRef< [ u8 ] > ) -> Result< (), Box<dyn std::error::Error > >
     {
       self.encoder.encode( data )
     }
     /// Finish encoding.
-    fn flush( &self ) -> Result< () >
+    fn flush( &mut self ) -> Result< (), Box<dyn std::error::Error > >
     {
       self.encoder.flush()
     }
@@ -52,6 +52,7 @@ pub( crate ) mod private
     T : EncodeData
   {
     /// Create an instance.
+    #[ allow( unused_variables ) ]
     pub fn new( width : usize, height : usize, frame_rate : usize, repeat : Option< usize >, encoder_type : EncoderType, filename : impl AsRef< str > ) -> Self
     {
       unimplemented!( "not implemented" );

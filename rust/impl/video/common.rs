@@ -1,8 +1,6 @@
 /// Private namespace.
 pub( crate ) mod private
 {
-  use wtools::error::Result;
-
   /// Select strategy for the output format.
   #[ derive( Debug, PartialEq ) ]
   pub enum EncoderType
@@ -24,13 +22,21 @@ pub( crate ) mod private
     // qqq : extend
   }
 
+  impl Default for ColorType
+  {
+    fn default() -> Self
+    {
+      ColorType::Rgb
+    }
+  }
+
   /// Trait for encoders.
   pub trait EncodeData
   {
     /// Encode bytes buffer to output.
-    fn encode( &mut self, data : impl AsRef< [ u8 ] > ) -> Result< () >;
+    fn encode( &mut self, data : impl AsRef< [ u8 ] > ) -> Result< (), Box<dyn std::error::Error > >;
     /// Finish encoding.
-    fn flush( &self ) -> Result< () >;
+    fn flush( &mut self ) -> Result< (), Box<dyn std::error::Error > >;
   }
 }
 
