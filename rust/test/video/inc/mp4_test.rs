@@ -4,113 +4,7 @@ tests_impls!
 {
   fn basic() -> Result< (), Box< dyn std::error::Error > >
   {
-    use std::fs::File;
-
-    use super::ac_ffmpeg::
-    {
-      packet::PacketMut,
-      codec::{ CodecParameters, VideoCodecParameters },
-      format::
-      {
-        io::IO,
-        muxer::{ Muxer, OutputFormat },
-      },
-      time::{ TimeBase, Timestamp },
-      Error,
-    };
-    use openh264::encoder::{ Encoder, EncoderConfig };
-
-    fn open_output( path : &str, codec_parameters : &CodecParameters ) -> Result< Muxer< File >, Error >
-    {
-      let output_format = OutputFormat::guess_from_file_name( path )
-      .ok_or_else( || Error::new( format!( "unable to guess output format for file: {}", path ) ) )?;
-
-      let output = File::create( path )
-      .map_err( | err | Error::new( format!( "unable to create output file {}: {}", path, err ) ) )?;
-
-      let io = IO::from_seekable_write_stream( output );
-
-      let mut muxer_builder = Muxer::builder();
-
-      muxer_builder.add_stream( codec_parameters )?;
-
-      muxer_builder.build( io, output_format )
-    }
-
-    /* */
-
-    let codec_parameters = CodecParameters::from
-    (
-      VideoCodecParameters::builder( "libx264" )?
-      .width( 100 )
-      .height( 100 )
-      .build()
-    );
-
-    let config = EncoderConfig::new( 100, 100 );
-    let mut encoder = Encoder::with_config( config )?;
-
-    let mut write_frame_to_buf = | buf: &mut Vec< u8 >, frame: &[ u8 ] | -> Result< (), Box< dyn std::error::Error > >
-    {
-      let mut yuv = openh264::formats::RBGYUVConverter::new( 100, 100 );
-      yuv.convert( frame );
-
-      let bitstream = encoder.encode( &yuv )?;
-      bitstream.write_vec( buf );
-      Ok( () )
-    };
-
-    let mut muxer = open_output( "../../../target/out.mp4", &codec_parameters )?;
-    let mut buf = vec![];
-
-    let time_base = TimeBase::new( 1, 60 );
-    let mut frame_idx = 0;
-    let mut frame_timestamp = Timestamp::new( frame_idx, time_base );
-
-    let mut frame = [ 255u8; 30_000 ];
-    frame[ 0 ] = 0;
-    frame[ 1 ] = 0;
-    frame[ 2 ] = 0;
-    write_frame_to_buf( &mut buf, frame.as_slice() )?;
-
-    let packet = PacketMut::from( &buf )
-    .with_pts( frame_timestamp )
-    .with_dts( frame_timestamp )
-    .freeze();
-    muxer.push( packet )?;
-    buf.clear();
-
-    for i in 1..100
-    {
-      frame_idx += 1;
-      frame_timestamp = Timestamp::new( frame_idx, time_base );
-
-      frame[ ( i - 1 ) * 3 + ( i - 1 ) * 300 ] = 255;
-      frame[ ( i - 1 ) * 3 + 1 + ( i - 1 ) * 300 ] = 255;
-      frame[ ( i - 1 ) * 3 + 2 + ( i - 1 ) * 300 ] = 255;
-
-      frame[ i * 3 + i * 300 ] = 0;
-      frame[ i * 3 + 1 + i * 300 ] = 0;
-      frame[ i * 3 + 2 + i * 300 ] = 0;
-      write_frame_to_buf( &mut buf, frame.as_slice() )?;
-
-      let packet = PacketMut::from( &buf )
-      .with_pts( frame_timestamp )
-      .with_dts( frame_timestamp )
-      .freeze();
-      muxer.push( packet )?;
-      buf.clear();
-    }
-
-    muxer.flush()?;
-    Ok( () )
-  }
-
-  //
-
-  fn basic_with_encoder() -> Result< (), Box< dyn std::error::Error > >
-  {
-    let mut encoder = super::encoders::Mp4::new( 100, 100, 30, None, &ColorType::Rgb, "../../../target/out_encoder.mp4" )?;
+    let mut encoder = super::encoders::Mp4::new( 100, 100, 30, None, &ColorType::Rgb, "../../../target/out.mp4" )?;
     let mut buf = [ 255u8; 30_000 ];
     buf[ 0 ] = 0;
     buf[ 1 ] = 0;
@@ -129,6 +23,10 @@ tests_impls!
       encoder.encode( &buf )?;
     }
     encoder.flush()?;
+
+    let path = std::path::PathBuf::from( "../../../target/out.mp4" );
+    a_id!( path.exists(), true );
+
     Ok( () )
   }
 }
@@ -138,5 +36,4 @@ tests_impls!
 tests_index!
 {
   basic,
-  basic_with_encoder,
 }
