@@ -5,4 +5,6 @@ wtools::meta::mod_interface!
   layer gif;
   /// Png encoder.
   layer png;
+  /// Mp4 encoder.
+  layer mp4;
 }

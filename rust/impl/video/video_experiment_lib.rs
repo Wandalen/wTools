@@ -23,8 +23,6 @@ pub mod dependency
   #[ doc( inline ) ]
   pub use ::png;
   #[ doc( inline ) ]
-  pub use ::minimp4;
-  #[ doc( inline ) ]
   pub use ::ac_ffmpeg;
   #[ doc( inline ) ]
   pub use ::openh264;
