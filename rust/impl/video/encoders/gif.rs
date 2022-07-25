@@ -90,7 +90,7 @@ pub( crate ) mod private
       }
       else
       {
-        encoder.set_repeat( Repeat::Finite( 1 ) )?;
+        encoder.set_repeat( Repeat::Finite( 0 ) )?;
       }
 
       let instance = Self

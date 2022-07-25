@@ -129,8 +129,9 @@ pub( crate ) mod private
     {
       let repeat = match repeat
       {
+        Some( 0 ) => u32::MAX,
         Some( n ) => n as u32,
-        None => 0 as u32,
+        None => 1 as u32,
       };
 
       let instance = Self
