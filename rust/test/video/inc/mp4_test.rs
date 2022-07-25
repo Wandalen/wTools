@@ -2,7 +2,7 @@ use super::*;
 
 tests_impls!
 {
-  fn basic()
+  fn basic() -> Result< (), Box< dyn std::error::Error > >
   {
     use std::fs::File;
 
@@ -41,25 +41,26 @@ tests_impls!
 
     let codec_parameters = CodecParameters::from
     (
-      VideoCodecParameters::builder( "libx264" ).unwrap()
+      VideoCodecParameters::builder( "libx264" )?
       .width( 100 )
       .height( 100 )
       .build()
     );
 
     let config = EncoderConfig::new( 100, 100 );
-    let mut encoder = Encoder::with_config( config ).unwrap();
+    let mut encoder = Encoder::with_config( config )?;
 
-    let mut write_frame_to_buf = | buf: &mut Vec< u8 >, frame: &[ u8 ] |
+    let mut write_frame_to_buf = | buf: &mut Vec< u8 >, frame: &[ u8 ] | -> Result< (), Box< dyn std::error::Error > >
     {
       let mut yuv = openh264::formats::RBGYUVConverter::new( 100, 100 );
       yuv.convert( frame );
 
-      let bitstream = encoder.encode( &yuv ).unwrap();
+      let bitstream = encoder.encode( &yuv )?;
       bitstream.write_vec( buf );
+      Ok( () )
     };
 
-    let mut muxer = open_output( "../../../target/out_ac_ffmpeg.mp4", &codec_parameters ).unwrap();
+    let mut muxer = open_output( "../../../target/out.mp4", &codec_parameters )?;
     let mut buf = vec![];
 
     let time_base = TimeBase::new( 1, 60 );
@@ -70,13 +71,13 @@ tests_impls!
     frame[ 0 ] = 0;
     frame[ 1 ] = 0;
     frame[ 2 ] = 0;
-    write_frame_to_buf( &mut buf, frame.as_slice() );
+    write_frame_to_buf( &mut buf, frame.as_slice() )?;
 
     let packet = PacketMut::from( &buf )
     .with_pts( frame_timestamp )
     .with_dts( frame_timestamp )
     .freeze();
-    muxer.push( packet ).unwrap();
+    muxer.push( packet )?;
     buf.clear();
 
     for i in 1..100
@@ -91,17 +92,18 @@ tests_impls!
       frame[ i * 3 + i * 300 ] = 0;
       frame[ i * 3 + 1 + i * 300 ] = 0;
       frame[ i * 3 + 2 + i * 300 ] = 0;
-      write_frame_to_buf( &mut buf, frame.as_slice() );
+      write_frame_to_buf( &mut buf, frame.as_slice() )?;
 
       let packet = PacketMut::from( &buf )
       .with_pts( frame_timestamp )
       .with_dts( frame_timestamp )
       .freeze();
-      muxer.push( packet ).unwrap();
+      muxer.push( packet )?;
       buf.clear();
     }
 
-    muxer.flush().unwrap();
+    muxer.flush()?;
+    Ok( () )
   }
 
   //
