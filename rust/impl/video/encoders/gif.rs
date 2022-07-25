@@ -40,14 +40,14 @@ pub( crate ) mod private
   impl EncodeData for Gif
   {
     /// Encode bytes buffer to output.
-    fn encode( &mut self, data : impl AsRef< [ u8 ] > ) -> Result< (), Box<dyn std::error::Error > >
+    fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box<dyn std::error::Error > >
     {
       #[ allow( unreachable_patterns ) ]
       match self.color_type
       {
         ColorType::Rgb =>
         {
-          let mut buf = Frame::from_rgb( self.width as u16, self.height as u16, data.as_ref() );
+          let mut buf = Frame::from_rgb( self.width as u16, self.height as u16, data );
           let gif_time_step = 10; // library allow write images with time step equal to 10 ms
           buf.delay = ( 1000 / gif_time_step / self.frame_rate ) as u16;
 
@@ -68,7 +68,15 @@ pub( crate ) mod private
   impl Gif
   {
     /// Create an instance.
-    pub fn new( width : usize, height : usize, frame_rate : usize, repeat : Option< usize >, color_type : &ColorType, filename : impl AsRef< str > ) -> Result< Self, Box< dyn std::error::Error > >
+    pub fn new
+    (
+      width : usize,
+      height : usize,
+      frame_rate : usize,
+      repeat : Option< usize >,
+      color_type : &ColorType,
+      filename : impl AsRef< str >
+    ) -> Result< Self, Box< dyn std::error::Error > >
     {
       let image = std::fs::File::create( filename.as_ref() )?;
       let mut encoder = Encoder::new( image, width as u16, height as u16, &[] )?;

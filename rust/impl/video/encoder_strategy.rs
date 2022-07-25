@@ -1,42 +1,59 @@
 /// Private namespace.
 pub( crate ) mod private
 {
+  use std::fmt::{ Debug, Formatter };
   use crate::common::prelude::*;
+  use crate::encoders::{ Gif, Png, Mp4 };
+  use wtools::error::BasicError;
+  #[ allow( unused_imports ) ]
+  use wtools::prelude::former::Former;
 
   /// Encoder for the buffer.
 
   #[ allow( dead_code ) ]
-  #[ derive( Debug ) ]
-  pub struct Encoder< T >
-  where
-    T : EncodeData
+  /* qqq : add former macro when attributes and documentation comments handling will be implemented */
+  // #[ derive( Former ) ]
+  pub struct Encoder
   {
-    /// Frame width.
+    // /// Frame width.
     width : usize,
-    /// Frame height.
+    // /// Frame height.
     height : usize,
-    /// Frame rate.
+    // /// Frame rate.
     frame_rate : usize,
-    /// Color encoding.
+    // /// Color encoding.
     color_type : ColorType,
-    /// Repeat animation. For animated images formats.
-    repeat : Option<usize>,
+    // /// Repeat animation. For animated images formats.
+    repeat : Option< usize >,
 
-    /// Type of output format.
+    // /// Type of output format.
     encoder_type : EncoderType,
-    /// Encoder for the output format.
-    encoder : Box< T >,
+    // /// Encoder for the output format.
+    encoder : Box< dyn EncodeData >,
 
-    /// Output filename.
+    // /// Output filename.
     output_filename : std::path::PathBuf,
   }
 
-  impl< T > EncodeData for Encoder< T >
-  where
-    T : EncodeData
+  impl Debug for Encoder
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      f.debug_struct( "Encoder" )
+      .field( "width", &self.width )
+      .field( "height", &self.height )
+      .field( "frame_rate", &self.frame_rate )
+      .field( "color_type", &self.color_type )
+      .field( "encoder_type", &self.encoder_type )
+      .field( "output_filename", &self.output_filename )
+      .finish()
+     }
+  }
+
+  impl EncodeData for Encoder
   {
     /// Encode bytes buffer to output.
-    fn encode( &mut self, data : impl AsRef< [ u8 ] > ) -> Result< (), Box<dyn std::error::Error > >
+    fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box< dyn std::error::Error > >
     {
       self.encoder.encode( data )
     }
@@ -47,42 +64,66 @@ pub( crate ) mod private
     }
   }
 
-  impl< T > Encoder< T >
-  where
-    T : EncodeData
+  impl Encoder
   {
     /// Create an instance.
     #[ allow( unused_variables ) ]
-    pub fn new( width : usize, height : usize, frame_rate : usize, repeat : Option< usize >, encoder_type : EncoderType, filename : impl AsRef< str > ) -> Self
+    pub fn new
+    (
+      encoder_type : EncoderType,
+      width : usize,
+      height : usize,
+      frame_rate : usize,
+      repeat : Option< usize >,
+      color_type : ColorType,
+      filename : impl AsRef< str >
+    ) -> Result< Self, Box< dyn std::error::Error > >
     {
-      unimplemented!( "not implemented" );
-      // let color_type = ColorType::Rgb;
-      // let encoder = Encoder::encoder_make( width, height, frame_rate, &encoder_type, &color_type );
-      //
-      // Self
-      // {
-      //   width,
-      //   height,
-      //   frame_rate,
-      //   color_type,
-      //   repeat,
-      //   encoder_type,
-      //   encoder : Box::new( encoder ),
-      //   output_filename : std::path::PathBuf::from( filename.as_ref() ),
-      // }
+      let encoder = Encoder::encoder_make( &encoder_type, width, height, frame_rate, repeat, &color_type, filename.as_ref() )?;
+
+      let instance = Self
+      {
+        width,
+        height,
+        frame_rate,
+        color_type,
+        repeat,
+        encoder_type,
+        encoder,
+        output_filename : std::path::PathBuf::from( filename.as_ref() ),
+      };
+      Ok( instance )
     }
 
-    // fn encoder_make( width : usize, height : usize, frame_rate : usize, &encoder_type : &EncoderType, &color_type : &ColorType ) -> impl EncodeData
-    // {
-    //   let encoder = match encoder_type
-    //   {
-    //     EncoderType::Gif => crate::encoders::Gif::new( width, height, frame_rate, color_type ),
-    //     EncoderType::Png => crate::encoders::Png::new( width, height, frame_rate, color_type ),
-    //     EncoderType::Mp4 => crate::encoders::Mp4::new( width, height, frame_rate, color_type ),
-    //     _ => panic!( "unknown encoder type \"{:?}\"", _ ),
-    //   }
-    //   encoder
-    // }
+    fn encoder_make
+    (
+      encoder_type : &EncoderType,
+      width : usize,
+      height : usize,
+      frame_rate : usize,
+      repeat : Option< usize >,
+      color_type : &ColorType,
+      filename : &str
+    ) -> Result< Box< dyn EncodeData >, Box< dyn std::error::Error > >
+    {
+      if encoder_type == &EncoderType::Gif
+      {
+        let encoder = Gif::new( width, height, frame_rate, repeat, color_type, filename )?;
+        return Ok( Box::new( encoder ) );
+      }
+      if encoder_type == &EncoderType::Png
+      {
+        let encoder = Png::new( width, height, frame_rate, repeat, color_type, filename )?;
+        return Ok( Box::new( encoder ) );
+      }
+      if encoder_type == &EncoderType::Mp4
+      {
+        let encoder = Mp4::new( width, height, frame_rate, repeat, color_type, filename )?;
+        return Ok( Box::new( encoder ) );
+      }
+
+      Err( Box::new( BasicError::new( format!( "unknown encoder type \"{:?}\"", encoder_type ) ) ) )
+    }
   }
 }
 

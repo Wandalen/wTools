@@ -60,7 +60,7 @@ pub( crate ) mod private
   impl EncodeData for Mp4
   {
     /// Encode bytes buffer to output.
-    fn encode( &mut self, data : impl AsRef< [ u8 ] > ) -> Result< (), Box<dyn std::error::Error > >
+    fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box<dyn std::error::Error > >
     {
       #[ allow( unreachable_patterns ) ]
       match self.color_type
@@ -72,7 +72,7 @@ pub( crate ) mod private
 
           let mut buf = vec![];
           let mut yuv = openh264::formats::RBGYUVConverter::new( self.width, self.height );
-          yuv.convert( data.as_ref() );
+          yuv.convert( data );
 
           let bitstream = self.encoder.encode( &yuv )?;
           bitstream.write_vec( &mut buf );
@@ -100,7 +100,15 @@ pub( crate ) mod private
   impl Mp4
   {
     /// Create an instance.
-    pub fn new( width : usize, height : usize, frame_rate : usize, _repeat : Option< usize >, color_type : &ColorType, filename : impl AsRef< str > ) -> Result< Self, Box< dyn std::error::Error > >
+    pub fn new
+    (
+      width : usize,
+      height : usize,
+      frame_rate : usize,
+      _repeat : Option< usize >,
+      color_type : &ColorType,
+      filename : impl AsRef< str >
+    ) -> Result< Self, Box< dyn std::error::Error > >
     {
       let path = filename.as_ref();
       let output_format = OutputFormat::guess_from_file_name( path )

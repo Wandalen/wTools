@@ -45,7 +45,7 @@ pub( crate ) mod private
   impl EncodeData for Png
   {
     /// Encode bytes buffer to output.
-    fn encode( &mut self, data : impl AsRef< [ u8 ] > ) -> Result< (), Box<dyn std::error::Error > >
+    fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box<dyn std::error::Error > >
     {
       #[ allow( unreachable_patterns ) ]
       match self.color_type
@@ -56,7 +56,7 @@ pub( crate ) mod private
           {
             width : self.width as _,
             height : self.height as _,
-            data : data.as_ref().to_vec(),
+            data : data.to_vec(),
             bit_depth : BitDepth::Eight,
             color_type : ::png::ColorType::RGB,
           };
@@ -117,7 +117,15 @@ pub( crate ) mod private
   impl Png
   {
     /// Create an instance.
-    pub fn new( width : usize, height : usize, frame_rate : usize, repeat : Option< usize >, color_type : &ColorType, filename : impl AsRef< str > ) -> Result< Self, Box< dyn std::error::Error > >
+    pub fn new
+    (
+      width : usize,
+      height : usize,
+      frame_rate : usize,
+      repeat : Option< usize >,
+      color_type : &ColorType,
+      filename : impl AsRef< str >
+    ) -> Result< Self, Box< dyn std::error::Error > >
     {
       let repeat = match repeat
       {

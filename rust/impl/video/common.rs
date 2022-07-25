@@ -13,6 +13,14 @@ pub( crate ) mod private
     Mp4,
   }
 
+  impl Default for EncoderType
+  {
+    fn default() -> Self
+    {
+      EncoderType::Mp4
+    }
+  }
+
   /// Select color encoding.
   #[ derive( Debug, Clone, PartialEq ) ]
   pub enum ColorType
@@ -34,7 +42,7 @@ pub( crate ) mod private
   pub trait EncodeData
   {
     /// Encode bytes buffer to output.
-    fn encode( &mut self, data : impl AsRef< [ u8 ] > ) -> Result< (), Box<dyn std::error::Error > >;
+    fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box<dyn std::error::Error > >;
     /// Finish encoding.
     fn flush( &mut self ) -> Result< (), Box<dyn std::error::Error > >;
   }
