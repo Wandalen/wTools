@@ -1,60 +1,8 @@
 use super::*;
 
-tests_impls! {
-  fn basic_minimp4_muxer()
-  {
-    use std::io::{ Cursor, Read, Seek, SeekFrom };
-    use super::minimp4::Mp4Muxer;
-    use super::openh264::encoder::{ Encoder, EncoderConfig };
-
-    let config = EncoderConfig::new( 100, 100 );
-    let mut encoder = Encoder::with_config( config ).unwrap();
-
-    let mut write_frame_to_buf = | buf: &mut Vec< u8 >, frame: &[ u8 ] |
-    {
-      let mut yuv = openh264::formats::RBGYUVConverter::new( 100, 100 );
-      yuv.convert( frame );
-
-      let bitstream = encoder.encode( &yuv ).unwrap();
-      bitstream.write_vec( buf );
-    };
-
-    let mut buf = Vec::new();
-
-    let mut frame = [ 255u8; 30_000 ];
-    frame[ 0 ] = 0;
-    frame[ 1 ] = 0;
-    frame[ 2 ] = 0;
-    write_frame_to_buf( &mut buf, frame.as_slice() );
-
-    for i in 1..100
-    {
-      frame[ ( i - 1 ) * 3 + ( i - 1 ) * 300 ] = 255;
-      frame[ ( i - 1 ) * 3 + 1 + ( i - 1 ) * 300 ] = 255;
-      frame[ ( i - 1 ) * 3 + 2 + ( i - 1 ) * 300 ] = 255;
-
-      frame[ i * 3 + i * 300 ] = 0;
-      frame[ i * 3 + 1 + i * 300 ] = 0;
-      frame[ i * 3 + 2 + i * 300 ] = 0;
-      write_frame_to_buf( &mut buf, frame.as_slice() );
-    }
-
-    let mut video_buffer = Cursor::new( Vec::new() );
-    let mut mp4muxer = Mp4Muxer::new( &mut video_buffer );
-    mp4muxer.init_video( 100, 100, false, "Moving circle." );
-    mp4muxer.write_video( &buf );
-    mp4muxer.close();
-
-    video_buffer.seek( SeekFrom::Start( 0 ) ).unwrap();
-    let mut video_bytes = Vec::new();
-    video_buffer.read_to_end( &mut video_bytes ).unwrap();
-
-    std::fs::write( "../../../target/out_minimp4.mp4", &video_bytes ).unwrap();
-  }
-
-  //
-
-  fn basic_ac_ffmpeg_muxer()
+tests_impls!
+{
+  fn basic()
   {
     use std::fs::File;
 
@@ -155,12 +103,38 @@ tests_impls! {
 
     muxer.flush().unwrap();
   }
+
+  //
+
+  fn basic_with_encoder() -> Result< (), Box< dyn std::error::Error > >
+  {
+    let mut encoder = super::encoders::Mp4::new( 100, 100, 30, None, &ColorType::Rgb, "../../../target/out_encoder.mp4" )?;
+    let mut buf = [ 255u8; 30_000 ];
+    buf[ 0 ] = 0;
+    buf[ 1 ] = 0;
+    buf[ 2 ] = 0;
+    encoder.encode( &buf )?;
+
+    for i in 1..100
+    {
+      buf[ ( i - 1 ) * 3 + ( i - 1 ) * 300 ] = 255;
+      buf[ ( i - 1 ) * 3 + 1 + ( i - 1 ) * 300 ] = 255;
+      buf[ ( i - 1 ) * 3 + 2 + ( i - 1 ) * 300 ] = 255;
+
+      buf[ i * 3 + i * 300 ] = 0;
+      buf[ i * 3 + 1 + i * 300 ] = 0;
+      buf[ i * 3 + 2 + i * 300 ] = 0;
+      encoder.encode( &buf )?;
+    }
+    encoder.flush()?;
+    Ok( () )
+  }
 }
 
 //
 
 tests_index!
 {
-  basic_minimp4_muxer,
-  basic_ac_ffmpeg_muxer,
+  basic,
+  basic_with_encoder,
 }
