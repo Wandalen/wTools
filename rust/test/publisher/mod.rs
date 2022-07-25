@@ -1,2 +1,0 @@
-
-mod publisher_test;

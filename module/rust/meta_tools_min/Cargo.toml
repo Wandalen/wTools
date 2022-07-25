@@ -1,0 +1,78 @@
+[package]
+name = "meta_tools_min"
+version = "0.2.13"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/meta_tools_min"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/meta_tools_min"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/meta_tools_min"
+description = """
+Collection of general purpose meta tools. Minimal Set.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/meta",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+default = [
+  "for_each",
+  "impls_index",
+  "mod_interface",
+  "collection_make",
+  "idents_concat",
+  "use_std",
+]
+full = [
+  "for_each",
+  "impls_index",
+  "mod_interface",
+  "collection_make",
+  "idents_concat",
+  "use_std",
+  "use_alloc",
+]
+use_std = []
+use_alloc = []
+
+collection_make = [ "literally" ]
+idents_concat = [ "paste" ]
+
+[lib]
+name = "meta_tools_min"
+path = "rust/impl/meta/meta_tools_min_lib.rs"
+
+[[test]]
+name = "meta_tools_min_test"
+path = "rust/test/meta/meta_tools_min_tests.rs"
+
+[[test]]
+name = "meta_tools_min_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
+# [[example]]
+# name = "meta_tools_trivial_sample"
+# path = "sample/rust/meta_tools_trivial_sample/src/main.rs"
+
+[dependencies]
+for_each = { version = "~0.1", path = "../../rust/for_each", optional = true, default-features = false }
+impls_index = { version = "~0.1", path = "../../rust/impls_index", optional = true, default-features = false }
+mod_interface = { version = "~0.1", path = "../../rust/mod_interface", optional = true, default-features = false }
+literally = { version = "~0.1", optional = true, default-features = false }
+paste = { version = "~1.0", optional = true, default-features = false }
+
+[dev-dependencies]
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

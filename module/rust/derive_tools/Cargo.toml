@@ -1,0 +1,156 @@
+[package]
+name = "derive_tools"
+version = "0.1.5"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/derive_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/derive_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/derive_tools"
+description = """
+Collection of derives which extend STD.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/derive",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+
+default = [
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_display",
+  "derive_from_str",
+
+  "derive_clone_dyn",
+  "derive_clone_dyn_use_std",
+
+  "use_std",
+]
+
+full = [
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_display",
+  "derive_from_str",
+
+  "derive_clone_dyn",
+  "derive_clone_dyn_use_std",
+
+  "use_std",
+]
+use_std = []
+use_alloc = []
+
+nightly = [ "derive_more/nightly" ]
+
+enable_track_caller = [ "derive_more/track-caller" ]
+
+derive_add_assign = [ "derive_more/add_assign" ]
+derive_add = [ "derive_more/add" ]
+derive_as_mut = [ "derive_more/as_mut" ]
+derive_as_ref = [ "derive_more/as_ref" ]
+derive_constructor = [ "derive_more/constructor" ]
+derive_deref = [ "derive_more/deref" ]
+derive_deref_mut = [ "derive_more/deref_mut" ]
+derive_error = [ "derive_more/error" ]
+derive_from = [ "derive_more/from" ]
+derive_index = [ "derive_more/index" ]
+derive_index_mut = [ "derive_more/index_mut" ]
+derive_into = [ "derive_more/into" ]
+derive_into_iterator = [ "derive_more/into_iterator" ]
+derive_iterator = [ "derive_more/iterator" ]
+derive_mul_assign = [ "derive_more/mul_assign" ]
+derive_mul = [ "derive_more/mul" ]
+derive_not = [ "derive_more/not" ]
+derive_sum = [ "derive_more/sum" ]
+derive_try_into = [ "derive_more/try_into" ]
+derive_is_variant = [ "derive_more/is_variant" ]
+derive_unwrap = [ "derive_more/unwrap" ]
+derive_convert_case = [ "derive_more/convert_case" ]
+
+derive_display = [ "parse-display" ]
+derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex", "parse-display/once_cell" ]
+
+derive_clone_dyn = [ "clone_dyn" ]
+derive_clone_dyn_use_std = [ "derive_clone_dyn", "clone_dyn/use_std" ]
+derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
+
+[lib]
+name = "derive_tools"
+path = "rust/impl/derive/derive_tools_lib.rs"
+
+[[test]]
+name = "derive_tools_test"
+path = "rust/test/derive/derive_tests.rs"
+
+[[test]]
+name = "derive_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
+[[example]]
+name = "derive_tools_trivial_sample"
+path = "sample/rust/derive_tools_trivial_sample/src/main.rs"
+
+[dependencies]
+derive_more = { version = "~0.99", default-features = false }
+parse-display = { version = "~0.5", optional = true, default-features = false }
+clone_dyn = { version = "~0.1", path = "../../rust/clone_dyn", optional = true, default-features = false }
+
+[dev-dependencies]
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

@@ -1,6 +1,6 @@
 [package]
 name = "meta_tools"
-version = "0.2.0"
+version = "0.2.18"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,6 +18,9 @@ Collection of general purpose meta tools.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/meta",
   "/Cargo.toml",
@@ -25,42 +28,61 @@ include = [
   "/License",
 ]
 
+[features]
+default = [
+  "for_each",
+  "impls_index",
+  "mod_interface",
+  "former",
+  "options",
+  "collection_make",
+  "idents_concat",
+  "use_std",
+]
+full = [
+  "for_each",
+  "impls_index",
+  "mod_interface",
+  "former",
+  "options",
+  "collection_make",
+  "idents_concat",
+  "use_std",
+]
+use_std = []
+use_alloc = []
+
+collection_make = [ "literally" ]
+options = [ "woptions" ]
+idents_concat = [ "paste" ]
+
 [lib]
 name = "meta_tools"
-path = "rust/impl/meta/lib.rs"
+path = "rust/impl/meta/meta_tools_lib.rs"
 
 [[test]]
 name = "meta_tools_test"
-path = "rust/test/meta/lib_test.rs"
+path = "rust/test/meta/meta_tools_tests.rs"
+
+[[test]]
+name = "meta_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "meta_tools_trivial"
-path = "sample/rust/meta_tools_trivial/src/main.rs"
-# qqq : for Rust dev : please add # aaa : done
+name = "meta_tools_trivial_sample"
+path = "sample/rust/meta_tools_trivial_sample/src/main.rs"
+# qqq : for Rust dev : add a sample with impls + index. discuss first
+# - all samples should be in md files and have short descriptions
 
 [dependencies]
-# former = { version = "~0.1", path = "../../rust/former" }
-# inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
-# is_slice = { version = "~0.1", path = "../../rust/is_slice" }
-# implements = { version = "~0.1", path = "../../rust/implements" }
-# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
-# werror = { version = "~0.1", path = "../../rust/werror" }
-# winterval = { version = "~0.1", path = "../../rust/winterval" }
-# proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
-literally = "~0.1"
-either = "~1.6"
-# # maplit = "~1.0"
-# regex = "1.5.4"
-# chrono = "0.4.19"
-# paste = "1.0.5"
-# anyhow = "1.0.48"
+for_each = { version = "~0.1", path = "../../rust/for_each", optional = true, default-features = false }
+impls_index = { version = "~0.1", path = "../../rust/impls_index", optional = true, default-features = false }
+mod_interface = { version = "~0.1", path = "../../rust/mod_interface", optional = true, default-features = false }
+former = { version = "~0.1", path = "../../rust/former", optional = true, default-features = false }
+woptions = { version = "~0.1", path = "../../rust/woptions", optional = true, default-features = false }
+literally = { version = "~0.1", optional = true, default-features = false }
+paste = { version = "~1.0", optional = true, default-features = false }
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
-# trybuild = { version = "~1.0", features = [ "diff" ] }
-# anyhow = "~1.0"
-# rustversion = "~1.0"
-# quote = { version = "~1.0" }
-# proc-macro2 = { version = "~1.0" }
-# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+

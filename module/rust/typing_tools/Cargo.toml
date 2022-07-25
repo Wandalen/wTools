@@ -1,6 +1,7 @@
+
 [package]
 name = "typing_tools"
-version = "0.1.1"
+version = "0.1.5"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,6 +19,9 @@ Collection of general purpose tools for type checking.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/typing",
   "/Cargo.toml",
@@ -25,49 +29,45 @@ include = [
   "/License",
 ]
 
+[features]
+default = [
+  "use_std",
+  "implements",
+  "is_slice",
+  "inspect_type",
+]
+full = [
+  "use_std",
+  "use_alloc",
+  "implements",
+  "is_slice",
+  "inspect_type",
+]
+use_std = []
+use_alloc = []
+
+nightly = [ "inspect_type/nightly" ]
+
 [lib]
 name = "typing_tools"
-path = "rust/impl/typing/lib.rs"
+path = "rust/impl/typing/typing_tools_lib.rs"
 
 [[test]]
 name = "typing_tools_test"
-path = "rust/test/typing/typing_tools_test.rs"
+path = "rust/test/typing/tests.rs"
+
+[[test]]
+name = "typing_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "typing_tools_trivial"
-path = "sample/rust/typing_tools_trivial/src/main.rs"
-# qqq : for Rust dev : please add # aaa : done
-
-[features]
-nightly = [ "inspect_type/nightly" ]
-default = []
-
-[package.metadata.docs.rs]
-all-features = true
-# rustdoc-args = []
+name = "typing_tools_trivial_sample"
+path = "sample/rust/typing_tools_trivial_sample/src/main.rs"
 
 [dependencies]
-# former = { version = "~0.1", path = "../../rust/former" }
-inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
-is_slice = { version = "~0.1", path = "../../rust/is_slice" }
-implements = { version = "~0.1", path = "../../rust/implements" }
-# typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
-# typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
-# werror = { version = "~0.1", path = "../../rust/werror" }
-# winterval = { version = "~0.1", path = "../../rust/winterval" }
-# proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
-# # maplit = "~1.0"
-# regex = "1.5.4"
-# chrono = "0.4.19"
-# paste = "1.0.5"
-# anyhow = "1.0.48"
+inspect_type = { version = "~0.1", path = "../../rust/inspect_type", optional = true, default-features = false }
+is_slice = { version = "~0.1", path = "../../rust/is_slice", optional = true, default-features = false }
+implements = { version = "~0.1", path = "../../rust/implements", optional = true, default-features = false }
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
-rustversion = "~1.0"
-# trybuild = { version = "~1.0", features = [ "diff" ] }
-# anyhow = "~1.0"
-# rustversion = "~1.0"
-# quote = { version = "~1.0" }
-# proc-macro2 = { version = "~1.0" }
-# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

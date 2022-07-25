@@ -1,0 +1,17 @@
+name : time_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # time_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/rust/time_tools/Cargo.toml'
+      module_name : 'time_tools'
+      commit_message : ${{ github.event.head_commit.message }}

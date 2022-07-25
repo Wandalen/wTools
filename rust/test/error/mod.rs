@@ -1,2 +1,7 @@
+#[ allow( unused_imports ) ]
+use super::*;
+#[ cfg( feature = "error" ) ]
+use wtools::error as TheModule;
 
-mod basic_test;
+#[ cfg( feature = "error" ) ]
+mod inc;

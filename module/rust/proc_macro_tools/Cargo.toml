@@ -1,6 +1,6 @@
 [package]
 name = "proc_macro_tools"
-version = "0.1.0"
+version = "0.1.18"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,6 +18,9 @@ Tools for writing procedural macroses.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/proc_macro",
   "/Cargo.toml",
@@ -25,26 +28,36 @@ include = [
   "/License",
 ]
 
+[features]
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
+use_std = []
+use_alloc = []
+
 [lib]
 name = "proc_macro_tools"
-path = "rust/impl/proc_macro/lib.rs"
+path = "rust/impl/proc_macro/proc_macro_tools_lib.rs"
 
 [[test]]
-name = "proc_macro"
-path = "rust/test/proc_macro/lib_test.rs"
+name = "proc_macro_tools_test"
+path = "rust/test/proc_macro/proc_macro_tools_tests.rs"
+
+[[test]]
+name = "proc_macro_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "proc_macro_trivial"
-path = "sample/rust/proc_macro_tools_trivial/src/main.rs"
+name = "proc_macro_tools_trivial_sample"
+path = "sample/rust/proc_macro_tools_trivial_sample/src/main.rs"
 
 [dependencies]
-proc-macro2 = { version = "~1.0" }
-syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }
+proc-macro2 = { version = "~1.0", features = [] }
+quote = { version = "~1.0", features = [] }
+syn = { version = "~1.0", features = [ "full", "extra-traits" ] }
 winterval = { version = "~0.1", path = "../../rust/winterval" }
-# inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
-# werror = { path = "../../rust/werror", version = "~0.1" }
+type_constructor = { version = "~0.1", path = "../../rust/type_constructor" }
 
 [dev-dependencies]
-trybuild = { version = "~1.0", features = [ "diff" ] }
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
-quote = "~1.0"
+# trybuild = { version = "~1.0", features = [ "diff" ] }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+

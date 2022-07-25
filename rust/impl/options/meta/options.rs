@@ -1,17 +1,11 @@
-#![ allow( unused_imports ) ]
-#![ allow( unused_mut ) ]
-#![ allow( dead_code ) ]
-#![ allow( unused_variables ) ]
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
 
-use meta_tools::*;
-use quote::{ quote, ToTokens, TokenStreamExt };
-use syn::parse::*;
-use syn::spanned::Spanned;
+use meta_tools_min::*;
+use proc_macro_tools::quote::{ ToTokens, TokenStreamExt };
+use proc_macro_tools::syn::parse::*;
+use proc_macro_tools::syn::spanned::Spanned;
 use proc_macro_tools::*;
 use std::collections::HashMap;
-use iter_tools::{ Itertools, process_results }; /* xxx : use wtools::iter_tool */
+use iter_tools::{ /* Itertools, */ process_results };
 use convert_case::{Case, Casing};
 
 pub type Result< T > = std::result::Result< T, syn::Error >;
@@ -56,18 +50,20 @@ impl quote::ToTokens for FnQuick
 pub enum Element
 {
   Fn( FnQuick ),
+  #[ allow( dead_code ) ]
   Signature( FnQuick ),
   Field( syn::Field ),
 }
 
 impl Parse for Element
 {
-  fn parse( input : ParseStream ) -> Result< Self >
+  fn parse( input : ParseStream< '_ > ) -> Result< Self >
   {
 
     let attrs : Vec< syn::Attribute > = input.call( syn::Attribute::parse_outer )?;
     let vis : syn::Visibility = input.parse()?;
 
+    // zzz : remove lookahead, use input
     let lookahead1 = input.lookahead1();
     if lookahead1.peek( syn::Token!{ fn } )
     {
@@ -77,7 +73,7 @@ impl Parse for Element
       if lookahead2.peek( syn::token::Brace )
       {
         let input2;
-        let brace_token : syn::token::Brace = syn::braced!( input2 in input );
+        let _brace_token : syn::token::Brace = syn::braced!( input2 in input );
         let block : proc_macro2::TokenStream = input2.parse()?;
         let fn_desc = FnQuick
         {
@@ -131,7 +127,7 @@ struct OptionsDescriptor
 
 impl Parse for OptionsDescriptor
 {
-  fn parse( input : ParseStream ) -> Result< Self >
+  fn parse( input : ParseStream< '_ > ) -> Result< Self >
   {
     let input2;
     let vis = input.parse()?;
@@ -163,13 +159,13 @@ impl Parse for OptionsDescriptor
         },
         Element::Field( f ) =>
         {
-          let key = f.ident.as_ref().ok_or_else( || syn_err!( &f.clone(), "Field does not have name: {}", quote!{ #f } ) )?.to_string();
+          let key = f.ident.as_ref().ok_or_else( || syn_err!( &f.clone(), "Field does not have name: {}", qt!{ #f } ) )?.to_string();
           fields_map.insert( key, f );
         },
       }
     }
 
-    let mut result = OptionsDescriptor
+    let result = OptionsDescriptor
     {
       vis,
       ident,
@@ -228,20 +224,20 @@ fn getter_gen( name : &str, field : &syn::Field ) -> Result< AccessorDescriptor 
   }
   else
   {
-    quote!{ & #ty }
+    qt!{ & #ty }
   };
 
-  let attr = quote!
+  let attr = qt!
   {
     #[ inline ]
   };
 
-  let signature = quote!
+  let signature = qt!
   {
     fn #name_ident( &self ) -> #ty2
   };
 
-  let body = quote!
+  let body = qt!
   {
     {
       &self.#name_ident
@@ -271,19 +267,19 @@ fn mutter_gen( name : &str, field : &syn::Field ) -> Result< AccessorDescriptor 
 
   // tree_print!( ty );
 
-  let ty2 = quote!{ &mut #ty };
+  let ty2 = qt!{ &mut #ty };
 
-  let attr = quote!
+  let attr = qt!
   {
     #[ inline ]
   };
 
-  let signature = quote!
+  let signature = qt!
   {
     fn #name_mut_ident( &mut self ) -> #ty2
   };
 
-  let body = quote!
+  let body = qt!
   {
     {
       &mut self.#name_ident
@@ -307,13 +303,13 @@ fn mutter_gen( name : &str, field : &syn::Field ) -> Result< AccessorDescriptor 
 fn perform_gen( options_descriptor : &OptionsDescriptor ) -> ( proc_macro2::TokenStream, proc_macro2::TokenStream )
 {
 
-  let mut perform = quote!{};
-  let mut attr_perform = quote!{};
+  let mut perform = qt!{};
+  let mut attr_perform = qt!{};
   if let Some( perform_fn ) = options_descriptor.methods_map.get( "perform" )
   {
     let sig = &perform_fn.sig;
-    attr_perform = quote!{ #[ perform( #sig ) ] };
-    perform = quote!
+    attr_perform = qt!{ #[ perform( #sig ) ] };
+    perform = qt!
     {
       #[ allow( unused_attributes ) ]
       #[ inline ]
@@ -328,7 +324,7 @@ fn perform_gen( options_descriptor : &OptionsDescriptor ) -> ( proc_macro2::Toke
 /// Options macro handler.
 ///
 
-pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+pub fn options( _attr : proc_macro::TokenStream, item : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
 
   let options_descriptor = match syn::parse::< OptionsDescriptor >( item )
@@ -345,7 +341,7 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
   let attrs = &options_descriptor.attrs;
 
   let mut fields_define = Vec::< &syn::Field >::new();
-  for ( name, field ) in options_descriptor.fields_map.iter()
+  for ( _name, field ) in options_descriptor.fields_map.iter()
   {
     fields_define.push( field );
   }
@@ -360,16 +356,16 @@ pub fn options( attr : proc_macro::TokenStream, item : proc_macro::TokenStream )
   let mutters : Vec< _ > = process_results( mutters, | iter | iter.collect() )?;
   let mutters_signatures : Vec< _ > = mutters.iter().map( | e | e.signature.clone() ).collect();
 
-  let result = quote!
+  let result = qt!
   {
 
     pub mod #name_ident
     {
 
-      #[cfg( feature = "in_wtools" )]
-      use ::wtools::options::*;
-      #[cfg( not( feature = "in_wtools" ) )]
-      use ::woptions::*;
+      // #[cfg( feature = "in_wtools" )]
+      // use ::wtools::options::*;
+      // #[cfg( not( feature = "in_wtools" ) )]
+      use super::Former;
 
       #( #attrs )*
       #[ derive( Former, PartialEq, Debug ) ]

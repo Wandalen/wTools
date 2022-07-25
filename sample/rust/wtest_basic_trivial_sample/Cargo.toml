@@ -1,0 +1,12 @@
+[package]
+name = "wtest_basic_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[[test]]
+name = "trivial_test"
+path = "test/trivial_test.rs"
+
+[dependencies]
+wtest_basic = { version = "*", path = "../../../module/rust/wtest_basic" }

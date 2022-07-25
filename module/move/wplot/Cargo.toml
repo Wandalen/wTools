@@ -1,0 +1,59 @@
+[package]
+name = "wplot"
+version = "0.1.7"
+edition = "2021"
+authors = ["Kostiantyn Wandalen <wandalen@obox.systems>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>" ]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/wplot"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/move/wplot"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/wplot/Readme.md"
+description = """
+Plot interface.
+"""
+categories = [ "command-line-interface", "command-line-utilities" ]
+keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/plot",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
+use_std = []
+use_alloc = []
+
+[lib]
+name = "wplot"
+path = "rust/impl/plot/wplot_lib.rs"
+
+[[test]]
+name = "wplot_test"
+path = "rust/test/plot/wplot_tests.rs"
+
+[[test]]
+name = "wplot_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
+[dependencies]
+wtools = { version = "~0.2", path = "../../rust/wtools" }
+image = { version = "~0.24" }
+open = { version = "~3.0" }
+wmath = { version = "~0.3" }
+rgb = { version = "~0.8" }
+once_cell = { version = "~1.12" }
+dashmap = { version = "~5.3" }
+num-traits = { version = "~0.2" }
+
+# total_float_wrap = { version = "~0.1" }
+
+[dev-dependencies]
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+

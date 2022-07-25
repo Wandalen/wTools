@@ -1,0 +1,17 @@
+name : iter_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # iter_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/rust/iter_tools/Cargo.toml'
+      module_name : 'iter_tools'
+      commit_message : ${{ github.event.head_commit.message }}

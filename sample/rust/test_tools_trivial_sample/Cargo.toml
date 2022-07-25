@@ -1,0 +1,12 @@
+[package]
+name = "test_tools_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[[test]]
+name = "trivial_test"
+path = "test/trivial_test.rs"
+
+[dependencies]
+test_tools = { version = "*", path = "../../../module/rust/test_tools" }

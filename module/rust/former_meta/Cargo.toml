@@ -1,6 +1,6 @@
 [package]
 name = "former_meta"
-version = "0.1.9"
+version = "0.1.12"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,6 +18,9 @@ Former - a variation of builder pattern. Implementation of its derive macro. Sho
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/former/meta",
   "/Cargo.toml",
@@ -25,18 +28,20 @@ include = [
   "/License",
 ]
 
+[features]
+default = []
+full = []
+
 [lib]
 proc-macro = true
 name = "former_meta"
-path = "rust/impl/former/meta/lib.rs"
+path = "rust/impl/former/meta/former_lib.rs"
 
 [dependencies]
 proc-macro2 = "~1.0"
 quote = "~1.0"
-# heck = "~0.4"
 syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
 iter_tools = { path = "../../rust/iter_tools", version = "~0.1" }
-werror = { path = "../../rust/werror", version = "~0.1" }
 proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
 
 [dev-dependencies]

@@ -1,52 +1,76 @@
-// #![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
-
-// pub use werror::*;
-use std::collections::HashMap;
-
-//
-
-pub trait PropsParseOptionsAdapter
+/// Private namespace of the module.
+pub( crate ) mod private
 {
-  fn parse_from_splits< I >( &self, mut _splits : I ) -> HashMap< Box< str >, Box< str > >
-  where
-    I : core::iter::Iterator,
-    < I as Iterator >::Item : std::fmt::Display,
-    < I as Iterator >::Item : AsRef< str >,
+  use std::collections::HashMap;
+
+  //
+
+  ///
+  /// Parse properties.
+  ///
+
+  pub trait PropsParseOptionsAdapter
   {
-    let result : HashMap< Box< str >, Box< str > > = HashMap::new();
-    result
-  }
-}
-
-#[ derive( Debug, PartialEq ) ]
-pub struct PropsParseOptions
-{
-  // result : HashMap< Box< str >, Box< str > >,
-}
-
-impl PropsParseOptions
-{
-  pub fn new() -> Self
-  {
-    Self
+    /// Parse from splits.
+    fn parse_from_splits< I >( &self, mut _splits : I ) -> HashMap< Box< str >, Box< str > >
+    where
+      I : core::iter::Iterator,
+      < I as Iterator >::Item : core::fmt::Display,
+      < I as Iterator >::Item : AsRef< str >,
     {
+      let result : HashMap< Box< str >, Box< str > > = HashMap::new();
+      result
     }
   }
-}
 
-impl PropsParseOptionsAdapter for PropsParseOptions
-{
+  ///
+  /// Properties parsing options.
+  ///
+
+  #[ derive( Debug, PartialEq ) ]
+  pub struct PropsParseOptions
+  {
+    // result : HashMap< Box< str >, Box< str > >,
+  }
+
+  impl PropsParseOptions
+  {
+    /// Create new parsing properties.
+    pub fn new() -> Self
+    {
+      Self
+      {
+      }
+    }
+  }
+
+  impl PropsParseOptionsAdapter for PropsParseOptions
+  {
+  }
+
+  //
+
+  ///
+  /// Parse properties from splits.
+  ///
+
+  pub fn parse_from_splits< I >( splits : I ) -> HashMap< Box< str >, Box< str > >
+  where
+    < I as Iterator >::Item : core::fmt::Display,
+    < I as Iterator >::Item : AsRef< str >,
+    I : core::iter::Iterator,
+  {
+    let options = PropsParseOptions::new();
+    options.parse_from_splits( splits )
+  }
 }
 
 //
 
-pub fn parse_from_splits< I >( splits : I ) -> HashMap< Box< str >, Box< str > >
-where
-  < I as Iterator >::Item : std::fmt::Display,
-  < I as Iterator >::Item : AsRef< str >,
-  I : core::iter::Iterator,
+crate::mod_interface!
 {
-  let options = PropsParseOptions::new();
-  options.parse_from_splits( splits )
+  // qqq : for Dima : bad : list all elements, don't use * for private /* aaa : Dmytro : expanded */
+  prelude use PropsParseOptionsAdapter;
+  prelude use PropsParseOptions;
+  prelude use parse_from_splits;
 }

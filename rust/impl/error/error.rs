@@ -1,16 +1,15 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
+///
+/// Alias for std::error::BasicError.
+///
 
-/// Alias for std::error::Error.
-
-pub use std::error::Error as ErrorAdapter;
+pub use std::error::Error as ErrorInterface;
 
 ///
 /// Macro to generate error.
 ///
-/// # Sample
+/// ### Sample
 /// ```
-/// # use werror::*;
+/// # use error_tools::*;
 /// err!( "No attr" );
 /// ```
 ///
@@ -21,29 +20,29 @@ macro_rules! err
 
   ( $msg : expr ) =>
   {
-    $crate::Error::new( $msg )
+    $crate::BasicError::new( $msg )
   };
   ( $msg : expr, $( $arg : expr ),+ ) =>
   {
-    $crate::Error::new( format!( $msg, $( $arg ),+ ) )
+    $crate::BasicError::new( format!( $msg, $( $arg ),+ ) )
   };
 
 }
 
-/// baic implementation of generic Error
+/// baic implementation of generic BasicError
 
 #[ derive( core::fmt::Debug, core::clone::Clone, core::cmp::PartialEq ) ]
-pub struct Error
+pub struct BasicError
 {
   msg : String,
 }
 
-impl Error
+impl BasicError
 {
   /// Constructor expecting message with description.
-  pub fn new< Msg : Into< String > >( msg : Msg ) -> Error
+  pub fn new< Msg : Into< String > >( msg : Msg ) -> BasicError
   {
-    Error { msg : msg.into() }
+    BasicError { msg : msg.into() }
   }
   /// Message with description getter.
   pub fn msg( &self ) -> &String
@@ -52,18 +51,20 @@ impl Error
   }
 }
 
-impl core::fmt::Display for Error
+impl core::fmt::Display for BasicError
 {
-  fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result
+  fn fmt(&self, f: &mut core::fmt::Formatter< '_ >) -> core::fmt::Result
   {
     write!( f, "{}", self.msg )
   }
 }
 
-impl std::error::Error for Error
+impl ErrorInterface for BasicError
 {
   fn description( &self ) -> &str
   {
     &self.msg
   }
 }
+
+// qqq : write standard mod interface without using mod_interface

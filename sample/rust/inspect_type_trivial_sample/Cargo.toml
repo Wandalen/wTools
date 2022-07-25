@@ -1,0 +1,13 @@
+[package]
+name = "inspect_type_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[features]
+nightly = [ "inspect_type/nightly" ]
+default = []
+
+[dependencies]
+inspect_type = { version = "*", path = "../../../module/rust/inspect_type" }
+# rustversion = "~1.0"

@@ -1,42 +1,18 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
 
 //!
 //! Library of utility to operate packages from a command line.
 //!
 
-///
-/// Work with bools.
-///
-
-pub mod bool;
-
-///
-/// Manipulate over files.
-///
-
-pub mod files;
-
-///
-/// Manipulate over manifest.
-///
-
-pub mod manifest;
-
-///
-/// Work with crate on `crates.io`.
-///
-
-pub mod http;
-
-///
-/// Run external processes.
-///
-
-pub mod process;
-
-///
-/// Make sha-1 hash for data.
-///
-
-pub mod digest;
+crate::mod_interface!
+{
+  #[ cfg( feature = "use_std" ) ]
+  orphan mod
+  {
+    bool,
+    files,
+    http,
+    manifest,
+    process,
+    digest,
+  };
+}

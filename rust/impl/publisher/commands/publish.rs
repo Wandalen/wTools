@@ -1,24 +1,23 @@
 
-use crate::*;
+use crate::protected::*;
 use crate::wpublisher::bool::*;
-use wca::*;
 use std::env;
 use std::fs;
-use std::fmt::Write;
+use core::fmt::Write;
 use std::path::PathBuf;
 use toml_edit::value;
 use cargo_metadata::MetadataCommand;
-use wtools::error::Error;
+use wtools::error::BasicError;
 
 ///
 /// Publish package.
 ///
 
-pub fn publish( instruction : &instruction::Instruction ) -> Result<(), Error>
+pub fn publish( instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
 {
   let current_path = env::current_dir().unwrap();
 
-  let paths = files::find( &current_path, instruction.subject.split( " " ).collect::<Vec<&str>>().as_slice() );
+  let paths = crate::files::find( &current_path, instruction.subject.split( " " ).collect::<Vec<&str>>().as_slice() );
   let mut paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::<Vec<PathBuf>>();
   if paths.is_empty() /* && !path.glob_is( &instruction.subject ) qqq : implement `glob_is` */
   {
@@ -37,8 +36,8 @@ pub fn publish( instruction : &instruction::Instruction ) -> Result<(), Error>
     let mut package_dir = manifest.manifest_path.clone();
     package_dir.pop();
 
-    let output = process::start_sync( "cargo package", &package_dir ).unwrap();
-    process::log_output( &output );
+    let output = crate::process::start_sync( "cargo package", &package_dir ).unwrap();
+    crate::process::log_output( &output );
 
     let name = &data[ "package" ][ "name" ].clone();
     let name = name.as_str().unwrap();
@@ -69,27 +68,27 @@ pub fn publish( instruction : &instruction::Instruction ) -> Result<(), Error>
       {
         let mut buf = String::new();
         write!( &mut buf, "git commit --dry-run -am \"{} v{}\"", name, version ).unwrap();
-        let output = process::start_sync( &buf, &current_path ).unwrap();
-        process::log_output( &output );
+        let output = crate::process::start_sync( &buf, &current_path ).unwrap();
+        crate::process::log_output( &output );
 
-        let output = process::start_sync( "git push --dry-run", &current_path ).unwrap();
-        process::log_output( &output );
+        let output = crate::process::start_sync( "git push --dry-run", &current_path ).unwrap();
+        crate::process::log_output( &output );
 
-        let output = process::start_sync( "cargo publish --dry-run --allow-dirty", &package_dir ).unwrap();
-        process::log_output( &output );
+        let output = crate::process::start_sync( "cargo publish --dry-run --allow-dirty", &package_dir ).unwrap();
+        crate::process::log_output( &output );
       }
       else
       {
         let mut buf = String::new();
         write!( &mut buf, "git commit -am \"{} v{}\"", name, version ).unwrap();
-        let output = process::start_sync( &buf, &current_path ).unwrap();
-        process::log_output( &output );
+        let output = crate::process::start_sync( &buf, &current_path ).unwrap();
+        crate::process::log_output( &output );
 
-        let output = process::start_sync( "git push", &current_path ).unwrap();
-        process::log_output( &output );
+        let output = crate::process::start_sync( "git push", &current_path ).unwrap();
+        crate::process::log_output( &output );
 
-        let output = process::start_sync( "cargo publish", &package_dir ).unwrap();
-        process::log_output( &output );
+        let output = crate::process::start_sync( "cargo publish", &package_dir ).unwrap();
+        crate::process::log_output( &output );
       }
     }
     else

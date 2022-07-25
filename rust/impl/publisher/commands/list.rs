@@ -1,12 +1,12 @@
-use crate::*;
+use crate::protected::*;
 use std::env;
-use wtools::error::Error;
+use wtools::error::BasicError;
 
 ///
 /// List packages.
 ///
 
-pub fn list( instruction : &instruction::Instruction ) -> Result<(), Error>
+pub fn list( instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
 {
   let current_path = env::current_dir().unwrap();
 

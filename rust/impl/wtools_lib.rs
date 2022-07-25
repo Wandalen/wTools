@@ -1,87 +1,186 @@
-#![ warn( missing_docs ) ]
+#![ cfg_attr( not( feature = "use_std" ), no_std ) ] // zzz
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico")]
+#![ doc( html_root_url = "https://docs.rs/wtools/latest/wtools/")]
+#![ warn( rust_2018_idioms ) ]
 #![ warn( missing_debug_implementations ) ]
-// #![ feature( concat_idents ) ]
+#![ warn( missing_docs ) ]
+
+// #![ feature( type_name_of_val ) ]
+// #![ feature( trace_macros ) ]
 
 //!
 //! wTools - Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 //!
-//! # Sample
-//! ```
-//! use wtools::*;
-//!
-//! fn main()
-//! {
-//!   println!( "implements!( 13_i32 => Copy ) : {}", implements!( 13_i32 => Copy ) );
-//!   println!( "implements!( Box::new( 13_i32 ) => Copy ) : {}", implements!( Box::new( 13_i32 ) => Copy ) );
-//! }
-//! ```
 
-///
-/// Meta tools.
-///
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-pub mod meta;
-pub use meta::*;
+/* zzz : use skeptic? */
 
-///
-/// Type checking tools.
-///
-
-pub mod typing;
-pub use typing::*;
-
-///
-/// Exporting/importing serialize/deserialize encoding/decoding macros, algorithms and structures for that.
-///
-
-pub mod convert;
-pub use convert::*;
-
-///
-/// Collection of general purpose time tools.
-///
-
-pub mod time;
-
-//
-
-pub use werror as error;
-
-// #[ cfg( feature = "with_proc_macro" ) ]
-// pub use proc_macro_tools as proc_macro;
-
-pub use former as former;
-pub use woptions as options;
-pub use winterval as interval;
-pub use wstring_tools as string;
-
-///
-/// Prelude to use: `use wtools::prelude::*`.
-///
-
-pub mod prelude
+/// Dependencies.
+pub mod dependency
 {
-  pub use super::*;
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  pub use ::meta_tools::former;
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  pub use ::meta_tools::options;
+  #[ cfg( feature = "meta" ) ]
+  pub use ::meta_tools;
+  #[ cfg( feature = "mem" ) ]
+  pub use ::mem_tools;
+  // zzz
+  // #[ cfg( feature = "impls_index" ) ]
+  // pub use ::impls_index;
+  // #[ cfg( feature = "mod_interface" ) ]
+  // pub use ::mod_interface;
+  #[ cfg( feature = "typing" ) ]
+  pub use ::typing_tools;
+  #[ cfg( feature = "time" ) ]
+  pub use ::time_tools;
+  #[ cfg( feature = "string" ) ]
+  pub use ::strs_tools;
+  #[ cfg( feature = "error" ) ]
+  pub use ::error_tools;
+  // #[ cfg( feature = "winterval" ) ]
+  // pub use ::winterval;
+  #[ cfg( feature = "derive" ) ]
+  pub use ::derive_tools;
+  #[ cfg( feature = "diagnostics" ) ]
+  pub use ::diagnostics_tools;
+
 }
 
-///
-/// Dependencies.
-///
-
-pub mod dependencies
+/// Protected namespace of the module.
+pub mod protected
 {
+  #[ doc( inline ) ]
+  pub use super::orphan::*;
 
-  pub use ::former;
-  pub use ::woptions;
-  pub use ::meta_tools;
-  pub use ::typing_tools;
-  pub use ::time_tools;
-  pub use ::wstring_tools;
-  pub use ::werror;
-  pub use ::winterval;
-  pub use ::parse_display; /* xxx : move to stringing */
+  #[ cfg( feature = "iter" ) ]
+  #[ doc( inline ) ]
+  pub use ::iter_tools as iter;
+  #[ cfg( feature = "meta" ) ]
+  #[ doc( inline ) ]
+  pub use ::meta_tools as meta;
+  #[ cfg( feature = "mem" ) ]
+  #[ doc( inline ) ]
+  pub use ::mem_tools as mem;
+  #[ cfg( feature = "typing" ) ]
+  #[ doc( inline ) ]
+  pub use ::typing_tools as typing;
+  #[ cfg( feature = "diagnostics" ) ]
+  #[ doc( inline ) ]
+  pub use ::diagnostics_tools as diagnostics;
+  #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
+  #[ doc( inline ) ]
+  pub use ::data_type as dt;
+  #[ cfg( feature = "time" ) ]
+  #[ doc( inline ) ]
+  pub use ::time_tools as time;
+  #[ cfg( feature = "error" ) ]
+  #[ doc( inline ) ]
+  pub use ::error_tools as error;
+  #[ cfg( feature = "string" ) ]
+  #[ doc( inline ) ]
+  pub use ::strs_tools as string;
+  #[ cfg( feature = "derive" ) ]
+  #[ doc( inline ) ]
+  pub use ::derive_tools as derive;
 
-  // #[ cfg( debug_assertions ) ]
-  // pub use ::wtest_basic;
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  #[ doc( inline ) ]
+  pub use ::meta_tools::former as former;
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  #[ doc( inline ) ]
+  pub use ::meta_tools::options as options;
+}
 
+#[ doc( inline ) ]
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  #[ doc( inline ) ]
+  pub use super::exposed::*;
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  #[ doc( inline ) ]
+  pub use super::prelude::*;
+  #[ cfg( feature = "iter" ) ]
+  pub use super::iter::exposed::*;
+  #[ cfg( feature = "meta" ) ]
+  pub use super::meta::exposed::*;
+  #[ cfg( feature = "mem" ) ]
+  pub use super::mem::exposed::*;
+  #[ cfg( feature = "typing" ) ]
+  pub use super::typing::exposed::*;
+  #[ cfg( feature = "diagnostics" ) ]
+  pub use super::diagnostics::exposed::*;
+  #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
+  pub use super::dt::exposed::*;
+  #[ cfg( feature = "time" ) ]
+  pub use super::time::exposed::*;
+  #[ cfg( feature = "error" ) ]
+  pub use super::error::exposed::*;
+  #[ cfg( feature = "string" ) ]
+  pub use super::string::exposed::*;
+  #[ cfg( feature = "derive" ) ]
+  pub use super::derive::exposed::*;
+
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  pub use super::former::exposed::*;
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  pub use super::options::exposed::*;
+
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+pub mod prelude
+{
+  #[ cfg( feature = "iter" ) ]
+  #[ doc( inline ) ]
+  pub use super::iter::prelude::*;
+  #[ cfg( feature = "meta" ) ]
+  #[ doc( inline ) ]
+  pub use super::meta::prelude::*;
+  #[ cfg( feature = "mem" ) ]
+  #[ doc( inline ) ]
+  pub use super::mem::prelude::*;
+  #[ cfg( feature = "typing" ) ]
+  #[ doc( inline ) ]
+  pub use super::typing::prelude::*;
+  #[ cfg( feature = "diagnostics" ) ]
+  #[ doc( inline ) ]
+  pub use super::diagnostics::prelude::*;
+  #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
+  #[ doc( inline ) ]
+  pub use super::dt::prelude::*;
+  #[ cfg( feature = "time" ) ]
+  #[ doc( inline ) ]
+  pub use super::time::prelude::*;
+  #[ cfg( feature = "error" ) ]
+  #[ doc( inline ) ]
+  pub use super::error::prelude::*;
+  #[ cfg( feature = "string" ) ]
+  #[ doc( inline ) ]
+  pub use super::string::prelude::*;
+
+  #[ cfg( feature = "derive" ) ]
+  #[ doc( inline ) ]
+  pub use super::derive::prelude::*;
+  // zzz
+  #[ cfg( feature = "derive_clone_dyn" ) ]
+  #[ doc( inline ) ]
+  pub use super::derive::prelude::clone_dyn;
+
+  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  #[ doc( inline ) ]
+  pub use super::former::prelude::*;
+  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  #[ doc( inline ) ]
+  pub use super::options::prelude::*;
 }

@@ -1,0 +1,8 @@
+[package]
+name = "fs_tools_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+fs_tools = { version = "~0.1", path = "../../../module/move/fs_tools" }

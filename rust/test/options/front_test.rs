@@ -9,7 +9,7 @@
 //   // t.pass( "rust/test/former/test/basic_manual.rs" );
 // }
 
-// /* xxx : implement module::mod_at */
+// /* zzz : implement module::mod_at */
 //
 // mods_at!{ "./all"
 // {
@@ -18,9 +18,16 @@
 //   mod without_perform;
 // }}
 
-mod basic_manual { include!( "./all/basic_manual.rs" ); }
-mod basic { include!( "./all/basic.rs" ); }
-mod without_perform { include!( "./all/without_perform.rs" ); }
-/* xxx : use macro mod_at */
+use super::*;
+use super::Former;
+
+#[ path = "./all/basic_manual.rs" ]
+mod basic_manual;
+#[ path = "./all/basic.rs" ]
+mod basic;
+#[ path = "./all/without_perform.rs" ]
+mod without_perform;
+
+/* zzz : use macro mod_at */
 // mod custom_getter_manual { include!( "./all/custom_getter_manual.rs" ); }
 // mod custom_getter { include!( "./all/custom_getter.rs" ); }

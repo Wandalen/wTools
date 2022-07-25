@@ -1,3 +1,6 @@
+#[ cfg( feature = "string" ) ]
+use super::*;
+use TheModule::string as TheModule;
 
-mod split_test;
-mod parse_test;
+#[ cfg( feature = "string" ) ]
+mod inc;

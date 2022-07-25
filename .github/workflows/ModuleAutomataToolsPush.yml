@@ -1,0 +1,26 @@
+name : automata_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # automata_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/move/automata_tools/Cargo.toml'
+      module_name : 'automata_tools'
+      commit_message : ${{ github.event.head_commit.message }}
+
+  # wautomata
+
+  test_wautomata :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/alias/wautomata/Cargo.toml'
+      module_name : 'wautomata'
+      commit_message : ${{ github.event.head_commit.message }}

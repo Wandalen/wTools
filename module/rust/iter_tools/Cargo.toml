@@ -1,6 +1,6 @@
 [package]
 name = "iter_tools"
-version = "0.1.0"
+version = "0.1.4"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -13,10 +13,13 @@ documentation = "https://docs.rs/iter_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/iter_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/iter_tools"
 description = """
-Collection of general purpose tools to iterate. Currently it simply reexport itertools.
+Collection of general purpose tools to iterate. Currently it simply reexports itertools.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
 
 include = [
   "/rust/impl/iter",
@@ -25,21 +28,30 @@ include = [
   "/License",
 ]
 
+[features]
+default = [ "use_std" ]
+full = [ "use_std", "use_alloc" ]
+use_std = [ "itertools/use_std" ]
+use_alloc = [ "itertools/use_alloc" ]
+
 [lib]
 name = "iter_tools"
-path = "rust/impl/iter/lib.rs"
+path = "rust/impl/iter/iter_tools_lib.rs"
 
 [[test]]
 name = "iter_tools_test"
-path = "rust/test/iter/lib_test.rs"
+path = "rust/test/iter/tests.rs"
+
+[[test]]
+name = "iter_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "iter_tools_trivial"
-path = "sample/rust/iter_tools_trivial/src/main.rs"
-# qqq : for Rust dev : please add # aaa : done
+name = "iter_tools_trivial_sample"
+path = "sample/rust/iter_tools_trivial_sample/src/main.rs"
 
 [dependencies]
-itertools = "~0.10.3"
+itertools = { version = "~0.10.3" }
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

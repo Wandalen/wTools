@@ -1,9 +1,0 @@
-[package]
-name = "time_tools_trivial_sample"
-version = "0.0.0"
-edition = "2021"
-publish = false
-
-[dependencies]
-time_tools = "*"
-chrono = "*"

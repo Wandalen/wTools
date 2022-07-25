@@ -1,31 +1,16 @@
-// #![ feature( type_name_of_val ) ]
-#![ warn( missing_docs ) ]
+#![ cfg_attr( not( feature = "use_std" ), no_std ) ]
+#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
+#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
+#![ doc( html_root_url = "https://docs.rs/inspect_type/latest/inspect_type/" ) ]
+#![ warn( rust_2018_idioms ) ]
 #![ warn( missing_debug_implementations ) ]
+#![ warn( missing_docs ) ]
 
+//!
 //! Diagnostic-purpose tools to inspect type of a variable and its size.
 //!
-//! Sample
-//! ```
-//!# // #![ feature( type_name_of_val ) ]
-//! #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
-//!
-//! use inspect_type::*;
-//!
-//! #[ cfg( feature = "nightly" ) ]
-//! fn main()
-//! {
-//!   inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
-//!   // < sizeof( &[1, 2, 3][..] : &[i32] ) = 16
-//!   inspect_type_of!( &[ 1, 2, 3 ] );
-//!   // < sizeof( &[1, 2, 3] : &[i32; 3] ) = 8
-//! }
-//!
-//!# #[ cfg( not( feature = "nightly" ) ) ]
-//!# fn main()
-//!# {
-//!# }
-//!
-//! ```
+
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ cfg( feature = "nightly" ) ]
 mod nightly
@@ -72,7 +57,42 @@ mod nightly
     }}
   }
 
+  pub use inspect_to_str_type_of;
+  pub use inspect_type_of;
 }
 
-#[ cfg( feature = "nightly" ) ]
-pub use nightly::*;
+// #[ cfg( feature = "nightly" ) ]
+// #[ doc( inline ) ]
+// pub use nightly::*;
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  #[ doc( inline ) ]
+  pub use super::orphan::*;
+}
+
+#[ doc( inline ) ]
+pub use protected::*;
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  #[ doc( inline ) ]
+  pub use super::exposed::*;
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  #[ doc( inline ) ]
+  pub use super::prelude::*;
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+pub mod prelude
+{
+  #[ cfg( feature = "nightly" ) ]
+  #[ doc( inline ) ]
+  pub use super::nightly::*;
+}

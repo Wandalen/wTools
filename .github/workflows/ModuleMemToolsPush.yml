@@ -1,0 +1,17 @@
+name : mem_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # mem_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/rust/mem_tools/Cargo.toml'
+      module_name : 'mem_tools'
+      commit_message : ${{ github.event.head_commit.message }}

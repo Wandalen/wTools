@@ -1,66 +1,24 @@
-#![ warn( missing_docs ) ]
-#![ warn( missing_debug_implementations ) ]
 
 //!
 //! Library of utility to work with commands.
 //!
 
-///
-/// Publish module.
-///
-
-mod publish;
-
-///
-/// List packages.
-///
-
-mod list;
-
-///
-/// Form CA commands.
-///
-
-pub fn commands_form() -> std::collections::HashMap<String, wca::command::Command>
+crate::mod_interface!
 {
-  let publish_command = wca::CommandOptions::default()
-  .hint( "Publish package on `crates.io`." )
-  .long_hint( "Publish package on `crates.io`." )
-  .phrase( "publish" )
-  .subject_hint( "A path to package. Should be a directory with file `Cargo.toml`." )
-  .property_hint( "dry", "Run command dry. Default is false." )
-  .property_hint( "verbosity", "Setup level of verbosity." )
-  .property_alias( "verbosity", "v" )
-  .routine( &publish::publish )
-  .form();
+  /// Publish module.
+  #[ cfg( feature = "use_std" ) ]
+  prelude mod publish;
+  /// List packages.
+  #[ cfg( feature = "use_std" ) ]
+  prelude mod list;
+  /// Init aggregator commands.
+  #[ cfg( feature = "use_std" ) ]
+  prelude mod init;
 
-  let list_command = wca::CommandOptions::default()
-  .hint( "List packages." )
-  .long_hint( "List packages" )
-  .phrase( "list" )
-  .subject_hint( "A path to directory with packages. Should be a glob." )
-  .routine( &list::list )
-  .form();
-
-  let ca_map = std::collections::HashMap::from
-  ([
-    ( ".publish".to_string(), publish_command ),
-    ( ".list".to_string(), list_command ),
-  ]);
-
-  ca_map
+  #[ cfg( feature = "use_std" ) ]
+  protected use super::init::*;
 }
 
-///
-/// Print help from map of commands.
-///
-
-pub fn print_help( ca_map : &std::collections::HashMap<String, wca::Command> ) -> Result<(), wtools::error::Error>
-{
-  println!( "Illformed command" );
-  for ( command_name, command_descriptor ) in ca_map.iter()
-  {
-    println!("{} - {}", command_name, command_descriptor.hint );
-  }
-  Ok( () )
-}
+// qqq : for Dima : remove. that could be inside mod_interface
+// #[ cfg( feature = "use_std" ) ]
+// pub use init::*;

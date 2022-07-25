@@ -1,10 +1,9 @@
+use super::Former;
+
 mod split
 {
 
-  #[cfg( feature = "in_wtools" )]
-  use wtools::former::Former;
-  #[cfg( not( feature = "in_wtools" ) )]
-  use former::Former;
+  use super::Former;
 
   #[ derive( PartialOrd ) ]
   #[ derive( Former, PartialEq, Debug ) ]
@@ -87,7 +86,7 @@ mod split
   pub mod prelude
   {
     pub use super::OptionsAdapter as SplitOptionsAdapter;
-    /* xxx : cover by a test */
+    /* zzz : cover by a test */
   }
 
 }

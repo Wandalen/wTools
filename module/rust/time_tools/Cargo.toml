@@ -1,6 +1,6 @@
 [package]
 name = "time_tools"
-version = "0.1.0"
+version = "0.1.5"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,6 +18,9 @@ Collection of general purpose time tools.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata.docs.rs]
+all-features = true
+
 include = [
   "/rust/impl/time",
   "/Cargo.toml",
@@ -25,40 +28,40 @@ include = [
   "/License",
 ]
 
+[features]
+default = [
+  "use_std",
+  "now",
+]
+full = [
+  "use_std",
+  "use_alloc",
+  "now",
+]
+use_std = []
+use_alloc = []
+
+now = [ "use_std", "chrono", "chrono/default" ]
+
 [lib]
 name = "time_tools"
-path = "rust/impl/time/lib.rs"
+path = "rust/impl/time/time_tools_lib.rs"
 
 [[test]]
 name = "time_tools_test"
-path = "rust/test/time/lib_test.rs"
+path = "rust/test/time/tests.rs"
+
+[[test]]
+name = "time_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 [[example]]
-name = "time_tools_trivial"
-path = "sample/rust/time_tools_trivial/src/main.rs"
-# qqq : for Rust dev : please add # aaa : done
+name = "time_tools_trivial_sample"
+path = "sample/rust/time_tools_trivial_sample/src/main.rs"
 
 [dependencies]
-# former = { version = "~0.1", path = "../../rust/former" }
-# inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
-# is_slice = { version = "~0.1", path = "../../rust/is_slice" }
-# implements = { version = "~0.1", path = "../../rust/implements" }
-# time_tools = { version = "~0.1", path = "../../rust/time_tools" }
-# time_tools = { version = "~0.1", path = "../../rust/time_tools" }
-# werror = { version = "~0.1", path = "../../rust/werror" }
-# winterval = { version = "~0.1", path = "../../rust/winterval" }
-# proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools", optional = true }
-# # maplit = "~1.0"
-# regex = "1.5.4"
-chrono = "~0.4"
-# paste = "1.0.5"
-# anyhow = "1.0.48"
+chrono = { version = "~0.4", optional = true, default-features = false }
 
 [dev-dependencies]
-wtest_basic = { version = "~0.1", path = "../../rust/wtest_basic" }
-# trybuild = { version = "~1.0", features = [ "diff" ] }
-# anyhow = "~1.0"
-# rustversion = "~1.0"
-# quote = { version = "~1.0" }
-# proc-macro2 = { version = "~1.0" }
-# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing" ] }
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+

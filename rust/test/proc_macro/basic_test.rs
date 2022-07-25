@@ -1,18 +1,15 @@
-// #![ feature( proc_macro_span ) ]
-// #![ feature( type_name_of_val ) ]
 
-use wtest_basic::*;
-use proc_macro_tools as TheModule;
-use quote::*;
-
-use proc_macro_tools::dependencies::*;
+use super::*;
 
 //
 
-fn _tree_export_str_basic()
+tests_impls!
 {
+  #[ test ]
+  fn tree_diagnostics_str_basic()
+  {
 
-  let exp = r#"code : std :: collections :: HashMap < i32 , i32 > :
+    let exp = r#"code : std :: collections :: HashMap < i32 , i32 > :
 TokenStream [
     Ident {
         sym: std,
@@ -58,347 +55,377 @@ TokenStream [
         spacing: Alone,
     },
 ]"#;
-  let code = quote!( std::collections::HashMap< i32, i32 > );
-  let got = TheModule::tree_export_str!( code );
-  // println!( "{}", got );
-  assert_eq!( got, exp );
-  let got = TheModule::tree_print!( code );
-  // println!( "{}", got );
-  assert_eq!( got, exp );
+    let code = qt!( std::collections::HashMap< i32, i32 > );
+    let got = TheModule::tree_diagnostics_str!( code );
+    // println!( "{}", got );
+    a_id!( got, exp );
+    let got = TheModule::tree_print!( code );
+    // println!( "{}", got );
+    a_id!( got, exp );
 
-}
-
-//
-
-fn _syn_err_basic()
-{
-
-  // test.case( "basic" );
-  let err = TheModule::syn_err!( "abc" );
-  assert_eq!( err.to_string(), "abc" );
-
-  // test.case( "with span" );
-  let code = quote!( core::option::Option< i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let err = TheModule::syn_err!( tree_type, "abc" );
-  assert_eq!( err.to_string(), "abc" );
-  // assert_eq!( err.span(), syn::spanned::Spanned::span( &tree_type ) );
-
-  // test.case( "with span and args" );
-  let code = quote!( core::option::Option< i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let err = TheModule::syn_err!( tree_type, "abc{}{}", "def", "ghi" );
-  assert_eq!( err.to_string(), "abcdefghi" );
-  // assert_eq!( err.span(), syn::spanned::Spanned::span( &tree_type ) );
-
-  // test.case( "without span" );
-  let err = TheModule::syn_err!( _, "abc" );
-  assert_eq!( err.to_string(), "abc" );
-
-  // test.case( "without span, but with args" );
-  let err = TheModule::syn_err!( _, "abc{}{}", "def", "ghi" );
-  assert_eq!( err.to_string(), "abcdefghi" );
-
-}
-
-//
-
-fn _type_container_kind_basic()
-{
-
-  // test.case( "core::option::Option< i32 >" );
-  let code = quote!( core::option::Option< i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_container_kind( &tree_type );
-  assert_eq!( got, TheModule::ContainerKind::No );
-
-  // test.case( "core::option::Option< Vec >" );
-  let code = quote!( core::option::Option< Vec > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_container_kind( &tree_type );
-  assert_eq!( got, TheModule::ContainerKind::No );
-
-  // test.case( "alloc::vec::Vec< i32 >" );
-  let code = quote!( alloc::vec::Vec< i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_container_kind( &tree_type );
-  assert_eq!( got, TheModule::ContainerKind::Vector );
-
-  // test.case( "alloc::vec::Vec" );
-  let code = quote!( alloc::vec::Vec );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_container_kind( &tree_type );
-  assert_eq!( got, TheModule::ContainerKind::Vector );
-
-  // test.case( "std::vec::Vec< i32 >" );
-  let code = quote!( std::vec::Vec< i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_container_kind( &tree_type );
-  assert_eq!( got, TheModule::ContainerKind::Vector );
-
-  // test.case( "std::vec::Vec" );
-  let code = quote!( std::vec::Vec );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_container_kind( &tree_type );
-  assert_eq!( got, TheModule::ContainerKind::Vector );
-
-  // test.case( "std::Vec< i32 >" );
-  let code = quote!( std::Vec< i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_container_kind( &tree_type );
-  assert_eq!( got, TheModule::ContainerKind::Vector );
-
-  // test.case( "std::Vec" );
-  let code = quote!( std::Vec );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_container_kind( &tree_type );
-  assert_eq!( got, TheModule::ContainerKind::Vector );
-
-  // test.case( "not vector" );
-  let code = quote!( std::SomeVector< i32, i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_container_kind( &tree_type );
-  assert_eq!( got, TheModule::ContainerKind::No );
-
-  // test.case( "hash map" );
-  let code = quote!( std::collections::HashMap< i32, i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_container_kind( &tree_type );
-  assert_eq!( got, TheModule::ContainerKind::HashMap );
-
-  // test.case( "hash set" );
-  let code = quote!( std::collections::HashSet< i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_container_kind( &tree_type );
-  assert_eq!( got, TheModule::ContainerKind::HashSet );
-
-}
-
-//
-
-fn _type_optional_container_kind_basic()
-{
-
-  // test.case( "non optional not container" );
-  let code = quote!( i32 );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::No, false ) );
-
-  // test.case( "optional not container" );
-  let code = quote!( core::option::Option< i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::No, true ) );
-
-  // test.case( "optional not container" );
-  let code = quote!( Option< i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::No, true ) );
-
-
-  // test.case( "optional vector" );
-  let code = quote!( core::option::Option< Vec > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::Vector, true ) );
-
-  // test.case( "optional vector" );
-  let code = quote!( Option< Vec > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::Vector, true ) );
-
-  // test.case( "non optional vector" );
-  let code = quote!( std::Vec< i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::Vector, false ) );
-
-
-  // test.case( "optional vector" );
-  let code = quote!( core::option::Option< std::collections::HashMap< i32, i32 > > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::HashMap, true ) );
-
-  // test.case( "optional vector" );
-  let code = quote!( Option< HashMap > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::HashMap, true ) );
-
-  // test.case( "non optional vector" );
-  let code = quote!( HashMap< i32, i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::HashMap, false ) );
-
-
-  // test.case( "optional vector" );
-  let code = quote!( core::option::Option< std::collections::HashSet< i32, i32 > > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::HashSet, true ) );
-
-  // test.case( "optional vector" );
-  let code = quote!( Option< HashSet > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::HashSet, true ) );
-
-  // test.case( "non optional vector" );
-  let code = quote!( HashSet< i32, i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_optional_container_kind( &tree_type );
-  assert_eq!( got, ( TheModule::ContainerKind::HashSet, false ) );
-
-}
-
-//
-
-fn _type_rightmost_basic()
-{
-
-  // test.case( "core::option::Option< i32 >" );
-  let code = quote!( core::option::Option< i32 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  let got = TheModule::type_rightmost( &tree_type );
-  assert_eq!( got, Some( "Option".to_string() ) );
-
-}
-
-//
-
-fn _type_parameters_basic()
-{
-
-  macro_rules! q
-  {
-    ( $( $Src : tt )+ ) =>
-    {
-      syn::parse2::< syn::Type >( quote!( $( $Src )+ ) ).unwrap()
-    }
   }
 
-  // test.case( "core::option::Option< i8, i16, i32, i64 >" );
-  let code = quote!( core::option::Option< i8, i16, i32, i64 > );
-  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+  //
 
-  let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..=0 ).into_iter().cloned().collect();
-  let exp = vec![ q!( i8 ) ];
-  assert_eq!( got, exp );
-  let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..=1 ).into_iter().cloned().collect();
-  let exp = vec![ q!( i8 ), q!( i16 ) ];
-  assert_eq!( got, exp );
-  let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..=2 ).into_iter().cloned().collect();
-  let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ) ];
-  assert_eq!( got, exp );
-
-  let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..0 ).into_iter().cloned().collect();
-  let exp : Vec< syn::Type > = vec![];
-  assert_eq!( got, exp );
-  let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..1 ).into_iter().cloned().collect();
-  let exp = vec![ q!( i8 ) ];
-  assert_eq!( got, exp );
-  let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..2 ).into_iter().cloned().collect();
-  let exp = vec![ q!( i8 ), q!( i16 ) ];
-  assert_eq!( got, exp );
-
-}
-
-//
-
-// fn attr_pair_single( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ), syn::Error >
-
-#[test]
-fn _attr_pair_single_basic() -> Result< (), syn::Error >
-{
-  use syn::spanned::Spanned;
-
-  // test.case( "basic" );
-  let input = quote!
+  #[ test ]
+  fn syn_err_basic()
   {
-    #[derive( Former )]
-    pub struct Struct1
+
+    // test.case( "basic" );
+    let err = TheModule::syn_err!( "abc" );
+    a_id!( err.to_string(), "abc" );
+
+    // test.case( "basic, trailing comma" );
+    let err = TheModule::syn_err!( "abc", );
+    a_id!( err.to_string(), "abc" );
+
+    // test.case( "with span" );
+    let code = qt!( core::option::Option< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let err = TheModule::syn_err!( tree_type, "abc" );
+    a_id!( err.to_string(), "abc" );
+    // a_id!( err.span(), syn::spanned::Spanned::span( &tree_type ) );
+
+    // test.case( "with span, trailing comma" );
+    let code = qt!( core::option::Option< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let err = TheModule::syn_err!( tree_type, "abc", );
+    a_id!( err.to_string(), "abc" );
+
+    // test.case( "with span and args" );
+    let code = qt!( core::option::Option< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let err = TheModule::syn_err!( tree_type, "abc{}{}", "def", "ghi" );
+    a_id!( err.to_string(), "abcdefghi" );
+    // a_id!( err.span(), syn::spanned::Spanned::span( &tree_type ) );
+
+    // test.case( "with span and args, trailing comma" );
+    let code = qt!( core::option::Option< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let err = TheModule::syn_err!( tree_type, "abc{}{}", "def", "ghi", );
+    a_id!( err.to_string(), "abcdefghi" );
+
+    // test.case( "without span" );
+    let err = TheModule::syn_err!( _, "abc" );
+    a_id!( err.to_string(), "abc" );
+
+    // test.case( "without span, trailing comma" );
+    let err = TheModule::syn_err!( _, "abc", );
+    a_id!( err.to_string(), "abc" );
+
+    // test.case( "without span, but with args" );
+    let err = TheModule::syn_err!( _, "abc{}{}", "def", "ghi" );
+    a_id!( err.to_string(), "abcdefghi" );
+
+    // test.case( "without span, trailing comma" );
+    let err = TheModule::syn_err!( _, "abc{}{}", "def", "ghi", );
+    a_id!( err.to_string(), "abcdefghi" );
+
+  }
+
+  //
+
+  #[ test ]
+  fn type_container_kind_basic()
+  {
+
+    // test.case( "core::option::Option< i32 >" );
+    let code = qt!( core::option::Option< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_container_kind( &tree_type );
+    a_id!( got, TheModule::ContainerKind::No );
+
+    // test.case( "core::option::Option< Vec >" );
+    let code = qt!( core::option::Option< Vec > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_container_kind( &tree_type );
+    a_id!( got, TheModule::ContainerKind::No );
+
+    // test.case( "alloc::vec::Vec< i32 >" );
+    let code = qt!( alloc::vec::Vec< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_container_kind( &tree_type );
+    a_id!( got, TheModule::ContainerKind::Vector );
+
+    // test.case( "alloc::vec::Vec" );
+    let code = qt!( alloc::vec::Vec );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_container_kind( &tree_type );
+    a_id!( got, TheModule::ContainerKind::Vector );
+
+    // test.case( "std::vec::Vec< i32 >" );
+    let code = qt!( std::vec::Vec< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_container_kind( &tree_type );
+    a_id!( got, TheModule::ContainerKind::Vector );
+
+    // test.case( "std::vec::Vec" );
+    let code = qt!( std::vec::Vec );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_container_kind( &tree_type );
+    a_id!( got, TheModule::ContainerKind::Vector );
+
+    // test.case( "std::Vec< i32 >" );
+    let code = qt!( std::Vec< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_container_kind( &tree_type );
+    a_id!( got, TheModule::ContainerKind::Vector );
+
+    // test.case( "std::Vec" );
+    let code = qt!( std::Vec );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_container_kind( &tree_type );
+    a_id!( got, TheModule::ContainerKind::Vector );
+
+    // test.case( "not vector" );
+    let code = qt!( std::SomeVector< i32, i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_container_kind( &tree_type );
+    a_id!( got, TheModule::ContainerKind::No );
+
+    // test.case( "hash map" );
+    let code = qt!( std::collections::HashMap< i32, i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_container_kind( &tree_type );
+    a_id!( got, TheModule::ContainerKind::HashMap );
+
+    // test.case( "hash set" );
+    let code = qt!( std::collections::HashSet< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_container_kind( &tree_type );
+    a_id!( got, TheModule::ContainerKind::HashSet );
+
+  }
+
+  //
+
+  #[ test ]
+  fn type_optional_container_kind_basic()
+  {
+
+    // test.case( "non optional not container" );
+    let code = qt!( i32 );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::No, false ) );
+
+    // test.case( "optional not container" );
+    let code = qt!( core::option::Option< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::No, true ) );
+
+    // test.case( "optional not container" );
+    let code = qt!( Option< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::No, true ) );
+
+
+    // test.case( "optional vector" );
+    let code = qt!( core::option::Option< Vec > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::Vector, true ) );
+
+    // test.case( "optional vector" );
+    let code = qt!( Option< Vec > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::Vector, true ) );
+
+    // test.case( "non optional vector" );
+    let code = qt!( std::Vec< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::Vector, false ) );
+
+
+    // test.case( "optional vector" );
+    let code = qt!( core::option::Option< std::collections::HashMap< i32, i32 > > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::HashMap, true ) );
+
+    // test.case( "optional vector" );
+    let code = qt!( Option< HashMap > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::HashMap, true ) );
+
+    // test.case( "non optional vector" );
+    let code = qt!( HashMap< i32, i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::HashMap, false ) );
+
+
+    // test.case( "optional vector" );
+    let code = qt!( core::option::Option< std::collections::HashSet< i32, i32 > > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::HashSet, true ) );
+
+    // test.case( "optional vector" );
+    let code = qt!( Option< HashSet > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::HashSet, true ) );
+
+    // test.case( "non optional vector" );
+    let code = qt!( HashSet< i32, i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_optional_container_kind( &tree_type );
+    a_id!( got, ( TheModule::ContainerKind::HashSet, false ) );
+
+  }
+
+  //
+
+  #[ test ]
+  fn type_rightmost_basic()
+  {
+
+    // test.case( "core::option::Option< i32 >" );
+    let code = qt!( core::option::Option< i32 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+    let got = TheModule::type_rightmost( &tree_type );
+    a_id!( got, Some( "Option".to_string() ) );
+
+  }
+
+  //
+
+  #[ test ]
+  fn type_parameters_basic()
+  {
+
+    macro_rules! q
     {
-      #[former( default = 31 )]
-      pub int_1 : i32,
-    }
-  };
-
-  let ast = match syn::parse2::< syn::DeriveInput >( input )
-  {
-    Ok( syntax_tree ) => syntax_tree,
-    Err( err ) => return Err( err ),
-  };
-
-  let fields = match ast.data
-  {
-    syn::Data::Struct( ref data_struct ) => match data_struct.fields
-    {
-      syn::Fields::Named( ref fields_named ) =>
+      ( $( $Src : tt )+ ) =>
       {
-        &fields_named.named
-      },
-      _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Fields::Named( ref fields_named )" ) ),
-    },
-    _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Data::Struct( ref data_struct )" ) ),
-  };
+        syn::parse2::< syn::Type >( qt!( $( $Src )+ ) ).unwrap()
+      }
+    }
 
-  let attr = fields.first().ok_or_else( || err( "No field" ) )?.attrs.first().ok_or_else( || err( "No attr" ) )?;
+    // test.case( "core::option::Option< i8, i16, i32, i64 >" );
+    let code = qt!( core::option::Option< i8, i16, i32, i64 > );
+    let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
 
-  let ( key, val, meta ) = TheModule::attr_pair_single( &attr )?;
-  assert_eq!( key, "default".to_string() );
-  assert_eq!( quote!( #val ).to_string(), "31".to_string() );
-  let is = match meta
-  {
-    syn::Meta::List( _ ) => true,
-    _ => false,
-  };
-  assert!( is );
+    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..=0 ).into_iter().cloned().collect();
+    let exp = vec![ q!( i8 ) ];
+    a_id!( got, exp );
+    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..=1 ).into_iter().cloned().collect();
+    let exp = vec![ q!( i8 ), q!( i16 ) ];
+    a_id!( got, exp );
+    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..=2 ).into_iter().cloned().collect();
+    let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ) ];
+    a_id!( got, exp );
 
-  return Ok( () );
+    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..0 ).into_iter().cloned().collect();
+    let exp : Vec< syn::Type > = vec![];
+    a_id!( got, exp );
+    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..1 ).into_iter().cloned().collect();
+    let exp = vec![ q!( i8 ) ];
+    a_id!( got, exp );
+    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..2 ).into_iter().cloned().collect();
+    let exp = vec![ q!( i8 ), q!( i16 ) ];
+    a_id!( got, exp );
 
-  fn err( src : &str ) -> syn::Error
-  {
-    syn::Error::new( proc_macro2::Span::call_site(), src )
   }
+
+  //
+
+  // fn attr_pair_single( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ), syn::Error >
+
+  // #[test]
+  // fn attr_pair_single_basic() -> Result< (), syn::Error >
+  // {
+  //   use syn::spanned::Spanned;
+  //
+  //   // test.case( "basic" );
+  //   let input = qt!
+  //   {
+  //     #[derive( Former )]
+  //     pub struct Struct1
+  //     {
+  //       #[former( default = 31 )]
+  //       pub int_1 : i32,
+  //     }
+  //   };
+  //
+  //   let ast = match syn::parse2::< syn::DeriveInput >( input )
+  //   {
+  //     Ok( syntax_tree ) => syntax_tree,
+  //     Err( err ) => return Err( err ),
+  //   };
+  //
+  //   let fields = match ast.data
+  //   {
+  //     syn::Data::Struct( ref data_struct ) => match data_struct.fields
+  //     {
+  //       syn::Fields::Named( ref fields_named ) =>
+  //       {
+  //         &fields_named.named
+  //       },
+  //       _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Fields::Named( ref fields_named )" ) ),
+  //     },
+  //     _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Data::Struct( ref data_struct )" ) ),
+  //   };
+  //
+  //   let attr = fields.first().ok_or_else( || err( "No field" ) )?.attrs.first().ok_or_else( || err( "No attr" ) )?;
+  //
+  //   let ( key, val, meta ) = TheModule::attr_pair_single( &attr )?;
+  //   a_id!( key, "default".to_string() );
+  //   a_id!( qt!( #val ).to_string(), "31".to_string() );
+  //   let is = match meta
+  //   {
+  //     syn::Meta::List( _ ) => true,
+  //     _ => false,
+  //   };
+  //   assert!( is );
+  //
+  //   return Ok( () );
+  //
+  //   fn err( src : &str ) -> syn::Error
+  //   {
+  //     syn::Error::new( proc_macro2::Span::call_site(), src )
+  //   }
+  // }
+//
+//   //
+//
+//   fn path_of() -> Result< (), syn::Error >
+//   {
+//
+//     let input = qt!
+//     {
+//       This::is::path
+//     };
+//     let ast = match syn::parse2::< syn::Path >( input )
+//     {
+//       Ok( syntax_tree ) => syntax_tree,
+//       Err( err ) => return Err( err ),
+//     };
+//
+//     let got = proc_macro_tools::path_of( &ast );
+//     a_id!( got, "This::is::path" );
+//
+//     return Ok( () );
+//   }
+
 }
 
 //
 
-// #[test]
-// fn path_of() -> Result< (), syn::Error >
-// {
-//
-//   let input = quote!
-//   {
-//     This::is::path
-//   };
-//   let ast = match syn::parse2::< syn::Path >( input )
-//   {
-//     Ok( syntax_tree ) => syntax_tree,
-//     Err( err ) => return Err( err ),
-//   };
-//
-//   let got = proc_macro_tools::path_of( &ast );
-//   assert_eq!( got, "This::is::path" );
-//
-//   return Ok( () );
-// }
-
-//
-
-test_suite!
+tests_index!
 {
-  tree_export_str_basic,
+  tree_diagnostics_str_basic,
   syn_err_basic,
   type_container_kind_basic,
   type_optional_container_kind_basic,
   type_rightmost_basic,
   type_parameters_basic,
-  // attr_pair_single_basic -> Result< (), syn::Error >,
-  // path_of -> Result< (), syn::Error >,
+  // attr_pair_single_basic,
+  // path_of,
 }

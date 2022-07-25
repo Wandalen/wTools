@@ -1,0 +1,74 @@
+[package]
+name = "error_tools"
+version = "0.1.5"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Volodymyr M. <volodymyr.migdal@gmail.com>",
+  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/error_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/error_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/error_tools"
+description = """
+Basic exceptions handling mechanism.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/error",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+# = features
+
+[features]
+default = [
+  "use_std",
+  "error_handling_for_lib",
+  "error_handling_for_app",
+]
+full = [
+  "use_std",
+  "use_alloc",
+  "error_handling_for_lib",
+  "error_handling_for_app",
+]
+use_std = []
+use_alloc = []
+
+error_handling_for_lib = [ "thiserror" ]
+error_handling_for_app = [ "anyhow" ]
+
+# = entry
+
+[lib]
+name = "error_tools"
+path = "rust/impl/error/error_tools_lib.rs"
+
+[[test]]
+name = "error_test"
+path = "rust/test/error/error_tools_tests.rs"
+
+[[test]]
+name = "error_tools_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
+
+[[example]]
+name = "error_tools_trivial_sample"
+path = "sample/rust/error_tools_trivial_sample/src/main.rs"
+
+[dependencies]
+anyhow = { version = "~1.0", optional = true }
+thiserror = { version = "~1.0", optional = true }
+
+[dev-dependencies]
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }
