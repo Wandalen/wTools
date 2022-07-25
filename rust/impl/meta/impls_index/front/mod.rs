@@ -19,15 +19,15 @@ pub mod dependency
   pub use ::impls_index_meta;
 }
 
+#[ doc( inline ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
 }
-
-#[ doc( inline ) ]
-pub use protected::*;
 
 /// Shared with parent namespace of the module
 pub mod orphan

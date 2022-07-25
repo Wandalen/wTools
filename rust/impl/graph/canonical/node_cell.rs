@@ -134,6 +134,8 @@ pub( crate ) mod private
 
 }
 
+// qqq : use mod_interface here and in other similar places
+
 /// Protected namespace of the module.
 pub mod protected
 {

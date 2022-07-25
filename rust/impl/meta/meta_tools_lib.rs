@@ -40,5 +40,3 @@ mod_interface::mod_interface!
   layer meta;
 
 }
-
-// xxx : use `paste::paste`
