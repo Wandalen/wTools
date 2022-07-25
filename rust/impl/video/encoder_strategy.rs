@@ -10,7 +10,6 @@ pub( crate ) mod private
 
   /// Encoder for the buffer.
 
-  #[ allow( dead_code ) ]
   /* qqq : add former macro when attributes and documentation comments handling will be implemented */
   // #[ derive( Former ) ]
   pub struct Encoder
@@ -67,7 +66,6 @@ pub( crate ) mod private
   impl Encoder
   {
     /// Create an instance.
-    #[ allow( unused_variables ) ]
     pub fn new
     (
       encoder_type : EncoderType,
@@ -124,7 +122,37 @@ pub( crate ) mod private
 
       Err( Box::new( BasicError::new( format!( "unknown encoder type \"{:?}\"", encoder_type ) ) ) )
     }
+
+    /// Change type of encoder.
+    pub fn type_change( &mut self, encoder_type : EncoderType ) -> Result< (), Box< dyn std::error::Error > >
+    {
+      let changed = match encoder_type
+      {
+        EncoderType::Gif => self.output_filename.set_extension( "gif" ),
+        EncoderType::Png => self.output_filename.set_extension( "png" ),
+        EncoderType::Mp4 => self.output_filename.set_extension( "mp4" ),
+      };
+
+      if !changed
+      {
+        return Err( Box::new( BasicError::new( "cannot update extension" ) ) );
+      }
+
+      let encoder = Encoder::encoder_make
+      (
+        &encoder_type,
+        self.width,
+        self.height,
+        self.frame_rate,
+        self.repeat,
+        &self.color_type,
+        self.output_filename.to_str().ok_or( BasicError::new( "cannot form filename" ) )?
+      )?;
+      self.encoder = encoder;
+      Ok( () )
+    }
   }
+
 }
 
 wtools::meta::mod_interface!

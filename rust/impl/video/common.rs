@@ -43,7 +43,7 @@ pub( crate ) mod private
   {
     /// Encode bytes buffer to output.
     fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box<dyn std::error::Error > >;
-    /// Finish encoding.
+    /// Finish encoding. It is recommended to flush data at the end of encoding, because the data can be loosed.
     fn flush( &mut self ) -> Result< (), Box<dyn std::error::Error > >;
   }
 }
