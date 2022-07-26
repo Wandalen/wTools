@@ -3,6 +3,21 @@ pub( crate ) mod private
 {
   // use crate::protected::*;
 
+  /// TODO
+  pub fn same_data< T1 : ?Sized, T2 : ?Sized >( src1 : &T1, src2 : &T2 ) -> bool
+  {
+    extern "C" { fn memcmp(s1: *const u8, s2: *const u8, n: usize) -> i32; }
+
+    let mem1 = src1 as *const _ as *const u8;
+    let mem2 = src2 as *const _ as *const u8;
+
+    if same_size( src1, src2 ) {
+      unsafe { memcmp( mem1, mem2, core::mem::size_of_val( src1 ) ) == 0 }
+    } else {
+        false
+    }
+  }
+
   /* zzz : qqq : implement mem::same_data, comparing data. discuss */
 
   ///
@@ -60,6 +75,7 @@ pub mod orphan
   pub use super::
   {
     exposed::*,
+    private::same_data,
     private::same_ptr,
     private::same_size,
     private::same_region,
