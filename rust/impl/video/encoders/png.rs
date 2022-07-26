@@ -47,23 +47,34 @@ pub( crate ) mod private
     /// Encode bytes buffer to output.
     fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box<dyn std::error::Error > >
     {
-      match self.color_type
+      let image = match self.color_type
       {
         ColorType::Rgb =>
         {
-          let image = PNGImage
+          PNGImage
           {
             width : self.width as _,
             height : self.height as _,
             data : data.to_vec(),
             bit_depth : BitDepth::Eight,
             color_type : ::png::ColorType::RGB,
-          };
-          self.images_buffer.push( image );
-          Ok( () )
+          }
         },
-        _ => unimplemented!( "not implemented" ),
-      }
+        ColorType::Rgba =>
+        {
+          PNGImage
+          {
+            width : self.width as _,
+            height : self.height as _,
+            data : data.to_vec(),
+            bit_depth : BitDepth::Eight,
+            color_type : ::png::ColorType::RGBA,
+          }
+        },
+      };
+
+      self.images_buffer.push( image );
+      Ok( () )
     }
 
     /// Finish encoding.
