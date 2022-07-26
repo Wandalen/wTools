@@ -27,6 +27,8 @@ pub( crate ) mod private
   {
     /// RGB color encoding.
     Rgb,
+    /// RGB color encoding.
+    Rgba,
     // qqq : extend
   }
 
