@@ -15,6 +15,8 @@ pub( crate ) mod private
     height : usize,
     /// Frame rate.
     frame_rate : usize,
+    /// Delay for frame.
+    frame_delay : u16,
     /// Color encoding.
     color_type : ColorType,
     /// Encoder for the gif.
@@ -42,21 +44,23 @@ pub( crate ) mod private
     /// Encode bytes buffer to output.
     fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box<dyn std::error::Error > >
     {
-      #[ allow( unreachable_patterns ) ]
-      match self.color_type
+      let mut buf = match self.color_type
       {
         ColorType::Rgb =>
         {
-          let mut buf = Frame::from_rgb( self.width as u16, self.height as u16, data );
-          let gif_time_step = 10; // library allow write images with time step equal to 10 ms
-          buf.delay = ( 1000 / gif_time_step / self.frame_rate ) as u16;
-
-          self.encoder.write_frame( &buf )?;
-          Ok( () )
+          Frame::from_rgb( self.width as u16, self.height as u16, data )
         },
-        _ => unimplemented!( "not implemented" ),
-      }
+        ColorType::Rgba =>
+        {
+          let mut cloned_data = data.to_vec();
+          /* routine accepts mutable slice */
+          Frame::from_rgba( self.width as u16, self.height as u16, cloned_data.as_mut_slice() )
+        },
+      };
+      buf.delay = self.frame_delay;
 
+      self.encoder.write_frame( &buf )?;
+      Ok( () )
     }
     /// Finish encoding.
     fn flush( &mut self ) -> Result< (), Box<dyn std::error::Error > >
@@ -93,11 +97,15 @@ pub( crate ) mod private
         encoder.set_repeat( Repeat::Finite( 0 ) )?;
       }
 
+      let gif_time_step = 10; // library allow write images with time step equal to 10 ms
+      let frame_delay = ( 1000 / gif_time_step / frame_rate ) as u16;
+
       let instance = Self
       {
         width,
         height,
         frame_rate,
+        frame_delay,
         color_type : color_type.clone(),
         encoder,
         output_filename : std::path::PathBuf::from( filename.as_ref() ),

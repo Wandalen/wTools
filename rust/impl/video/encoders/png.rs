@@ -47,7 +47,6 @@ pub( crate ) mod private
     /// Encode bytes buffer to output.
     fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box<dyn std::error::Error > >
     {
-      #[ allow( unreachable_patterns ) ]
       match self.color_type
       {
         ColorType::Rgb =>
