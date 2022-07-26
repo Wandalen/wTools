@@ -9,11 +9,9 @@ fn main()
 
 //
 
-mod_interface!
+mod_interface::mod_interface!
 {
+  #![ debug ]
   /// Inner.
   layer inner;
 }
-
-// qqq : rewrite sample
-/* aaa : Dmytro : sample with layer */
