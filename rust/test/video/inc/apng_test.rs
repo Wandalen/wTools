@@ -2,58 +2,62 @@ use super::*;
 
 tests_impls!
 {
-  fn basic()
+  fn basic_rgb() -> Result< (), Box< dyn std::error::Error > >
   {
-    use super::apng::{ Config, Encoder, Frame, PNGImage };
-    use super::png::{ ColorType, BitDepth, FilterType };
-    use std::fs::File;
-    use std::io::BufWriter;
-    use std::path::Path;
+    let mut encoder = super::encoders::Png::new( 100, 100, 30, None, &ColorType::Rgb, "../../../target/out_rgb.png" )?;
+    let mut buf = [ 255u8; 30_000 ];
+    buf[ 0 ] = 0;
+    buf[ 1 ] = 0;
+    buf[ 2 ] = 0;
+    encoder.encode( &buf )?;
 
-    let path = Path::new( "../../../target/out.png" );
-    let mut out = BufWriter::new( File::create( path ).unwrap() );
-
-    let config = Config
+    for i in 1..100
     {
-      width : 100,
-      height : 100,
-      num_frames : 100,
-      num_plays : 0,
-      color : ColorType::RGB,
-      depth : BitDepth::Eight,
-      filter : FilterType::NoFilter,
-    };
-    let mut encoder = Encoder::new( &mut out, config ).unwrap();
+      buf[ ( i - 1 ) * 3 + ( i - 1 ) * 300 ] = 255;
+      buf[ ( i - 1 ) * 3 + 1 + ( i - 1 ) * 300 ] = 255;
+      buf[ ( i - 1 ) * 3 + 2 + ( i - 1 ) * 300 ] = 255;
 
-    let frame = Frame
-    {
-      delay_num : Some( 1 ),
-      delay_den : Some( 100 ),
-      ..Default::default()
-    };
-
-    for i in 0..100
-    {
-      let mut data = vec![ 255u8; 30_000 ];
-      data[ i * 3 + i * 300 ] = 0;
-      data[ i * 3 + 1 + i * 300 ] = 0;
-      data[ i * 3 + 2 + i * 300 ] = 0;
-      let image = PNGImage
-      {
-        width : 100,
-        height : 100,
-        data,
-        bit_depth : BitDepth::Eight,
-        color_type : ColorType::RGB,
-      };
-      encoder.write_frame( &image, frame.clone() ).unwrap();
+      buf[ i * 3 + i * 300 ] = 0;
+      buf[ i * 3 + 1 + i * 300 ] = 0;
+      buf[ i * 3 + 2 + i * 300 ] = 0;
+      encoder.encode( &buf )?;
     }
+    encoder.flush()?;
 
-    match encoder.finish_encode()
+    let path = std::path::PathBuf::from( "../../../target/out_rgb.png" );
+    a_id!( path.exists(), true );
+
+    Ok( () )
+  }
+
+  //
+
+  fn basic_rgba() -> Result< (), Box< dyn std::error::Error > >
+  {
+    let mut encoder = super::encoders::Png::new( 100, 100, 30, None, &ColorType::Rgba, "../../../target/out_rgba.png" )?;
+    let mut buf = [ 255u8; 40_000 ];
+    buf[ 0 ] = 0;
+    buf[ 1 ] = 0;
+    buf[ 2 ] = 0;
+    encoder.encode( &buf )?;
+
+    for i in 1..100
     {
-      Err( err ) => assert!( false ),
-      _ => {}
+      buf[ ( i - 1 ) * 4 + ( i - 1 ) * 400 ] = 255;
+      buf[ ( i - 1 ) * 4 + 1 + ( i - 1 ) * 400 ] = 255;
+      buf[ ( i - 1 ) * 4 + 2 + ( i - 1 ) * 400 ] = 255;
+
+      buf[ i * 4 + i * 400 ] = 0;
+      buf[ i * 4 + 1 + i * 400 ] = 0;
+      buf[ i * 4 + 2 + i * 400 ] = 0;
+      encoder.encode( &buf )?;
     }
+    encoder.flush()?;
+
+    let path = std::path::PathBuf::from( "../../../target/out_rgba.png" );
+    a_id!( path.exists(), true );
+
+    Ok( () )
   }
 }
 
@@ -61,5 +65,6 @@ tests_impls!
 
 tests_index!
 {
-  basic,
+  basic_rgb,
+  basic_rgba,
 }
