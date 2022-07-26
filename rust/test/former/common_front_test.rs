@@ -17,6 +17,8 @@ mod string_slice;
 
 #[ path = "./all/default_user_type.rs" ]
 mod default_user_type;
+#[ path = "./all/user_type_no_default.rs" ]
+mod user_type_no_default;
 #[ path = "./all/default_primitive.rs" ]
 mod default_primitive;
 #[ path = "./all/default_container.rs" ]
