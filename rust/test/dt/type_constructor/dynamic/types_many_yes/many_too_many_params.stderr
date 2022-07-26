@@ -8,4 +8,4 @@ error: Parametrized element should be single, because Many has only one element
 7 | | }
   | |_^
   |
-  = note: this error originates in the macro `$crate::_many` (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the macro `$crate::_many` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
