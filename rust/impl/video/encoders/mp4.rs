@@ -29,14 +29,18 @@ pub( crate ) mod private
     height : usize,
     /// Frame rate.
     frame_rate : usize,
+    #[ cfg( feature = "mp4_ratio_conversion" ) ]
+    /// Frame rate multiplier.
+    #[ cfg( feature = "mp4_ratio_conversion" ) ]
+    frame_rate_ratio : usize,
     /// Frame index.
     frame_idx : i64,
     /// Time base of video.
     time_base : TimeBase,
     /// Color encoding.
     color_type : ColorType,
-    /// Encoder for color format.
-    encoder : Encoder,
+    /// Config for color format encoder.
+    config : EncoderConfig,
     /// Muxer for the mp4.
     muxer : Muxer< std::fs::File >,
     /// Output filename.
@@ -70,18 +74,37 @@ pub( crate ) mod private
           let frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );
           self.frame_idx += 1;
 
-          let mut buf = vec![];
           let mut yuv = openh264::formats::RBGYUVConverter::new( self.width, self.height );
           yuv.convert( data );
 
-          let bitstream = self.encoder.encode( &yuv )?;
-          bitstream.write_vec( &mut buf );
+          /* the initialization of new instance is required for correct conversion */
+          let mut encoder = Encoder::with_config( self.config.clone() ).unwrap();
+          let bitstream = encoder.encode( &yuv )?;
+          let buf = bitstream.to_vec();
 
-          let packet = PacketMut::from( &buf )
-          .with_pts( frame_timestamp )
-          .with_dts( frame_timestamp )
-          .freeze();
-          self.muxer.push( packet )?;
+          #[ cfg( feature = "mp4_ratio_conversion" ) ]
+          {
+            let mut frame_timestamp = frame_timestamp;
+            for _i in 0..self.frame_rate_ratio
+            {
+              let packet = PacketMut::from( &buf )
+              .with_pts( frame_timestamp )
+              .with_dts( frame_timestamp )
+              .freeze();
+
+              frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );
+              self.frame_idx += 1;
+              self.muxer.push( packet )?;
+            }
+          }
+          #[ cfg( not( feature = "mp4_ratio_conversion" ) ) ]
+          {
+            let packet = PacketMut::from( &buf )
+            .with_pts( frame_timestamp )
+            .with_dts( frame_timestamp )
+            .freeze();
+            self.muxer.push( packet )?;
+          }
 
           Ok( () )
         },
@@ -131,20 +154,33 @@ pub( crate ) mod private
       muxer_builder.add_stream( &codec_parameters )?;
       let muxer = muxer_builder.build( io, output_format )?;
 
-      let time_base = TimeBase::new( 1, frame_rate as _ );
+      #[ cfg( not( feature = "mp4_ratio_conversion" ) ) ]
+      let base_frame_rate = frame_rate as u32;
+
+      #[ cfg( feature = "mp4_ratio_conversion" ) ]
+      let base_frame_rate = if frame_rate < 30
+      {
+        30
+      }
+      else
+      {
+        frame_rate as u32
+      };
+      let time_base = TimeBase::new( 1, base_frame_rate );
 
       let config = EncoderConfig::new( width as _, height as _ );
-      let encoder = Encoder::with_config( config ).unwrap();
 
       let instance = Self
       {
         width,
         height,
         frame_rate,
+        #[ cfg( feature = "mp4_ratio_conversion" ) ]
+        frame_rate_ratio : ( 30 / frame_rate ) as _,
         frame_idx : 0,
         time_base,
         color_type : color_type.clone(),
-        encoder,
+        config,
         muxer,
         output_filename : std::path::PathBuf::from( filename.as_ref() ),
       };

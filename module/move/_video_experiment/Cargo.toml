@@ -32,6 +32,7 @@ default = [ "use_std" ]
 full = [ "use_std", "use_alloc" ]
 use_std = []
 use_alloc = []
+mp4_ratio_conversion = []
 
 [lib]
 name = "video_experiment"

@@ -31,7 +31,6 @@ fn animation_write( encoder : &mut super::encoder_strategy::Encoder ) -> Result<
 
 fn animation_write_from_img_rgb( encoder : &mut super::encoder_strategy::Encoder ) -> Result< (), Box< dyn std::error::Error > >
 {
-
   for i in 1..4
   {
     let path = std::path::PathBuf::from( format!( "./rust/test/video/_asset/img/rust_logo{}.png", i ) );
