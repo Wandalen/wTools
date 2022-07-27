@@ -7,6 +7,7 @@ pub( crate ) mod private
   use wtools::error::BasicError;
   #[ allow( unused_imports ) ]
   use wtools::prelude::former::Former;
+  use wmath::X2;
 
   /// Encoder for the buffer.
 
@@ -14,23 +15,21 @@ pub( crate ) mod private
   // #[ derive( Former ) ]
   pub struct Encoder
   {
-    // /// Frame width.
-    width : usize,
-    // /// Frame height.
-    height : usize,
-    // /// Frame rate.
+    /// Frame width and height.
+    dims : wmath::X2< usize >,
+    /// Frame rate.
     frame_rate : usize,
-    // /// Color encoding.
+    /// Color encoding.
     color_type : ColorType,
-    // /// Repeat animation. For animated images formats.
+    /// Repeat animation. For animated images formats.
     repeat : Option< usize >,
 
-    // /// Type of output format.
+    /// Type of output format.
     encoder_type : EncoderType,
-    // /// Encoder for the output format.
+    /// Encoder for the output format.
     encoder : Box< dyn EncodeData >,
 
-    // /// Output filename.
+    /// Output filename.
     output_filename : std::path::PathBuf,
   }
 
@@ -39,8 +38,8 @@ pub( crate ) mod private
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       f.debug_struct( "Encoder" )
-      .field( "width", &self.width )
-      .field( "height", &self.height )
+      .field( "width", &self.dims.0 )
+      .field( "height", &self.dims.0 )
       .field( "frame_rate", &self.frame_rate )
       .field( "color_type", &self.color_type )
       .field( "encoder_type", &self.encoder_type )
@@ -81,8 +80,7 @@ pub( crate ) mod private
 
       let instance = Self
       {
-        width,
-        height,
+        dims : X2( width, height ),
         frame_rate,
         color_type,
         repeat,
@@ -141,8 +139,8 @@ pub( crate ) mod private
       let encoder = Encoder::encoder_make
       (
         &encoder_type,
-        self.width,
-        self.height,
+        self.dims.0,
+        self.dims.1,
         self.frame_rate,
         self.repeat,
         &self.color_type,
