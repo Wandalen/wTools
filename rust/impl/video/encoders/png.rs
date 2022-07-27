@@ -128,8 +128,7 @@ pub( crate ) mod private
     /// Create an instance.
     pub fn new
     (
-      width : usize,
-      height : usize,
+      dims : X2< usize >,
       frame_rate : usize,
       repeat : Option< usize >,
       color_type : &ColorType,
@@ -145,7 +144,7 @@ pub( crate ) mod private
 
       let instance = Self
       {
-        dims : X2( width, height ),
+        dims,
         frame_rate,
         color_type : color_type.clone(),
         images_buffer : vec![],

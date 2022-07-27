@@ -68,19 +68,18 @@ pub( crate ) mod private
     pub fn new
     (
       encoder_type : EncoderType,
-      width : usize,
-      height : usize,
+      dims : X2< usize >,
       frame_rate : usize,
       repeat : Option< usize >,
       color_type : ColorType,
       filename : impl AsRef< str >
     ) -> Result< Self, Box< dyn std::error::Error > >
     {
-      let encoder = Encoder::encoder_make( &encoder_type, width, height, frame_rate, repeat, &color_type, filename.as_ref() )?;
+      let encoder = Encoder::encoder_make( &encoder_type, &dims, frame_rate, repeat, &color_type, filename.as_ref() )?;
 
       let instance = Self
       {
-        dims : X2( width, height ),
+        dims,
         frame_rate,
         color_type,
         repeat,
@@ -91,11 +90,12 @@ pub( crate ) mod private
       Ok( instance )
     }
 
+    //
+
     fn encoder_make
     (
       encoder_type : &EncoderType,
-      width : usize,
-      height : usize,
+      dims : &X2< usize >,
       frame_rate : usize,
       repeat : Option< usize >,
       color_type : &ColorType,
@@ -104,22 +104,24 @@ pub( crate ) mod private
     {
       if encoder_type == &EncoderType::Gif
       {
-        let encoder = Gif::new( width, height, frame_rate, repeat, color_type, filename )?;
+        let encoder = Gif::new( dims.clone(), frame_rate, repeat, color_type, filename )?;
         return Ok( Box::new( encoder ) );
       }
       if encoder_type == &EncoderType::Png
       {
-        let encoder = Png::new( width, height, frame_rate, repeat, color_type, filename )?;
+        let encoder = Png::new( dims.clone(), frame_rate, repeat, color_type, filename )?;
         return Ok( Box::new( encoder ) );
       }
       if encoder_type == &EncoderType::Mp4
       {
-        let encoder = Mp4::new( width, height, frame_rate, repeat, color_type, filename )?;
+        let encoder = Mp4::new( dims.clone(), frame_rate, repeat, color_type, filename )?;
         return Ok( Box::new( encoder ) );
       }
 
       Err( Box::new( BasicError::new( format!( "unknown encoder type \"{:?}\"", encoder_type ) ) ) )
     }
+
+    //
 
     /// Change type of encoder.
     pub fn type_change( &mut self, encoder_type : EncoderType ) -> Result< (), Box< dyn std::error::Error > >
@@ -139,8 +141,7 @@ pub( crate ) mod private
       let encoder = Encoder::encoder_make
       (
         &encoder_type,
-        self.dims.0,
-        self.dims.1,
+        &self.dims,
         self.frame_rate,
         self.repeat,
         &self.color_type,

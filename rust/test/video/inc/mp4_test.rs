@@ -4,7 +4,7 @@ tests_impls!
 {
   fn basic_rgb() -> Result< (), Box< dyn std::error::Error > >
   {
-    let mut encoder = super::encoders::Mp4::new( 100, 100, 30, None, &ColorType::Rgb, "../../../target/out_rgb.mp4" )?;
+    let mut encoder = super::encoders::Mp4::new( X2( 100, 100 ), 30, None, &ColorType::Rgb, "../../../target/out_rgb.mp4" )?;
     let mut buf = [ 255u8; 30_000 ];
     buf[ 0 ] = 0;
     buf[ 1 ] = 0;
@@ -34,7 +34,7 @@ tests_impls!
 
   fn basic_rgba() -> Result< (), Box< dyn std::error::Error > >
   {
-    let mut encoder = super::encoders::Mp4::new( 100, 100, 30, None, &ColorType::Rgba, "../../../target/out_rgba.mp4" )?;
+    let mut encoder = super::encoders::Mp4::new( X2( 100, 100 ), 30, None, &ColorType::Rgba, "../../../target/out_rgba.mp4" )?;
     let mut buf = [ 255u8; 40_000 ];
     buf[ 0 ] = 0;
     buf[ 1 ] = 0;

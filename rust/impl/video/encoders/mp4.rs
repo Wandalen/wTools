@@ -131,8 +131,7 @@ pub( crate ) mod private
     /// Create an instance.
     pub fn new
     (
-      width : usize,
-      height : usize,
+      dims : X2< usize >,
       frame_rate : usize,
       _repeat : Option< usize >,
       color_type : &ColorType,
@@ -151,8 +150,8 @@ pub( crate ) mod private
       let codec_parameters = CodecParameters::from
       (
         VideoCodecParameters::builder( "libx264" ).unwrap()
-        .width( width )
-        .height( height )
+        .width( dims.0 )
+        .height( dims.1 )
         .build()
       );
 
@@ -174,11 +173,11 @@ pub( crate ) mod private
       };
       let time_base = TimeBase::new( 1, base_frame_rate );
 
-      let config = EncoderConfig::new( width as _, height as _ );
+      let config = EncoderConfig::new( dims.0 as _, dims.1 as _ );
 
       let instance = Self
       {
-        dims : X2( width, height ),
+        dims,
         frame_rate,
         #[ cfg( feature = "mp4_ratio_conversion" ) ]
         frame_rate_ratio : ( 30 / frame_rate ) as _,

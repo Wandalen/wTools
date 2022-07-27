@@ -73,8 +73,7 @@ pub( crate ) mod private
     /// Create an instance.
     pub fn new
     (
-      width : usize,
-      height : usize,
+      dims : X2< usize >,
       frame_rate : usize,
       repeat : Option< usize >,
       color_type : &ColorType,
@@ -82,7 +81,7 @@ pub( crate ) mod private
     ) -> Result< Self, Box< dyn std::error::Error > >
     {
       let image = std::fs::File::create( filename.as_ref() )?;
-      let mut encoder = Encoder::new( image, width as u16, height as u16, &[] )?;
+      let mut encoder = Encoder::new( image, dims.0 as u16, dims.1 as u16, &[] )?;
       if let Some( n ) = repeat
       {
         match n
@@ -101,7 +100,7 @@ pub( crate ) mod private
 
       let instance = Self
       {
-        dims : X2( width, height ),
+        dims,
         frame_rate,
         frame_delay,
         color_type : color_type.clone(),
