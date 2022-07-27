@@ -66,49 +66,57 @@ pub( crate ) mod private
     /// Encode bytes buffer to output.
     fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box<dyn std::error::Error > >
     {
-      match self.color_type
+      let data = match self.color_type
       {
         ColorType::Rgb =>
         {
-          let frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );
-          self.frame_idx += 1;
-
-          let mut yuv = openh264::formats::RBGYUVConverter::new( self.width, self.height );
-          yuv.convert( data );
-
-          /* the initialization of new instance is required for correct conversion */
-          let mut encoder = Encoder::with_config( self.config.clone() ).unwrap();
-          let bitstream = encoder.encode( &yuv )?;
-          let buf = bitstream.to_vec();
-
-          #[ cfg( feature = "mp4_ratio_conversion" ) ]
-          {
-            let mut frame_timestamp = frame_timestamp;
-            for _i in 0..self.frame_rate_ratio
-            {
-              let packet = PacketMut::from( &buf )
-              .with_pts( frame_timestamp )
-              .with_dts( frame_timestamp )
-              .freeze();
-
-              frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );
-              self.frame_idx += 1;
-              self.muxer.push( packet )?;
-            }
-          }
-          #[ cfg( not( feature = "mp4_ratio_conversion" ) ) ]
-          {
-            let packet = PacketMut::from( &buf )
-            .with_pts( frame_timestamp )
-            .with_dts( frame_timestamp )
-            .freeze();
-            self.muxer.push( packet )?;
-          }
-
-          Ok( () )
+          data.to_vec()
         },
-        _ => unimplemented!( "not implemented" ),
+        ColorType::Rgba =>
+        {
+          /* skip alpha channel */
+          data.iter().enumerate()
+          .filter_map( | ( i, v ) | if ( i + 1 ) % 4 == 0 { None } else { Some( *v ) } )
+          .collect::<Vec<u8>>()
+        },
+      };
+
+      let frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );
+      self.frame_idx += 1;
+
+      let mut yuv = openh264::formats::RBGYUVConverter::new( self.width, self.height );
+      yuv.convert( data.as_slice() );
+
+      /* the initialization of new instance is required for correct conversion */
+      let mut encoder = Encoder::with_config( self.config.clone() ).unwrap();
+      let bitstream = encoder.encode( &yuv )?;
+      let buf = bitstream.to_vec();
+
+      #[ cfg( feature = "mp4_ratio_conversion" ) ]
+      {
+        let mut frame_timestamp = frame_timestamp;
+        for _i in 0..self.frame_rate_ratio
+        {
+          let packet = PacketMut::from( &buf )
+          .with_pts( frame_timestamp )
+          .with_dts( frame_timestamp )
+          .freeze();
+
+          frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );
+          self.frame_idx += 1;
+          self.muxer.push( packet )?;
+        }
       }
+      #[ cfg( not( feature = "mp4_ratio_conversion" ) ) ]
+      {
+        let packet = PacketMut::from( &buf )
+        .with_pts( frame_timestamp )
+        .with_dts( frame_timestamp )
+        .freeze();
+        self.muxer.push( packet )?;
+      }
+
+      Ok( () )
 
     }
     /// Finish encoding.
