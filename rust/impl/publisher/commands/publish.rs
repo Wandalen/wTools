@@ -1,12 +1,23 @@
-
-use crate::protected::*;
-use crate::wpublisher::bool::*;
-use std::env;
-use std::fs;
-use core::fmt::Write;
-use std::path::PathBuf;
+use crate::protected::
+{
+  bool::*,
+  digest,
+  files,
+  http,
+  instruction,
+  manifest,
+  process,
+};
+use wtools::error::Result;
+use std::
+{
+  env,
+  fs,
+  path::PathBuf,
+  collections::HashMap,
+  fmt::Write,
+};
 use toml_edit::value;
-use wtools::error::BasicError;
 use cargo_metadata::
 {
   DependencyKind,
@@ -14,21 +25,23 @@ use cargo_metadata::
   MetadataCommand,
   Package,
 };
-use petgraph::graph::Graph;
-use petgraph::algo::toposort;
-use std::collections::HashMap;
+use petgraph::
+{
+  graph::Graph,
+  algo::toposort,
+};
 
 ///
 /// Publish package.
 ///
 
-pub fn publish( instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
+pub fn publish( instruction : &instruction::Instruction ) -> Result< () >
 {
   let current_path = env::current_dir().unwrap();
 
-  let paths = crate::files::find( &current_path, instruction.subject.split( " " ).collect::<Vec<&str>>().as_slice() );
-  let mut paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::<Vec<PathBuf>>();
-  if paths.is_empty() /* && !path.glob_is( &instruction.subject ) qqq : implement `glob_is` */
+  let paths = files::find( &current_path, instruction.subject.split( " " ).collect::< Vec< &str > >().as_slice() );
+  let mut paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::< Vec< PathBuf > >();
+  if paths.is_empty() /* && !path.glob_is( &instruction.subject ) rrr : for Dmytro : implement `glob_is` */
   {
     paths.push( PathBuf::from( &instruction.subject ) );
   }
@@ -47,7 +60,7 @@ pub fn publish( instruction : &crate::instruction::Instruction ) -> Result< (), 
   Ok( () )
 }
 
-fn manifest_get( path : impl Into<PathBuf> ) -> anyhow::Result<manifest::Manifest>
+fn manifest_get( path : impl Into< PathBuf > ) -> anyhow::Result< manifest::Manifest >
 {
   let mut manifest = manifest::Manifest::new();
   manifest.manifest_path_from_str( path )?;
@@ -55,7 +68,7 @@ fn manifest_get( path : impl Into<PathBuf> ) -> anyhow::Result<manifest::Manifes
   Ok( manifest )
 }
 
-fn local_package_path_get<'a>( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
+fn local_package_path_get< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
 {
   let mut buf = String::new();
   write!( &mut buf, "package/{0}-{1}.crate", name, version ).unwrap();
@@ -69,16 +82,16 @@ fn local_package_path_get<'a>( name : &'a str, version : &'a str, manifest_path 
   local_package_path
 }
 
-fn bump( version : &str ) -> anyhow::Result<toml_edit::Item>
+fn bump( version : &str ) -> anyhow::Result< toml_edit::Item >
 {
-  let mut splits : Vec<&str> = version.split( "." ).collect();
-  let patch_version = splits[ 2 ].parse::<u32>()? + 1;
+  let mut splits : Vec< &str > = version.split( "." ).collect();
+  let patch_version = splits[ 2 ].parse::< u32 >()? + 1;
   let v = &patch_version.to_string();
   splits[ 2 ] = v;
   Ok( value( splits.join( "." ) ) )
 }
 
-fn package_publish( current_path : &PathBuf, path : &PathBuf, dry : &BoolLike ) -> Result< (), BasicError >
+fn package_publish( current_path : &PathBuf, path : &PathBuf, dry : &BoolLike ) -> Result< () >
 {
   let mut manifest = manifest_get( path ).unwrap();
   if !manifest.package_is() || manifest.local_is()
@@ -154,7 +167,7 @@ fn package_publish( current_path : &PathBuf, path : &PathBuf, dry : &BoolLike ) 
 /// Publish packages from workspace.
 ///
 
-pub fn workspace_publish( instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
+pub fn workspace_publish( instruction : &instruction::Instruction ) -> Result< () >
 {
   let current_path = env::current_dir().unwrap();
 
@@ -233,3 +246,4 @@ fn toposort_local_packages( packages : &HashMap< String, &Package > ) -> Vec< St
   let names = sorted.iter().rev().map( | dep_idx | deps.node_weight( *dep_idx ).unwrap().to_string() ).collect::< Vec< String > >();
   names
 }
+

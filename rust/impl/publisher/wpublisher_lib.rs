@@ -12,17 +12,19 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// qqq : for Dima : that should be in mod_interface
-#[ cfg( feature = "use_std" ) ]
-pub use std::env;
-#[ allow( unused_imports ) ]
-pub use wca::instruction;
+// qqq : for Dima : that should be in mod_interface /* aaa : Dmytro : moved to the macro */
+// #[ cfg( feature = "use_std" ) ]
+// pub use std::env;
+// #[ allow( unused_imports ) ]
+// pub use wca::instruction;
 
 wtools::mod_interface!
 {
-  layer wpublisher; // qqq : for Dima : bad name of a namespace
+  layer tools; // qqq : for Dima : bad name of a namespace /* aaa : Dmytro : renamed */
   layer commands;
 
+  #[ cfg( feature = "use_std" ) ]
+  prelude use ::std::env;
+  prelude use ::wca::instruction;
   protected( crate ) use ::wtools::prelude::*;
-
 }
