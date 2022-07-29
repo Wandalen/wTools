@@ -10,12 +10,7 @@
 //! The tool to make CLI ( commands user interface ). It is able to aggregate external binary applications, as well as functions, which are written in your language.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
-
-/// Commands aggregator library.
-#[ cfg( feature = "use_std" ) ]
-#[ path = "./inc.rs" ]
-pub mod ca;
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Requests parser.
 #[ cfg( feature = "use_std" ) ]
@@ -24,19 +19,31 @@ pub mod string
   pub use wtools::string::*;
 }
 
+use wtools::meta::mod_interface;
+
+crate::mod_interface!
+{
+  /// Commands aggregator library.
+  #[ cfg( feature = "use_std" ) ]
+  layer ca;
+
+  // protected( crate ) use super::
+  // {
+  //   field_str,
+  //   field_map_str_str,
+  //   field_map_str_vec_str,
+  //   field_routine,
+  // };
+
+}
+
 #[ cfg( feature = "use_std" ) ]
 #[ doc( inline ) ]
-pub use ca::*;
-
-/// Exposed namespace of the module.
-pub mod exposed
+pub use ca::
 {
-}
-pub use exposed::*;
-
-/// Namespace of the module to include with `use module::*`.
-pub mod prelude
-{
-  #[ cfg( feature = "use_std" ) ]
-  pub use super::ca::prelude::*;
-}
+  commands_aggregator,
+  common,
+  command,
+  input,
+  instruction,
+};

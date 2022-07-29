@@ -1,22 +1,24 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-tests_impls!
+//
+
+macro_rules! PairDefine
 {
-  fn basic()
+
+  ()
+  =>
   {
-    use TheModule::prelude::*;
 
-    struct Pair( i32, i32 );
-
-    impl Enumerable for Pair
+    struct Pair1( i32, i32 );
+    impl TheModule::Enumerable for Pair1
     {
-      type Item = i32;
+      type Element = i32;
       fn len( &self ) -> usize
       {
         2
       }
-      fn element( &self, index : usize ) -> &Self::Item
+      fn element_ref( &self, index : usize ) -> &Self::Element
       {
         debug_assert!( index < 2 );
         if index == 0
@@ -28,7 +30,7 @@ tests_impls!
           &self.1
         }
       }
-      fn element_take( &self, index : usize ) -> Self::Item
+      fn element_copy( &self, index : usize ) -> Self::Element
       {
         debug_assert!( index < 2 );
         if index == 0
@@ -41,37 +43,77 @@ tests_impls!
         }
       }
     }
+    // impl TheModule::EnumerableMut for Pair1
+    // {
+    //   fn element_mut< 'slf, 'element >( &'slf mut self, index : usize ) -> &'element mut Self::Element
+    //   where
+    //     'element : 'slf,
+    //   {
+    //     debug_assert!( index < 2 );
+    //     if index == 0
+    //     {
+    //       &mut self.0
+    //     }
+    //     else
+    //     {
+    //       &mut self.1
+    //     }
+    //   }
+    // }
 
-    impl IntoIterator for Pair
-    {
-      type Item = < Pair as Enumerable >::Item;
-      type IntoIter = TheModule::EnumerableIteratorConsumable< Self >;
-      fn into_iter( self ) -> Self::IntoIter
-      {
-        TheModule::EnumerableIteratorConsumable::new( self )
-      }
-    }
+  };
 
-    impl< 'a > IntoIterator for &'a Pair
-    {
-      type Item = &'a < Pair as Enumerable >::Item;
-      type IntoIter = TheModule::EnumerableIteratorNonConsumable< 'a, Pair >;
-      fn into_iter( self ) -> Self::IntoIter
-      {
-        TheModule::EnumerableIteratorNonConsumable::new( self )
-      }
-    }
+}
+
+//
+
+tests_impls!
+{
+
+  fn basic()
+  {
+    use TheModule::prelude::*;
+    PairDefine!();
 
     /* test.case( "basic" ); */
-    let pair = Pair( 13, 31 );
+    let pair = Pair1( 13, 31 );
     a_id!( pair.len(), 2 );
-    a_id!( pair.element_take( 0 ), 13 );
-    a_id!( pair.element_take( 1 ), 31 );
+    a_id!( pair.element_copy( 0 ), 13 );
+    a_id!( pair.element_copy( 1 ), 31 );
     a_id!( pair.element( 0 ), &13 );
     a_id!( pair.element( 1 ), &31 );
 
+  }
+
+  //
+
+  fn manual_into_iter()
+  {
+    use TheModule::prelude::*;
+    PairDefine!();
+
+    impl IntoIterator for Pair1
+    {
+      type Item = < Pair1 as Enumerable >::Element;
+      type IntoIter = TheModule::EnumerableIteratorCopy< Self >;
+      fn into_iter( self ) -> Self::IntoIter
+      {
+        TheModule::EnumerableIteratorCopy::new( self )
+      }
+    }
+
+    impl< 'a > IntoIterator for &'a Pair1
+    {
+      type Item = &'a < Pair1 as Enumerable >::Element;
+      type IntoIter = TheModule::EnumerableIteratorRef< 'a, Pair1 >;
+      fn into_iter( self ) -> Self::IntoIter
+      {
+        TheModule::EnumerableIteratorRef::new( self )
+      }
+    }
+
     /* test.case( "consumable iterator" ); */
-    let pair = Pair( 13, 31 );
+    let pair = Pair1( 13, 31 );
     a_id!( pair.len(), 2 );
     for e in pair
     {
@@ -79,8 +121,15 @@ tests_impls!
     }
     // a_id!( pair.len(), 2 );
 
+    /* test.case( "consumable iterator" ); */
+    let pair = Pair1( 13, 31 );
+    a_id!( pair.len(), 2 );
+    let got : Vec< _ > = pair.into_iter().collect();
+    let exp = vec![ 13, 31 ];
+    a_id!( got, exp );
+
     /* test.case( "non-consumable iterator" ); */
-    let pair = Pair( 13, 31 );
+    let pair = Pair1( 13, 31 );
     a_id!( pair.len(), 2 );
     for e in &pair
     {
@@ -88,7 +137,120 @@ tests_impls!
     }
     a_id!( pair.len(), 2 );
 
+    /* test.case( "non-consumable iterator" ); */
+    let pair = Pair1( 13, 31 );
+    a_id!( pair.len(), 2 );
+    let got : Vec< _ > = ( &pair ).into_iter().cloned().collect();
+    let exp = vec![ 13, 31 ];
+    a_id!( got, exp );
+    a_id!( pair.len(), 2 );
+
   }
+
+  //
+
+  fn enumerable_iterate_trait()
+  {
+    use TheModule::prelude::*;
+    PairDefine!();
+
+    /* test.case( "consumable iterator" ); */
+    let pair = Pair1( 13, 31 );
+    a_id!( pair.len(), 2 );
+    for e in pair.enumerable_iterate_consuming()
+    {
+      println!( "{}", e );
+    }
+    // a_id!( pair.len(), 2 );
+
+    /* test.case( "consumable iterator" ); */
+    let pair = Pair1( 13, 31 );
+    a_id!( pair.len(), 2 );
+    let got : Vec< _ > = pair.enumerable_iterate_consuming().collect();
+    let exp = vec![ 13, 31 ];
+    a_id!( got, exp );
+
+    /* test.case( "non-consumable iterator" ); */
+    let pair = Pair1( 13, 31 );
+    a_id!( pair.len(), 2 );
+    for e in pair.enumerable_iterate()
+    {
+      println!( "{}", e );
+    }
+    a_id!( pair.len(), 2 );
+
+    /* test.case( "non-consumable iterator" ); */
+    let pair = Pair1( 13, 31 );
+    a_id!( pair.len(), 2 );
+    let got : Vec< _ > = pair.enumerable_iterate().cloned().collect();
+    let exp = vec![ 13, 31 ];
+    a_id!( got, exp );
+    a_id!( pair.len(), 2 );
+
+  }
+
+  //
+
+  fn into_iterate_enumerable_iterate_trait()
+  {
+    use TheModule::prelude::*;
+    PairDefine!();
+
+    impl IntoIterator for Pair1
+    {
+      type Item = < Pair1 as Enumerable >::Element;
+      type IntoIter = TheModule::EnumerableIteratorCopy< Self >;
+      fn into_iter( self ) -> Self::IntoIter
+      {
+        TheModule::EnumerableIteratorCopy::new( self )
+      }
+    }
+
+    impl< 'a > IntoIterator for &'a Pair1
+    {
+      type Item = &'a < Pair1 as Enumerable >::Element;
+      type IntoIter = TheModule::EnumerableIteratorRef< 'a, Pair1 >;
+      fn into_iter( self ) -> Self::IntoIter
+      {
+        TheModule::EnumerableIteratorRef::new( self )
+      }
+    }
+
+    /* test.case( "consumable iterator" ); */
+    let pair = Pair1( 13, 31 );
+    a_id!( pair.len(), 2 );
+    for e in pair
+    {
+      println!( "{}", e );
+    }
+    // a_id!( pair.len(), 2 );
+
+//     /* test.case( "consumable iterator" ); */
+//     let pair = Pair1( 13, 31 );
+//     a_id!( pair.len(), 2 );
+//     let got : Vec< _ > = pair.into_iter().collect();
+//     let exp = vec![ 13, 31 ];
+//     a_id!( got, exp );
+//
+//     /* test.case( "non-consumable iterator" ); */
+//     let pair = Pair1( 13, 31 );
+//     a_id!( pair.len(), 2 );
+//     for e in &pair
+//     {
+//       println!( "{}", e );
+//     }
+//     a_id!( pair.len(), 2 );
+//
+//     /* test.case( "non-consumable iterator" ); */
+//     let pair = Pair1( 13, 31 );
+//     a_id!( pair.len(), 2 );
+//     let got : Vec< _ > = ( &pair ).into_iter().cloned().collect();
+//     let exp = vec![ 13, 31 ];
+//     a_id!( got, exp );
+//     a_id!( pair.len(), 2 );
+
+  }
+
 }
 
 //
@@ -96,4 +258,7 @@ tests_impls!
 tests_index!
 {
   basic,
+  manual_into_iter,
+  enumerable_iterate_trait,
+  into_iterate_enumerable_iterate_trait,
 }

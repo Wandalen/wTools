@@ -1,11 +1,11 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  use crate::protected::*;
 
   /// Context.
   #[ allow( dead_code ) ]
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Clone ) ]
   pub struct ContextChanger
   {
     /// Id.
@@ -33,6 +33,19 @@ pub( crate ) mod private
     {
       let changer = DrawChanger::_new( self );
       changer
+    }
+  }
+
+  impl fmt::Debug for ContextChanger
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      f.write_str( "ContextChanger" )?;
+      for ( _i, e ) in self.changes.iter().enumerate()
+      {
+        f.write_str( &wtools::string::indentation( "  ", format!( "\n{:?}", e ), "" ) )?;
+      }
+      Ok( () )
     }
   }
 
@@ -87,39 +100,7 @@ pub( crate ) mod private
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::
-  {
-    orphan::*,
-  };
-}
-
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::
-  {
-    prelude::*,
-    private::ContextChanger,
-  };
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::private::
-  {
-  };
+  exposed use ContextChanger;
 }

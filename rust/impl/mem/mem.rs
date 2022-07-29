@@ -1,10 +1,9 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::*;
+  // use crate::protected::*;
 
-  /* xxx : qqq : move to mem_tools. discuss */
-  /* zzz : qqq : implement mem_same_region, comparing also data */
+  /* zzz : qqq : implement mem::same_data, comparing data. discuss */
 
   ///
   /// Are two pointers are the same, not taking into accoint type.
@@ -44,17 +43,20 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::
   {
     orphan::*,
   };
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::
   {
     exposed::*,
@@ -67,6 +69,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 }
 

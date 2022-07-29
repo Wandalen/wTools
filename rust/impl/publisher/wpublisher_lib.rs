@@ -10,42 +10,19 @@
 //! Utility to publish modules on `crates.io` from a command line.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// pub mod wpublisher;
-// pub mod commands;
-
+// qqq : for Dima : that should be in mod_interface
 #[ cfg( feature = "use_std" ) ]
 pub use std::env;
 #[ allow( unused_imports ) ]
 pub use wca::instruction;
-#[ allow( unused_imports ) ]
-pub use crate::wpublisher::*;
 
-// qqq : for Dima : mod interface /* aaa : Dmytro : replaced */
 wtools::mod_interface!
 {
-  prelude mod wpublisher;
-  prelude mod commands;
-}
+  layer wpublisher; // qqq : for Dima : bad name of a namespace
+  layer commands;
 
-// /// Protected namespace of the module.
-// pub mod protected
-// {
-//   pub use super::exposed::*;
-//   pub use super::commands::*;
-// }
-//
-// pub use protected::*;
-//
-// /// Exposed namespace of the module.
-// pub mod exposed
-// {
-//   pub use super::prelude::*;
-// }
-//
-// /// Prelude to use essentials: `use my_module::prelude::*`.
-// pub mod prelude
-// {
-//   pub use super::wpublisher::*;
-// }
+  protected( crate ) use ::wtools::prelude::*;
+
+}

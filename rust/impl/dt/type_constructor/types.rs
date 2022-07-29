@@ -3,9 +3,8 @@ pub( crate ) mod private
 {
   use crate::exposed::*;
 
-  // xxx : write article about the module
+  // zzz : write article about the module
   // zzz : extend diagnostics_tools
-  // zzz : add core::fmt to prelude
 
   ///
   /// Type constructor to define tuple wrapping a given type.
@@ -814,23 +813,28 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 }
 
+#[ doc( inline ) ]
 pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

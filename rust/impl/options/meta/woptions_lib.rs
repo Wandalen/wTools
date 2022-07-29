@@ -10,7 +10,7 @@
 //! Mechanism to define map of options for a fuction and its defaults laconically.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 // extern crate proc_macro_tools;
 // mod former;

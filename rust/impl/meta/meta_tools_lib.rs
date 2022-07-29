@@ -10,52 +10,33 @@
 //! Collection of general purpose meta tools.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
-
-// xxx : expose one_cell
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
-  #[ cfg( any( feature = "collection_make", feature = "literally" ) ) ]
-  pub use ::literally;
+
   #[ cfg( feature = "for_each" ) ]
   pub use ::for_each;
   #[ cfg( feature = "impls_index" ) ]
   pub use ::impls_index;
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
+  #[ cfg( feature = "collection_make" ) ]
+  pub use ::literally;
+  #[ cfg( feature = "idents_concat" ) ]
+  pub use ::paste;
+
+  #[ cfg( feature = "former" ) ]
   pub use ::former;
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
+  #[ cfg( feature = "options" ) ]
   pub use ::woptions;
+
 }
 
-/// Collection of general purpose meta tools.
-pub mod meta;
+//
 
-/// Protected namespace of the module.
-pub mod protected
+mod_interface::mod_interface!
 {
-  pub use super::orphan::*;
-  pub use super::meta::orphan::*;
-}
 
-pub use protected::*;
+  layer meta;
 
-/// Orphan namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-  pub use super::meta::exposed::*;
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::meta::prelude::*;
 }

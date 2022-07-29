@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  use crate::protected::*;
 
   /// Command to draw rectangle.
   #[ allow( dead_code ) ]
@@ -22,7 +22,7 @@ pub( crate ) mod private
     pub fn _new( draw : DrawChanger ) -> Self
     {
       let id = Id::new::< Self >();
-      let change = RectChange::new( id );
+      let change = RectChangeNew::new( id );
       let mut result = Self{ id, draw };
       change.add_to( &mut result );
       result
@@ -32,7 +32,7 @@ pub( crate ) mod private
     #[ inline ]
     pub fn region( mut self, left_top : X2< f32 >, right_bottom : X2< f32 > ) -> Self
     {
-      let change = RectChange::new( self.id() ).region( left_top, right_bottom );
+      let change = RectChangeRegion::new( self.id() ).region( left_top, right_bottom );
       self.change_add( change );
       self
     }
@@ -87,39 +87,7 @@ pub( crate ) mod private
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::orphan::*;
-}
-
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::
-  {
-    exposed::*,
-  };
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::
-  {
-    prelude::*,
-    private::RectChanger,
-  };
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::private::
-  {
-  };
+  exposed use RectChanger;
 }

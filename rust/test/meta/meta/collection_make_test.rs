@@ -1,13 +1,10 @@
-// #![ allow( dead_code ) ]
-// #![ feature( trace_macros ) ]
 use super::*;
-// use test_tools::*;
 
 //
 
 tests_impls!
 {
-  #[ test ]
+
   fn hash_map()
   {
 
@@ -26,7 +23,7 @@ tests_impls!
 
   //
 
-  #[ test ]
+
   fn hash_set()
   {
 

@@ -9,6 +9,12 @@ use ::multilayer as TheModule;
 
 include!( "../_conditional/local_module.rs" );
 #[ allow( unused_imports ) ]
-use test_tools::*;
+use test_tools::exposed::*;
+
+///  A struct for testing purpose.
+#[ derive( Debug, PartialEq ) ]
+pub struct CrateStructForTesting1
+{
+}
 
 mod mod_interface;

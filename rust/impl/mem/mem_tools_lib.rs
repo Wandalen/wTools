@@ -10,10 +10,10 @@
 //! Collection of tools to manipulate memory.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
 }
 
@@ -23,27 +23,34 @@ pub mod mem;
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
+  #[ doc( inline ) ]
   pub use super::mem::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
+  #[ doc( inline ) ]
   pub use super::mem::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use super::mem::prelude::*;
 }

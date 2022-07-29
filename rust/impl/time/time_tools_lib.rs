@@ -10,7 +10,7 @@
 //! Collection of time tools.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 ///
 /// Collection of general purpose time tools.
@@ -49,33 +49,39 @@
 pub mod time;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
 }
 
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Shared with parent namespace of the module
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
+  #[ doc( inline ) ]
   pub use super::time::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use super::time::prelude::*;
 }

@@ -1,7 +1,7 @@
 
 use woptions as TheModule;
 #[ allow( unused_imports ) ]
-use test_tools::*;
+use test_tools::exposed::*;
 
 use former::Former;
 

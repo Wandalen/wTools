@@ -10,21 +10,16 @@
 //! Library of utility to operate files from a command line.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// #![feature( pattern )]
+use wtools::meta::mod_interface;
 
-// use wtools::former::Former;
-
-///
-/// Result of parsing.
-///
-
-pub mod instruction;
-
-///
-/// Properties parsing.
-///
-
-pub mod props;
-// pub mod string;
+crate::mod_interface!
+{
+  /// Result of parsing.
+  #[ cfg( feature = "use_std" ) ]
+  layer instruction;
+  /// Properties parsing.
+  #[ cfg( feature = "use_std" ) ]
+  layer props;
+}

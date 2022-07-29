@@ -11,26 +11,20 @@
 //! Tools for writing procedural macroses.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Container kind.
 pub mod container_kind;
-/// Helpers.
 pub mod helper;
-/// Trait name.
 pub mod name;
-/// Split with name.
-pub mod split_with_name;
-/// Syntax.
+pub mod quantifier;
 pub mod syntax;
-/// Analyze generic to provide more information.
 pub mod generic_analyze;
 
 ///
 /// Dependencies of the module.
 ///
 
-pub mod dependencies
+pub mod dependency
 {
   pub use ::syn;
   pub use ::quote;
@@ -39,6 +33,9 @@ pub mod dependencies
   pub use ::type_constructor;
 }
 
+#[ doc( inline ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
@@ -46,12 +43,10 @@ pub mod protected
   pub use super::orphan::*;
 }
 
-#[ doc( inline ) ]
-pub use protected::*;
-
 /// Parented namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
@@ -66,11 +61,12 @@ pub mod exposed
     generic_analyze::exposed::*,
     helper::exposed::*,
     name::exposed::*,
-    split_with_name::exposed::*,
+    // split_with_name::exposed::*,
+    quantifier::exposed::*,
     syntax::exposed::*,
   };
   #[ doc( inline ) ]
-  pub use super::syntax::
+  pub use super::quantifier::
   {
     Pair,
     Many,
@@ -119,8 +115,11 @@ pub mod prelude
     generic_analyze::prelude::*,
     helper::prelude::*,
     name::prelude::*,
-    split_with_name::prelude::*,
+    // split_with_name::prelude::*,
+    quantifier::prelude::*,
     syntax::prelude::*,
   };
 
 }
+
+// qqq : introduce features. make it smart. discuss list of features before implementing

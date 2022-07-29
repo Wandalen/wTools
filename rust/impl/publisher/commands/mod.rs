@@ -3,17 +3,22 @@
 //! Library of utility to work with commands.
 //!
 
-/// Publish module.
-#[ cfg( feature = "use_std" ) ]
-mod publish;
+crate::mod_interface!
+{
+  /// Publish module.
+  #[ cfg( feature = "use_std" ) ]
+  prelude mod publish;
+  /// List packages.
+  #[ cfg( feature = "use_std" ) ]
+  prelude mod list;
+  /// Init aggregator commands.
+  #[ cfg( feature = "use_std" ) ]
+  prelude mod init;
 
-/// List packages.
-#[ cfg( feature = "use_std" ) ]
-mod list;
+  #[ cfg( feature = "use_std" ) ]
+  protected use super::init::*;
+}
 
-/// Init aggregator commands.
-#[ cfg( feature = "use_std" ) ]
-mod init;
-#[ cfg( feature = "use_std" ) ]
-pub use init::*;
-
+// qqq : for Dima : remove. that could be inside mod_interface
+// #[ cfg( feature = "use_std" ) ]
+// pub use init::*;

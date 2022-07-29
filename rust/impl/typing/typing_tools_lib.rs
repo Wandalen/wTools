@@ -10,13 +10,13 @@
 //! Collection of general purpose tools for type checking.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Collection of general purpose tools for type checking.
 pub mod typing;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   pub use ::inspect_type;
   pub use ::is_slice;

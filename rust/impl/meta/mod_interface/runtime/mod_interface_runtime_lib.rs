@@ -10,7 +10,7 @@
 //! Protocol of modularity unifying interface of a module and introducing layers.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Namespace with dependencies.
 pub mod dependency
@@ -20,14 +20,17 @@ pub mod dependency
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 }
 

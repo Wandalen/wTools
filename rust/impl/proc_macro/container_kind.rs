@@ -1,3 +1,7 @@
+//!
+//! Determine kind of a container.
+//!
+
 /// Internal namespace.
 pub( crate ) mod private
 {
@@ -96,22 +100,26 @@ pub( crate ) mod private
 
 }
 
+#[ doc( inline ) ]
+pub use exposed::*;
+
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
-  // use super::private as i;
 
-  pub use super::private::ContainerKind;
-  pub use super::private::type_container_kind;
-  pub use super::private::type_optional_container_kind;
+  #[ doc( inline ) ]
+  pub use super::private::
+  {
+    ContainerKind,
+    type_container_kind,
+    type_optional_container_kind,
+  };
 
 }
-
-pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // // use super::private as i;
 }

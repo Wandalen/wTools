@@ -1,3 +1,7 @@
+//!
+//! Analyze generic to provide more information than trivial syntax node.
+//!
+
 /// Internal namespace.
 pub( crate ) mod private
 {
@@ -48,23 +52,27 @@ pub( crate ) mod private
 
 }
 
+#[ doc( inline ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
-
-pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::
   {
     prelude::*,
@@ -75,6 +83,7 @@ pub mod exposed
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use super::
   {
     private::GenericsAnalyze,

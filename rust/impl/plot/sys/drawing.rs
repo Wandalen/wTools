@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  use crate::protected::*;
 
   /// Drawing.
   #[ derive( Debug, Clone ) ]
@@ -34,60 +34,24 @@ pub( crate ) mod private
 
 }
 
-/// Draw command.
-mod command;
-/// Draw queue.
-mod queue;
-/// Rectangle change.
-mod rect_change;
-/// Rectangle change.
-mod rect_changer;
-
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::
-  {
-    orphan::*,
-    command::orphan::*,
-    queue::orphan::*,
-    rect_change::orphan::*,
-    rect_changer::orphan::*,
-  };
-}
 
-pub use protected::*;
+  /// Draw changer.
+  layer changer;
+  /// ChangeInterface for drawing constructor.
+  layer change_new;
+  /// Draw command.
+  layer command;
+  /// Draw queue.
+  layer queue;
+  /// New shape : rectangle.
+  layer rect_change_new;
+  /// Change region of the rectangle.
+  layer rect_change_region;
+  /// Rectangle change.
+  layer rect_changer;
 
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
+  exposed use Drawing;
 
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::
-  {
-    prelude::*,
-    command::exposed::*,
-    queue::exposed::*,
-    rect_change::exposed::*,
-    rect_changer::exposed::*,
-    private::Drawing,
-  };
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::
-  {
-    command::prelude::*,
-    queue::prelude::*,
-    rect_change::prelude::*,
-    rect_changer::prelude::*,
-  };
 }

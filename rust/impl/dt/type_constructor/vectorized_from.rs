@@ -125,6 +125,7 @@ pub( crate ) mod private
   {
     fn vectorized_from( src : [ Into1 ; N ] ) -> Self
     {
+      // SAFETY : safe because all elements are set in the funtions
       let mut result : Self = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
       for i in 0..N
       {
@@ -139,31 +140,34 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
-  pub use super::private::
-  {
-  };
 }
 
+#[ doc( inline ) ]
 pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use super::private::
   {
     VectorizedFrom,

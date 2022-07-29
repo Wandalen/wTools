@@ -1,10 +1,13 @@
 
-/// Perform smoke testing.
-#[ cfg( feature = "use_std" ) ]
-mod smoke;
+crate::mod_interface!
+{
+  /// Perform smoke testing.
+  #[ cfg( feature = "use_std" ) ]
+  prelude mod smoke;
+  /// Init aggregator commands.
+  #[ cfg( feature = "use_std" ) ]
+  prelude mod init;
+}
 
-/// Init aggregator commands.
-#[ cfg( feature = "use_std" ) ]
-mod init;
 #[ cfg( feature = "use_std" ) ]
 pub use init::*;

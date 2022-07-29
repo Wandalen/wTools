@@ -13,7 +13,7 @@
 //! Interval adapter for both open/closed implementations of intervals ( ranges ).
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Internal namespace.
 #[ cfg( feature = "use_std" ) ]
@@ -174,22 +174,27 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Parented namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
   #[ cfg( feature = "use_std" ) ]
+  #[ doc( inline ) ]
   pub use super::private::
   {
     IntervalAdapter,
@@ -197,6 +202,7 @@ pub mod exposed
   };
 }
 
+#[ doc( inline ) ]
 pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

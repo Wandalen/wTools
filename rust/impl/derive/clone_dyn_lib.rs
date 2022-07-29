@@ -13,7 +13,7 @@
 //! Derive to clone dyn structures.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ cfg( all( not( feature = "use_std" ), feature = "use_alloc" ) ) ]
 extern crate alloc;
@@ -47,7 +47,7 @@ pub( crate ) mod private
 }
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   pub use ::clone_dyn_meta;
 }
@@ -55,27 +55,33 @@ pub mod dependencies
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use ::clone_dyn_meta::clone_dyn;
   #[ cfg( any( feature = "use_std", feature = "use_alloc" ) ) ]
+  #[ doc( inline ) ]
   pub use super::private::_clone_boxed;
 }

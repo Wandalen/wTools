@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  use crate::protected::*;
   use crate::abs::*;
 
   use once_cell::sync::Lazy;
@@ -81,55 +81,10 @@ pub( crate ) mod private
     }
   }
 
-  // /// Obtain a new context.
-  // pub fn obtain() -> ContextChanger
-  // {
-  //   // Safety : under mutex.
-  //   unsafe
-  //   {
-  //     Registry::< Context >::obtain( &mut REGISTRY )
-  //   }
-  // }
-
 }
 
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::
-  {
-    orphan::*,
-    private::REGISTRY,
-    private::current,
-    // private::obtain,
-  };
-}
-
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::
-  {
-    prelude::*,
-    private::Context,
-    private::current as context,
-  };
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::private::
-  {
-  };
+  protected use { REGISTRY, current };
+  exposed use { Context, current as context };
 }

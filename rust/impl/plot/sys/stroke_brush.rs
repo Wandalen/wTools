@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  use crate::protected::*;
 
   /// StrokeBrush.
   #[ derive( Debug, Clone ) ]
@@ -9,30 +9,47 @@ pub( crate ) mod private
   {
     pub( crate ) id : Id,
     pub( crate ) color : Rgba,
+    pub( crate ) width : f32,
+  }
+
+  impl Default for StrokeBrush
+  {
+    fn default() -> Self
+    {
+      let id = Id::new::< Self >();
+      let color = Default::default();
+      let width = 1.0;
+      Self { id, color, width }
+    }
   }
 
   impl StrokeBrush
   {
+
     /// Constructor.
     pub fn new() -> Self
     {
-      let id = Id::new::< Self >();
-      let color = Default::default();
-      Self
-      {
-        color,
-        id,
-      }
+      Default::default()
     }
+
     /// ChangeInterface color.
     #[ inline ]
-    pub fn color< Color >( mut self, color : Color ) -> Self
+    pub fn color< Color >( mut self, val : Color ) -> Self
     where
       Color : RgbaInterface< f32 >,
     {
-      self.color = color.into_rgba();
+      self.color = val.into_rgba();
       self
     }
+
+    /// ChangeInterface color.
+    #[ inline ]
+    pub fn width( mut self, val : f32 ) -> Self
+    {
+      self.width = val;
+      self
+    }
+
   }
 
   impl HasIdInterface for StrokeBrush
@@ -46,39 +63,17 @@ pub( crate ) mod private
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::
-  {
-    orphan::*,
-  };
-}
+  exposed use StrokeBrush;
 
-pub use protected::*;
+  /// ChangerInterface of brush stroke.
+  layer changer;
+  /// ChangeInterface of brush stroke constructor.
+  layer change_new;
+  /// ChangeInterface of brush stroke to change color.
+  layer change_color;
+  /// ChangeInterface of brush stroke to change width.
+  layer change_width;
 
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::
-  {
-    prelude::*,
-    private::StrokeBrush,
-  };
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::private::
-  {
-  };
 }

@@ -1,6 +1,6 @@
 [package]
 name = "meta_tools_min"
-version = "0.2.11"
+version = "0.2.13"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -33,6 +33,7 @@ default = [
   "impls_index",
   "mod_interface",
   "collection_make",
+  "idents_concat",
   "use_std",
 ]
 full = [
@@ -40,6 +41,7 @@ full = [
   "impls_index",
   "mod_interface",
   "collection_make",
+  "idents_concat",
   "use_std",
   "use_alloc",
 ]
@@ -47,6 +49,7 @@ use_std = []
 use_alloc = []
 
 collection_make = [ "literally" ]
+idents_concat = [ "paste" ]
 
 [lib]
 name = "meta_tools_min"
@@ -69,6 +72,7 @@ for_each = { version = "~0.1", path = "../../rust/for_each", optional = true, de
 impls_index = { version = "~0.1", path = "../../rust/impls_index", optional = true, default-features = false }
 mod_interface = { version = "~0.1", path = "../../rust/mod_interface", optional = true, default-features = false }
 literally = { version = "~0.1", optional = true, default-features = false }
+paste = { version = "~1.0", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

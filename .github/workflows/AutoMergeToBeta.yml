@@ -50,14 +50,12 @@ jobs :
           initial_delay : 60
           workflows : ${{ needs.get_modules.outputs.workflow_names }}
 
-  check :
+  runs_check :
     needs :
       - get_modules
       - wait_for_modules
     strategy :
       matrix : ${{ fromJSON( needs.get_modules.outputs.workflow_files ) }}
-    outputs :
-      has_succeeded_runs : ${{ steps.success.outputs.success }}
     runs-on : ubuntu-latest
     steps :
       - name : Check workflow run status
@@ -74,14 +72,12 @@ jobs :
       - name : Check cancelled conclusion
         if : ${{ steps.check_ci.outputs.conclusion == 'cancelled' }}
         run : exit 1
-      - name : Check success conclusion and setup output
-        if : ${{ steps.check_ci.outputs.conclusion == 'success' }}
-        id : success
-        run: echo "::set-output name=success::true"
+      - name : Check skipped conclusion
+        if : ${{ steps.check_ci.outputs.conclusion == 'skipped' }}
+        run : exit 1
 
   merge :
-    needs : check
-    if : ${{ success() && needs.check.outputs.has_succeeded_runs == 'true' }}
+    needs : runs_check
     runs-on : ubuntu-latest
     steps :
       - name : Find PR number for current commit
@@ -94,17 +90,6 @@ jobs :
         uses: juliangruber/merge-pull-request-action@v1
         with:
           github-token: ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
+          repo: ${{ github.repository }}
           number: ${{ steps.find.outputs.number }}
           method: merge
-
-  skipped_runs_check :
-    needs : check
-    if : ${{ success() }}
-    runs-on : ubuntu-latest
-    steps :
-      - name : Failure if skipped
-        if : ${{ needs.check.outputs.has_succeeded_runs != 'true' }}
-        run : exit 1
-      - name : Success if not skipped
-        if : ${{ needs.check.outputs.has_succeeded_runs == 'true' }}
-        run : exit 0

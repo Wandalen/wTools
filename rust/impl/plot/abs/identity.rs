@@ -1,8 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
-  use once_cell::sync::Lazy; /* xxx : move to wtools */
+  use crate::protected::*;
+  use once_cell::sync::Lazy;
   use std::sync::Mutex;
   use core::hash::Hash;
   // use core::any::TypeId;
@@ -24,8 +24,6 @@ pub( crate ) mod private
       Hash +
     ,
   {
-    // fn tp_id() -> i32;
-    // fn in_id() -> i32;
   }
 
   /// Has id.
@@ -39,7 +37,7 @@ pub( crate ) mod private
   }
 
   /// Reference on context.
-  #[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
+  #[ derive( Clone, Copy, PartialEq, Eq, Hash ) ]
   pub struct Id
   {
     // #[ allow( dead_code ) ]
@@ -60,55 +58,29 @@ pub( crate ) mod private
       *c += 1;
       Self
       {
-        // tp_id : TypeId::of::< T >(),
         in_id : *c,
       }
     }
   }
 
   impl IdInterface for Id
-  // where
-  //   T : core::any::Any,
   {
+  }
+
+  impl fmt::Debug for Id
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      f.write_fmt( format_args!( "id::{:?}", self.in_id ) )
+    }
   }
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
+crate::mod_interface!
 {
-  pub use super::
-  {
-    orphan::*,
-  };
-}
 
-pub use protected::*;
+  exposed use Id;
+  prelude use { IdInterface, HasIdInterface };
 
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::
-  {
-    prelude::*,
-    private::Id,
-  };
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::private::
-  {
-    IdInterface,
-    HasIdInterface,
-  };
 }

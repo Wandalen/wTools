@@ -1,4 +1,4 @@
-use wtools::former::Former;
+use former::Former;
 
 struct HashMap< T >
 {

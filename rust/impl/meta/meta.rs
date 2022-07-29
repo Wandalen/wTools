@@ -1,71 +1,39 @@
+//!
+//! Collection of general purpose meta tools.
+//!
+
 /// Internal namespace.
 pub( crate ) mod private
 {
+
 }
 
-/* zzz : use name protected */
-/* zzz : use for implementing of macro mod_interface */
+//
 
-/// Protected namespace of the module.
-pub mod protected
+mod_interface::mod_interface!
 {
-  pub use super::orphan::*;
-  #[ cfg( feature = "impls_index" ) ]
-  pub use ::impls_index::orphan::*;
-  #[ cfg( feature = "mod_interface" ) ]
-  pub use ::mod_interface::orphan::*;
-  #[ cfg( feature = "for_each" ) ]
-  pub use ::for_each::orphan::*;
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
-  pub use ::woptions::orphan::*;
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-  pub use ::former::orphan::*;
-}
-
-pub use protected::*;
-
-/// Shared with parent namespace of the module
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
 
   #[ cfg( feature = "impls_index" ) ]
-  pub use ::impls_index::exposed::*;
-  #[ cfg( feature = "mod_interface" ) ]
-  pub use ::mod_interface::exposed::*;
+  use ::impls_index;
   #[ cfg( feature = "for_each" ) ]
-  pub use ::for_each::exposed::*;
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
-  pub use ::woptions::exposed::*;
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-  pub use ::former::exposed::*;
-
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
-  pub use ::woptions as options;
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-  pub use ::former as former;
-
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  #[ cfg( feature = "impls_index" ) ]
-  pub use ::impls_index::prelude::*;
+  use ::for_each;
   #[ cfg( feature = "mod_interface" ) ]
-  pub use ::mod_interface::prelude::*;
-  #[ cfg( feature = "for_each" ) ]
-  pub use ::for_each::prelude::*;
-  #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
-  pub use ::woptions::prelude::*;
-  #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-  pub use ::former::prelude::*;
+  use ::mod_interface;
+  #[ cfg( feature = "mod_interface" ) ]
+  prelude use ::mod_interface::mod_interface;
   #[ cfg( feature = "collection_make" ) ]
-  pub use ::literally::*;
+  prelude use ::literally::*;
+  #[ cfg( feature = "idents_concat" ) ]
+  prelude use ::paste::paste as idents_concat;
+
+  #[ cfg( feature = "options" ) ]
+  use ::woptions;
+  #[ cfg( feature = "options" ) ]
+  prelude use ::woptions as options;
+
+  #[ cfg( feature = "former" ) ]
+  use ::former;
+  #[ cfg( feature = "former" ) ]
+  prelude use ::former as former;
+
 }

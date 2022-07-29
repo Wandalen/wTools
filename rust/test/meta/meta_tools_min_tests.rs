@@ -7,8 +7,14 @@
 
 include!( "../_conditional/local_module.rs" );
 
+///  A struct for testing purpose.
+#[ derive( Debug, PartialEq ) ]
+pub struct CrateStructForTesting1
+{
+}
+
 use meta_tools_min as TheModule;
 #[ allow( unused_imports ) ]
-use test_tools::*;
+use test_tools::exposed::*;
 
 mod inc;

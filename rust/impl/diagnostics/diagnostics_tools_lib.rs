@@ -10,7 +10,7 @@
 //! Diagnostics tools.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Compile-time asserting.
 pub mod diagnostics;
@@ -18,7 +18,7 @@ pub mod diagnostics;
 pub mod layout;
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
   #[ cfg( feature = "runtime_assertions" ) ]
   pub use ::pretty_assertions;
@@ -27,6 +27,7 @@ pub mod dependencies
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
   pub use super::diagnostics::orphan::*;
@@ -40,12 +41,14 @@ pub use protected::*;
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
   pub use super::diagnostics::exposed::*;

@@ -1,6 +1,6 @@
 [package]
 name = "wplot"
-version = "0.1.3"
+version = "0.1.7"
 edition = "2021"
 authors = ["Kostiantyn Wandalen <wandalen@obox.systems>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>" ]
 license = "MIT"

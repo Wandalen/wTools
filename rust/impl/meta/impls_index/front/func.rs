@@ -342,19 +342,23 @@ pub( crate ) mod private
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  // // use super::private as i;
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 }
 
+#[ doc( inline ) ]
 pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::private as i;
+  #[ doc( inline ) ]
   pub use super::private::fn_rename;
+  #[ doc( inline ) ]
   pub use super::private::fn_name;
+  #[ doc( inline ) ]
   pub use super::private::fns;
+  #[ doc( inline ) ]
   pub use super::private::fns2;
   // pub use super::private::ignore_macro;
 }

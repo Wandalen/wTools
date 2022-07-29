@@ -1,5 +1,5 @@
 
-use crate::*;
+use crate::protected::*;
 use crate::wpublisher::bool::*;
 use std::env;
 use std::fs;
@@ -22,11 +22,11 @@ use std::collections::HashMap;
 /// Publish package.
 ///
 
-pub fn publish( instruction : &instruction::Instruction ) -> Result< (), BasicError >
+pub fn publish( instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
 {
   let current_path = env::current_dir().unwrap();
 
-  let paths = files::find( &current_path, instruction.subject.split( " " ).collect::<Vec<&str>>().as_slice() );
+  let paths = crate::files::find( &current_path, instruction.subject.split( " " ).collect::<Vec<&str>>().as_slice() );
   let mut paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::<Vec<PathBuf>>();
   if paths.is_empty() /* && !path.glob_is( &instruction.subject ) qqq : implement `glob_is` */
   {
@@ -154,7 +154,7 @@ fn package_publish( current_path : &PathBuf, path : &PathBuf, dry : &BoolLike ) 
 /// Publish packages from workspace.
 ///
 
-pub fn workspace_publish( instruction : &instruction::Instruction ) -> Result< (), BasicError >
+pub fn workspace_publish( instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
 {
   let current_path = env::current_dir().unwrap();
 

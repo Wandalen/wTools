@@ -10,8 +10,9 @@
 //! Utility to publish modules on `crates.io` from a command line.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ allow( unused_imports ) ]
 use ::wpublisher::*;
 
 //

@@ -10,44 +10,56 @@
 //! Tools for writing and running tests.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Basics.
-pub mod basic;
-/// Helpers.
-pub mod helper;
+// doc_file_test!( "rust/test/test/asset/Test.md" );
 
 /// Dependencies.
-pub mod dependencies
+pub mod dependency
 {
+  #[ doc( inline ) ]
   pub use ::paste;
+  #[ doc( inline ) ]
   pub use ::trybuild;
+  #[ doc( inline ) ]
   pub use ::anyhow;
+  #[ doc( inline ) ]
   pub use ::rustversion;
+  #[ doc( inline ) ]
   pub use ::meta_tools;
+  #[ doc( inline ) ]
   pub use ::mem_tools;
+  #[ doc( inline ) ]
   pub use ::typing_tools;
+  #[ doc( inline ) ]
   pub use ::num_traits;
+  #[ doc( inline ) ]
   pub use ::diagnostics_tools;
 }
 
-pub use dependencies::*;
-pub use ::meta_tools as meta;
-pub use ::mem_tools as mem;
-pub use ::typing_tools as typing;
+use ::meta_tools::mod_interface;
 
-/// Exposed namespace of the module.
-pub mod exposed
+mod_interface!
 {
-  #[ doc( inline ) ]
-  pub use super::basic::exposed::*;
-  #[ doc( inline ) ]
-  pub use super::helper::exposed::*;
+  /// Basics.
+  layer basic;
 
-  #[ doc( inline ) ]
-  pub use ::diagnostics_tools::exposed::*;
-  #[ doc( inline ) ]
-  pub use ::meta_tools::
+  // use super::exposed::meta;
+  use super::exposed::mem;
+  use super::exposed::typing;
+  use super::exposed::dt;
+  use super::exposed::diagnostics;
+
+  protected use super::dependency;
+  protected use super::dependency::*;
+
+  prelude use ::meta_tools as meta;
+  prelude use ::mem_tools as mem;
+  prelude use ::typing_tools as typing;
+  prelude use ::data_type as dt;
+  prelude use ::diagnostics_tools as diagnostics;
+
+  prelude use ::meta_tools::
   {
     impls,
     index,
@@ -55,39 +67,8 @@ pub mod exposed
     tests_impls_optional,
     tests_index,
   };
-  #[ doc( inline ) ]
-  pub use ::typing_tools::{ implements };
-
-  #[ doc( inline ) ]
-  pub use ::inspect_type::exposed::*;
-  // pub use ::inspect_type;
-  // qqq : xxx : add negative test that wtest_basic::exposed::exposed does not exist
+  prelude use ::typing_tools::{ implements };
 
 }
 
-#[ doc( inline ) ]
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  #[ doc( inline ) ]
-  pub use super::basic::prelude::*;
-  #[ doc( inline ) ]
-  pub use super::helper::prelude::*;
-
-  #[ doc( inline ) ]
-  pub use ::diagnostics_tools::prelude::*;
-  #[ doc( inline ) ]
-  pub use ::meta_tools::
-  {
-    impls,
-    index,
-    tests_impls,
-    tests_impls_optional,
-    tests_index,
-  };
-  #[ doc( inline ) ]
-  pub use ::typing_tools::{ implements };
-
-}
+// qqq : for Dima : add negative test that wtest_basic::exposed::exposed does not exist

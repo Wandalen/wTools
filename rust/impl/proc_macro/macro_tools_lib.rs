@@ -10,7 +10,8 @@
 //! Tools for writing procedural macroses.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ doc( inline ) ]
 pub use proc_macro_tools::*;
+

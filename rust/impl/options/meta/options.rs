@@ -63,6 +63,7 @@ impl Parse for Element
     let attrs : Vec< syn::Attribute > = input.call( syn::Attribute::parse_outer )?;
     let vis : syn::Visibility = input.parse()?;
 
+    // zzz : remove lookahead, use input
     let lookahead1 = input.lookahead1();
     if lookahead1.peek( syn::Token!{ fn } )
     {

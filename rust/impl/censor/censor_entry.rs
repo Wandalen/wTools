@@ -10,12 +10,12 @@
 //! Utility to operate files from a command line.
 //!
 
-// #![feature( pattern )]
-
+#[ cfg( feature = "use_std" ) ]
 use std::env;
-use wcensor::*;
-// use wtools::former::Former;
+#[ allow( unused_imports ) ]
+use ::wcensor::*;
 
+#[ cfg( feature = "use_std" ) ]
 fn main()
 {
 
@@ -32,4 +32,9 @@ fn main()
   // .collect();
   // dbg!( &splits );
 
+}
+
+#[ cfg( not( feature = "use_std" ) ) ]
+fn main()
+{
 }

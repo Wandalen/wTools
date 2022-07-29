@@ -7,10 +7,10 @@
 #![ warn( missing_docs ) ]
 
 //!
-//! Collection of general purpose tools to iterate. Currently it simply reexport itertools.
+//! Collection of general purpose tools to iterate. Currently it simply reexports itertools.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Core module.
 pub mod iter;
@@ -24,14 +24,18 @@ pub mod dependency
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
+  #[ doc( inline ) ]
   pub use super::iter::exposed::*;
 }
 
+#[ doc( inline ) ]
 pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use super::iter::prelude::*;
 }
