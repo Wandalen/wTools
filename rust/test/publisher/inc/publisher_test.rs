@@ -107,6 +107,7 @@ tests_impls!
     let path = std::ffi::OsStr::new( &path );
     let proc = std::process::Command::new( path )
     .current_dir( &tmp_dir )
+    .env( "CARGO_TERM_COLOR", "never" )
     .args([ ".workspace.publish", "dry:1" ])
     .output()
     .unwrap();
