@@ -503,7 +503,7 @@ pub mod prelude
   };
 }
 
-// qqq : for Dima : rewrite sample for the module
-// qqq : for Dima : write description for the module, it should have
+// qqq : for Dima : rewrite sample for the module /* aaa : Dmytro : added new samples */
+// qqq : for Dima : write description for the module, it should have /* aaa : Dmytro : added */
 // - example based on simpified version of test::layer_have_layer with single sublayer
 // - example with attribute `#![ debug ]`
