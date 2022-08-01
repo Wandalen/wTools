@@ -10,7 +10,7 @@ pub( crate ) mod private
   {
     ( $name:ident ) =>
     {
-      #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
+      #[ allow( missing_docs ) ] // rrr : for Dmytro : make proper solution, maybe use Former
       pub fn $name< Str : AsRef< str > >( &mut self, src : Str ) -> &mut Self
       where
         String : From<Str>
@@ -21,7 +21,7 @@ pub( crate ) mod private
     };
     ( $name1:ident, $name2:ident ) =>
     {
-      #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
+      #[ allow( missing_docs ) ] // rrr : for Dmytro : : make proper solution, maybe use Former
       pub fn $name2< Str : AsRef< str > >( &mut self, src : Str ) -> &mut Self
       where
         String : From<Str>
@@ -41,7 +41,7 @@ pub( crate ) mod private
   {
     ( $name1:ident, $name2:ident ) =>
     {
-      #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
+      #[ allow( missing_docs ) ] // rrr : for Dmytro : : make proper solution, maybe use Former
       pub fn $name2< Str : AsRef< str > >( &mut self, property : Str, hint : Str ) -> &mut Self
       where
         String : From<Str>
@@ -61,7 +61,7 @@ pub( crate ) mod private
   {
     ( $name1:ident, $name2:ident ) =>
     {
-      #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
+      #[ allow( missing_docs ) ] // rrr : for Dmytro : : make proper solution, maybe use Former
       pub fn $name2< Str : AsRef< str > >( &mut self, property : Str, alias : Str ) -> &mut Self
       where
         String : From<Str>
@@ -82,7 +82,7 @@ pub( crate ) mod private
   {
     ( $name:ident ) =>
     {
-      #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
+      #[ allow( missing_docs ) ] // rrr : for Dmytro : : make proper solution, maybe use Former
       pub fn $name( &mut self, routine : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> &mut Self
       {
         self.ins.$name = routine.into();
@@ -91,7 +91,7 @@ pub( crate ) mod private
     };
     ( $name1:ident, $name2:ident ) =>
     {
-      #[ allow( missing_docs ) ] // qqq : make proper solution, maybe use Former
+      #[ allow( missing_docs ) ] // rrr : for Dmytro : : make proper solution, maybe use Former
       pub fn $name2( &mut self, routine : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> &mut Self
       {
         self.ins.$name1 = routine.into();
