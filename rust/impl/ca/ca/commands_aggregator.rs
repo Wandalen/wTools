@@ -43,9 +43,9 @@ pub( crate ) mod private
     pub with_help : bool,
     #[ default( true ) ]
     pub changing_exit_code : bool,
-    // logger : Option<Logger>, /* qqq : implement */
+    // logger : Option<Logger>, /* rrr : for Dmytro : implement */
     pub commands : std::collections::HashMap< String, Command >,
-    // pub vocabulary : Option<vocabulary>, /* qqq : implement */
+    // pub vocabulary : Option<vocabulary>, /* rrr : for Dmytro : implement */
   }
 
   impl CommandsAggregator
@@ -334,7 +334,7 @@ pub( crate ) mod private
     {
       if self.changing_exit_code
       {
-        /* qqq : implement */
+        /* rrr : for Dmytro : implement */
         // unimplemented!();
       }
       Err( err )
