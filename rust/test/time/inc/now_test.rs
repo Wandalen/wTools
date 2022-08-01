@@ -32,7 +32,6 @@ tests_impls!
     let got2 = time::s::now();
     a_id!( got1 / 1000, got2 );
   }
-
 }
 
 //
