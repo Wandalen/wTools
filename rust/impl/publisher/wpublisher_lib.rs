@@ -20,7 +20,11 @@
 
 wtools::mod_interface!
 {
+  /// Library of utility to operate packages from a command line.
+  #[ cfg( feature = "use_std" ) ]
   layer tools; // qqq : for Dima : bad name of a namespace /* aaa : Dmytro : renamed */
+  /// Library of utility to work with commands.
+  #[ cfg( feature = "use_std" ) ]
   layer commands;
 
   #[ cfg( feature = "use_std" ) ]

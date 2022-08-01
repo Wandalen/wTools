@@ -1,18 +1,16 @@
 
-//!
-//! Library of utility to operate packages from a command line.
-//!
-
 crate::mod_interface!
 {
-  #[ cfg( feature = "use_std" ) ]
-  orphan mod
-  {
-    bool,
-    files,
-    http,
-    manifest,
-    process,
-    digest,
-  };
+  /// Work with bools.
+  orphan mod bool;
+  /// Make sha-1 hash for data.
+  orphan mod digest;
+  /// Operate over files.
+  orphan mod files;
+  /// Work with crate on `crates.io`.
+  orphan mod http;
+  /// A module to manipulate manifest data.
+  orphan mod manifest;
+  /// Run external processes.
+  orphan mod process;
 }
