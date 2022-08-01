@@ -6,7 +6,7 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
-// zzz : qqq for Dima : use https://github.com/Peternator7/strum
+// zzz : qqq for Dima : use https://github.com/Peternator7/strum /* aaa : Dmytro : done */
 
 // #![ feature( trait_alias ) ]
 // #![ feature( type_name_of_val ) ]
