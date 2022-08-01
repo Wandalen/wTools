@@ -10,27 +10,27 @@ pub( crate ) mod private
 
   /// Encoder for the buffer.
 
-  /* qqq : add former macro when attributes and documentation comments handling will be implemented */
+  /* rrr : for Dmytro : add former macro when attributes and documentation comments handling will be implemented */
   // #[ derive( Former ) ]
   pub struct Encoder
   {
-    // /// Frame width.
+    /// Frame width.
     width : usize,
-    // /// Frame height.
+    /// Frame height.
     height : usize,
-    // /// Frame rate.
+    /// Frame rate.
     frame_rate : usize,
-    // /// Color encoding.
+    /// Color encoding.
     color_type : ColorType,
-    // /// Repeat animation. For animated images formats.
+    /// Repeat animation. For animated images formats.
     repeat : Option< usize >,
 
-    // /// Type of output format.
+    /// Type of output format.
     encoder_type : EncoderType,
-    // /// Encoder for the output format.
+    /// Encoder for the output format.
     encoder : Box< dyn EncodeData >,
 
-    // /// Output filename.
+    /// Output filename.
     output_filename : std::path::PathBuf,
   }
 
