@@ -111,7 +111,7 @@ pub( crate ) mod private
 
   impl PartialEq for Command
   {
-    /* qqq : for Dmytro : extend */
+    /* rrr : for Dmytro : extend */
     fn eq( &self, other: &Self ) -> bool
     {
       self.hint == other.hint
