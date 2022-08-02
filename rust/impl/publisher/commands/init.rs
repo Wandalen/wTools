@@ -6,7 +6,7 @@
 #[ cfg( feature = "use_std" ) ]
 pub fn commands_form() -> std::collections::HashMap< String, wca::command::Command >
 {
-  let publish_command = wca::CommandOptions::default()
+  let publish_command = wca::Command::former()
   .hint( "Publish package on `crates.io`." )
   .long_hint( "Publish package on `crates.io`." )
   .phrase( "publish" )
@@ -17,7 +17,7 @@ pub fn commands_form() -> std::collections::HashMap< String, wca::command::Comma
   .routine( &super::publish::publish )
   .form();
 
-  let list_command = wca::CommandOptions::default()
+  let list_command = wca::Command::former()
   .hint( "List packages." )
   .long_hint( "List packages" )
   .phrase( "list" )
