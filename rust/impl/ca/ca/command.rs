@@ -1,17 +1,20 @@
+#![ allow( missing_docs ) ]
+/* does not work locally */
+/* rrr : for Dmytro : remove when former will be extended */
+
 pub( crate ) mod private
 {
-  use std::collections::HashMap;
-  use std::rc::Rc;
-  use core::fmt;
-  use wtools::error::{ Result, BasicError };
-  use crate::protected::*;
-  // use crate::
-  // {
-  //   field_str,
-  //   field_map_str_str,
-  //   field_map_str_vec_str,
-  //   field_routine,
-  // };
+  use std::
+  {
+    collections::HashMap,
+    rc::Rc,
+    fmt,
+  };
+  use wtools::
+  {
+    error::{ Result, BasicError },
+    meta::Former,
+  };
 
   ///
   /// Handle for command routine.
@@ -90,23 +93,100 @@ pub( crate ) mod private
   /// Command descriptor.
   ///
 
-  #[derive( Default, Debug, Clone )]
+  #[ derive( Debug, Clone ) ]
+  #[ derive( Former ) ]
   pub struct Command
   {
-    /// Command common hint.
+    // /// Command common hint.
     pub hint : String,
-    /// Command full hint.
+    // /// Command full hint.
     pub long_hint : String,
-    /// Phrase descriptor for command.
+    // /// Phrase descriptor for command.
     pub phrase : String,
-    /// Command subject hint.
+    // /// Command subject hint.
     pub subject_hint : String,
-    /// Hints for command options.
+    // /// Hints for command options.
     pub properties_hints : HashMap< String, String >,
-    /// Map of aliases.
+    // /// Map of aliases.
     pub properties_aliases : HashMap< String, Vec< String > >,
-    /// Command routine.
-    pub routine : OnCommand,
+    // /// Command routine.
+    /* rrr : for Dmytro : use name `routine` when former will be extended */
+    pub _routine : OnCommand,
+  }
+
+  impl CommandFormer
+  {
+    /// Alias for routine `routine`.
+    pub fn routine( mut self, src : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> Self
+    {
+      self._routine = ::core::option::Option::Some( OnCommand( Some( Rc::new( src ) ) ) );
+      self
+    }
+
+    /// Alias for routine `hint`.
+    pub fn h( mut self, help : impl AsRef< str > ) -> Self
+    {
+      self.hint = Some( help.as_ref().into() );
+      self
+    }
+
+    /// Alias for routine `long_hint`.
+    pub fn lh( mut self, help : impl AsRef< str > ) -> Self
+    {
+      self.long_hint = Some( help.as_ref().into() );
+      self
+    }
+
+    /// Alias for routine `routine`.
+    pub fn ro( mut self, src : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> Self
+    {
+      self._routine = ::core::option::Option::Some( OnCommand( Some( Rc::new( src ) ) ) );
+      self
+    }
+
+    /// Setter for separate properties.
+    pub fn property_hint< S : AsRef< str > >( mut self, key : S, hint : S ) -> Self
+    {
+      let key = key.as_ref();
+      let hint = hint.as_ref();
+
+      if self.properties_hints.is_none()
+      {
+        self.properties_hints = Some( HashMap::from([ ( key.into(), hint.into() ) ]) );
+      }
+      else
+      {
+        let hmap = self.properties_hints.as_mut().unwrap();
+        hmap.insert( key.into(), hint.into() );
+      }
+      self
+    }
+
+    /// Setter for separate properties aliases.
+    pub fn property_alias< S : AsRef< str > >( mut self, key : S, alias : S ) -> Self
+    {
+      let key = key.as_ref();
+      let alias = alias.as_ref();
+
+      if self.properties_aliases.is_none()
+      {
+        self.properties_aliases = Some( HashMap::from([ ( key.into(), vec![ alias.into() ] ) ]) );
+      }
+      else
+      {
+        let hmap = self.properties_aliases.as_mut().unwrap();
+        if hmap.get( key ).is_some()
+        {
+          let vec_aliases = hmap.get_mut( key ).unwrap();
+          vec_aliases.push( alias.into() );
+        }
+        else
+        {
+          hmap.insert( key.into(), vec![ alias.into() ] );
+        }
+      }
+      self
+    }
   }
 
   impl PartialEq for Command
@@ -151,51 +231,13 @@ pub( crate ) mod private
           return Err( BasicError::new( "Unknown option." ) );
         }
       }
-      if self.routine.callable()
+      if self._routine.callable()
       {
-        return self.routine.perform( instruction );
+        return self._routine.perform( instruction );
       }
 
       Ok( () )
     }
-  }
-
-  ///
-  /// Options for command.
-  ///
-
-  #[derive( Debug, Clone, Default )]
-  pub struct CommandOptions
-  {
-    ins : Command,
-  }
-
-  //
-
-  // ro : null,
-  // h : null,
-  // lh : null,
-
-  impl CommandOptions
-  {
-    field_str!{ hint }
-    field_str!{ hint, h }
-    field_str!{ long_hint }
-    field_str!{ long_hint, lh }
-    field_str!{ phrase }
-    field_str!{ subject_hint }
-    field_str!{ subject_hint, sh }
-    field_map_str_str!{ properties_hints, property_hint }
-    field_map_str_vec_str!{ properties_aliases, property_alias }
-    field_routine!{ routine }
-    field_routine!{ routine, ro }
-
-    /// Command former.
-    pub fn form( &self ) -> Command
-    {
-      self.ins.clone()
-    }
-
   }
 }
 
@@ -205,5 +247,5 @@ crate::mod_interface!
 {
   prelude use OnCommand;
   prelude use Command;
-  prelude use CommandOptions;
+  prelude use CommandFormer;
 }
