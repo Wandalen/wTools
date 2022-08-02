@@ -57,7 +57,7 @@ pub( crate ) mod private
     }
   }
 
-  impl From<&'static dyn Fn( &crate::instruction::Instruction ) -> Result< () >> for OnCommand
+  impl From< &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > > for OnCommand
   {
     fn from( src : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> Self
     {
@@ -79,7 +79,7 @@ pub( crate ) mod private
 
   impl fmt::Debug for OnCommand
   {
-    fn fmt( &self, f: &mut fmt::Formatter<'_> ) -> fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
     {
       match self
       {
@@ -88,6 +88,23 @@ pub( crate ) mod private
       }
     }
   }
+
+  impl PartialEq for OnCommand
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      match self
+      {
+        OnCommand( Option::None ) =>
+        {
+          if other.0.is_none()
+          {
+            return true;
+          }
+          false
+        },
+      }
+    }
 
   ///
   /// Command descriptor.
@@ -191,12 +208,14 @@ pub( crate ) mod private
 
   impl PartialEq for Command
   {
-    /* qqq : for Dmytro : extend */
-    fn eq( &self, other: &Self ) -> bool
+    fn eq( &self, other : &Self ) -> bool
     {
       self.hint == other.hint
       && self.long_hint == other.long_hint
       && self.subject_hint == other.subject_hint
+      && self.properties_hints == other.properties_hints
+      && self.properties_aliases == other.properties_aliases
+      /* rrr : for Dmytro : try to extend using option OnCommand */
     }
   }
 
