@@ -5,7 +5,7 @@ fn main()
     use wca::*;
     use wca::instruction::Instruction;
 
-    let help_command : Command = wca::CommandOptions::default()
+    let help_command : Command = wca::Command::former()
     .hint( "Get help." )
     .long_hint( "Get help for command [command]" )
     .phrase( ".help" )
