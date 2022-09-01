@@ -23,7 +23,6 @@ only_for_local_module!
 
 tests_impls!
 {
-  #[ test ]
   fn test_user_type_with_default()
   {
     #[derive( Debug, PartialEq, Default )]
