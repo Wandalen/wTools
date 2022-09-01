@@ -9,7 +9,7 @@ fn main()
 
 //
 
-mod_interface::mod_interface!
+mod_interface!
 {
   #![ debug ]
   /// Inner.
