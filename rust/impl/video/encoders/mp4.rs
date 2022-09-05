@@ -3,6 +3,7 @@ pub( crate ) mod private
 {
   use std::fmt::{ Debug, Formatter };
   use crate::common::prelude::*;
+  use wmath::X2;
   use ::ac_ffmpeg::
   {
     packet::PacketMut,
@@ -23,10 +24,8 @@ pub( crate ) mod private
   // #[ derive( Former ) ]
   pub struct Mp4
   {
-    /// Frame width.
-    width : usize,
-    /// Frame height.
-    height : usize,
+    /// Frame width and height.
+    dims : X2< usize >,
     /// Frame rate.
     frame_rate : usize,
     #[ cfg( feature = "mp4_ratio_conversion" ) ]
@@ -52,8 +51,8 @@ pub( crate ) mod private
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       f.debug_struct( "Mp4" )
-      .field( "width", &self.width )
-      .field( "height", &self.height )
+      .field( "width", &self.dims.0 )
+      .field( "height", &self.dims.1 )
       .field( "frame_rate", &self.frame_rate )
       .field( "color_type", &self.color_type )
       .field( "output_filename", &self.output_filename )
@@ -66,49 +65,57 @@ pub( crate ) mod private
     /// Encode bytes buffer to output.
     fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box<dyn std::error::Error > >
     {
-      match self.color_type
+      let data = match self.color_type
       {
         ColorType::Rgb =>
         {
-          let frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );
-          self.frame_idx += 1;
-
-          let mut yuv = openh264::formats::RBGYUVConverter::new( self.width, self.height );
-          yuv.convert( data );
-
-          /* the initialization of new instance is required for correct conversion */
-          let mut encoder = Encoder::with_config( self.config.clone() ).unwrap();
-          let bitstream = encoder.encode( &yuv )?;
-          let buf = bitstream.to_vec();
-
-          #[ cfg( feature = "mp4_ratio_conversion" ) ]
-          {
-            let mut frame_timestamp = frame_timestamp;
-            for _i in 0..self.frame_rate_ratio
-            {
-              let packet = PacketMut::from( &buf )
-              .with_pts( frame_timestamp )
-              .with_dts( frame_timestamp )
-              .freeze();
-
-              frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );
-              self.frame_idx += 1;
-              self.muxer.push( packet )?;
-            }
-          }
-          #[ cfg( not( feature = "mp4_ratio_conversion" ) ) ]
-          {
-            let packet = PacketMut::from( &buf )
-            .with_pts( frame_timestamp )
-            .with_dts( frame_timestamp )
-            .freeze();
-            self.muxer.push( packet )?;
-          }
-
-          Ok( () )
+          data.to_vec()
         },
-        _ => unimplemented!( "not implemented" ),
+        ColorType::Rgba =>
+        {
+          /* skip alpha channel */
+          data.iter().enumerate()
+          .filter_map( | ( i, v ) | if ( i + 1 ) % 4 == 0 { None } else { Some( *v ) } )
+          .collect::<Vec<u8>>()
+        },
+      };
+
+      let frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );
+      self.frame_idx += 1;
+
+      let mut yuv = openh264::formats::RBGYUVConverter::new( self.dims.0, self.dims.1 );
+      yuv.convert( data.as_slice() );
+
+      /* the initialization of new instance is required for correct conversion */
+      let mut encoder = Encoder::with_config( self.config.clone() ).unwrap();
+      let bitstream = encoder.encode( &yuv )?;
+      let buf = bitstream.to_vec();
+
+      #[ cfg( feature = "mp4_ratio_conversion" ) ]
+      {
+        let mut frame_timestamp = frame_timestamp;
+        for _i in 0..self.frame_rate_ratio
+        {
+          let packet = PacketMut::from( &buf )
+          .with_pts( frame_timestamp )
+          .with_dts( frame_timestamp )
+          .freeze();
+
+          frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );
+          self.frame_idx += 1;
+          self.muxer.push( packet )?;
+        }
       }
+      #[ cfg( not( feature = "mp4_ratio_conversion" ) ) ]
+      {
+        let packet = PacketMut::from( &buf )
+        .with_pts( frame_timestamp )
+        .with_dts( frame_timestamp )
+        .freeze();
+        self.muxer.push( packet )?;
+      }
+
+      Ok( () )
 
     }
     /// Finish encoding.
@@ -124,8 +131,7 @@ pub( crate ) mod private
     /// Create an instance.
     pub fn new
     (
-      width : usize,
-      height : usize,
+      dims : X2< usize >,
       frame_rate : usize,
       _repeat : Option< usize >,
       color_type : &ColorType,
@@ -144,8 +150,8 @@ pub( crate ) mod private
       let codec_parameters = CodecParameters::from
       (
         VideoCodecParameters::builder( "libx264" ).unwrap()
-        .width( width )
-        .height( height )
+        .width( dims.0 )
+        .height( dims.1 )
         .build()
       );
 
@@ -167,12 +173,11 @@ pub( crate ) mod private
       };
       let time_base = TimeBase::new( 1, base_frame_rate );
 
-      let config = EncoderConfig::new( width as _, height as _ );
+      let config = EncoderConfig::new( dims.0 as _, dims.1 as _ );
 
       let instance = Self
       {
-        width,
-        height,
+        dims,
         frame_rate,
         #[ cfg( feature = "mp4_ratio_conversion" ) ]
         frame_rate_ratio : ( 30 / frame_rate ) as _,

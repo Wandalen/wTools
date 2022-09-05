@@ -101,7 +101,13 @@ pub( crate ) mod private
       .unquoting( true )
       .perform();
 
-      self._instruction_perform( &parsed )
+      let result = self._instruction_perform( &parsed );
+      if result.is_err() && self.changing_exit_code
+      {
+        eprintln!( "{}", result.err().unwrap().to_string() );
+        std::process::exit( 1 );
+      }
+      result
     }
 
     //

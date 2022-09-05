@@ -22,7 +22,7 @@ pub( crate ) mod private
     #[ default( true ) ]
     left : bool,
     #[ default( 1 ) ]
-    times : u8, /* qqq : former do not form u16, u32, u64, usize */
+    times : u8, /* rrr : Dmytro : former do not form u16, u32, u64, usize, replace after fix */
     #[ default( true ) ]
     none : bool,
   }

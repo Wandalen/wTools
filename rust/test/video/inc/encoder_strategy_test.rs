@@ -48,9 +48,9 @@ tests_impls!
 {
   fn basic() -> Result< (), Box< dyn std::error::Error > >
   {
-    let mut encoder_gif = super::encoder_strategy::Encoder::new( EncoderType::Gif, 100, 100, 30, None, ColorType::Rgb, "../../../target/strategy.gif" )?;
-    let mut encoder_png = super::encoder_strategy::Encoder::new( EncoderType::Png, 100, 100, 30, None, ColorType::Rgb, "../../../target/strategy.png" )?;
-    let mut encoder_mp4 = super::encoder_strategy::Encoder::new( EncoderType::Mp4, 100, 100, 30, None, ColorType::Rgb, "../../../target/strategy.mp4" )?;
+    let mut encoder_gif = super::encoder_strategy::Encoder::new( EncoderType::Gif, X2( 100, 100 ), 30, None, ColorType::Rgb, "../../../target/strategy.gif" )?;
+    let mut encoder_png = super::encoder_strategy::Encoder::new( EncoderType::Png, X2( 100, 100 ), 30, None, ColorType::Rgb, "../../../target/strategy.png" )?;
+    let mut encoder_mp4 = super::encoder_strategy::Encoder::new( EncoderType::Mp4, X2( 100, 100 ), 30, None, ColorType::Rgb, "../../../target/strategy.mp4" )?;
     animation_write( &mut encoder_gif )?;
     animation_write( &mut encoder_png )?;
     animation_write( &mut encoder_mp4 )?;
@@ -69,7 +69,7 @@ tests_impls!
 
   fn basic_with_change() -> Result< (), Box< dyn std::error::Error > >
   {
-    let mut encoder = super::encoder_strategy::Encoder::new( EncoderType::Gif, 100, 100, 30, None, ColorType::Rgb, "../../../target/encoder_change.gif" )?;
+    let mut encoder = super::encoder_strategy::Encoder::new( EncoderType::Gif, X2( 100, 100 ), 30, None, ColorType::Rgb, "../../../target/encoder_change.gif" )?;
     animation_write( &mut encoder )?;
     encoder.type_change( EncoderType::Mp4 )?;
     animation_write( &mut encoder )?;
@@ -86,9 +86,9 @@ tests_impls!
 
   fn basic_with_images_rgb() -> Result< (), Box< dyn std::error::Error > >
   {
-    let mut encoder_gif = super::encoder_strategy::Encoder::new( EncoderType::Gif, 512, 512, 1, None, ColorType::Rgb, "../../../target/image.gif" )?;
-    let mut encoder_png = super::encoder_strategy::Encoder::new( EncoderType::Png, 512, 512, 1, None, ColorType::Rgb, "../../../target/image.png" )?;
-    let mut encoder_mp4 = super::encoder_strategy::Encoder::new( EncoderType::Mp4, 512, 512, 1, None, ColorType::Rgb, "../../../target/image.mp4" )?;
+    let mut encoder_gif = super::encoder_strategy::Encoder::new( EncoderType::Gif, X2( 512, 512 ), 1, None, ColorType::Rgb, "../../../target/image.gif" )?;
+    let mut encoder_png = super::encoder_strategy::Encoder::new( EncoderType::Png, X2( 512, 512 ), 1, None, ColorType::Rgb, "../../../target/image.png" )?;
+    let mut encoder_mp4 = super::encoder_strategy::Encoder::new( EncoderType::Mp4, X2( 512, 512 ), 1, None, ColorType::Rgb, "../../../target/image.mp4" )?;
     animation_write_from_img_rgb( &mut encoder_gif )?;
     animation_write_from_img_rgb( &mut encoder_png )?;
     animation_write_from_img_rgb( &mut encoder_mp4 )?;
