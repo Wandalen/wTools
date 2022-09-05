@@ -29,7 +29,7 @@ pub( crate ) mod private
     Rgb,
     /// RGB color encoding.
     Rgba,
-    // qqq : extend
+    // rrr : for Dmytro : extend, maybe Grayscale, YUV 
   }
 
   impl Default for ColorType

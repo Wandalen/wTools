@@ -232,6 +232,9 @@ derive_full = [
   "derive_unwrap",
   "derive_convert_case",
 
+  "derive_strum",
+  "derive_strum_phf",
+
   "derive_display",
   "derive_from_str",
 
@@ -266,6 +269,9 @@ derive_default = [
   "derive_is_variant",
   "derive_unwrap",
   "derive_convert_case",
+
+  "derive_strum",
+  "derive_strum_phf",
 
   "derive_display",
   "derive_from_str",
@@ -303,6 +309,9 @@ derive_try_into = [ "derive", "derive_tools/derive_try_into" ]
 derive_is_variant = [ "derive", "derive_tools/derive_is_variant" ]
 derive_unwrap = [ "derive", "derive_tools/derive_unwrap" ]
 derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
+
+derive_strum = [ "derive", "derive_tools/strum_derive" ]
+derive_strum_phf = [ "derive", "derive_tools/strum_phf" ]
 
 derive_display = [ "derive", "derive_tools/derive_display", "parse-display" ]
 derive_from_str = [ "derive", "derive_tools/derive_from_str", "parse-display" ]

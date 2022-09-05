@@ -71,4 +71,4 @@ mod_interface!
 
 }
 
-// qqq : for Dima : add negative test that wtest_basic::exposed::exposed does not exist
+// qqq : for Dima : add negative test that wtest_basic::exposed::exposed does not exist /* aaa : Dmytro : added trybuild test with compile time error */

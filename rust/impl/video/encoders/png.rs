@@ -4,6 +4,7 @@ pub( crate ) mod private
   use std::fmt::{ Debug, Formatter };
   use crate::common::prelude::*;
   use wtools::error::BasicError;
+  use wmath::X2;
   use ::apng::{ Config, Encoder, Frame, PNGImage };
   use ::png::{ BitDepth, FilterType };
 
@@ -12,10 +13,8 @@ pub( crate ) mod private
   // #[ derive( Former ) ]
   pub struct Png
   {
-    /// Frame width.
-    width : usize,
-    /// Frame height.
-    height : usize,
+    /// Frame width and height.
+    dims : X2< usize >,
     /// Frame rate.
     frame_rate : usize,
     /// Color encoding.
@@ -33,8 +32,8 @@ pub( crate ) mod private
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       f.debug_struct( "Png" )
-      .field( "width", &self.width )
-      .field( "height", &self.height )
+      .field( "width", &self.dims.0 )
+      .field( "height", &self.dims.1 )
       .field( "frame_rate", &self.frame_rate )
       .field( "color_type", &self.color_type )
       .field( "output_filename", &self.output_filename )
@@ -53,8 +52,8 @@ pub( crate ) mod private
         {
           PNGImage
           {
-            width : self.width as _,
-            height : self.height as _,
+            width : self.dims.0 as _,
+            height : self.dims.1 as _,
             data : data.to_vec(),
             bit_depth : BitDepth::Eight,
             color_type : ::png::ColorType::RGB,
@@ -64,8 +63,8 @@ pub( crate ) mod private
         {
           PNGImage
           {
-            width : self.width as _,
-            height : self.height as _,
+            width : self.dims.0 as _,
+            height : self.dims.1 as _,
             data : data.to_vec(),
             bit_depth : BitDepth::Eight,
             color_type : ::png::ColorType::RGBA,
@@ -84,8 +83,8 @@ pub( crate ) mod private
 
       let config = Config
       {
-        width : self.width as _,
-        height : self.height as _,
+        width : self.dims.0 as _,
+        height : self.dims.1 as _,
         num_frames : self.images_buffer.len() as _,
         num_plays : self.repeat,
         color : self.images_buffer[ 0 ].color_type,
@@ -129,8 +128,7 @@ pub( crate ) mod private
     /// Create an instance.
     pub fn new
     (
-      width : usize,
-      height : usize,
+      dims : X2< usize >,
       frame_rate : usize,
       repeat : Option< usize >,
       color_type : &ColorType,
@@ -146,8 +144,7 @@ pub( crate ) mod private
 
       let instance = Self
       {
-        width,
-        height,
+        dims,
         frame_rate,
         color_type : color_type.clone(),
         images_buffer : vec![],

@@ -41,7 +41,6 @@ impl Struct1
 
 tests_impls!
 {
-  #[ test ]
   fn basic()
   {
     let got = Struct1::former().form();

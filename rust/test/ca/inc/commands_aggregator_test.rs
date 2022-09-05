@@ -8,21 +8,21 @@ use wca::string::parse_request::OpType::Primitive;
 
 fn commands_form() -> std::collections::HashMap< String, Command >
 {
-  let help_command : Command = wca::CommandOptions::default()
+  let help_command : Command = wca::Command::former()
   .hint( "Get help." )
   .long_hint( "Get help for command [command]" )
   .phrase( ".help" )
   .subject_hint( "some command" )
   .routine( &| _i : &Instruction | { println!( "this is help" ); Ok( () ) } )
   .form();
-  let list_command : Command = wca::CommandOptions::default()
+  let list_command : Command = wca::Command::former()
   .hint( "Get list." )
   .long_hint( "Get list of" )
   .phrase( ".list" )
   .subject_hint( "some subject" )
   .routine( &| _i : &Instruction | { println!( "this is list" ); Ok( () ) } )
   .form();
-  let err_command : Command = wca::CommandOptions::default()
+  let err_command : Command = wca::Command::former()
   .hint( "Error." )
   .long_hint( "Throw error" )
   .phrase( ".error" )

@@ -178,6 +178,5 @@ impls!
     }
     f.write_str( "" )
   }
-
 }
 

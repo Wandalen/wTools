@@ -8,7 +8,7 @@ pub( crate ) mod private
 
   pub fn commands_form() -> std::collections::HashMap< String, wca::command::Command >
   {
-    let publish_command = wca::CommandOptions::default()
+    let publish_command = wca::Command::former()
     .hint( "Publish package on `crates.io`." )
     .long_hint( "Publish package on `crates.io`." )
     .phrase( "publish" )
@@ -19,7 +19,7 @@ pub( crate ) mod private
     .routine( &crate::commands::publish::publish )
     .form();
 
-    let workspace_publish_command = wca::CommandOptions::default()
+    let workspace_publish_command = wca::Command::former()
     .hint( "Publish packages from workspace on `crates.io`." )
     .long_hint( "Publish packages from workspace on `crates.io`." )
     .phrase( "workspace.publish" )
@@ -30,7 +30,7 @@ pub( crate ) mod private
     .routine( &crate::commands::publish::workspace_publish )
     .form();
 
-    let list_command = wca::CommandOptions::default()
+    let list_command = wca::Command::former()
     .hint( "List packages." )
     .long_hint( "List packages" )
     .phrase( "list" )

@@ -7,7 +7,6 @@ use test_tools::exposed::*;
 
 tests_impls!
 {
-  #[ test ]
   fn test_int()
   {
 
@@ -44,7 +43,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_string()
   {
 
@@ -100,7 +98,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_optional_string()
   {
 
@@ -155,7 +152,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_vector()
   {
 
@@ -220,7 +216,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_hashmap()
   {
 
@@ -287,7 +282,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_hashset()
   {
 
@@ -354,7 +348,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_underscored_form()
   {
     // test.case( "basic" );
@@ -377,7 +370,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_complex()
   {
     let command = Struct1::former()

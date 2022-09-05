@@ -7,7 +7,7 @@ tests_impls!
 {
   fn basic()
   {
-    let command = wca::CommandOptions::default()
+    let command = wca::Command::former()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "phrase" )
@@ -44,7 +44,7 @@ tests_impls!
 
   fn shortcut()
   {
-    let command = wca::CommandOptions::default()
+    let command = wca::Command::former()
     .h( "hint2" )
     .lh( "long_hint2" )
     .ro( &| _i : &wca::instruction::Instruction | { println!( "hello" ); Ok( () ) } )
@@ -62,7 +62,7 @@ tests_impls!
 
   fn perform_trivial()
   {
-    let command = wca::CommandOptions::default()
+    let command = wca::Command::former()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "phrase" )
@@ -85,7 +85,7 @@ tests_impls!
 
   fn perform_with_subject()
   {
-    let command = wca::CommandOptions::default()
+    let command = wca::Command::former()
     .hint( "hint" )
     .subject_hint( "" )
     .routine( &| _i : &wca::instruction::Instruction | { println!( "hello" ); Ok( () ) } )
@@ -96,7 +96,7 @@ tests_impls!
     let perform = command.perform( &instruction );
     assert!( perform.is_err() );
 
-    let command = wca::CommandOptions::default()
+    let command = wca::Command::former()
     .hint( "hint" )
     .subject_hint( "subject" )
     .routine( &| _i : &wca::instruction::Instruction | { println!( "hello" ); Ok( () ) } )
@@ -112,7 +112,7 @@ tests_impls!
 
   fn perform_with_props()
   {
-    let command = wca::CommandOptions::default()
+    let command = wca::Command::former()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "phrase" )
