@@ -6,7 +6,7 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
-// zzz : qqq for Dima : use https://github.com/Peternator7/strum
+// zzz : qqq for Dima : use https://github.com/Peternator7/strum /* aaa : Dmytro : done */
 
 // #![ feature( trait_alias ) ]
 // #![ feature( type_name_of_val ) ]
@@ -17,15 +17,12 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Internal namespace.
-pub( crate ) mod private
-{
-}
-
 /// Dependencies.
 pub mod dependency
 {
   pub use ::derive_more;
+  #[ cfg( feature = "strum" ) ]
+  pub use ::strum;
   #[ cfg( feature = "parse_display" ) ]
   pub use ::parse_display;
   #[ cfg( feature = "clone_dyn" ) ]
@@ -59,6 +56,10 @@ pub mod exposed
   pub use super::prelude::*;
   #[ doc( inline ) ]
   pub use ::derive_more::*;
+
+  #[ cfg( feature = "strum" ) ]
+  #[ doc( inline ) ]
+  pub use ::strum::*;
 
   #[ cfg( feature = "derive_display" ) ]
   #[ doc( inline ) ]

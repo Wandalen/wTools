@@ -11,7 +11,7 @@ pub( crate ) mod private
 
   /// Encoder for the buffer.
 
-  /* qqq : add former macro when attributes and documentation comments handling will be implemented */
+  /* rrr : for Dmytro : add former macro when attributes and documentation comments handling will be implemented */
   // #[ derive( Former ) ]
   pub struct Encoder
   {

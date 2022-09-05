@@ -89,23 +89,23 @@ pub( crate ) mod private
     }
   }
 
-  impl PartialEq for OnCommand
-  {
-    fn eq( &self, other : &Self ) -> bool
-    {
-      match self
-      {
-        OnCommand( Option::None ) =>
-        {
-          if other.0.is_none()
-          {
-            return true;
-          }
-          false
-        },
-      }
-    }
-
+  // impl PartialEq for OnCommand
+  // {
+  //   fn eq( &self, other : &Self ) -> bool
+  //   {
+  //     match self
+  //     {
+  //       OnCommand( Option::None ) =>
+  //       {
+  //         if other.0.is_none()
+  //         {
+  //           return true;
+  //         }
+  //         false
+  //       },
+  //     }
+  //   }
+  // }
   ///
   /// Command descriptor.
   ///
@@ -208,7 +208,8 @@ pub( crate ) mod private
 
   impl PartialEq for Command
   {
-    fn eq( &self, other : &Self ) -> bool
+    /* rrr : for Dmytro : extend */
+    fn eq( &self, other: &Self ) -> bool
     {
       self.hint == other.hint
       && self.long_hint == other.long_hint

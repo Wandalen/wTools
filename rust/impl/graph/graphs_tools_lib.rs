@@ -16,9 +16,8 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-use wtools::meta::mod_interface;
 
-crate::mod_interface!
+wtools::mod_interface!
 {
   /// Abstract layer.
   #[ cfg( feature = "use_std" ) ]
@@ -29,6 +28,8 @@ crate::mod_interface!
   /// Algorithms.
   #[ cfg( feature = "use_std" ) ]
   layer algo;
+
+  protected( crate ) use ::wtools::prelude::*;
 }
 
 // zzz : implement checks
