@@ -24,22 +24,19 @@ tests_impls!
   fn basic_with_only_command()
   {
     #[ cfg( debug_assertions ) ]
-    let path = std::ffi::OsStr::new( "./debug/wtest" );
+    let dir = std::ffi::OsStr::new( "../../../target/debug/" );
     #[ cfg( not( debug_assertions ) ) ]
-    let path = std::ffi::OsStr::new( "./release/wtest" );
-    let mut current_dir = std::env::current_dir().unwrap();
-    current_dir.push( "../../../target" );
+    let dir = std::ffi::OsStr::new( "../../../target/release/" );
+    let path = format!("{}wtest", dir.to_str().unwrap());
     let proc = std::process::Command::new( path )
-    .current_dir( current_dir )
     .arg( ".smoke " )
-    .output()
-    .unwrap();
+    .current_dir( dir )
+    .output().unwrap();
     assert!( !proc.status.success() );
-    let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
-    assert_eq!( stdout, "Command \".smoke\"\n" );
     let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
-    println!( "{}", stderr );
     assert!( stderr.contains( "has no file \"Cargo.toml\"" ) );
+    let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
+    assert!( stdout.contains( "Command \".smoke\"\n" ) );
   }
 }
 
