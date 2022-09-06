@@ -13,4 +13,6 @@ crate::mod_interface!
   orphan mod manifest;
   /// Run external processes.
   orphan mod process;
+  /// Work with paths.
+  orphan mod path;
 }
