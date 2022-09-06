@@ -119,6 +119,35 @@ tests_impls!
     assert!( stderr.contains( "Uploading module2" ) );
     asset_clean_tmp( "workspace" ).unwrap();
   }
+
+  //
+
+  fn basic_publish()
+  {
+    let tmp_dir = tmp_dir_get( "package" );
+    asset_copy_to_tmp( "_asset", "package" ).unwrap();
+
+    let module_path = std::env::var( "CARGO_MANIFEST_DIR" ).unwrap();
+    let mut path = PathBuf::from( module_path );
+    #[ cfg( debug_assertions ) ]
+    path.push( "../../../target/debug/wpublisher" );
+    #[ cfg( not( debug_assertions ) ) ]
+    path.push( "../../../target/release/wpublisher" );
+
+    let proc = std::process::Command::new( path )
+    .current_dir( &tmp_dir )
+    .env( "CARGO_TERM_COLOR", "never" )
+    .args( [ ".publish", "dry:1" ] )
+    .output()
+    .unwrap();
+    assert!( proc.status.success() );
+    let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
+    assert!( stdout.contains( "Saved manifest data to" ) );
+    let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
+    assert!( stderr.contains( "Uploading package" ) );
+
+    asset_clean_tmp( "package" ).unwrap();
+  }
 }
 
 //
@@ -128,4 +157,5 @@ tests_index!
   basic_no_args,
   basic_with_args,
   basic_workspace_publish,
+  basic_publish,
 }
