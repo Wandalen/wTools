@@ -21,20 +21,22 @@ tests_impls!
 
   //
 
-  /* qqq : make it working */
-  // fn basic_with_only_command()
-  // {
-  //   #[ cfg( debug_assertions ) ]
-  //   let path = std::ffi::OsStr::new( "../../../target/debug/wtest" );
-  //   #[ cfg( not( debug_assertions ) ) ]
-  //   let path = std::ffi::OsStr::new( "../../../target/release/wtest" );
-  //   let proc = std::process::Command::new( path ).arg( ".smoke " ).output().unwrap();
-  //   assert!( !proc.status.success() );
-  //   let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
-  //   assert_eq!( stdout, "Command \".smoke\"\n" );
-  //   let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
-  //   assert!( stderr.contains( "has no file \"Cargo.toml\"" ) );
-  // }
+  fn basic_with_only_command()
+  {
+    #[ cfg( debug_assertions ) ]
+    let path = std::ffi::OsStr::new( "../../../target/debug/" );
+    #[ cfg( not( debug_assertions ) ) ]
+    let path = std::ffi::OsStr::new( "../../../target/release/" );
+    let proc = std::process::Command::new( format!( "{}wtest" , &path.to_str().unwrap() ) )
+    .arg( ".smoke" )
+    .current_dir( &path )
+    .output().unwrap();
+    assert!( !proc.status.success() );
+    let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
+    assert!( stderr.contains( "has no file \"Cargo.toml\"" ) );
+    let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
+    assert!( stdout.contains( "Command \".smoke\"\n" ) );
+  }
 }
 
 //
@@ -42,5 +44,5 @@ tests_impls!
 tests_index!
 {
   basic_no_args,
-  // basic_with_only_command,
+  basic_with_only_command,
 }
