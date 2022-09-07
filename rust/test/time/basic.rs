@@ -3,6 +3,7 @@ use test_tools::exposed::*;
 
 tests_impls!
 {
+  #[ cfg( feature = "time_now" ) ]
   fn basic()
   {
     // test.case( "wtools::now" );
