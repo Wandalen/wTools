@@ -27,7 +27,9 @@ tests_impls!
     let dir = std::ffi::OsStr::new( "../../../target/debug/" );
     #[ cfg( not( debug_assertions ) ) ]
     let dir = std::ffi::OsStr::new( "../../../target/release/" );
-    let path = format!("{}wtest", dir.to_str().unwrap());
+    let path = "./wtest";
+    #[ cfg( target_family="windows" ) ]
+    let path = format!( "{}wtest", dir.to_str().unwrap() );
     let proc = std::process::Command::new( path )
     .arg( ".smoke " )
     .current_dir( dir )
