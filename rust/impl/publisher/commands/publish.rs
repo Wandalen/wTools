@@ -45,7 +45,7 @@ pub( crate ) mod private
 
     let paths = files::find( &current_path, instruction.subject.split( " " ).collect::< Vec< &str > >().as_slice() );
     let mut paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::< Vec< PathBuf > >();
-    if paths.is_empty() && !path::glob_is( &instruction.subject )
+    if paths.is_empty() && path::valid_is( &instruction.subject )
     {
       paths.push( PathBuf::from( &instruction.subject ) );
     }
