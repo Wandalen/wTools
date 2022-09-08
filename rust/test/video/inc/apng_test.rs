@@ -130,9 +130,9 @@ tests_impls!
 
     let mut reader = decoder.read_info().expect( "Can not read the file target/out_rgba.png" );
     let animation_info = reader.info()?;    
-    let mut buf = vec![0; reader.output_buffer_size()];
+    let mut buf = vec![ 0; reader.output_buffer_size() ];
 
-    let info = reader.next_frame(&mut buf)?;
+    let info = reader.next_frame( &mut buf )?;
 
     a_id!( animation_info.weight, 100 );
     a_id!( animation_info.height, 100 );
@@ -142,7 +142,6 @@ tests_impls!
     {
       a_id!( animation_control.num_frames, 30 );
     }
-
 
     Ok( () )
   }
