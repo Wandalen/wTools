@@ -134,10 +134,10 @@ tests_impls!
     #[ cfg( not( debug_assertions ) ) ]
     path.push( "../../../target/release/wpublisher" );
 
-    let proc = std::process::Command::new( path )
+    let proc = std::process::Command::new( path.clone() )
     .current_dir( &tmp_dir )
     .env( "CARGO_TERM_COLOR", "never" )
-    .args( [ ".publish", "dry:1" ] )
+    .args( [ ".publish", tmp_dir.to_str().unwrap(), "dry:1" ] )
     .output()
     .unwrap();
     assert!( proc.status.success() );
@@ -145,6 +145,18 @@ tests_impls!
     assert!( stdout.contains( "Saved manifest data to" ) );
     let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
     assert!( stderr.contains( "Uploading package" ) );
+
+    let proc = std::process::Command::new( path )
+    .current_dir( &tmp_dir )
+    .env( "CARGO_TERM_COLOR", "never" )
+    .args( [ ".publish", tmp_dir_get( "pa?kag[a-z]" ).to_str().unwrap(), "dry:1" ] )
+    .output()
+    .unwrap();
+    assert!( proc.status.success() );
+    let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
+    assert!( stdout.is_empty() );
+    let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
+    assert!( stderr.is_empty() );
 
     asset_clean_tmp( "package" ).unwrap();
   }
