@@ -34,5 +34,8 @@ fn trybuild_tests()
   t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_nested_type_test.rs" );
   t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_not_completed_type_test.rs" );
   t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_redefinition_test.rs" );
-  t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_self_containing_test.rs" );
+
+  t.compile_fail( "../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs" );
+
+  t.compile_fail( "../../../rust/test/dt/type_constructor/pair/pair_three_elements_test.rs" );
 }
