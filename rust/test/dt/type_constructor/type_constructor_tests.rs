@@ -37,5 +37,10 @@ fn trybuild_tests()
 
   t.compile_fail( "../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs" );
 
+  t.compile_fail( "../../../rust/test/dt/type_constructor/pair/pair_without_args_test.rs" );
   t.compile_fail( "../../../rust/test/dt/type_constructor/pair/pair_three_elements_test.rs" );
+
+  t.compile_fail( "../../../rust/test/dt/type_constructor/many/many_without_args_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/many/many_with_two_args_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/many/many_from_tuple_test.rs" );
 }
