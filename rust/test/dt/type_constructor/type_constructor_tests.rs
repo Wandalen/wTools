@@ -32,4 +32,6 @@ fn trybuild_tests()
   t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/types_many_no/*.rs" );
 
   t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_self_containing_test.rs" );
+
+  t.compile_fail( "../../../rust/test/dt/type_constructor/pair/homo_pair_missing_generic_test.rs" );
 }
