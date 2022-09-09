@@ -30,4 +30,6 @@ fn trybuild_tests()
 
   #[ cfg( any( not( any( feature = "use_std", feature = "use_alloc" ) ), not( feature = "many" ) ) ) ]
   t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/types_many_no/*.rs" );
+
+  t.compile_fail( "../../../rust/test/dt/type_constructor/pair/pair_missing_generic_test.rs" );
 }

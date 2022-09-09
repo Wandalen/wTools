@@ -1,0 +1,71 @@
+error[E0107]: this enum takes 1 generic argument but 0 generic arguments were supplied
+ --> ../../../rust/test/dt/type_constructor/pair/pair_missing_generic_test.rs:9:29
+  |
+9 |     pair Bad : Option< T >, Option;
+  |                             ^^^^^^ expected 1 generic argument
+  |
+help: add missing generic argument
+ --> rust/impl/dt/type_constructor/pair.rs
+  |
+  |         pub $TypeSplit2x1 $( :: $TypeSplit2xN )* <T $( $( $ParamName2 ),* )? >,
+  |                                                   +
+
+error[E0107]: this enum takes 1 generic argument but 0 generic arguments were supplied
+ --> ../../../rust/test/dt/type_constructor/pair/pair_missing_generic_test.rs:9:29
+  |
+9 |     pair Bad : Option< T >, Option;
+  |                             ^^^^^^ expected 1 generic argument
+  |
+help: add missing generic argument
+ --> rust/impl/dt/type_constructor/pair.rs
+  |
+  |         $TypeSplit2x1 $( :: $TypeSplit2xN )* <T $( $( $ParamName2 ),* )? >,
+  |                                               +
+
+error[E0107]: this enum takes 1 generic argument but 0 generic arguments were supplied
+ --> ../../../rust/test/dt/type_constructor/pair/pair_missing_generic_test.rs:9:29
+  |
+9 |     pair Bad : Option< T >, Option;
+  |                             ^^^^^^ expected 1 generic argument
+  |
+help: add missing generic argument
+ --> rust/impl/dt/type_constructor/pair.rs
+  |
+  |         $TypeSplit2x1 $( :: $TypeSplit2xN )* <T $( $( $ParamName2 ),* )? >,
+  |                                               +
+
+error[E0107]: this enum takes 1 generic argument but 0 generic arguments were supplied
+ --> ../../../rust/test/dt/type_constructor/pair/pair_missing_generic_test.rs:9:29
+  |
+9 |     pair Bad : Option< T >, Option;
+  |                             ^^^^^^ expected 1 generic argument
+  |
+help: add missing generic argument
+ --> rust/impl/dt/type_constructor/pair.rs
+  |
+  |           $TypeSplit2x1 $( :: $TypeSplit2xN )* <T $( $( $ParamName2 ),* )? >,
+  |                                                 +
+
+error[E0107]: this enum takes 1 generic argument but 0 generic arguments were supplied
+ --> ../../../rust/test/dt/type_constructor/pair/pair_missing_generic_test.rs:9:29
+  |
+9 |     pair Bad : Option< T >, Option;
+  |                             ^^^^^^ expected 1 generic argument
+  |
+help: add missing generic argument
+ --> rust/impl/dt/type_constructor/pair.rs
+  |
+  |             $TypeSplit2x1 $( :: $TypeSplit2xN )* <T $( $( $ParamName2 ),* )? >,
+  |                                                   +
+
+error[E0107]: this enum takes 1 generic argument but 0 generic arguments were supplied
+ --> ../../../rust/test/dt/type_constructor/pair/pair_missing_generic_test.rs:9:29
+  |
+9 |     pair Bad : Option< T >, Option;
+  |                             ^^^^^^ expected 1 generic argument
+  |
+help: add missing generic argument
+ --> rust/impl/dt/type_constructor/pair.rs
+  |
+  |             _1 : $TypeSplit2x1 $( :: $TypeSplit2xN )* <T $( $( $ParamName2 ),* )? >,
+  |                                                        +
