@@ -30,4 +30,9 @@ fn trybuild_tests()
 
   #[ cfg( any( not( any( feature = "use_std", feature = "use_alloc" ) ), not( feature = "many" ) ) ) ]
   t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/types_many_no/*.rs" );
+
+  t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_nested_type_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_not_completed_type_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_redefinition_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_self_containing_test.rs" );
 }
