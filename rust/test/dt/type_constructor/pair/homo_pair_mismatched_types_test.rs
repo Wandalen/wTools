@@ -2,5 +2,6 @@ use type_constructor::prelude::*;
 
 fn main()
 {
-  types!( pair Bad< T1, T2, T3 > );
+  types!( pair Bad : i32 );
+  Bad( 1, "str" );
 }
