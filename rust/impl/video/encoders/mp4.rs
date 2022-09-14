@@ -3,6 +3,7 @@ pub( crate ) mod private
 {
   use std::fmt::{ Debug, Formatter };
   use crate::common::prelude::*;
+  use crate::yuv;
   use wmath::X2;
   use ::ac_ffmpeg::
   {
@@ -77,6 +78,27 @@ pub( crate ) mod private
           data.iter().enumerate()
           .filter_map( | ( i, v ) | if ( i + 1 ) % 4 == 0 { None } else { Some( *v ) } )
           .collect::<Vec<u8>>()
+        },
+        // TODO: Avoid double conversion.
+        ColorType::Yuv444 =>
+        {
+          yuv::yuv444_to_rgb( data )
+        },
+        ColorType::Yuv422 =>
+        {
+          yuv::yuv422_to_rgb( data )
+        },
+        ColorType::Yuv420p =>
+        {
+          yuv::yuv420p_to_rgb( data, self.dims.0, self.dims.1 )
+        },
+        ColorType::Yvu420p =>
+        {
+          yuv::yvu420p_to_rgb( data, self.dims.0, self.dims.1 )
+        },
+        ColorType::Yuv422p =>
+        {
+          yuv::yuv422p_to_rgb( data, self.dims.0, self.dims.1 )
         },
       };
 

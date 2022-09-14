@@ -3,6 +3,7 @@ pub( crate ) mod private
 {
   use std::fmt::{ Debug, Formatter };
   use crate::common::prelude::*;
+  use crate::yuv;
   use wtools::error::BasicError;
   use wmath::X2;
   use ::apng::{ Config, Encoder, Frame, PNGImage };
@@ -68,6 +69,61 @@ pub( crate ) mod private
             data : data.to_vec(),
             bit_depth : BitDepth::Eight,
             color_type : ::png::ColorType::RGBA,
+          }
+        },
+        ColorType::Yuv444 =>
+        {
+          PNGImage
+          {
+            width : self.dims.0 as _,
+            height : self.dims.1 as _,
+            data : yuv::yuv444_to_rgb( data ),
+            bit_depth : BitDepth::Eight,
+            color_type : ::png::ColorType::RGB,
+          }
+        },
+        ColorType::Yuv422 =>
+        {
+          PNGImage
+          {
+            width : self.dims.0 as _,
+            height : self.dims.1 as _,
+            data : yuv::yuv422_to_rgb( data ),
+            bit_depth : BitDepth::Eight,
+            color_type : ::png::ColorType::RGB,
+          }
+        },
+        ColorType::Yuv420p =>
+        {
+          PNGImage
+          {
+            width : self.dims.0 as _,
+            height : self.dims.1 as _,
+            data : yuv::yuv420p_to_rgb( data, self.dims.0, self.dims.1 ),
+            bit_depth : BitDepth::Eight,
+            color_type : ::png::ColorType::RGB,
+          }
+        },
+        ColorType::Yvu420p =>
+        {
+          PNGImage
+          {
+            width : self.dims.0 as _,
+            height : self.dims.1 as _,
+            data : yuv::yvu420p_to_rgb( data, self.dims.0, self.dims.1 ),
+            bit_depth : BitDepth::Eight,
+            color_type : ::png::ColorType::RGB,
+          }
+        },
+        ColorType::Yuv422p =>
+        {
+          PNGImage
+          {
+            width : self.dims.0 as _,
+            height : self.dims.1 as _,
+            data : yuv::yuv422p_to_rgb( data, self.dims.0, self.dims.1 ),
+            bit_depth : BitDepth::Eight,
+            color_type : ::png::ColorType::RGB,
           }
         },
       };

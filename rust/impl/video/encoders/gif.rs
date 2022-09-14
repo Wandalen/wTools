@@ -3,6 +3,7 @@ pub( crate ) mod private
 {
   use std::fmt::{ Debug, Formatter };
   use crate::common::prelude::*;
+  use crate::yuv;
   use wmath::X2;
   use ::gif::{ Encoder, Frame, Repeat };
 
@@ -54,6 +55,31 @@ pub( crate ) mod private
           let mut cloned_data = data.to_vec();
           /* routine accepts mutable slice */
           Frame::from_rgba( self.dims.0 as u16, self.dims.1 as u16, cloned_data.as_mut_slice() )
+        },
+        ColorType::Yuv444 =>
+        {
+          let rgb = yuv::yuv444_to_rgb( data );
+          Frame::from_rgb( self.dims.0 as u16, self.dims.1 as u16, &rgb )
+        },
+        ColorType::Yuv422 =>
+        {
+          let rgb = yuv::yuv422_to_rgb( data );
+          Frame::from_rgb( self.dims.0 as u16, self.dims.1 as u16, &rgb )
+        },
+        ColorType::Yuv420p =>
+        {
+          let rgb = yuv::yuv420p_to_rgb( data, self.dims.0, self.dims.1 );
+          Frame::from_rgb( self.dims.0 as u16, self.dims.1 as u16, &rgb )
+        },
+        ColorType::Yvu420p =>
+        {
+          let rgb = yuv::yvu420p_to_rgb( data, self.dims.0, self.dims.1 );
+          Frame::from_rgb( self.dims.0 as u16, self.dims.1 as u16, &rgb )
+        },
+        ColorType::Yuv422p =>
+        {
+          let rgb = yuv::yuv422p_to_rgb( data, self.dims.0, self.dims.1 );
+          Frame::from_rgb( self.dims.0 as u16, self.dims.1 as u16, &rgb )
         },
       };
       buf.delay = self.frame_delay;
