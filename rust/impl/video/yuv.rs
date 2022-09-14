@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   /// Convert one Y'UV444 frame to RGB888
-  pub fn yuv444_to_rgb( buffer: &[ u8 ] ) -> Vec< u8 >
+  pub fn yuv444_to_rgb( buffer : &[ u8 ] ) -> Vec< u8 >
   {
     buffer.chunks_exact( 3 )
       .map(| yuv | yuv_to_rgb( yuv[ 0 ], yuv[ 1 ], yuv[ 2 ] ) )
@@ -11,21 +11,21 @@ pub( crate ) mod private
   }
 
   /// Convert one Y'UV422(also known as YUYV or YUY2) frame to RGB888
-  pub fn yuv422_to_rgb( buffer: &[ u8 ] ) -> Vec< u8 >
+  pub fn yuv422_to_rgb( buffer : &[ u8 ] ) -> Vec< u8 >
   {
     buffer.chunks_exact( 4 )
-      .map(| yuv |
+      .map( | yuv |
         [
-          yuv_to_rgb( yuv[ 0 ], yuv[ 1 ], yuv[ 3 ]),
-          yuv_to_rgb( yuv[ 2 ], yuv[ 1 ], yuv[ 3 ]),
-        ])
+          yuv_to_rgb( yuv[ 0 ], yuv[ 1 ], yuv[ 3 ] ),
+          yuv_to_rgb( yuv[ 2 ], yuv[ 1 ], yuv[ 3 ] ),
+        ] )
       .flatten()
       .flatten()
       .collect()
   }
 
   /// Convert one Y'VU420p(also known as YV12) frame to RGB888
-  pub fn yvu420p_to_rgb( frame: &[ u8 ], width: usize, height: usize ) -> Vec< u8 >
+  pub fn yvu420p_to_rgb( frame : &[ u8 ], width : usize, height : usize ) -> Vec< u8 >
   {
     let pixels = width * height;
     let ( y_plane, remainder ) = frame.split_at( pixels );
@@ -34,7 +34,7 @@ pub( crate ) mod private
   }
 
   /// Convert one Y'UV420p(also known as YU12) frame to RGB888
-  pub fn yuv420p_to_rgb( frame: &[ u8 ], width: usize, height: usize ) -> Vec< u8 >
+  pub fn yuv420p_to_rgb( frame: &[ u8 ], width : usize, height : usize ) -> Vec< u8 >
   {
     let pixels = width * height;
     let ( y_plane, remainder ) = frame.split_at( pixels );
@@ -43,7 +43,7 @@ pub( crate ) mod private
   }
 
   /// Convert one Y'UV422p frame to RGB888
-  pub fn yuv422p_to_rgb( frame: &[ u8 ], width: usize, height: usize ) -> Vec< u8 >
+  pub fn yuv422p_to_rgb( frame : &[ u8 ], width : usize, height : usize ) -> Vec< u8 >
   {
     let pixels = width * height;
     let ( y_plane, remainder ) = frame.split_at( pixels );
@@ -81,15 +81,15 @@ pub( crate ) mod private
 
   /// Convert "square" planes.
   /// Each U/V belongs to 'shared_count' number of Y's in one row.
-  fn convert_square_planar( y_plane : &[ u8 ], u_plane : &[ u8 ], v_plane : &[ u8 ], width : usize, shared_count: usize ) -> Vec< u8 >
+  fn convert_square_planar( y_plane : &[ u8 ], u_plane : &[ u8 ], v_plane : &[ u8 ], width : usize, shared_count : usize ) -> Vec< u8 >
   {
     y_plane.chunks_exact( width * 2 )
       .zip( u_plane.chunks_exact( width / shared_count).zip( v_plane.chunks_exact( width / shared_count) ) )
       .map( | ( rows, ( u, v ) ) |
         {
           let ( first, second ) = rows.split_at( width );
-          let mut result = convert_consecutive_planar(first, u, v, shared_count);
-          result.append( &mut convert_consecutive_planar(second, u, v, shared_count) );
+          let mut result = convert_consecutive_planar( first, u, v, shared_count );
+          result.append( &mut convert_consecutive_planar( second, u, v, shared_count ) );
           result
         })
       .flatten()
@@ -100,7 +100,7 @@ pub( crate ) mod private
   /// Each U/V belongs to 'shared_count' number of Y's.
   fn convert_consecutive_planar(y_plane : &[ u8 ], u_plane : &[ u8 ], v_plane : &[ u8 ], shared_count : usize ) -> Vec< u8 >
   {
-    y_plane.chunks_exact(shared_count)
+    y_plane.chunks_exact( shared_count )
     .zip( u_plane.iter().zip( v_plane.iter() ) )
     .map(| ( lums, ( u, v ) ) | [ yuv_to_rgb( lums[ 0 ], *u, *v ), yuv_to_rgb( lums[ 1 ], *u, *v ) ] )
     .flatten()
