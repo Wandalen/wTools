@@ -51,6 +51,19 @@ pub( crate ) mod private
     convert_consecutive_planar( y_plane, u_plane, v_plane, 2 )
   }
 
+  /// Convert one Grayscale frame to RGB888
+  pub fn grayscale_to_rgb( buffer : &[ u8 ] ) -> Vec< u8 >
+  {
+    let mut rgb = Vec::with_capacity( buffer.len() * 3 );
+    for &y in buffer
+    {
+      rgb.push( y );
+      rgb.push( y );
+      rgb.push( y );
+    }
+    rgb
+  }
+
   fn yuv_to_rgb( y : u8, u : u8, v : u8 ) -> [ u8; 3 ]
   {
     let y = ( y as f32 ) - 16.0;
@@ -105,4 +118,5 @@ wtools::meta::mod_interface!
   prelude use yvu420p_to_rgb;
   prelude use yuv420p_to_rgb;
   prelude use yuv422p_to_rgb;
+  prelude use grayscale_to_rgb;
 }

@@ -81,6 +81,11 @@ pub( crate ) mod private
           let rgb = yuv::yuv422p_to_rgb( data, self.dims.0, self.dims.1 );
           Frame::from_rgb( self.dims.0 as u16, self.dims.1 as u16, &rgb )
         },
+        ColorType::Grayscale =>
+        {
+          let rgb = yuv::grayscale_to_rgb( data );
+          Frame::from_rgb( self.dims.0 as u16, self.dims.1 as u16, &rgb )
+        },
       };
       buf.delay = self.frame_delay;
 

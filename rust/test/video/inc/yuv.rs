@@ -131,6 +131,26 @@ tests_impls!
 
     assert_eq!( converted_rgb, rgb );
   }
+
+  fn grayscale_to_rgb_conversion()
+  {
+    let yuv =
+    [
+      255, 0, 76, 149, 29,
+    ];
+    let rgb =
+    [
+      255, 255, 255,
+      0, 0, 0,
+      76, 76, 76,
+      149, 149, 149,
+      29, 29, 29,
+    ];
+
+    let converted_rgb = grayscale_to_rgb( &yuv );
+
+    assert_eq!( converted_rgb, rgb );
+  }
 }
 //
 
@@ -141,4 +161,5 @@ tests_index!
   yvu420p_to_rgb_conversion,
   yuv420p_to_rgb_conversion,
   yuv422p_to_rgb_conversion,
+  grayscale_to_rgb_conversion,
 }

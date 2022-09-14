@@ -100,6 +100,10 @@ pub( crate ) mod private
         {
           yuv::yuv422p_to_rgb( data, self.dims.0, self.dims.1 )
         },
+        ColorType::Grayscale =>
+        {
+          yuv::grayscale_to_rgb( data )
+        },
       };
 
       let frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );

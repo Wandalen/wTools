@@ -126,6 +126,17 @@ pub( crate ) mod private
             color_type : ::png::ColorType::RGB,
           }
         },
+        ColorType::Grayscale =>
+        {
+          PNGImage
+          {
+            width : self.dims.0 as _,
+            height : self.dims.1 as _,
+            data : yuv::grayscale_to_rgb( data ),
+            bit_depth : BitDepth::Eight,
+            color_type : ::png::ColorType::RGB,
+          }
+        },
       };
 
       self.images_buffer.push( image );

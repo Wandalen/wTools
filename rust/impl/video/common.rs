@@ -40,7 +40,8 @@ pub( crate ) mod private
     Yvu420p,
     /// Y′UV422p color encoding.
     Yuv422p,
-    // rrr : for Dmytro : extend, maybe Grayscale, YUV
+    /// Greyscale color encoding.
+    Grayscale,
   }
 
   impl Default for ColorType
