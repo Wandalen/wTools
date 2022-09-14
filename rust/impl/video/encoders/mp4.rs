@@ -18,6 +18,7 @@ pub( crate ) mod private
     Error,
   };
   use openh264::encoder::{ Encoder, EncoderConfig };
+  use openh264::formats::YUVSource;
 
   //
 
@@ -66,55 +67,64 @@ pub( crate ) mod private
     /// Encode bytes buffer to output.
     fn encode( &mut self, data : &[ u8 ] ) -> Result< (), Box<dyn std::error::Error > >
     {
-      let data = match self.color_type
+      let rgb = match self.color_type
       {
         ColorType::Rgb =>
         {
-          data.to_vec()
+          Some( data.to_vec() )
         },
         ColorType::Rgba =>
         {
           /* skip alpha channel */
-          data.iter().enumerate()
+          let data = data.iter().enumerate()
           .filter_map( | ( i, v ) | if ( i + 1 ) % 4 == 0 { None } else { Some( *v ) } )
-          .collect::<Vec<u8>>()
+          .collect::<Vec<u8>>();
+          Some( data )
         },
-        // TODO: Avoid double conversion.
         ColorType::Yuv444 =>
         {
-          yuv::yuv444_to_rgb( data )
+          Some( yuv::yuv444_to_rgb( data ) )
         },
         ColorType::Yuv422 =>
         {
-          yuv::yuv422_to_rgb( data )
+          Some( yuv::yuv422_to_rgb( data ) )
         },
         ColorType::Yuv420p =>
         {
-          yuv::yuv420p_to_rgb( data, self.dims.0, self.dims.1 )
+          None
         },
         ColorType::Yvu420p =>
         {
-          yuv::yvu420p_to_rgb( data, self.dims.0, self.dims.1 )
+          Some( yuv::yvu420p_to_rgb( data, self.dims.0, self.dims.1 ) )
         },
         ColorType::Yuv422p =>
         {
-          yuv::yuv422p_to_rgb( data, self.dims.0, self.dims.1 )
+          Some( yuv::yuv422p_to_rgb( data, self.dims.0, self.dims.1 ) )
         },
         ColorType::Grayscale =>
         {
-          yuv::grayscale_to_rgb( data )
+          Some( yuv::grayscale_to_rgb( data ) )
         },
       };
 
       let frame_timestamp = Timestamp::new( self.frame_idx, self.time_base );
       self.frame_idx += 1;
 
-      let mut yuv = openh264::formats::RBGYUVConverter::new( self.dims.0, self.dims.1 );
-      yuv.convert( data.as_slice() );
-
       /* the initialization of new instance is required for correct conversion */
       let mut encoder = Encoder::with_config( self.config.clone() ).unwrap();
-      let bitstream = encoder.encode( &yuv )?;
+
+      let bitstream = if let Some( rgb ) = rgb
+      {
+        let mut yuv = openh264::formats::RBGYUVConverter::new( self.dims.0, self.dims.1 );
+        yuv.convert( rgb.as_slice() );
+        encoder.encode( &yuv )?
+      }
+      else
+      {
+        let yuv = RawYuv420pSource { yuv: data, dims: self.dims };
+        encoder.encode( &yuv )?
+      };
+
       let buf = bitstream.to_vec();
 
       #[ cfg( feature = "mp4_ratio_conversion" ) ]
@@ -215,6 +225,60 @@ pub( crate ) mod private
         output_filename : std::path::PathBuf::from( filename.as_ref() ),
       };
       Ok( instance )
+    }
+
+  }
+
+
+  struct RawYuv420pSource< 'a >
+  {
+    yuv : &'a [ u8 ],
+    dims : X2< usize >,
+  }
+
+  impl YUVSource for RawYuv420pSource< '_ >
+  {
+    fn width( &self ) -> i32
+    {
+      self.dims.0 as i32
+    }
+
+    fn height( &self ) -> i32
+    {
+      self.dims.1 as i32
+    }
+
+    fn y( &self ) -> &[ u8 ]
+    {
+      &self.yuv[ 0..self.dims.0 * self.dims.0 ]
+    }
+
+    fn u( &self ) -> &[ u8 ]
+    {
+      let base_u = self.dims.0 * self.dims.1;
+      &self.yuv[ base_u..base_u + base_u / 4 ]
+    }
+
+    fn v( &self ) -> &[ u8 ]
+    {
+      let base_u = self.dims.0 * self.dims.1;
+      let base_v = base_u + base_u / 4;
+      &self.yuv[ base_v.. ]
+    }
+
+    fn y_stride( &self ) -> i32
+    {
+      self.dims.0 as i32
+    }
+
+    fn u_stride( &self ) -> i32
+    {
+      ( self.dims.0 / 2 ) as i32
+    }
+
+    fn v_stride( &self ) -> i32
+    {
+      ( self.dims.0 / 2 ) as i32
     }
   }
 }
