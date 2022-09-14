@@ -59,6 +59,36 @@ tests_impls!
 
     Ok( () )
   }
+
+  //
+
+  fn basic_yuv() -> Result< (), Box< dyn std::error::Error > >
+{
+    let mut encoder = super::encoders::Mp4::new( X2( 100, 100 ), 30, None, &ColorType::Yuv444, "../../../target/out_yuv.mp4" )?;
+    let mut buf : Vec< u8 > = [ [ 255u8, 128u8, 128u8 ]; 10_000 ].into_iter().flatten().collect();
+    buf[ 0 ] = 0;
+    buf[ 1 ] = 0;
+    buf[ 2 ] = 0;
+    encoder.encode( &buf )?;
+
+    for i in 1..100
+    {
+      buf[ ( i - 1 ) * 3 + ( i - 1 ) * 300 ] = 255;
+      buf[ ( i - 1 ) * 3 + 1 + ( i - 1 ) * 300 ] = 128;
+      buf[ ( i - 1 ) * 3 + 2 + ( i - 1 ) * 300 ] = 128;
+
+      buf[ i * 3 + i * 300 ] = 0;
+      buf[ i * 3 + 1 + i * 300 ] = 0;
+      buf[ i * 3 + 2 + i * 300 ] = 0;
+      encoder.encode( &buf )?;
+    }
+    encoder.flush()?;
+
+    let path = std::path::PathBuf::from( "../../../target/out_yuv.mp4" );
+    a_id!( path.exists(), true );
+
+    Ok( () )
+  }
 }
 
 //
@@ -67,4 +97,5 @@ tests_index!
 {
   basic_rgb,
   basic_rgba,
+  basic_yuv,
 }
