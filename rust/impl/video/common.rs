@@ -1,6 +1,7 @@
 /// Private namespace.
 pub( crate ) mod private
 {
+
   /// Select strategy for the output format.
   #[ derive( Debug, PartialEq ) ]
   pub enum EncoderType
@@ -29,7 +30,18 @@ pub( crate ) mod private
     Rgb,
     /// RGB color encoding.
     Rgba,
-    // rrr : for Dmytro : extend, maybe Grayscale, YUV 
+    /// Y′UV444 color encoding.
+    Yuv444,
+    /// Y′UV422(also known as YUYV or YUY2) color encoding.
+    Yuv422,
+    /// Y′UV420p(also known as YV12) color encoding.
+    Yuv420p,
+    /// Y′VU420p(also known as YU12) color encoding.
+    Yvu420p,
+    /// Y′UV422p color encoding.
+    Yuv422p,
+    /// Greyscale color encoding.
+    Grayscale,
   }
 
   impl Default for ColorType
@@ -48,6 +60,7 @@ pub( crate ) mod private
     /// Finish encoding. It is recommended to flush data at the end of encoding, because the data can be loosed.
     fn flush( &mut self ) -> Result< (), Box<dyn std::error::Error > >;
   }
+
 }
 
 //

@@ -38,4 +38,6 @@ wtools::meta::mod_interface!
   layer encoders;
   /// Universal interface for animation.
   layer encoder_strategy;
+  /// Yuv tools
+  layer yuv;
 }
