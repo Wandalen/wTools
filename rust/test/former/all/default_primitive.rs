@@ -43,7 +43,6 @@ pub struct Struct1
 
 tests_impls!
 {
-  #[ test ]
   fn test_complex()
   {
     let command = Struct1::former().form();

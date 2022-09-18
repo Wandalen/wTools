@@ -150,38 +150,14 @@ pub( crate ) mod private
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
-{
-  #[ doc( inline ) ]
-  pub use super::orphan::*;
-}
+//
 
-#[ doc( inline ) ]
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
+crate::mod_interface!
 {
-  #[ doc( inline ) ]
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  #[ doc( inline ) ]
-  pub use super::private::
+  exposed use super::private::
   {
     IdentityWithPointer,
     IdentityWithName,
     IdentityWithInt,
   };
-  #[ doc( inline ) ]
-  pub use super::prelude::*;
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
 }

@@ -1,0 +1,5 @@
+error: no rules expected the token `_`
+ --> ../../../rust/test/dt/type_constructor/single/single_not_completed_type_test.rs:8:27
+  |
+8 |     pub single Bad : Vec< _ >;
+  |                           ^ no rules expected this token in macro call

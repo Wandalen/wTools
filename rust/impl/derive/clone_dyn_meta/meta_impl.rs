@@ -1,5 +1,5 @@
 
-use proc_macro_tools::*;
+use proc_macro_tools::prelude::*;
 pub type Result< T > = std::result::Result< T, syn::Error >;
 
 //

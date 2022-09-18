@@ -52,6 +52,7 @@ path = "rust/test/video/video_experiment_tests.rs"
 
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }
+wmath = "~0.3"
 gif = "~0.11"
 apng = "~0.2.0"
 png = "~0.16.3"

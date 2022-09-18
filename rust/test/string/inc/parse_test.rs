@@ -25,7 +25,7 @@ tests_impls!
     /* */
 
     let op = parse::OpType::from( 1 );
-    let got = op.primitive(); /* qqq : does not work properly, find better way to convert types */
+    let got = op.primitive(); /* rrr : for Dmytro : does not work properly, find better way to convert types */
     a_id!( got.unwrap(), 1 );
 
     let op = parse::OpType::from( vec![ 1, 2 ] );

@@ -30,4 +30,19 @@ fn trybuild_tests()
 
   #[ cfg( any( not( any( feature = "use_std", feature = "use_alloc" ) ), not( feature = "many" ) ) ) ]
   t.compile_fail( "../../../rust/test/dt/type_constructor/dynamic/types_many_no/*.rs" );
+
+  t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_nested_type_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_with_two_args_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_not_completed_type_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/single/single_redefinition_test.rs" );
+
+  t.compile_fail( "../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/pair/homo_pair_mismatched_types_test.rs" );
+
+  t.compile_fail( "../../../rust/test/dt/type_constructor/pair/pair_without_args_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/pair/pair_three_elements_test.rs" );
+
+  t.compile_fail( "../../../rust/test/dt/type_constructor/many/many_without_args_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/many/many_with_two_args_test.rs" );
+  t.compile_fail( "../../../rust/test/dt/type_constructor/many/many_from_tuple_test.rs" );
 }

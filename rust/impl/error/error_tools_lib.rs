@@ -14,10 +14,10 @@
 
 /// Assertions.
 pub mod assert;
-/// Default error object.
+/// Alias for std::error::BasicError.
 #[ cfg( feature = "use_std" ) ]
 pub mod error;
-/// An alias for Result.
+/// An alias for std::result::Result.
 #[ cfg( feature = "use_std" ) ]
 pub mod result;
 
