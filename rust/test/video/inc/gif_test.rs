@@ -2,9 +2,9 @@ use super::*;
 
 fn rgba_to_rgb( rgba_buf : Vec< u8 > ) -> Vec< u8 >
 {
-  let mut result = vec![ 0; rgba_buf.len() * 3 / 4];
+  let mut result = vec![ 0; rgba_buf.len() * 3 / 4 ];
   let mut i = 0;
-  for chunk in rgba_buf.chunks(4)
+  for chunk in rgba_buf.chunks( 4 )
   {
       result[ i..i+3 ].copy_from_slice( &chunk[ 0..3 ] );
       i += 3;

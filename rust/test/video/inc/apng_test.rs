@@ -60,7 +60,7 @@ tests_impls!
   fn basic_rgba() -> Result< (), Box< dyn std::error::Error > >
   {
     let mut encoder = super::encoders::Png::new( X2( 100, 100 ), 30, None, &ColorType::Rgba, "../../../target/out_rgba.png" )?;
-    let mut buf = [ 50; 40_000 ];
+    let mut buf = [ 255u8; 40_000 ];
     buf[ 0 ] = 0;
     buf[ 1 ] = 0;
     buf[ 2 ] = 0;
@@ -68,13 +68,13 @@ tests_impls!
 
     for i in 1..50
     {
-      buf[ ( i - 1 ) * 4 + ( i - 1 ) * 4 ] = 255;
-      buf[ ( i - 1 ) * 4 + 1 + ( i - 1 ) * 4 ] = i as u8 * 2_u8;
-      buf[ ( i - 1 ) * 4 + 2 + ( i - 1 ) * 4 ] = i as u8 * 2_u8;
+      buf[ ( i - 1 ) * 4 + ( i - 1 ) * 400 ] = 255;
+      buf[ ( i - 1 ) * 4 + 1 + ( i - 1 ) * 400 ] = 255;
+      buf[ ( i - 1 ) * 4 + 2 + ( i - 1 ) * 400 ] = 255;
 
-      buf[ i * 4 + i * 4 ] = 0;
-      buf[ i * 4 + 1 + i * 4 ] = 0;
-      buf[ i * 4 + 2 + i * 4 ] = 0;
+      buf[ i * 4 + i * 400 ] = 0;
+      buf[ i * 4 + 1 + i * 400 ] = 0;
+      buf[ i * 4 + 2 + i * 400 ] = 0;
       encoder.encode( &buf )?;
     }
 
@@ -98,7 +98,7 @@ tests_impls!
 
     // first frame
     a_id!( [ 0, 0, 0 ], bytes.as_slice()[ ..3 ] );
-    assert_eq!( [ 50; 40_000 - 3 ], bytes.as_slice()[ 3.. ] );
+    assert_eq!( [ 255u8; 40_000 - 3 ], bytes.as_slice()[ 3.. ] );
 
     // all frames valid
     for _ in 1..50
