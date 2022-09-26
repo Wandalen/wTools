@@ -42,9 +42,12 @@ pub mod exposed
     rev,
     sorted,
     unfold,
-    zip,
+    // zip,
     zip_eq,
   };
+
+  #[ doc( inline ) ]
+  pub use std::iter::zip;
 
 }
 

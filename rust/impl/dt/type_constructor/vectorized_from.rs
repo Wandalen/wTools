@@ -66,7 +66,6 @@ pub( crate ) mod private
   {
     fn vectorized_from( _ : () ) -> Self
     {
-      ()
     }
   }
 

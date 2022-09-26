@@ -41,7 +41,7 @@ full = [
 use_std = []
 use_alloc = []
 
-now = [ "use_std", "chrono", "chrono/default" ]
+now = [ "use_std" ]
 
 [lib]
 name = "time_tools"
@@ -58,9 +58,6 @@ path = "rust/test/_integration_test/smoke_test.rs"
 [[example]]
 name = "time_tools_trivial_sample"
 path = "sample/rust/time_tools_trivial_sample/src/main.rs"
-
-[dependencies]
-chrono = { version = "~0.4", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

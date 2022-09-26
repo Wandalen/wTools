@@ -63,7 +63,7 @@ pub( crate ) mod private
   /// Both [core::ops::Range], [core::ops::RangeInclusive] are convertable to [crate::Interval]
   ///
 
-  #[ derive( PartialEq, Debug ) ]
+  #[ derive( PartialEq, Eq, Debug ) ]
   pub struct Interval< T = isize >
   where
     T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,

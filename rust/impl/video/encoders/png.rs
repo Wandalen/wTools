@@ -174,7 +174,7 @@ pub( crate ) mod private
 
       for image in &self.images_buffer
       {
-        let encoded = encoder.write_frame( &image, frame.clone() );
+        let encoded = encoder.write_frame( image, frame.clone() );
         if encoded.is_err()
         {
           return Err( Box::new( BasicError::new( "cannot write frame" ) ) );
@@ -206,7 +206,7 @@ pub( crate ) mod private
       {
         Some( 0 ) => u32::MAX,
         Some( n ) => n as u32,
-        None => 1 as u32,
+        None => 1_u32,
       };
 
       let instance = Self
