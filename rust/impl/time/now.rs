@@ -1,4 +1,4 @@
-use chrono::prelude::*;
+use std::time;
 
 ///
 /// Get current time. Units are milliseconds.
@@ -6,7 +6,9 @@ use chrono::prelude::*;
 
 pub fn now() -> i64
 {
-  Utc::now().timestamp_millis()
+  time::SystemTime::now()
+  .duration_since( time::UNIX_EPOCH ).unwrap()
+  .as_millis() as i64
 }
 
 ///
@@ -20,7 +22,9 @@ pub mod s
   /// Get current time. Units are seconds.
   pub fn now() -> i64
   {
-    Utc::now().timestamp()
+    time::SystemTime::now()
+    .duration_since( time::UNIX_EPOCH ).unwrap()
+    .as_secs() as i64
   }
 }
 
@@ -35,7 +39,9 @@ pub mod ms
   /// Get current time. Units are milliseconds.
   pub fn now() -> i64
   {
-    Utc::now().timestamp_millis()
+    time::SystemTime::now()
+    .duration_since( time::UNIX_EPOCH ).unwrap()
+    .as_millis() as i64
   }
 }
 
@@ -53,6 +59,8 @@ pub mod ns
   /// Get current time. Units are nanoseconds.
   pub fn now() -> i64
   {
-    Utc::now().timestamp_nanos()
+    time::SystemTime::now()
+    .duration_since( time::UNIX_EPOCH ).unwrap()
+    .as_nanos() as i64
   }
 }

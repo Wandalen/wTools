@@ -104,17 +104,17 @@ pub( crate ) mod private
     {
       if encoder_type == &EncoderType::Gif
       {
-        let encoder = Gif::new( dims.clone(), frame_rate, repeat, color_type, filename )?;
+        let encoder = Gif::new( *dims, frame_rate, repeat, color_type, filename )?;
         return Ok( Box::new( encoder ) );
       }
       if encoder_type == &EncoderType::Png
       {
-        let encoder = Png::new( dims.clone(), frame_rate, repeat, color_type, filename )?;
+        let encoder = Png::new( *dims, frame_rate, repeat, color_type, filename )?;
         return Ok( Box::new( encoder ) );
       }
       if encoder_type == &EncoderType::Mp4
       {
-        let encoder = Mp4::new( dims.clone(), frame_rate, repeat, color_type, filename )?;
+        let encoder = Mp4::new( *dims, frame_rate, repeat, color_type, filename )?;
         return Ok( Box::new( encoder ) );
       }
 
@@ -145,7 +145,7 @@ pub( crate ) mod private
         self.frame_rate,
         self.repeat,
         &self.color_type,
-        self.output_filename.to_str().ok_or( BasicError::new( "cannot form filename" ) )?
+        self.output_filename.to_str().ok_or_else( | | BasicError::new( "cannot form filename" ) )?
       )?;
       self.encoder = encoder;
       Ok( () )

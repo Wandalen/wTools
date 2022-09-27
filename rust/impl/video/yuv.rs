@@ -5,8 +5,7 @@ pub( crate ) mod private
   pub fn yuv444_to_rgb( buffer : &[ u8 ] ) -> Vec< u8 >
   {
     buffer.chunks_exact( 3 )
-      .map(| yuv | yuv_to_rgb( yuv[ 0 ], yuv[ 1 ], yuv[ 2 ] ) )
-      .flatten()
+      .flat_map(| yuv | yuv_to_rgb( yuv[ 0 ], yuv[ 1 ], yuv[ 2 ] ) )
       .collect()
   }
 
@@ -14,12 +13,11 @@ pub( crate ) mod private
   pub fn yuv422_to_rgb( buffer : &[ u8 ] ) -> Vec< u8 >
   {
     buffer.chunks_exact( 4 )
-      .map( | yuv |
+      .flat_map( | yuv |
         [
           yuv_to_rgb( yuv[ 0 ], yuv[ 1 ], yuv[ 3 ] ),
           yuv_to_rgb( yuv[ 2 ], yuv[ 1 ], yuv[ 3 ] ),
         ] )
-      .flatten()
       .flatten()
       .collect()
   }
@@ -85,14 +83,13 @@ pub( crate ) mod private
   {
     y_plane.chunks_exact( width * 2 )
       .zip( u_plane.chunks_exact( width / shared_count).zip( v_plane.chunks_exact( width / shared_count) ) )
-      .map( | ( rows, ( u, v ) ) |
+      .flat_map( | ( rows, ( u, v ) ) |
         {
           let ( first, second ) = rows.split_at( width );
           let mut result = convert_consecutive_planar( first, u, v, shared_count );
           result.append( &mut convert_consecutive_planar( second, u, v, shared_count ) );
           result
         })
-      .flatten()
       .collect()
   }
 
@@ -102,8 +99,7 @@ pub( crate ) mod private
   {
     y_plane.chunks_exact( shared_count )
     .zip( u_plane.iter().zip( v_plane.iter() ) )
-    .map(| ( lums, ( u, v ) ) | [ yuv_to_rgb( lums[ 0 ], *u, *v ), yuv_to_rgb( lums[ 1 ], *u, *v ) ] )
-    .flatten()
+    .flat_map(| ( lums, ( u, v ) ) | [ yuv_to_rgb( lums[ 0 ], *u, *v ), yuv_to_rgb( lums[ 1 ], *u, *v ) ] )
     .flatten()
     .collect()
   }
