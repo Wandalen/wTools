@@ -17,22 +17,6 @@ tests_impls!
       _2 : i32,
     }
 
-    impl TheModule::Make2< i32, i32 > for Struct1
-    {
-      fn make_2( val0 : i32, val1 : i32 ) -> Self
-      {
-        Self { _0 : val0, _1 : val1, _2 : val1 }
-      }
-    }
-
-    impl TheModule::Make3< i32, i32, i32 > for Struct1
-    {
-      fn make_3( val0 : i32, val1 : i32, val2 : i32 ) -> Self
-      {
-        Self { _0 : val0, _1 : val1, _2 : val2 }
-      }
-    }
-
     let got : Struct1 = TheModule::make!();
     let exp = Struct1{ _0 : 0, _1 : 0, _2 : 0 };
     a_id!( got, exp );
@@ -63,14 +47,6 @@ tests_impls!
     {
       a : i32,
       b : i32,
-    }
-
-    impl TheModule::Make2< i32, i32 > for Struct1
-    {
-      fn make_2( val1 : i32, val2 : i32 ) -> Self
-      {
-        Self { a : val1, b : val2 }
-      }
     }
 
     let got : Struct1 = TheModule::make!();

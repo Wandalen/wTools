@@ -1,112 +1,156 @@
-use proc_macro2::TokenStream;
+use proc_macro2::{ TokenStream, Ident };
 use quote::{ quote, ToTokens };
-use syn::{ parse_macro_input, Fields };
+use syn::{ parse_macro_input, Fields, ItemStruct };
+
+// * Change this if more traits already defined
+const MAX_MAKE_TRAIT_NUMBER : usize = 3;
 
 
-fn impl_make0( is_named : bool, fields : &Vec< Field > ) -> TokenStream
+struct DeriveMake
 {
-  let types = fields.iter()
-  .map( | f | f.f_type.to_owned() )
-  .collect::< Vec< _ > >();
-  if is_named
-  {
-    let names = fields.iter()
-    .map( | f | f.f_name.clone() )
-    .collect::< Vec< _ > >();
-    quote!( Self{ #( #names : #types::default() ),* } )
-  }
-  else
-  {
-    quote!( Self( #( #types::default() ),* ) )
-  }
+  struct_name : Ident,
+  is_named : bool,
+  types : Vec< TokenStream >,
+  names : Vec< Option< TokenStream > >,
 }
 
-fn impl_make1( is_named : bool, fields : &Vec< Field > ) -> TokenStream
+impl DeriveMake
 {
-  let types = fields.iter()
-  .map( | f | f.f_type.to_owned() )
-  .collect::< Vec< _ > >();
-  if is_named
+  fn parse_fields( &mut self, fields : Fields )
   {
-    let names = fields.iter()
-    .map( | f | f.f_name.clone() )
-    .collect::< Vec< _ > >();
-    quote!( Self{ #( #names : val as #types ),* } )
+    match fields
+    {
+      Fields::Named( named ) =>
+      {
+        self.is_named = true;
+        let fields = &named.named;
+        fields.iter().for_each( | field |
+        {
+          self.names.push( Some( field.ident.as_ref().unwrap().to_token_stream() ) );
+          self.types.push( field.ty.clone().into_token_stream() );
+        })
+      },
+      Fields::Unnamed( unnamed ) =>
+      {
+        self.is_named = false;
+        let fields = &unnamed.unnamed;
+        fields.iter().for_each( | field |
+        {
+          self.names.push( None );
+          self.types.push( field.into_token_stream() );
+        })
+      },
+      _ => panic!( "Can'not implement \"Make\" for struct without fields" )
+    };
   }
-  else
-  {
-    quote!( Self( #( val as #types ),* ) )
-  }
-}
 
-#[ derive( Debug ) ]
-struct Field
-{
-  f_name : Option< TokenStream >,
-  f_type : TokenStream,
+  pub( crate ) fn parse( input : ItemStruct ) -> Self
+  {
+    let mut obj = Self
+    {
+      struct_name : input.ident,
+      is_named : false,
+      types : Vec::new(),
+      names : Vec::new()
+    };
+
+    obj.parse_fields( input.fields );
+
+    obj
+  }
+
+  fn impl_make0( &self ) -> TokenStream
+  {
+    let types = &self.types;
+    let struct_name = &self.struct_name;
+    let creation = if self.is_named
+    {
+      let names = &self.names;
+      quote!( Self{ #( #names : #types::default() ),* } )
+    }
+    else
+    {
+      quote!( Self( #( #types::default() ),* ) )
+    };
+    quote!
+    (
+      impl Make0 for #struct_name
+      {
+        fn make_0() -> Self
+        {
+          #creation
+        }
+      }
+    )
+  }
+
+  fn impl_make_n( &self, n : usize ) -> TokenStream
+  {
+    // ? If all defined traits already implemented - skips implementation next one
+    if n > MAX_MAKE_TRAIT_NUMBER { return quote!() }
+
+    let trait_name = format!( "{}{}", quote!( Make ), n ).parse::< TokenStream >().unwrap();
+    let trait_fn_name = format!( "{}{}", quote!( make_ ), n ).parse::< TokenStream >().unwrap();
+    let types = &self.types;
+    let struct_name = &self.struct_name;
+    let generic_type = types[ 0 .. n ].to_owned();
+    let mut vals = Vec::< TokenStream >::with_capacity( n );
+    let mut i = 1;
+    for _ in 0 .. types.len()
+    {
+      vals.push( format!( "{}{}", quote!( val_ ), i ).parse().unwrap() );
+      if n > i
+      {
+        i += 1
+      }
+    }
+
+    // make constructor
+    let creation = if self.is_named
+    {
+      let names = &self.names;
+      quote!( Self{ #( #names : #vals as #types ),* } )
+    }
+    else
+    {
+      quote!( Self( #( #vals as #types ),* ) )
+    };
+    // make implementation
+    quote!
+    (
+      impl #trait_name< #( #generic_type ),* > for #struct_name
+      {
+        fn #trait_fn_name( #( #vals : #generic_type ),* ) -> Self
+        {
+          #creation
+        }
+      }
+    )
+  }
+
+  // implements make for all defined "Make" traits
+  pub( crate ) fn impl_makes( &self ) -> TokenStream
+  {
+    let mut result = self.impl_make0();
+    for i in 1 .. self.types.len() + 1
+    {
+      let implementation = self.impl_make_n( i );
+      result = quote!
+      (
+        #result
+        #implementation
+      )
+    }
+    result
+  }
 }
 
 #[ proc_macro_derive( Make ) ]
 pub fn derive_make( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let input = parse_macro_input!( input as syn::ItemStruct );
-  let struct_name = input.ident;
-  let is_named;
-  let fields_vec = match input.fields
-  {
-    Fields::Named( named ) =>
-    {
-      is_named = true;
-      let fields = &named.named;
-      fields.iter().map( | field |
-      {
-        Field
-        {
-          f_name : Some( field.ident.as_ref().unwrap().to_token_stream() ),
-          f_type : field.ty.clone().into_token_stream(),
-        }
-      })
-      .collect::< Vec< _ > >()
-    },
-    Fields::Unnamed( unnamed ) =>
-    {
-      is_named = false;
-      let fields = &unnamed.unnamed;
-      fields.iter().map( | field |
-      {
-        Field
-        {
-          f_name : None,
-          f_type : field.into_token_stream(),
-        }
-      } )
-      .collect::< Vec< _ > >()
-    },
-    _ => unimplemented!()
-  };
+  let dm = DeriveMake::parse( input );
 
-  let f_type = fields_vec[ 0 ].f_type.clone(); 
-
-  let make0 = impl_make0( is_named, &fields_vec );
-  let make1 = impl_make1( is_named, &fields_vec );
-
-  let expanded = quote! {
-    impl Make0 for #struct_name
-    {
-      fn make_0() -> Self
-      {
-        #make0
-      }
-    }
-
-    impl Make1< #f_type > for #struct_name
-    {
-      fn make_1( val : #f_type ) -> Self
-      {
-        #make1
-      }
-    }
-  };
-
-  proc_macro::TokenStream::from( expanded )
+  proc_macro::TokenStream::from( dm.impl_makes() )
 }
+  
