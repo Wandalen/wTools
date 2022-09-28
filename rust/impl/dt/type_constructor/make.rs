@@ -250,4 +250,7 @@ pub mod prelude
     make,
 
   };
+
+  #[ cfg( feature = "make" ) ]
+  pub use derive_make::Make;
 }

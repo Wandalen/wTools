@@ -9,28 +9,12 @@ tests_impls!
   fn max()
   {
 
-    #[ derive( Debug, PartialEq ) ]
+    #[ derive( Debug, PartialEq, Make ) ]
     struct Struct1
     {
       _0 : i32,
       _1 : i32,
       _2 : i32,
-    }
-
-    impl TheModule::Make0 for Struct1
-    {
-      fn make_0() -> Self
-      {
-        Self { _0 : 0, _1 : 0, _2 : 0 }
-      }
-    }
-
-    impl TheModule::Make1< i32 > for Struct1
-    {
-      fn make_1( val : i32 ) -> Self
-      {
-        Self { _0 : val, _1 : val, _2 : val }
-      }
     }
 
     impl TheModule::Make2< i32, i32 > for Struct1
@@ -74,27 +58,11 @@ tests_impls!
   fn sample()
   {
 
-    #[ derive( Debug, PartialEq ) ]
+    #[ derive( Debug, PartialEq, Make ) ]
     struct Struct1
     {
       a : i32,
       b : i32,
-    }
-
-    impl TheModule::Make0 for Struct1
-    {
-      fn make_0() -> Self
-      {
-        Self { a : 0, b : 0 }
-      }
-    }
-
-    impl TheModule::Make1< i32 > for Struct1
-    {
-      fn make_1( val : i32 ) -> Self
-      {
-        Self { a : val, b : val }
-      }
     }
 
     impl TheModule::Make2< i32, i32 > for Struct1
