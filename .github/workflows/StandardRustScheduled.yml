@@ -1,4 +1,4 @@
-name : rust_status
+name : rust_scheduled
 
 on :
   schedule :
@@ -36,16 +36,19 @@ jobs :
 
       - name : Audit the modules
         run : make audit
+        continue-on-error : true
       - name : Generate documentation for the modules
         run : make doc open=no
+        continue-on-error : true
       - name : Lint the modules
         run : make lint warnings=no
+        continue-on-error : true
       - name : Check the modules
         run : make check
+        continue-on-error : true
       - name : Check the modules dependencies
         run : cargo +nightly udeps --all-targets
-      - name : Test with miri
-        run : cargo miri test
+        continue-on-error : true
 
   release :
     strategy :
