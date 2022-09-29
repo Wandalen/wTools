@@ -72,6 +72,23 @@ pub( crate ) mod private
   }
 
   ///
+  /// Constructor with four arguments.
+  ///
+
+  pub trait Make4< Arg1, Arg2, Arg3, Arg4 >
+  where
+    Self : Sized,
+  {
+    /// Constructor with four arguments.
+    fn make( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3, arg4 : Arg4 ) -> Self
+    {
+      Self::make_4( arg1, arg2, arg3, arg4 )
+    }
+    /// Constructor with four arguments.
+    fn make_4( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3, arg4 : Arg4 ) -> Self;
+  }
+
+  ///
   /// Variadic constructor.
   ///
   /// Implement traits [Make0], [Make1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
@@ -183,6 +200,14 @@ pub( crate ) mod private
     };
 
     (
+      $Arg1 : expr, $Arg2 : expr, $Arg3 : expr, $Arg4 : expr $(,)?
+    )
+    =>
+    {
+      $crate::Make4::make_4( $Arg1, $Arg2, $Arg3, $Arg4 );
+    };
+
+    (
       $( $Rest : tt )+
     )
     =>
@@ -246,6 +271,7 @@ pub mod prelude
     Make1,
     Make2,
     Make3,
+    Make4,
 
     make,
 

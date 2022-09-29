@@ -15,24 +15,27 @@ tests_impls!
       _0 : i32,
       _1 : i32,
       _2 : i32,
+      _3 : i32,
     }
 
     let got : Struct1 = TheModule::make!();
-    let exp = Struct1{ _0 : 0, _1 : 0, _2 : 0 };
+    let exp = Struct1{ _0 : 0, _1 : 0, _2 : 0, _3 : 0 };
     a_id!( got, exp );
 
     let got : Struct1 = TheModule::make!( 13 );
-    let exp = Struct1{ _0 : 13, _1 : 13, _2 : 13 };
+    let exp = Struct1{ _0 : 13, _1 : 13, _2 : 13, _3 : 13 };
     a_id!( got, exp );
 
     let got : Struct1 = TheModule::make!( 0, 1 );
-    let exp = Struct1{ _0 : 0, _1 : 1, _2 : 1 };
+    let exp = Struct1{ _0 : 0, _1 : 1, _2 : 1, _3 : 1 };
     a_id!( got, exp );
 
     let got : Struct1 = TheModule::make!( 0, 1, 2 );
-    let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2 };
+    let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2, _3 : 2 };
     a_id!( got, exp );
-    let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2 };
+
+    let got : Struct1 = TheModule::make!( 0, 1, 2, 3 );
+    let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2, _3 : 3 };
     a_id!( got, exp );
 
   }
@@ -63,6 +66,35 @@ tests_impls!
 
   }
 
+  //
+
+  fn slice_like()
+  {
+
+    #[ derive( Debug, PartialEq, Make ) ]
+    struct Struct1( i32, i32, i32, i32 );
+
+    let got : Struct1 = TheModule::make!();
+    let exp = Struct1( 0, 0, 0, 0 );
+    a_id!( got, exp );
+
+    let got : Struct1 = TheModule::make!( 13 );
+    let exp = Struct1( 13, 13, 13, 13 );
+    a_id!( got, exp );
+
+    let got : Struct1 = TheModule::make!( 0, 1 );
+    let exp = Struct1( 0, 1, 1, 1 );
+    a_id!( got, exp );
+
+    let got : Struct1 = TheModule::make!( 0, 1, 2 );
+    let exp = Struct1( 0, 1, 2, 2 );
+    a_id!( got, exp );
+
+    let got : Struct1 = TheModule::make!( 0, 1, 2, 3 );
+    let exp = Struct1( 0, 1, 2, 3 );
+    a_id!( got, exp );
+
+  }
 }
 
 //
@@ -71,4 +103,5 @@ tests_index!
 {
   max,
   sample,
+  slice_like,
 }

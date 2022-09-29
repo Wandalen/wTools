@@ -3,7 +3,7 @@ use quote::{ quote, ToTokens };
 use syn::{ parse_macro_input, Fields, ItemStruct };
 
 // * Change this if more traits already defined
-const MAX_MAKE_TRAIT_NUMBER : usize = 3;
+const MAX_MAKE_TRAIT_NUMBER : usize = 4;
 
 
 struct DeriveMake
