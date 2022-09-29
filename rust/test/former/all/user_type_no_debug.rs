@@ -25,29 +25,29 @@ tests_impls!
 {
   fn test_user_type_with_no_debug()
   {
-    // #[ derive( Default, PartialEq ) ]
-    // struct State
-    // {
-    //   on : bool
-    // }
-    //
-    // #[derive( Debug, PartialEq, Former )]
-    // struct Device
-    // {
-    //   device : String,
-    //   state : State,
-    // }
-    //
-    // let device = Device::former()
-    // .form();
-    //
-    // let expected = Device
-    // {
-    //   device : "".to_string(),
-    //   state : State { on : false },
-    // };
-    //
-    // a_id!( device, expected );
+    #[ derive( Default, PartialEq ) ]
+    pub struct State
+    {
+      on : bool
+    }
+
+    #[derive( PartialEq, Former )]
+    pub struct Device
+    {
+      device : String,
+      state : State,
+    }
+
+    let device = Device::former()
+    .form();
+
+    let expected = Device
+    {
+      device : "".to_string(),
+      state : State { on : false },
+    };
+
+    assert!( device == expected );
   }
 }
 

@@ -592,7 +592,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       // use wtools::former;
 
       #[doc = #doc_former_struct]
-      #[derive( Debug )]
       pub struct #former_name_ident #generics
       {
         #(
