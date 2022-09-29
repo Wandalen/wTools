@@ -25,53 +25,52 @@ tests_impls!
 {
   fn test_user_type_with_no_default()
   {
-    // #[ derive( Debug, PartialEq ) ]
-    // enum State
-    // {
-    //   On,
-    //   Off,
-    // }
-    //
-    // #[derive( Debug, PartialEq, Former )]
-    // struct Device
-    // {
-    //   device : String,
-    //   state : State,
-    // }
-    //
-    // let device = Device::former()
-    // .state( State::On )
-    // .form();
-    //
-    // let expected = Device
-    // {
-    //   device : "".to_string(),
-    //   state : State::On,
-    // };
-    //
-    // a_id!( device, expected );
+    #[ derive( Debug, PartialEq ) ]
+    pub enum State
+    {
+      On,
+      Off,
+    }
+
+    #[derive( Debug, PartialEq, Former )]
+    pub struct Device
+    {
+      device : String,
+      state : State,
+    }
+
+    let device = Device::former()
+    .state( State::On )
+    .form();
+
+    let expected = Device
+    {
+      device : "".to_string(),
+      state : State::On,
+    };
+
+    a_id!( device, expected );
   }
 
   //
 
-  #[ ignore ]
   #[ should_panic ]
   fn test_user_type_with_no_default_throwing()
   {
-    // #[ derive( Debug, PartialEq ) ]
-    // enum State
-    // {
-    //   On,
-    //   Off,
-    // }
-    //
-    // #[derive( Debug, PartialEq, Former )]
-    // struct Device
-    // {
-    //   device : String,
-    //   state : State,
-    // }
-    // let device = Device::former().form();
+    #[ derive( Debug, PartialEq ) ]
+    pub enum State
+    {
+      On,
+      Off,
+    }
+
+    #[derive( Debug, PartialEq, Former )]
+    pub struct Device
+    {
+      device : String,
+      state : State,
+    }
+    let device = Device::former().form();
   }
 }
 

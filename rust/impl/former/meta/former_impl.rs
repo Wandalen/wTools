@@ -256,9 +256,38 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
     let _else = if default == None
     {
+      let panic_msg = format!( "Field '{}' isn't initialized", ident );
       qt!
       {
-        let val : #ty = ::core::default::Default::default();
+        let val : #ty =
+        {
+          // Autoref specialization
+          trait NotDefault< T >
+          {
+            fn maybe_default( self : &Self ) -> T { panic!( #panic_msg ) }
+          }
+
+          trait WithDefault< T >
+          {
+            fn maybe_default( self : &Self ) -> T;
+          }
+
+          impl< T > NotDefault< T >
+          for & ::core::marker::PhantomData< T >
+          {}
+
+          impl< T > WithDefault< T >
+          for ::core::marker::PhantomData< T >
+          where T : ::core::default::Default,
+          {
+            fn maybe_default( self : &Self ) -> T
+            {
+              T::default()
+            }
+          }
+
+          ( &::core::marker::PhantomData::< #ty > ).maybe_default()
+        };
       }
     }
     else
