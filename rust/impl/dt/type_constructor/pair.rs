@@ -973,7 +973,7 @@ pub( crate ) mod private
     /// ```
     ///
 
-    #[ derive( Debug, Clone, PartialEq, Eq, Default ) ]
+    #[ derive( Debug, Clone, PartialEq, Eq, Default, Pair ) ]
     pub pair Pair : < T1, T2 >;
 
     ///
@@ -994,6 +994,7 @@ pub( crate ) mod private
   // trace_macros!( false );
 
   pub use _pair;
+  use derive_pair::Pair;
 }
 
 /// Protected namespace of the module.
