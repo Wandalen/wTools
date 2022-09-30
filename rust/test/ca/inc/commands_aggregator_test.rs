@@ -65,7 +65,7 @@ tests_impls!
     /* single command, returns Ok */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".help" );
     a_id!( got, Ok( () ) );
@@ -73,7 +73,7 @@ tests_impls!
     /* single command, returns Err */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".error" );
     a_id!( got, Err( BasicError::new( "err" ) ) );
@@ -83,7 +83,7 @@ tests_impls!
     /* two commands, explicit delimeter, returns Ok */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".help ; .list" );
     a_id!( got, Ok( () ) );
@@ -91,7 +91,7 @@ tests_impls!
     /* two commands, explicit delimeter, second command returns Err */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ; .error" );
     a_id!( got, Err( BasicError::new( "err" ) ) );
@@ -101,7 +101,7 @@ tests_impls!
     /* two commands, implicit delimeter, returns Ok */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".help .list" );
     a_id!( got, Ok( () ) );
@@ -109,7 +109,7 @@ tests_impls!
     /* two commands, implicit delimeter, second command returns Err */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list .error" );
     a_id!( got, Err( BasicError::new( "err" ) ) );
@@ -122,7 +122,7 @@ tests_impls!
     /* single command with subject as single dot */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ." );
     a_id!( got, Ok( () ) );
@@ -130,7 +130,7 @@ tests_impls!
     /* single command with subject as double dot */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list .." );
     a_id!( got, Ok( () ) );
@@ -138,7 +138,7 @@ tests_impls!
     /* single command with subject as dot and slash */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ./" );
     a_id!( got, Ok( () ) );
@@ -146,7 +146,7 @@ tests_impls!
     /* single command with subject as double dot and slash */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ../" );
     a_id!( got, Ok( () ) );
@@ -154,7 +154,7 @@ tests_impls!
     /* single command with subject as dot and backslash */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list .\\" );
     a_id!( got, Ok( () ) );
@@ -162,7 +162,7 @@ tests_impls!
     /* single command with subject as double dot and backslash */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ..\\" );
     a_id!( got, Ok( () ) );
@@ -172,7 +172,7 @@ tests_impls!
     /* two commands with subjects with dots */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ..\\ .help ./some" );
     a_id!( got, Ok( () ) );
@@ -192,7 +192,7 @@ tests_impls!
     /* command returns Ok */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.instruction_perform( ".help" );
     a_id!( got, Ok( () ) );
@@ -200,7 +200,7 @@ tests_impls!
     /* command returns Err */
     let ca = wca::commands_aggregator()
     .changing_exit_code( false )
-    .commands().replace( commands_form() ).end()
+    .commands( commands_form() )
     .form();
     let got = ca.instruction_perform( ".error" );
     a_id!( got, Err( BasicError::new( "err" ) ) );

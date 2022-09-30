@@ -97,25 +97,6 @@ fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 }
 
 ///
-/// Extract the first and the second parameters of the type if such exist.
-///
-
-fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn::Type ) >
-{
-  let on_err = ||
-  {
-    syn_err!( ty, "Expects at least two parameters here:\n  {}", qt!{ #ty } )
-  };
-  let result = proc_macro_tools::type_parameters( ty, 0 ..= 1 );
-  let mut iter = result.iter();
-  Ok
-  ((
-    iter.next().ok_or_else( on_err )?,
-    iter.next().ok_or_else( on_err )?,
-  ),)
-}
-
-///
 /// Generate fields for initializer of a struct setting each field to `None`.
 ///
 /// ### Sample of output
@@ -345,100 +326,29 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///
 
 #[inline]
-fn field_setter_map( field : &FormerField< '_ >, former_name_ident : &syn::Ident ) -> Result< proc_macro2::TokenStream >
+fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
 {
   let ident = &field.ident;
 
   let tokens = match &field.type_container_kind
   {
-    proc_macro_tools::ContainerKind::No =>
     {
-      let non_optional_ty = &field.non_optional_ty;
-      qt!
-      {
-        #[inline]
-        pub fn #ident< Src >( mut self, src : Src ) -> Self
-        where Src : ::core::convert::Into< #non_optional_ty >,
-        {
-          debug_assert!( self.#ident.is_none() );
-          self.#ident = ::core::option::Option::Some( src.into() );
-          self
-        }
-      }
-    },
-    proc_macro_tools::ContainerKind::Vector =>
+    }
+  }
+  let tokens =
+  {
+    let non_optional_ty = &field.non_optional_ty;
+    qt!
     {
-      let ty = &field.ty;
-      let internal_ty = parameter_internal_first( ty )?;
-      qt!
+      #[inline]
+      pub fn #ident< Src >( mut self, src : Src ) -> Self
+      where Src : ::core::convert::Into< #non_optional_ty >,
       {
-        #[inline]
-        pub fn #ident( mut self ) -> former::runtime::VectorFormer
-        <
-          #internal_ty,
-          #ty,
-          #former_name_ident,
-          impl Fn( &mut #former_name_ident, ::core::option::Option< #ty > )
-        >
-        {
-          let container = self.#ident.take();
-          let on_end = | former : &mut #former_name_ident, container : ::core::option::Option< #ty > |
-          {
-            former.#ident = container;
-          };
-          former::runtime::VectorFormer::new( self, container, on_end )
-        }
+        debug_assert!( self.#ident.is_none() );
+        self.#ident = ::core::option::Option::Some( src.into() );
+        self
       }
-    },
-    proc_macro_tools::ContainerKind::HashMap =>
-    {
-      let ty = &field.ty;
-      let ( k_ty, e_ty ) = parameter_internal_first_two( ty )?;
-      qt!
-      {
-        #[inline]
-        pub fn #ident( mut self ) -> former::runtime::HashMapFormer
-        <
-          #k_ty,
-          #e_ty,
-          #ty,
-          #former_name_ident,
-          impl Fn( &mut #former_name_ident, ::core::option::Option< #ty > )
-        >
-        {
-          let container = self.#ident.take();
-          let on_end = | former : &mut #former_name_ident, container : ::core::option::Option< #ty > |
-          {
-            former.#ident = container;
-          };
-          former::runtime::HashMapFormer::new( self, container, on_end )
-        }
-      }
-    },
-    proc_macro_tools::ContainerKind::HashSet =>
-    {
-      let ty = &field.ty;
-      let internal_ty = parameter_internal_first( ty )?;
-      qt!
-      {
-        #[inline]
-        pub fn #ident( mut self ) -> former::runtime::HashSetFormer
-        <
-          #internal_ty,
-          #ty,
-          #former_name_ident,
-          impl Fn( &mut #former_name_ident, ::core::option::Option< #ty > )
-        >
-        {
-          let container = self.#ident.take();
-          let on_end = | former : &mut #former_name_ident, container : ::core::option::Option< #ty > |
-          {
-            former.#ident = container;
-          };
-          former::runtime::HashSetFormer::new( self, container, on_end )
-        }
-      }
-    },
+    }
   };
 
   Ok( tokens )
