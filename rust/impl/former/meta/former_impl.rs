@@ -11,7 +11,7 @@ pub type Result< T > = std::result::Result< T, syn::Error >;
 #[allow( dead_code )]
 struct FormerField< 'a >
 {
-  pub attrs : &'a Vec< syn::Attribute >,
+  pub attrs : Attributes,
   pub vis : &'a syn::Visibility,
   pub ident : &'a syn::Ident,
   pub colon_token : &'a Option< syn::token::Colon >,
@@ -19,6 +19,50 @@ struct FormerField< 'a >
   pub non_optional_ty : &'a syn::Type,
   pub is_optional : bool,
   pub type_container_kind : proc_macro_tools::ContainerKind,
+}
+
+///
+/// Attributes of the field.
+///
+
+struct Attributes
+{
+  default : Option< AttributeDefault >,
+  setter : Option< AttributeSetter >
+}
+
+impl Attributes
+{
+  fn parse( attributes : & Vec< syn::Attribute > ) -> Result< Self >
+  {
+    let mut default = None;
+    let mut setter = None;
+    for attr in attributes
+    {
+      let key_ident = attr.path.get_ident()
+      .ok_or_else( || syn_err!( attr, "Expects simple key of an attirbute, but got:\n  {}", qt!{ #attr } ) )?;
+      let key_str = format!( "{}", key_ident );
+      match key_str.as_ref()
+      {
+        "default" =>
+        {
+          let attr_default = syn::parse2::< AttributeDefault >( attr.tokens.clone() )?;
+          default.replace( attr_default );
+        }
+        "setter" =>
+        {
+          let attr_setter = syn::parse2::< AttributeSetter >( attr.tokens.clone() )?;
+          setter.replace( attr_setter );
+        }
+        _ =>
+        {
+          return Err( syn_err!( attr, "Unknown attribute {}", qt!{ #attr } ) );
+        }
+      }
+    }
+
+    Ok( Attributes { default, setter } )
+  }
 }
 
 ///
@@ -71,6 +115,32 @@ impl syn::parse::Parse for AttributeDefault
       paren_token : syn::parenthesized!( input2 in input ),
       // eq_token : input.parse()?,
       expr : input2.parse()?,
+    })
+  }
+}
+
+///
+/// Attribute to enable/disable setter generation.
+///
+/// `#[ setter = false ]`
+///
+
+#[allow( dead_code )]
+struct AttributeSetter
+{
+  paren_token : syn::token::Paren,
+  condition : syn::LitBool,
+}
+
+impl syn::parse::Parse for AttributeSetter
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+  {
+    let input2;
+    Ok( Self
+    {
+      paren_token : syn::parenthesized!( input2 in input ),
+      condition : input2.parse()?,
     })
   }
 }
@@ -179,26 +249,14 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 {
   let ident = field.ident;
   let ty = field.ty;
-  let mut default = None;
-
-  for attr in field.attrs.iter()
+  let default = if let Some( attr_default ) = &field.attrs.default
   {
-    let key_ident = attr.path.get_ident()
-    .ok_or_else( || syn_err!( attr, "Expects simple key of an attirbute, but got:\n  {}", qt!{ #attr } ) )?;
-    let key_str = format!( "{}", key_ident );
-    match key_str.as_ref()
-    {
-      "default" =>
-      {
-        let attr_default = syn::parse2::< AttributeDefault >( attr.tokens.clone() )?;
-        default = Some( attr_default.expr );
-      }
-      _ =>
-      {
-        return Err( syn_err!( attr, "Unknown attribute {}", qt!{ #attr } ) );
-      }
-    }
+    Some( &attr_default.expr )
   }
+  else
+  {
+    None
+  };
 
   let tokens = if field.is_optional
   {
@@ -329,12 +387,14 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
 {
   let ident = &field.ident;
-
-  let tokens = match &field.type_container_kind
+  if let Some( setter_attr ) = &field.attrs.setter
   {
+    if !setter_attr.condition.value()
     {
+      return Ok( qt!{ } );
     }
   }
+
   let tokens =
   {
     let non_optional_ty = &field.non_optional_ty;
@@ -473,7 +533,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 
   let former_fields : Vec< Result< FormerField< '_ > > > = fields.iter().map( | field |
   {
-    let attrs = &field.attrs;
+    let attrs = Attributes::parse( &field.attrs )?;
     let vis = &field.vis;
     let ident = field.ident.as_ref()
     .ok_or_else( || syn_err!( field, "Expected that each field has key, but some does not:\n  {}", qt!{ #field } ) )?;
@@ -496,7 +556,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     field_optional_map( &former_field ),
     field_form_map( &former_field ),
     field_name_map( &former_field ),
-    field_setter_map( &former_field, &former_name_ident ),
+    field_setter_map( &former_field ),
   )}).multiunzip();
 
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( &name_ident );
