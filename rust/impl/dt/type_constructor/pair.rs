@@ -587,7 +587,7 @@ pub( crate ) mod private
     )
     =>
     {
-      // #[ derive( derive_pair::Pair ) ]
+      #[ derive( derive_pair::Pair ) ]
       $( #[ $Meta ] )*
       $Vis struct $Name
       <
