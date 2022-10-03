@@ -11,7 +11,7 @@ pub type Result< T > = std::result::Result< T, syn::Error >;
 #[allow( dead_code )]
 struct FormerField< 'a >
 {
-  pub attrs : &'a Vec< syn::Attribute >,
+  pub attrs : Attributes,
   pub vis : &'a syn::Visibility,
   pub ident : &'a syn::Ident,
   pub colon_token : &'a Option< syn::token::Colon >,
@@ -19,6 +19,50 @@ struct FormerField< 'a >
   pub non_optional_ty : &'a syn::Type,
   pub is_optional : bool,
   pub type_container_kind : proc_macro_tools::ContainerKind,
+}
+
+///
+/// Attributes of the field.
+///
+
+struct Attributes
+{
+  default : Option< AttributeDefault >,
+  setter : Option< AttributeSetter >
+}
+
+impl Attributes
+{
+  fn parse( attributes : & Vec< syn::Attribute > ) -> Result< Self >
+  {
+    let mut default = None;
+    let mut setter = None;
+    for attr in attributes
+    {
+      let key_ident = attr.path.get_ident()
+      .ok_or_else( || syn_err!( attr, "Expects simple key of an attirbute, but got:\n  {}", qt!{ #attr } ) )?;
+      let key_str = format!( "{}", key_ident );
+      match key_str.as_ref()
+      {
+        "default" =>
+        {
+          let attr_default = syn::parse2::< AttributeDefault >( attr.tokens.clone() )?;
+          default.replace( attr_default );
+        }
+        "setter" =>
+        {
+          let attr_setter = syn::parse2::< AttributeSetter >( attr.tokens.clone() )?;
+          setter.replace( attr_setter );
+        }
+        _ =>
+        {
+          return Err( syn_err!( attr, "Unknown attribute {}", qt!{ #attr } ) );
+        }
+      }
+    }
+
+    Ok( Attributes { default, setter } )
+  }
 }
 
 ///
@@ -76,6 +120,32 @@ impl syn::parse::Parse for AttributeDefault
 }
 
 ///
+/// Attribute to enable/disable setter generation.
+///
+/// `#[ setter = false ]`
+///
+
+#[allow( dead_code )]
+struct AttributeSetter
+{
+  paren_token : syn::token::Paren,
+  condition : syn::LitBool,
+}
+
+impl syn::parse::Parse for AttributeSetter
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+  {
+    let input2;
+    Ok( Self
+    {
+      paren_token : syn::parenthesized!( input2 in input ),
+      condition : input2.parse()?,
+    })
+  }
+}
+
+///
 /// Is type under Option.
 ///
 
@@ -94,25 +164,6 @@ fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
   .first()
   .map( | e | *e )
   .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", qt!{ #ty } ) )
-}
-
-///
-/// Extract the first and the second parameters of the type if such exist.
-///
-
-fn parameter_internal_first_two( ty : &syn::Type ) -> Result< ( &syn::Type, &syn::Type ) >
-{
-  let on_err = ||
-  {
-    syn_err!( ty, "Expects at least two parameters here:\n  {}", qt!{ #ty } )
-  };
-  let result = proc_macro_tools::type_parameters( ty, 0 ..= 1 );
-  let mut iter = result.iter();
-  Ok
-  ((
-    iter.next().ok_or_else( on_err )?,
-    iter.next().ok_or_else( on_err )?,
-  ),)
 }
 
 ///
@@ -198,26 +249,14 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 {
   let ident = field.ident;
   let ty = field.ty;
-  let mut default = None;
-
-  for attr in field.attrs.iter()
+  let default = if let Some( attr_default ) = &field.attrs.default
   {
-    let key_ident = attr.path.get_ident()
-    .ok_or_else( || syn_err!( attr, "Expects simple key of an attirbute, but got:\n  {}", qt!{ #attr } ) )?;
-    let key_str = format!( "{}", key_ident );
-    match key_str.as_ref()
-    {
-      "default" =>
-      {
-        let attr_default = syn::parse2::< AttributeDefault >( attr.tokens.clone() )?;
-        default = Some( attr_default.expr );
-      }
-      _ =>
-      {
-        return Err( syn_err!( attr, "Unknown attribute {}", qt!{ #attr } ) );
-      }
-    }
+    Some( &attr_default.expr )
   }
+  else
+  {
+    None
+  };
 
   let tokens = if field.is_optional
   {
@@ -256,9 +295,38 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
     let _else = if default == None
     {
+      let panic_msg = format!( "Field '{}' isn't initialized", ident );
       qt!
       {
-        let val : #ty = ::core::default::Default::default();
+        let val : #ty =
+        {
+          // Autoref specialization
+          trait NotDefault< T >
+          {
+            fn maybe_default( self : &Self ) -> T { panic!( #panic_msg ) }
+          }
+
+          trait WithDefault< T >
+          {
+            fn maybe_default( self : &Self ) -> T;
+          }
+
+          impl< T > NotDefault< T >
+          for & ::core::marker::PhantomData< T >
+          {}
+
+          impl< T > WithDefault< T >
+          for ::core::marker::PhantomData< T >
+          where T : ::core::default::Default,
+          {
+            fn maybe_default( self : &Self ) -> T
+            {
+              T::default()
+            }
+          }
+
+          ( &::core::marker::PhantomData::< #ty > ).maybe_default()
+        };
       }
     }
     else
@@ -316,100 +384,31 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///
 
 #[inline]
-fn field_setter_map( field : &FormerField< '_ >, former_name_ident : &syn::Ident ) -> Result< proc_macro2::TokenStream >
+fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
 {
   let ident = &field.ident;
-
-  let tokens = match &field.type_container_kind
+  if let Some( setter_attr ) = &field.attrs.setter
   {
-    proc_macro_tools::ContainerKind::No =>
+    if !setter_attr.condition.value()
     {
-      let non_optional_ty = &field.non_optional_ty;
-      qt!
-      {
-        #[inline]
-        pub fn #ident< Src >( mut self, src : Src ) -> Self
-        where Src : ::core::convert::Into< #non_optional_ty >,
-        {
-          debug_assert!( self.#ident.is_none() );
-          self.#ident = ::core::option::Option::Some( src.into() );
-          self
-        }
-      }
-    },
-    proc_macro_tools::ContainerKind::Vector =>
+      return Ok( qt!{ } );
+    }
+  }
+
+  let tokens =
+  {
+    let non_optional_ty = &field.non_optional_ty;
+    qt!
     {
-      let ty = &field.ty;
-      let internal_ty = parameter_internal_first( ty )?;
-      qt!
+      #[inline]
+      pub fn #ident< Src >( mut self, src : Src ) -> Self
+      where Src : ::core::convert::Into< #non_optional_ty >,
       {
-        #[inline]
-        pub fn #ident( mut self ) -> former::runtime::VectorFormer
-        <
-          #internal_ty,
-          #ty,
-          #former_name_ident,
-          impl Fn( &mut #former_name_ident, ::core::option::Option< #ty > )
-        >
-        {
-          let container = self.#ident.take();
-          let on_end = | former : &mut #former_name_ident, container : ::core::option::Option< #ty > |
-          {
-            former.#ident = container;
-          };
-          former::runtime::VectorFormer::new( self, container, on_end )
-        }
+        debug_assert!( self.#ident.is_none() );
+        self.#ident = ::core::option::Option::Some( src.into() );
+        self
       }
-    },
-    proc_macro_tools::ContainerKind::HashMap =>
-    {
-      let ty = &field.ty;
-      let ( k_ty, e_ty ) = parameter_internal_first_two( ty )?;
-      qt!
-      {
-        #[inline]
-        pub fn #ident( mut self ) -> former::runtime::HashMapFormer
-        <
-          #k_ty,
-          #e_ty,
-          #ty,
-          #former_name_ident,
-          impl Fn( &mut #former_name_ident, ::core::option::Option< #ty > )
-        >
-        {
-          let container = self.#ident.take();
-          let on_end = | former : &mut #former_name_ident, container : ::core::option::Option< #ty > |
-          {
-            former.#ident = container;
-          };
-          former::runtime::HashMapFormer::new( self, container, on_end )
-        }
-      }
-    },
-    proc_macro_tools::ContainerKind::HashSet =>
-    {
-      let ty = &field.ty;
-      let internal_ty = parameter_internal_first( ty )?;
-      qt!
-      {
-        #[inline]
-        pub fn #ident( mut self ) -> former::runtime::HashSetFormer
-        <
-          #internal_ty,
-          #ty,
-          #former_name_ident,
-          impl Fn( &mut #former_name_ident, ::core::option::Option< #ty > )
-        >
-        {
-          let container = self.#ident.take();
-          let on_end = | former : &mut #former_name_ident, container : ::core::option::Option< #ty > |
-          {
-            former.#ident = container;
-          };
-          former::runtime::HashSetFormer::new( self, container, on_end )
-        }
-      }
-    },
+    }
   };
 
   Ok( tokens )
@@ -534,7 +533,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 
   let former_fields : Vec< Result< FormerField< '_ > > > = fields.iter().map( | field |
   {
-    let attrs = &field.attrs;
+    let attrs = Attributes::parse( &field.attrs )?;
     let vis = &field.vis;
     let ident = field.ident.as_ref()
     .ok_or_else( || syn_err!( field, "Expected that each field has key, but some does not:\n  {}", qt!{ #field } ) )?;
@@ -557,7 +556,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     field_optional_map( &former_field ),
     field_form_map( &former_field ),
     field_name_map( &former_field ),
-    field_setter_map( &former_field, &former_name_ident ),
+    field_setter_map( &former_field ),
   )}).multiunzip();
 
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( &name_ident );
@@ -592,7 +591,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       // use wtools::former;
 
       #[doc = #doc_former_struct]
-      #[derive( Debug )]
       pub struct #former_name_ident #generics
       {
         #(

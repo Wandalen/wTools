@@ -25,7 +25,7 @@ fn main() -> Result< (), wtools::error::BasicError >
 
   let ca = wca::commands_aggregator()
   .changing_exit_code( true )
-  .commands().replace( commands::commands_form() ).end()
+  .commands( commands::commands_form() )
   .form();
   ca.program_perform( args.join( " " ).as_str() )
 }

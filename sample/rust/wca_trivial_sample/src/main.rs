@@ -17,7 +17,7 @@ fn main()
     /* */
 
     let ca = wca::commands_aggregator()
-    .commands().replace( commands ).end()
+    .commands( commands )
     .form();
     let got = ca.instruction_perform( ".help" );
     /* print : this is help */
