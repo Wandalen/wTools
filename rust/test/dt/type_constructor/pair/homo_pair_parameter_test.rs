@@ -9,6 +9,7 @@ tests_impls!
     mod mod1
     {
       #[ derive( Clone ) ]
+      #[ derive( Default ) ]
       pub struct Float
       (
         pub f32,
@@ -54,6 +55,7 @@ tests_impls!
     mod mod1
     {
       #[ derive( Debug, Clone, PartialEq ) ]
+      #[ derive( Default ) ]
       pub struct Float
       (
         pub f32,

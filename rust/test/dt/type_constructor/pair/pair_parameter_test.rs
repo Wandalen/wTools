@@ -72,6 +72,7 @@ tests_impls!
     mod mod1
     {
       #[ derive( Clone ) ]
+      #[ derive( Default ) ]
       pub struct Float
       (
         pub f32,

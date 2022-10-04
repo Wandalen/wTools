@@ -64,6 +64,28 @@ impl DerivePair
     )
   }
 
+  fn impl_from_tuple_no_into( &self ) -> proc_macro2::TokenStream
+  {
+    let struct_name = &self.ident;
+    let generics = &self.generics;
+    let gtypes = &self.gtypes;
+    let param1 = &self.fields.0.ty;
+    let param2 = &self.fields.1.ty;
+
+    quote!
+    (
+      impl< #( #generics ),* > From <( #param1, #param2 )>
+      for #struct_name< #( #gtypes ),* >
+      {
+        #[ inline ]
+        fn from( src : ( #param1, #param2 ) ) -> Self
+        {
+          Self( src.0, src.1 )
+        }
+      }
+    )
+  }
+
   fn impl_to_tuple( &self ) -> proc_macro2::TokenStream
   {
     let struct_name = &self.ident;
@@ -406,7 +428,7 @@ impl DerivePair
     let gtypes = &self.gtypes;
     let param1 = &self.fields.0.ty;
     let param2 = &self.fields.1.ty;
-    
+
     quote!
     (
       impl< #( #generics ),* > Make2< #param1, #param2 > for #struct_name< #( #gtypes ),* >
@@ -431,11 +453,26 @@ pub fn derive_pair( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
   let mut impls =
   vec!
   [
-    dp.impl_from_tuple(),
     dp.impl_to_tuple(),
     dp.impl_clone_as_tuple(),
-    // dp.impl_make0(),
+    dp.impl_make0(), // ! Fields must impl Default
     dp.impl_make2(),
+  ];
+  let impls_for_single_type =
+  vec!
+  [
+    dp.impl_make1(),
+    dp.impl_from_tuple_no_into(),
+    dp.impl_as_tuple(),
+    dp.impl_from_array(),
+    dp.impl_from_slice(),
+    dp.impl_to_array(),
+    dp.impl_as_slice(),
+    dp.impl_as_array(),
+    dp.impl_clone_as_array(),
+    dp.impl_from_value(), // ! conflicts with impl_from_tuple
+    dp.impl_deref(),
+    dp.impl_deref_mut(),
   ];
 
   // if two fields has the same types => it can be stored into array/slice/...
@@ -443,17 +480,11 @@ pub fn derive_pair( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
   let type2_as_string = &dp.fields.1.ty.clone().into_token_stream().to_string();
   if type1_as_string == type2_as_string
   {
-    impls.push( dp.impl_make1() );
-    impls.push( dp.impl_as_tuple() );
-    impls.push( dp.impl_from_array() );
-    impls.push( dp.impl_from_slice() );
-    impls.push( dp.impl_to_array() );
-    impls.push( dp.impl_as_slice() );
-    impls.push( dp.impl_as_array() );
-    impls.push( dp.impl_clone_as_array() );
-    // impls.push( dp.impl_from_value() ); //! conflicts with impl_from_tuple
-    impls.push( dp.impl_deref() );
-    impls.push( dp.impl_deref_mut() );
+    impls.extend( impls_for_single_type )
+  }
+  else
+  {
+    impls.push( dp.impl_from_tuple() )
   }
   let result = impls.iter().fold( quote!(), | mut result, i |
   {
