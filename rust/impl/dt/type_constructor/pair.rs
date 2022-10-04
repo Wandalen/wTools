@@ -93,26 +93,26 @@ pub( crate ) mod private
   //     }
 
 
-  //     $crate::_if_make!
-  //     {
+      $crate::_if_make!
+      {
 
-  //       impl
-  //       <
-  //         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
-  //         $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
-  //       >
-  //       $crate::Make0
-  //       for $Name< $ParamName1, $ParamName2 >
-  //       where
-  //         $ParamName1 : Default,
-  //         $ParamName2 : Default,
-  //       {
-  //         #[ inline ]
-  //         fn make_0() -> Self
-  //         {
-  //           Self( Default::default(), Default::default() )
-  //         }
-  //       }
+        impl
+        <
+          $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?,
+          $ParamName2 $( : $ParamTy2x1 $( :: $ParamTy2xN )* $( + $ParamTy2x2 )* )?
+        >
+        $crate::Make0
+        for $Name< $ParamName1, $ParamName2 >
+        where
+          $ParamName1 : Default,
+          $ParamName2 : Default,
+        {
+          #[ inline ]
+          fn make_0() -> Self
+          {
+            Self( Default::default(), Default::default() )
+          }
+        }
 
 
   //       impl
@@ -130,7 +130,7 @@ pub( crate ) mod private
   //         }
   //       }
 
-  //     }
+      }
 
       // From Pair Into Element cant be implemented because of Rust restructions.
 
@@ -347,19 +347,19 @@ pub( crate ) mod private
   //       }
   //     }
 
-  //     impl
-  //     <
-  //       $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
-  //     >
-  //     From<( $ParamName1, $ParamName1 )>
-  //     for $Name< $ParamName1 >
-  //     {
-  //       #[ inline ]
-  //       fn from( src : ( $ParamName1, $ParamName1 ) ) -> Self
-  //       {
-  //         Self( src.0, src.1 )
-  //       }
-  //     }
+      // impl
+      // <
+      //   $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      // >
+      // From<( $ParamName1, $ParamName1 )>
+      // for $Name< $ParamName1 >
+      // {
+      //   #[ inline ]
+      //   fn from( src : ( $ParamName1, $ParamName1 ) ) -> Self
+      //   {
+      //     Self( src.0, src.1 )
+      //   }
+      // }
 
   //     impl
   //     <
@@ -422,21 +422,21 @@ pub( crate ) mod private
   //       }
   //     }
 
-  //     impl
-  //     <
-  //       $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
-  //     >
-  //     From< $ParamName1 >
-  //     for $Name< $ParamName1 >
-  //     where
-  //       $ParamName1 : Clone,
-  //     {
-  //       #[ inline ]
-  //       fn from( src : $ParamName1 ) -> Self
-  //       {
-  //         Self( src.clone(), src.clone() )
-  //       }
-  //     }
+      // impl
+      // <
+      //   $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+      // >
+      // From< $ParamName1 >
+      // for $Name< $ParamName1 >
+      // where
+      //   $ParamName1 : Clone,
+      // {
+      //   #[ inline ]
+      //   fn from( src : $ParamName1 ) -> Self
+      //   {
+      //     Self( src.clone(), src.clone() )
+      //   }
+      // }
 
   //     impl
   //     <
@@ -520,24 +520,24 @@ pub( crate ) mod private
   //       }
   //     }
 
-  //     $crate::_if_make!
-  //     {
+      $crate::_if_make!
+      {
 
-  //       impl
-  //       <
-  //         $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
-  //       >
-  //       $crate::Make0
-  //       for $Name< $ParamName1 >
-  //       where
-  //         $ParamName1 : Default,
-  //       {
-  //         #[ inline ]
-  //         fn make_0() -> Self
-  //         {
-  //           Self( Default::default(), Default::default() )
-  //         }
-  //       }
+        impl
+        <
+          $ParamName1 $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy1x2 )* )?
+        >
+        $crate::Make0
+        for $Name< $ParamName1 >
+        where
+          $ParamName1 : Default,
+        {
+          #[ inline ]
+          fn make_0() -> Self
+          {
+            Self( Default::default(), Default::default() )
+          }
+        }
 
   //       impl
   //       <
@@ -569,7 +569,7 @@ pub( crate ) mod private
   //         }
   //       }
 
-  //     }
+      }
 
       $crate::types!{ $( $( $Rest )* )? }
     };
