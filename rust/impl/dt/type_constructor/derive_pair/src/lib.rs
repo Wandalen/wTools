@@ -49,11 +49,7 @@ impl DerivePair
         #( #generics, )*
         Into1 : Into< #param1 >, Into2 : Into< #param2 >
       >
-      From
-      <(
-       Into1, Into2
-      )>
-      for #struct_name< #( #gtypes ),* >
+      From<( Into1, Into2 )> for #struct_name< #( #gtypes ),* >
       {
         #[ inline ]
         fn from( src : ( Into1, Into2 ) ) -> Self
@@ -74,8 +70,7 @@ impl DerivePair
 
     quote!
     (
-      impl< #( #generics ),* > From <( #param1, #param2 )>
-      for #struct_name< #( #gtypes ),* >
+      impl< #( #generics ),* > From <( #param1, #param2 )> for #struct_name< #( #gtypes ),* >
       {
         #[ inline ]
         fn from( src : ( #param1, #param2 ) ) -> Self
@@ -96,9 +91,7 @@ impl DerivePair
     
     quote!
     (
-      impl< #( #generics ),* >
-      From  < #struct_name< #( #gtypes ),* > >
-      for ( #param1, #param2 )
+      impl< #( #generics ),* > From  < #struct_name< #( #gtypes ),* > > for ( #param1, #param2 )
       {
         #[ inline ]
         fn from( src : #struct_name< #( #gtypes ),* > ) -> Self
@@ -383,8 +376,8 @@ impl DerivePair
     let param1 = &self.fields.0.ty;
     let param2 = &self.fields.1.ty;
 
-    quote!
-    (
+    quote!( _if_make!
+    {
       impl< #( #generics ),* > Make0 for #struct_name< #( #gtypes ),* >
       where
         #param1 : Default,
@@ -396,7 +389,7 @@ impl DerivePair
           Self( Default::default(), Default::default() )
         }
       }
-    )
+    })
   }
 
   fn impl_make1( &self ) -> proc_macro2::TokenStream
@@ -406,8 +399,8 @@ impl DerivePair
     let gtypes = &self.gtypes;
     let param = &self.fields.0.ty;
 
-    quote!
-    (
+    quote!( _if_make!
+    {
       impl< #( #generics ),* > Make1< #param > for #struct_name< #( #gtypes ),* >
       where
         #param : Clone
@@ -418,7 +411,7 @@ impl DerivePair
           Self( val.clone(), val.clone() )
         }
       }
-    )
+    })
   }
 
   fn impl_make2( &self ) -> proc_macro2::TokenStream
@@ -429,8 +422,8 @@ impl DerivePair
     let param1 = &self.fields.0.ty;
     let param2 = &self.fields.1.ty;
 
-    quote!
-    (
+    quote!( _if_make!
+    {
       impl< #( #generics ),* > Make2< #param1, #param2 > for #struct_name< #( #gtypes ),* >
       {
         #[ inline ]
@@ -439,7 +432,7 @@ impl DerivePair
           Self( _1, _2 )
         }
       }
-    )
+    })
   }
 }
 
@@ -450,16 +443,14 @@ pub fn derive_pair( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
   let input = parse_macro_input!( input as syn::ItemStruct );
   let dp = DerivePair::parse( input );
 
-  let mut impls =
-  vec!
+  let mut impls = vec!
   [
     dp.impl_to_tuple(),
     dp.impl_clone_as_tuple(),
-    dp.impl_make0(), // ! Fields must impl Default
+    dp.impl_make0(),
     dp.impl_make2(),
   ];
-  let impls_for_single_type =
-  vec!
+  let impls_for_single_type = vec!
   [
     dp.impl_make1(),
     dp.impl_from_tuple_no_into(),
@@ -470,7 +461,7 @@ pub fn derive_pair( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
     dp.impl_as_slice(),
     dp.impl_as_array(),
     dp.impl_clone_as_array(),
-    dp.impl_from_value(), // ! conflicts with impl_from_tuple
+    dp.impl_from_value(),
     dp.impl_deref(),
     dp.impl_deref_mut(),
   ];
