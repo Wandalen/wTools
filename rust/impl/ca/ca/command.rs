@@ -88,28 +88,28 @@ pub( crate ) mod private
     }
   }
 
-  // impl PartialEq for OnCommand
-  // {
-  //   fn eq( &self, other : &Self ) -> bool
-  //   {
-  //     match self
-  //     {
-  //       OnCommand( Option::None ) =>
-  //       {
-  //         if other.0.is_none()
-  //         {
-  //           return true;
-  //         }
-  //         false
-  //       },
-  //     }
-  //   }
-  // }
+  impl PartialEq for OnCommand
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      // We can't compare closures. Because every closure has a separate type, even if they're identical.
+      // Therefore, we check that the two Rc's point to the same closure (allocation).
+      if let ( Some( this_rc ), Some( other_rc ) ) = ( &self.0, &other.0 )
+      {
+        Rc::ptr_eq( this_rc, other_rc )
+      }
+      else
+      {
+        self.0.is_none() && other.0.is_none()
+      }
+    }
+  }
+
   ///
   /// Command descriptor.
   ///
 
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Debug, Clone, PartialEq ) ]
   #[ derive( Former ) ]
   pub struct Command
   {
@@ -176,20 +176,6 @@ pub( crate ) mod private
         }
       }
       self
-    }
-  }
-
-  impl PartialEq for Command
-  {
-    /* rrr : for Dmytro : extend */
-    fn eq( &self, other: &Self ) -> bool
-    {
-      self.hint == other.hint
-      && self.long_hint == other.long_hint
-      && self.subject_hint == other.subject_hint
-      && self.properties_hints == other.properties_hints
-      && self.properties_aliases == other.properties_aliases
-      /* rrr : for Dmytro : try to extend using option OnCommand */
     }
   }
 
