@@ -6,6 +6,8 @@ use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
 use test_tools::dependency::*;
 
+#[ path = "./all/alias.rs" ]
+mod alias;
 #[ path = "./all/basic.rs" ]
 mod basic;
 #[ path = "./all/conflict.rs" ]

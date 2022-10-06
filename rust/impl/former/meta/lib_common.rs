@@ -7,7 +7,7 @@ mod former_impl;
 ///
 
 // #[ cfg( feature = "use_std" ) ]
-#[ proc_macro_derive( Former, attributes( perform, default, setter ) ) ]
+#[ proc_macro_derive( Former, attributes( perform, default, setter, alias ) ) ]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = former_impl::former( input );
