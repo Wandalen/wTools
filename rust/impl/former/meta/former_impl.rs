@@ -61,6 +61,9 @@ impl Attributes
           let attr_alias = syn::parse2::< AttributeAlias >( attr.tokens.clone() )?;
           alias.replace( attr_alias );
         }
+        "doc" =>
+        {
+        }
         _ =>
         {
           return Err( syn_err!( attr, "Unknown attribute {}", qt!{ #attr } ) );
@@ -401,7 +404,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 }
 
 ///
-/// Generate a fomer setter for the field.
+/// Generate a former setter for the field.
 ///
 /// ### Sample of output
 ///
@@ -447,11 +450,16 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
   Ok( setter_tokens )
 }
 
+///
+/// Generate a setter for the 'field_ident' with the 'setter_name' name.
+///
+
 #[inline]
 fn field_setter( field_ident: &syn::Ident, non_optional_type: &syn::Type, setter_name: &syn::Ident ) -> proc_macro2::TokenStream
 {
   qt!
   {
+    /// Setter for the '#field_ident' field.
     #[inline]
     pub fn #setter_name< Src >( mut self, src : Src ) -> Self
     where Src : ::core::convert::Into< #non_optional_type >,
