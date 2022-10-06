@@ -48,16 +48,6 @@ pub( crate ) mod private
     subject_win_paths_maybe : bool,
   }
 
-  impl< 'a > InstructionParseParams< 'a >
-  {
-    /// Set not default builder field `properties_map`.
-    pub fn properties_map( mut self, properties_map : HashMap< String, OpType< String > > ) -> InstructionParseParams< 'a >
-    {
-      self.properties_map = Some( properties_map );
-      self
-    }
-  }
-
   ///
   /// Instruction behaviour.
   ///
