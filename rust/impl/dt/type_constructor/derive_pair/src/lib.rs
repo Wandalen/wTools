@@ -443,27 +443,27 @@ pub fn derive_pair( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
   let input = parse_macro_input!( input as syn::ItemStruct );
   let dp = DerivePair::parse( input );
 
-  let mut impls = vec!
+  let mut impls : Vec< fn( dp : &DerivePair ) -> proc_macro2::TokenStream > = vec!
   [
-    dp.impl_to_tuple(),
-    dp.impl_clone_as_tuple(),
-    dp.impl_make0(),
-    dp.impl_make2(),
+    DerivePair::impl_to_tuple,
+    DerivePair::impl_clone_as_tuple,
+    DerivePair::impl_make0,
+    DerivePair::impl_make2,
   ];
-  let impls_for_single_type = vec!
+  let impls_for_single_type : Vec< fn( dp : &DerivePair ) -> proc_macro2::TokenStream > = vec!
   [
-    dp.impl_make1(),
-    dp.impl_from_tuple_no_into(),
-    dp.impl_as_tuple(),
-    dp.impl_from_array(),
-    dp.impl_from_slice(),
-    dp.impl_to_array(),
-    dp.impl_as_slice(),
-    dp.impl_as_array(),
-    dp.impl_clone_as_array(),
-    dp.impl_from_value(),
-    dp.impl_deref(),
-    dp.impl_deref_mut(),
+    DerivePair::impl_make1,
+    DerivePair::impl_from_tuple_no_into,
+    DerivePair::impl_as_tuple,
+    DerivePair::impl_from_array,
+    DerivePair::impl_from_slice,
+    DerivePair::impl_to_array,
+    DerivePair::impl_as_slice,
+    DerivePair::impl_as_array,
+    DerivePair::impl_clone_as_array,
+    DerivePair::impl_from_value,
+    DerivePair::impl_deref,
+    DerivePair::impl_deref_mut,
   ];
 
   // if two fields has the same types => it can be stored into array/slice/...
@@ -475,11 +475,12 @@ pub fn derive_pair( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
   }
   else
   {
-    impls.push( dp.impl_from_tuple() )
+    impls.push( DerivePair::impl_from_tuple )
   }
   let result = impls.iter().fold( quote!(), | mut result, i |
   {
-    result = quote!( #result #i );
+    let imp = i( &dp );
+    result = quote!( #result #imp );
     result
   });
 
