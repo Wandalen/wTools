@@ -3,7 +3,6 @@ pub( crate ) mod private
 {
   use crate::command::*;
   use crate::instruction::*;
-  use wtools::meta::*;
   use wtools::error::{ Result, BasicError };
   use wtools::string::split;
   use wtools::former::Former;
@@ -24,30 +23,41 @@ pub( crate ) mod private
 
   #[ derive( Debug, PartialEq ) ]
   #[ derive( Former ) ]
-  #[ allow( missing_docs ) ]
   pub struct CommandsAggregator
   {
+    /// Working directory.
     pub base_path : Option<std::path::PathBuf>,
+    /// Prefix for the command.
     #[ default( "".to_string() ) ]
     pub command_prefix : String,
+    /// Command delimiters.
     #[ default( vec![ ".".to_string(), " ".to_string() ] ) ]
     pub delimeter : Vec< String >,
+    /// Explicit command delimiter.
     #[ default( ";".to_string() ) ]
     pub command_explicit_delimeter : String,
+    /// Implicit command delimiter.
     #[ default( " ".to_string() ) ]
     pub command_implicit_delimeter : String,
+    /// Whether commands have explicit delimiting.
     #[ default( true ) ]
     pub commands_explicit_delimiting : bool,
+    /// Whether commands have implicit delimiting.
     #[ default( false ) ]
     pub commands_implicit_delimiting : bool,
+    /// Whether to enable properties map parsing.
     #[ default( false ) ]
     pub properties_map_parsing : bool,
+    /// Commands have several values.
     #[ default( true ) ]
     pub several_values : bool,
+    /// Commands have help.
     #[ default( true ) ]
     pub with_help : bool,
+    /// Commands have different exit code.
     #[ default( true ) ]
     pub changing_exit_code : bool,
+    /// Commands.
     pub commands : std::collections::HashMap< String, Command >,
     // pub vocabulary : Option<vocabulary>, /* rrr : for Dmytro : implement */
   }

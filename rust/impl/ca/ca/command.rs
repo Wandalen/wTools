@@ -1,4 +1,3 @@
-#![ allow( missing_docs ) ]
 pub( crate ) mod private
 {
   use std::
@@ -113,21 +112,21 @@ pub( crate ) mod private
   #[ derive( Former ) ]
   pub struct Command
   {
-    // /// Command common hint.
+    /// Command common hint.
     #[ alias( h ) ]
     pub hint : String,
-    // /// Command full hint.
+    /// Command full hint.
     #[ alias( lh ) ]
     pub long_hint : String,
-    // /// Phrase descriptor for command.
+    /// Phrase descriptor for command.
     pub phrase : String,
-    // /// Command subject hint.
+    /// Command subject hint.
     pub subject_hint : String,
-    // /// Hints for command options.
+    /// Hints for command options.
     pub properties_hints : HashMap< String, String >,
-    // /// Map of aliases.
+    /// Map of aliases.
     pub properties_aliases : HashMap< String, Vec< String > >,
-    // /// Command routine.
+    /// Command routine.
     #[ alias( ro ) ]
     pub routine : OnCommand,
   }
