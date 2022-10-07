@@ -28,7 +28,8 @@ struct FormerField< 'a >
 struct Attributes
 {
   default : Option< AttributeDefault >,
-  setter : Option< AttributeSetter >
+  setter : Option< AttributeSetter >,
+  alias : Option< AttributeAlias >,
 }
 
 impl Attributes
@@ -37,6 +38,7 @@ impl Attributes
   {
     let mut default = None;
     let mut setter = None;
+    let mut alias = None;
     for attr in attributes
     {
       let key_ident = attr.path.get_ident()
@@ -54,6 +56,14 @@ impl Attributes
           let attr_setter = syn::parse2::< AttributeSetter >( attr.tokens.clone() )?;
           setter.replace( attr_setter );
         }
+        "alias" =>
+        {
+          let attr_alias = syn::parse2::< AttributeAlias >( attr.tokens.clone() )?;
+          alias.replace( attr_alias );
+        }
+        "doc" =>
+        {
+        }
         _ =>
         {
           return Err( syn_err!( attr, "Unknown attribute {}", qt!{ #attr } ) );
@@ -61,7 +71,7 @@ impl Attributes
       }
     }
 
-    Ok( Attributes { default, setter } )
+    Ok( Attributes { default, setter, alias } )
   }
 }
 
@@ -141,6 +151,32 @@ impl syn::parse::Parse for AttributeSetter
     {
       paren_token : syn::parenthesized!( input2 in input ),
       condition : input2.parse()?,
+    })
+  }
+}
+
+///
+/// Attribute to create alias.
+///
+/// `#[ alias( name ) ]`
+///
+
+#[allow( dead_code )]
+struct AttributeAlias
+{
+  paren_token : syn::token::Paren,
+  alias : syn::Ident,
+}
+
+impl syn::parse::Parse for AttributeAlias
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+  {
+    let input2;
+    Ok( Self
+    {
+      paren_token : syn::parenthesized!( input2 in input ),
+      alias : input2.parse()?,
     })
   }
 }
@@ -368,7 +404,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 }
 
 ///
-/// Generate a fomer setter for the field.
+/// Generate a former setter for the field.
 ///
 /// ### Sample of output
 ///
@@ -395,23 +431,44 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
     }
   }
 
-  let tokens =
+  let non_optional_ty = &field.non_optional_ty;
+  let setter_tokens = field_setter( &ident, &non_optional_ty, &ident );
+  if let Some( alias_attr ) = &field.attrs.alias
   {
-    let non_optional_ty = &field.non_optional_ty;
-    qt!
-    {
-      #[inline]
-      pub fn #ident< Src >( mut self, src : Src ) -> Self
-      where Src : ::core::convert::Into< #non_optional_ty >,
-      {
-        debug_assert!( self.#ident.is_none() );
-        self.#ident = ::core::option::Option::Some( src.into() );
-        self
-      }
-    }
-  };
+    let alias_tokens = field_setter( &ident, &non_optional_ty, &alias_attr.alias );
 
-  Ok( tokens )
+    let token =
+      qt!
+      {
+      #setter_tokens
+
+      #alias_tokens
+    };
+    return Ok( token );
+  }
+
+  Ok( setter_tokens )
+}
+
+///
+/// Generate a setter for the 'field_ident' with the 'setter_name' name.
+///
+
+#[inline]
+fn field_setter( field_ident: &syn::Ident, non_optional_type: &syn::Type, setter_name: &syn::Ident ) -> proc_macro2::TokenStream
+{
+  qt!
+  {
+    /// Setter for the '#field_ident' field.
+    #[inline]
+    pub fn #setter_name< Src >( mut self, src : Src ) -> Self
+    where Src : ::core::convert::Into< #non_optional_type >,
+    {
+      debug_assert!( self.#field_ident.is_none() );
+      self.#field_ident = ::core::option::Option::Some( src.into() );
+      self
+    }
+  }
 }
 
 ///
