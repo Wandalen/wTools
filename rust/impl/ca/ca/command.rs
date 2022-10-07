@@ -1,7 +1,3 @@
-#![ allow( missing_docs ) ]
-/* does not work locally */
-/* rrr : for Dmytro : remove when former will be extended */
-
 pub( crate ) mod private
 {
   use std::
@@ -57,9 +53,11 @@ pub( crate ) mod private
     }
   }
 
-  impl From< &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > > for OnCommand
+  impl< T > From< &'static T > for OnCommand
+  where
+    T : Fn( &crate::instruction::Instruction ) -> Result< () >
   {
-    fn from( src : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> Self
+    fn from( src : &'static T ) -> Self
     {
       OnCommand( Some( Rc::new( src ) ) )
     }
@@ -89,78 +87,52 @@ pub( crate ) mod private
     }
   }
 
-  // impl PartialEq for OnCommand
-  // {
-  //   fn eq( &self, other : &Self ) -> bool
-  //   {
-  //     match self
-  //     {
-  //       OnCommand( Option::None ) =>
-  //       {
-  //         if other.0.is_none()
-  //         {
-  //           return true;
-  //         }
-  //         false
-  //       },
-  //     }
-  //   }
-  // }
+  impl PartialEq for OnCommand
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      // We can't compare closures. Because every closure has a separate type, even if they're identical.
+      // Therefore, we check that the two Rc's point to the same closure (allocation).
+      if let ( Some( this_rc ), Some( other_rc ) ) = ( &self.0, &other.0 )
+      {
+        Rc::ptr_eq( this_rc, other_rc )
+      }
+      else
+      {
+        self.0.is_none() && other.0.is_none()
+      }
+    }
+  }
+
   ///
   /// Command descriptor.
   ///
 
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Debug, Clone, PartialEq ) ]
   #[ derive( Former ) ]
   pub struct Command
   {
-    // /// Command common hint.
+    /// Command common hint.
+    #[ alias( h ) ]
     pub hint : String,
-    // /// Command full hint.
+    /// Command full hint.
+    #[ alias( lh ) ]
     pub long_hint : String,
-    // /// Phrase descriptor for command.
+    /// Phrase descriptor for command.
     pub phrase : String,
-    // /// Command subject hint.
+    /// Command subject hint.
     pub subject_hint : String,
-    // /// Hints for command options.
+    /// Hints for command options.
     pub properties_hints : HashMap< String, String >,
-    // /// Map of aliases.
+    /// Map of aliases.
     pub properties_aliases : HashMap< String, Vec< String > >,
-    // /// Command routine.
-    /* rrr : for Dmytro : use name `routine` when former will be extended */
-    pub _routine : OnCommand,
+    /// Command routine.
+    #[ alias( ro ) ]
+    pub routine : OnCommand,
   }
 
   impl CommandFormer
   {
-    /// Alias for routine `routine`.
-    pub fn routine( mut self, src : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> Self
-    {
-      self._routine = ::core::option::Option::Some( OnCommand( Some( Rc::new( src ) ) ) );
-      self
-    }
-
-    /// Alias for routine `hint`.
-    pub fn h( mut self, help : impl AsRef< str > ) -> Self
-    {
-      self.hint = Some( help.as_ref().into() );
-      self
-    }
-
-    /// Alias for routine `long_hint`.
-    pub fn lh( mut self, help : impl AsRef< str > ) -> Self
-    {
-      self.long_hint = Some( help.as_ref().into() );
-      self
-    }
-
-    /// Alias for routine `routine`.
-    pub fn ro( mut self, src : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> Self
-    {
-      self._routine = ::core::option::Option::Some( OnCommand( Some( Rc::new( src ) ) ) );
-      self
-    }
-
     /// Setter for separate properties.
     pub fn property_hint< S : AsRef< str > >( mut self, key : S, hint : S ) -> Self
     {
@@ -206,20 +178,6 @@ pub( crate ) mod private
     }
   }
 
-  impl PartialEq for Command
-  {
-    /* rrr : for Dmytro : extend */
-    fn eq( &self, other: &Self ) -> bool
-    {
-      self.hint == other.hint
-      && self.long_hint == other.long_hint
-      && self.subject_hint == other.subject_hint
-      && self.properties_hints == other.properties_hints
-      && self.properties_aliases == other.properties_aliases
-      /* rrr : for Dmytro : try to extend using option OnCommand */
-    }
-  }
-
   impl Command
   {
     /// Generate short help for command.
@@ -251,9 +209,9 @@ pub( crate ) mod private
           return Err( BasicError::new( "Unknown option." ) );
         }
       }
-      if self._routine.callable()
+      if self.routine.callable()
       {
-        return self._routine.perform( instruction );
+        return self.routine.perform( instruction );
       }
 
       Ok( () )

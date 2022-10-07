@@ -22,6 +22,6 @@ fn trybuild_tests()
   println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
   let t = trybuild::TestCases::new();
   t.compile_fail( "../../../rust/test/former/all/wtools_bad_attr.rs" );
-  t.compile_fail( "../../../rust/test/former/all/wtools_vector_without_parameter.rs" );
-  t.compile_fail( "../../../rust/test/former/all/wtools_hashmap_without_parameter.rs" );
+  t.pass( "../../../rust/test/former/all/wtools_vector_without_parameter.rs" );
+  t.pass( "../../../rust/test/former/all/wtools_hashmap_without_parameter.rs" );
 }

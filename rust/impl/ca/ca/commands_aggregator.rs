@@ -3,10 +3,14 @@ pub( crate ) mod private
 {
   use crate::command::*;
   use crate::instruction::*;
-  use wtools::meta::*;
   use wtools::error::{ Result, BasicError };
   use wtools::string::split;
   use wtools::former::Former;
+  use log::
+  {
+    info,
+    warn,
+  };
 
   ///
   /// Commands aggregator.
@@ -19,31 +23,41 @@ pub( crate ) mod private
 
   #[ derive( Debug, PartialEq ) ]
   #[ derive( Former ) ]
-  #[ allow( missing_docs ) ]
   pub struct CommandsAggregator
   {
+    /// Working directory.
     pub base_path : Option<std::path::PathBuf>,
+    /// Prefix for the command.
     #[ default( "".to_string() ) ]
     pub command_prefix : String,
+    /// Command delimiters.
     #[ default( vec![ ".".to_string(), " ".to_string() ] ) ]
     pub delimeter : Vec< String >,
+    /// Explicit command delimiter.
     #[ default( ";".to_string() ) ]
     pub command_explicit_delimeter : String,
+    /// Implicit command delimiter.
     #[ default( " ".to_string() ) ]
     pub command_implicit_delimeter : String,
+    /// Whether commands have explicit delimiting.
     #[ default( true ) ]
     pub commands_explicit_delimiting : bool,
+    /// Whether commands have implicit delimiting.
     #[ default( false ) ]
     pub commands_implicit_delimiting : bool,
+    /// Whether to enable properties map parsing.
     #[ default( false ) ]
     pub properties_map_parsing : bool,
+    /// Commands have several values.
     #[ default( true ) ]
     pub several_values : bool,
+    /// Commands have help.
     #[ default( true ) ]
     pub with_help : bool,
+    /// Commands have different exit code.
     #[ default( true ) ]
     pub changing_exit_code : bool,
-    // logger : Option<Logger>, /* rrr : for Dmytro : implement */
+    /// Commands.
     pub commands : std::collections::HashMap< String, Command >,
     // pub vocabulary : Option<vocabulary>, /* rrr : for Dmytro : implement */
   }
@@ -62,8 +76,7 @@ pub( crate ) mod private
         return self.on_syntax_error( program );
       }
 
-      /* should use logger and condition */
-      println!( "Command \"{}\"", program );
+      info!( "Command \"{}\"", program );
 
       let instructions = self.instructions_parse( program );
 
@@ -76,7 +89,7 @@ pub( crate ) mod private
           {
             if self.changing_exit_code
             {
-              eprintln!( "{}", err.to_string() );
+              warn!( "{}", err.to_string() );
               std::process::exit( 1 );
             }
             else
@@ -104,7 +117,7 @@ pub( crate ) mod private
       let result = self._instruction_perform( &parsed );
       if result.is_err() && self.changing_exit_code
       {
-        eprintln!( "{}", result.err().unwrap().to_string() );
+        warn!( "{}", result.err().unwrap().to_string() );
         std::process::exit( 1 );
       }
       result
@@ -147,14 +160,14 @@ pub( crate ) mod private
       {
         for ( _name, command_descriptor ) in self.commands.iter()
         {
-          println!( "{}", command_descriptor.help_short() );
+          info!( "{}", command_descriptor.help_short() );
         }
       }
       else
       {
         if let Some( command_descriptor ) = self.commands.get( command.as_ref() )
         {
-          println!( "{}", command_descriptor.help_long() );
+          info!( "{}", command_descriptor.help_long() );
         }
         else
         {
