@@ -167,7 +167,7 @@ pub( crate ) mod private
     /// ```
     /// let i32_and_f32_in_tuple = type_constructor::Pair::< i32, f32 >::from( ( 13, 13.0 ) );
     /// dbg!( i32_and_f32_in_tuple );
-    /// vec_of_i32_in_tuple = Pair( 13, 13.0 )
+    /// // let vec_of_i32_in_tuple = type_constructor::Pair::< i32, i32 >::from( [ 13, 13 ] );
     /// ```
     ///
 
@@ -181,7 +181,7 @@ pub( crate ) mod private
     /// ```
     /// let two_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( ( 13, 31 ) );
     /// dbg!( two_i32_in_tuple );
-    /// vec_of_i32_in_tuple = HomoPair( 13, 31 )
+    /// let vec_of_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( [ 13, 31 ] );
     /// ```
     ///
 
