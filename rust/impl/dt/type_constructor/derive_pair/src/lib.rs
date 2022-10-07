@@ -450,27 +450,28 @@ pub fn derive_pair( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
     DerivePair::impl_make0,
     DerivePair::impl_make2,
   ];
-  let impls_for_single_type : Vec< fn( dp : &DerivePair ) -> proc_macro2::TokenStream > = vec!
-  [
-    DerivePair::impl_make1,
-    DerivePair::impl_from_tuple_no_into,
-    DerivePair::impl_as_tuple,
-    DerivePair::impl_from_array,
-    DerivePair::impl_from_slice,
-    DerivePair::impl_to_array,
-    DerivePair::impl_as_slice,
-    DerivePair::impl_as_array,
-    DerivePair::impl_clone_as_array,
-    DerivePair::impl_from_value,
-    DerivePair::impl_deref,
-    DerivePair::impl_deref_mut,
-  ];
 
   // if two fields has the same types => it can be stored into array/slice/...
   let type1_as_string = &dp.fields.0.ty.clone().into_token_stream().to_string();
   let type2_as_string = &dp.fields.1.ty.clone().into_token_stream().to_string();
   if type1_as_string == type2_as_string
   {
+    let impls_for_single_type : Vec< fn( dp : &DerivePair ) -> proc_macro2::TokenStream > = vec!
+    [
+      DerivePair::impl_make1,
+      DerivePair::impl_from_tuple_no_into,
+      DerivePair::impl_as_tuple,
+      DerivePair::impl_from_array,
+      DerivePair::impl_from_slice,
+      DerivePair::impl_to_array,
+      DerivePair::impl_as_slice,
+      DerivePair::impl_as_array,
+      DerivePair::impl_clone_as_array,
+      DerivePair::impl_from_value,
+      DerivePair::impl_deref,
+      DerivePair::impl_deref_mut,
+    ];
+
     impls.extend( impls_for_single_type )
   }
   else
