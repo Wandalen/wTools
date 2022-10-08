@@ -75,9 +75,7 @@ tests_impls!
     assert!( !proc.status.success() );
     let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
     assert_eq!( stderr, "Ambiguity. Did you mean?\n" );
-    dbg!( &stderr );
     let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
-    dbg!( &stdout );
     assert!( stdout.contains( ".list - List packages." ) );
   }
 
