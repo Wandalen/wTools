@@ -22,11 +22,11 @@ fn main() -> Result< (), wtools::error::BasicError >
 {
   let args = env::args().skip( 1 ).collect::< Vec< String > >();
 
-  let ca = wca::commands_aggregator()
+  wca::commands_aggregator()
   .changing_exit_code( true )
   .commands( commands::commands_form() )
-  .form();
-  ca.instruction_perform( args.join( " " ).as_str() )
+  .form()
+  .instruction_perform( args.join( " " ).as_str() )
 }
 
 #[ cfg( not( feature = "use_std" ) ) ]
