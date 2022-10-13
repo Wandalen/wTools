@@ -6,11 +6,6 @@ pub( crate ) mod private
   use wtools::error::{ Result, BasicError };
   use wtools::string::split;
   use wtools::former::Former;
-  use log::
-  {
-    info,
-    warn,
-  };
 
   ///
   /// Commands aggregator.
@@ -76,7 +71,7 @@ pub( crate ) mod private
         return self.on_syntax_error( program );
       }
 
-      info!( "Command \"{}\"", program );
+      println!( "Command \"{}\"", program );
 
       let instructions = self.instructions_parse( program );
 
@@ -89,7 +84,7 @@ pub( crate ) mod private
           {
             if self.changing_exit_code
             {
-              warn!( "{}", err.to_string() );
+              eprintln!( "{}", err.to_string() );
               std::process::exit( 1 );
             }
             else
@@ -117,7 +112,7 @@ pub( crate ) mod private
       let result = self._instruction_perform( &parsed );
       if result.is_err() && self.changing_exit_code
       {
-        warn!( "{}", result.err().unwrap().to_string() );
+        eprintln!( "{}", result.err().unwrap().to_string() );
         std::process::exit( 1 );
       }
       result
@@ -160,14 +155,14 @@ pub( crate ) mod private
       {
         for ( _name, command_descriptor ) in self.commands.iter()
         {
-          info!( "{}", command_descriptor.help_short() );
+          println!( "{}", command_descriptor.help_short() );
         }
       }
       else
       {
         if let Some( command_descriptor ) = self.commands.get( command.as_ref() )
         {
-          info!( "{}", command_descriptor.help_long() );
+          println!( "{}", command_descriptor.help_long() );
         }
         else
         {

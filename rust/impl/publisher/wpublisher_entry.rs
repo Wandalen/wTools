@@ -26,6 +26,7 @@ fn main() -> Result< (), wtools::error::BasicError >
   .changing_exit_code( true )
   .commands( commands::commands_form() )
   .form();
+
   ca.instruction_perform( args.join( " " ).as_str() )
 }
 
