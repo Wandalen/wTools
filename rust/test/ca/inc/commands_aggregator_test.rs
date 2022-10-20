@@ -1,35 +1,40 @@
 use super::*;
 use wtools::error::BasicError;
 use wca::command::Command;
-use wca::instruction::Instruction;
 use wca::string::parse_request::OpType::Primitive;
+use wca::
+{
+  Args,
+  NoSubject,
+  NoProperties,
+};
 
 //
 
-fn commands_form() -> std::collections::HashMap< String, Command >
+fn commands_form() -> HashMap< String, Command >
 {
   let help_command : Command = wca::Command::former()
   .hint( "Get help." )
   .long_hint( "Get help for command [command]" )
   .phrase( ".help" )
   .subject_hint( "some command" )
-  .routine( &| _i : &Instruction | { println!( "this is help" ); Ok( () ) } )
+  .routine( | _ : Args< NoSubject, NoProperties > | { println!( "this is help" ); Ok( () ) } )
   .form();
   let list_command : Command = wca::Command::former()
   .hint( "Get list." )
   .long_hint( "Get list of" )
   .phrase( ".list" )
   .subject_hint( "some subject" )
-  .routine( &| _i : &Instruction | { println!( "this is list" ); Ok( () ) } )
+  .routine( | _ : Args< NoSubject, NoProperties > | { println!( "this is list" ); Ok( () ) } )
   .form();
   let err_command : Command = wca::Command::former()
   .hint( "Error." )
   .long_hint( "Throw error" )
   .phrase( ".error" )
-  .routine( &| _i : &Instruction | { Err( BasicError::new( "err" ) ) } )
+  .routine( | _ : Args< NoSubject, NoProperties > | { Err( BasicError::new( "err" ) ) } )
   .form();
 
-  let commands : std::collections::HashMap< String, Command > = std::collections::HashMap::from
+  let commands : HashMap< String, Command > = std::collections::HashMap::from
   ([
     ( ".help".to_string(), help_command ),
     ( ".list".to_string(), list_command ),
@@ -44,17 +49,9 @@ tests_impls!
   {
     let ca = wca::commands_aggregator()
     .form();
-    a_id!( ca.base_path, None );
-    a_id!( ca.command_prefix, "".to_string() );
-    a_id!( ca.delimeter, vec![ ".".to_string(), " ".to_string() ] );
-    a_id!( ca.command_explicit_delimeter, ";".to_string() );
-    a_id!( ca.command_implicit_delimeter, " ".to_string() );
-    a_id!( ca.commands_explicit_delimiting, true );
-    a_id!( ca.commands_implicit_delimiting, false );
-    a_id!( ca.properties_map_parsing, false );
-    a_id!( ca.several_values, true );
+    a_id!( ca.delimiter, ".".to_string() );
     a_id!( ca.with_help, true );
-    a_id!( ca.changing_exit_code, true );
+    a_id!( ca.exit_code_on_error, None );
     a_id!( ca.commands, std::collections::HashMap::new() );
   }
 
@@ -64,7 +61,6 @@ tests_impls!
   {
     /* single command, returns Ok */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".help" );
@@ -72,7 +68,6 @@ tests_impls!
 
     /* single command, returns Err */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".error" );
@@ -82,7 +77,6 @@ tests_impls!
 
     /* two commands, explicit delimeter, returns Ok */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".help ; .list" );
@@ -90,7 +84,6 @@ tests_impls!
 
     /* two commands, explicit delimeter, second command returns Err */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ; .error" );
@@ -100,7 +93,6 @@ tests_impls!
 
     /* two commands, implicit delimeter, returns Ok */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".help .list" );
@@ -108,7 +100,6 @@ tests_impls!
 
     /* two commands, implicit delimeter, second command returns Err */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list .error" );
@@ -121,7 +112,6 @@ tests_impls!
   {
     /* single command with subject as single dot */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ." );
@@ -129,7 +119,6 @@ tests_impls!
 
     /* single command with subject as double dot */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list .." );
@@ -137,7 +126,6 @@ tests_impls!
 
     /* single command with subject as dot and slash */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ./" );
@@ -145,7 +133,6 @@ tests_impls!
 
     /* single command with subject as double dot and slash */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ../" );
@@ -153,7 +140,6 @@ tests_impls!
 
     /* single command with subject as dot and backslash */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list .\\" );
@@ -161,7 +147,6 @@ tests_impls!
 
     /* single command with subject as double dot and backslash */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ..\\" );
@@ -171,7 +156,6 @@ tests_impls!
 
     /* two commands with subjects with dots */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.program_perform( ".list ..\\ .help ./some" );
@@ -184,14 +168,12 @@ tests_impls!
   {
     /* no commands in aggregator */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .form();
     let got = ca.instruction_perform( ".help" );
     a_id!( got, Ok( () ) );
 
     /* command returns Ok */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.instruction_perform( ".help" );
@@ -199,7 +181,6 @@ tests_impls!
 
     /* command returns Err */
     let ca = wca::commands_aggregator()
-    .changing_exit_code( false )
     .commands( commands_form() )
     .form();
     let got = ca.instruction_perform( ".error" );
@@ -216,16 +197,15 @@ tests_impls!
     /* */
 
     /* empty program */
-    let got = ca.instructions_parse( "" );
+    let got = ca.instructions_parse( "" ).unwrap();
     a_id!( got, vec![] );
 
     /* */
 
     /* single command without subject and map */
-    let got = ca.instructions_parse( ".help" );
+    let got = ca.instructions_parse( ".help" ).unwrap();
     let instruction = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".help".to_string(),
       subject : "".to_string(),
       properties_map : HashMap::new(),
@@ -233,10 +213,9 @@ tests_impls!
     a_id!( got, vec![ instruction ] );
 
     /* single command with subject */
-    let got = ca.instructions_parse( ".help command" );
+    let got = ca.instructions_parse( ".help command" ).unwrap();
     let instruction = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".help".to_string(),
       subject : "command".to_string(),
       properties_map : HashMap::new(),
@@ -244,10 +223,9 @@ tests_impls!
     a_id!( got, vec![ instruction ] );
 
     /* single command with subject and map */
-    let got = ca.instructions_parse( ".help command v:3" );
+    let got = ca.instructions_parse( ".help command v:3" ).unwrap();
     let instruction = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".help".to_string(),
       subject : "command".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Primitive( "3".to_string() ) ) ]),
@@ -257,17 +235,15 @@ tests_impls!
     /* */
 
     /* two commands without subject and map, explicit delimeter */
-    let got = ca.instructions_parse( ".help ; .version" );
+    let got = ca.instructions_parse( ".help ; .version" ).unwrap();
     let instruction1 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".help".to_string(),
       subject : "".to_string(),
       properties_map : HashMap::new(),
     };
     let instruction2 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".version".to_string(),
       subject : "".to_string(),
       properties_map : HashMap::new(),
@@ -275,17 +251,15 @@ tests_impls!
     a_id!( got, vec![ instruction1, instruction2 ] );
 
     /* two commands with subject, explicit delimeter */
-    let got = ca.instructions_parse( ".help command ; .version delta" );
+    let got = ca.instructions_parse( ".help command ; .version delta" ).unwrap();
     let instruction1 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".help".to_string(),
       subject : "command".to_string(),
       properties_map : HashMap::new(),
     };
     let instruction2 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".version".to_string(),
       subject : "delta".to_string(),
       properties_map : HashMap::new(),
@@ -293,17 +267,15 @@ tests_impls!
     a_id!( got, vec![ instruction1, instruction2 ] );
 
     /* two commands with subject and map, explicit delimeter */
-    let got = ca.instructions_parse( ".help command v:3 ; .version delta n:5" );
+    let got = ca.instructions_parse( ".help command v:3 ; .version delta n:5" ).unwrap();
     let instruction1 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".help".to_string(),
       subject : "command".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Primitive( "3".to_string() ) ) ]),
     };
     let instruction2 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".version".to_string(),
       subject : "delta".to_string(),
       properties_map : HashMap::from([ ( "n".to_string(), Primitive( "5".to_string() ) ) ]),
@@ -313,17 +285,15 @@ tests_impls!
     /* */
 
     /* two commands without subject and map, implicit delimeter */
-    let got = ca.instructions_parse( ".help .version" );
+    let got = ca.instructions_parse( ".help .version" ).unwrap();
     let instruction1 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".help".to_string(),
       subject : "".to_string(),
       properties_map : HashMap::new(),
     };
     let instruction2 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".version".to_string(),
       subject : "".to_string(),
       properties_map : HashMap::new(),
@@ -331,17 +301,15 @@ tests_impls!
     a_id!( got, vec![ instruction1, instruction2 ] );
 
     /* two commands with subject, implicit delimeter */
-    let got = ca.instructions_parse( ".help command .version delta" );
+    let got = ca.instructions_parse( ".help command .version delta" ).unwrap();
     let instruction1 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".help".to_string(),
       subject : "command".to_string(),
       properties_map : HashMap::new(),
     };
     let instruction2 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".version".to_string(),
       subject : "delta".to_string(),
       properties_map : HashMap::new(),
@@ -349,17 +317,15 @@ tests_impls!
     a_id!( got, vec![ instruction1, instruction2 ] );
 
     /* two commands with subject and map, implicit delimeter */
-    let got = ca.instructions_parse( ".help command v:3 .version delta n:5" );
+    let got = ca.instructions_parse( ".help command v:3 .version delta n:5" ).unwrap();
     let instruction1 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".help".to_string(),
       subject : "command".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Primitive( "3".to_string() ) ) ]),
     };
     let instruction2 = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".version".to_string(),
       subject : "delta".to_string(),
       properties_map : HashMap::from([ ( "n".to_string(), Primitive( "5".to_string() ) ) ]),
