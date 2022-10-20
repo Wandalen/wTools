@@ -16,45 +16,21 @@ pub( crate ) mod private
      containers
    */
 
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( PartialEq, Debug ) ]
   #[ derive( Former ) ]
   pub struct CommandsAggregator
   {
-    /// Working directory.
-    pub base_path : Option<std::path::PathBuf>,
-    /// Prefix for the command.
-    #[ default( "".to_string() ) ]
-    pub command_prefix : String,
-    /// Command delimiters.
-    #[ default( vec![ ".".to_string(), " ".to_string() ] ) ]
-    pub delimeter : Vec< String >,
-    /// Explicit command delimiter.
-    #[ default( ";".to_string() ) ]
-    pub command_explicit_delimeter : String,
-    /// Implicit command delimiter.
-    #[ default( " ".to_string() ) ]
-    pub command_implicit_delimeter : String,
-    /// Whether commands have explicit delimiting.
-    #[ default( true ) ]
-    pub commands_explicit_delimiting : bool,
-    /// Whether commands have implicit delimiting.
-    #[ default( false ) ]
-    pub commands_implicit_delimiting : bool,
-    /// Whether to enable properties map parsing.
-    #[ default( false ) ]
-    pub properties_map_parsing : bool,
-    /// Commands have several values.
-    #[ default( true ) ]
-    pub several_values : bool,
+    /// Command delimiter.
+    #[ default( ".".to_string() ) ]
+    pub delimiter : String,
     /// Commands have help.
     #[ default( true ) ]
     pub with_help : bool,
-    /// Commands have different exit code.
-    #[ default( true ) ]
-    pub changing_exit_code : bool,
+    /// If set terminates the current process with the specified exit code on error.
+    /// Otherwise returns result.
+    pub exit_code_on_error : Option< i32 >,
     /// Commands.
     pub commands : std::collections::HashMap< String, Command >,
-    // pub vocabulary : Option<vocabulary>, /* rrr : for Dmytro : implement */
   }
 
   impl CommandsAggregator
@@ -64,33 +40,22 @@ pub( crate ) mod private
     {
       let program = program.as_ref().trim();
 
-      if !program.starts_with( '.' /* aggregator.vocabulary.default_delimeter */ )
-        || program.starts_with( "./" /* `${aggregator.vocabulary.default_delimeter}/` */ )
-        || program.starts_with( ".\\" /* `${aggregator.vocabulary.default_delimeter}\\` */ )
-      {
-        return self.on_syntax_error( program );
-      }
-
       println!( "Command \"{}\"", program );
 
-      let instructions = self.instructions_parse( program );
+      let instructions = self.instructions_parse( program )?;
 
       for instruction in &instructions
       {
-        match self._instruction_perform( instruction )
+        if let Err( err ) = self._instruction_perform( instruction )
         {
-          Ok( _ ) => {},
-          Err( err ) =>
+          if let Some( exit_code ) = self.exit_code_on_error
           {
-            if self.changing_exit_code
-            {
-              eprintln!( "{}", err );
-              std::process::exit( 1 );
-            }
-            else
-            {
-              return Err( err )
-            }
+            eprintln!( "{}", err.to_string() );
+            std::process::exit( exit_code );
+          }
+          else
+          {
+            return Err( err );
           }
         }
       }
@@ -101,19 +66,17 @@ pub( crate ) mod private
     /// Perform instruction.
     pub fn instruction_perform( &self, instruction : impl AsRef< str > ) -> Result< () >
     {
-      let parsed : Instruction = instruction_parse()
-      .instruction( instruction.as_ref() )
-      .several_values( self.several_values )
-      .properties_map_parsing( self.properties_map_parsing )
+      let parsed : Instruction = DefaultInstructionParser::former()
       .quoting( true )
       .unquoting( true )
-      .perform();
+      .form()
+      .parse( instruction.as_ref() )?;
 
       let result = self._instruction_perform( &parsed );
-      if result.is_err() && self.changing_exit_code
+      if let ( true, Some( code ) ) = ( result.is_err(), self.exit_code_on_error )
       {
-        eprintln!( "{}", result.err().unwrap() );
-        std::process::exit( 1 );
+        eprintln!( "{}", result.err().unwrap().to_string() );
+        std::process::exit( code );
       }
       result
     }
@@ -137,9 +100,9 @@ pub( crate ) mod private
               _ => (),
             }
           }
-          if self.changing_exit_code
+          if let Some( code ) = self.exit_code_on_error
           {
-            std::process::exit( 1 );
+            std::process::exit( code );
           }
           Ok( () )
         },
@@ -172,17 +135,17 @@ pub( crate ) mod private
     }
 
     /// Find command in dictionary.
-    fn command_resolve( &self, instruction : &Instruction ) -> Option<&Command>
+    fn command_resolve( &self, instruction : &Instruction ) -> Option< &Command >
     {
       self.commands.get( &instruction.command_name )
     }
 
     /// Parse multiple instructions.
-    pub fn instructions_parse( &self, program : impl AsRef< str > ) -> Vec< Instruction >
+    pub fn instructions_parse( &self, program : impl AsRef< str > ) -> Result< Vec< Instruction > >
     {
       let commands = split()
       .src( program.as_ref().trim() )
-      .delimeter( self.command_explicit_delimeter.as_str() )
+      .delimeter( self.delimiter.as_str() )
       .preserving_empty( false )
       .preserving_delimeters( false )
       .preserving_quoting( false )
@@ -192,16 +155,18 @@ pub( crate ) mod private
       let mut string_commands = vec![];
       for command in commands
       {
+        // TODO: implicit delimiter .delimiter(" ")
         let splitted = split()
         .src( command.trim() )
-        .delimeter( self.command_implicit_delimeter.as_str() )
+        .delimeter( " " )
         .preserving_empty( false )
         .preserving_delimeters( false )
         .preserving_quoting( false )
         .perform();
         let splitted = splitted.map( String::from ).collect::< Vec< _ > >();
 
-        if self.command_implicit_delimeter == " "
+        // TODO: implicit delimiter check self.command_implicit_delimeter == " "
+        if " " == " "
         {
           let start_index = if splitted[ 0 ].is_empty() { 1 } else { 0 };
           let mut string_command = String::from( &splitted[ start_index ] );
@@ -232,16 +197,16 @@ pub( crate ) mod private
         }
       }
 
-      let instructions = string_commands.iter().map( | instruction |
+      let parser = DefaultInstructionParser::former()
+      .several_values( true )
+      .form();
+      let mut instructions = Vec::with_capacity( string_commands.len() );
+      for instruction in string_commands
       {
-        instruction_parse()
-        .instruction( instruction.as_str() )
-        .properties_map_parsing( true )
-        .several_values( true )
-        .perform()
-      }).collect::< Vec< Instruction > >();
+        instructions.push( parser.parse( instruction )? );
+      }
 
-      instructions
+      Ok( instructions )
     }
 
     //
@@ -343,7 +308,7 @@ pub( crate ) mod private
     /// Handle error.
     fn on_error( &self, err : BasicError ) -> Result< () >
     {
-      if self.changing_exit_code
+      if self.exit_code_on_error.is_some()
       {
         /* rrr : for Dmytro : implement */
         // unimplemented!();
@@ -391,9 +356,7 @@ pub( crate ) mod private
     {
       let mut err_formatted = format!( "Unknown command \"{}\"", command.as_ref() );
 
-      let instruction = instruction_parse()
-      .instruction( ".help" )
-      .perform();
+      let instruction = DefaultInstructionParser::former().form().parse( ".help" )?;
       if self.command_resolve( &instruction ).is_some()
       {
         err_formatted.push_str( "\nTry \".help\"" );
@@ -409,14 +372,10 @@ pub( crate ) mod private
     /// Get help.
     fn on_get_help( &self ) -> Result< () >
     {
-      let instruction = instruction_parse()
-      .instruction( ".help" )
-      .perform();
-      if let Some( command ) = self.command_resolve( &instruction )
+      let instruction = DefaultInstructionParser::former().form().parse( ".help" )?;
+      return if let Some( command ) = self.command_resolve( &instruction )
       {
-        let instruction = instruction_parse()
-        .instruction( "" )
-        .perform();
+        let instruction = DefaultInstructionParser::former().form().parse( "" )?;
         command.perform( &instruction )
       }
       else
