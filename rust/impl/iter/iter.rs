@@ -47,7 +47,7 @@ pub mod exposed
   };
 
   #[ doc( inline ) ]
-  pub use std::iter::zip;
+  pub use core::iter::zip;
 
 }
 
