@@ -30,7 +30,7 @@ pub( crate ) mod private
 
   /// baic implementation of generic BasicError
 
-  #[ derive( core::fmt::Debug, core::clone::Clone, core::cmp::PartialEq ) ]
+  #[ derive( core::fmt::Debug, core::clone::Clone, core::cmp::PartialEq, core::cmp::Eq ) ]
   pub struct BasicError
   {
     msg : String,

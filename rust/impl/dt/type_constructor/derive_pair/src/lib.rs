@@ -27,7 +27,7 @@ impl DerivePair
     };
     Self
     {
-      ident : ident.to_owned(),
+      ident,
       generics,
       gtypes,
       fields : ( fields.next().unwrap(), fields.next().unwrap() ),

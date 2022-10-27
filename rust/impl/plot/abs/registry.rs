@@ -60,7 +60,7 @@ pub( crate ) mod private
       {
         let context : Context = make!();
         let id = context.id();
-        registry.contexts_with_name.insert( current_name.clone(), context.id() );
+        registry.contexts_with_name.insert( current_name, context.id() );
         registry.contexts.insert( id, context );
         registry.contexts.get_mut( &id ).unwrap().value_mut().changer()
       }

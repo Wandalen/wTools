@@ -11,7 +11,7 @@ pub( crate ) mod private
   /// Instruction handle.
   ///
 
-  #[ derive( Debug, Default, PartialEq ) ]
+  #[ derive( Debug, Default, PartialEq, Eq ) ]
   pub struct Instruction
   {
     /// Error of Instruction forming.
@@ -37,7 +37,7 @@ pub( crate ) mod private
     instruction : &'a str,
     properties_map : Option< HashMap< String, OpType< String > > >,
     #[ default( true ) ]
-    properties_map_parsing : bool,
+    properties_map_parsing : bool, // ! is it dead code?
     #[ default( true ) ]
     several_values : bool,
     #[ default( true ) ]
@@ -77,13 +77,13 @@ pub( crate ) mod private
     }
     fn command_name_is_valid( &self, command_name : &str ) -> bool
     {
-      command_name.trim().starts_with( "." )
+      command_name.trim().starts_with( '.' )
     }
     fn parse_str( &self ) -> Instruction
     {
       let mut result = Instruction::default();
 
-      let ( command_name, request ) = match self.instruction.split_once( " " )
+      let ( command_name, request ) = match self.instruction.split_once( ' ' )
       {
         Some( entries ) => entries,
         None => ( self.instruction, "" ),
@@ -112,12 +112,8 @@ pub( crate ) mod private
         return result;
       }
 
-      if self.properties_map_parsing /* dead code to delete */
-      {
-      }
-
       result.subject = request.subject.clone();
-      result.properties_map = request.map.clone();
+      result.properties_map = request.map;
 
       if self.properties_map.is_some()
       {

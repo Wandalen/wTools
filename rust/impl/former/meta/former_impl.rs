@@ -198,7 +198,7 @@ fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 {
   proc_macro_tools::type_parameters( ty, 0 ..= 0 )
   .first()
-  .map( | e | *e )
+  .copied()
   .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", qt!{ #ty } ) )
 }
 
@@ -285,14 +285,8 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 {
   let ident = field.ident;
   let ty = field.ty;
-  let default = if let Some( attr_default ) = &field.attrs.default
-  {
-    Some( &attr_default.expr )
-  }
-  else
-  {
-    None
-  };
+  let default = field.attrs.default.as_ref()
+  .map( | attr_default | &attr_default.expr );
 
   let tokens = if field.is_optional
   {
@@ -399,8 +393,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 #[inline]
 fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 {
-  let ident = field.ident.clone();
-  ident
+  field.ident.clone()
 }
 
 ///
@@ -432,10 +425,10 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
   }
 
   let non_optional_ty = &field.non_optional_ty;
-  let setter_tokens = field_setter( &ident, &non_optional_ty, &ident );
+  let setter_tokens = field_setter( ident, non_optional_ty, ident );
   if let Some( alias_attr ) = &field.attrs.alias
   {
-    let alias_tokens = field_setter( &ident, &non_optional_ty, &alias_attr.alias );
+    let alias_tokens = field_setter( ident, non_optional_ty, &alias_attr.alias );
 
     let token =
       qt!
@@ -553,13 +546,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
         perform_generics = qt!{ #generics };
         let perform_ident = &signature.ident;
         let output = &signature.output;
-        match output
+        if let syn::ReturnType::Type( _, boxed_type ) = output
         {
-          syn::ReturnType::Type( _, boxed_type ) =>
-          {
-            perform_output = qt!{ #boxed_type };
-          },
-          _ => {},
+          perform_output = qt!{ #boxed_type };
         }
         perform = qt!
         {
@@ -596,8 +585,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     .ok_or_else( || syn_err!( field, "Expected that each field has key, but some does not:\n  {}", qt!{ #field } ) )?;
     let colon_token = &field.colon_token;
     let ty = &field.ty;
-    let is_optional = is_optional( &ty );
-    let type_container_kind = proc_macro_tools::type_container_kind( &ty );
+    let is_optional = is_optional( ty );
+    let type_container_kind = proc_macro_tools::type_container_kind( ty );
     let non_optional_ty : &syn::Type = if is_optional { parameter_internal_first( ty )? } else { ty };
     let former_field = FormerField { attrs, vis, ident, colon_token, ty, non_optional_ty, is_optional, type_container_kind };
     Ok( former_field )
@@ -609,14 +598,14 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   : ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
   = former_fields.iter().map( | former_field |
   {(
-    field_none_map( &former_field ),
-    field_optional_map( &former_field ),
-    field_form_map( &former_field ),
-    field_name_map( &former_field ),
-    field_setter_map( &former_field ),
+    field_none_map( former_field ),
+    field_optional_map( former_field ),
+    field_form_map( former_field ),
+    field_name_map( former_field ),
+    field_setter_map( former_field ),
   )}).multiunzip();
 
-  let ( _doc_former_mod, doc_former_struct ) = doc_generate( &name_ident );
+  let ( _doc_former_mod, doc_former_struct ) = doc_generate( name_ident );
   let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
   let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
 

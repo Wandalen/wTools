@@ -8,7 +8,7 @@ pub( crate ) mod private
   /// Instruction.
   ///
 
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( Debug, PartialEq, Eq ) ]
   pub struct Instruction
   {
     /// Error of parsing an instruction.
@@ -57,7 +57,7 @@ pub( crate ) mod private
     /// Check that command begins with dot.
     fn instruction_split_is_command< Src : AsRef< str > >( &self, src : Src ) -> bool
     {
-      src.as_ref().starts_with( "." )
+      src.as_ref().starts_with( '.' )
     }
 
     /// Normalize command name.
@@ -65,10 +65,10 @@ pub( crate ) mod private
     {
       let splits : Vec< &str > = src.as_ref()
       .split_whitespace()
-      .flat_map( | e | e.split( "." ) )
+      .flat_map( | e | e.split( '.' ) )
       .filter( | e | e != &"" )
       .collect();
-      ( ".".to_string() + &splits.join( "." ) ).to_string().into_boxed_str()
+      ( ".".to_string() + &splits.join( "." ) ).into_boxed_str()
     }
 
     /// Make properties map.
@@ -81,7 +81,7 @@ pub( crate ) mod private
       }
       let splits : Vec< &str > = src
       .split_ascii_whitespace()
-      .flat_map( | e | e.split( ":" ) )
+      .flat_map( | e | e.split( ':' ) )
       .filter( | e | e != &"" )
       .collect();
       let index = splits.iter().position( | e | *e == ":" ).unwrap();
@@ -89,7 +89,7 @@ pub( crate ) mod private
       {
         return 2;
       }
-      return 1;
+      1
     }
 
     /// Parse instruction from splits.
@@ -161,7 +161,7 @@ pub( crate ) mod private
   /// Parameters of instruction.
   ///
 
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( Debug, PartialEq, Eq ) ]
   pub struct InstructionParseParams
   {
   }
@@ -194,8 +194,7 @@ pub( crate ) mod private
     I : core::iter::Iterator,
   {
     let params = InstructionParseParams::new();
-    let instruction = params.parse_from_splits( splits );
-    instruction
+    params.parse_from_splits( splits )
   }
 
   //

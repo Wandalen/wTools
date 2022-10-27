@@ -39,7 +39,7 @@ pub( crate ) mod private
     {
       let mut ptr = t as *const T;
       let data_ptr = &mut ptr as *mut *const T as *mut *mut ();
-      *data_ptr = Box::into_raw( Box::new( t.clone() ) ) as *mut ();
+      *data_ptr = Box::into_raw( Box::new( < &T >::clone( &t ) ) ) as *mut ();
       Box::from_raw( ptr as *mut T )
     }
   }
