@@ -359,11 +359,11 @@ pub( crate ) mod private
         // }
       }
 
-      return Ok( Vis::vis_make
+      Ok( Vis::vis_make
       (
         token,
         None,
-      ).into() );
+      ).into() )
     }
 
     // fn parse_in_crate( input : ParseStream< '_ > ) -> Result< Self >
@@ -471,6 +471,7 @@ pub( crate ) mod private
     }
   }
 
+  #[ allow( clippy::derive_hash_xor_eq ) ]
   impl Hash for Visibility
   {
     fn hash< H : Hasher >( &self, state : &mut H )

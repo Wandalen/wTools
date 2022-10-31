@@ -95,7 +95,7 @@ pub( crate ) mod private
       if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
       {
         let remote = data[ "package" ].get( "publish" ).is_none()
-                     || data[ "package" ][ "publish" ].as_bool().unwrap() == true;
+                     || data[ "package" ][ "publish" ].as_bool().unwrap();
         return !remote;
       }
 

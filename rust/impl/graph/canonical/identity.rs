@@ -77,7 +77,7 @@ pub( crate ) mod private
     #[ inline ]
     pub fn make( val : &'static str ) -> Self
     {
-      Self( val.into() )
+      Self( val )
     }
 
   }

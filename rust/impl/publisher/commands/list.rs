@@ -13,8 +13,8 @@ pub( crate ) mod private
   {
     let current_path = env::current_dir().unwrap();
 
-    let paths = files::find( current_path, instruction.subject.split( " " ).collect::< Vec< &str > >().as_slice() );
-    let paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s ) } else { None } );
+    let paths = files::find( current_path, instruction.subject.split( ' ' ).collect::< Vec< &str > >().as_slice() );
+    let paths = paths.iter().filter( | s | s.ends_with( "Cargo.toml" ) );
 
     for path in paths
     {

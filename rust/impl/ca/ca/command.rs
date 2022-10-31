@@ -23,14 +23,7 @@ pub( crate ) mod private
     /// Checks that OnCommand has callback to call.
     pub fn callable( &self ) -> bool
     {
-      if self.0.is_some()
-      {
-        true
-      }
-      else
-      {
-        false
-      }
+      self.0.is_some()
     }
     /// Perform callback.
     pub fn perform( &self, instruction : &crate::instruction::Instruction ) -> Result< () >
@@ -95,6 +88,7 @@ pub( crate ) mod private
       // Therefore, we check that the two Rc's point to the same closure (allocation).
       if let ( Some( this_rc ), Some( other_rc ) ) = ( &self.0, &other.0 )
       {
+        #[ allow( clippy::vtable_address_comparisons ) ]
         Rc::ptr_eq( this_rc, other_rc )
       }
       else
@@ -183,7 +177,7 @@ pub( crate ) mod private
     /// Generate short help for command.
     pub fn help_short( &self ) -> String
     {
-      format!( ".{} - {}", self.phrase.replace( " ", "." ), self.hint )
+      format!( ".{} - {}", self.phrase.replace( ' ', "." ), self.hint )
     }
 
     /// Generate short help for command.
@@ -191,18 +185,18 @@ pub( crate ) mod private
     {
       let properties_hints = self.properties_hints.iter().map( | ( key, value ) | format!( "  {} - {}", key, value ) ).collect::< Vec< _ > >();
       let properties_hints = properties_hints.join( "\n" );
-      format!( ".{} - {}\n{}", self.phrase.replace( " ", "." ), self.long_hint, properties_hints )
+      format!( ".{} - {}\n{}", self.phrase.replace( ' ', "." ), self.long_hint, properties_hints )
     }
 
     /// Execute callback.
     pub fn perform( &self, instruction : &crate::instruction::Instruction ) -> Result< () >
     {
-      if self.subject_hint.len() == 0 && instruction.subject.len() != 0
+      if self.subject_hint.is_empty() && !instruction.subject.is_empty()
       {
         return Err( BasicError::new( "Unexpected subject." ) );
       }
 
-      for ( key, _value ) in &instruction.properties_map
+      for key in instruction.properties_map.keys()
       {
         if self.properties_hints.get( key.as_str() ).is_none()
         {

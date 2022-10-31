@@ -125,6 +125,7 @@ pub( crate ) mod private
     fn vectorized_from( src : [ Into1 ; N ] ) -> Self
     {
       // SAFETY : safe because all elements are set in the funtions
+      #[ allow( clippy::uninit_assumed_init ) ]
       let mut result : Self = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
       for i in 0..N
       {

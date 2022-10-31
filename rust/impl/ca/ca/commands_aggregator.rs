@@ -84,7 +84,7 @@ pub( crate ) mod private
           {
             if self.changing_exit_code
             {
-              eprintln!( "{}", err.to_string() );
+              eprintln!( "{}", err );
               std::process::exit( 1 );
             }
             else
@@ -112,7 +112,7 @@ pub( crate ) mod private
       let result = self._instruction_perform( &parsed );
       if result.is_err() && self.changing_exit_code
       {
-        eprintln!( "{}", result.err().unwrap().to_string() );
+        eprintln!( "{}", result.err().unwrap() );
         std::process::exit( 1 );
       }
       result
@@ -158,19 +158,16 @@ pub( crate ) mod private
           println!( "{}", command_descriptor.help_short() );
         }
       }
+      else if let Some( command_descriptor ) = self.commands.get( command.as_ref() )
+      {
+        println!( "{}", command_descriptor.help_long() );
+      }
       else
       {
-        if let Some( command_descriptor ) = self.commands.get( command.as_ref() )
+        match self.on_unknown_command_error( command.as_ref() )
         {
-          println!( "{}", command_descriptor.help_long() );
-        }
-        else
-        {
-          match self.on_unknown_command_error( command.as_ref() )
-          {
-            _ => ()
-          };
-        }
+          _ => ()
+        };
       }
     }
 
@@ -190,7 +187,7 @@ pub( crate ) mod private
       .preserving_delimeters( false )
       .preserving_quoting( false )
       .perform();
-      let commands = commands.map( | e | String::from( e ) ).collect::< Vec< _ > >();
+      let commands = commands.map( String::from ).collect::< Vec< _ > >();
 
       let mut string_commands = vec![];
       for command in commands
@@ -202,16 +199,16 @@ pub( crate ) mod private
         .preserving_delimeters( false )
         .preserving_quoting( false )
         .perform();
-        let splitted = splitted.map( | e | String::from( e ) ).collect::< Vec< _ > >();
+        let splitted = splitted.map( String::from ).collect::< Vec< _ > >();
 
         if self.command_implicit_delimeter == " "
         {
           let start_index = if splitted[ 0 ].is_empty() { 1 } else { 0 };
           let mut string_command = String::from( &splitted[ start_index ] );
 
-          for i in start_index + 1 .. splitted.len()
+          for splitted_item in splitted.iter().skip( start_index + 1 )
           {
-            let part = splitted[ i ].trim();
+            let part = splitted_item.trim();
             if part.starts_with( '.' ) && !self.dotted_path_is( part )
             {
               string_commands.push( string_command );
@@ -366,7 +363,7 @@ pub( crate ) mod private
       self.on_get_help().unwrap();
 
       let err = BasicError::new( err_formatted );
-      return self.on_error( err );
+      self.on_error( err )
     }
   }
 
@@ -378,11 +375,11 @@ pub( crate ) mod private
     {
       eprintln!( "Ambiguity. Did you mean?" );
       self.command_help( command.as_ref() );
-      println!( "" );
+      println!();
 
       let err_formatted = format!( "Ambiguity \"{}\"", command.as_ref() );
       let err = BasicError::new( err_formatted );
-      return self.on_error( err );
+      self.on_error( err )
     }
   }
 
@@ -402,7 +399,7 @@ pub( crate ) mod private
         err_formatted.push_str( "\nTry \".help\"" );
       }
       let err = BasicError::new( err_formatted );
-      return self.on_error( err );
+      self.on_error( err )
     }
   }
 
@@ -420,12 +417,12 @@ pub( crate ) mod private
         let instruction = instruction_parse()
         .instruction( "" )
         .perform();
-        return command.perform( &instruction );
+        command.perform( &instruction )
       }
       else
       {
         self.command_help( "" );
-        return Ok( () );
+        Ok( () )
       }
     }
   }
@@ -436,9 +433,9 @@ pub( crate ) mod private
     /// Print all commands.
     fn on_print_commands( &self ) -> Result< () >
     {
-      println!( "" );
+      println!();
       self.command_help( "" );
-      println!( "" );
+      println!();
       Ok( () )
     }
   }

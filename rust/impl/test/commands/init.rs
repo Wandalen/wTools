@@ -16,10 +16,8 @@ pub fn commands_form() -> std::collections::HashMap< String, wca::command::Comma
   .routine( &super::smoke::smoke )
   .form();
 
-  let ca_map = std::collections::HashMap::from
+  std::collections::HashMap::from
   ([
     ( ".smoke".to_string(), smoke_command ),
-  ]);
-
-  ca_map
+  ])
 }

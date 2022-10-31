@@ -22,7 +22,7 @@ pub( crate ) mod private
       if id.is_none()
       {
         *id = Some( Id::new::< Self >() );
-        DrawingChangeNew::new( id.unwrap().clone() ).add_to( &mut context_changer );
+        DrawingChangeNew::new( id.unwrap() ).add_to( &mut context_changer );
       }
       let id = context_changer.drawing.unwrap();
       Self
@@ -35,8 +35,7 @@ pub( crate ) mod private
     #[ inline ]
     pub fn rect( self ) -> RectChanger
     {
-      let change = RectChanger::_new( self );
-      change
+      RectChanger::_new( self )
     }
   }
 
