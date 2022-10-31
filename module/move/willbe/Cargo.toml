@@ -50,6 +50,7 @@ path = "rust/test/willbe/tests.rs"
 # path = "sample/rust/willbe_trivial_sample/src/main.rs"
 
 [dependencies]
+wtools = { version = "~0.2", path = "../../rust/wtools" }
 toml = "0.5"
 glob = "0.3"
 

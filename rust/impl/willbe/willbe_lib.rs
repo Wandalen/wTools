@@ -15,41 +15,15 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Features of Application Programming Interface that 100% should be implemented
-pub mod core;
-
 /// Namespace with dependencies.
 pub mod dependency
 {
 }
 
-/// Protected namespace of the module.
-pub mod protected
+//
+
+wtools::meta::mod_interface!
 {
-  #[ doc( inline ) ]
-  pub use super::orphan::*;
-}
-
-#[ doc( inline ) ]
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
-{
-  #[ doc( inline ) ]
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-}
-
-#[ doc( inline ) ]
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::core::*;
+  /// Features of Application Programming Interface that 100% should be implemented
+  layer core;
 }

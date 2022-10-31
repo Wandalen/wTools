@@ -1,7 +1,18 @@
-/// Ordering strategies
-#[ derive( Debug ) ]
-pub enum OrderStrategy
+/// Internal namespace.
+pub( crate ) mod private
 {
-  /// Not ordered
-  Random
+  /// Ordering strategies
+  #[ derive( Debug, Clone, Copy ) ]
+  pub enum OrderStrategy
+  {
+    /// Not ordered
+    Random
+  }
+}
+
+//
+
+wtools::meta::mod_interface!
+{
+  prelude use OrderStrategy;
 }

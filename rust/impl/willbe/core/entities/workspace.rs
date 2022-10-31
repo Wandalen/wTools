@@ -1,73 +1,79 @@
-use std::path::PathBuf;
-
-use toml::Value;
-
-use super::
+/// Internal namespace.
+pub( crate ) mod private
 {
-  package::Package,
-  utility::OrderStrategy
-};
+  use std::path::PathBuf;
+  use toml::Value;
 
-/// Workspace
-#[ derive( Debug ) ]
-pub struct Workspace
-{
-  path : PathBuf,
-}
+  use crate::{ Package, OrderStrategy };
 
-impl TryFrom< PathBuf > for Workspace
-{
-  type Error = ();
-
-  fn try_from( path : PathBuf ) -> Result< Self, Self::Error >
+  /// Workspace
+  #[ derive( Debug, Clone ) ]
+  pub struct Workspace
   {
-    let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) ).or( Err( () ) )?;
-    let toml = config_str.parse::< Value >().or( Err( () ) )?;
+    path : PathBuf,
+  }
 
-    if toml.get( "workspace" ).is_some()
+  impl TryFrom< PathBuf > for Workspace
+  {
+    type Error = ();
+
+    fn try_from( path : PathBuf ) -> Result< Self, Self::Error >
     {
-      Ok( Self{ path } )
-    }
-    else
-    {
-      Err( () )
+      let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) ).or( Err( () ) )?;
+      let toml = config_str.parse::< Value >().or( Err( () ) )?;
+
+      if toml.get( "workspace" ).is_some()
+      {
+        Ok( Self{ path } )
+      }
+      else
+      {
+        Err( () )
+      }
     }
   }
-}
 
-impl Workspace
-{
-  /// iterate over packages into workspace
-  pub fn packages_iterate( &self, _order : OrderStrategy ) -> impl Iterator< Item = Package >
+  impl Workspace
   {
-    // it might be better to move somewhere. reparse it again - isn't good
-    let config_str = std::fs::read_to_string( self.path.join( "Cargo.toml" ) ).unwrap();
-    let toml = config_str.parse::< Value >().unwrap();
-
-    // iterate over members into workspace
-    let packages = toml[ "workspace" ][ "members" ].as_array().unwrap().into_iter()
-    // fold all packages from members
-    .fold( vec![], | mut acc, package |
+    /// iterate over packages into workspace
+    pub fn packages_iterate( &self, _order : OrderStrategy ) -> impl Iterator< Item = Package >
     {
-      let packages_paths = glob::glob
-      (
-        &format!( "{sp}/{mp}", sp = self.path.display(), mp = package.as_str().unwrap() )
-      ).unwrap();
+      // it might be better to move somewhere. reparse it again - isn't good
+      let config_str = std::fs::read_to_string( self.path.join( "Cargo.toml" ) ).unwrap();
+      let toml = config_str.parse::< Value >().unwrap();
 
-      packages_paths.filter_map( Result::ok )
-      .fold( &mut acc, | acc, package_path |
+      // iterate over members into workspace
+      let packages = toml[ "workspace" ][ "members" ].as_array().unwrap().iter()
+      // fold all packages from members
+      .fold( vec![], | mut acc, member |
       {
-        if let Ok( package ) = Package::try_from( package_path )
+        let packages_paths = glob::glob
+        (
+          &format!( "{sp}/{mp}", sp = self.path.display(), mp = member.as_str().unwrap() )
+        ).unwrap();
+
+        packages_paths.filter_map( Result::ok )
+        .fold( &mut acc, | acc, package_path |
         {
-          acc.push( package );
-        }
+          if let Ok( package ) = Package::try_from( package_path )
+          {
+            acc.push( package );
+          }
+
+          acc
+        });
 
         acc
       });
 
-      acc
-    });
-    
-    packages.into_iter()
+      packages.into_iter()
+    }
   }
+}
+
+//
+
+wtools::meta::mod_interface!
+{
+  prelude use Workspace;
 }

@@ -1,30 +1,49 @@
-use std::path::PathBuf;
-
-use toml::Value;
-
-/// Crate
-#[ derive( Debug, Clone ) ]
-pub struct Package
+/// Internal namespace.
+pub( crate ) mod private
 {
-  path : PathBuf,
-}
+  use std::path::PathBuf;
+  use toml::Value;
 
-impl TryFrom< PathBuf > for Package
-{
-  type Error = ();
-
-  fn try_from( path : PathBuf ) -> Result< Self, Self::Error >
+  /// Package
+  #[ derive( Debug, Clone ) ]
+  pub struct Package
   {
-    let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) ).or( Err( () ) )?;
-    let toml = config_str.parse::< Value >().or( Err( () ) )?;
+    path : PathBuf,
+  }
 
-    if toml.get( "package" ).is_some()
+  impl TryFrom< PathBuf > for Package
+  {
+    type Error = ();
+
+    fn try_from( path : PathBuf ) -> Result< Self, Self::Error >
     {
-      Ok( Self{ path } )
-    }
-    else
-    {
-      Err( () )
+      let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) ).or( Err( () ) )?;
+      let toml = config_str.parse::< Value >().or( Err( () ) )?;
+
+      if toml.get( "package" ).is_some()
+      {
+        Ok( Self{ path } )
+      }
+      else
+      {
+        Err( () )
+      }
     }
   }
+
+  impl Package
+  {
+    /// Gets path of package
+    pub fn path( &self ) -> &PathBuf
+    {
+      &self.path
+    }
+  }
+}
+
+//
+
+wtools::meta::mod_interface!
+{
+  prelude use Package;
 }
