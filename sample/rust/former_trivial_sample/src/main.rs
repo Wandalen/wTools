@@ -4,7 +4,7 @@ fn main()
 {
   use former::Former;
 
-  #[derive( Debug, PartialEq, Former )]
+  #[derive( Debug, PartialEq, Eq, Former )]
   pub struct Structure1
   {
     int_1 : i32,

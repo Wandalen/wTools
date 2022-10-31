@@ -134,7 +134,7 @@ pub( crate ) mod private
       }
 
       let semi = Some( input.parse()? );
-      return Ok( Record
+      Ok( Record
       {
         attrs,
         vis,
@@ -195,7 +195,7 @@ pub( crate ) mod private
 
         let good = true
           && code_export_str!( attr.path ) == "debug"
-          && code_export_str!( attr.tokens ) == ""
+          && code_export_str!( attr.tokens ).is_empty()
         ;
 
         if !good
@@ -231,7 +231,7 @@ pub( crate ) mod private
       let head = input.parse()?;
       // let head = Default::default();
       let records = input.parse()?;
-      return Ok( Thesis
+      Ok( Thesis
       {
         head,
         records,

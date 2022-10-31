@@ -46,6 +46,7 @@ pub mod exposed
     zip_eq,
   };
 
+  #[ cfg( feature = "use_std" ) ]
   #[ doc( inline ) ]
   pub use std::iter::zip;
 

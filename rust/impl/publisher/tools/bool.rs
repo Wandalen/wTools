@@ -5,7 +5,7 @@ pub( crate ) mod private
   /// Get bool like value.
   ///
 
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( Debug, PartialEq, Eq ) ]
   pub enum BoolLike
   {
     /// Variant for true-like values.
@@ -47,7 +47,7 @@ pub( crate ) mod private
   {
     fn to_bool_like( &self ) -> BoolLike
     {
-      let bool_like = match self.parse::< bool >()
+      match self.parse::< bool >()
       {
         Ok( x ) => if x { BoolLike::True } else { BoolLike::False },
         Err( _ ) =>
@@ -58,9 +58,7 @@ pub( crate ) mod private
             Err(_err) => BoolLike::False,
           }
         },
-      };
-
-      bool_like
+      }
     }
   }
 
@@ -70,7 +68,7 @@ pub( crate ) mod private
   {
     fn to_bool_like( &self ) -> BoolLike
     {
-      let bool_like = match self.parse::< bool >()
+      match self.parse::< bool >()
       {
         Ok( x ) => if x { BoolLike::True } else { BoolLike::False },
         Err( _ ) =>
@@ -81,9 +79,7 @@ pub( crate ) mod private
             Err( _err ) => BoolLike::False,
           }
         },
-      };
-
-      bool_like
+      }
     }
   }
 }

@@ -43,7 +43,7 @@ pub( crate ) mod private
   {
     let current_path = env::current_dir().unwrap();
 
-    let paths = files::find( &current_path, instruction.subject.split( " " ).collect::< Vec< &str > >().as_slice() );
+    let paths = files::find( &current_path, instruction.subject.split( ' ' ).collect::< Vec< &str > >().as_slice() );
     let mut paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::< Vec< PathBuf > >();
     if paths.is_empty() && path::valid_is( &instruction.subject )
     {
@@ -94,7 +94,7 @@ pub( crate ) mod private
 
   fn bump( version : &str ) -> anyhow::Result< toml_edit::Item >
   {
-    let mut splits : Vec< &str > = version.split( "." ).collect();
+    let mut splits : Vec< &str > = version.split( '.' ).collect();
     let patch_version = splits[ 2 ].parse::< u32 >()? + 1;
     let v = &patch_version.to_string();
     splits[ 2 ] = v;
@@ -230,7 +230,7 @@ pub( crate ) mod private
     let mut deps = Graph::< &str, &str >::new();
     let _update_graph = packages.iter().map( | ( _name, package ) |
     {
-      let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == &package.name )
+      let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == package.name )
       {
         node
       }
@@ -242,7 +242,7 @@ pub( crate ) mod private
       {
         if dep.path.is_some() && dep.kind != DependencyKind::Development
         {
-          let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == &dep.name )
+          let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == dep.name )
           {
             node
           }

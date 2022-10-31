@@ -5,7 +5,7 @@ mod splitter
   use former::Former;
 
   #[ derive( PartialOrd ) ]
-  #[ derive( Former, PartialEq, Debug ) ]
+  #[ derive( Former, PartialEq, Eq, Debug ) ]
   #[ perform( fn perform( self ) -> Box< ( dyn std::iter::Iterator< Item = &'a str > + 'a ) > ) ]
   pub struct Options< 'a >
   {
@@ -41,12 +41,12 @@ mod splitter
     #[ inline ]
     fn src( &self ) -> &'a str
     {
-      &self.src
+      self.src
     }
     #[ inline ]
     fn delimeter( &self ) -> &'a str
     {
-      &self.delimeter
+      self.delimeter
     }
     #[ inline ]
     fn left( &self ) -> &bool

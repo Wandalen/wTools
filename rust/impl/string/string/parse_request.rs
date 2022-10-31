@@ -10,7 +10,7 @@ pub( crate ) mod private
   /// Wrapper types to make transformation.
   ///
 
-  #[ derive( Debug, Clone, PartialEq ) ]
+  #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub enum OpType<T>
   {
     /// Wrapper over single element of type <T>.
@@ -130,7 +130,7 @@ pub( crate ) mod private
   ///
 
   #[ allow( dead_code ) ]
-  #[ derive( Debug, Default, PartialEq ) ]
+  #[ derive( Debug, Default, PartialEq, Eq ) ]
   pub struct Request< 'a >
   {
     /// Original request string.
@@ -247,11 +247,13 @@ pub( crate ) mod private
     where
       Self : Sized,
     {
-      let mut result = Request::default();
-
-      result.original = self.src();
-      result.key_val_delimeter = self.key_val_delimeter();
-      result.commands_delimeter = self.commands_delimeter();
+      let mut result = Request
+      {
+        original : self.src(),
+        key_val_delimeter : self.key_val_delimeter(),
+        commands_delimeter : self.commands_delimeter(),
+        ..Default::default()
+      };
 
       self.src = self.src.trim();
 
@@ -260,10 +262,10 @@ pub( crate ) mod private
         return result;
       }
 
-      let commands;
+      let commands =
       if self.commands_delimeter.trim().is_empty()
       {
-        commands = vec![ self.src().to_string() ];
+        vec![ self.src().to_string() ]
       }
       else
       {
@@ -275,8 +277,8 @@ pub( crate ) mod private
         .preserving_empty( false )
         .preserving_delimeters( false )
         .perform();
-        commands = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
-      }
+        iter.map( String::from ).collect::< Vec< _ > >()
+      };
 
       for command in commands
       {
@@ -320,7 +322,7 @@ pub( crate ) mod private
           .preserving_delimeters( true )
           .preserving_quoting( true )
           .perform()
-          .map( | e | String::from( e ) ).collect::< Vec< _ > >();
+          .map( String::from ).collect::< Vec< _ > >();
 
 
           let mut pairs = vec![];
@@ -358,7 +360,7 @@ pub( crate ) mod private
             let right = right.trim().to_string();
             if self.unquoting
             {
-              if left.contains( "\"" ) || left.contains( "'" ) || right.contains( "\"" ) || right.contains( "'" )
+              if left.contains( '\"' ) || left.contains( '\'' ) || right.contains( '\"' ) || right.contains( '\'' )
               {
                 unimplemented!( "not implemented" );
               }
@@ -434,7 +436,7 @@ pub( crate ) mod private
 
         if self.unquoting
         {
-          if subject.contains( "\"" ) || subject.contains( "'" )
+          if subject.contains( '\"' ) || subject.contains( '\'' )
           {
             unimplemented!( "not implemented" );
           }
@@ -451,11 +453,11 @@ pub( crate ) mod private
         result.maps.push( map );
       }
 
-      if result.subjects.len() > 0
+      if !result.subjects.is_empty()
       {
         result.subject = result.subjects[ 0 ].clone();
       }
-      if result.maps.len() > 0
+      if !result.maps.is_empty()
       {
         result.map = result.maps[ 0 ].clone();
       }
