@@ -4,6 +4,8 @@ pub( crate ) mod private
   use std::path::PathBuf;
   use toml::Value;
 
+  use wtools::{ BasicError, err };
+
   use crate::{ Package, OrderStrategy };
 
   /// Workspace
@@ -15,12 +17,14 @@ pub( crate ) mod private
 
   impl TryFrom< PathBuf > for Workspace
   {
-    type Error = ();
+    type Error = BasicError;
 
     fn try_from( path : PathBuf ) -> Result< Self, Self::Error >
     {
-      let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) ).or( Err( () ) )?;
-      let toml = config_str.parse::< Value >().or( Err( () ) )?;
+      let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) )
+      .or( Err( err!( "Can not read \"Cargo.toml\"" ) ) )?;
+      let toml = config_str.parse::< Value >()
+      .or( Err( err!( "Can not parse \"Cargo.toml\"" ) ) )?;
 
       if toml.get( "workspace" ).is_some()
       {
@@ -28,22 +32,21 @@ pub( crate ) mod private
       }
       else
       {
-        Err( () )
+        Err( err!( "\"workspace\" into \"Cargo.toml\" not found" ) )
       }
     }
   }
 
   impl Workspace
   {
-    /// iterate over packages into workspace
-    pub fn packages_iterate( &self, _order : OrderStrategy ) -> impl Iterator< Item = Package >
+    /// Gets list of packages into workspace
+    pub fn packages( &self, _order : OrderStrategy ) -> Vec< Package >
     {
-      // it might be better to move somewhere. reparse it again - isn't good
       let config_str = std::fs::read_to_string( self.path.join( "Cargo.toml" ) ).unwrap();
       let toml = config_str.parse::< Value >().unwrap();
 
       // iterate over members into workspace
-      let packages = toml[ "workspace" ][ "members" ].as_array().unwrap().iter()
+      toml[ "workspace" ][ "members" ].as_array().unwrap_or( &vec![] ).iter()
       // fold all packages from members
       .fold( vec![], | mut acc, member |
       {
@@ -59,14 +62,16 @@ pub( crate ) mod private
           {
             acc.push( package );
           }
-
           acc
         });
-
         acc
-      });
+      })
+    }
 
-      packages.into_iter()
+    /// iterate over packages into workspace
+    pub fn packages_iterate( &self, order : OrderStrategy ) -> impl Iterator< Item = Package >
+    {
+      self.packages( order ).into_iter()
     }
   }
 }

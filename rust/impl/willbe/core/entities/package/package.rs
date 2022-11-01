@@ -4,6 +4,10 @@ pub( crate ) mod private
   use std::path::PathBuf;
   use toml::Value;
 
+  use wtools::{ BasicError, err };
+
+  use crate::PackageInfo;
+
   /// Package
   #[ derive( Debug, Clone ) ]
   pub struct Package
@@ -13,12 +17,14 @@ pub( crate ) mod private
 
   impl TryFrom< PathBuf > for Package
   {
-    type Error = ();
+    type Error = BasicError;
 
     fn try_from( path : PathBuf ) -> Result< Self, Self::Error >
     {
-      let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) ).or( Err( () ) )?;
-      let toml = config_str.parse::< Value >().or( Err( () ) )?;
+      let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) )
+      .or( Err( err!( "Can not read \"Cargo.toml\"" ) ) )?;
+      let toml = config_str.parse::< Value >()
+      .or( Err( err!( "Can not parse \"Cargo.toml\"" ) ) )?;
 
       if toml.get( "package" ).is_some()
       {
@@ -26,7 +32,7 @@ pub( crate ) mod private
       }
       else
       {
-        Err( () )
+        Err( err!( "\"package\" into \"Cargo.toml\" not found" ) )
       }
     }
   }
@@ -37,6 +43,12 @@ pub( crate ) mod private
     pub fn path( &self ) -> &PathBuf
     {
       &self.path
+    }
+
+    /// Gets info about package
+    pub fn info( &self ) -> PackageInfo
+    {
+      self.to_owned().into()
     }
   }
 }
