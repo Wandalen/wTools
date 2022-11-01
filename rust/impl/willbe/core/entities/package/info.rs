@@ -5,7 +5,7 @@ pub( crate ) mod private
 
   use crate::Package;
 
-  /// Package
+  /// Information about package
   #[ derive( Debug, Default, Clone ) ]
   pub struct PackageInfo
   {

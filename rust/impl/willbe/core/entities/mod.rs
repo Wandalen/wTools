@@ -1,5 +1,5 @@
 
-wtools::meta::mod_interface!
+wtools::mod_interface!
 {
   /// Package
   layer package;

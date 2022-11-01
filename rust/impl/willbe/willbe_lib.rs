@@ -21,4 +21,13 @@ wtools::meta::mod_interface!
 {
   /// Features of Application Programming Interface that 100% should be implemented
   layer core;
+
+  /// Library of utility to work with commands.
+  #[ cfg( feature = "use_std" ) ]
+  layer commands;
+
+  #[ cfg( feature = "use_std" ) ]
+  prelude use ::std::env;
+  prelude use ::wca::instruction;
+  protected( crate ) use ::wtools::prelude::*;
 }
