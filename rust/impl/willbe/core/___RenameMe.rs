@@ -13,7 +13,16 @@ pub( crate ) mod private
     }
 
     // find all crates
-    let workspaces = glob::glob( &format!( "{path}/**/Cargo.toml", path = path.display() ) ).unwrap();
+    let workspaces = globwalk::GlobWalkerBuilder::from_patterns
+    (
+      path,
+      &[ "Cargo.toml" ]
+    )
+    .max_open( 1 )
+    .follow_links( true )
+    .build().unwrap()
+    .filter_map( Result::ok );
+
     Box::new( workspaces_packages_iterate
     (
       workspaces
@@ -22,14 +31,12 @@ pub( crate ) mod private
       (
         | p |
         // map paths into Workspaces
-        p.map( | mut p |
         {
-          p.pop();
-          Workspace::try_from( p )
-        }).ok()
-      )
-      // filter all valid Workspaces
-      .filter_map( Result::ok ),
+          let mut path = p.path().to_path_buf();
+          path.pop();
+          Workspace::try_from( path ).ok()
+        }
+      ),
       order
     ))
   }

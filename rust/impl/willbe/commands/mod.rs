@@ -6,6 +6,9 @@ wtools::mod_interface!
   /// Information about package
   prelude mod info;
 
+  /// Publish package
+  prelude mod publish;
+
   /// Iterate over subject
   prelude mod each;
   

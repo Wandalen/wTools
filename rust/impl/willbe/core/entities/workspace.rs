@@ -40,25 +40,35 @@ pub( crate ) mod private
   impl Workspace
   {
     /// Gets list of packages into workspace
-    pub fn packages( &self, _order : OrderStrategy ) -> Vec< Package >
+    pub fn packages( &self ) -> Vec< Package >
     {
       let config_str = std::fs::read_to_string( self.path.join( "Cargo.toml" ) ).unwrap();
       let toml = config_str.parse::< Value >().unwrap();
 
       // iterate over members into workspace
-      toml[ "workspace" ][ "members" ].as_array().unwrap_or( &vec![] ).iter()
+      toml[ "workspace" ]
+      // members can be doesn't setted
+      .get( "members" )
+      .unwrap_or( &Value::Array( vec![] ) ).as_array()
+      .unwrap_or( &vec![] )
+      .iter()
       // fold all packages from members
       .fold( vec![], | mut acc, member |
       {
-        let packages_paths = glob::glob
+        let packages_paths = globwalk::GlobWalkerBuilder::from_patterns
         (
-          &format!( "{sp}/{mp}", sp = self.path.display(), mp = member.as_str().unwrap() )
-        ).unwrap();
+          self.path.to_owned(),
+          &[ format!( "{}", member.as_str().unwrap() ) ]
+        )
+        .max_open( 1 )
+        .follow_links( true )
+        .build().unwrap()
+        .filter_map( Result::ok );
 
-        packages_paths.filter_map( Result::ok )
+        packages_paths
         .fold( &mut acc, | acc, package_path |
         {
-          if let Ok( package ) = Package::try_from( package_path )
+          if let Ok( package ) = Package::try_from( package_path.path().to_path_buf() )
           {
             acc.push( package );
           }
@@ -69,9 +79,10 @@ pub( crate ) mod private
     }
 
     /// iterate over packages into workspace
-    pub fn packages_iterate( &self, order : OrderStrategy ) -> impl Iterator< Item = Package >
+    pub fn packages_iterate( &self, _order : OrderStrategy ) -> impl Iterator< Item = Package >
     {
-      self.packages( order ).into_iter()
+      // TODO: Sort before return iterator
+      self.packages().into_iter()
     }
   }
 }

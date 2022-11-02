@@ -43,7 +43,7 @@ path = "rust/impl/willbe/willbe_entry.rs"
 
 [[test]]
 name = "willbe_test"
-path = "rust/test/willbe/tests.rs"
+path = "rust/test/willbe/willbe_test.rs"
 
 # [[test]]
 # name = "willbe_smoke_test"
@@ -57,7 +57,7 @@ path = "rust/test/willbe/tests.rs"
 wtools = { version = "~0.2", path = "../../rust/wtools" }
 wca = { version = "~0.1", path = "../../move/wca" }
 toml = "0.5"
-glob = "0.3"
+globwalk = "0.8"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

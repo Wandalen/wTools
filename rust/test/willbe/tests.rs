@@ -1,13 +1,4 @@
-use std::path::PathBuf;
-
-use willbe::prelude::*;
-
-fn to_asset_path( path : PathBuf ) -> PathBuf
-{
-  let mut out = PathBuf::from( "rust/test/willbe/_asset" );
-  out.push( path );
-  out
-}
+use super::*;
 
 #[ test ]
 fn package_from_path()
@@ -78,4 +69,15 @@ fn get_info()
 
   assert!( !info.name.is_empty() );
   assert!( !info.version.is_empty() );
+}
+
+#[ test ]
+fn verification()
+{
+  let package = Package::try_from( to_asset_path( PathBuf::from( "package" ) ) ).unwrap();
+
+  assert!( package.has_license() );
+  assert!( package.has_readme() );
+  assert!( package.has_documentation() );
+  assert!( package.is_tests_passed() );
 }

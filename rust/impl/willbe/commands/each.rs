@@ -22,7 +22,11 @@ pub( crate ) mod private
       .for_each( | p |
       {
         let info = p.info();
-        println!( "===\nName: {}\nVersion: {}\nDependencies: {:?}", info.name, info.version, info.dependencies )
+        println!
+        (
+          "===\nName: {}\nVersion: {}\nDependencies: {:?}\nLocation: {}",
+          info.name, info.version, info.dependencies, info.location.display()
+        )
       }),
       _ => {}
     }

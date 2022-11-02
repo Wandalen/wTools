@@ -2,6 +2,7 @@
 pub( crate ) mod private
 {
   use toml::Value;
+  use std::path::PathBuf;
 
   use crate::Package;
 
@@ -15,13 +16,16 @@ pub( crate ) mod private
     pub version : String,
     /// List of dependencies
     pub dependencies : Vec< String >,
+    /// Package location
+    pub location : PathBuf,
   }
 
   impl From< Package > for PackageInfo
   {
     fn from( package : Package ) -> Self
     {
-      let config_str = std::fs::read_to_string( package.path().join( "Cargo.toml" ) ).unwrap();
+      let path = package.path();
+      let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) ).unwrap();
       let toml = config_str.parse::< Value >().unwrap();
 
       if let Some( package ) = toml.get( "package" )
@@ -31,6 +35,7 @@ pub( crate ) mod private
           name : package[ "name" ].as_str().unwrap_or( "" ).to_owned(),
           version : package[ "version" ].as_str().unwrap_or( "" ).to_owned(),
           dependencies : vec![], // ! implement me
+          location : path.to_owned(),
         }
       }
       else

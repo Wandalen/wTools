@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use std::path::PathBuf;
+  use std::{ path::PathBuf, process::Command };
   use toml::Value;
 
   use wtools::{ BasicError, err };
@@ -49,6 +49,41 @@ pub( crate ) mod private
     pub fn info( &self ) -> PackageInfo
     {
       self.to_owned().into()
+    }
+  }
+
+  impl Package
+  {
+    /// Check if the package has a license
+    pub fn has_license( &self ) -> bool
+    {
+      self.path.join( "License" ).exists()
+    }
+
+    /// Check if the package has a readme
+    pub fn has_readme( &self ) -> bool
+    {
+      self.path.join( "Readme.md" ).exists()
+    }
+
+    /// Check if the package has a documentation
+    pub fn has_documentation( &self ) -> bool
+    {
+      //? How to check it?
+      false
+    }
+
+    /// Checks if all tests have completed successfully
+    pub fn is_tests_passed( &self ) -> bool
+    {
+      let tests_output = Command::new( "cargo" )
+      .args([ "test", "-q" ])
+      .output().unwrap();
+
+      // ! rework it. it is tmp implementation.
+      String::from_utf8( tests_output.stdout )
+      .unwrap_or( "".to_owned() )
+      .contains( "0 failed" )
     }
   }
 }
