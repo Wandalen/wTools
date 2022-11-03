@@ -61,3 +61,4 @@ globwalk = "0.8"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+tempfile = "3"

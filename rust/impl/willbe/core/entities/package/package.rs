@@ -77,13 +77,11 @@ pub( crate ) mod private
     pub fn is_tests_passed( &self ) -> bool
     {
       let tests_output = Command::new( "cargo" )
+      .current_dir( &self.path )
       .args([ "test", "-q" ])
       .output().unwrap();
 
-      // ! rework it. it is tmp implementation.
-      String::from_utf8( tests_output.stdout )
-      .unwrap_or( "".to_owned() )
-      .contains( "0 failed" )
+      tests_output.status.success()
     }
   }
 }

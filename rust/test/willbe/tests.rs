@@ -1,26 +1,38 @@
 use super::*;
+use utility::*;
+
+const ASSET_PATH : &str = "rust/test/willbe/_asset";
 
 #[ test ]
 fn package_from_path()
 {
-  let path = to_asset_path( PathBuf::from( "package" ) );
+  let asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) );
+  let path = asset.path_buf();
+
   let package = Package::try_from( path.to_owned() );
 
   assert!( package.is_ok() );
-  assert_eq!( path, *package.unwrap().path() );
+  assert_eq!( *path, *package.unwrap().path() );
 }
 
 #[ test ]
 fn workspace_from_path()
 {
-  assert!( Workspace::try_from( to_asset_path( PathBuf::from( "package" ) ) ).is_err() );
-  assert!( Workspace::try_from( to_asset_path( PathBuf::from( "workspaces/workspace1" ) ) ).is_ok() );
+  let package_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) );
+  let package_path = package_asset.path_buf();
+  assert!( Workspace::try_from( package_path.to_owned() ).is_err() );
+
+  let workspace_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "workspaces/workspace1" ) );
+  let workspace_path = workspace_asset.path_buf();
+  assert!( Workspace::try_from( workspace_path.to_owned() ).is_ok() );
 }
 
 #[ test ]
 fn workspace_iterator()
 {
-  let workspace = Workspace::try_from( to_asset_path( PathBuf::from( "workspaces/workspace1" ) ) ).unwrap();
+  let workspace_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "workspaces/workspace1" ) );
+  let workspace_path = workspace_asset.path_buf();
+  let workspace = Workspace::try_from( workspace_path.to_owned() ).unwrap();
   let packages = workspace.packages_iterate( OrderStrategy::Random ).collect::< Vec< _ > >();
 
   assert!( !packages.is_empty() );
@@ -29,27 +41,39 @@ fn workspace_iterator()
 #[ test ]
 fn iterate_over_path_buf()
 {
-  let dir_without_crates = packages_iterate( to_asset_path( PathBuf::from( "empty" ) ), OrderStrategy::Random ).collect::< Vec< _ > >();
+  let empty_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "empty" ) );
+  let empty_path = empty_asset.path_buf();
+  let dir_without_crates = packages_iterate( empty_path.to_owned(), OrderStrategy::Random ).collect::< Vec< _ > >();
   assert!( dir_without_crates.is_empty() );
 
-  let package = packages_iterate( to_asset_path( PathBuf::from( "package" ) ), OrderStrategy::Random ).collect::< Vec< _ > >();
+  let package_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) );
+  let package_path = package_asset.path_buf();
+  let package = packages_iterate( package_path.to_owned(), OrderStrategy::Random ).collect::< Vec< _ > >();
   assert_eq!( 1, package.len() );
 
-  let workspace = packages_iterate( to_asset_path( PathBuf::from( "workspaces/workspace1" ) ) , OrderStrategy::Random ).collect::< Vec< _ > >();
+  let workspace_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "workspaces/workspace1" ) );
+  let workspace_path = workspace_asset.path_buf();
+  let workspace = packages_iterate( workspace_path.to_owned(), OrderStrategy::Random ).collect::< Vec< _ > >();
   assert!( workspace.len() >= 1 );
 
-  let many_workspaces = packages_iterate( to_asset_path( PathBuf::from( "workspaces" ) ) , OrderStrategy::Random ).collect::< Vec< _ > >();
+  let many_workspaces_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "workspaces" ) );
+  let many_workspaces_path = many_workspaces_asset.path_buf();
+  let many_workspaces = packages_iterate( many_workspaces_path.to_owned(), OrderStrategy::Random ).collect::< Vec< _ > >();
   assert!( many_workspaces.len() > workspace.len() );
 }
 
 #[ test ]
 fn iterate_over_workspaces()
 {
-  let workspaces = vec!
+  let assets = vec!
   [
-    Workspace::try_from( to_asset_path( PathBuf::from( "workspaces/workspace1" ) ) ).unwrap(),
-    Workspace::try_from( to_asset_path( PathBuf::from( "workspaces/workspace2" ) ) ).unwrap(),
+    Asset::from( PathBuf::from( ASSET_PATH ).join( "workspaces/workspace1" ) ),
+    Asset::from( PathBuf::from( ASSET_PATH ).join( "workspaces/workspace2" ) ),
   ];
+  let workspaces = assets.iter()
+  .map( | asset | Workspace::try_from( asset.path_buf().to_owned() ) )
+  .filter_map( Result::ok )
+  .collect::< Vec< _ > >();
 
   let packages_into_workspaces = workspaces_packages_iterate
   (
@@ -64,7 +88,9 @@ fn iterate_over_workspaces()
 #[ test ]
 fn get_info()
 {
-  let package = Package::try_from( to_asset_path( PathBuf::from( "package" ) ) ).unwrap();
+  let package_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) );
+  let package_path = package_asset.path_buf();
+  let package = Package::try_from( package_path.to_owned() ).unwrap();
   let info = package.info();
 
   assert!( !info.name.is_empty() );
@@ -74,10 +100,22 @@ fn get_info()
 #[ test ]
 fn verification()
 {
-  let package = Package::try_from( to_asset_path( PathBuf::from( "package" ) ) ).unwrap();
+  let asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) ).copied();
+  let path = asset.path_buf();
+
+  let package = Package::try_from( path.to_owned() ).unwrap();
 
   assert!( package.has_license() );
   assert!( package.has_readme() );
-  assert!( package.has_documentation() );
+  // assert!( package.has_documentation() );
   assert!( package.is_tests_passed() );
+
+  let asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package_no_verified" ) ).copied();
+  let path = asset.path_buf();
+
+  let package = Package::try_from( path.to_owned() ).unwrap();
+  assert!( !package.has_license() );
+  assert!( !package.has_readme() );
+  assert!( !package.has_documentation() );
+  assert!( !package.is_tests_passed() );
 }
