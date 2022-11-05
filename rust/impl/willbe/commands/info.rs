@@ -17,7 +17,29 @@ pub( crate ) mod private
 
     let package = Package::try_from( current_path )
     .or( Err( err!( "Package not found at current directory" ) ) )?;
-    dbg!( package.info() );
+
+    let info = package.info();
+    println!
+    (
+      r#"
+Name: "{}"
+Version: "{}"
+Description: "{}"
+Documentation: "{}"
+License: "{}"
+Readme: "{}"
+Dependencies: {:?}
+Location: "{}"
+      "#,
+      info.name,
+      info.version,
+      info.description.unwrap_or( "Not found".to_string() ),
+      info.documentation.unwrap_or( "Not found".to_string() ),
+      info.license.unwrap_or( "Not found".to_string() ),
+      info.readme.map( String::from ).unwrap_or( "Not found".to_string() ),
+      info.dependencies.iter().map( | d | &d.name ).collect::< Vec< _ > >(),
+      info.manifest_path.parent().unwrap()
+    );
     Ok( () )
   }
 }

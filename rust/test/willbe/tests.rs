@@ -88,13 +88,13 @@ fn iterate_over_workspaces()
 #[ test ]
 fn get_info()
 {
-  let package_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) );
+  let package_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) ).copied();
   let package_path = package_asset.path_buf();
   let package = Package::try_from( package_path.to_owned() ).unwrap();
   let info = package.info();
 
   assert!( !info.name.is_empty() );
-  assert!( !info.version.is_empty() );
+  assert!( !info.version.to_string().is_empty() );
 }
 
 #[ test ]
@@ -107,7 +107,7 @@ fn verification()
 
   assert!( package.has_license() );
   assert!( package.has_readme() );
-  // assert!( package.has_documentation() );
+  assert!( package.has_documentation() );
   assert!( package.is_tests_passed() );
 
   let asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package_no_verified" ) ).copied();

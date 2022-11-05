@@ -18,7 +18,7 @@ pub( crate ) mod private
       path,
       &[ "Cargo.toml" ]
     )
-    .max_open( 1 )
+    .max_depth( 1 )
     .follow_links( true )
     .build().unwrap()
     .filter_map( Result::ok );

@@ -2,6 +2,7 @@
 pub( crate ) mod private
 {
   use std::{ path::PathBuf, process::Command };
+  use cargo_metadata::MetadataCommand;
   use toml::Value;
 
   use wtools::{ BasicError, err };
@@ -46,9 +47,17 @@ pub( crate ) mod private
     }
 
     /// Gets info about package
-    pub fn info( &self ) -> PackageInfo
+    pub fn info( &self ) -> cargo_metadata::Package
     {
-      self.to_owned().into()
+      // self.to_owned().into()
+      let meta = MetadataCommand::new()
+      .manifest_path( self.path.join( "Cargo.toml" ).to_owned() )
+      .no_deps()
+      .exec().unwrap();
+
+      meta.packages.iter()
+      .find( | p | p.manifest_path == self.path.join( "Cargo.toml" ) ).unwrap()
+      .to_owned()
     }
   }
 
@@ -57,20 +66,22 @@ pub( crate ) mod private
     /// Check if the package has a license
     pub fn has_license( &self ) -> bool
     {
-      self.path.join( "License" ).exists()
+      let info = self.info();
+      info.license.is_some()
+      ||
+      info.license_file.is_some()
     }
 
     /// Check if the package has a readme
     pub fn has_readme( &self ) -> bool
     {
-      self.path.join( "Readme.md" ).exists()
+      self.info().readme.is_some()
     }
 
     /// Check if the package has a documentation
     pub fn has_documentation( &self ) -> bool
     {
-      //? How to check it?
-      false
+      self.info().documentation.is_some()
     }
 
     /// Checks if all tests have completed successfully
@@ -78,7 +89,7 @@ pub( crate ) mod private
     {
       let tests_output = Command::new( "cargo" )
       .current_dir( &self.path )
-      .args([ "test", "-q" ])
+      .args([ "test" ])
       .output().unwrap();
 
       tests_output.status.success()

@@ -60,7 +60,6 @@ pub( crate ) mod private
           self.path.to_owned(),
           &[ format!( "{}", member.as_str().unwrap() ) ]
         )
-        .max_open( 1 )
         .follow_links( true )
         .build().unwrap()
         .filter_map( Result::ok );
@@ -71,6 +70,11 @@ pub( crate ) mod private
           if let Ok( package ) = Package::try_from( package_path.path().to_path_buf() )
           {
             acc.push( package );
+          }
+          // workspaces into workspace
+          else if let Ok( workspace ) = Workspace::try_from( package_path.path().to_path_buf() )
+          {
+            acc.extend( workspace.packages() );
           }
           acc
         });
