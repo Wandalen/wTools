@@ -7,8 +7,6 @@ pub( crate ) mod private
 
   use wtools::{ BasicError, err };
 
-  use crate::PackageInfo;
-
   /// Package
   #[ derive( Debug, Clone ) ]
   pub struct Package
@@ -49,14 +47,14 @@ pub( crate ) mod private
     /// Gets info about package
     pub fn info( &self ) -> cargo_metadata::Package
     {
-      // self.to_owned().into()
+      let path = self.path.join( "Cargo.toml" ).to_owned();
       let meta = MetadataCommand::new()
-      .manifest_path( self.path.join( "Cargo.toml" ).to_owned() )
+      .manifest_path( &path )
       .no_deps()
       .exec().unwrap();
 
       meta.packages.iter()
-      .find( | p | p.manifest_path == self.path.join( "Cargo.toml" ) ).unwrap()
+      .find( | p | p.manifest_path == path ).unwrap()
       .to_owned()
     }
   }

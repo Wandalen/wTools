@@ -11,14 +11,12 @@ pub( crate ) mod private
 
   pub fn each( instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
   {
-    dbg!( instruction );
-
     let current_path = env::current_dir().unwrap();
 
     // ???
     match instruction.subject.as_str()
     {
-      ".crate.info" => packages_iterate( current_path, OrderStrategy::Random )
+      ".crate.info" => packages_iterate( current_path, OrderStrategy::Default )
       .for_each( | p |
       {
         let info = p.info();
@@ -33,7 +31,7 @@ pub( crate ) mod private
       }),
       ".crate.publish" =>
       {
-        let failed = packages_iterate( current_path, OrderStrategy::Random )
+        let failed = packages_iterate( current_path, OrderStrategy::Default )
         .filter_map( | p |
         {
           let info = p.info();

@@ -9,10 +9,8 @@ pub( crate ) mod private
   /// Prints information about package
   /// 
 
-  pub fn info( instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
+  pub fn info( _instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
   {
-    dbg!( &instruction );
-
     let current_path = env::current_dir().unwrap();
 
     let package = Package::try_from( current_path )

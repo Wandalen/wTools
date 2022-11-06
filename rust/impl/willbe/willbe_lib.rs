@@ -20,6 +20,7 @@
 wtools::meta::mod_interface!
 {
   /// Features of Application Programming Interface that 100% should be implemented
+  #[ cfg( feature = "use_std" ) ]
   layer core;
 
   /// Library of utility to work with commands.
