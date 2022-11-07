@@ -14,9 +14,12 @@ pub( crate ) mod private
     let current_path = env::current_dir().unwrap();
 
     let package = Package::try_from( current_path )
-    .or( Err( err!( "Package not found at current directory" ) ) )?;
+    .map_err( | _ | err!( "Package not found at current directory" ) )?;
 
-    let info = package.info();
+    let info = PackageMetadata::try_from( package )
+    .map_err( | _ | err!( "Can not parse package metadata" ) )?;
+    let info = info.all().to_owned();
+
     println!
     (
       r#"
@@ -31,10 +34,10 @@ Location: "{}"
       "#,
       info.name,
       info.version,
-      info.description.unwrap_or( "Not found".to_string() ),
-      info.documentation.unwrap_or( "Not found".to_string() ),
-      info.license.unwrap_or( "Not found".to_string() ),
-      info.readme.map( String::from ).unwrap_or( "Not found".to_string() ),
+      info.description.unwrap_or_else( || "Not found".to_string() ),
+      info.documentation.unwrap_or_else( || "Not found".to_string() ),
+      info.license.unwrap_or_else( || "Not found".to_string() ),
+      info.readme.map( String::from ).unwrap_or_else( || "Not found".to_string() ),
       info.dependencies.iter().map( | d | &d.name ).collect::< Vec< _ > >(),
       info.manifest_path.parent().unwrap()
     );

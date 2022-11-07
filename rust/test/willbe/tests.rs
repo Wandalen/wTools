@@ -90,11 +90,11 @@ fn get_info()
 {
   let package_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) ).copied();
   let package_path = package_asset.path_buf();
-  let package = Package::try_from( package_path.to_owned() ).unwrap();
-  let info = package.info();
 
-  assert!( !info.name.is_empty() );
-  assert!( !info.version.to_string().is_empty() );
+  let meta = PackageMetadata::try_from( package_path.to_owned() ).unwrap();
+
+  assert!( !meta.all().name.is_empty() );
+  assert!( !meta.all().version.to_string().is_empty() );
 }
 
 #[ test ]
@@ -103,19 +103,17 @@ fn verification()
   let asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) ).copied();
   let path = asset.path_buf();
 
-  let package = Package::try_from( path.to_owned() ).unwrap();
+  let meta = PackageMetadata::try_from( path.to_owned() ).unwrap();
 
-  assert!( package.has_license() );
-  assert!( package.has_readme() );
-  assert!( package.has_documentation() );
-  assert!( package.is_tests_passed() );
+  assert!( meta.check_all() );
 
   let asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package_no_verified" ) ).copied();
   let path = asset.path_buf();
 
-  let package = Package::try_from( path.to_owned() ).unwrap();
-  assert!( !package.has_license() );
-  assert!( !package.has_readme() );
-  assert!( !package.has_documentation() );
-  assert!( !package.is_tests_passed() );
+  let meta = PackageMetadata::try_from( path.to_owned() ).unwrap();
+
+  assert!( !meta.has_license() );
+  assert!( !meta.has_readme() );
+  assert!( !meta.has_documentation() );
+  assert!( !meta.is_tests_passed() );
 }

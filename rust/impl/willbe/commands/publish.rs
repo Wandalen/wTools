@@ -14,17 +14,18 @@ pub( crate ) mod private
     let current_path = env::current_dir().unwrap();
 
     let package = Package::try_from( current_path )
-    .or( Err( err!( "Package not found at current directory" ) ) )?;
+    .map_err( | _ | err!( "Package not found at current directory" ) )?;
 
-    let info = package.info();
+    let info = PackageMetadata::try_from( package )
+    .map_err( | _ | err!( "Can not parse package metadata" ) )?;
 
     println!
     (
       "=== Verification ===\nLicense: {}\nReadme: {}\nDocumentation: {}\nTests: {}",
-      if info.license.is_some() { "Yes" } else { "No" },
-      if info.readme.is_some() { "Yes" } else { "No" },
-      if info.documentation.is_some() { "Yes" } else { "No" },
-      if package.is_tests_passed() { "Passed" } else { "Failed" }
+      if info.has_license() { "Yes" } else { "No" },
+      if info.has_readme() { "Yes" } else { "No" },
+      if info.has_documentation() { "Yes" } else { "No" },
+      if info.is_tests_passed() { "Passed" } else { "Failed" }
     );
 
     Ok( () )

@@ -19,7 +19,8 @@ pub( crate ) mod private
       ".crate.info" => packages_iterate( current_path, OrderStrategy::Default )
       .for_each( | p |
       {
-        let info = p.info();
+        let info = PackageMetadata::try_from( p ).unwrap();
+        let info = info.all();
         println!
         (
           "===\nName: {}\nVersion: {}\nDependencies: {:?}\nLocation: {}",
@@ -34,18 +35,19 @@ pub( crate ) mod private
         let failed = packages_iterate( current_path, OrderStrategy::Default )
         .filter_map( | p |
         {
-          let info = p.info();
+          let info = PackageMetadata::try_from( p ).unwrap();
+
           let mut success = true;
           println!
           (
             "=== Verification ===\nlocation: {}\nLicense: {}\nReadme: {}\nDocumentation: {}\nTests: {}",
-            p.path().display(),
-            if info.license.is_some() { "Yes" } else { success = false; "No" },
-            if info.readme.is_some() { "Yes" } else { success = false; "No" },
-            if info.documentation.is_some() { "Yes" } else { success = false; "No" },
-            if p.is_tests_passed() { "Passed" } else { success = false; "Failed" }
+            info.as_package().path().display(),
+            if info.has_license() { "Yes" } else { success = false; "No" },
+            if info.has_readme() { "Yes" } else { success = false; "No" },
+            if info.has_documentation() { "Yes" } else { success = false; "No" },
+            if info.is_tests_passed() { "Passed" } else { success = false; "Failed" }
           );
-          if !success { Some( info ) }
+          if !success { Some( info.all().to_owned() ) }
           else { None }
         })
         // collect all failed and after all show result

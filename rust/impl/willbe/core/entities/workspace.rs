@@ -22,9 +22,9 @@ pub( crate ) mod private
     fn try_from( path : PathBuf ) -> Result< Self, Self::Error >
     {
       let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) )
-      .or( Err( err!( "Can not read \"Cargo.toml\"" ) ) )?;
+      .map_err( | _ | err!( "Can not read \"Cargo.toml\"" ) )?;
       let toml = config_str.parse::< Value >()
-      .or( Err( err!( "Can not parse \"Cargo.toml\"" ) ) )?;
+      .map_err( | _ | err!( "Can not parse \"Cargo.toml\"" ) )?;
 
       if toml.get( "workspace" ).is_some()
       {
@@ -58,7 +58,7 @@ pub( crate ) mod private
         let packages_paths = unique_walk
         (
           self.path.to_owned(),
-          &[ format!( "{}", member.as_str().unwrap() ) ]
+          &[ member.as_str().unwrap().to_string() ]
         );
 
         packages_paths
@@ -69,7 +69,7 @@ pub( crate ) mod private
             acc.push( package );
           }
           // workspaces into workspace
-          else if let Ok( workspace ) = Workspace::try_from( package_path.to_owned() )
+          else if let Ok( workspace ) = Workspace::try_from( package_path )
           {
             acc.extend( workspace.packages() );
           }

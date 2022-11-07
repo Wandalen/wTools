@@ -12,7 +12,7 @@ pub( crate ) mod private
       return Box::new( Some( package ).into_iter() )
     }
 
-    if let Ok( workspace ) = Workspace::try_from( path.to_owned() )
+    if let Ok( workspace ) = Workspace::try_from( path )
     {
       return Box::new( workspace.packages_iterate( order ) )
     }
