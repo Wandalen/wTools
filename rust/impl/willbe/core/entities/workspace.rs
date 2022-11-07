@@ -6,7 +6,7 @@ pub( crate ) mod private
 
   use wtools::{ BasicError, err };
 
-  use crate::{ Package, OrderStrategy };
+  use crate::{ Package, OrderStrategy, unique_walk };
 
   /// Workspace
   #[ derive( Debug, Clone ) ]
@@ -55,24 +55,21 @@ pub( crate ) mod private
       // fold all packages from members
       .fold( vec![], | mut acc, member |
       {
-        let packages_paths = globwalk::GlobWalkerBuilder::from_patterns
+        let packages_paths = unique_walk
         (
           self.path.to_owned(),
           &[ format!( "{}", member.as_str().unwrap() ) ]
-        )
-        .follow_links( true )
-        .build().unwrap()
-        .filter_map( Result::ok );
+        );
 
         packages_paths
         .fold( &mut acc, | acc, package_path |
         {
-          if let Ok( package ) = Package::try_from( package_path.path().to_path_buf() )
+          if let Ok( package ) = Package::try_from( package_path.to_owned() )
           {
             acc.push( package );
           }
           // workspaces into workspace
-          else if let Ok( workspace ) = Workspace::try_from( package_path.path().to_path_buf() )
+          else if let Ok( workspace ) = Workspace::try_from( package_path.to_owned() )
           {
             acc.extend( workspace.packages() );
           }

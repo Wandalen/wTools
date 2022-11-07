@@ -12,33 +12,12 @@ pub( crate ) mod private
       return Box::new( Some( package ).into_iter() )
     }
 
-    // find all crates
-    let workspaces = globwalk::GlobWalkerBuilder::from_patterns
-    (
-      path,
-      &[ "Cargo.toml" ]
-    )
-    .max_depth( 1 )
-    .follow_links( true )
-    .build().unwrap()
-    .filter_map( Result::ok );
+    if let Ok( workspace ) = Workspace::try_from( path.to_owned() )
+    {
+      return Box::new( workspace.packages_iterate( order ) )
+    }
 
-    Box::new( workspaces_packages_iterate
-    (
-      workspaces
-      // filter all valid paths
-      .filter_map
-      (
-        | p |
-        // map paths into Workspaces
-        {
-          let mut path = p.path().to_path_buf();
-          path.pop();
-          Workspace::try_from( path ).ok()
-        }
-      ),
-      order
-    ))
+    Box::new( None.into_iter() )
   }
 
   /// Iterate over workspace iterator

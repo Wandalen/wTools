@@ -27,6 +27,10 @@ wtools::meta::mod_interface!
   #[ cfg( feature = "use_std" ) ]
   layer commands;
 
+  /// Operate over files.
+  #[ cfg( feature = "use_std" ) ]
+  layer files;
+
   #[ cfg( feature = "use_std" ) ]
   prelude use ::std::env;
   prelude use ::wca::instruction;
