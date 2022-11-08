@@ -5,6 +5,8 @@ pub( crate ) mod private
   #[ derive( Debug, Clone, Copy ) ]
   pub enum OrderStrategy
   {
+    /// Command specific default value
+    Default,
     /// Not ordered
     Random
   }

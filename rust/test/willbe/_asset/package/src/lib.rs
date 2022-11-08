@@ -1,3 +1,4 @@
+/// Adds two numbers and returns result
 pub fn add(left: usize, right: usize) -> usize {
   left + right
 }

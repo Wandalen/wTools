@@ -6,8 +6,6 @@ pub( crate ) mod private
 
   use wtools::{ BasicError, err };
 
-  use crate::PackageInfo;
-
   /// Package
   #[ derive( Debug, Clone ) ]
   pub struct Package
@@ -22,9 +20,9 @@ pub( crate ) mod private
     fn try_from( path : PathBuf ) -> Result< Self, Self::Error >
     {
       let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) )
-      .or( Err( err!( "Can not read \"Cargo.toml\"" ) ) )?;
+      .map_err( | _ | err!( "Can not read \"Cargo.toml\"" ) )?;
       let toml = config_str.parse::< Value >()
-      .or( Err( err!( "Can not parse \"Cargo.toml\"" ) ) )?;
+      .map_err( | _ | err!( "Can not parse \"Cargo.toml\"" ) )?;
 
       if toml.get( "package" ).is_some()
       {
@@ -43,12 +41,6 @@ pub( crate ) mod private
     pub fn path( &self ) -> &PathBuf
     {
       &self.path
-    }
-
-    /// Gets info about package
-    pub fn info( &self ) -> PackageInfo
-    {
-      self.to_owned().into()
     }
   }
 }

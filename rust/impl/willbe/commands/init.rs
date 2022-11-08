@@ -22,10 +22,18 @@ pub( crate ) mod private
     .routine( &crate::commands::each::each )
     .form();
 
+    let publish_command = wca::Command::former()
+    .hint( "--- publish ---" )
+    .long_hint( "--- publish ---" )
+    .phrase( "each" )
+    .routine( &crate::commands::publish::publish )
+    .form();
+
     std::collections::HashMap::from
     ([
       ( ".crate.info".to_string(), info_command ),
       ( ".each".to_string(), each_command ),
+      ( ".crate.publish".to_string(), publish_command ),
     ])
   }
 }

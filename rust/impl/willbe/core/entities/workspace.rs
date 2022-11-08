@@ -6,7 +6,7 @@ pub( crate ) mod private
 
   use wtools::{ BasicError, err };
 
-  use crate::{ Package, OrderStrategy };
+  use crate::{ Package, OrderStrategy, unique_walk };
 
   /// Workspace
   #[ derive( Debug, Clone ) ]
@@ -22,9 +22,9 @@ pub( crate ) mod private
     fn try_from( path : PathBuf ) -> Result< Self, Self::Error >
     {
       let config_str = std::fs::read_to_string( path.join( "Cargo.toml" ) )
-      .or( Err( err!( "Can not read \"Cargo.toml\"" ) ) )?;
+      .map_err( | _ | err!( "Can not read \"Cargo.toml\"" ) )?;
       let toml = config_str.parse::< Value >()
-      .or( Err( err!( "Can not parse \"Cargo.toml\"" ) ) )?;
+      .map_err( | _ | err!( "Can not parse \"Cargo.toml\"" ) )?;
 
       if toml.get( "workspace" ).is_some()
       {
@@ -40,27 +40,38 @@ pub( crate ) mod private
   impl Workspace
   {
     /// Gets list of packages into workspace
-    pub fn packages( &self, _order : OrderStrategy ) -> Vec< Package >
+    pub fn packages( &self ) -> Vec< Package >
     {
       let config_str = std::fs::read_to_string( self.path.join( "Cargo.toml" ) ).unwrap();
       let toml = config_str.parse::< Value >().unwrap();
 
       // iterate over members into workspace
-      toml[ "workspace" ][ "members" ].as_array().unwrap_or( &vec![] ).iter()
+      toml[ "workspace" ]
+      // members can be doesn't setted
+      .get( "members" )
+      .unwrap_or( &Value::Array( vec![] ) ).as_array()
+      .unwrap_or( &vec![] )
+      .iter()
       // fold all packages from members
       .fold( vec![], | mut acc, member |
       {
-        let packages_paths = glob::glob
+        let packages_paths = unique_walk
         (
-          &format!( "{sp}/{mp}", sp = self.path.display(), mp = member.as_str().unwrap() )
-        ).unwrap();
+          self.path.to_owned(),
+          &[ member.as_str().unwrap().to_string() ]
+        );
 
-        packages_paths.filter_map( Result::ok )
+        packages_paths
         .fold( &mut acc, | acc, package_path |
         {
-          if let Ok( package ) = Package::try_from( package_path )
+          if let Ok( package ) = Package::try_from( package_path.to_owned() )
           {
             acc.push( package );
+          }
+          // workspaces into workspace
+          else if let Ok( workspace ) = Workspace::try_from( package_path )
+          {
+            acc.extend( workspace.packages() );
           }
           acc
         });
@@ -69,9 +80,10 @@ pub( crate ) mod private
     }
 
     /// iterate over packages into workspace
-    pub fn packages_iterate( &self, order : OrderStrategy ) -> impl Iterator< Item = Package >
+    pub fn packages_iterate( &self, _order : OrderStrategy ) -> impl Iterator< Item = Package >
     {
-      self.packages( order ).into_iter()
+      // TODO: Sort before return iterator
+      self.packages().into_iter()
     }
   }
 }

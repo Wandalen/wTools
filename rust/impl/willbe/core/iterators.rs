@@ -12,26 +12,12 @@ pub( crate ) mod private
       return Box::new( Some( package ).into_iter() )
     }
 
-    // find all crates
-    let workspaces = glob::glob( &format!( "{path}/**/Cargo.toml", path = path.display() ) ).unwrap();
-    Box::new( workspaces_packages_iterate
-    (
-      workspaces
-      // filter all valid paths
-      .filter_map
-      (
-        | p |
-        // map paths into Workspaces
-        p.map( | mut p |
-        {
-          p.pop();
-          Workspace::try_from( p )
-        }).ok()
-      )
-      // filter all valid Workspaces
-      .filter_map( Result::ok ),
-      order
-    ))
+    if let Ok( workspace ) = Workspace::try_from( path )
+    {
+      return Box::new( workspace.packages_iterate( order ) )
+    }
+
+    Box::new( None.into_iter() )
   }
 
   /// Iterate over workspace iterator
