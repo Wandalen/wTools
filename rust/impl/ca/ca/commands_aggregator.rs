@@ -4,7 +4,6 @@ pub( crate ) mod private
   use crate::command::*;
   use crate::instruction::*;
   use wtools::error::{ Result, BasicError };
-  use wtools::string::split;
   use wtools::former::Former;
 
   ///

@@ -24,7 +24,7 @@ fn main() -> Result< (), wtools::error::BasicError >
   let args = env::args().skip( 1 ).collect::< Vec< String > >();
 
   let ca = wca::commands_aggregator()
-  .changing_exit_code( true )
+  .exit_code_on_error( 1 )
   .commands( commands::commands_form() )
   .form();
 

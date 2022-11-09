@@ -3,18 +3,19 @@ pub( crate ) mod private
 {
   use crate::protected::*;
   use std::env;
+  use wca::{Args, NoProperties};
   use wtools::error::BasicError;
 
   ///
   /// List packages.
   ///
 
-  pub fn list( instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
+  pub fn list( args: Args< String, NoProperties > ) -> Result< (), BasicError >
   {
     let current_path = env::current_dir().unwrap();
 
-    let paths = files::find( current_path, instruction.subject.split( ' ' ).collect::< Vec< &str > >().as_slice() );
-    let paths = paths.iter().filter( | s | s.ends_with( "Cargo.toml" ) );
+    let paths = files::find( current_path, args.subject.split( " " ).collect::< Vec< &str > >().as_slice() );
+    let paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s ) } else { None } );
 
     for path in paths
     {

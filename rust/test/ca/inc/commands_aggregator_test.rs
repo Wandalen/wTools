@@ -5,7 +5,6 @@ use wca::string::parse_request::OpType::Primitive;
 use wca::
 {
   Args,
-  NoSubject,
   NoProperties,
 };
 
