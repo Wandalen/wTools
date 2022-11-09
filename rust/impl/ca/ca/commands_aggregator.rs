@@ -143,68 +143,29 @@ pub( crate ) mod private
     /// Parse multiple instructions.
     pub fn instructions_parse( &self, program : impl AsRef< str > ) -> Result< Vec< Instruction > >
     {
-      let commands = split()
-      .src( program.as_ref().trim() )
-      .delimeter( self.delimiter.as_str() )
-      .preserving_empty( false )
-      .preserving_delimeters( false )
-      .preserving_quoting( false )
-      .perform();
-      let commands = commands.map( String::from ).collect::< Vec< _ > >();
-
-      let mut string_commands = vec![];
-      for command in commands
+      let program = program.as_ref().trim();
+      if program.is_empty()
       {
-        // TODO: implicit delimiter .delimiter(" ")
-        let splitted = split()
-        .src( command.trim() )
-        .delimeter( " " )
-        .preserving_empty( false )
-        .preserving_delimeters( false )
-        .preserving_quoting( false )
-        .perform();
-        let splitted = splitted.map( String::from ).collect::< Vec< _ > >();
-
-        // TODO: implicit delimiter check self.command_implicit_delimeter == " "
-        if " " == " "
-        {
-          let start_index = if splitted[ 0 ].is_empty() { 1 } else { 0 };
-          let mut string_command = String::from( &splitted[ start_index ] );
-
-          for splitted_item in splitted.iter().skip( start_index + 1 )
-          {
-            let part = splitted_item.trim();
-            if part.starts_with( '.' ) && !self.dotted_path_is( part )
-            {
-              string_commands.push( string_command );
-              string_command = String::from( part );
-            }
-            else
-            {
-              string_command.push( ' ' );
-              string_command.push_str( part );
-            }
-          }
-
-          string_commands.push( string_command );
-        }
-        else
-        {
-          for command in splitted
-          {
-            string_commands.push( String::from( command.trim() ) );
-          }
-        }
+        return Ok( vec![] );
       }
 
       let parser = DefaultInstructionParser::former()
       .several_values( true )
       .form();
-      let mut instructions = Vec::with_capacity( string_commands.len() );
-      for instruction in string_commands
+      let mut instructions = vec![];
+      let mut instruction = String::new();
+      for part in program.split_inclusive( ' ' )
       {
-        instructions.push( parser.parse( instruction )? );
+        if part.starts_with( &self.delimiter ) && !self.dotted_path_is( part ) && !instruction.is_empty()
+        {
+          instructions.push( parser.parse( &instruction )? );
+          instruction.clear();
+        }
+
+        instruction.push_str( part );
       }
+
+      instructions.push( parser.parse( &instruction )? );
 
       Ok( instructions )
     }

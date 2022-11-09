@@ -201,6 +201,38 @@ tests_impls!
     };
     a_id!( instruction, exp );
   }
+
+  fn path_subject() {
+    let parser = DefaultInstructionParser::former()
+    .several_values( true )
+    .form();
+    let instruction = parser
+    .parse( ".get ./tmp/dir v:1" )
+    .unwrap();
+    let exp = wca::instruction::Instruction
+    {
+      command_name : ".get".to_string(),
+      subject : "./tmp/dir".to_string(),
+      properties_map : HashMap::from([ ( "v".to_string(), Primitive( "1".to_string() ) ) ]),
+    };
+    a_id!( instruction, exp );
+  }
+
+  fn path_property() {
+    let parser = DefaultInstructionParser::former()
+    .several_values( true )
+    .form();
+    let instruction = parser
+    .parse( ".get some v:./tmp/dir/" )
+    .unwrap();
+    let exp = wca::instruction::Instruction
+    {
+      command_name : ".get".to_string(),
+      subject : "some".to_string(),
+      properties_map : HashMap::from([ ( "v".to_string(), Primitive( "./tmp/dir/".to_string() ) ) ]),
+    };
+    a_id!( instruction, exp );
+  }
 }
 
 //
@@ -209,4 +241,6 @@ tests_index!
 {
   basic,
   with_several_values,
+  path_subject,
+  path_property,
 }

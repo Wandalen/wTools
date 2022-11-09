@@ -18,20 +18,20 @@ fn commands_form() -> HashMap< String, Command >
   .long_hint( "Get help for command [command]" )
   .phrase( ".help" )
   .subject_hint( "some command" )
-  .routine( | _ : Args< NoSubject, NoProperties > | { println!( "this is help" ); Ok( () ) } )
+  .routine( | _ : Args< String, NoProperties > | { println!( "this is help" ); Ok( () ) } )
   .form();
   let list_command : Command = wca::Command::former()
   .hint( "Get list." )
   .long_hint( "Get list of" )
   .phrase( ".list" )
   .subject_hint( "some subject" )
-  .routine( | _ : Args< NoSubject, NoProperties > | { println!( "this is list" ); Ok( () ) } )
+  .routine( | _ : Args< String, NoProperties > | { println!( "this is list" ); Ok( () ) } )
   .form();
   let err_command : Command = wca::Command::former()
   .hint( "Error." )
   .long_hint( "Throw error" )
   .phrase( ".error" )
-  .routine( | _ : Args< NoSubject, NoProperties > | { Err( BasicError::new( "err" ) ) } )
+  .routine( | _ : Args< String, NoProperties > | { Err( BasicError::new( "err" ) ) } )
   .form();
 
   let commands : HashMap< String, Command > = std::collections::HashMap::from
@@ -332,6 +332,27 @@ tests_impls!
     };
     a_id!( got, vec![ instruction1, instruction2 ] );
   }
+
+  fn instructions_with_paths()
+  {
+    let ca = wca::commands_aggregator()
+    .form();
+
+    let got = ca.instructions_parse( ".help ./tmp/dir v:3 .version delta n:./tmp/dir/" ).unwrap();
+    let instruction1 = wca::instruction::Instruction
+    {
+      command_name : ".help".to_string(),
+      subject : "./tmp/dir".to_string(),
+      properties_map : HashMap::from([ ( "v".to_string(), Primitive( "3".to_string() ) ) ]),
+    };
+    let instruction2 = wca::instruction::Instruction
+    {
+      command_name : ".version".to_string(),
+      subject : "delta".to_string(),
+      properties_map : HashMap::from([ ( "n".to_string(), Primitive( "./tmp/dir/".to_string() ) ) ]),
+    };
+    a_id!( got, vec![ instruction1, instruction2 ] );
+  }
 }
 
 //
@@ -343,5 +364,6 @@ tests_index!
   program_perform_with_dotted_paths,
   instruction_perform_basic,
   instructions_parse_basic,
+  instructions_with_paths,
 }
 
