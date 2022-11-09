@@ -7,4 +7,6 @@ wtools::mod_interface!
   layer metadata;
   /// Verification methods
   layer verification;
+  /// Working with package repository
+  layer repository;
 }

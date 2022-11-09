@@ -2,8 +2,7 @@
 pub( crate ) mod private
 {
   use std::path::PathBuf;
-
-use cargo_metadata::MetadataCommand;
+  use cargo_metadata::MetadataCommand;
 
   use wtools::{ BasicError, err };
 
