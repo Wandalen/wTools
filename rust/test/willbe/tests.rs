@@ -127,16 +127,17 @@ fn commit_and_push_package()
   let server_rep = Repository::init_bare( server.path_buf() ).unwrap();
 
   let source = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) ).copied();
-  let source_rep = PackageRepository::try_from( source.path_buf().to_owned() ).unwrap();
+  let mut source_rep = PackageRepository::try_from( source.path_buf().to_owned() ).unwrap();
+  source_rep.add_refspec( "refs/heads/master:refs/heads/master" );
 
   let commit_message = "Init";
 
-  source_rep.commit( [ "*" ], commit_message ).unwrap();
-  source_rep.push
-  (
-    &[ "refs/heads/master:refs/heads/master" ],
-    server_rep.path().to_str().unwrap()
-  ).unwrap();
+  source_rep
+  .add( "*" )
+  .commit( commit_message ).unwrap();
+
+  let mut rem = source_rep.remote_by_url( server_rep.path().to_str().unwrap() ).unwrap();
+  source_rep.push( &mut rem ).unwrap();
 
   let last_commit_on_server = server_rep
   .head()

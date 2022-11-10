@@ -30,12 +30,16 @@ pub( crate ) mod private
     {
       let url = remote_url.clone().primitive().unwrap();
 
-      let package_rep = PackageRepository::try_from( package )?;
-
-      // if package is inside workspace - `*` will be replaced with `<path to package>/*`
-      package_rep.commit( [ "*" ], format!( "AUTO: {pn}", pn = info.all().name ) )?;
+      let mut package_rep = PackageRepository::try_from( package )?;
       // TODO: Think about refs. Who should set branch to push?
-      package_rep.push( &[ "refs/heads/master:refs/heads/master" ], url )?;
+      package_rep.add_refspec( "refs/heads/master:refs/heads/master" );
+
+      package_rep
+      // if package is inside workspace - `*` will be replaced with `<path to package>/*`
+      .add( "*" )
+      .commit( format!( "AUTO: {pn}", pn = info.all().name ) )?;
+      let mut rem = package_rep.remote_by_url( url )?;
+      package_rep.push( &mut rem )?;
     }
 
     Ok( () )
