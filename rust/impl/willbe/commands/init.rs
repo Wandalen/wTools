@@ -25,7 +25,8 @@ pub( crate ) mod private
     let publish_command = wca::Command::former()
     .hint( "--- publish ---" )
     .long_hint( "--- publish ---" )
-    .phrase( "each" )
+    .phrase( "publish" )
+    .property_hint( "push_remote", "Remote url to push" )
     .routine( &crate::commands::publish::publish )
     .form();
 

@@ -117,3 +117,31 @@ fn verification()
   assert!( !meta.has_documentation() );
   assert!( !meta.is_tests_passed() );
 }
+
+#[ test ]
+fn commit_and_push_package()
+{
+  use git2::*;
+
+  let server = Asset::from( PathBuf::from( ASSET_PATH ).join( "empty" ) ).copied();
+  let server_rep = Repository::init_bare( server.path_buf() ).unwrap();
+
+  let source = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) ).copied();
+  let source_rep = PackageRepository::try_from( source.path_buf().to_owned() ).unwrap();
+
+  let commit_message = "Init";
+
+  source_rep.commit( [ "*" ], commit_message ).unwrap();
+  source_rep.push
+  (
+    &[ "refs/heads/master:refs/heads/master" ],
+    server_rep.path().to_str().unwrap()
+  ).unwrap();
+
+  let last_commit_on_server = server_rep
+  .head()
+  .map( | x | x.target().unwrap() )
+  .map( | x | server_rep.find_commit( x ).unwrap() ).unwrap();
+
+  assert_eq!( Some( commit_message ), last_commit_on_server.message() );
+}

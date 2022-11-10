@@ -12,7 +12,19 @@ pub( crate ) mod private
   pub struct PackageRepository
   {
     package : Package,
-    repository : Repository, // Repository does not implement Debug
+    repository : Repository,
+  }
+
+  impl core::fmt::Debug for PackageRepository
+  {
+    fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
+    {
+      f.debug_struct( "PackageRepository" )
+      .field( "package", &self.package )
+      // Repository is wrapper on raw poiner to git_repository from libgit2
+      .field( "repository", &"" )
+      .finish()
+    }
   }
 
   impl TryFrom< PathBuf > for PackageRepository
@@ -32,6 +44,7 @@ pub( crate ) mod private
 
     fn try_from( value : Package ) -> Result< Self, Self::Error >
     {
+      // If Package is not a root of repository this fails
       let repository = Repository::open( value.path() )
       .map_err( | _ | err!( "Can not open the package repository" ) )?;
 
@@ -69,7 +82,12 @@ pub( crate ) mod private
         index.write_tree().unwrap()
       };
       let tree = self.repository.find_tree( tree_id ).unwrap();
-      let parent = self.repository.head().unwrap().target().unwrap();
+      let last_commit = self.repository
+      .head()
+      .map( | x | x.target().unwrap() )
+      .map( | x | self.repository.find_commit( x ).unwrap() );
+      let parents = last_commit
+      .iter().collect::< Vec< _ > >();
 
       self.repository.commit
       (
@@ -78,22 +96,27 @@ pub( crate ) mod private
         &sig,
         message.as_ref(),
         &tree,
-        &[ &self.repository.find_commit( parent ).unwrap() ]
+        &parents
       )
       .map_err( | _ | err!( "Commit failed" ) )?;
+
       Ok( () )
     }
 
     /// Push chenges
-    pub fn push( &self, remote_url : impl AsRef< str > ) -> Result< (), BasicError >
+    // refspecs example: &[ "refs/heads/master:refs/heads/master" ] - to push master branch to remote master branch
+    pub fn push< S >( &self, refspecs : &[ S ], remote_url : impl AsRef< str > ) -> Result< (), BasicError >
+    where
+      S : AsRef< str > + git2::IntoCString + Clone
     {
-      // May be the url contains into package's metadata
-      let mut remote = self.repository.remote_anonymous( remote_url.as_ref() ).unwrap();
-      remote.connect( Direction::Push ).unwrap();
+      // May be the url contains into package's metadata and we could use that instead of getting it as the parameter
+      let mut remote = self.repository.remote_anonymous( remote_url.as_ref() )
+      .map_err( | _ | err!( "Could not create remote connection" ) )?;
+      remote.connect( Direction::Push )
+      .map_err( | _ | err!( "Could not connect to remote repository to push" ) )?;
 
-      // IDK what is this refs
-      // TODO: improve this
-      remote.push(&[ "refs/heads/master:refs/heads/master" ], None ).unwrap();
+      remote.push( refspecs.as_ref(), None )
+      .map_err( | _ | err!( "Push failed" ) )?;
 
       Ok( () )
     }
