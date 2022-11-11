@@ -39,24 +39,27 @@ pub( crate ) mod private
     {
       let program = program.as_ref().trim();
 
+      if !program.starts_with( '.' )
+        || program.starts_with( "./" )
+        || program.starts_with( ".\\" )
+      {
+        return self.on_syntax_error( program );
+      }
+
       println!( "Command \"{}\"", program );
 
-      let instructions = self.instructions_parse( program )?;
+      let instructions = if let Ok( instructions ) = self.instructions_parse( program )
+      {
+        instructions
+      }
+      else
+      {
+        return self.on_syntax_error( program );
+      };
 
       for instruction in &instructions
       {
-        if let Err( err ) = self._instruction_perform( instruction )
-        {
-          if let Some( exit_code ) = self.exit_code_on_error
-          {
-            eprintln!( "{}", err.to_string() );
-            std::process::exit( exit_code );
-          }
-          else
-          {
-            return Err( err );
-          }
-        }
+        self._instruction_perform( &instruction )?;
       }
 
       Ok( () )
@@ -65,50 +68,88 @@ pub( crate ) mod private
     /// Perform instruction.
     pub fn instruction_perform( &self, instruction : impl AsRef< str > ) -> Result< () >
     {
-      let parsed : Instruction = DefaultInstructionParser::former()
+      let result = DefaultInstructionParser::former()
       .quoting( true )
       .unquoting( true )
       .form()
-      .parse( instruction.as_ref() )?;
+      .parse( instruction.as_ref() );
 
-      let result = self._instruction_perform( &parsed );
-      if let ( true, Some( code ) ) = ( result.is_err(), self.exit_code_on_error )
+      if let Ok( parsed ) = result
       {
-        eprintln!( "{}", result.err().unwrap().to_string() );
-        std::process::exit( code );
+        self._instruction_perform( &parsed )
       }
-      result
+      else
+      {
+        if self.with_help
+        {
+          return self.on_ambiguity( instruction.as_ref() );
+        }
+
+        self.on_syntax_error( instruction.as_ref() )
+      }
     }
 
     //
 
-    fn _instruction_perform( &self, instruction : &Instruction ) -> Result< () >
+    /// Parse multiple instructions.
+    pub fn instructions_parse( &self, program : impl AsRef< str > ) -> Result< Vec< Instruction > >
     {
-      let result = match self.command_resolve( instruction )
+      let parser = DefaultInstructionParser::former()
+        .several_values( true )
+        .form();
+
+      self.split_program( program.as_ref() )
+      .into_iter()
+      .map( | instruction | parser.parse( instruction ) )
+      .collect()
+    }
+
+    //
+
+    fn _instruction_perform( &self, instruction: &Instruction ) -> Result< () >
+    {
+      match self.command_resolve( instruction )
       {
-        Some( command ) =>
-        {
-          command.perform( instruction )
-        },
+        Some( command ) => command.perform( instruction ),
         None =>
         {
-          if self.with_help
-          {
-            match self.on_ambiguity( instruction.command_name.as_str() )
-            {
-              _ => (),
-            }
-          }
-          if let Some( code ) = self.exit_code_on_error
-          {
-            std::process::exit( code );
-          }
-          Ok( () )
+          self.on_ambiguity( &instruction.command_name );
+          // NOTE: Tests don't pass without it.
+          Ok(())
         },
-      };
-
-      result
+      }
     }
+
+    //
+
+    /// Split program to instructions
+    fn split_program( &self, program : &str ) -> Vec< String >
+    {
+      let program = program.trim();
+      if program.is_empty()
+      {
+        return vec![];
+      }
+
+      let mut instructions = vec![];
+      let mut parts_iter = program.split_inclusive( ' ' );
+      let mut instruction = parts_iter.next().unwrap().to_string();
+      for part in parts_iter
+      {
+        if part.starts_with( &self.delimiter ) && !self.dotted_path_is( part )
+        {
+          instructions.push( instruction );
+          instruction = String::new();
+        }
+
+        instruction.push_str( part );
+      }
+      instructions.push( instruction );
+
+      instructions
+    }
+
+    //
 
     /// Print help for command.
     fn command_help( &self, command : impl AsRef< str > )
@@ -139,35 +180,6 @@ pub( crate ) mod private
       self.commands.get( &instruction.command_name )
     }
 
-    /// Parse multiple instructions.
-    pub fn instructions_parse( &self, program : impl AsRef< str > ) -> Result< Vec< Instruction > >
-    {
-      let program = program.as_ref().trim();
-      if program.is_empty()
-      {
-        return Ok( vec![] );
-      }
-
-      let parser = DefaultInstructionParser::former()
-      .several_values( true )
-      .form();
-      let mut instructions = vec![];
-      let mut instruction = String::new();
-      for part in program.split_inclusive( ' ' )
-      {
-        if part.starts_with( &self.delimiter ) && !self.dotted_path_is( part ) && !instruction.is_empty()
-        {
-          instructions.push( parser.parse( &instruction )? );
-          instruction.clear();
-        }
-
-        instruction.push_str( part );
-      }
-
-      instructions.push( parser.parse( &instruction )? );
-
-      Ok( instructions )
-    }
 
     //
 
@@ -268,11 +280,11 @@ pub( crate ) mod private
     /// Handle error.
     fn on_error( &self, err : BasicError ) -> Result< () >
     {
-      if self.exit_code_on_error.is_some()
+      if let Some( code ) = self.exit_code_on_error
       {
-        /* rrr : for Dmytro : implement */
-        // unimplemented!();
+        std::process::exit( code );
       }
+
       Err( err )
     }
   }
