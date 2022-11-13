@@ -16,7 +16,7 @@ pub( crate ) mod private
     // ???
     match instruction.subject.as_str()
     {
-      ".crate.info" => packages_iterate( current_path, OrderStrategy::Default )
+      ".crate.info" => packages_iterate( current_path, OrderStrategy::Alphabetical )
       .for_each( | p |
       {
         let info = PackageMetadata::try_from( p ).unwrap();
@@ -32,7 +32,7 @@ pub( crate ) mod private
       }),
       ".crate.publish" =>
       {
-        let failed = packages_iterate( current_path, OrderStrategy::Default )
+        let failed = packages_iterate( current_path, OrderStrategy::Topological )
         .filter_map( | p |
         {
           let info = PackageMetadata::try_from( p ).unwrap();

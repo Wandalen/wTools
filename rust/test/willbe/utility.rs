@@ -3,6 +3,7 @@ use std::path::Path;
 
 pub use std::path::PathBuf;
 
+#[ derive( Debug ) ]
 pub struct Asset
 {
   remove_after_use : bool,

@@ -20,9 +20,18 @@ pub( crate ) mod private
     Box::new( None.into_iter() )
   }
 
-  /// Iterate over workspace iterator
+  /// Iterate over workspaces iterator
   pub fn workspaces_packages_iterate( workspaces : impl Iterator< Item = Workspace >, order : OrderStrategy ) -> impl Iterator< Item = Package >
   {
+    // TODO: Improve. Ordering through workspaces
+    //? Problem:
+    // At the moment, packages are sorted only in their own workspaces
+    // If a package from first workspace will require a package from another workspace, it will not be processed correctly
+    // ! Possible solution:
+    // Split iteration and ordering
+    // + single responsibility(iteration do iteration only)
+    // + ordering implements once(easier to test)
+    // - call two functions instead one
     workspaces.flat_map( move | workspace | workspace.packages_iterate( order ) )
   }
 }

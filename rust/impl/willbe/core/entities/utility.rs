@@ -1,14 +1,16 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  /// Ordering strategies
+  /// Represent with which ordering strategy to iterate over packages
   #[ derive( Debug, Clone, Copy ) ]
   pub enum OrderStrategy
   {
-    /// Command specific default value
-    Default,
-    /// Not ordered
-    Random
+    /// Alphabetical by package name
+    Alphabetical,
+    /// Based on their dependencies
+    Topological,
+    /// Shuffle packages
+    Random,
   }
 }
 

@@ -40,7 +40,7 @@ pub( crate ) mod private
   impl Workspace
   {
     /// Gets list of packages into workspace
-    pub fn packages( &self ) -> Vec< Package >
+    fn packages( &self ) -> Vec< Package >
     {
       let config_str = std::fs::read_to_string( self.path.join( "Cargo.toml" ) ).unwrap();
       let toml = config_str.parse::< Value >().unwrap();

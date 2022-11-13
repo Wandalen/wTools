@@ -52,13 +52,18 @@ use cargo_metadata::MetadataCommand;
       })
     }
   }
-
   impl PackageMetadata
   {
-    /// Returns reference to Package
-    pub fn as_package( &self ) -> &Package
+    /// Returns name
+    pub fn name( &self ) -> &String
     {
-      &self.package
+      &self.metadata.name
+    }
+
+    /// Returns version
+    pub fn version( &self ) -> String
+    {
+      self.metadata.version.to_string()
     }
   }
 
@@ -87,6 +92,15 @@ use cargo_metadata::MetadataCommand;
     {
       self.metadata.documentation.to_owned()
     }
+  }
+
+  impl PackageMetadata
+  {
+    /// Returns reference to Package
+    pub fn as_package( &self ) -> &Package
+    {
+      &self.package
+    }
 
     /// Returns all metadata
     pub fn all( &self ) -> &cargo_metadata::Package
@@ -94,6 +108,7 @@ use cargo_metadata::MetadataCommand;
       &self.metadata
     }
   }
+
 }
 
 //
