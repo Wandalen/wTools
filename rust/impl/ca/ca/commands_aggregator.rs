@@ -113,7 +113,7 @@ pub( crate ) mod private
         Some( command ) => command.perform( instruction ),
         None =>
         {
-          self.on_ambiguity( &instruction.command_name );
+          let _ = self.on_ambiguity( &instruction.command_name );
           // NOTE: Tests don't pass without it.
           Ok(())
         },

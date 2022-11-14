@@ -4,17 +4,22 @@ pub( crate ) mod private
   use crate::protected::*;
   use std::env;
   use wtools::error::BasicError;
+  use wca::
+  {
+    Args,
+    NoProperties,
+  };
 
   ///
   /// Iterate over subject
-  /// 
+  ///
 
-  pub fn each( instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
+  pub fn each( args : Args< String, NoProperties > ) -> Result< (), BasicError >
   {
     let current_path = env::current_dir().unwrap();
 
     // ???
-    match instruction.subject.as_str()
+    match args.subject.as_str()
     {
       ".crate.info" => packages_iterate( current_path, OrderStrategy::Default )
       .for_each( | p |

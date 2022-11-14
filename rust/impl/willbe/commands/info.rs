@@ -4,12 +4,18 @@ pub( crate ) mod private
   use crate::protected::*;
   use std::env;
   use wtools::{ error::BasicError, err };
+  use wca::
+  {
+    Args,
+    NoSubject,
+    NoProperties,
+  };
 
   ///
   /// Prints information about package
-  /// 
+  ///
 
-  pub fn info( _instruction : &crate::instruction::Instruction ) -> Result< (), BasicError >
+  pub fn info( _ : Args< NoSubject, NoProperties > ) -> Result< (), BasicError >
   {
     let current_path = env::current_dir().unwrap();
 
