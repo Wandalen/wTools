@@ -6,7 +6,7 @@ pub( crate ) mod private
 
   use wtools::{ BasicError, err };
 
-  use crate::{ Package, OrderStrategy, unique_walk };
+  use crate::{ Package, unique_walk };
 
   /// Workspace
   #[ derive( Debug, Clone ) ]
@@ -40,7 +40,7 @@ pub( crate ) mod private
   impl Workspace
   {
     /// Gets list of packages into workspace
-    fn packages( &self ) -> Vec< Package >
+    pub fn packages( &self ) -> Vec< Package >
     {
       let config_str = std::fs::read_to_string( self.path.join( "Cargo.toml" ) ).unwrap();
       let toml = config_str.parse::< Value >().unwrap();
@@ -80,9 +80,8 @@ pub( crate ) mod private
     }
 
     /// iterate over packages into workspace
-    pub fn packages_iterate( &self, _order : OrderStrategy ) -> impl Iterator< Item = Package >
+    pub fn packages_iterate( &self ) -> impl Iterator< Item = Package >
     {
-      // TODO: Sort before return iterator
       self.packages().into_iter()
     }
   }
