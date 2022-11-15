@@ -1,8 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-  "workspace1",
-  "workspace2",
+  "module/*",
 ]
 exclude = [
   "*",

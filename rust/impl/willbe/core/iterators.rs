@@ -5,7 +5,7 @@ pub( crate ) mod private
   use crate::*;
 
   /// Iterate over all packages by PathBuf
-  pub fn packages_iterate( path : PathBuf, order : OrderStrategy ) -> Box< dyn Iterator< Item = Package > >
+  pub fn packages_iterate( path : PathBuf ) -> Box< dyn Iterator< Item = Package > >
   {
     if let Ok( package ) = Package::try_from( path.to_owned() )
     {
@@ -14,16 +14,16 @@ pub( crate ) mod private
 
     if let Ok( workspace ) = Workspace::try_from( path )
     {
-      return Box::new( workspace.packages_iterate( order ) )
+      return Box::new( workspace.packages_iterate() )
     }
 
     Box::new( None.into_iter() )
   }
 
-  /// Iterate over workspace iterator
-  pub fn workspaces_packages_iterate( workspaces : impl Iterator< Item = Workspace >, order : OrderStrategy ) -> impl Iterator< Item = Package >
+  /// Iterate over workspaces iterator
+  pub fn workspaces_packages_iterate( workspaces : impl Iterator< Item = Workspace > ) -> impl Iterator< Item = Package >
   {
-    workspaces.flat_map( move | workspace | workspace.packages_iterate( order ) )
+    workspaces.flat_map( move | workspace | workspace.packages_iterate() )
   }
 }
 

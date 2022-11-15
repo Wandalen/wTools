@@ -6,7 +6,7 @@ pub( crate ) mod private
 
   use wtools::{ BasicError, err };
 
-  use crate::{ Package, OrderStrategy, unique_walk };
+  use crate::{ Package, unique_walk };
 
   /// Workspace
   #[ derive( Debug, Clone ) ]
@@ -80,9 +80,8 @@ pub( crate ) mod private
     }
 
     /// iterate over packages into workspace
-    pub fn packages_iterate( &self, _order : OrderStrategy ) -> impl Iterator< Item = Package >
+    pub fn packages_iterate( &self ) -> impl Iterator< Item = Package >
     {
-      // TODO: Sort before return iterator
       self.packages().into_iter()
     }
   }

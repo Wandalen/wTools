@@ -1,9 +1,10 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
   use std::env;
   use wtools::error::BasicError;
+
+  use crate::protected::*;
 
   ///
   /// Iterate over subject
@@ -16,7 +17,7 @@ pub( crate ) mod private
     // ???
     match instruction.subject.as_str()
     {
-      ".crate.info" => packages_iterate( current_path, OrderStrategy::Default )
+      ".crate.info" => packages_iterate( current_path ).ordered( OrderStrategy::Alphabetical ).into_iter()
       .for_each( | p |
       {
         let info = PackageMetadata::try_from( p ).unwrap();
@@ -32,7 +33,7 @@ pub( crate ) mod private
       }),
       ".crate.publish" =>
       {
-        let failed = packages_iterate( current_path, OrderStrategy::Default )
+        let failed = packages_iterate( current_path ).ordered( OrderStrategy::Topological ).into_iter()
         .filter_map( | p |
         {
           let info = PackageMetadata::try_from( p ).unwrap();
