@@ -1,14 +1,24 @@
 use proc_macro::TokenStream;
-use proc_macro_tools::{ parse_macro_input, ParseStream, syn  };
+use proc_macro_tools::{parse_macro_input, ParseStream, syn, syn_err};
 use proc_macro_tools::quote::quote;
-use proc_macro_tools::syn::{ Ident, Type };
+use proc_macro_tools::syn::{Ident, Type};
 use proc_macro_tools::syn::parse::Parse;
-use crate::syn::{ Expr, Fields };
+use crate::syn::{Expr, Fields};
 
 struct Properties
 {
   fields : Vec< Field >,
   struct_ident : Ident,
+}
+
+struct Attributes
+{
+  parser : Option< ParserAttribute >,
+}
+
+struct ParserAttribute
+{
+  parser : Expr,
 }
 
 enum Field
@@ -20,11 +30,12 @@ enum Field
 enum FieldType
 {
   PlainType(),
+  CustomParser( Expr ),
   Vec( Type ),
   Array( Type, Expr ),
 }
 
-#[ proc_macro_derive( Properties ) ]
+#[ proc_macro_derive( Properties, attributes( doc, parser ) ) ]
 pub fn derive_command_properties( input : TokenStream ) -> TokenStream
 {
   let properties = parse_macro_input!( input as Properties );
@@ -73,6 +84,7 @@ fn parse_field( field : Field ) -> proc_macro_tools::proc_macro2::TokenStream
     FieldType::PlainType() => parse_plain_type( &field_ident ),
     FieldType::Vec( type_ ) => parse_vector_type( &type_, &field_ident ),
     FieldType::Array( type_ , elements_count) => parse_array_type( &type_, &field_ident, &elements_count ),
+    FieldType::CustomParser( expr ) => parse_with_custom_parser( &expr ),
   };
 
   let key = field_ident.to_string();
@@ -147,6 +159,70 @@ fn parse_vector_type( type_ : &Type, field_ident : &Ident ) -> proc_macro_tools:
   )
 }
 
+fn parse_with_custom_parser( parser : &Expr ) -> proc_macro_tools::proc_macro2::TokenStream
+{
+  quote!
+  (
+    if let Some( primitive ) = op_type.clone().primitive()
+    {
+      ( #parser )( primitive )?
+    }
+    else
+    {
+      return ::std::result::Result::Err( error_tools::BasicError::new( "Primitive type expected" ) );
+    }
+  )
+}
+
+fn extract_field_type( type_ : &Type ) -> FieldType
+{
+  if let Type::Array( array ) = type_
+  {
+    FieldType::Array( ( *array.elem ).clone(), array.len.clone() )
+  }
+  else if proc_macro_tools::type_rightmost( type_ ).unwrap() == "Vec"
+  {
+    let types = proc_macro_tools::type_parameters( type_, 0..1 );
+    let type_ = types.first().unwrap();
+    FieldType::Vec( ( *type_ ).clone() )
+  }
+  else
+  {
+    FieldType::PlainType()
+  }
+}
+
+impl Attributes
+{
+  fn parse( attributes : &Vec< syn::Attribute > ) -> syn::Result< Self >
+  {
+    let mut parser = None;
+    for attr in attributes
+    {
+      let key_ident = attr.path.get_ident()
+        .ok_or_else( || syn_err!( attr, "Expects simple key of an attirbute, but got:\n  {}", quote!{ #attr } ) )?;
+      let key_str = format!( "{}", key_ident );
+      match key_str.as_ref()
+      {
+        "parser" =>
+          {
+            let parser_attr = syn::parse2::< ParserAttribute >( attr.tokens.clone() )?;
+            parser.replace( parser_attr );
+          }
+        "doc" =>
+          {
+          }
+        _ =>
+          {
+            return Err( syn_err!( attr, "Unknown attribute {}", quote!{ #attr } ) );
+          }
+      }
+    }
+
+    Ok( Attributes { parser } )
+  }
+}
+
 impl Parse for Properties
 {
   fn parse( input : ParseStream ) -> syn::Result< Self >
@@ -159,9 +235,15 @@ impl Parse for Properties
         {
           fields.named.into_iter().map
           (
-            | field |
+            | field: syn::Field |
               {
                 let ident = field.ident.unwrap();
+
+                let attrs = Attributes::parse( &field.attrs ).unwrap();
+                if let Some( expr ) = attrs.parser
+                {
+                  return Field::Required( FieldType::CustomParser( expr.parser ), ident );
+                }
 
                 let type_ = proc_macro_tools::type_rightmost( &field.ty );
                 if type_.is_some() && type_.unwrap() == "Option"
@@ -180,7 +262,7 @@ impl Parse for Properties
           )
             .collect()
         },
-      Fields::Unnamed(_) => todo!(),
+      Fields::Unnamed( fields ) => return Err( syn_err!( fields, "Unnamed fields are not supported." ) ),
       Fields::Unit => Vec::new(),
     };
 
@@ -188,20 +270,17 @@ impl Parse for Properties
   }
 }
 
-fn extract_field_type( type_ : &Type ) -> FieldType
+impl Parse for ParserAttribute
 {
-  if let Type::Array( array ) = type_
+  fn parse( input : ParseStream ) -> syn::Result< Self >
   {
-    FieldType::Array( ( *array.elem ).clone(), array.len.clone() )
-  }
-  else if proc_macro_tools::type_rightmost( type_ ).unwrap() == "Vec"
-  {
-    let types = proc_macro_tools::type_parameters( type_, 0..1 );
-    let type_ = types.first().unwrap();
-    FieldType::Vec( ( *type_ ).clone() )
-  }
-  else
-  {
-    FieldType::PlainType()
+    let expr_tokens;
+    syn::parenthesized!( expr_tokens in input );
+    Ok
+      ( ParserAttribute
+      {
+        parser : expr_tokens.parse()?,
+      }
+      )
   }
 }

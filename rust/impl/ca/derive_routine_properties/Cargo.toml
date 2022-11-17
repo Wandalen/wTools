@@ -1,5 +1,5 @@
 [package]
-name = "derive_command_properties"
+name = "derive_routine_properties"
 version = "0.1.0"
 edition = "2021"
 publish = false
