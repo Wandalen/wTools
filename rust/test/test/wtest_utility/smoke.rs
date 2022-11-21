@@ -36,7 +36,7 @@ tests_impls!
     .output().unwrap();
     assert!( !proc.status.success() );
     let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
-    assert!( stderr.contains( "has no file \"Cargo.toml\"" ) );
+    assert!( stderr.contains( r#"has no file \"Cargo.toml\""# ) );
     let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
     assert!( stdout.contains( "Command \".smoke\"\n" ) );
   }

@@ -1,6 +1,12 @@
 
 use super::*;
-use wca::string::parse_request::OpType::{ Primitive, Vector }; // qqq : this line should be ok /* aaa : Dmytro : it's ok */
+use wca::string::parse_request::OpType::{ Primitive, Vector };
+use wtools::error::BasicError;
+use wca::
+{
+  DefaultInstructionParser,
+  InstructionParser,
+};
 
 //
 
@@ -8,69 +14,58 @@ tests_impls!
 {
   fn basic()
   {
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( "" )
-    .perform();
-    let exp = wca::instruction::Instruction
-    {
-      err : Some( wtools::error::BasicError::new( "Invalid command" ) ),
-      command_name : "".to_string(),
-      subject : "".to_string(),
-      properties_map : HashMap::new(),
-    };
-    a_id!( instruction, exp );
+    let parser = DefaultInstructionParser::former().form();
 
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get" )
-    .perform();
+    let err = parser.parse( "" ).unwrap_err();
+    a_id!( err, BasicError::new( "Invalid command" ) );
+
+    let instruction = parser
+    .parse( ".get" )
+    .unwrap();
     let exp = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".get".to_string(),
       subject : "".to_string(),
       properties_map : HashMap::new(),
     };
     a_id!( instruction, exp );
 
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get some" )
-    .perform();
+    let instruction = parser
+    .parse( ".get some" )
+    .unwrap();
     let exp = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".get".to_string(),
       subject : "some".to_string(),
       properties_map : HashMap::new(),
     };
     a_id!( instruction, exp );
 
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get v:1" )
-    .perform();
+    let instruction = parser
+    .parse( ".get v:1" )
+    .unwrap();
     let exp = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".get".to_string(),
       subject : "".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Primitive( "1".to_string() ) ) ]),
     };
     a_id!( instruction, exp );
 
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get some v:1" )
-    .perform();
+    let instruction = parser
+    .parse( ".get some v:1" )
+    .unwrap();
     let exp = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".get".to_string(),
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Primitive( "1".to_string() ) ) ]),
     };
     a_id!( instruction, exp );
 
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get some v:1 routine:some" )
-    .perform();
+    let instruction = parser
+    .parse( ".get some v:1 routine:some" )
+    .unwrap();
     let properties_map = HashMap::from
     ([
       ( "v".to_string(), Primitive( "1".to_string() ) ),
@@ -78,7 +73,6 @@ tests_impls!
     ]);
     let exp = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".get".to_string(),
       subject : "some".to_string(),
       properties_map,
@@ -87,11 +81,11 @@ tests_impls!
 
     /* */
 
-    let aggregator_map = HashMap::new();
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get some v:1 routine:some" )
-    .properties_map( aggregator_map )
-    .perform();
+    let instruction = DefaultInstructionParser::former()
+    .properties( vec![] )
+    .form()
+    .parse( ".get some v:1 routine:some" )
+    .unwrap();
     let properties_map = HashMap::from
     ([
       ( "v".to_string(), Primitive( "1".to_string() ) ),
@@ -99,19 +93,18 @@ tests_impls!
     ]);
     let exp = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".get".to_string(),
       subject : "some".to_string(),
       properties_map,
     };
     a_id!( instruction, exp );
 
-    let mut aggregator_map = HashMap::new();
-    aggregator_map.insert( "ne".to_string(), Primitive( "-2".to_string() ) );
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get some v:1 routine:some" )
-    .properties_map( aggregator_map )
-    .perform();
+    let mut properties = vec![ ( "ne".to_string(), Primitive( "-2".to_string() ) ) ];
+    let instruction = DefaultInstructionParser::former()
+    .properties( properties )
+    .form()
+    .parse( ".get some v:1 routine:some" )
+    .unwrap();
     let properties_map = HashMap::from
     ([
       ( "v".to_string(), Primitive( "1".to_string() ) ),
@@ -120,7 +113,6 @@ tests_impls!
     ]);
     let exp = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".get".to_string(),
       subject : "some".to_string(),
       properties_map,
@@ -132,26 +124,53 @@ tests_impls!
 
   fn with_several_values()
   {
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get some v:1 v:2" )
+    let parser = DefaultInstructionParser::former()
     .several_values( false )
-    .perform();
+    .form();
+
+    let instruction = parser
+    .parse( ".get some v:1 v:2" )
+    .unwrap();
     let exp = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".get".to_string(),
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Primitive( "2".to_string() ) ) ]),
     };
     a_id!( instruction, exp );
 
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get some v:[1,2]" )
-    .several_values( false )
-    .perform();
+    let instruction = parser
+    .parse( ".get some v:[1,2]" )
+    .unwrap();
     let exp = wca::instruction::Instruction
     {
-      err : None,
+      command_name : ".get".to_string(),
+      subject : "some".to_string(),
+      properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "1".to_string(), "2".to_string() ] ) ) ]),
+    };
+    a_id!( instruction, exp );
+
+    /* */
+    let parser = DefaultInstructionParser::former()
+    .several_values( true )
+    .form();
+
+    let instruction = parser
+    .parse( ".get some v:1 v:2" )
+    .unwrap();
+    let exp = wca::instruction::Instruction
+    {
+      command_name : ".get".to_string(),
+      subject : "some".to_string(),
+      properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "1".to_string(), "2".to_string() ] ) ) ]),
+    };
+    a_id!( instruction, exp );
+
+    let instruction = parser
+    .parse( ".get some v:[1,2]" )
+    .unwrap();
+    let exp = wca::instruction::Instruction
+    {
       command_name : ".get".to_string(),
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "1".to_string(), "2".to_string() ] ) ) ]),
@@ -160,57 +179,57 @@ tests_impls!
 
     /* */
 
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get some v:1 v:2" )
-    .several_values( true )
-    .perform();
+    let instruction = parser
+    .parse( ".get some v:[1,2] v:3" )
+    .unwrap();
     let exp = wca::instruction::Instruction
     {
-      err : None,
-      command_name : ".get".to_string(),
-      subject : "some".to_string(),
-      properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "1".to_string(), "2".to_string() ] ) ) ]),
-    };
-    a_id!( instruction, exp );
-
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get some v:[1,2]" )
-    .several_values( true )
-    .perform();
-    let exp = wca::instruction::Instruction
-    {
-      err : None,
-      command_name : ".get".to_string(),
-      subject : "some".to_string(),
-      properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "1".to_string(), "2".to_string() ] ) ) ]),
-    };
-    a_id!( instruction, exp );
-
-    /* */
-
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get some v:[1,2] v:3" )
-    .several_values( true )
-    .perform();
-    let exp = wca::instruction::Instruction
-    {
-      err : None,
       command_name : ".get".to_string(),
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "1".to_string(), "2".to_string(), "3".to_string() ] ) ) ]),
     };
     a_id!( instruction, exp );
 
-    let instruction = wca::instruction::instruction_parse()
-    .instruction( ".get some v:3 v:[1,2]" )
-    .several_values( true )
-    .perform();
+    let instruction = parser
+    .parse( ".get some v:3 v:[1,2]" )
+    .unwrap();
     let exp = wca::instruction::Instruction
     {
-      err : None,
       command_name : ".get".to_string(),
       subject : "some".to_string(),
       properties_map : HashMap::from([ ( "v".to_string(), Vector( vec![ "3".to_string(), "1".to_string(), "2".to_string() ] ) ) ]),
+    };
+    a_id!( instruction, exp );
+  }
+
+  fn path_subject() {
+    let parser = DefaultInstructionParser::former()
+    .several_values( true )
+    .form();
+    let instruction = parser
+    .parse( ".get ./tmp/dir v:1" )
+    .unwrap();
+    let exp = wca::instruction::Instruction
+    {
+      command_name : ".get".to_string(),
+      subject : "./tmp/dir".to_string(),
+      properties_map : HashMap::from([ ( "v".to_string(), Primitive( "1".to_string() ) ) ]),
+    };
+    a_id!( instruction, exp );
+  }
+
+  fn path_property() {
+    let parser = DefaultInstructionParser::former()
+    .several_values( true )
+    .form();
+    let instruction = parser
+    .parse( ".get some v:./tmp/dir/" )
+    .unwrap();
+    let exp = wca::instruction::Instruction
+    {
+      command_name : ".get".to_string(),
+      subject : "some".to_string(),
+      properties_map : HashMap::from([ ( "v".to_string(), Primitive( "./tmp/dir/".to_string() ) ) ]),
     };
     a_id!( instruction, exp );
   }
@@ -222,4 +241,6 @@ tests_index!
 {
   basic,
   with_several_values,
+  path_subject,
+  path_property,
 }

@@ -1,21 +1,34 @@
+use std::collections::HashMap;
 use std::env::current_dir;
 use std::path::PathBuf;
 use wtools::error::BasicError;
-use wca::instruction::Instruction;
 use ::wpublisher::manifest::Manifest;
+use wca::{Args, Properties};
+use wca::string::parse_request::OpType;
+use wtools::error::Result;
+
+/// Properties for the smoke function
+
+#[ derive( Debug ) ]
+pub struct SmokeProperties
+{
+  code_path : Option< PathBuf >,
+  version: Option< String >,
+  smoke: Option< String >,
+}
 
 ///
 /// Perform smoke testing.
 ///
 
-pub fn smoke( instruction : &Instruction ) -> Result< (), BasicError >
+pub fn smoke( args : Args< String, SmokeProperties > ) -> Result< (), BasicError >
 {
   let mut current_path = current_dir().unwrap();
 
-  let subject_path = PathBuf::from( &instruction.subject );
+  let subject_path = PathBuf::from( &args.subject );
   let module_path = if subject_path.is_relative()
   {
-    current_path.push( &instruction.subject );
+    current_path.push( &args.subject );
     current_path
   }
   else
@@ -42,9 +55,9 @@ pub fn smoke( instruction : &Instruction ) -> Result< (), BasicError >
   let module_name = &data[ "package" ][ "name" ].clone();
   let module_name = module_name.as_str().unwrap();
 
-  let code_path = match instruction.properties_map.get( "code_path" )
+  let code_path = match args.properties.code_path
   {
-    Some( x ) => PathBuf::from( x.clone().primitive().unwrap() ),
+    Some( path ) => path,
     None => PathBuf::default(),
   };
 
@@ -54,15 +67,15 @@ pub fn smoke( instruction : &Instruction ) -> Result< (), BasicError >
     data = Some( std::fs::read_to_string( code_path ).unwrap() );
   }
 
-  let version = match instruction.properties_map.get( "version" )
+  let version = match args.properties.version
   {
-    Some( x ) => x.clone().primitive().unwrap(),
+    Some( x ) => x,
     None => "*".to_string(),
   };
 
-  let smoke = match instruction.properties_map.get( "smoke" )
+  let smoke = match args.properties.smoke
   {
-    Some( x ) => x.clone().primitive().unwrap(),
+    Some( x ) => x,
     None =>
     {
       if let Ok( x ) = std::env::var( "WITH_SMOKE" )
@@ -135,6 +148,23 @@ pub fn smoke( instruction : &Instruction ) -> Result< (), BasicError >
   }
 
   Ok( () )
+}
+
+impl Properties for SmokeProperties
+{
+  fn parse( properties : &HashMap< String, OpType< String > > ) -> Result< Self >
+  {
+    let code_path = properties.get( "code_path" )
+      .map( | path | PathBuf::from( path.clone().primitive().unwrap() ) );
+
+    let version = properties.get( "version" )
+      .map( | version | version.clone().primitive().unwrap() );
+
+    let smoke = properties.get( "smoke" )
+      .map( | smoke | smoke.clone().primitive().unwrap() );
+
+    Ok ( SmokeProperties { code_path, version, smoke } )
+  }
 }
 
 //
@@ -298,4 +328,5 @@ impl< 'a > SmokeModuleTest< 'a >
     Ok( () )
   }
 }
+
 
