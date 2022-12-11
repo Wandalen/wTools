@@ -19,7 +19,7 @@ pub( crate ) mod private
     .long_hint( "--- each ---" )
     .phrase( "each" )
     .subject_hint( "What to iterate(?)" )
-    .routine( &crate::commands::each::each )
+    .routine_with_ctx( &crate::commands::each::each )
     .form();
 
     let publish_command = wca::Command::former()

@@ -19,6 +19,8 @@ pub( crate ) mod private
   {
     let current_path = env::current_dir().unwrap();
 
+    println!("[LOG] Called info command");
+
     let package = Package::try_from( current_path )
     .map_err( | _ | err!( "Package not found at current directory" ) )?;
 
@@ -47,6 +49,7 @@ Location: "{}"
       info.dependencies.iter().map( | d | &d.name ).collect::< Vec< _ > >(),
       info.manifest_path.parent().unwrap()
     );
+
     Ok( () )
   }
 }

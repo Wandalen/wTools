@@ -88,7 +88,7 @@ tests_impls!
     .parse( ".phrase" )
     .unwrap();
 
-    let perform = command.perform( &instruction );
+    let perform = command.perform( &instruction, None );
     assert!( perform.is_ok() );
   }
 
@@ -104,7 +104,7 @@ tests_impls!
     .routine(  | _ : Args< String, NoProperties >  | { println!( "hello" ); Ok( () ) } )
     .form();
     let instruction = parser.parse( ".get subj" ).unwrap();
-    let perform = command.perform( &instruction );
+    let perform = command.perform( &instruction, None );
     assert!( perform.is_err() );
 
     let command = wca::Command::former()
@@ -113,7 +113,7 @@ tests_impls!
     .routine(  | _ : Args< String, NoProperties >  | { println!( "hello" ); Ok( () ) } )
     .form();
     let instruction = parser.parse( ".get subj" ).unwrap();
-    let perform = command.perform( &instruction );
+    let perform = command.perform( &instruction, None );
     assert!( perform.is_ok() );
   }
 
@@ -159,11 +159,11 @@ tests_impls!
     .form();
 
     let instruction = parser.parse( ".get subj prop1:1" ).unwrap();
-    let perform = command.perform( &instruction );
+    let perform = command.perform( &instruction, None );
     assert!( perform.is_ok() );
 
     let instruction = parser.parse( ".get subj unknown:1" ).unwrap();
-    let perform = command.perform( &instruction );
+    let perform = command.perform( &instruction, None );
     assert!( perform.is_err() );
   }
 }

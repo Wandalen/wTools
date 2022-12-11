@@ -64,12 +64,19 @@ pub( crate ) mod private
   ///
   /// Routine handle.
   ///
-
+  
   #[ derive( Clone ) ]
-  pub struct Routine
+  pub enum Routine
   {
-    callback : Rc< dyn Fn( &Instruction ) ->  Result< () > >,
+    WithContext( Rc< dyn Fn( &Instruction, &mut crate::Context ) ->  Result< () > > ),
+    WithoutContext( Rc< dyn Fn( &Instruction ) ->  Result< () > > ),
   }
+
+  // #[ derive( Clone ) ]
+  // pub struct Routine
+  // {
+  //   callback : Rc< dyn Fn( &Instruction, &mut crate::Context ) ->  Result< () > >,
+  // }
 
   ///
   /// Command args. Used in ['Routine'] as the routine args.
@@ -114,7 +121,7 @@ pub( crate ) mod private
     }
 
     /// Execute callback.
-    pub fn perform( &self, instruction : &crate::instruction::Instruction ) -> Result< () >
+    pub fn perform( &self, instruction : &crate::instruction::Instruction, mut context : Option< crate::Context > ) -> Result< () >
     {
       if self.subject_hint.len() == 0 && instruction.subject.len() != 0
       {
@@ -129,7 +136,7 @@ pub( crate ) mod private
         }
       }
 
-      self.routine.perform( instruction )
+      self.routine.perform( instruction, context.as_mut() )
     }
   }
 
@@ -185,11 +192,21 @@ pub( crate ) mod private
 
     pub fn routine< F, S, P >( mut self, callback: F ) -> Self
     where
-      F : Fn( Args< S, P > ) -> Result< () > + 'static,
+      F : Fn( Args< S, P > ) -> Result< () > + 'static, //? Into< Routine >?
       S : Subject,
       P : Properties,
     {
       self.routine = Some( Routine::new( callback ) );
+      self
+    }
+
+    pub fn routine_with_ctx< F, S, P >( mut self, callback: F ) -> Self
+    where
+      F : Fn( Args< S, P >, &mut crate::Context ) -> Result< () > + 'static,
+      S : Subject,
+      P : Properties,
+    {
+      self.routine = Some( Routine::new_with_ctx( callback ) );
       self
     }
 
@@ -227,13 +244,36 @@ pub( crate ) mod private
         callback( Args { subject, properties } )
       };
 
-      Routine { callback: Rc::new( callback ) }
+      // Routine { callback: Rc::new( callback ) }
+      Routine::WithoutContext( Rc::new( callback ) )
+    }
+
+    pub fn new_with_ctx< F, S, P >( callback: F ) -> Self
+    where
+      F : Fn( Args< S, P >, &mut crate::Context ) -> Result< () > + 'static,
+      S : Subject,
+      P : Properties,
+    {
+      let callback = move | instruction: &Instruction, context: &mut crate::Context |
+      {
+        let subject = S::parse( &instruction.subject )?;
+        let properties = P::parse( &instruction.properties_map )?;
+
+        callback( Args { subject, properties }, context )
+      };
+
+      Routine::WithContext( Rc::new( callback ) )
     }
 
     /// Perform callback.
-    pub fn perform( &self, instruction: &Instruction ) -> Result< () >
+    pub fn perform( &self, instruction: &Instruction, context : Option< &mut crate::Context > ) -> Result< () >
     {
-      ( self.callback )( instruction )
+      match self
+      {
+        Routine::WithContext( func ) if context.is_some() => ( func )( instruction, context.unwrap() ),
+        Routine::WithoutContext( func ) => ( func )( instruction ),
+        _ => Err( BasicError::new( "Can not perform" ) )
+      }
     }
   }
 
@@ -251,7 +291,12 @@ pub( crate ) mod private
     {
       // We can't compare closures. Because every closure has a separate type, even if they're identical.
       // Therefore, we check that the two Rc's point to the same closure (allocation).
-      Rc::ptr_eq( &self.callback, &other.callback )
+      match ( self, other )
+      {
+        ( Routine::WithContext( this ), Routine::WithContext( other ) )=> Rc::ptr_eq( &this, &other ),
+        ( Routine::WithoutContext( this ), Routine::WithoutContext( other ) ) => Rc::ptr_eq( &this, &other ),
+        _ => false
+      }
     }
   }
 

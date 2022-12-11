@@ -30,6 +30,16 @@ pub( crate ) mod private
     pub exit_code_on_error : Option< i32 >,
     /// Commands.
     pub commands : std::collections::HashMap< String, Command >,
+    /// ! TEMP Context
+    pub context : Option< Context >,
+  }
+
+  #[ derive( Debug, Clone, PartialEq ) ]
+  /// ! Remove THIS
+  pub struct Context
+  {
+    /// ! 
+    pub s : std::collections::HashMap< String, Command >
   }
 
   impl CommandsAggregator
@@ -110,7 +120,7 @@ pub( crate ) mod private
     {
       match self.command_resolve( instruction )
       {
-        Some( command ) => command.perform( instruction ),
+        Some( command ) => command.perform( instruction, self.context.to_owned() ),  // ! changed
         None =>
         {
           let _ = self.on_ambiguity( &instruction.command_name );
@@ -348,7 +358,7 @@ pub( crate ) mod private
       return if let Some( command ) = self.command_resolve( &instruction )
       {
         let instruction = DefaultInstructionParser::former().form().parse( "" )?;
-        command.perform( &instruction )
+        command.perform( &instruction, self.context.to_owned() )     // ! changed
       }
       else
       {
@@ -394,4 +404,6 @@ crate::mod_interface!
   prelude use OnGetHelp;
   prelude use OnPrintCommands;
   prelude use commands_aggregator;
+
+  prelude use Context; // ! REMOVE THIS
 }
