@@ -105,8 +105,8 @@ pub( crate ) mod private
     pub fn instructions_parse( &self, program : impl AsRef< str > ) -> Result< Vec< Instruction > >
     {
       let parser = DefaultInstructionParser::former()
-        .several_values( true )
-        .form();
+      .several_values( true )
+      .form();
 
       self.split_program( program.as_ref() )
       .into_iter()

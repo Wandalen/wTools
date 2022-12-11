@@ -19,7 +19,7 @@ pub( crate ) mod private
   {
     let current_path = env::current_dir().unwrap();
 
-    println!("[LOG] Called publish command");
+    println!( "[LOG] Called publish command" );
 
     let package = Package::try_from( current_path )
     .map_err( | _ | err!( "Package not found at current directory" ) )?;

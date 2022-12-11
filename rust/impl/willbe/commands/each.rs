@@ -20,9 +20,9 @@ pub( crate ) mod private
   {
     let current_path = env::current_dir().unwrap();
 
-    println!("[LOG] Called each command");
+    println!( "[LOG] Called each command" );
 
-    println!("context: {:#?}\nargs: {:?}", &ctx, &args);
+    println!( "context: {:#?}\nargs: {:?}", &ctx, &args );
     let parser = wca::instruction::DefaultInstructionParser::former().form();
 
     let routine = ctx.s[&args.subject].routine.clone();
