@@ -166,6 +166,43 @@ tests_impls!
     let perform = command.perform( &instruction, None );
     assert!( perform.is_err() );
   }
+
+  fn perform_with_context()
+  {
+    let command = wca::Command::former()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .phrase( "phrase" )
+    .subject_hint( "subject_hint" )
+    .property_hint( "prop1", "hint of prop1" )
+    .property_hint( "prop2", "hint of prop2" )
+    .property_alias( "property_alias", "a1" )
+    .property_alias( "property_alias", "a2" )
+    .routine_with_ctx( | _ : Args< NoSubject, NoProperties >, ctx : wca::Context |
+    {
+      ctx.inner.get( "key" ).ok_or( wtools::BasicError::new( "Value not found" ) )?;
+
+      Ok( () )
+    })
+    .form();
+
+    let instruction = wca::instruction::DefaultInstructionParser::former()
+    .form()
+    .parse( ".phrase" )
+    .unwrap();
+
+    // try to call without context
+    let perform = command.perform( &instruction, None );
+    assert!( perform.is_err() );
+
+    // try to call with context but without needed key
+    let perform = command.perform( &instruction, Some( wca::Context{ inner : hmap!( "unknown key".to_owned() => command.to_owned() ) } ) );
+    assert!( perform.is_err() );
+
+    // try to call with context
+    let perform = command.perform( &instruction, Some( wca::Context{ inner : hmap!( "key".to_owned() => command.to_owned() ) } ) );
+    assert!( perform.is_ok() );
+  }
 }
 
 //
@@ -177,4 +214,5 @@ tests_index!
   perform_trivial,
   perform_with_subject,
   perform_with_props,
+  perform_with_context,
 }

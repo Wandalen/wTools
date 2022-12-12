@@ -16,7 +16,7 @@ pub( crate ) mod private
   /// Iterate over subject
   ///
 
-  pub fn each( args : Args< String, NoProperties >, ctx : &mut wca::Context ) -> Result< (), BasicError >
+  pub fn each( args : Args< String, NoProperties >, ctx : wca::Context ) -> Result< (), BasicError >
   {
     let current_path = env::current_dir().unwrap();
 
@@ -25,7 +25,7 @@ pub( crate ) mod private
     println!( "context: {:#?}\nargs: {:?}", &ctx, &args );
     let parser = wca::instruction::DefaultInstructionParser::former().form();
 
-    let routine = ctx.s[&args.subject].routine.clone();
+    let routine = ctx.inner[&args.subject].routine.clone();
     packages_iterate(current_path)
     .into_iter()
     .for_each( | package |
@@ -34,7 +34,7 @@ pub( crate ) mod private
       routine.perform
       (
         &parser.parse( &args.subject ).unwrap(),
-        Some( ctx )
+        Some( ctx.to_owned() )
       )
       .ok();
     });

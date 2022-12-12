@@ -30,16 +30,17 @@ pub( crate ) mod private
     pub exit_code_on_error : Option< i32 >,
     /// Commands.
     pub commands : std::collections::HashMap< String, Command >,
-    /// ! TEMP Context
+    // TODO: Improve this
+    /// Commands context.
     pub context : Option< Context >,
   }
 
   #[ derive( Debug, Clone, PartialEq ) ]
-  /// ! Remove THIS
+  /// Basic context which contains commands hashmap
   pub struct Context
   {
-    /// ! 
-    pub s : std::collections::HashMap< String, Command >
+    /// Hashmap with existing commands
+    pub inner : std::collections::HashMap< String, Command >
   }
 
   impl CommandsAggregator
@@ -69,7 +70,7 @@ pub( crate ) mod private
 
       for instruction in &instructions
       {
-        self._instruction_perform( &instruction )?;
+        self._instruction_perform( instruction )?;
       }
 
       Ok( () )
