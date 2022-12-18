@@ -12,7 +12,7 @@ pub( crate ) mod private
     meta::Former,
   };
   use wtools::string::parse_request::OpType;
-  use crate::Instruction;
+  use crate::{ Instruction, Context };
 
   ///
   /// A type that implements ['Properties'] can be used as 'properties' in ['Args'].
@@ -31,7 +31,7 @@ pub( crate ) mod private
   pub trait Subject : Sized
   {
     /// Parse subject.
-    fn parse( input: impl AsRef< str > ) -> Result< Self >;
+    fn parse( input : impl AsRef< str > ) -> Result< Self >;
   }
 
   ///
@@ -62,7 +62,7 @@ pub( crate ) mod private
   }
 
   type RoutineWithoutContextFn = dyn Fn( &Instruction ) -> Result< () >;
-  type RoutineWithContextFn = dyn Fn( &Instruction, crate::Context ) -> Result< () >;
+  type RoutineWithContextFn = dyn Fn( &Instruction, Context ) -> Result< () >;
 
   ///
   /// Routine handle.
@@ -84,9 +84,9 @@ pub( crate ) mod private
   pub struct Args< S, P >
   {
     /// Subject of the command.
-    pub subject: S,
+    pub subject : S,
     /// Properties of the command.
-    pub properties: P,
+    pub properties : P,
   }
 
   ///
@@ -120,7 +120,7 @@ pub( crate ) mod private
     }
 
     /// Execute callback.
-    pub fn perform( &self, instruction : &crate::instruction::Instruction, context : Option< crate::Context > ) -> Result< () >
+    pub fn perform( &self, instruction : &crate::instruction::Instruction, context : Option< Context > ) -> Result< () >
     {
       if self.subject_hint.is_empty() && !instruction.subject.is_empty()
       {
@@ -191,7 +191,7 @@ pub( crate ) mod private
 
     pub fn routine< F, S, P >( mut self, callback: F ) -> Self
     where
-      F : Fn( Args< S, P > ) -> Result< () > + 'static, //? Into< Routine >?
+      F : Fn( Args< S, P > ) -> Result< () > + 'static,
       S : Subject,
       P : Properties,
     {
@@ -205,7 +205,7 @@ pub( crate ) mod private
 
     pub fn routine_with_ctx< F, S, P >( mut self, callback: F ) -> Self
     where
-      F : Fn( Args< S, P >, crate::Context ) -> Result< () > + 'static,
+      F : Fn( Args< S, P >, Context ) -> Result< () > + 'static,
       S : Subject,
       P : Properties,
     {
@@ -256,11 +256,11 @@ pub( crate ) mod private
 
     pub fn new_with_ctx< F, S, P >( callback: F ) -> Self
     where
-      F : Fn( Args< S, P >, crate::Context ) -> Result< () > + 'static,
+      F : Fn( Args< S, P >, Context ) -> Result< () > + 'static,
       S : Subject,
       P : Properties,
     {
-      let callback = move | instruction: &Instruction, context : crate::Context |
+      let callback = move | instruction: &Instruction, context : Context |
       {
         let subject = S::parse( &instruction.subject )?;
         let properties = P::parse( &instruction.properties_map )?;
@@ -272,7 +272,7 @@ pub( crate ) mod private
     }
 
     /// Perform callback.
-    pub fn perform( &self, instruction: &Instruction, context : Option< crate::Context > ) -> Result< () >
+    pub fn perform( &self, instruction: &Instruction, context : Option< Context > ) -> Result< () >
     {
       match self
       {

@@ -11,7 +11,7 @@ pub( crate ) mod private
     .hint( "Prints information about package" )
     .long_hint( "Prints information about package at current directory" )
     .phrase( "crate.info" )
-    .routine( &crate::commands::info::info )
+    .routine_with_ctx( &crate::commands::info::info )
     .form();
 
     let each_command = wca::Command::former()

@@ -15,9 +15,18 @@ pub( crate ) mod private
   /// Prints information about package
   ///
 
-  pub fn info( _ : Args< NoSubject, NoProperties > ) -> Result< (), BasicError >
+  pub fn info( _ : Args< NoSubject, NoProperties >, ctx : wca::Context ) -> Result< (), BasicError >
   {
-    let current_path = env::current_dir().unwrap();
+    let current_path = if let Some( path ) = ctx.get_ref::< std::path::PathBuf >()
+    {
+      println!( "From context" );
+      path.to_owned()
+    }
+    else
+    {
+      println!( "Current dir" );
+      env::current_dir().unwrap().to_owned()
+    };
 
     println!( "[LOG] Called info command" );
 

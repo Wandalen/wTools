@@ -178,9 +178,11 @@ tests_impls!
     .property_hint( "prop2", "hint of prop2" )
     .property_alias( "property_alias", "a1" )
     .property_alias( "property_alias", "a2" )
-    .routine_with_ctx( | _ : Args< NoSubject, NoProperties >, ctx : wca::Context |
+    .routine_with_ctx( | _ : Args< NoSubject, NoProperties >, ctx |
     {
-      ctx.inner.get( "key" ).ok_or( wtools::BasicError::new( "Value not found" ) )?;
+      let ctx : &HashMap< String, wca::Command > = ctx.get_ref().unwrap();
+
+      ctx.get( "key" ).ok_or( wtools::BasicError::new( "Value not found" ) )?;
 
       Ok( () )
     })
@@ -196,11 +198,17 @@ tests_impls!
     assert!( perform.is_err() );
 
     // try to call with context but without needed key
-    let perform = command.perform( &instruction, Some( wca::Context{ inner : hmap!( "unknown key".to_owned() => command.to_owned() ) } ) );
+    let perform = command.perform( &instruction, Some( wca::Context::new
+    (
+      HashMap::< String, wca::Command >::from_iter([( "unknown key".to_owned(), command.to_owned() )])
+    )));
     assert!( perform.is_err() );
 
     // try to call with context
-    let perform = command.perform( &instruction, Some( wca::Context{ inner : hmap!( "key".to_owned() => command.to_owned() ) } ) );
+    let perform = command.perform( &instruction, Some( wca::Context::new
+    (
+      HashMap::< String, wca::Command >::from_iter([( "key".to_owned(), command.to_owned() )])
+    )));
     assert!( perform.is_ok() );
   }
 }
