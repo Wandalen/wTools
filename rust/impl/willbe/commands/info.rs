@@ -19,12 +19,10 @@ pub( crate ) mod private
   {
     let current_path = if let Some( path ) = ctx.get_ref::< std::path::PathBuf >()
     {
-      println!( "From context" );
       path.to_owned()
     }
     else
     {
-      println!( "Current dir" );
       env::current_dir().unwrap().to_owned()
     };
 
