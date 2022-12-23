@@ -53,11 +53,11 @@ mod private
     }
   }
 
-  impl Into< wca::Context > for State
+  impl From< State > for wca::Context
   {
-    fn into( self ) -> wca::Context
+    fn from( value : State ) -> Self
     {
-      wca::Context::new( self )
+      Self::new( value )
     }
   }
 }
