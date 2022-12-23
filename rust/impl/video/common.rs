@@ -3,7 +3,7 @@ pub( crate ) mod private
 {
 
   /// Select strategy for the output format.
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( Debug, PartialEq, Eq ) ]
   pub enum EncoderType
   {
     /// Convert to gif.
@@ -23,7 +23,7 @@ pub( crate ) mod private
   }
 
   /// Select color encoding.
-  #[ derive( Debug, Clone, PartialEq ) ]
+  #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub enum ColorType
   {
     /// RGB color encoding.

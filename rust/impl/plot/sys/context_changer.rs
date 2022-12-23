@@ -24,15 +24,13 @@ pub( crate ) mod private
     #[ inline ]
     pub fn stroke( self ) -> StrokeBrushChanger
     {
-      let changer = StrokeBrushChanger::_new( self );
-      changer
+      StrokeBrushChanger::_new( self )
     }
     /// Draw.
     #[ inline ]
     pub fn draw( self ) -> DrawChanger
     {
-      let changer = DrawChanger::_new( self );
-      changer
+      DrawChanger::_new( self )
     }
   }
 

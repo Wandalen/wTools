@@ -12,7 +12,12 @@ fn tmp_dir_get( prefix : impl AsRef<str> ) -> PathBuf
 fn asset_copy_to_tmp( asset_dir : impl AsRef<str>, prefix : impl AsRef<str> ) -> std::io::Result< () >
 {
   let tmp_dir = tmp_dir_get( prefix.as_ref() );
-  std::fs::create_dir( &tmp_dir )?;
+  // if the dir already exists - remove it and create new
+  if let Err( _ ) = std::fs::create_dir( &tmp_dir )
+  {
+    asset_clean_tmp( &prefix )?;
+    std::fs::create_dir( &tmp_dir )?;
+  }
   let module_path = std::env::var( "CARGO_MANIFEST_DIR" ).unwrap();
   let mut current_dir = PathBuf::from( module_path );
   current_dir.push( "rust" );
@@ -133,11 +138,14 @@ tests_impls!
     path.push( "../../../target/debug/wpublisher" );
     #[ cfg( not( debug_assertions ) ) ]
     path.push( "../../../target/release/wpublisher" );
+    let package_local_dir = tmp_dir.to_str().unwrap();
+    #[ cfg( target_family="windows" ) ]
+    let package_local_dir = "./";
 
     let proc = std::process::Command::new( path.clone() )
     .current_dir( &tmp_dir )
     .env( "CARGO_TERM_COLOR", "never" )
-    .args( [ ".publish", tmp_dir.to_str().unwrap(), "dry:1" ] )
+    .args( [ ".publish", package_local_dir, "dry:1" ] )
     .output()
     .unwrap();
     assert!( proc.status.success() );
@@ -146,10 +154,15 @@ tests_impls!
     let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
     assert!( stderr.contains( "Uploading package" ) );
 
+    let package_dir_name = "pa?kag[a-z]";
+    let package_local_dir = &tmp_dir_get( &package_dir_name ).to_str().unwrap().to_owned();
+    #[ cfg( target_family="windows" ) ]
+    let package_local_dir = &format!( "./{package_dir_name}" );
+
     let proc = std::process::Command::new( path )
     .current_dir( &tmp_dir )
     .env( "CARGO_TERM_COLOR", "never" )
-    .args( [ ".publish", tmp_dir_get( "pa?kag[a-z]" ).to_str().unwrap(), "dry:1" ] )
+    .args( [ ".publish", package_local_dir, "dry:1" ] )
     .output()
     .unwrap();
     assert!( proc.status.success() );

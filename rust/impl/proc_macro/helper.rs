@@ -207,7 +207,7 @@ pub( crate ) mod private
       let last = &segments.last();
       if last.is_none()
       {
-        return vec![ &ty ]
+        return vec![ ty ]
       }
       let args = &last.unwrap().arguments;
       if let syn::PathArguments::AngleBracketed( ref args2 ) = args
@@ -215,7 +215,7 @@ pub( crate ) mod private
         let args3 = &args2.args;
         let selected : Vec< &syn::Type > = args3
         .iter()
-        .skip_while( | e | if let syn::GenericArgument::Type( _ ) = e { false } else { true } )
+        .skip_while( | e | !matches!( e, syn::GenericArgument::Type( _ ) ) )
         .skip( range.first().try_into().unwrap() )
         .take( range.len().try_into().unwrap() )
         .map( | e | if let syn::GenericArgument::Type( ty ) = e { ty } else { unreachable!( "Expects Type" ) } )
@@ -223,7 +223,7 @@ pub( crate ) mod private
         return selected;
       }
     }
-    vec![ &ty ]
+    vec![ ty ]
   }
 
   ///

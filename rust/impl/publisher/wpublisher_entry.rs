@@ -23,9 +23,10 @@ fn main() -> Result< (), wtools::error::BasicError >
   let args = env::args().skip( 1 ).collect::< Vec< String > >();
 
   let ca = wca::commands_aggregator()
-  .changing_exit_code( true )
-  .commands().replace( commands::commands_form() ).end()
+  .exit_code_on_error( 1 )
+  .commands( commands::commands_form() )
   .form();
+
   ca.instruction_perform( args.join( " " ).as_str() )
 }
 

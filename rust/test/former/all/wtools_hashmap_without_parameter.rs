@@ -1,6 +1,6 @@
 use former::Former;
 
-struct HashMap< T >
+pub struct HashMap< T >
 {
   f1 : T,
 }

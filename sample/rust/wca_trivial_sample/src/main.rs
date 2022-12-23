@@ -3,13 +3,12 @@ fn main()
   #[ cfg( feature = "use_std" ) ]
   {
     use wca::*;
-    use wca::instruction::Instruction;
 
     let help_command : Command = wca::Command::former()
     .hint( "Get help." )
     .long_hint( "Get help for command [command]" )
     .phrase( ".help" )
-    .routine( &| _i : &Instruction | { println!( "this is help" ); Ok( () ) } )
+    .routine( | _ : Args< NoSubject, NoProperties > | { println!( "this is help" ); Ok( () ) } )
     .form();
 
     let commands = std::collections::HashMap::from([ ( ".help".to_string(), help_command ) ]);
@@ -17,7 +16,7 @@ fn main()
     /* */
 
     let ca = wca::commands_aggregator()
-    .commands().replace( commands ).end()
+    .commands( commands )
     .form();
     let got = ca.instruction_perform( ".help" );
     /* print : this is help */

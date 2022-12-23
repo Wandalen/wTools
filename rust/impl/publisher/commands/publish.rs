@@ -7,7 +7,6 @@ pub( crate ) mod private
     digest,
     files,
     http,
-    instruction,
     manifest,
     process,
     path
@@ -34,27 +33,35 @@ pub( crate ) mod private
     graph::Graph,
     algo::toposort,
   };
+  use wca::{Args, Properties};
+  use wca::string::parse_request::OpType;
+
+  ///
+  /// Properties for the publish functions.
+  ///
+
+  #[ derive( Debug ) ]
+  pub struct PublishProperties
+  {
+    dry : BoolLike,
+  }
 
   ///
   /// Publish package.
   ///
 
-  pub fn publish( instruction : &instruction::Instruction ) -> Result< () >
+  pub fn publish( args: Args< String, PublishProperties > ) -> Result< () >
   {
     let current_path = env::current_dir().unwrap();
 
-    let paths = files::find( &current_path, instruction.subject.split( " " ).collect::< Vec< &str > >().as_slice() );
+    let paths = files::find( &current_path, args.subject.split( " " ).collect::< Vec< &str > >().as_slice() );
     let mut paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::< Vec< PathBuf > >();
-    if paths.is_empty() && path::valid_is( &instruction.subject )
+    if paths.is_empty() && path::valid_is( &args.subject )
     {
-      paths.push( PathBuf::from( &instruction.subject ) );
+      paths.push( PathBuf::from( &args.subject ) );
     }
 
-    let dry = match instruction.properties_map.get( "dry" )
-    {
-      Some( x ) => x.clone().primitive().unwrap().to_bool_like(),
-      None => BoolLike::False,
-    };
+    let dry = args.properties.dry;
 
     for path in paths
     {
@@ -94,7 +101,7 @@ pub( crate ) mod private
 
   fn bump( version : &str ) -> anyhow::Result< toml_edit::Item >
   {
-    let mut splits : Vec< &str > = version.split( "." ).collect();
+    let mut splits : Vec< &str > = version.split( '.' ).collect();
     let patch_version = splits[ 2 ].parse::< u32 >()? + 1;
     let v = &patch_version.to_string();
     splits[ 2 ] = v;
@@ -179,12 +186,12 @@ pub( crate ) mod private
   /// Publish packages from workspace.
   ///
 
-  pub fn workspace_publish( instruction : &instruction::Instruction ) -> Result< () >
+  pub fn workspace_publish( args: Args< String, PublishProperties > ) -> Result< () >
   {
     let current_path = env::current_dir().unwrap();
 
     let mut manifest = manifest::Manifest::new();
-    let manifest_path = manifest.manifest_path_from_str( &instruction.subject ).unwrap();
+    let manifest_path = manifest.manifest_path_from_str( &args.subject ).unwrap();
     let package_metadata = MetadataCommand::new()
     .manifest_path( &manifest_path )
     .no_deps()
@@ -194,11 +201,7 @@ pub( crate ) mod private
     let packages_map = packages_filter( &package_metadata );
     let sorted = toposort_local_packages( &packages_map );
 
-    let dry = match instruction.properties_map.get( "dry" )
-    {
-      Some( x ) => x.clone().primitive().unwrap().to_bool_like(),
-      None => BoolLike::False,
-    };
+    let dry = args.properties.dry;
 
     for name in sorted.iter()
     {
@@ -230,7 +233,7 @@ pub( crate ) mod private
     let mut deps = Graph::< &str, &str >::new();
     let _update_graph = packages.iter().map( | ( _name, package ) |
     {
-      let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == &package.name )
+      let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == package.name )
       {
         node
       }
@@ -242,7 +245,7 @@ pub( crate ) mod private
       {
         if dep.path.is_some() && dep.kind != DependencyKind::Development
         {
-          let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == &dep.name )
+          let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == dep.name )
           {
             node
           }
@@ -259,6 +262,23 @@ pub( crate ) mod private
     let sorted = toposort( &deps, None ).unwrap();
     let names = sorted.iter().rev().map( | dep_idx | deps.node_weight( *dep_idx ).unwrap().to_string() ).collect::< Vec< String > >();
     names
+  }
+
+  impl Properties for PublishProperties
+  {
+    fn parse( properties : &HashMap< String, OpType< String > > ) -> Result< Self >
+    {
+      let dry = if let Some( dry ) = properties.get( "dry" )
+      {
+        dry.clone().primitive().unwrap().to_bool_like()
+      }
+      else
+      {
+        BoolLike::False
+      };
+
+      Ok ( PublishProperties { dry } )
+    }
   }
 }
 

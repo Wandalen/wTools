@@ -21,7 +21,7 @@ keywords = [ "fundamental", "general-purpose" ]
 all-features = true
 
 include = [
-  "/rust/impl/_blank",
+  "/rust/impl/willbe",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -35,11 +35,15 @@ use_alloc = []
 
 [lib]
 name = "willbe"
-path = "rust/impl/_blank/standard_lib.rs"
+path = "rust/impl/willbe/willbe_lib.rs"
+
+[[bin]]
+name = "willbe"
+path = "rust/impl/willbe/willbe_entry.rs"
 
 [[test]]
 name = "willbe_test"
-path = "rust/test/_blank/tests.rs"
+path = "rust/test/willbe/willbe_test.rs"
 
 # [[test]]
 # name = "willbe_smoke_test"
@@ -50,6 +54,15 @@ path = "rust/test/_blank/tests.rs"
 # path = "sample/rust/willbe_trivial_sample/src/main.rs"
 
 [dependencies]
+wtools = { version = "~0.2", path = "../../rust/wtools" }
+wca = { version = "~0.1", path = "../../move/wca" }
+toml = "0.5"
+globwalk = "0.8"
+cargo_metadata = "0.15"
+path-absolutize = "3"
+petgraph = "~0.6"
+rand = "0.8.4"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+tempfile = "3"

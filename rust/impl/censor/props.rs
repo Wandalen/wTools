@@ -27,7 +27,7 @@ pub( crate ) mod private
   /// Properties parsing options.
   ///
 
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( Debug, PartialEq, Eq ) ]
   pub struct PropsParseOptions
   {
     // result : HashMap< Box< str >, Box< str > >,

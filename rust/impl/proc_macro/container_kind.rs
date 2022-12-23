@@ -12,7 +12,7 @@ pub( crate ) mod private
   /// Kind of container.
   ///
 
-  #[derive( Debug, PartialEq, Copy, Clone )]
+  #[derive( Debug, PartialEq, Eq, Copy, Clone )]
   pub enum ContainerKind
   {
     /// Not a container.
@@ -85,17 +85,17 @@ pub( crate ) mod private
 
     if type_rightmost( ty ) == Some( "Option".to_string() )
     {
-      let ty2 = type_parameters( ty, 0 ..= 0 ).first().map( | e | *e );
+      let ty2 = type_parameters( ty, 0 ..= 0 ).first().copied();
       // inspect_type::inspect_type_of!( ty2 );
       if ty2.is_none()
       {
         return ( ContainerKind::No, false )
       }
       let ty2 = ty2.unwrap();
-      return ( type_container_kind( ty2 ), true );
+      return ( type_container_kind( ty2 ), true )
     }
 
-    return ( type_container_kind( ty ), false );
+    ( type_container_kind( ty ), false )
   }
 
 }

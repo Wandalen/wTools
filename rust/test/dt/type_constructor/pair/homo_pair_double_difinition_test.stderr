@@ -16,7 +16,7 @@ error[E0428]: the name `Bad` is defined multiple times
    = note: `Bad` must be defined only once in the type namespace of this block
    = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0119]: conflicting implementations of trait `std::ops::Deref` for type `main::Bad`
+error[E0119]: conflicting implementations of trait `std::convert::From<main::Bad>` for type `(i32, i32)`
   --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
    |
 5  | /   types!
@@ -29,26 +29,9 @@ error[E0119]: conflicting implementations of trait `std::ops::Deref` for type `m
    | |   ^
    | |   |
    | |___first implementation here
-   |     conflicting implementation for `main::Bad`
+   |     conflicting implementation for `(i32, i32)`
    |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0119]: conflicting implementations of trait `std::ops::DerefMut` for type `main::Bad`
-  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
-   |
-5  | /   types!
-6  | |   {
-7  | |
-8  | |     pair Bad : i32;
-9  | |     pair Bad : i32;
-10 | |
-11 | |   }
-   | |   ^
-   | |   |
-   | |___first implementation here
-   |     conflicting implementation for `main::Bad`
-   |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0119]: conflicting implementations of trait `std::convert::From<(i32, i32)>` for type `main::Bad`
   --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
@@ -65,24 +48,7 @@ error[E0119]: conflicting implementations of trait `std::convert::From<(i32, i32
    | |___first implementation here
    |     conflicting implementation for `main::Bad`
    |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0119]: conflicting implementations of trait `std::convert::From<main::Bad>` for type `(i32, i32)`
-  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
-   |
-5  | /   types!
-6  | |   {
-7  | |
-8  | |     pair Bad : i32;
-9  | |     pair Bad : i32;
-10 | |
-11 | |   }
-   | |   ^
-   | |   |
-   | |___first implementation here
-   |     conflicting implementation for `(i32, i32)`
-   |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0119]: conflicting implementations of trait `std::convert::From<[i32; 2]>` for type `main::Bad`
   --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
@@ -99,24 +65,7 @@ error[E0119]: conflicting implementations of trait `std::convert::From<[i32; 2]>
    | |___first implementation here
    |     conflicting implementation for `main::Bad`
    |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0119]: conflicting implementations of trait `std::convert::From<main::Bad>` for type `[i32; 2]`
-  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
-   |
-5  | /   types!
-6  | |   {
-7  | |
-8  | |     pair Bad : i32;
-9  | |     pair Bad : i32;
-10 | |
-11 | |   }
-   | |   ^
-   | |   |
-   | |___first implementation here
-   |     conflicting implementation for `[i32; 2]`
-   |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0119]: conflicting implementations of trait `std::convert::From<&[i32]>` for type `main::Bad`
   --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
@@ -133,7 +82,41 @@ error[E0119]: conflicting implementations of trait `std::convert::From<&[i32]>` 
    | |___first implementation here
    |     conflicting implementation for `main::Bad`
    |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `std::convert::From<main::Bad>` for type `[i32; 2]`
+  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
+   |
+5  | /   types!
+6  | |   {
+7  | |
+8  | |     pair Bad : i32;
+9  | |     pair Bad : i32;
+10 | |
+11 | |   }
+   | |   ^
+   | |   |
+   | |___first implementation here
+   |     conflicting implementation for `[i32; 2]`
+   |
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `std::convert::From<i32>` for type `main::Bad`
+  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
+   |
+5  | /   types!
+6  | |   {
+7  | |
+8  | |     pair Bad : i32;
+9  | |     pair Bad : i32;
+10 | |
+11 | |   }
+   | |   ^
+   | |   |
+   | |___first implementation here
+   |     conflicting implementation for `main::Bad`
+   |
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0119]: conflicting implementations of trait `type_constructor::CloneAsTuple<(i32, i32)>` for type `main::Bad`
   --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
@@ -150,9 +133,9 @@ error[E0119]: conflicting implementations of trait `type_constructor::CloneAsTup
    | |___first implementation here
    |     conflicting implementation for `main::Bad`
    |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0119]: conflicting implementations of trait `type_constructor::CloneAsArray<i32, 2>` for type `main::Bad`
+error[E0119]: conflicting implementations of trait `type_constructor::Make0` for type `main::Bad`
   --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
    |
 5  | /   types!
@@ -167,75 +150,7 @@ error[E0119]: conflicting implementations of trait `type_constructor::CloneAsArr
    | |___first implementation here
    |     conflicting implementation for `main::Bad`
    |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0119]: conflicting implementations of trait `type_constructor::AsTuple<(i32, i32)>` for type `main::Bad`
-  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
-   |
-5  | /   types!
-6  | |   {
-7  | |
-8  | |     pair Bad : i32;
-9  | |     pair Bad : i32;
-10 | |
-11 | |   }
-   | |   ^
-   | |   |
-   | |___first implementation here
-   |     conflicting implementation for `main::Bad`
-   |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0119]: conflicting implementations of trait `type_constructor::AsArray<i32, 2>` for type `main::Bad`
-  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
-   |
-5  | /   types!
-6  | |   {
-7  | |
-8  | |     pair Bad : i32;
-9  | |     pair Bad : i32;
-10 | |
-11 | |   }
-   | |   ^
-   | |   |
-   | |___first implementation here
-   |     conflicting implementation for `main::Bad`
-   |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0119]: conflicting implementations of trait `type_constructor::AsSlice<i32>` for type `main::Bad`
-  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
-   |
-5  | /   types!
-6  | |   {
-7  | |
-8  | |     pair Bad : i32;
-9  | |     pair Bad : i32;
-10 | |
-11 | |   }
-   | |   ^
-   | |   |
-   | |___first implementation here
-   |     conflicting implementation for `main::Bad`
-   |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0119]: conflicting implementations of trait `type_constructor::Make1<i32>` for type `main::Bad`
-  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
-   |
-5  | /   types!
-6  | |   {
-7  | |
-8  | |     pair Bad : i32;
-9  | |     pair Bad : i32;
-10 | |
-11 | |   }
-   | |   ^
-   | |   |
-   | |___first implementation here
-   |     conflicting implementation for `main::Bad`
-   |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0119]: conflicting implementations of trait `type_constructor::Make2<i32, i32>` for type `main::Bad`
   --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
@@ -252,4 +167,123 @@ error[E0119]: conflicting implementations of trait `type_constructor::Make2<i32,
    | |___first implementation here
    |     conflicting implementation for `main::Bad`
    |
-   = note: this error originates in the macro `$crate::_pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `type_constructor::Make1<i32>` for type `main::Bad`
+  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
+   |
+5  | /   types!
+6  | |   {
+7  | |
+8  | |     pair Bad : i32;
+9  | |     pair Bad : i32;
+10 | |
+11 | |   }
+   | |   ^
+   | |   |
+   | |___first implementation here
+   |     conflicting implementation for `main::Bad`
+   |
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `type_constructor::AsTuple<(i32, i32)>` for type `main::Bad`
+  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
+   |
+5  | /   types!
+6  | |   {
+7  | |
+8  | |     pair Bad : i32;
+9  | |     pair Bad : i32;
+10 | |
+11 | |   }
+   | |   ^
+   | |   |
+   | |___first implementation here
+   |     conflicting implementation for `main::Bad`
+   |
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `type_constructor::AsSlice<i32>` for type `main::Bad`
+  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
+   |
+5  | /   types!
+6  | |   {
+7  | |
+8  | |     pair Bad : i32;
+9  | |     pair Bad : i32;
+10 | |
+11 | |   }
+   | |   ^
+   | |   |
+   | |___first implementation here
+   |     conflicting implementation for `main::Bad`
+   |
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `type_constructor::AsArray<i32, 2>` for type `main::Bad`
+  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
+   |
+5  | /   types!
+6  | |   {
+7  | |
+8  | |     pair Bad : i32;
+9  | |     pair Bad : i32;
+10 | |
+11 | |   }
+   | |   ^
+   | |   |
+   | |___first implementation here
+   |     conflicting implementation for `main::Bad`
+   |
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `type_constructor::CloneAsArray<i32, 2>` for type `main::Bad`
+  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
+   |
+5  | /   types!
+6  | |   {
+7  | |
+8  | |     pair Bad : i32;
+9  | |     pair Bad : i32;
+10 | |
+11 | |   }
+   | |   ^
+   | |   |
+   | |___first implementation here
+   |     conflicting implementation for `main::Bad`
+   |
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `std::ops::Deref` for type `main::Bad`
+  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
+   |
+5  | /   types!
+6  | |   {
+7  | |
+8  | |     pair Bad : i32;
+9  | |     pair Bad : i32;
+10 | |
+11 | |   }
+   | |   ^
+   | |   |
+   | |___first implementation here
+   |     conflicting implementation for `main::Bad`
+   |
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `std::ops::DerefMut` for type `main::Bad`
+  --> ../../../rust/test/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
+   |
+5  | /   types!
+6  | |   {
+7  | |
+8  | |     pair Bad : i32;
+9  | |     pair Bad : i32;
+10 | |
+11 | |   }
+   | |   ^
+   | |   |
+   | |___first implementation here
+   |     conflicting implementation for `main::Bad`
+   |
+   = note: this error originates in the derive macro `derive_pair::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)

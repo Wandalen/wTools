@@ -3,9 +3,7 @@ pub( crate ) mod private
 {
   use crate::command::*;
   use crate::instruction::*;
-  use wtools::meta::*;
   use wtools::error::{ Result, BasicError };
-  use wtools::string::split;
   use wtools::former::Former;
 
   ///
@@ -17,35 +15,21 @@ pub( crate ) mod private
      containers
    */
 
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( PartialEq, Debug ) ]
   #[ derive( Former ) ]
-  #[ allow( missing_docs ) ]
   pub struct CommandsAggregator
   {
-    pub base_path : Option<std::path::PathBuf>,
-    #[ default( "".to_string() ) ]
-    pub command_prefix : String,
-    #[ default( vec![ ".".to_string(), " ".to_string() ] ) ]
-    pub delimeter : Vec< String >,
-    #[ default( ";".to_string() ) ]
-    pub command_explicit_delimeter : String,
-    #[ default( " ".to_string() ) ]
-    pub command_implicit_delimeter : String,
-    #[ default( true ) ]
-    pub commands_explicit_delimiting : bool,
-    #[ default( false ) ]
-    pub commands_implicit_delimiting : bool,
-    #[ default( false ) ]
-    pub properties_map_parsing : bool,
-    #[ default( true ) ]
-    pub several_values : bool,
+    /// Command delimiter.
+    #[ default( ".".to_string() ) ]
+    pub delimiter : String,
+    /// Commands have help.
     #[ default( true ) ]
     pub with_help : bool,
-    #[ default( true ) ]
-    pub changing_exit_code : bool,
-    // logger : Option<Logger>, /* rrr : for Dmytro : implement */
+    /// If set terminates the current process with the specified exit code on error.
+    /// Otherwise returns result.
+    pub exit_code_on_error : Option< i32 >,
+    /// Commands.
     pub commands : std::collections::HashMap< String, Command >,
-    // pub vocabulary : Option<vocabulary>, /* rrr : for Dmytro : implement */
   }
 
   impl CommandsAggregator
@@ -55,36 +39,27 @@ pub( crate ) mod private
     {
       let program = program.as_ref().trim();
 
-      if !program.starts_with( '.' /* aggregator.vocabulary.default_delimeter */ )
-        || program.starts_with( "./" /* `${aggregator.vocabulary.default_delimeter}/` */ )
-        || program.starts_with( ".\\" /* `${aggregator.vocabulary.default_delimeter}\\` */ )
+      if !program.starts_with( '.' )
+        || program.starts_with( "./" )
+        || program.starts_with( ".\\" )
       {
         return self.on_syntax_error( program );
       }
 
-      /* should use logger and condition */
       println!( "Command \"{}\"", program );
 
-      let instructions = self.instructions_parse( program );
+      let instructions = if let Ok( instructions ) = self.instructions_parse( program )
+      {
+        instructions
+      }
+      else
+      {
+        return self.on_syntax_error( program );
+      };
 
       for instruction in &instructions
       {
-        match self._instruction_perform( instruction )
-        {
-          Ok( _ ) => {},
-          Err( err ) =>
-          {
-            if self.changing_exit_code
-            {
-              eprintln!( "{}", err.to_string() );
-              std::process::exit( 1 );
-            }
-            else
-            {
-              return Err( err )
-            }
-          }
-        }
+        self._instruction_perform( &instruction )?;
       }
 
       Ok( () )
@@ -93,52 +68,88 @@ pub( crate ) mod private
     /// Perform instruction.
     pub fn instruction_perform( &self, instruction : impl AsRef< str > ) -> Result< () >
     {
-      let parsed : Instruction = instruction_parse()
-      .instruction( instruction.as_ref() )
-      .several_values( self.several_values )
-      .properties_map_parsing( self.properties_map_parsing )
+      let result = DefaultInstructionParser::former()
       .quoting( true )
       .unquoting( true )
-      .perform();
+      .form()
+      .parse( instruction.as_ref() );
 
-      let result = self._instruction_perform( &parsed );
-      if result.is_err() && self.changing_exit_code
+      if let Ok( parsed ) = result
       {
-        eprintln!( "{}", result.err().unwrap().to_string() );
-        std::process::exit( 1 );
+        self._instruction_perform( &parsed )
       }
-      result
+      else
+      {
+        if self.with_help
+        {
+          return self.on_ambiguity( instruction.as_ref() );
+        }
+
+        self.on_syntax_error( instruction.as_ref() )
+      }
     }
 
     //
 
-    fn _instruction_perform( &self, instruction : &Instruction ) -> Result< () >
+    /// Parse multiple instructions.
+    pub fn instructions_parse( &self, program : impl AsRef< str > ) -> Result< Vec< Instruction > >
     {
-      let result = match self.command_resolve( instruction )
+      let parser = DefaultInstructionParser::former()
+        .several_values( true )
+        .form();
+
+      self.split_program( program.as_ref() )
+      .into_iter()
+      .map( | instruction | parser.parse( instruction ) )
+      .collect()
+    }
+
+    //
+
+    fn _instruction_perform( &self, instruction: &Instruction ) -> Result< () >
+    {
+      match self.command_resolve( instruction )
       {
-        Some( command ) =>
-        {
-          command.perform( instruction )
-        },
+        Some( command ) => command.perform( instruction ),
         None =>
         {
-          if self.with_help
-          {
-            match self.on_ambiguity( instruction.command_name.as_str() )
-            {
-              _ => (),
-            }
-          }
-          if self.changing_exit_code
-          {
-            std::process::exit( 1 );
-          }
-          Ok( () )
+          let _ = self.on_ambiguity( &instruction.command_name );
+          // NOTE: Tests don't pass without it.
+          Ok(())
         },
-      };
-
-      result
+      }
     }
+
+    //
+
+    /// Split program to instructions
+    fn split_program( &self, program : &str ) -> Vec< String >
+    {
+      let program = program.trim();
+      if program.is_empty()
+      {
+        return vec![];
+      }
+
+      let mut instructions = vec![];
+      let mut parts_iter = program.split_inclusive( ' ' );
+      let mut instruction = parts_iter.next().unwrap().to_string();
+      for part in parts_iter
+      {
+        if part.starts_with( &self.delimiter ) && !self.dotted_path_is( part )
+        {
+          instructions.push( instruction );
+          instruction = String::new();
+        }
+
+        instruction.push_str( part );
+      }
+      instructions.push( instruction );
+
+      instructions
+    }
+
+    //
 
     /// Print help for command.
     fn command_help( &self, command : impl AsRef< str > )
@@ -150,94 +161,25 @@ pub( crate ) mod private
           println!( "{}", command_descriptor.help_short() );
         }
       }
+      else if let Some( command_descriptor ) = self.commands.get( command.as_ref() )
+      {
+        println!( "{}", command_descriptor.help_long() );
+      }
       else
       {
-        if let Some( command_descriptor ) = self.commands.get( command.as_ref() )
+        match self.on_unknown_command_error( command.as_ref() )
         {
-          println!( "{}", command_descriptor.help_long() );
-        }
-        else
-        {
-          match self.on_unknown_command_error( command.as_ref() )
-          {
-            _ => ()
-          };
-        }
+          _ => ()
+        };
       }
     }
 
     /// Find command in dictionary.
-    fn command_resolve( &self, instruction : &Instruction ) -> Option<&Command>
+    fn command_resolve( &self, instruction : &Instruction ) -> Option< &Command >
     {
       self.commands.get( &instruction.command_name )
     }
 
-    /// Parse multiple instructions.
-    pub fn instructions_parse( &self, program : impl AsRef< str > ) -> Vec< Instruction >
-    {
-      let commands = split()
-      .src( program.as_ref().trim() )
-      .delimeter( self.command_explicit_delimeter.as_str() )
-      .preserving_empty( false )
-      .preserving_delimeters( false )
-      .preserving_quoting( false )
-      .perform();
-      let commands = commands.map( | e | String::from( e ) ).collect::< Vec< _ > >();
-
-      let mut string_commands = vec![];
-      for command in commands
-      {
-        let splitted = split()
-        .src( command.trim() )
-        .delimeter( self.command_implicit_delimeter.as_str() )
-        .preserving_empty( false )
-        .preserving_delimeters( false )
-        .preserving_quoting( false )
-        .perform();
-        let splitted = splitted.map( | e | String::from( e ) ).collect::< Vec< _ > >();
-
-        if self.command_implicit_delimeter == " "
-        {
-          let start_index = if splitted[ 0 ].is_empty() { 1 } else { 0 };
-          let mut string_command = String::from( &splitted[ start_index ] );
-
-          for i in start_index + 1 .. splitted.len()
-          {
-            let part = splitted[ i ].trim();
-            if part.starts_with( '.' ) && !self.dotted_path_is( part )
-            {
-              string_commands.push( string_command );
-              string_command = String::from( part );
-            }
-            else
-            {
-              string_command.push( ' ' );
-              string_command.push_str( part );
-            }
-          }
-
-          string_commands.push( string_command );
-        }
-        else
-        {
-          for command in splitted
-          {
-            string_commands.push( String::from( command.trim() ) );
-          }
-        }
-      }
-
-      let instructions = string_commands.iter().map( | instruction |
-      {
-        instruction_parse()
-        .instruction( instruction.as_str() )
-        .properties_map_parsing( true )
-        .several_values( true )
-        .perform()
-      }).collect::< Vec< Instruction > >();
-
-      instructions
-    }
 
     //
 
@@ -338,11 +280,11 @@ pub( crate ) mod private
     /// Handle error.
     fn on_error( &self, err : BasicError ) -> Result< () >
     {
-      if self.changing_exit_code
+      if let Some( code ) = self.exit_code_on_error
       {
-        /* rrr : for Dmytro : implement */
-        // unimplemented!();
+        std::process::exit( code );
       }
+
       Err( err )
     }
   }
@@ -358,7 +300,7 @@ pub( crate ) mod private
       self.on_get_help().unwrap();
 
       let err = BasicError::new( err_formatted );
-      return self.on_error( err );
+      self.on_error( err )
     }
   }
 
@@ -370,11 +312,11 @@ pub( crate ) mod private
     {
       eprintln!( "Ambiguity. Did you mean?" );
       self.command_help( command.as_ref() );
-      println!( "" );
+      println!();
 
       let err_formatted = format!( "Ambiguity \"{}\"", command.as_ref() );
       let err = BasicError::new( err_formatted );
-      return self.on_error( err );
+      self.on_error( err )
     }
   }
 
@@ -386,15 +328,13 @@ pub( crate ) mod private
     {
       let mut err_formatted = format!( "Unknown command \"{}\"", command.as_ref() );
 
-      let instruction = instruction_parse()
-      .instruction( ".help" )
-      .perform();
+      let instruction = DefaultInstructionParser::former().form().parse( ".help" )?;
       if self.command_resolve( &instruction ).is_some()
       {
         err_formatted.push_str( "\nTry \".help\"" );
       }
       let err = BasicError::new( err_formatted );
-      return self.on_error( err );
+      self.on_error( err )
     }
   }
 
@@ -404,20 +344,16 @@ pub( crate ) mod private
     /// Get help.
     fn on_get_help( &self ) -> Result< () >
     {
-      let instruction = instruction_parse()
-      .instruction( ".help" )
-      .perform();
-      if let Some( command ) = self.command_resolve( &instruction )
+      let instruction = DefaultInstructionParser::former().form().parse( ".help" )?;
+      return if let Some( command ) = self.command_resolve( &instruction )
       {
-        let instruction = instruction_parse()
-        .instruction( "" )
-        .perform();
-        return command.perform( &instruction );
+        let instruction = DefaultInstructionParser::former().form().parse( "" )?;
+        command.perform( &instruction )
       }
       else
       {
         self.command_help( "" );
-        return Ok( () );
+        Ok( () )
       }
     }
   }
@@ -428,9 +364,9 @@ pub( crate ) mod private
     /// Print all commands.
     fn on_print_commands( &self ) -> Result< () >
     {
-      println!( "" );
+      println!();
       self.command_help( "" );
-      println!( "" );
+      println!();
       Ok( () )
     }
   }

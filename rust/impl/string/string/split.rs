@@ -70,10 +70,9 @@ pub( crate ) mod private
       let mut r = vec![];
       for pat in self
       {
-        match src.find( pat )
+        if let Some( x ) =  src.find( pat )
         {
-          Some( x ) => r.push( ( x, x + pat.len() ) ),
-          None => (),
+          r.push( ( x, x + pat.len() ) )
         }
       }
 
@@ -84,20 +83,13 @@ pub( crate ) mod private
 
       r.into_iter().reduce( | accum, item |
       {
-        if accum.0 > item.0
+        if accum.0 > item.0 || accum.1 > item.1
         {
           item
         }
         else
         {
-          if accum.1 > item.1
-          {
-            item
-          }
-          else
-          {
-            accum
-          }
+          accum
         }
       })
     }
@@ -156,7 +148,7 @@ pub( crate ) mod private
         let positions = self.delimeter.pos( self.iterable );
         if let Some( ( mut start, end ) ) = positions
         {
-          if self.iterable == "" && start == end
+          if self.iterable.is_empty() && start == end
           {
             if self.stop_empty
             {
@@ -176,13 +168,10 @@ pub( crate ) mod private
           }
 
           let mut next = &self.iterable[ ..start ];
-          if start == end
+          if start == end && self.counter >= 3
           {
-            if self.counter >= 3
-            {
-              next = &self.iterable[ ..start + 1 ];
-              start += 1;
-            }
+            next = &self.iterable[ ..start + 1 ];
+            start += 1;
           }
 
           self.iterable = &self.iterable[ start.. ];
@@ -194,18 +183,15 @@ pub( crate ) mod private
 
           Some( Split { string : next, typ : SplitType::Delimeted } )
         }
+        else if self.iterable.is_empty()
+        {
+          None
+        }
         else
         {
-          if self.iterable == ""
-          {
-            return None;
-          }
-          else
-          {
-            let r = Split { string : self.iterable, typ : SplitType::Delimeted };
-            self.iterable = "";
-            return Some( r );
-          }
+          let r = Split { string : self.iterable, typ : SplitType::Delimeted };
+          self.iterable = "";
+          Some( r )
         }
       }
       else
@@ -227,11 +213,11 @@ pub( crate ) mod private
 
         if self.preserving_delimeters
         {
-          return Some( Split { string, typ : SplitType::Delimeter } );
+          Some( Split { string, typ : SplitType::Delimeter } )
         }
         else
         {
-          return self.next();
+          self.next()
           // return self.next_odd_split();
         }
       }
@@ -337,12 +323,9 @@ pub( crate ) mod private
             return self.next();
           }
         }
-        else
+        else if !self.quoting
         {
-          if !self.quoting
-          {
-            return Some( split );
-          }
+          return Some( split );
         }
 
         if !self.preserving_delimeters
@@ -394,23 +377,22 @@ pub( crate ) mod private
           let start = pos - split_str.len();
           let end = self.iterator.iterable.find( postfix );
 
-          if end.is_none()
+          if let Some( end ) = end
           {
-            self.iterator.iterable = "";
-            return Split { string : &self.src[ start.. ], typ : SplitType::Delimeted };
-          }
-          else
-          {
-            let end = end.unwrap();
             while self.iterator.next().unwrap().string != postfix {}
             if self.preserving_quoting
             {
-              return Split { string : &self.src[ start..pos + end + postfix.len() ], typ : SplitType::Delimeted };
+              Split { string : &self.src[ start..pos + end + postfix.len() ], typ : SplitType::Delimeted }
             }
             else
             {
-              return Split { string : &self.src[ start + split_str.len() ..pos + end ], typ : SplitType::Delimeted };
+              Split { string : &self.src[ start + split_str.len() ..pos + end ], typ : SplitType::Delimeted }
             }
+          }
+          else
+          {
+            self.iterator.iterable = "";
+            Split { string : &self.src[ start.. ], typ : SplitType::Delimeted }
           }
         },
         None => Split { string : split_str, typ : SplitType::Delimeted },

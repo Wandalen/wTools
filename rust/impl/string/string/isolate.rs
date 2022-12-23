@@ -55,11 +55,11 @@ pub( crate ) mod private
       {
         if self.none
         {
-          return ( "", None, src );
+          ( "", None, src )
         }
         else
         {
-          return ( src, None, "" );
+          ( src, None, "" )
         }
       };
 
@@ -69,11 +69,11 @@ pub( crate ) mod private
       {
         if self.none
         {
-          return ( src, None, "" );
+          ( src, None, "" )
         }
         else
         {
-          return ( "", None, src );
+          ( "", None, src )
         }
       };
 

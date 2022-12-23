@@ -42,9 +42,13 @@ pub mod exposed
     rev,
     sorted,
     unfold,
-    zip,
+    // zip,
     zip_eq,
   };
+
+  #[ cfg( feature = "use_std" ) ]
+  #[ doc( inline ) ]
+  pub use std::iter::zip;
 
 }
 

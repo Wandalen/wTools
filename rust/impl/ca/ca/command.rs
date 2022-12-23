@@ -1,166 +1,140 @@
-#![ allow( missing_docs ) ]
-/* does not work locally */
-/* rrr : for Dmytro : remove when former will be extended */
-
 pub( crate ) mod private
 {
   use std::
   {
     collections::HashMap,
     rc::Rc,
-    fmt,
   };
+  use std::fmt::Formatter;
   use wtools::
   {
     error::{ Result, BasicError },
     meta::Former,
   };
+  use wtools::string::parse_request::OpType;
+  use crate::Instruction;
 
   ///
-  /// Handle for command routine.
+  /// A type that implements ['Properties'] can be used as 'properties' in ['Args'].
   ///
 
-  pub struct OnCommand( Option< Rc< dyn Fn( &crate::instruction::Instruction ) -> Result< () > > > );
-
-  impl OnCommand
+  pub trait Properties : Sized
   {
-    /// Checks that OnCommand has callback to call.
-    pub fn callable( &self ) -> bool
-    {
-      if self.0.is_some()
-      {
-        true
-      }
-      else
-      {
-        false
-      }
-    }
-    /// Perform callback.
-    pub fn perform( &self, instruction : &crate::instruction::Instruction ) -> Result< () >
-    {
-      if self.0.is_some()
-      {
-        let r = self.0.as_ref().unwrap();
-        return r( instruction );
-      }
-
-      Ok( () )
-    }
+    /// Parse properties.
+    fn parse( properties : &HashMap< String, OpType< String > > ) -> Result< Self >;
   }
 
-  impl Default for OnCommand
+  ///
+  /// A type that implements ['Subject'] can be used as 'subject' in ['Args'].
+  ///
+
+  pub trait Subject : Sized
   {
-    fn default() -> Self
-    {
-      Self ( Option::None )
-    }
+    /// Parse subject.
+    fn parse( input: impl AsRef< str > ) -> Result< Self >;
   }
 
-  impl From< &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > > for OnCommand
-  {
-    fn from( src : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> Self
-    {
-      OnCommand( Some( Rc::new( src ) ) )
-    }
-  }
-
-  impl Clone for OnCommand
-  {
-    fn clone( &self ) -> Self
-    {
-      match self
-      {
-        OnCommand ( Option::None ) => Self ( None ),
-        OnCommand ( Option::Some( boxed ) ) => Self ( Some( boxed.clone() ) ),
-      }
-    }
-  }
-
-  impl fmt::Debug for OnCommand
-  {
-    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-    {
-      match self
-      {
-        OnCommand ( Option::None ) => f.write_str( "None" ),
-        OnCommand ( Option::Some( _rc ) ) => f.write_str( "OnCommand" ),
-      }
-    }
-  }
-
-  // impl PartialEq for OnCommand
-  // {
-  //   fn eq( &self, other : &Self ) -> bool
-  //   {
-  //     match self
-  //     {
-  //       OnCommand( Option::None ) =>
-  //       {
-  //         if other.0.is_none()
-  //         {
-  //           return true;
-  //         }
-  //         false
-  //       },
-  //     }
-  //   }
-  // }
   ///
   /// Command descriptor.
   ///
 
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Clone, PartialEq, Debug ) ]
   #[ derive( Former ) ]
   pub struct Command
   {
-    // /// Command common hint.
+    /// Command common hint.
+    #[ alias( h ) ]
     pub hint : String,
-    // /// Command full hint.
+    /// Command full hint.
+    #[ alias( lh ) ]
     pub long_hint : String,
-    // /// Phrase descriptor for command.
+    /// Phrase descriptor for command.
     pub phrase : String,
-    // /// Command subject hint.
+    /// Command subject hint.
     pub subject_hint : String,
-    // /// Hints for command options.
+    /// Hints for command options.
     pub properties_hints : HashMap< String, String >,
-    // /// Map of aliases.
+    /// Map of aliases.
     pub properties_aliases : HashMap< String, Vec< String > >,
-    // /// Command routine.
-    /* rrr : for Dmytro : use name `routine` when former will be extended */
-    pub _routine : OnCommand,
+    /// Command routine.
+    #[ setter( false ) ]
+    pub routine : Routine,
+  }
+
+  ///
+  /// Routine handle.
+  ///
+
+  #[ derive( Clone ) ]
+  pub struct Routine
+  {
+    callback : Rc< dyn Fn( &Instruction ) ->  Result< () > >,
+  }
+
+  ///
+  /// Command args. Used in ['Routine'] as the routine args.
+  ///
+
+  pub struct Args< S, P >
+  {
+    /// Subject of the command.
+    pub subject: S,
+    /// Properties of the command.
+    pub properties: P,
+  }
+
+  ///
+  /// Used in ['Args'] when a command doesn't expect properties.
+  ///
+
+  #[ derive( Debug, PartialEq ) ]
+  pub struct NoProperties;
+
+  ///
+  /// Used in ['Args'] when a command doesn't expect subject.
+  ///
+
+  #[ derive( Debug, PartialEq ) ]
+  pub struct NoSubject;
+
+  impl Command
+  {
+    /// Generate short help for command.
+    pub fn help_short( &self ) -> String
+    {
+      format!( ".{} - {}", self.phrase.replace( " ", "." ), self.hint )
+    }
+
+    /// Generate short help for command.
+    pub fn help_long( &self ) -> String
+    {
+      let properties_hints = self.properties_hints.iter().map( | ( key, value ) | format!( "  {} - {}", key, value ) ).collect::< Vec< _ > >();
+      let properties_hints = properties_hints.join( "\n" );
+      format!( ".{} - {}\n{}", self.phrase.replace( " ", "." ), self.long_hint, properties_hints )
+    }
+
+    /// Execute callback.
+    pub fn perform( &self, instruction : &crate::instruction::Instruction ) -> Result< () >
+    {
+      if self.subject_hint.len() == 0 && instruction.subject.len() != 0
+      {
+        return Err( BasicError::new( "Unexpected subject." ) );
+      }
+
+      for ( key, _value ) in &instruction.properties_map
+      {
+        if self.properties_hints.get( key.as_str() ).is_none()
+        {
+          return Err( BasicError::new( "Unknown option." ) );
+        }
+      }
+
+      self.routine.perform( instruction )
+    }
   }
 
   impl CommandFormer
   {
-    /// Alias for routine `routine`.
-    pub fn routine( mut self, src : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> Self
-    {
-      self._routine = ::core::option::Option::Some( OnCommand( Some( Rc::new( src ) ) ) );
-      self
-    }
-
-    /// Alias for routine `hint`.
-    pub fn h( mut self, help : impl AsRef< str > ) -> Self
-    {
-      self.hint = Some( help.as_ref().into() );
-      self
-    }
-
-    /// Alias for routine `long_hint`.
-    pub fn lh( mut self, help : impl AsRef< str > ) -> Self
-    {
-      self.long_hint = Some( help.as_ref().into() );
-      self
-    }
-
-    /// Alias for routine `routine`.
-    pub fn ro( mut self, src : &'static dyn Fn( &crate::instruction::Instruction ) -> Result< () > ) -> Self
-    {
-      self._routine = ::core::option::Option::Some( OnCommand( Some( Rc::new( src ) ) ) );
-      self
-    }
-
     /// Setter for separate properties.
     pub fn property_hint< S : AsRef< str > >( mut self, key : S, hint : S ) -> Self
     {
@@ -204,59 +178,132 @@ pub( crate ) mod private
       }
       self
     }
-  }
 
-  impl PartialEq for Command
-  {
-    /* rrr : for Dmytro : extend */
-    fn eq( &self, other: &Self ) -> bool
+    ///
+    /// Routine setter.
+    ///
+
+    pub fn routine< F, S, P >( mut self, callback: F ) -> Self
+    where
+      F : Fn( Args< S, P > ) -> Result< () > + 'static,
+      S : Subject,
+      P : Properties,
     {
-      self.hint == other.hint
-      && self.long_hint == other.long_hint
-      && self.subject_hint == other.subject_hint
-      && self.properties_hints == other.properties_hints
-      && self.properties_aliases == other.properties_aliases
-      /* rrr : for Dmytro : try to extend using option OnCommand */
+      self.routine = Some( Routine::new( callback ) );
+      self
+    }
+
+    ///
+    /// Alias for 'routine'.
+    ///
+
+    pub fn ro< F, S, P >( self, callback: F ) -> Self
+      where
+        F : Fn( Args< S, P > ) -> Result< () > + 'static,
+        S : Subject,
+        P : Properties,
+    {
+      self.routine( callback )
     }
   }
 
-  impl Command
+  impl Routine
   {
-    /// Generate short help for command.
-    pub fn help_short( &self ) -> String
+    ///
+    /// Create new routine.
+    ///
+
+    pub fn new< F, S, P >( callback: F ) -> Self
+    where
+      F : Fn( Args< S, P > ) -> Result< () > + 'static,
+      S : Subject,
+      P : Properties,
     {
-      format!( ".{} - {}", self.phrase.replace( " ", "." ), self.hint )
+      let callback = move | instruction: &Instruction |
+      {
+        let subject = S::parse( &instruction.subject )?;
+        let properties = P::parse( &instruction.properties_map )?;
+
+        callback( Args { subject, properties } )
+      };
+
+      Routine { callback: Rc::new( callback ) }
     }
 
-    /// Generate short help for command.
-    pub fn help_long( &self ) -> String
+    /// Perform callback.
+    pub fn perform( &self, instruction: &Instruction ) -> Result< () >
     {
-      let properties_hints = self.properties_hints.iter().map( | ( key, value ) | format!( "  {} - {}", key, value ) ).collect::< Vec< _ > >();
-      let properties_hints = properties_hints.join( "\n" );
-      format!( ".{} - {}\n{}", self.phrase.replace( " ", "." ), self.long_hint, properties_hints )
+      ( self.callback )( instruction )
     }
+  }
 
-    /// Execute callback.
-    pub fn perform( &self, instruction : &crate::instruction::Instruction ) -> Result< () >
+  impl std::fmt::Debug for Routine
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      if self.subject_hint.len() == 0 && instruction.subject.len() != 0
-      {
-        return Err( BasicError::new( "Unexpected subject." ) );
-      }
+      f.write_str( "Routine" )
+    }
+  }
 
-      for ( key, _value ) in &instruction.properties_map
-      {
-        if self.properties_hints.get( key.as_str() ).is_none()
-        {
-          return Err( BasicError::new( "Unknown option." ) );
-        }
-      }
-      if self._routine.callable()
-      {
-        return self._routine.perform( instruction );
-      }
+  impl PartialEq for Routine
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      // We can't compare closures. Because every closure has a separate type, even if they're identical.
+      // Therefore, we check that the two Rc's point to the same closure (allocation).
+      Rc::ptr_eq( &self.callback, &other.callback )
+    }
+  }
 
-      Ok( () )
+  impl< S, P > std::fmt::Debug for Args< S, P >
+  where
+    S: std::fmt::Debug,
+    P: std::fmt::Debug,
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      f.debug_struct( "Args" )
+      .field( "properties", &self.properties )
+      .field( "subject", &self.subject )
+      .finish()
+    }
+  }
+
+  impl Properties for NoProperties
+  {
+    fn parse( properties : &HashMap< String, OpType< String > > ) -> Result< Self >
+    {
+      if properties.is_empty()
+      {
+        Ok( NoProperties )
+      }
+      else
+      {
+        Err( BasicError::new( "Non empty properties map" ) )
+      }
+    }
+  }
+
+  impl Subject for NoSubject
+  {
+    fn parse( input : impl AsRef< str > ) -> Result< Self >
+    {
+      if input.as_ref().is_empty()
+      {
+        Ok( NoSubject )
+      }
+      else
+      {
+        Err( BasicError::new( "Non empty subject" ) )
+      }
+    }
+  }
+
+  impl Subject for String
+  {
+    fn parse( input : impl AsRef< str > ) -> Result< Self >
+    {
+      Ok( input.as_ref().to_string() )
     }
   }
 }
@@ -265,7 +312,12 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use OnCommand;
+  prelude use Routine;
   prelude use Command;
   prelude use CommandFormer;
+  prelude use Args;
+  exposed use NoProperties;
+  exposed use NoSubject;
+  exposed use Properties;
+  exposed use Subject;
 }

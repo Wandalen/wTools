@@ -38,14 +38,12 @@ pub( crate ) mod private
     .routine( &crate::commands::list::list )
     .form();
 
-    let ca_map = std::collections::HashMap::from
+    std::collections::HashMap::from
     ([
       ( ".publish".to_string(), publish_command ),
       ( ".workspace.publish".to_string(), workspace_publish_command ),
       ( ".list".to_string(), list_command ),
-    ]);
-
-    ca_map
+    ])
   }
 }
 //
