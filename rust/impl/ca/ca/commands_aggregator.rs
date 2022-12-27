@@ -38,32 +38,47 @@ pub( crate ) mod private
   }
 
   #[ derive( Debug, Clone ) ]
-  /// Basic context which contains commands hashmap
+  /// Container for contexts values
   pub struct Context
   {
-    inner : Rc< RefCell< dyn std::any::Any > >
+    inner : Rc< RefCell< anymap::AnyMap > >
   }
 
   impl Context
   {
     /// Create context
-    pub fn new( data : impl std::any::Any ) -> Self
+    pub fn new< T : 'static >( value : T ) -> Self
     {
-      Self { inner : Rc::new( RefCell::new( data ) ) }
+      let mut contexts = anymap::AnyMap::new();
+      contexts.insert( value );
+
+      Self { inner : Rc::new( RefCell::new( contexts ) ) }
+    }
+
+    /// Insert the T value to the context. If it is alredy exists - replace it
+    pub fn insert< T : 'static >( &mut self, value : T )
+    {
+      self.inner.borrow_mut().insert( value );
+    }
+
+    /// Removes the T value from the context
+    pub fn remove< T : 'static >( &mut self )
+    {
+      self.inner.borrow_mut().remove::< T >();
     }
 
     /// Return immutable reference on interior object. ! Unsafe !
     pub fn get_ref< T : 'static >( &self ) -> Option< &T >
     {
       // ! how do it better?
-      unsafe { self.inner.as_ptr().as_ref().and_then( | c | c.downcast_ref() ) }
+      unsafe{ self.inner.as_ptr().as_ref()?.get() }
     }
 
     /// Return mutable reference on interior object. ! Unsafe !
     pub fn get_mut< T : 'static >( &self ) -> Option< &mut T >
     {
       // ! how do it better?
-      unsafe { self.inner.as_ptr().as_mut().and_then( | c | c.downcast_mut() ) }
+      unsafe { self.inner.as_ptr().as_mut()?.get_mut() }
     }
   }
 

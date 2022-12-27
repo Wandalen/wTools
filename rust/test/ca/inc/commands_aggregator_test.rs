@@ -352,6 +352,260 @@ tests_impls!
     };
     a_id!( got, vec![ instruction1, instruction2 ] );
   }
+
+  fn program_perform_with_context()
+  {
+    use wtools::Itertools;
+
+    let eat_command : Command = wca::Command::former()
+    .hint( "Eat." )
+    .long_hint( "Clear a list." )
+    .phrase( ".eat" )
+    .subject_hint( "some command" )
+    .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
+    {
+      let mut ctx = ctx.get_mut::< Vec< i32 > >().unwrap();
+      ctx.clear();
+
+      Ok( () )
+    })
+    .form();
+
+    let list_command : Command = wca::Command::former()
+    .hint( "List." )
+    .long_hint( "Make a list." )
+    .phrase( ".list" )
+    .subject_hint( "some command" )
+    .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
+    {
+      let mut ctx = ctx.get_mut::< Vec< i32 > >().unwrap();
+      *ctx = vec![ 1, 2, 3 ];
+
+      Ok( () )
+    })
+    .form();
+
+    let inc_command : Command = wca::Command::former()
+    .hint( "Increase values." )
+    .long_hint( "Increment list vales." )
+    .phrase( ".inc" )
+    .subject_hint( "some command" )
+    .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
+    {
+      let mut ctx = ctx.get_mut::< Vec< i32 > >().unwrap();
+      ctx.iter_mut().for_each( | i | { *i += 1; } );
+
+      Ok( () )
+    })
+    .form();
+
+    let commands = vec![ list_command, eat_command, inc_command ]
+    .into_iter()
+    .map( | command | ( command.phrase.to_string(), command ) )
+    .collect::< HashMap< String, Command > >();
+
+    let ca = wca::commands_aggregator()
+    .commands( commands )
+    .context( wca::Context::new( Vec::< i32 >::new() ) )
+    .form();
+
+    // get a list and increment values
+    let got = ca.program_perform( ".list .inc" );
+    let ctx = ca.context.as_ref().unwrap();
+    let ctx = ctx.get_ref::< Vec< i32 > >().unwrap();
+    a_id!( got, Ok( () ) );
+    a_id!( vec![ 2, 3, 4 ], *ctx );
+
+    // get a list and increment twice values
+    let got = ca.program_perform( ".list .inc .inc" );
+    let ctx = ca.context.as_ref().unwrap();
+    let ctx = ctx.get_ref::< Vec< i32 > >().unwrap();
+    a_id!( got, Ok( () ) );
+    a_id!( vec![ 3, 4, 5 ], *ctx );
+
+    // get a list, increment values and clear the list
+    let got = ca.program_perform( ".list .inc .eat" );
+    let ctx = ca.context.as_ref().unwrap();
+    let ctx = ctx.get_ref::< Vec< i32 > >().unwrap();
+    a_id!( got, Ok( () ) );
+    a_id!( Vec::< i32 >::new(), *ctx );
+
+    // eat an empty list and icrease its values(do nothing)
+    let got = ca.program_perform( ".eat .inc" );
+    let ctx = ca.context.as_ref().unwrap();
+    let ctx = ctx.get_ref::< Vec< i32 > >().unwrap();
+    a_id!( got, Ok( () ) );
+    a_id!( Vec::< i32 >::new(), *ctx );
+  }
+
+  fn program_perform_with_several_context_values()
+  {
+    use wtools::Itertools;
+
+    let list_command : Command = wca::Command::former()
+    .hint( "List." )
+    .long_hint( "Make a list." )
+    .phrase( ".list" )
+    .subject_hint( "some command" )
+    .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
+    {
+      let mut ctx = ctx.get_mut::< Vec< i32 > >().unwrap();
+      *ctx = vec![ 1, 2, 3 ];
+
+      Ok( () )
+    })
+    .form();
+
+    let inc_command : Command = wca::Command::former()
+    .hint( "Increase values." )
+    .long_hint( "Add value from context. Grows every call" )
+    .phrase( ".inc" )
+    .subject_hint( "some command" )
+    .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
+    {
+      let mut vec = ctx.get_mut::< Vec< i32 > >().unwrap();
+      let mut value = ctx.get_mut::< i32 >().unwrap();
+
+      vec.iter_mut().for_each( | i | { *i += *value; } );
+
+      *value += 1;
+
+      Ok( () )
+    })
+    .form();
+
+    let commands = vec![ list_command, inc_command ]
+    .into_iter()
+    .map( | command | ( command.phrase.to_string(), command ) )
+    .collect::< HashMap< String, Command > >();
+
+    let mut ctx = wca::Context::new( Vec::< i32 >::new() );
+    ctx.insert( 1_i32 );
+
+    let mut ca = wca::commands_aggregator()
+    .commands( commands )
+    .context( ctx )
+    .form();
+
+    // get a list and increment values
+    let got = ca.program_perform( ".list .inc" );
+    let ctx = ca.context.as_ref().unwrap();
+    let ctx = ctx.get_ref::< Vec< i32 > >().unwrap();
+    a_id!( got, Ok( () ) );
+    a_id!( vec![ 2, 3, 4 ], *ctx );
+
+    // reset context
+    let mut ctx = wca::Context::new( Vec::< i32 >::new() );
+    ctx.insert( 1_i32 );
+    ca.context = Some( ctx );
+
+    // get a list and increment twice values
+    // [ 1, 2, 3 ] +1 -> [ 2, 3, 4 ] +2 -> [ 4, 5, 6 ]
+    let got = ca.program_perform( ".list .inc .inc" );
+    let ctx = ca.context.as_ref().unwrap();
+    let ctx = ctx.get_ref::< Vec< i32 > >().unwrap();
+    a_id!( got, Ok( () ) );
+    assert_eq!( vec![ 4, 5, 6 ], *ctx );
+  }
+
+  // TODO: Rename
+  fn chainsaw_man()
+  {
+    let list_command : Command = wca::Command::former()
+    .hint( "Iterator." )
+    .long_hint( "Iterator over 1, 2, 3." )
+    .phrase( ".iter" )
+    .subject_hint( "some command" )
+    .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
+    {
+      let state = ctx.get_mut::< State >().ok_or_else( || BasicError::new( "Have no State" ) )?;
+      state.current_value = state.iter.next();
+
+      Ok( () )
+    })
+    .form();
+
+    let inc_command : Command = wca::Command::former()
+    .hint( "Increment values." )
+    .long_hint( "" )
+    .phrase( ".inc" )
+    .subject_hint( "some command" )
+    .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
+    {
+      let state = ctx.get_mut::< State >().ok_or_else( || BasicError::new( "Have no State" ) )?;
+      state.current_value = state.current_value.map( | mut v | v + 1 );
+
+      Ok( () )
+    })
+    .form();
+
+    let print_command : Command = wca::Command::former()
+    .hint( "Prints values." )
+    .long_hint( "" )
+    .phrase( ".print" )
+    .subject_hint( "some command" )
+    .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
+    {
+      let state = ctx.get_ref::< State >().ok_or_else( || BasicError::new( "Have no State" ) )?;
+      if let Some( value ) = state.current_value {
+        println!( "{value}" );
+      }
+
+      Ok( () )
+    })
+    .form();
+
+    let collect_command : Command = wca::Command::former()
+    .hint( "Back to begin." )
+    .long_hint( "" )
+    .phrase( ".collect" )
+    .subject_hint( "some command" )
+    .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
+    {
+      let state = ctx.get_ref::< State >().ok_or_else( || BasicError::new( "Have no State" ) )?;
+      if state.current_value.is_some()
+      {
+        // TODO: Go back to the `iter` somehow
+      }
+
+      Ok( () )
+    })
+    .form();
+
+    let commands = vec![ list_command, inc_command, print_command, collect_command ]
+    .into_iter()
+    .map( | command | ( command.phrase.to_string(), command ) )
+    .collect::< HashMap< String, Command > >();
+
+    struct State
+    {
+      current_value : Option< i32 >,
+      iter : Box< dyn Iterator< Item = i32 > >,
+    }
+
+    // ? It's not a context, and it's not args of routine.. What is it?
+    struct ProgramState
+    {
+      current : i32, // number of current instruction
+      breakpoints : Vec< i32 >, // where to return.  E.g. `each` instruction number
+    }
+
+    // Need ability to manage execution statement
+    // Now all commands executs from begin to end and can not repeat something
+
+    let vec = vec![ 1, 2, 3 ];
+    let mut ctx = wca::Context::new( State { current_value : None, iter : Box::new( vec.into_iter() ) } );
+
+    let mut ca = wca::commands_aggregator()
+    .commands( commands )
+    .context( ctx )
+    .form();
+
+    let got = ca.program_perform( ".iter .inc .print .collect" );
+    // let ctx = ca.context.as_ref().unwrap();
+    // let ctx = ctx.get_ref::< State >().unwrap();
+    a_id!( got, Ok( () ) );
+  }
 }
 
 //
@@ -364,5 +618,8 @@ tests_index!
   instruction_perform_basic,
   instructions_parse_basic,
   instructions_with_paths,
+  program_perform_with_context,
+  program_perform_with_several_context_values,
+  chainsaw_man,
 }
 
