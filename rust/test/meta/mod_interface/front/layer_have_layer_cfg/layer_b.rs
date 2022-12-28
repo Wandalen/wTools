@@ -33,7 +33,7 @@ mod private
 
 /// Super struct.
 #[ derive( Debug, PartialEq ) ]
-pub struct SuperStruct2
+pub struct SubStruct2
 {
 }
 

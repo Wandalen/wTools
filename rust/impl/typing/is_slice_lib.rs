@@ -10,7 +10,7 @@
 //! Macro to answer the question: is it a slice?
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Internal namespace.
 pub( crate ) mod private
@@ -74,6 +74,7 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
@@ -83,12 +84,14 @@ pub use protected::*;
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 }
 

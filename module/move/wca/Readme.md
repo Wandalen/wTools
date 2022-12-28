@@ -12,19 +12,19 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 ```rust
 #[ cfg( feature = "use_std" ) ]
 {
+  use std::collections::HashMap;
   use wca::*;
-  use wca::string::parse_request::OpType;
+  use wca::string::parse_request::OpType::Primitive;
 
-  let instruction = instruction::instruction_parse()
-  .instruction( ".get some v:1" )
-  .perform();
-  let properties_map = std::collections::HashMap::from([ ( "v".to_string(), OpType::Primitive( "1".to_string() ) ) ]);
-  let exp = instruction::Instruction
+  let parser = DefaultInstructionParser::former().form();
+  let instruction = parser
+  .parse( ".get some v:1" )
+  .unwrap();
+  let exp = wca::instruction::Instruction
   {
-    err : None,
     command_name : ".get".to_string(),
     subject : "some".to_string(),
-    properties_map,
+    properties_map : HashMap::from([ ( "v".to_string(), Primitive( "1".to_string() ) ) ]),
   };
   assert_eq!( instruction, exp );
 }

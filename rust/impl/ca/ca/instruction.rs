@@ -1,21 +1,37 @@
 
 pub( crate ) mod private
 {
-  pub use wtools::error::BasicError;
+  pub use wtools::error::
+  {
+    Result,
+    BasicError
+  };
   pub use wtools::string::parse_request;
   pub use wtools::string::parse_request::OpType;
   pub use wtools::former::Former;
   use std::collections::HashMap;
 
   ///
+  /// Instruction parser.
+  ///
+
+  pub trait InstructionParser
+  {
+    /// Return help about valid command format.
+    fn about_command_format( &self ) -> &'static str;
+    /// Check that command name is valid.
+    fn command_name_is_valid( &self, command_name : &str ) -> bool;
+    /// Parse instruction from string slice.
+    fn parse( &self, input : impl AsRef< str > ) -> Result< Instruction >;
+  }
+
+  ///
   /// Instruction handle.
   ///
 
-  #[ derive( Debug, Default, PartialEq ) ]
+  #[ derive( Debug, Default, PartialEq, Eq ) ]
   pub struct Instruction
   {
-    /// Error of Instruction forming.
-    pub err : Option< BasicError >,
     /// Name of command
     pub command_name : String,
     /// Subject.
@@ -25,19 +41,15 @@ pub( crate ) mod private
   }
 
   ///
-  /// Parameters for parsing instructions.
+  /// Default parser used in CommandAggregator.
   ///
 
   #[ derive( Debug ) ]
   #[ derive( Former ) ]
-  #[ perform( fn parse( &self ) -> Instruction ) ]
-  pub struct InstructionParseParams< 'a >
+  pub struct DefaultInstructionParser
   {
-    #[ default( "" ) ]
-    instruction : &'a str,
-    properties_map : Option< HashMap< String, OpType< String > > >,
-    #[ default( true ) ]
-    properties_map_parsing : bool,
+    /// Allows to inject some properties in each parser call.
+    properties: Vec< ( String, OpType< String > ) >,
     #[ default( true ) ]
     several_values : bool,
     #[ default( true ) ]
@@ -48,119 +60,67 @@ pub( crate ) mod private
     subject_win_paths_maybe : bool,
   }
 
-  impl< 'a > InstructionParseParams< 'a >
-  {
-    /// Set not default builder field `properties_map`.
-    pub fn properties_map( mut self, properties_map : HashMap< String, OpType< String > > ) -> InstructionParseParams< 'a >
-    {
-      self.properties_map = Some( properties_map );
-      self
-    }
-  }
-
-  ///
-  /// Instruction behaviour.
-  ///
-
-  pub trait InstructionParseParamsAdapter
-  {
-    /// Print info about valid command format.
-    fn about_command_format( &self ) -> &'static str;
-    /// Check that command name is valid.
-    fn command_name_is_valid( &self, command_name : &str ) -> bool;
-    /// Parse instruction from string slice.
-    fn parse_str( &self ) -> Instruction;
-    /// Main parser.
-    fn parse( &self ) -> Instruction;
-  }
-
-  //
-
-  impl < 'a >InstructionParseParamsAdapter for InstructionParseParams< 'a >
+  impl InstructionParser for DefaultInstructionParser
   {
     fn about_command_format( &self ) -> &'static str
     {
-  r#"Command should start from a dot `.`.
-  Command can have a subject and properties.
-  Property is pair delimited by colon `:`.
-  For example: `.struct1 subject key1:val key2:val2`."#
+r#"A command should start from a dot `.`.
+Commands can have a subject and properties.
+Property is a pair that is delimited by a colon `:`.
+For example: `.struct1 subject key1:val key2:val2`."#
     }
+
     fn command_name_is_valid( &self, command_name : &str ) -> bool
     {
-      command_name.trim().starts_with( "." )
+      command_name.trim().starts_with( '.' )
     }
-    fn parse_str( &self ) -> Instruction
-    {
-      let mut result = Instruction::default();
 
-      let ( command_name, request ) = match self.instruction.split_once( " " )
+    fn parse( &self, input : impl AsRef< str > ) -> Result< Instruction >
+    {
+      let ( command_name, request ) = match input.as_ref().split_once( ' ' )
       {
         Some( entries ) => entries,
-        None => ( self.instruction, "" ),
+        None => ( input.as_ref(), "" ),
       };
 
-      result.command_name = command_name.to_string();
-
-      if !self.command_name_is_valid( &result.command_name[ .. ] )
+      if !self.command_name_is_valid( command_name )
       {
         self.about_command_format();
-        result.err = Some( BasicError::new( "Invalid command" ) );
-        return result;
+        return Err( BasicError::new( "Invalid command" ) );
       }
 
       let request = parse_request::request_parse()
-      .src( request )
-      .several_values( self.several_values )
-      .quoting( self.quoting )
-      .unquoting( self.unquoting )
-      .subject_win_paths_maybe( self.subject_win_paths_maybe )
-      .perform();
+        .src( request )
+        .several_values( self.several_values )
+        .quoting( self.quoting )
+        .unquoting( self.unquoting )
+        .subject_win_paths_maybe( self.subject_win_paths_maybe )
+        .perform();
 
       if request.subjects.len() > 1
       {
-        result.err = Some( BasicError::new( "Too many instructions" ) );
-        return result;
+        return Err( BasicError::new( "Too many instructions" ) );
       }
 
-      if self.properties_map_parsing /* dead code to delete */
+      let subject = request.subject;
+      let mut properties_map = request.map;
+      let command_name = command_name.to_string();
+
+      for ( key, value ) in &self.properties
       {
+        properties_map.insert( key.clone(), value.clone() );
       }
 
-      result.subject = request.subject.clone();
-      result.properties_map = request.map.clone();
-
-      if self.properties_map.is_some()
-      {
-        for ( key, value ) in self.properties_map.as_ref().unwrap().iter()
-        {
-          result.properties_map.insert( key.clone(), value.clone() );
-        }
-      }
-
-      result
+      Ok( Instruction { command_name, subject, properties_map } )
     }
-    fn parse( &self ) -> Instruction
-    {
-      self.parse_str()
-    }
-  }
-
-  ///
-  /// Get instruction parser builder.
-  ///
-
-  pub fn instruction_parse< 'a >() -> InstructionParseParamsFormer< 'a >
-  {
-    InstructionParseParams::former()
   }
 }
 
 //
 
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
-  protected use Instruction;
-  protected use InstructionParseParams;
-  exposed use instruction_parse;
-  prelude use InstructionParseParamsAdapter;
+  exposed use Instruction;
+  exposed use InstructionParser;
+  exposed use DefaultInstructionParser;
 }

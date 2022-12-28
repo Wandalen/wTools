@@ -1,6 +1,6 @@
 [package]
 name = "wtools"
-version = "0.2.19"
+version = "0.2.20"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -76,6 +76,7 @@ meta_default = [
   "meta_former",
   "meta_options",
   "meta_collection_make",
+  "meta_idents_concat",
 ]
 meta_full = [
   "meta",
@@ -85,6 +86,7 @@ meta_full = [
   "meta_former",
   "meta_options",
   "meta_collection_make",
+  "meta_idents_concat",
 ]
 meta_use_std = [ "meta", "meta_tools/use_std" ]
 meta_use_alloc = [ "meta", "meta_tools/use_alloc" ]
@@ -93,6 +95,7 @@ meta_for_each = [ "meta", "meta_tools/for_each" ]
 meta_impls_index = [ "meta", "meta_tools/impls_index" ]
 meta_mod_interface = [ "meta", "meta_tools/mod_interface" ]
 meta_collection_make = [ "meta", "meta_tools/collection_make" ]
+meta_idents_concat = [ "meta", "meta_tools/idents_concat" ]
 meta_former = [ "meta", "meta_tools/former" ]
 meta_options = [ "meta", "meta_tools/options" ]
 
@@ -229,6 +232,9 @@ derive_full = [
   "derive_unwrap",
   "derive_convert_case",
 
+  "derive_strum",
+  "derive_strum_phf",
+
   "derive_display",
   "derive_from_str",
 
@@ -263,6 +269,9 @@ derive_default = [
   "derive_is_variant",
   "derive_unwrap",
   "derive_convert_case",
+
+  "derive_strum",
+  "derive_strum_phf",
 
   "derive_display",
   "derive_from_str",
@@ -300,6 +309,9 @@ derive_try_into = [ "derive", "derive_tools/derive_try_into" ]
 derive_is_variant = [ "derive", "derive_tools/derive_is_variant" ]
 derive_unwrap = [ "derive", "derive_tools/derive_unwrap" ]
 derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
+
+derive_strum = [ "derive", "derive_tools/strum_derive" ]
+derive_strum_phf = [ "derive", "derive_tools/strum_phf" ]
 
 derive_display = [ "derive", "derive_tools/derive_display", "parse-display" ]
 derive_from_str = [ "derive", "derive_tools/derive_from_str", "parse-display" ]
@@ -435,5 +447,6 @@ diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools", o
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+
 
 

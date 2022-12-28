@@ -1,3 +1,7 @@
+//!
+//! Determine kind of a container.
+//!
+
 /// Internal namespace.
 pub( crate ) mod private
 {
@@ -8,7 +12,7 @@ pub( crate ) mod private
   /// Kind of container.
   ///
 
-  #[derive( Debug, PartialEq, Copy, Clone )]
+  #[derive( Debug, PartialEq, Eq, Copy, Clone )]
   pub enum ContainerKind
   {
     /// Not a container.
@@ -81,37 +85,41 @@ pub( crate ) mod private
 
     if type_rightmost( ty ) == Some( "Option".to_string() )
     {
-      let ty2 = type_parameters( ty, 0 ..= 0 ).first().map( | e | *e );
+      let ty2 = type_parameters( ty, 0 ..= 0 ).first().copied();
       // inspect_type::inspect_type_of!( ty2 );
       if ty2.is_none()
       {
         return ( ContainerKind::No, false )
       }
       let ty2 = ty2.unwrap();
-      return ( type_container_kind( ty2 ), true );
+      return ( type_container_kind( ty2 ), true )
     }
 
-    return ( type_container_kind( ty ), false );
+    ( type_container_kind( ty ), false )
   }
 
 }
 
+#[ doc( inline ) ]
+pub use exposed::*;
+
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
-  // use super::private as i;
 
-  pub use super::private::ContainerKind;
-  pub use super::private::type_container_kind;
-  pub use super::private::type_optional_container_kind;
+  #[ doc( inline ) ]
+  pub use super::private::
+  {
+    ContainerKind,
+    type_container_kind,
+    type_optional_container_kind,
+  };
 
 }
-
-pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // // use super::private as i;
 }

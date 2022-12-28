@@ -54,14 +54,17 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Shared with parent namespace of the module
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 
 }
@@ -69,6 +72,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
   // use super::private::TempDir;
 }

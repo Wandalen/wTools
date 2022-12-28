@@ -1,5 +1,4 @@
-
-use chrono::prelude::*;
+use std::time;
 
 ///
 /// Get current time. Units are milliseconds.
@@ -7,7 +6,9 @@ use chrono::prelude::*;
 
 pub fn now() -> i64
 {
-  Utc::now().timestamp_millis()
+  time::SystemTime::now()
+  .duration_since( time::UNIX_EPOCH ).unwrap()
+  .as_millis() as i64
 }
 
 ///
@@ -16,17 +17,15 @@ pub fn now() -> i64
 
 pub mod s
 {
-  use chrono::prelude::*;
+  use super::*;
 
-  ///
   /// Get current time. Units are seconds.
-  ///
-
   pub fn now() -> i64
   {
-    Utc::now().timestamp()
+    time::SystemTime::now()
+    .duration_since( time::UNIX_EPOCH ).unwrap()
+    .as_secs() as i64
   }
-
 }
 
 ///
@@ -35,18 +34,19 @@ pub mod s
 
 pub mod ms
 {
-  use chrono::prelude::*;
+  use super::*;
 
-  ///
   /// Get current time. Units are milliseconds.
-  ///
-
   pub fn now() -> i64
   {
-    Utc::now().timestamp_millis()
+    time::SystemTime::now()
+    .duration_since( time::UNIX_EPOCH ).unwrap()
+    .as_millis() as i64
   }
-
 }
+
+// xxx : qqq for Dima : problem. ms should not be part of `wtools::ms`, something is wrong. fix it, please
+/* aaa : Dmytro : all routines and modules is inside wtools and wtools::time, added test suite to test it */
 
 ///
 /// Default units are nanoseconds.
@@ -54,15 +54,13 @@ pub mod ms
 
 pub mod ns
 {
-  use chrono::prelude::*;
+  use super::*;
 
-  ///
   /// Get current time. Units are nanoseconds.
-  ///
-
   pub fn now() -> i64
   {
-    Utc::now().timestamp_nanos()
+    time::SystemTime::now()
+    .duration_since( time::UNIX_EPOCH ).unwrap()
+    .as_nanos() as i64
   }
-
 }

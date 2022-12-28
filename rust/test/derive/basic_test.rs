@@ -1,5 +1,4 @@
 
-// use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
 use super::*;
 
@@ -9,7 +8,6 @@ tests_impls!
 {
 
   #[ cfg( all( feature = "derive_from", feature = "derive_into", feature = "derive_display", feature = "derive_from_str" ) ) ]
-  #[ test ]
   fn samples()
   {
     use TheModule::*;
@@ -40,13 +38,11 @@ tests_impls!
     let src = Struct1::from_str( "1-3" );
     let exp = Ok( Struct1 { a : 1, b : 3 } );
     assert_eq!( src, exp );
-
   }
 
   //
 
   #[ cfg( all( feature = "derive_from", feature = "derive_into", feature = "derive_display" ) ) ]
-  #[ test ]
   fn basic()
   {
     use TheModule::*;
@@ -74,9 +70,26 @@ tests_impls!
     let got = format!( "{}", src );
     let exp = "1-3";
     a_id!( got, exp );
-
   }
 
+  //
+
+  #[ cfg( all( feature = "strum", feature = "strum_derive" ) ) ]
+  fn enum_with_strum()
+  {
+    use TheModule::*;
+
+    #[ derive( EnumIter, Debug, PartialEq ) ]
+    enum Foo
+    {
+      Bar,
+      Baz
+    }
+
+    let mut iter = Foo::iter();
+    a_id!( iter.next(), Some( Foo::Bar ) );
+    a_id!( iter.next(), Some( Foo::Baz ) );
+  }
 }
 
 //
@@ -85,4 +98,5 @@ tests_index!
 {
   samples,
   basic,
+  enum_with_strum,
 }

@@ -14,11 +14,7 @@
 //! Apply macro for each element of a list.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
-
-/* zzz :
-use module::macro_for_each in module::macro_tools
-*/
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Internal namespace.
 pub( crate ) mod private
@@ -489,28 +485,34 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // use super::private as i;
+  #[ doc( inline ) ]
   pub use super::private::for_each;
+  #[ doc( inline ) ]
   pub use super::private::braces_unwrap;
+  #[ doc( inline ) ]
   pub use super::private::identity;
 }

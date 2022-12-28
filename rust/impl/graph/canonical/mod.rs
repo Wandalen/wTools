@@ -1,4 +1,4 @@
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
   /// Implements canonical factory where each node in a cell.
   #[ cfg( feature = "cell_factory" ) ]

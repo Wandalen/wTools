@@ -63,6 +63,7 @@ impl Parse for Element
     let attrs : Vec< syn::Attribute > = input.call( syn::Attribute::parse_outer )?;
     let vis : syn::Visibility = input.parse()?;
 
+    // zzz : remove lookahead, use input
     let lookahead1 = input.lookahead1();
     if lookahead1.peek( syn::Token!{ fn } )
     {
@@ -81,7 +82,7 @@ impl Parse for Element
           sig,
           block : Some( block ),
         };
-        return Ok( Element::Fn( fn_desc ) );
+        Ok( Element::Fn( fn_desc ) )
       }
       else
       {
@@ -92,7 +93,7 @@ impl Parse for Element
           sig,
           block : None,
         };
-        return Ok( Element::Fn( fn_desc ) );
+        Ok( Element::Fn( fn_desc ) )
       }
     }
     else
@@ -210,7 +211,7 @@ impl quote::ToTokens for AccessorDescriptor
 fn getter_gen( name : &str, field : &syn::Field ) -> Result< AccessorDescriptor >
 {
 
-  let name_ident = syn::Ident::new( &name, field.span() );
+  let name_ident = syn::Ident::new( name, field.span() );
   let ty = &field.ty;
 
   // tree_print!( ty );
@@ -260,7 +261,7 @@ fn getter_gen( name : &str, field : &syn::Field ) -> Result< AccessorDescriptor 
 fn mutter_gen( name : &str, field : &syn::Field ) -> Result< AccessorDescriptor >
 {
 
-  let name_ident = syn::Ident::new( &name, field.span() );
+  let name_ident = syn::Ident::new( name, field.span() );
   let name_mut_ident = syn::Ident::new( &format!( "{}_mut", name ), field.span() );
   let ty = &field.ty;
 
@@ -333,7 +334,7 @@ pub fn options( _attr : proc_macro::TokenStream, item : proc_macro::TokenStream 
   };
 
   let name_ident = &options_descriptor.ident;
-  let name_options_adapter_str = String::from( name_ident.to_string() ).from_case( Case::Snake ).to_case( Case::UpperCamel );
+  let name_options_adapter_str = name_ident.to_string().from_case( Case::Snake ).to_case( Case::UpperCamel );
   let name_options_adapter_str = format!( "{}OptionsAdapter", name_options_adapter_str );
   let name_options_adapter_ident = syn::Ident::new( &name_options_adapter_str, name_ident.span() );
   let generics = &options_descriptor.generics;

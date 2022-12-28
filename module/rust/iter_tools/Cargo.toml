@@ -13,7 +13,7 @@ documentation = "https://docs.rs/iter_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/iter_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/iter_tools"
 description = """
-Collection of general purpose tools to iterate. Currently it simply reexport itertools.
+Collection of general purpose tools to iterate. Currently it simply reexports itertools.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]

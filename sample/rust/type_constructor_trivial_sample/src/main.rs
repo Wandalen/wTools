@@ -6,7 +6,7 @@ fn main()
     mod mod1
     {
 
-      #[ derive( Debug, Clone, PartialEq ) ]
+      #[ derive( Debug, Clone, PartialEq, Eq ) ]
       pub struct Floats< T1 : PartialEq + Copy, T2 : Default >
       (
         pub T1,
@@ -37,7 +37,7 @@ fn main()
     types!
     {
       #[ derive( Debug, Clone ) ]
-      #[ derive( PartialEq ) ]
+      #[ derive( PartialEq, Eq ) ]
       pair Pair :
         mod1::Floats< T1 : PartialEq + std::marker::Copy, T2 : Default >,
         std::sync::Arc< T : Copy >,

@@ -13,7 +13,7 @@
 //! Derive to clone dyn structures.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ cfg( all( not( feature = "use_std" ), feature = "use_alloc" ) ) ]
 extern crate alloc;
@@ -39,7 +39,7 @@ pub( crate ) mod private
     {
       let mut ptr = t as *const T;
       let data_ptr = &mut ptr as *mut *const T as *mut *mut ();
-      *data_ptr = Box::into_raw( Box::new( t.clone() ) ) as *mut ();
+      *data_ptr = Box::into_raw( Box::new( < &T >::clone( &t ) ) ) as *mut ();
       Box::from_raw( ptr as *mut T )
     }
   }
@@ -55,27 +55,33 @@ pub mod dependency
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use ::clone_dyn_meta::clone_dyn;
   #[ cfg( any( feature = "use_std", feature = "use_alloc" ) ) ]
+  #[ doc( inline ) ]
   pub use super::private::_clone_boxed;
 }

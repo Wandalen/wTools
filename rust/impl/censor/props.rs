@@ -27,7 +27,7 @@ pub( crate ) mod private
   /// Properties parsing options.
   ///
 
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( Debug, PartialEq, Eq ) ]
   pub struct PropsParseOptions
   {
     // result : HashMap< Box< str >, Box< str > >,
@@ -67,7 +67,10 @@ pub( crate ) mod private
 
 //
 
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
-  prelude use super::private::*;
+  // qqq : for Dima : bad : list all elements, don't use * for private /* aaa : Dmytro : expanded */
+  prelude use PropsParseOptionsAdapter;
+  prelude use PropsParseOptions;
+  prelude use parse_from_splits;
 }

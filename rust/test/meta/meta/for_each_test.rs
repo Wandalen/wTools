@@ -1,11 +1,10 @@
 use super::*;
 
-tests_impls_optional!
+tests_impls!
 {
 
   //
 
-  #[ test ]
   fn braces_unwrap_test()
   {
     // let mut GOT : String = String::new();
@@ -56,7 +55,7 @@ tests_impls_optional!
     }
 
     /* test.case( "function-style" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::braces_unwrap!( test_with, a, b, c );
@@ -96,7 +95,7 @@ tests_impls_optional!
     }
 
     /* test.case( "map-style" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -163,7 +162,7 @@ tests_impls_optional!
     }
 
     /* test.case( "prefix and postfix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -245,7 +244,7 @@ tests_impls_optional!
     }
 
     /* test.case( "prefix and postfix unwrapping" ) */
-    // unsafe
+
     {
       /* 0 */
       GOT = "".to_string();
@@ -338,7 +337,7 @@ tests_impls_optional!
     }
 
     /* test.case( "prefix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -413,7 +412,7 @@ tests_impls_optional!
     }
 
     /* test.case( "prefix unwrapping" ) */
-    // unsafe
+
     {
       /* 0 */
       GOT = "".to_string();
@@ -458,7 +457,7 @@ tests_impls_optional!
     }
 
     /* test.case( "postfix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::braces_unwrap!
@@ -533,7 +532,7 @@ tests_impls_optional!
     }
 
     /* test.case( "postfix unwrapping" ) */
-    // unsafe
+
     {
       /* 0 */
       GOT = "".to_string();
@@ -583,9 +582,10 @@ tests_impls_optional!
   /// Tests macro crate::for_each!().
   ///
 
-  #[ test ]
+
   fn for_each_test()
   {
+    let mut GOT : String = String::new();
 
     macro_rules! test_with
     {
@@ -597,8 +597,6 @@ tests_impls_optional!
         GOT += "+";
       }};
     }
-
-    let mut GOT : String = String::new();
 
     /* test.case( "sample : function-style" ) */
     {
@@ -655,7 +653,7 @@ tests_impls_optional!
     // function-style
 
     /* test.case( "function-style" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!( test_with, a, b, c );
@@ -664,7 +662,7 @@ tests_impls_optional!
     }
 
     /* test.case( "function-style, paths, unwrapping" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!( test_with, { std::collections::HashMap }, { std::collections::BTreeMap } );
@@ -673,7 +671,7 @@ tests_impls_optional!
     }
 
     /* test.case( "function-style, complex, unwrapping" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!( test_with, { a _ a }, { b _ b } );
@@ -682,7 +680,7 @@ tests_impls_optional!
     }
 
     /* test.case( "function-style, complex, unwrapping, trailing comma" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!( test_with, { a _ a }, { b _ b }, );
@@ -691,7 +689,7 @@ tests_impls_optional!
     }
 
     /* test.case( "function-style, paths, parentheses" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!( test_with, ( std::collections::HashMap ), ( std::collections::BTreeMap ) );
@@ -702,7 +700,7 @@ tests_impls_optional!
     // callbackless
 
     /* test.case( "callbackless, prefix, postfix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!
@@ -716,7 +714,7 @@ tests_impls_optional!
     }
 
     /* test.case( "callbackless, prefix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!
@@ -729,7 +727,7 @@ tests_impls_optional!
     }
 
     /* test.case( "callbackless, postfix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!
@@ -744,7 +742,7 @@ tests_impls_optional!
     // map-style
 
     /* test.case( "map-style" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!( test_with where @Each a b c );
@@ -753,7 +751,7 @@ tests_impls_optional!
     }
 
     /* test.case( "map-style, prefix + postfix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!( test_with where @Prefix prefix @Postfix postfix @Each a b c );
@@ -762,7 +760,7 @@ tests_impls_optional!
     }
 
     /* test.case( "map-style, prefix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!( test_with where @Prefix prefix @Each a b c );
@@ -771,7 +769,7 @@ tests_impls_optional!
     }
 
     /* test.case( "map-style, postfix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!( test_with where @Postfix postfix @Each a b c );
@@ -782,7 +780,7 @@ tests_impls_optional!
     // map-style, complex
 
     /* test.case( "map-style" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!
@@ -795,7 +793,7 @@ tests_impls_optional!
     }
 
     /* test.case( "map-style, prefix + postfix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!
@@ -810,7 +808,7 @@ tests_impls_optional!
     }
 
     /* test.case( "map-style, prefix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!
@@ -824,7 +822,7 @@ tests_impls_optional!
     }
 
     /* test.case( "map-style, postfix" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!
@@ -843,7 +841,7 @@ tests_impls_optional!
   /// Higher order cases
   ///
 
-  #[ test ]
+
   fn for_each_higher_order_test()
   {
     let mut GOT : String = String::new();
@@ -877,7 +875,7 @@ tests_impls_optional!
     }
 
     /* test.case( "manual" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       for_each_float!( test_with where @Prefix { pre fix 1 } @Postfix { post fix } );
@@ -887,7 +885,7 @@ tests_impls_optional!
     }
 
     /* test.case( "without fixes" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!
@@ -902,7 +900,7 @@ tests_impls_optional!
     }
 
     /* test.case( "without fixes" ) */
-    // unsafe
+
     {
       GOT = "".to_string();
       TheModule::for_each!
@@ -927,6 +925,6 @@ tests_impls_optional!
 tests_index!
 {
   braces_unwrap_test,
-  // for_each_test,
-  // for_each_higher_order_test,
+  for_each_test,
+  for_each_higher_order_test,
 }

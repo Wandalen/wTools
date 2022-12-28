@@ -13,39 +13,17 @@ pub( crate ) mod private
   where
     Self : NodeBasicInterface,
   {
-//
-//     fn dfs( roots : Iterator< IdInterface > )
-//     {
-//
-//     }
+    // fn dfs( roots : Iterator< IdInterface > )
+    // {
+    //
+    // }
   }
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
-{
-  pub use super::orphan::*;
-}
+//
 
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
+crate::mod_interface!
 {
-  // // use super::private as i;
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  // // use super::private as i;
-  pub use super::prelude::*;
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  // // use super::private as i;
+  prelude use DfsAlgorithm;
 }

@@ -68,6 +68,7 @@ meta_default = [
   "meta_former",
   "meta_options",
   "meta_collection_make",
+  "meta_idents_concat",
 ]
 meta_full = [
   "meta",
@@ -77,6 +78,7 @@ meta_full = [
   "meta_former",
   "meta_options",
   "meta_collection_make",
+  "meta_idents_concat",
 ]
 meta_use_std = [ "wtools/meta_use_std" ]
 meta_use_alloc = [ "wtools/meta_use_alloc" ]
@@ -85,6 +87,7 @@ meta_for_each = [ "meta", "wtools/meta_for_each" ]
 meta_impls_index = [ "meta", "wtools/meta_impls_index" ]
 meta_mod_interface = [ "meta", "wtools/meta_mod_interface" ]
 meta_collection_make = [ "meta", "wtools/meta_collection_make" ]
+meta_idents_concat = [ "meta", "wtools/meta_idents_concat" ]
 meta_former = [ "meta", "wtools/meta_former" ]
 meta_options = [ "meta", "wtools/meta_options" ]
 
@@ -209,6 +212,9 @@ derive_full = [
   "derive_unwrap",
   "derive_convert_case",
 
+  "derive_strum",
+  "derive_strum_phf",
+
   "derive_display",
   "derive_from_str",
 
@@ -243,6 +249,9 @@ derive_default = [
   "derive_is_variant",
   "derive_unwrap",
   "derive_convert_case",
+
+  "derive_strum",
+  "derive_strum_phf",
 
   "derive_display",
   "derive_from_str",
@@ -281,6 +290,9 @@ derive_try_into = [ "derive", "wtools/derive_try_into" ]
 derive_is_variant = [ "derive", "wtools/derive_is_variant" ]
 derive_unwrap = [ "derive", "wtools/derive_unwrap" ]
 derive_convert_case = [ "derive", "wtools/derive_convert_case" ]
+
+derive_strum = [ "derive", "wtools/derive_strum" ]
+derive_strum_phf = [ "derive", "wtools/derive_strum_phf" ]
 
 derive_display = [ "derive", "wtools/derive_display", "parse-display" ]
 derive_from_str = [ "derive", "wtools/derive_from_str", "parse-display" ]

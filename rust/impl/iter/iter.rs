@@ -1,8 +1,10 @@
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
 
+  #[ doc( inline ) ]
   pub use ::itertools::
   {
     all,
@@ -40,17 +42,23 @@ pub mod exposed
     rev,
     sorted,
     unfold,
-    zip,
+    // zip,
     zip_eq,
   };
 
+  #[ cfg( feature = "use_std" ) ]
+  #[ doc( inline ) ]
+  pub use std::iter::zip;
+
 }
 
+#[ doc( inline ) ]
 pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use ::itertools::
   {
     Diff,

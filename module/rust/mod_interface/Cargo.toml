@@ -1,6 +1,6 @@
 [package]
 name = "mod_interface"
-version = "0.1.12"
+version = "0.1.16"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -50,9 +50,14 @@ path = "rust/test/_integration_test/smoke_test.rs"
 name = "mod_interface_trivial_sample"
 path = "sample/rust/mod_interface_trivial_sample/src/main.rs"
 
+[[example]]
+name = "mod_interface_with_debug_sample"
+path = "sample/rust/mod_interface_with_debug_sample/src/main.rs"
+
 [dependencies]
 mod_interface_meta = { version = "~0.1", path = "../../rust/mod_interface_meta" }
 mod_interface_runtime = { version = "~0.1", path = "../../rust/mod_interface_runtime" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+

@@ -134,30 +134,9 @@ pub( crate ) mod private
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
+// qqq : use mod_interface here and in other similar places /* aaa : Dmytro : done */
+
+crate::mod_interface!
 {
-  pub use super::orphan::*;
-}
-
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-  pub use super::private::NodeCell;
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
+  exposed use super::private::NodeCell;
 }

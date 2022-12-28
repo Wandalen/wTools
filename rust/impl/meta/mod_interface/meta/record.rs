@@ -5,13 +5,19 @@ pub( crate ) mod private
   use derive_tools::IsVariant;
   use proc_macro_tools::exposed::*;
 
+  ///
   /// Custom keywords.
+  ///
+
   pub mod kw
   {
     super::syn::custom_keyword!( layer );
   }
 
+  ///
   /// Kind of element.
+  ///
+
   #[ derive( IsVariant, Debug, PartialEq, Eq, Clone, Copy ) ]
   pub enum ElementType
   {
@@ -47,7 +53,6 @@ pub( crate ) mod private
           return Err( lookahead.error() )
         },
       };
-
       Ok( element_type )
     }
 
@@ -103,13 +108,11 @@ pub( crate ) mod private
         ElementType::Use( _ ) =>
         {
           use_elements = Some( input.parse()? );
-          // println!( "{}", qt!{ #use_elements } );
           elements = syn::punctuated::Punctuated::new();
         },
         _ =>
         {
-          let lookahead = input.lookahead1();
-          if lookahead.peek( syn::token::Brace )
+          if input.peek( syn::token::Brace )
           {
             let input2;
             let _brace_token = syn::braced!( input2 in input );
@@ -131,7 +134,7 @@ pub( crate ) mod private
       }
 
       let semi = Some( input.parse()? );
-      return Ok( Record
+      Ok( Record
       {
         attrs,
         vis,
@@ -160,39 +163,90 @@ pub( crate ) mod private
   }
 
   ///
-  /// Module-specific item.
+  /// Many records.
   ///
 
-  #[ derive( Debug ) ]
-  pub struct Records
-  (
-    pub Vec< Record >,
-  );
+  pub type Records = Many< Record >;
+
+  impl AsMuchAsPossibleNoDelimiter for Record {}
+
+  ///
+  /// Thesis.
+  ///
+
+  #[ derive( Debug, PartialEq, Eq, Clone ) ]
+  pub struct Thesis
+  {
+    pub head : AttributesInner,
+    pub records : Records,
+  }
 
   //
 
-  impl syn::parse::Parse for Records
+  impl Thesis
   {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+    /// Validate each inner attribute of the thesis.
+    pub fn inner_attributes_validate( &self ) -> Result< () >
     {
-      let mut items = vec![];
-      while !input.is_empty()
+      self.head.iter().try_for_each( | attr |
       {
-        let item : Record = input.parse()?;
-        items.push( item );
-      }
-      Ok( Self( items ) )
+        // code_print!( attr.path );
+        // code_print!( attr.tokens );
+
+        let good = true
+          && code_export_str!( attr.path ) == "debug"
+          && code_export_str!( attr.tokens ).is_empty()
+        ;
+
+        if !good
+        {
+          return Err( syn_err!
+          (
+            attr,
+            "Unknown inner attribute:\n{}",
+            tree_diagnostics_str!( attr ),
+          ));
+        }
+
+        Result::Ok( () )
+      })?;
+      Ok( () )
+    }
+    /// Does the thesis has debug inner attribute.
+    pub fn has_debug( &self ) -> bool
+    {
+      self.head.iter().any( | attr |
+      {
+        code_export_str!( attr.path ) == "debug"
+      })
     }
   }
 
   //
 
-  impl quote::ToTokens for Records
+  impl syn::parse::Parse for Thesis
+  {
+    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    {
+      let head = input.parse()?;
+      // let head = Default::default();
+      let records = input.parse()?;
+      Ok( Thesis
+      {
+        head,
+        records,
+      })
+    }
+  }
+
+  //
+
+  impl quote::ToTokens for Thesis
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
-      use proc_macro_tools::quote::TokenStreamExt;
-      tokens.append_all( &self.0 )
+      self.head.to_tokens( tokens );
+      self.records.to_tokens( tokens );
     }
   }
 
@@ -218,9 +272,10 @@ pub mod exposed
   pub use super::prelude::*;
   pub use super::private::
   {
+    ElementType,
     Record,
     Records,
-    ElementType,
+    Thesis,
   };
 }
 

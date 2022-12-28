@@ -1,6 +1,6 @@
 [package]
 name = "wtest_basic"
-version = "0.1.13"
+version = "0.1.14"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -22,7 +22,8 @@ keywords = [ "fundamental", "general-purpose", "testing" ]
 all-features = true
 
 include = [
-  "/rust/impl/test",
+  "/rust/impl/test/wtest_basic_lib.rs",
+  "/rust/impl/test/basic",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -34,7 +35,6 @@ full = [ "use_std", "use_alloc" ]
 use_std = []
 use_alloc = []
 nightly = [ "typing_tools/nightly" ]
-# nightly = [ "inspect_type/nightly" ]
 
 [lib]
 name = "wtest_basic"
@@ -63,7 +63,5 @@ mem_tools = { version = "~0.1", path = "../../rust/mem_tools" }
 typing_tools = { version = "~0.1", path = "../../rust/typing_tools" }
 data_type = { version = "~0.1", path = "../../rust/data_type" }
 diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools" }
-# inspect_type = { version = "~0.1", path = "../../rust/inspect_type" }
 
 [dev-dependencies]
-# rustversion = "~1.0"

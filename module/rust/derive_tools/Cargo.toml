@@ -59,6 +59,9 @@ default = [
   "derive_clone_dyn",
   "derive_clone_dyn_use_std",
 
+  "strum_derive",
+  "strum_phf",
+
   "use_std",
 ]
 
@@ -91,6 +94,9 @@ full = [
 
   "derive_clone_dyn",
   "derive_clone_dyn_use_std",
+
+  "strum_derive",
+  "strum_phf",
 
   "use_std",
 ]
@@ -127,6 +133,9 @@ derive_convert_case = [ "derive_more/convert_case" ]
 derive_display = [ "parse-display" ]
 derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex", "parse-display/once_cell" ]
 
+strum_derive = [ "strum/std", "strum/derive", "strum/strum_macros" ]
+strum_phf = [ "strum/std", "strum/phf", "strum/strum_macros" ]
+
 derive_clone_dyn = [ "clone_dyn" ]
 derive_clone_dyn_use_std = [ "derive_clone_dyn", "clone_dyn/use_std" ]
 derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
@@ -149,6 +158,8 @@ path = "sample/rust/derive_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 derive_more = { version = "~0.99", default-features = false }
+strum = { version = "~0.24", optional = true, default-features = false }
+strum_macros = { version = "~0.24", optional = true, default-features = false }
 parse-display = { version = "~0.5", optional = true, default-features = false }
 clone_dyn = { version = "~0.1", path = "../../rust/clone_dyn", optional = true, default-features = false }
 
