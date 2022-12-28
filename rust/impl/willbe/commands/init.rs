@@ -11,7 +11,7 @@ pub( crate ) mod private
     .hint( "Prints information about package" )
     .long_hint( "Prints information about package at current directory" )
     .phrase( "crate.info" )
-    .routine( &crate::commands::info::info )
+    .routine_with_ctx( &crate::commands::info::info )
     .form();
 
     let each_command = wca::Command::former()
@@ -19,7 +19,7 @@ pub( crate ) mod private
     .long_hint( "--- each ---" )
     .phrase( "each" )
     .subject_hint( "What to iterate(?)" )
-    .routine( &crate::commands::each::each )
+    .routine_with_ctx( &crate::commands::each::each )
     .form();
 
     let publish_command = wca::Command::former()

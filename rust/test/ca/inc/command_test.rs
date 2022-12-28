@@ -88,7 +88,7 @@ tests_impls!
     .parse( ".phrase" )
     .unwrap();
 
-    let perform = command.perform( &instruction );
+    let perform = command.perform( &instruction, None );
     assert!( perform.is_ok() );
   }
 
@@ -104,7 +104,7 @@ tests_impls!
     .routine(  | _ : Args< String, NoProperties >  | { println!( "hello" ); Ok( () ) } )
     .form();
     let instruction = parser.parse( ".get subj" ).unwrap();
-    let perform = command.perform( &instruction );
+    let perform = command.perform( &instruction, None );
     assert!( perform.is_err() );
 
     let command = wca::Command::former()
@@ -113,7 +113,7 @@ tests_impls!
     .routine(  | _ : Args< String, NoProperties >  | { println!( "hello" ); Ok( () ) } )
     .form();
     let instruction = parser.parse( ".get subj" ).unwrap();
-    let perform = command.perform( &instruction );
+    let perform = command.perform( &instruction, None );
     assert!( perform.is_ok() );
   }
 
@@ -159,12 +159,57 @@ tests_impls!
     .form();
 
     let instruction = parser.parse( ".get subj prop1:1" ).unwrap();
-    let perform = command.perform( &instruction );
+    let perform = command.perform( &instruction, None );
     assert!( perform.is_ok() );
 
     let instruction = parser.parse( ".get subj unknown:1" ).unwrap();
-    let perform = command.perform( &instruction );
+    let perform = command.perform( &instruction, None );
     assert!( perform.is_err() );
+  }
+
+  fn perform_with_context()
+  {
+    let command = wca::Command::former()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .phrase( "phrase" )
+    .subject_hint( "subject_hint" )
+    .property_hint( "prop1", "hint of prop1" )
+    .property_hint( "prop2", "hint of prop2" )
+    .property_alias( "property_alias", "a1" )
+    .property_alias( "property_alias", "a2" )
+    .routine_with_ctx( | _ : Args< NoSubject, NoProperties >, ctx |
+    {
+      let ctx : &HashMap< String, wca::Command > = ctx.get_ref().unwrap();
+
+      ctx.get( "key" ).ok_or( wtools::BasicError::new( "Value not found" ) )?;
+
+      Ok( () )
+    })
+    .form();
+
+    let instruction = wca::instruction::DefaultInstructionParser::former()
+    .form()
+    .parse( ".phrase" )
+    .unwrap();
+
+    // try to call without context
+    let perform = command.perform( &instruction, None );
+    assert!( perform.is_err() );
+
+    // try to call with context but without needed key
+    let perform = command.perform( &instruction, Some( wca::Context::new
+    (
+      HashMap::< String, wca::Command >::from_iter([( "unknown key".to_owned(), command.to_owned() )])
+    )));
+    assert!( perform.is_err() );
+
+    // try to call with context
+    let perform = command.perform( &instruction, Some( wca::Context::new
+    (
+      HashMap::< String, wca::Command >::from_iter([( "key".to_owned(), command.to_owned() )])
+    )));
+    assert!( perform.is_ok() );
   }
 }
 
@@ -177,4 +222,5 @@ tests_index!
   perform_trivial,
   perform_with_subject,
   perform_with_props,
+  perform_with_context,
 }
