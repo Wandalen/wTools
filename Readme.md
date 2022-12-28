@@ -68,4 +68,4 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 | Module | Stability | Master |
 |--------|-----------|--------|
-| [wTools](https://github.com/Wandalen/wToolsJs/tree/master/module/wTools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![js-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wToolsJs/StandardJsPublish.yml?label=&branch=master)](https://github.com/Wandalen/wToolsJs/actions/workflows/StandardJsPublish.yml) |
+| [wTools](https://github.com/Wandalen/wToolsJs/tree/master/module/wTools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![js-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wToolsJs/StandardJsPublish.yml?label=&branch=v0.8.1253)](https://github.com/Wandalen/wToolsJs/actions/workflows/StandardJsPublish.yml) |
