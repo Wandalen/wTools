@@ -65,7 +65,7 @@ path = "sample/rust/wca_trivial_sample/src/main.rs"
 [dependencies]
 wtools = { version = "~0.2", path = "../../rust/wtools" }
 former = { version = "~0.1", path = "../../rust/former" } # zzz : remove. fix
-log = "0.4.17"
+derive_routine_properties = { path = "./rust/impl/ca/derive_routine_properties" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

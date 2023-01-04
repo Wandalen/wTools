@@ -1,0 +1,11 @@
+[package]
+name = "derive_routine_properties"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc_macro_tools = "0.1.17"

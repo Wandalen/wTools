@@ -27,6 +27,10 @@ crate::mod_interface!
   #[ cfg( feature = "use_std" ) ]
   layer ca;
 
+  /// Derive routine properties macro.
+  #[ cfg( feature = "use_std" ) ]
+  layer derive_routine_properties;
+
   // protected( crate ) use super::
   // {
   //   field_str,
