@@ -15,9 +15,18 @@ pub( crate ) mod private
   /// Prints information about package
   ///
 
-  pub fn info( _ : Args< NoSubject, NoProperties > ) -> Result< (), BasicError >
+  pub fn info( _ : Args< NoSubject, NoProperties >, ctx : wca::Context ) -> Result< (), BasicError >
   {
-    let current_path = env::current_dir().unwrap();
+    let current_path = if let Some( path ) = ctx.get_ref::< std::path::PathBuf >()
+    {
+      path.to_owned()
+    }
+    else
+    {
+      env::current_dir().unwrap().to_owned()
+    };
+
+    println!( "[LOG] Called info command" );
 
     let package = Package::try_from( current_path )
     .map_err( | _ | err!( "Package not found at current directory" ) )?;
@@ -47,6 +56,7 @@ Location: "{}"
       info.dependencies.iter().map( | d | &d.name ).collect::< Vec< _ > >(),
       info.manifest_path.parent().unwrap()
     );
+
     Ok( () )
   }
 }

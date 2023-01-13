@@ -77,7 +77,7 @@ For example: `.struct1 subject key1:val key2:val2`."#
 
     fn parse( &self, input : impl AsRef< str > ) -> Result< Instruction >
     {
-      let ( command_name, request ) = match input.as_ref().split_once( " " )
+      let ( command_name, request ) = match input.as_ref().split_once( ' ' )
       {
         Some( entries ) => entries,
         None => ( input.as_ref(), "" ),

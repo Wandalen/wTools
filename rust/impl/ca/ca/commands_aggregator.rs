@@ -6,6 +6,9 @@ pub( crate ) mod private
   use wtools::error::{ Result, BasicError };
   use wtools::former::Former;
 
+  use std::rc::Rc;
+  use core::cell::RefCell;
+
   ///
   /// Commands aggregator.
   ///
@@ -30,6 +33,46 @@ pub( crate ) mod private
     pub exit_code_on_error : Option< i32 >,
     /// Commands.
     pub commands : std::collections::HashMap< String, Command >,
+    /// Commands context.
+    pub context : Option< Context >,
+  }
+
+  #[ derive( Debug, Clone ) ]
+  /// Basic context which contains commands hashmap
+  pub struct Context
+  {
+    inner : Rc< RefCell< dyn std::any::Any > >
+  }
+
+  impl Context
+  {
+    /// Create context
+    pub fn new( data : impl std::any::Any ) -> Self
+    {
+      Self { inner : Rc::new( RefCell::new( data ) ) }
+    }
+
+    /// Return immutable reference on interior object. ! Unsafe !
+    pub fn get_ref< T : 'static >( &self ) -> Option< &T >
+    {
+      // ! how do it better?
+      unsafe { self.inner.as_ptr().as_ref().and_then( | c | c.downcast_ref() ) }
+    }
+
+    /// Return mutable reference on interior object. ! Unsafe !
+    pub fn get_mut< T : 'static >( &self ) -> Option< &mut T >
+    {
+      // ! how do it better?
+      unsafe { self.inner.as_ptr().as_mut().and_then( | c | c.downcast_mut() ) }
+    }
+  }
+
+  impl PartialEq for Context
+  {
+    fn eq( &self, _other : &Self ) -> bool
+    {
+      false
+    }
   }
 
   impl CommandsAggregator
@@ -59,7 +102,7 @@ pub( crate ) mod private
 
       for instruction in &instructions
       {
-        self._instruction_perform( &instruction )?;
+        self._instruction_perform( instruction )?;
       }
 
       Ok( () )
@@ -95,8 +138,8 @@ pub( crate ) mod private
     pub fn instructions_parse( &self, program : impl AsRef< str > ) -> Result< Vec< Instruction > >
     {
       let parser = DefaultInstructionParser::former()
-        .several_values( true )
-        .form();
+      .several_values( true )
+      .form();
 
       self.split_program( program.as_ref() )
       .into_iter()
@@ -110,7 +153,7 @@ pub( crate ) mod private
     {
       match self.command_resolve( instruction )
       {
-        Some( command ) => command.perform( instruction ),
+        Some( command ) => command.perform( instruction, self.context.clone() ),  // ! changed
         None =>
         {
           let _ = self.on_ambiguity( &instruction.command_name );
@@ -348,7 +391,7 @@ pub( crate ) mod private
       return if let Some( command ) = self.command_resolve( &instruction )
       {
         let instruction = DefaultInstructionParser::former().form().parse( "" )?;
-        command.perform( &instruction )
+        command.perform( &instruction, self.context.clone() )     // ! changed
       }
       else
       {
@@ -394,4 +437,6 @@ crate::mod_interface!
   prelude use OnGetHelp;
   prelude use OnPrintCommands;
   prelude use commands_aggregator;
+
+  prelude use Context; // ! REMOVE THIS
 }
