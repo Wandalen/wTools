@@ -508,18 +508,21 @@ tests_impls!
     assert_eq!( vec![ 4, 5, 6 ], *ctx );
   }
 
-  // TODO: Rename
-  fn chainsaw_man()
+  fn chaining()
   {
-    let list_command : Command = wca::Command::former()
-    .hint( "Iterator." )
-    .long_hint( "Iterator over 1, 2, 3." )
-    .phrase( ".iter" )
+    let loop_command : Command = wca::Command::former()
+    .hint( "Loop" )
+    .long_hint( "Loop block" )
+    .phrase( ".loop" )
     .subject_hint( "some command" )
     .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
     {
       let state = ctx.get_mut::< State >().ok_or_else( || BasicError::new( "Have no State" ) )?;
+      let breakpoint = ctx.get_mut::< Breakpoint >().ok_or_else( || BasicError::new( "Have no Breakpoints" ) )?;
+      let prog_state = ctx.get_ref::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no State" ) )?;
+
       state.current_value = state.iter.next();
+      breakpoint.0 = prog_state.current_pos - 1;
 
       Ok( () )
     })
@@ -546,33 +549,36 @@ tests_impls!
     .subject_hint( "some command" )
     .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
     {
-      let state = ctx.get_ref::< State >().ok_or_else( || BasicError::new( "Have no State" ) )?;
+      let state = ctx.get_mut::< State >().ok_or_else( || BasicError::new( "Have no State" ) )?;
       if let Some( value ) = state.current_value {
-        println!( "{value}" );
+        print!( "{value}" );
+        state.processed.push( value );
       }
 
       Ok( () )
     })
     .form();
 
-    let collect_command : Command = wca::Command::former()
-    .hint( "Back to begin." )
+    let loop_end_command : Command = wca::Command::former()
+    .hint( "And of loop" )
     .long_hint( "" )
-    .phrase( ".collect" )
+    .phrase( ".end" )
     .subject_hint( "some command" )
     .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
     {
       let state = ctx.get_ref::< State >().ok_or_else( || BasicError::new( "Have no State" ) )?;
-      if state.current_value.is_some()
-      {
-        // TODO: Go back to the `iter` somehow
+      let breakpoint = ctx.get_ref::< Breakpoint >().ok_or_else( || BasicError::new( "Have no Breakpoints" ) )?;
+      let prog_state = ctx.get_mut::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no State" ) )?;
+
+      if state.current_value.is_some() {
+        prog_state.current_pos = breakpoint.0;
       }
 
       Ok( () )
     })
     .form();
 
-    let commands = vec![ list_command, inc_command, print_command, collect_command ]
+    let commands = vec![ loop_command, inc_command, print_command, loop_end_command ]
     .into_iter()
     .map( | command | ( command.phrase.to_string(), command ) )
     .collect::< HashMap< String, Command > >();
@@ -581,30 +587,27 @@ tests_impls!
     {
       current_value : Option< i32 >,
       iter : Box< dyn Iterator< Item = i32 > >,
+      processed : Vec< i32 >,
     }
 
-    // ? It's not a context, and it's not args of routine.. What is it?
-    struct ProgramState
-    {
-      current : i32, // number of current instruction
-      breakpoints : Vec< i32 >, // where to return.  E.g. `each` instruction number
-    }
-
-    // Need ability to manage execution statement
-    // Now all commands executs from begin to end and can not repeat something
+    struct Breakpoint( usize );
 
     let vec = vec![ 1, 2, 3 ];
-    let mut ctx = wca::Context::new( State { current_value : None, iter : Box::new( vec.into_iter() ) } );
+    let mut ctx = wca::Context::new( State { current_value : None, iter : Box::new( vec.into_iter() ) , processed : vec![] } );
+    ctx.insert( Breakpoint( 0 ) );
 
     let mut ca = wca::commands_aggregator()
     .commands( commands )
     .context( ctx )
     .form();
 
-    let got = ca.program_perform( ".iter .inc .print .collect" );
-    // let ctx = ca.context.as_ref().unwrap();
-    // let ctx = ctx.get_ref::< State >().unwrap();
+    let got = ca.program_perform( ".loop .iter .inc .print .end" );
+
+    let ctx = ca.context.as_ref().unwrap();
+    let ctx = ctx.get_ref::< State >().unwrap();
+
     a_id!( got, Ok( () ) );
+    a_id!( vec![ 2, 3, 4 ], ctx.processed );
   }
 }
 
@@ -620,6 +623,6 @@ tests_index!
   instructions_with_paths,
   program_perform_with_context,
   program_perform_with_several_context_values,
-  chainsaw_man,
+  chaining,
 }
 

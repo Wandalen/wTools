@@ -37,6 +37,14 @@ pub( crate ) mod private
     pub context : Option< Context >,
   }
 
+  /// Execution statement of a program
+  #[ derive( Debug ) ]
+  pub struct ProgramState
+  {
+    /// Current instruction number
+    pub current_pos : usize
+  }
+
   #[ derive( Debug, Clone ) ]
   /// Container for contexts values
   pub struct Context
@@ -52,11 +60,16 @@ pub( crate ) mod private
       let mut contexts = anymap::AnyMap::new();
       contexts.insert( value );
 
+      // Execution context
+      // ? Is it OK?
+      let state = ProgramState { current_pos: 0 } ;
+      contexts.insert( state );
+
       Self { inner : Rc::new( RefCell::new( contexts ) ) }
     }
 
     /// Insert the T value to the context. If it is alredy exists - replace it
-    pub fn insert< T : 'static >( &mut self, value : T )
+    pub fn insert< T : 'static >( &self, value : T )
     {
       self.inner.borrow_mut().insert( value );
     }
@@ -115,10 +128,29 @@ pub( crate ) mod private
         return self.on_syntax_error( program );
       };
 
-      for instruction in &instructions
+      // if program has context - it can use `ProgramState` => we need work with it
+      if let Some( state ) = self
+      .context
+      .as_ref()
+      .and_then( | ctx | ctx.get_mut::< ProgramState >() )
       {
-        self._instruction_perform( instruction )?;
+        // because program, sometimes, uses with context alredy used
+        state.current_pos = 0;
+
+        while let Some( instruction ) = instructions.get( state.current_pos )
+        {
+          state.current_pos += 1;
+          self._instruction_perform( instruction )?;
+        }
       }
+      else
+      {
+        for instruction in &instructions
+        {
+          self._instruction_perform( instruction )?;
+        }
+      }
+
 
       Ok( () )
     }
@@ -453,5 +485,6 @@ crate::mod_interface!
   prelude use OnPrintCommands;
   prelude use commands_aggregator;
 
-  prelude use Context; // ! REMOVE THIS
+  prelude use Context;
+  prelude use ProgramState;
 }
