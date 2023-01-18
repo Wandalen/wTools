@@ -6,4 +6,4 @@ error[E0512]: cannot transmute between types of different sizes, or dependently-
   |
   = note: source type: `i32` (32 bits)
   = note: target type: `Int` (16 bits)
-  = note: this error originates in the macro `$crate::cta_ptr_same_size` (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the macro `$crate::cta_ptr_same_size` which comes from the expansion of the macro `cta_mem_same_size` (in Nightly builds, run with -Z macro-backtrace for more info)

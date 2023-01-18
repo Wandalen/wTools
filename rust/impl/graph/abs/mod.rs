@@ -1,4 +1,4 @@
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
   /// Edge interface.
   layer edge;

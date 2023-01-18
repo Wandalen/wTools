@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
 
-  // xxx : use type_constructor::Enumberable for indexed access to color components
+  // zzz : use type_constructor::Enumberable for indexed access to color components
 
   ///
   /// Has length and indexed access.
@@ -232,21 +232,26 @@ pub( crate ) mod private
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
+  #[ doc( inline ) ]
   pub use super::private::
   {
     EnumerableIteratorCopy,
@@ -255,11 +260,13 @@ pub mod exposed
   };
 }
 
+#[ doc( inline ) ]
 pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use super::private::
   {
     Enumerable,

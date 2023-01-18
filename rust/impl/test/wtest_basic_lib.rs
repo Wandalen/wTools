@@ -10,43 +10,54 @@
 //! Tools for writing and running tests.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+
+// doc_file_test!( "rust/test/test/asset/Test.md" );
 
 /// Dependencies.
 pub mod dependency
 {
+  #[ doc( inline ) ]
   pub use ::paste;
+  #[ doc( inline ) ]
   pub use ::trybuild;
+  #[ doc( inline ) ]
   pub use ::anyhow;
+  #[ doc( inline ) ]
   pub use ::rustversion;
+  #[ doc( inline ) ]
   pub use ::meta_tools;
+  #[ doc( inline ) ]
   pub use ::mem_tools;
+  #[ doc( inline ) ]
   pub use ::typing_tools;
+  #[ doc( inline ) ]
   pub use ::num_traits;
+  #[ doc( inline ) ]
   pub use ::diagnostics_tools;
 }
 
-pub use dependency::*;
 use ::meta_tools::mod_interface;
 
 mod_interface!
 {
   /// Basics.
   layer basic;
-  /// Helpers.
-  layer helper;
-
-  prelude use ::meta_tools as meta;
-  prelude use ::mem_tools as mem;
-  prelude use ::typing_tools as typing;
-  prelude use ::data_type as dt;
-  prelude use ::diagnostics_tools as diagnostics;
 
   // use super::exposed::meta;
   use super::exposed::mem;
   use super::exposed::typing;
   use super::exposed::dt;
   use super::exposed::diagnostics;
+
+  protected use super::dependency;
+  protected use super::dependency::*;
+
+  prelude use ::meta_tools as meta;
+  prelude use ::mem_tools as mem;
+  prelude use ::typing_tools as typing;
+  prelude use ::data_type as dt;
+  prelude use ::diagnostics_tools as diagnostics;
 
   prelude use ::meta_tools::
   {
@@ -57,6 +68,7 @@ mod_interface!
     tests_index,
   };
   prelude use ::typing_tools::{ implements };
+
 }
 
-// qqq : for Dima : add negative test that wtest_basic::exposed::exposed does not exist
+// qqq : for Dima : add negative test that wtest_basic::exposed::exposed does not exist /* aaa : Dmytro : added trybuild test with compile time error */

@@ -13,7 +13,7 @@
 //! Protocol of modularity unifying interface of a module and introducing layers.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 mod impls;
 #[ allow( unused_imports ) ]

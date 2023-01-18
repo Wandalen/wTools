@@ -1,21 +1,12 @@
-// #![ feature( proc_macro_span ) ]
-// #![ feature( type_name_of_val ) ]
-
-// use test_tools::exposed::*;
-// use proc_macro_tools as TheModule;
-// #[ allow( unused_imports ) ]
-// use test_tools::exposed::*;
 
 use super::*;
-// use qt::*;
-// use proc_macro_tools::dependency::*;
 
 //
 
 tests_impls!
 {
   #[ test ]
-  fn tree_export_str_basic()
+  fn tree_diagnostics_str_basic()
   {
 
     let exp = r#"code : std :: collections :: HashMap < i32 , i32 > :
@@ -65,7 +56,7 @@ TokenStream [
     },
 ]"#;
     let code = qt!( std::collections::HashMap< i32, i32 > );
-    let got = TheModule::tree_export_str!( code );
+    let got = TheModule::tree_diagnostics_str!( code );
     // println!( "{}", got );
     a_id!( got, exp );
     let got = TheModule::tree_print!( code );
@@ -401,40 +392,40 @@ TokenStream [
   //     syn::Error::new( proc_macro2::Span::call_site(), src )
   //   }
   // }
+//
+//   //
+//
+//   fn path_of() -> Result< (), syn::Error >
+//   {
+//
+//     let input = qt!
+//     {
+//       This::is::path
+//     };
+//     let ast = match syn::parse2::< syn::Path >( input )
+//     {
+//       Ok( syntax_tree ) => syntax_tree,
+//       Err( err ) => return Err( err ),
+//     };
+//
+//     let got = proc_macro_tools::path_of( &ast );
+//     a_id!( got, "This::is::path" );
+//
+//     return Ok( () );
+//   }
 
-  //
-
-  // #[test]
-  // fn path_of() -> Result< (), syn::Error >
-  // {
-  //
-  //   let input = qt!
-  //   {
-  //     This::is::path
-  //   };
-  //   let ast = match syn::parse2::< syn::Path >( input )
-  //   {
-  //     Ok( syntax_tree ) => syntax_tree,
-  //     Err( err ) => return Err( err ),
-  //   };
-  //
-  //   let got = proc_macro_tools::path_of( &ast );
-  //   a_id!( got, "This::is::path" );
-  //
-  //   return Ok( () );
-  // }
 }
 
 //
 
 tests_index!
 {
-  tree_export_str_basic,
+  tree_diagnostics_str_basic,
   syn_err_basic,
   type_container_kind_basic,
   type_optional_container_kind_basic,
   type_rightmost_basic,
   type_parameters_basic,
-  // attr_pair_single_basic -> Result< (), syn::Error >,
-  // path_of -> Result< (), syn::Error >,
+  // attr_pair_single_basic,
+  // path_of,
 }

@@ -1,6 +1,6 @@
 [package]
 name = "meta_tools"
-version = "0.2.15"
+version = "0.2.18"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -36,6 +36,7 @@ default = [
   "former",
   "options",
   "collection_make",
+  "idents_concat",
   "use_std",
 ]
 full = [
@@ -45,14 +46,15 @@ full = [
   "former",
   "options",
   "collection_make",
+  "idents_concat",
   "use_std",
-  "use_alloc",
 ]
 use_std = []
 use_alloc = []
 
 collection_make = [ "literally" ]
 options = [ "woptions" ]
+idents_concat = [ "paste" ]
 
 [lib]
 name = "meta_tools"
@@ -79,6 +81,8 @@ mod_interface = { version = "~0.1", path = "../../rust/mod_interface", optional 
 former = { version = "~0.1", path = "../../rust/former", optional = true, default-features = false }
 woptions = { version = "~0.1", path = "../../rust/woptions", optional = true, default-features = false }
 literally = { version = "~0.1", optional = true, default-features = false }
+paste = { version = "~1.0", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+

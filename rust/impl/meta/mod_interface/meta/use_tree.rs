@@ -23,8 +23,8 @@ pub( crate ) mod private
       }
       match &self.tree
       {
-        Path( e ) => e.ident.to_string() != "super",
-        Rename( e ) => e.ident.to_string() != "super",
+        Path( e ) => e.ident != "super" && e.ident != "crate",
+        Rename( e ) => e.ident != "super" && e.ident != "crate",
         _ => true,
       }
     }

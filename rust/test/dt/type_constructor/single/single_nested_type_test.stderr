@@ -1,0 +1,5 @@
+error: no rules expected the token `::`
+ --> ../../../rust/test/dt/type_constructor/single/single_nested_type_test.rs:9:37
+  |
+9 |     single Bad : std::sync::Arc< std::sync::Mutex< T > >;
+  |                                     ^^ no rules expected this token in macro call

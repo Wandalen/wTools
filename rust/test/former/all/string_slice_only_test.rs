@@ -7,7 +7,6 @@ use test_tools::exposed::*;
 
 tests_impls!
 {
-  #[ test ]
   fn test_complex()
   {
     // test.case( "default" );

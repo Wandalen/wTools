@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  use crate::protected::*;
 
   /// ChangerInterface of brush stroke.
   #[ allow( dead_code ) ]

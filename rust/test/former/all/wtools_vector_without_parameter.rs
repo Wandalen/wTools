@@ -1,6 +1,6 @@
 use former::Former;
 
-struct Vec
+pub struct Vec
 {
 }
 

@@ -14,9 +14,10 @@
 //! Implementation of automata.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-wtools::meta::mod_interface!
+
+wtools::mod_interface!
 {
   /// Abstract layer.
   #[ cfg( feature = "use_std" ) ]
@@ -27,6 +28,8 @@ wtools::meta::mod_interface!
   /// Algorithms.
   #[ cfg( feature = "use_std" ) ]
   layer algo;
+
+  protected( crate ) use ::wtools::prelude::*;
 }
 
 // zzz : implement checks

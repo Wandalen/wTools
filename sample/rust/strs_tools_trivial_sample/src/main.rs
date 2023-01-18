@@ -12,7 +12,7 @@ fn main()
     .delimeter( " " )
     .stripping( false )
     .perform();
-    let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
+    let iterated = iter.map( String::from ).collect::< Vec< _ > >();
     assert_eq!( iterated, vec![ "abc", " ", "def" ] );
 
     /* delimeter not exists */
@@ -21,7 +21,7 @@ fn main()
     .src( src )
     .delimeter( "g" )
     .perform();
-    let iterated = iter.map( | e | String::from( e ) ).collect::< Vec< _ > >();
+    let iterated = iter.map( String::from ).collect::< Vec< _ > >();
     assert_eq!( iterated, vec![ "abc def" ] );
   }
 }

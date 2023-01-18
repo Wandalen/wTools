@@ -71,7 +71,7 @@ tests_impls!
 
     mod mod1
     {
-      #[ derive( Clone ) ]
+      #[ derive( Default, Clone ) ]
       pub struct Float
       (
         pub f32,
@@ -387,7 +387,7 @@ tests_impls!
       let exp = TheModule::Pair::from( ( MySingle::from( 1 ), MySingle::from( 3 ) ) );
       a_id!( got, exp );
     }
-    // xxx : implement similar test for other type constructors
+    // zzz : implement similar test for other type constructors
 
     // /* test.case( "from pair" ) */
     // {

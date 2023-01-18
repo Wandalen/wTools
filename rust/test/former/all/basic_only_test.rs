@@ -7,7 +7,6 @@ use test_tools::exposed::*;
 
 tests_impls!
 {
-  #[ test ]
   fn test_int()
   {
 
@@ -44,7 +43,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_string()
   {
 
@@ -100,7 +98,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_optional_string()
   {
 
@@ -155,14 +152,13 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_vector()
   {
 
-    // test.case( "vector : implicit construction" );
+    // test.case( "vector : construction" );
 
     let command = Struct1::former()
-    .vec_1().push( "ghi" ).push( "klm" ).end()
+    .vec_1( vec![ "ghi".to_string(), "klm".to_string() ] )
     .form()
     ;
     // dbg!( &command );
@@ -178,56 +174,17 @@ tests_impls!
       hashset_strings_1 : hset!{},
     };
     a_id!( command, expected );
-
-    // test.case( "vector : replace" );
-
-    let command = Struct1::former()
-    .vec_1().replace( vec![ "a".to_string(), "bc".to_string(), "def".to_string() ] ).end()
-    .form();
-    // dbg!( &command );
-
-    let expected = Struct1
-    {
-      int_1 : 0,
-      string_1 : "".to_string(),
-      int_optional_1 : None,
-      string_optional_1 : None,
-      vec_1 : vec![ "a".to_string(), "bc".to_string(), "def".to_string() ],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{},
-    };
-    a_id!( command, expected );
-
-    // test.case( "vector : replace and push" );
-
-    let command = Struct1::former()
-    .vec_1().replace( vec![ "a".to_string(), "bc".to_string(), "def".to_string() ] ).push( "gh" ).end()
-    .form();
-    // dbg!( &command );
-
-    let expected = Struct1
-    {
-      int_1 : 0,
-      string_1 : "".to_string(),
-      int_optional_1 : None,
-      string_optional_1 : None,
-      vec_1 : vec![ "a".to_string(), "bc".to_string(), "def".to_string(), "gh".to_string() ],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{},
-    };
-    a_id!( command, expected );
   }
 
   //
 
-  #[ test ]
   fn test_hashmap()
   {
 
-    // test.case( "implicit construction" );
+    // test.case( "construction" );
 
     let command = Struct1::former()
-    .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
+    .hashmap_strings_1( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
     .form()
     ;
     // dbg!( &command );
@@ -240,46 +197,6 @@ tests_impls!
       string_optional_1 : None,
       vec_1 : vec![],
       hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-      hashset_strings_1 : hset!{},
-    };
-    a_id!( command, expected );
-
-    // test.case( "replace" );
-
-    let command = Struct1::former()
-    .hashmap_strings_1().replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
-    .form()
-    ;
-    // dbg!( &command );
-
-    let expected = Struct1
-    {
-      int_1 : 0,
-      string_1 : "".to_string(),
-      int_optional_1 : None,
-      string_optional_1 : None,
-      vec_1 : vec![],
-      hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-      hashset_strings_1 : hset!{},
-    };
-    a_id!( command, expected );
-
-    // test.case( "replace and insert" );
-
-    let command = Struct1::former()
-    .hashmap_strings_1().replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).insert( "k3", "v3" ).end()
-    .form()
-    ;
-    // dbg!( &command );
-
-    let expected = Struct1
-    {
-      int_1 : 0,
-      string_1 : "".to_string(),
-      int_optional_1 : None,
-      string_optional_1 : None,
-      vec_1 : vec![],
-      hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string(), "k3".to_string() => "v3".to_string() },
       hashset_strings_1 : hset!{},
     };
     a_id!( command, expected );
@@ -287,14 +204,12 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_hashset()
   {
 
-    // test.case( "implicit construction" );
-
+    // test.case( "construction" );
     let command = Struct1::former()
-    .hashset_strings_1().insert( "v1" ).insert( "v2" ).end()
+    .hashset_strings_1( hset!{ "v1".to_string(), "v2".to_string() } )
     .form()
     ;
     // dbg!( &command );
@@ -308,53 +223,12 @@ tests_impls!
       vec_1 : vec![],
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string() },
-    };
-    a_id!( command, expected );
-
-    // test.case( "replace" );
-
-    let command = Struct1::former()
-    .hashset_strings_1().replace( hset!{ "v1".to_string(), "v2".to_string() } ).end()
-    .form()
-    ;
-    // dbg!( &command );
-
-    let expected = Struct1
-    {
-      int_1 : 0,
-      string_1 : "".to_string(),
-      int_optional_1 : None,
-      string_optional_1 : None,
-      vec_1 : vec![],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string() },
-    };
-    a_id!( command, expected );
-
-    // test.case( "replace and insert" );
-
-    let command = Struct1::former()
-    .hashset_strings_1().replace( hset!{ "v1".to_string(), "v2".to_string() } ).insert( "v3" ).end()
-    .form()
-    ;
-    // dbg!( &command );
-
-    let expected = Struct1
-    {
-      int_1 : 0,
-      string_1 : "".to_string(),
-      int_optional_1 : None,
-      string_optional_1 : None,
-      vec_1 : vec![],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string(), "v3".to_string() },
     };
     a_id!( command, expected );
   }
 
   //
 
-  #[ test ]
   fn test_underscored_form()
   {
     // test.case( "basic" );
@@ -377,14 +251,13 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn test_complex()
   {
     let command = Struct1::former()
     .int_1( 13 )
     .string_1( "Abcd".to_string() )
-    .vec_1().push( "ghi" ).push( "klm" ).end()
-    .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
+    .vec_1( vec![ "ghi".to_string(), "klm".to_string() ] )
+    .hashmap_strings_1( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
     .string_optional_1( "dir1" )
     .form();
     // dbg!( &command );

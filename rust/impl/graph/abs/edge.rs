@@ -52,38 +52,14 @@ pub( crate ) mod private
       HasId +
   {
   }
-
 }
 
-/// Protected namespace of the module.
-pub mod protected
+//
+
+crate::mod_interface!
 {
-  pub use super::orphan::*;
+  exposed use EdgeKindless;
+  prelude use EdgeKindInterface;
+  prelude use EdgeBasicInterface;
 }
 
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
-{
-  pub use super::exposed::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-  pub use super::private::EdgeKindless;
-}
-
-pub use exposed::*;
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
-  pub use super::private::
-  {
-    EdgeKindInterface,
-    EdgeBasicInterface,
-  };
-}

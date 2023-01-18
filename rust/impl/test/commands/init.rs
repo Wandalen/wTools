@@ -5,7 +5,7 @@
 
 pub fn commands_form() -> std::collections::HashMap< String, wca::command::Command >
 {
-  let smoke_command = wca::CommandOptions::default()
+  let smoke_command = wca::Command::former()
   .hint( "Perform smoke testing on module." )
   .long_hint( "Perform smoke testing on module." )
   .phrase( "smoke" )
@@ -16,10 +16,8 @@ pub fn commands_form() -> std::collections::HashMap< String, wca::command::Comma
   .routine( &super::smoke::smoke )
   .form();
 
-  let ca_map = std::collections::HashMap::from
+  std::collections::HashMap::from
   ([
     ( ".smoke".to_string(), smoke_command ),
-  ]);
-
-  ca_map
+  ])
 }

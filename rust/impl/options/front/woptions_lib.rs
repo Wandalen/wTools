@@ -10,7 +10,7 @@
 //! Mechanism to define map of options for a function and its defaults laconically.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Namespace with dependencies.
 pub mod dependency
@@ -22,6 +22,7 @@ pub mod dependency
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
@@ -31,22 +32,30 @@ pub use protected::*;
 /// Parented namespace of the module.
 pub mod orphan
 {
+  #[ doc( inline ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ doc( inline ) ]
   pub use super::prelude::*;
+  #[ doc( inline ) ]
   pub use woptions_runtime as runtime;
+  #[ doc( inline ) ]
   pub use woptions_meta as meta;
+  #[ doc( inline ) ]
   pub use meta::Options;
+  #[ doc( inline ) ]
   pub use former::derive::Former;
+  #[ doc( inline ) ]
   pub use woptions_runtime::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
   pub use woptions_runtime::prelude::*;
 }

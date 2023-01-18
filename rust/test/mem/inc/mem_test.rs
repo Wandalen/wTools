@@ -5,6 +5,27 @@ use super::*;
 tests_impls!
 {
 
+  fn same_data()
+  {
+    let buf = [ 0u8; 128 ];
+    a_true!( TheModule::same_data( &buf, &buf ) );
+
+    let x = [ 0u8; 1 ];
+    let y = 0u8;
+
+    a_true!( TheModule::same_data( &x, &y ) );
+
+    a_false!( TheModule::same_data( &buf, &x ) );
+    a_false!( TheModule::same_data( &buf, &y ) );
+
+    struct H1( &'static str );
+    struct H2( &'static str );
+    
+    a_true!( TheModule::same_data( &H1( "hello" ), &H2( "hello" ) ) );
+    a_false!( TheModule::same_data( &H1( "qwerty" ), &H2( "hello" ) ) );
+
+  }
+
   fn same_ptr()
   {
 
@@ -91,6 +112,7 @@ tests_impls!
 
 tests_index!
 {
+  same_data,
   same_ptr,
   same_size,
   same_region,

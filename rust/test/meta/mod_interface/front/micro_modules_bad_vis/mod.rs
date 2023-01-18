@@ -5,6 +5,6 @@ TheModule::mod_interface!
 {
 
   /// mod_exposed
-  private mod mod_exposed;
+  pub mod mod_exposed;
 
 }

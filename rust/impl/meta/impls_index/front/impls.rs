@@ -382,6 +382,7 @@ pub mod exposed
   pub use super::prelude::*;
 }
 
+#[ doc( inline ) ]
 pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -398,6 +399,8 @@ pub mod prelude
     impls2,
     _impls_callback,
   };
+  #[ doc( inline ) ]
   pub use ::impls_index_meta::impls3;
+  #[ doc( inline ) ]
   pub use impls1 as impls;
 }

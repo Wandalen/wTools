@@ -10,9 +10,11 @@
 //! Tools for writing and running tests.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-wtools::meta::mod_interface!
+use ::wtools::mod_interface;
+
+crate::mod_interface!
 {
   /// Commands of binary target.
   #[ cfg( feature = "use_std" ) ]

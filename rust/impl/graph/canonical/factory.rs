@@ -460,29 +460,11 @@ pub( crate ) mod private
 
 }
 
-/// Protected namespace of the module.
-pub mod protected
-{
-  pub use super::orphan::*;
-}
+//
 
-pub use protected::*;
-
-/// Parented namespace of the module.
-pub mod orphan
+crate::mod_interface!
 {
-  pub use super::exposed::*;
-  pub use super::private::NodeFactory;
-  // pub use super::private::NodeFactory2;
-}
+  orphan use NodeFactory;
+  // orphan use NodeFactory2;
 
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  pub use super::prelude::*;
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-pub mod prelude
-{
 }

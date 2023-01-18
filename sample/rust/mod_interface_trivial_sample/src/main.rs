@@ -2,14 +2,18 @@ use mod_interface::mod_interface;
 
 //
 
-mod_interface!
+fn main()
 {
-  exposed mod inner;
+  assert_eq!( prelude::inner_is(), inner::prelude::inner_is() );
 }
 
 //
 
-fn main()
+mod_interface!
 {
-  assert_eq!( exposed::inner::inner_is(), true );
+  /// Inner.
+  layer inner;
 }
+
+// qqq : rewrite sample
+/* aaa : Dmytro : sample with layer */
