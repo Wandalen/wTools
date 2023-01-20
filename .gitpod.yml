@@ -14,7 +14,7 @@ tasks :
 
 vscode :
   extensions :
-    - matklad.rust-analyzer
+    - rust-lang.rust-analyzer
 
 github :
   prebuilds :
