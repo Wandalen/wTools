@@ -3,11 +3,9 @@ pub( crate ) mod private
 {
   use crate::command::*;
   use crate::instruction::*;
+  use crate::context::*;
   use wtools::error::{ Result, BasicError };
   use wtools::former::Former;
-
-  use std::rc::Rc;
-  use core::cell::RefCell;
 
   ///
   /// Commands aggregator.
@@ -35,72 +33,6 @@ pub( crate ) mod private
     pub commands : std::collections::HashMap< String, Command >,
     /// Commands context.
     pub context : Option< Context >,
-  }
-
-  /// Execution statement of a program
-  #[ derive( Debug ) ]
-  pub struct ProgramState
-  {
-    /// Current instruction number
-    pub current_pos : usize
-  }
-
-  #[ derive( Debug, Clone ) ]
-  /// Container for contexts values
-  pub struct Context
-  {
-    inner : Rc< RefCell< anymap::AnyMap > >
-  }
-
-  impl Context
-  {
-    /// Create context
-    pub fn new< T : 'static >( value : T ) -> Self
-    {
-      let mut contexts = anymap::AnyMap::new();
-      contexts.insert( value );
-
-      // Execution context
-      // ? Is it OK?
-      let state = ProgramState { current_pos: 0 } ;
-      contexts.insert( state );
-
-      Self { inner : Rc::new( RefCell::new( contexts ) ) }
-    }
-
-    /// Insert the T value to the context. If it is alredy exists - replace it
-    pub fn insert< T : 'static >( &self, value : T )
-    {
-      self.inner.borrow_mut().insert( value );
-    }
-
-    /// Removes the T value from the context
-    pub fn remove< T : 'static >( &mut self )
-    {
-      self.inner.borrow_mut().remove::< T >();
-    }
-
-    /// Return immutable reference on interior object. ! Unsafe !
-    pub fn get_ref< T : 'static >( &self ) -> Option< &T >
-    {
-      // ! how do it better?
-      unsafe{ self.inner.as_ptr().as_ref()?.get() }
-    }
-
-    /// Return mutable reference on interior object. ! Unsafe !
-    pub fn get_mut< T : 'static >( &self ) -> Option< &mut T >
-    {
-      // ! how do it better?
-      unsafe { self.inner.as_ptr().as_mut()?.get_mut() }
-    }
-  }
-
-  impl PartialEq for Context
-  {
-    fn eq( &self, _other : &Self ) -> bool
-    {
-      false
-    }
   }
 
   impl CommandsAggregator
@@ -200,7 +132,7 @@ pub( crate ) mod private
     {
       match self.command_resolve( instruction )
       {
-        Some( command ) => command.perform( instruction, self.context.clone() ),  // ! changed
+        Some( command ) => command.perform( instruction, self.context.clone() ),
         None =>
         {
           let _ = self.on_ambiguity( &instruction.command_name );
@@ -438,7 +370,7 @@ pub( crate ) mod private
       return if let Some( command ) = self.command_resolve( &instruction )
       {
         let instruction = DefaultInstructionParser::former().form().parse( "" )?;
-        command.perform( &instruction, self.context.clone() )     // ! changed
+        command.perform( &instruction, self.context.clone() )
       }
       else
       {
@@ -484,7 +416,4 @@ crate::mod_interface!
   prelude use OnGetHelp;
   prelude use OnPrintCommands;
   prelude use commands_aggregator;
-
-  prelude use Context;
-  prelude use ProgramState;
 }

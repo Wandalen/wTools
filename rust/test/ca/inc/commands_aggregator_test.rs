@@ -508,6 +508,55 @@ tests_impls!
     assert_eq!( vec![ 4, 5, 6 ], *ctx );
   }
 
+  fn program_perform_with_complex_context_types()
+  {
+    use core::str::FromStr;
+
+    let test_command : Command = wca::Command::former()
+    .hint( "Test" )
+    .long_hint( "Test getting complex types" )
+    .phrase( ".test" )
+    .subject_hint( "some command" )
+    .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
+    {
+      let string = ctx.get_ref::<&str>().unwrap();
+      assert_eq!("Hello, World!", *string);
+
+      let ctx_with_ctx = ctx.get_ref::<wca::Context>().unwrap();
+      let path = ctx_with_ctx.get_ref::<std::path::PathBuf>().unwrap();
+      assert_eq!(std::path::PathBuf::from_str("./").unwrap(), *path);
+
+      let reference_counter = ctx.get_ref::<std::rc::Rc<i32>>().unwrap();
+      // reference on reference counter
+      assert_eq!(8, **reference_counter);
+
+      Ok( () )
+    })
+    .form();
+
+    let commands = vec![ test_command ]
+    .into_iter()
+    .map( | command | ( command.phrase.to_string(), command ) )
+    .collect::< HashMap< String, Command > >();
+
+    let path = std::path::PathBuf::from_str( "./" ).unwrap();
+    // Context with path
+    let ctx = wca::Context::new( path );
+    // Context with context with path
+    let mut ctx = wca::Context::new( ctx );
+    // And with string
+    ctx.insert("Hello, World!");
+    // And with reference counter
+    ctx.insert(std::rc::Rc::new(8));
+
+    let mut ca = wca::commands_aggregator()
+    .commands( commands )
+    .context( ctx )
+    .form();
+
+    assert!(ca.program_perform( ".test" ).is_ok());
+  }
+
   fn chaining()
   {
     let loop_command : Command = wca::Command::former()
@@ -560,7 +609,7 @@ tests_impls!
     .form();
 
     let loop_end_command : Command = wca::Command::former()
-    .hint( "And of loop" )
+    .hint( "End of loop" )
     .long_hint( "" )
     .phrase( ".end" )
     .subject_hint( "some command" )
@@ -623,6 +672,7 @@ tests_index!
   instructions_with_paths,
   program_perform_with_context,
   program_perform_with_several_context_values,
+  program_perform_with_complex_context_types,
   chaining,
 }
 
