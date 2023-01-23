@@ -519,16 +519,16 @@ tests_impls!
     .subject_hint( "some command" )
     .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
     {
-      let string = ctx.get_ref::<&str>().unwrap();
-      assert_eq!("Hello, World!", *string);
+      let string = ctx.get_ref::< &str >().unwrap();
+      assert_eq!( "Hello, World!", *string );
 
-      let ctx_with_ctx = ctx.get_ref::<wca::Context>().unwrap();
-      let path = ctx_with_ctx.get_ref::<std::path::PathBuf>().unwrap();
-      assert_eq!(std::path::PathBuf::from_str("./").unwrap(), *path);
+      let ctx_with_ctx = ctx.get_ref::< wca::Context >().unwrap();
+      let path = ctx_with_ctx.get_ref::< std::path::PathBuf >().unwrap();
+      assert_eq!( std::path::PathBuf::from_str( "./" ).unwrap(), *path );
 
-      let reference_counter = ctx.get_ref::<std::rc::Rc<i32>>().unwrap();
+      let reference_counter = ctx.get_ref::< std::rc::Rc< i32 > >().unwrap();
       // reference on reference counter
-      assert_eq!(8, **reference_counter);
+      assert_eq!( 8, **reference_counter );
 
       Ok( () )
     })
@@ -545,16 +545,16 @@ tests_impls!
     // Context with context with path
     let mut ctx = wca::Context::new( ctx );
     // And with string
-    ctx.insert("Hello, World!");
+    ctx.insert( "Hello, World!" );
     // And with reference counter
-    ctx.insert(std::rc::Rc::new(8));
+    ctx.insert( std::rc::Rc::new( 8 ) );
 
     let mut ca = wca::commands_aggregator()
     .commands( commands )
     .context( ctx )
     .form();
 
-    assert!(ca.program_perform( ".test" ).is_ok());
+    assert!( ca.program_perform( ".test" ).is_ok() );
   }
 
   fn chaining()
