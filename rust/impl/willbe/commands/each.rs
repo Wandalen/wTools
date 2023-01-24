@@ -6,69 +6,84 @@ pub( crate ) mod private
   use wca::
   {
     Args,
-    NoProperties,
+    NoSubject, NoProperties,
+    Context,
   };
 
   use crate::protected::*;
+  use crate::commands::{ StartPointStack, EndPointStack };
+
+  struct PackagesIterator
+  (
+    Box< dyn Iterator< Item = Package > >
+  );
 
   ///
-  /// Iterate over subject
+  /// Iterate over packages
   ///
 
-  pub fn each( args : Args< String, NoProperties > ) -> Result< (), BasicError >
+  pub fn each( _ : Args< NoSubject, NoProperties >, mut ctx : Context ) -> Result< (), BasicError >
   {
-    let current_path = env::current_dir().unwrap();
+    println!( "[LOG] Called each command" );
 
-    // ???
-    match args.subject.as_str()
+    let mut is_end = false;
+    // Already iterate
+    if let Some( iter ) = ctx.get_mut::< PackagesIterator >()
     {
-      ".crate.info" => packages_iterate( current_path ).ordered( OrderStrategy::Alphabetical ).into_iter()
-      .for_each( | p |
+      if let Some( package ) = iter.0.next()
       {
-        let info = PackageMetadata::try_from( p ).unwrap();
-        let info = info.all();
-        println!
-        (
-          "===\nName: {}\nVersion: {}\nDependencies: {:?}\nLocation: {}",
-          info.name,
-          info.version,
-          info.dependencies.iter().map( | d | &d.name ).collect::< Vec< _ > >(),
-          info.manifest_path.parent().unwrap()
-        )
-      }),
-      ".crate.publish" =>
+        // Setup next package to context
+        ctx.insert( package );
+      }
+      else
       {
-        let failed = packages_iterate( current_path ).ordered( OrderStrategy::Topological ).into_iter()
-        .filter_map( | p |
-        {
-          let info = PackageMetadata::try_from( p ).unwrap();
-
-          let mut success = true;
-          println!
-          (
-            "=== Verification ===\nlocation: {}\nLicense: {}\nReadme: {}\nDocumentation: {}\nTests: {}",
-            info.as_package().path().display(),
-            if info.has_license() { "Yes" } else { success = false; "No" },
-            if info.has_readme() { "Yes" } else { success = false; "No" },
-            if info.has_documentation() { "Yes" } else { success = false; "No" },
-            if info.is_tests_passed() { "Passed" } else { success = false; "Failed" }
-          );
-          if !success { Some( info.all().to_owned() ) }
-          else { None }
-        })
-        // collect all failed and after all show result
-        .collect::< Vec< _ > >();
-
-        println!( "\t Fails:" );
-        for ( n, p ) in failed.iter().enumerate()
-        {
-          println!( "- {n} -" );
-          println!( "Name: {}", p.name );
-          println!( "Manifest: {}\n", p.manifest_path );
-        }
-      },
-      _ => {}
+        // Finish
+        ctx.remove::< Package >();
+        is_end = true;
+      }
     }
+    else
+    {
+      // Begin iteration
+      let current_path = env::current_dir().unwrap();
+      let mut packages_iter = packages_iterate( current_path )
+      .into_iter();
+
+      // If it has packages
+      if let Some( package ) = packages_iter.next()
+      {
+      // Add current package and the iterator to context
+        ctx.insert( package );
+        ctx.insert( PackagesIterator( packages_iter ) );
+      }
+      else
+      {
+        println!( "Any package was found at current directory" );
+        is_end = true;
+      }
+    }
+    if is_end
+    {
+        let prog_state = ctx.get_mut::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no Program State" ) )?;
+        // At the end of each - go to first endpoint or to the end of the program
+        prog_state.current_pos = ctx
+        .get_mut::< EndPointStack >()
+        .and_then( | endpoints | endpoints.0.pop() )
+        // TODO: WCA: prog_state - last_instruction_pos
+        .unwrap_or( usize::MAX );
+    }
+    // Start point to previous instruction( back to current )
+    // TODO: WCA: get_mut_or_insert()
+    let startpoints = if let Some( startpoints ) = ctx.get_mut::< StartPointStack >()
+    { startpoints }
+    else
+    {
+      ctx.insert( StartPointStack::default() );
+      ctx.get_mut::< StartPointStack >().unwrap()
+    };
+    let prog_state = ctx.get_ref::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no Program State" ) )?;
+    startpoints.0.push( prog_state.current_pos - 1 );
+
     Ok( () )
   }
 }

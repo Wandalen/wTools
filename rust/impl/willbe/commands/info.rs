@@ -9,18 +9,27 @@ pub( crate ) mod private
     Args,
     NoSubject,
     NoProperties,
+    Context,
   };
 
   ///
   /// Prints information about package
   ///
 
-  pub fn info( _ : Args< NoSubject, NoProperties > ) -> Result< (), BasicError >
+  pub fn info( _ : Args< NoSubject, NoProperties >, ctx : Context ) -> Result< (), BasicError >
   {
-    let current_path = env::current_dir().unwrap();
+    println!( "[LOG] Called info command" );
 
-    let package = Package::try_from( current_path )
-    .map_err( | _ | err!( "Package not found at current directory" ) )?;
+    // Get package from context or try to read package at current directory
+    let package = ctx.get_ref::< Package >()
+    .map( | p | p.to_owned() )
+    .unwrap_or_else( ||
+    {
+      let path = env::current_dir().unwrap().to_owned();
+      Package::try_from( path )
+      .map_err( | _ | err!( "Package not found at current directory" ) )
+      .unwrap()
+    });
 
     let info = PackageMetadata::try_from( package )
     .map_err( | _ | err!( "Can not parse package metadata" ) )?;
