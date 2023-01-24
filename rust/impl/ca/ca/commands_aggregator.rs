@@ -3,6 +3,7 @@ pub( crate ) mod private
 {
   use crate::command::*;
   use crate::instruction::*;
+  use crate::context::*;
   use wtools::error::{ Result, BasicError };
   use wtools::former::Former;
 
@@ -30,6 +31,8 @@ pub( crate ) mod private
     pub exit_code_on_error : Option< i32 >,
     /// Commands.
     pub commands : std::collections::HashMap< String, Command >,
+    /// Commands context.
+    pub context : Option< Context >,
   }
 
   impl CommandsAggregator
@@ -57,10 +60,29 @@ pub( crate ) mod private
         return self.on_syntax_error( program );
       };
 
-      for instruction in &instructions
+      // if program has context - it can use `ProgramState` => we need work with it
+      if let Some( state ) = self
+      .context
+      .as_ref()
+      .and_then( | ctx | ctx.get_mut::< ProgramState >() )
       {
-        self._instruction_perform( &instruction )?;
+        // because program, sometimes, uses with context alredy used
+        state.current_pos = 0;
+
+        while let Some( instruction ) = instructions.get( state.current_pos )
+        {
+          state.current_pos += 1;
+          self._instruction_perform( instruction )?;
+        }
       }
+      else
+      {
+        for instruction in &instructions
+        {
+          self._instruction_perform( instruction )?;
+        }
+      }
+
 
       Ok( () )
     }
@@ -95,8 +117,8 @@ pub( crate ) mod private
     pub fn instructions_parse( &self, program : impl AsRef< str > ) -> Result< Vec< Instruction > >
     {
       let parser = DefaultInstructionParser::former()
-        .several_values( true )
-        .form();
+      .several_values( true )
+      .form();
 
       self.split_program( program.as_ref() )
       .into_iter()
@@ -110,7 +132,7 @@ pub( crate ) mod private
     {
       match self.command_resolve( instruction )
       {
-        Some( command ) => command.perform( instruction ),
+        Some( command ) => command.perform( instruction, self.context.clone() ),
         None =>
         {
           let _ = self.on_ambiguity( &instruction.command_name );
@@ -348,7 +370,7 @@ pub( crate ) mod private
       return if let Some( command ) = self.command_resolve( &instruction )
       {
         let instruction = DefaultInstructionParser::former().form().parse( "" )?;
-        command.perform( &instruction )
+        command.perform( &instruction, self.context.clone() )
       }
       else
       {

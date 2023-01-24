@@ -35,6 +35,4 @@ fn main() -> Result< (), wtools::error::BasicError >
 }
 
 #[ cfg( not( feature = "use_std" ) ) ]
-fn main()
-{
-}
+fn main() {}

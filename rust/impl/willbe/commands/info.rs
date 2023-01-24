@@ -56,6 +56,7 @@ Location: "{}"
       info.dependencies.iter().map( | d | &d.name ).collect::< Vec< _ > >(),
       info.manifest_path.parent().unwrap()
     );
+
     Ok( () )
   }
 }

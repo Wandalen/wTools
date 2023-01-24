@@ -1,0 +1,94 @@
+name : rust_scheduled
+
+on :
+  schedule :
+    - cron : '0 1 * * *'
+
+env :
+
+  RUST_BACKTRACE : 1
+  CARGO_TERM_COLOR : always
+  WITH_SMOKE : ${{ inputs.with_smoke }}
+
+jobs :
+
+  checkmate :
+    runs-on : ubuntu-latest
+    steps :
+      - name : Install latest nightly toolchain
+        uses : Wandalen/wretry.action@master
+        with :
+          action : actions-rs/toolchain@v1
+          with : |
+            toolchain : nightly
+            override : true
+            components : clippy
+          attempt_limit : 3
+          attempt_delay: 10000
+      - uses : actions/checkout@v3
+        with :
+          ref : alpha
+
+      - name : Install cargo-audit
+        run : cargo install cargo-audit
+      - name : Install cargo-udeps
+        run : cargo install cargo-udeps --locked
+
+      - name : Audit the modules
+        run : make audit
+        continue-on-error : true
+      - name : Generate documentation for the modules
+        run : make doc open=no
+        continue-on-error : true
+      - name : Lint the modules
+        run : make lint warnings=no
+        continue-on-error : true
+      - name : Check the modules
+        run : make check
+        continue-on-error : true
+      - name : Check the modules dependencies
+        run : cargo +nightly udeps --all-targets
+        continue-on-error : true
+
+  release :
+    strategy :
+      fail-fast : false
+      matrix :
+        os : [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on : ${{ matrix.os }}
+    steps :
+      - name : Install latest stable toolchain
+        uses : Wandalen/wretry.action@master
+        with :
+          action : actions-rs/toolchain@v1
+          with : |
+            toolchain : stable
+            override : true
+          attempt_limit : 3
+          attempt_delay: 10000
+      - uses : actions/checkout@v3
+        with :
+          ref : alpha
+
+      - name : Make release build
+        run : cargo build --release
+
+  miri :
+    runs-on : ubuntu-latest
+    steps :
+      - name : Install latest nightly toolchain
+        uses : Wandalen/wretry.action@master
+        with :
+          action : actions-rs/toolchain@v1
+          with : |
+            toolchain : nightly
+            override : true
+            components : miri
+          attempt_limit : 3
+          attempt_delay: 10000
+      - uses : actions/checkout@v3
+        with :
+          ref : alpha
+
+      - name : Test with miri
+        run : cargo miri test

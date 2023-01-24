@@ -12,7 +12,7 @@ pub( crate ) mod private
     meta::Former,
   };
   use wtools::string::parse_request::OpType;
-  use crate::Instruction;
+  use crate::{ Instruction, Context };
 
   ///
   /// A type that implements ['Properties'] can be used as 'properties' in ['Args'].
@@ -31,7 +31,7 @@ pub( crate ) mod private
   pub trait Subject : Sized
   {
     /// Parse subject.
-    fn parse( input: impl AsRef< str > ) -> Result< Self >;
+    fn parse( input : impl AsRef< str > ) -> Result< Self >;
   }
 
   ///
@@ -61,14 +61,20 @@ pub( crate ) mod private
     pub routine : Routine,
   }
 
+  type RoutineWithoutContextFn = dyn Fn( &Instruction ) -> Result< () >;
+  type RoutineWithContextFn = dyn Fn( &Instruction, Context ) -> Result< () >;
+
   ///
   /// Routine handle.
   ///
-
+  
   #[ derive( Clone ) ]
-  pub struct Routine
+  pub enum Routine
   {
-    callback : Rc< dyn Fn( &Instruction ) ->  Result< () > >,
+    /// Routine without context
+    WithoutContext( Rc< RoutineWithoutContextFn > ),
+    /// Routine with context
+    WithContext( Rc< RoutineWithContextFn > ),
   }
 
   ///
@@ -78,23 +84,23 @@ pub( crate ) mod private
   pub struct Args< S, P >
   {
     /// Subject of the command.
-    pub subject: S,
+    pub subject : S,
     /// Properties of the command.
-    pub properties: P,
+    pub properties : P,
   }
 
   ///
   /// Used in ['Args'] when a command doesn't expect properties.
   ///
 
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( Debug, PartialEq, Eq ) ]
   pub struct NoProperties;
 
   ///
   /// Used in ['Args'] when a command doesn't expect subject.
   ///
 
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( Debug, PartialEq, Eq ) ]
   pub struct NoSubject;
 
   impl Command
@@ -102,7 +108,7 @@ pub( crate ) mod private
     /// Generate short help for command.
     pub fn help_short( &self ) -> String
     {
-      format!( ".{} - {}", self.phrase.replace( " ", "." ), self.hint )
+      format!( ".{} - {}", self.phrase.replace( ' ', "." ), self.hint )
     }
 
     /// Generate short help for command.
@@ -110,13 +116,13 @@ pub( crate ) mod private
     {
       let properties_hints = self.properties_hints.iter().map( | ( key, value ) | format!( "  {} - {}", key, value ) ).collect::< Vec< _ > >();
       let properties_hints = properties_hints.join( "\n" );
-      format!( ".{} - {}\n{}", self.phrase.replace( " ", "." ), self.long_hint, properties_hints )
+      format!( ".{} - {}\n{}", self.phrase.replace( ' ', "." ), self.long_hint, properties_hints )
     }
 
     /// Execute callback.
-    pub fn perform( &self, instruction : &crate::instruction::Instruction ) -> Result< () >
+    pub fn perform( &self, instruction : &crate::instruction::Instruction, context : Option< Context > ) -> Result< () >
     {
-      if self.subject_hint.len() == 0 && instruction.subject.len() != 0
+      if self.subject_hint.is_empty() && !instruction.subject.is_empty()
       {
         return Err( BasicError::new( "Unexpected subject." ) );
       }
@@ -129,7 +135,7 @@ pub( crate ) mod private
         }
       }
 
-      self.routine.perform( instruction )
+      self.routine.perform( instruction, context )
     }
   }
 
@@ -194,6 +200,20 @@ pub( crate ) mod private
     }
 
     ///
+    /// Routine setter with context.
+    ///
+
+    pub fn routine_with_ctx< F, S, P >( mut self, callback: F ) -> Self
+    where
+      F : Fn( Args< S, P >, Context ) -> Result< () > + 'static,
+      S : Subject,
+      P : Properties,
+    {
+      self.routine = Some( Routine::new_with_ctx( callback ) );
+      self
+    }
+
+    ///
     /// Alias for 'routine'.
     ///
 
@@ -227,13 +247,39 @@ pub( crate ) mod private
         callback( Args { subject, properties } )
       };
 
-      Routine { callback: Rc::new( callback ) }
+      Routine::WithoutContext( Rc::new( callback ) )
+    }
+
+    ///
+    /// Create new routine with context.
+    ///
+
+    pub fn new_with_ctx< F, S, P >( callback: F ) -> Self
+    where
+      F : Fn( Args< S, P >, Context ) -> Result< () > + 'static,
+      S : Subject,
+      P : Properties,
+    {
+      let callback = move | instruction: &Instruction, context : Context |
+      {
+        let subject = S::parse( &instruction.subject )?;
+        let properties = P::parse( &instruction.properties_map )?;
+
+        callback( Args { subject, properties }, context )
+      };
+
+      Routine::WithContext( Rc::new( callback ) )
     }
 
     /// Perform callback.
-    pub fn perform( &self, instruction: &Instruction ) -> Result< () >
+    pub fn perform( &self, instruction: &Instruction, context : Option< Context > ) -> Result< () >
     {
-      ( self.callback )( instruction )
+      match self
+      {
+        Routine::WithContext( func ) if context.is_some() => ( func )( instruction, context.unwrap() ),
+        Routine::WithoutContext( func ) => ( func )( instruction ),
+        _ => Err( BasicError::new( "Can not perform" ) )
+      }
     }
   }
 
@@ -251,7 +297,13 @@ pub( crate ) mod private
     {
       // We can't compare closures. Because every closure has a separate type, even if they're identical.
       // Therefore, we check that the two Rc's point to the same closure (allocation).
-      Rc::ptr_eq( &self.callback, &other.callback )
+      #[ allow( clippy::vtable_address_comparisons ) ]
+      match ( self, other )
+      {
+        ( Routine::WithContext( this ), Routine::WithContext( other ) ) => Rc::ptr_eq( this, other ),
+        ( Routine::WithoutContext( this ), Routine::WithoutContext( other ) ) => Rc::ptr_eq( this, other ),
+        _ => false
+      }
     }
   }
 
