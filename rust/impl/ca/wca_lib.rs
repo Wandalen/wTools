@@ -46,4 +46,5 @@ pub use ca::
   command,
   input,
   instruction,
+  context,
 };
