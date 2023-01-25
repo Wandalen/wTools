@@ -67,11 +67,11 @@ pub( crate ) mod private
       .and_then( | ctx | ctx.get_mut::< ProgramState >() )
       {
         // because program, sometimes, uses with context alredy used
-        state.current_pos = 0;
+        state.set_pos( 0 );
 
-        while let Some( instruction ) = instructions.get( state.current_pos )
+        while let Some( instruction ) = instructions.get( state.get_pos() )
         {
-          state.current_pos += 1;
+          state.go_next();
           self._instruction_perform( instruction )?;
         }
       }
