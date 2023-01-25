@@ -32,9 +32,14 @@ pub( crate ) mod private
           ctx.insert( EndPointStack::default() );
           ctx.get_mut::< EndPointStack >().unwrap()
         };
-
+        
         let prog_state = ctx.get_mut::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no Program State" ) )?;
-        endpoints.push( prog_state.current_pos - 1 );
+        let current_instruction_pos = prog_state.current_pos - 1;
+        // if has no point at current instruction - push it
+        if endpoints.last() != Some( &current_instruction_pos )
+        {
+          endpoints.push( prog_state.current_pos - 1 );
+        }
          
         // Go to start point
         prog_state.current_pos = *point;
