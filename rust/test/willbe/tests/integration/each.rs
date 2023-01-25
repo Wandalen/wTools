@@ -107,3 +107,24 @@ fn empty_path_each_info() -> Result< (), Box< dyn std::error::Error > >
 
   Ok( () )
 }
+
+#[ test ]
+fn another_command_after_each() -> Result< (), Box< dyn std::error::Error > >
+{
+  let mut cmd = Command::cargo_bin( MODULE_NAME )?;
+  let package_asset = Asset::from( PathBuf::from( ASSET_PATH ).join( "package" ) ).copied();
+  let package_path = package_asset.path_buf();
+
+  cmd.current_dir( package_path );
+  cmd.arg( ".each .crate.info .end .crate.info" );
+
+  cmd
+  .assert()
+  .success()
+  .stdout
+  (
+    predicate::str::contains( "Name: \"package\"" ).count( 2 )
+  );
+
+  Ok( () )
+}

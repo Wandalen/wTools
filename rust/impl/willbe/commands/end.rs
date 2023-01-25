@@ -19,12 +19,10 @@ pub( crate ) mod private
   {
     println!( "[LOG] end called" );
 
-    if let Some( startpoints ) = ctx.get_mut::< StartPointStack >()
+    if let Some( startpoints ) = ctx.get_ref::< StartPointStack >()
     {
-      if let Some( point ) = startpoints.0.pop()
+      if let Some( point ) = startpoints.last()
       {
-        let prog_state = ctx.get_mut::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no Program State" ) )?;
-
         // Endpoint to next instruction
         // TODO: WCA: get_mut_or_insert()
         let endpoints = if let Some( endpoints ) = ctx.get_mut::< EndPointStack >()
@@ -34,11 +32,12 @@ pub( crate ) mod private
           ctx.insert( EndPointStack::default() );
           ctx.get_mut::< EndPointStack >().unwrap()
         };
-        endpoints.0.push( prog_state.current_pos );
+
+        let prog_state = ctx.get_mut::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no Program State" ) )?;
+        endpoints.push( prog_state.current_pos - 1 );
          
         // Go to start point
-        prog_state.current_pos = point;
-
+        prog_state.current_pos = *point;
       }
     }
 

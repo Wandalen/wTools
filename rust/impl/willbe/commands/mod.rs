@@ -25,9 +25,45 @@ mod private
 {
   /// Allow to go back to the iterator
   #[ derive( Debug, Default ) ]
-  pub struct StartPointStack( pub Vec< usize > );
+  pub struct StartPointStack( Vec< usize > );
 
-  /// Allow to go back to the iterator
+  impl std::ops::Deref for StartPointStack
+  {
+    type Target = Vec< usize >;
+
+    fn deref( &self ) -> &Self::Target
+    {
+      &self.0
+    }
+  }
+
+  impl std::ops::DerefMut for StartPointStack
+  {
+    fn deref_mut( &mut self ) -> &mut Self::Target
+    {
+      &mut self.0
+    }
+  }
+
+  /// Allow to go back to the end
   #[ derive( Debug, Default ) ]
-  pub struct EndPointStack( pub Vec< usize > );
+  pub struct EndPointStack( Vec< usize > );
+
+  impl std::ops::Deref for EndPointStack
+  {
+    type Target = Vec< usize >;
+
+    fn deref( &self ) -> &Self::Target
+    {
+      &self.0
+    }
+  }
+
+  impl std::ops::DerefMut for EndPointStack
+  {
+    fn deref_mut( &mut self ) -> &mut Self::Target
+    {
+      &mut self.0
+    }
+  }
 }

@@ -20,15 +20,17 @@ pub( crate ) mod private
     println!( "[LOG] Called publish command" );
 
     // Get package from context or try to read package at current directory
-    let package = ctx.get_ref::< Package >()
-    .map( | p | p.to_owned() )
-    .unwrap_or_else( ||
+    let package = match ctx.get_ref::< Option< Package > >()
     {
-      let path = env::current_dir().unwrap().to_owned();
-      Package::try_from( path )
-      .map_err( | _ | err!( "Package not found at current directory" ) )
-      .unwrap()
-    });
+      Some( Some( package ) ) => package.to_owned(),
+      None =>
+      {
+        let path = env::current_dir().unwrap().to_owned();
+        Package::try_from( path )
+        .map_err( | _ | err!( "Package not found at current directory" ) )?
+      }
+      _ => return Ok( () )
+    };
 
     let info = PackageMetadata::try_from( package )
     .map_err( | _ | err!( "Can not parse package metadata" ) )?;

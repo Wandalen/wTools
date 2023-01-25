@@ -18,6 +18,24 @@ pub( crate ) mod private
     Box< dyn Iterator< Item = Package > >
   );
 
+  impl std::ops::Deref for PackagesIterator
+  {
+    type Target = Box< dyn Iterator< Item = Package > >;
+
+    fn deref( &self ) -> &Self::Target
+    {
+      &self.0
+    }
+  }
+
+  impl std::ops::DerefMut for PackagesIterator
+  {
+    fn deref_mut( &mut self ) -> &mut Self::Target
+    {
+      &mut self.0
+    }
+  }
+
   ///
   /// Iterate over packages
   ///
@@ -26,63 +44,63 @@ pub( crate ) mod private
   {
     println!( "[LOG] Called each command" );
 
-    let mut is_end = false;
     // Already iterate
     if let Some( iter ) = ctx.get_mut::< PackagesIterator >()
     {
-      if let Some( package ) = iter.0.next()
+      // It isn't end of iterator
+      let is_current_package_exists = ctx.get_ref::< Option< Package > >().and_then( | p | p.as_ref() ).is_some();
+      let next_package = iter.next();
+      if is_current_package_exists && next_package.is_some()
       {
-        // Setup next package to context
-        ctx.insert( package );
+        ctx.insert( next_package );
       }
       else
       {
-        // Finish
-        ctx.remove::< Package >();
-        is_end = true;
+        ctx.remove::< Option< Package > >();
+        ctx.remove::< PackagesIterator >();
+        // At the end of each - go to first endpoint
+        // remove self from startpoints
+        ctx.get_mut::< StartPointStack >().and_then( | sp | sp.pop() );
+        // go to endpoint
+        let prog_state = ctx.get_mut::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no Program State" ) )?;
+        prog_state.current_pos = ctx
+        .get_mut::< EndPointStack >()
+        .and_then( | endpoints | endpoints.pop() )
+        //? What is better - panic or go to end of the program when endpoints doesn't exists for any reason
+        .unwrap();
       }
     }
     else
     {
       // Begin iteration
       let current_path = env::current_dir().unwrap();
-      let mut packages_iter = packages_iterate( current_path )
-      .into_iter();
+      let mut packages_iter = packages_iterate( current_path );
 
-      // If it has packages
-      if let Some( package ) = packages_iter.next()
-      {
       // Add current package and the iterator to context
-        ctx.insert( package );
-        ctx.insert( PackagesIterator( packages_iter ) );
-      }
-      else
+      let package = packages_iter.next();
+
+      // But anyway program must found the end of `.each`
+      if package.is_none()
       {
         println!( "Any package was found at current directory" );
-        is_end = true;
       }
+
+      ctx.insert( package );
+      ctx.insert( PackagesIterator( packages_iter ) );
+
+      // Start point to previous instruction( back to current )
+      // TODO: WCA: get_mut_or_insert()
+      let startpoints = if let Some( startpoints ) = ctx.get_mut::< StartPointStack >()
+      { startpoints }
+      else
+      {
+        ctx.insert( StartPointStack::default() );
+        ctx.get_mut::< StartPointStack >().unwrap()
+      };
+
+      let prog_state = ctx.get_ref::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no Program State" ) )?;
+      startpoints.push( prog_state.current_pos - 1 );
     }
-    if is_end
-    {
-        let prog_state = ctx.get_mut::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no Program State" ) )?;
-        // At the end of each - go to first endpoint or to the end of the program
-        prog_state.current_pos = ctx
-        .get_mut::< EndPointStack >()
-        .and_then( | endpoints | endpoints.0.pop() )
-        // TODO: WCA: prog_state - last_instruction_pos
-        .unwrap_or( usize::MAX );
-    }
-    // Start point to previous instruction( back to current )
-    // TODO: WCA: get_mut_or_insert()
-    let startpoints = if let Some( startpoints ) = ctx.get_mut::< StartPointStack >()
-    { startpoints }
-    else
-    {
-      ctx.insert( StartPointStack::default() );
-      ctx.get_mut::< StartPointStack >().unwrap()
-    };
-    let prog_state = ctx.get_ref::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no Program State" ) )?;
-    startpoints.0.push( prog_state.current_pos - 1 );
 
     Ok( () )
   }
