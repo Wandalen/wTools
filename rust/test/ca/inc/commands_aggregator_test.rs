@@ -567,11 +567,10 @@ tests_impls!
     .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
     {
       let state = ctx.get_mut::< State >().ok_or_else( || BasicError::new( "Have no State" ) )?;
-      let breakpoint = ctx.get_mut::< Breakpoint >().ok_or_else( || BasicError::new( "Have no Breakpoints" ) )?;
       let prog_state = ctx.get_ref::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no State" ) )?;
 
       state.current_value = state.iter.next();
-      breakpoint.0 = prog_state.current_pos - 1;
+      ctx.get_or_default::< Breakpoints >().0.push( prog_state.get_pos() - 1 );
 
       Ok( () )
     })
@@ -616,11 +615,14 @@ tests_impls!
     .routine_with_ctx( | _ : Args< String, NoProperties >, ctx : wca::Context |
     {
       let state = ctx.get_ref::< State >().ok_or_else( || BasicError::new( "Have no State" ) )?;
-      let breakpoint = ctx.get_ref::< Breakpoint >().ok_or_else( || BasicError::new( "Have no Breakpoints" ) )?;
+      let breakpoint = ctx.get_mut::< Breakpoints >().ok_or_else( || BasicError::new( "Have no Breakpoints" ) )?;
       let prog_state = ctx.get_mut::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no State" ) )?;
 
       if state.current_value.is_some() {
-        prog_state.current_pos = breakpoint.0;
+        if let Some( point ) = breakpoint.0.pop()
+        {
+          prog_state.set_pos( point );
+        }
       }
 
       Ok( () )
@@ -639,18 +641,21 @@ tests_impls!
       processed : Vec< i32 >,
     }
 
-    struct Breakpoint( usize );
+    #[ derive( Default ) ]
+    struct Breakpoints( Vec< usize > );
 
-    let vec = vec![ 1, 2, 3 ];
-    let mut ctx = wca::Context::new( State { current_value : None, iter : Box::new( vec.into_iter() ) , processed : vec![] } );
-    ctx.insert( Breakpoint( 0 ) );
-
+    // commands aggregator with default context
     let mut ca = wca::commands_aggregator()
     .commands( commands )
-    .context( ctx )
+    .default_context()
     .form();
 
-    let got = ca.program_perform( ".loop .iter .inc .print .end" );
+    let vec = vec![ 1, 2, 3 ];
+    let state = State { current_value : None, iter : Box::new( vec.into_iter() ) , processed : vec![] } ;
+    // add state to the context
+    ca.context.as_mut().map( | x | x.insert( state ) );
+
+    let got = ca.program_perform( ".loop .inc .print .end" );
 
     let ctx = ca.context.as_ref().unwrap();
     let ctx = ctx.get_ref::< State >().unwrap();
