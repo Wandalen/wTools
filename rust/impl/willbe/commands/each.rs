@@ -62,12 +62,14 @@ pub( crate ) mod private
         // remove self from startpoints
         ctx.get_mut::< StartPointStack >().and_then( | sp | sp.pop() );
         // go to endpoint
-        let prog_state = ctx.get_mut::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no Program State" ) )?;
-        prog_state.current_pos = ctx
-        .get_mut::< EndPointStack >()
-        .and_then( | endpoints | endpoints.pop() )
-        //? What is better - panic or go to end of the program when endpoints doesn't exists for any reason
-        .unwrap();
+        let prog_state = ctx.get_mut::< wca::ProgramState >()
+        .ok_or_else( || BasicError::new( "Have no Program State" ) )?;
+
+        ctx.get_mut::< EndPointStack >()
+        .and_then( | ep | ep.pop() )
+        .map( | point | prog_state.set_pos( point ) )
+        //? What is better - panic or go to the end of the program when endpoints doesn't exists for any reason
+        .unwrap_or_else( || prog_state.finish() );
       }
     }
     else
@@ -76,7 +78,6 @@ pub( crate ) mod private
       let current_path = env::current_dir().unwrap();
       let mut packages_iter = packages_iterate( current_path );
 
-      // Add current package and the iterator to context
       let package = packages_iter.next();
 
       // But anyway program must found the end of `.each`
@@ -85,21 +86,14 @@ pub( crate ) mod private
         println!( "Any package was found at current directory" );
       }
 
+      // Add current package and the iterator to context
       ctx.insert( package );
       ctx.insert( PackagesIterator( packages_iter ) );
 
       // Start point to previous instruction( back to current )
-      // TODO: WCA: get_mut_or_insert()
-      let startpoints = if let Some( startpoints ) = ctx.get_mut::< StartPointStack >()
-      { startpoints }
-      else
-      {
-        ctx.insert( StartPointStack::default() );
-        ctx.get_mut::< StartPointStack >().unwrap()
-      };
-
-      let prog_state = ctx.get_ref::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no Program State" ) )?;
-      startpoints.push( prog_state.current_pos - 1 );
+      let prog_state = ctx.get_ref::< wca::ProgramState >()
+      .ok_or_else( || BasicError::new( "Have no Program State" ) )?;
+      ctx.get_or_default::< StartPointStack >().push( prog_state.get_pos() - 1 );
     }
 
     Ok( () )

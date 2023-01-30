@@ -27,8 +27,7 @@ fn main() -> Result< (), wtools::error::BasicError >
   let ca = wca::commands_aggregator()
   .exit_code_on_error( 1 )
   .commands( commands.to_owned() )
-  // TODO: WCA: with_context() [?] - place `empty` context to commands aggregator
-  .context( wca::Context::new( "" ) )
+  .default_context()
   .form();
 
   ca.program_perform( args.join( " " ) + " .end" )
