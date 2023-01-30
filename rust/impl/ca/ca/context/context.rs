@@ -5,13 +5,7 @@ pub( crate ) mod private
   use core::cell::RefCell;
   use core::any::Any;
 
-  /// Execution statement of a program
-  #[ derive( Debug ) ]
-  pub struct ProgramState
-  {
-    /// Current instruction number
-    pub current_pos : usize
-  }
+  use crate::ProgramState;
 
   #[ derive( Debug, Clone ) ]
   /// Container for contexts values
@@ -20,20 +14,28 @@ pub( crate ) mod private
     inner : Rc< RefCell< anymap::AnyMap > >
   }
 
+  impl Default for Context
+  {
+    fn default() -> Self
+    {
+      let mut contexts = anymap::AnyMap::new();
+      
+      let state = ProgramState::default();
+      contexts.insert( state );
+
+      Self { inner : Rc::new( RefCell::new( contexts ) ) }
+    }
+  }
+
   impl Context
   {
     /// Create context
     pub fn new< T : Any >( value : T ) -> Self
     {
-      let mut contexts = anymap::AnyMap::new();
+      let contexts = Self::default();
       contexts.insert( value );
 
-      // Execution context
-      // ? Is it OK?
-      let state = ProgramState { current_pos: 0 } ;
-      contexts.insert( state );
-
-      Self { inner : Rc::new( RefCell::new( contexts ) ) }
+      contexts
     }
 
     /// Insert the T value to the context. If it is alredy exists - replace it
@@ -61,19 +63,40 @@ pub( crate ) mod private
       // ! how do it better?
       unsafe { self.inner.as_ptr().as_mut()?.get_mut() }
     }
+
+    /// Insert the value if it doesn't exists, or take an existing value and return mutable reference to it
+    pub fn get_or_insert< T : Any >( &self, value : T ) -> &mut T
+    {
+      if let Some( value ) = self.get_mut()
+      {
+        value
+      }
+      else
+      {
+        self.insert( value );
+        self.get_mut().unwrap()
+      }
+    }
+
+    /// Insert default value if it doesn't exists, or take an existing value and return mutable reference to it
+    pub fn get_or_default< T : Any + Default >( &self ) -> &mut T
+    {
+      self.get_or_insert( T::default() )
+    }
   }
 
   impl PartialEq for Context
   {
-    fn eq( &self, _other : &Self ) -> bool
+    fn eq( &self, other : &Self ) -> bool
     {
-      false
+      self == other
     }
   }
 }
 
+//
+
 crate::mod_interface!
 {
   prelude use Context;
-  prelude use ProgramState;
 }

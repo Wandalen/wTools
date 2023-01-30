@@ -67,11 +67,14 @@ pub( crate ) mod private
       .and_then( | ctx | ctx.get_mut::< ProgramState >() )
       {
         // because program, sometimes, uses with context alredy used
-        state.current_pos = 0;
+        state.start();
 
-        while let Some( instruction ) = instructions.get( state.current_pos )
+        while let Some( instruction ) = instructions.get( state.get_pos() )
         {
-          state.current_pos += 1;
+          if state.next().is_none()
+          {
+            break;
+          }
           self._instruction_perform( instruction )?;
         }
       }
@@ -221,6 +224,18 @@ pub( crate ) mod private
       }
 
       false
+    }
+  }
+
+  impl CommandsAggregatorFormer
+  {
+    pub fn default_context( self ) -> Self
+    {
+      Self
+      {
+        context : Some( Context::default() ),
+        ..self
+      }
     }
   }
 
