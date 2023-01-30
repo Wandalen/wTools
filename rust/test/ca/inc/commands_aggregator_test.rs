@@ -570,7 +570,7 @@ tests_impls!
       let prog_state = ctx.get_ref::< wca::ProgramState >().ok_or_else( || BasicError::new( "Have no State" ) )?;
 
       state.current_value = state.iter.next();
-      ctx.get_or_default::< Breakpoints >().0.push( prog_state.prev() );
+      ctx.get_or_default::< Breakpoints >().0.push( prog_state.get_pos() - 1 );
 
       Ok( () )
     })
@@ -644,13 +644,16 @@ tests_impls!
     #[ derive( Default ) ]
     struct Breakpoints( Vec< usize > );
 
-    let vec = vec![ 1, 2, 3 ];
-    let mut ctx = wca::Context::new( State { current_value : None, iter : Box::new( vec.into_iter() ) , processed : vec![] } );
-
+    // commands aggregator with default context
     let mut ca = wca::commands_aggregator()
     .commands( commands )
-    .context( ctx )
+    .default_context()
     .form();
+
+    let vec = vec![ 1, 2, 3 ];
+    let state = State { current_value : None, iter : Box::new( vec.into_iter() ) , processed : vec![] } ;
+    // add state to the context
+    ca.context.as_mut().map( | x | x.insert( state ) );
 
     let got = ca.program_perform( ".loop .inc .print .end" );
 

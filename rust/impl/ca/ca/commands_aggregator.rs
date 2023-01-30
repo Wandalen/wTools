@@ -71,7 +71,7 @@ pub( crate ) mod private
 
         while let Some( instruction ) = instructions.get( state.get_pos() )
         {
-          if state.checked_go_next().is_err()
+          if state.next().is_none()
           {
             break;
           }
@@ -225,6 +225,17 @@ pub( crate ) mod private
 
       false
     }
+  }
+
+  impl CommandsAggregatorFormer {
+      pub fn default_context( self ) -> Self
+      {
+        Self
+        {
+          context : Some( Context::default() ),
+          ..self
+        }
+      }
   }
 
   //

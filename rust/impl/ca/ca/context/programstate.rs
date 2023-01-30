@@ -1,8 +1,6 @@
 
 pub( crate ) mod private
 {
-  use wtools::BasicError;
-
   /// Execution statement of a program
   #[ derive( Debug, Default ) ]
   pub struct ProgramState
@@ -25,57 +23,30 @@ pub( crate ) mod private
       self.current_pos
     }
 
-    /// Returns the number of next instruction
-    pub fn next( &self ) -> usize
-    {
-      self.checked_next().unwrap_or( usize::MAX )
-    }
-
-    /// Checked position addition. Computes self + 1, returning None if overflow occurred.
-    pub fn checked_next( &self ) -> Option< usize >
+    /// Change the current instruction position to the next one
+    /// Returns Some( position ) if it can be done
+    /// And None when can not increment position value
+    pub fn next( &mut self ) -> Option< usize >
     {
       self.current_pos.checked_add( 1 )
+      .map( | pos |
+      {
+        self.set_pos( pos );
+        pos
+      })
     }
 
-    /// Sets current instruction to next one
-    pub fn go_next( &mut self )
-    {
-      // if current instruction is the last available, on next iteration it will be usize::MAX + 1 and it stop safe
-      self.checked_go_next().ok();
-    }
-
-    /// Checked go to the next instruction. If it was the last instruction - returns Error
-    pub fn checked_go_next( &mut self ) -> Result< (), BasicError >
-    {
-       self.checked_next()
-       .ok_or( BasicError::new( "It was the last instruction" ) )
-       .map( | pos | self.set_pos( pos ) )
-    }
-
-    /// Returns the number of previous instruction
-    pub fn prev( &self ) -> usize
-    {
-      self.checked_prev().unwrap_or( usize::MIN )
-    }
-
-    /// Checked position subtraction. Computes self - 1, returning None if overflow occurred.
-    pub fn checked_prev( &self ) -> Option< usize >
+    /// Change the current instruction position to the previous one
+    /// Returns Some( position ) if it can be done
+    /// And None when can not increment position value
+    pub fn prev( &mut self ) -> Option< usize >
     {
       self.current_pos.checked_sub( 1 )
-    }
-
-    /// Sets current instruction to previous one
-    pub fn go_back( &mut self )
-    {
-      self.checked_go_back().ok();
-    }
-
-    /// Checked go to the previous instruction. If it was the first instruction - returns Error
-    pub fn checked_go_back( &mut self ) -> Result< (), BasicError >
-    {
-       self.checked_prev()
-       .ok_or( BasicError::new( "It was the first instruction" ) )
-       .map( | pos | self.set_pos( pos ) )
+      .map( | pos |
+      {
+        self.set_pos( pos );
+        pos
+      })
     }
 
     /// Sets current instruction to begin of a program
