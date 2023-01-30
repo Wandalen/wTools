@@ -227,15 +227,16 @@ pub( crate ) mod private
     }
   }
 
-  impl CommandsAggregatorFormer {
-      pub fn default_context( self ) -> Self
+  impl CommandsAggregatorFormer
+  {
+    pub fn default_context( self ) -> Self
+    {
+      Self
       {
-        Self
-        {
-          context : Some( Context::default() ),
-          ..self
-        }
+        context : Some( Context::default() ),
+        ..self
       }
+    }
   }
 
   //
