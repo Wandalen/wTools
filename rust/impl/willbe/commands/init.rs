@@ -17,7 +17,7 @@ pub( crate ) mod private
     let each_command = wca::Command::former()
     .hint( "--- each ---" )
     .long_hint( "--- each ---" )
-    .phrase( ".each" )
+    .phrase( "each" )
     .subject_hint( "What to iterate(?)" )
     .routine_with_ctx( &crate::commands::each::each )
     .form();
