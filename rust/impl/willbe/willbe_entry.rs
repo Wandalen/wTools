@@ -30,7 +30,7 @@ fn main() -> Result< (), wtools::error::BasicError >
   .default_context()
   .form();
 
-  ca.program_perform( args.join( " " ) + " .end" )
+  ca.program_perform( if args.is_empty() { "".to_owned() } else { args.join( " " ) + " .end" } )
 }
 
 #[ cfg( not( feature = "use_std" ) ) ]
