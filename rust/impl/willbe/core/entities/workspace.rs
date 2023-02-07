@@ -58,7 +58,8 @@ pub( crate ) mod private
         let packages_paths = unique_walk
         (
           self.path.to_owned(),
-          &[ member.as_str().unwrap().to_string() ]
+          &[ member.as_str().unwrap().to_string() ],
+          0 .. usize::MAX
         );
 
         packages_paths
@@ -89,7 +90,7 @@ pub( crate ) mod private
 
 //
 
-wtools::meta::mod_interface!
+wtools::mod_interface!
 {
   prelude use Workspace;
 }

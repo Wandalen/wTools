@@ -11,13 +11,15 @@ pub( crate ) mod private
   /// Iterate over unique files in directory using globs 
   ///
 
-  pub fn unique_walk< P, S >( base_dir : P, patterns : &[ S ] ) -> impl Iterator< Item = PathBuf >
+  pub fn unique_walk< P, S >( base_dir : P, patterns : &[ S ], depth : std::ops::Range< usize > ) -> impl Iterator< Item = PathBuf >
   where
     P: AsRef< Path >,
     S: AsRef< str >,
   {
     globwalk::GlobWalkerBuilder::from_patterns( base_dir, patterns )
     .follow_links( true )
+    .min_depth( depth.start )
+    .max_depth( depth.end )
     .build().unwrap()
     .into_iter()
     .filter_map( Result::ok )

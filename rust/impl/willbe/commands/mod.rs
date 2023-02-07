@@ -9,6 +9,9 @@ wtools::mod_interface!
   /// Publish package
   prelude mod publish;
 
+  /// Works with package dependencies
+  prelude mod dep;
+
   /// Iterate over subject
   prelude mod each;
 

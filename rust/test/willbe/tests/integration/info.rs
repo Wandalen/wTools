@@ -1,4 +1,5 @@
 use super::*;
+use predicate::str::contains;
 
 #[ test ]
 fn package_info() -> Result< (), Box< dyn std::error::Error > >
@@ -15,27 +16,12 @@ fn package_info() -> Result< (), Box< dyn std::error::Error > >
   .success()
   .stdout
   (
-    predicate::str::contains( "Name: \"package\"" )
-    .and
-    (
-      predicate::str::contains( "Version: \"0.1.0\"" )
-    )
-    .and
-    (
-      predicate::str::contains( "Description: \"Not found\"" )
-    )
-    .and
-    (
-      predicate::str::contains( "Documentation: \"Documentation text\"" )
-    )
-    .and
-    (
-      predicate::str::contains( "License: \"MIT\"" )
-    )
-    .and
-    (
-      predicate::str::contains( "Dependencies: []" )
-    )
+    contains( "Name: \"package\"" )
+    .and( contains( "Version: \"0.1.0\"" ) )
+    .and( contains( "Description: \"Not found\"" ) )
+    .and( contains( "Documentation: \"Documentation text\"" ) )
+    .and( contains( "License: \"MIT\"" ) )
+    .and( contains( "Dependencies: []" ) )
   );
 
   Ok( () )
@@ -54,7 +40,7 @@ fn workspace_path_info() -> Result< (), Box< dyn std::error::Error > >
   cmd
   .assert()
   .failure()
-  .stderr( predicate::str::contains( "Package not found at current directory" ) );
+  .stderr( contains( "Package not found at current directory" ) );
 
   Ok( () )
 }
@@ -72,7 +58,7 @@ fn empty_path_info() -> Result< (), Box< dyn std::error::Error > >
   cmd
   .assert()
   .failure()
-  .stderr( predicate::str::contains( "Package not found at current directory" ) );
+  .stderr( contains( "Package not found at current directory" ) );
 
   Ok( () )
 }

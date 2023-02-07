@@ -6,10 +6,12 @@ pub( crate ) mod private
   use wca::
   {
     Args,
-    NoSubject, NoProperties,
+    NoSubject, Properties,
     Context,
+    string::parse_request::OpType,
   };
 
+  use crate::core::iterators::private::packages_recursive_iterate;
   use crate::protected::*;
   use crate::commands::{ StartPointStack, EndPointStack };
 
@@ -36,14 +38,43 @@ pub( crate ) mod private
     }
   }
 
+  #[derive(Debug, Default)]
+  pub struct EachProperties
+  {
+    depth: Option< std::ops::Range< usize > >,
+  }
+
+  // TODO: WCA: Properties will be extended. Change here too
+  impl Properties for EachProperties
+  {
+    fn parse( properties : &HashMap< String, OpType< String > > ) -> Result< Self, BasicError >
+    {
+      if let Some( depth ) = properties.get( "depth" )
+      {
+        let depth = depth.clone().primitive().unwrap();
+        if let Some(( from, to )) = depth.split_once( ".." )
+        {
+          let from = if from.is_empty() { usize::MIN } else { from.parse().map_err( | _ | BasicError::new( "Can not parse depth from" ) )? };
+          let to = if to == "inf" || to.is_empty() { usize::MAX } else { to.parse().map_err( | _ | BasicError::new( "Can not parse depth to" ) )? };
+          let props = EachProperties
+          {
+            depth: Some( from .. to )
+          };
+
+          return Ok( props );
+        }
+      }
+
+      Ok( Self::default() )
+    }
+  }
+
   ///
   /// Iterate over packages
   ///
 
-  pub fn each( _ : Args< NoSubject, NoProperties >, mut ctx : Context ) -> Result< (), BasicError >
+  pub fn each( args : Args< NoSubject, EachProperties >, mut ctx : Context ) -> Result< (), BasicError >
   {
-    println!( "[LOG] Called each command" );
-
     // Already iterate
     if let Some( iter ) = ctx.get_mut::< PackagesIterator >()
     {
@@ -76,7 +107,13 @@ pub( crate ) mod private
     {
       // Begin iteration
       let current_path = env::current_dir().unwrap();
-      let mut packages_iter = packages_iterate( current_path );
+      let mut packages_iter = if let Some( depth ) = args.properties.depth {
+        packages_recursive_iterate( current_path, depth )
+      }
+      else
+      {
+        packages_iterate( current_path )
+      };
 
       let package = packages_iter.next();
 

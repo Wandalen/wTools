@@ -61,7 +61,8 @@ globwalk = "0.8"
 cargo_metadata = "0.15"
 path-absolutize = "3"
 petgraph = "~0.6"
-rand = "0.8.4"
+rand = "0.8"
+cargo-edit = "0.10"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

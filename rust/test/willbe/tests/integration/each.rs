@@ -1,4 +1,5 @@
 use super::*;
+use predicate::str::contains;
 
 #[ test ]
 fn many_workspaces_each_info() -> Result< (), Box< dyn std::error::Error > >
@@ -15,23 +16,11 @@ fn many_workspaces_each_info() -> Result< (), Box< dyn std::error::Error > >
   .success()
   .stdout
   (
-    predicate::str::contains( "Name: \"module1\"" ).count( 1 )
-    .and
-    (
-      predicate::str::contains( "Name: \"module2\"" ).count( 1 )
-    )
-    .and
-    (
-      predicate::str::contains( "Name: \"module3\"" ).count( 1 )
-    )
-    .and
-    (
-      predicate::str::contains( "Name: \"module4\"" ).count( 1 )
-    )
-    .and
-    (
-      predicate::str::contains( "Name: \"module5\"" ).count( 1 )
-    )
+    contains( "Name: \"module1\"" ).count( 1 )
+    .and( contains( "Name: \"module2\"" ).count( 1 ) )
+    .and( contains( "Name: \"module3\"" ).count( 1 ) )
+    .and( contains( "Name: \"module4\"" ).count( 1 ) )
+    .and( contains( "Name: \"module5\"" ).count( 1 ) )
   );
 
   Ok( () )
@@ -52,15 +41,9 @@ fn workspace_each_info() -> Result< (), Box< dyn std::error::Error > >
   .success()
   .stdout
   (
-    predicate::str::contains( "Name: \"module1\"" ).count( 1 )
-    .and
-    (
-      predicate::str::contains( "Name: \"module2\"" ).count( 1 )
-    )
-    .and
-    (
-      predicate::str::contains( "Name: \"module3\"" ).count( 1 )
-    )
+    contains( "Name: \"module1\"" ).count( 1 )
+    .and( contains( "Name: \"module2\"" ).count( 1 ) )
+    .and( contains( "Name: \"module3\"" ).count( 1 ) )
   );
 
   Ok( () )
@@ -79,10 +62,7 @@ fn single_package_each_info() -> Result< (), Box< dyn std::error::Error > >
   cmd
   .assert()
   .success()
-  .stdout
-  (
-    predicate::str::contains( "Name: \"package\"" ).count( 1 )
-  );
+  .stdout( contains( "Name: \"package\"" ).count( 1 ) );
 
   Ok( () )
 }
@@ -100,10 +80,7 @@ fn empty_path_each_info() -> Result< (), Box< dyn std::error::Error > >
   cmd
   .assert()
   .success()
-  .stdout
-  (
-    predicate::str::contains( "Any package was found at current directory" )
-  );
+  .stdout( contains( "Any package was found at current directory" ) );
 
   Ok( () )
 }
@@ -121,10 +98,7 @@ fn another_command_after_each() -> Result< (), Box< dyn std::error::Error > >
   cmd
   .assert()
   .success()
-  .stdout
-  (
-    predicate::str::contains( "Name: \"package\"" ).count( 2 )
-  );
+  .stdout( contains( "Name: \"package\"" ).count( 2 ) );
 
   Ok( () )
 }

@@ -6,3 +6,4 @@ const MODULE_NAME : &str = "willbe";
 
 mod each;
 mod info;
+mod dependency;

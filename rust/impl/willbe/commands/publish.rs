@@ -17,22 +17,20 @@ pub( crate ) mod private
 
   pub fn publish( _ : Args< NoSubject, NoProperties >, ctx : Context ) -> Result< (), BasicError >
   {
-    println!( "[LOG] Called publish command" );
-
     // Get package from context or try to read package at current directory
     let package = match ctx.get_ref::< Option< Package > >()
     {
       Some( Some( package ) ) => package.to_owned(),
       None =>
       {
-        let path = env::current_dir().unwrap().to_owned();
+        let path = env::current_dir().unwrap();
         Package::try_from( path )
         .map_err( | _ | err!( "Package not found at current directory" ) )?
       }
       _ => return Ok( () )
     };
 
-    let info = PackageMetadata::try_from( package )
+    let info = package.metadata()
     .map_err( | _ | err!( "Can not parse package metadata" ) )?;
 
     println!

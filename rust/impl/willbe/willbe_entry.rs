@@ -26,7 +26,7 @@ fn main() -> Result< (), wtools::error::BasicError >
 
   let ca = wca::commands_aggregator()
   .exit_code_on_error( 1 )
-  .commands( commands.to_owned() )
+  .commands( commands )
   .default_context()
   .form();
 

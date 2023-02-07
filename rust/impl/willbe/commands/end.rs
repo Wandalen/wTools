@@ -17,8 +17,6 @@ pub( crate ) mod private
 
   pub fn end( _ : Args< NoSubject, NoProperties >, ctx : Context ) -> Result< (), BasicError >
   {
-    println!( "[LOG] end called" );
-
     if let Some( startpoints ) = ctx.get_ref::< StartPointStack >()
     {
       if let Some( point ) = startpoints.last()

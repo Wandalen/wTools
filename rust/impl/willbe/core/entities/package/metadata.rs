@@ -3,7 +3,7 @@ pub( crate ) mod private
 {
   use std::path::PathBuf;
 
-use cargo_metadata::MetadataCommand;
+  use cargo_metadata::MetadataCommand;
 
   use wtools::{ BasicError, err };
 
@@ -17,6 +17,15 @@ use cargo_metadata::MetadataCommand;
     metadata : cargo_metadata::Package,
   }
 
+  impl Package
+  {
+    /// Try to get metadata from the package
+    pub fn metadata( self ) -> Result< PackageMetadata, BasicError >
+    {
+      PackageMetadata::try_from( self )
+    }
+  }
+
   impl TryFrom< PathBuf > for PackageMetadata
   {
     type Error = BasicError;
@@ -24,7 +33,7 @@ use cargo_metadata::MetadataCommand;
     fn try_from( value : PathBuf ) -> Result< Self, Self::Error >
     {
       let package = Package::try_from( value )?;
-      package.try_into()
+      package.metadata()
     }
   }
 
@@ -47,11 +56,12 @@ use cargo_metadata::MetadataCommand;
       .to_owned();
       Ok( Self
       {
-        package : value,
+        package: value,
         metadata
       })
     }
   }
+
   impl PackageMetadata
   {
     /// Returns name
@@ -108,7 +118,6 @@ use cargo_metadata::MetadataCommand;
       &self.metadata
     }
   }
-
 }
 
 //

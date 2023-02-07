@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::{ Package, PackageMetadata };
+  use crate::Package;
   use wtools::{ DynArray, Itertools };
 
   /// Represent with which order strategy to iterate over packages
@@ -48,10 +48,7 @@ pub( crate ) mod private
   fn alphabetical( packages : Vec< Package > ) -> Vec< Package >
   {
     packages.iter().cloned()
-    .filter_map( | p |
-    {
-      PackageMetadata::try_from( p ).ok()
-    })
+    .filter_map( | p | p.metadata().ok() )
 
     .sorted_by_key( | meta | meta.name().to_owned() )
 
@@ -66,12 +63,12 @@ pub( crate ) mod private
     use wtools::HashMap;
 
     let ( deps, package_map ) = packages.iter()
-    .filter_map( | p | PackageMetadata::try_from( p.to_owned() ).ok() )
+    .filter_map( | p |  p.to_owned().metadata().ok() )
     .fold( ( Graph::new(), HashMap::new() ), | ( mut deps, mut packages ), meta |
     {
       packages.insert( meta.name().to_owned(), meta.as_package().to_owned() );
 
-      let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == meta.name().to_owned() )
+      let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == *meta.name() )
       { node }
       else
       { deps.add_node( meta.name().to_owned() ) };
@@ -117,7 +114,7 @@ pub( crate ) mod private
 
 //
 
-wtools::meta::mod_interface!
+wtools::mod_interface!
 {
   prelude use OrderStrategy;
   prelude use Ordered;

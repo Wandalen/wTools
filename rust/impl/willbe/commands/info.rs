@@ -18,24 +18,26 @@ pub( crate ) mod private
 
   pub fn info( _ : Args< NoSubject, NoProperties >, ctx : Context ) -> Result< (), BasicError >
   {
-    println!( "[LOG] Called info command" );
-
     // Get package from context or try to read package at current directory
     let package = match ctx.get_ref::< Option< Package > >()
     {
       Some( Some( package ) ) => package.to_owned(),
       None =>
       {
-        let path = env::current_dir().unwrap().to_owned();
+        let path = env::current_dir().unwrap();
         Package::try_from( path )
         .map_err( | _ | err!( "Package not found at current directory" ) )?
       }
       _ => return Ok( () )
     };
 
-    let info = PackageMetadata::try_from( package )
-    .map_err( | _ | err!( "Can not parse package metadata" ) )?;
-    let info = info.all().to_owned();
+    let info =  package.clone().metadata();
+    if info.is_err()
+    {
+      println!( "`{}` can not parse package metadata", package.path().display() );
+      return Ok( () )
+    }
+    let info = info.unwrap().all().to_owned();
 
     println!
     (

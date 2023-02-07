@@ -17,7 +17,7 @@
 
 //
 
-wtools::meta::mod_interface!
+wtools::mod_interface!
 {
   /// Features of Application Programming Interface that 100% should be implemented
   #[ cfg( feature = "use_std" ) ]
