@@ -15,7 +15,7 @@ pub( crate ) mod private
     /// 
     /// command_delimeter = '.'
     /// ".command" -> Command( "command" )
-    pub command_delimeter : char,
+    pub command_prefix : char,
     /// Symbol that will be interpreted as a separator for the name and value of the property
     /// 
     /// prop_delimeter = ':'

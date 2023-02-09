@@ -9,7 +9,7 @@ tests_impls!
     // TODO: Builder
     let parser = Parser
     {
-      command_delimeter : '.',
+      command_prefix : '.',
       prop_delimeter : ':',
       namespace_delimeter : "|".into(),
     };
@@ -119,7 +119,7 @@ tests_impls!
     // TODO: Builder
     let parser = Parser
     {
-      command_delimeter : '.',
+      command_prefix : '.',
       prop_delimeter : ':',
       namespace_delimeter : "|".into(),
     };
@@ -163,7 +163,7 @@ tests_impls!
     // TODO: Builder
     let parser = Parser
     {
-      command_delimeter : '.',
+      command_prefix : '.',
       prop_delimeter : ':',
       namespace_delimeter : "|".into(),
     };
@@ -207,7 +207,7 @@ tests_impls!
     // TODO: Builder
     let parser = Parser
     {
-      command_delimeter : '-',
+      command_prefix : '-',
       prop_delimeter : '-',
       namespace_delimeter : "|".into(),
     };
@@ -229,7 +229,7 @@ tests_impls!
     // TODO: Builder
     let parser = Parser
     {
-      command_delimeter : '.',
+      command_prefix : '.',
       prop_delimeter : ':',
       namespace_delimeter : "|".into(),
     };
@@ -262,7 +262,7 @@ tests_impls!
     // TODO: Builder
     let parser = Parser
     {
-      command_delimeter : '.',
+      command_prefix : '.',
       prop_delimeter : ':',
       namespace_delimeter : "|".into(),
     };
@@ -303,7 +303,7 @@ tests_impls!
     // TODO: Builder
     let parser = Parser
     {
-      command_delimeter : '/',
+      command_prefix : '/',
       prop_delimeter : ':',
       namespace_delimeter : "|".into(),
     };
@@ -325,7 +325,7 @@ tests_impls!
     // TODO: Builder
     let parser = Parser
     {
-      command_delimeter : '.',
+      command_prefix : '.',
       prop_delimeter : ':',
       namespace_delimeter : "|".into(),
     };

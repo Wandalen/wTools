@@ -8,7 +8,7 @@ tests_impls!
   {
     let parser = Parser
     {
-      command_delimeter : '.',
+      command_prefix : '.',
       prop_delimeter : ':',
       namespace_delimeter : ".also".into(),
     };
