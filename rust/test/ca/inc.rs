@@ -8,4 +8,6 @@ use std::collections::HashMap;
 #[ cfg( feature = "use_std" ) ]
 mod parser;
 #[ cfg( feature = "use_std" ) ]
+mod grammar;
+#[ cfg( feature = "use_std" ) ]
 mod executor;
