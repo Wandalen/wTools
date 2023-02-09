@@ -10,8 +10,8 @@ pub( crate ) mod private
   use nom::
   {
     branch::alt,
-    bytes::complete::tag,
-    character::complete::{ alpha1, alphanumeric1, multispace0, multispace1},
+    bytes::complete::{ tag, take_while },
+    character::complete::{ alpha1, multispace0, multispace1 },
     combinator::{ map, recognize },
     multi::many0,
     sequence::{ tuple, pair },
@@ -20,12 +20,12 @@ pub( crate ) mod private
 
   impl Parser
   {
-    fn command_name( &self ) -> impl Fn( &str ) -> IResult< &str, &str >
+    fn command_name() -> impl Fn( &str ) -> IResult< &str, &str >
     {
       move | input : &str |
       recognize( pair
       (
-        alt(( alpha1, tag( "_" )) ),
+        alt(( alpha1, tag( "_" ) )),
         any_word
       ))( input )
     }
@@ -55,14 +55,25 @@ pub( crate ) mod private
       })
     }
 
-    fn property( &self ) -> impl Fn( &str ) -> IResult< &str, ( String, String ) >
+    fn propery_name( &self ) -> impl Fn( &str ) -> IResult< &str, &str >
+    {
+      let property_delimeter = self.prop_delimeter;
+      move | input : &str |
+      recognize( pair
+      (
+        alt(( alpha1, tag( "_" ) )),
+        take_while( | c : char | !c.is_whitespace() && c != property_delimeter )
+      ))( input )
+    }
+
+    fn property( &self ) -> impl Fn( &str ) -> IResult< &str, ( String, String ) > + '_
     {
       let property_delimeter = self.prop_delimeter;
       move | input : &str |
       map
       (
-        tuple(( alphanumeric1, tag( &*format!( "{property_delimeter}" ) ), any_word )),
-        |( name, _, value ) : ( &str, _, _) | ( name.to_owned(), value.to_owned() )
+        tuple(( self.propery_name(), tag( &*format!( "{property_delimeter}" ) ), any_word )),
+        |( name, _, value ) : ( &str, _, _ ) | ( name.to_owned(), value.to_owned() )
       )( input )
     }
 
@@ -76,7 +87,7 @@ pub( crate ) mod private
         ((
           multispace0,
           tag( &*format!( "{command_delimeter}" ) ),
-          self.command_name(),
+          Self::command_name(),
           many0( tuple(( multispace1, self.subject() )) ),
           //? why multispace0
           many0( tuple(( multispace0, self.property() )) )
@@ -86,7 +97,7 @@ pub( crate ) mod private
           Command
           {
             name : name.to_owned(),
-            subjects : subjects.into_iter().filter_map( |( _, subject )| if subject.is_empty() { None } else { Some( subject ) }).collect(),
+            subjects : subjects.into_iter().filter_map( |( _, subject )| if subject.is_empty() { None } else { Some( subject ) } ).collect(),
             properties : props.into_iter().map( |( _, prop )| prop ).collect()
           }
         }
@@ -98,7 +109,6 @@ pub( crate ) mod private
     /// Command name must starts with letter or underscore
     pub fn command< 'a >( &'a self, input : &'a str ) -> Result< Command >
     {
-      // name subject1 subject2 prop1:value1 prop2:value2
       self.command_fn()( input )
       .map( |( _, command )| command )
       .map_err( | _ | err!( "Fail to parse `Command`" ) )

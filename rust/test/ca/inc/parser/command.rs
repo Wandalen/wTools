@@ -189,6 +189,17 @@ tests_impls!
       }),
       parser.command( ".command.sub_command subj_ect" )
     );
+
+    a_id!
+    (
+      Ok( Command
+      {
+        name : "command".into(),
+        subjects : vec![],
+        properties : HashMap::from_iter([ ( "long_prop".into(), "some-value".into() ) ]),
+      }),
+      parser.command( ".command long_prop:some-value" )
+    );
   }
 
   fn same_command_and_prop_delimeter()
