@@ -1,5 +1,5 @@
 use super::*;
-use wca2::*;
+use wca::*;
 
 mod command;
 mod namespace;
