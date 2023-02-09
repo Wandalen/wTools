@@ -4,7 +4,7 @@ pub( crate ) mod private
 
   /// Program representation
   #[ derive( Debug, PartialEq, Eq ) ]
-  pub struct Program
+  pub struct Program< Namespace >
   {
     /// list of namespaces with commands
     pub namespaces : Vec< Namespace >,
@@ -12,7 +12,7 @@ pub( crate ) mod private
 
   /// Namespace representation
   #[ derive( Debug, PartialEq, Eq ) ]
-  pub struct Namespace
+  pub struct Namespace< Command >
   {
     /// list of commands
     pub commands : Vec< Command >,
@@ -20,7 +20,7 @@ pub( crate ) mod private
 
   /// Command representation
   #[ derive( Debug, PartialEq, Eq ) ]
-  pub struct Command
+  pub struct RawCommand
   {
     /// name of command without delimeter
     pub name : String,
@@ -37,5 +37,5 @@ crate::mod_interface!
 {
   prelude use Program;
   prelude use Namespace;
-  prelude use Command;
+  prelude use RawCommand;
 }

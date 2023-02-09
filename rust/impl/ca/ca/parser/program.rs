@@ -3,7 +3,7 @@ pub( crate ) mod private
   use crate::
   {
     Parser,
-    Program,
+    Program, Namespace, RawCommand as Command,
     ca::parser::namespace::private::NamespaceParserFn,
   };
   use wtools::{ Result, err };
@@ -19,10 +19,10 @@ pub( crate ) mod private
   pub trait ProgramParser
   {
     /// Parses program from string
-    fn program( &self, input : &str ) -> Result< Program >;
+    fn program( &self, input : &str ) -> Result< Program< Namespace< Command > > >;
   }
 
-  type ProgramParserFunction< 'a > = Box< dyn Fn( &str ) -> IResult< &str, Program > + 'a >;
+  type ProgramParserFunction< 'a > = Box< dyn Fn( &str ) -> IResult< &str, Program< Namespace< Command > > > + 'a >;
 
   /// Can be used as function to parse a Namespace
   pub( crate ) trait ProgramParserFn : NamespaceParserFn
@@ -47,7 +47,7 @@ pub( crate ) mod private
 
   impl ProgramParser for Parser
   {
-    fn program< 'a >( &'a self, input : &'a str ) -> Result< Program >
+    fn program< 'a >( &'a self, input : &'a str ) -> Result< Program< Namespace< Command > > >
     {
       self.program_fn()( input.trim() )
       .map( |( _, program )| program )

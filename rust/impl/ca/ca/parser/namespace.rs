@@ -3,7 +3,7 @@ pub( crate ) mod private
   use crate::
   {
     Parser,
-    Namespace,
+    Namespace, RawCommand as Command,
     parser::
     {
       parser::any_word,
@@ -25,7 +25,7 @@ pub( crate ) mod private
   pub trait NamespaceParser
   {
     /// Parses first namespace from string
-    fn namespace( &self, input : &str ) -> Result< Namespace >;
+    fn namespace( &self, input : &str ) -> Result< Namespace< Command > >;
   }
 
   pub( crate ) trait GetNamespaceDelimeter
@@ -38,7 +38,7 @@ pub( crate ) mod private
     fn get_namespace_delimeter( &self ) -> &str { &self.namespace_delimeter }
   }
 
-  type NamespaceParserFunction< 'a > = Box< dyn Fn( &str ) -> IResult< &str, Namespace > + 'a >;
+  type NamespaceParserFunction< 'a > = Box< dyn Fn( &str ) -> IResult< &str, Namespace< Command > > + 'a >;
 
   /// Can be used as function to parse a Namespace
   pub( crate ) trait NamespaceParserFn : CommandParserFn + GetNamespaceDelimeter
@@ -68,7 +68,7 @@ pub( crate ) mod private
 
   impl NamespaceParser for Parser
   {
-    fn namespace< 'a >( &'a self, input : &'a str ) -> Result< Namespace >
+    fn namespace< 'a >( &'a self, input : &'a str ) -> Result< Namespace< Command > >
     {
       self.namespace_fn()( input.trim() )
       .map( |( _, namespace )| namespace )

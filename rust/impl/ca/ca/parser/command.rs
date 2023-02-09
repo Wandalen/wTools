@@ -3,7 +3,7 @@ pub( crate ) mod private
   use crate::
   {
     Parser,
-    Command,
+    RawCommand as Command,
     parser::parser::any_word,
   };
   use wtools::{ Result, err };
