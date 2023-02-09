@@ -3,7 +3,8 @@ pub( crate ) mod private
   use crate::
   {
     Parser,
-    Namespace, Program,
+    Program,
+    ca::parser::namespace::private::NamespaceParserFn,
   };
   use wtools::{ Result, err };
   use nom::
@@ -14,31 +15,39 @@ pub( crate ) mod private
     IResult,
   };
 
-  impl Parser
+  /// Can parser Programs
+  pub trait ProgramParser
   {
-    fn namespaces_fn( &self ) -> impl Fn( &str ) -> IResult< &str, Vec< Namespace > > + '_
-    {
-      move | input : &str |
-      map( many_till
-      (
-        self.namespace_fn(),
-        not( anychar )
-      ), | x | x.0
-      )( input )
-    }
-
-    pub( crate ) fn program_fn( &self ) -> impl Fn( &str ) -> IResult< &str, Program > + '_
-    {
-      move | input : &str |
-      map
-      (
-        self.namespaces_fn(),
-        | namespaces | Program { namespaces }
-      )( dbg!( input ) )
-    }
-
     /// Parses program from string
-    pub fn program< 'a >( &'a self, input : &'a str ) -> Result< Program >
+    fn program( &self, input : &str ) -> Result< Program >;
+  }
+
+  type ProgramParserFunction< 'a > = Box< dyn Fn( &str ) -> IResult< &str, Program > + 'a >;
+
+  /// Can be used as function to parse a Namespace
+  pub( crate ) trait ProgramParserFn : NamespaceParserFn
+  {
+    /// Returns function that can parse a Namespace
+    fn program_fn( &self ) -> ProgramParserFunction
+    {
+      Box::new
+      (
+        move | input : &str |
+        map( many_till
+        (
+          self.namespace_fn(),
+          not( anychar )
+        ), |( namespaces, _ )| Program { namespaces }
+        )( input )
+      )
+    }
+  }
+
+  impl ProgramParserFn for Parser {}
+
+  impl ProgramParser for Parser
+  {
+    fn program< 'a >( &'a self, input : &'a str ) -> Result< Program >
     {
       self.program_fn()( input.trim() )
       .map( |( _, program )| program )
@@ -51,5 +60,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-
+  prelude use ProgramParser;
 }

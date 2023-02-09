@@ -4,7 +4,11 @@ pub( crate ) mod private
   {
     Parser,
     Namespace,
-    parser::parser::any_word,
+    parser::
+    {
+      parser::any_word,
+      command::CommandParserFn,
+    }
   };
   use wtools::{ Result, err };
   use nom::
@@ -17,30 +21,54 @@ pub( crate ) mod private
     IResult,
   };
 
-  impl Parser
+  /// Can parse Namespaces
+  pub trait NamespaceParser
   {
-    pub( crate ) fn namespace_fn( &self ) -> impl Fn( &str ) -> IResult< &str, Namespace > + '_
-    {
-      let delimeter = self.namespace_delimeter.clone();
-      move | input : &str |
-      map( many_till
-      (
-        self.command_fn(),
-        alt
-        ((
-          map
-          (
-            tuple(( multispace0, verify( any_word, | word : &str | word == delimeter ) )),
-            | _ | ()
-          ),
-          not( anychar )
-        ))
-      ), | x | Namespace { commands : x.0 }
-      )( input )
-    }
+    /// Parses first namespace from string
+    fn namespace( &self, input : &str ) -> Result< Namespace >;
+  }
 
-    /// Parses namespace from string
-    pub fn namespace< 'a >( &'a self, input : &'a str ) -> Result< Namespace >
+  pub( crate ) trait GetNamespaceDelimeter
+  {
+    fn get_namespace_delimeter( &self ) -> &str;
+  }
+
+  impl GetNamespaceDelimeter for Parser
+  {
+    fn get_namespace_delimeter( &self ) -> &str { &self.namespace_delimeter }
+  }
+
+  type NamespaceParserFunction< 'a > = Box< dyn Fn( &str ) -> IResult< &str, Namespace > + 'a >;
+
+  /// Can be used as function to parse a Namespace
+  pub( crate ) trait NamespaceParserFn : CommandParserFn + GetNamespaceDelimeter
+  {
+    /// Returns function that can parse a Namespace
+    fn namespace_fn( &self ) -> NamespaceParserFunction
+    {
+      let delimeter = self.get_namespace_delimeter();
+      Box::new
+      (
+        move | input : &str |
+        map( many_till
+        (
+          self.command_fn(),
+          alt
+          ((
+            map( tuple(( multispace0, verify( any_word, | word : &str | word == delimeter ) )), | _ | () ),
+            not( anychar )
+          ))
+        ), | x | Namespace { commands : x.0 }
+        )( input )
+      )
+    }
+  }
+
+  impl NamespaceParserFn for Parser {}
+
+  impl NamespaceParser for Parser
+  {
+    fn namespace< 'a >( &'a self, input : &'a str ) -> Result< Namespace >
     {
       self.namespace_fn()( input.trim() )
       .map( |( _, namespace )| namespace )
@@ -53,5 +81,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-
+  prelude use NamespaceParser;
 }
