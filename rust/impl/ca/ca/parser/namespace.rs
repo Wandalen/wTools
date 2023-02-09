@@ -26,7 +26,8 @@ pub( crate ) mod private
       map( many_till
       (
         self.command_fn(),
-        alt((
+        alt
+        ((
           map
           (
             tuple(( multispace0, verify( any_word, | word : &str | word == delimeter ) )),

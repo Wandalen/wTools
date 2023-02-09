@@ -42,7 +42,7 @@ pub( crate ) mod private
       .map( |( tail, word )|
       {
         // if next word - is a command => it isn't subject
-        // if you wont pass command as subject - take it in quotes
+        // if you want pass command as subject - take it in quotes
         let not_a_command = self.command_fn()( word ).is_err();
         if not_a_command && !word.contains( prop_delimeter ) && !word.contains( &*namespace_delimeter )
         {
