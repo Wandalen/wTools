@@ -189,7 +189,7 @@ tests_impls!
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "with_context" )
-    .routine_with_ctx( | _, _ | { println!( "hello" ); Ok( () ) } )
+    .routine_with_ctx( | _, _ : wca::Context | { println!( "hello" ); Ok( () ) } )
     .form();
 
     // init parser

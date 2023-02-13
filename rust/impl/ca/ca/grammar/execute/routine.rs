@@ -1,34 +1,39 @@
 pub( crate ) mod private
 {
-  use wtools::
-  {
-    HashMap,
-    Result,
-  };
+  use crate::Context;
+
+  use wtools::{ HashMap, Result };
 
   use std::{ fmt::Formatter, rc::Rc };
 
-  /// Commands that be executed
+  /// Command Args
   #[ derive( Debug ) ]
-  pub struct ExecutableCommand
+  pub struct Args( pub Vec< String > );
+
+  impl core::ops::Deref for Args
   {
-    /// subjects values
-    pub subjects : Vec< String >,
-    /// properties value
-    pub properties : HashMap< String, String >,
-    /// function that will be called
-    pub routine : Routine,
+    type Target = Vec< String >;
+    fn deref( &self ) -> &Self::Target
+    {
+      &self.0
+    }
   }
 
-  // ! TEMP !
-  pub struct Context;
+  /// Command Properties
+  #[ derive( Debug ) ]
+  pub struct Props( pub HashMap< String, String > );
 
-  pub struct Args;
-  pub struct Props;
-  // ! ---
+  impl core::ops::Deref for Props
+  {
+    type Target = HashMap< String, String > ;
+    fn deref( &self ) -> &Self::Target
+    {
+      &self.0
+    }
+  }
 
-  type RoutineWithoutContextFn = dyn Fn(( &Args, &Props )) -> Result< () >;
-  type RoutineWithContextFn = dyn Fn( ( &Args, &Props ), Context ) -> Result< () >;
+  type RoutineWithoutContextFn = dyn Fn(( Args, Props )) -> Result< () >;
+  type RoutineWithContextFn = dyn Fn( ( Args, Props ), Context ) -> Result< () >;
 
   ///
   /// Routine handle.
@@ -51,7 +56,7 @@ pub( crate ) mod private
 
     pub fn new< F >( callback : F ) -> Self
     where
-      F : Fn(( &Args, &Props )) -> Result< () > + 'static,
+      F : Fn(( Args, Props )) -> Result< () > + 'static,
     {
       Routine::WithoutContext( Rc::new( callback ) )
     }
@@ -62,7 +67,7 @@ pub( crate ) mod private
 
     pub fn new_with_ctx< F >( callback : F ) -> Self
     where
-      F : Fn( ( &Args, &Props ), Context ) -> Result< () > + 'static,
+      F : Fn( ( Args, Props ), Context ) -> Result< () > + 'static,
     {
       Routine::WithContext( Rc::new( callback ) )
     }
@@ -99,9 +104,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use ExecutableCommand;
   prelude use Routine;
   prelude use Args;
   prelude use Props;
-  prelude use Context;
 }

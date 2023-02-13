@@ -107,7 +107,7 @@ pub( crate ) mod private
 
     pub fn routine< F >( mut self, callback: F ) -> Self
     where
-      F : Fn(( &Args, &Props )) -> Result< () > + 'static,
+      F : Fn(( Args, Props )) -> Result< () > + 'static,
     {
       self.routine = Some( Routine::new( callback ) );
       self
@@ -119,7 +119,7 @@ pub( crate ) mod private
 
     pub fn routine_with_ctx< F >( mut self, callback: F ) -> Self
     where
-      F : Fn( ( &Args, &Props ), Context ) -> Result< () > + 'static,
+      F : Fn( ( Args, Props ), Context ) -> Result< () > + 'static,
     {
       self.routine = Some( Routine::new_with_ctx( callback ) );
       self
