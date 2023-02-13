@@ -3,7 +3,7 @@ pub( crate ) mod private
   use wtools::HashMap;
 
   /// Program representation
-  #[ derive( Debug, PartialEq, Eq ) ]
+  #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct Program< Namespace >
   {
     /// list of namespaces with commands
@@ -11,7 +11,7 @@ pub( crate ) mod private
   }
 
   /// Namespace representation
-  #[ derive( Debug, PartialEq, Eq ) ]
+  #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct Namespace< Command >
   {
     /// list of commands
@@ -19,7 +19,7 @@ pub( crate ) mod private
   }
 
   /// Command representation
-  #[ derive( Debug, PartialEq, Eq ) ]
+  #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct RawCommand
   {
     /// name of command without delimeter
