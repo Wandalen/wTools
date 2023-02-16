@@ -13,13 +13,7 @@ tests_impls!
     .form();
 
     // init parser
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     // init converter
     let converter = wca::Converter::former()
@@ -63,13 +57,7 @@ tests_impls!
     .form();
 
     // init parser
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     // init converter
     let converter = wca::Converter::former()
@@ -109,13 +97,8 @@ tests_impls!
     .form();
 
     // init parser
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
+    ;
 
     // init converter
     let converter = wca::Converter::former()
@@ -173,13 +156,7 @@ tests_impls!
     .form();
 
     // init parser
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     // init converter
     let converter = wca::Converter::former()
@@ -241,13 +218,7 @@ tests_impls!
     .form();
 
     // init parser
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     // init converter
     let converter = wca::Converter::former()
@@ -278,13 +249,7 @@ tests_impls!
     .form();
 
     // init parser
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     // init converter
     let converter = wca::Converter::former()

@@ -6,12 +6,7 @@ tests_impls!
 {
   fn basic()
   {
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : ".also".into(),
-    };
+    let parser = Parser::former().form();
 
     // only one command and only one namespace
     a_id!

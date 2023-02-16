@@ -6,13 +6,7 @@ tests_impls!
 {
   fn basic()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : ".also".into(),
-    };
+    let parser = Parser::former().form();
 
     // namespace with only one command
     a_id!
@@ -71,13 +65,11 @@ tests_impls!
 
   fn same_command_and_prop_and_namespace_delimeter()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '-',
-      prop_delimeter : '-',
-      namespace_delimeter : "-".into(),
-    };
+    let parser = Parser::former()
+    .command_prefix( '-' )
+    .prop_delimeter( '-' )
+    .namespace_delimeter( "-" )
+    .form();
 
     a_id!
     (

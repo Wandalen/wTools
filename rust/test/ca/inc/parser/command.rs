@@ -6,13 +6,7 @@ tests_impls!
 {
   fn basic()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     // only command
     a_id!
@@ -116,13 +110,7 @@ tests_impls!
 
   fn with_spaces()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     a_id!
     (
@@ -160,13 +148,7 @@ tests_impls!
 
   fn not_only_alphanumeric_symbols()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     a_id!
     (
@@ -204,13 +186,10 @@ tests_impls!
 
   fn same_command_and_prop_delimeter()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '-',
-      prop_delimeter : '-',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former()
+    .command_prefix( '-' )
+    .prop_delimeter( '-' )
+    .form();
 
     a_id!
     (
@@ -226,13 +205,7 @@ tests_impls!
 
   fn path_in_subject()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     a_id!
     (
@@ -259,13 +232,7 @@ tests_impls!
 
   fn path_in_property()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     a_id!
     (
@@ -300,13 +267,9 @@ tests_impls!
       parser.command( ".command path:../path/to/something" )
     );
 
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '/',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former()
+    .command_prefix( '/' )
+    .form();
 
     a_id!
     (
@@ -322,13 +285,7 @@ tests_impls!
 
   fn list_in_property()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     a_id!
     (
