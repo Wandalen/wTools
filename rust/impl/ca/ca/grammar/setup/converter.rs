@@ -3,21 +3,47 @@ pub( crate ) mod private
   use crate::
   {
     Program, Namespace,
-    Command, RawCommand, ExecutableCommand,
+    Command, RawCommand, ExecutableCommand, Routine,
+    Args, Props, Context
   };
+
+  use former::Former;
+  use wtools::{ HashMap, Result };
 
   /// Converts from RawCommand to ExecutableCommand
   #[ derive( Debug ) ]
+  #[ derive( Former ) ]
   pub struct Converter
   {
-    commands : Vec< Command >,
+    commands : HashMap< String, Vec<( Command, Routine )> >,
   }
 
-  impl From< Vec< Command > > for Converter
+  impl ConverterFormer
   {
-    fn from( commands : Vec< Command > ) -> Self
+    pub fn command< F >( mut self, command : Command, callback: F ) -> Self
+    where
+      F : Fn(( Args, Props )) -> Result< () > + 'static,
     {
-      Self { commands }
+      let mut commands = self.commands.unwrap_or_default();
+      let command_variants = commands.entry( command.phrase.to_owned() ).or_insert_with( || vec![] );
+
+      command_variants.push(( command, Routine::new( callback ) ));
+
+      self.commands = Some( commands );
+      self
+    }
+
+    pub fn command_with_ctx< F >( mut self, command : Command, callback: F ) -> Self
+    where
+      F : Fn( ( Args, Props ), Context ) -> Result< () > + 'static,
+    {
+      let mut commands = self.commands.unwrap_or_default();
+      let command_variants = commands.entry( command.phrase.to_owned() ).or_insert_with( || vec![] );
+
+      command_variants.push(( command, Routine::new_with_ctx( callback ) ));
+
+      self.commands = Some( commands );
+      self
     }
   }
 
@@ -41,16 +67,18 @@ pub( crate ) mod private
     pub fn to_command( &self, raw_command : RawCommand ) -> Option< ExecutableCommand >
     {
       self.commands
-      .iter()
-      .find( | &cmd | cmd.phrase == raw_command.name )
-      .map
-      (
-        | cmd |
+      .get( &raw_command.name )
+      .and_then( | cmds |
+        // find needed command
+        cmds.iter().find( |( cmd, _ )| cmd.subjects_hints.len() == raw_command.subjects.len() )
+      )
+      .map(
+        |( cmd, routine )|
         ExecutableCommand
         {
-          subjects : raw_command.subjects.into_iter().take( cmd.subjects_hint.len() ).collect(),
+          subjects : raw_command.subjects,
           properties : raw_command.properties.into_iter().filter( |( key, _ )| cmd.properties_hints.contains_key( key ) ).collect(),  
-          routine : cmd.routine.clone(),
+          routine : routine.clone(),
         }
       )
     }

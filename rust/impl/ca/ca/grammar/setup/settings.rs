@@ -1,11 +1,9 @@
 pub( crate ) mod private
 {
-  use crate::{ Routine, Args, Props, Context };
   use wtools::
   {
     HashMap,
     Former,
-    Result,
   };
 
   ///
@@ -25,17 +23,11 @@ pub( crate ) mod private
     /// Phrase descriptor for command.
     pub phrase : String,
     /// Command subjects hints.
-    pub subjects_hint : Vec< String >,
+    pub subjects_hints : Vec< String >,
     /// Hints for command options.
     pub properties_hints : HashMap< String, String >,
-
-    // TODO:
-    // /// Map of aliases.
-    // pub properties_aliases : HashMap< String, Vec< String > >,
-
-    /// Command routine.
-    #[ setter( false ) ]
-    pub routine : Routine,
+    /// TODO: Map of aliases.
+    pub properties_aliases : HashMap< String, Vec< String > >,
   }
 
   impl CommandFormer
@@ -45,13 +37,13 @@ pub( crate ) mod private
     {
       let hint = hint.into();
 
-      if self.subjects_hint.is_none()
+      if self.subjects_hints.is_none()
       {
-        self.subjects_hint = Some( vec![ hint ] );
+        self.subjects_hints = Some( vec![ hint ] );
       }
       else
       {
-        let hints = self.subjects_hint.as_mut().unwrap();
+        let hints = self.subjects_hints.as_mut().unwrap();
         hints.push( hint );
       }
       self
@@ -100,30 +92,6 @@ pub( crate ) mod private
     //   }
     //   self
     // }
-
-    ///
-    /// Routine setter.
-    ///
-
-    pub fn routine< F >( mut self, callback: F ) -> Self
-    where
-      F : Fn(( Args, Props )) -> Result< () > + 'static,
-    {
-      self.routine = Some( Routine::new( callback ) );
-      self
-    }
-
-    ///
-    /// Routine setter with context.
-    ///
-
-    pub fn routine_with_ctx< F >( mut self, callback: F ) -> Self
-    where
-      F : Fn( ( Args, Props ), Context ) -> Result< () > + 'static,
-    {
-      self.routine = Some( Routine::new_with_ctx( callback ) );
-      self
-    }
   }
 }
 

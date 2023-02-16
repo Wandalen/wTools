@@ -10,7 +10,6 @@ tests_impls!
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "command" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
     .form();
 
     // init parser
@@ -23,7 +22,9 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command ] );
+    let converter = wca::Converter::former()
+    .command( command, | _ | { println!( "hello" ); Ok( () ) } )
+    .form();
 
     // existed command
     let raw_command = parser.command( ".command" );
@@ -46,14 +47,19 @@ tests_impls!
     a_true!( raw_command.is_err() );
   }
 
-  fn subjects()
+  fn with_same_name()
   {
-    let command = wca::Command::former()
+    let without_subject = wca::Command::former()
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "command" )
-    .subject_hint( "first subject" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
+    .form();
+
+    let with_subject = wca::Command::former()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .phrase( "command" )
+    .subject_hint( "subject" )
     .form();
 
     // init parser
@@ -66,7 +72,55 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command ] );
+    let converter = wca::Converter::former()
+    .command( without_subject, | _ | { println!( "hello" ); Ok( () ) } )
+    .command( with_subject, |( subjects, _ )| { println!( "hello, {}", subjects[ 0 ] ); Ok( () ) } )
+    .form();
+
+    // existed command
+    let raw_command = parser.command( ".command" );
+    a_true!( raw_command.is_ok() );
+    let raw_command = raw_command.unwrap();
+
+    let exec_command = converter.to_command( raw_command );
+    a_true!( exec_command.is_some() );
+
+    // not existed command
+    let raw_command = parser.command( ".invalid_command" );
+    a_true!( raw_command.is_ok() );
+    let raw_command = raw_command.unwrap();
+
+    let exec_command = converter.to_command( raw_command );
+    a_true!( exec_command.is_none() );
+
+    // invalid command syntax
+    let raw_command = parser.command( "invalid_command" );
+    a_true!( raw_command.is_err() );
+  }
+
+
+  fn subjects()
+  {
+    let command = wca::Command::former()
+    .hint( "hint" )
+    .long_hint( "long_hint" )
+    .phrase( "command" )
+    .subject_hint( "first subject" )
+    .form();
+
+    // init parser
+    // TODO: Builder
+    let parser = Parser
+    {
+      command_prefix : '.',
+      prop_delimeter : ':',
+      namespace_delimeter : "|".into(),
+    };
+
+    // init converter
+    let converter = wca::Converter::former()
+    .command( command, | _ | { println!( "hello" ); Ok( () ) } )
+    .form();
 
     // with only one subject
     let raw_command = parser.command( ".command subject" );
@@ -86,18 +140,10 @@ tests_impls!
     let raw_command = raw_command.unwrap();
 
     let exec_command = converter.to_command( raw_command );
-    a_true!( exec_command.is_some() );
-    let exec_command = exec_command.unwrap();
+    a_true!( exec_command.is_none() );
 
-    // ! FAILS
-    // ? what it must to do?
-    // * take all subjects that user give
-    // * take a certain number of items and error if there are more or less (or ignore the rest) or what?
-    a_id!( vec![ "subject1".to_string() ], exec_command.subjects );
-    a_true!( exec_command.properties.is_empty() );
-
-    // with property. It isn't declareted
-    let raw_command = parser.command( ".command prop:value" );
+    // with subject and property that isn't declareted
+    let raw_command = parser.command( ".command subject prop:value" );
     a_true!( raw_command.is_ok() );
     let raw_command = raw_command.unwrap();
 
@@ -106,8 +152,15 @@ tests_impls!
     a_true!( exec_command.is_some() );
     let exec_command = exec_command.unwrap();
 
-    a_true!( exec_command.subjects.is_empty() );
     a_true!( exec_command.properties.is_empty() );
+
+    // with property that isn't declareted and without subject
+    let raw_command = parser.command( ".command prop:value" );
+    a_true!( raw_command.is_ok() );
+    let raw_command = raw_command.unwrap();
+
+    let exec_command = converter.to_command( raw_command );
+    a_true!( exec_command.is_none() );
   }
 
   fn properties()
@@ -117,7 +170,6 @@ tests_impls!
     .long_hint( "long_hint" )
     .phrase( "command" )
     .property_hint( "prop1", "hint of prop1" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
     .form();
 
     // init parser
@@ -130,7 +182,9 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command ] );
+    let converter = wca::Converter::former()
+    .command( command, | _ | { println!( "hello" ); Ok( () ) } )
+    .form();
 
     // with only one property
     let raw_command = parser.command( ".command prop1:value1" );
@@ -175,12 +229,7 @@ tests_impls!
     let raw_command = raw_command.unwrap();
 
     let exec_command = converter.to_command( raw_command );
-    // ? or fail?
-    a_true!( exec_command.is_some() );
-    let exec_command = exec_command.unwrap();
-
-    a_true!( exec_command.subjects.is_empty() );
-    a_id!( HashMap::from_iter([ ( "prop1".to_string(), "value".to_string() ) ]), exec_command.properties );
+    a_true!( exec_command.is_none() );
   }
 
   fn with_context()
@@ -189,7 +238,6 @@ tests_impls!
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "with_context" )
-    .routine_with_ctx( | _, _ : wca::Context | { println!( "hello" ); Ok( () ) } )
     .form();
 
     // init parser
@@ -202,7 +250,9 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command ] );
+    let converter = wca::Converter::former()
+    .command_with_ctx( command, | _, _ | { println!( "hello" ); Ok( () ) } )
+    .form();
 
     // parse command
     let raw_command = parser.command( ".with_context" );
@@ -225,7 +275,6 @@ tests_impls!
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "without_context" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
     .form();
 
     // init parser
@@ -238,7 +287,9 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command ] );
+    let converter = wca::Converter::former()
+    .command( command, | _ | { println!( "hello" ); Ok( () ) } )
+    .form();
 
     // parse command
     let raw_command = parser.command( ".without_context" );
@@ -262,6 +313,7 @@ tests_impls!
 tests_index!
 {
   command_validation,
+  with_same_name,
   subjects,
   properties,
   with_context,

@@ -8,4 +8,6 @@ crate::mod_interface!
   layer namespace;
   /// Implementation for parsing program
   layer program;
+  /// -
+  layer entities;
 }

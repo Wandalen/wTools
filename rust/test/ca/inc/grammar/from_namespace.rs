@@ -11,7 +11,6 @@ tests_impls!
     .long_hint( "long_hint" )
     .phrase( "command1" )
     .subject_hint( "subject" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
     .form();
 
     let command2 = wca::Command::former()
@@ -19,7 +18,6 @@ tests_impls!
     .long_hint( "long_hint" )
     .phrase( "command2" )
     .subject_hint( "subject" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
     .form();
 
     // init parser
@@ -32,7 +30,10 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command1, command2 ] );
+    let converter = wca::Converter::former()
+    .command( command1, | _ | { println!( "hello" ); Ok( () ) } )
+    .command( command2, | _ | { println!( "hello" ); Ok( () ) } )
+    .form();
 
     // parse namespace with only one command
     let raw_namespace = parser.namespace( ".command1 subject" );
@@ -63,7 +64,6 @@ tests_impls!
     .long_hint( "long_hint" )
     .phrase( "command1" )
     .subject_hint( "subject" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
     .form();
 
     // init parser
@@ -76,7 +76,9 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command1 ] );
+    let converter = wca::Converter::former()
+    .command( command1, | _ | { println!( "hello" ); Ok( () ) } )
+    .form();
 
     // parse namespace with only several command
     let raw_namespace = parser.namespace( ".command1 first_subj .invalid_command second_subj" );
