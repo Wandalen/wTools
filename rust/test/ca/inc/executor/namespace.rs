@@ -11,7 +11,6 @@ tests_impls!
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "command" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
     .form();
 
     // init parser
@@ -24,7 +23,9 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command ] );
+    let converter = wca::Converter::former()
+    .command( command, | _ | { println!( "hello" ); Ok( () ) } )
+    .form();
 
     // existed command | unknown command will fails on converter
     let raw_namespace = parser.namespace( ".command" );
@@ -46,14 +47,6 @@ tests_impls!
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "inc" )
-    .routine_with_ctx
-    (
-      | _, ctx |
-      ctx
-      .get_mut()
-      .ok_or_else( || err!( "Have no value" ) )
-      .and_then( | x : &mut i32 | { *x += 1; Ok( () ) } )
-    )
     .form();
 
     let check = wca::Command::former()
@@ -61,23 +54,6 @@ tests_impls!
     .long_hint( "long_hint" )
     .phrase( "eq" )
     .subject_hint( "number" )
-    .routine_with_ctx
-    (
-      | ( args, _ ), ctx |
-      ctx
-      .get_ref()
-      .ok_or_else( || err!( "Have no value" ) )
-      .and_then
-      (
-        | &x : &i32 |
-        {
-          let y = args.get( 0 ).ok_or_else( || err!( "Have no subject" ) )?;
-          let y = y.parse::< i32 >().map_err( | _ | err!( "Failed to parse `{}`", y ) )?;
-
-          if x != y { Err( err!( "expected {} eq {}", x, y ) ) } else { Ok( () ) }
-        }
-      )
-    )
     .form();
 
     // init parser
@@ -90,7 +66,36 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ inc, check ] );
+    let converter = wca::Converter::former()
+    .command_with_ctx
+    (
+      inc, 
+      | _, ctx |
+      ctx
+      .get_mut()
+      .ok_or_else( || err!( "Have no value" ) )
+      .and_then( | x : &mut i32 | { *x += 1; Ok( () ) } )
+    )
+    .command_with_ctx
+    (
+      check,
+      | ( args, _ ), ctx |
+      ctx
+      .get_ref()
+      .ok_or_else( || err!( "Have no value" ) )
+      .and_then
+      (
+        | &x : &i32 |
+        {
+          let y = args.get( 0 ).ok_or_else( || err!( "" ) )?;
+          let y = y.parse::< i32 >().map_err( | _ | err!( "" ) )?;
+
+          if dbg!( x ) != y { Err( err!( "{} not eq {}", x, y ) ) } else { Ok( () ) }
+        }
+      )
+    )
+    .form();
+
 
     // starts with 0
     let mut ctx = wca::Context::default();

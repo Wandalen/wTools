@@ -99,6 +99,12 @@ pub( crate ) mod private
         // iteration
         for runtime in runtimes.iter_mut()
         {
+          // Thoughts on Improvements
+          // * unlock after get commands
+          // 1) let commands = { global_ctx.lock().unwrap().get_commands() };
+          // 2) run_commands( commands )
+          // * somehow lock only current namespace
+          // 2 - into command) global_ctx.lock().unwrap().change_pos( 8 );
           runtime.r#do()?;
         }
         !runtimes.is_empty()

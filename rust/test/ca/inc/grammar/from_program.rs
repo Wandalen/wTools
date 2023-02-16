@@ -11,7 +11,6 @@ tests_impls!
     .long_hint( "long_hint" )
     .phrase( "command1" )
     .subject_hint( "subject" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
     .form();
 
     let command2 = wca::Command::former()
@@ -19,7 +18,6 @@ tests_impls!
     .long_hint( "long_hint" )
     .phrase( "command2" )
     .subject_hint( "subject" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
     .form();
 
     // init parser
@@ -32,7 +30,10 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command1, command2 ] );
+    let converter = wca::Converter::former()
+    .command( command1, | _ | { println!( "hello" ); Ok( () ) } )
+    .command( command2, | _ | { println!( "hello" ); Ok( () ) } )
+    .form();
 
     // parse program with only one command
     let raw_program = parser.program( ".command1 subject" );

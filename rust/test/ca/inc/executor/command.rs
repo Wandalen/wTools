@@ -11,7 +11,6 @@ tests_impls!
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "command" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
     .form();
 
     // init parser
@@ -24,7 +23,9 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command ] );
+    let converter = wca::Converter::former()
+    .command( command, | _ | { println!( "hello" ); Ok( () ) } )
+    .form();
 
     // existed command | unknown command will fails on converter
     let raw_command = parser.command( ".command" );
@@ -49,7 +50,6 @@ tests_impls!
     .long_hint( "long_hint" )
     .phrase( "command" )
     .subject_hint( "hint" )
-    .routine( |( args, _ )| args.get( 0 ).map( | a | println!( "{a}" )).ok_or_else( || err!( "Prop not found" ) ) )
     .form();
 
     // init parser
@@ -62,7 +62,9 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command ] );
+    let converter = wca::Converter::former()
+    .command( command, |( args, _ )| args.get( 0 ).map( | a | println!( "{a}" )).ok_or_else( || err!( "Subject not found" ) ) )
+    .form();
 
     // with subject
     let raw_command = parser.command( ".command subject" );
@@ -85,14 +87,7 @@ tests_impls!
     let raw_command = raw_command.unwrap();
 
     let exec_command = converter.to_command( raw_command );
-    a_true!( exec_command.is_some() );
-    let exec_command = exec_command.unwrap();
-
-    // init executor
-    let executor = Executor::former().form();
-
-    // execute the command
-    a_true!( executor.command( exec_command ).is_err() );
+    a_true!( exec_command.is_none() );
   }
 
   fn with_property()
@@ -102,7 +97,6 @@ tests_impls!
     .long_hint( "long_hint" )
     .phrase( "command" )
     .property_hint( "prop", "about prop" )
-    .routine( |( _, props )| props.get( "prop" ).map( | a | println!( "{a}" ) ).ok_or_else( || err!( "Prop not found" ) ) )
     .form();
 
     // init parser
@@ -115,7 +109,9 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command ] );
+    let converter = wca::Converter::former()
+    .command( command, |( _, props )| props.get( "prop" ).map( | a | println!( "{a}" )).ok_or_else( || err!( "Prop not found" ) ) )
+    .form();
 
     // with property
     let raw_command = parser.command( ".command prop:value" );
@@ -154,14 +150,6 @@ tests_impls!
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "check" )
-    .routine_with_ctx
-    (
-      | _, ctx |
-      ctx
-      .get_ref()
-      .ok_or_else( || err!( "Have no value" ) )
-      .and_then( | &x : &i32 | if x != 1 { Err( err!( "x not eq 1" ) ) } else { Ok( () ) } )
-    )
     .form();
 
     // init parser
@@ -174,7 +162,17 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ check ] );
+    let converter = wca::Converter::former()
+    .command_with_ctx
+    (
+      check,
+      | _, ctx |
+      ctx
+      .get_ref()
+      .ok_or_else( || err!( "Have no value" ) )
+      .and_then( | &x : &i32 | if x != 1 { Err( err!( "x not eq 1" ) ) } else { Ok( () ) } )
+    )
+    .form();
 
     // increment value
     let raw_command = parser.command( ".check" );

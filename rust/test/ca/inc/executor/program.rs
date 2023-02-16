@@ -11,7 +11,6 @@ tests_impls!
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "command" )
-    .routine( | _ | { println!( "hello" ); Ok( () ) } )
     .form();
 
     // init parser
@@ -24,7 +23,9 @@ tests_impls!
     };
 
     // init converter
-    let converter = wca::Converter::from( vec![ command ] );
+    let converter = wca::Converter::former()
+    .command( command, | _ | { println!( "hello" ); Ok( () ) } )
+    .form();
 
     // existed command | unknown command will fails on converter
     let raw_program = parser.program( ".command" );
@@ -46,14 +47,6 @@ tests_impls!
     .hint( "hint" )
     .long_hint( "long_hint" )
     .phrase( "inc" )
-    .routine_with_ctx
-    (
-      | _, ctx |
-      ctx
-      .get_mut()
-      .ok_or_else( || err!( "Have no value" ) )
-      .and_then( | x : &mut i32 | { *x += 1; Ok( () ) } )
-    )
     .form();
 
     let check = wca::Command::former()
@@ -61,8 +54,31 @@ tests_impls!
     .long_hint( "long_hint" )
     .phrase( "eq" )
     .subject_hint( "number" )
-    .routine_with_ctx
+    .form();
+
+    // init parser
+    // TODO: Builder
+    let parser = Parser
+    {
+      command_prefix : '.',
+      prop_delimeter : ':',
+      namespace_delimeter : ".also".into(),
+    };
+
+    // init converter
+    let converter = wca::Converter::former()
+    .command_with_ctx
     (
+      inc,
+      | _, ctx |
+      ctx
+      .get_mut()
+      .ok_or_else( || err!( "Have no value" ) )
+      .and_then( | x : &mut i32 | { *x += 1; Ok( () ) } )
+    )
+    .command_with_ctx
+    (
+      check,
       | ( args, _ ), ctx |
       ctx
       .get_ref()
@@ -79,18 +95,6 @@ tests_impls!
       )
     )
     .form();
-
-    // init parser
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : ".also".into(),
-    };
-
-    // init converter
-    let converter = wca::Converter::from( vec![ inc, check ] );
 
     // starts with 0
     let mut ctx = wca::Context::default();
@@ -146,7 +150,6 @@ tests_impls!
 
     a_true!( executor.program( exec_program ).is_ok() );
   }
-
 }
 
 //
