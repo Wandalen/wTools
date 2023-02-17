@@ -2,13 +2,14 @@ pub( crate ) mod private
 {
   use crate::
   {
-    Context,
     Program, Namespace, ExecutableCommand,
-    Runtime,
-    ca::executor::runtime::_exec_command,
+
+    Context,
+    Runtime, Routine,
+    ca::executor::runtime::_exec_command, 
   };
 
-  use wtools::Result;
+  use wtools::{ Result, HashMap };
 
   #[ derive( Debug ) ]
   /// TODO: THINK
@@ -30,6 +31,20 @@ pub( crate ) mod private
     /// default context
     #[ default( Context::default() ) ]
     pub context : Context,
+    /// commands routins
+    pub commands : HashMap< String, Routine >
+  }
+
+  impl ExecutorFormer
+  {
+    pub fn command< S : Into< String > >( mut self, phrase : S, routine : Routine ) -> Self
+    {
+      let mut commands = self.commands.unwrap_or_default();
+      commands.insert( phrase.into(), routine );
+
+      self.commands = Some( commands );
+      self
+    }
   }
 
   impl Executor

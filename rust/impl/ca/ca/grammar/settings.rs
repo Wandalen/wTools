@@ -1,10 +1,6 @@
 pub( crate ) mod private
 {
-  use wtools::
-  {
-    HashMap,
-    Former,
-  };
+  use wtools::{ HashMap, Former };
 
   ///
   /// Command descriptor.

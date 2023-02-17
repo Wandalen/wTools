@@ -11,7 +11,7 @@ tests_impls!
     // only command
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -23,7 +23,7 @@ tests_impls!
     // command with one subject
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
@@ -35,7 +35,7 @@ tests_impls!
     // command with many subjects
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject1".into(), "subject2".into(), "subject3".into() ],
@@ -47,7 +47,7 @@ tests_impls!
     // command with one property
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -59,7 +59,7 @@ tests_impls!
     // command with many properties
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -76,7 +76,7 @@ tests_impls!
     // command with one subject and one property
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
@@ -88,7 +88,7 @@ tests_impls!
     // command with many subjects and many properties
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec!
@@ -114,7 +114,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -125,7 +125,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
@@ -136,7 +136,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
@@ -152,7 +152,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "additional_command".into(),
         subjects : vec![],
@@ -163,7 +163,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command.sub_command".into(),
         subjects : vec![ "subj_ect".into() ],
@@ -174,7 +174,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -193,7 +193,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
@@ -209,7 +209,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "/absolute/path/to/something".into() ],
@@ -220,7 +220,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "./path/to/something".into() ],
@@ -236,7 +236,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -247,7 +247,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -258,7 +258,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -273,7 +273,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -289,7 +289,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],

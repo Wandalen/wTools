@@ -1,8 +1,13 @@
 use super::*;
 use wca::
 {
+  Program, Namespace,
+
   Parser,
   ProgramParser, NamespaceParser, CommandParser,
+
+  GrammarConverter,
+  RawCommand, GrammarCommand,
 };
 
 mod from_command;

@@ -2,6 +2,21 @@ use super::*;
 
 //
 
+fn ok_program_parser( parser : &Parser, program : &str ) -> Program< Namespace< RawCommand > >
+{
+  let raw_program = parser.program( program );
+  a_true!( raw_program.is_ok() );
+  raw_program.unwrap()
+}
+
+fn ok_program_grammar( grammar : &GrammarConverter, raw : Program< Namespace< RawCommand > > ) -> Program< Namespace< GrammarCommand > >
+{
+  let grammar_program = grammar.to_program( raw );
+  // a_true!( grammar_program.is_some() );
+  // grammar_program.unwrap()
+  grammar_program
+}
+
 tests_impls!
 {
   fn basic()
@@ -24,29 +39,25 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let converter = wca::Converter::former()
-    .command( command1, | _ | { println!( "hello" ); Ok( () ) } )
-    .command( command2, | _ | { println!( "hello" ); Ok( () ) } )
+    let grammar_converter = GrammarConverter::former()
+    .command( command1 )
+    .command( command2 )
     .form();
 
     // parse program with only one command
-    let raw_program = parser.program( ".command1 subject" );
-    a_true!( raw_program.is_ok() );
-    let raw_program = raw_program.unwrap();
+    let raw_program = ok_program_parser( &parser, ".command1 subject" );
 
     // convert program
-    let exec_program = converter.to_program( raw_program );
+    let exec_program = ok_program_grammar( &grammar_converter, raw_program );
     a_true!( exec_program.namespaces.len() == 1 );
     a_true!( exec_program.namespaces[ 0 ].commands.len() == 1 );
     a_id!( vec![ "subject".to_string() ], exec_program.namespaces[ 0 ].commands[ 0 ].subjects );
 
     // parse program several namespaces
-    let raw_program = parser.program( ".command1 first_subj .also .command2 second_subj" );
-    a_true!( raw_program.is_ok() );
-    let raw_program = raw_program.unwrap();
+    let raw_program = ok_program_parser( &parser, ".command1 first_subj .also .command2 second_subj" );
 
     // convert program
-    let exec_program = converter.to_program( raw_program );
+    let exec_program = ok_program_grammar( &grammar_converter, raw_program );
     a_true!( exec_program.namespaces.len() == 2 );
     a_true!( exec_program.namespaces[ 0 ].commands.len() == 1 );
     a_id!( vec![ "first_subj".to_string() ], exec_program.namespaces[ 0 ].commands[ 0 ].subjects );
@@ -56,7 +67,6 @@ tests_impls!
 }
 
 //
-
 
 tests_index!
 {
