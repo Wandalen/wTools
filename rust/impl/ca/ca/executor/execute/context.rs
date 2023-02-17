@@ -1,10 +1,6 @@
 pub( crate ) mod private
 {
-  use std::
-  {
-    sync::Arc,
-    cell::RefCell,
-  };
+  use std::{ sync::Arc, cell::RefCell };
 
   use anymap::{ Map, any::CloneAny };
 

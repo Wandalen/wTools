@@ -1,6 +1,14 @@
 pub( crate ) mod private
 {
-  use crate::{ Context, Args, Props, Routine, Namespace, ExecutableCommand };
+  use crate::
+  { 
+    Namespace,
+
+    ExecutableCommand,
+
+    Args, Props,
+    Context, Routine,
+  };
 
   use wtools::{ Result, err };
 

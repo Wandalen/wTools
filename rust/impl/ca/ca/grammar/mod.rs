@@ -1,5 +1,7 @@
 crate::mod_interface!
 {
-  /// User commands setup
-  layer setup;
+  /// user settings
+  layer settings;
+  /// converts from raw to executable
+  layer converter;
 }

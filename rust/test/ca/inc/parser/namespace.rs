@@ -13,7 +13,7 @@ tests_impls!
     (
       Ok( Namespace
       {
-        commands : vec![ Command
+        commands : vec![ RawCommand
         {
           name : "command".into(),
           subjects : vec![],
@@ -28,7 +28,7 @@ tests_impls!
     (
       Ok( Namespace
       {
-        commands : vec![ Command
+        commands : vec![ RawCommand
         {
           name : "command".into(),
           subjects : vec![],
@@ -45,13 +45,13 @@ tests_impls!
       {
         commands : vec!
         [
-          Command
+          RawCommand
           {
             name : "command1".into(),
             subjects : vec![],
             properties : HashMap::new(),
           },
-          Command
+          RawCommand
           {
             name : "command2".into(),
             subjects : vec![ "subject".into() ],
@@ -77,13 +77,13 @@ tests_impls!
       {
         commands : vec!
         [
-          Command
+          RawCommand
           {
             name : "command1".into(),
             subjects : vec![ "subject".into() ],
             properties : HashMap::from_iter([ ( "prop".into(), "value".into() ) ]),
           },
-          Command
+          RawCommand
           {
             name : "command2".into(),
             subjects : vec![],
