@@ -14,7 +14,7 @@ mod inc;
 
 // zzz : move to inc after implementing macro to check presence of a dependency
 #[ cfg( feature = "use_std" ) ]
-#[ test_tools::rustversion::stable ]
+#[ test_tools::rustversion::nightly ]
 #[ test ]
 fn trybuild_tests()
 {
