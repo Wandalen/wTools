@@ -10,7 +10,7 @@ pub( crate ) mod private
   };
 
   use former::Former;
-  use wtools::HashMap;
+  use wtools::{ HashMap, Result, err };
 
   /// Converts from RawCommand to ExecutableCommand
   #[ derive( Debug ) ]
@@ -39,24 +39,33 @@ pub( crate ) mod private
   impl ExecutorConverter
   {
     /// Converts raw program to executable
-    pub fn to_program( &self, raw_program : Program< Namespace< GrammarCommand > > ) -> Program< Namespace< ExecutableCommand > >
+    pub fn to_program( &self, raw_program : Program< Namespace< GrammarCommand > > ) -> Result< Program< Namespace< ExecutableCommand > > >
     {
-      let namespaces = raw_program.namespaces.into_iter().map( | n | self.to_namespace( n ) ).collect();
-      Program { namespaces }
+      let namespaces = raw_program.namespaces
+      .into_iter()
+      .map( | n | self.to_namespace( n ) )
+      .collect::< Result< Vec< Namespace< ExecutableCommand > > > >()?;
+
+      Ok( Program { namespaces } )
     }
 
     /// Converts raw namespace to executable
-    pub fn to_namespace( &self, raw_namespace : Namespace< GrammarCommand > ) -> Namespace< ExecutableCommand >
+    pub fn to_namespace( &self, raw_namespace : Namespace< GrammarCommand > ) -> Result< Namespace< ExecutableCommand > >
     {
-      let commands = raw_namespace.commands.into_iter().filter_map( | c | self.to_command( c ) ).collect();
-      Namespace { commands }
+      let commands = raw_namespace.commands
+      .into_iter()
+      .map( | c | self.to_command( c ) )
+      .collect::< Result< Vec< ExecutableCommand > > >()?;
+
+      Ok( Namespace { commands } )
     }
 
     /// Converts raw command to executable
-    pub fn to_command( &self, command : GrammarCommand ) -> Option< ExecutableCommand >
+    pub fn to_command( &self, command : GrammarCommand ) -> Result< ExecutableCommand >
     {
       self.routines
       .get( &command.phrase )
+      .ok_or_else( || err!( "Can not found routine for command `{}`", command.phrase ) )
       .map(
         | routine |
         ExecutableCommand
