@@ -12,6 +12,8 @@
 
 // #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#![ allow( where_clauses_object_safety ) ] // https://github.com/chris-morgan/anymap/issues/31
+
 /// Requests parser.
 #[ cfg( feature = "use_std" ) ]
 pub mod string

@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use crate::Routine;
+  use crate::{ Routine, Value };
 
   use wtools::HashMap;
 
@@ -9,9 +9,9 @@ pub( crate ) mod private
   pub struct ExecutableCommand
   {
     /// subjects values
-    pub subjects : Vec< String >,
+    pub subjects : Vec< Value >,
     /// properties value
-    pub properties : HashMap< String, String >,
+    pub properties : HashMap< String, Value >,
     /// function that will be called
     pub routine : Routine,
   }

@@ -1,6 +1,18 @@
 pub( crate ) mod private
 {
+  use crate::Type;
+
   use wtools::{ HashMap, Former };
+
+  /// Command subject description
+  #[ derive( Debug, Clone, PartialEq, Eq ) ]
+  pub struct ValueDescription
+  {
+    /// subject hint
+    pub hint : String,
+    /// subject type
+    pub kind : Type,
+  }
 
   ///
   /// Command descriptor.
@@ -18,10 +30,10 @@ pub( crate ) mod private
     pub long_hint : String,
     /// Phrase descriptor for command.
     pub phrase : String,
-    /// Command subjects hints.
-    pub subjects_hints : Vec< String >,
-    /// Hints for command options.
-    pub properties_hints : HashMap< String, String >,
+    /// Command subjects hints and types.
+    pub subjects : Vec< ValueDescription >,
+    /// Hints and types for command options.
+    pub properties : HashMap< String, ValueDescription >,
     /// TODO: Map of aliases.
     pub properties_aliases : HashMap< String, Vec< String > >,
   }
@@ -29,36 +41,38 @@ pub( crate ) mod private
   impl CommandFormer
   {
     /// Setter for separate properties.
-    pub fn subject_hint< S : Into< String > >( mut self, hint : S ) -> Self
+    pub fn subject< S : Into< String > >( mut self, hint : S, kind : Type ) -> Self
     {
       let hint = hint.into();
+      let subject = ValueDescription { hint, kind };
 
-      if self.subjects_hints.is_none()
+      if self.subjects.is_none()
       {
-        self.subjects_hints = Some( vec![ hint ] );
+        self.subjects = Some( vec![ subject ] );
       }
       else
       {
-        let hints = self.subjects_hints.as_mut().unwrap();
-        hints.push( hint );
+        let hints = self.subjects.as_mut().unwrap();
+        hints.push( subject );
       }
       self
     }
 
     /// Setter for separate properties.
-    pub fn property_hint< S : AsRef< str > >( mut self, key : S, hint : S ) -> Self
+    pub fn property< S : AsRef< str >, H : Into< String > >( mut self, key : S, hint : H, kind : Type ) -> Self
     {
       let key = key.as_ref();
-      let hint = hint.as_ref();
+      let hint = hint.into();
+      let property = ValueDescription { hint, kind };
 
-      if self.properties_hints.is_none()
+      if self.properties.is_none()
       {
-        self.properties_hints = Some( HashMap::from([ ( key.into(), hint.into() ) ]) );
+        self.properties = Some( HashMap::from([ ( key.into(), property ) ]) );
       }
       else
       {
-        let hmap = self.properties_hints.as_mut().unwrap();
-        hmap.insert( key.into(), hint.into() );
+        let hmap = self.properties.as_mut().unwrap();
+        hmap.insert( key.into(), property );
       }
       self
     }
@@ -96,4 +110,5 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   prelude use Command;
+  protected use ValueDescription;
 }

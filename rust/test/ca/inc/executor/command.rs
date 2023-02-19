@@ -2,43 +2,23 @@ use super::*;
 
 //
 
-fn ok_command_parser( parser : &Parser, command : &str ) -> RawCommand
-{
-  let raw_command = parser.command( command );
-  a_true!( raw_command.is_ok() );
-  raw_command.unwrap()
-}
-
-fn ok_command_grammar( grammar : &GrammarConverter, raw : RawCommand ) -> GrammarCommand
-{
-  let grammar_command = grammar.to_command( raw );
-  a_true!( grammar_command.is_some() );
-  grammar_command.unwrap()
-}
-
-fn ok_command_exec( exec : &ExecutorConverter, grammar : GrammarCommand ) -> ExecutableCommand
-{
-  let exec_command = exec.to_command( grammar );
-  a_true!( exec_command.is_some() );
-  exec_command.unwrap()
-}
-
 tests_impls!
 {
   fn basic()
   {
-    let command = wca::Command::former()
-    .hint( "hint" )
-    .long_hint( "long_hint" )
-    .phrase( "command" )
-    .form();
-
     // init parser
     let parser = Parser::former().form();
 
     // init converter
     let grammar_converter = GrammarConverter::former()
-    .command( command )
+    .command
+    (
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .form()
+    )
     .form();
 
     // init executor
@@ -47,9 +27,9 @@ tests_impls!
     .routine( "command", Routine::new( | _ | { println!( "hello" ); Ok( () ) } ) )
     .form();
 
-    let raw_command = ok_command_parser( &parser, ".command" );
-    let grammar_command = ok_command_grammar( &grammar_converter, raw_command );
-    let exec_command = ok_command_exec( &executor_converter, grammar_command );
+    let raw_command = parser.command( ".command" ).unwrap();
+    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+    let exec_command = executor_converter.to_command( grammar_command ).unwrap();
 
     // execute the command
     a_true!( executor.command( exec_command ).is_ok() );
@@ -57,19 +37,20 @@ tests_impls!
 
   fn with_subject()
   {
-    let command = wca::Command::former()
-    .hint( "hint" )
-    .long_hint( "long_hint" )
-    .phrase( "command" )
-    .subject_hint( "hint" )
-    .form();
-
     // init parser
     let parser = Parser::former().form();
 
     // init converter
     let grammar_converter = GrammarConverter::former()
-    .command( command )
+    .command
+    (
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .subject( "hint", Type::String )
+      .form()
+    )
     .form();
 
     // init executor
@@ -78,39 +59,40 @@ tests_impls!
     .routine
     (
       "command",
-      Routine::new( |( args, _ )| args.get( 0 ).map( | a | println!( "{a}" )).ok_or_else( || err!( "Subject not found" ) ) )
+      Routine::new( |( args, _ )| args.get( 0 ).map( | a | println!( "{a:?}" )).ok_or_else( || err!( "Subject not found" ) ) )
     )
     .form();
 
     // with subject
-    let raw_command = ok_command_parser( &parser, ".command subject" );
-    let grammar_command = ok_command_grammar( &grammar_converter, raw_command );
-    let exec_command = ok_command_exec( &executor_converter, grammar_command );
+    let raw_command = parser.command( ".command subject" ).unwrap();
+    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+    let exec_command = executor_converter.to_command( grammar_command ).unwrap();
 
     // execute the command
     a_true!( executor.command( exec_command ).is_ok() );
 
     // without subject
-    let raw_command = ok_command_parser( &parser, ".command" );
+    let raw_command = parser.command( ".command" ).unwrap();
     let grammar_command = grammar_converter.to_command( raw_command );
-    a_true!( grammar_command.is_none() );
+    a_true!( grammar_command.is_err() );
   }
 
   fn with_property()
   {
-    let command = wca::Command::former()
-    .hint( "hint" )
-    .long_hint( "long_hint" )
-    .phrase( "command" )
-    .property_hint( "prop", "about prop" )
-    .form();
-
     // init parser
     let parser = Parser::former().form();
 
     // init converter
     let grammar_converter = GrammarConverter::former()
-    .command( command )
+    .command
+    (
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .property( "prop", "about prop", Type::String )
+      .form()
+    )
     .form();
 
     // init executor
@@ -119,43 +101,44 @@ tests_impls!
     .routine
     (
       "command",
-      Routine::new( |( _, props )| props.get( "prop" ).map( | a | println!( "{a}" )).ok_or_else( || err!( "Prop not found" ) ) )
+      Routine::new( |( _, props )| props.get( "prop" ).map( | a | println!( "{a:?}" )).ok_or_else( || err!( "Prop not found" ) ) )
     )
     .form();
 
     // with property
-    let raw_command = ok_command_parser( &parser, ".command prop:value" );
-    let grammar_command = ok_command_grammar( &grammar_converter, raw_command );
-    let exec_command = ok_command_exec( &executor_converter, grammar_command );
+    let raw_command = parser.command( ".command prop:value" ).unwrap();
+    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+    let exec_command = executor_converter.to_command( grammar_command ).unwrap();
 
     // execute the command
     a_true!( executor.command( exec_command ).is_ok() );
 
     // with subject and without property
-    let raw_command = ok_command_parser( &parser, ".command subject" );
+    let raw_command = parser.command( ".command subject" ).unwrap();
     let grammar_command = grammar_converter.to_command( raw_command );
-    a_true!( grammar_command.is_none() );
+    a_true!( grammar_command.is_err() );
 
     // with subject and with property
-    let raw_command = ok_command_parser( &parser, ".command subject prop:value" );
+    let raw_command = parser.command( ".command subject prop:value" ).unwrap();
     let grammar_command = grammar_converter.to_command( raw_command );
-    a_true!( grammar_command.is_none() );
+    a_true!( grammar_command.is_err() );
   }
 
   fn with_context()
   {
-    let check = wca::Command::former()
-    .hint( "hint" )
-    .long_hint( "long_hint" )
-    .phrase( "check" )
-    .form();
-
     // init parser
     let parser = Parser::former().form();
 
     // init converter
     let grammar_converter = GrammarConverter::former()
-    .command( check )
+    .command
+    (
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "check" )
+      .form()
+    )
     .form();
 
     let mut ctx = wca::Context::default();
@@ -181,12 +164,40 @@ tests_impls!
     )
     .form();
 
-    let raw_command = ok_command_parser( &parser, ".check" );
-    let grammar_command = ok_command_grammar( &grammar_converter, raw_command );
-    let exec_command = ok_command_exec( &executor_converter, grammar_command );
+    let raw_command = parser.command( ".check" ).unwrap();
+    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+    let exec_command = executor_converter.to_command( grammar_command ).unwrap();
 
     // execute the command
     a_true!( executor.command( exec_command ).is_ok() );
+  }
+
+  fn without_routine()
+  {
+    // init parser
+    let parser = Parser::former().form();
+
+    // init converter
+    let grammar_converter = GrammarConverter::former()
+    .command
+    (
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .form()
+    )
+    .form();
+
+    // init executor
+    let executor = Executor::former().form();
+    let executor_converter = ExecutorConverter::former().form();
+
+    let raw_command = parser.command( ".command" ).unwrap();
+    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+
+    let exec_command = executor_converter.to_command( grammar_command );
+    a_true!( exec_command.is_err() );
   }
 }
 
@@ -198,4 +209,5 @@ tests_index!
   with_subject,
   with_property,
   with_context,
+  without_routine,
 }
