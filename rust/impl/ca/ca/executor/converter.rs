@@ -17,7 +17,7 @@ pub( crate ) mod private
   #[ derive( Former ) ]
   pub struct ExecutorConverter
   {
-    routines : HashMap< String, Routine >,
+    pub( crate ) routines : HashMap< String, Routine >,
   }
 
   impl ExecutorConverterFormer

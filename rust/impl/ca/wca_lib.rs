@@ -44,4 +44,7 @@ crate::mod_interface!
 pub use ca::
 {
   parser,
+  grammar,
+  executor,
+  commands_aggregator,
 };

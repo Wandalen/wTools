@@ -7,4 +7,6 @@ crate::mod_interface!
   layer parser;
   /// Program executor
   layer executor;
+  /// -
+  layer commands_aggregator;
 }
