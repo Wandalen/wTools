@@ -6,18 +6,12 @@ tests_impls!
 {
   fn basic()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     // only command
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -29,7 +23,7 @@ tests_impls!
     // command with one subject
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
@@ -41,7 +35,7 @@ tests_impls!
     // command with many subjects
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject1".into(), "subject2".into(), "subject3".into() ],
@@ -53,7 +47,7 @@ tests_impls!
     // command with one property
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -65,7 +59,7 @@ tests_impls!
     // command with many properties
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -82,7 +76,7 @@ tests_impls!
     // command with one subject and one property
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
@@ -94,7 +88,7 @@ tests_impls!
     // command with many subjects and many properties
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec!
@@ -116,17 +110,11 @@ tests_impls!
 
   fn with_spaces()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -137,7 +125,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
@@ -148,7 +136,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
@@ -160,17 +148,11 @@ tests_impls!
 
   fn not_only_alphanumeric_symbols()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "additional_command".into(),
         subjects : vec![],
@@ -181,7 +163,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command.sub_command".into(),
         subjects : vec![ "subj_ect".into() ],
@@ -192,7 +174,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -204,17 +186,14 @@ tests_impls!
 
   fn same_command_and_prop_delimeter()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '-',
-      prop_delimeter : '-',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former()
+    .command_prefix( '-' )
+    .prop_delimeter( '-' )
+    .form();
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "subject".into() ],
@@ -226,17 +205,11 @@ tests_impls!
 
   fn path_in_subject()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "/absolute/path/to/something".into() ],
@@ -247,7 +220,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![ "./path/to/something".into() ],
@@ -259,17 +232,11 @@ tests_impls!
 
   fn path_in_property()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -280,7 +247,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -291,7 +258,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -300,17 +267,13 @@ tests_impls!
       parser.command( ".command path:../path/to/something" )
     );
 
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '/',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former()
+    .command_prefix( '/' )
+    .form();
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],
@@ -322,17 +285,11 @@ tests_impls!
 
   fn list_in_property()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : "|".into(),
-    };
+    let parser = Parser::former().form();
 
     a_id!
     (
-      Ok( Command
+      Ok( RawCommand
       {
         name : "command".into(),
         subjects : vec![],

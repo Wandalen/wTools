@@ -1,9 +1,9 @@
 crate::mod_interface!
 {
-  /// Parseable objects
-  layer raw;
-  /// -
-  layer execute;
-  /// User commands setup
-  layer setup;
+  /// user settings
+  layer settings;
+  /// converts from raw to executable
+  layer converter;
+  /// available types for arguments
+  layer types;
 }

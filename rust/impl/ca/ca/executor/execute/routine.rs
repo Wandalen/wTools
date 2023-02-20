@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use crate::Context;
+  use crate::{ Context, Value };
 
   use wtools::{ HashMap, Result };
 
@@ -8,11 +8,11 @@ pub( crate ) mod private
 
   /// Command Args
   #[ derive( Debug ) ]
-  pub struct Args( pub Vec< String > );
+  pub struct Args( pub Vec< Value > );
 
   impl core::ops::Deref for Args
   {
-    type Target = Vec< String >;
+    type Target = Vec< Value >;
     fn deref( &self ) -> &Self::Target
     {
       &self.0
@@ -21,11 +21,11 @@ pub( crate ) mod private
 
   /// Command Properties
   #[ derive( Debug ) ]
-  pub struct Props( pub HashMap< String, String > );
+  pub struct Props( pub HashMap< String, Value > );
 
   impl core::ops::Deref for Props
   {
-    type Target = HashMap< String, String > ;
+    type Target = HashMap< String, Value > ;
     fn deref( &self ) -> &Self::Target
     {
       &self.0

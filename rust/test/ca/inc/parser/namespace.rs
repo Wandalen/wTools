@@ -6,20 +6,14 @@ tests_impls!
 {
   fn basic()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : ".also".into(),
-    };
+    let parser = Parser::former().form();
 
     // namespace with only one command
     a_id!
     (
       Ok( Namespace
       {
-        commands : vec![ Command
+        commands : vec![ RawCommand
         {
           name : "command".into(),
           subjects : vec![],
@@ -34,7 +28,7 @@ tests_impls!
     (
       Ok( Namespace
       {
-        commands : vec![ Command
+        commands : vec![ RawCommand
         {
           name : "command".into(),
           subjects : vec![],
@@ -51,13 +45,13 @@ tests_impls!
       {
         commands : vec!
         [
-          Command
+          RawCommand
           {
             name : "command1".into(),
             subjects : vec![],
             properties : HashMap::new(),
           },
-          Command
+          RawCommand
           {
             name : "command2".into(),
             subjects : vec![ "subject".into() ],
@@ -71,13 +65,11 @@ tests_impls!
 
   fn same_command_and_prop_and_namespace_delimeter()
   {
-    // TODO: Builder
-    let parser = Parser
-    {
-      command_prefix : '-',
-      prop_delimeter : '-',
-      namespace_delimeter : "-".into(),
-    };
+    let parser = Parser::former()
+    .command_prefix( '-' )
+    .prop_delimeter( '-' )
+    .namespace_delimeter( "-" )
+    .form();
 
     a_id!
     (
@@ -85,13 +77,13 @@ tests_impls!
       {
         commands : vec!
         [
-          Command
+          RawCommand
           {
             name : "command1".into(),
             subjects : vec![ "subject".into() ],
             properties : HashMap::from_iter([ ( "prop".into(), "value".into() ) ]),
           },
-          Command
+          RawCommand
           {
             name : "command2".into(),
             subjects : vec![],

@@ -6,12 +6,7 @@ tests_impls!
 {
   fn basic()
   {
-    let parser = Parser
-    {
-      command_prefix : '.',
-      prop_delimeter : ':',
-      namespace_delimeter : ".also".into(),
-    };
+    let parser = Parser::former().form();
 
     // only one command and only one namespace
     a_id!
@@ -20,7 +15,7 @@ tests_impls!
       [
         Namespace { commands : vec!
         [
-          Command
+          RawCommand
           {
             name : "command".into(),
             subjects : vec![],
@@ -38,7 +33,7 @@ tests_impls!
       [
         Namespace { commands : vec!
         [
-          Command
+          RawCommand
           {
             name : "command1".into(),
             subjects : vec![],
@@ -47,7 +42,7 @@ tests_impls!
         ]},
         Namespace { commands : vec!
         [
-          Command
+          RawCommand
           {
             name : "command2".into(),
             subjects : vec![],
@@ -56,7 +51,7 @@ tests_impls!
         ]},
         Namespace { commands : vec!
         [
-          Command
+          RawCommand
           {
             name : "command3".into(),
             subjects : vec![],

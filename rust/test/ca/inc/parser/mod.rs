@@ -1,9 +1,10 @@
 use super::*;
 use wca::
 {
+  Program, Namespace, RawCommand,
+
   Parser,
   ProgramParser, NamespaceParser, CommandParser,
-  Program, Namespace, RawCommand as Command,
 };
 
 mod command;
