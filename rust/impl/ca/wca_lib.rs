@@ -10,7 +10,7 @@
 //! The tool to make CLI ( commands user interface ). It is able to aggregate external binary applications, as well as functions, which are written in your language.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+// #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Requests parser.
 #[ cfg( feature = "use_std" ) ]
@@ -41,10 +41,5 @@ crate::mod_interface!
 #[ doc( inline ) ]
 pub use ca::
 {
-  commands_aggregator,
-  // common,
-  command,
-  input,
-  instruction,
-  context,
+  parser,
 };
