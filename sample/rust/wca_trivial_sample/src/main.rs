@@ -15,22 +15,16 @@ fn main()
     ])
     .executor(
     [
-      (
-        "echo".to_owned(),
-        Routine::new
-        (
-          |( args, props )|
-          {
-            println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
-            Ok( () )
-          }
-        )
-      ),
+      ( "echo".to_owned(), Routine::new( |( args, props )|
+      {
+        println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
+        Ok( () )
+      })),
     ])
     .with_help_command()
     .form();
 
-    let got = ca.perform( ".echo subject property:value .help" );
-    assert_eq!( got, Ok( () ) );
+    let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
+    ca.perform( args.join( " " ) ).unwrap();
   }
 }
