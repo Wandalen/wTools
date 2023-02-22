@@ -34,8 +34,9 @@ pub( crate ) mod private
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
     pub properties : HashMap< String, ValueDescription >,
-    /// TODO: Map of aliases.
-    pub properties_aliases : HashMap< String, Vec< String > >,
+    /// Map of aliases.
+    // Aliased key -> Original key
+    pub properties_aliases : HashMap< String, String >,
   }
 
   impl CommandFormer
@@ -46,15 +47,11 @@ pub( crate ) mod private
       let hint = hint.into();
       let subject = ValueDescription { hint, kind };
 
-      if self.subjects.is_none()
-      {
-        self.subjects = Some( vec![ subject ] );
-      }
-      else
-      {
-        let hints = self.subjects.as_mut().unwrap();
-        hints.push( subject );
-      }
+      let mut subjects = self.subjects.unwrap_or_default();
+
+      subjects.push( subject );
+
+      self.subjects = Some( subjects );
       self
     }
 
@@ -65,43 +62,26 @@ pub( crate ) mod private
       let hint = hint.into();
       let property = ValueDescription { hint, kind };
 
-      if self.properties.is_none()
-      {
-        self.properties = Some( HashMap::from([ ( key.into(), property ) ]) );
-      }
-      else
-      {
-        let hmap = self.properties.as_mut().unwrap();
-        hmap.insert( key.into(), property );
-      }
+      let mut properties = self.properties.unwrap_or_default();
+
+      properties.insert( key.into(), property );
+
+      self.properties = Some( properties );
       self
     }
 
-    // // Setter for separate properties aliases.
-    // pub fn property_alias< S : AsRef< str > >( mut self, key : S, alias : S ) -> Self
-    // {
-    //   let key = key.as_ref();
-    //   let alias = alias.as_ref();
+    // Setter for separate properties aliases.
+    pub fn property_alias< S : Into< String > >( mut self, key : S, alias : S ) -> Self
+    {
+      let key = key.into();
+      let alias = alias.into();
+      let mut properties_aliases = self.properties_aliases.unwrap_or_default();
 
-    //   if self.properties_aliases.is_none()
-    //   {
-    //     self.properties_aliases = Some( HashMap::from([ ( key.into(), vec![ alias.into() ] ) ]) );
-    //   }
-    //   else
-    //   {
-    //     let hmap = self.properties_aliases.as_mut().unwrap();
-    //     if hmap.get( key ).is_some()
-    //     {
-    //       let vec_aliases = hmap.get_mut( key ).unwrap();
-    //       vec_aliases.push( alias.into() );
-    //     }
-    //     else
-    //     {
-    //       hmap.insert( key.into(), vec![ alias.into() ] );
-    //     }
-    //   }
-    //   self
-    // }
+      properties_aliases.insert( alias, key );
+
+      self.properties_aliases = Some( properties_aliases );
+      self
+    }
   }
 }
 

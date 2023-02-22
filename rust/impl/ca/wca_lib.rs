@@ -43,6 +43,7 @@ crate::mod_interface!
 #[ doc( inline ) ]
 pub use ca::
 {
+  input,
   parser,
   grammar,
   executor,
