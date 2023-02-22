@@ -9,4 +9,6 @@ crate::mod_interface!
   layer executor;
   /// -
   layer commands_aggregator;
+  /// -
+  layer input;
 }

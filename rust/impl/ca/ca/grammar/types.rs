@@ -12,6 +12,8 @@ pub( crate ) mod private
     Number,
     /// Path
     Path,
+    /// List of some type values separeted a delimiter character
+    List( Box< Type >, char ),
   }
 
   /// Can be implemented for something that represents a type of value
@@ -31,6 +33,8 @@ pub( crate ) mod private
     Number( f64 ),
     /// Path
     Path( std::path::PathBuf ),
+    /// List
+    List( Vec< Value > ),
   }
 
   macro_rules! value_into_impl
@@ -71,6 +75,18 @@ pub( crate ) mod private
       std::path::PathBuf => | value | value
   }
 
+  impl< T : From< Value > > From< Value > for Vec< T >
+  {
+    fn from( value : Value ) -> Self
+    {
+      match value
+      {
+        Value::List( value ) => value.into_iter().map( | x | x.into() ).collect(),
+        _ => panic!( "Unknown cast variant. Got `{value:?}` and try to cast to `Vec<{}>`", std::any::type_name::< T >() )
+      }
+    }
+  }
+
   impl TryCast< Value > for Type
   {
     fn try_cast( &self, value : String ) -> Result< Value >
@@ -79,7 +95,16 @@ pub( crate ) mod private
       {
         Self::String => Ok( Value::String( value ) ),
         Self::Number => value.parse().map_err( | _ | err!( "Can not parse number from `{}`", value ) ).map( Value::Number ),
-        Self::Path => Ok( Value::Path( value.into() ) )
+        Self::Path => Ok( Value::Path( value.into() ) ),
+        Self::List( kind, delimeter ) =>
+        {
+          let values = value
+          .split( *delimeter )
+          .into_iter()
+          .map( | val | kind.try_cast( val.into() ) )
+          .collect::< Result< Vec< Value > > >()?;
+          Ok( Value::List( values ) )
+        },
       }
     }
   }
