@@ -31,7 +31,8 @@ pub( crate ) mod private
   #[ derive( Former ) ]
   pub struct GrammarConverter
   {
-    commands : HashMap< String, Vec< Command > >,
+    #[ setter( false ) ]
+    pub( crate ) commands : HashMap< String, Vec< Command > >,
   }
 
   impl GrammarConverterFormer
@@ -39,11 +40,27 @@ pub( crate ) mod private
     pub fn command( mut self, command : Command ) -> Self
     {
       let mut commands = self.commands.unwrap_or_default();
-      let command_variants = commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
 
+      let command_variants = commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
       command_variants.push( command );
 
       self.commands = Some( commands );
+      self
+    }
+
+    pub fn commands< V >( mut self, commands : V ) -> Self
+    where
+      V : Into< Vec< Command > >
+    {
+      let mut self_commands = self.commands.unwrap_or_default();
+
+      for command in commands.into()
+      {
+        let command_variants = self_commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
+        command_variants.push( command );
+      }
+
+      self.commands = Some( self_commands );
       self
     }
   }
