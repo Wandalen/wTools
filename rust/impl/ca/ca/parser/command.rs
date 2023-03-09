@@ -10,11 +10,11 @@ pub( crate ) mod private
   use nom::
   {
     branch::alt,
-    bytes::complete::{ tag, take_while },
-    character::complete::{ alpha1, multispace0, multispace1 },
-    combinator::{ map, recognize },
+    bytes::complete::{ tag, take_while, escaped },
+    character::complete::{ alpha1, multispace0, multispace1, none_of, one_of },
+    combinator::{ map, map_opt, recognize },
     multi::many0,
-    sequence::{ tuple, pair },
+    sequence::{ tuple, pair, delimited },
     IResult,
   };
 
@@ -126,21 +126,31 @@ pub( crate ) mod private
       Box::new
       (
         move | input : &str |
-        any_word( input )
-        .map( |( tail, word )|
-        {
-          // if next word - is a command => it isn't subject
-          // if you want pass command as subject - take it in quotes
-          let not_a_command = self.command_fn()( word ).is_err();
-          if not_a_command && !word.contains( prop_delimeter ) && !word.contains( &*namespace_delimeter )
-          {
-            ( tail, word.to_owned() )
-          }
-          else
-          {
-            ( input, "".to_owned() )
-          }
-        })
+        alt
+        ((
+          // quoted subject
+          map( delimited( tag( "\"" ), escaped( none_of( "\\\"" ), '\\', one_of( "\\\"" ) ), tag( "\"" ) ), | s : &str | s.replace( "\\\"", "\"" ).replace( "\\\\", "\\" ) ),
+          map( delimited( tag( "'" ), escaped( none_of( "\\'" ), '\\', one_of( "\\'" ) ), tag( "'" ) ), | s : &str | s.replace( "\\\'", "'" ).replace( "\\\\", "\\" ) ),
+          // single word subject
+          map_opt
+          (
+            any_word,
+            | word |
+            {
+              // if next word - is a command => it isn't subject
+              // if you want pass command as subject - take it in quotes
+              let not_a_command = self.command_fn()( word ).is_err();
+              if not_a_command && !word.contains( prop_delimeter ) && !word.contains( &*namespace_delimeter )
+              {
+                Some( word.to_owned() )
+              }
+              else
+              {
+                None
+              }
+            }
+          )
+        ))( input )
       )
     }
   }
@@ -169,9 +179,21 @@ pub( crate ) mod private
         move | input : &str |
         map
         (
-          tuple(( self.propery_name(), tag( &*format!( "{property_delimeter}" ) ), any_word )),
-          |( name, _, value ) : ( &str, _, _ ) | ( name.to_owned(), value.to_owned() )
-        )( input )
+          tuple
+          ((
+            self.propery_name(),
+            tag( &*format!( "{property_delimeter}" ) ),
+            alt
+            ((
+              // quoted value
+              map( delimited( tag( "\"" ), escaped( none_of( "\\\"" ), '\\', one_of( "\\\"" ) ), tag( "\"" ) ), | s : &str | s.replace( "\\\"", "\"" ).replace( "\\\\", "\\" ) ),
+              map( delimited( tag( "'" ), escaped( none_of( "\\'" ), '\\', one_of( "\\'" ) ), tag( "'" ) ), | s : &str | s.replace( "\\\'", "'" ).replace( "\\\\", "\\" ) ),
+              // single word
+              map( any_word, | s : &str | s.to_owned() ),
+            ))
+          )),
+          |( name, _, value ) : ( &str, _, _ ) | ( name.to_owned(), value )
+        )( dbg!( input ) )
       )
     }
   }

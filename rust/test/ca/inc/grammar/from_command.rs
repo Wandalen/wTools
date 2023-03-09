@@ -294,10 +294,13 @@ tests_impls!
       .long_hint( "long_hint" )
       .phrase( "command" )
       .property( "property", "string property", Type::String )
+      // .property( "property", "number property with alredy used name", Type::Number ) // panic because this property name alredy used
       .property_alias( "property", "p" )
+      // .property_alias( "property", "proposal" ) // panic at next property beacuse this name alredy used as alias
       .property( "proposal", "string property", Type::String )
-      .property_alias( "proposal", "p" )
-      .form() // should fail because of two properties has the same alias or be re-writed
+      // .property_alias( "proposal", "property" ) // panic because this name alredy used as property name
+      // .property_alias( "proposal", "p" ) // panic because this alias alredy used
+      .form()
     )
     .form();
 
@@ -305,7 +308,7 @@ tests_impls!
     let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
 
     a_true!( grammar_command.subjects.is_empty() );
-    a_id!( HashMap::from_iter([ ( "proposal".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.properties );
+    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.properties );
   }
 }
 
