@@ -25,8 +25,7 @@ tests_impls!
       ( "command".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
       ( "command2".to_owned(), Routine::new( | _ | { println!( "Command2" ); Ok( () ) } ) ),
     ])
-    .with_help_command() // add help command for whole program
-    .with_detailed_help_commands() // add additional help commands for all exists commands
+    .help_variants([ HelpVariants::General, HelpVariants::DotCommand ])
     .form();
 
     a_true!( ca.perform( ".command2 .help" ).is_ok() ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
