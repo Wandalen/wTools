@@ -7,6 +7,7 @@ use wca::
 
   CommandsAggregator,
   Routine,
+  HelpVariants
 };
 
 mod basic;
