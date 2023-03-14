@@ -28,7 +28,17 @@ fn main() -> Result< (), wtools::error::BasicError >
   .executor( commands::executor_form() )
   .build();
 
-  ca.perform( args.join( " " ).as_str() )
+  let program = args.join( " " );
+  if program.is_empty()
+  {
+    eprintln!( "Ambiguity. Did you mean?" );
+    ca.perform( ".help" )?;
+    std::process::exit( 1 )
+  }
+  else
+  {
+    ca.perform( program.as_str() )
+  }
 }
 
 #[ cfg( not( feature = "use_std" ) ) ]
