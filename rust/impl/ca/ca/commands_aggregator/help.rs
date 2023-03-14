@@ -145,7 +145,7 @@ pub( crate ) mod private
             Some( Routine::WithoutContext( help ) ) if args.is_empty() => help(( args, props ))?,
             _ =>
             {
-              let command : String = args.get( 0 ).unwrap().to_owned().into();
+              let command = args.get_owned::< String >( 0 ).unwrap();
               let cmds = grammar.commands.get( &command ).unwrap_or_else( || panic!( "Command `{command}` not found" ) );
 
               let text = cmds.iter().map
