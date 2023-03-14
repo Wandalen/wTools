@@ -27,7 +27,8 @@ pub( crate ) mod private
   }
 
   /// Converts from RawCommand to ExecutableCommand
-  #[ derive( Debug ) ]
+  // TODO: Remove Clone
+  #[ derive( Debug, Clone ) ]
   #[ derive( Former ) ]
   pub struct GrammarConverter
   {
