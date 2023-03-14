@@ -29,6 +29,6 @@ wtools::mod_interface!
 
   #[ cfg( feature = "use_std" ) ]
   prelude use ::std::env;
-  prelude use ::wca::instruction;
+  // prelude use ::wca::*;
   protected( crate ) use ::wtools::prelude::*;
 }

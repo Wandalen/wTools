@@ -33,35 +33,25 @@ pub( crate ) mod private
     graph::Graph,
     algo::toposort,
   };
-  use wca::{Args, Properties};
-  use wca::string::parse_request::OpType;
-
-  ///
-  /// Properties for the publish functions.
-  ///
-
-  #[ derive( Debug ) ]
-  pub struct PublishProperties
-  {
-    dry : BoolLike,
-  }
+  use wca::{ Args, Props };
 
   ///
   /// Publish package.
   ///
 
-  pub fn publish( args: Args< String, PublishProperties > ) -> Result< () >
+  pub fn publish( ( args, properties ) : ( Args, Props ) ) -> Result< () >
   {
     let current_path = env::current_dir().unwrap();
 
-    let paths = files::find( &current_path, args.subject.split( " " ).collect::< Vec< &str > >().as_slice() );
+    let patterns = args.get_owned::< Vec< String > >( 0 ).unwrap_or_default();
+    let paths = files::find( &current_path, &patterns );
     let mut paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::< Vec< PathBuf > >();
-    if paths.is_empty() && path::valid_is( &args.subject )
+    if !patterns.is_empty() && paths.is_empty() && path::valid_is( &patterns[ 0 ] )
     {
-      paths.push( PathBuf::from( &args.subject ) );
+      paths.push( PathBuf::from( &patterns[ 0 ] ) );
     }
 
-    let dry = args.properties.dry;
+    let dry = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::False );
 
     for path in paths
     {
@@ -185,13 +175,13 @@ pub( crate ) mod private
   ///
   /// Publish packages from workspace.
   ///
-
-  pub fn workspace_publish( args: Args< String, PublishProperties > ) -> Result< () >
+  pub fn workspace_publish( ( args, properties ) : ( Args, Props ) ) -> Result< () >
   {
     let current_path = env::current_dir().unwrap();
 
     let mut manifest = manifest::Manifest::new();
-    let manifest_path = manifest.manifest_path_from_str( &args.subject ).unwrap();
+    let path_to_workspace = args.get_owned::< String >( 0 ).unwrap_or_default();
+    let manifest_path = manifest.manifest_path_from_str( &path_to_workspace ).unwrap();
     let package_metadata = MetadataCommand::new()
     .manifest_path( &manifest_path )
     .no_deps()
@@ -201,7 +191,7 @@ pub( crate ) mod private
     let packages_map = packages_filter( &package_metadata );
     let sorted = toposort_local_packages( &packages_map );
 
-    let dry = args.properties.dry;
+    let dry = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::False );
 
     for name in sorted.iter()
     {
@@ -262,23 +252,6 @@ pub( crate ) mod private
     let sorted = toposort( &deps, None ).unwrap();
     let names = sorted.iter().rev().map( | dep_idx | deps.node_weight( *dep_idx ).unwrap().to_string() ).collect::< Vec< String > >();
     names
-  }
-
-  impl Properties for PublishProperties
-  {
-    fn parse( properties : &HashMap< String, OpType< String > > ) -> Result< Self >
-    {
-      let dry = if let Some( dry ) = properties.get( "dry" )
-      {
-        dry.clone().primitive().unwrap().to_bool_like()
-      }
-      else
-      {
-        BoolLike::False
-      };
-
-      Ok ( PublishProperties { dry } )
-    }
   }
 }
 
