@@ -1,6 +1,12 @@
 pub( crate ) mod private
 {
-  use crate::{ GrammarConverter, Command };
+  use crate::
+  {
+    GrammarConverter, ExecutorConverter,
+
+    Command,
+    Routine, Type
+  };
   
   use wtools::Itertools;
 
@@ -48,10 +54,167 @@ pub( crate ) mod private
     All,
     /// Help for whole program. E.g. `.help`
     General,
-    /// Detailed help for one command as separete help command. E.g. `.help.command_name`
-    DotCommand,
     /// Detailed help for one command as subject in help command. E.g. `.help command_name`
     SubjectCommand,
+    /// Detailed help for one command as separete help command. E.g. `.help.command_name`
+    DotCommand,
+  }
+
+  impl HelpVariants
+  {
+    /// Generates help commands
+    pub fn generate( &self, helper : &HelpGeneratorFn, grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
+    {
+      match self
+      {
+        HelpVariants::All =>
+        {
+          self.general_help( helper, grammar, executor );
+          self.subject_command_help( helper, grammar, executor );
+          self.dot_command_help( helper, grammar, executor );
+        },
+        HelpVariants::General => self.general_help( helper, grammar, executor ),
+        HelpVariants::SubjectCommand => self.subject_command_help( helper, grammar, executor ),
+        HelpVariants::DotCommand => self.dot_command_help( helper, grammar, executor ),
+      }
+    }
+
+    // .help
+    fn general_help( &self, helper : &HelpGeneratorFn, grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
+    {
+      let phrase = "help".to_string();
+
+      let help = Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( &phrase )
+      .form();
+
+      let command_variants = grammar.commands.entry( phrase.to_owned() ).or_insert_with( Vec::new );
+      command_variants.push( help );
+
+      // generate and add routine of help command
+      // replace old help command with new one
+      let subject_help = executor.routines.remove( &phrase );
+      let text = helper.exec( grammar, None );
+      let routine = Routine::new
+      (
+        move |( args, props )|
+        {
+          match &subject_help
+          {
+            Some( Routine::WithoutContext( help ) ) if !args.is_empty() => help(( args, props ))?,
+            _ => println!( "Help command\n{text}" ),
+          }
+
+          Ok( () )
+        }
+      );
+
+      executor.routines.insert( phrase, routine );
+    }
+
+    // .help command_name
+    fn subject_command_help( &self, helper : &HelpGeneratorFn, grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
+    {
+      let phrase = "help".to_string();
+
+      // generate and add grammar of help command
+      let help = Command::former()
+      .hint( "help" )
+      .long_hint( "" )
+      .phrase( &phrase )
+      .subject( "command name", Type::String )
+      .form();
+
+      let command_variants = grammar.commands.entry( phrase.to_owned() ).or_insert_with( Vec::new );
+      command_variants.push( help );
+
+      // generate and add routine of help command
+      // replace old help command with new one
+      let full_help = executor.routines.remove( &phrase );
+      // TODO: Fix it somehow( Cloning grammar and helper )
+      let grammar = grammar.clone();
+      let generator = helper.clone();
+      let routine = Routine::new
+      (
+        move |( args, props )|
+        {
+          match &full_help
+          {
+            Some( Routine::WithoutContext( help ) ) if args.is_empty() => help(( args, props ))?,
+            _ =>
+            {
+              let command : String = args.get( 0 ).unwrap().to_owned().into();
+              let cmds = grammar.commands.get( &command ).unwrap_or_else( || panic!( "Command `{command}` not found" ) );
+
+              let text = cmds.iter().map
+              (
+                | cmd |
+                generator.exec( &grammar, Some( cmd ) )
+              )
+              .join( "\n\n" );
+
+              println!( "{text}" );
+            }
+          };
+
+          Ok( () )
+        }
+      );
+
+      executor.routines.insert( phrase, routine );
+    }
+
+    // .help.command_name
+    fn dot_command_help( &self, helper : &HelpGeneratorFn, grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
+    {
+      // generate commands names
+      let commands : Vec< _ > = grammar.commands.iter().map( |( name, cmd )| ( format!( "help.{name}" ), cmd.clone() ) ).collect();
+
+      // generate Commands grammar
+      let grammar_helps = commands
+      .iter()
+      .map( |( help_name, _ )| Command::former().hint( "help" ).long_hint( "" ).phrase( help_name ).form() )
+      .collect::< Vec< _ > >();
+
+      // add commands to GrammarConverter
+      for cmd in grammar_helps
+      {
+        let command_variants = grammar.commands.entry( cmd.phrase.to_owned() ).or_insert_with( Vec::new );
+        command_variants.push( cmd );
+      }
+
+      // generate Commands routines
+      let executable = commands
+      .into_iter()
+      .fold( vec![], | mut acc, ( help_name, cmds ) |
+      {
+        let text = cmds.iter()
+        .map
+        (
+          | cmd | helper.exec( grammar, Some( cmd ) )
+        )
+        .join( "\n\n" );
+
+        // TODO: compile time or binary size?
+        let routine = Routine::new( move | _ |
+        {
+          println!( "Help for command\n\n{text}" );
+
+          Ok( () )
+        });
+        acc.push(( help_name, routine ));
+
+        acc
+      });
+
+      // add commands to ExecutorConverter
+      for ( phrase, routine ) in executable
+      {
+        executor.routines.insert( phrase, routine );
+      }
+    }
   }
 
   type HelpFucntionFn = Rc< dyn Fn( &GrammarConverter, Option< &Command > ) -> String >;
