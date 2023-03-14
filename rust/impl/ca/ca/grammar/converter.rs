@@ -104,7 +104,7 @@ pub( crate ) mod private
         // and add trailing subjects as "Trailing" somehow
         cmds.iter().find( | cmd | cmd.subjects.len() == raw_command.subjects.len() )
       )
-      .ok_or_else( || err!( "Command not found" ) )
+      .ok_or_else( || err!( "Command not found. Got `{:?}`", raw_command ) )
       .and_then
       (
         | cmd |

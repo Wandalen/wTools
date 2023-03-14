@@ -42,7 +42,6 @@ pub( crate ) mod private
       .ok_or_else( || err!( "No command here. Current execution pos was `{}`", self.pos ) )
       .and_then( | cmd |
       {
-        self.pos += 1;
         _exec_command( cmd.clone(), self.context.clone() )
       })
     }
