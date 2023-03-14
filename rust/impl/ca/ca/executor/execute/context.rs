@@ -42,9 +42,9 @@ pub( crate ) mod private
      }
  
      /// Removes the T value from the context
-     pub fn remove< T : CloneAny >( &mut self )
+     pub fn remove< T : CloneAny >( &mut self ) -> Option< T >
      {
-       self.inner.borrow_mut().remove::< T >();
+       self.inner.borrow_mut().remove::< T >()
      }
 
     /// Return immutable reference on interior object. ! Unsafe !
