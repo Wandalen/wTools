@@ -21,6 +21,10 @@ pub mod string
   pub use wtools::string::*;
 }
 
+/// Errors.
+#[ cfg( feature = "use_std" ) ]
+pub use wtools::{ Result, BasicError, err };
+
 use wtools::meta::mod_interface;
 
 crate::mod_interface!
