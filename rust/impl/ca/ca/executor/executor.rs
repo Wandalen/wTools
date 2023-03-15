@@ -5,7 +5,7 @@ pub( crate ) mod private
     Program, Namespace, ExecutableCommand,
 
     Context,
-    Runtime, Routine,
+    RuntimeState, Runtime, Routine,
     ca::executor::runtime::_exec_command, 
   };
 
@@ -100,10 +100,10 @@ pub( crate ) mod private
 
       while !runtime.is_finished()
       {
-        // TODO: RuntimeState instead usize
-        runtime.context.insert( runtime.pos + 1 );
+        let state = runtime.context.get_or_default::< RuntimeState >();
+        state.pos = runtime.pos + 1;
         runtime.r#do()?;
-        runtime.pos = *runtime.context.get_ref::< usize >().unwrap();
+        runtime.pos = runtime.context.get_ref::< RuntimeState >().unwrap().pos;
       }
 
       Ok( () )
@@ -122,10 +122,10 @@ pub( crate ) mod private
         // iteration
         for runtime in runtimes.iter_mut()
         {
-          // TODO: RuntimeState instead usize
-          runtime.context.insert( runtime.pos + 1 );
+          let state = runtime.context.get_or_default::< RuntimeState >();
+          state.pos = runtime.pos + 1;
           runtime.r#do()?;
-          runtime.pos = *runtime.context.get_ref::< usize >().unwrap();
+          runtime.pos = runtime.context.get_ref::< RuntimeState >().unwrap().pos;
         }
         !runtimes.is_empty()
       }
@@ -143,10 +143,10 @@ pub( crate ) mod private
       {
         while !runtime.is_finished()
         {
-          // TODO: RuntimeState instead usize
-          runtime.context.insert( runtime.pos + 1 );
+          let state = runtime.context.get_or_default::< RuntimeState >();
+          state.pos = runtime.pos + 1;
           runtime.r#do()?;
-          runtime.pos = *runtime.context.get_ref::< usize >().unwrap();
+          runtime.pos = runtime.context.get_ref::< RuntimeState >().unwrap().pos;
         }
       }
 
