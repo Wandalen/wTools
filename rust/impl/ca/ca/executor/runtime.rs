@@ -12,6 +12,14 @@ pub( crate ) mod private
 
   use wtools::{ Result, err };
 
+  /// Program runtimes state
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct RuntimeState
+  {
+    /// current execution position that can be changed by user
+    pub pos : usize,
+  }
+
   /// Program runtime
   /// 
   /// Cloned Runtime will work with the same context
@@ -42,7 +50,6 @@ pub( crate ) mod private
       .ok_or_else( || err!( "No command here. Current execution pos was `{}`", self.pos ) )
       .and_then( | cmd |
       {
-        self.pos += 1;
         _exec_command( cmd.clone(), self.context.clone() )
       })
     }
@@ -63,6 +70,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
+  prelude use RuntimeState;
   prelude use Runtime;
   protected use _exec_command;
 }

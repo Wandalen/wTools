@@ -10,6 +10,15 @@ pub( crate ) mod private
   #[ derive( Debug ) ]
   pub struct Args( pub Vec< Value > );
 
+  impl Args
+  {
+    /// Returns owned casted value by its index
+    pub fn get_owned< T : From< Value > >( &self, index : usize ) -> Option< T >
+    {
+      self.0.get( index ).map( | arg | arg.to_owned().into() )
+    }
+  }
+
   impl core::ops::Deref for Args
   {
     type Target = Vec< Value >;
@@ -22,6 +31,15 @@ pub( crate ) mod private
   /// Command Properties
   #[ derive( Debug ) ]
   pub struct Props( pub HashMap< String, Value > );
+
+  impl Props
+  {
+    /// Returns owned casted value by its key
+    pub fn get_owned< K : AsRef< str >, T : From< Value > >( &self, key : K ) -> Option< T >
+    {
+      self.0.get( key.as_ref() ).map( | arg | arg.to_owned().into() )
+    }
+  }
 
   impl core::ops::Deref for Props
   {

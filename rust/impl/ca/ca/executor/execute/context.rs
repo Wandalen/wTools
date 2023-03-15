@@ -42,9 +42,9 @@ pub( crate ) mod private
      }
  
      /// Removes the T value from the context
-     pub fn remove< T : CloneAny >( &mut self )
+     pub fn remove< T : CloneAny >( &mut self ) -> Option< T >
      {
-       self.inner.borrow_mut().remove::< T >();
+       self.inner.borrow_mut().remove::< T >()
      }
 
     /// Return immutable reference on interior object. ! Unsafe !
@@ -57,6 +57,26 @@ pub( crate ) mod private
     pub fn get_mut< T : CloneAny >( &self ) -> Option< &mut T >
     {
       unsafe { self.inner.as_ptr().as_mut()?.get_mut() }
+    }
+
+    /// Insert the value if it doesn't exists, or take an existing value and return mutable reference to it
+    pub fn get_or_insert< T : CloneAny >( &self, value : T ) -> &mut T
+    {
+      if let Some( value ) = self.get_mut()
+      {
+        value
+      }
+      else
+      {
+        self.insert( value );
+        self.get_mut().unwrap()
+      }
+    }
+
+    /// Insert default value if it doesn't exists, or take an existing value and return mutable reference to it
+    pub fn get_or_default< T : CloneAny + Default >( &self ) -> &mut T
+    {
+      self.get_or_insert( T::default() )
     }
 
     /// Make a deep clone of the context

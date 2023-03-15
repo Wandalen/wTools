@@ -64,6 +64,39 @@ tests_impls!
     let inner_path : std::path::PathBuf = path.into();
     a_id!( std::path::PathBuf::from_str( "./some/relative/path" ).unwrap(), inner_path );
   }
+
+  fn values_list()
+  {
+    // strings
+    let string = Type::List( Type::String.into(), ',' ).try_cast( "some,string".into() );
+
+    a_id!( Ok
+    (
+      Value::List( vec![ Value::String( "some".into() ), Value::String( "string".into() ) ] )
+    ), string );
+    let string = string.unwrap();
+
+    let inner_string : Vec< String > = string.clone().into();
+    a_id!( vec![ "some".to_string(), "string".into() ], inner_string );
+
+    let inner_string : Vec< &str > = string.into();
+    a_id!( vec![ "some", "string" ], inner_string );
+
+    // numbers
+    let numbers = Type::List( Type::Number.into(), ';' ).try_cast( "100;3.14".into() );
+
+    a_id!( Ok
+    (
+      Value::List( vec![ Value::Number( 100.0 ), Value::Number( 3.14 ) ] )
+    ), numbers );
+    let numbers = numbers.unwrap();
+
+    let inner_numbers : Vec< i32 > = numbers.clone().into();
+    a_id!( vec![ 100, 3 ], inner_numbers );
+
+    let inner_numbers : Vec< f64 > = numbers.into();
+    a_id!( vec![ 100.0, 3.14 ], inner_numbers );
+  }
 }
 
 //
@@ -73,4 +106,5 @@ tests_index!
   number,
   string,
   path,
+  values_list,
 }

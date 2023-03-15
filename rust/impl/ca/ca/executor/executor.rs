@@ -5,7 +5,7 @@ pub( crate ) mod private
     Program, Namespace, ExecutableCommand,
 
     Context,
-    Runtime, Routine,
+    RuntimeState, Runtime, Routine,
     ca::executor::runtime::_exec_command, 
   };
 
@@ -62,7 +62,8 @@ pub( crate ) mod private
         | mut acc, namespace |
         {
           // local context for each namespace
-          let context = match self.kind {
+          let context = match self.kind
+          {
             ExecutorType::ResetsContext => context.deep_clone(),
             ExecutorType::Simple => context.clone(),
           };
@@ -77,7 +78,11 @@ pub( crate ) mod private
         }
       );
 
-      Self::sequential_execution_loop( runtimes )?;
+      match self.kind
+      {
+        ExecutorType::ResetsContext => Self::parallel_execution_loop( runtimes )?,
+        ExecutorType::Simple => Self::sequential_execution_loop( runtimes )?,
+      }
 
       Ok( () )
     }
@@ -95,7 +100,10 @@ pub( crate ) mod private
 
       while !runtime.is_finished()
       {
-        runtime.r#do()?
+        let state = runtime.context.get_or_default::< RuntimeState >();
+        state.pos = runtime.pos + 1;
+        runtime.r#do()?;
+        runtime.pos = runtime.context.get_ref::< RuntimeState >().unwrap().pos;
       }
 
       Ok( () )
@@ -107,20 +115,17 @@ pub( crate ) mod private
       _exec_command( command, self.context.clone() )
     }
 
-    fn sequential_execution_loop( mut runtimes : Vec< Runtime > ) -> Result< () >
+    fn parallel_execution_loop( mut runtimes : Vec< Runtime > ) -> Result< () >
     {
       while
       {
         // iteration
         for runtime in runtimes.iter_mut()
         {
-          // Thoughts on Improvements
-          // * unlock after get commands
-          // 1) let commands = { global_ctx.lock().unwrap().get_commands() };
-          // 2) run_commands( commands )
-          // * somehow lock only current namespace
-          // 2 - into command) global_ctx.lock().unwrap().change_pos( 8 );
+          let state = runtime.context.get_or_default::< RuntimeState >();
+          state.pos = runtime.pos + 1;
           runtime.r#do()?;
+          runtime.pos = runtime.context.get_ref::< RuntimeState >().unwrap().pos;
         }
         !runtimes.is_empty()
       }
@@ -129,6 +134,22 @@ pub( crate ) mod private
         runtimes = runtimes.into_iter().filter( | r | !r.is_finished() ).collect::< Vec< _ > >();
       }
       
+      Ok( () )
+    }
+
+    fn sequential_execution_loop( runtimes : Vec< Runtime > ) -> Result< () >
+    {
+      for mut runtime in runtimes
+      {
+        while !runtime.is_finished()
+        {
+          let state = runtime.context.get_or_default::< RuntimeState >();
+          state.pos = runtime.pos + 1;
+          runtime.r#do()?;
+          runtime.pos = runtime.context.get_ref::< RuntimeState >().unwrap().pos;
+        }
+      }
+
       Ok( () )
     }
   }

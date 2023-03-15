@@ -25,10 +25,50 @@ tests_impls!
       ( "command".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
       ( "command2".to_owned(), Routine::new( | _ | { println!( "Command2" ); Ok( () ) } ) ),
     ])
-    .with_help_command() // add help command for whole program
-    .form();
+    .build();
 
-    a_true!( ca.perform( ".command2 .help" ).is_ok() ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
+    a_id!( Ok( () ), ca.perform( ".command2 .help" ) ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
+
+    a_id!( Ok( () ), ca.perform( ".help command" ) );
+    a_id!( Ok( () ), ca.perform( ".help command2" ) );
+    a_id!( Ok( () ), ca.perform( ".help help" ) );
+
+    a_id!( Ok( () ), ca.perform( ".help.command" ) );
+    a_id!( Ok( () ), ca.perform( ".help.command2" ) );
+    a_id!( Ok( () ), ca.perform( ".help.help" ) );
+
+    a_true!( ca.perform( ".help.help.help" ).is_err() );
+  }
+
+  fn with_only_general_help()
+  {
+    let ca = CommandsAggregator::former()
+    .grammar( // list of commands -> Collect all to GrammarConverter 
+    [
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .form(),
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command2" )
+      .form(),
+    ])
+    .executor( // hashmap of routines -> ExecutorConverter
+    [
+      ( "command".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
+      ( "command2".to_owned(), Routine::new( | _ | { println!( "Command2" ); Ok( () ) } ) ),
+    ])
+    .help_variants([ HelpVariants::General ])
+    .build();
+
+    a_id!( Ok( () ), ca.perform( ".help" ) ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
+
+    a_true!( ca.perform( ".help command" ).is_err() );
+
+    a_true!( ca.perform( ".help.command" ).is_err() );
   }
 
   fn custom_converters()
@@ -59,9 +99,9 @@ tests_impls!
     let ca = CommandsAggregator::former()
     .grammar_converter( grammar )
     .executor_converter( executor )
-    .form();
+    .build();
 
-    a_true!( ca.perform( ".command" ).is_ok() );
+    a_id!( Ok( () ), ca.perform( ".command" ) );
   }
 
   fn custom_parser()
@@ -84,9 +124,9 @@ tests_impls!
     [
       ( "command".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
     ])
-    .form();
+    .build();
 
-    a_true!( ca.perform( "-command" ).is_ok() );
+    a_id!( Ok( () ), ca.perform( "-command" ) );
   }
 }
 
@@ -95,6 +135,7 @@ tests_impls!
 tests_index!
 {
   simple,
+  with_only_general_help,
   custom_converters,
   custom_parser,
 }

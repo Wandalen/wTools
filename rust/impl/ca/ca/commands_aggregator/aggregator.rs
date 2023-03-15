@@ -9,9 +9,10 @@ pub( crate ) mod private
 
     Command,
     Routine,
+    commands_aggregator::help::{ HelpGeneratorFn, HelpVariants },
   };
 
-  use wtools::{ HashMap, Result };
+  use wtools::{ HashMap, Result, HashSet };
 
   /// CommandsAggragator
   #[ derive( Debug ) ] 
@@ -23,6 +24,9 @@ pub( crate ) mod private
     #[ setter( false ) ]
     #[ default( Executor::former().form() ) ]
     executor : Executor,
+    help_generator : HelpGeneratorFn,
+    #[ default( HashSet::from([ HelpVariants::All ]) ) ]
+    help_variants : HashSet< HelpVariants >,
     grammar_converter : GrammarConverter,
     executor_converter : ExecutorConverter,
   }
@@ -53,53 +57,31 @@ pub( crate ) mod private
       self
     }
 
-    fn generate_help_routine( &self ) -> Routine
+    pub fn help< HelpFunction >( mut self, func : HelpFunction ) -> Self
+    where
+      HelpFunction : Fn( &GrammarConverter, Option< &Command > ) -> String + 'static
     {
-      let text = format!( "{:#?}", self.grammar_converter );
-      Routine::new( move | _ | { println!( "Help command\n{text}" ); Ok( () ) } )
+      self.help_generator = Some( HelpGeneratorFn::new( func ) );
+      self
     }
 
-    /// help for whole program
-    // it must be a flag that would generate a command on `form`
-    pub fn with_help_command( mut self ) -> Self
+    pub fn build( self ) -> CommandsAggregator
     {
-      let help = Command::former()
-      .hint( "hint" )
-      .long_hint( "long_hint" )
-      .phrase( "help" )
-      .form();
+      let mut ca = self.form();
 
-      let grammar_help = help.clone();
-      let grammar = if let Some( mut grammar ) = self.grammar_converter
+      if ca.help_variants.contains( &HelpVariants::All )
       {
-        let command_variants = grammar.commands.entry( grammar_help.phrase.to_owned() ).or_insert_with( Vec::new );
-        command_variants.push( grammar_help );
-        grammar
+        HelpVariants::All.generate( &ca.help_generator, &mut ca.grammar_converter, &mut ca.executor_converter );
       }
       else
       {
-        GrammarConverter::former()
-        .command( grammar_help )
-        .form()
-      };
-      self.grammar_converter = Some( grammar );
-
-      let phrase = help.phrase;
-      let routine = self.generate_help_routine();
-      let executor = if let Some( mut executor ) = self.executor_converter
-      {
-        executor.routines.insert( phrase, routine );
-        executor
+        for help in &ca.help_variants
+        {
+          help.generate( &ca.help_generator, &mut ca.grammar_converter, &mut ca.executor_converter );
+        }
       }
-      else
-      {
-        ExecutorConverter::former()
-        .routine( phrase, routine )
-        .form()
-      };
-      self.executor_converter = Some( executor );
 
-      self
+      ca
     }
   }
 

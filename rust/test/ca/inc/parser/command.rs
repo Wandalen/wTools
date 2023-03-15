@@ -298,6 +298,46 @@ tests_impls!
       parser.command( ".command list:[1,2,3]" )
     );
   }
+
+  fn string_value()
+  {
+    let parser = Parser::former().form();
+
+    a_id!
+    (
+      Ok( RawCommand
+      {
+        name : "command".into(),
+        subjects : vec![ "subject with spaces".into() ],
+        properties : HashMap::from_iter([ ( "prop".into(), "property with spaces".into() ) ]),
+      }),
+      parser.command( r#".command "subject with spaces" prop:"property with spaces""# )
+    );
+
+    // command in subject and property
+    a_id!
+    (
+      Ok( RawCommand
+      {
+        name : "command".into(),
+        subjects : vec![ ".command".into() ],
+        properties : HashMap::from_iter([ ( "prop".into(), ".command".into() ) ]),
+      }),
+      parser.command( r#".command ".command" prop:".command""# )
+    );
+
+    // with escaped quetes
+    a_id!
+    (
+      Ok( RawCommand
+      {
+        name : "command".into(),
+        subjects : vec![ "' queted ' \\ value".into() ],
+        properties : HashMap::from_iter([ ( "prop".into(), "some \"quetes\" ' \\ in string".into() ) ]),
+      }),
+      parser.command( r#".command '\' queted \' \\ value' prop:"some \"quetes\" ' \\ in string""# )
+    );
+  }
 }
 
 //
@@ -311,4 +351,5 @@ tests_index!
   path_in_subject,
   path_in_property,
   list_in_property,
+  string_value,
 }
