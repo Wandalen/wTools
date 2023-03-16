@@ -3,19 +3,28 @@ pub( crate ) mod private
 {
   use crate::protected::*;
   use std::env;
-  use wtools::{ error::BasicError, err };
   use wca::
   {
-    Args,
-    NoSubject, NoProperties,
+    Args, Props,
     Context,
+    Result, err,
   };
+
+  /// Publish command declaration
+  pub fn publish_command() -> wca::Command
+  {
+    wca::Command::former()
+    .hint( "Publish a package" )
+    .long_hint( "Validate, runs tests and publish a package" )
+    .phrase( "crate.publish" )
+    .form()
+  }
 
   ///
   /// Verify and publish a package
   ///
 
-  pub fn publish( _ : Args< NoSubject, NoProperties >, ctx : Context ) -> Result< (), BasicError >
+  pub fn publish( _ : ( Args, Props ), ctx : Context ) -> Result< () >
   {
     println!( "[LOG] Called publish command" );
 
@@ -52,5 +61,6 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
+  prelude use publish_command;
   prelude use publish;
 }

@@ -1,13 +1,10 @@
-wtools::mod_interface!
+crate::mod_interface!
 {
   /// Init aggregator commands.
   prelude mod init;
 
-  /// Information about package
-  prelude mod info;
-
-  /// Publish package
-  prelude mod publish;
+  /// Works with crates
+  prelude mod package;
 
   /// Iterate over subject
   prelude mod each;
@@ -24,7 +21,7 @@ wtools::mod_interface!
 mod private
 {
   /// Allow to go back to the iterator
-  #[ derive( Debug, Default ) ]
+  #[ derive( Debug, Default, Clone ) ]
   pub struct StartPointStack( Vec< usize > );
 
   impl std::ops::Deref for StartPointStack
@@ -46,7 +43,7 @@ mod private
   }
 
   /// Allow to go back to the end
-  #[ derive( Debug, Default ) ]
+  #[ derive( Debug, Default, Clone ) ]
   pub struct EndPointStack( Vec< usize > );
 
   impl std::ops::Deref for EndPointStack

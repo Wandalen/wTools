@@ -3,20 +3,28 @@ pub( crate ) mod private
 {
   use crate::protected::*;
   use std::env;
-  use wtools::{ error::BasicError, err };
   use wca::
   {
-    Args,
-    NoSubject,
-    NoProperties,
+    Args, Props,
     Context,
+    Result, err,
   };
+
+  /// Info command declaration
+  pub fn info_command() -> wca::Command
+  {
+    wca::Command::former()
+    .hint( "Prints information about package" )
+    .long_hint( "Prints information about package at current directory" )
+    .phrase( "crate.info" )
+    .form()
+  }
 
   ///
   /// Prints information about package
   ///
 
-  pub fn info( _ : Args< NoSubject, NoProperties >, ctx : Context ) -> Result< (), BasicError >
+  pub fn info( _ : ( Args, Props ), ctx : Context ) -> Result< () >
   {
     println!( "[LOG] Called info command" );
 
@@ -67,5 +75,6 @@ Location: "{}"
 
 crate::mod_interface!
 {
+  prelude use info_command;
   prelude use info;
 }

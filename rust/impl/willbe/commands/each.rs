@@ -1,46 +1,56 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use std::env;
-  use wtools::error::BasicError;
+  use std::{ env, rc::Rc, cell::RefCell, };
   use wca::
   {
-    Args,
-    NoSubject, NoProperties,
+    Args, Props,
     Context,
+    Result, BasicError
   };
 
   use crate::protected::*;
   use crate::commands::{ StartPointStack, EndPointStack };
 
+  #[ derive( Clone ) ]
   struct PackagesIterator
   (
-    Box< dyn Iterator< Item = Package > >
+    Rc< RefCell< dyn Iterator< Item = Package > > >
   );
 
-  impl std::ops::Deref for PackagesIterator
+  impl< I > From< I > for PackagesIterator
+  where
+    I : Iterator< Item = Package > + 'static
   {
-    type Target = Box< dyn Iterator< Item = Package > >;
-
-    fn deref( &self ) -> &Self::Target
+    fn from( iter : I ) -> Self
     {
-      &self.0
+      Self( Rc::new( RefCell::new( iter ) ) )
     }
   }
 
-  impl std::ops::DerefMut for PackagesIterator
+  impl PackagesIterator
   {
-    fn deref_mut( &mut self ) -> &mut Self::Target
+    fn next( &self ) -> Option< Package >
     {
-      &mut self.0
+      self.0.borrow_mut().next()
     }
+  }
+
+  /// Each command declaration
+  pub fn each_command() -> wca::Command
+  {
+    wca::Command::former()
+    .hint( "Iterate over packages" )
+    .long_hint( "Iterates over all packages from current directory" )
+    .phrase( "each" )
+    .form()
   }
 
   ///
   /// Iterate over packages
   ///
 
-  pub fn each( _ : Args< NoSubject, NoProperties >, mut ctx : Context ) -> Result< (), BasicError >
+  pub fn each( _ : ( Args, Props ), mut ctx : Context ) -> Result< () >
   {
     println!( "[LOG] Called each command" );
 
@@ -62,14 +72,14 @@ pub( crate ) mod private
         // remove self from startpoints
         ctx.get_mut::< StartPointStack >().and_then( | sp | sp.pop() );
         // go to endpoint
-        let prog_state = ctx.get_mut::< wca::ProgramState >()
+        let prog_state = ctx.get_mut::< wca::RuntimeState >()
         .ok_or_else( || BasicError::new( "Have no Program State" ) )?;
 
         ctx.get_mut::< EndPointStack >()
         .and_then( | ep | ep.pop() )
-        .map( | point | prog_state.set_pos( point ) )
+        .map( | point | prog_state.pos = point )
         //? What is better - panic or go to the end of the program when endpoints doesn't exists for any reason
-        .unwrap_or_else( || prog_state.finish() );
+        .unwrap_or_else( || prog_state.pos = usize::MAX );
       }
     }
     else
@@ -88,12 +98,12 @@ pub( crate ) mod private
 
       // Add current package and the iterator to context
       ctx.insert( package );
-      ctx.insert( PackagesIterator( packages_iter ) );
+      ctx.insert::< PackagesIterator >( packages_iter.into() );
 
       // Start point to previous instruction( back to current )
-      let prog_state = ctx.get_ref::< wca::ProgramState >()
+      let prog_state = ctx.get_ref::< wca::RuntimeState >()
       .ok_or_else( || BasicError::new( "Have no Program State" ) )?;
-      ctx.get_or_default::< StartPointStack >().push( prog_state.get_pos() - 1 );
+      ctx.get_or_default::< StartPointStack >().push( prog_state.pos - 1 );
     }
 
     Ok( () )
@@ -104,5 +114,6 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
+  prelude use each_command;
   prelude use each;
 }
