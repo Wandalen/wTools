@@ -16,7 +16,7 @@ tests_impls!
     let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
     assert!( stderr.contains( "Illformed command \"\"\n" ) );
     let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
-    assert!( stdout.contains( ".smoke - Perform smoke testing on module." ) );
+    assert!( stdout.contains( "smoke <properties> - Perform smoke testing on module." ) );
   }
 
   //
