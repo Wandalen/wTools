@@ -1,34 +1,48 @@
-use std::collections::HashMap;
 use std::env::current_dir;
 use std::path::PathBuf;
 use wtools::error::BasicError;
 use ::wpublisher::manifest::Manifest;
-use wca::{Args, Properties};
-use wca::string::parse_request::OpType;
+use wca::{ Args, Props, Type };
 use wtools::error::Result;
 
-/// Properties for the smoke function
-
-#[ derive( Debug ) ]
-pub struct SmokeProperties
+pub( crate ) fn smoke_command() -> wca::Command
 {
-  code_path : Option< PathBuf >,
-  version: Option< String >,
-  smoke: Option< String >,
+  wca::Command::former()
+  .hint( "Perform smoke testing on module." )
+  .long_hint( "Perform smoke testing on module." )
+  .phrase( "smoke" )
+  .property( "smoke", "A variant of smoke testing of module. It can be:\n  local - local module in directory.\n  published - module published on `crates.io`. true - local and published version.\n  Default is \"local\"", Type::String )
+  .property( "code_path", "A path to code snippet to test. By default utility imports module into binary.", Type::Path )
+  .property( "version", "A string version of module. By default \"*\"", Type::String )
+  .form()
+}
+
+pub( crate ) fn smoke_with_subject_command() -> wca::Command
+{
+  wca::Command::former()
+  .hint( "Perform smoke testing on module by path." )
+  .long_hint( "Perform smoke testing on module by path." )
+  .phrase( "smoke" )
+  .subject( "A path to module. Should be a directory with file `Cargo.toml`. Default is current directory.", Type::Path )
+  .property( "smoke", "A variant of smoke testing of module. It can be:\n  local - local module in directory.\n  published - module published on `crates.io`. true - local and published version.\n  Default is \"local\"", Type::String )
+  .property( "code_path", "A path to code snippet to test. By default utility imports module into binary.", Type::Path )
+  .property( "version", "A string version of module. By default \"*\"", Type::String )
+  .form()
 }
 
 ///
 /// Perform smoke testing.
 ///
 
-pub fn smoke( args : Args< String, SmokeProperties > ) -> Result< (), BasicError >
+pub fn smoke( ( args, props ) : ( Args, Props ) ) -> Result< () >
 {
+  println!( "Command \".smoke\"" );
   let mut current_path = current_dir().unwrap();
 
-  let subject_path = PathBuf::from( &args.subject );
+  let subject_path = args.get_owned::< PathBuf >( 0 ).unwrap_or_default();
   let module_path = if subject_path.is_relative()
   {
-    current_path.push( &args.subject );
+    current_path.push( args.get_owned::< PathBuf >( 0 ).unwrap_or_default() );
     current_path
   }
   else
@@ -55,7 +69,7 @@ pub fn smoke( args : Args< String, SmokeProperties > ) -> Result< (), BasicError
   let module_name = &data[ "package" ][ "name" ].clone();
   let module_name = module_name.as_str().unwrap();
 
-  let code_path = match args.properties.code_path
+  let code_path = match props.get_owned( "code_path" )
   {
     Some( path ) => path,
     None => PathBuf::default(),
@@ -67,13 +81,13 @@ pub fn smoke( args : Args< String, SmokeProperties > ) -> Result< (), BasicError
     data = Some( std::fs::read_to_string( code_path ).unwrap() );
   }
 
-  let version = match args.properties.version
+  let version = match props.get_owned( "version" )
   {
     Some( x ) => x,
     None => "*".to_string(),
   };
 
-  let smoke = match args.properties.smoke
+  let smoke = match props.get_owned( "smoke" )
   {
     Some( x ) => x,
     None =>
@@ -148,23 +162,6 @@ pub fn smoke( args : Args< String, SmokeProperties > ) -> Result< (), BasicError
   }
 
   Ok( () )
-}
-
-impl Properties for SmokeProperties
-{
-  fn parse( properties : &HashMap< String, OpType< String > > ) -> Result< Self >
-  {
-    let code_path = properties.get( "code_path" )
-      .map( | path | PathBuf::from( path.clone().primitive().unwrap() ) );
-
-    let version = properties.get( "version" )
-      .map( | version | version.clone().primitive().unwrap() );
-
-    let smoke = properties.get( "smoke" )
-      .map( | smoke | smoke.clone().primitive().unwrap() );
-
-    Ok ( SmokeProperties { code_path, version, smoke } )
-  }
 }
 
 //
@@ -328,5 +325,3 @@ impl< 'a > SmokeModuleTest< 'a >
     Ok( () )
   }
 }
-
-
