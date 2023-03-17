@@ -18,19 +18,16 @@ use ::willbe::*;
 //
 
 #[ cfg( feature = "use_std" ) ]
-fn main() -> Result< (), wtools::error::BasicError >
+fn main() -> wca::Result< () >
 {
-  let args = env::args().skip( 1 ).collect::< Vec< String > >();
+  let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
 
-  let commands = commands::commands_form();
+  let ca = wca::CommandsAggregator::former()
+  .grammar( commands::grammar_form() )
+  .executor( commands::executor_form() )
+  .build();
 
-  let ca = wca::commands_aggregator()
-  .exit_code_on_error( 1 )
-  .commands( commands.to_owned() )
-  .context( State::new( commands ) )
-  .form();
-
-  ca.instruction_perform( args.join( " " ).as_str() )
+  ca.perform( if args.is_empty() { "".to_owned() } else { args.join( " " ) + " .end" } )
 }
 
 #[ cfg( not( feature = "use_std" ) ) ]
