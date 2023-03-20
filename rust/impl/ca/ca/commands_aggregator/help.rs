@@ -17,7 +17,7 @@ pub( crate ) mod private
     if let Some( command ) = command
     {
       let name = &command.phrase;
-      let hint = &command.long_hint;
+      let hint = if command.long_hint.is_empty() { &command.hint } else { &command.long_hint };
       let subjects = command.subjects.iter().enumerate().fold( String::new(), | acc, ( number, subj ) | format!( "{acc} <subject_{number}:{:?}>", subj.kind ) );
       let full_subjects = command.subjects.iter().enumerate().map( |( number, subj )| format!( "subject_{number} - {} [{:?}]", subj.hint, subj.kind ) ).join( "\n\t\t" );
       let properties = if command.properties.is_empty() { " " } else { " <properties> " };
@@ -36,7 +36,9 @@ pub( crate ) mod private
         {
           let subjects = cmd.subjects.iter().fold( String::new(), | acc, subj | format!( "{acc} <{:?}>", subj.kind ) );
           let properties = if cmd.properties.is_empty() { " " } else { " <properties> " };
-          format!( "{acc}\n{name}{subjects}{properties}- {}", cmd.hint )
+          let hint = if cmd.hint.is_empty() { &cmd.long_hint } else { &cmd.hint };
+
+          format!( "{acc}\n{name}{subjects}{properties}- {hint}" )
         })
       })
       .fold( String::new(), | acc, cmd |
@@ -85,8 +87,7 @@ pub( crate ) mod private
       let phrase = "help".to_string();
 
       let help = Command::former()
-      .hint( "hint" )
-      .long_hint( "long_hint" )
+      .hint( "prints information about existing commands" )
       .phrase( &phrase )
       .form();
 
@@ -121,8 +122,7 @@ pub( crate ) mod private
 
       // generate and add grammar of help command
       let help = Command::former()
-      .hint( "help" )
-      .long_hint( "" )
+      .hint( "prints full information about a specified command" )
       .phrase( &phrase )
       .subject( "command name", Type::String )
       .form();
@@ -175,7 +175,7 @@ pub( crate ) mod private
       // generate Commands grammar
       let grammar_helps = commands
       .iter()
-      .map( |( help_name, _ )| Command::former().hint( "help" ).long_hint( "" ).phrase( help_name ).form() )
+      .map( |( help_name, _ )| Command::former().hint( "prints full information about a specified command" ).phrase( help_name ).form() )
       .collect::< Vec< _ > >();
 
       // add commands to GrammarConverter
