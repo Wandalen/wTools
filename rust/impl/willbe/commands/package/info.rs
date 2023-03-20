@@ -3,33 +3,43 @@ pub( crate ) mod private
 {
   use crate::protected::*;
   use std::env;
-  use wtools::{ error::BasicError, err };
   use wca::
   {
-    Args,
-    NoSubject,
-    NoProperties,
+    Args, Props,
+    Context,
+    Result, err,
   };
+
+  /// Info command declaration
+  pub fn info_command() -> wca::Command
+  {
+    wca::Command::former()
+    .hint( "Prints information about package" )
+    .long_hint( "Prints information about package at current directory" )
+    .phrase( "crate.info" )
+    .form()
+  }
 
   ///
   /// Prints information about package
   ///
 
-  pub fn info( _ : Args< NoSubject, NoProperties >, ctx : wca::Context ) -> Result< (), BasicError >
+  pub fn info( _ : ( Args, Props ), ctx : Context ) -> Result< () >
   {
-    let current_path = if let Some( path ) = ctx.get_ref::< std::path::PathBuf >()
-    {
-      path.to_owned()
-    }
-    else
-    {
-      env::current_dir().unwrap().to_owned()
-    };
-
     println!( "[LOG] Called info command" );
 
-    let package = Package::try_from( current_path )
-    .map_err( | _ | err!( "Package not found at current directory" ) )?;
+    // Get package from context or try to read package at current directory
+    let package = match ctx.get_ref::< Option< Package > >()
+    {
+      Some( Some( package ) ) => package.to_owned(),
+      None =>
+      {
+        let path = env::current_dir().unwrap().to_owned();
+        Package::try_from( path )
+        .map_err( | _ | err!( "Package not found at current directory" ) )?
+      }
+      _ => return Ok( () )
+    };
 
     let info = PackageMetadata::try_from( package )
     .map_err( | _ | err!( "Can not parse package metadata" ) )?;
@@ -65,5 +75,6 @@ Location: "{}"
 
 crate::mod_interface!
 {
+  prelude use info_command;
   prelude use info;
 }
