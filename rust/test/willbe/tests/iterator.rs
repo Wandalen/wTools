@@ -11,7 +11,7 @@ fn over_workspace()
   // `workspace.packages()` and `workspace.packages_iterate().collect::< Vec< _ > >()` is the same
   let packages = workspace.packages();
 
-  let expected = HashSet::from([ "module1".to_owned(), "module2".to_owned() ]);
+  let expected = HashSet::from([ "willbe_workspace1_module1".to_owned(), "willbe_workspace1_module2".to_owned() ]);
 
   assert_eq!( expected.len(), packages.len() );
   assert_eq!
@@ -45,7 +45,15 @@ fn over_workspaces_iterator()
   let packages = workspaces_packages_iterate( workspaces.into_iter() )
   .collect::< Vec< _ > >();
 
-  let expected = HashSet::from([ "module1".to_owned(), "module2".to_owned(), "module3".to_owned(), "module4".to_owned(), "module5".to_owned() ]);
+  let expected = HashSet::from(
+  [
+    "willbe_workspace1_module1".to_owned(),
+    "willbe_workspace1_module2".to_owned(),
+
+    "willbe_workspace2_module3".to_owned(),
+    "willbe_workspace2_module4".to_owned(),
+    "willbe_workspace2_module5".to_owned(),
+  ]);
 
   assert_eq!( expected.len(), packages.len() );
   assert_eq!
@@ -79,7 +87,7 @@ fn over_single_package_path()
   let package = packages_iterate( package_path.to_owned() ).collect::< Vec< _ > >();
 
   assert_eq!( 1, package.len() );
-  assert_eq!( "package", PackageMetadata::try_from( package[ 0 ].clone() ).unwrap().all().name.as_str() );
+  assert_eq!( "willbe_verified_package", PackageMetadata::try_from( package[ 0 ].clone() ).unwrap().all().name.as_str() );
 }
 
 #[ test ]
@@ -91,7 +99,7 @@ fn over_single_workspace_path()
   let workspace_path = workspace_asset.path_buf();
   let packages = packages_iterate( workspace_path.to_owned() ).collect::< Vec< _ > >();
 
-  let expected = HashSet::from([ "module1".to_owned(), "module2".to_owned() ]);
+  let expected = HashSet::from([ "willbe_workspace1_module1".to_owned(), "willbe_workspace1_module2".to_owned() ]);
 
   assert_eq!( expected.len(), packages.len() );
   assert_eq!
@@ -116,7 +124,15 @@ fn over_workspaces_root_path()
   let many_workspaces_path = many_workspaces_asset.path_buf();
   let packages = packages_iterate( many_workspaces_path.to_owned() ).collect::< Vec< _ > >();
 
-  let expected = HashSet::from([ "module1".to_owned(), "module2".to_owned(), "module3".to_owned(), "module4".to_owned(), "module5".to_owned() ]);
+  let expected = HashSet::from(
+  [
+    "willbe_workspace1_module1".to_owned(),
+    "willbe_workspace1_module2".to_owned(),
+
+    "willbe_workspace2_module3".to_owned(),
+    "willbe_workspace2_module4".to_owned(),
+    "willbe_workspace2_module5".to_owned(),
+  ]);
 
   assert_eq!( expected.len(), packages.len() );
   assert_eq!
