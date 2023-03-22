@@ -13,5 +13,5 @@ note: required for `Bad<_>` to implement `From<({integer}, {integer})>`
  --> ../../../rust/test/dt/type_constructor/many/many_from_tuple_test.rs:5:3
   |
 5 |   types!( many Bad : < T > );
-  |   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   ^^^^^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound introduced here
   = note: this error originates in the macro `$crate::_many` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
