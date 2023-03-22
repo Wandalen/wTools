@@ -11,3 +11,5 @@ mod commands_aggregator_test;
 mod command_test;
 #[ cfg( feature = "use_std" ) ]
 mod instruction_test;
+#[ cfg( feature = "use_std" ) ]
+mod programstate_test;
