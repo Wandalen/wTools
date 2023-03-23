@@ -1,4 +1,3 @@
-
 use super::*;
 use wca::string::parse_request::OpType::{ Primitive, Vector };
 use wtools::error::BasicError;

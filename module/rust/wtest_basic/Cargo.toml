@@ -65,3 +65,4 @@ data_type = { version = "~0.1", path = "../../rust/data_type" }
 diagnostics_tools = { version = "~0.1", path = "../../rust/diagnostics_tools" }
 
 [dev-dependencies]
+test_tools = { version = "~0.1", path = "../../rust/test_tools" }

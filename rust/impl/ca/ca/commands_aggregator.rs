@@ -3,11 +3,9 @@ pub( crate ) mod private
 {
   use crate::command::*;
   use crate::instruction::*;
+  use crate::context::*;
   use wtools::error::{ Result, BasicError };
   use wtools::former::Former;
-
-  use std::rc::Rc;
-  use core::cell::RefCell;
 
   ///
   /// Commands aggregator.
@@ -37,44 +35,6 @@ pub( crate ) mod private
     pub context : Option< Context >,
   }
 
-  #[ derive( Debug, Clone ) ]
-  /// Basic context which contains commands hashmap
-  pub struct Context
-  {
-    inner : Rc< RefCell< dyn std::any::Any > >
-  }
-
-  impl Context
-  {
-    /// Create context
-    pub fn new( data : impl std::any::Any ) -> Self
-    {
-      Self { inner : Rc::new( RefCell::new( data ) ) }
-    }
-
-    /// Return immutable reference on interior object. ! Unsafe !
-    pub fn get_ref< T : 'static >( &self ) -> Option< &T >
-    {
-      // ! how do it better?
-      unsafe { self.inner.as_ptr().as_ref().and_then( | c | c.downcast_ref() ) }
-    }
-
-    /// Return mutable reference on interior object. ! Unsafe !
-    pub fn get_mut< T : 'static >( &self ) -> Option< &mut T >
-    {
-      // ! how do it better?
-      unsafe { self.inner.as_ptr().as_mut().and_then( | c | c.downcast_mut() ) }
-    }
-  }
-
-  impl PartialEq for Context
-  {
-    fn eq( &self, _other : &Self ) -> bool
-    {
-      false
-    }
-  }
-
   impl CommandsAggregator
   {
     /// Perform instructions queue as single program.
@@ -100,10 +60,32 @@ pub( crate ) mod private
         return self.on_syntax_error( program );
       };
 
-      for instruction in &instructions
+      // if program has context - it can use `ProgramState` => we need work with it
+      if let Some( state ) = self
+      .context
+      .as_ref()
+      .and_then( | ctx | ctx.get_mut::< ProgramState >() )
       {
-        self._instruction_perform( instruction )?;
+        // because program, sometimes, uses with context alredy used
+        state.start();
+
+        while let Some( instruction ) = instructions.get( state.get_pos() )
+        {
+          if state.next().is_none()
+          {
+            break;
+          }
+          self._instruction_perform( instruction )?;
+        }
       }
+      else
+      {
+        for instruction in &instructions
+        {
+          self._instruction_perform( instruction )?;
+        }
+      }
+
 
       Ok( () )
     }
@@ -153,7 +135,7 @@ pub( crate ) mod private
     {
       match self.command_resolve( instruction )
       {
-        Some( command ) => command.perform( instruction, self.context.clone() ),  // ! changed
+        Some( command ) => command.perform( instruction, self.context.clone() ),
         None =>
         {
           let _ = self.on_ambiguity( &instruction.command_name );
@@ -242,6 +224,18 @@ pub( crate ) mod private
       }
 
       false
+    }
+  }
+
+  impl CommandsAggregatorFormer
+  {
+    pub fn default_context( self ) -> Self
+    {
+      Self
+      {
+        context : Some( Context::default() ),
+        ..self
+      }
     }
   }
 
@@ -391,7 +385,7 @@ pub( crate ) mod private
       return if let Some( command ) = self.command_resolve( &instruction )
       {
         let instruction = DefaultInstructionParser::former().form().parse( "" )?;
-        command.perform( &instruction, self.context.clone() )     // ! changed
+        command.perform( &instruction, self.context.clone() )
       }
       else
       {
@@ -437,6 +431,4 @@ crate::mod_interface!
   prelude use OnGetHelp;
   prelude use OnPrintCommands;
   prelude use commands_aggregator;
-
-  prelude use Context; // ! REMOVE THIS
 }
