@@ -12,6 +12,56 @@ pub( crate ) mod private
 
   use std::rc::Rc;
 
+  /// Generate `dot` command
+  pub fn dot_command( grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
+  {
+      let empty = Command::former()
+      .hint( "prints all available commands" )
+      .phrase( "" )
+      .form();
+
+      let to_command = Command::former()
+      .hint( "prints all available commands that starts with" )
+      .phrase( "" )
+      .subject( "command name", Type::String )
+      .form();
+
+      let command_variants = grammar.commands.entry( "".to_string() ).or_insert_with( Vec::new );
+      *command_variants = vec![ empty, to_command ];
+
+      let mut available_commands = grammar.commands.keys().cloned().collect::< Vec< _ > >();
+      available_commands.sort();
+
+      let routine = Routine::new
+      (
+        move |( args, _ )|
+        {
+          let output = if let Some( command ) = args.get_owned::< String >( 0 )
+          {
+            let ac = available_commands.iter().filter( | cmd | cmd.starts_with( &command ) ).map( String::from ).collect::< Vec< _ > >();
+            if ac.is_empty()
+            {
+              format!( "Have no commands that starts with `{command}`" )
+            }
+            else
+            {
+              ac.join( "\n" )
+            }
+          }
+          else
+          {
+            available_commands.join( "\n" )
+          };
+
+          println!( "{output}" );
+
+          Ok( () )
+        }
+      );
+
+      executor.routines.insert( "".to_string(), routine );
+  }
+
   fn generate_help_content( grammar : &GrammarConverter, command : Option< &Command > ) -> String
   {
     if let Some( command ) = command
@@ -265,5 +315,6 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use HelpGeneratorFn;
+  protected use dot_command;
   prelude use HelpVariants;
 }

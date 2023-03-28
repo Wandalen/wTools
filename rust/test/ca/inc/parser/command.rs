@@ -338,6 +338,47 @@ tests_impls!
       parser.command( r#".command '\' queted \' \\ value' prop:"some \"quetes\" ' \\ in string""# )
     );
   }
+
+  fn dot_command()
+  {
+    let parser = Parser::former().form();
+
+    // single dot
+    a_id!
+    (
+      Ok( RawCommand
+      {
+        name : "".into(),
+        subjects : vec![],
+        properties : HashMap::new(),
+      }),
+      parser.command( "." )
+    );
+
+    // command .
+    a_id!
+    (
+      Ok( RawCommand
+      {
+        name : "".into(),
+        subjects : vec![ "command".into() ],
+        properties : HashMap::new(),
+      }),
+      parser.command( ".command." )
+    );
+
+    // command . with subjects
+    a_id!
+    (
+      Ok( RawCommand
+      {
+        name : "".into(),
+        subjects : vec![ "command".into() ],
+        properties : HashMap::new(),
+      }),
+      parser.command( ".command. <this will be ignored>" )
+    );
+  }
 }
 
 //
@@ -352,4 +393,5 @@ tests_index!
   path_in_property,
   list_in_property,
   string_value,
+  dot_command,
 }

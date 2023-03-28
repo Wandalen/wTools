@@ -12,7 +12,7 @@ pub( crate ) mod private
     branch::alt,
     bytes::complete::{ tag, take_while, escaped },
     character::complete::{ alpha1, multispace0, multispace1, none_of, one_of },
-    combinator::{ map, map_opt, recognize },
+    combinator::{ map, map_opt, recognize, eof },
     multi::many0,
     sequence::{ tuple, pair, delimited },
     IResult,
@@ -43,21 +43,61 @@ pub( crate ) mod private
         ((
           multispace0,
           tag( &*format!( "{command_prefix}" ) ),
-          Self::command_name_fn(),
-          many0( tuple(( multispace1, self.command_subject_fn() )) ),
-          //? why multispace0
-          many0( tuple(( multispace0, self.command_property_fn() )) )
+          alt
+          ((
+            // it is a command
+            map( tuple
+            ((
+              Self::command_name_fn(),
+              many0( tuple(( multispace1, self.command_subject_fn() )) ),
+              //? why multispace0
+              many0( tuple(( multispace0, self.command_property_fn() )) )
+            )), |( name, subjects, props )|
+            {
+              Command
+              {
+                name : name.to_owned(),
+                subjects : subjects.into_iter().filter_map( |( _, subject )| if subject.is_empty() { None } else { Some( subject ) } ).collect(),
+                properties : props.into_iter().map( |( _, prop )| prop ).collect()
+              }
+            }),
+            // it is the end
+            map( eof, | _ | Command::default() )
+          )),
         )),
-        |( _, _, name, subjects, props )|
+        |( _, _, command )|
         {
-          Command
+          if command.name.ends_with( command_prefix )
           {
-            name : name.to_owned(),
-            subjects : subjects.into_iter().filter_map( |( _, subject )| if subject.is_empty() { None } else { Some( subject ) } ).collect(),
-            properties : props.into_iter().map( |( _, prop )| prop ).collect()
+            doted_command( command )
+          }
+          else
+          {
+            command
           }
         }
       )( input ) )
+    }
+  }
+
+  fn doted_command( raw_command : Command ) -> Command
+  {
+    // Perhaps that would be a good idea:
+    // if !raw_command.subjects.is_empty() || !raw_command.properties.is_empty()
+    // {
+    //   return Err( err!( "`{}` can not take arguments.", raw_command.name ) )
+    // }
+    let command_phrase = {
+      let mut tmp = raw_command.name;
+      tmp.pop();
+
+      tmp
+    };
+
+    Command {
+      name : "".to_string(),
+      subjects : vec![ command_phrase ],
+      properties : Default::default(),
     }
   }
 
