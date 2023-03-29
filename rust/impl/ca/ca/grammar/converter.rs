@@ -32,8 +32,10 @@ pub( crate ) mod private
   #[ derive( Former ) ]
   pub struct GrammarConverter
   {
+    /// all available commands
+    // TODO: Make getters
     #[ setter( false ) ]
-    pub( crate ) commands : HashMap< String, Vec< Command > >,
+    pub commands : HashMap< String, Vec< Command > >,
   }
 
   impl GrammarConverterFormer
