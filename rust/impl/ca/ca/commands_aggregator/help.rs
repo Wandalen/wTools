@@ -18,12 +18,14 @@ pub( crate ) mod private
       let empty = Command::former()
       .hint( "prints all available commands" )
       .phrase( "" )
+      .property( "command_prefix", "", Type::String )
       .form();
 
       let to_command = Command::former()
       .hint( "prints all available commands that starts with" )
       .phrase( "" )
       .subject( "command name", Type::String )
+      .property( "command_prefix", "", Type::String )
       .form();
 
       let command_variants = grammar.commands.entry( "".to_string() ).or_insert_with( Vec::new );
@@ -34,26 +36,30 @@ pub( crate ) mod private
 
       let routine = Routine::new
       (
-        move |( args, _ )|
+        move |( args, props )|
         {
-          let output = if let Some( command ) = args.get_owned::< String >( 0 )
+          let prefix : String = props.get_owned( "command_prefix" ).unwrap();
+          if let Some( command ) = args.get_owned::< String >( 0 )
           {
-            let ac = available_commands.iter().filter( | cmd | cmd.starts_with( &command ) ).map( String::from ).collect::< Vec< _ > >();
+            let ac = available_commands
+            .iter()
+            .filter( | cmd | cmd.starts_with( &command ) )
+            .map( | cmd | format!( "{prefix}{cmd}" ) )
+            .collect::< Vec< _ > >();
+
             if ac.is_empty()
             {
-              format!( "Have no commands that starts with `{command}`" )
+              eprintln!( "Have no commands that starts with `{prefix}{command}`" );
             }
             else
             {
-              ac.join( "\n" )
+              println!( "{}", ac.join( "\n" ) );
             }
           }
           else
           {
-            available_commands.join( "\n" )
+            println!( "{}", available_commands.iter().map( | cmd | format!( "{prefix}{cmd}" ) ).join( "\n" ) );
           };
-
-          println!( "{output}" );
 
           Ok( () )
         }

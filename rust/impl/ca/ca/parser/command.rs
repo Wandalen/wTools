@@ -6,7 +6,7 @@ pub( crate ) mod private
     RawCommand as Command,
     parser::parser::any_word,
   };
-  use wtools::{ Result, err };
+use wtools::{ HashMap, Result, err };
   use nom::
   {
     branch::alt,
@@ -62,14 +62,26 @@ pub( crate ) mod private
               }
             }),
             // it is the end
-            map( eof, | _ | Command::default() )
+            map
+            (
+              eof,
+              | _ |
+              Command
+              {
+                properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() )]), ..Default::default()
+              }
+            )
           )),
         )),
         |( _, _, command )|
         {
           if command.name.ends_with( command_prefix )
           {
-            doted_command( command )
+            Command {
+              name : "".to_string(),
+              subjects : vec![ command.name ],
+              properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() )]),
+            }
           }
           else
           {
@@ -77,27 +89,6 @@ pub( crate ) mod private
           }
         }
       )( input ) )
-    }
-  }
-
-  fn doted_command( raw_command : Command ) -> Command
-  {
-    // Perhaps that would be a good idea:
-    // if !raw_command.subjects.is_empty() || !raw_command.properties.is_empty()
-    // {
-    //   return Err( err!( "`{}` can not take arguments.", raw_command.name ) )
-    // }
-    let command_phrase = {
-      let mut tmp = raw_command.name;
-      tmp.pop();
-
-      tmp
-    };
-
-    Command {
-      name : "".to_string(),
-      subjects : vec![ command_phrase ],
-      properties : Default::default(),
     }
   }
 
