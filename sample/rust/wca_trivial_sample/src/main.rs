@@ -9,6 +9,7 @@ fn main()
     [
       Command::former()
       .phrase( "echo" )
+      .hint( "prints all subjects and properties" )
       .subject( "Subject", Type::String )
       .property( "property", "simple property", Type::String )
       .form(),
@@ -21,8 +22,7 @@ fn main()
         Ok( () )
       })),
     ])
-    .with_help_command()
-    .form();
+    .build();
 
     let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
     ca.perform( args.join( " " ) ).unwrap();
