@@ -8,7 +8,7 @@ pub( crate ) mod private
     Routine, Type
   };
   
-  use wtools::Itertools;
+  use wtools::{ Itertools, err };
 
   use std::rc::Rc;
 
@@ -49,7 +49,7 @@ pub( crate ) mod private
 
             if ac.is_empty()
             {
-              eprintln!( "Have no commands that starts with `{prefix}{command}`" );
+              return Err( err!( "Have no commands that starts with `{prefix}{command}`" ) );
             }
             else
             {

@@ -155,7 +155,7 @@ tests_impls!
     a_id!( Ok( () ), ca.perform( "." ) );
     a_id!( Ok( () ), ca.perform( ".cmd." ) );
 
-    a_id!( Ok( () ), ca.perform( ".c." ) );
+    a_true!( ca.perform( ".c." ).is_err() );
   }
 }
 
