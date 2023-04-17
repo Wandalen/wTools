@@ -58,12 +58,12 @@ pub( crate ) mod private
         let heading = format!( "# .{name}{subjects}{properties}\n__{}__\n", hint );
 
         let hint = if cmd.long_hint.is_empty() { &cmd.hint } else { &cmd.long_hint };
-        let full_subjects = cmd.subjects.iter().enumerate().map( |( number, subj )| format!( "\n- subject_{number} - {} `[{:?}]`", subj.hint, subj.kind ) ).join( "\n" );
-        let full_properties = cmd.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "\n- {name} - {} `[{:?}]`", value.hint, value.kind ) ).join( "\n" );
+        let full_subjects = cmd.subjects.iter().enumerate().map( |( number, subj )| format!( "\n- {}subject_{number} - {} `[{:?}]`", if subj.optional { "optional" } else { "" }, subj.hint, subj.kind ) ).join( "\n" );
+        let full_properties = cmd.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "\n- {}{name} - {} `[{:?}]`", if value.optional { "optional" } else { "" }, value.hint, value.kind ) ).join( "\n" );
 
         format!
         ( 
-          "{heading}\n{hint}{}{}\nCommand output example:\n{}", 
+          "{heading}\n{hint}{}{}\n\nCommand output example:\n{}", 
           if cmd.subjects.is_empty() { "".to_string() } else { format!( "\n\nSubjects:{}", &full_subjects ) }, 
           if cmd.properties.is_empty() { "".to_string() } else { format!( "\n\nProperties:{}",&full_properties ) } ,
           cmd.example
@@ -160,7 +160,7 @@ pub( crate ) mod private
       let help = Command::former()
       .hint( "prints information about existing commands" )
       .phrase( &phrase )
-      .property( "format", "readme file generate format", Type::String )
+      .property( "format", "readme file generate format", Type::String, true )
       .form();
 
       let command_variants = grammar.commands.entry( phrase.to_owned() ).or_insert_with( Vec::new );
@@ -209,7 +209,7 @@ pub( crate ) mod private
       let help = Command::former()
       .hint( "prints full information about a specified command" )
       .phrase( &phrase )
-      .subject( "command name", Type::String )
+      .subject( "command name", Type::String, true )
       .form();
 
       let command_variants = grammar.commands.entry( phrase.to_owned() ).or_insert_with( Vec::new );

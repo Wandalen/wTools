@@ -14,9 +14,9 @@ pub( crate ) mod private
     .hint( "Publish package on `crates.io`." )
     .long_hint( "Publish package on `crates.io`." )
     .phrase( "publish" )
-    .subject( "A path to package. Should be a directory with file `Cargo.toml`.", Type::List( Type::String.into(), ',' ) )
-    .property( "dry", "Run command dry. Default is false.", Type::String )
-    .property( "verbosity", "Setup level of verbosity.", Type::String )
+    .subject( "A path to package. Should be a directory with file `Cargo.toml`.", Type::List( Type::String.into(), ',' ), false )
+    .property( "dry", "Run command dry. Default is false.", Type::String, true )
+    .property( "verbosity", "Setup level of verbosity.", Type::String, true )
     .property_alias( "verbosity", "v" )
     .form();
 
@@ -24,8 +24,8 @@ pub( crate ) mod private
     .hint( "Publish packages from workspace on `crates.io`." )
     .long_hint( "Publish packages from workspace on `crates.io`." )
     .phrase( "workspace.publish" )
-    .property( "dry", "Run command dry. Default is false.", Type::String )
-    .property( "verbosity", "Setup level of verbosity.", Type::String )
+    .property( "dry", "Run command dry. Default is false.", Type::String, true )
+    .property( "verbosity", "Setup level of verbosity.", Type::String, true )
     .property_alias( "verbosity", "v" )
     .form();
 
@@ -33,9 +33,9 @@ pub( crate ) mod private
     .hint( "Publish packages from workspace on `crates.io`." )
     .long_hint( "Publish packages from workspace on `crates.io`." )
     .phrase( "workspace.publish" )
-    .subject( "A path to manifest path with workspace. Should be a directory with file `Cargo.toml`.", Type::String )
-    .property( "dry", "Run command dry. Default is false.", Type::String )
-    .property( "verbosity", "Setup level of verbosity.", Type::String )
+    .subject( "A path to manifest path with workspace. Should be a directory with file `Cargo.toml`.", Type::String, false )
+    .property( "dry", "Run command dry. Default is false.", Type::String, true )
+    .property( "verbosity", "Setup level of verbosity.", Type::String, true )
     .property_alias( "verbosity", "v" )
     .form();
 
@@ -49,7 +49,7 @@ pub( crate ) mod private
     .hint( "List packages." )
     .long_hint( "List packages" )
     .phrase( "list" )
-    .subject( "A path to directory with packages. Should be a glob.", Type::List( Type::String.into(), ',' ) )
+    .subject( "A path to directory with packages. Should be a glob.", Type::List( Type::String.into(), ',' ), false )
     .form();
 
     vec!
