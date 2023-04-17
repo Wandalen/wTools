@@ -22,12 +22,23 @@ fn main() -> Result< (), wtools::error::BasicError >
 {
   let args = env::args().skip( 1 ).collect::< Vec< String > >();
 
-  let ca = wca::commands_aggregator()
-  .exit_code_on_error( 1 )
-  .commands( commands::commands_form() )
-  .form();
+  let ca = wca::CommandsAggregator::former()
+  // .exit_code_on_error( 1 )
+  .grammar( commands::grammar_form() )
+  .executor( commands::executor_form() )
+  .build();
 
-  ca.instruction_perform( args.join( " " ).as_str() )
+  let program = args.join( " " );
+  if program.is_empty()
+  {
+    eprintln!( "Ambiguity. Did you mean?" );
+    ca.perform( ".help" )?;
+    std::process::exit( 1 )
+  }
+  else
+  {
+    ca.perform( program.as_str() )
+  }
 }
 
 #[ cfg( not( feature = "use_std" ) ) ]

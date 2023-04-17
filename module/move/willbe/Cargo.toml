@@ -45,9 +45,9 @@ path = "rust/impl/willbe/willbe_entry.rs"
 name = "willbe_test"
 path = "rust/test/willbe/willbe_test.rs"
 
-# [[test]]
-# name = "willbe_smoke_test"
-# path = "rust/test/_integration_test/smoke_test.rs"
+[[test]]
+name = "willbe_smoke_test"
+path = "rust/test/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "willbe_trivial_sample"
@@ -66,3 +66,5 @@ rand = "0.8.4"
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
 tempfile = "3"
+assert_cmd = "2.0"
+predicates = "2.1"

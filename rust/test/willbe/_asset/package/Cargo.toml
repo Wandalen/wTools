@@ -2,7 +2,7 @@
 name = "package"
 version = "0.1.0"
 edition = "2021"
-documentation = ""
+documentation = "Documentation text"
 license = "MIT"
 readme = "Readme.md"
 

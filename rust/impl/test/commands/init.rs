@@ -1,23 +1,26 @@
+use super::*;
 
 ///
-/// Form CA commands.
+/// Form CA commands grammar.
 ///
 
-pub fn commands_form() -> std::collections::HashMap< String, wca::command::Command >
+pub fn grammar_form() -> Vec< wca::Command >
 {
-  let smoke_command = wca::Command::former()
-  .hint( "Perform smoke testing on module." )
-  .long_hint( "Perform smoke testing on module." )
-  .phrase( "smoke" )
-  .subject_hint( "A path to module. Should be a directory with file `Cargo.toml`. Default is current directory." )
-  .property_hint( "smoke", "A variant of smoke testing of module. It can be:\n  local - local module in directory.\n  published - module published on `crates.io`. true - local and published version.\n  Default is \"local\"" )
-  .property_hint( "code_path", "A path to code snippet to test. By default utility imports module into binary." )
-  .property_hint( "version", "A string version of module. By default \"*\"" )
-  .routine( &super::smoke::smoke )
-  .form();
+  vec!
+  [
+    smoke::smoke_command(),
+    smoke::smoke_with_subject_command(),
+  ]
+}
 
-  std::collections::HashMap::from
+///
+/// Form CA commands executor.
+///
+
+pub fn executor_form() -> std::collections::HashMap< String, wca::Routine >
+{
+  std::collections::HashMap::from_iter
   ([
-    ( ".smoke".to_string(), smoke_command ),
+    ( "smoke".to_string(), wca::Routine::new( smoke::smoke ) ),
   ])
 }
