@@ -79,7 +79,7 @@ pub( crate ) mod private
     });
 
     let skin = MadSkin::default();
-    println!("{}", skin.term_text( &format!( "{list_of_commands}\n{about_each_command}" ) ));
+    skin.print_text( &format!( "{list_of_commands}\n{about_each_command}" ) );
     
 
 
