@@ -4,22 +4,27 @@ fn main()
   {
     use wca::*;
 
-    let help_command : Command = wca::Command::former()
-    .hint( "Get help." )
-    .long_hint( "Get help for command [command]" )
-    .phrase( ".help" )
-    .routine( | _ : Args< NoSubject, NoProperties > | { println!( "this is help" ); Ok( () ) } )
-    .form();
+    let ca = CommandsAggregator::former()
+    .grammar(
+    [
+      Command::former()
+      .phrase( "echo" )
+      .hint( "prints all subjects and properties" )
+      .subject( "Subject", Type::String )
+      .property( "property", "simple property", Type::String )
+      .form(),
+    ])
+    .executor(
+    [
+      ( "echo".to_owned(), Routine::new( |( args, props )|
+      {
+        println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
+        Ok( () )
+      })),
+    ])
+    .build();
 
-    let commands = std::collections::HashMap::from([ ( ".help".to_string(), help_command ) ]);
-
-    /* */
-
-    let ca = wca::commands_aggregator()
-    .commands( commands )
-    .form();
-    let got = ca.instruction_perform( ".help" );
-    /* print : this is help */
-    assert_eq!( got, Ok( () ) );
+    let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
+    ca.perform( args.join( " " ) ).unwrap();
   }
 }

@@ -1,4 +1,3 @@
-
 pub( crate ) mod private
 {
   use std::io;
@@ -21,4 +20,3 @@ crate::mod_interface!
 {
   prelude use ask;
 }
-

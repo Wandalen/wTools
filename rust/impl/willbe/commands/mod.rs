@@ -1,43 +1,32 @@
-wtools::mod_interface!
+crate::mod_interface!
 {
   /// Init aggregator commands.
   prelude mod init;
 
-  /// Information about package
-  prelude mod info;
-
-  /// Publish package
-  prelude mod publish;
+  /// Works with crates
+  prelude mod package;
 
   /// Iterate over subject
   prelude mod each;
+
+  /// End of loop/program
+  prelude mod end;
   
   protected use super::init::protected::*;
 
-  prelude use State;
+  protected use super::private::StartPointStack;
+  protected use super::private::EndPointStack;
 }
 
 mod private
 {
-  use core::ops::{ Deref, DerefMut };
-  use std::collections::HashMap;
+  /// Allow to go back to the iterator
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct StartPointStack( Vec< usize > );
 
-  #[ derive( Debug ) ]
-  /// Commands context
-  pub struct State( HashMap< String, wca::Command > );
-
-  impl State
+  impl std::ops::Deref for StartPointStack
   {
-    /// Construct state object
-    pub fn new( val : HashMap< String, wca::Command > ) -> Self
-    {
-      Self( val )
-    }
-  }
-
-  impl Deref for State
-  {
-    type Target = HashMap< String, wca::Command >;
+    type Target = Vec< usize >;
 
     fn deref( &self ) -> &Self::Target
     {
@@ -45,7 +34,7 @@ mod private
     }
   }
 
-  impl DerefMut for State
+  impl std::ops::DerefMut for StartPointStack
   {
     fn deref_mut( &mut self ) -> &mut Self::Target
     {
@@ -53,11 +42,25 @@ mod private
     }
   }
 
-  impl From< State > for wca::Context
+  /// Allow to go back to the end
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct EndPointStack( Vec< usize > );
+
+  impl std::ops::Deref for EndPointStack
   {
-    fn from( value : State ) -> Self
+    type Target = Vec< usize >;
+
+    fn deref( &self ) -> &Self::Target
     {
-      Self::new( value )
+      &self.0
+    }
+  }
+
+  impl std::ops::DerefMut for EndPointStack
+  {
+    fn deref_mut( &mut self ) -> &mut Self::Target
+    {
+      &mut self.0
     }
   }
 }

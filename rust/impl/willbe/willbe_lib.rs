@@ -17,7 +17,7 @@
 
 //
 
-wtools::meta::mod_interface!
+wtools::mod_interface!
 {
   /// Features of Application Programming Interface that 100% should be implemented
   #[ cfg( feature = "use_std" ) ]
@@ -31,8 +31,5 @@ wtools::meta::mod_interface!
   #[ cfg( feature = "use_std" ) ]
   layer files;
 
-  #[ cfg( feature = "use_std" ) ]
-  prelude use ::std::env;
-  prelude use ::wca::instruction;
   protected( crate ) use ::wtools::prelude::*;
 }

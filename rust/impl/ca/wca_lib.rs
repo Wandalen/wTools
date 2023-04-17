@@ -10,7 +10,9 @@
 //! The tool to make CLI ( commands user interface ). It is able to aggregate external binary applications, as well as functions, which are written in your language.
 //!
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+// #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+
+#![ allow( where_clauses_object_safety ) ] // https://github.com/chris-morgan/anymap/issues/31
 
 /// Requests parser.
 #[ cfg( feature = "use_std" ) ]
@@ -18,6 +20,10 @@ pub mod string
 {
   pub use wtools::string::*;
 }
+
+/// Errors.
+#[ cfg( feature = "use_std" ) ]
+pub use wtools::{ Result, BasicError, err };
 
 use wtools::meta::mod_interface;
 
@@ -41,10 +47,9 @@ crate::mod_interface!
 #[ doc( inline ) ]
 pub use ca::
 {
-  commands_aggregator,
-  // common,
-  command,
   input,
-  instruction,
-  context,
+  parser,
+  grammar,
+  executor,
+  commands_aggregator,
 };
