@@ -58,8 +58,8 @@ pub( crate ) mod private
         let heading = format!( "# .{name}{subjects}{properties}\n__{}__\n", hint );
 
         let hint = if cmd.long_hint.is_empty() { &cmd.hint } else { &cmd.long_hint };
-        let full_subjects = cmd.subjects.iter().enumerate().map( |( number, subj )| format!( "\n- {}subject_{number} - {} `[{:?}]`", if subj.optional { "optional" } else { "" }, subj.hint, subj.kind ) ).join( "\n" );
-        let full_properties = cmd.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "\n- {}{name} - {} `[{:?}]`", if value.optional { "optional" } else { "" }, value.hint, value.kind ) ).join( "\n" );
+        let full_subjects = cmd.subjects.iter().enumerate().map( |( number, subj )| format!( "\n- {}subject_{number} - {} `[{:?}]`", if subj.optional { "`<optional>` " } else { "" }, subj.hint, subj.kind ) ).join( "\n" );
+        let full_properties = cmd.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "\n- {}{name} - {} `[{:?}]`", if value.optional { "`<optional>` " } else { "" }, value.hint, value.kind ) ).join( "\n" );
 
         format!
         ( 
@@ -90,9 +90,9 @@ pub( crate ) mod private
       let name = &command.phrase;
       let hint = if command.long_hint.is_empty() { &command.hint } else { &command.long_hint };
       let subjects = command.subjects.iter().enumerate().fold( String::new(), | acc, ( number, subj ) | format!( "{acc} <subject_{number}:{:?}>", subj.kind ) );
-      let full_subjects = command.subjects.iter().enumerate().map( |( number, subj )| format!( "subject_{number} - {} [{:?}]", subj.hint, subj.kind ) ).join( "\n\t\t" );
+      let full_subjects = command.subjects.iter().enumerate().map( |( number, subj )| format!( "{}subject_{number} - {} [{:?}]", if subj.optional { "<optional> " } else { "" }, subj.hint, subj.kind ) ).join( "\n\t\t" );
       let properties = if command.properties.is_empty() { " " } else { " <properties> " };
-      let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{name} - {} [{:?}]", value.hint, value.kind ) ).join( "\n\t\t" );
+      let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{}{name} - {} [{:?}]", if value.optional { "<optional> " } else { "" }, value.hint, value.kind ) ).join( "\n\t\t" );
 
       format!( "{name}{subjects}{properties}- {hint}\n\tSubjects:\n\t\t{full_subjects}\n\tProperties:\n\t\t{full_properties}" )
     }
