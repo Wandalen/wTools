@@ -68,6 +68,7 @@ former = { version = "~0.1", path = "../../rust/former" } # zzz : remove. fix
 anymap = "0.12"
 log = "0.4"
 nom = "7.1"
+termimad = "0.20.6"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }

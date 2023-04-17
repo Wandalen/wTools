@@ -17,6 +17,8 @@ pub( crate ) mod private
 
   use std::io::prelude::*;
 
+  use termimad::*;
+
   
 
 
@@ -76,8 +78,9 @@ pub( crate ) mod private
       format!( "{acc}\n\n{cmd}" )
     });
 
-    let mut file = File::create( "./Readme.md" ).unwrap();
-    file.write_all( format!( "{list_of_commands}\n{about_each_command}" ).as_bytes() ).unwrap();
+    let skin = MadSkin::default();
+    println!("{}", skin.term_text( &format!( "{list_of_commands}\n{about_each_command}" ) ));
+    
 
 
   }
@@ -90,9 +93,9 @@ pub( crate ) mod private
       let name = &command.phrase;
       let hint = if command.long_hint.is_empty() { &command.hint } else { &command.long_hint };
       let subjects = command.subjects.iter().enumerate().fold( String::new(), | acc, ( number, subj ) | format!( "{acc} <subject_{number}:{:?}>", subj.kind ) );
-      let full_subjects = command.subjects.iter().enumerate().map( |( number, subj )| format!( "{}subject_{number} - {} [{:?}]", if subj.optional { "<true> " } else { "<false>" }, subj.hint, subj.kind ) ).join( "\n\t\t" );
+      let full_subjects = command.subjects.iter().enumerate().map( |( number, subj )| format!( "subject_{number} - {} [{:?}]", subj.hint, subj.kind ) ).join( "\n\t\t" );
       let properties = if command.properties.is_empty() { " " } else { " <properties> " };
-      let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{}{name} - {} [{:?}]", if value.optional { "<true> " } else { "<false>" }, value.hint, value.kind ) ).join( "\n\t\t" );
+      let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{name} - {} [{:?}]", value.hint, value.kind ) ).join( "\n\t\t" );
 
       format!( "{name}{subjects}{properties}- {hint}\n\tSubjects:\n\t\t{full_subjects}\n\tProperties:\n\t\t{full_properties}" )
     }
