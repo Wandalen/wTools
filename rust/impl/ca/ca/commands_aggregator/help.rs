@@ -12,17 +12,12 @@ pub( crate ) mod private
 
   use std::rc::Rc;
 
-
-  use std::fs::File;
-
-  use std::io::prelude::*;
-
   use termimad::*;
 
   
 
 
-  fn md_file_generator( grammar : &GrammarConverter )
+  fn md_generator( grammar : &GrammarConverter )
   {
     let text = grammar.commands
     .iter()
@@ -65,10 +60,10 @@ pub( crate ) mod private
 
         format!
         ( 
-          "{heading}\n{hint}{}{}\n\nCommand output example:\n{}", 
+          "{heading}\n{hint}{}{}\n\n{}", 
           if cmd.subjects.is_empty() { "".to_string() } else { format!( "\n\nSubjects:{}", &full_subjects ) }, 
           if cmd.properties.is_empty() { "".to_string() } else { format!( "\n\nProperties:{}",&full_properties ) } ,
-          cmd.example
+          if !cmd.example.is_empty() { format!("Command output example: \n{}", cmd.example ) } else { "".to_string() }
         )
 
       })
@@ -186,7 +181,7 @@ pub( crate ) mod private
               let format : String = props.get_owned( "format" ).unwrap_or_default();
               if format == "md"
               {
-                md_file_generator( &grammar_for_md );
+                md_generator( &grammar_for_md );
               }
               else
               {
