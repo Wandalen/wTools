@@ -34,6 +34,8 @@ pub( crate ) mod private
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
     pub properties : HashMap< String, ValueDescription >,
+    /// Example of command output
+    pub example : String,
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,

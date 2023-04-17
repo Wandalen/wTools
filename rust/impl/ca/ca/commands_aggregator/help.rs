@@ -17,6 +17,8 @@ pub( crate ) mod private
 
   use std::io::prelude::*;
 
+  
+
 
   fn md_file_generator( grammar : &GrammarConverter )
   {
@@ -27,6 +29,7 @@ pub( crate ) mod private
     {
       cmd.iter().fold( String::new(), | _, cmd |
       {
+        
         let subjects = cmd.subjects.iter().fold( String::new(), | _, _ | format!( " `[Subject]`" ) );
         let properties = if cmd.properties.is_empty() { " " } else { " `[properties]` " };
 
@@ -60,9 +63,10 @@ pub( crate ) mod private
 
         format!
         ( 
-          "{heading}\n{hint}{}{}", 
+          "{heading}\n{hint}{}{}\nCommand output example:\n{}", 
           if cmd.subjects.is_empty() { "".to_string() } else { format!( "\n\nSubjects:{}", &full_subjects ) }, 
-          if cmd.properties.is_empty() { "".to_string() } else { format!( "\n\nProperties:{}",&full_properties ) } 
+          if cmd.properties.is_empty() { "".to_string() } else { format!( "\n\nProperties:{}",&full_properties ) } ,
+          cmd.example
         )
 
       })
@@ -181,7 +185,11 @@ pub( crate ) mod private
               {
                 md_file_generator( &grammar_for_md );
               }
-              println!( "Help command\n{text}" );
+              else
+              {
+                println!( "Help command\n{text}" );
+              }
+              
             }
           }
 
