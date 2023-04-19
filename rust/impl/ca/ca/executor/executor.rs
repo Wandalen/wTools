@@ -31,12 +31,13 @@ pub( crate ) mod private
     /// default context
     #[ default( Context::default() ) ]
     pub context : Context,
-    /// commands routins
+    /// commands routines
     pub commands : HashMap< String, Routine >
   }
 
   impl ExecutorFormer
   {
+    /// Inserts routine to a routine dictionary
     pub fn command< S : Into< String > >( mut self, phrase : S, routine : Routine ) -> Self
     {
       let mut commands = self.commands.unwrap_or_default();

@@ -12,7 +12,7 @@ pub( crate ) mod private
     Number,
     /// Path
     Path,
-    /// List of some type values separeted a delimiter character
+    /// List of some type values separated a delimiter character
     List( Box< Type >, char ),
   }
 

@@ -15,20 +15,20 @@ pub( crate ) mod private
   {
     /// Symbol that will be interpreted as the beginning of a command
     /// 
-    /// command_delimeter = '.'
+    /// command_delimiter = '.'
     /// ".command" -> Command( "command" )
     #[ default( '.' ) ]
     pub command_prefix : char,
     /// Symbol that will be interpreted as a separator for the name and value of the property
     /// 
-    /// prop_delimeter = ':'
+    /// prop_delimiter = ':'
     /// "prop:value" -> ( "prop", "value" )
     #[ default( ':' ) ]
     pub prop_delimeter : char,
     /// String that will be interpreted as a separator for namespaces
     /// 
-    /// namespace_delimeter = ".also"
-    /// "<commands1> .also <commads2>" -> Namespace( < commands1 > ), Namespace( < commands2 > )
+    /// namespace_delimiter = ".also"
+    /// "<commands1> .also <commands2>" -> Namespace( < commands1 > ), Namespace( < commands2 > )
     #[ default( ".also" ) ]
     pub namespace_delimeter : Cow< 'static, str >,
   }
