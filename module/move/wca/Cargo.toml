@@ -66,7 +66,8 @@ path = "sample/rust/wca_trivial_sample/src/main.rs"
 wtools = { version = "~0.2", path = "../../rust/wtools" }
 former = { version = "~0.1", path = "../../rust/former" } # zzz : remove. fix
 anymap = "0.12"
-log = "0.4.17"
+log = "0.4"
+nom = "7.1"
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
