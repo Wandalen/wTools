@@ -58,7 +58,7 @@ pub( crate ) mod private
     General,
     /// Detailed help for one command as subject in help command. E.g. `.help command_name`
     SubjectCommand,
-    /// Detailed help for one command as separete help command. E.g. `.help.command_name`
+    /// Detailed help for one command as separate help command. E.g. `.help.command_name`
     DotCommand,
   }
 
@@ -97,7 +97,10 @@ pub( crate ) mod private
       // generate and add routine of help command
       // replace old help command with new one
       let subject_help = executor.routines.remove( &phrase );
-      let text = helper.exec( grammar, None );
+      let generator = helper.clone();
+      // TODO: Will be static
+      let grammar = grammar.clone();
+
       let routine = Routine::new
       (
         move |( args, props )|
@@ -105,7 +108,7 @@ pub( crate ) mod private
           match &subject_help
           {
             Some( Routine::WithoutContext( help ) ) if !args.is_empty() => help(( args, props ))?,
-            _ => println!( "Help command\n{text}" ),
+            _ => println!( "Help command\n{text}", text = generator.exec( &grammar, None ) ),
           }
 
           Ok( () )
@@ -133,9 +136,10 @@ pub( crate ) mod private
       // generate and add routine of help command
       // replace old help command with new one
       let full_help = executor.routines.remove( &phrase );
-      // TODO: Fix it somehow( Cloning grammar and helper )
-      let grammar = grammar.clone();
       let generator = helper.clone();
+      // TODO: Will be static
+      let grammar = grammar.clone();
+
       let routine = Routine::new
       (
         move |( args, props )|
@@ -190,16 +194,19 @@ pub( crate ) mod private
       .into_iter()
       .fold( vec![], | mut acc, ( help_name, cmds ) |
       {
-        let text = cmds.iter()
-        .map
-        (
-          | cmd | helper.exec( grammar, Some( cmd ) )
-        )
-        .join( "\n\n" );
+        let generator = helper.clone();
+        // TODO: Will be static
+        let grammar = grammar.clone();
 
-        // TODO: compile time or binary size?
         let routine = Routine::new( move | _ |
         {
+          let text = cmds.iter()
+          .map
+          (
+            | cmd | generator.exec( &grammar, Some( cmd ) )
+          )
+          .join( "\n\n" );
+
           println!( "Help for command\n\n{text}" );
 
           Ok( () )
@@ -217,11 +224,11 @@ pub( crate ) mod private
     }
   }
 
-  type HelpFucntionFn = Rc< dyn Fn( &GrammarConverter, Option< &Command > ) -> String >;
+  type HelpFunctionFn = Rc< dyn Fn( &GrammarConverter, Option< &Command > ) -> String >;
 
   /// Container for function that generates help string for any command
   #[ derive( Clone ) ]
-  pub struct HelpGeneratorFn( HelpFucntionFn );
+  pub struct HelpGeneratorFn( HelpFunctionFn );
 
   impl Default for HelpGeneratorFn
   {
@@ -233,7 +240,7 @@ pub( crate ) mod private
 
   impl HelpGeneratorFn
   {
-    /// Wrap a help fucntion
+    /// Wrap a help function
     pub fn new< HelpFunction >( func : HelpFunction ) -> Self
     where
       HelpFunction : Fn( &GrammarConverter, Option< &Command > ) -> String + 'static

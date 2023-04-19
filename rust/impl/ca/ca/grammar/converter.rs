@@ -26,14 +26,14 @@ pub( crate ) mod private
     pub properties : HashMap< String, Value >,
   }
 
-  /// Converts from RawCommand to ExecutableCommand
   // TODO: Remove Clone
+  /// Converts from RawCommand to ExecutableCommand
   #[ derive( Debug, Clone ) ]
   #[ derive( Former ) ]
   pub struct GrammarConverter
   {
-    /// all available commands
     // TODO: Make getters
+    /// all available commands
     #[ setter( false ) ]
     pub commands : HashMap< String, Vec< Command > >,
   }
