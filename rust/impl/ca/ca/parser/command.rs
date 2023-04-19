@@ -52,7 +52,7 @@ pub( crate ) mod private
         {
           Command
           {
-            name : name.to_owned(),
+            name : name.to_string(),
             subjects : subjects.into_iter().filter_map( |( _, subject )| if subject.is_empty() { None } else { Some( subject ) } ).collect(),
             properties : props.into_iter().map( |( _, prop )| prop ).collect()
           }
@@ -202,7 +202,7 @@ pub( crate ) mod private
 
   impl CommandParser for Parser
   {
-    fn command< 'a >( &'a self, input : &'a str ) -> Result< Command >
+    fn command( &self, input : &str ) -> Result< Command >
     {
       self.command_fn()( input )
       .map( |( _, command )| command )

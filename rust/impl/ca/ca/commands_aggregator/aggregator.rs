@@ -27,19 +27,29 @@ pub( crate ) mod private
     help_generator : HelpGeneratorFn,
     #[ default( HashSet::from([ HelpVariants::All ]) ) ]
     help_variants : HashSet< HelpVariants >,
-    grammar_converter : GrammarConverter,
+    grammar_converter : crate::StaticGrammarConverter,
     executor_converter : ExecutorConverter,
   }
 
   impl CommandsAggregatorFormer
   {
-    pub fn grammar< V >( mut self, commands : V ) -> Self
-    where
-      V : Into< Vec< Command > >
+    // pub fn grammar< V >( mut self, commands : V ) -> Self
+    // where
+    //   V : Into< Vec< Command > >
+    // {
+    //   let grammar = GrammarConverter::former()
+    //   .commands( commands )
+    //   .form();
+
+    //   self.grammar_converter = Some( grammar );
+    //   self
+    // }
+    pub fn grammar( mut self, commands : &'static phf::Map< &'static str, &[ crate::StaticGrammarCommand ] > ) -> Self
     {
-      let grammar = GrammarConverter::former()
-      .commands( commands )
-      .form();
+      let grammar = crate::StaticGrammarConverter
+      {
+        commands
+      };
 
       self.grammar_converter = Some( grammar );
       self
@@ -69,17 +79,17 @@ pub( crate ) mod private
     {
       let mut ca = self.form();
 
-      if ca.help_variants.contains( &HelpVariants::All )
-      {
-        HelpVariants::All.generate( &ca.help_generator, &mut ca.grammar_converter, &mut ca.executor_converter );
-      }
-      else
-      {
-        for help in &ca.help_variants
-        {
-          help.generate( &ca.help_generator, &mut ca.grammar_converter, &mut ca.executor_converter );
-        }
-      }
+      // if ca.help_variants.contains( &HelpVariants::All )
+      // {
+      //   HelpVariants::All.generate( &ca.help_generator, &mut ca.grammar_converter, &mut ca.executor_converter );
+      // }
+      // else
+      // {
+      //   for help in &ca.help_variants
+      //   {
+      //     help.generate( &ca.help_generator, &mut ca.grammar_converter, &mut ca.executor_converter );
+      //   }
+      // }
 
       ca
     }

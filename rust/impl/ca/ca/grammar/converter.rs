@@ -149,6 +149,121 @@ pub( crate ) mod private
       )
     }
   }
+
+  /// Command subject description
+  #[derive(Debug, Clone, PartialEq, Eq)]
+  pub struct StaticValueDescription {
+      /// subject hint
+      pub hint: &'static str,
+      /// subject type
+      pub kind: crate::Type,
+  }
+
+  #[ derive( Debug ) ]
+  pub struct StaticGrammarCommand< 'a >
+  {
+    /// Command common hint.
+    pub hint : &'a str,
+    /// Command full hint.
+    pub long_hint : &'a str,
+    /// Phrase descriptor for command.
+    pub phrase : &'a str,
+    /// Command subjects hints and types.
+    pub subjects : &'a [ StaticValueDescription ],
+    /// Hints and types for command options.
+    pub properties : phf::Map< &'static str, StaticValueDescription >,
+    /// Map of aliases.
+    // Aliased key -> Original key
+    pub properties_aliases : phf::Map< &'static str, &'static str >,
+  }
+
+  #[ derive( Debug ) ]
+  pub struct StaticGrammarConverter
+  {
+    pub commands : &'static phf::Map< &'static str, &'static [ StaticGrammarCommand< 'static > ] >
+  }
+
+  impl StaticGrammarConverter
+  {
+    /// Converts raw program to executable
+    pub fn to_program( &self, raw_program : Program< Namespace< RawCommand > > ) -> Result< Program< Namespace< GrammarCommand > > >
+    {
+      let namespaces = raw_program.namespaces
+      .into_iter()
+      .map( | n | self.to_namespace( n ) )
+      .collect::< Result< Vec< Namespace< GrammarCommand > > > >()?;
+
+      Ok( Program { namespaces } )
+    }
+
+    /// Converts raw namespace to executable
+    pub fn to_namespace( &self, raw_namespace : Namespace< RawCommand > ) -> Result< Namespace< GrammarCommand > >
+    {
+      let commands = raw_namespace.commands
+      .into_iter()
+      .map( | c | self.to_command( c ) )
+      .collect::< Result< Vec< GrammarCommand > > >()?;
+
+      Ok( Namespace { commands } )
+    }
+
+    /// Converts raw command to executable
+    pub fn to_command( &self, raw_command : RawCommand ) -> Result< GrammarCommand >
+    {
+      self.commands
+      .get( &raw_command.name )
+      .and_then
+      (
+        | cmds |
+        // find needed command
+        // if it will be needed:
+        // find command where number raw_command.subjects more or equal a command.subjects
+        // and add trailing subjects as "Trailing" somehow
+        cmds.iter().find( | cmd | cmd.subjects.len() == raw_command.subjects.len() )
+      )
+      .ok_or_else( || err!( "Command not found. Got `{:?}`", raw_command ) )
+      .and_then
+      (
+        | cmd |
+        {
+          let subjects = raw_command.subjects
+          .into_iter()
+          .zip( cmd.subjects.iter() )
+          // an error can be extended with the value's hint
+          .map( |( x, StaticValueDescription { kind, .. } )| kind.try_cast( x ) )
+          .collect::< Result< Vec< _ > > >()?;
+
+          let properties = raw_command.properties
+          .iter()
+          .map
+          (
+            |( key, value )|
+            // find a key
+            if cmd.properties.contains_key( key ) { Ok( &**key ) }
+            else { cmd.properties_aliases.get( &key ).map( | v | *v ).ok_or_else( || err!( "`{}` not found", key ) ) }
+            // give a description
+            .map( | key | ( key.clone(), cmd.properties.get( &key ).unwrap(), value ) )
+          )
+          .collect::< Result< Vec< _ > > >()?
+          .into_iter()
+          // an error can be extended with the value's hint
+          .map
+          (
+            |( key, value_description, value )|
+            value_description.kind.try_cast( value.to_string() ).map( | v | ( key.to_string(), v ) )
+          )
+          .collect::< Result< HashMap< _, _ > > >()?;
+
+          Ok( GrammarCommand
+          {
+            phrase : cmd.phrase.to_owned(),
+            subjects,
+            properties,
+          })
+        }
+      )
+    }
+  }
 }
 
 //
@@ -157,4 +272,7 @@ crate::mod_interface!
 {
   prelude use GrammarConverter;
   prelude use GrammarCommand;
+
+  prelude use StaticGrammarConverter;
+  prelude use StaticGrammarCommand;
 }

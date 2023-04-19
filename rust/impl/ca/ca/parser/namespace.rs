@@ -68,7 +68,7 @@ pub( crate ) mod private
 
   impl NamespaceParser for Parser
   {
-    fn namespace< 'a >( &'a self, input : &'a str ) -> Result< Namespace< RawCommand > >
+    fn namespace( &self, input : &str ) -> Result< Namespace< RawCommand > >
     {
       self.namespace_fn()( input.trim() )
       .map( |( _, namespace )| namespace )

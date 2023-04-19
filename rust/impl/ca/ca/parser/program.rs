@@ -47,7 +47,7 @@ pub( crate ) mod private
 
   impl ProgramParser for Parser
   {
-    fn program< 'a >( &'a self, input : &'a str ) -> Result< Program< Namespace< RawCommand > > >
+    fn program( &self, input : &str ) -> Result< Program< Namespace< RawCommand > > >
     {
       self.program_fn()( input.trim() )
       .map( |( _, program )| program )

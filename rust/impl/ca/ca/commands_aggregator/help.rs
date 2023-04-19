@@ -217,11 +217,29 @@ pub( crate ) mod private
     }
   }
 
-  type HelpFucntionFn = Rc< dyn Fn( &GrammarConverter, Option< &Command > ) -> String >;
+  type HelpFunctionFn = Rc< dyn Fn( &GrammarConverter, Option< &Command > ) -> String >;
 
   /// Container for function that generates help string for any command
+  /// 
+  /// ```
+  /// # use wca::commands_aggregator::help::HelpGeneratorFn;
+  /// use wca::{ GrammarConverter, Command };
+  /// 
+  /// fn my_help_generator( grammar : &GrammarConverter, command : Option< &Command > ) -> String
+  /// {
+  ///   format!( "Help content based on grammar and command" )
+  /// }
+  /// 
+  /// let help_fn = HelpGeneratorFn::new( my_help_generator );
+  /// # let grammar = &GrammarConverter::former().form();
+  /// 
+  /// help_fn.exec( grammar, None );
+  /// // or
+  /// # let cmd = Command::former().form();
+  /// help_fn.exec( grammar, Some( &cmd ) );
+  /// ```
   #[ derive( Clone ) ]
-  pub struct HelpGeneratorFn( HelpFucntionFn );
+  pub struct HelpGeneratorFn( HelpFunctionFn );
 
   impl Default for HelpGeneratorFn
   {
@@ -233,7 +251,7 @@ pub( crate ) mod private
 
   impl HelpGeneratorFn
   {
-    /// Wrap a help fucntion
+    /// Wrap a help function
     pub fn new< HelpFunction >( func : HelpFunction ) -> Self
     where
       HelpFunction : Fn( &GrammarConverter, Option< &Command > ) -> String + 'static
@@ -244,7 +262,7 @@ pub( crate ) mod private
 
   impl HelpGeneratorFn
   {
-    /// Executes the function
+    /// Executes the function to generate help content
     pub fn exec( &self, grammar : &GrammarConverter, command : Option< &Command > ) -> String
     {
       self.0( grammar, command )
