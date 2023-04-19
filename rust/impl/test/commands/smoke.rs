@@ -11,9 +11,9 @@ pub( crate ) fn smoke_command() -> wca::Command
   .hint( "Perform smoke testing on module." )
   .long_hint( "Perform smoke testing on module." )
   .phrase( "smoke" )
-  .property( "smoke", "A variant of smoke testing of module. It can be:\n  local - local module in directory.\n  published - module published on `crates.io`. true - local and published version.\n  Default is \"local\"", Type::String )
-  .property( "code_path", "A path to code snippet to test. By default utility imports module into binary.", Type::Path )
-  .property( "version", "A string version of module. By default \"*\"", Type::String )
+  .property( "smoke", "A variant of smoke testing of module. It can be:\n  local - local module in directory.\n  published - module published on `crates.io`. true - local and published version.\n  Default is \"local\"", Type::String, true )
+  .property( "code_path", "A path to code snippet to test. By default utility imports module into binary.", Type::Path, true )
+  .property( "version", "A string version of module. By default \"*\"", Type::String, true )
   .form()
 }
 
@@ -23,10 +23,10 @@ pub( crate ) fn smoke_with_subject_command() -> wca::Command
   .hint( "Perform smoke testing on module by path." )
   .long_hint( "Perform smoke testing on module by path." )
   .phrase( "smoke" )
-  .subject( "A path to module. Should be a directory with file `Cargo.toml`. Default is current directory.", Type::Path )
-  .property( "smoke", "A variant of smoke testing of module. It can be:\n  local - local module in directory.\n  published - module published on `crates.io`. true - local and published version.\n  Default is \"local\"", Type::String )
-  .property( "code_path", "A path to code snippet to test. By default utility imports module into binary.", Type::Path )
-  .property( "version", "A string version of module. By default \"*\"", Type::String )
+  .subject( "A path to module. Should be a directory with file `Cargo.toml`. Default is current directory.", Type::Path, true )
+  .property( "smoke", "A variant of smoke testing of module. It can be:\n  local - local module in directory.\n  published - module published on `crates.io`. true - local and published version.\n  Default is \"local\"", Type::String, true )
+  .property( "code_path", "A path to code snippet to test. By default utility imports module into binary.", Type::Path, true )
+  .property( "version", "A string version of module. By default \"*\"", Type::String, true )
   .form()
 }
 
