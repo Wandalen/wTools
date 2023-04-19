@@ -48,7 +48,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "hint", Type::String )
+      .subject( "hint", Type::String, true )
       .form()
     )
     .form();
@@ -90,7 +90,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .property( "prop", "about prop", Type::String )
+      .property( "prop", "about prop", Type::String, true )
       .form()
     )
     .form();

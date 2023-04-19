@@ -5,7 +5,7 @@ pub( crate ) mod private
     GrammarConverter, ExecutorConverter,
 
     Command,
-    Routine, Type
+    Routine, Type, commands_aggregator::formatter::private::{HelpFormat, md_generator}
   };
   
   use wtools::Itertools;
@@ -88,6 +88,7 @@ pub( crate ) mod private
 
       let help = Command::former()
       .hint( "prints information about existing commands" )
+      .property( "format", "help generates in format witch you write", Type::String, true )
       .phrase( &phrase )
       .form();
 
@@ -108,7 +109,23 @@ pub( crate ) mod private
           match &subject_help
           {
             Some( Routine::WithoutContext( help ) ) if !args.is_empty() => help(( args, props ))?,
-            _ => println!( "Help command\n{text}", text = generator.exec( &grammar, None ) ),
+            _ => 
+            {
+              let format_prop : String = props.get_owned( "format" ).unwrap_or_default();
+              let format = match format_prop.as_str()
+              {
+                "md" | "markdown" => HelpFormat::Markdown,
+                _ => HelpFormat::Another,
+              };
+              if format == HelpFormat::Markdown
+              {
+                println!( "Help command\n{text}", text = md_generator( &grammar ) );
+              }
+              else
+              {
+                println!( "Help command\n{text}", text = generator.exec( &grammar, None ) );
+              }
+            }
           }
 
           Ok( () )
@@ -127,7 +144,7 @@ pub( crate ) mod private
       let help = Command::former()
       .hint( "prints full information about a specified command" )
       .phrase( &phrase )
-      .subject( "command name", Type::String )
+      .subject( "command name", Type::String, true )
       .form();
 
       let command_variants = grammar.commands.entry( phrase.to_owned() ).or_insert_with( Vec::new );

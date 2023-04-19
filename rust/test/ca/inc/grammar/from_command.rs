@@ -50,7 +50,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "first subject", Type::String )
+      .subject( "first subject", Type::String, true )
       .form()
     )
     .form();
@@ -93,7 +93,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "number value", Type::Number )
+      .subject( "number value", Type::Number, true )
       .form()
     )
     .form();
@@ -121,7 +121,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "Subjects list", Type::List( Type::String.into(), ',' ) )
+      .subject( "Subjects list", Type::List( Type::String.into(), ',' ), true )
       .form()
     )
     .form();
@@ -155,7 +155,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .property( "prop1", "hint of prop1", Type::String )
+      .property( "prop1", "hint of prop1", Type::String, true )
       .form()
     )
     .form();
@@ -199,7 +199,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .property( "prop", "Number property", Type::Number )
+      .property( "prop", "Number property", Type::Number, true )
       .form()
     )
     .form();
@@ -227,7 +227,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .property( "prop", "Numbers list property", Type::List( Type::Number.into(), ',' ) )
+      .property( "prop", "Numbers list property", Type::List( Type::Number.into(), ',' ), true )
       .form()
     )
     .form();
@@ -257,7 +257,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .property( "property", "string property", Type::String )
+      .property( "property", "string property", Type::String, true )
       .property_alias( "property", "prop" )
       .property_alias( "property", "p" )
       .form()
@@ -293,11 +293,11 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .property( "property", "string property", Type::String )
+      .property( "property", "string property", Type::String, true )
       // .property( "property", "number property with alredy used name", Type::Number ) // panic because this property name alredy used
       .property_alias( "property", "p" )
       // .property_alias( "property", "proposal" ) // panic at next property beacuse this name alredy used as alias
-      .property( "proposal", "string property", Type::String )
+      .property( "proposal", "string property", Type::String, true )
       // .property_alias( "proposal", "property" ) // panic because this name alredy used as property name
       // .property_alias( "proposal", "p" ) // panic because this alias alredy used
       .form()

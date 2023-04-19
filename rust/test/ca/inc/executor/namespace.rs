@@ -57,7 +57,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "eq" )
-      .subject( "number", Type::Number )
+      .subject( "number", Type::Number, true )
       .form()
     )
     .form();
