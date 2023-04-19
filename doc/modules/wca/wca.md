@@ -3,26 +3,21 @@
 ## Class diagram
 
 - `Parser`
-> Parse raw string to `RawCommand`-s
+> This component takes in raw strings of text and converts them into `RawCommand` objects. These objects contain all of the information needed to represent a command, but they haven't been validated or processed in any way yet.
 
 - `Grammar`
-> Available commands configured by the user.
+> Contains available commands configured by the user.
 >
-> Converts `RawCommand`-s to `GrammarCommand`-s with validation.
->
-> `GrammarComand` contains valid subject and property values
+> Once the `RawCommand` objects have been generated, the `Grammar` component steps in. This component takes in the `RawCommand`-s and converts them into `GrammarCommand` objects, which contain subject and property values that have been validated against a set of pre-defined grammar. This ensures that the user's input is structured correctly and can be understood by the system.
 
 - `Executor`
-> Available routines configured by the user.
+> Contains available routines configured by the user.
 >
-> Converts `GrammarCommand`-s to `ExecutableCommand`-s
->
-> This entity is responsible for the program execution process
+> Once the `GrammarCommand` objects have been generated, the `Executor` component takes over. This component converts the `GrammarCommands` into `ExecutableCommand` objects, which contain the actual routines that will be executed at runtime. This is where the system takes action based on the user's input.
 
 - `CommandsAggregator`
-> Configures `Parser`, `Grammar` and `Executor` by the user.
->
-> Executes the entire pipeline (parse -> validate -> execute)
+> Finally, the `CommandsAggregator` component brings everything together. This component is responsible for configuring the `Parser`, `Grammar`, and `Executor` components based on the user's needs. It also manages the entire pipeline of processing, from parsing the raw text input to executing the final command(parse -> validate -> execute).
+
 
 <div style="background-color: #FFFFFF; padding: 10px; border-radius: 8px;">
     <img src="https://i.imgur.com/uW70tQg.png" title="Class diagram" />
