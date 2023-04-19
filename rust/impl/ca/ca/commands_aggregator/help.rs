@@ -97,7 +97,10 @@ pub( crate ) mod private
       // generate and add routine of help command
       // replace old help command with new one
       let subject_help = executor.routines.remove( &phrase );
-      let text = helper.exec( grammar, None );
+      let generator = helper.clone();
+      // TODO: Will be static
+      let grammar = grammar.clone();
+
       let routine = Routine::new
       (
         move |( args, props )|
@@ -105,7 +108,7 @@ pub( crate ) mod private
           match &subject_help
           {
             Some( Routine::WithoutContext( help ) ) if !args.is_empty() => help(( args, props ))?,
-            _ => println!( "Help command\n{text}" ),
+            _ => println!( "Help command\n{text}", text = generator.exec( &grammar, None ) ),
           }
 
           Ok( () )
@@ -133,9 +136,10 @@ pub( crate ) mod private
       // generate and add routine of help command
       // replace old help command with new one
       let full_help = executor.routines.remove( &phrase );
-      // TODO: Fix it somehow( Cloning grammar and helper )
-      let grammar = grammar.clone();
       let generator = helper.clone();
+      // TODO: Will be static
+      let grammar = grammar.clone();
+
       let routine = Routine::new
       (
         move |( args, props )|
@@ -190,16 +194,19 @@ pub( crate ) mod private
       .into_iter()
       .fold( vec![], | mut acc, ( help_name, cmds ) |
       {
-        let text = cmds.iter()
-        .map
-        (
-          | cmd | helper.exec( grammar, Some( cmd ) )
-        )
-        .join( "\n\n" );
+        let generator = helper.clone();
+        // TODO: Will be static
+        let grammar = grammar.clone();
 
-        // TODO: compile time or binary size?
         let routine = Routine::new( move | _ |
         {
+          let text = cmds.iter()
+          .map
+          (
+            | cmd | generator.exec( &grammar, Some( cmd ) )
+          )
+          .join( "\n\n" );
+
           println!( "Help for command\n\n{text}" );
 
           Ok( () )
