@@ -22,7 +22,7 @@ pub( crate ) mod private
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct RawCommand
   {
-    /// name of command without delimeter
+    /// name of command without delimiter
     pub name : String,
     /// list of subjects
     pub subjects : Vec< String >,

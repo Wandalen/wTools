@@ -22,6 +22,7 @@ pub( crate ) mod private
 
   impl ExecutorConverterFormer
   {
+    /// Inserts routine to a routine dictionary
     pub fn routine< S >( mut self, phrase : S, routine : Routine ) -> Self
     where
       S : Into< String >,

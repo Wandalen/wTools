@@ -1,7 +1,7 @@
 
 crate::mod_interface!
 {
-  /// Parseable objects
+  /// Parsable objects
   layer grammar;
   /// Program parser
   layer parser;
@@ -9,6 +9,6 @@ crate::mod_interface!
   layer executor;
   /// -
   layer commands_aggregator;
-  /// -
+  /// User input
   layer input;
 }
