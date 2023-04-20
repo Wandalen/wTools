@@ -8,7 +8,7 @@ pub( crate ) mod private
   ///
   /// The program can be executed by iterating over each namespace and executing its commands sequentially or in parallel.
   ///
-  /// # Examples
+  /// # Example:
   ///
   /// ```
   /// # use wca::{ RawCommand, Namespace, Program }; 

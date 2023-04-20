@@ -14,7 +14,12 @@ pub( crate ) mod private
 
   use wtools::{ HashMap, Result, HashSet };
 
-  /// CommandsAggregator
+  /// The `CommandsAggregator` struct is responsible for aggregating all commands that the user defines,
+  /// and for parsing and executing them. It is the main entry point of the library.
+  /// 
+  /// CommandsAggregator component brings everything together. This component is responsible for configuring the `Parser`, `Grammar`, and `Executor` components based on the user’s needs. It also manages the entire pipeline of processing, from parsing the raw text input to executing the final command(parse -> validate -> execute).
+  /// 
+  /// # Example:
   /// 
   /// ```
   /// use wca::prelude::*;

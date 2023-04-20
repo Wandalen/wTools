@@ -5,52 +5,64 @@ pub( crate ) mod private
     Program, Namespace, ExecutableCommand,
 
     Context,
-    RuntimeState, Runtime, Routine,
+    RuntimeState, Runtime,
     ca::executor::runtime::_exec_command, 
   };
 
-  use wtools::{ Result, HashMap };
+  use wtools::Result;
 
+  /// Represents the type of executor to use for running commands.
   #[ derive( Debug ) ]
-  /// TODO: THINK
   pub enum ExecutorType
   {
-    /// Separate context for each namespaces
+    /// The executor will create a new context for each namespace
     ResetsContext,
-    /// single context for all namespaces
+    /// The executor will use a single context for all namespaces
     Simple,
   }
 
+  /// Executor that is responsible for executing the program's commands.
+  /// It uses the given `Context` to store and retrieve values during runtime.
+  ///
+  /// It takes an `ExecutableCommand` which contains subjects and properties that will be passed to the callback function of the associated command's routine.
+  ///
+  /// # Example:
+  /// 
+  /// ```
+  /// # use wca::{ Executor, ExecutableCommand, Routine, Value };
+  /// # use wtools::HashMap;
+  /// let executor = Executor::former().form();
+  /// 
+  /// let executable_command = ExecutableCommand
+  /// {
+  ///   subjects : vec![ Value::String( "subject_value".to_string() ), /* ... */ ],
+  ///   properties : HashMap::from_iter(
+  ///   [
+  ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
+  ///     /* ... */
+  ///   ]),
+  ///   routine : Routine::new( |( args, props )| Ok( () ) )
+  /// };
+  /// 
+  /// assert!( executor.command( executable_command ).is_ok() );
+  /// ```
+  /// 
   #[ derive( Debug, former::Former ) ]
-  /// TODO: THINK
   pub struct Executor
   {
-    /// represent how executor will work
+    /// Represents how the executor will work
     #[ default( ExecutorType::Simple ) ]
     pub kind : ExecutorType,
-    /// default context
+    /// The default context for the executor
     #[ default( Context::default() ) ]
     pub context : Context,
-    /// commands routines
-    pub commands : HashMap< String, Routine >
-  }
-
-  impl ExecutorFormer
-  {
-    /// Inserts routine to a routine dictionary
-    pub fn command< S : Into< String > >( mut self, phrase : S, routine : Routine ) -> Self
-    {
-      let mut commands = self.commands.unwrap_or_default();
-      commands.insert( phrase.into(), routine );
-
-      self.commands = Some( commands );
-      self
-    }
   }
 
   impl Executor
   {
-    /// executes a program
+    /// Executes a program
+    /// 
+    /// Setup runtimes for each namespace into program and run it with specified execution type
     pub fn program( &self, program : Program< Namespace< ExecutableCommand > > ) -> Result< () >
     {
       let context = self.context.clone();
@@ -88,7 +100,9 @@ pub( crate ) mod private
       Ok( () )
     }
 
-    /// executes a namespace
+    /// Executes a namespace
+    /// 
+    /// Configure `Runtime` and run commands from namespace at runtime position while it isn't finished
     pub fn namespace( &self, namespace : Namespace< ExecutableCommand > ) -> Result< () >
     {
       let context = self.context.clone();
@@ -110,7 +124,9 @@ pub( crate ) mod private
       Ok( () )
     }
 
-    /// executes a command
+    /// Executes a command
+    /// 
+    /// Call command callback with context if it is necessary.
     pub fn command( &self, command : ExecutableCommand ) -> Result< () >
     {
       _exec_command( command, self.context.clone() )
