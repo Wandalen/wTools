@@ -55,7 +55,7 @@ pub( crate ) mod private
     }
   }
 
-  /// executes a program
+  /// executes a command
   pub fn _exec_command( command : ExecutableCommand, ctx : Context ) -> Result< () >
   {
     match command.routine

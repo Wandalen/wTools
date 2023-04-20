@@ -7,6 +7,18 @@ pub( crate ) mod private
   use std::{ fmt::Formatter, rc::Rc };
 
   /// Command Args
+  /// 
+  /// ```
+  /// use wca::prelude::*;
+  /// 
+  /// let args = Args( vec![ Value::String( "Hello, World!".to_string() ) ] );
+  /// 
+  /// let first_arg : &str = args.get_owned( 0 ).unwrap();
+  /// assert_eq!( "Hello, World!", first_arg );
+  /// 
+  /// let first_arg : &str = args[ 0 ].clone().into();
+  /// assert_eq!( "Hello, World!", first_arg );
+  /// ```
   #[ derive( Debug ) ]
   pub struct Args( pub Vec< Value > );
 
@@ -29,6 +41,15 @@ pub( crate ) mod private
   }
 
   /// Command Properties
+  /// 
+  /// ```
+  /// use wca::prelude::*;
+  /// 
+  /// let props = Props( [ ( "hello".to_string(), Value::String( "World!".to_string() ) ) ].into() );
+  /// let hello_prop : &str = props.get_owned( "hello" ).unwrap();
+  /// 
+  /// assert_eq!( "World!", hello_prop );
+  /// ```
   #[ derive( Debug ) ]
   pub struct Props( pub HashMap< String, Value > );
 

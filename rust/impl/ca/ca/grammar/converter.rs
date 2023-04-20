@@ -40,6 +40,7 @@ pub( crate ) mod private
 
   impl GrammarConverterFormer
   {
+    /// Insert a command to the commands list
     pub fn command( mut self, command : Command ) -> Self
     {
       let mut commands = self.commands.unwrap_or_default();
@@ -51,6 +52,7 @@ pub( crate ) mod private
       self
     }
 
+    /// Expands the list of commands with received commands 
     pub fn commands< V >( mut self, commands : V ) -> Self
     where
       V : Into< Vec< Command > >
@@ -70,7 +72,7 @@ pub( crate ) mod private
 
   impl GrammarConverter
   {
-    /// Converts raw program to executable
+    /// Converts raw program to grammatically correct
     pub fn to_program( &self, raw_program : Program< Namespace< RawCommand > > ) -> Result< Program< Namespace< GrammarCommand > > >
     {
       let namespaces = raw_program.namespaces
@@ -81,7 +83,7 @@ pub( crate ) mod private
       Ok( Program { namespaces } )
     }
 
-    /// Converts raw namespace to executable
+    /// Converts raw namespace to grammatically correct
     pub fn to_namespace( &self, raw_namespace : Namespace< RawCommand > ) -> Result< Namespace< GrammarCommand > >
     {
       let commands = raw_namespace.commands
@@ -92,7 +94,7 @@ pub( crate ) mod private
       Ok( Namespace { commands } )
     }
 
-    /// Converts raw command to executable
+    /// Converts raw command to grammatically correct
     pub fn to_command( &self, raw_command : RawCommand ) -> Result< GrammarCommand >
     {
       self.commands
