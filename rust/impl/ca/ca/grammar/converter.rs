@@ -14,7 +14,27 @@ pub( crate ) mod private
   use former::Former;
   use wtools::{ HashMap, Result, err };
 
-  /// Grammatically correct command
+  /// Represents a grammatically correct command with a phrase descriptor, a list of command subjects, and a set of command options.
+  /// 
+  /// # Example:
+  /// 
+  /// ```
+  /// # use wca::{ GrammarCommand, Value };
+  /// # use wtools::HashMap;
+  /// GrammarCommand
+  /// {
+  ///   phrase : "command".to_string(),
+  ///   subjects : vec![ Value::String( "subject_value".to_string() ), /* ... */ ],
+  ///   properties : HashMap::from_iter(
+  ///   [
+  ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
+  ///     /* ... */
+  ///   ])
+  /// };
+  /// ```
+  /// 
+  /// In the above example, a `GrammarCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a typed values.
+  /// 
   #[ derive( Debug ) ]
   pub struct GrammarCommand
   {
@@ -26,14 +46,40 @@ pub( crate ) mod private
     pub properties : HashMap< String, Value >,
   }
 
-  /// Converts from RawCommand to ExecutableCommand
   // TODO: Remove Clone
+  /// Converts a `RawCommand` to a `GrammarCommand` by performing validation and type casting on values.
+  /// 
+  /// ```
+  /// # use wca::{ Command, Type, GrammarConverter, RawCommand };
+  /// # use wtools::HashMap;
+  /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
+  /// let grammar = GrammarConverter::former()
+  /// .command
+  /// (
+  ///   Command::former()
+  ///   .hint( "hint" )
+  ///   .long_hint( "long_hint" )
+  ///   .phrase( "command" )
+  ///   .form()
+  /// )
+  /// .form();
+  ///
+  /// let raw_command = RawCommand
+  /// {
+  ///   name: "command".to_string(),
+  ///   subjects: vec![],
+  ///   properties: HashMap::new(),
+  /// };
+  ///
+  /// let grammar_command = grammar.to_command( raw_command )?;
+  /// # Ok( () ) }
+  /// ```
   #[ derive( Debug, Clone ) ]
   #[ derive( Former ) ]
   pub struct GrammarConverter
   {
-    /// all available commands
     // TODO: Make getters
+    /// all available commands
     #[ setter( false ) ]
     pub commands : HashMap< String, Vec< Command > >,
   }
@@ -73,6 +119,8 @@ pub( crate ) mod private
   impl GrammarConverter
   {
     /// Converts raw program to grammatically correct
+    /// 
+    /// Converts all namespaces into it with `to_namespace` method.
     pub fn to_program( &self, raw_program : Program< Namespace< RawCommand > > ) -> Result< Program< Namespace< GrammarCommand > > >
     {
       let namespaces = raw_program.namespaces
@@ -84,6 +132,8 @@ pub( crate ) mod private
     }
 
     /// Converts raw namespace to grammatically correct
+    /// 
+    /// Converts all commands into it with `to_command` method.
     pub fn to_namespace( &self, raw_namespace : Namespace< RawCommand > ) -> Result< Namespace< GrammarCommand > >
     {
       let commands = raw_namespace.commands
@@ -95,6 +145,8 @@ pub( crate ) mod private
     }
 
     /// Converts raw command to grammatically correct
+    /// 
+    /// Make sure that this command is described in the grammar and matches it(command itself and all it options too).
     pub fn to_command( &self, raw_command : RawCommand ) -> Result< GrammarCommand >
     {
       self.commands
