@@ -6,6 +6,7 @@
 #![ warn( missing_debug_implementations ) ]
 #![ warn( missing_docs ) ]
 
+
 //!
 //! The tool to make CLI ( commands user interface ). It is able to aggregate external binary applications, as well as functions, which are written in your language.
 //!
@@ -18,14 +19,14 @@
 #[ cfg( feature = "use_std" ) ]
 pub mod string
 {
-  pub use wtools::string::*;
+  //pub use wtools::string::*;
 }
 
 /// Errors.
 #[ cfg( feature = "use_std" ) ]
-pub use wtools::{ Result, BasicError, err };
+pub use error_tools::{ Result, BasicError, err };
 
-use wtools::meta::mod_interface;
+use meta_tools::meta::mod_interface;
 
 crate::mod_interface!
 {

@@ -2,7 +2,7 @@ pub( crate ) mod private
 {
   use crate::{ Routine, Value };
 
-  use wtools::HashMap;
+  use data_type::HashMap;
 
   /// Commands that be executed
   #[ derive( Debug, Clone ) ]

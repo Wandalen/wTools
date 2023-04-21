@@ -6,7 +6,7 @@ pub( crate ) mod private
     Parser,
     ca::parser::namespace::private::NamespaceParserFn,
   };
-  use wtools::{ Result, err };
+  use error_tools::{ Result, err };
   use nom::
   {
     character::complete::anychar,

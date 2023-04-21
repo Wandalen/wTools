@@ -12,7 +12,8 @@ pub( crate ) mod private
     commands_aggregator::help::{ HelpGeneratorFn, HelpVariants },
   };
 
-  use wtools::{ HashMap, Result, HashSet };
+  use data_type::{ HashMap, HashSet };
+  use error_tools::Result;
 
   /// CommandsAggragator
   #[ derive( Debug ) ] 

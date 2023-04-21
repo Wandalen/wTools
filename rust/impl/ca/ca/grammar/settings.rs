@@ -2,7 +2,8 @@ pub( crate ) mod private
 {
   use crate::Type;
 
-  use wtools::{ HashMap, Former };
+  use data_type::HashMap;
+  use former::Former;
 
   /// Command subject description
   #[ derive( Debug, Clone, PartialEq, Eq ) ]

@@ -2,7 +2,8 @@ pub( crate ) mod private
 {
   use crate::{ Context, Value };
 
-  use wtools::{ HashMap, Result };
+  use data_type::HashMap;
+  use error_tools::Result;
 
   use std::{ fmt::Formatter, rc::Rc };
 

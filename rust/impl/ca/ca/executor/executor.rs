@@ -9,7 +9,9 @@ pub( crate ) mod private
     ca::executor::runtime::_exec_command, 
   };
 
-  use wtools::{ Result, HashMap };
+  use data_type::HashMap;
+  use error_tools::Result;
+  use former::Former;
 
   #[ derive( Debug ) ]
   /// TODO: THINK
@@ -21,7 +23,7 @@ pub( crate ) mod private
     Simple,
   }
 
-  #[ derive( Debug, former::Former ) ]
+  #[ derive( Debug, Former ) ]
   /// TODO: THINK
   pub struct Executor
   {

@@ -10,7 +10,7 @@ pub( crate ) mod private
     Context, Routine,
   };
 
-  use wtools::{ Result, err };
+  use error_tools::{ Result, err };
 
   /// Program runtimes state
   #[ derive( Debug, Default, Clone ) ]

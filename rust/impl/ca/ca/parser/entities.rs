@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use wtools::HashMap;
+  use data_type::HashMap;
 
   /// Program representation
   #[ derive( Debug, Clone, PartialEq, Eq ) ]

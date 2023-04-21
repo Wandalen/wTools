@@ -63,7 +63,11 @@ name = "wca_trivial_sample"
 path = "sample/rust/wca_trivial_sample/src/main.rs"
 
 [dependencies]
-wtools = { version = "~0.2", path = "../../rust/wtools" }
+#wtools = { version = "~0.2", path = "../../rust/wtools" }
+error_tools = { version = "~0.1", path = "../../rust/error_tools" }
+meta_tools = { version = "~0.2", path = "../../rust/meta_tools" }
+iter_tools = { version = "~0.1", path = "../../rust/iter_tools" }
+data_type = { version = "~0.1", path = "../../rust/data_type" }
 former = { version = "~0.1", path = "../../rust/former" } # zzz : remove. fix
 anymap = "0.12"
 log = "0.4"
