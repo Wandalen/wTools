@@ -5,7 +5,7 @@ pub( crate ) mod private
     GrammarConverter, ExecutorConverter,
 
     Command,
-    Routine, Type
+    Routine, Type, commands_aggregator::formatter::private::{HelpFormat, md_generator}
   };
   
   use wtools::Itertools;
@@ -19,11 +19,13 @@ pub( crate ) mod private
       let name = &command.phrase;
       let hint = if command.long_hint.is_empty() { &command.hint } else { &command.long_hint };
       let subjects = command.subjects.iter().enumerate().fold( String::new(), | acc, ( number, subj ) | format!( "{acc} <subject_{number}:{:?}>", subj.kind ) );
-      let full_subjects = command.subjects.iter().enumerate().map( |( number, subj )| format!( "subject_{number} - {} [{:?}]", subj.hint, subj.kind ) ).join( "\n\t\t" );
+      let full_subjects = command.subjects.iter().enumerate().map( |( number, subj )| format!( "subject_{number} - {} [{:?}]", subj.hint, subj.kind ) ).join( "\n\t" );
       let properties = if command.properties.is_empty() { " " } else { " <properties> " };
-      let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{name} - {} [{:?}]", value.hint, value.kind ) ).join( "\n\t\t" );
-
-      format!( "{name}{subjects}{properties}- {hint}\n\tSubjects:\n\t\t{full_subjects}\n\tProperties:\n\t\t{full_properties}" )
+      let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{name} - {} [{:?}]", value.hint, value.kind ) ).join( "\n\t" );
+      
+      format!( "{name}{subjects}{properties}- {hint}\n{}{}", 
+      if command.subjects.is_empty() { "".to_string() } else { format!( "\nSubjects:\n\t{}", &full_subjects ) }, 
+      if command.properties.is_empty() { "".to_string() } else { format!( "\nProperties:\n\t{}",&full_properties ) }, )
     }
     else
     {
@@ -88,6 +90,7 @@ pub( crate ) mod private
 
       let help = Command::former()
       .hint( "prints information about existing commands" )
+      .property( "format", "help generates in format witch you write", Type::String, true )
       .phrase( &phrase )
       .form();
 
@@ -97,7 +100,10 @@ pub( crate ) mod private
       // generate and add routine of help command
       // replace old help command with new one
       let subject_help = executor.routines.remove( &phrase );
-      let text = helper.exec( grammar, None );
+      let generator = helper.clone();
+      // TODO: Will be static
+      let grammar = grammar.clone();
+
       let routine = Routine::new
       (
         move |( args, props )|
@@ -105,7 +111,23 @@ pub( crate ) mod private
           match &subject_help
           {
             Some( Routine::WithoutContext( help ) ) if !args.is_empty() => help(( args, props ))?,
-            _ => println!( "Help command\n{text}" ),
+            _ => 
+            {
+              let format_prop : String = props.get_owned( "format" ).unwrap_or_default();
+              let format = match format_prop.as_str()
+              {
+                "md" | "markdown" => HelpFormat::Markdown,
+                _ => HelpFormat::Another,
+              };
+              if format == HelpFormat::Markdown
+              {
+                println!( "Help command\n{text}", text = md_generator( &grammar ) );
+              }
+              else
+              {
+                println!( "Help command\n{text}", text = generator.exec( &grammar, None ) );
+              }
+            }
           }
 
           Ok( () )
@@ -124,7 +146,7 @@ pub( crate ) mod private
       let help = Command::former()
       .hint( "prints full information about a specified command" )
       .phrase( &phrase )
-      .subject( "command name", Type::String )
+      .subject( "command name", Type::String, true )
       .form();
 
       let command_variants = grammar.commands.entry( phrase.to_owned() ).or_insert_with( Vec::new );
@@ -133,9 +155,10 @@ pub( crate ) mod private
       // generate and add routine of help command
       // replace old help command with new one
       let full_help = executor.routines.remove( &phrase );
-      // TODO: Fix it somehow( Cloning grammar and helper )
-      let grammar = grammar.clone();
       let generator = helper.clone();
+      // TODO: Will be static
+      let grammar = grammar.clone();
+
       let routine = Routine::new
       (
         move |( args, props )|
@@ -190,16 +213,19 @@ pub( crate ) mod private
       .into_iter()
       .fold( vec![], | mut acc, ( help_name, cmds ) |
       {
-        let text = cmds.iter()
-        .map
-        (
-          | cmd | helper.exec( grammar, Some( cmd ) )
-        )
-        .join( "\n\n" );
+        let generator = helper.clone();
+        // TODO: Will be static
+        let grammar = grammar.clone();
 
-        // TODO: compile time or binary size?
         let routine = Routine::new( move | _ |
         {
+          let text = cmds.iter()
+          .map
+          (
+            | cmd | generator.exec( &grammar, Some( cmd ) )
+          )
+          .join( "\n\n" );
+
           println!( "Help for command\n\n{text}" );
 
           Ok( () )
