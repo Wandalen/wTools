@@ -17,7 +17,15 @@ fn alphabetical()
     &first_workspace,   // module1, module2
   ];
 
-  let expected = [ "module1", "module2", "module3", "module4", "module5" ];
+  let expected =
+  [
+    "willbe_workspace1_module1",
+    "willbe_workspace1_module2",
+
+    "willbe_workspace2_module3",
+    "willbe_workspace2_module4",
+    "willbe_workspace2_module5"
+  ];
 
   assert_eq!
   (

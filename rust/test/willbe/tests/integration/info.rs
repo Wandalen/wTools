@@ -15,7 +15,7 @@ fn package_info() -> Result< (), Box< dyn std::error::Error > >
   .success()
   .stdout
   (
-    predicate::str::contains( "Name: \"package\"" )
+    predicate::str::contains( "Name: \"willbe_verified_package\"" )
     .and
     (
       predicate::str::contains( "Version: \"0.1.0\"" )
