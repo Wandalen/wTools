@@ -34,6 +34,8 @@ data_type_published = { version = "*", package = "data_type" }
 fundamental_data_type_local = { version = "*", path = "../../alias/fundamental_data_type", package = "fundamental_data_type" }
 fundamental_data_type_published = { version = "*", package = "fundamental_data_type" }
 type_constructor_local = { version = "*", path = "../../rust/type_constructor", package = "type_constructor" }
+type_constructor_derive_make_meta_local = { version = "*", path = "../../rust/type_constructor_derive_make_meta", package = "type_constructor_derive_make_meta" }
+type_constructor_derive_pair_meta_local = { version = "*", path = "../../rust/type_constructor_derive_pair_meta", package = "type_constructor_derive_pair_meta" }
 type_constructor_published = { version = "*", package = "type_constructor" }
 winterval_local = { version = "*", path = "../../rust/winterval", package = "winterval" }
 winterval_published = { version = "*", package = "winterval" }

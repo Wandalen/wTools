@@ -105,8 +105,8 @@ required-features = [ "many" ]
 
 [dependencies]
 # inspect_type = { version = "~0.1", path = "../../rust/inspect_type", features = [ "nightly", "use_std" ] }
-derive_make = { path = "./rust/impl/dt/type_constructor/derive_make" }
-derive_pair = { path = "./rust/impl/dt/type_constructor/derive_pair" }
+type_constructor_derive_make_meta = { version = "~0.1", path = "../../rust/type_constructor_derive_make_meta" }
+type_constructor_derive_pair_meta = { version = "~0.1", path = "../../rust/type_constructor_derive_pair_meta" }
 
 [dev-dependencies]
 test_tools = { version = "~0.1", path = "../../rust/test_tools" }
