@@ -15,22 +15,22 @@ fn many_workspaces_each_info() -> Result< (), Box< dyn std::error::Error > >
   .success()
   .stdout
   (
-    predicate::str::contains( "Name: \"module1\"" ).count( 1 )
+    predicate::str::contains( "Name: \"willbe_workspace1_module1\"" ).count( 1 )
     .and
     (
-      predicate::str::contains( "Name: \"module2\"" ).count( 1 )
+      predicate::str::contains( "Name: \"willbe_workspace1_module2\"" ).count( 1 )
     )
     .and
     (
-      predicate::str::contains( "Name: \"module3\"" ).count( 1 )
+      predicate::str::contains( "Name: \"willbe_workspace2_module3\"" ).count( 1 )
     )
     .and
     (
-      predicate::str::contains( "Name: \"module4\"" ).count( 1 )
+      predicate::str::contains( "Name: \"willbe_workspace2_module4\"" ).count( 1 )
     )
     .and
     (
-      predicate::str::contains( "Name: \"module5\"" ).count( 1 )
+      predicate::str::contains( "Name: \"willbe_workspace2_module5\"" ).count( 1 )
     )
   );
 
@@ -52,14 +52,14 @@ fn workspace_each_info() -> Result< (), Box< dyn std::error::Error > >
   .success()
   .stdout
   (
-    predicate::str::contains( "Name: \"module1\"" ).count( 1 )
+    predicate::str::contains( "Name: \"willbe_with_deps_module1\"" ).count( 1 )
     .and
     (
-      predicate::str::contains( "Name: \"module2\"" ).count( 1 )
+      predicate::str::contains( "Name: \"willbe_with_deps_module2\"" ).count( 1 )
     )
     .and
     (
-      predicate::str::contains( "Name: \"module3\"" ).count( 1 )
+      predicate::str::contains( "Name: \"willbe_with_deps_module3\"" ).count( 1 )
     )
   );
 
@@ -81,7 +81,7 @@ fn single_package_each_info() -> Result< (), Box< dyn std::error::Error > >
   .success()
   .stdout
   (
-    predicate::str::contains( "Name: \"package\"" ).count( 1 )
+    predicate::str::contains( "Name: \"willbe_verified_package\"" ).count( 1 )
   );
 
   Ok( () )
@@ -123,7 +123,7 @@ fn another_command_after_each() -> Result< (), Box< dyn std::error::Error > >
   .success()
   .stdout
   (
-    predicate::str::contains( "Name: \"package\"" ).count( 2 )
+    predicate::str::contains( "Name: \"willbe_verified_package\"" ).count( 2 )
   );
 
   Ok( () )

@@ -26,8 +26,8 @@ pub( crate ) mod private
   ///   Command::former()
   ///   .phrase( "echo" )
   ///   .hint( "prints all subjects and properties" )
-  ///   .subject( "Subject", Type::String )
-  ///   .property( "property", "simple property", Type::String )
+  ///   .subject( "Subject", Type::String, false )
+  ///   .property( "property", "simple property", Type::String, false )
   ///   .form(),
   /// ])
   /// .executor(
