@@ -19,7 +19,7 @@ pub( crate ) mod private
   }
 
   /// Command representation
-  #[ derive( Debug, Clone, PartialEq, Eq ) ]
+  #[ derive( Debug, Default, Clone, PartialEq, Eq ) ]
   pub struct RawCommand
   {
     /// name of command without delimiter

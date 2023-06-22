@@ -9,7 +9,7 @@ pub( crate ) mod private
 
     Command,
     Routine,
-    commands_aggregator::help::{ HelpGeneratorFn, HelpVariants },
+    commands_aggregator::help::{ HelpGeneratorFn, HelpVariants, dot_command },
   };
 
   use wtools::{ HashMap, Result, HashSet };
@@ -131,6 +131,8 @@ pub( crate ) mod private
           help.generate( &ca.help_generator, &mut ca.grammar_converter, &mut ca.executor_converter );
         }
       }
+
+      dot_command( &mut ca.grammar_converter, &mut ca.executor_converter );
 
       ca
     }

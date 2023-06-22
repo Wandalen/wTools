@@ -128,6 +128,35 @@ tests_impls!
 
     a_id!( Ok( () ), ca.perform( "-command" ) );
   }
+
+  fn dot_command()
+  {
+    let ca = CommandsAggregator::former()
+    .grammar(
+    [
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "cmd.first" )
+      .form(),
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "cmd.second" )
+      .form(),
+    ])
+    .executor(
+    [
+      ( "cmd.first".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
+      ( "cmd.second".to_owned(), Routine::new( | _ | { println!( "Command2" ); Ok( () ) } ) ),
+    ])
+    .build();
+
+    a_id!( Ok( () ), ca.perform( "." ) );
+    a_id!( Ok( () ), ca.perform( ".cmd." ) );
+
+    a_true!( ca.perform( ".c." ).is_err() );
+  }
 }
 
 //
@@ -138,4 +167,5 @@ tests_index!
   with_only_general_help,
   custom_converters,
   custom_parser,
+  dot_command,
 }
