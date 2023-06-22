@@ -4,21 +4,44 @@ pub( crate ) mod private
 
   use wtools::{ HashMap, Former };
 
-  /// Command subject description
+  /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
+  /// 
+  /// This struct is used to describe a command's subject or property and validate it against the expected type. It contains a hint
+  /// string that provides guidance to the user for entering a valid value, and a `Type` enum value that represents the expected
+  /// type of the value.
+  ///
+  /// # Examples:
+  ///
+  /// ```
+  /// # use wca::{ Type, grammar::settings::ValueDescription };
+  /// let value_desc = ValueDescription { kind: Type::String, hint: "Enter your name".to_string() };
+  /// ```
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct ValueDescription
   {
-    /// subject hint
+    /// providing guidance to the user for entering a valid value
     pub hint : String,
-    /// subject type
+    /// expected type of a value
     pub kind : Type,
     /// subject optional parameter
     pub optional : bool,
   }
 
-  ///
   /// Command descriptor.
+  /// 
+  /// Based on this structure, the structure( `RawCommand` ) obtained after parsing will be validated and converted to `GrammarCommand`.
   ///
+  /// # Example:
+  /// 
+  /// ```
+  /// # use wca::{ Command, Type };
+  /// let command = Command::former()
+  /// .hint( "hint" )
+  /// .long_hint( "long_hint" )
+  /// .phrase( "command" )
+  /// .subject( "subject", Type::String )
+  /// .form();
+  /// ```
 
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   #[ derive( Former ) ]

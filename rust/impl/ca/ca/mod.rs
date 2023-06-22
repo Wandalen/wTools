@@ -1,13 +1,13 @@
 
 crate::mod_interface!
 {
-  /// Parsable objects
-  layer grammar;
-  /// Program parser
+  /// This component is responsible for parsing the raw string into `RawCommand`
   layer parser;
-  /// Program executor
+  /// Performs validation and type casting on commands values
+  layer grammar;
+  /// This component is responsible for performing
   layer executor;
-  /// -
+  /// This component is responsible for aggregating all commands
   layer commands_aggregator;
   /// User input
   layer input;

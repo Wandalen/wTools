@@ -12,7 +12,22 @@ pub( crate ) mod private
 
   use wtools::{ Result, err };
 
-  /// Program runtimes state
+  /// State of a program runtime
+  ///
+  /// `RuntimeState` contains information about the current state of a running program. It is used to store information that can be modified during program execution.
+  /// 
+  /// Can be used to change execution position at runtime.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// # use wca::RuntimeState;
+  /// let mut state = RuntimeState::default();
+  ///
+  /// state.pos = 5; // modify current execution position
+  ///
+  /// assert_eq!( state.pos, 5 );
+  /// ```
   #[ derive( Debug, Default, Clone ) ]
   pub struct RuntimeState
   {
@@ -20,9 +35,26 @@ pub( crate ) mod private
     pub pos : usize,
   }
 
-  /// Program runtime
+  /// Represents the state of the program's runtime, including the current context, execution position, and namespace of executable commands.
   /// 
-  /// Cloned Runtime will work with the same context
+  /// Cloned Runtime will work with the same context.
+  /// 
+  /// It performs callbacks to commands at the current execution position and, if necessary, provides context for them.
+  /// 
+  /// ```
+  /// # use wca::{ Runtime, Namespace, Context };
+  /// let runtime = Runtime
+  /// {
+  ///   context : Context::default(),
+  ///   pos : 0,
+  ///   namespace : Namespace
+  ///   {
+  ///     commands: vec![]
+  ///   }
+  /// };
+  /// 
+  /// assert!( runtime.is_finished() );
+  /// ```
   #[ derive( Debug, Clone ) ]
   pub struct Runtime
   {
@@ -42,7 +74,7 @@ pub( crate ) mod private
       self.namespace.commands.len() == self.pos
     }
 
-    /// executes current command and go to the next one
+    /// executes current command( command at current execution position )
     pub fn r#do( &mut self ) -> Result< () >
     {
       self.namespace.commands
