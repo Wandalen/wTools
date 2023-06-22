@@ -278,5 +278,5 @@ pub mod prelude
   };
 
   #[ cfg( feature = "make" ) ]
-  pub use derive_make::Make;
+  pub use type_constructor_derive_make_meta::Make;
 }

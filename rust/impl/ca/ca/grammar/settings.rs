@@ -23,6 +23,8 @@ pub( crate ) mod private
     pub hint : String,
     /// expected type of a value
     pub kind : Type,
+    /// subject optional parameter
+    pub optional : bool,
   }
 
   /// Command descriptor.
@@ -65,10 +67,10 @@ pub( crate ) mod private
   impl CommandFormer
   {
     /// Setter for separate properties.
-    pub fn subject< S : Into< String > >( mut self, hint : S, kind : Type ) -> Self
+    pub fn subject< S : Into< String > >( mut self, hint : S, kind : Type, optional : bool ) -> Self
     {
       let hint = hint.into();
-      let subject = ValueDescription { hint, kind };
+      let subject = ValueDescription { hint, kind, optional };
 
       let mut subjects = self.subjects.unwrap_or_default();
 
@@ -79,11 +81,11 @@ pub( crate ) mod private
     }
 
     /// Setter for separate properties.
-    pub fn property< S : AsRef< str >, H : Into< String > >( mut self, key : S, hint : H, kind : Type ) -> Self
+    pub fn property< S : AsRef< str >, H : Into< String > >( mut self, key : S, hint : H, kind : Type, optional : bool ) -> Self
     {
       let key = key.as_ref();
       let hint = hint.into();
-      let property = ValueDescription { hint, kind };
+      let property = ValueDescription { hint, kind, optional };
 
       let mut properties = self.properties.unwrap_or_default();
       let properties_aliases = self.properties_aliases.unwrap_or_default();

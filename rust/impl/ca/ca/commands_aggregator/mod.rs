@@ -4,4 +4,6 @@ crate::mod_interface!
   layer aggregator;
   /// Helper commands
   layer help;
+  /// -
+  layer formatter;
 }

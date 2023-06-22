@@ -111,7 +111,7 @@ pub( crate ) mod private
       i32 => | value | value as i32,
       i64 => | value | value as i64,
       f32 => | value | value as f32,
-      f64 => | value | value as f64;
+      f64 => | value | value;
     Value::String =>
       String => String::from,
       &'static str => | value : String | Box::leak( value.into_boxed_str() );
@@ -144,7 +144,6 @@ pub( crate ) mod private
         {
           let values = value
           .split( *delimeter )
-          .into_iter()
           .map( | val | kind.try_cast( val.into() ) )
           .collect::< Result< Vec< Value > > >()?;
           Ok( Value::List( values ) )
