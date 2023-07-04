@@ -1,0 +1,35 @@
+diff --git a/rust/impl/ca/ca/commands_aggregator/help.rs b/rust/impl/ca/ca/commands_aggregator/help.rs
+index 54c0e0e1d..0b710d99c 100644
+--- a/rust/impl/ca/ca/commands_aggregator/help.rs
++++ b/rust/impl/ca/ca/commands_aggregator/help.rs
+@@ -18,14 +18,14 @@ pub( crate ) mod private
+       let empty = Command::former()
+       .hint( "prints all available commands" )
+       .phrase( "" )
+-      .property( "command_prefix", "", Type::String )
++      .property( "command_prefix", "", Type::String, false )
+       .form();
+ 
+       let to_command = Command::former()
+       .hint( "prints all available commands that starts with" )
+       .phrase( "" )
+-      .subject( "command name", Type::String )
+-      .property( "command_prefix", "", Type::String )
++      .subject( "command name", Type::String, true )
++      .property( "command_prefix", "", Type::String, true )
+       .form();
+ 
+       let command_variants = grammar.commands.entry( "".to_string() ).or_insert_with( Vec::new );
+diff --git a/rust/impl/ca/ca/parser/entities.rs b/rust/impl/ca/ca/parser/entities.rs
+index 0a1c7c36a..d97ada63a 100644
+--- a/rust/impl/ca/ca/parser/entities.rs
++++ b/rust/impl/ca/ca/parser/entities.rs
+@@ -127,7 +127,7 @@ pub( crate ) mod private
+   /// 
+   /// In the above example, a `RawCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a raw value of "raw_prop_value".
+   /// 
+-  #[ derive( Debug, Clone, PartialEq, Eq ) ]
++  #[ derive( Default, Debug, Clone, PartialEq, Eq ) ]
+   pub struct RawCommand
+   {
+     /// name of command without delimiter
