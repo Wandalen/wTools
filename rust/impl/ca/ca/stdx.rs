@@ -74,7 +74,7 @@ pub( crate ) mod private
     {
       state: T,
       commands: Vec< crate::Command >,
-      handlers: Vec< ( String, crate::Routine ) >,
+      handlers: wtools::HashMap< String, crate::Routine >,
     }
 
     impl< T > CommandBuilder< T >
@@ -82,7 +82,7 @@ pub( crate ) mod private
       /// Constructs a `CommandBuilder` with the given state.
       pub fn with_state(state: T) -> Self
       {
-        Self { state, handlers: vec![], commands: vec![] }
+        Self { state, handlers: <_>::default(), commands: vec![] }
       }
     }
 
@@ -142,23 +142,23 @@ pub( crate ) mod private
         }
     }
 
-    impl< T: Copy + 'static > CommandBuilder< T > {
+    impl< T: Copy + 'static> CommandBuilder< T > {
         /// Adds a command to the `CommandBuilder`.
         pub fn command< F: Fn( T, crate::Args, crate::Props ) -> Result<(), E> + 'static, E: Debug>(
           mut self,
-          command: impl IntoBuilder<F, T>,
+          command : impl IntoBuilder< F, T >,
         ) -> Self
         {
           let Builder { handler, command } = command.into_builder();
 
-          let handler = crate::Routine::new(move | ( args, props ) |
+          let handler = crate::Routine::new( move | ( args, props ) |
           {
-            handler(self.state, args, props)
+            handler( self.state, args, props )
             .map_err( | report | crate::BasicError::new( format!( "{report:?}" ) ) )
           } );
 
 
-          self.handlers.push( (command.phrase.clone(), handler ) );
+          self.handlers.insert( command.phrase.clone(), handler );
           self.commands.push( command );
 
           self
@@ -169,10 +169,9 @@ pub( crate ) mod private
         /// This method finalizes the construction of the `CommandBuilder` by
         /// creating a `wca::CommandsAggregator` instance with the accumulated
         /// commands and handlers.
-        pub fn build(self) -> crate::CommandsAggregator
+        pub fn build( self ) -> crate::CommandsAggregator
         {
-          let handlers = std::collections::HashMap::from_iter( self.handlers );
-          crate::CommandsAggregator::former().grammar( self.commands ).executor( handlers ).build()
+          crate::CommandsAggregator::former().grammar( self.commands ).executor( self.handlers ).build()
         }
     }
 
@@ -195,7 +194,7 @@ pub( crate ) mod private
     }
   }
 
-  impl< F: Fn( T, crate::Args, crate::Props ) -> Result<(), E>, T, E > CommandExt< T > for F {}
+  impl< F: Fn( T, crate::Args, crate::Props ) -> Result< (), E>, T, E > CommandExt< T > for F {}
 
   /// A trait for converting a type into a `Builder`.
   pub trait IntoBuilder< F, T >: Sized
@@ -206,7 +205,7 @@ pub( crate ) mod private
 
   impl< F, T > IntoBuilder< F, T > for Builder< F >
   {
-    fn into_builder(self) -> Self
+    fn into_builder( self ) -> Self
     {
       self
     }
@@ -221,7 +220,8 @@ pub( crate ) mod private
   }
 }
 
-crate::mod_interface! {
+crate::mod_interface! 
+{
   prelude use cli;
   prelude use IntoBuilder;
   prelude use CommandExt;
