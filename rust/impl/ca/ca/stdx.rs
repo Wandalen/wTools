@@ -221,4 +221,9 @@ pub( crate ) mod private
   }
 }
 
-crate::mod_interface! {}
+crate::mod_interface! {
+  prelude use cli;
+  prelude use IntoBuilder;
+  prelude use CommandExt;
+  prelude use CommandBuilder;
+}
