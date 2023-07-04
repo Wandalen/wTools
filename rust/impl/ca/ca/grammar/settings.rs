@@ -14,7 +14,7 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::{ Type, grammar::settings::ValueDescription };
-  /// let value_desc = ValueDescription { kind: Type::String, hint: "Enter your name".to_string() };
+  /// let value_desc = ValueDescription { kind: Type::String, hint: "Enter your name".to_string(), optional: false };
   /// ```
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct ValueDescription
@@ -39,7 +39,7 @@ pub( crate ) mod private
   /// .hint( "hint" )
   /// .long_hint( "long_hint" )
   /// .phrase( "command" )
-  /// .subject( "subject", Type::String )
+  /// .subject( "subject", Type::String, false )
   /// .form();
   /// ```
 

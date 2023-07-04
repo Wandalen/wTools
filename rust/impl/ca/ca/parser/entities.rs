@@ -127,7 +127,7 @@ pub( crate ) mod private
   /// 
   /// In the above example, a `RawCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a raw value of "raw_prop_value".
   /// 
-  #[ derive( Debug, Clone, PartialEq, Eq ) ]
+  #[ derive( Default, Debug, Clone, PartialEq, Eq ) ]
   pub struct RawCommand
   {
     /// name of command without delimiter

@@ -18,14 +18,14 @@ pub( crate ) mod private
       let empty = Command::former()
       .hint( "prints all available commands" )
       .phrase( "" )
-      .property( "command_prefix", "", Type::String )
+      .property( "command_prefix", "", Type::String, false )
       .form();
 
       let to_command = Command::former()
       .hint( "prints all available commands that starts with" )
       .phrase( "" )
-      .subject( "command name", Type::String )
-      .property( "command_prefix", "", Type::String )
+      .subject( "command name", Type::String, true )
+      .property( "command_prefix", "", Type::String, true )
       .form();
 
       let command_variants = grammar.commands.entry( "".to_string() ).or_insert_with( Vec::new );
