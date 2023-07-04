@@ -1,5 +1,7 @@
 pub( crate ) mod private
 {
+  use core::fmt::Debug;
+
   /// Macro for parsing WCA arguments.
   ///
   /// # Examples
@@ -13,53 +15,50 @@ pub( crate ) mod private
   /// assert_eq!(name, "Rust");
   /// ```
   #[macro_export]
-  macro_rules! parse_args 
+  macro_rules! parse_args
   {
-    ($args:ident, mut $b:ident: $ty:ident $( $rest:tt )* ) => 
+    ($args:ident, mut $b:ident: $ty:ident $( $rest:tt )* ) =>
     {
       let mut $b: $ty = std::convert::TryFrom::try_from( $args.next().unwrap() ).unwrap();
       $crate::parse_args!($args $( $rest )* )
     };
-    ($args:ident, $b:ident: $ty:ident $( $rest:tt )* ) => 
+    ($args:ident, $b:ident: $ty:ident $( $rest:tt )* ) =>
     {
       let $b: $ty = std::convert::TryFrom::try_from( $args.next().unwrap() ).unwrap();
       $crate::parse_args!( $args $( $rest )* )
     };
-    ($args:ident, $b:ident $( $rest:tt )* ) => 
+    ($args:ident, $b:ident $( $rest:tt )* ) =>
     {
       let $b = $args.next().unwrap();
       $crate::parse_args!( $args $( $rest )* )
       };
-    ($args:ident, mut $b:ident $( $rest:tt )* ) => 
+    ($args:ident, mut $b:ident $( $rest:tt )* ) =>
     {
       let mut $b = $args.next().unwrap();
       $crate::parse_args!( $args $( $rest )* )
     };
-    ($args:ident) => 
+    ($args:ident) =>
     {
       assert!( $args.next().is_none() );
     };
-    ($args:ident,) => 
+    ($args:ident,) =>
     {
       $crate::parse_args!( $args )
     };
   }
 
-  /// A type alias for `miette::Result<T, E>`.
-  pub type Result< T = (), E = miette::Report > = miette::Result< T, E >;
-
   /// Creates a command-line interface (CLI) builder with the given initial state.
   ///
   /// This function initializes a `CommandBuilder` with the provided `state` and
   /// returns it for further configuration of the CLI.
-  pub fn cli< T >( state: T ) -> CommandBuilder< T, 0 > 
+  pub fn cli< T >( state: T ) -> CommandBuilder< T >
   {
     CommandBuilder::with_state( state )
   }
 
     /// A struct representing a property.
     #[ derive( Debug, Clone ) ]
-    pub struct Property< 'a > 
+    pub struct Property< 'a >
     {
       /// The name of the property.
       pub name : &'a str,
@@ -68,65 +67,70 @@ pub( crate ) mod private
       /// The tag representing the property's type.
       pub tag : crate::Type,
     }
-  
+
     /// A builder struct for constructing commands.
     #[ derive( Debug ) ]
-    pub struct CommandBuilder< T, const N : usize > 
+    pub struct CommandBuilder< T >
     {
       state: T,
-      commands: [ crate::Command; N ],
-      handlers: [ ( String, crate::Routine ); N ],
+      commands: Vec< crate::Command >,
+      handlers: Vec< ( String, crate::Routine ) >,
     }
-  
-    impl< T > CommandBuilder< T, 0 > 
+
+    impl< T > CommandBuilder< T >
     {
       /// Constructs a `CommandBuilder` with the given state.
-      pub fn with_state(state: T) -> Self 
+      pub fn with_state(state: T) -> Self
       {
-        Self { state, handlers: [], commands: [] }
+        Self { state, handlers: vec![], commands: vec![] }
       }
     }
-  
+
     #[ derive( Debug ) ]
-    pub struct Builder<F> 
+    pub struct Builder< F >
     {
       handler : F,
       command : crate::Command,
     }
-  
-    impl< F > Builder< F > 
+
+    impl< F > Builder< F >
     {
         pub fn new( handler: F ) -> Self
         {
-            let name = 
+            let name =
             {
                 use wtools::Itertools as _;
 
                 let name = std::any::type_name::< F >();
-                name.rfind( ':' ).map_or( name, | tail | &name[ tail + 1.. ] ).split( '_' ).join( "." )
+                let name = name.rfind( ':' ).map_or( name, | tail | &name[ tail + 1.. ] );
+                name.split( '_' ).join( "." )
             };
-  
+
             Self { handler, command : crate::Command::former().phrase( name ).form() }
         }
-  
-        pub fn arg( mut self, hint : &str, tag : crate::Type ) -> Self 
+
+        pub fn arg( mut self, hint : &str, tag : crate::Type ) -> Self
         {
-            self.command.subjects.push( crate::grammar::settings::ValueDescription 
+            self.command.subjects.push( crate::grammar::settings::ValueDescription
             {
               hint : hint.into(),
               kind : tag,
               optional : false,
-            });
+            } );
+
             self
         }
-  
-        pub fn properties< const N: usize >( mut self, properties: [ Property; N ] ) -> Self 
+
+        pub fn properties< const N: usize >( mut self, properties: [ Property; N ] ) -> Self
         {
-          for property in properties 
+
+          self.command.properties.reserve( properties.len() );
+
+          for property in properties
           {
             self.command.properties.insert(
               property.name.to_owned(),
-              crate::grammar::settings::ValueDescription 
+              crate::grammar::settings::ValueDescription
               {
                 hint : property.hint.to_owned(),
                 kind : property.tag,
@@ -137,67 +141,51 @@ pub( crate ) mod private
           self
         }
     }
-  
-    impl< T: Copy + 'static, const LEN: usize > CommandBuilder< T, LEN > {
+
+    impl< T: Copy + 'static > CommandBuilder< T > {
         /// Adds a command to the `CommandBuilder`.
-        pub fn command< F: Fn( T, crate::Args, crate::Props ) -> Result + 'static>(
-          self,
+        pub fn command< F: Fn( T, crate::Args, crate::Props ) -> Result<(), E> + 'static, E: Debug>(
+          mut self,
           command: impl IntoBuilder<F, T>,
-        ) -> CommandBuilder< T, { LEN + 1 } > 
+        ) -> Self
         {
           let Builder { handler, command } = command.into_builder();
-  
-          let handler = crate::Routine::new(move | ( args, props ) | 
+
+          let handler = crate::Routine::new(move | ( args, props ) |
           {
             handler(self.state, args, props)
-            .map_err(|report| crate::BasicError::new( format!( "{report:?}" ) ) )
-          });
-  
-          CommandBuilder 
-          {
-            state: self.state,
-            handlers: array_push( self.handlers, ( command.phrase.clone(), handler ) ),
-            commands: array_push( self.commands, command ),
-          }
+            .map_err( | report | crate::BasicError::new( format!( "{report:?}" ) ) )
+          } );
+
+
+          self.handlers.push( (command.phrase.clone(), handler ) );
+          self.commands.push( command );
+
+          self
         }
-  
+
         /// Builds and returns a `wca::CommandsAggregator` instance.
         ///
         /// This method finalizes the construction of the `CommandBuilder` by
         /// creating a `wca::CommandsAggregator` instance with the accumulated
         /// commands and handlers.
-        pub fn build(self) -> crate::CommandsAggregator 
+        pub fn build(self) -> crate::CommandsAggregator
         {
-          crate::CommandsAggregator::former().grammar( self.commands ).executor( self.handlers ).build()
+          let handlers = std::collections::HashMap::from_iter( self.handlers );
+          crate::CommandsAggregator::former().grammar( self.commands ).executor( handlers ).build()
         }
     }
-  
-    fn array_push< const N: usize, T >( this: [T; N], item: T ) -> [ T; N + 1 ] 
-    {
-      use std::mem::MaybeUninit;
-  
-      unsafe 
-      {
-        let mut uninit = MaybeUninit::< [ T; N + 1 ] >::uninit();
-  
-        let ptr = uninit.as_mut_ptr() as *mut T;
-        ( ptr as *mut [ T; N ] ).write( this );
-        ( ptr.add( N ) as *mut [ T; 1 ] ).write( [ item ] );
-  
-        uninit.assume_init()
-      }
-    }
 
-     /// An extension trait for commands.
+  /// An extension trait for commands.
   ///
   /// This trait provides additional methods for enhancing commands, such as
   /// adding arguments and properties.
   pub trait CommandExt< T >: Sized
   {
     /// Adds an argument to the command.
-    fn arg( self, hint : &str, tag : crate::Type ) -> Builder< Self > 
+    fn arg( self, hint : &str, tag : crate::Type ) -> Builder< Self >
     {
-      Builder::new(self).arg(hint, tag)
+      Builder::new( self ).arg( hint, tag )
     }
 
     /// Adds properties to the command.
@@ -207,26 +195,26 @@ pub( crate ) mod private
     }
   }
 
-  impl< F: Fn( T, crate::Args, crate::Props ) -> Result, T > CommandExt< T > for F {}
+  impl< F: Fn( T, crate::Args, crate::Props ) -> Result<(), E>, T, E > CommandExt< T > for F {}
 
   /// A trait for converting a type into a `Builder`.
-  pub trait IntoBuilder< F, T >: Sized 
+  pub trait IntoBuilder< F, T >: Sized
   {
     /// Converts the type into a `Builder` instance.
     fn into_builder( self ) -> Builder< F >;
   }
 
-  impl< F, T > IntoBuilder< F, T > for Builder< F > 
+  impl< F, T > IntoBuilder< F, T > for Builder< F >
   {
-    fn into_builder(self) -> Self 
+    fn into_builder(self) -> Self
     {
       self
     }
   }
 
-  impl< F: Fn( T, crate::Args, crate::Props ) -> Result, T > IntoBuilder< F, T > for F 
+  impl< F: Fn( T, crate::Args, crate::Props ) -> Result<(), E>, T, E > IntoBuilder< F, T > for F
   {
-    fn into_builder( self ) -> Builder< F > 
+    fn into_builder( self ) -> Builder< F >
     {
       Builder::new( self )
     }
