@@ -9,7 +9,7 @@ pub( crate ) mod private
   /// use wca::Value;
   ///
   /// let mut args = vec![Value::Number(42.), Value::String("Rust".into())].into_iter();
-  /// stdx::parse_args!(args, n: f64, name: String);
+  /// wca::parse_args!(args, n: f64, name: String);
   ///
   /// assert_eq!(n, 42.);
   /// assert_eq!(name, "Rust");
