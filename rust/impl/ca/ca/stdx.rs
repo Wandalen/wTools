@@ -51,7 +51,7 @@ pub( crate ) mod private
   ///
   /// This function initializes a `CommandBuilder` with the provided `state` and
   /// returns it for further configuration of the CLI.
-  pub fn cli< T >( state: T ) -> CommandBuilder< T >
+  pub fn cli< T >( state : T ) -> CommandBuilder< T >
   {
     CommandBuilder::with_state( state )
   }
@@ -72,17 +72,17 @@ pub( crate ) mod private
     #[ derive( Debug ) ]
     pub struct CommandBuilder< T >
     {
-      state: T,
-      commands: Vec< crate::Command >,
-      handlers: wtools::HashMap< String, crate::Routine >,
+      state : T,
+      commands : Vec< crate::Command >,
+      handlers : wtools::HashMap< String, crate::Routine >,
     }
 
     impl< T > CommandBuilder< T >
     {
       /// Constructs a `CommandBuilder` with the given state.
-      pub fn with_state(state: T) -> Self
+      pub fn with_state( state: T ) -> Self
       {
-        Self { state, handlers: <_>::default(), commands: vec![] }
+        Self { state, handlers : <_>::default(), commands : vec![] }
       }
     }
 
@@ -95,73 +95,73 @@ pub( crate ) mod private
 
     impl< F > Builder< F >
     {
-        pub fn new( handler: F ) -> Self
+      pub fn new( handler: F ) -> Self
+      {
+        let name =
         {
-            let name =
+          use wtools::Itertools as _;
+
+          let name = std::any::type_name::< F >();
+          let name = name.rfind( ':' ).map_or( name, | tail | &name[ tail + 1.. ] );
+          name.split( '_' ).join( "." )
+        };
+
+        Self { handler, command : crate::Command::former().phrase( name ).form() }
+      }
+
+      pub fn arg( mut self, hint : &str, tag : crate::Type ) -> Self
+      {
+        self.command.subjects.push( crate::grammar::settings::ValueDescription
+        {
+          hint : hint.into(),
+          kind : tag,
+          optional : false,
+        } );
+
+        self
+      }
+
+      pub fn properties< const N: usize >( mut self, properties : [ Property; N ] ) -> Self
+      {
+        self.command.properties.reserve( properties.len() );
+
+        for property in properties
+        {
+          self.command.properties.insert(
+            property.name.to_owned(),
+            crate::grammar::settings::ValueDescription
             {
-                use wtools::Itertools as _;
-
-                let name = std::any::type_name::< F >();
-                let name = name.rfind( ':' ).map_or( name, | tail | &name[ tail + 1.. ] );
-                name.split( '_' ).join( "." )
-            };
-
-            Self { handler, command : crate::Command::former().phrase( name ).form() }
+              hint : property.hint.to_owned(),
+              kind : property.tag,
+              optional : true,
+            },
+          );
         }
-
-        pub fn arg( mut self, hint : &str, tag : crate::Type ) -> Self
-        {
-            self.command.subjects.push( crate::grammar::settings::ValueDescription
-            {
-              hint : hint.into(),
-              kind : tag,
-              optional : false,
-            } );
-
-            self
-        }
-
-        pub fn properties< const N: usize >( mut self, properties: [ Property; N ] ) -> Self
-        {
-
-          self.command.properties.reserve( properties.len() );
-
-          for property in properties
-          {
-            self.command.properties.insert(
-              property.name.to_owned(),
-              crate::grammar::settings::ValueDescription
-              {
-                hint : property.hint.to_owned(),
-                kind : property.tag,
-                optional : true,
-              },
-            );
-          }
-          self
-        }
+        
+        self
+      }
     }
 
     impl< T: Copy + 'static> CommandBuilder< T > {
-        /// Adds a command to the `CommandBuilder`.
-        pub fn command< F: Fn( T, crate::Args, crate::Props ) -> Result<(), E> + 'static, E: Debug>(
-          mut self,
-          command : impl IntoBuilder< F, T >,
-        ) -> Self
+      /// Adds a command to the `CommandBuilder`.
+      pub fn command< F: Fn( T, crate::Args, crate::Props ) -> Result< (), E > + 'static, E: Debug >(
+        mut self,
+        command : impl IntoBuilder< F, T >,
+      ) -> Self
+      {
+        let Builder { handler, command } = command.into_builder();
+
+        let handler = crate::Routine::new( move | ( args, props ) |
         {
-          let Builder { handler, command } = command.into_builder();
-
-          let handler = crate::Routine::new( move | ( args, props ) |
-          {
-            handler( self.state, args, props )
-            .map_err( | report | crate::BasicError::new( format!( "{report:?}" ) ) )
-          } );
+          handler( self.state, args, props )
+          .map_err( | report | crate::BasicError::new( format!( "{report:?}" ) ) )
+        } );
 
 
-          self.handlers.insert( command.phrase.clone(), handler );
-          self.commands.push( command );
+        self.handlers.insert( command.phrase.clone(), handler );
+        self.commands.push( command );
 
-          self
+        self
         }
 
         /// Builds and returns a `wca::CommandsAggregator` instance.
