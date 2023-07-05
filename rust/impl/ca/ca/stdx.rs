@@ -17,31 +17,31 @@ pub( crate ) mod private
   #[macro_export]
   macro_rules! parse_args
   {
-    ($args:ident, mut $b:ident: $ty:ident $( $rest:tt )* ) =>
+    ( $args : ident, mut $b : ident : $ty : ident $( $rest : tt )* ) =>
     {
-      let mut $b: $ty = std::convert::TryFrom::try_from( $args.next().unwrap() ).unwrap();
-      $crate::parse_args!($args $( $rest )* )
-    };
-    ($args:ident, $b:ident: $ty:ident $( $rest:tt )* ) =>
-    {
-      let $b: $ty = std::convert::TryFrom::try_from( $args.next().unwrap() ).unwrap();
+      let mut $b : $ty = std::convert::TryFrom::try_from( $args.next().unwrap() ).unwrap();
       $crate::parse_args!( $args $( $rest )* )
     };
-    ($args:ident, $b:ident $( $rest:tt )* ) =>
+    ( $args : ident, $b : ident : $ty : ident $( $rest : tt )* ) =>
+    {
+      let $b : $ty = std::convert::TryFrom::try_from( $args.next().unwrap() ).unwrap();
+      $crate::parse_args!( $args $( $rest )* )
+    };
+    ( $args : ident, $b : ident $( $rest : tt )* ) =>
     {
       let $b = $args.next().unwrap();
       $crate::parse_args!( $args $( $rest )* )
       };
-    ($args:ident, mut $b:ident $( $rest:tt )* ) =>
+    ( $args : ident, mut $b : ident $( $rest : tt )* ) =>
     {
       let mut $b = $args.next().unwrap();
       $crate::parse_args!( $args $( $rest )* )
     };
-    ($args:ident) =>
+    ( $args : ident ) =>
     {
       assert!( $args.next().is_none() );
     };
-    ($args:ident,) =>
+    ( $args : ident, ) =>
     {
       $crate::parse_args!( $args )
     };
