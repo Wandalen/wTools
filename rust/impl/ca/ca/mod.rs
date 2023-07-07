@@ -11,4 +11,6 @@ crate::mod_interface!
   layer commands_aggregator;
   /// User input
   layer input;
+  /// The missing batteries of WCA.
+  layer stdx;
 }

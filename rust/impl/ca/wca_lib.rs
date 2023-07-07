@@ -55,4 +55,5 @@ pub use ca::
   grammar,
   executor,
   commands_aggregator,
+  stdx,
 };
