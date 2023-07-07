@@ -160,9 +160,9 @@ pub( crate ) mod private
     /// command's properties collection using the `name` as the key.
     /// 
     /// # Example
-    /// ```no_run
+    /// ```no_rust
     /// let ca = cli(())
-    ///   .property("name", "Name property", Type::String)
+    ///   .command(user.property("name", "Name property", Type::String))
     ///   .build();
     /// ```
     ///
@@ -227,7 +227,7 @@ pub( crate ) mod private
 
   impl< T: Copy + 'static > CommandBuilder< T > {
     /// Adds a command to the `CommandBuilder`.
-    /// ```no_run
+    /// ```no_rust
     /// let ca = cli(()) // Add commands using the builder pattern
     /// .command(command)
     /// .command(command2)
