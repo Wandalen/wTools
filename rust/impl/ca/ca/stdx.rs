@@ -68,6 +68,10 @@ pub( crate ) mod private
     pub tag : crate::Type,
   }
 
+  impl< 'a > Property< 'a > {
+    pub fn new( name : &'a str, hint : &'a str, tag : crate::Type ) -> Self { Self { name, hint, tag } }
+  }
+
   /// A builder struct for constructing commands.
   #[ derive( Debug ) ]
   pub struct CommandBuilder< T >
@@ -154,6 +158,13 @@ pub( crate ) mod private
     /// This method takes in the `name`, `hint`, and `kind` parameters to create a `ValueDescription`
     /// object representing a property. The `ValueDescription` object is then inserted into the
     /// command's properties collection using the `name` as the key.
+    /// 
+    /// # Example
+    /// ```no_run
+    /// let ca = cli(())
+    ///   .property("name", "Name property", Type::String)
+    ///   .build();
+    /// ```
     ///
     /// # Arguments
     ///
@@ -185,6 +196,14 @@ pub( crate ) mod private
     /// This method takes in an array of `Property` objects and adds them to the command's properties.
     /// The properties are provided in the `properties` parameter as an array of length `N`.
     ///
+    /// ```no_std
+    /// let ca = cli(())
+    ///   .properties([
+    ///      Property::new("name", "Name property", Type::String),
+    ///      Property::new("age", "Age property", Type::Integer),
+    ///   ]).build();
+    /// ```
+    /// 
     /// # Arguments
     ///
     /// * `properties` - An array of `Property` objects representing the properties to be added.
@@ -208,6 +227,15 @@ pub( crate ) mod private
 
   impl< T: Copy + 'static > CommandBuilder< T > {
     /// Adds a command to the `CommandBuilder`.
+    /// ```no_run
+    /// let ca = cli(()) // Add commands using the builder pattern
+    /// .command(command)
+    /// .command(command2)
+    /// .command(echo.arg("string", Type::String)) // Customize your commands by chaining methods such as properties
+    ///                                            // property, and arg to add properties and arguments.
+    /// .build();
+    /// 
+    /// ```
     pub fn command< F: Fn( T, crate::Args, crate::Props ) -> Result< (), E > + 'static + Copy, E : Debug >(
       mut self,
       command : impl IntoBuilder< F, T >,
