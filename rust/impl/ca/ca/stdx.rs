@@ -142,7 +142,7 @@ pub( crate ) mod private
     }
   }
 
-  impl< T: Copy + 'static> CommandBuilder< T > {
+  impl< T: Copy + 'static > CommandBuilder< T > {
     /// Adds a command to the `CommandBuilder`.
     pub fn command< F: Fn( T, crate::Args, crate::Props ) -> Result< (), E > + 'static, E: Debug >(
       mut self,
@@ -211,7 +211,7 @@ pub( crate ) mod private
     }
   }
 
-  impl< F: Fn( T, crate::Args, crate::Props ) -> Result<(), E>, T, E > IntoBuilder< F, T > for F
+  impl< F: Fn( T, crate::Args, crate::Props ) -> Result< (), E >, T, E > IntoBuilder< F, T > for F
   {
     fn into_builder( self ) -> Builder< F >
     {
