@@ -225,7 +225,7 @@ pub( crate ) mod private
     }
   }
 
-  impl< T: Copy + 'static > CommandBuilder< T > {
+  impl< T: Clone + 'static > CommandBuilder< T > {
     /// Adds a command to the `CommandBuilder`.
     /// ```no_rust
     /// let ca = cli(()) // Add commands using the builder pattern
@@ -242,13 +242,14 @@ pub( crate ) mod private
     ) -> Self
     {
       let Builder { handler, command } = command.into_builder();
+      let state = self.state.clone();
 
-      let handler = crate::Routine::new( move | ( args, props ) |
-      {
-        handler( self.state, args, props )
+      let closure = closure::closure!( | ( args, props ) | {
+        handler( state.clone(), args, props )
         .map_err( | report | crate::BasicError::new( format!( "{report:?}" ) ) )
-      } );
+      });
 
+      let handler = crate::Routine::new( closure );
 
       self.handlers.insert( command.phrase.clone(), handler );
       self.commands.push( command );
