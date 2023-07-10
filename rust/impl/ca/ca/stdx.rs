@@ -324,4 +324,5 @@ crate::mod_interface!
   prelude use IntoBuilder;
   prelude use CommandExt;
   prelude use CommandBuilder;
+  prelude use Property;
 }
