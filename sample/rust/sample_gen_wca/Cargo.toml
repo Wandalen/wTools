@@ -8,4 +8,4 @@ name = "app"
 path = "src/main.rs"
 
 [dependencies]
-wca = { version = "~0.1", path = "../../../module/move/wca" }
+wca = { git = "https://github.com/f01dab1e/wTools.git", branch = "f0kek" }
