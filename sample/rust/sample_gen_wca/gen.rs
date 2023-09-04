@@ -17,9 +17,7 @@ fn cmd((): (), _args: wca::Args, _props: wca::Props) -> Result<(), wca::BasicErr
 }}
     
 fn main() {{
-    let memory_usage = ra_ap_profile::memory_usage();
     let aggregator = cli(()).{commands}.build();
-    println!(\"{{}}\", ra_ap_profile::memory_usage() - memory_usage);
     let args = std::env::args().skip(1).collect::<Vec<_>>().join(\" \");
     aggregator.perform(args).unwrap();
 }}"
