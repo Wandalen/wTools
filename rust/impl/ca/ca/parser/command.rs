@@ -1,12 +1,12 @@
 pub( crate ) mod private
 {
-  use crate::
+  use crate::ca::
   {
     Parser,
     RawCommand as Command,
     parser::parser::any_word,
   };
-use wtools::{ HashMap, Result, err };
+  use wtools::{ HashMap, Result, err };
   use nom::
   {
     branch::alt,
@@ -246,6 +246,6 @@ use wtools::{ HashMap, Result, err };
 
 crate::mod_interface!
 {
-  prelude use CommandParser;
+  exposed use CommandParser;
   protected use CommandParserFn;
 }

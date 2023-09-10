@@ -2,14 +2,14 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/wca/latest/wca/" ) ]
-#![ warn( rust_2021_compatibility ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
+#![ deny( rust_2021_compatibility ) ]
+#![ deny( missing_debug_implementations ) ]
+#![ deny( missing_docs ) ]
 
 //!
 //! The tool to make CLI ( commands user interface ). It is able to aggregate external binary applications, as well as functions, which are written in your language.
 //!
-//! 
+//!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "doc/modules/wca/", "wca.md" ) ) ]
 
@@ -27,6 +27,7 @@ pub mod string
 /// Errors.
 #[ cfg( feature = "use_std" ) ]
 pub use wtools::{ Result, BasicError, err };
+// xxx : check
 
 use wtools::meta::mod_interface;
 
@@ -46,14 +47,15 @@ crate::mod_interface!
 
 }
 
-#[ cfg( feature = "use_std" ) ]
-#[ doc( inline ) ]
-pub use ca::
-{
-  input,
-  parser,
-  grammar,
-  executor,
-  commands_aggregator,
-  stdx,
-};
+// xxx : qqq : rid off. use mod_interface
+// #[ cfg( feature = "use_std" ) ]
+// #[ doc( inline ) ]
+// pub use ca::
+// {
+//   input,
+//   parser,
+//   grammar,
+//   executor,
+//   commands_aggregator,
+//   adapter,
+// };

@@ -1,6 +1,7 @@
 pub( crate ) mod private
 {
   use core::fmt::Debug;
+  use crate::ca::grammar;
 
   /// Macro for parsing WCA arguments.
   ///
@@ -51,7 +52,7 @@ pub( crate ) mod private
   ///
   /// This function initializes a `CommandBuilder` with the provided `state` and
   /// returns it for further configuration of the CLI.
-  pub fn cli< T >( state : T ) -> CommandBuilder< T >
+  pub fn cui< T >( state : T ) -> CommandBuilder< T >
   {
     CommandBuilder::with_state( state )
   }
@@ -68,7 +69,9 @@ pub( crate ) mod private
     pub tag : crate::Type,
   }
 
-  impl< 'a > Property< 'a > {
+  impl< 'a > Property< 'a >
+  {
+    /// Constructor of a property.
     pub fn new( name : &'a str, hint : &'a str, tag : crate::Type ) -> Self { Self { name, hint, tag } }
   }
 
@@ -103,7 +106,7 @@ pub( crate ) mod private
     ///
     /// This method takes in a handler function `handler` and creates a new instance of the command.
     /// The `handler` function is used to handle the execution logic associated with the command.
-    /// 
+    ///
     /// # Arguments
     ///
     /// * `handler` - The handler function that will be invoked when the command is executed.
@@ -112,6 +115,7 @@ pub( crate ) mod private
     ///
     /// A new instance of the command with the specified `handler`.
     ///
+    #[ inline ]
     pub fn new( handler: F ) -> Self
     {
       let name =
@@ -125,25 +129,26 @@ pub( crate ) mod private
 
       Self { handler, command : crate::Command::former().phrase( name ).form() }
     }
-    
-      /// Adds an argument to the command.
-      ///
-      /// This method takes in the `hint` and `tag` parameters to create a `ValueDescription` object
-      /// representing an argument. The `ValueDescription` object is then appended to the command's
-      /// `subjects` collection.
-      ///
-      /// # Arguments
-      ///
-      /// * `hint` - The hint for the argument, represented as a string slice (`&str`).
-      /// * `tag` - The type of the argument, represented by a `Type` object from the `crate::Type` module.
-      ///
-      /// # Returns
-      ///
-      /// The modified command instance with the argument added.
-      ///
-      pub fn arg( mut self, hint : &str, tag : crate::Type ) -> Self
+
+    /// Adds an argument to the command.
+    ///
+    /// This method takes in the `hint` and `tag` parameters to create a `ValueDescription` object
+    /// representing an argument. The `ValueDescription` object is then appended to the command's
+    /// `subjects` collection.
+    ///
+    /// # Arguments
+    ///
+    /// * `hint` - The hint for the argument, represented as a string slice (`&str`).
+    /// * `tag` - The type of the argument, represented by a `Type` object from the `crate::Type` module.
+    ///
+    /// # Returns
+    ///
+    /// The modified command instance with the argument added.
+    ///
+    #[ inline ]
+    pub fn arg( mut self, hint : &str, tag : crate::Type ) -> Self
     {
-      self.command.subjects.push( crate::grammar::settings::ValueDescription
+      self.command.subjects.push( grammar::settings::ValueDescription
       {
         hint : hint.into(),
         kind : tag,
@@ -152,16 +157,16 @@ pub( crate ) mod private
 
       self
     }
-  
+
     /// Adds a property to the command.
     ///
     /// This method takes in the `name`, `hint`, and `kind` parameters to create a `ValueDescription`
     /// object representing a property. The `ValueDescription` object is then inserted into the
     /// command's properties collection using the `name` as the key.
-    /// 
+    ///
     /// # Example
     /// ```no_rust
-    /// let ca = cli(())
+    /// let ca = cui(())
     ///   .command(user.property("name", "Name property", Type::String))
     ///   .build();
     /// ```
@@ -176,11 +181,12 @@ pub( crate ) mod private
     ///
     /// The modified command instance with the property added.
     ///
+    #[ inline ]
     pub fn property( mut self, name : impl ToString , hint : impl ToString, kind : crate::Type ) -> Self
     {
       self.command.properties.insert(
         name.to_string(),
-        crate::grammar::settings::ValueDescription 
+        grammar::settings::ValueDescription
         {
           hint : hint.to_string(),
           kind,
@@ -197,13 +203,13 @@ pub( crate ) mod private
     /// The properties are provided in the `properties` parameter as an array of length `N`.
     ///
     /// ```no_std
-    /// let ca = cli(())
+    /// let ca = cui(())
     ///   .properties([
     ///      Property::new("name", "Name property", Type::String),
     ///      Property::new("age", "Age property", Type::Integer),
     ///   ]).build();
     /// ```
-    /// 
+    ///
     /// # Arguments
     ///
     /// * `properties` - An array of `Property` objects representing the properties to be added.
@@ -212,6 +218,7 @@ pub( crate ) mod private
     ///
     /// The modified command instance with the properties added.
     ///
+    #[ inline ]
     pub fn properties< const N: usize >( mut self, properties : [ Property; N ] ) -> Self
     {
       self.command.properties.reserve( properties.len() );
@@ -220,26 +227,31 @@ pub( crate ) mod private
       {
         self = self.property(name, hint, tag);
       }
-        
+
       self
     }
   }
 
-  impl< T: Clone + 'static > CommandBuilder< T > {
+  impl< T: Clone + 'static > CommandBuilder< T >
+  {
     /// Adds a command to the `CommandBuilder`.
     /// ```no_rust
-    /// let ca = cli(()) // Add commands using the builder pattern
+    /// let ca = cui(()) // Add commands using the builder pattern
     /// .command(command)
     /// .command(command2)
     /// .command(echo.arg("string", Type::String)) // Customize your commands by chaining methods such as properties
     ///                                            // property, and arg to add properties and arguments.
     /// .build();
-    /// 
+    ///
     /// ```
-    pub fn command< F: Fn( T, crate::Args, crate::Props ) -> Result< (), E > + 'static + Copy, E : Debug >(
+    pub fn command< F, E >
+    (
       mut self,
       command : impl IntoBuilder< F, T >,
     ) -> Self
+    where
+      F : Fn( T, crate::Args, crate::Props ) -> Result< (), E > + 'static + Copy,
+      E : Debug,
     {
       let Builder { handler, command } = command.into_builder();
       let state = self.state.clone();
@@ -272,14 +284,14 @@ pub( crate ) mod private
   ///
   /// This trait provides additional methods for enhancing commands, such as
   /// adding arguments and properties.
-  pub trait CommandExt< T >: Sized
+  pub trait CommandExt< T > : Sized
   {
     /// Adds an argument to the command.
     fn arg( self, hint : &str, tag : crate::Type ) -> Builder< Self >
     {
       Builder::new( self ).arg( hint, tag )
     }
-  
+
     /// Adds property to the command.
     fn property< const N: usize >( self, name : impl ToString , hint : impl ToString, kind : crate::Type ) -> Builder< Self >
     {
@@ -296,7 +308,7 @@ pub( crate ) mod private
   impl< F: Fn( T, crate::Args, crate::Props ) -> Result< (), E>, T, E > CommandExt< T > for F {}
 
   /// A trait for converting a type into a `Builder`.
-  pub trait IntoBuilder< F, T >: Sized
+  pub trait IntoBuilder< F, T > : Sized
   {
     /// Converts the type into a `Builder` instance.
     fn into_builder( self ) -> Builder< F >;
@@ -319,11 +331,11 @@ pub( crate ) mod private
   }
 }
 
-crate::mod_interface! 
+crate::mod_interface!
 {
-  prelude use cli;
-  prelude use IntoBuilder;
-  prelude use CommandExt;
-  prelude use CommandBuilder;
-  prelude use Property;
+  exposed use cui;
+  exposed use IntoBuilder;
+  exposed use CommandExt;
+  exposed use CommandBuilder;
+  exposed use Property;
 }

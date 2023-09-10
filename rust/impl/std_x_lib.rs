@@ -3,8 +3,8 @@
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/std_x/latest/std_x/" ) ]
 #![ warn( rust_2018_idioms ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
+#![ deny( missing_debug_implementations ) ]
+#![ deny( missing_docs ) ]
 
 //!
 //! std_x - Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.

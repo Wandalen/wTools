@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use crate::
+  use crate::ca::
   {
     Namespace, RawCommand,
     Parser,
@@ -81,5 +81,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use NamespaceParser;
+  exposed use NamespaceParser;
 }

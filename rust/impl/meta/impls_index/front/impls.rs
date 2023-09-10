@@ -402,5 +402,5 @@ pub mod prelude
   #[ doc( inline ) ]
   pub use ::impls_index_meta::impls3;
   #[ doc( inline ) ]
-  pub use impls1 as impls;
+  pub use impls3 as impls;
 }

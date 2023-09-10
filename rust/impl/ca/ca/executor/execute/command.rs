@@ -7,7 +7,7 @@ pub( crate ) mod private
   /// Represents a command that can be executed, with a list of command subjects and a set of command options, and a callback function that defines the command logic.
   ///
   /// # Example:
-  /// 
+  ///
   /// ```
   /// # use wca::{ ExecutableCommand, Routine, Value };
   /// # use wtools::HashMap;
@@ -22,7 +22,7 @@ pub( crate ) mod private
   ///   routine : Routine::new( |( args, props )| Ok( () ) )
   /// };
   /// ```
-  /// 
+  ///
   #[ derive( Debug, Clone ) ]
   pub struct ExecutableCommand
   {
