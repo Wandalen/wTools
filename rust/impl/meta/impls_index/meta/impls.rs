@@ -17,9 +17,11 @@ use proc_macro_tools::{ Result, Many, syn };
 pub struct Item2
 {
   pub optional : Option< Token![ ? ] >,
-  // pub optional : syn::LitInt,
   pub func : syn::Item,
 }
+
+impl AsMuchAsPossibleNoDelimiter for Item2 {}
+// xxx : qqq : introduce trait
 
 //
 
@@ -49,44 +51,17 @@ impl quote::ToTokens for Item2
 #[ derive( Debug ) ]
 pub struct Items2
 (
-  pub Vec< Item2 >,
+  pub Many< Item2 >,
 );
 
-// zzz : use?
-// types!
-// {
-//   ///
-//   /// Module-specific item.
-//   ///
-//
-//   #[ derive( Debug, PartialEq, Eq, Clone ) ]
-//   pub many Many : syn::Item
-// }
-
-impl From< Many< Item2 > > for Items2
-{
-  fn from( src : Many< Item2 > ) -> Self
-  {
-    Self( src.0 )
-  }
-}
-
 //
 
-// xxx : remove it. Many should generate it.
 impl syn::parse::Parse for Items2
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
-    let mut items = vec![];
-
-    while !input.is_empty()
-    {
-      let item : Item2 = input.parse()?;
-      items.push( item );
-    }
-
-    Ok( Self( items ) )
+    let many = input.parse()?;
+    Ok( Self( many ) )
   }
 }
 

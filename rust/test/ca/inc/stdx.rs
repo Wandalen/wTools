@@ -5,7 +5,7 @@ tests_impls!
 {
   fn simple()
   {
-    fn command(() : (), args : Args, props : Props) -> Result< (), () >
+    fn command( () : (), args : Args, props : Props) -> Result< (), () >
     {
       Ok( () )
     }
@@ -15,7 +15,7 @@ tests_impls!
       Ok( () )
     }
 
-    fn echo( () : (), args: Args, props: Props ) -> Result< (), () >
+    fn echo( () : (), args : Args, props : Props ) -> Result< (), () >
     {
       Ok( () )
     }
@@ -33,7 +33,6 @@ tests_impls!
     a_id!( Ok( () ), ca.perform( ".help.help" ) );
 
     a_true!( ca.perform( ".help.help.help" ).is_err() );
-
     a_true!( ca.perform( ".echo 34" ).is_ok() );
     a_true!( ca.perform( ".echo" ).is_err() );
   }
