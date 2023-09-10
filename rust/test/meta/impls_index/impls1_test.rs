@@ -6,7 +6,7 @@ use TheModule::prelude::impls1;
 
 tests_impls!
 {
-  #[ test ]
+
   fn impls_basic()
   {
 

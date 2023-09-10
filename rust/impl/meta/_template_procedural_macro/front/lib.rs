@@ -26,6 +26,8 @@ pub mod dependency
 pub mod protected
 {
   pub use super::exposed::*;
+  pub use procedural_macro_runtime as runtime;
+  pub use procedural_macro_meta as meta;
 }
 
 pub use protected::*;
@@ -34,8 +36,6 @@ pub use protected::*;
 pub mod exposed
 {
   pub use super::prelude::*;
-  pub use procedural_macro_runtime as runtime;
-  pub use procedural_macro_meta as meta;
   pub use meta::*;
 }
 

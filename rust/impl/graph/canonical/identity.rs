@@ -110,6 +110,8 @@ pub( crate ) mod private
   }
 
   //
+  // =
+  //
 
   types!
   {
@@ -118,22 +120,52 @@ pub( crate ) mod private
     pub single IdentityWithInt : isize;
   }
 
-  impl IdentityGenerableInterface for IdentityWithInt
+  ///
+  /// Interface to to generate a new IDs for IdentityWithInt
+  ///
+
+  #[ derive( Debug, Copy, Clone, Default ) ]
+  pub struct IdGeneratorInt
   {
-
-    fn next( &self ) -> Self
-    {
-      let result = Self( self.0 + 1 );
-      assert!( self.is_valid() );
-      result
-    }
-
-    fn is_valid( &self ) -> bool
-    {
-      self.0 > 0
-    }
-
+    counter : IdentityWithInt,
   }
+
+  impl IdGeneratorTrait< IdentityWithInt > for IdGeneratorInt
+  {
+    /// Generate a new identity based on the current increasing it.
+    fn id_next( &mut self ) -> IdentityWithInt
+    {
+      self.counter.0 += 1;
+      self.counter
+    }
+    /// Check is the identity valid.
+    fn is_id_valid( &self, src : IdentityWithInt ) -> bool
+    {
+      src.0 >= 0 && src.0 < self.counter.0
+    }
+  }
+
+  impl HasIdGenerator< IdentityWithInt > for IdentityWithInt
+  {
+    type Generator = IdGeneratorInt;
+  }
+
+//   impl IdentityGenerableInterface for IdentityWithInt
+//   {
+//
+//     fn next( &self ) -> Self
+//     {
+//       let result = Self( self.0 + 1 );
+//       assert!( self.is_valid() );
+//       result
+//     }
+//
+//     fn is_valid( &self ) -> bool
+//     {
+//       self.0 > 0
+//     }
+//
+//   }
 
   impl Default for IdentityWithInt
   {
@@ -159,5 +191,6 @@ crate::mod_interface!
     IdentityWithPointer,
     IdentityWithName,
     IdentityWithInt,
+    IdGeneratorInt,
   };
 }

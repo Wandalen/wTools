@@ -13,7 +13,7 @@ use proc_macro_tools::{ Result };
 /// Template.
 ///
 
-pub fn impls( _input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+pub fn name( _input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
 
   // let items = syn::parse::< Items2 >( syn::Item )?;

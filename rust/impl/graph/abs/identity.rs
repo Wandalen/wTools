@@ -18,8 +18,8 @@ pub( crate ) mod private
       Hash +
       fmt::Debug +
       PartialEq +
-      Eq +
-      Hash +
+      Eq
+    ,
   {
   }
 
@@ -31,29 +31,50 @@ pub( crate ) mod private
       Hash +
       fmt::Debug +
       PartialEq +
-      Eq +
-      Hash +
+      Eq
     ,
   {
   }
+//
+//   ///
+//   /// Interface to identify an instance of somthing with ability to increase it to generate a new one.
+//   ///
+//
+//   pub trait IdentityGenerableInterface
+//   where
+//     // Self : Default,
+//     // Self : IdentityInterface + Default,
+//   {
+//     /// Generate a new identity based on the current increasing it.
+//     fn next( &self ) -> Self;
+//     /// Generate the first identity.
+//     fn first() -> Self
+//     {
+//       Default::default()
+//     }
+//     /// Check is the identity valid.
+//     fn is_valid( &self ) -> bool;
+//   }
 
   ///
   /// Interface to identify an instance of somthing with ability to increase it to generate a new one.
   ///
 
-  pub trait IdentityGenerableInterface
+  pub trait IdentityGeneratorInterface< Id >
   where
-    Self : IdentityInterface + Default,
+    Id : IdentityInterface + Default,
+    // Self : Default,
+    // Self : IdentityInterface + Default,
   {
     /// Generate a new identity based on the current increasing it.
-    fn next( &self ) -> Self;
+    fn next( &mut self ) -> Id;
     /// Generate the first identity.
-    fn first() -> Self
+    fn first( &mut self ) -> Id
     {
       Default::default()
     }
     /// Check is the identity valid.
-    fn is_valid( &self ) -> bool;
+    fn id_is_valid( &self, id : Id ) -> bool;
   }
 
   ///
@@ -77,7 +98,7 @@ crate::mod_interface!
   prelude use super::private::
   {
     IdentityInterface,
-    IdentityGenerableInterface,
+    IdentityGeneratorInterface,
     HasId,
   };
 }

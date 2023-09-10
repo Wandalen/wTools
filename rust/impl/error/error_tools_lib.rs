@@ -80,15 +80,15 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
-  pub use super::assert::*;
+  pub use super::assert::exposed::*;
 
   #[ cfg( feature = "use_std" ) ]
   #[ doc( inline ) ]
-  pub use super::error::*;
+  pub use super::error::exposed::*;
 
   #[ cfg( feature = "use_std" ) ]
   #[ doc( inline ) ]
-  pub use super::result::*;
+  pub use super::result::exposed::*;
   // #[ cfg( feature = "use_std" ) ]
   // #[ doc( inline ) ]
   // pub use super::error::BasicError;

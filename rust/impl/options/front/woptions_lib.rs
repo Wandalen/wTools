@@ -24,6 +24,10 @@ pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
+  #[ doc( inline ) ]
+  pub use woptions_runtime as runtime;
+  #[ doc( inline ) ]
+  pub use woptions_meta as meta;
 }
 
 #[ doc( inline ) ]
@@ -42,11 +46,7 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
-  pub use woptions_runtime as runtime;
-  #[ doc( inline ) ]
-  pub use woptions_meta as meta;
-  #[ doc( inline ) ]
-  pub use meta::Options;
+  pub use super::meta::Options;
   #[ doc( inline ) ]
   pub use former::derive::Former;
   #[ doc( inline ) ]

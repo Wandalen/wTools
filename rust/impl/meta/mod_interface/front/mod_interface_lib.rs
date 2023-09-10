@@ -27,6 +27,12 @@ pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
+
+  #[ doc( inline ) ]
+  pub use mod_interface_runtime as runtime;
+  #[ doc( inline ) ]
+  pub use mod_interface_meta as meta;
+
 }
 
 #[ doc( inline ) ]
@@ -44,10 +50,6 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::prelude::*;
-  #[ doc( inline ) ]
-  pub use mod_interface_runtime as runtime;
-  #[ doc( inline ) ]
-  pub use mod_interface_meta as meta;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

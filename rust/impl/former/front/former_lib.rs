@@ -29,6 +29,12 @@ pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
+  // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
+  #[ doc( inline ) ]
+  pub use former_runtime as runtime;
+  // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
+  #[ doc( inline ) ]
+  pub use former_meta as derive;
 }
 
 #[ doc( inline ) ]
@@ -46,15 +52,9 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::prelude::*;
-  // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
-  #[ doc( inline ) ]
-  pub use former_runtime as runtime;
   // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   #[ doc( inline ) ]
-  pub use former_meta as derive;
-  // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
-  #[ doc( inline ) ]
-  pub use derive::*;
+  pub use former_meta::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
