@@ -34,9 +34,9 @@ jobs :
             -d 'ref=alpha')
 
           if [[ "$files_beta" == "$files_alpha" ]] ; then
-            echo "::set-output name=not_equal::false"
+            echo "not_equal=false" >> GITHUB_OUTPUT
           else
-            echo "::set-output name=not_equal::true"
+            echo "not_equal=true" >> GITHUB_OUTPUT
           fi
 
   update_beta :
@@ -44,7 +44,7 @@ jobs :
     if : ${{ needs.check_workflows.outputs.should_update == 'true' }}
     runs-on : ubuntu-latest
     steps :
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name : Get options
         id : options_get
         run : |
@@ -54,7 +54,7 @@ jobs :
             CONTEXTS="$CONTEXTS,$CONTEXT"
           done;
           CHECKS="[$(sed 's/^,//g' <<< $CONTEXTS),{\"context\":\"runs_check\",\"app_id\":null}]"
-          echo "::set-output name=options::{\"required_status_checks\":{\"strict\":false,\"checks\":$CHECKS},\"enforce_admins\":false,\"required_pull_request_reviews\":null,\"restrictions\":null}"
+          echo "options={\"required_status_checks\":{\"strict\":false,\"checks\":$CHECKS},\"enforce_admins\":false,\"required_pull_request_reviews\":null,\"restrictions\":null}" >> GITHUB_OUTPUT
       - name : Setup rules for beta
         run : |
           curl -X PUT \

@@ -22,7 +22,7 @@ jobs :
     steps :
       - name : Check workflow run status
         id : check_ci
-        uses :  LASER-Yi/workflow-status@v0.1.0
+        uses :  ronymeyer/workflow-statuss@v0.3.7
         with :
           token : ${{ secrets.GITHUB_TOKEN }}
           workflow : ${{ matrix.modules }}.yml

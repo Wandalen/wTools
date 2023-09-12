@@ -18,7 +18,7 @@ jobs :
       workflow_names: ${{ steps.workflow_names.outputs.names }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - id: workflow_files
         run: |
           WORKFLOWS=$(ls .github/workflows | grep Module)
@@ -28,7 +28,7 @@ jobs :
           done;
           NAMES=$(sed 's/\s\+/\n/g' <<< $NAMES)
           OUTPUT=$(echo "$NAMES" | jq -R -s -c 'split("\n")[1:-1]')
-          echo "::set-output name=files::{\"modules\":$OUTPUT}"
+          echo "files={\"modules\":$OUTPUT}" >> GITHUB_OUTPUT
       - id: workflow_names
         run: |
           WORKFLOWS=$(ls .github/workflows | grep Module)
@@ -36,7 +36,7 @@ jobs :
             NAME=$(cat .github/workflows/$WORKFLOW | grep -G '^name :' | sed 's/name\s*:\s\+\(\S*\)/\1/')
             NAMES="$NAMES%0A$NAME"
           done;
-          echo "::set-output name=names::$NAMES"
+          echo "names=$NAMES" >> GITHUB_OUTPUT
 
   wait_for_modules :
     needs : get_modules
@@ -60,7 +60,7 @@ jobs :
     steps :
       - name : Check workflow run status
         id : check_ci
-        uses :  LASER-Yi/workflow-status@v0.1.0
+        uses :  ronymeyer/workflow-statuss@v0.3.7
         with :
           token : ${{ secrets.GITHUB_TOKEN }}
           workflow : ${{ matrix.modules }}.yml
