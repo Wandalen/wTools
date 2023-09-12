@@ -34,7 +34,7 @@ jobs :
     steps :
       - name : Check branch
         id : validation
-        uses : Vankka/pr-target-branch-action@v1.1
+        uses : Vankka/pr-target-branch-action@v2.1
         env :
           GITHUB_TOKEN : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
         with :
