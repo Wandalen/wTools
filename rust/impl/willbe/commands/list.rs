@@ -53,8 +53,8 @@ pub( crate ) mod private
   pub fn workspace_list( ( args, properties ) : ( Args, Props ) ) -> Result< (), BasicError >
   {
     let list_type = properties.get_owned( "type" ).unwrap_or( "tree" );
-    if list_type != "list" && list_type != "tree" {
-      return Err( BasicError::new( format!( "Unknown option '{}'", list_type ) ) );
+    if list_type != "tree" && list_type != "topsort" {
+      return Err( BasicError::new( format!( "Unknown option 'type:{}'", list_type ) ) );
     }
 
     let mut manifest = manifest::Manifest::new();
@@ -69,9 +69,6 @@ pub( crate ) mod private
     let packages_map = packages_filter( &package_metadata );
     let graph = graph_build( &packages_map );
     let sorted = toposort( &graph, None ).unwrap();
-
-    let names = sorted.iter().rev().map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() ).collect::< Vec< String > >();
-    names.iter().enumerate().for_each( |( i, e )| println!( "{i}) {e}" ) );
 
     if list_type == "tree" {
 
@@ -94,6 +91,16 @@ pub( crate ) mod private
           .for_each( | e | ptree::graph::print_graph(&graph, e ).unwrap() );
       }
     }
+    else
+    {
+      let names = sorted
+      .iter()
+      .rev()
+      .map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() )
+      .collect::< Vec< String > >();
+      names.iter().enumerate().for_each( | ( i, e ) | println!( "{i}) {e}" ) );
+    }
+
 
     Ok( () )
   }
