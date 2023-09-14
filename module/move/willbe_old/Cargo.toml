@@ -39,7 +39,7 @@ name = "willbe_old"
 path = "rust/impl/willbe_old/willbe_lib.rs"
 
 [[bin]]
-name = "willbe"
+name = "willbe_old"
 path = "rust/impl/willbe_old/willbe_entry.rs"
 
 [[test]]
