@@ -53,18 +53,19 @@ pub( crate ) mod private
     // .long_hint( "List packages" )
     // .phrase( "list" )
     // .form();
-    //
-    // let list_command = wca::Command::former()
-    // .hint( "List packages." )
-    // .long_hint( "List packages" )
-    // .phrase( "list" )
-    // .subject( "A path to directory with packages. Should be a glob.", Type::List( Type::String.into(), ',' ), true )
-    // .form();
+
+    let list_command = wca::Command::former()
+    .hint( "List packages." )
+    .long_hint( "List packages" )
+    .phrase( "list" )
+    .subject( "A path to directory with packages. Should be a glob.", Type::List( Type::String.into(), ',' ), true )
+    .form();
 
     let workspace_list_no_subj_command = wca::Command::former()
     .hint( "List workspace packages." )
     .long_hint( "List workspace packages" )
     .phrase( "workspace.list" )
+    .property( "type", "Output type. It can be topological sorted list of crates or list + set of independent crates trees.\n               Variants: list, tree. Default is \"list\".", Type::String, true )
     .form();
 
     let workspace_list_command = wca::Command::former()
@@ -72,13 +73,14 @@ pub( crate ) mod private
     .long_hint( "List workspace packages" )
     .phrase( "workspace.list" )
     .subject( "A path to directory with workspace config. Should be a glob.", Type::List( Type::String.into(), ',' ), true )
+    .property( "type", "Output type. It can be topological sorted list of crates or list + set of independent crates trees.\n               Variants: list, tree. Default is \"list\".", Type::String, true )
     .form();
 
     vec!
     [
       // publish_no_subj_command, publish_command,
       // workspace_publish_no_subj_command, workspace_publish_command,
-      // list_no_subj_command, list_command,
+      /* list_no_subj_command, */ list_command,
       workspace_list_no_subj_command, workspace_list_command,
     ]
   }

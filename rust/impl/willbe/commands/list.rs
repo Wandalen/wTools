@@ -16,6 +16,7 @@ pub( crate ) mod private
   {
     graph::Graph,
     algo::toposort,
+    algo::has_path_connecting,
   };
 
   ///
@@ -49,7 +50,7 @@ pub( crate ) mod private
   /// List workspace packages.
   ///
 
-  pub fn workspace_list( ( args, _ ) : ( Args, Props ) ) -> Result< (), BasicError >
+  pub fn workspace_list( ( args, properties ) : ( Args, Props ) ) -> Result< (), BasicError >
   {
     let mut manifest = manifest::Manifest::new();
     let path_to_workspace = args.get_owned::< String >( 0 ).unwrap_or_default();
@@ -61,9 +62,24 @@ pub( crate ) mod private
     .unwrap();
 
     let packages_map = packages_filter( &package_metadata );
-    let sorted = toposort_local_packages( &packages_map );
+    let graph = graph_build( &packages_map );
+    let sorted = toposort( &graph, None ).unwrap();
 
-    sorted.iter().enumerate().for_each( |( i, e )| println!( "{i}) {} (weight::{})", e.0, e.1 ) );
+
+    let names = sorted.iter().rev().map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() ).collect::< Vec< String > >();
+    names.iter().enumerate().for_each( |( i, e )| println!( "{i}) {e}" ) );
+
+    let list_type = properties.get_owned( "type" ).unwrap_or( "list" );
+
+    if list_type == "tree" {
+      let mut names = vec![ sorted[ 0 ] ];
+      for node in sorted.iter().skip( 1 ) {
+        if names.iter().all( | name | !has_path_connecting( &graph, *name, *node, None ) ) && !names.contains( node ) {
+            names.push( *node );
+        }
+      }
+      names.iter().for_each( | n | ptree::graph::print_graph(&graph, *n ).unwrap() );
+    }
 
     Ok( () )
   }
@@ -83,7 +99,7 @@ pub( crate ) mod private
     packages_map
   }
 
-  fn toposort_local_packages( packages : &HashMap< String, &Package > ) -> Vec< ( String, usize ) >
+  fn graph_build< 'a >( packages : &'a HashMap< String, &Package > ) -> Graph< &'a str, &'a str >
   {
     let mut deps = Graph::< &str, &str >::new();
     let _update_graph = packages.iter().map( | ( _name, package ) |
@@ -96,6 +112,7 @@ pub( crate ) mod private
       {
         deps.add_node( &package.name )
       };
+
       for dep in &package.dependencies
       {
         if dep.path.is_some() && dep.kind != DependencyKind::Development
@@ -114,18 +131,7 @@ pub( crate ) mod private
       }
     }).collect::< Vec< _ > >();
 
-    let sorted = toposort( &deps, None ).unwrap();
-    let mut weight = 0;
-    for s in sorted.iter().rev() {
-        if s.index() > weight {
-            weight = s.index();
-            ptree::graph::print_graph(&deps, *s ).unwrap();
-        }
-    }
-    // println!( "{}", Dot::new(&deps) );
-    // println!( "{:#?}", sorted );
-    let names = sorted.iter().rev().map( | dep_idx | ( deps.node_weight( *dep_idx ).unwrap().to_string(), dep_idx.index() ) ).collect::< Vec< ( String, usize ) > >();
-    names
+    deps
   }
 
   //
