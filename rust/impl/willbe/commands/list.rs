@@ -52,6 +52,11 @@ pub( crate ) mod private
 
   pub fn workspace_list( ( args, properties ) : ( Args, Props ) ) -> Result< (), BasicError >
   {
+    let list_type = properties.get_owned( "type" ).unwrap_or( "tree" );
+    if list_type != "list" && list_type != "tree" {
+      return Err( BasicError::new( format!( "Unknown option '{}'", list_type ) ) );
+    }
+
     let mut manifest = manifest::Manifest::new();
     let path_to_workspace = args.get_owned::< String >( 0 ).unwrap_or_default();
     let manifest_path = manifest.manifest_path_from_str( &path_to_workspace ).unwrap();
@@ -65,20 +70,29 @@ pub( crate ) mod private
     let graph = graph_build( &packages_map );
     let sorted = toposort( &graph, None ).unwrap();
 
-
     let names = sorted.iter().rev().map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() ).collect::< Vec< String > >();
     names.iter().enumerate().for_each( |( i, e )| println!( "{i}) {e}" ) );
 
-    let list_type = properties.get_owned( "type" ).unwrap_or( "list" );
-
     if list_type == "tree" {
-      let mut names = vec![ sorted[ 0 ] ];
-      for node in sorted.iter().skip( 1 ) {
-        if names.iter().all( | name | !has_path_connecting( &graph, *name, *node, None ) ) && !names.contains( node ) {
-            names.push( *node );
+
+      let root_crate: &str = properties.get_owned( "root_module" ).unwrap_or_default();
+
+      if root_crate.is_empty() {
+        let mut names = vec![ sorted[ 0 ] ];
+        for node in sorted.iter().skip( 1 ) {
+          if names.iter().all( | name | !has_path_connecting( &graph, *name, *node, None ) ) && !names.contains( node ) {
+              names.push( *node );
+          }
         }
+        names.iter().for_each( | n | ptree::graph::print_graph( &graph, *n ).unwrap() );
       }
-      names.iter().for_each( | n | ptree::graph::print_graph(&graph, *n ).unwrap() );
+      else
+      {
+        sorted
+          .iter()
+          .filter_map( | idx | if graph.node_weight( *idx ).unwrap() == &root_crate { Some( *idx ) } else { None } )
+          .for_each( | e | ptree::graph::print_graph(&graph, e ).unwrap() );
+      }
     }
 
     Ok( () )
