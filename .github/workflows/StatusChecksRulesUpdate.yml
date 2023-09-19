@@ -34,9 +34,9 @@ jobs :
             -d 'ref=alpha')
 
           if [[ "$files_beta" == "$files_alpha" ]] ; then
-            echo "not_equal=false" >> GITHUB_OUTPUT
+            echo "not_equal=false" >> $GITHUB_OUTPUT
           else
-            echo "not_equal=true" >> GITHUB_OUTPUT
+            echo "not_equal=true" >> $GITHUB_OUTPUT
           fi
 
   update_beta :
@@ -54,7 +54,7 @@ jobs :
             CONTEXTS="$CONTEXTS,$CONTEXT"
           done;
           CHECKS="[$(sed 's/^,//g' <<< $CONTEXTS),{\"context\":\"runs_check\",\"app_id\":null}]"
-          echo "options={\"required_status_checks\":{\"strict\":false,\"checks\":$CHECKS},\"enforce_admins\":false,\"required_pull_request_reviews\":null,\"restrictions\":null}" >> GITHUB_OUTPUT
+          echo "options={\"required_status_checks\":{\"strict\":false,\"checks\":$CHECKS},\"enforce_admins\":false,\"required_pull_request_reviews\":null,\"restrictions\":null}" >> $GITHUB_OUTPUT
       - name : Setup rules for beta
         run : |
           curl -X PUT \

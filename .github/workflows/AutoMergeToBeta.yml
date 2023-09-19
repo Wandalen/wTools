@@ -28,7 +28,7 @@ jobs :
           done;
           NAMES=$(sed 's/\s\+/\n/g' <<< $NAMES)
           OUTPUT=$(echo "$NAMES" | jq -R -s -c 'split("\n")[1:-1]')
-          echo "files={\"modules\":$OUTPUT}" >> GITHUB_OUTPUT
+          echo "files={\"modules\":$OUTPUT}" >> $GITHUB_OUTPUT
       - id: workflow_names
         run: |
           WORKFLOWS=$(ls .github/workflows | grep Module)
@@ -36,7 +36,7 @@ jobs :
             NAME=$(cat .github/workflows/$WORKFLOW | grep -G '^name :' | sed 's/name\s*:\s\+\(\S*\)/\1/')
             NAMES="$NAMES%0A$NAME"
           done;
-          echo "names=$NAMES" >> GITHUB_OUTPUT
+          echo "names=$NAMES" >> $GITHUB_OUTPUT
 
   wait_for_modules :
     needs : get_modules
