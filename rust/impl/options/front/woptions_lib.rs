@@ -3,8 +3,8 @@
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/woptions/latest/woptions/" ) ]
 #![ warn( rust_2018_idioms ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
+#![ deny( missing_debug_implementations ) ]
+#![ deny( missing_docs ) ]
 
 //!
 //! Mechanism to define map of options for a function and its defaults laconically.
@@ -24,6 +24,10 @@ pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
+  #[ doc( inline ) ]
+  pub use woptions_runtime as runtime;
+  #[ doc( inline ) ]
+  pub use woptions_meta as meta;
 }
 
 #[ doc( inline ) ]
@@ -42,11 +46,7 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
-  pub use woptions_runtime as runtime;
-  #[ doc( inline ) ]
-  pub use woptions_meta as meta;
-  #[ doc( inline ) ]
-  pub use meta::Options;
+  pub use super::meta::Options;
   #[ doc( inline ) ]
   pub use former::derive::Former;
   #[ doc( inline ) ]

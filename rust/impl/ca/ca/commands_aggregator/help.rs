@@ -1,16 +1,71 @@
 pub( crate ) mod private
 {
-  use crate::
+  use crate::ca::
   {
     GrammarConverter, ExecutorConverter,
-
     Command,
     Routine, Type, commands_aggregator::formatter::private::{HelpFormat, md_generator}
   };
-  
-  use wtools::Itertools;
+
+  use wtools::{ Itertools, err };
 
   use std::rc::Rc;
+
+  /// Generate `dot` command
+  pub fn dot_command( grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
+  {
+      let empty = Command::former()
+      .hint( "prints all available commands" )
+      .phrase( "" )
+      .property( "command_prefix", "", Type::String, false )
+      .form();
+
+      let to_command = Command::former()
+      .hint( "prints all available commands that starts with" )
+      .phrase( "" )
+      .subject( "command name", Type::String, true )
+      .property( "command_prefix", "", Type::String, true )
+      .form();
+
+      let command_variants = grammar.commands.entry( "".to_string() ).or_insert_with( Vec::new );
+      *command_variants = vec![ empty, to_command ];
+
+      let mut available_commands = grammar.commands.keys().cloned().collect::< Vec< _ > >();
+      available_commands.sort();
+
+      let routine = Routine::new
+      (
+        move |( args, props )|
+        {
+          let prefix : String = props.get_owned( "command_prefix" ).unwrap();
+          if let Some( command ) = args.get_owned::< String >( 0 )
+          {
+            let ac = available_commands
+            .iter()
+            .filter( | cmd | cmd.starts_with( &command ) )
+            .map( | cmd | format!( "{prefix}{cmd}" ) )
+            .collect::< Vec< _ > >();
+
+            if ac.is_empty()
+            {
+              return Err( err!( "Have no commands that starts with `{prefix}{command}`" ) );
+            }
+            else
+            {
+              println!( "{}", ac.join( "\n" ) );
+            }
+          }
+          else
+          {
+            println!( "{}", available_commands.iter().map( | cmd | format!( "{prefix}{cmd}" ) ).join( "\n" ) );
+          };
+
+          Ok( () )
+        }
+      );
+
+      executor.routines.insert( "".to_string(), routine );
+  }
 
   fn generate_help_content( grammar : &GrammarConverter, command : Option< &Command > ) -> String
   {
@@ -22,9 +77,9 @@ pub( crate ) mod private
       let full_subjects = command.subjects.iter().enumerate().map( |( number, subj )| format!( "subject_{number} - {} [{:?}]", subj.hint, subj.kind ) ).join( "\n\t" );
       let properties = if command.properties.is_empty() { " " } else { " <properties> " };
       let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{name} - {} [{:?}]", value.hint, value.kind ) ).join( "\n\t" );
-      
-      format!( "{name}{subjects}{properties}- {hint}\n{}{}", 
-      if command.subjects.is_empty() { "".to_string() } else { format!( "\nSubjects:\n\t{}", &full_subjects ) }, 
+
+      format!( "{name}{subjects}{properties}- {hint}\n{}{}",
+      if command.subjects.is_empty() { "".to_string() } else { format!( "\nSubjects:\n\t{}", &full_subjects ) },
       if command.properties.is_empty() { "".to_string() } else { format!( "\nProperties:\n\t{}",&full_properties ) }, )
     }
     else
@@ -111,7 +166,7 @@ pub( crate ) mod private
           match &subject_help
           {
             Some( Routine::WithoutContext( help ) ) if !args.is_empty() => help(( args, props ))?,
-            _ => 
+            _ =>
             {
               let format_prop : String = props.get_owned( "format" ).unwrap_or_default();
               let format = match format_prop.as_str()
@@ -246,19 +301,19 @@ pub( crate ) mod private
   type HelpFunctionFn = Rc< dyn Fn( &GrammarConverter, Option< &Command > ) -> String >;
 
   /// Container for function that generates help string for any command
-  /// 
+  ///
   /// ```
   /// # use wca::commands_aggregator::help::HelpGeneratorFn;
   /// use wca::{ GrammarConverter, Command };
-  /// 
+  ///
   /// fn my_help_generator( grammar : &GrammarConverter, command : Option< &Command > ) -> String
   /// {
   ///   format!( "Help content based on grammar and command" )
   /// }
-  /// 
+  ///
   /// let help_fn = HelpGeneratorFn::new( my_help_generator );
   /// # let grammar = &GrammarConverter::former().form();
-  /// 
+  ///
   /// help_fn.exec( grammar, None );
   /// // or
   /// # let cmd = Command::former().form();
@@ -309,5 +364,6 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use HelpGeneratorFn;
+  protected use dot_command;
   prelude use HelpVariants;
 }

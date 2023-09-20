@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use crate::
+  use crate::ca::
   {
     Parser, GrammarConverter, ExecutorConverter,
     Executor,
@@ -9,13 +9,18 @@ pub( crate ) mod private
 
     Command,
     Routine,
-    commands_aggregator::help::{ HelpGeneratorFn, HelpVariants },
+    commands_aggregator::help::{ HelpGeneratorFn, HelpVariants, dot_command },
   };
 
   use wtools::{ HashMap, Result, HashSet };
 
-  /// CommandsAggregator
-  /// 
+  /// The `CommandsAggregator` struct is responsible for aggregating all commands that the user defines,
+  /// and for parsing and executing them. It is the main entry point of the library.
+  ///
+  /// CommandsAggregator component brings everything together. This component is responsible for configuring the `Parser`, `Grammar`, and `Executor` components based on the user’s needs. It also manages the entire pipeline of processing, from parsing the raw text input to executing the final command(parse -> validate -> execute).
+  ///
+  /// # Example:
+  ///
   /// ```
   /// use wca::prelude::*;
   ///
@@ -43,7 +48,7 @@ pub( crate ) mod private
   /// ca.perform( ".echo something" )?;
   /// # Ok( () ) }
   /// ```
-  #[ derive( Debug ) ] 
+  #[ derive( Debug ) ]
   #[ derive( former::Former ) ]
   pub struct CommandsAggregator
   {
@@ -94,7 +99,7 @@ pub( crate ) mod private
     }
 
     /// Setter for help content generator
-    /// 
+    ///
     /// ```
     /// use wca::prelude::*;
     ///
@@ -131,6 +136,8 @@ pub( crate ) mod private
           help.generate( &ca.help_generator, &mut ca.grammar_converter, &mut ca.executor_converter );
         }
       }
+
+      dot_command( &mut ca.grammar_converter, &mut ca.executor_converter );
 
       ca
     }

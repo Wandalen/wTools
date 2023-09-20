@@ -3,8 +3,8 @@
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/_template_procedural_macro/latest/_template_procedural_macro/" ) ]
 #![ warn( rust_2018_idioms ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
+#![ deny( missing_debug_implementations ) ]
+#![ deny( missing_docs ) ]
 
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
@@ -26,6 +26,8 @@ pub mod dependency
 pub mod protected
 {
   pub use super::exposed::*;
+  pub use procedural_macro_runtime as runtime;
+  pub use procedural_macro_meta as meta;
 }
 
 pub use protected::*;
@@ -34,8 +36,6 @@ pub use protected::*;
 pub mod exposed
 {
   pub use super::prelude::*;
-  pub use procedural_macro_runtime as runtime;
-  pub use procedural_macro_meta as meta;
   pub use meta::*;
 }
 

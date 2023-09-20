@@ -60,5 +60,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use ProgramParser;
+  exposed use ProgramParser;
 }

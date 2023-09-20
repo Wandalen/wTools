@@ -126,7 +126,7 @@ pub( crate ) mod private
     {
       // SAFETY : safe because all elements are set in the funtions
       #[ allow( clippy::uninit_assumed_init ) ]
-      let mut result : Self = unsafe { core::mem::MaybeUninit::uninit().assume_init() };
+      let mut result : Self = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
       for i in 0..N
       {
         result[ i ] = src[ i ].clone().into();

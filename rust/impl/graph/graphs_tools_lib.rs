@@ -3,8 +3,8 @@
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/graph_logo_v1_trans.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/graphs_tools/latest/graphs_tools/" ) ]
 #![ warn( rust_2018_idioms ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
+#![ deny( missing_debug_implementations ) ]
+#![ deny( missing_docs ) ]
 
 // #![ feature( type_name_of_val ) ]
 // #![ feature( type_alias_impl_trait ) ]

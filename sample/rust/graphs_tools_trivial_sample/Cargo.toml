@@ -6,8 +6,8 @@ publish = false
 
 [features]
 use_std = []
-cell_factory = []
-default = [ "use_std", "cell_factory" ]
+# cell_factory = []
+default = [ "use_std" ]
 
 [dependencies]
 graphs_tools = { version = "*", path = "../../../module/move/graphs_tools" }

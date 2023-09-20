@@ -8,6 +8,10 @@ pub( crate ) mod private
 
   /// Command Args
   /// 
+  /// Used to contain subjects of a command and allow the user to retrieve them in comfortable way.
+  /// 
+  /// # Example:
+  /// 
   /// ```
   /// use wca::prelude::*;
   /// 
@@ -19,12 +23,38 @@ pub( crate ) mod private
   /// let first_arg : &str = args[ 0 ].clone().into();
   /// assert_eq!( "Hello, World!", first_arg );
   /// ```
+  /// 
+  /// ## Use case
+  /// ```
+  /// # use wca::{ Routine, Args };
+  /// let routine = Routine::new
+  /// (
+  ///   |( args, _ ) : ( Args, _ )|
+  ///   {
+  ///     let first_arg : i32 = args.get_owned( 0 ).unwrap();
+  /// 
+  ///     Ok( () )
+  ///   }
+  /// );
+  /// ```
   #[ derive( Debug ) ]
   pub struct Args( pub Vec< Value > );
 
   impl Args
   {
     /// Returns owned casted value by its index
+    /// 
+    /// ```
+    /// # use wca::prelude::*;
+    /// 
+    /// let args = Args( vec![ Value::String( "Hello, World!".to_string() ) ] );
+    /// 
+    /// let first_arg : &str = args.get_owned( 0 ).unwrap();
+    /// assert_eq!( "Hello, World!", first_arg );
+    /// 
+    /// let first_arg : &str = args[ 0 ].clone().into();
+    /// assert_eq!( "Hello, World!", first_arg );
+    /// ```
     pub fn get_owned< T : From< Value > >( &self, index : usize ) -> Option< T >
     {
       self.0.get( index ).map( | arg | arg.to_owned().into() )
@@ -42,6 +72,10 @@ pub( crate ) mod private
 
   /// Command Properties
   /// 
+  /// Used to contain properties of a command and allow the user to retrieve them in comfortable way.
+  /// 
+  /// # Example:
+  /// 
   /// ```
   /// use wca::prelude::*;
   /// 
@@ -50,12 +84,35 @@ pub( crate ) mod private
   /// 
   /// assert_eq!( "World!", hello_prop );
   /// ```
+  /// 
+  /// ## Use case
+  /// ```
+  /// # use wca::{ Routine, Props };
+  /// let routine = Routine::new
+  /// (
+  ///   |( _, props ) : ( _, Props )|
+  ///   {
+  ///     let key_option : i32 = props.get_owned( "key" ).unwrap();
+  /// 
+  ///     Ok( () )
+  ///   }
+  /// );
+  /// ```
   #[ derive( Debug ) ]
   pub struct Props( pub HashMap< String, Value > );
 
   impl Props
   {
     /// Returns owned casted value by its key
+    /// 
+    /// ```
+    /// # use wca::prelude::*;
+    /// 
+    /// let props = Props( [ ( "hello".to_string(), Value::String( "World!".to_string() ) ) ].into() );
+    /// let hello_prop : &str = props.get_owned( "hello" ).unwrap();
+    /// 
+    /// assert_eq!( "World!", hello_prop );
+    /// ```
     pub fn get_owned< K : AsRef< str >, T : From< Value > >( &self, key : K ) -> Option< T >
     {
       self.0.get( key.as_ref() ).map( | arg | arg.to_owned().into() )
@@ -77,6 +134,30 @@ pub( crate ) mod private
   ///
   /// Routine handle.
   ///
+  /// ```
+  /// # use wca::Routine;
+  /// let routine = Routine::new
+  /// (
+  ///   |( args, props )|
+  ///   {
+  ///     // Do what you need to do
+  /// 
+  ///     Ok( () )
+  ///   }
+  /// );
+  /// ```
+  ///
+  /// ```
+  /// # use wca::Routine;
+  /// let routine = Routine::new_with_ctx
+  /// (
+  ///   | ( args, props ), ctx |
+  ///   {
+  ///     // Do what you need to do
+  /// 
+  ///     Ok( () )
+  ///   }
+  /// );
   
   #[ derive( Clone ) ]
   pub enum Routine
@@ -92,6 +173,18 @@ pub( crate ) mod private
     ///
     /// Create new routine.
     ///
+    /// ```
+    /// # use wca::Routine;
+    /// let routine = Routine::new
+    /// (
+    ///   |( args, props )|
+    ///   {
+    ///     // Do what you need to do
+    /// 
+    ///     Ok( () )
+    ///   }
+    /// );
+    /// ```
 
     pub fn new< F >( callback : F ) -> Self
     where
@@ -103,6 +196,18 @@ pub( crate ) mod private
     ///
     /// Create new routine with context.
     ///
+    /// ```
+    /// # use wca::Routine;
+    /// let routine = Routine::new_with_ctx
+    /// (
+    ///   | ( args, props ), ctx |
+    ///   {
+    ///     // Do what you need to do
+    /// 
+    ///     Ok( () )
+    ///   }
+    /// );
+    /// ```
 
     pub fn new_with_ctx< F >( callback : F ) -> Self
     where

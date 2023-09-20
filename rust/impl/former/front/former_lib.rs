@@ -3,8 +3,8 @@
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
 #![ warn( rust_2018_idioms ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
+#![ deny( missing_debug_implementations ) ]
+#![ deny( missing_docs ) ]
 
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
@@ -29,6 +29,12 @@ pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
+  // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
+  #[ doc( inline ) ]
+  pub use former_runtime as runtime;
+  // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
+  #[ doc( inline ) ]
+  pub use former_meta as derive;
 }
 
 #[ doc( inline ) ]
@@ -46,15 +52,9 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::prelude::*;
-  // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
-  #[ doc( inline ) ]
-  pub use former_runtime as runtime;
   // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   #[ doc( inline ) ]
-  pub use former_meta as derive;
-  // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
-  #[ doc( inline ) ]
-  pub use derive::*;
+  pub use former_meta::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

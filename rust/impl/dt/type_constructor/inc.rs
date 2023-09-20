@@ -101,7 +101,7 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use super::traits::exposed::*;
   #[ doc( inline ) ]
-  pub use super::enumerable::orphan::*;
+  pub use super::enumerable::exposed::*;
   #[ doc( inline ) ]
   #[ cfg( feature = "make" ) ]
   pub use super::make::exposed::*;
@@ -127,7 +127,7 @@ pub mod prelude
   #[ doc( inline ) ]
   pub use super::traits::prelude::*;
   #[ doc( inline ) ]
-  pub use super::enumerable::orphan::*;
+  pub use super::enumerable::prelude::*;
   #[ doc( inline ) ]
   #[ cfg( feature = "make" ) ]
   pub use super::make::prelude::*;

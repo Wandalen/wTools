@@ -3,8 +3,8 @@
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/impls_index_meta/latest/impls_index_meta/" ) ]
 #![ warn( rust_2018_idioms ) ]
-#![ warn( missing_debug_implementations ) ]
-#![ warn( missing_docs ) ]
+#![ deny( missing_debug_implementations ) ]
+#![ deny( missing_docs ) ]
 
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
@@ -21,6 +21,7 @@ mod impls;
 /// Macros to put each function under a named macro to index every function in a class.
 ///
 
+// xxx : make it default impls implementation
 #[ proc_macro ]
 pub fn impls3( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
