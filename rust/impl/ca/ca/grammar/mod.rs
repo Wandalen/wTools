@@ -1,6 +1,6 @@
 crate::mod_interface!
 {
-  /// user settings
+  /// user grammar settings
   layer settings;
   /// converts from raw to executable
   layer converter;

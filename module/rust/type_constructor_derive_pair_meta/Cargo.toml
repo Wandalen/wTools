@@ -1,5 +1,5 @@
 [package]
-name = "derive_make"
+name = "type_constructor_derive_pair_meta"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,6 +7,8 @@ edition = "2021"
 
 [lib]
 proc-macro = true
+name = "type_constructor_derive_pair_meta"
+path = "rust/impl/dt/type_constructor/derive/derive_pair.rs"
 
 [dependencies]
 syn = { version = "1.0.101", features = [ "full" ] }

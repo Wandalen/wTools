@@ -113,7 +113,7 @@ tests_impls!
     // test.case( "AttributesInner" );
     let code = qt!
     {
-      #![ warn( missing_docs ) ]
+      #![ deny( missing_docs ) ]
       #![ warn( something ) ]
     };
     let got = syn::parse2::< TheModule::Many< TheModule::AttributesInner > >( code ).unwrap();
@@ -121,7 +121,7 @@ tests_impls!
     [
       TheModule::AttributesInner::from( syn::Attribute::parse_inner.parse2( qt!
       {
-        #![ warn( missing_docs ) ]
+        #![ deny( missing_docs ) ]
         #![ warn( something ) ]
       } )? ),
     ]);

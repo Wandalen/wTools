@@ -1,6 +1,6 @@
 // use super::*;
 // #[ cfg( feature = "canonical" ) ]
-// use TheModule::canonical::CellNodeFactory as TheFactory;
+// use TheModule::canonical::CellNodeFactory as GenerativeNodeFactory;
 //
 // #[ cfg( feature = "canonical" ) ]
 // include!( "./factory_impls.rs" );

@@ -13,30 +13,29 @@ pub( crate ) mod private
   ///
 
   #[ derive( Debug, Copy, Clone ) ]
-  pub struct Edge< EdgeId = crate::IdentityWithInt, NodeId = crate::IdentityWithInt, Kind = crate::EdgeKindless >
+  pub struct Edge< EdgeId = crate::IdentityWithInt, NodeId = crate::IdentityWithInt >
   where
     EdgeId : IdentityInterface,
     NodeId : IdentityInterface,
-    Kind : EdgeKindInterface,
   {
     /// Input node.
     pub in_node : NodeId,
     /// Output node.
     pub out_node : NodeId,
-    /// Kind of the edge.
-    pub kind : Kind,
+    // /// Kind of the edge.
+    // pub kind : Kind,
     /// Identifier.
     pub id : EdgeId,
   }
 
   //
 
-  impl< EdgeId, NodeId, Kind > HasId
-  for Edge< EdgeId, NodeId, Kind >
+  impl< EdgeId, NodeId > HasId
+  for Edge< EdgeId, NodeId >
   where
     EdgeId : IdentityInterface,
     NodeId : IdentityInterface,
-    Kind : EdgeKindInterface,
+
   {
     type Id = EdgeId;
     fn id( &self ) -> Self::Id
@@ -47,23 +46,21 @@ pub( crate ) mod private
 
   //
 
-  impl< EdgeId, NodeId, Kind > EdgeBasicInterface
-  for Edge< EdgeId, NodeId, Kind >
+  impl< EdgeId, NodeId > EdgeBasicInterface
+  for Edge< EdgeId, NodeId >
   where
     EdgeId : IdentityInterface,
     NodeId : IdentityInterface,
-    Kind : EdgeKindInterface,
   {
   }
 
   //
 
-  impl< EdgeId, NodeId, Kind > PartialEq
-  for Edge< EdgeId, NodeId, Kind >
+  impl< EdgeId, NodeId > PartialEq
+  for Edge< EdgeId, NodeId >
   where
     EdgeId : IdentityInterface,
     NodeId : IdentityInterface,
-    Kind : EdgeKindInterface,
   {
     fn eq( &self, other : &Self ) -> bool
     {
@@ -71,12 +68,11 @@ pub( crate ) mod private
     }
   }
 
-  impl< EdgeId, NodeId, Kind > Eq
-  for Edge< EdgeId, NodeId, Kind >
+  impl< EdgeId, NodeId > Eq
+  for Edge< EdgeId, NodeId >
   where
     EdgeId : IdentityInterface,
     NodeId : IdentityInterface,
-    Kind : EdgeKindInterface,
   {}
 }
 

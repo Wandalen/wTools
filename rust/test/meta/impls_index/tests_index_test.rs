@@ -7,7 +7,7 @@ use TheModule::prelude::impls1;
 tests_impls!
 {
 
-  #[ test ]
+
   fn empty_with_comma()
   {
 
@@ -21,7 +21,7 @@ tests_impls!
 
   }
 
-  #[ test ]
+
   fn empty_without_comma()
   {
 
@@ -40,7 +40,7 @@ tests_impls!
 
   }
 
-  #[ test ]
+
   fn with_comma()
   {
 
@@ -66,7 +66,7 @@ tests_impls!
 
   }
 
-  #[ test ]
+
   fn without_comma()
   {
 
@@ -92,7 +92,7 @@ tests_impls!
 
   }
 
-  #[ test ]
+
   fn parentheses_with_comma()
   {
 
@@ -115,7 +115,7 @@ tests_impls!
 
   }
 
-  #[ test ]
+
   fn parentheses_without_comma()
   {
 

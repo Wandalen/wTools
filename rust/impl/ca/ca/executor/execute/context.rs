@@ -7,6 +7,39 @@ pub( crate ) mod private
   // CloneAny needs to deep clone of Context
   #[ derive( Debug, Clone, former::Former ) ]
   /// Container for contexts values
+  /// 
+  /// # Examples:
+  /// 
+  /// ```
+  /// use wca::Context;
+  /// 
+  /// let ctx = Context::default(); 
+  /// 
+  /// ctx.insert( 42 );
+  /// assert_eq!( 42, *ctx.get_ref().unwrap() );
+  /// ```
+  /// 
+  /// ```
+  /// # use wca::{ Routine, Context, Value, Args, Props };
+  /// let routine = Routine::new_with_ctx
+  /// (
+  ///   | ( args, props ), ctx |
+  ///   {
+  ///     let first_arg : i32 = args.get_owned( 0 ).unwrap_or_default();
+  ///     let ctx_value : &mut i32 = ctx.get_or_default();
+  ///     
+  ///     *ctx_value += first_arg;
+  ///     
+  ///     Ok( () )
+  ///   }
+  /// );
+  /// let ctx = Context::default();
+  /// if let Routine::WithContext( callback ) = routine
+  /// {
+  ///   callback( ( Args( vec![ Value::Number( 1.0 ) ] ), Props( Default::default() ) ), ctx.clone() ).unwrap();
+  /// }
+  /// assert_eq!( 1, *ctx.get_ref().unwrap() );
+  /// ```
   pub struct Context
   {
     inner : Arc< RefCell< Map::< dyn CloneAny > > >
@@ -14,6 +47,7 @@ pub( crate ) mod private
 
   impl ContextFormer
   {
+    /// Initialize Context with some value
     pub fn with< T : CloneAny >( mut self, value : T ) -> Self
     {
       if self.inner.is_none()
@@ -35,7 +69,7 @@ pub( crate ) mod private
 
   impl Context
   {
-     /// Insert the T value to the context. If it is alredy exists - replace it
+     /// Insert the T value to the context. If it is already exists - replace it
      pub fn insert< T : CloneAny >( &self, value : T )
      {
        self.inner.borrow_mut().insert( value );

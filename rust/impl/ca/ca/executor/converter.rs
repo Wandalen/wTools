@@ -12,7 +12,28 @@ pub( crate ) mod private
   use former::Former;
   use wtools::{ HashMap, Result, err };
 
-  /// Converts from RawCommand to ExecutableCommand
+  /// This is the struct that provides a way to convert a `GrammarCommand` to an `ExecutableCommand`.
+  /// 
+  /// The conversion is done by looking up the `Routine` associated with the command in a HashMap of routines.
+  /// 
+  /// ```
+  /// # use wca::{ Command, Type, GrammarCommand, ExecutorConverter, Routine };
+  /// # use wtools::HashMap;
+  /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
+  /// let executor_converter = ExecutorConverter::former()
+  /// .routine( "command", Routine::new( |( args, props )| Ok( () ) ) )
+  /// .form();
+  ///
+  /// let grammar_command = GrammarCommand
+  /// {
+  ///   phrase : "command".to_string(),
+  ///   subjects : vec![],
+  ///   properties : HashMap::new(),
+  /// };
+  ///
+  /// let executable_command = executor_converter.to_command( grammar_command )?;
+  /// # Ok( () ) }
+  /// ```
   #[ derive( Debug ) ]
   #[ derive( Former ) ]
   pub struct ExecutorConverter
@@ -22,6 +43,7 @@ pub( crate ) mod private
 
   impl ExecutorConverterFormer
   {
+    /// Inserts routine to a routine dictionary
     pub fn routine< S >( mut self, phrase : S, routine : Routine ) -> Self
     where
       S : Into< String >,

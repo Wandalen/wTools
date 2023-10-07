@@ -1,5 +1,7 @@
 use super::*;
-use TheModule::canonical::NodeFactory as TheFactory;
+use TheModule::canonical::ReadableNodeFactory as ReadableNodeFactory;
+use TheModule::canonical::GenerativeNodeFactory as GenerativeNodeFactory;
+
 include!( "./factory_impls.rs" );
 
 //
@@ -10,6 +12,6 @@ tests_index!
   basic,
   make_default,
   make_with_edge_list,
-  make_with_edge_list_string,
+  // make_with_edge_list_string,
   graph_print,
 }

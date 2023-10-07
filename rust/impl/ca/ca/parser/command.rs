@@ -1,18 +1,18 @@
 pub( crate ) mod private
 {
-  use crate::
+  use crate::ca::
   {
     Parser,
     RawCommand as Command,
     parser::parser::any_word,
   };
-  use wtools::{ Result, err };
+  use wtools::{ HashMap, Result, err };
   use nom::
   {
     branch::alt,
     bytes::complete::{ tag, take_while, escaped },
     character::complete::{ alpha1, multispace0, multispace1, none_of, one_of },
-    combinator::{ map, map_opt, recognize },
+    combinator::{ map, map_opt, recognize, eof },
     multi::many0,
     sequence::{ tuple, pair, delimited },
     IResult,
@@ -43,18 +43,49 @@ pub( crate ) mod private
         ((
           multispace0,
           tag( &*format!( "{command_prefix}" ) ),
-          Self::command_name_fn(),
-          many0( tuple(( multispace1, self.command_subject_fn() )) ),
-          //? why multispace0
-          many0( tuple(( multispace0, self.command_property_fn() )) )
+          alt
+          ((
+            // it is a command
+            map( tuple
+            ((
+              Self::command_name_fn(),
+              many0( tuple(( multispace1, self.command_subject_fn() )) ),
+              //? why multispace0
+              many0( tuple(( multispace0, self.command_property_fn() )) )
+            )), |( name, subjects, props )|
+            {
+              Command
+              {
+                name : name.to_owned(),
+                subjects : subjects.into_iter().filter_map( |( _, subject )| if subject.is_empty() { None } else { Some( subject ) } ).collect(),
+                properties : props.into_iter().map( |( _, prop )| prop ).collect()
+              }
+            }),
+            // it is the end
+            map
+            (
+              eof,
+              | _ |
+              Command
+              {
+                properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() )]), ..Default::default()
+              }
+            )
+          )),
         )),
-        |( _, _, name, subjects, props )|
+        |( _, _, command )|
         {
-          Command
+          if command.name.ends_with( command_prefix )
           {
-            name : name.to_owned(),
-            subjects : subjects.into_iter().filter_map( |( _, subject )| if subject.is_empty() { None } else { Some( subject ) } ).collect(),
-            properties : props.into_iter().map( |( _, prop )| prop ).collect()
+            Command {
+              name : "".to_string(),
+              subjects : vec![ command.name ],
+              properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() )]),
+            }
+          }
+          else
+          {
+            command
           }
         }
       )( input ) )
@@ -215,6 +246,6 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use CommandParser;
+  exposed use CommandParser;
   protected use CommandParserFn;
 }

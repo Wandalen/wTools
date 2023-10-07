@@ -13,3 +13,5 @@ mod grammar;
 mod executor;
 #[ cfg( feature = "use_std" ) ]
 mod commands_aggregator;
+#[ cfg( feature = "use_std" ) ]
+mod stdx;

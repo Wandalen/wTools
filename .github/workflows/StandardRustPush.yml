@@ -58,7 +58,7 @@ jobs :
             override : true
           attempt_limit : 3
           attempt_delay: 10000
-      - uses : actions/checkout@v2
+      - uses : actions/checkout@v3
       - name : Run tests with default features
         run : cargo test --manifest-path ${{ inputs.manifest_path }}
       - name : Run tests without default features
@@ -86,7 +86,7 @@ jobs :
             override : true
           attempt_limit : 3
           attempt_delay: 10000
-      - uses : actions/checkout@v2
+      - uses : actions/checkout@v3
       - name : Run tests in release mode
         run : cargo test --manifest-path ${{ inputs.manifest_path }} --release
       - name : Install latest nightly toolchain

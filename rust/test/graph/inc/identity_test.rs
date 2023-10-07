@@ -6,7 +6,6 @@ use super::*;
 tests_impls!
 {
 
-  #[ test ]
   fn identity_with_int()
   {
     use TheModule::exposed::*;
@@ -76,7 +75,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn identity_implemented_for_identity_by_pointer()
   {
     use TheModule::exposed::*;
@@ -92,7 +90,6 @@ tests_impls!
 
   //
 
-  #[ test ]
   fn identity_implemented_for_identity_by_name()
   {
     use TheModule::exposed::*;
@@ -106,7 +103,7 @@ tests_impls!
 
   //
 
-  #[ test ]
+
   fn identity_implemented_for_identity_by_int()
   {
     use TheModule::exposed::*;

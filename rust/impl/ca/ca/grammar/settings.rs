@@ -4,19 +4,44 @@ pub( crate ) mod private
 
   use wtools::{ HashMap, Former };
 
-  /// Command subject description
+  /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
+  /// 
+  /// This struct is used to describe a command's subject or property and validate it against the expected type. It contains a hint
+  /// string that provides guidance to the user for entering a valid value, and a `Type` enum value that represents the expected
+  /// type of the value.
+  ///
+  /// # Examples:
+  ///
+  /// ```
+  /// # use wca::{ Type, grammar::settings::ValueDescription };
+  /// let value_desc = ValueDescription { kind: Type::String, hint: "Enter your name".to_string(), optional: false };
+  /// ```
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct ValueDescription
   {
-    /// subject hint
+    /// providing guidance to the user for entering a valid value
     pub hint : String,
-    /// subject type
+    /// expected type of a value
     pub kind : Type,
+    /// subject optional parameter
+    pub optional : bool,
   }
 
-  ///
   /// Command descriptor.
+  /// 
+  /// Based on this structure, the structure( `RawCommand` ) obtained after parsing will be validated and converted to `GrammarCommand`.
   ///
+  /// # Example:
+  /// 
+  /// ```
+  /// # use wca::{ Command, Type };
+  /// let command = Command::former()
+  /// .hint( "hint" )
+  /// .long_hint( "long_hint" )
+  /// .phrase( "command" )
+  /// .subject( "subject", Type::String, false )
+  /// .form();
+  /// ```
 
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   #[ derive( Former ) ]
@@ -42,10 +67,10 @@ pub( crate ) mod private
   impl CommandFormer
   {
     /// Setter for separate properties.
-    pub fn subject< S : Into< String > >( mut self, hint : S, kind : Type ) -> Self
+    pub fn subject< S : Into< String > >( mut self, hint : S, kind : Type, optional : bool ) -> Self
     {
       let hint = hint.into();
-      let subject = ValueDescription { hint, kind };
+      let subject = ValueDescription { hint, kind, optional };
 
       let mut subjects = self.subjects.unwrap_or_default();
 
@@ -56,16 +81,16 @@ pub( crate ) mod private
     }
 
     /// Setter for separate properties.
-    pub fn property< S : AsRef< str >, H : Into< String > >( mut self, key : S, hint : H, kind : Type ) -> Self
+    pub fn property< S : AsRef< str >, H : Into< String > >( mut self, key : S, hint : H, kind : Type, optional : bool ) -> Self
     {
       let key = key.as_ref();
       let hint = hint.into();
-      let property = ValueDescription { hint, kind };
+      let property = ValueDescription { hint, kind, optional };
 
       let mut properties = self.properties.unwrap_or_default();
       let properties_aliases = self.properties_aliases.unwrap_or_default();
-      debug_assert!( !properties.contains_key( key ), "Property name `{key}` is alredy used for `{:?}`", properties[ key ] );
-      debug_assert!( !properties_aliases.contains_key( key ), "Name `{key}` is alredy used for `{}` as alias", properties_aliases[ key ] );
+      debug_assert!( !properties.contains_key( key ), "Property name `{key}` is already used for `{:?}`", properties[ key ] );
+      debug_assert!( !properties_aliases.contains_key( key ), "Name `{key}` is already used for `{}` as alias", properties_aliases[ key ] );
 
       properties.insert( key.into(), property );
 
@@ -81,8 +106,8 @@ pub( crate ) mod private
       let alias = alias.into();
       let properties = self.properties.unwrap_or_default();
       let mut properties_aliases = self.properties_aliases.unwrap_or_default();
-      debug_assert!( !properties.contains_key( &alias ), "Name `{key}` is alredy used for `{:?} as property name`", properties[ &alias ] );
-      debug_assert!( !properties_aliases.contains_key( &alias ), "Alias `{alias}` is alredy used for `{}`", properties_aliases[ &alias ] );
+      debug_assert!( !properties.contains_key( &alias ), "Name `{key}` is already used for `{:?} as property name`", properties[ &alias ] );
+      debug_assert!( !properties_aliases.contains_key( &alias ), "Alias `{alias}` is already used for `{}`", properties_aliases[ &alias ] );
 
       properties_aliases.insert( alias, key );
 

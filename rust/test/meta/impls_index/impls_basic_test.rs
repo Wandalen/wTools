@@ -6,7 +6,7 @@ use TheModule::prelude::*;
 tests_impls!
 {
 
-  #[ test ]
+
   fn pass1_test()
   {
     a_id!( true, true );
@@ -14,7 +14,7 @@ tests_impls!
 
   //
 
-  #[ test ]
+
   fn fail1_test()
   {
     // a_id!( true, false );
@@ -23,7 +23,7 @@ tests_impls!
   //
 
   #[cfg(any())]
-  #[ test ]
+
   fn never_test()
   {
     println!( "never_test" );
@@ -32,7 +32,7 @@ tests_impls!
   //
 
   #[cfg(all())]
-  #[ test ]
+
   fn always_test()
   {
     println!( "always_test" );

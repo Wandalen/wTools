@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use crate::
+  use crate::ca::
   {
     Parser, GrammarConverter, ExecutorConverter,
     Executor,
@@ -9,13 +9,46 @@ pub( crate ) mod private
 
     Command,
     Routine,
-    commands_aggregator::help::{ HelpGeneratorFn, HelpVariants },
+    commands_aggregator::help::{ HelpGeneratorFn, HelpVariants, dot_command },
   };
 
   use wtools::{ HashMap, Result, HashSet };
 
-  /// CommandsAggragator
-  #[ derive( Debug ) ] 
+  /// The `CommandsAggregator` struct is responsible for aggregating all commands that the user defines,
+  /// and for parsing and executing them. It is the main entry point of the library.
+  ///
+  /// CommandsAggregator component brings everything together. This component is responsible for configuring the `Parser`, `Grammar`, and `Executor` components based on the user’s needs. It also manages the entire pipeline of processing, from parsing the raw text input to executing the final command(parse -> validate -> execute).
+  ///
+  /// # Example:
+  ///
+  /// ```
+  /// use wca::prelude::*;
+  ///
+  /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
+  /// let ca = CommandsAggregator::former()
+  /// .grammar(
+  /// [
+  ///   Command::former()
+  ///   .phrase( "echo" )
+  ///   .hint( "prints all subjects and properties" )
+  ///   .subject( "Subject", Type::String, false )
+  ///   .property( "property", "simple property", Type::String, false )
+  ///   .form(),
+  /// ])
+  /// .executor(
+  /// [
+  ///   ( "echo".to_owned(), Routine::new( |( args, props )|
+  ///   {
+  ///     println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
+  ///     Ok( () )
+  ///   })),
+  /// ])
+  /// .build();
+  ///
+  /// ca.perform( ".echo something" )?;
+  /// # Ok( () ) }
+  /// ```
+  #[ derive( Debug ) ]
   #[ derive( former::Former ) ]
   pub struct CommandsAggregator
   {
@@ -27,12 +60,17 @@ pub( crate ) mod private
     help_generator : HelpGeneratorFn,
     #[ default( HashSet::from([ HelpVariants::All ]) ) ]
     help_variants : HashSet< HelpVariants >,
+    #[ default( GrammarConverter::former().form() ) ]
     grammar_converter : GrammarConverter,
+    #[ default( ExecutorConverter::former().form() ) ]
     executor_converter : ExecutorConverter,
   }
 
   impl CommandsAggregatorFormer
   {
+    /// Setter for grammar
+    ///
+    /// Gets list of available commands
     pub fn grammar< V >( mut self, commands : V ) -> Self
     where
       V : Into< Vec< Command > >
@@ -45,6 +83,9 @@ pub( crate ) mod private
       self
     }
 
+    /// Setter for executor
+    ///
+    /// Gets dictionary of routines( command name -> callback )
     pub fn executor< H >( mut self, routines : H ) -> Self
     where
       H : Into< HashMap< String, Routine > >
@@ -57,6 +98,20 @@ pub( crate ) mod private
       self
     }
 
+    /// Setter for help content generator
+    ///
+    /// ```
+    /// use wca::prelude::*;
+    ///
+    /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
+    /// let ca = CommandsAggregator::former()
+    /// // ...
+    /// .help( | grammar, command | format!( "Replaced help content" ) )
+    /// .build();
+    ///
+    /// ca.perform( ".help" )?;
+    /// # Ok( () ) }
+    /// ```
     pub fn help< HelpFunction >( mut self, func : HelpFunction ) -> Self
     where
       HelpFunction : Fn( &GrammarConverter, Option< &Command > ) -> String + 'static
@@ -65,6 +120,7 @@ pub( crate ) mod private
       self
     }
 
+    /// Construct CommandsAggregator
     pub fn build( self ) -> CommandsAggregator
     {
       let mut ca = self.form();
@@ -81,6 +137,8 @@ pub( crate ) mod private
         }
       }
 
+      dot_command( &mut ca.grammar_converter, &mut ca.executor_converter );
+
       ca
     }
   }
@@ -88,6 +146,8 @@ pub( crate ) mod private
   impl CommandsAggregator
   {
     /// Parse, converts and executes a program
+    ///
+    /// Takes a string with program and executes it
     pub fn perform< S >( &self, program : S ) -> Result< () >
     where
       S : AsRef< str >
