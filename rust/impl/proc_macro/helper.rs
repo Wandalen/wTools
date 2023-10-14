@@ -332,6 +332,6 @@ pub mod prelude
     syn_err,
   };
 
-  #[ doc( inline ) ]
-  pub use super::private::Result;
+  // #[ doc( inline ) ]
+  // pub use super::private::Result;
 }
