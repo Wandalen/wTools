@@ -1,7 +1,7 @@
 use super::*;
 use utility::*;
 
-const ASSET_PATH : &str = "rust/test/willbe/_asset";
+const ASSET_PATH : &str = "rust/test/willbe_old/_asset";
 
 mod integration;
 mod ordering;

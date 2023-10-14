@@ -10,7 +10,7 @@ ___
 <!-- {{# generate.module_sample{} #}} -->
 
 ```rust
-use willbe::*;
+use willbe_old::*;
 
 fn main()
 {
@@ -31,4 +31,3 @@ cd wTools
 cd sample/rust/willbe_trivial_sample
 cargo run
 ```
-

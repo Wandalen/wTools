@@ -158,6 +158,8 @@ willbe_local = { version = "*", path = "../../move/willbe", package = "willbe" }
 willbe_published = { version = "*", package = "willbe" }
 willbe2_local = { version = "*", path = "../../alias/willbe2", package = "willbe2" }
 willbe2_published = { version = "*", package = "willbe2" }
+willbe_old_local = { version = "*", path = "../../move/willbe_old", package = "willbe_old" }
+# willbe_old_published = { version = "*", package = "willbe_old" }
 
 # automata
 
