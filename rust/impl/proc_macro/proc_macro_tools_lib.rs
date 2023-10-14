@@ -93,7 +93,7 @@ pub mod prelude
   #[ doc( inline ) ]
   pub use ::syn::parse_quote as parse_qt;
   #[ doc( inline ) ]
-  pub use ::proc_macro_tools::syn::spanned::Spanned;
+  pub use ::syn::spanned::Spanned;
 
   #[ doc( inline ) ]
   pub use syn::
