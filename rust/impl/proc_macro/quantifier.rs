@@ -34,7 +34,7 @@ pub( crate ) mod private
   types!
   {
     ///
-    /// Parse as much elements as possible.
+    /// Parse a pair.
     ///
 
     #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]

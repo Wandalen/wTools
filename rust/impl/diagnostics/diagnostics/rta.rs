@@ -168,6 +168,41 @@ pub( crate ) mod private
 
   }
 
+  // xxx : switch left and right args
+  // ///
+  // /// Asserts that two expressions are identical to each other (using [`PartialEq`]).
+  // ///
+
+  // #[macro_export]
+  // macro_rules! assert_eq
+  // {
+  //   ($left:expr, $right:expr$(,)?) =>
+  //   ({
+  //     ::pretty_assertions::assert_eq!();
+  //     $crate::assert_eq!(@ $left, $right, "", "");
+  //   });
+  //   ($left:expr, $right:expr, $($arg:tt)*) => ({
+  //     $crate::assert_eq!(@ $left, $right, ": ", $($arg)+);
+  //   });
+  //   (@ $left:expr, $right:expr, $maybe_colon:expr, $($arg:tt)*) => ({
+  //     match (&($left), &($right)) {
+  //       (left_val, right_val) => {
+  //         if !(*left_val == *right_val) {
+  //           use $crate::private::CreateComparison;
+  //           ::core::panic!("assertion failed: `(left == right)`{}{}\
+  //           \n\
+  //           \n{}\
+  //           \n",
+  //           $maybe_colon,
+  //           format_args!($($arg)*),
+  //           (left_val, right_val).create_comparison()
+  //           )
+  //         }
+  //       }
+  //     }
+  //   });
+  // }
+
   pub use a_true;
   pub use a_false;
   pub use a_dbg_true;
@@ -219,5 +254,6 @@ pub mod prelude
     a_dbg_id,
     a_dbg_not_id,
   };
+
 }
 
