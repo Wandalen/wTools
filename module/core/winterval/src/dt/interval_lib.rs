@@ -169,6 +169,9 @@ pub( crate ) mod private
     }
   }
 
+  // xxx : qqq2 : implement rest Froms
+  // xxx : qqq2 : std range Froms interval
+
 }
 
 /// Protected namespace of the module.

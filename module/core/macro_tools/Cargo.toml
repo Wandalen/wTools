@@ -58,7 +58,6 @@ syn = { version = "~1.0", features = [ "full", "extra-traits" ] }
 
 ## internal
 winterval = { workspace = true, features = [ "default" ] }
-# xxx : rid off winterval, maybe?
 type_constructor = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
