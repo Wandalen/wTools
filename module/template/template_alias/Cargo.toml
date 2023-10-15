@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
@@ -28,24 +28,25 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std", "use_alloc" ]
-use_std = []
+default = [ ]
+full = []
+# use_std = []
+no_std = []
 use_alloc = []
 
 [lib]
 name = "template_alias"
-path = "rust/impl/_blank/standard_lib.rs"
+path = "src/_blank/standard_lib.rs"
 
 [[test]]
 name = "template_alias_test"
-path = "rust/test/_blank/tests.rs"
+path = "tests/_blank/tests.rs"
 
 [[test]]
 name = "template_alias_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
+path = "tests/_integration_test/smoke_test.rs"
 
 [dependencies]
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+test_tools = { workspace = true }

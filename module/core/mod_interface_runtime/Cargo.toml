@@ -1,0 +1,53 @@
+[package]
+name = "mod_interface_runtime"
+version = "0.1.2"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/mod_interface_runtime"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/mod_interface_runtime"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/mod_interface_runtime"
+description = """
+Protocol of modularity unifying interface of a module and introducing layers.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+# xxx : unify structure with other procedural macroses
+include = [
+  "/rust/impl/meta/mod_interface_runtime_lib.rs",
+  "/rust/impl/meta/mod_interface/runtime",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+default = [ ]
+full = []
+# use_std = []
+no_std = []
+use_alloc = []
+
+[lib]
+name = "mod_interface_runtime"
+path = "src/meta/mod_interface/runtime/mod_interface_runtime_lib.rs"
+
+[[test]]
+name = "mod_interface_runtime_test"
+path = "tests/meta/mod_interface_runtime_tests.rs"
+
+[dependencies]
+
+[dev-dependencies]
+test_tools = { workspace = true }
+# meta_tools = { workspace = true }
+# maplit = "~1.0.2"
+# anyhow = "~1.0"

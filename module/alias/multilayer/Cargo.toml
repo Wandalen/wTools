@@ -4,7 +4,7 @@ version = "0.1.3"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
@@ -28,29 +28,30 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std", "use_alloc" ]
-use_std = []
+default = [ ]
+full = []
+# use_std = []
+no_std = []
 use_alloc = []
 
 [lib]
 name = "multilayer"
-path = "rust/impl/meta/mod_interface/front/multilayer_lib.rs"
+path = "src/meta/mod_interface/front/multilayer_lib.rs"
 
 [[test]]
 name = "mod_interface_test"
-path = "rust/test/meta/multilayer_tests.rs"
+path = "tests/meta/multilayer_tests.rs"
 
 [[test]]
 name = "mod_interface_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
+path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "multilayer_trivial_sample"
-# path = "sample/rust/multilayer_trivial_sample/src/main.rs"
+# path = "examples/multilayer_trivial_sample/src/main.rs"
 
 [dependencies]
-mod_interface = { version = "~0.1", path = "../../rust/mod_interface" }
+mod_interface = { workspace = true }
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+test_tools = { workspace = true }

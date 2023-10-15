@@ -1,0 +1,8 @@
+error: Parametrized element should be single, because Single has only one element
+        single Bad : < T1, T2 >
+ --> tests/dt/type_constructor/single/single_with_two_args_test.rs:5:3
+  |
+5 |   types!( single Bad : < T1, T2 > );
+  |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `$crate::_single` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)

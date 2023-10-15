@@ -22,6 +22,6 @@ cargo add multilayer
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/multilayer_trivial_sample
+cd examples/multilayer_trivial_sample
 cargo run
 ```

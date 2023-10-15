@@ -1,0 +1,8 @@
+[package]
+name = "meta_tools_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+meta_tools = { workspace = true }

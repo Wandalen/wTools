@@ -1,0 +1,17 @@
+[package]
+name = "derive_tools_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[features]
+derive_from = []
+derive_into = []
+derive_display = []
+derive_from_str = []
+default = [ "derive_from", "derive_into", "derive_display", "derive_from_str" ]
+
+[dependencies]
+derive_tools = { workspace = true }
+parse-display = { version = "~0.5" } # qqq : make possible to remove that
+

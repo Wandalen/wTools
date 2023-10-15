@@ -1,18 +1,839 @@
 [workspace]
 resolver = "2"
 members = [
-  "module/rust/*",
+  "module/core/*",
   "module/alias/*",
   "module/move/*",
-  "sample/rust/*",
+  "module/step/*",
+  # "module/core/*/examples/*",
 ]
 exclude = [
   "*",
   "module/move/_video_experiment",
-  # "module/rust/-*",
-  # "sample/rust/-*",
-  # "module/rust/_*",
-  # "sample/rust/_*",
-  # "sample/rust/_select_matching",
+  "module/core/-*",
 ]
-# default-members = [ "module/rust/wtools" ]
+# default-members = [ "module/core/wtools" ]
+
+# [metadata.cargo-suppress-warnings]
+# unused-manifest-key = true
+
+## top level
+
+[workspace.dependencies.wtools_default]
+# version = "*"
+path = "module/core/wtools"
+# package = "wtools"
+default-features = true
+
+[workspace.dependencies.wtools]
+# version = "*"
+path = "module/core/wtools"
+# package = "wtools"
+default-features = false
+
+[workspace.dependencies.wtools_published]
+# version = "*"
+# package = "wtools"
+
+[workspace.dependencies.non_std]
+# version = "*"
+path = "module/alias/non_std"
+# package = "non_std"
+
+[workspace.dependencies.non_std_published]
+# version = "*"
+# package = "non_std"
+
+[workspace.dependencies.std_tools]
+# version = "*"
+path = "module/alias/std_tools"
+# package = "std_tools"
+
+[workspace.dependencies.std_tools_published]
+# version = "*"
+# package = "std_tools"
+
+[workspace.dependencies.std_x]
+# version = "*"
+path = "module/alias/std_x"
+# package = "std_x"
+
+[workspace.dependencies.std_x_published]
+# version = "*"
+# package = "std_x"
+
+
+## data_type
+
+[workspace.dependencies.data_type_default]
+# version = "*"
+path = "module/core/data_type"
+# package = "data_type"
+default-features = true
+
+[workspace.dependencies.data_type]
+# version = "*"
+path = "module/core/data_type"
+# package = "data_type"
+default-features = false
+
+[workspace.dependencies.data_type_published]
+# version = "*"
+# package = "data_type"
+
+[workspace.dependencies.fundamental_data_type]
+# version = "*"
+path = "module/alias/fundamental_data_type"
+# package = "fundamental_data_type"
+
+[workspace.dependencies.fundamental_data_type_published]
+# version = "*"
+# package = "fundamental_data_type"
+
+[workspace.dependencies.type_constructor_default]
+# version = "*"
+path = "module/core/type_constructor"
+# package = "type_constructor"
+default-features = true
+
+[workspace.dependencies.type_constructor]
+# version = "*"
+path = "module/core/type_constructor"
+# package = "type_constructor"
+default-features = false
+
+[workspace.dependencies.type_constructor_derive_make_meta]
+# version = "*"
+path = "module/core/type_constructor_derive_make_meta"
+# package = "type_constructor_derive_make_meta"
+
+[workspace.dependencies.type_constructor_derive_pair_meta]
+# version = "*"
+path = "module/core/type_constructor_derive_pair_meta"
+# package = "type_constructor_derive_pair_meta"
+
+[workspace.dependencies.type_constructor_published]
+# version = "*"
+# package = "type_constructor"
+
+[workspace.dependencies.winterval_default]
+# version = "*"
+path = "module/core/winterval"
+# package = "winterval"
+default-features = true
+
+[workspace.dependencies.winterval]
+# version = "*"
+path = "module/core/winterval"
+# package = "winterval"
+default-features = false
+
+[workspace.dependencies.winterval_published]
+# version = "*"
+# package = "winterval"
+
+
+## derive
+
+[workspace.dependencies.derive_tools_default]
+# version = "*"
+path = "module/core/derive_tools"
+# package = "derive_tools"
+default-features = true
+
+[workspace.dependencies.derive_tools]
+# version = "*"
+path = "module/core/derive_tools"
+# package = "derive_tools"
+default-features = false
+
+[workspace.dependencies.derive_tools_published]
+# version = "*"
+# package = "derive_tools"
+
+[workspace.dependencies.clone_dyn_default]
+# version = "*"
+path = "module/core/clone_dyn"
+# package = "clone_dyn"
+default-features = true
+
+[workspace.dependencies.clone_dyn]
+# version = "*"
+path = "module/core/clone_dyn"
+# package = "clone_dyn"
+default-features = false
+
+[workspace.dependencies.clone_dyn_published]
+# version = "*"
+# package = "clone_dyn"
+
+[workspace.dependencies.clone_dyn_meta]
+# version = "*"
+path = "module/core/clone_dyn_meta"
+# package = "clone_dyn_meta"
+
+[workspace.dependencies.clone_dyn_meta_published]
+# version = "*"
+# package = "clone_dyn_meta"
+
+
+## mem
+
+[workspace.dependencies.mem_tools_default]
+# version = "*"
+path = "module/core/mem_tools"
+# package = "mem_tools"
+default-features = true
+
+[workspace.dependencies.mem_tools]
+# version = "*"
+path = "module/core/mem_tools"
+# package = "mem_tools"
+default-features = false
+
+[workspace.dependencies.mem_tools_published]
+# version = "*"
+# package = "mem_tools"
+
+
+## diagnostics
+
+[workspace.dependencies.diagnostics_tools_default]
+# version = "*"
+path = "module/core/diagnostics_tools"
+# package = "diagnostics_tools"
+default-features = true
+
+[workspace.dependencies.diagnostics_tools]
+# version = "*"
+path = "module/core/diagnostics_tools"
+# package = "diagnostics_tools"
+default-features = false
+
+[workspace.dependencies.diagnostics_tools_published]
+# version = "*"
+# package = "diagnostics_tools"
+
+
+## iter
+
+[workspace.dependencies.iter_tools_default]
+# version = "*"
+path = "module/core/iter_tools"
+# package = "iter_tools"
+default-features = true
+
+[workspace.dependencies.iter_tools]
+# version = "*"
+path = "module/core/iter_tools"
+# package = "iter_tools"
+default-features = false
+
+[workspace.dependencies.iter_tools_published]
+# version = "*"
+# package = "iter_tools"
+
+
+## meta
+
+[workspace.dependencies.meta_tools_default]
+# version = "*"
+path = "module/core/meta_tools"
+# package = "meta_tools"
+default-features = true
+
+[workspace.dependencies.meta_tools]
+# version = "*"
+path = "module/core/meta_tools"
+# package = "meta_tools"
+default-features = false
+# features = [ "mod_interface" ]
+
+[workspace.dependencies.meta_tools_published]
+# version = "*"
+# package = "meta_tools"
+
+# [workspace.dependencies.meta_tools]
+# version = "*"
+# path = "module/core/meta_tools"
+# # package = "meta_tools"
+#
+# [workspace.dependencies.meta_tools_published]
+# version = "*"
+# # package = "meta_tools"
+
+[workspace.dependencies.for_each_default]
+# version = "*"
+path = "module/core/for_each"
+# package = "for_each"
+default-features = true
+
+[workspace.dependencies.for_each]
+# version = "*"
+path = "module/core/for_each"
+# package = "for_each"
+default-features = false
+
+[workspace.dependencies.for_each_published]
+# version = "*"
+# package = "for_each"
+
+[workspace.dependencies.former_default]
+# version = "*"
+path = "module/core/former"
+# package = "former"
+default-features = true
+
+[workspace.dependencies.former]
+# version = "*"
+path = "module/core/former"
+# package = "former"
+default-features = false
+
+[workspace.dependencies.former_published]
+# version = "*"
+# package = "former"
+
+[workspace.dependencies.former_meta]
+# version = "*"
+path = "module/core/former_meta"
+# package = "former_meta"
+
+[workspace.dependencies.former_meta_published]
+# version = "*"
+# package = "former_meta"
+
+[workspace.dependencies.former_runtime]
+# version = "*"
+path = "module/core/former_runtime"
+# package = "former_runtime"
+
+[workspace.dependencies.former_runtime_published]
+# version = "*"
+# package = "former_runtime"
+
+[workspace.dependencies.impls_index_default]
+# version = "*"
+path = "module/core/impls_index"
+# package = "impls_index"
+default-features = true
+
+[workspace.dependencies.impls_index]
+# version = "*"
+path = "module/core/impls_index"
+# package = "impls_index"
+default-features = false
+
+[workspace.dependencies.impls_index_published]
+# version = "*"
+# package = "impls_index"
+
+[workspace.dependencies.impls_index_meta]
+# version = "*"
+path = "module/core/impls_index_meta"
+# package = "impls_index_meta"
+
+[workspace.dependencies.impls_index_meta_published]
+# version = "*"
+# package = "impls_index_meta"
+
+[workspace.dependencies.mod_interface_default]
+# version = "*"
+path = "module/core/mod_interface"
+# package = "mod_interface"
+default-features = true
+
+[workspace.dependencies.mod_interface]
+# version = "*"
+path = "module/core/mod_interface"
+# package = "mod_interface"
+default-features = false
+
+[workspace.dependencies.mod_interface_published]
+# version = "*"
+# package = "mod_interface"
+
+[workspace.dependencies.mod_interface_meta]
+# version = "*"
+path = "module/core/mod_interface_meta"
+# package = "mod_interface_meta"
+
+[workspace.dependencies.mod_interface_meta_published]
+# version = "*"
+# package = "mod_interface_meta"
+
+[workspace.dependencies.mod_interface_runtime]
+# version = "*"
+path = "module/core/mod_interface_runtime"
+# package = "mod_interface_runtime"
+
+[workspace.dependencies.mod_interface_runtime_published]
+# version = "*"
+# package = "mod_interface_runtime"
+
+[workspace.dependencies.multilayer_default]
+# version = "*"
+path = "module/alias/multilayer"
+# package = "multilayer"
+default-features = true
+
+[workspace.dependencies.multilayer]
+# version = "*"
+path = "module/alias/multilayer"
+# package = "multilayer"
+default-features = false
+
+[workspace.dependencies.multilayer_published]
+# version = "*"
+# package = "multilayer"
+
+[workspace.dependencies.woptions_default]
+# version = "*"
+path = "module/core/woptions"
+# package = "woptions"
+default-features = true
+
+[workspace.dependencies.woptions]
+# version = "*"
+path = "module/core/woptions"
+# package = "woptions"
+default-features = false
+
+[workspace.dependencies.woptions_published]
+# version = "*"
+# package = "woptions"
+
+[workspace.dependencies.woptions_meta]
+# version = "*"
+path = "module/core/woptions_meta"
+# package = "woptions_meta"
+
+[workspace.dependencies.woptions_meta_published]
+# version = "*"
+# package = "woptions_meta"
+
+[workspace.dependencies.woptions_runtime]
+# version = "*"
+path = "module/core/woptions_runtime"
+# package = "woptions_runtime"
+
+[workspace.dependencies.woptions_runtime_published]
+# version = "*"
+# package = "woptions_runtime"
+
+
+## proc_macro
+
+[workspace.dependencies.proc_macro_tools_default]
+# version = "*"
+path = "module/core/proc_macro_tools"
+# package = "proc_macro_tools"
+default-features = true
+
+[workspace.dependencies.proc_macro_tools]
+# version = "*"
+path = "module/core/proc_macro_tools"
+# package = "proc_macro_tools"
+default-features = false
+
+[workspace.dependencies.proc_macro_tools_published]
+# version = "*"
+# package = "proc_macro_tools"
+
+[workspace.dependencies.wproc_macro_default]
+# version = "*"
+path = "module/alias/wproc_macro"
+# package = "wproc_macro"
+default-features = true
+
+[workspace.dependencies.wproc_macro]
+# version = "*"
+path = "module/alias/wproc_macro"
+# package = "wproc_macro"
+default-features = false
+
+[workspace.dependencies.wproc_macro_published]
+# version = "*"
+# package = "wproc_macro"
+
+[workspace.dependencies.macro_tools_default]
+# version = "*"
+path = "module/alias/macro_tools"
+# package = "macro_tools"
+default-features = true
+
+[workspace.dependencies.macro_tools]
+# version = "*"
+path = "module/alias/macro_tools"
+# package = "macro_tools"
+default-features = false
+
+[workspace.dependencies.macro_tools_published]
+# version = "*"
+# package = "macro_tools"
+
+
+## time
+
+[workspace.dependencies.time_tools_default]
+# version = "*"
+path = "module/core/time_tools"
+# package = "time_tools"
+default-features = true
+
+[workspace.dependencies.time_tools]
+# version = "*"
+path = "module/core/time_tools"
+# package = "time_tools"
+default-features = false
+
+[workspace.dependencies.time_tools_published]
+# version = "*"
+# package = "time_tools"
+
+
+## typing
+
+[workspace.dependencies.typing_tools_default]
+# version = "*"
+path = "module/core/typing_tools"
+# package = "typing_tools"
+default-features = true
+
+[workspace.dependencies.typing_tools]
+# version = "*"
+path = "module/core/typing_tools"
+# package = "typing_tools"
+default-features = false
+
+[workspace.dependencies.typing_tools_published]
+# version = "*"
+# package = "typing_tools"
+
+[workspace.dependencies.implements_default]
+# version = "*"
+path = "module/core/implements"
+# package = "implements"
+default-features = true
+
+[workspace.dependencies.implements]
+# version = "*"
+path = "module/core/implements"
+# package = "implements"
+default-features = false
+
+[workspace.dependencies.implements_published]
+# version = "*"
+# package = "implements"
+
+[workspace.dependencies.instance_of_default]
+# version = "*"
+path = "module/alias/instance_of"
+# package = "instance_of"
+default-features = true
+
+[workspace.dependencies.instance_of]
+# version = "*"
+path = "module/alias/instance_of"
+# package = "instance_of"
+default-features = false
+
+[workspace.dependencies.instance_of_published]
+# version = "*"
+# package = "instance_of"
+
+[workspace.dependencies.inspect_type_default]
+# version = "*"
+path = "module/core/inspect_type"
+# package = "inspect_type"
+default-features = true
+
+[workspace.dependencies.inspect_type]
+# version = "*"
+path = "module/core/inspect_type"
+# package = "inspect_type"
+default-features = false
+
+[workspace.dependencies.inspect_type_published]
+# version = "*"
+# package = "inspect_type"
+
+[workspace.dependencies.is_slice_default]
+# version = "*"
+path = "module/core/is_slice"
+# package = "is_slice"
+default-features = true
+
+[workspace.dependencies.is_slice]
+# version = "*"
+path = "module/core/is_slice"
+# package = "is_slice"
+default-features = false
+
+[workspace.dependencies.is_slice_published]
+# version = "*"
+# package = "is_slice"
+
+
+## error
+
+[workspace.dependencies.error_tools_default]
+# version = "*"
+path = "module/core/error_tools"
+# package = "error_tools"
+default-features = true
+
+[workspace.dependencies.error_tools]
+# version = "*"
+path = "module/core/error_tools"
+# package = "error_tools"
+default-features = false
+
+[workspace.dependencies.error_tools_published]
+# version = "*"
+# package = "error_tools"
+
+[workspace.dependencies.werror]
+# version = "*"
+path = "module/alias/werror"
+# package = "werror"
+
+[workspace.dependencies.werror_published]
+# version = "*"
+# package = "werror"
+
+
+## strs
+
+[workspace.dependencies.strs_tools_default]
+# version = "*"
+path = "module/core/strs_tools"
+# package = "strs_tools"
+default-features = true
+
+[workspace.dependencies.strs_tools]
+# version = "*"
+path = "module/core/strs_tools"
+# package = "strs_tools"
+default-features = false
+
+[workspace.dependencies.strs_tools_published]
+# version = "*"
+# package = "strs_tools"
+
+[workspace.dependencies.wstring_tools]
+# version = "*"
+path = "module/alias/wstring_tools"
+# package = "wstring_tools"
+
+[workspace.dependencies.wstring_tools_published]
+# version = "*"
+# package = "wstring_tools"
+
+
+## fs
+
+[workspace.dependencies.fs_tools_default]
+# version = "*"
+path = "module/move/fs_tools"
+# package = "fs_tools"
+default-features = true
+
+[workspace.dependencies.fs_tools]
+# version = "*"
+path = "module/move/fs_tools"
+# package = "fs_tools"
+default-features = false
+
+[workspace.dependencies.fs_tools_published]
+# version = "*"
+# package = "fs_tools"
+
+
+## test
+
+# [workspace.dependencies.wtest_basic]
+# # version = "*"
+# path = "module/core/wtest_basic"
+# # package = "wtest_basic"
+#
+# [workspace.dependencies.wtest_basic_published]
+# # version = "*"
+# # package = "wtest_basic"
+
+[workspace.dependencies.wtest]
+# version = "*"
+path = "module/move/wtest"
+# package = "wtest"
+
+[workspace.dependencies.wtest_published]
+# version = "*"
+# package = "wtest"
+
+[workspace.dependencies.test_tools_default]
+# version = "*"
+path = "module/core/test_tools"
+# package = "test_tools"
+default-features = true
+
+[workspace.dependencies.test_tools]
+# version = "*"
+path = "module/core/test_tools"
+# package = "test_tools"
+default-features = false
+
+[workspace.dependencies.test_tools_published]
+# version = "*"
+# package = "test_tools"
+
+## willbe
+
+[workspace.dependencies.willbe]
+# version = "*"
+path = "module/move/willbe"
+# package = "willbe"
+
+[workspace.dependencies.willbe_published]
+# version = "*"
+# package = "willbe"
+
+[workspace.dependencies.willbe2]
+# version = "*"
+path = "module/alias/willbe2"
+# package = "willbe2"
+
+[workspace.dependencies.willbe2_published]
+# version = "*"
+# package = "willbe2"
+
+[workspace.dependencies.willbe_old]
+# version = "*"
+path = "module/move/willbe_old"
+# package = "willbe_old"
+
+# [workspace.dependencies.willbe_old_published]
+# version = "*"
+# # package = "willbe_old"
+
+## automata
+
+[workspace.dependencies.automata_tools]
+# version = "*"
+path = "module/move/automata_tools"
+# package = "automata_tools"
+
+[workspace.dependencies.automata_tools_published]
+# version = "*"
+# package = "automata_tools"
+
+[workspace.dependencies.wautomata]
+# version = "*"
+path = "module/alias/wautomata"
+# package = "wautomata"
+
+[workspace.dependencies.wautomata_published]
+# version = "*"
+# package = "wautomata"
+
+
+## graphs
+
+[workspace.dependencies.graphs_tools_default]
+# version = "*"
+path = "module/move/graphs_tools"
+# package = "graphs_tools"
+default-features = true
+
+[workspace.dependencies.graphs_tools]
+# version = "*"
+path = "module/move/graphs_tools"
+# package = "graphs_tools"
+default-features = false
+
+[workspace.dependencies.graphs_tools_published]
+# version = "*"
+# package = "graphs_tools"
+
+
+## ca
+
+[workspace.dependencies.wca]
+# version = "*"
+path = "module/move/wca"
+# package = "wca"
+
+[workspace.dependencies.wca_published]
+# version = "*"
+# package = "wca"
+
+
+## censor
+
+[workspace.dependencies.wcensor]
+# version = "*"
+path = "module/move/wcensor"
+# package = "wcensor"
+
+[workspace.dependencies.wcensor_published]
+# version = "*"
+# package = "wcensor"
+
+
+## lang
+
+[workspace.dependencies.wlang]
+# version = "*"
+path = "module/move/wlang"
+# package = "wlang"
+
+[workspace.dependencies.wlang_published]
+# version = "*"
+# package = "wlang"
+
+
+## publisher
+
+[workspace.dependencies.wpublisher]
+# version = "*"
+path = "module/move/wpublisher"
+# package = "wpublisher"
+
+[workspace.dependencies.wpublisher_published]
+# version = "*"
+# package = "wpublisher"
+
+
+## plot
+
+[workspace.dependencies.wplot]
+# version = "*"
+path = "module/move/wplot"
+# package = "wplot"
+
+[workspace.dependencies.wplot_published]
+# version = "*"
+# package = "wplot"
+
+[workspace.dependencies.plot_interface]
+# version = "*"
+path = "module/move/plot_interface"
+# package = "plot_interface"
+
+[workspace.dependencies.plot_interface_published]
+# version = "*"
+# package = "plot_interface"
+
+
+## steps
+
+[workspace.dependencies.integration_test]
+path = "module/step/integration_test"
+default-features = true
+# # package = "integration_test"
+# version = "*"
+
+[workspace.dependencies.smoke_test]
+path = "module/step/smoke_test"
+default-features = true
+# # package = "smoke_test"
+# version = "*"

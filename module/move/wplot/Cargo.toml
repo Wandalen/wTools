@@ -2,7 +2,7 @@
 name = "wplot"
 version = "0.1.7"
 edition = "2021"
-authors = ["Kostiantyn Wandalen <wandalen@obox.systems>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>" ]
+authors = ["Kostiantyn Wandalen <wandalen@obox.systems>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dmytro.kr@obox.systems>" ]
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/wplot"
@@ -25,25 +25,26 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std", "use_alloc" ]
-use_std = []
+default = [ ]
+full = []
+# use_std = []
+no_std = []
 use_alloc = []
 
 [lib]
 name = "wplot"
-path = "rust/impl/plot/wplot_lib.rs"
+path = "src/plot/wplot_lib.rs"
 
 [[test]]
 name = "wplot_test"
-path = "rust/test/plot/wplot_tests.rs"
+path = "tests/plot/wplot_tests.rs"
 
 [[test]]
 name = "wplot_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
+path = "tests/_integration_test/smoke_test.rs"
 
 [dependencies]
-wtools = { version = "~0.2", path = "../../rust/wtools" }
+wtools = { workspace = true }
 image = { version = "~0.24" }
 open = { version = "~3.0" }
 wmath = { version = "~0.3" }
@@ -55,5 +56,5 @@ num-traits = { version = "~0.2" }
 # total_float_wrap = { version = "~0.1" }
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+test_tools = { workspace = true }
 

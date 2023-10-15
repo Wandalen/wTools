@@ -797,6 +797,6 @@ cargo add fundamental_data_type
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/fundamental_data_type_trivial_sample
+cd examples/fundamental_data_type_trivial_sample
 cargo run
 ```

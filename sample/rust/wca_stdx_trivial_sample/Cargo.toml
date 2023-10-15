@@ -1,7 +1,0 @@
-[package]
-name = "wca_stdx_trivial_sample"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-wca = { version = "*", path = "../../../module/move/wca" }

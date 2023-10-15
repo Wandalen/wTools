@@ -44,6 +44,6 @@ cargo add wstring_tools
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/wstring_tools_trivial
+cd examples/wstring_tools_trivial
 cargo run
 ```

@@ -28,6 +28,6 @@ cargo add wautomata
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/wautomata_trivial
+cd examples/wautomata_trivial
 cargo run
 ```

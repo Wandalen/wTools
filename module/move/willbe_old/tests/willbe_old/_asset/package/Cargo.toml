@@ -1,0 +1,9 @@
+[package]
+name = "willbe_verified_package"
+version = "0.1.0"
+edition = "2021"
+documentation = "Documentation text"
+license = "MIT"
+readme = "Readme.md"
+
+[dependencies]

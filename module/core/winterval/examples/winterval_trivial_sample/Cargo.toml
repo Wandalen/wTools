@@ -1,0 +1,13 @@
+[package]
+name = "winterval_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[features]
+# use_std = []
+no_std = []
+default = [ ]
+
+[dependencies]
+winterval = { workspace = true }

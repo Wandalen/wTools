@@ -1,0 +1,81 @@
+[package]
+name = "strs_tools"
+version = "0.1.8"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/strs_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/strs_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/strs_tools"
+description = """
+Tools to manipulate strings.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/string",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+default = [
+  "indentation",
+  "isolate",
+  "parse_request",
+  "parse_number",
+  "split",
+]
+full = [
+  "use_alloc",
+  "indentation",
+  "isolate",
+  "parse_request",
+  "parse_number",
+  "split",
+]
+# use_std = []
+no_std = []
+use_alloc = []
+
+indentation = []
+isolate = []
+parse_request  = [ "split", "isolate" ]
+parse_number = [ "lexical" ]
+split = []
+
+[lib]
+name = "strs_tools"
+path = "src/string/strs_tools_lib.rs"
+
+[[test]]
+name = "string_test"
+path = "tests/string/strs_tools_tests.rs"
+
+[[test]]
+name = "string_smoke_test"
+path = "tests/_integration_test/smoke_test.rs"
+
+[[example]]
+name = "strs_tools_trivial_sample"
+path = "examples/strs_tools_trivial_sample/src/main.rs"
+# zzz : check
+
+[dependencies]
+former = { workspace = true }
+lexical = { version = "~6.1", optional = true }
+# woptions = { workspace = true }
+# wtools = { workspace = true }
+# error_tools = { workspace = true }
+
+[dev-dependencies]
+test_tools = { workspace = true }

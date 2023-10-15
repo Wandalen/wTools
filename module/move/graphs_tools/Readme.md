@@ -32,6 +32,6 @@ cargo add graphs_tools
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/graphs_tools_trivial_sample
+cd examples/graphs_tools_trivial_sample
 cargo run
 ```

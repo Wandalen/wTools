@@ -1,0 +1,6 @@
+error: Expects at least two parameters here:
+         HashMap < i32 >
+  --> tests/former/all/former_hashmap_without_parameter.rs:11:24
+   |
+11 |   pub string_slice_1 : HashMap< i32 >,
+   |                        ^^^^^^^^^^^^^^

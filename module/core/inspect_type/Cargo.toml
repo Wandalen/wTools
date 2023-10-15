@@ -1,0 +1,58 @@
+[package]
+name = "inspect_type"
+version = "0.1.3"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/inspect_type"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/inspect_type"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/inspect_type"
+description = """
+Diagnostic-purpose tools to inspect type of a variable and its size.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose", "diagnostic-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/typing/inspect_type_lib.rs",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+default = [ ]
+full = []
+# use_std = []
+no_std = []
+use_alloc = []
+
+nightly = []
+
+[lib]
+name = "inspect_type"
+path = "src/typing/inspect_type_lib.rs"
+
+[[test]]
+name = "inspect_type_test"
+path = "tests/typing/inspect_type_tests.rs"
+
+[[test]]
+name = "inspect_type_smoke_test"
+path = "tests/_integration_test/smoke_test.rs"
+
+[[example]]
+name = "inspect_type_trivial_sample"
+path = "examples/inspect_type_trivial_sample/src/main.rs"
+
+[dependencies]
+
+[dev-dependencies]
+test_tools = { workspace = true }

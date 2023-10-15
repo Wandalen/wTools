@@ -10,7 +10,7 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 <!-- {{# generate.module_sample{} #}} -->
 
 ```rust
-#[ cfg( feature = "use_std" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 {
     use wca::*;
 
@@ -50,7 +50,7 @@ cargo add wca
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/wca_trivial
+cd examples/wca_trivial
 cargo run
 ```
 

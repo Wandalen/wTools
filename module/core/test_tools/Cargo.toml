@@ -1,0 +1,76 @@
+[package]
+name = "test_tools"
+version = "0.1.5"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/test_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/test_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/test_tools"
+description = """
+Tools for writing and running tests.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose", "testing" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+# include = [
+#   "/rust/impl/test",
+#   "/Cargo.toml",
+#   "/Readme.md",
+#   "/License",
+# ]
+
+# = features
+
+[features]
+default = [ ]
+full = []
+# use_std = []
+no_std = []
+use_alloc = []
+nightly = [ "typing_tools/nightly" ]
+# nightly = [ "wtest_basic/nightly" ]
+
+[lib]
+name = "test_tools"
+path = "src/test/test_tools_lib.rs"
+
+[[test]]
+name = "test_tools_test"
+path = "tests/test/test_tools_tests.rs"
+
+[[test]]
+name = "test_tools_smoke_test"
+path = "tests/_integration_test/smoke_test.rs"
+
+# [[example]]
+# name = "test_tools_trivial_sample"
+# path = "examples/test_tools_trivial_sample/src/main.rs"
+
+[dependencies]
+
+## external
+
+paste = "~1.0"
+rustversion = "~1.0"
+anyhow = "~1.0"
+num-traits = "~0.2"
+trybuild = { version = "~1.0", features = [ "diff" ] }
+
+## internal
+
+meta_tools = { workspace = true, features = [ "full" ] }
+mem_tools = { workspace = true, features = [ "full" ] }
+typing_tools = { workspace = true, features = [ "full" ] }
+data_type = { workspace = true, features = [ "full" ] }
+diagnostics_tools = { workspace = true, features = [ "full" ] }
+
+# [dev-dependencies]
+# test_tools = { workspace = true }

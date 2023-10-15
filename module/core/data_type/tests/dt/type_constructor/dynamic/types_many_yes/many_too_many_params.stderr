@@ -1,0 +1,11 @@
+error: Parametrized element should be single, because Many has only one element
+       pub  many Many : < T1, T2 > ;
+ --> tests/dt/type_constructor/dynamic/types_many_yes/many_too_many_params.rs:4:1
+  |
+4 | / types!
+5 | | {
+6 | |   pub many Many : < T1, T2 >;
+7 | | }
+  | |_^
+  |
+  = note: this error originates in the macro `$crate::_many` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)

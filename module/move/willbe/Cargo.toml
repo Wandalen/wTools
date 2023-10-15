@@ -4,7 +4,7 @@ version = "0.1.3"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
@@ -28,34 +28,35 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std", "use_alloc" ]
-use_std = []
+default = [ ]
+full = []
+# use_std = []
+no_std = []
 use_alloc = []
 
 [lib]
 name = "willbe"
-path = "rust/impl/willbe/willbe_lib.rs"
+path = "src/willbe/willbe_lib.rs"
 
 [[bin]]
 name = "willbe"
-path = "rust/impl/willbe/willbe_entry.rs"
+path = "src/willbe/willbe_entry.rs"
 
 # [[test]]
 # name = "willbe_test"
-# path = "rust/test/willbe/willbe_tests.rs"
+# path = "tests/willbe/willbe_tests.rs"
 
 [[test]]
 name = "willbe_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
+path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "willbe_trivial_sample"
-# path = "sample/rust/willbe_trivial_sample/src/main.rs"
+# path = "examples/willbe_trivial_sample/src/main.rs"
 
 [dependencies]
-wtools = { version = "~0.2", path = "../../rust/wtools" }
-wca = { version = "~0.1", path = "../../move/wca" }
+wtools = { workspace = true }
+wca = { workspace = true }
 anyhow = "~1.0"
 toml_edit = "~0.14"
 cargo_metadata = "~0.14"
@@ -66,5 +67,5 @@ petgraph = "~0.6"
 ptree = "~0.4"
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+test_tools = { workspace = true }
 

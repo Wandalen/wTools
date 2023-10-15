@@ -29,6 +29,6 @@ cargo add automata_tools
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/automata_tools_trivial_sample
+cd examples/automata_tools_trivial_sample
 cargo run
 ```

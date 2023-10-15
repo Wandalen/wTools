@@ -1,0 +1,70 @@
+[package]
+name = "diagnostics_tools"
+version = "0.1.4"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/diagnostics_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/diagnostics_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/diagnostics_tools"
+description = """
+Diagnostics tools.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/diagnostics",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+default = [
+  "runtime_assertions",
+  "compiletime_assertions",
+  # "use_std"
+]
+full = [
+  "runtime_assertions",
+  "compiletime_assertions",
+  # "use_std",
+  # "use_alloc"
+]
+# use_std = []
+no_std = []
+use_alloc = []
+
+runtime_assertions = [ "pretty_assertions" ] # run-time assertions
+compiletime_assertions = [] # compile-time assertions
+
+[lib]
+name = "diagnostics_tools"
+path = "src/diagnostics/diagnostics_tools_lib.rs"
+
+[[test]]
+name = "diagnostics_tools_test"
+path = "tests/diagnostics/tests.rs"
+
+[[test]]
+name = "diagnostics_tools_smoke_test"
+path = "tests/_integration_test/smoke_test.rs"
+
+[[example]]
+name = "diagnostics_tools_trivial_sample"
+path = "examples/diagnostics_tools_trivial_sample/src/main.rs"
+# zzz : xxx : implement # aaa : Dmytro : added
+
+[dependencies]
+pretty_assertions = { version = "~1.2", optional = true }
+
+[dev-dependencies]
+test_tools = { workspace = true }

@@ -23,6 +23,6 @@ cargo add plot_interface
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/plot_interface_trivial_sample
+cd examples/plot_interface_trivial_sample
 cargo run
 ```

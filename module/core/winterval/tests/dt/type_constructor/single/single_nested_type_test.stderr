@@ -1,0 +1,11 @@
+error: no rules expected the token `::`
+   --> tests/dt/type_constructor/single/single_nested_type_test.rs:9:37
+    |
+9   |     single Bad : std::sync::Arc< std::sync::Mutex< T > >;
+    |                                     ^^ no rules expected this token in macro call
+    |
+note: while trying to match `>`
+   --> rust/impl/dt/type_constructor/single.rs
+    |
+    |       $( < $( $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? ),* > )?
+    |                                                                                                                        ^

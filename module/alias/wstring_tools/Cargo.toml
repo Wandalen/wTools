@@ -4,7 +4,7 @@ version = "0.1.5"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
@@ -29,7 +29,6 @@ include = [
 
 [features]
 default = [
-  "use_std",
   "indentation",
   "isolate",
   "parse_request",
@@ -37,14 +36,14 @@ default = [
   "parse_number",
 ]
 full = [
-  "use_std",
   "indentation",
   "isolate",
   "parse_request",
   "split",
   "parse_number",
 ]
-use_std = [ "strs_tools/use_std" ]
+# use_std = [ "strs_tools/use_std" ]
+no_std = [ "strs_tools/no_std" ]
 use_alloc = [ "strs_tools/use_alloc" ]
 
 indentation = [ "strs_tools/indentation" ]
@@ -55,22 +54,22 @@ split = [ "strs_tools/split" ]
 
 [lib]
 name = "wstring_tools"
-path = "rust/impl/string/wstring_tools_lib.rs"
+path = "src/string/wstring_tools_lib.rs"
 
 [[test]]
 name = "string_test"
-path = "rust/test/string/wstring_tools_tests.rs"
+path = "tests/string/wstring_tools_tests.rs"
 
 [[test]]
 name = "string_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
+path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "wstring_tools_trivial_sample"
-# path = "sample/rust/strs_tools_trivial_sample/src/main.rs"
+# path = "examples/strs_tools_trivial_sample/src/main.rs"
 
 [dependencies]
-strs_tools = { version = "~0.1", path = "../../rust/strs_tools" }
+strs_tools = { workspace = true }
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+test_tools = { workspace = true }

@@ -1,0 +1,14 @@
+error: Bad syntax.
+       Expects : {kind} {name} : {type}.
+       For example : `pub single MySingle : std::sync::Arc< T : Copy >`.
+       But got:
+       wrong_kind Single : std :: sync :: Arc < T : Copy > ;
+ --> tests/dt/type_constructor/dynamic/types/wrong_kind.rs:4:1
+  |
+4 | / types!
+5 | | {
+6 | |   wrong_kind Single : std::sync::Arc< T : Copy >;
+7 | | }
+  | |_^
+  |
+  = note: this error originates in the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)

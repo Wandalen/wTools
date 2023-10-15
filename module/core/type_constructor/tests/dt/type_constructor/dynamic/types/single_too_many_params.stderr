@@ -1,0 +1,11 @@
+error: Parametrized element should be single, because Single has only one element
+        single Single : < T1, T2 > ;
+ --> tests/dt/type_constructor/dynamic/types/single_too_many_params.rs:4:1
+  |
+4 | / types!
+5 | | {
+6 | |   single Single : < T1, T2 >;
+7 | | }
+  | |_^
+  |
+  = note: this error originates in the macro `$crate::_single` (in Nightly builds, run with -Z macro-backtrace for more info)

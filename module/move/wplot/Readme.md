@@ -23,7 +23,7 @@ cargo add wplot
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/wplot_trivial
+cd examples/wplot_trivial
 cargo run
 ```
 

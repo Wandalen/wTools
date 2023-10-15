@@ -1,0 +1,15 @@
+[package]
+name = "graphs_tools_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[features]
+# use_std = []
+no_std = []
+# cell_factory = []
+default = [ ]
+
+[dependencies]
+graphs_tools = { workspace = true }
+wtools = { workspace = true }

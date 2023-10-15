@@ -23,6 +23,6 @@ cargo add wlang
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/wlang_trivial_sample
+cd examples/wlang_trivial_sample
 cargo run
 ```

@@ -1,8 +1,0 @@
-[package]
-name = "wpublisher_trivial_sample"
-version = "0.0.0"
-edition = "2021"
-publish = false
-
-[dependencies]
-wpublisher = { version = "~0.1", path = "../../../module/move/wpublisher" }

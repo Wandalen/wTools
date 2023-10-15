@@ -1,0 +1,62 @@
+[package]
+name = "time_tools"
+version = "0.1.5"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/time_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/time_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/time_tools"
+description = """
+Collection of general purpose time tools.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/time",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+default = [
+  "now",
+]
+full = [
+  "use_alloc",
+  "now",
+]
+# use_std = []
+no_std = []
+use_alloc = []
+
+now = []
+
+[lib]
+name = "time_tools"
+path = "src/time/time_tools_lib.rs"
+
+[[test]]
+name = "time_tools_test"
+path = "tests/time/tests.rs"
+
+[[test]]
+name = "time_tools_smoke_test"
+path = "tests/_integration_test/smoke_test.rs"
+
+[[example]]
+name = "time_tools_trivial_sample"
+path = "examples/time_tools_trivial_sample/src/main.rs"
+
+[dev-dependencies]
+test_tools = { workspace = true }
+

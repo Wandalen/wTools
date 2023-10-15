@@ -1,0 +1,11 @@
+error: no rules expected the token `>`
+  --> tests/dt/type_constructor/many/many_without_args_test.rs:5:25
+   |
+5  |   types!( many Bad : <  > );
+   |                         ^ no rules expected this token in macro call
+   |
+note: while trying to match meta-variable `$ParamName:ident`
+  --> rust/impl/dt/type_constructor/many.rs
+   |
+   |       < $ParamName : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy2 : path )* )? >
+   |         ^^^^^^^^^^^^^^^^^^

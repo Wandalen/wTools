@@ -1,0 +1,111 @@
+[package]
+name = "type_constructor"
+version = "0.1.20"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/type_constructor"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/type_constructor"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/type_constructor"
+description = """
+Fundamental data types and type constructors, like Single, Pair, Many.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/dt/type_constructor",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+default = [
+  "many",
+  "make",
+  "vectorized_from",
+]
+full = [
+  "use_alloc",
+  "many",
+  "make",
+  "vectorized_from",
+]
+# use_std = []
+no_std = []
+use_alloc = []
+
+many = []
+make = []
+vectorized_from = []
+
+[lib]
+name = "type_constructor"
+path = "src/dt/type_constructor/type_constructor_lib.rs"
+
+[[test]]
+name = "type_constructor_test"
+path = "tests/dt/type_constructor/type_constructor_tests.rs"
+
+[[test]]
+name = "type_constructor_smoke_test"
+path = "tests/_integration_test/smoke_test.rs"
+
+[[example]]
+name = "type_constructor_trivial_sample"
+path = "examples/type_constructor_trivial_sample/src/main.rs"
+
+[[example]]
+name = "type_constructor_derive_and_attr_sample"
+path = "examples/type_constructor_derive_and_attr_sample/src/main.rs"
+
+[[example]]
+name = "type_constructor_struct_sample"
+path = "examples/type_constructor_struct_sample/src/main.rs"
+
+[[example]]
+name = "type_constructor_parametrized_element_sample"
+path = "examples/type_constructor_parametrized_element_sample/src/main.rs"
+
+[[example]]
+name = "type_constructor_parametrized_tuple_sample"
+path = "examples/type_constructor_parametrized_tuple_sample/src/main.rs"
+
+[[example]]
+name = "type_constructor_multiple_sample"
+path = "examples/type_constructor_multiple_sample/src/main.rs"
+required-features = [ "many" ]
+
+[[example]]
+name = "type_constructor_without_macro_sample"
+path = "examples/type_constructor_without_macro_sample/src/main.rs"
+required-features = [ "many" ]
+
+[[example]]
+name = "type_constructor_pair_sample"
+path = "examples/type_constructor_pair_sample/src/main.rs"
+
+[[example]]
+name = "type_constructor_homopair_sample"
+path = "examples/type_constructor_homopair_sample/src/main.rs"
+
+[[example]]
+name = "type_constructor_many_sample"
+path = "examples/type_constructor_many_sample/src/main.rs"
+required-features = [ "many" ]
+
+[dependencies]
+# inspect_type = { workspace = true ] }
+type_constructor_derive_make_meta = { workspace = true }
+type_constructor_derive_pair_meta = { workspace = true }
+
+[dev-dependencies]
+test_tools = { workspace = true }

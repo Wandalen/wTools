@@ -1,0 +1,11 @@
+error: no rules expected the token `<`
+  --> tests/dt/type_constructor/pair/pair_three_elements_test.rs:5:19
+   |
+5  |   types!( pair Bad< T1, T2, T3 > );
+   |                   ^ no rules expected this token in macro call
+   |
+note: while trying to match `:`
+  --> rust/impl/dt/type_constructor/pair.rs
+   |
+   |       $Vis : vis pair $Name : ident :
+   |                                     ^

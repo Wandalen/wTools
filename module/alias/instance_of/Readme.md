@@ -9,7 +9,7 @@ This solution has a limitation:
 
 - In case enity is a function and trat is `Fn`/`FnMut`/`FnOnce` which current entity does not implement you will get compile-time error instead of `false`.
 
-This is alias for [module::implements](https://github.com/Wandalen/wTools/tree/master/module/rust/implements).
+This is alias for [module::implements](https://github.com/Wandalen/wTools/tree/master/module/core/implements).
 
 ### Sample
 
@@ -35,6 +35,6 @@ cargo add implements
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/implements_trivial
+cd examples/implements_trivial
 cargo run
 ```

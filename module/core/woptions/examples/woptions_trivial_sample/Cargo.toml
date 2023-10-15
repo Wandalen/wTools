@@ -1,0 +1,9 @@
+[package]
+name = "woptions_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+woptions = { workspace = true }
+former = { workspace = true }

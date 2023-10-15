@@ -4,8 +4,7 @@ version = "0.1.3"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Volodymyr M. <volodymyr.migdal@gmail.com>",
-  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
@@ -32,25 +31,24 @@ include = [
 
 [features]
 default = [
-  "use_std",
   "error_handling_for_lib",
   "error_handling_for_app"
 ]
 full = [
-  "use_std",
   "use_alloc",
   "error_handling_for_lib",
   "error_handling_for_app"
 ]
-use_std = [ "error_tools/use_std" ]
+# use_std = [ "error_tools/use_std" ]
+no_std = [ "error_tools/no_std" ]
 use_alloc = []
 
 error_handling_for_lib = [
-  "use_std",
+  # "use_std",
   "error_tools/error_handling_for_lib"
 ]
 error_handling_for_app = [
-  "use_std",
+  # "use_std",
   "error_tools/error_handling_for_app"
 ]
 
@@ -58,22 +56,22 @@ error_handling_for_app = [
 
 [lib]
 name = "werror"
-path = "rust/impl/error/werror_lib.rs"
+path = "src/error/werror_lib.rs"
 
 [[test]]
 name = "error_test"
-path = "rust/test/error/werror_tests.rs"
+path = "tests/error/werror_tests.rs"
 
 [[test]]
 name = "werror_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
+path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "werror_trivial_sample"
-# path = "sample/rust/werror_trivial_sample/src/main.rs"
+# path = "examples/werror_trivial_sample/src/main.rs"
 
 [dependencies]
-error_tools = { version = "~0.1", path = "../../rust/error_tools", default-features = false }
+error_tools = { workspace = true }
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+test_tools = { workspace = true }

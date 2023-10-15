@@ -4,13 +4,13 @@ version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/template_blank"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/template_blank"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/template_blank"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/template_blank"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/template_blank"
 description = """
 ___
 """
@@ -28,28 +28,29 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std", "use_alloc" ]
-use_std = []
+default = [ ]
+full = []
+# use_std = []
+no_std = []
 use_alloc = []
 
 [lib]
 name = "template_blank"
-path = "rust/impl/_blank/standard_lib.rs"
+path = "src/_blank/standard_lib.rs"
 
 [[test]]
 name = "template_blank_test"
-path = "rust/test/_blank/tests.rs"
+path = "tests/_blank/tests.rs"
 
 # [[test]]
 # name = "template_blank_smoke_test"
-# path = "rust/test/_integration_test/smoke_test.rs"
+# path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "template_blank_trivial_sample"
-# path = "sample/rust/template_blank_trivial_sample/src/main.rs"
+# path = "examples/template_blank_trivial_sample/src/main.rs"
 
 [dependencies]
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+test_tools = { workspace = true }

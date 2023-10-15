@@ -10,7 +10,7 @@ Basic exceptions handling mechanism.
 <!-- {{# generate.module_sample{} #}} -->
 
 ```rust
-#[ cfg( feature = "use_std" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 {
   use werror::*;
 
@@ -31,6 +31,6 @@ cargo add werror
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/error_tools_trivial
+cd examples/error_tools_trivial
 cargo run
 ```

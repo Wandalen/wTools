@@ -1,0 +1,92 @@
+[package]
+name = "meta_tools"
+version = "0.2.18"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/meta_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/meta_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/meta_tools"
+description = """
+Collection of general purpose meta tools.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/meta",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+default = [
+  "for_each",
+  "impls_index",
+  # "mod_interface",
+  # "former",
+  # "options",
+  "collection_make",
+  "idents_concat",
+  # "use_std",
+]
+full = [
+  "for_each",
+  "impls_index",
+  # "mod_interface",
+  # "former",
+  # "options",
+  "collection_make",
+  "idents_concat",
+  # "use_std",
+]
+# use_std = []
+no_std = []
+use_alloc = []
+
+collection_make = [ "literally" ]
+# options = [ "woptions" ]
+idents_concat = [ "paste" ]
+
+[lib]
+name = "meta_tools"
+path = "src/meta/meta_tools_lib.rs"
+
+[[test]]
+name = "meta_tools_test"
+path = "tests/meta/meta_tools_tests.rs"
+
+[[test]]
+name = "meta_tools_smoke_test"
+path = "tests/_integration_test/smoke_test.rs"
+
+[[example]]
+name = "meta_tools_trivial_sample"
+path = "examples/meta_tools_trivial_sample/src/main.rs"
+# qqq : for Rust dev : add a sample with impls + index. discuss first
+# - all samples should be in md files and have short descriptions
+
+[dependencies]
+
+## external
+literally = { version = "~0.1", optional = true, default-features = false }
+paste = { version = "~1.0", optional = true, default-features = false }
+
+## internal
+for_each = { workspace = true, optional = true }
+impls_index = { workspace = true, optional = true }
+mod_interface = { workspace = true }
+
+# former = { workspace = true, optional = true, default-features = false }
+# woptions = { workspace = true, optional = true, default-features = false }
+
+[dev-dependencies]
+test_tools = { workspace = true }

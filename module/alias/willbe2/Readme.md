@@ -28,6 +28,6 @@ cargo add willbe2
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/willbe2_trivial_sample
+cd examples/willbe2_trivial_sample
 cargo run
 ```

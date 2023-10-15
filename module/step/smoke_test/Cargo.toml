@@ -1,0 +1,205 @@
+[package]
+
+name = "smoke_test"
+version = "0.0.1"
+publish = false
+edition = "2021"
+description = "Smoke Test"
+
+# [[bin]]
+# name = "integration_test"
+# path = "tests/_integration_test/smoke_entry.rs"
+#
+# [[test]]
+# name = "integration_test"
+# path = "tests/_integration_test/integration_tests.rs"
+
+# [dependencies]
+#
+# wtools = { workspace = true }
+# wtools_published = { version = "*", package = "wtools" }
+# non_std = { workspace = true }
+# non_std_published = { version = "*", package = "non_std" }
+# std_tools = { workspace = true }
+# std_tools_published = { version = "*", package = "std_tools" }
+# std_x = { workspace = true }
+# std_x_published = { version = "*", package = "std_x" }
+#
+# # data_type
+#
+# data_type = { workspace = true }
+# data_type_published = { version = "*", package = "data_type" }
+# fundamental_data_type = { workspace = true }
+# fundamental_data_type_published = { version = "*", package = "fundamental_data_type" }
+# type_constructor = { workspace = true }
+# type_constructor_derive_make_meta = { workspace = true }
+# type_constructor_derive_pair_meta = { workspace = true }
+# type_constructor_published = { version = "*", package = "type_constructor" }
+# winterval = { workspace = true }
+# winterval_published = { version = "*", package = "winterval" }
+#
+# # derive
+#
+# derive_tools = { workspace = true }
+# derive_tools_published = { version = "*", package = "derive_tools" }
+# clone_dyn = { workspace = true }
+# clone_dyn_published = { version = "*", package = "clone_dyn" }
+# clone_dyn_meta = { workspace = true }
+# clone_dyn_meta_published = { version = "*", package = "clone_dyn_meta" }
+#
+# # mem
+#
+# mem_tools = { workspace = true }
+# mem_tools_published = { version = "*", package = "mem_tools" }
+#
+# # diagnostics
+#
+# diagnostics_tools = { workspace = true }
+# diagnostics_tools_published = { version = "*", package = "diagnostics_tools" }
+#
+# # iter
+#
+# iter_tools = { workspace = true }
+# iter_tools_published = { version = "*", package = "iter_tools" }
+#
+# # meta
+#
+# meta_tools = { workspace = true }
+# meta_tools_published = { version = "*", package = "meta_tools" }
+# # meta_tools = { package = "meta_tools", workspace = true }
+# # meta_tools_published = { version = "*", package = "meta_tools" }
+# for_each = { workspace = true }
+# for_each_published = { version = "*", package = "for_each" }
+# former = { workspace = true }
+# former_published = { version = "*", package = "former" }
+# former_meta = { workspace = true }
+# former_meta_published = { version = "*", package = "former_meta" }
+# former_runtime = { workspace = true }
+# former_runtime_published = { version = "*", package = "former_runtime" }
+# impls_index = { workspace = true }
+# impls_index_published = { version = "*", package = "impls_index" }
+# impls_index_meta = { workspace = true }
+# impls_index_meta_published = { version = "*", package = "impls_index_meta" }
+# mod_interface = { workspace = true }
+# mod_interface_published = { version = "*", package = "mod_interface" }
+# mod_interface_meta = { workspace = true }
+# mod_interface_meta_published = { version = "*", package = "mod_interface_meta" }
+# mod_interface_runtime = { workspace = true }
+# mod_interface_runtime_published = { version = "*", package = "mod_interface_runtime" }
+# multilayer = { workspace = true }
+# multilayer_published = { version = "*", package = "multilayer" }
+# woptions = { workspace = true }
+# woptions_published = { version = "*", package = "woptions" }
+# woptions_meta = { workspace = true }
+# woptions_meta_published = { version = "*", package = "woptions_meta" }
+# woptions_runtime = { workspace = true }
+# woptions_runtime_published = { version = "*", package = "woptions_runtime" }
+#
+# # proc_macro
+#
+# proc_macro_tools = { workspace = true }
+# proc_macro_tools_published = { version = "*", package = "proc_macro_tools" }
+# wproc_macro = { workspace = true }
+# wproc_macro_published = { version = "*", package = "wproc_macro" }
+# macro_tools = { workspace = true }
+# macro_tools_published = { version = "*", package = "macro_tools" }
+#
+# # time
+#
+# time_tools = { workspace = true }
+# time_tools_published = { version = "*", package = "time_tools" }
+#
+# # typing
+#
+# typing_tools = { workspace = true }
+# typing_tools_published = { version = "*", package = "typing_tools" }
+# implements = { workspace = true }
+# implements_published = { version = "*", package = "implements" }
+# instance_of = { workspace = true }
+# instance_of_published = { version = "*", package = "instance_of" }
+# inspect_type = { workspace = true }
+# inspect_type_published = { version = "*", package = "inspect_type" }
+# is_slice = { workspace = true }
+# is_slice_published = { version = "*", package = "is_slice" }
+#
+# # error
+#
+# error_tools = { workspace = true }
+# error_tools_published = { version = "*", package = "error_tools" }
+# werror = { workspace = true }
+# werror_published = { version = "*", package = "werror" }
+#
+# # strs
+#
+# strs_tools = { workspace = true }
+# strs_tools_published = { version = "*", package = "strs_tools" }
+# wstring_tools = { workspace = true }
+# wstring_tools_published = { version = "*", package = "wstring_tools" }
+#
+# # fs
+#
+# fs_tools = { workspace = true }
+# fs_tools_published = { version = "*", package = "fs_tools" }
+#
+# # test
+#
+# # wtest_basic = { workspace = true }
+# # wtest_basic_published = { version = "*", package = "wtest_basic" }
+# wtest = { workspace = true }
+# wtest_published = { version = "*", package = "wtest" }
+# test_tools = { workspace = true }
+# test_tools_published = { version = "*", package = "test_tools" }
+#
+# # willbe
+#
+# willbe = { workspace = true }
+# willbe_published = { version = "*", package = "willbe" }
+# willbe2 = { workspace = true }
+# willbe2_published = { version = "*", package = "willbe2" }
+# willbe_old = { workspace = true }
+# # willbe_old_published = { version = "*", package = "willbe_old" }
+#
+# # automata
+#
+# automata_tools = { workspace = true }
+# automata_tools_published = { version = "*", package = "automata_tools" }
+# wautomata = { workspace = true }
+# wautomata_published = { version = "*", package = "wautomata" }
+#
+# # graphs
+#
+# graphs_tools = { workspace = true }
+# graphs_tools_published = { version = "*", package = "graphs_tools" }
+#
+# # ca
+#
+# wca = { workspace = true }
+# wca_published = { version = "*", package = "wca" }
+#
+# # censor
+#
+# wcensor = { workspace = true }
+# wcensor_published = { version = "*", package = "wcensor" }
+#
+# # lang
+#
+# wlang = { workspace = true }
+# wlang_published = { version = "*", package = "wlang" }
+#
+# # publisher
+#
+# wpublisher = { workspace = true }
+# wpublisher_published = { version = "*", package = "wpublisher", optional = true }
+# # wpublisher = { version = "*", path = "../../move/wpublisher", package = "wpublisher", optional = true }
+# # wpublisher_published = { version = "*", package = "wpublisher", optional = true }
+#
+# # plot
+#
+# wplot = { workspace = true }
+# wplot_published = { version = "*", package = "wplot" }
+# plot_interface = { workspace = true }
+# plot_interface_published = { version = "*", package = "plot_interface" }
+
+[dev-dependencies]
+# test_tools = { workspace = true }
+toml_edit = { version = "~0.14" }

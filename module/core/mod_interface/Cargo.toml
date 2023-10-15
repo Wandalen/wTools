@@ -1,0 +1,64 @@
+[package]
+name = "mod_interface"
+version = "0.1.16"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/mod_interface"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/mod_interface"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/mod_interface"
+description = """
+Protocol of modularity unifying interface of a module and introducing layers.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/meta/mod_interface_lib.rs",
+  "/rust/impl/meta/mod_interface/front",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+default = [ ]
+full = []
+# use_std = []
+no_std = []
+use_alloc = []
+
+[lib]
+name = "mod_interface"
+path = "src/meta/mod_interface/front/mod_interface_lib.rs"
+
+[[test]]
+name = "mod_interface_tests"
+path = "tests/meta/mod_interface_tests.rs"
+
+[[test]]
+name = "mod_interface_smoke_test"
+path = "tests/_integration_test/smoke_test.rs"
+
+[[example]]
+name = "mod_interface_trivial_sample"
+path = "examples/mod_interface_trivial_sample/src/main.rs"
+
+[[example]]
+name = "mod_interface_with_debug_sample"
+path = "examples/mod_interface_with_debug_sample/src/main.rs"
+
+[dependencies]
+mod_interface_meta = { workspace = true }
+mod_interface_runtime = { workspace = true }
+
+[dev-dependencies]
+test_tools = { workspace = true }
+

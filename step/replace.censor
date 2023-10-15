@@ -1,0 +1,14 @@
+(\w+) = \{.+"\.\./\.\./\.\./module/.+" \}
+$1 = { workspace = true }
+
+(\w+)\s*=\s*\{\s*(\w+\s*=\s*"[^"]+")\s*,\s*(\w+\s*=\s*"[^"]+")\s*\}
+[workspace.dependencies.$1]\n$2\n$3\n
+
+(\w+)\s*=\s*\{\s*(\w+\s*=\s*"[^"]+")\s*,\s*(\w+\s*=\s*"[^"]+")\s*,\s*(\w+\s*=\s*"[^"]+")\s*\}
+[workspace.dependencies.$1]\n$2\n$3\n$4\n
+
+#![ cfg_attr( not( feature = "use_std" ), without_std ) ]
+#![ cfg_attr( feature = "no_std", no_std ) ]
+
+use_std = [ "error_tools/use_std" ]
+use_std = [ "error_tools/use_std" ]

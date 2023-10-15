@@ -51,6 +51,6 @@ cargo add wtest --dev
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/test_trivial
+cd examples/test_trivial
 cargo run
 ```

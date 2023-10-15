@@ -1,0 +1,31 @@
+error[E0432]: unresolved import `wtest_basic::exposed::exposed`
+ --> tests/test/dynamic/namespace_does_not_exists.rs:1:27
+  |
+1 | use wtest_basic::exposed::exposed::*;
+  |                           ^^^^^^^ could not find `exposed` in `exposed`
+
+error: cannot find macro `tests_index` in this scope
+  --> tests/test/dynamic/namespace_does_not_exists.rs:15:1
+   |
+15 | tests_index!
+   | ^^^^^^^^^^^
+   |
+help: consider importing one of these items
+   |
+1  + use meta_tools::tests_index;
+   |
+1  + use wtest_basic::tests_index;
+   |
+
+error: cannot find macro `tests_impls` in this scope
+ --> tests/test/dynamic/namespace_does_not_exists.rs:5:1
+  |
+5 | tests_impls!
+  | ^^^^^^^^^^^
+  |
+help: consider importing one of these items
+  |
+1 + use meta_tools::tests_impls;
+  |
+1 + use wtest_basic::tests_impls;
+  |

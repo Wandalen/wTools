@@ -1,0 +1,56 @@
+[package]
+name = "include_md"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/include_md"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/move/include_md"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/include_md"
+description = """
+Include markdown file or its section.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[package.metadata.docs.rs]
+all-features = true
+
+include = [
+  "/rust/impl/_blank",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
+
+[features]
+default = [ ]
+full = []
+# use_std = []
+no_std = []
+use_alloc = []
+
+[lib]
+name = "include_md"
+path = "src/_blank/standard_lib.rs"
+
+# [[test]]
+# name = "include_md_test"
+# path = "tests/include_md/include_md_tests.rs"
+
+# [[test]]
+# name = "include_md_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
+
+# [[example]]
+# name = "include_md_trivial_sample"
+# path = "sample/move/include_md_trivial_sample/src/main.rs"
+
+[dependencies]
+
+[dev-dependencies]
+test_tools = { workspace = true }

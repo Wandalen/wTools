@@ -1,0 +1,13 @@
+error[E0308]: mismatched types
+ --> tests/dt/type_constructor/pair/homo_pair_mismatched_types_test.rs:6:11
+  |
+6 |   Bad( 1, "str" );
+  |   ---     ^^^^^ expected `i32`, found `&str`
+  |   |
+  |   arguments to this struct are incorrect
+  |
+note: tuple struct defined here
+ --> tests/dt/type_constructor/pair/homo_pair_mismatched_types_test.rs:5:16
+  |
+5 |   types!( pair Bad : i32 );
+  |                ^^^
