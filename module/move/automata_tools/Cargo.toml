@@ -57,4 +57,5 @@ graphs_tools = { version = "~0.1", path = "../../move/graphs_tools", features = 
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }
 wtools = { workspace = true }

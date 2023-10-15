@@ -68,3 +68,4 @@ pretty_assertions = { version = "~1.2", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }

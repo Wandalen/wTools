@@ -55,3 +55,4 @@ mod_interface = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }

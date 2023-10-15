@@ -55,5 +55,6 @@ automata_tools = { version = "~0.1", path = "../../move/automata_tools", feature
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }
 wtools = { workspace = true }
 

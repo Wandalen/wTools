@@ -6,3 +6,4 @@ publish = false
 
 [dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }

@@ -20,12 +20,12 @@ keywords = [ "fundamental", "general-purpose" ]
 [package.metadata.docs.rs]
 all-features = true
 
-include = [
-  "/rust/impl/meta",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
+# include = [
+#   "/rust/impl/meta",
+#   "/Cargo.toml",
+#   "/Readme.md",
+#   "/License",
+# ]
 
 [features]
 default = [
@@ -56,21 +56,21 @@ collection_make = [ "literally" ]
 # options = [ "woptions" ]
 idents_concat = [ "paste" ]
 
-[lib]
-name = "meta_tools"
-path = "src/meta/meta_tools_lib.rs"
-
-[[test]]
-name = "meta_tools_test"
-path = "tests/meta/meta_tools_tests.rs"
-
-[[test]]
-name = "meta_tools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "meta_tools_trivial_sample"
-path = "examples/meta_tools_trivial_sample/src/main.rs"
+# [lib]
+# name = "meta_tools"
+# path = "src/meta/meta_tools_lib.rs"
+#
+# [[test]]
+# name = "meta_tools_test"
+# path = "tests/meta/meta_tools_tests.rs"
+#
+# [[test]]
+# name = "meta_tools_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
+#
+# [[example]]
+# name = "meta_tools_trivial_sample"
+# path = "examples/meta_tools_trivial_sample/src/main.rs"
 # qqq : for Rust dev : add a sample with impls + index. discuss first
 # - all samples should be in md files and have short descriptions
 
@@ -90,3 +90,4 @@ mod_interface = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }

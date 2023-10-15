@@ -61,3 +61,4 @@ clone_dyn_meta = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }

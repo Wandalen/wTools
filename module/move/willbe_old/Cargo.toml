@@ -68,6 +68,7 @@ rand = "0.8.4"
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }
 tempfile = "3"
 assert_cmd = "2.0"
 predicates = "2.1"

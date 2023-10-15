@@ -68,4 +68,5 @@ ptree = "~0.4"
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }
 

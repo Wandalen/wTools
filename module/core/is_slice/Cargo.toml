@@ -55,3 +55,4 @@ path = "examples/is_slice_trivial_sample/src/main.rs"
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { workspace = true }
+smoke_test = { workspace = true }

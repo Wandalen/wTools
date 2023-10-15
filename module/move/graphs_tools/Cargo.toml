@@ -63,6 +63,7 @@ meta_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }
 # wtools = { workspace = true }
 # mod_interface = { workspace = true }
 inspect_type = { workspace = true }

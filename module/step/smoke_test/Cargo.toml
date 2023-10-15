@@ -148,6 +148,7 @@ description = "Smoke Test"
 # wtest = { workspace = true }
 # wtest_published = { version = "*", package = "wtest" }
 # test_tools = { workspace = true }
+smoke_test = { workspace = true }
 # test_tools_published = { version = "*", package = "test_tools" }
 #
 # # willbe
@@ -202,4 +203,5 @@ description = "Smoke Test"
 
 [dev-dependencies]
 # test_tools = { workspace = true }
+smoke_test = { workspace = true }
 toml_edit = { version = "~0.14" }

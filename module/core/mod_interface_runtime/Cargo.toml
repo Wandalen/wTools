@@ -48,6 +48,7 @@ path = "tests/meta/mod_interface_runtime_tests.rs"
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }
 # meta_tools = { workspace = true }
 # maplit = "~1.0.2"
 # anyhow = "~1.0"

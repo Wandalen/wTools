@@ -55,3 +55,4 @@ itertools = { version = "~0.10.3", features = [ "use_std" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }

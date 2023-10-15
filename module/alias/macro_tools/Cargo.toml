@@ -51,4 +51,5 @@ proc_macro_tools = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }
 

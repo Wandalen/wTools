@@ -56,3 +56,4 @@ path = "examples/inspect_type_trivial_sample/src/main.rs"
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }

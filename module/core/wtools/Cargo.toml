@@ -466,3 +466,4 @@ parse-display = { version = "~0.5", optional = true } # have to be here because 
 
 [dev-dependencies]
 test_tools = { workspace = true }
+smoke_test = { workspace = true }
