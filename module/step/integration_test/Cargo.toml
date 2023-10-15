@@ -157,7 +157,7 @@ willbe = { workspace = true }
 willbe_published = { version = "*", package = "willbe" }
 willbe2 = { workspace = true }
 willbe2_published = { version = "*", package = "willbe2" }
-willbe_old = { workspace = true }
+# willbe_old = { workspace = true }
 # willbe_old_published = { version = "*", package = "willbe_old" }
 
 # automata
