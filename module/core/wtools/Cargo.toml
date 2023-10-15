@@ -21,6 +21,7 @@ keywords = [ "fundamental", "general-purpose" ]
 all-features = true
 # rustdoc-args = []
 
+exclude = [ "/tests", "-*" ]
 include = [
   "/rust/impl/wtools_lib.rs",
   "/Cargo.toml",

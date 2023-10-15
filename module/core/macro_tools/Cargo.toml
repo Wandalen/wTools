@@ -20,6 +20,7 @@ keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 [package.metadata.docs.rs]
 all-features = true
 
+exclude = [ "/tests", "-*" ]
 include = [
   "/rust/impl/proc_macro",
   "/Cargo.toml",
@@ -59,7 +60,7 @@ syn = { version = "~1.0", features = [ "full", "extra-traits" ] }
 ## internal
 winterval = { workspace = true, features = [ "default" ] }
 # derive_tools = { workspace = true, features = [ "default" ] }
-type_constructor = { workspace = true, features = [ "default" ] }
+# type_constructor = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = [ "diff" ] }

@@ -6,7 +6,7 @@
 pub( crate ) mod private
 {
   use crate::exposed::*;
-  use type_constructor::prelude::*;
+  // use type_constructor::prelude::*;
 
   ///
   /// Marker saying how to parse several elements of such type in a row.
@@ -31,15 +31,21 @@ pub( crate ) mod private
 //     T2 : syn::parse::Parse + quote::ToTokens,
 //   ;
 
-  types!
-  {
+  // types!
+  // {
     ///
     /// Parse a pair.
     ///
 
+    // #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+    // pub pair Pair : < T1 : syn::parse::Parse + quote::ToTokens, T2 : syn::parse::Parse + quote::ToTokens >
+    // xxx : apply maybe collection of derives for TDD
+
     #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    pub pair Pair : < T1 : syn::parse::Parse + quote::ToTokens, T2 : syn::parse::Parse + quote::ToTokens >
-  }
+    pub struct Pair
+    < T1 : syn::parse::Parse + quote::ToTokens, T2 : syn::parse::Parse + quote::ToTokens >
+    ( pub T1, pub T2 );
+  // }
 
   impl< T1, T2 > Pair< T1, T2 >
   where
@@ -50,6 +56,30 @@ pub( crate ) mod private
     pub fn new( src1 : T1, src2 : T2 ) -> Self
     {
       Self( src1, src2 )
+    }
+  }
+
+  impl< T1, T2 > From< ( T1, T2 ) > for Pair< T1, T2 >
+  where
+    T1 : syn::parse::Parse + quote::ToTokens,
+    T2 : syn::parse::Parse + quote::ToTokens,
+  {
+    #[ inline( always ) ]
+    fn from( src : ( T1, T2 ) ) -> Self
+    {
+      Self( src.0, src.1 )
+    }
+  }
+
+  impl< T1, T2 > From< Pair< T1, T2 > > for ( T1, T2 )
+  where
+    T1 : syn::parse::Parse + quote::ToTokens,
+    T2 : syn::parse::Parse + quote::ToTokens,
+  {
+    #[ inline( always ) ]
+    fn from( src : Pair< T1, T2 > ) -> Self
+    {
+      ( src.0, src.1 )
     }
   }
 
@@ -78,15 +108,20 @@ pub( crate ) mod private
 
   //
 
-  types!
-  {
+  // types!
+  // {
     ///
     /// Parse as much elements as possible.
     ///
 
+    // #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+    // pub many Many : < T : quote::ToTokens >
+    // xxx : apply maybe collection of derives for TDD
+
     #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    pub many Many : < T : quote::ToTokens >
-  }
+    pub struct Many< T : quote::ToTokens >( pub Vec< T > );
+
+  // }
 
   impl< T > Many< T >
   where
@@ -102,17 +137,69 @@ pub( crate ) mod private
     {
       Self( src )
     }
+    /// Iterator
+    pub fn iter( &self ) -> core::slice::Iter< '_, T >
+    {
+      self.0.iter()
+    }
+  }
+
+  impl< T > From< Vec< T > > for Many< T >
+  where
+    T : quote::ToTokens,
+  {
+    #[ inline( always ) ]
+    fn from( src : Vec< T > ) -> Self
+    {
+      Self( src )
+    }
   }
 
   impl< T > From< Many< T > > for Vec< T >
   where
-    T : quote::ToTokens + syn::parse::Parse,
+    T : quote::ToTokens,
   {
+    #[ inline( always ) ]
     fn from( src : Many< T > ) -> Self
     {
       src.0
     }
   }
+
+  impl< T > IntoIterator for Many< T >
+  where
+    T : quote::ToTokens,
+  {
+    type Item = T;
+    type IntoIter = std::vec::IntoIter< Self::Item >;
+    fn into_iter( self ) -> Self::IntoIter
+    {
+      self.0.into_iter()
+    }
+  }
+
+  impl< 'a, T > IntoIterator for &'a Many< T >
+  where
+    T : quote::ToTokens,
+  {
+    type Item = &'a T;
+    type IntoIter = core::slice::Iter< 'a, T >;
+    fn into_iter( self ) -> Self::IntoIter
+    {
+      // let x = vec![ 1, 2, 3 ].iter();
+      ( self.0 ).iter()
+    }
+  }
+
+  // impl< T > From< Many< T > > for Vec< T >
+  // where
+  //   T : quote::ToTokens + syn::parse::Parse,
+  // {
+  //   fn from( src : Many< T > ) -> Self
+  //   {
+  //     src.0
+  //   }
+  // }
 
   impl< T > quote::ToTokens
   for Many< T >

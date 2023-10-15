@@ -20,6 +20,7 @@ keywords = [ "fundamental", "general-purpose", "diagnostic-purpose" ]
 [package.metadata.docs.rs]
 all-features = true
 
+exclude = [ "/tests", "-*" ]
 include = [
   "/rust/impl/typing/inspect_type_lib.rs",
   "/Cargo.toml",

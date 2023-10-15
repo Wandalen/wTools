@@ -20,6 +20,7 @@ keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 [package.metadata.docs.rs]
 all-features = true
 
+exclude = [ "/tests", "-*" ]
 include = [
   "/rust/impl/meta/mod_interface_meta_lib.rs",
   "/rust/impl/meta/mod_interface/meta",
@@ -34,8 +35,8 @@ full = []
 
 [lib]
 proc-macro = true
-name = "mod_interface_meta"
-path = "src/meta/mod_interface/meta/mod_interface_meta_lib.rs"
+# name = "mod_interface_meta"
+# path = "src/meta/mod_interface/meta/mod_interface_meta_lib.rs"
 
 [dependencies]
 macro_tools = { workspace = true }

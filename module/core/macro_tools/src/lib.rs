@@ -30,7 +30,7 @@ pub mod dependency
   pub use ::quote;
   pub use ::proc_macro2;
   pub use ::winterval;
-  pub use ::type_constructor;
+  // pub use ::type_constructor;
 }
 
 #[ doc( inline ) ]
@@ -78,8 +78,8 @@ pub mod prelude
 
   #[ doc( inline ) ]
   pub use ::winterval::prelude::*;
-  #[ doc( inline ) ]
-  pub use ::type_constructor::prelude::*;
+  // #[ doc( inline ) ]
+  // pub use ::type_constructor::prelude::*;
 
   #[ doc( inline ) ]
   pub use ::syn;

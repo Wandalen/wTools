@@ -20,6 +20,7 @@ keywords = [ "fundamental", "general-purpose", "testing" ]
 [package.metadata.docs.rs]
 all-features = true
 
+exclude = [ "/tests", "-*" ]
 # include = [
 #   "/rust/impl/test",
 #   "/Cargo.toml",

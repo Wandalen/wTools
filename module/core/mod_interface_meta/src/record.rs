@@ -122,7 +122,7 @@ pub( crate ) mod private
           {
             let ident = input.parse()?;
             elements = syn::punctuated::Punctuated::new();
-            elements.push( Pair::new( make!(), ident ) );
+            elements.push( Pair::new( Default::default(), ident ) );
           }
         },
       }
