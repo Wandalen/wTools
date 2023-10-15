@@ -29,7 +29,7 @@ pub mod dependency
   pub use ::syn;
   pub use ::quote;
   pub use ::proc_macro2;
-  // pub use ::winterval;
+  pub use ::winterval;
   pub use ::type_constructor;
 }
 
@@ -61,7 +61,6 @@ pub mod exposed
     generic_analyze::exposed::*,
     helper::exposed::*,
     name::exposed::*,
-    // split_with_name::exposed::*,
     quantifier::exposed::*,
     syntax::exposed::*,
   };
@@ -77,8 +76,8 @@ pub mod exposed
 pub mod prelude
 {
 
-  // #[ doc( inline ) ]
-  // pub use ::winterval::prelude::*;
+  #[ doc( inline ) ]
+  pub use ::winterval::prelude::*;
   #[ doc( inline ) ]
   pub use ::type_constructor::prelude::*;
 
@@ -117,7 +116,6 @@ pub mod prelude
     generic_analyze::prelude::*,
     helper::prelude::*,
     name::prelude::*,
-    // split_with_name::prelude::*,
     quantifier::prelude::*,
     syntax::prelude::*,
   };
