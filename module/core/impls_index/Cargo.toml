@@ -1,6 +1,6 @@
 [package]
 name = "impls_index"
-version = "0.1.4"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,26 +31,24 @@ include = [
 [features]
 default = [ ]
 full = []
-# use_std = []
 no_std = []
 use_alloc = []
 
-[lib]
-name = "impls_index"
-path = "src/meta/impls_index/front/impls_index_lib.rs"
-
-[[test]]
-name = "impls_index_test"
-path = "tests/meta/impls_index_tests.rs"
-
-[[test]]
-name = "impls_index_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "impls_index_trivial_sample"
-path = "examples/impls_index_trivial_sample/src/main.rs"
-# aaa : xxx : write please # aaa : Dmytro : added
+# [lib]
+# name = "impls_index"
+# path = "src/meta/impls_index/front/impls_index_lib.rs"
+#
+# [[test]]
+# name = "impls_index_test"
+# path = "tests/meta/impls_index_tests.rs"
+#
+# [[test]]
+# name = "impls_index_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
+#
+# [[example]]
+# name = "impls_index_trivial_sample"
+# path = "examples/impls_index_trivial_sample/src/main.rs"
 
 [dependencies]
 impls_index_meta = { workspace = true }

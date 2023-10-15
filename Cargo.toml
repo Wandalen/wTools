@@ -269,7 +269,7 @@ path = "module/core/for_each"
 default-features = true
 
 [workspace.dependencies.for_each]
-# version = "*"
+version = "*"
 path = "module/core/for_each"
 # package = "for_each"
 default-features = false

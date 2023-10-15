@@ -121,5 +121,4 @@ cd wTools
 cd examples/for_each_trivial_sample
 cargo run
 ```
-
-
+<!-- xxx : qqq2 : fix each example instruction -->
