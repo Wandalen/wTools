@@ -40,6 +40,6 @@ path = "src/meta/impls_index/meta/impls_index_meta_lib.rs"
 # proc-macro2 = "~1.0"
 # quote = "~1.0"
 # syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
-proc_macro_tools = { workspace = true }
+macro_tools = { workspace = true }
 
 [dev-dependencies]

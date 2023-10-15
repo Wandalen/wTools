@@ -38,7 +38,7 @@ name = "mod_interface_meta"
 path = "src/meta/mod_interface/meta/mod_interface_meta_lib.rs"
 
 [dependencies]
-proc_macro_tools = { workspace = true }
+macro_tools = { workspace = true }
 derive_tools = { workspace = true, features = [ "derive_is_variant" ] }
 
 [dev-dependencies]

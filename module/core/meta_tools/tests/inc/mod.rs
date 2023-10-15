@@ -21,10 +21,10 @@ mod indents_concat_test;
 // #[ path = "./impls_index/mod.rs" ]
 #[ path = "../../../impls_index/tests/inc/mod.rs" ]
 mod impls_index;
-//
-// // #[ cfg( any( feature = "mod_interface", feature = "meta_mod_interface" ) ) ]
-// // #[ path = "./mod_interface/mod.rs" ]
-// #[ path = "../../../mod_interface/tests/inc/mod.rs" ]
-// mod mod_interface;
+
+// #[ cfg( any( feature = "mod_interface", feature = "meta_mod_interface" ) ) ]
+// #[ path = "./mod_interface/mod.rs" ]
+#[ path = "../../../mod_interface/tests/inc/mod.rs" ]
+mod mod_interface;
 
 // xxx : move former / options tests here

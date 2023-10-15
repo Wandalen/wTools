@@ -38,4 +38,4 @@ name = "procedural_macro_meta"
 path = "src/meta/procedural_macro/meta/procedural_macro_lib.rs"
 
 [dependencies]
-proc_macro_tools = { workspace = true }
+macro_tools = { workspace = true }

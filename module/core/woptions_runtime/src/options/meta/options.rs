@@ -1,9 +1,9 @@
 
 use meta_tools_min::*;
-use proc_macro_tools::quote::{ ToTokens, TokenStreamExt };
-use proc_macro_tools::syn::parse::*;
-use proc_macro_tools::syn::spanned::Spanned;
-use proc_macro_tools::*;
+use macro_tools::quote::{ ToTokens, TokenStreamExt };
+use macro_tools::syn::parse::*;
+use macro_tools::syn::spanned::Spanned;
+use macro_tools::*;
 use std::collections::HashMap;
 use iter_tools::{ /* Itertools, */ process_results };
 use convert_case::{Case, Casing};

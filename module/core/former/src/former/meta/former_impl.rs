@@ -1,6 +1,6 @@
 
 use iter_tools::{ Itertools, process_results };
-use proc_macro_tools::*;
+use macro_tools::*;
 
 pub type Result< T > = std::result::Result< T, syn::Error >;
 
@@ -18,7 +18,7 @@ struct FormerField< 'a >
   pub ty : &'a syn::Type,
   pub non_optional_ty : &'a syn::Type,
   pub is_optional : bool,
-  pub type_container_kind : proc_macro_tools::ContainerKind,
+  pub type_container_kind : macro_tools::ContainerKind,
 }
 
 ///
@@ -187,7 +187,7 @@ impl syn::parse::Parse for AttributeAlias
 
 fn is_optional( ty : &syn::Type ) -> bool
 {
-  proc_macro_tools::type_rightmost( ty ) == Some( "Option".to_string() )
+  macro_tools::type_rightmost( ty ) == Some( "Option".to_string() )
 }
 
 ///
@@ -196,7 +196,7 @@ fn is_optional( ty : &syn::Type ) -> bool
 
 fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 {
-  proc_macro_tools::type_parameters( ty, 0 ..= 0 )
+  macro_tools::type_parameters( ty, 0 ..= 0 )
   .first()
   .copied()
   .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", qt!{ #ty } ) )
@@ -586,7 +586,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     let colon_token = &field.colon_token;
     let ty = &field.ty;
     let is_optional = is_optional( ty );
-    let type_container_kind = proc_macro_tools::type_container_kind( ty );
+    let type_container_kind = macro_tools::type_container_kind( ty );
     let non_optional_ty : &syn::Type = if is_optional { parameter_internal_first( ty )? } else { ty };
     let former_field = FormerField { attrs, vis, ident, colon_token, ty, non_optional_ty, is_optional, type_container_kind };
     Ok( former_field )

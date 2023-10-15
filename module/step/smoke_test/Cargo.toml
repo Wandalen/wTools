@@ -97,7 +97,7 @@ description = "Smoke Test"
 #
 # # proc_macro
 #
-# proc_macro_tools = { workspace = true }
+# macro_tools = { workspace = true }
 # proc_macro_tools_published = { version = "*", package = "proc_macro_tools" }
 # wproc_macro = { workspace = true }
 # wproc_macro_published = { version = "*", package = "wproc_macro" }

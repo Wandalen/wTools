@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use proc_macro_tools::exposed::*;
+  use macro_tools::exposed::*;
   use std::collections::HashMap;
 
 // = use

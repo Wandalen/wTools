@@ -422,17 +422,33 @@ version = "*"
 # package = "woptions_runtime"
 
 
-## proc_macro
+## proc macro tools
+
+[workspace.dependencies.macro_tools_default]
+version = "0.2.0"
+path = "module/core/macro_tools"
+# package = "macro_tools"
+default-features = true
+
+[workspace.dependencies.macro_tools]
+version = "0.2.0"
+path = "module/core/macro_tools"
+# package = "macro_tools"
+default-features = false
+
+[workspace.dependencies.macro_tools_published]
+version = "*"
+# package = "macro_tools"
 
 [workspace.dependencies.proc_macro_tools_default]
-version = "0.1.18"
-path = "module/core/proc_macro_tools"
+version = "0.2.0"
+path = "module/alias/proc_macro_tools"
 # package = "proc_macro_tools"
 default-features = true
 
 [workspace.dependencies.proc_macro_tools]
-version = "0.1.18"
-path = "module/core/proc_macro_tools"
+version = "0.2.0"
+path = "module/alias/proc_macro_tools"
 # package = "proc_macro_tools"
 default-features = false
 
@@ -455,23 +471,6 @@ default-features = false
 [workspace.dependencies.wproc_macro_published]
 version = "*"
 # package = "wproc_macro"
-
-[workspace.dependencies.macro_tools_default]
-version = "0.1.2"
-path = "module/alias/macro_tools"
-# package = "macro_tools"
-default-features = true
-
-[workspace.dependencies.macro_tools]
-version = "0.1.2"
-path = "module/alias/macro_tools"
-# package = "macro_tools"
-default-features = false
-
-[workspace.dependencies.macro_tools_published]
-version = "*"
-# package = "macro_tools"
-
 
 ## time
 

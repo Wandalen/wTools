@@ -4,10 +4,10 @@ use quote::{ quote };
 #[ allow( unused_imports ) ]
 use syn::{ parse_quote };
 #[ allow( unused_imports ) ]
-use proc_macro_tools::prelude::*;
+use macro_tools::prelude::*;
 #[ allow( unused_imports ) ]
-// use proc_macro_tools::{ Result, Items };
-use proc_macro_tools::{ Result, Many, syn };
+// use macro_tools::{ Result, Items };
+use macro_tools::{ Result, Many, syn };
 
 ///
 /// Module-specific item.

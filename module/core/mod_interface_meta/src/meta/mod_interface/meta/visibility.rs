@@ -1,8 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use proc_macro_tools::prelude::*;
-  use proc_macro_tools::Result;
+  use macro_tools::prelude::*;
+  use macro_tools::Result;
   use core::hash::{ Hash, Hasher };
 
   pub const VALID_VISIBILITY_LIST_STR : &str = "[ private, protected, orphan, exposed, prelude ]";
@@ -301,8 +301,8 @@ pub( crate ) mod private
     where
       Vis : Into< Visibility > + VisibilityInterface,
     {
-      use proc_macro_tools::syn::parse::discouraged::Speculative;
-      use proc_macro_tools::syn::ext::IdentExt;
+      use macro_tools::syn::parse::discouraged::Speculative;
+      use macro_tools::syn::ext::IdentExt;
       let token = input.parse::< < Vis as VisibilityInterface >::Token >()?;
 
       if input.peek( syn::token::Paren )

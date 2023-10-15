@@ -3,7 +3,7 @@ pub( crate ) mod private
 {
   use crate::*;
   use derive_tools::IsVariant;
-  use proc_macro_tools::exposed::*;
+  use macro_tools::exposed::*;
 
   ///
   /// Custom keywords.

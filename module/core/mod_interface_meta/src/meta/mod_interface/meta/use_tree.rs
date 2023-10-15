@@ -1,8 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use proc_macro_tools::prelude::*;
-  use proc_macro_tools::Result;
+  use macro_tools::prelude::*;
+  use macro_tools::Result;
 
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
   pub struct UseTree
