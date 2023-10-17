@@ -18,7 +18,8 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "diagnostic-purpose" ]
 
 [package.metadata.docs.rs]
-all-features = true
+features = [ "full" ]
+all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
 include = [

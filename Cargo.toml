@@ -117,7 +117,7 @@ path = "module/core/type_constructor_derive_pair_meta"
 # package = "type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
-version = "0.2.0"
+version = "0.2.3"
 path = "module/core/interval_adapter"
 default-features = false
 
@@ -126,7 +126,7 @@ version = "*"
 package = "interval_adapter"
 
 [workspace.dependencies.winterval]
-version = "0.2.0"
+version = "0.2.3"
 path = "module/alias/winterval"
 default-features = false
 

@@ -18,7 +18,6 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Internal namespace.
-#[ cfg( not( feature = "no_std" ) ) ]
 pub( crate ) mod private
 {
 

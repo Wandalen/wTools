@@ -18,7 +18,8 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 [package.metadata.docs.rs]
-all-features = true
+features = [ "full" ]
+all-features = false
 
 include = [
   "/rust/impl/non_std_lib.rs",

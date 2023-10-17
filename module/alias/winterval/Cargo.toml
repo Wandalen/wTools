@@ -1,6 +1,6 @@
 [package]
 name = "winterval"
-version = "0.2.0"
+version = "0.2.3"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -18,7 +18,8 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 [package.metadata.docs.rs]
-all-features = true
+features = [ "full" ]
+all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
 

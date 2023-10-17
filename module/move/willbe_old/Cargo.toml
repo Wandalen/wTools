@@ -19,7 +19,8 @@ keywords = [ "fundamental", "general-purpose" ]
 publish = false
 
 [package.metadata.docs.rs]
-all-features = true
+features = [ "full" ]
+all-features = false
 
 include = [
   "/rust/impl/willbe_old",
