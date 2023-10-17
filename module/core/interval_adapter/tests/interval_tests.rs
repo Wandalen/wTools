@@ -1,4 +1,4 @@
-use winterval as TheModule;
+use crate as TheModule;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

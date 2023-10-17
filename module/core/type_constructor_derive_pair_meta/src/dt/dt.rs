@@ -33,7 +33,7 @@ pub mod exposed
   pub use ::type_constructor::exposed::*;
   #[ cfg( feature = "interval" ) ]
   #[ doc( inline ) ]
-  pub use ::winterval::exposed::*;
+  pub use ::interval_adapter::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -46,5 +46,5 @@ pub mod prelude
   pub use ::type_constructor::prelude::*;
   #[ cfg( feature = "interval" ) ]
   #[ doc( inline ) ]
-  pub use ::winterval::prelude::*;
+  pub use ::interval_adapter::prelude::*;
 }

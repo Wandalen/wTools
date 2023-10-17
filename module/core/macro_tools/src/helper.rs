@@ -178,7 +178,7 @@ pub( crate ) mod private
     None
   }
 
-  use winterval::*;
+  use interval_adapter::IntervalAdapter;
 
   /// Return the specified number of parameters of the type.
   ///
@@ -197,11 +197,14 @@ pub( crate ) mod private
   /// // < i32
   /// ```
 
-  pub fn type_parameters< R >( ty : &syn::Type, range : R ) -> Vec< &syn::Type >
-  where
-    R : std::convert::Into< Interval >
+  // pub fn type_parameters< R >( ty : &syn::Type, range : R ) -> Vec< &syn::Type >
+  // where
+  //   R : std::convert::Into< Interval >
+  pub fn type_parameters( ty : &syn::Type, range : impl IntervalAdapter ) -> Vec< &syn::Type >
+  // where
+    // R : std::convert::Into< Interval >
   {
-    let range = range.into();
+    // let range = range.into();
     if let syn::Type::Path( syn::TypePath{ path : syn::Path { ref segments, .. }, .. } ) = ty
     {
       let last = &segments.last();
@@ -216,8 +219,8 @@ pub( crate ) mod private
         let selected : Vec< &syn::Type > = args3
         .iter()
         .skip_while( | e | !matches!( e, syn::GenericArgument::Type( _ ) ) )
-        .skip( range.first().try_into().unwrap() )
-        .take( range.len().try_into().unwrap() )
+        .skip( range.closed_left().try_into().unwrap() )
+        .take( range.closed_len().try_into().unwrap() )
         .map( | e | if let syn::GenericArgument::Type( ty ) = e { ty } else { unreachable!( "Expects Type" ) } )
         .collect();
         return selected;

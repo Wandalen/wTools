@@ -21,34 +21,12 @@ keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 all-features = true
 
 exclude = [ "/tests", "-*" ]
-include = [
-  "/rust/impl/proc_macro",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
 default = [ ]
 full = []
 no_std = []
 use_alloc = []
-
-# [lib]
-# name = "macro_tools"
-# path = "src/proc_macro/macro_tools_lib.rs"
-#
-# [[test]]
-# name = "macro_tools_test"
-# path = "tests/proc_macro/macro_tools_tests.rs"
-#
-# [[test]]
-# name = "macro_tools_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-#
-# [[example]]
-# name = "macro_tools_trivial_sample"
-# path = "examples/macro_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 
@@ -58,7 +36,7 @@ quote = { version = "~1.0", features = [] }
 syn = { version = "~1.0", features = [ "full", "extra-traits" ] }
 
 ## internal
-winterval = { workspace = true, features = [ "default" ] }
+interval_adapter = { workspace = true, features = [ "default" ] }
 # derive_tools = { workspace = true, features = [ "default" ] }
 # type_constructor = { workspace = true, features = [ "default" ] }
 

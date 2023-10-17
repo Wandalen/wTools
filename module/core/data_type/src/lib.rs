@@ -26,7 +26,7 @@ pub mod dependency
   #[ cfg( feature = "type_constructor" ) ]
   pub use ::type_constructor;
   #[ cfg( feature = "interval" ) ]
-  pub use ::winterval;
+  pub use ::interval_adapter;
 }
 
 /// Protected namespace of the module.

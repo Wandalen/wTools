@@ -21,12 +21,12 @@ keywords = [ "fundamental", "general-purpose" ]
 all-features = true
 
 exclude = [ "/tests", "-*" ]
-include = [
-  "/rust/impl/dt",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
+# include = [
+#   "/rust/impl/dt",
+#   "/Cargo.toml",
+#   "/Readme.md",
+#   "/License",
+# ]
 
 # = features
 
@@ -55,15 +55,15 @@ no_std = []
 use_alloc = []
 
 prelude = []
-interval = [ "winterval" ]
+interval = [ "interval_adapter" ]
 make = [ "type_constructor/make" ]
 vectorized_from = [ "type_constructor/vectorized_from" ]
 
 # = entries
 
-[lib]
-name = "data_type"
-path = "src/dt/data_type_lib.rs"
+# [lib]
+# name = "data_type"
+# path = "src/dt/data_type_lib.rs"
 
 [[test]]
 name = "data_type_test"
@@ -84,7 +84,7 @@ either = { version = "~1.6", optional = true }
 
 ## internal
 type_constructor = { workspace = true, optional = true }
-winterval = { workspace = true, optional = true }
+interval_adapter = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
