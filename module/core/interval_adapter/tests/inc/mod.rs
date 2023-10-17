@@ -195,14 +195,16 @@ tests_impls!
       }
     }
 
-    // Calling the function either with half-open interval `core::ops::Range`.
+    // Calling the function either with
+    // half-open interval `core::ops::Range`.
     f1( 0..=3 );
     // Or closed one `core::ops::RangeInclusive`.
     f1( 0..4 );
     // Alternatively you construct your custom interval from a tuple.
     f1( ( 0, 3 ).into_interval() );
     f1( ( Bound::Included( 0 ), Bound::Included( 3 ) ).into_interval() );
-    // All the calls to the function `f1`` perform the same task, and the output is exactly identical.
+    // All the calls to the function `f1`` perform the same task,
+    // and the output is exactly identical.
 
   }
 
@@ -215,9 +217,14 @@ tests_impls!
       println!( "Do something with this {:?} .. {:?} interval", interval.left(), interval.right() );
     }
 
+    // Iterable/bound interval from tuple.
     f1( ( Bound::Included( 0 ), Bound::Included( 3 ) ).into_interval() );
+    // Non-iterable/unbound interval from tuple.
     f1( ( Bound::Included( 0 ), Bound::Unbounded ).into_interval() );
+    // Non-iterable/unbound interval from `core::ops::RangeFrom`.
     f1( 0.. );
+    // Non-iterable/unbound interval from `core::ops::RangeFull`
+    // what is ( -Infinity .. +Infinity ).
     f1( .. );
   }
 

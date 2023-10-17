@@ -20,7 +20,7 @@ keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 [package.metadata.docs.rs]
 all-features = true
 
-exclude = [ "/tests", "-*" ]
+exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 default = [ ]

@@ -1,7 +1,6 @@
 [package]
-# name = "winterval"
 name = "interval_adapter"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -9,9 +8,9 @@ authors = [
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/winterval"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/winterval"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/winterval"
+documentation = "https://docs.rs/interval_adapter"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/interval_adapter"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/interval_adapter"
 description = """
 Interval adapter for both open/closed implementations of intervals ( ranges ).
 """
@@ -21,36 +20,13 @@ keywords = [ "fundamental", "general-purpose" ]
 [package.metadata.docs.rs]
 all-features = true
 
-exclude = [ "/tests", "-*" ]
-# include = [
-#   "/rust/impl/dt/interval_lib.rs",
-#   "/Cargo.toml",
-#   "/Readme.md",
-#   "/License",
-# ]
+exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 default = [ ]
 full = []
-# use_std = []
 no_std = []
 use_alloc = []
-
-# [lib]
-# name = "winterval"
-# path = "src/dt/interval_lib.rs"
-#
-# [[test]]
-# name = "interval_test"
-# path = "tests/dt/interval_tests.rs"
-#
-# [[test]]
-# name = "winterval_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-#
-# [[example]]
-# name = "winterval_trivial_sample"
-# path = "examples/winterval_trivial_sample/src/main.rs"
 
 [dependencies]
 

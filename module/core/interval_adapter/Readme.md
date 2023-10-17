@@ -1,7 +1,7 @@
 <!-- {{# generate.module_header{} #}} -->
 
-# Module :: winterval
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModulewIntervalPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModulewIntervalPush.yml) [![docs.rs](https://img.shields.io/docsrs/winterval?color=e3e8f0&logo=docs.rs)](https://docs.rs/winterval) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fwinterval_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20winterval_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+# Module :: interval_adapter
+[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModulewIntervalPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModulewIntervalPush.yml) [![docs.rs](https://img.shields.io/docsrs/interval_adapter?color=e3e8f0&logo=docs.rs)](https://docs.rs/interval_adapter) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Finterval_adapter_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20interval_adapter_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
 Integer interval adapter for both Range and RangeInclusive.
 
@@ -23,7 +23,8 @@ fn f1( interval : impl IterableInterval )
   }
 }
 
-// Calling the function either with half-open interval `core::ops::Range`.
+// Calling the function either with
+// half-open interval `core::ops::Range`.
 f1( 0..=3 );
 // Or closed one `core::ops::RangeInclusive`.
 f1( 0..4 );
@@ -46,14 +47,16 @@ fn f1( interval : impl IterableInterval )
   }
 }
 
-// Calling the function either with half-open interval `core::ops::Range`.
+// Calling the function either with
+// half-open interval `core::ops::Range`.
 f1( 0..=3 );
 // Or closed one `core::ops::RangeInclusive`.
 f1( 0..4 );
 // Alternatively you construct your custom interval from a tuple.
 f1( ( 0, 3 ).into_interval() );
 f1( ( Bound::Included( 0 ), Bound::Included( 3 ) ).into_interval() );
-// All the calls to the function `f1`` perform the same task, and the output is exactly identical.
+// All the calls to the function `f1`` perform the same task,
+// and the output is exactly identical.
 
 ```
 
@@ -70,9 +73,14 @@ fn f1( interval : impl NonIterableInterval )
   println!( "Do something with this {:?} .. {:?} interval", interval.left(), interval.right() );
 }
 
+// Iterable/bound interval from tuple.
 f1( ( Bound::Included( 0 ), Bound::Included( 3 ) ).into_interval() );
+// Non-iterable/unbound interval from tuple.
 f1( ( Bound::Included( 0 ), Bound::Unbounded ).into_interval() );
+// Non-iterable/unbound interval from `core::ops::RangeFrom`.
 f1( 0.. );
+// Non-iterable/unbound interval from `core::ops::RangeFull`
+// what is ( -Infinity .. +Infinity ).
 f1( .. );
 
 ```

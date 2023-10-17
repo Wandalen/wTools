@@ -20,7 +20,7 @@ keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 [package.metadata.docs.rs]
 all-features = true
 
-exclude = [ "/tests", "-*" ]
+exclude = [ "/tests", "/examples", "-*" ]
 include = [
   "/rust/impl/meta/mod_interface_meta_lib.rs",
   "/rust/impl/meta/mod_interface/meta",
