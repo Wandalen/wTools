@@ -116,21 +116,23 @@ version = "0.1.0"
 path = "module/core/type_constructor_derive_pair_meta"
 # package = "type_constructor_derive_pair_meta"
 
-[workspace.dependencies.winterval_default]
-version = "0.1.6"
-path = "module/core/winterval"
-# package = "winterval"
-default-features = true
+[workspace.dependencies.interval_adapter]
+version = "0.2.0"
+path = "module/core/interval_adapter"
+default-features = false
+
+[workspace.dependencies.interval_adapter_published]
+version = "*"
+package = "interval_adapter"
 
 [workspace.dependencies.winterval]
-version = "0.1.6"
-path = "module/core/winterval"
-# package = "winterval"
+version = "0.2.0"
+path = "module/alias/winterval"
 default-features = false
 
 [workspace.dependencies.winterval_published]
 version = "*"
-# package = "winterval"
+package = "winterval"
 
 
 ## derive

@@ -15,8 +15,6 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/* zzz : use skeptic? */
-
 /// Dependencies.
 pub mod dependency
 {
