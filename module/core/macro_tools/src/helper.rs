@@ -178,7 +178,7 @@ pub( crate ) mod private
     None
   }
 
-  use interval_adapter::IntervalAdapter;
+  use interval_adapter::IterableInterval;
 
   /// Return the specified number of parameters of the type.
   ///
@@ -200,7 +200,7 @@ pub( crate ) mod private
   // pub fn type_parameters< R >( ty : &syn::Type, range : R ) -> Vec< &syn::Type >
   // where
   //   R : std::convert::Into< Interval >
-  pub fn type_parameters( ty : &syn::Type, range : impl IntervalAdapter ) -> Vec< &syn::Type >
+  pub fn type_parameters( ty : &syn::Type, range : impl IterableInterval ) -> Vec< &syn::Type >
   // where
     // R : std::convert::Into< Interval >
   {

@@ -15,12 +15,12 @@ tests_impls!
 
     let src = TheModule::Interval::new( 2, 4 );
 
-    a_id!( TheModule::IntervalAdapter::first( &src ), 2 );
-    a_id!( TheModule::IntervalAdapter::last( &src ), 4 );
-    a_id!( TheModule::IntervalAdapter::len( &src ), 3 );
-    a_id!( TheModule::IntervalAdapter::closed( &src ), ( 2, 4 ) );
-    a_id!( TheModule::IntervalAdapter::closed_open( &src ), ( 2, 5 ) );
-    a_id!( TheModule::IntervalAdapter::first_len( &src ), ( 2, 3 ) );
+    a_id!( TheModule::IterableInterval::first( &src ), 2 );
+    a_id!( TheModule::IterableInterval::last( &src ), 4 );
+    a_id!( TheModule::IterableInterval::len( &src ), 3 );
+    a_id!( TheModule::IterableInterval::closed( &src ), ( 2, 4 ) );
+    a_id!( TheModule::IterableInterval::closed_open( &src ), ( 2, 5 ) );
+    a_id!( TheModule::IterableInterval::first_len( &src ), ( 2, 3 ) );
 
     a_id!( src.first(), 2 );
     a_id!( src.last(), 4 );
@@ -42,12 +42,12 @@ tests_impls!
 
     let src = 2..5;
 
-    a_id!( TheModule::IntervalAdapter::first( &src ), 2 );
-    a_id!( TheModule::IntervalAdapter::last( &src ), 4 );
-    a_id!( TheModule::IntervalAdapter::len( &src ), 3 );
-    a_id!( TheModule::IntervalAdapter::closed( &src ), ( 2, 4 ) );
-    a_id!( TheModule::IntervalAdapter::closed_open( &src ), ( 2, 5 ) );
-    a_id!( TheModule::IntervalAdapter::first_len( &src ), ( 2, 3 ) );
+    a_id!( TheModule::IterableInterval::first( &src ), 2 );
+    a_id!( TheModule::IterableInterval::last( &src ), 4 );
+    a_id!( TheModule::IterableInterval::len( &src ), 3 );
+    a_id!( TheModule::IterableInterval::closed( &src ), ( 2, 4 ) );
+    a_id!( TheModule::IterableInterval::closed_open( &src ), ( 2, 5 ) );
+    a_id!( TheModule::IterableInterval::first_len( &src ), ( 2, 3 ) );
 
     a_id!( src.first(), 2 );
     // a_id!( src.last(), 4 );
@@ -69,12 +69,12 @@ tests_impls!
 
     let src = 2..=4;
 
-    a_id!( TheModule::IntervalAdapter::first( &src ), 2 );
-    a_id!( TheModule::IntervalAdapter::last( &src ), 4 );
-    a_id!( TheModule::IntervalAdapter::len( &src ), 3 );
-    a_id!( TheModule::IntervalAdapter::closed( &src ), ( 2, 4 ) );
-    a_id!( TheModule::IntervalAdapter::closed_open( &src ), ( 2, 5 ) );
-    a_id!( TheModule::IntervalAdapter::first_len( &src ), ( 2, 3 ) );
+    a_id!( TheModule::IterableInterval::first( &src ), 2 );
+    a_id!( TheModule::IterableInterval::last( &src ), 4 );
+    a_id!( TheModule::IterableInterval::len( &src ), 3 );
+    a_id!( TheModule::IterableInterval::closed( &src ), ( 2, 4 ) );
+    a_id!( TheModule::IterableInterval::closed_open( &src ), ( 2, 5 ) );
+    a_id!( TheModule::IterableInterval::first_len( &src ), ( 2, 3 ) );
 
     a_id!( src.first(), 2 );
     // a_id!( src.last(), 4 );

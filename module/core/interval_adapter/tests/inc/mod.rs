@@ -21,14 +21,13 @@ tests_impls!
     let got = ( 0, 3 ).into_interval();
     a_id!( got, exp );
 
-    // let got : Interval< _ > = [ Bound::Included( 0 ), Bound::Included( 3 ) ].into();
-    // a_id!( got, exp );
+    let got : Interval< _ > = [ Bound::Included( 0 ), Bound::Included( 3 ) ].into();
+    a_id!( got, exp );
     let got = [ Bound::Included( 0 ), Bound::Included( 3 ) ].into_interval();
     a_id!( got, exp );
 
-    // zzz : why does not work?
-    // let got : Interval< _ > = [ 0, 3 ].into();
-    // a_id!( got, exp );
+    let got : Interval< _ > = [ 0, 3 ].into();
+    a_id!( got, exp );
     let got = [ 0, 3 ].into_interval();
     a_id!( got, exp );
 
@@ -54,13 +53,33 @@ tests_impls!
     let got = ( 0..=4 ).bounds();
     a_id!( got, exp );
 
-    let exp = Interval::new( Bound::Unbounded, Bound::Included( 4 ) );
+    let exp = Interval::new( Bound::Unbounded, Bound::Excluded( 4 ) );
     let got = ( ..4 ).into_interval();
     a_id!( got, exp );
-    // let exp = ( Bound::Unbounded, Bound::Excluded( 4 ) );
-    // let got = ( ..4 ).bounds();
-    // a_id!( got, exp );
-    // xxx : !
+    let exp = ( Bound::Unbounded, Bound::Excluded( 4 ) );
+    let got = ( ..4 ).bounds();
+    a_id!( got, exp );
+
+    let exp = Interval::new( Bound::Unbounded, Bound::Included( 4 ) );
+    let got = ( ..=4 ).into_interval();
+    a_id!( got, exp );
+    let exp = ( Bound::Unbounded, Bound::Included( 4 ) );
+    let got = ( ..=4 ).bounds();
+    a_id!( got, exp );
+
+    let exp = Interval::new( Bound::Included( 4 ), Bound::Unbounded );
+    let got = ( 4.. ).into_interval();
+    a_id!( got, exp );
+    let exp = ( Bound::Included( 4 ), Bound::Unbounded );
+    let got = ( 4.. ).bounds();
+    a_id!( got, exp );
+
+    let exp = Interval::< isize >::new( Bound::Unbounded, Bound::Unbounded );
+    let got = ( .. ).into_interval();
+    a_id!( got, exp );
+    let exp = ( Bound::< isize >::Unbounded, Bound::< isize >::Unbounded );
+    let got = ( .. ).bounds();
+    a_id!( got, exp );
 
   }
 
@@ -72,13 +91,13 @@ tests_impls!
     use TheModule::*;
     let src = Interval::new( Bound::Included( 2 ), Bound::Included( 4 ) );
 
-    a_id!( IntervalAdapter::left( &src ), Bound::Included( 2 ) );
-    a_id!( IntervalAdapter::right( &src ), Bound::Included( 4 ) );
-    a_id!( IntervalAdapter::bounds( &src ), ( Bound::Included( 2 ), Bound::Included( 4 ) ) );
-    a_id!( IntervalAdapter::closed_left( &src ), 2 );
-    a_id!( IntervalAdapter::closed_right( &src ), 4 );
-    a_id!( IntervalAdapter::closed_len( &src ), 3 );
-    a_id!( IntervalAdapter::closed( &src ), ( 2, 4 ) );
+    a_id!( NonIterableInterval::left( &src ), Bound::Included( 2 ) );
+    a_id!( NonIterableInterval::right( &src ), Bound::Included( 4 ) );
+    a_id!( NonIterableInterval::bounds( &src ), ( Bound::Included( 2 ), Bound::Included( 4 ) ) );
+    a_id!( NonIterableInterval::closed_left( &src ), 2 );
+    a_id!( NonIterableInterval::closed_right( &src ), 4 );
+    a_id!( NonIterableInterval::closed_len( &src ), 3 );
+    a_id!( NonIterableInterval::closed( &src ), ( 2, 4 ) );
 
     a_id!( src.left(), Bound::Included( 2 ) );
     a_id!( src.right(), Bound::Included( 4 ) );
@@ -160,15 +179,15 @@ tests_impls!
   // #[ cfg( not( feature = "no_std" ) ) ]
   fn impl_interval()
   {
-    use TheModule::{ IntervalAdapter, IntoInterval, Bound };
+    use TheModule::{ NonIterableInterval, IterableInterval, IntoInterval, Bound };
 
     //
     // Let's assume you have a function which should accept Interval.
     // But you don't want to limit caller of the function to use either half-open interval `core::ops::Range` or closed one `core::ops::RangeInclusive`.
-    // To make that work smoothly use `IntervalAdapter`.
+    // To make that work smoothly use `IterableInterval`.
     // Both `core::ops::Range` and `core::ops::RangeInclusive` implement the trait.
     //
-    fn f1( interval : impl IntervalAdapter )
+    fn f1( interval : impl IterableInterval )
     {
       for i in interval
       {
@@ -187,6 +206,21 @@ tests_impls!
 
   }
 
+  fn non_interable_smoke()
+  {
+    use TheModule::NonIterableInterval;
+
+    fn f1( interval : impl NonIterableInterval )
+    {
+      println!( "Do something with this {:?} .. {:?} interval", interval.left(), interval.right() );
+    }
+
+    f1( ( Bound::Included( 0 ), Bound::Included( 3 ) ).into_interval() );
+    f1( ( Bound::Included( 0 ), Bound::Unbounded ).into_interval() );
+    f1( 0.. );
+    f1( .. );
+  }
+
 }
 
 //
@@ -200,4 +234,5 @@ tests_index!
   adapter_std_closed_open,
   into_interval,
   impl_interval,
+  non_interable_smoke,
 }

@@ -24,7 +24,7 @@ pub( crate ) mod private
   /// Interval adapter. Interface to interval-like structures.
   ///
 
-  pub trait IntervalAdapter< T = isize >
+  pub trait IterableInterval< T = isize >
   where
     T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
     isize : Into< T >,
@@ -85,7 +85,7 @@ pub( crate ) mod private
     }
   }
 
-  impl< T > IntervalAdapter< T >
+  impl< T > IterableInterval< T >
   for Interval< T >
   where
     T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
@@ -102,10 +102,10 @@ pub( crate ) mod private
   }
 
   //
-  // IntervalAdapter for std
+  // IterableInterval for std
   //
 
-  impl< T > IntervalAdapter< T >
+  impl< T > IterableInterval< T >
   for ::core::ops::Range< T >
   where
     T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
@@ -122,7 +122,7 @@ pub( crate ) mod private
     }
   }
 
-  impl< T > IntervalAdapter< T >
+  impl< T > IterableInterval< T >
   for ::core::ops::RangeInclusive< T >
   where
     T : std::ops::Sub< Output = T > + std::ops::Add< Output = T > + Copy,
@@ -197,7 +197,7 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use super::private::
   {
-    IntervalAdapter,
+    IterableInterval,
     Interval,
   };
 }

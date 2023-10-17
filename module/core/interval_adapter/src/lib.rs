@@ -88,10 +88,15 @@ pub( crate ) mod private
   ///
   /// Interval adapter. Interface to interval-like structures.
   ///
-
-  pub trait IntervalAdapter< T = isize >
+  /// `NonIterableInterval` it does not implement iterator unlike `IterableInterval`.
+  /// `IterableInterval` inherits all methods of `NonIterableInterval`.
+  ///
+  /// Non-iterable intervals have either one or several unbound endpoints.
+  /// For example, interval `core::ops::RangeFull` has no bounds and represents the range from minus infinity to plus infinity.
+  ///
+  pub trait NonIterableInterval< T = isize >
   where
-    Self : IntoIterator< Item = T >,
+    // Self : IntoIterator< Item = T >,
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
@@ -118,7 +123,7 @@ pub( crate ) mod private
     #[ inline( always ) ]
     fn closed_right( &self ) -> T
     {
-      self.left().into_right_closed()
+      self.right().into_right_closed()
     }
     /// Length of the interval, converting interval into closed one.
     #[ inline( always ) ]
@@ -141,6 +146,31 @@ pub( crate ) mod private
       Interval::new( self.left(), self.right() )
     }
 
+  }
+
+  ///
+  /// Interval adapter. Interface to interval-like structures.
+  ///
+  /// `NonIterableInterval` it does not implement iterator unlike `IterableInterval`.
+  /// `IterableInterval` inherits all methods of `NonIterableInterval`.
+  ///
+
+  pub trait IterableInterval< T = isize >
+  where
+    Self : IntoIterator< Item = T > + NonIterableInterval< T >,
+    T : EndPointTrait< T >,
+    isize : Into< T >,
+  {
+  }
+
+  impl< T, NonIterableIntervalType > IterableInterval< T >
+  for NonIterableIntervalType
+  where
+    NonIterableIntervalType : NonIterableInterval< T >,
+    Self : IntoIterator< Item = T > + NonIterableInterval< T >,
+    T : EndPointTrait< T >,
+    isize : Into< T >,
+  {
   }
 
   ///
@@ -239,6 +269,7 @@ pub( crate ) mod private
     isize : Into< T >,
   {
     type Item = T;
+    #[ inline( always ) ]
     fn next( &mut self ) -> Option< Self::Item >
     {
       if self.current <= self.right
@@ -255,98 +286,223 @@ pub( crate ) mod private
   }
 
   //
-  // impl IntervalAdapter
+  // impl IterableInterval
   //
 
-  impl< T > IntervalAdapter< T >
+  // impl< T, All > NonIterableInterval< T > for All
+  // where
+  //   T : EndPointTrait< T >,
+  //   isize : Into< T >,
+  //   Interval< T > : From< Self >,
+  //   All : Clone,
+  // {
+  //   #[ inline( always ) ]
+  //   fn left( &self ) -> Bound< T >
+  //   {
+  //     Interval::from( self.clone() )._left
+  //   }
+  //   #[ inline( always ) ]
+  //   fn right( &self ) -> Bound< T >
+  //   {
+  //     Interval::from( self.clone() )._right
+  //   }
+  // }
+
+  impl< T > NonIterableInterval< T >
   for Interval< T >
   where
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       self._left
     }
+    #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
       self._right
     }
-    fn closed_left( &self ) -> T
-    {
-      self._left.into_left_closed()
-    }
-    fn closed_right( &self ) -> T
-    {
-      self._right.into_right_closed()
-    }
   }
 
-  impl< T > IntervalAdapter< T >
+  impl< T > NonIterableInterval< T >
   for core::ops::Range< T >
   where
-    core::ops::Range< T > : Iterator< Item = T >,
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       Bound::Included( self.start )
     }
+    #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
       Bound::Excluded( self.end )
     }
-    fn closed_left( &self ) -> T
-    {
-      self.start
-    }
-    fn closed_right( &self ) -> T
-    {
-      let one : T = 1.into();
-      self.end - one
-    }
   }
 
-  impl< T > IntervalAdapter< T >
+  impl< T > NonIterableInterval< T >
   for core::ops::RangeInclusive< T >
   where
-    core::ops::RangeInclusive< T > : Iterator< Item = T >,
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       Bound::Included( *self.start() )
     }
+    #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
       Bound::Included( *self.end() )
     }
-    fn closed_left( &self ) -> T
-    {
-      *self.start()
-    }
-    fn closed_right( &self ) -> T
-    {
-      *self.end()
-    }
   }
 
-  impl< T > IntervalAdapter< T >
+  impl< T > NonIterableInterval< T >
   for core::ops::RangeTo< T >
   where
-    core::ops::RangeTo< T > : Iterator< Item = T >,
     T : EndPointTrait< T >,
     isize : Into< T >,
   {
+    #[ inline( always ) ]
     fn left( &self ) -> Bound< T >
     {
       Bound::Unbounded
     }
+    #[ inline( always ) ]
+    fn right( &self ) -> Bound< T >
+    {
+      Bound::Excluded( self.end )
+    }
+  }
+
+  impl< T > NonIterableInterval< T >
+  for core::ops::RangeToInclusive< T >
+  where
+    T : EndPointTrait< T >,
+    isize : Into< T >,
+  {
+    #[ inline( always ) ]
+    fn left( &self ) -> Bound< T >
+    {
+      Bound::Unbounded
+    }
+    #[ inline( always ) ]
     fn right( &self ) -> Bound< T >
     {
       Bound::Included( self.end )
+    }
+  }
+
+  impl< T > NonIterableInterval< T >
+  for core::ops::RangeFrom< T >
+  where
+    T : EndPointTrait< T >,
+    isize : Into< T >,
+  {
+    #[ inline( always ) ]
+    fn left( &self ) -> Bound< T >
+    {
+      Bound::Included( self.start )
+    }
+    #[ inline( always ) ]
+    fn right( &self ) -> Bound< T >
+    {
+      Bound::Unbounded
+    }
+  }
+
+  impl< T > NonIterableInterval< T >
+  for core::ops::RangeFull
+  where
+    T : EndPointTrait< T >,
+    isize : Into< T >,
+  {
+    #[ inline( always ) ]
+    fn left( &self ) -> Bound< T >
+    {
+      Bound::Unbounded
+    }
+    #[ inline( always ) ]
+    fn right( &self ) -> Bound< T >
+    {
+      Bound::Unbounded
+    }
+  }
+
+  impl< T > NonIterableInterval< T >
+  for ( T, T )
+  where
+    T : EndPointTrait< T >,
+    isize : Into< T >,
+  {
+    #[ inline( always ) ]
+    fn left( &self ) -> Bound< T >
+    {
+      Bound::Included( self.0 )
+    }
+    #[ inline( always ) ]
+    fn right( &self ) -> Bound< T >
+    {
+      Bound::Included( self.1 )
+    }
+  }
+
+  impl< T > NonIterableInterval< T >
+  for ( Bound< T >, Bound< T > )
+  where
+    T : EndPointTrait< T >,
+    isize : Into< T >,
+  {
+    #[ inline( always ) ]
+    fn left( &self ) -> Bound< T >
+    {
+      self.0
+    }
+    #[ inline( always ) ]
+    fn right( &self ) -> Bound< T >
+    {
+      self.1
+    }
+  }
+
+  impl< T > NonIterableInterval< T >
+  for [ T ; 2 ]
+  where
+    T : EndPointTrait< T >,
+    isize : Into< T >,
+  {
+    #[ inline( always ) ]
+    fn left( &self ) -> Bound< T >
+    {
+      Bound::Included( self[ 0 ] )
+    }
+    #[ inline( always ) ]
+    fn right( &self ) -> Bound< T >
+    {
+      Bound::Included( self[ 1 ] )
+    }
+  }
+
+  impl< T > NonIterableInterval< T >
+  for [ Bound< T > ; 2 ]
+  where
+    T : EndPointTrait< T >,
+    isize : Into< T >,
+  {
+    #[ inline( always ) ]
+    fn left( &self ) -> Bound< T >
+    {
+      self[ 0 ]
+    }
+    #[ inline( always ) ]
+    fn right( &self ) -> Bound< T >
+    {
+      self[ 1 ]
     }
   }
 
@@ -354,107 +510,52 @@ pub( crate ) mod private
   // from for std
   // =
 
-  impl< T > From< core::ops::Range< T > >
-  for Interval< T >
-  where
-    T : EndPointTrait< T >,
-    isize : Into< T >,
+  macro_rules! impl_interval_from
   {
-    #[ inline( always ) ]
-    fn from( src : core::ops::Range< T > ) -> Self
+    {} => {};
     {
-      Self { _left : Bound::Included( src.start ), _right : Bound::Excluded( src.end ) }
+      $Type : ty
     }
+    =>
+    {
+      impl< T > From< $Type >
+      for Interval< T >
+      where
+        T : EndPointTrait< T >,
+        isize : Into< T >,
+      {
+        #[ inline( always ) ]
+        fn from( src : $Type ) -> Self
+        {
+          let _left = NonIterableInterval::left( &src );
+          let _right = NonIterableInterval::right( &src );
+          Self { _left, _right }
+        }
+      }
+    };
+    {
+      $Type : ty
+      , $( $Rest : tt )*
+    }
+    =>
+    {
+      impl_interval_from!{ $Type }
+      impl_interval_from!{ $( $Rest )* }
+    };
   }
 
-  //
-
-  impl< T > From< core::ops::RangeInclusive< T > >
-  for Interval< T >
-  where
-    T : EndPointTrait< T >,
-    isize : Into< T >,
+  impl_interval_from!
   {
-    #[ inline( always ) ]
-    fn from( src : core::ops::RangeInclusive< T > ) -> Self
-    {
-      Self { _left : Bound::Included( *src.start() ), _right : Bound::Included( *src.end() ) }
-    }
-  }
-
-  //
-
-  impl< T > From< core::ops::RangeTo< T > >
-  for Interval< T >
-  where
-    T : EndPointTrait< T >,
-    isize : Into< T >,
-  {
-    #[ inline( always ) ]
-    fn from( src : core::ops::RangeTo< T > ) -> Self
-    {
-      Self { _left : Bound::Unbounded, _right : Bound::Included( src.end ) }
-    }
-  }
-
-  //
-
-  impl< T > From< ( T, T ) >
-  for Interval< T >
-  where
-    T : EndPointTrait< T >,
-    isize : Into< T >,
-  {
-    #[ inline( always ) ]
-    fn from( src : ( T, T ) ) -> Self
-    {
-      Self { _left : Bound::Included( src.0 ), _right : Bound::Included( src.1 ) }
-    }
-  }
-
-  //
-
-  impl< T > From< ( Bound< T >, Bound< T > ) >
-  for Interval< T >
-  where
-    T : EndPointTrait< T >,
-    isize : Into< T >,
-  {
-    #[ inline( always ) ]
-    fn from( src : ( Bound< T >, Bound< T > ) ) -> Self
-    {
-      Self { _left : src.0, _right : src.1 }
-    }
-  }
-
-  //
-
-  impl< T > From< [ T ; 2 ] >
-  for Interval< T >
-  where
-    T : EndPointTrait< T >,
-    isize : Into< T >,
-  {
-    #[ inline( always ) ]
-    fn from( src : [ T ; 2 ] ) -> Self
-    {
-      Self { _left : Bound::Included( src[ 0 ] ), _right : Bound::Included( src[ 1 ] ) }
-    }
-  }
-
-  //
-
-  impl< T > From< [ Bound< T > ; 2 ] >
-  for Interval< T >
-  where
-    T : EndPointTrait< T >,
-    isize : Into< T >,
-  {
-    #[ inline( always ) ]
-    fn from( src : [ Bound< T > ; 2 ] ) -> Self
-    {
-      Self { _left : src[ 0 ], _right : src[ 1 ] }
-    }
+    core::ops::Range< T >,
+    core::ops::RangeInclusive< T >,
+    core::ops::RangeTo< T >,
+    core::ops::RangeToInclusive< T >,
+    core::ops::RangeFrom< T >,
+    core::ops::RangeFull,
+    ( T, T ),
+    ( Bound< T >, Bound< T > ),
+    [ T ; 2 ],
+    [ Bound< T > ; 2 ],
   }
 
   /// Convert it into canonical interval.
@@ -478,27 +579,6 @@ pub( crate ) mod private
       From::from( self )
     }
   }
-
-// //   macro_rules! impl_interval_into_interval
-// //   {
-// //     {
-// //       $( $Type : tt )*
-// //     }
-// //     =>
-// //     {
-// //       impl< T > IntoInterval< T > for $( $Type )*< T >
-// //       where
-// //         T : EndPointTrait< T >,
-// //         isize : Into< T >,
-// //         $( $Type )*< T > : Iterator< Item = T >,
-// //       {
-// //         fn into_interval( self ) -> Interval< T >
-// //         {
-// //           IntervalAdapter::< T >::canonical( &self )
-// //         }
-// //       }
-// //     }
-// //   }
 
 }
 
@@ -525,13 +605,14 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::prelude::*;
-  #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
   pub use super::private::
   {
     Bound,
+    BoundExt,
     EndPointTrait,
-    IntervalAdapter,
+    IterableInterval,
+    NonIterableInterval,
     Interval,
     IntoInterval,
   };
@@ -543,4 +624,11 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
+  pub use super::private::
+  {
+    IterableInterval,
+    NonIterableInterval,
+    IntoInterval,
+  };
 }

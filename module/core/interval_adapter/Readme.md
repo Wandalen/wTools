@@ -5,17 +5,17 @@
 
 Integer interval adapter for both Range and RangeInclusive.
 
-Let's assume you have a function which should accept Interval. But you don't want to limit caller of the function to use either half-open interval `core::ops::Range` or closed one `core::ops::RangeInclusive`. To make that work smoothly use `IntervalAdapter`. Both `core::ops::Range` and `core::ops::RangeInclusive` implement the trait.
+Let's assume you have a function which should accept Interval. But you don't want to limit caller of the function to either half-open interval `core::ops::Range` or closed one `core::ops::RangeInclusive` you want allow to use anyone of iterable interval. To make that work smoothly use `IterableInterval`. Both `core::ops::Range` and `core::ops::RangeInclusive` implement the trait, also it's possible to work with non-iterable intervals, like ( -Infinity .. +Infinity ).
 
 ### Sample
 
-<!-- {{# generate.module_sample{} #}} -->
+Basic use-case.
 
 ```rust
 
-use interval_adapter::IntervalAdapter;
+use interval_adapter::IterableInterval;
 
-fn f1( interval : impl IntervalAdapter )
+fn f1( interval : impl IterableInterval )
 {
   for i in interval
   {
@@ -32,13 +32,13 @@ f1( 0..4 );
 
 ### More flexibility
 
-<!-- {{# generate.module_sample{} #}} -->
+If you need more flexibility in defining intervals, you can convert a tuple of endpoints to an interval.
 
 ```rust
 
-use interval_adapter::{ IntervalAdapter, IntoInterval, Bound };
+use interval_adapter::{ IterableInterval, IntoInterval, Bound };
 
-fn f1( interval : impl IntervalAdapter )
+fn f1( interval : impl IterableInterval )
 {
   for i in interval
   {
@@ -54,6 +54,26 @@ f1( 0..4 );
 f1( ( 0, 3 ).into_interval() );
 f1( ( Bound::Included( 0 ), Bound::Included( 3 ) ).into_interval() );
 // All the calls to the function `f1`` perform the same task, and the output is exactly identical.
+
+```
+
+### Non-iterable intervals
+
+You may also use the crate to specify non-iterable intervals. Non-iterable intervals have either one or several unbound endpoints. For example, interval `core::ops::RangeFull` has no bounds and represents the range from minus infinity to plus infinity.
+
+```rust
+
+use interval_adapter::{ NonIterableInterval, IntoInterval, Bound };
+
+fn f1( interval : impl NonIterableInterval )
+{
+  println!( "Do something with this {:?} .. {:?} interval", interval.left(), interval.right() );
+}
+
+f1( ( Bound::Included( 0 ), Bound::Included( 3 ) ).into_interval() );
+f1( ( Bound::Included( 0 ), Bound::Unbounded ).into_interval() );
+f1( 0.. );
+f1( .. );
 
 ```
 
