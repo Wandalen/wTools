@@ -120,6 +120,7 @@ path = "module/core/type_constructor_derive_pair_meta"
 version = "0.2.3"
 path = "module/core/interval_adapter"
 default-features = false
+features = [ "enabled" ]
 
 [workspace.dependencies.interval_adapter_published]
 version = "*"
@@ -129,6 +130,7 @@ package = "interval_adapter"
 version = "0.2.3"
 path = "module/alias/winterval"
 default-features = false
+features = [ "enabled" ]
 
 [workspace.dependencies.winterval_published]
 version = "*"
