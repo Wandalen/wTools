@@ -205,7 +205,7 @@ fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 ///
 /// Generate fields for initializer of a struct setting each field to `None`.
 ///
-/// ### Sample of output
+/// ### Basic use-case. of output
 ///
 /// ```compile_fail
 /// int_1 : core::option::Option::None,
@@ -230,7 +230,7 @@ fn field_none_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 ///
 /// Generate field of the former for a field of the structure
 ///
-/// ### Sample of output
+/// ### Basic use-case. of output
 ///
 /// ```compile_fail
 /// pub int_1 : core::option::Option< i32 >,
@@ -265,7 +265,7 @@ fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 ///
 /// Generate code converting a field of the former to the field of the structure.
 ///
-/// ### Sample of output
+/// ### Basic use-case. of output
 ///
 /// ```compile_fail
 /// let int_1 = if self.int_1.is_some()
@@ -399,7 +399,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///
 /// Generate a former setter for the field.
 ///
-/// ### Sample of output
+/// ### Basic use-case. of output
 ///
 /// ```compile_fail
 /// pub fn int_1< Src >( mut self, src : Src ) -> Self

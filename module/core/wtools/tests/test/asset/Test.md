@@ -1,5 +1,5 @@
 
-### Sample
+### Basic use-case.
 
 ```rust
 use test_tools::*;

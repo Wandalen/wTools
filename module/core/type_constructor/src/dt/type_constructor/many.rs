@@ -525,7 +525,7 @@ pub( crate ) mod private
     ///
     /// Type constructor to wrap a vector.
     ///
-    /// ### Sample
+    /// ### Basic use-case.
     /// ```rust
     /// let vec_of_i32_in_tuple = type_constructor::Many::< i32 >::from( [ 1, 2, 3 ] );
     /// dbg!( vec_of_i32_in_tuple );

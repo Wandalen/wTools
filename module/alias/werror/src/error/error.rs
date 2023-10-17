@@ -6,7 +6,7 @@ pub( crate ) mod private
   ///
   /// Macro to generate error.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ```
   /// # use error_tools::*;
   /// err!( "No attr" );

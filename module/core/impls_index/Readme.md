@@ -7,7 +7,7 @@ Several of macros to put each function under a named macro to index every functi
 
 It encourages writing better code, having index of components stripped of details of implementation is very important for comprehension of the code and ability to see the big picture.
 
-### Sample
+### Basic use-case.
 
 <!-- {{# generate.module_sample{} #}} -->
 

@@ -9,7 +9,7 @@ pub( crate ) mod private
   /// That how pair of traits `VectorizedFrom`/`VectorizedInto` could be useful. They are implemented for tuples and arrays.
   /// Their implementation is based on standard `From`, if `From` is implemented for elements of a tuple then `VectorizedFrom`/`VectorizedInto` implemented for collection containing them.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ```rust
   /// use type_constructor::prelude::*;
   /// types!( single Single1 : i32 );
@@ -31,7 +31,7 @@ pub( crate ) mod private
   /// That how pair of traits `VectorizedFrom`/`VectorizedInto` could be useful. They are implemented for tuples and arrays.
   /// Their implementation is based on standard `From`, if `From` is implemented for elements of a tuple then `VectorizedFrom`/`VectorizedInto` implemented for collection containing them.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ```rust
   /// use type_constructor::prelude::*;
   /// types!( single Single1 : i32 );

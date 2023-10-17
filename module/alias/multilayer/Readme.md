@@ -5,7 +5,7 @@
 
 Protocol of modularity unifying interface of a module and introducing layers.
 
-### Sample
+### Basic use-case.
 
 ```ignore
 ```

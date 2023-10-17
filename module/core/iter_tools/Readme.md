@@ -5,7 +5,7 @@
 
 Collection of general purpose tools to iterate. Currently it simply reexports itertools.
 
-### Sample
+### Basic use-case.
 
 <!-- {{# generate.module_sample{} #}} -->
 

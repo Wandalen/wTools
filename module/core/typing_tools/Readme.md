@@ -5,7 +5,7 @@
 
 Collection of general purpose tools for type checking.
 
-### Sample
+### Basic use-case.
 
 <!-- {{# generate.module_sample{} #}} -->
 

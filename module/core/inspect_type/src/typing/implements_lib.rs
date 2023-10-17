@@ -22,7 +22,7 @@ pub( crate ) mod private
   ///
   /// Macro `implements` to answer the question: does it implement a trait?
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ```
   /// use implements::*;
   ///
@@ -44,7 +44,7 @@ pub( crate ) mod private
   ///
   /// Macro `instance_of` to answer the question: does it implement a trait? Alias of the macro `implements`.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ```
   /// use implements::instance_of;
   ///

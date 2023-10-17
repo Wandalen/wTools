@@ -5,7 +5,7 @@
 
 Tools to manipulate strings.
 
-### Sample
+### Basic use-case.
 
 <!-- {{# generate.module_sample{} #}} -->
 

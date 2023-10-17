@@ -11,7 +11,7 @@ This solution has a limitation:
 
 This is alias for [module::implements](https://github.com/Wandalen/wTools/tree/master/module/core/implements).
 
-### Sample
+### Basic use-case.
 
 <!-- {{# generate.module_sample{} #}} -->
 

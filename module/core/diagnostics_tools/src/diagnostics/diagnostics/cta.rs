@@ -5,7 +5,7 @@ pub( crate ) mod private
   ///
   /// Macro to compare meta condition is true at compile-time.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   ///
   /// ``` rust
   /// use diagnostics_tools::prelude::*;

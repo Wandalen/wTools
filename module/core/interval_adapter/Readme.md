@@ -7,7 +7,7 @@ Integer interval adapter for both Range and RangeInclusive.
 
 Let's assume you have a function which should accept Interval. But you don't want to limit caller of the function to either half-open interval `core::ops::Range` or closed one `core::ops::RangeInclusive` you want allow to use anyone of iterable interval. To make that work smoothly use `IterableInterval`. Both `core::ops::Range` and `core::ops::RangeInclusive` implement the trait, also it's possible to work with non-iterable intervals, like ( -Infinity .. +Infinity ).
 
-### Sample
+### Basic use-case.
 
 Basic use-case.
 

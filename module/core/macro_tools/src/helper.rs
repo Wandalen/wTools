@@ -16,7 +16,7 @@ pub( crate ) mod private
   ///
   /// Macro for diagnostics purpose to print both syntax tree and source code behind it with syntax tree.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ```
   /// use macro_tools::prelude::*;
   ///
@@ -44,7 +44,7 @@ pub( crate ) mod private
   ///
   /// Macro for diagnostics purpose to print both syntax tree and source code behind it without syntax tree.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ```
   /// use macro_tools::prelude::*;
   ///
@@ -114,7 +114,7 @@ pub( crate ) mod private
   ///
   /// Macro to generate syn error either with span of a syntax tree element or with default one `proc_macro2::Span::call_site()`.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ```
   /// # use macro_tools::*;
   /// syn_err!( "No attr" );
@@ -154,7 +154,7 @@ pub( crate ) mod private
   /// Good to verify `core::option::Option< i32 >` is optional.
   /// Good to verify `alloc::vec::Vec< i32 >` is vector.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ```
   /// use macro_tools::*;
   ///
@@ -184,7 +184,7 @@ pub( crate ) mod private
   ///
   /// Good to getting `i32` from `core::option::Option< i32 >` or `alloc::vec::Vec< i32 >`
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ```
   /// use macro_tools::*;
   ///
@@ -233,7 +233,7 @@ pub( crate ) mod private
   /// For attribute like `#[former( default = 31 )]` return key `default` and value `31`,
   /// as well as syn::Meta as the last element of result tuple.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ``` ignore
   /// let ( key, val, meta ) = attr_pair_single( &attr )?;
   /// ```

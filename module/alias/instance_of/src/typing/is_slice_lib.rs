@@ -18,7 +18,7 @@ pub( crate ) mod private
 
   /// Macro to answer the question: is it a slice?
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   /// ```
   /// use is_slice::*;
   ///

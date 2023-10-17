@@ -5,7 +5,7 @@
 
 Collection of general purpose meta tools.
 
-### Sample  :: variadic constructor of collections
+### Basic use-case.  :: variadic constructor of collections
 
 Among other useful meta tools the module aggregates variadtic constructors of collections. For example macro `hmap!` for constructing a hash map.
 
@@ -20,7 +20,7 @@ std_map.insert( 3, 13 );
 assert_eq!( meta_map, std_map );
 ```
 
-### Sample :: function-style call
+### Basic use-case. :: function-style call
 
 Apply a macro for each element of a list.
 

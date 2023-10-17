@@ -5,7 +5,7 @@
 
 Tools for writing and running tests. The most basic things.
 
-### Sample
+### Basic use-case.
 
 <!-- {{# generate.module_sample{} #}} -->
 

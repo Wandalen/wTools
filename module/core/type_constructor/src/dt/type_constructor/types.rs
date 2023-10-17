@@ -92,7 +92,7 @@ pub( crate ) mod private
   /// }
   /// ```
   ///
-  /// ### Sample :: single-line single.
+  /// ### Basic use-case. :: single-line single.
   ///
   /// To define your own single-use macro `types!`. The single-line definition looks like that.
   ///
@@ -139,7 +139,7 @@ pub( crate ) mod private
   /// println!( "x : {}", x.0 );
   /// ```
   ///
-  /// ### Sample :: single with derives and attributes.
+  /// ### Basic use-case. :: single with derives and attributes.
   ///
   /// It's possible to define attributes as well as derives.
   ///
@@ -193,7 +193,7 @@ pub( crate ) mod private
   /// dbg!( x );
   /// ```
   ///
-  /// ### Sample :: single with struct instead of macro.
+  /// ### Basic use-case. :: single with struct instead of macro.
   ///
   /// Sometimes it's sufficient to use a common type instead of defining a brand new one.
   /// You may use parameterized struct `Single< T >` instead of macro `types!` if that is the case.
@@ -204,7 +204,7 @@ pub( crate ) mod private
   /// dbg!( x );
   /// ```
   ///
-  /// ### Sample :: single with a parametrized element.
+  /// ### Basic use-case. :: single with a parametrized element.
   ///
   /// Element of tuple could be parametrized.
   ///
@@ -254,7 +254,7 @@ pub( crate ) mod private
   /// let x = MySingle( std::sync::Arc::new( 13 ) );
   /// ```
   ///
-  /// ### Sample :: single with parametrized tuple.
+  /// ### Basic use-case. :: single with parametrized tuple.
   ///
   /// Instead of parametrizing the element, it's possible to define a parametrized tuple.
   ///
@@ -299,7 +299,7 @@ pub( crate ) mod private
   /// dbg!( 13 );
   /// ```
   ///
-  /// ### Sample :: single-line pair
+  /// ### Basic use-case. :: single-line pair
   ///
   /// Sometimes you need to wrap more than a single element into a tupдe. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
   ///
@@ -341,7 +341,7 @@ pub( crate ) mod private
   /// println!( "x : ( {}, {} )", x.0, x.1 );
   /// ```
   ///
-  /// ### Sample :: pair with parameters
+  /// ### Basic use-case. :: pair with parameters
   ///
   /// Just like `single` `pair` may have parameters.
   ///
@@ -400,7 +400,7 @@ pub( crate ) mod private
   /// // prints : x = MyPair( 13, 13.0 )
   /// ```
   ///
-  /// ### Sample :: single-line homopair
+  /// ### Basic use-case. :: single-line homopair
   ///
   /// If you need to wrap pair of elements with the same type use the type constructor `pair`. The same type constructor `pair` for both `pair` and `homopair`, difference in number of types in definition, `homopair` has only one, because both its element has the same type. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
   ///
@@ -442,7 +442,7 @@ pub( crate ) mod private
   /// println!( "x : ( {}, {} )", x.0, x.1 );
   /// ```
   ///
-  /// ### Sample :: homopair with parameters
+  /// ### Basic use-case. :: homopair with parameters
   ///
   /// Unlike `heteropair` `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or array, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tuple, array, slice, scalar.
   ///
@@ -609,7 +609,7 @@ pub( crate ) mod private
   /// // prints : &clone_as_tuple = ( 13, 31 )
   /// ```
   ///
-  /// ### Sample :: single-line many
+  /// ### Basic use-case. :: single-line many
   ///
   /// Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has essential traits implemented for it.
   ///

@@ -26,7 +26,7 @@ mod inner_from;
 ///
 /// Derive macro to implement From converting inner type into outer when-ever it's possible to do automatically.
 ///
-/// ### Sample :: struct instead of macro.
+/// ### Basic use-case. :: struct instead of macro.
 ///
 /// Write this
 ///
@@ -64,7 +64,7 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// Derive macro to implement From converting inner type into outer when-ever it's possible to do automatically.
 ///
-/// ### Sample :: struct instead of macro.
+/// ### Basic use-case. :: struct instead of macro.
 ///
 /// Write this
 ///
@@ -102,7 +102,7 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// Derive macro to implement From converting outer type into inner when-ever it's possible to do automatically.
 ///
-/// ### Sample :: struct instead of macro.
+/// ### Basic use-case. :: struct instead of macro.
 ///
 /// Write this
 ///
@@ -140,7 +140,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// Derive macro to implement Deref when-ever it's possible to do automatically.
 ///
-/// ### Sample :: struct instead of macro.
+/// ### Basic use-case. :: struct instead of macro.
 ///
 /// Write this
 ///
@@ -179,7 +179,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// Derive macro to implement Deref when-ever it's possible to do automatically.
 ///
-/// ### Sample :: struct instead of macro.
+/// ### Basic use-case. :: struct instead of macro.
 ///
 /// Write this
 ///
@@ -227,7 +227,7 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// Derive macro to implement AsRef when-ever it's possible to do automatically.
 ///
-/// ### Sample :: struct instead of macro.
+/// ### Basic use-case. :: struct instead of macro.
 ///
 /// Write this
 ///
@@ -264,7 +264,7 @@ pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// Derive macro to implement AsMut when-ever it's possible to do automatically.
 ///
-/// ### Sample :: struct instead of macro.
+/// ### Basic use-case. :: struct instead of macro.
 ///
 /// Write this
 ///

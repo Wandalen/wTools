@@ -5,7 +5,7 @@
 
 Diagnostics tools.
 
-### Sample
+### Basic use-case.
 
 <!-- {{# generate.module_sample{} #}} -->
 

@@ -7,7 +7,7 @@ pub( crate ) mod private
   ///
   /// This will invoke the panic! macro if the provided expression cannot be evaluated to true at runtime.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   ///
   /// ``` rust
   /// use diagnostics_tools::prelude::*;
@@ -33,7 +33,7 @@ pub( crate ) mod private
   ///
   /// This will invoke the panic! macro if the provided expression cannot be evaluated to false at runtime.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   ///
   /// ``` should_panic
   /// use diagnostics_tools::prelude::*;
@@ -60,7 +60,7 @@ pub( crate ) mod private
   /// This will invoke the panic! macro if the provided expression cannot be evaluated to true at runtime.
   /// Like [a_true!], this macro also has a second version, where a custom panic message can be provided.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   ///
   /// ``` rust
   /// use diagnostics_tools::prelude::*;
@@ -87,7 +87,7 @@ pub( crate ) mod private
   /// This will invoke the panic! macro if the provided expression cannot be evaluated to false at runtime.
   /// Like [a_false!], this macro also has a second version, where a custom panic message can be provided.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   ///
   /// ``` should_panic
   /// use diagnostics_tools::prelude::*;
@@ -114,7 +114,7 @@ pub( crate ) mod private
   /// This will invoke the panic! macro if two experessions have different values at runtime.
   /// Like [a_id!], this macro also has a second version, where a custom panic message can be provided.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   ///
   /// ``` rust
   /// use diagnostics_tools::prelude::*;
@@ -144,7 +144,7 @@ pub( crate ) mod private
   /// This will invoke the panic! macro if two experessions have the same value at runtime.
   /// Like [a_id!], this macro also has a second version, where a custom panic message can be provided.
   ///
-  /// ### Sample
+  /// ### Basic use-case.
   ///
   /// ``` rust
   /// use diagnostics_tools::prelude::*;

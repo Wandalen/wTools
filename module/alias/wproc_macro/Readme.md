@@ -5,7 +5,7 @@
 
 Tools for writing procedural macroses.
 
-### Sample
+### Basic use-case.
 
 <!-- {{# generate.module_sample{} #}} -->
 

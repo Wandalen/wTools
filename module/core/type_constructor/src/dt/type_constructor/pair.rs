@@ -99,7 +99,7 @@ pub( crate ) mod private
         pub $TypeSplit1x1 $( :: $TypeSplit1xN )* < $( $( $( $ParamName1 ),+ )? )? >,
         pub $TypeSplit2x1 $( :: $TypeSplit2xN )* < $( $( $ParamName2 ),* )? >,
       );
-      
+
       $crate::types!{ $( $( $Rest )* )? }
     };
 
@@ -163,7 +163,7 @@ pub( crate ) mod private
     ///
     /// Type constructor to wrap two types into a tuple.
     ///
-    /// ### Sample
+    /// ### Basic use-case.
     /// ```
     /// let i32_and_f32_in_tuple = type_constructor::Pair::< i32, f32 >::from( ( 13, 13.0 ) );
     /// dbg!( i32_and_f32_in_tuple );
@@ -177,7 +177,7 @@ pub( crate ) mod private
     ///
     /// Type constructor to wrap pair of the same type.
     ///
-    /// ### Sample
+    /// ### Basic use-case.
     /// ```
     /// let two_i32_in_tuple = type_constructor::HomoPair::< i32 >::from( ( 13, 31 ) );
     /// dbg!( two_i32_in_tuple );
