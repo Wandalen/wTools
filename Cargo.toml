@@ -155,14 +155,8 @@ default-features = false
 version = "*"
 # package = "derive_tools"
 
-# [workspace.dependencies.clone_dyn_default]
-# version = "0.2.0"
-# path = "module/core/clone_dyn"
-# # package = "clone_dyn"
-# default-features = true
-
 [workspace.dependencies.clone_dyn]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/clone_dyn"
 default-features = false
 features = [ "enabled" ]
@@ -172,7 +166,7 @@ version = "*"
 package = "clone_dyn"
 
 [workspace.dependencies.clone_dyn_meta]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/clone_dyn_meta"
 features = [ "enabled" ]
 
