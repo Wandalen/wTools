@@ -3,7 +3,7 @@ use super::*;
 // use diagnostics_tools::prelude::*;
 // use derives::*;
 
-#[ derive( Debug, Clone, Copy, PartialEq, Deref, DerefMut ) ]
+#[ derive( Debug, Clone, Copy, PartialEq, TheModule::AsMut ) ]
 pub struct IsTransparent( bool );
 
-include!( "./only_test/deref_mut.rs" );
+include!( "./only_test/as_mut.rs" );

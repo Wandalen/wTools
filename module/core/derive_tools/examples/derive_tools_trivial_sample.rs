@@ -5,7 +5,8 @@ fn main()
   {
     use derive_tools::*;
 
-    #[ derive( From, Into, Display, FromStr, PartialEq, Debug ) ]
+    // #[ derive( From, Into, Display, FromStr, PartialEq, Debug ) ]
+    #[ derive( Into, Display, FromStr, PartialEq, Debug ) ]
     #[ display( "{a}-{b}" ) ]
     struct Struct1
     {

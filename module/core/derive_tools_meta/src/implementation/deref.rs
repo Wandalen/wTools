@@ -1,5 +1,5 @@
 
-use crate::*;
+use super::*;
 
 pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {

@@ -139,21 +139,25 @@ package = "winterval"
 
 ## derive
 
-[workspace.dependencies.derive_tools_default]
-version = "0.1.5"
-path = "module/core/derive_tools"
-# package = "derive_tools"
-default-features = true
-
 [workspace.dependencies.derive_tools]
-version = "0.1.5"
+version = "0.2.0"
 path = "module/core/derive_tools"
-# package = "derive_tools"
 default-features = false
+features = [ "enabled" ]
 
 [workspace.dependencies.derive_tools_published]
 version = "*"
-# package = "derive_tools"
+package = "derive_tools"
+
+[workspace.dependencies.derive_tools_meta]
+version = "0.2.0"
+path = "module/core/derive_tools_meta"
+default-features = false
+features = [ "enabled" ]
+
+[workspace.dependencies.derive_tools_meta_published]
+version = "*"
+package = "derive_tools_meta"
 
 [workspace.dependencies.clone_dyn]
 version = "0.4.0"
@@ -335,30 +339,22 @@ path = "module/core/impls_index_meta"
 version = "*"
 # package = "impls_index_meta"
 
-[workspace.dependencies.mod_interface_default]
-version = "0.1.16"
-path = "module/core/mod_interface"
-# package = "mod_interface"
-default-features = true
-
 [workspace.dependencies.mod_interface]
-version = "0.1.16"
+version = "0.2.0"
 path = "module/core/mod_interface"
-# package = "mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_published]
 version = "*"
-# package = "mod_interface"
+package = "mod_interface"
 
 [workspace.dependencies.mod_interface_meta]
-version = "0.1.11"
+version = "0.2.0"
 path = "module/core/mod_interface_meta"
-# package = "mod_interface_meta"
 
 [workspace.dependencies.mod_interface_meta_published]
 version = "*"
-# package = "mod_interface_meta"
+package = "mod_interface_meta"
 
 [workspace.dependencies.mod_interface_runtime]
 version = "0.1.2"

@@ -26,9 +26,11 @@ pub mod dependency
   pub use ::parse_display;
   #[ cfg( feature = "clone_dyn" ) ]
   pub use ::clone_dyn;
+  pub use ::derive_tools_meta;
 }
 
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -38,10 +40,12 @@ pub mod protected
   pub use ::clone_dyn::orphan::*;
 }
 
+#[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -49,10 +53,12 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::prelude::*;
+
   #[ cfg( feature = "derive_more" ) ]
   #[ doc( inline ) ]
   pub use ::derive_more::*;
@@ -72,9 +78,13 @@ pub mod exposed
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
   pub use ::clone_dyn::exposed::*;
+
+  pub use ::derive_tools_meta::*;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
 
