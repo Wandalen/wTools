@@ -18,8 +18,15 @@
 #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 extern crate alloc;
 
+/// Dependencies.
+pub mod dependency
+{
+  pub use ::clone_dyn_meta;
+}
+
 /// Internal namespace.
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+// #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 pub( crate ) mod private
 {
   #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
@@ -46,23 +53,20 @@ pub( crate ) mod private
 
 }
 
-/// Dependencies.
-pub mod dependency
-{
-  pub use ::clone_dyn_meta;
-}
-
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -70,6 +74,7 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
@@ -77,11 +82,12 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
   #[ doc( inline ) ]
   pub use ::clone_dyn_meta::clone_dyn;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ doc( inline ) ]
   pub use super::private::_clone_boxed;
 }
