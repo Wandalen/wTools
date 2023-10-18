@@ -15,12 +15,14 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ cfg( feature = "enabled" ) ]
 mod meta_impl;
 
 ///
 /// Derive macro to generate former for a structure. Former is variation of Builder Pattern.
 ///
 
+#[ cfg( feature = "enabled" ) ]
 #[ proc_macro_attribute ]
 pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {

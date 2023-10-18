@@ -4,5 +4,5 @@ use clone_dyn as TheModule;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod clone_dyn_test;
+// #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+mod inc;

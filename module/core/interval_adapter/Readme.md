@@ -9,8 +9,6 @@ Let's assume you have a function which should accept Interval. But you don't wan
 
 ### Basic use-case.
 
-Basic use-case.
-
 ```rust
 
 use interval_adapter::IterableInterval;

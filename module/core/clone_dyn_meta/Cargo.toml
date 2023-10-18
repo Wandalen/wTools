@@ -1,6 +1,6 @@
 [package]
 name = "clone_dyn_meta"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -22,25 +22,11 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/derive/clone_dyn_meta",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
 default = []
 full = []
-
-[lib]
-proc-macro = true
-name = "clone_dyn_meta"
-path = "src/derive/clone_dyn_meta/clone_dyn_meta_lib.rs"
-
-[[test]]
-name = "clone_dyn_meta_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+enabled = []
 
 [dependencies]
 macro_tools = { workspace = true }
