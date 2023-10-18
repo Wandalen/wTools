@@ -1,6 +1,6 @@
 [package]
 name = "clone_dyn"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,10 +31,8 @@ exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 
-default = [
-]
-full = [
-]
+default = [ "enabled" ]
+full = [ "enabled" ]
 enabled = []
 no_std = []
 use_alloc = []
