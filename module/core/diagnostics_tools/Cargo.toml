@@ -44,6 +44,7 @@ full = [
 # use_std = []
 no_std = []
 use_alloc = []
+enabled = []
 
 runtime_assertions = [ "pretty_assertions" ] # run-time assertions
 compiletime_assertions = [] # compile-time assertions

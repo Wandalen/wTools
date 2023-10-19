@@ -54,6 +54,7 @@ full = [
 # # use_std = []
 no_std = []
 use_alloc = []
+enabled = []
 
 prelude = []
 interval = [ "interval_adapter" ]

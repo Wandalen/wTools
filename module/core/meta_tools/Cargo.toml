@@ -31,6 +31,7 @@ exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 default = [
+  "enabled",
   "for_each",
   "impls_index",
   # "mod_interface",
@@ -41,6 +42,7 @@ default = [
   # "use_std",
 ]
 full = [
+  "enabled",
   "for_each",
   "impls_index",
   # "mod_interface",
@@ -53,6 +55,16 @@ full = [
 # use_std = []
 no_std = []
 use_alloc = []
+enabled = []
+
+for_each = [ "for_each/enabled" ]
+impls_index = [ "impls_index/enabled" ]
+# mod_interface = [ "mod_interface/enabled" ]
+# xxx : qqq : make mod_interface optional maybe
+
+# for_each = { workspace = true, optional = true }
+# impls_index = { workspace = true, optional = true }
+# mod_interface = { workspace = true }
 
 collection_make = [ "literally" ]
 # options = [ "woptions" ]
@@ -83,9 +95,9 @@ literally = { version = "~0.1", optional = true, default-features = false }
 paste = { version = "~1.0", optional = true, default-features = false }
 
 ## internal
-for_each = { workspace = true, optional = true }
-impls_index = { workspace = true, optional = true }
-mod_interface = { workspace = true }
+for_each = { workspace = true }
+impls_index = { workspace = true }
+mod_interface = { workspace = true, features = [ "enabled" ] }
 
 # former = { workspace = true, optional = true, default-features = false }
 # woptions = { workspace = true, optional = true, default-features = false }

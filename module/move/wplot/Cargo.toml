@@ -26,11 +26,12 @@ include = [
 ]
 
 [features]
-default = [ ]
-full = []
+default = [ "enabled" ]
+full = [ "enabled" ]
 # use_std = []
 no_std = []
 use_alloc = []
+enabled = []
 
 [lib]
 name = "wplot"

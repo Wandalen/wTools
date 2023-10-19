@@ -32,11 +32,12 @@ exclude = [ "/tests", "/examples", "-*" ]
 # = features
 
 [features]
-default = [ ]
-full = []
+default = [ "enabled" ]
+full = [ "enabled" ]
 # use_std = []
 no_std = []
 use_alloc = []
+enabled = []
 nightly = [ "typing_tools/nightly" ]
 # nightly = [ "wtest_basic/nightly" ]
 

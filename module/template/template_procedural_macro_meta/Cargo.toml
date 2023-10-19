@@ -30,8 +30,8 @@ include = [
 ]
 
 [features]
-default = []
-full = []
+default = [ "enabled" ]
+full = [ "enabled" ]
 
 [lib]
 proc-macro = true

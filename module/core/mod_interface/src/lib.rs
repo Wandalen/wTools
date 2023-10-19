@@ -18,27 +18,30 @@
 /// Namespace with dependencies.
 pub mod dependency
 {
-  pub use mod_interface_runtime;
+  // pub use mod_interface_runtime;
   pub use mod_interface_meta;
 }
 
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
 
-  #[ doc( inline ) ]
-  pub use mod_interface_runtime as runtime;
+  // #[ doc( inline ) ]
+  // pub use mod_interface_runtime as runtime;
   #[ doc( inline ) ]
   pub use mod_interface_meta as meta;
 
 }
 
 #[ doc( inline ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -46,6 +49,7 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
@@ -53,6 +57,8 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
   #[ doc( inline ) ]

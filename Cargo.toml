@@ -356,14 +356,14 @@ path = "module/core/mod_interface_meta"
 version = "*"
 package = "mod_interface_meta"
 
-[workspace.dependencies.mod_interface_runtime]
-version = "0.1.2"
-path = "module/core/mod_interface_runtime"
-# package = "mod_interface_runtime"
-
-[workspace.dependencies.mod_interface_runtime_published]
-version = "*"
-# package = "mod_interface_runtime"
+# [workspace.dependencies.mod_interface_runtime]
+# version = "0.1.2"
+# path = "module/core/mod_interface_runtime"
+# # package = "mod_interface_runtime"
+#
+# [workspace.dependencies.mod_interface_runtime_published]
+# version = "*"
+# # package = "mod_interface_runtime"
 
 [workspace.dependencies.multilayer_default]
 version = "0.1.3"
