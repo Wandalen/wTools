@@ -15,6 +15,7 @@
 // doc_file_test!( "rust/test/test/asset/Test.md" );
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   #[ doc( inline ) ]

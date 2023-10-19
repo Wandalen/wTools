@@ -18,6 +18,7 @@ pub mod diagnostics;
 pub mod layout;
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   #[ cfg( feature = "runtime_assertions" ) ]

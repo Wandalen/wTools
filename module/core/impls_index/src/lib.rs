@@ -17,6 +17,7 @@
 pub mod impls_index;
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   // pub use ::literally;

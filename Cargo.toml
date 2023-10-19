@@ -664,17 +664,17 @@ path = "module/move/wtest"
 version = "*"
 # package = "wtest"
 
-[workspace.dependencies.test_tools_default]
-version = "0.2.0"
-path = "module/core/test_tools"
-# package = "test_tools"
-default-features = true
+# [workspace.dependencies.test_tools_default]
+# version = "0.2.0"
+# path = "module/core/test_tools"
+# # package = "test_tools"
+# default-features = true
 
 [workspace.dependencies.test_tools]
 version = "0.1.5"
 path = "module/core/test_tools"
 # package = "test_tools"
-default-features = false
+# default-features = false
 
 [workspace.dependencies.test_tools_published]
 version = "*"

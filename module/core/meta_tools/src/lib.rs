@@ -13,27 +13,32 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
 
+  // #[ cfg( feature = "mod_interface" ) ]
+  pub use ::mod_interface;
   #[ cfg( feature = "for_each" ) ]
   pub use ::for_each;
   #[ cfg( feature = "impls_index" ) ]
   pub use ::impls_index;
+
   #[ cfg( feature = "collection_make" ) ]
   pub use ::literally;
   #[ cfg( feature = "idents_concat" ) ]
   pub use ::paste;
 
-  #[ cfg( feature = "former" ) ]
-  pub use ::former;
-  #[ cfg( feature = "options" ) ]
-  pub use ::woptions;
+  // #[ cfg( feature = "former" ) ]
+  // pub use ::former;
+  // #[ cfg( feature = "options" ) ]
+  // pub use ::woptions;
 
 }
 
 //
 
+#[ cfg( feature = "enabled" ) ]
 mod_interface::mod_interface!
 {
 

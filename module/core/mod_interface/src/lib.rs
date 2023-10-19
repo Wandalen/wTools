@@ -16,6 +16,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Namespace with dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   // pub use mod_interface_runtime;

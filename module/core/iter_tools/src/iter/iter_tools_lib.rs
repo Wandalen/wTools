@@ -16,6 +16,7 @@
 pub mod iter;
 
 /// Namespace with dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   pub use ::itertools;

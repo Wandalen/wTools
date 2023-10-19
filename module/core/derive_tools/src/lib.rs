@@ -16,6 +16,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   #[ cfg( feature = "derive_more" ) ]
@@ -26,7 +27,10 @@ pub mod dependency
   pub use ::parse_display;
   #[ cfg( feature = "clone_dyn" ) ]
   pub use ::clone_dyn;
+  #[ cfg( feature = "clone_dyn" ) ]
+  pub use ::clone_dyn::dependency::*;
   pub use ::derive_tools_meta;
+
 }
 
 /// Protected namespace of the module.

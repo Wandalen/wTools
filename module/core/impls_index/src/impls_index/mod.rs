@@ -13,6 +13,7 @@ pub mod impls;
 /* zzz : use for implementing of macro mod_interface */
 
 /// Namespace with dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   // #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
