@@ -12,13 +12,13 @@ pub mod impls;
 /* zzz : use name protected */
 /* zzz : use for implementing of macro mod_interface */
 
-/// Namespace with dependencies.
-#[ cfg( feature = "enabled" ) ]
-pub mod dependency
-{
-  // #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
-  pub use ::impls_index_meta;
-}
+// /// Namespace with dependencies.
+// #[ cfg( feature = "enabled" ) ]
+// pub mod dependency
+// {
+//   // #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
+//   pub use ::impls_index_meta;
+// }
 
 #[ doc( inline ) ]
 pub use protected::*;

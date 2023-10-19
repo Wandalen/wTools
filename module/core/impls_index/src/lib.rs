@@ -14,17 +14,18 @@
 
 /// Collection of general purpose meta tools.
 // #[ path = "./mod.rs" ]
+#[ cfg( feature = "enabled" ) ]
 pub mod impls_index;
 
 /// Dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  // pub use ::literally;
-  // pub use ::for_each;
+  pub use ::impls_index_meta;
 }
 
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -33,10 +34,12 @@ pub mod protected
   pub use super::impls_index::orphan::*;
 }
 
+#[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -44,6 +47,7 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
@@ -53,6 +57,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
   #[ doc( inline ) ]
