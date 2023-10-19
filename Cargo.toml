@@ -271,7 +271,7 @@ version = "*"
 # default-features = true
 
 [workspace.dependencies.for_each]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/for_each"
 # package = "for_each"
 default-features = false
