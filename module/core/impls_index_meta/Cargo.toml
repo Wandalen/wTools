@@ -30,8 +30,6 @@ enabled = []
 
 [lib]
 proc-macro = true
-name = "impls_index_meta"
-path = "src/meta/impls_index/meta/impls_index_meta_lib.rs"
 
 [dependencies]
 macro_tools = { workspace = true }
