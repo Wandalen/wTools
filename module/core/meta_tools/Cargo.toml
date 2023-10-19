@@ -1,6 +1,6 @@
 [package]
 name = "meta_tools"
-version = "0.2.18"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -95,8 +95,8 @@ literally = { version = "~0.1", optional = true, default-features = false }
 paste = { version = "~1.0", optional = true, default-features = false }
 
 ## internal
-for_each = { workspace = true }
 impls_index = { workspace = true }
+for_each = { workspace = true, features = [ "enabled" ] }
 mod_interface = { workspace = true, features = [ "enabled" ] }
 
 # former = { workspace = true, optional = true, default-features = false }

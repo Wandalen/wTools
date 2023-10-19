@@ -238,14 +238,14 @@ version = "*"
 
 ## meta
 
-[workspace.dependencies.meta_tools_default]
-version = "0.2.18"
-path = "module/core/meta_tools"
-# package = "meta_tools"
-default-features = true
+# [workspace.dependencies.meta_tools_default]
+# version = "0.2.18"
+# path = "module/core/meta_tools"
+# # package = "meta_tools"
+# default-features = true
 
 [workspace.dependencies.meta_tools]
-version = "0.2.18"
+version = "0.3.0"
 path = "module/core/meta_tools"
 # package = "meta_tools"
 default-features = false
@@ -264,14 +264,14 @@ version = "*"
 # version = "0.2.0"
 # # package = "meta_tools"
 
-[workspace.dependencies.for_each_default]
-version = "0.2.0"
-path = "module/core/for_each"
-# package = "for_each"
-default-features = true
+# [workspace.dependencies.for_each_default]
+# version = "0.2.0"
+# path = "module/core/for_each"
+# # package = "for_each"
+# default-features = true
 
 [workspace.dependencies.for_each]
-version = "*"
+version = "0.2.0"
 path = "module/core/for_each"
 # package = "for_each"
 default-features = false
