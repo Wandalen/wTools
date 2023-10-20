@@ -4,6 +4,7 @@ fn basic_test()
 {
 
   let got = IsTransparent::default();
+  let g_age = Age::default();
   let exp = IsTransparent( true );
   a_id!( got, exp );
 
