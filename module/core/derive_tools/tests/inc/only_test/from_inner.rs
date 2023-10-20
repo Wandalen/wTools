@@ -14,6 +14,9 @@ fn from_inner_test()
   let exp = IsTransparent( false );
   a_id!( got, exp );
 
+  let got = Age::from( 18 );
+  let exp = Age{ age: 18 };
+  a_id!( got, exp );
   // let got : bool = IsTransparent::from( true ).into();
   // let exp = true;
   // a_id!( got, exp );

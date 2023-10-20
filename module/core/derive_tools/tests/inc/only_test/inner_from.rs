@@ -2,7 +2,6 @@
 #[ test ]
 fn from_outer_test()
 {
-  let age: u32 = Age{age: 18}.into();
   let got : bool = IsTransparent( true ).into();
   let exp = true;
   a_id!( got, exp );
@@ -10,4 +9,7 @@ fn from_outer_test()
   let exp = false;
   a_id!( got, exp );
 
+  let got: u32 = Age{ age: 18 }.into();
+  let exp: u32 = 18;
+  a_id!( got, exp );
 }

@@ -65,4 +65,34 @@ impl AsMut< bool > for IsTransparent
   }
 }
 
+#[ derive( Debug, Clone, Copy, PartialEq ) ]
+pub struct Age { age: u32 }
+
+impl Default for Age
+{
+  #[ inline( always ) ]
+  fn default() -> Self
+  {
+    Self{ age: 0 }
+  }
+}
+
+impl From< u32 > for Age
+{
+  #[ inline( always ) ]
+  fn from( src : u32 ) -> Self
+  {
+    Self{ age: src }
+  }
+}
+
+impl From< Age > for u32
+{
+  #[ inline( always ) ]
+  fn from( src : Age ) -> Self
+  {
+    src.age
+  }
+}
+
 include!( "./only_test/all.rs" );

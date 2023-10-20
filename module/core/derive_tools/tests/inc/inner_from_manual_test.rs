@@ -15,4 +15,16 @@ impl From< IsTransparent > for bool
   }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Age{ age: u32 }
+
+impl From< Age >  for u32
+{
+  #[ inline( always ) ]
+  fn from(value: Age) -> Self 
+  {
+    value.age    
+  }    
+}
+
 include!( "./only_test/inner_from.rs" );

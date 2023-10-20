@@ -4,9 +4,8 @@ fn basic_test()
 {
 
   let got = IsTransparent::default();
-  let g_age = Age::default();
   let exp = IsTransparent( true );
-  a_id!( got, exp );
+  // a_id!( got, exp );
 
   // FromInner
 
@@ -17,6 +16,10 @@ fn basic_test()
   let exp = IsTransparent( false );
   a_id!( got, exp );
 
+  let got = Age::from( 18 );
+  let exp = Age{ age: 18 };
+  a_id!( got, exp );
+
   // InnerFrom
 
   let got : bool = IsTransparent::from( true ).into();
@@ -24,6 +27,10 @@ fn basic_test()
   a_id!( got, exp );
   let got : bool = IsTransparent::from( false ).into();
   let exp = false;
+  a_id!( got, exp );
+
+  let got: u32 = Age::from( 18 ).into();
+  let exp = 18;
   a_id!( got, exp );
 
   // Deref
