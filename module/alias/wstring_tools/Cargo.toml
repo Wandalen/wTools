@@ -31,39 +31,39 @@ include = [
 [features]
 default = [
   "indentation",
-  "isolate",
-  "parse_request",
-  "split",
+  # "isolate",
+  # "parse_request",
+  # "split",
   "parse_number",
 ]
 full = [
   "indentation",
-  "isolate",
-  "parse_request",
-  "split",
+  # "isolate",
+  # "parse_request",
+  # "split",
   "parse_number",
 ]
 # use_std = [ "strs_tools/use_std" ]
 no_std = [ "strs_tools/no_std" ]
 use_alloc = [ "strs_tools/use_alloc" ]
 
-indentation = [ "strs_tools/indentation" ]
-isolate = [ "strs_tools/isolate" ]
-parse_request  = [ "split", "isolate", "strs_tools/parse_request" ]
-parse_number = [ "strs_tools/parse_number" ]
-split = [ "strs_tools/split" ]
+indentation = [ "strs_tools/string_indentation" ]
+isolate = [ "strs_tools/string_isolate" ]
+parse_request  = [ "split", "isolate", "strs_tools/string_parse_request" ]
+parse_number = [ "strs_tools/string_parse_number" ]
+split = [ "strs_tools/string_split" ]
 
-[lib]
-name = "wstring_tools"
-path = "src/string/wstring_tools_lib.rs"
+# [lib]
+# name = "wstring_tools"
+# path = "src/string/wstring_tools_lib.rs"
 
-[[test]]
-name = "string_test"
-path = "tests/string/wstring_tools_tests.rs"
+# [[test]]
+# name = "string_test"
+# path = "tests/string/wstring_tools_tests.rs"
 
-[[test]]
-name = "string_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+# [[test]]
+# name = "string_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "wstring_tools_trivial_sample"

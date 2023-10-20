@@ -1,7 +1,6 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use former::Former;
   use crate::string::split::*;
   use crate::string::isolate::isolate_right;
   use std::collections::HashMap;
@@ -154,7 +153,6 @@ pub( crate ) mod private
   ///
 
   #[ derive( Debug ) ]
-  #[ derive( Former ) ]
   #[ perform( fn parse( mut self ) -> Request< 'a > ) ]
   pub struct ParseOptions< 'a >
   {

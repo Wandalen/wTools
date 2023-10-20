@@ -1,7 +1,6 @@
 
 pub( crate ) mod private
 {
-  use former::Former;
 
   ///
   /// Options for isolate.
@@ -9,7 +8,6 @@ pub( crate ) mod private
 
   #[ allow( dead_code ) ]
   #[ derive( Debug ) ]
-  #[ derive( Former ) ]
   #[ perform( fn isolate( &self ) -> ( &'a str, Option<&'a str>, &'a str ) ) ]
   pub struct IsolateOptions<'a>
   {

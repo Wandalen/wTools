@@ -22,59 +22,59 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/string",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
+# include = [
+#   "/rust/impl/string",
+#   "/Cargo.toml",
+#   "/Readme.md",
+#   "/License",
+# ]
 
 [features]
 default = [
-  "indentation",
-  "isolate",
-  "parse_request",
-  "parse_number",
-  "split",
+  "string_indentation",
+  # "string_isolate",
+  # "string_parse_request",
+  "string_parse_number",
+  # "string_split",
 ]
 full = [
   "use_alloc",
-  "indentation",
-  "isolate",
-  "parse_request",
-  "parse_number",
-  "split",
+  "string_indentation",
+  # "string_isolate",
+  # "string_parse_request",
+  "string_parse_number",
+  # "string_split",
 ]
-# use_std = []
+
 no_std = []
 use_alloc = []
 enabled = []
 
-indentation = []
-isolate = []
-parse_request  = [ "split", "isolate" ]
-parse_number = [ "lexical" ]
-split = []
+string_indentation = []
+string_isolate = []
+string_parse_request  = [ "string_split", "string_isolate" ]
+string_parse_number = [ "lexical" ]
+string_split = []
 
-[lib]
-name = "strs_tools"
-path = "src/string/strs_tools_lib.rs"
+# [lib]
+# name = "strs_tools"
+# path = "src/string/strs_tools_lib.rs"
 
-[[test]]
-name = "string_test"
-path = "tests/string/strs_tools_tests.rs"
+# [[test]]
+# name = "string_test"
+# path = "tests/string/strs_tools_tests.rs"
 
-[[test]]
-name = "string_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+# [[test]]
+# name = "string_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
 
-[[example]]
-name = "strs_tools_trivial_sample"
-path = "examples/strs_tools_trivial_sample/src/main.rs"
+# [[example]]
+# name = "strs_tools_trivial_sample"
+# path = "examples/strs_tools_trivial_sample/src/main.rs"
 # zzz : check
 
 [dependencies]
-former = { workspace = true }
+# former = { workspace = true }
 lexical = { version = "~6.1", optional = true }
 # woptions = { workspace = true }
 # wtools = { workspace = true }

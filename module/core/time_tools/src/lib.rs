@@ -46,7 +46,12 @@
 // pub use time::*;
 
 /// Collection of time tools.
-pub mod time;
+// pub mod time;
+
+#[ cfg( feature = "time_now" ) ]
+#[ path = "./now.rs" ]
+#[ cfg( feature = "enabled" ) ]
+pub mod now;
 
 /// Dependencies.
 #[ cfg( feature = "enabled" ) ]
@@ -55,6 +60,7 @@ pub mod dependency
 }
 
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -62,9 +68,11 @@ pub mod protected
 }
 
 #[ doc( inline ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
 /// Shared with parent namespace of the module
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -72,17 +80,18 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::prelude::*;
+  #[ cfg( feature = "time_now" ) ]
   #[ doc( inline ) ]
-  pub use super::time::exposed::*;
+  pub use super::now::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
-  #[ doc( inline ) ]
-  pub use super::time::prelude::*;
 }
