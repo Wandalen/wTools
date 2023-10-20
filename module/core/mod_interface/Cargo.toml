@@ -1,6 +1,6 @@
 [package]
 name = "mod_interface"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -22,32 +22,15 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/meta/mod_interface_lib.rs",
-  "/rust/impl/meta/mod_interface/front",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
-default = [ ]
-full = []
-# use_std = []
+default = [ "enabled" ]
+full = [ "enabled" ]
 no_std = []
 use_alloc = []
+enabled = []
 
-[lib]
-name = "mod_interface"
-path = "src/meta/mod_interface/front/mod_interface_lib.rs"
-
-[[test]]
-name = "mod_interface_tests"
-path = "tests/meta/mod_interface_tests.rs"
-
-[[test]]
-name = "mod_interface_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+# keep these examples in directories
 
 [[example]]
 name = "mod_interface_trivial_sample"
@@ -59,9 +42,8 @@ path = "examples/mod_interface_with_debug_sample/src/main.rs"
 
 [dependencies]
 mod_interface_meta = { workspace = true }
-mod_interface_runtime = { workspace = true }
+# mod_interface_runtime = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
 smoke_test = { workspace = true }
-

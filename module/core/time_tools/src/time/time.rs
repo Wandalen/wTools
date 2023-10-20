@@ -5,6 +5,7 @@
 pub mod now;
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
 }

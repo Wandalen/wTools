@@ -16,6 +16,7 @@
 pub mod typing;
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   pub use ::inspect_type;

@@ -44,6 +44,7 @@ full = [
 # use_std = []
 no_std = []
 use_alloc = []
+enabled = []
 
 error_handling_for_lib = [ "thiserror" ]
 error_handling_for_app = [ "anyhow" ]

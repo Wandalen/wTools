@@ -44,6 +44,7 @@ full = [
 # use_std = []
 no_std = []
 use_alloc = []
+enabled = []
 
 many = []
 make = []

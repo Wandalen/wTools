@@ -7,7 +7,7 @@ publish = false
 [features]
 # use_std = []
 no_std = []
-default = [ ]
+default = [ "enabled" ]
 
 [dependencies]
 error_tools = { workspace = true }

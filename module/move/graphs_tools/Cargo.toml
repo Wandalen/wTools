@@ -30,16 +30,14 @@ include = [
 
 [features]
 default = [
-  # "cell_factory",
+  "enabled"
 ]
 full = [
-  "use_alloc",
-  # "cell_factory",
+  "enabled",
 ]
-# use_std = []
 no_std = []
 use_alloc = []
-# cell_factory = []
+enabled = []
 
 [lib]
 name = "graphs_tools"
@@ -59,12 +57,9 @@ path = "examples/graphs_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 indexmap = "~1.8"
-# mod_interface = { workspace = true }
 meta_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
 smoke_test = { workspace = true }
-# wtools = { workspace = true }
-# mod_interface = { workspace = true }
 inspect_type = { workspace = true }

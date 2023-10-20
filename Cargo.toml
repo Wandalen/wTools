@@ -238,14 +238,14 @@ version = "*"
 
 ## meta
 
-[workspace.dependencies.meta_tools_default]
-version = "0.2.18"
-path = "module/core/meta_tools"
-# package = "meta_tools"
-default-features = true
+# [workspace.dependencies.meta_tools_default]
+# version = "0.2.18"
+# path = "module/core/meta_tools"
+# # package = "meta_tools"
+# default-features = true
 
 [workspace.dependencies.meta_tools]
-version = "0.2.18"
+version = "0.3.0"
 path = "module/core/meta_tools"
 # package = "meta_tools"
 default-features = false
@@ -264,14 +264,14 @@ version = "*"
 # version = "0.2.0"
 # # package = "meta_tools"
 
-[workspace.dependencies.for_each_default]
-version = "0.2.0"
-path = "module/core/for_each"
-# package = "for_each"
-default-features = true
+# [workspace.dependencies.for_each_default]
+# version = "0.2.0"
+# path = "module/core/for_each"
+# # package = "for_each"
+# default-features = true
 
 [workspace.dependencies.for_each]
-version = "*"
+version = "0.3.0"
 path = "module/core/for_each"
 # package = "for_each"
 default-features = false
@@ -340,7 +340,7 @@ version = "*"
 # package = "impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/mod_interface"
 default-features = false
 
@@ -349,21 +349,22 @@ version = "*"
 package = "mod_interface"
 
 [workspace.dependencies.mod_interface_meta]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/mod_interface_meta"
+# default-features = false
 
 [workspace.dependencies.mod_interface_meta_published]
 version = "*"
 package = "mod_interface_meta"
 
-[workspace.dependencies.mod_interface_runtime]
-version = "0.1.2"
-path = "module/core/mod_interface_runtime"
-# package = "mod_interface_runtime"
-
-[workspace.dependencies.mod_interface_runtime_published]
-version = "*"
-# package = "mod_interface_runtime"
+# [workspace.dependencies.mod_interface_runtime]
+# version = "0.1.2"
+# path = "module/core/mod_interface_runtime"
+# # package = "mod_interface_runtime"
+#
+# [workspace.dependencies.mod_interface_runtime_published]
+# version = "*"
+# # package = "mod_interface_runtime"
 
 [workspace.dependencies.multilayer_default]
 version = "0.1.3"
@@ -663,17 +664,17 @@ path = "module/move/wtest"
 version = "*"
 # package = "wtest"
 
-[workspace.dependencies.test_tools_default]
-version = "0.2.0"
-path = "module/core/test_tools"
-# package = "test_tools"
-default-features = true
+# [workspace.dependencies.test_tools_default]
+# version = "0.2.0"
+# path = "module/core/test_tools"
+# # package = "test_tools"
+# default-features = true
 
 [workspace.dependencies.test_tools]
 version = "0.1.5"
 path = "module/core/test_tools"
 # package = "test_tools"
-default-features = false
+# default-features = false
 
 [workspace.dependencies.test_tools_published]
 version = "*"

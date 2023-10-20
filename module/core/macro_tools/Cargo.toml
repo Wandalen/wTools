@@ -26,9 +26,9 @@ exclude = [ "/tests", "/examples", "-*" ]
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = []
 no_std = []
 use_alloc = []
+enabled = []
 # qqq2 : introduce feature enabled
 
 [dependencies]

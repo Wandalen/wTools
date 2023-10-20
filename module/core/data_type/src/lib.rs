@@ -19,6 +19,7 @@
 pub mod dt;
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   #[ cfg( feature = "either" ) ]

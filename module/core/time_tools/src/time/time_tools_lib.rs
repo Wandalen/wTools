@@ -49,6 +49,7 @@
 pub mod time;
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
 }

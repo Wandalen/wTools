@@ -1,8 +1,8 @@
 
 #[ allow( unused_imports ) ]
-use quote::{ quote };
+use quote::quote;
 #[ allow( unused_imports ) ]
-use syn::{ parse_quote };
+use syn::parse_quote;
 #[ allow( unused_imports ) ]
 use macro_tools::prelude::*;
 #[ allow( unused_imports ) ]

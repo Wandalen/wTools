@@ -19,6 +19,7 @@
 extern crate alloc;
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   pub use ::clone_dyn_meta;

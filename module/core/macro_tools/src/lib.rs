@@ -24,6 +24,7 @@ pub mod generic_analyze;
 /// Dependencies of the module.
 ///
 
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   pub use ::syn;

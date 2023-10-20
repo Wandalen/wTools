@@ -152,22 +152,6 @@ derive_clone_dyn = [ "clone_dyn" ]
 derive_clone_dyn_no_std = [ "derive_clone_dyn", "clone_dyn/no_std" ]
 derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
 
-# [lib]
-# name = "derive_tools"
-# path = "src/derive/derive_tools_lib.rs"
-#
-# [[test]]
-# name = "derive_tools_test"
-# path = "tests/derive/derive_tests.rs"
-#
-# [[test]]
-# name = "derive_tools_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-#
-# [[example]]
-# name = "derive_tools_trivial_sample"
-# path = "examples/derive_tools_trivial_sample/src/main.rs"
-
 [dependencies]
 
 ## external

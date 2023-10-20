@@ -43,6 +43,7 @@ full = [
 # use_std = [ "error_tools/use_std" ]
 no_std = [ "error_tools/no_std" ]
 use_alloc = []
+enabled = []
 
 error_handling_for_lib = [
   # "use_std",

@@ -22,26 +22,16 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/meta/impls_index_meta",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
-default = []
-full = []
+default = [ "enabled" ]
+full = [ "enabled" ]
+enabled = []
 
 [lib]
 proc-macro = true
-name = "impls_index_meta"
-path = "src/meta/impls_index/meta/impls_index_meta_lib.rs"
 
 [dependencies]
-# proc-macro2 = "~1.0"
-# quote = "~1.0"
-# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
 macro_tools = { workspace = true }
 
 [dev-dependencies]
