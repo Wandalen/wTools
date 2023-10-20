@@ -75,15 +75,11 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   pub use super::prelude::*;
-  // #[ doc( inline ) ]
-  // pub use super::time::time::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  // #[ doc( inline ) ]
-  // pub use super::time::time::prelude::*;
 }
 
 use std::time;
