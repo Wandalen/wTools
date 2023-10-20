@@ -13,12 +13,15 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// String tools.
+#[ cfg( feature = "enabled" ) ]
 pub mod string;
 
 #[ doc( inline ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use string::*;
 
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   pub use super::orphan::*;
@@ -26,20 +29,24 @@ pub mod protected
 }
 
 #[ doc( inline ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
 /// Parented namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
 }
 
 /// Namespace of the module to include with `use module::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
   pub use super::string::prelude::*;

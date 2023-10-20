@@ -32,20 +32,20 @@ exclude = [ "/tests", "/examples", "-*" ]
 [features]
 default = [
   "string_indentation",
-  "string_isolate",
-  "string_parse_request",
+  # "string_isolate",
+  # "string_parse_request",
   "string_parse_number",
-  "string_split",
+  # "string_split",
 ]
 full = [
   "use_alloc",
   "string_indentation",
-  "string_isolate",
-  "string_parse_request",
+  # "string_isolate",
+  # "string_parse_request",
   "string_parse_number",
-  "string_split",
+  # "string_split",
 ]
-# use_std = []
+
 no_std = []
 use_alloc = []
 enabled = []

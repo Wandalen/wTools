@@ -10,7 +10,7 @@ Tools to manipulate strings.
 <!-- {{# generate.module_sample{} #}} -->
 
 ```rust
-#[ cfg( all( feature = "split", feature = "use_std" ) ) ]
+#[ cfg( all( feature = "split", not( feature = "no_std" ) ) ) ]
 {
   /* delimeter exists */
   let src = "abc def";
