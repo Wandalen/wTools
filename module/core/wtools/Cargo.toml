@@ -156,7 +156,7 @@ time_full = [
 time_no_std = [ "time", "time_tools/no_std" ]
 time_use_alloc = [ "time", "time_tools/use_alloc" ]
 
-time_now = [ "time", "time_tools/now" ]
+time_now = [ "time", "time_tools/time_now" ]
 
 # string
 
