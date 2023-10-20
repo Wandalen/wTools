@@ -31,17 +31,17 @@ exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 default = [
-  "now",
+  "time_now",
 ]
 full = [
   "use_alloc",
-  "now",
+  "time_now",
 ]
 # use_std = []
 no_std = []
 use_alloc = []
 
-now = []
+time_now = []
 
 # [lib]
 # name = "time_tools"
