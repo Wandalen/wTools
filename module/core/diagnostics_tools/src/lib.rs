@@ -11,10 +11,11 @@
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
-
+#[ cfg( feature = "enabled" ) ]
 /// Compile-time asserting.
 pub mod diagnostics;
 /// Compile-time asserting of memory layout.
+#[ cfg( feature = "enabled" ) ]
 pub mod layout;
 
 /// Dependencies.
@@ -26,6 +27,7 @@ pub mod dependency
 }
 
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -37,9 +39,11 @@ pub mod protected
 }
 
 #[ doc( inline ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -47,6 +51,7 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
@@ -58,6 +63,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
   #[ doc( inline ) ]
