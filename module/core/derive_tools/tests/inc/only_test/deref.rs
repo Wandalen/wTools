@@ -1,4 +1,5 @@
 
+#[ cfg( feature = "derive_deref" ) ]
 #[ test ]
 fn deref_test()
 {

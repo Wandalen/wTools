@@ -1,4 +1,5 @@
 
+#[ cfg( feature = "derive_deref_mut" ) ]
 #[ test ]
 fn deref_mut_test()
 {

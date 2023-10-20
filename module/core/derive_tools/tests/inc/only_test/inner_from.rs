@@ -1,4 +1,5 @@
 
+#[ cfg( feature = "derive_from" ) ]
 #[ test ]
 fn from_outer_test()
 {
