@@ -1,4 +1,5 @@
-use wtools::diagnostics::*;
+use super::*;
+use TheModule::*;
 
 fn main()
 {

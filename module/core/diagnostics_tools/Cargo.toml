@@ -22,20 +22,22 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/diagnostics",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
+# include = [
+#   "/rust/impl/diagnostics",
+#   "/Cargo.toml",
+#   "/Readme.md",
+#   "/License",
+# ]
 
 [features]
 default = [
+  "enabled",
   "runtime_assertions",
   "compiletime_assertions",
   # "use_std"
 ]
 full = [
+  "enabled",
   "runtime_assertions",
   "compiletime_assertions",
   # "use_std",
@@ -48,23 +50,6 @@ enabled = []
 
 runtime_assertions = [ "pretty_assertions" ] # run-time assertions
 compiletime_assertions = [] # compile-time assertions
-
-[lib]
-name = "diagnostics_tools"
-path = "src/diagnostics/diagnostics_tools_lib.rs"
-
-[[test]]
-name = "diagnostics_tools_test"
-path = "tests/diagnostics/tests.rs"
-
-[[test]]
-name = "diagnostics_tools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "diagnostics_tools_trivial_sample"
-path = "examples/diagnostics_tools_trivial_sample/src/main.rs"
-# zzz : xxx : implement # aaa : Dmytro : added
 
 [dependencies]
 pretty_assertions = { version = "~1.2", optional = true }
