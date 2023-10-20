@@ -1,5 +1,4 @@
 
-#[ cfg( feature = "derive_as_mut" ) ]
 #[ test ]
 fn as_mut_test()
 {

@@ -1,5 +1,4 @@
 
-#[ cfg( feature = "derive_from" ) ]
 #[ test ]
 fn from_inner_test()
 {

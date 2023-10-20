@@ -1,5 +1,4 @@
 
-#[ cfg( feature = "derive_as_ref" ) ]
 #[ test ]
 fn as_ref_test()
 {
