@@ -10,7 +10,7 @@ pub mod protected
   pub use super::private::
   {
   };
-  #[ cfg( all( feature = "parse_number" ) ) ]
+  #[ cfg( all( feature = "string_parse_number" ) ) ]
   #[ doc( inline ) ]
   pub use lexical::*;
 }

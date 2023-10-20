@@ -47,11 +47,11 @@ full = [
 no_std = [ "strs_tools/no_std" ]
 use_alloc = [ "strs_tools/use_alloc" ]
 
-indentation = [ "strs_tools/indentation" ]
-isolate = [ "strs_tools/isolate" ]
-parse_request  = [ "split", "isolate", "strs_tools/parse_request" ]
-parse_number = [ "strs_tools/parse_number" ]
-split = [ "strs_tools/split" ]
+indentation = [ "strs_tools/string_indentation" ]
+isolate = [ "strs_tools/string_isolate" ]
+parse_request  = [ "split", "isolate", "strs_tools/string_parse_request" ]
+parse_number = [ "strs_tools/string_parse_number" ]
+split = [ "strs_tools/string_split" ]
 
 [lib]
 name = "wstring_tools"

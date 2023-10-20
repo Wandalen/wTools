@@ -183,11 +183,11 @@ string_full = [
 string_no_std = [ "string", "strs_tools/no_std" ]
 string_use_alloc = [ "string", "strs_tools/use_alloc" ]
 
-string_indentation = [ "string", "strs_tools/indentation" ]
-string_isolate = [ "string", "strs_tools/isolate" ]
-string_parse_request = [ "string", "string_isolate", "strs_tools/parse_request" ]
-string_parse_number = [ "string", "strs_tools/parse_number" ]
-string_split = [ "string", "strs_tools/split", "strs_tools/parse_request" ]
+string_indentation = [ "string", "strs_tools/string_indentation" ]
+string_isolate = [ "string", "strs_tools/string_isolate" ]
+string_parse_request = [ "string", "string_isolate", "strs_tools/string_parse_request" ]
+string_parse_number = [ "string", "strs_tools/string_parse_number" ]
+string_split = [ "string", "strs_tools/string_split", "strs_tools/string_parse_request" ]
 
 # error
 
