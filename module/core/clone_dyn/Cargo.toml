@@ -22,38 +22,14 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-# include = [
-#   "/rust/impl/derive/clone_dyn_lib.rs",
-#   "/Cargo.toml",
-#   "/Readme.md",
-#   "/License",
-# ]
 
 [features]
 
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = []
 no_std = []
 use_alloc = []
-
-# nightly = []
-
-# [lib]
-# name = "clone_dyn"
-# path = "src/derive/clone_dyn_lib.rs"
-#
-# [[test]]
-# name = "clone_dyn_tests"
-# path = "tests/derive/clone_dyn_tests.rs"
-#
-# [[test]]
-# name = "clone_dyn_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-#
-# [[example]]
-# name = "clone_dyn_trivial_sample"
-# path = "examples/clone_dyn_trivial_sample/src/main.rs"
+enabled = []
 
 [dependencies]
 clone_dyn_meta = { workspace = true }

@@ -8,7 +8,7 @@ publish = false
 # use_std = []
 no_std = []
 # cell_factory = []
-default = [ ]
+default = [ "enabled" ]
 
 [dependencies]
 graphs_tools = { workspace = true }

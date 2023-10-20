@@ -17,6 +17,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Internal namespace.
+#[ cfg( feature = "enabled" ) ]
 pub( crate ) mod private
 {
 
@@ -483,16 +484,19 @@ pub( crate ) mod private
 // pub use internal::*;
 
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -500,6 +504,7 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
@@ -507,6 +512,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
   #[ doc( inline ) ]

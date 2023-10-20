@@ -395,6 +395,7 @@ nightly = [] # must be empty
 # # use_std = []
 no_std = []
 use_alloc = []
+enabled = []
 
 # xxx : qqq : should it be filled by all non_std?
 # iter_no_std = [ "iter", "iter_tools/no_std" ]

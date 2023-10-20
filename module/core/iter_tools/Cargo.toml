@@ -22,19 +22,13 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/iter",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
-default = [ ]
-full = []
-# use_std = [ "itertools/use_std" ]
+default = [ "enabled" ]
+full = [ "enabled" ]
 no_std = []
 use_alloc = [ "itertools/use_alloc" ]
+enabled = []
 
 [lib]
 name = "iter_tools"

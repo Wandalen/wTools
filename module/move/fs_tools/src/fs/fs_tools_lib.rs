@@ -16,6 +16,7 @@
 pub mod fs;
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
 }

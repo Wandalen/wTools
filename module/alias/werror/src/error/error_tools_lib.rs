@@ -22,6 +22,7 @@ pub mod error;
 pub mod result;
 
 /// Dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
 

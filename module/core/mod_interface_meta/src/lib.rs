@@ -9,6 +9,8 @@
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
 
+// xxx : write good description and the main use-case
+
 //!
 //! Protocol of modularity unifying interface of a module and introducing layers.
 //!
@@ -29,6 +31,7 @@ use use_tree::exposed::*;
 /// Protocol of modularity unifying interface of a module and introducing layers.
 ///
 
+#[ cfg( feature = "enabled" ) ]
 #[ proc_macro ]
 pub fn mod_interface( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
@@ -106,9 +109,6 @@ mod_interface!
       private              public               public             public              public
 
 micro-module < meso-module < macro-module < inter-module
-
-slim module - ?
-complete module - ?
 
 */
 

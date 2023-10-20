@@ -23,34 +23,19 @@ all-features = false
 
 # xxx : unify structure with other procedural macroses
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/meta/mod_interface_runtime_lib.rs",
-  "/rust/impl/meta/mod_interface/runtime",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
-default = [ ]
-full = []
-# use_std = []
+default = [ "enabled" ]
+full = [ "enabled" ]
 no_std = []
 use_alloc = []
+enabled = []
 
 [lib]
 name = "mod_interface_runtime"
-path = "src/meta/mod_interface/runtime/mod_interface_runtime_lib.rs"
-
-[[test]]
-name = "mod_interface_runtime_test"
-path = "tests/meta/mod_interface_runtime_tests.rs"
 
 [dependencies]
 
 [dev-dependencies]
 test_tools = { workspace = true }
 smoke_test = { workspace = true }
-# meta_tools = { workspace = true }
-# maplit = "~1.0.2"
-# anyhow = "~1.0"

@@ -15,6 +15,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ cfg( feature = "enabled" ) ]
 mod impls;
 
 ///
@@ -22,6 +23,7 @@ mod impls;
 ///
 
 // xxx : make it default impls implementation
+#[ cfg( feature = "enabled" ) ]
 #[ proc_macro ]
 pub fn impls3( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {

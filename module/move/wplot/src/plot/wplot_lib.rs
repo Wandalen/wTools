@@ -19,6 +19,7 @@
 use ::wtools::mod_interface;
 
 /// Namespace with dependencies.
+#[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
   pub use ::image;
