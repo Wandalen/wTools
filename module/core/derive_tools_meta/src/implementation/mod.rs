@@ -6,6 +6,7 @@
 #[ allow( unused_imports ) ]
 use macro_tools::prelude::*;
 pub use macro_tools::{ Result, Many };
+pub use iter_tools as iter;
 
 pub mod input;
 #[ allow( unused_imports ) ]

@@ -430,9 +430,8 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
   {
     let alias_tokens = field_setter( ident, non_optional_ty, &alias_attr.alias );
 
-    let token =
-      qt!
-      {
+    let token = qt!
+    {
       #setter_tokens
 
       #alias_tokens

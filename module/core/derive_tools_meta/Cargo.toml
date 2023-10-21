@@ -59,6 +59,8 @@ derive_make = []
 
 [dependencies]
 macro_tools = { workspace = true, features = [ "full" ] }
+iter_tools = { workspace = true, features = [ "full" ] }
+# xxx : optimize features set
 
 [dev-dependencies]
 test_tools = { workspace = true }

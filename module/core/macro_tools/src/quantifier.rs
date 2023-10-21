@@ -19,38 +19,31 @@ pub( crate ) mod private
   //   type Delimiter : syn::token::Token + Default + Copy + Into< Self::Peek >;
   // }
 
-//   ///
-//   /// Pair of syntax elements.
-//   ///
-//
-//   #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-//   pub struct Pair< T1, T2 >
-//   ( pub T1, pub T2 )
-//   where
-//     T1 : syn::parse::Parse + quote::ToTokens,
-//     T2 : syn::parse::Parse + quote::ToTokens,
-//   ;
+  /// Element of parsing.
+  pub trait Element
+  where
+    // Self : syn::parse::Parse + quote::ToTokens,
+    Self : quote::ToTokens,
+  {
+  }
 
-  // types!
-  // {
-    ///
-    /// Parse a pair.
-    ///
+  impl< T > Element for T
+  where
+    // Self : syn::parse::Parse + quote::ToTokens,
+    Self : quote::ToTokens,
+  {
+  }
 
-    // #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    // pub pair Pair : < T1 : syn::parse::Parse + quote::ToTokens, T2 : syn::parse::Parse + quote::ToTokens >
-    // xxx : apply maybe collection of derives for TDD
-
-    #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    pub struct Pair
-    < T1 : syn::parse::Parse + quote::ToTokens, T2 : syn::parse::Parse + quote::ToTokens >
-    ( pub T1, pub T2 );
-  // }
+  /// Pair of two elements of parsing.
+  #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+  pub struct Pair
+  < T1 : Element, T2 : Element >
+  ( pub T1, pub T2 );
 
   impl< T1, T2 > Pair< T1, T2 >
   where
-    T1 : syn::parse::Parse + quote::ToTokens,
-    T2 : syn::parse::Parse + quote::ToTokens,
+    T1 : Element,
+    T2 : Element,
   {
     /// Constructor.
     pub fn new( src1 : T1, src2 : T2 ) -> Self
@@ -61,8 +54,8 @@ pub( crate ) mod private
 
   impl< T1, T2 > From< ( T1, T2 ) > for Pair< T1, T2 >
   where
-    T1 : syn::parse::Parse + quote::ToTokens,
-    T2 : syn::parse::Parse + quote::ToTokens,
+    T1 : Element,
+    T2 : Element,
   {
     #[ inline( always ) ]
     fn from( src : ( T1, T2 ) ) -> Self
@@ -73,8 +66,8 @@ pub( crate ) mod private
 
   impl< T1, T2 > From< Pair< T1, T2 > > for ( T1, T2 )
   where
-    T1 : syn::parse::Parse + quote::ToTokens,
-    T2 : syn::parse::Parse + quote::ToTokens,
+    T1 : Element,
+    T2 : Element,
   {
     #[ inline( always ) ]
     fn from( src : Pair< T1, T2 > ) -> Self
@@ -85,8 +78,8 @@ pub( crate ) mod private
 
   impl< T1, T2 > syn::parse::Parse for Pair< T1, T2 >
   where
-    T1 : syn::parse::Parse + quote::ToTokens,
-    T2 : syn::parse::Parse + quote::ToTokens,
+    T1 : Element + syn::parse::Parse,
+    T2 : Element + syn::parse::Parse,
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
@@ -96,8 +89,8 @@ pub( crate ) mod private
 
   impl< T1, T2 > quote::ToTokens for Pair< T1, T2 >
   where
-    T1 : syn::parse::Parse + quote::ToTokens,
-    T2 : syn::parse::Parse + quote::ToTokens,
+    T1 : Element + quote::ToTokens,
+    T2 : Element + quote::ToTokens,
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
@@ -125,7 +118,7 @@ pub( crate ) mod private
 
   impl< T > Many< T >
   where
-    T : quote::ToTokens + syn::parse::Parse,
+    T : Element,
   {
     /// Constructor.
     pub fn new() -> Self
@@ -193,7 +186,7 @@ pub( crate ) mod private
 
   // impl< T > From< Many< T > > for Vec< T >
   // where
-  //   T : quote::ToTokens + syn::parse::Parse,
+  //   T : Element,
   // {
   //   fn from( src : Many< T > ) -> Self
   //   {
@@ -204,7 +197,7 @@ pub( crate ) mod private
   impl< T > quote::ToTokens
   for Many< T >
   where
-    T : quote::ToTokens + syn::parse::Parse,
+    T : Element + quote::ToTokens,
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
@@ -216,7 +209,7 @@ pub( crate ) mod private
   impl< T > syn::parse::Parse
   for Many< T >
   where
-    T : quote::ToTokens + syn::parse::Parse + AsMuchAsPossibleNoDelimiter,
+    T : Element + syn::parse::Parse + AsMuchAsPossibleNoDelimiter,
   {
     fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
     {
@@ -235,7 +228,7 @@ pub( crate ) mod private
 //   impl< T > syn::parse::Parse
 //   for Many< T >
 //   where
-//     T : quote::ToTokens + syn::parse::Parse + WhileDelimiter,
+//     T : Element + WhileDelimiter,
 //   {
 //     fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
 //     {

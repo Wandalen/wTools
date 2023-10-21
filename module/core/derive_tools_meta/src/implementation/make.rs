@@ -1,5 +1,38 @@
 
 use super::*;
+// use iter_tools::{ Itertools, process_results };
+use iter::{ process_results, Itertools };
+
+/// Extension of iterator
+
+pub trait IterExt
+{
+  // fn map_result_unzip< F, R, Item, T1, T2, T3 >( &self, f : F ) -> ( T1, T2 ,T3 )
+  // where
+  //   Self: Sized,
+  //   F : FnMut( Item ) -> R
+  // ;
+}
+
+impl< Iterator > IterExt for Iterator
+where
+  Iterator : core::iter::Iterator,
+{
+  // type Item = It;
+//   fn map_result_unzip< F, R, Item, T1, T2, T3 >( &self, f : F ) -> ( T1, T2 ,T3 )
+//   where
+//     Self: Sized,
+//     F : FnMut( Item ) -> R,
+//     // F : FnMut( < Self as core::iter::Iterator >::Item ) -> R,
+//   {
+//     let vars_maybe = self.map( f );
+//     let vars : Vec< _ > = process_results( vars_maybe, | iter | iter.collect() )?;
+//
+//     let result : ( Vec< _ >, Vec< _ >, Vec< _ > )
+//     = vars.into_iter().multiunzip();
+//     result
+//   }
+}
 
 //
 
@@ -7,11 +40,28 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 {
 
   let parsed = syn::parse::< InputParsed >( input )?;
-  // let field_type = parsed.first_field_type()?;
   let fields = &parsed.fields;
   let item_name = parsed.item_name;
 
-  fields.iter();
+  let vars_maybe = fields.iter().map( | field |
+  {
+    let ident = field.ident.clone().ok_or_else( || syn_err!( parsed.item.span(), "Fields should be named" ) )?;
+    Result::Ok
+    ((
+      qt!{ #ident = core::default::Default::default(); },
+      qt!{ let #ident = src.into(); },
+      qt!{ #ident, },
+    ))
+  });
+  let vars : Vec< _ > = process_results( vars_maybe, | iter | iter.collect() )?;
+
+  let
+  (
+    vars_assing_default,
+    vars_from_src,
+    vars
+  ) : ( Vec< _ >, Vec< _ >, Vec< _ > )
+  = vars.into_iter().multiunzip();
 
   let result = qt!
   {
@@ -20,16 +70,18 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
     {
       fn make_0() -> Self
       {
-        let a = Default::default();
-        let b = Default::default();
-        let c = Default::default();
-        let d = Default::default();
+        #( #vars_assing_default )*
+        // let a = Default::default();
+        // let b = Default::default();
+        // let c = Default::default();
+        // let d = Default::default();
         Self
         {
-          a,
-          b,
-          c,
-          d,
+          #( #vars )*
+          // a,
+          // b,
+          // c,
+          // d,
         }
       }
     }
