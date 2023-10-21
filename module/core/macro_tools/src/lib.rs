@@ -55,6 +55,13 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  pub use quote::
+  {
+    format_ident,
+    quote,
+    quote_spanned,
+  };
+  #[ doc( inline ) ]
   pub use super::
   {
     prelude::*,

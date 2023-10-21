@@ -4,6 +4,7 @@ use super::*;
 #[ test ]
 fn make_named_fields()
 {
+  use TheModule::prelude::*;
 
   #[ derive( Debug, PartialEq, TheModule::Make ) ]
   struct StructNamedFields
@@ -22,37 +23,35 @@ fn make_named_fields()
 #[ test ]
 fn make_tuple()
 {
+  use TheModule::prelude::*;
 
   #[ derive( Debug, PartialEq, TheModule::Make ) ]
   struct StructTuple( i32, i32, i32, i32 );
 
-  include!( "./only_test/make_tuple.rs" );
+  // include!( "./only_test/make_tuple.rs" );
 }
 
-// xxx
+//
 
-// #[ test ]
-// fn sample()
-// {
-//   use TheModule::exposed::*;
-//
-//   #[ derive( Debug, PartialEq, Make ) ]
-//   struct MyStruct
-//   {
-//     a : i32,
-//     b : i32,
-//   }
-//
-//   let got : MyStruct = make!();
-//   let exp = MyStruct { a : 0, b : 0 };
-//   a_id!( got, exp );
-//
-//   let got : MyStruct = make!( 13 );
-//   let exp = MyStruct { a : 13, b : 13 };
-//   a_id!( got, exp );
-//
-//   let got : MyStruct = make!( 1, 3 );
-//   let exp = MyStruct { a : 1, b : 3 };
-//   a_id!( got, exp );
-//
-// }
+#[ test ]
+fn sample()
+{
+  use TheModule::prelude::*;
+  use TheModule::Make;
+
+  #[ derive( Debug, PartialEq, Make ) ]
+  struct MyStruct
+  {
+    a : i32,
+    b : i32,
+  }
+
+  let got : MyStruct = make!();
+  let exp = MyStruct { a : 0, b : 0 };
+  a_id!( got, exp );
+
+  let got : MyStruct = make!( 13 );
+  let exp = MyStruct { a : 13, b : 13 };
+  a_id!( got, exp );
+
+}

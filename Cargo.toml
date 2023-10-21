@@ -313,7 +313,7 @@ package = "woptions_runtime"
 ## proc macro tools
 
 [workspace.dependencies.macro_tools]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/macro_tools"
 default-features = false
 

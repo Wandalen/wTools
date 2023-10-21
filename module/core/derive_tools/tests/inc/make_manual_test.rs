@@ -31,15 +31,15 @@ fn make_named_fields()
     fn make_1( a : i32 ) -> Self { Self{ a, b : a, c : a, d : a } }
   }
 
-  impl TheModule::wtools::Make2< i32, i32 > for StructNamedFields
-  {
-    fn make_2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
-  }
-
-  impl TheModule::wtools::Make3< i32, i32, i32 > for StructNamedFields
-  {
-    fn make_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
-  }
+//   impl TheModule::wtools::Make2< i32, i32 > for StructNamedFields
+//   {
+//     fn make_2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
+//   }
+//
+//   impl TheModule::wtools::Make3< i32, i32, i32 > for StructNamedFields
+//   {
+//     fn make_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
+//   }
 
   include!( "./only_test/make_named_fields.rs" );
 }
@@ -70,15 +70,15 @@ fn make_tuple()
     fn make_1( a : i32 ) -> Self { Self( a, a, a, a ) }
   }
 
-  impl TheModule::wtools::Make2< i32, i32 > for StructTuple
-  {
-    fn make_2( a : i32, b : i32 ) -> Self { Self( a, b, b, b ) }
-  }
-
-  impl TheModule::wtools::Make3< i32, i32, i32 > for StructTuple
-  {
-    fn make_3( a : i32, b : i32, c : i32 ) -> Self { Self( a, b, c, c ) }
-  }
+//   impl TheModule::wtools::Make2< i32, i32 > for StructTuple
+//   {
+//     fn make_2( a : i32, b : i32 ) -> Self { Self( a, b, b, b ) }
+//   }
+//
+//   impl TheModule::wtools::Make3< i32, i32, i32 > for StructTuple
+//   {
+//     fn make_3( a : i32, b : i32, c : i32 ) -> Self { Self( a, b, c, c ) }
+//   }
 
   include!( "./only_test/make_tuple.rs" );
 }

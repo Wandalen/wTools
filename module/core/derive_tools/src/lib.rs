@@ -122,5 +122,7 @@ pub mod prelude
   pub use ::clone_dyn::clone_dyn;
   #[ doc( inline ) ]
   pub use super::wtools::prelude::*;
+  #[ doc( no_inline ) ]
+  pub use super::wtools;
 
 }

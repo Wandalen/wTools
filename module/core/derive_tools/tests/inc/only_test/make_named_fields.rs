@@ -17,13 +17,13 @@
   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
   a_id!( got, exp );
 
-  let got : StructNamedFields = TheModule::make!( 0, 1 );
-  let exp = StructNamedFields{ a : 0, b : 1, c : 1, d : 1 };
-  a_id!( got, exp );
-
-  let got : StructNamedFields = TheModule::make!( 0, 1, 2 );
-  let exp = StructNamedFields{ a : 0, b : 1, c : 2, d : 2 };
-  a_id!( got, exp );
+//   let got : StructNamedFields = TheModule::make!( 0, 1 );
+//   let exp = StructNamedFields{ a : 0, b : 1, c : 1, d : 1 };
+//   a_id!( got, exp );
+//
+//   let got : StructNamedFields = TheModule::make!( 0, 1, 2 );
+//   let exp = StructNamedFields{ a : 0, b : 1, c : 2, d : 2 };
+//   a_id!( got, exp );
 
   // let got : StructNamedFields = TheModule::make!( 0, 1, 2, 3 );
   // let exp = StructNamedFields{ a : 0, b : 1, c : 2, d : 3 };

@@ -42,39 +42,39 @@ pub( crate ) mod private
     fn make_1( arg : Arg ) -> Self;
   }
 
-  ///
-  /// Constructor with two arguments.
-  ///
-
-  pub trait Make2< Arg1, Arg2 >
-  where
-    Self : Sized,
-  {
-    /// Constructor with two arguments.
-    fn make( arg1 : Arg1, arg2 : Arg2 ) -> Self
-    {
-      Self::make_2( arg1, arg2 )
-    }
-    /// Constructor with two arguments.
-    fn make_2( arg1 : Arg1, arg2 : Arg2 ) -> Self;
-  }
-
-  ///
-  /// Constructor with three arguments.
-  ///
-
-  pub trait Make3< Arg1, Arg2, Arg3 >
-  where
-    Self : Sized,
-  {
-    /// Constructor with three arguments.
-    fn make( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3 ) -> Self
-    {
-      Self::make_3( arg1, arg2, arg3 )
-    }
-    /// Constructor with three arguments.
-    fn make_3( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3 ) -> Self;
-  }
+//   ///
+//   /// Constructor with two arguments.
+//   ///
+//
+//   pub trait Make2< Arg1, Arg2 >
+//   where
+//     Self : Sized,
+//   {
+//     /// Constructor with two arguments.
+//     fn make( arg1 : Arg1, arg2 : Arg2 ) -> Self
+//     {
+//       Self::make_2( arg1, arg2 )
+//     }
+//     /// Constructor with two arguments.
+//     fn make_2( arg1 : Arg1, arg2 : Arg2 ) -> Self;
+//   }
+//
+//   ///
+//   /// Constructor with three arguments.
+//   ///
+//
+//   pub trait Make3< Arg1, Arg2, Arg3 >
+//   where
+//     Self : Sized,
+//   {
+//     /// Constructor with three arguments.
+//     fn make( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3 ) -> Self
+//     {
+//       Self::make_3( arg1, arg2, arg3 )
+//     }
+//     /// Constructor with three arguments.
+//     fn make_3( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3 ) -> Self;
+//   }
 
 //   ///
 //   /// Constructor with four arguments.
@@ -188,21 +188,21 @@ pub( crate ) mod private
       $crate::wtools::Make1::make_1( $Arg1 );
     };
 
-    (
-      $Arg1 : expr, $Arg2 : expr $(,)?
-    )
-    =>
-    {
-      $crate::wtools::Make2::make_2( $Arg1, $Arg2 );
-    };
-
-    (
-      $Arg1 : expr, $Arg2 : expr, $Arg3 : expr $(,)?
-    )
-    =>
-    {
-      $crate::wtools::Make3::make_3( $Arg1, $Arg2, $Arg3 );
-    };
+//     (
+//       $Arg1 : expr, $Arg2 : expr $(,)?
+//     )
+//     =>
+//     {
+//       $crate::wtools::Make2::make_2( $Arg1, $Arg2 );
+//     };
+//
+//     (
+//       $Arg1 : expr, $Arg2 : expr, $Arg3 : expr $(,)?
+//     )
+//     =>
+//     {
+//       $crate::wtools::Make3::make_3( $Arg1, $Arg2, $Arg3 );
+//     };
 
     // (
     //   $Arg1 : expr, $Arg2 : expr, $Arg3 : expr, $Arg4 : expr $(,)?
@@ -221,7 +221,7 @@ pub( crate ) mod private
       (
         concat!
         (
-          "Variadic constructor supports up to 3 arguments.\n",
+          "Variadic constructor supports up to 1 arguments.\n",
           "Open an issue if you need more.\n",
           "You passed:\n",
           stringify!
@@ -259,8 +259,8 @@ pub mod orphan
 
     Make0,
     Make1,
-    Make2,
-    Make3,
+    // Make2,
+    // Make3,
 
   };
 

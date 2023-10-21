@@ -14,7 +14,7 @@ Collection of derives which extend STD.
 {
   use derive_tools::*;
 
-  #[ derive( From, Into, Display, FromStr, PartialEq, Debug ) ]
+  #[ derive( Into, Display, FromStr, PartialEq, Debug ) ]
   #[ display( "{a}-{b}" ) ]
   struct Struct1
   {
