@@ -140,7 +140,7 @@ package = "winterval"
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/derive_tools"
 default-features = false
 features = [ "enabled" ]
@@ -150,7 +150,7 @@ version = "*"
 package = "derive_tools"
 
 [workspace.dependencies.derive_tools_meta]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/derive_tools_meta"
 default-features = false
 features = [ "enabled" ]
@@ -245,7 +245,7 @@ version = "*"
 # default-features = true
 
 [workspace.dependencies.meta_tools]
-version = "0.3.0"
+version = "0.4.0"
 path = "module/core/meta_tools"
 # package = "meta_tools"
 default-features = false

@@ -3,10 +3,12 @@
 //! Implement couple of derives of general-purpose.
 //!
 
+#[ allow( unused_imports ) ]
 use macro_tools::prelude::*;
 pub use macro_tools::Result;
 
 pub mod input;
+#[ allow( unused_imports ) ]
 use input::*;
 #[ cfg( feature = "derive_as_mut" ) ]
 pub mod as_mut;
@@ -18,5 +20,5 @@ pub mod deref;
 pub mod deref_mut;
 #[ cfg( feature = "derive_from" ) ]
 pub mod from_inner;
-#[ cfg( feature = "derive_from" ) ]
+#[ cfg( feature = "derive_inner_from" ) ]
 pub mod inner_from;

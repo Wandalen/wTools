@@ -18,24 +18,37 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-#[ cfg( feature = "enabled" ) ]
-use macro_tools::prelude::*;
+// #[ cfg( feature = "enabled" ) ]
+// use macro_tools::prelude::*;
+
+#[ cfg
+(
+	any
+	(
+		feature = "derive_as_mut",
+		feature = "derive_as_ref",
+		feature = "derive_deref",
+		feature = "derive_deref_mut",
+		feature = "derive_from",
+		feature = "derive_inner_from",
+	)
+)]
 #[ cfg( feature = "enabled" ) ]
 mod implementation;
+#[ cfg
+(
+	any
+	(
+		feature = "derive_as_mut",
+		feature = "derive_as_ref",
+		feature = "derive_deref",
+		feature = "derive_deref_mut",
+		feature = "derive_from",
+		feature = "derive_inner_from",
+	)
+)]
 #[ cfg( feature = "enabled" ) ]
 use implementation::*;
-
-// use proc_macro_tools::prelude::*;
-// pub use proc_macro_tools::Result;
-//
-// mod input;
-// use input::*;
-// mod as_mut;
-// mod as_ref;
-// mod deref;
-// mod deref_mut;
-// mod from_inner;
-// mod inner_from;
 
 ///
 /// Derive macro to implement From converting inner type into outer when-ever it's possible to do automatically.
@@ -64,6 +77,8 @@ use implementation::*;
 /// }
 /// ```
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_from" ) ]
 #[ proc_macro_derive( From ) ]
 pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
@@ -102,6 +117,8 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// }
 /// ```
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_from" ) ]
 #[ proc_macro_derive( FromInner ) ]
 pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
@@ -140,6 +157,8 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// }
 /// ```
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_inner_from" ) ]
 #[ proc_macro_derive( InnerFrom ) ]
 pub fn inner_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
@@ -179,6 +198,8 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// }
 /// ```
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_deref" ) ]
 #[ proc_macro_derive( Deref ) ]
 pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
@@ -227,6 +248,8 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// ```
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_deref_mut" ) ]
 #[ proc_macro_derive( DerefMut ) ]
 pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
@@ -264,6 +287,8 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// }
 /// ```
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_as_ref" ) ]
 #[ proc_macro_derive( AsRef ) ]
 pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
@@ -302,6 +327,8 @@ pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// ```
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_as_mut" ) ]
 #[ proc_macro_derive( AsMut ) ]
 pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {

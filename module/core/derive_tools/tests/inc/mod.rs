@@ -7,15 +7,16 @@ mod clone_dyn_test;
 
 mod all_manual_test;
 #[ cfg
-( 
-	all 
+(
+	all
 	(
-		feature = "derive_as_mut", 
-		feature = "derive_as_ref", 
+		feature = "derive_as_mut",
+		feature = "derive_as_ref",
 		feature = "derive_deref",
 		feature = "derive_deref_mut",
 		feature = "derive_from",
-	) 
+		feature = "derive_inner_from",
+	)
 )]
 mod all_test;
 mod as_mut_manual_test;
@@ -34,5 +35,5 @@ mod from_inner_manual_test;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_test;
 mod inner_from_manual_test;
-#[ cfg( feature = "derive_from" ) ]
+#[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_test;

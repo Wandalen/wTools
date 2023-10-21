@@ -30,18 +30,17 @@ pub mod dependency
   #[ cfg( feature = "clone_dyn" ) ]
   pub use ::clone_dyn::dependency::*;
   #[ cfg
-  ( 
-    any 
+  (
+    any
     (
-      feature = "derive_as_mut", 
-      feature = "derive_as_ref", 
+      feature = "derive_as_mut",
+      feature = "derive_as_ref",
       feature = "derive_deref",
       feature = "derive_deref_mut",
       feature = "derive_from",
-    ) 
+    )
   )]
   pub use ::derive_tools_meta;
-
 
 }
 
