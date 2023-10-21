@@ -13,7 +13,7 @@ In some cases, the same code may be generated without callback macro, just using
 That's why `$Callback` is also optional.
 To invoke `for_each` without callback use map call style omitting path to callback and keyword `where`.
 
-### Basic use-case. :: function-style call
+### Basic use-case :: function-style call
 
 Apply a macro for each element of a list.
 
@@ -33,7 +33,7 @@ dbg!( "b" );
 dbg!( "c" );
 ```
 
-### Basic use-case. :: map-style call
+### Basic use-case :: map-style call
 
 Macro `for_each` may be called either in function-style way or in map-style way.
 Use keys @Prefix @Postfix @Each to pass options as entries of a map.
@@ -63,7 +63,7 @@ dbg!( "prefix".to_string() + "b" + "postfix" );
 dbg!( "prefix".to_string() + "c" + "postfix" );
 ```
 
-### Basic use-case. :: more than single token
+### Basic use-case :: more than single token
 
 Both prefix and postfix have to be token tree ( `tt` ). But if you need something more complex put it into braces `{ ... }`.
 Macros `for_each` will remove outermost braces. Braces are optional in case of prefix/postfix is a singlle token.
@@ -87,7 +87,7 @@ dbg!( "prefix".to_string() + "b" + "2" + "postfix" );
 dbg!( "prefix".to_string() + "c" + "3" + "postfix" );
 ```
 
-### Basic use-case. :: callbackless
+### Basic use-case :: callbackless
 
 Callback macro is optinal.
 Use map call style and omit path to callback macro with keyword `where` to invoke `for_each` without a callback.

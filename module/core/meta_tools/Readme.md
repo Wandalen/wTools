@@ -20,7 +20,7 @@ std_map.insert( 3, 13 );
 assert_eq!( meta_map, std_map );
 ```
 
-### Basic use-case. :: function-style call
+### Basic use-case :: function-style call
 
 Apply a macro for each element of a list.
 
