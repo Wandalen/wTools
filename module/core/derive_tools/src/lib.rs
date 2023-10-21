@@ -80,6 +80,7 @@ pub mod exposed
   #[ cfg( feature = "derive_more" ) ]
   #[ doc( inline ) ]
   pub use ::derive_more::*;
+  // qqq2 : list instead of asteris
 
   #[ cfg( feature = "strum" ) ]
   #[ doc( inline ) ]

@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -156,7 +156,8 @@ derive_unwrap = [ "derive_more", "derive_more/unwrap" ]
 derive_convert_case = [ "derive_more", "derive_more/convert_case" ]
 
 derive_display = [ "parse-display" ]
-derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex", "parse-display/once_cell" ]
+derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex" ]
+# derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex", "parse-display/once_cell" ]
 
 strum_derive = [ "strum/std", "strum/derive", "strum/strum_macros" ]
 strum_phf = [ "strum/std", "strum/phf", "strum/strum_macros" ]
@@ -170,10 +171,10 @@ derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
 [dependencies]
 
 ## external
-derive_more = { version = "~0.99", optional = true, default-features = false }
-strum = { version = "~0.24", optional = true, default-features = false }
-strum_macros = { version = "~0.24", optional = true, default-features = false }
-parse-display = { version = "~0.5", optional = true, default-features = false }
+derive_more = { version = "~0.99.17", optional = true, default-features = false }
+strum = { version = "~0.25", optional = true, default-features = false }
+# strum_macros = { version = "~0.25.3", optional = true, default-features = false }
+parse-display = { version = "~0.8.2", optional = true, default-features = false }
 
 ## internal
 derive_tools_meta = { workspace = true, features = [ "enabled" ] }
