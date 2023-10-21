@@ -22,45 +22,44 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/time",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
+# include = [
+#   "/rust/impl/time",
+#   "/Cargo.toml",
+#   "/Readme.md",
+#   "/License",
+# ]
 
 [features]
 default = [
-  "now",
+  "time_now",
 ]
 full = [
   "use_alloc",
-  "now",
+  "time_now",
 ]
-# use_std = []
+
 no_std = []
 use_alloc = []
 enabled = []
 
-now = []
+time_now = []
 
-[lib]
-name = "time_tools"
-path = "src/time/time_tools_lib.rs"
+# [lib]
+# name = "time_tools"
+# path = "src/time/time_tools_lib.rs"
 
-[[test]]
-name = "time_tools_test"
-path = "tests/time/tests.rs"
+# [[test]]
+# name = "time_tools_test"
+# path = "tests/time/tests.rs"
 
-[[test]]
-name = "time_tools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+# [[test]]
+# name = "time_tools_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
 
-[[example]]
-name = "time_tools_trivial_sample"
-path = "examples/time_tools_trivial_sample/src/main.rs"
+# [[example]]
+# name = "time_tools_trivial_sample"
+# path = "examples/time_tools_trivial_sample/src/main.rs"
 
 [dev-dependencies]
 test_tools = { workspace = true }
 smoke_test = { workspace = true }
-

@@ -21,32 +21,14 @@ keywords = [ "fundamental", "general-purpose" ]
 features = [ "full" ]
 all-features = false
 
-include = [
-  "/rust/impl/proc_macro/macro_tools_lib.rs",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
+exclude = ["/tests", "/example", "-*"]
 
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
 use_alloc = []
-enabled = []
-
-[lib]
-name = "macro_tools"
-path = "src/proc_macro/macro_tools_lib.rs"
-
-[[test]]
-name = "macro_tools_test"
-path = "tests/proc_macro/macro_tools_tests.rs"
-
-[[test]]
-name = "macro_tools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+enabled = ["macro_tools/enabled"]
 
 [dependencies]
 macro_tools = { workspace = true }

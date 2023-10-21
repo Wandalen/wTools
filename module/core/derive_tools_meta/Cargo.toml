@@ -27,9 +27,29 @@ exclude = [ "/tests", "/examples", "-*" ]
 proc-macro = true
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+default = [ 
+  "enabled",
+  "derive_deref_mut",
+  "derive_deref",
+  "derive_from",
+  "derive_as_ref",
+  "derive_as_mut"
+]
+full = [ 
+  "enabled",
+  "derive_deref_mut",
+  "derive_deref",
+  "derive_from",
+  "derive_as_ref",
+  "derive_as_mut"
+]
 enabled = []
+
+derive_as_mut = []
+derive_as_ref = []
+derive_deref = []
+derive_deref_mut = []
+derive_from = []
 
 [dependencies]
 macro_tools = { workspace = true, features = [ "full" ] }
