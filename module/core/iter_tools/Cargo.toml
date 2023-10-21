@@ -1,6 +1,6 @@
 [package]
 name = "iter_tools"
-version = "0.1.4"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -47,7 +47,7 @@ name = "iter_tools_trivial_sample"
 path = "examples/iter_tools_trivial_sample/src/main.rs"
 
 [dependencies]
-itertools = { version = "~0.10.3", features = [ "use_std" ] }
+itertools = { version = "~0.11.0", features = [ "use_std" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

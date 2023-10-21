@@ -1,3 +1,65 @@
+
+pub( crate ) mod private
+{
+  use ::itertools::process_results;
+
+  // fn collect_results< I, T, E >( iter : I ) -> core::result::Result< Vec< T >, E >
+  // where
+  //   I : Iterator< Item = core::result::Result< T, E > > + Clone,
+  //   E : core::fmt::Debug,
+  // {
+  //   for e in iter.clone()
+  //   {
+  //     if e.is_err()
+  //     {
+  //       e?;
+  //     }
+  //   }
+  //   Ok( iter.map( | e | e.unwrap() ).collect() )
+  // }
+
+  /// Extension of iterator.
+
+  pub trait IterExt
+  where
+    Self : core::iter::Iterator,
+  {
+    /// Iterate each element and return `core::Result::Err` if any element is error.
+    fn map_result< F, RE, El >( self, f : F ) -> core::result::Result< Vec< El >, RE >
+    where
+      Self : Sized + Clone,
+      // Self : Sized,
+      F : FnMut( < Self as core::iter::Iterator >::Item ) -> core::result::Result< El, RE >,
+      RE : core::fmt::Debug,
+      // El : Clone,
+      // core::result::Result< El, RE > : Clone,
+    ;
+  }
+
+  impl< Iterator > IterExt for Iterator
+  where
+    Iterator : core::iter::Iterator,
+  {
+    fn map_result< F, RE, El >( self, f : F ) -> core::result::Result< Vec< El >, RE >
+    where
+      Self : Sized + Clone,
+      F : FnMut( < Self as core::iter::Iterator >::Item ) -> core::result::Result< El, RE >,
+      RE : core::fmt::Debug,
+      // El : Clone,
+      // core::result::Result< El, RE > : Clone,
+    {
+      let vars_maybe = self.map( f );
+      let vars : Vec< _ > = process_results( vars_maybe, | iter | iter.collect() )?;
+      // let vars = collect_results( vars_maybe.clone() )?;
+      Ok( vars )
+      // let result : ( Vec< _ >, Vec< _ >, Vec< _ > )
+      // = vars.into_iter().multiunzip();
+      // Ok( result )
+    }
+  }
+
+}
+
 /// Exposed namespace of the module.
 pub mod exposed
 {
@@ -58,6 +120,7 @@ pub use exposed::*;
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+
   #[ doc( inline ) ]
   pub use ::itertools::
   {
@@ -71,4 +134,8 @@ pub mod prelude
     /*MultiUnzip,*/
     PeekingNext,
   };
+
+  #[ doc( inline ) ]
+  pub use super::private::IterExt;
+
 }

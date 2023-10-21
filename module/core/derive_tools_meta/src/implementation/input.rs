@@ -7,7 +7,8 @@ pub struct InputParsed
 {
   pub item : syn::ItemStruct,
   pub item_name : syn::Ident,
-  pub fields : Many< syn::Field >,
+  pub fields : syn::Fields,
+  pub fields_many : Many< syn::Field >,
   // pub field_type : syn::Type,
 }
 
@@ -15,14 +16,15 @@ impl InputParsed
 {
   pub fn first_field_type( &self ) -> Result< syn::Type >
   {
-    // let maybe_field = match self.fields.0
-    // {
-    //   syn::Fields::Named( fields ) => fields.named.first(),
-    //   syn::Fields::Unnamed( fields ) => fields.unnamed.first(),
-    //   _ => return Err( syn_err!( self.fields.span(), "Expects fields" ) ),
-    // };
+    let maybe_field = match self.fields
+    {
+      syn::Fields::Named( ref fields ) => fields.named.first(),
+      syn::Fields::Unnamed( ref fields ) => fields.unnamed.first(),
+      _ => return Err( syn_err!( self.fields.span(), "Expects fields" ) ),
+    };
 
-    let maybe_field = self.fields.0.first();
+    // let maybe_field = self.fields.0.first();
+    // let maybe_field = self.fields;
 
     if let Some( field ) = maybe_field
     {
@@ -47,7 +49,8 @@ impl syn::parse::Parse for InputParsed
     //
 
     let item_name = item.ident.clone();
-    let fields : Vec< syn::Field > = match item.fields
+    let fields = item.fields.clone();
+    let fields_many : Vec< syn::Field > = match item.fields
     {
       syn::Fields::Unnamed( ref fields ) => { fields.unnamed.iter().cloned().collect() },
       syn::Fields::Named( ref fields ) => { fields.named.iter().cloned().collect() },
@@ -61,8 +64,8 @@ impl syn::parse::Parse for InputParsed
     // let field = fields.first().cloned().unwrap();
     // let field_type = field.ty.clone();
 
-    let fields = fields.into();
-    Ok( Self { item, item_name, fields } )
+    let fields_many = fields_many.into();
+    Ok( Self { item, item_name, fields, fields_many } )
   }
 }
 

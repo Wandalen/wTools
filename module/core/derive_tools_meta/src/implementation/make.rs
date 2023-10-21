@@ -1,38 +1,6 @@
 
 use super::*;
-// use iter_tools::{ Itertools, process_results };
-use iter::{ process_results, Itertools };
-
-/// Extension of iterator
-
-pub trait IterExt
-{
-  // fn map_result_unzip< F, R, Item, T1, T2, T3 >( &self, f : F ) -> ( T1, T2 ,T3 )
-  // where
-  //   Self: Sized,
-  //   F : FnMut( Item ) -> R
-  // ;
-}
-
-impl< Iterator > IterExt for Iterator
-where
-  Iterator : core::iter::Iterator,
-{
-  // type Item = It;
-//   fn map_result_unzip< F, R, Item, T1, T2, T3 >( &self, f : F ) -> ( T1, T2 ,T3 )
-//   where
-//     Self: Sized,
-//     F : FnMut( Item ) -> R,
-//     // F : FnMut( < Self as core::iter::Iterator >::Item ) -> R,
-//   {
-//     let vars_maybe = self.map( f );
-//     let vars : Vec< _ > = process_results( vars_maybe, | iter | iter.collect() )?;
-//
-//     let result : ( Vec< _ >, Vec< _ >, Vec< _ > )
-//     = vars.into_iter().multiunzip();
-//     result
-//   }
-}
+use iter::{ IterExt, Itertools };
 
 //
 
@@ -40,83 +8,148 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 {
 
   let parsed = syn::parse::< InputParsed >( input )?;
-  let fields = &parsed.fields;
+  // let fields = &parsed.fields;
   let item_name = parsed.item_name;
 
-  let vars_maybe = fields.iter().map( | field |
+  let result = match &parsed.fields
   {
-    let ident = field.ident.clone().ok_or_else( || syn_err!( parsed.item.span(), "Fields should be named" ) )?;
-    Result::Ok
-    ((
-      qt!{ #ident = core::default::Default::default(); },
-      qt!{ let #ident = src.into(); },
-      qt!{ #ident, },
-    ))
-  });
-  let vars : Vec< _ > = process_results( vars_maybe, | iter | iter.collect() )?;
-
-  let
-  (
-    vars_assing_default,
-    vars_from_src,
-    vars
-  ) : ( Vec< _ >, Vec< _ >, Vec< _ > )
-  = vars.into_iter().multiunzip();
-
-  let result = qt!
-  {
-    #[ automatically_derived ]
-    impl wtools::Make0 for #item_name
+    // syn::Fields::Named( syn::FieldsNamed { ref named, .. } ) =>
+    syn::Fields::Named( _ ) =>
     {
-      fn make_0() -> Self
-      {
-        #( #vars_assing_default )*
-        // let a = Default::default();
-        // let b = Default::default();
-        // let c = Default::default();
-        // let d = Default::default();
-        Self
-        {
-          #( #vars )*
-          // a,
-          // b,
-          // c,
-          // d,
-        }
-      }
-    }
 
-    #[ automatically_derived ]
-    impl wtools::Make1< i32 > for #item_name
+      let
+      (
+        vars_assing_default,
+        src_into_vars,
+        vars
+      ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map_result( | field |
+      {
+        let ident = field.ident.clone().ok_or_else( || syn_err!( parsed.item.span(), "Fields should be named" ) )?;
+        Result::Ok
+        ((
+          qt!{ #ident = core::default::Default::default(); },
+          qt!{ let #ident = src.into(); },
+          qt!{ #ident, },
+        ))
+      })?
+      .into_iter().multiunzip();
+
+      qt!
+      {
+        #[ automatically_derived ]
+        impl wtools::Make0 for #item_name
+        {
+          fn make_0() -> Self
+          {
+            #( #vars_assing_default )*
+            // let a = Default::default();
+            // let b = Default::default();
+            // let c = Default::default();
+            // let d = Default::default();
+            Self
+            {
+              #( #vars )*
+              // a,
+              // b,
+              // c,
+              // d,
+            }
+          }
+        }
+
+        #[ automatically_derived ]
+        impl wtools::Make1< i32 > for #item_name
+        {
+          fn make_1( src : i32 ) -> Self
+          {
+            #( #src_into_vars )*
+            // let a = src.into();
+            // let b = src.into();
+            // let c = src.into();
+            // let d = src.into();
+            Self
+            {
+              #( #vars )*
+              // a,
+              // b,
+              // c,
+              // d,
+            }
+          }
+        }
+
+      }
+
+    }
+    // syn::Fields::Unnamed( ref fields ) =>
+    syn::Fields::Unnamed( _ ) =>
     {
-      fn make_1( src : i32 ) -> Self
+
+      let
+      (
+        vars_assing_default,
+        src_into_vars,
+        vars
+      ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map_result( | field |
       {
-        let a = src.into();
-        let b = src.into();
-        let c = src.into();
-        let d = src.into();
-        Self
+        let ident = field.ident.clone().ok_or_else( || syn_err!( parsed.item.span(), "Fields should be named" ) )?;
+        Result::Ok
+        ((
+          qt!{ #ident = core::default::Default::default(); },
+          qt!{ let #ident = src.into(); },
+          qt!{ #ident, },
+        ))
+      })?
+      .into_iter().multiunzip();
+
+      qt!
+      {
+        #[ automatically_derived ]
+        impl wtools::Make0 for #item_name
         {
-          a,
-          b,
-          c,
-          d,
+          fn make_0() -> Self
+          {
+            #( #vars_assing_default )*
+            // let a = Default::default();
+            // let b = Default::default();
+            // let c = Default::default();
+            // let d = Default::default();
+            Self
+            {
+              #( #vars )*
+              // a,
+              // b,
+              // c,
+              // d,
+            }
+          }
         }
+
+        #[ automatically_derived ]
+        impl wtools::Make1< i32 > for #item_name
+        {
+          fn make_1( src : i32 ) -> Self
+          {
+            #( #src_into_vars )*
+            // let a = src.into();
+            // let b = src.into();
+            // let c = src.into();
+            // let d = src.into();
+            Self
+            {
+              #( #vars )*
+              // a,
+              // b,
+              // c,
+              // d,
+            }
+          }
+        }
+
       }
+
     }
-
-//     #[ automatically_derived ]
-//     impl wtools::Make2< i32, i32 > for #item_name
-//     {
-//       fn make_2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
-//     }
-//
-//     #[ automatically_derived ]
-//     impl wtools::Make3< i32, i32, i32 > for #item_name
-//     {
-//       fn make_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
-//     }
-
+    _ => return Err( syn_err!( parsed.fields.span(), "Expects fields" ) ),
   };
 
   Ok( result )
