@@ -5,7 +5,7 @@
 
 #[ allow( unused_imports ) ]
 use macro_tools::prelude::*;
-pub use macro_tools::Result;
+pub use macro_tools::{ Result, Many };
 
 pub mod input;
 #[ allow( unused_imports ) ]

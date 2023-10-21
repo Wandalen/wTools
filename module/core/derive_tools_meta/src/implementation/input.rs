@@ -6,8 +6,31 @@ use super::*;
 pub struct InputParsed
 {
   pub item : syn::ItemStruct,
-  pub field_type : syn::Type,
   pub item_name : syn::Ident,
+  pub fields : Many< syn::Field >,
+  // pub field_type : syn::Type,
+}
+
+impl InputParsed
+{
+  pub fn first_field_type( &self ) -> Result< syn::Type >
+  {
+    // let maybe_field = match self.fields.0
+    // {
+    //   syn::Fields::Named( fields ) => fields.named.first(),
+    //   syn::Fields::Unnamed( fields ) => fields.unnamed.first(),
+    //   _ => return Err( syn_err!( self.fields.span(), "Expects fields" ) ),
+    // };
+
+    let maybe_field = self.fields.0.first();
+
+    if let Some( field ) = maybe_field
+    {
+      return Ok( field.ty.clone() )
+    }
+
+    return Err( syn_err!( self.item.span(), "Expects type for fields" ) );
+  }
 }
 
 //
@@ -24,19 +47,22 @@ impl syn::parse::Parse for InputParsed
     //
 
     let item_name = item.ident.clone();
-    let fields = match item.fields
+    let fields : Vec< syn::Field > = match item.fields
     {
-      syn::Fields::Unnamed( ref fields ) => { &fields.unnamed },
+      syn::Fields::Unnamed( ref fields ) => { fields.unnamed.iter().cloned().collect() },
+      syn::Fields::Named( ref fields ) => { fields.named.iter().cloned().collect() },
       _ => return Err( syn_err!( item.fields.span(), "Not implemented" ) ),
     };
-    if fields.len() != 1
-    {
-      return Err( syn_err!( fields.span(), "Expects exactly one field, not implemented for {}.", fields.len() ) );
-    }
-    let field = fields.first().cloned().unwrap();
-    let field_type = field.ty.clone();
 
-    Ok( Self { item, item_name, field_type } )
+    // if fields.len() != 1
+    // {
+    //   return Err( syn_err!( fields.span(), "Expects exactly one field, not implemented for {}.", fields.len() ) );
+    // }
+    // let field = fields.first().cloned().unwrap();
+    // let field_type = field.ty.clone();
+
+    let fields = fields.into();
+    Ok( Self { item, item_name, fields } )
   }
 }
 

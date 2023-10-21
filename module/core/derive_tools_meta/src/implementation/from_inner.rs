@@ -7,7 +7,7 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
 {
 
   let parsed = syn::parse::< InputParsed >( input )?;
-  let field_type = parsed.field_type;
+  let field_type = parsed.first_field_type()?;
   let item_name = parsed.item_name;
 
   let result = qt!

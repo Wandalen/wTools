@@ -7,13 +7,16 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 {
 
   let parsed = syn::parse::< InputParsed >( input )?;
-  let field_type = parsed.field_type;
+  // let field_type = parsed.first_field_type()?;
+  let fields = &parsed.fields;
   let item_name = parsed.item_name;
+
+  fields.iter();
 
   let result = qt!
   {
     #[ automatically_derived ]
-    impl wtools::Make0 for StructNamedFields
+    impl wtools::Make0 for #item_name
     {
       fn make_0() -> Self
       {
@@ -21,27 +24,46 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
         let b = Default::default();
         let c = Default::default();
         let d = Default::default();
-        Self{ a, b, c, d }
+        Self
+        {
+          a,
+          b,
+          c,
+          d,
+        }
       }
     }
 
     #[ automatically_derived ]
-    impl wtools::Make1< i32 > for StructNamedFields
+    impl wtools::Make1< i32 > for #item_name
     {
-      fn make_1( a : i32 ) -> Self { Self{ a, b : a, c : a, d : a } }
+      fn make_1( src : i32 ) -> Self
+      {
+        let a = src.into();
+        let b = src.into();
+        let c = src.into();
+        let d = src.into();
+        Self
+        {
+          a,
+          b,
+          c,
+          d,
+        }
+      }
     }
 
-    #[ automatically_derived ]
-    impl wtools::Make2< i32, i32 > for StructNamedFields
-    {
-      fn make_2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
-    }
-
-    #[ automatically_derived ]
-    impl wtools::Make3< i32, i32, i32 > for StructNamedFields
-    {
-      fn make_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
-    }
+//     #[ automatically_derived ]
+//     impl wtools::Make2< i32, i32 > for #item_name
+//     {
+//       fn make_2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
+//     }
+//
+//     #[ automatically_derived ]
+//     impl wtools::Make3< i32, i32, i32 > for #item_name
+//     {
+//       fn make_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
+//     }
 
   };
 
@@ -208,7 +230,7 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 // {
 //   let parsed = syn::parse::< ItemStruct >( input )?;
 //
-// //   let field_type = parsed.field_type;
+// //   let field_type = parsed.first_field_type()?;
 // //   let item_name = parsed.item_name;
 // //
 // //   let result = qt!
