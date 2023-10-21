@@ -22,3 +22,5 @@ pub mod deref_mut;
 pub mod from_inner;
 #[ cfg( feature = "derive_inner_from" ) ]
 pub mod inner_from;
+#[ cfg( feature = "derive_make" ) ]
+pub mod make;

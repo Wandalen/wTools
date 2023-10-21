@@ -32,8 +32,9 @@ data_type_published = { version = "*", package = "data_type" }
 fundamental_data_type = { workspace = true }
 fundamental_data_type_published = { version = "*", package = "fundamental_data_type" }
 type_constructor = { workspace = true }
-type_constructor_derive_make_meta = { workspace = true }
-type_constructor_derive_pair_meta = { workspace = true }
+# type_constructor_meta = { workspace = true }
+# type_constructor_make_meta = { workspace = true }
+# type_constructor_derive_pair_meta = { workspace = true }
 type_constructor_published = { version = "*", package = "type_constructor" }
 winterval = { workspace = true }
 winterval_published = { version = "*", package = "winterval" }

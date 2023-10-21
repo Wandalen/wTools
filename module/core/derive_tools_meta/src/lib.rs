@@ -31,6 +31,7 @@
 		feature = "derive_deref_mut",
 		feature = "derive_from",
 		feature = "derive_inner_from",
+		feature = "derive_make",
 	)
 )]
 #[ cfg( feature = "enabled" ) ]
@@ -45,6 +46,7 @@ mod implementation;
 		feature = "derive_deref_mut",
 		feature = "derive_from",
 		feature = "derive_inner_from",
+		feature = "derive_make",
 	)
 )]
 #[ cfg( feature = "enabled" ) ]
@@ -58,7 +60,7 @@ use implementation::*;
 /// Write this
 ///
 /// ```rust
-/// use derives::*;
+/// # use derive_tools_meta::*;
 /// #[ derive( From ) ]
 /// pub struct IsTransparent( bool );
 /// ```
@@ -98,7 +100,7 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// Write this
 ///
 /// ```rust
-/// use derives::*;
+/// # use derive_tools_meta::*;
 /// #[ derive( FromInner ) ]
 /// pub struct IsTransparent( bool );
 /// ```
@@ -138,7 +140,7 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// Write this
 ///
 /// ```rust
-/// use derives::*;
+/// # use derive_tools_meta::*;
 /// #[ derive( InnerFrom ) ]
 /// pub struct IsTransparent( bool );
 /// ```
@@ -178,7 +180,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// Write this
 ///
 /// ```rust
-/// use derives::*;
+/// # use derive_tools_meta::*;
 /// #[ derive( Deref ) ]
 /// pub struct IsTransparent( bool );
 /// ```
@@ -219,7 +221,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// Write this
 ///
 /// ```rust
-/// use derives::*;
+/// # use derive_tools_meta::*;
 /// #[ derive( Deref, DerefMut ) ]
 /// pub struct IsTransparent( bool );
 /// ```
@@ -269,7 +271,7 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// Write this
 ///
 /// ```rust
-/// use derives::*;
+/// # use derive_tools_meta::*;
 /// #[ derive( AsRef ) ]
 /// pub struct IsTransparent( bool );
 /// ```
@@ -308,7 +310,7 @@ pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// Write this
 ///
 /// ```rust
-/// use derives::*;
+/// # use derive_tools_meta::*;
 /// #[ derive( AsMut ) ]
 /// pub struct IsTransparent( bool );
 /// ```
@@ -339,3 +341,57 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
     Err( err ) => err.to_compile_error().into(),
   }
 }
+
+///
+/// Derive macro to implement default constructors `Make0`, `Make1`, `Make2`, `Make3`.
+///
+/// ### Sample :: struct instead of macro.
+///
+/// Write this
+///
+/// ```rust, ignore, no_run
+/// # use derive_tools::*;
+/// #[ derive( Make ) ]
+/// pub struct IsTransparent( bool );
+/// ```
+///
+/// Instead of this
+///
+/// ```rust, ignore, no_run
+/// pub struct IsTransparent( bool );
+/// impl Make0 for IsTransparent
+/// {
+///   fn make0() -> Self
+///   {
+///     Self::default();
+///   }
+/// }
+/// impl Make1 for IsTransparent
+/// {
+///   fn make1( src : bool ) -> Self
+///   {
+///     Self( src )
+///   }
+/// }
+///
+/// ```
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_make" ) ]
+#[ proc_macro_derive( Make ) ]
+pub fn derive_make( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = make::make( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+// {
+//   let input = parse_macro_input!( input as syn::ItemStruct );
+//   let dm = DeriveMake::parse( input );
+//
+//   proc_macro::TokenStream::from( dm.impl_makes() )
+// }

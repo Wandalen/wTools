@@ -35,31 +35,35 @@ exclude = [ "/tests", "/examples", "-*" ]
 
 default = [
   # "use_std",
-  "either",
-  "prelude",
-  "interval",
-  "make",
-  "vectorized_from",
-  "type_constructor/default",
+  "enabled",
+  "dt_either",
+  "dt_prelude",
+  "dt_interval",
+  "dt_make",
+  "dt_vectorized_from",
+  # "type_constructor/default",
 ]
 full = [
   # "use_std",
-  "either",
-  "prelude",
-  "interval",
-  "make",
-  "vectorized_from",
-  "type_constructor/full",
+  "enabled",
+  "dt_either",
+  "dt_prelude",
+  "dt_interval",
+  "dt_make",
+  "dt_vectorized_from",
+  # "type_constructor/full",
 ]
 # # use_std = []
 no_std = []
 use_alloc = []
 enabled = []
 
-prelude = []
-interval = [ "interval_adapter" ]
-make = [ "type_constructor/make" ]
-vectorized_from = [ "type_constructor/vectorized_from" ]
+dt_prelude = []
+dt_either = [ "either" ]
+dt_interval = [ "interval_adapter/enabled" ]
+dt_type_constructor = [ "type_constructor/enabled" ]
+dt_make = [ "type_constructor/make" ]
+dt_vectorized_from = [ "type_constructor/vectorized_from" ]
 
 # = entries
 
@@ -67,17 +71,17 @@ vectorized_from = [ "type_constructor/vectorized_from" ]
 # name = "data_type"
 # path = "src/dt/data_type_lib.rs"
 
-[[test]]
-name = "data_type_test"
-path = "tests/dt/data_type_tests.rs"
-
-[[test]]
-name = "data_type_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "data_type_trivial_sample"
-path = "examples/data_type_trivial_sample/src/main.rs"
+# [[test]]
+# name = "data_type_test"
+# path = "tests/dt/data_type_tests.rs"
+#
+# [[test]]
+# name = "data_type_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
+#
+# [[example]]
+# name = "data_type_trivial_sample"
+# path = "examples/data_type_trivial_sample/src/main.rs"
 
 [dependencies]
 
@@ -85,8 +89,8 @@ path = "examples/data_type_trivial_sample/src/main.rs"
 either = { version = "~1.6", optional = true }
 
 ## internal
-type_constructor = { workspace = true, optional = true }
-interval_adapter = { workspace = true, optional = true }
+type_constructor = { workspace = true }
+interval_adapter = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }

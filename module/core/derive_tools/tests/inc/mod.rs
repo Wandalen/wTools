@@ -19,21 +19,33 @@ mod all_manual_test;
 	)
 )]
 mod all_test;
+
 mod as_mut_manual_test;
 #[ cfg( feature = "derive_as_mut" ) ]
 mod as_mut_test;
+
 mod as_ref_manual_test;
 #[ cfg( feature = "derive_as_ref" ) ]
 mod as_ref_test;
+
 mod deref_manual_test;
+#[ cfg( feature = "derive_deref" ) ]
+mod deref_test;
+
 mod deref_mut_manual_test;
 #[ cfg( feature = "derive_deref_mut" ) ]
 mod deref_mut_test;
-#[ cfg( feature = "derive_deref" ) ]
-mod deref_test;
+
 mod from_inner_manual_test;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_test;
+
 mod inner_from_manual_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_test;
+
+#[ cfg( all( feature = "type_make" ) ) ]
+mod make_manual_test;
+
+// #[ cfg( all( feature = "derive_make", feature = "type_make" ) ) ]
+// mod make_derive_test;

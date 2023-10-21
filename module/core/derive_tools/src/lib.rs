@@ -15,6 +15,12 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ cfg( feature = "enabled" ) ]
+pub mod wtools;
+
+// use derive_tools_meta::Deref;
+// use derive_tools_meta::Make;
+
 /// Dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
@@ -29,17 +35,7 @@ pub mod dependency
   pub use ::clone_dyn;
   #[ cfg( feature = "clone_dyn" ) ]
   pub use ::clone_dyn::dependency::*;
-  #[ cfg
-  (
-    any
-    (
-      feature = "derive_as_mut",
-      feature = "derive_as_ref",
-      feature = "derive_deref",
-      feature = "derive_deref_mut",
-      feature = "derive_from",
-    )
-  )]
+  #[ cfg( any_derive ) ]
   pub use ::derive_tools_meta;
 
 }
@@ -53,11 +49,17 @@ pub mod protected
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
   pub use ::clone_dyn::orphan::*;
+  #[ doc( inline ) ]
+  pub use super::wtools::orphan::*;
 }
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 pub use protected::*;
+
+#[ cfg( feature = "enabled" ) ]
+#[ doc( inline ) ]
+pub use exposed::*;
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
@@ -65,6 +67,7 @@ pub mod orphan
 {
   #[ doc( inline ) ]
   pub use super::exposed::*;
+
 }
 
 /// Exposed namespace of the module.
@@ -94,6 +97,11 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use ::clone_dyn::exposed::*;
 
+  #[ doc( inline ) ]
+  pub use super::wtools::exposed::*;
+
+  // #[ cfg( any_derive ) ]
+  #[ doc( inline ) ]
   pub use ::derive_tools_meta::*;
 
 }
@@ -112,5 +120,7 @@ pub mod prelude
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
   pub use ::clone_dyn::clone_dyn;
+  #[ doc( inline ) ]
+  pub use super::wtools::prelude::*;
 
 }

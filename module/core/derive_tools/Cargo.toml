@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -33,6 +33,10 @@ exclude = [ "/tests", "/examples", "-*" ]
 
 default = [
   "enabled",
+
+  "derive_make",
+  "type_make",
+
   "derive_add_assign",
   "derive_add",
   "derive_as_mut",
@@ -71,6 +75,10 @@ default = [
 
 full = [
   "enabled",
+
+  "derive_make",
+  "type_make",
+
   "derive_add_assign",
   "derive_add",
   "derive_as_mut",
@@ -110,6 +118,9 @@ use_alloc = []
 enabled = []
 
 nightly = [ "derive_more/nightly" ]
+
+type_make = []
+derive_make = [ "type_make", "derive_tools_meta/derive_make" ]
 
 enable_track_caller = [ "derive_more", "derive_more/track-caller" ]
 
@@ -171,3 +182,6 @@ clone_dyn = { workspace = true, optional = true }
 [dev-dependencies]
 test_tools = { workspace = true }
 smoke_test = { workspace = true }
+
+[build-dependencies]
+cfg_aliases = "0.1.1"

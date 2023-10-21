@@ -1,6 +1,6 @@
 [package]
-name = "derive_tools_meta"
-version = "0.4.0"
+name = "type_constructor_make_meta"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -8,9 +8,9 @@ authors = [
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/derive_tools_meta"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools_meta"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools_meta"
+documentation = "https://docs.rs/type_constructor_make_meta"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/type_constructor_make_meta"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/type_constructor_make_meta"
 description = """
 Derive to clone dyn structures.
 """
@@ -29,37 +29,17 @@ proc-macro = true
 [features]
 default = [
   "enabled",
-  "derive_deref_mut",
-  "derive_deref",
-  "derive_from",
-  "derive_inner_from",
-  "derive_as_ref",
-  "derive_as_mut",
-  "derive_make",
 ]
 full = [
   "enabled",
-  "derive_deref_mut",
-  "derive_deref",
-  "derive_from",
-  "derive_inner_from",
-  "derive_as_ref",
-  "derive_as_mut",
-  "derive_make",
 ]
 enabled = []
 
-derive_as_mut = []
-derive_as_ref = []
-derive_deref = []
-derive_deref_mut = []
-derive_from = []
-derive_inner_from = []
-derive_make = []
-
 [dependencies]
 macro_tools = { workspace = true, features = [ "full" ] }
+# xxx : optimize set of features of all such dependancies
 
 [dev-dependencies]
 test_tools = { workspace = true }
 smoke_test = { workspace = true }
+# xxx : move smoke_test to test_tools

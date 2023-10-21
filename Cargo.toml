@@ -80,13 +80,18 @@ default-features = false
 version = "*"
 package = "type_constructor"
 
-[workspace.dependencies.type_constructor_derive_make_meta]
-version = "0.1.0"
-path = "module/core/type_constructor_derive_make_meta"
+# [workspace.dependencies.type_constructor_meta]
+# version = "0.2.0"
+# path = "module/core/type_constructor_meta"
+# default-features = false
 
-[workspace.dependencies.type_constructor_derive_pair_meta]
-version = "0.1.0"
-path = "module/core/type_constructor_derive_pair_meta"
+# [workspace.dependencies.type_constructor_make_meta]
+# version = "0.2.0"
+# path = "module/core/type_constructor_make_meta"
+#
+# [workspace.dependencies.type_constructor_derive_pair_meta]
+# version = "0.1.0"
+# path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
 version = "0.2.3"
@@ -112,7 +117,7 @@ package = "winterval"
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "0.3.0"
+version = "0.4.0"
 path = "module/core/derive_tools"
 default-features = false
 features = [ "enabled" ]
@@ -122,7 +127,7 @@ version = "*"
 package = "derive_tools"
 
 [workspace.dependencies.derive_tools_meta]
-version = "0.3.0"
+version = "0.4.0"
 path = "module/core/derive_tools_meta"
 default-features = false
 features = [ "enabled" ]

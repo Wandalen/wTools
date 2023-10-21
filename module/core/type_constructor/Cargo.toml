@@ -31,17 +31,18 @@ include = [
 
 [features]
 default = [
+  "enabled",
   "many",
   "make",
   "vectorized_from",
 ]
 full = [
+  "enabled",
   "use_alloc",
   "many",
   "make",
   "vectorized_from",
 ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
@@ -50,17 +51,17 @@ many = []
 make = []
 vectorized_from = []
 
-[lib]
-name = "type_constructor"
-path = "src/dt/type_constructor/type_constructor_lib.rs"
-
-[[test]]
-name = "type_constructor_test"
-path = "tests/dt/type_constructor/type_constructor_tests.rs"
-
-[[test]]
-name = "type_constructor_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+# [lib]
+# name = "type_constructor"
+# path = "src/dt/type_constructor/type_constructor_lib.rs"
+#
+# [[test]]
+# name = "type_constructor_test"
+# path = "tests/dt/type_constructor/type_constructor_tests.rs"
+#
+# [[test]]
+# name = "type_constructor_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
 
 [[example]]
 name = "type_constructor_trivial_sample"
@@ -107,8 +108,8 @@ required-features = [ "many" ]
 
 [dependencies]
 # inspect_type = { workspace = true ] }
-type_constructor_derive_make_meta = { workspace = true }
-type_constructor_derive_pair_meta = { workspace = true }
+# type_constructor_make_meta = { workspace = true }
+# type_constructor_derive_pair_meta = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
