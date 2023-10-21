@@ -16,13 +16,6 @@ impl syn::parse::Parse for InputParsed
 {
   fn parse( input : ParseStream< '_ > ) -> Result< Self >
   {
-
-    // let item = match syn::parse::< syn::ItemStruct >( input )
-    // {
-    //   Ok( original ) => original,
-    //   Err( err ) => return Err( err ),
-    // };
-
     let item : syn::ItemStruct = input.parse()?;
 
     // # example of input

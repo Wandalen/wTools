@@ -28,7 +28,7 @@ default = [ "enabled" ]
 full = [ "enabled" ]
 no_std = []
 use_alloc = []
-enabled = []
+enabled = [ "mod_interface_meta/enabled" ]
 
 # keep these examples in directories
 

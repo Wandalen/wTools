@@ -1,6 +1,6 @@
 [package]
 name = "automata_tools"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -52,12 +52,11 @@ path = "tests/_integration_test/smoke_test.rs"
 [[example]]
 name = "automata_tools_trivial_sample"
 path = "examples/automata_tools_trivial_sample/src/main.rs"
-# zzz : write please # aaa : Dmytro : added
 
 [dependencies]
-graphs_tools = { version = "~0.1", path = "../../move/graphs_tools", features = [ "full" ] }
+graphs_tools = { workspace = true, features = [ "full" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
 smoke_test = { workspace = true }
-wtools = { workspace = true }
+# wtools = { workspace = true }

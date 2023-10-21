@@ -38,6 +38,7 @@ pub mod dependency
 
 //
 
+// qqq : meta interface should be optional dependancy. please fix writing equivalent code manually
 #[ cfg( feature = "enabled" ) ]
 mod_interface::mod_interface!
 {

@@ -1,6 +1,6 @@
 [package]
 name = "wautomata"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -53,10 +53,9 @@ path = "tests/_integration_test/smoke_test.rs"
 # path = "examples/wautomata_trivial_sample/src/main.rs"
 
 [dependencies]
-automata_tools = { version = "~0.1", path = "../../move/automata_tools", features = [ "full" ] }
+automata_tools = { workspace = true, features = [ "full" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
 smoke_test = { workspace = true }
 wtools = { workspace = true }
-

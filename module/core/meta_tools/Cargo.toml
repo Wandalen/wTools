@@ -59,7 +59,7 @@ enabled = []
 
 for_each = [ "for_each/enabled" ]
 impls_index = [ "impls_index/enabled" ]
-# mod_interface = [ "mod_interface/enabled" ]
+mod_interface = [ "mod_interface/enabled" ]
 # xxx : qqq : make mod_interface optional maybe
 
 # for_each = { workspace = true, optional = true }
@@ -95,9 +95,10 @@ literally = { version = "~0.1", optional = true, default-features = false }
 paste = { version = "~1.0", optional = true, default-features = false }
 
 ## internal
-impls_index = { workspace = true }
-for_each = { workspace = true, features = [ "enabled" ] }
-mod_interface = { workspace = true, features = [ "enabled" ] }
+# impls_index = { workspace = true }
+impls_index = { workspace = true, features = [] }
+for_each = { workspace = true, features = [] }
+mod_interface = { workspace = true, features = [ "default" ] }
 
 # former = { workspace = true, optional = true, default-features = false }
 # woptions = { workspace = true, optional = true, default-features = false }

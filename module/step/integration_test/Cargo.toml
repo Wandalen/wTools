@@ -160,17 +160,14 @@ willbe2_published = { version = "*", package = "willbe2" }
 # willbe_old = { workspace = true }
 # willbe_old_published = { version = "*", package = "willbe_old" }
 
-# automata
-
-automata_tools = { workspace = true }
-automata_tools_published = { version = "*", package = "automata_tools" }
-wautomata = { workspace = true }
-wautomata_published = { version = "*", package = "wautomata" }
-
 # graphs
 
 graphs_tools = { workspace = true }
 graphs_tools_published = { version = "*", package = "graphs_tools" }
+automata_tools = { workspace = true }
+automata_tools_published = { version = "*", package = "automata_tools" }
+wautomata = { workspace = true }
+wautomata_published = { version = "*", package = "wautomata" }
 
 # ca
 
@@ -191,8 +188,6 @@ wlang_published = { version = "*", package = "wlang" }
 
 wpublisher = { workspace = true }
 wpublisher_published = { version = "*", package = "wpublisher", optional = true }
-# wpublisher = { version = "*", path = "../../move/wpublisher", package = "wpublisher", optional = true }
-# wpublisher_published = { version = "*", package = "wpublisher", optional = true }
 
 # plot
 
