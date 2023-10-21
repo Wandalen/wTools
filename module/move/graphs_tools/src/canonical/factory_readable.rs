@@ -4,11 +4,12 @@ pub( crate ) mod private
   use crate::prelude::*;
   // use crate::canonical::*;
   // use crate::canonical;
-  use wtools::prelude::*;
+  // use wtools::prelude::*;
   use core::fmt;
   use indexmap::IndexMap;
   // use std::default::Default;
   // use core::ops::Deref;
+  use crate::meta::*;
 
   include!( "./factory_impl.rs" );
 
@@ -16,6 +17,7 @@ pub( crate ) mod private
   /// Radable node factory.
   ///
 
+  #[ derive( Default ) ]
   pub struct ReadableNodeFactory< NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt >
   where
     NodeId : IdentityInterface,
@@ -128,29 +130,50 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId > Make0
-  for ReadableNodeFactory< NodeId, EdgeId >
-  where
-    NodeId : IdentityInterface,
-    EdgeId : IdentityInterface,
-  {
-    index!
-    {
-      // make_0,
-    }
+//   impl< NodeId, EdgeId > Default
+//   for ReadableNodeFactory< NodeId, EdgeId >
+//   where
+//     NodeId : IdentityInterface,
+//     EdgeId : IdentityInterface,
+//   {
+//
+//     fn default() -> Self
+//     {
+//       let id_to_node_map = IndexMap::new();
+//       let id_to_edge_map = IndexMap::new();
+//       Self
+//       {
+//         id_to_node_map,
+//         id_to_edge_map,
+//       }
+//     }
+//
+//   }
 
-    fn make_0() -> Self
-    {
-      let id_to_node_map = IndexMap::new();
-      let id_to_edge_map = IndexMap::new();
-      Self
-      {
-        id_to_node_map,
-        id_to_edge_map,
-      }
-    }
-
-  }
+//   impl< NodeId, EdgeId > Make0
+//   for ReadableNodeFactory< NodeId, EdgeId >
+//   where
+//     NodeId : IdentityInterface,
+//     EdgeId : IdentityInterface,
+//   {
+//
+//     index!
+//     {
+//       // make_0,
+//     }
+//
+//     fn make_0() -> Self
+//     {
+//       let id_to_node_map = IndexMap::new();
+//       let id_to_edge_map = IndexMap::new();
+//       Self
+//       {
+//         id_to_node_map,
+//         id_to_edge_map,
+//       }
+//     }
+//
+//   }
 
 }
 

@@ -21,7 +21,7 @@ publish = false
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-
+exclude = [ "/tests", "/examples", "-*" ]
 include = [
   "/rust/impl/willbe_old",
   "/Cargo.toml",

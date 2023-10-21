@@ -16,6 +16,11 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+use iter_tools::iter;
+use data_type::dt;
+use meta_tools::meta;
+use strs_tools::string;
+
 use meta_tools::mod_interface;
 mod_interface!
 {

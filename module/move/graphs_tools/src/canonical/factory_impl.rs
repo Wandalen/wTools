@@ -1,4 +1,3 @@
-
 macro_rules! NODE_ID
 {
   () => { < < Self as GraphNodesNominalInterface >::NodeHandle as HasId >::Id };
@@ -182,7 +181,7 @@ impls3!
         f.write_str( "\n" )?;
       }
       first = false;
-      f.write_str( &wtools::string::indentation( "  ", format!( "{:?}", node ), "" ) )?;
+      f.write_str( &string::indentation( "  ", format!( "{:?}", node ), "" ) )?;
     }
     f.write_str( "" )
   }

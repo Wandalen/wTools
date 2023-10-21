@@ -340,7 +340,8 @@ pub( crate ) mod private
       IntoIter : IntoIterator< Item = Id >,
       IntoIter::IntoIter : core::iter::ExactSizeIterator< Item = Id >,
     {
-      use wtools::iter::prelude::*;
+      // use wtools::iter::prelude::*;
+      use crate::iter::prelude::*;
       let iter = into_iter.into_iter();
       debug_assert_eq!( iter.len() % 2, 0 );
       for mut chunk in &iter.chunks( 2 )

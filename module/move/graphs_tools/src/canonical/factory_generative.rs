@@ -4,7 +4,8 @@ pub( crate ) mod private
   use crate::prelude::*;
   // use crate::canonical::*;
   use crate::canonical;
-  use wtools::prelude::*;
+  use crate::meta::*;
+  // use wtools::prelude::*;
   use core::fmt;
   use indexmap::IndexMap;
   use std::default::Default;
@@ -16,6 +17,7 @@ pub( crate ) mod private
   /// Generative node factory.
   ///
 
+  #[ derive( Default ) ]
   pub struct GenerativeNodeFactory< NodeId = crate::IdentityWithInt, EdgeId = crate::IdentityWithInt >
   where
     NodeId : IdentityInterface + HasIdGenerator< NodeId >,
@@ -164,31 +166,31 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId > Make0
-  for GenerativeNodeFactory< NodeId, EdgeId >
-  where
-    NodeId : IdentityInterface + HasIdGenerator< NodeId >,
-    EdgeId : IdentityInterface + HasIdGenerator< EdgeId >,
-  {
-    index!
-    {
-      // make_0,
-    }
-    fn make_0() -> Self
-    {
-      let id_to_node_map = IndexMap::new();
-      let id_to_edge_map = IndexMap::new();
-      let _node_id_generator = Default::default();
-      let _edge_id_generator = Default::default();
-      Self
-      {
-        id_to_node_map,
-        id_to_edge_map,
-        _node_id_generator,
-        _edge_id_generator,
-      }
-    }
-  }
+  // impl< NodeId, EdgeId > Make0
+  // for GenerativeNodeFactory< NodeId, EdgeId >
+  // where
+  //   NodeId : IdentityInterface + HasIdGenerator< NodeId >,
+  //   EdgeId : IdentityInterface + HasIdGenerator< EdgeId >,
+  // {
+  //   index!
+  //   {
+  //     // make_0,
+  //   }
+  //   fn make_0() -> Self
+  //   {
+  //     let id_to_node_map = IndexMap::new();
+  //     let id_to_edge_map = IndexMap::new();
+  //     let _node_id_generator = Default::default();
+  //     let _edge_id_generator = Default::default();
+  //     Self
+  //     {
+  //       id_to_node_map,
+  //       id_to_edge_map,
+  //       _node_id_generator,
+  //       _edge_id_generator,
+  //     }
+  //   }
+  // }
 
 }
 

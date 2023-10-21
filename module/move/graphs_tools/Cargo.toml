@@ -20,13 +20,13 @@ keywords = [ "fundamental", "general-purpose" ]
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-
-include = [
-  "/rust/impl/graph",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
+exclude = [ "/tests", "/examples", "-*" ]
+# include = [
+#   "/rust/impl/graph",
+#   "/Cargo.toml",
+#   "/Readme.md",
+#   "/License",
+# ]
 
 [features]
 default = [
@@ -39,27 +39,30 @@ no_std = []
 use_alloc = []
 enabled = []
 
-[lib]
-name = "graphs_tools"
-path = "src/graph/graphs_tools_lib.rs"
-
-[[test]]
-name = "graphs_tools_test"
-path = "tests/graph/graphs_tools_tests.rs"
-
-[[test]]
-name = "graphs_tools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "graphs_tools_trivial_sample"
-path = "examples/graphs_tools_trivial_sample/src/main.rs"
+# [lib]
+# name = "graphs_tools"
+# path = "src/graph/graphs_tools_lib.rs"
+#
+# [[test]]
+# name = "graphs_tools_test"
+# path = "tests/graph/graphs_tools_tests.rs"
+#
+# [[test]]
+# name = "graphs_tools_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
+#
+# [[example]]
+# name = "graphs_tools_trivial_sample"
+# path = "examples/graphs_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 indexmap = "~1.8"
 meta_tools = { workspace = true, features = [ "default" ] }
+iter_tools = { workspace = true, features = [ "default" ] }
+data_type = { workspace = true, features = [ "default" ] }
+strs_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
 smoke_test = { workspace = true }
-inspect_type = { workspace = true }
+# inspect_type = { workspace = true }

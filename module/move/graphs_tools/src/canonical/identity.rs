@@ -5,7 +5,7 @@ pub( crate ) mod private
   use core::fmt;
   use core::hash::Hash;
   use core::cmp::{ PartialEq, Eq };
-  use wtools::dt::prelude::*;
+  use crate::dt::prelude::*;
 
   // types!
   // {

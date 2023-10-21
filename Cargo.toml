@@ -417,7 +417,7 @@ package = "werror"
 ## strs
 
 [workspace.dependencies.strs_tools]
-version = "0.1.8"
+version = "0.2.0"
 path = "module/core/strs_tools"
 default-features = false
 
@@ -426,7 +426,7 @@ version = "*"
 package = "strs_tools"
 
 [workspace.dependencies.wstring_tools]
-version = "0.1.5"
+version = "0.2.0"
 path = "module/alias/wstring_tools"
 
 [workspace.dependencies.wstring_tools_published]
