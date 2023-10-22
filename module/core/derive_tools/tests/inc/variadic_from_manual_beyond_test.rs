@@ -174,7 +174,7 @@ fn from_tuple_from_from1()
     fn from_1( a : i32 ) -> Self { Self{ a, b : a, c : a, d : a } }
   }
 
-  let got : StructNamedFields = TheModule::from!( 13 );
+  let got : StructNamedFields = from!( 13 );
   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
   a_id!( got, exp );
 
@@ -182,7 +182,15 @@ fn from_tuple_from_from1()
   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
   a_id!( got, exp );
 
+  let got : StructNamedFields = from!( ( 13, ) );
+  let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
+  a_id!( got, exp );
+
   let got : StructNamedFields = StructNamedFields::from_1( ( 13, ) );
+  let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = from!( ( ( 13, ), ) );
   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
   a_id!( got, exp );
 
@@ -204,55 +212,116 @@ fn from_tuple_from_from1()
 
 }
 
-// //
 //
-// /// Into1 is auto implemented from From_1.
-// /// From_1< ( All1, All2 ) > is auto implemented for From_2< All1, All2 >.
-// #[ test ]
-// fn from_tuple_from_from2()
-// {
-//   use TheModule::prelude::*;
+
+/// Into1 is auto implemented from From_1.
+/// From_1< ( All1, All2 ) > is auto implemented for From_2< All1, All2 >.
+#[ test ]
+fn from_tuple_from_from2()
+{
+  use TheModule::prelude::*;
+
+  #[ derive( Debug, PartialEq, Default ) ]
+  struct StructNamedFields
+  {
+    a : i32,
+    b : i32,
+    c : i32,
+    d : i32,
+  }
+
+  impl TheModule::wtools::From_2< i32, i32 > for StructNamedFields
+  {
+    fn from_2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
+  }
+
+  let got : StructNamedFields = from!( 13, 14 );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 14, d : 14 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = StructNamedFields::from_2( 13, 14 );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 14, d : 14 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = from!( ( 13, 14 ) );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 14, d : 14 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = StructNamedFields::from_1( ( 13, 14 ) );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 14, d : 14 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = from!( ( ( 13, 14 ), ) );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 14, d : 14 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = StructNamedFields::from_1( ( ( 13, 14 ), ) );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 14, d : 14 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = ( 13, 14 ).to();
+  let exp = StructNamedFields{ a : 13, b : 14, c : 14, d : 14 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = ( ( 13, 14 ), ).to();
+  let exp = StructNamedFields{ a : 13, b : 14, c : 14, d : 14 };
+  a_id!( got, exp );
+
+}
+
 //
-//   #[ derive( Debug, PartialEq, Default ) ]
-//   struct StructNamedFields
-//   {
-//     a : i32,
-//     b : i32,
-//     c : i32,
-//     d : i32,
-//   }
-//
-//   impl TheModule::wtools::From_2< i32, i32 > for StructNamedFields
-//   {
-//     fn from_1( a : i32, b : i32 ) -> Self { Self{ a, b } }
-//   }
-//
-//   let got : StructNamedFields = TheModule::from!( 13 );
-//   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
-//   a_id!( got, exp );
-//
-//   let got : StructNamedFields = StructNamedFields::from_1( 13 );
-//   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
-//   a_id!( got, exp );
-//
-//   let got : StructNamedFields = StructNamedFields::from_1( ( 13, ) );
-//   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
-//   a_id!( got, exp );
-//
-//   let got : StructNamedFields = StructNamedFields::from_1( ( ( 13, ), ) );
-//   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
-//   a_id!( got, exp );
-//
-//   let got : StructNamedFields = 13.to();
-//   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
-//   a_id!( got, exp );
-//
-//   let got : StructNamedFields = ( 13, ).to();
-//   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
-//   a_id!( got, exp );
-//
-//   let got : StructNamedFields = ( ( 13, ), ).to();
-//   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
-//   a_id!( got, exp );
-//
-// }
+
+/// Into1 is auto implemented from From_1.
+/// From_1< ( All1, All2, All3 ) > is auto implemented for From_3< All1, All2, All3 >.
+#[ test ]
+fn from_tuple_from_from3()
+{
+  use TheModule::prelude::*;
+
+  #[ derive( Debug, PartialEq, Default ) ]
+  struct StructNamedFields
+  {
+    a : i32,
+    b : i32,
+    c : i32,
+    d : i32,
+  }
+
+  impl TheModule::wtools::From_3< i32, i32, i32 > for StructNamedFields
+  {
+    fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
+  }
+
+  let got : StructNamedFields = from!( 13, 14, 15 );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 15, d : 15 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = StructNamedFields::from_3( 13, 14, 15 );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 15, d : 15 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = from!( ( 13, 14, 15 ) );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 15, d : 15 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = StructNamedFields::from_1( ( 13, 14, 15 ) );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 15, d : 15 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = from!( ( ( 13, 14, 15 ), ) );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 15, d : 15 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = StructNamedFields::from_1( ( ( 13, 14, 15 ), ) );
+  let exp = StructNamedFields{ a : 13, b : 14, c : 15, d : 15 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = ( 13, 14, 15 ).to();
+  let exp = StructNamedFields{ a : 13, b : 14, c : 15, d : 15 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = ( ( 13, 14, 15 ), ).to();
+  let exp = StructNamedFields{ a : 13, b : 14, c : 15, d : 15 };
+  a_id!( got, exp );
+
+}

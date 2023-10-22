@@ -41,7 +41,7 @@ fn from_named_fields()
 //     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
 //   }
 
-  include!( "./only_test/from_named_fields.rs" );
+  include!( "./only_test/variadic_from_named.rs" );
 }
 
 //
@@ -80,7 +80,7 @@ fn from_tuple()
 //     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self( a, b, c, c ) }
 //   }
 
-  include!( "./only_test/from_tuple.rs" );
+  include!( "./only_test/variadic_from_tuple.rs" );
 }
 
 //

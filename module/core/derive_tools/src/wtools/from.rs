@@ -63,7 +63,27 @@ pub( crate ) mod private
     }
   }
 
-  /// Into1
+  // impl< T, All > From_1< T > for All
+  // where
+  //   All : core::convert::From< T >,
+  // {
+  //   fn from_1( arg : T ) -> Self
+  //   {
+  //     core::convert::From::< T >::from( arg )
+  //   }
+  // }
+
+  // impl< T1, T2, All > From_1< ( T1, T2 ) > for All
+  // where
+  //   All : core::convert::From< ( T1, T2 ) >,
+  // {
+  //   fn from_1( arg : ( T1, T2 ) ) -> Self
+  //   {
+  //     core::convert::From::< ( T1, T2 ) >::from( arg )
+  //   }
+  // }
+
+  ///  value-to-value conversion that consumes the input value. Change left and rught, but keep semantic of `From_1``.
   #[ allow( non_camel_case_types ) ]
   pub trait Into1< T > : Sized
   {
@@ -118,6 +138,16 @@ pub( crate ) mod private
     fn from_2( arg1 : Arg1, arg2 : Arg2 ) -> Self;
   }
 
+  impl< T1, T2, All > From_1< ( T1, T2 ) > for All
+  where
+    All : From_2< T1, T2 >,
+  {
+    fn from_1( arg : ( T1, T2 ) ) -> Self
+    {
+      From_2::< T1, T2 >::from_2( arg.0, arg.1 )
+    }
+  }
+
   ///
   /// Constructor with three arguments.
   ///
@@ -134,6 +164,16 @@ pub( crate ) mod private
     // }
     /// Constructor with three arguments.
     fn from_3( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3 ) -> Self;
+  }
+
+  impl< T1, T2, T3, All > From_1< ( T1, T2, T3 ) > for All
+  where
+    All : From_3< T1, T2, T3 >,
+  {
+    fn from_1( arg : ( T1, T2, T3 ) ) -> Self
+    {
+      From_3::< T1, T2, T3 >::from_3( arg.0, arg.1, arg.2 )
+    }
   }
 
 //   ///

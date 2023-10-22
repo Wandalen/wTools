@@ -45,10 +45,13 @@ mod inner_from_manual_test;
 mod inner_from_test;
 
 #[ cfg( all( feature = "type_from" ) ) ]
-mod from_manual_test;
+mod variadic_from_manual_test;
 
 #[ cfg( all( feature = "type_from" ) ) ]
-mod from_manual_beyond_test;
+mod variadic_from_manual_beyond_test;
 
 #[ cfg( all( feature = "derive_variadic_from", feature = "type_from" ) ) ]
-mod from_derive_test;
+mod variadic_from_derive_test;
+
+#[ cfg( all( feature = "derive_variadic_from", feature = "type_from" ) ) ]
+mod variadic_from2_derive;

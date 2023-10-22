@@ -15,7 +15,7 @@ fn from_named_fields()
     d : i32,
   }
 
-  include!( "./only_test/from_named_fields.rs" );
+  include!( "./only_test/variadic_from_named.rs" );
 }
 
 //
@@ -28,7 +28,7 @@ fn from_tuple()
   #[ derive( Debug, PartialEq, TheModule::VariadicFrom ) ]
   struct StructTuple( i32, i32, i32, i32 );
 
-  // include!( "./only_test/from_tuple.rs" );
+  include!( "./only_test/variadic_from_tuple.rs" );
 }
 
 //
