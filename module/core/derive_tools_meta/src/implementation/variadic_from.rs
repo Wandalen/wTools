@@ -4,7 +4,7 @@ use iter::{ IterExt, Itertools };
 
 //
 
-pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
 
   let parsed = syn::parse::< InputParsed >( input )?;

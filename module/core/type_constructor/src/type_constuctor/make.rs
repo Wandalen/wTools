@@ -280,5 +280,5 @@
 //   };
 //
 //   #[ cfg( feature = "make" ) ]
-//   pub use type_constructor_make_meta::Make;
+//   pub use type_constructor_make_meta::VariadicFrom;
 // }

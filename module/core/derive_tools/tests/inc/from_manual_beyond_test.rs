@@ -141,6 +141,10 @@ fn from0_from_default()
   let exp = StructNamedFields{ a : 0, b : 0 };
   a_id!( got, exp );
 
+  let got : StructNamedFields = TheModule::From_0::from_0();
+  let exp = StructNamedFields{ a : 0, b : 0 };
+  a_id!( got, exp );
+
   let got : StructNamedFields = Default::default();
   let exp = StructNamedFields{ a : 0, b : 0 };
   a_id!( got, exp );

@@ -20,7 +20,7 @@ fn main()
         feature = "derive_deref_mut",
         feature = "derive_from",
         feature = "derive_inner_from",
-        feature = "derive_make"
+        feature = "derive_variadic_from"
       )
     },
     any_derive :
@@ -33,7 +33,7 @@ fn main()
         feature = "derive_deref_mut",
         feature = "derive_from",
         feature = "derive_inner_from",
-        feature = "derive_make"
+        feature = "derive_variadic_from"
       )
     },
   }

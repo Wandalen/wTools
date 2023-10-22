@@ -347,5 +347,5 @@ pub mod prelude
 
   };
 
-  // pub use type_constructor_from_meta::Make;
+  // pub use type_constructor_from_meta::VariadicFrom;
 }

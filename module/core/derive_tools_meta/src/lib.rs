@@ -31,7 +31,7 @@
 		feature = "derive_deref_mut",
 		feature = "derive_from",
 		feature = "derive_inner_from",
-		feature = "derive_make",
+		feature = "derive_variadic_from",
 	)
 )]
 #[ cfg( feature = "enabled" ) ]
@@ -46,7 +46,7 @@ mod implementation;
 		feature = "derive_deref_mut",
 		feature = "derive_from",
 		feature = "derive_inner_from",
-		feature = "derive_make",
+		feature = "derive_variadic_from",
 	)
 )]
 #[ cfg( feature = "enabled" ) ]
@@ -377,21 +377,14 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// ```
 
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_make" ) ]
-#[ proc_macro_derive( Make ) ]
-pub fn derive_make( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+#[ cfg( feature = "derive_variadic_from" ) ]
+#[ proc_macro_derive( VariadicFrom ) ]
+pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = make::make( input );
+  let result = variadic_from::variadic_from( input );
   match result
   {
     Ok( stream ) => stream.into(),
     Err( err ) => err.to_compile_error().into(),
   }
 }
-
-// {
-//   let input = parse_macro_input!( input as syn::ItemStruct );
-//   let dm = DeriveMake::parse( input );
-//
-//   proc_macro::TokenStream::from( dm.impl_makes() )
-// }

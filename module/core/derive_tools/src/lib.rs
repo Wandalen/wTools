@@ -19,7 +19,7 @@
 pub mod wtools;
 
 // use derive_tools_meta::Deref;
-// use derive_tools_meta::Make;
+// use derive_tools_meta::VariadicFrom;
 
 /// Dependencies.
 #[ cfg( feature = "enabled" ) ]

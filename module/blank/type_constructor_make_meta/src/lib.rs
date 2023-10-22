@@ -146,7 +146,7 @@ impl DeriveMake
 }
 
 #[ proc_macro_derive( Make ) ]
-pub fn derive_make( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
+pub fn derive_variadic_from( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let input = parse_macro_input!( input as syn::ItemStruct );
   let dm = DeriveMake::parse( input );

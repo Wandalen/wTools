@@ -6,7 +6,7 @@ fn from_named_fields()
 {
   use TheModule::prelude::*;
 
-  #[ derive( Debug, PartialEq, TheModule::Make ) ]
+  #[ derive( Debug, PartialEq, TheModule::VariadicFrom ) ]
   struct StructNamedFields
   {
     a : i32,
@@ -25,7 +25,7 @@ fn from_tuple()
 {
   use TheModule::prelude::*;
 
-  #[ derive( Debug, PartialEq, TheModule::Make ) ]
+  #[ derive( Debug, PartialEq, TheModule::VariadicFrom ) ]
   struct StructTuple( i32, i32, i32, i32 );
 
   // include!( "./only_test/from_tuple.rs" );
@@ -36,10 +36,9 @@ fn from_tuple()
 #[ test ]
 fn sample()
 {
-  use TheModule::prelude::*;
-  use TheModule::Make;
+  use TheModule::exposed::*;
 
-  #[ derive( Debug, PartialEq, Make ) ]
+  #[ derive( Debug, PartialEq, VariadicFrom ) ]
   struct MyStruct
   {
     a : i32,
@@ -55,3 +54,5 @@ fn sample()
   a_id!( got, exp );
 
 }
+
+// qqq : add to examples and to readme

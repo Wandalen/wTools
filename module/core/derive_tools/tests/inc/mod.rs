@@ -50,5 +50,5 @@ mod from_manual_test;
 #[ cfg( all( feature = "type_from" ) ) ]
 mod from_manual_beyond_test;
 
-#[ cfg( all( feature = "derive_make", feature = "type_from" ) ) ]
+#[ cfg( all( feature = "derive_variadic_from", feature = "type_from" ) ) ]
 mod from_derive_test;
