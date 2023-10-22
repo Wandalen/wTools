@@ -62,7 +62,7 @@ pub( crate ) mod private
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
-      // let mut result : Self = make!();
+      // let mut result : Self = from!();
       let mut result : Self = Default::default();
       loop
       {

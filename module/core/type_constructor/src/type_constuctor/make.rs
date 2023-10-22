@@ -14,10 +14,10 @@
 //     /// Constructor without arguments.
 //     fn make() -> Self
 //     {
-//       Self::make_0()
+//       Self::from_0()
 //     }
 //     /// Constructor without arguments.
-//     fn make_0() -> Self;
+//     fn from_0() -> Self;
 //   }
 //
 //   // xxx : auto impl from Default, please
@@ -113,7 +113,7 @@
 //   ///
 //   ///   impl From_0 for Struct1
 //   ///   {
-//   ///     fn make_0() -> Self
+//   ///     fn from_0() -> Self
 //   ///     {
 //   ///       Self { a : 0, b : 0 }
 //   ///     }
@@ -135,15 +135,15 @@
 //   ///     }
 //   ///   }
 //   ///
-//   ///   let got : Struct1 = make!();
+//   ///   let got : Struct1 = from!();
 //   ///   let exp = Struct1{ a : 0, b : 0 };
 //   ///   assert_eq!( got, exp );
 //   ///
-//   ///   let got : Struct1 = make!( 13 );
+//   ///   let got : Struct1 = from!( 13 );
 //   ///   let exp = Struct1{ a : 13, b : 13 };
 //   ///   assert_eq!( got, exp );
 //   ///
-//   ///   let got : Struct1 = make!( 1, 3 );
+//   ///   let got : Struct1 = from!( 1, 3 );
 //   ///   let exp = Struct1{ a : 1, b : 3 };
 //   ///   assert_eq!( got, exp );
 //   /// }
@@ -174,7 +174,7 @@
 //     )
 //     =>
 //     {
-//       $crate::From_0::make_0();
+//       $crate::From_0::from_0();
 //     };
 //
 //     (
@@ -223,7 +223,7 @@
 //           "You passed:\n",
 //           stringify!
 //           (
-//             make!( $( $Rest )+ )
+//             from!( $( $Rest )+ )
 //           )
 //         )
 //       );

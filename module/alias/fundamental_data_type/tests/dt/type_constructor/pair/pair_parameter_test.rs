@@ -114,12 +114,12 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
-      let got : Pair< f32, f64 > = TheModule::make!();
+      let got : Pair< f32, f64 > = TheModule::from!();
       let exp = Pair::< f32, f64 >( 0.0, 0.0 );
       a_id!( got, exp );
 
       /* test.case( "make2" ) */
-      let got : Pair< f32, f64 > = TheModule::make!( 13.0, 31.0 );
+      let got : Pair< f32, f64 > = TheModule::from!( 13.0, 31.0 );
       let exp = Pair::< f32, f64 >( 13.0, 31.0 );
       a_id!( got, exp );
     }
@@ -272,12 +272,12 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
-      let got : TheModule::Pair< f32, f64 > = TheModule::make!();
+      let got : TheModule::Pair< f32, f64 > = TheModule::from!();
       let exp = TheModule::Pair::< f32, f64 >( 0.0, 0.0 );
       a_id!( got, exp );
 
       /* test.case( "make2" ) */
-      let got : TheModule::Pair< f32, f64 > = TheModule::make!( 13.0, 31.0 );
+      let got : TheModule::Pair< f32, f64 > = TheModule::from!( 13.0, 31.0 );
       let exp = TheModule::Pair::< f32, f64 >( 13.0, 31.0 );
       a_id!( got, exp );
     }

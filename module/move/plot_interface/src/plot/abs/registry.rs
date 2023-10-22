@@ -58,7 +58,7 @@ pub( crate ) mod private
       }
       else
       {
-        let context : Context = make!();
+        let context : Context = from!();
         let id = context.id();
         registry.contexts_with_name.insert( current_name, context.id() );
         registry.contexts.insert( id, context );

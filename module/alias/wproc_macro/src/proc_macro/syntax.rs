@@ -31,7 +31,7 @@ pub( crate ) mod private
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
-      let mut result : Self = make!();
+      let mut result : Self = from!();
       loop
       {
         if !input.peek( Token![ # ] ) || !input.peek2( Token![ ! ] )
@@ -84,7 +84,7 @@ pub( crate ) mod private
   {
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
-      let mut result : Self = make!();
+      let mut result : Self = from!();
       loop
       {
         if !input.peek( Token![ # ] ) || input.peek2( Token![ ! ] )

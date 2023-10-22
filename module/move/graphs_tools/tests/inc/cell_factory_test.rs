@@ -13,9 +13,9 @@
 //   {
 //     use TheModule::prelude::*;
 //
-//     let node : TheModule::canonical::Node = make!( 13 );
+//     let node : TheModule::canonical::Node = from!( 13 );
 //     a_id!( node.id(), 13.into() );
-//     let cellnode : < TheModule::canonical::CellNodeFactory as GraphNodesNominalInterface >::NodeHandle = make!( node );
+//     let cellnode : < TheModule::canonical::CellNodeFactory as GraphNodesNominalInterface >::NodeHandle = from!( node );
 //
 //   }
 //

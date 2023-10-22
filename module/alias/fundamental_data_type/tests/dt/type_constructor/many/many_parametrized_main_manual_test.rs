@@ -191,13 +191,13 @@ for Many < T1, T2 >
   }
 }
 
-TheModule::_if_make!
+TheModule::_if_from!
 {
 
   impl < T1 : PartialEq, T2 : Default > TheModule::From_0
   for Many < T1, T2 >
   {
-    #[ inline ] fn make_0() -> Self
+    #[ inline ] fn from_0() -> Self
     {
       Self( TheModule::_Vec::< mod1::Floats < T1, T2 > >::new() )
     }

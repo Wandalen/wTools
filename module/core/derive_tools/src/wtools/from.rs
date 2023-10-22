@@ -15,13 +15,13 @@ pub( crate ) mod private
   where
     Self : Sized,
   {
+    // /// Constructor without arguments.
+    // fn from() -> Self
+    // {
+    //   Self::from_0()
+    // }
     /// Constructor without arguments.
-    fn make() -> Self
-    {
-      Self::make_0()
-    }
-    /// Constructor without arguments.
-    fn make_0() -> Self;
+    fn from_0() -> Self;
   }
 
   impl< All > From_0 for All
@@ -29,7 +29,7 @@ pub( crate ) mod private
     All : Default,
   {
     /// Constructor without arguments.
-    fn make_0() -> Self
+    fn from_0() -> Self
     {
       Self::default()
     }
@@ -44,11 +44,11 @@ pub( crate ) mod private
   where
     Self : Sized,
   {
-    /// Constructor without arguments.
-    fn make( arg : Arg ) -> Self
-    {
-      Self::from_1( arg )
-    }
+    // /// Constructor without arguments.
+    // fn from( arg : Arg ) -> Self
+    // {
+    //   Self::from_1( arg )
+    // }
     /// Constructor without arguments.
     fn from_1( arg : Arg ) -> Self;
   }
@@ -109,11 +109,11 @@ pub( crate ) mod private
   where
     Self : Sized,
   {
-    /// Constructor with two arguments.
-    fn make( arg1 : Arg1, arg2 : Arg2 ) -> Self
-    {
-      Self::from_2( arg1, arg2 )
-    }
+    // /// Constructor with two arguments.
+    // fn from( arg1 : Arg1, arg2 : Arg2 ) -> Self
+    // {
+    //   Self::from_2( arg1, arg2 )
+    // }
     /// Constructor with two arguments.
     fn from_2( arg1 : Arg1, arg2 : Arg2 ) -> Self;
   }
@@ -127,11 +127,11 @@ pub( crate ) mod private
   where
     Self : Sized,
   {
-    /// Constructor with three arguments.
-    fn make( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3 ) -> Self
-    {
-      Self::from_3( arg1, arg2, arg3 )
-    }
+    // /// Constructor with three arguments.
+    // fn from( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3 ) -> Self
+    // {
+    //   Self::from_3( arg1, arg2, arg3 )
+    // }
     /// Constructor with three arguments.
     fn from_3( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3 ) -> Self;
   }
@@ -146,7 +146,7 @@ pub( crate ) mod private
 //     Self : Sized,
 //   {
 //     /// Constructor with four arguments.
-//     fn make( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3, arg4 : Arg4 ) -> Self
+//     fn from( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3, arg4 : Arg4 ) -> Self
 //     {
 //       Self::from_4( arg1, arg2, arg3, arg4 )
 //     }
@@ -164,7 +164,7 @@ pub( crate ) mod private
   /// - Constructor with 2 arguments set individual values of each field.
   ///
   /// ```rust
-  /// # #[ cfg( feature = "make" ) ]
+  /// # #[ cfg( feature = "from" ) ]
   /// # {
   ///   use type_constructor::prelude::*;
   ///
@@ -177,7 +177,7 @@ pub( crate ) mod private
   ///
   ///   impl From_0 for Struct1
   ///   {
-  ///     fn make_0() -> Self
+  ///     fn from_0() -> Self
   ///     {
   ///       Self { a : 0, b : 0 }
   ///     }
@@ -199,15 +199,15 @@ pub( crate ) mod private
   ///     }
   ///   }
   ///
-  ///   let got : Struct1 = make!();
+  ///   let got : Struct1 = from!();
   ///   let exp = Struct1{ a : 0, b : 0 };
   ///   assert_eq!( got, exp );
   ///
-  ///   let got : Struct1 = make!( 13 );
+  ///   let got : Struct1 = from!( 13 );
   ///   let exp = Struct1{ a : 13, b : 13 };
   ///   assert_eq!( got, exp );
   ///
-  ///   let got : Struct1 = make!( 1, 3 );
+  ///   let got : Struct1 = from!( 1, 3 );
   ///   let exp = Struct1{ a : 1, b : 3 };
   ///   assert_eq!( got, exp );
   /// # }
@@ -230,7 +230,7 @@ pub( crate ) mod private
   /// ```
 
   #[ macro_export ]
-  macro_rules! make
+  macro_rules! from
   {
 
     (
@@ -238,7 +238,7 @@ pub( crate ) mod private
     )
     =>
     {
-      $crate::wtools::From_0::make_0();
+      $crate::wtools::From_0::from_0();
     };
 
     (
@@ -287,7 +287,7 @@ pub( crate ) mod private
           "You passed:\n",
           stringify!
           (
-            make!( $( $Rest )+ )
+            from!( $( $Rest )+ )
           )
         )
       );
@@ -295,7 +295,7 @@ pub( crate ) mod private
 
   }
 
-  pub use make;
+  pub use from;
 }
 
 /// Protected namespace of the module.
@@ -343,9 +343,9 @@ pub mod prelude
     Into1,
     From_2,
     From_3,
-    make,
+    from,
 
   };
 
-  // pub use type_constructor_make_meta::Make;
+  // pub use type_constructor_from_meta::Make;
 }

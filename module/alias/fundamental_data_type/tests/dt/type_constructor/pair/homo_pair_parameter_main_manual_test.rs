@@ -111,7 +111,7 @@ where
   T1 : Default,
 {
   #[ inline ]
-  fn make_0() -> Self { Self( Default::default(), Default::default() ) }
+  fn from_0() -> Self { Self( Default::default(), Default::default() ) }
 }
 impl< T1 > TheModule::From_1< T1 > for Pair< T1 >
 where

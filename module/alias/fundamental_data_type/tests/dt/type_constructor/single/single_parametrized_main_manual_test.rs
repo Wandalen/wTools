@@ -220,7 +220,7 @@ for Single< T1, T2 >
   }
 }
 
-TheModule::_if_make!
+TheModule::_if_from!
 {
   impl< T1 : PartialEq + std::marker::Copy, T2 : Default > TheModule::From_1< mod1::Floats< T1, T2 > >
   for Single< T1, T2 >

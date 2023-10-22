@@ -184,7 +184,7 @@ pub( crate ) mod private
         }
       }
 
-      $crate::_if_make!
+      $crate::_if_from!
       {
 
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
@@ -192,7 +192,7 @@ pub( crate ) mod private
         for $Name < $ParamName >
         {
           #[ inline ]
-          fn make_0() -> Self
+          fn from_0() -> Self
           {
             Self( $crate::_Vec::new() )
           }
@@ -433,7 +433,7 @@ pub( crate ) mod private
         }
       }
 
-      $crate::_if_make!
+      $crate::_if_from!
       {
 
         impl
@@ -443,7 +443,7 @@ pub( crate ) mod private
         $Name $( < $( $ParamName ),* > )?
         {
           #[ inline ]
-          fn make_0() -> Self
+          fn from_0() -> Self
           {
             Self( $crate::_Vec::< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >::new() )
           }

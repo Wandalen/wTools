@@ -2,7 +2,7 @@
 use super::*;
 
 #[ test ]
-fn make_named_fields()
+fn from_named_fields()
 {
   use TheModule::prelude::*;
 
@@ -15,20 +15,20 @@ fn make_named_fields()
     d : i32,
   }
 
-  include!( "./only_test/make_named_fields.rs" );
+  include!( "./only_test/from_named_fields.rs" );
 }
 
 //
 
 #[ test ]
-fn make_tuple()
+fn from_tuple()
 {
   use TheModule::prelude::*;
 
   #[ derive( Debug, PartialEq, TheModule::Make ) ]
   struct StructTuple( i32, i32, i32, i32 );
 
-  // include!( "./only_test/make_tuple.rs" );
+  // include!( "./only_test/from_tuple.rs" );
 }
 
 //
@@ -46,11 +46,11 @@ fn sample()
     b : i32,
   }
 
-  let got : MyStruct = make!();
+  let got : MyStruct = from!();
   let exp = MyStruct { a : 0, b : 0 };
   a_id!( got, exp );
 
-  let got : MyStruct = make!( 13 );
+  let got : MyStruct = from!( 13 );
   let exp = MyStruct { a : 13, b : 13 };
   a_id!( got, exp );
 

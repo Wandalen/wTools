@@ -98,12 +98,12 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make1" ) */
-      let instance1 : Pair< mod1::Float > = TheModule::make!( mk!( 13.0 ) );
+      let instance1 : Pair< mod1::Float > = TheModule::from!( mk!( 13.0 ) );
       let instance2 = Pair::< mod1::Float >::from( [ mk!( 13.0 ), mk!( 13.0 ) ] );
       a_id!( instance1, instance2 );
 
       /* test.case( "make2" ) */
-      let instance1 : Pair< mod1::Float > = TheModule::make!( mk!( 13.0 ), mk!( 31.0 ) );
+      let instance1 : Pair< mod1::Float > = TheModule::from!( mk!( 13.0 ), mk!( 31.0 ) );
       let instance2 = Pair::< mod1::Float >::from( [ mk!( 13.0 ), mk!( 31.0 ) ] );
       a_id!( instance1, instance2 );
     }
@@ -264,12 +264,12 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
-      let got : TheModule::HomoPair< f32 > = TheModule::make!();
+      let got : TheModule::HomoPair< f32 > = TheModule::from!();
       let exp = TheModule::HomoPair::< f32 >( 0.0, 0.0 );
       a_id!( got, exp );
 
       /* test.case( "make2" ) */
-      let got : TheModule::HomoPair< f32 > = TheModule::make!( 13.0, 31.0 );
+      let got : TheModule::HomoPair< f32 > = TheModule::from!( 13.0, 31.0 );
       let exp = TheModule::HomoPair::< f32 >( 13.0, 31.0 );
       a_id!( got, exp );
     }

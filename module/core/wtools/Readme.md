@@ -88,7 +88,7 @@ In this example structure, Struct1 could be constructed either without arguments
 
   impl From_0 for Struct1
   {
-    fn make_0() -> Self
+    fn from_0() -> Self
     {
       Self { a : 0, b : 0 }
     }
@@ -110,15 +110,15 @@ In this example structure, Struct1 could be constructed either without arguments
     }
   }
 
-  let got : Struct1 = make!();
+  let got : Struct1 = from!();
   let exp = Struct1{ a : 0, b : 0 };
   assert_eq!( got, exp );
 
-  let got : Struct1 = make!( 13 );
+  let got : Struct1 = from!( 13 );
   let exp = Struct1{ a : 13, b : 13 };
   assert_eq!( got, exp );
 
-  let got : Struct1 = make!( 1, 3 );
+  let got : Struct1 = from!( 1, 3 );
   let exp = Struct1{ a : 1, b : 3 };
   assert_eq!( got, exp );
 }

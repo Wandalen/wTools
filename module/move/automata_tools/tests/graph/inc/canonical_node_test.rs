@@ -8,7 +8,7 @@
 //   {
 //     use TheModule::prelude::*;
 //
-//     let node : TheModule::canonical::Node = make!( 13 );
+//     let node : TheModule::canonical::Node = from!( 13 );
 //     a_id!( node.id(), 13.into() );
 //
 //   }
@@ -17,9 +17,9 @@
 //   {
 //     use TheModule::prelude::*;
 //
-//     let node : TheModule::canonical::Node = make!( 13 );
+//     let node : TheModule::canonical::Node = from!( 13 );
 //     a_id!( node.id(), 13.into() );
-//     let cellnode : TheModule::NodeCell< _ > = make!( node );
+//     let cellnode : TheModule::NodeCell< _ > = from!( node );
 //
 //   }
 //

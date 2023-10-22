@@ -37,7 +37,7 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
         #[ automatically_derived ]
         impl wtools::From_0 for #item_name
         {
-          fn make_0() -> Self
+          fn from_0() -> Self
           {
             #( #vars_assing_default )*
             // let a = Default::default();
@@ -106,7 +106,7 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
         #[ automatically_derived ]
         impl wtools::From_0 for #item_name
         {
-          fn make_0() -> Self
+          fn from_0() -> Self
           {
             #( #vars_assing_default )*
             // let a = Default::default();

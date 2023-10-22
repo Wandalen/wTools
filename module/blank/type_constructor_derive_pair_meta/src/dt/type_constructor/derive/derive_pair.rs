@@ -376,7 +376,7 @@ impl DerivePair
     let param1 = &self.fields.0.ty;
     let param2 = &self.fields.1.ty;
 
-    quote!( _if_make!
+    quote!( _if_from!
     {
       impl< #( #generics ),* > From_0 for #struct_name< #( #gtypes ),* >
       where
@@ -384,7 +384,7 @@ impl DerivePair
         #param2 : Default,
       {
         #[ inline ]
-        fn make_0() -> Self
+        fn from_0() -> Self
         {
           Self( Default::default(), Default::default() )
         }
@@ -399,7 +399,7 @@ impl DerivePair
     let gtypes = &self.gtypes;
     let param = &self.fields.0.ty;
 
-    quote!( _if_make!
+    quote!( _if_from!
     {
       impl< #( #generics ),* > From_1< #param > for #struct_name< #( #gtypes ),* >
       where
@@ -422,7 +422,7 @@ impl DerivePair
     let param1 = &self.fields.0.ty;
     let param2 = &self.fields.1.ty;
 
-    quote!( _if_make!
+    quote!( _if_from!
     {
       impl< #( #generics ),* > From_2< #param1, #param2 > for #struct_name< #( #gtypes ),* >
       {

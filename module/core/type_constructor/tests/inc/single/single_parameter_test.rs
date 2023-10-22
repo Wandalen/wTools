@@ -136,7 +136,7 @@ tests_impls!
     /* test.case( "make0" ) */
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
-      let got : TheModule::Single< f32 > = TheModule::make!();
+      let got : TheModule::Single< f32 > = TheModule::from!();
       let exp = TheModule::Single::< f32 >::from( 0.0 );
       a_id!( got, exp );
     }
@@ -144,7 +144,7 @@ tests_impls!
     /* test.case( "make1" ) */
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
-      let got : TheModule::Single< f32 > = TheModule::make!( 13.0 );
+      let got : TheModule::Single< f32 > = TheModule::from!( 13.0 );
       let exp = TheModule::Single::< f32 >::from( 13.0 );
       a_id!( got, exp );
     }

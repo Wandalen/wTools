@@ -29,7 +29,7 @@ tests_impls!
   {
     use TheModule::prelude::*;
 
-    let mut factory : GenerativeNodeFactory::< TheModule::IdentityWithInt > = make!();
+    let mut factory : GenerativeNodeFactory::< TheModule::IdentityWithInt > = from!();
     let n1 = factory.node_making( 1 );
     let n1b = factory.node( 1 );
     a_id!( n1, n1b.id() );

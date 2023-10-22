@@ -78,7 +78,7 @@ dbg!( vec_of_i32_in_tuple );
 ### Make.
 
 Make is the variadic constructor. It's the unified interface of the arbitrary-length constructor.
-After implementing several traits `From_0`, `From_1` up to `MakeN` one can use make `make!` to construct instances.
+After implementing several traits `From_0`, `From_1` up to `MakeN` one can use make `from!` to construct instances.
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -87,9 +87,9 @@ After implementing several traits `From_0`, `From_1` up to `MakeN` one can use m
 {
   use type_constructor::prelude::*;
 
-  let instance1 : Struct1 = make!();
-  let instance2 : Struct1 = make!( 13 );
-  let instance3 : Struct1 = make!( 1, 3 );
+  let instance1 : Struct1 = from!();
+  let instance2 : Struct1 = from!( 13 );
+  let instance3 : Struct1 = from!( 1, 3 );
 
 }
 ```
@@ -421,7 +421,7 @@ where
   T1 : Default,
   T2 : Default,
 {
-  fn make_0() -> Self { Self( Default::default(), Default::default() ) }
+  fn from_0() -> Self { Self( Default::default(), Default::default() ) }
 }
 
 #[ cfg( feature = "make" ) ]
@@ -624,7 +624,7 @@ impl< T > From_0 for MyHomoPair< T >
 where
   T : Default,
 {
-  fn make_0() -> Self { Self( Default::default(), Default::default() ) }
+  fn from_0() -> Self { Self( Default::default(), Default::default() ) }
 }
 
 #[ cfg( feature = "make" ) ]
@@ -735,7 +735,7 @@ where
 #[ cfg( feature = "make" ) ]
 impl From_0 for MyMany
 {
-  fn make_0() -> Self { Self( std::vec::Vec::< i32 >::new() ) }
+  fn from_0() -> Self { Self( std::vec::Vec::< i32 >::new() ) }
 }
 
 #[ cfg( feature = "make" ) ]
@@ -786,7 +786,7 @@ In this example structure, Struct1 could be constructed either without arguments
 
   impl From_0 for Struct1
   {
-    fn make_0() -> Self
+    fn from_0() -> Self
     {
       Self { a : 0, b : 0 }
     }
@@ -808,15 +808,15 @@ In this example structure, Struct1 could be constructed either without arguments
     }
   }
 
-  let got : Struct1 = make!();
+  let got : Struct1 = from!();
   let exp = Struct1{ a : 0, b : 0 };
   assert_eq!( got, exp );
 
-  let got : Struct1 = make!( 13 );
+  let got : Struct1 = from!( 13 );
   let exp = Struct1{ a : 13, b : 13 };
   assert_eq!( got, exp );
 
-  let got : Struct1 = make!( 1, 3 );
+  let got : Struct1 = from!( 1, 3 );
   let exp = Struct1{ a : 1, b : 3 };
   assert_eq!( got, exp );
 }

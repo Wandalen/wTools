@@ -188,7 +188,7 @@ for Single< T >
   }
 }
 
-TheModule::_if_make!
+TheModule::_if_from!
 {
 
   impl< T > TheModule::From_0
@@ -196,7 +196,7 @@ TheModule::_if_make!
   where T : Default
   {
     #[ inline ]
-    fn make_0() -> Self
+    fn from_0() -> Self
     {
       Self( Default::default() )
     }

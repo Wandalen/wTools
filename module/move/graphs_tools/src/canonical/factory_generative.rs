@@ -174,9 +174,9 @@ pub( crate ) mod private
   // {
   //   index!
   //   {
-  //     // make_0,
+  //     // from_0,
   //   }
-  //   fn make_0() -> Self
+  //   fn from_0() -> Self
   //   {
   //     let id_to_node_map = IndexMap::new();
   //     let id_to_edge_map = IndexMap::new();

@@ -20,22 +20,22 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
-      let got : Many< f32, f64 > = TheModule::make!();
+      let got : Many< f32, f64 > = TheModule::from!();
       let exp = Many::< f32, f64 >( std::vec::Vec::new() );
       a_id!( got, exp );
 
       /* test.case( "make1" ) */
-      let got : Many< f32, f64 > = TheModule::make!( mk!( 1.0 ) );
+      let got : Many< f32, f64 > = TheModule::from!( mk!( 1.0 ) );
       let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ) ) );
       a_id!( got, exp );
 
       /* test.case( "make2" ) */
-      let got : Many< f32, f64 > = TheModule::make!( mk!( 1.0 ), mk!( 1.0 ) );
+      let got : Many< f32, f64 > = TheModule::from!( mk!( 1.0 ), mk!( 1.0 ) );
       let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ), mk!( 1.0 ) ) );
       a_id!( got, exp );
 
       /* test.case( "make3" ) */
-      let got : Many< f32, f64 > = TheModule::make!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
+      let got : Many< f32, f64 > = TheModule::from!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) );
       let exp = Many::< f32, f64 >( vec!( mk!( 1.0 ), mk!( 1.0 ), mk!( 1.0 ) ) );
       a_id!( got, exp );
     }

@@ -23,7 +23,7 @@ pub( crate ) mod private
 
   impl From_0 for Context
   {
-    fn make_0() -> Self
+    fn from_0() -> Self
     {
       let id = Id::new::< Self >();
       let stroke = None;

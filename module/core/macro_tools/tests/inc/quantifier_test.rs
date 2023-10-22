@@ -75,7 +75,7 @@ tests_impls!
     ));
     exp.push( TheModule::Pair::new
     (
-      // make!(),
+      // from!(),
       Default::default(),
       syn::Ident::new( "x3", proc_macro2::Span::call_site() ),
     ));

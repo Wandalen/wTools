@@ -76,7 +76,7 @@ impl DeriveMake
     (
       impl From_0 for #struct_name
       {
-        fn make_0() -> Self
+        fn from_0() -> Self
         {
           #creation
         }

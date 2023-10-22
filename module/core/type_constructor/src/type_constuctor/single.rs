@@ -207,7 +207,7 @@ pub( crate ) mod private
         }
       }
 
-      $crate::_if_make!
+      $crate::_if_from!
       {
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
         $crate::From_0
@@ -215,7 +215,7 @@ pub( crate ) mod private
         where $ParamName : Default
         {
           #[ inline ]
-          fn make_0() -> Self
+          fn from_0() -> Self
           {
             Self( Default::default() )
           }
@@ -475,7 +475,7 @@ pub( crate ) mod private
         }
       }
 
-      $crate::_if_make!
+      $crate::_if_from!
       {
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?

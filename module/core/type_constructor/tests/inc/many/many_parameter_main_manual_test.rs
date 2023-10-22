@@ -101,13 +101,13 @@ impl< T > TheModule::AsSlice< T > for Many< T >
   }
 }
 
-TheModule::_if_make!
+TheModule::_if_from!
 {
 
   impl< T > TheModule::From_0 for Many< T >
   {
     #[inline]
-    fn make_0() -> Self
+    fn from_0() -> Self
     {
       Self( TheModule::_Vec::new() )
     }

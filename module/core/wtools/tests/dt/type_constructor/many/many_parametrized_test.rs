@@ -210,7 +210,7 @@ tests_impls!
 //
 //     impl TheModule :: From_0 for Structs
 //     {
-//       #[inline] fn make_0() -> Self
+//       #[inline] fn from_0() -> Self
 //       { Self(TheModule :: _Vec :: < Struct > :: new()) }
 //     }
 //

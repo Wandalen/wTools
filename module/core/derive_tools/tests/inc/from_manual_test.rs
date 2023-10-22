@@ -2,7 +2,7 @@
 use super::*;
 
 #[ test ]
-fn make_named_fields()
+fn from_named_fields()
 {
 
   #[ derive( Debug, PartialEq ) ]
@@ -16,7 +16,7 @@ fn make_named_fields()
 
   impl TheModule::wtools::From_0 for StructNamedFields
   {
-    fn make_0() -> Self
+    fn from_0() -> Self
     {
       let a = Default::default();
       let b = Default::default();
@@ -41,13 +41,13 @@ fn make_named_fields()
 //     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
 //   }
 
-  include!( "./only_test/make_named_fields.rs" );
+  include!( "./only_test/from_named_fields.rs" );
 }
 
 //
 
 #[ test ]
-fn make_tuple()
+fn from_tuple()
 {
 
   #[ derive( Debug, PartialEq ) ]
@@ -55,7 +55,7 @@ fn make_tuple()
 
   impl TheModule::wtools::From_0 for StructTuple
   {
-    fn make_0() -> Self
+    fn from_0() -> Self
     {
       let a = Default::default();
       let b = Default::default();
@@ -80,7 +80,7 @@ fn make_tuple()
 //     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self( a, b, c, c ) }
 //   }
 
-  include!( "./only_test/make_tuple.rs" );
+  include!( "./only_test/from_tuple.rs" );
 }
 
 //

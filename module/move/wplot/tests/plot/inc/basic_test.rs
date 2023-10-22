@@ -60,14 +60,14 @@ tests_impls!
     let mut c = TheModule::context();
     // let c = TheModule::context().new();
 
-    // c.canvas.size( make!( 32, 32 ) );
+    // c.canvas.size( from!( 32, 32 ) );
     let c = c
     // .stroke().color( [ 1.0, 0.0, 1.0 ] ).end()
     .stroke().width( 2.0 ).color( [ 1.0, 0.0, 1.0 ] ).context()
     // c.draw().begin();
     // c.draw().name( "drawing1" );
     .draw().rect().context()
-    // c.draw().rect().region( make!( 0.0, 0.0 ), make!( 1.0, 1.0 ) ).context();
+    // c.draw().rect().region( from!( 0.0, 0.0 ), from!( 1.0, 1.0 ) ).context();
     // c.draw().end();
     // c.draw().now();
     ;

@@ -78,16 +78,16 @@ pub( crate ) mod private
   /// ## Make.
   ///
   /// Make is the variadic constructor. It's the unified interface of the arbitrary-length constructor.
-  /// After implementing several traits `From_0`, `From_1` up to `MakeN` one can use make `make!` to construct instances.
+  /// After implementing several traits `From_0`, `From_1` up to `MakeN` one can use make `from!` to construct instances.
   ///
   /// ```rust ignore
   /// #[ cfg( feature = "make" ) ]
   /// {
   ///   use type_constructor::prelude::*;
   ///
-  ///   let instance1 : Struct1 = make!();
-  ///   let instance2 : Struct1 = make!( 13 );
-  ///   let instance3 : Struct1 = make!( 1, 3 );
+  ///   let instance1 : Struct1 = from!();
+  ///   let instance2 : Struct1 = from!( 13 );
+  ///   let instance3 : Struct1 = from!( 1, 3 );
   ///
   /// }
   /// ```
@@ -384,7 +384,7 @@ pub( crate ) mod private
   ///   T1 : Default,
   ///   T2 : Default,
   /// {
-  ///   fn make_0() -> Self { Self( Default::default(), Default::default() ) }
+  ///   fn from_0() -> Self { Self( Default::default(), Default::default() ) }
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
@@ -579,7 +579,7 @@ pub( crate ) mod private
   /// where
   ///   T : Default,
   /// {
-  ///   fn make_0() -> Self { Self( Default::default(), Default::default() ) }
+  ///   fn from_0() -> Self { Self( Default::default(), Default::default() ) }
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
@@ -678,7 +678,7 @@ pub( crate ) mod private
   /// #[ cfg( feature = "make" ) ]
   /// impl From_0 for MyMany
   /// {
-  ///   fn make_0() -> Self { Self( std::vec::Vec::< i32 >::new() ) }
+  ///   fn from_0() -> Self { Self( std::vec::Vec::< i32 >::new() ) }
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]

@@ -172,7 +172,7 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make2" ) */
-      let got : Pair< f32, f64, f32 > = TheModule::make!( mk1!( 13.0 ), mk2!( 31.0 ) );
+      let got : Pair< f32, f64, f32 > = TheModule::from!( mk1!( 13.0 ), mk2!( 31.0 ) );
       let exp = Pair::< f32, f64, f32 >( mk1!( 13.0 ), mk2!( 31.0 ) );
       a_id!( got, exp );
     }
