@@ -78,7 +78,7 @@ pub( crate ) mod private
   /// ## Make.
   ///
   /// Make is the variadic constructor. It's the unified interface of the arbitrary-length constructor.
-  /// After implementing several traits `Make0`, `Make1` up to `MakeN` one can use make `make!` to construct instances.
+  /// After implementing several traits `From_0`, `From_1` up to `MakeN` one can use make `make!` to construct instances.
   ///
   /// ```rust ignore
   /// #[ cfg( feature = "make" ) ]
@@ -330,9 +330,9 @@ pub( crate ) mod private
   /// }
   ///
   /// #[cfg( feature = "make" )]
-  /// impl Make2< i32, i64 > for MyPair
+  /// impl From_2< i32, i64 > for MyPair
   /// {
-  ///   fn make_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
+  ///   fn from_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
   /// }
   ///
   /// /* ... */
@@ -379,7 +379,7 @@ pub( crate ) mod private
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl< T1, T2 > Make0 for MyPair< T1, T2 >
+  /// impl< T1, T2 > From_0 for MyPair< T1, T2 >
   /// where
   ///   T1 : Default,
   ///   T2 : Default,
@@ -388,9 +388,9 @@ pub( crate ) mod private
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl< T1, T2 > Make2< T1, T2 > for MyPair< T1, T2 >
+  /// impl< T1, T2 > From_2< T1, T2 > for MyPair< T1, T2 >
   /// {
-  ///   fn make_2( _0 : T1, _1 : T2 ) -> Self { Self( _0, _1 ) }
+  ///   fn from_2( _0 : T1, _1 : T2 ) -> Self { Self( _0, _1 ) }
   /// }
   ///
   /// /* ... */
@@ -431,9 +431,9 @@ pub( crate ) mod private
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl Make2< i32, i64 > for MyPair
+  /// impl From_2< i32, i64 > for MyPair
   /// {
-  ///   fn make_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
+  ///   fn from_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
   /// }
   ///
   /// /* ... */
@@ -575,7 +575,7 @@ pub( crate ) mod private
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl< T > Make0 for MyHomoPair< T >
+  /// impl< T > From_0 for MyHomoPair< T >
   /// where
   ///   T : Default,
   /// {
@@ -583,17 +583,17 @@ pub( crate ) mod private
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl< T > Make1< T > for MyHomoPair< T >
+  /// impl< T > From_1< T > for MyHomoPair< T >
   /// where
   ///   T : Clone,
   /// {
-  ///   fn make_1( _0 : T ) -> Self { Self( _0.clone(), _0.clone() ) }
+  ///   fn from_1( _0 : T ) -> Self { Self( _0.clone(), _0.clone() ) }
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl< T > Make2< T, T > for MyHomoPair< T >
+  /// impl< T > From_2< T, T > for MyHomoPair< T >
   /// {
-  ///   fn make_2( _0 : T, _1 : T ) -> Self { Self( _0, _1 ) }
+  ///   fn from_2( _0 : T, _1 : T ) -> Self { Self( _0, _1 ) }
   /// }
   ///
   /// /* ... */
@@ -676,27 +676,27 @@ pub( crate ) mod private
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl Make0 for MyMany
+  /// impl From_0 for MyMany
   /// {
   ///   fn make_0() -> Self { Self( std::vec::Vec::< i32 >::new() ) }
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl Make1< i32 > for MyMany
+  /// impl From_1< i32 > for MyMany
   /// {
-  ///   fn make_1( _0 : i32 ) -> Self { Self( vec![ _0 ] ) }
+  ///   fn from_1( _0 : i32 ) -> Self { Self( vec![ _0 ] ) }
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl Make2< i32, i32 > for MyMany
+  /// impl From_2< i32, i32 > for MyMany
   /// {
-  ///   fn make_2( _0 : i32, _1 : i32 ) -> Self { Self( vec![ _0, _1 ] ) }
+  ///   fn from_2( _0 : i32, _1 : i32 ) -> Self { Self( vec![ _0, _1 ] ) }
   /// }
   ///
   /// #[ cfg( feature = "make" ) ]
-  /// impl Make3< i32, i32, i32 > for MyMany
+  /// impl From_3< i32, i32, i32 > for MyMany
   /// {
-  ///   fn make_3( _0 : i32, _1 : i32, _2 : i32 ) -> Self { Self( vec![ _0, _1, _2 ] ) }
+  ///   fn from_3( _0 : i32, _1 : i32, _2 : i32 ) -> Self { Self( vec![ _0, _1, _2 ] ) }
   /// }
   ///
   /// /* ... */

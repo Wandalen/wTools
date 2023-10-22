@@ -210,7 +210,7 @@ pub( crate ) mod private
       $crate::_if_make!
       {
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::Make0
+        $crate::From_0
         for $Name < $ParamName >
         where $ParamName : Default
         {
@@ -223,11 +223,11 @@ pub( crate ) mod private
 
 
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::Make1< $ParamName >
+        $crate::From_1< $ParamName >
         for $Name < $ParamName >
         {
           #[ inline ]
-          fn make_1( _0 : $ParamName ) -> Self
+          fn from_1( _0 : $ParamName ) -> Self
           {
             Self( _0 )
           }
@@ -479,12 +479,12 @@ pub( crate ) mod private
       {
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-        $crate::Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+        $crate::From_1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
         for
         $Name $( < $( $ParamName ),* > )?
         {
           #[ inline ]
-          fn make_1( _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
+          fn from_1( _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ) -> Self
           {
             Self( _0 )
           }

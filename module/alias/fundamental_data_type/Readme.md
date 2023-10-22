@@ -78,7 +78,7 @@ dbg!( vec_of_i32_in_tuple );
 ## Make.
 
 Make is the variadic constructor. It's the unified interface of the arbitrary-length constructor.
-After implementing several traits `Make0`, `Make1` up to `MakeN` one can use make `make!` to construct instances.
+After implementing several traits `From_0`, `From_1` up to `MakeN` one can use make `make!` to construct instances.
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -343,9 +343,9 @@ impl From< MyPair > for ( i32, i64 )
 }
 
 #[cfg( feature = "make" )]
-impl Make2< i32, i64 > for MyPair
+impl From_2< i32, i64 > for MyPair
 {
-  fn make_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
+  fn from_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
 }
 
 /* ... */
@@ -394,7 +394,7 @@ impl< T1, T2 > From< MyPair< T1, T2 > > for ( T1, T2 )
 }
 
 #[ cfg( feature = "make" ) ]
-impl< T1, T2 > Make0 for MyPair< T1, T2 >
+impl< T1, T2 > From_0 for MyPair< T1, T2 >
 where
   T1 : Default,
   T2 : Default,
@@ -403,9 +403,9 @@ where
 }
 
 #[ cfg( feature = "make" ) ]
-impl< T1, T2 > Make2< T1, T2 > for MyPair< T1, T2 >
+impl< T1, T2 > From_2< T1, T2 > for MyPair< T1, T2 >
 {
-  fn make_2( _0 : T1, _1 : T2 ) -> Self { Self( _0, _1 ) }
+  fn from_2( _0 : T1, _1 : T2 ) -> Self { Self( _0, _1 ) }
 }
 
 /* ... */
@@ -448,9 +448,9 @@ impl From< MyPair > for ( i32, i64 )
 }
 
 #[ cfg( feature = "make" ) ]
-impl Make2< i32, i64 > for MyPair
+impl From_2< i32, i64 > for MyPair
 {
-  fn make_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
+  fn from_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
 }
 
 /* ... */
@@ -594,7 +594,7 @@ impl< T > AsSlice< T > for MyHomoPair< T >
 }
 
 #[ cfg( feature = "make" ) ]
-impl< T > Make0 for MyHomoPair< T >
+impl< T > From_0 for MyHomoPair< T >
 where
   T : Default,
 {
@@ -602,17 +602,17 @@ where
 }
 
 #[ cfg( feature = "make" ) ]
-impl< T > Make1< T > for MyHomoPair< T >
+impl< T > From_1< T > for MyHomoPair< T >
 where
   T : Clone,
 {
-  fn make_1( _0 : T ) -> Self { Self( _0.clone(), _0.clone() ) }
+  fn from_1( _0 : T ) -> Self { Self( _0.clone(), _0.clone() ) }
 }
 
 #[ cfg( feature = "make" ) ]
-impl< T > Make2< T, T > for MyHomoPair< T >
+impl< T > From_2< T, T > for MyHomoPair< T >
 {
-  fn make_2( _0 : T, _1 : T ) -> Self { Self( _0, _1 ) }
+  fn from_2( _0 : T, _1 : T ) -> Self { Self( _0, _1 ) }
 }
 
 /* ... */
@@ -697,27 +697,27 @@ where
 }
 
 #[ cfg( feature = "make" ) ]
-impl Make0 for MyMany
+impl From_0 for MyMany
 {
   fn make_0() -> Self { Self( std::vec::Vec::< i32 >::new() ) }
 }
 
 #[ cfg( feature = "make" ) ]
-impl Make1< i32 > for MyMany
+impl From_1< i32 > for MyMany
 {
-  fn make_1( _0 : i32 ) -> Self { Self( vec![ _0 ] ) }
+  fn from_1( _0 : i32 ) -> Self { Self( vec![ _0 ] ) }
 }
 
 #[ cfg( feature = "make" ) ]
-impl Make2< i32, i32 > for MyMany
+impl From_2< i32, i32 > for MyMany
 {
-  fn make_2( _0 : i32, _1 : i32 ) -> Self { Self( vec![ _0, _1 ] ) }
+  fn from_2( _0 : i32, _1 : i32 ) -> Self { Self( vec![ _0, _1 ] ) }
 }
 
 #[ cfg( feature = "make" ) ]
-impl Make3< i32, i32, i32 > for MyMany
+impl From_3< i32, i32, i32 > for MyMany
 {
-  fn make_3( _0 : i32, _1 : i32, _2 : i32 ) -> Self { Self( vec![ _0, _1, _2 ] ) }
+  fn from_3( _0 : i32, _1 : i32, _2 : i32 ) -> Self { Self( vec![ _0, _1, _2 ] ) }
 }
 
 /* ... */
@@ -728,7 +728,7 @@ println!( "x : {:?}", x.0 );
 
 ### Basic use-case :: make - variadic constructor
 
-Implement traits [Make0], [Make1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
+Implement traits [From_0], [From_1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
 In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.
 - Constructor without arguments fills fields with zero.
 - Constructor with a single argument sets both fields to the value of the argument.
@@ -748,7 +748,7 @@ In this example structure, Struct1 could be constructed either without arguments
     b : i32,
   }
 
-  impl Make0 for Struct1
+  impl From_0 for Struct1
   {
     fn make_0() -> Self
     {
@@ -756,17 +756,17 @@ In this example structure, Struct1 could be constructed either without arguments
     }
   }
 
-  impl Make1< i32 > for Struct1
+  impl From_1< i32 > for Struct1
   {
-    fn make_1( val : i32 ) -> Self
+    fn from_1( val : i32 ) -> Self
     {
       Self { a : val, b : val }
     }
   }
 
-  impl Make2< i32, i32 > for Struct1
+  impl From_2< i32, i32 > for Struct1
   {
-    fn make_2( val1 : i32, val2 : i32 ) -> Self
+    fn from_2( val1 : i32, val2 : i32 ) -> Self
     {
       Self { a : val1, b : val2 }
     }

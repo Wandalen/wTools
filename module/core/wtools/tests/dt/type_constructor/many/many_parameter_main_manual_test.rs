@@ -104,7 +104,7 @@ impl< T > TheModule::AsSlice< T > for Many< T >
 TheModule::_if_make!
 {
 
-  impl< T > TheModule::Make0 for Many< T >
+  impl< T > TheModule::From_0 for Many< T >
   {
     #[inline]
     fn make_0() -> Self
@@ -113,27 +113,27 @@ TheModule::_if_make!
     }
   }
 
-  impl< T > TheModule::Make1 < T > for Many< T >
+  impl< T > TheModule::From_1 < T > for Many< T >
   {
     #[inline]
-    fn make_1(_0 : T) -> Self
+    fn from_1(_0 : T) -> Self
     {
       Self(TheModule::_vec! [_0])
     }
   }
 
-  impl< T > TheModule::Make2 < T, T > for Many< T >
+  impl< T > TheModule::From_2 < T, T > for Many< T >
   {
     #[inline]
-    fn make_2(_0 : T, _1 : T) -> Self
+    fn from_2(_0 : T, _1 : T) -> Self
     {
       Self( TheModule::_vec![ _0, _1 ] )
     }
   }
 
-  impl< T > TheModule::Make3 < T, T, T > for Many< T >
+  impl< T > TheModule::From_3 < T, T, T > for Many< T >
   {
-    #[inline] fn make_3(_0 : T, _1 : T, _2 : T) -> Self
+    #[inline] fn from_3(_0 : T, _1 : T, _2 : T) -> Self
     {
       Self( TheModule::_vec![ _0, _1, _2 ] )
     }

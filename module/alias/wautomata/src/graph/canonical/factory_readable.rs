@@ -128,7 +128,7 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId > Make0
+  impl< NodeId, EdgeId > From_0
   for ReadableNodeFactory< NodeId, EdgeId >
   where
     NodeId : IdentityInterface,

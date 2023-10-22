@@ -57,7 +57,7 @@ use std_tools::prelude::*;
 
 <!-- ### Basic use-case :: make - variadic constructor
 
-Implement traits [Make0], [Make1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
+Implement traits [From_0], [From_1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
 In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.
 - Constructor without arguments fills fields with zero.
 - Constructor with a single argument sets both fields to the value of the argument.
@@ -73,7 +73,7 @@ struct Struct1
   b : i32,
 }
 
-impl Make0 for Struct1
+impl From_0 for Struct1
 {
   fn make_0() -> Self
   {
@@ -81,17 +81,17 @@ impl Make0 for Struct1
   }
 }
 
-impl Make1< i32 > for Struct1
+impl From_1< i32 > for Struct1
 {
-  fn make_1( val : i32 ) -> Self
+  fn from_1( val : i32 ) -> Self
   {
     Self { a : val, b : val }
   }
 }
 
-impl Make2< i32, i32 > for Struct1
+impl From_2< i32, i32 > for Struct1
 {
-  fn make_2( val1 : i32, val2 : i32 ) -> Self
+  fn from_2( val1 : i32, val2 : i32 ) -> Self
   {
     Self { a : val1, b : val2 }
   }

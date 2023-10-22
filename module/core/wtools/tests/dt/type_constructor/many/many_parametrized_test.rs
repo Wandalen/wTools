@@ -208,27 +208,27 @@ tests_impls!
 //     // where Struct : Clone,
 //     { #[inline] fn as_slice(& self) -> & [Struct] { & self [..] } }
 //
-//     impl TheModule :: Make0 for Structs
+//     impl TheModule :: From_0 for Structs
 //     {
 //       #[inline] fn make_0() -> Self
 //       { Self(TheModule :: _Vec :: < Struct > :: new()) }
 //     }
 //
-//     impl TheModule :: Make1 < Struct > for Structs
+//     impl TheModule :: From_1 < Struct > for Structs
 //     {
-//       #[inline] fn make_1(_0 : Struct,) -> Self
+//       #[inline] fn from_1(_0 : Struct,) -> Self
 //       { Self(TheModule :: _vec! [_0]) }
 //     }
 //
-//     impl TheModule :: Make2 < Struct, Struct, > for Structs
+//     impl TheModule :: From_2 < Struct, Struct, > for Structs
 //     {
-//       #[inline] fn make_2(_0 : Struct, _1 : Struct,) -> Self
+//       #[inline] fn from_2(_0 : Struct, _1 : Struct,) -> Self
 //       { Self(TheModule :: _vec! [_0, _1]) }
 //     }
 //
-//     impl TheModule :: Make3 < Struct, Struct, Struct, > for Structs
+//     impl TheModule :: From_3 < Struct, Struct, Struct, > for Structs
 //     {
-//       #[inline] fn make_3(_0 : Struct, _1 : Struct, _2 : Struct,) -> Self
+//       #[inline] fn from_3(_0 : Struct, _1 : Struct, _2 : Struct,) -> Self
 //       { Self(TheModule :: _vec! [_0, _1, _2]) }
 //     }
 //

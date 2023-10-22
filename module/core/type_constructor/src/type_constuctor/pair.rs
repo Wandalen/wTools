@@ -26,7 +26,7 @@ pub( crate ) mod private
     )
     =>
     {
-      #[ derive( type_constructor_meta::Pair ) ]
+      // #[ derive( type_constructor_meta::Pair ) ]
       $( #[ $Meta ] )*
       $Vis struct $Name
       <
@@ -88,7 +88,7 @@ pub( crate ) mod private
     )
     =>
     {
-      #[ derive( type_constructor_meta::Pair ) ]
+      // #[ derive( type_constructor_meta::Pair ) ]
       $( #[ $Meta ] )*
       $Vis struct $Name
       <
@@ -115,7 +115,7 @@ pub( crate ) mod private
     )
     =>
     {
-      #[ derive( type_constructor_meta::Pair ) ]
+      // #[ derive( type_constructor_meta::Pair ) ]
       $( #[ $Meta ] )*
       $Vis struct $Name
       <
@@ -139,7 +139,7 @@ pub( crate ) mod private
     )
     =>
     {
-      #[ derive( type_constructor_meta::Pair ) ]
+      // #[ derive( type_constructor_meta::Pair ) ]
       $( #[ $Meta ] )*
       $Vis struct $Name
       <
@@ -192,7 +192,7 @@ pub( crate ) mod private
   // trace_macros!( false );
 
   pub use _pair;
-  pub use type_constructor_meta;
+  // pub use type_constructor_meta;
 }
 
 /// Protected namespace of the module.
@@ -235,6 +235,6 @@ pub mod prelude
   {
     Pair,
     HomoPair,
-    type_constructor_meta,
+    // type_constructor_meta,
   };
 }

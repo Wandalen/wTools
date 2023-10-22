@@ -7,7 +7,7 @@ pub( crate ) mod private
   /// Constructor without arguments.
   ///
 
-  pub trait Make0
+  pub trait From_0
   where
     Self : Sized,
   {
@@ -24,74 +24,74 @@ pub( crate ) mod private
   /// Constructor with single argument.
   ///
 
-  pub trait Make1< Arg >
+  pub trait From_1< Arg >
   where
     Self : Sized,
   {
     /// Constructor without arguments.
     fn make( arg : Arg ) -> Self
     {
-      Self::make_1( arg )
+      Self::from_1( arg )
     }
     /// Constructor without arguments.
-    fn make_1( arg : Arg ) -> Self;
+    fn from_1( arg : Arg ) -> Self;
   }
 
   ///
   /// Constructor with two arguments.
   ///
 
-  pub trait Make2< Arg1, Arg2 >
+  pub trait From_2< Arg1, Arg2 >
   where
     Self : Sized,
   {
     /// Constructor with two arguments.
     fn make( arg1 : Arg1, arg2 : Arg2 ) -> Self
     {
-      Self::make_2( arg1, arg2 )
+      Self::from_2( arg1, arg2 )
     }
     /// Constructor with two arguments.
-    fn make_2( arg1 : Arg1, arg2 : Arg2 ) -> Self;
+    fn from_2( arg1 : Arg1, arg2 : Arg2 ) -> Self;
   }
 
   ///
   /// Constructor with three arguments.
   ///
 
-  pub trait Make3< Arg1, Arg2, Arg3 >
+  pub trait From_3< Arg1, Arg2, Arg3 >
   where
     Self : Sized,
   {
     /// Constructor with three arguments.
     fn make( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3 ) -> Self
     {
-      Self::make_3( arg1, arg2, arg3 )
+      Self::from_3( arg1, arg2, arg3 )
     }
     /// Constructor with three arguments.
-    fn make_3( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3 ) -> Self;
+    fn from_3( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3 ) -> Self;
   }
 
   ///
   /// Constructor with four arguments.
   ///
 
-  pub trait Make4< Arg1, Arg2, Arg3, Arg4 >
+  pub trait From_4< Arg1, Arg2, Arg3, Arg4 >
   where
     Self : Sized,
   {
     /// Constructor with four arguments.
     fn make( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3, arg4 : Arg4 ) -> Self
     {
-      Self::make_4( arg1, arg2, arg3, arg4 )
+      Self::from_4( arg1, arg2, arg3, arg4 )
     }
     /// Constructor with four arguments.
-    fn make_4( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3, arg4 : Arg4 ) -> Self;
+    fn from_4( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3, arg4 : Arg4 ) -> Self;
   }
 
   ///
   /// Variadic constructor.
   ///
-  /// Implement traits [Make0], [Make1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
+  /// Implement traits [From_0], [From_1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
   /// In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.
   /// - Constructor without arguments fills fields with zero.
   /// - Constructor with a single argument sets both fields to the value of the argument.
@@ -109,7 +109,7 @@ pub( crate ) mod private
   ///     b : i32,
   ///   }
   ///
-  ///   impl Make0 for Struct1
+  ///   impl From_0 for Struct1
   ///   {
   ///     fn make_0() -> Self
   ///     {
@@ -117,17 +117,17 @@ pub( crate ) mod private
   ///     }
   ///   }
   ///
-  ///   impl Make1< i32 > for Struct1
+  ///   impl From_1< i32 > for Struct1
   ///   {
-  ///     fn make_1( val : i32 ) -> Self
+  ///     fn from_1( val : i32 ) -> Self
   ///     {
   ///       Self { a : val, b : val }
   ///     }
   ///   }
   ///
-  ///   impl Make2< i32, i32 > for Struct1
+  ///   impl From_2< i32, i32 > for Struct1
   ///   {
-  ///     fn make_2( val1 : i32, val2 : i32 ) -> Self
+  ///     fn from_2( val1 : i32, val2 : i32 ) -> Self
   ///     {
   ///       Self { a : val1, b : val2 }
   ///     }
@@ -172,7 +172,7 @@ pub( crate ) mod private
     )
     =>
     {
-      $crate::Make0::make_0();
+      $crate::From_0::make_0();
     };
 
     (
@@ -180,7 +180,7 @@ pub( crate ) mod private
     )
     =>
     {
-      $crate::Make1::make_1( $Arg1 );
+      $crate::From_1::from_1( $Arg1 );
     };
 
     (
@@ -188,7 +188,7 @@ pub( crate ) mod private
     )
     =>
     {
-      $crate::Make2::make_2( $Arg1, $Arg2 );
+      $crate::From_2::from_2( $Arg1, $Arg2 );
     };
 
     (
@@ -196,7 +196,7 @@ pub( crate ) mod private
     )
     =>
     {
-      $crate::Make3::make_3( $Arg1, $Arg2, $Arg3 );
+      $crate::From_3::from_3( $Arg1, $Arg2, $Arg3 );
     };
 
     (
@@ -204,7 +204,7 @@ pub( crate ) mod private
     )
     =>
     {
-      $crate::Make4::make_4( $Arg1, $Arg2, $Arg3, $Arg4 );
+      $crate::From_4::from_4( $Arg1, $Arg2, $Arg3, $Arg4 );
     };
 
     (
@@ -267,11 +267,11 @@ pub mod prelude
   pub use super::private::
   {
 
-    Make0,
-    Make1,
-    Make2,
-    Make3,
-    Make4,
+    From_0,
+    From_1,
+    From_2,
+    From_3,
+    From_4,
 
     make,
 

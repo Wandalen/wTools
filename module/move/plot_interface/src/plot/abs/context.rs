@@ -13,7 +13,7 @@ pub( crate ) mod private
   where
     Self :
       HasIdInterface +
-      Make0 +
+      From_0 +
       fmt::Debug +
     ,
   {

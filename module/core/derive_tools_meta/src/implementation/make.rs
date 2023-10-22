@@ -35,7 +35,7 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
       qt!
       {
         #[ automatically_derived ]
-        impl wtools::Make0 for #item_name
+        impl wtools::From_0 for #item_name
         {
           fn make_0() -> Self
           {
@@ -56,9 +56,9 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
         }
 
         #[ automatically_derived ]
-        impl wtools::Make1< i32 > for #item_name
+        impl wtools::From_1< i32 > for #item_name
         {
-          fn make_1( src : i32 ) -> Self
+          fn from_1( src : i32 ) -> Self
           {
             #( #src_into_vars )*
             // let a = src.into();
@@ -104,7 +104,7 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
       qt!
       {
         #[ automatically_derived ]
-        impl wtools::Make0 for #item_name
+        impl wtools::From_0 for #item_name
         {
           fn make_0() -> Self
           {
@@ -125,9 +125,9 @@ pub fn make( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
         }
 
         #[ automatically_derived ]
-        impl wtools::Make1< i32 > for #item_name
+        impl wtools::From_1< i32 > for #item_name
         {
-          fn make_1( src : i32 ) -> Self
+          fn from_1( src : i32 ) -> Self
           {
             #( #src_into_vars )*
             // let a = src.into();

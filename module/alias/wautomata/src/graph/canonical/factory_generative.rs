@@ -164,7 +164,7 @@ pub( crate ) mod private
 
   //
 
-  impl< NodeId, EdgeId > Make0
+  impl< NodeId, EdgeId > From_0
   for GenerativeNodeFactory< NodeId, EdgeId >
   where
     NodeId : IdentityInterface + HasIdGenerator< NodeId >,

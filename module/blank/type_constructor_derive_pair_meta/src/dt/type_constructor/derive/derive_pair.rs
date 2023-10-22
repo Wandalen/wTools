@@ -41,7 +41,7 @@ impl DerivePair
     let gtypes = &self.gtypes;
     let param1 = &self.fields.0.ty;
     let param2 = &self.fields.1.ty;
-    
+
     quote!
     (
       impl
@@ -88,7 +88,7 @@ impl DerivePair
     let gtypes = &self.gtypes;
     let param1 = &self.fields.0.ty;
     let param2 = &self.fields.1.ty;
-    
+
     quote!
     (
       impl< #( #generics ),* > From  < #struct_name< #( #gtypes ),* > > for ( #param1, #param2 )
@@ -152,7 +152,7 @@ impl DerivePair
       }
     )
   }
-  
+
   fn impl_from_array( &self ) -> proc_macro2::TokenStream
   {
     let struct_name = &self.ident;
@@ -338,7 +338,7 @@ impl DerivePair
       }
     )
   }
-  
+
   fn impl_deref_mut( &self ) -> proc_macro2::TokenStream
   {
     let struct_name = &self.ident;
@@ -378,7 +378,7 @@ impl DerivePair
 
     quote!( _if_make!
     {
-      impl< #( #generics ),* > Make0 for #struct_name< #( #gtypes ),* >
+      impl< #( #generics ),* > From_0 for #struct_name< #( #gtypes ),* >
       where
         #param1 : Default,
         #param2 : Default,
@@ -401,12 +401,12 @@ impl DerivePair
 
     quote!( _if_make!
     {
-      impl< #( #generics ),* > Make1< #param > for #struct_name< #( #gtypes ),* >
+      impl< #( #generics ),* > From_1< #param > for #struct_name< #( #gtypes ),* >
       where
         #param : Clone
       {
         #[ inline ]
-        fn make_1( val : #param ) -> Self
+        fn from_1( val : #param ) -> Self
         {
           Self( val.clone(), val.clone() )
         }
@@ -424,10 +424,10 @@ impl DerivePair
 
     quote!( _if_make!
     {
-      impl< #( #generics ),* > Make2< #param1, #param2 > for #struct_name< #( #gtypes ),* >
+      impl< #( #generics ),* > From_2< #param1, #param2 > for #struct_name< #( #gtypes ),* >
       {
         #[ inline ]
-        fn make_2( _1 : #param1, _2 : #param2 ) -> Self
+        fn from_2( _1 : #param1, _2 : #param2 ) -> Self
         {
           Self( _1, _2 )
         }
@@ -487,4 +487,3 @@ pub fn derive_pair( input: proc_macro::TokenStream ) -> proc_macro::TokenStream
 
   proc_macro::TokenStream::from( result )
 }
-  

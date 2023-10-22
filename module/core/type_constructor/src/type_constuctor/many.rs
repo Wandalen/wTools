@@ -188,7 +188,7 @@ pub( crate ) mod private
       {
 
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::Make0
+        $crate::From_0
         for $Name < $ParamName >
         {
           #[ inline ]
@@ -199,37 +199,37 @@ pub( crate ) mod private
         }
 
         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::Make1< $ParamName >
+        $crate::From_1< $ParamName >
         for $Name < $ParamName >
         {
           #[ inline ]
-          fn make_1( _0 : $ParamName ) -> Self
+          fn from_1( _0 : $ParamName ) -> Self
           {
             Self( $crate::_vec![ _0 ] )
           }
         }
 
-        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::Make2< $ParamName, $ParamName >
-        for $Name < $ParamName >
-        {
-          #[ inline ]
-          fn make_2( _0 : $ParamName, _1 : $ParamName ) -> Self
-          {
-            Self( $crate::_vec![ _0, _1 ] )
-          }
-        }
-
-        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::Make3< $ParamName, $ParamName, $ParamName >
-        for $Name < $ParamName >
-        {
-          #[ inline ]
-          fn make_3( _0 : $ParamName, _1 : $ParamName, _2 : $ParamName ) -> Self
-          {
-            Self( $crate::_vec![ _0, _1, _2 ] )
-          }
-        }
+//         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+//         $crate::From_2< $ParamName, $ParamName >
+//         for $Name < $ParamName >
+//         {
+//           #[ inline ]
+//           fn from_2( _0 : $ParamName, _1 : $ParamName ) -> Self
+//           {
+//             Self( $crate::_vec![ _0, _1 ] )
+//           }
+//         }
+//
+//         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+//         $crate::From_3< $ParamName, $ParamName, $ParamName >
+//         for $Name < $ParamName >
+//         {
+//           #[ inline ]
+//           fn from_3( _0 : $ParamName, _1 : $ParamName, _2 : $ParamName ) -> Self
+//           {
+//             Self( $crate::_vec![ _0, _1, _2 ] )
+//           }
+//         }
 
       }
 
@@ -438,7 +438,7 @@ pub( crate ) mod private
 
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-        $crate::Make0
+        $crate::From_0
         for
         $Name $( < $( $ParamName ),* > )?
         {
@@ -451,12 +451,12 @@ pub( crate ) mod private
 
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-        $crate::Make1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
+        $crate::From_1< $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? >
         for
         $Name $( < $( $ParamName ),* > )?
         {
           #[ inline ]
-          fn make_1
+          fn from_1
           (
             _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
           )
@@ -468,7 +468,7 @@ pub( crate ) mod private
 
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-        $crate::Make2
+        $crate::From_2
         <
           $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
           $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
@@ -477,7 +477,7 @@ pub( crate ) mod private
         $Name $( < $( $ParamName ),* > )?
         {
           #[ inline ]
-          fn make_2
+          fn from_2
           (
             _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
             _1 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
@@ -490,7 +490,7 @@ pub( crate ) mod private
 
         impl
         $( < $( $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? ),* > )?
-        $crate::Make3
+        $crate::From_3
         <
           $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
           $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
@@ -500,7 +500,7 @@ pub( crate ) mod private
         $Name $( < $( $ParamName ),* > )?
         {
           #[ inline ]
-          fn make_3
+          fn from_3
           (
             _0 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,
             _1 : $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?,

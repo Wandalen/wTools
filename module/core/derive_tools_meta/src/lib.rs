@@ -343,7 +343,7 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 }
 
 ///
-/// Derive macro to implement default constructors `Make0`, `Make1`, `Make2`, `Make3`.
+/// Derive macro to implement default constructors `From_0`, `From_1`, `From_2`, `From_3`.
 ///
 /// ### Sample :: struct instead of macro.
 ///
@@ -359,14 +359,14 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// ```rust, ignore, no_run
 /// pub struct IsTransparent( bool );
-/// impl Make0 for IsTransparent
+/// impl From_0 for IsTransparent
 /// {
 ///   fn make0() -> Self
 ///   {
 ///     Self::default();
 ///   }
 /// }
-/// impl Make1 for IsTransparent
+/// impl From_1 for IsTransparent
 /// {
 ///   fn make1( src : bool ) -> Self
 ///   {

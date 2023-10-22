@@ -107,7 +107,8 @@ path = "examples/type_constructor_many_sample/src/main.rs"
 required-features = [ "many" ]
 
 [dependencies]
-# inspect_type = { workspace = true ] }
+derive_tools = { workspace = true, features = [ "enabled", "type_from" ] }
+# inspect_type = { workspace = true }
 # type_constructor_make_meta = { workspace = true }
 # type_constructor_derive_pair_meta = { workspace = true }
 

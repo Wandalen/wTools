@@ -44,8 +44,11 @@ mod inner_from_manual_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_test;
 
-#[ cfg( all( feature = "type_make" ) ) ]
+#[ cfg( all( feature = "type_from" ) ) ]
 mod make_manual_test;
 
-#[ cfg( all( feature = "derive_make", feature = "type_make" ) ) ]
+#[ cfg( all( feature = "type_from" ) ) ]
+mod make_manual_beyond_test;
+
+#[ cfg( all( feature = "derive_make", feature = "type_from" ) ) ]
 mod make_derive_test;

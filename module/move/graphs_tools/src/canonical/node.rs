@@ -70,7 +70,7 @@ pub( crate ) mod private
     }
   }
 
-//   impl< NodeId, EdgeId, IntoId > Make1< IntoId >
+//   impl< NodeId, EdgeId, IntoId > From_1< IntoId >
 //   for Node< NodeId, EdgeId >
 //   where
 //     NodeId : IdentityInterface,
@@ -78,7 +78,7 @@ pub( crate ) mod private
 //
 //     IntoId : Into< < Self as HasId >::Id >,
 //   {
-//     fn make_1( id : IntoId ) -> Self
+//     fn from_1( id : IntoId ) -> Self
 //     {
 //       let out_nodes = Default::default();
 //       let in_nodes = Default::default();

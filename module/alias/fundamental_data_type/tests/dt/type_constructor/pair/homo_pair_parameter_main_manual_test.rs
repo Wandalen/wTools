@@ -106,24 +106,24 @@ impl< T1 > TheModule::AsSlice< T1 > for Pair< T1 >
   #[ inline ]
   fn as_slice( &self ) -> &[ T1 ] { &TheModule::AsArray::as_array( self )[ ..] }
 }
-impl< T1 > TheModule::Make0 for Pair< T1 >
+impl< T1 > TheModule::From_0 for Pair< T1 >
 where
   T1 : Default,
 {
   #[ inline ]
   fn make_0() -> Self { Self( Default::default(), Default::default() ) }
 }
-impl< T1 > TheModule::Make1< T1 > for Pair< T1 >
+impl< T1 > TheModule::From_1< T1 > for Pair< T1 >
 where
   T1 : Clone,
 {
   #[ inline ]
-  fn make_1( _0 : T1 ) -> Self { Self( _0.clone(), _0.clone() ) }
+  fn from_1( _0 : T1 ) -> Self { Self( _0.clone(), _0.clone() ) }
 }
-impl< T1 > TheModule::Make2< T1, T1 > for Pair< T1 >
+impl< T1 > TheModule::From_2< T1, T1 > for Pair< T1 >
 {
   #[ inline ]
-  fn make_2( _0 : T1, _1 : T1 ) -> Self { Self( _0, _1 ) }
+  fn from_2( _0 : T1, _1 : T1 ) -> Self { Self( _0, _1 ) }
 }
 
 include!( "./homo_pair_parameter_main_test_only.rs" );

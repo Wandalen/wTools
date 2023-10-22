@@ -194,7 +194,7 @@ for Many < T1, T2 >
 TheModule::_if_make!
 {
 
-  impl < T1 : PartialEq, T2 : Default > TheModule::Make0
+  impl < T1 : PartialEq, T2 : Default > TheModule::From_0
   for Many < T1, T2 >
   {
     #[ inline ] fn make_0() -> Self
@@ -204,33 +204,33 @@ TheModule::_if_make!
   }
 
   impl < T1 : PartialEq, T2 : Default >
-  TheModule::Make1 < mod1::Floats < T1, T2 > >
+  TheModule::From_1 < mod1::Floats < T1, T2 > >
   for Many < T1, T2 >
   {
     #[ inline ]
-    fn make_1( _0 : mod1::Floats < T1, T2 >, ) -> Self
+    fn from_1( _0 : mod1::Floats < T1, T2 >, ) -> Self
     {
       Self( TheModule::_vec! [ _0 ] )
     }
   }
 
   impl < T1 : PartialEq, T2 : Default >
-  TheModule::Make2 < mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, >
+  TheModule::From_2 < mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, >
   for Many < T1, T2 >
   {
     #[ inline ]
-    fn make_2( _0 : mod1::Floats < T1, T2 >, _1 : mod1::Floats < T1, T2 >, ) -> Self
+    fn from_2( _0 : mod1::Floats < T1, T2 >, _1 : mod1::Floats < T1, T2 >, ) -> Self
     {
       Self( TheModule::_vec! [ _0, _1 ] )
     }
   }
 
   impl < T1 : PartialEq, T2 : Default >
-  TheModule::Make3 < mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, >
+  TheModule::From_3 < mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, >
   for Many < T1, T2 >
   {
     #[ inline ]
-    fn make_3( _0 : mod1::Floats < T1, T2 >, _1 : mod1::Floats < T1, T2 >, _2 : mod1::Floats < T1, T2 >, ) -> Self
+    fn from_3( _0 : mod1::Floats < T1, T2 >, _1 : mod1::Floats < T1, T2 >, _2 : mod1::Floats < T1, T2 >, ) -> Self
     {
       Self( TheModule::_vec! [ _0, _1, _2 ] )
     }

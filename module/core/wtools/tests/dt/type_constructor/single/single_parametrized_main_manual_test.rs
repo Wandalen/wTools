@@ -222,11 +222,11 @@ for Single< T1, T2 >
 
 TheModule::_if_make!
 {
-  impl< T1 : PartialEq + std::marker::Copy, T2 : Default > TheModule::Make1< mod1::Floats< T1, T2 > >
+  impl< T1 : PartialEq + std::marker::Copy, T2 : Default > TheModule::From_1< mod1::Floats< T1, T2 > >
   for Single< T1, T2 >
   {
     #[ inline ]
-    fn make_1( _0 : mod1::Floats< T1, T2 > ) -> Self
+    fn from_1( _0 : mod1::Floats< T1, T2 > ) -> Self
     {
       Self( _0 )
     }

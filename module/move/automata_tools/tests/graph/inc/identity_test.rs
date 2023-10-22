@@ -41,9 +41,9 @@ tests_impls!
     // zzz
     // /* test.case( "from pair" ) */
     // {
-    //   let src = Pair::make_2( 1, 3 );
+    //   let src = Pair::from_2( 1, 3 );
     //   let got : Pair< IdentityWithInt, IdentityWithInt > = src.into();
-    //   let exp = Pair::make_2( IdentityWithInt::make( 1 ), IdentityWithInt::make( 3 ) );
+    //   let exp = Pair::from_2( IdentityWithInt::make( 1 ), IdentityWithInt::make( 3 ) );
     //   a_id!( got, exp );
     // }
 

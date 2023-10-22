@@ -358,7 +358,7 @@ tests_impls!
 
   fn struct_transitive_from()
   {
-    // use TheModule::{ Make2 };
+    // use TheModule::{ From_2 };
 
     /* test.case( "from tuple" ) */
     {
@@ -398,9 +398,9 @@ tests_impls!
     //     single MySingle : i32
     //   };
     //   // trace_macros!( false );
-    //   let src = TheModule::Pair::make_2( 1, 3 );
+    //   let src = TheModule::Pair::from_2( 1, 3 );
     //   // let got : TheModule::Pair< MySingle, MySingle > = src.into();
-    //   let exp = TheModule::Pair::make_2( MySingle::make_1( 1 ), MySingle::make_1( 3 ) );
+    //   let exp = TheModule::Pair::from_2( MySingle::from_1( 1 ), MySingle::from_1( 3 ) );
     //   // a_id!( got, exp );
     // }
 

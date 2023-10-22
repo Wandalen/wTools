@@ -21,7 +21,7 @@ pub( crate ) mod private
   {
   }
 
-  impl Make0 for Context
+  impl From_0 for Context
   {
     fn make_0() -> Self
     {
