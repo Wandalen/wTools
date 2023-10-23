@@ -11,13 +11,15 @@
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
-
+#[ cfg( feature = "enabled" ) ]
 /// Assertions.
 pub mod assert;
 /// Alias for std::error::BasicError.
+#[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
 pub mod error;
 /// An alias for std::result::Result.
+#[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
 pub mod result;
 
@@ -36,6 +38,7 @@ pub mod dependency
 
 }
 
+#[ cfg( feature = "enabled" ) ]
 /// Exceptions handling mechanism for libs.
 pub mod for_lib
 {
@@ -44,6 +47,7 @@ pub mod for_lib
   pub use ::thiserror::*;
 }
 
+#[ cfg( feature = "enabled" ) ]
 // qqq : cover by simple test /* aaa : Dmytro : added trivial test routine `basic` */
 /// Exceptions handling mechanism for apps.
 pub mod for_app
@@ -55,12 +59,14 @@ pub mod for_app
 
 // qqq : cover by simple test /* aaa : Dmytro : added trivial test routines in test suite `assert` */
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
 }
 
+#[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 pub use protected::*;
 // pub use protected::BasicError;
@@ -68,6 +74,7 @@ pub use protected::*;
 // #[ doc( inline ) ]
 // pub use protected::Error;
 
+#[ cfg( feature = "enabled" ) ]
 /// Shared with parent namespace of the module
 pub mod orphan
 {
@@ -75,6 +82,7 @@ pub mod orphan
   pub use super::exposed::*;
 }
 
+#[ cfg( feature = "enabled" ) ]
 /// Exposed namespace of the module.
 pub mod exposed
 {
@@ -95,6 +103,7 @@ pub mod exposed
   // pub use super::error::BasicError;
 }
 
+#[ cfg( feature = "enabled" ) ]
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
