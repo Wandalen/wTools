@@ -10,6 +10,7 @@ tests_impls!
   #[ test ]
   fn is_slice_basic()
   {
+    #[ cfg( feature = "nightly" ) ]
     let src : &[ i32 ] = &[ 1, 2, 3 ];
     a_id!( TheModule::is_slice!( src ), true );
     a_id!( TheModule::is_slice!( &[ 1, 2, 3 ][ .. ] ), true );
