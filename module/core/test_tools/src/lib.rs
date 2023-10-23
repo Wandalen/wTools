@@ -38,6 +38,7 @@ pub mod dependency
   pub use ::diagnostics_tools;
 }
 
+#[ cfg( feature = "enabled" ) ]
 use ::meta_tools::mod_interface;
 
 mod_interface!

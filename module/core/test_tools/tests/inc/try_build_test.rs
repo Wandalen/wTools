@@ -1,7 +1,5 @@
 use super::*;
 
-mod basic_test;
-
 #[ test_tools::rustversion::nightly ]
 #[ test ]
 fn trybuild_test()
