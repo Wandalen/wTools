@@ -66,9 +66,7 @@ pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::
-  {
-    orphan::*,
-  };
+  orphan::*;
 }
 
 #[ doc( inline ) ]

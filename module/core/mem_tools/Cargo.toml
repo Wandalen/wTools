@@ -31,30 +31,32 @@ include = [
 
 [features]
 default = [
+  "enabled",
 ]
 full = [
   "use_alloc",
+  "enabled",
 ]
 # use_std = []
 no_std = []
 use_alloc = []
 enabled = []
 
-[lib]
-name = "mem_tools"
-path = "src/mem/mem_tools_lib.rs"
+# [lib]
+# name = "mem_tools"
+# path = "src/mem/mem_tools_lib.rs"
 
-[[test]]
-name = "mem_tools_test"
-path = "tests/mem/mem_tools_tests.rs"
+# [[test]]
+# name = "mem_tools_test"
+# path = "tests/mem/mem_tools_tests.rs"
 
-[[test]]
-name = "mem_tools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+# [[test]]
+# name = "mem_tools_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
 
-[[example]]
-name = "mem_tools_trivial_sample"
-path = "examples/mem_tools_trivial_sample/src/main.rs"
+# [[example]]
+# name = "mem_tools_trivial_sample"
+# path = "examples/mem_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 
