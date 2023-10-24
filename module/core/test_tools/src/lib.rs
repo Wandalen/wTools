@@ -41,6 +41,7 @@ pub mod dependency
 #[ cfg( feature = "enabled" ) ]
 use ::meta_tools::mod_interface;
 
+#[ cfg( feature = "enabled" ) ]
 mod_interface!
 {
   /// Basics.

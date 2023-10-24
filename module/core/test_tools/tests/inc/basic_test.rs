@@ -13,6 +13,7 @@
 
 use super::*;
 
+#[ cfg( feature = "enabled" ) ]
 TheModule::tests_impls!
 {
 
@@ -50,6 +51,7 @@ TheModule::tests_impls!
 
 //
 
+#[ cfg( feature = "enabled" ) ]
 TheModule::tests_index!
 {
   pass1_test,

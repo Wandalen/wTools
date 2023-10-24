@@ -4,6 +4,7 @@
 
 use test_tools as TheModule;
 #[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 use test_tools::exposed::*;
 
 mod inc;
