@@ -1,8 +1,0 @@
-[package]
-name = "is_slice_trivial_sample"
-version = "0.0.0"
-edition = "2021"
-publish = false
-
-[dependencies]
-is_slice = { workspace = true }
