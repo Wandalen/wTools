@@ -23,8 +23,8 @@ all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
 include = [
-  "/rust/impl/typing/implements_impl.rs",
-  "/rust/impl/typing/implements_lib.rs",
+  # "/rust/impl/typing/implements_impl.rs",
+  # "/rust/impl/typing/implements_lib.rs",
   "/Cargo.toml",
   "/Readme.md",
   "/License",
@@ -38,21 +38,21 @@ no_std = []
 use_alloc = []
 enabled = []
 
-[lib]
-name = "implements"
-path = "src/typing/implements_lib.rs"
+# [lib]
+# name = "implements"
+# path = "src/typing/implements_lib.rs"
 
-[[test]]
-name = "implements_test"
-path = "tests/typing/implements_tests.rs"
+# [[test]]
+# name = "implements_test"
+# path = "tests/typing/implements_tests.rs"
 
-[[test]]
-name = "implements_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+# [[test]]
+# name = "implements_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
 
-[[example]]
-name = "implements_trivial_sample"
-path = "examples/implements_trivial_sample/src/main.rs"
+# [[example]]
+# name = "implements_trivial_sample"
+# path = "examples/implements_trivial_sample/src/main.rs"
 
 [dependencies]
 
