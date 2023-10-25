@@ -37,12 +37,18 @@ mod deref_mut_manual_test;
 mod deref_mut_test;
 
 mod from_inner_manual_test;
+mod named_from_inner_manual_test;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_test;
+#[ cfg( feature = "derive_from" ) ]
+mod named_from_inner_test;
 
 mod inner_from_manual_test;
+mod named_inner_from_manual_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_test;
+#[ cfg( feature = "derive_inner_from" ) ]
+mod named_inner_from_test;
 
 #[ cfg( all( feature = "type_from" ) ) ]
 mod variadic_from_manual_test;
