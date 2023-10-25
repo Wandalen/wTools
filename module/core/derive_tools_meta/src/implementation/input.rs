@@ -33,6 +33,23 @@ impl InputParsed
 
     return Err( syn_err!( self.item.span(), "Expects type for fields" ) );
   }
+
+  pub fn first_field_name( &self ) -> Result< Option< syn::Ident > >
+  {
+    let maybe_field = match self.fields
+    {
+      syn::Fields::Named( ref fields ) => fields.named.first(),
+      syn::Fields::Unnamed( ref fields ) => fields.unnamed.first(),
+      _ => return Err( syn_err!( self.fields.span(), "Expects fields" ) ),
+    };
+
+    if let Some( field ) = maybe_field
+    {
+      return Ok( field.ident.clone() )
+    }
+
+    return Err( syn_err!( self.item.span(), "Expects type for fields" ) );
+  }
 }
 
 //
