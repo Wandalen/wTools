@@ -1,6 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use smart_default::SmartDefault;
+
   use crate::string::split::*;
   use crate::string::isolate::isolate_right;
   use std::collections::HashMap;
@@ -152,8 +154,8 @@ pub( crate ) mod private
   /// Options for parser.
   ///
 
-  #[ derive( Debug ) ]
-  #[ perform( fn parse( mut self ) -> Request< 'a > ) ]
+  #[ derive( Debug, SmartDefault ) ]
+  // #[ perform( fn parse( mut self ) -> Request< 'a > ) ]
   pub struct ParseOptions< 'a >
   {
     #[ default( "" ) ]
@@ -299,11 +301,12 @@ pub( crate ) mod private
 
         if map_entries.1.is_some()
         {
-          let subject_and_key = isolate_right()
-          .src( map_entries.0.trim() )
-          .delimeter( " " )
-          .none( false )
-          .perform();
+          let subject_and_key = isolate_right();
+          // let subject_and_key = isolate_right()
+          // .src( map_entries.0.trim() )
+          // .delimeter( " " )
+          // .none( false )
+          // .perform();
           subject = subject_and_key.0;
           map_entries.0 = subject_and_key.2;
 
@@ -330,13 +333,13 @@ pub( crate ) mod private
 
             while a < ( splits.len() - 3 )
             {
-              let cuts = isolate_right()
-              .src( right.trim() )
-              .delimeter( " " )
-              .none( false )
-              .perform();
+              let cuts = isolate_right();
+              // .src( right.trim() )
+              // .delimeter( " " )
+              // .none( false )
+              // .perform();
 
-              if cuts.1.is_none()
+              if !cuts.1
               {
                 let mut joined = splits[ a + 2 ].clone();
                 joined.push_str( splits[ a + 3 ].as_str() );
@@ -470,9 +473,9 @@ pub( crate ) mod private
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///
 
-  pub fn request_parse<'a>() -> ParseOptionsFormer<'a>
+  pub fn request_parse<'a>() -> ParseOptions<'a>
   {
-    ParseOptions::former()
+    ParseOptions::default()
   }
 }
 

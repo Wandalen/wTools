@@ -1,14 +1,16 @@
 
 pub( crate ) mod private
 {
+  use smart_default::SmartDefault;
+
 
   ///
   /// Options for isolate.
   ///
 
   #[ allow( dead_code ) ]
-  #[ derive( Debug ) ]
-  #[ perform( fn isolate( &self ) -> ( &'a str, Option<&'a str>, &'a str ) ) ]
+  #[ derive( Debug, SmartDefault ) ]
+  // #[ perform( fn isolate( &self ) -> ( &'a str, Option<&'a str>, &'a str ) ) ]
   pub struct IsolateOptions<'a>
   {
     #[ default( "" ) ]
@@ -144,9 +146,9 @@ pub( crate ) mod private
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///
 
-  pub fn isolate<'a>() -> IsolateOptionsFormer<'a>
+  pub fn isolate<'a>() -> IsolateOptions<'a>
   {
-    IsolateOptions::former()
+    IsolateOptions::default()
   }
 
   ///
@@ -155,10 +157,11 @@ pub( crate ) mod private
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///
 
-  pub fn isolate_left<'a>() -> IsolateOptionsFormer<'a>
+  pub fn isolate_left<'a>() -> (&'a str, bool, &'a str)
   {
-    IsolateOptions::former()
-    .left( true )
+    let mut isolate_options = IsolateOptions::default();
+    isolate_options.left = true;
+    (isolate_options.src, isolate_options.left, isolate_options.delimeter)
   }
 
   ///
@@ -167,10 +170,11 @@ pub( crate ) mod private
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///
 
-  pub fn isolate_right<'a>() -> IsolateOptionsFormer<'a>
+  pub fn isolate_right<'a>() -> (&'a str, bool, &'a str)
   {
-    IsolateOptions::former()
-    .left( false )
+    let mut isolate_options = IsolateOptions::default();
+    isolate_options.left = false;
+    (isolate_options.src, isolate_options.left, isolate_options.delimeter)
   }
 }
 

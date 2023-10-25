@@ -3,7 +3,7 @@
 use super::*;
 
 //
-
+#[ cfg( feature = "enabled" ) ]
 tests_impls!
 {
   fn basic()
@@ -39,6 +39,7 @@ tests_impls!
 
 //
 
+#[ cfg( feature = "enabled" ) ]
 tests_index!
 {
   basic,

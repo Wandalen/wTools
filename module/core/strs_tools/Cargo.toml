@@ -78,6 +78,7 @@ string_split = []
 [dependencies]
 # former = { workspace = true }
 lexical = { version = "~6.1", optional = true }
+smart-default = "0.7.1"
 # woptions = { workspace = true }
 # wtools = { workspace = true }
 # error_tools = { workspace = true }
