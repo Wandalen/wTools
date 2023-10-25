@@ -109,6 +109,7 @@ pub mod prelude
 }
 
 #[ cfg( feature = "nightly" ) ]
+#[ cfg( feature = "enabled" ) ]
 mod nightly
 {
 
