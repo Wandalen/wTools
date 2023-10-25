@@ -13,6 +13,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 // #[ macro_use ]
+#[ cfg( feature = "enabled" ) ]
 mod implements_impl;
 
 /// Internal namespace.
