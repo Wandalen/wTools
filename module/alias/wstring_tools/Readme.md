@@ -5,7 +5,7 @@
 
 Tools to manipulate strings.
 
-### Basic use-case.
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 

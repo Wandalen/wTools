@@ -5,7 +5,7 @@
 
 Basic exceptions handling mechanism.
 
-### Basic use-case.
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 
