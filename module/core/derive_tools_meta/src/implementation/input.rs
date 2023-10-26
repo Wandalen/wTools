@@ -50,6 +50,26 @@ impl InputParsed
 
     return Err( syn_err!( self.item.span(), "Expects type for fields" ) );
   }
+
+  pub fn field_types ( &self ) -> Result< Vec< syn::Type> >{
+    let mut field_types: Vec< syn::Type > = vec![];
+    for elem in &self.fields_many {
+        field_types.push(elem.ty.clone());
+    }
+    Ok(field_types)
+  }
+
+  pub fn field_names( &self ) -> Result< Option< Vec< syn::Ident > > > {
+    let mut field_names: Vec< syn::Ident > = vec![];
+    for elem in &self.fields_many {
+      if let Some( ident ) = &elem.ident  {
+        field_names.push(ident.clone());
+      } else {
+          return Ok(None);
+      }
+    }
+    Ok(Some(field_names))
+  }
 }
 
 //
