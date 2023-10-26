@@ -1,5 +1,6 @@
 
-use super::*;
+use meta_tools::tests_impls;
+use meta_tools::tests_index;
 
 //
 

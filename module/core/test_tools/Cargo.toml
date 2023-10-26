@@ -41,13 +41,13 @@ enabled = []
 nightly = [ "typing_tools/nightly" ]
 # nightly = [ "wtest_basic/nightly" ]
 
-[lib]
-name = "test_tools"
-path = "src/test/test_tools_lib.rs"
+# [lib]
+# name = "test_tools"
+# path = "src/test/test_tools_lib.rs"
 
-[[test]]
-name = "test_tools_test"
-path = "tests/test/test_tools_tests.rs"
+# [[test]]
+# name = "test_tools_test"
+# path = "tests/test/test_tools_tests.rs"
 
 # [[test]]
 # name = "test_tools_smoke_test"
