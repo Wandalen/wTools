@@ -1,7 +1,7 @@
+#[ allow( unused_imports ) ]
 use super::*;
 
-mod basic_test;
-
+#[ cfg( feature = "enabled" ) ]
 #[ test_tools::rustversion::nightly ]
 #[ test ]
 fn trybuild_test()

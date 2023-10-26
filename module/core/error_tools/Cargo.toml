@@ -33,10 +33,12 @@ include = [
 
 [features]
 default = [
+  "enabled",
   "error_handling_for_lib",
   "error_handling_for_app",
 ]
 full = [
+  "enabled",
   "use_alloc",
   "error_handling_for_lib",
   "error_handling_for_app",
@@ -50,22 +52,6 @@ error_handling_for_lib = [ "thiserror" ]
 error_handling_for_app = [ "anyhow" ]
 
 # = entry
-
-[lib]
-name = "error_tools"
-path = "src/error/error_tools_lib.rs"
-
-[[test]]
-name = "error_test"
-path = "tests/error/error_tools_tests.rs"
-
-[[test]]
-name = "error_tools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "error_tools_trivial_sample"
-path = "examples/error_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 anyhow = { version = "~1.0", optional = true }
