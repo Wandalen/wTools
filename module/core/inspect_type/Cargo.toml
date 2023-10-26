@@ -22,12 +22,6 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  # "/rust/impl/typing/inspect_type_lib.rs",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
 default = [ "enabled" ]
