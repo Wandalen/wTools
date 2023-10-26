@@ -5,7 +5,7 @@
 
 Collection of general purpose meta tools.
 
-### Basic use-case.  :: variadic constructor of collections
+### Basic use-case  :: variadic constructor of collections
 
 Among other useful meta tools the module aggregates variadtic constructors of collections. For example macro `hmap!` for constructing a hash map.
 

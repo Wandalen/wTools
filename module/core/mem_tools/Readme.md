@@ -7,7 +7,7 @@ Collection of tools to manipulate memory.
 
 Performant size / pointer / region / data comparing.
 
-### Basic use-case.
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 

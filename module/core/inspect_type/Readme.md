@@ -5,7 +5,7 @@
 
 Diagnostic-purpose tools to inspect type of a variable and its size.
 
-### Basic use-case.
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 

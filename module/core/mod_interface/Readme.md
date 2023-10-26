@@ -5,7 +5,7 @@
 
 Protocol of modularity unifying interface of a module and introducing layers.
 
-### Basic use-case.
+### Basic use-case
 
 Library file with code `inner.rs`:
 

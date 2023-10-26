@@ -5,7 +5,7 @@
 
 Collection of general purpose time tools.
 
-### Basic use-case.
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 

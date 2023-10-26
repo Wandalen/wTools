@@ -5,7 +5,7 @@
 
 Former - variation of builder pattern.
 
-### Basic use-case.
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 

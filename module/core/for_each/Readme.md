@@ -37,7 +37,7 @@ dbg!( "c" );
 
 Macro `for_each` may be called either in function-style way or in map-style way.
 Use keys @Prefix @Postfix @Each to pass options as entries of a map.
-Options @Prefix and @Postfix are optional and their entries could be ommited, but entry @Each is mandatory.
+Options @Prefix and @Postfix are optional and their entries could be omitted, but entry @Each is mandatory.
 Order of options should always be @Prefix, @Postfix, @Each.
 
 <!-- {{# generate.module_sample{} #}} -->
@@ -66,7 +66,7 @@ dbg!( "prefix".to_string() + "c" + "postfix" );
 ### Basic use-case :: more than single token
 
 Both prefix and postfix have to be token tree ( `tt` ). But if you need something more complex put it into braces `{ ... }`.
-Macros `for_each` will remove outermost braces. Braces are optional in case of prefix/postfix is a singlle token.
+Macros `for_each` will remove outermost braces. Braces are optional in case of prefix/postfix is a single token.
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -89,7 +89,7 @@ dbg!( "prefix".to_string() + "c" + "3" + "postfix" );
 
 ### Basic use-case :: callbackless
 
-Callback macro is optinal.
+Callback macro is optional.
 Use map call style and omit path to callback macro with keyword `where` to invoke `for_each` without a callback.
 
 <!-- {{# generate.module_sample{} #}} -->

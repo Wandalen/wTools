@@ -5,7 +5,7 @@
 
 Macro to answer the question: is it a slice?
 
-### Basic use-case.
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 

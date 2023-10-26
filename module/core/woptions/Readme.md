@@ -5,7 +5,7 @@
 
 Mechanism to define map of options for a function and its defaults laconically.
 
-### Basic use-case.
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 
