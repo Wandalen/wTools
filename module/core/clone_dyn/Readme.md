@@ -4,13 +4,13 @@
 
 Derive to clone dyn structures.
 
-The purpose of the crate is very simple, making `dyn< Trait >` clonable with minimum efforts and complexity, simply by applying to derive to the trait.
+The crate's purpose is straightforward: it allows for easy cloning of `dyn< Trait >` with minimal effort and complexity, accomplished by applying the derive attribute to the trait.
 
 ### Alternative
 
-There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [dyn-clonable](https://github.com/kardeiz/objekt-clonable). Unlike alternatives, this solution is more compact and requires fewer efforts to use without loss of quality of the solution. Also, you can ask an inquiry and get answers, which is problematic in the case of alternatives.
+There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [dyn-clonable](https://github.com/kardeiz/objekt-clonable). Unlike other options, this solution is more concise and demands less effort to use, all without compromising the quality of the outcome. Also, you can ask an inquiry and get answers, which is problematic in the case of alternatives.
 
-### Basic use-case.
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 

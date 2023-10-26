@@ -5,7 +5,7 @@
 
 Collection of derives which extend STD.
 
-### Basic use-case.
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 
