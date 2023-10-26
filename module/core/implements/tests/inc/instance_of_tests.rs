@@ -6,9 +6,10 @@
 // #![ feature( trace_macros ) ]
 
 // use test_tools::exposed::*;
-use instance_of as TheModule;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
+
+use super::*;
 
 tests_impls!
 {
