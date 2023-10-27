@@ -4,7 +4,7 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( idents_concat ) ]
 
-use typing_tools as TheModule;
+use is_slice as TheModule;
 
 // #[ path = "./inc.rs" ]
 mod inc;

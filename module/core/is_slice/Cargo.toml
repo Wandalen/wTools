@@ -22,12 +22,6 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/typing/is_slice_lib.rs",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
 default = [ "enabled" ]
@@ -36,22 +30,6 @@ full = [ "enabled" ]
 no_std = []
 use_alloc = []
 enabled = []
-
-[lib]
-name = "is_slice"
-path = "src/typing/is_slice_lib.rs"
-
-[[test]]
-name = "is_slice_test"
-path = "tests/typing/is_slice_tests.rs"
-
-[[test]]
-name = "is_slice_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "is_slice_trivial_sample"
-path = "examples/is_slice_trivial_sample/src/main.rs"
 
 [dependencies]
 
