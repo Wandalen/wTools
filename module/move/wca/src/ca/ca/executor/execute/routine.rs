@@ -2,28 +2,29 @@ pub( crate ) mod private
 {
   use crate::{ Context, Value };
 
-  use wtools::{ HashMap, Result };
+  use std::collections::HashMap;
+  use wtools::Result;
 
   use std::{ fmt::Formatter, rc::Rc };
 
   /// Command Args
-  /// 
+  ///
   /// Used to contain subjects of a command and allow the user to retrieve them in comfortable way.
-  /// 
+  ///
   /// # Example:
-  /// 
+  ///
   /// ```
   /// use wca::prelude::*;
-  /// 
+  ///
   /// let args = Args( vec![ Value::String( "Hello, World!".to_string() ) ] );
-  /// 
+  ///
   /// let first_arg : &str = args.get_owned( 0 ).unwrap();
   /// assert_eq!( "Hello, World!", first_arg );
-  /// 
+  ///
   /// let first_arg : &str = args[ 0 ].clone().into();
   /// assert_eq!( "Hello, World!", first_arg );
   /// ```
-  /// 
+  ///
   /// ## Use case
   /// ```
   /// # use wca::{ Routine, Args };
@@ -32,7 +33,7 @@ pub( crate ) mod private
   ///   |( args, _ ) : ( Args, _ )|
   ///   {
   ///     let first_arg : i32 = args.get_owned( 0 ).unwrap();
-  /// 
+  ///
   ///     Ok( () )
   ///   }
   /// );
@@ -43,15 +44,15 @@ pub( crate ) mod private
   impl Args
   {
     /// Returns owned casted value by its index
-    /// 
+    ///
     /// ```
     /// # use wca::prelude::*;
-    /// 
+    ///
     /// let args = Args( vec![ Value::String( "Hello, World!".to_string() ) ] );
-    /// 
+    ///
     /// let first_arg : &str = args.get_owned( 0 ).unwrap();
     /// assert_eq!( "Hello, World!", first_arg );
-    /// 
+    ///
     /// let first_arg : &str = args[ 0 ].clone().into();
     /// assert_eq!( "Hello, World!", first_arg );
     /// ```
@@ -71,20 +72,20 @@ pub( crate ) mod private
   }
 
   /// Command Properties
-  /// 
+  ///
   /// Used to contain properties of a command and allow the user to retrieve them in comfortable way.
-  /// 
+  ///
   /// # Example:
-  /// 
+  ///
   /// ```
   /// use wca::prelude::*;
-  /// 
+  ///
   /// let props = Props( [ ( "hello".to_string(), Value::String( "World!".to_string() ) ) ].into() );
   /// let hello_prop : &str = props.get_owned( "hello" ).unwrap();
-  /// 
+  ///
   /// assert_eq!( "World!", hello_prop );
   /// ```
-  /// 
+  ///
   /// ## Use case
   /// ```
   /// # use wca::{ Routine, Props };
@@ -93,7 +94,7 @@ pub( crate ) mod private
   ///   |( _, props ) : ( _, Props )|
   ///   {
   ///     let key_option : i32 = props.get_owned( "key" ).unwrap();
-  /// 
+  ///
   ///     Ok( () )
   ///   }
   /// );
@@ -104,13 +105,13 @@ pub( crate ) mod private
   impl Props
   {
     /// Returns owned casted value by its key
-    /// 
+    ///
     /// ```
     /// # use wca::prelude::*;
-    /// 
+    ///
     /// let props = Props( [ ( "hello".to_string(), Value::String( "World!".to_string() ) ) ].into() );
     /// let hello_prop : &str = props.get_owned( "hello" ).unwrap();
-    /// 
+    ///
     /// assert_eq!( "World!", hello_prop );
     /// ```
     pub fn get_owned< K : AsRef< str >, T : From< Value > >( &self, key : K ) -> Option< T >
@@ -141,7 +142,7 @@ pub( crate ) mod private
   ///   |( args, props )|
   ///   {
   ///     // Do what you need to do
-  /// 
+  ///
   ///     Ok( () )
   ///   }
   /// );
@@ -154,11 +155,11 @@ pub( crate ) mod private
   ///   | ( args, props ), ctx |
   ///   {
   ///     // Do what you need to do
-  /// 
+  ///
   ///     Ok( () )
   ///   }
   /// );
-  
+
   #[ derive( Clone ) ]
   pub enum Routine
   {
@@ -180,7 +181,7 @@ pub( crate ) mod private
     ///   |( args, props )|
     ///   {
     ///     // Do what you need to do
-    /// 
+    ///
     ///     Ok( () )
     ///   }
     /// );
@@ -203,7 +204,7 @@ pub( crate ) mod private
     ///   | ( args, props ), ctx |
     ///   {
     ///     // Do what you need to do
-    /// 
+    ///
     ///     Ok( () )
     ///   }
     /// );

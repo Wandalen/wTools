@@ -2,10 +2,11 @@ pub( crate ) mod private
 {
   use crate::Type;
 
-  use wtools::{ HashMap, Former };
+  use std::collections::HashMap;
+  use former::Former;
 
   /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
-  /// 
+  ///
   /// This struct is used to describe a command's subject or property and validate it against the expected type. It contains a hint
   /// string that provides guidance to the user for entering a valid value, and a `Type` enum value that represents the expected
   /// type of the value.
@@ -28,11 +29,11 @@ pub( crate ) mod private
   }
 
   /// Command descriptor.
-  /// 
+  ///
   /// Based on this structure, the structure( `RawCommand` ) obtained after parsing will be validated and converted to `GrammarCommand`.
   ///
   /// # Example:
-  /// 
+  ///
   /// ```
   /// # use wca::{ Command, Type };
   /// let command = Command::former()

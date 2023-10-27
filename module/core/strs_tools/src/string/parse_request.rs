@@ -152,7 +152,7 @@ pub( crate ) mod private
   /// Options for parser.
   ///
 
-  #[ derive( Debug ) ]
+  #[ derive( Debug, former::Former ) ]
   #[ perform( fn parse( mut self ) -> Request< 'a > ) ]
   pub struct ParseOptions< 'a >
   {

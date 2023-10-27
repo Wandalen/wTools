@@ -12,7 +12,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-wtools::mod_interface!
+::wtools::meta::mod_interface!
 {
   /// The tools for operating over packages.
   #[ cfg( not( feature = "no_std" ) ) ]

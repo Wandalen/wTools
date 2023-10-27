@@ -6,7 +6,8 @@ pub( crate ) mod private
     RawCommand as Command,
     parser::parser::any_word,
   };
-  use wtools::{ HashMap, Result, err };
+  use std::collections::HashMap;
+  use wtools::{ Result, err };
   use nom::
   {
     branch::alt,

@@ -12,12 +12,13 @@ pub( crate ) mod private
   };
 
   use former::Former;
-  use wtools::{ HashMap, Result, err };
+  use std::collections::HashMap;
+  use wtools::{ Result, err };
 
   /// Represents a grammatically correct command with a phrase descriptor, a list of command subjects, and a set of command options.
-  /// 
+  ///
   /// # Example:
-  /// 
+  ///
   /// ```
   /// # use wca::{ GrammarCommand, Value };
   /// # use wtools::HashMap;
@@ -32,9 +33,9 @@ pub( crate ) mod private
   ///   ])
   /// };
   /// ```
-  /// 
+  ///
   /// In the above example, a `GrammarCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a typed values.
-  /// 
+  ///
   #[ derive( Debug ) ]
   pub struct GrammarCommand
   {
@@ -48,7 +49,7 @@ pub( crate ) mod private
 
   // TODO: Remove Clone
   /// Converts a `RawCommand` to a `GrammarCommand` by performing validation and type casting on values.
-  /// 
+  ///
   /// ```
   /// # use wca::{ Command, Type, GrammarConverter, RawCommand };
   /// # use wtools::HashMap;
@@ -98,7 +99,7 @@ pub( crate ) mod private
       self
     }
 
-    /// Expands the list of commands with received commands 
+    /// Expands the list of commands with received commands
     pub fn commands< V >( mut self, commands : V ) -> Self
     where
       V : Into< Vec< Command > >
@@ -119,7 +120,7 @@ pub( crate ) mod private
   impl GrammarConverter
   {
     /// Converts raw program to grammatically correct
-    /// 
+    ///
     /// Converts all namespaces into it with `to_namespace` method.
     pub fn to_program( &self, raw_program : Program< Namespace< RawCommand > > ) -> Result< Program< Namespace< GrammarCommand > > >
     {
@@ -132,7 +133,7 @@ pub( crate ) mod private
     }
 
     /// Converts raw namespace to grammatically correct
-    /// 
+    ///
     /// Converts all commands into it with `to_command` method.
     pub fn to_namespace( &self, raw_namespace : Namespace< RawCommand > ) -> Result< Namespace< GrammarCommand > >
     {
@@ -145,7 +146,7 @@ pub( crate ) mod private
     }
 
     /// Converts raw command to grammatically correct
-    /// 
+    ///
     /// Make sure that this command is described in the grammar and matches it(command itself and all it options too).
     pub fn to_command( &self, raw_command : RawCommand ) -> Result< GrammarCommand >
     {

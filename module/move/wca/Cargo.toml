@@ -65,8 +65,8 @@ name = "wca_trivial_sample"
 path = "examples/wca_trivial_sample/src/main.rs"
 
 [dependencies]
-wtools = { workspace = true }
-former = { workspace = true } # zzz : remove. fix
+wtools = { workspace = true, features = [ "default" ] }
+former = { workspace = true, features = [ "default" ] } # zzz : remove. fix
 anymap = "0.12"
 log = "0.4"
 nom = "7.1"

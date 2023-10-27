@@ -7,7 +7,7 @@ pub( crate ) mod private
   ///
 
   #[ allow( dead_code ) ]
-  #[ derive( Debug ) ]
+  #[ derive( Debug, former::Former ) ]
   #[ perform( fn isolate( &self ) -> ( &'a str, Option<&'a str>, &'a str ) ) ]
   pub struct IsolateOptions<'a>
   {

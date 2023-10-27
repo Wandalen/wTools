@@ -57,8 +57,9 @@ path = "tests/_integration_test/smoke_test.rs"
 # path = "examples/willbe_trivial_sample/src/main.rs"
 
 [dependencies]
-wtools = { workspace = true }
-wca = { workspace = true }
+wtools = { workspace = true, features = [ "default" ] }
+wca = { workspace = true, features = [ "default" ] }
+former = { workspace = true, features = [ "default" ] }
 anyhow = "~1.0"
 toml_edit = "~0.14"
 cargo_metadata = "~0.14"

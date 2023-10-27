@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::
+  use crate::tools::
   {
     bool::*,
     digest,
@@ -257,8 +257,5 @@ pub( crate ) mod private
 
 //
 
-crate::mod_interface!
-{
-  prelude use publish;
-  prelude use workspace_publish;
-}
+pub use private::publish;
+pub use private::workspace_publish;

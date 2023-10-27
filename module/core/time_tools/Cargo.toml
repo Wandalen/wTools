@@ -32,6 +32,7 @@ exclude = [ "/tests", "/examples", "-*" ]
 [features]
 default = [
   "time_now",
+  "enabled"
 ]
 full = [
   "use_alloc",
