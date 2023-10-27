@@ -7,16 +7,15 @@ use super::*;
 
 pub fn from_inner( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
-
   let parsed = syn::parse::< InputParsed >( input )?;
-  let field_type = parsed.first_field_type()?;
   let field_types = parsed.field_types()?;
   let field_names = parsed.field_names()?;
-  let field_name = parsed.first_field_name()?;
   let item_name = parsed.item_name;
   let result;
-  match ((field_types.len(), field_types, field_names), (field_name, field_type)) {
-      ((1,..), (Some(field_name), field_type)) => {
+  match (field_types.len(), field_names) {
+      (1, Some(field_names)) => {
+        let field_name = field_names.get(0).unwrap();
+        let field_type = field_types.get(0).unwrap();
         result = qt!
           {
           #[ automatically_derived ]
@@ -30,7 +29,8 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
             }
           };
       }
-      ((1,..), (None, field_type)) => {
+      (1, None) => {
+        let field_type = field_types.get(0).unwrap();
         result = qt!
         {
           #[ automatically_derived ]
@@ -44,33 +44,33 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
           }
         };
       }
-      ((_, types,Some(names)), ..) => {
+      (_, Some(field_names)) => {
         let mut params: Vec<TokenStream> = vec![];
-        for (index, field_name) in names.iter().enumerate(){
+        for (index, field_name) in field_names.iter().enumerate(){
           let index: TokenStream = index.to_string().parse()?;
           params.push(qt!{ #field_name: src.#index });
         }
         result = qt!
         {
-          impl From < (# (#types), *) > for #item_name {
+          impl From < (# (#field_types), *) > for #item_name {
             #[ inline( always ) ]
-            fn from( src: (# (#types), *)) -> #item_name {
+            fn from( src: (# (#field_types), *)) -> #item_name {
               #item_name{# (#params), *}
             }
           }
         };
       }
-      ((_, types, None), ..) => {
+      (n, None) => {
         let mut params: Vec<TokenStream> = vec![];
-        for index in 0.. types.len() {
+        for index in 0.. n {
           let index: TokenStream = index.to_string().parse()?;
           params.push(qt!(src.#index));
         }
           result = qt!
           {
-            impl From < (# (#types), *) > for #item_name {
+            impl From < (# (#field_types), *) > for #item_name {
               #[ inline( always ) ]
-              fn from( src: (# (#types), *)) -> #item_name {
+              fn from( src: (# (#field_types), *)) -> #item_name {
                 #item_name(# (#params), *)
               }
             }
