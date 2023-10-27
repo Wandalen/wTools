@@ -12,16 +12,27 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-wtools::mod_interface!
-{
-  /// The tools for operating over packages.
-  #[ cfg( not( feature = "no_std" ) ) ]
-  layer tools;
-  /// Commands library.
-  #[ cfg( not( feature = "no_std" ) ) ]
-  layer commands;
+/// The tools for operating over packages.
+#[ cfg( not( feature = "no_std" ) ) ]
+pub mod tools;
+/// Commands library.
+#[ cfg( not( feature = "no_std" ) ) ]
+pub mod commands;
 
-  #[ cfg( not( feature = "no_std" ) ) ]
-  prelude use ::std::env;
-  protected( crate ) use ::wtools::prelude::*;
-}
+#[ cfg( not( feature = "no_std" ) ) ]
+pub use ::std::env;
+use ::wtools::prelude::*;
+
+// wtools::meta::mod_interface!
+// {
+//   /// The tools for operating over packages.
+//   #[ cfg( not( feature = "no_std" ) ) ]
+//   layer tools;
+//   /// Commands library.
+//   #[ cfg( not( feature = "no_std" ) ) ]
+//   layer commands;
+//
+//   #[ cfg( not( feature = "no_std" ) ) ]
+//   prelude use ::std::env;
+//   protected( crate ) use ::wtools::prelude::*;
+// }
