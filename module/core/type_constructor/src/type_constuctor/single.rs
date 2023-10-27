@@ -207,32 +207,32 @@ pub( crate ) mod private
         }
       }
 
-      $crate::_if_from!
-      {
-        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::From_0
-        for $Name < $ParamName >
-        where $ParamName : Default
-        {
-          #[ inline ]
-          fn from_0() -> Self
-          {
-            Self( Default::default() )
-          }
-        }
-
-
-        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::From_1< $ParamName >
-        for $Name < $ParamName >
-        {
-          #[ inline ]
-          fn from_1( _0 : $ParamName ) -> Self
-          {
-            Self( _0 )
-          }
-        }
-      }
+      // $crate::_if_from!
+      // {
+      //   impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      //   $crate::From_0
+      //   for $Name < $ParamName >
+      //   where $ParamName : Default
+      //   {
+      //     #[ inline ]
+      //     fn from_0() -> Self
+      //     {
+      //       Self( Default::default() )
+      //     }
+      //   }
+      //
+      //
+      //   impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      //   $crate::From_1< $ParamName >
+      //   for $Name < $ParamName >
+      //   {
+      //     #[ inline ]
+      //     fn from_1( _0 : $ParamName ) -> Self
+      //     {
+      //       Self( _0 )
+      //     }
+      //   }
+      // }
 
       // From Single Into Element cant be implemented because of Rust restrictions.
 

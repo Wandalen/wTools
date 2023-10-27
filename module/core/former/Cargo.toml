@@ -54,8 +54,8 @@ name = "former_trivial_sample"
 path = "examples/former_trivial_sample/src/main.rs"
 
 [dependencies]
-former_meta = { workspace = true }
-former_runtime = { workspace = true }
+former_meta = { workspace = true, features = [ "default" ] }
+former_runtime = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

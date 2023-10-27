@@ -12,6 +12,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+/// Operates over current time.
 #[ cfg( feature = "time_now" ) ]
 #[ path = "./now.rs" ]
 #[ cfg( feature = "enabled" ) ]

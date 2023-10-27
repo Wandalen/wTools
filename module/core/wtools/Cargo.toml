@@ -433,39 +433,39 @@ default = [
 [dependencies]
 
 # iter
-iter_tools = { workspace = true, optional = true }
+iter_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # meta
-meta_tools = { workspace = true, optional = true }
+meta_tools = { workspace = true, optional = true, features = [ "default" ] }
 impls_index = { workspace = true } # despite impls_index is imported by meta_tools it should also be imported immediatly
 # qqq : fix that
 
 # mem
-mem_tools = { workspace = true, optional = true }
+mem_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # typing
-typing_tools = { workspace = true, optional = true }
+typing_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # time
-time_tools = { workspace = true, optional = true }
+time_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # sting
-strs_tools = { workspace = true, optional = true }
+strs_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # err
-error_tools = { workspace = true, optional = true }
+error_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # derive
-derive_tools = { workspace = true, optional = true }
+derive_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # data_type
-data_type = { workspace = true, optional = true }
+data_type = { workspace = true, optional = true, features = [ "default" ] }
 
 # diagnostics
-diagnostics_tools = { workspace = true, optional = true }
+diagnostics_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # external
-parse-display = { version = "~0.5", optional = true } # have to be here because of problem with FromStr
+parse-display = { version = "~0.5", optional = true, features = [ "default" ] } # have to be here because of problem with FromStr
 
 [dev-dependencies]
 test_tools = { workspace = true }

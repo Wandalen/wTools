@@ -6,16 +6,17 @@ pub( crate ) mod private
 
     GrammarCommand, ExecutableCommand,
 
-    Routine, 
+    Routine,
   };
 
   use former::Former;
-  use wtools::{ HashMap, Result, err };
+  use std::collections::HashMap;
+  use wtools::{ Result, err };
 
   /// This is the struct that provides a way to convert a `GrammarCommand` to an `ExecutableCommand`.
-  /// 
+  ///
   /// The conversion is done by looking up the `Routine` associated with the command in a HashMap of routines.
-  /// 
+  ///
   /// ```
   /// # use wca::{ Command, Type, GrammarCommand, ExecutorConverter, Routine };
   /// # use wtools::HashMap;

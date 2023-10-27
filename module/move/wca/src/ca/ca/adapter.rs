@@ -81,7 +81,7 @@ pub( crate ) mod private
   {
     state : T,
     commands : Vec< crate::Command >,
-    handlers : wtools::HashMap< String, crate::Routine >,
+    handlers : std::collections::HashMap< String, crate::Routine >,
   }
 
   impl< T > CommandBuilder< T >

@@ -67,9 +67,9 @@ pub mod protected
   pub use super::traits::orphan::*;
   #[ doc( inline ) ]
   pub use super::enumerable::orphan::*;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "make" ) ]
-  pub use super::make::orphan::*;
+  // #[ doc( inline ) ]
+  // #[ cfg( feature = "make" ) ]
+  // pub use super::make::orphan::*;
 }
 
 #[ doc( inline ) ]
@@ -105,9 +105,9 @@ pub mod exposed
   pub use super::traits::exposed::*;
   #[ doc( inline ) ]
   pub use super::enumerable::exposed::*;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "make" ) ]
-  pub use super::make::exposed::*;
+  // #[ doc( inline ) ]
+  // #[ cfg( feature = "make" ) ]
+  // pub use super::make::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -131,7 +131,7 @@ pub mod prelude
   pub use super::traits::prelude::*;
   #[ doc( inline ) ]
   pub use super::enumerable::prelude::*;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "make" ) ]
-  pub use super::make::prelude::*;
+  // #[ doc( inline ) ]
+  // #[ cfg( feature = "make" ) ]
+  // pub use super::make::prelude::*;
 }

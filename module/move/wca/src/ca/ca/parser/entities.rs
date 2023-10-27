@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use wtools::HashMap;
+  use std::collections::HashMap;
 
   /// Represents a program that contains one or more namespaces, where each namespace contains a list of commands.
   ///
