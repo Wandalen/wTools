@@ -1,14 +1,12 @@
 <!-- {{# generate.module_header{} #}} -->
 
 # Module :: fundamental_data_type
+
 [![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml) [![docs.rs](https://img.shields.io/docsrs/fundamental_data_type?color=e3e8f0&logo=docs.rs)](https://docs.rs/fundamental_data_type) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
 Fundamental data types and type constructors, like Single, Pair, Homopair, Many.
 
-In Rust, you often need to wrap a given type into a new one.
-The role of the orphan rules in particular is basically to prevent you from implementing external traits for external types.
-To overcome the restriction developer usually wrap the external type into a tuple introducing a new type.
-Type constructor does exactly that and auto-implement traits From, Into, Deref and few more for the constructed type.
+In Rust, it is often necessary to encapsulate an existing type within a new one. The orphan rules play a crucial role in preventing the implementation of external traits for external types. To overcome this restriction, developers commonly encapsulate the external type within a tuple, introducing a new type. The 'Type constructor' precisely accomplishes this and automatically implements traits such as From, Into, Deref, and several others for the constructed type.
 
 Besides type constructor for single element there are type constructors for `pair`, `homopair` and `many`:
 
@@ -312,7 +310,7 @@ dbg!( 13 );
 
 ### Basic use-case :: single-line pair
 
-Sometimes you need to wrap more than a single element into a tupдe. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`:
+Sometimes you need to wrap more than a single element into a tuple. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -430,7 +428,7 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 // prints : x : ( 13, 31 )
 ```
 
-It gererates code:
+It generates code:
 
 ```rust
 use fundamental_data_type::prelude::*;
@@ -485,7 +483,7 @@ dbg!( &clone_as_tuple );
 // prints : &clone_as_tuple = ( 13, 31 )
 ```
 
-It gererates code:
+It generates code:
 
 ```rust
 use fundamental_data_type::prelude::*;
