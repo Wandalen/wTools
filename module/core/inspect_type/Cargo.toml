@@ -22,12 +22,6 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/typing/inspect_type_lib.rs",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
 default = [ "enabled" ]
@@ -38,22 +32,6 @@ use_alloc = []
 enabled = []
 
 nightly = []
-
-[lib]
-name = "inspect_type"
-path = "src/typing/inspect_type_lib.rs"
-
-[[test]]
-name = "inspect_type_test"
-path = "tests/typing/inspect_type_tests.rs"
-
-[[test]]
-name = "inspect_type_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "inspect_type_trivial_sample"
-path = "examples/inspect_type_trivial_sample/src/main.rs"
 
 [dependencies]
 
