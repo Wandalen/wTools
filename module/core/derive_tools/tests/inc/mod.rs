@@ -48,8 +48,14 @@ mod named_multiple_from_inner_test;
 
 mod inner_from_manual_test;
 mod named_inner_from_manual_test;
+mod named_multiple_inner_from_manual_test;
+mod multiple_inner_from_manual_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_test;
+#[ cfg( feature = "derive_inner_from" ) ]
+mod named_multiple_inner_from_test;
+#[ cfg( feature = "derive_inner_from" ) ]
+mod multiple_inner_from_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod named_inner_from_test;
 
