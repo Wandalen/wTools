@@ -246,12 +246,12 @@ default-features = false
 ## error
 
 [workspace.dependencies.error_tools]
-version = "~0.1.5"
+version = "~0.3.0"
 path = "module/core/error_tools"
 default-features = false
 
 [workspace.dependencies.werror]
-version = "~0.1.3"
+version = "~0.3.0"
 path = "module/alias/werror"
 
 
@@ -321,7 +321,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.1.3"
+version = "~0.2.0"
 path = "module/move/wca"
 
 

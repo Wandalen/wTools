@@ -18,10 +18,10 @@ pub mod assert;
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
 pub mod error;
-/// An alias for std::result::Result.
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-pub mod result;
+// /// An alias for std::result::Result.
+// #[ cfg( feature = "enabled" ) ]
+// #[ cfg( not( feature = "no_std" ) ) ]
+// pub mod result;
 
 /// Dependencies.
 #[ cfg( feature = "enabled" ) ]
@@ -30,12 +30,12 @@ pub mod dependency
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_handling_for_lib" ) ]
+  #[ cfg( feature = "error_for_lib" ) ]
   pub use ::thiserror;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_handling_for_app" ) ]
+  #[ cfg( feature = "error_for_app" ) ]
   pub use ::anyhow;
 
 }
@@ -46,7 +46,7 @@ pub mod for_lib
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_handling_for_lib" ) ]
+  #[ cfg( feature = "error_for_lib" ) ]
   pub use ::thiserror::*;
 }
 
@@ -57,18 +57,8 @@ pub mod for_app
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_handling_for_app" ) ]
+  #[ cfg( feature = "error_for_app" ) ]
   pub use ::anyhow::*;
-}
-
-// qqq : cover by simple test /* aaa : Dmytro : added trivial test routines in test suite `assert` */
-/// Protected namespace of the module.
-#[ cfg( feature = "enabled" ) ]
-pub mod protected
-{
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
 }
 
 #[ cfg( feature = "enabled" ) ]
@@ -80,6 +70,16 @@ pub use protected::*;
 // #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 // pub use protected::Error;
+
+// qqq : cover by simple test /* aaa : Dmytro : added trivial test routines in test suite `assert` */
+/// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
+pub mod protected
+{
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::orphan::*;
+}
 
 #[ cfg( feature = "enabled" ) ]
 /// Shared with parent namespace of the module
@@ -106,13 +106,16 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::error::exposed::*;
 
-  #[ cfg( not( feature = "no_std" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::result::exposed::*;
+  #[ cfg( feature = "error_for_app" ) ]
+  pub use super::for_app::Result;
+
   // #[ cfg( not( feature = "no_std" ) ) ]
   // #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::result::exposed::*;
+  // #[ cfg( not( feature = "no_std" ) ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
   // pub use super::error::BasicError;
 }
 

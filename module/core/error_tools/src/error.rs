@@ -66,10 +66,24 @@ pub( crate ) mod private
     }
   }
 
+  impl< T > From< BasicError > for Result< T, BasicError >
+  {
+    /// Returns the argument unchanged.
+    #[ inline( always ) ]
+    fn from( src : BasicError ) -> Self
+    {
+      Result::Err( src )
+    }
+  }
+
   pub use err;
 
   // qqq : write standard mod interface without using mod_interface /* aaa : Dmytro : added to each library file */
 }
+
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
 
 /// Protected namespace of the module.
 pub mod protected
@@ -78,10 +92,6 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
-
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use protected::*;
 
 /// Shared with parent namespace of the module
 pub mod orphan

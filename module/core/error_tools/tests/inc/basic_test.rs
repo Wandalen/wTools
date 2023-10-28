@@ -92,6 +92,33 @@ tests_impls!
     let err = TheModule::err!( "abc{}{}", "def", "ghi" );
     a_id!( err.to_string(), "abcdefghi" );
   }
+
+  //
+
+  fn sample()
+  {
+    #[ cfg( not( feature = "no_std" ) ) ]
+    fn f1() -> TheModule::Result< () >
+    {
+      let _read = std::fs::read_to_string( "Cargo.toml" )?;
+      Err( TheModule::BasicError::new( "Some error" ).into() )
+      // TheModule::BasicError::new( "Some error" ).into()
+      // zzz : make it working maybe
+    }
+
+    #[ cfg( not( feature = "no_std" ) ) ]
+    {
+      let err = f1();
+      println!( "{err:#?}" );
+      // < Err(
+      // <    BasicError {
+      // <        msg: "Some error",
+      // <    },
+      // < )
+    }
+  }
+
+
 }
 
 //
@@ -104,4 +131,5 @@ tests_index!
   use2,
   use3,
   err_basic,
+  sample,
 }

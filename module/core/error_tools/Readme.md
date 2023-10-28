@@ -10,13 +10,25 @@ Basic exceptions handling mechanism.
 <!-- {{# generate.module_sample{} #}} -->
 
 ```rust
-#[ cfg( not( feature = "no_std" ) ) ]
+fn main()
 {
-  use error_tools::*;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  {
+    let err = f1();
+    println!( "{err:#?}" );
+    // < Err(
+    // <    BasicError {
+    // <        msg: "Some error",
+    // <    },
+    // < )
+  }
+}
 
-  let err1 = BasicError::new( "Some error" );
-  println!( "err1 : {}", err1 );
-  // < err1 : Some error
+#[ cfg( not( feature = "no_std" ) ) ]
+fn f1() -> error_tools::Result< () >
+{
+  let _read = std::fs::read_to_string( "Cargo.toml" )?;
+  Err( error_tools::BasicError::new( "Some error" ).into() )
 }
 ```
 
@@ -31,6 +43,5 @@ cargo add error_tools
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/error_tools_trivial
-cargo run
+cargo run --example error_tools_trivial
 ```

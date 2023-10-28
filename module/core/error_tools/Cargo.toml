@@ -1,6 +1,6 @@
 [package]
 name = "error_tools"
-version = "0.1.5"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -22,34 +22,26 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/error",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 # = features
 
 [features]
 default = [
   "enabled",
-  "error_handling_for_lib",
-  "error_handling_for_app",
+  "error_for_lib",
+  "error_for_app",
 ]
 full = [
   "enabled",
-  "use_alloc",
-  "error_handling_for_lib",
-  "error_handling_for_app",
+  "error_for_lib",
+  "error_for_app",
 ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
 
-error_handling_for_lib = [ "thiserror" ]
-error_handling_for_app = [ "anyhow" ]
+error_for_lib = [ "thiserror" ]
+error_for_app = [ "anyhow" ]
 
 # = entry
 

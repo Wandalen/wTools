@@ -3,7 +3,7 @@ use super::*;
 
 //
 
-#[ cfg( feature = "error_handling_for_app" ) ]
+#[ cfg( feature = "error_for_app" ) ]
 tests_impls!
 {
   fn basic()
@@ -19,7 +19,7 @@ tests_impls!
 
 //
 
-#[ cfg( feature = "error_handling_for_app" ) ]
+#[ cfg( feature = "error_for_app" ) ]
 tests_index!
 {
   basic,
