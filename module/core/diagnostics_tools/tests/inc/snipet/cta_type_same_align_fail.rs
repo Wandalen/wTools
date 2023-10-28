@@ -1,5 +1,4 @@
-use super::*;
-use TheModule::*;
+use diagnostics_tools::*;
 
 fn main()
 {

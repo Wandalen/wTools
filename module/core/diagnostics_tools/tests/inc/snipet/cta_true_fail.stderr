@@ -1,6 +1,6 @@
 error: Does not hold :
          feature = "unknown"
- --> tests/diagnostics/inc/cta_true_fail.rs:5:3
+ --> tests/inc/snipet/cta_true_fail.rs:5:3
   |
 5 |   cta_true!( feature = "unknown" );
   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

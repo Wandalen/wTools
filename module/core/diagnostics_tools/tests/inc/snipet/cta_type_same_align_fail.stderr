@@ -1,5 +1,5 @@
 error[E0308]: mismatched types
- --> tests/diagnostics/inc/cta_type_same_align_fail.rs:7:3
+ --> tests/inc/snipet/cta_type_same_align_fail.rs:7:3
   |
 7 |   cta_type_same_align!( Int, i16 );
   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

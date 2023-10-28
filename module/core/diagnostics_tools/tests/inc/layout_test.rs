@@ -68,27 +68,13 @@ tests_impls!
   {
     use test_tools::dependency::trybuild;
     let t = trybuild::TestCases::new();
-    // t.compile_fail( "tests/inc/snipet/cta_type_same_size_fail.rs" );
-    // t.compile_fail( "tests/inc/snipet/cta_type_same_align_fail.rs" );
-    // t.compile_fail( "tests/inc/snipet/cta_ptr_same_size_fail.rs" );
-    // t.compile_fail( "tests/inc/snipet/cta_mem_same_size_fail.rs" );
-    // xxx
+    t.compile_fail( "tests/inc/snipet/cta_type_same_size_fail.rs" );
+    t.compile_fail( "tests/inc/snipet/cta_type_same_align_fail.rs" );
+    t.compile_fail( "tests/inc/snipet/cta_ptr_same_size_fail.rs" );
+    t.compile_fail( "tests/inc/snipet/cta_mem_same_size_fail.rs" );
   }
 
 }
-
-// #[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
-// #[ test_tools::rustversion::nightly ]
-// #[ test ]
-// fn cta_trybuild_tests()
-// {
-//   use test_tools::dependency::trybuild;
-//   let t = trybuild::TestCases::new();
-//   t.compile_fail( "tests/inc/snipet/wtools_cta_type_same_size_fail.rs" );
-//   t.compile_fail( "tests/inc/snipet/wtools_cta_type_same_align_fail.rs" );
-//   t.compile_fail( "tests/inc/snipet/wtools_cta_ptr_same_size_fail.rs" );
-//   t.compile_fail( "tests/inc/snipet/wtools_cta_mem_same_size_fail.rs" );
-// }
 
 //
 

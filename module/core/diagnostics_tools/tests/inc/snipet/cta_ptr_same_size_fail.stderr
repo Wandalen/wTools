@@ -1,5 +1,5 @@
 error[E0512]: cannot transmute between types of different sizes, or dependently-sized types
- --> tests/diagnostics/inc/cta_ptr_same_size_fail.rs:8:3
+ --> tests/inc/snipet/cta_ptr_same_size_fail.rs:8:3
   |
 8 |   cta_ptr_same_size!( &ins1, &ins2 );
   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
