@@ -22,12 +22,6 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-# include = [
-#   "/rust/impl/test",
-#   "/Cargo.toml",
-#   "/Readme.md",
-#   "/License",
-# ]
 
 # = features
 
@@ -39,23 +33,6 @@ no_std = []
 use_alloc = []
 enabled = []
 nightly = [ "typing_tools/nightly" ]
-# nightly = [ "wtest_basic/nightly" ]
-
-# [lib]
-# name = "test_tools"
-# path = "src/test/test_tools_lib.rs"
-
-# [[test]]
-# name = "test_tools_test"
-# path = "tests/test/test_tools_tests.rs"
-
-# [[test]]
-# name = "test_tools_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-
-# [[example]]
-# name = "test_tools_trivial_sample"
-# path = "examples/test_tools_trivial_sample/src/main.rs"
 
 [dependencies]
 

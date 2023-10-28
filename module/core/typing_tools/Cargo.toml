@@ -27,27 +27,28 @@ exclude = [ "/tests", "/examples", "-*" ]
 [features]
 
 default = [
-  # "implements",
   "enabled",
-  "is_slice",
-  "inspect_type",
+  "typing_implements",
+  "typing_is_slice",
+  "typing_inspect_type",
+  "nightly",
 ]
 
 full = [
-  # "use_alloc",
-  # "implements",
   "enabled",
-  "is_slice",
-  "inspect_type",
+  "typing_implements",
+  "typing_is_slice",
+  "typing_inspect_type",
+  "nightly",
 ]
 # use_std = []
 no_std = []
 use_alloc = []
 enabled = []
 
-inspect_type = [ "inspect_type/enabled" ]
-is_slice = [ "is_slice/enabled" ]
-implements = [ "implements/enabled" ]
+typing_inspect_type = [ "inspect_type/enabled" ]
+typing_is_slice = [ "is_slice/enabled" ]
+typing_implements = [ "implements/enabled" ]
 nightly = [ "inspect_type/nightly" ]
 
 [dependencies]

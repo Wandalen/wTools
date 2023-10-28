@@ -123,23 +123,21 @@ typing_default = [
   "typing",
   "typing_inspect_type",
   "typing_is_slice",
-  # "typing_implements",
+  "typing_implements",
 ]
 typing_full = [
   "typing",
   "typing_inspect_type",
   "typing_is_slice",
-  # "typing_implements",
+  "typing_implements",
 ]
-# typing_use_std = [ "typing", "typing_tools/use_std" ]
 typing_no_std = [ "typing", "typing_tools/no_std" ]
 typing_use_alloc = [ "typing", "typing_tools/use_alloc" ]
 
 typing_nightly = [ "typing", "nightly", "typing_tools/nightly", ]
-typing_inspect_type = [ "typing", "typing_tools/inspect_type" ]
-typing_is_slice = [ "typing", "typing_tools/is_slice" ]
-typing_implements = [ "typing" ]
-# typing_implements = [ "typing", "typing_tools/implements" ]
+typing_inspect_type = [ "typing", "typing_tools/typing_inspect_type" ]
+typing_is_slice = [ "typing", "typing_tools/typing_is_slice" ]
+typing_implements = [ "typing", "typing_tools/typing_implements" ]
 
 # time
 

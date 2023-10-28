@@ -20,11 +20,11 @@ pub mod typing;
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  #[ cfg( inspect_type ) ]
+  #[ cfg( feature = "typing_inspect_type" ) ]
   pub use ::inspect_type;
-  #[ cfg( is_slice ) ]
+  #[ cfg( feature = "typing_is_slice" ) ]
   pub use ::is_slice;
-  // #[ cfg( implements ) ]
+  #[ cfg( feature = "typing_implements" ) ]
   pub use ::implements;
 }
 
