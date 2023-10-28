@@ -21,12 +21,14 @@ pub mod impls;
 // }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
@@ -34,6 +36,7 @@ pub mod protected
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
   // pub use super::dependency;
 }
@@ -42,10 +45,13 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::impls::exposed::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::func::exposed::*;
 }
 
@@ -53,10 +59,13 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::impls::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::func::prelude::*;
   // #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::impls_index_meta::*;
 }

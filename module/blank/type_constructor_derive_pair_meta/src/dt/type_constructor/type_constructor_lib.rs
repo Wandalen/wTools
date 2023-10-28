@@ -23,4 +23,5 @@
 #[ path = "./inc.rs" ]
 mod inc;
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use inc::*;

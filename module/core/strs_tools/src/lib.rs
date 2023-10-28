@@ -17,6 +17,7 @@
 pub mod string;
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 pub use string::*;
 
@@ -29,6 +30,7 @@ pub mod protected
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 

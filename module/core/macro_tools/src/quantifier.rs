@@ -315,15 +315,38 @@ pub( crate ) mod private
 
 }
 
+// #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+// pub use exposed::*;
+
 #[ doc( inline ) ]
-pub use exposed::*;
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::orphan::*;
+}
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     Pair,
@@ -335,6 +358,7 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     AsMuchAsPossibleNoDelimiter,

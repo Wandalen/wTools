@@ -24,20 +24,25 @@ pub mod dependency
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use woptions_runtime as runtime;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use woptions_meta as meta;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Parented namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -45,12 +50,16 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::meta::Options;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use former::derive::Former;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use woptions_runtime::exposed::*;
 }
 
@@ -58,5 +67,6 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use woptions_runtime::prelude::*;
 }

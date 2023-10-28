@@ -18,13 +18,25 @@ pub mod dependency
 {
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
-  pub use super::exposed::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::orphan::*;
 }
 
-pub use protected::*;
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed

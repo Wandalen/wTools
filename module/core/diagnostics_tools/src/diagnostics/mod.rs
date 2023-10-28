@@ -14,22 +14,27 @@ pub mod cta;
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ cfg( feature = "runtime_assertions" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::rta::orphan::*;
   #[ cfg( feature = "compiletime_assertions" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::cta::orphan::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -37,12 +42,15 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ cfg( feature = "runtime_assertions" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::rta::exposed::*;
   #[ cfg( feature = "compiletime_assertions" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::cta::exposed::*;
 }
 
@@ -51,8 +59,10 @@ pub mod prelude
 {
   #[ cfg( feature = "runtime_assertions" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::rta::prelude::*;
   #[ cfg( feature = "compiletime_assertions" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::cta::prelude::*;
 }

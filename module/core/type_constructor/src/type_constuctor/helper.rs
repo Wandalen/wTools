@@ -41,16 +41,19 @@ pub( crate ) mod private
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -58,16 +61,19 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
 
-#[ doc( inline ) ]
-pub use exposed::*;
+// #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+// pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     _if_make,

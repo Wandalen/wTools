@@ -23,8 +23,10 @@ pub( crate ) mod private
 {
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use core::ops::Bound;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use core::ops::RangeBounds;
 
   use core::cmp::{ PartialEq, Eq };
@@ -582,24 +584,27 @@ pub( crate ) mod private
 
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
+// #[ allow( unused_imports ) ]
+pub use protected::*;
 
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
-
-#[ doc( inline ) ]
-#[ cfg( feature = "enabled" ) ]
-pub use protected::*;
 
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -608,29 +613,34 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     Bound,
     BoundExt,
     EndPointTrait,
-    IterableInterval,
-    NonIterableInterval,
     Interval,
-    IntoInterval,
+    // IterableInterval,
+    // NonIterableInterval,
+    // IntoInterval,
   };
 }
 
-#[ doc( inline ) ]
-#[ cfg( feature = "enabled" ) ]
-pub use exposed::*;
+// #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+// #[ cfg( feature = "enabled" ) ]
+// #[ allow( unused_imports ) ]
+// pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     IterableInterval,

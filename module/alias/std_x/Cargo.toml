@@ -43,6 +43,8 @@ path = "tests/_integration_test/smoke_test.rs"
 
 ### features
 
+# {{ willbe.alias_features( "wtools" ) }}
+
 [features]
 
 # iter

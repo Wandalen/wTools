@@ -1,6 +1,6 @@
 [package]
 name = "inspect_type"
-version = "0.1.3"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -30,7 +30,6 @@ full = [ "enabled" ]
 no_std = []
 use_alloc = []
 enabled = []
-
 nightly = []
 
 [dependencies]

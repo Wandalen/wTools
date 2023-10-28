@@ -22,16 +22,19 @@ pub mod dependency
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Parented namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -39,6 +42,7 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
 

@@ -29,22 +29,27 @@ pub mod dependency
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use former_runtime as runtime;
   // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use former_meta as derive;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Parented namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -52,9 +57,11 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use former_meta::*;
 }
 

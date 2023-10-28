@@ -53,54 +53,69 @@ pub mod dependency
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 
   #[ cfg( feature = "iter" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::iter_tools as iter;
   #[ cfg( feature = "meta" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::meta_tools as meta;
   #[ cfg( feature = "mem" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::mem_tools as mem;
   #[ cfg( feature = "typing" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::typing_tools as typing;
   #[ cfg( feature = "diagnostics" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::diagnostics_tools as diagnostics;
   #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::data_type as dt;
   #[ cfg( feature = "time" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::time_tools as time;
   #[ cfg( feature = "error" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::error_tools as error;
   #[ cfg( feature = "string" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::strs_tools as string;
   #[ cfg( feature = "derive" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::derive_tools as derive;
 
   #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::meta_tools::former as former;
   #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::meta_tools::options as options;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -108,6 +123,7 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ cfg( feature = "iter" ) ]
   pub use super::iter::exposed::*;
@@ -142,44 +158,57 @@ pub mod prelude
 {
   #[ cfg( feature = "iter" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::iter::prelude::*;
   #[ cfg( feature = "meta" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::meta::prelude::*;
   #[ cfg( feature = "mem" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::mem::prelude::*;
   #[ cfg( feature = "typing" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::typing::prelude::*;
   #[ cfg( feature = "diagnostics" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::diagnostics::prelude::*;
   #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::dt::prelude::*;
   #[ cfg( feature = "time" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::time::prelude::*;
   #[ cfg( feature = "error" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::error::prelude::*;
   #[ cfg( feature = "string" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::string::prelude::*;
 
   #[ cfg( feature = "derive" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::derive::prelude::*;
   // zzz
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::derive::prelude::clone_dyn;
 
   #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::former::prelude::*;
   #[ cfg( any( feature = "options", feature = "meta_options" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::options::prelude::*;
 }

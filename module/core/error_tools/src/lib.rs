@@ -29,10 +29,12 @@ pub mod dependency
 {
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   #[ cfg( feature = "error_handling_for_lib" ) ]
   pub use ::thiserror;
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   #[ cfg( feature = "error_handling_for_app" ) ]
   pub use ::anyhow;
 
@@ -43,6 +45,7 @@ pub mod dependency
 pub mod for_lib
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   #[ cfg( feature = "error_handling_for_lib" ) ]
   pub use ::thiserror::*;
 }
@@ -53,6 +56,7 @@ pub mod for_lib
 pub mod for_app
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   #[ cfg( feature = "error_handling_for_app" ) ]
   pub use ::anyhow::*;
 }
@@ -63,15 +67,18 @@ pub mod for_app
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 // pub use protected::BasicError;
 // #[ cfg( not( feature = "no_std" ) ) ]
 // #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 // pub use protected::Error;
 
 #[ cfg( feature = "enabled" ) ]
@@ -79,6 +86,7 @@ pub use protected::*;
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -87,19 +95,24 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::assert::exposed::*;
 
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::error::exposed::*;
 
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::result::exposed::*;
   // #[ cfg( not( feature = "no_std" ) ) ]
   // #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
   // pub use super::error::BasicError;
 }
 

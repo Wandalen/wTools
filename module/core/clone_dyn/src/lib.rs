@@ -59,11 +59,13 @@ pub( crate ) mod private
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
@@ -71,6 +73,7 @@ pub use protected::*;
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -79,6 +82,7 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
 
@@ -87,8 +91,10 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::clone_dyn_meta::clone_dyn;
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::_clone_boxed;
 }

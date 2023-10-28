@@ -45,27 +45,33 @@ pub mod dependency
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::clone_dyn::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::wtools::orphan::*;
 }
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 #[ cfg( feature = "enabled" ) ]
-#[ doc( inline ) ]
-pub use exposed::*;
+// #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+// pub use exposed::*;
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 
 }
@@ -75,34 +81,42 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 
   #[ cfg( feature = "derive_more" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::derive_more::*;
   // qqq2 : list instead of asteris
 
   #[ cfg( feature = "strum" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::strum::*;
 
   #[ cfg( feature = "derive_display" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::parse_display::Display;
 
   #[ cfg( feature = "derive_from_str" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::parse_display::FromStr;
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::clone_dyn::exposed::*;
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::wtools::exposed::*;
 
   // #[ cfg( any_derive ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::derive_tools_meta::*;
 
 }
@@ -114,14 +128,18 @@ pub mod prelude
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::clone_dyn;
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::clone_dyn::prelude::*;
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::clone_dyn::clone_dyn;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::wtools::prelude::*;
   #[ doc( no_inline ) ]
   pub use super::wtools;

@@ -44,6 +44,7 @@ pub mod protected
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Parented namespace of the module.

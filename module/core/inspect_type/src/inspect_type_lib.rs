@@ -69,22 +69,26 @@ mod nightly
 
 // #[ cfg( feature = "nightly" ) ]
 // #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 // pub use nightly::*;
 
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -92,6 +96,7 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
 
@@ -100,5 +105,6 @@ pub mod prelude
 {
   #[ cfg( feature = "nightly" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::nightly::*;
 }

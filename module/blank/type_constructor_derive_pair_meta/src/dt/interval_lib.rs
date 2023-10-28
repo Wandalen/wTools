@@ -175,16 +175,19 @@ pub( crate ) mod private
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Parented namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -192,9 +195,11 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     IterableInterval,
@@ -202,8 +207,9 @@ pub mod exposed
   };
 }
 
-#[ doc( inline ) ]
-pub use exposed::*;
+// #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+// pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude

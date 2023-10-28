@@ -12,10 +12,12 @@ pub mod protected
   };
   #[ cfg( all( feature = "string_parse_number" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use lexical::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Parented namespace of the module.

@@ -29,22 +29,28 @@ mod hash_set;
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::vector::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::hash_map::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::hash_set::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
 

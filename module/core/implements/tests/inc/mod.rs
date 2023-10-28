@@ -1,7 +1,4 @@
 #[ allow( unused_imports ) ]
-use test_tools::exposed::*;
 use super::*;
 
 mod implements_test;
-mod inspect_type_test;
-mod instance_of_tests;

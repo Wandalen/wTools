@@ -14,16 +14,19 @@ pub mod from;
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -31,18 +34,21 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ cfg( feature = "type_from" ) ]
   pub use super::from::orphan::*;
 }
 
-#[ doc( inline ) ]
-pub use exposed::*;
+// #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+// pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   #[ cfg( feature = "type_from" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::from::prelude::*;
 }

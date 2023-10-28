@@ -142,6 +142,7 @@ pub( crate ) mod private
     clause!( clauses_map, VisProtected::Kind ).push( qt!
     {
       #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
       #attrs1
       pub use #path2::orphan::*;
     });
@@ -150,6 +151,7 @@ pub( crate ) mod private
     clause!( clauses_map, VisExposed::Kind ).push( qt!
     {
       #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
       #attrs1
       pub use #path2::exposed::*;
     });
@@ -158,6 +160,7 @@ pub( crate ) mod private
     clause!( clauses_map, VisPrelude::Kind ).push( qt!
     {
       #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
       #attrs1
       pub use #path2::prelude::*;
     });
@@ -214,6 +217,7 @@ pub( crate ) mod private
     clause!( clauses_map, vis.kind ).push( qt!
     {
       #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
       #attrs1
       #vis2 use #path2;
     });
@@ -263,6 +267,7 @@ pub( crate ) mod private
     clause!( clauses_map, record.vis.kind ).push( qt!
     {
       #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
       pub use super::#path;
@@ -310,6 +315,7 @@ pub( crate ) mod private
     clause!( clauses_map, VisProtected::Kind ).push( qt!
     {
       #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
       pub use super::#path::orphan::*;
@@ -319,6 +325,7 @@ pub( crate ) mod private
     clause!( clauses_map, VisExposed::Kind ).push( qt!
     {
       #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
       pub use super::#path::exposed::*;
@@ -328,6 +335,7 @@ pub( crate ) mod private
     clause!( clauses_map, VisPrelude::Kind ).push( qt!
     {
       #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
       pub use super::#path::prelude::*;
@@ -417,12 +425,14 @@ pub( crate ) mod private
       #( #immediates_clause )*
 
       #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
       pub use protected::*;
 
       /// Protected namespace of the module.
       pub mod protected
       {
         #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
         pub use super::orphan::*;
         #( #protected_clause )*
       }
@@ -431,6 +441,7 @@ pub( crate ) mod private
       pub mod orphan
       {
         #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
         pub use super::exposed::*;
         #( #orphan_clause )*
       }
@@ -439,6 +450,7 @@ pub( crate ) mod private
       pub mod exposed
       {
         #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
         pub use super::prelude::*;
         #( #exposed_clause )*
       }
@@ -489,6 +501,7 @@ pub mod orphan
 pub mod exposed
 {
   pub use super::prelude::*;
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
   };
@@ -497,6 +510,7 @@ pub mod exposed
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     mod_interface,

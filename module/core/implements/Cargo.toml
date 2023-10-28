@@ -1,6 +1,6 @@
 [package]
 name = "implements"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -26,30 +26,12 @@ exclude = [ "/tests", "/examples", "-*" ]
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
 
-# [lib]
-# name = "implements"
-# path = "src/typing/implements_lib.rs"
-
-# [[test]]
-# name = "implements_test"
-# path = "tests/typing/implements_tests.rs"
-
-# [[test]]
-# name = "implements_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-
-# [[example]]
-# name = "implements_trivial_sample"
-# path = "examples/implements_trivial_sample/src/main.rs"
-
 [dependencies]
 
 [dev-dependencies]
-# trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { workspace = true }
 smoke_test = { workspace = true }

@@ -182,7 +182,7 @@ package = "diagnostics_tools"
 ## iter
 
 [workspace.dependencies.iter_tools]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/iter_tools"
 default-features = false
 
@@ -354,7 +354,7 @@ package = "time_tools"
 ## typing
 
 [workspace.dependencies.typing_tools]
-version = "0.1.5"
+version = "0.2.0"
 path = "module/core/typing_tools"
 default-features = false
 
@@ -363,7 +363,7 @@ version = "*"
 package = "typing_tools"
 
 [workspace.dependencies.implements]
-version = "0.1.2"
+version = "0.2.0"
 path = "module/core/implements"
 default-features = false
 
@@ -372,7 +372,7 @@ version = "*"
 package = "implements"
 
 [workspace.dependencies.instance_of]
-version = "0.1.0"
+version = "0.2.0"
 path = "module/alias/instance_of"
 default-features = false
 
@@ -381,7 +381,7 @@ version = "*"
 package = "instance_of"
 
 [workspace.dependencies.inspect_type]
-version = "0.1.3"
+version = "0.2.0"
 path = "module/core/inspect_type"
 default-features = false
 
@@ -390,7 +390,7 @@ version = "*"
 package = "inspect_type"
 
 [workspace.dependencies.is_slice]
-version = "0.1.1"
+version = "0.2.0"
 path = "module/core/is_slice"
 default-features = false
 

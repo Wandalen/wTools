@@ -25,4 +25,5 @@ pub mod dependency
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use typing::*;

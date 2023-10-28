@@ -50,6 +50,7 @@ crate::mod_interface!
 // xxx : qqq : rid off. use mod_interface
 // #[ cfg( not( feature = "no_std" ) ) ]
 // #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 // pub use ca::
 // {
 //   input,
