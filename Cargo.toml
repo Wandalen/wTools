@@ -140,17 +140,17 @@ path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~0.1.12"
+version = "~0.2.0"
 path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~0.1.12"
+version = "~0.2.0"
 path = "module/core/former_meta"
 
-[workspace.dependencies.former_runtime]
-version = "~0.1.12"
-path = "module/core/former_runtime"
+# [workspace.dependencies.former_runtime]
+# version = "~0.1.12"
+# path = "module/core/former_runtime"
 
 [workspace.dependencies.impls_index]
 version = "~0.2.0"

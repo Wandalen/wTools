@@ -67,13 +67,14 @@ mod perform;
 #[ test ]
 fn trybuild_tests()
 {
+
   use test_tools::dependency::trybuild;
   println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
   let t = trybuild::TestCases::new();
 
   t.compile_fail( "tests/inc/all/former_bad_attr.rs" );
-  t.compile_fail( "tests/inc/all/former_hashmap_without_parameter.rs" );
-  t.compile_fail( "tests/inc/all/former_vector_without_parameter.rs" );
+  t.pass( "tests/inc/all/former_hashmap_without_parameter.rs" );
+  t.pass( "tests/inc/all/former_vector_without_parameter.rs" );
 
 }
 
