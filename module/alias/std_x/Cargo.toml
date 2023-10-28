@@ -72,7 +72,7 @@ meta_default = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_collection_make",
+  "meta_constructors",
   "meta_idents_concat",
 ]
 meta_full = [
@@ -82,7 +82,7 @@ meta_full = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_collection_make",
+  "meta_constructors",
   "meta_idents_concat",
 ]
 meta_no_std = [ "wtools/meta_no_std" ]
@@ -91,7 +91,7 @@ meta_use_alloc = [ "wtools/meta_use_alloc" ]
 meta_for_each = [ "meta", "wtools/meta_for_each" ]
 meta_impls_index = [ "meta", "wtools/meta_impls_index" ]
 meta_mod_interface = [ "meta", "wtools/meta_mod_interface" ]
-meta_collection_make = [ "meta", "wtools/meta_collection_make" ]
+meta_constructors = [ "meta", "wtools/meta_constructors" ]
 meta_idents_concat = [ "meta", "wtools/meta_idents_concat" ]
 # meta_former = [ "meta", "wtools/meta_former" ]
 # meta_options = [ "meta", "wtools/meta_options" ]

@@ -22,71 +22,36 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-# include = [
-#   "/rust/impl/meta",
-#   "/Cargo.toml",
-#   "/Readme.md",
-#   "/License",
-# ]
 
 [features]
 default = [
   "enabled",
-  "for_each",
-  "impls_index",
-  # "mod_interface",
-  # "former",
-  # "options",
-  "collection_make",
-  "idents_concat",
-  # "use_std",
+  "meta_for_each",
+  "meta_impls_index",
+  # "meta_mod_interface",
+  "meta_constructors",
+  "meta_idents_concat",
 ]
 full = [
   "enabled",
-  "for_each",
-  "impls_index",
-  # "mod_interface",
-  # "former",
-  # "options",
-  "collection_make",
-  "idents_concat",
-  # "use_std",
+  "meta_for_each",
+  "meta_impls_index",
+  # "meta_mod_interface",
+  "meta_constructors",
+  "meta_idents_concat",
 ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
 
-for_each = [ "for_each/enabled" ]
-impls_index = [ "impls_index/enabled" ]
-mod_interface = [ "mod_interface/enabled" ]
+meta_for_each = [ "for_each/enabled" ]
+meta_impls_index = [ "impls_index/enabled" ]
+meta_mod_interface = [ "mod_interface/enabled" ]
 # xxx : qqq : make mod_interface optional maybe
 
-# for_each = { workspace = true, optional = true }
-# impls_index = { workspace = true, optional = true }
-# mod_interface = { workspace = true }
-
-collection_make = [ "literally" ]
-# options = [ "woptions" ]
-idents_concat = [ "paste" ]
-
-# [lib]
-# name = "meta_tools"
-# path = "src/meta/meta_tools_lib.rs"
-#
-# [[test]]
-# name = "meta_tools_test"
-# path = "tests/meta/meta_tools_tests.rs"
-#
-# [[test]]
-# name = "meta_tools_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-#
-# [[example]]
-# name = "meta_tools_trivial_sample"
-# path = "examples/meta_tools_trivial_sample/src/main.rs"
-# qqq : for Rust dev : add a sample with impls + index. discuss first
-# - all samples should be in md files and have short descriptions
+# xxx : use
+meta_constructors = [ "literally" ]
+meta_idents_concat = [ "paste" ]
 
 [dependencies]
 
@@ -95,14 +60,9 @@ literally = { version = "~0.1", optional = true, default-features = false }
 paste = { version = "~1.0", optional = true, default-features = false }
 
 ## internal
-# impls_index = { workspace = true }
-impls_index = { workspace = true, features = [] }
-for_each = { workspace = true, features = [] }
+impls_index = { workspace = true }
+for_each = { workspace = true }
 mod_interface = { workspace = true, features = [ "default" ] }
-
-# former = { workspace = true, optional = true, default-features = false }
-# woptions = { workspace = true, optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-# smoke_test = { workspace = true }

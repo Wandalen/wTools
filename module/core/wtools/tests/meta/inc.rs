@@ -8,11 +8,11 @@ use super::*;
 #[ path = "meta/for_each_test.rs" ]
 mod for_each_test;
 
-#[ cfg( any( feature = "collection_make", feature = "meta_collection_make" ) ) ]
+#[ cfg( any( feature = "meta_constructors", feature = "meta_constructors" ) ) ]
 #[ path = "meta/collection_make_test.rs" ]
 mod collection_make_test;
 
-#[ cfg( any( feature = "idents_concat", feature = "meta_idents_concat" ) ) ]
+#[ cfg( any( feature = "meta_idents_concat", feature = "meta_idents_concat" ) ) ]
 #[ path = "meta/indents_concat_test.rs" ]
 mod indents_concat_test;
 
