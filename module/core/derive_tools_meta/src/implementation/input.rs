@@ -14,6 +14,7 @@ pub struct InputParsed
 
 impl InputParsed
 {
+  #[ allow( dead_code ) ]
   pub fn first_field_type( &self ) -> Result< syn::Type >
   {
     let maybe_field = match self.fields

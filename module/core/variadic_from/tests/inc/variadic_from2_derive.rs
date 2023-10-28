@@ -35,6 +35,7 @@ fn std_from_and_into_derive()
 #[ test ]
 fn auto_from_std_from_and_into()
 {
+  #[ allow( unused_imports ) ]
   use TheModule::exposed::*;
 
   #[ derive( Debug, PartialEq, Default ) ]

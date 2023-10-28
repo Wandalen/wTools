@@ -119,8 +119,8 @@ enabled = []
 
 nightly = [ "derive_more/nightly" ]
 
-type_variadic_from = []
-derive_variadic_from = [ "type_variadic_from", "derive_tools_meta/derive_variadic_from" ]
+type_variadic_from = [ "variadic_from/type_variadic_from" ]
+derive_variadic_from = [ "type_variadic_from", "derive_tools_meta/derive_variadic_from", "variadic_from/derive_variadic_from" ]
 
 enable_track_caller = [ "derive_more", "derive_more/track-caller" ]
 
@@ -178,7 +178,9 @@ parse-display = { version = "~0.8.2", optional = true, default-features = false 
 
 ## internal
 derive_tools_meta = { workspace = true, features = [ "enabled" ] }
+variadic_from = { workspace = true, features = [] }
 clone_dyn = { workspace = true, optional = true }
+# xxx
 
 [dev-dependencies]
 test_tools = { workspace = true }

@@ -8,7 +8,8 @@ pub( crate ) mod private
 }
 
 #[ cfg( feature = "type_variadic_from" ) ]
-pub mod from;
+pub use ::variadic_from::wtools::from;
+// pub mod from;
 
 /// Protected namespace of the module.
 pub mod protected
