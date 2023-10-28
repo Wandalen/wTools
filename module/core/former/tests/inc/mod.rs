@@ -1,34 +1,10 @@
 use super::*;
 
-// #[ cfg( any( feature = "former", feature = "meta_former" ) ) ]
-// mod all
-// {
-
-// use super::*;
-
-// use super::TheModule::former as TheModule;
-// use TheModule as former;
-// use wtools::meta::*;
-
-// mod former
-// {
-//   pub mod runtime
-//   {
-//     pub use former_runtime::*;
-//   }
-// }
-
 #[ allow( unused_imports ) ]
 use test_tools::meta::*;
 
-// #[ path = "./common_front_test.rs" ]
-// mod common_front_test;
-
 #[ path = "./all/basic_runtime_common.rs" ]
 mod basic_runtime_common;
-
-// #[ path = "./all/string_slice_runtime.rs" ]
-// mod string_slice_runtime;
 
 #[ path = "./all/alias.rs" ]
 mod alias;
@@ -56,26 +32,26 @@ mod default_container;
 #[ path = "./all/perform.rs" ]
 mod perform;
 
-// #[ path = "./common_front_test.rs" ]
-// mod common_front_test;
-
 //
 
-// stable have different information about error
-// that's why these tests are active only for nightly
-#[ test_tools::nightly ]
-#[ test ]
-fn trybuild_tests()
+only_for_terminal_module!
 {
 
-  use test_tools::dependency::trybuild;
-  println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-  let t = trybuild::TestCases::new();
+  // stable have different information about error
+  // that's why these tests are active only for nightly
+  #[ test_tools::nightly ]
+  #[ test ]
+  fn trybuild_tests()
+  {
 
-  t.compile_fail( "tests/inc/all/former_bad_attr.rs" );
-  t.pass( "tests/inc/all/former_hashmap_without_parameter.rs" );
-  t.pass( "tests/inc/all/former_vector_without_parameter.rs" );
+    use test_tools::dependency::trybuild;
+    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+    let t = trybuild::TestCases::new();
+
+    t.compile_fail( "tests/inc/all/former_bad_attr.rs" );
+    t.pass( "tests/inc/all/former_hashmap_without_parameter.rs" );
+    t.pass( "tests/inc/all/former_vector_without_parameter.rs" );
+
+  }
 
 }
-
-// }
