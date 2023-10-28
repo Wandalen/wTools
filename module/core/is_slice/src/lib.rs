@@ -64,8 +64,16 @@ mod nightly
 
 // #[ cfg( feature = "nightly" ) ]
 // #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+// #[ allow( unused_imports ) ]
 // pub use nightly::*;
+
+#[ cfg( feature = "enabled" ) ]
+mod implements_impl;
+
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
+pub use protected::*;
 
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
@@ -75,11 +83,6 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
-
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-#[ cfg( feature = "enabled" ) ]
-pub use protected::*;
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
@@ -123,7 +126,6 @@ pub mod prelude
     is_slice,
   };
 }
-mod implements_impl;
 
 #[ cfg( feature = "enabled" ) ]
 pub( crate ) mod private

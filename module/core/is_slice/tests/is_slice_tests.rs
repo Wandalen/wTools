@@ -4,6 +4,7 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( idents_concat ) ]
 
+use test_tools::exposed::*;
 use is_slice as TheModule;
 
 // #[ path = "./inc.rs" ]
