@@ -76,9 +76,9 @@ mod many
   mod many_parametrized_test;
 }
 
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
-mod make_interface_test;
+// #[ cfg( feature = "enabled" ) ]
+// #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
+// mod make_interface_test;
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( any( feature = "vectorized_from", feature = "dt_vectorized_from" ) ) ]

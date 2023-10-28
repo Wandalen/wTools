@@ -43,15 +43,6 @@ version = "~0.1.9"
 path = "module/core/data_type"
 default-features = false
 
-[workspace.dependencies.fundamental_data_type]
-version = "~0.1.6"
-path = "module/alias/fundamental_data_type"
-
-[workspace.dependencies.type_constructor]
-version = "~0.1.20"
-path = "module/core/type_constructor"
-default-features = false
-
 # [workspace.dependencies.type_constructor_meta]
 # version = "~0.2.0"
 # path = "module/core/type_constructor_meta"
@@ -89,6 +80,22 @@ features = [ "enabled" ]
 [workspace.dependencies.derive_tools_meta]
 version = "~0.4.0"
 path = "module/core/derive_tools_meta"
+default-features = false
+features = [ "enabled" ]
+
+[workspace.dependencies.type_constructor]
+version = "~0.1.20"
+path = "module/core/type_constructor"
+default-features = false
+
+[workspace.dependencies.fundamental_data_type]
+version = "~0.1.6"
+path = "module/alias/fundamental_data_type"
+default-features = false
+
+[workspace.dependencies.variadic_from]
+version = "~0.1.0"
+path = "module/core/variadic_from"
 default-features = false
 features = [ "enabled" ]
 

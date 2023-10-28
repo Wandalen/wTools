@@ -35,7 +35,7 @@ default = [
   "enabled",
 
   "derive_variadic_from",
-  "type_from",
+  "type_variadic_from",
 
   "derive_add_assign",
   "derive_add",
@@ -77,7 +77,7 @@ full = [
   "enabled",
 
   "derive_variadic_from",
-  "type_from",
+  "type_variadic_from",
 
   "derive_add_assign",
   "derive_add",
@@ -119,8 +119,8 @@ enabled = []
 
 nightly = [ "derive_more/nightly" ]
 
-type_from = []
-derive_variadic_from = [ "type_from", "derive_tools_meta/derive_variadic_from" ]
+type_variadic_from = []
+derive_variadic_from = [ "type_variadic_from", "derive_tools_meta/derive_variadic_from" ]
 
 enable_track_caller = [ "derive_more", "derive_more/track-caller" ]
 

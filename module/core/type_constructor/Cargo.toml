@@ -106,7 +106,7 @@ vectorized_from = []
 # required-features = [ "many" ]
 
 [dependencies]
-derive_tools = { workspace = true, features = [ "enabled", "type_from" ] }
+derive_tools = { workspace = true, features = [ "enabled", "type_variadic_from", "derive_variadic_from" ] }
 # inspect_type = { workspace = true }
 # type_constructor_make_meta = { workspace = true }
 # type_constructor_derive_pair_meta = { workspace = true }

@@ -13,6 +13,19 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+pub use derive_tools::{ VariadicFrom, From_0, From_1, From_2, From_3, from };
+
+/// Temporary workaround.
+#[ macro_export ]
+macro_rules! _if_from
+{
+  ( $( $code:tt )* )
+  =>
+  {
+    $( $code )*
+  };
+}
+
 // #![ without_std ]
 
 // #[ cfg( feature = "no_std" ) ]
@@ -37,6 +50,11 @@ pub mod dependency
 {
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
@@ -46,11 +64,6 @@ pub mod protected
   pub use super::orphan::*;
   pub use super::type_constuctor::protected::*;
 }
-
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-#[ cfg( feature = "enabled" ) ]
-pub use protected::*;
 
 /// Shared with parent namespace of the module
 #[ cfg( feature = "enabled" ) ]

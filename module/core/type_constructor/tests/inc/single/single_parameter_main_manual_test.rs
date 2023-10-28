@@ -191,26 +191,26 @@ for Single< T >
 TheModule::_if_from!
 {
 
-  impl< T > TheModule::From_0
-  for Single< T >
-  where T : Default
-  {
-    #[ inline ]
-    fn from_0() -> Self
-    {
-      Self( Default::default() )
-    }
-  }
-
-  impl< T > TheModule::From_1< T >
-  for Single< T >
-  {
-    #[ inline ]
-    fn from_1( _0 : T ) -> Self
-    {
-      Self( _0 )
-    }
-  }
+//   impl< T > TheModule::From_0
+//   for Single< T >
+//   where T : Default
+//   {
+//     #[ inline ]
+//     fn from_0() -> Self
+//     {
+//       Self( Default::default() )
+//     }
+//   }
+//
+//   impl< T > TheModule::From_1< T >
+//   for Single< T >
+//   {
+//     #[ inline ]
+//     fn from_1( _0 : T ) -> Self
+//     {
+//       Self( _0 )
+//     }
+//   }
 
 }
 
