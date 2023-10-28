@@ -1,6 +1,6 @@
 [package]
 name = "inspect_type"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,8 +24,8 @@ all-features = false
 exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+default = [ "enabled", "nightly" ]
+full = [ "enabled", "nightly" ]
 # use_std = []
 no_std = []
 use_alloc = []
