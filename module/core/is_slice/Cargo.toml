@@ -1,6 +1,6 @@
 [package]
 name = "is_slice"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -26,7 +26,6 @@ exclude = [ "/tests", "/examples", "-*" ]
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
@@ -34,5 +33,4 @@ enabled = []
 [dependencies]
 
 [dev-dependencies]
-# trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { workspace = true }

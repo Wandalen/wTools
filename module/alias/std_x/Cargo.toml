@@ -114,7 +114,7 @@ typing_full = [
 typing_no_std = [ "wtools/typing_no_std" ]
 typing_use_alloc = [ "wtools/typing_use_alloc" ]
 
-typing_nightly = [ "typing", "nightly", "wtools/typing_nightly" ]
+# typing_nightly = [ "typing", "nightly", "wtools/typing_nightly" ]
 typing_inspect_type = [ "typing", "wtools/typing_inspect_type" ]
 typing_is_slice = [ "typing", "wtools/typing_is_slice" ]
 typing_implements = [ "typing", "wtools/typing_implements" ]

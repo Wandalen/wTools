@@ -56,6 +56,7 @@ mod_interface!
   /// Basics.
   layer basic;
 
+  // xxx : try to uncomment
   // use super::exposed::meta;
   use super::exposed::mem;
   use super::exposed::typing;
@@ -64,6 +65,8 @@ mod_interface!
 
   protected use super::dependency;
   protected use super::dependency::*;
+
+  prelude use ::rustversion::{ nightly, stable };
 
   prelude use ::meta_tools as meta;
   prelude use ::mem_tools as mem;

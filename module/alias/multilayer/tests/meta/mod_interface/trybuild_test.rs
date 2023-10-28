@@ -4,7 +4,7 @@ use super::*;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 
-#[ test_tools::rustversion::nightly ]
+#[ test_tools::nightly ]
 tests_impls!
 {
 
@@ -48,7 +48,7 @@ tests_impls!
 
 }
 
-#[ test_tools::rustversion::nightly ]
+#[ test_tools::nightly ]
 tests_index!
 {
   trybuild_tests,

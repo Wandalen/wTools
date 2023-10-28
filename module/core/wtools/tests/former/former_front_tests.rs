@@ -14,7 +14,7 @@ mod common_front_test;
 
 // stable have different information about error
 // that's why these tests are active only for nightly
-#[ test_tools::rustversion::nightly ]
+#[ test_tools::nightly ]
 #[ test ]
 fn trybuild_tests()
 {

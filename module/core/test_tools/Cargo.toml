@@ -1,6 +1,6 @@
 [package]
 name = "test_tools"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -32,14 +32,14 @@ full = [ "enabled" ]
 no_std = []
 use_alloc = []
 enabled = []
-nightly = [ "typing_tools/nightly" ]
+# nightly = [ "typing_tools/nightly" ]
 
 [dependencies]
 
 ## external
 
 paste = "~1.0"
-rustversion = "~1.0"
+rustversion = "~1.0" # xxx : remove later. use #[ cfg( RUSTC_IS_NIGHTLY ) ]
 anyhow = "~1.0"
 num-traits = "~0.2"
 trybuild = { version = "1.0.85", features = [ "diff" ] }
@@ -51,3 +51,6 @@ mem_tools = { workspace = true, features = [ "full" ] }
 typing_tools = { workspace = true, features = [ "full" ] }
 data_type = { workspace = true, features = [ "full" ] }
 diagnostics_tools = { workspace = true, features = [ "full" ] }
+
+[build-dependencies]
+rustc_version = "0.4"

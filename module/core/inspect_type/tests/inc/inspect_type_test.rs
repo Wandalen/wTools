@@ -3,7 +3,9 @@ use super::*;
 
 //
 
-#[ cfg( feature = "nightly" ) ]
+// #[ test_tools::nightly ]
+// #[ cfg( feature = "nightly" ) ]
+#[ cfg( RUSTC_IS_NIGHTLY ) ]
 tests_impls!
 {
 
@@ -39,7 +41,9 @@ tests_impls!
 
 //
 
-#[ cfg( feature = "nightly" ) ]
+// #[ test_tools::nightly ]
+// #[ cfg( feature = "nightly" ) ]
+#[ cfg( RUSTC_IS_NIGHTLY ) ]
 tests_index!
 {
   inspect_to_str_type_of_test,

@@ -31,7 +31,7 @@ default = [
   "typing_implements",
   "typing_is_slice",
   "typing_inspect_type",
-  "nightly",
+  # "nightly",
 ]
 
 full = [
@@ -39,9 +39,8 @@ full = [
   "typing_implements",
   "typing_is_slice",
   "typing_inspect_type",
-  "nightly",
+  # "nightly",
 ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
@@ -49,7 +48,7 @@ enabled = []
 typing_inspect_type = [ "inspect_type/enabled" ]
 typing_is_slice = [ "is_slice/enabled" ]
 typing_implements = [ "implements/enabled" ]
-nightly = [ "inspect_type/nightly" ]
+# nightly = [ "inspect_type/nightly" ]
 
 [dependencies]
 

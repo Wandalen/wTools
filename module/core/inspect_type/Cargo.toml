@@ -1,6 +1,6 @@
 [package]
 name = "inspect_type"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,15 +24,17 @@ all-features = false
 exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
-default = [ "enabled", "nightly" ]
-full = [ "enabled", "nightly" ]
-# use_std = []
+default = [ "enabled" ]
+full = [ "enabled" ]
 no_std = []
 use_alloc = []
 enabled = []
-nightly = []
+# nightly = []
 
 [dependencies]
 
 [dev-dependencies]
 test_tools = { workspace = true }
+
+[build-dependencies]
+rustc_version = "0.4"

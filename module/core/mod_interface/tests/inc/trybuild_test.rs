@@ -8,7 +8,9 @@ only_for_terminal_module!
 {
 
   // #[ cfg( module_mod_interface ) ]
-  #[ test_tools::rustversion::nightly ]
+  // #[ cfg( module_is_terminal ) ]
+  #[ test_tools::nightly ]
+  // #[ cfg( RUSTC_IS_NIGHTLY ) ]
   tests_impls!
   {
 
@@ -53,7 +55,9 @@ only_for_terminal_module!
   }
 
   // #[ cfg( module_mod_interface ) ]
-  #[ test_tools::rustversion::nightly ]
+  // #[ cfg( module_is_terminal ) ]
+  // #[ cfg( RUSTC_IS_NIGHTLY ) ]
+  #[ test_tools::nightly ]
   tests_index!
   {
     trybuild_tests,

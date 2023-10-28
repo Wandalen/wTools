@@ -6,6 +6,12 @@
 #![ deny( missing_debug_implementations ) ]
 #![ deny( missing_docs ) ]
 
+// #![ cfg( rustversion::nightly ) ]
+// #![ feature( type_name_of_val ) ]
+// #![ cfg_attr( feature = "type_name_of_val", feature( type_name_of_val ) ) ]
+
+#![ cfg_attr( RUSTC_IS_NIGHTLY, feature( type_name_of_val ) ) ]
+
 //!
 //! Diagnostic-purpose tools to inspect type of a variable and its size.
 //!
@@ -18,7 +24,10 @@
 // #[ derive( Debug ) ]
 // pub struct Experimental( i32 );
 
-#[ cfg( feature = "nightly" ) ]
+// #[ cfg( feature = "nightly" ) ]
+// #[ cfg( feature = "type_name_of_val" ) ]
+// #[ rustversion::nightly ]
+#[ cfg( RUSTC_IS_NIGHTLY ) ]
 mod nightly
 {
 
@@ -99,7 +108,10 @@ pub mod exposed
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  #[ cfg( feature = "nightly" ) ]
+  // #[ cfg( feature = "nightly" ) ]
+  // #[ rustversion::nightly ]
+  // #[ cfg( feature = "type_name_of_val" ) ]
+  #[ cfg( RUSTC_IS_NIGHTLY ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::nightly::*;

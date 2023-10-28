@@ -4,7 +4,7 @@ mod inc;
 
 //
 
-#[ test_tools::rustversion::nightly ]
+#[ test_tools::nightly ]
 #[ test ]
 fn trybuild_test()
 {

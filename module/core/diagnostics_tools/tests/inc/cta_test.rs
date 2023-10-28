@@ -18,7 +18,7 @@ tests_impls!
   }
 
   #[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
-  #[ test_tools::rustversion::nightly ]
+  #[ test_tools::nightly ]
   fn cta_trybuild_tests()
   {
     use test_tools::dependency::trybuild;
