@@ -66,13 +66,13 @@ default-features = false
 # path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
-version = "0.2.3"
+version = "0.3.0"
 path = "module/core/interval_adapter"
 default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.winterval]
-version = "0.2.3"
+version = "0.3.0"
 path = "module/alias/winterval"
 default-features = false
 features = [ "enabled" ]

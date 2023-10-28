@@ -58,4 +58,3 @@ implements = { workspace = true }
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { workspace = true }
-# smoke_test = { workspace = true }

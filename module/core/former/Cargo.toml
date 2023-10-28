@@ -59,4 +59,3 @@ former_runtime = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-# smoke_test = { workspace = true }

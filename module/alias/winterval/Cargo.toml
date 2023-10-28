@@ -1,6 +1,6 @@
 [package]
 name = "winterval"
-version = "0.2.3"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -35,4 +35,3 @@ interval_adapter = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-# smoke_test = { workspace = true }

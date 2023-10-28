@@ -395,4 +395,3 @@ parse-display = { version = "~0.5", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-# smoke_test = { workspace = true }
