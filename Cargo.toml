@@ -1,8 +1,9 @@
 [workspace]
 resolver = "2"
 members = [
-  "module/core/*",
   "module/alias/*",
+  "module/blank/*",
+  "module/core/*",
   "module/move/*",
   # "module/step/*",
   # "module/core/*/examples/*",

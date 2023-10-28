@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-only_for_wtools!
+only_for_aggregating_module!
 {
   #[ allow( unused_imports ) ]
   use wtools::meta::*;
@@ -9,7 +9,7 @@ only_for_wtools!
   use wtools::former::Former;
 }
 
-only_for_local_module!
+only_for_terminal_module!
 {
   #[ allow( unused_imports ) ]
   use meta_tools::*;

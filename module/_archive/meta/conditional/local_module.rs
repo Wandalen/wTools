@@ -1,6 +1,6 @@
 
 #[ macro_export ]
-macro_rules! only_for_local_module
+macro_rules! only_for_terminal_module
 {
 ( $( $Any : tt )* ) =>
   {
@@ -9,7 +9,7 @@ macro_rules! only_for_local_module
 }
 
 #[ macro_export ]
-macro_rules! only_for_wtools
+macro_rules! only_for_aggregating_module
 {
   ( $( $Any : tt )* ) =>
   {

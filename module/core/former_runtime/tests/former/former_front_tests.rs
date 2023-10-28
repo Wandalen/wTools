@@ -5,7 +5,7 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-include!( "../_conditional/local_module.rs" );
+include!( "../_conditional/terminal_module.rs" );
 
 #[ path = "./common_front_test.rs" ]
 mod common_front_test;
