@@ -1,7 +1,5 @@
 
-// qqq : for Dima : uncomment the next line and comment second one after fixing /* aaa : Dmytro : fixed during call */
 use super::*;
-// use super::{ TheModule, tests_impls, tests_index, a_id };
 
 mod micro_modules;
 mod micro_modules_two;
