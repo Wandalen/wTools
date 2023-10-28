@@ -9,7 +9,7 @@ pub( crate ) mod private
   ///
   /// ``` rust
   /// use diagnostics_tools::prelude::*;
-  /// cta_true!( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
+  /// cta_true!( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
   /// ```
   ///
 
@@ -44,6 +44,10 @@ pub( crate ) mod private
   pub use cta_true;
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
@@ -51,10 +55,6 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
-
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan

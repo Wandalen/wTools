@@ -211,6 +211,10 @@ pub( crate ) mod private
   pub use a_dbg_not_id;
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
@@ -218,10 +222,6 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
-
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan

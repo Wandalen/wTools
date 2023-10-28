@@ -277,11 +277,11 @@ default-features = false
 ## test
 
 [workspace.dependencies.wtest]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/wtest"
 
 [workspace.dependencies.test_tools]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/test_tools"
 
 ## willbe

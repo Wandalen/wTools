@@ -1,12 +1,8 @@
-
 use diagnostics_tools::prelude::*;
 
-//
-
-#[ test ]
-#[ should_panic ]
-fn a_id_panic_test()
+fn main()
 {
+
   a_id!( 1, 2 );
   /*
     print :
@@ -19,4 +15,5 @@ Diff < left / right > :
 >2
 ...
   */
+
 }

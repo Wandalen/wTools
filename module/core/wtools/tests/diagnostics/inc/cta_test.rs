@@ -8,16 +8,16 @@ use TheModule::prelude::*;
 
 tests_impls!
 {
-  #[ cfg( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
+  #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
   fn cta_true_pass()
   {
     // test.case( "check feature, true" );
-    cta_true!( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
+    cta_true!( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
     // zzz : try ( 1 + 2 == 3 )
   }
 }
 
-#[ cfg( feature = "compiletime_assertions" ) ]
+#[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
 #[ test_tools::rustversion::nightly ]
 #[ test ]
 fn cta_trybuild_tests()

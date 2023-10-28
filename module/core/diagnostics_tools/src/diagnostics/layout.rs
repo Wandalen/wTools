@@ -1,5 +1,5 @@
 
-#[ cfg( feature = "compiletime_assertions" ) ]
+#[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
 pub( crate ) mod private
 {
 
@@ -7,7 +7,7 @@ pub( crate ) mod private
   /// Compile-time assertion that two types have the same size.
   ///
 
-  // #[ cfg( feature = "compiletime_assertions" ) ]
+
   #[ macro_export ]
   macro_rules! cta_type_same_size
   {
@@ -26,7 +26,7 @@ pub( crate ) mod private
   /// Compile-time assertion of having the same align.
   ///
 
-  // #[ cfg( feature = "compiletime_assertions" ) ]
+
   #[ macro_export ]
   macro_rules! cta_type_same_align
   {
@@ -44,7 +44,7 @@ pub( crate ) mod private
   /// Compile-time assertion that memory behind two references have the same size.
   ///
 
-  // #[ cfg( feature = "compiletime_assertions" ) ]
+
   #[ macro_export ]
   macro_rules! cta_ptr_same_size
   {
@@ -67,7 +67,7 @@ pub( crate ) mod private
   /// Does not consume values.
   ///
 
-  // #[ cfg( feature = "compiletime_assertions" ) ]
+
   #[ macro_export ]
   macro_rules! cta_mem_same_size
   {
@@ -115,7 +115,7 @@ pub mod exposed
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  #[ cfg( feature = "compiletime_assertions" ) ]
+  #[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::private::

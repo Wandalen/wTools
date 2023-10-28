@@ -22,34 +22,27 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-# include = [
-#   "/rust/impl/diagnostics",
-#   "/Cargo.toml",
-#   "/Readme.md",
-#   "/License",
-# ]
 
 [features]
 default = [
   "enabled",
-  "runtime_assertions",
-  "compiletime_assertions",
-  # "use_std"
+  "diagnostics_runtime_assertions",
+  "diagnostics_compiletime_assertions",
+  "diagnostics_memory_layout",
 ]
 full = [
   "enabled",
-  "runtime_assertions",
-  "compiletime_assertions",
-  # "use_std",
-  # "use_alloc"
+  "diagnostics_runtime_assertions",
+  "diagnostics_compiletime_assertions",
+  "diagnostics_memory_layout",
 ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
 
-runtime_assertions = [ "pretty_assertions" ] # run-time assertions
-compiletime_assertions = [] # compile-time assertions
+diagnostics_runtime_assertions = [ "pretty_assertions" ] # run-time assertions
+diagnostics_compiletime_assertions = [] # compile-time assertions
+diagnostics_memory_layout = [] #
 
 [dependencies]
 pretty_assertions = { version = "~1.2", optional = true }

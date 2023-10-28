@@ -383,8 +383,8 @@ diagnostics_default = [
 diagnostics_no_std = [ "diagnostics", "diagnostics_tools/no_std" ]
 diagnostics_use_alloc = [ "diagnostics", "diagnostics_tools/use_alloc" ]
 
-diagnostics_runtime_assertions = [ "diagnostics_tools/runtime_assertions" ]
-diagnostics_compiletime_assertions = [ "diagnostics_tools/compiletime_assertions" ]
+diagnostics_runtime_assertions = [ "diagnostics_tools/diagnostics_runtime_assertions" ]
+diagnostics_compiletime_assertions = [ "diagnostics_tools/diagnostics_compiletime_assertions" ]
 
 # common
 
