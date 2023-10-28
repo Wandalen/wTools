@@ -15,12 +15,15 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+/// Former - variation of builder pattern. Implementation of its runtime.
+pub mod runtime;
+
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
-  pub use former_runtime;
+  // // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
+  // pub use former_runtime;
   // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   pub use former_meta;
 }
@@ -34,7 +37,8 @@ pub mod protected
   // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use former_runtime as runtime;
+  use super::runtime;
+  // pub use former_runtime as runtime;
   // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

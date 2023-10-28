@@ -1,22 +1,7 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
-#![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
-#![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/former_runtime/latest/former_runtime/" ) ]
-#![ warn( rust_2018_idioms ) ]
-#![ deny( missing_debug_implementations ) ]
-#![ deny( missing_docs ) ]
 
 //!
 //! Former - variation of builder pattern. Implementation of its runtime.
 //!
-
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
-
-/// Namespace with dependencies.
-#[ cfg( feature = "enabled" ) ]
-pub mod dependency
-{
-}
 
 /// Former of a fector.
 mod vector;
@@ -24,6 +9,10 @@ mod vector;
 mod hash_map;
 /// Former of a hash set.
 mod hash_set;
+
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
 
 /// Protected namespace of the module.
 pub mod protected
@@ -41,10 +30,6 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::hash_set::*;
 }
-
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use protected::*;
 
 /// Exposed namespace of the module.
 pub mod exposed

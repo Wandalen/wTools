@@ -12,25 +12,24 @@ Basic exceptions handling mechanism.
 ```rust
 fn main()
 {
-  #[ cfg( not( feature = "no_std" ) ) ]
-  {
-    let err = f1();
-    println!( "{err:#?}" );
-    // < Err(
-    // <    BasicError {
-    // <        msg: "Some error",
-    // <    },
-    // < )
-  }
+  let err = f1();
+  println!( "{err:#?}" );
+  // < Err(
+  // <    BasicError {
+  // <        msg: "Some error",
+  // <    },
+  // < )
 }
 
-#[ cfg( not( feature = "no_std" ) ) ]
 fn f1() -> error_tools::Result< () >
 {
   let _read = std::fs::read_to_string( "Cargo.toml" )?;
   Err( error_tools::BasicError::new( "Some error" ).into() )
 }
 ```
+
+<!-- qqq : investigate use-cases and write good documentation -->
+<!-- qqq : make sure it work in no_std -->
 
 ### To add to your project
 
