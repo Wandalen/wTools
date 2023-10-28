@@ -182,7 +182,7 @@ clone_dyn = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }
+# smoke_test = { workspace = true }
 
 [build-dependencies]
 cfg_aliases = "0.1.1"

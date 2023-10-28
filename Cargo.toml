@@ -4,13 +4,12 @@ members = [
   "module/core/*",
   "module/alias/*",
   "module/move/*",
-  "module/step/*",
+  # "module/step/*",
   # "module/core/*/examples/*",
 ]
 exclude = [
-  "*",
+  "-*",
   "module/move/_video_experiment",
-  "module/core/-*",
 ]
 # default-members = [ "module/core/wtools" ]
 
@@ -24,33 +23,17 @@ version = "0.2.0"
 path = "module/core/wtools"
 default-features = false
 
-[workspace.dependencies.wtools_published]
-version = "*"
-package = "wtools"
-
 [workspace.dependencies.non_std]
 version = "0.1.4"
 path = "module/alias/non_std"
-
-[workspace.dependencies.non_std_published]
-version = "*"
-package = "non_std"
 
 [workspace.dependencies.std_tools]
 version = "0.1.4"
 path = "module/alias/std_tools"
 
-[workspace.dependencies.std_tools_published]
-version = "*"
-package = "std_tools"
-
 [workspace.dependencies.std_x]
 version = "0.1.4"
 path = "module/alias/std_x"
-
-[workspace.dependencies.std_x_published]
-version = "*"
-package = "std_x"
 
 ## data_type
 
@@ -59,26 +42,14 @@ version = "0.1.9"
 path = "module/core/data_type"
 default-features = false
 
-[workspace.dependencies.data_type_published]
-version = "*"
-package = "data_type"
-
 [workspace.dependencies.fundamental_data_type]
 version = "0.1.6"
 path = "module/alias/fundamental_data_type"
-
-[workspace.dependencies.fundamental_data_type_published]
-version = "*"
-package = "fundamental_data_type"
 
 [workspace.dependencies.type_constructor]
 version = "0.1.20"
 path = "module/core/type_constructor"
 default-features = false
-
-[workspace.dependencies.type_constructor_published]
-version = "*"
-package = "type_constructor"
 
 # [workspace.dependencies.type_constructor_meta]
 # version = "0.2.0"
@@ -99,19 +70,11 @@ path = "module/core/interval_adapter"
 default-features = false
 features = [ "enabled" ]
 
-[workspace.dependencies.interval_adapter_published]
-version = "*"
-package = "interval_adapter"
-
 [workspace.dependencies.winterval]
 version = "0.2.3"
 path = "module/alias/winterval"
 default-features = false
 features = [ "enabled" ]
-
-[workspace.dependencies.winterval_published]
-version = "*"
-package = "winterval"
 
 
 ## derive
@@ -122,19 +85,11 @@ path = "module/core/derive_tools"
 default-features = false
 features = [ "enabled" ]
 
-[workspace.dependencies.derive_tools_published]
-version = "*"
-package = "derive_tools"
-
 [workspace.dependencies.derive_tools_meta]
 version = "0.4.0"
 path = "module/core/derive_tools_meta"
 default-features = false
 features = [ "enabled" ]
-
-[workspace.dependencies.derive_tools_meta_published]
-version = "*"
-package = "derive_tools_meta"
 
 [workspace.dependencies.clone_dyn]
 version = "0.4.0"
@@ -142,18 +97,10 @@ path = "module/core/clone_dyn"
 default-features = false
 features = [ "enabled" ]
 
-[workspace.dependencies.clone_dyn_published]
-version = "*"
-package = "clone_dyn"
-
 [workspace.dependencies.clone_dyn_meta]
 version = "0.4.0"
 path = "module/core/clone_dyn_meta"
 features = [ "enabled" ]
-
-[workspace.dependencies.clone_dyn_meta_published]
-version = "*"
-package = "clone_dyn_meta"
 
 
 ## mem
@@ -163,20 +110,12 @@ version = "0.1.1"
 path = "module/core/mem_tools"
 default-features = false
 
-[workspace.dependencies.mem_tools_published]
-version = "*"
-package = "mem_tools"
-
 ## diagnostics
 
 [workspace.dependencies.diagnostics_tools]
 version = "0.1.4"
 path = "module/core/diagnostics_tools"
 default-features = false
-
-[workspace.dependencies.diagnostics_tools_published]
-version = "*"
-package = "diagnostics_tools"
 
 
 ## iter
@@ -186,10 +125,6 @@ version = "0.3.0"
 path = "module/core/iter_tools"
 default-features = false
 
-[workspace.dependencies.iter_tools_published]
-version = "*"
-package = "iter_tools"
-
 
 ## meta
 
@@ -198,116 +133,60 @@ version = "0.4.0"
 path = "module/core/meta_tools"
 default-features = false
 
-[workspace.dependencies.meta_tools_published]
-version = "*"
-package = "meta_tools"
-
 [workspace.dependencies.for_each]
 version = "0.3.0"
 path = "module/core/for_each"
 default-features = false
-
-[workspace.dependencies.for_each_published]
-version = "*"
-package = "for_each"
 
 [workspace.dependencies.former]
 version = "0.1.12"
 path = "module/core/former"
 default-features = false
 
-[workspace.dependencies.former_published]
-version = "*"
-package = "former"
-
 [workspace.dependencies.former_meta]
 version = "0.1.12"
 path = "module/core/former_meta"
 
-[workspace.dependencies.former_meta_published]
-version = "*"
-package = "former_meta"
-
 [workspace.dependencies.former_runtime]
 version = "0.1.12"
 path = "module/core/former_runtime"
-
-[workspace.dependencies.former_runtime_published]
-version = "*"
-package = "former_runtime"
 
 [workspace.dependencies.impls_index]
 version = "0.2.0"
 path = "module/core/impls_index"
 default-features = false
 
-[workspace.dependencies.impls_index_published]
-version = "*"
-package = "impls_index"
-
 [workspace.dependencies.impls_index_meta]
 version = "0.2.0"
 path = "module/core/impls_index_meta"
-
-[workspace.dependencies.impls_index_meta_published]
-version = "*"
-package = "impls_index_meta"
 
 [workspace.dependencies.mod_interface]
 version = "0.3.0"
 path = "module/core/mod_interface"
 default-features = false
 
-[workspace.dependencies.mod_interface_published]
-version = "*"
-package = "mod_interface"
-
 [workspace.dependencies.mod_interface_meta]
 version = "0.3.0"
 path = "module/core/mod_interface_meta"
 default-features = false
-
-[workspace.dependencies.mod_interface_meta_published]
-version = "*"
-package = "mod_interface_meta"
-
-# [workspace.dependencies.mod_interface_runtime]
-# version = "0.1.2"
-# path = "module/core/mod_interface_runtime"
 
 [workspace.dependencies.multilayer]
 version = "0.1.3"
 path = "module/alias/multilayer"
 default-features = false
 
-[workspace.dependencies.multilayer_published]
-version = "*"
-package = "multilayer"
-
 [workspace.dependencies.woptions]
 version = "0.1.4"
 path = "module/core/woptions"
 default-features = false
 
-[workspace.dependencies.woptions_published]
-version = "*"
-package = "woptions"
-
 [workspace.dependencies.woptions_meta]
 version = "0.1.4"
 path = "module/core/woptions_meta"
 
-[workspace.dependencies.woptions_meta_published]
-version = "*"
-package = "woptions_meta"
-
 [workspace.dependencies.woptions_runtime]
 version = "0.1.4"
 path = "module/core/woptions_runtime"
-
-[workspace.dependencies.woptions_runtime_published]
-version = "*"
-package = "woptions_runtime"
 
 
 ## proc macro tools
@@ -317,27 +196,15 @@ version = "0.3.0"
 path = "module/core/macro_tools"
 default-features = false
 
-[workspace.dependencies.macro_tools_published]
-version = "*"
-package = "macro_tools"
-
 [workspace.dependencies.proc_macro_tools]
 version = "0.2.0"
 path = "module/alias/proc_macro_tools"
 default-features = false
 
-[workspace.dependencies.proc_macro_tools_published]
-version = "*"
-package = "proc_macro_tools"
-
 [workspace.dependencies.wproc_macro]
 version = "0.1.1"
 path = "module/alias/wproc_macro"
 default-features = false
-
-[workspace.dependencies.wproc_macro_published]
-version = "*"
-package = "wproc_macro"
 
 ## time
 
@@ -345,10 +212,6 @@ package = "wproc_macro"
 version = "0.1.5"
 path = "module/core/time_tools"
 default-features = false
-
-[workspace.dependencies.time_tools_published]
-version = "*"
-package = "time_tools"
 
 
 ## typing
@@ -358,45 +221,25 @@ version = "0.2.0"
 path = "module/core/typing_tools"
 default-features = false
 
-[workspace.dependencies.typing_tools_published]
-version = "*"
-package = "typing_tools"
-
 [workspace.dependencies.implements]
 version = "0.3.0"
 path = "module/core/implements"
 default-features = false
-
-[workspace.dependencies.implements_published]
-version = "*"
-package = "implements"
 
 [workspace.dependencies.instance_of]
 version = "0.2.0"
 path = "module/alias/instance_of"
 default-features = false
 
-[workspace.dependencies.instance_of_published]
-version = "*"
-package = "instance_of"
-
 [workspace.dependencies.inspect_type]
 version = "0.4.0"
 path = "module/core/inspect_type"
 default-features = false
 
-[workspace.dependencies.inspect_type_published]
-version = "*"
-package = "inspect_type"
-
 [workspace.dependencies.is_slice]
 version = "0.3.0"
 path = "module/core/is_slice"
 default-features = false
-
-[workspace.dependencies.is_slice_published]
-version = "*"
-package = "is_slice"
 
 
 ## error
@@ -406,17 +249,9 @@ version = "0.1.5"
 path = "module/core/error_tools"
 default-features = false
 
-[workspace.dependencies.error_tools_published]
-version = "*"
-package = "error_tools"
-
 [workspace.dependencies.werror]
 version = "0.1.3"
 path = "module/alias/werror"
-
-[workspace.dependencies.werror_published]
-version = "*"
-package = "werror"
 
 
 ## strs
@@ -426,17 +261,9 @@ version = "0.2.0"
 path = "module/core/strs_tools"
 default-features = false
 
-[workspace.dependencies.strs_tools_published]
-version = "*"
-package = "strs_tools"
-
 [workspace.dependencies.wstring_tools]
 version = "0.2.0"
 path = "module/alias/wstring_tools"
-
-[workspace.dependencies.wstring_tools_published]
-version = "*"
-package = "wstring_tools"
 
 
 ## fs
@@ -446,37 +273,16 @@ version = "0.1.0"
 path = "module/move/fs_tools"
 default-features = false
 
-[workspace.dependencies.fs_tools_published]
-version = "*"
-package = "fs_tools"
-
 
 ## test
 
-# [workspace.dependencies.wtest_basic]
-# version = "0.2.0"
-# path = "module/core/wtest_basic"
-# # package = "wtest_basic"
-#
-# [workspace.dependencies.wtest_basic_published]
-# version = "*"
-# package = "wtest_basic"
-
 [workspace.dependencies.wtest]
-version = "0.1.2"
-path = "module/move/wtest"
-
-[workspace.dependencies.wtest_published]
-version = "*"
-package = "wtest"
+version = "0.2.0"
+path = "module/core/wtest"
 
 [workspace.dependencies.test_tools]
-version = "0.1.5"
+version = "0.2.0"
 path = "module/core/test_tools"
-
-[workspace.dependencies.test_tools_published]
-version = "*"
-package = "test_tools"
 
 ## willbe
 
@@ -484,25 +290,9 @@ package = "test_tools"
 version = "0.1.3"
 path = "module/move/willbe"
 
-[workspace.dependencies.willbe_published]
-version = "*"
-package = "willbe"
-
 [workspace.dependencies.willbe2]
 version = "0.1.0"
 path = "module/alias/willbe2"
-
-[workspace.dependencies.willbe2_published]
-version = "*"
-package = "willbe2"
-
-# [workspace.dependencies.willbe_old]
-# version = "0.2.0"
-# path = "module/move/willbe_old"
-
-# [workspace.dependencies.willbe_old_published]
-# version = "*"
-# package = "willbe_old"
 
 
 ## graphs
@@ -512,37 +302,22 @@ version = "0.2.0"
 path = "module/move/graphs_tools"
 default-features = false
 
-[workspace.dependencies.graphs_tools_published]
-version = "*"
-package = "graphs_tools"
-
 [workspace.dependencies.automata_tools]
 version = "0.2.0"
 path = "module/move/automata_tools"
 default-features = false
-
-[workspace.dependencies.automata_tools_published]
-version = "*"
-package = "automata_tools"
 
 [workspace.dependencies.wautomata]
 version = "0.2.0"
 path = "module/alias/wautomata"
 default-features = false
 
-[workspace.dependencies.wautomata_published]
-version = "*"
-package = "wautomata"
 
 ## ca
 
 [workspace.dependencies.wca]
 version = "0.1.3"
 path = "module/move/wca"
-
-[workspace.dependencies.wca_published]
-version = "*"
-package = "wca"
 
 
 ## censor
@@ -551,20 +326,12 @@ package = "wca"
 version = "0.1.1"
 path = "module/move/wcensor"
 
-[workspace.dependencies.wcensor_published]
-version = "*"
-package = "wcensor"
-
 
 ## lang
 
 [workspace.dependencies.wlang]
 version = "0.1.0"
 path = "module/move/wlang"
-
-[workspace.dependencies.wlang_published]
-version = "*"
-package = "wlang"
 
 
 ## publisher
@@ -573,10 +340,6 @@ package = "wlang"
 version = "0.1.3"
 path = "module/move/wpublisher"
 
-[workspace.dependencies.wpublisher_published]
-version = "*"
-package = "wpublisher"
-
 
 ## plot
 
@@ -584,17 +347,9 @@ package = "wpublisher"
 version = "0.1.7"
 path = "module/move/wplot"
 
-[workspace.dependencies.wplot_published]
-version = "*"
-package = "wplot"
-
 [workspace.dependencies.plot_interface]
 version = "0.1.3"
 path = "module/move/plot_interface"
-
-[workspace.dependencies.plot_interface_published]
-version = "*"
-package = "plot_interface"
 
 
 ## steps

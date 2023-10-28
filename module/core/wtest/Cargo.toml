@@ -1,6 +1,6 @@
 [package]
 name = "wtest"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -36,33 +36,12 @@ no_std = []
 use_alloc = []
 enabled = []
 
-[[bin]]
-name = "wtest"
-path = "src/test/wtest_entry.rs"
-
-[lib]
-name = "wtest"
-path = "src/test/wtest_lib.rs"
-
-[[test]]
-name = "wtest_test"
-path = "tests/test/wtest_tests.rs"
-
-[[test]]
-name = "wtest_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "wtest_trivial_sample"
-path = "examples/wtest_trivial_sample/src/main.rs"
-
 [dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }
 wtools = { workspace = true }
 wca = { workspace = true }
-wpublisher = { workspace = true }
-anyhow = "~1.0.56"
+# wpublisher = { workspace = true }
+# anyhow = "~1.0.56"
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = [ "diff" ] }

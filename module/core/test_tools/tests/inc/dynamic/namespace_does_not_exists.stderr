@@ -1,11 +1,11 @@
 error[E0433]: failed to resolve: use of undeclared crate or module `wtest_basic`
- --> tests/test/dynamic/namespace_does_not_exists.rs:1:5
+ --> tests/inc/dynamic/namespace_does_not_exists.rs:1:5
   |
 1 | use wtest_basic::exposed::exposed::*;
   |     ^^^^^^^^^^^ use of undeclared crate or module `wtest_basic`
 
 error: cannot find macro `tests_index` in this scope
-  --> tests/test/dynamic/namespace_does_not_exists.rs:15:1
+  --> tests/inc/dynamic/namespace_does_not_exists.rs:15:1
    |
 15 | tests_index!
    | ^^^^^^^^^^^
@@ -18,7 +18,7 @@ help: consider importing one of these items
    |
 
 error: cannot find macro `tests_impls` in this scope
- --> tests/test/dynamic/namespace_does_not_exists.rs:5:1
+ --> tests/inc/dynamic/namespace_does_not_exists.rs:5:1
   |
 5 | tests_impls!
   | ^^^^^^^^^^^

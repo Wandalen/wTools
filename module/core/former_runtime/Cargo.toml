@@ -49,6 +49,6 @@ path = "tests/former/former_runtime_tests.rs"
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }
+# smoke_test = { workspace = true }
 meta_tools = { workspace = true }
 anyhow = "~1.0"

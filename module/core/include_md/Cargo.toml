@@ -57,4 +57,4 @@ path = "src/_blank/standard_lib.rs"
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }
+# smoke_test = { workspace = true }

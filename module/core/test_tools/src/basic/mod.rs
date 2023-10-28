@@ -13,4 +13,5 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   layer helper;
+  layer smoke_test;
 }

@@ -69,5 +69,5 @@ petgraph = "~0.6"
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }
+# smoke_test = { workspace = true }
 

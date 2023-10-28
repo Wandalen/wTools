@@ -44,4 +44,4 @@ derive_tools = { workspace = true, features = [ "enabled", "derive_is_variant" ]
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }
+# smoke_test = { workspace = true }

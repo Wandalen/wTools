@@ -56,4 +56,4 @@ path = "tests/_blank/tests.rs"
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }
+# smoke_test = { workspace = true }

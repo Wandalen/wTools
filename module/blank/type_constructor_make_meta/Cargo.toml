@@ -41,5 +41,5 @@ macro_tools = { workspace = true, features = [ "full" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }
+# smoke_test = { workspace = true }
 # xxx : move smoke_test to test_tools

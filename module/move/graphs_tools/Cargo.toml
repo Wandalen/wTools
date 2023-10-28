@@ -64,5 +64,5 @@ strs_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }
+# smoke_test = { workspace = true }
 # inspect_type = { workspace = true }

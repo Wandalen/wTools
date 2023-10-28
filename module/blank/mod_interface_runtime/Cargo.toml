@@ -38,4 +38,4 @@ name = "mod_interface_runtime"
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }
+# smoke_test = { workspace = true }

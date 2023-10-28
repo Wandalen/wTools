@@ -1,22 +1,16 @@
-
-### Basic use-case.
-
-```rust
-use wtest_basic::*;
-
-//
+use wtest::*;
 
 tests_impls!
 {
 
-  fn pass1()
+  fn pass1_test()
   {
     assert_eq!( true, true );
   }
 
   //
 
-  fn pass2()
+  fn pass2_test()
   {
     assert_eq!( 1, 1 );
   }
@@ -27,8 +21,6 @@ tests_impls!
 
 tests_index!
 {
-  pass1,
-  pass2,
+  pass1_test,
+  pass2_test,
 }
-
-```
