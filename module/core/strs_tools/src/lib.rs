@@ -16,28 +16,30 @@
 #[ cfg( feature = "enabled" ) ]
 pub mod string;
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+// #[ doc( inline ) ]
+// #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 pub use string::*;
-
-/// Protected namespace of the module.
-#[ cfg( feature = "enabled" ) ]
-pub mod protected
-{
-  pub use super::orphan::*;
-  pub use super::string::orphan::*;
-}
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
+/// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
+pub mod protected
+{
+  #[ allow( unused_imports ) ]
+  pub use super::orphan::*;
+  pub use super::string::orphan::*;
+}
+
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -45,6 +47,7 @@ pub mod orphan
 #[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
+  pub use super::string::exposed::*;
 }
 
 /// Namespace of the module to include with `use module::*`.

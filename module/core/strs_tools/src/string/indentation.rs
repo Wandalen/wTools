@@ -34,23 +34,26 @@ pub( crate ) mod private
 
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
   pub use super::orphan::*;
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
   };
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use protected::*;
-
 /// Parented namespace of the module.
 pub mod orphan
 {
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     indentation,
@@ -60,6 +63,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
   };
