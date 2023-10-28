@@ -25,9 +25,11 @@ pub mod dependency
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -36,6 +38,7 @@ pub mod protected
 }
 
 /// Orphan namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
