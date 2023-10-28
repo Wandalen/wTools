@@ -77,7 +77,7 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::enumerable::orphan::*;
   // #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+  // #[ allow( unused_imports ) ]
   // #[ cfg( feature = "make" ) ]
   // pub use super::make::orphan::*;
 }
@@ -127,7 +127,7 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::enumerable::exposed::*;
   // #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+  // #[ allow( unused_imports ) ]
   // #[ cfg( feature = "make" ) ]
   // pub use super::make::exposed::*;
 }
@@ -162,7 +162,7 @@ pub mod prelude
   #[ allow( unused_imports ) ]
   pub use super::enumerable::prelude::*;
   // #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+  // #[ allow( unused_imports ) ]
   // #[ cfg( feature = "make" ) ]
   // pub use super::make::prelude::*;
 }

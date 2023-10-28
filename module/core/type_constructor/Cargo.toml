@@ -46,7 +46,6 @@ full = [
 no_std = []
 use_alloc = []
 enabled = []
-
 many = []
 make = []
 vectorized_from = []
@@ -63,48 +62,48 @@ vectorized_from = []
 # name = "type_constructor_smoke_test"
 # path = "tests/_integration_test/smoke_test.rs"
 
-[[example]]
-name = "type_constructor_trivial_sample"
-path = "examples/type_constructor_trivial_sample/src/main.rs"
-
-[[example]]
-name = "type_constructor_derive_and_attr_sample"
-path = "examples/type_constructor_derive_and_attr_sample/src/main.rs"
-
-[[example]]
-name = "type_constructor_struct_sample"
-path = "examples/type_constructor_struct_sample/src/main.rs"
-
-[[example]]
-name = "type_constructor_parametrized_element_sample"
-path = "examples/type_constructor_parametrized_element_sample/src/main.rs"
-
-[[example]]
-name = "type_constructor_parametrized_tuple_sample"
-path = "examples/type_constructor_parametrized_tuple_sample/src/main.rs"
-
-[[example]]
-name = "type_constructor_multiple_sample"
-path = "examples/type_constructor_multiple_sample/src/main.rs"
-required-features = [ "many" ]
-
-[[example]]
-name = "type_constructor_without_macro_sample"
-path = "examples/type_constructor_without_macro_sample/src/main.rs"
-required-features = [ "many" ]
-
-[[example]]
-name = "type_constructor_pair_sample"
-path = "examples/type_constructor_pair_sample/src/main.rs"
-
-[[example]]
-name = "type_constructor_homopair_sample"
-path = "examples/type_constructor_homopair_sample/src/main.rs"
-
-[[example]]
-name = "type_constructor_many_sample"
-path = "examples/type_constructor_many_sample/src/main.rs"
-required-features = [ "many" ]
+# [[example]]
+# name = "type_constructor_trivial_sample"
+# path = "examples/type_constructor_trivial_sample/src/main.rs"
+#
+# [[example]]
+# name = "type_constructor_derive_and_attr_sample"
+# path = "examples/type_constructor_derive_and_attr_sample/src/main.rs"
+#
+# [[example]]
+# name = "type_constructor_struct_sample"
+# path = "examples/type_constructor_struct_sample/src/main.rs"
+#
+# [[example]]
+# name = "type_constructor_parametrized_element_sample"
+# path = "examples/type_constructor_parametrized_element_sample/src/main.rs"
+#
+# [[example]]
+# name = "type_constructor_parametrized_tuple_sample"
+# path = "examples/type_constructor_parametrized_tuple_sample/src/main.rs"
+#
+# [[example]]
+# name = "type_constructor_multiple_sample"
+# path = "examples/type_constructor_multiple_sample/src/main.rs"
+# required-features = [ "many" ]
+#
+# [[example]]
+# name = "type_constructor_without_macro_sample"
+# path = "examples/type_constructor_without_macro_sample/src/main.rs"
+# required-features = [ "many" ]
+#
+# [[example]]
+# name = "type_constructor_pair_sample"
+# path = "examples/type_constructor_pair_sample/src/main.rs"
+#
+# [[example]]
+# name = "type_constructor_homopair_sample"
+# path = "examples/type_constructor_homopair_sample/src/main.rs"
+#
+# [[example]]
+# name = "type_constructor_many_sample"
+# path = "examples/type_constructor_many_sample/src/main.rs"
+# required-features = [ "many" ]
 
 [dependencies]
 derive_tools = { workspace = true, features = [ "enabled", "type_from" ] }
