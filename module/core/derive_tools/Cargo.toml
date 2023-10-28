@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -22,12 +22,6 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-# include = [
-#   "/rust/impl/derive",
-#   "/Cargo.toml",
-#   "/Readme.md",
-#   "/License",
-# ]
 
 [features]
 
