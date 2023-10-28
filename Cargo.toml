@@ -390,7 +390,7 @@ version = "*"
 package = "inspect_type"
 
 [workspace.dependencies.is_slice]
-version = "0.2.0"
+version = "0.3.0"
 path = "module/core/is_slice"
 default-features = false
 
