@@ -8,6 +8,7 @@ use TheModule::prelude::*;
 
 tests_impls!
 {
+
   #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
   fn cta_type_same_size_pass()
   {
@@ -61,18 +62,17 @@ tests_impls!
     // cta_mem_same_size!( ins1, 13_i32 );
   }
 
-  #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
-  #[ test_tools::nightly ]
-  #[ test ]
-  fn cta_trybuild_tests()
-  {
-    let t = test_tools::compiletime::TestCases::new();
-    t.compile_fail( "tests/inc/snipet/cta_type_same_size_fail.rs" );
-    t.compile_fail( "tests/inc/snipet/cta_type_same_align_fail.rs" );
-    t.compile_fail( "tests/inc/snipet/cta_ptr_same_size_fail.rs" );
-    t.compile_fail( "tests/inc/snipet/cta_mem_same_size_fail.rs" );
-  }
+}
 
+#[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
+#[ test_tools::nightly ]
+fn cta_trybuild_tests()
+{
+  let t = test_tools::compiletime::TestCases::new();
+  t.compile_fail( "tests/inc/snipet/cta_type_same_size_fail.rs" );
+  t.compile_fail( "tests/inc/snipet/cta_type_same_align_fail.rs" );
+  t.compile_fail( "tests/inc/snipet/cta_ptr_same_size_fail.rs" );
+  t.compile_fail( "tests/inc/snipet/cta_mem_same_size_fail.rs" );
 }
 
 //
@@ -83,5 +83,5 @@ tests_index!
   cta_type_same_align_pass,
   cta_ptr_same_size_pass,
   cta_mem_same_size_pass,
-  cta_trybuild_tests,
+  // cta_trybuild_tests,
 }

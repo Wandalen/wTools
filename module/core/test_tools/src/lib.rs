@@ -62,7 +62,7 @@ pub mod dependency
 {
   layer test;
 
-  use super::exposed::meta; // zzz
+  use super::exposed::meta;
   use super::exposed::mem;
   use super::exposed::typing;
   use super::exposed::dt;

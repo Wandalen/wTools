@@ -2,7 +2,7 @@
 #![ deny( missing_debug_implementations ) ]
 #![ deny( missing_docs ) ]
 
-#![ cfg_attr( feature = "type_name_of_val", feature( type_name_of_val ) ) ]
+// #![ cfg_attr( feature = "type_name_of_val", feature( type_name_of_val ) ) ]
 // #![ feature( trace_macros ) ]
 
 #[ allow( unused_imports ) ]
