@@ -27,3 +27,4 @@ Cargo.lock
 *.code-workspace
 .warchive*
 -*
+rustc-ice-*.txt
