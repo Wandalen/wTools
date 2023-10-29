@@ -26,7 +26,7 @@ pub mod string
 
 /// Errors.
 #[ cfg( not( feature = "no_std" ) ) ]
-pub use wtools::{ Result, BasicError, err };
+use wtools::{ error::Result, BasicError, err };
 // xxx : check
 
 use wtools::meta::mod_interface;

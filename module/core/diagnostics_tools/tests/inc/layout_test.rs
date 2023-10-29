@@ -66,8 +66,7 @@ tests_impls!
   #[ test ]
   fn cta_trybuild_tests()
   {
-    use test_tools::dependency::trybuild;
-    let t = trybuild::TestCases::new();
+    let t = test_tools::compiletime::TestCases::new();
     t.compile_fail( "tests/inc/snipet/cta_type_same_size_fail.rs" );
     t.compile_fail( "tests/inc/snipet/cta_type_same_align_fail.rs" );
     t.compile_fail( "tests/inc/snipet/cta_ptr_same_size_fail.rs" );

@@ -1,9 +1,0 @@
-[package]
-name = "willbe_with_deps_module2"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-willbe_with_deps_module1 = { version = "*", path = "../module1" }

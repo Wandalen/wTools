@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use core::fmt::Debug;
+  use core::fmt;
   use crate::ca::grammar;
 
   /// Macro for parsing WCA arguments.
@@ -251,7 +251,7 @@ pub( crate ) mod private
     ) -> Self
     where
       F : Fn( T, crate::Args, crate::Props ) -> Result< (), E > + 'static + Copy,
-      E : Debug,
+      E : fmt::Debug,
     {
       let Builder { handler, command } = command.into_builder();
       let state = self.state.clone();

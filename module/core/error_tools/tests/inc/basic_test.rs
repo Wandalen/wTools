@@ -85,11 +85,11 @@ tests_impls!
   fn err_basic()
   {
     // test.case( "basic" );
-    let err = TheModule::err!( "abc" );
+    let err : TheModule::BasicError = TheModule::err!( "abc" );
     a_id!( err.to_string(), "abc" );
 
     // test.case( "with args" );
-    let err = TheModule::err!( "abc{}{}", "def", "ghi" );
+    let err : TheModule::BasicError = TheModule::err!( "abc{}{}", "def", "ghi" );
     a_id!( err.to_string(), "abcdefghi" );
   }
 

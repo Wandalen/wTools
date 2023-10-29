@@ -1,0 +1,80 @@
+thread 'rustc' panicked at compiler\rustc_hir_typeck\src\fn_ctxt\suggestions.rs:1755:62:
+already mutably borrowed: BorrowError
+stack backtrace:
+   0:     0x7ffb33abe8e4 - std::backtrace::Backtrace::force_capture::h290e295946a2153e
+   1:     0x7ffb33abe824 - std::backtrace::Backtrace::force_capture::h290e295946a2153e
+   2:     0x7ffac048cd84 - <tracing_subscriber[b1f324f451abffa6]::fmt::format::Writer>::write_fmt
+   3:     0x7ffb33ad7e13 - std::panicking::rust_panic_with_hook::h38ae4b4e41601221
+   4:     0x7ffb33ad7cb5 - <std::panicking::begin_panic_handler::StaticStrPayload as core::panic::PanicPayload>::take_box::hbd9a00db4a2ea23a
+   5:     0x7ffb33ad4e59 - <std::sys_common::backtrace::_print::DisplayBacktrace as core::fmt::Display>::fmt::h574704069d95b2bf
+   6:     0x7ffb33ad79c4 - rust_begin_unwind
+   7:     0x7ffb33b3c5e7 - core::panicking::panic_fmt::hb27bf337912459fe
+   8:     0x7ffb33b3c538 - core::cell::panic_already_mutably_borrowed::h7d9b98dd2fe54741
+   9:     0x7ffac06affe9 - <rustc_hir_typeck[72c0b58dc047d09f]::fn_ctxt::FnCtxt>::suggest_missing_semicolon
+  10:     0x7ffac068a558 - <rustc_hir_typeck[72c0b58dc047d09f]::fn_ctxt::FnCtxt>::emit_type_mismatch_suggestions
+  11:     0x7ffac068bc30 - <rustc_hir_typeck[72c0b58dc047d09f]::fn_ctxt::FnCtxt>::emit_coerce_suggestions
+  12:     0x7ffabf5fb6e8 - <rustc_hir_typeck[72c0b58dc047d09f]::fn_ctxt::FnCtxt>::demand_coerce
+  13:     0x7ffabf5e06b5 - <rustc_hir_typeck[72c0b58dc047d09f]::fn_ctxt::FnCtxt>::demand_coerce
+  14:     0x7ffabf615d1e - <rustc_hir_typeck[72c0b58dc047d09f]::fn_ctxt::FnCtxt>::check_struct_path
+  15:     0x7ffabf5df932 - <rustc_hir_typeck[72c0b58dc047d09f]::fn_ctxt::FnCtxt>::demand_coerce
+  16:     0x7ffabf5fac48 - <rustc_hir_typeck[72c0b58dc047d09f]::fn_ctxt::FnCtxt>::demand_coerce
+  17:     0x7ffabf5c2137 - rustc_hir_typeck[72c0b58dc047d09f]::typeck
+  18:     0x7ffabf5bcffb - rustc_hir_typeck[72c0b58dc047d09f]::typeck
+  19:     0x7ffabfd9be2f - <rustc_query_impl[d6e88205cda22d72]::plumbing::QueryCtxt as rustc_query_system[f729307075c69a4c]::query::QueryContext>::load_side_effects
+  20:     0x7ffabfe0909f - <rustc_query_impl[d6e88205cda22d72]::plumbing::QueryCtxt as rustc_query_system[f729307075c69a4c]::query::QueryContext>::load_side_effects
+  21:     0x7ffabfe7c5e1 - <rustc_query_impl[d6e88205cda22d72]::plumbing::QueryCtxt as rustc_query_system[f729307075c69a4c]::query::QueryContext>::load_side_effects
+  22:     0x7ffabfe11772 - <rustc_query_impl[d6e88205cda22d72]::plumbing::QueryCtxt as rustc_query_system[f729307075c69a4c]::query::QueryContext>::load_side_effects
+  23:     0x7ffabf7537a7 - rustc_hir_analysis[29f9d307fec685ab]::collect::type_of::type_of
+  24:     0x7ffabf74ed11 - rustc_hir_analysis[29f9d307fec685ab]::collect::type_of::type_of
+  25:     0x7ffabee22f64 - rustc_hir_analysis[29f9d307fec685ab]::check_crate
+  26:     0x7ffabc65f057 - rustc_interface[48481cd2bd45c52e]::passes::analysis
+  27:     0x7ffabf08c30d - rustc_query_impl[d6e88205cda22d72]::profiling_support::alloc_self_profile_query_strings
+  28:     0x7ffabf0c0539 - rustc_query_impl[d6e88205cda22d72]::profiling_support::alloc_self_profile_query_strings
+  29:     0x7ffabf0fae28 - rustc_query_impl[d6e88205cda22d72]::profiling_support::alloc_self_profile_query_strings
+  30:     0x7ffabf0d0582 - rustc_query_impl[d6e88205cda22d72]::profiling_support::alloc_self_profile_query_strings
+  31:     0x7ffabc61829b - <rustc_middle[bce21830c7cfe97d]::ty::SymbolName as core[754103fe75d1c74e]::fmt::Debug>::fmt
+  32:     0x7ffabc6157dc - rustc_driver_impl[6c205a7523adf7e6]::args::arg_expand_all
+  33:     0x7ffabc616d51 - rustc_driver_impl[6c205a7523adf7e6]::args::arg_expand_all
+  34:     0x7ffb33aeb33c - std::sys::windows::thread::Thread::new::ha810e195e69c493c
+  35:     0x7ffbd103257d - BaseThreadInitThunk
+  36:     0x7ffbd244aa68 - RtlUserThreadStart
+
+
+rustc version: 1.75.0-nightly (df871fbf0 2023-10-24)
+platform: x86_64-pc-windows-msvc
+
+query stack during panic:
+#0 [typeck] type-checking `main::_doctest_main_module_core_error_tools_src_error_rs_35_0`
+#1 [analysis] running analysis passes on this crate
+end of query stack
+delayed span bug: coercion error but no error emitted
+   0: std::backtrace::Backtrace::force_capture
+   1: std::backtrace::Backtrace::capture
+   2: <rustc_errors::HandlerInner>::emit_diagnostic
+   3: <rustc_hir_typeck::upvar::MigrationWarningReason as core::fmt::Debug>::fmt
+   4: <rustc_hir_typeck::fn_ctxt::FnCtxt>::demand_coerce
+   5: <rustc_hir_typeck::fn_ctxt::FnCtxt>::demand_coerce
+   6: <rustc_hir_typeck::fn_ctxt::FnCtxt>::check_struct_path
+   7: <rustc_hir_typeck::fn_ctxt::FnCtxt>::demand_coerce
+   8: <rustc_hir_typeck::fn_ctxt::FnCtxt>::demand_coerce
+   9: rustc_hir_typeck::typeck
+  10: rustc_hir_typeck::typeck
+  11: <rustc_query_impl::plumbing::QueryCtxt as rustc_query_system::query::QueryContext>::load_side_effects
+  12: <rustc_query_impl::plumbing::QueryCtxt as rustc_query_system::query::QueryContext>::load_side_effects
+  13: <rustc_query_impl::plumbing::QueryCtxt as rustc_query_system::query::QueryContext>::load_side_effects
+  14: <rustc_query_impl::plumbing::QueryCtxt as rustc_query_system::query::QueryContext>::load_side_effects
+  15: rustc_hir_analysis::collect::type_of::type_of
+  16: rustc_hir_analysis::collect::type_of::type_of
+  17: rustc_hir_analysis::check_crate
+  18: rustc_interface::passes::analysis
+  19: rustc_query_impl::profiling_support::alloc_self_profile_query_strings
+  20: rustc_query_impl::profiling_support::alloc_self_profile_query_strings
+  21: rustc_query_impl::profiling_support::alloc_self_profile_query_strings
+  22: rustc_query_impl::profiling_support::alloc_self_profile_query_strings
+  23: <rustc_middle::ty::SymbolName as core::fmt::Debug>::fmt
+  24: rustc_driver_impl::args::arg_expand_all
+  25: rustc_driver_impl::args::arg_expand_all
+  26: std::sys::windows::thread::Thread::new
+  27: BaseThreadInitThunk
+  28: RtlUserThreadStart
+

@@ -44,9 +44,10 @@ only_for_terminal_module!
   fn trybuild_tests()
   {
 
-    use test_tools::dependency::trybuild;
+    // use test_tools::dependency::trybuild;
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-    let t = trybuild::TestCases::new();
+    // let t = trybuild::TestCases::new();
+    let t = test_tools::compiletime::TestCases::new();
 
     t.compile_fail( "tests/inc/all/former_bad_attr.rs" );
     t.pass( "tests/inc/all/former_hashmap_without_parameter.rs" );

@@ -10,7 +10,7 @@ pub( crate ) mod private
       command::CommandParserFn,
     }
   };
-  use wtools::{ Result, err };
+  use wtools::{ error::Result, err };
   use nom::
   {
     branch::alt,

@@ -1,7 +1,7 @@
 pub( crate ) mod private
 {
   use crate::
-  { 
+  {
     Namespace,
 
     ExecutableCommand,
@@ -10,12 +10,12 @@ pub( crate ) mod private
     Context, Routine,
   };
 
-  use wtools::{ Result, err };
+  use wtools::{ error::Result, err };
 
   /// State of a program runtime
   ///
   /// `RuntimeState` contains information about the current state of a running program. It is used to store information that can be modified during program execution.
-  /// 
+  ///
   /// Can be used to change execution position at runtime.
   ///
   /// # Examples
@@ -36,11 +36,11 @@ pub( crate ) mod private
   }
 
   /// Represents the state of the program's runtime, including the current context, execution position, and namespace of executable commands.
-  /// 
+  ///
   /// Cloned Runtime will work with the same context.
-  /// 
+  ///
   /// It performs callbacks to commands at the current execution position and, if necessary, provides context for them.
-  /// 
+  ///
   /// ```
   /// # use wca::{ Runtime, Namespace, Context };
   /// let runtime = Runtime
@@ -52,7 +52,7 @@ pub( crate ) mod private
   ///     commands: vec![]
   ///   }
   /// };
-  /// 
+  ///
   /// assert!( runtime.is_finished() );
   /// ```
   #[ derive( Debug, Clone ) ]

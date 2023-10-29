@@ -85,9 +85,14 @@ pub mod protected
 /// Shared with parent namespace of the module
 pub mod orphan
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::exposed::*;
+
+  #[ cfg( feature = "error_for_app" ) ]
+  pub use super::for_app::Result;
+
 }
 
 #[ cfg( feature = "enabled" ) ]
@@ -105,9 +110,6 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::error::exposed::*;
-
-  #[ cfg( feature = "error_for_app" ) ]
-  pub use super::for_app::Result;
 
   // #[ cfg( not( feature = "no_std" ) ) ]
   // #[ doc( inline ) ]

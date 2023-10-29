@@ -1,9 +1,9 @@
 pub( crate ) mod private
 {
-  use wtools::{ Result, err };
+  use wtools::{ error::Result, err };
 
   /// Available types that can be converted to a `Value`
-  /// 
+  ///
   /// Uses for configure subjects and properties types to validate it after parsing.
   ///
   /// ```
@@ -11,14 +11,14 @@ pub( crate ) mod private
   /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
   /// let raw_value = "3".to_string();
   /// let kind = Type::Number;
-  /// 
+  ///
   /// let value = kind.try_cast( raw_value )?;
   /// assert_eq!( Value::Number( 3.0 ), value );
   /// # Ok( () ) }
   /// ```
-  /// 
+  ///
   /// In the above example, the `Type` enum is used to represent the expected type of the value for a property. The `Number` type is chosen, and the raw value is parsed and validated to ensure it matches this type.
-  /// 
+  ///
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub enum Type
   {
@@ -40,13 +40,13 @@ pub( crate ) mod private
   }
 
   /// Container for a `Value` of a specific type
-  /// 
+  ///
   /// Uses for represent of subjects and properties in Commands( E.g. `GrammarCommand`, `ExecutableCommand` )
   /// With `wca::Type` enum and `TryCast` you can cast raw string into specific Type.
   /// You can also convert to a type that can be converted from the internal Value type.
-  /// 
+  ///
   /// # Example:
-  /// 
+  ///
   /// ```
   /// # use wca::{ GrammarCommand, Value };
   /// # use wtools::HashMap;
@@ -61,10 +61,10 @@ pub( crate ) mod private
   ///     ( "string_prop".to_string(), Value::String( "value".to_string() ) ),
   ///   ])
   /// };
-  /// 
+  ///
   /// let number : f32 = command.subjects[ 0 ].clone().into();
   /// assert_eq!( 3.14, number );
-  /// 
+  ///
   /// let number : i32 = command.subjects[ 0 ].clone().into();
   /// assert_eq!( 3, number );
   /// ```

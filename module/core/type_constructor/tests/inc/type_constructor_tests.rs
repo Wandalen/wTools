@@ -18,10 +18,12 @@ mod inc;
 #[ test ]
 fn trybuild_tests()
 {
-  use test_tools::trybuild;
+  // use test_tools::trybuild;
   println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
   #[ allow( unused_variables ) ]
-  let t = trybuild::TestCases::new();
+  // let t = trybuild::TestCases::new();
+  let t = test_tools::compiletime::TestCases::new();
+
   #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
   t.compile_fail( "tests/test/dt/type_constructor/dynamic/make/*.rs" );
 

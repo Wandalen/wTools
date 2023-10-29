@@ -121,7 +121,7 @@ default-features = false
 ## diagnostics
 
 [workspace.dependencies.diagnostics_tools]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/core/diagnostics_tools"
 default-features = false
 
@@ -253,12 +253,12 @@ default-features = false
 ## error
 
 [workspace.dependencies.error_tools]
-version = "~0.3.0"
+version = "~0.4.0"
 path = "module/core/error_tools"
 default-features = false
 
 [workspace.dependencies.werror]
-version = "~0.3.0"
+version = "~0.4.0"
 path = "module/alias/werror"
 
 
@@ -289,7 +289,7 @@ version = "~0.4.0"
 path = "module/core/wtest"
 
 [workspace.dependencies.test_tools]
-version = "~0.4.0"
+version = "~0.5.0"
 path = "module/core/test_tools"
 
 [workspace.dependencies.wtest_basic]

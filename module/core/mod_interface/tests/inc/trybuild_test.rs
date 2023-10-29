@@ -16,9 +16,10 @@ only_for_terminal_module!
 
     fn trybuild_tests()
     {
-      use test_tools::dependency::trybuild;
+      // use test_tools::dependency::trybuild;
       println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-      let t = trybuild::TestCases::new();
+      // let t = trybuild::TestCases::new();
+      let t = test_tools::compiletime::TestCases::new();
 
       // micro module
 

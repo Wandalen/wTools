@@ -6,10 +6,10 @@ pub( crate ) mod private
 
     Context,
     RuntimeState, Runtime,
-    ca::executor::runtime::_exec_command, 
+    ca::executor::runtime::_exec_command,
   };
 
-  use wtools::Result;
+  use wtools::error::Result;
 
   /// Represents the type of executor to use for running commands.
   #[ derive( Debug ) ]
@@ -27,12 +27,12 @@ pub( crate ) mod private
   /// It takes an `ExecutableCommand` which contains subjects and properties that will be passed to the callback function of the associated command's routine.
   ///
   /// # Example:
-  /// 
+  ///
   /// ```
   /// # use wca::{ Executor, ExecutableCommand, Routine, Value };
   /// # use wtools::HashMap;
   /// let executor = Executor::former().form();
-  /// 
+  ///
   /// let executable_command = ExecutableCommand
   /// {
   ///   subjects : vec![ Value::String( "subject_value".to_string() ), /* ... */ ],
@@ -43,10 +43,10 @@ pub( crate ) mod private
   ///   ]),
   ///   routine : Routine::new( |( args, props )| Ok( () ) )
   /// };
-  /// 
+  ///
   /// assert!( executor.command( executable_command ).is_ok() );
   /// ```
-  /// 
+  ///
   #[ derive( Debug, former::Former ) ]
   pub struct Executor
   {
@@ -61,7 +61,7 @@ pub( crate ) mod private
   impl Executor
   {
     /// Executes a program
-    /// 
+    ///
     /// Setup runtimes for each namespace into program and run it with specified execution type
     pub fn program( &self, program : Program< Namespace< ExecutableCommand > > ) -> Result< () >
     {
@@ -101,7 +101,7 @@ pub( crate ) mod private
     }
 
     /// Executes a namespace
-    /// 
+    ///
     /// Configure `Runtime` and run commands from namespace at runtime position while it isn't finished
     pub fn namespace( &self, namespace : Namespace< ExecutableCommand > ) -> Result< () >
     {
@@ -125,7 +125,7 @@ pub( crate ) mod private
     }
 
     /// Executes a command
-    /// 
+    ///
     /// Call command callback with context if it is necessary.
     pub fn command( &self, command : ExecutableCommand ) -> Result< () >
     {
@@ -150,7 +150,7 @@ pub( crate ) mod private
         // remove finished
         runtimes = runtimes.into_iter().filter( | r | !r.is_finished() ).collect::< Vec< _ > >();
       }
-      
+
       Ok( () )
     }
 

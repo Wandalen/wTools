@@ -58,6 +58,29 @@ tests_impls!
     a_id!( 1, v, "not equal 1 == {}", v );
   }
 
+  fn a_id_run()
+  {
+    // xxx : find and replace
+    // use test_tools::dependency::trybuild;
+    // let t = trybuild::TestCases::new();
+    let t = test_tools::compiletime::TestCases::new();
+    t.pass( "tests/inc/snipet/rta_id.rs" );
+    // t.pass( "tests/inc/snipet/rta_id_fail.rs" );
+    // zzz : make testing utility to check output and use
+    t.pass( "tests/inc/snipet/rta_not_id.rs" );
+    // t.pass( "tests/inc/snipet/rta_not_id_fail.rs" );
+    // zzz : make testing utility to check output and use
+
+    // let ins1 = ( 13, 15, 16 );
+    // let ins2 = ( 13, 15, 17 );
+    // a_id!( ins1, ins2 );
+
+    // let ins1 = ( 13, 15, 16 );
+    // let ins2 = ( 13, 15, 16 );
+    // a_not_id!( ins1, ins2 );
+
+  }
+
   //
 
   fn a_not_id_pass()
@@ -227,6 +250,7 @@ tests_index!
   a_id_fail_simple,
   a_id_fail_with_msg,
   a_id_fail_with_msg_template,
+  a_id_run,
 
   a_not_id_pass,
   a_not_id_fail_simple,

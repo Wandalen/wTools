@@ -23,28 +23,6 @@ all-features = false
 # rustdoc-args = []
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/wtools_lib.rs",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
-
-[lib]
-name = "wtools"
-path = "src/wtools_lib.rs"
-
-[[test]]
-name = "wtools_test"
-path = "tests/wtools_tests.rs"
-
-[[test]]
-name = "wtools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "wtools_trivial_sample"
-path = "examples/wtools_trivial_sample/src/main.rs"
 
 # = features
 
