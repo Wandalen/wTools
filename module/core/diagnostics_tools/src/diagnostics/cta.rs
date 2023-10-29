@@ -22,7 +22,7 @@ pub( crate ) mod private
     ) =>
     {
       #[ cfg( not( $( $Cond )+ ) ) ]
-      compile_error!( $Msg );
+      core::compile_error!( $Msg );
     };
     (
       $( $Cond : tt )*
@@ -30,7 +30,7 @@ pub( crate ) mod private
     =>
     {
       #[ cfg( not( $( $Cond )* ) ) ]
-      compile_error!
+      core::compile_error!
       (
         concat!
         (

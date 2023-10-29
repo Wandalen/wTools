@@ -45,7 +45,7 @@ diagnostics_compiletime_assertions = [] # compile-time assertions
 diagnostics_memory_layout = [] #
 
 [dependencies]
-pretty_assertions = { version = "~1.2", optional = true }
+pretty_assertions = { version = "~1.4.0", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
