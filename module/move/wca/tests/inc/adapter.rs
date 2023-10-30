@@ -1,5 +1,5 @@
 use super::*;
-use wca::*;
+use TheModule::exposed::*;
 
 tests_impls!
 {
@@ -20,7 +20,7 @@ tests_impls!
       Ok( () )
     }
 
-    let ca = wca::cui( () ).command( command ).command( command2 ).command( echo.arg( "string", Type::String ) ).build();
+    let ca = TheModule::cui( () ).command( command ).command( command2 ).command( echo.arg( "string", Type::String ) ).build();
 
     a_id!( Ok( () ), ca.perform( ".command2 .help" ) );
 
