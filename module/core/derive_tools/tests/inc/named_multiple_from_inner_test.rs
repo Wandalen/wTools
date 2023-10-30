@@ -13,7 +13,7 @@ fn sample()
     b : bool,
   }
 
-  let got : MyStruct = MyStruct::from( (13, true) );
+  let got = MyStruct::from(( 13, true ));
   let exp = MyStruct { a : 13, b: true };
   a_id!( got, exp );
 
