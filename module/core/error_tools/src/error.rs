@@ -4,12 +4,15 @@ pub( crate ) mod private
   pub use std::error::Error as ErrorInterface;
 
   ///
-  /// Macro to generate error.
+  /// Macro to generate an error descriptor.
   ///
   /// ### Basic use-case.
-  /// ```
-  /// # use error_tools::*;
-  /// err!( "No attr" );
+  /// ```rust
+  /// # use error_tools::{ BasicError, err };
+  /// fn f1() -> BasicError
+  /// {
+  ///   return err!( "No attr" );
+  /// }
   /// ```
   ///
 
@@ -19,11 +22,39 @@ pub( crate ) mod private
 
     ( $msg : expr ) =>
     {
-      $crate::BasicError::new( $msg )
+      $crate::BasicError::new( $msg ).into()
     };
-    ( $msg : expr, $( $arg : expr ),+ ) =>
+    ( $msg : expr, $( $arg : expr ),+ $(,)? ) =>
     {
-      $crate::BasicError::new( format!( $msg, $( $arg ),+ ) )
+      $crate::BasicError::new( format!( $msg, $( $arg ),+ ) ).into()
+    };
+
+  }
+
+  ///
+  /// Macro to return an Err( error ) generating error descriptor.
+  ///
+  /// ### Basic use-case.
+  /// ```rust
+  /// # use error_tools::{ BasicError, return_err };
+  /// fn f1() -> Result< (), BasicError >
+  /// {
+  ///   return_err!( "No attr" );
+  /// }
+  /// ```
+  ///
+
+  #[ macro_export ]
+  macro_rules! return_err
+  {
+
+    ( $msg : expr ) =>
+    {
+      return Result::Err( $crate::err!( $msg ) )
+    };
+    ( $msg : expr, $( $arg : expr ),+ $(,)? ) =>
+    {
+      return Result::Err( $crate::err!( $msg, $( $arg ),+ ) )
     };
 
   }
@@ -66,25 +97,39 @@ pub( crate ) mod private
     }
   }
 
+  impl< T > From< BasicError > for Result< T, BasicError >
+  {
+    /// Returns the argument unchanged.
+    #[ inline( always ) ]
+    fn from( src : BasicError ) -> Self
+    {
+      Result::Err( src )
+    }
+  }
+
   pub use err;
+  pub use return_err;
 
   // qqq : write standard mod interface without using mod_interface /* aaa : Dmytro : added to each library file */
 }
+
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
 
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
-
-#[ doc( inline ) ]
-pub use protected::*;
 
 /// Shared with parent namespace of the module
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -92,6 +137,7 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
 
@@ -99,6 +145,7 @@ pub mod exposed
 pub mod prelude
 {
   pub use super::private::err;
+  pub use super::private::return_err;
   pub use super::private::ErrorInterface;
   pub use super::private::BasicError;
 }

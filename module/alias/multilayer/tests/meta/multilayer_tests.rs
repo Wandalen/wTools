@@ -7,7 +7,7 @@ use ::multilayer as TheModule;
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-include!( "../_conditional/local_module.rs" );
+include!( "../_conditional/terminal_module.rs" );
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

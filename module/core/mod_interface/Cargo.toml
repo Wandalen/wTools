@@ -1,6 +1,6 @@
 [package]
 name = "mod_interface"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -46,4 +46,3 @@ mod_interface_meta = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }

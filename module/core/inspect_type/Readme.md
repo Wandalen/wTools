@@ -27,7 +27,7 @@ pub use inspect_type::*;
 ### To add to your project
 
 ```sh
-cargo add implements
+cargo add inspect_type
 ```
 
 ### Try out from the repository
@@ -35,6 +35,5 @@ cargo add implements
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/inspect_type_trivial
-cargo run
+cargo run --example inspect_type_trivial_sample
 ```

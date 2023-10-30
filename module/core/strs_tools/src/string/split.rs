@@ -643,9 +643,14 @@ pub( crate ) mod private
   }
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   pub use super::private::
   {
@@ -657,9 +662,6 @@ pub mod protected
     split,
   };
 }
-
-#[ doc( inline ) ]
-pub use protected::*;
 
 /// Parented namespace of the module.
 pub mod orphan

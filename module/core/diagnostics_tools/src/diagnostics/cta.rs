@@ -9,7 +9,7 @@ pub( crate ) mod private
   ///
   /// ``` rust
   /// use diagnostics_tools::prelude::*;
-  /// cta_true!( any( feature = "compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
+  /// cta_true!( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) );
   /// ```
   ///
 
@@ -22,7 +22,7 @@ pub( crate ) mod private
     ) =>
     {
       #[ cfg( not( $( $Cond )+ ) ) ]
-      compile_error!( $Msg );
+      core::compile_error!( $Msg );
     };
     (
       $( $Cond : tt )*
@@ -30,7 +30,7 @@ pub( crate ) mod private
     =>
     {
       #[ cfg( not( $( $Cond )* ) ) ]
-      compile_error!
+      core::compile_error!
       (
         concat!
         (
@@ -44,20 +44,23 @@ pub( crate ) mod private
   pub use cta_true;
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
-
-#[ doc( inline ) ]
-pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -65,6 +68,7 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
 
@@ -72,6 +76,7 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     cta_true,

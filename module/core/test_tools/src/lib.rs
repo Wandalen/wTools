@@ -18,43 +18,60 @@
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
+
+  // zzz : exclude later
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::paste;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::trybuild;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::anyhow;
   #[ doc( inline ) ]
-  pub use ::trybuild;
-  #[ doc( inline ) ]
-  pub use ::anyhow;
-  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::rustversion;
+
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use ::error_tools;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::meta_tools;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::mem_tools;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::typing_tools;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::num_traits;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::diagnostics_tools;
+
 }
 
-#[ cfg( feature = "enabled" ) ]
-use ::meta_tools::mod_interface;
+// #[ cfg( feature = "enabled" ) ]
+// use ::meta_tools::mod_interface;
 
 #[ cfg( feature = "enabled" ) ]
-mod_interface!
+::meta_tools::mod_interface!
 {
-  /// Basics.
-  layer basic;
+  layer test;
 
-  // use super::exposed::meta;
+  use super::exposed::meta;
   use super::exposed::mem;
   use super::exposed::typing;
   use super::exposed::dt;
   use super::exposed::diagnostics;
 
-  protected use super::dependency;
+  // protected use super::dependency;
   protected use super::dependency::*;
+
+  prelude use ::rustversion::{ nightly, stable };
 
   prelude use ::meta_tools as meta;
   prelude use ::mem_tools as mem;
@@ -74,4 +91,5 @@ mod_interface!
 
 }
 
-// qqq : for Dima : add negative test that wtest_basic::exposed::exposed does not exist /* aaa : Dmytro : added trybuild test with compile time error */
+// xxx : use module namespaces
+pub use test::{ compiletime, helper, smoke_test };

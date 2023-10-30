@@ -11,7 +11,7 @@ pub struct CrateStructForTesting1
 #[ allow( unused_imports ) ]
 use ::mod_interface as TheModule;
 
-include!( "../_conditional/local_module.rs" );
+include!( "../_conditional/terminal_module.rs" );
 
 mod mod_interface;
 

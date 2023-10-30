@@ -69,7 +69,7 @@ meta_default = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_collection_make",
+  "meta_constructors",
   "meta_idents_concat",
 ]
 meta_full = [
@@ -79,7 +79,7 @@ meta_full = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_collection_make",
+  "meta_constructors",
   "meta_idents_concat",
 ]
 meta_no_std = [ "wtools/meta_no_std" ]
@@ -88,7 +88,7 @@ meta_use_alloc = [ "wtools/meta_use_alloc" ]
 meta_for_each = [ "meta", "wtools/meta_for_each" ]
 meta_impls_index = [ "meta", "wtools/meta_impls_index" ]
 meta_mod_interface = [ "meta", "wtools/meta_mod_interface" ]
-meta_collection_make = [ "meta", "wtools/meta_collection_make" ]
+meta_constructors = [ "meta", "wtools/meta_constructors" ]
 meta_idents_concat = [ "meta", "wtools/meta_idents_concat" ]
 # meta_former = [ "meta", "wtools/meta_former" ]
 # meta_options = [ "meta", "wtools/meta_options" ]
@@ -111,7 +111,7 @@ typing_full = [
 typing_no_std = [ "wtools/typing_no_std" ]
 typing_use_alloc = [ "wtools/typing_use_alloc" ]
 
-typing_nightly = [ "typing", "nightly", "wtools/typing_nightly" ]
+# typing_nightly = [ "typing", "nightly", "wtools/typing_nightly" ]
 typing_inspect_type = [ "typing", "wtools/typing_inspect_type" ]
 typing_is_slice = [ "typing", "wtools/typing_is_slice" ]
 typing_implements = [ "typing", "wtools/typing_implements" ]
@@ -167,19 +167,19 @@ string_split = [ "string", "wtools/string_split" ]
 error = [ "wtools/error" ]
 error_default = [
   "error",
-  "error_handling_for_lib",
-  "error_handling_for_app",
+  "error_for_lib",
+  "error_for_app",
 ]
 error_full = [
   "error",
-  "error_handling_for_lib",
-  "error_handling_for_app",
+  "error_for_lib",
+  "error_for_app",
 ]
 error_no_std = [ "error", "wtools/error_no_std" ]
 error_use_alloc = [ "error", "wtools/error_use_alloc" ]
 
-error_handling_for_lib = [ "error", "wtools/error_handling_for_lib" ]
-error_handling_for_app = [ "error", "wtools/error_handling_for_app" ]
+error_for_lib = [ "error", "wtools/error_for_lib" ]
+error_for_app = [ "error", "wtools/error_for_app" ]
 
 # derive
 
@@ -392,4 +392,3 @@ parse-display = { version = "~0.5", optional = true, default-features = false }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }

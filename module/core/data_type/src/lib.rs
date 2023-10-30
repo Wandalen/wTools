@@ -34,18 +34,22 @@ pub mod dependency
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::dt::orphan::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Shared with parent namespace of the module
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -53,8 +57,10 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::dt::exposed::*;
 }
 
@@ -62,11 +68,13 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::dt::prelude::*;
 
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "prelude" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use std::collections::
   {
     HashMap as Map,
@@ -83,6 +91,7 @@ pub mod prelude
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ cfg( feature = "prelude" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use std::vec::
   {
     Vec,
@@ -92,6 +101,7 @@ pub mod prelude
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ cfg( feature = "prelude" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use core::
   {
     fmt,

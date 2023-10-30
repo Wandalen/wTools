@@ -481,25 +481,26 @@ pub( crate ) mod private
 
 }
 
-// pub use internal::*;
+#[ cfg( feature = "enabled" ) ]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
 
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
-
-#[ cfg( feature = "enabled" ) ]
-#[ doc( inline ) ]
-pub use protected::*;
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -508,6 +509,7 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
 
@@ -516,9 +518,12 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::for_each;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::braces_unwrap;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::identity;
 }

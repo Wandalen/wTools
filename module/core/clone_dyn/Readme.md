@@ -13,7 +13,7 @@ There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [d
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- begin {{# generate.module_sample( "example/clone_dyn_trivail_sample.rs" ) #}} -->
 
 ```rust
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
@@ -29,6 +29,8 @@ There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [d
   let vec2 = vec.clone(); /* <- it does not work without `clone_dyn` */
 }
 ```
+
+<!-- end -->
 
 ### To add to your project
 

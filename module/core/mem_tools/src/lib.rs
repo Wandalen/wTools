@@ -22,25 +22,31 @@ pub mod dependency
 #[ cfg( feature = "enabled" ) ]
 pub mod mem;
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::mem::orphan::*;
 }
-
-#[ doc( inline ) ]
-#[ cfg( feature = "enabled" ) ]
-pub use protected::*;
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -49,8 +55,12 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports ) ]
   pub use super::mem::exposed::*;
 }
 
@@ -59,5 +69,7 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports ) ]
   pub use super::mem::prelude::*;
 }

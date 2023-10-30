@@ -85,13 +85,40 @@ tests_impls!
   fn err_basic()
   {
     // test.case( "basic" );
-    let err = TheModule::err!( "abc" );
+    let err : TheModule::BasicError = TheModule::err!( "abc" );
     a_id!( err.to_string(), "abc" );
 
     // test.case( "with args" );
-    let err = TheModule::err!( "abc{}{}", "def", "ghi" );
+    let err : TheModule::BasicError = TheModule::err!( "abc{}{}", "def", "ghi" );
     a_id!( err.to_string(), "abcdefghi" );
   }
+
+  //
+
+  fn sample()
+  {
+    #[ cfg( not( feature = "no_std" ) ) ]
+    fn f1() -> TheModule::Result< () >
+    {
+      let _read = std::fs::read_to_string( "Cargo.toml" )?;
+      Err( TheModule::BasicError::new( "Some error" ).into() )
+      // TheModule::BasicError::new( "Some error" ).into()
+      // zzz : make it working maybe
+    }
+
+    #[ cfg( not( feature = "no_std" ) ) ]
+    {
+      let err = f1();
+      println!( "{err:#?}" );
+      // < Err(
+      // <    BasicError {
+      // <        msg: "Some error",
+      // <    },
+      // < )
+    }
+  }
+
+
 }
 
 //
@@ -104,4 +131,5 @@ tests_index!
   use2,
   use3,
   err_basic,
+  sample,
 }

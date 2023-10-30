@@ -32,6 +32,7 @@ exclude = [ "/tests", "/examples", "-*" ]
 [features]
 default = [
   "time_now",
+  "enabled"
 ]
 full = [
   "use_alloc",
@@ -62,4 +63,3 @@ time_now = []
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }

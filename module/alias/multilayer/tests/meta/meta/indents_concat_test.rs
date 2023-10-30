@@ -15,7 +15,7 @@ tests_impls!
       {
         a = 13;
         // let xy3_ = 13;
-        TheModule::idents_concat!
+        TheModule::meta_idents_concat!
         {
           let [< x $Number _ >] = 13;
         };

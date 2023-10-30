@@ -76,15 +76,18 @@ pub mod inner
   pub mod protected
   {
     #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
     pub use super::orphan::*;
   }
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use protected::*;
 
   /// Orphan namespace of the module.
   pub mod orphan
   {
     #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
     pub use super::exposed::*;
   }
 
@@ -92,6 +95,7 @@ pub mod inner
   pub mod exposed
   {
     #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
     pub use super::prelude::*;
   }
 
@@ -99,6 +103,7 @@ pub mod inner
   pub mod prelude
   {
     #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
     pub use super::private::inner_is;
   }
 }
@@ -107,17 +112,21 @@ pub mod inner
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::inner::orphan::*;
 }
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -125,8 +134,10 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::inner::exposed::*;
 }
 
@@ -134,6 +145,7 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::inner::prelude::*;
 }
 ```

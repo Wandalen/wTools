@@ -379,28 +379,34 @@ pub( crate ) mod private
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
 
-#[ doc( inline ) ]
-pub use exposed::*;
+// #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+// pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     index,
     tests_index,
     impls1,
+    impls_optional,
     tests_impls,
     tests_impls_optional,
     impls2,
     _impls_callback,
   };
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::impls_index_meta::impls3;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use impls3 as impls;
 }

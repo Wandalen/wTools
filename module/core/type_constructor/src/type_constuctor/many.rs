@@ -187,27 +187,27 @@ pub( crate ) mod private
       $crate::_if_from!
       {
 
-        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::From_0
-        for $Name < $ParamName >
-        {
-          #[ inline ]
-          fn from_0() -> Self
-          {
-            Self( $crate::_Vec::new() )
-          }
-        }
-
-        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::From_1< $ParamName >
-        for $Name < $ParamName >
-        {
-          #[ inline ]
-          fn from_1( _0 : $ParamName ) -> Self
-          {
-            Self( $crate::_vec![ _0 ] )
-          }
-        }
+//         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+//         $crate::From_0
+//         for $Name < $ParamName >
+//         {
+//           #[ inline ]
+//           fn from_0() -> Self
+//           {
+//             Self( $crate::_Vec::new() )
+//           }
+//         }
+//
+//         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+//         $crate::From_1< $ParamName >
+//         for $Name < $ParamName >
+//         {
+//           #[ inline ]
+//           fn from_1( _0 : $ParamName ) -> Self
+//           {
+//             Self( $crate::_vec![ _0 ] )
+//           }
+//         }
 
 //         impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
 //         $crate::From_2< $ParamName, $ParamName >
@@ -546,16 +546,19 @@ pub( crate ) mod private
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -563,8 +566,10 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     _many,
@@ -573,13 +578,15 @@ pub mod exposed
   };
 }
 
-#[ doc( inline ) ]
-pub use exposed::*;
+// #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+// pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     Many,

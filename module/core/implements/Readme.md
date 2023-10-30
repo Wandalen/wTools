@@ -34,6 +34,5 @@ cargo add implements
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/implements_trivial
-cargo run
+cargo run --example implements_trivial_sample
 ```

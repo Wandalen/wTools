@@ -1,6 +1,6 @@
 [package]
 name = "wca"
-version = "0.1.3"
+version = "0.2.0"
 edition = "2021"
 authors = ["Kostiantyn Wandalen <wandalen@obox.systems>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dmytro.kr@obox.systems>" ]
 license = "MIT"
@@ -48,30 +48,30 @@ on_unknown_command_error_default = [ "enabled" ]
 on_get_help_default = [ "enabled" ]
 on_print_commands_default = [ "enabled" ]
 
-[lib]
-name = "wca"
-path = "src/ca/wca_lib.rs"
-
-[[test]]
-name = "wca_test"
-path = "tests/ca/wca_tests.rs"
-
-[[test]]
-name = "wca_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "wca_trivial_sample"
-path = "examples/wca_trivial_sample/src/main.rs"
+# [lib]
+# name = "wca"
+# path = "src/ca/wca_lib.rs"
+#
+# [[test]]
+# name = "wca_test"
+# path = "tests/ca/wca_tests.rs"
+#
+# [[test]]
+# name = "wca_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
+#
+# [[example]]
+# name = "wca_trivial_sample"
+# path = "examples/wca_trivial_sample/src/main.rs"
 
 [dependencies]
-wtools = { workspace = true }
-former = { workspace = true } # zzz : remove. fix
+wtools = { workspace = true, features = [ "default" ] }
+former = { workspace = true, features = [ "default" ] } # xxx : remove
 anymap = "0.12"
 log = "0.4"
 nom = "7.1"
 closure = "0.3"
+# zzz : add to layers
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }

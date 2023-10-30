@@ -23,28 +23,6 @@ all-features = false
 # rustdoc-args = []
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/wtools_lib.rs",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
-
-[lib]
-name = "wtools"
-path = "src/wtools_lib.rs"
-
-[[test]]
-name = "wtools_test"
-path = "tests/wtools_tests.rs"
-
-[[test]]
-name = "wtools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "wtools_trivial_sample"
-path = "examples/wtools_trivial_sample/src/main.rs"
 
 # = features
 
@@ -77,7 +55,7 @@ meta_default = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_collection_make",
+  "meta_constructors",
   "meta_idents_concat",
 ]
 meta_full = [
@@ -87,19 +65,19 @@ meta_full = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_collection_make",
+  "meta_constructors",
   "meta_idents_concat",
 ]
 # meta_use_std = [ "meta", "meta_tools/use_std" ]
 meta_no_std = [ "meta", "meta_tools/no_std" ]
 meta_use_alloc = [ "meta", "meta_tools/use_alloc" ]
 
-meta_for_each = [ "meta", "meta_tools/for_each" ]
-meta_impls_index = [ "meta", "meta_tools/impls_index" ]
+meta_for_each = [ "meta", "meta_tools/meta_for_each" ]
+meta_impls_index = [ "meta", "meta_tools/meta_impls_index" ]
 meta_mod_interface = [ "meta" ]
 # meta_mod_interface = [ "meta", "meta_tools/mod_interface" ]
-meta_collection_make = [ "meta", "meta_tools/collection_make" ]
-meta_idents_concat = [ "meta", "meta_tools/idents_concat" ]
+meta_constructors = [ "meta", "meta_tools/meta_constructors" ]
+meta_idents_concat = [ "meta", "meta_tools/meta_idents_concat" ]
 # meta_former = [ "meta", "meta_tools/former" ]
 # meta_options = [ "meta", "meta_tools/options" ]
 
@@ -123,23 +101,21 @@ typing_default = [
   "typing",
   "typing_inspect_type",
   "typing_is_slice",
-  # "typing_implements",
+  "typing_implements",
 ]
 typing_full = [
   "typing",
   "typing_inspect_type",
   "typing_is_slice",
-  # "typing_implements",
+  "typing_implements",
 ]
-# typing_use_std = [ "typing", "typing_tools/use_std" ]
 typing_no_std = [ "typing", "typing_tools/no_std" ]
 typing_use_alloc = [ "typing", "typing_tools/use_alloc" ]
 
-typing_nightly = [ "typing", "nightly", "typing_tools/nightly", ]
-typing_inspect_type = [ "typing", "typing_tools/inspect_type" ]
-typing_is_slice = [ "typing", "typing_tools/is_slice" ]
-typing_implements = [ "typing" ]
-# typing_implements = [ "typing", "typing_tools/implements" ]
+# typing_nightly = [ "typing", "nightly", "typing_tools/nightly", ]
+typing_inspect_type = [ "typing", "typing_tools/typing_inspect_type" ]
+typing_is_slice = [ "typing", "typing_tools/typing_is_slice" ]
+typing_implements = [ "typing", "typing_tools/typing_implements" ]
 
 # time
 
@@ -194,22 +170,22 @@ string_split = [ "string", "strs_tools/string_split", "strs_tools/string_parse_r
 error = [ "error_tools" ]
 error_default = [
   "error",
-  "error_handling_for_lib",
-  "error_handling_for_app",
+  "error_for_lib",
+  "error_for_app",
   # "error_use_std",
 ]
 error_full = [
   "error",
-  "error_handling_for_lib",
-  "error_handling_for_app",
+  "error_for_lib",
+  "error_for_app",
   # "error_use_std",
 ]
 # error_use_std = [ "error", "error_tools/use_std" ]
 error_no_std = [ "error", "error_tools/no_std" ]
 error_use_alloc = [ "error", "error_tools/use_alloc" ]
 
-error_handling_for_lib = [ "error", "error_tools/error_handling_for_lib" ]
-error_handling_for_app = [ "error", "error_tools/error_handling_for_app" ]
+error_for_lib = [ "error", "error_tools/error_for_lib" ]
+error_for_app = [ "error", "error_tools/error_for_app" ]
 
 # derive
 
@@ -385,8 +361,8 @@ diagnostics_default = [
 diagnostics_no_std = [ "diagnostics", "diagnostics_tools/no_std" ]
 diagnostics_use_alloc = [ "diagnostics", "diagnostics_tools/use_alloc" ]
 
-diagnostics_runtime_assertions = [ "diagnostics_tools/runtime_assertions" ]
-diagnostics_compiletime_assertions = [ "diagnostics_tools/compiletime_assertions" ]
+diagnostics_runtime_assertions = [ "diagnostics_tools/diagnostics_runtime_assertions" ]
+diagnostics_compiletime_assertions = [ "diagnostics_tools/diagnostics_compiletime_assertions" ]
 
 # common
 
@@ -433,40 +409,39 @@ default = [
 [dependencies]
 
 # iter
-iter_tools = { workspace = true, optional = true }
+iter_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # meta
-meta_tools = { workspace = true, optional = true }
+meta_tools = { workspace = true, optional = true, features = [ "default" ] }
 impls_index = { workspace = true } # despite impls_index is imported by meta_tools it should also be imported immediatly
 # qqq : fix that
 
 # mem
-mem_tools = { workspace = true, optional = true }
+mem_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # typing
-typing_tools = { workspace = true, optional = true }
+typing_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # time
-time_tools = { workspace = true, optional = true }
+time_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # sting
-strs_tools = { workspace = true, optional = true }
+strs_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # err
-error_tools = { workspace = true, optional = true }
+error_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # derive
-derive_tools = { workspace = true, optional = true }
+derive_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # data_type
-data_type = { workspace = true, optional = true }
+data_type = { workspace = true, optional = true, features = [ "default" ] }
 
 # diagnostics
-diagnostics_tools = { workspace = true, optional = true }
+diagnostics_tools = { workspace = true, optional = true, features = [ "default" ] }
 
 # external
-parse-display = { version = "~0.5", optional = true } # have to be here because of problem with FromStr
+parse-display = { version = "~0.5", optional = true, features = [ "default" ] } # have to be here because of problem with FromStr
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }

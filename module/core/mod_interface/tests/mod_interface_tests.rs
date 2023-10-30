@@ -1,4 +1,4 @@
-
+// #![ cfg_attr( all(), feature( module_is_terminal ) ) ]
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
@@ -10,10 +10,9 @@ pub struct CrateStructForTesting1
 
 #[ allow( unused_imports ) ]
 use ::mod_interface as TheModule;
-
-// include!( "../_conditional/local_module.rs" );
+#[ allow( unused_imports ) ]
+use test_tools::exposed::*;
+#[ path="../../../../module/step/meta/src/module/terminal.rs" ]
+mod terminal;
 
 mod inc;
-
-// #[ path = "./mod_interface/trybuild_test.rs" ]
-// mod trybuild_test;

@@ -18,14 +18,19 @@
 pub mod dependency
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::gif;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::apng;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::png;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::ac_ffmpeg;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::openh264;
 }
 

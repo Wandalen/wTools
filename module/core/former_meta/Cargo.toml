@@ -1,6 +1,6 @@
 [package]
 name = "former_meta"
-version = "0.1.12"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -22,12 +22,6 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/former/meta",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
 default = [ "enabled" ]
@@ -36,15 +30,19 @@ enabled = []
 
 [lib]
 proc-macro = true
-name = "former_meta"
-path = "src/former/meta/former_lib.rs"
 
 [dependencies]
-proc-macro2 = "~1.0"
-quote = "~1.0"
-syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
-iter_tools = { workspace = true }
-macro_tools = { workspace = true }
+macro_tools = { workspace = true, features = [ "default" ] }
+iter_tools = { workspace = true, features = [ "default" ] }
+
+# xxx : optimize features set
+
+# proc-macro2 = "~1.0"
+# quote = "~1.0"
+# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
+# iter_tools = { workspace = true, features = [ "default" ] }
+# macro_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 # trybuild = { version = "~1.0", features = [ "diff" ] }
+test_tools = { workspace = true, features = [ "default" ] }

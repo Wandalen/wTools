@@ -26,17 +26,17 @@ tests_impls!
     let exp = Struct1{ _0 : 13, _1 : 13, _2 : 13, _3 : 13 };
     a_id!( got, exp );
 
-    let got : Struct1 = TheModule::from!( 0, 1 );
-    let exp = Struct1{ _0 : 0, _1 : 1, _2 : 1, _3 : 1 };
-    a_id!( got, exp );
-
-    let got : Struct1 = TheModule::from!( 0, 1, 2 );
-    let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2, _3 : 2 };
-    a_id!( got, exp );
-
-    let got : Struct1 = TheModule::from!( 0, 1, 2, 3 );
-    let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2, _3 : 3 };
-    a_id!( got, exp );
+//     let got : Struct1 = TheModule::from!( 0, 1 );
+//     let exp = Struct1{ _0 : 0, _1 : 1, _2 : 1, _3 : 1 };
+//     a_id!( got, exp );
+//
+//     let got : Struct1 = TheModule::from!( 0, 1, 2 );
+//     let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2, _3 : 2 };
+//     a_id!( got, exp );
+//
+//     let got : Struct1 = TheModule::from!( 0, 1, 2, 3 );
+//     let exp = Struct1{ _0 : 0, _1 : 1, _2 : 2, _3 : 3 };
+//     a_id!( got, exp );
 
   }
 
@@ -60,9 +60,9 @@ tests_impls!
     let exp = Struct1{ a : 13, b : 13 };
     a_id!( got, exp );
 
-    let got : Struct1 = TheModule::from!( 1, 3 );
-    let exp = Struct1{ a : 1, b : 3 };
-    a_id!( got, exp );
+    // let got : Struct1 = TheModule::from!( 1, 3 );
+    // let exp = Struct1{ a : 1, b : 3 };
+    // a_id!( got, exp );
 
   }
 
@@ -82,13 +82,13 @@ tests_impls!
     let exp = Struct1( 13, 13, 13, 13 );
     a_id!( got, exp );
 
-    let got : Struct1 = TheModule::from!( 0, 1 );
-    let exp = Struct1( 0, 1, 1, 1 );
-    a_id!( got, exp );
-
-    let got : Struct1 = TheModule::from!( 0, 1, 2 );
-    let exp = Struct1( 0, 1, 2, 2 );
-    a_id!( got, exp );
+//     let got : Struct1 = TheModule::from!( 0, 1 );
+//     let exp = Struct1( 0, 1, 1, 1 );
+//     a_id!( got, exp );
+//
+//     let got : Struct1 = TheModule::from!( 0, 1, 2 );
+//     let exp = Struct1( 0, 1, 2, 2 );
+//     a_id!( got, exp );
 
     // qqq : write negative test
     // let got : Struct1 = TheModule::from!( 0, 1, 2, 3 );

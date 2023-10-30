@@ -13,19 +13,19 @@ pub( crate ) mod private
 mod_interface::mod_interface!
 {
 
-  #[ cfg( feature = "impls_index" ) ]
+  #[ cfg( feature = "meta_impls_index" ) ]
   use ::impls_index;
-  #[ cfg( feature = "for_each" ) ]
+  #[ cfg( feature = "meta_for_each" ) ]
   use ::for_each;
-  // #[ cfg( feature = "mod_interface" ) ]
+  // #[ cfg( feature = "meta_mod_interface" ) ]
   use ::mod_interface;
-  // #[ cfg( feature = "mod_interface" ) ]
+  // #[ cfg( feature = "meta_mod_interface" ) ]
   prelude use ::mod_interface::mod_interface;
 
-  #[ cfg( feature = "collection_make" ) ]
+  #[ cfg( feature = "meta_constructors" ) ]
   prelude use ::literally::*;
-  #[ cfg( feature = "idents_concat" ) ]
-  prelude use ::paste::paste as idents_concat;
+  #[ cfg( feature = "meta_idents_concat" ) ]
+  prelude use ::paste::paste as meta_idents_concat;
 
   // #[ cfg( feature = "options" ) ]
   // use ::woptions;

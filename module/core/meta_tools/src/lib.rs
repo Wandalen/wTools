@@ -17,16 +17,16 @@
 pub mod dependency
 {
 
-  // #[ cfg( feature = "mod_interface" ) ]
+  // #[ cfg( feature = "meta_mod_interface" ) ]
   pub use ::mod_interface;
-  #[ cfg( feature = "for_each" ) ]
+  #[ cfg( feature = "meta_for_each" ) ]
   pub use ::for_each;
-  #[ cfg( feature = "impls_index" ) ]
+  #[ cfg( feature = "meta_impls_index" ) ]
   pub use ::impls_index;
 
-  #[ cfg( feature = "collection_make" ) ]
+  #[ cfg( feature = "meta_constructors" ) ]
   pub use ::literally;
-  #[ cfg( feature = "idents_concat" ) ]
+  #[ cfg( feature = "meta_idents_concat" ) ]
   pub use ::paste;
 
   // #[ cfg( feature = "former" ) ]

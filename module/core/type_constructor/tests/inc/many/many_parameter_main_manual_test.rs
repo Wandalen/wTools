@@ -104,23 +104,23 @@ impl< T > TheModule::AsSlice< T > for Many< T >
 TheModule::_if_from!
 {
 
-  impl< T > TheModule::From_0 for Many< T >
-  {
-    #[inline]
-    fn from_0() -> Self
-    {
-      Self( TheModule::_Vec::new() )
-    }
-  }
+  // impl< T > TheModule::From_0 for Many< T >
+  // {
+  //   #[inline]
+  //   fn from_0() -> Self
+  //   {
+  //     Self( TheModule::_Vec::new() )
+  //   }
+  // }
 
-  impl< T > TheModule::From_1 < T > for Many< T >
-  {
-    #[inline]
-    fn from_1(_0 : T) -> Self
-    {
-      Self(TheModule::_vec! [_0])
-    }
-  }
+  // impl< T > TheModule::From_1 < T > for Many< T >
+  // {
+  //   #[inline]
+  //   fn from_1(_0 : T) -> Self
+  //   {
+  //     Self(TheModule::_vec! [_0])
+  //   }
+  // }
 
   impl< T > TheModule::From_2 < T, T > for Many< T >
   {

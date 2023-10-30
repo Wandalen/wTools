@@ -48,37 +48,49 @@ pub mod make;
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::many::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::pair::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::single::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::types::orphan::*;
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   #[ cfg( feature = "vectorized_from" ) ]
   pub use super::vectorized_from::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::helper::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::traits::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::enumerable::orphan::*;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "make" ) ]
-  pub use super::make::orphan::*;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // #[ cfg( feature = "make" ) ]
+  // pub use super::make::orphan::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -86,52 +98,71 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::many::exposed::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::pair::exposed::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::single::exposed::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::types::exposed::*;
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   #[ cfg( feature = "vectorized_from" ) ]
   pub use super::vectorized_from::exposed::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::helper::exposed::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::traits::exposed::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::enumerable::exposed::*;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "make" ) ]
-  pub use super::make::exposed::*;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // #[ cfg( feature = "make" ) ]
+  // pub use super::make::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::many::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::pair::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::single::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::types::prelude::*;
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   #[ cfg( feature = "vectorized_from" ) ]
   pub use super::vectorized_from::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::helper::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::traits::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::enumerable::prelude::*;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "make" ) ]
-  pub use super::make::prelude::*;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // #[ cfg( feature = "make" ) ]
+  // pub use super::make::prelude::*;
 }

@@ -2,6 +2,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use std::collections::HashMap;
   use wca::{ Type, Routine };
 
   ///
@@ -91,9 +92,9 @@ pub( crate ) mod private
   /// Form CA commands executor.
   ///
 
-  pub fn executor_form() -> wtools::HashMap< String, Routine >
+  pub fn executor_form() -> HashMap< String, Routine >
   {
-    wtools::HashMap::from
+    HashMap::from
     ([
       ( "publish".to_owned(), Routine::new( crate::commands::publish::publish ) ),
       ( "workspace.publish".to_owned(), Routine::new( crate::commands::publish::workspace_publish ) ),

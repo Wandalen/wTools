@@ -3,25 +3,31 @@ pub( crate ) mod private
 {
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
   };
   #[ cfg( all( feature = "string_parse_number" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use lexical::*;
 }
-
-#[ doc( inline ) ]
-pub use protected::*;
 
 /// Parented namespace of the module.
 pub mod orphan
 {
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
   };
@@ -30,6 +36,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
   };

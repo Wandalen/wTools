@@ -1,6 +1,6 @@
 [package]
 name = "test_tools"
-version = "0.1.5"
+version = "0.5.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -22,12 +22,6 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-# include = [
-#   "/rust/impl/test",
-#   "/Cargo.toml",
-#   "/Readme.md",
-#   "/License",
-# ]
 
 # = features
 
@@ -38,43 +32,26 @@ full = [ "enabled" ]
 no_std = []
 use_alloc = []
 enabled = []
-nightly = [ "typing_tools/nightly" ]
-# nightly = [ "wtest_basic/nightly" ]
-
-# [lib]
-# name = "test_tools"
-# path = "src/test/test_tools_lib.rs"
-
-# [[test]]
-# name = "test_tools_test"
-# path = "tests/test/test_tools_tests.rs"
-
-# [[test]]
-# name = "test_tools_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-
-# [[example]]
-# name = "test_tools_trivial_sample"
-# path = "examples/test_tools_trivial_sample/src/main.rs"
+# nightly = [ "typing_tools/nightly" ]
 
 [dependencies]
 
 ## external
 
-paste = "~1.0"
+paste = "~1.0" # zzz : remove laster
 rustversion = "~1.0"
-anyhow = "~1.0"
+# anyhow = "~1.0"
 num-traits = "~0.2"
-trybuild = { version = "~1.0", features = [ "diff" ] }
+trybuild = { version = "1.0.85", features = [ "diff" ] }
 
 ## internal
 
+error_tools = { workspace = true, features = [ "full" ] }
 meta_tools = { workspace = true, features = [ "full" ] }
 mem_tools = { workspace = true, features = [ "full" ] }
 typing_tools = { workspace = true, features = [ "full" ] }
 data_type = { workspace = true, features = [ "full" ] }
 diagnostics_tools = { workspace = true, features = [ "full" ] }
 
-# [dev-dependencies]
-# test_tools = { workspace = true }
-smoke_test = { workspace = true }
+[build-dependencies]
+rustc_version = "0.4"
