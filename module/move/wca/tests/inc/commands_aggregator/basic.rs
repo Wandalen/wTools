@@ -7,7 +7,7 @@ tests_impls!
   fn simple()
   {
     let ca = CommandsAggregator::former()
-    .grammar( // list of commands -> Collect all to GrammarConverter 
+    .grammar( // list of commands -> Collect all to GrammarConverter
     [
       wca::Command::former()
       .hint( "hint" )
@@ -43,7 +43,7 @@ tests_impls!
   fn with_only_general_help()
   {
     let ca = CommandsAggregator::former()
-    .grammar( // list of commands -> Collect all to GrammarConverter 
+    .grammar( // list of commands -> Collect all to GrammarConverter
     [
       wca::Command::former()
       .hint( "hint" )

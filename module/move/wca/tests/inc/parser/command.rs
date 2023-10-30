@@ -17,7 +17,7 @@ tests_impls!
         subjects : vec![],
         properties : HashMap::new(),
       }),
-      parser.command( ".command" )
+      parser.command( ".command" ).into()
     );
 
     // command with one subject
