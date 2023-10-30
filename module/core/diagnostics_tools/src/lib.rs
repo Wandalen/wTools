@@ -14,39 +14,38 @@
 #[ cfg( feature = "enabled" ) ]
 /// Compile-time asserting.
 pub mod diagnostics;
-/// Compile-time asserting of memory layout.
-#[ cfg( feature = "enabled" ) ]
-pub mod layout;
 
 /// Dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  #[ cfg( feature = "runtime_assertions" ) ]
+  #[ cfg( feature = "diagnostics_runtime_assertions" ) ]
   pub use ::pretty_assertions;
 }
+
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
+pub use protected::*;
 
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::diagnostics::orphan::*;
-  #[ doc( inline ) ]
-  pub use super::layout::orphan::*;
 }
-
-#[ doc( inline ) ]
-#[ cfg( feature = "enabled" ) ]
-pub use protected::*;
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -55,11 +54,11 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::diagnostics::exposed::*;
-  #[ doc( inline ) ]
-  pub use super::layout::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -67,7 +66,6 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::diagnostics::prelude::*;
-  #[ doc( inline ) ]
-  pub use super::layout::prelude::*;
 }

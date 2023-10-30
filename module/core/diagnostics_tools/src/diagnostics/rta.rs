@@ -109,10 +109,10 @@ pub( crate ) mod private
   }
 
   ///
-  /// Asserts that two expressions are identical to each other.
+  /// Asserts that two expressions are identical.
   ///
-  /// This will invoke the panic! macro if two experessions have different values at runtime.
-  /// Like [a_id!], this macro also has a second version, where a custom panic message can be provided.
+  /// This macro will invoke the panic! macro if the two expressions have different values at runtime.
+  /// Like [a_id!], this macro also has a second version where a custom panic message can be provided.
   ///
   /// ### Basic use-case.
   ///
@@ -139,7 +139,7 @@ pub( crate ) mod private
   }
 
   ///
-  /// Asserts that two expressions are not identical to each other.
+  /// Asserts that two expressions are not identical with each other.
   ///
   /// This will invoke the panic! macro if two experessions have the same value at runtime.
   /// Like [a_id!], this macro also has a second version, where a custom panic message can be provided.
@@ -168,41 +168,46 @@ pub( crate ) mod private
 
   }
 
-  // xxx : switch left and right args
-  // ///
-  // /// Asserts that two expressions are identical to each other (using [`PartialEq`]).
-  // ///
+  ///
+  /// Asserts that two expressions are identical to each other (using [`PartialEq`]). Prints nice diff.
+  ///
 
-  // #[macro_export]
-  // macro_rules! assert_eq
-  // {
-  //   ($left:expr, $right:expr$(,)?) =>
-  //   ({
-  //     ::pretty_assertions::assert_eq!();
-  //     $crate::assert_eq!(@ $left, $right, "", "");
-  //   });
-  //   ($left:expr, $right:expr, $($arg:tt)*) => ({
-  //     $crate::assert_eq!(@ $left, $right, ": ", $($arg)+);
-  //   });
-  //   (@ $left:expr, $right:expr, $maybe_colon:expr, $($arg:tt)*) => ({
-  //     match (&($left), &($right)) {
-  //       (left_val, right_val) => {
-  //         if !(*left_val == *right_val) {
-  //           use $crate::private::CreateComparison;
-  //           ::core::panic!("assertion failed: `(left == right)`{}{}\
-  //           \n\
-  //           \n{}\
-  //           \n",
-  //           $maybe_colon,
-  //           format_args!($($arg)*),
-  //           (left_val, right_val).create_comparison()
-  //           )
-  //         }
-  //       }
-  //     }
-  //   });
-  // }
+  #[macro_export]
+  macro_rules! a_id
+  {
+    ( $left:expr , $right:expr $(,)? )
+    =>
+    ({
+      $crate::dependency::pretty_assertions::assert_eq!( $left, $right );
+    });
+    ($left:expr, $right:expr, $($arg:tt)*)
+    =>
+    ({
+      $crate::dependency::pretty_assertions::assert_eq!( $left, $right, $($arg)+ );
+    });
+  }
 
+  ///
+  /// Asserts that two expressions are not identical to each other (using [`PartialEq`]). Prints nice diff.
+  ///
+
+  #[macro_export]
+  macro_rules! a_not_id
+  {
+    ( $left:expr , $right:expr $(,)? )
+    =>
+    ({
+      $crate::dependency::pretty_assertions::assert_ne!( $left, $right );
+    });
+    ($left:expr, $right:expr, $($arg:tt)*)
+    =>
+    ({
+      $crate::dependency::pretty_assertions::assert_ne!( $left, $right, $($arg)+ );
+    });
+  }
+
+  pub use a_id;
+  pub use a_not_id;
   pub use a_true;
   pub use a_false;
   pub use a_dbg_true;
@@ -211,27 +216,39 @@ pub( crate ) mod private
   pub use a_dbg_not_id;
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
-
-#[ doc( inline ) ]
-pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::a_id as assert_eq;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::a_not_id as assert_ne;
+
 }
 
 /// Exposed namespace of the module.
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
 
@@ -239,12 +256,22 @@ pub mod exposed
 pub mod prelude
 {
 
-  #[ doc( inline ) ]
-  pub use ::pretty_assertions::assert_eq as a_id;
-  #[ doc( inline ) ]
-  pub use ::pretty_assertions::assert_ne as a_not_id;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::pretty_assertions::assert_eq as a_id;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::pretty_assertions::assert_ne as a_not_id;
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::a_id;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::a_not_id;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     a_true,

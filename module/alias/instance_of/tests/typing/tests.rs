@@ -2,7 +2,7 @@
 #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 // #![ feature( type_name_of_val ) ]
 // #![ feature( trace_macros ) ]
-// #![ feature( idents_concat ) ]
+// #![ feature( meta_idents_concat ) ]
 
 use typing_tools as TheModule;
 

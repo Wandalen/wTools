@@ -207,32 +207,32 @@ pub( crate ) mod private
         }
       }
 
-      $crate::_if_from!
-      {
-        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::From_0
-        for $Name < $ParamName >
-        where $ParamName : Default
-        {
-          #[ inline ]
-          fn from_0() -> Self
-          {
-            Self( Default::default() )
-          }
-        }
-
-
-        impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
-        $crate::From_1< $ParamName >
-        for $Name < $ParamName >
-        {
-          #[ inline ]
-          fn from_1( _0 : $ParamName ) -> Self
-          {
-            Self( _0 )
-          }
-        }
-      }
+      // $crate::_if_from!
+      // {
+      //   impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      //   $crate::From_0
+      //   for $Name < $ParamName >
+      //   where $ParamName : Default
+      //   {
+      //     #[ inline ]
+      //     fn from_0() -> Self
+      //     {
+      //       Self( Default::default() )
+      //     }
+      //   }
+      //
+      //
+      //   impl< $ParamName $( : $ParamTy1x1 $( :: $ParamTy1xN )* $( + $ParamTy2 )* )? >
+      //   $crate::From_1< $ParamName >
+      //   for $Name < $ParamName >
+      //   {
+      //     #[ inline ]
+      //     fn from_1( _0 : $ParamName ) -> Self
+      //     {
+      //       Self( _0 )
+      //     }
+      //   }
+      // }
 
       // From Single Into Element cant be implemented because of Rust restrictions.
 
@@ -526,16 +526,19 @@ pub( crate ) mod private
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Orphan namespace of the module.
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -543,21 +546,25 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     _single,
   };
 }
 
-#[ doc( inline ) ]
-pub use exposed::*;
+// #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+// pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::
   {
     Single,

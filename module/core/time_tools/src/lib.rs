@@ -12,6 +12,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+/// Operates over current time.
 #[ cfg( feature = "time_now" ) ]
 #[ path = "./now.rs" ]
 #[ cfg( feature = "enabled" ) ]
@@ -28,10 +29,12 @@ pub mod dependency
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
@@ -40,6 +43,7 @@ pub use protected::*;
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -48,9 +52,11 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ cfg( feature = "time_now" ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::now::*;
 }
 

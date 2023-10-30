@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "0.1.12"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -22,41 +22,17 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/former/front",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
 
-[lib]
-name = "former"
-path = "src/former/front/former_lib.rs"
-
-[[test]]
-name = "former_test"
-path = "tests/former/former_front_tests.rs"
-
-[[test]]
-name = "former_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "former_trivial_sample"
-path = "examples/former_trivial_sample/src/main.rs"
-
 [dependencies]
-former_meta = { workspace = true }
-former_runtime = { workspace = true }
+former_meta = { workspace = true, features = [ "default" ] }
+# former_runtime = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
-smoke_test = { workspace = true }
+test_tools = { workspace = true, features = [ "default" ] }

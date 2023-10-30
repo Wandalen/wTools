@@ -35,12 +35,14 @@ pub mod dependency
 }
 
 #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
 pub use protected::*;
 
 /// Protected namespace of the module.
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
@@ -48,6 +50,7 @@ pub mod protected
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -55,6 +58,7 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use quote::
   {
     format_ident,
@@ -62,6 +66,7 @@ pub mod exposed
     quote_spanned,
   };
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::
   {
     prelude::*,
@@ -73,6 +78,7 @@ pub mod exposed
     syntax::exposed::*,
   };
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::quantifier::
   {
     Pair,
@@ -85,24 +91,33 @@ pub mod prelude
 {
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::interval_adapter::prelude::*;
   // #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
   // pub use ::type_constructor::prelude::*;
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::syn;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::proc_macro2;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::quote;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::quote::quote as qt;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::syn::parse_quote as parse_qt;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::syn::spanned::Spanned;
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use syn::
   {
     parse::ParseStream,
@@ -118,6 +133,7 @@ pub mod prelude
   };
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::
   {
     container_kind::prelude::*,

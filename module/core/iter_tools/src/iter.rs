@@ -64,9 +64,11 @@ pub( crate ) mod private
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::itertools::
   {
     all,
@@ -110,18 +112,21 @@ pub mod exposed
 
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use std::iter::zip;
 
 }
 
-#[ doc( inline ) ]
-pub use exposed::*;
+// #[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+// pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use ::itertools::
   {
     Diff,
@@ -136,6 +141,7 @@ pub mod prelude
   };
 
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::private::IterExt;
 
 }

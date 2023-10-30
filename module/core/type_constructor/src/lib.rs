@@ -13,6 +13,19 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+pub use derive_tools::{ VariadicFrom, From_0, From_1, From_2, From_3, from };
+
+/// Temporary workaround.
+#[ macro_export ]
+macro_rules! _if_from
+{
+  ( $( $code:tt )* )
+  =>
+  {
+    $( $code )*
+  };
+}
+
 // #![ without_std ]
 
 // #[ cfg( feature = "no_std" ) ]
@@ -24,6 +37,7 @@
 // mod inc;
 // pub mod type_constuctor;
 // #[ doc( inline ) ]
+// #[ allow( unused_imports ) ]
 // pub use inc::*;
 
 
@@ -36,24 +50,27 @@ pub mod dependency
 {
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   pub use super::type_constuctor::protected::*;
 }
-
-#[ doc( inline ) ]
-#[ cfg( feature = "enabled" ) ]
-pub use protected::*;
 
 /// Shared with parent namespace of the module
 #[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
   pub use super::type_constuctor::orphan::*;
 }
@@ -63,8 +80,10 @@ pub mod orphan
 pub mod exposed
 {
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::type_constuctor::exposed::*;
 }
 

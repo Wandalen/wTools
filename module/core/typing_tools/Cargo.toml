@@ -1,7 +1,7 @@
 
 [package]
 name = "typing_tools"
-version = "0.1.5"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,56 +23,39 @@ features = [ "full" ]
 all-features = false
 
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/typing",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
 
 default = [
-  # "implements",
-  "is_slice",
-  "inspect_type",
+  "enabled",
+  "typing_implements",
+  "typing_is_slice",
+  "typing_inspect_type",
+  # "nightly",
 ]
 
 full = [
-  # "use_alloc",
-  # "implements",
-  "is_slice",
-  "inspect_type",
+  "enabled",
+  "typing_implements",
+  "typing_is_slice",
+  "typing_inspect_type",
+  # "nightly",
 ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
-nightly = [ "inspect_type/nightly" ]
 
-[lib]
-name = "typing_tools"
-path = "src/typing/typing_tools_lib.rs"
-
-[[test]]
-name = "typing_tools_test"
-path = "tests/typing/tests.rs"
-
-[[test]]
-name = "typing_tools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "typing_tools_trivial_sample"
-path = "examples/typing_tools_trivial_sample/src/main.rs"
+typing_inspect_type = [ "inspect_type/enabled" ]
+typing_is_slice = [ "is_slice/enabled" ]
+typing_implements = [ "implements/enabled" ]
+# nightly = [ "inspect_type/nightly" ]
 
 [dependencies]
 
 ## internal
-inspect_type = { workspace = true, optional = true }
-is_slice = { workspace = true, optional = true }
+inspect_type = { workspace = true }
+is_slice = { workspace = true }
 implements = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-smoke_test = { workspace = true }

@@ -152,7 +152,7 @@ pub( crate ) mod private
   /// Options for parser.
   ///
 
-  #[ derive( Debug ) ]
+  #[ derive( Debug, former::Former ) ]
   #[ perform( fn parse( mut self ) -> Request< 'a > ) ]
   pub struct ParseOptions< 'a >
   {
@@ -476,9 +476,14 @@ pub( crate ) mod private
   }
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   pub use super::private::
   {
@@ -489,9 +494,6 @@ pub mod protected
     request_parse,
   };
 }
-
-#[ doc( inline ) ]
-pub use protected::*;
 
 /// Parented namespace of the module.
 pub mod orphan

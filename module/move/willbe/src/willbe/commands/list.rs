@@ -1,7 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  use std::collections::HashMap;
+  use crate::tools::*;
   use std::env;
   use wca::{ Args, Props };
   use wtools::error::BasicError;

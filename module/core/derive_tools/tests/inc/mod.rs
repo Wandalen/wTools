@@ -59,15 +59,18 @@ mod multiple_inner_from_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod named_inner_from_test;
 
-#[ cfg( all( feature = "type_from" ) ) ]
-mod variadic_from_manual_test;
+// #[ cfg( all( feature = "type_variadic_from" ) ) ]
+// mod variadic_from_manual_test;
+//
+// #[ cfg( all( feature = "type_variadic_from" ) ) ]
+// mod variadic_from_manual_beyond_test;
+//
+// // #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+// // mod variadic_from_derive_test;
+// // xxx : fix
+// #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+// mod variadic_from2_derive;
 
-#[ cfg( all( feature = "type_from" ) ) ]
-mod variadic_from_manual_beyond_test;
-
-// #[ cfg( all( feature = "derive_variadic_from", feature = "type_from" ) ) ]
-// mod variadic_from_derive_test;
-// xxx : fix
-
-#[ cfg( all( feature = "derive_variadic_from", feature = "type_from" ) ) ]
-mod variadic_from2_derive;
+#[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+#[ path = "../../../../../module/core/variadic_from/tests/inc/mod.rs" ]
+mod variadic_tests;
