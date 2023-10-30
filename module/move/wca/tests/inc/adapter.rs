@@ -22,15 +22,15 @@ tests_impls!
 
     let ca = TheModule::cui( () ).command( command ).command( command2 ).command( echo.arg( "string", Type::String ) ).build();
 
-    a_id!( Ok( () ), ca.perform( ".command2 .help" ) );
+    a_id!( () , ca.perform( ".command2 .help" ).unwrap() );
 
-    a_id!( Ok( () ), ca.perform( ".help command" ) );
-    a_id!( Ok( () ), ca.perform( ".help command2" ) );
-    a_id!( Ok( () ), ca.perform( ".help help" ) );
+    a_id!( () , ca.perform( ".help command" ).unwrap() );
+    a_id!( () , ca.perform( ".help command2" ).unwrap() );
+    a_id!( (), ca.perform( ".help help" ).unwrap() );
 
-    a_id!( Ok( () ), ca.perform( ".help.command" ) );
-    a_id!( Ok( () ), ca.perform( ".help.command2" ) );
-    a_id!( Ok( () ), ca.perform( ".help.help" ) );
+    a_id!( () , ca.perform( ".help.command" ).unwrap() );
+    a_id!( () , ca.perform( ".help.command2" ).unwrap() );
+    a_id!( () , ca.perform( ".help.help" ).unwrap() );
 
     a_true!( ca.perform( ".help.help.help" ).is_err() );
     a_true!( ca.perform( ".echo 34" ).is_ok() );
