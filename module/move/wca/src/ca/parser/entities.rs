@@ -12,7 +12,7 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::{ RawCommand, Namespace, Program };
-  /// # use wtools::HashMap;
+  /// # use std::collections::HashMap;
   /// let namespace1 = Namespace
   /// {
   ///   commands : vec!
@@ -67,7 +67,7 @@ pub( crate ) mod private
   /// ```
   /// # use wca::RawCommand;
   /// # use wca::Namespace;
-  /// # use wtools::HashMap;
+  /// # use std::collections::HashMap;
   ///
   /// let commands = vec!
   /// [
@@ -112,7 +112,7 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::RawCommand;
-  /// # use wtools::HashMap;
+  /// # use std::collections::HashMap;
   /// RawCommand
   /// {
   ///   name : "command".to_string(),

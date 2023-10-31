@@ -21,7 +21,7 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::{ GrammarCommand, Value };
-  /// # use wtools::HashMap;
+  /// # use std::collections::HashMap;
   /// GrammarCommand
   /// {
   ///   phrase : "command".to_string(),
@@ -52,7 +52,7 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::{ Command, Type, GrammarConverter, RawCommand };
-  /// # use wtools::HashMap;
+  /// # use std::collections::HashMap;
   /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
   /// let grammar = GrammarConverter::former()
   /// .command

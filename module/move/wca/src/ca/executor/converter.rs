@@ -19,7 +19,7 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::{ Command, Type, GrammarCommand, ExecutorConverter, Routine };
-  /// # use wtools::HashMap;
+  /// # use std::collections::HashMap;
   /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
   /// let executor_converter = ExecutorConverter::former()
   /// .routine( "command", Routine::new( |( args, props )| Ok( () ) ) )
