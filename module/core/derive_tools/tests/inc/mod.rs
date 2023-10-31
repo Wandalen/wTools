@@ -37,27 +37,27 @@ mod deref_mut_manual_test;
 mod deref_mut_test;
 
 mod from_inner_manual_test;
-mod named_from_inner_manual_test;
-mod named_multiple_from_inner_manual_test;
+mod from_inner_named_manual_test;
+mod from_inner_multiple_named_manual_test;
+mod from_inner_multiple_manual_test;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_test;
 #[ cfg( feature = "derive_from" ) ]
-mod named_from_inner_test;
+mod from_inner_named_test;
 #[ cfg( feature = "derive_from" ) ]
-mod named_multiple_from_inner_test;
+mod from_inner_multiple_named_test;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_multiple_test;
 
 mod inner_from_manual_test;
-mod named_inner_from_manual_test;
-mod named_multiple_inner_from_manual_test;
-mod multiple_inner_from_manual_test;
+mod inner_from_named_manual_test;
+mod inner_from_multiple_named_manual_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_test;
 #[ cfg( feature = "derive_inner_from" ) ]
-mod named_multiple_inner_from_test;
+mod inner_from_named_test;
 #[ cfg( feature = "derive_inner_from" ) ]
-mod multiple_inner_from_test;
-#[ cfg( feature = "derive_inner_from" ) ]
-mod named_inner_from_test;
+mod inner_from_multiple_named_test;
 
 // #[ cfg( all( feature = "type_variadic_from" ) ) ]
 // mod variadic_from_manual_test;
