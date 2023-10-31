@@ -15,15 +15,15 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
   let result = 
   match (field_types.len(), field_names) 
   {
-    ( 1, Some( field_names ) ) => generate_from_single_field( &field_types[ 0 ], &field_names[ 0 ], item_name ),
-    ( 1, None ) => generate_from_single_field_no_names( &field_types[ 0 ], item_name ),
-    ( _, Some( field_names ) ) => generate_from_multiple_fields( &field_types, &field_names, item_name ),
-    ( n, None ) => generate_from_multiple_fields_no_names( &field_types, n, item_name ),
+    ( 1, Some( field_names ) ) => generate_from_single_field_named( &field_types[ 0 ], &field_names[ 0 ], item_name ),
+    ( 1, None ) => generate_from_single_field( &field_types[ 0 ], item_name ),
+    ( _, Some( field_names ) ) => generate_from_multiple_fields_named( &field_types, &field_names, item_name ),
+    ( _, None ) => generate_from_multiple_fields( &field_types, item_name ),
   };
   Ok( result )
 }
 
-fn generate_from_single_field( field_type: &syn::Type, field_name: &syn::Ident, item_name: syn::Ident ) -> TokenStream 
+fn generate_from_single_field_named( field_type: &syn::Type, field_name: &syn::Ident, item_name: syn::Ident ) -> TokenStream 
 {
   qt!
   {
@@ -39,7 +39,7 @@ fn generate_from_single_field( field_type: &syn::Type, field_name: &syn::Ident, 
   }
 }
 
-fn generate_from_single_field_no_names( field_type: &syn::Type, item_name: syn::Ident ) -> TokenStream 
+fn generate_from_single_field( field_type: &syn::Type, item_name: syn::Ident ) -> TokenStream 
 {
   qt!
   {
@@ -55,7 +55,7 @@ fn generate_from_single_field_no_names( field_type: &syn::Type, item_name: syn::
   }
 }
 
-fn generate_from_multiple_fields( field_types: &Vec< syn::Type >, field_names: &Vec< syn::Ident >, item_name: syn::Ident) -> TokenStream 
+fn generate_from_multiple_fields_named( field_types: &Vec< syn::Type >, field_names: &Vec< syn::Ident >, item_name: syn::Ident) -> TokenStream 
 {
   let params: Vec< TokenStream > = field_names
     .iter()
@@ -80,9 +80,9 @@ fn generate_from_multiple_fields( field_types: &Vec< syn::Type >, field_names: &
   }
 }
 
-fn generate_from_multiple_fields_no_names( field_types: &Vec< syn::Type >, n: usize, item_name: syn::Ident ) -> TokenStream 
+fn generate_from_multiple_fields( field_types: &Vec< syn::Type >, item_name: syn::Ident ) -> TokenStream 
 {
-  let params: Vec<TokenStream> = (0..n)
+  let params: Vec<TokenStream> = (0..field_types.len())
     .map( | index | 
       {
         let index = index.to_string().parse::< TokenStream >().unwrap();
