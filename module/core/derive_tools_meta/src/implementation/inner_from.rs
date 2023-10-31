@@ -18,12 +18,12 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
     {
       let field_name = field_names.get( 0 ).unwrap();
       let field_type = field_types.get( 0 ).unwrap();
-      generate_from_impl( item_name, field_type, field_name )
+      generate_from_impl_named( item_name, field_type, field_name )
     }
     ( 1, None ) => 
     {
       let field_type = field_types.get( 0 ).unwrap();
-      generate_from_impl_no_field_names( item_name, field_type )
+      generate_from_impl( item_name, field_type )
     }
     ( _, Some( field_names ) ) => 
     {
@@ -32,9 +32,9 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
         .collect();
       generate_from_impl_multiple_fields( item_name, &field_types, &params )
     }
-    ( n, None ) => 
+    ( _, None ) => 
     {
-      let params: Vec< TokenStream > = ( 0..n )
+      let params: Vec< TokenStream > = ( 0..field_types.len() )
           .map( | index | 
             {
               let index: TokenStream = index.to_string().parse().unwrap();
@@ -47,7 +47,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
   Ok( result )
 }
 
-fn generate_from_impl( item_name: syn::Ident, field_type: &syn::Type, field_name: &syn::Ident ) -> TokenStream 
+fn generate_from_impl_named( item_name: syn::Ident, field_type: &syn::Type, field_name: &syn::Ident ) -> TokenStream 
 {
   qt! 
   {
@@ -63,7 +63,7 @@ fn generate_from_impl( item_name: syn::Ident, field_type: &syn::Type, field_name
   }
 }
 
-fn generate_from_impl_no_field_names( item_name: syn::Ident, field_type: &syn::Type ) -> TokenStream 
+fn generate_from_impl( item_name: syn::Ident, field_type: &syn::Type ) -> TokenStream 
 {
   qt! 
   {

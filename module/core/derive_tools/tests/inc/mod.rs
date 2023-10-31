@@ -52,12 +52,15 @@ mod from_inner_multiple_test;
 mod inner_from_manual_test;
 mod inner_from_named_manual_test;
 mod inner_from_multiple_named_manual_test;
+mod inner_from_multiple_manual_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_named_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_multiple_named_test;
+#[ cfg( feature = "derive_inner_from" ) ]
+mod inner_from_multiple_test;
 
 // #[ cfg( all( feature = "type_variadic_from" ) ) ]
 // mod variadic_from_manual_test;

@@ -7,10 +7,10 @@ struct StructNamedFields
   b: bool,
 }
 
-impl From< (i32, bool) > for StructNamedFields
+impl From< ( i32, bool ) > for StructNamedFields
 {
   #[ inline( always ) ]
-  fn from( src : (i32, bool) ) -> Self
+  fn from( src : ( i32, bool ) ) -> Self
   {
     Self{ a: src.0, b: src.1 }
   }

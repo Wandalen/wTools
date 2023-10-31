@@ -7,13 +7,12 @@ use super::*;
 
 pub fn from_inner( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
-
   let parsed = syn::parse::< InputParsed >( input )?;
   let field_types = parsed.field_types;
   let field_names = parsed.field_names;
   let item_name = parsed.item_name;
   let result = 
-  match (field_types.len(), field_names) 
+  match ( field_types.len(), field_names ) 
   {
     ( 1, Some( field_names ) ) => generate_from_single_field_named( &field_types[ 0 ], &field_names[ 0 ], item_name ),
     ( 1, None ) => generate_from_single_field( &field_types[ 0 ], item_name ),
@@ -82,7 +81,7 @@ fn generate_from_multiple_fields_named( field_types: &Vec< syn::Type >, field_na
 
 fn generate_from_multiple_fields( field_types: &Vec< syn::Type >, item_name: syn::Ident ) -> TokenStream 
 {
-  let params: Vec<TokenStream> = (0..field_types.len())
+  let params: Vec<TokenStream> = ( 0..field_types.len() )
     .map( | index | 
       {
         let index = index.to_string().parse::< TokenStream >().unwrap();
