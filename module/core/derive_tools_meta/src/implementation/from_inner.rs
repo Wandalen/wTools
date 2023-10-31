@@ -9,8 +9,8 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
 {
 
   let parsed = syn::parse::< InputParsed >( input )?;
-  let field_types = parsed.field_types()?;
-  let field_names = parsed.field_names()?;
+  let field_types = parsed.field_types;
+  let field_names = parsed.field_names;
   let item_name = parsed.item_name;
   let result = 
   match (field_types.len(), field_names) 
