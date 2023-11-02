@@ -13,7 +13,7 @@ pub( crate ) mod private
 
   use former::Former;
   use std::collections::HashMap;
-  use wtools::{ error::Result, err };
+  use werror::{ Result, err };
 
   /// Represents a grammatically correct command with a phrase descriptor, a list of command subjects, and a set of command options.
   ///

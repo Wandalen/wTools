@@ -7,7 +7,7 @@ pub( crate ) mod private
     parser::parser::any_word,
   };
   use std::collections::HashMap;
-  use wtools::{ error::Result, err };
+  use werror::{ Result, err };
   use nom::
   {
     branch::alt,

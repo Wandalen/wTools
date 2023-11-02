@@ -10,7 +10,7 @@ pub( crate ) mod private
     Context, Routine,
   };
 
-  use wtools::{ error::Result, err };
+  use werror::{ Result, err };
 
   /// State of a program runtime
   ///

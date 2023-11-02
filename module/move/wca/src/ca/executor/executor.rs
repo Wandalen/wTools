@@ -9,7 +9,7 @@ pub( crate ) mod private
     ca::executor::runtime::_exec_command,
   };
 
-  use wtools::error::Result;
+  use werror::Result;
 
   /// Represents the type of executor to use for running commands.
   #[ derive( Debug ) ]

@@ -3,7 +3,7 @@ pub( crate ) mod private
   use crate::{ Context, Value };
 
   use std::collections::HashMap;
-  use wtools::error::Result;
+  use werror::Result;
 
   use std::{ fmt::Formatter, rc::Rc };
 

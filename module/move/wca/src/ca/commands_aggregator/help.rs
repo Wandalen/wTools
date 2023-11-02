@@ -7,7 +7,8 @@ pub( crate ) mod private
     Routine, Type, commands_aggregator::formatter::private::{HelpFormat, md_generator}
   };
 
-  use wtools::{ Itertools, err };
+  use werror::{ err };
+  use iter_tools::{ Itertools };
 
   use std::rc::Rc;
 

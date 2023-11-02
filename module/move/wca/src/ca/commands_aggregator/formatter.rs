@@ -2,7 +2,7 @@ pub( crate ) mod private
 {
 
   use crate::GrammarConverter;
-  use wtools::Itertools;
+  use iter_tools::Itertools;
 
   /// -
   #[ derive( Debug, Clone, PartialEq ) ]

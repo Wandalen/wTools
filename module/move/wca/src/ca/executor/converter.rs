@@ -11,7 +11,7 @@ pub( crate ) mod private
 
   use former::Former;
   use std::collections::HashMap;
-  use wtools::{ error::Result, err };
+  use werror::{ Result, err };
 
   /// This is the struct that provides a way to convert a `GrammarCommand` to an `ExecutableCommand`.
   ///

@@ -13,7 +13,7 @@ pub( crate ) mod private
   };
 
   use std::collections::{ HashMap, HashSet };
-  use wtools::error::Result;
+  use werror::Result;
 
   /// The `CommandsAggregator` struct is responsible for aggregating all commands that the user defines,
   /// and for parsing and executing them. It is the main entry point of the library.

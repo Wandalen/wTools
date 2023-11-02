@@ -120,7 +120,7 @@ pub( crate ) mod private
     {
       let name =
       {
-        use wtools::Itertools as _;
+        use iter_tools::Itertools as _;
 
         let name = std::any::type_name::< F >();
         let name = name.split("::").last().unwrap();

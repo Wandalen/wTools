@@ -21,15 +21,15 @@
 #[ cfg( not( feature = "no_std" ) ) ]
 pub mod string
 {
-  pub use wtools::string::*;
+  pub use strs_tools::string::*;
 }
 
 /// Errors.
 #[ cfg( not( feature = "no_std" ) ) ]
-use wtools::{ BasicError };
+use werror::{ BasicError };
 // xxx : check
 
-use wtools::meta::mod_interface;
+use mod_interface::meta::mod_interface;
 
 crate::mod_interface!
 {

@@ -38,7 +38,7 @@ tests_impls!
 
   fn with_context()
   {
-    use wtools::error::for_app::Error;
+    use werror::for_app::Error;
 
     // init parser
     let parser = Parser::former().form();
