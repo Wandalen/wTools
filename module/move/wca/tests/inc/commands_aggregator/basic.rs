@@ -27,15 +27,15 @@ tests_impls!
     ])
     .build();
 
-    a_id!( Ok( () ), ca.perform( ".command2 .help" ) ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
+    a_id!( (), ca.perform( ".command2 .help" ).unwrap() ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
 
-    a_id!( Ok( () ), ca.perform( ".help command" ) );
-    a_id!( Ok( () ), ca.perform( ".help command2" ) );
-    a_id!( Ok( () ), ca.perform( ".help help" ) );
+    a_id!( (), ca.perform( ".help command" ).unwrap() );
+    a_id!( (), ca.perform( ".help command2" ).unwrap() );
+    a_id!( (), ca.perform( ".help help" ).unwrap() );
 
-    a_id!( Ok( () ), ca.perform( ".help.command" ) );
-    a_id!( Ok( () ), ca.perform( ".help.command2" ) );
-    a_id!( Ok( () ), ca.perform( ".help.help" ) );
+    a_id!( (), ca.perform( ".help.command" ).unwrap() );
+    a_id!( (), ca.perform( ".help.command2" ).unwrap() );
+    a_id!( (), ca.perform( ".help.help" ).unwrap() );
 
     a_true!( ca.perform( ".help.help.help" ).is_err() );
   }
@@ -64,7 +64,7 @@ tests_impls!
     .help_variants([ HelpVariants::General ])
     .build();
 
-    a_id!( Ok( () ), ca.perform( ".help" ) ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
+    a_id!( (), ca.perform( ".help" ).unwrap() ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
 
     a_true!( ca.perform( ".help command" ).is_err() );
 
@@ -101,7 +101,7 @@ tests_impls!
     .executor_converter( executor )
     .build();
 
-    a_id!( Ok( () ), ca.perform( ".command" ) );
+    a_id!( (), ca.perform( ".command" ).unwrap() );
   }
 
   fn custom_parser()
@@ -126,7 +126,7 @@ tests_impls!
     ])
     .build();
 
-    a_id!( Ok( () ), ca.perform( "-command" ) );
+    a_id!( (), ca.perform( "-command" ).unwrap() );
   }
 
   fn dot_command()
@@ -152,8 +152,8 @@ tests_impls!
     ])
     .build();
 
-    a_id!( Ok( () ), ca.perform( "." ) );
-    a_id!( Ok( () ), ca.perform( ".cmd." ) );
+    a_id!( (), ca.perform( "." ).unwrap() );
+    a_id!( (), ca.perform( ".cmd." ).unwrap() );
 
     a_true!( ca.perform( ".c." ).is_err() );
   }

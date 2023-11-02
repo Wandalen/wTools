@@ -30,7 +30,7 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::{ Executor, ExecutableCommand, Routine, Value };
-  /// # use wtools::HashMap;
+  /// # use std::collections::HashMap;
   /// let executor = Executor::former().form();
   ///
   /// let executable_command = ExecutableCommand

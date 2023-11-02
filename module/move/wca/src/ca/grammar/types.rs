@@ -49,7 +49,7 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::{ GrammarCommand, Value };
-  /// # use wtools::HashMap;
+  /// # use std::collections::HashMap;
   /// let command = GrammarCommand
   /// {
   ///   phrase : "command".to_string(),
