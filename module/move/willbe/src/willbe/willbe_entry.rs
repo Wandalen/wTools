@@ -18,7 +18,7 @@ use ::willbe::*;
 //
 
 #[ cfg( not( feature = "no_std" ) ) ]
-fn main() -> Result< (), wtools::error::BasicError >
+fn main() -> Result< (), wtools::error::for_app::Error >
 {
   let args = env::args().skip( 1 ).collect::< Vec< String > >();
 

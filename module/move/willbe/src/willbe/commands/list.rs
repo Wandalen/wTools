@@ -5,7 +5,7 @@ pub( crate ) mod private
   use crate::tools::*;
   use std::env;
   use wca::{ Args, Props };
-  use wtools::error::BasicError;
+  use wtools::error::{ Result, err };
   use cargo_metadata::
   {
     DependencyKind,
@@ -24,7 +24,7 @@ pub( crate ) mod private
   /// List packages.
   ///
 
-  pub fn list( ( args, _ ) : ( Args, Props ) ) -> Result< (), BasicError >
+  pub fn list( ( args, _ ) : ( Args, Props ) ) -> Result< () >
   {
     let current_path = env::current_dir().unwrap();
 
@@ -51,11 +51,11 @@ pub( crate ) mod private
   /// List workspace packages.
   ///
 
-  pub fn workspace_list( ( args, properties ) : ( Args, Props ) ) -> Result< (), BasicError >
+  pub fn workspace_list( ( args, properties ) : ( Args, Props ) ) -> Result< () >
   {
     let list_type = properties.get_owned( "type" ).unwrap_or( "tree" );
     if list_type != "tree" && list_type != "topsort" {
-      return Err( BasicError::new( format!( "Unknown option 'type:{}'", list_type ) ) );
+      return Err(err!( format!( "Unknown option 'type:{}'", list_type ) ) );
     }
 
     let mut manifest = manifest::Manifest::new();
