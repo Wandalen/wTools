@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use crate::ca::
+  use crate::{ca::
   {
     Namespace, RawCommand,
     Parser,
@@ -9,7 +9,7 @@ pub( crate ) mod private
       parser::any_word,
       command::CommandParserFn,
     }
-  };
+  }, wtools};
   use wtools::{ error::Result, err };
   use nom::
   {

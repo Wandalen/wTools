@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use crate::{ Context, Value };
+  use crate::{ Context, Value, wtools };
 
   use std::collections::HashMap;
   use wtools::error::Result;

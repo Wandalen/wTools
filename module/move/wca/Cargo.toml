@@ -43,7 +43,10 @@ on_get_help_default = [ "enabled" ]
 on_print_commands_default = [ "enabled" ]
 
 [dependencies]
-wtools = { workspace = true, features = [ "default" ] }
+werror = { workspace = true, features = [ "default" ] }
+strs_tools = { workspace = true, features = [ "default" ] }
+mod_interface = { workspace = true, features = [ "default" ] }
+iter_tools = { workspace = true, features = [ "default" ] }
 former = { workspace = true, features = [ "default" ] } # xxx : remove
 anymap = "0.12"
 log = "0.4"

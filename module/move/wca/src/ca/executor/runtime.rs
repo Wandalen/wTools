@@ -7,7 +7,7 @@ pub( crate ) mod private
     ExecutableCommand,
 
     Args, Props,
-    Context, Routine,
+    Context, Routine, wtools,
   };
 
   use wtools::{ error::Result, err };

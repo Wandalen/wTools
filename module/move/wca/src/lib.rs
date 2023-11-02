@@ -17,11 +17,14 @@
 
 #![ allow( where_clauses_object_safety ) ] // https://github.com/chris-morgan/anymap/issues/31
 
+///micro wtools
+pub mod wtools;
+
 /// Requests parser.
 #[ cfg( not( feature = "no_std" ) ) ]
 pub mod string
 {
-  pub use wtools::string::*;
+  pub use crate::wtools::string::*;
 }
 
 /// Errors.
@@ -31,7 +34,7 @@ use wtools::{ BasicError };
 
 use wtools::meta::mod_interface;
 
-crate::mod_interface!
+wtools::mod_interface!
 {
   /// Commands aggregator library.
   #[ cfg( not( feature = "no_std" ) ) ]

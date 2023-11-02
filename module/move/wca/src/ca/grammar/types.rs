@@ -1,5 +1,7 @@
 pub( crate ) mod private
 {
+  use crate::wtools;
+
   use wtools::{ error::Result, err };
 
   /// Available types that can be converted to a `Value`

@@ -4,7 +4,7 @@ pub( crate ) mod private
   {
     Program, Namespace, RawCommand,
     Parser,
-    ca::parser::namespace::private::NamespaceParserFn,
+    ca::parser::namespace::private::NamespaceParserFn, wtools,
   };
   use wtools::{ error::Result, err };
   use nom::

@@ -1,13 +1,13 @@
 pub( crate ) mod private
 {
-  use crate::ca::
+  use crate::{ca::
   {
     Parser,
     RawCommand as Command,
     parser::parser::any_word,
-  };
+  }, wtools};
   use std::collections::HashMap;
-  use wtools::{ error::Result, err };
+  use wtools::{ error:: Result, err };
   use nom::
   {
     branch::alt,
