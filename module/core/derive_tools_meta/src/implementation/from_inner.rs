@@ -14,6 +14,7 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
   let result = 
   match ( field_types.len(), field_names ) 
   {
+    ( 0, _ ) => generate_unit(item_name),
     ( 1, Some( field_names ) ) => generate_from_single_field_named( &field_types[ 0 ], &field_names[ 0 ], item_name ),
     ( 1, None ) => generate_from_single_field( &field_types[ 0 ], item_name ),
     ( _, Some( field_names ) ) => generate_from_multiple_fields_named( &field_types, &field_names, item_name ),
@@ -97,6 +98,21 @@ fn generate_from_multiple_fields( field_types: &Vec< syn::Type >, item_name: syn
       fn from( src: (#(#field_types), *) ) -> Self 
       {
         #item_name( #(#params), *)
+      }
+    }
+  }
+}
+
+fn generate_unit( item_name: syn::Ident ) -> TokenStream
+{
+  qt!
+  {
+    impl From< () > for #item_name
+    {
+      #[ inline( always ) ]
+      fn from( src: () ) -> Self
+      {
+        Self
       }
     }
   }
