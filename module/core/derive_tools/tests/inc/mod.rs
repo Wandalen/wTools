@@ -66,6 +66,8 @@ mod inner_from_multiple_named_test;
 // #[ cfg( feature = "derive_inner_from" ) ]
 // mod inner_from_unit_test;
 #[ cfg( feature = "derive_inner_from" ) ]
+mod inner_from_unit_test;
+#[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_multiple_test;
 
 // #[ cfg( all( feature = "type_variadic_from" ) ) ]
