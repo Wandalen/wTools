@@ -1,7 +1,8 @@
 #[ test ]
 fn inner_from_named() 
 {
-  let got : () = UnitStruct.into();
+  let s = UnitStruct;
+  let got : () = s.into();
   let exp = ();
   a_id!( got, exp );
 }
