@@ -1,7 +1,7 @@
 /// Internal namespace.
 mod private
 {
-  use crate::publish::endpoint;
+  use crate::endpoint;
 
   use crate::tools::bool::*;
   use wca::{ Args, Props };

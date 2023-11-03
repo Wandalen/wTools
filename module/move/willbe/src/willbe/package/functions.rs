@@ -1,13 +1,13 @@
-/// Internal namespace.
 mod private
 {
   use crate::tools::
   {
     digest,
     http,
-    manifest,
     process,
   };
+  use crate::manifest;
+  use crate::version::bump;
   use wtools::error::Result;
   use std::
   {
@@ -16,7 +16,6 @@ mod private
     collections::HashMap,
     fmt::Write,
   };
-  use toml_edit::value;
   use cargo_metadata::
   {
     DependencyKind,
@@ -27,13 +26,13 @@ mod private
   use petgraph::
   {
     graph::Graph,
-    algo::toposort,
+    algo::toposort as pg_toposort,
   };
 
-  // duplicates list.rs
-  pub fn packages_filter( metadata : &Metadata ) -> HashMap< String, &Package >
+  pub fn filter( metadata : &Metadata ) -> HashMap< String, &Package >
   {
     let mut packages_map = HashMap::new();
+
     let _packages = metadata.packages.iter().filter( | package |
     {
       if package.publish.is_none()
@@ -51,19 +50,7 @@ mod private
 
   //
 
-  // duplicates list.rs
-  fn manifest_get( path : impl Into< PathBuf > ) -> anyhow::Result< manifest::Manifest >
-  {
-    let mut manifest = manifest::Manifest::new();
-    manifest.manifest_path_from_str( path )?;
-    manifest.load()?;
-
-    Ok( manifest )
-  }
-
-  //
-
-  fn local_package_path_get< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
+  pub fn local_path_get< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
   {
     let mut buf = String::new();
     write!( &mut buf, "package/{0}-{1}.crate", name, version ).unwrap();
@@ -82,21 +69,9 @@ mod private
 
   //
 
-  fn bump( version : &str ) -> anyhow::Result< toml_edit::Item >
+  pub fn publish( current_path : &PathBuf, path : &PathBuf, dry : bool ) -> Result< () >
   {
-    let mut splits : Vec< &str > = version.split( '.' ).collect();
-    let patch_version = splits[ 2 ].parse::< u32 >()? + 1;
-    let v = &patch_version.to_string();
-    splits[ 2 ] = v;
-
-    Ok( value( splits.join( "." ) ) )
-  }
-
-  //
-
-  pub fn package_publish( current_path : &PathBuf, path : &PathBuf, dry : bool ) -> Result< () >
-  {
-    let mut manifest = manifest_get( path ).unwrap();
+    let mut manifest = manifest::get( path ).unwrap();
     if !manifest.package_is() || manifest.local_is()
     {
       return Ok( () );
@@ -113,9 +88,9 @@ mod private
     let name = name.as_str().unwrap();
     let version = &data[ "package" ][ "version" ].clone();
     let version = version.as_str().unwrap();
-    let local_package_path = local_package_path_get( name, version, &manifest.manifest_path );
+    let local_package_path = local_path_get( name, version, &manifest.manifest_path );
 
-    let local_package = fs::read( &local_package_path ).unwrap();
+    let local_package = fs::read( local_package_path ).unwrap();
     let remote_package = http::retrieve_bytes( name, version ).unwrap_or_default();
 
     let digest_of_local = digest::hash( &local_package );
@@ -132,26 +107,26 @@ mod private
       {
         let mut buf = String::new();
         write!( &mut buf, "git commit --dry-run -am \"{} v{}\"", name, version ).unwrap();
-        let output = process::start_sync( &buf, &current_path ).unwrap();
+        let output = process::start_sync( &buf, current_path ).unwrap();
         process::log_output( &output );
 
-        let output = process::start_sync( "git push --dry-run", &current_path ).unwrap();
+        let output = process::start_sync( "git push --dry-run", current_path ).unwrap();
         process::log_output( &output );
 
         let output = process::start_sync( "cargo publish --dry-run --allow-dirty", &package_dir ).unwrap();
         process::log_output( &output );
 
-        let output = process::start_sync( &format!( "git checkout {:?}", &package_dir ), &current_path ).unwrap();
+        let output = process::start_sync( &format!( "git checkout {:?}", &package_dir ), current_path ).unwrap();
         process::log_output( &output );
       }
       else
       {
         let mut buf = String::new();
         write!( &mut buf, "git commit -am \"{} v{}\"", name, version ).unwrap();
-        let output = process::start_sync( &buf, &current_path ).unwrap();
+        let output = process::start_sync( &buf, current_path ).unwrap();
         process::log_output( &output );
 
-        let output = process::start_sync( "git push", &current_path ).unwrap();
+        let output = process::start_sync( "git push", current_path ).unwrap();
         process::log_output( &output );
 
         let output = process::start_sync( "cargo publish", &package_dir ).unwrap();
@@ -168,7 +143,7 @@ mod private
 
   //
 
-  pub fn toposort_local_packages( packages : &HashMap< String, &Package > ) -> Vec< String >
+  pub fn graph_build< 'a >( packages : &'a HashMap< String, &Package > ) -> Graph< &'a str, &'a str >
   {
     let mut deps = Graph::< &str, &str >::new();
     let _update_graph = packages.iter().map( | ( _name, package ) |
@@ -181,6 +156,7 @@ mod private
       {
         deps.add_node( &package.name )
       };
+
       for dep in &package.dependencies
       {
         if dep.path.is_some() && dep.kind != DependencyKind::Development
@@ -199,7 +175,16 @@ mod private
       }
     }).collect::< Vec< _ > >();
 
-    let sorted = toposort( &deps, None ).unwrap();
+    deps
+  }
+
+  //
+
+  pub fn toposort( packages : &HashMap< String, &Package > ) -> Vec< String >
+  {
+    let deps = graph_build( packages );
+
+    let sorted = pg_toposort( &deps, None ).unwrap();
     let names = sorted
     .iter()
     .rev()
@@ -214,7 +199,10 @@ mod private
 
 crate::mod_interface!
 {
-  protected(crate) use packages_filter;
-  protected(crate) use package_publish;
-  protected(crate) use toposort_local_packages;
+  protected(crate) use filter;
+  protected(crate) use local_path_get;
+  protected(crate) use publish;
+
+  protected(crate) use graph_build;
+  protected(crate) use toposort;
 }

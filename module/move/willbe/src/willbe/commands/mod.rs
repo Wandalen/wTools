@@ -1,10 +1,6 @@
 
 crate::mod_interface!
 {
-  /// Publish module.
-  prelude mod publish;
-  /// List packages.
-  prelude mod list;
   /// Init aggregator commands.
   prelude mod init;
 

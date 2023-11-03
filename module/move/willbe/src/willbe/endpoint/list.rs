@@ -1,9 +1,14 @@
 /// Internal namespace.
 mod private
 {
-  use crate::list::logic::*;
+  use crate::package::functions as package;
+  use crate::manifest;
 
-  use crate::tools::*;
+  use crate::tools::
+  {
+    manifest::Manifest,
+    files,
+  };
   use std::env;
   use wtools::error::Result;
   use cargo_metadata::
@@ -21,16 +26,16 @@ mod private
   /// List packages.
   ///
 
-  pub fn list(patterns : Vec< String > ) -> Result< () >
+  pub fn list( patterns : Vec< String > ) -> Result< () >
   {
     let current_path = env::current_dir().unwrap();
 
     let paths = files::find( current_path, patterns.as_slice() );
-    let paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s ) } else { None } );
+    let paths = paths.iter().filter( | s | s.ends_with( "Cargo.toml" ) );
 
     for path in paths
     {
-      let manifest = manifest_get( path );
+      let manifest = manifest::get( path )?;
       if manifest.package_is()
       {
         let local_is = manifest.local_is();
@@ -49,7 +54,7 @@ mod private
 
   pub fn workspace_list( path_to_workspace : PathBuf, root_crate : &str, list_type : &str ) -> Result< () >
   {
-    let mut manifest = manifest::Manifest::new();
+    let mut manifest = Manifest::new();
     let manifest_path = manifest.manifest_path_from_str( &path_to_workspace ).unwrap();
     let package_metadata = MetadataCommand::new()
     .manifest_path( &manifest_path )
@@ -57,12 +62,14 @@ mod private
     .exec()
     .unwrap();
 
-    let packages_map = packages_filter( &package_metadata );
-    let graph = graph_build( &packages_map );
+    let packages_map = package::filter( &package_metadata );
+    let graph = package::graph_build( &packages_map );
     let sorted = toposort( &graph, None ).unwrap();
 
-    if list_type == "tree" {
-      if root_crate.is_empty() {
+    if list_type == "tree"
+    {
+      if root_crate.is_empty()
+      {
         let mut names = vec![ sorted[ 0 ] ];
         for node in sorted.iter().skip( 1 )
         {

@@ -1,7 +1,7 @@
 /// Internal namespace.
 mod private
 {
-  use crate::publish::logic::*;
+  use crate::package::functions as package;
 
   use crate::tools::
   {
@@ -37,7 +37,7 @@ mod private
 
     for path in paths
     {
-      package_publish( &current_path, &path, dry )?;
+      package::publish( &current_path, &path, dry )?;
     }
 
     Ok( () )
@@ -54,17 +54,17 @@ mod private
     let mut manifest = manifest::Manifest::new();
     let manifest_path = manifest.manifest_path_from_str( &path_to_workspace ).unwrap();
     let package_metadata = MetadataCommand::new()
-    .manifest_path( &manifest_path )
-    .no_deps()
-    .exec()
-    .unwrap();
+      .manifest_path( &manifest_path )
+      .no_deps()
+      .exec()
+      .unwrap();
 
-    let packages_map = packages_filter( &package_metadata );
-    let sorted = toposort_local_packages( &packages_map );
+    let packages_map = package::filter( &package_metadata );
+    let sorted = package::toposort( &packages_map );
 
     for name in sorted.iter()
     {
-      package_publish( &current_path, &packages_map[ name ].manifest_path.clone().into(), dry )?;
+      package::publish( &current_path, &packages_map[ name ].manifest_path.clone().into(), dry )?;
     }
 
     Ok( () )
