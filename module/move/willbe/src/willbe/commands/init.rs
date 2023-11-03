@@ -94,12 +94,14 @@ pub( crate ) mod private
 
   pub fn executor_form() -> HashMap< String, Routine >
   {
+    use crate::commands::*;
+
     HashMap::from
     ([
-      ( "publish".to_owned(), Routine::new( crate::commands::publish::publish ) ),
-      ( "workspace.publish".to_owned(), Routine::new( crate::commands::publish::workspace_publish ) ),
-      ( "list".to_owned(), Routine::new( crate::commands::list::list ) ),
-      ( "workspace.list".to_owned(), Routine::new( crate::commands::list::workspace_list ) ),
+      ( "publish".to_owned(), Routine::new( publish::cli::publish ) ),
+      ( "workspace.publish".to_owned(), Routine::new( publish::cli::workspace_publish ) ),
+      ( "list".to_owned(), Routine::new( list::cli::list ) ),
+      ( "workspace.list".to_owned(), Routine::new( list::cli::workspace_list ) ),
     ])
   }
 }
