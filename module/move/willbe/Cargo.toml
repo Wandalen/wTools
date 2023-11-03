@@ -31,18 +31,17 @@ no_std = []
 use_alloc = []
 enabled = []
 
-[lib]
-name = "willbe"
-path = "src/willbe/willbe_lib.rs"
-
-[[bin]]
-name = "willbe"
-path = "src/willbe/willbe_entry.rs"
+# [lib]
+# name = "willbe"
+# path = "src/willbe/willbe_lib.rs"
+#
+# [[bin]]
+# name = "willbe"
+# path = "src/willbe/willbe_entry.rs"
 
 # [[test]]
 # name = "willbe_test"
 # path = "tests/willbe/willbe_tests.rs"
-
 
 # [[example]]
 # name = "willbe_trivial_sample"
