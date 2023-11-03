@@ -2,7 +2,7 @@
 mod private
 {
   use crate::package::functions as package;
-  use crate::manifest;
+  use crate::{ manifest, wtools };
 
   use crate::tools::
   {

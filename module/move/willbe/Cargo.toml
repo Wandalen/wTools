@@ -46,7 +46,9 @@ enabled = []
 # path = "examples/willbe_trivial_sample/src/main.rs"
 
 [dependencies]
-wtools = { workspace = true, features = [ "default" ] }
+# wtools = { workspace = true, features = [ "default" ] }
+mod_interface = { workspace = true, features = [ "default" ] }
+error_tools = { workspace = true, features = [ "default" ] }
 wca = { workspace = true, features = [ "default" ] }
 former = { workspace = true, features = [ "default" ] }
 anyhow = "~1.0"

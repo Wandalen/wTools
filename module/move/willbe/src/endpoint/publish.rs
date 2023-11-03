@@ -9,6 +9,7 @@ mod private
     manifest,
     path
   };
+  use crate::wtools;
   use wtools::error::Result;
   use std::
   {

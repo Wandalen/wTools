@@ -6,7 +6,7 @@ mod private
     http,
     process,
   };
-  use crate::manifest;
+  use crate::{ manifest, wtools };
   use crate::version::bump;
   use wtools::error::Result;
   use std::
