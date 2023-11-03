@@ -1,16 +1,20 @@
 pub( crate ) mod private
 {
-  use crate::{ ca::
-  {
-    Parser, GrammarConverter, ExecutorConverter,
-    Executor,
+  use crate::
+  { 
+    ca::
+    {
+      Parser, GrammarConverter, ExecutorConverter,
+      Executor,
 
-    ProgramParser,
+      ProgramParser,
 
-    Command,
-    Routine,
-    commands_aggregator::help::{ HelpGeneratorFn, HelpVariants, dot_command },
-  }, wtools };
+      Command,
+      Routine,
+      commands_aggregator::help::{ HelpGeneratorFn, HelpVariants, dot_command },
+    }, 
+    wtools 
+  };
 
   use std::collections::{ HashMap, HashSet };
   use wtools::error::Result;

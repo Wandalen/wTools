@@ -21,11 +21,12 @@ pub use mod_interface::mod_interface;
 ///micro wtools
 pub mod wtools;
 
+
 /// Requests parser.
 #[ cfg( not( feature = "no_std" ) ) ]
 pub mod string
 {
-  pub use crate::wtools::string::*;
+  pub use strs_tools::string::*;
 }
 
 /// Errors.
