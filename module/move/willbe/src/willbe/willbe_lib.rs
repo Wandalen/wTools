@@ -21,6 +21,22 @@
   #[ cfg( not( feature = "no_std" ) ) ]
   layer commands;
 
+  /// Commands library.
+  #[ cfg( not( feature = "no_std" ) ) ]
+  layer command;
+
+  /// Endpoints library.
+  #[ cfg( not( feature = "no_std" ) ) ]
+  layer endpoint;
+
+  /// Package library.
+  #[ cfg( not( feature = "no_std" ) ) ]
+  layer package;
+
+  /// Version library.
+  #[ cfg( not( feature = "no_std" ) ) ]
+  layer version;
+
   #[ cfg( not( feature = "no_std" ) ) ]
   prelude use ::std::env;
   protected( crate ) use ::wtools::prelude::*;

@@ -102,7 +102,15 @@ pub( crate ) mod private
       true
     }
   }
-  // qqq : for Dima : use mod_interface /* aaa : Dmytro : done */
+
+  pub fn get( path : impl Into< PathBuf > ) -> anyhow::Result< Manifest >
+  {
+    let mut manifest = Manifest::new();
+    manifest.manifest_path_from_str( path )?;
+    manifest.load()?;
+
+    Ok( manifest )
+  }
 }
 
 //
@@ -110,5 +118,6 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   prelude use Manifest;
+  protected( crate ) use get;
 }
 
