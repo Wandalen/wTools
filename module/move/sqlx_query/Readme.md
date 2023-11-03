@@ -12,11 +12,36 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 ```rust
 use sqlx_query::*;
 
-let user: User = query_as!( User, "SELECT * FROM users LIMIT 1" )
-.fetch_one( executor )
-.await?;
+let user : User = query_as!( User, "SELECT * FROM users LIMIT 1" )
+    .fetch_one( executor )
+    .await?;
 
-query!("DELETE FROM users WHERE id = $1", user.id).execute( executor ).await?;
+query!( "DELETE FROM users WHERE id = $1", user.id )
+    .execute( executor )
+    .await?;
+}
+
+// Expands to
+
+let user : User =
+  {
+    #[ cfg( feature = "sqlx_compiletime_checks" ) ]
+    let q = ::sqlx::query_as::< _, User >( "SELECT * FROM users LIMIT 1" );
+    #[ cfg( not( feature = "sqlx_compiletime_checks" ) ) ]
+    let q = ::sqlx::query_as!( User, "SELECT * FROM users LIMIT 1" );
+    q
+  }
+    .fetch_one( executor )
+    .await?;
+{
+  #[ cfg( feature = "sqlx_compiletime_checks" ) ]
+  let q = ::sqlx::query( "DELETE FROM users WHERE id = $1" ).bind( user.id );
+  #[ cfg( not( feature = "sqlx_compiletime_checks" ) ) ]
+  let q = ::sqlx::query!( "DELETE FROM users WHERE id = $1", user.id );
+  q
+}
+    .execute( executor )
+    .await?;
 ```
 
 ### To add to your project
