@@ -8,7 +8,7 @@ pub( crate ) mod private
 
     TryCast,
     Value,
-    ca::grammar::settings::ValueDescription,
+    ca::grammar::settings::ValueDescription, wtools,
   };
 
   use former::Former;

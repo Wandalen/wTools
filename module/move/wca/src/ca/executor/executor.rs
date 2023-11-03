@@ -6,7 +6,7 @@ pub( crate ) mod private
 
     Context,
     RuntimeState, Runtime,
-    ca::executor::runtime::_exec_command,
+    ca::executor::runtime::_exec_command, wtools,
   };
 
   use wtools::error::Result;

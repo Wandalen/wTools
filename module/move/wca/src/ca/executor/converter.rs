@@ -6,7 +6,7 @@ pub( crate ) mod private
 
     GrammarCommand, ExecutableCommand,
 
-    Routine,
+    Routine, wtools,
   };
 
   use former::Former;

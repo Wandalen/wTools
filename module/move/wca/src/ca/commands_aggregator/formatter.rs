@@ -1,7 +1,7 @@
 pub( crate ) mod private
 {
 
-  use crate::GrammarConverter;
+  use crate::{ GrammarConverter, wtools };
   use wtools::Itertools;
 
   /// -
