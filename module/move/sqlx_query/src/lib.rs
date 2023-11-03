@@ -12,7 +12,7 @@
 
 //!
 //! Expands to either sqlx function `query` or macro `query!` call
-//! depending on `compile_time_safety` has been enabled during the build.
+//! depending on `sqlx_compiletime_checks` has been enabled during the build.
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "Readme.md" ) ) ]
@@ -31,9 +31,9 @@ pub( crate ) mod private
     ) =>
     {
       {
-        #[ cfg( feature = "compile_time_safety" ) ]
+        #[ cfg( feature = "sqlx_compiletime_checks" ) ]
         let q = ::sqlx::query( $sql );
-        #[ cfg( not( feature = "compile_time_safety" ) ) ]
+        #[ cfg( not( feature = "sqlx_compiletime_checks" ) ) ]
         let q = ::sqlx::query!( $sql );
         q
       }
@@ -43,9 +43,9 @@ pub( crate ) mod private
     ) =>
     {
       {
-        #[ cfg( feature = "compile_time_safety" ) ]
+        #[ cfg( feature = "sqlx_compiletime_checks" ) ]
         let q = ::sqlx::query($sql)$(.bind($binds))+;
-        #[ cfg( not( feature = "compile_time_safety" ) ) ]
+        #[ cfg( not( feature = "sqlx_compiletime_checks" ) ) ]
         let q = ::sqlx::query!( $sql, $( $binds )+ );
         q
       }
@@ -63,9 +63,9 @@ pub( crate ) mod private
     ) =>
     {
       {
-        #[ cfg( feature = "compile_time_safety" ) ]
+        #[ cfg( feature = "sqlx_compiletime_checks" ) ]
         let q = ::sqlx::query_as::< _, $as >( $sql );
-        #[ cfg( not( feature = "compile_time_safety" ) ) ]
+        #[ cfg( not( feature = "sqlx_compiletime_checks" ) ) ]
         let q = ::sqlx::query_as!( $as, $sql );
         q
       }
@@ -75,9 +75,9 @@ pub( crate ) mod private
     ) =>
     {
       {
-        #[ cfg( feature = "compile_time_safety" ) ]
+        #[ cfg( feature = "sqlx_compiletime_checks" ) ]
         let q = ::sqlx::query_as::< _, $as >( $sql )$( .bind( $binds ) )+;
-        #[ cfg( not( feature = "compile_time_safety" ) ) ]
+        #[ cfg( not( feature = "sqlx_compiletime_checks" ) ) ]
         let q = ::sqlx::query_as!( $as, $sql, $( $binds )+ );
         q
       }

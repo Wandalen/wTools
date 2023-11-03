@@ -12,7 +12,7 @@ documentation = "https://docs.rs/sqlx_query"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/sqlx_query"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/sqlx_query"
 description = """
-Expands to either sqlx function `query` or macro `query!` call depending on `compile_time_safety` has been enabled during the build.
+Expands to either sqlx function `query` or macro `query!` call depending on `sqlx_compiletime_checks` has been enabled during the build.
 """
 
 [package.metadata.docs.rs]
