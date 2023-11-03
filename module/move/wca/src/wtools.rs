@@ -6,14 +6,13 @@ pub mod string
 
 /// werror
 pub mod error {
-    pub use werror::*;
+    pub use error_tools::*;
 }
 
-pub use werror::err;
+pub use error_tools::err;
 
-pub use werror::BasicError;
-
-#[allow(ambiguous_glob_reexports)]
-pub use mod_interface::*;
+pub use error_tools::BasicError;
 
 pub use iter_tools::*;
+
+pub use mod_interface::*;

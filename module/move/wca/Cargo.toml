@@ -43,7 +43,7 @@ on_get_help_default = [ "enabled" ]
 on_print_commands_default = [ "enabled" ]
 
 [dependencies]
-werror = { workspace = true, features = [ "default" ] }
+error_tools = { workspace = true, features = [ "default" ] }
 strs_tools = { workspace = true, features = [ "default" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
