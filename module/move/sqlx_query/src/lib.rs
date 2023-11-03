@@ -53,8 +53,8 @@ pub( crate ) mod private
   }
 
   ///
-  /// 
-  /// 
+  ///
+  ///
   #[ macro_export ]
   macro_rules! query_as
   {
@@ -84,7 +84,7 @@ pub( crate ) mod private
     };
   }
 
-
+  #[ allow( unused_imports ) ]
   pub use query;
 
 }

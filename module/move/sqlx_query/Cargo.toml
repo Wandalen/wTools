@@ -20,35 +20,12 @@ features = [ "full" ]
 all-features = false
 exclude = [ "/tests", "/examples", "-*" ]
 
-include = [
-  "/rust/impl/sqlx_query",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
-
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
 no_std = []
 use_alloc = []
 enabled = []
-
-default_handlers = [
-  "on_error_default",
-  "on_syntax_error_default",
-  "on_ambiguity_default",
-  "on_unknown_command_error_default",
-  "on_get_help_default",
-  "on_print_commands_default",
-]
-
-on_error_default = [ "enabled" ]
-on_syntax_error_default = [ "enabled" ]
-on_ambiguity_default = [ "enabled" ]
-on_unknown_command_error_default = [ "enabled" ]
-on_get_help_default = [ "enabled" ]
-on_print_commands_default = [ "enabled" ]
 
 [dependencies]
 
