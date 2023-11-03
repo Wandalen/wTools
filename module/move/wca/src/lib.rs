@@ -34,7 +34,7 @@ use wtools::{ BasicError };
 
 use wtools::meta::mod_interface;
 
-wtools::mod_interface!
+crate::mod_interface!
 {
   /// Commands aggregator library.
   #[ cfg( not( feature = "no_std" ) ) ]
