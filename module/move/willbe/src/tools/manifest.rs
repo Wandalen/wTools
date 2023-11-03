@@ -5,6 +5,7 @@ pub( crate ) mod private
   use std::env;
   use std::process;
   use std::path::PathBuf;
+  use anyhow::*;
 
   ///
   /// Hold manifest data.
@@ -37,7 +38,7 @@ pub( crate ) mod private
       let mut path_buf : PathBuf = path.into();
       if path_buf.is_relative()
       {
-        let mut current_dir = env::current_dir()?;
+        let mut current_dir = env::current_dir().context( "Try to take current dir for relative manifest" )?;
         current_dir.push( path_buf );
         path_buf = current_dir;
       }
@@ -47,22 +48,24 @@ pub( crate ) mod private
         path_buf.push( "Cargo.toml" );
       }
       self.manifest_path = path_buf.clone();
+
       Ok( path_buf )
     }
 
     /// Load manifest from path.
     pub fn load( &mut self ) -> anyhow::Result< () >
     {
-      let read = fs::read_to_string( &self.manifest_path )?;
-      let result = read.parse::< toml_edit::Document >()?;
+      let read = fs::read_to_string( &self.manifest_path ).context( "Read manifest" )?;
+      let result = read.parse::< toml_edit::Document >().context( "Pars manifest" )?;
       self.manifest_data = Some( result );
+
       Ok( () )
     }
 
     /// Store manifest.
     pub fn store( &self ) -> anyhow::Result< () >
     {
-      let data = self.manifest_data.as_ref().unwrap().to_string();
+      let data = self.manifest_data.as_ref().ok_or( anyhow!( "Manifest data wasn't loaded" ) )?.to_string();
       println!( "Saved manifest data to {:?}\n", &self.manifest_path );
       println!( "{}", &data );
 
@@ -74,13 +77,14 @@ pub( crate ) mod private
           process::exit( -1 );
         }
       );
+
       Ok( () )
     }
 
     /// Check that current manifest is manifest for a package.
     pub fn package_is( &self ) -> bool
     {
-      let data = self.manifest_data.as_ref().unwrap();
+      let data = self.manifest_data.as_ref().expect( "Manifest data wasn't loaded" );
       if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
       {
         return true;

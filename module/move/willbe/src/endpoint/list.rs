@@ -11,6 +11,7 @@ mod private
   };
   use std::env;
   use wtools::error::Result;
+  use anyhow::anyhow;
   use cargo_metadata::
   {
     MetadataCommand,
@@ -28,7 +29,7 @@ mod private
 
   pub fn list( patterns : Vec< String > ) -> Result< () >
   {
-    let current_path = env::current_dir().unwrap();
+    let current_path = env::current_dir()?;
 
     let paths = files::find( current_path, patterns.as_slice() );
     let paths = paths.iter().filter( | s | s.ends_with( "Cargo.toml" ) );
@@ -40,7 +41,7 @@ mod private
       {
         let local_is = manifest.local_is();
         let remote = if local_is { "local" } else { "remote" };
-        let data = manifest.manifest_data.as_ref().unwrap();
+        let data = manifest.manifest_data.as_ref().ok_or( anyhow!( "Failed to get manifest data" ) )?;
         println!( "{} - {:?}, {}", data[ "package" ][ "name" ].to_string().trim(), path.parent().unwrap(), remote );
       }
     }
@@ -55,16 +56,15 @@ mod private
   pub fn workspace_list( path_to_workspace : PathBuf, root_crate : &str, list_type : &str ) -> Result< () >
   {
     let mut manifest = Manifest::new();
-    let manifest_path = manifest.manifest_path_from_str( &path_to_workspace ).unwrap();
+    let manifest_path = manifest.manifest_path_from_str( &path_to_workspace )?;
     let package_metadata = MetadataCommand::new()
     .manifest_path( &manifest_path )
     .no_deps()
-    .exec()
-    .unwrap();
+    .exec()?;
 
     let packages_map = package::filter( &package_metadata );
     let graph = package::graph_build( &packages_map );
-    let sorted = toposort( &graph, None ).unwrap();
+    let sorted = toposort( &graph, None ).expect( "Failed to process toposort for packages" );
 
     if list_type == "tree"
     {

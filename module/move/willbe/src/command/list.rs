@@ -5,6 +5,7 @@ mod private
 
   use wca::{ Args, Props };
   use wtools::error::{ Result, err };
+  use anyhow::*;
 
   ///
   /// List packages.
@@ -14,7 +15,7 @@ mod private
   {
     let patterns = args.get_owned( 0 ).unwrap_or_default();
 
-    endpoint::list( patterns )
+    endpoint::list( patterns ).context( "package list command" )
   }
 
   ///
@@ -32,7 +33,7 @@ mod private
       return Err(err!( format!( "Unknown option 'type:{}'", list_type ) ) );
     }
 
-    endpoint::workspace_list( path_to_workspace, root_crate, list_type )
+    endpoint::workspace_list( path_to_workspace, root_crate, list_type ).context( "workspace list command" )
   }
 }
 

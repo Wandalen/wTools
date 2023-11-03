@@ -11,6 +11,7 @@ mod private
   };
   use crate::wtools;
   use wtools::error::Result;
+  use anyhow::*;
   use std::
   {
     env,
@@ -27,7 +28,7 @@ mod private
 
   pub fn publish( patterns : Vec< String >, dry : bool ) -> Result< () >
   {
-    let current_path = env::current_dir().unwrap();
+    let current_path = env::current_dir()?;
 
     let paths = files::find( &current_path, &patterns );
     let mut paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::< Vec< PathBuf > >();
@@ -38,7 +39,7 @@ mod private
 
     for path in paths
     {
-      package::publish( &current_path, &path, dry )?;
+      package::publish( &current_path, &path, dry ).context( "Publish list of packages" )?;
     }
 
     Ok( () )
@@ -50,22 +51,21 @@ mod private
 
   pub fn workspace_publish( path_to_workspace : PathBuf, dry : bool ) -> Result< () >
   {
-    let current_path = env::current_dir().unwrap();
+    let current_path = env::current_dir()?;
 
     let mut manifest = manifest::Manifest::new();
-    let manifest_path = manifest.manifest_path_from_str( &path_to_workspace ).unwrap();
+    let manifest_path = manifest.manifest_path_from_str( &path_to_workspace )?;
     let package_metadata = MetadataCommand::new()
-      .manifest_path( &manifest_path )
-      .no_deps()
-      .exec()
-      .unwrap();
+    .manifest_path( &manifest_path )
+    .no_deps()
+    .exec()?;
 
     let packages_map = package::filter( &package_metadata );
     let sorted = package::toposort( &packages_map );
 
     for name in sorted.iter()
     {
-      package::publish( &current_path, &packages_map[ name ].manifest_path.clone().into(), dry )?;
+      package::publish( &current_path, &packages_map[ name ].manifest_path.clone().into(), dry ).context( "Publish workspace" )?;
     }
 
     Ok( () )
