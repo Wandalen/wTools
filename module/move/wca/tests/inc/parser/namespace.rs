@@ -11,7 +11,7 @@ tests_impls!
     // namespace with only one command
     a_id!
     (
-      Ok( Namespace
+      Namespace
       {
         commands : vec![ RawCommand
         {
@@ -19,14 +19,14 @@ tests_impls!
           subjects : vec![],
           properties : HashMap::new(),
         }]
-      }),
-      parser.namespace( ".command" )
+      },
+      parser.namespace( ".command" ).unwrap()
     );
 
     // only one command in first namespace
     a_id!
     (
-      Ok( Namespace
+      Namespace
       {
         commands : vec![ RawCommand
         {
@@ -34,14 +34,14 @@ tests_impls!
           subjects : vec![],
           properties : HashMap::new(),
         }]
-      }),
-      parser.namespace( ".command .also .command2" )
+      },
+      parser.namespace( ".command .also .command2" ).unwrap()
     );
 
     // many commands in first namespace and some in another
     a_id!
     (
-      Ok( Namespace
+      Namespace
       {
         commands : vec!
         [
@@ -58,8 +58,8 @@ tests_impls!
             properties : HashMap::from_iter([ ( "prop".into(), "12".into() ) ]),
           }
         ]
-      }),
-      parser.namespace( ".command1 .command2 subject prop:12 .also .command3" )
+      },
+      parser.namespace( ".command1 .command2 subject prop:12 .also .command3" ).unwrap()
     );
   }
 
@@ -73,7 +73,7 @@ tests_impls!
 
     a_id!
     (
-      Ok( Namespace
+      Namespace
       {
         commands : vec!
         [
@@ -90,8 +90,8 @@ tests_impls!
             properties : HashMap::new(),
           }
         ]
-      }),
-      parser.namespace( "-command1 subject prop-value -command2 - -command3" )
+      },
+      parser.namespace( "-command1 subject prop-value -command2 - -command3" ).unwrap()
     );
   }
 }

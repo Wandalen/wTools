@@ -21,12 +21,7 @@ keywords = [ "fundamental", "general-purpose" ]
 features = [ "full" ]
 all-features = false
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/willbe",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
+
 
 [features]
 default = [ "enabled" ]
@@ -48,9 +43,6 @@ path = "src/willbe/willbe_entry.rs"
 # name = "willbe_test"
 # path = "tests/willbe/willbe_tests.rs"
 
-[[test]]
-name = "willbe_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "willbe_trivial_sample"
@@ -71,4 +63,3 @@ ptree = "~0.4"
 
 [dev-dependencies]
 test_tools = { workspace = true }
-

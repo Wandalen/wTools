@@ -18,12 +18,6 @@ keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
 features = [ "full" ]
 all-features = false
 exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/ca",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
 default = [ "enabled" ]
@@ -48,24 +42,11 @@ on_unknown_command_error_default = [ "enabled" ]
 on_get_help_default = [ "enabled" ]
 on_print_commands_default = [ "enabled" ]
 
-# [lib]
-# name = "wca"
-# path = "src/ca/wca_lib.rs"
-#
-# [[test]]
-# name = "wca_test"
-# path = "tests/ca/wca_tests.rs"
-#
-# [[test]]
-# name = "wca_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-#
-# [[example]]
-# name = "wca_trivial_sample"
-# path = "examples/wca_trivial_sample/src/main.rs"
-
 [dependencies]
-wtools = { workspace = true, features = [ "default" ] }
+error_tools = { workspace = true, features = [ "default" ] }
+strs_tools = { workspace = true, features = [ "default" ] }
+mod_interface = { workspace = true, features = [ "default" ] }
+iter_tools = { workspace = true, features = [ "default" ] }
 former = { workspace = true, features = [ "default" ] } # xxx : remove
 anymap = "0.12"
 log = "0.4"

@@ -1,14 +1,12 @@
 <!-- {{# generate.module_header{} #}} -->
 
 # Module :: fundamental_data_type
+
 [![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml) [![docs.rs](https://img.shields.io/docsrs/fundamental_data_type?color=e3e8f0&logo=docs.rs)](https://docs.rs/fundamental_data_type) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
 Fundamental data types and type constructors, like Single, Pair, Homopair, Many.
 
-In Rust, you often need to wrap a given type into a new one.
-The role of the orphan rules in particular is basically to prevent you from implementing external traits for external types.
-To overcome the restriction developer usually wrap the external type into a tuple introducing a new type.
-Type constructor does exactly that and auto-implement traits From, Into, Deref and few more for the constructed type.
+In Rust, it is often necessary to encapsulate an existing type within a new one. The orphan rules play a crucial role in preventing the implementation of external traits for external types. To overcome this restriction, developers commonly encapsulate the external type within a tuple, introducing a new type. The 'Type constructor' precisely accomplishes this and automatically implements traits such as From, Into, Deref, and several others for the constructed type.
 
 Besides type constructor for single element there are type constructors for `pair`, `homopair` and `many`:
 
@@ -75,7 +73,7 @@ dbg!( vec_of_i32_in_tuple );
 
 ```
 
-## Make.
+## Make
 
 Make is the variadic constructor. It's the unified interface of the arbitrary-length constructor.
 After implementing several traits `From_0`, `From_1` up to `MakeN` one can use make `from!` to construct instances.
@@ -94,9 +92,9 @@ After implementing several traits `From_0`, `From_1` up to `MakeN` one can use m
 }
 ```
 
-### Basic use-case :: single-line single.
+### Basic use-case :: single-line single
 
-To define your own single-use macro `types!`. The single-line definition looks like that.
+To define your own single-use macro `types!`. The single-line definition looks like that:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -143,9 +141,9 @@ let x = MySingle( 13 );
 println!( "x : {}", x.0 );
 ```
 
-### Basic use-case :: single with derives and attributes.
+### Basic use-case :: single with derives and attributes
 
-It's possible to define attributes as well as derives.
+It's possible to define attributes as well as derives:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -199,10 +197,10 @@ let x = MySingle( 13 );
 dbg!( x );
 ```
 
-### Basic use-case :: single with struct instead of macro.
+### Basic use-case :: single with struct instead of macro
 
 Sometimes it's sufficient to use a common type instead of defining a brand new one.
-You may use parameterized struct `Single< T >` instead of macro `types!` if that is the case.
+You may use parameterized struct `Single< T >` instead of macro `types!` if that is the case:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -212,9 +210,9 @@ let x = Single::< i32 >( 13 );
 dbg!( x );
 ```
 
-### Basic use-case :: single with a parametrized element.
+### Basic use-case :: single with a parametrized element
 
-Element of tuple could be parametrized.
+Element of tuple could be parametrized:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -264,9 +262,9 @@ impl< T : Copy > From< MySingle< T > > for std::sync::Arc< T >
 let x = MySingle( std::sync::Arc::new( 13 ) );
 ```
 
-### Basic use-case :: single with parametrized tuple.
+### Basic use-case :: single with parametrized tuple
 
-Instead of parametrizing the element, it's possible to define a parametrized tuple.
+Instead of parametrizing the element, it's possible to define a parametrized tuple:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -312,7 +310,7 @@ dbg!( 13 );
 
 ### Basic use-case :: single-line pair
 
-Sometimes you need to wrap more than a single element into a tupдe. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
+Sometimes you need to wrap more than a single element into a tuple. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -356,7 +354,7 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 
 ### Basic use-case :: pair with parameters
 
-Just like `single` `pair` may have parameters.
+Just like `single` - `pair` may have parameters:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -417,7 +415,7 @@ dbg!( x );
 
 ### Basic use-case :: single-line homopair
 
-If you need to wrap pair of elements with the same type use the type constructor `pair`. The same type constructor `pair` for both `pair` and `homopair`, difference in number of types in definition, `homopair` has only one, because both its element has the same type. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
+If you need to wrap pair of elements with the same type use the type constructor `pair`. The same type constructor `pair` for both `pair` and `homopair`, difference in number of types in definition, `homopair` has only one, because both its element has the same type. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -430,7 +428,7 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 // prints : x : ( 13, 31 )
 ```
 
-It gererates code:
+It generates code:
 
 ```rust
 use fundamental_data_type::prelude::*;
@@ -461,7 +459,7 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 
 ### Basic use-case :: homopair with parameters
 
-Unlike `heteropair` `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or array, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tuple, array, slice, scalar.
+Unlike `heteropair` and `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or array, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tuple, array, slice, scalar:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -485,7 +483,7 @@ dbg!( &clone_as_tuple );
 // prints : &clone_as_tuple = ( 13, 31 )
 ```
 
-It gererates code:
+It generates code:
 
 ```rust
 use fundamental_data_type::prelude::*;
@@ -630,7 +628,7 @@ dbg!( &clone_as_tuple );
 
 ### Basic use-case :: single-line many
 
-Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has essential traits implemented for it.
+Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has essential traits implemented for it:
 
 <!-- {{# generate.module_sample{} #}} -->
 

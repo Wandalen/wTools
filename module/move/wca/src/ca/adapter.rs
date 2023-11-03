@@ -120,7 +120,7 @@ pub( crate ) mod private
     {
       let name =
       {
-        use wtools::Itertools as _;
+        use crate::wtools::Itertools as _;
 
         let name = std::any::type_name::< F >();
         let name = name.split("::").last().unwrap();
@@ -256,9 +256,10 @@ pub( crate ) mod private
       let Builder { handler, command } = command.into_builder();
       let state = self.state.clone();
 
-      let closure = closure::closure!( | ( args, props ) | {
+      let closure = closure::closure!( | ( args, props ) |
+      {
         handler( state.clone(), args, props )
-        .map_err( | report | crate::BasicError::new( format!( "{report:?}" ) ) )
+        .map_err( | report | crate::BasicError::new( format!( "{report:?}" ) ).into() )
       });
 
       let handler = crate::Routine::new( closure );

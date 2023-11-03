@@ -38,6 +38,7 @@ tests_impls!
 
   fn with_context()
   {
+    use wtools::error::for_app::Error;
     // init parser
     let parser = Parser::former().form();
 
@@ -97,7 +98,7 @@ tests_impls!
         (
           | &x : &i32 |
           {
-            let y : i32 = args.get( 0 ).ok_or_else( || err!( "" ) )?.to_owned().into();
+            let y : i32 = args.get( 0 ).ok_or_else::< Error, _ >( || err!( "" ) ).unwrap().to_owned().into();
 
             if dbg!( x ) != y { Err( err!( "{} not eq {}", x, y ) ) } else { Ok( () ) }
           }
@@ -122,7 +123,6 @@ tests_impls!
   }
 }
 
-//
 
 tests_index!
 {

@@ -9,5 +9,7 @@
 use diagnostics_tools as TheModule;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
+#[ path="../../../../module/step/meta/src/module/terminal.rs" ]
+mod terminal;
 
 mod inc;

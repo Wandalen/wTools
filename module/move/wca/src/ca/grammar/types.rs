@@ -1,5 +1,7 @@
 pub( crate ) mod private
 {
+  use crate::wtools;
+
   use wtools::{ error::Result, err };
 
   /// Available types that can be converted to a `Value`
@@ -49,7 +51,7 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::{ GrammarCommand, Value };
-  /// # use wtools::HashMap;
+  /// # use std::collections::HashMap;
   /// let command = GrammarCommand
   /// {
   ///   phrase : "command".to_string(),

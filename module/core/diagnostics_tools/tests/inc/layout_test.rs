@@ -66,6 +66,7 @@ tests_impls!
 
 #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
 #[ test_tools::nightly ]
+#[ test ]
 fn cta_trybuild_tests()
 {
   let t = test_tools::compiletime::TestCases::new();
