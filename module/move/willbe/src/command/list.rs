@@ -1,7 +1,7 @@
 /// Internal namespace.
 mod private
 {
-  use crate::endpoint;
+  use crate::{ endpoint, wtools };
 
   use wca::{ Args, Props };
   use wtools::error::{ Result, err };

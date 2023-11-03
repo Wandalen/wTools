@@ -9,10 +9,14 @@
 //!
 //! Utility with set of tools for managing developer routines.
 //!
-
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-::wtools::meta::mod_interface!
+
+pub use mod_interface::mod_interface;
+/// Micro wtools
+pub mod wtools;
+
+wtools::meta::mod_interface!
 {
   /// The tools for operating over packages.
   #[ cfg( not( feature = "no_std" ) ) ]
@@ -39,5 +43,5 @@
 
   #[ cfg( not( feature = "no_std" ) ) ]
   prelude use ::std::env;
-  protected( crate ) use ::wtools::prelude::*;
+  // protected( crate ) use wtools::prelude::*;
 }
