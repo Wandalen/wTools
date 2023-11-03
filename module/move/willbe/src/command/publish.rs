@@ -6,6 +6,7 @@ mod private
   use crate::tools::bool::*;
   use wca::{ Args, Props };
   use wtools::error::Result;
+  use anyhow::*;
 
   ///
   /// Publish package.
@@ -16,7 +17,7 @@ mod private
     let patterns = args.get_owned( 0 ).unwrap_or_default();
     let dry = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::False ).into();
 
-    endpoint::publish( patterns, dry )
+    endpoint::publish( patterns, dry ).context( "publish command" )
   }
 
   ///
@@ -28,7 +29,7 @@ mod private
     let path_to_workspace = args.get_owned( 0 ).unwrap_or_default();
     let dry = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::False ).into();
 
-    endpoint::workspace_publish( path_to_workspace, dry )
+    endpoint::workspace_publish( path_to_workspace, dry ).context( "workspace publish command" )
   }
 }
 

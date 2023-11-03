@@ -6,6 +6,8 @@ pub( crate ) mod private
   use core::fmt::Write;
   use std::io::Read;
 
+  use anyhow::*;
+
   ///
   /// Get data of remote package.
   ///
@@ -19,7 +21,7 @@ pub( crate ) mod private
     let mut buf = String::new();
     write!( &mut buf, "https://static.crates.io/crates/{0}/{0}-{1}.crate", name, version )?;
 
-    let resp = agent.get( &buf[ .. ] ).call()?;
+    let resp = agent.get( &buf[ .. ] ).call().context( "Get data of remote package" )?;
 
     let len: usize = resp.header( "Content-Length" )
     .unwrap()
@@ -29,6 +31,7 @@ pub( crate ) mod private
     resp.into_reader()
     .take( u64::MAX )
     .read_to_end( &mut bytes )?;
+
     Ok( bytes )
   }
 }
