@@ -10,16 +10,13 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 <!-- {{# generate.module_sample{} #}} -->
 
 ```rust
-#[ cfg( feature = "use_std" ) ]
-{
 use sqlx_query::*;
 
 let user: User = query_as!( User, "SELECT * FROM users LIMIT 1" )
-    .fetch_one( executor )
-    .await?;
+.fetch_one( executor )
+.await?;
 
 query!("DELETE FROM users WHERE id = $1", user.id).execute( executor ).await?;
-}
 ```
 
 ### To add to your project
