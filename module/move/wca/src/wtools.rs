@@ -1,39 +1,38 @@
-/// internal module
-pub mod private {
+// /// internal module
+// pub mod private {
+//
+//   pub use iter_tools;
+//   /// strs tools
+//   pub mod string
+//   {
+//     pub use strs_tools::string::*;
+//   }
+//
+//   pub use error_tools::err;
+//
+//   // pub use error_tools::BasicError;
+//
+//   pub use mod_interface;
+//
+//   /// error tools
+//   pub mod error
+//   {
+//     pub use error_tools::*;
+//   }
+// }
 
-  pub use iter_tools;
-  /// strs tools
-  pub mod string
-  {
-    pub use strs_tools::string::*;
-  }
-
-  pub use error_tools::err;
-
-  // pub use error_tools::BasicError;
-
-  pub use mod_interface;
-
-  /// error tools
-  pub mod error 
-  {
-    pub use error_tools::*;
-  }
-}
-
-
-// crate::mod_interface! 
+// crate::mod_interface!
 // {
-//   exposed use iter_tools::Itertools;
-//   exposed use error::err;
-
-//   use string;
-//   use error;
-//   use mod_interface;
+//   exposed use ::iter_tools::Itertools;
+//   exposed use ::error::err;
+//
+//   use ::str_tools as string;
+//   use ::error_tools as error;
+//   use ::mod_interface;
 // }
 
 pub use iter_tools::*;
-  /// strs tools
+/// strs tools
 pub mod string
 {
   pub use strs_tools::string::*;
@@ -45,8 +44,8 @@ pub use error_tools::err;
 
 pub use mod_interface;
 
-  /// error tools
-pub mod error 
+/// error tools
+pub mod error
 {
   pub use error_tools::*;
 }

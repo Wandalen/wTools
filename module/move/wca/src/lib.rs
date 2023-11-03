@@ -18,7 +18,7 @@
 #![ allow( where_clauses_object_safety ) ] // https://github.com/chris-morgan/anymap/issues/31
 
 pub use mod_interface::mod_interface;
-///micro wtools
+/// Micro wtools
 pub mod wtools;
 
 
