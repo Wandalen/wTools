@@ -2,6 +2,6 @@
 use super::*;
 
 // xxx : uncomment
-// mod manual;
+mod manual;
 mod derive;
-// mod trybuild_test;
+mod trybuild_test;

@@ -10,7 +10,7 @@ use mod_interface as TheModule;
 use test_tools::exposed::*;
 
 /// Test module.
-#[ path = "mod.rs" ]
+#[ path = "derive.rs" ]
 pub mod test;
 
 fn main()

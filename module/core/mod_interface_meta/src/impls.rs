@@ -2,6 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
+  use crate::visibility::ClauseKind;
   use macro_tools::exposed::*;
   use std::collections::HashMap;
 
@@ -110,7 +111,7 @@ pub( crate ) mod private
   pub struct RecordContext< 'clauses_map >
   {
     pub has_debug : bool,
-    pub clauses_map : &'clauses_map mut HashMap< u32 , Vec< proc_macro2::TokenStream > >,
+    pub clauses_map : &'clauses_map mut HashMap< ClauseKind , Vec< proc_macro2::TokenStream > >,
   }
 
   ///
@@ -135,18 +136,47 @@ pub( crate ) mod private
 
     // xxx
 
-    let _path;
-    let path2 = if path.to_add_prefix()
-    {
-      _path = parse_qt!{ super::private::#path };
-      &_path
-    }
-    else
-    {
-      path
-    };
+    // let _path;
+    // let path2 = if path.prefix_is_needed()
+    // {
+    //   _path = parse_qt!{ super::private::#path };
+    //   &_path
+    // }
+    // else
+    // {
+    //   path
+    // };
 
-    // println!( "path2 : {}", qt!{ #path2 } );
+    let adjsuted_path = path.adjsuted_implicit_path()?;
+
+    // println!( "adjsuted_path : {}", qt!{ #adjsuted_path } );
+
+    if let Some( rename ) = &path.rename
+    {
+      let pure_path = path.pure_without_super_path()?;
+      c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
+      {
+        use #pure_path as #rename;
+      });
+    }
+
+    // use syn::UseTree::*;
+    // match &path.tree
+    // {
+    //   Rename( e ) =>
+    //   {
+    //     let rename = &e.rename;
+    //     c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
+    //     {
+    //       use #path as #rename;
+    //     });
+    //   },
+    //   Glob( _e ) =>
+    //   {
+    //     return Err( syn_err!( "Complex glob uses like `use module1::*` are not supported." ) );
+    //   },
+    //   _ => {}
+    // };
 
     // clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
     // clause!( clauses_map, VisProtected::Kind ).push( qt!
@@ -155,7 +185,7 @@ pub( crate ) mod private
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
-      pub use #path2::orphan::*;
+      pub use #adjsuted_path::orphan::*;
     });
 
     // clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
@@ -165,7 +195,7 @@ pub( crate ) mod private
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
-      pub use #path2::exposed::*;
+      pub use #adjsuted_path::exposed::*;
     });
 
     // clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
@@ -175,7 +205,7 @@ pub( crate ) mod private
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
-      pub use #path2::prelude::*;
+      pub use #adjsuted_path::prelude::*;
     });
 
     Ok( () )
@@ -209,14 +239,16 @@ pub( crate ) mod private
       ));
     }
 
-    let path2 = if path.to_add_prefix()
-    {
-      qt!{ super::private::#path }
-    }
-    else
-    {
-      qt!{ #path }
-    };
+    // let path2 = if path.prefix_is_needed()
+    // {
+    //   qt!{ super::private::#path }
+    // }
+    // else
+    // {
+    //   qt!{ #path }
+    // };
+
+    let adjsuted_path = path.adjsuted_explicit_path();
 
     let vis2 = if vis.restriction().is_some()
     {
@@ -234,7 +266,7 @@ pub( crate ) mod private
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
-      #vis2 use #path2;
+      #vis2 use #adjsuted_path;
     });
 
     Ok( () )
