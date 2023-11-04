@@ -50,7 +50,7 @@ only_for_terminal_module!
       t.compile_fail( "tests/inc/derive/use_bad_vis/trybuild.rs" );
       t.compile_fail( "tests/inc/derive/use_unknown_vis/trybuild.rs" );
 
-      // etc
+      // attr
 
       t.pass( "tests/inc/derive/attr_debug/trybuild.rs" );
 
