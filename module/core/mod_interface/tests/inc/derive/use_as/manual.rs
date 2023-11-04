@@ -1,7 +1,7 @@
 
 use super::*;
 
-mod layer_x;
+pub mod layer_x;
 
 // TheModule::mod_interface!
 // {

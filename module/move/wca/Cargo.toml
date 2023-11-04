@@ -47,7 +47,7 @@ error_tools = { workspace = true, features = [ "default" ] }
 strs_tools = { workspace = true, features = [ "default" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
-former = { workspace = true, features = [ "default" ] } # xxx : remove
+former = { workspace = true, features = [ "default" ] }
 anymap = "0.12"
 log = "0.4"
 nom = "7.1"

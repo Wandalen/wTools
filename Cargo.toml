@@ -169,12 +169,12 @@ version = "~0.2.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/core/mod_interface_meta"
 default-features = false
 

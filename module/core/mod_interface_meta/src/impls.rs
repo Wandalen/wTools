@@ -156,7 +156,7 @@ pub( crate ) mod private
       let pure_path = path.pure_without_super_path()?;
       c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
       {
-        use #pure_path as #rename;
+        pub use #pure_path as #rename;
       });
     }
 
