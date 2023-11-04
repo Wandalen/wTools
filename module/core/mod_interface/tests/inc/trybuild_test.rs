@@ -42,12 +42,17 @@ only_for_terminal_module!
       t.compile_fail( "tests/inc/derive/layer_bad_vis/trybuild.rs" );
       t.compile_fail( "tests/inc/derive/layer_unknown_vis/trybuild.rs" );
 
+      // use
+
+      t.pass( "tests/inc/derive/use_basic/trybuild.rs" );
+      t.pass( "tests/inc/derive/use_layer/trybuild.rs" );
+      t.pass( "tests/inc/derive/use_as/trybuild.rs" );
+      t.compile_fail( "tests/inc/derive/use_bad_vis/trybuild.rs" );
+      t.compile_fail( "tests/inc/derive/use_unknown_vis/trybuild.rs" );
+
       // etc
 
       t.pass( "tests/inc/derive/attr_debug/trybuild.rs" );
-      t.pass( "tests/inc/derive/use_non_layer/trybuild.rs" );
-      t.compile_fail( "tests/inc/derive/use_bad_vis/trybuild.rs" );
-      t.compile_fail( "tests/inc/derive/use_unknown_vis/trybuild.rs" );
 
       //
 

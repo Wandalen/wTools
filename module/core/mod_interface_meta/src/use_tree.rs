@@ -15,9 +15,14 @@ pub( crate ) mod private
   {
 
     /// Is adding prefix to the tree path required?
+    /// Add `super::private::` to path unless it starts from `::` or `super` or `crate`.
     pub fn to_add_prefix( &self ) -> bool
     {
       use syn::UseTree::*;
+
+      // println!( "to_add_prefix : {:?}", self );
+      // println!( "to_add_prefix : self.leading_colon : {:?}", self.leading_colon );
+
       if self.leading_colon.is_some()
       {
         return false;
@@ -27,6 +32,42 @@ pub( crate ) mod private
         Path( e ) => e.ident != "super" && e.ident != "crate",
         Rename( e ) => e.ident != "super" && e.ident != "crate",
         _ => true,
+      }
+    }
+
+    /// Get pure path, cutting off `as module2` from `use module1 as module2`.
+    pub fn pure_path( &self ) -> syn::punctuated::Punctuated< syn::Ident, Token![::] >
+    {
+      use syn::UseTree::*;
+
+      // let leading_colon = None;
+      match &self.tree
+      {
+        Name( e ) =>
+        {
+          let mut path = syn::punctuated::Punctuated::< syn::Ident, Token![::] >::new();
+          path.push( e.ident.clone() );
+          path
+        },
+        // Path( e ) => e.ident != "super" && e.ident != "crate",
+        // Rename( e ) => e.ident != "super" && e.ident != "crate",
+        _ => unimplemented!(),
+      }
+    }
+
+    /// Adjusted path.
+    /// Add `super::private::` to path unless it starts from `::` or `super` or `crate`.
+    pub fn adjsuted_path( &self ) -> syn::punctuated::Punctuated< syn::Ident, Token![::] >
+    {
+      // use syn::UseTree::*;
+      let pure_path = self.pure_path();
+      if self.to_add_prefix()
+      {
+        parse_qt!{ super::private::#pure_path }
+      }
+      else
+      {
+        pure_path
       }
     }
 
