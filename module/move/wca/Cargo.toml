@@ -1,6 +1,6 @@
 [package]
 name = "wca"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["Kostiantyn Wandalen <wandalen@obox.systems>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dmytro.kr@obox.systems>" ]
 license = "MIT"
@@ -52,7 +52,6 @@ anymap = "0.12"
 log = "0.4"
 nom = "7.1"
 closure = "0.3"
-# zzz : add to layers
 
 [dev-dependencies]
 test_tools = { workspace = true }

@@ -1,51 +1,17 @@
-// /// internal module
-// pub mod private {
-//
-//   pub use iter_tools;
-//   /// strs tools
-//   pub mod string
-//   {
-//     pub use strs_tools::string::*;
-//   }
-//
-//   pub use error_tools::err;
-//
-//   // pub use error_tools::BasicError;
-//
-//   pub use mod_interface;
-//
-//   /// error tools
-//   pub mod error
-//   {
-//     pub use error_tools::*;
-//   }
-// }
 
-// crate::mod_interface!
+crate::mod_interface!
+{
+  protected use ::iter_tools::Itertools;
+  protected use ::error_tools::err;
+
+  use ::strs_tools as string;
+  use ::error_tools as error;
+  use ::mod_interface;
+}
+
+// /// Requests parser.
+// #[ cfg( not( feature = "no_std" ) ) ]
+// pub mod string
 // {
-//   exposed use ::iter_tools::Itertools;
-//   exposed use ::error::err;
-//
-//   use ::str_tools as string;
-//   use ::error_tools as error;
-//   use ::mod_interface;
+//   pub use strs_tools::string::*;
 // }
-
-pub use iter_tools::*;
-/// strs tools
-pub mod string
-{
-  pub use strs_tools::string::*;
-}
-
-pub use error_tools::err;
-
-// pub use error_tools::BasicError;
-
-pub use mod_interface;
-
-/// error tools
-pub mod error
-{
-  pub use error_tools::*;
-}
