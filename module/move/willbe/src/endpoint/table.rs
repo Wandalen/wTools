@@ -1,20 +1,19 @@
 mod private 
 {
-  use core::fmt::Display;
   use std::{ fs, path::PathBuf };
-  use std::io::BufReader;
-  use std::io::BufWriter;
-  use std::io::BufRead;
+  use std::io::{ Read, self, Seek };
   use std::io::Write;
   use cargo_metadata::
   {
     MetadataCommand,
   };
-
-  use lazy_format::prelude::*;
-
-  use joinery::JoinableIterator;
-  use std::fs::File;
+  use wca::wtools::Itertools;
+  use convert_case::Case;
+  use convert_case::Casing;
+  use std::fs::
+  { 
+    OpenOptions
+  };
 
   // use wtools::error::Result;
   use anyhow::*;
@@ -25,8 +24,8 @@ mod private
     let workspace_root = get_workspace_root()?;
     let core_directories = get_directory_names( workspace_root.join( "module" ).join( "core" ) )?;
     let move_directories = get_directory_names( workspace_root.join( "module" ).join( "move" ) )?;
-    let core_table = prepare_table( core_directories );
-    let move_table = prepare_table( move_directories );
+    let core_table = prepare_table( core_directories , "core".into());
+    let move_table = prepare_table( move_directories, "move".into());
     write_tables_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ])?;
     Ok( () )
   }
@@ -50,18 +49,24 @@ mod private
     Ok( result )
   }
 
-  fn prepare_table( modules: Vec< String >) -> impl Display
+  fn prepare_table( modules: Vec< String >, dir: String ) -> String
   {
     let table = modules
     .into_iter()
     .map
     (
-      | module_name | 
+      | ref module_name | 
       {
-      lazy_format!( "| {} | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status]({})]({}) | [![rust-status]({})]({}) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) | [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/Wandalen/wTools) |", module_name, module_name, module_name, module_name, module_name, module_name, module_name, module_name )
+        let column_module = format!( "| [{}](./module/{}/{}) | ", &module_name, &dir, &module_name ); 
+        let column_stability = format!( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | " );
+        let column_master = format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch=master)](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml) |", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) );
+        let column_alpha = format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch=alpha)](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml) |", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) );
+        let column_docs = format!( "[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) |", &module_name );
+        let column_sample = format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/Wandalen/wTools) |", &module_name, &module_name );
+        format!("{} {} {} {} {} {}", column_module, column_stability, column_master, column_alpha, column_docs, column_sample )
       }
     )
-    .join_with( "\n" );
+    .join( "\n" );
     table
   }
 
@@ -71,32 +76,25 @@ mod private
     Ok( metadata.workspace_root.into_std_path_buf() )
   }
 
-  fn write_tables_into_file< T: Display >( file_path: PathBuf, params: Vec< T >) -> Result< () >
+  fn write_tables_into_file( file_path: PathBuf, params: Vec< String >) -> Result< () >
   {
-    let file = File::open( &file_path )?;
-    let temp_file_path = format!( "temp{}.md", uuid::Uuid::new_v4() );
-    let temp_file = File::create( &temp_file_path )?;
-    let mut reader = BufReader::new( file );
-    let mut writer = BufWriter::new( temp_file );
+    let header = "| Module | Stability | Master | Alpha | Docs | Online |\n|--------|-----------|--------|-------|:----:|:------:|\n";
+    let mut file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(&file_path)?;
 
-    let mut line = String::new();
-    let mut index = 0;
-    while reader.read_line( &mut line )? > 0 
-    {
-      if line.contains( "KEYWORD") 
-      {
-        line = line.replace( "KEYWORD", &format!( "| Module | Stability | Master | Alpha | Docs | Sample |\n|--------|-----------|--------|-------|:----:|:------:|\n{}", params[ index ] ) );
-        index+=1;
-      }
-      writer.write_all( line.as_bytes() )?;
-      line.clear();
-    }
-    drop( reader );
-    drop( writer );
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
 
-    std::fs::remove_file( &file_path )?;
-    std::fs::rename( &temp_file_path, &file_path )?;
-    Ok( () )
+    let updated_contents = contents.replace("KEYWORD1", &format!("{}{}", &header,params[0])).replace("KEYWORD2", &format!("{}{}", &header, params[1]));
+
+    file.set_len(0)?;  
+    file.seek(io::SeekFrom::Start(0))?;
+
+    file.write_all(updated_contents.as_bytes())?;
+
+    Ok(())
   }
 }
 crate::mod_interface!
