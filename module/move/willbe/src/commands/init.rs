@@ -79,12 +79,20 @@ pub( crate ) mod private
     .property( "root_module", "Log dependency tree for selected module. Works in combination with option 'type:tree'", Type::String, true )
     .form();
 
+    let create_table_command = wca::Command::former()
+    .hint( "Generate table for main Readme.md file" )
+    .long_hint( "Generate table for main Readme.md file" )
+    .phrase( "readme.create" )
+    .subject("A path to root directory", Type::String, true)
+    .form();
+
     vec!
     [
       publish_no_subj_command, publish_command,
       workspace_publish_no_subj_command, workspace_publish_command,
       list_no_subj_command, list_command,
       workspace_list_no_subj_command, workspace_list_command,
+      create_table_command,
     ]
   }
 
@@ -102,6 +110,7 @@ pub( crate ) mod private
       ( "workspace.publish".to_owned(), Routine::new( workspace_publish ) ),
       ( "list".to_owned(), Routine::new( list ) ),
       ( "workspace.list".to_owned(), Routine::new( workspace_list ) ),
+      ( "readme.create".to_owned(), Routine::new( generate_table ) ),
     ])
   }
 }
