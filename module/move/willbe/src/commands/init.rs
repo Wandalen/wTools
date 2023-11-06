@@ -43,7 +43,7 @@ pub( crate ) mod private
     .hint( "Publish packages from workspace on `crates.io`." )
     .long_hint( "Publish packages from workspace on `crates.io`." )
     .phrase( "workspace.publish" )
-    .subject( "A path to manifest path with workspace. Should be a directory with file `Cargo.toml`.", Type::String, true )
+    .subject( "A path to manifest path with workspace. Should be a directory with file `Cargo.toml`.", Type::Path, true )
     .property( "dry", "Run command dry. Default is false.", Type::String, true )
     .property( "verbosity", "Setup level of verbosity.", Type::String, true )
     .property_alias( "verbosity", "v" )
@@ -74,7 +74,8 @@ pub( crate ) mod private
     .hint( "List workspace packages." )
     .long_hint( "List workspace packages" )
     .phrase( "workspace.list" )
-    .subject( "A path to directory with workspace config. Should be a glob.", Type::List( Type::String.into(), ',' ), true )
+    .subject( "A path to directory with workspace config.", Type::Path, true )
+    // .subject( "A path to directory with workspace config. Should be a glob.", Type::List( Type::Path.into() ), true )
     .property( "type", "Output type. It can be topological sorted list of crates or list + set of independent crates trees.\n               Variants: topsort, tree. Default is \"tree\".", Type::String, true )
     .property( "root_module", "Log dependency tree for selected module. Works in combination with option 'type:tree'", Type::String, true )
     .form();
