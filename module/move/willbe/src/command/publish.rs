@@ -15,7 +15,7 @@ mod private
   pub fn publish( ( args, properties ) : ( Args, Props ) ) -> Result< () >
   {
     let patterns = args.get_owned( 0 ).unwrap_or_default();
-    let dry = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::False ).into();
+    let dry = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::True ).into();
 
     endpoint::publish( patterns, dry ).context( "publish command" )
   }
@@ -27,7 +27,7 @@ mod private
   pub fn workspace_publish( ( args, properties ) : ( Args, Props ) ) -> Result< () >
   {
     let path_to_workspace = args.get_owned( 0 ).unwrap_or_default();
-    let dry = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::False ).into();
+    let dry = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::True ).into();
 
     endpoint::workspace_publish( path_to_workspace, dry ).context( "workspace publish command" )
   }
