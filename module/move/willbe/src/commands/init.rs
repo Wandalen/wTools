@@ -59,7 +59,7 @@ pub( crate ) mod private
     .hint( "List packages." )
     .long_hint( "List packages" )
     .phrase( "list" )
-    .subject( "A path to directory with packages. Should be a glob.", Type::List( Type::String.into(), ',' ), true )
+    .subject( "A path to directories with packages.", Type::List( Type::Path.into(), ',' ), true )
     .form();
 
     let workspace_list_no_subj_command = wca::Command::former()

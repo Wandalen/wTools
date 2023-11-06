@@ -9,7 +9,6 @@ mod private
     manifest::Manifest,
     files,
   };
-  use std::env;
   use wtools::error::Result;
   use anyhow::anyhow;
   use cargo_metadata::
@@ -21,20 +20,18 @@ mod private
     algo::toposort,
     algo::has_path_connecting,
   };
-  use std::path::PathBuf;
+  use std::path::{ Path, PathBuf };
 
   ///
   /// List packages.
   ///
 
-  pub fn list( patterns : Vec< String > ) -> Result< () >
+  pub fn list( dir : &Path ) -> Result< () >
   {
-    let current_path = env::current_dir()?;
+    let current_path = dir.canonicalize()?;
+    let paths = files::find( current_path, &[ "**/Cargo.toml" ] );
 
-    let paths = files::find( current_path, patterns.as_slice() );
-    let paths = paths.iter().filter( | s | s.ends_with( "Cargo.toml" ) );
-
-    for path in paths
+    for path in &paths
     {
       let manifest = manifest::get( path )?;
       if manifest.package_is()
@@ -42,6 +39,7 @@ mod private
         let local_is = manifest.local_is();
         let remote = if local_is { "local" } else { "remote" };
         let data = manifest.manifest_data.as_ref().ok_or( anyhow!( "Failed to get manifest data" ) )?;
+
         println!( "{} - {:?}, {}", data[ "package" ][ "name" ].to_string().trim(), path.parent().unwrap(), remote );
       }
     }

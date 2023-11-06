@@ -2,7 +2,7 @@
 mod private
 {
   use std::path::PathBuf;
-  use crate::{endpoint, wtools };
+  use crate::{ endpoint, wtools };
 
   use wca::{ Args, Props };
   use wtools::error::{ Result, err };
@@ -14,17 +14,14 @@ mod private
 
   pub fn list( ( args, _ ) : ( Args, Props ) ) -> Result< () >
   {
-    let patterns : Vec< _ > = args.get_owned( 0 ).unwrap_or_default();
+    let patterns : Vec< PathBuf > = args.get_owned( 0 ).unwrap_or_default();
 
-    if patterns.is_empty()
+    for pattern in patterns
     {
-      endpoint::list( [ "./".into() ].into() )
+      endpoint::list( &pattern ).context( "package list command" )?;
     }
-    else
-    {
-      endpoint::list( patterns )
-    }
-    .context( "package list command" )
+
+    Ok( () )
   }
 
   ///
