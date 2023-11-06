@@ -13,9 +13,17 @@ mod private
 
   pub fn list( ( args, _ ) : ( Args, Props ) ) -> Result< () >
   {
-    let patterns = args.get_owned( 0 ).unwrap_or_default();
+    let patterns : Vec< _ > = args.get_owned( 0 ).unwrap_or_default();
 
-    endpoint::list( patterns ).context( "package list command" )
+    if patterns.is_empty()
+    {
+      endpoint::list( [ "./".into() ].into() )
+    }
+    else
+    {
+      endpoint::list( patterns )
+    }
+    .context( "package list command" )
   }
 
   ///
