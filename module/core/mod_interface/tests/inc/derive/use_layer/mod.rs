@@ -6,10 +6,12 @@ mod tools
   pub use super::super::*;
 }
 
-/// Private namespace of the module.
-mod private
-{
-}
+// /// Private namespace of the module.
+// mod private
+// {
+// }
+
+mod layer_a;
 
 /// SuperStruct1.
 #[ derive( Debug, PartialEq ) ]
@@ -21,7 +23,7 @@ TheModule::mod_interface!
 {
 
   /// layer_a
-  layer layer_a;
+  use super::layer_a;
 
 }
 

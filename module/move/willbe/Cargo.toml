@@ -29,24 +29,7 @@ no_std = []
 use_alloc = []
 enabled = []
 
-# [lib]
-# name = "willbe"
-# path = "src/willbe/willbe_lib.rs"
-#
-# [[bin]]
-# name = "willbe"
-# path = "src/willbe/willbe_entry.rs"
-
-# [[test]]
-# name = "willbe_test"
-# path = "tests/willbe/willbe_tests.rs"
-
-# [[example]]
-# name = "willbe_trivial_sample"
-# path = "examples/willbe_trivial_sample/src/main.rs"
-
 [dependencies]
-# wtools = { workspace = true, features = [ "default" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 error_tools = { workspace = true, features = [ "default" ] }
 wca = { workspace = true, features = [ "default" ] }

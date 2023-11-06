@@ -60,6 +60,8 @@ pub mod dependency
 #[ cfg( feature = "enabled" ) ]
 ::meta_tools::mod_interface!
 {
+  // #![ debug ]
+
   layer test;
 
   use super::exposed::meta;

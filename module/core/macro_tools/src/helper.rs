@@ -128,25 +128,45 @@ pub( crate ) mod private
 
     ( $msg:expr $(,)? ) =>
     {
-      syn::Error::new( proc_macro2::Span::call_site(), $msg )
+      $crate::syn::Error::new( proc_macro2::Span::call_site(), $msg )
     };
     ( _, $msg:expr $(,)? ) =>
     {
-      syn::Error::new( proc_macro2::Span::call_site(), $msg )
+      $crate::syn::Error::new( proc_macro2::Span::call_site(), $msg )
     };
     ( $span:expr, $msg:expr $(,)? ) =>
     {
-      syn::Error::new( syn::spanned::Spanned::span( &( $span ) ), $msg )
+      $crate::syn::Error::new( syn::spanned::Spanned::span( &( $span ) ), $msg )
     };
     ( $span:expr, $msg:expr, $( $arg:expr ),+ $(,)? ) =>
     {
-      syn::Error::new( syn::spanned::Spanned::span( &( $span ) ), format!( $msg, $( $arg ),+ ) )
+      $crate::syn::Error::new( syn::spanned::Spanned::span( &( $span ) ), format!( $msg, $( $arg ),+ ) )
     };
     ( _, $msg:expr, $( $arg:expr ),+ $(,)? ) =>
     {
-      syn::Error::new( proc_macro2::Span::call_site(), format!( $msg, $( $arg ),+ ) )
+      $crate::syn::Error::new( proc_macro2::Span::call_site(), format!( $msg, $( $arg ),+ ) )
     };
 
+  }
+
+  ///
+  /// Macro to generate syn error either with span of a syntax tree element or with default one `proc_macro2::Span::call_site()`.
+  ///
+  /// ### Basic use-case.
+  /// ```
+  /// # use macro_tools::*;
+  /// syn_err!( "No attr" );
+  /// # ()
+  /// ```
+  ///
+
+  #[ macro_export ]
+  macro_rules! return_syn_err
+  {
+    ( $( $Arg : tt )* ) =>
+    {
+      $crate::syn_err!( $( $Arg )* )
+    };
   }
 
   /// Check is the rightmost item of path refering a type is specified type.

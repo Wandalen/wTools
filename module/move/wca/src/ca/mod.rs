@@ -13,14 +13,14 @@ crate::mod_interface!
   /// User input
   layer input;
   /// The missing batteries of WCA.
-  layer adapter;
+  layer facade;
 
   orphan use super::parser;
   orphan use super::grammar;
   orphan use super::executor;
   orphan use super::commands_aggregator;
   orphan use super::input;
-  orphan use super::adapter;
+  orphan use super::facade;
   // xxx : change algorithm of how layer works to rid off this
 
 }

@@ -1,7 +1,8 @@
 pub( crate ) mod private
 {
+  use crate::*;
   use core::fmt;
-  use crate::ca::grammar;
+  use ca::grammar;
 
   /// Macro for parsing WCA arguments.
   ///
@@ -330,13 +331,14 @@ pub( crate ) mod private
       Builder::new( self )
     }
   }
+
 }
 
 crate::mod_interface!
 {
   exposed use cui;
-  exposed use IntoBuilder;
-  exposed use CommandExt;
   exposed use CommandBuilder;
   exposed use Property;
+  prelude use IntoBuilder;
+  prelude use CommandExt;
 }
