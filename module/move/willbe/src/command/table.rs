@@ -11,7 +11,7 @@ mod private
   ///
   pub fn generate_table( ( _, _ ) : ( Args, Props ) ) -> Result< () >
   {
-    endpoint::create_table().context( "TODO")
+    endpoint::create_table().context( "Fail to create table" )
   }
 }
 
