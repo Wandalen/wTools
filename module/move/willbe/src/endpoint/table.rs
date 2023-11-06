@@ -86,7 +86,7 @@ mod private
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
 
-    let updated_contents = contents.replace( "KEYWORD1", &format!( "{}{}", &header,params[0] ) ).replace( "KEYWORD2", &format!( "{}{}", &header, params[1] ) );
+    let updated_contents = contents.replace( "<!-- {{# generate.modules_index{core} #}} -->", &format!( "{}{}", &header,params[0] ) ).replace( "<!-- {{# generate.modules_index{move} #}} -->", &format!( "{}{}", &header, params[1] ) );
 
     file.set_len(0)?;  
     file.seek(io::SeekFrom::Start(0))?;
