@@ -15,7 +15,6 @@ mod private
     OpenOptions
   };
 
-  // use wtools::error::Result;
   use anyhow::*;
 
   /// Create table
@@ -24,9 +23,9 @@ mod private
     let workspace_root = get_workspace_root()?;
     let core_directories = get_directory_names( workspace_root.join( "module" ).join( "core" ) )?;
     let move_directories = get_directory_names( workspace_root.join( "module" ).join( "move" ) )?;
-    let core_table = prepare_table( core_directories , "core".into());
-    let move_table = prepare_table( move_directories, "move".into());
-    write_tables_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ])?;
+    let core_table = prepare_table( core_directories , "core".into() );
+    let move_table = prepare_table( move_directories, "move".into() );
+    write_tables_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ] )?;
     Ok( () )
   }
 
@@ -57,13 +56,13 @@ mod private
     (
       | ref module_name | 
       {
-        let column_module = format!( "| [{}](./module/{}/{}) | ", &module_name, &dir, &module_name ); 
-        let column_stability = format!( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | " );
-        let column_master = format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch=master)](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml) |", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) );
-        let column_alpha = format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch=alpha)](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml) |", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) );
-        let column_docs = format!( "[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) |", &module_name );
-        let column_sample = format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/Wandalen/wTools) |", &module_name, &module_name );
-        format!("{} {} {} {} {} {}", column_module, column_stability, column_master, column_alpha, column_docs, column_sample )
+        let column_module = format!( "[{}](./module/{}/{})", &module_name, &dir, &module_name ); 
+        let column_stability = format!( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)" );
+        let column_master = format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch=master)](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml)", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) );
+        let column_alpha = format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch=alpha)](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml)", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) );
+        let column_docs = format!( "[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{})", &module_name );
+        let column_sample = format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/Wandalen/wTools)", &module_name, &module_name );
+        format!( "| {} | {} | {} | {} | {} | {} |", column_module, column_stability, column_master, column_alpha, column_docs, column_sample )
       }
     )
     .join( "\n" );
@@ -87,7 +86,7 @@ mod private
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
 
-    let updated_contents = contents.replace("KEYWORD1", &format!("{}{}", &header,params[0])).replace("KEYWORD2", &format!("{}{}", &header, params[1]));
+    let updated_contents = contents.replace( "KEYWORD1", &format!( "{}{}", &header,params[0] ) ).replace( "KEYWORD2", &format!( "{}{}", &header, params[1] ) );
 
     file.set_len(0)?;  
     file.seek(io::SeekFrom::Start(0))?;
