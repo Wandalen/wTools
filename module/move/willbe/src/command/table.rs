@@ -9,11 +9,9 @@ mod private
   ///
   /// Generate table.
   ///
-  pub fn generate_table( ( args, _ ) : ( Args, Props ) ) -> Result< () >
+  pub fn generate_table( ( _, _ ) : ( Args, Props ) ) -> Result< () >
   {
-    let path = args.get_owned( 0 ).unwrap_or_default();
-    dbg!(&path);
-    endpoint::create_table( path ).context( "TODO")
+    endpoint::create_table().context( "TODO")
   }
 }
 

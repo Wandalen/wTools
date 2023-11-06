@@ -83,7 +83,6 @@ pub( crate ) mod private
     .hint( "Generate table for main Readme.md file" )
     .long_hint( "Generate table for main Readme.md file" )
     .phrase( "readme.create" )
-    .subject("A path to root directory", Type::String, true)
     .form();
 
     vec!
