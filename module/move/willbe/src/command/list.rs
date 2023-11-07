@@ -14,11 +14,27 @@ mod private
 
   pub fn list( ( args, _ ) : ( Args, Props ) ) -> Result< () >
   {
-    let patterns : Vec< PathBuf > = args.get_owned( 0 ).unwrap_or_default();
+    let mut patterns : Vec< PathBuf > = args.get_owned( 0 ).unwrap_or_default();
+    if patterns.is_empty()
+    {
+      patterns.push( "./".into() );
+    }
 
     for pattern in patterns
     {
-      endpoint::list( &pattern ).context( "package list command" )?;
+      match endpoint::list( &pattern )
+      {
+        core::result::Result::Ok( report ) =>
+        {
+          println!( "{report} ");
+        }
+        Err(( report, e )) =>
+        {
+          eprintln!( "{report}" );
+
+          return Err( e.context( "package list command" ) );
+        }
+      }
     }
 
     Ok( () )

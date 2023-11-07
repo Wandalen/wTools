@@ -1,12 +1,27 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use std::path::PathBuf;
   use std::process::
   {
     Command,
-    Output,
+    // Output,
     Stdio,
   };
+
+  /// Process command output.
+  #[ derive( Debug, Clone ) ]
+  pub struct CmdReport
+  {
+    /// Command that was executed.
+    pub command : String,
+    /// Path where command was executed.
+    pub path : PathBuf,
+    /// Stdout.
+    pub out : String,
+    /// Stderr.
+    pub err : String,
+  }
 
   ///
   /// Run external processes.
@@ -15,16 +30,18 @@ pub( crate ) mod private
   pub fn start_sync
   (
     exec_path : &str,
-    current_path : impl Into< std::path::PathBuf > + AsRef< std::path::Path >
-  ) -> anyhow::Result< Output >
+    current_path : impl Into< std::path::PathBuf >,
+  ) -> anyhow::Result< CmdReport >
   {
+    let current_path = current_path.into();
+
     let child = if cfg!( target_os = "windows" )
     {
       Command::new( "cmd" )
       .args( [ "/C", exec_path ] )
       .stdout( Stdio::piped() )
       .stderr( Stdio::piped() )
-      .current_dir( current_path )
+      .current_dir( &current_path )
       .spawn()
       .expect( "failed to spawn process" )
     }
@@ -34,7 +51,7 @@ pub( crate ) mod private
       .args( [ "-c", exec_path ] )
       .stdout( Stdio::piped() )
       .stderr( Stdio::piped() )
-      .current_dir( current_path )
+      .current_dir( &current_path )
       .spawn()
       .expect( "failed to spawn process" )
     };
@@ -42,25 +59,35 @@ pub( crate ) mod private
     .wait_with_output()
     .expect( "failed to wait on child" );
 
-    Ok( output )
+    let report = CmdReport
+    {
+      command : exec_path.to_string(),
+      path : current_path,
+      out : String::from_utf8( output.stdout ).expect( "Found invalid UTF-8" ),
+      err : String::from_utf8( output.stderr ).expect( "Found invalid UTF-8" ),
+    };
+
+    Ok( report )
   }
 
-  ///
-  /// Log output.
-  ///
-
-  pub fn log_output( output : &Output )
-  {
-    println!( "{}", std::str::from_utf8( &output.stdout ).expect( "Found invalid UTF-8" ) );
-    eprintln!( "{}", std::str::from_utf8( &output.stderr ).expect( "Found invalid UTF-8" ) );
-  }
+  // ///
+  // /// Log output.
+  // ///
+  //
+  // pub fn log_output( output : &Output )
+  // {
+  //   println!( "{}", std::str::from_utf8( &output.stdout ).expect( "Found invalid UTF-8" ) );
+  //   eprintln!( "{}", std::str::from_utf8( &output.stderr ).expect( "Found invalid UTF-8" ) );
+  // }
 }
 
 //
 
 crate::mod_interface!
 {
-  prelude use start_sync;
-  prelude use log_output;
+  protected( crate ) use CmdReport;
+  protected( crate ) use start_sync;
+
+  // protected( crate ) use log_output;
 }
 
