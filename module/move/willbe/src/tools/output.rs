@@ -49,6 +49,6 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use Output;
-  prelude use Action;
+  protected( crate ) use Output;
+  protected( crate ) use Action;
 }

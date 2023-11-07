@@ -16,5 +16,5 @@ crate::mod_interface!
   /// Work with paths.
   orphan mod path;
   /// Output structures.
-  orphan mod output;
+  protected( crate ) mod output;
 }
