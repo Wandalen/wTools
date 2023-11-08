@@ -82,7 +82,7 @@ pub( crate ) mod private
     let create_table_command = wca::Command::former()
     .hint( "Generate table for main Readme.md file" )
     .long_hint( "Generate table for main Readme.md file" )
-    .phrase( "readme.create" )
+    .phrase( "readme.health.table.generate" )
     .form();
 
     vec!
@@ -109,7 +109,7 @@ pub( crate ) mod private
       ( "workspace.publish".to_owned(), Routine::new( workspace_publish ) ),
       ( "list".to_owned(), Routine::new( list ) ),
       ( "workspace.list".to_owned(), Routine::new( workspace_list ) ),
-      ( "readme.create".to_owned(), Routine::new( generate_table ) ),
+      ( "readme.create".to_owned(), Routine::new( table_generate ) ),
     ])
   }
 }

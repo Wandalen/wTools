@@ -1,7 +1,16 @@
 mod private 
 {
-  use std::{ fs, path::PathBuf };
-  use std::io::{ Read, self, Seek };
+  use std::
+  { 
+    fs, 
+    path::PathBuf
+  };
+  use std::io::
+  { 
+    Read, 
+    self,
+     Seek 
+  };
   use std::io::Write;
   use cargo_metadata::
   {
@@ -18,18 +27,18 @@ mod private
   use anyhow::*;
 
   /// Create table
-  pub fn create_table() -> Result< () >
+  pub fn table_create() -> Result< () >
   {
-    let workspace_root = get_workspace_root()?;
-    let core_directories = get_directory_names( workspace_root.join( "module" ).join( "core" ) )?;
-    let move_directories = get_directory_names( workspace_root.join( "module" ).join( "move" ) )?;
-    let core_table = prepare_table( core_directories , "core".into() );
-    let move_table = prepare_table( move_directories, "move".into() );
-    write_tables_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ] )?;
+    let workspace_root = workspace_root()?;
+    let core_directories = directory_names( workspace_root.join( "module" ).join( "core" ) )?;
+    let move_directories = directory_names( workspace_root.join( "module" ).join( "move" ) )?;
+    let core_table = table_prepare( core_directories , "core".into() );
+    let move_table = table_prepare( move_directories, "move".into() );
+    tables_write_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ] )?;
     Ok( () )
   }
 
-  fn get_directory_names( path: PathBuf ) -> Result< Vec< String > >
+  fn directory_names( path: PathBuf ) -> Result< Vec< String > >
   {
     let mut result = vec![];
     let entries = fs::read_dir( path )?;
@@ -48,7 +57,7 @@ mod private
     Ok( result )
   }
 
-  fn prepare_table( modules: Vec< String >, dir: String ) -> String
+  fn table_prepare( modules: Vec< String >, dir: String ) -> String
   {
     let table = modules
     .into_iter()
@@ -69,35 +78,38 @@ mod private
     table
   }
 
-  fn get_workspace_root() -> Result< PathBuf >
+  fn workspace_root() -> Result< PathBuf >
   {
     let metadata = MetadataCommand::new().no_deps().exec()?;
     Ok( metadata.workspace_root.into_std_path_buf() )
   }
 
-  fn write_tables_into_file( file_path: PathBuf, params: Vec< String >) -> Result< () >
+  fn tables_write_into_file( file_path: PathBuf, params: Vec< String >) -> Result< () >
   {
     let header = "| Module | Stability | Master | Alpha | Docs | Online |\n|--------|-----------|--------|-------|:----:|:------:|\n";
     let mut file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(&file_path)?;
+        .read( true )
+        .write( true )
+        .open( &file_path )?;
 
     let mut contents = String::new();
-    file.read_to_string(&mut contents)?;
+    file.read_to_string( &mut contents )?;
 
-    let updated_contents = contents.replace( "<!-- {{# generate.modules_index{core} #}} -->", &format!( "{}{}", &header,params[0] ) ).replace( "<!-- {{# generate.modules_index{move} #}} -->", &format!( "{}{}", &header, params[1] ) );
+    let updated_contents = contents
+      .replace( "<!-- {{# generate.modules_index{core} #}} -->", &format!( "{}{}", &header,params[0] ) )
+      .replace( "<!-- {{# generate.modules_index{move} #}} -->", &format!( "{}{}", &header, params[1] ) );
 
-    file.set_len(0)?;  
-    file.seek(io::SeekFrom::Start(0))?;
+    file.set_len( 0 )?;  
+    file.seek( io::SeekFrom::Start( 0 ) )?;
 
-    file.write_all(updated_contents.as_bytes())?;
+    file.write_all( updated_contents.as_bytes() )?;
 
-    Ok(())
+    Ok( () )
   }
 }
+
 crate::mod_interface!
 {
   /// Create Table.
-  prelude use create_table;
+  prelude use table_create;
 }
