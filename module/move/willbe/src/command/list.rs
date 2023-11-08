@@ -14,11 +14,27 @@ mod private
 
   pub fn list( ( args, _ ) : ( Args, Props ) ) -> Result< () >
   {
-    let patterns : Vec< PathBuf > = args.get_owned( 0 ).unwrap_or_default();
+    let mut patterns : Vec< PathBuf > = args.get_owned( 0 ).unwrap_or_default();
+    if patterns.is_empty()
+    {
+      patterns.push( "./".into() );
+    }
 
     for pattern in patterns
     {
-      endpoint::list( &pattern ).context( "package list command" )?;
+      match endpoint::list( &pattern )
+      {
+        core::result::Result::Ok( report ) =>
+        {
+          println!( "{report} ");
+        }
+        Err(( report, e )) =>
+        {
+          eprintln!( "{report}" );
+
+          return Err( e.context( "package list command" ) );
+        }
+      }
     }
 
     Ok( () )
@@ -35,7 +51,8 @@ mod private
     let root_crate = properties.get_owned( "root_module" ).unwrap_or_default();
     let list_type = properties.get_owned( "type" ).unwrap_or( "tree" );
 
-    if list_type != "tree" && list_type != "topsort" {
+    if list_type != "tree" && list_type != "topsort"
+    {
       return Err( err!( format!( "Unknown option 'type:{}'", list_type ) ) );
     }
 

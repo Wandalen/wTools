@@ -1,15 +1,5 @@
 mod private
 {
-  use crate::tools::
-  {
-    digest,
-    http,
-    process,
-  };
-  use crate::{ manifest, wtools };
-  use crate::version::bump;
-  use wtools::error::Result;
-  use anyhow::*;
   use std::
   {
     fs,
@@ -29,6 +19,99 @@ mod private
     graph::Graph,
     algo::toposort as pg_toposort,
   };
+  use crate::tools::
+  {
+    manifest,
+    process,
+    digest,
+    http,
+  };
+  use crate::version::bump;
+  use anyhow::{ Context, Error, anyhow };
+
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct PublishReport
+  {
+    get_info : Option< process::CmdReport >,
+    commit : Option< process::CmdReport >,
+    push : Option< process::CmdReport >,
+    publish : Option< process::CmdReport >,
+  }
+
+  ///
+  /// Publish single packages.
+  ///
+
+  pub fn publish( current_path : &PathBuf, path : &PathBuf, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
+  {
+    let mut report = PublishReport::default();
+
+    let mut manifest = manifest::get( path ).map_err( | e | ( report.clone(), e ) )?;
+    if !manifest.package_is() || manifest.local_is()
+    {
+      return Ok( report );
+    }
+    let data = manifest.manifest_data.as_deref_mut().ok_or( anyhow!( "Failed to get manifest data" ) ).map_err( | e | ( report.clone(), e ) )?;
+
+    let mut package_dir = manifest.manifest_path.clone();
+    package_dir.pop();
+
+    let output = process::start_sync( "cargo package", &package_dir ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
+    report.get_info = Some( output );
+
+    let name = &data[ "package" ][ "name" ].clone();
+    let name = name.as_str().ok_or( anyhow!( "Package has no name" ) ).map_err( | e | ( report.clone(), e ) )?;
+    let version = &data[ "package" ][ "version" ].clone();
+    let version = version.as_str().ok_or( anyhow!( "Package has no version" ) ).map_err( | e | ( report.clone(), e ) )?;
+    let local_package_path = local_path_get( name, version, &manifest.manifest_path );
+
+    let local_package = fs::read( local_package_path ).context( "Read local package" ).map_err( | e | ( report.clone(), e ) )?;
+    let remote_package = http::retrieve_bytes( name, version ).unwrap_or_default();
+
+    let digest_of_local = digest::hash( &local_package );
+    let digest_of_remote = digest::hash( &remote_package );
+
+    if digest_of_local != digest_of_remote
+    {
+      data[ "package" ][ "version" ] = bump( version ).map_err( | e | ( report.clone(), e ) )?;
+      let version = &data[ "package" ][ "version" ].clone();
+      let version = version.as_str().ok_or( anyhow!( "Failed to take package version after bump" ) ).map_err( | e | ( report.clone(), e ) )?;
+      manifest.store().map_err( | e | ( report.clone(), e ) )?;
+
+      if dry
+      {
+        let buf = format!( "git commit --dry-run -am \"{} v{}\"", name, version );
+        let output = process::start_sync( &buf, current_path ).context( "Dry commit while publishing" ).map_err( | e | ( report.clone(), e ) )?;
+        report.commit = Some( output );
+
+        let output = process::start_sync( "git push --dry-run", current_path ).context( "Dry push while publishing" ).map_err( | e | ( report.clone(), e ) )?;
+        report.push = Some( output );
+
+        let output = process::start_sync( "cargo publish --dry-run --allow-dirty", &package_dir ).context( "Dry publish" ).map_err( | e | ( report.clone(), e ) )?;
+        report.publish = Some( output );
+
+        // ?
+        // let buf = format!( "git checkout {:?}", &package_dir );
+        // let output = process::start_sync( &buf, current_path )?;
+      }
+      else
+      {
+        let buf = format!( "git commit -am \"{} v{}\"", name, version );
+        let output = process::start_sync( &buf, current_path ).context( "Commit changes while publishing" ).map_err( | e | ( report.clone(), e ) )?;
+        report.commit = Some( output );
+
+        let output = process::start_sync( "git push", current_path ).context( "Push while publishing" ).map_err( | e | ( report.clone(), e ) )?;
+        report.push = Some( output );
+
+        let output = process::start_sync( "cargo publish", &package_dir ).context( "Publish" ).map_err( | e | ( report.clone(), e ) )?;
+        report.publish = Some( output );
+      }
+    }
+
+    Ok( report )
+  }
+
+  //
 
   pub fn filter( metadata : &Metadata ) -> HashMap< String, &Package >
   {
@@ -66,80 +149,6 @@ mod private
     local_package_path.push( buf );
 
     local_package_path
-  }
-
-  //
-
-  pub fn publish( current_path : &PathBuf, path : &PathBuf, dry : bool ) -> Result< () >
-  {
-    let mut manifest = manifest::get( path )?;
-    if !manifest.package_is() || manifest.local_is()
-    {
-      return Ok( () );
-    }
-    let data = manifest.manifest_data.as_deref_mut().ok_or( anyhow!( "Failed to get manifest data" ) )?;
-
-    let mut package_dir = manifest.manifest_path.clone();
-    package_dir.pop();
-
-    let output = process::start_sync( "cargo package", &package_dir ).context( "Take information about package" )?;
-    process::log_output( &output );
-
-    let name = &data[ "package" ][ "name" ].clone();
-    let name = name.as_str().ok_or( anyhow!( "Package has no name" ) )?;
-    let version = &data[ "package" ][ "version" ].clone();
-    let version = version.as_str().ok_or( anyhow!( "Package has no version" ) )?;
-    let local_package_path = local_path_get( name, version, &manifest.manifest_path );
-
-    let local_package = fs::read( local_package_path ).context( "Read local package" )?;
-    let remote_package = http::retrieve_bytes( name, version ).unwrap_or_default();
-
-    let digest_of_local = digest::hash( &local_package );
-    let digest_of_remote = digest::hash( &remote_package );
-
-    if digest_of_local != digest_of_remote
-    {
-      data[ "package" ][ "version" ] = bump( version )?;
-      let version = &data[ "package" ][ "version" ].clone();
-      let version = version.as_str().ok_or( anyhow!( "Failed to take package version after bump" ) )?;
-      manifest.store()?;
-
-      if dry
-      {
-        let mut buf = String::new();
-        write!( &mut buf, "git commit --dry-run -am \"{} v{}\"", name, version )?;
-        let output = process::start_sync( &buf, current_path ).context( "Dry commit while publishing" )?;
-        process::log_output( &output );
-
-        let output = process::start_sync( "git push --dry-run", current_path ).context( "Dry push while publishing" )?;
-        process::log_output( &output );
-
-        let output = process::start_sync( "cargo publish --dry-run --allow-dirty", &package_dir ).context( "Dry publish" )?;
-        process::log_output( &output );
-
-        let output = process::start_sync( &format!( "git checkout {:?}", &package_dir ), current_path )?;
-        process::log_output( &output );
-      }
-      else
-      {
-        let mut buf = String::new();
-        write!( &mut buf, "git commit -am \"{} v{}\"", name, version )?;
-        let output = process::start_sync( &buf, current_path ).context( "Commit changes while publishing" )?;
-        process::log_output( &output );
-
-        let output = process::start_sync( "git push", current_path ).context( "Push while publishing" )?;
-        process::log_output( &output );
-
-        let output = process::start_sync( "cargo publish", &package_dir ).context( "Publish" )?;
-        process::log_output( &output );
-      }
-    }
-    else
-    {
-      println!( "Package {} is up to date", name );
-    }
-
-    Ok( () )
   }
 
   //
@@ -200,10 +209,12 @@ mod private
 
 crate::mod_interface!
 {
-  protected(crate) use filter;
-  protected(crate) use local_path_get;
-  protected(crate) use publish;
+  protected( crate ) use PublishReport;
+  protected( crate ) use publish;
 
-  protected(crate) use graph_build;
-  protected(crate) use toposort;
+  protected( crate ) use filter;
+  protected( crate ) use local_path_get;
+
+  protected( crate ) use graph_build;
+  protected( crate ) use toposort;
 }

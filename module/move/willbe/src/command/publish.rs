@@ -2,7 +2,7 @@
 mod private
 {
   use std::path::PathBuf;
-  use crate::{endpoint, wtools };
+  use crate::{ endpoint, wtools };
 
   use crate::tools::bool::*;
   use wca::{ Args, Props };
@@ -18,7 +18,7 @@ mod private
     let patterns : Vec< _ > = args.get_owned( 0 ).unwrap_or_default();
     let dry = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::True ).into();
 
-    if patterns.is_empty()
+    match if patterns.is_empty()
     {
       endpoint::publish( [ "./".into() ].into(), dry )
     }
@@ -26,7 +26,20 @@ mod private
     {
       endpoint::publish( patterns, dry )
     }
-    .context( "publish command" )
+    {
+      core::result::Result::Ok( report ) =>
+      {
+        println!( "{report}" );
+
+        Ok( () )
+      }
+      Err(( report, e )) =>
+      {
+        eprintln!( "{report}" );
+
+        Err( e.context( "publish command" ) )
+      }
+    }
   }
 
   ///
@@ -38,7 +51,21 @@ mod private
     let path_to_workspace : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace publish command without subject" )? );
     let dry = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::True ).into();
 
-    endpoint::workspace_publish( path_to_workspace, dry ).context( "workspace publish command" )
+    match endpoint::workspace_publish( path_to_workspace, dry )
+    {
+      core::result::Result::Ok( report ) =>
+      {
+        println!( "{report}" );
+
+        Ok( () )
+      }
+      Err(( report, e )) =>
+      {
+        eprintln!( "{report}" );
+
+        Err( e.context( "workspace publish command" ) )
+      }
+    }
   }
 }
 
