@@ -109,7 +109,7 @@ pub( crate ) mod private
       ( "workspace.publish".to_owned(), Routine::new( workspace_publish ) ),
       ( "list".to_owned(), Routine::new( list ) ),
       ( "workspace.list".to_owned(), Routine::new( workspace_list ) ),
-      ( "readme.create".to_owned(), Routine::new( table_generate ) ),
+      ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
     ])
   }
 }

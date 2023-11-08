@@ -8,8 +8,8 @@ mod private
   use std::io::
   { 
     Read, 
-    self,
-     Seek 
+    Seek,
+    SeekFrom 
   };
   use std::io::Write;
   use cargo_metadata::
@@ -47,12 +47,12 @@ mod private
       let entry = entry?;
       let path = entry.path();
       if path.is_dir() 
+      {
+        if let Some( dir_name ) = path.file_name() 
         {
-          if let Some( dir_name ) = path.file_name() 
-          {
-            result.push( dir_name.to_string_lossy().into() );
-          }
+          result.push( dir_name.to_string_lossy().into() );
         }
+      }
     }
     Ok( result )
   }
@@ -87,22 +87,39 @@ mod private
   fn tables_write_into_file( file_path: PathBuf, params: Vec< String >) -> Result< () >
   {
     let header = "| Module | Stability | Master | Alpha | Docs | Online |\n|--------|-----------|--------|-------|:----:|:------:|\n";
-    let mut file = OpenOptions::new()
-        .read( true )
-        .write( true )
-        .open( &file_path )?;
 
-    let mut contents = String::new();
-    file.read_to_string( &mut contents )?;
+    let mut file = OpenOptions::new()
+      .read( true )
+      .write( true )
+      .open( &file_path )?;
+
+    let mut contents = Vec::new();
+    file.read_to_end( &mut contents )?;
+
+    let core_old_text = "<!-- {{# generate.modules_index{core} #}} -->";
+    let core_new_text = &format!( "{core_old_text}\n{}{}", &header, params[ 0 ] );
+    let move_old_text = "<!-- {{# generate.modules_index{move} #}} -->";
+    let move_new_text = &format!( "{move_old_text}\n{}{}", &header, params[ 0 ] );
 
     let updated_contents = contents
-      .replace( "<!-- {{# generate.modules_index{core} #}} -->", &format!( "{}{}", &header,params[0] ) )
-      .replace( "<!-- {{# generate.modules_index{move} #}} -->", &format!( "{}{}", &header, params[1] ) );
+      .windows(core_old_text.len())
+      .enumerate()
+      .fold(Vec::new(), | mut acc, ( index, window ) | 
+        {
+          match ( window == core_old_text.as_bytes(), window == move_old_text.as_bytes() ) 
+          {
+            ( true, false ) => acc.extend_from_slice( core_new_text.as_bytes() ), 
+            ( false, true ) => acc.extend_from_slice( move_new_text.as_bytes() ),
+            ( false, false ) | ( true, true ) => acc.push( contents[ index ] ), 
+          }
+          acc
+        }
+      );
 
-    file.set_len( 0 )?;  
-    file.seek( io::SeekFrom::Start( 0 ) )?;
+    file.set_len( 0 )?;
+    file.seek( SeekFrom::Start( 0 ) )?;
 
-    file.write_all( updated_contents.as_bytes() )?;
+    file.write_all( &updated_contents )?;
 
     Ok( () )
   }
