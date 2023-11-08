@@ -60,15 +60,15 @@ mod private
 
     for path in paths
     {
-        package::publish( &current_path, &path, dry )
-        .map_err
-        (
-          | ( current_report, e ) |
-          {
-            report.packages.push(( path, current_report.clone() ));
-            ( report.clone(), e.context( "Publish list of packages" ).into() )
-          }
-        )?;
+      package::publish( &current_path, &path, dry )
+      .map_err
+      (
+        | ( current_report, e ) |
+        {
+          report.packages.push(( path, current_report.clone() ));
+          ( report.clone(), e.context( "Publish list of packages" ).into() )
+        }
+      )?;
     }
 
     Ok( report )
@@ -102,10 +102,10 @@ mod private
       .map_err
       (
         | ( current_report, e ) |
-          {
-            report.packages.push(( path, current_report.clone() ));
-            ( report.clone(), e.context( "Publish list of packages" ).into() )
-          }
+        {
+          report.packages.push(( path, current_report.clone() ));
+          ( report.clone(), e.context( "Publish list of packages" ).into() )
+        }
       )?;
     }
 

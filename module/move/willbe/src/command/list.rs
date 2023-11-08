@@ -51,7 +51,8 @@ mod private
     let root_crate = properties.get_owned( "root_module" ).unwrap_or_default();
     let list_type = properties.get_owned( "type" ).unwrap_or( "tree" );
 
-    if list_type != "tree" && list_type != "topsort" {
+    if list_type != "tree" && list_type != "topsort"
+    {
       return Err( err!( format!( "Unknown option 'type:{}'", list_type ) ) );
     }
 
