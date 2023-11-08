@@ -4,4 +4,6 @@ crate::mod_interface!
   layer list;
   /// Publish packages.
   layer publish;
+  /// Generate tables 
+  layer table;
 }
