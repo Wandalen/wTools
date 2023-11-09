@@ -5,7 +5,6 @@ mod private
     fs,
     path::PathBuf,
     collections::HashMap,
-    fmt::Write,
   };
   use cargo_metadata::
   {
@@ -33,6 +32,7 @@ mod private
   pub struct PublishReport
   {
     get_info : Option< process::CmdReport >,
+    bump : Option< String >,
     commit : Option< process::CmdReport >,
     push : Option< process::CmdReport >,
     publish : Option< process::CmdReport >,
@@ -57,6 +57,10 @@ mod private
     package_dir.pop();
 
     let output = process::start_sync( "cargo package", &package_dir ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
+    if output.err.contains( "not yet committed")
+    {
+      return Err(( report, anyhow!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
+    }
     report.get_info = Some( output );
 
     let name = &data[ "package" ][ "name" ].clone();
@@ -73,37 +77,58 @@ mod private
 
     if digest_of_local != digest_of_remote
     {
-      data[ "package" ][ "version" ] = bump( version ).map_err( | e | ( report.clone(), e ) )?;
-      let version = &data[ "package" ][ "version" ].clone();
-      let version = version.as_str().ok_or( anyhow!( "Failed to take package version after bump" ) ).map_err( | e | ( report.clone(), e ) )?;
-      manifest.store().map_err( | e | ( report.clone(), e ) )?;
-
       if dry
       {
-        let buf = format!( "git commit --dry-run -am \"{} v{}\"", name, version );
-        let output = process::start_sync( &buf, current_path ).context( "Dry commit while publishing" ).map_err( | e | ( report.clone(), e ) )?;
+        report.bump = Some( "Bump package version".into() );
+
+        let buf = format!( "git commit -am {}-v{}", name, version );
+        let output = process::CmdReport
+        {
+          command : buf,
+          path : current_path.clone(),
+          out : String::new(),
+          err : String::new(),
+        };
         report.commit = Some( output );
 
-        let output = process::start_sync( "git push --dry-run", current_path ).context( "Dry push while publishing" ).map_err( | e | ( report.clone(), e ) )?;
+        let buf = "git push".to_string();
+        let output = process::CmdReport
+        {
+          command : buf,
+          path : current_path.clone(),
+          out : String::new(),
+          err : String::new(),
+        };
         report.push = Some( output );
 
-        let output = process::start_sync( "cargo publish --dry-run --allow-dirty", &package_dir ).context( "Dry publish" ).map_err( | e | ( report.clone(), e ) )?;
+        let buf = "cargo publish".to_string();
+        let output = process::CmdReport
+        {
+          command : buf,
+          path : package_dir.clone(),
+          out : String::new(),
+          err : String::new(),
+        };
         report.publish = Some( output );
-
-        // ?
-        // let buf = format!( "git checkout {:?}", &package_dir );
-        // let output = process::start_sync( &buf, current_path )?;
       }
       else
       {
-        let buf = format!( "git commit -am \"{} v{}\"", name, version );
+        data[ "package" ][ "version" ] = bump( version ).map_err( | e | ( report.clone(), e ) )?;
+        let version = &data[ "package" ][ "version" ].clone();
+        let version = version.as_str().ok_or( anyhow!( "Failed to take package version after bump" ) ).map_err( | e | ( report.clone(), e ) )?;
+        manifest.store().map_err( | e | ( report.clone(), e ) )?;
+        report.bump = Some( "Bump package version".into() );
+
+        let buf = format!( "git commit -am {}-v{}", name, version );
         let output = process::start_sync( &buf, current_path ).context( "Commit changes while publishing" ).map_err( | e | ( report.clone(), e ) )?;
         report.commit = Some( output );
 
-        let output = process::start_sync( "git push", current_path ).context( "Push while publishing" ).map_err( | e | ( report.clone(), e ) )?;
+        let buf = "git push".to_string();
+        let output = process::start_sync( &buf, current_path ).context( "Push while publishing" ).map_err( | e | ( report.clone(), e ) )?;
         report.push = Some( output );
 
-        let output = process::start_sync( "cargo publish", &package_dir ).context( "Publish" ).map_err( | e | ( report.clone(), e ) )?;
+        let buf = "cargo publish".to_string();
+        let output = process::start_sync( &buf, &package_dir ).context( "Publish" ).map_err( | e | ( report.clone(), e ) )?;
         report.publish = Some( output );
       }
     }
@@ -136,8 +161,7 @@ mod private
 
   pub fn local_path_get< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
   {
-    let mut buf = String::new();
-    write!( &mut buf, "package/{0}-{1}.crate", name, version ).unwrap();
+    let buf = format!( "package/{0}-{1}.crate", name, version );
 
     let package_metadata = MetadataCommand::new()
     .manifest_path( manifest_path )
