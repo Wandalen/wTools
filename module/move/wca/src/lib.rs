@@ -5,6 +5,7 @@
 #![ deny( rust_2021_compatibility ) ]
 #![ deny( missing_debug_implementations ) ]
 #![ deny( missing_docs ) ]
+#![ deny( unused_imports ) ]
 
 //!
 //! The tool to make CLI ( commands user interface ). It is able to aggregate external binary applications, as well as functions, which are written in your language.
