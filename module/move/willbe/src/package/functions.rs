@@ -7,6 +7,7 @@ mod private
     collections::HashMap,
     fmt::Write,
   };
+  use std::path::Path;
   use cargo_metadata::
   {
     DependencyKind,
@@ -28,6 +29,7 @@ mod private
   };
   use crate::version::bump;
   use anyhow::{ Context, Error, anyhow };
+  use crate::wtools;
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
@@ -109,6 +111,42 @@ mod private
     }
 
     Ok( report )
+  }
+
+  //
+
+  pub fn get_local_dependencies( manifest_path : &Path ) -> wtools::error::Result< Vec< PathBuf > >
+  {
+    let manifest_path = Path::new( manifest_path ).canonicalize()?;
+    #[ cfg( target_os = "windows" ) ] // canonicalization on windows adds `\\?\` prefix
+    let manifest_path =
+    {
+      const VERBATIM_PREFIX : &str = r#"\\?\"#;
+      let p = manifest_path.display().to_string();
+      if p.starts_with( VERBATIM_PREFIX )
+      {
+        PathBuf::from( &p[ VERBATIM_PREFIX.len() .. ] )
+      }
+      else
+      {
+        manifest_path
+      }
+    };
+    let package_metadata = MetadataCommand::new()
+    .manifest_path( &manifest_path )
+    .exec()?;
+
+    let deps = package_metadata
+    .packages
+    .into_iter()
+    .find( | package | package.manifest_path.as_std_path() == &manifest_path )
+    .unwrap()
+    .dependencies
+    .into_iter()
+    .filter_map( | dep | dep.path.map( | path | path.into_std_path_buf() ) )
+    .collect::< Vec< _ > >();
+
+    Ok( deps )
   }
 
   //
