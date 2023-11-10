@@ -25,8 +25,9 @@ mod private
     digest,
     http,
   };
-  use crate::version::bump;
+  use crate::version;
   use anyhow::{ Context, Error, anyhow };
+  use toml_edit::value;
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
@@ -51,7 +52,6 @@ mod private
     {
       return Ok( report );
     }
-    let data = manifest.manifest_data.as_deref_mut().ok_or( anyhow!( "Failed to get manifest data" ) ).map_err( | e | ( report.clone(), e ) )?;
 
     let mut package_dir = manifest.manifest_path.clone();
     package_dir.pop();
@@ -63,25 +63,20 @@ mod private
     }
     report.get_info = Some( output );
 
-    let name = &data[ "package" ][ "name" ].clone();
-    let name = name.as_str().ok_or( anyhow!( "Package has no name" ) ).map_err( | e | ( report.clone(), e ) )?;
-    let version = &data[ "package" ][ "version" ].clone();
-    let version = version.as_str().ok_or( anyhow!( "Package has no version" ) ).map_err( | e | ( report.clone(), e ) )?;
-    let local_package_path = local_path_get( name, version, &manifest.manifest_path );
-
-    let local_package = fs::read( local_package_path ).context( "Read local package" ).map_err( | e | ( report.clone(), e ) )?;
-    let remote_package = http::retrieve_bytes( name, version ).unwrap_or_default();
-
-    let digest_of_local = digest::hash( &local_package );
-    let digest_of_remote = digest::hash( &remote_package );
-
-    if digest_of_local != digest_of_remote
+    if !same_as_published( &manifest )
     {
+      let data = manifest.manifest_data.as_deref_mut().ok_or( anyhow!( "Failed to get manifest data" ) ).map_err( | e | ( report.clone(), e ) )?;
+      let name = &data[ "package" ][ "name" ].clone();
+      let name = name.as_str().expect( "Name should be valid UTF-8" );
+      let version = &data[ "package" ][ "version" ].clone();
+      let version = version.as_str().expect( "Version should be valid UTF-8" );
+      let new_version = version::bump( version ).map_err( | e | ( report.clone(), e ) )?;
+
       if dry
       {
         report.bump = Some( "Bump package version".into() );
 
-        let buf = format!( "git commit -am {}-v{}", name, version );
+        let buf = format!( "git commit -am {}-v{}", name, new_version );
         let output = process::CmdReport
         {
           command : buf,
@@ -113,13 +108,11 @@ mod private
       }
       else
       {
-        data[ "package" ][ "version" ] = bump( version ).map_err( | e | ( report.clone(), e ) )?;
-        let version = &data[ "package" ][ "version" ].clone();
-        let version = version.as_str().ok_or( anyhow!( "Failed to take package version after bump" ) ).map_err( | e | ( report.clone(), e ) )?;
+        data[ "package" ][ "version" ] = value( &new_version );
         manifest.store().map_err( | e | ( report.clone(), e ) )?;
         report.bump = Some( "Bump package version".into() );
 
-        let buf = format!( "git commit -am {}-v{}", name, version );
+        let buf = format!( "git commit -am {}-v{}", name, new_version );
         let output = process::start_sync( &buf, current_path ).context( "Commit changes while publishing" ).map_err( | e | ( report.clone(), e ) )?;
         report.commit = Some( output );
 
@@ -226,6 +219,26 @@ mod private
     .collect::< Vec< String > >();
 
     names
+  }
+
+  //
+
+  // Panic: manifest must be loaded
+  pub fn same_as_published( manifest : &manifest::Manifest ) -> bool
+  {
+    let data = manifest.manifest_data.as_ref().expect( "Manifest data doesn't loaded" );
+
+    let name = &data[ "package" ][ "name" ].clone();
+    let name = name.as_str().expect( "Name should be valid UTF-8" );
+    let version = &data[ "package" ][ "version" ].clone();
+    let version = version.as_str().expect( "Version should be valid UTF-8" );
+    let local_package_path = local_path_get( name, version, &manifest.manifest_path );
+
+    let local_package = fs::read( local_package_path ).expect( "Failed to read local package. Please, run `cargo package` before." );
+    // Is it ok? If there is any problem with the Internet, we will say that the packages are different.
+    let remote_package = http::retrieve_bytes( name, version ).unwrap_or_default();
+
+    digest::hash( &local_package ) == digest::hash( &remote_package )
   }
 }
 
