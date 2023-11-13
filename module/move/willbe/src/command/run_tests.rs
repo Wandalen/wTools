@@ -1,30 +1,38 @@
 /// Internal namespace.
 mod private {
-  use crate::wtools;
+  use std::path::PathBuf;
 
-	use wca::{ Args, Props };
+  use crate::{ wtools, endpoint };
+
+	use anyhow::Ok;
+  use wca::{ Args, Props };
   use wtools::error::Result;
 
 	/// run all tests in all crates
-	pub fn run_tests( ( _, _ ) : ( Args, Props ) ) -> Result< () >
+	pub fn run_tests( ( args, _ ) : ( Args, Props ) ) -> Result< () >
 	{
-		let output = std::process::Command::new( "cargo" )
-		.arg( "test" )
-		.output()
-		.expect( "Error while running tests" );
+		let mut patterns : Vec< PathBuf > = args.get_owned( 0 ).unwrap_or_default();
+		if patterns.is_empty()
+    {
+      patterns.push( "./".into() );
+    }
 
-		if output.status.success() 
-		{
-			println!( "All tests were successfully executed" );
-		} 
-		else 
-		{
-			eprintln!( "Error while executing tests" );
+		for pattern in patterns
+    {
+      match endpoint::run_tests( &pattern )
+      {
+        core::result::Result::Ok( report ) =>
+        {
+          println!( "{report:#?} ");
+        }
+        Err( e ) =>
+        {
+          return Err( e.context( "package test command" ) );
+        }
+      }
+    }
 
-			eprintln!( "stderr: {:?}", String::from_utf8_lossy( &output.stderr ) );
-		}
-
-		Ok( () )
+	 	Ok(())
 	}
 }
 

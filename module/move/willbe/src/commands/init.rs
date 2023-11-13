@@ -86,10 +86,17 @@ pub( crate ) mod private
     .phrase( "readme.health.table.generate" )
     .form();
 
+    let run_tests_no_subj_command = wca::Command::former()
+    .hint("Run all tests in all crates")
+    .long_hint( "Run all tests in all crates" )
+    .phrase("tests.run")
+    .form();
+
     let run_tests_command = wca::Command::former()
     .hint("Run all tests in all crates")
     .long_hint( "Run all tests in all crates" )
     .phrase("tests.run")
+    .subject( "A path to directories with packages.", Type::List( Type::Path.into(), ',' ), true )
     .form();
 
     vec!
@@ -99,7 +106,7 @@ pub( crate ) mod private
       list_no_subj_command, list_command,
       workspace_list_no_subj_command, workspace_list_command,
       create_table_command,
-      run_tests_command
+      run_tests_no_subj_command, run_tests_command
     ]
   }
 
