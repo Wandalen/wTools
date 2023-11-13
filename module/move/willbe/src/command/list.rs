@@ -9,42 +9,10 @@ mod private
   use anyhow::*;
 
   ///
-  /// List packages.
-  ///
-
-  pub fn list( ( args, _ ) : ( Args, Props ) ) -> Result< () >
-  {
-    let mut patterns : Vec< PathBuf > = args.get_owned( 0 ).unwrap_or_default();
-    if patterns.is_empty()
-    {
-      patterns.push( "./".into() );
-    }
-
-    for pattern in patterns
-    {
-      match endpoint::list( &pattern )
-      {
-        core::result::Result::Ok( report ) =>
-        {
-          println!( "{report} ");
-        }
-        Err(( report, e )) =>
-        {
-          eprintln!( "{report}" );
-
-          return Err( e.context( "package list command" ) );
-        }
-      }
-    }
-
-    Ok( () )
-  }
-
-  ///
   /// List workspace packages.
   ///
 
-  pub fn workspace_list( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn list( ( args, properties ) : ( Args, Props ) ) -> Result< () >
   {
     let path_to_workspace : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
 
@@ -78,8 +46,6 @@ mod private
 
 crate::mod_interface!
 {
-  /// List packages.
-  prelude use list;
   /// List workspace packages.
-  prelude use workspace_list;
+  prelude use list;
 }
