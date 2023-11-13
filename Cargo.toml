@@ -7,7 +7,6 @@ members = [
   "module/move/*",
   # "module/step/*",
   # "module/core/*/examples/*",
-   "module/willbe_asset/*",
 ]
 exclude = [
   "-*",
