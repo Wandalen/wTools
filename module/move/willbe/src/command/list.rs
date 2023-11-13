@@ -56,7 +56,21 @@ mod private
       return Err( err!( format!( "Unknown option 'type:{}'", list_type ) ) );
     }
 
-    endpoint::workspace_list( path_to_workspace, root_crate, list_type ).context( "workspace list command" )
+    match endpoint::workspace_list( path_to_workspace, root_crate, list_type )
+    {
+      core::result::Result::Ok( report ) =>
+        {
+          println!( "{report} ");
+        }
+      Err(( report, e )) =>
+        {
+          eprintln!( "{report}" );
+
+          return Err( e.context( "workspace list command" ) );
+        }
+    }
+
+    Ok( () )
   }
 }
 
