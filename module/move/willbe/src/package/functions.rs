@@ -63,7 +63,7 @@ mod private
     }
     report.get_info = Some( output );
 
-    if !same_as_published( &manifest )
+    if !publish_need( &manifest )
     {
       let data = manifest.manifest_data.as_deref_mut().ok_or( anyhow!( "Failed to get manifest data" ) ).map_err( | e | ( report.clone(), e ) )?;
       let name = &data[ "package" ][ "name" ].clone();
@@ -224,7 +224,7 @@ mod private
   //
 
   // Panic: manifest must be loaded
-  pub fn same_as_published( manifest : &manifest::Manifest ) -> bool
+  pub fn publish_need( manifest : &manifest::Manifest ) -> bool
   {
     let data = manifest.manifest_data.as_ref().expect( "Manifest data doesn't loaded" );
 
