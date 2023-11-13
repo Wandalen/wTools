@@ -59,15 +59,15 @@ mod private
     match endpoint::workspace_list( path_to_workspace, root_crate, list_type )
     {
       core::result::Result::Ok( report ) =>
-        {
-          println!( "{report} ");
-        }
+      {
+        println!( "{report} ");
+      }
       Err(( report, e )) =>
-        {
-          eprintln!( "{report}" );
+      {
+        eprintln!( "{report}" );
 
-          return Err( e.context( "workspace list command" ) );
-        }
+        return Err( e.context( "workspace list command" ) );
+      }
     }
 
     Ok( () )
