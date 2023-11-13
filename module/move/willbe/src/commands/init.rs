@@ -86,6 +86,12 @@ pub( crate ) mod private
     .phrase( "readme.health.table.generate" )
     .form();
 
+    let run_tests_command = wca::Command::former()
+    .hint("Run all tests in all crates")
+    .long_hint( "Run all tests in all crates" )
+    .phrase("tests.run")
+    .form();
+
     vec!
     [
       publish_no_subj_command, publish_command,
@@ -93,6 +99,7 @@ pub( crate ) mod private
       list_no_subj_command, list_command,
       workspace_list_no_subj_command, workspace_list_command,
       create_table_command,
+      run_tests_command
     ]
   }
 
@@ -111,6 +118,7 @@ pub( crate ) mod private
       ( "list".to_owned(), Routine::new( list ) ),
       ( "workspace.list".to_owned(), Routine::new( workspace_list ) ),
       ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
+      ( "tests.run".to_owned(), Routine::new( run_tests ) ),
     ])
   }
 }

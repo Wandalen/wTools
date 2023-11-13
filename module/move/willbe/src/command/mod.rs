@@ -6,4 +6,6 @@ crate::mod_interface!
   layer publish;
   /// Generate tables 
   layer table;
+  /// Run all tests
+  layer run_tests;
 }
