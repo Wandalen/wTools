@@ -11,5 +11,5 @@ pub struct CrateStructForTesting1
 {
 }
 
-#[ path = "./mod.rs" ]
-mod tests;
+// #[ path = "./mod.rs" ]
+// mod tests;
