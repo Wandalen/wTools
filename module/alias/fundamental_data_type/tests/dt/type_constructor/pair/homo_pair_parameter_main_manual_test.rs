@@ -113,13 +113,13 @@ where
   #[ inline ]
   fn from_0() -> Self { Self( Default::default(), Default::default() ) }
 }
-impl< T1 > TheModule::From_1< T1 > for Pair< T1 >
-where
-  T1 : Clone,
-{
-  #[ inline ]
-  fn from_1( _0 : T1 ) -> Self { Self( _0.clone(), _0.clone() ) }
-}
+// impl< T1 > TheModule::From_1< T1 > for Pair< T1 >
+// where
+//   T1 : Clone,
+// {
+//   #[ inline ]
+//   fn from_1( _0 : T1 ) -> Self { Self( _0.clone(), _0.clone() ) }
+// }
 impl< T1 > TheModule::From_2< T1, T1 > for Pair< T1 >
 {
   #[ inline ]
