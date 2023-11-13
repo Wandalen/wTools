@@ -24,7 +24,14 @@ mod private
     OpenOptions
   };
 
-  use anyhow::*;
+  use anyhow::
+    {
+      Result,
+      anyhow,
+    };
+  
+  #[cfg(not( target_os = "windows"))]  
+  use crate::files::private::find_with_depth_zero;
 
   /// Create table
   pub fn table_create() -> Result< () >
@@ -34,7 +41,8 @@ mod private
     let move_directories = directory_names( workspace_root.join( "module" ).join( "move" ) )?;
     let core_table = table_prepare( core_directories , "core".into() );
     let move_table = table_prepare( move_directories, "move".into() );
-    tables_write_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ] )?;
+    let read_me_path = readme_path(workspace_root).ok_or( anyhow!("Cannot found README.md file") )?;
+    tables_write_into_file( read_me_path, vec![ core_table, move_table ] )?;
     Ok( () )
   }
 
@@ -123,7 +131,62 @@ mod private
 
     Ok( () )
   }
+
+  fn readme_path( dir_path: PathBuf ) -> Option< PathBuf >
+  {
+    if let Ok( Some( path ) ) = find_readme_in_dir(dir_path.join( "./.github" ))
+    {
+      return Some( path );
+    } 
+    else if let Ok( Some( path ) ) = find_readme_in_dir( dir_path.clone() )
+    {
+      return Some( path );
+    }
+    else if let Ok( Some( path ) ) = find_readme_in_dir( dir_path.join( "./docs" ) ) 
+    {
+        return Some( path );
+    }   
+    None
+  }
+  
+
+  #[cfg( target_os = "windows" ) ]
+  fn find_readme_in_dir( dir_path: PathBuf ) -> Result< Option< PathBuf > >
+  {
+    let entries = fs::read_dir( dir_path )?;
+    for entry in entries 
+    {
+      let entry = entry?;
+      let path = entry.path();
+      dbg!(&path);
+      if path.is_file() && validate_file_name( &path ) 
+      {
+        return Ok( Some( path ) );
+      }
+    }
+    Ok( None )
+  }
+
+  #[cfg( target_os = "windows" ) ]
+  fn validate_file_name( path: &PathBuf ) -> bool 
+  {
+    path
+    .file_name().unwrap_or_default()
+    .to_string_lossy()
+    .to_lowercase()
+    .eq( "readme.md" )
+  }
+
+  #[cfg(not( target_os = "windows"))]
+  fn find_readme_in_dir( path: PathBuf ) -> Result< Option< PathBuf > > {
+    Ok( find_with_depth_zero( path, &[ "(R|r)(E|e)(A|a)(D|d)(M|m)(E|e).md" ] ).into_iter().max() )
+  }
+
+
+
 }
+
+
 
 crate::mod_interface!
 {

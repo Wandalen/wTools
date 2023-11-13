@@ -23,6 +23,23 @@ pub( crate ) mod private
     .map( | s | s.path().to_path_buf() )
     .collect::< Vec< PathBuf > >()
   }
+
+  pub fn find_with_depth_zero< P, S >( base_dir : P, patterns : &[ S ] ) -> Vec< PathBuf>
+  where
+    P: AsRef< Path >,
+    S: AsRef< str >,
+  {
+    globwalk::GlobWalkerBuilder::from_patterns( base_dir, patterns )
+    .max_depth(0)
+    .follow_links(false)
+    .build().unwrap()
+    .into_iter()
+    .filter_map( Result::ok )
+    .map( | s | s.path().to_path_buf() )
+    .collect::< Vec< PathBuf > >()
+  }
+
+  
 }
 
 //
