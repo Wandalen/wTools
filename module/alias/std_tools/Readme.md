@@ -10,7 +10,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use std_tools::prelude::*;
 
 fn main()
@@ -31,7 +31,7 @@ Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/mac
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use std_tools::prelude::*;
 
 // types!
