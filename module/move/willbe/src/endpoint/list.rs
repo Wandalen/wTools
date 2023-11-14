@@ -1,22 +1,14 @@
 /// Internal namespace.
 mod private
 {
-  use crate::package::functions as package;
-
+  use std::collections::HashMap;
   use crate::tools::
   {
     manifest::Manifest,
   };
   use std::fmt::Formatter;
-  use cargo_metadata::
-  {
-    MetadataCommand,
-  };
-  use petgraph::
-  {
-    algo::toposort,
-    algo::has_path_connecting,
-  };
+  use cargo_metadata::{ DependencyKind, MetadataCommand };
+  use petgraph::{ algo::toposort, algo::has_path_connecting, Graph };
   use std::path::PathBuf;
   use std::str::FromStr;
   use crate::wtools::error::{ for_app::Error, err };
@@ -46,12 +38,37 @@ mod private
     }
   }
 
+  #[ derive( Debug, Default, Copy, Clone ) ]
+  pub enum ListFilter
+  {
+    #[ default ]
+    Nothing,
+    Local,
+  }
+
+  impl FromStr for ListFilter
+  {
+    type Err = Error;
+
+    fn from_str( s : &str ) -> Result< Self, Self::Err >
+    {
+      let value = match s
+      {
+        "nothing" => ListFilter::Nothing,
+        "local" => ListFilter::Local,
+        e => return Err( err!( "Unknown filter '{}'. Available values: [nothing, local]", e ) )
+      };
+
+      Ok( value )
+    }
+  }
+
   #[ derive( Debug, Default, Clone ) ]
-  pub enum WorkspaceListReport
+  pub enum ListReport
   {
     Tree
     {
-      graph : petgraph::Graph< String, String >,
+      graph : Graph< String, String >,
       names : Vec< petgraph::stable_graph::NodeIndex >,
     },
     List( Vec< String > ),
@@ -82,17 +99,17 @@ mod private
     }
   }
 
-  impl std::fmt::Display for WorkspaceListReport
+  impl std::fmt::Display for ListReport
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       match self
       {
-        WorkspaceListReport::Tree { graph, names } => for n in names
+        ListReport::Tree { graph, names } => for n in names
         {
           ptree::graph::write_graph_with(&graph, *n, Io2FmtWrite { f }, &ptree::PrintConfig::from_env() ).unwrap();
         },
-        WorkspaceListReport::List ( list ) => for ( i ,e ) in list.iter().enumerate() { writeln!( f, "{i}) {e}" )? },
+        ListReport::List ( list ) => for ( i ,e ) in list.iter().enumerate() { writeln!( f, "{i}) {e}" )? },
         _ => {},
       }
 
@@ -104,20 +121,53 @@ mod private
   /// List workspace packages.
   ///
 
-  pub fn list(path_to_workspace : PathBuf, root_crate : &str, format : ListFormat ) -> Result< WorkspaceListReport, (WorkspaceListReport, Error ) >
+  pub fn list( path_to_workspace : PathBuf, root_crate : &str, format : ListFormat, filter : ListFilter ) -> Result< ListReport, ( ListReport, Error ) >
   {
-    let mut report = WorkspaceListReport::default();
+    let mut report = ListReport::default();
 
     let mut manifest = Manifest::new();
     let manifest_path = manifest.manifest_path_from_str( &path_to_workspace ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let package_metadata = MetadataCommand::new()
+    let metadata = MetadataCommand::new()
     .manifest_path( &manifest_path )
     .no_deps()
     .exec()
     .map_err( | e | ( report.clone(), e.into() ) )?;
 
-    let packages_map = package::filter( &package_metadata );
-    let graph = package::graph_build( &packages_map );
+    let packages_map = metadata.packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
+
+    let mut graph = Graph::new();
+    for ( _, package ) in packages_map
+    {
+      let root_node = if let Some( node ) = graph.node_indices().find( | i | graph[ *i ] == &package.name )
+      {
+        node
+      }
+      else
+      {
+        graph.add_node( &package.name )
+      };
+
+      for dep in &package.dependencies
+      {
+        if match filter
+        {
+          ListFilter::Nothing => dep.kind != DependencyKind::Development,
+          ListFilter::Local => dep.path.is_some() && dep.kind != DependencyKind::Development,
+        }
+        {
+          let dep_node = if let Some( node ) = graph.node_indices().find( | i | graph[ *i ] == &dep.name )
+          {
+            node
+          }
+          else
+          {
+            graph.add_node( &dep.name )
+          };
+
+          graph.add_edge( root_node, dep_node, &package.name );
+        }
+      }
+    }
     let sorted = toposort( &graph, None ).expect( "Failed to process toposort for packages" );
 
     match format
@@ -132,7 +182,7 @@ mod private
             names.push( *node );
           }
         }
-        report = WorkspaceListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
+        report = ListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
       },
       ListFormat::Tree =>
       {
@@ -141,7 +191,7 @@ mod private
         .filter_map( | idx | if graph.node_weight( *idx ).unwrap() == &root_crate { Some( *idx ) } else { None } )
         .collect::< Vec< _ > >();
 
-        report = WorkspaceListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
+        report = ListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
       }
       ListFormat::Topological =>
       {
@@ -151,7 +201,7 @@ mod private
         .map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() )
         .collect::< Vec< String > >();
 
-        report = WorkspaceListReport::List( names );
+        report = ListReport::List( names );
       },
     }
 
@@ -164,6 +214,7 @@ mod private
 crate::mod_interface!
 {
   protected( crate ) use ListFormat;
+  protected( crate ) use ListFilter;
   /// List packages in workspace.
   prelude use list;
 }

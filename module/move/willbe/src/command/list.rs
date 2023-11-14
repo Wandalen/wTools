@@ -9,6 +9,7 @@ mod private
   use wtools::error::Result;
   use anyhow::*;
   use crate::endpoint::list::ListFormat;
+  use crate::endpoint::list::protected::ListFilter;
 
   ///
   /// List workspace packages.
@@ -20,8 +21,9 @@ mod private
 
     let root_crate = properties.get_owned( "root_module" ).unwrap_or_default();
     let format = properties.get_owned( "format" ).map( ListFormat::from_str ).transpose()?.unwrap_or_default();
+    let filter = properties.get_owned( "filter" ).map( ListFilter::from_str ).transpose()?.unwrap_or_default();
 
-    match endpoint::list(path_to_workspace, root_crate, format )
+    match endpoint::list(path_to_workspace, root_crate, format, filter )
     {
       core::result::Result::Ok( report ) =>
       {
