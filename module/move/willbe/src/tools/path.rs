@@ -1,6 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use std::path::{ Path, PathBuf };
+
   /// Check if path is valid.
   pub fn valid_is( path: &str ) -> bool
   {
@@ -27,10 +29,35 @@ pub( crate ) mod private
 
     false
   }
+
+  //
+
+  pub fn path_canonicalize( path : impl AsRef< Path > ) -> std::io::Result< PathBuf >
+  {
+    let path = path.as_ref().canonicalize()?;
+
+    #[ cfg( target_os = "windows" ) ] // canonicalization on windows adds `\\?\` prefix
+      let path =
+      {
+        const VERBATIM_PREFIX : &str = r#"\\?\"#;
+        let p = path.display().to_string();
+        if p.starts_with( VERBATIM_PREFIX )
+        {
+          PathBuf::from( &p[ VERBATIM_PREFIX.len() .. ] )
+        }
+        else
+        {
+          path.into()
+        }
+      };
+
+    Ok( path )
+  }
 }
 
 crate::mod_interface!
 {
   prelude use glob_is;
   prelude use valid_is;
+  protected( crate ) use path_canonicalize;
 }

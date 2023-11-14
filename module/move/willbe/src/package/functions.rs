@@ -4,7 +4,7 @@ mod private
   {
     fs,
     path::PathBuf,
-    collections::HashMap,
+    collections::{ HashMap, HashSet },
     fmt::Write,
   };
   use std::path::Path;
@@ -29,6 +29,7 @@ mod private
   };
   use crate::version::bump;
   use anyhow::{ Context, Error, anyhow };
+  use crate::path::path_canonicalize;
   use crate::wtools;
 
   #[ derive( Debug, Default, Clone ) ]
@@ -115,38 +116,56 @@ mod private
 
   //
 
-  pub fn get_local_dependencies( manifest_path : &Path ) -> wtools::error::Result< Vec< PathBuf > >
+  #[ derive( Debug, Clone ) ]
+  pub struct LocalDependenciesOptions
   {
-    let manifest_path = Path::new( manifest_path ).canonicalize()?;
-    #[ cfg( target_os = "windows" ) ] // canonicalization on windows adds `\\?\` prefix
-    let manifest_path =
+    recursive : bool,
+    exclude : HashSet< PathBuf >,
+  }
+
+  impl Default for LocalDependenciesOptions
+  {
+    fn default() -> Self
     {
-      const VERBATIM_PREFIX : &str = r#"\\?\"#;
-      let p = manifest_path.display().to_string();
-      if p.starts_with( VERBATIM_PREFIX )
+      Self
       {
-        PathBuf::from( &p[ VERBATIM_PREFIX.len() .. ] )
+        recursive : true,
+        exclude : HashSet::new(),
       }
-      else
-      {
-        manifest_path
-      }
-    };
-    let package_metadata = MetadataCommand::new()
-    .manifest_path( &manifest_path )
-    .exec()?;
+    }
+  }
 
-    let deps = package_metadata
+  //
+
+  pub fn local_dependencies( metadata : &Metadata, manifest_path : &Path, mut opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
+  {
+    let manifest_path = path_canonicalize( manifest_path )?;
+
+    let deps = metadata
     .packages
-    .into_iter()
+    .iter()
     .find( | package | package.manifest_path.as_std_path() == &manifest_path )
-    .unwrap()
+    .ok_or( anyhow!( "Package not found in the workspace" ) )?
     .dependencies
-    .into_iter()
-    .filter_map( | dep | dep.path.map( | path | path.into_std_path_buf() ) )
-    .collect::< Vec< _ > >();
+    .iter()
+    .filter_map( | dep | dep.path.as_ref().map( | path | path.clone().into_std_path_buf() ) )
+    .collect::< HashSet< _ > >();
 
-    Ok( deps )
+    let mut output = deps.clone();
+
+    if opts.recursive
+    {
+      for dep in &deps
+      {
+        if !opts.exclude.contains( dep )
+        {
+          opts.exclude.insert( dep.clone() );
+          output.extend( local_dependencies( metadata, &dep.join( "Cargo.toml" ), opts.clone() )? );
+        }
+      }
+    }
+
+    Ok( output.into_iter().collect() )
   }
 
   //
@@ -255,4 +274,5 @@ crate::mod_interface!
 
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
+  protected( crate ) use local_dependencies;
 }
