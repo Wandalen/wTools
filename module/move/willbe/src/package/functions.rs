@@ -117,10 +117,13 @@ mod private
   //
 
   #[ derive( Debug, Clone ) ]
+  /// Args for `local_dependencies` function
   pub struct LocalDependenciesOptions
   {
-    recursive : bool,
-    exclude : HashSet< PathBuf >,
+    /// With dependencies of dependencies
+    pub recursive : bool,
+    /// Skip packages
+    pub exclude : HashSet< PathBuf >,
   }
 
   impl Default for LocalDependenciesOptions
@@ -137,6 +140,7 @@ mod private
 
   //
 
+  /// Returns local dependencies of specified package by its manifest path from a workspace
   pub fn local_dependencies( metadata : &Metadata, manifest_path : &Path, mut opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
   {
     let manifest_path = path::canonicalize( manifest_path )?;
@@ -274,5 +278,7 @@ crate::mod_interface!
 
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
-  protected( crate ) use local_dependencies;
+
+  orphan use LocalDependenciesOptions;
+  orphan use local_dependencies;
 }
