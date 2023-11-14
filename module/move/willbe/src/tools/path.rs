@@ -32,7 +32,7 @@ pub( crate ) mod private
 
   //
 
-  pub fn path_canonicalize( path : impl AsRef< Path > ) -> std::io::Result< PathBuf >
+  pub fn canonicalize( path : impl AsRef< Path > ) -> std::io::Result< PathBuf >
   {
     let path = path.as_ref().canonicalize()?;
 
@@ -59,5 +59,5 @@ crate::mod_interface!
 {
   prelude use glob_is;
   prelude use valid_is;
-  protected( crate ) use path_canonicalize;
+  protected( crate ) use canonicalize;
 }

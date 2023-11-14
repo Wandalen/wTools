@@ -29,7 +29,7 @@ mod private
   };
   use crate::version::bump;
   use anyhow::{ Context, Error, anyhow };
-  use crate::path::path_canonicalize;
+  use crate::path;
   use crate::wtools;
 
   #[ derive( Debug, Default, Clone ) ]
@@ -139,7 +139,7 @@ mod private
 
   pub fn local_dependencies( metadata : &Metadata, manifest_path : &Path, mut opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
   {
-    let manifest_path = path_canonicalize( manifest_path )?;
+    let manifest_path = path::canonicalize( manifest_path )?;
 
     let deps = metadata
     .packages
