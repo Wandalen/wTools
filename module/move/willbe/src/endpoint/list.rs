@@ -1,16 +1,13 @@
 /// Internal namespace.
 mod private
 {
-  use std::fmt::Formatter;
   use crate::package::functions as package;
-  use crate::manifest;
 
   use crate::tools::
   {
     manifest::Manifest,
-    files,
   };
-  use anyhow::{ Error, anyhow };
+  use std::fmt::Formatter;
   use cargo_metadata::
   {
     MetadataCommand,
@@ -20,65 +17,33 @@ mod private
     algo::toposort,
     algo::has_path_connecting,
   };
-  use std::path::{ Path, PathBuf };
+  use std::path::PathBuf;
+  use std::str::FromStr;
+  use crate::wtools::error::{ for_app::Error, err };
 
-  #[ derive( Debug, Default, Clone ) ]
-  pub struct ListReport
+  #[ derive( Debug, Default, Copy, Clone ) ]
+  pub enum ListFormat
   {
-    pub packages : Vec< PackageReport >,
+    #[ default ]
+    Tree,
+    Topological,
   }
 
-  impl core::fmt::Display for ListReport
+  impl FromStr for ListFormat
   {
-    fn fmt( &self, f : &mut Formatter< '_ >) -> core::fmt::Result
+    type Err = Error;
+
+    fn from_str( s : &str ) -> Result< Self, Self::Err >
     {
-      for report in &self.packages
+      let value = match s
       {
-        f.write_fmt( format_args!( "[ {} ]\n{report:#?}\n", report.name ) )?;
-      }
+        "tree" => ListFormat::Tree,
+        "toposort" => ListFormat::Topological,
+        e => return Err( err!( "Unknown format '{}'. Available values: [tree, toposort]", e ))
+      };
 
-      Ok( () )
+      Ok( value )
     }
-  }
-
-  #[ derive( Debug, Default, Clone ) ]
-  pub struct PackageReport
-  {
-    pub name : String,
-    pub path : PathBuf,
-    pub is_local : bool,
-  }
-
-  ///
-  /// List packages.
-  ///
-
-  pub fn list( dir : &Path ) -> Result< ListReport, ( ListReport, Error ) >
-  {
-    let mut report = ListReport::default();
-
-    let current_path = dir.canonicalize().map_err( | e | ( report.clone(), e.into() ) )?;
-    let paths = files::find( current_path, &[ "**/Cargo.toml" ] );
-
-    for path in &paths
-    {
-      let manifest = manifest::get( path ).map_err( | e | ( report.clone(), e.into() ) )?;
-      if manifest.package_is()
-      {
-        let local_is = manifest.local_is();
-        let data = manifest.manifest_data.as_ref().ok_or( anyhow!( "Failed to get manifest data" ) ).map_err( | e | ( report.clone(), e.into() ) )?;
-
-        let current_report = PackageReport
-        {
-          name : data [ "package" ][ "name" ].to_string().trim().into(),
-          path : path.parent().unwrap().into(),
-          is_local : local_is,
-        };
-        report.packages.push( current_report );
-      }
-    }
-
-    Ok( report )
   }
 
   #[ derive( Debug, Default, Clone ) ]
@@ -139,7 +104,7 @@ mod private
   /// List workspace packages.
   ///
 
-  pub fn workspace_list( path_to_workspace : PathBuf, root_crate : &str, list_type : &str ) -> Result< WorkspaceListReport, ( WorkspaceListReport, Error ) >
+  pub fn list(path_to_workspace : PathBuf, root_crate : &str, format : ListFormat ) -> Result< WorkspaceListReport, (WorkspaceListReport, Error ) >
   {
     let mut report = WorkspaceListReport::default();
 
@@ -155,9 +120,9 @@ mod private
     let graph = package::graph_build( &packages_map );
     let sorted = toposort( &graph, None ).expect( "Failed to process toposort for packages" );
 
-    if list_type == "tree"
+    match format
     {
-      if root_crate.is_empty()
+      ListFormat::Tree if root_crate.is_empty() =>
       {
         let mut names = vec![ sorted[ 0 ] ];
         for node in sorted.iter().skip( 1 )
@@ -168,8 +133,8 @@ mod private
           }
         }
         report = WorkspaceListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
-      }
-      else
+      },
+      ListFormat::Tree =>
       {
         let names = sorted
         .iter()
@@ -178,16 +143,16 @@ mod private
 
         report = WorkspaceListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
       }
-    }
-    else
-    {
-      let names = sorted
-      .iter()
-      .rev()
-      .map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() )
-      .collect::< Vec< String > >();
+      ListFormat::Topological =>
+      {
+        let names = sorted
+        .iter()
+        .rev()
+        .map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() )
+        .collect::< Vec< String > >();
 
-      report = WorkspaceListReport::List( names );
+        report = WorkspaceListReport::List( names );
+      },
     }
 
     Ok( report )
@@ -198,8 +163,7 @@ mod private
 
 crate::mod_interface!
 {
-  /// List packages.
-  prelude use list;
+  protected( crate ) use ListFormat;
   /// List packages in workspace.
-  prelude use workspace_list;
+  prelude use list;
 }

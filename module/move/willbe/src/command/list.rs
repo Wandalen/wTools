@@ -2,11 +2,13 @@
 mod private
 {
   use std::path::PathBuf;
+  use std::str::FromStr;
   use crate::{ endpoint, wtools };
 
   use wca::{ Args, Props };
-  use wtools::error::{ Result, err };
+  use wtools::error::Result;
   use anyhow::*;
+  use crate::endpoint::list::ListFormat;
 
   ///
   /// List workspace packages.
@@ -17,14 +19,9 @@ mod private
     let path_to_workspace : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
 
     let root_crate = properties.get_owned( "root_module" ).unwrap_or_default();
-    let list_type = properties.get_owned( "type" ).unwrap_or( "tree" );
+    let format = properties.get_owned( "format" ).map( ListFormat::from_str ).transpose()?.unwrap_or_default();
 
-    if list_type != "tree" && list_type != "topsort"
-    {
-      return Err( err!( format!( "Unknown option 'type:{}'", list_type ) ) );
-    }
-
-    match endpoint::workspace_list( path_to_workspace, root_crate, list_type )
+    match endpoint::list(path_to_workspace, root_crate, format )
     {
       core::result::Result::Ok( report ) =>
       {
