@@ -9,6 +9,7 @@ use TheModule::package::{ local_dependencies, LocalDependenciesOptions };
 
 tests_impls!
 {
+  // a -> b -> c
   fn chain_of_three_packages()
   {
     // Arrange
@@ -42,6 +43,7 @@ tests_impls!
     assert!( output.is_empty() );
   }
 
+  // a -> ( remote, b )
   fn package_with_remote_dependency()
   {
     // Arrange
@@ -66,6 +68,32 @@ tests_impls!
     assert_eq!( 1, output.len() );
     assert_eq!( b_path, output[ 0 ] );
   }
+
+  // a -> b -> a
+  fn workspace_with_cyclic_dependency()
+  {
+    // Arrange
+    let metadata = MetadataCommand::new().no_deps().exec().unwrap();
+
+    let root_path = metadata.workspace_root.as_std_path();
+    let assets_relative_path = std::path::Path::new( ASSETS_PATH );
+    let assets_path = root_path.join( assets_relative_path );
+
+    let temp = assert_fs::TempDir::new().unwrap();
+    temp.copy_from( assets_path.join( "workspace_with_cyclic_dependency" ), &[ "**" ] ).unwrap();
+
+    let metadata = MetadataCommand::new().no_deps().current_dir( temp.as_ref() ).exec().unwrap();
+
+    let a_path = temp.join( "a" );
+    let b_path = temp.join( "b" );
+
+    // Act
+    let output = local_dependencies( &metadata, &a_path.join( "Cargo.toml" ), LocalDependenciesOptions::default() ).unwrap();
+
+    // Assert
+    assert_eq!( 2, output.len() );
+    assert!( ( a_path == output[ 0 ] && b_path == output[ 1 ] ) || ( a_path == output[ 1 ] && b_path == output[ 0 ] ) );
+  }
 }
 
 //
@@ -74,4 +102,5 @@ tests_index!
 {
   chain_of_three_packages,
   package_with_remote_dependency,
+  workspace_with_cyclic_dependency,
 }
