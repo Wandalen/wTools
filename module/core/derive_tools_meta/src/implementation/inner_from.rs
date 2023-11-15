@@ -104,9 +104,9 @@ fn generate_unit( item_name: syn::Ident ) -> TokenStream
     impl From< #item_name > for () 
     {
       #[ inline( always ) ]
-      fn from( src: #item_name ) -> Self
+      fn from( src: #item_name ) -> ()
       {
-        Self
+        ()
       }
     }
   }

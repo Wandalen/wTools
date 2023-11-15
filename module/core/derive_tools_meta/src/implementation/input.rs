@@ -75,7 +75,7 @@ impl syn::parse::Parse for InputParsed
     {
       syn::Fields::Unnamed( ref fields ) => { fields.unnamed.iter().cloned().collect() },
       syn::Fields::Named( ref fields ) => { fields.named.iter().cloned().collect() },
-      _ => return Err( syn_err!( item.fields.span(), "Not implemented" ) ),
+      _ => return Ok( Self { item, item_name, fields, fields_many: Many(vec![]), field_types: vec![], field_names: None } ),
     };
 
     // if fields.len() != 1

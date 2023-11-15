@@ -13,4 +13,4 @@ impl From< UnitStruct > for ()
 }
 
 // include!( "./manual/basic.rs" );
-include!( "./only_test/inner_from.rs" );
+include!( "./only_test/inner_from_unit.rs" );

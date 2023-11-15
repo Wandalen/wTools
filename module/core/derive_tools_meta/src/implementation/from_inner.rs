@@ -12,14 +12,15 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
   let field_names = parsed.field_names;
   let item_name = parsed.item_name;
   let result = 
-  match ( field_types.len(), field_names ) 
+  match ( field_types.len(), field_names )
   {
-    ( 0, _ ) => generate_unit(item_name),
+    ( 0, _ ) => { generate_unit(item_name) },
     ( 1, Some( field_names ) ) => generate_from_single_field_named( &field_types[ 0 ], &field_names[ 0 ], item_name ),
     ( 1, None ) => generate_from_single_field( &field_types[ 0 ], item_name ),
     ( _, Some( field_names ) ) => generate_from_multiple_fields_named( &field_types, &field_names, item_name ),
     ( _, None ) => generate_from_multiple_fields( &field_types, item_name ),
   };
+
   Ok( result )
 }
 

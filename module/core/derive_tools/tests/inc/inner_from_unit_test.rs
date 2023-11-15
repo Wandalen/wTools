@@ -4,4 +4,4 @@ use super::*;
 pub struct UnitStruct;
 
 
-include!( "./only_test/inner_from.rs" );
+include!( "./only_test/inner_from_unit.rs" );

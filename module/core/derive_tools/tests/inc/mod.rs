@@ -47,8 +47,8 @@ mod from_inner_test;
 mod from_inner_named_test;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_multiple_named_test;
-// #[ cfg( feature = "derive_from" ) ]
-// mod from_inner_unit_test;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_unit_test;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_multiple_test;
 
@@ -63,8 +63,6 @@ mod inner_from_test;
 mod inner_from_named_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_multiple_named_test;
-// #[ cfg( feature = "derive_inner_from" ) ]
-// mod inner_from_unit_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_unit_test;
 #[ cfg( feature = "derive_inner_from" ) ]
