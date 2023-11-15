@@ -13,11 +13,14 @@ mod private
   use std::str::FromStr;
   use crate::wtools::error::{ for_app::Error, err };
 
+  /// Args for `list` endpoint.
   #[ derive( Debug, Default, Copy, Clone ) ]
   pub enum ListFormat
   {
+    /// Tree like format.
     #[ default ]
     Tree,
+    /// Topologically sorted list.
     Topological,
   }
 
@@ -38,11 +41,14 @@ mod private
     }
   }
 
+  /// Args for `list` endpoint.
   #[ derive( Debug, Default, Copy, Clone ) ]
   pub enum ListFilter
   {
+    /// With all packages.
     #[ default ]
     Nothing,
+    /// With local only packages.
     Local,
   }
 
@@ -63,15 +69,21 @@ mod private
     }
   }
 
+  /// Output of the `list` endpoint
   #[ derive( Debug, Default, Clone ) ]
   pub enum ListReport
   {
+    /// With tree format.
     Tree
     {
+      /// Dependencies graph.
       graph : Graph< String, String >,
+      /// Packages indexes to display.
       names : Vec< petgraph::stable_graph::NodeIndex >,
     },
+    /// With topologically sorted list.
     List( Vec< String > ),
+    /// Nothing to show.
     #[ default ]
     Empty
   }
@@ -168,7 +180,7 @@ mod private
         }
       }
     }
-    let sorted = toposort( &graph, None ).expect( "Failed to process toposort for packages" );
+    let sorted = toposort( &graph, None ).map_err( | e | ( report.clone() , err!( "Failed to process toposort for packages: {:?}", e ) ) )?;
 
     match format
     {
@@ -213,8 +225,12 @@ mod private
 
 crate::mod_interface!
 {
-  protected( crate ) use ListFormat;
-  protected( crate ) use ListFilter;
+  /// Argument for `list` endpoint. Sets the output format.
+  orphan use ListFormat;
+  /// Argument for `list` endpoint. Sets filter(local or all) packages should be in the output.
+  orphan use ListFilter;
+  /// Contains output of the endpoint.
+  orphan use ListReport;
   /// List packages in workspace.
-  prelude use list;
+  orphan use list;
 }
