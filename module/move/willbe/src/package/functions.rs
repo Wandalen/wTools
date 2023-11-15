@@ -4,9 +4,10 @@ mod private
   {
     fs,
     path::PathBuf,
-    collections::HashMap,
+    collections::{ HashMap, HashSet },
     fmt::Write,
   };
+  use std::path::Path;
   use cargo_metadata::
   {
     DependencyKind,
@@ -28,6 +29,8 @@ mod private
   };
   use crate::version::bump;
   use anyhow::{ Context, Error, anyhow };
+  use crate::path;
+  use crate::wtools;
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
@@ -109,6 +112,64 @@ mod private
     }
 
     Ok( report )
+  }
+
+  //
+
+  #[ derive( Debug, Clone ) ]
+  /// Args for `local_dependencies` function
+  pub struct LocalDependenciesOptions
+  {
+    /// With dependencies of dependencies
+    pub recursive : bool,
+    /// Skip packages
+    pub exclude : HashSet< PathBuf >,
+  }
+
+  impl Default for LocalDependenciesOptions
+  {
+    fn default() -> Self
+    {
+      Self
+      {
+        recursive : true,
+        exclude : HashSet::new(),
+      }
+    }
+  }
+
+  //
+
+  /// Returns local dependencies of specified package by its manifest path from a workspace
+  pub fn local_dependencies( metadata : &Metadata, manifest_path : &Path, mut opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
+  {
+    let manifest_path = path::canonicalize( manifest_path )?;
+
+    let deps = metadata
+    .packages
+    .iter()
+    .find( | package | package.manifest_path.as_std_path() == &manifest_path )
+    .ok_or( anyhow!( "Package not found in the workspace" ) )?
+    .dependencies
+    .iter()
+    .filter_map( | dep | dep.path.as_ref().map( | path | path.clone().into_std_path_buf() ) )
+    .collect::< HashSet< _ > >();
+
+    let mut output = deps.clone();
+
+    if opts.recursive
+    {
+      for dep in &deps
+      {
+        if !opts.exclude.contains( dep )
+        {
+          opts.exclude.insert( dep.clone() );
+          output.extend( local_dependencies( metadata, &dep.join( "Cargo.toml" ), opts.clone() )? );
+        }
+      }
+    }
+
+    Ok( output.into_iter().collect() )
   }
 
   //
@@ -217,4 +278,7 @@ crate::mod_interface!
 
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
+
+  orphan use LocalDependenciesOptions;
+  orphan use local_dependencies;
 }
