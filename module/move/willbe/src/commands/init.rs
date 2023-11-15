@@ -43,7 +43,7 @@ pub( crate ) mod private
     .hint( "Publish packages from workspace on `crates.io`." )
     .long_hint( "Publish packages from workspace on `crates.io`." )
     .phrase( "workspace.publish" )
-    .subject( "A path to manifest path with workspace. Should be a directory with file `Cargo.toml`.", Type::String, true )
+    .subject( "A path to manifest path with workspace. Should be a directory with file `Cargo.toml`.", Type::Path, true )
     .property( "dry", "Run command dry. Default is false.", Type::String, true )
     .property( "verbosity", "Setup level of verbosity.", Type::String, true )
     .property_alias( "verbosity", "v" )
@@ -59,7 +59,7 @@ pub( crate ) mod private
     .hint( "List packages." )
     .long_hint( "List packages" )
     .phrase( "list" )
-    .subject( "A path to directory with packages. Should be a glob.", Type::List( Type::String.into(), ',' ), true )
+    .subject( "A path to directories with packages.", Type::List( Type::Path.into(), ',' ), true )
     .form();
 
     let workspace_list_no_subj_command = wca::Command::former()
@@ -74,9 +74,16 @@ pub( crate ) mod private
     .hint( "List workspace packages." )
     .long_hint( "List workspace packages" )
     .phrase( "workspace.list" )
-    .subject( "A path to directory with workspace config. Should be a glob.", Type::List( Type::String.into(), ',' ), true )
+    .subject( "A path to directory with workspace config.", Type::Path, true )
+    // .subject( "A path to directory with workspace config. Should be a glob.", Type::List( Type::Path.into() ), true )
     .property( "type", "Output type. It can be topological sorted list of crates or list + set of independent crates trees.\n               Variants: topsort, tree. Default is \"tree\".", Type::String, true )
     .property( "root_module", "Log dependency tree for selected module. Works in combination with option 'type:tree'", Type::String, true )
+    .form();
+
+    let create_table_command = wca::Command::former()
+    .hint( "Generate table for main Readme.md file" )
+    .long_hint( "Generate table for main Readme.md file" )
+    .phrase( "readme.health.table.generate" )
     .form();
 
     vec!
@@ -85,6 +92,7 @@ pub( crate ) mod private
       workspace_publish_no_subj_command, workspace_publish_command,
       list_no_subj_command, list_command,
       workspace_list_no_subj_command, workspace_list_command,
+      create_table_command,
     ]
   }
 
@@ -102,6 +110,7 @@ pub( crate ) mod private
       ( "workspace.publish".to_owned(), Routine::new( workspace_publish ) ),
       ( "list".to_owned(), Routine::new( list ) ),
       ( "workspace.list".to_owned(), Routine::new( workspace_list ) ),
+      ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
     ])
   }
 }

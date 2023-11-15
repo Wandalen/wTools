@@ -1,0 +1,18 @@
+#![ deny( rust_2018_idioms ) ]
+#![ deny( missing_debug_implementations ) ]
+#![ deny( missing_docs ) ]
+
+//! Trybuild tests.
+
+#[ allow( unused_imports ) ]
+use mod_interface as TheModule;
+#[ allow( unused_imports ) ]
+use test_tools::exposed::*;
+
+/// Test module.
+#[ path = "derive.rs" ]
+pub mod test;
+
+fn main()
+{
+}

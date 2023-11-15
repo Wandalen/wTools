@@ -2,6 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
+  use crate::visibility::ClauseKind;
   use macro_tools::exposed::*;
   use std::collections::HashMap;
 
@@ -89,22 +90,29 @@ pub( crate ) mod private
   // exposed mod { mod_exposed1, mod_exposed2 };
   // prelude mod { mod_prelude1, mod_prelude2 };
 
-  ///
-  /// Get vector of a clause.
-  ///
-
-  macro_rules! clause
-  {
-    (
-      $ClauseMap:ident,
-      $( $Key:tt )+
-    )
-    =>
-    {
-      $ClauseMap.get_mut( &$( $Key )+() ).unwrap()
-    };
-  }
+//   ///
+//   /// Get vector of a clause.
+//   ///
+//
+//   macro_rules! clause
+//   {
+//     (
+//       $ClauseMap:ident,
+//       $( $Key:tt )+
+//     )
+//     =>
+//     {
+//       $ClauseMap.get_mut( &$( $Key )+() ).unwrap()
+//     };
+//   }
   // zzz : clause should not expect the first argument
+
+  /// Context for handlign a record. Cotnains clauses map and debug attribute.
+  pub struct RecordContext< 'clauses_map >
+  {
+    pub has_debug : bool,
+    pub clauses_map : &'clauses_map mut HashMap< ClauseKind , Vec< proc_macro2::TokenStream > >,
+  }
 
   ///
   /// Handle record "use" with implicit visibility.
@@ -113,7 +121,8 @@ pub( crate ) mod private
   fn record_use_implicit
   (
     record : &Record,
-    clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
+    c : &'_ mut RecordContext< '_ >,
+    // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
   )
   ->
   Result< () >
@@ -125,44 +134,78 @@ pub( crate ) mod private
 
     // if vis == Visibility::Inherited
 
-    let _path;
-    let path2 = if path.to_add_prefix()
-    {
-      _path = parse_qt!{ super::private::#path };
-      &_path
-    }
-    else
-    {
-      path
-    };
+    // xxx
 
-    // println!( "path2 : {}", qt!{ #path2 } );
+    // let _path;
+    // let path2 = if path.prefix_is_needed()
+    // {
+    //   _path = parse_qt!{ super::private::#path };
+    //   &_path
+    // }
+    // else
+    // {
+    //   path
+    // };
+
+    let adjsuted_path = path.adjsuted_implicit_path()?;
+
+    // println!( "adjsuted_path : {}", qt!{ #adjsuted_path } );
+
+    if let Some( rename ) = &path.rename
+    {
+      let pure_path = path.pure_without_super_path()?;
+      c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
+      {
+        pub use #pure_path as #rename;
+      });
+    }
+
+    // use syn::UseTree::*;
+    // match &path.tree
+    // {
+    //   Rename( e ) =>
+    //   {
+    //     let rename = &e.rename;
+    //     c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
+    //     {
+    //       use #path as #rename;
+    //     });
+    //   },
+    //   Glob( _e ) =>
+    //   {
+    //     return Err( syn_err!( "Complex glob uses like `use module1::*` are not supported." ) );
+    //   },
+    //   _ => {}
+    // };
 
     // clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
-    clause!( clauses_map, VisProtected::Kind ).push( qt!
+    // clause!( clauses_map, VisProtected::Kind ).push( qt!
+    c.clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+      #[ allow( unused_imports ) ]
       #attrs1
-      pub use #path2::orphan::*;
+      pub use #adjsuted_path::orphan::*;
     });
 
     // clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
-    clause!( clauses_map, VisExposed::Kind ).push( qt!
+    // clause!( clauses_map, VisExposed::Kind ).push( qt!
+    c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+      #[ allow( unused_imports ) ]
       #attrs1
-      pub use #path2::exposed::*;
+      pub use #adjsuted_path::exposed::*;
     });
 
     // clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
-    clause!( clauses_map, VisPrelude::Kind ).push( qt!
+    // clause!( clauses_map, VisPrelude::Kind ).push( qt!
+    c.clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+      #[ allow( unused_imports ) ]
       #attrs1
-      pub use #path2::prelude::*;
+      pub use #adjsuted_path::prelude::*;
     });
 
     Ok( () )
@@ -175,7 +218,8 @@ pub( crate ) mod private
   fn record_use_explicit
   (
     record : &Record,
-    clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
+    c : &'_ mut RecordContext< '_ >,
+    // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
   )
   ->
   Result< () >
@@ -195,14 +239,16 @@ pub( crate ) mod private
       ));
     }
 
-    let path2 = if path.to_add_prefix()
-    {
-      qt!{ super::private::#path }
-    }
-    else
-    {
-      qt!{ #path }
-    };
+    // let path2 = if path.prefix_is_needed()
+    // {
+    //   qt!{ super::private::#path }
+    // }
+    // else
+    // {
+    //   qt!{ #path }
+    // };
+
+    let adjsuted_path = path.adjsuted_explicit_path();
 
     let vis2 = if vis.restriction().is_some()
     {
@@ -214,12 +260,13 @@ pub( crate ) mod private
     };
 
     // clauses_map.get_mut( &vis.kind() ).unwrap().push( qt!
-    clause!( clauses_map, vis.kind ).push( qt!
+    // clause!( clauses_map, vis.kind ).push( qt!
+    c.clauses_map.get_mut( &vis.kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+      #[ allow( unused_imports ) ]
       #attrs1
-      #vis2 use #path2;
+      #vis2 use #adjsuted_path;
     });
 
     Ok( () )
@@ -233,7 +280,8 @@ pub( crate ) mod private
   (
     record : &Record,
     element : &Pair< AttributesOuter, syn::Path >,
-    clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
+    c : &'_ mut RecordContext< '_ >,
+    // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
   )
   ->
   Result< () >
@@ -243,7 +291,8 @@ pub( crate ) mod private
     let path = &element.1;
 
     // clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
-    clause!( clauses_map, ClauseImmediates::Kind ).push( qt!
+    // clause!( clauses_map, ClauseImmediates::Kind ).push( qt!
+    c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
     {
       #attrs1
       #attrs2
@@ -264,10 +313,11 @@ pub( crate ) mod private
     // println!( "clauses_map.contains_key( {} ) : {}", record.vis.kind(), clauses_map.contains_key( &record.vis.kind() ) );
     // let fixes_list = clauses_map.get_mut( &record.vis.kind() ).ok_or_else( || syn_err!( "Error!" ) )?;
     // clauses_map.get_mut( &record.vis.kind() ).unwrap().push( qt!
-    clause!( clauses_map, record.vis.kind ).push( qt!
+    // clause!( clauses_map, record.vis.kind ).push( qt!
+    c.clauses_map.get_mut( &record.vis.kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+      #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
       pub use super::#path;
@@ -284,7 +334,8 @@ pub( crate ) mod private
   (
     record : &Record,
     element : &Pair< AttributesOuter, syn::Path >,
-    clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
+    // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
+    c : &'_ mut RecordContext< '_ >,
   )
   ->
   Result< () >
@@ -304,7 +355,8 @@ pub( crate ) mod private
     }
 
     // clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
-    clause!( clauses_map, ClauseImmediates::Kind ).push( qt!
+    // clause!( clauses_map, ClauseImmediates::Kind ).push( qt!
+    c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
     {
       #attrs1
       #attrs2
@@ -312,30 +364,33 @@ pub( crate ) mod private
     });
 
     // clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
-    clause!( clauses_map, VisProtected::Kind ).push( qt!
+    // clause!( clauses_map, VisProtected::Kind ).push( qt!
+    c.clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+      #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
       pub use super::#path::orphan::*;
     });
 
     // clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
-    clause!( clauses_map, VisExposed::Kind ).push( qt!
+    // clause!( clauses_map, VisExposed::Kind ).push( qt!
+    c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+      #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
       pub use super::#path::exposed::*;
     });
 
     // clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
-    clause!( clauses_map, VisPrelude::Kind ).push( qt!
+    // clause!( clauses_map, VisPrelude::Kind ).push( qt!
+    c.clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+      #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
       pub use super::#path::prelude::*;
@@ -355,6 +410,7 @@ pub( crate ) mod private
     let original_input = input.clone();
     let document = syn::parse::< Thesis >( input )?;
     document.inner_attributes_validate()?;
+    let has_debug = document.has_debug();
 
     // use inspect_type::*;
     // inspect_type_of!( immediates );
@@ -369,6 +425,12 @@ pub( crate ) mod private
 
     // zzz : test case with several attrs
 
+    let mut record_context = RecordContext::< '_ >
+    {
+      has_debug,
+      clauses_map : &mut clauses_map,
+    };
+
     document.records.0.iter().try_for_each( | record |
     {
 
@@ -379,11 +441,11 @@ pub( crate ) mod private
           let vis = &record.vis;
           if vis == &Visibility::Inherited
           {
-            record_use_implicit( record, &mut clauses_map )?;
+            record_use_implicit( record, &mut record_context )?;
           }
           else
           {
-            record_use_explicit( record, &mut clauses_map )?;
+            record_use_explicit( record, &mut record_context )?;
           }
         },
         _ =>
@@ -394,11 +456,11 @@ pub( crate ) mod private
             {
               MicroModule( _ ) =>
               {
-                record_micro_module( record, element, &mut clauses_map )?;
+                record_micro_module( record, element, &mut record_context )?;
               },
               Layer( _ ) =>
               {
-                record_layer( record, element, &mut clauses_map )?;
+                record_layer( record, element, &mut record_context )?;
               },
               Use( _ ) =>
               {
@@ -412,7 +474,6 @@ pub( crate ) mod private
       Result::Ok( () )
     })?;
 
-    let has_debug = document.has_debug();
     let immediates_clause = clauses_map.get( &ClauseImmediates::Kind() ).unwrap();
     let protected_clause = clauses_map.get( &VisProtected::Kind() ).unwrap();
     let orphan_clause = clauses_map.get( &VisOrphan::Kind() ).unwrap();
@@ -425,14 +486,14 @@ pub( crate ) mod private
       #( #immediates_clause )*
 
       #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+      #[ allow( unused_imports ) ]
       pub use protected::*;
 
       /// Protected namespace of the module.
       pub mod protected
       {
         #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+        #[ allow( unused_imports ) ]
         pub use super::orphan::*;
         #( #protected_clause )*
       }
@@ -441,7 +502,7 @@ pub( crate ) mod private
       pub mod orphan
       {
         #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+        #[ allow( unused_imports ) ]
         pub use super::exposed::*;
         #( #orphan_clause )*
       }
@@ -450,7 +511,7 @@ pub( crate ) mod private
       pub mod exposed
       {
         #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+        #[ allow( unused_imports ) ]
         pub use super::prelude::*;
         #( #exposed_clause )*
       }
@@ -517,7 +578,5 @@ pub mod prelude
   };
 }
 
-// qqq : for Dima : rewrite sample for the module /* aaa : Dmytro : added new samples */
-// qqq : for Dima : write description for the module, it should have /* aaa : Dmytro : added */
 // - example based on simpified version of test::layer_have_layer with single sublayer
 // - example with attribute `#![ debug ]`
