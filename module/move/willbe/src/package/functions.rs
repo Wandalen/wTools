@@ -117,12 +117,24 @@ mod private
   //
 
   #[ derive( Debug, Clone ) ]
-  /// Args for `local_dependencies` function
+  /// Sorting variants for dependencies
+  pub enum LocalDependenciesSort
+  {
+    /// List will be topologically sorted.
+    Topological,
+    /// List will be unsorted.
+    Unordered,
+  }
+
+  #[ derive( Debug, Clone ) ]
+  /// Args for `local_dependencies` function.
   pub struct LocalDependenciesOptions
   {
-    /// With dependencies of dependencies
+    /// With dependencies of dependencies.
     pub recursive : bool,
-    /// Skip packages
+    /// With sorting.
+    pub sort : LocalDependenciesSort,
+    /// Skip packages.
     pub exclude : HashSet< PathBuf >,
   }
 
@@ -133,6 +145,7 @@ mod private
       Self
       {
         recursive : true,
+        sort : LocalDependenciesSort::Unordered,
         exclude : HashSet::new(),
       }
     }
@@ -169,7 +182,18 @@ mod private
       }
     }
 
-    Ok( output.into_iter().collect() )
+    let mut output : Vec< _ > = output.into_iter().collect();
+
+    match opts.sort
+    {
+      LocalDependenciesSort::Unordered => {},
+      LocalDependenciesSort::Topological =>
+      {
+        output = toposort_by_paths( &metadata, &output );
+      },
+    }
+
+    Ok( output )
   }
 
   //
@@ -251,6 +275,19 @@ mod private
 
   //
 
+  pub fn toposort_by_paths( metadata : &Metadata, paths : &[ PathBuf ] ) -> Vec< PathBuf >
+  {
+    let map = metadata.packages
+    .iter()
+    .filter( | x | paths.contains( &x.manifest_path.as_std_path().parent().unwrap().to_path_buf() ) )
+    .map( | p | ( p.name.clone(), p ) )
+    .collect::< HashMap< _, _ > >();
+
+    toposort( &map ).into_iter().map( | name | map[ &name ].manifest_path.parent().unwrap().to_path_buf().into_std_path_buf() ).collect()
+  }
+
+  //
+
   pub fn toposort( packages : &HashMap< String, &Package > ) -> Vec< String >
   {
     let deps = graph_build( packages );
@@ -279,6 +316,7 @@ crate::mod_interface!
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
 
+  orphan use LocalDependenciesSort;
   orphan use LocalDependenciesOptions;
   orphan use local_dependencies;
 }
