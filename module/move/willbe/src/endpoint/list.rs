@@ -89,18 +89,25 @@ mod private
   }
 
   /// Wrapper to redirect output from `ptree` graph to `fmt::Write`
-  struct Io2FmtWrite< 'a, 'b >
+  pub( crate ) struct Io2FmtWrite< 'a, W >
   {
-    f : &'a mut Formatter< 'b >,
+    pub f : &'a mut W,
   }
 
-  impl std::io::Write for Io2FmtWrite< '_, '_ >
+  impl< W : std::fmt::Write > std::io::Write for Io2FmtWrite< '_, W >
   {
     fn write( &mut self, buf : &[ u8 ] ) -> std::io::Result< usize >
     {
+      use std::io::ErrorKind;
+
       let size = buf.len();
 
-      self.f.write_str( std::str::from_utf8( buf ).unwrap() ).unwrap();
+      self.f.write_str
+      (
+        std::str::from_utf8( buf )
+        .map_err( | _ | std::io::Error::new( ErrorKind::InvalidData, "Allow only valid UTF-8 string" ) )?
+      )
+      .map_err( | e | std::io::Error::new( ErrorKind::Other, e ) )?;
 
       Ok( size )
     }
@@ -218,6 +225,31 @@ mod private
     }
 
     Ok( report )
+  }
+}
+
+mod tests
+{
+  #[ test ]
+  fn io2fmt_write()
+  {
+    use super::private::Io2FmtWrite;
+
+    // Arrange
+    fn accepts_io_write< W : std::io::Write >( mut w : W ) -> std::io::Result< () >
+    {
+      w.write( b"Hello, world!" )?;
+
+      Ok( () )
+    }
+
+    let mut string = String::new();
+
+    // Act
+    accepts_io_write( Io2FmtWrite { f : &mut string } ).unwrap();
+
+    // Assert
+    assert_eq!( "Hello, world!", &string );
   }
 }
 
