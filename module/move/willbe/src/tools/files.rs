@@ -24,6 +24,12 @@ pub( crate ) mod private
     .collect::< Vec< PathBuf > >()
   }
 
+  /// Searches for files in the specified directory using glob patterns with a depth limit of zero.
+  ///
+  /// This function utilizes the `globwalk` crate to perform a search for files matching the provided
+  /// glob patterns within the specified directory (`base_dir`). The search is restricted to files
+  /// directly within the specified directory (depth limit of zero), and symbolic links are not
+  /// followed.
   pub fn find_with_depth_zero< P, S >( base_dir : P, patterns : &[ S ] ) -> Vec< PathBuf>
   where
     P: AsRef< Path >,

@@ -25,10 +25,10 @@ mod private
   };
 
   use anyhow::
-    {
-      Result,
-      anyhow,
-    };
+  {
+    Result,
+    anyhow,
+  };
   
   #[cfg(not( target_os = "windows"))]  
   use crate::files::private::find_with_depth_zero;
@@ -132,17 +132,22 @@ mod private
     Ok( () )
   }
 
+  /// Searches for a README file in specific subdirectories of the given directory path.
+  ///
+  /// This function attempts to find a README file in the following subdirectories: ".github",
+  /// the root directory, and "./docs". It returns the path to the first found README file, or
+  /// `None` if no README file is found in any of these locations.
   fn readme_path( dir_path: PathBuf ) -> Option< PathBuf >
   {
-    if let Ok( Some( path ) ) = find_readme_in_dir(dir_path.join( "./.github" ))
+    if let Ok( Some( path ) ) = readme_in_dir_find(dir_path.join( "./.github" ))
     {
       return Some( path );
     } 
-    else if let Ok( Some( path ) ) = find_readme_in_dir( dir_path.clone() )
+    else if let Ok( Some( path ) ) = readme_in_dir_find( dir_path.clone() )
     {
       return Some( path );
     }
-    else if let Ok( Some( path ) ) = find_readme_in_dir( dir_path.join( "./docs" ) ) 
+    else if let Ok( Some( path ) ) = readme_in_dir_find( dir_path.join( "./docs" ) )
     {
         return Some( path );
     }   
@@ -151,7 +156,11 @@ mod private
   
 
   #[cfg( target_os = "windows" ) ]
-  fn find_readme_in_dir( dir_path: PathBuf ) -> Result< Option< PathBuf > >
+  /// Searches for a README file in the specified directory path.
+  ///
+  /// This function attempts to find a README file (case-insensitive) with a depth limit of zero
+  /// (i.e., only checks files directly within the specified directory, not in subdirectories).
+  fn readme_in_dir_find(dir_path: PathBuf ) -> Result< Option< PathBuf > >
   {
     let entries = fs::read_dir( dir_path )?;
     for entry in entries 
@@ -159,7 +168,7 @@ mod private
       let entry = entry?;
       let path = entry.path();
       dbg!(&path);
-      if path.is_file() && validate_file_name( &path ) 
+      if path.is_file() && readme_name_validate( &path )
       {
         return Ok( Some( path ) );
       }
@@ -168,7 +177,12 @@ mod private
   }
 
   #[cfg( target_os = "windows" ) ]
-  fn validate_file_name( path: &PathBuf ) -> bool 
+  /// Validates whether the file name, when converted to lowercase, matches the expected value "readme.md".
+  ///
+  /// This function takes a reference to a `PathBuf` and checks if its file name (if available) matches
+  /// the case-insensitive string "readme.md". The comparison is case-insensitive to handle variations
+  /// in capitalization.
+  fn readme_name_validate(path: &PathBuf ) -> bool
   {
     path
     .file_name().unwrap_or_default()
@@ -178,15 +192,15 @@ mod private
   }
 
   #[cfg(not( target_os = "windows"))]
-  fn find_readme_in_dir( path: PathBuf ) -> Result< Option< PathBuf > > {
+  /// Searches for a README file in the specified directory path.
+  ///
+  /// This function attempts to find a README file (case-insensitive) with a depth limit of zero
+  /// (i.e., only checks files directly within the specified directory, not in subdirectories).
+  fn readme_in_dir_find(path: PathBuf ) -> Result< Option< PathBuf > > {
     Ok( find_with_depth_zero( path, &[ "(R|r)(E|e)(A|a)(D|d)(M|m)(E|e).md" ] ).into_iter().max() )
   }
 
-
-
 }
-
-
 
 crate::mod_interface!
 {
