@@ -69,7 +69,7 @@ mod private
     }
     report.get_info = Some( output );
 
-    if !publish_need( &manifest )
+    if publish_need( &manifest )
     {
       let data = manifest.manifest_data.as_deref_mut().ok_or( anyhow!( "Failed to get manifest data" ) ).map_err( | e | ( report.clone(), e ) )?;
       let name = &data[ "package" ][ "name" ].clone();
@@ -302,7 +302,7 @@ mod private
     // Is it ok? If there is any problem with the Internet, we will say that the packages are different.
     let remote_package = http::retrieve_bytes( name, version ).unwrap_or_default();
 
-    digest::hash( &local_package ) == digest::hash( &remote_package )
+    digest::hash( &local_package ) != digest::hash( &remote_package )
   }
 }
 
