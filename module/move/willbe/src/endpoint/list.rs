@@ -2,17 +2,15 @@
 mod private
 {
   use std::collections::HashMap;
-  use crate::tools::
-  {
-    manifest::Manifest,
-  };
   use std::fmt::Formatter;
   use petgraph::{ algo::toposort, algo::has_path_connecting, Graph };
   use std::path::PathBuf;
   use std::str::FromStr;
+  use anyhow::Context;
   use crate::package::functions::graph_build;
   use crate::wtools::error::{ for_app::Error, err };
   use cargo_metadata::MetadataCommand;
+  use crate::manifest;
 
   /// Args for `list` endpoint.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -141,17 +139,22 @@ mod private
   /// List workspace packages.
   ///
 
-  pub fn list( path_to_workspace : PathBuf, root_crate : &str, format : ListFormat, filter : ListFilter ) -> Result< ListReport, ( ListReport, Error ) >
+  pub fn list( path_to_manifest : PathBuf, format : ListFormat, filter : ListFilter ) -> Result< ListReport, ( ListReport, Error ) >
   {
     let mut report = ListReport::default();
 
-    let mut manifest = Manifest::new();
-    let manifest_path = manifest.manifest_path_from_str( &path_to_workspace ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let manifest = manifest::get( &path_to_manifest ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
     let metadata = MetadataCommand::new()
-    .manifest_path( &manifest_path )
+    .manifest_path( &manifest.manifest_path )
     .no_deps()
     .exec()
     .map_err( | e | ( report.clone(), e.into() ) )?;
+
+    let root_crate = manifest.manifest_data
+    .as_ref()
+    .and_then( | m | m.get( "package" ) )
+    .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
+    .unwrap_or_default();
 
     let packages_map = metadata.packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
     let graph = graph_build( &packages_map, matches!( filter, ListFilter::Local ) );

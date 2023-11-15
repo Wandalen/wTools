@@ -3,7 +3,7 @@ mod private
 {
   use std::path::PathBuf;
   use std::str::FromStr;
-  use crate::{ endpoint, wtools };
+  use crate::{ endpoint, path, wtools };
 
   use wca::{ Args, Props };
   use wtools::error::Result;
@@ -18,12 +18,12 @@ mod private
   pub fn list( ( args, properties ) : ( Args, Props ) ) -> Result< () >
   {
     let path_to_workspace : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
+    let path_to_workspace = path::canonicalize( path_to_workspace )?;
 
-    let root_crate = properties.get_owned( "root_module" ).unwrap_or_default();
     let format = properties.get_owned( "format" ).map( ListFormat::from_str ).transpose()?.unwrap_or_default();
     let filter = properties.get_owned( "filter" ).map( ListFilter::from_str ).transpose()?.unwrap_or_default();
 
-    match endpoint::list(path_to_workspace, root_crate, format, filter )
+    match endpoint::list( path_to_workspace, format, filter )
     {
       core::result::Result::Ok( report ) =>
       {

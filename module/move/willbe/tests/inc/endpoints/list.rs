@@ -25,7 +25,7 @@ tests_impls!
     // Tree format, without filters
 
     // Act
-    let output = endpoint::list( temp.to_path_buf(), "a", ListFormat::Tree, ListFilter::Nothing ).unwrap();
+    let output = endpoint::list( temp.join( "a" ), ListFormat::Tree, ListFilter::Nothing ).unwrap();
 
     // Assert
     let ListReport::Tree { graph, names } = &output else { panic!( "Expected `Tree` format, but found another" ) };
@@ -38,7 +38,17 @@ tests_impls!
     // List format, without filters
 
     // Act
-    let output = endpoint::list( temp.to_path_buf(), "a", ListFormat::Topological, ListFilter::Nothing ).unwrap();
+    let output = endpoint::list( temp.join( "a" ), ListFormat::Topological, ListFilter::Nothing ).unwrap();
+
+    // Assert
+    let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
+
+    assert_eq!( &[ "c".to_string(), "b".to_string(), "a".to_string() ], names.as_slice() );
+
+    // List format, without filters, full workspace
+
+    // Act
+    let output = endpoint::list( temp.to_path_buf(), ListFormat::Topological, ListFilter::Nothing ).unwrap();
 
     // Assert
     let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
@@ -62,7 +72,7 @@ tests_impls!
     // Tree format, without filters
 
     // Act
-    let output = endpoint::list( temp.to_path_buf(), "a", ListFormat::Tree, ListFilter::Nothing ).unwrap();
+    let output = endpoint::list( temp.join( "a" ), ListFormat::Tree, ListFilter::Nothing ).unwrap();
 
     // Assert
     let ListReport::Tree { graph, names } = &output else { panic!( "Expected `Tree` format, but found another" ) };
@@ -75,7 +85,7 @@ tests_impls!
     // List format, without filters
 
     // Act
-    let output = endpoint::list( temp.to_path_buf(), "a", ListFormat::Topological, ListFilter::Nothing ).unwrap();
+    let output = endpoint::list( temp.join( "a" ), ListFormat::Topological, ListFilter::Nothing ).unwrap();
 
     // Assert
     let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
@@ -103,7 +113,7 @@ tests_impls!
     // List format, with local only filter
 
     // Act
-    let output = endpoint::list( temp.to_path_buf(), "a", ListFormat::Topological, ListFilter::Local ).unwrap();
+    let output = endpoint::list( temp.join( "a" ), ListFormat::Topological, ListFilter::Local ).unwrap();
 
     // Assert
     let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
@@ -125,7 +135,7 @@ tests_impls!
     let metadata = MetadataCommand::new().no_deps().current_dir( temp.as_ref() ).exec().unwrap();
 
     // Act
-    let output = endpoint::list( temp.to_path_buf(), "a", ListFormat::Tree, ListFilter::Nothing );
+    let output = endpoint::list( temp.join( "a" ), ListFormat::Tree, ListFilter::Nothing );
 
     // Assert
 
