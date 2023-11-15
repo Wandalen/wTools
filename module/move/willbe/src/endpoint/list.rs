@@ -7,11 +7,12 @@ mod private
     manifest::Manifest,
   };
   use std::fmt::Formatter;
-  use cargo_metadata::{ DependencyKind, MetadataCommand };
   use petgraph::{ algo::toposort, algo::has_path_connecting, Graph };
   use std::path::PathBuf;
   use std::str::FromStr;
+  use crate::package::functions::graph_build;
   use crate::wtools::error::{ for_app::Error, err };
+  use cargo_metadata::MetadataCommand;
 
   /// Args for `list` endpoint.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -153,40 +154,7 @@ mod private
     .map_err( | e | ( report.clone(), e.into() ) )?;
 
     let packages_map = metadata.packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
-
-    let mut graph = Graph::new();
-    for ( _, package ) in packages_map
-    {
-      let root_node = if let Some( node ) = graph.node_indices().find( | i | graph[ *i ] == &package.name )
-      {
-        node
-      }
-      else
-      {
-        graph.add_node( &package.name )
-      };
-
-      for dep in &package.dependencies
-      {
-        if match filter
-        {
-          ListFilter::Nothing => dep.kind != DependencyKind::Development,
-          ListFilter::Local => dep.path.is_some() && dep.kind != DependencyKind::Development,
-        }
-        {
-          let dep_node = if let Some( node ) = graph.node_indices().find( | i | graph[ *i ] == &dep.name )
-          {
-            node
-          }
-          else
-          {
-            graph.add_node( &dep.name )
-          };
-
-          graph.add_edge( root_node, dep_node, &package.name );
-        }
-      }
-    }
+    let graph = graph_build( &packages_map, matches!( filter, ListFilter::Local ) );
     let sorted = toposort( &graph, None ).map_err( | e | ( report.clone() , err!( "Failed to process toposort for packages: {:?}", e ) ) )?;
 
     match format

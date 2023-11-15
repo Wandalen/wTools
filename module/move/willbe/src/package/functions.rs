@@ -214,7 +214,7 @@ mod private
 
   //
 
-  pub fn graph_build< 'a >( packages : &'a HashMap< String, &Package > ) -> Graph< &'a str, &'a str >
+  pub fn graph_build< 'a >( packages : &'a HashMap< String, &Package >, only_local : bool ) -> Graph< &'a str, &'a str >
   {
     let mut deps = Graph::< &str, &str >::new();
     let _update_graph = packages.iter().map( | ( _name, package ) |
@@ -230,7 +230,7 @@ mod private
 
       for dep in &package.dependencies
       {
-        if dep.path.is_some() && dep.kind != DependencyKind::Development
+        if ( only_local && dep.path.is_some() || !only_local ) && dep.kind != DependencyKind::Development
         {
           let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == dep.name )
           {
@@ -253,7 +253,7 @@ mod private
 
   pub fn toposort( packages : &HashMap< String, &Package > ) -> Vec< String >
   {
-    let deps = graph_build( packages );
+    let deps = graph_build( packages, true );
 
     let sorted = pg_toposort( &deps, None ).expect( "Failed to process toposort for packages" );
     let names = sorted
