@@ -74,7 +74,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected( crate ) use CmdReport;
-  protected( crate ) use start_sync;
+  protected use CmdReport;
+  protected use start_sync;
 }
 

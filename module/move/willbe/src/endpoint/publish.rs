@@ -7,13 +7,13 @@ mod private
   {
     files,
     manifest,
-    path,
   };
   use anyhow::Error;
   use std::
   {
     env,
     path::PathBuf,
+    collections::HashSet,
   };
   use core::fmt::Formatter;
   use cargo_metadata::
@@ -31,6 +31,12 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
+      if self.packages.is_empty()
+      {
+        f.write_fmt( format_args!( "Nothing to publish" ) )?;
+        return Ok( () );
+      }
+
       for ( path, report ) in &self.packages
       {
         f.write_fmt( format_args!( "[ {} ]\n{report:#?}\n", path.display() ) )?;
@@ -49,26 +55,42 @@ mod private
     let mut report = PublishReport::default();
 
     let current_path = env::current_dir().map_err( | e | ( report.clone(), e.into() ) )?;
-
-    let paths = files::find( &current_path, &patterns );
-    let mut paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::< Vec< PathBuf > >();
-
-    if !patterns.is_empty() && paths.is_empty() && path::valid_is( &patterns[ 0 ] )
+    let mut paths = HashSet::new();
+    for pattern in &patterns
     {
-      paths.push( PathBuf::from( &patterns[ 0 ] ) );
+      let current_path = std::path::Path::new( pattern ).canonicalize().map_err( | e | ( report.clone(), e.into() ) )?;
+      #[ cfg( target_os = "windows" ) ] // canonicalization on windows adds `\\?\` prefix
+      let current_path =
+      {
+        const VERBATIM_PREFIX : &str = r#"\\?\"#;
+        let p = current_path.display().to_string();
+        if p.starts_with( VERBATIM_PREFIX )
+        {
+          PathBuf::from( &p[ VERBATIM_PREFIX.len() .. ] )
+        }
+        else
+        {
+         current_path
+        }
+      };
+      let current_paths = files::find( current_path, &[ "**/Cargo.toml" ] );
+      paths.extend( current_paths );
     }
+
+    let paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::< Vec< PathBuf > >();
 
     for path in paths
     {
-      package::publish( &current_path, &path, dry )
+      let current_report = package::publish( &current_path, &path, dry )
       .map_err
       (
         | ( current_report, e ) |
         {
-          report.packages.push(( path, current_report.clone() ));
+          report.packages.push(( path.clone(), current_report.clone() ));
           ( report.clone(), e.context( "Publish list of packages" ).into() )
         }
       )?;
+      report.packages.push(( path, current_report.clone() ));
     }
 
     Ok( report )
