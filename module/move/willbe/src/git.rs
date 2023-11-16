@@ -19,15 +19,15 @@ mod private
     if dry
     {
       Ok
-        (
-          CmdReport
-          {
-            command : command.to_string(),
-            path : path.as_ref().to_path_buf(),
-            out : String::new(),
-            err : String::new(),
-          }
-        )
+      (
+        CmdReport
+        {
+          command : command.to_string(),
+          path : path.as_ref().to_path_buf(),
+          out : String::new(),
+          err : String::new(),
+        }
+      )
     }
     else
     {
@@ -46,15 +46,15 @@ mod private
     if dry
     {
       Ok
-        (
-          CmdReport
-          {
-            command : command.to_string(),
-            path : path.as_ref().to_path_buf(),
-            out : String::new(),
-            err : String::new(),
-          }
-        )
+      (
+        CmdReport
+        {
+          command : command.to_string(),
+          path : path.as_ref().to_path_buf(),
+          out : String::new(),
+          err : String::new(),
+        }
+      )
     }
     else
     {

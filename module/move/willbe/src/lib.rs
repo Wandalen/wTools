@@ -44,6 +44,10 @@ wtools::meta::mod_interface!
   /// Git library.
   #[ cfg( not( feature = "no_std" ) ) ]
   layer git;
+  
+  /// Cargo library.
+  #[ cfg( not( feature = "no_std" ) ) ]
+  layer cargo;
 
   #[ cfg( not( feature = "no_std" ) ) ]
   prelude use ::std::env;
