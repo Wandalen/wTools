@@ -1,5 +1,6 @@
+#![ deny( unused_imports ) ]
+
 use super::*;
-use TheModule::prelude::*;
 // use test_tools::exposed::*;
 
 //

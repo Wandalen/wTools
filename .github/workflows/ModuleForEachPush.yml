@@ -12,6 +12,6 @@ jobs :
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
-      manifest_path : 'module/rust/for_each/Cargo.toml'
+      manifest_path : 'module/core/for_each/Cargo.toml'
       module_name : 'for_each'
       commit_message : ${{ github.event.head_commit.message }}
