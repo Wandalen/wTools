@@ -180,7 +180,7 @@ mod private
 
     let _packages = metadata.packages.iter().filter( | package |
     {
-      if package.publish.is_none()
+      if package.publish.is_none() && package.manifest_path.starts_with("D:\\work\\wTools\\module\\move")
       {
         packages_map.insert( package.name.clone(), *package );
 
@@ -230,7 +230,7 @@ mod private
 
       for dep in &package.dependencies
       {
-        if dep.path.is_some() && dep.kind != DependencyKind::Development
+        if dep.path.is_some() && dep.kind != DependencyKind::Development && dep.path.as_ref().unwrap().starts_with("D:\\work\\wTools\\module\\move")
         {
           let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == dep.name )
           {

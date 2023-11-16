@@ -25,16 +25,30 @@ mod private
   };
 
   use anyhow::*;
+  use crate::manifest::Manifest;
+  use crate::package::functions::toposort;
+
+  use crate::package::functions;
 
   /// Create table
   pub fn table_create() -> Result< () >
   {
     let workspace_root = workspace_root()?;
-    let core_directories = directory_names( workspace_root.join( "module" ).join( "core" ) )?;
-    let move_directories = directory_names( workspace_root.join( "module" ).join( "move" ) )?;
-    let core_table = table_prepare( core_directories , "core".into() );
-    let move_table = table_prepare( move_directories, "move".into() );
-    tables_write_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ] )?;
+
+    let package_metadata = MetadataCommand::new()
+      .no_deps()
+      .exec()?;
+
+    let packages_map = functions::filter( &package_metadata );
+    let r = toposort(&packages_map);
+    dbg!(r);
+
+    // let sorted = toposort()
+    // let core_directories = directory_names( workspace_root.join( "module" ).join( "core" ) )?;
+    // let move_directories = directory_names( workspace_root.join( "module" ).join( "move" ) )?;
+    // let core_table = table_prepare( core_directories , "core".into() );
+    // let move_table = table_prepare( move_directories, "move".into() );
+    // tables_write_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ] )?;
     Ok( () )
   }
 
