@@ -93,12 +93,12 @@ fn generate_from_multiple_fields_named( field_types: &Vec< syn::Type >, field_na
 fn generate_from_multiple_fields( field_types: &Vec< syn::Type >, item_name: syn::Ident ) -> TokenStream 
 {
   let params: Vec<TokenStream> = ( 0..field_types.len() )
-    .map( | index | 
-      {
-        let index = index.to_string().parse::< TokenStream >().unwrap();
+  .map( | index |
+    {
+      let index = index.to_string().parse::< TokenStream >().unwrap();
         qt!( src.#index )
-      } )
-      .collect();
+    } )
+  .collect();
 
   qt! 
   {
