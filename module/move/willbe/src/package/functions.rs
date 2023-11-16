@@ -180,7 +180,7 @@ mod private
 
     let _packages = metadata.packages.iter().filter( | package |
     {
-      if package.publish.is_none() && package.manifest_path.starts_with("D:\\work\\wTools\\module\\move")
+      if package.publish.is_none()
       {
         packages_map.insert( package.name.clone(), *package );
 
@@ -193,13 +193,13 @@ mod private
     packages_map
   }
 
-  pub fn filter_by_path( metadata : &Metadata, filter_path: PathBuf ) -> HashMap< String, &Package >
+  pub fn filter_by_path<'a>( metadata : &'a Metadata, filter_path: &'a PathBuf ) -> HashMap< String, &'a Package >
   {
     let mut packages_map = HashMap::new();
 
     let _packages = metadata.packages.iter().filter( | package |
       {
-        if package.publish.is_none() && package.manifest_path.starts_with(&filter_path )
+        if package.publish.is_none() && package.manifest_path.starts_with(filter_path )
         {
           packages_map.insert( package.name.clone(), *package );
 
@@ -318,6 +318,20 @@ mod private
 
     names
   }
+
+  pub fn toposort_with_filter( packages : &HashMap< String, &Package >, filter_path: &PathBuf ) -> Vec< String >
+  {
+    let deps = graph_build_with_filter( packages, filter_path );
+
+    let sorted = pg_toposort( &deps, None ).expect( "Failed to process toposort for packages" );
+    let names = sorted
+      .iter()
+      .rev()
+      .map( | dep_idx | deps.node_weight( *dep_idx ).unwrap().to_string() )
+      .collect::< Vec< String > >();
+
+    names
+  }
 }
 
 //
@@ -328,10 +342,12 @@ crate::mod_interface!
   protected( crate ) use publish;
 
   protected( crate ) use filter;
+  protected( crate ) use filter_by_path;
   protected( crate ) use local_path_get;
 
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
+  protected( crate ) use toposort_with_filter;
 
   orphan use LocalDependenciesOptions;
   orphan use local_dependencies;

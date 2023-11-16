@@ -19,10 +19,10 @@ mod private
   use wca::wtools::Itertools;
   use convert_case::Case;
   use convert_case::Casing;
-  use std::fs::{Metadata, OpenOptions};
+  use std::fs::OpenOptions;
 
   use anyhow::*;
-  use crate::package::functions::toposort;
+  use crate::package::functions::toposort_with_filter;
 
   use crate::package::functions;
 
@@ -30,19 +30,18 @@ mod private
   pub fn table_create() -> Result< () >
   {
     let metadata = MetadataCommand::new()
-      .no_deps()
-      .exec()?;
+    .no_deps()
+    .exec()?;
     let workspace_root = workspace_root(&metadata)?;
-
-    let packages_map = functions::filter( &metadata);
-    let r = toposort(&packages_map);
-    dbg!(r);
-
-    // let core_directories = directory_names( workspace_root.join( "module" ).join( "core" ) )?;
-    // let move_directories = directory_names( workspace_root.join( "module" ).join( "move" ) )?;
-    // let core_table = table_prepare( core_directories , "core".into() );
-    // let move_table = table_prepare( move_directories, "move".into() );
-    // tables_write_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ] )?;
+    let core_root = workspace_root.join( "module" ).join( "core" );
+    let move_root = workspace_root.join( "module" ).join( "move" );
+    let core_packages_map = functions::filter_by_path( &metadata, &core_root );
+    let move_packages_map = functions::filter_by_path( &metadata, &move_root );
+    let core_directories = toposort_with_filter(&core_packages_map, &core_root );
+    let move_directories = toposort_with_filter(&move_packages_map, &move_root );
+    let core_table = table_prepare( core_directories , "core".into() );
+    let move_table = table_prepare( move_directories, "move".into() );
+    tables_write_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ] )?;
     Ok( () )
   }
 
