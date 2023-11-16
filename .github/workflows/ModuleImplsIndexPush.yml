@@ -12,7 +12,7 @@ jobs :
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
-      manifest_path : 'module/rust/impls_index/Cargo.toml'
+      manifest_path : 'module/core/impls_index/Cargo.toml'
       module_name : 'impls_index'
       commit_message : ${{ github.event.head_commit.message }}
 
@@ -21,6 +21,6 @@ jobs :
   test_impls_index_meta :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
-      manifest_path : 'module/rust/impls_index_meta/Cargo.toml'
+      manifest_path : 'module/core/impls_index_meta/Cargo.toml'
       module_name : 'impls_index_meta'
       commit_message : ${{ github.event.head_commit.message }}
