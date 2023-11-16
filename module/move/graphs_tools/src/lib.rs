@@ -5,6 +5,7 @@
 #![ warn( rust_2018_idioms ) ]
 #![ deny( missing_debug_implementations ) ]
 #![ deny( missing_docs ) ]
+#![ deny( unused_imports ) ]
 
 // #![ feature( type_name_of_val ) ]
 // #![ feature( type_alias_impl_trait ) ]
