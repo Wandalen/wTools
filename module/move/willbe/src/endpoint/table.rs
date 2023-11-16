@@ -19,13 +19,9 @@ mod private
   use wca::wtools::Itertools;
   use convert_case::Case;
   use convert_case::Casing;
-  use std::fs::
-  { 
-    OpenOptions
-  };
+  use std::fs::{Metadata, OpenOptions};
 
   use anyhow::*;
-  use crate::manifest::Manifest;
   use crate::package::functions::toposort;
 
   use crate::package::functions;
@@ -33,17 +29,15 @@ mod private
   /// Create table
   pub fn table_create() -> Result< () >
   {
-    let workspace_root = workspace_root()?;
-
-    let package_metadata = MetadataCommand::new()
+    let metadata = MetadataCommand::new()
       .no_deps()
       .exec()?;
+    let workspace_root = workspace_root(&metadata)?;
 
-    let packages_map = functions::filter( &package_metadata );
+    let packages_map = functions::filter( &metadata);
     let r = toposort(&packages_map);
     dbg!(r);
 
-    // let sorted = toposort()
     // let core_directories = directory_names( workspace_root.join( "module" ).join( "core" ) )?;
     // let move_directories = directory_names( workspace_root.join( "module" ).join( "move" ) )?;
     // let core_table = table_prepare( core_directories , "core".into() );
@@ -92,10 +86,9 @@ mod private
     table
   }
 
-  fn workspace_root() -> Result< PathBuf >
+  fn workspace_root(metadata: &cargo_metadata::Metadata) -> Result< PathBuf >
   {
-    let metadata = MetadataCommand::new().no_deps().exec()?;
-    Ok( metadata.workspace_root.into_std_path_buf() )
+    Ok( metadata.workspace_root.clone().into_std_path_buf() )
   }
 
   fn tables_write_into_file( file_path: PathBuf, params: Vec< String >) -> Result< () >
