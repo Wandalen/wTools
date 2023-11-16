@@ -2,7 +2,7 @@
 mod private {
   use std::path::PathBuf;
 
-  use crate::{ wtools, endpoint };
+  use crate::{ wtools, endpoint, path };
 
 	use anyhow::Ok;
   use wca::{ Args, Props };
@@ -11,24 +11,18 @@ mod private {
 	/// run all tests in all crates
 	pub fn run_tests( ( args, _ ) : ( Args, Props ) ) -> Result< () >
 	{
-		let mut patterns : Vec< PathBuf > = args.get_owned( 0 ).unwrap_or_default();
-		if patterns.is_empty()
-    {
-      patterns.push( "./".into() );
-    }
+		let path : PathBuf = args.get_owned( 0 ).unwrap_or_else(|| "./".into() );
+    let path = path::canonicalize(path)?;
 
-		for pattern in patterns
+    match endpoint::run_tests( &path )
     {
-      match endpoint::run_tests( &pattern )
+      core::result::Result::Ok( report ) =>
       {
-        core::result::Result::Ok( report ) =>
-        {
-          println!( "{report:#?} ");
-        }
-        Err( e ) =>
-        {
-          return Err( e.context( "package test command" ) );
-        }
+        println!( "{report} ");
+      }
+      Err( e ) =>
+      {
+        return Err( e.context( "package test command" ) );
       }
     }
 

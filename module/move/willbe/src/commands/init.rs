@@ -96,7 +96,7 @@ pub( crate ) mod private
     .hint("Run all tests in all crates")
     .long_hint( "Run all tests in all crates" )
     .phrase("tests.run")
-    .subject( "A path to directories with packages.", Type::List( Type::Path.into(), ',' ), true )
+    .subject( "A path to directories with packages.", Type::Path, true )
     .form();
 
     vec!
