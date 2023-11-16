@@ -114,7 +114,7 @@ tests_impls!
     #[ clone_dyn ]
     trait Trait2< T1 : Copy, T2 : Copy >
     where
-      T2 : Clone + fmt::Debug,
+      T2 : Clone + std::fmt::Debug,
     {
     }
 
