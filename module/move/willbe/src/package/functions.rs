@@ -219,9 +219,9 @@ mod private
     {
       LocalDependenciesSort::Unordered => {},
       LocalDependenciesSort::Topological =>
-        {
-          output = toposort_by_paths( &metadata, &output );
-        },
+      {
+        output = toposort_by_paths( &metadata, &output );
+      },
     }
 
     Ok( output )
@@ -308,10 +308,10 @@ mod private
   pub fn toposort_by_paths( metadata : &Metadata, paths : &[ PathBuf ] ) -> Vec< PathBuf >
   {
     let map = metadata.packages
-      .iter()
-      .filter( | x | paths.contains( &x.manifest_path.as_std_path().parent().unwrap().to_path_buf() ) )
-      .map( | p | ( p.name.clone(), p ) )
-      .collect::< HashMap< _, _ > >();
+    .iter()
+    .filter( | x | paths.contains( &x.manifest_path.as_std_path().parent().unwrap().to_path_buf() ) )
+    .map( | p | ( p.name.clone(), p ) )
+    .collect::< HashMap< _, _ > >();
 
     toposort( &map ).into_iter().map( | name | map[ &name ].manifest_path.parent().unwrap().to_path_buf().into_std_path_buf() ).collect()
   }
