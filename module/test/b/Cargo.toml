@@ -2,6 +2,10 @@
 name = "test_experimental_b"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+description = """
+Module publishing test
+"""
 
 [dependencies]
 test_experimental_c = { workspace = true }
