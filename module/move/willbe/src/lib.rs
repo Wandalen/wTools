@@ -41,6 +41,10 @@ wtools::meta::mod_interface!
   #[ cfg( not( feature = "no_std" ) ) ]
   layer version;
 
+  /// Git library.
+  #[ cfg( not( feature = "no_std" ) ) ]
+  layer git;
+
   #[ cfg( not( feature = "no_std" ) ) ]
   prelude use ::std::env;
   // protected( crate ) use wtools::prelude::*;
