@@ -23,6 +23,7 @@ mod private
   { 
     OpenOptions
   };
+  use std::path::Path;
 
   use anyhow::
   {
@@ -40,7 +41,7 @@ mod private
     let move_directories = directory_names( workspace_root.join( "module" ).join( "move" ) )?;
     let core_table = table_prepare( core_directories , "core".into() );
     let move_table = table_prepare( move_directories, "move".into() );
-    let read_me_path = readme_path(workspace_root).ok_or( anyhow!("Cannot found README.md file") )?;
+    let read_me_path = readme_path(&workspace_root).ok_or( anyhow!("Cannot found README.md file") )?;
     tables_write_into_file( read_me_path, vec![ core_table, move_table ] )?;
     Ok( () )
   }
@@ -96,9 +97,9 @@ mod private
     let header = "| Module | Stability | Master | Alpha | Docs | Online |\n|--------|-----------|--------|-------|:----:|:------:|\n";
 
     let mut file = OpenOptions::new()
-      .read( true )
-      .write( true )
-      .open( &file_path )?;
+    .read( true )
+    .write( true )
+    .open( &file_path )?;
 
     let mut contents = Vec::new();
     file.read_to_end( &mut contents )?;
@@ -109,19 +110,18 @@ mod private
     let move_new_text = &format!( "{move_old_text}\n{}{}", &header, params[ 0 ] );
 
     let updated_contents = contents
-      .windows(core_old_text.len())
-      .enumerate()
-      .fold(Vec::new(), | mut acc, ( index, window ) | 
-        {
-          match ( window == core_old_text.as_bytes(), window == move_old_text.as_bytes() ) 
-          {
-            ( true, false ) => acc.extend_from_slice( core_new_text.as_bytes() ), 
-            ( false, true ) => acc.extend_from_slice( move_new_text.as_bytes() ),
-            ( false, false ) | ( true, true ) => acc.push( contents[ index ] ), 
-          }
-          acc
-        }
-      );
+    .windows(core_old_text.len())
+    .enumerate()
+    .fold(Vec::new(), | mut acc, ( index, window ) |
+    {
+      match ( window == core_old_text.as_bytes(), window == move_old_text.as_bytes() )
+      {
+        ( true, false ) => acc.extend_from_slice( core_new_text.as_bytes() ),
+        ( false, true ) => acc.extend_from_slice( move_new_text.as_bytes() ),
+        ( false, false ) | ( true, true ) => acc.push( contents[ index ] ),
+      }
+      acc
+    });
 
     file.set_len( 0 )?;
     file.seek( SeekFrom::Start( 0 ) )?;
@@ -136,29 +136,32 @@ mod private
   /// This function attempts to find a README file in the following subdirectories: ".github",
   /// the root directory, and "./docs". It returns the path to the first found README file, or
   /// `None` if no README file is found in any of these locations.
-  fn readme_path( dir_path: PathBuf ) -> Option< PathBuf >
+  fn readme_path( dir_path : &Path ) -> Option< PathBuf >
   {
-    if let Some( path )  = readme_in_dir_find(dir_path.join( "./.github" ))
+    if let Some( path )  = readme_in_dir_find( &dir_path.join( ".github" ) )
     {
-      return Some( path );
+      Some( path )
     } 
-    else if let Some( path )  = readme_in_dir_find( dir_path.clone() )
+    else if let Some( path )  = readme_in_dir_find( dir_path )
     {
-      return Some( path );
+      Some( path )
     }
-    else if let Some( path )  = readme_in_dir_find( dir_path.join( "./docs" ) )
+    else if let Some( path )  = readme_in_dir_find( &dir_path.join( "docs" ) )
     {
-        return Some( path );
-    }   
-    None
+      Some( path )
+    }
+    else
+    {
+      None
+    }
   }
 
-  #[cfg( target_os = "windows" ) ]
+  #[ cfg( target_os = "windows" ) ]
   /// Searches for a file named "readme.md" in the specified directory path.
   ///
   /// Given a directory path, this function appends "readme.md" to it and checks if the resulting
   /// file exists.
-  fn readme_in_dir_find(dir_path: PathBuf ) -> Option< PathBuf >
+  fn readme_in_dir_find( dir_path : &Path ) -> Option< PathBuf >
   {
     let path = dir_path.join( "readme.md" );
     if path.exists()
@@ -169,34 +172,29 @@ mod private
   }
 
 
-  #[cfg(not( target_os = "windows"))]
+  #[ cfg( not ( target_os = "windows" ) ) ]
   /// Searches for a file named "readme.md" in the specified directory path.
   ///
   /// Given a directory path, this function searches for a file named "readme.md" in the specified
   /// directory.
-  fn readme_in_dir_find(path: PathBuf ) -> Option< PathBuf >
+  fn readme_in_dir_find( path: PathBuf ) -> Option< PathBuf >
   {
-    if let Ok( dir ) = fs::read_dir( path )
+    fs::read_dir( path )
+    .ok()?
+    .filter_map( Result::ok )
+    .filter( | p | p.path().is_file() )
+    .filter_map( | f |
     {
-      let res = dir
-      .filter_map( Result::ok )
-      .filter( | p | p.path().is_file() )
-      .filter_map( | f |
+      let l_f = f.file_name().to_ascii_lowercase();
+      if l_f == "readme.md"
       {
-        let l_f = f.file_name().to_ascii_lowercase();
-        if l_f == "readme.md"
-        {
-          return Some( f.file_name() )
-        }
-        None
-      } )
-      .max()
-      .map( PathBuf::from );
-      return res;
-    }
-    None
+        return Some( f.file_name() )
+      }
+      None
+    })
+    .max()
+    .map( PathBuf::from )
   }
-
 }
 
 
