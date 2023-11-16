@@ -12,7 +12,7 @@ jobs :
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
-      manifest_path : 'module/rust/proc_macro_tools/Cargo.toml'
+      manifest_path : 'module/alias/proc_macro_tools/Cargo.toml'
       module_name : 'proc_macro_tools'
       commit_message : ${{ github.event.head_commit.message }}
 
@@ -27,9 +27,9 @@ jobs :
 
   # macro_tools
 
-  test_macro_tools :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
-    with :
-      manifest_path : 'module/alias/macro_tools/Cargo.toml'
-      module_name : 'macro_tools'
-      commit_message : ${{ github.event.head_commit.message }}
+  # test_macro_tools :
+  #   uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+  #   with :
+  #     manifest_path : 'module/alias/macro_tools/Cargo.toml'
+  #     module_name : 'macro_tools'
+  #     commit_message : ${{ github.event.head_commit.message }}

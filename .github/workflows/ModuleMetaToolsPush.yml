@@ -12,15 +12,15 @@ jobs :
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
-      manifest_path : 'module/rust/meta_tools/Cargo.toml'
+      manifest_path : 'module/core/meta_tools/Cargo.toml'
       module_name : 'meta_tools'
       commit_message : ${{ github.event.head_commit.message }}
 
   # meta_tools_min
 
-  test_meta_tools_min :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
-    with :
-      manifest_path : 'module/rust/meta_tools_min/Cargo.toml'
-      module_name : 'meta_tools_min'
-      commit_message : ${{ github.event.head_commit.message }}
+  # test_meta_tools_min :
+  #   uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+  #   with :
+  #     manifest_path : 'module/rust/meta_tools_min/Cargo.toml'
+  #     module_name : 'meta_tools_min'
+  #     commit_message : ${{ github.event.head_commit.message }}

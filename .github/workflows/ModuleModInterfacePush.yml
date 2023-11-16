@@ -12,7 +12,7 @@ jobs :
   test_mod_interface :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
-      manifest_path : 'module/rust/mod_interface/Cargo.toml'
+      manifest_path : 'module/core/mod_interface/Cargo.toml'
       module_name : 'mod_interface'
       commit_message : ${{ github.event.head_commit.message }}
 
@@ -21,7 +21,7 @@ jobs :
   test_mod_interface_meta :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
-      manifest_path : 'module/rust/mod_interface_meta/Cargo.toml'
+      manifest_path : 'module/core/mod_interface_meta/Cargo.toml'
       module_name : 'mod_interface_meta'
       commit_message : ${{ github.event.head_commit.message }}
 
