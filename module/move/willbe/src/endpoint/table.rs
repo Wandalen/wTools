@@ -23,22 +23,72 @@ mod private
   { 
     OpenOptions
   };
+  use std::str::FromStr;
 
   use anyhow::*;
+
+  lazy_static::lazy_static!{
+    static ref TAG_TEMPLATE: regex::bytes::Regex = regex::bytes::Regex::new(r#"<!--\{ generate.healthtable\( '(\w+/\w+)' \) \} -->"#).unwrap();
+    static ref CLOUSE_TAG: regex::bytes::Regex = regex::bytes::Regex::new(r#"<!--\{ generate\.healthtable\.end \} -->"#).unwrap();
+  }
 
   /// Create table
   pub fn table_create() -> Result< () >
   {
     let workspace_root = workspace_root()?;
-    let core_directories = directory_names( workspace_root.join( "module" ).join( "core" ) )?;
-    let move_directories = directory_names( workspace_root.join( "module" ).join( "move" ) )?;
-    let core_table = table_prepare( core_directories , "core".into() );
-    let move_table = table_prepare( move_directories, "move".into() );
-    tables_write_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ] )?;
+    let read_me_path = workspace_root.join("Readme.md");
+    let mut file = OpenOptions::new()
+      .read( true )
+      .write( true )
+      .open( &read_me_path )?;
+
+    let mut contents = Vec::new();
+
+    file.read_to_end( &mut contents )?;
+    let mut buffer = vec![];
+    let open_caps = TAG_TEMPLATE.captures_iter( &*contents );
+    let close_caps = CLOUSE_TAG.captures_iter( &*contents );
+    let mut tags_clousures = vec![];
+    let mut tables = vec![];
+    for c in open_caps.zip( close_caps )
+    {
+      for c in c.0.iter().zip( c.1.iter() )
+      {
+        if let ( Some( open ), Some( close ) ) = c
+        {
+          let path_content = &mut "".to_string();
+          let _ = open.as_bytes().read_to_string(path_content);
+          let module_path =
+            PathBuf::from_str(
+            std::str::from_utf8(
+              TAG_TEMPLATE.captures(path_content.as_bytes())
+                .ok_or(anyhow!("Fail to parse tag"))?
+                .get(1)
+                .ok_or(anyhow!("Fail to parse group"))?
+                .as_bytes())?)?;
+          tables.push(table_prepare(directory_names(&module_path)?, module_path.to_string_lossy().into()));
+          tags_clousures.push( ( open.end(), close.start() ) );
+        }
+      }
+    }
+    let mut start: usize = 0;
+    for ( t_c, con ) in tags_clousures.iter().zip( tables.iter() )
+    {
+      copy_range_to_target( &*contents, &mut buffer, start, t_c.0 )?;
+      copy_range_to_target( con.as_bytes(), &mut buffer, 0,con.len()-1 )?;
+      start = t_c.1;
+    }
+    copy_range_to_target( &*contents,&mut buffer,start,contents.len()-1 )?;
+
+    file.set_len( 0 )?;
+    file.seek( SeekFrom::Start( 0 ) )?;
+
+    file.write_all( &buffer )?;
+
     Ok( () )
   }
 
-  fn directory_names( path: PathBuf ) -> Result< Vec< String > >
+  fn directory_names( path: &PathBuf ) -> Result< Vec< String > >
   {
     let mut result = vec![];
     let entries = fs::read_dir( path )?;
@@ -59,13 +109,14 @@ mod private
 
   fn table_prepare( modules: Vec< String >, dir: String ) -> String
   {
-    let table = modules
+    let table_header = "| Module | Stability | Master | Alpha | Docs | Online |\n|--------|-----------|--------|-------|:----:|:------:|";
+    let table_content = modules
     .into_iter()
     .map
     (
       | ref module_name | 
       {
-        let column_module = format!( "[{}](./module/{}/{})", &module_name, &dir, &module_name ); 
+        let column_module = format!( "[{}](./{}/{})", &module_name, &dir, &module_name );
         let column_stability = format!( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)" );
         let column_master = format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch=master)](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml)", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) );
         let column_alpha = format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch=alpha)](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml)", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) );
@@ -75,7 +126,7 @@ mod private
       }
     )
     .join( "\n" );
-    table
+    format!( "{table_header}\n{table_content}\n" )
   }
 
   fn workspace_root() -> Result< PathBuf >
@@ -84,44 +135,13 @@ mod private
     Ok( metadata.workspace_root.into_std_path_buf() )
   }
 
-  fn tables_write_into_file( file_path: PathBuf, params: Vec< String >) -> Result< () >
-  {
-    let header = "| Module | Stability | Master | Alpha | Docs | Online |\n|--------|-----------|--------|-------|:----:|:------:|\n";
-
-    let mut file = OpenOptions::new()
-      .read( true )
-      .write( true )
-      .open( &file_path )?;
-
-    let mut contents = Vec::new();
-    file.read_to_end( &mut contents )?;
-
-    let core_old_text = "<!-- {{# generate.modules_index{core} #}} -->";
-    let core_new_text = &format!( "{core_old_text}\n{}{}", &header, params[ 0 ] );
-    let move_old_text = "<!-- {{# generate.modules_index{move} #}} -->";
-    let move_new_text = &format!( "{move_old_text}\n{}{}", &header, params[ 0 ] );
-
-    let updated_contents = contents
-      .windows(core_old_text.len())
-      .enumerate()
-      .fold(Vec::new(), | mut acc, ( index, window ) | 
-        {
-          match ( window == core_old_text.as_bytes(), window == move_old_text.as_bytes() ) 
-          {
-            ( true, false ) => acc.extend_from_slice( core_new_text.as_bytes() ), 
-            ( false, true ) => acc.extend_from_slice( move_new_text.as_bytes() ),
-            ( false, false ) | ( true, true ) => acc.push( contents[ index ] ), 
-          }
-          acc
-        }
-      );
-
-    file.set_len( 0 )?;
-    file.seek( SeekFrom::Start( 0 ) )?;
-
-    file.write_all( &updated_contents )?;
-
-    Ok( () )
+  fn copy_range_to_target<T: Clone>(source: &[T], target: &mut Vec<T>, a: usize, b: usize) -> Result<()> {
+    if a < source.len() && b < source.len() && a <= b {
+      target.extend_from_slice(&source[a..=b]);
+      return Ok( () )
+    } else {
+      bail!("Incorrect indexes")
+    }
   }
 }
 
