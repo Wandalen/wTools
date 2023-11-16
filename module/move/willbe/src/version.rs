@@ -1,6 +1,7 @@
 /// Internal namespace.
 mod private
 {
+  /// Bump version.
   pub fn bump( version : &str ) -> anyhow::Result< String >
   {
     let mut splits : Vec< &str > = version.split( '.' ).collect();
@@ -17,5 +18,5 @@ mod private
 crate::mod_interface!
 {
   /// Bump version.
-  protected( crate ) use bump;
+  protected use bump;
 }
