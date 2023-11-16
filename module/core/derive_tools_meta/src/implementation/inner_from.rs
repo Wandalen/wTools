@@ -29,19 +29,19 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
     ( _, Some( field_names ) ) => 
     {
       let params: Vec< TokenStream > = field_names.iter()
-        .map( | field_name | qt! { src.#field_name } )
-        .collect();
+      .map( | field_name | qt! { src.#field_name } )
+      .collect();
       generate_from_impl_multiple_fields( item_name, &field_types, &params )
     }
     ( _, None ) => 
     {
       let params: Vec< TokenStream > = ( 0..field_types.len() )
-          .map( | index | 
-            {
-              let index: TokenStream = index.to_string().parse().unwrap();
-              qt! { src.#index }
-            })
-          .collect();
+      .map( | index |
+      {
+        let index: TokenStream = index.to_string().parse().unwrap();
+        qt! { src.#index }
+      })
+      .collect();
       generate_from_impl_multiple_fields( item_name, &field_types, &params )
     }
   };
