@@ -154,7 +154,10 @@ mod private
   }
 
   #[cfg( target_os = "windows" ) ]
-
+  /// Searches for a file named "readme.md" in the specified directory path.
+  ///
+  /// Given a directory path, this function appends "readme.md" to it and checks if the resulting
+  /// file exists.
   fn readme_in_dir_find(dir_path: PathBuf ) -> Option< PathBuf >
   {
     let path = dir_path.join( "readme.md" );
@@ -167,7 +170,10 @@ mod private
 
 
   #[cfg(not( target_os = "windows"))]
-
+  /// Searches for a file named "readme.md" in the specified directory path.
+  ///
+  /// Given a directory path, this function searches for a file named "readme.md" in the specified
+  /// directory.
   fn readme_in_dir_find(path: PathBuf ) -> Option< PathBuf >
   {
     if let Ok( dir ) = fs::read_dir( path )
@@ -190,6 +196,7 @@ mod private
     }
     None
   }
+
 }
 
 
