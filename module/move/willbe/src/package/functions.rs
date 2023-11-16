@@ -5,7 +5,6 @@ mod private
     fs,
     path::PathBuf,
     collections::{ HashMap, HashSet },
-    fmt::Write,
   };
   use std::path::Path;
   use cargo_metadata::
@@ -27,15 +26,19 @@ mod private
     digest,
     http,
   };
-  use crate::version::bump;
+  use crate::version;
   use anyhow::{ Context, Error, anyhow };
+  use toml_edit::value;
+
   use crate::path;
   use crate::wtools;
+
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
   {
     get_info : Option< process::CmdReport >,
+    bump : Option< String >,
     commit : Option< process::CmdReport >,
     push : Option< process::CmdReport >,
     publish : Option< process::CmdReport >,
@@ -54,59 +57,76 @@ mod private
     {
       return Ok( report );
     }
-    let data = manifest.manifest_data.as_deref_mut().ok_or( anyhow!( "Failed to get manifest data" ) ).map_err( | e | ( report.clone(), e ) )?;
 
     let mut package_dir = manifest.manifest_path.clone();
     package_dir.pop();
 
     let output = process::start_sync( "cargo package", &package_dir ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
+    if output.err.contains( "not yet committed")
+    {
+      return Err(( report, anyhow!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
+    }
     report.get_info = Some( output );
 
-    let name = &data[ "package" ][ "name" ].clone();
-    let name = name.as_str().ok_or( anyhow!( "Package has no name" ) ).map_err( | e | ( report.clone(), e ) )?;
-    let version = &data[ "package" ][ "version" ].clone();
-    let version = version.as_str().ok_or( anyhow!( "Package has no version" ) ).map_err( | e | ( report.clone(), e ) )?;
-    let local_package_path = local_path_get( name, version, &manifest.manifest_path );
-
-    let local_package = fs::read( local_package_path ).context( "Read local package" ).map_err( | e | ( report.clone(), e ) )?;
-    let remote_package = http::retrieve_bytes( name, version ).unwrap_or_default();
-
-    let digest_of_local = digest::hash( &local_package );
-    let digest_of_remote = digest::hash( &remote_package );
-
-    if digest_of_local != digest_of_remote
+    if publish_need( &manifest )
     {
-      data[ "package" ][ "version" ] = bump( version ).map_err( | e | ( report.clone(), e ) )?;
+      let data = manifest.manifest_data.as_deref_mut().ok_or( anyhow!( "Failed to get manifest data" ) ).map_err( | e | ( report.clone(), e ) )?;
+      let name = &data[ "package" ][ "name" ].clone();
+      let name = name.as_str().expect( "Name should be valid UTF-8" );
       let version = &data[ "package" ][ "version" ].clone();
-      let version = version.as_str().ok_or( anyhow!( "Failed to take package version after bump" ) ).map_err( | e | ( report.clone(), e ) )?;
-      manifest.store().map_err( | e | ( report.clone(), e ) )?;
+      let version = version.as_str().expect( "Version should be valid UTF-8" );
+      let new_version = version::bump( version ).map_err( | e | ( report.clone(), e ) )?;
 
       if dry
       {
-        let buf = format!( "git commit --dry-run -am \"{} v{}\"", name, version );
-        let output = process::start_sync( &buf, current_path ).context( "Dry commit while publishing" ).map_err( | e | ( report.clone(), e ) )?;
+        report.bump = Some( "Bump package version".into() );
+
+        let buf = format!( "git commit -am {}-v{}", name, new_version );
+        let output = process::CmdReport
+        {
+          command : buf,
+          path : current_path.clone(),
+          out : String::new(),
+          err : String::new(),
+        };
         report.commit = Some( output );
 
-        let output = process::start_sync( "git push --dry-run", current_path ).context( "Dry push while publishing" ).map_err( | e | ( report.clone(), e ) )?;
+        let buf = "git push".to_string();
+        let output = process::CmdReport
+        {
+          command : buf,
+          path : current_path.clone(),
+          out : String::new(),
+          err : String::new(),
+        };
         report.push = Some( output );
 
-        let output = process::start_sync( "cargo publish --dry-run --allow-dirty", &package_dir ).context( "Dry publish" ).map_err( | e | ( report.clone(), e ) )?;
+        let buf = "cargo publish".to_string();
+        let output = process::CmdReport
+        {
+          command : buf,
+          path : package_dir.clone(),
+          out : String::new(),
+          err : String::new(),
+        };
         report.publish = Some( output );
-
-        // ?
-        // let buf = format!( "git checkout {:?}", &package_dir );
-        // let output = process::start_sync( &buf, current_path )?;
       }
       else
       {
-        let buf = format!( "git commit -am \"{} v{}\"", name, version );
+        data[ "package" ][ "version" ] = value( &new_version );
+        manifest.store().map_err( | e | ( report.clone(), e ) )?;
+        report.bump = Some( "Bump package version".into() );
+
+        let buf = format!( "git commit -am {}-v{}", name, new_version );
         let output = process::start_sync( &buf, current_path ).context( "Commit changes while publishing" ).map_err( | e | ( report.clone(), e ) )?;
         report.commit = Some( output );
 
-        let output = process::start_sync( "git push", current_path ).context( "Push while publishing" ).map_err( | e | ( report.clone(), e ) )?;
+        let buf = "git push".to_string();
+        let output = process::start_sync( &buf, current_path ).context( "Push while publishing" ).map_err( | e | ( report.clone(), e ) )?;
         report.push = Some( output );
 
-        let output = process::start_sync( "cargo publish", &package_dir ).context( "Publish" ).map_err( | e | ( report.clone(), e ) )?;
+        let buf = "cargo publish".to_string();
+        let output = process::start_sync( &buf, &package_dir ).context( "Publish" ).map_err( | e | ( report.clone(), e ) )?;
         report.publish = Some( output );
       }
     }
@@ -117,24 +137,12 @@ mod private
   //
 
   #[ derive( Debug, Clone ) ]
-  /// Sorting variants for dependencies
-  pub enum LocalDependenciesSort
-  {
-    /// List will be topologically sorted.
-    Topological,
-    /// List will be unsorted.
-    Unordered,
-  }
-
-  #[ derive( Debug, Clone ) ]
-  /// Args for `local_dependencies` function.
+  /// Args for `local_dependencies` function
   pub struct LocalDependenciesOptions
   {
-    /// With dependencies of dependencies.
+    /// With dependencies of dependencies
     pub recursive : bool,
-    /// With sorting.
-    pub sort : LocalDependenciesSort,
-    /// Skip packages.
+    /// Skip packages
     pub exclude : HashSet< PathBuf >,
   }
 
@@ -145,7 +153,6 @@ mod private
       Self
       {
         recursive : true,
-        sort : LocalDependenciesSort::Unordered,
         exclude : HashSet::new(),
       }
     }
@@ -182,18 +189,7 @@ mod private
       }
     }
 
-    let mut output : Vec< _ > = output.into_iter().collect();
-
-    match opts.sort
-    {
-      LocalDependenciesSort::Unordered => {},
-      LocalDependenciesSort::Topological =>
-      {
-        output = toposort_by_paths( &metadata, &output );
-      },
-    }
-
-    Ok( output )
+    Ok( output.into_iter().collect() )
   }
 
   //
@@ -221,8 +217,7 @@ mod private
 
   pub fn local_path_get< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
   {
-    let mut buf = String::new();
-    write!( &mut buf, "package/{0}-{1}.crate", name, version ).unwrap();
+    let buf = format!( "package/{0}-{1}.crate", name, version );
 
     let package_metadata = MetadataCommand::new()
     .manifest_path( manifest_path )
@@ -275,19 +270,6 @@ mod private
 
   //
 
-  pub fn toposort_by_paths( metadata : &Metadata, paths : &[ PathBuf ] ) -> Vec< PathBuf >
-  {
-    let map = metadata.packages
-    .iter()
-    .filter( | x | paths.contains( &x.manifest_path.as_std_path().parent().unwrap().to_path_buf() ) )
-    .map( | p | ( p.name.clone(), p ) )
-    .collect::< HashMap< _, _ > >();
-
-    toposort( &map ).into_iter().map( | name | map[ &name ].manifest_path.parent().unwrap().to_path_buf().into_std_path_buf() ).collect()
-  }
-
-  //
-
   pub fn toposort( packages : &HashMap< String, &Package > ) -> Vec< String >
   {
     let deps = graph_build( packages );
@@ -300,6 +282,32 @@ mod private
     .collect::< Vec< String > >();
 
     names
+  }
+
+  //
+
+  /// Check if publish needed for a package
+  ///
+  /// Returns:
+  /// - true - need
+  /// - false - no need
+  ///
+  /// Panic: manifest must be loaded
+  pub fn publish_need( manifest : &manifest::Manifest ) -> bool
+  {
+    let data = manifest.manifest_data.as_ref().expect( "Manifest data doesn't loaded" );
+
+    let name = &data[ "package" ][ "name" ].clone();
+    let name = name.as_str().expect( "Name should be valid UTF-8" );
+    let version = &data[ "package" ][ "version" ].clone();
+    let version = version.as_str().expect( "Version should be valid UTF-8" );
+    let local_package_path = local_path_get( name, version, &manifest.manifest_path );
+
+    let local_package = fs::read( local_package_path ).expect( "Failed to read local package. Please, run `cargo package` before." );
+    // Is it ok? If there is any problem with the Internet, we will say that the packages are different.
+    let remote_package = http::retrieve_bytes( name, version ).unwrap_or_default();
+
+    digest::hash( &local_package ) != digest::hash( &remote_package )
   }
 }
 
@@ -316,7 +324,8 @@ crate::mod_interface!
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
 
-  orphan use LocalDependenciesSort;
+  protected use publish_need;
+
   orphan use LocalDependenciesOptions;
   orphan use local_dependencies;
 }
