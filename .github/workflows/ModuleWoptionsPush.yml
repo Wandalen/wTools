@@ -1,35 +1,35 @@
-name : woptions
+# name : woptions
 
-on : push
+# on : push
 
-env :
-  CARGO_TERM_COLOR : always
+# env :
+#   CARGO_TERM_COLOR : always
 
-jobs :
+# jobs :
 
   # woptions
 
-  test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
-    with :
-      manifest_path : 'module/rust/woptions/Cargo.toml'
-      module_name : 'woptions'
-      commit_message : ${{ github.event.head_commit.message }}
+  # test :
+  #   uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+  #   with :
+  #     manifest_path : 'module/rust/woptions/Cargo.toml'
+  #     module_name : 'woptions'
+  #     commit_message : ${{ github.event.head_commit.message }}
 
   # woptions_meta
 
-  test_woptions_meta :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
-    with :
-      manifest_path : 'module/rust/woptions_meta/Cargo.toml'
-      module_name : 'woptions_meta'
-      commit_message : ${{ github.event.head_commit.message }}
+  # test_woptions_meta :
+  #   uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+  #   with :
+  #     manifest_path : 'module/rust/woptions_meta/Cargo.toml'
+  #     module_name : 'woptions_meta'
+  #     commit_message : ${{ github.event.head_commit.message }}
 
-  # woptions_runtime
+  # # woptions_runtime
 
-  test_woptions_runtime :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
-    with :
-      manifest_path : 'module/rust/woptions_runtime/Cargo.toml'
-      module_name : 'woptions_runtime'
-      commit_message : ${{ github.event.head_commit.message }}
+  # test_woptions_runtime :
+  #   uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+  #   with :
+  #     manifest_path : 'module/rust/woptions_runtime/Cargo.toml'
+  #     module_name : 'woptions_runtime'
+  #     commit_message : ${{ github.event.head_commit.message }}
