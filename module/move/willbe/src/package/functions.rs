@@ -134,15 +134,25 @@ mod private
     Ok( report )
   }
 
-  //
+  /// Sorting variants for dependencies.
+  #[ derive( Debug, Copy, Clone ) ]
+  pub enum LocalDependenciesSort
+  {
+    /// List will be topologically sorted.
+    Topological,
+    /// List will be unsorted.
+    Unordered,
+  }
 
   #[ derive( Debug, Clone ) ]
-  /// Args for `local_dependencies` function
+  /// Args for `local_dependencies` function.
   pub struct LocalDependenciesOptions
   {
-    /// With dependencies of dependencies
+    /// With dependencies of dependencies.
     pub recursive : bool,
-    /// Skip packages
+    /// With sorting.
+    pub sort : LocalDependenciesSort,
+    /// Skip packages.
     pub exclude : HashSet< PathBuf >,
   }
 
@@ -153,6 +163,7 @@ mod private
       Self
       {
         recursive : true,
+        sort : LocalDependenciesSort::Unordered,
         exclude : HashSet::new(),
       }
     }
@@ -161,8 +172,15 @@ mod private
   //
 
   /// Returns local dependencies of specified package by its manifest path from a workspace
-  pub fn local_dependencies( metadata : &Metadata, manifest_path : &Path, mut opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
+  pub fn local_dependencies( metadata : &Metadata, manifest_path : &Path, opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
   {
+    let LocalDependenciesOptions
+    {
+      recursive,
+      sort,
+      mut exclude,
+    } = opts;
+
     let manifest_path = path::canonicalize( manifest_path )?;
 
     let deps = metadata
@@ -177,19 +195,36 @@ mod private
 
     let mut output = deps.clone();
 
-    if opts.recursive
+    if recursive
     {
       for dep in &deps
       {
-        if !opts.exclude.contains( dep )
+        if !exclude.contains( dep )
         {
-          opts.exclude.insert( dep.clone() );
-          output.extend( local_dependencies( metadata, &dep.join( "Cargo.toml" ), opts.clone() )? );
+          exclude.insert( dep.clone() );
+          let rebuild_opts = LocalDependenciesOptions
+          {
+            recursive,
+            sort,
+            exclude: exclude.clone(),
+          };
+          output.extend( local_dependencies( metadata, &dep.join( "Cargo.toml" ), rebuild_opts )? );
         }
       }
     }
 
-    Ok( output.into_iter().collect() )
+    let mut output : Vec< _ > = output.into_iter().collect();
+
+    match sort
+    {
+      LocalDependenciesSort::Unordered => {},
+      LocalDependenciesSort::Topological =>
+        {
+          output = toposort_by_paths( &metadata, &output );
+        },
+    }
+
+    Ok( output )
   }
 
   //
@@ -270,6 +305,19 @@ mod private
 
   //
 
+  pub fn toposort_by_paths( metadata : &Metadata, paths : &[ PathBuf ] ) -> Vec< PathBuf >
+  {
+    let map = metadata.packages
+      .iter()
+      .filter( | x | paths.contains( &x.manifest_path.as_std_path().parent().unwrap().to_path_buf() ) )
+      .map( | p | ( p.name.clone(), p ) )
+      .collect::< HashMap< _, _ > >();
+
+    toposort( &map ).into_iter().map( | name | map[ &name ].manifest_path.parent().unwrap().to_path_buf().into_std_path_buf() ).collect()
+  }
+
+  //
+
   pub fn toposort( packages : &HashMap< String, &Package > ) -> Vec< String >
   {
     let deps = graph_build( packages );
@@ -326,6 +374,7 @@ crate::mod_interface!
 
   protected use publish_need;
 
+  orphan use LocalDependenciesSort;
   orphan use LocalDependenciesOptions;
   orphan use local_dependencies;
 }

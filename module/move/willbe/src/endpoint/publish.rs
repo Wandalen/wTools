@@ -7,6 +7,7 @@ mod private
   {
     files,
     manifest,
+    path,
   };
   use anyhow::Error;
   use std::
@@ -58,21 +59,7 @@ mod private
     let mut paths = HashSet::new();
     for pattern in &patterns
     {
-      let current_path = std::path::Path::new( pattern ).canonicalize().map_err( | e | ( report.clone(), e.into() ) )?;
-      #[ cfg( target_os = "windows" ) ] // canonicalization on windows adds `\\?\` prefix
-      let current_path =
-      {
-        const VERBATIM_PREFIX : &str = r#"\\?\"#;
-        let p = current_path.display().to_string();
-        if p.starts_with( VERBATIM_PREFIX )
-        {
-          PathBuf::from( &p[ VERBATIM_PREFIX.len() .. ] )
-        }
-        else
-        {
-         current_path
-        }
-      };
+      let current_path = path::canonicalize( pattern ).map_err( | e | ( report.clone(), e.into() ) )?;
       let current_paths = files::find( current_path, &[ "**/Cargo.toml" ] );
       paths.extend( current_paths );
     }
@@ -90,7 +77,7 @@ mod private
           ( report.clone(), e.context( "Publish list of packages" ).into() )
         }
       )?;
-      report.packages.push(( path, current_report.clone() ));
+      report.packages.push(( path, current_report ));
     }
 
     Ok( report )
