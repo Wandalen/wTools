@@ -53,11 +53,14 @@ fn generate_from_impl_named( item_name: syn::Ident, field_type: &syn::Type, fiel
   qt! 
   {
     #[ automatically_derived ]
+    // impl From< MyStruct > for i32
     impl From< #item_name > for #field_type 
     {
       #[ inline( always ) ]
+      // fm from( src: MyStruct ) -> Self
       fn from( src: #item_name ) -> Self 
       {
+        // src.a
         src.#field_name
       }
     }
@@ -69,9 +72,11 @@ fn generate_from_impl( item_name: syn::Ident, field_type: &syn::Type ) -> TokenS
   qt! 
   {
     #[ automatically_derived ]
+    // impl From< IsTransparent> for bool
     impl From< #item_name > for #field_type 
     {
       #[ inline( always ) ]
+      // fn from( src: IsTransparent ) -> Self
       fn from( src: #item_name ) -> Self 
       {
         src.0
@@ -85,11 +90,14 @@ fn generate_from_impl_multiple_fields ( item_name: syn::Ident, field_types: &Vec
   qt! 
   {
     #[ automatically_derived ]
+    // impl From< StructWithManyFields > for ( i32, bool )
     impl From< #item_name > for ( #(#field_types), *) 
     {
       #[ inline( always ) ]
-      fn from( src: #item_name ) -> Self 
+      // fn from( src: StructWithManyFields ) -> Self
+      fn from( src: #item_name ) -> Self
       {
+        //( src.0, src.1 )
         (#(#params), *)
       }
     }
@@ -101,9 +109,11 @@ fn generate_unit( item_name: syn::Ident ) -> TokenStream
   qt!
   {
     #[ automatically_derived ]
+    // impl From< UnitStruct > for ()
     impl From< #item_name > for () 
     {
       #[ inline( always ) ]
+      // fn from( src: UnitStruct ) -> ()
       fn from( src: #item_name ) -> ()
       {
         ()
