@@ -5,6 +5,7 @@ pub( crate ) mod private
   use core::fmt;
   use core::hash::Hash;
   use core::cmp::{ PartialEq, Eq };
+  #[ allow( unused_imports ) ]
   use crate::dt::prelude::*;
 
   // types!
@@ -113,7 +114,7 @@ pub( crate ) mod private
   // =
   //
 
-  types!
+  type_constructor::types!
   {
     /// Identify an instance by integer.
     #[ derive( PartialEq, Eq, Copy, Clone, Hash ) ]
