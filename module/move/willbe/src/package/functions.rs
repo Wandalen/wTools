@@ -48,7 +48,7 @@ mod private
   /// Publish single packages.
   ///
 
-  pub fn publish( _current_path : &PathBuf, path : &PathBuf, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
+  pub fn publish_single( path : &Path, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
 
@@ -320,7 +320,7 @@ mod private
 crate::mod_interface!
 {
   protected( crate ) use PublishReport;
-  protected( crate ) use publish;
+  protected( crate ) use publish_single;
 
   protected( crate ) use filter;
   protected( crate ) use local_path_get;

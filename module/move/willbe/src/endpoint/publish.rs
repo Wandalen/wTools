@@ -12,7 +12,6 @@ mod private
   use anyhow::Error;
   use std::
   {
-    env,
     path::PathBuf,
     collections::HashSet,
   };
@@ -55,7 +54,6 @@ mod private
   {
     let mut report = PublishReport::default();
 
-    let current_path = env::current_dir().map_err( | e | ( report.clone(), e.into() ) )?;
     let mut paths = HashSet::new();
     for pattern in &patterns
     {
@@ -68,7 +66,7 @@ mod private
 
     for path in paths
     {
-      let current_report = package::publish( &current_path, &path, dry )
+      let current_report = package::publish_single( &path, dry )
       .map_err
       (
         | ( current_report, e ) |
@@ -91,8 +89,6 @@ mod private
   {
     let mut report = PublishReport::default();
 
-    let current_path = env::current_dir().map_err( | e | ( report.clone(), e.into() ) )?;
-
     let mut manifest = manifest::Manifest::new();
     let manifest_path = manifest.manifest_path_from_str( &path_to_workspace ).map_err( | e | ( report.clone(), e.into() ) )?;
     let package_metadata = MetadataCommand::new()
@@ -106,13 +102,13 @@ mod private
 
     for name in sorted.iter()
     {
-      let path = packages_map[ name ].manifest_path.clone().into();
-      package::publish( &current_path, &path, dry )
+      let path = packages_map[ name ].manifest_path.as_std_path();
+      package::publish_single( path, dry )
       .map_err
       (
         | ( current_report, e ) |
         {
-          report.packages.push(( path, current_report.clone() ));
+          report.packages.push(( path.to_path_buf(), current_report.clone() ));
           ( report.clone(), e.context( "Publish list of packages" ).into() )
         }
       )?;
