@@ -29,6 +29,8 @@ mod private
     MetadataCommand,
     Package
   };
+  use petgraph::prelude::{ Dfs, EdgeRef };
+  use petgraph::visit::Topo;
   use crate::manifest;
 
   /// Args for `list` endpoint.
@@ -178,18 +180,21 @@ mod private
 
     // let packages_map =  metadata.packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
 
-    let f: Option< Box< dyn Fn( &Package, &Dependency ) -> bool > > = match filter
+    let dep_filter: Option< Box< dyn Fn( &Package, &Dependency ) -> bool > > = match filter
     {
-      ListFilter::Nothing => { None }
+      ListFilter::Nothing =>
+      // TODO: Dev dependencies do loop in the graph, but it would be great if there was some way around that
+      {
+        Some
+          (
+            Box::new( | _p: &Package, d: &Dependency | d.kind != DependencyKind::Development )
+          )
+      }
       ListFilter::Local =>
       {
         Some
         (
-          Box::new
-          (
-            | _p: &Package, d: &Dependency |
-            d.path.is_some() && d.kind != DependencyKind::Development
-          )
+          Box::new( | _p: &Package, d: &Dependency | d.path.is_some() && d.kind != DependencyKind::Development )
         )
       }
     };
@@ -197,11 +202,12 @@ mod private
     let packages_map =  packages_filter_map
     (
       &metadata.packages,
-      FilterMapOptions{ dependency_filter: f, ..Default::default() }
+      FilterMapOptions{ dependency_filter: dep_filter, ..Default::default() }
     );
 
     let graph = graph_build( &packages_map );
-    let sorted = toposort( &graph, None ).map_err( | e | ( report.clone(), err!( "Failed to process toposort for packages: {:?}", e ) ) )?;
+
+    let sorted = toposort( &graph, None ).map_err( | e | { use std::ops::Index; ( report.clone(), err!( "Failed to process toposort for package: {:?}", graph.index( e.node_id() ) ) ) } )?;
 
     match format
     {
@@ -226,7 +232,7 @@ mod private
 
         report = ListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
       }
-      ListFormat::Topological =>
+      ListFormat::Topological if root_crate.is_empty() =>
       {
         let names = sorted
         .iter()
@@ -236,6 +242,35 @@ mod private
 
         report = ListReport::List( names );
       },
+      ListFormat::Topological =>
+      {
+        let node = graph.node_indices().find( | n | graph.node_weight( *n ).unwrap() == &&root_crate ).unwrap();
+        let mut dfs = Dfs::new( &graph, node );
+        let mut subgraph = Graph::new();
+        let mut node_map = std::collections::HashMap::new();
+        while let Some( n )= dfs.next( &graph )
+        {
+          node_map.insert( n, subgraph.add_node( graph[ n ] ) );
+        }
+
+        for e in graph.edge_references()
+        {
+          if let ( Some( &s ), Some( &t ) ) = ( node_map.get( &e.source() ), node_map.get( &e.target() ) )
+          {
+            subgraph.add_edge( s, t, () );
+          }
+        }
+
+        let mut topo = Topo::new( &subgraph );
+        let mut names = Vec::new();
+        while let Some( n ) = topo.next( &subgraph )
+        {
+          names.push( subgraph[ n ].clone() );
+        }
+        names.reverse();
+
+        report = ListReport::List( names );
+      }
     }
 
     Ok( report )
