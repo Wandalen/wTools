@@ -25,7 +25,7 @@ mod private
   };
   use std::path::Path;
 
-  use anyhow::
+  use error_tools::for_app::
   {
     Result,
     anyhow,
@@ -138,7 +138,7 @@ mod private
   /// `None` if no README file is found in any of these locations.
   fn readme_path( dir_path : &Path ) -> Option< PathBuf >
   {
-    if let Some( path )  = readme_in_dir_find( &dir_path.join( ".github" ) )
+    if let Some( path )  = readme_in_dir_find(&dir_path.join( ".github" ))
     {
       Some( path )
     } 
@@ -156,28 +156,12 @@ mod private
     }
   }
 
-  #[ cfg( target_os = "windows" ) ]
-  /// Searches for a file named "readme.md" in the specified directory path.
-  ///
-  /// Given a directory path, this function appends "readme.md" to it and checks if the resulting
-  /// file exists.
-  fn readme_in_dir_find( dir_path : &Path ) -> Option< PathBuf >
-  {
-    let path = dir_path.join( "readme.md" );
-    if path.exists()
-    {
-      return Some( path );
-    }
-    None
-  }
 
-
-  #[ cfg( not ( target_os = "windows" ) ) ]
   /// Searches for a file named "readme.md" in the specified directory path.
   ///
   /// Given a directory path, this function searches for a file named "readme.md" in the specified
   /// directory.
-  fn readme_in_dir_find( path: PathBuf ) -> Option< PathBuf >
+  fn readme_in_dir_find( path: &Path ) -> Option< PathBuf >
   {
     fs::read_dir( path )
     .ok()?
