@@ -213,13 +213,13 @@ mod private
     packages_map
   }
 
-  pub fn filter_by_path<'a>( metadata : &'a Metadata, filter_path: &'a PathBuf ) -> HashMap< String, &'a Package >
+  pub fn filter_by_path< 'a >( metadata : &'a Metadata, filter_path: &'a PathBuf ) -> HashMap< String, &'a Package >
   {
     let mut packages_map = HashMap::new();
 
     let _packages = metadata.packages.iter().filter( | package |
     {
-      if package.publish.is_none() && package.manifest_path.starts_with(filter_path )
+      if package.publish.is_none() && package.manifest_path.starts_with( filter_path )
       {
         packages_map.insert( package.name.clone(), *package );
 
@@ -287,7 +287,7 @@ mod private
     deps
   }
 
-  pub fn graph_build_with_filter< 'a >( packages : &'a HashMap< String, &Package >, filter_path: &PathBuf) -> Graph< &'a str, &'a str >
+  pub fn graph_build_with_filter< 'a >( packages : &'a HashMap< String, &Package >, filter_path: &PathBuf ) -> Graph< &'a str, &'a str >
   {
     let mut deps = Graph::< &str, &str >::new();
     let _update_graph = packages.iter().map( | ( _name, package ) |
@@ -340,14 +340,14 @@ mod private
 
   pub fn toposort_with_filter( packages : &HashMap< String, &Package >, filter_path: &PathBuf ) -> Vec< String >
   {
-    let deps = graph_build_with_filter(packages, filter_path);
+    let deps = graph_build_with_filter( packages, filter_path );
 
-    let sorted = pg_toposort(&deps, None).expect("Failed to process toposort for packages");
+    let sorted = pg_toposort( &deps, None ).expect( "Failed to process toposort for packages" );
     let names = sorted
     .iter()
     .rev()
     .map( | dep_idx | deps.node_weight( *dep_idx ).unwrap().to_string() )
-    .collect::<Vec<String>>();
+    .collect::< Vec< String > >();
 
     names
   }
