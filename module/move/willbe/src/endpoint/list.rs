@@ -1,15 +1,34 @@
 /// Internal namespace.
 mod private
 {
-  use std::collections::HashMap;
   use std::fmt::Formatter;
-  use petgraph::{ algo::toposort, algo::has_path_connecting, Graph };
+  use petgraph::
+  {
+    algo::toposort,
+    algo::has_path_connecting,
+    Graph
+  };
   use std::path::PathBuf;
   use std::str::FromStr;
   use anyhow::Context;
-  use crate::package::functions::{FilterMapOptions, graph_build, packages_filter_map};
-  use crate::wtools::error::{ for_app::Error, err };
-  use cargo_metadata::{Dependency, DependencyKind, MetadataCommand, Package};
+  use crate::package::functions::
+  {
+    FilterMapOptions,
+    graph_build,
+    packages_filter_map
+  };
+  use crate::wtools::error::
+  {
+    for_app::Error,
+    err
+  };
+  use cargo_metadata::
+  {
+    Dependency,
+    DependencyKind,
+    MetadataCommand,
+    Package
+  };
   use crate::manifest;
 
   /// Args for `list` endpoint.
@@ -169,9 +188,7 @@ mod private
           Box::new
           (
             | _p: &Package, d: &Dependency |
-            {
             d.path.is_some() && d.kind != DependencyKind::Development
-            }
           )
         )
       }
@@ -184,7 +201,7 @@ mod private
     );
 
     let graph = graph_build( &packages_map );
-    let sorted = toposort( &graph, None ).map_err( | e | ( report.clone() , err!( "Failed to process toposort for packages: {:?}", e ) ) )?;
+    let sorted = toposort( &graph, None ).map_err( | e | ( report.clone(), err!( "Failed to process toposort for packages: {:?}", e ) ) )?;
 
     match format
     {
@@ -222,11 +239,6 @@ mod private
     }
 
     Ok( report )
-  }
-
-  fn a(_p: &Package, d: &Dependency) -> bool
-  {
-    d.path.is_some() && d.kind != DependencyKind::Development
   }
 }
 

@@ -4,10 +4,21 @@ mod private
   {
     fs,
     path::PathBuf,
-    collections::{ HashMap, HashSet },
+    collections::
+    {
+      HashMap,
+      HashSet
+    },
   };
+  use std::fmt::Formatter;
   use std::path::Path;
-  use cargo_metadata::{Dependency, DependencyKind, Metadata, MetadataCommand, Package};
+  use cargo_metadata::
+  {
+    Dependency,
+    Metadata,
+    MetadataCommand,
+    Package
+  };
   use petgraph::
   {
     graph::Graph,
@@ -210,13 +221,40 @@ mod private
 
   //
 
+  /// A configuration struct for specifying optional filters when using the
+  /// `packages_filter_map` function. It allows users to provide custom filtering
+  /// functions for packages and dependencies.
   #[ derive( Default ) ]
   pub struct FilterMapOptions
   {
+    /// An optional package filtering function. If provided, this function is
+    /// applied to each package, and only packages that satisfy the condition
+    /// are included in the final result. If not provided, a default filter that
+    /// accepts all packages is used.
     pub package_filter: Option< Box< dyn Fn( &Package) -> bool > >,
+
+    /// An optional dependency filtering function. If provided, this function
+    /// is applied to each dependency of each package, and only dependencies
+    /// that satisfy the condition are included in the final result. If not
+    /// provided, a default filter that accepts all dependencies is used.
     pub dependency_filter: Option< Box< dyn Fn( &Package, &Dependency ) -> bool  > >,
   }
 
+  impl std::fmt::Debug for FilterMapOptions{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+      f
+      .debug_struct( "FilterMapOptions" )
+      .field( "package_filter", &"package_filter" )
+      .field( "dependency_filter", &"dependency_filter" )
+      .finish()
+    }
+  }
+
+  /// Given a slice of `Package` instances and a set of filtering options,
+  /// this function filters and maps the packages and their dependencies
+  /// based on the provided filters. It returns a HashMap where the keys
+  /// are package names, and the values are HashSet instances containing
+  /// the names of filtered dependencies for each package.
   pub fn packages_filter_map( packages: &[ Package ], filter_map_options: FilterMapOptions ) -> HashMap< String, HashSet< String > >
   {
     let FilterMapOptions { package_filter, dependency_filter } = filter_map_options;
@@ -318,8 +356,8 @@ crate::mod_interface!
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
 
-  protected( crate ) use FilterMapOptions;
-  protected( crate ) use packages_filter_map;
+  protected use FilterMapOptions;
+  protected use packages_filter_map;
   protected use publish_need;
 
   orphan use LocalDependenciesOptions;

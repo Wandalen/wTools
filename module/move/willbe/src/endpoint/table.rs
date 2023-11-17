@@ -44,11 +44,11 @@ mod private
     let workspace_root = workspace_root( &metadata )?;
     let core_root = workspace_root.join( "module" ).join( "core" );
     let move_root = workspace_root.join( "module" ).join( "move" );
-    let core_directories = directory_names(core_root, &metadata.packages);
-    let move_directories = directory_names(move_root, &metadata.packages);
+    let core_directories = directory_names( core_root, &metadata.packages );
+    let move_directories = directory_names( move_root, &metadata.packages );
     let core_table = table_prepare( core_directories , "core".into() );
     let move_table = table_prepare( move_directories, "move".into() );
-    let read_me_path = readme_path(&workspace_root).ok_or( anyhow!("Cannot found README.md file") )?;
+    let read_me_path = readme_path( &workspace_root ).ok_or( anyhow!( "Cannot found README.md file" ) )?;
     tables_write_into_file( read_me_path, vec![ core_table, move_table ] )?;
     Ok( () )
   }
@@ -57,18 +57,18 @@ mod private
   fn directory_names( path: PathBuf, packages: &[Package] ) -> Vec< String >
   {
     let core_filter: Option< Box< dyn Fn( &Package) -> bool > > = Some
+    (
+      Box::new
       (
-        Box::new
-          (
-            move | p |
-              p.publish.is_none() && p.manifest_path.starts_with( &path )
-          )
-      );
+        move | p |
+        p.publish.is_none() && p.manifest_path.starts_with( &path )
+      )
+    );
     let core_packages_map = functions::packages_filter_map
-      (
-        packages,
-        FilterMapOptions{ package_filter: core_filter, ..Default::default() },
-      );
+    (
+      packages,
+     FilterMapOptions{ package_filter: core_filter, ..Default::default() },
+    );
     let core_graph = functions::graph_build( &core_packages_map );
     functions::toposort( core_graph )
   }

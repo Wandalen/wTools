@@ -116,10 +116,15 @@ mod private
     let packages_map = package::packages_filter_map
     (
       &package_metadata.packages,
-      FilterMapOptions{ package_filter: Some(Box::new( | p |{ p.publish.is_none() } ) ), ..Default::default() }
+      FilterMapOptions{ package_filter: Some( Box::new( | p |{ p.publish.is_none() } ) ), ..Default::default() }
     );
-    let package_path_map: HashMap< _, _ > = package_metadata.packages.iter().map( | p | ( &p.name, &p.manifest_path )).collect();
-    let graph = package::graph_build(&packages_map);
+    let package_path_map: HashMap< _, _ > = package_metadata
+    .packages
+    .iter()
+    .map( | p | ( &p.name, &p.manifest_path ) )
+    .collect();
+
+    let graph = package::graph_build( &packages_map );
     let sorted = package::toposort( graph );
 
     for name in &sorted
