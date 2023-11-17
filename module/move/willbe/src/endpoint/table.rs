@@ -15,6 +15,7 @@ mod private
   use cargo_metadata::
   {
     MetadataCommand,
+    Package
   };
   use wca::wtools::Itertools;
   use convert_case::Case;
@@ -30,6 +31,9 @@ mod private
     Result,
     anyhow,
   };
+  use crate::package::functions;
+  use crate::package::functions::FilterMapOptions;
+
 
   /// Create table
   pub fn table_create() -> Result< () >
@@ -40,10 +44,8 @@ mod private
     let workspace_root = workspace_root( &metadata )?;
     let core_root = workspace_root.join( "module" ).join( "core" );
     let move_root = workspace_root.join( "module" ).join( "move" );
-    let core_packages_map = functions::filter_by_path( &metadata, &core_root );
-    let move_packages_map = functions::filter_by_path( &metadata, &move_root );
-    let core_directories = toposort_with_filter( &core_packages_map, &core_root );
-    let move_directories = toposort_with_filter( &move_packages_map, &move_root );
+    let core_directories = directory_names(core_root, &metadata.packages);
+    let move_directories = directory_names(move_root, &metadata.packages);
     let core_table = table_prepare( core_directories , "core".into() );
     let move_table = table_prepare( move_directories, "move".into() );
     let read_me_path = readme_path(&workspace_root).ok_or( anyhow!("Cannot found README.md file") )?;
@@ -51,23 +53,24 @@ mod private
     Ok( () )
   }
 
-  fn directory_names( path: PathBuf ) -> Result< Vec< String > >
+
+  fn directory_names( path: PathBuf, packages: &[Package] ) -> Vec< String >
   {
-    let mut result = vec![];
-    let entries = fs::read_dir( path )?;
-    for entry in entries 
-    {
-      let entry = entry?;
-      let path = entry.path();
-      if path.is_dir() 
-      {
-        if let Some( dir_name ) = path.file_name() 
-        {
-          result.push( dir_name.to_string_lossy().into() );
-        }
-      }
-    }
-    Ok( result )
+    let core_filter: Option< Box< dyn Fn( &Package) -> bool > > = Some
+      (
+        Box::new
+          (
+            move | p |
+              p.publish.is_none() && p.manifest_path.starts_with( &path )
+          )
+      );
+    let core_packages_map = functions::packages_filter_map
+      (
+        packages,
+        FilterMapOptions{ package_filter: core_filter, ..Default::default() },
+      );
+    let core_graph = functions::graph_build( &core_packages_map );
+    functions::toposort( core_graph )
   }
 
   fn table_prepare( modules: Vec< String >, dir: String ) -> String
