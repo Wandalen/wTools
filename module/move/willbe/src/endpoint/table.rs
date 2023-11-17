@@ -32,15 +32,24 @@ mod private
     static ref CLOUSE_TAG: regex::bytes::Regex = regex::bytes::Regex::new(r#"<!--\{ generate\.healthtable\.end \} -->"#).unwrap();
   }
 
-  /// Create table
+  /// Create health table in README.md file
+  ///
+  /// The location and filling of tables is defined by a tag, for example record:
+  /// ```md
+  /// <!--{ generate.healthtable( 'module/core' ) } -->
+  /// <!--{ generate.healthtable.end } -->
+  /// ```
+  /// will mean that at this place the table with modules located in the directory module/core will be generated.
+  /// The tags do not disappear after generation.
+  /// Anything between the opening and closing tag will be destroyed.
   pub fn table_create() -> Result< () >
   {
     let workspace_root = workspace_root()?;
     let read_me_path = workspace_root.join("Readme.md");
     let mut file = OpenOptions::new()
-      .read( true )
-      .write( true )
-      .open( &read_me_path )?;
+    .read( true )
+    .write( true )
+    .open( &read_me_path )?;
 
     let mut contents = Vec::new();
 
@@ -48,7 +57,7 @@ mod private
     let mut buffer = vec![];
     let open_caps = TAG_TEMPLATE.captures_iter( &*contents );
     let close_caps = CLOUSE_TAG.captures_iter( &*contents );
-    let mut tags_clousures = vec![];
+    let mut tags_closures = vec![];
     let mut tables = vec![];
     for c in open_caps.zip( close_caps )
     {
@@ -57,28 +66,28 @@ mod private
         if let ( Some( open ), Some( close ) ) = c
         {
           let path_content = &mut "".to_string();
-          let _ = open.as_bytes().read_to_string(path_content);
+          let _ = open.as_bytes().read_to_string( path_content );
           let module_path =
             PathBuf::from_str(
             std::str::from_utf8(
-              TAG_TEMPLATE.captures(path_content.as_bytes())
-                .ok_or(anyhow!("Fail to parse tag"))?
-                .get(1)
-                .ok_or(anyhow!("Fail to parse group"))?
-                .as_bytes())?)?;
-          tables.push(table_prepare(directory_names(&module_path)?, module_path.to_string_lossy().into()));
-          tags_clousures.push( ( open.end(), close.start() ) );
+              TAG_TEMPLATE.captures( path_content.as_bytes() )
+                .ok_or( anyhow!("Fail to parse tag") )?
+                .get( 1 )
+                .ok_or( anyhow!("Fail to parse group") )?
+                .as_bytes() )? )?;
+          tables.push( table_prepare( directory_names( &module_path )?, module_path.to_string_lossy().into() ) );
+          tags_closures.push( (open.end(), close.start() ) );
         }
       }
     }
     let mut start: usize = 0;
-    for ( t_c, con ) in tags_clousures.iter().zip( tables.iter() )
+    for ( tag_closure, con ) in tags_closures.iter().zip( tables.iter() )
     {
-      copy_range_to_target( &*contents, &mut buffer, start, t_c.0 )?;
-      copy_range_to_target( con.as_bytes(), &mut buffer, 0,con.len()-1 )?;
-      start = t_c.1;
+      copy_range_to_target( &*contents, &mut buffer, start, tag_closure.0 )?;
+      copy_range_to_target( con.as_bytes(), &mut buffer, 0,con.len() - 1 )?;
+      start = tag_closure.1;
     }
-    copy_range_to_target( &*contents,&mut buffer,start,contents.len()-1 )?;
+    copy_range_to_target( &*contents,&mut buffer,start,contents.len() - 1 )?;
 
     file.set_len( 0 )?;
     file.seek( SeekFrom::Start( 0 ) )?;
@@ -135,12 +144,15 @@ mod private
     Ok( metadata.workspace_root.into_std_path_buf() )
   }
 
-  fn copy_range_to_target<T: Clone>(source: &[T], target: &mut Vec<T>, a: usize, b: usize) -> Result<()> {
-    if a < source.len() && b < source.len() && a <= b {
-      target.extend_from_slice(&source[a..=b]);
+  fn copy_range_to_target<T: Clone>( source: &[T], target: &mut Vec<T>, from: usize, to: usize ) -> Result<()> {
+    if from < source.len() && to < source.len() && from <= to
+    {
+      target.extend_from_slice( &source[ from..= to ] );
       return Ok( () )
-    } else {
-      bail!("Incorrect indexes")
+    }
+    else
+    {
+      bail!( "Incorrect indexes" )
     }
   }
 }
