@@ -3,17 +3,13 @@ mod private
   use std::
   {
     fs,
-    path::PathBuf,
+    path::{ Path, PathBuf },
     collections::{ HashMap, HashSet },
   };
-  use std::path::Path;
-  use cargo_metadata::
-  {
-    Dependency,
-    Metadata,
-    MetadataCommand,
-    Package,
-  };
+  use std::fmt::Formatter;
+  use std::hash::Hash;
+  use std::ops::Index;
+  use cargo_metadata::{ Dependency, DependencyKind, Metadata, MetadataCommand, Package };
   use petgraph::
   {
     graph::Graph,
@@ -42,6 +38,51 @@ mod private
     commit : Option< process::CmdReport >,
     push : Option< process::CmdReport >,
     publish : Option< process::CmdReport >,
+  }
+
+  impl std::fmt::Display for PublishReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      let PublishReport
+      {
+        get_info,
+        bump,
+        add,
+        commit,
+        push,
+        publish,
+      } = self;
+      // first command
+      if get_info.is_none()
+      {
+        f.write_fmt( format_args!( "Empty report" ) )?;
+      }
+      let info = get_info.as_ref().unwrap();
+      f.write_fmt( format_args!( "{}", info ) )?;
+      if let Some( bump ) = bump
+      {
+        f.write_fmt( format_args!( "{}", bump.report ) )?;
+      }
+      if let Some( add ) = add
+      {
+        f.write_fmt( format_args!( "{add}" ) )?;
+      }
+      if let Some( commit ) = commit
+      {
+        f.write_fmt( format_args!( "{commit}" ) )?;
+      }
+      if let Some( push ) = push
+      {
+        f.write_fmt( format_args!( "{push}" ) )?;
+      }
+      if let Some( publish ) = publish
+      {
+        f.write_fmt( format_args!( "{publish}" ) )?;
+      }
+
+      Ok( () )
+    }
   }
 
   ///
@@ -107,7 +148,9 @@ mod private
     pub recursive : bool,
     /// With sorting.
     pub sort : LocalDependenciesSort,
-    /// Skip packages.
+    /// Include dev dependencies.
+    pub with_dev : bool,
+    /// Skip specific packets.
     pub exclude : HashSet< PathBuf >,
   }
 
@@ -119,6 +162,7 @@ mod private
       {
         recursive : true,
         sort : LocalDependenciesSort::Unordered,
+        with_dev : false,
         exclude : HashSet::new(),
       }
     }
@@ -133,6 +177,7 @@ mod private
     {
       recursive,
       sort,
+      with_dev,
       mut exclude,
     } = opts;
 
@@ -145,6 +190,7 @@ mod private
     .ok_or( anyhow!( "Package not found in the workspace" ) )?
     .dependencies
     .iter()
+    .filter( | dep | !with_dev || ( with_dev && dep.kind != DependencyKind::Development ) )
     .filter_map( | dep | dep.path.as_ref().map( | path | path.clone().into_std_path_buf() ) )
     .collect::< HashSet< _ > >();
 
@@ -161,6 +207,7 @@ mod private
           {
             recursive,
             sort,
+            with_dev,
             exclude: exclude.clone(),
           };
           output.extend( local_dependencies( metadata, &dep.join( "Cargo.toml" ), rebuild_opts )? );
@@ -184,24 +231,24 @@ mod private
 
   //
 
-  pub fn filter( metadata : &Metadata ) -> HashMap< String, &Package >
-  {
-    let mut packages_map = HashMap::new();
-
-    let _packages = metadata.packages.iter().filter( | package |
-    {
-      if package.publish.is_none()
-      {
-        packages_map.insert( package.name.clone(), *package );
-
-        return true;
-      }
-
-      false
-    }).collect::< Vec< _ > >();
-
-    packages_map
-  }
+  // pub fn filter( metadata : &Metadata ) -> HashMap< String, &Package >
+  // {
+  //   let mut packages_map = HashMap::new();
+  //
+  //   let _packages = metadata.packages.iter().filter( | package |
+  //   {
+  //     if package.publish.is_none()
+  //     {
+  //       packages_map.insert( package.name.clone(), *package );
+  //
+  //       return true;
+  //     }
+  //
+  //     false
+  //   }).collect::< Vec< _ > >();
+  //
+  //   packages_map
+  // }
 
   //
 
@@ -233,7 +280,7 @@ mod private
     /// applied to each package, and only packages that satisfy the condition
     /// are included in the final result. If not provided, a default filter that
     /// accepts all packages is used.
-    pub package_filter: Option< Box< dyn Fn( &Package) -> bool > >,
+    pub package_filter: Option< Box< dyn Fn( &Package ) -> bool > >,
 
     /// An optional dependency filtering function. If provided, this function
     /// is applied to each dependency of each package, and only dependencies
@@ -242,8 +289,10 @@ mod private
     pub dependency_filter: Option< Box< dyn Fn( &Package, &Dependency ) -> bool  > >,
   }
 
-  impl std::fmt::Debug for FilterMapOptions{
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+  impl std::fmt::Debug for FilterMapOptions
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
       f
       .debug_struct( "FilterMapOptions" )
       .field( "package_filter", &"package_filter" )
@@ -262,11 +311,11 @@ mod private
   pub fn packages_filter_map( packages: &[ Package ], filter_map_options: FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
   {
     let FilterMapOptions { package_filter, dependency_filter } = filter_map_options;
-    let package_filter = package_filter.unwrap_or_else( || Box::new( |_| true ) );
+    let package_filter = package_filter.unwrap_or_else( || Box::new( | _ | true ) );
     let dependency_filter = dependency_filter.unwrap_or_else( || Box::new( | _, _ | true ) );
     packages
     .iter()
-    .filter(|&p| package_filter( p ) )
+    .filter( | &p | package_filter( p ) )
     .map
     (
       | package |
@@ -282,7 +331,9 @@ mod private
   }
 
   // string, str - package_name
-  pub fn graph_build< 'a >( packages: &'a HashMap< PackageName, HashSet< PackageName > > ) -> Graph< &'a PackageName, &'a PackageName >
+  pub fn graph_build< 'a, PackageIdentifier >( packages: &'a HashMap< PackageIdentifier, HashSet< PackageIdentifier > > ) -> Graph< &'a PackageIdentifier, &'a PackageIdentifier >
+  where
+    PackageIdentifier : PartialEq + Eq + Hash,
   {
     let nudes: HashSet< _ > = packages
     .iter()
@@ -292,7 +343,7 @@ mod private
       .iter()
       .chain( Some( name ) )
     }).collect();
-    let mut deps = Graph::< &PackageName, &PackageName >::new();
+    let mut deps = Graph::new();
     for nude in nudes
     {
       deps.add_node( nude );
@@ -313,25 +364,46 @@ mod private
 
   pub fn toposort_by_paths( metadata : &Metadata, paths : &[ PathBuf ] ) -> Vec< PathBuf >
   {
-    // let map = metadata.packages
-    //   .iter()
-    //   .filter( | x | paths.contains( &x.manifest_path.as_std_path().parent().unwrap().to_path_buf() ) )
-    //   .map( | p | ( p.name.clone(), p ) )
-    //   .collect::< HashMap< _, _ > >();
-    //
-    // toposort( &map ).into_iter().map( | name | map[ &name ].manifest_path.parent().unwrap().to_path_buf().into_std_path_buf() ).collect()
-    todo!()
+    let map = metadata.packages
+    .iter()
+    .filter( | x | paths.contains( &x.manifest_path.as_std_path().parent().unwrap().to_path_buf() ) )
+    .map( | p | ( p.name.clone(), p ) )
+    .collect::< HashMap< _, _ > >();
+
+    let edges = map
+    .iter()
+    .map
+    (
+      |( _, package )|
+      (
+        package.manifest_path.as_std_path().parent().unwrap().to_path_buf(),
+        package.dependencies
+        .iter()
+        .filter_map( | dep | dep.path.clone() )
+        .filter( | path | paths.contains( &path.as_std_path().to_path_buf() ) )
+        .map( | path | path.into_std_path_buf() )
+        .collect(),
+      )
+    )
+    .collect();
+    let graph = graph_build( &edges );
+
+    toposort( graph )
   }
 
   //
 
-  pub fn toposort< 'a >( graph :  Graph<&'a PackageName, &'a PackageName> ) -> Vec< PackageName >
+  pub fn toposort< 'a, PackageIdentifier : Clone + std::fmt::Debug >( graph :  Graph< &'a PackageIdentifier, &'a PackageIdentifier > ) -> Vec< PackageIdentifier >
   {
-    pg_toposort( &graph, None ).expect( "Failed to process toposort for packages" )
-    .iter()
-    .rev()
-    .map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() )
-    .collect::< Vec< String > >()
+    match pg_toposort( &graph, None )
+    {
+      Ok( list ) => list
+      .iter()
+      .rev()
+      .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
+      .collect::< Vec< _ > >(),
+      Err( index ) => panic!( "Cycle: {:?}", graph.index( index.node_id() ) ),
+    }
   }
 
   //
@@ -368,7 +440,6 @@ crate::mod_interface!
   protected( crate ) use PublishReport;
   protected( crate ) use publish_single;
 
-  protected( crate ) use filter;
   protected( crate ) use local_path_get;
 
   protected( crate ) use graph_build;

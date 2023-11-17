@@ -1,7 +1,7 @@
 /// Internal namespace.
 mod private
 {
-  use crate::package::{ functions as package, local_dependencies, LocalDependenciesOptions };
+  use crate::package::{ functions as package, LocalDependenciesOptions, LocalDependenciesSort };
 
   use crate::tools::
   {
@@ -16,12 +16,7 @@ mod private
     collections::HashSet,
   };
   use core::fmt::Formatter;
-  use cargo_metadata::
-  {
-    MetadataCommand,
-  };
-  use wca::wtools::Itertools;
-  use crate::package::functions::toposort_by_paths;
+  use cargo_metadata::{ MetadataCommand };
   use std::collections::HashMap;
   use crate::package::functions::FilterMapOptions;
 
@@ -43,7 +38,7 @@ mod private
 
       for ( path, report ) in &self.packages
       {
-        f.write_fmt( format_args!( "[ {} ]\n{report:#?}\n", path.display() ) )?;
+        f.write_fmt( format_args!( "[ {} ]\n{report}\n", path.display() ) )?;
       }
 
       Ok( () )
@@ -70,19 +65,38 @@ mod private
     // FIX: Maybe unsafe. Take metadata of workspace in current dir. Patterns can link to another.
     let metadata = MetadataCommand::new().no_deps().exec().unwrap();
 
-    let paths : Vec< _ > = paths
-    .into_iter()
-    // with local dependencies
-    .flat_map( | path | local_dependencies( &metadata, &path, LocalDependenciesOptions::default() ).unwrap().into_iter().chain( Some( path.parent().unwrap().to_path_buf() ) ) )
-    // unique packages only
-    .unique()
-    .collect();
+    let packages_to_publish : Vec< _ >= metadata.packages.iter().filter( | &package | paths.contains( package.manifest_path.as_std_path() ) ).collect();
+    let mut queue = vec![];
+    for package in &packages_to_publish
+    {
+      // get sorted dependencies
+      let local_deps_args = LocalDependenciesOptions
+      {
+        recursive : true,
+        sort : LocalDependenciesSort::Topological,
+        ..Default::default()
+      };
+      let deps = package::local_dependencies( &metadata, package.manifest_path.as_std_path(), local_deps_args )
+      .map_err( | e | ( report.clone(), e.into() ) )?;
 
-    // sort the list
-    let paths = toposort_by_paths( &metadata, &paths );
+      // add dependencies to publish queue
+      for dep in deps
+      {
+        if !queue.contains( &dep )
+        {
+          queue.push( dep );
+        }
+      }
+      // add current package to publish queue if it isn't already here
+      let package = package.manifest_path.as_std_path().parent().unwrap().to_path_buf();
+      if !queue.contains( &package )
+      {
+        queue.push( package );
+      }
+    }
 
-    // publish sorted
-    for path in paths
+    // process publish
+    for path in queue
     {
       let current_report = package::publish_single( &path, dry )
       .map_err
@@ -131,7 +145,7 @@ mod private
 
     for name in &sorted
     {
-      let path = package_path_map[ name ].clone().into();
+      let path = package_path_map[ name ].as_std_path();
       package::publish_single( &path, dry )
       .map_err
       (
