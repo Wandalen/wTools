@@ -27,9 +27,10 @@ mod private
 
   use anyhow::*;
 
-  lazy_static::lazy_static!{
-    static ref TAG_TEMPLATE: regex::bytes::Regex = regex::bytes::Regex::new(r#"<!--\{ generate.healthtable\( '(\w+/\w+)' \) \} -->"#).unwrap();
-    static ref CLOUSE_TAG: regex::bytes::Regex = regex::bytes::Regex::new(r#"<!--\{ generate\.healthtable\.end \} -->"#).unwrap();
+  lazy_static::lazy_static!
+  {
+    static ref TAG_TEMPLATE: regex::bytes::Regex = regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( '(\w+/\w+)' \) \} -->"# ).unwrap();
+    static ref CLOUSE_TAG: regex::bytes::Regex = regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap();
   }
 
   /// Create health table in README.md file
@@ -59,18 +60,17 @@ mod private
     let close_caps = CLOUSE_TAG.captures_iter( &*contents );
     let mut tags_closures = vec![];
     let mut tables = vec![];
-    for c in open_caps.zip( close_caps )
+    // iterate by regex matches and generate table content for each dir py taken
+    for (open_captures, close_captures) in open_caps.zip( close_caps )
     {
-      for c in c.0.iter().zip( c.1.iter() )
+      for captures in open_captures.iter().zip( close_captures.iter() )
       {
-        if let ( Some( open ), Some( close ) ) = c
+        if let ( Some( open ), Some( close ) ) = captures
         {
-          let path_content = &mut "".to_string();
-          let _ = open.as_bytes().read_to_string( path_content );
           let module_path =
             PathBuf::from_str(
             std::str::from_utf8(
-              TAG_TEMPLATE.captures( path_content.as_bytes() )
+              TAG_TEMPLATE.captures( open.as_bytes() )
                 .ok_or( anyhow!("Fail to parse tag") )?
                 .get( 1 )
                 .ok_or( anyhow!("Fail to parse group") )?
