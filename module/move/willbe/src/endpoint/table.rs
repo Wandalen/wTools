@@ -32,13 +32,13 @@ mod private
     let metadata = MetadataCommand::new()
     .no_deps()
     .exec()?;
-    let workspace_root = workspace_root(&metadata)?;
+    let workspace_root = workspace_root( &metadata )?;
     let core_root = workspace_root.join( "module" ).join( "core" );
     let move_root = workspace_root.join( "module" ).join( "move" );
     let core_packages_map = functions::filter_by_path( &metadata, &core_root );
     let move_packages_map = functions::filter_by_path( &metadata, &move_root );
-    let core_directories = toposort_with_filter(&core_packages_map, &core_root );
-    let move_directories = toposort_with_filter(&move_packages_map, &move_root );
+    let core_directories = toposort_with_filter( &core_packages_map, &core_root );
+    let move_directories = toposort_with_filter( &move_packages_map, &move_root );
     let core_table = table_prepare( core_directories , "core".into() );
     let move_table = table_prepare( move_directories, "move".into() );
     tables_write_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ] )?;
@@ -85,7 +85,7 @@ mod private
     table
   }
 
-  fn workspace_root(metadata: &cargo_metadata::Metadata) -> Result< PathBuf >
+  fn workspace_root( metadata: &cargo_metadata::Metadata ) -> Result< PathBuf >
   {
     Ok( metadata.workspace_root.clone().into_std_path_buf() )
   }

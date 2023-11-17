@@ -218,16 +218,16 @@ mod private
     let mut packages_map = HashMap::new();
 
     let _packages = metadata.packages.iter().filter( | package |
+    {
+      if package.publish.is_none() && package.manifest_path.starts_with(filter_path )
       {
-        if package.publish.is_none() && package.manifest_path.starts_with(filter_path )
-        {
-          packages_map.insert( package.name.clone(), *package );
+        packages_map.insert( package.name.clone(), *package );
 
-          return true;
-        }
+        return true;
+      }
 
-        false
-      }).collect::< Vec< _ > >();
+      false
+    }).collect::< Vec< _ > >();
 
     packages_map
   }
@@ -291,33 +291,33 @@ mod private
   {
     let mut deps = Graph::< &str, &str >::new();
     let _update_graph = packages.iter().map( | ( _name, package ) |
+    {
+      let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == package.name )
       {
-        let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == package.name )
-        {
-          node
-        }
-        else
-        {
-          deps.add_node( &package.name )
-        };
+        node
+      }
+      else
+      {
+        deps.add_node( &package.name )
+      };
 
-        for dep in &package.dependencies
+      for dep in &package.dependencies
+      {
+        if dep.path.is_some() && dep.kind != DependencyKind::Development && dep.path.as_ref().unwrap().starts_with( filter_path )
         {
-          if dep.path.is_some() && dep.kind != DependencyKind::Development && dep.path.as_ref().unwrap().starts_with(filter_path )
+          let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == dep.name )
           {
-            let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == dep.name )
-            {
-              node
-            }
-            else
-            {
-              deps.add_node( &dep.name )
-            };
-
-            deps.add_edge( root_node, dep_node, &package.name );
+          node
           }
+          else
+          {
+            deps.add_node( &dep.name )
+          };
+
+          deps.add_edge( root_node, dep_node, &package.name );
         }
-      }).collect::< Vec< _ > >();
+      }
+    }).collect::< Vec< _ > >();
 
     deps
   }
@@ -340,16 +340,17 @@ mod private
 
   pub fn toposort_with_filter( packages : &HashMap< String, &Package >, filter_path: &PathBuf ) -> Vec< String >
   {
-    let deps = graph_build_with_filter( packages, filter_path );
+    let deps = graph_build_with_filter(packages, filter_path);
 
-    let sorted = pg_toposort( &deps, None ).expect( "Failed to process toposort for packages" );
+    let sorted = pg_toposort(&deps, None).expect("Failed to process toposort for packages");
     let names = sorted
-      .iter()
-      .rev()
-      .map( | dep_idx | deps.node_weight( *dep_idx ).unwrap().to_string() )
-      .collect::< Vec< String > >();
+    .iter()
+    .rev()
+    .map( | dep_idx | deps.node_weight( *dep_idx ).unwrap().to_string() )
+    .collect::<Vec<String>>();
 
     names
+  }
   //
 
   /// Check if publish needed for a package
