@@ -1,4 +1,4 @@
-mod private 
+mod private
 {
   use std::
   { 
@@ -19,12 +19,17 @@ mod private
   use wca::wtools::Itertools;
   use convert_case::Case;
   use convert_case::Casing;
-  use std::fs::OpenOptions;
+  use std::fs::
+  { 
+    OpenOptions
+  };
+  use std::path::Path;
 
-  use anyhow::*;
-  use crate::package::functions::toposort_with_filter;
-
-  use crate::package::functions;
+  use error_tools::for_app::
+  {
+    Result,
+    anyhow,
+  };
 
   /// Create table
   pub fn table_create() -> Result< () >
@@ -41,7 +46,8 @@ mod private
     let move_directories = toposort_with_filter( &move_packages_map, &move_root );
     let core_table = table_prepare( core_directories , "core".into() );
     let move_table = table_prepare( move_directories, "move".into() );
-    tables_write_into_file( workspace_root.join( "Readme.md" ), vec![ core_table, move_table ] )?;
+    let read_me_path = readme_path(&workspace_root).ok_or( anyhow!("Cannot found README.md file") )?;
+    tables_write_into_file( read_me_path, vec![ core_table, move_table ] )?;
     Ok( () )
   }
 
@@ -95,9 +101,9 @@ mod private
     let header = "| Module | Stability | Master | Alpha | Docs | Online |\n|--------|-----------|--------|-------|:----:|:------:|\n";
 
     let mut file = OpenOptions::new()
-      .read( true )
-      .write( true )
-      .open( &file_path )?;
+    .read( true )
+    .write( true )
+    .open( &file_path )?;
 
     let mut contents = Vec::new();
     file.read_to_end( &mut contents )?;
@@ -108,19 +114,18 @@ mod private
     let move_new_text = &format!( "{move_old_text}\n{}{}", &header, params[ 0 ] );
 
     let updated_contents = contents
-      .windows(core_old_text.len())
-      .enumerate()
-      .fold(Vec::new(), | mut acc, ( index, window ) | 
-        {
-          match ( window == core_old_text.as_bytes(), window == move_old_text.as_bytes() ) 
-          {
-            ( true, false ) => acc.extend_from_slice( core_new_text.as_bytes() ), 
-            ( false, true ) => acc.extend_from_slice( move_new_text.as_bytes() ),
-            ( false, false ) | ( true, true ) => acc.push( contents[ index ] ), 
-          }
-          acc
-        }
-      );
+    .windows(core_old_text.len())
+    .enumerate()
+    .fold(Vec::new(), | mut acc, ( index, window ) |
+    {
+      match ( window == core_old_text.as_bytes(), window == move_old_text.as_bytes() )
+      {
+        ( true, false ) => acc.extend_from_slice( core_new_text.as_bytes() ),
+        ( false, true ) => acc.extend_from_slice( move_new_text.as_bytes() ),
+        ( false, false ) | ( true, true ) => acc.push( contents[ index ] ),
+      }
+      acc
+    });
 
     file.set_len( 0 )?;
     file.seek( SeekFrom::Start( 0 ) )?;
@@ -128,6 +133,55 @@ mod private
     file.write_all( &updated_contents )?;
 
     Ok( () )
+  }
+
+  /// Searches for a README file in specific subdirectories of the given directory path.
+  ///
+  /// This function attempts to find a README file in the following subdirectories: ".github",
+  /// the root directory, and "./docs". It returns the path to the first found README file, or
+  /// `None` if no README file is found in any of these locations.
+  fn readme_path( dir_path : &Path ) -> Option< PathBuf >
+  {
+    if let Some( path )  = readme_in_dir_find(&dir_path.join( ".github" ))
+    {
+      Some( path )
+    }
+    else if let Some( path )  = readme_in_dir_find( dir_path )
+    {
+      Some( path )
+    }
+    else if let Some( path )  = readme_in_dir_find( &dir_path.join( "docs" ) )
+    {
+      Some( path )
+    }
+    else
+    {
+      None
+    }
+  }
+
+
+  /// Searches for a file named "readme.md" in the specified directory path.
+  ///
+  /// Given a directory path, this function searches for a file named "readme.md" in the specified
+  /// directory.
+  fn readme_in_dir_find( path: &Path ) -> Option< PathBuf >
+  {
+    fs::read_dir( path )
+    .ok()?
+    .filter_map( Result::ok )
+    .filter( | p | p.path().is_file() )
+    .filter_map( | f |
+    {
+      let l_f = f.file_name().to_ascii_lowercase();
+      if l_f == "readme.md"
+      {
+        return Some( f.file_name() )
+      }
+      None
+    })
+    .max()
+    .map( PathBuf::from )
   }
 }
 

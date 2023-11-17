@@ -7,13 +7,7 @@ mod private
     collections::{ HashMap, HashSet },
   };
   use std::path::Path;
-  use cargo_metadata::
-  {
-    DependencyKind,
-    Metadata,
-    MetadataCommand,
-    Package,
-  };
+  use cargo_metadata::{Dependency, DependencyKind, Metadata, MetadataCommand, Package};
   use petgraph::
   {
     graph::Graph,
@@ -194,43 +188,26 @@ mod private
 
   //
 
-  pub fn filter( metadata : &Metadata ) -> HashMap< String, &Package >
-  {
-    let mut packages_map = HashMap::new();
 
-    let _packages = metadata.packages.iter().filter( | package |
-    {
-      if package.publish.is_none()
-      {
-        packages_map.insert( package.name.clone(), *package );
 
-        return true;
-      }
-
-      false
-    }).collect::< Vec< _ > >();
-
-    packages_map
-  }
-
-  pub fn filter_by_path< 'a >( metadata : &'a Metadata, filter_path: &'a PathBuf ) -> HashMap< String, &'a Package >
-  {
-    let mut packages_map = HashMap::new();
-
-    let _packages = metadata.packages.iter().filter( | package |
-    {
-      if package.publish.is_none() && package.manifest_path.starts_with( filter_path )
-      {
-        packages_map.insert( package.name.clone(), *package );
-
-        return true;
-      }
-
-      false
-    }).collect::< Vec< _ > >();
-
-    packages_map
-  }
+  // pub fn filter_by_path< 'a >( metadata : &'a Metadata, filter_path: &'a PathBuf ) -> HashMap< String, &'a Package >
+  // {
+  //   let mut packages_map = HashMap::new();
+  //
+  //   let _packages = metadata.packages.iter().filter( | package |
+  //   {
+  //     if package.publish.is_none() && package.manifest_path.starts_with( filter_path )
+  //     {
+  //       packages_map.insert( package.name.clone(), *package );
+  //
+  //       return true;
+  //     }
+  //
+  //     false
+  //   }).collect::< Vec< _ > >();
+  //
+  //   packages_map
+  // }
 
   //
 
@@ -252,105 +229,109 @@ mod private
 
   //
 
-  pub fn graph_build< 'a >( packages : &'a HashMap< String, &Package > ) -> Graph< &'a str, &'a str >
+  // pub fn graph_build< 'a >( packages : &'a HashMap< String, &Package >, only_local : bool ) -> Graph< &'a str, &'a str >
+  // {
+  //   let mut deps = Graph::< &str, &str >::new();
+  //   let _update_graph = packages.iter().map( | ( _name, package ) |
+  //   {
+  //     let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == package.name )
+  //     {
+  //       node
+  //     }
+  //     else
+  //     {
+  //       deps.add_node( &package.name )
+  //     };
+  //
+  //     for dep in &package.dependencies
+  //     {
+  //       if ( only_local && dep.path.is_some() || !only_local ) && dep.kind != DependencyKind::Development
+  //       {
+  //         let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == dep.name )
+  //         {
+  //           node
+  //         }
+  //         else
+  //         {
+  //           deps.add_node( &dep.name )
+  //         };
+  //
+  //         deps.add_edge( root_node, dep_node, &package.name );
+  //       }
+  //     }
+  //   }).collect::< Vec< _ > >();
+  //
+  //   deps
+  // }
+  #[ derive( Default ) ]
+  pub struct FilterMapOptions
   {
-    let mut deps = Graph::< &str, &str >::new();
-    let _update_graph = packages.iter().map( | ( _name, package ) |
+    pub package_filter: Option< Box< dyn Fn( &Package) -> bool > >,
+    pub dependency_filter: Option< Box< dyn Fn( &Package, &Dependency ) -> bool  > >,
+  }
+
+  pub fn packages_filter_map( packages: &[ Package ], filter_map_options: FilterMapOptions ) -> HashMap< String, HashSet< String > >
+  {
+    let FilterMapOptions { package_filter, dependency_filter } = filter_map_options;
+    let package_filter = package_filter.unwrap_or_else( || Box::new( |_| true ) );
+    let dependency_filter = dependency_filter.unwrap_or_else( || Box::new( | _, _ | true ) );
+    packages
+    .iter()
+    .filter(|&p| package_filter( p ) )
+    .map
+    (
+      | package |
+      (
+        package.name.clone(),
+        package.dependencies
+        .iter()
+        .filter( | &d | dependency_filter( package, d ) )
+        .map( | d | d.name.clone() )
+        .collect::< HashSet< _ > >()
+      )
+    ).collect()
+  }
+
+  // string, str - package_name
+  pub fn graph_build< 'a >( packages: &'a HashMap< String, HashSet< String > > ) -> Graph< &'a str, &'a str >
+  {
+    let nudes: HashSet< _ > = packages
+    .iter()
+    .flat_map( | ( name, dependency ) |
     {
-      let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == package.name )
+      dependency
+      .iter()
+      .chain( Some( name ) )
+    }).collect();
+    let mut deps = Graph::< &str, &str >::new();
+    for nude in nudes
+    {
+      deps.add_node( nude );
+    }
+    for ( name, dependencies ) in packages
+    {
+      let root_node = deps.node_indices().find( | i | deps[ *i ] == name ).unwrap();
+      for dep in dependencies
       {
-        node
+        let dep_node = deps.node_indices().find( | i | deps[ *i ] == dep ).unwrap();
+        deps.add_edge(root_node, dep_node, name );
       }
-      else
-      {
-        deps.add_node( &package.name )
-      };
-
-      for dep in &package.dependencies
-      {
-        if dep.path.is_some() && dep.kind != DependencyKind::Development
-        {
-          let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == dep.name )
-          {
-            node
-          }
-          else
-          {
-            deps.add_node( &dep.name )
-          };
-
-          deps.add_edge( root_node, dep_node, &package.name );
-        }
-      }
-    }).collect::< Vec< _ > >();
-
+    }
     deps
   }
 
-  pub fn graph_build_with_filter< 'a >( packages : &'a HashMap< String, &Package >, filter_path: &PathBuf ) -> Graph< &'a str, &'a str >
-  {
-    let mut deps = Graph::< &str, &str >::new();
-    let _update_graph = packages.iter().map( | ( _name, package ) |
-    {
-      let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == package.name )
-      {
-        node
-      }
-      else
-      {
-        deps.add_node( &package.name )
-      };
-
-      for dep in &package.dependencies
-      {
-        if dep.path.is_some() && dep.kind != DependencyKind::Development && dep.path.as_ref().unwrap().starts_with( filter_path )
-        {
-          let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == dep.name )
-          {
-          node
-          }
-          else
-          {
-            deps.add_node( &dep.name )
-          };
-
-          deps.add_edge( root_node, dep_node, &package.name );
-        }
-      }
-    }).collect::< Vec< _ > >();
-
-    deps
-  }
 
   //
 
-  pub fn toposort( packages : &HashMap< String, &Package > ) -> Vec< String >
+  pub fn toposort< 'a >( graph :  Graph<&'a str, &'a str> ) -> Vec< String >
   {
-    let deps = graph_build( packages );
-
-    let sorted = pg_toposort( &deps, None ).expect( "Failed to process toposort for packages" );
-    let names = sorted
+    pg_toposort( &graph, None ).expect( "Failed to process toposort for packages" )
     .iter()
     .rev()
-    .map( | dep_idx | deps.node_weight( *dep_idx ).unwrap().to_string() )
-    .collect::< Vec< String > >();
-
-    names
+    .map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() )
+    .collect::< Vec< String > >()
   }
 
-  pub fn toposort_with_filter( packages : &HashMap< String, &Package >, filter_path: &PathBuf ) -> Vec< String >
-  {
-    let deps = graph_build_with_filter( packages, filter_path );
-
-    let sorted = pg_toposort( &deps, None ).expect( "Failed to process toposort for packages" );
-    let names = sorted
-    .iter()
-    .rev()
-    .map( | dep_idx | deps.node_weight( *dep_idx ).unwrap().to_string() )
-    .collect::< Vec< String > >();
-
-    names
-  }
   //
 
   /// Check if publish needed for a package
@@ -385,14 +366,13 @@ crate::mod_interface!
   protected( crate ) use PublishReport;
   protected( crate ) use publish;
 
-  protected( crate ) use filter;
-  protected( crate ) use filter_by_path;
   protected( crate ) use local_path_get;
 
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
-  protected( crate ) use toposort_with_filter;
 
+  protected( crate ) use FilterMapOptions;
+  protected( crate ) use packages_filter_map;
   protected use publish_need;
 
   orphan use LocalDependenciesOptions;
