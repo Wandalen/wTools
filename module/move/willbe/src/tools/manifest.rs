@@ -107,6 +107,7 @@ pub( crate ) mod private
     }
   }
 
+  /// Create and load manifest by specified path
   pub fn get( path : impl Into< PathBuf > ) -> anyhow::Result< Manifest >
   {
     let mut manifest = Manifest::new();
@@ -122,6 +123,6 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   prelude use Manifest;
-  protected( crate ) use get;
+  protected use get;
 }
 
