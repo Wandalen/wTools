@@ -1,4 +1,4 @@
-mod private 
+mod private
 {
   use std::
   { 
@@ -15,6 +15,7 @@ mod private
   use cargo_metadata::
   {
     MetadataCommand,
+    Package
   };
   use wca::wtools::Itertools;
   use convert_case::Case;
@@ -23,9 +24,15 @@ mod private
   { 
     OpenOptions
   };
-  use std::str::FromStr;
 
-  use anyhow::*;
+  use error_tools::for_app::
+  {
+    Result,
+    anyhow,
+  };
+  use crate::package::functions;
+  use crate::package::functions::FilterMapOptions;
+
 
   lazy_static::lazy_static!
   {
@@ -97,23 +104,24 @@ mod private
     Ok( () )
   }
 
-  fn directory_names( path: &PathBuf ) -> Result< Vec< String > >
+
+  fn directory_names( path: PathBuf, packages: &[Package] ) -> Vec< String >
   {
-    let mut result = vec![];
-    let entries = fs::read_dir( path )?;
-    for entry in entries 
-    {
-      let entry = entry?;
-      let path = entry.path();
-      if path.is_dir() 
-      {
-        if let Some( dir_name ) = path.file_name() 
-        {
-          result.push( dir_name.to_string_lossy().into() );
-        }
-      }
-    }
-    Ok( result )
+    let core_filter: Option< Box< dyn Fn( &Package) -> bool > > = Some
+    (
+      Box::new
+      (
+        move | p |
+        p.publish.is_none() && p.manifest_path.starts_with( &path )
+      )
+    );
+    let core_packages_map = functions::packages_filter_map
+    (
+      packages,
+     FilterMapOptions{ package_filter: core_filter, ..Default::default() },
+    );
+    let core_graph = functions::graph_build( &core_packages_map );
+    functions::toposort( core_graph )
   }
 
   fn table_prepare( modules: Vec< String >, dir: String ) -> String
@@ -138,10 +146,9 @@ mod private
     format!( "{table_header}\n{table_content}\n" )
   }
 
-  fn workspace_root() -> Result< PathBuf >
+  fn workspace_root( metadata: &cargo_metadata::Metadata ) -> Result< PathBuf >
   {
-    let metadata = MetadataCommand::new().no_deps().exec()?;
-    Ok( metadata.workspace_root.into_std_path_buf() )
+    Ok( metadata.workspace_root.clone().into_std_path_buf() )
   }
 
   fn copy_range_to_target<T: Clone>( source: &[T], target: &mut Vec<T>, from: usize, to: usize ) -> Result<()> {
