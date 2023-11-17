@@ -250,12 +250,14 @@ mod private
     }
   }
 
+  pub type PackageName = String;
+
   /// Given a slice of `Package` instances and a set of filtering options,
   /// this function filters and maps the packages and their dependencies
   /// based on the provided filters. It returns a HashMap where the keys
   /// are package names, and the values are HashSet instances containing
   /// the names of filtered dependencies for each package.
-  pub fn packages_filter_map( packages: &[ Package ], filter_map_options: FilterMapOptions ) -> HashMap< String, HashSet< String > >
+  pub fn packages_filter_map( packages: &[ Package ], filter_map_options: FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
   {
     let FilterMapOptions { package_filter, dependency_filter } = filter_map_options;
     let package_filter = package_filter.unwrap_or_else( || Box::new( |_| true ) );
@@ -278,7 +280,7 @@ mod private
   }
 
   // string, str - package_name
-  pub fn graph_build< 'a >( packages: &'a HashMap< String, HashSet< String > > ) -> Graph< &'a str, &'a str >
+  pub fn graph_build< 'a >( packages: &'a HashMap< PackageName, HashSet< PackageName > > ) -> Graph< &'a PackageName, &'a PackageName >
   {
     let nudes: HashSet< _ > = packages
     .iter()
@@ -288,7 +290,7 @@ mod private
       .iter()
       .chain( Some( name ) )
     }).collect();
-    let mut deps = Graph::< &str, &str >::new();
+    let mut deps = Graph::< &PackageName, &PackageName >::new();
     for nude in nudes
     {
       deps.add_node( nude );
@@ -308,7 +310,7 @@ mod private
 
   //
 
-  pub fn toposort< 'a >( graph :  Graph<&'a str, &'a str> ) -> Vec< String >
+  pub fn toposort< 'a >( graph :  Graph<&'a PackageName, &'a PackageName> ) -> Vec< PackageName >
   {
     pg_toposort( &graph, None ).expect( "Failed to process toposort for packages" )
     .iter()
