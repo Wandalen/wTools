@@ -51,7 +51,6 @@ mod private
   pub fn publish_single( path : &Path, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
-
     let manifest = manifest::get( path ).map_err( | e | ( report.clone(), e ) )?;
     if !manifest.package_is() || manifest.local_is()
     {
@@ -60,7 +59,6 @@ mod private
 
     let mut package_dir = manifest.manifest_path.clone();
     package_dir.pop();
-
     let output = process::start_sync( "cargo package", &package_dir ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
     if output.err.contains( "not yet committed")
     {
@@ -327,6 +325,7 @@ crate::mod_interface!
 
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
+  protected( crate ) use toposort_by_paths;
 
   protected use publish_need;
 

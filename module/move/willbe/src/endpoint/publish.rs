@@ -1,7 +1,7 @@
 /// Internal namespace.
 mod private
 {
-  use crate::package::functions as package;
+  use crate::package::{ functions as package, local_dependencies, LocalDependenciesOptions };
 
   use crate::tools::
   {
@@ -20,6 +20,8 @@ mod private
   {
     MetadataCommand,
   };
+  use wca::wtools::Itertools;
+  use crate::package::functions::toposort_by_paths;
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
@@ -55,6 +57,7 @@ mod private
     let mut report = PublishReport::default();
 
     let mut paths = HashSet::new();
+    // find all packages by specified folders
     for pattern in &patterns
     {
       let current_path = path::canonicalize( pattern ).map_err( | e | ( report.clone(), e.into() ) )?;
@@ -62,8 +65,21 @@ mod private
       paths.extend( current_paths );
     }
 
-    let paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::< Vec< PathBuf > >();
+    // FIX: Maybe unsafe. Take metadata of workspace in current dir. Patterns can link to another.
+    let metadata = MetadataCommand::new().no_deps().exec().unwrap();
 
+    let paths : Vec< _ > = paths
+    .into_iter()
+    // with local dependencies
+    .flat_map( | path | local_dependencies( &metadata, &path, LocalDependenciesOptions::default() ).unwrap().into_iter().chain( Some( path.parent().unwrap().to_path_buf() ) ) )
+    // unique packages only
+    .unique()
+    .collect();
+
+    // sort the list
+    let paths = toposort_by_paths( &metadata, &paths );
+
+    // publish sorted
     for path in paths
     {
       let current_report = package::publish_single( &path, dry )
