@@ -4,6 +4,7 @@ mod private
   use std::fmt::Formatter;
   use std::path::Path;
   use toml_edit::value;
+  use semver::Version;
   use crate::manifest;
   use crate::process::CmdReport;
   use crate::wtools::error::Result;
@@ -45,12 +46,25 @@ mod private
   /// Bump version as a string.
   pub fn bump_from_str( version : &str ) -> Result< String >
   {
-    let mut splits : Vec< &str > = version.split( '.' ).collect();
-    let patch_version = splits[ 2 ].parse::< u32 >()? + 1;
-    let v = &patch_version.to_string();
-    splits[ 2 ] = v;
+    let mut version : Version = version.parse()?;
 
-    Ok( splits.join( "." ) )
+    if version.major != 0
+    {
+      version.major += 1;
+      version.minor = 0;
+      version.patch = 0;
+    }
+    else if version.minor != 0
+    {
+      version.minor += 1;
+      version.patch = 0;
+    }
+    else
+    {
+      version.patch += 1;
+    }
+
+    Ok( version.to_string() )
   }
 
   /// Bump package version by manifest path.
@@ -106,6 +120,93 @@ mod private
     report.new_version = Some( new_version );
 
     Ok( report )
+  }
+}
+
+#[ cfg( test ) ]
+mod tests
+{
+  mod bump_str
+  {
+    use crate::version::private::bump_from_str;
+
+    #[ test ]
+    fn patch()
+    {
+      // Arrange
+      let version = "0.0.0";
+
+      // Act
+      let new_version = bump_from_str( version ).unwrap();
+
+      // Assert
+      assert_eq!( "0.0.1", &new_version );
+    }
+
+    #[ test ]
+    fn minor_without_patches()
+    {
+      // Arrange
+      let version = "0.1.0";
+
+      // Act
+      let new_version = bump_from_str( version ).unwrap();
+
+      // Assert
+      assert_eq!( "0.2.0", &new_version );
+    }
+
+    #[ test ]
+    fn minor_with_patch()
+    {
+      // Arrange
+      let version = "0.1.1";
+
+      // Act
+      let new_version = bump_from_str( version ).unwrap();
+
+      // Assert
+      assert_eq!( "0.2.0", &new_version );
+    }
+
+    #[ test ]
+    fn major_without_patches()
+    {
+      // Arrange
+      let version = "1.0.0";
+
+      // Act
+      let new_version = bump_from_str( version ).unwrap();
+
+      // Assert
+      assert_eq!( "2.0.0", &new_version );
+    }
+
+    #[ test ]
+    fn major_with_minor()
+    {
+      // Arrange
+      let version = "1.1.0";
+
+      // Act
+      let new_version = bump_from_str( version ).unwrap();
+
+      // Assert
+      assert_eq!( "2.0.0", &new_version );
+    }
+
+    #[ test ]
+    fn major_with_patches()
+    {
+      // Arrange
+      let version = "1.1.1";
+
+      // Act
+      let new_version = bump_from_str( version ).unwrap();
+
+      // Assert
+      assert_eq!( "2.0.0", &new_version );
+    }
   }
 }
 
