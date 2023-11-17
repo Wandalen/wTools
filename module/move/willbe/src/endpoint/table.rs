@@ -15,6 +15,7 @@ mod private
   use cargo_metadata::
   {
     MetadataCommand,
+    Package
   };
   use wca::wtools::Itertools;
   use convert_case::Case;
@@ -30,39 +31,46 @@ mod private
     Result,
     anyhow,
   };
-  
+  use crate::package::functions;
+  use crate::package::functions::FilterMapOptions;
 
 
   /// Create table
   pub fn table_create() -> Result< () >
   {
-    let workspace_root = workspace_root()?;
-    let core_directories = directory_names( workspace_root.join( "module" ).join( "core" ) )?;
-    let move_directories = directory_names( workspace_root.join( "module" ).join( "move" ) )?;
+    let metadata = MetadataCommand::new()
+    .no_deps()
+    .exec()?;
+    let workspace_root = workspace_root( &metadata )?;
+    let core_root = workspace_root.join( "module" ).join( "core" );
+    let move_root = workspace_root.join( "module" ).join( "move" );
+    let core_directories = directory_names( core_root, &metadata.packages );
+    let move_directories = directory_names( move_root, &metadata.packages );
     let core_table = table_prepare( core_directories , "core".into() );
     let move_table = table_prepare( move_directories, "move".into() );
-    let read_me_path = readme_path(&workspace_root).ok_or( anyhow!("Cannot found README.md file") )?;
+    let read_me_path = readme_path( &workspace_root ).ok_or( anyhow!( "Cannot found README.md file" ) )?;
     tables_write_into_file( read_me_path, vec![ core_table, move_table ] )?;
     Ok( () )
   }
 
-  fn directory_names( path: PathBuf ) -> Result< Vec< String > >
+
+  fn directory_names( path: PathBuf, packages: &[Package] ) -> Vec< String >
   {
-    let mut result = vec![];
-    let entries = fs::read_dir( path )?;
-    for entry in entries 
-    {
-      let entry = entry?;
-      let path = entry.path();
-      if path.is_dir() 
-      {
-        if let Some( dir_name ) = path.file_name() 
-        {
-          result.push( dir_name.to_string_lossy().into() );
-        }
-      }
-    }
-    Ok( result )
+    let core_filter: Option< Box< dyn Fn( &Package) -> bool > > = Some
+    (
+      Box::new
+      (
+        move | p |
+        p.publish.is_none() && p.manifest_path.starts_with( &path )
+      )
+    );
+    let core_packages_map = functions::packages_filter_map
+    (
+      packages,
+     FilterMapOptions{ package_filter: core_filter, ..Default::default() },
+    );
+    let core_graph = functions::graph_build( &core_packages_map );
+    functions::toposort( core_graph )
   }
 
   fn table_prepare( modules: Vec< String >, dir: String ) -> String
@@ -86,10 +94,9 @@ mod private
     table
   }
 
-  fn workspace_root() -> Result< PathBuf >
+  fn workspace_root( metadata: &cargo_metadata::Metadata ) -> Result< PathBuf >
   {
-    let metadata = MetadataCommand::new().no_deps().exec()?;
-    Ok( metadata.workspace_root.into_std_path_buf() )
+    Ok( metadata.workspace_root.clone().into_std_path_buf() )
   }
 
   fn tables_write_into_file( file_path: PathBuf, params: Vec< String >) -> Result< () >
@@ -141,7 +148,7 @@ mod private
     if let Some( path )  = readme_in_dir_find(&dir_path.join( ".github" ))
     {
       Some( path )
-    } 
+    }
     else if let Some( path )  = readme_in_dir_find( dir_path )
     {
       Some( path )
@@ -180,8 +187,6 @@ mod private
     .map( PathBuf::from )
   }
 }
-
-
 
 crate::mod_interface!
 {

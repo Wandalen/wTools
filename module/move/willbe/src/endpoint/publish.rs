@@ -16,10 +16,9 @@ mod private
     collections::HashSet,
   };
   use core::fmt::Formatter;
-  use cargo_metadata::
-  {
-    MetadataCommand,
-  };
+  use std::collections::HashMap;
+  use cargo_metadata::MetadataCommand;
+  use crate::package::functions::FilterMapOptions;
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
@@ -114,12 +113,23 @@ mod private
     .exec()
     .map_err( | e | ( report.clone(), e.into() ) )?;
 
-    let packages_map = package::filter( &package_metadata );
-    let sorted = package::toposort( &packages_map );
+    let packages_map = package::packages_filter_map
+    (
+      &package_metadata.packages,
+      FilterMapOptions{ package_filter: Some( Box::new( | p |{ p.publish.is_none() } ) ), ..Default::default() }
+    );
+    let package_path_map: HashMap< _, _ > = package_metadata
+    .packages
+    .iter()
+    .map( | p | ( &p.name, &p.manifest_path ) )
+    .collect();
 
-    for name in sorted.iter()
+    let graph = package::graph_build( &packages_map );
+    let sorted = package::toposort( graph );
+
+    for name in &sorted
     {
-      let path = packages_map[ name ].manifest_path.clone().into();
+      let path = package_path_map[ name ].clone().into();
       package::publish( &current_path, &path, dry )
       .map_err
       (

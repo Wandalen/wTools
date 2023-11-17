@@ -4,15 +4,20 @@ mod private
   {
     fs,
     path::PathBuf,
-    collections::{ HashMap, HashSet },
+    collections::
+    {
+      HashMap,
+      HashSet
+    },
   };
+  use std::fmt::Formatter;
   use std::path::Path;
   use cargo_metadata::
   {
-    DependencyKind,
+    Dependency,
     Metadata,
     MetadataCommand,
-    Package,
+    Package
   };
   use petgraph::
   {
@@ -194,24 +199,7 @@ mod private
 
   //
 
-  pub fn filter( metadata : &Metadata ) -> HashMap< String, &Package >
-  {
-    let mut packages_map = HashMap::new();
 
-    let _packages = metadata.packages.iter().filter( | package |
-    {
-      if package.publish.is_none()
-      {
-        packages_map.insert( package.name.clone(), *package );
-
-        return true;
-      }
-
-      false
-    }).collect::< Vec< _ > >();
-
-    packages_map
-  }
 
   //
 
@@ -233,55 +221,102 @@ mod private
 
   //
 
-  pub fn graph_build< 'a >( packages : &'a HashMap< String, &Package >, only_local : bool ) -> Graph< &'a str, &'a str >
+  /// A configuration struct for specifying optional filters when using the
+  /// `packages_filter_map` function. It allows users to provide custom filtering
+  /// functions for packages and dependencies.
+  #[ derive( Default ) ]
+  pub struct FilterMapOptions
   {
-    let mut deps = Graph::< &str, &str >::new();
-    let _update_graph = packages.iter().map( | ( _name, package ) |
+    /// An optional package filtering function. If provided, this function is
+    /// applied to each package, and only packages that satisfy the condition
+    /// are included in the final result. If not provided, a default filter that
+    /// accepts all packages is used.
+    pub package_filter: Option< Box< dyn Fn( &Package) -> bool > >,
+
+    /// An optional dependency filtering function. If provided, this function
+    /// is applied to each dependency of each package, and only dependencies
+    /// that satisfy the condition are included in the final result. If not
+    /// provided, a default filter that accepts all dependencies is used.
+    pub dependency_filter: Option< Box< dyn Fn( &Package, &Dependency ) -> bool  > >,
+  }
+
+  impl std::fmt::Debug for FilterMapOptions{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+      f
+      .debug_struct( "FilterMapOptions" )
+      .field( "package_filter", &"package_filter" )
+      .field( "dependency_filter", &"dependency_filter" )
+      .finish()
+    }
+  }
+
+  pub type PackageName = String;
+
+  /// Given a slice of `Package` instances and a set of filtering options,
+  /// this function filters and maps the packages and their dependencies
+  /// based on the provided filters. It returns a HashMap where the keys
+  /// are package names, and the values are HashSet instances containing
+  /// the names of filtered dependencies for each package.
+  pub fn packages_filter_map( packages: &[ Package ], filter_map_options: FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
+  {
+    let FilterMapOptions { package_filter, dependency_filter } = filter_map_options;
+    let package_filter = package_filter.unwrap_or_else( || Box::new( |_| true ) );
+    let dependency_filter = dependency_filter.unwrap_or_else( || Box::new( | _, _ | true ) );
+    packages
+    .iter()
+    .filter(|&p| package_filter( p ) )
+    .map
+    (
+      | package |
+      (
+        package.name.clone(),
+        package.dependencies
+        .iter()
+        .filter( | &d | dependency_filter( package, d ) )
+        .map( | d | d.name.clone() )
+        .collect::< HashSet< _ > >()
+      )
+    ).collect()
+  }
+
+  // string, str - package_name
+  pub fn graph_build< 'a >( packages: &'a HashMap< PackageName, HashSet< PackageName > > ) -> Graph< &'a PackageName, &'a PackageName >
+  {
+    let nudes: HashSet< _ > = packages
+    .iter()
+    .flat_map( | ( name, dependency ) |
     {
-      let root_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == package.name )
+      dependency
+      .iter()
+      .chain( Some( name ) )
+    }).collect();
+    let mut deps = Graph::< &PackageName, &PackageName >::new();
+    for nude in nudes
+    {
+      deps.add_node( nude );
+    }
+    for ( name, dependencies ) in packages
+    {
+      let root_node = deps.node_indices().find( | i | deps[ *i ] == name ).unwrap();
+      for dep in dependencies
       {
-        node
+        let dep_node = deps.node_indices().find( | i | deps[ *i ] == dep ).unwrap();
+        deps.add_edge(root_node, dep_node, name );
       }
-      else
-      {
-        deps.add_node( &package.name )
-      };
-
-      for dep in &package.dependencies
-      {
-        if ( only_local && dep.path.is_some() || !only_local ) && dep.kind != DependencyKind::Development
-        {
-          let dep_node = if let Some( node ) = deps.node_indices().find( | i | deps[ *i ] == dep.name )
-          {
-            node
-          }
-          else
-          {
-            deps.add_node( &dep.name )
-          };
-
-          deps.add_edge( root_node, dep_node, &package.name );
-        }
-      }
-    }).collect::< Vec< _ > >();
-
+    }
     deps
   }
 
+
   //
 
-  pub fn toposort( packages : &HashMap< String, &Package > ) -> Vec< String >
+  pub fn toposort< 'a >( graph :  Graph<&'a PackageName, &'a PackageName> ) -> Vec< PackageName >
   {
-    let deps = graph_build( packages, true );
-
-    let sorted = pg_toposort( &deps, None ).expect( "Failed to process toposort for packages" );
-    let names = sorted
+    pg_toposort( &graph, None ).expect( "Failed to process toposort for packages" )
     .iter()
     .rev()
-    .map( | dep_idx | deps.node_weight( *dep_idx ).unwrap().to_string() )
-    .collect::< Vec< String > >();
-
-    names
+    .map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() )
+    .collect::< Vec< String > >()
   }
 
   //
@@ -318,12 +353,13 @@ crate::mod_interface!
   protected( crate ) use PublishReport;
   protected( crate ) use publish;
 
-  protected( crate ) use filter;
   protected( crate ) use local_path_get;
 
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
 
+  protected use FilterMapOptions;
+  protected use packages_filter_map;
   protected use publish_need;
 
   orphan use LocalDependenciesOptions;

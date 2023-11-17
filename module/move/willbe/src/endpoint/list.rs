@@ -1,15 +1,34 @@
 /// Internal namespace.
 mod private
 {
-  use std::collections::HashMap;
   use std::fmt::Formatter;
-  use petgraph::{ algo::toposort, algo::has_path_connecting, Graph };
+  use petgraph::
+  {
+    algo::toposort,
+    algo::has_path_connecting,
+    Graph
+  };
   use std::path::PathBuf;
   use std::str::FromStr;
   use anyhow::Context;
-  use crate::package::functions::graph_build;
-  use crate::wtools::error::{ for_app::Error, err };
-  use cargo_metadata::MetadataCommand;
+  use crate::package::functions::
+  {
+    FilterMapOptions,
+    graph_build,
+    packages_filter_map
+  };
+  use crate::wtools::error::
+  {
+    for_app::Error,
+    err
+  };
+  use cargo_metadata::
+  {
+    Dependency,
+    DependencyKind,
+    MetadataCommand,
+    Package
+  };
   use crate::manifest;
 
   /// Args for `list` endpoint.
@@ -156,9 +175,33 @@ mod private
     .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
     .unwrap_or_default();
 
-    let packages_map = metadata.packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
-    let graph = graph_build( &packages_map, matches!( filter, ListFilter::Local ) );
-    let sorted = toposort( &graph, None ).map_err( | e | ( report.clone() , err!( "Failed to process toposort for packages: {:?}", e ) ) )?;
+
+    // let packages_map =  metadata.packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
+
+    let f: Option< Box< dyn Fn( &Package, &Dependency ) -> bool > > = match filter
+    {
+      ListFilter::Nothing => { None }
+      ListFilter::Local =>
+      {
+        Some
+        (
+          Box::new
+          (
+            | _p: &Package, d: &Dependency |
+            d.path.is_some() && d.kind != DependencyKind::Development
+          )
+        )
+      }
+    };
+
+    let packages_map =  packages_filter_map
+    (
+      &metadata.packages,
+      FilterMapOptions{ dependency_filter: f, ..Default::default() }
+    );
+
+    let graph = graph_build( &packages_map );
+    let sorted = toposort( &graph, None ).map_err( | e | ( report.clone(), err!( "Failed to process toposort for packages: {:?}", e ) ) )?;
 
     match format
     {
@@ -178,7 +221,7 @@ mod private
       {
         let names = sorted
         .iter()
-        .filter_map( | idx | if graph.node_weight( *idx ).unwrap() == &root_crate { Some( *idx ) } else { None } )
+        .filter_map( | idx | if graph.node_weight( *idx ).unwrap() == &&root_crate { Some( *idx ) } else { None } )
         .collect::< Vec< _ > >();
 
         report = ListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
