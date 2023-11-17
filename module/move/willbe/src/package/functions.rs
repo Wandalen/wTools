@@ -26,9 +26,8 @@ mod private
     digest,
     http,
   };
-  use crate::version;
+  use crate::{ cargo, git, version };
   use anyhow::{ Context, Error, anyhow };
-  use toml_edit::value;
 
   use crate::path;
   use crate::wtools;
@@ -38,7 +37,8 @@ mod private
   pub struct PublishReport
   {
     get_info : Option< process::CmdReport >,
-    bump : Option< String >,
+    bump : Option< version::BumpReport >,
+    add : Option< process::CmdReport >,
     commit : Option< process::CmdReport >,
     push : Option< process::CmdReport >,
     publish : Option< process::CmdReport >,
@@ -48,11 +48,11 @@ mod private
   /// Publish single packages.
   ///
 
-  pub fn publish( current_path : &PathBuf, path : &PathBuf, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
+  pub fn publish( _current_path : &PathBuf, path : &PathBuf, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
 
-    let mut manifest = manifest::get( path ).map_err( | e | ( report.clone(), e ) )?;
+    let manifest = manifest::get( path ).map_err( | e | ( report.clone(), e ) )?;
     if !manifest.package_is() || manifest.local_is()
     {
       return Ok( report );
@@ -70,65 +70,21 @@ mod private
 
     if publish_need( &manifest )
     {
-      let data = manifest.manifest_data.as_deref_mut().ok_or( anyhow!( "Failed to get manifest data" ) ).map_err( | e | ( report.clone(), e ) )?;
-      let name = &data[ "package" ][ "name" ].clone();
-      let name = name.as_str().expect( "Name should be valid UTF-8" );
-      let version = &data[ "package" ][ "version" ].clone();
-      let version = version.as_str().expect( "Version should be valid UTF-8" );
-      let new_version = version::bump( version ).map_err( | e | ( report.clone(), e ) )?;
+      let bump_report = version::bump( &manifest.manifest_path, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+      let package_name = bump_report.package_name.clone().unwrap();
+      let new_version = bump_report.new_version.clone().unwrap();
+      report.bump = Some( bump_report );
 
-      if dry
-      {
-        report.bump = Some( "Bump package version".into() );
+      let commit_message = format!( "{package_name}-v{new_version}" );
+      let res = git::add( &manifest.manifest_path, [ "Cargo.toml" ], dry ).map_err( | e | ( report.clone(), e ) )?;
+      report.add = Some( res );
+      let res = git::commit( &manifest.manifest_path, commit_message, dry ).map_err( | e | ( report.clone(), e ) )?;
+      report.commit = Some( res );
+      let res = git::push( &manifest.manifest_path, dry ).map_err( | e | ( report.clone(), e ) )?;
+      report.push = Some( res );
 
-        let buf = format!( "git commit -am {}-v{}", name, new_version );
-        let output = process::CmdReport
-        {
-          command : buf,
-          path : current_path.clone(),
-          out : String::new(),
-          err : String::new(),
-        };
-        report.commit = Some( output );
-
-        let buf = "git push".to_string();
-        let output = process::CmdReport
-        {
-          command : buf,
-          path : current_path.clone(),
-          out : String::new(),
-          err : String::new(),
-        };
-        report.push = Some( output );
-
-        let buf = "cargo publish".to_string();
-        let output = process::CmdReport
-        {
-          command : buf,
-          path : package_dir.clone(),
-          out : String::new(),
-          err : String::new(),
-        };
-        report.publish = Some( output );
-      }
-      else
-      {
-        data[ "package" ][ "version" ] = value( &new_version );
-        manifest.store().map_err( | e | ( report.clone(), e ) )?;
-        report.bump = Some( "Bump package version".into() );
-
-        let buf = format!( "git commit -am {}-v{}", name, new_version );
-        let output = process::start_sync( &buf, current_path ).context( "Commit changes while publishing" ).map_err( | e | ( report.clone(), e ) )?;
-        report.commit = Some( output );
-
-        let buf = "git push".to_string();
-        let output = process::start_sync( &buf, current_path ).context( "Push while publishing" ).map_err( | e | ( report.clone(), e ) )?;
-        report.push = Some( output );
-
-        let buf = "cargo publish".to_string();
-        let output = process::start_sync( &buf, &package_dir ).context( "Publish" ).map_err( | e | ( report.clone(), e ) )?;
-        report.publish = Some( output );
-      }
+      let res = cargo::publish( &manifest.manifest_path, dry ).map_err( | e | ( report.clone(), e ) )?;
+      report.publish = Some( res );
     }
 
     Ok( report )
