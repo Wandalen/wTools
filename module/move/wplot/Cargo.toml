@@ -14,6 +14,9 @@ Plot interface.
 categories = [ "command-line-interface", "command-line-utilities" ]
 keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
 
+[lints]
+workspace = true
+
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
