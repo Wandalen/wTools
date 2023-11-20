@@ -49,6 +49,10 @@ wtools::meta::mod_interface!
   #[ cfg( not( feature = "no_std" ) ) ]
   layer cargo;
 
+  /// Metadata cache.
+  #[ cfg( not( feature = "no_std" ) ) ]
+  layer cache;
+
   #[ cfg( not( feature = "no_std" ) ) ]
   prelude use ::std::env;
   // protected( crate ) use wtools::prelude::*;

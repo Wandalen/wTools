@@ -5,8 +5,7 @@ mod private
 
   use crate::tools::
   {
-    files,
-    manifest,
+    // files,
     path,
   };
   use anyhow::Error;
@@ -16,8 +15,8 @@ mod private
     collections::HashSet,
   };
   use core::fmt::Formatter;
-  use cargo_metadata::{ MetadataCommand };
   use std::collections::HashMap;
+  use crate::cache::Cache;
   use crate::package::functions::FilterMapOptions;
 
   #[ derive( Debug, Default, Clone ) ]
@@ -58,14 +57,21 @@ mod private
     for pattern in &patterns
     {
       let current_path = path::canonicalize( pattern ).map_err( | e | ( report.clone(), e.into() ) )?;
-      let current_paths = files::find( current_path, &[ "**/Cargo.toml" ] );
-      paths.extend( current_paths );
+      // let current_paths = files::find( current_path, &[ "Cargo.toml" ] );
+      paths.extend( Some( current_path ) );
     }
 
-    // FIX: Maybe unsafe. Take metadata of workspace in current dir. Patterns can link to another.
-    let metadata = MetadataCommand::new().no_deps().exec().unwrap();
+    let mut metadata = if paths.is_empty()
+    {
+      Cache::default()
+    }
+    else
+    {
+      // FIX: patterns can point to different workspaces. Current solution take first random path from list
+      Cache::with_manifest_path( paths.iter().next().unwrap() )
+    };
 
-    let packages_to_publish : Vec< _ >= metadata.packages.iter().filter( | &package | paths.contains( package.manifest_path.as_std_path() ) ).collect();
+    let packages_to_publish : Vec< _ >= metadata.load().packages_get().iter().filter( | &package | paths.contains( package.manifest_path.as_std_path().parent().unwrap() ) ).cloned().collect();
     let mut queue = vec![];
     for package in &packages_to_publish
     {
@@ -76,7 +82,7 @@ mod private
         sort : LocalDependenciesSort::Topological,
         ..Default::default()
       };
-      let deps = package::local_dependencies( &metadata, package.manifest_path.as_std_path(), local_deps_args )
+      let deps = package::local_dependencies( &mut metadata, package.manifest_path.as_std_path(), local_deps_args )
       .map_err( | e | ( report.clone(), e.into() ) )?;
 
       // add dependencies to publish queue
@@ -121,21 +127,16 @@ mod private
   {
     let mut report = PublishReport::default();
 
-    let mut manifest = manifest::Manifest::new();
-    let manifest_path = manifest.manifest_path_from_str( &path_to_workspace ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let package_metadata = MetadataCommand::new()
-    .manifest_path( &manifest_path )
-    .no_deps()
-    .exec()
-    .map_err( | e | ( report.clone(), e.into() ) )?;
+    let mut package_metadata = Cache::with_manifest_path( path_to_workspace );
 
     let packages_map = package::packages_filter_map
     (
-      &package_metadata.packages,
+      &package_metadata.load().packages_get(),
       FilterMapOptions{ package_filter: Some( Box::new( | p |{ p.publish.is_none() } ) ), ..Default::default() }
     );
     let package_path_map: HashMap< _, _ > = package_metadata
-    .packages
+    .load()
+    .packages_get()
     .iter()
     .map( | p | ( &p.name, &p.manifest_path ) )
     .collect();

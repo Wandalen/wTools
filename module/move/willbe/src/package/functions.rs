@@ -9,7 +9,7 @@ mod private
   use std::fmt::Formatter;
   use std::hash::Hash;
   use std::ops::Index;
-  use cargo_metadata::{ Dependency, DependencyKind, Metadata, MetadataCommand, Package };
+  use cargo_metadata::{ Dependency, DependencyKind, Package };
   use petgraph::
   {
     graph::Graph,
@@ -24,6 +24,7 @@ mod private
   };
   use crate::{ cargo, git, version };
   use anyhow::{ Context, Error, anyhow };
+  use crate::cache::Cache;
 
   use crate::path;
   use crate::wtools;
@@ -182,7 +183,7 @@ mod private
   //
 
   /// Returns local dependencies of specified package by its manifest path from a workspace
-  pub fn local_dependencies( metadata : &Metadata, manifest_path : &Path, opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
+  pub fn local_dependencies_back_end( metadata : &mut Cache, manifest_path : &Path, opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
   {
     let LocalDependenciesOptions
     {
@@ -195,9 +196,8 @@ mod private
     let manifest_path = path::canonicalize( manifest_path )?;
 
     let deps = metadata
-    .packages
-    .iter()
-    .find( | package | package.manifest_path.as_std_path() == &manifest_path )
+    .load()
+    .package_find_by_manifest( &manifest_path )
     .ok_or( anyhow!( "Package not found in the workspace" ) )?
     .dependencies
     .iter()
@@ -214,14 +214,12 @@ mod private
         if !exclude.contains( dep )
         {
           exclude.insert( dep.clone() );
-          let rebuild_opts = LocalDependenciesOptions
+          let inner_opts = LocalDependenciesOptions
           {
-            recursive,
-            sort,
-            with_dev,
             exclude: exclude.clone(),
+            ..opts
           };
-          output.extend( local_dependencies( metadata, &dep.join( "Cargo.toml" ), rebuild_opts )? );
+          output.extend( local_dependencies_back_end( metadata, &dep.join( "Cargo.toml" ), inner_opts )? );
         }
       }
     }
@@ -233,11 +231,17 @@ mod private
       LocalDependenciesSort::Unordered => {},
       LocalDependenciesSort::Topological =>
       {
-        output = toposort_by_paths( &metadata, &output );
+        output = toposort_by_paths( metadata, &output );
       },
     }
 
     Ok( output )
+  }
+
+  /// Returns local dependencies of specified package by its manifest path from a workspace
+  pub fn local_dependencies( metadata : &mut Cache, manifest_path : &Path, opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
+  {
+    local_dependencies_back_end( metadata, manifest_path, opts )
   }
 
   //
@@ -267,13 +271,10 @@ mod private
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
 
-    let package_metadata = MetadataCommand::new()
-    .manifest_path( manifest_path )
-    .exec()
-    .unwrap();
+    let package_metadata = Cache::with_manifest_path( manifest_path.parent().unwrap() );
 
     let mut local_package_path = PathBuf::new();
-    local_package_path.push( package_metadata.target_directory );
+    local_package_path.push( package_metadata.target_directory() );
     local_package_path.push( buf );
 
     local_package_path
@@ -373,9 +374,11 @@ mod private
 
   //
 
-  pub fn toposort_by_paths( metadata : &Metadata, paths : &[ PathBuf ] ) -> Vec< PathBuf >
+  pub fn toposort_by_paths( metadata : &mut Cache, paths : &[ PathBuf ] ) -> Vec< PathBuf >
   {
-    let map = metadata.packages
+    let map = metadata
+    .load()
+    .packages_get()
     .iter()
     .filter( | x | paths.contains( &x.manifest_path.as_std_path().parent().unwrap().to_path_buf() ) )
     .map( | p | ( p.name.clone(), p ) )

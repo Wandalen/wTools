@@ -26,11 +26,11 @@ mod private
   {
     Dependency,
     DependencyKind,
-    MetadataCommand,
     Package
   };
   use petgraph::prelude::{ Dfs, EdgeRef };
   use petgraph::visit::Topo;
+  use crate::cache::Cache;
   use crate::manifest;
 
   /// Args for `list` endpoint.
@@ -165,13 +165,10 @@ mod private
     let mut report = ListReport::default();
 
     let manifest = manifest::get( &path_to_manifest ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let metadata = MetadataCommand::new()
-    .manifest_path( &manifest.manifest_path )
-    .no_deps()
-    .exec()
-    .map_err( | e | ( report.clone(), e.into() ) )?;
+    let mut metadata = Cache::with_manifest_path( &path_to_manifest );
 
-    let root_crate = manifest.manifest_data
+    let root_crate = manifest
+    .manifest_data
     .as_ref()
     .and_then( | m | m.get( "package" ) )
     .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
@@ -201,7 +198,7 @@ mod private
 
     let packages_map =  packages_filter_map
     (
-      &metadata.packages,
+      &metadata.load().packages_get(),
       FilterMapOptions{ dependency_filter: dep_filter, ..Default::default() }
     );
 

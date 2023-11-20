@@ -14,7 +14,6 @@ mod private
   use std::io::Write;
   use cargo_metadata::
   {
-    MetadataCommand,
     Package
   };
   use wca::wtools::Itertools;
@@ -31,6 +30,7 @@ mod private
     Result,
     anyhow,
   };
+  use crate::cache::Cache;
   use crate::package::functions;
   use crate::package::functions::FilterMapOptions;
 
@@ -38,14 +38,12 @@ mod private
   /// Create table
   pub fn table_create() -> Result< () >
   {
-    let metadata = MetadataCommand::new()
-    .no_deps()
-    .exec()?;
-    let workspace_root = workspace_root( &metadata )?;
+    let mut metadata = Cache::default();
+    let workspace_root = workspace_root( &mut metadata )?;
     let core_root = workspace_root.join( "module" ).join( "core" );
     let move_root = workspace_root.join( "module" ).join( "move" );
-    let core_directories = directory_names( core_root, &metadata.packages );
-    let move_directories = directory_names( move_root, &metadata.packages );
+    let core_directories = directory_names( core_root, &metadata.load().packages_get() );
+    let move_directories = directory_names( move_root, &metadata.load().packages_get() );
     let core_table = table_prepare( core_directories , "core".into() );
     let move_table = table_prepare( move_directories, "move".into() );
     let read_me_path = readme_path( &workspace_root ).ok_or( anyhow!( "Cannot found README.md file" ) )?;
@@ -94,9 +92,9 @@ mod private
     table
   }
 
-  fn workspace_root( metadata: &cargo_metadata::Metadata ) -> Result< PathBuf >
+  fn workspace_root( metadata: &mut Cache ) -> Result< PathBuf >
   {
-    Ok( metadata.workspace_root.clone().into_std_path_buf() )
+    Ok( metadata.load().workspace_root().to_path_buf() )
   }
 
   fn tables_write_into_file( file_path: PathBuf, params: Vec< String >) -> Result< () >
