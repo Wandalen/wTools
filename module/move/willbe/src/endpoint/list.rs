@@ -164,7 +164,7 @@ mod private
   {
     let mut report = ListReport::default();
 
-    let manifest = manifest::get( &path_to_manifest ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let manifest = manifest::get( &path_to_manifest.join( "Cargo.toml" ) ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
     let mut metadata = Cache::with_manifest_path( &path_to_manifest );
 
     let root_crate = manifest
