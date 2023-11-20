@@ -12,7 +12,7 @@ mod private
     SeekFrom 
   };
   use std::io::Write;
-  use cargo_metadata::{Dependency, DependencyKind, MetadataCommand, Package};
+  use cargo_metadata::{ Dependency, DependencyKind, Package };
   use wca::wtools::Itertools;
   use convert_case::Case;
   use convert_case::Casing;
@@ -51,7 +51,7 @@ mod private
   {
     let mut cargo_metadata = Cache::default();
     let workspace_root = workspace_root( &mut cargo_metadata )?;
-    let read_me_path = readme_path(&workspace_root).ok_or_else( || anyhow!( "Fail to find README.md" ) )?;
+    let read_me_path = readme_path( &workspace_root ).ok_or_else( || anyhow!( "Fail to find README.md" ) )?;
     let mut file = OpenOptions::new()
     .read( true )
     .write( true )
@@ -83,7 +83,7 @@ mod private
               .as_bytes()
             )?
           )?;
-          tables.push( table_prepare( directory_names( workspace_root.join(module_path.clone() ), &cargo_metadata.packages ), &module_path ) );
+          tables.push( table_prepare( directory_names( workspace_root.join(module_path.clone() ), cargo_metadata.load().packages_get() ), &module_path ) );
           tags_closures.push( ( open.end(), close.start() ) );
         }
       }
