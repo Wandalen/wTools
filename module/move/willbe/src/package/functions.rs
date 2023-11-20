@@ -86,9 +86,17 @@ mod private
   }
 
   ///
-  /// Publish single packages.
+  /// Publish single package.
   ///
-
+  /// Args:
+  ///
+  /// - path - a path to package manifest file
+  /// - dry - a flag that indicates whether to apply the changes or not
+  ///   - true - do not publish, but only show what steps should be taken
+  ///   - false - publishes the package
+  ///
+  /// Returns:
+  /// Returns a result containing a report indicating the result of the operation.
   pub fn publish_single( path : &Path, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
