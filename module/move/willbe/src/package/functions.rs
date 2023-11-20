@@ -28,7 +28,6 @@ mod private
   {
     manifest,
     process,
-    digest,
     http,
   };
   use crate::version;
@@ -199,10 +198,6 @@ mod private
 
   //
 
-
-
-  //
-
   pub fn local_path_get< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
@@ -330,6 +325,8 @@ mod private
   /// Panic: manifest must be loaded
   pub fn publish_need( manifest : &manifest::Manifest ) -> bool
   {
+    const IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml.orig" ];
+
     let data = manifest.manifest_data.as_ref().expect( "Manifest data doesn't loaded" );
 
     let name = &data[ "package" ][ "name" ].clone();
@@ -342,7 +339,61 @@ mod private
     // Is it ok? If there is any problem with the Internet, we will say that the packages are different.
     let remote_package = http::retrieve_bytes( name, version ).unwrap_or_default();
 
-    digest::hash( &local_package ) != digest::hash( &remote_package )
+    let mut local_decoded_package = decode_reader( local_package ).expect( "Failed to unpack local package" );
+    let mut remote_decoded_package = decode_reader( remote_package ).expect( "Failed to unpack remote package" );
+
+    let package_root = std::path::PathBuf::from( format!( "{name}-{version}" ) );
+    // all ignored files must be ignored
+    for ignore in IGNORE_LIST.iter().map( | &object | package_root.join( object ) )
+    {
+      local_decoded_package.remove( &ignore );
+      remote_decoded_package.remove( &ignore );
+    }
+
+    let mut is_same = true;
+    // if remote has files that missing locally - it is also difference
+    let mut remote_keys = remote_decoded_package.keys().collect::< HashSet< _ > >();
+    for ( path, ref content ) in local_decoded_package
+    {
+      remote_keys.remove( &path );
+      if let Some( remote_content ) = remote_decoded_package.get( &path )
+      {
+        is_same &= content == remote_content;
+      }
+      else
+      {
+        is_same = false;
+      }
+    }
+
+    !( is_same && remote_keys.is_empty() )
+  }
+
+  fn decode_reader( bytes : Vec< u8 > ) -> std::io::Result< HashMap< PathBuf, Vec< u8 > > >
+  {
+    use std::io::prelude::*;
+    use flate2::bufread::GzDecoder;
+    use tar::Archive;
+
+    if bytes.is_empty()
+    {
+      return Ok( Default::default() );
+    }
+
+    let gz = GzDecoder::new( &bytes[ .. ] );
+    let mut archive = Archive::new( gz );
+
+    let mut output = HashMap::new();
+
+    for file in archive.entries()?
+    {
+      let mut file = file?;
+      let mut contents = vec![];
+      file.read_to_end( &mut contents )?;
+      output.insert( file.path()?.to_path_buf(), contents );
+    }
+
+    Ok( output )
   }
 }
 
