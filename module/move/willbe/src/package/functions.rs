@@ -54,16 +54,17 @@ mod private
         push,
         publish,
       } = self;
-      // first command
+
       if get_info.is_none()
       {
         f.write_fmt( format_args!( "Empty report" ) )?;
+        return Ok( () )
       }
       let info = get_info.as_ref().unwrap();
       f.write_fmt( format_args!( "{}", info ) )?;
       if let Some( bump ) = bump
       {
-        f.write_fmt( format_args!( "{}", bump ) )?;
+        f.write_fmt( format_args!( "{}\n", bump ) )?;
       }
       if let Some( add ) = add
       {
@@ -201,7 +202,7 @@ mod private
     .ok_or( anyhow!( "Package not found in the workspace" ) )?
     .dependencies
     .iter()
-    .filter( | dep | !with_dev || ( with_dev && dep.kind != DependencyKind::Development ) )
+    .filter( | dep | with_dev || dep.kind != DependencyKind::Development )
     .filter_map( | dep | dep.path.as_ref().map( | path | path.clone().into_std_path_buf() ) )
     .collect::< HashSet< _ > >();
 
@@ -382,26 +383,21 @@ mod private
 
   pub fn toposort_by_paths( metadata : &mut Cache, paths : &[ PathBuf ] ) -> Vec< PathBuf >
   {
-    let map = metadata
+    let edges = metadata
     .load()
     .packages_get()
     .iter()
     .filter( | x | paths.contains( &x.manifest_path.as_std_path().parent().unwrap().to_path_buf() ) )
-    .map( | p | ( p.name.clone(), p ) )
-    .collect::< HashMap< _, _ > >();
-
-    let edges = map
-    .iter()
     .map
     (
-      |( _, package )|
+      | package |
       (
         package.manifest_path.as_std_path().parent().unwrap().to_path_buf(),
         package.dependencies
         .iter()
         .filter_map( | dep | dep.path.clone() )
-        .filter( | path | paths.contains( &path.as_std_path().to_path_buf() ) )
         .map( | path | path.into_std_path_buf() )
+        .filter( | path | paths.contains( &path ) )
         .collect(),
       )
     )
