@@ -342,7 +342,13 @@ mod private
     ).collect()
   }
 
-  // string, str - package_name
+  /// Build a graph from map of packages and its dependencies
+  ///
+  /// Arg:
+  /// - packages - a map, where key is a package identifier and value - the package dependencies identifiers
+  ///
+  /// Returns:
+  /// The graph with all accepted packages
   pub fn graph_build< PackageIdentifier >( packages : &HashMap< PackageIdentifier, HashSet< PackageIdentifier > > ) -> Graph< &PackageIdentifier, &PackageIdentifier >
   where
     PackageIdentifier : PartialEq + Eq + Hash,
