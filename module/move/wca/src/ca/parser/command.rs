@@ -38,7 +38,7 @@ pub( crate ) mod private
   pub trait CommandParserFn : GetCommandPrefix + CommandNameParserFn + CommandSubjectParserFn + CommandPropertyParserFn
   {
     /// Returns function that can parse a Command
-    fn command_fn( &self ) -> CommandParserFunction
+    fn command_fn( &self ) -> CommandParserFunction< '_ >
     {
       let command_prefix = self.get_command_prefix();
       Box::new( move | input : &str |
@@ -122,7 +122,7 @@ pub( crate ) mod private
   pub trait CommandSubjectParserFn
   {
     /// Returns function that can parse a Command subject
-    fn command_subject_fn( &self ) -> CommandSubjectParserFunction;
+    fn command_subject_fn( &self ) -> CommandSubjectParserFunction< '_ >;
   }
 
   type CommandPropertyParserFunction< 'a > = Box< dyn Fn( &str ) -> IResult< &str, ( String, String ) > + 'a >;
@@ -131,7 +131,7 @@ pub( crate ) mod private
   pub trait CommandPropertyParserFn
   {
     /// Returns function that can parse a Command property
-    fn command_property_fn( &self ) -> CommandPropertyParserFunction;
+    fn command_property_fn( &self ) -> CommandPropertyParserFunction< '_ >;
   }
 
   impl CommandNameParserFn for Parser
@@ -152,7 +152,7 @@ pub( crate ) mod private
 
   impl CommandSubjectParserFn for Parser
   {
-    fn command_subject_fn( &self ) -> CommandSubjectParserFunction
+    fn command_subject_fn( &self ) -> CommandSubjectParserFunction< '_ >
     {
       // ? looks not good
       // reason - all words can be `subject`
@@ -207,7 +207,7 @@ pub( crate ) mod private
 
   impl CommandPropertyParserFn for Parser
   {
-    fn command_property_fn( &self ) -> CommandPropertyParserFunction
+    fn command_property_fn( &self ) -> CommandPropertyParserFunction< '_ >
     {
       let property_delimeter = self.prop_delimeter;
       Box::new
