@@ -34,7 +34,8 @@ fn with_changes()
   let temp = assert_fs::TempDir::new().unwrap();
   temp.copy_from( &package_path, &[ "**" ] ).unwrap();
 
-  version::bump( temp.as_ref(), false ).unwrap();
+  let mut manifest = manifest::get( temp.as_ref() ).unwrap();
+  version::bump( &mut manifest, false ).unwrap();
 
   _ = process::start_sync( "cargo package", temp.as_ref() ).expect( "Failed to package a package" );
 

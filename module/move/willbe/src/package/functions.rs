@@ -33,7 +33,7 @@ mod private
   pub struct PublishReport
   {
     get_info : Option< process::CmdReport >,
-    bump : Option< version::BumpReport >,
+    bump : Option< String >,
     add : Option< process::CmdReport >,
     commit : Option< process::CmdReport >,
     push : Option< process::CmdReport >,
@@ -62,7 +62,7 @@ mod private
       f.write_fmt( format_args!( "{}", info ) )?;
       if let Some( bump ) = bump
       {
-        f.write_fmt( format_args!( "{}", bump.report ) )?;
+        f.write_fmt( format_args!( "{}", bump ) )?;
       }
       if let Some( add ) = add
       {
@@ -92,7 +92,7 @@ mod private
   pub fn publish_single( path : &Path, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
-    let manifest = manifest::get( path ).map_err( | e | ( report.clone(), e ) )?;
+    let mut manifest = manifest::get( path ).map_err( |e | (report.clone(), e ) )?;
     if !manifest.package_is() || manifest.local_is()
     {
       return Ok( report );
@@ -110,10 +110,13 @@ mod private
 
     if publish_need( &manifest )
     {
-      let bump_report = version::bump( &manifest.manifest_path, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
-      let package_name = bump_report.package_name.clone().unwrap();
-      let new_version = bump_report.new_version.clone().unwrap();
-      report.bump = Some( bump_report );
+      let new_version = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+      let package_name =
+      {
+        let data = manifest.manifest_data.as_ref().unwrap();
+        data[ "package" ][ "name" ].as_str().unwrap()
+      };
+      report.bump = Some( format!( "`{package_name}` bumped to `{new_version}`" ) );
 
       let commit_message = format!( "{package_name}-v{new_version}" );
       let res = git::add( &manifest.manifest_path, [ "Cargo.toml" ], dry ).map_err( | e | ( report.clone(), e ) )?;
@@ -331,7 +334,7 @@ mod private
   }
 
   // string, str - package_name
-  pub fn graph_build< 'a, PackageIdentifier >( packages: &'a HashMap< PackageIdentifier, HashSet< PackageIdentifier > > ) -> Graph< &'a PackageIdentifier, &'a PackageIdentifier >
+  pub fn graph_build< PackageIdentifier >( packages : &HashMap< PackageIdentifier, HashSet< PackageIdentifier > > ) -> Graph< &PackageIdentifier, &PackageIdentifier >
   where
     PackageIdentifier : PartialEq + Eq + Hash,
   {
