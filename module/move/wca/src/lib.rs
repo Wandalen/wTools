@@ -10,8 +10,11 @@
 //!
 //! The tool to make CLI ( commands user interface ). It is able to aggregate external binary applications, as well as functions, which are written in your language.
 //!
+// qqq : when trying to use wca in a project we get the following message:
+// wca-0.3.0/../../../doc/modules/wca/wca.md: The system cannot find the specified path. (os error 3)
+// solution options symbolic link or moving the contents of the nue folder to level 1 with the project
+// #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "doc/modules/wca/", "wca.md" ) ) ]
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/../../../", "doc/modules/wca/", "wca.md" ) ) ]
 // #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #![ allow( where_clauses_object_safety ) ] // https://github.com/chris-morgan/anymap/issues/31
