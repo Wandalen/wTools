@@ -28,7 +28,7 @@ pub( crate ) mod private
   pub( crate ) trait ProgramParserFn : NamespaceParserFn
   {
     /// Returns function that can parse a Namespace
-    fn program_fn( &self ) -> ProgramParserFunction
+    fn program_fn( &self ) -> ProgramParserFunction< '_ >
     {
       Box::new
       (

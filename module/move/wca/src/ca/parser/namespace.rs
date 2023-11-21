@@ -48,7 +48,7 @@ pub( crate ) mod private
   pub( crate ) trait NamespaceParserFn : CommandParserFn + GetNamespaceDelimeter
   {
     /// Returns function that can parse a Namespace
-    fn namespace_fn( &self ) -> NamespaceParserFunction
+    fn namespace_fn( &self ) -> NamespaceParserFunction< '_ >
     {
       let delimeter = self.get_namespace_delimeter();
       Box::new
