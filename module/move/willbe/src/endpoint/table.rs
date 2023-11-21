@@ -12,7 +12,13 @@ mod private
     SeekFrom 
   };
   use std::io::Write;
-  use cargo_metadata::{Dependency, DependencyKind, MetadataCommand, Package};
+  use cargo_metadata::
+  {
+    Dependency,
+    DependencyKind,
+    MetadataCommand,
+    Package
+  };
   use wca::wtools::Itertools;
   use convert_case::Case;
   use convert_case::Casing;
@@ -36,16 +42,19 @@ mod private
     static ref CLOUSE_TAG: regex::bytes::Regex = regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap();
   }
 
-  enum Stability{
+  enum Stability
+  {
     Stable,
     Experimental,
   }
+
   struct TableParameters
   {
     core_url: String,
     stability: Stability,
     branches: Vec< String >,
   }
+
   /// Create health table in README.md file
   ///
   /// The location and filling of tables is defined by a tag, for example record:
@@ -65,6 +74,8 @@ mod private
     .read( true )
     .write( true )
     .open( &read_me_path )?;
+
+    let params = TableParameters{ core_url: "test".into(), stability: Stability::Experimental, branches: vec![ "alpha".to_string(), "master".to_string() ] };
 
     let mut contents = Vec::new();
 
@@ -92,7 +103,7 @@ mod private
               .as_bytes()
             )?
           )?;
-          tables.push( table_prepare( directory_names( workspace_root.join(module_path.clone() ), &cargo_metadata.packages ), &module_path ) );
+          tables.push( table_prepare( directory_names( workspace_root.join(module_path.clone() ), &cargo_metadata.packages ), &module_path, &params ) );
           tags_closures.push( ( open.end(), close.start() ) );
         }
       }
@@ -114,52 +125,53 @@ mod private
     Ok( () )
   }
 
-  fn directory_names( path: PathBuf, packages: &[Package] ) -> Vec< String >
+  fn directory_names( path: PathBuf, packages: &[ Package ] ) -> Vec< String >
   {
     let path_clone = path.clone();
     let module_package_filter: Option< Box< dyn Fn( &Package) -> bool > > = Some
     (
       Box::new
       (
-        move | p | {
+        move | p |
+        {
           p.publish.is_none() && p.manifest_path.starts_with(&path)
         }
       )
     );
     let module_dependency_filter: Option< Box< dyn Fn( &Package, &Dependency) -> bool > > = Some
-      (
-        Box::new
-          (
-            move | _, d | {
-              d.path.is_some() && d.kind != DependencyKind::Development && d.path.as_ref().unwrap().starts_with( &path_clone )
-            }
-          )
-      );
+    (
+      Box::new
+        (
+          move | _, d |
+          {
+            d.path.is_some() && d.kind != DependencyKind::Development && d.path.as_ref().unwrap().starts_with( &path_clone )
+          }
+        )
+    );
     let module_packages_map = functions::packages_filter_map
     (
       packages,
       FilterMapOptions{ package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
     let module_graph = functions::graph_build( &module_packages_map);
-    functions::toposort(module_graph)
+    functions::toposort( module_graph )
   }
 
-  fn table_prepare( modules: Vec< String >, dir: &Path, parameters: TableParameters ) -> String
+  fn table_prepare( modules: Vec< String >, dir: &Path, parameters: &TableParameters ) -> String
   {
     let table_header = generate_table_header(&parameters);
+    let stability = generate_stability( &parameters );
     let table_content = modules
     .into_iter()
     .map
     (
       | ref module_name | 
       {
-        let column_module = format!( "[{}](./{}/{})", &module_name, &dir.display(), &module_name );
-        let column_stability = format!( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)" );
-        let column_master = format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch=master)](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml)", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) );
-        let column_alpha = format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch=alpha)](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml)", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) );
-        let column_docs = format!( "[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{})", &module_name );
-        let column_sample = format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/Wandalen/wTools)", &module_name, &module_name );
-        format!( "| {} | {} | {} | {} | {} | {} |", column_module, column_stability, column_master, column_alpha, column_docs, column_sample )
+        let cell_module = format!("[{}](./{}/{})", &module_name, &dir.display(), &module_name);
+        let cell_branch = generate_branch_cell( &parameters, module_name );
+        let cell_docs = format!("[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{})", &module_name );
+        let cell_sample = format!("[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/Wandalen/wTools)", &module_name, &module_name );
+        format!("| {} | {} | {} | {} | {} |", cell_module, stability, cell_branch, cell_docs, cell_sample)
       }
     )
     .join( "\n" );
@@ -168,31 +180,48 @@ mod private
 
   fn generate_stability( table_parameters: &TableParameters ) -> String
   {
-
+    match table_parameters.stability
+    {
+      Stability::Experimental => "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)".into(),
+      Stability::Stable => "[![stable](https://raster.shields.io/static/v1?label=&message=experimental&color=green)](https://github.com/emersion/stability-badges#stable)".into(),
+    }
   }
 
-  fn generate_table_header(table_parameters: &TableParameters) -> String
+  fn generate_table_header( table_parameters: &TableParameters ) -> String
   {
-    // Формируем строку заголовка таблицы
-    let mut table_header = String::from("| Module | Stability |");
+    let mut table_header = String::from( "| Module | Stability |" );
 
-    // Добавляем заголовки для каждой ветки
-    for branch in &table_parameters.branches {
-      table_header.push_str(&format!(" {} |", branch));
+    for branch in &table_parameters.branches
+    {
+      table_header.push_str(&format!(" {} |", branch.to_case( Case::Title) ) );
     }
 
-    // Добавляем остальные столбцы
-    table_header.push_str(" Docs | Online |\n|--------|-----------|");
+    table_header.push_str( " Docs | Online |\n|--------|-----------|" );
 
-    // Добавляем разделительные линии для каждой ветки
-    for _ in &table_parameters.branches {
-      table_header.push_str("--------|");
+    for _ in &table_parameters.branches
+    {
+      table_header.push_str( "--------|" );
     }
 
-    table_header.push_str(":----:|:------:|");
+    table_header.push_str( ":----:|:------:|" );
 
     table_header
   }
+
+  fn generate_branch_cell( table_parameters: &TableParameters, module_name: &String ) -> String
+  {
+    table_parameters
+    .branches
+    .iter()
+    .map
+    (
+      | b |
+      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch={b})](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml)", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) )
+    )
+    .collect::< Vec< String > >()
+    .join( " | ")
+  }
+
   fn workspace_root( metadata: &cargo_metadata::Metadata ) -> Result< PathBuf >
   {
     Ok( metadata.workspace_root.clone().into_std_path_buf() )
@@ -254,7 +283,7 @@ mod private
       {
         return Some( f.file_name() )
       }
-        None
+      None
     })
     .max()
     .map( PathBuf::from )
