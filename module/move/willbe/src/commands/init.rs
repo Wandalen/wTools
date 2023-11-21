@@ -90,6 +90,7 @@ pub( crate ) mod private
     .hint("Run all tests in all crates")
     .long_hint( "Run all tests in all crates" )
     .phrase("tests.run")
+    .property( "nightly", "Run tests on nightly. Default is false.", Type::String, true )
     .form();
 
     let run_tests_command = wca::Command::former()
@@ -97,6 +98,7 @@ pub( crate ) mod private
     .long_hint( "Run all tests in all crates" )
     .phrase("tests.run")
     .subject( "A path to directories with packages.", Type::Path, true )
+    .property( "nightly", "Run tests on nightly. Default is false.", Type::String, true )
     .form();
 
     vec!

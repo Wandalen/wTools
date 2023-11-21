@@ -1,5 +1,6 @@
 /// Internal namespace.
-mod private {
+mod private 
+{
   use std::{path::Path, collections::HashMap};
 
 	use crate::{ wtools, process::{ self, CmdReport } };
@@ -20,12 +21,20 @@ mod private {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
 			f.write_fmt( format_args!( "Package: [ {} ]:\n", self.package_name ) )?;
-			if self.tests.is_empty() {
+			if self.tests.is_empty() 
+			{
 				f.write_fmt( format_args!( "unlucky" ) )?;
 				return Ok( () );
 			}
+
+			if self.tests.values().next().unwrap().err.contains( "toolchain 'nightly" ) 
+			{
+				f.write_fmt( format_args!( "unlucky, nightly not installed.\n For installation perform `rustup install nightly`" ) )?;
+				return Ok( () );
+			}
       
-			for (feature, result) in &self.tests {
+			for (feature, result) in &self.tests 
+			{
 				f.write_fmt( format_args!( "\tFeature: [ {} ]:\n Tests status: {}\n", feature, result.out ) )?;
 			}
 			
@@ -34,24 +43,34 @@ mod private {
   }
 
 	/// run all tests in all crates
-	pub fn run_tests( dir : &Path ) -> Result< TestReport >
+	pub fn run_tests( dir : &Path, nightly : bool ) -> Result< TestReport >
 	{
 		let mut report = TestReport::default();
 
 		let path = dir.join("Cargo.toml");
 
 		let metadata = cargo_metadata::MetadataCommand::new()
-			.manifest_path(&path)
-			.features(cargo_metadata::CargoOpt::AllFeatures)
-			.exec()
-			.unwrap();
+		.manifest_path( &path )
+		.features( cargo_metadata::CargoOpt::AllFeatures )
+		.exec()
+		.unwrap();
 
-		report.package_name = metadata.packages.iter().find(|x| x.manifest_path == path).unwrap().name.clone();
+		let toolchain = if nightly 
+		{
+			"nightly"
+		}
+		else 
+		{
+			"stable"
+		};
+
+		report.package_name = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().name.clone();
 		
-		let features = metadata.packages.iter().find(|x| x.manifest_path == path).unwrap().features.clone();
-		for (feature, _) in features {
-			let cmd_rep = process::start_sync(&format!("cargo test --features {}", feature), dir)?;
-			report.tests.insert(feature, cmd_rep);
+		let features = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().features.clone();
+		for ( feature, _ ) in features 
+		{
+			let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --features {feature}" ), dir )?;
+			report.tests.insert( feature.clone(), cmd_rep );
 		}
 
 		Ok( report )
