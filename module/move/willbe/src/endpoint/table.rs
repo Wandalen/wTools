@@ -36,6 +36,16 @@ mod private
     static ref CLOUSE_TAG: regex::bytes::Regex = regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap();
   }
 
+  enum Stability{
+    Stable,
+    Experimental,
+  }
+  struct TableParameters
+  {
+    core_url: String,
+    stability: Stability,
+    branches: Vec< String >,
+  }
   /// Create health table in README.md file
   ///
   /// The location and filling of tables is defined by a tag, for example record:
@@ -134,9 +144,9 @@ mod private
     functions::toposort(module_graph)
   }
 
-  fn table_prepare( modules: Vec< String >, dir: &Path ) -> String
+  fn table_prepare( modules: Vec< String >, dir: &Path, parameters: TableParameters ) -> String
   {
-    let table_header = "| Module | Stability | Master | Alpha | Docs | Online |\n|--------|-----------|--------|-------|:----:|:------:|";
+    let table_header = generate_table_header(&parameters);
     let table_content = modules
     .into_iter()
     .map
@@ -156,6 +166,33 @@ mod private
     format!( "{table_header}\n{table_content}\n" )
   }
 
+  fn generate_stability( table_parameters: &TableParameters ) -> String
+  {
+
+  }
+
+  fn generate_table_header(table_parameters: &TableParameters) -> String
+  {
+    // Формируем строку заголовка таблицы
+    let mut table_header = String::from("| Module | Stability |");
+
+    // Добавляем заголовки для каждой ветки
+    for branch in &table_parameters.branches {
+      table_header.push_str(&format!(" {} |", branch));
+    }
+
+    // Добавляем остальные столбцы
+    table_header.push_str(" Docs | Online |\n|--------|-----------|");
+
+    // Добавляем разделительные линии для каждой ветки
+    for _ in &table_parameters.branches {
+      table_header.push_str("--------|");
+    }
+
+    table_header.push_str(":----:|:------:|");
+
+    table_header
+  }
   fn workspace_root( metadata: &cargo_metadata::Metadata ) -> Result< PathBuf >
   {
     Ok( metadata.workspace_root.clone().into_std_path_buf() )

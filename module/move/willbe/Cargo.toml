@@ -52,3 +52,6 @@ regex = "1.10.2"
 [dev-dependencies]
 test_tools = { workspace = true }
 assert_fs = "1.0"
+
+[health.table]
+stable_status = "experimental"
