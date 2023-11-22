@@ -316,15 +316,21 @@ mod private
 
   //
 
-  /// Check if publish needed for a package
+  /// Determines whether a package needs to be published by comparing `.crate` files from the local and remote package.
+  ///
+  /// This function requires the local package to be previously packed.
   ///
   /// Returns:
-  /// - true - need
-  /// - false - no need
+  /// - `true` if the package needs to be published.
+  /// - `false` if there is no need to publish the package.
   ///
-  /// Panic: manifest must be loaded
+  /// Panics if the manifest is not loaded or local package is not packed.
   pub fn publish_need( manifest : &manifest::Manifest ) -> bool
   {
+    // These files are ignored because they can be safely changed without affecting functionality
+    //
+    // - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits
+    // - `Cargo.toml.orig` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
     const IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml.orig" ];
 
     let data = manifest.manifest_data.as_ref().expect( "Manifest data doesn't loaded" );
@@ -369,6 +375,10 @@ mod private
     !( is_same && remote_keys.is_empty() )
   }
 
+  /// Decode bytes archive to the dictionary of file path as a key and content as a value
+  ///
+  /// Arg:
+  /// - bytes - `.crate` file as bytes
   fn decode_reader( bytes : Vec< u8 > ) -> std::io::Result< HashMap< PathBuf, Vec< u8 > > >
   {
     use std::io::prelude::*;
