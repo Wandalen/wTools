@@ -5,14 +5,22 @@ mod private
 
   /// Stores information about current workspace.
   #[ derive( Debug, Default, Clone ) ]
-  pub struct WorkspaceCache( Option< Metadata >, PathBuf );
+  pub struct WorkspaceCache
+  {
+    metadata : Option< Metadata >,
+    manifest_dir : PathBuf,
+  }
 
   impl WorkspaceCache
   {
     /// Load data from current directory
     pub fn from_current_path() -> Self
     {
-      Self( Some( MetadataCommand::new().no_deps().exec().unwrap() ), std::env::current_dir().unwrap_or_default() )
+      Self
+      {
+        metadata : Some( MetadataCommand::new().no_deps().exec().unwrap() ),
+        manifest_dir : std::env::current_dir().unwrap_or_default(),
+      }
     }
 
     /// Load data from current directory
@@ -22,7 +30,11 @@ mod private
     {
       let path = path.into();
 
-      Self( Some( MetadataCommand::new().manifest_path( path.join( "Cargo.toml" ) ).no_deps().exec().unwrap() ), path )
+      Self
+      {
+        metadata : Some( MetadataCommand::new().manifest_path( path.join( "Cargo.toml" ) ).no_deps().exec().unwrap() ),
+        manifest_dir : path,
+      }
     }
   }
 
@@ -32,7 +44,11 @@ mod private
     {
       let path = value.workspace_root.as_std_path().parent().unwrap().to_path_buf();
 
-      Self( Some( value ), path )
+      Self
+      {
+        metadata : Some( value ),
+        manifest_dir : path,
+      }
     }
   }
 
@@ -42,9 +58,9 @@ mod private
     // FIX: Maybe unsafe. Take metadata of workspace in current dir.
     pub fn load( &mut self ) -> &mut Self
     {
-      if self.0.is_none()
+      if self.metadata.is_none()
       {
-        self.0.get_or_insert_with( || Self::with_manifest_path( &self.1 ).0.unwrap() );
+        self.metadata.get_or_insert_with( || Self::with_manifest_path( &self.manifest_dir ).metadata.unwrap() );
       }
 
       self
@@ -54,7 +70,7 @@ mod private
     // FIX: Maybe unsafe. Take metadata of workspace in current dir.
     pub fn force_reload( &mut self ) -> &mut Self
     {
-      _ = self.0.insert( Self::with_manifest_path( &self.1 ).0.unwrap() );
+      _ = self.metadata.insert( Self::with_manifest_path( &self.manifest_dir ).metadata.unwrap() );
 
       self
     }
@@ -65,19 +81,19 @@ mod private
     /// Returns list of all packages
     pub fn packages_get( &self ) -> &[ Package ]
     {
-      &self.0.as_ref().unwrap().packages
+      &self.metadata.as_ref().unwrap().packages
     }
 
     /// Returns the path to workspace root
     pub fn workspace_root( &self ) -> &Path
     {
-      self.0.as_ref().unwrap().workspace_root.as_std_path()
+      self.metadata.as_ref().unwrap().workspace_root.as_std_path()
     }
 
     /// Returns the path to target directory
     pub fn target_directory( &self ) -> &Path
     {
-      self.0.as_ref().unwrap().target_directory.as_std_path()
+      self.metadata.as_ref().unwrap().target_directory.as_std_path()
     }
 
     /// Find a package by its manifest file path
