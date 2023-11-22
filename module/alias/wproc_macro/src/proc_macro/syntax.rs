@@ -18,7 +18,7 @@ pub( crate ) mod private
     ///
     /// Attribute which is inner.
     ///
-    /// For example: `#![ deny( missing_docs ) ]`.
+    /// For example: `// #![ deny( missing_docs ) ]`.
     ///
 
     #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]

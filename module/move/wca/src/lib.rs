@@ -3,8 +3,8 @@
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/wca/latest/wca/" ) ]
 #![ deny( rust_2021_compatibility ) ]
-#![ deny( missing_debug_implementations ) ]
-#![ deny( missing_docs ) ]
+// #![ deny( missing_debug_implementations ) ]
+// #![ deny( missing_docs ) ]
 #![ deny( unused_imports ) ]
 
 //!

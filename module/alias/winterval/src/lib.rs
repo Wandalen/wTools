@@ -2,9 +2,9 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/winterval/latest/winterval/" ) ]
-#![ warn( rust_2018_idioms ) ]
-#![ deny( missing_debug_implementations ) ]
-#![ deny( missing_docs ) ]
+// #![ deny( rust_2018_idioms ) ]
+// #![ deny( missing_debug_implementations ) ]
+// #![ deny( missing_docs ) ]
 
 /* zzz : consider https://doc.rust-lang.org/std/ops/trait.RangeBounds.html */
 /* zzz : implement iterator */

@@ -17,6 +17,9 @@ Collection of general purpose meta tools.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[lints]
+workspace = true
+
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false

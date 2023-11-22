@@ -1,4 +1,4 @@
-// This could be a cargo build script
+//! To have information about channel of Rust compiler.
 
 use rustc_version::{ version, version_meta, Channel };
 
