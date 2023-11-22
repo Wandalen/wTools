@@ -255,6 +255,15 @@ mod private
     _local_dependencies( metadata, manifest_path, opts )
   }
 
+  /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.
+  ///
+  /// Args:
+  /// - `name` - the name of the package.
+  /// - `version` - the version of the package.
+  /// - `manifest_path` - path to the package `Cargo.toml` file.
+  ///
+  /// Returns:
+  /// The local packed `.crate` file of the package
   pub fn local_path_get< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
@@ -368,6 +377,17 @@ mod private
 
   //
 
+  /// Performs a topological sort of a set of paths based on their dependencies.
+  ///
+  /// Args:
+  /// - `metadata` - holds cached information about the workspace, such as the packages it contains and their dependencies. By passing it as a mutable reference, function can update the cache as needed.
+  /// - `paths` - paths of the packages that need to be sorted.
+  ///
+  /// Returns
+  /// A list that contains the sorted paths in topological order.
+  ///
+  /// # Panics
+  /// If there is a cycle in the dependency graph
   pub fn toposort_by_paths( metadata : &mut WorkspaceCache, paths : &[ PathBuf ] ) -> Vec< PathBuf >
   {
     let edges = metadata
@@ -396,7 +416,17 @@ mod private
 
   //
 
-  pub fn toposort< 'a, PackageIdentifier : Clone + std::fmt::Debug >( graph :  Graph< &'a PackageIdentifier, &'a PackageIdentifier > ) -> Vec< PackageIdentifier >
+  /// Performs a topological sort of a graph of packages
+  ///
+  /// Arg:
+  /// - `graph` - a directed graph of packages and their dependencies.
+  ///
+  /// Returns
+  /// A list that contains the sorted packages identifiers in topological order.
+  ///
+  /// # Panics
+  /// If there is a cycle in the dependency graph
+  pub fn toposort< 'a, PackageIdentifier : Clone + std::fmt::Debug >( graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier > ) -> Vec< PackageIdentifier >
   {
     match pg_toposort( &graph, None )
     {
