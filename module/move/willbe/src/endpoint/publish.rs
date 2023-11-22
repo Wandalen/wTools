@@ -16,7 +16,7 @@ mod private
   };
   use core::fmt::Formatter;
   use std::collections::HashMap;
-  use crate::cache::Cache;
+  use crate::cache::WorkspaceCache;
   use crate::package::functions::FilterMapOptions;
 
   #[ derive( Debug, Default, Clone ) ]
@@ -63,12 +63,12 @@ mod private
 
     let mut metadata = if paths.is_empty()
     {
-      Cache::default()
+      WorkspaceCache::default()
     }
     else
     {
       // FIX: patterns can point to different workspaces. Current solution take first random path from list
-      Cache::with_manifest_path( paths.iter().next().unwrap() )
+      WorkspaceCache::with_manifest_path( paths.iter().next().unwrap() )
     };
 
     let packages_to_publish : Vec< _ >= metadata.load().packages_get().iter().filter( | &package | paths.contains( package.manifest_path.as_std_path().parent().unwrap() ) ).cloned().collect();
@@ -127,7 +127,7 @@ mod private
   {
     let mut report = PublishReport::default();
 
-    let mut package_metadata = Cache::with_manifest_path( path_to_workspace );
+    let mut package_metadata = WorkspaceCache::with_manifest_path( path_to_workspace );
 
     let packages_map = package::packages_filter_map
     (

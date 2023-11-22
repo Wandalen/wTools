@@ -10,7 +10,7 @@ mod private
   ///
   /// Args:
   /// - path - the root path
-  /// - objects - a list of objects from the root that will be added
+  /// - objects - a list of paths from the root that will be added
   /// - dry - a flag that indicates whether to apply the changes or not
   ///         - true - does not modify git state
   ///         - false - adds a change in the working directory to the staging area

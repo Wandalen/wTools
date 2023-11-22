@@ -24,7 +24,7 @@ mod private
   };
   use crate::{ cargo, git, version };
   use anyhow::{ Context, Error, anyhow };
-  use crate::cache::Cache;
+  use crate::cache::WorkspaceCache;
 
   use crate::path;
   use crate::wtools;
@@ -87,8 +87,9 @@ mod private
     }
   }
 
+  /// Publishes a single package without publishing its dependencies.
   ///
-  /// Publish single package.
+  /// This function is designed to publish a single package. It does not publish any of the package's dependencies.
   ///
   /// Args:
   ///
@@ -102,7 +103,7 @@ mod private
   pub fn publish_single( path : &Path, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
-    let mut manifest = manifest::get( path ).map_err( |e | (report.clone(), e ) )?;
+    let mut manifest = manifest::get( path ).map_err( |e | ( report.clone(), e ) )?;
     if !manifest.package_is() || manifest.local_is()
     {
       return Ok( report );
@@ -184,7 +185,7 @@ mod private
   //
 
   /// Returns local dependencies of specified package by its manifest path from a workspace
-  pub fn local_dependencies_back_end( metadata : &mut Cache, manifest_path : &Path, opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
+  pub fn _local_dependencies( metadata : &mut WorkspaceCache, manifest_path : &Path, opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
   {
     let LocalDependenciesOptions
     {
@@ -220,7 +221,7 @@ mod private
             exclude: exclude.clone(),
             ..opts
           };
-          output.extend( local_dependencies_back_end( metadata, &dep.join( "Cargo.toml" ), inner_opts )? );
+          output.extend( _local_dependencies( metadata, &dep.join( "Cargo.toml" ), inner_opts )? );
         }
       }
     }
@@ -239,10 +240,20 @@ mod private
     Ok( output )
   }
 
-  /// Returns local dependencies of specified package by its manifest path from a workspace
-  pub fn local_dependencies( metadata : &mut Cache, manifest_path : &Path, opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
+  /// Returns local dependencies of a specified package by its manifest path from a workspace.
+  ///
+  /// # Arguments
+  ///
+  /// - `metadata` - holds cached information about the workspace, such as the packages it contains and their dependencies. By passing it as a mutable reference, function can update the cache as needed.
+  /// - `manifest_path` - path to the package manifest file. The package manifest file contains metadata about the package such as its name, version, and dependencies.
+  /// - `opts` - used to specify options or configurations for fetching local dependencies.
+  ///
+  /// # Returns
+  ///
+  /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
+  pub fn local_dependencies( metadata : &mut WorkspaceCache, manifest_path : &Path, opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
   {
-    local_dependencies_back_end( metadata, manifest_path, opts )
+    _local_dependencies( metadata, manifest_path, opts )
   }
 
   //
@@ -272,7 +283,7 @@ mod private
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
 
-    let package_metadata = Cache::with_manifest_path( manifest_path.parent().unwrap() );
+    let package_metadata = WorkspaceCache::with_manifest_path( manifest_path.parent().unwrap() );
 
     let mut local_package_path = PathBuf::new();
     local_package_path.push( package_metadata.target_directory() );
@@ -381,7 +392,7 @@ mod private
 
   //
 
-  pub fn toposort_by_paths( metadata : &mut Cache, paths : &[ PathBuf ] ) -> Vec< PathBuf >
+  pub fn toposort_by_paths( metadata : &mut WorkspaceCache, paths : &[ PathBuf ] ) -> Vec< PathBuf >
   {
     let edges = metadata
     .load()

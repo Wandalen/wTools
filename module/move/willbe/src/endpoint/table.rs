@@ -26,7 +26,7 @@ mod private
     anyhow,
     bail,
   };
-  use crate::cache::Cache;
+  use crate::cache::WorkspaceCache;
   use crate::package::functions;
   use crate::package::functions::FilterMapOptions;
 
@@ -49,7 +49,7 @@ mod private
   /// Anything between the opening and closing tag will be destroyed.
   pub fn table_create() -> Result< () >
   {
-    let mut cargo_metadata = Cache::default();
+    let mut cargo_metadata = WorkspaceCache::default();
     let workspace_root = workspace_root( &mut cargo_metadata )?;
     let read_me_path = readme_path( &workspace_root ).ok_or_else( || anyhow!( "Fail to find README.md" ) )?;
     let mut file = OpenOptions::new()
@@ -156,7 +156,7 @@ mod private
     format!( "{table_header}\n{table_content}\n" )
   }
 
-  fn workspace_root( metadata: &mut Cache ) -> Result< PathBuf >
+  fn workspace_root( metadata: &mut WorkspaceCache ) -> Result< PathBuf >
   {
     Ok( metadata.load().workspace_root().to_path_buf() )
   }
