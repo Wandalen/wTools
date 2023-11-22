@@ -47,9 +47,9 @@ path = "src/typing/instance_of_lib.rs"
 name = "instance_of_test"
 path = "tests/typing/instance_of_tests.rs"
 
-# [[test]]
-# name = "instance_of_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
+[[test]]
+name = "instance_of_smoke_test"
+path = "tests/smoke_test.rs"
 
 [[example]]
 name = "instance_of_trivial_sample"
