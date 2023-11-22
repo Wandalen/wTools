@@ -28,12 +28,15 @@ mod private
 
   use error_tools::for_app::
   {
+    Error,
     Result,
     anyhow,
     bail,
   };
   use crate::package::functions;
   use crate::package::functions::FilterMapOptions;
+  use walkdir::WalkDir;
+  use toml::Value;
 
 
   lazy_static::lazy_static!
@@ -42,16 +45,62 @@ mod private
     static ref CLOUSE_TAG: regex::bytes::Regex = regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap();
   }
 
+
+
   enum Stability
   {
     Stable,
     Experimental,
+    Deprecated,
   }
+
+  impl FromStr for Stability
+  {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err>
+    {
+      match s
+      {
+        "Stable" => Ok( Stability::Stable ),
+        "Experimental" => Ok( Stability::Experimental ),
+        "Deprecated" => Ok( Stability::Deprecated ),
+        _ => Err( err!( "Fail to parse stability" ) ),
+      }
+    }
+  }
+
+  fn get_stable_status( directories: Vec<String>, dir: &Path ) -> Result< Vec< ( String, Stability ) > >
+  {
+    let mut results = Vec::new();
+
+    for directory in directories
+    {
+      for entry in WalkDir::new( dir.join(directory ) )
+      {
+        let entry = entry?;
+        if entry.file_name() == "Cargo.toml"
+        {
+          let contents = fs::read_to_string( entry.path() )?;
+          let value = contents.parse::< Value >()?;
+          let stable_status = value
+          .get( "health.table" )
+          .and_then( | package | package.get( "stable_status" ) )
+          .and_then( Value::as_str )
+          .and_then( | s | s.parse::< Stability >().ok() );
+          results.push( ( entry.path().display().to_string(), stable_status.unwrap_or( Stability::Stable ) ) );
+        }
+      }
+    }
+
+    Ok(results)
+  }
+
 
   struct TableParameters
   {
     core_url: String,
-    stability: Stability,
+    user_and_repo: String,
     branches: Vec< String >,
   }
 
@@ -75,7 +124,7 @@ mod private
     .write( true )
     .open( &read_me_path )?;
 
-    let params = TableParameters{ core_url: "test".into(), stability: Stability::Experimental, branches: vec![ "alpha".to_string(), "master".to_string() ] };
+    let params = TableParameters{ core_url: "https://github.com/Wandalen/wTools/".into(), user_and_repo: "Wandalen/wTools".into(), branches: vec![ "alpha".to_string(), "master".to_string() ] };
 
     let mut contents = Vec::new();
 
@@ -103,7 +152,10 @@ mod private
               .as_bytes()
             )?
           )?;
-          tables.push( table_prepare( directory_names( workspace_root.join(module_path.clone() ), &cargo_metadata.packages ), &module_path, &params ) );
+          let directory_names = directory_names( workspace_root.join(module_path.clone()), &cargo_metadata.packages );
+          let directory_names_and_stability = get_stable_status( directory_names, &workspace_root )?;
+          let table = table_prepare( directory_names_and_stability,&workspace_root.join(module_path.clone()), &params );
+          tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
         }
       }
@@ -124,6 +176,41 @@ mod private
 
     Ok( () )
   }
+
+  fn get_repo_url_and_branches( path: &Path ) -> Result< ( String, Vec< String > ) >
+  {
+    let cargo_toml_path = path.join( "Cargo.toml" );
+    if !cargo_toml_path.exists()
+    {
+      bail!( "Cannot find Cargo.toml" )
+    }
+    {
+      let contents = fs::read_to_string( cargo_toml_path )?;
+      let value = contents.parse::< Value >()?;
+
+      let repo_url = value
+      .get( "package" )
+      .and_then( | package | package.get( "repo_url" ) )
+      .and_then( Value::as_str )
+      .map( String::from );
+
+      let branches = value
+      .get( "package" )
+      .and_then( | package | package.get( "branches" ) )
+      .and_then( Value::as_array )
+      .map
+      (
+        | array |
+        array
+        .iter()
+        .filter_map( Value::as_str )
+        .map( String::from )
+        .collect()
+      );
+
+    }
+  }
+
 
   fn directory_names( path: PathBuf, packages: &[ Package ] ) -> Vec< String >
   {
@@ -157,20 +244,21 @@ mod private
     functions::toposort( module_graph )
   }
 
-  fn table_prepare( modules: Vec< String >, dir: &Path, parameters: &TableParameters ) -> String
+  fn table_prepare( modules: Vec< ( String, Stability ) >, dir: &Path, parameters: &TableParameters ) -> String
   {
     let table_header = generate_table_header(&parameters);
     let stability = generate_stability( &parameters );
+
     let table_content = modules
-    .into_iter()
+    .iter()
     .map
     (
-      | ref module_name | 
+      | ( module_name, module_stability ) |
       {
         let cell_module = format!("[{}](./{}/{})", &module_name, &dir.display(), &module_name);
-        let cell_branch = generate_branch_cell( &parameters, module_name );
+        let cell_branch = generate_branch_cells(module_stability, module_name );
         let cell_docs = format!("[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{})", &module_name );
-        let cell_sample = format!("[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/Wandalen/wTools)", &module_name, &module_name );
+        let cell_sample = format!("[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/{})", &module_name, &module_name, parameters.core_url );
         format!("| {} | {} | {} | {} | {} |", cell_module, stability, cell_branch, cell_docs, cell_sample)
       }
     )
@@ -178,12 +266,13 @@ mod private
     format!( "{table_header}\n{table_content}\n" )
   }
 
-  fn generate_stability( table_parameters: &TableParameters ) -> String
+  fn generate_stability( stability: Stability ) -> String
   {
-    match table_parameters.stability
+    match stability
     {
       Stability::Experimental => "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)".into(),
-      Stability::Stable => "[![stable](https://raster.shields.io/static/v1?label=&message=experimental&color=green)](https://github.com/emersion/stability-badges#stable)".into(),
+      Stability::Stable => "[![stable](https://raster.shields.io/static/v1?label=&message=stable&color=green)](https://github.com/emersion/stability-badges#stable)".into(),
+      Stabiluity::Deprecated => "[![deprecated](https://raster.shields.io/static/v1?label=&message=deprecated&color=grey)](https://github.com/emersion/stability-badges#deprecated)".into()
     }
   }
 
@@ -208,7 +297,7 @@ mod private
     table_header
   }
 
-  fn generate_branch_cell( table_parameters: &TableParameters, module_name: &String ) -> String
+  fn generate_branch_cells( table_parameters: &TableParameters, module_name: &String ) -> String
   {
     table_parameters
     .branches
@@ -216,7 +305,7 @@ mod private
     .map
     (
       | b |
-      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/Module{}Push.yml?label=&branch={b})](https://github.com/Wandalen/wTools/actions/workflows/Module{}Push.yml)", &module_name.to_case( Case::Pascal ), &module_name.to_case( Case::Pascal ) )
+      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/Module{}Push.yml?label=&branch={b})](https://{}/actions/workflows/Module{}Push.yml)", table_parameters.user_and_repo, &module_name.to_case( Case::Pascal ), table_parameters.core_url, &module_name.to_case( Case::Pascal ) )
     )
     .collect::< Vec< String > >()
     .join( " | ")
