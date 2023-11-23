@@ -180,7 +180,7 @@ mod private
     let dep_filter: Option< Box< dyn Fn( &Package, &Dependency ) -> bool > > = match filter
     {
       ListFilter::Nothing =>
-      // TODO: Dev dependencies do loop in the graph, but it would be great if there was some way around that
+      // qqq: Dev dependencies do loop in the graph, but it would be great if there was some way around that
       {
         Some
           (
