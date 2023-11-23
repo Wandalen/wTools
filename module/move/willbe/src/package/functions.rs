@@ -127,17 +127,19 @@ mod private
         let data = manifest.manifest_data.as_ref().unwrap();
         data[ "package" ][ "name" ].as_str().unwrap()
       };
+      let manifest_dir = manifest.manifest_path.parent().unwrap();
+
       report.bump = Some( format!( "`{package_name}` bumped to `{new_version}`" ) );
 
       let commit_message = format!( "{package_name}-v{new_version}" );
-      let res = git::add( &manifest.manifest_path, [ "Cargo.toml" ], dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git::add( manifest_dir, [ "Cargo.toml" ], dry ).map_err( | e | ( report.clone(), e ) )?;
       report.add = Some( res );
-      let res = git::commit( &manifest.manifest_path, commit_message, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git::commit( manifest_dir, commit_message, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.commit = Some( res );
-      let res = git::push( &manifest.manifest_path, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git::push( manifest_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.push = Some( res );
 
-      let res = cargo::publish( &manifest.manifest_path, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = cargo::publish( manifest_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.publish = Some( res );
     }
 
@@ -236,7 +238,7 @@ mod private
     let package = metadata
     .load()
     .package_find_by_manifest( &manifest_path )
-    .ok_or( anyhow!( "Package not found in the workspace" ) )?;
+    .ok_or( anyhow!( "Package not found in the workspace with path: `{}`", manifest_path.display() ) )?;
 
     let deps = package
     .dependencies
