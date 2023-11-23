@@ -17,7 +17,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 ### Rust tools
 
-<!--{ generate.healthtable( 'module/core' ) } -->
+<!--{ generate.healthtable( path: module/core ) } -->
 | Module | Stability | Master | Alpha | Docs | Sample |
 |--------|-----------|--------|-------|:----:|:------:|
 | [wtools](./module/rust/wtools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/ModulewToolsPush.yml?label=&branch=master)](https://github.com/Wandalen/wTools/actions/workflows/ModulewToolsPush.yml) | [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/ModulewToolsPush.yml?label=&branch=alpha)](https://github.com/Wandalen/wTools/actions/workflows/ModulewToolsPush.yml) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/wtools) | [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fwtools_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20wtools_trivial_sample/https://github.com/Wandalen/wTools) |
@@ -48,7 +48,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 ### Rust modules to be moved out to other repositories
 
-<!--{ generate.healthtable( 'module/move' ) } -->
+<!--{ generate.healthtable( path: module/move ) } -->
 | Module | Stability | Master | Alpha | Docs | Online |
 |--------|-----------|--------|-------|:----:|:------:|
 | [automata_tools](./module/move/automata_tools) | [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/ModuleAutomataToolsPush.yml?label=&branch=master)](https://github.com/Wandalen/wTools/actions/workflows/ModuleAutomataToolsPush.yml) | [![rust-status](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/ModuleAutomataToolsPush.yml?label=&branch=alpha)](https://github.com/Wandalen/wTools/actions/workflows/ModuleAutomataToolsPush.yml) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/automata_tools) |  [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fautomata_tools_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20automata_tools_trivial_sample/https://github.com/Wandalen/wTools) |

@@ -17,6 +17,9 @@ Collection of general purpose meta tools.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[package.metadata]
+stable_status = "experimental"
+
 [lints]
 workspace = true
 

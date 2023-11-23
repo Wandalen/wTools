@@ -17,6 +17,9 @@ Former - a variation of builder pattern. Implementation of its derive macro. Sho
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
+[package.metadata]
+stable_status = "experimental"
+
 [lints]
 workspace = true
 

@@ -15,6 +15,10 @@ exclude = [
 ]
 # default-members = [ "module/core/wtools" ]
 
+[workspace.metadata]
+repo_url = "https://github.com/Wandalen/wTools"
+branches = [ "master", "alpha" ]
+
 # [metadata.cargo-suppress-warnings]
 # unused-manifest-key = true
 
@@ -410,6 +414,3 @@ version = "~0.1.0"
 path = "module/test/c"
 default-features = true
 
-[health.table]
-repo_url = "https://github.com/Wandalen/wTools"
-branches = [ "master", "alpha", "beta" ]
