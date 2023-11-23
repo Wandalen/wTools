@@ -1,7 +1,7 @@
 /// Internal namespace.
 mod private
 {
-  use crate::package::{ functions as package, LocalDependenciesOptions, LocalDependenciesSort };
+  use crate::package::{ functions as package, DependenciesOptions, DependenciesSort };
 
   use crate::tools::
   {
@@ -17,7 +17,7 @@ mod private
   use core::fmt::Formatter;
   use std::collections::HashMap;
   use crate::cache::WorkspaceCache;
-  use crate::package::functions::FilterMapOptions;
+  use crate::package::functions::{ CrateId, FilterMapOptions };
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
@@ -76,13 +76,13 @@ mod private
     for package in &packages_to_publish
     {
       // get sorted dependencies
-      let local_deps_args = LocalDependenciesOptions
+      let local_deps_args = DependenciesOptions
       {
-        recursive : true,
-        sort : LocalDependenciesSort::Topological,
+        recursive: true,
+        sort: DependenciesSort::Topological,
         ..Default::default()
       };
-      let deps = package::local_dependencies( &mut metadata, package.manifest_path.as_std_path(), local_deps_args )
+      let deps = package::dependencies( &mut metadata, package.manifest_path.as_std_path(), local_deps_args )
       .map_err( | e | ( report.clone(), e.into() ) )?;
 
       // add dependencies to publish queue
@@ -94,15 +94,15 @@ mod private
         }
       }
       // add current package to publish queue if it isn't already here
-      let package = package.manifest_path.as_std_path().parent().unwrap().to_path_buf();
-      if !queue.contains( &package )
+      let crate_id = CrateId::from( package );
+      if !queue.contains( &crate_id )
       {
-        queue.push( package );
+        queue.push( crate_id );
       }
     }
 
     // process publish
-    for path in queue
+    for path in queue.into_iter().filter_map( | id | id.path )
     {
       let current_report = package::publish_single( &path, dry )
       .map_err

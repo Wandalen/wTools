@@ -23,6 +23,7 @@ mod private
   };
   use crate::{ cargo, git, version };
   use anyhow::{ Context, Error, anyhow };
+  use wca::wtools::Itertools;
   use crate::cache::WorkspaceCache;
 
   use crate::path;
@@ -145,7 +146,7 @@ mod private
 
   /// Sorting variants for dependencies.
   #[ derive( Debug, Copy, Clone ) ]
-  pub enum LocalDependenciesSort
+  pub enum DependenciesSort
   {
     /// List will be topologically sorted.
     Topological,
@@ -155,88 +156,111 @@ mod private
 
   #[ derive( Debug, Clone ) ]
   /// Args for `local_dependencies` function.
-  pub struct LocalDependenciesOptions
+  pub struct DependenciesOptions
   {
     /// With dependencies of dependencies.
     pub recursive : bool,
     /// With sorting.
-    pub sort : LocalDependenciesSort,
+    pub sort : DependenciesSort,
     /// Include dev dependencies.
     pub with_dev : bool,
-    /// Skip specific packets.
-    pub exclude : HashSet< PathBuf >,
+    /// Include remote dependencies.
+    pub with_remote : bool,
   }
 
-  impl Default for LocalDependenciesOptions
+  impl Default for DependenciesOptions
   {
     fn default() -> Self
     {
       Self
       {
         recursive : true,
-        sort : LocalDependenciesSort::Unordered,
+        sort : DependenciesSort::Unordered,
         with_dev : false,
-        exclude : HashSet::new(),
+        with_remote : false,
       }
     }
   }
 
   //
 
-  /// Returns local dependencies of specified package by its manifest path from a workspace
-  pub fn _local_dependencies( metadata : &mut WorkspaceCache, manifest_path : &Path, opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
+  /// Identifier of any crate(local and remote)
+  #[ derive( Debug, Clone, Hash, Eq, PartialEq ) ]
+  pub struct CrateId
   {
-    let LocalDependenciesOptions
+    /// TODO: make it private
+    pub name : String,
+    /// TODO: make it private
+    pub path : Option< PathBuf >,
+  }
+
+  impl From< &Package > for CrateId
+  {
+    fn from( value : &Package ) -> Self
+    {
+      Self
+      {
+        name : value.name.clone(),
+        path : Some( value.manifest_path.as_std_path().parent().unwrap().to_path_buf() ),
+      }
+    }
+  }
+
+  impl From< &Dependency > for CrateId
+  {
+    fn from( value : &Dependency ) -> Self
+    {
+      Self
+      {
+        name : value.name.clone(),
+        path : value.path.clone().map( | path | path.into_std_path_buf() ),
+      }
+    }
+  }
+
+  /// Build HashMap dependencies graph.
+  /// Returns identifier of root node
+  pub fn _dependencies( metadata : &mut WorkspaceCache, manifest_path : &Path, graph: &mut HashMap< CrateId, HashSet< CrateId > >, opts: DependenciesOptions ) -> wtools::error::Result< CrateId >
+  {
+    let DependenciesOptions
     {
       recursive,
-      sort,
+      sort: _,
       with_dev,
-      mut exclude,
+      with_remote,
     } = opts;
+    if recursive && with_remote { unimplemented!( "`recursive` + `with_remote` options") }
 
     let manifest_path = path::canonicalize( manifest_path )?;
 
-    let deps = metadata
+    let package = metadata
     .load()
     .package_find_by_manifest( &manifest_path )
-    .ok_or( anyhow!( "Package not found in the workspace" ) )?
+    .ok_or( anyhow!( "Package not found in the workspace" ) )?;
+
+    let deps = package
     .dependencies
     .iter()
-    .filter( | dep | with_dev || dep.kind != DependencyKind::Development )
-    .filter_map( | dep | dep.path.as_ref().map( | path | path.clone().into_std_path_buf() ) )
+    .filter( | dep | ( with_remote || dep.path.is_some() ) && ( with_dev || dep.kind != DependencyKind::Development ) )
+    .map( CrateId::from )
     .collect::< HashSet< _ > >();
 
-    let mut output = deps.clone();
+    let package = CrateId::from( package );
+    graph.insert( package.clone(), deps.clone() );
 
     if recursive
     {
-      for dep in &deps
+      for dep in deps
       {
-        if !exclude.contains( dep )
+        if graph.get( &dep ).is_none()
         {
-          exclude.insert( dep.clone() );
-          let inner_opts = LocalDependenciesOptions
-          {
-            exclude: exclude.clone(),
-            ..opts
-          };
-          output.extend( _local_dependencies( metadata, &dep.join( "Cargo.toml" ), inner_opts )? );
+          // unwrap because `recursive` + `with_remote` not yet implemented
+          _dependencies( metadata, &dep.path.as_ref().unwrap().join( "Cargo.toml" ), graph, opts.clone() )?;
         }
       }
     }
 
-    let mut output : Vec< _ > = output.into_iter().collect();
-
-    match sort
-    {
-      LocalDependenciesSort::Unordered => {},
-      LocalDependenciesSort::Topological =>
-      {
-        output = toposort_by_paths( metadata, &output );
-      },
-    }
-
-    Ok( output )
+    Ok( package )
   }
 
   /// Returns local dependencies of a specified package by its manifest path from a workspace.
@@ -250,9 +274,34 @@ mod private
   /// # Returns
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
-  pub fn local_dependencies( metadata : &mut WorkspaceCache, manifest_path : &Path, opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
+  pub fn dependencies( metadata : &mut WorkspaceCache, manifest_path : &Path, opts: DependenciesOptions ) -> wtools::error::Result< Vec< CrateId > >
   {
-    _local_dependencies( metadata, manifest_path, opts )
+    let mut graph = HashMap::new();
+    let root = _dependencies( metadata, manifest_path, &mut graph, opts.clone() )?;
+
+    let output = match opts.sort
+    {
+      DependenciesSort::Unordered =>
+      {
+        graph
+        .into_iter()
+        .flat_map( | ( id, dependency ) |
+        {
+          dependency
+          .into_iter()
+          .chain( Some( id ) )
+        })
+        .unique()
+        .filter( | x | x != &root )
+        .collect()
+      }
+      DependenciesSort::Topological =>
+      {
+        toposort( graph_build( &graph ) ).into_iter().filter( | x | x != &root ).collect()
+      },
+    };
+
+    Ok( output )
   }
 
   /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.
@@ -373,45 +422,6 @@ mod private
       }
     }
     deps
-  }
-
-  //
-
-  /// Performs a topological sort of a set of paths based on their dependencies.
-  ///
-  /// Args:
-  /// - `metadata` - holds cached information about the workspace, such as the packages it contains and their dependencies. By passing it as a mutable reference, function can update the cache as needed.
-  /// - `paths` - paths of the packages that need to be sorted.
-  ///
-  /// Returns
-  /// A list that contains the sorted paths in topological order.
-  ///
-  /// # Panics
-  /// If there is a cycle in the dependency graph
-  pub fn toposort_by_paths( metadata : &mut WorkspaceCache, paths : &[ PathBuf ] ) -> Vec< PathBuf >
-  {
-    let edges = metadata
-    .load()
-    .packages_get()
-    .iter()
-    .filter( | x | paths.contains( &x.manifest_path.as_std_path().parent().unwrap().to_path_buf() ) )
-    .map
-    (
-      | package |
-      (
-        package.manifest_path.as_std_path().parent().unwrap().to_path_buf(),
-        package.dependencies
-        .iter()
-        .filter_map( | dep | dep.path.clone() )
-        .map( | path | path.into_std_path_buf() )
-        .filter( | path | paths.contains( &path ) )
-        .collect(),
-      )
-    )
-    .collect();
-    let graph = graph_build( &edges );
-
-    toposort( graph )
   }
 
   //
@@ -543,13 +553,13 @@ crate::mod_interface!
 
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
-  protected( crate ) use toposort_by_paths;
 
   protected use FilterMapOptions;
   protected use packages_filter_map;
   protected use publish_need;
 
-  orphan use LocalDependenciesSort;
-  orphan use LocalDependenciesOptions;
-  orphan use local_dependencies;
+  protected use CrateId;
+  orphan use DependenciesSort;
+  orphan use DependenciesOptions;
+  orphan use dependencies;
 }
