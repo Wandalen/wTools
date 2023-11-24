@@ -50,6 +50,8 @@ regex = "1.10.2"
 sha-1 = "~0.10"
 tar = "~0.4"
 ureq = "~2.4"
+walkdir = "2.4.0"
+toml = "0.8.8"
 
 [dev-dependencies]
 test_tools = { workspace = true }

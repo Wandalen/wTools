@@ -49,8 +49,10 @@ mod private
   #[ derive( Debug ) ]
   enum Stability
   {
-    Stable,
     Experimental,
+    Unstable,
+    Stable,
+    Frozen,
     Deprecated,
   }
 
@@ -62,8 +64,10 @@ mod private
     {
       match s
       {
-        "stable" => Ok( Stability::Stable ),
         "experimental" => Ok( Stability::Experimental ),
+        "unstable" => Ok( Stability::Unstable ),
+        "stable" => Ok( Stability::Stable ),
+        "frozen" => Ok( Stability::Frozen ),
         "deprecated" => Ok( Stability::Deprecated ),
         _ => Err( anyhow!( "Fail to parse stability" ) ),
       }
@@ -86,10 +90,10 @@ mod private
           let stable_status = value
           .get( "package" )
           .and_then( | package | package.get( "metadata" ) )
-          .and_then( | package | package.get( "stable_status" ) )
+          .and_then( | package | package.get( "stability" ) )
           .and_then( Value::as_str )
           .and_then( | s | s.parse::< Stability >().ok() );
-          results.push( stable_status.unwrap_or( Stability::Stable ) );
+          results.push( stable_status.unwrap_or( Stability::Experimental ) );
         }
       }
     }
@@ -345,8 +349,10 @@ mod private
     match stability
     {
       Stability::Experimental => "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | ".into(),
-      Stability::Stable => "[![stable](https://raster.shields.io/static/v1?label=&message=stable&color=green)](https://github.com/emersion/stability-badges#stable) | ".into(),
-      Stability::Deprecated => "[![deprecated](https://raster.shields.io/static/v1?label=&message=deprecated&color=grey)](https://github.com/emersion/stability-badges#deprecated) | ".into()
+      Stability::Stable => "[![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable) | ".into(),
+      Stability::Deprecated => "[![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated) | ".into(),
+      Stability::Unstable => "[![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable) |".into(),
+      Stability::Frozen => "[![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen) |".into(),
     }
   }
 
