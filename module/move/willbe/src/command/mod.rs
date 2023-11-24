@@ -142,4 +142,6 @@ crate::mod_interface!
   layer table;
   /// Run all tests
   layer run_tests;
+  /// Generate workflow
+  layer workflow;
 }
