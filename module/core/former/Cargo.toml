@@ -17,9 +17,6 @@ Former - variation of builder pattern.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
-[package.metadata]
-stable_status = "experimental"
-
 [lints]
 workspace = true
 

@@ -17,9 +17,6 @@ Basic exceptions handling mechanism.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
-[package.metadata]
-stable_status = "experimental"
-
 [lints]
 workspace = true
 

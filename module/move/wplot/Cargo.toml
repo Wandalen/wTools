@@ -14,9 +14,6 @@ Plot interface.
 categories = [ "command-line-interface", "command-line-utilities" ]
 keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
 
-[package.metadata]
-stable_status = "experimental"
-
 [lints]
 workspace = true
 
