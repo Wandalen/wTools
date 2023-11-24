@@ -8,11 +8,12 @@ authors = [
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/template_blank"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/template_blank"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/template_blank"
+documentation = "https://docs.rs/crates_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/move/crates_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/crates_tools"
 description = """
-Crates tools
+This package provides tools for working with `.crate` files.
+This package is intended for Rust developers who want to manipulate and inspect crates programmatically.
 """
 categories = []
 keywords = []
