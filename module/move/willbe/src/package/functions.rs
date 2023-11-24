@@ -247,6 +247,7 @@ mod private
     }
   }
 
+  /// Type aliasing for String
   pub type PackageName = String;
 
   /// Given a slice of `Package` instances and a set of filtering options,
@@ -410,7 +411,7 @@ mod private
 
 
   /// enum for parsing string
-  #[ derive( Debug ) ]
+  #[ derive( Debug, PartialEq ) ]
   pub enum Value
   {
     /// represent string value
@@ -475,6 +476,49 @@ mod private
 
 }
 
+#[ cfg( test ) ]
+mod tests
+{
+  use super::private::
+  {
+    parse_string,
+    Value,
+  };
+  use std::str::FromStr;
+  use std::collections::HashMap;
+  
+  #[test]
+    fn test_from_str() 
+    {
+      assert_eq!( Value::from_str( "123" ).unwrap(), Value::IntValue( 123 ) );
+      assert_eq!( Value::from_str( "true" ).unwrap(), Value::BoolValue( true ) );
+      assert_eq!( Value::from_str( "false" ).unwrap(), Value::BoolValue( false ) );
+      assert_eq!( Value::from_str( "hello" ).unwrap(), Value::StringValue( String::from( "hello" ) ) );
+    }
+
+    #[test]
+    fn test_from_value_to_bool() 
+    {
+      assert_eq!( bool::from( &Value::IntValue( 1 ) ), true );
+      assert_eq!( bool::from( &Value::IntValue( 0 ) ), false );
+      assert_eq!( bool::from( &Value::BoolValue( true ) ), true );
+      assert_eq!( bool::from( &Value::BoolValue( false ) ), false );
+      assert_eq!( bool::from( &Value::StringValue( String::from( "1" ) ) ), true );
+      assert_eq!( bool::from( &Value::StringValue( String::from( "0" ) ) ), false );
+    }
+
+    #[test]
+    fn test_parse_string() 
+    {
+      let input = "key1   : 123, key2: true, key3: hello";
+      let mut expected = HashMap::new();
+      expected.insert( String::from( "key1" ), Value::IntValue( 123 ) );
+      expected.insert( String::from( "key2" ), Value::BoolValue( true ) );
+      expected.insert( String::from( "key3" ), Value::StringValue( String::from( "hello" ) ) );
+      assert_eq!( parse_string( input ), expected );
+    }
+}
+
 //
 
 crate::mod_interface!
@@ -486,6 +530,8 @@ crate::mod_interface!
 
   protected( crate ) use graph_build;
   protected( crate ) use toposort;
+
+  protected use PackageName;
 
   protected use FilterMapOptions;
   protected use packages_filter_map;

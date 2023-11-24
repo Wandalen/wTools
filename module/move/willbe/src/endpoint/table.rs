@@ -37,6 +37,7 @@ mod private
   use anyhow::anyhow;
   use crate::package::functions;
   use crate::package::functions::FilterMapOptions;
+  use crate::package::functions::PackageName;
   use walkdir::WalkDir;
 
 
@@ -76,10 +77,10 @@ mod private
     }
   }
 
-  fn get_stable_status( directories: &Vec< String >, dir: &Path) -> Result< Vec< Stability > > 
+  fn get_stable_status( package_names: &[ PackageName ], dir: &Path) -> Result< Vec< Stability > > 
   {
     let mut results = Vec::new();
-    for directory in directories 
+    for directory in package_names 
     {
       for entry in WalkDir::new( dir.join( directory ) ) 
       {
@@ -90,9 +91,13 @@ mod private
           File::open( entry.path() )?.read_to_string( &mut contents )?;
           let doc = contents.parse::<Document>()?;
           let stable_status = 
-          doc[ "package" ][ "metadata" ][ "stability" ]
-          .as_str()
+          doc
+          .get( "package" )
+          .and_then( | package | package.get( "metadata" ) )
+          .and_then( | metadata | metadata.get( "stability ") )
+          .and_then( | i | i.as_str() )
           .and_then( | s | s.parse::< Stability >().ok() );
+
           results.push( stable_status.unwrap_or( Stability::Experimental ) );
         }
       }
@@ -252,7 +257,7 @@ mod private
           {
             None
           };
-          let table = table_prepare(directory_names, stability, &parameters, &params );
+          let table = table_prepare(&directory_names, stability.as_deref(), &parameters, &params );
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
         }
@@ -307,7 +312,7 @@ mod private
     functions::toposort( module_graph )
   }
 
-  fn table_prepare(modules: Vec< String >, stability: Option< Vec< Stability > >, parameters: &GlobalTableParameters, table_parameters: &TableParameters ) -> String
+  fn table_prepare( modules: &[ String ], stability: Option< &[ Stability ] >, parameters: &GlobalTableParameters, table_parameters: &TableParameters ) -> String
   {
     let table_header = generate_table_header( &parameters, table_parameters );
     let table_content = modules
@@ -413,7 +418,7 @@ mod private
     Ok( metadata.workspace_root.clone().into_std_path_buf() )
   }
 
-  fn copy_range_to_target< T: Clone >( source: &[T], target: &mut Vec< T >, from: usize, to: usize ) -> Result< () >
+  fn copy_range_to_target< T: Clone >( source: &[ T ], target: &mut Vec< T >, from: usize, to: usize ) -> Result< () >
   {
     if from < source.len() && to < source.len() && from <= to
     {
