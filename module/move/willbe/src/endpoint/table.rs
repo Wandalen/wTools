@@ -20,10 +20,11 @@ mod private
     MetadataCommand,
     Package
   };
+  use toml_edit::Document;
   use wca::wtools::Itertools;
   use convert_case::Case;
   use convert_case::Casing;
-  use std::fs::OpenOptions;
+  use std::fs::{OpenOptions, File};
   use std::path::Path;
   use std::str::FromStr;
 
@@ -37,14 +38,15 @@ mod private
   use crate::package::functions;
   use crate::package::functions::FilterMapOptions;
   use walkdir::WalkDir;
-  use toml::Value;
 
 
-  lazy_static::lazy_static!
-  {
-    static ref TAG_TEMPLATE: regex::bytes::Regex = regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( (path\s*:\s*[\w\/]+(\s*,\s*\w+\s*:\s*\w+)*) \) \} -->"# ).unwrap();
-    static ref CLOUSE_TAG: regex::bytes::Regex = regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap();
-  }
+  static TAG_TEMPLATE: once_cell::sync::Lazy< regex::bytes::Regex > = once_cell::sync::Lazy::new(|| {
+    regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( (path\s*:\s*[\w\/]+(\s*,\s*\w+\s*:\s*\w+)*) \) \} -->"# ).unwrap()
+  });
+
+  static CLOUSE_TAG: once_cell::sync::Lazy< regex::bytes::Regex > = once_cell::sync::Lazy::new(|| {
+    regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap()
+  });
 
   #[ derive( Debug ) ]
   enum Stability
@@ -74,24 +76,22 @@ mod private
     }
   }
 
-  fn get_stable_status( directories: &Vec< String >, dir: &Path ) -> Result< Vec< Stability  > >
+  fn get_stable_status( directories: &Vec< String >, dir: &Path) -> Result< Vec< Stability > > 
   {
     let mut results = Vec::new();
-
-    for directory in directories
+    for directory in directories 
     {
-      for entry in WalkDir::new( dir.join(directory ) )
+      for entry in WalkDir::new( dir.join( directory ) ) 
       {
         let entry = entry?;
-        if entry.file_name() == "Cargo.toml"
+        if entry.file_name() == "Cargo.toml" 
         {
-          let contents = fs::read_to_string( entry.path() )?;
-          let value = contents.parse::< Value >()?;
-          let stable_status = value
-          .get( "package" )
-          .and_then( | package | package.get( "metadata" ) )
-          .and_then( | package | package.get( "stability" ) )
-          .and_then( Value::as_str )
+          let mut contents = String::new();
+          File::open( entry.path() )?.read_to_string( &mut contents )?;
+          let doc = contents.parse::<Document>()?;
+          let stable_status = 
+          doc[ "package" ][ "metadata" ][ "stability" ]
+          .as_str()
           .and_then( | s | s.parse::< Stability >().ok() );
           results.push( stable_status.unwrap_or( Stability::Experimental ) );
         }
@@ -142,39 +142,35 @@ mod private
 
   impl GlobalTableParameters
   {
-    fn new( path: &Path ) -> Result< Self >
+    fn new(path: &Path) -> Result<Self> 
     {
       let cargo_toml_path = path.join( "Cargo.toml" );
-      if !cargo_toml_path.exists()
+      if !cargo_toml_path.exists() 
       {
         bail!( "Cannot find Cargo.toml" )
-      }
-      else
+      } 
+      else 
       {
-        let contents = fs::read_to_string( cargo_toml_path )?;
-        let value = contents.parse::< Value >()?;
+        let mut contents = String::new();
+        File::open( cargo_toml_path )?.read_to_string( &mut contents )?;
+        let doc = contents.parse::< Document >()?;
 
-        let core_url = value
-        .get( "workspace" )
-        .and_then( |workspace | workspace.get( "metadata" ) )
-        .and_then( |metadata | metadata.get( "repo_url" ) )
-        .and_then( Value::as_str )
+        let core_url = 
+        doc[ "workspace" ][ "metadata" ][ "repo_url" ].as_str()
         .map( String::from )
         .ok_or_else( || anyhow!( "Fail to find repo_url" ) )?;
 
-        let branches = value
-        .get( "workspace" )
-        .and_then( | workspace | workspace.get( "metadata" ) )
-        .and_then( | package | package.get( "branches" ) )
-        .and_then( Value::as_array )
+        let branches = 
+        doc[ "workspace" ][ "metadata" ][ "branches" ]
+        .as_array()
         .map
         (
-          |array|
+          | array | 
           array
           .iter()
-          .filter_map( Value::as_str )
+          .filter_map( | value | value.as_str() )
           .map( String::from )
-          .collect()
+          .collect::< Vec< String > >()
         );
 
         let user_and_repo = Self::extract_repo( &core_url )?;
@@ -182,6 +178,7 @@ mod private
         Ok( Self { core_url, user_and_repo, branches } )
       }
     }
+    
 
     fn extract_repo( url: &String ) -> Result< String >
     {
@@ -215,7 +212,7 @@ mod private
     let workspace_root = workspace_root( &cargo_metadata )?;
     let parameters = GlobalTableParameters::new( &workspace_root )?;
 
-    let read_me_path = readme_path(&workspace_root).ok_or_else( || anyhow!( "Fail to find README.md" ) )?;
+    let read_me_path = readme_path(&workspace_root ).ok_or_else( || anyhow!( "Fail to find README.md" ) )?;
     let mut file = OpenOptions::new()
     .read( true )
     .write( true )
