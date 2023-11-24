@@ -21,7 +21,6 @@ mod private
     Package
   };
   use toml_edit::Document;
-  use wca::wtools::Itertools;
   use convert_case::Case;
   use convert_case::Casing;
   use std::fs::{OpenOptions, File};
@@ -38,16 +37,17 @@ mod private
   use crate::package::functions;
   use crate::package::functions::FilterMapOptions;
   use crate::package::functions::PackageName;
-  use walkdir::WalkDir;
 
 
-  static TAG_TEMPLATE: once_cell::sync::Lazy< regex::bytes::Regex > = once_cell::sync::Lazy::new(|| {
-    regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( (path\s*:\s*[\w\/]+(\s*,\s*\w+\s*:\s*\w+)*) \) \} -->"# ).unwrap()
-  });
+  static TAG_TEMPLATE: once_cell::sync::Lazy< regex::bytes::Regex > = once_cell::sync::Lazy::new
+  ( 
+    || regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( (path\s*:\s*[\w\/]+(\s*,\s*\w+\s*:\s*\w+)*) \) \} -->"# ).unwrap()
+  );
 
-  static CLOUSE_TAG: once_cell::sync::Lazy< regex::bytes::Regex > = once_cell::sync::Lazy::new(|| {
-    regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap()
-  });
+  static CLOUSE_TAG: once_cell::sync::Lazy< regex::bytes::Regex > = once_cell::sync::Lazy::new
+  ( 
+    || regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap()
+  );
 
   #[ derive( Debug ) ]
   enum Stability
@@ -77,33 +77,28 @@ mod private
     }
   }
 
-  fn get_stable_status( package_names: &[ PackageName ], dir: &Path) -> Result< Vec< Stability > > 
-  {
-    let mut results = Vec::new();
-    for directory in package_names 
+  fn stability_get( package_name: &PackageName , dir: &Path ) -> Result< Stability > {
+    let path = dir.join( package_name ).join( "Cargo.toml" );
+    if path.exists() 
     {
-      for entry in WalkDir::new( dir.join( directory ) ) 
-      {
-        let entry = entry?;
-        if entry.file_name() == "Cargo.toml" 
-        {
-          let mut contents = String::new();
-          File::open( entry.path() )?.read_to_string( &mut contents )?;
-          let doc = contents.parse::<Document>()?;
-          let stable_status = 
-          doc
-          .get( "package" )
-          .and_then( | package | package.get( "metadata" ) )
-          .and_then( | metadata | metadata.get( "stability ") )
-          .and_then( | i | i.as_str() )
-          .and_then( | s | s.parse::< Stability >().ok() );
+      let mut contents = String::new();
+      File::open( path )?.read_to_string (&mut contents )?;
+      let doc = contents.parse::< Document >()?;
 
-          results.push( stable_status.unwrap_or( Stability::Experimental ) );
-        }
-      }
+      let stable_status = doc
+      .get( "package" )
+      .and_then( | package | package.get( "metadata" ) )
+      .and_then( | metadata | metadata.get( "stability" ) )
+      .and_then( | i | i.as_str() )
+      .and_then( | s | s.parse::< Stability >().ok() );
+
+      Ok( stable_status.unwrap_or( Stability::Experimental ) )
     }
-    Ok( results )
-  }
+    else
+    {
+      Err( anyhow!( "No Cargo.toml found" ) )
+    }
+}
 
 
   #[ derive( Debug ) ]
@@ -124,15 +119,15 @@ mod private
     include_sample: bool,
   }
 
-  impl From< HashMap< String, functions::Value > > for TableParameters
+  impl From< HashMap< String, crate::query::Value > > for TableParameters
   {
-    fn from(value: HashMap< String, functions::Value >) -> Self
+    fn from(value: HashMap< String, crate::query::Value >) -> Self
     {
       let include_branches = value.get( "with_branches" ).map( | val | bool::from( val ) ).unwrap_or( true );
       let include_stability = value.get( "with_stability" ).map( | val | bool::from( val ) ).unwrap_or( true );
       let include_docs = value.get( "with_docs" ).map( | val | bool::from( val ) ).unwrap_or( true );
       let include_sample = value.get( "with_gitpod" ).map( | val | bool::from( val ) ).unwrap_or( true );
-      let base_path = if let Some( functions::Value::StringValue( path ) ) = value.get( "path" )
+      let base_path = if let Some( crate::query::Value::StringValue( path ) ) = value.get( "path" )
       {
         path.as_ref()
       }
@@ -178,14 +173,14 @@ mod private
           .collect::< Vec< String > >()
         );
 
-        let user_and_repo = Self::extract_repo( &core_url )?;
+        let user_and_repo = Self::repo_extract( &core_url )?;
 
         Ok( Self { core_url, user_and_repo, branches } )
       }
     }
     
 
-    fn extract_repo( url: &String ) -> Result< String >
+    fn repo_extract( url: &String ) -> Result< String >
     {
       let parts: Vec< &str > = url.split( '/' ).collect();
       if parts.len() >= 2
@@ -223,11 +218,10 @@ mod private
     .write( true )
     .open( &read_me_path )?;
 
-
     let mut contents = Vec::new();
 
     file.read_to_end( &mut contents )?;
-    let mut buffer = vec![];
+
     let mut tags_closures = vec![];
     let mut tables = vec![];
     let open_caps = TAG_TEMPLATE.captures_iter( &*contents );
@@ -239,45 +233,60 @@ mod private
       {
         if let ( Some( open ), Some( close ) ) = captures
         {
-          let raw_table_params = std::str::from_utf8
-          (
-            TAG_TEMPLATE.captures( open.as_bytes() )
-            .ok_or( anyhow!( "Fail to parse tag" ) )?
-            .get( 1 )
-            .ok_or( anyhow!( "Fail to parse group" ) )?
-            .as_bytes()
-          )?;
-          let params: TableParameters  = functions::parse_string( raw_table_params ).into();
-          let directory_names = directory_names( workspace_root.join( &params.base_path ), &cargo_metadata.packages );
-          let stability = if params.include_stability
-          {
-            Some( get_stable_status(&directory_names, &workspace_root.join( &params.base_path ) )? )
-          }
-          else
-          {
-            None
-          };
-          let table = table_prepare(&directory_names, stability.as_deref(), &parameters, &params );
+          let table = package_table_create( open, &workspace_root, &cargo_metadata, &parameters )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
         }
       }
     }
+    tables_write_into_file( tags_closures, tables, contents, file )?;
+
+    Ok( () )
+  }
+
+  fn tables_write_into_file(  tags_closures: Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () > 
+  {
+    let mut buffer: Vec<u8> = vec![];
     let mut start: usize = 0;
     for ( ( end_of_start_tag, start_of_end_tag ), con ) in tags_closures.iter().zip( tables.iter() )
     {
-      copy_range_to_target( &*contents, &mut buffer, start, *end_of_start_tag )?;
-      copy_range_to_target( con.as_bytes(), &mut buffer, 0,con.len() - 1 )?;
+      range_to_target_copy( &*contents, &mut buffer, start, *end_of_start_tag )?;
+      range_to_target_copy( con.as_bytes(), &mut buffer, 0,con.len() - 1 )?;
       start = *start_of_end_tag;
     }
-    copy_range_to_target( &*contents,&mut buffer,start,contents.len() - 1 )?;
-
+    range_to_target_copy( &*contents,&mut buffer,start,contents.len() - 1 )?;
     file.set_len( 0 )?;
     file.seek( SeekFrom::Start( 0 ) )?;
-
     file.write_all( &buffer )?;
+    Ok(())
+}
 
-    Ok( () )
+  fn package_table_create( open: regex::bytes::Match<'_>, workspace_root: &PathBuf, cargo_metadata: &cargo_metadata::Metadata, parameters: &GlobalTableParameters ) -> Result< String, Error > 
+  {
+    let raw_table_params = std::str::from_utf8
+    (
+    TAG_TEMPLATE.captures( open.as_bytes() )
+    .ok_or( anyhow!( "Fail to parse tag" ) )?
+    .get( 1 )
+    .ok_or( anyhow!( "Fail to parse group" ) )?
+    .as_bytes()
+    )?;
+    let params: TableParameters  = crate::query::string_parse( raw_table_params ).into();
+    let directory_names = directory_names( workspace_root.join( &params.base_path ), &cargo_metadata.packages );
+    let mut table = table_header_generate( parameters, &params );
+    for package_name in directory_names 
+    {
+      let stability = if params.include_stability
+      {
+        Some( stability_get( &package_name, &workspace_root.join( &params.base_path ) )? )
+      }
+      else
+      {
+        None
+      };
+      table.push_str( &row_generate(&package_name, stability.as_ref(), parameters, &params) );
+    }
+    Ok(table)
   }
 
   fn directory_names( path: PathBuf, packages: &[ Package ] ) -> Vec< String >
@@ -312,41 +321,29 @@ mod private
     functions::toposort( module_graph )
   }
 
-  fn table_prepare( modules: &[ String ], stability: Option< &[ Stability ] >, parameters: &GlobalTableParameters, table_parameters: &TableParameters ) -> String
+  fn row_generate( module_name: &str, stability: Option< &Stability >, parameters: &GlobalTableParameters, table_parameters: &TableParameters ) -> String
   {
-    let table_header = generate_table_header( &parameters, table_parameters );
-    let table_content = modules
-    .iter()
-    .enumerate()
-    .map
-    (
-      | ( index, module_name) |
-      {
-        let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
-        if table_parameters.include_stability
-        {
-          rou.push_str( &generate_stability( &stability.as_ref().unwrap()[ index ] ) );
-        }
-        if parameters.branches.is_some() && table_parameters.include_branches
-        {
-          rou.push_str( &generate_branch_cells( &parameters, &module_name ) );
-        }
-        if table_parameters.include_docs
-        {
-          rou.push_str( &format!( "[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) | ", &module_name ) );
-        }
-        if table_parameters.include_sample
-        {
-          rou.push_str(&format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/{}) | ", &module_name, &module_name, parameters.core_url ) );
-        }
-        rou
-      }
-    )
-    .join( "\n" );
-    format!( "{table_header}\n{table_content}\n" )
+    let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
+    if table_parameters.include_stability
+    {
+      rou.push_str( &stability_generate( &stability.as_ref().unwrap() ) );
+    }
+    if parameters.branches.is_some() && table_parameters.include_branches
+    {
+      rou.push_str( &branch_cells_generate( &parameters, &module_name ) );
+    }
+    if table_parameters.include_docs
+    {
+      rou.push_str( &format!( "[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) | ", &module_name ) );
+    }
+    if table_parameters.include_sample
+    {
+      rou.push_str(&format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/{}) | ", &module_name, &module_name, parameters.core_url ) );
+    }
+    format!( "{rou}\n" )
   }
 
-  fn generate_stability( stability: &Stability ) -> String
+  fn stability_generate( stability: &Stability ) -> String
   {
     match stability
     {
@@ -358,7 +355,7 @@ mod private
     }
   }
 
-  fn generate_table_header( parameters: &GlobalTableParameters, table_parameters: &TableParameters ) -> String
+  fn table_header_generate( parameters: &GlobalTableParameters, table_parameters: &TableParameters ) -> String
   {
     let mut header = String::from( "| Module |" );
     let mut separator = String::from( "|--------|" );
@@ -396,7 +393,7 @@ mod private
     format!( "{}\n{}", header, separator )
   }
 
-  fn generate_branch_cells( table_parameters: &GlobalTableParameters, module_name: &String ) -> String
+  fn branch_cells_generate( table_parameters: &GlobalTableParameters, module_name: &str ) -> String
   {
     let cells = table_parameters
     .branches
@@ -418,7 +415,7 @@ mod private
     Ok( metadata.workspace_root.clone().into_std_path_buf() )
   }
 
-  fn copy_range_to_target< T: Clone >( source: &[ T ], target: &mut Vec< T >, from: usize, to: usize ) -> Result< () >
+  fn range_to_target_copy< T: Clone >( source: &[ T ], target: &mut Vec< T >, from: usize, to: usize ) -> Result< () >
   {
     if from < source.len() && to < source.len() && from <= to
     {

@@ -37,6 +37,8 @@ wtools::meta::mod_interface!
   #[ cfg( not( feature = "no_std" ) ) ]
   layer package;
 
+  /// query
+  layer query;
   /// Version library.
   #[ cfg( not( feature = "no_std" ) ) ]
   layer version;

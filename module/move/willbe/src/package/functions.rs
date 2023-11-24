@@ -37,9 +37,6 @@ mod private
   use crate::path;
   use crate::wtools;
 
-  use std::str::FromStr;
-
-
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
   {
@@ -409,115 +406,8 @@ mod private
     Ok( output )
   }
 
-
-  /// enum for parsing string
-  #[ derive( Debug, PartialEq ) ]
-  pub enum Value
-  {
-    /// represent string value
-    StringValue( String ),
-    /// represent int value
-    IntValue( i32 ),
-    /// represent bool value
-    BoolValue( bool ),
-  }
-
-  impl FromStr for Value
-  {
-    type Err = anyhow::Error;
-
-    fn from_str( s: &str ) -> Result< Self, Self::Err >
-    {
-      if let Ok( int ) = s.parse::< i32 >()
-      {
-        Ok( Value::IntValue( int ) )
-      }
-      else if let Ok( boolean ) = s.parse::< bool >()
-      {
-        Ok( Value::BoolValue( boolean ) )
-      }
-      else
-      {
-        Ok( Value::StringValue( s.to_string() ) )
-      }
-    }
-  }
-
-  impl From< &Value > for bool
-  {
-    fn from( value: &Value ) -> Self
-    {
-      match value
-      {
-        Value::BoolValue( b ) => *b,
-        Value::IntValue( i ) => i == &1,
-        Value::StringValue( s ) => s.as_str() == "1",
-      }
-    }
-  }
-
-  /// parse string to HashMap< String, Value >
-  pub fn parse_string( input: &str ) -> HashMap< String, Value >
-  {
-    let mut map = HashMap::new();
-
-    for item in input.split( "," )
-    {
-      let parts: Vec< &str > = item.split( ":" ).collect();
-      if parts.len() == 2
-      {
-        let key = parts[ 0 ].trim().to_string();
-        let value = parts[ 1 ].trim().parse::< Value >().unwrap();
-        map.insert( key, value );
-      }
-    }
-    map
-  }
-
 }
 
-#[ cfg( test ) ]
-mod tests
-{
-  use super::private::
-  {
-    parse_string,
-    Value,
-  };
-  use std::str::FromStr;
-  use std::collections::HashMap;
-  
-  #[test]
-    fn test_from_str() 
-    {
-      assert_eq!( Value::from_str( "123" ).unwrap(), Value::IntValue( 123 ) );
-      assert_eq!( Value::from_str( "true" ).unwrap(), Value::BoolValue( true ) );
-      assert_eq!( Value::from_str( "false" ).unwrap(), Value::BoolValue( false ) );
-      assert_eq!( Value::from_str( "hello" ).unwrap(), Value::StringValue( String::from( "hello" ) ) );
-    }
-
-    #[test]
-    fn test_from_value_to_bool() 
-    {
-      assert_eq!( bool::from( &Value::IntValue( 1 ) ), true );
-      assert_eq!( bool::from( &Value::IntValue( 0 ) ), false );
-      assert_eq!( bool::from( &Value::BoolValue( true ) ), true );
-      assert_eq!( bool::from( &Value::BoolValue( false ) ), false );
-      assert_eq!( bool::from( &Value::StringValue( String::from( "1" ) ) ), true );
-      assert_eq!( bool::from( &Value::StringValue( String::from( "0" ) ) ), false );
-    }
-
-    #[test]
-    fn test_parse_string() 
-    {
-      let input = "key1   : 123, key2: true, key3: hello";
-      let mut expected = HashMap::new();
-      expected.insert( String::from( "key1" ), Value::IntValue( 123 ) );
-      expected.insert( String::from( "key2" ), Value::BoolValue( true ) );
-      expected.insert( String::from( "key3" ), Value::StringValue( String::from( "hello" ) ) );
-      assert_eq!( parse_string( input ), expected );
-    }
-}
 
 //
 
@@ -536,9 +426,6 @@ crate::mod_interface!
   protected use FilterMapOptions;
   protected use packages_filter_map;
   protected use publish_need;
-
-  protected use Value;
-  protected use parse_string;
 
   orphan use LocalDependenciesOptions;
   orphan use local_dependencies;
