@@ -23,7 +23,11 @@ mod private
   use toml_edit::Document;
   use convert_case::Case;
   use convert_case::Casing;
-  use std::fs::{OpenOptions, File};
+  use std::fs::
+  {
+    OpenOptions, 
+    File
+  };
   use std::path::Path;
   use std::str::FromStr;
 
@@ -37,11 +41,12 @@ mod private
   use crate::package::functions;
   use crate::package::functions::FilterMapOptions;
   use crate::package::functions::PackageName;
+use crate::process::start_sync;
 
 
   static TAG_TEMPLATE: once_cell::sync::Lazy< regex::bytes::Regex > = once_cell::sync::Lazy::new
   ( 
-    || regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( (path\s*:\s*[\w\/]+(\s*,\s*\w+\s*:\s*\w+)*) \) \} -->"# ).unwrap()
+    || regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( (.+) \) \} -->"# ).unwrap()
   );
 
   static CLOUSE_TAG: once_cell::sync::Lazy< regex::bytes::Regex > = once_cell::sync::Lazy::new
@@ -77,12 +82,13 @@ mod private
     }
   }
 
-  fn stability_get( package_name: &PackageName , dir: &Path ) -> Result< Stability > {
-    let path = dir.join( package_name ).join( "Cargo.toml" );
+  fn stability_get( package_name: &PackageName, base_dir_path: &Path ) -> Result< Stability > 
+  {
+    let path = base_dir_path.join( package_name ).join( "Cargo.toml" );
     if path.exists() 
     {
       let mut contents = String::new();
-      File::open( path )?.read_to_string (&mut contents )?;
+      File::open( path )?.read_to_string( &mut contents )?;
       let doc = contents.parse::< Document >()?;
 
       let stable_status = doc
@@ -98,7 +104,52 @@ mod private
     {
       Err( anyhow!( "No Cargo.toml found" ) )
     }
-}
+  }
+
+  fn extract_repo_url( full_url: &str ) -> Option< String > 
+  {
+    let parts: Vec< &str > = full_url.split( '/' ).collect();
+
+    if parts.len() >= 4 && parts[ 0 ] == "https:" && parts[ 1 ] == "" && parts[ 2 ] == "github.com" 
+    {
+      let user = parts[ 3 ];
+      let repo = parts[ 4 ];
+      let repo_url = format!( "https://github.com/{}/{}", user, repo );
+      Some( repo_url )
+    } 
+    else 
+    {
+      None
+    }
+  }
+
+  fn repo_url( package_name: &PackageName, base_dir_path: &Path ) -> Result< String >
+  {
+    let path = base_dir_path.join( package_name ).join( "Cargo.toml" );
+    if path.exists() 
+    {
+      let mut contents = String::new();
+      File::open( path )?.read_to_string( &mut contents )?;
+      let doc = contents.parse::< Document >()?;
+
+      let repo_url = doc
+      .get( "package" )
+      .and_then( | package | package.get( "repository" ) )
+      .and_then( | i | i.as_str() );
+      if let Some( repo_url ) = repo_url {
+          Ok( extract_repo_url( repo_url ).ok_or_else( || anyhow!( "Fail to extract repository url ") )? )
+      }
+      else 
+      {
+        let report = start_sync( "git ls-remote --get-url", base_dir_path )?;
+        Ok( extract_repo_url( &report.out.trim() ).ok_or_else( || anyhow!( "Fail to extract repository url.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) OR in Cargo.toml of a module (in the [package] section named repository, specify the full path to the module) OR ensure that at least one remotest is present in git. ") )? )
+      }
+    }
+    else
+    {
+      Err( anyhow!( "No Cargo.toml found" ) )
+    }
+  }
 
 
   #[ derive( Debug ) ]
@@ -123,13 +174,13 @@ mod private
   {
     fn from(value: HashMap< String, crate::query::Value >) -> Self
     {
-      let include_branches = value.get( "with_branches" ).map( | val | bool::from( val ) ).unwrap_or( true );
-      let include_stability = value.get( "with_stability" ).map( | val | bool::from( val ) ).unwrap_or( true );
-      let include_docs = value.get( "with_docs" ).map( | val | bool::from( val ) ).unwrap_or( true );
-      let include_sample = value.get( "with_gitpod" ).map( | val | bool::from( val ) ).unwrap_or( true );
-      let base_path = if let Some( crate::query::Value::StringValue( path ) ) = value.get( "path" )
+      let include_branches = value.get( "with_branches" ).map( | v | bool::from( v ) ).unwrap_or( true );
+      let include_stability = value.get( "with_stability" ).map( | v | bool::from( v ) ).unwrap_or( true );
+      let include_docs = value.get( "with_docs" ).map( | v | bool::from( v ) ).unwrap_or( true );
+      let include_sample = value.get( "with_gitpod" ).map( | v | bool::from( v ) ).unwrap_or( true );
+      let base_path = if let Some( crate::query::Value::String( path ) ) = value.get( "path" )
       {
-        path.as_ref()
+        path
       }
       else
       {
@@ -156,13 +207,19 @@ mod private
         let doc = contents.parse::< Document >()?;
 
         let core_url = 
-        doc[ "workspace" ][ "metadata" ][ "repo_url" ].as_str()
-        .map( String::from )
-        .ok_or_else( || anyhow!( "Fail to find repo_url" ) )?;
+        doc
+        .get( "workspace" )
+        .and_then( | workspace  | workspace.get( "metadata" ) )
+        .and_then( | metadata | metadata.get( "repo_url" ) )
+        .and_then( | url | url.as_str() )
+        .map( String::from );
 
         let branches = 
-        doc[ "workspace" ][ "metadata" ][ "branches" ]
-        .as_array()
+        doc
+        .get( "workspace" )
+        .and_then( | workspace | workspace.get( "metadata" ) )
+        .and_then( | metadata | metadata.get( "branches" ) )
+        .and_then( | branches | branches.as_array())
         .map
         (
           | array | 
@@ -172,29 +229,29 @@ mod private
           .map( String::from )
           .collect::< Vec< String > >()
         );
-
-        let user_and_repo = Self::repo_extract( &core_url )?;
-
-        Ok( Self { core_url, user_and_repo, branches } )
+        let mut user_and_repo = "".to_string();
+        if let Some( core_url ) = &core_url
+        {
+          user_and_repo = user_name_and_project_name_extract( core_url )?;
+        }
+        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches } )
       }
     }
     
-
-    fn repo_extract( url: &String ) -> Result< String >
-    {
-      let parts: Vec< &str > = url.split( '/' ).collect();
-      if parts.len() >= 2
-      {
-        Ok( format!( "{}/{}", parts[ parts.len() - 2 ], parts[ parts.len() - 1 ] ) )
-      }
-      else
-      {
-        Err( anyhow!( "Fail to extract  git username and repository name" ) )
-      }
-    }
-
   }
 
+  fn user_name_and_project_name_extract( url: &String ) -> Result< String >
+  {
+    let parts: Vec< &str > = url.split( '/' ).collect();
+    if parts.len() >= 2
+    {
+      Ok( format!( "{}/{}", parts[ parts.len() - 2 ], parts[ parts.len() - 1 ] ) )
+    }
+    else
+    {
+      Err( anyhow!( "Fail to extract  git username and repository name" ) )
+    }
+  }
 
   /// Create health table in README.md file
   ///
@@ -210,7 +267,7 @@ mod private
   {
     let cargo_metadata = MetadataCommand::new().no_deps().exec()?;
     let workspace_root = workspace_root( &cargo_metadata )?;
-    let parameters = GlobalTableParameters::new( &workspace_root )?;
+    let mut parameters = GlobalTableParameters::new( &workspace_root )?;
 
     let read_me_path = readme_path(&workspace_root ).ok_or_else( || anyhow!( "Fail to find README.md" ) )?;
     let mut file = OpenOptions::new()
@@ -233,7 +290,7 @@ mod private
       {
         if let ( Some( open ), Some( close ) ) = captures
         {
-          let table = package_table_create( open, &workspace_root, &cargo_metadata, &parameters )?;
+          let table = package_table_create( open, &workspace_root, &cargo_metadata, &mut parameters )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
         }
@@ -261,7 +318,7 @@ mod private
     Ok(())
 }
 
-  fn package_table_create( open: regex::bytes::Match<'_>, workspace_root: &PathBuf, cargo_metadata: &cargo_metadata::Metadata, parameters: &GlobalTableParameters ) -> Result< String, Error > 
+  fn package_table_create( open: regex::bytes::Match<'_>, workspace_root: &PathBuf, cargo_metadata: &cargo_metadata::Metadata, parameters: & mut GlobalTableParameters ) -> Result< String, Error > 
   {
     let raw_table_params = std::str::from_utf8
     (
@@ -284,6 +341,11 @@ mod private
       {
         None
       };
+      if parameters.core_url == "" 
+      {
+        parameters.core_url = repo_url( &package_name, &workspace_root.join( &params.base_path ) )?;
+        parameters.user_and_repo = user_name_and_project_name_extract( &parameters.core_url )?;
+      }
       table.push_str( &row_generate(&package_name, stability.as_ref(), parameters, &params) );
     }
     Ok(table)
@@ -321,7 +383,7 @@ mod private
     functions::toposort( module_graph )
   }
 
-  fn row_generate( module_name: &str, stability: Option< &Stability >, parameters: &GlobalTableParameters, table_parameters: &TableParameters ) -> String
+  fn row_generate( module_name: &str, stability: Option< &Stability >, parameters: &GlobalTableParameters, table_parameters: &TableParameters,  ) -> String
   {
     let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
     if table_parameters.include_stability
@@ -338,7 +400,7 @@ mod private
     }
     if table_parameters.include_sample
     {
-      rou.push_str(&format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/{}) | ", &module_name, &module_name, parameters.core_url ) );
+      rou.push_str( &format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/{}) | ", &module_name, &module_name, parameters.core_url ) );
     }
     format!( "{rou}\n" )
   }
@@ -390,7 +452,7 @@ mod private
       separator.push_str( ":------:|" );
     }
 
-    format!( "{}\n{}", header, separator )
+    format!( "{}\n{}\n", header, separator )
   }
 
   fn branch_cells_generate( table_parameters: &GlobalTableParameters, module_name: &str ) -> String

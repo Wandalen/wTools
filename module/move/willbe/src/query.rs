@@ -3,65 +3,104 @@ mod private
   use std::collections::HashMap;
   use std::str::FromStr;
 
-  /// enum for parsing string
-  #[ derive( Debug, PartialEq ) ]
-  pub enum Value
+  #[ derive( Debug ) ]
+  /// Parser result enum
+  pub enum Value 
   {
-    /// represent string value
-    StringValue( String ),
-    /// represent int value
-    IntValue( i32 ),
-    /// represent bool value
-    BoolValue( bool ),
+    /// string value
+    String( String ),
+    /// int value
+    Int( i32 ),
+    /// bool value
+    Bool( bool ),
   }
 
-  impl FromStr for Value
+  impl FromStr for Value 
   {
-    type Err = anyhow::Error;
+    type Err = error_tools::for_app::Error;
 
-    fn from_str( s: &str ) -> Result< Self, Self::Err >
+    fn from_str( s: &str ) -> Result< Self, Self::Err > 
     {
-      if let Ok( int ) = s.parse::< i32 >()
+      if let Ok( i ) = s.parse::< i32 >() 
       {
-        Ok( Value::IntValue( int ) )
-      }
-      else if let Ok( boolean ) = s.parse::< bool >()
+        Ok( Value::Int( i ) )
+      } else if let Ok( b ) = s.parse::< bool >() 
       {
-        Ok( Value::BoolValue( boolean ) )
-      }
-      else
+        Ok( Value::Bool( b ) )
+      } else 
       {
-        Ok( Value::StringValue( s.to_string() ) )
+        let s = s.trim_matches( '\'' );
+        Ok( Value::String( s.to_string() ) )
       }
     }
   }
 
   impl From< &Value > for bool
   {
-    fn from( value: &Value ) -> Self
+    fn from( value: &Value ) -> Self 
     {
-      match value
+      match value 
       {
-        Value::BoolValue( b ) => *b,
-        Value::IntValue( i ) => i == &1,
-        Value::StringValue( s ) => s.as_str() == "1",
+        Value::Bool( value ) => *value,
+        Value::String( string ) => string == "true",
+        Value::Int( i ) => *i == 1,
       }
     }
   }
 
   /// parse string to HashMap< String, Value >
-  pub fn string_parse( input: &str ) -> HashMap< String, Value >
+  pub fn string_parse( input_string: &str ) -> HashMap< String, Value > 
   {
     let mut map = HashMap::new();
+    let mut start = 0;
+    let mut in_quotes = false;
 
-    for item in input.split( "," )
+    for ( i, c ) in input_string.chars().enumerate() 
     {
-      let parts: Vec< &str > = item.split( ":" ).collect();
-      if parts.len() == 2
+      match c 
       {
-        let key = parts[ 0 ].trim().to_string();
-        let value = parts[ 1 ].trim().parse::< Value >().unwrap();
-        map.insert( key, value );
+        ',' if !in_quotes => 
+        {
+          let item = &input_string[ start..i ];
+          let parts: Vec< &str > = item.splitn( 2, ':' ).map( | s | s.trim() ).collect();
+          if parts.len() == 2 
+          {
+            if let Ok( value ) = parts[ 1 ].parse() 
+            {
+              map.insert( parts[ 0 ].to_string(), value );
+            }
+          } 
+          else if parts.len() == 1 
+          {
+            if let Ok( value ) = parts[ 0 ].parse::< Value >() 
+            {
+              map.insert( "path".to_string(), value );
+            }
+          }
+          start = i + 1;
+        }
+        '\'' => 
+        {
+          in_quotes = !in_quotes;
+        }
+        _ => {}
+      }
+    }
+
+    let item = &input_string[ start.. ];
+    let parts: Vec< &str > = item.splitn( 2, ':' ).map( | s | s.trim() ).collect();
+    if parts.len() == 2 
+    {
+      if let Ok( value ) = parts[ 1 ].parse() 
+      {
+        map.insert( parts[ 0 ].to_string(), value );
+      }
+    } 
+    else if parts.len() == 1 
+    {
+      if let Ok( value ) = parts[ 0 ].parse::< Value >() 
+      {
+        map.insert( "path".to_string(), value );
       }
     }
     map
