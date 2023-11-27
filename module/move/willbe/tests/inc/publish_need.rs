@@ -2,7 +2,6 @@ const TEST_MODULE_PATH : &str = "../../test/";
 
 use assert_fs::prelude::*;
 
-use toml_edit::value;
 use crate::TheModule::{ manifest, process, version };
 use crate::TheModule::package::functions::protected::publish_need;
 
@@ -36,15 +35,11 @@ fn with_changes()
   temp.copy_from( &package_path, &[ "**" ] ).unwrap();
 
   let mut manifest = manifest::get( temp.as_ref() ).unwrap();
-  // REFACTOR: move this to a function
-  let data = manifest.manifest_data.as_deref_mut().unwrap();
-  let version = &data[ "package" ][ "version" ].clone();
-  let version = version.as_str().expect( "Version should be valid UTF-8" );
-  let new_version = version::bump( version ).unwrap();
-  data[ "package" ][ "version" ] = value( &new_version );
-  manifest.store().unwrap();
+  version::bump( &mut manifest, false ).unwrap();
 
   _ = process::start_sync( "cargo package", temp.as_ref() ).expect( "Failed to package a package" );
+
+  let manifest = manifest::get( temp.as_ref() ).unwrap();
 
   // Act
   let publish_needed = publish_need( &manifest );

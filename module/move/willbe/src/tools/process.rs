@@ -1,6 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use std::fmt::Formatter;
   use std::path::PathBuf;
   use std::process::
   {
@@ -20,6 +21,24 @@ pub( crate ) mod private
     pub out : String,
     /// Stderr.
     pub err : String,
+  }
+
+  impl std::fmt::Display for CmdReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      f.write_fmt( format_args!( "[ {} ]\n", self.command ) )?;
+      if !self.out.trim().is_empty()
+      {
+        f.write_fmt( format_args!( "\t{}\n", self.out.replace( '\n', "\n\t" ) ) )?;
+      }
+      if !self.err.trim().is_empty()
+      {
+        f.write_fmt( format_args!( "\t!! {} !!\n\t{}\n", self.path.display(), self.err.replace( '\n', "\n\t" ) ) )?;
+      }
+
+      Ok( () )
+    }
   }
 
   ///

@@ -40,10 +40,11 @@ error_tools = { workspace = true, features = [ "default" ] }
 flate2 = "~1.0"
 former = { workspace = true, features = [ "default" ] }
 globwalk = "~0.8"
-lazy_static = "1.4.0"
 mod_interface = { workspace = true, features = [ "default" ] }
 petgraph = "~0.6"
 ptree = "~0.4"
+semver = "~1.0.0"
+lazy_static = "1.4.0"
 regex = "1.10.2"
 sha-1 = "~0.10"
 tar = "~0.4"
