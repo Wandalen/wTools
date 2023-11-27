@@ -45,7 +45,7 @@ path = "src/meta/mod_interface/front/multilayer_lib.rs"
 
 [[test]]
 name = "mod_interface_test"
-path = "tests/meta/multilayer_tests.rs"
+path = "tests/multilayer_tests.rs"
 
 [[test]]
 name = "mod_interface_smoke_test"

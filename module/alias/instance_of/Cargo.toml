@@ -45,7 +45,7 @@ path = "src/typing/instance_of_lib.rs"
 
 [[test]]
 name = "instance_of_test"
-path = "tests/typing/instance_of_tests.rs"
+path = "tests/instance_of_tests.rs"
 
 [[test]]
 name = "instance_of_smoke_test"
