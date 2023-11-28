@@ -12,7 +12,7 @@ jobs :
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
-      manifest_path : 'module/rust/implements/Cargo.toml'
+      manifest_path : 'module/core/implements/Cargo.toml'
       module_name : 'implements'
       commit_message : ${{ github.event.head_commit.message }}
 

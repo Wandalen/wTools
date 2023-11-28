@@ -220,7 +220,7 @@ pub( crate ) mod private
     /// The modified command instance with the properties added.
     ///
     #[ inline ]
-    pub fn properties< const N: usize >( mut self, properties : [ Property; N ] ) -> Self
+    pub fn properties< const N: usize >( mut self, properties : [ Property< '_ >; N ] ) -> Self
     {
       self.command.properties.reserve( properties.len() );
 
@@ -301,7 +301,7 @@ pub( crate ) mod private
     }
 
     /// Adds properties to the command.
-    fn properties< const N: usize >( self, properties: [ Property; N ] ) -> Builder< Self >
+    fn properties< const N: usize >( self, properties: [ Property< '_ >; N ] ) -> Builder< Self >
     {
       Builder::new( self ).properties( properties )
     }

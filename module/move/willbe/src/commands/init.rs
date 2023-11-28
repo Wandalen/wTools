@@ -49,34 +49,36 @@ pub( crate ) mod private
     .property_alias( "verbosity", "v" )
     .form();
 
+    // let list_no_subj_command = wca::Command::former()
+    // .hint( "List packages." )
+    // .long_hint( "List packages" )
+    // .phrase( "list" )
+    // .form();
+    //
+    // let list_command = wca::Command::former()
+    // .hint( "List packages." )
+    // .long_hint( "List packages" )
+    // .phrase( "list" )
+    // .subject( "A path to directories with packages.", Type::List( Type::Path.into(), ',' ), true )
+    // .form();
+
     let list_no_subj_command = wca::Command::former()
-    .hint( "List packages." )
-    .long_hint( "List packages" )
-    .phrase( "list" )
-    .form();
-
-    let list_command = wca::Command::former()
-    .hint( "List packages." )
-    .long_hint( "List packages" )
-    .phrase( "list" )
-    .subject( "A path to directories with packages.", Type::List( Type::Path.into(), ',' ), true )
-    .form();
-
-    let workspace_list_no_subj_command = wca::Command::former()
     .hint( "List workspace packages." )
     .long_hint( "List workspace packages" )
-    .phrase( "workspace.list" )
-    .property( "type", "Output type. It can be topological sorted list of crates or list + set of independent crates trees.\n               Variants: topsort, tree. Default is \"tree\".", Type::String, true )
+    .phrase( "list" )
+    .property( "format", "Output format. It can be topological sorted list of crates or list + set of independent crates trees.\n               Variants: topsort, tree. Default is \"tree\".", Type::String, true )
+    .property( "filter", "Filter output packages.\n               Variants: local, nothing. Default is \"nothing\".", Type::String, true )
     .property( "root_module", "Log dependency tree for selected module. Works in combination with option 'type:tree'", Type::String, true )
     .form();
 
-    let workspace_list_command = wca::Command::former()
+    let list_command = wca::Command::former()
     .hint( "List workspace packages." )
     .long_hint( "List workspace packages" )
-    .phrase( "workspace.list" )
+    .phrase( "list" )
     .subject( "A path to directory with workspace config.", Type::Path, true )
     // .subject( "A path to directory with workspace config. Should be a glob.", Type::List( Type::Path.into() ), true )
-    .property( "type", "Output type. It can be topological sorted list of crates or list + set of independent crates trees.\n               Variants: topsort, tree. Default is \"tree\".", Type::String, true )
+    .property( "format", "Output format. It can be topological sorted list of crates or list + set of independent crates trees.\n               Variants: topsort, tree. Default is \"tree\".", Type::String, true )
+    .property( "filter", "Filter output packages.\n               Variants: local, nothing. Default is \"nothing\".", Type::String, true )
     .property( "root_module", "Log dependency tree for selected module. Works in combination with option 'type:tree'", Type::String, true )
     .form();
 
@@ -91,7 +93,7 @@ pub( crate ) mod private
       publish_no_subj_command, publish_command,
       workspace_publish_no_subj_command, workspace_publish_command,
       list_no_subj_command, list_command,
-      workspace_list_no_subj_command, workspace_list_command,
+      // workspace_list_no_subj_command, workspace_list_command,
       create_table_command,
     ]
   }
@@ -109,7 +111,6 @@ pub( crate ) mod private
       ( "publish".to_owned(), Routine::new( publish ) ),
       ( "workspace.publish".to_owned(), Routine::new( workspace_publish ) ),
       ( "list".to_owned(), Routine::new( list ) ),
-      ( "workspace.list".to_owned(), Routine::new( workspace_list ) ),
       ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
     ])
   }

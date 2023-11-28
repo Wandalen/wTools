@@ -1,3 +1,5 @@
+//! To avoid messing up with long logical expressions in the codebase.
+
 use cfg_aliases::cfg_aliases;
 
 fn main()
