@@ -1,0 +1,10 @@
+[package]
+name = "_package_with_remote_dep_a"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+foo = "*"
+_package_with_remote_dep_b = { path = "../b" }

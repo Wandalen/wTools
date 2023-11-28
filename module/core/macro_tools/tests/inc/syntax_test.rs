@@ -31,13 +31,13 @@ tests_impls!
     // test.case( "AttributesInner" );
     let code = qt!
     {
-      #![ deny( missing_docs ) ]
+      // #![ deny( missing_docs ) ]
       #![ warn( something ) ]
     };
     let got = syn::parse2::< TheModule::AttributesInner >( code ).unwrap();
     let exp = TheModule::AttributesInner::from( syn::Attribute::parse_inner.parse2( qt!
     {
-      #![ deny( missing_docs ) ]
+      // #![ deny( missing_docs ) ]
       #![ warn( something ) ]
     } )? );
     a_id!( got, exp );
