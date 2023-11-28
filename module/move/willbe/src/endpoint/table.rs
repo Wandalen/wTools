@@ -328,7 +328,7 @@ use crate::process::start_sync;
     .ok_or( anyhow!( "Fail to parse group" ) )?
     .as_bytes()
     )?;
-    let params: TableParameters  = crate::query::string_parse( raw_table_params ).into();
+    let params: TableParameters  = crate::query::parse( raw_table_params ).into();
     let directory_names = directory_names( workspace_root.join( &params.base_path ), &cargo_metadata.load().packages_get() );
     let mut table = table_header_generate( parameters, &params );
     for package_name in directory_names 

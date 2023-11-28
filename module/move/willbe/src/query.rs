@@ -3,7 +3,7 @@ mod private
   use std::collections::HashMap;
   use std::str::FromStr;
 
-  #[ derive( Debug ) ]
+  #[ derive( Debug, PartialEq, Eq ) ]
   /// Parser result enum
   pub enum Value 
   {
@@ -49,9 +49,14 @@ mod private
   }
 
   /// parse string to HashMap< String, Value >
-  pub fn string_parse( input_string: &str ) -> HashMap< String, Value > 
+  pub fn parse( input_string: &str ) -> HashMap< String, Value > 
   {
+    let input_string = input_string.trim();
     let mut map = HashMap::new();
+    if input_string.is_empty() 
+    {
+      return map
+    }
     let mut start = 0;
     let mut in_quotes = false;
 
@@ -65,14 +70,14 @@ mod private
           let parts: Vec< &str > = item.splitn( 2, ':' ).map( | s | s.trim() ).collect();
           if parts.len() == 2 
           {
-            if let Ok( value ) = parts[ 1 ].parse() 
+            if let Ok( value ) = parts[ 1 ].trim_matches( '\'' ).parse() 
             {
               map.insert( parts[ 0 ].to_string(), value );
             }
           } 
           else if parts.len() == 1 
           {
-            if let Ok( value ) = parts[ 0 ].parse::< Value >() 
+            if let Ok( value ) = parts[ 0 ].trim_matches( '\'' ).parse::< Value >() 
             {
               map.insert( "path".to_string(), value );
             }
@@ -83,22 +88,22 @@ mod private
         {
           in_quotes = !in_quotes;
         }
-        _ => {}
+          _ => {}
       }
     }
 
     let item = &input_string[ start.. ];
-    let parts: Vec< &str > = item.splitn( 2, ':' ).map( | s | s.trim() ).collect();
+    let parts: Vec<&str> = item.splitn( 2, ':' ).map( | s | s.trim() ).collect();
     if parts.len() == 2 
     {
-      if let Ok( value ) = parts[ 1 ].parse() 
+      if let Ok( value ) = parts[ 1 ].trim_matches( '\'' ).parse() 
       {
         map.insert( parts[ 0 ].to_string(), value );
       }
     } 
     else if parts.len() == 1 
     {
-      if let Ok( value ) = parts[ 0 ].parse::< Value >() 
+      if let Ok( value ) = parts[ 0 ].trim_matches( '\'' ).parse::< Value >() 
       {
         map.insert( "path".to_string(), value );
       }
@@ -110,6 +115,6 @@ mod private
 crate::mod_interface!
 {
   /// Bump version.
-  protected use string_parse;
+  protected use parse;
   protected use Value;
 }
