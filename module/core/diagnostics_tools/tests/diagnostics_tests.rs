@@ -1,6 +1,6 @@
-#![ warn( rust_2018_idioms ) ]
-#![ deny( missing_debug_implementations ) ]
-#![ deny( missing_docs ) ]
+// #![ warn( rust_2018_idioms ) ]
+// #![ deny( missing_debug_implementations ) ]
+// #![ deny( missing_docs ) ]
 
 // #![ cfg_attr( feature = "type_name_of_val", feature( type_name_of_val ) ) ]
 // #![ feature( trace_macros ) ]

@@ -1,6 +1,6 @@
-#![ warn( rust_2018_idioms ) ]
-#![ deny( missing_debug_implementations ) ]
-#![ deny( missing_docs ) ]
+// #![ warn( rust_2018_idioms ) ]
+// #![ deny( missing_debug_implementations ) ]
+// #![ deny( missing_docs ) ]
 
 #[ allow( unused_imports ) ]
 use ::meta_tools as TheModule;

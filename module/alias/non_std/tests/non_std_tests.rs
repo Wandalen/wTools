@@ -15,8 +15,5 @@ pub struct CrateStructForTesting1
 {
 }
 
-// #[ path = "./mod.rs" ]
-// mod tests;
-
 #[ path="../../../../module/core/wtools/tests/wtools_tests.rs" ]
 mod wtools;
