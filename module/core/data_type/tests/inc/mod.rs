@@ -5,7 +5,7 @@ use super::*;
 #[ cfg( any( feature = "either", feature = "dt_either" ) ) ]
 mod either_test;
 
-// #[ cfg( any( feature = "type_constructor", feature = "dt_type_constructor" ) ) ]
+#[ cfg( any( feature = "type_constructor", feature = "dt_type_constructor" ) ) ]
 #[ path = "../../../../core/type_constructor/tests/inc/mod.rs" ]
 mod type_constructor;
 
