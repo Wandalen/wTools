@@ -108,6 +108,7 @@ pub( crate ) mod private
   // zzz : clause should not expect the first argument
 
   /// Context for handlign a record. Cotnains clauses map and debug attribute.
+  #[ allow( dead_code ) ]
   pub struct RecordContext< 'clauses_map >
   {
     pub has_debug : bool,
@@ -117,7 +118,7 @@ pub( crate ) mod private
   ///
   /// Handle record "use" with implicit visibility.
   ///
-
+  #[ allow ( dead_code ) ]
   fn record_use_implicit
   (
     record : &Record,
@@ -214,7 +215,7 @@ pub( crate ) mod private
   ///
   /// Handle record "use" with explicit visibility.
   ///
-
+  #[ allow ( dead_code ) ]
   fn record_use_explicit
   (
     record : &Record,
@@ -329,7 +330,7 @@ pub( crate ) mod private
   ///
   /// Handle record micro module.
   ///
-
+  #[ allow ( dead_code ) ]
   fn record_layer
   (
     record : &Record,
@@ -402,7 +403,7 @@ pub( crate ) mod private
   ///
   /// Protocol of modularity unifying interface of a module and introducing layers.
   ///
-
+  #[ allow ( dead_code ) ]
   pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
   {
     use ElementType::*;
