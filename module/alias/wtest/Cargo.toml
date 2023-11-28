@@ -38,8 +38,8 @@ enabled = []
 
 [dependencies]
 test_tools = { workspace = true }
-wtools = { workspace = true }
-wca = { workspace = true }
+# wtools = { workspace = true }
+# wca = { workspace = true }
 # wpublisher = { workspace = true }
 # anyhow = "~1.0.56"
 
