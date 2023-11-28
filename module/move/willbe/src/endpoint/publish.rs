@@ -1,24 +1,23 @@
 /// Internal namespace.
 mod private
 {
-  use crate::package::functions as package;
+  use crate::package::{ functions as package, DependenciesOptions, DependenciesSort };
 
   use crate::tools::
   {
-    files,
-    manifest,
+    // files,
+    path,
   };
   use anyhow::Error;
   use std::
   {
-    env,
     path::PathBuf,
     collections::HashSet,
   };
   use core::fmt::Formatter;
   use std::collections::HashMap;
-  use cargo_metadata::MetadataCommand;
-  use crate::package::functions::FilterMapOptions;
+  use crate::cache::WorkspaceCache;
+  use crate::package::functions::{ CrateId, FilterMapOptions };
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
@@ -38,7 +37,7 @@ mod private
 
       for ( path, report ) in &self.packages
       {
-        f.write_fmt( format_args!( "[ {} ]\n{report:#?}\n", path.display() ) )?;
+        f.write_fmt( format_args!( "[ {} ]\n{report}\n", path.display() ) )?;
       }
 
       Ok( () )
@@ -53,34 +52,59 @@ mod private
   {
     let mut report = PublishReport::default();
 
-    let current_path = env::current_dir().map_err( | e | ( report.clone(), e.into() ) )?;
     let mut paths = HashSet::new();
+    // find all packages by specified folders
     for pattern in &patterns
     {
-      let current_path = std::path::Path::new( pattern ).canonicalize().map_err( | e | ( report.clone(), e.into() ) )?;
-      #[ cfg( target_os = "windows" ) ] // canonicalization on windows adds `\\?\` prefix
-      let current_path =
-      {
-        const VERBATIM_PREFIX : &str = r#"\\?\"#;
-        let p = current_path.display().to_string();
-        if p.starts_with( VERBATIM_PREFIX )
-        {
-          PathBuf::from( &p[ VERBATIM_PREFIX.len() .. ] )
-        }
-        else
-        {
-         current_path
-        }
-      };
-      let current_paths = files::find( current_path, &[ "**/Cargo.toml" ] );
-      paths.extend( current_paths );
+      let current_path = path::canonicalize( pattern ).map_err( | e | ( report.clone(), e.into() ) )?;
+      // let current_paths = files::find( current_path, &[ "Cargo.toml" ] );
+      paths.extend( Some( current_path ) );
     }
 
-    let paths = paths.iter().filter_map( | s | if s.ends_with( "Cargo.toml" ) { Some( s.into() ) } else { None } ).collect::< Vec< PathBuf > >();
-
-    for path in paths
+    let mut metadata = if paths.is_empty()
     {
-      let current_report = package::publish( &current_path, &path, dry )
+      WorkspaceCache::default()
+    }
+    else
+    {
+      // FIX: patterns can point to different workspaces. Current solution take first random path from list
+      WorkspaceCache::with_manifest_path( paths.iter().next().unwrap() )
+    };
+
+    let packages_to_publish : Vec< _ >= metadata.load().packages_get().iter().filter( | &package | paths.contains( package.manifest_path.as_std_path().parent().unwrap() ) ).cloned().collect();
+    let mut queue = vec![];
+    for package in &packages_to_publish
+    {
+      // get sorted dependencies
+      let local_deps_args = DependenciesOptions
+      {
+        recursive: true,
+        sort: DependenciesSort::Topological,
+        ..Default::default()
+      };
+      let deps = package::dependencies( &mut metadata, package.manifest_path.as_std_path(), local_deps_args )
+      .map_err( | e | ( report.clone(), e.into() ) )?;
+
+      // add dependencies to publish queue
+      for dep in deps
+      {
+        if !queue.contains( &dep )
+        {
+          queue.push( dep );
+        }
+      }
+      // add current package to publish queue if it isn't already here
+      let crate_id = CrateId::from( package );
+      if !queue.contains( &crate_id )
+      {
+        queue.push( crate_id );
+      }
+    }
+
+    // process publish
+    for path in queue.into_iter().filter_map( | id | id.path )
+    {
+      let current_report = package::publish_single( &path, dry )
       .map_err
       (
         | ( current_report, e ) |
@@ -89,7 +113,7 @@ mod private
           ( report.clone(), e.context( "Publish list of packages" ).into() )
         }
       )?;
-      report.packages.push(( path, current_report.clone() ));
+      report.packages.push(( path, current_report ));
     }
 
     Ok( report )
@@ -103,23 +127,16 @@ mod private
   {
     let mut report = PublishReport::default();
 
-    let current_path = env::current_dir().map_err( | e | ( report.clone(), e.into() ) )?;
-
-    let mut manifest = manifest::Manifest::new();
-    let manifest_path = manifest.manifest_path_from_str( &path_to_workspace ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let package_metadata = MetadataCommand::new()
-    .manifest_path( &manifest_path )
-    .no_deps()
-    .exec()
-    .map_err( | e | ( report.clone(), e.into() ) )?;
+    let mut package_metadata = WorkspaceCache::with_manifest_path( path_to_workspace );
 
     let packages_map = package::packages_filter_map
     (
-      &package_metadata.packages,
+      &package_metadata.load().packages_get(),
       FilterMapOptions{ package_filter: Some( Box::new( | p |{ p.publish.is_none() } ) ), ..Default::default() }
     );
     let package_path_map: HashMap< _, _ > = package_metadata
-    .packages
+    .load()
+    .packages_get()
     .iter()
     .map( | p | ( &p.name, &p.manifest_path ) )
     .collect();
@@ -129,13 +146,13 @@ mod private
 
     for name in &sorted
     {
-      let path = package_path_map[ name ].clone().into();
-      package::publish( &current_path, &path, dry )
+      let path = package_path_map[ name ].as_std_path();
+      package::publish_single( &path, dry )
       .map_err
       (
         | ( current_report, e ) |
         {
-          report.packages.push(( path, current_report.clone() ));
+          report.packages.push(( path.to_path_buf(), current_report.clone() ));
           ( report.clone(), e.context( "Publish list of packages" ).into() )
         }
       )?;

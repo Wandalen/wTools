@@ -17,7 +17,6 @@ mod private
   {
     Dependency,
     DependencyKind,
-    MetadataCommand,
     Package
   };
   use toml_edit::Document;
@@ -38,6 +37,7 @@ mod private
     bail,
   };
   use anyhow::anyhow;
+  use crate::cache::WorkspaceCache;
   use crate::package::functions;
   use crate::package::functions::FilterMapOptions;
   use crate::package::functions::PackageName;
@@ -265,8 +265,8 @@ use crate::process::start_sync;
   /// Anything between the opening and closing tag will be destroyed.
   pub fn table_create() -> Result< () >
   {
-    let cargo_metadata = MetadataCommand::new().no_deps().exec()?;
-    let workspace_root = workspace_root( &cargo_metadata )?;
+    let mut cargo_metadata = WorkspaceCache::default();
+    let workspace_root = workspace_root( &mut cargo_metadata )?;
     let mut parameters = GlobalTableParameters::new( &workspace_root )?;
 
     let read_me_path = readme_path(&workspace_root ).ok_or_else( || anyhow!( "Fail to find README.md" ) )?;
@@ -290,7 +290,7 @@ use crate::process::start_sync;
       {
         if let ( Some( open ), Some( close ) ) = captures
         {
-          let table = package_table_create( open, &workspace_root, &cargo_metadata, &mut parameters )?;
+          let table = package_table_create( open, &workspace_root, &mut cargo_metadata, &mut parameters )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
         }
@@ -318,7 +318,7 @@ use crate::process::start_sync;
     Ok(())
 }
 
-  fn package_table_create( open: regex::bytes::Match<'_>, workspace_root: &PathBuf, cargo_metadata: &cargo_metadata::Metadata, parameters: & mut GlobalTableParameters ) -> Result< String, Error > 
+  fn package_table_create( open: regex::bytes::Match<'_>, workspace_root: &PathBuf, cargo_metadata: &mut WorkspaceCache, parameters: & mut GlobalTableParameters ) -> Result< String, Error > 
   {
     let raw_table_params = std::str::from_utf8
     (
@@ -329,7 +329,7 @@ use crate::process::start_sync;
     .as_bytes()
     )?;
     let params: TableParameters  = crate::query::string_parse( raw_table_params ).into();
-    let directory_names = directory_names( workspace_root.join( &params.base_path ), &cargo_metadata.packages );
+    let directory_names = directory_names( workspace_root.join( &params.base_path ), &cargo_metadata.load().packages_get() );
     let mut table = table_header_generate( parameters, &params );
     for package_name in directory_names 
     {
@@ -359,27 +359,24 @@ use crate::process::start_sync;
       Box::new
       (
         move | p |
-        {
-          p.publish.is_none() && p.manifest_path.starts_with( &path )
-        }
+        p.publish.is_none() && p.manifest_path.starts_with( &path )
       )
     );
     let module_dependency_filter: Option< Box< dyn Fn( &Package, &Dependency) -> bool > > = Some
     (
       Box::new
-        (
-          move | _, d |
-          {
-            d.path.is_some() && d.kind != DependencyKind::Development && d.path.as_ref().unwrap().starts_with( &path_clone )
-          }
-        )
+      (
+        move | _, d |
+        d.path.is_some() && d.kind != DependencyKind::Development && d.path.as_ref().unwrap().starts_with( &path_clone )
+      )
     );
     let module_packages_map = functions::packages_filter_map
     (
       packages,
-      FilterMapOptions{ package_filter: module_package_filter, dependency_filter: module_dependency_filter },
+      FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
-    let module_graph = functions::graph_build( &module_packages_map);
+    let module_graph = functions::graph_build( &module_packages_map );
+
     functions::toposort( module_graph )
   }
 
@@ -472,9 +469,9 @@ use crate::process::start_sync;
     format!( "{cells} | " )
   }
 
-  fn workspace_root( metadata: &cargo_metadata::Metadata ) -> Result< PathBuf >
+  fn workspace_root( metadata: &mut WorkspaceCache ) -> Result< PathBuf >
   {
-    Ok( metadata.workspace_root.clone().into_std_path_buf() )
+    Ok( metadata.load().workspace_root().to_path_buf() )
   }
 
   fn range_to_target_copy< T: Clone >( source: &[ T ], target: &mut Vec< T >, from: usize, to: usize ) -> Result< () >
@@ -497,7 +494,7 @@ use crate::process::start_sync;
   /// `None` if no README file is found in any of these locations.
   fn readme_path( dir_path : &Path ) -> Option< PathBuf >
   {
-    if let Some( path )  = readme_in_dir_find( &dir_path.join( ".github" ) )
+    if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
     {
       Some( path )
     }

@@ -3,22 +3,13 @@ mod private
   use std::
   {
     fs,
-    path::PathBuf,
-    collections::
-    {
-      HashMap,
-      HashSet
-    },
+    path::{ Path, PathBuf },
+    collections::{ HashMap, HashSet },
   };
   use std::fmt::Formatter;
-  use std::path::Path;
-  use cargo_metadata::
-  {
-    Dependency,
-    Metadata,
-    MetadataCommand,
-    Package
-  };
+  use std::hash::Hash;
+  use std::ops::Index;
+  use cargo_metadata::{ Dependency, DependencyKind, Package };
   use petgraph::
   {
     graph::Graph,
@@ -30,9 +21,10 @@ mod private
     process,
     http,
   };
-  use crate::version;
+  use crate::{ cargo, git, version };
   use anyhow::{ Context, Error, anyhow };
-  use toml_edit::value;
+  use wca::wtools::Itertools;
+  use crate::cache::WorkspaceCache;
 
   use crate::path;
   use crate::wtools;
@@ -42,20 +34,75 @@ mod private
   {
     get_info : Option< process::CmdReport >,
     bump : Option< String >,
+    add : Option< process::CmdReport >,
     commit : Option< process::CmdReport >,
     push : Option< process::CmdReport >,
     publish : Option< process::CmdReport >,
   }
 
-  ///
-  /// Publish single packages.
-  ///
+  impl std::fmt::Display for PublishReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      let PublishReport
+      {
+        get_info,
+        bump,
+        add,
+        commit,
+        push,
+        publish,
+      } = self;
 
-  pub fn publish( current_path : &PathBuf, path : &PathBuf, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
+      if get_info.is_none()
+      {
+        f.write_fmt( format_args!( "Empty report" ) )?;
+        return Ok( () )
+      }
+      let info = get_info.as_ref().unwrap();
+      f.write_fmt( format_args!( "{}", info ) )?;
+      if let Some( bump ) = bump
+      {
+        f.write_fmt( format_args!( "{}\n", bump ) )?;
+      }
+      if let Some( add ) = add
+      {
+        f.write_fmt( format_args!( "{add}" ) )?;
+      }
+      if let Some( commit ) = commit
+      {
+        f.write_fmt( format_args!( "{commit}" ) )?;
+      }
+      if let Some( push ) = push
+      {
+        f.write_fmt( format_args!( "{push}" ) )?;
+      }
+      if let Some( publish ) = publish
+      {
+        f.write_fmt( format_args!( "{publish}" ) )?;
+      }
+
+      Ok( () )
+    }
+  }
+
+  /// Publishes a single package without publishing its dependencies.
+  ///
+  /// This function is designed to publish a single package. It does not publish any of the package's dependencies.
+  ///
+  /// Args:
+  ///
+  /// - path - a path to package manifest file
+  /// - dry - a flag that indicates whether to apply the changes or not
+  ///   - true - do not publish, but only show what steps should be taken
+  ///   - false - publishes the package
+  ///
+  /// Returns:
+  /// Returns a result containing a report indicating the result of the operation.
+  pub fn publish_single( path : &Path, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
-
-    let mut manifest = manifest::get( path ).map_err( | e | ( report.clone(), e ) )?;
+    let mut manifest = manifest::get( path ).map_err( |e | ( report.clone(), e ) )?;
     if !manifest.package_is() || manifest.local_is()
     {
       return Ok( report );
@@ -73,141 +120,208 @@ mod private
 
     if publish_need( &manifest )
     {
-      let data = manifest.manifest_data.as_deref_mut().ok_or( anyhow!( "Failed to get manifest data" ) ).map_err( | e | ( report.clone(), e ) )?;
-      let name = &data[ "package" ][ "name" ].clone();
-      let name = name.as_str().expect( "Name should be valid UTF-8" );
-      let version = &data[ "package" ][ "version" ].clone();
-      let version = version.as_str().expect( "Version should be valid UTF-8" );
-      let new_version = version::bump( version ).map_err( | e | ( report.clone(), e ) )?;
-
-      if dry
+      let new_version = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+      let package_name =
       {
-        report.bump = Some( "Bump package version".into() );
+        let data = manifest.manifest_data.as_ref().unwrap();
+        data[ "package" ][ "name" ].as_str().unwrap()
+      };
+      let manifest_dir = manifest.manifest_path.parent().unwrap();
 
-        let buf = format!( "git commit -am {}-v{}", name, new_version );
-        let output = process::CmdReport
-        {
-          command : buf,
-          path : current_path.clone(),
-          out : String::new(),
-          err : String::new(),
-        };
-        report.commit = Some( output );
+      report.bump = Some( format!( "`{package_name}` bumped to `{new_version}`" ) );
 
-        let buf = "git push".to_string();
-        let output = process::CmdReport
-        {
-          command : buf,
-          path : current_path.clone(),
-          out : String::new(),
-          err : String::new(),
-        };
-        report.push = Some( output );
+      let commit_message = format!( "{package_name}-v{new_version}" );
+      let res = git::add( manifest_dir, [ "Cargo.toml" ], dry ).map_err( | e | ( report.clone(), e ) )?;
+      report.add = Some( res );
+      let res = git::commit( manifest_dir, commit_message, dry ).map_err( | e | ( report.clone(), e ) )?;
+      report.commit = Some( res );
+      let res = git::push( manifest_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
+      report.push = Some( res );
 
-        let buf = "cargo publish".to_string();
-        let output = process::CmdReport
-        {
-          command : buf,
-          path : package_dir.clone(),
-          out : String::new(),
-          err : String::new(),
-        };
-        report.publish = Some( output );
-      }
-      else
-      {
-        data[ "package" ][ "version" ] = value( &new_version );
-        manifest.store().map_err( | e | ( report.clone(), e ) )?;
-        report.bump = Some( "Bump package version".into() );
-
-        let buf = format!( "git commit -am {}-v{}", name, new_version );
-        let output = process::start_sync( &buf, current_path ).context( "Commit changes while publishing" ).map_err( | e | ( report.clone(), e ) )?;
-        report.commit = Some( output );
-
-        let buf = "git push".to_string();
-        let output = process::start_sync( &buf, current_path ).context( "Push while publishing" ).map_err( | e | ( report.clone(), e ) )?;
-        report.push = Some( output );
-
-        let buf = "cargo publish".to_string();
-        let output = process::start_sync( &buf, &package_dir ).context( "Publish" ).map_err( | e | ( report.clone(), e ) )?;
-        report.publish = Some( output );
-      }
+      let res = cargo::publish( manifest_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
+      report.publish = Some( res );
     }
 
     Ok( report )
   }
 
-  //
-
-  #[ derive( Debug, Clone ) ]
-  /// Args for `local_dependencies` function
-  pub struct LocalDependenciesOptions
+  /// Sorting variants for dependencies.
+  #[ derive( Debug, Copy, Clone ) ]
+  pub enum DependenciesSort
   {
-    /// With dependencies of dependencies
-    pub recursive : bool,
-    /// Skip packages
-    pub exclude : HashSet< PathBuf >,
+    /// List will be topologically sorted.
+    Topological,
+    /// List will be unsorted.
+    Unordered,
   }
 
-  impl Default for LocalDependenciesOptions
+  #[ derive( Debug, Clone ) ]
+  /// Args for `local_dependencies` function.
+  pub struct DependenciesOptions
+  {
+    /// With dependencies of dependencies.
+    pub recursive : bool,
+    /// With sorting.
+    pub sort : DependenciesSort,
+    /// Include dev dependencies.
+    pub with_dev : bool,
+    /// Include remote dependencies.
+    pub with_remote : bool,
+  }
+
+  impl Default for DependenciesOptions
   {
     fn default() -> Self
     {
       Self
       {
         recursive : true,
-        exclude : HashSet::new(),
+        sort : DependenciesSort::Unordered,
+        with_dev : false,
+        with_remote : false,
       }
     }
   }
 
   //
 
-  /// Returns local dependencies of specified package by its manifest path from a workspace
-  pub fn local_dependencies( metadata : &Metadata, manifest_path : &Path, mut opts: LocalDependenciesOptions ) -> wtools::error::Result< Vec< PathBuf > >
+  /// Identifier of any crate(local and remote)
+  #[ derive( Debug, Clone, Hash, Eq, PartialEq ) ]
+  pub struct CrateId
   {
+    /// TODO: make it private
+    pub name : String,
+    /// TODO: make it private
+    pub path : Option< PathBuf >,
+  }
+
+  impl From< &Package > for CrateId
+  {
+    fn from( value : &Package ) -> Self
+    {
+      Self
+      {
+        name : value.name.clone(),
+        path : Some( value.manifest_path.as_std_path().parent().unwrap().to_path_buf() ),
+      }
+    }
+  }
+
+  impl From< &Dependency > for CrateId
+  {
+    fn from( value : &Dependency ) -> Self
+    {
+      Self
+      {
+        name : value.name.clone(),
+        path : value.path.clone().map( | path | path.into_std_path_buf() ),
+      }
+    }
+  }
+
+  /// Build HashMap dependencies graph.
+  /// Returns identifier of root node
+  pub fn _dependencies( metadata : &mut WorkspaceCache, manifest_path : &Path, graph: &mut HashMap< CrateId, HashSet< CrateId > >, opts: DependenciesOptions ) -> wtools::error::Result< CrateId >
+  {
+    let DependenciesOptions
+    {
+      recursive,
+      sort: _,
+      with_dev,
+      with_remote,
+    } = opts;
+    if recursive && with_remote { unimplemented!( "`recursive` + `with_remote` options") }
+
     let manifest_path = path::canonicalize( manifest_path )?;
 
-    let deps = metadata
-    .packages
-    .iter()
-    .find( | package | package.manifest_path.as_std_path() == &manifest_path )
-    .ok_or( anyhow!( "Package not found in the workspace" ) )?
+    let package = metadata
+    .load()
+    .package_find_by_manifest( &manifest_path )
+    .ok_or( anyhow!( "Package not found in the workspace with path: `{}`", manifest_path.display() ) )?;
+
+    let deps = package
     .dependencies
     .iter()
-    .filter_map( | dep | dep.path.as_ref().map( | path | path.clone().into_std_path_buf() ) )
+    .filter( | dep | ( with_remote || dep.path.is_some() ) && ( with_dev || dep.kind != DependencyKind::Development ) )
+    .map( CrateId::from )
     .collect::< HashSet< _ > >();
 
-    let mut output = deps.clone();
+    let package = CrateId::from( package );
+    graph.insert( package.clone(), deps.clone() );
 
-    if opts.recursive
+    if recursive
     {
-      for dep in &deps
+      for dep in deps
       {
-        if !opts.exclude.contains( dep )
+        if graph.get( &dep ).is_none()
         {
-          opts.exclude.insert( dep.clone() );
-          output.extend( local_dependencies( metadata, &dep.join( "Cargo.toml" ), opts.clone() )? );
+          // unwrap because `recursive` + `with_remote` not yet implemented
+          _dependencies( metadata, &dep.path.as_ref().unwrap().join( "Cargo.toml" ), graph, opts.clone() )?;
         }
       }
     }
 
-    Ok( output.into_iter().collect() )
+    Ok( package )
   }
 
-  //
+  /// Returns local dependencies of a specified package by its manifest path from a workspace.
+  ///
+  /// # Arguments
+  ///
+  /// - `metadata` - holds cached information about the workspace, such as the packages it contains and their dependencies. By passing it as a mutable reference, function can update the cache as needed.
+  /// - `manifest_path` - path to the package manifest file. The package manifest file contains metadata about the package such as its name, version, and dependencies.
+  /// - `opts` - used to specify options or configurations for fetching local dependencies.
+  ///
+  /// # Returns
+  ///
+  /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
+  pub fn dependencies( metadata : &mut WorkspaceCache, manifest_path : &Path, opts: DependenciesOptions ) -> wtools::error::Result< Vec< CrateId > >
+  {
+    let mut graph = HashMap::new();
+    let root = _dependencies( metadata, manifest_path, &mut graph, opts.clone() )?;
 
+    let output = match opts.sort
+    {
+      DependenciesSort::Unordered =>
+      {
+        graph
+        .into_iter()
+        .flat_map( | ( id, dependency ) |
+        {
+          dependency
+          .into_iter()
+          .chain( Some( id ) )
+        })
+        .unique()
+        .filter( | x | x != &root )
+        .collect()
+      }
+      DependenciesSort::Topological =>
+      {
+        toposort( graph_build( &graph ) ).into_iter().filter( | x | x != &root ).collect()
+      },
+    };
+
+    Ok( output )
+  }
+
+  /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.
+  ///
+  /// Args:
+  /// - `name` - the name of the package.
+  /// - `version` - the version of the package.
+  /// - `manifest_path` - path to the package `Cargo.toml` file.
+  ///
+  /// Returns:
+  /// The local packed `.crate` file of the package
   pub fn local_path_get< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
 
-    let package_metadata = MetadataCommand::new()
-    .manifest_path( manifest_path )
-    .exec()
-    .unwrap();
+    let package_metadata = WorkspaceCache::with_manifest_path( manifest_path.parent().unwrap() );
 
     let mut local_package_path = PathBuf::new();
-    local_package_path.push( package_metadata.target_directory );
+    local_package_path.push( package_metadata.target_directory() );
     local_package_path.push( buf );
 
     local_package_path
@@ -225,7 +339,7 @@ mod private
     /// applied to each package, and only packages that satisfy the condition
     /// are included in the final result. If not provided, a default filter that
     /// accepts all packages is used.
-    pub package_filter: Option< Box< dyn Fn( &Package) -> bool > >,
+    pub package_filter: Option< Box< dyn Fn( &Package ) -> bool > >,
 
     /// An optional dependency filtering function. If provided, this function
     /// is applied to each dependency of each package, and only dependencies
@@ -234,8 +348,10 @@ mod private
     pub dependency_filter: Option< Box< dyn Fn( &Package, &Dependency ) -> bool  > >,
   }
 
-  impl std::fmt::Debug for FilterMapOptions{
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+  impl std::fmt::Debug for FilterMapOptions
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
       f
       .debug_struct( "FilterMapOptions" )
       .field( "package_filter", &"package_filter" )
@@ -255,11 +371,11 @@ mod private
   pub fn packages_filter_map( packages: &[ Package ], filter_map_options: FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
   {
     let FilterMapOptions { package_filter, dependency_filter } = filter_map_options;
-    let package_filter = package_filter.unwrap_or_else( || Box::new( |_| true ) );
+    let package_filter = package_filter.unwrap_or_else( || Box::new( | _ | true ) );
     let dependency_filter = dependency_filter.unwrap_or_else( || Box::new( | _, _ | true ) );
     packages
     .iter()
-    .filter(|&p| package_filter( p ) )
+    .filter( | &p | package_filter( p ) )
     .map
     (
       | package |
@@ -274,8 +390,16 @@ mod private
     ).collect()
   }
 
-  // string, str - package_name
-  pub fn graph_build< 'a >( packages: &'a HashMap< PackageName, HashSet< PackageName > > ) -> Graph< &'a PackageName, &'a PackageName >
+  /// Build a graph from map of packages and its dependencies
+  ///
+  /// Arg:
+  /// - packages - a map, where key is a package identifier and value - the package dependencies identifiers
+  ///
+  /// Returns:
+  /// The graph with all accepted packages
+  pub fn graph_build< PackageIdentifier >( packages : &HashMap< PackageIdentifier, HashSet< PackageIdentifier > > ) -> Graph< &PackageIdentifier, &PackageIdentifier >
+  where
+    PackageIdentifier : PartialEq + Eq + Hash,
   {
     let nudes: HashSet< _ > = packages
     .iter()
@@ -285,7 +409,7 @@ mod private
       .iter()
       .chain( Some( name ) )
     }).collect();
-    let mut deps = Graph::< &PackageName, &PackageName >::new();
+    let mut deps = Graph::new();
     for nude in nudes
     {
       deps.add_node( nude );
@@ -302,16 +426,29 @@ mod private
     deps
   }
 
-
   //
 
-  pub fn toposort< 'a >( graph :  Graph<&'a PackageName, &'a PackageName> ) -> Vec< PackageName >
+  /// Performs a topological sort of a graph of packages
+  ///
+  /// Arg:
+  /// - `graph` - a directed graph of packages and their dependencies.
+  ///
+  /// Returns
+  /// A list that contains the sorted packages identifiers in topological order.
+  ///
+  /// # Panics
+  /// If there is a cycle in the dependency graph
+  pub fn toposort< 'a, PackageIdentifier : Clone + std::fmt::Debug >( graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier > ) -> Vec< PackageIdentifier >
   {
-    pg_toposort( &graph, None ).expect( "Failed to process toposort for packages" )
-    .iter()
-    .rev()
-    .map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() )
-    .collect::< Vec< String > >()
+    match pg_toposort( &graph, None )
+    {
+      Ok( list ) => list
+      .iter()
+      .rev()
+      .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
+      .collect::< Vec< _ > >(),
+      Err( index ) => panic!( "Cycle: {:?}", graph.index( index.node_id() ) ),
+    }
   }
 
   //
@@ -414,7 +551,7 @@ mod private
 crate::mod_interface!
 {
   protected( crate ) use PublishReport;
-  protected( crate ) use publish;
+  protected( crate ) use publish_single;
 
   protected( crate ) use local_path_get;
 
@@ -427,6 +564,8 @@ crate::mod_interface!
   protected use packages_filter_map;
   protected use publish_need;
 
-  orphan use LocalDependenciesOptions;
-  orphan use local_dependencies;
+  protected use CrateId;
+  orphan use DependenciesSort;
+  orphan use DependenciesOptions;
+  orphan use dependencies;
 }

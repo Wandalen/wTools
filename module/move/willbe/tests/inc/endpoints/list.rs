@@ -37,7 +37,7 @@ mod chain_of_three_packages
     assert_eq!( 3, graph.node_count() );
     assert_eq!( 2, graph.edge_count() );
     assert_eq!( 1, names.len() );
-    assert_eq!( Some( "a" ), graph.node_weight( names[ 0 ] ).map( | x | x.as_str() ) );
+    assert_eq!( Some( "_chain_of_packages_a" ), graph.node_weight( names[ 0 ] ).map( | x | x.as_str() ) );
   }
 
   #[ test ]
@@ -52,7 +52,7 @@ mod chain_of_three_packages
     // Assert
     let ListReport::List( names ) = &output else { panic!("Expected `Topological` format, but found another") };
 
-    assert_eq!( &[ "c".to_string(), "b".to_string(), "a".to_string() ], names.as_slice() );
+    assert_eq!( &[ "_chain_of_packages_c".to_string(), "_chain_of_packages_b".to_string(), "_chain_of_packages_a".to_string() ], names.as_slice() );
   }
 
   #[ test ]
@@ -67,7 +67,7 @@ mod chain_of_three_packages
     // Assert
     let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
 
-    assert_eq!( &[ "c".to_string(), "b".to_string(), "a".to_string() ], names.as_slice() );
+    assert_eq!( &[ "_chain_of_packages_c".to_string(), "_chain_of_packages_b".to_string(), "_chain_of_packages_a".to_string() ], names.as_slice() );
   }
 }
 
@@ -103,7 +103,7 @@ mod package_with_remote_dependency
     assert_eq!( 3, graph.node_count() );
     assert_eq!( 2, graph.edge_count() );
     assert_eq!( 1, names.len() );
-    assert_eq!( Some( "a" ), graph.node_weight( names[ 0 ] ).map( | x | x.as_str() ) );
+    assert_eq!( Some( "_package_with_remote_dep_a" ), graph.node_weight( names[ 0 ] ).map( | x | x.as_str() ) );
   }
 
   #[ test ]
@@ -120,9 +120,9 @@ mod package_with_remote_dependency
 
     assert_eq!( 3, names.len() );
     // `a` must be last
-    assert_eq!( "a", &names[ 2 ] );
+    assert_eq!( "_package_with_remote_dep_a", &names[ 2 ] );
     // can be in any order
-    assert!( ( "b" == &names[ 0 ] && "foo" == &names[ 1 ] ) || ( "b" == &names[ 1 ] && "foo" == &names[ 0 ] ) );
+    assert!( ( "_package_with_remote_dep_b" == &names[ 0 ] && "foo" == &names[ 1 ] ) || ( "_package_with_remote_dep_b" == &names[ 1 ] && "foo" == &names[ 0 ] ) );
   }
 
   #[ test ]
@@ -137,7 +137,7 @@ mod package_with_remote_dependency
     // Assert
     let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
 
-    assert_eq!( &[ "b".to_string(), "a".to_string() ], names.as_slice() );
+    assert_eq!( &[ "_package_with_remote_dep_b".to_string(), "_package_with_remote_dep_a".to_string() ], names.as_slice() );
   }
 }
 
