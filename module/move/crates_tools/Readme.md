@@ -23,14 +23,16 @@ use crates_tools::*;
 
 fn main()
 {
-  let krate = CrateArchive::download_crates_io( "test_experimental_c", "0.1.0" ).unwrap();
-  
-  for path in krate.list()
+  // download a package with specific version from `crates.io`
+  let crate_archive = CrateArchive::download_crates_io( "test_experimental_c", "0.1.0" ).unwrap();
+
+  for path in crate_archive.list()
   {
-    let bytes = krate.content_bytes( path ).unwrap();
+    // take content from a specific file from the archive
+    let bytes = crate_archive.content_bytes( path ).unwrap();
     let string = std::str::from_utf8( bytes ).unwrap();
-    
-    println!( "# {}\n```\n{}```", path.display(), string );
+
+    println!("# {}\n```\n{}```", path.display(), string);
   }
 }
 ```
