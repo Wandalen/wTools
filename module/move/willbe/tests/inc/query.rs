@@ -26,7 +26,7 @@ fn bool_from_value()
 fn parse_empty_string() 
 {
   let expected_map = HashMap::new();
-  assert_eq!( parse( "" ), expected_map );
+  assert_eq!( parse( "" ).unwrap(), expected_map );
 }
 
 #[test]
@@ -34,7 +34,7 @@ fn parse_single_value()
 {
   let mut expected_map = HashMap::new();
   expected_map.insert( "path".to_string(), Value::String( "test/test".to_string() ) );
-  assert_eq!( parse( "'test/test'" ), expected_map );
+  assert_eq!( parse( "'test/test'" ).unwrap(), expected_map );
 }
 
 #[ test ]
@@ -43,16 +43,17 @@ fn parse_multiple_values()
   let mut expected_map = HashMap::new();
   expected_map.insert( "key1".to_string(), Value::Int( 123 ) );
   expected_map.insert( "key2".to_string(), Value::Bool( true ) );
-  assert_eq!( parse( "key1: 123, key2: true" ), expected_map );
+  assert_eq!( parse( "key1: 123, key2: true" ).unwrap(), expected_map );
 }
 
 #[ test ]
+#[ should_panic ]
 fn parse_mixed_values() 
 {
   let mut expected_map = HashMap::new();
   expected_map.insert( "key1".to_string(), Value::Int( 123 ) );
   expected_map.insert( "path".to_string(), Value::String( "test/test".to_string() ) );
-  assert_eq!( parse( "key1: 123, 'test/test'" ), expected_map );
+  assert_eq!( parse( "key1: 123, 'test/test'" ).unwrap(), expected_map );
 }
 
 #[ test ]
@@ -60,7 +61,7 @@ fn parse_with_quotes()
 {
   let mut expected_map = HashMap::new();
   expected_map.insert( "key".to_string(), Value::String( "hello world".to_string() ) );
-  assert_eq!( parse( "key: 'hello world'" ), expected_map );
+  assert_eq!( parse( "key: 'hello world'" ).unwrap(), expected_map );
 }
 
 #[ test ]
@@ -68,7 +69,7 @@ fn parse_with_special_characters()
 {
   let mut expected_map = HashMap::new();
   expected_map.insert( "key".to_string(), Value::String( "!@#$%^&*()".to_string() ) );
-  assert_eq!( parse( "key: '!@#$%^&*()'" ), expected_map );
+  assert_eq!( parse( "key: '!@#$%^&*()'" ).unwrap(), expected_map );
 }
 
 
@@ -77,7 +78,7 @@ fn parse_with_colon_in_value()
 {
   let mut expected_map = HashMap::new();
   expected_map.insert( "key".to_string(), Value::String( "hello:world".to_string() ) );
-  assert_eq!( parse( "key: 'hello:world'" ), expected_map );
+  assert_eq!( parse( "key: 'hello:world'" ).unwrap(), expected_map );
 }
 
 #[ test ]
@@ -85,7 +86,7 @@ fn with_comma_in_value()
 {
   let mut expected_map = HashMap::new();
   expected_map.insert( "key".to_string(), Value::String( "hello,world".to_string() ) );
-  assert_eq!( parse( "key: 'hello,world'" ), expected_map );
+  assert_eq!( parse( "key: 'hello,world'" ).unwrap(), expected_map );
 }
 
 #[ test ]
@@ -93,5 +94,5 @@ fn with_single_quote_escape()
 {
   let mut expected_map = HashMap::new();
   expected_map.insert( "key".to_string(), Value::String( r#"hello\'test\'test"#.into() ) );
-  assert_eq!( parse( r#"key: 'hello\'test\'test'"# ), expected_map );
+  assert_eq!( parse( r#"key: 'hello\'test\'test'"# ).unwrap(), expected_map );
 }

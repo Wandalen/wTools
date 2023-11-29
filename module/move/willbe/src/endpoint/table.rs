@@ -1,5 +1,6 @@
 mod private
 {
+  use crate::*;
   use std::
   { 
     fs, 
@@ -82,9 +83,9 @@ mod private
     }
   }
 
-  fn stability_get( package_name: &PackageName, base_dir_path: &Path ) -> Result< Stability > 
+  fn stability_get( package_path: &Path ) -> Result< Stability > 
   {
-    let path = base_dir_path.join( package_name ).join( "Cargo.toml" );
+    let path = package_path.join( "Cargo.toml" );
     if path.exists() 
     {
       let mut contents = String::new();
@@ -106,23 +107,6 @@ mod private
     }
   }
 
-  fn extract_repo_url( full_url: &str ) -> Option< String > 
-  {
-    let parts: Vec< &str > = full_url.split( '/' ).collect();
-
-    if parts.len() >= 4 && parts[ 0 ] == "https:" && parts[ 1 ] == "" && parts[ 2 ] == "github.com" 
-    {
-      let user = parts[ 3 ];
-      let repo = parts[ 4 ];
-      let repo_url = format!( "https://github.com/{}/{}", user, repo );
-      Some( repo_url )
-    } 
-    else 
-    {
-      None
-    }
-  }
-
   fn repo_url( package_name: &PackageName, base_dir_path: &Path ) -> Result< String >
   {
     let path = base_dir_path.join( package_name ).join( "Cargo.toml" );
@@ -137,12 +121,12 @@ mod private
       .and_then( | package | package.get( "repository" ) )
       .and_then( | i | i.as_str() );
       if let Some( repo_url ) = repo_url {
-          Ok( extract_repo_url( repo_url ).ok_or_else( || anyhow!( "Fail to extract repository url ") )? )
+          Ok( url::extract_repo_url( repo_url ).ok_or_else( || anyhow!( "Fail to extract repository url ") )? )
       }
       else 
       {
         let report = start_sync( "git ls-remote --get-url", base_dir_path )?;
-        Ok( extract_repo_url( &report.out.trim() ).ok_or_else( || anyhow!( "Fail to extract repository url.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) OR in Cargo.toml of a module (in the [package] section named repository, specify the full path to the module) OR ensure that at least one remotest is present in git. ") )? )
+        Ok( url::extract_repo_url( &report.out.trim() ).ok_or_else( || anyhow!( "Fail to extract repository url.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) OR in Cargo.toml of a module (in the [package] section named repository, specify the full path to the module) OR ensure that at least one remotest is present in git. ") )? )
       }
     }
     else
@@ -152,6 +136,10 @@ mod private
   }
 
 
+  /// represents parameters that are common for all tables
+  /// core_url - path to the root repository
+  /// user_and_repo - user and repository name, written through '/'
+  /// branches - list of branches in the repository 
   #[ derive( Debug ) ]
   struct GlobalTableParameters
   {
@@ -170,15 +158,15 @@ mod private
     include_sample: bool,
   }
 
-  impl From< HashMap< String, crate::query::Value > > for TableParameters
+  impl From< HashMap< String, query::Value > > for TableParameters
   {
-    fn from(value: HashMap< String, crate::query::Value >) -> Self
+    fn from(value: HashMap< String, query::Value >) -> Self
     {
       let include_branches = value.get( "with_branches" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_stability = value.get( "with_stability" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_docs = value.get( "with_docs" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_sample = value.get( "with_gitpod" ).map( | v | bool::from( v ) ).unwrap_or( true );
-      let base_path = if let Some( crate::query::Value::String( path ) ) = value.get( "path" )
+      let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" )
       {
         path
       }
@@ -232,25 +220,12 @@ mod private
         let mut user_and_repo = "".to_string();
         if let Some( core_url ) = &core_url
         {
-          user_and_repo = user_name_and_project_name_extract( core_url )?;
+          user_and_repo = url::git_info_extract( core_url )?;
         }
         Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches } )
       }
     }
     
-  }
-
-  fn user_name_and_project_name_extract( url: &String ) -> Result< String >
-  {
-    let parts: Vec< &str > = url.split( '/' ).collect();
-    if parts.len() >= 2
-    {
-      Ok( format!( "{}/{}", parts[ parts.len() - 2 ], parts[ parts.len() - 1 ] ) )
-    }
-    else
-    {
-      Err( anyhow!( "Fail to extract  git username and repository name" ) )
-    }
   }
 
   /// Create health table in README.md file
@@ -329,14 +304,14 @@ mod private
     .ok_or( anyhow!( "Fail to parse group" ) )?
     .as_bytes()
     )?;
-    let params: TableParameters  = crate::query::parse( raw_table_params ).into();
+    let params: TableParameters  = query::parse( raw_table_params ).unwrap().into();
     let directory_names = directory_names( workspace_root.join( &params.base_path ), &cargo_metadata.load().packages_get() );
     let mut table = table_header_generate( parameters, &params );
     for package_name in directory_names 
     {
       let stability = if params.include_stability
       {
-        Some( stability_get( &package_name, &workspace_root.join( &params.base_path ) )? )
+        Some( stability_get( &workspace_root.join( &params.base_path ).join( &package_name ) )? )
       }
       else
       {
@@ -345,7 +320,7 @@ mod private
       if parameters.core_url == "" 
       {
         parameters.core_url = repo_url( &package_name, &workspace_root.join( &params.base_path ) )?;
-        parameters.user_and_repo = user_name_and_project_name_extract( &parameters.core_url )?;
+        parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
       }
       table.push_str( &row_generate(&package_name, stability.as_ref(), parameters, &params) );
     }

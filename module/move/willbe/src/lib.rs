@@ -39,6 +39,9 @@ wtools::meta::mod_interface!
 
   /// query
   layer query;
+
+  /// methods for url
+  layer url;
   /// Version library.
   #[ cfg( not( feature = "no_std" ) ) ]
   layer version;
