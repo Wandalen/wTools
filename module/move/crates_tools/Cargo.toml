@@ -12,8 +12,7 @@ documentation = "https://docs.rs/crates_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/crates_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/crates_tools"
 description = """
-This package provides tools for working with `.crate` files.
-This package is intended for Rust developers who want to manipulate and inspect crates programmatically.
+Tools for working with `.crate` files.
 """
 categories = []
 keywords = []
