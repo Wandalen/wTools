@@ -96,3 +96,13 @@ fn with_single_quote_escape()
   expected_map.insert( "key".to_string(), Value::String( r#"hello\'test\'test"#.into() ) );
   assert_eq!( parse( r#"key: 'hello\'test\'test'"# ).unwrap(), expected_map );
 }
+
+#[ test ]
+fn with_multiple_spaces()
+{
+  let mut expected_map = HashMap::new();
+  expected_map.insert( "key".to_string(), Value::String( "test     ".into() ) );
+  expected_map.insert( "key2".to_string(), Value::String( "test".into() ) );
+  assert_eq!( parse( r#"key    :    'test     ', key2  :      test     "# ).unwrap(), expected_map );
+}
+

@@ -238,14 +238,14 @@ mod private
   /// will mean that at this place the table with modules located in the directory module/core will be generated.
   /// The tags do not disappear after generation.
   /// Anything between the opening and closing tag will be destroyed.
-  pub fn table_create() -> Result< () >
+  pub fn table_create( path: &Path ) -> Result< () >
   {
     regexes_initialize();
-    let mut cargo_metadata = WorkspaceCache::default();
+    let mut cargo_metadata = WorkspaceCache::with_manifest_path( path );
     let workspace_root = workspace_root( &mut cargo_metadata )?;
     let mut parameters = GlobalTableParameters::new( &workspace_root )?;
 
-    let read_me_path = readme_path(&workspace_root ).ok_or_else( || anyhow!( "Fail to find README.md" ) )?;
+    let read_me_path = workspace_root.join( readme_path(&workspace_root ).ok_or_else( || anyhow!( "Fail to find README.md" ) )?);
     let mut file = OpenOptions::new()
     .read( true )
     .write( true )

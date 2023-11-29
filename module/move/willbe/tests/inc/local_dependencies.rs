@@ -109,7 +109,6 @@ tests_impls!
   // a -> b -> a
   fn workspace_with_cyclic_dependency()
   {
-    // Arrange
     let mut metadata = WorkspaceCache::default();
 
     let root_path = metadata.load().workspace_root();

@@ -20,7 +20,7 @@ mod private
   ///
   pub fn table_generate( ( _, _ ) : ( Args, Props ) ) -> Result< () >
   {
-    endpoint::table_create().context( "Fail to create table" )
+    endpoint::table_create( &std::env::current_dir()? ).context( "Fail to create table" )
   }
 }
 

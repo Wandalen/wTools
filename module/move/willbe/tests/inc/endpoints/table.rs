@@ -21,21 +21,19 @@ mod table_create_test
     temp
   }
 
-  // should panic, because the url to the repository is not in Cargo.toml of the workspace or in Cargo.toml of the module. 
   #[ test ]
-  #[ should_panic ] 
+  // should panic, because the url to the repository is not in Cargo.toml of the workspace or in Cargo.toml of the module. 
   fn without_any_toml_configurations_test()
   {
     // Arrange
-    let temp = arrange( "without_any_toml_configuration" );
-
+    let temp = arrange( "without_any_toml_configurations" );
     // Act
-    _ = std::env::set_current_dir( temp.path() );
-    _ = endpoint::table_create().unwrap();
-    
-
+    let result  = endpoint::table_create( &temp );
+    // Assert
+    assert!( result.is_err() );
   }
 
+  #[ test ]
   // url to repository and list of branches should be taken from workspace Cargo.toml, stability - experimental by default 
   fn without_module_toml_configurations_test()
   {
@@ -45,8 +43,7 @@ mod table_create_test
     let temp = arrange( "without_module_toml_configurations" );
 
     // Act
-    _ = std::env::set_current_dir( temp.path() );
-    _ = endpoint::table_create().unwrap();
+    _  = endpoint::table_create( &temp ).unwrap();
 
     // Assert
     let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -55,6 +52,7 @@ mod table_create_test
     assert_eq!( expected, actual );
   }
 
+  #[ test ]
   // url to repository and stability should be taken from module Cargo.toml, branches should not be awarded because they are not listed in the workspace Cargo.toml 
   fn without_workspace_toml_configurations_test()
   {
@@ -64,8 +62,7 @@ mod table_create_test
     let temp = arrange( "without_workspace_toml_configurations" );
 
     // Act
-    _ = std::env::set_current_dir( temp.path() );
-    _ = endpoint::table_create().unwrap();
+    _  = endpoint::table_create( &temp ).unwrap();
 
     // Assert
     let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -74,6 +71,7 @@ mod table_create_test
     assert_eq!( expected, actual );
   }
 
+  #[ test ]
   fn variadic_tag_configuration_test() 
   {
     let explicit_all_true_flag = 
@@ -93,8 +91,7 @@ mod table_create_test
     let temp = arrange( "variadic_tag_configurations" );
 
     // Act
-    _ = std::env::set_current_dir( temp.path() );
-    _ = endpoint::table_create().unwrap();
+    _  = endpoint::table_create( &temp ).unwrap();
 
     // Assert
     let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -104,14 +101,6 @@ mod table_create_test
     {
       assert_eq!( expected[ index ], actual.trim() ); 
     }
-  }
-
-  #[ test ]
-  fn test_runner()
-  {
-    without_module_toml_configurations_test();
-    without_workspace_toml_configurations_test();
-    variadic_tag_configuration_test();
   }
 
 }
