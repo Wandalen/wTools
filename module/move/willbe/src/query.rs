@@ -55,19 +55,27 @@ mod private
     let mut map = HashMap::new();
     if input_string.is_empty() 
     {
-      return map
+      return map;
     }
     let mut start = 0;
     let mut in_quotes = false;
+    let mut escaped = false;
 
     for ( i, c ) in input_string.chars().enumerate() 
     {
       match c 
       {
+        '\\' => 
+        {
+          if in_quotes 
+          {
+            escaped = !escaped;
+          }
+        }
         ',' if !in_quotes => 
         {
           let item = &input_string[ start..i ];
-          let parts: Vec< &str > = item.splitn( 2, ':' ).map( | s | s.trim() ).collect();
+          let parts = item.splitn( 2, ':' ).map( | s | s.trim() ).collect::< Vec< &str > >();
           if parts.len() == 2 
           {
             if let Ok( value ) = parts[ 1 ].trim_matches( '\'' ).parse() 
@@ -86,14 +94,24 @@ mod private
         }
         '\'' => 
         {
-          in_quotes = !in_quotes;
+          if !escaped 
+          {
+            in_quotes = !in_quotes;
+          } 
+          else 
+          {
+            escaped = false;
+          }
         }
-          _ => {}
+        _ => 
+        {
+          escaped = false;
+        }
       }
     }
 
     let item = &input_string[ start.. ];
-    let parts: Vec<&str> = item.splitn( 2, ':' ).map( | s | s.trim() ).collect();
+    let parts: Vec< &str > = item.splitn( 2, ':' ).map( | s | s.trim() ).collect();
     if parts.len() == 2 
     {
       if let Ok( value ) = parts[ 1 ].trim_matches( '\'' ).parse() 

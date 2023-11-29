@@ -87,3 +87,11 @@ fn with_comma_in_value()
   expected_map.insert( "key".to_string(), Value::String( "hello,world".to_string() ) );
   assert_eq!( parse( "key: 'hello,world'" ), expected_map );
 }
+
+#[ test ]
+fn with_single_quote_escape()
+{
+  let mut expected_map = HashMap::new();
+  expected_map.insert( "key".to_string(), Value::String( r#"hello\'test\'test"#.into() ) );
+  assert_eq!( parse( r#"key: 'hello\'test\'test'"# ), expected_map );
+}
