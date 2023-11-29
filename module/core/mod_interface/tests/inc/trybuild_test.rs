@@ -1,6 +1,7 @@
 
 #[ allow( unused_imports ) ]
 use super::*;
+use crate::only_for_terminal_module;
 
 // #[ cfg_attr( feature = "enabled", module_mod_interface ) ]
 

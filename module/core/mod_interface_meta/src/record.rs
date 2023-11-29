@@ -186,6 +186,7 @@ pub( crate ) mod private
   impl Thesis
   {
     /// Validate each inner attribute of the thesis.
+    #[ allow ( dead_code ) ]
     pub fn inner_attributes_validate( &self ) -> Result< () >
     {
       self.head.iter().try_for_each( | attr |
@@ -213,6 +214,7 @@ pub( crate ) mod private
       Ok( () )
     }
     /// Does the thesis has debug inner attribute.
+    #[ allow ( dead_code ) ]
     pub fn has_debug( &self ) -> bool
     {
       self.head.iter().any( | attr |

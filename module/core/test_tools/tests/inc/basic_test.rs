@@ -11,6 +11,7 @@
 //   trybuild_test,
 // }
 
+#[ allow( unused_imports ) ]
 use super::*;
 
 #[ cfg( feature = "enabled" ) ]
