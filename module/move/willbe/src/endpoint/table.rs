@@ -41,18 +41,18 @@ mod private
   use crate::package::functions;
   use crate::package::functions::FilterMapOptions;
   use crate::package::functions::PackageName;
-use crate::process::start_sync;
+  use crate::process::start_sync;
 
 
-  static TAG_TEMPLATE: once_cell::sync::Lazy< regex::bytes::Regex > = once_cell::sync::Lazy::new
-  ( 
-    || regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( (.+) \) \} -->"# ).unwrap()
-  );
+  static TAG_TEMPLATE: std::sync::OnceLock<regex::bytes::Regex> = std::sync::OnceLock::new();
+  static CLOUSE_TAG: std::sync::OnceLock<regex::bytes::Regex> = std::sync::OnceLock::new();
 
-  static CLOUSE_TAG: once_cell::sync::Lazy< regex::bytes::Regex > = once_cell::sync::Lazy::new
-  ( 
-    || regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap()
-  );
+  fn regexes_initialize() 
+  {
+    TAG_TEMPLATE.set( regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( (.+) \) \} -->"# ).unwrap() ).ok();
+    CLOUSE_TAG.set( regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap() ).ok();
+  }
+
 
   #[ derive( Debug ) ]
   enum Stability
@@ -265,6 +265,7 @@ use crate::process::start_sync;
   /// Anything between the opening and closing tag will be destroyed.
   pub fn table_create() -> Result< () >
   {
+    regexes_initialize();
     let mut cargo_metadata = WorkspaceCache::default();
     let workspace_root = workspace_root( &mut cargo_metadata )?;
     let mut parameters = GlobalTableParameters::new( &workspace_root )?;
@@ -281,8 +282,8 @@ use crate::process::start_sync;
 
     let mut tags_closures = vec![];
     let mut tables = vec![];
-    let open_caps = TAG_TEMPLATE.captures_iter( &*contents );
-    let close_caps = CLOUSE_TAG.captures_iter( &*contents );
+    let open_caps = TAG_TEMPLATE.get().unwrap().captures_iter( &*contents );
+    let close_caps = CLOUSE_TAG.get().unwrap().captures_iter( &*contents );
     // iterate by regex matches and generate table content for each dir which taken from open-tag
     for ( open_captures, close_captures ) in open_caps.zip( close_caps )
     {
@@ -322,7 +323,7 @@ use crate::process::start_sync;
   {
     let raw_table_params = std::str::from_utf8
     (
-    TAG_TEMPLATE.captures( open.as_bytes() )
+    TAG_TEMPLATE.get().unwrap().captures( open.as_bytes() )
     .ok_or( anyhow!( "Fail to parse tag" ) )?
     .get( 1 )
     .ok_or( anyhow!( "Fail to parse group" ) )?
