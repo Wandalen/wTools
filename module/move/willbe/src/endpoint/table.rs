@@ -126,7 +126,7 @@ mod private
       else 
       {
         let report = start_sync( "git ls-remote --get-url", base_dir_path )?;
-        Ok( url::extract_repo_url( &report.out.trim() ).ok_or_else( || anyhow!( "Fail to extract repository url.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) OR in Cargo.toml of a module (in the [package] section named repository, specify the full path to the module) OR ensure that at least one remotest is present in git. ") )? )
+        Ok( url::extract_repo_url( &report.out.trim() ).ok_or_else( || anyhow!( "Fail to extract repository url.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", base_dir_path.join( "Cargo.toml" ).display(), base_dir_path.join( package_name ).join( "Cargo.toml" ).display() ) )? )
       }
     }
     else

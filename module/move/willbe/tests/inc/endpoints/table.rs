@@ -74,6 +74,7 @@ mod table_create_test
   #[ test ]
   fn variadic_tag_configuration_test() 
   {
+    // Arrange
     let explicit_all_true_flag = 
     "<!--{ generate.healthtable( path: '.', with_stability : 1, with_branches : 1, with_docs : 1, with_gitpod : 1 ) } -->\r| Module | Stability | test_branch1 | test_branch2 | Docs | Sample |\n|--------|-----------|--------|--------|:----:|:------:|\n| [c](./c) |[![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/ModuleCPush.yml?label=&branch=test_branch1)](https://https://github.com/SomeName/SomeCrate/C/actions/workflows/ModuleCPush.yml) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/ModuleCPush.yml?label=&branch=test_branch2)](https://https://github.com/SomeName/SomeCrate/C/actions/workflows/ModuleCPush.yml) | [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/c) | [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fc_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20c_trivial_sample/https://github.com/SomeName/SomeCrate/C) | \n<!--{ generate.healthtable.end } -->";
     let all_true_flag = 
