@@ -20,6 +20,8 @@ fn bool_from_value()
   assert_eq!( bool::from( &Value::Bool( true ) ), true );
   assert_eq!( bool::from( &Value::String( "true".to_string() ) ), true );
   assert_eq!( bool::from( &Value::Int( 1 ) ), true );
+  assert_eq!( bool::from( &Value::Int( 0 ) ), false);
+  assert_eq!( bool::from( &Value::String( "test".to_string() ) ), false);
 }
 
 #[ test ]
@@ -50,10 +52,7 @@ fn parse_multiple_values()
 #[ should_panic ]
 fn parse_mixed_values() 
 {
-  let mut expected_map = HashMap::new();
-  expected_map.insert( "key1".to_string(), Value::Int( 123 ) );
-  expected_map.insert( "path".to_string(), Value::String( "test/test".to_string() ) );
-  assert_eq!( parse( "key1: 123, 'test/test'" ).unwrap(), expected_map );
+  _ = parse( "key1: 123, 'test/test'" ).unwrap();
 }
 
 #[ test ]
@@ -68,8 +67,8 @@ fn parse_with_quotes()
 fn parse_with_special_characters() 
 {
   let mut expected_map = HashMap::new();
-  expected_map.insert( "key".to_string(), Value::String( "!@#$%^&*()".to_string() ) );
-  assert_eq!( parse( "key: '!@#$%^&*()'" ).unwrap(), expected_map );
+  expected_map.insert( "key".to_string(), Value::String( "!@#$%^&*(),".to_string() ) );
+  assert_eq!( parse( "key: '!@#$%^&*(),'" ).unwrap(), expected_map );
 }
 
 

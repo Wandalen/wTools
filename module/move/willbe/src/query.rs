@@ -2,7 +2,8 @@ mod private
 {
   use std::collections::HashMap;
   use std::str::FromStr;
-
+  use error_tools::for_app::anyhow;
+  
   #[ derive( Debug, PartialEq, Eq ) ]
   /// Parser result enum
   pub enum Value 
@@ -48,8 +49,59 @@ mod private
     }
   }
 
-  /// parse string to HashMap< String, Value >
-  pub fn parse(input_string: &str) -> Result<HashMap<String, Value>, &'static str> {
+  /// The `parse` function parses an input string into a `HashMap` where the keys are `String` and the values are of type `Value`.
+  ///
+  /// # Arguments
+  ///
+  /// * `input_string`: A reference to a `str` that represents the input string to be parsed.
+  ///
+  /// # Returns
+  ///
+  /// This function returns a `Result` that contains a `HashMap<String, Value>` if the input string is successfully parsed, or error message if the input string cannot be parsed.
+  ///
+  /// # Edge Cases
+  ///
+  /// * If the input string is empty or contains only whitespace characters, the function returns an empty `HashMap`.
+  /// ```rust
+  /// use willbe::query::parse;
+  /// use std::collections::HashMap;
+  /// 
+  /// let expected_map = HashMap::new();
+  /// assert_eq!( parse( "" ).unwrap(), expected_map );
+  /// ```
+  /// * If the input string contains a single value enclosed in single quotes, the function returns a `HashMap` with a single entry where the key is `"path"` and the value is the input string.
+  /// ```rust
+  /// use willbe::query::{ parse, Value };
+  /// use std::collections::HashMap;
+  /// 
+  /// let mut expected_map = HashMap::new();
+  /// expected_map.insert( "path".to_string(), Value::String( "test/test".to_string() ) );
+  /// assert_eq!( parse( "'test/test'" ).unwrap(), expected_map );
+  /// ```
+  /// * If the input string contains unnamed values after named values, the function returns an error.
+  /// ```rust should_panic
+  /// use willbe::query::parse;
+  /// 
+  /// _ = parse( "key1: 123, 'test/test'" ).unwrap();
+  /// ```
+  /// * All values inside "'" are considered to be a string and can have any characters inside them, to escape "'" use "\'".
+  /// ``` rust
+  /// use willbe::query::{ parse, Value };
+  /// use std::collections::HashMap;
+  /// 
+  /// let mut expected_map = HashMap::new();
+  /// expected_map.insert( "key".to_string(), Value::String( r#"hello\'test\'test"#.into() ) );
+  /// assert_eq!( parse( r#"key: 'hello\'test\'test'"# ).unwrap(), expected_map );
+  /// 
+  /// let mut expected_map = HashMap::new();
+  /// expected_map.insert( "key".to_string(), Value::String( "test     ".into() ) );
+  /// expected_map.insert( "key2".to_string(), Value::String( "test".into() ) );
+  /// assert_eq!( parse( r#"key    :    'test     ', key2  :      test     "# ).unwrap(), expected_map ); 
+  /// ```
+  ///  
+  
+  pub fn parse(input_string: &str) -> Result<HashMap<String, Value>, error_tools::for_app::Error> 
+  {
     let input_string = input_string.trim();
     let mut map = HashMap::new();
     if input_string.is_empty() {
@@ -77,7 +129,7 @@ mod private
                     }
                 } else if parts.len() == 1 {
                     if has_named_values {
-                        return Err("Unnamed value found after named values");
+                        return Err(anyhow!("Unnamed value found after named values"));
                     }
                     if let Ok(value) = parts[0].trim_matches('\'').parse::<Value>() {
                         map.insert("path".to_string(), value);
@@ -106,7 +158,7 @@ mod private
         }
     } else if parts.len() == 1 {
         if has_named_values {
-            return Err("Unnamed value found after named values");
+            return Err(anyhow!("Unnamed value found after named values"));
         }
         if let Ok(value) = parts[0].trim_matches('\'').parse::<Value>() {
             map.insert("path".to_string(), value);

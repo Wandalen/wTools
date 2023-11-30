@@ -43,25 +43,33 @@ mod private
   use crate::package::functions::FilterMapOptions;
   use crate::package::functions::PackageName;
   use crate::process::start_sync;
+  use regex::bytes::Regex;
+
+  static TAG_TEMPLATE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
+  static CLOSE_TAG: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
 
 
-  static TAG_TEMPLATE: std::sync::OnceLock<regex::bytes::Regex> = std::sync::OnceLock::new();
-  static CLOUSE_TAG: std::sync::OnceLock<regex::bytes::Regex> = std::sync::OnceLock::new();
-
+  /// Initializes two global regular expressions that are used to match tags.
   fn regexes_initialize() 
   {
     TAG_TEMPLATE.set( regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( (.+) \) \} -->"# ).unwrap() ).ok();
-    CLOUSE_TAG.set( regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap() ).ok();
+    CLOSE_TAG.set( regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap() ).ok();
   }
 
 
+  /// `Stability` is an enumeration that represents the stability level of a feature.
   #[ derive( Debug ) ]
   enum Stability
   {
+    /// The feature is still being tested and may change.
     Experimental,
+    /// The feature is not fully tested and may be unstable.
     Unstable,
+    /// The feature is tested and stable.
     Stable,
+    /// The feature is stable and will not change in future versions.
     Frozen,
+    /// The feature is no longer recommended for use and may be removed in future versions.
     Deprecated,
   }
 
@@ -83,6 +91,7 @@ mod private
     }
   }
 
+  /// Retrieves the stability level of a package from its `Cargo.toml` file.
   fn stability_get( package_path: &Path ) -> Result< Stability > 
   {
     let path = package_path.join( "Cargo.toml" );
@@ -107,6 +116,7 @@ mod private
     }
   }
 
+  /// Retrieves the repository URL of a package from its `Cargo.toml` file.
   fn repo_url( package_name: &PackageName, base_dir_path: &Path ) -> Result< String >
   {
     let path = base_dir_path.join( package_name ).join( "Cargo.toml" );
@@ -135,26 +145,31 @@ mod private
     }
   }
 
-
-  /// represents parameters that are common for all tables
-  /// core_url - path to the root repository
-  /// user_and_repo - user and repository name, written through '/'
-  /// branches - list of branches in the repository 
+  /// Represents parameters that are common for all tables
   #[ derive( Debug ) ]
   struct GlobalTableParameters
   {
+    /// Path to the root repository.
     core_url: String,
+    /// User and repository name, written through '/'.
     user_and_repo: String,
+    /// List of branches in the repository.
     branches: Option< Vec< String > >,
   }
 
+  /// Structure that holds the parameters for generating a table.
   #[ derive( Debug ) ]
   struct TableParameters
   {
+    // Relative path from workspace root to directory with modules 
     base_path: String,
+    // include branches column flag
     include_branches: bool,
+    // include stability column flag
     include_stability: bool,
+    // include docs column flag
     include_docs: bool,
+    // include sample column flag 
     include_sample: bool,
   }
 
@@ -178,10 +193,10 @@ mod private
     }
   }
 
-
   impl GlobalTableParameters
   {
-    fn new(path: &Path) -> Result<Self> 
+    /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
+    fn initialize_from_path( path: &Path ) -> Result< Self > 
     {
       let cargo_toml_path = path.join( "Cargo.toml" );
       if !cargo_toml_path.exists() 
@@ -243,7 +258,7 @@ mod private
     regexes_initialize();
     let mut cargo_metadata = WorkspaceCache::with_manifest_path( path );
     let workspace_root = workspace_root( &mut cargo_metadata )?;
-    let mut parameters = GlobalTableParameters::new( &workspace_root )?;
+    let mut parameters = GlobalTableParameters::initialize_from_path( &workspace_root )?;
 
     let read_me_path = workspace_root.join( readme_path(&workspace_root ).ok_or_else( || anyhow!( "Fail to find README.md" ) )?);
     let mut file = OpenOptions::new()
@@ -258,7 +273,7 @@ mod private
     let mut tags_closures = vec![];
     let mut tables = vec![];
     let open_caps = TAG_TEMPLATE.get().unwrap().captures_iter( &*contents );
-    let close_caps = CLOUSE_TAG.get().unwrap().captures_iter( &*contents );
+    let close_caps = CLOSE_TAG.get().unwrap().captures_iter( &*contents );
     // iterate by regex matches and generate table content for each dir which taken from open-tag
     for ( open_captures, close_captures ) in open_caps.zip( close_caps )
     {
@@ -266,7 +281,16 @@ mod private
       {
         if let ( Some( open ), Some( close ) ) = captures
         {
-          let table = package_table_create( open, &workspace_root, &mut cargo_metadata, &mut parameters )?;
+          let raw_table_params = std::str::from_utf8
+          (
+          TAG_TEMPLATE.get().unwrap().captures( open.as_bytes() )
+          .ok_or( anyhow!( "Fail to parse tag" ) )?
+          .get( 1 )
+          .ok_or( anyhow!( "Fail to parse group" ) )?
+          .as_bytes()
+          )?;
+          let params: TableParameters  = query::parse( raw_table_params ).unwrap().into();
+          let table = package_table_create( &mut cargo_metadata, &params, &mut parameters )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
         }
@@ -277,6 +301,7 @@ mod private
     Ok( () )
   }
 
+  /// Writes tables into a file at specified positions.
   fn tables_write_into_file(  tags_closures: Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () > 
   {
     let mut buffer: Vec<u8> = vec![];
@@ -292,26 +317,19 @@ mod private
     file.seek( SeekFrom::Start( 0 ) )?;
     file.write_all( &buffer )?;
     Ok(())
-}
+  }
 
-  fn package_table_create( open: regex::bytes::Match<'_>, workspace_root: &PathBuf, cargo_metadata: &mut WorkspaceCache, parameters: & mut GlobalTableParameters ) -> Result< String, Error > 
+  /// Generate table from `table_parameters`.
+  /// Generate header, iterate over all modules in package (from table_parameters) and append row. 
+  fn package_table_create(  cache: &mut WorkspaceCache, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error > 
   {
-    let raw_table_params = std::str::from_utf8
-    (
-    TAG_TEMPLATE.get().unwrap().captures( open.as_bytes() )
-    .ok_or( anyhow!( "Fail to parse tag" ) )?
-    .get( 1 )
-    .ok_or( anyhow!( "Fail to parse group" ) )?
-    .as_bytes()
-    )?;
-    let params: TableParameters  = query::parse( raw_table_params ).unwrap().into();
-    let directory_names = directory_names( workspace_root.join( &params.base_path ), &cargo_metadata.load().packages_get() );
-    let mut table = table_header_generate( parameters, &params );
+    let directory_names = directory_names( cache.workspace_root().join( &table_parameters.base_path ), &cache.load().packages_get() );
+    let mut table = table_header_generate( parameters, &table_parameters );
     for package_name in directory_names 
     {
-      let stability = if params.include_stability
+      let stability = if table_parameters.include_stability
       {
-        Some( stability_get( &workspace_root.join( &params.base_path ).join( &package_name ) )? )
+        Some( stability_get( &cache.workspace_root().join( &table_parameters.base_path ).join( &package_name ) )? )
       }
       else
       {
@@ -319,14 +337,15 @@ mod private
       };
       if parameters.core_url == "" 
       {
-        parameters.core_url = repo_url( &package_name, &workspace_root.join( &params.base_path ) )?;
+        parameters.core_url = repo_url( &package_name, &cache.workspace_root().join( &table_parameters.base_path ) )?;
         parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
       }
-      table.push_str( &row_generate(&package_name, stability.as_ref(), parameters, &params) );
+      table.push_str( &row_generate(&package_name, stability.as_ref(), parameters, &table_parameters) );
     }
-    Ok(table)
+    Ok( table )
   }
 
+  /// Return topologically sorted modules name, from packages list, in specified directory.
   fn directory_names( path: PathBuf, packages: &[ Package ] ) -> Vec< String >
   {
     let path_clone = path.clone();
@@ -356,6 +375,7 @@ mod private
     functions::toposort( module_graph )
   }
 
+  /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
   fn row_generate( module_name: &str, stability: Option< &Stability >, parameters: &GlobalTableParameters, table_parameters: &TableParameters,  ) -> String
   {
     let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
@@ -378,6 +398,7 @@ mod private
     format!( "{rou}\n" )
   }
 
+  /// Generate stability cell based on stability
   fn stability_generate( stability: &Stability ) -> String
   {
     match stability
@@ -390,6 +411,7 @@ mod private
     }
   }
 
+  /// Generate table header
   fn table_header_generate( parameters: &GlobalTableParameters, table_parameters: &TableParameters ) -> String
   {
     let mut header = String::from( "| Module |" );
@@ -428,6 +450,7 @@ mod private
     format!( "{}\n{}\n", header, separator )
   }
 
+  /// Generate cells for each branch 
   fn branch_cells_generate( table_parameters: &GlobalTableParameters, module_name: &str ) -> String
   {
     let cells = table_parameters
@@ -445,6 +468,7 @@ mod private
     format!( "{cells} | " )
   }
 
+  /// Return workspace root
   fn workspace_root( metadata: &mut WorkspaceCache ) -> Result< PathBuf >
   {
     Ok( metadata.load().workspace_root().to_path_buf() )
