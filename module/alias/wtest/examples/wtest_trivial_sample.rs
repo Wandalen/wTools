@@ -1,4 +1,4 @@
-use wtest::*;
+use test_tools::*;
 
 tests_impls!
 {
@@ -23,4 +23,8 @@ tests_index!
 {
   pass1_test,
   pass2_test,
+}
+
+fn main()
+{
 }
