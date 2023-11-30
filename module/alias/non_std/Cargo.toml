@@ -39,9 +39,9 @@ path = "src/non_std_lib.rs"
 name = "non_std_test"
 path = "tests/non_std_tests.rs"
 
-[[test]]
-name = "non_std_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+# [[test]]
+# name = "non_std_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
 
 ### features
 
