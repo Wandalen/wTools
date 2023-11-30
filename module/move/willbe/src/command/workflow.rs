@@ -20,7 +20,7 @@ mod private
   ///
   pub fn workflow_generate( ( _, _ ) : ( Args, Props ) ) -> Result< () >
   {
-    endpoint::workflow_generate().context( "Fail to generate workflow" )
+    endpoint::workflow_generate( &std::env::current_dir()? ).context( "Fail to generate workflow" )
   }
 }
 

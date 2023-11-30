@@ -1,77 +1,92 @@
 mod private
 {
-    use error_tools::for_app::Result;
-
-    fn appropriative_branch() -> String
+  use std::
+  {
+    path::
     {
-      r#"
-      name : appropriate_branch
-      
-      on :
-      
-        workflow_call :
-          inputs :
-            src_branch :
-              required : true
-              type : string
-            dst_branch :
-              required : true
-              type : string
-          secrets :
-            PRIVATE_GITHUB_BOT_TOKEN :
-              description : 'Github bot token'
-              required : true
-      
-      env :
-      
-        CARGO_TERM_COLOR : always
-      
-      concurrency :
-      
-        group : appropraite_branch_${{{{ inputs.src_branch }}}}_${{{{ inputs.dst_branch }}}}
-        cancel-in-progress : true
-      
-      jobs :
-      
-        check :
-          runs-on : ubuntu-latest
-          outputs :
-            shouldSkip : ${{{{ steps.validation.outputs.wrong-target }}}}
-          steps :
-            - name : Check branch
-              id : validation
-              uses : Vankka/pr-target-branch-action@v2.1
-              env :
-                GITHUB_TOKEN : ${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}
-              with :
-                target : ${{{{ inputs.dst_branch }}}}
-                exclude : ${{{{ inputs.src_branch }}}}
-                comment : |
-                  To maintain stability of the module the repository uses 3-stages system to forward changes from an unstable branch to a stable.
-                  The unstable branch is `alpha`. All user pull requests should be opened to this branch.
-                  The staging branch is `beta`. Changes to this branch are forwarded by a pull request from branch `alpha` automatically.
-                  The stable branch is `master`. Changes to this branch are forwarded by a pull request from branch `beta` automatically.
-      
-                  The pull request was automatically converted to draft.
-                  Please, change base branch taking into account the described system `alpha -> beta -> master`.
-            - name : Convert to draft
-              if : ${{{{ steps.validation.outputs.wrong-target == 'true' }}}}
-              uses: voiceflow/draft-pr@latest
-              with:
-                token: ${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}
-            - name : Failure
-              if : ${{{{ steps.validation.outputs.wrong-target == 'true' }}}}
-              run : exit 1
-      "#.into()
-    }
+      Path,
+    }, 
+    fs::File,
+    io::Write
+  };
 
-    fn appropraite_branch_for( branches: &str, uses_branch: &str, src_branch: &str, name: &str ) -> String
-    {
-        format!(r#"
-        name : appropriate_branch_{name}
+  
+  use convert_case::{Casing, Case};
+  use error_tools::for_app::Result;
+
+  use crate::workspace::Workspace;
+
+  fn appropriative_branch() -> String
+  {
+    r#"
+    name : appropriate_branch
+    
+    on :
+    
+      workflow_call :
+        inputs :
+          src_branch :
+            required : true
+            type : string
+          dst_branch :
+            required : true
+            type : string
+        secrets :
+          PRIVATE_GITHUB_BOT_TOKEN :
+            description : 'Github bot token'
+            required : true
+    
+    env :
+    
+      CARGO_TERM_COLOR : always
+    
+    concurrency :
+    
+      group : appropraite_branch_${{{{ inputs.src_branch }}}}_${{{{ inputs.dst_branch }}}}
+      cancel-in-progress : true
+    
+    jobs :
+    
+      check :
+        runs-on : ubuntu-latest
+        outputs :
+          shouldSkip : ${{{{ steps.validation.outputs.wrong-target }}}}
+        steps :
+          - name : Check branch
+            id : validation
+            uses : Vankka/pr-target-branch-action@v2.1
+            env :
+              GITHUB_TOKEN : ${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}
+            with :
+              target : ${{{{ inputs.dst_branch }}}}
+              exclude : ${{{{ inputs.src_branch }}}}
+              comment : |
+                To maintain stability of the module the repository uses 3-stages system to forward changes from an unstable branch to a stable.
+                The unstable branch is `alpha`. All user pull requests should be opened to this branch.
+                The staging branch is `beta`. Changes to this branch are forwarded by a pull request from branch `alpha` automatically.
+                The stable branch is `master`. Changes to this branch are forwarded by a pull request from branch `beta` automatically.
+    
+                The pull request was automatically converted to draft.
+                Please, change base branch taking into account the described system `alpha -> beta -> master`.
+          - name : Convert to draft
+            if : ${{{{ steps.validation.outputs.wrong-target == 'true' }}}}
+            uses: voiceflow/draft-pr@latest
+            with:
+              token: ${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}
+          - name : Failure
+            if : ${{{{ steps.validation.outputs.wrong-target == 'true' }}}}
+            run : exit 1
+    "#.into()
+  }
+
+  fn appropraite_branch_for( branches: &str, uses_branch: &str, src_branch: &str, name: &str ) -> String
+  {
+    format!
+    ( 
+      r#"name : appropriate_branch_{name}
         
-        on :
-          pull_request_target :
+         on :
+         pull_request_target :
             branches :
               {branches}
         
@@ -254,7 +269,7 @@ jobs :
         )
     }
 
-    fn module_push( name: &str, branch: &str, manifest_path: &str ) -> String
+    fn module_push( name: &str, branch: &str, manifest_path: &str, username_and_repository: &str ) -> String
     {
         format!
         (
@@ -269,7 +284,7 @@ jobs :
           jobs :
                                     
             test :
-              uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@{branch}
+              uses : {username_and_repository}/.github/workflows/StandardRustPush.yml@{branch}
               with :
                 manifest_path : '{manifest_path}'
                 module_name : '{name}'
@@ -721,13 +736,38 @@ jobs :
     }
 
     
-    /// generate workflow
-    pub fn workflow_generate() -> Result< () >
+  /// generate workflow
+  pub fn workflow_generate( base_path: &Path ) -> Result< () >
+  {
+    dbg!( base_path );
+    let workspace_cache = Workspace::with_manifest_path( base_path );
+    let workspace_root = workspace_cache.workspace_root();
+    let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
+    let names = workspace_cache.packages_get().iter().map( | p | &p.name).collect::< Vec< _ > >();
+    let relative_paths = workspace_cache
+    .packages_get()
+    .iter()
+    .map( | p | &p.manifest_path )
+    .filter_map( | p | p.strip_prefix( workspace_root ).ok() )
+    .map( | p | p.with_file_name( "" ) )
+    .collect::< Vec< _ > >();
+    for ( name, relative_path ) in names.iter().zip( relative_paths.iter() )
     {
-
-
-        todo!()
+      let workflow_file_name = workflow_root.join( format!( "Module{}Push.yml", name.to_case( Case::Pascal ) ) );
+      let content = module_push( name, "alpha", relative_path.join( "Cargo.toml" ).as_str(), "Wandalen/wTools" );
+      write_to_file(&workflow_file_name, &content)?;
     }
+    
+    Ok( () )
+  }
+
+  pub fn write_to_file( filename: &Path, content: &str ) -> Result< () > 
+  {
+    let mut file = File::create(filename )?;
+    file.write_all( content.as_bytes() )?;
+    Ok(())
+  }
+
 }
 
 crate::mod_interface!
