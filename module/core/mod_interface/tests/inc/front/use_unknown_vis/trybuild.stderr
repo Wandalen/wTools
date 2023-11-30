@@ -1,5 +1,0 @@
-error: expected one of: `mod`, `use`, `layer`
- --> tests/inc/front/use_unknown_vis/mod.rs
-  |
-  |   xyz use f1;
-  |   ^^^

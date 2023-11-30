@@ -4,7 +4,7 @@ pub( crate ) mod private
   {
     Program, Namespace, RawCommand,
     Parser,
-    ca::parser::namespace::private::NamespaceParserFn,
+    ca::parser::namespace::private::NamespaceParserFn, wtools,
   };
   use wtools::{ error::Result, err };
   use nom::
@@ -28,7 +28,7 @@ pub( crate ) mod private
   pub( crate ) trait ProgramParserFn : NamespaceParserFn
   {
     /// Returns function that can parse a Namespace
-    fn program_fn( &self ) -> ProgramParserFunction
+    fn program_fn( &self ) -> ProgramParserFunction< '_ >
     {
       Box::new
       (

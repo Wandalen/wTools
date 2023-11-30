@@ -1,3 +1,5 @@
+use crate::string;
+
 macro_rules! NODE_ID
 {
   () => { < < Self as GraphNodesNominalInterface >::NodeHandle as HasId >::Id };

@@ -2,9 +2,9 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/test_tools/latest/test_tools/" ) ]
-#![ warn( rust_2018_idioms ) ]
-#![ deny( missing_debug_implementations ) ]
-#![ deny( missing_docs ) ]
+// #![ deny( rust_2018_idioms ) ]
+// #![ deny( missing_debug_implementations ) ]
+// #![ deny( missing_docs ) ]
 
 //!
 //! Tools for writing and running tests.
@@ -60,6 +60,8 @@ pub mod dependency
 #[ cfg( feature = "enabled" ) ]
 ::meta_tools::mod_interface!
 {
+  // #![ debug ]
+
   layer test;
 
   use super::exposed::meta;

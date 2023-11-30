@@ -10,8 +10,8 @@ tests_impls!
     // basic
     let number = Type::Number.try_cast( "1".into() );
 
-    a_id!( Ok( Value::Number( 1.0 ) ), number );
     let number = number.unwrap();
+    a_id!( Value::Number( 1.0 ) , number );
 
     let inner_number : i32 = number.clone().into();
     a_id!( 1, inner_number );
@@ -22,8 +22,8 @@ tests_impls!
     // negative float number
     let number = Type::Number.try_cast( "-3.14".into() );
 
-    a_id!( Ok( Value::Number( -3.14 ) ), number );
     let number = number.unwrap();
+    a_id!( Value::Number( -3.14 ) , number );
 
     let inner_number : i32 = number.clone().into();
     a_id!( -3, inner_number );
@@ -43,8 +43,8 @@ tests_impls!
   {
     let string = Type::String.try_cast( "some string".into() );
 
-    a_id!( Ok( Value::String( "some string".into() ) ), string );
     let string = string.unwrap();
+    a_id!( Value::String( "some string".into() ) , string );
 
     let inner_string : String = string.clone().into();
     a_id!( "some string", inner_string );
@@ -58,8 +58,8 @@ tests_impls!
     use std::str::FromStr;
     let path = Type::Path.try_cast( "./some/relative/path".into() );
 
-    a_id!( Ok( Value::Path( "./some/relative/path".into() ) ), path );
     let path = path.unwrap();
+    a_id!( Value::Path( "./some/relative/path".into() ) , path );
 
     let inner_path : std::path::PathBuf = path.into();
     a_id!( std::path::PathBuf::from_str( "./some/relative/path" ).unwrap(), inner_path );
@@ -68,13 +68,11 @@ tests_impls!
   fn values_list()
   {
     // strings
-    let string = Type::List( Type::String.into(), ',' ).try_cast( "some,string".into() );
+    let string = Type::List( Type::String.into(), ',' ).try_cast( "some,string".into() ).unwrap();
 
-    a_id!( Ok
-    (
+    a_id!( 
       Value::List( vec![ Value::String( "some".into() ), Value::String( "string".into() ) ] )
-    ), string );
-    let string = string.unwrap();
+    , string );
 
     let inner_string : Vec< String > = string.clone().into();
     a_id!( vec![ "some".to_string(), "string".into() ], inner_string );
@@ -84,12 +82,10 @@ tests_impls!
 
     // numbers
     let numbers = Type::List( Type::Number.into(), ';' ).try_cast( "100;3.14".into() );
-
-    a_id!( Ok
-    (
-      Value::List( vec![ Value::Number( 100.0 ), Value::Number( 3.14 ) ] )
-    ), numbers );
     let numbers = numbers.unwrap();
+    a_id!(
+      Value::List( vec![ Value::Number( 100.0 ), Value::Number( 3.14 ) ] )
+    , numbers );
 
     let inner_numbers : Vec< i32 > = numbers.clone().into();
     a_id!( vec![ 100, 3 ], inner_numbers );

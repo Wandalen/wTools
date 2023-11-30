@@ -7,6 +7,7 @@ members = [
   "module/move/*",
   # "module/step/*",
   # "module/core/*/examples/*",
+  "module/test/*",
 ]
 exclude = [
   "-*",
@@ -16,6 +17,16 @@ exclude = [
 
 # [metadata.cargo-suppress-warnings]
 # unused-manifest-key = true
+
+[workspace.lints.rust]
+rust_2018_idioms = "deny"
+missing_docs = "deny"
+missing_debug_implementations = "deny" # opt out where Debug is really redundant
+future_incompatible = "deny"
+
+[workspace.lints.clippy]
+restriction = "deny" # opt out where this is redundant
+pedantic = "deny" # opt out where this is redundant
 
 ## top level
 
@@ -169,12 +180,12 @@ version = "~0.2.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.4.0"
+version = "~0.6.0"
 path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.3.0"
+version = "~0.6.0"
 path = "module/core/mod_interface_meta"
 default-features = false
 
@@ -299,11 +310,11 @@ path = "module/alias/wtest_basic"
 ## willbe
 
 [workspace.dependencies.willbe]
-version = "~0.1.3"
+version = "~0.2.0"
 path = "module/move/willbe"
 
 [workspace.dependencies.willbe2]
-version = "~0.1.0"
+version = "~0.2.0"
 path = "module/alias/willbe2"
 
 
@@ -328,7 +339,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/move/wca"
 
 
@@ -364,6 +375,13 @@ version = "~0.1.3"
 path = "module/move/plot_interface"
 
 
+## plot
+
+[workspace.dependencies.sqlx_query]
+version = "~0.2.0"
+path = "module/move/sqlx_query"
+
+
 ## steps
 
 [workspace.dependencies.integration_test]
@@ -372,4 +390,22 @@ default-features = true
 
 [workspace.dependencies.smoke_test]
 path = "module/step/smoke_test"
+default-features = true
+
+
+## test experimental
+
+[workspace.dependencies.test_experimental_a]
+version = "~0.1.0"
+path = "module/test/a"
+default-features = true
+
+[workspace.dependencies.test_experimental_b]
+version = "~0.1.0"
+path = "module/test/b"
+default-features = true
+
+[workspace.dependencies.test_experimental_c]
+version = "~0.1.0"
+path = "module/test/c"
 default-features = true

@@ -11,7 +11,7 @@ tests_impls!
     // only one command and only one namespace
     a_id!
     (
-      Ok( Program { namespaces : vec!
+      Program { namespaces : vec!
       [
         Namespace { commands : vec!
         [
@@ -22,14 +22,14 @@ tests_impls!
             properties : HashMap::new(),
           }
         ]}
-      ]}),
-      parser.program( ".command" )
+      ]},
+      parser.program( ".command" ).unwrap()
     );
 
     // one command at a time in many namespaces
     a_id!
     (
-      Ok( Program { namespaces : vec!
+      Program { namespaces : vec!
       [
         Namespace { commands : vec!
         [
@@ -58,8 +58,8 @@ tests_impls!
             properties : HashMap::new(),
           }
         ]},
-      ]}),
-      parser.program( ".command1 .also .command2 .also .command3" )
+      ]},
+      parser.program( ".command1 .also .command2 .also .command3" ).unwrap()
     );
   }
 }

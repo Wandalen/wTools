@@ -1,5 +1,0 @@
-error: expected one of: `mod`, `use`, `layer`
- --> tests/inc/front/layer_unknown_vis/mod.rs
-  |
-  |   xyz layer layer_a;
-  |   ^^^

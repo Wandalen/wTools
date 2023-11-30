@@ -9,7 +9,7 @@ use wca::
   GrammarConverter, ExecutorConverter,
 
   Executor, ExecutorType,
-  Routine,
+  Routine, wtools
 };
 
 mod command;

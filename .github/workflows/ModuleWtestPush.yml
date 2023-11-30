@@ -1,0 +1,17 @@
+name : wtest
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # wtest
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/core/wtest/Cargo.toml'
+      module_name : 'wtest'
+      commit_message : ${{ github.event.head_commit.message }}

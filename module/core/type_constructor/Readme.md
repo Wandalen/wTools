@@ -1,6 +1,7 @@
 <!-- {{# generate.module_header{} #}} -->
 
 # Module :: type_constructor
+
 [![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml) [![docs.rs](https://img.shields.io/docsrs/type_constructor?color=e3e8f0&logo=docs.rs)](https://docs.rs/type_constructor) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftype_constructor_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20type_constructor_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
 Fundamental data types and type constructors, like Single, Pair, Homopair, Many.
@@ -75,7 +76,7 @@ dbg!( vec_of_i32_in_tuple );
 
 ```
 
-### Make.
+### Make
 
 Make is the variadic constructor. It's the unified interface of the arbitrary-length constructor.
 After implementing several traits `From_0`, `From_1` up to `MakeN` one can use make `from!` to construct instances.
@@ -112,7 +113,7 @@ Their implementation is based on standard `From`, if `From` is implemented for e
 }
 ```
 
-### Basic use-case :: single-line single.
+### Basic use-case :: single-line single
 
 To define your own single-use macro `types!`. The single-line definition looks like that.
 
@@ -162,7 +163,7 @@ let x = MySingle( 13 );
 println!( "x : {}", x.0 );
 ```
 
-### Basic use-case :: single with derives and attributes.
+### Basic use-case :: single with derives and attributes
 
 It's possible to define attributes as well as derives.
 
@@ -218,7 +219,7 @@ let x = MySingle( 13 );
 dbg!( x );
 ```
 
-### Basic use-case :: single with struct instead of macro.
+### Basic use-case :: single with struct instead of macro
 
 Sometimes it's sufficient to use a common type instead of defining a brand new one.
 You may use parameterized struct `Single< T >` instead of macro `types!` if that is the case.
@@ -231,7 +232,7 @@ let x = Single::< i32 >( 13 );
 dbg!( x );
 ```
 
-### Basic use-case :: single with a parametrized element.
+### Basic use-case :: single with a parametrized element
 
 Element of tuple could be parametrized.
 
@@ -283,7 +284,7 @@ impl< T : Copy > From< MySingle< T > > for std::sync::Arc< T >
 let x = MySingle( std::sync::Arc::new( 13 ) );
 ```
 
-### Basic use-case :: single with parametrized tuple.
+### Basic use-case :: single with parametrized tuple
 
 Instead of parametrizing the element, it's possible to define a parametrized tuple.
 
@@ -301,7 +302,7 @@ let x = MySingle( 13 );
 dbg!( x );
 ```
 
-It gererates code:
+It generates code:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -334,7 +335,7 @@ dbg!( 13 );
 
 ### Basic use-case :: single-line pair
 
-Sometimes you need to wrap more than a single element into a tupдe. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
+Sometimes you need to wrap more than a single element into a tuple. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -378,7 +379,7 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 
 ### Basic use-case :: pair with parameters
 
-Just like `single` `pair` may have parameters.
+Just like `single`, `pair` may have parameters:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -452,7 +453,7 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 // prints : x : ( 13, 31 )
 ```
 
-It gererates code:
+It generates code:
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -509,7 +510,7 @@ dbg!( &clone_as_tuple );
 // prints : &clone_as_tuple = ( 13, 31 )
 ```
 
-It gererates code:
+It generates code:
 
 <!-- {{# generate.module_sample{} #}} -->
 

@@ -1,10 +1,14 @@
 pub( crate ) mod private
 {
-  use crate::ca::
-  {
-    GrammarConverter, ExecutorConverter,
-    Command,
-    Routine, Type, commands_aggregator::formatter::private::{HelpFormat, md_generator}
+  use crate::
+  { 
+    ca::
+    {
+      GrammarConverter, ExecutorConverter,
+      Command,
+      Routine, Type, commands_aggregator::formatter::private::{HelpFormat, md_generator}
+    }, 
+    wtools 
   };
 
   use wtools::{ Itertools, err };

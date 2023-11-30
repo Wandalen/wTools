@@ -1,8 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-mod basic_test;
-mod runtime;
-mod front;
-
+// xxx : uncomment
+mod manual;
+mod derive;
 mod trybuild_test;

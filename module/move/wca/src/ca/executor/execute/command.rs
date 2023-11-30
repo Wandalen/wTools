@@ -10,7 +10,7 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::{ ExecutableCommand, Routine, Value };
-  /// # use wtools::HashMap;
+  /// # use std::collections::HashMap;
   /// ExecutableCommand
   /// {
   ///   subjects : vec![ Value::String( "subject_value".to_string() ), /* ... */ ],

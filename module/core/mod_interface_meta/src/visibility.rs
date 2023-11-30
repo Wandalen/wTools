@@ -44,17 +44,17 @@ pub( crate ) mod private
   }
 
   /// Has kind.
-  pub trait HasKind
+  pub trait HasClauseKind
   {
 
     /// Static function to get kind of the visibility.
     #[ allow( non_snake_case ) ]
     #[ allow( dead_code ) ]
-    fn Kind() -> u32;
+    fn Kind() -> ClauseKind;
 
     /// Method to get kind of the visibility.
     #[ allow( dead_code ) ]
-    fn kind( &self ) -> u32
+    fn kind( &self ) -> ClauseKind
     {
       Self::Kind()
     }
@@ -66,7 +66,7 @@ pub( crate ) mod private
   macro_rules! Clause
   {
 
-    ( $Name1:ident, $Kind:literal ) =>
+    ( $Name1:ident, $Kind:ident ) =>
     {
 
       #[ derive( Debug, PartialEq, Eq, Clone ) ]
@@ -83,13 +83,13 @@ pub( crate ) mod private
         }
       }
 
-      impl HasKind for $Name1
+      impl HasClauseKind for $Name1
       {
         #[ allow( non_snake_case ) ]
         #[ allow( dead_code ) ]
-        fn Kind() -> u32
+        fn Kind() -> ClauseKind
         {
-          $Kind
+          ClauseKind::$Kind
         }
       }
 
@@ -101,7 +101,7 @@ pub( crate ) mod private
 
   macro_rules! Vis
   {
-    ( $Name0:ident, $Name1:ident, $Name2:ident, $Kind:literal ) =>
+    ( $Name0:ident, $Name1:ident, $Name2:ident, $Kind:ident ) =>
     {
 
       #[ derive( Debug, PartialEq, Eq, Clone ) ]
@@ -141,13 +141,13 @@ pub( crate ) mod private
         }
       }
 
-      impl HasKind for $Name1
+      impl HasClauseKind for $Name1
       {
         #[ allow( non_snake_case ) ]
         #[ allow( dead_code ) ]
-        fn Kind() -> u32
+        fn Kind() -> ClauseKind
         {
-          $Kind
+          ClauseKind::$Kind
         }
       }
 
@@ -173,19 +173,19 @@ pub( crate ) mod private
 
   //
 
-  macro_rules! HasKind
+  macro_rules! HasClauseKind
   {
 
-    ( $Name1:path, $Kind:literal ) =>
+    ( $Name1:path, $Kind:ident ) =>
     {
 
-      impl HasKind for $Name1
+      impl HasClauseKind for $Name1
       {
         #[ allow( non_snake_case ) ]
         #[ allow( dead_code ) ]
-        fn Kind() -> u32
+        fn Kind() -> ClauseKind
         {
-          $Kind
+          ClauseKind::$Kind
         }
       }
 
@@ -214,13 +214,13 @@ pub( crate ) mod private
   }
 
   // Vis!( Private, VisPrivate, private, 1 );
-  Vis!( Protected, VisProtected, protected, 2 );
-  Vis!( Orphan, VisOrphan, orphan, 3 );
-  Vis!( Exposed, VisExposed, exposed, 4 );
-  Vis!( Prelude, VisPrelude, prelude, 5 );
-  HasKind!( syn::VisPublic, 6 );
-  HasKind!( syn::VisRestricted, 7 );
-  Clause!( ClauseImmediates, 11 );
+  Vis!( Protected, VisProtected, protected, Protected );
+  Vis!( Orphan, VisOrphan, orphan, Orphan );
+  Vis!( Exposed, VisExposed, exposed, Exposed );
+  Vis!( Prelude, VisPrelude, prelude, Prelude );
+  HasClauseKind!( syn::VisPublic, Public );
+  HasClauseKind!( syn::VisRestricted, Restricted );
+  Clause!( ClauseImmediates, Immadiate );
 
   // impl_valid_sub_namespace!( VisPrivate, false );
   impl_valid_sub_namespace!( VisProtected, true );
@@ -242,11 +242,35 @@ pub( crate ) mod private
     path : Box< syn::Path >,
   }
 
+  /// Kinds of clause.
+
+  #[ derive( Debug, Hash, Default, PartialEq, Eq, Clone, Copy ) ]
+  pub enum ClauseKind
+  {
+    /// Invisible outside.
+    #[ default ]
+    Private,
+    /// Owned by current file entities.
+    Protected,
+    /// Should be used by parent.
+    Orphan,
+    /// Should be used by all ascendants in the current crate.
+    Exposed,
+    /// Should be used by all crates which use current crate.
+    Prelude,
+    /// Public.
+    Public,
+    /// Public, but with some restrictions.
+    Restricted,
+    /// Immediate namespace
+    Immadiate,
+  }
+
   ///
   /// Visibility of an element.
   ///
 
-  #[ derive( Debug, PartialEq, Eq, Clone ) ]
+  #[ derive( Debug, Default, PartialEq, Eq, Clone ) ]
   pub enum Visibility
   {
     //Private( VisPrivate ),
@@ -257,20 +281,12 @@ pub( crate ) mod private
     Public( syn::VisPublic ),
     // Crate( syn::VisCrate ),
     // Restricted( syn::VisRestricted ),
+    #[ default ]
     Inherited,
   }
 
   impl Visibility
   {
-
-    // fn parse_private( input : ParseStream< '_ > ) -> Result< Self >
-    // {
-    //   Ok( Visibility::Private( VisPrivate
-    //   {
-    //     token : input.parse()?,
-    //     restriction : None,
-    //   }))
-    // }
 
     fn parse_protected( input : ParseStream< '_ > ) -> Result< Self >
     {
@@ -339,25 +355,7 @@ pub( crate ) mod private
             ).into() );
           }
         }
-        // else if input2.peek( Token![ in ] )
-        // {
-        //   let in_token : Token![ in ] = input2.parse()?;
-        //   let path = input2.call( syn::Path::parse_mod_style )?;
-        //   input.advance_to( &ahead );
-        //   return Ok
-        //   (
-        //     Visibility::Restricted
-        //     (
-        //       syn::VisRestricted
-        //       {
-        //         pub_token,
-        //         paren_token,
-        //         in_token : Some( in_token ),
-        //         path : Box::new( path ),
-        //       }
-        //     )
-        //   );
-        // }
+
       }
 
       Ok( Vis::vis_make
@@ -384,7 +382,7 @@ pub( crate ) mod private
 
     /// Get kind.
     #[ allow( dead_code ) ]
-    pub fn kind( &self ) -> u32
+    pub fn kind( &self ) -> ClauseKind
     {
       match self
       {
@@ -396,7 +394,7 @@ pub( crate ) mod private
         Visibility::Prelude( e ) => e.kind(),
         Visibility::Public( e ) => e.kind(),
         // Visibility::Restricted( e ) => e.kind(),
-        Visibility::Inherited => 9,
+        Visibility::Inherited => ClauseKind::Private,
       }
     }
 
@@ -529,7 +527,7 @@ pub mod exposed
     kw,
     VALID_VISIBILITY_LIST_STR,
     ValidSubNamespace,
-    HasKind,
+    HasClauseKind,
     // VisPrivate,
     VisProtected,
     VisOrphan,
@@ -537,6 +535,7 @@ pub mod exposed
     VisPrelude,
     ClauseImmediates,
     Visibility,
+    ClauseKind,
   };
 
 }
