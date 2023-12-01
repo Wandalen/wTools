@@ -22,6 +22,7 @@ mod private
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
   {
+    workspace_root_dir : PathBuf,
     packages : Vec<( PathBuf,  package::PublishReport )>
   }
 
@@ -38,7 +39,8 @@ mod private
       for ( path, report ) in &self.packages
       {
         let report = report.to_string().replace("\n", "\n\t");
-        f.write_fmt( format_args!( "[ {} ]\n\t{report}\n", path.display() ) )?;
+        // qqq: remove unwrap
+        f.write_fmt( format_args!( "Publishing crate by `{}` path\n\t{report}\n", path.strip_prefix( &self.workspace_root_dir ).unwrap().display() ) )?;
       }
 
       Ok( () )
@@ -71,6 +73,7 @@ mod private
       // FIX: patterns can point to different workspaces. Current solution take first random path from list
       WorkspaceCache::with_manifest_path( paths.iter().next().unwrap() )
     };
+    report.workspace_root_dir = metadata.workspace_root().to_path_buf();
 
     let packages_to_publish : Vec< _ >= metadata.load().packages_get().iter().filter( | &package | paths.contains( package.manifest_path.as_std_path().parent().unwrap() ) ).cloned().collect();
     let mut queue = vec![];
