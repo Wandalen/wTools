@@ -37,7 +37,8 @@ mod private
 
       for ( path, report ) in &self.packages
       {
-        f.write_fmt( format_args!( "[ {} ]\n{report}\n", path.display() ) )?;
+        let report = report.to_string().replace("\n", "\n\t");
+        f.write_fmt( format_args!( "[ {} ]\n\t{report}\n", path.display() ) )?;
       }
 
       Ok( () )

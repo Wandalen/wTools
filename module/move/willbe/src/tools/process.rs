@@ -27,14 +27,14 @@ pub( crate ) mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      f.write_fmt( format_args!( "[ {} ]\n", self.command ) )?;
+      f.write_fmt( format_args!( "> {}\n", self.command ) )?;
       if !self.out.trim().is_empty()
       {
         f.write_fmt( format_args!( "\t{}\n", self.out.replace( '\n', "\n\t" ) ) )?;
       }
       if !self.err.trim().is_empty()
       {
-        f.write_fmt( format_args!( "\t!! {} !!\n\t{}\n", self.path.display(), self.err.replace( '\n', "\n\t" ) ) )?;
+        f.write_fmt( format_args!( "\tpath: {}\n\t{}\n", self.path.display(), self.err.replace( '\n', "\n\t" ) ) )?;
       }
 
       Ok( () )
