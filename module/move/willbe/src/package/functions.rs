@@ -150,7 +150,7 @@ mod private
     let mut package_dir = manifest.manifest_path.clone();
     package_dir.pop();
 
-    let output = process::start_sync( "cargo package", &package_dir ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
+    let output = process::start_sync( "cargo package", &package_dir ).map_err( | e | ( report.clone(), anyhow!( "{e}" ) ) )?;
     if output.err.contains( "not yet committed")
     {
       return Err(( report, anyhow!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));

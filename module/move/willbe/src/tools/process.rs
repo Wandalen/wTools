@@ -49,7 +49,7 @@ pub( crate ) mod private
   (
     exec_path : &str,
     current_path : impl Into< std::path::PathBuf >,
-  ) -> anyhow::Result< CmdReport >
+  ) -> Result< CmdReport, CmdReport >
   {
     let current_path = current_path.into();
 
@@ -85,7 +85,14 @@ pub( crate ) mod private
       err : String::from_utf8( output.stderr ).expect( "Found invalid UTF-8" ),
     };
 
-    Ok( report )
+    if output.status.success()
+    {
+      Ok( report )
+    }
+    else
+    {
+      Err( report )
+    }
   }
 }
 

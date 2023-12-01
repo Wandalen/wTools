@@ -1,6 +1,7 @@
 mod private
 {
   use std::path::Path;
+  use anyhow::anyhow;
   use wca::wtools::Itertools;
   use crate::process;
   use crate::process::CmdReport;
@@ -41,7 +42,7 @@ mod private
     }
     else
     {
-      process::start_sync( &command, path.as_ref() )
+      process::start_sync( &command, path.as_ref() ).map_err( | e | anyhow!( "{e}" ) )
     }
   }
 
@@ -79,7 +80,7 @@ mod private
     }
     else
     {
-      process::start_sync( &command, path.as_ref() )
+      process::start_sync( &command, path.as_ref() ).map_err( | e | anyhow!( "{e}" ) )
     }
   }
 
@@ -114,7 +115,7 @@ mod private
     }
     else
     {
-      process::start_sync( command, path.as_ref() )
+      process::start_sync( &command, path.as_ref() ).map_err( | e | anyhow!( "{e}" ) )
     }
   }
 }

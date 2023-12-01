@@ -1,6 +1,7 @@
 mod private
 {
   use std::path::Path;
+  use anyhow::anyhow;
   use crate::process;
   use crate::process::CmdReport;
   use crate::wtools::error::Result;
@@ -27,7 +28,7 @@ mod private
     }
     else
     {
-      process::start_sync( command, path.as_ref() )
+      process::start_sync( command, path.as_ref() ).map_err( | e | anyhow!( "{e}" ) )
     }
   }
 }
