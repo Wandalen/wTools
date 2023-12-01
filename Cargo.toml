@@ -406,6 +406,6 @@ path = "module/test/b"
 default-features = true
 
 [workspace.dependencies.test_experimental_c]
-version = "~0.1.0"
+version = "~0.2.0"
 path = "module/test/c"
 default-features = true
