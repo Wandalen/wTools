@@ -30,24 +30,24 @@ pub( crate ) mod private
     .property_alias( "verbosity", "v" )
     .form();
 
-    let workspace_publish_no_subj_command = wca::Command::former()
-    .hint( "Publish packages from workspace on `crates.io`." )
-    .long_hint( "Publish packages from workspace on `crates.io`." )
-    .phrase( "workspace.publish" )
-    .property( "dry", "Run command dry. Default is false.", Type::String, true )
-    .property( "verbosity", "Setup level of verbosity.", Type::String, true )
-    .property_alias( "verbosity", "v" )
-    .form();
-
-    let workspace_publish_command = wca::Command::former()
-    .hint( "Publish packages from workspace on `crates.io`." )
-    .long_hint( "Publish packages from workspace on `crates.io`." )
-    .phrase( "workspace.publish" )
-    .subject( "A path to manifest path with workspace. Should be a directory with file `Cargo.toml`.", Type::Path, true )
-    .property( "dry", "Run command dry. Default is false.", Type::String, true )
-    .property( "verbosity", "Setup level of verbosity.", Type::String, true )
-    .property_alias( "verbosity", "v" )
-    .form();
+    // let workspace_publish_no_subj_command = wca::Command::former()
+    // .hint( "Publish packages from workspace on `crates.io`." )
+    // .long_hint( "Publish packages from workspace on `crates.io`." )
+    // .phrase( "workspace.publish" )
+    // .property( "dry", "Run command dry. Default is false.", Type::String, true )
+    // .property( "verbosity", "Setup level of verbosity.", Type::String, true )
+    // .property_alias( "verbosity", "v" )
+    // .form();
+    //
+    // let workspace_publish_command = wca::Command::former()
+    // .hint( "Publish packages from workspace on `crates.io`." )
+    // .long_hint( "Publish packages from workspace on `crates.io`." )
+    // .phrase( "workspace.publish" )
+    // .subject( "A path to manifest path with workspace. Should be a directory with file `Cargo.toml`.", Type::Path, true )
+    // .property( "dry", "Run command dry. Default is false.", Type::String, true )
+    // .property( "verbosity", "Setup level of verbosity.", Type::String, true )
+    // .property_alias( "verbosity", "v" )
+    // .form();
 
     // let list_no_subj_command = wca::Command::former()
     // .hint( "List packages." )
@@ -91,7 +91,7 @@ pub( crate ) mod private
     vec!
     [
       publish_no_subj_command, publish_command,
-      workspace_publish_no_subj_command, workspace_publish_command,
+      // workspace_publish_no_subj_command, workspace_publish_command,
       list_no_subj_command, list_command,
       // workspace_list_no_subj_command, workspace_list_command,
       create_table_command,
@@ -109,7 +109,7 @@ pub( crate ) mod private
     HashMap::from
     ([
       ( "publish".to_owned(), Routine::new( publish ) ),
-      ( "workspace.publish".to_owned(), Routine::new( workspace_publish ) ),
+      // ( "workspace.publish".to_owned(), Routine::new( workspace_publish ) ),
       ( "list".to_owned(), Routine::new( list ) ),
       ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
     ])

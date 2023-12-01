@@ -23,6 +23,7 @@ mod private
   };
   use crate::{ cargo, git, version };
   use anyhow::{ Context, Error, anyhow };
+  use toml_edit::value;
   use wca::wtools::Itertools;
   use crate::cache::WorkspaceCache;
 
@@ -30,12 +31,13 @@ mod private
   use crate::wtools;
 
 
+  /// Report about publish execution.
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
   {
     get_info : Option< process::CmdReport >,
     publish_required : bool,
-    bump : Option< String >,
+    bump : Option< BumpReport >,
     add : Option< process::CmdReport >,
     commit : Option< process::CmdReport >,
     push : Option< process::CmdReport >,
@@ -73,7 +75,7 @@ mod private
 
       if let Some( bump ) = bump
       {
-        f.write_fmt( format_args!( "{}\n", bump ) )?;
+        f.write_fmt( format_args!( "{}", bump ) )?;
       }
       if let Some( add ) = add
       {
@@ -96,12 +98,39 @@ mod private
     }
   }
 
+  /// Report about changing version.
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct BumpReport
+  {
+    package_name : String,
+    new_version : String,
+    changed_files : Vec< PathBuf >
+  }
+
+  impl std::fmt::Display for BumpReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      if self.changed_files.is_empty()
+      {
+        f.write_str( "Files were not changed during bumping the version" )?;
+        return Ok( () )
+      }
+
+      let files = self.changed_files.iter().map( | f | f.display() ).join( ",\n\t\t" );
+      f.write_fmt( format_args!( "`{}` bumped to `{}`\n\tchanged files:\n\t\t{files}\n", self.package_name, self.new_version ) )?;
+
+      Ok( () )
+    }
+  }
+
   /// Publishes a single package without publishing its dependencies.
   ///
   /// This function is designed to publish a single package. It does not publish any of the package's dependencies.
   ///
   /// Args:
   ///
+  /// - metadata - information about current workspace
   /// - path - a path to package manifest file
   /// - dry - a flag that indicates whether to apply the changes or not
   ///   - true - do not publish, but only show what steps should be taken
@@ -109,7 +138,7 @@ mod private
   ///
   /// Returns:
   /// Returns a result containing a report indicating the result of the operation.
-  pub fn publish_single( path : &Path, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
+  pub fn publish_single( metadata : &mut WorkspaceCache, path : &Path, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
     let mut manifest = manifest::get( path ).map_err( |e | ( report.clone(), e ) )?;
@@ -132,18 +161,53 @@ mod private
     {
       report.publish_required = true;
 
+      let mut files_changed_for_bump = vec![];
+      // bump version in the package manifest
       let new_version = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+      files_changed_for_bump.push( manifest.manifest_path.clone() );
+
       let package_name =
       {
         let data = manifest.manifest_data.as_ref().unwrap();
         data[ "package" ][ "name" ].as_str().unwrap()
       };
+
+      // bump the package version in dependents(so far, only workspace)
+      let workspace_manifest_dir = metadata.load().workspace_root();
+      let workspace_manifest_path = workspace_manifest_dir.join( "Cargo.toml" );
+
+      // qqq: should be refactored
+      if !dry
+      {
+        let mut workspace_manifest = manifest::get( &workspace_manifest_path ).map_err( | e | ( report.clone(), e ) )?;
+        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().unwrap();
+        workspace_manifest_data
+        .get_mut( "workspace" )
+        .and_then( | workspace | workspace.get_mut( "dependencies" ) )
+        .and_then( | dependencies | dependencies.get_mut( package_name ) )
+        .map
+        (
+          | dependency |
+            {
+              let previous_version = dependency.get( "version" ).and_then( | v | v.as_str() ).unwrap().to_string();
+              if previous_version.starts_with( '~' )
+              {
+                dependency[ "version" ] = value( format!( "~{new_version}" ) );
+              }
+            }
+        );
+        workspace_manifest.store().unwrap();
+      }
+
+      files_changed_for_bump.push( workspace_manifest_path );
+      let files_changed_for_bump : Vec< _ > = files_changed_for_bump.into_iter().unique().collect();
+      let objects_to_add : Vec< _ > = files_changed_for_bump.iter().map( | f | f.strip_prefix( workspace_manifest_dir ).unwrap().to_string_lossy() ).collect();
+
+      report.bump = Some( BumpReport { package_name : package_name.to_string(), new_version : new_version.clone(), changed_files : files_changed_for_bump.clone() } );
+
       let manifest_dir = manifest.manifest_path.parent().unwrap();
-
-      report.bump = Some( format!( "`{package_name}` bumped to `{new_version}`" ) );
-
       let commit_message = format!( "{package_name}-v{new_version}" );
-      let res = git::add( manifest_dir, [ "Cargo.toml" ], dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git::add( workspace_manifest_dir, objects_to_add, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.add = Some( res );
       let res = git::commit( manifest_dir, commit_message, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.commit = Some( res );
@@ -559,7 +623,8 @@ mod private
 
 crate::mod_interface!
 {
-  protected( crate ) use PublishReport;
+  protected use PublishReport;
+  protected use BumpReport;
   protected( crate ) use publish_single;
 
   protected( crate ) use local_path_get;

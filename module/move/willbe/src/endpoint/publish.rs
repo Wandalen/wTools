@@ -15,9 +15,8 @@ mod private
     collections::HashSet,
   };
   use core::fmt::Formatter;
-  use std::collections::HashMap;
   use crate::cache::WorkspaceCache;
-  use crate::package::functions::{ CrateId, FilterMapOptions };
+  use crate::package::functions::CrateId;
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
@@ -108,7 +107,7 @@ mod private
     // process publish
     for path in queue.into_iter().filter_map( | id | id.path )
     {
-      let current_report = package::publish_single( &path, dry )
+      let current_report = package::publish_single( &mut metadata, &path, dry )
       .map_err
       (
         | ( current_report, e ) |
@@ -123,47 +122,47 @@ mod private
     Ok( report )
   }
 
-  ///
-  /// Publish packages from workspace.
-  ///
-
-  pub fn workspace_publish( path_to_workspace : PathBuf, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
-  {
-    let mut report = PublishReport::default();
-
-    let mut package_metadata = WorkspaceCache::with_manifest_path( path_to_workspace );
-
-    let packages_map = package::packages_filter_map
-    (
-      &package_metadata.load().packages_get(),
-      FilterMapOptions{ package_filter: Some( Box::new( | p |{ p.publish.is_none() } ) ), ..Default::default() }
-    );
-    let package_path_map: HashMap< _, _ > = package_metadata
-    .load()
-    .packages_get()
-    .iter()
-    .map( | p | ( &p.name, &p.manifest_path ) )
-    .collect();
-
-    let graph = package::graph_build( &packages_map );
-    let sorted = package::toposort( graph );
-
-    for name in &sorted
-    {
-      let path = package_path_map[ name ].as_std_path();
-      package::publish_single( &path, dry )
-      .map_err
-      (
-        | ( current_report, e ) |
-        {
-          report.packages.push(( path.to_path_buf(), current_report.clone() ));
-          ( report.clone(), e.context( "Publish list of packages" ).into() )
-        }
-      )?;
-    }
-
-    Ok( report )
-  }
+  // ///
+  // /// Publish packages from workspace.
+  // ///
+  //
+  // pub fn workspace_publish( path_to_workspace : PathBuf, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
+  // {
+  //   let mut report = PublishReport::default();
+  //
+  //   let mut package_metadata = WorkspaceCache::with_manifest_path( path_to_workspace );
+  //
+  //   let packages_map = package::packages_filter_map
+  //   (
+  //     &package_metadata.load().packages_get(),
+  //     FilterMapOptions{ package_filter: Some( Box::new( | p |{ p.publish.is_none() } ) ), ..Default::default() }
+  //   );
+  //   let package_path_map: HashMap< _, _ > = package_metadata
+  //   .load()
+  //   .packages_get()
+  //   .iter()
+  //   .map( | p | ( &p.name, &p.manifest_path ) )
+  //   .collect();
+  //
+  //   let graph = package::graph_build( &packages_map );
+  //   let sorted = package::toposort( graph );
+  //
+  //   for name in &sorted
+  //   {
+  //     let path = package_path_map[ name ].as_std_path();
+  //     package::publish_single( &path, dry )
+  //     .map_err
+  //     (
+  //       | ( current_report, e ) |
+  //       {
+  //         report.packages.push(( path.to_path_buf(), current_report.clone() ));
+  //         ( report.clone(), e.context( "Publish list of packages" ).into() )
+  //       }
+  //     )?;
+  //   }
+  //
+  //   Ok( report )
+  // }
 }
 
 //
@@ -172,6 +171,6 @@ crate::mod_interface!
 {
   /// Publish package.
   prelude use publish;
-  /// Publish packages from workspace.
-  prelude use workspace_publish;
+  // /// Publish packages from workspace.
+  // prelude use workspace_publish;
 }
