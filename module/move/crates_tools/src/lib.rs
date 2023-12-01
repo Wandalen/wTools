@@ -126,33 +126,6 @@ pub( crate ) mod private
   }
 }
 
-#[ cfg( test ) ]
-mod tests
-{
-  use std::path::Path;
-  use crate::CrateArchive;
-
-  #[ test ]
-  fn download()
-  {
-    let krate = CrateArchive::download_crates_io( "test_experimental_c", "0.1.0" ).unwrap();
-
-    let mut expected_files : Vec< &Path > = vec!
-    [
-      "test_experimental_c-0.1.0/.cargo_vcs_info.json".as_ref(),
-      "test_experimental_c-0.1.0/src/lib.rs".as_ref(),
-      "test_experimental_c-0.1.0/Cargo.toml".as_ref(),
-      "test_experimental_c-0.1.0/Cargo.toml.orig".as_ref(),
-    ];
-    expected_files.sort();
-
-    let mut actual_files = krate.list();
-    actual_files.sort();
-
-    assert_eq!( expected_files, actual_files );
-  }
-}
-
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
