@@ -34,6 +34,7 @@ mod private
   pub struct PublishReport
   {
     get_info : Option< process::CmdReport >,
+    publish_required : bool,
     bump : Option< String >,
     add : Option< process::CmdReport >,
     commit : Option< process::CmdReport >,
@@ -48,6 +49,7 @@ mod private
       let PublishReport
       {
         get_info,
+        publish_required,
         bump,
         add,
         commit,
@@ -57,11 +59,18 @@ mod private
 
       if get_info.is_none()
       {
-        f.write_fmt( format_args!( "Empty report" ) )?;
+        f.write_str( "Empty report" )?;
         return Ok( () )
       }
       let info = get_info.as_ref().unwrap();
       f.write_fmt( format_args!( "{}", info ) )?;
+
+      if !publish_required
+      {
+        f.write_str( "The package has no changes, so no publishing is required" )?;
+        return Ok( () )
+      }
+
       if let Some( bump ) = bump
       {
         f.write_fmt( format_args!( "{}\n", bump ) )?;
@@ -121,6 +130,8 @@ mod private
 
     if publish_need( &manifest )
     {
+      report.publish_required = true;
+
       let new_version = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
       let package_name =
       {
