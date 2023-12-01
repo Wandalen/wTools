@@ -66,12 +66,18 @@ mod private
 
 		report.package_name = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().name.clone();
 		
+		let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test" ), dir )?;
+		report.tests.insert( "All features".to_string(), cmd_rep );
+		
 		let features = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().features.clone();
 		for ( feature, _ ) in features 
 		{
 			let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --features {feature}" ), dir )?;
 			report.tests.insert( feature.clone(), cmd_rep );
 		}
+
+		let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features" ), dir )?;
+		report.tests.insert( "No features".to_string(), cmd_rep );
 
 		Ok( report )
 	}
