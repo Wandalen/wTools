@@ -1,6 +1,7 @@
 /// Internal namespace.
 mod private
 {
+  use crate::*;
   use std::fmt::Formatter;
   use petgraph::
   {
@@ -10,16 +11,16 @@ mod private
   };
   use std::path::PathBuf;
   use std::str::FromStr;
-  use anyhow::Context;
-  use crate::package::functions::
+  // use anyhow::Context;
+  use package::
   {
     FilterMapOptions,
     graph_build,
     packages_filter_map
   };
-  use crate::wtools::error::
+  use wtools::error::
   {
-    for_app::Error,
+    for_app::{ Error, Context },
     err
   };
   use cargo_metadata::
@@ -30,8 +31,7 @@ mod private
   };
   use petgraph::prelude::{ Dfs, EdgeRef };
   use petgraph::visit::Topo;
-  use crate::cache::WorkspaceCache;
-  use crate::manifest;
+  use cache::WorkspaceCache;
 
   /// Args for `list` endpoint.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -304,11 +304,11 @@ mod tests
 crate::mod_interface!
 {
   /// Argument for `list` endpoint. Sets the output format.
-  orphan use ListFormat;
+  protected use ListFormat;
   /// Argument for `list` endpoint. Sets filter(local or all) packages should be in the output.
-  orphan use ListFilter;
+  protected use ListFilter;
   /// Contains output of the endpoint.
-  orphan use ListReport;
+  protected use ListReport;
   /// List packages in workspace.
   orphan use list;
 }

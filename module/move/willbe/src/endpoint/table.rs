@@ -1,15 +1,16 @@
 mod private
 {
+  use crate::*;
   use std::
-  { 
-    fs, 
+  {
+    fs,
     path::PathBuf
   };
   use std::io::
-  { 
-    Read, 
+  {
+    Read,
     Seek,
-    SeekFrom 
+    SeekFrom
   };
   use std::io::Write;
   use cargo_metadata::{ Dependency, DependencyKind, Package };
@@ -26,11 +27,9 @@ mod private
     anyhow,
     bail,
   };
-  use crate::cache::WorkspaceCache;
-  use crate::package::functions;
-  use crate::package::functions::FilterMapOptions;
+  use cache::WorkspaceCache;
 
-
+  // qqq : rid off lazy_static
   lazy_static::lazy_static!
   {
     static ref TAG_TEMPLATE: regex::bytes::Regex = regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( '(\w+/\w+)' \) \} -->"# ).unwrap();
@@ -47,6 +46,7 @@ mod private
   /// will mean that at this place the table with modules located in the directory module/core will be generated.
   /// The tags do not disappear after generation.
   /// Anything between the opening and closing tag will be destroyed.
+
   pub fn table_create() -> Result< () >
   {
     let mut cargo_metadata = WorkspaceCache::default();
@@ -125,13 +125,13 @@ mod private
         d.path.is_some() && d.kind != DependencyKind::Development && d.path.as_ref().unwrap().starts_with( &path_clone )
       )
     );
-    let module_packages_map = functions::packages_filter_map
+    let module_packages_map = package::packages_filter_map
     (
       packages,
-      FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
+      package::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
-    let module_graph = functions::graph_build( &module_packages_map );
-    functions::toposort( module_graph )
+    let module_graph = package::graph_build( &module_packages_map );
+    package::toposort( module_graph )
   }
 
   fn table_prepare( modules: Vec< String >, dir: &Path ) -> String
@@ -141,7 +141,7 @@ mod private
     .into_iter()
     .map
     (
-      | ref module_name | 
+      | ref module_name |
       {
         let column_module = format!( "[{}](./{}/{})", &module_name, &dir.display(), &module_name );
         let column_stability = format!( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)" );
@@ -199,7 +199,6 @@ mod private
     }
   }
 
-
   /// Searches for a file named "readme.md" in the specified directory path.
   ///
   /// Given a directory path, this function searches for a file named "readme.md" in the specified
@@ -222,10 +221,11 @@ mod private
     .max()
     .map( PathBuf::from )
   }
+
 }
 
 crate::mod_interface!
 {
   /// Create Table.
-  prelude use table_create;
+  orphan use table_create;
 }

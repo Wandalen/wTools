@@ -2,9 +2,6 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/willbe/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
 
 //!
 //! Utility with set of tools for managing developer routines.
@@ -24,8 +21,8 @@ fn main() -> Result< (), wtools::error::for_app::Error >
 
   let ca = wca::CommandsAggregator::former()
   // .exit_code_on_error( 1 )
-  .grammar( commands::grammar_form() )
-  .executor( commands::executor_form() )
+  .grammar( command::grammar_form() )
+  .executor( command::executor_form() )
   .build();
 
   let program = args.join( " " );
@@ -39,6 +36,7 @@ fn main() -> Result< (), wtools::error::for_app::Error >
   {
     ca.perform( program.as_str() )
   }
+
 }
 
 #[ cfg( feature = "no_std" ) ]

@@ -2,28 +2,22 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/willbe/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
 
 //!
 //! Utility with set of tools for managing developer routines.
 //!
+
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-
-pub use mod_interface::mod_interface;
 /// Micro wtools
 pub mod wtools;
+pub use mod_interface::mod_interface;
 
 wtools::meta::mod_interface!
 {
   /// The tools for operating over packages.
   #[ cfg( not( feature = "no_std" ) ) ]
   layer tools;
-  /// Commands library.
-  #[ cfg( not( feature = "no_std" ) ) ]
-  layer commands;
 
   /// Commands library.
   #[ cfg( not( feature = "no_std" ) ) ]
@@ -44,7 +38,7 @@ wtools::meta::mod_interface!
   /// Git library.
   #[ cfg( not( feature = "no_std" ) ) ]
   layer git;
-  
+
   /// Cargo library.
   #[ cfg( not( feature = "no_std" ) ) ]
   layer cargo;
@@ -54,6 +48,6 @@ wtools::meta::mod_interface!
   layer cache;
 
   #[ cfg( not( feature = "no_std" ) ) ]
-  prelude use ::std::env;
+  orphan use ::std::env;
   // protected( crate ) use wtools::prelude::*;
 }

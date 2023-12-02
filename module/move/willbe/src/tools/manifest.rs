@@ -1,11 +1,13 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use crate::*;
   use std::fs;
   use std::env;
   use std::process;
   use std::path::PathBuf;
-  use anyhow::*;
+  use wtools::error;
+  use wtools::error::for_app::{ anyhow, Context };
 
   ///
   /// Hold manifest data.
@@ -33,7 +35,7 @@ pub( crate ) mod private
     }
 
     /// Join manifest path.
-    pub fn manifest_path_from_str( &mut self, path : impl Into< PathBuf > ) -> anyhow::Result< PathBuf >
+    pub fn manifest_path_from_str( &mut self, path : impl Into< PathBuf > ) -> error::for_app::Result< PathBuf >
     {
       let mut path_buf : PathBuf = path.into();
       if path_buf.is_relative()
@@ -53,7 +55,7 @@ pub( crate ) mod private
     }
 
     /// Load manifest from path.
-    pub fn load( &mut self ) -> anyhow::Result< () >
+    pub fn load( &mut self ) -> error::for_app::Result< () >
     {
       let read = fs::read_to_string( &self.manifest_path ).context( "Read manifest" )?;
       let result = read.parse::< toml_edit::Document >().context( "Pars manifest" )?;
@@ -63,7 +65,7 @@ pub( crate ) mod private
     }
 
     /// Store manifest.
-    pub fn store( &self ) -> anyhow::Result< () >
+    pub fn store( &self ) -> error::for_app::Result< () >
     {
       let data = self.manifest_data.as_ref().ok_or( anyhow!( "Manifest data wasn't loaded" ) )?.to_string();
       println!( "Saved manifest data to {:?}\n", &self.manifest_path );
@@ -102,13 +104,12 @@ pub( crate ) mod private
                      || data[ "package" ][ "publish" ].as_bool().unwrap();
         return !remote;
       }
-
       true
     }
   }
 
   /// Create and load manifest by specified path
-  pub fn get( path : impl Into< PathBuf > ) -> anyhow::Result< Manifest >
+  pub fn get( path : impl Into< PathBuf > ) -> error::for_app::Result< Manifest >
   {
     let mut manifest = Manifest::new();
     manifest.manifest_path_from_str( path )?;
@@ -122,7 +123,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use Manifest;
+  orphan use Manifest;
   protected use get;
 }
 

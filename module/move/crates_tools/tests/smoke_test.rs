@@ -7,8 +7,8 @@ fn local_smoke_test()
 }
 
 // #[ cfg( feature = "default" ) ]
-// #[ test ]
-// fn published_smoke_test()
-// {
-//   ::test_tools::smoke_test_for_published_run();
-// }
+#[ test ]
+fn published_smoke_test()
+{
+  ::test_tools::smoke_test_for_published_run();
+}

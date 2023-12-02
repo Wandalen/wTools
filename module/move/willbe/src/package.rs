@@ -1,5 +1,6 @@
 mod private
 {
+  use crate::*;
   use std::
   {
     fs,
@@ -15,21 +16,18 @@ mod private
     graph::Graph,
     algo::toposort as pg_toposort,
   };
-  use crate::tools::
+  use tools::
   {
     manifest,
     process,
     http,
   };
-  use crate::{ cargo, git, version };
-  use anyhow::{ Context, Error, anyhow };
-  use wca::wtools::Itertools;
-  use crate::cache::WorkspaceCache;
+  use { cargo, git, version, path, wtools };
+  use wca::wtools::Itertools; // qqq : use wtools::...!
+  use wtools::error::for_app::{ anyhow, Error, Context };
+  use cache::WorkspaceCache;
 
-  use crate::path;
-  use crate::wtools;
-
-
+  /// Describe publishing outcomes.
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
   {
@@ -368,7 +366,7 @@ mod private
   /// based on the provided filters. It returns a HashMap where the keys
   /// are package names, and the values are HashSet instances containing
   /// the names of filtered dependencies for each package.
-  pub fn packages_filter_map( packages: &[ Package ], filter_map_options: FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
+  pub fn packages_filter_map( packages : &[ Package ], filter_map_options : FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
   {
     let FilterMapOptions { package_filter, dependency_filter } = filter_map_options;
     let package_filter = package_filter.unwrap_or_else( || Box::new( | _ | true ) );
@@ -397,7 +395,9 @@ mod private
   ///
   /// Returns:
   /// The graph with all accepted packages
-  pub fn graph_build< PackageIdentifier >( packages : &HashMap< PackageIdentifier, HashSet< PackageIdentifier > > ) -> Graph< &PackageIdentifier, &PackageIdentifier >
+  pub fn graph_build< PackageIdentifier >
+  ( packages : &HashMap< PackageIdentifier, HashSet< PackageIdentifier > > )
+  -> Graph< &PackageIdentifier, &PackageIdentifier >
   where
     PackageIdentifier : PartialEq + Eq + Hash,
   {
@@ -426,7 +426,8 @@ mod private
     deps
   }
 
-  //
+  // qqq : add test
+  // qqq : cyclic test?
 
   /// Performs a topological sort of a graph of packages
   ///
@@ -438,7 +439,10 @@ mod private
   ///
   /// # Panics
   /// If there is a cycle in the dependency graph
-  pub fn toposort< 'a, PackageIdentifier : Clone + std::fmt::Debug >( graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier > ) -> Vec< PackageIdentifier >
+  pub fn toposort
+  < 'a, PackageIdentifier : Clone + std::fmt::Debug >
+  ( graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier > ) ->
+  Vec< PackageIdentifier >
   {
     match pg_toposort( &graph, None )
     {
@@ -548,20 +552,20 @@ mod private
 
 crate::mod_interface!
 {
-  protected( crate ) use PublishReport;
-  protected( crate ) use publish_single;
 
-  protected( crate ) use local_path_get;
-
-  protected( crate ) use graph_build;
-  protected( crate ) use toposort;
+  protected use PublishReport;
+  protected use publish_single;
+  protected use local_path_get;
+  protected use graph_build;
+  protected use toposort;
 
   protected use FilterMapOptions;
   protected use packages_filter_map;
   protected use publish_need;
 
   protected use CrateId;
-  orphan use DependenciesSort;
-  orphan use DependenciesOptions;
-  orphan use dependencies;
+  protected use DependenciesSort;
+  protected use DependenciesOptions;
+  protected use dependencies;
+
 }

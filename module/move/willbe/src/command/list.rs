@@ -1,21 +1,21 @@
 /// Internal namespace.
 mod private
 {
+  use crate::*;
   use std::path::PathBuf;
   use std::str::FromStr;
-  use crate::{ endpoint, path, wtools };
+  use { endpoint, path, wtools };
 
   use wca::{ Args, Props };
-  use wtools::error::Result;
-  use anyhow::*;
-  use crate::endpoint::list::ListFormat;
-  use crate::endpoint::list::protected::ListFilter;
+  use endpoint::list::{ ListFormat, ListFilter };
+  use wtools::error::for_app::Context;
+  use wtools::error;
 
   ///
   /// List workspace packages.
   ///
 
-  pub fn list( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn list( ( args, properties ) : ( Args, Props ) ) -> error::Result< () >
   {
     let path_to_workspace : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
     let path_to_workspace = path::canonicalize( path_to_workspace )?;
@@ -46,5 +46,5 @@ mod private
 crate::mod_interface!
 {
   /// List workspace packages.
-  prelude use list;
+  orphan use list;
 }

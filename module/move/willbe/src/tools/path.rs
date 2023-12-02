@@ -37,19 +37,19 @@ pub( crate ) mod private
     let path = path.as_ref().canonicalize()?;
 
     #[ cfg( target_os = "windows" ) ] // canonicalization on windows adds `\\?\` prefix
-      let path =
+    let path =
+    {
+      const VERBATIM_PREFIX : &str = r#"\\?\"#;
+      let p = path.display().to_string();
+      if p.starts_with( VERBATIM_PREFIX )
       {
-        const VERBATIM_PREFIX : &str = r#"\\?\"#;
-        let p = path.display().to_string();
-        if p.starts_with( VERBATIM_PREFIX )
-        {
-          PathBuf::from( &p[ VERBATIM_PREFIX.len() .. ] )
-        }
-        else
-        {
-          path.into()
-        }
-      };
+        PathBuf::from( &p[ VERBATIM_PREFIX.len() .. ] )
+      }
+      else
+      {
+        path.into()
+      }
+    };
 
     Ok( path )
   }
@@ -57,7 +57,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use glob_is;
-  prelude use valid_is;
+  orphan use glob_is;
+  orphan use valid_is;
   protected( crate ) use canonicalize;
 }

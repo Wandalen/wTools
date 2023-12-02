@@ -3,6 +3,8 @@ pub( crate ) mod private
 {
   use sha1::{ Sha1, Digest };
 
+  // zzz : not used
+
   ///
   /// Make sha-1 hash for data.
   ///
@@ -20,5 +22,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use hash;
+  orphan use hash;
 }
