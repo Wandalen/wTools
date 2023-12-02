@@ -1,0 +1,180 @@
+
+//!
+//! Hierarchical random number generators itself.
+//!
+//! There are two versions of HRNG: deterministic and non-deterministic.
+//! Both have the same interface and are interchengable by switching on/off a feature `determinsim`.
+//!
+
+/// Internal namespace.
+pub( crate ) mod private
+{
+
+  use crate::*;
+  // use std::cmp::Ordering;
+  // #[ cfg( not( feature = "determinism" ) ) ]
+  // use std::{ ops::Deref, ops::DerefMut };
+  #[ cfg( feature = "determinism" ) ]
+  use std::sync::{ Arc, Mutex, RwLock };
+  // #[ cfg( feature = "determinism" ) ]
+  // use std::vec::IntoIter;
+
+  // #[ cfg( feature = "determinism" ) ]
+  // use iter_tools::exposed::Itertools;
+
+  #[ cfg( feature = "determinism" ) ]
+  use rand_chacha::ChaCha8Rng;
+
+  // pub use rand::{ SeedableRng, Rng, RngCore, seq::SliceRandom };
+
+  /// Generator under mutex and reference counter.
+  #[ cfg( feature = "determinism" ) ]
+  pub type SharedGenerator = Arc< Mutex< ChaCha8Rng > >;
+
+  /// Hierarchical random number generator.
+  ///
+  /// Produce deterministic random series of numbers with uniform distribution.
+  /// Handy to be used for paralelism.
+  ///
+  /// Master random number generator produce children and each child might produce more children as much as dataflows in progam.
+  ///
+  #[ cfg( feature = "determinism" ) ]
+  #[ derive( Debug, Clone ) ]
+  pub struct Hrng
+  {
+    /// List of child generators produced by this hierarchical random number generator.
+    children : Arc< RwLock< Vec< Hrng > > >,
+    /// Current main generator used for number generation.
+    generator : SharedGenerator,
+    /// Current generator used for child creation.
+    ///
+    /// Different generators are used for generating data and generating children for performance
+    /// and to make sure that child with the same index of a parent produce always same sequence of random numbers.
+    children_generator : SharedGenerator,
+    /// Current index of the generator in the list of children of parent.
+    index : usize,
+  }
+
+  impl Default for Hrng
+  {
+    fn default() -> Self
+    {
+      Hrng::master()
+    }
+  }
+
+  #[ cfg( feature = "determinism" ) ]
+  impl Hrng
+  {
+    /// Construct master hierarchical random number generator with default seed phrase.
+    pub fn master() -> Self
+    {
+      Self::master_with_seed( Seed::default() )
+    }
+
+    /// Construct hierarchical random number generator with help of seed phrase.
+    pub fn master_with_seed( seed : Seed ) -> Self
+    {
+      let mut _generator : ChaCha8Rng = rand_seeder::Seeder::from( seed.into_inner() ).make_rng();
+      let _children_generator = ChaCha8Rng::seed_from_u64( _generator.next_u64() );
+      let generator = Arc::new( Mutex::new( _generator ) );
+      let children_generator = Arc::new( Mutex::new( _children_generator ) );
+      Self
+      {
+        children : Default::default(),
+        generator,
+        children_generator,
+        index: 0,
+      }
+    }
+
+    /// Construct hierarchical random number generator with help of short seed.
+    fn _with_short_seed( seed : u64 ) -> Self
+    {
+      let rng = ChaCha8Rng::seed_from_u64( seed );
+      Self::_with_generator( rng )
+    }
+
+    /// Construct hierarchical random number generator with help of RNG.
+    fn _with_generator( mut rng : ChaCha8Rng ) -> Self
+    {
+      let _children_generator = ChaCha8Rng::seed_from_u64( rng.next_u64() );
+      let generator = Arc::new( Mutex::new( rng ) );
+      let children_generator = Arc::new( Mutex::new( _children_generator ) );
+      Self
+      {
+        children : Default::default(),
+        generator,
+        children_generator,
+        index: 0,
+      }
+    }
+
+    /// Get arc on current generator.
+    ///
+    /// Returns a shared `Arc<Mutex<Generator>>`.
+    ///
+    /// ```
+    /// # use rand::seq::SliceRandom;
+    /// # use deterministic_rand::Hrng;
+    /// # let hrng = Hrng::default();
+    /// let rng_ref = hrng.rng();
+    /// let mut rng = rng_ref.lock().unwrap();
+    ///
+    /// [ 1, 2, 3 ].choose( &mut *rng);
+    /// ```
+    #[ inline( always ) ]
+    pub fn rng( &self ) -> SharedGenerator
+    {
+      self.generator.clone()
+    }
+
+    /// Creates new child hierarchical random number generator by index seed.
+    pub fn child( &self, index : usize ) -> Self
+    {
+      let children = self.children.read().unwrap();
+      if children.len() > index
+      {
+        return children[ index ].clone();
+      }
+
+      // To acquire a write lock, read lock should be released first
+      drop( children );
+      let mut rng = self.children_generator.lock().unwrap();
+      let mut children = self.children.write().unwrap();
+      let len = children.len();
+
+      // After the second lock it can happen that the child already exists.
+      if len > index
+      {
+        return children[ index ].clone();
+      }
+
+      children.reserve( index + 1 - len );
+      for _ in len..( index + 1 )
+      {
+        children.push( Self::_with_short_seed( rng.next_u64() ) )
+      }
+      children[ index ].clone()
+
+    }
+
+    /// Returns number of children created by this generator.
+    pub fn children_len( &self ) -> usize
+    {
+      self.children.read().unwrap().len()
+    }
+
+    /// Returns current index of the generator.
+    pub fn index( &self ) -> usize
+    {
+      self.index
+    }
+  }
+
+}
+
+crate::mod_interface!
+{
+  orphan use Hrng;
+}
