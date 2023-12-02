@@ -13,7 +13,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-pub use derive_tools::{ VariadicFrom, From_0, From_1, From_2, From_3, from };
+pub use derive_tools::{ From_0, From_1, From_2, From_3, from };
 
 /// Temporary workaround.
 #[ macro_export ]

@@ -113,14 +113,14 @@ TheModule::_if_from!
   //   }
   // }
 
-  // impl< T > TheModule::From_1 < T > for Many< T >
-  // {
-  //   #[inline]
-  //   fn from_1(_0 : T) -> Self
-  //   {
-  //     Self(TheModule::_vec! [_0])
-  //   }
-  // }
+  impl< T > TheModule::From_1 < T > for Many< T >
+  {
+    #[inline]
+    fn from_1(_0 : T) -> Self
+    {
+      Self(TheModule::_vec! [_0])
+    }
+  }
 
   impl< T > TheModule::From_2 < T, T > for Many< T >
   {
