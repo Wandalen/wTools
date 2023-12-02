@@ -45,7 +45,7 @@ path = "src/proc_macro/wproc_macro_lib.rs"
 
 [[test]]
 name = "macro_tools_test"
-path = "tests/proc_macro/wproc_macro_tests.rs"
+path = "tests/wproc_macro_tests.rs"
 
 # [[test]]
 # name = "wproc_macro_smoke_test"

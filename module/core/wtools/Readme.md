@@ -13,7 +13,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust,editable
+```rust ignore,editable
 #[ cfg( feature = "typing_default" ) ]
 {
   use wtools::prelude::*;
@@ -35,7 +35,7 @@ Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/mac
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust,editable
+```rust ignore,editable
 #[ cfg( feature = "dt_default" ) ]
 {
   use wtools::prelude::*;
@@ -75,7 +75,7 @@ In this example structure, Struct1 could be constructed either without arguments
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 #[ cfg( feature = "dt_default" ) ]
 {
   use wtools::prelude::*;

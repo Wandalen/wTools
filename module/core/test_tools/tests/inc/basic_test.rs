@@ -11,7 +11,10 @@
 //   trybuild_test,
 // }
 
+#[ allow( unused_imports ) ]
 use super::*;
+use ::test_tools as TheModule;
+
 
 #[ cfg( feature = "enabled" ) ]
 TheModule::tests_impls!

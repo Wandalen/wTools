@@ -1,5 +1,5 @@
 [package]
-name = "c"
+name = "_chain_of_packages_c"
 version = "0.1.0"
 edition = "2021"
 

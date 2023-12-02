@@ -45,7 +45,7 @@ path = "src/graph/wautomata_lib.rs"
 
 [[test]]
 name = "wautomata_test"
-path = "tests/graph/wautomata_tests.rs"
+path = "tests/wautomata_tests.rs"
 
 # [[test]]
 # name = "wautomata_smoke_test"

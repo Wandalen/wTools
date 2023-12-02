@@ -1,5 +1,5 @@
 [package]
-name = "a"
+name = "_package_with_remote_dep_a"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 foo = "*"
-b = { path = "../b" }
+_package_with_remote_dep_b = { path = "../b" }

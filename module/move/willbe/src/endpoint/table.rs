@@ -1,18 +1,19 @@
 mod private
 {
+  use crate::*;
   use std::
-  { 
-    fs, 
+  {
+    fs,
     path::PathBuf
   };
   use std::io::
-  { 
-    Read, 
+  {
+    Read,
     Seek,
-    SeekFrom 
+    SeekFrom
   };
   use std::io::Write;
-  use cargo_metadata::{Dependency, DependencyKind, MetadataCommand, Package};
+  use cargo_metadata::{ Dependency, DependencyKind, Package };
   use wca::wtools::Itertools;
   use convert_case::Case;
   use convert_case::Casing;
@@ -26,10 +27,9 @@ mod private
     anyhow,
     bail,
   };
-  use crate::package::functions;
-  use crate::package::functions::FilterMapOptions;
+  use workspace::Workspace;
 
-
+  // qqq : rid off lazy_static
   lazy_static::lazy_static!
   {
     static ref TAG_TEMPLATE: regex::bytes::Regex = regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( '(\w+/\w+)' \) \} -->"# ).unwrap();
@@ -46,11 +46,12 @@ mod private
   /// will mean that at this place the table with modules located in the directory module/core will be generated.
   /// The tags do not disappear after generation.
   /// Anything between the opening and closing tag will be destroyed.
+
   pub fn table_create() -> Result< () >
   {
-    let cargo_metadata = MetadataCommand::new().no_deps().exec()?;
-    let workspace_root = workspace_root( &cargo_metadata )?;
-    let read_me_path = readme_path(&workspace_root).ok_or_else( || anyhow!( "Fail to find README.md" ) )?;
+    let mut cargo_metadata = Workspace::default();
+    let workspace_root = workspace_root( &mut cargo_metadata )?;
+    let read_me_path = readme_path( &workspace_root ).ok_or_else( || anyhow!( "Fail to find README.md" ) )?;
     let mut file = OpenOptions::new()
     .read( true )
     .write( true )
@@ -82,7 +83,7 @@ mod private
               .as_bytes()
             )?
           )?;
-          tables.push( table_prepare( directory_names( workspace_root.join(module_path.clone() ), &cargo_metadata.packages ), &module_path ) );
+          tables.push( table_prepare( directory_names( workspace_root.join(module_path.clone() ), cargo_metadata.load().packages_get() ), &module_path ) );
           tags_closures.push( ( open.end(), close.start() ) );
         }
       }
@@ -104,6 +105,7 @@ mod private
     Ok( () )
   }
 
+
   fn directory_names( path: PathBuf, packages: &[Package] ) -> Vec< String >
   {
     let path_clone = path.clone();
@@ -111,27 +113,25 @@ mod private
     (
       Box::new
       (
-        move | p | {
-          p.publish.is_none() && p.manifest_path.starts_with(&path)
-        }
+        move | p |
+        p.publish.is_none() && p.manifest_path.starts_with(&path)
       )
     );
     let module_dependency_filter: Option< Box< dyn Fn( &Package, &Dependency) -> bool > > = Some
+    (
+      Box::new
       (
-        Box::new
-          (
-            move | _, d | {
-              d.path.is_some() && d.kind != DependencyKind::Development && d.path.as_ref().unwrap().starts_with( &path_clone )
-            }
-          )
-      );
-    let module_packages_map = functions::packages_filter_map
+        move | _, d |
+        d.path.is_some() && d.kind != DependencyKind::Development && d.path.as_ref().unwrap().starts_with( &path_clone )
+      )
+    );
+    let module_packages_map = package::packages_filter_map
     (
       packages,
-      FilterMapOptions{ package_filter: module_package_filter, dependency_filter: module_dependency_filter },
+      package::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
-    let module_graph = functions::graph_build( &module_packages_map);
-    functions::toposort(module_graph)
+    let module_graph = package::graph_build( &module_packages_map );
+    package::toposort( module_graph )
   }
 
   fn table_prepare( modules: Vec< String >, dir: &Path ) -> String
@@ -141,7 +141,7 @@ mod private
     .into_iter()
     .map
     (
-      | ref module_name | 
+      | ref module_name |
       {
         let column_module = format!( "[{}](./{}/{})", &module_name, &dir.display(), &module_name );
         let column_stability = format!( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)" );
@@ -156,12 +156,12 @@ mod private
     format!( "{table_header}\n{table_content}\n" )
   }
 
-  fn workspace_root( metadata: &cargo_metadata::Metadata ) -> Result< PathBuf >
+  fn workspace_root( metadata: &mut Workspace ) -> Result< PathBuf >
   {
-    Ok( metadata.workspace_root.clone().into_std_path_buf() )
+    Ok( metadata.load().workspace_root().to_path_buf() )
   }
 
-  fn copy_range_to_target< T: Clone >( source: &[T], target: &mut Vec< T >, from: usize, to: usize ) -> Result< () >
+  fn copy_range_to_target< T: Clone >( source: &[ T ], target: &mut Vec< T >, from: usize, to: usize ) -> Result< () >
   {
     if from < source.len() && to < source.len() && from <= to
     {
@@ -181,7 +181,7 @@ mod private
   /// `None` if no README file is found in any of these locations.
   fn readme_path( dir_path : &Path ) -> Option< PathBuf >
   {
-    if let Some( path )  = readme_in_dir_find(&dir_path.join( ".github" ) )
+    if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
     {
       Some( path )
     }
@@ -198,7 +198,6 @@ mod private
       None
     }
   }
-
 
   /// Searches for a file named "readme.md" in the specified directory path.
   ///
@@ -217,15 +216,16 @@ mod private
       {
         return Some( f.file_name() )
       }
-        None
+      None
     })
     .max()
     .map( PathBuf::from )
   }
+
 }
 
 crate::mod_interface!
 {
   /// Create Table.
-  prelude use table_create;
+  orphan use table_create;
 }

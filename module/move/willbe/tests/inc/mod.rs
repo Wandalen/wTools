@@ -1,5 +1,5 @@
 use super::*;
 
-mod local_dependencies;
+mod dependencies;
 mod endpoints;
 mod publish_need;

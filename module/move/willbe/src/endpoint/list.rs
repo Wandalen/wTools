@@ -1,6 +1,7 @@
 /// Internal namespace.
 mod private
 {
+  use crate::*;
   use std::fmt::Formatter;
   use petgraph::
   {
@@ -10,26 +11,27 @@ mod private
   };
   use std::path::PathBuf;
   use std::str::FromStr;
-  use anyhow::Context;
-  use crate::package::functions::
+  // use anyhow::Context;
+  use package::
   {
     FilterMapOptions,
     graph_build,
     packages_filter_map
   };
-  use crate::wtools::error::
+  use wtools::error::
   {
-    for_app::Error,
+    for_app::{ Error, Context },
     err
   };
   use cargo_metadata::
   {
     Dependency,
     DependencyKind,
-    MetadataCommand,
     Package
   };
-  use crate::manifest;
+  use petgraph::prelude::{ Dfs, EdgeRef };
+  use petgraph::visit::Topo;
+  use workspace::Workspace;
 
   /// Args for `list` endpoint.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -162,14 +164,11 @@ mod private
   {
     let mut report = ListReport::default();
 
-    let manifest = manifest::get( &path_to_manifest ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let metadata = MetadataCommand::new()
-    .manifest_path( &manifest.manifest_path )
-    .no_deps()
-    .exec()
-    .map_err( | e | ( report.clone(), e.into() ) )?;
+    let manifest = manifest::open( &path_to_manifest.join( "Cargo.toml" ) ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let mut metadata = Workspace::with_manifest_path( &path_to_manifest );
 
-    let root_crate = manifest.manifest_data
+    let root_crate = manifest
+    .manifest_data
     .as_ref()
     .and_then( | m | m.get( "package" ) )
     .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
@@ -178,30 +177,34 @@ mod private
 
     // let packages_map =  metadata.packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
 
-    let f: Option< Box< dyn Fn( &Package, &Dependency ) -> bool > > = match filter
+    let dep_filter: Option< Box< dyn Fn( &Package, &Dependency ) -> bool > > = match filter
     {
-      ListFilter::Nothing => { None }
+      ListFilter::Nothing =>
+      // qqq: Dev dependencies do loop in the graph, but it would be great if there was some way around that
+      {
+        Some
+          (
+            Box::new( | _p: &Package, d: &Dependency | d.kind != DependencyKind::Development )
+          )
+      }
       ListFilter::Local =>
       {
         Some
         (
-          Box::new
-          (
-            | _p: &Package, d: &Dependency |
-            d.path.is_some() && d.kind != DependencyKind::Development
-          )
+          Box::new( | _p: &Package, d: &Dependency | d.path.is_some() && d.kind != DependencyKind::Development )
         )
       }
     };
 
     let packages_map =  packages_filter_map
     (
-      &metadata.packages,
-      FilterMapOptions{ dependency_filter: f, ..Default::default() }
+      &metadata.load().packages_get(),
+      FilterMapOptions{ dependency_filter: dep_filter, ..Default::default() }
     );
 
     let graph = graph_build( &packages_map );
-    let sorted = toposort( &graph, None ).map_err( | e | ( report.clone(), err!( "Failed to process toposort for packages: {:?}", e ) ) )?;
+
+    let sorted = toposort( &graph, None ).map_err( | e | { use std::ops::Index; ( report.clone(), err!( "Failed to process toposort for package: {:?}", graph.index( e.node_id() ) ) ) } )?;
 
     match format
     {
@@ -226,7 +229,7 @@ mod private
 
         report = ListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
       }
-      ListFormat::Topological =>
+      ListFormat::Topological if root_crate.is_empty() =>
       {
         let names = sorted
         .iter()
@@ -236,12 +239,42 @@ mod private
 
         report = ListReport::List( names );
       },
+      ListFormat::Topological =>
+      {
+        let node = graph.node_indices().find( | n | graph.node_weight( *n ).unwrap() == &&root_crate ).unwrap();
+        let mut dfs = Dfs::new( &graph, node );
+        let mut subgraph = Graph::new();
+        let mut node_map = std::collections::HashMap::new();
+        while let Some( n )= dfs.next( &graph )
+        {
+          node_map.insert( n, subgraph.add_node( graph[ n ] ) );
+        }
+
+        for e in graph.edge_references()
+        {
+          if let ( Some( &s ), Some( &t ) ) = ( node_map.get( &e.source() ), node_map.get( &e.target() ) )
+          {
+            subgraph.add_edge( s, t, () );
+          }
+        }
+
+        let mut topo = Topo::new( &subgraph );
+        let mut names = Vec::new();
+        while let Some( n ) = topo.next( &subgraph )
+        {
+          names.push( subgraph[ n ].clone() );
+        }
+        names.reverse();
+
+        report = ListReport::List( names );
+      }
     }
 
     Ok( report )
   }
 }
 
+// qqq : for Bohdan : move to tests folder
 mod tests
 {
   #[ test ]
@@ -272,11 +305,11 @@ mod tests
 crate::mod_interface!
 {
   /// Argument for `list` endpoint. Sets the output format.
-  orphan use ListFormat;
+  protected use ListFormat;
   /// Argument for `list` endpoint. Sets filter(local or all) packages should be in the output.
-  orphan use ListFilter;
+  protected use ListFilter;
   /// Contains output of the endpoint.
-  orphan use ListReport;
+  protected use ListReport;
   /// List packages in workspace.
   orphan use list;
 }
