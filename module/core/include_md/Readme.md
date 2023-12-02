@@ -6,7 +6,7 @@
 
 Include markdown file or its section.
 
-## Sample  :: trivial
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 

@@ -5,7 +5,7 @@
 
 Utility to publish multi-crate and multi-workspace environments and maintain their consistency.
 
-## Sample  :: trivial
+### Basic use-case
 
 <!-- qqq : for Bohdan : write good readme -->
 

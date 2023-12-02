@@ -9,9 +9,9 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+use mod_interface::mod_interface;
 /// Micro wtools
-pub mod wtools;
-pub use mod_interface::mod_interface;
+mod wtools;
 
 // qqq : for Bohdan : poor description, make it useful
 
