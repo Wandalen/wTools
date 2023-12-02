@@ -1,8 +1,11 @@
 [package]
 name = "wplot"
-version = "0.1.7"
+version = "0.2.0"
 edition = "2021"
-authors = ["Kostiantyn Wandalen <wandalen@obox.systems>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dmytro.kr@obox.systems>" ]
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>"
+]
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/wplot"
