@@ -4,7 +4,7 @@
 #![ doc( html_root_url = "https://docs.rs/willbe/" ) ]
 
 //!
-//! Utility with set of tools for managing developer routines.
+//! Utility to publish multi-crate and multi-workspace environments and maintain their consistency.
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
@@ -12,34 +12,7 @@
 #[ allow( unused_imports ) ]
 use ::willbe::*;
 
-//
-
-#[ cfg( not( feature = "no_std" ) ) ]
 fn main() -> Result< (), wtools::error::for_app::Error >
 {
-  let args = env::args().skip( 1 ).collect::< Vec< String > >();
-
-  let ca = wca::CommandsAggregator::former()
-  // .exit_code_on_error( 1 )
-  .grammar( command::grammar_form() )
-  .executor( command::executor_form() )
-  .build();
-
-  let program = args.join( " " );
-  if program.is_empty()
-  {
-    eprintln!( "Ambiguity. Did you mean?" );
-    ca.perform( ".help" )?;
-    std::process::exit( 1 )
-  }
-  else
-  {
-    ca.perform( program.as_str() )
-  }
-
-}
-
-#[ cfg( feature = "no_std" ) ]
-fn main()
-{
+  willbe::run()
 }

@@ -10,8 +10,6 @@ pub( crate ) mod private
   }
 
   /// Check if path has a glob.
-  // It's enough to check if path is valid.
-  // https://stackoverflow.com/questions/42283009/check-if-string-is-a-glob-pattern
   #[ allow( dead_code ) ]
   pub fn glob_is( path : &str ) -> bool
   {
@@ -30,8 +28,7 @@ pub( crate ) mod private
     false
   }
 
-  //
-
+  /// qqq : for Bohdan : explain how does it work?
   pub fn canonicalize( path : impl AsRef< Path > ) -> std::io::Result< PathBuf >
   {
     let path = path.as_ref().canonicalize()?;
@@ -54,6 +51,7 @@ pub( crate ) mod private
 
     Ok( path )
   }
+
 }
 
 crate::mod_interface!

@@ -2,7 +2,7 @@ use super::*;
 const ASSETS_PATH : &str = "module/move/willbe/tests/assets";
 
 use assert_fs::prelude::*;
-use TheModule::cache::WorkspaceCache;
+use TheModule::Workspace;
 use TheModule::package::{ dependencies, DependenciesOptions, DependenciesSort };
 
 //
@@ -13,7 +13,7 @@ tests_impls!
   fn chain_of_three_packages()
   {
     // Arrange
-    let mut metadata = WorkspaceCache::default();
+    let mut metadata = Workspace::default();
 
     let root_path = metadata.load().workspace_root();
     let assets_relative_path = std::path::Path::new( ASSETS_PATH );
@@ -22,7 +22,7 @@ tests_impls!
     let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( "chain_of_packages" ), &[ "**" ] ).unwrap();
 
-    let mut metadata = WorkspaceCache::with_manifest_path( temp.as_ref() );
+    let mut metadata = Workspace::with_manifest_path( temp.as_ref() );
 
     let a_path = temp.join( "a" );
     let b_path = temp.join( "b" );
@@ -49,7 +49,7 @@ tests_impls!
   fn chain_of_three_packages_topologically_sorted()
   {
     // Arrange
-    let mut metadata = WorkspaceCache::default();
+    let mut metadata = Workspace::default();
 
     let root_path = metadata.load().workspace_root();
     let assets_relative_path = std::path::Path::new( ASSETS_PATH );
@@ -58,7 +58,7 @@ tests_impls!
     let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( "chain_of_packages" ), &[ "**" ] ).unwrap();
 
-    let mut metadata = WorkspaceCache::with_manifest_path( temp.as_ref() );
+    let mut metadata = Workspace::with_manifest_path( temp.as_ref() );
 
     let a_path = temp.join( "a" );
     let b_path = temp.join( "b" );
@@ -83,7 +83,7 @@ tests_impls!
   fn package_with_remote_dependency()
   {
     // Arrange
-    let mut metadata = WorkspaceCache::default();
+    let mut metadata = Workspace::default();
 
     let root_path = metadata.load().workspace_root();
     let assets_relative_path = std::path::Path::new( ASSETS_PATH );
@@ -92,7 +92,7 @@ tests_impls!
     let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( "package_with_remote_dependency" ), &[ "**" ] ).unwrap();
 
-    let mut metadata = WorkspaceCache::with_manifest_path( temp.as_ref() );
+    let mut metadata = Workspace::with_manifest_path( temp.as_ref() );
 
     let a_path = temp.join( "a" );
     let b_path = temp.join( "b" );
@@ -110,7 +110,7 @@ tests_impls!
   fn workspace_with_cyclic_dependency()
   {
     // Arrange
-    let mut metadata = WorkspaceCache::default();
+    let mut metadata = Workspace::default();
 
     let root_path = metadata.load().workspace_root();
     let assets_relative_path = std::path::Path::new( ASSETS_PATH );
@@ -119,7 +119,7 @@ tests_impls!
     let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( "workspace_with_cyclic_dependency" ), &[ "**" ] ).unwrap();
 
-    let mut metadata = WorkspaceCache::with_manifest_path( temp.as_ref() );
+    let mut metadata = Workspace::with_manifest_path( temp.as_ref() );
 
     let a_path = temp.join( "a" );
     let b_path = temp.join( "b" );

@@ -2,10 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use std::fs;
-  use std::env;
-  use std::process;
-  use std::path::PathBuf;
+  use std::{ fs, env, process, path::PathBuf };
   use wtools::error;
   use wtools::error::for_app::{ anyhow, Context };
 
@@ -35,9 +32,14 @@ pub( crate ) mod private
     }
 
     /// Join manifest path.
+    // qqq : for Bohdan : bad, poor description
+    // qqq : for Bohdan : bad, what is argument? introduce newtype
+    // qqq : for Bohdan : introduce newtype AbsolutePath for all paths
     pub fn manifest_path_from_str( &mut self, path : impl Into< PathBuf > ) -> error::for_app::Result< PathBuf >
     {
       let mut path_buf : PathBuf = path.into();
+
+      // qqq : for Bohdan : bad, should throw error on relative
       if path_buf.is_relative()
       {
         let mut current_dir = env::current_dir().context( "Try to take current dir for relative manifest" )?;
@@ -45,6 +47,7 @@ pub( crate ) mod private
         path_buf = current_dir;
       }
 
+      // qqq : for Bohdan : bad, use newtypes
       if !path_buf.ends_with( "Cargo.toml" )
       {
         path_buf.push( "Cargo.toml" );
@@ -64,6 +67,7 @@ pub( crate ) mod private
       Ok( () )
     }
 
+    // qqq : for Bohdan : don't abuse anyhow
     /// Store manifest.
     pub fn store( &self ) -> error::for_app::Result< () >
     {
@@ -71,6 +75,7 @@ pub( crate ) mod private
       println!( "Saved manifest data to {:?}\n", &self.manifest_path );
       println!( "{}", &data );
 
+      // qqq : for Bohdan : make proper errors handling
       fs::write( &self.manifest_path, &data ).unwrap_or_else
       (
         | err |
@@ -84,6 +89,7 @@ pub( crate ) mod private
     }
 
     /// Check that current manifest is manifest for a package.
+    // qqq : for Bohdan : poor description, what else could it be?
     pub fn package_is( &self ) -> bool
     {
       let data = self.manifest_data.as_ref().expect( "Manifest data wasn't loaded" );
@@ -95,6 +101,7 @@ pub( crate ) mod private
     }
 
     /// Check that module is local.
+    // qqq : for Bohdan : poor description, how?
     pub fn local_is( &self ) -> bool
     {
       let data = self.manifest_data.as_ref().unwrap();
@@ -109,14 +116,15 @@ pub( crate ) mod private
   }
 
   /// Create and load manifest by specified path
-  pub fn get( path : impl Into< PathBuf > ) -> error::for_app::Result< Manifest >
+  // qqq : for Bohdan : use newtype, add proper errors handing
+  pub fn open( path : impl Into< PathBuf > ) -> error::for_app::Result< Manifest >
   {
     let mut manifest = Manifest::new();
     manifest.manifest_path_from_str( path )?;
     manifest.load()?;
-
     Ok( manifest )
   }
+
 }
 
 //
@@ -124,6 +132,5 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   orphan use Manifest;
-  protected use get;
+  protected use open;
 }
-

@@ -10,7 +10,7 @@ mod private
     collections::HashSet,
   };
   use core::fmt::Formatter;
-  use cache::WorkspaceCache;
+  use workspace::Workspace;
   use package::CrateId;
   use wtools::error::for_app::Error;
 
@@ -47,6 +47,7 @@ mod private
   {
     let mut report = PublishReport::default();
 
+    // qqq : for Bohdan : lack of comments
     let mut paths = HashSet::new();
     // find all packages by specified folders
     for pattern in &patterns
@@ -58,12 +59,12 @@ mod private
 
     let mut metadata = if paths.is_empty()
     {
-      WorkspaceCache::default()
+      Workspace::default()
     }
     else
     {
       // FIX: patterns can point to different workspaces. Current solution take first random path from list
-      WorkspaceCache::with_manifest_path( paths.iter().next().unwrap() )
+      Workspace::with_manifest_path( paths.iter().next().unwrap() )
     };
 
     let packages_to_publish : Vec< _ >= metadata.load().packages_get().iter().filter( | &package | paths.contains( package.manifest_path.as_std_path().parent().unwrap() ) ).cloned().collect();
@@ -122,7 +123,7 @@ mod private
 //   {
 //     let mut report = PublishReport::default();
 //
-//     let mut package_metadata = WorkspaceCache::with_manifest_path( path_to_workspace );
+//     let mut package_metadata = Workspace::with_manifest_path( path_to_workspace );
 //
 //     let packages_map = package::packages_filter_map
 //     (

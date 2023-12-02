@@ -13,41 +13,79 @@
 pub mod wtools;
 pub use mod_interface::mod_interface;
 
+// qqq : for Bohdan : poor description, make it useful
+
+/// Internal namespace.
+pub( crate ) mod private
+{
+  use crate::*;
+
+  /// qqq : for Bohdan : write description
+  #[ cfg( not( feature = "no_std" ) ) ]
+  pub fn run() -> Result< (), wtools::error::for_app::Error >
+  {
+    let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
+
+    let ca = wca::CommandsAggregator::former()
+    // .exit_code_on_error( 1 )
+    .grammar( command::grammar_form() )
+    .executor( command::executor_form() )
+    .build();
+
+    let program = args.join( " " );
+    if program.is_empty()
+    {
+      eprintln!( "Ambiguity. Did you mean?" );
+      ca.perform( ".help" )?;
+      std::process::exit( 1 )
+    }
+    else
+    {
+      ca.perform( program.as_str() )
+    }
+
+  }
+
+  /// qqq : for Bohdan : write description
+  #[ cfg( feature = "no_std" ) ]
+  pub fn run() -> Result< (), wtools::error::for_app::Error >
+  {
+    Ok( () )
+  }
+
+}
+
+#[ cfg( not( feature = "no_std" ) ) ]
 wtools::meta::mod_interface!
 {
+
+  protected use run;
+
   /// The tools for operating over packages.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer tools;
 
   /// Commands library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer command;
 
   /// Endpoints library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer endpoint;
 
   /// Package library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer package;
 
   /// Version library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer version;
 
   /// Git library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer git;
 
   /// Cargo library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer cargo;
 
   /// Metadata cache.
-  #[ cfg( not( feature = "no_std" ) ) ]
-  layer cache;
+  layer workspace;
 
-  #[ cfg( not( feature = "no_std" ) ) ]
-  orphan use ::std::env;
-  // protected use wtools::prelude::*;
+  /// To manipulate manifest data.
+  layer manifest;
+
 }

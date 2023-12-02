@@ -9,8 +9,6 @@ crate::mod_interface!
   orphan mod files;
   /// Work with crate on `crates.io`.
   orphan mod http;
-  /// A module to manipulate manifest data.
-  orphan mod manifest;
   /// Run external processes.
   orphan mod process;
   /// Work with paths.

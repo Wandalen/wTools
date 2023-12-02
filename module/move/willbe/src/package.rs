@@ -18,14 +18,14 @@ mod private
   };
   use tools::
   {
-    manifest,
     process,
     http,
   };
+  use manifest::Manifest;
   use { cargo, git, version, path, wtools };
   use wca::wtools::Itertools; // qqq : use wtools::...!
   use wtools::error::for_app::{ anyhow, Error, Context };
-  use cache::WorkspaceCache;
+  use workspace::Workspace;
 
   /// Describe publishing outcomes.
   #[ derive( Debug, Default, Clone ) ]
@@ -101,7 +101,7 @@ mod private
   pub fn publish_single( path : &Path, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
-    let mut manifest = manifest::get( path ).map_err( |e | ( report.clone(), e ) )?;
+    let mut manifest = manifest::open( path ).map_err( |e | ( report.clone(), e ) )?;
     if !manifest.package_is() || manifest.local_is()
     {
       return Ok( report );
@@ -218,9 +218,16 @@ mod private
     }
   }
 
+  // qqq : for Bohdan : poor description, not explained what for
   /// Build HashMap dependencies graph.
   /// Returns identifier of root node
-  pub fn _dependencies( metadata : &mut WorkspaceCache, manifest_path : &Path, graph: &mut HashMap< CrateId, HashSet< CrateId > >, opts: DependenciesOptions ) -> wtools::error::Result< CrateId >
+  pub fn _dependencies
+  (
+    workspace : &mut Workspace,
+    manifest_path : &Path, // qqq : for Bohdan : new type!
+    graph: &mut HashMap< CrateId, HashSet< CrateId > >,
+    opts: DependenciesOptions
+  ) -> wtools::error::Result< CrateId >
   {
     let DependenciesOptions
     {
@@ -233,7 +240,7 @@ mod private
 
     let manifest_path = path::canonicalize( manifest_path )?;
 
-    let package = metadata
+    let package = workspace
     .load()
     .package_find_by_manifest( &manifest_path )
     .ok_or( anyhow!( "Package not found in the workspace with path: `{}`", manifest_path.display() ) )?;
@@ -255,7 +262,7 @@ mod private
         if graph.get( &dep ).is_none()
         {
           // unwrap because `recursive` + `with_remote` not yet implemented
-          _dependencies( metadata, &dep.path.as_ref().unwrap().join( "Cargo.toml" ), graph, opts.clone() )?;
+          _dependencies( workspace, &dep.path.as_ref().unwrap().join( "Cargo.toml" ), graph, opts.clone() )?;
         }
       }
     }
@@ -267,17 +274,17 @@ mod private
   ///
   /// # Arguments
   ///
-  /// - `metadata` - holds cached information about the workspace, such as the packages it contains and their dependencies. By passing it as a mutable reference, function can update the cache as needed.
+  /// - `workspace` - holds cached information about the workspace, such as the packages it contains and their dependencies. By passing it as a mutable reference, function can update the cache as needed.
   /// - `manifest_path` - path to the package manifest file. The package manifest file contains metadata about the package such as its name, version, and dependencies.
   /// - `opts` - used to specify options or configurations for fetching local dependencies.
   ///
   /// # Returns
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
-  pub fn dependencies( metadata : &mut WorkspaceCache, manifest_path : &Path, opts: DependenciesOptions ) -> wtools::error::Result< Vec< CrateId > >
+  pub fn dependencies( workspace : &mut Workspace, manifest_path : &Path, opts: DependenciesOptions ) -> wtools::error::Result< Vec< CrateId > >
   {
     let mut graph = HashMap::new();
-    let root = _dependencies( metadata, manifest_path, &mut graph, opts.clone() )?;
+    let root = _dependencies( workspace, manifest_path, &mut graph, opts.clone() )?;
 
     let output = match opts.sort
     {
@@ -304,6 +311,9 @@ mod private
     Ok( output )
   }
 
+  // qqq : for Bohdan : dont add _get at the end
+  // qqq : for Bohdan : move to file packed_crate as well as relevant functions
+
   /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.
   ///
   /// Args:
@@ -317,10 +327,10 @@ mod private
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
 
-    let package_metadata = WorkspaceCache::with_manifest_path( manifest_path.parent().unwrap() );
+    let workspace = Workspace::with_manifest_path( manifest_path.parent().unwrap() );
 
     let mut local_package_path = PathBuf::new();
-    local_package_path.push( package_metadata.target_directory() );
+    local_package_path.push( workspace.target_directory() );
     local_package_path.push( buf );
 
     local_package_path
@@ -361,6 +371,8 @@ mod private
 
   pub type PackageName = String;
 
+  // qqq : for Bohdan : move to packages::filter
+
   /// Given a slice of `Package` instances and a set of filtering options,
   /// this function filters and maps the packages and their dependencies
   /// based on the provided filters. It returns a HashMap where the keys
@@ -388,6 +400,7 @@ mod private
     ).collect()
   }
 
+  // qqq : for Bohdan : move to tools::graph::construct
   /// Build a graph from map of packages and its dependencies
   ///
   /// Arg:
@@ -428,6 +441,7 @@ mod private
 
   // qqq : add test
   // qqq : cyclic test?
+  // qqq : for Bohdan : move to tools::graph::topsort
 
   /// Performs a topological sort of a graph of packages
   ///
@@ -452,6 +466,7 @@ mod private
       .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
       .collect::< Vec< _ > >(),
       Err( index ) => panic!( "Cycle: {:?}", graph.index( index.node_id() ) ),
+      // qqq : for Bohdan : bad, make proper error handling
     }
   }
 
@@ -466,7 +481,9 @@ mod private
   /// - `false` if there is no need to publish the package.
   ///
   /// Panics if the manifest is not loaded or local package is not packed.
-  pub fn publish_need( manifest : &manifest::Manifest ) -> bool
+
+  // qqq : for Bohdan : why manifest is argument? introduce newtype Package
+  pub fn publish_need( manifest : &Manifest ) -> bool
   {
     // These files are ignored because they can be safely changed without affecting functionality
     //
@@ -484,8 +501,10 @@ mod private
 
     let local_package = fs::read( local_package_path ).expect( "Failed to read local package. Please, run `cargo package` before." );
     // Is it ok? If there is any problem with the Internet, we will say that the packages are different.
+    // qqq : for Bohdan : bad, properly handle errors
     let remote_package = http::retrieve_bytes( name, version ).unwrap_or_default();
 
+    // qqq : for Bohdan : bad, properly handle errors
     let mut local_decoded_package = decode_reader( local_package ).expect( "Failed to unpack local package" );
     let mut remote_decoded_package = decode_reader( remote_package ).expect( "Failed to unpack remote package" );
 
@@ -516,6 +535,7 @@ mod private
     !( is_same && remote_keys.is_empty() )
   }
 
+  // qqq : move out to tools::archive and introduce newtype
   /// Decode bytes archive to the dictionary of file path as a key and content as a value
   ///
   /// Arg:

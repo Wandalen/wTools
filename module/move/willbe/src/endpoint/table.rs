@@ -27,7 +27,7 @@ mod private
     anyhow,
     bail,
   };
-  use cache::WorkspaceCache;
+  use workspace::Workspace;
 
   // qqq : rid off lazy_static
   lazy_static::lazy_static!
@@ -49,7 +49,7 @@ mod private
 
   pub fn table_create() -> Result< () >
   {
-    let mut cargo_metadata = WorkspaceCache::default();
+    let mut cargo_metadata = Workspace::default();
     let workspace_root = workspace_root( &mut cargo_metadata )?;
     let read_me_path = readme_path( &workspace_root ).ok_or_else( || anyhow!( "Fail to find README.md" ) )?;
     let mut file = OpenOptions::new()
@@ -156,7 +156,7 @@ mod private
     format!( "{table_header}\n{table_content}\n" )
   }
 
-  fn workspace_root( metadata: &mut WorkspaceCache ) -> Result< PathBuf >
+  fn workspace_root( metadata: &mut Workspace ) -> Result< PathBuf >
   {
     Ok( metadata.load().workspace_root().to_path_buf() )
   }

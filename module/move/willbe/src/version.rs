@@ -2,11 +2,12 @@
 mod private
 {
   use crate::*;
-  use std::fmt::Display;
+  use std::fmt;
   use std::str::FromStr;
   use toml_edit::value;
   use semver::Version as SemVersion;
   use wtools::error::for_app::{ Result, anyhow };
+  use manifest::Manifest;
 
   /// Wrapper for a SemVer structure
   #[ derive( Debug, Clone, Eq, PartialEq ) ]
@@ -22,7 +23,7 @@ mod private
     }
   }
 
-  impl Display for Version
+  impl fmt::Display for Version
   {
     fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
     {
@@ -72,7 +73,7 @@ mod private
   /// Returns:
   /// - Ok - the new version number as a string;
   /// - Err - if the manifest file cannot be read, written, parsed.
-  pub fn bump( manifest : &mut manifest::Manifest, dry : bool ) -> Result< String >
+  pub fn bump( manifest : &mut Manifest, dry : bool ) -> Result< String >
   {
     let version=
     {

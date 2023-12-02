@@ -5,13 +5,13 @@ mod private
 
   /// Stores information about current workspace.
   #[ derive( Debug, Default, Clone ) ]
-  pub struct WorkspaceCache
+  pub struct Workspace
   {
     metadata : Option< Metadata >,
     manifest_dir : PathBuf,
   }
 
-  impl WorkspaceCache
+  impl Workspace
   {
     /// Load data from current directory
     pub fn from_current_path() -> Self
@@ -38,7 +38,7 @@ mod private
     }
   }
 
-  impl From< Metadata > for WorkspaceCache
+  impl From< Metadata > for Workspace
   {
     fn from( value : Metadata ) -> Self
     {
@@ -52,7 +52,7 @@ mod private
     }
   }
 
-  impl WorkspaceCache
+  impl Workspace
   {
     /// Load data from the current location or from cache
     // FIX: Maybe unsafe. Take metadata of workspace in current dir.
@@ -76,7 +76,7 @@ mod private
     }
   }
 
-  impl WorkspaceCache
+  impl Workspace
   {
     /// Returns list of all packages
     pub fn packages_get( &self ) -> &[ Package ]
@@ -110,5 +110,5 @@ mod private
 
 crate::mod_interface!
 {
-  protected use WorkspaceCache;
+  orphan use Workspace;
 }

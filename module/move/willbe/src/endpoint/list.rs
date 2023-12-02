@@ -31,7 +31,7 @@ mod private
   };
   use petgraph::prelude::{ Dfs, EdgeRef };
   use petgraph::visit::Topo;
-  use cache::WorkspaceCache;
+  use workspace::Workspace;
 
   /// Args for `list` endpoint.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -164,8 +164,8 @@ mod private
   {
     let mut report = ListReport::default();
 
-    let manifest = manifest::get( &path_to_manifest.join( "Cargo.toml" ) ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let mut metadata = WorkspaceCache::with_manifest_path( &path_to_manifest );
+    let manifest = manifest::open( &path_to_manifest.join( "Cargo.toml" ) ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let mut metadata = Workspace::with_manifest_path( &path_to_manifest );
 
     let root_crate = manifest
     .manifest_data
@@ -274,6 +274,7 @@ mod private
   }
 }
 
+// qqq : for Bohdan : move to tests folder
 mod tests
 {
   #[ test ]
