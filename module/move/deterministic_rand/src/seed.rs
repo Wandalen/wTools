@@ -7,22 +7,6 @@
 pub( crate ) mod private
 {
 
-  // use std::cmp::Ordering;
-  // #[ cfg( not( feature = "determinism" ) ) ]
-  // use std::{ ops::Deref, ops::DerefMut };
-  // #[ cfg( feature = "determinism" ) ]
-  // use std::sync::{ Arc, Mutex, RwLock };
-  // #[ cfg( feature = "determinism" ) ]
-  // use std::vec::IntoIter;
-  //
-  // #[ cfg( feature = "determinism" ) ]
-  // use iter_tools::exposed::Itertools;
-  //
-  // #[ cfg( feature = "determinism" ) ]
-  // use rand_chacha::ChaCha8Rng;
-  //
-  // pub use rand::{ SeedableRng, Rng, RngCore, seq::SliceRandom };
-
   /// Master seed.
   #[ derive( Clone, Debug, PartialEq, Eq ) ]
   pub struct Seed( String );
@@ -57,6 +41,18 @@ pub( crate ) mod private
       Self( "master_seed".to_owned() )
     }
   }
+
+  impl< IntoString > From< IntoString > for Seed
+  where
+    IntoString : Into< String >,
+  {
+    #[ inline( always ) ]
+    fn from( src : IntoString ) -> Self
+    {
+      Self::new( src )
+    }
+  }
+
 
 }
 

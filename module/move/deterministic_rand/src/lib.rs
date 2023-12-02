@@ -9,7 +9,9 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-pub use rand::{ SeedableRng, Rng, RngCore, seq::SliceRandom };
+// pub use rand::{ SeedableRng, Rng, RngCore, seq };
+#[ doc( inline ) ]
+pub use rand::*;
 pub use mod_interface::mod_interface;
 
 #[ cfg( feature = "determinism" ) ]

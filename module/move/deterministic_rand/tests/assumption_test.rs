@@ -5,7 +5,7 @@ use deterministic_rand::Hrng;
 #[ test ]
 fn assumption_gen()
 {
-  let rng = Hrng::master().rng();
+  let rng = Hrng::master().rng_ref();
   let mut rng = rng.lock().unwrap();
   let _got : u64 = rng.gen();
   #[ cfg( feature = "determinism" ) ]
@@ -14,7 +14,7 @@ fn assumption_gen()
   #[ cfg( feature = "determinism" ) ]
   assert_eq!( _got, 15862033778988354993 );
 
-  let rng = Hrng::master().rng();
+  let rng = Hrng::master().rng_ref();
   let mut rng = rng.lock().unwrap();
   let _got : u64 = rng.gen();
   #[ cfg( feature = "determinism" ) ]
@@ -30,7 +30,7 @@ fn assumption_choose()
   #[ cfg( feature = "determinism" ) ]
   {
     use rand::seq::IteratorRandom;
-    let rng = Hrng::master().rng();
+    let rng = Hrng::master().rng_ref();
     let mut rng = rng.lock().unwrap();
     let got = ( 1..1000 ).choose( &mut *rng ).unwrap();
     assert_eq!( got, 334 );
@@ -47,7 +47,7 @@ fn assumption_choose_stable()
   #[ cfg( feature = "determinism" ) ]
   {
     use rand::seq::IteratorRandom;
-    let rng = Hrng::master().rng();
+    let rng = Hrng::master().rng_ref();
     let mut rng = rng.lock().unwrap();
     let got = ( 1..1000 ).choose_stable( &mut *rng ).unwrap();
     assert_eq!( got, 704 );
@@ -64,7 +64,7 @@ fn assumption_choose_multiple()
   #[ cfg( feature = "determinism" ) ]
   {
     use rand::seq::{ IteratorRandom, SliceRandom };
-    let rng = Hrng::master().rng();
+    let rng = Hrng::master().rng_ref();
     let mut rng = rng.lock().unwrap();
     let got = ( 1..1000 ).choose_multiple( &mut *rng, 10 );
     assert_eq!( got, vec![ 704, 2, 359, 578, 198, 219, 884, 649, 696, 532 ] );
@@ -93,8 +93,8 @@ fn assumption_choose_weighted()
 {
   #[ cfg( feature = "determinism" ) ]
   {
-    use deterministic_rand::SliceRandom;
-    let rng = Hrng::master().rng();
+     use deterministic_rand::seq::SliceRandom;
+    let rng = Hrng::master().rng_ref();
     let mut rng = rng.lock().unwrap();
     let got = ( 1..1000 )
     .zip( ( 1..1000 ).rev() )
@@ -121,8 +121,8 @@ fn assumption_choose_multiple_weighted()
 {
   #[ cfg( feature = "determinism" ) ]
   {
-    use deterministic_rand::SliceRandom;
-    let rng = Hrng::master().rng();
+     use deterministic_rand::seq::SliceRandom;
+    let rng = Hrng::master().rng_ref();
     let mut rng = rng.lock().unwrap();
     let got = ( 1..10 )
       .zip( ( 1..10 ).rev() )

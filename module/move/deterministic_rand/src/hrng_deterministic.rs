@@ -11,24 +11,13 @@ pub( crate ) mod private
 {
 
   use crate::*;
-  // use std::cmp::Ordering;
-  // #[ cfg( not( feature = "determinism" ) ) ]
-  // use std::{ ops::Deref, ops::DerefMut };
-  #[ cfg( feature = "determinism" ) ]
   use std::sync::{ Arc, Mutex, RwLock };
-  // #[ cfg( feature = "determinism" ) ]
-  // use std::vec::IntoIter;
-
-  // #[ cfg( feature = "determinism" ) ]
-  // use iter_tools::exposed::Itertools;
-
-  #[ cfg( feature = "determinism" ) ]
   use rand_chacha::ChaCha8Rng;
 
-  // pub use rand::{ SeedableRng, Rng, RngCore, seq::SliceRandom };
-
+  ///
   /// Generator under mutex and reference counter.
-  #[ cfg( feature = "determinism" ) ]
+  ///
+
   pub type SharedGenerator = Arc< Mutex< ChaCha8Rng > >;
 
   /// Hierarchical random number generator.
@@ -38,7 +27,7 @@ pub( crate ) mod private
   ///
   /// Master random number generator produce children and each child might produce more children as much as dataflows in progam.
   ///
-  #[ cfg( feature = "determinism" ) ]
+
   #[ derive( Debug, Clone ) ]
   pub struct Hrng
   {
@@ -63,7 +52,7 @@ pub( crate ) mod private
     }
   }
 
-  #[ cfg( feature = "determinism" ) ]
+
   impl Hrng
   {
     /// Construct master hierarchical random number generator with default seed phrase.
@@ -110,21 +99,20 @@ pub( crate ) mod private
       }
     }
 
-    /// Get arc on current generator.
+    /// Get a reference to the current random number generator using a reference counter and mutex.
     ///
     /// Returns a shared `Arc<Mutex<Generator>>`.
     ///
     /// ```
-    /// # use rand::seq::SliceRandom;
-    /// # use deterministic_rand::Hrng;
+    /// # use deterministic_rand::{ Hrng, Rng };
     /// # let hrng = Hrng::default();
-    /// let rng_ref = hrng.rng();
+    /// let rng_ref = hrng.rng_ref();
     /// let mut rng = rng_ref.lock().unwrap();
-    ///
-    /// [ 1, 2, 3 ].choose( &mut *rng);
+    /// let got : u64 = rng.gen();
     /// ```
+
     #[ inline( always ) ]
-    pub fn rng( &self ) -> SharedGenerator
+    pub fn rng_ref( &self ) -> SharedGenerator
     {
       self.generator.clone()
     }

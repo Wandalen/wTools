@@ -11,32 +11,14 @@ pub( crate ) mod private
 {
 
   use crate::*;
-  // use std::cmp::Ordering;
-  #[ cfg( not( feature = "determinism" ) ) ]
   use std::{ ops::Deref, ops::DerefMut };
-  // #[ cfg( feature = "determinism" ) ]
-  // use std::sync::{ Arc, Mutex, RwLock };
-  // #[ cfg( feature = "determinism" ) ]
-  // use std::vec::IntoIter;
-
-  // #[ cfg( feature = "determinism" ) ]
-  // use iter_tools::exposed::Itertools;
-
-  // #[ cfg( feature = "determinism" ) ]
-  // use rand_chacha::ChaCha8Rng;
-
-  // pub use rand::{ SeedableRng, Rng, RngCore, seq::SliceRandom };
-
-  // /// Generator under mutex and reference counter.
-  // #[ cfg( feature = "determinism" ) ]
-  // pub type SharedGenerator = Arc< Mutex< ChaCha8Rng > >;
 
   /// Emulates behavior of `Arc<Mutex<ThreadRng>>` for compatibility.
-  #[ cfg( not( feature = "determinism" ) ) ]
+
   #[ derive( Debug ) ]
   pub struct SharedGenerator;
 
-  #[ cfg( not( feature = "determinism" ) ) ]
+
   impl SharedGenerator
   {
     /// Emulate lock of a mutex.
@@ -48,11 +30,11 @@ pub( crate ) mod private
   }
 
   /// Emulates behavior of `Arc<Mutex<ThreadRng>>` for compatibility.
-  #[ cfg( not( feature = "determinism" ) ) ]
+
   #[ derive( Debug) ]
   pub struct SharedGeneratorLock;
 
-  #[ cfg( not( feature = "determinism" ) ) ]
+
   impl SharedGeneratorLock
   {
     /// Emulate unwrap of a result of guard produced my locking a mutex.
@@ -66,11 +48,11 @@ pub( crate ) mod private
   /// Placeholder structure that is used when `determinism` feature is not enabled.
   ///
   /// Used for code compatibility for both deterministic and non-deterministic modes.
-  #[ cfg( not( feature = "determinism" ) ) ]
+
   #[ derive( Debug ) ]
   pub struct DerefRng( rand::rngs::ThreadRng );
 
-  #[ cfg( not( feature = "determinism" ) ) ]
+
   impl Deref for DerefRng
   {
     type Target = rand::rngs::ThreadRng;
@@ -81,7 +63,7 @@ pub( crate ) mod private
     }
   }
 
-  #[ cfg( not( feature = "determinism" ) ) ]
+
   impl DerefMut for DerefRng
   {
     fn deref_mut( &mut self ) -> &mut Self::Target
@@ -102,11 +84,11 @@ pub( crate ) mod private
   /// for then the `determinism` feature is not enabled
   ///
   /// Always returns `rand::thread_rng`
-  #[ cfg( not( feature = "determinism" ) ) ]
+
   #[ derive( Debug, Clone ) ]
   pub struct Hrng;
 
-  #[ cfg( not( feature = "determinism" ) ) ]
+
   impl Hrng
   {
     /// Construct master hierarchical random number generator with default seed phrase.
@@ -123,9 +105,20 @@ pub( crate ) mod private
       Self
     }
 
-    /// Get arc on current generator.
+    /// Get a reference to the current random number generator using a reference counter and mutex.
+    ///
+    /// Returns a shared `Arc<Mutex<Generator>>`.
+    ///
+    /// ```
+    /// # use deterministic_rand::Hrng;
+    /// # let hrng = Hrng::default();
+    /// let rng_ref = hrng.rng_ref();
+    /// let mut rng = rng_ref.lock().unwrap();
+    /// let got : u64 = rng.gen();
+    /// ```
+
     #[ inline( always ) ]
-    pub fn rng( &self ) -> SharedGenerator
+    pub fn rng_ref( &self ) -> SharedGenerator
     {
       SharedGenerator
     }
