@@ -49,5 +49,5 @@ wtools::meta::mod_interface!
 
   #[ cfg( not( feature = "no_std" ) ) ]
   orphan use ::std::env;
-  // protected( crate ) use wtools::prelude::*;
+  // protected use wtools::prelude::*;
 }

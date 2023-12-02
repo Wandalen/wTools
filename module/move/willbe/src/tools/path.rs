@@ -36,6 +36,7 @@ pub( crate ) mod private
   {
     let path = path.as_ref().canonicalize()?;
 
+    // qqq : for Bohdan : explain why is it necessary? Add relevant links.
     #[ cfg( target_os = "windows" ) ] // canonicalization on windows adds `\\?\` prefix
     let path =
     {
@@ -57,7 +58,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  orphan use glob_is;
-  orphan use valid_is;
-  protected( crate ) use canonicalize;
+  protected use glob_is;
+  protected use valid_is;
+  protected use canonicalize;
 }
