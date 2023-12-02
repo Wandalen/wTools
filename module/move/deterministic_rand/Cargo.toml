@@ -1,9 +1,10 @@
 [package]
 name = "deterministic_rand"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Viktor Dudnik <viktor.d@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"

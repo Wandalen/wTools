@@ -91,7 +91,18 @@ pub( crate ) mod private
 
   impl Hrng
   {
+
     /// Construct master hierarchical random number generator with default seed phrase.
+    ///
+    /// ### Example
+    /// ```
+    /// use deterministic_rand::{ Hrng, Rng };
+    /// let hrng = Hrng::master();
+    /// let rng_ref = hrng.rng_ref();
+    /// let mut rng = rng_ref.lock().unwrap();
+    /// let got : u64 = rng.gen();
+    /// ```
+
     #[ inline( always ) ]
     pub fn master() -> Self
     {
@@ -99,6 +110,16 @@ pub( crate ) mod private
     }
 
     /// Construct hierarchical random number generator with help of seed phrase.
+    ///
+    /// ### Example
+    /// ```
+    /// use deterministic_rand::{ Hrng, Rng };
+    /// let hrng = Hrng::master_with_seed( "master1".into() );
+    /// let rng_ref = hrng.rng_ref();
+    /// let mut rng = rng_ref.lock().unwrap();
+    /// let got : u64 = rng.gen();
+    /// ```
+
     #[ inline( always ) ]
     pub fn master_with_seed( _ : Seed ) -> Self
     {
@@ -109,8 +130,10 @@ pub( crate ) mod private
     ///
     /// Returns a shared `Arc<Mutex<Generator>>`.
     ///
+    /// ### Example
+    ///
     /// ```
-    /// # use deterministic_rand::Hrng;
+    /// # use deterministic_rand::{ Hrng, Rng };
     /// # let hrng = Hrng::default();
     /// let rng_ref = hrng.rng_ref();
     /// let mut rng = rng_ref.lock().unwrap();

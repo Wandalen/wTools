@@ -9,10 +9,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// pub use rand::{ SeedableRng, Rng, RngCore, seq };
-#[ doc( inline ) ]
-pub use rand::*;
-pub use mod_interface::mod_interface;
+use mod_interface::mod_interface;
 
 #[ cfg( feature = "determinism" ) ]
 pub mod hrng_deterministic;
@@ -26,6 +23,8 @@ pub use hrng_non_deterministic as hrng;
 
 mod_interface!
 {
+
+  protected use ::rand::*;
 
   use super::hrng;
 

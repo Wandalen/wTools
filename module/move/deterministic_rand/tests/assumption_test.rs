@@ -73,17 +73,17 @@ fn assumption_choose_multiple()
     assert_eq!( got, vec![ 511, 470, 835, 820, 26, 776, 261, 278, 828, 765 ] );
 
     let got = ( 1..1000 )
-      .collect::< Vec< _ > >()
-      .choose_multiple( &mut *rng, 10 )
-      .copied()
-      .collect::< Vec< _ > >();
+    .collect::< Vec< _ > >()
+    .choose_multiple( &mut *rng, 10 )
+    .copied()
+    .collect::< Vec< _ > >();
     assert_eq!( got, vec![ 141, 969, 122, 311, 926, 11, 987, 184, 888, 423 ] );
 
     let got = ( 1..1000 )
-      .collect::< Vec< _ > >()
-      .choose_multiple( &mut *rng, 10 )
-      .copied()
-      .collect::< Vec< _ > >();
+    .collect::< Vec< _ > >()
+    .choose_multiple( &mut *rng, 10 )
+    .copied()
+    .collect::< Vec< _ > >();
     assert_eq!( got, vec![ 637, 798, 886, 412, 652, 688, 71, 854, 639, 282 ] );
   }
 }
@@ -125,13 +125,13 @@ fn assumption_choose_multiple_weighted()
     let rng = Hrng::master().rng_ref();
     let mut rng = rng.lock().unwrap();
     let got = ( 1..10 )
-      .zip( ( 1..10 ).rev() )
-      .into_iter()
-      .collect::< Vec< _ > >()
-      .choose_multiple_weighted( &mut *rng, 10, |w| w.0 )
-      .unwrap()
-      .map( |( i, j )| ( *i, *j ) )
-      .collect::< Vec< _ > >();
+    .zip( ( 1..10 ).rev() )
+    .into_iter()
+    .collect::< Vec< _ > >()
+    .choose_multiple_weighted( &mut *rng, 10, |w| w.0 )
+    .unwrap()
+    .map( |( i, j )| ( *i, *j ) )
+    .collect::< Vec< _ > >();
     assert_eq!
     (
       got,
@@ -150,13 +150,13 @@ fn assumption_choose_multiple_weighted()
     );
 
     let got = ( 1..10 )
-      .zip( ( 1..10 ).rev() )
-      .into_iter()
-      .collect::< Vec< _ > >()
-      .choose_multiple_weighted( &mut *rng, 10, |w| w.0 )
-      .unwrap()
-      .map( |( i, j )| ( *i, *j ) )
-      .collect::< Vec< _ > >();
+    .zip( ( 1..10 ).rev() )
+    .into_iter()
+    .collect::< Vec< _ > >()
+    .choose_multiple_weighted( &mut *rng, 10, |w| w.0 )
+    .unwrap()
+    .map( |( i, j )| ( *i, *j ) )
+    .collect::< Vec< _ > >();
     assert_eq!
     (
       got,

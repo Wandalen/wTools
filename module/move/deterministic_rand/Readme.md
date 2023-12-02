@@ -11,25 +11,25 @@ This library introduces hierarchical random number generators designed for concu
 
 Deterministic randomness, also known as pseudo-randomness, finds its application in various fields beyond algorithmic solutions for NP-hard problems and multiplayer gaming. Here are some other notable applications:
 
-**Cryptography**: In cryptography, deterministic randomness is essential for generating secure keys, cryptographic nonces, and for various encryption algorithms. Pseudo-random number generators (PRNGs) need to produce output that is indistinguishable from true randomness to ensure security.
+*Cryptography*: In cryptography, deterministic randomness is essential for generating secure keys, cryptographic nonces, and for various encryption algorithms. Pseudo-random number generators (PRNGs) need to produce output that is indistinguishable from true randomness to ensure security.
 
-**Simulation and Modeling**: In scientific simulations, such as those in physics, biology, or economics, deterministic randomness is used to model complex systems with inherent uncertainties. This allows for reproducibility of results, which is crucial for verification and validation of models.
+*Simulation and Modeling*: In scientific simulations, such as those in physics, biology, or economics, deterministic randomness is used to model complex systems with inherent uncertainties. This allows for reproducibility of results, which is crucial for verification and validation of models.
 
-**Computer Graphics**: In procedural generation, such as terrain or texture generation in computer graphics, deterministic randomness can create diverse yet consistent visuals. This is widely used in video games and simulations.
+*Computer Graphics*: In procedural generation, such as terrain or texture generation in computer graphics, deterministic randomness can create diverse yet consistent visuals. This is widely used in video games and simulations.
 
-**Load Testing**: In software engineering, deterministic randomness is used in load and stress testing of systems. By simulating user behavior or system inputs in a controlled, repeatable manner, developers can identify and rectify potential performance issues.
+*Load Testing*: In software engineering, deterministic randomness is used in load and stress testing of systems. By simulating user behavior or system inputs in a controlled, repeatable manner, developers can identify and rectify potential performance issues.
 
-**Machine Learning**: Some machine learning algorithms, especially those involving stochastic processes like stochastic gradient descent, use deterministic randomness to ensure reproducibility of results while still benefiting from randomness in the training process.
+*Machine Learning*: Some machine learning algorithms, especially those involving stochastic processes like stochastic gradient descent, use deterministic randomness to ensure reproducibility of results while still benefiting from randomness in the training process.
 
-**Statistical Sampling**: In statistics, pseudo-random number generators are used for random sampling and other statistical methods where reproducibility is essential.
+*Statistical Sampling*: In statistics, pseudo-random number generators are used for random sampling and other statistical methods where reproducibility is essential.
 
-**Quantum Computing Simulation**: Simulating quantum computers on classical machines often requires deterministic randomness to emulate the probabilistic nature of quantum mechanics.
+*Quantum Computing Simulation*: Simulating quantum computers on classical machines often requires deterministic randomness to emulate the probabilistic nature of quantum mechanics.
 
-**Algorithmic Art**: In generative art, deterministic randomness helps in creating complex and appealing patterns and images that are reproducible.
+*Algorithmic Art*: In generative art, deterministic randomness helps in creating complex and appealing patterns and images that are reproducible.
 
-**Financial Modeling**: In finance, deterministic randomness is used in Monte Carlo simulations for risk assessment and option pricing, where numerous scenarios are generated to model the behavior of financial markets.
+*Financial Modeling*: In finance, deterministic randomness is used in Monte Carlo simulations for risk assessment and option pricing, where numerous scenarios are generated to model the behavior of financial markets.
 
-**Educational Tools and Demonstrations**: In teaching concepts of probability and randomness, deterministic algorithms allow educators to demonstrate principles using repeatable experiments.
+*Educational Tools and Demonstrations*: In teaching concepts of probability and randomness, deterministic algorithms allow educators to demonstrate principles using repeatable experiments.
 
 These applications leverage the balance that deterministic randomness provides between unpredictability and reproducibility, making it a versatile tool in many fields.
 

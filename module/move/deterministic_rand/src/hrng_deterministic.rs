@@ -19,6 +19,7 @@ pub( crate ) mod private
   ///
 
   pub type SharedGenerator = Arc< Mutex< ChaCha8Rng > >;
+  // qqq : parametrize, use ChaCha8Rng by default, but allow to specify other
 
   /// Hierarchical random number generator.
   ///
@@ -55,13 +56,34 @@ pub( crate ) mod private
 
   impl Hrng
   {
+
     /// Construct master hierarchical random number generator with default seed phrase.
+    ///
+    /// ### Example
+    /// ```
+    /// use deterministic_rand::{ Hrng, Rng };
+    /// let hrng = Hrng::master();
+    /// let rng_ref = hrng.rng_ref();
+    /// let mut rng = rng_ref.lock().unwrap();
+    /// let got : u64 = rng.gen();
+    /// ```
+
     pub fn master() -> Self
     {
       Self::master_with_seed( Seed::default() )
     }
 
     /// Construct hierarchical random number generator with help of seed phrase.
+    ///
+    /// ### Example
+    /// ```
+    /// use deterministic_rand::{ Hrng, Rng };
+    /// let hrng = Hrng::master_with_seed( "master1".into() );
+    /// let rng_ref = hrng.rng_ref();
+    /// let mut rng = rng_ref.lock().unwrap();
+    /// let got : u64 = rng.gen();
+    /// ```
+
     pub fn master_with_seed( seed : Seed ) -> Self
     {
       let mut _generator : ChaCha8Rng = rand_seeder::Seeder::from( seed.into_inner() ).make_rng();
@@ -87,7 +109,10 @@ pub( crate ) mod private
     /// Construct hierarchical random number generator with help of RNG.
     fn _with_generator( mut rng : ChaCha8Rng ) -> Self
     {
+      // Use another sequence for seed generation to improve uniformness.
+      rng.set_stream( 1 );
       let _children_generator = ChaCha8Rng::seed_from_u64( rng.next_u64() );
+      rng.set_stream( 0 );
       let generator = Arc::new( Mutex::new( rng ) );
       let children_generator = Arc::new( Mutex::new( _children_generator ) );
       Self
@@ -102,6 +127,8 @@ pub( crate ) mod private
     /// Get a reference to the current random number generator using a reference counter and mutex.
     ///
     /// Returns a shared `Arc<Mutex<Generator>>`.
+    ///
+    /// ### Example
     ///
     /// ```
     /// # use deterministic_rand::{ Hrng, Rng };

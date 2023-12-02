@@ -13,7 +13,7 @@ fn main()
 
   // Convert the HashMap into an iterator, apply deterministic sorting to the keys,
   // and then map each (key, value) pair to just the value.
-  let keys: Vec<_> = map
+  let _keys: Vec<_> = map
   .into_iter()
   .if_determinism_then_sort_by( | ( a, _ ), ( b, _ ) | a.cmp( &b ) )
   .map( | e | e.1 )
@@ -23,6 +23,6 @@ fn main()
   // This is a conditional compilation check that ensures the code block is compiled and run only
   // if the 'determinism' feature is enabled.
   #[ cfg( feature = "determinism" ) ]
-  assert_eq!( keys, vec![ "first", "second", "third" ] );
+  assert_eq!( _keys, vec![ "first", "second", "third" ] );
 
 }

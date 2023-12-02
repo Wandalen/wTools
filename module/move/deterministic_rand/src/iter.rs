@@ -8,20 +8,10 @@ pub( crate ) mod private
 {
 
   use std::cmp::Ordering;
-  // #[ cfg( not( feature = "determinism" ) ) ]
-  // use std::{ ops::Deref, ops::DerefMut };
-  // #[ cfg( feature = "determinism" ) ]
-  // use std::sync::{ Arc, Mutex, RwLock };
   #[ cfg( feature = "determinism" ) ]
   use std::vec::IntoIter;
-
   #[ cfg( feature = "determinism" ) ]
   use iter_tools::exposed::Itertools;
-
-  // #[ cfg( feature = "determinism" ) ]
-  // use rand_chacha::ChaCha8Rng;
-  //
-  // pub use rand::{ SeedableRng, Rng, RngCore, seq::SliceRandom };
 
   /// Extensions of iterator to sort items of the iterator. Replaced by a no-op when determinism is switched off.
   /// Useful, for example, to eliminate non-deterministic iteration of `HashMap` and `HashSet` keys.
