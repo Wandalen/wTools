@@ -93,6 +93,7 @@ pub( crate ) mod private
     .property( "nightly", "Run tests on nightly. Default is false.", Type::String, true )
     .property( "exclude", "List of features to exclude.", Type::List( Type::String.into(), ',' ), true )
     .property( "include", "List of features to include.", Type::List( Type::String.into(), ',' ), true )
+    .property( "parallel", "Run tests with different a set of features in parallel. Default is false.", Type::String, true )
     .form();
 
     let run_tests_command = wca::Command::former()
