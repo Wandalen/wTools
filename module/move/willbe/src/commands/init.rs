@@ -87,18 +87,22 @@ pub( crate ) mod private
     .form();
 
     let run_tests_no_subj_command = wca::Command::former()
-    .hint("Run all tests in all crates")
-    .long_hint( "Run all tests in all crates" )
+    .hint("Run tests in a specified crate")
+    .long_hint( "Run tests in a specified crate" )
     .phrase("tests.run")
     .property( "nightly", "Run tests on nightly. Default is false.", Type::String, true )
+    .property( "exclude", "List of features to exclude.", Type::List( Type::String.into(), ',' ), true )
+    .property( "include", "List of features to include.", Type::List( Type::String.into(), ',' ), true )
     .form();
 
     let run_tests_command = wca::Command::former()
-    .hint("Run all tests in all crates")
-    .long_hint( "Run all tests in all crates" )
+    .hint("Run tests in a specified crate")
+    .long_hint( "Run tests in a specified crate" )
     .phrase("tests.run")
     .subject( "A path to directories with packages.", Type::Path, true )
     .property( "nightly", "Run tests on nightly. Default is false.", Type::String, true )
+    .property( "exclude", "List of features to exclude.", Type::List( Type::String.into(), ',' ), true )
+    .property( "include", "List of features to include.", Type::List( Type::String.into(), ',' ), true )
     .form();
 
     vec!

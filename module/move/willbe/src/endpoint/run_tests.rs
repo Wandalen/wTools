@@ -5,8 +5,8 @@ mod private
 
 	use crate::{ wtools, process::{ self, CmdReport } };
 
-  use wtools::error::Result;
-
+	use wtools::error::Result;
+	use anyhow::anyhow;
   use core::fmt::Formatter;
 
 	#[ derive( Debug, Default, Clone ) ]
@@ -43,7 +43,7 @@ mod private
   }
 
 	/// run all tests in all crates
-	pub fn run_tests( dir : &Path, nightly : bool ) -> Result< TestReport >
+	pub fn run_tests( dir : &Path, nightly : bool, exclude_features : Vec< String >, include_features : Vec< String > ) -> Result< TestReport >
 	{
 		let mut report = TestReport::default();
 
@@ -52,8 +52,13 @@ mod private
 		let metadata = cargo_metadata::MetadataCommand::new()
 		.manifest_path( &path )
 		.features( cargo_metadata::CargoOpt::AllFeatures )
-		.exec()
-		.unwrap();
+		.exec();
+
+		if metadata.is_err() || metadata.as_ref().unwrap().packages.iter().find( |x| x.manifest_path == path ).is_none()
+		{
+			return Err( anyhow!( "Directory path is not a crate" ) );
+		}
+		let metadata = metadata.unwrap();
 
 		let toolchain = if nightly 
 		{
@@ -70,8 +75,19 @@ mod private
 		report.tests.insert( "All features".to_string(), cmd_rep );
 		
 		let features = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().features.clone();
-		for ( feature, _ ) in features 
+		let mut features = features.keys().collect::< Vec< &String > >();
+
+		if !include_features.is_empty() 
 		{
+			features = include_features.iter().map( | x | x ).collect();
+		}
+
+		for feature in features 
+		{
+			if exclude_features.contains( &feature ) 
+			{
+				continue;
+			}
 			let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --features {feature}" ), dir )?;
 			report.tests.insert( feature.clone(), cmd_rep );
 		}
