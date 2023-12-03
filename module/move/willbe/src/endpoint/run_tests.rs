@@ -4,10 +4,11 @@ mod private
   use std::{path::Path, collections::HashMap};
 
 	use crate::{ wtools, process::{ self, CmdReport } };
-
+	use rayon::prelude::*;
 	use wtools::error::Result;
 	use anyhow::anyhow;
   use core::fmt::Formatter;
+	use std::sync::{Arc, RwLock};
 
 	#[ derive( Debug, Default, Clone ) ]
   pub struct TestReport
@@ -43,9 +44,9 @@ mod private
   }
 
 	/// run all tests in all crates
-	pub fn run_tests( dir : &Path, nightly : bool, exclude_features : Vec< String >, include_features : Vec< String > ) -> Result< TestReport >
+	pub fn run_tests( dir : &Path, nightly : bool, exclude_features : Vec< String >, include_features : Vec< String >, parallel : bool ) -> Result< TestReport >
 	{
-		let mut report = TestReport::default();
+		let report = Arc::new( RwLock::new( TestReport::default() ) );
 
 		let path = dir.join("Cargo.toml");
 
@@ -69,10 +70,10 @@ mod private
 			"stable"
 		};
 
-		report.package_name = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().name.clone();
+		report.write().unwrap().package_name = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().name.clone();
 		
 		let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test" ), dir )?;
-		report.tests.insert( "All features".to_string(), cmd_rep );
+		report.write().unwrap().tests.insert( "All features".to_string(), cmd_rep );
 		
 		let features = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().features.clone();
 		let mut features = features.keys().collect::< Vec< &String > >();
@@ -82,20 +83,40 @@ mod private
 			features = include_features.iter().map( | x | x ).collect();
 		}
 
-		for feature in features 
+		if parallel 
 		{
-			if exclude_features.contains( &feature ) 
-			{
-				continue;
-			}
-			let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --features {feature}" ), dir )?;
-			report.tests.insert( feature.clone(), cmd_rep );
+			features
+			.par_iter()
+			.for_each( |feature| 
+				{
+					if exclude_features.contains( &feature ) 
+					{
+						return;
+					}
+					let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --features {feature}" ), dir ).unwrap();
+					report.write().unwrap().tests.insert( feature.to_string(), cmd_rep );
+				}
+			);
 		}
-
+		else 
+		{
+			for feature in features
+			{
+				if exclude_features.contains( &feature ) 
+				{
+					continue;
+				}
+				let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --features {feature}" ), dir )?;
+				report.write().unwrap().tests.insert( feature.clone(), cmd_rep );
+			}
+		}
+		
 		let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features" ), dir )?;
-		report.tests.insert( "No features".to_string(), cmd_rep );
+		report.write().unwrap().tests.insert( "No features".to_string(), cmd_rep );
 
-		Ok( report )
+		let report_lock = report.read().unwrap();
+		let test_report: &TestReport = &*report_lock;
+		Ok( test_report.clone() )
 	}
 }
 

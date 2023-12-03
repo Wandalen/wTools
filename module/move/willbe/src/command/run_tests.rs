@@ -17,8 +17,9 @@ mod private
     let nightly = properties.get_owned( "nightly" ).map( | nightly : String | nightly.to_bool_like() ).unwrap_or_else( || BoolLike::False ).into();
     let exclude_features_list = properties.get_owned( "exclude" ).unwrap_or_else( || Vec::new() ).into();
     let include_features_list = properties.get_owned( "include" ).unwrap_or_else( || Vec::new() ).into();
+    let parallel = properties.get_owned( "parallel" ).map( | nightly : String | nightly.to_bool_like() ).unwrap_or_else( || BoolLike::False ).into();
 
-    match endpoint::run_tests( &path, nightly, exclude_features_list, include_features_list )
+    match endpoint::run_tests( &path, nightly, exclude_features_list, include_features_list, parallel )
     {
       core::result::Result::Ok( report ) =>
       {
