@@ -1,5 +1,5 @@
 [package]
-name = "b"
+name = "_package_with_remote_dep_b"
 version = "0.1.0"
 edition = "2021"
 

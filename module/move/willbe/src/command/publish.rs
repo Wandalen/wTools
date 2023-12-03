@@ -15,17 +15,11 @@ mod private
 
   pub fn publish( ( args, properties ) : ( Args, Props ) ) -> Result< () >
   {
-    let patterns : Vec< _ > = args.get_owned( 0 ).unwrap_or_default();
-    let dry = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::True ).into();
+    let patterns : Vec< _ > = args.get_owned( 0 ).unwrap_or_else( || vec![ "./".into() ] );
+    let dry : bool = properties.get_owned( "dry" ).map( | dry : String | dry.to_bool_like() ).unwrap_or_else( || BoolLike::True ).into();
 
-    match if patterns.is_empty()
-    {
-      endpoint::publish( [ "./".into() ].into(), dry )
-    }
-    else
-    {
-      endpoint::publish( patterns, dry )
-    }
+    println!( "`publish` command patterns: {patterns:?}, dry: {dry}" );
+    match endpoint::publish( patterns, dry )
     {
       core::result::Result::Ok( report ) =>
       {

@@ -18,6 +18,16 @@ exclude = [
 # [metadata.cargo-suppress-warnings]
 # unused-manifest-key = true
 
+[workspace.lints.rust]
+rust_2018_idioms = "deny"
+missing_docs = "deny"
+missing_debug_implementations = "deny" # opt out where Debug is really redundant
+future_incompatible = "deny"
+
+[workspace.lints.clippy]
+restriction = "deny" # opt out where this is redundant
+pedantic = "deny" # opt out where this is redundant
+
 ## top level
 
 [workspace.dependencies.wtools]

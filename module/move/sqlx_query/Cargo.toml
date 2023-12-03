@@ -15,6 +15,9 @@ description = """
 Expands to either sqlx function `query` or macro `query!` call depending on `sqlx_compiletime_checks` has been enabled during the build.
 """
 
+[lints]
+workspace = true
+
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false

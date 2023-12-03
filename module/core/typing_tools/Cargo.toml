@@ -18,6 +18,9 @@ Collection of general purpose tools for type checking.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[lints]
+workspace = true
+
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
