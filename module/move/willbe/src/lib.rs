@@ -11,7 +11,7 @@
 
 use mod_interface::mod_interface;
 /// Micro wtools
-mod wtools;
+pub mod wtools;
 
 // qqq : for Bohdan : poor description, make it useful
 
