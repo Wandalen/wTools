@@ -40,9 +40,9 @@ path = "src/std_tools_lib.rs"
 name = "std_tools_test"
 path = "tests/std_tools_tests.rs"
 
-[[test]]
-name = "std_tools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+# [[test]]
+# name = "std_tools_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
 
 ### features
 

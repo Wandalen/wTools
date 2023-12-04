@@ -1,6 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use crate::*;
+  use wtools::error;
   use std::fmt::Formatter;
   use std::path::PathBuf;
   use std::process::
@@ -27,6 +29,7 @@ pub( crate ) mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
+      // qqq : for Bohdan : why trim?
       f.write_fmt( format_args!( "[ {} ]\n", self.command ) )?;
       if !self.out.trim().is_empty()
       {
@@ -49,7 +52,8 @@ pub( crate ) mod private
   (
     exec_path : &str,
     current_path : impl Into< std::path::PathBuf >,
-  ) -> anyhow::Result< CmdReport >
+  )
+  -> error::for_app::Result< CmdReport >
   {
     let current_path = current_path.into();
 

@@ -5,7 +5,7 @@
 
 To be done.
 
-## Sample  :: trivial
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 

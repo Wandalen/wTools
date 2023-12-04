@@ -1,23 +1,18 @@
 /// Internal namespace.
 mod private
 {
-  use crate::package::{ functions as package, DependenciesOptions, DependenciesSort };
-
-  use crate::tools::
-  {
-    // files,
-    path,
-  };
-  use anyhow::Error;
+  use crate::*;
+  use package::{ DependenciesOptions, DependenciesSort };
+  use tools::path;
   use std::
   {
     path::PathBuf,
     collections::HashSet,
   };
   use core::fmt::Formatter;
-  use std::collections::HashMap;
-  use crate::cache::WorkspaceCache;
-  use crate::package::functions::{ CrateId, FilterMapOptions };
+  use workspace::Workspace;
+  use package::CrateId;
+  use wtools::error::for_app::Error;
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
@@ -52,6 +47,7 @@ mod private
   {
     let mut report = PublishReport::default();
 
+    // qqq : for Bohdan : lack of comments
     let mut paths = HashSet::new();
     // find all packages by specified folders
     for pattern in &patterns
@@ -63,12 +59,12 @@ mod private
 
     let mut metadata = if paths.is_empty()
     {
-      WorkspaceCache::default()
+      Workspace::default()
     }
     else
     {
       // FIX: patterns can point to different workspaces. Current solution take first random path from list
-      WorkspaceCache::with_manifest_path( paths.iter().next().unwrap() )
+      Workspace::with_manifest_path( paths.iter().next().unwrap() )
     };
 
     let packages_to_publish : Vec< _ >= metadata.load().packages_get().iter().filter( | &package | paths.contains( package.manifest_path.as_std_path().parent().unwrap() ) ).cloned().collect();
@@ -119,47 +115,48 @@ mod private
     Ok( report )
   }
 
-  ///
-  /// Publish packages from workspace.
-  ///
+//   ///
+//   /// Publish packages from workspace.
+//   ///
+//
+//   pub fn workspace_publish( path_to_workspace : PathBuf, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
+//   {
+//     let mut report = PublishReport::default();
+//
+//     let mut package_metadata = Workspace::with_manifest_path( path_to_workspace );
+//
+//     let packages_map = package::packages_filter_map
+//     (
+//       &package_metadata.load().packages_get(),
+//       FilterMapOptions{ package_filter: Some( Box::new( | p |{ p.publish.is_none() } ) ), ..Default::default() }
+//     );
+//     let package_path_map: HashMap< _, _ > = package_metadata
+//     .load()
+//     .packages_get()
+//     .iter()
+//     .map( | p | ( &p.name, &p.manifest_path ) )
+//     .collect();
+//
+//     let graph = package::graph_build( &packages_map );
+//     let sorted = package::toposort( graph );
+//
+//     for name in &sorted
+//     {
+//       let path = package_path_map[ name ].as_std_path();
+//       package::publish_single( &path, dry )
+//       .map_err
+//       (
+//         | ( current_report, e ) |
+//         {
+//           report.packages.push(( path.to_path_buf(), current_report.clone() ));
+//           ( report.clone(), e.context( "Publish list of packages" ).into() )
+//         }
+//       )?;
+//     }
+//
+//     Ok( report )
+//   }
 
-  pub fn workspace_publish( path_to_workspace : PathBuf, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
-  {
-    let mut report = PublishReport::default();
-
-    let mut package_metadata = WorkspaceCache::with_manifest_path( path_to_workspace );
-
-    let packages_map = package::packages_filter_map
-    (
-      &package_metadata.load().packages_get(),
-      FilterMapOptions{ package_filter: Some( Box::new( | p |{ p.publish.is_none() } ) ), ..Default::default() }
-    );
-    let package_path_map: HashMap< _, _ > = package_metadata
-    .load()
-    .packages_get()
-    .iter()
-    .map( | p | ( &p.name, &p.manifest_path ) )
-    .collect();
-
-    let graph = package::graph_build( &packages_map );
-    let sorted = package::toposort( graph );
-
-    for name in &sorted
-    {
-      let path = package_path_map[ name ].as_std_path();
-      package::publish_single( &path, dry )
-      .map_err
-      (
-        | ( current_report, e ) |
-        {
-          report.packages.push(( path.to_path_buf(), current_report.clone() ));
-          ( report.clone(), e.context( "Publish list of packages" ).into() )
-        }
-      )?;
-    }
-
-    Ok( report )
-  }
 }
 
 //
@@ -167,7 +164,7 @@ mod private
 crate::mod_interface!
 {
   /// Publish package.
-  prelude use publish;
-  /// Publish packages from workspace.
-  prelude use workspace_publish;
+  orphan use publish;
+  // /// Publish packages from workspace.
+  // orphan use workspace_publish;
 }

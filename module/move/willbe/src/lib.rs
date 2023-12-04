@@ -2,58 +2,95 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/willbe/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
 
 //!
 //! Utility with set of tools for managing developer routines.
 //!
+
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-
-pub use mod_interface::mod_interface;
+use mod_interface::mod_interface;
 /// Micro wtools
 pub mod wtools;
 
+// qqq : for Bohdan : poor description, make it useful
+
+/// Internal namespace.
+pub( crate ) mod private
+{
+  use crate::*;
+
+  /// qqq : for Bohdan : write description
+  #[ cfg( not( feature = "no_std" ) ) ]
+  pub fn run() -> Result< (), wtools::error::for_app::Error >
+  {
+    let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
+
+    let ca = wca::CommandsAggregator::former()
+    // .exit_code_on_error( 1 )
+    .grammar( command::grammar_form() )
+    .executor( command::executor_form() )
+    .build();
+
+    let program = args.join( " " );
+    if program.is_empty()
+    {
+      eprintln!( "Ambiguity. Did you mean?" );
+      ca.perform( ".help" )?;
+      std::process::exit( 1 )
+    }
+    else
+    {
+      ca.perform( program.as_str() )
+    }
+
+  }
+
+  /// qqq : for Bohdan : write description
+  #[ cfg( feature = "no_std" ) ]
+  pub fn run() -> Result< (), wtools::error::for_app::Error >
+  {
+    Ok( () )
+  }
+
+}
+
+#[ cfg( not( feature = "no_std" ) ) ]
 wtools::meta::mod_interface!
 {
+
+  protected use run;
+
   /// The tools for operating over packages.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer tools;
-  /// Commands library.
-  #[ cfg( not( feature = "no_std" ) ) ]
-  layer commands;
 
   /// Commands library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer command;
 
   /// Endpoints library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer endpoint;
 
   /// Package library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer package;
 
+  /// query
+  layer query;
+
+  /// methods for url
+  layer url;
   /// Version library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer version;
 
   /// Git library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer git;
-  
+
   /// Cargo library.
-  #[ cfg( not( feature = "no_std" ) ) ]
   layer cargo;
 
   /// Metadata cache.
-  #[ cfg( not( feature = "no_std" ) ) ]
-  layer cache;
+  layer workspace;
 
-  #[ cfg( not( feature = "no_std" ) ) ]
-  prelude use ::std::env;
-  // protected( crate ) use wtools::prelude::*;
+  /// To manipulate manifest data.
+  layer manifest;
+
 }

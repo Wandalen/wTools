@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
@@ -34,26 +33,9 @@ include = [
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
-
-[lib]
-name = "wlang"
-path = "src/_blank/standard_lib.rs"
-
-[[test]]
-name = "wlang_test"
-path = "tests/_blank/tests.rs"
-
-[[test]]
-name = "wlang_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "wlang_trivial_sample"
-path = "examples/wlang_trivial_sample/src/main.rs"
 
 [dependencies]
 

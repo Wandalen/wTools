@@ -1,11 +1,12 @@
 
 #[ allow( unused_imports ) ]
 use super::*;
+use crate::only_for_terminal_module;
 
 // #[ cfg_attr( feature = "enabled", module_mod_interface ) ]
 
-only_for_terminal_module!
-{
+// only_for_terminal_module!
+// {
 
   // #[ cfg( module_mod_interface ) ]
   // #[ cfg( module_is_terminal ) ]
@@ -69,4 +70,4 @@ only_for_terminal_module!
     trybuild_tests,
   }
 
-}
+// }

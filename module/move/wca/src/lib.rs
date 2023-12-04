@@ -16,7 +16,7 @@
 
 #![ allow( where_clauses_object_safety ) ] // https://github.com/chris-morgan/anymap/issues/31
 
-pub use mod_interface::mod_interface;
+use mod_interface::mod_interface;
 /// Tools
 pub mod wtools;
 

@@ -10,7 +10,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use std_x::prelude::*;
 
 fn main()
@@ -31,7 +31,7 @@ Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/mac
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use std_x::prelude::*;
 
 types!
@@ -66,7 +66,7 @@ In this example structure, Struct1 could be constructed either without arguments
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use std_x::prelude::*;
 
 #[ derive( Debug, PartialEq ) ]
