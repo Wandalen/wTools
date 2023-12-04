@@ -1,4 +1,3 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/willbe/" ) ]
@@ -11,7 +10,7 @@
 
 use mod_interface::mod_interface;
 /// Micro wtools
-mod wtools;
+pub mod wtools;
 
 // qqq : for Bohdan : poor description, make it useful
 
@@ -21,7 +20,6 @@ pub( crate ) mod private
   use crate::*;
 
   /// qqq : for Bohdan : write description
-  #[ cfg( not( feature = "no_std" ) ) ]
   pub fn run() -> Result< (), wtools::error::for_app::Error >
   {
     let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
@@ -45,17 +43,8 @@ pub( crate ) mod private
     }
 
   }
-
-  /// qqq : for Bohdan : write description
-  #[ cfg( feature = "no_std" ) ]
-  pub fn run() -> Result< (), wtools::error::for_app::Error >
-  {
-    Ok( () )
-  }
-
 }
 
-#[ cfg( not( feature = "no_std" ) ) ]
 wtools::meta::mod_interface!
 {
 
