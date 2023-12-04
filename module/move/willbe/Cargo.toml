@@ -37,6 +37,7 @@ enabled = []
 
 cargo_metadata = "~0.14"
 convert_case = "0.6.0"
+crates_tools = { workspace = true }
 error_tools = { workspace = true, features = [ "default" ] }
 flate2 = "~1.0"
 former = { workspace = true, features = [ "default" ] }

@@ -18,7 +18,7 @@
 
 use mod_interface::mod_interface;
 /// Tools
-mod wtools;
+pub mod wtools;
 
 /// Errors.
 #[ cfg( not( feature = "no_std" ) ) ]
