@@ -130,8 +130,8 @@ mod private
       packages,
       package::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
-    let module_graph = package::graph_build( &module_packages_map );
-    package::toposort( module_graph )
+    let module_graph = graph::construct( &module_packages_map );
+    graph::toposort( module_graph )
   }
 
   fn table_prepare( modules: Vec< String >, dir: &Path ) -> String
