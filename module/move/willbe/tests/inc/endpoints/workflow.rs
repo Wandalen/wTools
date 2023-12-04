@@ -35,7 +35,7 @@ mod workflow_generate
     // Arrange
     let temp = arrange( "single_module" );
     let mut expected: HashMap<&str, &str> = HashMap::new();
-    expected.insert( "ModuleTestModulePush.yml", "\n          name : test_module\n\n          on : push\n                  \n          env :\n            CARGO_TERM_COLOR : always\n                  \n          jobs :\n                test :\n              uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha\n              with :\n                manifest_path : 'test_module\\Cargo.toml'\n                module_name : 'test_module'\n                commit_message : ${{ github.event.head_commit.message }}" );
+    expected.insert( "ModuleTestModulePush.yml", "\n          name : test_module\n\n          on : push\n                  \n          env :\n            CARGO_TERM_COLOR : always\n                  \n          jobs :\n                                    \n            test :\n              uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha\n              with :\n                manifest_path : 'test_module\\Cargo.toml'\n                module_name : 'test_module'\n                commit_message : ${{ github.event.head_commit.message }}".trim() );
 
     // Act
     let output = endpoint::workflow_generate( &temp ).unwrap();
@@ -51,7 +51,7 @@ mod workflow_generate
         let mut content = String::new();
         let mut file = File::open( &path ).unwrap();
         _ = file.read_to_string( &mut content ).unwrap();
-        assert_eq!( expected.get( path.file_name().unwrap().to_str().unwrap() ).unwrap(), &content.as_str() );
+        assert_eq!( expected.get( path.file_name().unwrap().to_str().unwrap() ).unwrap(), &content.as_str().trim() );
       }
     }
     // Assert

@@ -10,8 +10,11 @@ mod private
     io::Write
   };
 
-  
-  use convert_case::{Casing, Case};
+  use convert_case::
+  {
+    Casing, 
+    Case
+  };
   use error_tools::for_app::Result;
 
   use crate::workspace::Workspace;
@@ -99,8 +102,9 @@ mod private
               dst_branch : '${{{{ github.base_ref }}}}'
             secrets :
               PRIVATE_GITHUB_BOT_TOKEN : '${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}'
-        "#)
-    }
+        "#
+    )
+  }
 
     fn auto_merge_to( branch: &str, group_branch: &str, name: &str ) -> String
     {
@@ -739,7 +743,6 @@ jobs :
   /// generate workflow
   pub fn workflow_generate( base_path: &Path ) -> Result< () >
   {
-    dbg!( base_path );
     let workspace_cache = Workspace::with_manifest_path( base_path );
     let workspace_root = workspace_cache.workspace_root();
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
@@ -757,6 +760,80 @@ jobs :
       let content = module_push( name, "alpha", relative_path.join( "Cargo.toml" ).as_str(), "Wandalen/wTools" );
       write_to_file(&workflow_file_name, &content)?;
     }
+  
+    write_to_file( &workflow_root.join( "AppropriateBranch.yml" ), &appropriative_branch() )?;
+
+    write_to_file( &workflow_root.join( "AppropriateBranchBeta.yml" ), &appropraite_branch_for( " - beta\n", "alpha", "alpha", "beta" ) )?;
+    
+    write_to_file( &workflow_root.join( "AppropriateBranchMaster.yml" ), &appropraite_branch_for("- main\n -master\n", "alpha", "beta", "master" ) )?;
+    
+    write_to_file( &workflow_root.join( "AutoMergeToBeta.yml" ), &auto_merge_to( "alpha", "beta", "beta" ) )?;
+    
+    write_to_file( &workflow_root.join( "AutoPr.yml" ), &auto_pr() )?;
+
+    write_to_file
+    ( 
+      &workflow_root.join( "AutoPrToAlpha.yml" ),
+       &auto_pr_to
+      ( 
+        "alpha",
+        r#"
+         - '*'
+         - '*/*'
+         - '**'
+         - '!master'
+         - '!main'
+         - '!alpha'
+         - '!beta'
+         - '!*test*'
+         - '!*test*/*'
+         - '!*/*test*'
+         - '!*experiment*'
+         - '!*experiment*/*'
+         - '!*/*experiment*'"#,
+        "alpha",
+        "${{ github.ref_name }}", 
+        "alpha"
+      )
+    )?;
+
+    write_to_file
+    ( 
+      &workflow_root.join( "AutoPrToBeta.yml" ),
+      &auto_pr_to
+      ( 
+        "beta",
+        "- alpha",
+     "alpha",
+     "alpha", 
+     "beta"
+      )
+    )?;
+
+    write_to_file
+    ( 
+      &workflow_root.join( "AutoPrToMaster.yml" ),
+      &auto_pr_to
+      ( 
+        "master",
+        "- beta",
+        "alpha",
+        "beta", 
+        "master"
+      )
+    )?;
+
+    write_to_file( &workflow_root.join( "RunsClean.yml" ), &rust_clean() )?;
+
+    write_to_file( &workflow_root.join( "StandardRustPullRequest.yml" ), &standard_rust_pull_request() )?;
+
+    write_to_file( &workflow_root.join( "StandardRustPush.yml" ), &&standard_rust_push() )?;
+
+    write_to_file( &workflow_root.join( "StandardRustScheduled.yml" ), &standard_rust_scheduled() )?;
+
+    write_to_file( &workflow_root.join( "StandardRustStatus.yml" ), &&standard_rust_status() )?;
+
+    write_to_file( &workflow_root.join( "StatusChecksRulesUpdate.yml" ), &status_checks_rules_update() )?;
     
     Ok( () )
   }
