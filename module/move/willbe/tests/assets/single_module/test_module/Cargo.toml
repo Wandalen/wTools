@@ -1,5 +1,5 @@
 [package]
-name = "_package_with_remote_dep_a"
+name = "test_module"
 version = "0.1.0"
 edition = "2021"
 
