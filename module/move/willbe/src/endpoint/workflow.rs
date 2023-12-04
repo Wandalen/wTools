@@ -19,90 +19,89 @@ mod private
 
   use crate::workspace::Workspace;
 
-  fn appropriative_branch() -> String
-  {
+  const APPROPRIATE_BRANCH: &str = 
     r#"
-    name : appropriate_branch
+name : appropriate_branch
     
-    on :
+on :
     
-      workflow_call :
-        inputs :
-          src_branch :
-            required : true
-            type : string
-          dst_branch :
-            required : true
-            type : string
-        secrets :
-          PRIVATE_GITHUB_BOT_TOKEN :
-            description : 'Github bot token'
-            required : true
+  workflow_call :
+    inputs :
+      src_branch :
+        required : true
+        type : string
+      dst_branch :
+        required : true
+        type : string
+      secrets :
+        PRIVATE_GITHUB_BOT_TOKEN :
+          description : 'Github bot token'
+          required : true
     
-    env :
+env :
     
-      CARGO_TERM_COLOR : always
+  CARGO_TERM_COLOR : always
     
-    concurrency :
+concurrency :
     
-      group : appropraite_branch_${{{{ inputs.src_branch }}}}_${{{{ inputs.dst_branch }}}}
-      cancel-in-progress : true
+  group : appropraite_branch_${{ inputs.src_branch }}_${{ inputs.dst_branch }}
+  cancel-in-progress : true
     
-    jobs :
+jobs :
     
-      check :
-        runs-on : ubuntu-latest
-        outputs :
-          shouldSkip : ${{{{ steps.validation.outputs.wrong-target }}}}
-        steps :
-          - name : Check branch
-            id : validation
-            uses : Vankka/pr-target-branch-action@v2.1
-            env :
-              GITHUB_TOKEN : ${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}
-            with :
-              target : ${{{{ inputs.dst_branch }}}}
-              exclude : ${{{{ inputs.src_branch }}}}
-              comment : |
-                To maintain stability of the module the repository uses 3-stages system to forward changes from an unstable branch to a stable.
-                The unstable branch is `alpha`. All user pull requests should be opened to this branch.
-                The staging branch is `beta`. Changes to this branch are forwarded by a pull request from branch `alpha` automatically.
-                The stable branch is `master`. Changes to this branch are forwarded by a pull request from branch `beta` automatically.
+  check :
+    runs-on : ubuntu-latest
+    outputs :
+      shouldSkip : ${{ steps.validation.outputs.wrong-target }}
+    steps :
+      - name : Check branch
+        id : validation
+        uses : Vankka/pr-target-branch-action@v2.1
+        env :
+          GITHUB_TOKEN : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
+        with :
+          target : ${{ inputs.dst_branch }}
+          exclude : ${{ inputs.src_branch }}
+          comment : |
+            To maintain stability of the module the repository uses 3-stages system to forward changes from an unstable branch to a stable.
+            The unstable branch is `alpha`. All user pull requests should be opened to this branch.
+            The staging branch is `beta`. Changes to this branch are forwarded by a pull request from branch `alpha` automatically.
+            The stable branch is `master`. Changes to this branch are forwarded by a pull request from branch `beta` automatically.
     
-                The pull request was automatically converted to draft.
-                Please, change base branch taking into account the described system `alpha -> beta -> master`.
-          - name : Convert to draft
-            if : ${{{{ steps.validation.outputs.wrong-target == 'true' }}}}
-            uses: voiceflow/draft-pr@latest
-            with:
-              token: ${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}
-          - name : Failure
-            if : ${{{{ steps.validation.outputs.wrong-target == 'true' }}}}
-            run : exit 1
-    "#.into()
-  }
+            The pull request was automatically converted to draft.
+            Please, change base branch taking into account the described system `alpha -> beta -> master`.
+      - name : Convert to draft
+        if : ${{ steps.validation.outputs.wrong-target == 'true' }}
+        uses: voiceflow/draft-pr@latest
+        with:
+          token: ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
+      - name : Failure
+        if : ${{ steps.validation.outputs.wrong-target == 'true' }}
+        run : exit 1
+"#;
 
-  fn appropraite_branch_for( branches: &str, uses_branch: &str, src_branch: &str, name: &str ) -> String
+  fn appropraite_branch_for( branches: &str, username_and_repository: &str, uses_branch: &str, src_branch: &str, name: &str ) -> String
   {
     format!
     ( 
-      r#"name : appropriate_branch_{name}
+      r#"
+name : appropriate_branch_{name}
         
-         on :
-         pull_request_target :
-            branches :
-              {branches}
+on :
+  pull_request_target :
+    branches :
+      {branches}
         
-        jobs :
+jobs :
         
-          appropriate_branch :
-            uses : Wandalen/wTools/.github/workflows/AppropriateBranch.yml@{uses_branch}
-            with :
-              src_branch : '{src_branch}'
-              dst_branch : '${{{{ github.base_ref }}}}'
-            secrets :
-              PRIVATE_GITHUB_BOT_TOKEN : '${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}'
-        "#
+  appropriate_branch :
+    uses : {username_and_repository}/.github/workflows/AppropriateBranch.yml@{uses_branch}
+    with :
+      src_branch : '{src_branch}'
+      dst_branch : '${{{{ github.base_ref }}}}'
+    secrets :
+      PRIVATE_GITHUB_BOT_TOKEN : '${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}'
+"#
     )
   }
 
@@ -207,69 +206,67 @@ jobs :
 "#)
     }
 
-    fn auto_pr() -> String
-    {
+    const AUTO_PR: &str = 
         r#"
-        name : auto_pr
+name : auto_pr
         
-        on :
+on :
         
-          workflow_call :
-            inputs :
-              src_branch :
-                required : true
-                type : string
-              dst_branch :
-                required : true
-                type : string
-            secrets :
-              PRIVATE_GITHUB_BOT_TOKEN :
-                description : 'Github bot token'
-                required : true
+  workflow_call :
+    inputs :
+      src_branch :
+        required : true
+        type : string
+      dst_branch :
+        required : true
+        type : string
+    secrets :
+      PRIVATE_GITHUB_BOT_TOKEN :
+        description : 'Github bot token'
+        required : true
         
-        concurrency :
+concurrency :
         
-          group : auto_pr_${{{{ inputs.src_branch }}}}_${{{{ inputs.dst_branch }}}}
-          cancel-in-progress : true
+  group : auto_pr_${{{{ inputs.src_branch }}}}_${{{{ inputs.dst_branch }}}}
+  cancel-in-progress : true
         
-        jobs :
+jobs :
         
-          build :
-            runs-on : ubuntu-latest
-            steps :
-              - uses : actions/checkout@v3
-              - name : Open PR
-                uses : vsoch/pull-request-action@1.0.18
-                env :
-                  GITHUB_TOKEN : ${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}
-                  PULL_REQUEST_BRANCH : ${{{{ inputs.dst_branch }}}}
-                  PULL_REQUEST_TITLE : 'AUTO : Forward from ${{{{ inputs.src_branch }}}} to ${{{{ inputs.dst_branch }}}}'
-                  PASS_IF_EXISTS : true
-        "#.into()
-    }
+  build :
+    runs-on : ubuntu-latest
+    steps :
+      - uses : actions/checkout@v3
+      - name : Open PR
+        uses : vsoch/pull-request-action@1.0.18
+        env :
+          GITHUB_TOKEN : ${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}
+          PULL_REQUEST_BRANCH : ${{{{ inputs.dst_branch }}}}
+          PULL_REQUEST_TITLE : 'AUTO : Forward from ${{{{ inputs.src_branch }}}} to ${{{{ inputs.dst_branch }}}}'
+          PASS_IF_EXISTS : true
+"#;
 
-    fn auto_pr_to( name: &str, branches: &str, uses: &str, src_branch: &str, dest_branch: &str ) -> String
+    fn auto_pr_to( name: &str, branches: &str, username_and_repository: &str, uses: &str, src_branch: &str, dest_branch: &str ) -> String
     {
         format!
         (
           r#"
-          name : auto_pr_to_{name}
+name : auto_pr_to_{name}
 
-          on :
-            push :
-              branches :
-                {branches}
+on :
+  push :
+    branches :
+      {branches}
                   
-          jobs :
+jobs :
                   
-            forward :
-              uses : Wandalen/wTools/.github/workflows/AutoPr.yml@{uses}
-              with :
-                src_branch : '{src_branch}'
-                dst_branch : '{dest_branch}'
-              secrets :
-                PRIVATE_GITHUB_BOT_TOKEN : '${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}'
-          "#
+  forward :
+    uses : {username_and_repository}/.github/workflows/AutoPr.yml@{uses}
+    with :
+      src_branch : '{src_branch}'
+      dst_branch : '{dest_branch}'
+    secrets :
+      PRIVATE_GITHUB_BOT_TOKEN : '${{{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}}}'
+"#
         )
     }
 
@@ -278,73 +275,69 @@ jobs :
         format!
         (
           r#"
-          name : {name}
+name : {name}
 
-          on : push
+on : push
                   
-          env :
-            CARGO_TERM_COLOR : always
+env :
+  CARGO_TERM_COLOR : always
                   
-          jobs :
+jobs :
                                     
-            test :
-              uses : {username_and_repository}/.github/workflows/StandardRustPush.yml@{branch}
-              with :
-                manifest_path : '{manifest_path}'
-                module_name : '{name}'
-                commit_message : ${{{{ github.event.head_commit.message }}}}"#
+  test :
+    uses : {username_and_repository}/.github/workflows/StandardRustPush.yml@{branch}
+    with :
+      manifest_path : '{manifest_path}'
+      module_name : '{name}'
+      commit_message : ${{{{ github.event.head_commit.message }}}}
+"#
         )
     }
 
-    fn rust_clean() -> String
+    const RUST_CLEAN: &str =
+        r#"  
+name : runs_clean
+
+on :
+
+  workflow_dispatch :
+    inputs :
+      days :
+        description : 'Older than number of days.'
+        required : true
+        type : number
+        default : 0
+
+concurrency :
+
+  group : runs_clean
+  cancel-in-progress : true
+
+jobs :
+
+  del_runs :
+    runs-on : ubuntu-latest
+    steps :
+      - name : Delete skipped and cancelled runs
+        uses : dmvict/clean-workflow-runs@v1
+        with :
+          token : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
+          run_conclusions : |
+            cancelled
+            skipped
+          save_period : 0
+          save_min_runs_number : 0
+      - name : Delete older workflow runs
+        uses : dmvict/clean-workflow-runs@v1
+        with :
+          token : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
+          save_period : ${{ github.event.inputs.days }}
+          save_min_runs_number : 20
+"#;
+
+    fn standard_rust_pull_request( username_and_repository: &str ) -> String 
     {
-        r#"
-        
-        name : runs_clean
-
-        on :
-
-          workflow_dispatch :
-            inputs :
-              days :
-                description : 'Older than number of days.'
-                required : true
-                type : number
-                default : 0
-
-        concurrency :
-
-          group : runs_clean
-          cancel-in-progress : true
-
-            jobs :
-
-              del_runs :
-                runs-on : ubuntu-latest
-                steps :
-                  - name : Delete skipped and cancelled runs
-                    uses : dmvict/clean-workflow-runs@v1
-                    with :
-                      token : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
-                      run_conclusions : |
-                        cancelled
-                        skipped
-                      save_period : 0
-                      save_min_runs_number : 0
-                  - name : Delete older workflow runs
-                    uses : dmvict/clean-workflow-runs@v1
-                    with :
-                      token : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
-                      save_period : ${{ github.event.inputs.days }}
-                      save_min_runs_number : 20
-
-        "#.into()
-    }
-
-    fn standard_rust_pull_request() -> String 
-    {
-        r#"
-        
+        format!(r#"
 name : rust_pull_request
 
 on : [ pull_request ]
@@ -389,19 +382,16 @@ jobs :
   tested :
     needs: check
     if : ${{ needs.check.outputs.should_run == 'true' }}
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    uses : {username_and_repository}/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : './Cargo.toml'
       module_name : ${{ github.event.base.ref }}_${{ github.event.number }}
       commit_message : ${{ github.event.base.ref }}_${{ github.event.number }}
-
-        "#.into()
+"#)
     }
 
-    fn standard_rust_push() -> String
-    {
+    const STANDARD_RUST_PUSH: &str = 
         r#"
-        
 name : rust_push
 
 on :
@@ -505,13 +495,11 @@ jobs :
         run : cargo install cargo-hack
       - name : Run tests with each feature
         run : cargo hack test --manifest-path ${{ inputs.manifest_path }} --each-feature
-        "#.into()
-    }
+"#;
 
-    fn standard_rust_scheduled() -> String
-    {
-        r#"
-        name : rust_scheduled
+    const STANDARD_RUST_SCHEDULED: &str = 
+      r#"
+name : rust_scheduled
 
 on :
   schedule :
@@ -605,14 +593,10 @@ jobs :
 
       - name : Test with miri
         run : cargo miri test
-
-        "#.into()
-    }
-
-    fn standard_rust_status() -> String
-    {
+"#;
+   
+    const STANDARD_RUST_STATUS: &str =
         r#"
-        
 name : rust_status
 
 on:
@@ -650,15 +634,10 @@ jobs :
       - name : Check skipped conclusion
         if : ${{ steps.check_ci.outputs.conclusion == 'skipped' }}
         run : exit 1
+"#;
 
-
-        "#.into()
-    }
-
-    fn status_checks_rules_update() -> String
-    {
+    const STATUS_CHECKS_RULES_UPDATE: &str = 
       r#"
-      
 name : status_checks_rules_update
 
 on :
@@ -735,9 +714,7 @@ jobs :
             -H "Authorization: token ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/branches/alpha/protection \
             -d "{\"required_status_checks\":{\"strict\":false,\"checks\":$CHECKS},\"enforce_admins\":false,\"required_pull_request_reviews\":null,\"restrictions\":null}"
-
-      "#.into()
-    }
+"#;
 
     
   /// generate workflow
@@ -745,8 +722,12 @@ jobs :
   {
     let workspace_cache = Workspace::with_manifest_path( base_path );
     let workspace_root = workspace_cache.workspace_root();
+    let username_and_repository = &username_and_repository();
+    // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
+    // map packages name's to naming standard
     let names = workspace_cache.packages_get().iter().map( | p | &p.name).collect::< Vec< _ > >();
+    // map packages path to relative paths fom workspace root, for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = workspace_cache
     .packages_get()
     .iter()
@@ -754,95 +735,104 @@ jobs :
     .filter_map( | p | p.strip_prefix( workspace_root ).ok() )
     .map( | p | p.with_file_name( "" ) )
     .collect::< Vec< _ > >();
+    // creating workflow for each module
     for ( name, relative_path ) in names.iter().zip( relative_paths.iter() )
     {
       let workflow_file_name = workflow_root.join( format!( "Module{}Push.yml", name.to_case( Case::Pascal ) ) );
-      let content = module_push( name, "alpha", relative_path.join( "Cargo.toml" ).as_str(), "Wandalen/wTools" );
-      write_to_file(&workflow_file_name, &content)?;
+      let content = module_push( name, "alpha", relative_path.join( "Cargo.toml" ).as_str(), username_and_repository );
+      file_write(&workflow_file_name, &content)?;
     }
   
-    write_to_file( &workflow_root.join( "AppropriateBranch.yml" ), &appropriative_branch() )?;
+    file_write( &workflow_root.join( "AppropriateBranch.yml" ), APPROPRIATE_BRANCH )?;
 
-    write_to_file( &workflow_root.join( "AppropriateBranchBeta.yml" ), &appropraite_branch_for( " - beta\n", "alpha", "alpha", "beta" ) )?;
+    file_write( &workflow_root.join( "AppropriateBranchBeta.yml" ), &appropraite_branch_for( " - beta\n", username_and_repository, "alpha", "alpha", "beta" ) )?;
     
-    write_to_file( &workflow_root.join( "AppropriateBranchMaster.yml" ), &appropraite_branch_for("- main\n -master\n", "alpha", "beta", "master" ) )?;
+    file_write( &workflow_root.join( "AppropriateBranchMaster.yml" ), &appropraite_branch_for(" - main\n -master\n", username_and_repository, "alpha", "beta", "master" ) )?;
     
-    write_to_file( &workflow_root.join( "AutoMergeToBeta.yml" ), &auto_merge_to( "alpha", "beta", "beta" ) )?;
+    file_write( &workflow_root.join( "AutoMergeToBeta.yml" ), &auto_merge_to( "alpha", "beta", "beta" ) )?;
     
-    write_to_file( &workflow_root.join( "AutoPr.yml" ), &auto_pr() )?;
+    file_write( &workflow_root.join( "AutoPr.yml" ), AUTO_PR )?;
 
-    write_to_file
+    file_write
     ( 
       &workflow_root.join( "AutoPrToAlpha.yml" ),
        &auto_pr_to
       ( 
         "alpha",
-        r#"
-         - '*'
-         - '*/*'
-         - '**'
-         - '!master'
-         - '!main'
-         - '!alpha'
-         - '!beta'
-         - '!*test*'
-         - '!*test*/*'
-         - '!*/*test*'
-         - '!*experiment*'
-         - '!*experiment*/*'
-         - '!*/*experiment*'"#,
+        r#"- '*'
+- '*/*'
+- '**'
+- '!master'
+- '!main'
+- '!alpha'
+- '!beta'
+- '!*test*'
+- '!*test*/*'
+- '!*/*test*'
+- '!*experiment*'
+- '!*experiment*/*'
+- '!*/*experiment*'"#,
+        username_and_repository,
         "alpha",
         "${{ github.ref_name }}", 
         "alpha"
       )
     )?;
 
-    write_to_file
+    file_write
     ( 
       &workflow_root.join( "AutoPrToBeta.yml" ),
       &auto_pr_to
       ( 
         "beta",
         "- alpha",
+        username_and_repository,
      "alpha",
      "alpha", 
      "beta"
       )
     )?;
 
-    write_to_file
+    file_write
     ( 
       &workflow_root.join( "AutoPrToMaster.yml" ),
       &auto_pr_to
       ( 
         "master",
         "- beta",
+        username_and_repository,
         "alpha",
         "beta", 
         "master"
       )
     )?;
 
-    write_to_file( &workflow_root.join( "RunsClean.yml" ), &rust_clean() )?;
+    file_write( &workflow_root.join( "RunsClean.yml" ), RUST_CLEAN )?;
 
-    write_to_file( &workflow_root.join( "StandardRustPullRequest.yml" ), &standard_rust_pull_request() )?;
+    file_write( &workflow_root.join( "StandardRustPullRequest.yml" ), &standard_rust_pull_request( username_and_repository ) )?;
 
-    write_to_file( &workflow_root.join( "StandardRustPush.yml" ), &&standard_rust_push() )?;
+    file_write( &workflow_root.join( "StandardRustPush.yml" ), STANDARD_RUST_PUSH )?;
 
-    write_to_file( &workflow_root.join( "StandardRustScheduled.yml" ), &standard_rust_scheduled() )?;
+    file_write( &workflow_root.join( "StandardRustScheduled.yml" ), STANDARD_RUST_SCHEDULED )?;
 
-    write_to_file( &workflow_root.join( "StandardRustStatus.yml" ), &&standard_rust_status() )?;
+    file_write( &workflow_root.join( "StandardRustStatus.yml" ), STANDARD_RUST_STATUS )?;
 
-    write_to_file( &workflow_root.join( "StatusChecksRulesUpdate.yml" ), &status_checks_rules_update() )?;
+    file_write( &workflow_root.join( "StatusChecksRulesUpdate.yml" ), STATUS_CHECKS_RULES_UPDATE )?;
     
     Ok( () )
   }
 
-  pub fn write_to_file( filename: &Path, content: &str ) -> Result< () > 
+  /// Create and write or rewrite content in file.
+  pub fn file_write( filename: &Path, content: &str ) -> Result< () > 
   {
     let mut file = File::create(filename )?;
     file.write_all( content.as_bytes() )?;
     Ok(())
+  }
+
+  pub fn username_and_repository() -> String 
+  {
+    "Wandalen/wTools".into()
   }
 
 }

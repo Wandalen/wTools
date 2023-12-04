@@ -99,6 +99,12 @@ pub( crate ) mod private
     .property( "parallel", "Run tests with different a set of features in parallel. Default is false.", Type::String, true )
     .form();
 
+    let generate_workflow = wca::Command::former()
+    .hint( "Generate workflow for modules" )
+    .long_hint( "Generate workflow for modules")
+    .phrase( "workflow.generate")
+    .form();
+
     vec!
     [
       publish_no_subj_command, publish_command,
@@ -106,7 +112,8 @@ pub( crate ) mod private
       list_no_subj_command, list_command,
       // workspace_list_no_subj_command, workspace_list_command,
       create_table_command,
-      run_tests_no_subj_command, run_tests_command
+      run_tests_no_subj_command, run_tests_command,
+      generate_workflow
     ]
   }
 
@@ -124,6 +131,7 @@ pub( crate ) mod private
       ( "list".to_owned(), Routine::new( list ) ),
       ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
       ( "tests.run".to_owned(), Routine::new( run_tests ) ),
+      ( "workflow.generate".to_owned(), Routine::new( workflow_generate ) ),
     ])
   }
 }
