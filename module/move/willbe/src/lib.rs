@@ -73,6 +73,11 @@ wtools::meta::mod_interface!
   /// Package library.
   layer package;
 
+  /// query
+  layer query;
+
+  /// methods for url
+  layer url;
   /// Version library.
   layer version;
 

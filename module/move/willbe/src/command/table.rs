@@ -9,7 +9,7 @@ mod private
   ///
   pub fn table_generate( ( _, _ ) : ( wca::Args, wca::Props ) ) -> error::Result< () >
   {
-    endpoint::table_create().context( "Fail to create table" )
+    endpoint::table_create( &std::env::current_dir()? ).context( "Fail to create table" )
   }
 }
 

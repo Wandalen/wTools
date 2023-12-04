@@ -111,7 +111,6 @@ tests_impls!
   {
     // Arrange
     let mut metadata = Workspace::default();
-
     let root_path = metadata.load().workspace_root();
     let assets_relative_path = std::path::Path::new( ASSETS_PATH );
     let assets_path = root_path.join( assets_relative_path );
