@@ -1,12 +1,13 @@
 /// Internal namespace.
 mod private
 {
-  use std::fmt::Display;
+  use crate::*;
+  use std::fmt;
   use std::str::FromStr;
   use toml_edit::value;
   use semver::Version as SemVersion;
-  use crate::manifest;
-  use crate::wtools::error::for_app::{ Result, anyhow };
+  use wtools::error::for_app::{ Result, anyhow };
+  use manifest::Manifest;
 
   /// Wrapper for a SemVer structure
   #[ derive( Debug, Clone, Eq, PartialEq ) ]
@@ -22,7 +23,7 @@ mod private
     }
   }
 
-  impl Display for Version
+  impl fmt::Display for Version
   {
     fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
     {
@@ -58,6 +59,7 @@ mod private
     }
   }
 
+  // qqq : for Bohdan : should return report
   /// Bump version by manifest.
   /// It takes data from the manifest and increments the version number according to the semantic versioning scheme.
   /// It then writes the updated manifest file back to the same path, unless the flag is set to true, in which case it only returns the new version number as a string.
@@ -71,7 +73,7 @@ mod private
   /// Returns:
   /// - Ok - the new version number as a string;
   /// - Err - if the manifest file cannot be read, written, parsed.
-  pub fn bump( manifest : &mut manifest::Manifest, dry : bool ) -> Result< String >
+  pub fn bump( manifest : &mut Manifest, dry : bool ) -> Result< String >
   {
     let version=
     {
@@ -82,6 +84,8 @@ mod private
       let data = manifest.manifest_data.as_ref().unwrap();
       if !manifest.package_is()
       {
+        // qqq : for Bohdan : rid off untyped errors, make proper errors handing
+        // https://www.lpalmieri.com/posts/error-handling-rust/
         return Err( anyhow!( "`{}` - not a package", manifest.manifest_path.display() ) );
       }
       let package = data.get( "package" ).unwrap();
@@ -115,6 +119,7 @@ mod tests
   {
     use std::str::FromStr;
     use crate::version::private::Version;
+    // qqq : for Bohdan : move to tests folder
 
     #[ test ]
     fn patch()

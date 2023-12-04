@@ -1,7 +1,6 @@
 mod private
 {
   use std::path::Path;
-  use anyhow::anyhow;
   use wca::wtools::Itertools;
   use crate::process;
   use crate::process::CmdReport;
@@ -42,7 +41,8 @@ mod private
     }
     else
     {
-      process::start_sync( &command, path.as_ref() ).map_err( | e | anyhow!( "{e}" ) )
+      // qqq : for Bohdan : process::start_sync is overkill. sh is not needed. introduce process::start2_sync
+      process::start_sync( &command, path.as_ref() )
     }
   }
 
@@ -80,7 +80,8 @@ mod private
     }
     else
     {
-      process::start_sync( &command, path.as_ref() ).map_err( | e | anyhow!( "{e}" ) )
+      // qqq : for Bohdan : process::start_sync is overkill. sh is not needed. introduce process::start2_sync
+      process::start_sync( &command, path.as_ref() )
     }
   }
 
@@ -115,7 +116,8 @@ mod private
     }
     else
     {
-      process::start_sync( &command, path.as_ref() ).map_err( | e | anyhow!( "{e}" ) )
+      // qqq : for Bohdan : process::start_sync is overkill. sh is not needed. introduce process::start2_sync
+      process::start_sync( &command, path.as_ref() )
     }
   }
 }
