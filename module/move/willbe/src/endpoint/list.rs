@@ -15,7 +15,6 @@ mod private
   use package::
   {
     FilterMapOptions,
-    graph_build,
     packages_filter_map
   };
   use wtools::error::
@@ -202,7 +201,7 @@ mod private
       FilterMapOptions{ dependency_filter: dep_filter, ..Default::default() }
     );
 
-    let graph = graph_build( &packages_map );
+    let graph = graph::construct( &packages_map );
 
     let sorted = toposort( &graph, None ).map_err( | e | { use std::ops::Index; ( report.clone(), err!( "Failed to process toposort for package: {:?}", graph.index( e.node_id() ) ) ) } )?;
 

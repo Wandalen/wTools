@@ -15,6 +15,9 @@ exclude = [
 ]
 # default-members = [ "module/core/wtools" ]
 
+[workspace.metadata]
+branches = [ "master", "alpha" ]
+
 # [metadata.cargo-suppress-warnings]
 # unused-manifest-key = true
 
@@ -412,3 +415,4 @@ default-features = true
 version = "~0.2.0"
 path = "module/test/c"
 default-features = true
+
