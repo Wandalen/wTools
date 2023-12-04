@@ -1,6 +1,7 @@
 mod private
 {
   use crate::*;
+  use crate::manifest::private::repo_url;
   use std::
   {
     fs,
@@ -37,11 +38,9 @@ mod private
     Result,
     bail,
   };
-  use anyhow::anyhow;
+  use anyhow::{anyhow, Context};
   use crate::workspace::Workspace;
   use crate::package;
-  use crate::package::PackageName;
-  use crate::process::start_sync;
   use regex::bytes::Regex;
 
   static TAG_TEMPLATE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
@@ -113,36 +112,7 @@ mod private
     {
       Err( anyhow!( "No Cargo.toml found" ) )
     }
-  }
-
-  /// Retrieves the repository URL of a package from its `Cargo.toml` file.
-  fn repo_url( package_name: &PackageName, base_dir_path: &Path ) -> Result< String >
-  {
-    let path = base_dir_path.join( package_name ).join( "Cargo.toml" );
-    if path.exists() 
-    {
-      let mut contents = String::new();
-      File::open( path )?.read_to_string( &mut contents )?;
-      let doc = contents.parse::< Document >()?;
-
-      let repo_url = doc
-      .get( "package" )
-      .and_then( | package | package.get( "repository" ) )
-      .and_then( | i | i.as_str() );
-      if let Some( repo_url ) = repo_url {
-          Ok( url::extract_repo_url( repo_url ).ok_or_else( || anyhow!( "Fail to extract repository url ") )? )
-      }
-      else 
-      {
-        let report = start_sync( "git ls-remote --get-url", base_dir_path )?;
-        Ok( url::extract_repo_url( &report.out.trim() ).ok_or_else( || anyhow!( "Fail to extract repository url.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", base_dir_path.join( "Cargo.toml" ).display(), base_dir_path.join( package_name ).join( "Cargo.toml" ).display() ) )? )
-      }
-    }
-    else
-    {
-      Err( anyhow!( "No Cargo.toml found" ) )
-    }
-  }
+  } 
 
   /// Represents parameters that are common for all tables
   #[ derive( Debug ) ]
@@ -336,7 +306,12 @@ mod private
       };
       if parameters.core_url == "" 
       {
-        parameters.core_url = repo_url( &package_name, &cache.workspace_root().join( &table_parameters.base_path ) )?;
+        let module_path = &cache.workspace_root().join( &table_parameters.base_path ).join( &package_name );
+        parameters.core_url = repo_url( &module_path )
+        .context
+        ( 
+          anyhow!( "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", module_path.display(), cache.workspace_root().join( "Cargo.toml" ).display(), module_path.join( "Cargo.toml" ).display() ) 
+        )?;
         parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
       }
       table.push_str( &row_generate(&package_name, stability.as_ref(), parameters, &table_parameters) );

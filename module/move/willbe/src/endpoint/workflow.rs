@@ -7,17 +7,19 @@ mod private
       Path,
     }, 
     fs::File,
-    io::Write
+    io::{Write, Read}
   };
 
+  use anyhow::bail;
   use convert_case::
   {
     Casing, 
     Case
   };
-  use error_tools::for_app::Result;
+  use error_tools::{for_app::{Result, anyhow}};
+use toml_edit::Document;
 
-  use crate::workspace::Workspace;
+  use crate::{workspace::Workspace, url, manifest};
 
   const APPROPRIATE_BRANCH: &str = 
     r#"
@@ -720,9 +722,9 @@ jobs :
   /// generate workflow
   pub fn workflow_generate( base_path: &Path ) -> Result< () >
   {
-    let workspace_cache = Workspace::with_manifest_path( base_path );
+    let mut workspace_cache = Workspace::with_manifest_path( base_path );
+    let username_and_repository = &username_and_repository( &mut workspace_cache )?;
     let workspace_root = workspace_cache.workspace_root();
-    let username_and_repository = &username_and_repository();
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard
@@ -830,9 +832,48 @@ jobs :
     Ok(())
   }
 
-  pub fn username_and_repository() -> String 
+  pub fn username_and_repository( workspace: &mut Workspace ) -> Result< String > 
   {
-    "Wandalen/wTools".into()
+    let cargo_toml_path = workspace.workspace_root().join( "Cargo.toml" );
+    if cargo_toml_path.exists() 
+    {
+      let mut contents = String::new();
+      File::open( cargo_toml_path )?.read_to_string( &mut contents )?;
+      let doc = contents.parse::< Document >()?;
+      let url =  
+      doc
+      .get( "workspace" )
+      .and_then( | workspace  | workspace.get( "metadata" ) )
+      .and_then( | metadata | metadata.get( "repo_url" ) )
+      .and_then( | url | url.as_str() )
+      .map( String::from );
+      if let Some( url ) = url 
+      {
+        return url::extract_repo_url( &url )
+        .and_then( | url | url::git_info_extract( &url ).ok() )
+        .ok_or_else( || anyhow!( "Fail to parse repository url from workspace Cargo.toml"))
+      } 
+      else 
+      {
+        let mut url = None;
+        for package in workspace.packages_get()
+        {
+          if let Ok( wu ) = manifest::private::repo_url( package.manifest_path.parent().unwrap().as_std_path() )
+          {
+            url = Some( wu );
+            break;
+          }
+        }
+        return url
+        .and_then( | url | url::extract_repo_url( &url ) )
+        .and_then( | url | url::git_info_extract( &url ).ok() )
+        .ok_or_else( || anyhow!( "Fail to extract repository url") )
+      }
+    } 
+    else 
+    {
+      return Err( anyhow!( "Fail to find workspace Cargo.toml" ));
+    }
   }
 
 }
