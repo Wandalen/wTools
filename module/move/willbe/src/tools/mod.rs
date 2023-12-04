@@ -13,4 +13,6 @@ crate::mod_interface!
   orphan mod process;
   /// Work with paths.
   orphan mod path;
+  /// Tools for working with dependencies graph.
+  orphan mod graph;
 }

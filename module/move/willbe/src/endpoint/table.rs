@@ -369,8 +369,8 @@ mod private
       packages,
       package::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
-    let module_graph = package::graph_build( &module_packages_map );
-    package::toposort( module_graph )
+    let module_graph = graph::construct( &module_packages_map );
+    graph::toposort( module_graph )
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
