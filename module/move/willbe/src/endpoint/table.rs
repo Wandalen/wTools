@@ -2,16 +2,16 @@ mod private
 {
   use crate::*;
   use std::
-  { 
-    fs, 
+  {
+    fs,
     path::PathBuf
   };
   use std::collections::HashMap;
   use std::io::
-  { 
-    Read, 
+  {
+    Read,
     Seek,
-    SeekFrom 
+    SeekFrom
   };
   use std::io::Write;
   use cargo_metadata::
@@ -38,10 +38,9 @@ mod private
     bail,
   };
   use anyhow::anyhow;
-  use crate::cache::WorkspaceCache;
-  use crate::package::functions;
-  use crate::package::functions::FilterMapOptions;
-  use crate::package::functions::PackageName;
+  use crate::workspace::Workspace;
+  use crate::package;
+  use crate::package::PackageName;
   use crate::process::start_sync;
   use regex::bytes::Regex;
 
@@ -256,7 +255,7 @@ mod private
   pub fn table_create( path: &Path ) -> Result< () >
   {
     regexes_initialize();
-    let mut cargo_metadata = WorkspaceCache::with_manifest_path( path );
+    let mut cargo_metadata = Workspace::with_manifest_path( path );
     let workspace_root = workspace_root( &mut cargo_metadata )?;
     let mut parameters = GlobalTableParameters::initialize_from_path( &workspace_root )?;
 
@@ -321,7 +320,7 @@ mod private
 
   /// Generate table from `table_parameters`.
   /// Generate header, iterate over all modules in package (from table_parameters) and append row. 
-  fn package_table_create(  cache: &mut WorkspaceCache, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error > 
+  fn package_table_create(  cache: &mut Workspace, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error > 
   {
     let directory_names = directory_names( cache.workspace_root().join( &table_parameters.base_path ), &cache.load().packages_get() );
     let mut table = table_header_generate( parameters, &table_parameters );
@@ -365,14 +364,13 @@ mod private
         d.path.is_some() && d.kind != DependencyKind::Development && d.path.as_ref().unwrap().starts_with( &path_clone )
       )
     );
-    let module_packages_map = functions::packages_filter_map
+    let module_packages_map = package::packages_filter_map
     (
       packages,
-      FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
+      package::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
-    let module_graph = functions::graph_build( &module_packages_map );
-
-    functions::toposort( module_graph )
+    let module_graph = package::graph_build( &module_packages_map );
+    package::toposort( module_graph )
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
@@ -469,7 +467,7 @@ mod private
   }
 
   /// Return workspace root
-  fn workspace_root( metadata: &mut WorkspaceCache ) -> Result< PathBuf >
+  fn workspace_root( metadata: &mut Workspace ) -> Result< PathBuf >
   {
     Ok( metadata.load().workspace_root().to_path_buf() )
   }
@@ -512,7 +510,6 @@ mod private
     }
   }
 
-
   /// Searches for a file named "readme.md" in the specified directory path.
   ///
   /// Given a directory path, this function searches for a file named "readme.md" in the specified
@@ -535,10 +532,11 @@ mod private
     .max()
     .map( PathBuf::from )
   }
+
 }
 
 crate::mod_interface!
 {
   /// Create Table.
-  prelude use table_create;
+  orphan use table_create;
 }

@@ -27,6 +27,7 @@ mod private
     }
     else
     {
+      // qqq : for Bohdan : process::start_sync is overkill. sh is not needed. introduce process::start2_sync
       process::start_sync( command, path.as_ref() )
     }
   }

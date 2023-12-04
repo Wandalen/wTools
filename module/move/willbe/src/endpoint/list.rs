@@ -1,6 +1,7 @@
 /// Internal namespace.
 mod private
 {
+  use crate::*;
   use std::fmt::Formatter;
   use petgraph::
   {
@@ -10,16 +11,16 @@ mod private
   };
   use std::path::PathBuf;
   use std::str::FromStr;
-  use anyhow::Context;
-  use crate::package::functions::
+  // use anyhow::Context;
+  use package::
   {
     FilterMapOptions,
     graph_build,
     packages_filter_map
   };
-  use crate::wtools::error::
+  use wtools::error::
   {
-    for_app::Error,
+    for_app::{ Error, Context },
     err
   };
   use cargo_metadata::
@@ -30,8 +31,7 @@ mod private
   };
   use petgraph::prelude::{ Dfs, EdgeRef };
   use petgraph::visit::Topo;
-  use crate::cache::WorkspaceCache;
-  use crate::manifest;
+  use workspace::Workspace;
 
   /// Args for `list` endpoint.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -164,8 +164,8 @@ mod private
   {
     let mut report = ListReport::default();
 
-    let manifest = manifest::get( &path_to_manifest.join( "Cargo.toml" ) ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let mut metadata = WorkspaceCache::with_manifest_path( &path_to_manifest );
+    let manifest = manifest::open( &path_to_manifest.join( "Cargo.toml" ) ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let mut metadata = Workspace::with_manifest_path( &path_to_manifest );
 
     let root_crate = manifest
     .manifest_data
@@ -274,6 +274,7 @@ mod private
   }
 }
 
+// qqq : for Bohdan : move to tests folder
 mod tests
 {
   #[ test ]
@@ -304,11 +305,11 @@ mod tests
 crate::mod_interface!
 {
   /// Argument for `list` endpoint. Sets the output format.
-  orphan use ListFormat;
+  protected use ListFormat;
   /// Argument for `list` endpoint. Sets filter(local or all) packages should be in the output.
-  orphan use ListFilter;
+  protected use ListFilter;
   /// Contains output of the endpoint.
-  orphan use ListReport;
+  protected use ListReport;
   /// List packages in workspace.
   orphan use list;
 }

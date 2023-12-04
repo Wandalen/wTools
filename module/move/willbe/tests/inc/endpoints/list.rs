@@ -1,7 +1,8 @@
-const ASSETS_PATH : &str = "tests/assets";
-
+use super::*;
 use assert_fs::prelude::*;
-use crate::TheModule::endpoint::{ self, list::* };
+use TheModule::endpoint::{ self, list::* };
+
+const ASSETS_PATH : &str = "tests/assets";
 
 //
 
