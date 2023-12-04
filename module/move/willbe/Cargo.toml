@@ -29,7 +29,6 @@ exclude = [ "/tests", "/examples", "-*" ]
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-no_std = []
 use_alloc = []
 enabled = []
 
