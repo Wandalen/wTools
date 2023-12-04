@@ -116,9 +116,9 @@ mod private
   }
 
   /// Retrieves the repository URL of a package from its `Cargo.toml` file.
-  fn repo_url( package_name: &PackageName ) -> Result< String >
+  fn repo_url( package_name: &PackageName, base_dir_path: &Path ) -> Result< String >
   {
-    let path = package_name.join( "Cargo.toml" );
+    let path = base_dir_path.join( package_name ).join( "Cargo.toml" );
     if path.exists() 
     {
       let mut contents = String::new();
