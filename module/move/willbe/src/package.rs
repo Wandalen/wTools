@@ -101,10 +101,9 @@ mod private
       return Ok( report );
     }
 
-    let mut package_dir = manifest.manifest_path.clone();
-    package_dir.pop();
+    let package_dir = &manifest.crate_dir();
 
-    let output = process::start_sync( "cargo package", &package_dir ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
+    let output = process::start_sync( "cargo package", &package_dir.as_ref() ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
     if output.err.contains( "not yet committed")
     {
       return Err(( report, anyhow!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
@@ -119,19 +118,18 @@ mod private
         let data = manifest.manifest_data.as_ref().unwrap();
         data[ "package" ][ "name" ].as_str().unwrap()
       };
-      let manifest_dir = manifest.manifest_path.parent().unwrap();
 
       report.bump = Some( format!( "`{package_name}` bumped to `{new_version}`" ) );
 
       let commit_message = format!( "{package_name}-v{new_version}" );
-      let res = git::add( manifest_dir, [ "Cargo.toml" ], dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git::add( package_dir, [ "Cargo.toml" ], dry ).map_err( | e | ( report.clone(), e ) )?;
       report.add = Some( res );
-      let res = git::commit( manifest_dir, commit_message, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git::commit( package_dir, commit_message, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.commit = Some( res );
-      let res = git::push( manifest_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git::push( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.push = Some( res );
 
-      let res = cargo::publish( manifest_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = cargo::publish( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.publish = Some( res );
     }
 
@@ -317,11 +315,11 @@ mod private
   ///
   /// Returns:
   /// The local packed `.crate` file of the package
-  pub fn local_path_get< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
+  pub fn local_path_get< 'a >( name : &'a str, version : &'a str, crate_dir : CrateDir ) -> PathBuf
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
 
-    let workspace = Workspace::with_manifest_path( manifest_path.parent().unwrap() );
+    let workspace = Workspace::with_crate_dir( crate_dir );
 
     let mut local_package_path = PathBuf::new();
     local_package_path.push( workspace.target_directory() );
@@ -422,7 +420,7 @@ mod private
     let name = name.as_str().expect( "Name should be valid UTF-8" );
     let version = &data[ "package" ][ "version" ].clone();
     let version = version.as_str().expect( "Version should be valid UTF-8" );
-    let local_package_path = local_path_get( name, version, &manifest.manifest_path );
+    let local_package_path = local_path_get( name, version, manifest.crate_dir() );
 
     let local_package = fs::read( local_package_path ).expect( "Failed to read local package. Please, run `cargo package` before." );
     // Is it ok? If there is any problem with the Internet, we will say that the packages are different.

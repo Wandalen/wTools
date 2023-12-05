@@ -3,6 +3,56 @@ pub( crate ) mod private
 {
   use std::path::{ Path, PathBuf };
 
+  /// Absolute path.
+  #[ derive( Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
+  pub struct AbsolutePath( PathBuf );
+
+  impl TryFrom< PathBuf > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    fn try_from( value : PathBuf ) -> Result< Self, Self::Error >
+    {
+      Ok( Self( canonicalize( value )? ) )
+    }
+  }
+
+  impl TryFrom< &Path > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    fn try_from( value : &Path ) -> Result< Self, Self::Error >
+    {
+      Ok( Self( canonicalize( value )? ) )
+    }
+  }
+
+  impl AsRef< Path > for AbsolutePath
+  {
+    fn as_ref( &self ) -> &Path
+    {
+      self.0.as_ref()
+    }
+  }
+
+  impl AbsolutePath
+  {
+    /// Returns the Path without its final component, if there is one.
+    /// Returns None if the path terminates in a root or prefix, or if it's the empty string.
+    pub fn parent( &self ) -> Option< AbsolutePath >
+    {
+      self.0.parent().map( PathBuf::from ).map( AbsolutePath )
+    }
+
+    /// Creates an owned `AbsolutePath` with path adjoined to self.
+    pub fn join< P >( &self, path : P ) -> AbsolutePath
+    where
+      P : AsRef< Path >,
+    {
+      Self::try_from( self.0.join( path ) ).unwrap()
+    }
+  }
+
   /// Check if path is valid.
   pub fn valid_is( path: &str ) -> bool
   {
@@ -59,4 +109,6 @@ crate::mod_interface!
   protected use glob_is;
   protected use valid_is;
   protected use canonicalize;
+
+  protected use AbsolutePath;
 }

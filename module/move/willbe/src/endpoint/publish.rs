@@ -3,7 +3,6 @@ mod private
 {
   use crate::*;
   use package::{ DependenciesOptions, DependenciesSort };
-  use tools::path;
   use std::
   {
     path::PathBuf,
@@ -13,6 +12,7 @@ mod private
   use workspace::Workspace;
   use package::CrateId;
   use wtools::error::for_app::Error;
+  use path::AbsolutePath;
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
@@ -52,22 +52,31 @@ mod private
     // find all packages by specified folders
     for pattern in &patterns
     {
-      let current_path = path::canonicalize( pattern ).map_err( | e | ( report.clone(), e.into() ) )?;
+      let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) ).map_err( | e | ( report.clone(), e.into() ) )?;
       // let current_paths = files::find( current_path, &[ "Cargo.toml" ] );
       paths.extend( Some( current_path ) );
     }
 
     let mut metadata = if paths.is_empty()
     {
-      Workspace::default()
+      Workspace::from_current_path().map_err( | e | ( report.clone(), e.into() ) )?
     }
     else
     {
       // FIX: patterns can point to different workspaces. Current solution take first random path from list
-      Workspace::with_manifest_path( paths.iter().next().unwrap() )
+      let current_path = paths.iter().next().unwrap().clone();
+      let dir = CrateDir::try_from( current_path ).map_err( | e | ( report.clone(), e.into() ) )?;
+
+      Workspace::with_crate_dir( dir )
     };
 
-    let packages_to_publish : Vec< _ >= metadata.load().packages_get().iter().filter( | &package | paths.contains( package.manifest_path.as_std_path().parent().unwrap() ) ).cloned().collect();
+    let packages_to_publish : Vec< _ >= metadata
+    .load()
+    .packages_get()
+    .iter()
+    .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path.as_std_path().parent().unwrap() ).unwrap() ) )
+    .cloned()
+    .collect();
     let mut queue = vec![];
     for package in &packages_to_publish
     {

@@ -1,39 +1,39 @@
 mod private
 {
-  use std::path::{ Path, PathBuf };
+  use std::path::Path;
   use cargo_metadata::*;
+  use wca::wtools::error;
+  use crate::CrateDir;
+  use crate::path::AbsolutePath;
 
   /// Stores information about current workspace.
-  #[ derive( Debug, Default, Clone ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct Workspace
   {
     metadata : Option< Metadata >,
-    manifest_dir : PathBuf,
+    manifest_dir : CrateDir,
   }
 
   impl Workspace
   {
     /// Load data from current directory
-    pub fn from_current_path() -> Self
+    pub fn from_current_path() -> error::Result< Self >
     {
-      Self
+      let current_path = AbsolutePath::try_from( std::env::current_dir().unwrap_or_default() )?;
+      Ok( Self
       {
         metadata : Some( MetadataCommand::new().no_deps().exec().unwrap() ),
-        manifest_dir : std::env::current_dir().unwrap_or_default(),
-      }
+        manifest_dir : CrateDir::try_from( current_path )?,
+      })
     }
 
     /// Load data from current directory
-    pub fn with_manifest_path< P >( path : P ) -> Self
-    where
-      P : Into< PathBuf >,
+    pub fn with_crate_dir( crate_dir : CrateDir ) -> Self
     {
-      let path = path.into();
-
       Self
       {
-        metadata : Some( MetadataCommand::new().manifest_path( path.join( "Cargo.toml" ) ).no_deps().exec().unwrap() ),
-        manifest_dir : path,
+        metadata : Some( MetadataCommand::new().current_dir( crate_dir.as_ref() ).no_deps().exec().unwrap() ),
+        manifest_dir : crate_dir,
       }
     }
   }
@@ -43,11 +43,12 @@ mod private
     fn from( value : Metadata ) -> Self
     {
       let path = value.workspace_root.as_std_path().parent().unwrap().to_path_buf();
+      let path = AbsolutePath::try_from( path ).unwrap();
 
       Self
       {
         metadata : Some( value ),
-        manifest_dir : path,
+        manifest_dir : CrateDir::try_from( path ).unwrap(),
       }
     }
   }
@@ -60,7 +61,7 @@ mod private
     {
       if self.metadata.is_none()
       {
-        self.metadata.get_or_insert_with( || Self::with_manifest_path( &self.manifest_dir ).metadata.unwrap() );
+        self.metadata.get_or_insert_with( || Self::with_crate_dir( self.manifest_dir.clone() ).metadata.unwrap() );
       }
 
       self
@@ -70,7 +71,7 @@ mod private
     // FIX: Maybe unsafe. Take metadata of workspace in current dir.
     pub fn force_reload( &mut self ) -> &mut Self
     {
-      _ = self.metadata.insert( Self::with_manifest_path( &self.manifest_dir ).metadata.unwrap() );
+      _ = self.metadata.insert( Self::with_crate_dir( self.manifest_dir.clone() ).metadata.unwrap() );
 
       self
     }
