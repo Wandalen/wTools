@@ -33,6 +33,6 @@ tests_impls!
 //
 
 tests_index!
-{ 
+{
   basic,
 }
