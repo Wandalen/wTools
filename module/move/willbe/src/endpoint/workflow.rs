@@ -71,7 +71,6 @@ mod private
     {
       let workflow_file_name = workflow_root.join( format!( "Module{}Push.yml", name.to_case( Case::Pascal ) ) );
       let path = relative_path.join( "Cargo.toml" );
-      // let content = module_push( name, "alpha", relative_path.join( "Cargo.toml" ).as_str(), username_and_repository );
       let mut data = BTreeMap::new();
       data.insert("name", name.as_str() );
       data.insert("username_and_repository", username_and_repository.as_str() );
@@ -82,13 +81,13 @@ mod private
       file_write(&workflow_file_name, &content)?;
     }
   
-    file_write( &workflow_root.join( "AppropriateBranch.yml" ), include_str!("../../files/static/appropriate_branch.yml") )?;
+    file_write( &workflow_root.join( "AppropriateBranch.yml" ), include_str!( "../../files/static/appropriate_branch.yml" ) )?;
 
-    let data = prepare_map("- beta\n", username_and_repository, "alpha", "alpha", "beta");
-    file_write( &workflow_root.join( "AppropriateBranchBeta.yml" ), &handlebars.render( "appropraite_branch_for", &data)?)?;
+    let data = prepare_map( "- beta\n", username_and_repository, "alpha", "alpha", "beta" );
+    file_write( &workflow_root.join( "AppropriateBranchBeta.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
 
-    let data = prepare_map("- main\n      - master", username_and_repository, "alpha", "beta", "master");
-    file_write( &workflow_root.join( "AppropriateBranchMaster.yml" ), &handlebars.render( "appropraite_branch_for", &data)?)?;
+    let data = prepare_map( "- main\n      - master", username_and_repository, "alpha", "beta", "master" );
+    file_write( &workflow_root.join( "AppropriateBranchMaster.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
 
     let mut data = BTreeMap::new();
     data.insert( "name", "beta" );
@@ -101,7 +100,10 @@ mod private
     
     let mut data = BTreeMap::new();
     data.insert( "name", "alpha" );
-    data.insert( "branches",  "- '*'
+    data.insert
+    ( 
+      "branches",  
+      "- '*'
      - '*/*' 
      - '**' 
      - '!master' 
@@ -113,7 +115,8 @@ mod private
      - '!*/*test*' 
      - '!*experiment*' 
      - '!*experiment*/*' 
-     - '!*/*experiment*' ", );
+     - '!*/*experiment*' " 
+    );
     data.insert( "username_and_repository", username_and_repository.as_str() );
     data.insert( "uses_branch", "alpha" );
     data.insert( "src_branch", "${{ github.ref_name }}" );
@@ -141,40 +144,40 @@ mod private
 
     file_write( &workflow_root.join( "AutoPrToMaster.yml" ), &handlebars.render( "auto_pr_to", &data )? )?;
 
-    file_write( &workflow_root.join( "RunsClean.yml" ),  include_str!("../../files/static/rust_clean.yml") )?;
+    file_write( &workflow_root.join( "RunsClean.yml" ),  include_str!( "../../files/static/rust_clean.yml" ) )?;
 
     let mut data = BTreeMap::new();
     data.insert( "username_and_repository", username_and_repository.as_str() );
 
     file_write( &workflow_root.join( "StandardRustPullRequest.yml" ), &handlebars.render( "standard_rust_pull_request", &data )? )?;
 
-    file_write( &workflow_root.join( "StandardRustPush.yml" ), include_str!("../../files/static/standard_rust_push.yml") )?;
+    file_write( &workflow_root.join( "StandardRustPush.yml" ), include_str!( "../../files/static/standard_rust_push.yml" ) )?;
 
-    file_write( &workflow_root.join( "StandardRustScheduled.yml" ), include_str!("../../files/static/standard_rust_scheduled.yml") )?;
+    file_write( &workflow_root.join( "StandardRustScheduled.yml" ), include_str!( "../../files/static/standard_rust_scheduled.yml" ) )?;
 
-    file_write( &workflow_root.join( "StandardRustStatus.yml" ), include_str!("../../files/static/standard_rust_status.yml") )?;
+    file_write( &workflow_root.join( "StandardRustStatus.yml" ), include_str!( "../../files/static/standard_rust_status.yml" ) )?;
 
-    file_write( &workflow_root.join( "StatusChecksRulesUpdate.yml" ), include_str!("../../files/static/status_checks_rules_update.yml") )?;
+    file_write( &workflow_root.join( "StatusChecksRulesUpdate.yml" ), include_str!( "../../files/static/status_checks_rules_update.yml" ) )?;
     Ok( () )
   }
 
-  fn prepare_map<'a>( branches: &'a str, username_and_repository: &'a str, uses_branch: &'a str, src_branch: &'a str, name: &'a str ) -> BTreeMap< &'a str, &'a str >
+  fn prepare_map< 'a >( branches: &'a str, username_and_repository: &'a str, uses_branch: &'a str, src_branch: &'a str, name: &'a str ) -> BTreeMap< &'a str, &'a str >
   {
     let mut data = BTreeMap::new();
-    data.insert("branches", branches);
-    data.insert("username_and_repository", username_and_repository);
-    data.insert("uses_branch", uses_branch);
-    data.insert("src_branch", src_branch);
-    data.insert("name", name);
+    data.insert( "branches", branches );
+    data.insert( "username_and_repository", username_and_repository );
+    data.insert( "uses_branch", uses_branch );
+    data.insert( "src_branch", src_branch );
+    data.insert( "name", name );
     data
   }
 
   /// Create and write or rewrite content in file.
   pub fn file_write( filename: &Path, content: &str ) -> Result< () > 
   {
-    let mut file = File::create(filename )?;
+    let mut file = File::create( filename )?;
     file.write_all( content.as_bytes() )?;
-    Ok(())
+    Ok( () )
   }
 
   pub fn username_and_repository( workspace: &mut Workspace ) -> Result< String > 
