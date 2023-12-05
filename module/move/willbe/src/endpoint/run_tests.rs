@@ -93,7 +93,7 @@ mod private
 					{
 						return;
 					}
-					let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --features {feature}" ), dir ).unwrap();
+					let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features --features {feature}" ), dir ).unwrap();
 					report.write().unwrap().tests.insert( feature.to_string(), cmd_rep );
 				}
 			);
@@ -106,7 +106,7 @@ mod private
 				{
 					continue;
 				}
-				let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --features {feature}" ), dir )?;
+				let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features --features {feature}" ), dir )?;
 				report.write().unwrap().tests.insert( feature.clone(), cmd_rep );
 			}
 		}
