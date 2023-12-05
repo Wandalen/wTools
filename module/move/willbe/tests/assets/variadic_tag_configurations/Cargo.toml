@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = [
+    "*",
+]
+
+[workspace.metadata]
+repo_url = "https://github.com/SomeName/SomeCrate/C"
+branches = [ "test_branch1", "test_branch2" ]

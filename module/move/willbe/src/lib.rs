@@ -11,7 +11,7 @@
 
 use mod_interface::mod_interface;
 /// Micro wtools
-mod wtools;
+pub mod wtools;
 
 // qqq : for Bohdan : poor description, make it useful
 
@@ -73,6 +73,11 @@ wtools::meta::mod_interface!
   /// Package library.
   layer package;
 
+  /// query
+  layer query;
+
+  /// methods for url
+  layer url;
   /// Version library.
   layer version;
 

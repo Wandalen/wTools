@@ -369,6 +369,7 @@ mod private
     }
   }
 
+  /// Type aliasing for String
   pub type PackageName = String;
 
   // qqq : for Bohdan : move to packages::filter
@@ -566,7 +567,9 @@ mod private
 
     Ok( output )
   }
+
 }
+
 
 //
 
@@ -578,6 +581,8 @@ crate::mod_interface!
   protected use local_path_get;
   protected use graph_build;
   protected use toposort;
+
+  protected use PackageName;
 
   protected use FilterMapOptions;
   protected use packages_filter_map;
