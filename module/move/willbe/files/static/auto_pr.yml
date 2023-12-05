@@ -1,0 +1,36 @@
+
+name : auto_pr
+
+on :
+
+  workflow_call :
+    inputs :
+      src_branch :
+        required : true
+        type : string
+      dst_branch :
+        required : true
+        type : string
+    secrets :
+      PRIVATE_GITHUB_BOT_TOKEN :
+        description : 'Github bot token'
+        required : true
+
+concurrency :
+
+  group : auto_pr_${{ inputs.src_branch }}_${{ inputs.dst_branch }}
+  cancel-in-progress : true
+
+jobs :
+
+  build :
+    runs-on : ubuntu-latest
+    steps :
+      - uses : actions/checkout@v3
+      - name : Open PR
+        uses : vsoch/pull-request-action@1.0.18
+        env :
+          GITHUB_TOKEN : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
+          PULL_REQUEST_BRANCH : ${{ inputs.dst_branch }}
+          PULL_REQUEST_TITLE : 'AUTO : Forward from ${{ inputs.src_branch }} to ${{ inputs.dst_branch }}'
+          PASS_IF_EXISTS : true

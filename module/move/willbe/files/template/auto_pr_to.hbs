@@ -1,0 +1,17 @@
+
+name : auto_pr_to_{{name}}
+
+on :
+  push :
+    branches :
+     {{{branches}}}
+
+jobs :
+
+  forward :
+    uses : {{username_and_repository}}/.github/workflows/AutoPr.yml@{{uses_branch}}
+    with :
+      src_branch : '{{src_branch}}'
+      dst_branch : '{{dest_branch}}'
+    secrets :
+      PRIVATE_GITHUB_BOT_TOKEN : '$\{{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}'
