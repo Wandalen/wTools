@@ -43,8 +43,19 @@ mod private
     }
   }
 
-	/// run all tests in all crates
-	pub fn run_tests( dir : &Path, nightly : bool, exclude_features : Vec< String >, include_features : Vec< String >, parallel : bool ) -> Result< TestReport >
+	/// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable). 
+	/// Tests are run with each feature separately, with all features together, and without any features. 
+	/// The tests are run in nightly and stable versions of Rust. 
+	/// It is possible to enable and disable various features of the crate. 
+	/// The function also has the ability to run tests in parallel using `Rayon` crate. 
+	/// The result of the tests is written to the structure `TestReport` and returned as a result of the function execution.
+	pub fn run_tests( 
+		dir : &Path, 
+		nightly : bool, 
+		exclude_features : Vec< String >, 
+		include_features : Vec< String >, 
+		parallel : bool 
+	) -> Result< TestReport >
 	{
 		let report = Arc::new( RwLock::new( TestReport::default() ) );
 
