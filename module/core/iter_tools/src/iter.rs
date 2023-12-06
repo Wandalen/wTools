@@ -1,4 +1,5 @@
 
+#[ cfg( not( feature = "no_std" ) ) ]
 pub( crate ) mod private
 {
   use ::itertools::process_results;
@@ -142,6 +143,7 @@ pub mod prelude
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
   pub use super::private::IterExt;
 
 }
