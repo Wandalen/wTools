@@ -1,3 +1,4 @@
+//! example
 
 fn main()
 {
