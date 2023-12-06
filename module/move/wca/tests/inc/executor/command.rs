@@ -48,7 +48,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "hint", Type::String, true )
+      .subject( "hint", Type::String, false )
       .form()
     )
     .form();

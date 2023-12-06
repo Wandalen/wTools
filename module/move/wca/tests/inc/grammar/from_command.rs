@@ -50,7 +50,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "first subject", Type::String, true )
+      .subject( "first subject", Type::String, false )
       .form()
     )
     .form();
@@ -140,6 +140,71 @@ tests_impls!
       ])
     ], grammar_command.subjects );
     a_true!( grammar_command.properties.is_empty() );
+  }
+
+  fn subject_is_optional_basic()
+  {
+    // init parser
+    let parser = Parser::former().form();
+
+    // init converter
+    let grammar_converter = GrammarConverter::former()
+    .command
+    (
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .subject( "This subject is optional", Type::String, true )
+      .form()
+    )
+    .form();
+
+    // with subject
+    let raw_command = parser.command( ".command subject" ).unwrap();
+    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+
+    // without subject
+    let raw_command = parser.command( ".command" ).unwrap();
+    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+  }
+
+  fn preferred_non_optional_first_order()
+  {
+    // init parser
+    let parser = Parser::former().form();
+
+    // init converter
+    let grammar_converter = GrammarConverter::former()
+    .command
+    (
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .subject( "This subject is optional and type number", Type::Number, true )
+      .subject( "This subject is required and type that accepts the optional one", Type::String, false )
+      .form()
+    )
+    .form();
+
+    // second subject is required, but missing
+    let raw_command = parser.command( ".command 42" ).unwrap();
+    let grammar_command = grammar_converter.to_command( raw_command );
+    a_true!( grammar_command.is_err(), "subject identifies as first subject" );
+
+    // first subject is missing
+    let raw_command = parser.command( ".command valid_string" ).unwrap();
+    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+
+    // both subjects exists
+    let raw_command = parser.command( ".command 42 string" ).unwrap();
+    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+
+    // first subject not a number, but both arguments exists
+    let raw_command = parser.command( ".command not_a_number string" ).unwrap();
+    let grammar_command = grammar_converter.to_command( raw_command );
+    a_true!( grammar_command.is_err(), "first subject not a number" );
   }
 
   fn properties()
@@ -320,6 +385,8 @@ tests_index!
   subjects,
   subject_type_check,
   subject_with_list,
+  subject_is_optional_basic,
+  preferred_non_optional_first_order,
   properties,
   property_type_check,
   property_with_list,
