@@ -1,3 +1,5 @@
+//! example
+
 pub use implements::*;
 
 fn main()
