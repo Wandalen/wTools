@@ -11,7 +11,7 @@ mod aggregating;
 
 ///  A struct for testing purpose.
 #[ derive( Debug, PartialEq ) ]
-pub struct CrateStructForTesting1
+pub struct CrateStructForTesting1 
 {
 }
 
