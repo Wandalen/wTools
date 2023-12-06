@@ -78,7 +78,7 @@ mod private
       data.insert( "username_and_repository", username_and_repository.as_str() );
       data.insert( "branch", "alpha" );
       let path = path.as_str().replace( "\\", "/" );
-      data.insert("manifest_path", path.as_str() );
+      data.insert( "manifest_path", path.as_str() );
       let content = handlebars.render( "module_push", &data )?;
       file_write( &workflow_file_name, &content )?;
     }
@@ -227,7 +227,7 @@ mod private
     } 
     else 
     {
-      return Err( anyhow!( "Fail to find workspace Cargo.toml" ));
+      return Err( anyhow!( "Fail to find workspace Cargo.toml" ) );
     }
   }
 

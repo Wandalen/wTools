@@ -1,13 +1,21 @@
 const ASSETS_PATH : &str = "tests/assets";
 
 use assert_fs::prelude::*;
-use crate::TheModule::endpoint::{ self, list::* };
+use crate::TheModule::endpoint::
+{ 
+  self, 
+  list::* 
+};
 
 //
 
 mod workflow_generate
 {
-  use serde::{Deserialize, Serialize};
+  use serde::
+  { 
+    Deserialize, 
+    Serialize 
+  };
   use std::
   {
     fs::File, 
@@ -29,7 +37,7 @@ mod workflow_generate
     temp
   }
 
-  #[ derive( Debug, PartialEq, Serialize, Deserialize ) ]
+  #[ derive( Debug, PartialEq, Deserialize ) ]
   struct Workflow 
   {
     name: String,
@@ -38,14 +46,14 @@ mod workflow_generate
     jobs: HashMap< String, Job >,
   }
   
-  #[ derive( Debug, PartialEq, Serialize, Deserialize ) ]
+  #[ derive( Debug, PartialEq, Deserialize ) ]
   struct Job 
   {
     uses: String,
     with: With,
   }
   
-  #[ derive( Debug, PartialEq, Serialize, Deserialize ) ]
+  #[ derive( Debug, PartialEq, Deserialize ) ]
   struct With 
   {
     manifest_path: String,
@@ -59,7 +67,7 @@ mod workflow_generate
     // Arrange
     let temp = arrange( "single_module" );
     let base_path = temp.path().join( ".github" ).join( "workflows" );
-    let file_path = base_path.join( "ModuleTestModulePush.yml ");
+    let file_path = base_path.join( "ModuleTestModulePush.yml" );
     let with = With
     { 
       manifest_path: "test_module/Cargo.toml".into(), 
