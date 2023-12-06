@@ -40,7 +40,7 @@ pub( crate ) mod private
   /// Hold manifest data.
   ///
 
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct Manifest
   {
     /// Path to `Cargo.toml`

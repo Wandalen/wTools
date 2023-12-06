@@ -5,19 +5,18 @@ mod private
   use package::{ DependenciesOptions, DependenciesSort };
   use std::
   {
-    path::PathBuf,
     collections::HashSet,
   };
   use core::fmt::Formatter;
   use workspace::Workspace;
-  use package::CrateId;
+  use package::{ CrateId, Package };
   use wtools::error::for_app::Error;
   use path::AbsolutePath;
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
   {
-    packages : Vec<( PathBuf,  package::PublishReport )>
+    packages : Vec<( AbsolutePath, package::PublishReport )>
   }
 
   impl std::fmt::Display for PublishReport
@@ -32,7 +31,7 @@ mod private
 
       for ( path, report ) in &self.packages
       {
-        f.write_fmt( format_args!( "[ {} ]\n{report}\n", path.display() ) )?;
+        f.write_fmt( format_args!( "[ {} ]\n{report}\n", path.as_ref().display() ) )?;
       }
 
       Ok( () )
@@ -87,7 +86,7 @@ mod private
         sort: DependenciesSort::Topological,
         ..Default::default()
       };
-      let deps = package::dependencies( &mut metadata, package.manifest_path.as_std_path(), local_deps_args )
+      let deps = package::dependencies( &mut metadata, &Package::from( package.clone() ), local_deps_args )
       .map_err( | e | ( report.clone(), e.into() ) )?;
 
       // add dependencies to publish queue
@@ -109,7 +108,7 @@ mod private
     // process publish
     for path in queue.into_iter().filter_map( | id | id.path )
     {
-      let current_report = package::publish_single( &path, dry )
+      let current_report = package::publish_single( &Package::try_from( path.clone() ).unwrap(), dry )
       .map_err
       (
         | ( current_report, e ) |

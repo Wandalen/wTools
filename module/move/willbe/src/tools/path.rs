@@ -2,6 +2,7 @@
 pub( crate ) mod private
 {
   use std::path::{ Path, PathBuf };
+  use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
 
   /// Absolute path.
   #[ derive( Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
@@ -24,6 +25,26 @@ pub( crate ) mod private
     fn try_from( value : &Path ) -> Result< Self, Self::Error >
     {
       Ok( Self( canonicalize( value )? ) )
+    }
+  }
+
+  impl TryFrom< Utf8PathBuf > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    fn try_from( value : Utf8PathBuf ) -> Result< Self, Self::Error >
+    {
+      AbsolutePath::try_from( value.as_std_path() )
+    }
+  }
+
+  impl TryFrom< &Utf8Path > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    fn try_from( value : &Utf8Path ) -> Result< Self, Self::Error >
+    {
+      AbsolutePath::try_from( value.as_std_path() )
     }
   }
 
