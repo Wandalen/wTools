@@ -5,9 +5,9 @@ use crate::TheModule::endpoint::{ self, list::* };
 
 //
 
-// a -> b -> c
 mod workflow_generate
 {
+  use serde::{Deserialize, Serialize};
   use std::
   {
     fs::File, 
@@ -29,31 +29,79 @@ mod workflow_generate
     temp
   }
 
+  #[ derive( Debug, PartialEq, Serialize, Deserialize ) ]
+  struct Workflow 
+  {
+    name: String,
+    on: String,
+    env: HashMap< String, String >,
+    jobs: HashMap< String, Job >,
+  }
+  
+  #[ derive( Debug, PartialEq, Serialize, Deserialize ) ]
+  struct Job 
+  {
+    uses: String,
+    with: With,
+  }
+  
+  #[ derive( Debug, PartialEq, Serialize, Deserialize ) ]
+  struct With 
+  {
+    manifest_path: String,
+    module_name: String,
+    commit_message: String,
+  }
+  
   #[ test ]
   fn default_case()
   {
     // Arrange
     let temp = arrange( "single_module" );
-    let mut expected: HashMap<&str, &str> = HashMap::new();
-    expected.insert( "ModuleTestModulePush.yml", "\n          name : test_module\n\n          on : push\n                  \n          env :\n            CARGO_TERM_COLOR : always\n                  \n          jobs :\n                                    \n            test :\n              uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha\n              with :\n                manifest_path : 'test_module\\Cargo.toml'\n                module_name : 'test_module'\n                commit_message : ${{ github.event.head_commit.message }}".trim() );
+    let base_path = temp.path().join( ".github" ).join( "workflows" );
+    let file_path = base_path.join( "ModuleTestModulePush.yml ");
+    let with = With
+    { 
+      manifest_path: "test_module/Cargo.toml".into(), 
+      module_name: "test_module".into(), 
+      commit_message: "${{ github.event.head_commit.message }}".into() 
+    };
+    let job = Job
+    { 
+      uses: "Username/test/.github/workflows/StandardRustPush.yml@alpha".into(), 
+      with 
+    };
+    let expected = Workflow
+    {
+      name: "test_module".into(),
+      on: "push".into(),
+      env: HashMap::from_iter( [ ( "CARGO_TERM_COLOR".to_string(), "always".to_string() ) ] ),
+      jobs: HashMap::from_iter( [ ( "test".to_string(), job ) ] ),
+    };
 
     // Act
-    let output = endpoint::workflow_generate( &temp ).unwrap();
+    _ = endpoint::workflow_generate( &temp ).unwrap();
 
-    let entries = std::fs::read_dir( temp.path().join( ".github" ).join( "workflows" ) ).unwrap();
-
-    for entry in entries 
-    {
-      let entry = entry.unwrap();
-      let path = entry.path();
-      if path.is_file() 
-      {
-        let mut content = String::new();
-        let mut file = File::open( &path ).unwrap();
-        _ = file.read_to_string( &mut content ).unwrap();
-        assert_eq!( expected.get( path.file_name().unwrap().to_str().unwrap() ).unwrap(), &content.as_str().trim() );
-      }
-    }
     // Assert
+    let mut file = File::open( file_path ).unwrap();
+    let mut content = String::new();
+    _ = file.read_to_string( &mut content ).unwrap();
+    let actual: Workflow = serde_yaml::from_str( &content ).unwrap();
+    assert_eq!( expected, actual );
+
+    assert!( base_path.join( "AppropriateBranch.yml" ).exists() );
+    assert!( base_path.join( "AppropriateBranchBeta.yml" ).exists() );
+    assert!( base_path.join( "AppropriateBranchMaster.yml" ).exists() );
+    assert!( base_path.join( "AutoMergeToBeta.yml" ).exists() );
+    assert!( base_path.join( "AutoPr.yml" ).exists() );
+    assert!( base_path.join( "AutoPrToAlpha.yml" ).exists() );
+    assert!( base_path.join( "AutoPrToBeta.yml" ).exists() );
+    assert!( base_path.join( "AutoPrToMaster.yml" ).exists() );
+    assert!( base_path.join( "RunsClean.yml" ).exists() );
+    assert!( base_path.join( "StandardRustPullRequest.yml" ).exists() );
+    assert!( base_path.join( "StandardRustPush.yml" ).exists() );
+    assert!( base_path.join( "StandardRustScheduled.yml" ).exists() );
+    assert!( base_path.join( "StandardRustStatus.yml" ).exists() );
+    assert!( base_path.join( "StatusChecksRulesUpdate.yml" ).exists() );
   }
 }

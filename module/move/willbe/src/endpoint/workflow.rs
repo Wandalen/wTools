@@ -25,7 +25,7 @@ mod private
     for_app::
     {
       Result,
-      anyhow
+      anyhow,
     }
   };
   use toml_edit::Document;
@@ -37,7 +37,7 @@ mod private
     manifest
   };
     
-  /// generate workflow
+  /// Generate workflows for modules in .github/workflows directory.
   pub fn workflow_generate( base_path: &Path ) -> Result< () >
   {
     let mut workspace_cache = Workspace::with_manifest_path( base_path );
@@ -55,7 +55,8 @@ mod private
     .filter_map( | p | p.strip_prefix( workspace_root ).ok() )
     .map( | p | p.with_file_name( "" ) )
     .collect::< Vec< _ > >();
-
+    
+    // preparing templates
     let mut handlebars = handlebars::Handlebars::new();
 
     handlebars.register_template_string( "auto_pr_to", include_str!( "../../files/template/auto_pr_to.hbs" ) )?;
@@ -69,24 +70,25 @@ mod private
     // creating workflow for each module
     for ( name, relative_path ) in names.iter().zip( relative_paths.iter() )
     {
+      // generate file names
       let workflow_file_name = workflow_root.join( format!( "Module{}Push.yml", name.to_case( Case::Pascal ) ) );
       let path = relative_path.join( "Cargo.toml" );
       let mut data = BTreeMap::new();
-      data.insert("name", name.as_str() );
-      data.insert("username_and_repository", username_and_repository.as_str() );
-      data.insert("branch", "alpha" );
+      data.insert( "name", name.as_str() );
+      data.insert( "username_and_repository", username_and_repository.as_str() );
+      data.insert( "branch", "alpha" );
       let path = path.as_str().replace( "\\", "/" );
       data.insert("manifest_path", path.as_str() );
-      let content = handlebars.render("module_push", &data)?;
-      file_write(&workflow_file_name, &content)?;
+      let content = handlebars.render( "module_push", &data )?;
+      file_write( &workflow_file_name, &content )?;
     }
   
     file_write( &workflow_root.join( "AppropriateBranch.yml" ), include_str!( "../../files/static/appropriate_branch.yml" ) )?;
 
-    let data = prepare_map( "- beta\n", username_and_repository, "alpha", "alpha", "beta" );
+    let data = map_prepare_for_appropriative_branch( "- beta\n", username_and_repository, "alpha", "alpha", "beta" );
     file_write( &workflow_root.join( "AppropriateBranchBeta.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
 
-    let data = prepare_map( "- main\n      - master", username_and_repository, "alpha", "beta", "master" );
+    let data = map_prepare_for_appropriative_branch( "- main\n      - master", username_and_repository, "alpha", "beta", "master" );
     file_write( &workflow_root.join( "AppropriateBranchMaster.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
 
     let mut data = BTreeMap::new();
@@ -161,7 +163,8 @@ mod private
     Ok( () )
   }
 
-  fn prepare_map< 'a >( branches: &'a str, username_and_repository: &'a str, uses_branch: &'a str, src_branch: &'a str, name: &'a str ) -> BTreeMap< &'a str, &'a str >
+  /// Prepare params for render appropriative_branch_for template.
+  fn map_prepare_for_appropriative_branch< 'a >( branches: &'a str, username_and_repository: &'a str, uses_branch: &'a str, src_branch: &'a str, name: &'a str ) -> BTreeMap< &'a str, &'a str >
   {
     let mut data = BTreeMap::new();
     data.insert( "branches", branches );
@@ -180,7 +183,11 @@ mod private
     Ok( () )
   }
 
-  pub fn username_and_repository( workspace: &mut Workspace ) -> Result< String > 
+  /// Searches and extracts the username and repository name from the repository URL. 
+  /// The repository URL is first sought in the Cargo.toml file of the workspace; 
+  /// if not found there, it is then searched in the Cargo.toml file of the module. 
+  /// If it is still not found, the search continues in the GitHub remotes.
+  fn username_and_repository( workspace: &mut Workspace ) -> Result< String > 
   {
     let cargo_toml_path = workspace.workspace_root().join( "Cargo.toml" );
     if cargo_toml_path.exists() 
@@ -228,5 +235,5 @@ mod private
 
 crate::mod_interface!
 {
-    prelude use workflow_generate;
+  prelude use workflow_generate;
 }

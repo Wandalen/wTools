@@ -51,8 +51,10 @@ regex = "1.10.2"
 sha-1 = "~0.10"
 tar = "~0.4"
 ureq = "~2.4"
-handlebars = { version = "4.5.0", features = ["dir_source"] }
+handlebars = "4.5.0"
 
 [dev-dependencies]
 test_tools = { workspace = true }
 assert_fs = "1.0"
+serde_yaml = "0.9"
+serde = "1.0"
