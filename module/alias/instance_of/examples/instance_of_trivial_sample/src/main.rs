@@ -1,3 +1,4 @@
+//! example
 pub use instance_of::*;
 
 fn main()
