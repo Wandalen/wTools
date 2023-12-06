@@ -5,7 +5,12 @@ mod private
   use crate::process::CmdReport;
   use crate::wtools::error::Result;
 
-  /// Cargo publish.
+  /// Upload a package to the registry
+  ///
+  /// # Args:
+  /// - `path` - path to the package directory
+  /// - `dry` - a flag that indicates whether to execute the command or not
+  ///
   pub fn publish< P >( path : P, dry : bool ) -> Result< CmdReport >
   where
     P : AsRef< Path >

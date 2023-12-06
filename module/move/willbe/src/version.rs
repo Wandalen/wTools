@@ -64,15 +64,15 @@ mod private
   /// It takes data from the manifest and increments the version number according to the semantic versioning scheme.
   /// It then writes the updated manifest file back to the same path, unless the flag is set to true, in which case it only returns the new version number as a string.
   ///
-  /// Args:
-  /// - manifest - a manifest mutable reference
-  /// - dry - a flag that indicates whether to apply the changes or not
-  ///         - true - does not modify the manifest file, but only returns the new version;
-  ///         - false - overwrites the manifest file with the new version.
+  /// # Args:
+  /// - `manifest` - a manifest mutable reference
+  /// - `dry` - a flag that indicates whether to apply the changes or not
+  ///         - `true` - does not modify the manifest file, but only returns the new version;
+  ///         - `false` - overwrites the manifest file with the new version.
   ///
-  /// Returns:
-  /// - Ok - the new version number as a string;
-  /// - Err - if the manifest file cannot be read, written, parsed.
+  /// # Returns:
+  /// - `Ok` - the new version number as a string;
+  /// - `Err` - if the manifest file cannot be read, written, parsed.
   pub fn bump( manifest : &mut Manifest, dry : bool ) -> Result< String >
   {
     let version=
