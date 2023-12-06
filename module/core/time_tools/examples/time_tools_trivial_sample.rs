@@ -1,4 +1,4 @@
-//! qwe
+//! example
 
 fn main()
 {
