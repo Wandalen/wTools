@@ -46,6 +46,7 @@ rustversion = "~1.0"
 # anyhow = "~1.0"
 num-traits = "~0.2"
 trybuild = { version = "1.0.85", features = [ "diff" ] }
+rand = "0.8.5"
 
 ## internal
 
