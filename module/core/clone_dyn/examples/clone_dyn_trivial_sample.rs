@@ -1,3 +1,5 @@
+//! example
+
 #[ allow( unused_imports ) ]
 use clone_dyn::clone_dyn;
 
