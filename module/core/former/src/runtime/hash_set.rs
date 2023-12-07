@@ -29,7 +29,7 @@ where
 pub struct HashSetFormer< E, HashSet, Former, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
-  HashSet : HashSetLike< E > + std::default::Default,
+  HashSet : HashSetLike< E > + core::default::Default,
   ContainerEnd : Fn( &mut Former, core::option::Option< HashSet > ),
 {
   container : Option< HashSet >,
@@ -42,7 +42,7 @@ impl< E, HashSet, Former, ContainerEnd >
 HashSetFormer< E, HashSet, Former, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
-  HashSet : HashSetLike< E > + std::default::Default,
+  HashSet : HashSetLike< E > + core::default::Default,
   ContainerEnd : Fn( &mut Former, core::option::Option< HashSet > ),
 {
 
