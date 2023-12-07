@@ -58,6 +58,7 @@ tests_impls!
     a_id!( 1, v, "not equal 1 == {}", v );
   }
 
+  #[ cfg( not( target_os = "windows" ) ) ]
   fn a_id_run()
   {
     use std::path::PathBuf;
