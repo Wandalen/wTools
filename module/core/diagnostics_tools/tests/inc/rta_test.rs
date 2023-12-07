@@ -124,14 +124,20 @@ tests_impls!
     let absolute_path = std::env::current_dir().unwrap();
     let current_dir_str = absolute_path.to_string_lossy();
 
-    let trimmed_path = if let Some(index) = current_dir_str.find("core/") {
-      &current_dir_str[0..index + "core/".len()]
+    let trimmed_path = if let Some( index ) = current_dir_str.find( "core/" ) 
+    {
+      &current_dir_str[ 0..index + "core/".len() ]
     }
-    else {
+    else 
+    {
       relative_path
     };
 
+    #[ cfg( not( target_os = "windows" ) ) ]
     let res = trimmed_path.to_string() + relative_path;
+    #[ cfg( target_os = "windows" ) ]
+    let res = relative_path;
+
     t.pass( res );
     // t.pass( "tests/inc/snipet/rta_not_id_fail.rs" );
     // zzz : make testing utility to check output and use
