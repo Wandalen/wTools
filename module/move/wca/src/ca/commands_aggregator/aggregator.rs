@@ -18,7 +18,11 @@ pub( crate ) mod private
   use thiserror::Error;
 
   use std::collections::{ HashMap, HashSet };
-  use wtools::error::{ Result, for_app::Error as wError } ;
+  use wtools::error::
+  { 
+    Result, 
+    for_app::Error as wError 
+  };
 
   /// Validation errors that can occur in application.
   #[ derive( Error, Debug ) ]
