@@ -193,7 +193,7 @@ tests_impls!
       matches!
       (
         ca.perform( ".command_with_execution_error" ), 
-        Err( Error::Execution ) 
+        Err( Error::Execution( _ ) ) 
       ), 
       "Unexpected error type, expected Error::Execution."
     );
@@ -203,7 +203,7 @@ tests_impls!
       matches!
       (
         ca.perform( ".help.help.help" ), 
-        Err( Error::Validation( ValidationError::GrammarConverter ) ) 
+        Err( Error::Validation( ValidationError::GrammarConverter( _ ) ) ) 
       ), 
       "Unexpected validation error type, expected ValidationError::GrammarConverter."
     );
@@ -223,7 +223,7 @@ tests_impls!
       matches!
       (
         ca.perform( ".command_without_executor" ), 
-        Err( Error::Validation( ValidationError::ExecutorConverter ) ) 
+        Err( Error::Validation( ValidationError::ExecutorConverter( _ ) ) ) 
       ), 
       "Unexpected validation error type, expected ValidationError::ExecutorConverter."
     );
