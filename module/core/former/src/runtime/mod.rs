@@ -4,10 +4,13 @@
 //!
 
 /// Former of a fector.
+#[ cfg( not( feature = "no_std" ) ) ]
 mod vector;
 /// Former of a hash map.
+#[ cfg( not( feature = "no_std" ) ) ]
 mod hash_map;
 /// Former of a hash set.
+#[ cfg( not( feature = "no_std" ) ) ]
 mod hash_set;
 
 #[ doc( inline ) ]
@@ -22,12 +25,15 @@ pub mod protected
   pub use super::exposed::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
   pub use super::vector::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
   pub use super::hash_map::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
   pub use super::hash_set::*;
 }
 
