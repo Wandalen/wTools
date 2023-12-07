@@ -15,9 +15,30 @@ pub( crate ) mod private
     }, 
     wtools 
   };
+  use thiserror::Error;
 
   use std::collections::{ HashMap, HashSet };
   use wtools::error::Result;
+
+  #[ derive( Error, Debug ) ]
+  pub enum ValidationError 
+  {
+    #[ error( "Parser error.\nCause:\n{0}" ) ]
+    ParserError( String ),
+    #[ error( "Grammar converter error" ) ]
+    GrammarConverterError,
+    #[ error( "Executor converter error" ) ]
+    ExecutorConverterError,
+  }
+
+  #[ derive( Error, Debug ) ]
+  pub enum Error
+  {
+    #[ error( "Validation err" ) ]
+    ValidationError( ValidationError ),
+    #[ error( "Execution error" ) ]
+    ExecutionError,
+  }
 
   /// The `CommandsAggregator` struct is responsible for aggregating all commands that the user defines,
   /// and for parsing and executing them. It is the main entry point of the library.
@@ -153,15 +174,15 @@ pub( crate ) mod private
     /// Parse, converts and executes a program
     ///
     /// Takes a string with program and executes it
-    pub fn perform< S >( &self, program : S ) -> Result< () >
+    pub fn perform< S >( &self, program : S ) -> Result< (), Error >
     where
       S : AsRef< str >
     {
-      let raw_program = self.parser.program( program.as_ref() )?;
-      let grammar_program = self.grammar_converter.to_program( raw_program )?;
-      let exec_program = self.executor_converter.to_program( grammar_program )?;
+      let raw_program = self.parser.program( program.as_ref() ).map_err( | e | Error::ValidationError( ValidationError::ParserError( e.to_string() ) ) )?;
+      let grammar_program = self.grammar_converter.to_program( raw_program ).map_err( | _ | Error::ValidationError( ValidationError::GrammarConverterError ) )?;
+      let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | _ | Error::ValidationError( ValidationError::ExecutorConverterError ) )?;
 
-      self.executor.program( exec_program )
+      self.executor.program( exec_program ).map_err( | _ | Error::ExecutionError )
     }
   }
 }
