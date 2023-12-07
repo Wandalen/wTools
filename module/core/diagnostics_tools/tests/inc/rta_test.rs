@@ -58,7 +58,6 @@ tests_impls!
     a_id!( 1, v, "not equal 1 == {}", v );
   }
 
-  #[ cfg( not( target_os = "windows" ) ) ]
   fn a_id_run()
   {
     use std::path::PathBuf;
@@ -67,14 +66,19 @@ tests_impls!
     let absolute_path = std::env::current_dir().unwrap();
     let current_dir_str = absolute_path.to_string_lossy();
 
-    let trimmed_path = if let Some(index) = current_dir_str.find("core/") {
-      &current_dir_str[0..index + "core/".len()]
+    let trimmed_path = if let Some( index ) = current_dir_str.find( "core/" ) 
+    {
+      &current_dir_str[ 0..index + "core/".len() ]
     }
-    else {
+    else 
+    {
       relative_path
     };
 
+    #[ cfg( not( target_os = "windows" ) ) ]
     let res = trimmed_path.to_string() + relative_path;
+    #[ cfg( target_os = "windows" ) ]
+    let res = relative_path;
 
     t.pass( res );
     // t.pass( "tests/inc/snipet/rta_id_fail.rs" );
