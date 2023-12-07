@@ -20,24 +20,33 @@ pub( crate ) mod private
   use std::collections::{ HashMap, HashSet };
   use wtools::error::Result;
 
+  /// Validation errors that can occur in application.
   #[ derive( Error, Debug ) ]
   pub enum ValidationError 
   {
+    /// This variant is used to represent parser errors. 
+    /// It carries a `String` payload that provides additional information about the error.
     #[ error( "Parser error.\nCause:\n{0}" ) ]
-    ParserError( String ),
-    #[ error( "Grammar converter error" ) ]
-    GrammarConverterError,
-    #[ error( "Executor converter error" ) ]
-    ExecutorConverterError,
+    Parser( String ),
+    /// This variant represents errors that occur during grammar conversion.
+    #[ error( "Grammar converter error." ) ]
+    GrammarConverter,
+    /// This variant is used to represent errors that occur during executor conversion.
+    #[ error( "Executor converter error." ) ]
+    ExecutorConverter,
   }
 
+  /// Errors that can occur in application.
   #[ derive( Error, Debug ) ]
-  pub enum Error
+  pub enum Error 
   {
-    #[ error( "Validation err" ) ]
-    ValidationError( ValidationError ),
-    #[ error( "Execution error" ) ]
-    ExecutionError,
+    /// This variant is used to represent validation errors. 
+    /// It carries a `ValidationError` payload that provides additional information about the error.
+    #[ error( "Validation error:\n{0}" ) ]
+    Validation( ValidationError ),
+    /// This variant represents execution errors.
+    #[ error( "Execution error." ) ]
+    Execution,
   }
 
   /// The `CommandsAggregator` struct is responsible for aggregating all commands that the user defines,
@@ -178,11 +187,11 @@ pub( crate ) mod private
     where
       S : AsRef< str >
     {
-      let raw_program = self.parser.program( program.as_ref() ).map_err( | e | Error::ValidationError( ValidationError::ParserError( e.to_string() ) ) )?;
-      let grammar_program = self.grammar_converter.to_program( raw_program ).map_err( | _ | Error::ValidationError( ValidationError::GrammarConverterError ) )?;
-      let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | _ | Error::ValidationError( ValidationError::ExecutorConverterError ) )?;
+      let raw_program = self.parser.program( program.as_ref() ).map_err( | e | Error::Validation( ValidationError::Parser( e.to_string() ) ) )?;
+      let grammar_program = self.grammar_converter.to_program( raw_program ).map_err( | _ | Error::Validation( ValidationError::GrammarConverter ) )?;
+      let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | _ | Error::Validation( ValidationError::ExecutorConverter ) )?;
 
-      self.executor.program( exec_program ).map_err( | _ | Error::ExecutionError )
+      self.executor.program( exec_program ).map_err( | _ | Error::Execution )
     }
   }
 }
@@ -192,4 +201,6 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   prelude use CommandsAggregator;
+  prelude use Error;
+  prelude use ValidationError;
 }
