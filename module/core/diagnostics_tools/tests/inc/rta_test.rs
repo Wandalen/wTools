@@ -58,7 +58,7 @@ tests_impls!
     a_id!( 1, v, "not equal 1 == {}", v );
   }
 
-  #[ cfg( not( target_os = "windows" ) ) ]
+  #[ allow( unused_macros ) ]
   fn a_id_run()
   {
     use std::path::PathBuf;
@@ -76,10 +76,7 @@ tests_impls!
       relative_path
     };
 
-    #[ cfg( not( target_os = "windows" ) ) ]
     let res = trimmed_path.to_string() + relative_path;
-    #[ cfg( target_os = "windows" ) ]
-    let res = trimmed_path.to_string();
 
     t.pass( res );
     // t.pass( "tests/inc/snipet/rta_id_fail.rs" );
@@ -117,7 +114,7 @@ tests_impls!
     a_not_id!( 1, v, "equal 1 == {}", v );
   }
 
-  #[ cfg( not( target_os = "windows" ) ) ]
+  #[ allow( unused_macros ) ]
   fn a_not_id_run()
   {
     use std::path::PathBuf;
@@ -135,10 +132,7 @@ tests_impls!
       relative_path
     };
 
-    #[ cfg( not( target_os = "windows" ) ) ]
     let res = trimmed_path.to_string() + relative_path;
-    #[ cfg( target_os = "windows" ) ]
-    let res = trimmed_path.to_string();
 
     t.pass( res );
     // t.pass( "tests/inc/snipet/rta_not_id_fail.rs" );
