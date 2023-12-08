@@ -58,6 +58,7 @@ tests_impls!
     a_id!( 1, v, "not equal 1 == {}", v );
   }
 
+  #[ cfg( not( target_os = "windows" ) ) ]
   fn a_id_run()
   {
     use std::path::PathBuf;
@@ -116,6 +117,7 @@ tests_impls!
     a_not_id!( 1, v, "equal 1 == {}", v );
   }
 
+  #[ cfg( not( target_os = "windows" ) ) ]
   fn a_not_id_run()
   {
     use std::path::PathBuf;
@@ -279,6 +281,41 @@ tests_impls!
 
 //
 
+#[ cfg( target_os = "windows" ) ]
+tests_index!
+{
+  a_true_pass,
+  a_true_fail_simple,
+  a_true_fail_with_msg,
+  a_true_fail_with_msg_template,
+
+  a_id_pass,
+  a_id_fail_simple,
+  a_id_fail_with_msg,
+  a_id_fail_with_msg_template,
+
+  a_not_id_pass,
+  a_not_id_fail_simple,
+  a_not_id_fail_with_msg,
+  a_not_id_fail_with_msg_template,
+
+  a_dbg_true_pass,
+  a_dbg_true_fail_simple,
+  a_dbg_true_fail_with_msg,
+  a_dbg_true_fail_with_msg_template,
+
+  a_dbg_id_pass,
+  a_dbg_id_fail_simple,
+  a_dbg_id_fail_with_msg,
+  a_dbg_id_fail_with_msg_template,
+
+  a_dbg_not_id_pass,
+  a_dbg_not_id_fail_simple,
+  a_dbg_not_id_fail_with_msg,
+  a_dbg_not_id_fail_with_msg_template,
+}
+
+#[ cfg( not( target_os = "windows" ) ) ]
 tests_index!
 {
   a_true_pass,
