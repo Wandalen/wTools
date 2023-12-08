@@ -1,3 +1,5 @@
+//! example
+
 use mod_interface::mod_interface;
 
 //

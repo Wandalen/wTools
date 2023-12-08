@@ -3,6 +3,7 @@ use super::*;
 #[ allow( unused_imports ) ]
 use test_tools::meta::*;
 
+#[ cfg( not( feature = "no_std" ) ) ]
 #[ path = "./all/basic_runtime_common.rs" ]
 mod basic_runtime_common;
 

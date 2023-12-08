@@ -2,6 +2,7 @@
 use super::*;
 
 #[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 #[ ::test_tools::nightly ]
 #[ test ]
 fn trybuild_test()

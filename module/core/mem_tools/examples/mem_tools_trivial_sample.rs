@@ -1,3 +1,5 @@
+//! example
+
 use mem_tools as mem;
 
 fn main()

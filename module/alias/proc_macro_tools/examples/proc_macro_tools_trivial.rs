@@ -1,3 +1,5 @@
+//! example
+
 fn main()
 {
   #[ cfg( not( feature = "no_std" ) ) ]

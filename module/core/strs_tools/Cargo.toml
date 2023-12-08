@@ -49,11 +49,11 @@ no_std = []
 use_alloc = []
 enabled = []
 
-string_indentation = []
-string_isolate = []
-string_parse_request  = [ "string_split", "string_isolate" ]
-string_parse_number = [ "lexical" ]
-string_split = []
+string_indentation = [ "enabled" ]
+string_isolate = [ "enabled" ]
+string_parse_request  = [ "string_split", "string_isolate", "enabled" ]
+string_parse_number = [ "lexical", "enabled" ]
+string_split = [ "string_parse_request", "enabled" ]
 
 [dependencies]
 former = { workspace = true, features = [ "default" ] }

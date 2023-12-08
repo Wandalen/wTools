@@ -10,7 +10,7 @@ Basic exceptions handling mechanism.
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 fn main()
 {
   let err = f1();

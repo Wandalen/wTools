@@ -1,3 +1,4 @@
+//! example
 use is_slice::*;
 
 fn main()

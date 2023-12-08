@@ -29,7 +29,7 @@ where
 pub struct HashMapFormer< K, E, HashMap, Former, ContainerEnd >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  HashMap : HashMapLike< K, E > + std::default::Default,
+  HashMap : HashMapLike< K, E > + core::default::Default,
   ContainerEnd : Fn( &mut Former, core::option::Option< HashMap > ),
 {
   container : Option< HashMap >,
@@ -43,7 +43,7 @@ impl< K, E, HashMap, Former, ContainerEnd >
 HashMapFormer< K, E, HashMap, Former, ContainerEnd >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  HashMap : HashMapLike< K, E > + std::default::Default,
+  HashMap : HashMapLike< K, E > + core::default::Default,
   ContainerEnd : Fn( &mut Former, core::option::Option< HashMap > ),
 {
 

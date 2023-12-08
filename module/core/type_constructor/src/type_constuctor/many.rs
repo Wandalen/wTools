@@ -106,7 +106,7 @@ pub( crate ) mod private
         #[ inline ]
         fn from( src : Collection ) -> Self
         {
-          Self( src.into_iter().map( | e | e.into() ).collect::< Vec< $ParamName > >() )
+          Self( src.into_iter().map( | e | e.into() ).collect::< $crate::_Vec< $ParamName > >() )
         }
       }
 

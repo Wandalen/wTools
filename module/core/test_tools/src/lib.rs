@@ -58,6 +58,7 @@ pub mod dependency
 // use ::meta_tools::mod_interface;
 
 #[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 ::meta_tools::mod_interface!
 {
   // #![ debug ]
@@ -94,4 +95,6 @@ pub mod dependency
 }
 
 // xxx : use module namespaces
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 pub use test::{ compiletime, helper, smoke_test };

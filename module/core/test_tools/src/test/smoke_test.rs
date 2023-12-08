@@ -11,6 +11,7 @@
 // qqq : make it a command of willbe
 
 /// Internal namespace.
+#[ cfg( not( feature = "no_std" ) ) ]
 pub( crate ) mod private
 {
 
@@ -332,7 +333,7 @@ pub( crate ) mod private
 
 
 //
-
+#[ cfg( not( feature = "no_std" ) ) ]
 crate::mod_interface!
 {
 
