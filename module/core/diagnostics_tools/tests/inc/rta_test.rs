@@ -78,7 +78,7 @@ tests_impls!
     #[ cfg( not( target_os = "windows" ) ) ]
     let res = trimmed_path.to_string() + relative_path;
     #[ cfg( target_os = "windows" ) ]
-    let res = relative_path;
+    let res = trimmed_path.to_string();
 
     t.pass( res );
     // t.pass( "tests/inc/snipet/rta_id_fail.rs" );
@@ -136,7 +136,7 @@ tests_impls!
     #[ cfg( not( target_os = "windows" ) ) ]
     let res = trimmed_path.to_string() + relative_path;
     #[ cfg( target_os = "windows" ) ]
-    let res = relative_path;
+    let res = trimmed_path.to_string();
 
     t.pass( res );
     // t.pass( "tests/inc/snipet/rta_not_id_fail.rs" );
