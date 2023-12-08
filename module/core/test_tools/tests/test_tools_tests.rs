@@ -6,6 +6,7 @@
 use test_tools as TheModule;
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 use test_tools::exposed::*;
 
 mod inc;
