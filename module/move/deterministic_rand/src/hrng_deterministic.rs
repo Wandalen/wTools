@@ -45,15 +45,6 @@ pub( crate ) mod private
     index : usize,
   }
 
-  impl Default for Hrng
-  {
-    fn default() -> Self
-    {
-      Hrng::master()
-    }
-  }
-
-
   impl Hrng
   {
 
@@ -174,6 +165,13 @@ pub( crate ) mod private
 
     }
 
+    /// Creates new child hierarchical random number generator by index seed, index is deduced from the contexst.
+    /// Index is new child is index of current newest child plus one.
+    pub fn child_new( &self ) -> Self
+    {
+      self.child( self.children.read().unwrap().len() )
+    }
+
     /// Returns number of children created by this generator.
     pub fn children_len( &self ) -> usize
     {
@@ -184,6 +182,14 @@ pub( crate ) mod private
     pub fn index( &self ) -> usize
     {
       self.index
+    }
+  }
+
+  impl Default for Hrng
+  {
+    fn default() -> Self
+    {
+      Hrng::master()
     }
   }
 
