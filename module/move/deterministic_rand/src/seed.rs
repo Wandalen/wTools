@@ -27,6 +27,19 @@ pub( crate ) mod private
       Self( format!( "master_seed_{}", src ) )
     }
 
+    /// Random string as seed.
+    pub fn random() -> Self
+    {
+      use rand::{ distributions::Alphanumeric, Rng };
+      let str : String = rand::thread_rng()
+      .sample_iter( &Alphanumeric )
+      .take( 16 )
+      .map(char::from)
+      .collect();
+      debug_assert!( str.len() > 0 );
+      Self( str )
+    }
+
     /// Returns inner seed string value.
     pub fn into_inner( self ) -> String
     {

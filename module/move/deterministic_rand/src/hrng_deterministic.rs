@@ -41,8 +41,8 @@ pub( crate ) mod private
     /// Different generators are used for generating data and generating children for performance
     /// and to make sure that child with the same index of a parent produce always same sequence of random numbers.
     children_generator : SharedGenerator,
-    /// Current index of the generator in the list of children of parent.
-    index : usize,
+    // /// Current index of the generator in the list of children of parent.
+    // index : usize,
   }
 
   impl Hrng
@@ -86,7 +86,7 @@ pub( crate ) mod private
         children : Default::default(),
         generator,
         children_generator,
-        index: 0,
+        // index: 0,
       }
     }
 
@@ -111,7 +111,7 @@ pub( crate ) mod private
         children : Default::default(),
         generator,
         children_generator,
-        index: 0,
+        // index: 0,
       }
     }
 
@@ -165,27 +165,26 @@ pub( crate ) mod private
 
     }
 
-    // xxx : remove, maybe
-    /// Creates new child hierarchical random number generator by index seed, index is deduced from the contexst.
-    /// Index is new child is index of current newest child plus one.
-    pub fn child_new( &self ) -> Self
-    {
-      self.child( self.children.read().unwrap().len() )
-    }
+//     // xxx : remove, maybe
+//     /// Creates new child hierarchical random number generator by index seed, index is deduced from the contexst.
+//     /// Index is new child is index of current newest child plus one.
+//     pub fn child_new( &self ) -> Self
+//     {
+//       self.child( self.children.read().unwrap().len() )
+//     }
 
-    // xxx : remove, maybe
-    /// Returns number of children created by this generator.
-    pub fn children_len( &self ) -> usize
+    /// Returns number of children created by this generator. Used only for diagnostics.
+    pub fn _children_len( &self ) -> usize
     {
       self.children.read().unwrap().len()
     }
 
-    // xxx : remove, maybe
-    /// Returns current index of the generator.
-    pub fn index( &self ) -> usize
-    {
-      self.index
-    }
+//     // xxx : remove, maybe
+//     /// Returns current index of the generator.
+//     pub fn index( &self ) -> usize
+//     {
+//       self.index
+//     }
   }
 
   impl Default for Hrng

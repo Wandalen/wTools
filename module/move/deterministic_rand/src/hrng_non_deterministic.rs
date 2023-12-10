@@ -149,26 +149,26 @@ pub( crate ) mod private
       Self
     }
 
-    /// Creates new child hierarchical random number generator by index seed, index is deduced from the contexst.
-    /// Index is new child is index of current newest child plus one.
-    pub fn child_new( &self ) -> Self
-    {
-      self.child( 0 )
-    }
+//     /// Creates new child hierarchical random number generator by index seed, index is deduced from the contexst.
+//     /// Index is new child is index of current newest child plus one.
+//     pub fn child_new( &self ) -> Self
+//     {
+//       self.child( 0 )
+//     }
 
     /// Returns number of children created by this generator.
     #[ inline( always ) ]
-    pub fn children_len( &self ) -> usize
+    pub fn _children_len( &self ) -> usize
     {
       0
     }
 
-    /// Returns current index of the generator.
-    #[ inline( always ) ]
-    pub fn index( &self ) -> usize
-    {
-      0
-    }
+//     /// Returns current index of the generator.
+//     #[ inline( always ) ]
+//     pub fn index( &self ) -> usize
+//     {
+//       0
+//     }
   }
 
 }
