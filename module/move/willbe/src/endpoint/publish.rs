@@ -50,7 +50,6 @@ mod private
   {
     let mut report = PublishReport::default();
 
-    // qqq : for Bohdan : lack of comments
     let mut paths = HashSet::new();
     // find all packages by specified folders
     for pattern in &patterns
@@ -75,7 +74,6 @@ mod private
     let mut queue = vec![];
     for package in &packages_to_publish
     {
-      // get sorted dependencies
       let local_deps_args = DependenciesOptions
       {
         recursive: true,
@@ -85,7 +83,6 @@ mod private
       let deps = package::dependencies( &mut metadata, package.manifest_path.as_std_path(), local_deps_args )
       .map_err( | e | ( report.clone(), e.into() ) )?;
 
-      // add dependencies to publish queue
       for dep in deps
       {
         if !queue.contains( &dep )
@@ -93,7 +90,6 @@ mod private
           queue.push( dep );
         }
       }
-      // add current package to publish queue if it isn't already here
       let crate_id = CrateId::from( package );
       if !queue.contains( &crate_id )
       {
@@ -101,7 +97,6 @@ mod private
       }
     }
 
-    // process publish
     for path in queue.into_iter().filter_map( | id | id.path )
     {
       let current_report = package::publish_single( &mut metadata, &path, dry )

@@ -36,8 +36,8 @@ mod private
       process::start2_sync( program, args, path )
     }
   }
-
-  /// Cargo publish.
+  
+ /// Upload a package to the registry
   pub fn publish< P >( path : P, dry : bool ) -> Result< CmdReport >
   where
     P : AsRef< Path >

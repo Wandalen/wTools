@@ -28,13 +28,16 @@ pub( crate ) mod private
     false
   }
 
-  /// qqq : for Bohdan : explain how does it work?
+  /// Returns the canonical, absolute form of the path with all intermediate components normalized and symbolic links resolved.
   pub fn canonicalize( path : impl AsRef< Path > ) -> std::io::Result< PathBuf >
   {
     let path = path.as_ref().canonicalize()?;
 
-    // qqq : for Bohdan : explain why is it necessary? Add relevant links.
-    #[ cfg( target_os = "windows" ) ] // canonicalization on windows adds `\\?\` prefix
+    // In Windows the regular/legacy paths (C:\foo) are supported by all programs, but have lots of bizarre restrictions for backwards compatibility with MS-DOS.
+    // And there are Windows NT UNC paths (\\?\C:\foo), which are more robust and with fewer gotchas, but are rarely supported by Windows programs. Even Microsoft’s own!
+    //
+    // https://github.com/rust-lang/rust/issues/42869
+    #[ cfg( target_os = "windows" ) ]
     let path =
     {
       const VERBATIM_PREFIX : &str = r#"\\?\"#;

@@ -31,7 +31,7 @@ pub( crate ) mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      // qqq : for Bohdan : why trim?
+      // Trim prevents writing unnecessary whitespace or empty lines
       f.write_fmt( format_args!( "> {}\n", self.command ) )?;
       if !self.out.trim().is_empty()
       {

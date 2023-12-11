@@ -284,9 +284,7 @@ mod private
     }
   }
 
-  // qqq : for Bohdan : poor description, not explained what for
-  /// Build HashMap dependencies graph.
-  /// Returns identifier of root node
+  /// Recursive implementation of the `dependencies` function
   pub fn _dependencies
   (
     workspace : &mut Workspace,
@@ -381,12 +379,12 @@ mod private
 
   /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.
   ///
-  /// Args:
+  /// # Args:
   /// - `name` - the name of the package.
   /// - `version` - the version of the package.
   /// - `manifest_path` - path to the package `Cargo.toml` file.
   ///
-  /// Returns:
+  /// # Returns:
   /// The local packed `.crate` file of the package
   pub fn local_path< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
   {
@@ -441,8 +439,8 @@ mod private
 
   /// Given a slice of `Package` instances and a set of filtering options,
   /// this function filters and maps the packages and their dependencies
-  /// based on the provided filters. It returns a HashMap where the keys
-  /// are package names, and the values are HashSet instances containing
+  /// based on the provided filters. It returns a `HashMap` where the keys
+  /// are package names, and the values are `HashSet` instances containing
   /// the names of filtered dependencies for each package.
   pub fn packages_filter_map( packages : &[ Package ], filter_map_options : FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
   {
@@ -472,7 +470,7 @@ mod private
   ///
   /// This function requires the local package to be previously packed.
   ///
-  /// Returns:
+  /// # Returns:
   /// - `true` if the package needs to be published.
   /// - `false` if there is no need to publish the package.
   ///
