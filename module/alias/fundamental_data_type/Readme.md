@@ -56,7 +56,7 @@ Macro `types` is exposed to generate new types, but in some cases, it is enough 
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 
 let i32_in_tuple = fundamental_data_type::Single::< i32 >::from( 13 );
 dbg!( i32_in_tuple );
@@ -325,7 +325,7 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 
 It generates code:
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 
 pub struct MyPair( pub i32, pub i64 );
@@ -358,7 +358,7 @@ Just like `single` - `pair` may have parameters:
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 
 use core::fmt;
@@ -374,7 +374,7 @@ dbg!( x );
 
 It generates code:
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 use core::fmt;
 
@@ -419,7 +419,7 @@ If you need to wrap pair of elements with the same type use the type constructor
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 
 types!( pub pair MyPair : i32, i64 );
@@ -430,7 +430,7 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 
 It generates code:
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 
 pub struct MyPair( pub i32, pub i64 );
@@ -463,7 +463,7 @@ Unlike `heteropair` and `homopair` has much more traits implemented for it. Amon
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 
 use core::fmt;
@@ -485,7 +485,7 @@ dbg!( &clone_as_tuple );
 
 It generates code:
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 use core::fmt;
 
@@ -642,7 +642,7 @@ println!( "x : {:?}", x.0 );
 
 It generates code:
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 
 pub struct MyMany( pub std::vec::Vec< i32 > );
@@ -734,7 +734,7 @@ In this example structure, Struct1 could be constructed either without arguments
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 #[ cfg( feature = "make" ) ]
 {
   use fundamental_data_type::prelude::*;

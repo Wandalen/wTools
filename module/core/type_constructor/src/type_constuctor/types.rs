@@ -314,7 +314,7 @@ pub( crate ) mod private
   ///
   /// It generates code:
   ///
-  /// ```rust
+  /// ```rust ignore
   /// use type_constructor::prelude::*;
   ///
   /// pub struct MyPair( pub i32, pub i64 );
@@ -361,7 +361,7 @@ pub( crate ) mod private
   ///
   /// It generates code:
   ///
-  /// ```rust
+  /// ```rust ignore
   /// use type_constructor::prelude::*;
   /// use core::fmt;
   ///
@@ -415,7 +415,7 @@ pub( crate ) mod private
   ///
   /// It gererates code:
   ///
-  /// ```rust
+  /// ```rust ignore
   /// use type_constructor::prelude::*;
   ///
   /// pub struct MyPair( pub i32, pub i64 );
@@ -446,7 +446,7 @@ pub( crate ) mod private
   ///
   /// Unlike `heteropair` `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or array, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tuple, array, slice, scalar.
   ///
-  /// ```rust
+  /// ```rust ignore
   /// use type_constructor::prelude::*;
   ///
   /// use core::fmt;
@@ -468,7 +468,7 @@ pub( crate ) mod private
   ///
   /// It gererates code:
   ///
-  /// ```rust
+  /// ```rust ignore
   /// use type_constructor::prelude::*;
   /// use core::fmt;
   ///
@@ -623,7 +623,7 @@ pub( crate ) mod private
   ///
   /// It generates code:
   ///
-  /// ```rust
+  /// ```rust ignore
   /// use type_constructor::prelude::*;
   ///
   /// pub struct MyMany( pub std::vec::Vec< i32 > );

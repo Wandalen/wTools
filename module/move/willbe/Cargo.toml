@@ -16,6 +16,7 @@ Utility with set of tools for managing developer routines.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+default-run = "main"
 
 [lints]
 workspace = true
@@ -28,28 +29,27 @@ exclude = [ "/tests", "/examples", "-*" ]
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-no_std = []
 use_alloc = []
 enabled = []
 
 [dependencies]
-anyhow = "~1.0"
 cargo_metadata = "~0.14"
 convert_case = "0.6.0"
 error_tools = { workspace = true, features = [ "default" ] }
 flate2 = "~1.0"
 former = { workspace = true, features = [ "default" ] }
 globwalk = "~0.8"
-lazy_static = "1.4.0"
 mod_interface = { workspace = true, features = [ "default" ] }
+wca = { workspace = true, features = [ "default" ] }
+anyhow = "~1.0"
+toml_edit = "~0.14"
 petgraph = "~0.6"
 ptree = "~0.4"
+semver = "~1.0.0"
 regex = "1.10.2"
 sha-1 = "~0.10"
 tar = "~0.4"
-toml_edit = "~0.14"
 ureq = "~2.4"
-wca = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

@@ -1,8 +1,12 @@
 [package]
 name = "wca"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
-authors = ["Kostiantyn Wandalen <wandalen@obox.systems>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dmytro.kr@obox.systems>" ]
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+  "Bogdan Balushkin <bohdan.b@obox.systems>",
+]
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/wca"

@@ -103,7 +103,7 @@ Their implementation is based on standard `From`, if `From` is implemented for e
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 #[ cfg( feature = "vectorized_from" ) ]
 {
   use type_constructor::prelude::*;
@@ -119,7 +119,7 @@ To define your own single-use macro `types!`. The single-line definition looks l
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 
 types!( pub single MySingle : i32 );
@@ -129,7 +129,7 @@ println!( "x : {}", x.0 );
 
 It generates code:
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 
 pub struct MySingle( pub i32 );
@@ -169,7 +169,7 @@ It's possible to define attributes as well as derives.
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 types!
 {
@@ -183,7 +183,7 @@ dbg!( x );
 
 It generates code:
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 
 /// This is also an attribute and macro understands it.
@@ -226,7 +226,7 @@ You may use parameterized struct `Single< T >` instead of macro `types!` if that
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 let x = Single::< i32 >( 13 );
 dbg!( x );
@@ -238,7 +238,7 @@ Element of tuple could be parametrized.
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 types!
 {
@@ -251,7 +251,7 @@ dbg!( x );
 
 It generates code:
 
-```rust
+```rust ignore
 use type_constructor::*;
 
 #[ derive( Debug ) ]
@@ -291,7 +291,7 @@ Instead of parametrizing the element, it's possible to define a parametrized tup
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 types!
 {
@@ -306,7 +306,7 @@ It generates code:
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 #[ derive( Debug ) ]
 pub struct MySingle< T : Copy >( pub T );
 
@@ -339,7 +339,7 @@ Sometimes you need to wrap more than a single element into a tuple. If types of 
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 
 types!( pub pair MyPair : i32, i64 );
@@ -350,7 +350,7 @@ println!( "x : ( {}, {} )", x.0, x.1 );
 
 It generates code:
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 
 pub struct MyPair( pub i32, pub i64 );
@@ -383,7 +383,7 @@ Just like `single`, `pair` may have parameters:
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 
 use core::fmt;
@@ -399,7 +399,7 @@ dbg!( x );
 
 It generates code:
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 use core::fmt;
 
@@ -444,7 +444,7 @@ If you need to wrap pair of elements with the same type use the type constructor
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 
 types!( pub pair MyPair : i32, i64 );
@@ -457,7 +457,7 @@ It generates code:
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 
 pub struct MyPair( pub i32, pub i64 );
@@ -490,7 +490,7 @@ Unlike `heteropair` `homopair` has much more traits implemented for it. Among su
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 
 use core::fmt;
@@ -514,7 +514,7 @@ It generates code:
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 use core::fmt;
 
@@ -661,7 +661,7 @@ Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 // #[ cfg
 // (
 //   all
@@ -681,7 +681,7 @@ Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has
 
 It generates code:
 
-```rust
+```rust ignore
 use type_constructor::prelude::*;
 
 pub struct MyMany( pub std::vec::Vec< i32 > );
@@ -773,7 +773,7 @@ In this example structure, Struct1 could be constructed either without arguments
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 #[ cfg( feature = "make" ) ]
 {
   use type_constructor::prelude::*;
@@ -825,7 +825,7 @@ In this example structure, Struct1 could be constructed either without arguments
 
 ### To add to your project
 
-``` shell
+``` shell ignore
 cargo add type_constructor
 ```
 

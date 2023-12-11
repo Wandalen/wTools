@@ -50,7 +50,7 @@ path = "tests/graph/automata_tools_tests.rs"
 
 [[test]]
 name = "automata_tools_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+path = "tests/smoke_test.rs"
 
 [[example]]
 name = "automata_tools_trivial_sample"

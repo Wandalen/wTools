@@ -23,12 +23,12 @@ pub( crate ) mod private
     .map( | s | s.path().to_path_buf() )
     .collect::< Vec< PathBuf > >()
   }
-  
+
 }
 
 //
 
 crate::mod_interface!
 {
-  prelude use find;
+  orphan use find;
 }

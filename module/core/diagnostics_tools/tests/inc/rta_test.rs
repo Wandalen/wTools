@@ -60,8 +60,22 @@ tests_impls!
 
   fn a_id_run()
   {
+    use std::path::PathBuf;
     let t = test_tools::compiletime::TestCases::new();
-    t.pass( "tests/inc/snipet/rta_id.rs" );
+    let relative_path = "diagnostics_tools/tests/inc/snipet/rta_id.rs";
+    let absolute_path = std::env::current_dir().unwrap();
+    let current_dir_str = absolute_path.to_string_lossy();
+
+    let trimmed_path = if let Some(index) = current_dir_str.find("core/") {
+      &current_dir_str[0..index + "core/".len()]
+    }
+    else {
+      relative_path
+    };
+
+    let res = trimmed_path.to_string() + relative_path;
+
+    t.pass( res );
     // t.pass( "tests/inc/snipet/rta_id_fail.rs" );
     // zzz : make testing utility to check output and use
 
@@ -99,8 +113,21 @@ tests_impls!
 
   fn a_not_id_run()
   {
+    use std::path::PathBuf;
     let t = test_tools::compiletime::TestCases::new();
-    t.pass( "tests/inc/snipet/rta_not_id.rs" );
+    let relative_path = "diagnostics_tools/tests/inc/snipet/rta_id.rs";
+    let absolute_path = std::env::current_dir().unwrap();
+    let current_dir_str = absolute_path.to_string_lossy();
+
+    let trimmed_path = if let Some(index) = current_dir_str.find("core/") {
+      &current_dir_str[0..index + "core/".len()]
+    }
+    else {
+      relative_path
+    };
+
+    let res = trimmed_path.to_string() + relative_path;
+    t.pass( res );
     // t.pass( "tests/inc/snipet/rta_not_id_fail.rs" );
     // zzz : make testing utility to check output and use
 

@@ -14,6 +14,7 @@ pub( crate ) mod private
   use former::Former;
   use std::collections::HashMap;
   use wtools::{ error::Result, err };
+  use crate::wtools::error;
 
   /// Represents a grammatically correct command with a phrase descriptor, a list of command subjects, and a set of command options.
   ///
@@ -150,58 +151,73 @@ pub( crate ) mod private
     /// Make sure that this command is described in the grammar and matches it(command itself and all it options too).
     pub fn to_command( &self, raw_command : RawCommand ) -> Result< GrammarCommand >
     {
-      self.commands
+      let variants = self
+      .commands
       .get( &raw_command.name )
-      .and_then
-      (
-        | cmds |
-        // find needed command
-        // if it will be needed:
-        // find command where number raw_command.subjects more or equal a command.subjects
-        // and add trailing subjects as "Trailing" somehow
-        cmds.iter().find( | cmd | cmd.subjects.len() == raw_command.subjects.len() )
-      )
-      .ok_or_else( || err!( "Command not found. Got `{:?}`", raw_command ) )
-      .and_then
-      (
-        | cmd |
+      .ok_or_else::< error::for_app::Error, _ >( || err!( "Command not found. Got `{:?}`", raw_command ) )?;
+
+      let mut cmd = None;
+      let mut subjects = vec![];
+
+      // find a variant that meets requirements
+      'variants_loop: for variant in variants
+      {
+        subjects.clear();
+
+        if raw_command.subjects.len() > variant.subjects.len() { continue; }
+        let mut rc_subjects_iter = raw_command.subjects.iter();
+
+        let mut current = rc_subjects_iter.next();
+        // try to match subjects
+        'internal: for ValueDescription { kind, optional, .. } in &variant.subjects
         {
-          let subjects = raw_command.subjects
-          .into_iter()
-          .zip( cmd.subjects.iter() )
-          // an error can be extended with the value's hint
-          .map( |( x, ValueDescription { kind, .. } )| kind.try_cast( x ) )
-          .collect::< Result< Vec< _ > > >()?;
-
-          let properties = raw_command.properties
-          .into_iter()
-          .map
-          (
-            |( key, value )|
-            // find a key
-            if cmd.properties.contains_key( &key ) { Ok( key ) }
-            else { cmd.properties_aliases.get( &key ).cloned().ok_or_else( || err!( "`{}` not found", key ) ) }
-            // give a description
-            .map( | key | ( key.clone(), cmd.properties.get( &key ).unwrap(), value ) )
-          )
-          .collect::< Result< Vec< _ > > >()?
-          .into_iter()
-          // an error can be extended with the value's hint
-          .map
-          (
-            |( key, value_description, value )|
-            value_description.kind.try_cast( value ).map( | v | ( key.clone(), v ) )
-          )
-          .collect::< Result< HashMap< _, _ > > >()?;
-
-          Ok( GrammarCommand
+          let value = match current.and_then( | v | kind.try_cast( v.clone() ).ok() )
           {
-            phrase : cmd.phrase.to_owned(),
-            subjects,
-            properties,
-          })
+            Some( v ) => v,
+            None if *optional => continue 'internal,
+            _ => continue 'variants_loop,
+          };
+
+          subjects.push( value );
+          current = rc_subjects_iter.next();
         }
+        // if something exists after all expected subjects - this isn't correct variant
+        if current.is_some() { continue 'variants_loop; }
+
+        cmd = Some( variant );
+      }
+      let Some( cmd ) = cmd else
+      {
+        error::for_app::bail!( "Command with specified subjects not found. Got `{:?}`", raw_command );
+      };
+
+      let properties = raw_command.properties
+      .into_iter()
+      .map
+      (
+        |( key, value )|
+        // find a key
+        if cmd.properties.contains_key( &key ) { Ok( key ) }
+        else { cmd.properties_aliases.get( &key ).cloned().ok_or_else( || err!( "`{}` not found", key ) ) }
+        // give a description
+        .map( | key | ( key.clone(), cmd.properties.get( &key ).unwrap(), value ) )
       )
+      .collect::< Result< Vec< _ > > >()?
+      .into_iter()
+      // an error can be extended with the value's hint
+      .map
+      (
+        |( key, value_description, value )|
+        value_description.kind.try_cast( value ).map( | v | ( key.clone(), v ) )
+      )
+      .collect::< Result< HashMap< _, _ > > >()?;
+
+      Ok( GrammarCommand
+      {
+        phrase : cmd.phrase.to_owned(),
+        subjects,
+        properties,
+      })
     }
   }
 }

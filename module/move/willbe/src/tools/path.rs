@@ -10,8 +10,6 @@ pub( crate ) mod private
   }
 
   /// Check if path has a glob.
-  // It's enough to check if path is valid.
-  // https://stackoverflow.com/questions/42283009/check-if-string-is-a-glob-pattern
   #[ allow( dead_code ) ]
   pub fn glob_is( path : &str ) -> bool
   {
@@ -30,34 +28,35 @@ pub( crate ) mod private
     false
   }
 
-  //
-
+  /// qqq : for Bohdan : explain how does it work?
   pub fn canonicalize( path : impl AsRef< Path > ) -> std::io::Result< PathBuf >
   {
     let path = path.as_ref().canonicalize()?;
 
+    // qqq : for Bohdan : explain why is it necessary? Add relevant links.
     #[ cfg( target_os = "windows" ) ] // canonicalization on windows adds `\\?\` prefix
-      let path =
+    let path =
+    {
+      const VERBATIM_PREFIX : &str = r#"\\?\"#;
+      let p = path.display().to_string();
+      if p.starts_with( VERBATIM_PREFIX )
       {
-        const VERBATIM_PREFIX : &str = r#"\\?\"#;
-        let p = path.display().to_string();
-        if p.starts_with( VERBATIM_PREFIX )
-        {
-          PathBuf::from( &p[ VERBATIM_PREFIX.len() .. ] )
-        }
-        else
-        {
-          path.into()
-        }
-      };
+        PathBuf::from( &p[ VERBATIM_PREFIX.len() .. ] )
+      }
+      else
+      {
+        path.into()
+      }
+    };
 
     Ok( path )
   }
+
 }
 
 crate::mod_interface!
 {
-  prelude use glob_is;
-  prelude use valid_is;
-  protected( crate ) use canonicalize;
+  protected use glob_is;
+  protected use valid_is;
+  protected use canonicalize;
 }

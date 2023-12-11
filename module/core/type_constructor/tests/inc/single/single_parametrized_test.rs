@@ -512,10 +512,10 @@ tests_impls!
       let i32_in_tuple = TheModule::Single::< i32 >::from( 13 );
       dbg!( i32_in_tuple );
       // i32_in_tuple = Single( 13 )
-      let i32_and_f32_in_tuple = TheModule::Pair::< i32, f32 >::from( ( 13, 13.0 ) );
+      let i32_and_f32_in_tuple = TheModule::Pair::< i32, f32 >::from( TheModule::Pair( 13, 13.0 ) );
       dbg!( i32_and_f32_in_tuple );
       // vec_of_i32_in_tuple = Pair( 13, 13.0 )
-      let two_i32_in_tuple = TheModule::HomoPair::< i32 >::from( ( 13, 31 ) );
+      let two_i32_in_tuple = TheModule::HomoPair::< i32 >::from( TheModule::HomoPair( 13, 31 ) );
       dbg!( two_i32_in_tuple );
       // vec_of_i32_in_tuple = HomoPair( 13, 31 )
       #[ cfg

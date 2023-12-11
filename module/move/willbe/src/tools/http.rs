@@ -1,18 +1,19 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use crate::*;
+  use wtools::error;
+  use wtools::error::for_app::Context;
   use ureq::Agent;
   use std::time::Duration;
   use core::fmt::Write;
   use std::io::Read;
 
-  use anyhow::*;
-
   ///
   /// Get data of remote package.
   ///
 
-  pub fn retrieve_bytes< 'a >( name : &'a str, version : &'a str ) -> anyhow::Result< Vec< u8 > >
+  pub fn retrieve_bytes< 'a >( name : &'a str, version : &'a str ) -> error::for_app::Result< Vec< u8 > >
   {
     let agent: Agent = ureq::AgentBuilder::new()
     .timeout_read( Duration::from_secs( 5 ) )
@@ -40,5 +41,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use retrieve_bytes;
+  orphan use retrieve_bytes;
 }

@@ -1,6 +1,9 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use crate::*;
+  use wtools::error;
+  use std::fmt::Formatter;
   use std::path::PathBuf;
   use std::process::
   {
@@ -22,6 +25,25 @@ pub( crate ) mod private
     pub err : String,
   }
 
+  impl std::fmt::Display for CmdReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      // qqq : for Bohdan : why trim?
+      f.write_fmt( format_args!( "[ {} ]\n", self.command ) )?;
+      if !self.out.trim().is_empty()
+      {
+        f.write_fmt( format_args!( "\t{}\n", self.out.replace( '\n', "\n\t" ) ) )?;
+      }
+      if !self.err.trim().is_empty()
+      {
+        f.write_fmt( format_args!( "\t!! {} !!\n\t{}\n", self.path.display(), self.err.replace( '\n', "\n\t" ) ) )?;
+      }
+
+      Ok( () )
+    }
+  }
+
   ///
   /// Run external processes.
   ///
@@ -30,7 +52,8 @@ pub( crate ) mod private
   (
     exec_path : &str,
     current_path : impl Into< std::path::PathBuf >,
-  ) -> anyhow::Result< CmdReport >
+  )
+  -> error::for_app::Result< CmdReport >
   {
     let current_path = current_path.into();
 

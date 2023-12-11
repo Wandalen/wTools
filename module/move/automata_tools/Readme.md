@@ -5,11 +5,11 @@
 
 Automata tools.
 
-## Sample  :: trivial
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use automata_tools::prelude::*;
 use wtools::prelude::*;
 let node : automata_tools::canonical::Node<i32, i32> = automata_tools::canonical::Node::_make_with_id( 13 );

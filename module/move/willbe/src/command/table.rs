@@ -1,32 +1,20 @@
 mod private
 {
-  use crate::
-  { 
-    endpoint,
-    wtools, 
-  };
-
-  use wca::
-  { 
-    Args, 
-    Props,
-  };
-  
-  use wtools::error::Result;
-  use anyhow::*;
+  use crate::*;
+  use wtools::error;
+  use wtools::error::for_app::Context;
 
   ///
   /// Generate table.
   ///
-  pub fn table_generate( ( _, _ ) : ( Args, Props ) ) -> Result< () >
+  pub fn table_generate( ( _, _ ) : ( wca::Args, wca::Props ) ) -> error::Result< () >
   {
-    endpoint::table_create().context( "Fail to create table" )
+    endpoint::table_create( &std::env::current_dir()? ).context( "Fail to create table" )
   }
 }
 
 crate::mod_interface!
 {
   /// List packages.
-  prelude use table_generate;
+  orphan use table_generate;
 }
-
