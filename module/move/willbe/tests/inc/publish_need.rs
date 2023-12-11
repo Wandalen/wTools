@@ -6,7 +6,6 @@ use TheModule::{ manifest, version, cargo };
 use TheModule::package::protected::publish_need;
 use TheModule::package::Package;
 use TheModule::path::AbsolutePath;
-use TheModule::process;
 
 // published the same as local
 #[ test ]
@@ -17,7 +16,7 @@ fn no_changes()
   let package_path = root_path.join( "c" );
   // qqq : for Bohdan : make helper function returning package_path. reuse it for all relevant tests
 
-  _ = process::start_sync( "cargo package", &package_path ).expect( "Failed to package a package" );
+  _ = cargo::package( &package_path, false ).expect( "Failed to package a package" );
   let absolute = AbsolutePath::try_from( package_path ).unwrap();
   let package = Package::try_from( absolute ).unwrap();
 
