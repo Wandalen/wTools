@@ -1,3 +1,5 @@
+//! example
+
 // #[ cfg( feature = "typing" ) ]
 // use wtools::*;
 
