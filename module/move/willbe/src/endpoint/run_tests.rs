@@ -15,6 +15,7 @@ mod private
   {
     tests : HashMap<String, CmdReport>,
 		package_name: String,
+		compilation_status: String,
   }
 
   impl std::fmt::Display for TestReport
@@ -38,6 +39,7 @@ mod private
 			{
 				f.write_fmt( format_args!( "\tFeature: [ {} ]:\n Tests status: {}\n", feature, result.out ) )?;
 			}
+			f.write_fmt( format_args!( "Compilation status:\n  {} ", self.compilation_status ) )?;
 			
       Ok( () )
     }
@@ -83,7 +85,12 @@ mod private
 
 		report.write().unwrap().package_name = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().name.clone();
 		
-		let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test" ), dir )?;
+		let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test" ), dir )?;
+		if cmd_rep.out.is_empty() 
+		{
+			cmd_rep.out = cmd_rep.err.clone();
+			report.write().unwrap().compilation_status.push_str( "Error while compiling tests with feature [All features]\n" );
+		}
 		report.write().unwrap().tests.insert( "All features".to_string(), cmd_rep );
 		
 		let features = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().features.clone();
@@ -104,7 +111,12 @@ mod private
 					{
 						return;
 					}
-					let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features --features {feature}" ), dir ).unwrap();
+					let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features --features {feature}" ), dir ).unwrap();
+					if cmd_rep.out.is_empty() 
+					{
+						cmd_rep.out = cmd_rep.err.clone();
+						report.write().unwrap().compilation_status.push_str( &format!( "Error while compiling tests with feature [{}]\n", feature ) );
+					}
 					report.write().unwrap().tests.insert( feature.to_string(), cmd_rep );
 				}
 			);
@@ -117,13 +129,27 @@ mod private
 				{
 					continue;
 				}
-				let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features --features {feature}" ), dir )?;
+				let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features --features {feature}" ), dir )?;
+				if cmd_rep.out.is_empty() 
+				{
+					cmd_rep.out = cmd_rep.err.clone();
+					report.write().unwrap().compilation_status.push_str( &format!( "Error while compiling tests with feature [{}]\n", feature ) );
+				}
 				report.write().unwrap().tests.insert( feature.clone(), cmd_rep );
 			}
 		}
 		
-		let cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features" ), dir )?;
+		let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features" ), dir )?;
+		if cmd_rep.out.is_empty() 
+		{
+			cmd_rep.out = cmd_rep.err.clone();
+			report.write().unwrap().compilation_status.push_str( "Error while compiling tests with feature [No features]\n" );
+		}
 		report.write().unwrap().tests.insert( "No features".to_string(), cmd_rep );
+		if report.read().unwrap().compilation_status.is_empty() 
+		{
+			report.write().unwrap().compilation_status.push_str( "Compilation of all tests with each feature variant was successful\n" );
+		}
 
 		let report_lock = report.read().unwrap();
 		let test_report: &TestReport = &*report_lock;
