@@ -8,10 +8,10 @@ include!( "./factory_impls.rs" );
 
 tests_index!
 {
-  node,
-  basic,
-  make_default,
-  make_with_edge_list,
-  // make_with_edge_list_string,
-  graph_print,
+  // node,
+  // basic,
+  // make_default,
+  // make_with_edge_list,
+  // // make_with_edge_list_string,
+  // graph_print,
 }

@@ -2,6 +2,7 @@
 pub( crate ) mod private
 {
   use crate::protected::*;
+  use core::fmt;
 
   /// Context.
   pub trait ChangerInterface
