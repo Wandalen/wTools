@@ -11,6 +11,7 @@
 // qqq : make it a command of willbe
 
 /// Internal namespace.
+#[ cfg( not( feature = "no_std" ) ) ]
 pub( crate ) mod private
 {
 
@@ -38,7 +39,12 @@ pub( crate ) mod private
     pub fn new( dependency_name : &'a str ) -> SmokeModuleTest< 'a >
     {
       let test_postfix = "_smoke_test";
-      let smoke_test_path = format!( "{}{}", dependency_name, test_postfix );
+
+      use rand::prelude::*;
+      let mut rng = rand::thread_rng();
+      let y: f64 = rng.gen();
+
+      let smoke_test_path = format!( "{}{}_{}", dependency_name, test_postfix, y );
       let mut test_path = std::env::temp_dir();
       test_path.push( smoke_test_path );
 
@@ -71,7 +77,12 @@ pub( crate ) mod private
     pub fn test_postfix( &mut self, test_postfix : &'a str ) -> &mut SmokeModuleTest< 'a >
     {
       self.test_postfix = test_postfix;
-      let smoke_test_path = format!( "{}{}", self.dependency_name, test_postfix );
+
+      use rand::prelude::*;
+      let mut rng = rand::thread_rng();
+      let y: f64 = rng.gen();
+
+      let smoke_test_path = format!( "{}{}_{}", self.dependency_name, test_postfix, y );
       self.test_path.pop();
       self.test_path.push( smoke_test_path );
       self
@@ -154,6 +165,7 @@ pub( crate ) mod private
     pub fn perform( &self ) -> Result<(), &'static str>
     {
       let mut test_path = self.test_path.clone();
+
       let test_name = format!( "{}{}", self.dependency_name, self.test_postfix );
       test_path.push( test_name );
 
@@ -239,7 +251,6 @@ pub( crate ) mod private
     let mut t = SmokeModuleTest::new( module_name.as_str() );
     t.test_postfix( test_name );
     t.clean( true ).unwrap();
-
     // let data;
     // if code_path.exists()
     // {
@@ -252,7 +263,6 @@ pub( crate ) mod private
     {
       t.local_path_clause( module_path.as_str() );
     }
-
     t.form().unwrap();
     t.perform().unwrap();
     t.clean( false ).unwrap();
@@ -323,7 +333,7 @@ pub( crate ) mod private
 
 
 //
-
+#[ cfg( not( feature = "no_std" ) ) ]
 crate::mod_interface!
 {
 

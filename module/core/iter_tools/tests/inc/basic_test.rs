@@ -7,6 +7,7 @@ tests_impls!
 {
 
   #[ test ]
+  #[ cfg( feature = "enabled" ) ]
   fn basic()
   {
     // test.case( "basic" );

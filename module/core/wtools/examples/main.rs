@@ -1,6 +1,8 @@
+//! example
+
 // #[ cfg( feature = "typing" ) ]
 // use wtools::*;
-
+#[ cfg( feature = "typing_implements" ) ]
 use wtools::implements;
 
 fn main()

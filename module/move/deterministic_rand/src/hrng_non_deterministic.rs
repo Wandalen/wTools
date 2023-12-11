@@ -34,7 +34,6 @@ pub( crate ) mod private
   #[ derive( Debug) ]
   pub struct SharedGeneratorLock;
 
-
   impl SharedGeneratorLock
   {
     /// Emulate unwrap of a result of guard produced my locking a mutex.
@@ -52,7 +51,6 @@ pub( crate ) mod private
   #[ derive( Debug ) ]
   pub struct DerefRng( rand::rngs::ThreadRng );
 
-
   impl Deref for DerefRng
   {
     type Target = rand::rngs::ThreadRng;
@@ -62,7 +60,6 @@ pub( crate ) mod private
       &self.0
     }
   }
-
 
   impl DerefMut for DerefRng
   {
@@ -87,7 +84,6 @@ pub( crate ) mod private
 
   #[ derive( Debug, Clone ) ]
   pub struct Hrng;
-
 
   impl Hrng
   {
@@ -153,19 +149,26 @@ pub( crate ) mod private
       Self
     }
 
+//     /// Creates new child hierarchical random number generator by index seed, index is deduced from the contexst.
+//     /// Index is new child is index of current newest child plus one.
+//     pub fn child_new( &self ) -> Self
+//     {
+//       self.child( 0 )
+//     }
+
     /// Returns number of children created by this generator.
     #[ inline( always ) ]
-    pub fn children_len( &self ) -> usize
+    pub fn _children_len( &self ) -> usize
     {
       0
     }
 
-    /// Returns current index of the generator.
-    #[ inline( always ) ]
-    pub fn index( &self ) -> usize
-    {
-      0
-    }
+//     /// Returns current index of the generator.
+//     #[ inline( always ) ]
+//     pub fn index( &self ) -> usize
+//     {
+//       0
+//     }
   }
 
 }

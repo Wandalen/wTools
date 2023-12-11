@@ -10,7 +10,7 @@ Tools for writing procedural macros.
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use proc_macro_tools::*;
 use proc_macro_tools::dependency::*;
 use quote::quote;

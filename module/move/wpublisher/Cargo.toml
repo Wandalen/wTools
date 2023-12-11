@@ -65,7 +65,7 @@ wca = { workspace = true }
 anyhow = "~1.0"
 toml_edit = "~0.14"
 cargo_metadata = "~0.14"
-ureq = "~2.4"
+ureq = "~2.9"
 sha-1 = "~0.10"
 globwalk = "~0.8"
 petgraph = "~0.6"

@@ -2,6 +2,7 @@
 pub( crate ) mod private
 {
   use crate::protected::*;
+  use core::fmt;
   // use crate::abs::*;
   // use once_cell::sync::Lazy;
   // use std::sync::Mutex;

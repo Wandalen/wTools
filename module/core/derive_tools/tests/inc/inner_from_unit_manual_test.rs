@@ -6,7 +6,7 @@ pub struct UnitStruct;
 impl From< UnitStruct > for ()
 {
   #[ inline( always ) ]
-  fn from( src : UnitStruct ) -> Self
+  fn from( _src : UnitStruct ) -> Self
   {
     ()
   }

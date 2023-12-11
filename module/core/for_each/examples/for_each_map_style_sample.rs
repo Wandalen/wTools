@@ -1,3 +1,5 @@
+//! example
+
 use for_each::for_each;
 
 fn main()

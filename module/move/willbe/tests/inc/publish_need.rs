@@ -2,7 +2,7 @@ use super::*;
 
 const TEST_MODULE_PATH : &str = "../../test/";
 use assert_fs::prelude::*;
-use TheModule::{ manifest, process, version };
+use TheModule::{ manifest, version, cargo };
 use TheModule::package::protected::publish_need;
 
 // published the same as local
@@ -14,7 +14,7 @@ fn no_changes()
   let package_path = root_path.join( "c" );
   // qqq : for Bohdan : make helper function returning package_path. reuse it for all relevant tests
 
-  _ = process::start_sync( "cargo package", &package_path ).expect( "Failed to package a package" );
+  _ = cargo::package( &package_path, false ).expect( "Failed to package a package" );
   let manifest = manifest::open( &package_path ).unwrap();
 
   // Act
@@ -38,7 +38,7 @@ fn with_changes()
   let mut manifest = manifest::open( temp.as_ref() ).unwrap();
   version::bump( &mut manifest, false ).unwrap();
 
-  _ = process::start_sync( "cargo package", temp.as_ref() ).expect( "Failed to package a package" );
+  _ = cargo::package( &temp, false ).expect( "Failed to package a package" );
 
   let manifest = manifest::open( temp.as_ref() ).unwrap();
 

@@ -5,17 +5,18 @@ mod private
   use crate::process::CmdReport;
   use crate::wtools::error::Result;
 
-  /// Upload a package to the registry
+  ///
+  /// Assemble the local package into a distributable tarball.
   ///
   /// # Args:
   /// - `path` - path to the package directory
   /// - `dry` - a flag that indicates whether to execute the command or not
   ///
-  pub fn publish< P >( path : P, dry : bool ) -> Result< CmdReport >
+  pub fn package< P >( path : P, dry : bool ) -> Result< CmdReport >
   where
     P : AsRef< Path >
   {
-    let command = "cargo publish";
+    let ( program, args ) = ( "cargo", [ "package" ] );
 
     if dry
     {
@@ -23,7 +24,33 @@ mod private
       (
         CmdReport
         {
-          command : command.to_string(),
+          command : format!( "{program} {}", args.join( " " ) ),
+          path : path.as_ref().to_path_buf(),
+          out : String::new(),
+          err : String::new(),
+        }
+      )
+    }
+    else
+    {
+      process::start2_sync( program, args, path )
+    }
+  }
+  
+ /// Upload a package to the registry
+  pub fn publish< P >( path : P, dry : bool ) -> Result< CmdReport >
+  where
+    P : AsRef< Path >
+  {
+    let ( program, args ) = ( "cargo", [ "publish" ] );
+
+    if dry
+    {
+      Ok
+      (
+        CmdReport
+        {
+          command : format!( "{program} {}", args.join( " " ) ),
           path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
@@ -33,7 +60,7 @@ mod private
     else
     {
       // qqq : for Bohdan : process::start_sync is overkill. sh is not needed. introduce process::start2_sync
-      process::start_sync( command, path.as_ref() )
+      process::start2_sync( program, args, path )
     }
   }
 }
@@ -42,5 +69,6 @@ mod private
 
 crate::mod_interface!
 {
+  protected use package;
   protected use publish;
 }
