@@ -1,3 +1,5 @@
+//! example
+
 use typing_tools::*;
 
 fn main()

@@ -1,3 +1,4 @@
+//! non-iterable example
 
 fn main()
 {

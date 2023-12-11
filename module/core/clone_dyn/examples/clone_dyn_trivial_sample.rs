@@ -1,10 +1,13 @@
+//! example
+
 #[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 use clone_dyn::clone_dyn;
 
 fn main()
 {
 
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "enabled" ) ]
   {
 
     #[ clone_dyn ]

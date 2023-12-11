@@ -16,7 +16,7 @@ There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [d
 <!-- begin {{# generate.module_sample( "example/clone_dyn_trivail_sample.rs" ) #}} -->
 
 ```rust
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 {
   use clone_dyn::clone_dyn;
 

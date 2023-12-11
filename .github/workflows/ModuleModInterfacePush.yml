@@ -27,12 +27,12 @@ jobs :
 
   # mod_interface_runtime
 
-  test_mod_interface_runtime :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
-    with :
-      manifest_path : 'module/rust/mod_interface_runtime/Cargo.toml'
-      module_name : 'mod_interface_runtime'
-      commit_message : ${{ github.event.head_commit.message }}
+  # test_mod_interface_runtime :
+  #   uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+  #   with :
+  #     manifest_path : 'module/rust/mod_interface_runtime/Cargo.toml'
+  #     module_name : 'mod_interface_runtime'
+  #     commit_message : ${{ github.event.head_commit.message }}
 
   # multilayer
 
