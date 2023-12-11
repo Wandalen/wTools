@@ -30,7 +30,7 @@ mod private
     {
       core::result::Result::Ok( report ) =>
       {
-        println!( "{report} ");
+        println!( "{report}" );
       }
       Err(( report, e )) =>
       {

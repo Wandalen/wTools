@@ -3,20 +3,20 @@ mod private
   use crate::*;
   use std::
   {
-    fs,
-    path::PathBuf,
+    path::{ Path, PathBuf },
     collections::{ HashMap, HashSet },
   };
   use std::fmt::Formatter;
   use std::hash::Hash;
   use cargo_metadata::{ Dependency, DependencyKind, Package as PackageMetadata };
+  use toml_edit::value;
   use tools::
   {
     process,
-    http,
   };
   use manifest::Manifest;
   use { cargo, git, version, path, wtools };
+  use crates_tools::CrateArchive;
   use wca::wtools::Itertools; // qqq : use wtools::...!
   use wtools::error::for_app::{ anyhow, Error, Context };
   use workspace::Workspace;
@@ -162,6 +162,16 @@ mod private
         Package::Metadata( metadata ) => manifest::open( metadata.manifest_path.as_std_path() ).unwrap(),
       }
     }
+
+    /// Returns the `Metadata`
+    pub fn metadata( &self ) -> PackageMetadata
+    {
+      match self
+      {
+        Package::Manifest( manifest ) => Workspace::with_crate_dir( manifest.crate_dir() ).package_find_by_manifest( &manifest.manifest_path ).unwrap().clone(),
+        Package::Metadata( metadata ) => metadata.clone(),
+      }
+    }
   }
 
   /// Describe publishing outcomes.
@@ -169,7 +179,8 @@ mod private
   pub struct PublishReport
   {
     get_info : Option< process::CmdReport >,
-    bump : Option< String >,
+    publish_required : bool,
+    bump : Option< BumpReport >,
     add : Option< process::CmdReport >,
     commit : Option< process::CmdReport >,
     push : Option< process::CmdReport >,
@@ -183,6 +194,7 @@ mod private
       let PublishReport
       {
         get_info,
+        publish_required,
         bump,
         add,
         commit,
@@ -192,14 +204,21 @@ mod private
 
       if get_info.is_none()
       {
-        f.write_fmt( format_args!( "Empty report" ) )?;
+        f.write_str( "Empty report" )?;
         return Ok( () )
       }
       let info = get_info.as_ref().unwrap();
       f.write_fmt( format_args!( "{}", info ) )?;
+
+      if !publish_required
+      {
+        f.write_str( "The package has no changes, so no publishing is required" )?;
+        return Ok( () )
+      }
+
       if let Some( bump ) = bump
       {
-        f.write_fmt( format_args!( "{}\n", bump ) )?;
+        f.write_fmt( format_args!( "{}", bump ) )?;
       }
       if let Some( add ) = add
       {
@@ -217,6 +236,32 @@ mod private
       {
         f.write_fmt( format_args!( "{publish}" ) )?;
       }
+
+      Ok( () )
+    }
+  }
+
+  /// Report about changing version.
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct BumpReport
+  {
+    package_name : String,
+    new_version : String,
+    changed_files : Vec< AbsolutePath >
+  }
+
+  impl std::fmt::Display for BumpReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      if self.changed_files.is_empty()
+      {
+        f.write_str( "Files were not changed during bumping the version" )?;
+        return Ok( () )
+      }
+
+      let files = self.changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n\t\t" );
+      f.write_fmt( format_args!( "`{}` bumped to `{}`\n\tchanged files:\n\t\t{files}\n", self.package_name, self.new_version ) )?;
 
       Ok( () )
     }
@@ -245,7 +290,7 @@ mod private
 
     let package_dir = &package.crate_dir();
 
-    let output = process::start_sync( "cargo package", &package_dir.as_ref() ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
+    let output = cargo::package( &package_dir, false ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
     if output.err.contains( "not yet committed")
     {
       return Err(( report, anyhow!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
@@ -254,13 +299,50 @@ mod private
 
     if publish_need( &package )
     {
+      report.publish_required = true;
+
+      let mut files_changed_for_bump = vec![];
+      // bump version in the package manifest
       let new_version = version::bump( &mut package.manifest(), dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+      files_changed_for_bump.push( package.manifest_path() );
+
       let package_name = package.name();
 
-      report.bump = Some( format!( "`{package_name}` bumped to `{new_version}`" ) );
+      // bump the package version in dependents(so far, only workspace)
+      let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( package.crate_dir() ).workspace_root().try_into().unwrap();
+      let workspace_manifest_path = workspace_manifest_dir.join( "Cargo.toml" );
+
+      // qqq: should be refactored
+      if !dry
+      {
+        let mut workspace_manifest = manifest::open( workspace_manifest_path.as_ref() ).map_err( | e | ( report.clone(), e ) )?;
+        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().unwrap();
+        workspace_manifest_data
+        .get_mut( "workspace" )
+        .and_then( | workspace | workspace.get_mut( "dependencies" ) )
+        .and_then( | dependencies | dependencies.get_mut( &package_name ) )
+        .map
+        (
+          | dependency |
+            {
+              let previous_version = dependency.get( "version" ).and_then( | v | v.as_str() ).unwrap().to_string();
+              if previous_version.starts_with( '~' )
+              {
+                dependency[ "version" ] = value( format!( "~{new_version}" ) );
+              }
+            }
+        );
+        workspace_manifest.store().unwrap();
+      }
+
+      files_changed_for_bump.push( workspace_manifest_path );
+      let files_changed_for_bump : Vec< _ > = files_changed_for_bump.into_iter().unique().collect();
+      let objects_to_add : Vec< _ > = files_changed_for_bump.iter().map( | f | f.as_ref().strip_prefix( &workspace_manifest_dir ).unwrap().to_string_lossy() ).collect();
+
+      report.bump = Some( BumpReport { package_name : package_name.to_string(), new_version : new_version.clone(), changed_files : files_changed_for_bump.clone() } );
 
       let commit_message = format!( "{package_name}-v{new_version}" );
-      let res = git::add( package_dir, [ "Cargo.toml" ], dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git::add( workspace_manifest_dir, objects_to_add, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.add = Some( res );
       let res = git::commit( package_dir, commit_message, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.commit = Some( res );
@@ -348,9 +430,7 @@ mod private
     }
   }
 
-  // qqq : for Bohdan : poor description, not explained what for
-  /// Build HashMap dependencies graph.
-  /// Returns identifier of root node
+  /// Recursive implementation of the `dependencies` function
   pub fn _dependencies
   (
     workspace : &mut Workspace,
@@ -441,19 +521,18 @@ mod private
     Ok( output )
   }
 
-  // qqq : for Bohdan : dont add _get at the end
   // qqq : for Bohdan : move to file packed_crate as well as relevant functions
 
   /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.
   ///
-  /// Args:
+  /// # Args:
   /// - `name` - the name of the package.
   /// - `version` - the version of the package.
   /// - `manifest_path` - path to the package `Cargo.toml` file.
   ///
-  /// Returns:
+  /// # Returns:
   /// The local packed `.crate` file of the package
-  pub fn local_path_get< 'a >( name : &'a str, version : &'a str, crate_dir : CrateDir ) -> PathBuf
+  pub fn local_path< 'a >( name : &'a str, version : &'a str, crate_dir: CrateDir ) -> PathBuf
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
 
@@ -506,8 +585,8 @@ mod private
 
   /// Given a slice of `Package` instances and a set of filtering options,
   /// this function filters and maps the packages and their dependencies
-  /// based on the provided filters. It returns a HashMap where the keys
-  /// are package names, and the values are HashSet instances containing
+  /// based on the provided filters. It returns a `HashMap` where the keys
+  /// are package names, and the values are `HashSet` instances containing
   /// the names of filtered dependencies for each package.
   pub fn packages_filter_map( packages : &[ PackageMetadata ], filter_map_options : FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
   {
@@ -537,7 +616,7 @@ mod private
   ///
   /// This function requires the local package to be previously packed.
   ///
-  /// Returns:
+  /// # Returns:
   /// - `true` if the package needs to be published.
   /// - `false` if there is no need to publish the package.
   ///
@@ -553,74 +632,35 @@ mod private
 
     let name = package.name();
     let version = package.version();
-    let local_package_path = local_path_get( &name, &version, package.crate_dir() );
-
-    let local_package = fs::read( local_package_path ).expect( "Failed to read local package. Please, run `cargo package` before." );
-    // Is it ok? If there is any problem with the Internet, we will say that the packages are different.
-    // qqq : for Bohdan : bad, properly handle errors
-    let remote_package = http::retrieve_bytes( &name, &version ).unwrap_or_default();
+    let local_package_path = local_path( &name, &version, package.crate_dir() );
 
     // qqq : for Bohdan : bad, properly handle errors
-    let mut local_decoded_package = decode_reader( local_package ).expect( "Failed to unpack local package" );
-    let mut remote_decoded_package = decode_reader( remote_package ).expect( "Failed to unpack remote package" );
-
-    let package_root = std::path::PathBuf::from( format!( "{name}-{version}" ) );
-    // all ignored files must be ignored
-    for ignore in IGNORE_LIST.iter().map( | &object | package_root.join( object ) )
+    let local_package = CrateArchive::read( local_package_path ).expect( "Failed to read local package. Please, run `cargo package` before." );
+    let remote_package = match CrateArchive::download_crates_io( name, version )
     {
-      local_decoded_package.remove( &ignore );
-      remote_decoded_package.remove( &ignore );
-    }
+      Ok( archive ) => archive,
+      // qqq: fix. we don't have to know about the http status code
+      Err( ureq::Error::Status( 403, _ ) ) => return true,
+      _ => /* return an error */ panic!( "Failed to load remote package" ),
+    };
+
+    let filter_ignore_list = | p : &&Path | !IGNORE_LIST.contains( &p.file_name().unwrap().to_string_lossy().as_ref() );
+    let local_package_files : Vec< _ > = local_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
+    let remote_package_files : Vec< _ > = remote_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
+
+    if local_package_files != remote_package_files { return true; }
 
     let mut is_same = true;
-    // if remote has files that missing locally - it is also difference
-    let mut remote_keys = remote_decoded_package.keys().collect::< HashSet< _ > >();
-    for ( path, ref content ) in local_decoded_package
+    for path in local_package_files
     {
-      remote_keys.remove( &path );
-      if let Some( remote_content ) = remote_decoded_package.get( &path )
-      {
-        is_same &= content == remote_content;
-      }
-      else
-      {
-        is_same = false;
-      }
+      // unwraps is safe because the paths to the files was compared previously
+      let local = local_package.content_bytes( path ).unwrap();
+      let remote = local_package.content_bytes( path ).unwrap();
+
+      is_same &= local == remote;
     }
 
-    !( is_same && remote_keys.is_empty() )
-  }
-
-  // qqq : move out to tools::archive and introduce newtype
-  /// Decode bytes archive to the dictionary of file path as a key and content as a value
-  ///
-  /// Arg:
-  /// - bytes - `.crate` file as bytes
-  fn decode_reader( bytes : Vec< u8 > ) -> std::io::Result< HashMap< PathBuf, Vec< u8 > > >
-  {
-    use std::io::prelude::*;
-    use flate2::bufread::GzDecoder;
-    use tar::Archive;
-
-    if bytes.is_empty()
-    {
-      return Ok( Default::default() );
-    }
-
-    let gz = GzDecoder::new( &bytes[ .. ] );
-    let mut archive = Archive::new( gz );
-
-    let mut output = HashMap::new();
-
-    for file in archive.entries()?
-    {
-      let mut file = file?;
-      let mut contents = vec![];
-      file.read_to_end( &mut contents )?;
-      output.insert( file.path()?.to_path_buf(), contents );
-    }
-
-    Ok( output )
+    !is_same
   }
 
 }
@@ -633,8 +673,7 @@ crate::mod_interface!
 
   protected use PublishReport;
   protected use publish_single;
-  protected use local_path_get;
-
+  protected use local_path;
   protected use PackageName;
   protected use Package;
 

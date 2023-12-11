@@ -12,14 +12,16 @@ use mod_interface::mod_interface;
 /// Micro wtools
 pub mod wtools;
 
-// qqq : for Bohdan : poor description, make it useful
-
 /// Internal namespace.
 pub( crate ) mod private
 {
   use crate::*;
 
-  /// qqq : for Bohdan : write description
+  /// Takes the command line arguments and perform associated function(s).
+  /// If no arguments are provided, the function identifies this as an ambiguous state and prompts the user with a help message, suggesting possible commands they might want to execute.
+  /// It then terminates the program with an exit code of 1 to indicate an error due to the lack of input.
+  ///
+  /// Do not support interactive mode.
   pub fn run() -> Result< (), wtools::error::for_app::Error >
   {
     let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
@@ -53,30 +55,31 @@ wtools::meta::mod_interface!
   /// The tools for operating over packages.
   layer tools;
 
-  /// Commands library.
+  /// Describes CLI commands.
   layer command;
 
-  /// Endpoints library.
+  /// Describes functions that can be called from an interface.
   layer endpoint;
 
-  /// Package library.
+  /// Offers capabilities for package management, facilitating the handling and organization of packages.
   layer package;
 
-  /// query
+  /// The parse function parses an input string into a HashMap where the keys are String and the values are of type Value.
   layer query;
 
-  /// methods for url
+  /// Tools for parsing and extracting information from url.
   layer url;
-  /// Version library.
+
+  /// Provides an opportunity to work with versions.
   layer version;
 
-  /// Git library.
+  /// Git interaction module that enables seamless integration and management of version control workflows.
   layer git;
 
-  /// Cargo library.
+  /// Interaction module with the `cargo` utilities.
   layer cargo;
 
-  /// Metadata cache.
+  /// It features the ability to interact with workspaces, manage their participants, and other functionalities.
   layer workspace;
 
   /// To manipulate manifest data.
