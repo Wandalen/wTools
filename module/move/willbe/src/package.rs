@@ -3,7 +3,6 @@ mod private
   use crate::*;
   use std::
   {
-    fs,
     path::{ Path, PathBuf },
     collections::{ HashMap, HashSet },
   };
@@ -13,10 +12,10 @@ mod private
   use tools::
   {
     process,
-    http,
   };
   use manifest::Manifest;
   use { cargo, git, version, path, wtools };
+  use crates_tools::CrateArchive;
   use wca::wtools::Itertools; // qqq : use wtools::...!
   use wtools::error::for_app::{ anyhow, Error, Context };
   use workspace::Workspace;
@@ -378,7 +377,6 @@ mod private
     Ok( output )
   }
 
-  // qqq : for Bohdan : dont add _get at the end
   // qqq : for Bohdan : move to file packed_crate as well as relevant functions
 
   /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.
@@ -390,7 +388,7 @@ mod private
   ///
   /// Returns:
   /// The local packed `.crate` file of the package
-  pub fn local_path_get< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
+  pub fn local_path< 'a >( name : &'a str, version : &'a str, manifest_path : &'a PathBuf ) -> PathBuf
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
 
@@ -495,74 +493,35 @@ mod private
     let name = name.as_str().expect( "Name should be valid UTF-8" );
     let version = &data[ "package" ][ "version" ].clone();
     let version = version.as_str().expect( "Version should be valid UTF-8" );
-    let local_package_path = local_path_get( name, version, &manifest.manifest_path );
-
-    let local_package = fs::read( local_package_path ).expect( "Failed to read local package. Please, run `cargo package` before." );
-    // Is it ok? If there is any problem with the Internet, we will say that the packages are different.
-    // qqq : for Bohdan : bad, properly handle errors
-    let remote_package = http::retrieve_bytes( name, version ).unwrap_or_default();
+    let local_package_path = local_path( name, version, &manifest.manifest_path );
 
     // qqq : for Bohdan : bad, properly handle errors
-    let mut local_decoded_package = decode_reader( local_package ).expect( "Failed to unpack local package" );
-    let mut remote_decoded_package = decode_reader( remote_package ).expect( "Failed to unpack remote package" );
-
-    let package_root = std::path::PathBuf::from( format!( "{name}-{version}" ) );
-    // all ignored files must be ignored
-    for ignore in IGNORE_LIST.iter().map( | &object | package_root.join( object ) )
+    let local_package = CrateArchive::read( local_package_path ).expect( "Failed to read local package. Please, run `cargo package` before." );
+    let remote_package = match CrateArchive::download_crates_io( name, version )
     {
-      local_decoded_package.remove( &ignore );
-      remote_decoded_package.remove( &ignore );
-    }
+      Ok( archive ) => archive,
+      // qqq: fix. we don't have to know about the http status code
+      Err( ureq::Error::Status( 403, _ ) ) => return true,
+      _ => /* return an error */ panic!( "Failed to load remote package" ),
+    };
+
+    let filter_ignore_list = | p : &&Path | !IGNORE_LIST.contains( &p.file_name().unwrap().to_string_lossy().as_ref() );
+    let local_package_files : Vec< _ > = local_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
+    let remote_package_files : Vec< _ > = remote_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
+
+    if local_package_files != remote_package_files { return true; }
 
     let mut is_same = true;
-    // if remote has files that missing locally - it is also difference
-    let mut remote_keys = remote_decoded_package.keys().collect::< HashSet< _ > >();
-    for ( path, ref content ) in local_decoded_package
+    for path in local_package_files
     {
-      remote_keys.remove( &path );
-      if let Some( remote_content ) = remote_decoded_package.get( &path )
-      {
-        is_same &= content == remote_content;
-      }
-      else
-      {
-        is_same = false;
-      }
+      // unwraps is safe because the paths to the files was compared previously
+      let local = local_package.content_bytes( path ).unwrap();
+      let remote = local_package.content_bytes( path ).unwrap();
+
+      is_same &= local == remote;
     }
 
-    !( is_same && remote_keys.is_empty() )
-  }
-
-  // qqq : move out to tools::archive and introduce newtype
-  /// Decode bytes archive to the dictionary of file path as a key and content as a value
-  ///
-  /// Arg:
-  /// - bytes - `.crate` file as bytes
-  fn decode_reader( bytes : Vec< u8 > ) -> std::io::Result< HashMap< PathBuf, Vec< u8 > > >
-  {
-    use std::io::prelude::*;
-    use flate2::bufread::GzDecoder;
-    use tar::Archive;
-
-    if bytes.is_empty()
-    {
-      return Ok( Default::default() );
-    }
-
-    let gz = GzDecoder::new( &bytes[ .. ] );
-    let mut archive = Archive::new( gz );
-
-    let mut output = HashMap::new();
-
-    for file in archive.entries()?
-    {
-      let mut file = file?;
-      let mut contents = vec![];
-      file.read_to_end( &mut contents )?;
-      output.insert( file.path()?.to_path_buf(), contents );
-    }
-
-    Ok( output )
+    !is_same
   }
 
 }
@@ -575,8 +534,7 @@ crate::mod_interface!
 
   protected use PublishReport;
   protected use publish_single;
-  protected use local_path_get;
-
+  protected use local_path;
   protected use PackageName;
 
   protected use FilterMapOptions;
