@@ -61,9 +61,9 @@ fn test_reusability()
     expected[3] = got;
   }
   #[ cfg( feature = "determinism" ) ]
-  assert_eq!( hrng.children_len(), 1 );
+  assert_eq!( hrng._children_len(), 1 );
   #[ cfg( not( feature = "determinism" ) ) ]
-  assert_eq!( hrng.children_len(), 0 );
+  assert_eq!( hrng._children_len(), 0 );
 
   let hrng = Hrng::master();
   {
@@ -85,9 +85,9 @@ fn test_reusability()
     assert_eq!( got, expected[3] );
   }
   #[ cfg( feature = "determinism" ) ]
-  assert_eq!( hrng.children_len(), 1 );
+  assert_eq!( hrng._children_len(), 1 );
   #[ cfg( not( feature = "determinism" ) ) ]
-  assert_eq!( hrng.children_len(), 0 );
+  assert_eq!( hrng._children_len(), 0 );
 }
 
 #[ cfg( feature = "determinism" ) ]
@@ -129,4 +129,14 @@ fn test_par()
       _ => unreachable!(),
     }
   } );
+}
+
+#[ cfg( feature = "determinism" ) ]
+#[test]
+fn seed()
+{
+  use deterministic_rand::Seed;
+  let seed = Seed::random();
+  println!( "{seed:?}" );
+  assert!( seed.into_inner().len() == 16 );
 }

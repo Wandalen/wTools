@@ -24,7 +24,7 @@ impl< E > VectorLike< E > for std::vec::Vec< E >
 #[derive( Debug, Default )]
 pub struct VectorFormer< E, Vector, Former, ContainerEnd >
 where
-  Vector : VectorLike< E > + core::fmt::Debug + core::cmp::PartialEq + std::default::Default,
+  Vector : VectorLike< E > + core::fmt::Debug + core::cmp::PartialEq + core::default::Default,
   ContainerEnd : Fn( &mut Former, core::option::Option< Vector > ),
 {
   container : Option< Vector >,
@@ -35,7 +35,7 @@ where
 
 impl< E, Vector, Former, ContainerEnd > VectorFormer< E, Vector, Former, ContainerEnd >
 where
-  Vector : VectorLike< E > + core::fmt::Debug + core::cmp::PartialEq + std::default::Default,
+  Vector : VectorLike< E > + core::fmt::Debug + core::cmp::PartialEq + core::default::Default,
   ContainerEnd : Fn( &mut Former, core::option::Option< Vector > ),
 {
 

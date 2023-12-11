@@ -17,6 +17,7 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#![ allow( unused_imports ) ]
 use iter_tools::iter;
 use data_type::dt;
 use meta_tools::meta;

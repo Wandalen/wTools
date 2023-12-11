@@ -2,7 +2,6 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use wtools::error;
   use std::fmt::Formatter;
   use std::path::{ Path, PathBuf };
   use std::process::
@@ -11,6 +10,8 @@ pub( crate ) mod private
     Stdio,
   };
   use wca::wtools::Itertools;
+  use wtools::error;
+
 
   /// Process command output.
   #[ derive( Debug, Clone ) ]
@@ -31,14 +32,14 @@ pub( crate ) mod private
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       // qqq : for Bohdan : why trim?
-      f.write_fmt( format_args!( "[ {} ]\n", self.command ) )?;
+      f.write_fmt( format_args!( "> {}\n", self.command ) )?;
       if !self.out.trim().is_empty()
       {
         f.write_fmt( format_args!( "\t{}\n", self.out.replace( '\n', "\n\t" ) ) )?;
       }
       if !self.err.trim().is_empty()
       {
-        f.write_fmt( format_args!( "\t!! {} !!\n\t{}\n", self.path.display(), self.err.replace( '\n', "\n\t" ) ) )?;
+        f.write_fmt( format_args!( "\tpath: {}\n\t{}\n", self.path.display(), self.err.replace( '\n', "\n\t" ) ) )?;
       }
 
       Ok( () )

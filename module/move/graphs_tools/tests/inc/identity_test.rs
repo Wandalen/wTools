@@ -12,21 +12,21 @@ tests_impls!
 
     /* test.case( "basic" ) */
     {
-      let src1 = IdentityWithInt::make( 3 );
-      let src2 = IdentityWithInt::make( 3 );
+      let src1 = IdentityWithInt::from( 3 );
+      let src2 = IdentityWithInt::from( 3 );
       // is_identity( src1 );
       // fn is_identity< T : IdentityInterface >( _ : T ){}
       a_true!( implements!( src1 => IdentityInterface ) );
       a_id!( src1, src2 );
 
-      let src1 = IdentityWithInt::make( 3 );
-      let src2 = IdentityWithInt::make( 1 );
+      let src1 = IdentityWithInt::from( 3 );
+      let src2 = IdentityWithInt::from( 1 );
       a_not_id!( src1, src2 );
     }
 
     /* test.case( "from" ) */
     {
-      let src = IdentityWithInt::make( 3 );
+      let src = IdentityWithInt::from( 3 );
       fn check_into< Src >( src : Src ) -> IdentityWithInt
       where Src : Into< IdentityWithInt >,
       {
@@ -34,8 +34,8 @@ tests_impls!
       }
       a_id!( src, check_into( 3 ) );
       a_not_id!( src, check_into( 1 ) );
-      a_id!( src, check_into( IdentityWithInt::make( 3 ) ) );
-      a_not_id!( src, check_into( IdentityWithInt::make( 1 ) ) );
+      a_id!( src, check_into( IdentityWithInt::from( 3 ) ) );
+      a_not_id!( src, check_into( IdentityWithInt::from( 1 ) ) );
     }
 
     // zzz
@@ -57,9 +57,10 @@ tests_impls!
 
     /* test.case( "from x2 tupple" ) */
     {
+      use type_constructor::VectorizedInto;
       let src = ( 1, 3 );
       let got : ( IdentityWithInt, IdentityWithInt ) = src.vectorized_into();
-      let exp = ( IdentityWithInt::make( 1 ), IdentityWithInt::make( 3 ) );
+      let exp = ( IdentityWithInt::from( 1 ), IdentityWithInt::from( 3 ) );
       a_id!( got, exp );
     }
 
@@ -81,8 +82,8 @@ tests_impls!
 
     let x = 1;
     let y = 1;
-    let src1 = IdentityWithPointer::make( &x );
-    let src2 = IdentityWithPointer::make( &y );
+    let src1 = IdentityWithPointer::from( &x );
+    let src2 = IdentityWithPointer::from( &y );
     check( src1 );
     fn check< T : IdentityInterface >( _ : T ){}
     a_not_id!( src1, src2 );
@@ -94,8 +95,8 @@ tests_impls!
   {
     use TheModule::exposed::*;
 
-    let src1 = IdentityWithName::make( "abc" );
-    let src2 = IdentityWithName::make( "abc" );
+    let src1 = IdentityWithName::from( "abc" );
+    let src2 = IdentityWithName::from( "abc" );
     check( src1 );
     fn check< T : IdentityInterface >( _ : T ){}
     assert_eq!( src1, src2 );
@@ -108,8 +109,8 @@ tests_impls!
   {
     use TheModule::exposed::*;
 
-    let src1 = IdentityWithInt::make( 3 );
-    let src2 = IdentityWithInt::make( 3 );
+    let src1 = IdentityWithInt::from( 3 );
+    let src2 = IdentityWithInt::from( 3 );
     check( src1 );
     fn check< T : IdentityInterface >( _ : T ){}
     assert_eq!( src1, src2 );

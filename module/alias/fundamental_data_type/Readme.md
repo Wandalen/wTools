@@ -21,7 +21,7 @@ Macro `types` is responsible for generating code for Single, Pair, Homopair, Man
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 {
   use fundamental_data_type::prelude::*;
 
@@ -98,7 +98,7 @@ To define your own single-use macro `types!`. The single-line definition looks l
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 types!( pub single MySingle : i32 );
 let x = MySingle( 13 );
@@ -107,7 +107,7 @@ println!( "x : {}", x.0 );
 
 It generates code:
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 
 pub struct MySingle( pub i32 );
@@ -147,7 +147,7 @@ It's possible to define attributes as well as derives:
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 types!
 {
@@ -161,7 +161,7 @@ dbg!( x );
 
 It generates code:
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 
 /// This is also an attribute and macro understands it.
@@ -204,7 +204,7 @@ You may use parameterized struct `Single< T >` instead of macro `types!` if that
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 let x = Single::< i32 >( 13 );
 dbg!( x );
@@ -216,7 +216,7 @@ Element of tuple could be parametrized:
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 types!
 {
@@ -229,7 +229,7 @@ dbg!( x );
 
 It generates code:
 
-```rust
+```rust ignore
 use fundamental_data_type::*;
 
 #[ derive( Debug ) ]
@@ -268,7 +268,7 @@ Instead of parametrizing the element, it's possible to define a parametrized tup
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 types!
 {
@@ -281,7 +281,7 @@ dbg!( x );
 
 It gererates code:
 
-```rust
+```rust ignore
 #[ derive( Debug ) ]
 pub struct MySingle< T : Copy >( pub T );
 
@@ -314,7 +314,7 @@ Sometimes you need to wrap more than a single element into a tuple. If types of 
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 
 types!( pub pair MyPair : i32, i64 );
@@ -632,7 +632,7 @@ Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use fundamental_data_type::prelude::*;
 
 types!( pub many MyMany : i32 );

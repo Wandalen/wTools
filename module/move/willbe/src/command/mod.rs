@@ -78,6 +78,27 @@ pub( crate ) mod private
     .phrase( "readme.health.table.generate" )
     .form();
 
+    let run_tests_no_subj_command = wca::Command::former()
+    .hint( "Run tests in a specified crate" )
+    .long_hint( "Run tests in a specified crate" )
+    .phrase("tests.run")
+    .property( "nightly", "Run tests on nightly. Default is false.", Type::String, true )
+    .property( "exclude", "List of features to exclude.", Type::List( Type::String.into(), ',' ), true )
+    .property( "include", "List of features to include.", Type::List( Type::String.into(), ',' ), true )
+    .property( "parallel", "Run tests with different a set of features in parallel. Default is false.", Type::String, true )
+    .form();
+
+    let run_tests_command = wca::Command::former()
+    .hint( "Run tests in a specified crate" )
+    .long_hint( "Run tests in a specified crate" )
+    .phrase("tests.run")
+    .subject( "A path to directories with packages.", Type::Path, true )
+    .property( "nightly", "Run tests on nightly. Default is false.", Type::String, true )
+    .property( "exclude", "List of features to exclude.", Type::List( Type::String.into(), ',' ), true )
+    .property( "include", "List of features to include.", Type::List( Type::String.into(), ',' ), true )
+    .property( "parallel", "Run tests with different a set of features in parallel. Default is false.", Type::String, true )
+    .form();
+
     vec!
     [
       publish_no_subj_command, publish_command,
@@ -85,6 +106,7 @@ pub( crate ) mod private
       list_no_subj_command, list_command,
       // workspace_list_no_subj_command, workspace_list_command,
       create_table_command,
+      run_tests_no_subj_command, run_tests_command
     ]
   }
 
@@ -101,6 +123,7 @@ pub( crate ) mod private
       // ( "workspace.publish".to_owned(), Routine::new( workspace_publish ) ),
       ( "list".to_owned(), Routine::new( list ) ),
       ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
+      ( "tests.run".to_owned(), Routine::new( run_tests ) ),
     ])
   }
 }
@@ -117,4 +140,6 @@ crate::mod_interface!
   layer publish;
   /// Generate tables
   layer table;
+  /// Run all tests
+  layer run_tests;
 }

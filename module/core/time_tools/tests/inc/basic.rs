@@ -4,6 +4,7 @@ use test_tools::exposed::*;
 tests_impls!
 {
   #[ cfg( feature = "time_now" ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
   fn basic()
   {
     use crate::TheModule;

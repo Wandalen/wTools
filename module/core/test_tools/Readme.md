@@ -13,6 +13,8 @@ Tools for writing and running tests.
 ```rust
 use test_tools::*;
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 tests_impls!
 {
   fn pass1()
@@ -29,7 +31,8 @@ tests_impls!
 }
 
 //
-
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 tests_index!
 {
   pass1,

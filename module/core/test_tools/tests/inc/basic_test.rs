@@ -17,6 +17,7 @@ use ::test_tools as TheModule;
 
 
 #[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 TheModule::tests_impls!
 {
 
@@ -55,6 +56,7 @@ TheModule::tests_impls!
 //
 
 #[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 TheModule::tests_index!
 {
   pass1_test,

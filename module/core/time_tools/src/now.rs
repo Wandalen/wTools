@@ -1,9 +1,10 @@
+#[ cfg( not( feature = "no_std" ) ) ]
 use std::time;
 
 ///
 /// Get current time. Units are milliseconds.
 ///
-
+#[ cfg( not( feature = "no_std" ) ) ]
 pub fn now() -> i64
 {
   time::SystemTime::now()
@@ -18,8 +19,9 @@ pub fn now() -> i64
 pub mod s
 {
   use super::*;
-
+  
   /// Get current time. Units are seconds.
+  #[ cfg( not( feature = "no_std" ) ) ]
   pub fn now() -> i64
   {
     time::SystemTime::now()
@@ -37,6 +39,7 @@ pub mod ms
   use super::*;
 
   /// Get current time. Units are milliseconds.
+  #[ cfg( not( feature = "no_std" ) ) ]
   pub fn now() -> i64
   {
     time::SystemTime::now()
@@ -57,6 +60,7 @@ pub mod ns
   use super::*;
 
   /// Get current time. Units are nanoseconds.
+  #[ cfg( not( feature = "no_std" ) ) ]
   pub fn now() -> i64
   {
     time::SystemTime::now()

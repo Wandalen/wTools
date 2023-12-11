@@ -10,7 +10,8 @@ Basic exceptions handling mechanism.
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
   let err = f1();
@@ -22,6 +23,7 @@ fn main()
   // < )
 }
 
+#[ cfg( feature = "enabled" ) ]
 fn f1() -> error_tools::Result< () >
 {
   let _read = std::fs::read_to_string( "Cargo.toml" )?;

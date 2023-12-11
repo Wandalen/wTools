@@ -40,13 +40,16 @@ default = [
 full = [
   "use_alloc",
   "time_now",
+  "enabled"
 ]
 
 no_std = []
 use_alloc = []
 enabled = []
 
-time_now = []
+time_now = [
+  "enabled"
+]
 
 # [lib]
 # name = "time_tools"

@@ -1,3 +1,5 @@
+//! example
+
 use diagnostics_tools::prelude::*;
 
 fn main()

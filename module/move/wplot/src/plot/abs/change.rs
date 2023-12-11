@@ -2,9 +2,10 @@
 pub( crate ) mod private
 {
   use crate::protected::*;
+  use core::fmt;
 
   /// Context.
-  #[ clone_dyn ]
+  // #[ clone_dyn ]
   pub trait ChangeInterface
   where
     Self :
