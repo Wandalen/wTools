@@ -88,8 +88,7 @@ pub( crate ) mod private
       Ok( () )
     }
 
-    /// Check that current manifest is manifest for a package.
-    // qqq : for Bohdan : poor description, what else could it be?
+    /// Check that the current manifest is the manifest of the package (can also be a virtual workspace).
     pub fn package_is( &self ) -> bool
     {
       let data = self.manifest_data.as_ref().expect( "Manifest data wasn't loaded" );
@@ -101,7 +100,7 @@ pub( crate ) mod private
     }
 
     /// Check that module is local.
-    // qqq : for Bohdan : poor description, how?
+    /// The package is defined as local if the `publish` field is set to `false' or the registers are specified.
     pub fn local_is( &self ) -> bool
     {
       let data = self.manifest_data.as_ref().unwrap();

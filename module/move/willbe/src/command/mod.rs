@@ -12,16 +12,7 @@ pub( crate ) mod private
 
   pub fn grammar_form() -> Vec< wca::Command >
   {
-    let publish_no_subj_command = wca::Command::former()
-    .hint( "Publish package on `crates.io`." )
-    .long_hint( "Publish package on `crates.io`." )
-    .phrase( "publish" )
-    .property( "dry", "Run command dry. Default is false.", Type::String, true )
-    .property( "verbosity", "Setup level of verbosity.", Type::String, true )
-    .property_alias( "verbosity", "v" )
-    .form();
-
-    let publish_command = wca::Command::former()
+     let publish_command = wca::Command::former()
     .hint( "Publish package on `crates.io`." )
     .long_hint( "Publish package on `crates.io`." )
     .phrase( "publish" )
@@ -29,36 +20,6 @@ pub( crate ) mod private
     .property( "dry", "Run command dry. Default is false.", Type::String, true )
     .property( "verbosity", "Setup level of verbosity.", Type::String, true )
     .property_alias( "verbosity", "v" )
-    .form();
-
-    // qqq : rid off dead code
-//     let workspace_publish_no_subj_command = wca::Command::former()
-//     .hint( "Publish packages from workspace on `crates.io`." )
-//     .long_hint( "Publish packages from workspace on `crates.io`." )
-//     .phrase( "workspace.publish" )
-//     .property( "dry", "Run command dry. Default is false.", Type::String, true )
-//     .property( "verbosity", "Setup level of verbosity.", Type::String, true )
-//     .property_alias( "verbosity", "v" )
-//     .form();
-//
-//     let workspace_publish_command = wca::Command::former()
-//     .hint( "Publish packages from workspace on `crates.io`." )
-//     .long_hint( "Publish packages from workspace on `crates.io`." )
-//     .phrase( "workspace.publish" )
-//     .subject( "A path to manifest path with workspace. Should be a directory with file `Cargo.toml`.", Type::Path, true )
-//     .property( "dry", "Run command dry. Default is false.", Type::String, true )
-//     .property( "verbosity", "Setup level of verbosity.", Type::String, true )
-//     .property_alias( "verbosity", "v" )
-//     .form();
-
-    // qqq : terrible. please fix WCA to avoid duplications
-    let list_no_subj_command = wca::Command::former()
-    .hint( "List workspace packages." )
-    .long_hint( "List workspace packages" )
-    .phrase( "list" )
-    .property( "format", "Output format. It can be topological sorted list of crates or list + set of independent crates trees.\n               Variants: topsort, tree. Default is \"tree\".", Type::String, true )
-    .property( "filter", "Filter output packages.\n               Variants: local, nothing. Default is \"nothing\".", Type::String, true )
-    .property( "root_module", "Log dependency tree for selected module. Works in combination with option 'type:tree'", Type::String, true )
     .form();
 
     let list_command = wca::Command::former()
@@ -101,10 +62,8 @@ pub( crate ) mod private
 
     vec!
     [
-      publish_no_subj_command, publish_command,
-      // workspace_publish_no_subj_command, workspace_publish_command,
-      list_no_subj_command, list_command,
-      // workspace_list_no_subj_command, workspace_list_command,
+      publish_command,
+      list_command,
       create_table_command,
       run_tests_no_subj_command, run_tests_command
     ]
@@ -120,7 +79,6 @@ pub( crate ) mod private
     HashMap::from
     ([
       ( "publish".to_owned(), Routine::new( publish ) ),
-      // ( "workspace.publish".to_owned(), Routine::new( workspace_publish ) ),
       ( "list".to_owned(), Routine::new( list ) ),
       ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
       ( "tests.run".to_owned(), Routine::new( run_tests ) ),
