@@ -13,3 +13,4 @@ use wca::
 };
 
 mod basic;
+mod callback;
