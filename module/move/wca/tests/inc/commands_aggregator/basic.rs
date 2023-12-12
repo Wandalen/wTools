@@ -157,6 +157,77 @@ tests_impls!
 
     a_true!( ca.perform( ".c." ).is_err() );
   }
+
+  fn error_types()
+  {
+    let ca = CommandsAggregator::former()
+    .grammar(
+    [
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .form(),
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command_with_execution_error" )
+      .form(),
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command_without_executor" )
+      .form(),
+    ])
+    .executor(
+    [
+      ( "command".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
+      ( "command_with_execution_error".to_owned(), Routine::new( | _ | { println!( "Command" ); Err( err!("todo") ) } ) ),
+    ])
+    .build();
+
+    a_true!( ca.perform( ".command" ).is_ok() );
+    // Expect execution error
+    a_true!
+    ( 
+      matches!
+      (
+        ca.perform( ".command_with_execution_error" ), 
+        Err( Error::Execution( _ ) ) 
+      ), 
+      "Unexpected error type, expected Error::Execution."
+    );
+    // Expect ValidationError::GrammarConverter
+    a_true!
+    (
+      matches!
+      (
+        ca.perform( ".help.help.help" ), 
+        Err( Error::Validation( ValidationError::GrammarConverter( _ ) ) ) 
+      ), 
+      "Unexpected validation error type, expected ValidationError::GrammarConverter."
+    );
+    // Expect ValidationError::Parser
+    a_true!
+    (
+      matches!
+      (
+        ca.perform( "command" ), 
+        Err( Error::Validation( ValidationError::Parser( _ ) ) ) 
+      ), 
+      "Unexpected validation error type, expected ValidationError::Parser."
+    );
+    // Expect ValidationError::ExecutorConverter
+    a_true!
+    (
+      matches!
+      (
+        ca.perform( ".command_without_executor" ), 
+        Err( Error::Validation( ValidationError::ExecutorConverter( _ ) ) ) 
+      ), 
+      "Unexpected validation error type, expected ValidationError::ExecutorConverter."
+    );
+  }
 }
 
 //
@@ -168,4 +239,5 @@ tests_index!
   custom_converters,
   custom_parser,
   dot_command,
+  error_types,
 }
