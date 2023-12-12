@@ -59,7 +59,6 @@ anymap = "0.12"
 log = "0.4"
 nom = "7.1"
 closure = "0.3"
-thiserror = "1.0.50"
 
 [dev-dependencies]
 test_tools = { workspace = true }
