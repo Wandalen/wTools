@@ -4,12 +4,13 @@ mod private
   use crate::*;
   use std::path::PathBuf;
   use std::str::FromStr;
-  use { endpoint, path, wtools };
+  use { endpoint, wtools };
 
   use wca::{ Args, Props };
   use endpoint::list::{ ListFormat, ListFilter };
   use wtools::error::for_app::Context;
   use wtools::error;
+  use path::AbsolutePath;
 
   ///
   /// List workspace packages.
@@ -18,12 +19,14 @@ mod private
   pub fn list( ( args, properties ) : ( Args, Props ) ) -> error::Result< () >
   {
     let path_to_workspace : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
-    let path_to_workspace = path::canonicalize( path_to_workspace )?;
+    let path_to_workspace = AbsolutePath::try_from( path_to_workspace )?;
 
     let format = properties.get_owned( "format" ).map( ListFormat::from_str ).transpose()?.unwrap_or_default();
     let filter = properties.get_owned( "filter" ).map( ListFilter::from_str ).transpose()?.unwrap_or_default();
 
-    match endpoint::list( path_to_workspace, format, filter )
+    let crate_dir = CrateDir::try_from( path_to_workspace )?;
+
+    match endpoint::list( crate_dir, format, filter )
     {
       core::result::Result::Ok( report ) =>
       {

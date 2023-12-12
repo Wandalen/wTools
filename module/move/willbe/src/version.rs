@@ -86,14 +86,14 @@ mod private
       {
         // qqq : for Bohdan : rid off untyped errors, make proper errors handing
         // https://www.lpalmieri.com/posts/error-handling-rust/
-        return Err( anyhow!( "`{}` - not a package", manifest.manifest_path.display() ) );
+        return Err( anyhow!( "`{}` - not a package", manifest.manifest_path().as_ref().display() ) );
       }
       let package = data.get( "package" ).unwrap();
 
       let version = package.get( "version" );
       if version.is_none()
       {
-        return Err( anyhow!( "`{}` - can not read the version", manifest.manifest_path.display() ) );
+        return Err( anyhow!( "`{}` - can not read the version", manifest.manifest_path().as_ref().display() ) );
       }
 
       Version::from_str( version.unwrap().as_str().unwrap() )?

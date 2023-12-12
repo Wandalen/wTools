@@ -1,9 +1,9 @@
 mod private
 {
+  use crate::*;
   use std::path::Path;
-  use crate::process;
-  use crate::process::CmdReport;
-  use crate::wtools::error::Result;
+  use process::CmdReport;
+  use wtools::error::Result;
 
   /// Adds changes to the Git staging area.
   ///

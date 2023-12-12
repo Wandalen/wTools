@@ -9,7 +9,6 @@ mod private
     algo::has_path_connecting,
     Graph
   };
-  use std::path::PathBuf;
   use std::str::FromStr;
   // use anyhow::Context;
   use package::
@@ -159,12 +158,12 @@ mod private
   /// List workspace packages.
   ///
 
-  pub fn list( path_to_manifest : PathBuf, format : ListFormat, filter : ListFilter ) -> Result< ListReport, ( ListReport, Error ) >
+  pub fn list( path_to_manifest : CrateDir, format : ListFormat, filter : ListFilter ) -> Result< ListReport, ( ListReport, Error ) >
   {
     let mut report = ListReport::default();
 
-    let manifest = manifest::open( &path_to_manifest.join( "Cargo.toml" ) ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let mut metadata = Workspace::with_manifest_path( &path_to_manifest );
+    let manifest = manifest::open( &path_to_manifest.as_ref() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let mut metadata = Workspace::with_crate_dir( manifest.crate_dir() );
 
     let root_crate = manifest
     .manifest_data
