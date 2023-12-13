@@ -3,21 +3,21 @@ mod private
 {
   use crate::*;
   use package::{ DependenciesOptions, DependenciesSort };
-  use tools::path;
   use std::
   {
-    path::PathBuf,
     collections::HashSet,
   };
   use core::fmt::Formatter;
   use workspace::Workspace;
-  use package::CrateId;
+  use package::{ CrateId, Package };
   use wtools::error::for_app::Error;
+  use path::AbsolutePath;
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
   {
-    packages : Vec<( PathBuf,  package::PublishReport )>
+    workspace_root_dir : Option<AbsolutePath>,
+    packages : Vec<( AbsolutePath, package::PublishReport )>
   }
 
   impl std::fmt::Display for PublishReport
@@ -32,7 +32,17 @@ mod private
 
       for ( path, report ) in &self.packages
       {
-        f.write_fmt( format_args!( "[ {} ]\n{report}\n", path.display() ) )?;
+        let report = report.to_string().replace("\n", "\n\t");
+        // qqq: remove unwrap
+        let path = if let Some( wrd ) = &self.workspace_root_dir
+        {
+          path.as_ref().strip_prefix( &wrd.as_ref() ).unwrap()
+        }
+        else
+        {
+          path.as_ref()
+        };
+        f.write_fmt( format_args!( "Publishing crate by `{}` path\n\t{report}\n", path.display() ) )?;
       }
 
       Ok( () )
@@ -47,41 +57,48 @@ mod private
   {
     let mut report = PublishReport::default();
 
-    // qqq : for Bohdan : lack of comments
     let mut paths = HashSet::new();
     // find all packages by specified folders
     for pattern in &patterns
     {
-      let current_path = path::canonicalize( pattern ).map_err( | e | ( report.clone(), e.into() ) )?;
+      let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) ).map_err( | e | ( report.clone(), e.into() ) )?;
       // let current_paths = files::find( current_path, &[ "Cargo.toml" ] );
       paths.extend( Some( current_path ) );
     }
 
     let mut metadata = if paths.is_empty()
     {
-      Workspace::default()
+      Workspace::from_current_path().map_err( | e | ( report.clone(), e.into() ) )?
     }
     else
     {
       // FIX: patterns can point to different workspaces. Current solution take first random path from list
-      Workspace::with_manifest_path( paths.iter().next().unwrap() )
-    };
+      let current_path = paths.iter().next().unwrap().clone();
+      let dir = CrateDir::try_from( current_path ).map_err( | e | ( report.clone(), e.into() ) )?;
 
-    let packages_to_publish : Vec< _ >= metadata.load().packages_get().iter().filter( | &package | paths.contains( package.manifest_path.as_std_path().parent().unwrap() ) ).cloned().collect();
+      Workspace::with_crate_dir( dir )
+    };
+    report.workspace_root_dir = Some( metadata.workspace_root().try_into().unwrap() );
+
+    let packages_to_publish : Vec< _ >= metadata
+    .load()
+    .packages_get()
+    .iter()
+    .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path.as_std_path().parent().unwrap() ).unwrap() ) )
+    .cloned()
+    .collect();
     let mut queue = vec![];
     for package in &packages_to_publish
     {
-      // get sorted dependencies
       let local_deps_args = DependenciesOptions
       {
         recursive: true,
         sort: DependenciesSort::Topological,
         ..Default::default()
       };
-      let deps = package::dependencies( &mut metadata, package.manifest_path.as_std_path(), local_deps_args )
+      let deps = package::dependencies( &mut metadata, &Package::from( package.clone() ), local_deps_args )
       .map_err( | e | ( report.clone(), e.into() ) )?;
 
-      // add dependencies to publish queue
       for dep in deps
       {
         if !queue.contains( &dep )
@@ -89,7 +106,6 @@ mod private
           queue.push( dep );
         }
       }
-      // add current package to publish queue if it isn't already here
       let crate_id = CrateId::from( package );
       if !queue.contains( &crate_id )
       {
@@ -97,10 +113,9 @@ mod private
       }
     }
 
-    // process publish
     for path in queue.into_iter().filter_map( | id | id.path )
     {
-      let current_report = package::publish_single( &path, dry )
+      let current_report = package::publish_single( &Package::try_from( path.clone() ).unwrap(), dry )
       .map_err
       (
         | ( current_report, e ) |
@@ -114,49 +129,6 @@ mod private
 
     Ok( report )
   }
-
-//   ///
-//   /// Publish packages from workspace.
-//   ///
-//
-//   pub fn workspace_publish( path_to_workspace : PathBuf, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
-//   {
-//     let mut report = PublishReport::default();
-//
-//     let mut package_metadata = Workspace::with_manifest_path( path_to_workspace );
-//
-//     let packages_map = package::packages_filter_map
-//     (
-//       &package_metadata.load().packages_get(),
-//       FilterMapOptions{ package_filter: Some( Box::new( | p |{ p.publish.is_none() } ) ), ..Default::default() }
-//     );
-//     let package_path_map: HashMap< _, _ > = package_metadata
-//     .load()
-//     .packages_get()
-//     .iter()
-//     .map( | p | ( &p.name, &p.manifest_path ) )
-//     .collect();
-//
-//     let graph = package::graph_build( &packages_map );
-//     let sorted = package::toposort( graph );
-//
-//     for name in &sorted
-//     {
-//       let path = package_path_map[ name ].as_std_path();
-//       package::publish_single( &path, dry )
-//       .map_err
-//       (
-//         | ( current_report, e ) |
-//         {
-//           report.packages.push(( path.to_path_buf(), current_report.clone() ));
-//           ( report.clone(), e.context( "Publish list of packages" ).into() )
-//         }
-//       )?;
-//     }
-//
-//     Ok( report )
-//   }
-
 }
 
 //
@@ -165,6 +137,4 @@ crate::mod_interface!
 {
   /// Publish package.
   orphan use publish;
-  // /// Publish packages from workspace.
-  // orphan use workspace_publish;
 }

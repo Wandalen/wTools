@@ -2,8 +2,10 @@ use super::*;
 
 const TEST_MODULE_PATH : &str = "../../test/";
 use assert_fs::prelude::*;
-use TheModule::{ manifest, process, version };
+use TheModule::{ manifest, version, cargo };
 use TheModule::package::protected::publish_need;
+use TheModule::package::Package;
+use TheModule::path::AbsolutePath;
 
 // published the same as local
 #[ test ]
@@ -14,11 +16,12 @@ fn no_changes()
   let package_path = root_path.join( "c" );
   // qqq : for Bohdan : make helper function returning package_path. reuse it for all relevant tests
 
-  _ = process::start_sync( "cargo package", &package_path ).expect( "Failed to package a package" );
-  let manifest = manifest::open( &package_path ).unwrap();
+  _ = cargo::package( &package_path, false ).expect( "Failed to package a package" );
+  let absolute = AbsolutePath::try_from( package_path ).unwrap();
+  let package = Package::try_from( absolute ).unwrap();
 
   // Act
-  let publish_needed = publish_need( &manifest );
+  let publish_needed = publish_need( &package );
 
   // Assert
   assert!( !publish_needed );
@@ -38,12 +41,13 @@ fn with_changes()
   let mut manifest = manifest::open( temp.as_ref() ).unwrap();
   version::bump( &mut manifest, false ).unwrap();
 
-  _ = process::start_sync( "cargo package", temp.as_ref() ).expect( "Failed to package a package" );
+  _ = cargo::package( &temp, false ).expect( "Failed to package a package" );
 
-  let manifest = manifest::open( temp.as_ref() ).unwrap();
+  let absolute = AbsolutePath::try_from( temp.as_ref() ).unwrap();
+  let package = Package::try_from( absolute ).unwrap();
 
   // Act
-  let publish_needed = publish_need( &manifest );
+  let publish_needed = publish_need( &package );
 
   // Assert
   assert!( publish_needed );

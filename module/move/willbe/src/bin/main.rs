@@ -13,5 +13,5 @@ use ::willbe::*;
 
 fn main() -> Result< (), wtools::error::for_app::Error >
 {
-  willbe::run()
+  Ok(willbe::run()?)
 }

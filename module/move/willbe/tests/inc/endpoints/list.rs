@@ -1,10 +1,19 @@
+use std::path::Path;
 use super::*;
 use assert_fs::prelude::*;
 use TheModule::endpoint::{ self, list::* };
+use willbe::CrateDir;
+use willbe::path::AbsolutePath;
 
 const ASSETS_PATH : &str = "tests/assets";
 
 //
+
+fn crate_dir( path : &Path ) -> CrateDir
+{
+  let absolut = AbsolutePath::try_from( path ).unwrap();
+  CrateDir::try_from( absolut ).unwrap()
+}
 
 // a -> b -> c
 mod chain_of_three_packages
@@ -30,7 +39,7 @@ mod chain_of_three_packages
     let temp = arrange();
 
     // Act
-    let output = endpoint::list( temp.join( "a" ), ListFormat::Tree, ListFilter::Nothing ).unwrap();
+    let output = endpoint::list( crate_dir( &temp.join( "a" ) ), ListFormat::Tree, ListFilter::Nothing ).unwrap();
 
     // Assert
     let ListReport::Tree { graph, names } = &output else { panic!( "Expected `Tree` format, but found another" ) };
@@ -48,7 +57,7 @@ mod chain_of_three_packages
     let temp = arrange();
 
     // Act
-    let output = endpoint::list( temp.join( "a" ), ListFormat::Topological, ListFilter::Nothing ).unwrap();
+    let output = endpoint::list( crate_dir( &temp.join( "a" ) ), ListFormat::Topological, ListFilter::Nothing ).unwrap();
 
     // Assert
     let ListReport::List( names ) = &output else { panic!("Expected `Topological` format, but found another") };
@@ -63,7 +72,7 @@ mod chain_of_three_packages
     let temp = arrange();
 
     // Act
-    let output = endpoint::list( temp.to_path_buf(), ListFormat::Topological, ListFilter::Nothing ).unwrap();
+    let output = endpoint::list( crate_dir( &temp ), ListFormat::Topological, ListFilter::Nothing ).unwrap();
 
     // Assert
     let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
@@ -96,7 +105,7 @@ mod package_with_remote_dependency
     let temp = arrange();
 
     // Act
-    let output = endpoint::list( temp.join( "a" ), ListFormat::Tree, ListFilter::Nothing ).unwrap();
+    let output = endpoint::list( crate_dir( &temp.join( "a" ) ), ListFormat::Tree, ListFilter::Nothing ).unwrap();
 
     // Assert
     let ListReport::Tree { graph, names } = &output else { panic!( "Expected `Tree` format, but found another" ) };
@@ -114,7 +123,7 @@ mod package_with_remote_dependency
     let temp = arrange();
 
     // Act
-    let output = endpoint::list( temp.join( "a" ), ListFormat::Topological, ListFilter::Nothing ).unwrap();
+    let output = endpoint::list( crate_dir( &temp.join( "a" ) ), ListFormat::Topological, ListFilter::Nothing ).unwrap();
 
     // Assert
     let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
@@ -133,7 +142,7 @@ mod package_with_remote_dependency
     let temp = arrange();
 
     // Act
-    let output = endpoint::list( temp.join( "a" ), ListFormat::Topological, ListFilter::Local ).unwrap();
+    let output = endpoint::list( crate_dir( &temp.join( "a" ) ), ListFormat::Topological, ListFilter::Local ).unwrap();
 
     // Assert
     let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
@@ -159,7 +168,7 @@ mod workspace_with_cyclic_dependency
     temp.copy_from( assets_path.join( "workspace_with_cyclic_dependency" ), &[ "**" ] ).unwrap();
 
     // Act
-    let output = endpoint::list( temp.join( "a" ), ListFormat::Tree, ListFilter::Nothing );
+    let output = endpoint::list( crate_dir( &temp.join( "a" ) ), ListFormat::Tree, ListFilter::Nothing );
 
     // Assert
 

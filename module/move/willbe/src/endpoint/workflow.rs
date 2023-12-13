@@ -34,13 +34,14 @@ mod private
   {
     workspace::Workspace, 
     url, 
-    manifest
+    manifest,
+    path::AbsolutePath,
   };
     
   /// Generate workflows for modules in .github/workflows directory.
   pub fn workflow_generate( base_path: &Path ) -> Result< () >
   {
-    let mut workspace_cache = Workspace::with_manifest_path( base_path );
+    let mut workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? );
     let username_and_repository = &username_and_repository( &mut workspace_cache )?;
     let workspace_root = workspace_cache.workspace_root();
     // find directory for workflows

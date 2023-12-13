@@ -2,73 +2,101 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use crate::process::start_sync;
-  use std::fs::File;
   use std::io::Read;
+use std::{ fs, process, path::PathBuf };
   use std::path::Path;
-  use std::
-  { 
-    fs,
-    env,
-    process,
-    path::PathBuf
-  };
   use wtools::error;
-  use wtools::error::for_app::
-  { 
-    anyhow,
-    Context
-   };
+  use wtools::error::for_app::{ anyhow, Context };
+  use path::AbsolutePath;
+
+  /// Path to crate directory
+  #[ derive( Debug, Clone ) ]
+  pub struct CrateDir( AbsolutePath );
+
+  impl AsRef< Path > for CrateDir
+  {
+    fn as_ref( &self ) -> &Path
+    {
+      self.0.as_ref()
+    }
+  }
+
+  impl TryFrom< AbsolutePath > for CrateDir
+  {
+    // qqq : make better errors
+    type Error = error::for_app::Error;
+
+    fn try_from( crate_dir_path : AbsolutePath ) -> Result< Self, Self::Error >
+    {
+      if !crate_dir_path.as_ref().join( "Cargo.toml" ).exists()
+      {
+        return Err( anyhow!( "The path is not a crate directory path" ) );
+      }
+
+      Ok( Self( crate_dir_path ) )
+    }
+  }
 
   ///
   /// Hold manifest data.
   ///
 
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct Manifest
   {
     /// Path to `Cargo.toml`
-    pub manifest_path : PathBuf,
+    pub manifest_path : AbsolutePath,
     /// Strict type of `Cargo.toml` manifest.
     pub manifest_data : Option< toml_edit::Document >,
   }
 
-  impl Manifest
+  impl TryFrom< AbsolutePath > for Manifest
   {
-    /// Create instance.
-    pub fn new() -> Self
+    // qqq : make better errors
+    type Error = error::for_app::Error;
+
+    fn try_from( manifest_path : AbsolutePath ) -> Result< Self, Self::Error >
     {
-      Manifest
+      if !manifest_path.as_ref().ends_with( "Cargo.toml" )
       {
-        manifest_path : PathBuf::default(),
+        return Err( anyhow!( "The path is not a manifest path" ) );
+      }
+
+      Ok
+      (
+        Manifest
+        {
+          manifest_path,
+          manifest_data : None,
+        }
+      )
+    }
+  }
+
+  impl From< CrateDir > for Manifest
+  {
+    fn from( value : CrateDir ) -> Self
+    {
+      Self
+      {
+        manifest_path : value.0.join( "Cargo.toml" ),
         manifest_data : None,
       }
     }
+  }
 
-    /// Join manifest path.
-    // qqq : for Bohdan : bad, poor description
-    // qqq : for Bohdan : bad, what is argument? introduce newtype
-    // qqq : for Bohdan : introduce newtype AbsolutePath for all paths
-    pub fn manifest_path_from_str( &mut self, path : impl Into< PathBuf > ) -> error::for_app::Result< PathBuf >
+  impl Manifest
+  {
+    /// Returns path to `Cargo.toml`.
+    pub fn manifest_path( &self ) -> &AbsolutePath
     {
-      let mut path_buf : PathBuf = path.into();
+      &self.manifest_path
+    }
 
-      // qqq : for Bohdan : bad, should throw error on relative
-      if path_buf.is_relative()
-      {
-        let mut current_dir = env::current_dir().context( "Try to take current dir for relative manifest" )?;
-        current_dir.push( path_buf );
-        path_buf = current_dir;
-      }
-
-      // qqq : for Bohdan : bad, use newtypes
-      if !path_buf.ends_with( "Cargo.toml" )
-      {
-        path_buf.push( "Cargo.toml" );
-      }
-      self.manifest_path = path_buf.clone();
-
-      Ok( path_buf )
+    /// Path to directory where `Cargo.toml` located.
+    pub fn crate_dir( &self ) -> CrateDir
+    {
+      CrateDir( self.manifest_path.parent().unwrap() )
     }
 
     /// Load manifest from path.
@@ -102,8 +130,7 @@ pub( crate ) mod private
       Ok( () )
     }
 
-    /// Check that current manifest is manifest for a package.
-    // qqq : for Bohdan : poor description, what else could it be?
+    /// Check that the current manifest is the manifest of the package (can also be a virtual workspace).
     pub fn package_is( &self ) -> bool
     {
       let data = self.manifest_data.as_ref().expect( "Manifest data wasn't loaded" );
@@ -115,7 +142,7 @@ pub( crate ) mod private
     }
 
     /// Check that module is local.
-    // qqq : for Bohdan : poor description, how?
+    /// The package is defined as local if the `publish` field is set to `false' or the registers are specified.
     pub fn local_is( &self ) -> bool
     {
       let data = self.manifest_data.as_ref().unwrap();
@@ -133,9 +160,18 @@ pub( crate ) mod private
   // qqq : for Bohdan : use newtype, add proper errors handing
   pub fn open( path : impl Into< PathBuf > ) -> error::for_app::Result< Manifest >
   {
-    let mut manifest = Manifest::new();
-    manifest.manifest_path_from_str( path )?;
+    let path = AbsolutePath::try_from( path.into() )?;
+    let mut manifest = if let Ok( dir ) = CrateDir::try_from( path.clone() )
+    {
+      Manifest::from( dir )
+    }
+    else
+    {
+      Manifest::try_from( path )?
+    };
+
     manifest.load()?;
+
     Ok( manifest )
   }
 
@@ -146,7 +182,7 @@ pub( crate ) mod private
     if path.exists() 
     {
       let mut contents = String::new();
-      File::open( path )?.read_to_string( &mut contents )?;
+      std::fs::File::open( path )?.read_to_string( &mut contents )?;
       let doc = contents.parse::< toml_edit::Document >()?;
 
       let repo_url = doc
@@ -159,7 +195,7 @@ pub( crate ) mod private
       }
       else 
       {
-        let report = start_sync( "git ls-remote --get-url", package_path )?;
+        let report = crate::process::start_sync( "git ls-remote --get-url", package_path )?;
         url::extract_repo_url( &report.out.trim() ).ok_or_else( || anyhow!( "Fail to extract repository url from git remote.") )
       }
     }
@@ -176,6 +212,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   orphan use Manifest;
+  orphan use CrateDir;
   protected use open;
   protected use repo_url;
 }

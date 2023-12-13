@@ -7,7 +7,9 @@ use wca::
 
   CommandsAggregator,
   Routine,
-  HelpVariants
+  HelpVariants,
+  Error,
+  ValidationError,
 };
 
 mod basic;

@@ -37,11 +37,12 @@ mod private
     Error,
     Result,
     bail,
+    Context,
   };
-  use anyhow::{anyhow, Context};
-  use crate::workspace::Workspace;
-  use crate::package;
+  use anyhow::anyhow;
+  use workspace::Workspace;
   use regex::bytes::Regex;
+  use path::AbsolutePath;
 
   static TAG_TEMPLATE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
@@ -225,7 +226,8 @@ mod private
   pub fn table_create( path: &Path ) -> Result< () >
   {
     regexes_initialize();
-    let mut cargo_metadata = Workspace::with_manifest_path( path );
+    let absolute_path = AbsolutePath::try_from( path )?;
+    let mut cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? );
     let workspace_root = workspace_root( &mut cargo_metadata )?;
     let mut parameters = GlobalTableParameters::initialize_from_path( &workspace_root )?;
 
