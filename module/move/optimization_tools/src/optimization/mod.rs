@@ -311,23 +311,23 @@ impl SudokuInitial
       let generation2 = generation2.unwrap();
 
       //plotting
-      let options = PlotOptions 
-      {
-        x : generation.n_generation as f32,
-        y : generation.person.cost.0 as f32,
-        name : String::from( "Cost change" ),
-        legend : None,
-        description : PlotDescription
-        {
-          x_label : String::from( "Step" ),
-          y_label : String::from( "Cost" ),
-          filename : String::from( "cost_plot" ),
-          dynamic : true,
-          ..Default::default()
-        }
-      };
+      // let options = PlotOptions 
+      // {
+      //   x : generation.n_generation as f32,
+      //   y : generation.person.cost.0 as f32,
+      //   name : String::from( "Cost change" ),
+      //   legend : None,
+      //   description : PlotDescription
+      //   {
+      //     x_label : String::from( "Step" ),
+      //     y_label : String::from( "Cost" ),
+      //     filename : String::from( "cost_plot" ),
+      //     dynamic : true,
+      //     ..Default::default()
+      //   }
+      // };
 
-      plot(options);
+      // plot(options);
 
       // let options = PlotOptions 
       // {
@@ -413,21 +413,22 @@ impl< 'a > SudokuGeneration< 'a >
       let rand : f64 = rng.gen();
       let vital = rand < threshold;
 
-      // plotting
+      //plotting
       // let accept = if threshold > 1.0 { 1.0 } else { threshold };
       // let options = PlotOptions 
       // {
       //   x : self.n_generation as f32,
       //   y : accept as f32,
-      //   name : String::from( "ac_probability" ),
+      //   name : String::from( "Treshold" ),
       //   legend : None,
       //   description : PlotDescription
       //   {
       //     x_label : String::from( "Step" ),
       //     y_label : String::from( "Acceptance probability" ),
-      //     filename : String::from( "probability_plot" ),
+      //     filename : String::from( "ac_prob_plot" ),
       //     plot_line : false,
       //     y_log_coords : false,
+      //     ..Default::default()
       //   }
       // };
 

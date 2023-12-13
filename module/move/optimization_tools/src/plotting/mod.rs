@@ -6,7 +6,7 @@ use plotters::{
   style::{
     full_palette::{ BLACK, WHITE },
     Color, IntoFont, TextStyle,
-  }, chart::ChartBuilder,
+  }, chart::ChartBuilder, coord::combinators::IntoLogRange,
 };
 use iter_tools::Itertools;
 use std::{ sync::{ Mutex, OnceLock }, collections::HashMap };
@@ -186,7 +186,7 @@ pub fn plot_data
 ) -> Result< (), Box< dyn std::error::Error > > 
 {
   let file_path = dst_file_path( description.filename.clone() )?;
-  let root = BitMapBackend::new( &file_path, ( 1800, 960 ) ).into_drawing_area();
+  let root = BitMapBackend::new( &file_path, ( 4000, 960 ) ).into_drawing_area();
 
   root.fill( &WHITE )?;
   let root = root.margin( 20, 20, 20, 20 );
@@ -219,14 +219,14 @@ pub fn plot_data
   .unwrap()
   ;
 
-  let x_spec = min_x - 0.2 * min_x.abs()..max_x + max_x.abs() * 0.2;
-  let y_spec = min_y - 0.2 * min_y.abs()..max_y + max_y.abs() * 0.2;
+  let x_spec = (0.0f32).min( min_x - 0.2 * min_x.abs())..max_x + max_x.abs() * 0.2;
+  let y_spec = (0.0f32).min(min_y - 0.2 * min_y.abs())..max_y + max_y.abs() * 0.2;
 
   let mut chart = ChartBuilder::on( &root )
   .caption( name, ( "sans-serif", 30 ) )
   .x_label_area_size( 40 )
   .y_label_area_size( 60 )
-  .build_cartesian_2d( x_spec, y_spec )?
+  .build_cartesian_2d( x_spec, y_spec.log_scale() )?
   ;
 
   chart
