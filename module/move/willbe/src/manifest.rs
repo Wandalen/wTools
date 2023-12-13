@@ -2,7 +2,8 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use std::{ fs, process, path::PathBuf };
+  use std::io::Read;
+use std::{ fs, process, path::PathBuf };
   use std::path::Path;
   use wtools::error;
   use wtools::error::for_app::{ anyhow, Context };
@@ -174,6 +175,36 @@ pub( crate ) mod private
     Ok( manifest )
   }
 
+  /// Retrieves the repository URL of a package from its `Cargo.toml` file.
+  pub fn repo_url( package_path: &Path ) -> error::for_app::Result< String >
+  {
+    let path = package_path.join( "Cargo.toml" );
+    if path.exists() 
+    {
+      let mut contents = String::new();
+      std::fs::File::open( path )?.read_to_string( &mut contents )?;
+      let doc = contents.parse::< toml_edit::Document >()?;
+
+      let repo_url = doc
+      .get( "package" )
+      .and_then( | package | package.get( "repository" ) )
+      .and_then( | i | i.as_str() );
+      if let Some( repo_url ) = repo_url 
+      {
+        url::extract_repo_url( repo_url ).ok_or_else( || anyhow!( "Fail to extract repository url ") ) 
+      }
+      else 
+      {
+        let report = crate::process::start_sync( "git ls-remote --get-url", package_path )?;
+        url::extract_repo_url( &report.out.trim() ).ok_or_else( || anyhow!( "Fail to extract repository url from git remote.") )
+      }
+    }
+    else
+    {
+      Err( anyhow!( "No Cargo.toml found" ) )
+    }
+  }
+
 }
 
 //
@@ -183,4 +214,5 @@ crate::mod_interface!
   orphan use Manifest;
   orphan use CrateDir;
   protected use open;
+  protected use repo_url;
 }
