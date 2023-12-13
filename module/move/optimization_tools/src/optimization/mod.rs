@@ -1,4 +1,5 @@
 use crate::*;
+use crate::plotting::{ PlotDescription, PlotOptions, plot };
 use sudoku::{ Board, BlockIndex, CellIndex };
 use deterministic_rand::Seed;
 // use log::*;
@@ -301,12 +302,49 @@ impl SudokuInitial
       // log::trace!( "\n= n_generation : {n_generation}\n" );
       // println!( "max_level : {}", log::max_level() );
 
+
       let ( reason, generation2 ) = generation.mutate( generation.hrng.clone() );
       if generation2.is_none()
       {
         return ( reason, None );
       }
       let generation2 = generation2.unwrap();
+
+      // plotting
+      let options = PlotOptions 
+      {
+        x : generation.n_generation as f32,
+        y : generation.person.cost.0 as f32,
+        name : String::from( "Cost change" ),
+        legend : None,
+        description : PlotDescription
+        {
+          x_label : String::from( "Step" ),
+          y_label : String::from( "Cost" ),
+          filename : String::from( "cost_plot" ),
+          ..Default::default()
+        }
+      };
+
+      plot(options);
+
+      let options = PlotOptions 
+      {
+        x : generation.n_generation as f32,
+        y : generation.temperature.unwrap() as f32,
+        name : String::from( "Temperature change" ),
+        legend : None,
+        description : PlotDescription
+        {
+          x_label : String::from( "Step" ),
+          y_label : String::from( "Temperature" ),
+          filename : String::from( "temp_plot" ),
+          ..Default::default()
+        }
+      };
+
+      plot(options);
+
       if generation2.is_good_enough()
       {
         return ( Reason::GoodEnough, Some( generation2 ) );
@@ -364,6 +402,7 @@ impl< 'a > SudokuGeneration< 'a >
 
       let cost_difference = 0.5 + person.cost.unwrap() as f64 - self.person.cost.unwrap() as f64;
       let threshold = ( - cost_difference / temperature.unwrap() ).exp();
+
       log::trace!
       (
         "cost : {} -> {} | cost_difference : {cost_difference} | temperature : {temperature}",
@@ -372,6 +411,29 @@ impl< 'a > SudokuGeneration< 'a >
       );
       let rand : f64 = rng.gen();
       let vital = rand < threshold;
+
+      let accept = if threshold > 1.0 { 1.0 } else { threshold };
+
+      // plotting
+      let options = PlotOptions 
+      {
+        x : self.n_generation as f32,
+        y : accept as f32,
+        name : String::from( "ac_probability" ),
+        legend : None,
+        description : PlotDescription
+        {
+          x_label : String::from( "Step" ),
+          y_label : String::from( "Acceptance probability" ),
+          filename : String::from( "probability_plot" ),
+          plot_line : false,
+          y_log_coords : false,
+        }
+      };
+
+      plot(options);
+
+
       if vital
       {
         let emoji = if cost_difference > 0.0
