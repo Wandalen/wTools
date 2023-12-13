@@ -17,6 +17,7 @@ Basic exceptions handling mechanism.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+
 [lints]
 workspace = true
 
