@@ -11,6 +11,10 @@ use plotters::{
 use iter_tools::Itertools;
 use std::{ sync::{ Mutex, OnceLock }, collections::HashMap };
 
+use piston_window::{ EventLoop, PistonWindow };
+mod backend;
+use backend::draw_piston_window;
+
 /// Struct that can be accessed in any place in code to add some data to draw plots.
 static PLOTS : OnceLock< Mutex< Plots > > = OnceLock::new();
 
@@ -22,7 +26,8 @@ pub struct Plots
   pub descriptions : HashMap< String, PlotDescription >,
 }
 
-impl Plots {
+impl Plots 
+{
   /// Create new empty Plots struct.
   fn new() -> Self 
   {
@@ -70,6 +75,7 @@ pub struct PlotDescription
   pub filename : String,
   pub plot_line : bool,
   pub y_log_coords : bool,
+  pub dynamic : bool,
 }
 
 /// Default values for description of plot.
@@ -84,6 +90,7 @@ impl Default for PlotDescription
       filename : String::from( "plot" ),
       plot_line : true,
       y_log_coords : false,
+      dynamic : false,
     }
   }
 }
@@ -138,10 +145,8 @@ pub fn draw_plots()
 
 pub fn dst_file_path( file_name : String ) -> Result< String, Box< dyn std::error::Error > > 
 {
-  use std::env;
   use std::fs;
 
-  let current_dir = env::current_dir()?;
   let dir_path = &format!( "./plots" );
   fs::create_dir_all( dir_path )?;
   let file_path = format!( "{dir_path}/{file_name}.png" );
@@ -150,10 +155,32 @@ pub fn dst_file_path( file_name : String ) -> Result< String, Box< dyn std::erro
 
 }
 
+pub fn draw_dynamic(window: &mut PistonWindow) {
+  let plots_opt = PLOTS.get();
+
+  if let Some( plots ) = plots_opt
+  {
+    let plots = plots.lock().unwrap();
+  
+    if !plots.series.is_empty() 
+    {
+      let plot_name = plots.descriptions.iter().find_map(|(name, desc)| if desc.dynamic {Some(name)} else {None}).unwrap();
+
+      plot_dynamically
+      (
+        window,
+        &plots.series[ plot_name ].iter().map( | s | ( s.0, s.1 ) ).collect_vec(),
+        plot_name, 
+        &plots.descriptions[ plot_name ]
+      );
+    }
+  }
+}
+
 pub fn plot_data
 (
   series: &Vec< ( f32, f32 ) >,
-  legend: &Vec< Option< String > >,
+  _legend: &Vec< Option< String > >,
   name: &str,
   description: &PlotDescription,
 ) -> Result< (), Box< dyn std::error::Error > > 
@@ -195,8 +222,6 @@ pub fn plot_data
   let x_spec = min_x - 0.2 * min_x.abs()..max_x + max_x.abs() * 0.2;
   let y_spec = min_y - 0.2 * min_y.abs()..max_y + max_y.abs() * 0.2;
 
-
-
   let mut chart = ChartBuilder::on( &root )
   .caption( name, ( "sans-serif", 30 ) )
   .x_label_area_size( 40 )
@@ -210,8 +235,8 @@ pub fn plot_data
   .axis_desc_style( TextStyle::from( ( "sans-serif", 18 ).into_font() ) )
   .y_label_style( TextStyle::from( ( "sans-serif", 15 ).into_font() ) )
   .x_label_formatter( &| x | format!( "{}", x ) )
-  .x_desc(&description.x_label)
-  .y_desc(&description.y_label)
+  .x_desc( &description.x_label )
+  .y_desc( &description.y_label )
   .draw()?
   ;
 
@@ -220,14 +245,14 @@ pub fn plot_data
    series.iter().enumerate().map( | ( i, ( x, y ) ) | ( *x, *y, i ) ),
    1,
    &BLACK,
-    &|c, s, _st| 
+    &| c, s, _st | 
     {
-    EmptyElement::at((c.0, c.1))
+    EmptyElement::at( ( c.0, c.1 ) )
     + Circle::new
     (
-      (0, 0),
+      ( 0, 0) ,
       s,
-      (&BLACK).filled(),
+      ( &BLACK ).filled(),
     )
     },
   ))?
@@ -239,9 +264,105 @@ pub fn plot_data
       (
         series.iter().map( | ( x, y ) | ( *x, *y ) ),
         &BLACK,
-      ))?;
+      ) )?;
   }
 
   Ok( () )
 
+}
+
+const FPS : u32 = 100;
+
+pub fn plot_dynamically
+(
+  window: &mut PistonWindow,
+  series: &Vec< ( f32, f32 ) >,
+  _name: &str,
+  _description: &PlotDescription,
+) 
+{
+
+  window.set_max_fps(FPS as u64);
+  
+  window.set_ups(30);
+  window.set_max_fps(FPS as u64);
+
+  let max_x = series
+  .iter()
+  .map( | ( x, _ ) | *x )
+  .max_by( | a, b | a.partial_cmp( b ).unwrap() )
+  .unwrap()
+  ;
+
+  let min_x = series
+  .iter()
+  .map( | ( x, _ ) | *x )
+  .min_by( | a, b | a.partial_cmp( b ).unwrap() )
+  .unwrap()
+  ;
+
+  let max_y = series
+  .iter()
+  .map( | ( _, y ) | *y )
+  .max_by( | a, b | a.partial_cmp( b ).unwrap() )
+  .unwrap()
+  ;
+
+  let min_y = series
+  .iter()
+  .map( | ( _, y ) | *y )
+  .min_by( | a, b | a.partial_cmp( b ).unwrap() )
+  .unwrap()
+  ;
+
+  let x_spec = min_x - 0.2 * min_x.abs()..max_x + max_x.abs() * 0.2;
+  let y_spec = min_y - 0.2 * min_y.abs()..max_y + max_y.abs() * 0.2;
+
+  let mut data = vec![];
+  while let Some( _ ) = draw_piston_window( window, | b | 
+    {
+      data = series[ 0..data.len() + 1 ].to_vec();
+      let root = b.into_drawing_area();
+      root.fill( &WHITE )?;
+
+      let mut cc = ChartBuilder::on( &root )
+      .margin( 10 )
+      .caption("Test", ( "sans-serif", 30 ) )
+      .x_label_area_size( 40 )
+      .y_label_area_size( 50 )
+      .build_cartesian_2d( x_spec.clone(), y_spec.clone() )?
+      ;
+
+      cc.configure_mesh()
+      .x_desc( "Step" )
+      .y_desc( "Cost" )
+      .axis_desc_style( ( "sans-serif", 15 ) )
+      .draw()?
+      ;
+
+    // cc.draw_series(PointSeries::of_element(
+    //     data.iter().map(|(a, b)| (*a, *b)),
+    //     1,
+    //     &BLACK,
+    //     &| c, s, _st | 
+    //      {
+    //      EmptyElement::at( ( c.0, c.1 ) )
+    //      + Circle::new
+    //      (
+    //        ( 0, 0) ,
+    //        s,
+    //        ( &BLACK ).filled(),
+    //      )
+    //      },
+    // ))?;
+
+    cc.draw_series( LineSeries::new
+      (
+        data.iter().map( | ( x, y ) | ( *x, *y ) ),
+        &BLACK,
+      ) )?;
+
+    Ok( () )
+
+  } ) {}
 }

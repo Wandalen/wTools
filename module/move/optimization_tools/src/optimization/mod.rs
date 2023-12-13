@@ -310,23 +310,24 @@ impl SudokuInitial
       }
       let generation2 = generation2.unwrap();
 
-      // plotting
-      // let options = PlotOptions 
-      // {
-      //   x : generation.n_generation as f32,
-      //   y : generation.person.cost.0 as f32,
-      //   name : String::from( "Cost change" ),
-      //   legend : None,
-      //   description : PlotDescription
-      //   {
-      //     x_label : String::from( "Step" ),
-      //     y_label : String::from( "Cost" ),
-      //     filename : String::from( "cost_plot" ),
-      //     ..Default::default()
-      //   }
-      // };
+      //plotting
+      let options = PlotOptions 
+      {
+        x : generation.n_generation as f32,
+        y : generation.person.cost.0 as f32,
+        name : String::from( "Cost change" ),
+        legend : None,
+        description : PlotDescription
+        {
+          x_label : String::from( "Step" ),
+          y_label : String::from( "Cost" ),
+          filename : String::from( "cost_plot" ),
+          dynamic : true,
+          ..Default::default()
+        }
+      };
 
-      // plot(options);
+      plot(options);
 
       // let options = PlotOptions 
       // {
