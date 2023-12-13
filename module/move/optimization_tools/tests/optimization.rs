@@ -82,6 +82,7 @@ fn solve_with_sa()
 
   a_id!( generation.person.cost, 0.into() );
 
+  #[ cfg( feature = "static_plot" ) ]
   plotting::draw_plots();
   // a_true!( false );
 }

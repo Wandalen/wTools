@@ -151,13 +151,13 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
       let color = make_piston_rgba( &style.color() );
       let [ x0, y0, x1, y1 ] = make_point_pair( upper_left, bottom_right, self.scale );
       line
-        (
-            color,
-            self.scale,
-            [ x0, y0, x0, y1 ],
-            self.context.transform,
-            self.graphics,
-        );
+      (
+        color,
+        self.scale,
+        [ x0, y0, x0, y1 ],
+        self.context.transform,
+        self.graphics,
+      );
       line
       (
         color,
@@ -170,7 +170,7 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
       (
         color,
         self.scale,
-        [x1, y1, x1, y0],
+        [ x1, y1, x1, y0 ],
         self.context.transform,
         self.graphics,
       );
@@ -178,7 +178,7 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
       (
         color,
         self.scale,
-        [x1, y0, x0, y0],
+        [ x1, y0, x0, y0 ],
         self.context.transform,
         self.graphics,
       );
@@ -190,10 +190,10 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
   fn draw_circle< S: BackendStyle >
   (
     &mut self,
-    center: BackendCoord,
-    radius: u32,
-    style: &S,
-    fill: bool,
+    center : BackendCoord,
+    radius : u32,
+    style : &S,
+    fill : bool,
   ) -> Result< (), DrawingErrorKind< Self::ErrorType > > 
   {
     let rect = circle( center.0 as f64, center.1 as f64, radius as f64 );
@@ -229,7 +229,7 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
         self.graphics,
       );
     }
-    Ok(())
+    Ok( () )
 
   }
 }

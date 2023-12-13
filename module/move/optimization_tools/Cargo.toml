@@ -25,7 +25,7 @@ features = [ "full" ]
 
 [features]
 default = [
-  "enabled"
+  "enabled",
 ]
 full = [
   "enabled",
@@ -35,6 +35,8 @@ rapidity_6 = [] # to enable slow tests
 rapidity_7 = [ "rapidity_6" ] # to enable slow tests
 rapidity_8 = [ "rapidity_7" ] # to enable slow tests
 rapidity_9 = [ "rapidity_8" ] # to enable slow tests
+static_plot = [ "plotters" ]
+dynamic_plot = [ "static_plot", "plotters-backend", "piston_window" ]
 
 [dependencies]
 derive_tools = { workspace = true, features = [ "default" ] }
@@ -45,9 +47,9 @@ env_logger = "0.10.1"
 log = "0.4.20"
 rand = "0.8.5"
 statrs = "0.16.0"
-plotters = "0.3.5"
-plotters-backend = "0.3.5"
-piston_window = "0.120.0"
+plotters = { version = "0.3.5", optional = true }
+plotters-backend = { version = "0.3.5", optional = true }
+piston_window = { version = "0.120.0", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }

@@ -1,4 +1,5 @@
 use crate::*;
+#[ cfg( feature="static_plot" ) ]
 use crate::plotting::{ PlotDescription, PlotOptions, plot };
 use sudoku::{ Board, BlockIndex, CellIndex };
 use deterministic_rand::Seed;
@@ -311,40 +312,43 @@ impl SudokuInitial
       let generation2 = generation2.unwrap();
 
       //plotting
-      // let options = PlotOptions 
+      // #[ cfg( feature="static_plot" ) ]
       // {
-      //   x : generation.n_generation as f32,
-      //   y : generation.person.cost.0 as f32,
-      //   name : String::from( "Cost change" ),
-      //   legend : None,
-      //   description : PlotDescription
+      //   let options = PlotOptions 
       //   {
-      //     x_label : String::from( "Step" ),
-      //     y_label : String::from( "Cost" ),
-      //     filename : String::from( "cost_plot" ),
-      //     dynamic : true,
-      //     ..Default::default()
-      //   }
-      // };
+      //     x : generation.n_generation as f32,
+      //     y : generation.person.cost.0 as f32,
+      //     name : String::from( "Cost change" ),
+      //     description : PlotDescription
+      //     {
+      //       x_label : String::from( "Step" ),
+      //       y_label : String::from( "Cost" ),
+      //       filename : String::from( "cost_plot" ),
+      //       ..Default::default()
+      //     }
+      //   };
 
-      // plot(options);
+      //   plot( options );
+      // }
 
-      // let options = PlotOptions 
+      // #[ cfg( feature="static_plot" ) ]
       // {
-      //   x : generation.n_generation as f32,
-      //   y : generation.temperature.unwrap() as f32,
-      //   name : String::from( "Temperature change" ),
-      //   legend : None,
-      //   description : PlotDescription
+      //   let options = PlotOptions 
       //   {
-      //     x_label : String::from( "Step" ),
-      //     y_label : String::from( "Temperature" ),
-      //     filename : String::from( "temp_plot" ),
-      //     ..Default::default()
-      //   }
-      // };
+      //     x : generation.n_generation as f32,
+      //     y : generation.temperature.unwrap() as f32,
+      //     name : String::from( "Temperature change" ),
+      //     description : PlotDescription
+      //     {
+      //       x_label : String::from( "Step" ),
+      //       y_label : String::from( "Temperature" ),
+      //       filename : String::from( "temp_plot" ),
+      //       ..Default::default()
+      //     }
+      //   };
 
-      // plot(options);
+      //   plot( options );
+      // }
 
       if generation2.is_good_enough()
       {
@@ -414,26 +418,26 @@ impl< 'a > SudokuGeneration< 'a >
       let vital = rand < threshold;
 
       //plotting
-      // let accept = if threshold > 1.0 { 1.0 } else { threshold };
-      // let options = PlotOptions 
+      // #[ cfg( feature="static_plot" ) ]
       // {
-      //   x : self.n_generation as f32,
-      //   y : accept as f32,
-      //   name : String::from( "Treshold" ),
-      //   legend : None,
-      //   description : PlotDescription
+      //   let accept = if threshold > 1.0 { 1.0 } else { threshold };
+      //   let options = PlotOptions 
       //   {
-      //     x_label : String::from( "Step" ),
-      //     y_label : String::from( "Acceptance probability" ),
-      //     filename : String::from( "ac_prob_plot" ),
-      //     plot_line : false,
-      //     y_log_coords : false,
-      //     ..Default::default()
-      //   }
-      // };
-
-      // plot(options);
-
+      //     x : self.n_generation as f32,
+      //     y : accept as f32,
+      //     name : String::from( "Treshold" ),
+      //     description : PlotDescription
+      //     {
+      //       x_label : String::from( "Step" ),
+      //       y_label : String::from( "Acceptance probability" ),
+      //       filename : String::from( "ac_prob_plot" ),
+      //       plot_line : false,
+      //       y_log_coords : false,
+      //       ..Default::default()
+      //     }
+      //   };
+      //   plot( options );
+      // }
 
       if vital
       {

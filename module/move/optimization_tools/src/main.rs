@@ -1,6 +1,5 @@
 use optimization_tools::*;
 use sudoku::*;
-use crate::optimization::SudokuInitial;
 
 fn main()
 {
@@ -9,20 +8,23 @@ fn main()
 
   // use optimization::*;
   // use iter_tools::prelude::*;
-  // use deterministic_rand::Seed;
-  // let mut window: piston_window::PistonWindow = piston_window::WindowSettings::new("Test", [400, 300])
-  // .samples(1)
+
+  // let mut window: piston_window::PistonWindow = piston_window::WindowSettings::new( "Dynamic cost", [ 400, 300 ] )
+  // .samples( 1 )
   // .build()
   // .unwrap()
   // ;
 
-  // plotting::draw_dynamic(&mut window);
+  // let handle = std::thread::spawn
+  // ( move || {
+  //   let seed : deterministic_rand::Seed = "seed3".into();
+  //   let initial = crate::optimization::SudokuInitial::new( Board::default(), seed );
+  //   let ( reason, generation ) = initial.solve_with_sa();
+  //   let generation = generation.unwrap();
+  // });
+  // dynamic_plotting::plot_dynamically( &mut window, &String::from( "Cost change" ) );
 
-  // let seed : Seed = "seed3".into();
-  // let initial = SudokuInitial::new( Board::default(), seed );
-  // let ( reason, generation ) = initial.solve_with_sa();
-
-  // let generation = generation.unwrap();
+  // handle.join();
 
   // plotting::draw_plots();
 }
