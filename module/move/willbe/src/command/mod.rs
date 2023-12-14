@@ -30,7 +30,6 @@ pub( crate ) mod private
     // .subject( "A path to directory with workspace config. Should be a glob.", Type::List( Type::Path.into() ), true )
     .property( "format", "Output format. It can be topological sorted list of crates or list + set of independent crates trees.\n               Variants: topsort, tree. Default is \"tree\".", Type::String, true )
     .property( "filter", "Filter output packages.\n               Variants: local, nothing. Default is \"nothing\".", Type::String, true )
-    .property( "root_module", "Log dependency tree for selected module. Works in combination with option 'type:tree'", Type::String, true )
     .form();
 
     let create_table_command = wca::Command::former()
