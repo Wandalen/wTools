@@ -655,7 +655,7 @@ mod private
     {
       // unwraps is safe because the paths to the files was compared previously
       let local = local_package.content_bytes( path ).unwrap();
-      let remote = local_package.content_bytes( path ).unwrap();
+      let remote = remote_package.content_bytes( path ).unwrap();
 
       is_same &= local == remote;
     }
