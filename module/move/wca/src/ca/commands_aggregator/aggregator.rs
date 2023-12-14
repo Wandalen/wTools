@@ -59,7 +59,7 @@ pub( crate ) mod private
     #[ error( "Validation error. {0}" ) ]
     Validation( ValidationError ),
     /// This variant represents execution errors.
-    #[ error( "Execution failed. {0}" ) ]
+    #[ error( "Execution failed. {0:?}" ) ]
     Execution( wError ),
   }
 
