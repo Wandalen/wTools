@@ -59,6 +59,8 @@ anymap = "0.12"
 log = "0.4"
 nom = "7.1"
 closure = "0.3"
+# fuzzy commands search
+eddie = "0.4"
 
 [dev-dependencies]
 test_tools = { workspace = true }

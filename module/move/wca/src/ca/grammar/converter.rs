@@ -154,7 +154,27 @@ pub( crate ) mod private
       let variants = self
       .commands
       .get( &raw_command.name )
-      .ok_or_else::< error::for_app::Error, _ >( || err!( "Command not found. Got `{:?}`", raw_command ) )?;
+      .ok_or_else::< error::for_app::Error, _ >
+      (
+        ||
+        {
+          let jaro = eddie::JaroWinkler::new();
+          let sim = self
+          .commands
+          .iter()
+          .map( |( name, c )| ( jaro.similarity( name, &raw_command.name ), c ) )
+          .max_by( |( s1, _ ), ( s2, _ )| s1.total_cmp( s2 ) );
+          if let Some(( sim, variant )) = sim
+          {
+            if sim > 0.0
+            {
+              let phrase = &variant[ 0 ].phrase;
+              return err!( "Command not found. Maybe you mean `.{}`?", phrase );
+            }
+          }
+          err!( "Command not found. Please use `.` command to see the list of available commands. Sorry for the inconvenience. 😔" )
+        }
+      )?;
 
       let mut cmd = None;
       let mut subjects = vec![];
@@ -188,7 +208,33 @@ pub( crate ) mod private
       }
       let Some( cmd ) = cmd else
       {
-        error::for_app::bail!( "Command with specified subjects not found. Got `{:?}`", raw_command );
+        error::for_app::bail!
+        (
+          "`{}` command with specified subjects not found. Available variants `{:#?}`",
+          &raw_command.name,
+          variants
+          .iter()
+          .map
+          (
+            | x |
+            format!
+            (
+              ".{}{}",
+              &raw_command.name,
+              {
+                let variants = x.subjects.iter().filter( | x | !x.optional ).map( | x | format!( "{:?}", x.kind ) ).collect::< Vec< _ > >();
+                if variants.is_empty()
+                {
+                  String::new()
+                }
+                else
+                {
+                  variants.join( "" )
+                }
+              }
+            )
+          ).collect::< Vec< _ > >()
+        );
       };
 
       let properties = raw_command.properties
@@ -198,7 +244,7 @@ pub( crate ) mod private
         |( key, value )|
         // find a key
         if cmd.properties.contains_key( &key ) { Ok( key ) }
-        else { cmd.properties_aliases.get( &key ).cloned().ok_or_else( || err!( "`{}` not found", key ) ) }
+        else { cmd.properties_aliases.get( &key ).cloned().ok_or_else( || err!( "property `{}` not found for command `.{}`", key, &raw_command.name ) ) }
         // give a description
         .map( | key | ( key.clone(), cmd.properties.get( &key ).unwrap(), value ) )
       )
