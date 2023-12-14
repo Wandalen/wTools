@@ -38,16 +38,6 @@ pub( crate ) mod private
     .phrase( "readme.health.table.generate" )
     .form();
 
-    let run_tests_no_subj_command = wca::Command::former()
-    .hint( "Run tests in a specified crate" )
-    .long_hint( "Run tests in a specified crate" )
-    .phrase("tests.run")
-    .property( "nightly", "Run tests on nightly. Default is false.", Type::String, true )
-    .property( "exclude", "List of features to exclude.", Type::List( Type::String.into(), ',' ), true )
-    .property( "include", "List of features to include.", Type::List( Type::String.into(), ',' ), true )
-    .property( "parallel", "Run tests with different a set of features in parallel. Default is false.", Type::String, true )
-    .form();
-
     let run_tests_command = wca::Command::former()
     .hint( "Run tests in a specified crate" )
     .long_hint( "Run tests in a specified crate" )
@@ -70,7 +60,7 @@ pub( crate ) mod private
       publish_command,
       list_command,
       create_table_command,
-      run_tests_no_subj_command, run_tests_command,
+      run_tests_command,
       generate_workflow
     ]
   }
