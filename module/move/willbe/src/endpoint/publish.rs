@@ -32,7 +32,7 @@ mod private
 
       for ( path, report ) in &self.packages
       {
-        let report = report.to_string().replace("\n", "\n\t");
+        let report = report.to_string().replace("\n", "\n  ");
         // qqq: remove unwrap
         let path = if let Some( wrd ) = &self.workspace_root_dir
         {
@@ -42,7 +42,7 @@ mod private
         {
           path.as_ref()
         };
-        f.write_fmt( format_args!( "Publishing crate by `{}` path\n\t{report}\n", path.display() ) )?;
+        f.write_fmt( format_args!( "Publishing crate by `{}` path\n  {report}\n", path.display() ) )?;
       }
 
       Ok( () )
