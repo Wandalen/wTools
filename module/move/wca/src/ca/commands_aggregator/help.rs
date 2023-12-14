@@ -14,6 +14,7 @@ pub( crate ) mod private
   use wtools::{ Itertools, err };
 
   use std::rc::Rc;
+  use error_tools::for_app::anyhow;
 
   /// Generate `dot` command
   pub fn dot_command( grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
@@ -228,7 +229,7 @@ pub( crate ) mod private
             _ =>
             {
               let command = args.get_owned::< String >( 0 ).unwrap();
-              let cmds = grammar.commands.get( &command ).unwrap_or_else( || panic!( "Command `{command}` not found" ) );
+              let cmds = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
 
               let text = cmds.iter().map
               (
