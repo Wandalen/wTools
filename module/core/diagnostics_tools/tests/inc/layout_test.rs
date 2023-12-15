@@ -70,10 +70,24 @@ tests_impls!
 fn cta_trybuild_tests()
 {
   let t = test_tools::compiletime::TestCases::new();
-  t.compile_fail( "tests/inc/snipet/cta_type_same_size_fail.rs" );
-  t.compile_fail( "tests/inc/snipet/cta_type_same_align_fail.rs" );
-  t.compile_fail( "tests/inc/snipet/cta_ptr_same_size_fail.rs" );
-  t.compile_fail( "tests/inc/snipet/cta_mem_same_size_fail.rs" );
+
+  let current_exe_path = std::env::current_exe().expect( "No such file or directory" );
+
+  let exe_directory = current_exe_path.parent().expect( "No such file or directory" );
+  fn find_workspace_root( start_path : &std::path::Path ) -> Option< &std::path::Path > 
+  {
+    start_path
+    .ancestors()
+    .find( |path| path.join( "Cargo.toml" ).exists() )
+  }
+
+  let workspace_root = find_workspace_root( exe_directory ).expect( "No such file or directory" );
+  let current_dir = workspace_root.join( "module/core/diagnostics_tools" );
+
+  t.compile_fail( current_dir.join("tests/inc/snipet/cta_type_same_size_fail.rs") );
+  t.compile_fail( current_dir.join("tests/inc/snipet/cta_type_same_align_fail.rs") );
+  t.compile_fail( current_dir.join("tests/inc/snipet/cta_ptr_same_size_fail.rs") );
+  t.compile_fail( current_dir.join("tests/inc/snipet/cta_mem_same_size_fail.rs") );
 }
 
 //
