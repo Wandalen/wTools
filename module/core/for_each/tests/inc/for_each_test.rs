@@ -665,8 +665,8 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with, { std::collections::HashMap }, { std::collections::BTreeMap } );
-      let exp = "std::collections::HashMap+std::collections::BTreeMap+";
+      TheModule::for_each!( test_with, { std :: collections :: HashMap }, { std :: collections :: BTreeMap } );
+      let exp = "std :: collections :: HashMap+std :: collections :: BTreeMap+";
       a_id!( GOT, exp );
     }
 
@@ -692,8 +692,8 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with, ( std::collections::HashMap ), ( std::collections::BTreeMap ) );
-      let exp = "(std::collections::HashMap)+(std::collections::BTreeMap)+";
+      TheModule::for_each!( test_with, ( std :: collections :: HashMap ), ( std :: collections :: BTreeMap ) );
+      let exp = "(std :: collections :: HashMap)+(std :: collections :: BTreeMap)+";
       a_id!( GOT, exp );
     }
 
