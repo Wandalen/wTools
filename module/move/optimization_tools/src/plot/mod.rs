@@ -1,12 +1,15 @@
-use plotters::{
+use plotters::
+{
   backend::BitMapBackend,
   drawing::IntoDrawingArea,
   element::{ Circle, EmptyElement },
   series::{ LineSeries, PointSeries },
-  style::{
+  style::
+  {
     full_palette::{ BLACK, WHITE },
     Color, IntoFont, TextStyle,
-  }, chart::ChartBuilder
+  }, 
+  chart::ChartBuilder
 };
 use iter_tools::Itertools;
 use std::{ sync::{ Mutex, OnceLock }, collections::HashMap };
@@ -40,7 +43,7 @@ impl Plots
     self.series
     .entry( plot_options.name.clone() )
     .and_modify( | v | v.push( ( plot_options.x, plot_options.y ) ) )
-    .or_insert(vec![(plot_options.x, plot_options.y)])
+    .or_insert( vec![ ( plot_options.x, plot_options.y ) ] )
     ;
 
     self.descriptions
@@ -119,7 +122,7 @@ pub fn draw_plots()
           .map( | s | ( s.0, s.1 ) )
           .collect_vec(),
           &plot_name,
-          &plots.descriptions[plot_name],
+          &plots.descriptions[ plot_name ],
         )
         .unwrap()
         ;
@@ -134,9 +137,11 @@ pub fn draw_plots()
 
 pub fn dst_file_path( file_name : String ) -> Result< String, Box< dyn std::error::Error > > 
 {
+  use std::env;
   use std::fs;
+  let current_dir = env::current_dir()?;
+  let dir_path = &format!("{}/target/plots", current_dir.display());
 
-  let dir_path = &format!( "./plots" );
   fs::create_dir_all( dir_path )?;
   let file_path = format!( "{dir_path}/{file_name}.png" );
 
@@ -146,9 +151,9 @@ pub fn dst_file_path( file_name : String ) -> Result< String, Box< dyn std::erro
 
 pub fn plot_data
 (
-  series: &Vec< ( f32, f32 ) >,
-  name: &str,
-  description: &PlotDescription,
+  series : &Vec< ( f32, f32 ) >,
+  name : &str,
+  description : &PlotDescription,
 ) -> Result< (), Box< dyn std::error::Error > > 
 {
   let file_path = dst_file_path( description.filename.clone() )?;
@@ -185,8 +190,8 @@ pub fn plot_data
   .unwrap()
   ;
 
-  let x_spec = (0.0f32).min( min_x - 0.2 * min_x.abs())..max_x + max_x.abs() * 0.2;
-  let y_spec = (0.0f32).min(min_y - 0.2 * min_y.abs())..max_y + max_y.abs() * 0.2;
+  let x_spec = ( 0.0f32 ).min( min_x - 0.2 * min_x.abs() )..max_x + max_x.abs() * 0.2;
+  let y_spec = ( 0.0f32 ).min( min_y - 0.2 * min_y.abs() )..max_y + max_y.abs() * 0.2;
 
   let mut chart = ChartBuilder::on( &root )
   .caption( name, ( "sans-serif", 30 ) )

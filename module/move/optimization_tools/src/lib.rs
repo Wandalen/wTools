@@ -4,6 +4,6 @@ use deterministic_rand::{ Hrng, Rng };
 pub mod sudoku;
 pub mod optimization;
 #[ cfg( feature="static_plot" ) ]
-pub mod plotting;
+pub mod plot;
 #[ cfg( feature="dynamic_plot" ) ]
-pub mod dynamic_plotting;
+pub mod plot_dynamic;

@@ -1,6 +1,6 @@
 use crate::*;
 #[ cfg( feature="static_plot" ) ]
-use crate::plotting::{ PlotDescription, PlotOptions, plot };
+use crate::plot::{ PlotDescription, PlotOptions, plot };
 use sudoku::{ Board, BlockIndex, CellIndex };
 use deterministic_rand::Seed;
 // use log::*;

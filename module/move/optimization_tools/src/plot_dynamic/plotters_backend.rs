@@ -3,7 +3,8 @@ use piston_window::ellipse::circle;
 use piston_window::{ circle_arc, ellipse, line, rectangle, Event, Loop };
 use piston_window::{ G2d, PistonWindow };
 
-use plotters_backend::{
+use plotters_backend::
+{
   BackendColor, BackendCoord, BackendStyle, DrawingBackend, DrawingErrorKind,
 };
 
@@ -12,7 +13,7 @@ pub struct DummyBackendError;
 
 impl std::fmt::Display for DummyBackendError 
 {
-  fn fmt( &self, fmt: &mut std::fmt::Formatter ) -> std::fmt::Result 
+  fn fmt( &self, fmt : &mut std::fmt::Formatter ) -> std::fmt::Result 
   {
     write!( fmt, "{:?}", self )
   }
@@ -41,7 +42,7 @@ fn make_piston_rgba( color : &BackendColor ) -> [ f32; 4 ]
   ]
 }
 
-fn make_point_pair( a: BackendCoord, b: BackendCoord, scale: f64 ) -> [ f64; 4 ] 
+fn make_point_pair( a : BackendCoord, b : BackendCoord, scale : f64 ) -> [ f64; 4 ] 
 {
   [
     a.0 as f64 * scale,
@@ -102,7 +103,7 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
     Ok( () )
   }
 
-  fn draw_line< S: BackendStyle >
+  fn draw_line< S : BackendStyle >
   (
     &mut self,
     from : BackendCoord,
@@ -122,7 +123,7 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
     Ok( () )
   }
 
-  fn draw_rect< S: BackendStyle >
+  fn draw_rect< S : BackendStyle >
   (
     &mut self,
     upper_left : BackendCoord,
@@ -187,7 +188,7 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
     Ok( () )
   }
 
-  fn draw_circle< S: BackendStyle >
+  fn draw_circle< S : BackendStyle >
   (
     &mut self,
     center : BackendCoord,
@@ -219,7 +220,8 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
         self.context.transform,
         self.graphics,
       );
-      circle_arc(
+      circle_arc
+      (
         make_piston_rgba( &style.color() ),
         self.scale,
         0.0,
@@ -234,7 +236,7 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
   }
 }
 
-pub fn draw_piston_window< F: FnOnce( PistonBackend ) -> Result< (), Box< dyn std::error::Error > > >
+pub fn draw_piston_window< F : FnOnce( PistonBackend ) -> Result< (), Box< dyn std::error::Error > > >
 (
   window : &mut PistonWindow,
   draw : F,
@@ -258,7 +260,7 @@ pub fn draw_piston_window< F: FnOnce( PistonBackend ) -> Result< (), Box< dyn st
       }
       _ => {}
     });
-    return Some(event);
+    return Some( event );
   }
   None
 }

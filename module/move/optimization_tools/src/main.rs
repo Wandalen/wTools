@@ -19,12 +19,12 @@ fn main()
   // ( move || {
   //   let seed : deterministic_rand::Seed = "seed3".into();
   //   let initial = crate::optimization::SudokuInitial::new( Board::default(), seed );
-  //   let ( reason, generation ) = initial.solve_with_sa();
-  //   let generation = generation.unwrap();
+  //   let ( _reason, generation ) = initial.solve_with_sa();
+  //   let _generation = generation.unwrap();
+  //   plot::draw_plots();
   // });
-  // dynamic_plotting::plot_dynamically( &mut window, &String::from( "Cost change" ) );
+  // plot_dynamic::plot_dynamically( &mut window, &String::from( "Cost change" ) );
 
   // handle.join();
-
-  // plotting::draw_plots();
+  
 }
