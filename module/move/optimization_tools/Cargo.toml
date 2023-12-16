@@ -37,10 +37,11 @@ rapidity_8 = [ "rapidity_7" ] # to enable slow tests
 rapidity_9 = [ "rapidity_8" ] # to enable slow tests
 
 [dependencies]
-derive_tools = { workspace = true, features = [ "default" ] }
+derive_tools = { workspace = true, features = ["default"] }
 deterministic_rand = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 meta_tools = { workspace = true, features = [ "meta_constructors" ] }
+error_tools = { workspace = true, features = ["default"] }
 env_logger = "0.10.1"
 log = "0.4.20"
 rand = "0.8.5"
