@@ -8,6 +8,7 @@ use plotters_backend::
   BackendColor, BackendCoord, BackendStyle, DrawingBackend, DrawingErrorKind,
 };
 
+/// Error type for plotters backend.
 #[ derive( Debug ) ]
 pub struct DummyBackendError;
 
@@ -21,6 +22,7 @@ impl std::fmt::Display for DummyBackendError
 
 impl std::error::Error for DummyBackendError {}
 
+/// Represents plotters backend structure configuration.
 pub struct PistonBackend< 'a, 'b > 
 {
   size : ( u32, u32 ),
@@ -29,6 +31,7 @@ pub struct PistonBackend< 'a, 'b >
   graphics : &'b mut G2d< 'a >,
 }
 
+/// Convert plotters color to array format.
 fn make_piston_rgba( color : &BackendColor ) -> [ f32; 4 ] 
 {
   let ( r, g, b ) = color.rgb;
@@ -42,6 +45,7 @@ fn make_piston_rgba( color : &BackendColor ) -> [ f32; 4 ]
   ]
 }
 
+/// Implements scaling of pair of points.
 fn make_point_pair( a : BackendCoord, b : BackendCoord, scale : f64 ) -> [ f64; 4 ] 
 {
   [
@@ -54,6 +58,7 @@ fn make_point_pair( a : BackendCoord, b : BackendCoord, scale : f64 ) -> [ f64; 
 
 impl< 'a, 'b > PistonBackend< 'a, 'b > 
 {
+  /// Create new instance of PistonBackend.
   pub fn new( size : ( u32, u32 ), scale : f64, context : Context, graphics : &'b mut G2d< 'a > ) -> Self 
   {
     Self 
@@ -66,25 +71,30 @@ impl< 'a, 'b > PistonBackend< 'a, 'b >
   }
 }
 
+/// Implementation of plotters Backend trait for custom piston backend struct.
 impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b > 
 {
   type ErrorType = DummyBackendError;
 
+  /// Get size of drawing area.
   fn get_size( &self ) -> ( u32, u32 ) 
   {
     self.size
   }
 
+  /// Checks if drawing can start.
   fn ensure_prepared( &mut self ) -> Result< (), DrawingErrorKind< DummyBackendError > > 
   {
     Ok( () )
   }
 
+  /// Checks if drawing is performed.
   fn present( &mut self ) -> Result< (), DrawingErrorKind< DummyBackendError > > 
   {
     Ok( () )
   }
 
+  /// Draw one colored point.
   fn draw_pixel
   (
     &mut self,
@@ -103,6 +113,7 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
     Ok( () )
   }
 
+  /// Draw line by given coordinates and style.
   fn draw_line< S : BackendStyle >
   (
     &mut self,
@@ -123,6 +134,7 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
     Ok( () )
   }
 
+  /// Draw rectangle by given two corners and style.
   fn draw_rect< S : BackendStyle >
   (
     &mut self,
@@ -188,6 +200,7 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
     Ok( () )
   }
 
+  /// Draw circle by given center coordinates, radius and style.
   fn draw_circle< S : BackendStyle >
   (
     &mut self,
@@ -236,6 +249,7 @@ impl< 'a, 'b > DrawingBackend for PistonBackend< 'a, 'b >
   }
 }
 
+/// General drawing method.
 pub fn draw_piston_window< F : FnOnce( PistonBackend ) -> Result< (), Box< dyn std::error::Error > > >
 (
   window : &mut PistonWindow,

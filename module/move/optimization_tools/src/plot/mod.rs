@@ -135,6 +135,7 @@ pub fn draw_plots()
 
 }
 
+/// Create tagret files and directory.
 pub fn dst_file_path( file_name : String ) -> Result< String, Box< dyn std::error::Error > > 
 {
   use std::env;
@@ -149,6 +150,7 @@ pub fn dst_file_path( file_name : String ) -> Result< String, Box< dyn std::erro
 
 }
 
+/// Draw plot from given point series and plot description.
 pub fn plot_data
 (
   series : &Vec< ( f32, f32 ) >,

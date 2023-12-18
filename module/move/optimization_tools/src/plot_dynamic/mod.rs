@@ -12,6 +12,7 @@ use piston_window::{ EventLoop, PistonWindow };
 mod plotters_backend;
 pub use plotters_backend::draw_piston_window;
 
+/// Draws dinamic plot of data, using PLOTS static structure on piston_window backend.
 pub fn plot_dynamically
 (
   window : &mut PistonWindow,

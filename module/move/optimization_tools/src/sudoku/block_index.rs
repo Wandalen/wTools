@@ -2,11 +2,13 @@ use super::*;
 use deterministic_rand::{ Rng, distributions::{Distribution, Standard } };
 use core::ops::Range;
 
+/// Represents the index of a Sudoku block.
 #[ derive( Default, Debug, Clone, Copy, PartialEq, Eq ) ]
 pub struct BlockIndex( u8, u8 );
 
 impl BlockIndex
 {
+  /// Get first cell in block.
   #[ inline ]
   pub fn first_cell( &self ) -> CellFlatIndex
   {
@@ -21,11 +23,13 @@ impl BlockIndex
       self.1 as usize * 3 .. self.1 as usize * 3 + 3,
     )
   }
+  /// Get column value of block.
   #[ inline ]
   pub fn col( &self ) -> u8
   {
     self.0
   }
+  /// Get column value of block.
   #[ inline ]
   pub fn row( &self ) -> u8
   {
@@ -33,6 +37,7 @@ impl BlockIndex
   }
 }
 
+/// Transform a tuple of elements, that can be converted to u8, into block index.
 impl< T > From< ( T, T ) > for BlockIndex
 where
   T : Into< u8 >,
@@ -47,6 +52,7 @@ where
   }
 }
 
+/// Convert value of type CellIndex into BlockIndex.
 impl From< CellIndex > for BlockIndex
 {
   #[ inline ]
@@ -56,6 +62,7 @@ impl From< CellIndex > for BlockIndex
   }
 }
 
+/// Convert value of type CellFlatIndex into BlockIndex.
 impl From< CellFlatIndex > for BlockIndex
 {
   #[ inline ]
@@ -66,6 +73,7 @@ impl From< CellFlatIndex > for BlockIndex
   }
 }
 
+/// Get random value of BlockIndex.
 impl Distribution< BlockIndex > for Standard
 {
   fn sample< R : Rng + ?Sized >( &self, rng : &mut R) -> BlockIndex

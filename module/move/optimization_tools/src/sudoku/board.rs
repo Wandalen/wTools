@@ -4,6 +4,7 @@ use std::collections::HashSet;
 use iter_tools::Itertools;
 use deterministic_rand::{ Hrng, IfDeterminismIteratorExt, seq::SliceRandom };
 
+/// Represents a Sudoku board as vector of CellVal values.
 #[ derive( PartialEq, Eq, Hash, Clone ) ]
 pub struct Board
 {
@@ -12,13 +13,14 @@ pub struct Board
 
 impl Board
 {
-
+  /// Create new instance of Board from vector of CellVal.
   pub fn new( storage : Vec< CellVal > ) -> Self
   {
     debug_assert_eq!( storage.len(), 81 );
     Self { storage }
   }
 
+  /// Get value of cell by given index.
   #[ inline ]
   pub fn cell< IntoCellFlatIndex >( &self, index : IntoCellFlatIndex ) -> CellVal
   where
@@ -28,31 +30,37 @@ impl Board
     self.storage[ index ]
   }
 
+  /// Get sequence of pairs of CellIndexes and CellVal values.
   pub fn cells( &self ) -> impl Iterator< Item = ( CellIndex, CellVal ) > + '_
   {
     self.storage.iter().enumerate().map( | ( k, e ) | ( CellIndex::from( CellFlatIndex::from( k ) ), *e ) )
   }
 
+  /// Get sequence of values in given row.
   pub fn row( &self, index : usize ) -> impl Iterator< Item = CellVal > + '_
   {
     self.storage.iter().cloned().skip( index * 9 ).take( 9 )
   }
 
+  /// Get sequence of rows in sudoku board.
   pub fn rows( &self ) -> impl Iterator< Item = impl Iterator< Item = CellVal > + '_ >
   {
     ( 0..9 ).map( move | i | self.row( i ) )
   }
 
+  /// Get sequence of values of column by its index.
   pub fn col( &self, index : usize ) -> impl Iterator< Item = CellVal > + '_
   {
     self.storage.iter().cloned().skip( index ).step_by( 9 )
   }
 
+  /// Get sequence columns columns in sudoku board.
   pub fn cols( &self ) -> impl Iterator< Item = impl Iterator< Item = CellVal > + '_ >
   {
     ( 0..9 ).map( move | i | self.col( i ) )
   }
 
+  /// Get sequence of values of block by block index.
   pub fn block( &self, index : BlockIndex ) -> impl Iterator< Item = CellVal > + '_
   {
     let mut i = 0;
@@ -65,22 +73,26 @@ impl Board
     result
   }
 
+  /// Get sequence of blocks in sudoku board.
   pub fn blocks( &self ) -> impl Iterator< Item = BlockIndex >
   {
     ( 0..9 ).map( move | i | ( i % 3, i / 3 ).into() )
   }
 
+  /// Get sequence of cell values by its indices.
   pub fn select< 'a >( &'a self, indices : impl Iterator< Item = CellFlatIndex > + 'a ) -> impl Iterator< Item = CellVal > + 'a
   {
     indices.map( | i | self.storage[ usize::from( i ) ] )
   }
 
+  /// Get sequence of cell values by its indices with mutable access.
   pub fn select_mut< 'a >( &'a mut self, indices : impl Iterator< Item = CellFlatIndex > + 'a ) -> impl Iterator< Item = &'a mut CellVal > + 'a
   {
     let storage_ptr = self.storage.as_mut_ptr();
     indices.map( move | i | unsafe { &mut *storage_ptr.add( usize::from( i ) ) } )
   }
 
+  /// Get iterator over indices of cells in block by given block index.
   pub fn block_cells( &self, index : BlockIndex ) -> std::array::IntoIter< CellFlatIndex, 9 >
   {
 
@@ -115,6 +127,7 @@ impl Board
 //     result.clone()
 //   }
 
+  /// Get digits that are missing in block by its index.
   pub fn block_missing_vals( &self, index : BlockIndex ) -> HashSet< CellVal >
   {
     use std::sync::OnceLock;
@@ -129,6 +142,7 @@ impl Board
     digits.difference( &has ).cloned().collect()
   }
 
+  /// Randomly fills empty positions in sudoku board.
   pub fn fill_missing_randomly( &mut self, hrng : Hrng ) -> &mut Self
   {
     let rng_ref = hrng.rng_ref();
@@ -155,6 +169,7 @@ impl Board
     self
   }
 
+  /// Calculates number of errors in column and row that given cell position belongs to.
   pub fn cross_error( &self, index : CellIndex ) -> usize
   {
     let mut error : usize = 0;
@@ -163,6 +178,7 @@ impl Board
     error
   }
 
+  /// Calculates number of errors(duplicate digits) in sudoku board.
   pub fn total_error( &self ) -> usize
   {
     let mut error : usize = 0;
@@ -180,6 +196,7 @@ impl Board
 
 }
 
+/// Sets default value for board.
 impl Default for Board
 {
   fn default() -> Self
@@ -200,6 +217,7 @@ impl Default for Board
   }
 }
 
+/// Create Board from value that can be converted to str.
 impl< Src > From< Src > for Board
 where
   Src : AsRef< str >,
@@ -217,6 +235,7 @@ where
   }
 }
 
+/// Output representation of sudoku board.
 impl fmt::Display for Board
 {
   fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
