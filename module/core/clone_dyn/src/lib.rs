@@ -35,22 +35,22 @@ pub( crate ) mod private
   #[ cfg( all( feature = "use_std", not( feature = "use_alloc" ) ) ) ]
   use std::boxed::Box;
 
-  // /// Clone boxed dyn.
-  // ///
-  // /// Not intended to be used directly.
-  // #[ inline ]
-  // pub fn _clone_boxed< T >( t : &T ) -> Box< T >
-  // where
-  //   T : ?Sized,
-  // {
-  //   unsafe
-  //   {
-  //     let mut ptr = t as *const T;
-  //     let data_ptr = &mut ptr as *mut *const T as *mut *mut ();
-  //     *data_ptr = Box::into_raw( Box::new( < &T >::clone( &t ) ) ) as *mut ();
-  //     Box::from_raw( ptr as *mut T )
-  //   }
-  // }
+  /// Clone boxed dyn.
+  ///
+  /// Not intended to be used directly.
+  #[ inline ]
+  pub fn _clone_boxed< T >( t : &T ) -> Box< T >
+  where
+    T : ?Sized,
+  {
+    unsafe
+    {
+      let mut ptr = t as *const T;
+      let data_ptr = &mut ptr as *mut *const T as *mut *mut ();
+      *data_ptr = Box::into_raw( Box::new( < &T >::clone( &t ) ) ) as *mut ();
+      Box::from_raw( ptr as *mut T )
+    }
+  }
 
 }
 
@@ -93,8 +93,8 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::clone_dyn_meta::clone_dyn;
-  // // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::private::_clone_boxed;
+  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::_clone_boxed;
 }
