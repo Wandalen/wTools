@@ -111,3 +111,18 @@ fn solve_with_sa()
 // 739425861
 // 841697532
 //
+
+#[ test ]
+fn time_measure()
+{
+
+  //let start = std::time::Instant::now();
+  for i in 0..10 
+  {
+    let initial = SudokuInitial::new( Board::default(), Seed::new( i.to_string() ) );
+
+    let ( _reason, _generation ) = initial.solve_with_sa();
+  }
+  // let elapsed = start.elapsed();
+  // println!( "{:?}", elapsed / 10 );
+}
