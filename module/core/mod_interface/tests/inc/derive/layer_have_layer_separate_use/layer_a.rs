@@ -33,7 +33,7 @@ mod private
 
 //
 
-TheModule::mod_interface!
+mod_interface!
 {
 
   protected use { layer_a_protected };

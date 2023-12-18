@@ -6,7 +6,7 @@ mod private
 {
 }
 
-TheModule::mod_interface!
+mod_interface!
 {
 
   protected mod

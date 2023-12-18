@@ -35,7 +35,7 @@ mod private
 
 //
 
-TheModule::mod_interface!
+mod_interface!
 {
 
   // exposed( crate ) use macro1;

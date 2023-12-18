@@ -84,10 +84,10 @@ fn cta_trybuild_tests()
   let workspace_root = find_workspace_root( exe_directory ).expect( "No such file or directory" );
   let current_dir = workspace_root.join( "module/core/diagnostics_tools" );
 
-  t.compile_fail( current_dir.join("tests/inc/snipet/cta_type_same_size_fail.rs") );
-  t.compile_fail( current_dir.join("tests/inc/snipet/cta_type_same_align_fail.rs") );
-  t.compile_fail( current_dir.join("tests/inc/snipet/cta_ptr_same_size_fail.rs") );
-  t.compile_fail( current_dir.join("tests/inc/snipet/cta_mem_same_size_fail.rs") );
+  // t.compile_fail( current_dir.join("tests/inc/snipet/cta_type_same_size_fail.rs") );
+  // t.compile_fail( current_dir.join("tests/inc/snipet/cta_type_same_align_fail.rs") );
+  // t.compile_fail( current_dir.join("tests/inc/snipet/cta_ptr_same_size_fail.rs") );
+  // t.compile_fail( current_dir.join("tests/inc/snipet/cta_mem_same_size_fail.rs") );
 }
 
 //

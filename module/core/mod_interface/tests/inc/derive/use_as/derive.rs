@@ -4,7 +4,7 @@ use super::*;
 /// Layer X
 pub mod layer_x;
 
-TheModule::mod_interface!
+mod_interface!
 {
   // #![ debug ]
 
