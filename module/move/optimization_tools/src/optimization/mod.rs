@@ -356,8 +356,26 @@ impl SudokuInitial
       //       ..Default::default()
       //     }
       //   };
-
       //   plot( options );
+
+      // }
+
+      // #[ cfg( feature="dynamic_plot" ) ]
+      // {
+      //   let options = PlotOptions 
+      //   {
+      //     x : generation.n_generation as f32,
+      //     y : generation.person.cost.0 as f32,
+      //     name : String::from( "Cost change" ),
+      //     description : PlotDescription
+      //     {
+      //       x_label : String::from( "Step" ),
+      //       y_label : String::from( "Cost" ),
+      //       filename : String::from( "cost_plot" ),
+      //       ..Default::default()
+      //     }
+      //   };
+      //   plot_dynamic::dyn_plot( options );
       // }
 
       // #[ cfg( feature="static_plot" ) ]

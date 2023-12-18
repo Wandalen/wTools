@@ -5,95 +5,127 @@ use plotters::
   style::full_palette::{ BLACK, WHITE },
   chart::ChartBuilder,
 };
-use iter_tools::Itertools;
-use crate::plot::PLOTS;
+use crate::plot::PlotOptions;
 
 use piston_window::{ EventLoop, PistonWindow };
 mod plotters_backend;
 pub use plotters_backend::draw_piston_window;
 
-/// Draws dinamic plot of data, using PLOTS static structure on piston_window backend.
-pub fn plot_dynamically
-(
-  window : &mut PistonWindow,
-  name : &String,
-) 
+use std::sync::{ OnceLock, mpsc::{ Receiver, Sender } };
+
+/// Struct that can be accessed in any place in code to add some data to draw plots.
+pub static DPLOT : OnceLock< Sender< PlotOptions > > = OnceLock::new();
+
+pub struct DynPlotter 
 {
-  window.set_ups( 60 );
-  window.set_max_fps( 100 as u64 );
+  rx : Receiver< PlotOptions >,
+  window : PistonWindow,
+}
 
-  let mut data = Vec::new();
-  while let Some( _ ) = draw_piston_window( window, | b | 
+pub fn init_dyn_plotter( name : String, width : u32, height : u32 ) -> DynPlotter 
+{
+  let ( tx,rx ) = std::sync::mpsc::channel::< PlotOptions >();
+  _ = DPLOT.set( tx );
+
+  let window = piston_window::WindowSettings::new( name, [ width, height ] )
+  .samples( 1 )
+  .exit_on_esc( true )
+  .build()
+  .unwrap()
+  ;
+
+  DynPlotter 
   {
-    let plots_opt = PLOTS.get();
-  
-    if let Some( plots ) = plots_opt
+    window,
+    rx
+  }
+}
+
+pub fn dyn_plot( options : PlotOptions ) 
+{
+  if let Some( tx ) = DPLOT.get() 
+  {
+    _ = tx.send( options );
+  }
+}
+
+impl DynPlotter 
+{
+  pub fn plot_dynamically( &mut self ) 
+  {
+
+    self.window.set_ups( 100 );
+    self.window.set_max_fps( 120 as u64 );
+
+    let mut data = Vec::new();
+    while let Some( _ ) = draw_piston_window( &mut self.window, | b | 
     {
-      let plots = plots.lock().unwrap();
-      
-      if let Some( series ) = plots.series.get( name ) 
+
+      let root = b.into_drawing_area();
+      root.fill( &WHITE )?;
+
+      let max_x : f32 = data
+      .iter()
+      .map( | x : &( f32, f32 ) | x.0 )
+      .max_by( | a : &f32, b : &f32 | a.partial_cmp( b ).unwrap() )
+      .unwrap_or( 10.0 )
+      ;
+    
+      let min_x = data
+      .iter()
+      .map( | ( x, _ ) | *x )
+      .min_by( | a, b | a.partial_cmp( b ).unwrap() )
+      .unwrap_or( 0.0 )
+      ;
+    
+      let max_y = data
+      .iter()
+      .map( | ( _, y ) | *y )
+      .max_by( | a, b | a.partial_cmp( b ).unwrap() )
+      .unwrap_or( 10.0 )
+      ;
+    
+      let min_y = data
+      .iter()
+      .map( | ( _, y ) | *y )
+      .min_by( | a, b | a.partial_cmp( b ).unwrap() )
+      .unwrap_or( 0.0 )
+      ;
+    
+      let x_spec = ( 0.0f32 ).min( min_x - 0.2 * min_x.abs() )..max_x + max_x.abs() * 0.2;
+      let y_spec = ( 0.0f32 ).min( min_y - 0.2 * min_y.abs() )..max_y + max_y.abs() * 0.2;
+
+      let mut cc = ChartBuilder::on( &root )
+      .margin( 10 )
+      .x_label_area_size( 40 )
+      .y_label_area_size( 50 )
+      .build_cartesian_2d( x_spec.clone(), y_spec.clone() )?
+      ;
+
+      for _ in 0..5 
       {
-        data = series.iter().map( | s | ( s.0, s.1 ) ).collect_vec();
+        if let Ok( msg ) = self.rx.recv() 
+        { 
+          data.push( ( msg.x, msg.y ) );
+
+          cc.configure_mesh()
+          .x_desc( msg.description.x_label )
+          .y_desc( msg.description.y_label )
+          .axis_desc_style( ( "sans-serif", 15 ) )
+          .draw()?
+          ;
+
+          cc.draw_series( LineSeries::new
+          (
+            data.iter().map( | ( x, y ) | ( *x, *y ) ),
+            &BLACK,
+          ) )?;
+        }
       }
-    }
 
-    let root = b.into_drawing_area();
-    root.fill( &WHITE )?;
+      Ok( () )
 
-    let max_x = data
-    .iter()
-    .map( | ( x, _ ) | *x )
-    .max_by( | a, b | a.partial_cmp( b ).unwrap() )
-    .unwrap_or( 10.0 )
-    ;
-  
-    let min_x = data
-    .iter()
-    .map( | ( x, _ ) | *x )
-    .min_by( | a, b | a.partial_cmp( b ).unwrap() )
-    .unwrap_or( 0.0 )
-    ;
-  
-    let max_y = data
-    .iter()
-    .map( | ( _, y ) | *y )
-    .max_by( | a, b | a.partial_cmp( b ).unwrap() )
-    .unwrap_or( 10.0 )
-    ;
-  
-    let min_y = data
-    .iter()
-    .map( | ( _, y ) | *y )
-    .min_by( | a, b | a.partial_cmp( b ).unwrap() )
-    .unwrap_or( 0.0 )
-    ;
-  
-    let x_spec = ( 0.0f32 ).min( min_x - 0.2 * min_x.abs() )..max_x + max_x.abs() * 0.2;
-    let y_spec = ( 0.0f32 ).min( min_y - 0.2 * min_y.abs() )..max_y + max_y.abs() * 0.2;
-
-    let mut cc = ChartBuilder::on( &root )
-    .margin( 10 )
-    .caption( name, ( "sans-serif", 30 ) )
-    .x_label_area_size( 40 )
-    .y_label_area_size( 50 )
-    .build_cartesian_2d( x_spec.clone(), y_spec.clone() )?
-    ;
-
-    cc.configure_mesh()
-    .x_desc( "Step" )
-    .y_desc( "Cost" )
-    .axis_desc_style( ( "sans-serif", 15 ) )
-    .draw()?
-    ;
-
-    cc.draw_series( LineSeries::new
-    (
-      data.iter().map( | ( x, y ) | ( *x, *y ) ),
-      &BLACK,
-    ) )?;
-
-    Ok( () )
-
-  } ) {}
+    } ) {}
+  }
 }
 
