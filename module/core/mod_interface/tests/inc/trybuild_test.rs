@@ -40,8 +40,6 @@ use super::*;
       t.pass( current_dir.join( "tests/inc/derive/micro_modules/trybuild.rs" ) );
       t.pass( current_dir.join( "tests/inc/derive/micro_modules_two/trybuild.rs" ) );
       t.pass( current_dir.join( "tests/inc/derive/micro_modules_two_joined/trybuild.rs" ) );
-      // t.compile_fail( current_dir.join( "tests/inc/derive/micro_modules_bad_vis/trybuild.rs" ) );
-      // t.compile_fail( current_dir.join( "tests/inc/derive/micro_modules_unknown_vis/trybuild.rs" ) );
 
       // layer
 
@@ -53,22 +51,28 @@ use super::*;
       t.pass( current_dir.join( "tests/inc/derive/layer_use_cfg/trybuild.rs" ) );
       t.pass( current_dir.join( "tests/inc/derive/layer_have_mod_cfg/trybuild.rs" ) );
       t.pass( current_dir.join( "tests/inc/derive/layer_use_macro/trybuild.rs" ) );
-      // t.compile_fail( current_dir.join( "tests/inc/derive/layer_bad_vis/trybuild.rs" ) );
-      // t.compile_fail( current_dir.join( "tests/inc/derive/layer_unknown_vis/trybuild.rs" ) );
 
       // use
 
       t.pass( current_dir.join( "tests/inc/derive/use_basic/trybuild.rs" ) );
       t.pass( current_dir.join( "tests/inc/derive/use_layer/trybuild.rs" ) );
       t.pass( current_dir.join( "tests/inc/derive/use_as/trybuild.rs" ) );
-      // t.compile_fail( current_dir.join( "tests/inc/derive/use_bad_vis/trybuild.rs" ) );
-      // t.compile_fail( current_dir.join( "tests/inc/derive/use_unknown_vis/trybuild.rs" ) );
 
       // attr
 
       t.pass( current_dir.join( "tests/inc/derive/attr_debug/trybuild.rs" ) );
 
       //
+
+      only_for_terminal_module!
+      {
+        t.compile_fail( current_dir.join( "tests/inc/derive/micro_modules_bad_vis/trybuild.rs" ) );
+        t.compile_fail( current_dir.join( "tests/inc/derive/micro_modules_unknown_vis/trybuild.rs" ) );
+        t.compile_fail( current_dir.join( "tests/inc/derive/layer_bad_vis/trybuild.rs" ) );
+        t.compile_fail( current_dir.join( "tests/inc/derive/layer_unknown_vis/trybuild.rs" ) );
+        t.compile_fail( current_dir.join( "tests/inc/derive/use_bad_vis/trybuild.rs" ) );
+        t.compile_fail( current_dir.join( "tests/inc/derive/use_unknown_vis/trybuild.rs" ) );
+      }
 
     }
 
