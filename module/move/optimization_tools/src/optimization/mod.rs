@@ -31,7 +31,7 @@ impl BoardExt for Board
       .map( | cell | self.cell( cell ) )
       .fold( 0, | acc, e | if e == 0.into() { acc + 1 } else { acc } )
       ;
-      if fixed == 0 || fixed >= 8
+      if fixed == 0 || fixed >= 9
       {
         return false;
       }
@@ -50,7 +50,7 @@ pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : 
   let cell1 = loop
   {
     let cell1 = CellIndex::random_in_block( block, hrng.clone() );
-    //log::trace!( "cell1 : {cell1:?}" );
+    log::trace!( "cell1 : {cell1:?}" );
     let is_fixed = initial.cell( cell1 ) != 0.into();
     if !is_fixed
     {
@@ -61,7 +61,7 @@ pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : 
   let cell2 = loop
   {
     let cell2 = CellIndex::random_in_block( block, hrng.clone() );
-    //log::trace!( "cell2 : {cell2:?}" );
+    log::trace!( "cell2 : {cell2:?}" );
     if cell1 == cell2
     {
       continue;
@@ -192,7 +192,7 @@ impl SudokuPerson
   pub fn mutate( &self, _initial : &SudokuInitial, mutagen : &SudokuMutagen ) -> Self
   {
     let mut new = self.clone();
-    //log::trace!( "cells_swap( {:?}, {:?} )", mutagen.cell1, mutagen.cell2 );
+    log::trace!( "cells_swap( {:?}, {:?} )", mutagen.cell1, mutagen.cell2 );
     new.board.cells_swap( mutagen.cell1, mutagen.cell2 );
     new.cost -= self.board.cross_error( mutagen.cell1 ).into();
     new.cost -= self.board.cross_error( mutagen.cell2 ).into();
@@ -327,7 +327,7 @@ impl SudokuInitial
         return ( Reason::GenerationLimit, None );
       }
 
-      //log::trace!( "\n= n_generation : {}\n", generation.n_generation );
+      log::trace!( "\n= n_generation : {}\n", generation.n_generation );
 
       // log::trace!( "\n= n_generation : {n_generation}\n" );
       // println!( "max_level : {}", log::max_level() );
@@ -448,8 +448,8 @@ impl< 'a > SudokuGeneration< 'a >
           return ( Reason::ResetLimit, None );
         }
         let temperature2 = ( temperature.unwrap() + initial.temperature_increase_factor.unwrap() ).into();
-        //log::trace!( " 🔄 reset temperature {temperature} -> {temperature2}" );
-        //sleep();
+        log::trace!( " 🔄 reset temperature {temperature} -> {temperature2}" );
+        sleep();
         temperature = temperature2;
         n_mutations = 0;
       }
@@ -463,12 +463,12 @@ impl< 'a > SudokuGeneration< 'a >
       let cost_difference = 0.5 + person.cost.unwrap() as f64 - self.person.cost.unwrap() as f64;
       let threshold = ( - cost_difference / temperature.unwrap() ).exp();
 
-      // log::trace!
-      // (
-      //   "cost : {} -> {} | cost_difference : {cost_difference} | temperature : {temperature}",
-      //   self.person.cost,
-      //   person.cost,
-      // );
+      log::trace!
+      (
+        "cost : {} -> {} | cost_difference : {cost_difference} | temperature : {temperature}",
+        self.person.cost,
+        person.cost,
+      );
       let rand : f64 = rng.gen();
       let vital = rand < threshold;
 
@@ -494,30 +494,30 @@ impl< 'a > SudokuGeneration< 'a >
       //   plot( options );
       // }
 
-      // if vital
-      // {
-      //   let emoji = if cost_difference > 0.0
-      //   {
-      //     "🔼"
-      //   }
-      //   else if cost_difference < 0.0
-      //   {
-      //     "✔️"
-      //   }
-      //   else
-      //   {
-      //     "🔘"
-      //   };
-      //   log::trace!( " {emoji} vital | rand( {rand} ) < threshold( {threshold} )" );
-      //   if cost_difference == 0.0
-      //   {
-      //     // sleep();
-      //   }
-      // }
-      // else
-      // {
-      //   log::trace!( " ❌ non-vital | rand( {rand} ) > threshold( {threshold} )" );
-      // }
+      if vital
+      {
+        let emoji = if cost_difference > 0.0
+        {
+          "🔼"
+        }
+        else if cost_difference < 0.0
+        {
+          "✔️"
+        }
+        else
+        {
+          "🔘"
+        };
+        log::trace!( " {emoji} vital | rand( {rand} ) < threshold( {threshold} )" );
+        if cost_difference == 0.0
+        {
+          // sleep();
+        }
+      }
+      else
+      {
+        log::trace!( " ❌ non-vital | rand( {rand} ) > threshold( {threshold} )" );
+      }
 
 
       // info!( target = threshold ); xxx

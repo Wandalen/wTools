@@ -15,8 +15,22 @@ const INPUT : &str = r#"
 
 fn main()
 {
-  let board = Board::default();
-  println!( "{board}" );
+  let _ = env_logger::builder()
+  .filter_level( log::LevelFilter::max() )
+  .try_init();
+
+  let seed : Seed = "seed1".into();
+  let board = Board::from( INPUT );
+  println!("{board}");
+  let initial = optimization::SudokuInitial::new( board, seed );
+  println!("{}", initial.board);
+  let ( reason, generation ) = initial.solve_with_sa();
+
+  log::trace!( "reason : {reason}" );
+  assert!( generation.is_some() );
+  let generation = generation.unwrap();
+  log::trace!( "{generation:#?}" );
+  log::trace!( "{:#?}", generation.person.board );
 
   // let mut dp = plot_dynamic::init_dyn_plotter( String::from( "Cost change" ), 800, 400 );
 

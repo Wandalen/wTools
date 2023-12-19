@@ -112,17 +112,20 @@ fn solve_with_sa()
 // 841697532
 //
 
+/// Test performance
+///
+/// # Usage
+///
+/// cargo test time_measure --release --features rapidity_6
+///
+#[ cfg( feature = "rapidity_6" ) ]
 #[ test ]
 fn time_measure()
 {
-
-  //let start = std::time::Instant::now();
-  for i in 0..10 
-  {
+  for i in 0..=9 {
     let initial = SudokuInitial::new( Board::default(), Seed::new( i.to_string() ) );
 
-    let ( _reason, _generation ) = initial.solve_with_sa();
+    let ( reason, generation ) = initial.solve_with_sa();
   }
-  // let elapsed = start.elapsed();
-  // println!( "{:?}", elapsed / 10 );
+
 }
