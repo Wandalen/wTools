@@ -67,6 +67,8 @@ tests_impls!
 #[ path = "../../../../step/meta/src/module/aggregating.rs" ]
 mod aggregating;
 
+use crate::only_for_terminal_module;
+
 only_for_terminal_module!
 {
   #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]

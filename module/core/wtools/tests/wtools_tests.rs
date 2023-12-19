@@ -49,6 +49,7 @@ mod derive_tools;
 mod data_type;
 
 #[ cfg( feature = "diagnostics_tools" ) ]
+#[ cfg( not( feature = "meta_tools" ) ) ]
 #[ path = "../../../core/diagnostics_tools/tests/diagnostics_tests.rs" ]
 mod diagnostics_tools;
 
