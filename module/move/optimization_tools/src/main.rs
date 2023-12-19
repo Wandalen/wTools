@@ -1,6 +1,18 @@
 use optimization_tools::*;
 use sudoku::*;
 
+const INPUT : &str = r#"
+024007000
+600000000
+003680415
+431005000
+500000032
+790000060
+209710800
+040093000
+310004750
+"#;
+
 fn main()
 {
   let board = Board::default();

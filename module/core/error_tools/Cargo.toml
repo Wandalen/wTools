@@ -12,10 +12,11 @@ documentation = "https://docs.rs/error_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/error_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/error_tools"
 description = """
-Basic exceptions handling mechanism.
+Basic exceptions handling mechanism
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+
 
 [lints]
 workspace = true

@@ -39,10 +39,11 @@ static_plot = [ "plotters" ]
 dynamic_plot = [ "static_plot", "plotters-backend", "piston_window" ]
 
 [dependencies]
-derive_tools = { workspace = true, features = [ "default" ] }
+derive_tools = { workspace = true, features = ["default"] }
 deterministic_rand = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 meta_tools = { workspace = true, features = [ "meta_constructors" ] }
+error_tools = { workspace = true, features = ["default"] }
 env_logger = "0.10.1"
 log = "0.4.20"
 rand = "0.8.5"

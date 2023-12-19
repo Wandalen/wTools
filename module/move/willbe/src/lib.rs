@@ -41,7 +41,7 @@ pub( crate ) mod private
     }
     else
     {
-      ca.perform( program.as_str() )
+      Ok( ca.perform( program.as_str() )? )
     }
 
   }

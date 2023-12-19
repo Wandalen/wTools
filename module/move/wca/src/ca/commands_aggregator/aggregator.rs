@@ -1,7 +1,7 @@
 pub( crate ) mod private
 {
   use crate::
-  { 
+  {
     ca::
     {
       Parser, GrammarConverter, ExecutorConverter,
@@ -12,11 +12,13 @@ pub( crate ) mod private
       Command,
       Routine,
       commands_aggregator::help::{ HelpGeneratorFn, HelpVariants, dot_command },
-    }, 
-    wtools 
+    },
+    ExecutableCommand, Namespace, Program,
+    wtools,
   };
 
   use std::collections::{ HashMap, HashSet };
+  use std::fmt;
   use wtools::protected::thiserror;
   use wtools::error::
   { 
@@ -53,6 +55,16 @@ pub( crate ) mod private
     /// This variant represents execution errors.
     #[ error( "Execution error.\nCause:\n{0}" ) ]
     Execution( wError ),
+  }
+
+  struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< Namespace< ExecutableCommand > > ) > );
+
+  impl fmt::Debug for CommandsAggregatorCallback
+  {
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+    {
+      f.debug_struct( "CommandsAggregatorCallback" ).finish_non_exhaustive()
+    }
   }
 
   /// The `CommandsAggregator` struct is responsible for aggregating all commands that the user defines,
@@ -105,6 +117,7 @@ pub( crate ) mod private
     grammar_converter : GrammarConverter,
     #[ default( ExecutorConverter::former().form() ) ]
     executor_converter : ExecutorConverter,
+    callback_fn : Option< CommandsAggregatorCallback >,
   }
 
   impl CommandsAggregatorFormer
@@ -161,6 +174,29 @@ pub( crate ) mod private
       self
     }
 
+    /// Set callback function that will be executed after validation state
+    ///
+    /// ```
+    /// use wca::prelude::*;
+    ///
+    /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
+    /// let ca = CommandsAggregator::former()
+    /// // ...
+    /// .callback( | _input, _program | println!( "Program is valid" ) )
+    /// .build();
+    ///
+    /// // prints the "Program is valid" and after executes the program
+    /// ca.perform( ".help" )?;
+    /// # Ok( () ) }
+    /// ```
+    pub fn callback< Callback >( mut self, callback : Callback ) -> Self
+    where
+      Callback : Fn( &str, &Program< Namespace< ExecutableCommand > > ) + 'static,
+    {
+      self.callback_fn = Some( CommandsAggregatorCallback( Box::new( callback ) ) );
+      self
+    }
+
     /// Construct CommandsAggregator
     pub fn build( self ) -> CommandsAggregator
     {
@@ -193,9 +229,16 @@ pub( crate ) mod private
     where
       S : AsRef< str >
     {
-      let raw_program = self.parser.program( program.as_ref() ).map_err( | e | Error::Validation( ValidationError::Parser( e ) ) )?;
+      let program = program.as_ref();
+
+      let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser( e ) ) )?;
       let grammar_program = self.grammar_converter.to_program( raw_program ).map_err( | e | Error::Validation( ValidationError::GrammarConverter( e ) ) )?;
       let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | e | Error::Validation( ValidationError::ExecutorConverter( e ) ) )?;
+
+      if let Some( callback ) = &self.callback_fn
+      {
+        callback.0( program, &exec_program )
+      }
 
       self.executor.program( exec_program ).map_err( | e | Error::Execution( e ) )
     }
