@@ -8,64 +8,64 @@ use super::*;
 // only_for_terminal_module!
 // {
 
-// #[ cfg( module_mod_interface ) ]
-// #[ cfg( module_is_terminal ) ]
-#[ test_tools::nightly ]
-// #[ cfg( RUSTC_IS_NIGHTLY ) ]
-tests_impls!
-{
-
-  fn trybuild_tests()
+  // #[ cfg( module_mod_interface ) ]
+  // #[ cfg( module_is_terminal ) ]
+  #[ test_tools::nightly ]
+  // #[ cfg( RUSTC_IS_NIGHTLY ) ]
+  tests_impls!
   {
-    // use test_tools::dependency::trybuild;
-    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-    // let t = trybuild::TestCases::new();
-    let t = test_tools::compiletime::TestCases::new();
-    
-    let current_exe_path = std::env::current_exe().expect( "No such file or directory" );
 
-    let exe_directory = current_exe_path.parent().expect( "No such file or directory" );
-    fn find_workspace_root( start_path : &std::path::Path ) -> Option< &std::path::Path > 
+    fn trybuild_tests()
     {
-      start_path
-      .ancestors()
-      .find( |path| path.join( "Cargo.toml" ).exists() )
+      // use test_tools::dependency::trybuild;
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      // let t = trybuild::TestCases::new();
+      let t = test_tools::compiletime::TestCases::new();
+      
+      let current_exe_path = std::env::current_exe().expect( "No such file or directory" );
+
+      let exe_directory = current_exe_path.parent().expect( "No such file or directory" );
+      fn find_workspace_root( start_path : &std::path::Path ) -> Option< &std::path::Path > 
+      {
+        start_path
+        .ancestors()
+        .find( |path| path.join( "Cargo.toml" ).exists() )
+      }
+
+      let workspace_root = find_workspace_root( exe_directory ).expect( "No such file or directory" );
+      let current_dir = workspace_root.join( "module/core/mod_interface" );
+
+      // micro module
+
+      t.pass( current_dir.join( "tests/inc/derive/micro_modules/trybuild.rs" ) );
+      t.pass( current_dir.join( "tests/inc/derive/micro_modules_two/trybuild.rs" ) );
+      t.pass( current_dir.join( "tests/inc/derive/micro_modules_two_joined/trybuild.rs" ) );
+
+      // layer
+
+      t.pass( current_dir.join( "tests/inc/derive/layer/trybuild.rs" ) );
+      t.pass( current_dir.join( "tests/inc/derive/layer_have_layer/trybuild.rs" ) );
+      t.pass( current_dir.join( "tests/inc/derive/layer_have_layer_separate_use/trybuild.rs" ) );
+      t.pass( current_dir.join( "tests/inc/derive/layer_have_layer_separate_use_two/trybuild.rs" ) );
+      t.pass( current_dir.join( "tests/inc/derive/layer_have_layer_cfg/trybuild.rs" ) );
+      t.pass( current_dir.join( "tests/inc/derive/layer_use_cfg/trybuild.rs" ) );
+      t.pass( current_dir.join( "tests/inc/derive/layer_have_mod_cfg/trybuild.rs" ) );
+      t.pass( current_dir.join( "tests/inc/derive/layer_use_macro/trybuild.rs" ) );
+
+      // use
+
+      t.pass( current_dir.join( "tests/inc/derive/use_basic/trybuild.rs" ) );
+      t.pass( current_dir.join( "tests/inc/derive/use_layer/trybuild.rs" ) );
+      t.pass( current_dir.join( "tests/inc/derive/use_as/trybuild.rs" ) );
+
+      // attr
+
+      t.pass( current_dir.join( "tests/inc/derive/attr_debug/trybuild.rs" ) );
+
+      //
     }
 
-    let workspace_root = find_workspace_root( exe_directory ).expect( "No such file or directory" );
-    let current_dir = workspace_root.join( "module/core/mod_interface" );
-
-    // micro module
-
-    t.pass( current_dir.join( "tests/inc/derive/micro_modules/trybuild.rs" ) );
-    t.pass( current_dir.join( "tests/inc/derive/micro_modules_two/trybuild.rs" ) );
-    t.pass( current_dir.join( "tests/inc/derive/micro_modules_two_joined/trybuild.rs" ) );
-
-    // layer
-
-    t.pass( current_dir.join( "tests/inc/derive/layer/trybuild.rs" ) );
-    t.pass( current_dir.join( "tests/inc/derive/layer_have_layer/trybuild.rs" ) );
-    t.pass( current_dir.join( "tests/inc/derive/layer_have_layer_separate_use/trybuild.rs" ) );
-    t.pass( current_dir.join( "tests/inc/derive/layer_have_layer_separate_use_two/trybuild.rs" ) );
-    t.pass( current_dir.join( "tests/inc/derive/layer_have_layer_cfg/trybuild.rs" ) );
-    t.pass( current_dir.join( "tests/inc/derive/layer_use_cfg/trybuild.rs" ) );
-    t.pass( current_dir.join( "tests/inc/derive/layer_have_mod_cfg/trybuild.rs" ) );
-    t.pass( current_dir.join( "tests/inc/derive/layer_use_macro/trybuild.rs" ) );
-
-    // use
-
-    t.pass( current_dir.join( "tests/inc/derive/use_basic/trybuild.rs" ) );
-    t.pass( current_dir.join( "tests/inc/derive/use_layer/trybuild.rs" ) );
-    t.pass( current_dir.join( "tests/inc/derive/use_as/trybuild.rs" ) );
-
-    // attr
-
-    t.pass( current_dir.join( "tests/inc/derive/attr_debug/trybuild.rs" ) );
-
-    //
   }
-
-}
 
 // #[ path="../../../../../module/step/meta/src/module/aggregating.rs" ]
 // mod aggregating;
