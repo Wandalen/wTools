@@ -46,6 +46,7 @@ env_logger = "0.10.1"
 log = "0.4.20"
 rand = "0.8.5"
 statrs = "0.16.0"
+nalgebra = "0.32.3"
 
 [dev-dependencies]
 test_tools = { workspace = true }
