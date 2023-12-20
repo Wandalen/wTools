@@ -1,41 +1,56 @@
 use std::{ vec, collections::HashSet };
 use iter_tools::Itertools;
 
-#[ derive( Clone ) ]
+/// Represents linear problem.
+#[ derive( Clone, Debug ) ]
 pub struct Problem 
 {
+    /// Coefficients of variables in function to optimize.
     pub var_coeffs : Vec< f64 >,
+    /// Set of inequation constraints.
     pub constraints : Vec< Constraint >,
+    /// Min allowed values for variables.
     pub mins : Vec< f64 >,
-    pub maxs : Vec< f64 >
+    /// Max allowed values for variables.
+    pub maxs : Vec< f64 >,
 }
 
 impl Problem 
 {
+  /// Create new linear problem.
   pub fn new( var_coeffs : Vec< f64 >, constraints : Vec< Constraint >, mins : Vec< f64 >, maxs : Vec< f64 > ) -> Self
   {
     Self { var_coeffs, constraints, mins, maxs }
   }
 }
 
-#[ derive( Clone ) ]
+/// Represents inequation constraint.
+#[ derive( Clone, Debug ) ]
 pub struct Constraint 
 {
+  /// Coefficients of variables in inequation.
   pub coefs : Vec< f64 >,
+  /// Right-hand constant value.
   pub value : f64,
+  /// Type of comparison.
   pub comparison : Comp,
 }
 
-#[ derive( Clone ) ]
+/// Type of comparison in inequation.
+#[ derive( Clone, Debug ) ]
 pub enum Comp
 {
+  /// Less than comparison.
   Less,
+  /// Greater than comparison.
   Greater,
+  /// Constraint is equation.
   Equal,
 }
 
 impl Constraint 
 {
+  /// Create new constraint.
   pub fn new( coefs : Vec< f64 >, value : f64, comparison : Comp ) -> Self
   {
     Self
@@ -47,11 +62,13 @@ impl Constraint
   }
 }
 
+/// Extreme point of feasible region.
 #[ derive( Clone, Debug, PartialEq ) ]
 pub struct ExtremePoint
 {
   /// Basic variables indices.
   bv : Vec< usize >,
+  /// Extreme point coordinates.
   point : Vec< f64 >,
 }
 
@@ -67,6 +84,7 @@ impl Default for ExtremePoint
 
 impl ExtremePoint
 {
+  /// Checks if two extreme points is adjacent.
   pub fn is_adjacent( &self, other : &ExtremePoint ) -> bool
   {
     let bv = self.bv.iter().collect::< HashSet< _ > >();
@@ -110,6 +128,8 @@ impl From< BasicSolution > for ExtremePoint
   }
 }
 
+/// Implementation of Simplex method solver.
+#[ derive( Debug ) ]
 pub struct SimplexSolver {}
 
 impl SimplexSolver
@@ -237,6 +257,7 @@ impl SimplexSolver
 
   }
 
+  /// Solves linear problem using Simplex method.
   pub fn solve( &self, p : Problem ) -> ExtremePoint
   {
     let m = p.constraints.len();
