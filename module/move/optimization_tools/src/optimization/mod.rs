@@ -1,17 +1,21 @@
 use crate::*;
+#[ cfg( feature="static_plot" ) ]
+use crate::plot::{ PlotDescription, PlotOptions, plot };
 use sudoku::{ Board, BlockIndex, CellIndex };
 use deterministic_rand::Seed;
 // use log::*;
 
+/// Pause execution of SA.
 pub fn sleep()
 {
   std::thread::sleep( std::time::Duration::from_secs( 5 ) );
 }
 
+/// Trait that implements SA specific methods for sudoku board.
 trait BoardExt
 {
 
-  /// Validate that each bloack has at least one non-fixed cell
+  /// Validate that each bloack has at least one non-fixed cell.
   fn validate_each_block_has_non_fixed_cell( &self ) -> bool;
 
 }
@@ -27,7 +31,7 @@ impl BoardExt for Board
       .map( | cell | self.cell( cell ) )
       .fold( 0, | acc, e | if e == 0.into() { acc + 1 } else { acc } )
       ;
-      if fixed == 0 || fixed >= 8
+      if fixed == 0 || fixed >= 9
       {
         return false;
       }
@@ -37,6 +41,7 @@ impl BoardExt for Board
 
 }
 
+/// Get a pair of random non-fixed cells in a specified block.
 pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : Hrng ) -> ( CellIndex, CellIndex )
 {
 
@@ -79,6 +84,7 @@ use derive_tools::{ Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssi
 pub struct SudokuCost( usize );
 
 // xxx : derive, please
+/// Returns inner value of SudokuCost struct.
 impl SudokuCost
 {
   pub fn unwrap( self ) -> usize
@@ -87,6 +93,7 @@ impl SudokuCost
   }
 }
 
+/// Transforms SudokuCost into f64.
 impl From< SudokuCost > for f64
 {
   #[ inline ]
@@ -102,12 +109,14 @@ pub struct Temperature( f64 );
 
 impl Temperature
 {
+  /// Returns inner value of Temperature struct.
   pub fn unwrap( &self ) -> f64
   {
     self.0
   }
 }
 
+/// Transforms Temperature value into f64.
 impl From< f32 > for Temperature
 {
   #[ inline ]
@@ -117,18 +126,21 @@ impl From< f32 > for Temperature
   }
 }
 
+/// Struct that represents coefficient to change temperature value.
 #[ derive( Debug, Display, Clone, Copy, PartialEq, PartialOrd, FromInner, InnerFrom ) ]
 #[ derive( Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign ) ]
 pub struct TemperatureFactor( f64 );
 
 impl TemperatureFactor
 {
+  /// Returns inner value of TemperatureFactor struct.
   pub fn unwrap( &self ) -> f64
   {
     self.0
   }
 }
 
+/// Default value of TemperatureFactor struct.
 impl Default for TemperatureFactor
 {
   fn default() -> Self
@@ -137,6 +149,7 @@ impl Default for TemperatureFactor
   }
 }
 
+/// Transforms f32 value into TemperatureFactor.
 impl From< f32 > for TemperatureFactor
 {
   #[ inline ]
@@ -146,6 +159,7 @@ impl From< f32 > for TemperatureFactor
   }
 }
 
+/// Represents the reasons for the termination or proceeding with the Sudoku solving.
 #[ derive( PartialEq, Eq, Clone, Copy, Debug, Display ) ]
 pub enum Reason
 {
@@ -155,6 +169,7 @@ pub enum Reason
   GenerationLimit,
 }
 
+/// Represents state of sudoku board filled with random digits and the number of the errors of the board as the cost.
 #[ derive( PartialEq, Eq, Clone, Debug ) ]
 pub struct SudokuPerson
 {
@@ -164,7 +179,7 @@ pub struct SudokuPerson
 
 impl SudokuPerson
 {
-
+  /// Create new SudokuPerson from initial configuration of sudoku board.
   pub fn new( initial : &SudokuInitial ) -> Self
   {
     let mut board = initial.board.clone();
@@ -173,6 +188,7 @@ impl SudokuPerson
     SudokuPerson { board, cost }
   }
 
+  /// Change state of the board by applying provided mutagen to current sudoku board.
   pub fn mutate( &self, _initial : &SudokuInitial, mutagen : &SudokuMutagen ) -> Self
   {
     let mut new = self.clone();
@@ -185,12 +201,14 @@ impl SudokuPerson
     new
   }
 
+  /// Create random mutagen and apply it current board.
   pub fn mutate_random( &self, initial : &SudokuInitial, hrng : Hrng ) -> Self
   {
     let mutagen = self.mutagen( initial, hrng );
     self.mutate( &initial, &mutagen.into() )
   }
 
+  /// Create new SudokuMutagen as random cells pair in random sudoku block in current board.
   pub fn mutagen( &self, initial : &SudokuInitial, hrng : Hrng ) -> SudokuMutagen
   {
     let rng_ref = hrng.rng_ref();
@@ -203,6 +221,7 @@ impl SudokuPerson
 
 }
 
+/// Represents single change(mutation) which contains indeces of two swapped cells. It is used to generate new state of the board for sudoku solving process.
 #[ derive( PartialEq, Eq, Clone, Debug, FromInner, InnerFrom ) ]
 pub struct SudokuMutagen
 {
@@ -210,16 +229,25 @@ pub struct SudokuMutagen
   pub cell2 : CellIndex,
 }
 
+/// Represents initial configuration of SA optimization process for sudoku solving.
 #[ derive( Clone, Debug ) ]
 pub struct SudokuInitial
 {
+  /// Initial state of sudoku board with fixed values.
   pub board : Board,
+  /// Seed for random numbers generator.
   pub seed : Seed,
+  /// Random numbers generator used for creating new state of SA.
   pub hrng : Hrng,
+  /// Max amount of mutations in generation.
   pub n_mutations_per_generation_limit : usize,
+  /// Max allowed number of resets.
   pub n_resets_limit : usize,
+  /// Max number of generations created during SA process.
   pub n_generations_limit : usize,
+  /// Coefficient for lowering SA temperature.
   pub temperature_decrease_factor : TemperatureFactor,
+  /// Coefficient for increasing SA temperature during reset.
   pub temperature_increase_factor : TemperatureFactor,
 }
 
@@ -236,7 +264,7 @@ pub struct SudokuInitial
 
 impl SudokuInitial
 {
-
+  /// Create new initial state for SA.
   pub fn new( board : Board, seed : Seed ) -> Self
   {
     let hrng = Hrng::master_with_seed( seed.clone() );
@@ -258,6 +286,7 @@ impl SudokuInitial
     }
   }
 
+  /// Create the initial generation for the simulated annealing algorithm.
   pub fn initial_generation( &self ) -> SudokuGeneration
   {
     let person = SudokuPerson::new( self );
@@ -268,6 +297,7 @@ impl SudokuInitial
     SudokuGeneration { initial : self, hrng, person, temperature, n_resets, n_generation }
   }
 
+  /// Calculate the initial temperature for the optimization process.
   pub fn initial_temperature( &self ) -> Temperature
   {
     use statrs::statistics::Statistics;
@@ -282,6 +312,7 @@ impl SudokuInitial
     costs[..].std_dev().into()
   }
 
+  /// Main loop for solving sudoku with simulated annealing. Returns reason that inidicates why loop exited and solved sudoku if optimization was successful.
   pub fn solve_with_sa( &self ) -> ( Reason, Option< SudokuGeneration > )
   {
     let mut generation = self.initial_generation();
@@ -301,12 +332,71 @@ impl SudokuInitial
       // log::trace!( "\n= n_generation : {n_generation}\n" );
       // println!( "max_level : {}", log::max_level() );
 
+
       let ( reason, generation2 ) = generation.mutate( generation.hrng.clone() );
       if generation2.is_none()
       {
         return ( reason, None );
       }
       let generation2 = generation2.unwrap();
+
+      //plotting
+      // #[ cfg( feature="static_plot" ) ]
+      // {
+      //   let options = PlotOptions 
+      //   {
+      //     x : generation.n_generation as f32,
+      //     y : generation.person.cost.0 as f32,
+      //     name : String::from( "Cost change" ),
+      //     description : PlotDescription
+      //     {
+      //       x_label : String::from( "Step" ),
+      //       y_label : String::from( "Cost" ),
+      //       filename : String::from( "cost_plot" ),
+      //       ..Default::default()
+      //     }
+      //   };
+      //   plot( options );
+
+      // }
+
+      // #[ cfg( feature="dynamic_plot" ) ]
+      // {
+      //   let options = PlotOptions 
+      //   {
+      //     x : generation.n_generation as f32,
+      //     y : generation.person.cost.0 as f32,
+      //     name : String::from( "Cost change" ),
+      //     description : PlotDescription
+      //     {
+      //       x_label : String::from( "Step" ),
+      //       y_label : String::from( "Cost" ),
+      //       filename : String::from( "cost_plot" ),
+      //       ..Default::default()
+      //     }
+      //   };
+      //   plot_dynamic::dyn_plot( options );
+      // }
+
+      // #[ cfg( feature="static_plot" ) ]
+      // {
+      //   let options = PlotOptions 
+      //   {
+      //     x : generation.n_generation as f32,
+      //     y : generation.temperature.unwrap() as f32,
+      //     name : String::from( "Temperature change" ),
+      //     description : PlotDescription
+      //     {
+      //       x_label : String::from( "Step" ),
+      //       y_label : String::from( "Temperature" ),
+      //       filename : String::from( "temp_plot" ),
+      //       ..Default::default()
+      //     }
+      //   };
+
+      //   plot( options );
+      // }
+
       if generation2.is_good_enough()
       {
         return ( Reason::GoodEnough, Some( generation2 ) );
@@ -318,17 +408,25 @@ impl SudokuInitial
 
 }
 
+/// Represents a state in the Simulated Annealing optimization process for solving Sudoku.
 #[ derive( Clone, Debug ) ]
 pub struct SudokuGeneration< 'a >
 {
+  /// Initial configuration of the Sudoku puzzle.
   initial : &'a SudokuInitial,
+  /// Random number generator for generating new state.
   hrng : Hrng,
+  /// Current state of sudoku board.
   pub person : SudokuPerson,
+  /// Current temperature in the optimization process.
   temperature : Temperature,
+  /// Number of resets performed.
   n_resets : usize,
+  /// Amount of generations before current genetration.
   n_generation : usize,
 }
 
+/// Performs single iteration of optimization process, returns a tuple containing the reason to stop or continue optimization process and the new Sudoku generation if successful.
 impl< 'a > SudokuGeneration< 'a >
 {
 
@@ -364,6 +462,7 @@ impl< 'a > SudokuGeneration< 'a >
 
       let cost_difference = 0.5 + person.cost.unwrap() as f64 - self.person.cost.unwrap() as f64;
       let threshold = ( - cost_difference / temperature.unwrap() ).exp();
+
       log::trace!
       (
         "cost : {} -> {} | cost_difference : {cost_difference} | temperature : {temperature}",
@@ -372,6 +471,29 @@ impl< 'a > SudokuGeneration< 'a >
       );
       let rand : f64 = rng.gen();
       let vital = rand < threshold;
+
+      //plotting
+      // #[ cfg( feature="static_plot" ) ]
+      // {
+      //   let accept = if threshold > 1.0 { 1.0 } else { threshold };
+      //   let options = PlotOptions 
+      //   {
+      //     x : self.n_generation as f32,
+      //     y : accept as f32,
+      //     name : String::from( "Treshold" ),
+      //     description : PlotDescription
+      //     {
+      //       x_label : String::from( "Step" ),
+      //       y_label : String::from( "Acceptance probability" ),
+      //       filename : String::from( "ac_prob_plot" ),
+      //       plot_line : false,
+      //       y_log_coords : false,
+      //       ..Default::default()
+      //     }
+      //   };
+      //   plot( options );
+      // }
+
       if vital
       {
         let emoji = if cost_difference > 0.0
@@ -416,6 +538,7 @@ impl< 'a > SudokuGeneration< 'a >
     ( Reason::NotFinished, Some( generation ) )
   }
 
+  /// Checks if the current state is considered good enough as a solution.
   pub fn is_good_enough( &self ) -> bool
   {
     self.person.cost == 0.into()

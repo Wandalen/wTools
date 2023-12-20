@@ -271,7 +271,7 @@ impl SimplexSolver
 }
 
 #[ cfg( test ) ]
-mod tests {
+mod simplex_tests {
   use super::*;
 
   #[ test ]

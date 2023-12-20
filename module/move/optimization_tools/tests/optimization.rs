@@ -81,6 +81,9 @@ fn solve_with_sa()
   log::trace!( "{:#?}", generation.person.board );
 
   a_id!( generation.person.cost, 0.into() );
+
+  #[ cfg( feature = "static_plot" ) ]
+  plot::draw_plots();
   // a_true!( false );
 }
 
@@ -108,3 +111,21 @@ fn solve_with_sa()
 // 739425861
 // 841697532
 //
+
+/// Test performance
+///
+/// # Usage
+///
+/// cargo test time_measure --release --features rapidity_6
+///
+#[ cfg( feature = "rapidity_6" ) ]
+#[ test ]
+fn time_measure()
+{
+  for i in 0..=9 {
+    let initial = SudokuInitial::new( Board::default(), Seed::new( i.to_string() ) );
+
+    let ( reason, generation ) = initial.solve_with_sa();
+  }
+
+}
