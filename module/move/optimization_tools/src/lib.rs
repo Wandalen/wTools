@@ -1,3 +1,5 @@
+//! Optimization tools for lonear and non-linear problem solving.
+//! 
 
 use deterministic_rand::{ Hrng, Rng };
 pub use deterministic_rand::Seed;

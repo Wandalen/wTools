@@ -1,3 +1,6 @@
+//! Contains implementation of Simmulated Annealing optimization method.
+//! 
+
 use crate::*;
 #[ cfg( feature="static_plot" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };

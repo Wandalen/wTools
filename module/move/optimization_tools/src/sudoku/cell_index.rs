@@ -1,3 +1,10 @@
+//! Provides structures for representetion of position of single digit on Sudoku board.
+//!
+//! CellFlatIndex is used for indexing Sudoku board as one-dimensional array.
+//! CellIndex is used for two-dimensional Sudoku board representation, where first value of
+//! the tuple if row index and second value is index of the column.
+//! 
+
 use super::*;
 use deterministic_rand::{ Rng, distributions::{ Distribution, Standard } };
 // use super::BlockIndex;

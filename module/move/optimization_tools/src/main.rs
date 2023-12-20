@@ -1,3 +1,6 @@
+//! Performs solving of sudoku puzzle using Simmulated Annealing algorithm.
+//! 
+
 use optimization_tools::*;
 use sudoku::*;
 

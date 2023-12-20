@@ -1,3 +1,6 @@
+//! Contains implementation of Simplex optimization method.
+//! 
+
 use std::{ vec, collections::HashSet };
 use iter_tools::Itertools;
 

@@ -1,3 +1,6 @@
+//! Block index structure used to perform operations on single Sudoku 3×3 field block.
+//!
+
 use super::*;
 use deterministic_rand::{ Rng, distributions::{Distribution, Standard } };
 use core::ops::Range;

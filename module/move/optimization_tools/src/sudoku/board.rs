@@ -1,3 +1,6 @@
+//! Contains representation of Sudoku board and methods to operate on it.
+//!
+
 use super::*;
 use std::fmt;
 use std::collections::HashSet;
