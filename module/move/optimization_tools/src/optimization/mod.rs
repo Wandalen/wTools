@@ -79,14 +79,15 @@ pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : 
 use derive_tools::{ FromInner, InnerFrom, Display };
 use derive_tools::{ Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign };
 
+/// Represents number of errors in sudoku board.
 #[ derive( Default, Debug, Display, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash, FromInner, InnerFrom ) ]
 #[ derive( Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign ) ]
 pub struct SudokuCost( usize );
 
 // xxx : derive, please
-/// Returns inner value of SudokuCost struct.
 impl SudokuCost
 {
+  /// Converts SudokuCost struct into its inner usize value.
   pub fn unwrap( self ) -> usize
   {
     self.0
@@ -103,6 +104,7 @@ impl From< SudokuCost > for f64
   }
 }
 
+/// Represents temperature of SA process.
 #[ derive( Default, Debug, Display, Clone, Copy, PartialEq, PartialOrd, FromInner, InnerFrom ) ]
 #[ derive( Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign ) ]
 pub struct Temperature( f64 );
@@ -163,9 +165,13 @@ impl From< f32 > for TemperatureFactor
 #[ derive( PartialEq, Eq, Clone, Copy, Debug, Display ) ]
 pub enum Reason
 {
+  /// SA process was finished with optimal result.
   GoodEnough,
+  /// SA process has not yet finished.
   NotFinished,
+  /// SA process finished due to reaching limit of resets.
   ResetLimit,
+  /// SA process finished due to reaching limit of generations.
   GenerationLimit,
 }
 
@@ -173,7 +179,9 @@ pub enum Reason
 #[ derive( PartialEq, Eq, Clone, Debug ) ]
 pub struct SudokuPerson
 {
+  /// Sudoku board.
   pub board : Board,
+  /// Number of errors in sudoku board.
   pub cost : SudokuCost,
 }
 
@@ -225,7 +233,9 @@ impl SudokuPerson
 #[ derive( PartialEq, Eq, Clone, Debug, FromInner, InnerFrom ) ]
 pub struct SudokuMutagen
 {
+  /// Index of cell swapped in mutation.
   pub cell1 : CellIndex,
+  /// Index of cell swapped in mutation.
   pub cell2 : CellIndex,
 }
 
@@ -287,7 +297,7 @@ impl SudokuInitial
   }
 
   /// Create the initial generation for the simulated annealing algorithm.
-  pub fn initial_generation( &self ) -> SudokuGeneration
+  pub fn initial_generation< 'initial >( &'initial self ) -> SudokuGeneration < 'initial >
   {
     let person = SudokuPerson::new( self );
     let temperature = self.initial_temperature();
@@ -313,7 +323,7 @@ impl SudokuInitial
   }
 
   /// Main loop for solving sudoku with simulated annealing. Returns reason that inidicates why loop exited and solved sudoku if optimization was successful.
-  pub fn solve_with_sa( &self ) -> ( Reason, Option< SudokuGeneration > )
+  pub fn solve_with_sa( &self ) -> ( Reason, Option< SudokuGeneration < '_ > > )
   {
     let mut generation = self.initial_generation();
     // let mut n_generation : usize = 0;
@@ -426,10 +436,9 @@ pub struct SudokuGeneration< 'a >
   n_generation : usize,
 }
 
-/// Performs single iteration of optimization process, returns a tuple containing the reason to stop or continue optimization process and the new Sudoku generation if successful.
 impl< 'a > SudokuGeneration< 'a >
 {
-
+  /// Performs single iteration of optimization process, returns a tuple containing the reason to stop or continue optimization process and the new Sudoku generation if successful.
   pub fn mutate( &self, hrng : Hrng ) -> ( Reason, Option< Self > )
   {
     let initial = self.initial;
