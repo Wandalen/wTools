@@ -8,6 +8,7 @@ pub struct CellFlatIndex( usize );
 
 impl CellFlatIndex
 {
+  /// Converts CellFlatIndex into its inner usize value.
   #[ inline ]
   pub fn unwrap( self ) -> usize
   {
@@ -64,11 +65,14 @@ impl CellIndex
     ( rng.gen_range( intervals.0 ) as u8, rng.gen_range( intervals.1 ) as u8 ).into()
   }
 
+  /// Column index of cell.
   #[ inline ]
   pub fn col( &self ) -> u8
   {
     self.0
   }
+
+  /// Row index of cell.
   #[ inline ]
   pub fn row( &self ) -> u8
   {

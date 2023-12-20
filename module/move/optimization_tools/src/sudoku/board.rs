@@ -189,6 +189,7 @@ impl Board
     error
   }
 
+  /// Swaps two cell values in provided positions.
   pub fn cells_swap( &mut self, index1 : CellIndex, index2 : CellIndex )
   {
     self.storage.swap( index1.into(), index2.into() );
