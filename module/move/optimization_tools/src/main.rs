@@ -15,11 +15,15 @@ const INPUT : &str = r#"
 
 fn main()
 {
-  // let board = Board::default();
+  let _ = env_logger::builder()
+  .filter_level( log::LevelFilter::max() )
+  .try_init();
+
   let seed : Seed = "seed1".into();
   let board = Board::from( INPUT );
+  println!("{board}");
   let initial = optimization::SudokuInitial::new( board, seed );
-
+  println!("{}", initial.board);
   let ( reason, generation ) = initial.solve_with_sa();
 
   log::trace!( "reason : {reason}" );
@@ -28,5 +32,20 @@ fn main()
   log::trace!( "{generation:#?}" );
   log::trace!( "{:#?}", generation.person.board );
 
-  // println!( "{board}" );
+  // let mut dp = plot_dynamic::init_dyn_plotter( String::from( "Cost change" ), 800, 400 );
+
+  // let handle = std::thread::spawn
+  // ( move || 
+  //   {
+  //     let seed : deterministic_rand::Seed = "seed3".into();
+  //     let initial = crate::optimization::SudokuInitial::new( Board::default(), seed );
+  //     let ( _reason, generation ) = initial.solve_with_sa();
+  //     let _generation = generation.unwrap();
+  //   }
+  // );
+
+  // dp.plot_dynamically();
+  
+  // _ = handle.join();
+  
 }
