@@ -1,14 +1,13 @@
-use std::{vec, collections::HashSet};
-
+use std::{ vec, collections::HashSet };
 use iter_tools::Itertools;
 
 #[ derive( Clone ) ]
 pub struct Problem 
 {
-    var_coeffs : Vec< f64 >,
-    constraints : Vec< Constraint >,
-    mins : Vec< f64 >,
-    maxs : Vec< f64 >
+    pub var_coeffs : Vec< f64 >,
+    pub constraints : Vec< Constraint >,
+    pub mins : Vec< f64 >,
+    pub maxs : Vec< f64 >
 }
 
 impl Problem 
@@ -22,9 +21,9 @@ impl Problem
 #[ derive( Clone ) ]
 pub struct Constraint 
 {
-  coefs : Vec< f64 >,
-  value : f64,
-  comparison : Comp,
+  pub coefs : Vec< f64 >,
+  pub value : f64,
+  pub comparison : Comp,
 }
 
 #[ derive( Clone ) ]
@@ -49,17 +48,14 @@ impl Constraint
 }
 
 #[ derive( Clone, Debug, PartialEq ) ]
-struct ExtremePoint
+pub struct ExtremePoint
 {
   /// Basic variables indices.
   bv : Vec< usize >,
   point : Vec< f64 >,
 }
 
-impl Eq for ExtremePoint
-{
-  
-}
+impl Eq for ExtremePoint {}
 
 impl Default for ExtremePoint
 {
@@ -118,15 +114,8 @@ pub struct SimplexSolver {}
 
 impl SimplexSolver
 {
-  fn basic_feasible_solutions( p : Problem ) -> Vec< BasicSolution >
+  fn normalized_problem( p : &Problem ) -> Problem
   {
-    let total_variables_number = p.var_coeffs.len() + p.constraints.len();
-    let basic_variables_number = p.var_coeffs.len();
-    let non_basic_variables_number = p.constraints.len();
-    let number_of_basic_solutions : u128 = ( 1..total_variables_number as u128 ).product::< u128 >() 
-      / ( ( 1..basic_variables_number as u128 ).product::< u128 >() * ( 1..non_basic_variables_number as u128 ).product::< u128 >() );
-
-        
     let mut equations_coefficients = Vec::new();
     for i in 1..= p.constraints.len()
     {
@@ -149,6 +138,33 @@ impl SimplexSolver
       }
       equations_coefficients.push( coeffs );
     }
+
+    let new_constraints = p.constraints
+    .iter()
+    .enumerate()
+    .map( | ( i, constraint ) | 
+      Constraint::new(equations_coefficients[ i ].clone(), constraint.value, Comp::Equal ) )
+    .collect_vec()
+    ;
+
+    Problem
+    {
+      var_coeffs : p.var_coeffs.clone(),
+      maxs : p.maxs.clone(),
+      mins : p.mins.clone(),
+      constraints : new_constraints,
+    }
+  }
+
+  fn basic_feasible_solutions( p : Problem ) -> Vec< BasicSolution >
+  {
+    let total_variables_number = p.var_coeffs.len() + p.constraints.len();
+    let basic_variables_number = p.var_coeffs.len();
+    let non_basic_variables_number = p.constraints.len();
+    let number_of_basic_solutions : u128 = ( 1..total_variables_number as u128 ).product::< u128 >() 
+      / ( ( 1..basic_variables_number as u128 ).product::< u128 >() * ( 1..non_basic_variables_number as u128 ).product::< u128 >() );
+
+    let p = SimplexSolver::normalized_problem(&p);
 
     let mut bs = vec![ BasicSolution 
       { 
@@ -194,7 +210,7 @@ impl SimplexSolver
       {
         for i in 0..basic_solution.bv.len() 
         {
-          vec_of_coeffs.push( equations_coefficients[ i ][ bv - 1 ] );
+          vec_of_coeffs.push( p.constraints[ i ].coefs[ bv - 1 ] );
         }
       }
       let dimension = basic_solution.bv.len();
@@ -221,7 +237,7 @@ impl SimplexSolver
 
   }
 
-  fn solve( &self, p : Problem ) -> ExtremePoint
+  pub fn solve( &self, p : Problem ) -> ExtremePoint
   {
     let m = p.constraints.len();
     let bfs = Self::basic_feasible_solutions( p.clone() );
