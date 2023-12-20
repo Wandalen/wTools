@@ -3,6 +3,7 @@
 
 use std::{ vec, collections::HashSet };
 use iter_tools::Itertools;
+//use ndarray;
 
 /// Represents linear problem.
 #[ derive( Clone, Debug ) ]
@@ -184,8 +185,8 @@ impl SimplexSolver
     let total_variables_number = p.var_coeffs.len() + p.constraints.len();
     let basic_variables_number = p.var_coeffs.len();
     let non_basic_variables_number = p.constraints.len();
-    let number_of_basic_solutions : u128 = ( 1..total_variables_number as u128 ).product::< u128 >() 
-      / ( ( 1..basic_variables_number as u128 ).product::< u128 >() * ( 1..non_basic_variables_number as u128 ).product::< u128 >() );
+    let number_of_basic_solutions : u128 = ( 1..=total_variables_number as u128 ).product::< u128 >() 
+      / ( ( 1..=basic_variables_number as u128 ).product::< u128 >() * ( 1..=non_basic_variables_number as u128 ).product::< u128 >() );
 
     let p = SimplexSolver::normalized_problem(&p);
 
@@ -197,52 +198,80 @@ impl SimplexSolver
       }; 
       number_of_basic_solutions as usize ];
 
-    let mut iter = bs.iter_mut();
-    for i in 1..=total_variables_number 
-    {
-      for j in i..=total_variables_number
+    let mut result = ( 1..=total_variables_number )
+    .into_iter()
+    .map(| elem | 
       {
-        if i != j  {
-          ( *iter.next().unwrap() ).nbv = vec![ i, j ];
+        let mut h = HashSet::new(); 
+        h.insert(elem); 
+        h
+    }).
+    collect_vec()
+    ;
+
+    for _ in 0..basic_variables_number
+    {
+      result = ( 1..=total_variables_number )
+      .cartesian_product( result.clone()).map( | ( elem, mut set ) | 
+      {
+        set.insert( elem );
+        set
+      })
+      .collect_vec()
+      ;
+    }
+
+    let mut result = result
+    .into_iter()
+    .filter( |set| set.len() == basic_variables_number )
+    .collect_vec()
+    ;
+
+    let mut final_result = Vec::new();
+    while let Some( combination ) = result.pop() 
+    {
+        if !result.contains( &combination )
+        {
+            final_result.push( combination );
         }
-      }
+    }
+
+    for ( index, bs ) in bs.iter_mut().enumerate()
+    {
+      bs.bv = final_result[ index ].clone().iter().map( | elem | *elem ).collect_vec();
     }
 
     for basic_solution in bs.iter_mut() 
     {
-      let mut e = 1;
-      for basic_var in basic_solution.bv.iter_mut()
-      {
-        loop {
-          if !basic_solution.nbv.contains( &e ) 
-          {
-            *basic_var = e;
-            e+= 1;
-            break;
-          } 
-          else { e += 1; }
-        }
-      }
+      let indices = ( 1..=total_variables_number ).into_iter().collect::< HashSet< _ > >();
+      let bv_set = basic_solution.bv.clone().into_iter().collect::< HashSet< _ > >();
+      let set = indices.difference( &bv_set );
+      basic_solution.nbv = set.into_iter().map( | elem | *elem ).collect_vec();
     }
-
     for basic_solution in bs.iter_mut() 
     {
       let mut vec_of_coeffs = Vec::new();
         
       for bv in basic_solution.bv.iter() 
       {
-        for i in 0..basic_solution.bv.len() 
+        for i in 0..p.constraints.len() 
         {
           vec_of_coeffs.push( p.constraints[ i ].coefs[ bv - 1 ] );
         }
       }
-      let dimension = basic_solution.bv.len();
+      let rows = basic_solution.nbv.len();
+      let columns = basic_solution.bv.len();
+      //vec_of_coeffs.extend([0.0,0.0,0.0]);
+      let m = nalgebra::DMatrix::from_vec( rows, columns, vec_of_coeffs );
+      //let m: ndarray::Array2<f64> = ndarray::Array2::from_shape_vec((p.constraints.len(), p.var_coeffs.len()), vec_of_coeffs).unwrap();
+      //   let mut b : ndarray::Array1<f64> = ndarray::ArrayBase::from_vec(p.constraints.iter().map(|c| c.value).collect::<Vec<_>>());
+      //     let b = ndarray_linalg::Solve::solve_into(&m, b).unwrap();
+      let v = p.constraints.iter().map(|c| c.value).collect::<Vec<_>>();
+      //v.extend([0.0]);
+      let const_m = nalgebra::DMatrix::from_vec( rows, 1, v );
+      let solutions = m.try_inverse().unwrap() * const_m;
 
-      let m = nalgebra::DMatrix::from_vec( dimension, dimension, vec_of_coeffs );
-      let inverse = m.try_inverse().unwrap();
-      let const_m = nalgebra::DMatrix::from_vec( dimension, 1, p.constraints.iter().map(|c| c.value).collect::<Vec<_>>());
-      let solutions = inverse * const_m;
-      basic_solution.bv_values = solutions.iter().map(|a| *a).collect_vec();
+      basic_solution.bv_values = solutions.iter().map( | a | *a ).collect_vec();
     }
 
     dbg!( bs.into_iter().filter_map( | b_s | 
@@ -337,5 +366,20 @@ mod simplex_tests {
     let solution = SimplexSolver{}.solve( p );
     assert_eq!( solution.point, vec![ 3.0, 3.0 ] )
   }
+
+//   #[ test ]
+//   fn problem3d() 
+//   {
+//     let p = Problem::new
+//     ( 
+//       vec![ 1.0, 2.0, 3.0 ], 
+//       vec![ Constraint::new( vec![ 1.0, 1.0, 0.0 ], 4.0, Comp::Less ), Constraint::new( vec![ 0.0, 0.0, 1.0 ], 5.0, Comp::Less ) ],
+//       Vec::new(), 
+//       Vec::new()
+//     );
+
+//     let solution = SimplexSolver{}.solve( p );
+//     assert_eq!( solution.point, vec![ 0.0, 4.0, 5.0 ] )
+//   }
 
 }
