@@ -56,6 +56,11 @@ struct ExtremePoint
   point : Vec< f64 >,
 }
 
+impl Eq for ExtremePoint
+{
+  
+}
+
 impl Default for ExtremePoint
 {
   fn default() -> Self 
@@ -90,14 +95,15 @@ struct BasicSolution
 
 impl From< BasicSolution > for ExtremePoint
 {
-  fn from(solution: BasicSolution) -> Self {
+  fn from( solution : BasicSolution ) -> Self 
+  {
     let m = solution.bv.len();
     let mut point = vec![ 0.0; m ];
     for index in 1..= m
     {
         if solution.bv.contains( &index )
         {
-        point[ index ] = solution.bv_values[ solution.bv[ index ] ];
+        point[ index - 1 ] = solution.bv_values[ index - 1 ];
         }
     }
     Self
@@ -211,71 +217,85 @@ impl SimplexSolver
         }
         Some( b_s )
       }
-    ).collect_vec())
+    ).collect_vec() )
 
+  }
+
+  fn solve( &self, p : Problem ) -> ExtremePoint
+  {
+    let m = p.constraints.len();
+    let bfs = Self::basic_feasible_solutions( p.clone() );
+
+    let extreme_points = bfs.into_iter().map( | s | s.into() ).collect::< Vec< ExtremePoint > >();
+    let mut ex_point = extreme_points[ 0 ].clone();
+
+    let mut visited : Vec< ExtremePoint > = Vec::new();
+    visited.push( ex_point.clone() );
+
+    let mut z = 0.0;
+    for i in 0..m
+    {
+      z += p.var_coeffs[ i ] * ex_point.point[ i ];
     }
 
-    fn solve( &self, p : Problem )
+    loop
     {
-      let m = p.constraints.len();
-      let bfs = Self::basic_feasible_solutions( p.clone() );
 
-    //   let extreme_points = bfs.into_iter().map( | solution |
-    //     {
-    //       let mut ex_point = vec![ 0.0; m ];
-    //       for i in 1..=m
-    //       {
-    //         if solution.bv.contains( &i )
-    //         {
-    //           ex_point[i] = solution.bv_values[ solution.bv[ i ] ];
-    //         }
-    //       }
-            
-    //     } ).collect_vec();
-      let mut max_z = f64::MIN;
-      let mut max_point = bfs[0].clone().into();
-      let extreme_points = bfs.into_iter().map( | s | s.into() ).collect::< Vec< ExtremePoint > >();
-      let mut ex_point = extreme_points[0].clone();
-      let mut old_point = ExtremePoint::default();
-      loop
+      let new_ex_point = extreme_points
+      .iter()
+      .find( | p | p.is_adjacent( &ex_point ) && !visited.contains( &p ) )
+      .clone()
+      ;
+
+      if let Some( point ) = new_ex_point
       {
-        let mut z = 0.0;
-        for i in 0..p.var_coeffs.len()
+        visited.push( point.clone() );
+        let mut new_z = 0.0;
+        for i in 0..m
         {
-          z += p.var_coeffs[ i ] * ex_point.point[ i ];
+          new_z += p.var_coeffs[ i ] * point.point[ i ];
         }
-        if z > max_z 
+        if new_z > z
         {
-            max_z = z;
-            max_point = ex_point.clone();
-            let new_ex_point = extreme_points.iter().find( | p | p.is_adjacent( &ex_point ) ).unwrap().clone();
-            //todo
+          z = new_z;
+          ex_point = point.clone();
         }
       }
-
+      else 
+      {
+        break;    
+      }
     }
+    ex_point
+  }
 }
 
-#[cfg(test)]
+#[ cfg( test ) ]
 mod tests {
-    use super::*;
+  use super::*;
 
-    #[test]
-    fn constraint() {
-        let c = Constraint::new(vec![1.0, 2.0], 4.0, Comp::Greater);
-        assert_eq!(c.value, 4.0);
-    }
+  #[ test ]
+  fn constraint() 
+  {
+    let c = Constraint::new( vec![ 1.0, 2.0 ], 4.0, Comp::Greater );
+    assert_eq!( c.value, 4.0 );
+  }
 
-    #[test]
-    fn problem() {
-        let p = Problem::new( vec![3.0,2.0], vec![
-            Constraint::new(vec![2.0, 1.0], 9.0, Comp::Less),
-            Constraint::new(vec![1.0, 2.0], 9.0, Comp::Less),
-            ], Vec::new(), Vec::new());
-        let c = Constraint::new(vec![1.0, 2.0], 4.0, Comp::Greater);
-        assert_eq!(c.value, 4.0);
+  #[ test ]
+  fn problem() 
+  {
+    let p = Problem::new
+    ( 
+      vec![ 3.0, 2.0 ], 
+      vec![ Constraint::new( vec![ 2.0, 1.0 ], 9.0, Comp::Less ), Constraint::new( vec![ 1.0, 2.0 ], 9.0, Comp::Less ) ],
+      Vec::new(), 
+      Vec::new()
+    );
+    let c = Constraint::new( vec![ 1.0, 2.0 ], 4.0, Comp::Greater );
+    assert_eq!( c.value, 4.0 );
 
-        let solve = SimplexSolver::bacis_feasible_solutions(p);
-    }
+    let solution = SimplexSolver{}.solve( p );
+    assert_eq!( solution.point, vec![ 3.0, 3.0 ] )
+  }
 
 }
