@@ -192,7 +192,7 @@ impl SimplexSolver
 
     let mut bs = vec![ BasicSolution 
       { 
-        bv_values: vec![ 0.0; basic_variables_number ], 
+        bv_values: vec![ -1.0; basic_variables_number ], 
         bv: vec![ 0; basic_variables_number ], 
         nbv: vec![ 0; non_basic_variables_number ]
       }; 
@@ -266,12 +266,21 @@ impl SimplexSolver
       //let m: ndarray::Array2<f64> = ndarray::Array2::from_shape_vec((p.constraints.len(), p.var_coeffs.len()), vec_of_coeffs).unwrap();
       //   let mut b : ndarray::Array1<f64> = ndarray::ArrayBase::from_vec(p.constraints.iter().map(|c| c.value).collect::<Vec<_>>());
       //     let b = ndarray_linalg::Solve::solve_into(&m, b).unwrap();
-      let v = p.constraints.iter().map(|c| c.value).collect::<Vec<_>>();
+      let lu = m.lu();
+      
+      let mut v = p.constraints.iter().map(|c| c.value).collect::<Vec<_>>();
       //v.extend([0.0]);
+      
       let const_m = nalgebra::DMatrix::from_vec( rows, 1, v );
-      let solutions = m.try_inverse().unwrap() * const_m;
+      let some_solution = lu.solve(&const_m);
+      //let solutions = m.try_inverse().unwrap() * const_m;
 
-      basic_solution.bv_values = solutions.iter().map( | a | *a ).collect_vec();
+      if let Some(solution) = some_solution
+      {
+        basic_solution.bv_values = solution.iter().map( | a | *a ).collect_vec();
+      }
+
+      
     }
 
     dbg!( bs.into_iter().filter_map( | b_s | 
@@ -381,5 +390,25 @@ mod simplex_tests {
 //     let solution = SimplexSolver{}.solve( p );
 //     assert_eq!( solution.point, vec![ 0.0, 4.0, 5.0 ] )
 //   }
+
+  #[ test ]
+  fn problem3d_1() 
+  {
+    let p = Problem::new
+    ( 
+      vec![ 4.0, 3.0, 6.0 ], 
+      vec!
+      [ 
+        Constraint::new( vec![ 3.0, 5.0, 9.0 ], 500.0, Comp::Less ), 
+        Constraint::new( vec![ 4.0, 0.0, 5.0 ], 350.0, Comp::Less ),
+        Constraint::new( vec![ 0.0, 2.0, 3.0 ], 150.0, Comp::Less ) 
+      ],
+      Vec::new(), 
+      Vec::new()
+    );
+
+    let solution = SimplexSolver{}.solve( p );
+    assert_eq!( solution.point, vec![ 0.0, 350.0, 0.0 ] )
+  }
 
 }
