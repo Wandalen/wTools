@@ -30,6 +30,7 @@ pub( crate ) mod private
     // .exit_code_on_error( 1 )
     .grammar( command::grammar_form() )
     .executor( command::executor_form() )
+    .help_variants( [ wca::HelpVariants::General, wca::HelpVariants::SubjectCommand ] )
     .build();
 
     let program = args.join( " " );
