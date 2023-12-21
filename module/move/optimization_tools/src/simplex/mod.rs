@@ -5,6 +5,9 @@ use std::{ vec, collections::{HashSet, BinaryHeap} };
 use iter_tools::Itertools;
 //use ndarray;
 
+mod drawing;
+
+
 /// Represents linear problem.
 #[ derive( Clone, Debug ) ]
 pub struct Problem 
@@ -197,6 +200,17 @@ pub struct SimplexSolver {}
 
 impl SimplexSolver
 {
+  fn extreme_points ( p : &mut Problem ) -> Vec< ExtremePoint >
+  {
+    let bfs = Self::basic_feasible_solutions( p.clone() );
+    let extreme_points = bfs
+    .into_iter()
+    .map( | s | ExtremePoint::new( s, p.var_coeffs.clone() ) )
+    .collect::< Vec< ExtremePoint > >()
+    ;
+
+    extreme_points
+  }
   fn basic_feasible_solutions( mut p : Problem ) -> Vec< BasicSolution >
   {
     let total_variables_number = p.var_coeffs.len() + p.constraints.len();
@@ -310,10 +324,10 @@ impl SimplexSolver
   }
 
   /// Solves linear problem using Simplex method.
-  pub fn solve( &self, p : Problem ) -> ExtremePoint
+  pub fn solve( &self, mut p : Problem ) -> ExtremePoint
   {
-    let bfs = Self::basic_feasible_solutions( p.clone() );
-    let extreme_points = bfs.into_iter().map( | s | ExtremePoint::new( s, p.var_coeffs.clone() ) ).collect::< Vec< ExtremePoint > >();
+    //let bfs = Self::basic_feasible_solutions( p.clone() );
+    let extreme_points = Self::extreme_points(&mut p);
     let mut queue: std::collections::BinaryHeap<ExtremePoint> = extreme_points.into_iter().collect::< BinaryHeap< _ > >();
     let max_point = queue.pop().unwrap();
 
@@ -367,6 +381,21 @@ mod simplex_tests {
 
     let solution = SimplexSolver{}.solve( p );
     assert_eq!( solution.point, vec![ 0.0, 0.0, 3.0 ] )
+  }
+
+  #[ test ]
+  fn problem_draw() 
+  {
+    let mut p = Problem::new
+    ( 
+      vec![ 3.0, 2.0 ], 
+      vec![ Constraint::new( vec![ 2.0, 1.0 ], 9.0, Comp::Less ), Constraint::new( vec![ 1.0, 2.0 ], 9.0, Comp::Less ) ],
+      Vec::new(), 
+      Vec::new()
+    );
+
+    let ex_points = SimplexSolver::extreme_points(&mut p);
+    drawing::draw_problem(&p, ex_points);
   }
 
 }
