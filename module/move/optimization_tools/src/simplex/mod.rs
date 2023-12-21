@@ -26,6 +26,42 @@ impl Problem
   {
     Self { var_coeffs, constraints, mins, maxs }
   }
+
+  fn normalize( &mut self )
+  {
+    let mut equations_coefficients = Vec::new();
+    for i in 1..= self.constraints.len()
+    {
+      let mut coeffs = self.constraints[ i - 1 ].coefs.clone();
+      for _ in 1..=self.constraints.len()
+      {
+        coeffs.push( 0.0 );
+      }
+      match self.constraints[ i-1 ].comparison
+      {
+        Comp::Less => 
+        {
+            coeffs[ self.var_coeffs.len() + i - 1 ] = 1.0;
+        }
+        Comp::Greater =>
+        {
+            coeffs[ self.var_coeffs.len() + i - 1 ] = -1.0;
+        }
+        Comp::Equal => {}
+      }
+      equations_coefficients.push( coeffs );
+    }
+
+    let new_constraints = self.constraints
+    .iter()
+    .enumerate()
+    .map( | ( i, constraint ) | 
+      Constraint::new(equations_coefficients[ i ].clone(), constraint.value, Comp::Equal ) )
+    .collect_vec()
+    ;
+
+    self.constraints = new_constraints;
+  }
 }
 
 /// Represents inequation constraint.
@@ -161,49 +197,7 @@ pub struct SimplexSolver {}
 
 impl SimplexSolver
 {
-  fn normalized_problem( p : &Problem ) -> Problem
-  {
-    let mut equations_coefficients = Vec::new();
-    for i in 1..= p.constraints.len()
-    {
-      let mut coeffs = p.constraints[ i - 1 ].coefs.clone();
-      for _ in 1..=p.constraints.len()
-      {
-        coeffs.push( 0.0 );
-      }
-      match p.constraints[ i-1 ].comparison
-      {
-        Comp::Less => 
-        {
-            coeffs[ p.var_coeffs.len() + i - 1 ] = 1.0;
-        }
-        Comp::Greater =>
-        {
-            coeffs[ p.var_coeffs.len() + i - 1 ] = -1.0;
-        }
-        Comp::Equal => {}
-      }
-      equations_coefficients.push( coeffs );
-    }
-
-    let new_constraints = p.constraints
-    .iter()
-    .enumerate()
-    .map( | ( i, constraint ) | 
-      Constraint::new(equations_coefficients[ i ].clone(), constraint.value, Comp::Equal ) )
-    .collect_vec()
-    ;
-
-    Problem
-    {
-      var_coeffs : p.var_coeffs.clone(),
-      maxs : p.maxs.clone(),
-      mins : p.mins.clone(),
-      constraints : new_constraints,
-    }
-  }
-
-  fn basic_feasible_solutions( p : Problem ) -> Vec< BasicSolution >
+  fn basic_feasible_solutions( mut p : Problem ) -> Vec< BasicSolution >
   {
     let total_variables_number = p.var_coeffs.len() + p.constraints.len();
     let basic_variables_number = p.var_coeffs.len();
@@ -211,7 +205,7 @@ impl SimplexSolver
     let number_of_basic_solutions : u128 = ( 1..=total_variables_number as u128 ).product::< u128 >() 
       / ( ( 1..=basic_variables_number as u128 ).product::< u128 >() * ( 1..=non_basic_variables_number as u128 ).product::< u128 >() );
 
-    let p = SimplexSolver::normalized_problem(&p);
+    p.normalize();
 
     let mut bs = vec![ BasicSolution 
       { 
