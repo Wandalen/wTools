@@ -67,9 +67,10 @@ impl Constraint
 }
 
 /// Extreme point of feasible region.
-#[ derive( Clone, Debug, PartialEq ) ]
+#[ derive( Clone, Debug, PartialEq, PartialOrd ) ]
 pub struct ExtremePoint
 {
+  problem_var_coeffs : Vec< f64 >,
   /// Basic variables indices.
   bv : Vec< usize >,
   /// Extreme point coordinates.
@@ -82,38 +83,14 @@ impl Default for ExtremePoint
 {
   fn default() -> Self 
   {
-    Self { bv : Vec::new(), point : Vec::new() }
+    Self { problem_var_coeffs : Vec::new(), bv : Vec::new(), point : Vec::new() }
   }
 }
 
 impl ExtremePoint
 {
-  /// Checks if two extreme points is adjacent.
-  pub fn is_adjacent( &self, other : &ExtremePoint ) -> bool
-  {
-    let bv = self.bv.iter().collect::< HashSet< _ > >();
-    let other_bv = other.bv.iter().collect::< HashSet< _ > >();
-    if bv.intersection( &other_bv ).collect_vec().len() == bv.len() - 1
-    {
-      return true;
-    }
-    false
-  }
-}
 
-#[ derive( Clone, Debug ) ]
-struct BasicSolution
-{
-  /// Non-basic variables indices.
-  nbv : Vec< usize >,
-  /// Basic variables indices.
-  bv : Vec< usize >,
-  bv_values : Vec< f64 >,
-}
-
-impl From< BasicSolution > for ExtremePoint
-{
-  fn from( solution : BasicSolution ) -> Self 
+  pub fn new( solution : BasicSolution, problem_coeffs : Vec< f64 > ) -> Self
   {
     let m = solution.bv.len();
     let mut point = vec![ 0.0; m ];
@@ -128,8 +105,49 @@ impl From< BasicSolution > for ExtremePoint
     {
         bv : solution.bv,
         point,
+        problem_var_coeffs : problem_coeffs,
     }
   }
+  /// Checks if two extreme points is adjacent.
+  pub fn is_adjacent( &self, other : &ExtremePoint ) -> bool
+  {
+    let bv = self.bv.iter().collect::< HashSet< _ > >();
+    let other_bv = other.bv.iter().collect::< HashSet< _ > >();
+    if bv.intersection( &other_bv ).collect_vec().len() == bv.len() - 1
+    {
+      return true;
+    }
+    false
+  }
+}
+
+#[ derive( Clone, Debug ) ]
+pub struct BasicSolution
+{
+  /// Non-basic variables indices.
+  nbv : Vec< usize >,
+  /// Basic variables indices.
+  bv : Vec< usize >,
+  bv_values : Vec< f64 >,
+}
+
+impl Ord for ExtremePoint {
+  fn cmp( &self, other : &Self ) -> std::cmp::Ordering
+  {
+    let z = self.problem_var_coeffs
+    .iter()
+    .zip( self.point.clone() )
+    .fold( 0.0, | sum, elem | sum + elem.0 * elem.1 )
+    ;
+
+    let other_z = other.problem_var_coeffs
+    .iter()
+    .zip( other.point.clone() )
+    .fold( 0.0, | sum, elem | sum + elem.0 * elem.1 )
+    ;
+    z.total_cmp( &other_z )
+  }
+
 }
 
 /// Implementation of Simplex method solver.
@@ -152,11 +170,11 @@ impl SimplexSolver
       {
         Comp::Less => 
         {
-            coeffs[ p.constraints.len() + i - 1 ] = 1.0;
+            coeffs[ p.var_coeffs.len() + i - 1 ] = 1.0;
         }
         Comp::Greater =>
         {
-            coeffs[ p.constraints.len() + i - 1 ] = -1.0;
+            coeffs[ p.var_coeffs.len() + i - 1 ] = -1.0;
         }
         Comp::Equal => {}
       }
@@ -201,12 +219,12 @@ impl SimplexSolver
     let mut result = ( 1..=total_variables_number )
     .into_iter()
     .map(| elem | 
-      {
-        let mut h = HashSet::new(); 
-        h.insert(elem); 
-        h
-    }).
-    collect_vec()
+    {
+      let mut h = HashSet::new(); 
+      h.insert(elem); 
+      h
+    })
+    .collect_vec()
     ;
 
     for _ in 0..basic_variables_number
@@ -230,10 +248,10 @@ impl SimplexSolver
     let mut final_result = Vec::new();
     while let Some( combination ) = result.pop() 
     {
-        if !result.contains( &combination )
-        {
-            final_result.push( combination );
-        }
+      if !result.contains( &combination )
+      {
+        final_result.push( combination );
+      }
     }
 
     for ( index, bs ) in bs.iter_mut().enumerate()
@@ -272,18 +290,17 @@ impl SimplexSolver
       //v.extend([0.0]);
       
       let const_m = nalgebra::DMatrix::from_vec( rows, 1, v );
-      let some_solution = lu.solve(&const_m);
+      let some_solution = lu.solve( &const_m );
       //let solutions = m.try_inverse().unwrap() * const_m;
 
-      if let Some(solution) = some_solution
+      if let Some( solution ) = some_solution
       {
         basic_solution.bv_values = solution.iter().map( | a | *a ).collect_vec();
       }
-
       
     }
 
-    dbg!( bs.into_iter().filter_map( | b_s | 
+    bs.into_iter().filter_map( | b_s | 
       {
         for b_value in b_s.bv_values.iter() 
         {
@@ -294,57 +311,49 @@ impl SimplexSolver
         }
         Some( b_s )
       }
-    ).collect_vec() )
+    ).collect_vec()
 
   }
 
   /// Solves linear problem using Simplex method.
-  pub fn solve( &self, p : Problem ) -> ExtremePoint
+  pub fn solve( &self, p : Problem ) -> ( ExtremePoint, f64 )
   {
     let m = p.constraints.len();
     let bfs = Self::basic_feasible_solutions( p.clone() );
 
-    let extreme_points = bfs.into_iter().map( | s | s.into() ).collect::< Vec< ExtremePoint > >();
-    let mut ex_point = extreme_points[ 0 ].clone();
+    let extreme_points = bfs.into_iter().map( | s | ExtremePoint::new( s, p.var_coeffs.clone() ) ).collect::< Vec< ExtremePoint > >();
+    let mut max_point = extreme_points[ 0 ].clone();
 
     let mut visited : Vec< ExtremePoint > = Vec::new();
-    visited.push( ex_point.clone() );
+    visited.push( max_point.clone() );
 
-    let mut z = 0.0;
-    for i in 0..m
+    let mut z = f64::MIN;
+
+    let mut queue = std::collections::BinaryHeap::new();
+    queue.push(max_point.clone() );
+    while let Some( ex_point ) = queue.pop()
     {
-      z += p.var_coeffs[ i ] * ex_point.point[ i ];
-    }
-
-    loop
-    {
-
-      let new_ex_point = extreme_points
+      let mut new_z = 0.0;
+      for i in 0..m
+      {
+        new_z += ex_point.problem_var_coeffs[ i ] * ex_point.point[ i ];
+      }
+      while let Some( point ) = extreme_points
       .iter()
-      .find( | p | p.is_adjacent( &ex_point ) && !visited.contains( &p ) )
+      .find( | p | p.is_adjacent( &ex_point ) && !visited.contains( p ) )
       .clone()
-      ;
-
-      if let Some( point ) = new_ex_point
       {
         visited.push( point.clone() );
-        let mut new_z = 0.0;
-        for i in 0..m
-        {
-          new_z += p.var_coeffs[ i ] * point.point[ i ];
-        }
-        if new_z > z
-        {
-          z = new_z;
-          ex_point = point.clone();
-        }
+        queue.push(point.clone());
       }
-      else 
+      if new_z > z 
       {
-        break;    
+        z = new_z;
+        max_point = ex_point.clone();
+
       }
     }
-    ex_point
+    ( max_point, z )
   }
 }
 
@@ -373,42 +382,27 @@ mod simplex_tests {
     assert_eq!( c.value, 4.0 );
 
     let solution = SimplexSolver{}.solve( p );
-    assert_eq!( solution.point, vec![ 3.0, 3.0 ] )
+    assert_eq!( solution.0.point, vec![ 3.0, 3.0 ] )
   }
 
-//   #[ test ]
-//   fn problem3d() 
-//   {
-//     let p = Problem::new
-//     ( 
-//       vec![ 1.0, 2.0, 3.0 ], 
-//       vec![ Constraint::new( vec![ 1.0, 1.0, 0.0 ], 4.0, Comp::Less ), Constraint::new( vec![ 0.0, 0.0, 1.0 ], 5.0, Comp::Less ) ],
-//       Vec::new(), 
-//       Vec::new()
-//     );
-
-//     let solution = SimplexSolver{}.solve( p );
-//     assert_eq!( solution.point, vec![ 0.0, 4.0, 5.0 ] )
-//   }
-
   #[ test ]
-  fn problem3d_1() 
+  fn problem3d_2() 
   {
     let p = Problem::new
     ( 
-      vec![ 4.0, 3.0, 6.0 ], 
+      vec![ 0.0, 0.0, 1.0 ], 
       vec!
       [ 
-        Constraint::new( vec![ 3.0, 5.0, 9.0 ], 500.0, Comp::Less ), 
-        Constraint::new( vec![ 4.0, 0.0, 5.0 ], 350.0, Comp::Less ),
-        Constraint::new( vec![ 0.0, 2.0, 3.0 ], 150.0, Comp::Less ) 
+        Constraint::new( vec![ 1.0, 2.0, 0.0 ], 2.0, Comp::Less ), 
+        Constraint::new( vec![ 0.0, 3.0, 1.0 ], 3.0, Comp::Less ),
+        Constraint::new( vec![ 3.0, 0.0, 2.0 ], 6.0, Comp::Less ),
       ],
       Vec::new(), 
       Vec::new()
     );
 
     let solution = SimplexSolver{}.solve( p );
-    assert_eq!( solution.point, vec![ 0.0, 350.0, 0.0 ] )
+    assert_eq!( solution.0.point, vec![ 0.0, 0.0, 3.0 ] )
   }
 
 }
