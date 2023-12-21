@@ -260,8 +260,8 @@ mod private
         return Ok( () )
       }
 
-      let files = self.changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n\t\t" );
-      f.write_fmt( format_args!( "`{}` bumped to `{}`\n\tchanged files:\n\t\t{files}\n", self.package_name, self.new_version ) )?;
+      let files = self.changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
+      f.write_fmt( format_args!( "`{}` bumped to `{}`\n  changed files:\n    {files}\n", self.package_name, self.new_version ) )?;
 
       Ok( () )
     }
