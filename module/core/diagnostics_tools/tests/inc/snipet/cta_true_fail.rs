@@ -1,4 +1,4 @@
-use diagnostics_tools::*;
+use test_tools::diagnostics_tools::*;
 
 fn main()
 {

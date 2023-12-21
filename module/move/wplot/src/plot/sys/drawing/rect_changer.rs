@@ -2,10 +2,17 @@
 pub( crate ) mod private
 {
   use crate::protected::*;
+  use crate::abs::identity::private::Id;
+  use crate::sys::context_changer::private::ContextChanger;
+  use crate::sys::drawing::changer::private::DrawChanger;
+  use crate::abs::changer::private::ChangerInterface;
+  use crate::sys::drawing::rect_change_region::private::RectChangeRegion;
+  use crate::sys::drawing::rect_change_new::private::RectChangeNew;
+  use crate::abs::identity::private::HasIdInterface;
 
   /// Command to draw rectangle.
   #[ allow( dead_code ) ]
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Debug ) ]
   pub struct RectChanger
   {
     /// Id.
@@ -87,7 +94,7 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
   exposed use RectChanger;
 }

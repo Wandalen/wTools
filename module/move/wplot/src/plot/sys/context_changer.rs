@@ -1,11 +1,14 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  // use crate::protected::*;
+  use core::fmt;
+
+  use crate::{abs::{identity::private::{Id, HasIdInterface}, change::private::ChangeInterface, changer::private::ChangerInterface}, StrokeBrushChanger, sys::drawing::changer::private::DrawChanger};
 
   /// Context.
   #[ allow( dead_code ) ]
-  #[ derive( Clone ) ]
+  // #[ derive( Clone ) ]
   pub struct ContextChanger
   {
     /// Id.

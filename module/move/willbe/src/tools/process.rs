@@ -35,11 +35,11 @@ pub( crate ) mod private
       f.write_fmt( format_args!( "> {}\n", self.command ) )?;
       if !self.out.trim().is_empty()
       {
-        f.write_fmt( format_args!( "\t{}\n", self.out.replace( '\n', "\n\t" ) ) )?;
+        f.write_fmt( format_args!( "  {}\n", self.out.replace( '\n', "\n  " ) ) )?;
       }
       if !self.err.trim().is_empty()
       {
-        f.write_fmt( format_args!( "\tpath: {}\n\t{}\n", self.path.display(), self.err.replace( '\n', "\n\t" ) ) )?;
+        f.write_fmt( format_args!( "  path: {}\n  {}\n", self.path.display(), self.err.replace( '\n', "\n  " ) ) )?;
       }
 
       Ok( () )

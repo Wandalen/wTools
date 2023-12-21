@@ -1,3 +1,6 @@
+//! Plotting of data series to png file.
+//! 
+
 use plotters::
 {
   backend::BitMapBackend,

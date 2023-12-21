@@ -1,7 +1,11 @@
+pub(crate) mod changer;
+
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  // use crate::protected::*;
+
+  use crate::abs::identity::private::{Id, HasIdInterface};
 
   /// Drawing.
   #[ derive( Debug, Clone ) ]
@@ -34,11 +38,11 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
 
   /// Draw changer.
-  layer changer;
+  // layer changer;
   /// ChangeInterface for drawing constructor.
   layer change_new;
   /// Draw command.

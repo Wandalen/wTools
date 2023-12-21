@@ -53,7 +53,7 @@ path = "tests/publisher/wpublisher_tests.rs"
 
 [[test]]
 name = "publisher_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+path = "tests/smoke_test.rs"
 
 [[example]]
 name = "wpublisher_trivial_sample"
@@ -62,6 +62,7 @@ path = "examples/wpublisher_trivial_sample/src/main.rs"
 [dependencies]
 wtools = { workspace = true }
 wca = { workspace = true }
+mod_interface = { workspace = true }
 anyhow = "~1.0"
 toml_edit = "~0.14"
 cargo_metadata = "~0.14"

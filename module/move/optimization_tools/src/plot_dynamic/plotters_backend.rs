@@ -1,3 +1,6 @@
+//! Contains piston_window backend for plotters crate.
+//! 
+
 use piston_window::context::Context;
 use piston_window::ellipse::circle;
 use piston_window::{ circle_arc, ellipse, line, rectangle, Event, Loop };

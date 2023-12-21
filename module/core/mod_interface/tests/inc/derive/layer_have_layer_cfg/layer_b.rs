@@ -39,7 +39,7 @@ pub struct SubStruct2
 
 //
 
-TheModule::mod_interface!
+mod_interface!
 {
 
   protected use layer_b_protected;

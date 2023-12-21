@@ -1,3 +1,6 @@
+//! Contains CellVal structure that corresponds to single digit on Sudoku field.
+//! 
+
 use derive_tools::Display;
 use derive_tools::{ Add, Sub, Mul, Div };
 
