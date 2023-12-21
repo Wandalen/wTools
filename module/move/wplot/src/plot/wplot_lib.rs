@@ -16,7 +16,9 @@
 
 // pub use ::wmath as math;
 // use ::wtools::prelude::*;
-use ::wtools::mod_interface;
+// use ::wtools::mod_interface;
+
+mod abs;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
@@ -28,18 +30,20 @@ pub mod dependency
   pub use ::rgb;
 }
 
-crate::mod_interface!
+// use mod_interface::mod_interface;
+
+::meta_tools::mod_interface!
 {
 
   /// Describe colors.
   #[ cfg( not( feature = "no_std" ) ) ]
   layer color;
-  /// Abstraction.
-  #[ cfg( not( feature = "no_std" ) ) ]
-  layer abs;
-  /// Concrete system.
-  #[ cfg( not( feature = "no_std" ) ) ]
-  layer sys;
+  // /// Abstraction.
+  // #[ cfg( not( feature = "no_std" ) ) ]
+  // layer abs;
+  // /// Concrete system.
+  // #[ cfg( not( feature = "no_std" ) ) ]
+  // layer sys;
 
   use super::math;
   protected use ::wmath as math;

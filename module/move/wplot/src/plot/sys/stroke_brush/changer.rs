@@ -5,7 +5,7 @@ pub( crate ) mod private
 
   /// ChangerInterface of brush stroke.
   #[ allow( dead_code ) ]
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Debug ) ]
   pub struct StrokeBrushChanger
   {
     pub( crate ) id : Id,
@@ -98,7 +98,7 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
   exposed use StrokeBrushChanger;
 }

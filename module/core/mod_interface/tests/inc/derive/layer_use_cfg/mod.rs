@@ -16,7 +16,7 @@ mod layer_a;
 /// layer_b
 mod layer_b;
 
-TheModule::mod_interface!
+mod_interface!
 {
 
   /// layer_a

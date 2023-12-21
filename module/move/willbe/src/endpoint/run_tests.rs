@@ -37,7 +37,7 @@ mod private
       
 			for (feature, result) in &self.tests 
 			{
-				f.write_fmt( format_args!( "\tFeature: [ {} ]:\n Tests status: {}\n", feature, result.out ) )?;
+				f.write_fmt( format_args!( "  Feature: [ {} ]:\n Tests status: {}\n", feature, result.out ) )?;
 			}
 			f.write_fmt( format_args!( "Compilation status:\n  {} ", self.compilation_status ) )?;
 			

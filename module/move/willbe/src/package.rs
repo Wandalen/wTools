@@ -260,8 +260,8 @@ mod private
         return Ok( () )
       }
 
-      let files = self.changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n\t\t" );
-      f.write_fmt( format_args!( "`{}` bumped to `{}`\n\tchanged files:\n\t\t{files}\n", self.package_name, self.new_version ) )?;
+      let files = self.changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
+      f.write_fmt( format_args!( "`{}` bumped to `{}`\n  changed files:\n    {files}\n", self.package_name, self.new_version ) )?;
 
       Ok( () )
     }
@@ -655,7 +655,7 @@ mod private
     {
       // unwraps is safe because the paths to the files was compared previously
       let local = local_package.content_bytes( path ).unwrap();
-      let remote = local_package.content_bytes( path ).unwrap();
+      let remote = remote_package.content_bytes( path ).unwrap();
 
       is_same &= local == remote;
     }

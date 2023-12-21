@@ -1,7 +1,7 @@
 
 use super::*;
 
-TheModule::mod_interface!
+mod_interface!
 {
   #![ debug ]
 

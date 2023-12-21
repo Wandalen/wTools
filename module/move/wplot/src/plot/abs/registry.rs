@@ -1,12 +1,16 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  // use crate::protected::*;
   // use crate::abs::*;
   use once_cell::sync::Lazy;
+  // use wtools::from;
   use std::sync::Mutex;
   use dashmap::DashMap;
   use std::sync::Arc;
+  use crate::abs::identity::private::Id;
+
+  use crate::abs::context::private::ContextInterface;
 
   /// Registry of contexts.
   #[ derive( Debug ) ]
@@ -58,10 +62,12 @@ pub( crate ) mod private
       }
       else
       {
-        let context : Context = from!();
-        let id = context.id();
-        registry.contexts_with_name.insert( current_name, context.id() );
-        registry.contexts.insert( id, context );
+        // let context : Context = from!();
+        // let id = context.id();
+        // registry.contexts_with_name.insert( current_name, context.id() );
+        // registry.contexts.insert( id, context );
+        // registry.contexts.get_mut( &id ).unwrap().value_mut().changer()
+        let id = *registry.contexts_with_name.get( &current_name ).unwrap().value();
         registry.contexts.get_mut( &id ).unwrap().value_mut().changer()
       }
     }
@@ -70,7 +76,7 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
 
   orphan use Registry;

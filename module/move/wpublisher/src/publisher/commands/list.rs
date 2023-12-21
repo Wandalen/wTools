@@ -4,7 +4,7 @@ pub( crate ) mod private
   use crate::protected::*;
   use std::env;
   use wca::{ Args, Props };
-  use wtools::error::BasicError;
+  use wca::wtools::error::BasicError;
 
   ///
   /// List packages.

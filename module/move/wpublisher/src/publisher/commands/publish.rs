@@ -11,7 +11,7 @@ pub( crate ) mod private
     process,
     path
   };
-  use wtools::error::Result;
+  use wca::wtools::error::Result;
   use std::
   {
     env,
