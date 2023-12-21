@@ -1,12 +1,17 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use crate::abs::registry::private::Registry;
   use crate::protected::*;
-  use crate::abs::*;
+  // use crate::abs::*;
 
   use once_cell::sync::Lazy;
   use std::sync::Mutex;
   use std::sync::Arc;
+  use crate::abs::identity::private::Id;
+  use crate::abs::identity::private::HasIdInterface;
+  use crate::sys::context_changer::private::ContextChanger;
+  use crate::sys::stroke_brush::private::StrokeBrush;
 
   /// Context.
   #[ derive( Debug, Clone ) ]

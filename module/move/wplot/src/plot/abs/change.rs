@@ -1,8 +1,10 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  // use crate::protected::*;
   use core::fmt;
+
+  use crate::abs::changer::private::ChangerInterface;
 
   /// Context.
   // #[ clone_dyn ]
@@ -27,7 +29,7 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
 
   prelude use ChangeInterface;
