@@ -1,7 +1,7 @@
 //! Contains implementation of Simplex optimization method.
 //! 
 
-use std::{ vec, collections::HashSet };
+use std::{ vec, collections::{HashSet, BinaryHeap} };
 use iter_tools::Itertools;
 //use ndarray;
 
@@ -67,14 +67,15 @@ impl Constraint
 }
 
 /// Extreme point of feasible region.
-#[ derive( Clone, Debug, PartialEq, PartialOrd ) ]
+#[ derive( Clone, Debug, PartialEq ) ]
 pub struct ExtremePoint
 {
-  problem_var_coeffs : Vec< f64 >,
+//   problem_var_coeffs : Vec< f64 >,
   /// Basic variables indices.
   bv : Vec< usize >,
   /// Extreme point coordinates.
   point : Vec< f64 >,
+  z : f64,
 }
 
 impl Eq for ExtremePoint {}
@@ -83,7 +84,7 @@ impl Default for ExtremePoint
 {
   fn default() -> Self 
   {
-    Self { problem_var_coeffs : Vec::new(), bv : Vec::new(), point : Vec::new() }
+    Self { bv : Vec::new(), point : Vec::new() , z : 0.0 }
   }
 }
 
@@ -96,16 +97,23 @@ impl ExtremePoint
     let mut point = vec![ 0.0; m ];
     for index in 1..= m
     {
-        if solution.bv.contains( &index )
-        {
+      if solution.bv.contains( &index )
+      {
         point[ index - 1 ] = solution.bv_values[ index - 1 ];
-        }
+      }
     }
+
+    let z = problem_coeffs
+    .iter()
+    .zip( &point )
+    .fold( 0.0, | sum, elem | sum + elem.0 * elem.1 )
+    ;
+
     Self
     {
-        bv : solution.bv,
-        point,
-        problem_var_coeffs : problem_coeffs,
+      bv : solution.bv,
+      point,
+      z,
     }
   }
   /// Checks if two extreme points is adjacent.
@@ -131,23 +139,20 @@ pub struct BasicSolution
   bv_values : Vec< f64 >,
 }
 
-impl Ord for ExtremePoint {
+impl PartialOrd for ExtremePoint 
+{
+  fn partial_cmp( &self, other : &Self ) -> Option< std::cmp::Ordering > 
+  {
+    Some( self.z.partial_cmp( &other.z ).unwrap() )
+  }
+}
+
+impl Ord for ExtremePoint 
+{
   fn cmp( &self, other : &Self ) -> std::cmp::Ordering
   {
-    let z = self.problem_var_coeffs
-    .iter()
-    .zip( self.point.clone() )
-    .fold( 0.0, | sum, elem | sum + elem.0 * elem.1 )
-    ;
-
-    let other_z = other.problem_var_coeffs
-    .iter()
-    .zip( other.point.clone() )
-    .fold( 0.0, | sum, elem | sum + elem.0 * elem.1 )
-    ;
-    z.total_cmp( &other_z )
+    self.z.partial_cmp( &other.z ).unwrap()
   }
-
 }
 
 /// Implementation of Simplex method solver.
@@ -241,7 +246,7 @@ impl SimplexSolver
 
     let mut result = result
     .into_iter()
-    .filter( |set| set.len() == basic_variables_number )
+    .filter( | set | set.len() == basic_variables_number )
     .collect_vec()
     ;
 
@@ -286,7 +291,7 @@ impl SimplexSolver
       //     let b = ndarray_linalg::Solve::solve_into(&m, b).unwrap();
       let lu = m.lu();
       
-      let mut v = p.constraints.iter().map(|c| c.value).collect::<Vec<_>>();
+      let v = p.constraints.iter().map(|c| c.value).collect::<Vec<_>>();
       //v.extend([0.0]);
       
       let const_m = nalgebra::DMatrix::from_vec( rows, 1, v );
@@ -316,44 +321,15 @@ impl SimplexSolver
   }
 
   /// Solves linear problem using Simplex method.
-  pub fn solve( &self, p : Problem ) -> ( ExtremePoint, f64 )
+  pub fn solve( &self, p : Problem ) -> ExtremePoint
   {
-    let m = p.constraints.len();
     let bfs = Self::basic_feasible_solutions( p.clone() );
 
     let extreme_points = bfs.into_iter().map( | s | ExtremePoint::new( s, p.var_coeffs.clone() ) ).collect::< Vec< ExtremePoint > >();
-    let mut max_point = extreme_points[ 0 ].clone();
+    let mut queue: std::collections::BinaryHeap<ExtremePoint> = extreme_points.into_iter().collect::< BinaryHeap< _ > >();
+    let max_point = queue.pop().unwrap();
 
-    let mut visited : Vec< ExtremePoint > = Vec::new();
-    visited.push( max_point.clone() );
-
-    let mut z = f64::MIN;
-
-    let mut queue = std::collections::BinaryHeap::new();
-    queue.push(max_point.clone() );
-    while let Some( ex_point ) = queue.pop()
-    {
-      let mut new_z = 0.0;
-      for i in 0..m
-      {
-        new_z += ex_point.problem_var_coeffs[ i ] * ex_point.point[ i ];
-      }
-      while let Some( point ) = extreme_points
-      .iter()
-      .find( | p | p.is_adjacent( &ex_point ) && !visited.contains( p ) )
-      .clone()
-      {
-        visited.push( point.clone() );
-        queue.push(point.clone());
-      }
-      if new_z > z 
-      {
-        z = new_z;
-        max_point = ex_point.clone();
-
-      }
-    }
-    ( max_point, z )
+    max_point
   }
 }
 
@@ -382,7 +358,7 @@ mod simplex_tests {
     assert_eq!( c.value, 4.0 );
 
     let solution = SimplexSolver{}.solve( p );
-    assert_eq!( solution.0.point, vec![ 3.0, 3.0 ] )
+    assert_eq!( solution.point, vec![ 3.0, 3.0 ] )
   }
 
   #[ test ]
@@ -402,7 +378,7 @@ mod simplex_tests {
     );
 
     let solution = SimplexSolver{}.solve( p );
-    assert_eq!( solution.0.point, vec![ 0.0, 0.0, 3.0 ] )
+    assert_eq!( solution.point, vec![ 0.0, 0.0, 3.0 ] )
   }
 
 }
