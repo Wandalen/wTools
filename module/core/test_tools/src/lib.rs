@@ -74,7 +74,7 @@ pub mod dependency
   // protected use super::dependency;
   protected use super::dependency::*;
 
-  prelude use ::rustversion::{ nightly, stable };
+  prelude use ::rustversion::{ nightly, stable, beta };
 
   prelude use ::meta_tools as meta;
   prelude use ::mem_tools as mem;

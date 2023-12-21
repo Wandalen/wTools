@@ -40,7 +40,7 @@ only_for_terminal_module!
 
   // stable have different information about error
   // that's why these tests are active only for nightly
-  #[ test_tools::nightly ]
+  #[ test_tools::beta ]
   #[ test ]
   fn trybuild_tests()
   {

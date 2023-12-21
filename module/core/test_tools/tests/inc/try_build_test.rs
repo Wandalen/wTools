@@ -3,7 +3,7 @@ use super::*;
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
-#[ ::test_tools::nightly ]
+#[ ::test_tools::beta ]
 #[ test ]
 fn trybuild_test()
 {

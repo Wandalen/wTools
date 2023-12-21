@@ -65,7 +65,7 @@ tests_impls!
 }
 
 #[ cfg( any( feature = "diagnostics_compiletime_assertions", feature = "diagnostics_compiletime_assertions" ) ) ]
-#[ test_tools::nightly ]
+#[ test_tools::beta ]
 #[ test ]
 fn cta_trybuild_tests()
 {

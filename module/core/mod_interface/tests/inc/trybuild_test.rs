@@ -10,7 +10,7 @@ use crate::only_for_terminal_module;
 
   // #[ cfg( module_mod_interface ) ]
   // #[ cfg( module_is_terminal ) ]
-  #[ test_tools::nightly ]
+  #[ test_tools::beta ]
   // #[ cfg( RUSTC_IS_NIGHTLY ) ]
   tests_impls!
   {
@@ -64,7 +64,7 @@ use crate::only_for_terminal_module;
   // #[ cfg( module_mod_interface ) ]
   // #[ cfg( module_is_terminal ) ]
   // #[ cfg( RUSTC_IS_NIGHTLY ) ]
-  #[ test_tools::nightly ]
+  #[ test_tools::beta ]
   tests_index!
   {
     trybuild_tests,
