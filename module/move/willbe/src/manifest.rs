@@ -3,8 +3,9 @@ pub( crate ) mod private
 {
   use crate::*;
   use std::io::Read;
-use std::{ fs, process, path::PathBuf };
+  use std::{ fs, process, path::PathBuf };
   use std::path::Path;
+  use error_tools::for_lib::Error;
   use wtools::error;
   use wtools::error::for_app::{ anyhow, Context };
   use path::AbsolutePath;
@@ -41,6 +42,14 @@ use std::{ fs, process, path::PathBuf };
   /// Hold manifest data.
   ///
 
+  #[ derive( Debug, Error ) ]
+  pub enum  ManifestError
+  {
+    #[ error( "Manifest data not loaded." ) ]
+    EmptyManifestData,
+    #[ error( "Cannot find tag {0} in toml file." ) ]
+    CannotFindValue(String),
+  }
   #[ derive( Debug, Clone ) ]
   pub struct Manifest
   {
@@ -143,16 +152,16 @@ use std::{ fs, process, path::PathBuf };
 
     /// Check that module is local.
     /// The package is defined as local if the `publish` field is set to `false' or the registers are specified.
-    pub fn local_is( &self ) -> bool
+    pub fn local_is( &self ) -> Result<bool, ManifestError>
     {
-      let data = self.manifest_data.as_ref().unwrap();
+      let data = self.manifest_data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
       if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
       {
         let remote = data[ "package" ].get( "publish" ).is_none()
-                     || data[ "package" ][ "publish" ].as_bool().unwrap();
-        return !remote;
+                     || data[ "package" ][ "publish" ].as_bool().ok_or_else( || ManifestError::CannotFindValue( "[package], [publish]".into() ) )?;
+        return Ok(!remote);
       }
-      true
+      Ok(true)
     }
   }
 
@@ -213,6 +222,7 @@ crate::mod_interface!
 {
   orphan use Manifest;
   orphan use CrateDir;
+  orphan use ManifestError;
   protected use open;
   protected use repo_url;
 }

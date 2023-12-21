@@ -17,6 +17,7 @@ mod private
   use manifest::Manifest;
   use { cargo, git, version, path, wtools };
   use crates_tools::CrateArchive;
+  use error_tools::for_lib::Error;
   use wca::wtools::Itertools; // qqq : use wtools::...!
   use wtools::error::for_app::{ anyhow, Error, Context };
   use workspace::Workspace;
@@ -30,6 +31,17 @@ mod private
     Manifest( Manifest ),
     /// Cargo metadata package.
     Metadata( PackageMetadata ),
+  }
+
+  #[ derive( Debug, Error ) ]
+  pub enum PackageError
+  {
+    #[ error( "Manifest error. Reason: {0}" ) ]
+    Manifest(ManifestError),
+    #[ error( "Fail to load metadata" ) ]
+    Metadata,
+    #[ error( "Fail to load remote package" ) ]
+    LoadRemotePackage,
   }
 
   impl TryFrom< AbsolutePath > for Package
@@ -102,43 +114,49 @@ mod private
     }
 
     /// Package name
-    pub fn name( &self ) -> String
+    pub fn name( &self ) -> Result< String, PackageError >
     {
       match self
       {
         Self::Manifest( manifest ) =>
         {
-          let data = manifest.manifest_data.as_ref().unwrap();
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
 
-          data[ "package" ][ "name" ].as_str().unwrap().to_string()
+          data["package"]["name"]
+          .as_str()
+          .ok_or_else( || PackageError::Manifest( ManifestError::CannotFindValue(" [package], [name]".into() ) ) )
+          .map( | r | r.to_string() )
         }
         Self::Metadata( metadata ) =>
         {
-          metadata.name.clone()
+          Ok(metadata.name.clone())
         }
       }
     }
 
     /// Package version
-    pub fn version( &self ) -> String
+    pub fn version( &self ) -> Result< String, PackageError >
     {
       match self
       {
         Self::Manifest( manifest ) =>
         {
-          let data = manifest.manifest_data.as_ref().unwrap();
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
 
-          data[ "package" ][ "version" ].as_str().unwrap().to_string()
+          data["package"]["version"]
+          .as_str()
+          .ok_or_else( || PackageError::Manifest( ManifestError::CannotFindValue(" [package], [name]".into() ) ) )
+          .map( | r | r.to_string() )
         }
         Self::Metadata( metadata ) =>
         {
-          metadata.version.to_string()
+          Ok( metadata.version.to_string() )
         }
       }
     }
 
     /// Check that module is local.
-    pub fn local_is( &self ) -> bool
+    pub fn local_is( &self ) -> Result<bool, ManifestError>
     {
       match self
       {
@@ -148,28 +166,32 @@ mod private
         }
         Self::Metadata( metadata ) =>
         {
-          metadata.publish.is_none() || metadata.publish.as_ref().is_some_and( | p | p.is_empty() )
+          Ok( metadata.publish.is_none() || metadata.publish.as_ref().is_some_and( | p | p.is_empty() ) )
         }
       }
     }
 
     /// Returns the `Manifest`
-    pub fn manifest( &self ) -> Manifest
+    pub fn manifest( &self ) -> Result< Manifest, PackageError >
     {
       match self
       {
-        Package::Manifest( manifest ) => manifest.clone(),
-        Package::Metadata( metadata ) => manifest::open( metadata.manifest_path.as_std_path() ).unwrap(),
+        Package::Manifest( manifest ) => Ok(manifest.clone()),
+        Package::Metadata( metadata ) => manifest::open( metadata.manifest_path.as_std_path() ).map_err( | err | PackageError::Metadata ),
       }
     }
 
     /// Returns the `Metadata`
-    pub fn metadata( &self ) -> PackageMetadata
+    pub fn metadata( &self ) -> Result< PackageMetadata, PackageError >
     {
       match self
       {
-        Package::Manifest( manifest ) => Workspace::with_crate_dir( manifest.crate_dir() ).package_find_by_manifest( &manifest.manifest_path ).unwrap().clone(),
-        Package::Metadata( metadata ) => metadata.clone(),
+        Package::Manifest( manifest ) =>
+        Workspace::with_crate_dir( manifest.crate_dir() )
+        .package_find_by_manifest( &manifest.manifest_path )
+        .ok_or_else( || PackageError::Metadata )
+        .cloned(),
+        Package::Metadata( metadata ) => Ok( metadata.clone() ),
       }
     }
   }
@@ -283,7 +305,7 @@ mod private
   pub fn publish_single( package : &Package, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
-    if package.local_is()
+    if package.local_is().map_err( | err | ( report.clone(), anyhow!( err ) ) )?
     {
       return Ok( report );
     }
@@ -302,11 +324,12 @@ mod private
       report.publish_required = true;
 
       let mut files_changed_for_bump = vec![];
+      let mut manifest = package.manifest().map_err( | err | ( report.clone(), anyhow!( err ) ) )?;
       // bump version in the package manifest
-      let new_version = version::bump( &mut package.manifest(), dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+      let new_version = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
       files_changed_for_bump.push( package.manifest_path() );
 
-      let package_name = package.name();
+      let package_name = package.name().map_err( | err | ( report.clone(), anyhow!( err ) ) )?;
 
       // bump the package version in dependents(so far, only workspace)
       let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( package.crate_dir() ).workspace_root().try_into().unwrap();
@@ -316,7 +339,7 @@ mod private
       if !dry
       {
         let mut workspace_manifest = manifest::open( workspace_manifest_path.as_ref() ).map_err( | e | ( report.clone(), e ) )?;
-        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().unwrap();
+        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().ok_or_else( || ( report.clone(), anyhow!( PackageError::Manifest( ManifestError::EmptyManifestData ) ) ) )?;
         workspace_manifest_data
         .get_mut( "workspace" )
         .and_then( | workspace | workspace.get_mut( "dependencies" ) )
@@ -325,14 +348,16 @@ mod private
         (
           | dependency |
             {
-              let previous_version = dependency.get( "version" ).and_then( | v | v.as_str() ).unwrap().to_string();
-              if previous_version.starts_with( '~' )
+              if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
               {
-                dependency[ "version" ] = value( format!( "~{new_version}" ) );
+                if previous_version.starts_with('~')
+                {
+                  dependency["version"] = value(format!("~{new_version}"));
+                }
               }
             }
         );
-        workspace_manifest.store().unwrap();
+        workspace_manifest.store().map_err( | err | ( report.clone(), err ) )?;
       }
 
       files_changed_for_bump.push( workspace_manifest_path );
@@ -622,7 +647,7 @@ mod private
   ///
   /// Panics if the manifest is not loaded or local package is not packed.
 
-  pub fn publish_need( package : &Package ) -> bool
+  pub fn publish_need( package : &Package ) -> Result< bool, PackageError >
   {
     // These files are ignored because they can be safely changed without affecting functionality
     //
@@ -630,8 +655,8 @@ mod private
     // - `Cargo.toml.orig` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
     const IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml.orig" ];
 
-    let name = package.name();
-    let version = package.version();
+    let name = package.name()?;
+    let version = package.version()?;
     let local_package_path = local_path( &name, &version, package.crate_dir() );
 
     // qqq : for Bohdan : bad, properly handle errors
@@ -640,15 +665,16 @@ mod private
     {
       Ok( archive ) => archive,
       // qqq: fix. we don't have to know about the http status code
-      Err( ureq::Error::Status( 403, _ ) ) => return true,
-      _ => /* return an error */ panic!( "Failed to load remote package" ),
+      Err( ureq::Error::Status( 403, _ ) ) => return Ok( true ),
+      // _ => /* return an error */ panic!( "Failed to load remote package" ),
+      _ => return Err( PackageError::LoadRemotePackage ),
     };
 
     let filter_ignore_list = | p : &&Path | !IGNORE_LIST.contains( &p.file_name().unwrap().to_string_lossy().as_ref() );
     let local_package_files : Vec< _ > = local_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
     let remote_package_files : Vec< _ > = remote_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
 
-    if local_package_files != remote_package_files { return true; }
+    if local_package_files != remote_package_files { return Ok( true ); }
 
     let mut is_same = true;
     for path in local_package_files
@@ -660,7 +686,7 @@ mod private
       is_same &= local == remote;
     }
 
-    !is_same
+    Ok( !is_same )
   }
 
 }
@@ -676,6 +702,7 @@ crate::mod_interface!
   protected use local_path;
   protected use PackageName;
   protected use Package;
+  protected use PackageError
 
   protected use FilterMapOptions;
   protected use packages_filter_map;
@@ -685,5 +712,4 @@ crate::mod_interface!
   protected use DependenciesSort;
   protected use DependenciesOptions;
   protected use dependencies;
-
 }
