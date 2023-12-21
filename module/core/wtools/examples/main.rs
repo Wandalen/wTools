@@ -2,7 +2,7 @@
 
 // #[ cfg( feature = "typing" ) ]
 // use wtools::*;
-#[ cfg( feature = "typing_implements" ) ]
+#[ cfg( any( feature = "typing_implements", feature = "typing") ) ]
 use wtools::implements;
 
 fn main()

@@ -18,7 +18,9 @@
 // #[ allow( unused_imports ) ]
 // pub use wca::instruction;
 
-wtools::mod_interface!
+use mod_interface::mod_interface;
+
+mod_interface!
 {
   /// Library of utility to operate packages from a command line.
   #[ cfg( not( feature = "no_std" ) ) ]

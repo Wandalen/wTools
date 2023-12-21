@@ -19,7 +19,7 @@ pub struct SuperStruct1
 {
 }
 
-TheModule::mod_interface!
+mod_interface!
 {
 
   /// layer_a

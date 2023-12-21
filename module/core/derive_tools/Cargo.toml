@@ -162,7 +162,7 @@ strum_phf = [ "strum/std", "strum/phf", "strum/strum_macros" ]
 
 derive_clone_dyn = [ "clone_dyn" ]
 # derive_clone_dyn_use_std = [ "derive_clone_dyn", "clone_dyn/use_std" ]
-derive_clone_dyn_no_std = [ "derive_clone_dyn", "clone_dyn/no_std" ]
+# derive_clone_dyn_no_std = [ "derive_clone_dyn", "clone_dyn/no_std" ]
 derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
 
 [dependencies]

@@ -1,11 +1,14 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  // use crate::protected::*;
+
+  use crate::{abs::{identity::private::{Id, HasIdInterface}, changer::private::ChangerInterface}, ContextChanger, sys::drawing::{rect_changer::private::RectChanger, change_new::private::DrawingChangeNew}};
+  use crate::abs::change::private::ChangeInterface;
 
   /// ChangerInterface of brush stroke.
   #[ allow( dead_code ) ]
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Debug ) ]
   pub struct DrawChanger
   {
     pub( crate ) id : Id,
@@ -75,7 +78,7 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
   exposed use DrawChanger;
 }

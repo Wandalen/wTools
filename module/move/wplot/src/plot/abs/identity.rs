@@ -1,10 +1,10 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  // use crate::protected::*;
   use once_cell::sync::Lazy;
   use std::sync::Mutex;
-  use core::hash::Hash;
+  use core::{hash::Hash, fmt};
   // use core::any::TypeId;
 
   static mut COUNTER : Lazy< Mutex< i64 > > = Lazy::new( ||
@@ -77,7 +77,7 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
 
   exposed use Id;

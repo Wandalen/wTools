@@ -1,7 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  // use crate::protected::*;
+  use crate::abs::{change::private::ChangeInterface, identity::private::Id};
 
   /// ChangerInterface of brush stroke.
   #[ allow( dead_code ) ]
@@ -26,7 +27,7 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
   exposed use DrawingChangeNew;
 }

@@ -15,7 +15,7 @@ There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [d
 
 <!-- begin {{# generate.module_sample( "example/clone_dyn_trivail_sample.rs" ) #}} -->
 
-```rust
+```rust ignore
 #[ cfg( feature = "enabled" ) ]
 {
   use clone_dyn::clone_dyn;

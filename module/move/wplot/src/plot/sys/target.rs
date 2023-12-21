@@ -7,7 +7,7 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
   // exposed use StrokeBrush;
 }

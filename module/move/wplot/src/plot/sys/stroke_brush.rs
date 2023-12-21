@@ -1,7 +1,12 @@
+mod change_width;
+mod change_new;
+
 /// Internal namespace.
 pub( crate ) mod private
 {
   use crate::protected::*;
+  use crate::abs::identity::private::Id;
+  use crate::abs::identity::private::HasIdInterface;
 
   /// StrokeBrush.
   #[ derive( Debug, Clone ) ]
@@ -63,17 +68,17 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
-{
-  exposed use StrokeBrush;
+// ::meta_tools::mod_interface!
+// {
+//   exposed use StrokeBrush;
 
-  /// ChangerInterface of brush stroke.
-  layer changer;
-  /// ChangeInterface of brush stroke constructor.
-  layer change_new;
-  /// ChangeInterface of brush stroke to change color.
-  layer change_color;
-  /// ChangeInterface of brush stroke to change width.
-  layer change_width;
+//   /// ChangerInterface of brush stroke.
+//   layer changer;
+//   /// ChangeInterface of brush stroke constructor.
+//   layer change_new;
+//   /// ChangeInterface of brush stroke to change color.
+//   layer change_color;
+//   /// ChangeInterface of brush stroke to change width.
+//   layer change_width;
 
-}
+// }

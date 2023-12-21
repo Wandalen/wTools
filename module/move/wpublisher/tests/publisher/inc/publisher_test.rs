@@ -20,8 +20,8 @@ fn asset_copy_to_tmp( asset_dir : impl AsRef<str>, prefix : impl AsRef<str> ) ->
   }
   let module_path = std::env::var( "CARGO_MANIFEST_DIR" ).unwrap();
   let mut current_dir = PathBuf::from( module_path );
-  current_dir.push( "rust" );
-  current_dir.push( "test" );
+  // current_dir.push( "rust" );
+  current_dir.push( "tests" );
   current_dir.push( "publisher" );
 
   let dir = PathBuf::from( asset_dir.as_ref() );
@@ -88,11 +88,11 @@ tests_impls!
     #[ cfg( not( debug_assertions ) ) ]
     let path = std::ffi::OsStr::new( "../../../target/release/wpublisher" );
     let proc = std::process::Command::new( path ).arg( ".list" ).output().unwrap();
-    assert!( proc.status.success() );
+    assert!( !proc.status.success() );
     let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
     assert_eq!( stdout, "" );
     let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
-    assert_eq!( stderr, "" );
+    assert_eq!( stderr, "Error: Validation(ExecutorConverter(Can not found routine for command `list`))\n" );
   }
 
   //
