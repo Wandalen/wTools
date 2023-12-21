@@ -135,7 +135,7 @@ impl ExtremePoint
     {
       if solution.bv.contains( &index )
       {
-        point[ index - 1 ] = solution.bv_values[ index - 1 ];
+        point[ index - 1 ] = solution.bv_values[ solution.bv.iter().position( | a | *a == index ).unwrap() ];
       }
     }
 
@@ -256,6 +256,7 @@ impl SimplexSolver
     for ( index, bs ) in bs.iter_mut().enumerate()
     {
       bs.bv = final_result[ index ].clone().iter().map( | elem | *elem ).collect_vec();
+      bs.bv.sort();
     }
 
     for basic_solution in bs.iter_mut() 
@@ -267,22 +268,23 @@ impl SimplexSolver
     }
     for basic_solution in bs.iter_mut() 
     {
-      let mut vec_of_coeffs = Vec::new();
+      let rows = basic_solution.nbv.len();
+      let columns = basic_solution.bv.len();
+      let mut vec_of_coeffs = vec![ 0.0; rows * columns ];
         
-      for bv in basic_solution.bv.iter() 
+      for ( index, bv ) in basic_solution.bv.iter().enumerate() 
       {
         for i in 0..p.constraints.len() 
         {
-          vec_of_coeffs.push( p.constraints[ i ].coefs[ bv - 1 ] );
+          vec_of_coeffs[ i * columns + index ] = p.constraints[ i ].coefs[ bv - 1 ];
         }
       }
-      let rows = basic_solution.nbv.len();
-      let columns = basic_solution.bv.len();
+
       
       let v = p.constraints.iter().map(|c| c.value).collect::<Vec<_>>();
 
       let m1: ndarray::Array2<f64> = ndarray::Array2::from_shape_vec((rows, columns), vec_of_coeffs).unwrap();
-      let mut b : ndarray::Array1<f64> = ndarray::ArrayBase::from_vec(v.clone());
+      let b : ndarray::Array1<f64> = ndarray::ArrayBase::from_vec(v.clone());
 
       let b = ndarray_linalg::Solve::solve_into(&m1, b);
 
