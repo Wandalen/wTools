@@ -284,25 +284,18 @@ impl SimplexSolver
       }
       let rows = basic_solution.nbv.len();
       let columns = basic_solution.bv.len();
-      //vec_of_coeffs.extend([0.0,0.0,0.0]);
-      let m = nalgebra::DMatrix::from_vec( rows, columns, vec_of_coeffs );
-      //let m: ndarray::Array2<f64> = ndarray::Array2::from_shape_vec((p.constraints.len(), p.var_coeffs.len()), vec_of_coeffs).unwrap();
-      //   let mut b : ndarray::Array1<f64> = ndarray::ArrayBase::from_vec(p.constraints.iter().map(|c| c.value).collect::<Vec<_>>());
-      //     let b = ndarray_linalg::Solve::solve_into(&m, b).unwrap();
-      let lu = m.lu();
       
       let v = p.constraints.iter().map(|c| c.value).collect::<Vec<_>>();
-      //v.extend([0.0]);
-      
-      let const_m = nalgebra::DMatrix::from_vec( rows, 1, v );
-      let some_solution = lu.solve( &const_m );
-      //let solutions = m.try_inverse().unwrap() * const_m;
 
-      if let Some( solution ) = some_solution
+      let m1: ndarray::Array2<f64> = ndarray::Array2::from_shape_vec((rows, columns), vec_of_coeffs).unwrap();
+      let mut b : ndarray::Array1<f64> = ndarray::ArrayBase::from_vec(v.clone());
+
+      let b = ndarray_linalg::Solve::solve_into(&m1, b);
+
+      if let Ok( solution ) = b
       {
         basic_solution.bv_values = solution.iter().map( | a | *a ).collect_vec();
       }
-      
     }
 
     bs.into_iter().filter_map( | b_s | 
@@ -324,7 +317,6 @@ impl SimplexSolver
   pub fn solve( &self, p : Problem ) -> ExtremePoint
   {
     let bfs = Self::basic_feasible_solutions( p.clone() );
-
     let extreme_points = bfs.into_iter().map( | s | ExtremePoint::new( s, p.var_coeffs.clone() ) ).collect::< Vec< ExtremePoint > >();
     let mut queue: std::collections::BinaryHeap<ExtremePoint> = extreme_points.into_iter().collect::< BinaryHeap< _ > >();
     let max_point = queue.pop().unwrap();
