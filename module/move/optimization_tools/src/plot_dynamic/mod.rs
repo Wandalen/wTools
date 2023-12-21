@@ -1,3 +1,6 @@
+//! Dynamic plotting of data series.
+//! 
+
 use plotters::
 {
   drawing::IntoDrawingArea,
