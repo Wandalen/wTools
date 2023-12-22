@@ -146,8 +146,9 @@ impl Board
   }
 
   /// Randomly fills empty positions in sudoku board.
-  pub fn fill_missing_randomly( &mut self, hrng : Hrng ) -> &mut Self
+  pub fn fill_missing_randomly( &self, hrng : Hrng ) -> Self
   {
+    let mut filled_board = self.clone();
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
 
@@ -158,10 +159,10 @@ impl Board
       let mut missing_vals : Vec< CellVal > = missing_vals.into_iter().if_determinism_then_sort().collect();
       missing_vals.shuffle( &mut *rng );
       let mut missing_val = missing_vals.into_iter();
-      let cells = self.block_cells( block );
+      let cells = filled_board.block_cells( block );
       cells.for_each( | cell_index |
       {
-        let cell_val = &mut self.storage[ usize::from( cell_index ) ];
+        let cell_val = &mut filled_board.storage[ usize::from( cell_index ) ];
         if *cell_val != 0.into()
         {
           return;
@@ -169,7 +170,7 @@ impl Board
         *cell_val = missing_val.next().unwrap();
       });
     }
-    self
+    filled_board
   }
 
   /// Calculates number of errors in column and row that given cell position belongs to.
@@ -178,6 +179,35 @@ impl Board
     let mut error : usize = 0;
     error += 9 - self.col( index.col() as usize ).filter( | &e | e != 0.into() ).unique().count();
     error += 9 - self.row( index.row() as usize ).filter( | &e | e != 0.into() ).unique().count();
+    error
+  }
+
+  /// Calculates number of errors in column and row that given cell position belongs to.
+  pub fn cross_error_for_value( &self, index : CellIndex, value : CellVal ) -> usize
+  {
+    let mut error : usize = 0;
+    error += 9 - self
+    .col( index.col() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into() && i != index.row() as usize
+      {
+        Some( e )
+      } else { None } 
+    }).chain([value].into_iter()).unique().count();
+    let mut error : usize = 0;
+    error += 9 - self
+    .row( index.row() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into() && i != index.col() as usize
+      {
+        Some( e )
+      } else { None } 
+    }).chain([value].into_iter()).unique().count();
+    
     error
   }
 

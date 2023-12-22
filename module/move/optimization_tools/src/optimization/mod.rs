@@ -197,48 +197,57 @@ pub enum Reason
 }
 
 /// Represents state of sudoku board filled with random digits and the number of the errors of the board as the cost.
-#[ derive( PartialEq, Eq, Clone, Debug ) ]
-pub struct SudokuPerson
+#[ derive( PartialEq, Eq, Debug ) ]
+pub struct SudokuPerson< 'board >
 {
   /// Sudoku board.
-  pub board : Board,
+  pub board : &'board mut Board,
   /// Number of errors in sudoku board.
   pub cost : SudokuCost,
 }
 
-impl SudokuPerson
+// impl Clone for SudokuPerson
+// {
+//     fn clone( &self ) -> Self 
+//     {
+//         Self { board: self.board.clone(), cost: self.cost.clone() }
+//     }
+// }
+
+impl< 'board > SudokuPerson< 'board >
 {
   /// Create new SudokuPerson from initial configuration of sudoku board.
-  pub fn new( initial : &SudokuInitial ) -> Self
+  pub fn new( initial : &'board mut Board ) -> Self
   {
-    let mut board = initial.board.clone();
-    board.fill_missing_randomly( initial.hrng.clone() );
-    let cost : SudokuCost = board.total_error().into();
-    SudokuPerson { board, cost }
+    //let mut board = initial.board.clone();
+    //board.fill_missing_randomly( initial.hrng.clone() );
+    let cost : SudokuCost = initial.total_error().into();
+    SudokuPerson { board : initial, cost }
   }
 
   /// Change state of the board by applying provided mutagen to current sudoku board.
-  pub fn mutate( &self, _initial : &SudokuInitial, mutagen : &SudokuMutagen ) -> Self
+  pub fn mutate( &mut self, mutagen : &SudokuMutagen )
   {
-    let mut new = self.clone();
+    let old_cross_error = self.board.cross_error( mutagen.cell1 )
+      + self.board.cross_error( mutagen.cell2 );
+    
+    //let mut new = self.clone();
     log::trace!( "cells_swap( {:?}, {:?} )", mutagen.cell1, mutagen.cell2 );
-    new.board.cells_swap( mutagen.cell1, mutagen.cell2 );
-    new.cost -= self.board.cross_error( mutagen.cell1 ).into();
-    new.cost -= self.board.cross_error( mutagen.cell2 ).into();
-    new.cost += new.board.cross_error( mutagen.cell1 ).into();
-    new.cost += new.board.cross_error( mutagen.cell2 ).into();
-    new
+    self.board.cells_swap( mutagen.cell1, mutagen.cell2 );
+    self.cost -= old_cross_error.into();
+    self.cost += self.board.cross_error( mutagen.cell1 ).into();
+    self.cost += self.board.cross_error( mutagen.cell2 ).into();
   }
 
   /// Create random mutagen and apply it current board.
-  pub fn mutate_random( &self, initial : &SudokuInitial, hrng : Hrng ) -> Self
+  pub fn mutate_random( &mut self, initial : &Board, hrng : Hrng )
   {
-    let mutagen = self.mutagen( initial, hrng );
-    self.mutate( &initial, &mutagen.into() )
+    let mutagen = self.mutagen( &initial, hrng );
+    self.mutate(  &mutagen.into() );
   }
 
   /// Create new SudokuMutagen as random cells pair in random sudoku block in current board.
-  pub fn mutagen( &self, initial : &SudokuInitial, hrng : Hrng ) -> SudokuMutagen
+  pub fn mutagen( &self, initial : &Board, hrng : Hrng ) -> SudokuMutagen
   {
     let mutagen;
     loop 
@@ -247,7 +256,7 @@ impl SudokuPerson
       let mut rng = rng_ref.lock().unwrap();
       let block : BlockIndex = rng.gen();
       drop( rng );
-      if let Some( m ) = cells_pair_random_in_block( &initial.board, block, hrng.clone() )
+      if let Some( m ) = cells_pair_random_in_block( &initial, block, hrng.clone() )
       {
         mutagen = m;
         break;
@@ -275,20 +284,9 @@ pub struct SudokuInitial
 {
   /// Initial state of sudoku board with fixed values.
   pub board : Board,
-  /// Seed for random numbers generator.
-  pub seed : Seed,
-  /// Random numbers generator used for creating new state of SA.
-  pub hrng : Hrng,
-  /// Max amount of mutations in generation.
-  pub n_mutations_per_generation_limit : usize,
-  /// Max allowed number of resets.
-  pub n_resets_limit : usize,
-  /// Max number of generations created during SA process.
-  pub n_generations_limit : usize,
-  /// Coefficient for lowering SA temperature.
-  pub temperature_decrease_factor : TemperatureFactor,
-  /// Coefficient for increasing SA temperature during reset.
-  pub temperature_increase_factor : TemperatureFactor,
+  /// Initial state of sudoku filled board.
+  pub full_board : Board,
+  pub config : InitialConfig,
 }
 
 // impl Default for SudokuInitial
@@ -302,6 +300,25 @@ pub struct SudokuInitial
 //   }
 // }
 
+#[derive(Clone,Debug)]
+pub struct InitialConfig
+{
+    /// Seed for random numbers generator.
+    pub seed : Seed,
+    /// Random numbers generator used for creating new state of SA.
+    pub hrng : Hrng,
+    /// Max amount of mutations in generation.
+    pub n_mutations_per_generation_limit : usize,
+    /// Max allowed number of resets.
+    pub n_resets_limit : usize,
+    /// Max number of generations created during SA process.
+    pub n_generations_limit : usize,
+    /// Coefficient for lowering SA temperature.
+    pub temperature_decrease_factor : TemperatureFactor,
+    /// Coefficient for increasing SA temperature during reset.
+    pub temperature_increase_factor : TemperatureFactor,
+}
+
 impl SudokuInitial
 {
   /// Create new initial state for SA.
@@ -313,56 +330,65 @@ impl SudokuInitial
     let n_mutations_per_generation_limit = 2_000; // xxx
     let n_resets_limit = 1_000; // xxx
     let n_generations_limit = 1_000_000;
+    let full_board = board.fill_missing_randomly(hrng.clone());
     Self
     {
       board,
-      seed,
-      hrng,
-      n_mutations_per_generation_limit,
-      n_resets_limit,
-      n_generations_limit,
-      temperature_decrease_factor,
-      temperature_increase_factor,
+      full_board,
+      config : InitialConfig
+      {
+        seed,
+        hrng,
+        n_mutations_per_generation_limit,
+        n_resets_limit,
+        n_generations_limit,
+        temperature_decrease_factor,
+        temperature_increase_factor,
+      }
     }
   }
 
   /// Create the initial generation for the simulated annealing algorithm.
-  pub fn initial_generation< 'initial >( &'initial self ) -> SudokuGeneration < 'initial >
+  pub fn initial_generation< 'initial >( config : &'initial InitialConfig, initial_board : &'initial Board, board : &'initial mut Board ) -> SudokuGeneration < 'initial >
   {
-    let person = SudokuPerson::new( self );
-    let temperature = self.initial_temperature();
-    let hrng = self.hrng.clone();
+    
+    let temperature = Self::initial_temperature(initial_board, config.hrng.clone());
+    let hrng = config.hrng.clone();
     let n_resets = 0;
     let n_generation = 0;
-    SudokuGeneration { initial : self, hrng, person, temperature, n_resets, n_generation }
+    let person = SudokuPerson::new( board );
+    SudokuGeneration { initial : config.clone(), initial_board, hrng, person, temperature, n_resets, n_generation }
   }
 
   /// Calculate the initial temperature for the optimization process.
-  pub fn initial_temperature( &self ) -> Temperature
+  /// initial_board + hrng
+  pub fn initial_temperature( initial_board: &Board, hrng : Hrng ) -> Temperature
   {
     use statrs::statistics::Statistics;
-    let state = SudokuPerson::new( self );
+    let mut temp_board = initial_board.fill_missing_randomly(hrng.clone());
+    
     const N : usize = 16;
     let mut costs : [ f64 ; N ] = [ 0.0 ; N ];
     for i in 0..N
     {
-      let state2 = state.mutate_random( self, self.hrng.clone() );
-      costs[ i ] = state2.cost.into();
+      let mut state = SudokuPerson::new( &mut temp_board );
+      state.mutate_random( initial_board, hrng.clone() );
+      costs[ i ] = state.cost.into();
     }
     costs[..].std_dev().into()
   }
 
   /// Main loop for solving sudoku with simulated annealing. Returns reason that inidicates why loop exited and solved sudoku if optimization was successful.
-  pub fn solve_with_sa( &self ) -> ( Reason, Option< SudokuGeneration < '_ > > )
+  pub fn solve_with_sa( &mut self ) -> ( Reason, Option< SudokuGeneration < '_ > > )
   {
-    let mut generation = self.initial_generation();
+    let mut generation = Self::initial_generation(&self.config, &self.board, &mut self.full_board);
     // let mut n_generation : usize = 0;
 
     // xxx : optimize, make sure it use not more than 2 enitties of generation
     loop
     {
       // n_generation += 1;
-      if generation.n_generation > self.n_generations_limit
+      if generation.n_generation > self.config.n_generations_limit
       {
         return ( Reason::GenerationLimit, None );
       }
@@ -372,13 +398,12 @@ impl SudokuInitial
       // log::trace!( "\n= n_generation : {n_generation}\n" );
       // println!( "max_level : {}", log::max_level() );
 
-
-      let ( reason, generation2 ) = generation.mutate( generation.hrng.clone() );
-      if generation2.is_none()
+      let ( reason ) = generation.mutate( generation.hrng.clone() );
+      if reason != Reason::NotFinished
       {
         return ( reason, None );
       }
-      let generation2 = generation2.unwrap();
+      // let generation2 = generation2.unwrap();
 
       //plotting
       // #[ cfg( feature="static_plot" ) ]
@@ -437,27 +462,28 @@ impl SudokuInitial
       //   plot( options );
       // }
 
-      if generation2.is_good_enough()
+      if generation.is_good_enough()
       {
-        return ( Reason::GoodEnough, Some( generation2 ) );
+        return ( Reason::GoodEnough, Some( generation ) );
       }
 
-      generation = generation2;
+      //generation = generation2;
     }
   }
 
 }
 
 /// Represents a state in the Simulated Annealing optimization process for solving Sudoku.
-#[ derive( Clone, Debug ) ]
+#[ derive( Debug ) ]
 pub struct SudokuGeneration< 'a >
 {
   /// Initial configuration of the Sudoku puzzle.
-  initial : &'a SudokuInitial,
+  initial : InitialConfig,
+  initial_board : &'a Board,
   /// Random number generator for generating new state.
   hrng : Hrng,
   /// Current state of sudoku board.
-  pub person : SudokuPerson,
+  pub person : SudokuPerson< 'a >,
   /// Current temperature in the optimization process.
   temperature : Temperature,
   /// Number of resets performed.
@@ -469,45 +495,60 @@ pub struct SudokuGeneration< 'a >
 impl< 'a > SudokuGeneration< 'a >
 {
   /// Performs single iteration of optimization process, returns a tuple containing the reason to stop or continue optimization process and the new Sudoku generation if successful.
-  pub fn mutate( &self, hrng : Hrng ) -> ( Reason, Option< Self > )
+  pub fn mutate( &mut self, hrng : Hrng ) -> ( Reason )
   {
-    let initial = self.initial;
+    let initial_config = &self.initial;
+    let initial_board = self.initial_board;
     let mut temperature = self.temperature;
     let mut n_mutations : usize = 0;
     let mut n_resets : usize = self.n_resets;
 
-    let person = loop
+    loop
     {
 
-      if n_mutations > initial.n_mutations_per_generation_limit
+      if n_mutations > initial_config.n_mutations_per_generation_limit
       {
         n_resets += 1;
-        if n_resets >= initial.n_resets_limit
+        if n_resets >= initial_config.n_resets_limit
         {
-          return ( Reason::ResetLimit, None );
+          return ( Reason::ResetLimit );
         }
-        let temperature2 = ( temperature.unwrap() + initial.temperature_increase_factor.unwrap() ).into();
+        let temperature2 = ( temperature.unwrap() + initial_config.temperature_increase_factor.unwrap() ).into();
         log::trace!( " 🔄 reset temperature {temperature} -> {temperature2}" );
         sleep();
         temperature = temperature2;
         n_mutations = 0;
       }
 
-      let mutagen = self.person.mutagen( initial, hrng.clone() );
-      let person = self.person.mutate( initial, &mutagen );
+      let mutagen = self.person.mutagen( initial_board, hrng.clone() );
+      let mut mutagen_cross_cost = 0;
+      mutagen_cross_cost += self.person.board.cross_error_for_value(mutagen.cell1, self.person.board.cell(mutagen.cell2));
+      mutagen_cross_cost += self.person.board.cross_error_for_value(mutagen.cell2, self.person.board.cell(mutagen.cell1));
+
+      let mut original_cross_cost = 0;
+      original_cross_cost += self.person.board.cross_error(mutagen.cell1 );
+      original_cross_cost += self.person.board.cross_error(mutagen.cell2 );
 
       let rng_ref = hrng.rng_ref();
       let mut rng = rng_ref.lock().unwrap();
 
-      let cost_difference = 0.5 + person.cost.unwrap() as f64 - self.person.cost.unwrap() as f64;
+      let cost_difference = 0.5 + ( mutagen_cross_cost - original_cross_cost ) as f64;
       let threshold = ( - cost_difference / temperature.unwrap() ).exp();
+
+      // let rng_ref = hrng.rng_ref();
+      // let mut rng = rng_ref.lock().unwrap();
+
+      // let cost_difference = 0.5 + person.cost.unwrap() as f64 - self.person.cost.unwrap() as f64;
+      // let threshold = ( - cost_difference / temperature.unwrap() ).exp();
 
       log::trace!
       (
-        "cost : {} -> {} | cost_difference : {cost_difference} | temperature : {temperature}",
-        self.person.cost,
-        person.cost,
+        "cost_difference : {cost_difference} | temperature : {temperature}"
+        //"cost : {} -> {} | cost_difference : {cost_difference} | temperature : {temperature}",
+        // self.person.cost,
+        // person.cost,
       );
+
       let rand : f64 = rng.gen();
       let vital = rand < threshold;
 
@@ -563,7 +604,8 @@ impl< 'a > SudokuGeneration< 'a >
 
       if vital
       {
-        break person;
+        self.person.mutate( &mutagen );
+        break;
       }
 
       n_mutations += 1;
@@ -572,9 +614,13 @@ impl< 'a > SudokuGeneration< 'a >
     temperature = Temperature::from( temperature.unwrap() * ( 1.0f64 - self.initial.temperature_decrease_factor.unwrap() ) );
     let n_generation = self.n_generation + 1;
 
-    let generation = SudokuGeneration { initial, hrng, person, temperature, n_resets, n_generation };
+    self.temperature = temperature;
+    self.n_resets = n_resets;
+    self.n_generation = n_generation;
 
-    ( Reason::NotFinished, Some( generation ) )
+    //let generation = SudokuGeneration { initial: initial_config.clone(), initial_board, hrng, person : self.person, temperature, n_resets, n_generation };
+
+    ( Reason::NotFinished )
   }
 
   /// Checks if the current state is considered good enough as a solution.
