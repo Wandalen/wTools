@@ -1,7 +1,7 @@
 //! Contains implementation of Simplex optimization method.
 //! 
 
-use std::{ vec, collections::{HashSet, BinaryHeap} };
+use std::{ vec, collections::{HashSet, BinaryHeap}, env::var };
 use iter_tools::Itertools;
 //use ndarray;
 
@@ -28,6 +28,76 @@ impl Problem
   pub fn new( var_coeffs : Vec< f64 >, constraints : Vec< Constraint >, mins : Vec< f64 >, maxs : Vec< f64 > ) -> Self
   {
     Self { var_coeffs, constraints, mins, maxs }
+  }
+
+  pub fn read( opt_function: &str, constraints_str: Vec<&str> ) -> Problem
+  {
+    use exmex::{ prelude::*, DeepEx, ops_factory, BinOp, MakeOperators, Operator};
+
+    ops_factory!(
+      BitwiseOpsFactory,
+        bool,
+        Operator::make_bin(
+            "<=",
+            BinOp {
+                apply: |a, b| a <= b,
+                prio: 0,
+                is_commutative: false,
+            }
+        )
+    );
+
+    let mut z_coeffs = Vec::new();
+
+    let z_expr = FlatEx::<f64>::parse(opt_function).unwrap();
+    let var_number = z_expr.var_indices_ordered().len();
+    for val in 0..var_number
+    {
+      let deep_ex = z_expr.clone().to_deepex().unwrap();
+      let coeff = deep_ex.partial(val).unwrap();
+      z_coeffs.push(coeff.eval(vec![0.0; var_number].as_slice()).unwrap());
+    }
+  
+  let mut constraints = Vec::new();
+    for constraint in &constraints_str
+    {
+      let mut left_hand = "";
+      let mut right_hand = "";
+      let mut comp = Comp::Less;
+      if constraint.contains("<=")
+      {
+        (left_hand, right_hand) = constraint.split("<=").collect_tuple().unwrap();
+      }
+
+      if constraint.contains(">=")
+      {
+        (left_hand, right_hand) = constraint.split(">=").collect_tuple().unwrap();
+        comp = Comp::Greater;
+      }
+      
+      let mut coeffs = Vec::new();
+      let expr = FlatEx::<f64>::parse(left_hand).unwrap();
+      let var_number = expr.var_indices_ordered().len();
+      for val in 0..var_number
+      {
+        let deep_ex = expr.clone().to_deepex().unwrap();
+        let coeff = deep_ex.partial(val).unwrap();
+        coeffs.push(coeff.eval(vec![0.0; var_number].as_slice()).unwrap());
+        
+      }
+      constraints.push( Constraint {
+        coefs: coeffs,
+        value: FlatEx::<f64>::parse(right_hand).unwrap().eval(&[]).unwrap(),
+        comparison: comp,
+      });
+    }
+
+    dbg!(Problem {
+      constraints,
+      var_coeffs: z_coeffs,
+      mins: Vec::new(),
+      maxs: Vec::new(),
+    })
   }
 
   fn normalize( &mut self )
