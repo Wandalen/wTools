@@ -13,7 +13,7 @@ trait BoardExt
 
   /// Validate that each bloack has at least one non-fixed cell
   fn validate_each_block_has_non_fixed_cell( &self ) -> bool;
-
+  fn validate_block_has_non_fixed_cells( &self, block : BlockIndex ) -> bool;
 }
 
 impl BoardExt for Board
@@ -27,7 +27,7 @@ impl BoardExt for Board
       .map( | cell | self.cell( cell ) )
       .fold( 0, | acc, e | if e == 0.into() { acc + 1 } else { acc } )
       ;
-      if fixed == 0 || fixed >= 8
+      if fixed <= 1 || fixed >= 10
       {
         return false;
       }
@@ -35,12 +35,30 @@ impl BoardExt for Board
     true
   }
 
+  fn validate_block_has_non_fixed_cells( &self, block : BlockIndex ) -> bool
+  {
+    let fixed = self.block_cells( block )
+    .map( | cell | self.cell( cell ) )
+    .fold( 0, | acc, e | if e == 0.into() { acc + 1 } else { acc } )
+    ;
+    if fixed <= 1 || fixed >= 10
+    {
+      log::info!( "can't swap cells in block {block:?} that has {fixed} fixed cells" );
+      return false;
+    }
+
+    true
+  }
+
 }
 
-pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : Hrng ) -> ( CellIndex, CellIndex )
+pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : Hrng ) -> Option<( CellIndex, CellIndex )>
 {
 
-  debug_assert!( initial.validate_each_block_has_non_fixed_cell() );
+  if !initial.validate_block_has_non_fixed_cells( block.clone() )
+  {
+    return None;
+  }
 
   let cell1 = loop
   {
@@ -68,7 +86,7 @@ pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : 
     }
   };
 
-  ( cell1, cell2 )
+  Some( ( cell1, cell2 ) )
 }
 
 use derive_tools::{ FromInner, InnerFrom, Display };
@@ -193,11 +211,20 @@ impl SudokuPerson
 
   pub fn mutagen( &self, initial : &SudokuInitial, hrng : Hrng ) -> SudokuMutagen
   {
-    let rng_ref = hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-    let block : BlockIndex = rng.gen();
-    drop( rng );
-    let mutagen = cells_pair_random_in_block( &initial.board, block, hrng );
+    let mutagen;
+    loop 
+    {
+      let rng_ref = hrng.rng_ref();
+      let mut rng = rng_ref.lock().unwrap();
+      let block : BlockIndex = rng.gen();
+      drop( rng );
+      if let Some( m ) = cells_pair_random_in_block( &initial.board, block, hrng.clone() )
+      {
+        mutagen = m;
+        break;
+      }
+
+    }
     mutagen.into()
   }
 

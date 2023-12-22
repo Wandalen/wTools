@@ -58,18 +58,58 @@ fn initial_temperature()
 ///
 /// cargo test solve_with_sa --release --features rapidity_6
 ///
+// #[ cfg( feature = "rapidity_6" ) ]
+// #[ test ]
+// fn solve_with_sa()
+// {
+//   logger_init();
+//   log::set_max_level( log::LevelFilter::Warn );
+
+//   // let seed : Seed = "seed1".into();
+//   // let seed : Seed = "seed2".into();
+//   let seed : Seed = "seed3".into();
+//   // let seed = Seed::random();
+//   let initial = SudokuInitial::new( Board::default(), seed );
+
+//   log::set_max_level( log::LevelFilter::max() );
+//   let ( reason, generation ) = initial.solve_with_sa();
+
+//   log::trace!( "reason : {reason}" );
+//   a_true!( generation.is_some() );
+//   let generation = generation.unwrap();
+//   log::trace!( "{generation:#?}" );
+//   log::trace!( "{:#?}", generation.person.board );
+
+//   a_id!( generation.person.cost, 0.into() );
+//   // a_true!( false );
+// }
+
+/// Test SA on sudoku
+///
+/// # Usage
+///
+/// cargo test solve_one_empty_block --release --features rapidity_6
+///
 #[ cfg( feature = "rapidity_6" ) ]
 #[ test ]
-fn solve_with_sa()
+fn solve_one_empty_block()
 {
-  logger_init();
+  let sudoku : &str = r#"
+  402000000
+  000038000
+  090000018
+  000000601
+  000007530
+  000120000
+  000056100
+  003940000
+  206080047
+  "#;
   log::set_max_level( log::LevelFilter::Warn );
 
-  // let seed : Seed = "seed1".into();
-  // let seed : Seed = "seed2".into();
   let seed : Seed = "seed3".into();
   // let seed = Seed::random();
-  let initial = SudokuInitial::new( Board::default(), seed );
+  let initial = SudokuInitial::new( Board::from(sudoku), seed );
 
   log::set_max_level( log::LevelFilter::max() );
   let ( reason, generation ) = initial.solve_with_sa();
