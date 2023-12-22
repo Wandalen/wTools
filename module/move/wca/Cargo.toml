@@ -46,6 +46,7 @@ on_error_default = [ "enabled" ]
 on_syntax_error_default = [ "enabled" ]
 on_ambiguity_default = [ "enabled" ]
 on_unknown_command_error_default = [ "enabled" ]
+on_unknown_command_error_suggest = [ "eddie" ]
 on_get_help_default = [ "enabled" ]
 on_print_commands_default = [ "enabled" ]
 
@@ -60,7 +61,7 @@ log = "0.4"
 nom = "7.1"
 closure = "0.3"
 # fuzzy commands search
-eddie = "0.4"
+eddie = { version = "0.4", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }

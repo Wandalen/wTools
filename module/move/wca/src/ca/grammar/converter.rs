@@ -158,18 +158,21 @@ pub( crate ) mod private
       (
         ||
         {
-          let jaro = eddie::JaroWinkler::new();
-          let sim = self
-          .commands
-          .iter()
-          .map( |( name, c )| ( jaro.similarity( name, &raw_command.name ), c ) )
-          .max_by( |( s1, _ ), ( s2, _ )| s1.total_cmp( s2 ) );
-          if let Some(( sim, variant )) = sim
+          #[ cfg( feature = "on_unknown_command_error_suggest" ) ]
           {
-            if sim > 0.0
+            let jaro = eddie::JaroWinkler::new();
+            let sim = self
+              .commands
+              .iter()
+              .map( |( name, c )| ( jaro.similarity( name, &raw_command.name ), c ) )
+              .max_by( |( s1, _ ), ( s2, _ )| s1.total_cmp( s2 ) );
+            if let Some(( sim, variant )) = sim
             {
-              let phrase = &variant[ 0 ].phrase;
-              return err!( "Command not found. Maybe you mean `.{}`?", phrase );
+              if sim > 0.0
+              {
+                let phrase = &variant[ 0 ].phrase;
+                return err!( "Command not found. Maybe you mean `.{}`?", phrase );
+              }
             }
           }
           err!( "Command not found. Please use `.` command to see the list of available commands. Sorry for the inconvenience. 😔" )
