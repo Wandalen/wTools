@@ -4,7 +4,7 @@ use super::*;
 mod layer_a;
 mod layer_b;
 
-TheModule::mod_interface!
+mod_interface!
 {
 
   /// layer_a

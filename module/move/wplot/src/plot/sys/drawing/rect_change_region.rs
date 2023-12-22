@@ -2,6 +2,8 @@
 pub( crate ) mod private
 {
   use crate::protected::*;
+  use crate::abs::change::private::ChangeInterface;
+  use crate::abs::identity::private::Id;
 
   /// Command to draw rectangle.
   #[ allow( dead_code ) ]
@@ -43,7 +45,7 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
   exposed use RectChangeRegion;
 }

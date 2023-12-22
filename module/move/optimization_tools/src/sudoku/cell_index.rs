@@ -1,12 +1,21 @@
+//! Provides structures for representetion of position of single digit on Sudoku board.
+//!
+//! CellFlatIndex is used for indexing Sudoku board as one-dimensional array.
+//! CellIndex is used for two-dimensional Sudoku board representation, where first value of
+//! the tuple if row index and second value is index of the column.
+//! 
+
 use super::*;
 use deterministic_rand::{ Rng, distributions::{ Distribution, Standard } };
 // use super::BlockIndex;
 
+/// Represents an index of a Sudoku cell in one-dimensional board array.
 #[ derive( Default, Debug, Clone, Copy, PartialEq, Eq ) ]
 pub struct CellFlatIndex( usize );
 
 impl CellFlatIndex
 {
+  /// Converts CellFlatIndex into its inner usize value.
   #[ inline ]
   pub fn unwrap( self ) -> usize
   {
@@ -14,6 +23,7 @@ impl CellFlatIndex
   }
 }
 
+/// Convert usize value into CellFlatIndex value.
 impl From< usize > for CellFlatIndex
 {
   #[ inline ]
@@ -25,6 +35,7 @@ impl From< usize > for CellFlatIndex
   }
 }
 
+/// Convert two-dimensional CellIndex value into CellFlatIndex value.
 impl From< CellIndex > for CellFlatIndex
 {
   #[ inline ]
@@ -34,6 +45,7 @@ impl From< CellIndex > for CellFlatIndex
   }
 }
 
+/// Convert CellFlatIndex value into usize.
 impl From< CellFlatIndex > for usize
 {
   #[ inline ]
@@ -43,6 +55,7 @@ impl From< CellFlatIndex > for usize
   }
 }
 
+/// Represents an index of a Sudoku cell in two-dimensional board representation.
 #[ derive( Default, Debug, Clone, Copy, PartialEq, Eq ) ]
 pub struct CellIndex( u8, u8 );
 
@@ -59,11 +72,14 @@ impl CellIndex
     ( rng.gen_range( intervals.0 ) as u8, rng.gen_range( intervals.1 ) as u8 ).into()
   }
 
+  /// Column index of cell.
   #[ inline ]
   pub fn col( &self ) -> u8
   {
     self.0
   }
+
+  /// Row index of cell.
   #[ inline ]
   pub fn row( &self ) -> u8
   {
@@ -71,6 +87,7 @@ impl CellIndex
   }
 }
 
+/// Get random CellIndex value.
 impl Distribution< CellIndex > for Standard
 {
   fn sample< R : Rng + ?Sized >( &self, rng : &mut R) -> CellIndex
@@ -79,6 +96,7 @@ impl Distribution< CellIndex > for Standard
   }
 }
 
+/// Transform a tuple of elements, that can be converted to u8, into CellIndex value.
 impl< T > From< ( T, T ) > for CellIndex
 where
   T : Into< u8 >,
@@ -93,6 +111,7 @@ where
   }
 }
 
+/// Convert CellFlatIndex value into CellIndex value.
 impl From< CellFlatIndex > for CellIndex
 {
   #[ inline ]
@@ -102,6 +121,7 @@ impl From< CellFlatIndex > for CellIndex
   }
 }
 
+/// Convert CellIndex value into usize value.
 impl From< CellIndex > for usize
 {
   #[ inline ]

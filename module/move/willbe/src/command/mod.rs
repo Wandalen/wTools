@@ -30,23 +30,12 @@ pub( crate ) mod private
     // .subject( "A path to directory with workspace config. Should be a glob.", Type::List( Type::Path.into() ), true )
     .property( "format", "Output format. It can be topological sorted list of crates or list + set of independent crates trees.\n               Variants: topsort, tree. Default is \"tree\".", Type::String, true )
     .property( "filter", "Filter output packages.\n               Variants: local, nothing. Default is \"nothing\".", Type::String, true )
-    .property( "root_module", "Log dependency tree for selected module. Works in combination with option 'type:tree'", Type::String, true )
     .form();
 
     let create_table_command = wca::Command::former()
     .hint( "Generate table for main Readme.md file" )
     .long_hint( "Generate table for main Readme.md file" )
     .phrase( "readme.health.table.generate" )
-    .form();
-
-    let run_tests_no_subj_command = wca::Command::former()
-    .hint( "Run tests in a specified crate" )
-    .long_hint( "Run tests in a specified crate" )
-    .phrase("tests.run")
-    .property( "nightly", "Run tests on nightly. Default is false.", Type::String, true )
-    .property( "exclude", "List of features to exclude.", Type::List( Type::String.into(), ',' ), true )
-    .property( "include", "List of features to include.", Type::List( Type::String.into(), ',' ), true )
-    .property( "parallel", "Run tests with different a set of features in parallel. Default is false.", Type::String, true )
     .form();
 
     let run_tests_command = wca::Command::former()
@@ -71,7 +60,7 @@ pub( crate ) mod private
       publish_command,
       list_command,
       create_table_command,
-      run_tests_no_subj_command, run_tests_command,
+      run_tests_command,
       generate_workflow
     ]
   }

@@ -1,15 +1,17 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  // use crate::protected::*;
   use core::fmt;
+
+  use crate::abs::change::private::ChangeInterface;
 
   /// Context.
   pub trait ChangerInterface
   where
     Self :
       fmt::Debug +
-      Clone +
+      // Clone +
     ,
   {
     /// Type of root changer.
@@ -51,7 +53,7 @@ pub( crate ) mod private
 
 }
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
 
   prelude use ChangerInterface;

@@ -1,4 +1,4 @@
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
 
   /// Describe change.

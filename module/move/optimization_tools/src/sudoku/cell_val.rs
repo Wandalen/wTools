@@ -1,12 +1,17 @@
+//! Contains CellVal structure that corresponds to single digit on Sudoku field.
+//! 
+
 use derive_tools::Display;
 use derive_tools::{ Add, Sub, Mul, Div };
 
+/// Represents the value of a cell in Sudoku. It can have a value from 1 to 9 or 0 if the cell is not assigned.
 #[ derive( Default, Debug, Display, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash ) ]
 #[ derive( Add, Sub, Mul, Div ) ]
 pub struct CellVal( u8 );
 
 impl CellVal
 {
+  /// Returns inner u8 value of CellVal.
   #[ inline ]
   pub fn unwrap( self ) -> u8
   {
@@ -14,6 +19,7 @@ impl CellVal
   }
 }
 
+/// Converts usize value into CellVal.
 impl From< usize > for CellVal
 {
   #[ inline ]
@@ -24,6 +30,7 @@ impl From< usize > for CellVal
   }
 }
 
+/// Converts i32 value into CellVal.
 impl From< i32 > for CellVal
 {
   #[ inline ]
@@ -34,6 +41,7 @@ impl From< i32 > for CellVal
   }
 }
 
+/// Converts u32 value into CellVal.
 impl From< u32 > for CellVal
 {
   #[ inline ]
@@ -44,6 +52,7 @@ impl From< u32 > for CellVal
   }
 }
 
+/// Converts u8 value into CellVal.
 impl From< u8 > for CellVal
 {
   #[ inline ]
@@ -54,6 +63,7 @@ impl From< u8 > for CellVal
   }
 }
 
+/// Converts CellVal value into usize.
 impl From< CellVal > for usize
 {
   #[ inline ]

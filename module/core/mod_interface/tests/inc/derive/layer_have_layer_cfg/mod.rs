@@ -11,7 +11,7 @@ mod private
 {
 }
 
-TheModule::mod_interface!
+mod_interface!
 {
 
   /// layer_a
