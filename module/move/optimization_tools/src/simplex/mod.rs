@@ -6,7 +6,7 @@ use iter_tools::Itertools;
 //use ndarray;
 
 mod drawing;
-
+pub mod parser;
 
 /// Represents linear problem.
 #[ derive( Clone, Debug ) ]
@@ -30,75 +30,85 @@ impl Problem
     Self { var_coeffs, constraints, mins, maxs }
   }
 
-  pub fn read( opt_function: &str, constraints_str: Vec<&str> ) -> Problem
-  {
-    use exmex::{ prelude::*, DeepEx, ops_factory, BinOp, MakeOperators, Operator};
+  // pub fn read( opt_function: &str, constraints_str: Vec<&str> ) -> Problem
+  // {
+  //   use exmex::{ prelude::*, DeepEx, ops_factory, BinOp, MakeOperators, Operator};
 
-    ops_factory!(
-      BitwiseOpsFactory,
-        bool,
-        Operator::make_bin(
-            "<=",
-            BinOp {
-                apply: |a, b| a <= b,
-                prio: 0,
-                is_commutative: false,
-            }
-        )
-    );
+  //   ops_factory!(
+  //     BitwiseOpsFactory,
+  //       bool,
+  //       Operator::make_bin(
+  //           "<=",
+  //           BinOp {
+  //               apply: |a, b| a <= b,
+  //               prio: 0,
+  //               is_commutative: false,
+  //           }
+  //       )
+  //   );
 
-    let mut z_coeffs = Vec::new();
+  //   let mut z_coeffs = Vec::new();
 
-    let z_expr = FlatEx::<f64>::parse(opt_function).unwrap();
-    let var_number = z_expr.var_indices_ordered().len();
-    for val in 0..var_number
-    {
-      let deep_ex = z_expr.clone().to_deepex().unwrap();
-      let coeff = deep_ex.partial(val).unwrap();
-      z_coeffs.push(coeff.eval(vec![0.0; var_number].as_slice()).unwrap());
-    }
+  //   let z_expr = FlatEx::<f64>::parse(opt_function).unwrap();
+  //   let var_number = z_expr.var_indices_ordered().len();
+  //   let var_names = z_expr.var_names().into_iter().cloned().collect::<HashSet<_>>();
+  //   for val in 0..var_number
+  //   {
+  //     let deep_ex = z_expr.clone().to_deepex().unwrap();
+  //     let coeff = deep_ex.partial(val).unwrap();
+  //     z_coeffs.push(coeff.eval(vec![0.0; var_number].as_slice()).unwrap());
+  //   }
+    
   
-  let mut constraints = Vec::new();
-    for constraint in &constraints_str
-    {
-      let mut left_hand = "";
-      let mut right_hand = "";
-      let mut comp = Comp::Less;
-      if constraint.contains("<=")
-      {
-        (left_hand, right_hand) = constraint.split("<=").collect_tuple().unwrap();
-      }
+  // let mut constraints = Vec::new();
+  //   for constraint in &constraints_str
+  //   {
+  //     let mut left_hand = "";
+  //     let mut right_hand = "";
+  //     let mut comp = Comp::Less;
+  //     if constraint.contains("<=")
+  //     {
+  //       (left_hand, right_hand) = constraint.split("<=").collect_tuple().unwrap();
+  //     }
 
-      if constraint.contains(">=")
-      {
-        (left_hand, right_hand) = constraint.split(">=").collect_tuple().unwrap();
-        comp = Comp::Greater;
-      }
+  //     if constraint.contains(">=")
+  //     {
+  //       (left_hand, right_hand) = constraint.split(">=").collect_tuple().unwrap();
+  //       comp = Comp::Greater;
+  //     }
       
-      let mut coeffs = Vec::new();
-      let expr = FlatEx::<f64>::parse(left_hand).unwrap();
-      let var_number = expr.var_indices_ordered().len();
-      for val in 0..var_number
-      {
-        let deep_ex = expr.clone().to_deepex().unwrap();
-        let coeff = deep_ex.partial(val).unwrap();
-        coeffs.push(coeff.eval(vec![0.0; var_number].as_slice()).unwrap());
+  //     let mut coeffs = Vec::new();
+  //     let mut expr = FlatEx::<f64>::parse(left_hand).unwrap();
+      
+  //     let con_var_names = expr.var_names();
+  //     let con_var_names = con_var_names.into_iter().cloned().collect::<HashSet<_>>();
+  //     let unused_vars = var_names.difference(&con_var_names);
+  //     for unused_var in unused_vars
+  //     {
+  //       expr = expr.operate_binary(FlatEx::<f64>::parse((String::from("0*") + unused_var).as_str()).unwrap(), "+").unwrap();
+  //     }
+  //     let var_number = expr.var_indices_ordered().len();
+  //     for val in 0..var_number
+  //     {
+  //       let deep_ex = expr.clone().to_deepex().unwrap();
+  //       let coeff = deep_ex.partial(val).unwrap();
+  //       coeffs.push(coeff.eval(vec![0.0; var_number].as_slice()).unwrap());
         
-      }
-      constraints.push( Constraint {
-        coefs: coeffs,
-        value: FlatEx::<f64>::parse(right_hand).unwrap().eval(&[]).unwrap(),
-        comparison: comp,
-      });
-    }
+  //     }
+  //     constraints.push( Constraint {
+  //       coefs: coeffs,
+  //       value: FlatEx::<f64>::parse(right_hand).unwrap().eval(&[]).unwrap(),
+  //       comparison: comp,
+  //     });
+  //   }
 
-    dbg!(Problem {
-      constraints,
-      var_coeffs: z_coeffs,
-      mins: Vec::new(),
-      maxs: Vec::new(),
-    })
-  }
+  //   dbg!(Problem {
+  //     constraints,
+  //     var_coeffs: z_coeffs,
+  //     mins: Vec::new(),
+  //     maxs: Vec::new(),
+  //   })
+  // }
 
   fn normalize( &mut self )
   {
@@ -138,7 +148,7 @@ impl Problem
 }
 
 /// Represents inequation constraint.
-#[ derive( Clone, Debug ) ]
+#[ derive( Clone, Debug, PartialEq ) ]
 pub struct Constraint 
 {
   /// Coefficients of variables in inequation.
@@ -150,7 +160,7 @@ pub struct Constraint
 }
 
 /// Type of comparison in inequation.
-#[ derive( Clone, Debug ) ]
+#[ derive( Clone, Debug, PartialEq ) ]
 pub enum Comp
 {
   /// Less than comparison.
@@ -466,6 +476,22 @@ mod simplex_tests {
 
     let ex_points = SimplexSolver::extreme_points(&mut p);
     drawing::draw_problem(&p, ex_points);
+  }
+
+  #[ test ]
+  fn problem_parse() 
+  {
+    let mut p = Problem::new
+    ( 
+      vec![ 2.0, -3.0, 4.0 ], 
+      vec![ Constraint::new( vec![ 2.0, -3.0, 1.0 ], 3.0, Comp::Less ), Constraint::new( vec![ 1.0, -1.0, 0.0 ], 4.0, Comp::Less ) ],
+      Vec::new(), 
+      Vec::new()
+    );
+    let parsed = parser::ProblemParser::parse("2*x - 3*y + 4*z", vec!["2*x -3*y +z <= 3", "-y + x <=4"]);
+    
+    assert_eq!(p.var_coeffs, parsed.var_coeffs);
+    assert_eq!(p.constraints, parsed.constraints);
   }
 
 }
