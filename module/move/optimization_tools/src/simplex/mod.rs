@@ -6,6 +6,7 @@ use iter_tools::Itertools;
 //use ndarray;
 
 mod drawing;
+#[ cfg( feature = "lp_parse" ) ]
 pub mod parser;
 
 /// Represents linear problem.
@@ -477,7 +478,8 @@ mod simplex_tests {
     let ex_points = SimplexSolver::extreme_points(&mut p);
     drawing::draw_problem(&p, ex_points);
   }
-
+  
+  #[ cfg( feature = "lp_parse" ) ]
   #[ test ]
   fn problem_parse() 
   {
