@@ -303,9 +303,9 @@ mod private
       .load()?
       .packages_get() 
       .map_err( | err | anyhow!( err ) )?
-    );
+    )?;
     let mut table = table_header_generate( parameters, &table_parameters );
-    for package_name in directory_names 
+    for package_name in directory_names
     {
       let stability = if table_parameters.include_stability
       {
@@ -331,7 +331,7 @@ mod private
   }
 
   /// Return topologically sorted modules name, from packages list, in specified directory.
-  fn directory_names( path: PathBuf, packages: &[ Package ] ) -> Vec< String >
+  fn directory_names( path: PathBuf, packages: &[ Package ] ) -> Result< Vec< String > >
   {
     let path_clone = path.clone();
     let module_package_filter: Option< Box< dyn Fn( &Package ) -> bool > > = Some
@@ -356,7 +356,7 @@ mod private
       package::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
     let module_graph = graph::construct( &module_packages_map );
-    graph::toposort( module_graph )
+    graph::toposort( module_graph ).map_err( | err | anyhow!( "{}", err ) )
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.

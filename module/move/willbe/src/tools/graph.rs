@@ -2,6 +2,7 @@
 pub( crate ) mod private
 {
   use std::collections::{ HashMap, HashSet };
+  use std::fmt::Debug;
   use std::hash::Hash;
   use std::ops::Index;
   use petgraph::
@@ -9,6 +10,15 @@ pub( crate ) mod private
     graph::Graph,
     algo::toposort as pg_toposort,
   };
+
+  use error_tools::for_lib::Error;
+
+  #[ derive( Debug, Error ) ]
+  pub enum GraphError< T : Debug >
+  {
+    #[ error( "Cycle: {0:?}" ) ]
+    Cycle( T ),
+  }
 
   /// Build a graph from map of packages and its dependencies
   ///
@@ -68,16 +78,19 @@ pub( crate ) mod private
     graph : Graph< &'a PackageIdentifier,
     &'a PackageIdentifier >
   )
-  -> Vec< PackageIdentifier >
+  -> Result< Vec< PackageIdentifier >, GraphError< PackageIdentifier > >
   {
     match pg_toposort( &graph, None )
     {
-      Ok( list ) => list
-      .iter()
-      .rev()
-      .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
-      .collect::< Vec< _ > >(),
-      Err( index ) => panic!( "Cycle: {:?}", graph.index( index.node_id() ) ),
+      Ok( list ) => Ok
+      (
+        list
+        .iter()
+        .rev()
+        .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
+        .collect::< Vec< _ > >()
+      ),
+      Err( index ) => Err( GraphError::Cycle( ( *graph.index( index.node_id() ) ).clone() ) ),
       // qqq : for Bohdan : bad, make proper error handling
     }
   }

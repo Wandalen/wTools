@@ -552,7 +552,7 @@ mod private
       }
       DependenciesSort::Topological =>
       {
-        graph::toposort( graph::construct( &graph ) ).into_iter().filter( | x | x != &root ).collect()
+        graph::toposort( graph::construct( &graph ) ).map_err( | err | anyhow!( "{}", err ) )?.into_iter().filter( | x | x != &root ).collect()
       },
     };
 
@@ -679,7 +679,6 @@ mod private
       Ok( archive ) => archive,
       // qqq: fix. we don't have to know about the http status code
       Err( ureq::Error::Status( 403, _ ) ) => return Ok( true ),
-      // _ => /* return an error */ panic!( "Failed to load remote package" ),
       _ => return Err( PackageError::LoadRemotePackage ),
     };
 
