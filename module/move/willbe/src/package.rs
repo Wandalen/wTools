@@ -14,14 +14,17 @@ mod private
   {
     process,
   };
-  use manifest::Manifest;
+  use manifest::{ Manifest, ManifestError };
   use { cargo, git, version, path, wtools };
   use crates_tools::CrateArchive;
-  use error_tools::for_lib::Error;
+  
   use wca::wtools::Itertools; // qqq : use wtools::...!
-  use wtools::error::for_app::{ anyhow, Error, Context };
+  use wtools::error::for_app::{ anyhow, Error as wError, Context };
   use workspace::Workspace;
   use path::AbsolutePath;
+
+  use error_tools::for_lib::Error;
+  use wtools::error::thiserror;
 
   ///
   #[ derive( Debug ) ]
@@ -33,26 +36,36 @@ mod private
     Metadata( PackageMetadata ),
   }
 
+  /// Represents errors related to package handling.
   #[ derive( Debug, Error ) ]
   pub enum PackageError
   {
-    #[ error( "Manifest error. Reason: {0}" ) ]
+    /// Manifest error.
+    #[ error( "Manifest error. Reason: {0}." ) ]
     Manifest(ManifestError),
-    #[ error( "Fail to load metadata" ) ]
+    /// Fail to load metadata.
+    #[ error( "Fail to load metadata." ) ]
     Metadata,
-    #[ error( "Fail to load remote package" ) ]
+    /// Fail to load remote package.
+    #[ error( "Fail to load remote package." ) ]
     LoadRemotePackage,
+    /// Fail to get crate local path.
+    #[ error( "Fail to get crate local path." ) ]
+    LocalPath,
+    /// Fail to read archive
+    #[ error( "Fail to read archive" ) ]
+    ReadArchive,
   }
 
   impl TryFrom< AbsolutePath > for Package
   {
     // qqq : make better errors
-    type Error = Error;
+    type Error = wError;
 
     fn try_from( value : AbsolutePath ) -> Result< Self, Self::Error >
     {
       let manifest =  manifest::open( value.as_ref() )?;
-      if !manifest.package_is()
+      if !manifest.package_is()?
       {
         return Err( anyhow!( "`{}` - not a package", value.as_ref().display() ) );
       }
@@ -64,11 +77,11 @@ mod private
   impl TryFrom< Manifest > for Package
   {
     // qqq : make better errors
-    type Error = Error;
+    type Error = wError;
 
     fn try_from( value : Manifest ) -> Result< Self, Self::Error >
     {
-      if !value.package_is()
+      if !value.package_is()?
       {
         return Err( anyhow!( "`{}` - not a package", value.manifest_path.as_ref().display() ) );
       }
@@ -177,7 +190,7 @@ mod private
       match self
       {
         Package::Manifest( manifest ) => Ok(manifest.clone()),
-        Package::Metadata( metadata ) => manifest::open( metadata.manifest_path.as_std_path() ).map_err( | err | PackageError::Metadata ),
+        Package::Metadata( metadata ) => manifest::open( metadata.manifest_path.as_std_path() ).map_err( | _ | PackageError::Metadata ),
       }
     }
 
@@ -187,7 +200,7 @@ mod private
       match self
       {
         Package::Manifest( manifest ) =>
-        Workspace::with_crate_dir( manifest.crate_dir() )
+        Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | _ | PackageError::Metadata )?
         .package_find_by_manifest( &manifest.manifest_path )
         .ok_or_else( || PackageError::Metadata )
         .cloned(),
@@ -302,7 +315,7 @@ mod private
   ///
   /// Returns:
   /// Returns a result containing a report indicating the result of the operation.
-  pub fn publish_single( package : &Package, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
+  pub fn publish_single( package : &Package, dry : bool ) -> Result< PublishReport, ( PublishReport, wError ) >
   {
     let mut report = PublishReport::default();
     if package.local_is().map_err( | err | ( report.clone(), anyhow!( err ) ) )?
@@ -319,7 +332,7 @@ mod private
     }
     report.get_info = Some( output );
 
-    if publish_need( &package )
+    if publish_need( &package ).map_err( | err | (report.clone(), anyhow!( err ) ) )?
     {
       report.publish_required = true;
 
@@ -332,7 +345,7 @@ mod private
       let package_name = package.name().map_err( | err | ( report.clone(), anyhow!( err ) ) )?;
 
       // bump the package version in dependents(so far, only workspace)
-      let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( package.crate_dir() ).workspace_root().try_into().unwrap();
+      let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( package.crate_dir() ).map_err( | err | ( report.clone(), err ) )?.workspace_root().map_err( | err | ( report.clone(), anyhow!( err ) ) )?.try_into().unwrap();
       let workspace_manifest_path = workspace_manifest_dir.join( "Cargo.toml" );
 
       // qqq: should be refactored
@@ -476,7 +489,7 @@ mod private
     let manifest_path = &manifest.manifest_path();
 
     let package = workspace
-    .load()
+    .load()?
     .package_find_by_manifest( &manifest_path )
     .ok_or( anyhow!( "Package not found in the workspace with path: `{}`", manifest_path.as_ref().display() ) )?;
 
@@ -557,17 +570,17 @@ mod private
   ///
   /// # Returns:
   /// The local packed `.crate` file of the package
-  pub fn local_path< 'a >( name : &'a str, version : &'a str, crate_dir: CrateDir ) -> PathBuf
+  pub fn local_path< 'a >( name : &'a str, version : &'a str, crate_dir: CrateDir ) -> anyhow::Result< PathBuf >
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
 
-    let workspace = Workspace::with_crate_dir( crate_dir );
+    let workspace = Workspace::with_crate_dir( crate_dir )?;
 
     let mut local_package_path = PathBuf::new();
-    local_package_path.push( workspace.target_directory() );
+    local_package_path.push( workspace.target_directory()? );
     local_package_path.push( buf );
 
-    local_package_path
+    Ok( local_package_path )
   }
 
   //
@@ -657,10 +670,10 @@ mod private
 
     let name = package.name()?;
     let version = package.version()?;
-    let local_package_path = local_path( &name, &version, package.crate_dir() );
+    let local_package_path = local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )?;
 
     // qqq : for Bohdan : bad, properly handle errors
-    let local_package = CrateArchive::read( local_package_path ).expect( "Failed to read local package. Please, run `cargo package` before." );
+    let local_package = CrateArchive::read( local_package_path ).map_err( | _ | PackageError::ReadArchive )?;
     let remote_package = match CrateArchive::download_crates_io( name, version )
     {
       Ok( archive ) => archive,
@@ -702,7 +715,7 @@ crate::mod_interface!
   protected use local_path;
   protected use PackageName;
   protected use Package;
-  protected use PackageError
+  protected use PackageError;
 
   protected use FilterMapOptions;
   protected use packages_filter_map;

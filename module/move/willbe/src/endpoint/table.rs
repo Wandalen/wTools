@@ -227,7 +227,7 @@ mod private
   {
     regexes_initialize();
     let absolute_path = AbsolutePath::try_from( path )?;
-    let mut cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? );
+    let mut cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
     let workspace_root = workspace_root( &mut cargo_metadata )?;
     let mut parameters = GlobalTableParameters::initialize_from_path( &workspace_root )?;
 
@@ -294,13 +294,22 @@ mod private
   /// Generate header, iterate over all modules in package (from table_parameters) and append row. 
   fn package_table_create(  cache: &mut Workspace, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error > 
   {
-    let directory_names = directory_names( cache.workspace_root().join( &table_parameters.base_path ), &cache.load().packages_get() );
+    let directory_names = directory_names
+    ( 
+      cache
+      .workspace_root()?
+      .join( &table_parameters.base_path ), 
+      &cache
+      .load()?
+      .packages_get() 
+      .map_err( | err | anyhow!( err ) )?
+    );
     let mut table = table_header_generate( parameters, &table_parameters );
     for package_name in directory_names 
     {
       let stability = if table_parameters.include_stability
       {
-        Some( stability_get( &cache.workspace_root().join( &table_parameters.base_path ).join( &package_name ) )? )
+        Some( stability_get( &cache.workspace_root()?.join( &table_parameters.base_path ).join( &package_name ) )? )
       }
       else
       {
@@ -308,11 +317,11 @@ mod private
       };
       if parameters.core_url == "" 
       {
-        let module_path = &cache.workspace_root().join( &table_parameters.base_path ).join( &package_name );
+        let module_path = &cache.workspace_root()?.join( &table_parameters.base_path ).join( &package_name );
         parameters.core_url = repo_url( &module_path )
         .context
         ( 
-          anyhow!( "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", module_path.display(), cache.workspace_root().join( "Cargo.toml" ).display(), module_path.join( "Cargo.toml" ).display() ) 
+          anyhow!( "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", module_path.display(), cache.workspace_root()?.join( "Cargo.toml" ).display(), module_path.join( "Cargo.toml" ).display() ) 
         )?;
         parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
       }
@@ -446,7 +455,7 @@ mod private
   /// Return workspace root
   fn workspace_root( metadata: &mut Workspace ) -> Result< PathBuf >
   {
-    Ok( metadata.load().workspace_root().to_path_buf() )
+    Ok( metadata.load()?.workspace_root()?.to_path_buf() )
   }
 
   fn range_to_target_copy< T: Clone >( source: &[ T ], target: &mut Vec< T >, from: usize, to: usize ) -> Result< () >

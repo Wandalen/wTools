@@ -1,6 +1,5 @@
 mod private
 {
-  use std::fs::metadata;
   use std::path::Path;
   use anyhow::Context;
   use cargo_metadata::{Metadata, MetadataCommand, Package};
@@ -17,12 +16,15 @@ mod private
     manifest_dir : CrateDir,
   }
 
+  /// Represents errors related to workspace operations.
   #[ derive( Debug, Error ) ]
   pub enum WorkspaceError
   {
+    /// Metadata is non.
     #[ error( "Metadata is non " ) ]
     MetadataError,
   }
+
   impl Workspace
   {
     /// Load data from current directory

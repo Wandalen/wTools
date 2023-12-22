@@ -5,9 +5,10 @@ pub( crate ) mod private
   use std::io::Read;
   use std::{ fs, process, path::PathBuf };
   use std::path::Path;
-  use error_tools::for_lib::Error;
   use wtools::error;
   use wtools::error::for_app::{ anyhow, Context };
+  use error_tools::for_lib::Error;
+  use wtools::error::thiserror;
   use path::AbsolutePath;
 
   /// Path to crate directory
@@ -38,18 +39,23 @@ pub( crate ) mod private
     }
   }
 
-  ///
-  /// Hold manifest data.
-  ///
 
+
+/// Represents errors related to manifest data processing.
   #[ derive( Debug, Error ) ]
   pub enum  ManifestError
   {
+    /// Manifest data not loaded.
     #[ error( "Manifest data not loaded." ) ]
     EmptyManifestData,
+    /// Cannot find the specified tag in the TOML file.
     #[ error( "Cannot find tag {0} in toml file." ) ]
     CannotFindValue(String),
   }
+
+  ///
+  /// Hold manifest data.
+  ///
   #[ derive( Debug, Clone ) ]
   pub struct Manifest
   {
@@ -140,14 +146,14 @@ pub( crate ) mod private
     }
 
     /// Check that the current manifest is the manifest of the package (can also be a virtual workspace).
-    pub fn package_is( &self ) -> bool
+    pub fn package_is( &self ) -> Result< bool, ManifestError>
     {
-      let data = self.manifest_data.as_ref().expect( "Manifest data wasn't loaded" );
+      let data = self.manifest_data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
       if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
       {
-        return true;
+        return Ok( true );
       }
-      false
+      Ok( false )
     }
 
     /// Check that module is local.

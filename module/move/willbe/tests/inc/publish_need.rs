@@ -21,7 +21,7 @@ fn no_changes()
   let package = Package::try_from( absolute ).unwrap();
 
   // Act
-  let publish_needed = publish_need( &package );
+  let publish_needed = publish_need( &package ).unwrap();
 
   // Assert
   assert!( !publish_needed );
@@ -47,7 +47,7 @@ fn with_changes()
   let package = Package::try_from( absolute ).unwrap();
 
   // Act
-  let publish_needed = publish_need( &package );
+  let publish_needed = publish_need( &package ).unwrap();
 
   // Assert
   assert!( publish_needed );

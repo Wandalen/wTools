@@ -9,7 +9,8 @@ pub( crate ) mod private
     Command,
     Stdio,
   };
-  use wca::wtools::Itertools;
+  use anyhow::Context;
+use wca::wtools::Itertools;
   use wtools::error;
 
 
@@ -101,18 +102,18 @@ pub( crate ) mod private
     .stderr( Stdio::piped() )
     .current_dir( path )
     .spawn()
-    .expect( "failed to spawn process" );
+    .context( "failed to spawn process" )?;
 
     let output = child
     .wait_with_output()
-    .expect( "failed to wait on child" );
+    .context( "failed to wait on child" )?;
 
     let report = CmdReport
     {
       command : format!( "{} {}", application.display(), args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
       path : path.to_path_buf(),
-      out : String::from_utf8( output.stdout ).expect( "Found invalid UTF-8" ),
-      err : String::from_utf8( output.stderr ).expect( "Found invalid UTF-8" ),
+      out : String::from_utf8( output.stdout ).context( "Found invalid UTF-8" )?,
+      err : String::from_utf8( output.stderr ).context( "Found invalid UTF-8" )?,
     };
 
     if output.status.success()

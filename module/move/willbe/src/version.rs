@@ -82,7 +82,7 @@ mod private
         manifest.load()?;
       }
       let data = manifest.manifest_data.as_ref().unwrap();
-      if !manifest.package_is()
+      if !manifest.package_is()?
       {
         // qqq : for Bohdan : rid off untyped errors, make proper errors handing
         // https://www.lpalmieri.com/posts/error-handling-rust/

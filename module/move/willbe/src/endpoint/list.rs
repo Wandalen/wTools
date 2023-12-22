@@ -3,7 +3,8 @@ mod private
 {
   use crate::*;
   use std::fmt::Formatter;
-  use petgraph::
+  use anyhow::anyhow;
+use petgraph::
   {
     algo::toposort,
     algo::has_path_connecting,
@@ -144,7 +145,7 @@ mod private
       {
         ListReport::Tree { graph, names } => for n in names
         {
-          ptree::graph::write_graph_with(&graph, *n, Io2FmtWrite { f }, &ptree::PrintConfig::from_env() )?;
+          ptree::graph::write_graph_with(&graph, *n, Io2FmtWrite { f }, &ptree::PrintConfig::from_env() ).unwrap();
         },
         ListReport::List ( list ) => for ( i ,e ) in list.iter().enumerate() { writeln!( f, "{i}) {e}" )? },
         _ => {},
@@ -163,7 +164,7 @@ mod private
     let mut report = ListReport::default();
 
     let manifest = manifest::open( &path_to_manifest.as_ref() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let mut metadata = Workspace::with_crate_dir( manifest.crate_dir() );
+    let mut metadata = Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | err | ( report.clone(), anyhow!( err ) ) )?;
 
     let root_crate = manifest
     .manifest_data
@@ -196,7 +197,11 @@ mod private
 
     let packages_map =  packages_filter_map
     (
-      &metadata.load().packages_get(),
+      &metadata
+      .load()
+      .map_err( | err | ( report.clone(), anyhow!( err ) ) )?
+      .packages_get()
+      .map_err( | err | ( report.clone(), anyhow!( err ) ) )?,
       FilterMapOptions{ dependency_filter: dep_filter, ..Default::default() }
     );
 

@@ -41,16 +41,17 @@ mod private
   /// Generate workflows for modules in .github/workflows directory.
   pub fn workflow_generate( base_path: &Path ) -> Result< () >
   {
-    let mut workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? );
+    let mut workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
     let username_and_repository = &username_and_repository( &mut workspace_cache )?;
-    let workspace_root = workspace_cache.workspace_root();
+    let workspace_root = workspace_cache.workspace_root()?;
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard
-    let names = workspace_cache.packages_get().iter().map( | p | &p.name).collect::< Vec< _ > >();
+    let names = workspace_cache.packages_get().and_then( | packages | Ok(packages.iter().map( | p | &p.name).collect::< Vec< _ > >()) )?;
     // map packages path to relative paths fom workspace root, for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = workspace_cache
     .packages_get()
+    .map_err( | err | anyhow!( err ) )?
     .iter()
     .map( | p | &p.manifest_path )
     .filter_map( | p | p.strip_prefix( workspace_root ).ok() )
@@ -190,7 +191,7 @@ mod private
   /// If it is still not found, the search continues in the GitHub remotes.
   fn username_and_repository( workspace: &mut Workspace ) -> Result< String > 
   {
-    let cargo_toml_path = workspace.workspace_root().join( "Cargo.toml" );
+    let cargo_toml_path = workspace.workspace_root()?.join( "Cargo.toml" );
     if cargo_toml_path.exists() 
     {
       let mut contents = String::new();
@@ -212,7 +213,7 @@ mod private
       else 
       {
         let mut url = None;
-        for package in workspace.packages_get()
+        for package in workspace.packages_get()?
         {
           if let Ok( wu ) = manifest::private::repo_url( package.manifest_path.parent().unwrap().as_std_path() )
           {
