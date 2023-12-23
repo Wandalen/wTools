@@ -263,7 +263,7 @@ fn fill_missing_randomly()
 {
 
   let hrng = Hrng::master_with_seed( "seed1".into() );
-  let board = Board::default();
+  let mut board = Board::default();
   println!( "{board}" );
   let full_board = board.fill_missing_randomly( hrng );
   for cell in full_board.cells()
@@ -280,7 +280,7 @@ fn fill_missing_randomly()
   println!( "total_error : {}", full_board.total_error() );
 
   let hrng = Hrng::master_with_seed( "seed1".into() );
-  let board2 = Board::default();
+  let mut board2 = Board::default();
   println!( "{board2}" );
   let full_board2 = board2.fill_missing_randomly( hrng );
   println!( "{full_board2} with hash {}", hash( &full_board2 ) );

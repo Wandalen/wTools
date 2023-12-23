@@ -146,9 +146,8 @@ impl Board
   }
 
   /// Randomly fills empty positions in sudoku board.
-  pub fn fill_missing_randomly( &self, hrng : Hrng ) -> Self
+  pub fn fill_missing_randomly( &mut self, hrng : Hrng ) -> &mut Self
   {
-    let mut filled_board = self.clone();
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
 
@@ -159,10 +158,10 @@ impl Board
       let mut missing_vals : Vec< CellVal > = missing_vals.into_iter().if_determinism_then_sort().collect();
       missing_vals.shuffle( &mut *rng );
       let mut missing_val = missing_vals.into_iter();
-      let cells = filled_board.block_cells( block );
+      let cells = self.block_cells( block );
       cells.for_each( | cell_index |
       {
-        let cell_val = &mut filled_board.storage[ usize::from( cell_index ) ];
+        let cell_val = &mut self.storage[ usize::from( cell_index ) ];
         if *cell_val != 0.into()
         {
           return;
@@ -170,7 +169,7 @@ impl Board
         *cell_val = missing_val.next().unwrap();
       });
     }
-    filled_board
+    self
   }
 
   /// Calculates number of errors in column and row that given cell position belongs to.
@@ -183,31 +182,71 @@ impl Board
   }
 
   /// Calculates number of errors in column and row that given cell position belongs to.
-  pub fn cross_error_for_value( &self, index : CellIndex, value : CellVal ) -> usize
+  pub fn cross_error_for_value( &self, index : CellIndex, value : CellVal, other_index : CellIndex, other_value : CellVal ) -> usize
   {
     let mut error : usize = 0;
+    
     error += 9 - self
     .col( index.col() as usize )
     .enumerate()
     .filter_map( | ( i, e ) | 
     {  
-      if e != 0.into() && i != index.row() as usize
+      if e != 0.into()
       {
+        if i == index.row() as usize && index.col() != other_index.col()
+        {
+          return Some( value )
+        }
+
         Some( e )
       } else { None } 
-    }).chain([value].into_iter()).unique().count();
+    }).unique().count();
 
     error += 9 - self
     .row( index.row() as usize )
     .enumerate()
     .filter_map( | ( i, e ) | 
     {  
-      if e != 0.into() && i != index.col() as usize
+      if e != 0.into()
       {
+        if i == index.col() as usize && index.row() != other_index.row()
+        {
+          return Some( value )
+        }
         Some( e )
       } else { None } 
-    }).chain([value].into_iter()).unique().count();
-    
+    }).unique().count();
+
+    error += 9 - self
+    .col( other_index.col() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into()
+      {
+        if i == other_index.row() as usize && index.col() != other_index.col()
+        {
+          return Some( other_value )
+        }
+        Some( e )
+      } else { None } 
+    }).unique().count();
+
+    error += 9 - self
+    .row( other_index.row() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into()
+      {
+        if i == other_index.col() as usize && index.row() != other_index.row()
+        {
+          return Some( other_value )
+        }
+        Some( e )
+      } else { None } 
+    }).unique().count();
+
     error
   }
 

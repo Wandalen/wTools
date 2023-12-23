@@ -14,7 +14,7 @@ fn person_mutate()
 
   let initial = SudokuInitial::new( Board::default(), Seed::default() );
 
-  let mut person = SudokuPerson::new( initial.board.fill_missing_randomly(initial.config.hrng.clone()) );
+  let mut person = SudokuPerson::new( &initial );
   log::trace!( "{person:#?}" );
   a_id!( person.cost, 45.into() );
   a_id!( person.cost, person.board.total_error().into() );
@@ -41,13 +41,13 @@ fn person_mutate()
 #[ test ]
 fn initial_temperature()
 {
-  // logger_init();
+  logger_init();
 
   let initial = SudokuInitial::new( Board::default(), Seed::default() );
 
-  let temperature = SudokuInitial::initial_temperature(&initial.board, initial.config.hrng.clone() );
+  let temperature = &initial.initial_temperature();
   a_true!( temperature.unwrap() >= 0f64 );
-  a_id!( temperature, 1.591644851508443.into() );
+  a_id!( temperature.unwrap(), 1.591644851508443 );
 
   // a_true!( false );
 }
@@ -90,11 +90,11 @@ fn solve_with_sa()
 ///
 /// # Usage
 ///
-/// cargo test solve_one_empty_block --release --features rapidity_6
+/// cargo test solve_empty_full_block --release --features rapidity_6
 ///
 #[ cfg( feature = "rapidity_6" ) ]
 #[ test ]
-fn solve_one_empty_block()
+fn solve_empty_full_block()
 {
   let sudoku : &str = r#"
   402000000
@@ -120,12 +120,38 @@ fn solve_one_empty_block()
   a_true!( generation.is_some() );
   let generation = generation.unwrap();
   log::trace!( "{generation:#?}" );
-  log::trace!( "{:#?}", generation.person.board );
+  println!( "{:#?}", generation.person.board );
 
   a_id!( generation.person.cost, 0.into() );
 
-  // a_true!( false );
-}
+  let sudoku : &str = r#"
+  350964170
+  700020003
+  019003524
+  491758032
+  507302801
+  283600090
+  900580317
+  800017209
+  170039406
+  "#;
+  log::set_max_level( log::LevelFilter::Warn );
+
+  let seed : Seed = "seed3".into();
+  // let seed = Seed::random();
+  let mut initial = SudokuInitial::new( Board::from(sudoku), seed );
+
+  log::set_max_level( log::LevelFilter::max() );
+  let ( reason, generation ) = initial.solve_with_sa();
+
+  log::trace!( "reason : {reason}" );
+  a_true!( generation.is_some() );
+  let generation = generation.unwrap();
+  log::trace!( "{generation:#?}" );
+  println!( "{:#?}", generation.person.board );
+
+  a_id!( generation.person.cost, 0.into() );
+ }
 
 //
 // seed: "seed1"
