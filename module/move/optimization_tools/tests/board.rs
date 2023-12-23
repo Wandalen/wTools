@@ -263,28 +263,28 @@ fn fill_missing_randomly()
 {
 
   let hrng = Hrng::master_with_seed( "seed1".into() );
-  let mut board = Board::default();
+  let board = Board::default();
   println!( "{board}" );
-  board.fill_missing_randomly( hrng );
-  for cell in board.cells()
+  let full_board = board.fill_missing_randomly( hrng );
+  for cell in full_board.cells()
   {
     // println!( "cell : {cell:?}" );
     assert!( cell.1 != 0.into() );
   }
-  for block in board.blocks()
+  for block in full_board.blocks()
   {
-    let missing = board.block_missing_vals( block );
+    let missing = full_board.block_missing_vals( block );
     assert!( missing.len() == 0 );
   }
-  println!( "{board} with hash {}", hash( &board ) );
-  println!( "total_error : {}", board.total_error() );
+  println!( "{full_board} with hash {}", hash( &full_board ) );
+  println!( "total_error : {}", full_board.total_error() );
 
   let hrng = Hrng::master_with_seed( "seed1".into() );
-  let mut board2 = Board::default();
+  let board2 = Board::default();
   println!( "{board2}" );
-  board2.fill_missing_randomly( hrng );
-  println!( "{board2} with hash {}", hash( &board2 ) );
-  assert_eq!( hash( &board ), hash( &board2 ) );
+  let full_board2 = board2.fill_missing_randomly( hrng );
+  println!( "{full_board2} with hash {}", hash( &full_board2 ) );
+  assert_eq!( hash( &full_board ), hash( &full_board2 ) );
 
   // assert!( false );
 }

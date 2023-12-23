@@ -196,7 +196,7 @@ impl Board
         Some( e )
       } else { None } 
     }).chain([value].into_iter()).unique().count();
-    let mut error : usize = 0;
+
     error += 9 - self
     .row( index.row() as usize )
     .enumerate()
