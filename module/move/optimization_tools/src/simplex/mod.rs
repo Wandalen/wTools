@@ -1,9 +1,13 @@
 //! Contains implementation of Simplex optimization method.
 //! 
 
-use std::{ vec, collections::{HashSet, BinaryHeap} };
+use std::{ vec, collections::{HashSet, BinaryHeap}, env::var };
 use iter_tools::Itertools;
 //use ndarray;
+
+mod drawing;
+#[ cfg( feature = "lp_parse" ) ]
+pub mod parser;
 
 /// Represents linear problem.
 #[ derive( Clone, Debug ) ]
@@ -26,10 +30,126 @@ impl Problem
   {
     Self { var_coeffs, constraints, mins, maxs }
   }
+
+  // pub fn read( opt_function: &str, constraints_str: Vec<&str> ) -> Problem
+  // {
+  //   use exmex::{ prelude::*, DeepEx, ops_factory, BinOp, MakeOperators, Operator};
+
+  //   ops_factory!(
+  //     BitwiseOpsFactory,
+  //       bool,
+  //       Operator::make_bin(
+  //           "<=",
+  //           BinOp {
+  //               apply: |a, b| a <= b,
+  //               prio: 0,
+  //               is_commutative: false,
+  //           }
+  //       )
+  //   );
+
+  //   let mut z_coeffs = Vec::new();
+
+  //   let z_expr = FlatEx::<f64>::parse(opt_function).unwrap();
+  //   let var_number = z_expr.var_indices_ordered().len();
+  //   let var_names = z_expr.var_names().into_iter().cloned().collect::<HashSet<_>>();
+  //   for val in 0..var_number
+  //   {
+  //     let deep_ex = z_expr.clone().to_deepex().unwrap();
+  //     let coeff = deep_ex.partial(val).unwrap();
+  //     z_coeffs.push(coeff.eval(vec![0.0; var_number].as_slice()).unwrap());
+  //   }
+    
+  
+  // let mut constraints = Vec::new();
+  //   for constraint in &constraints_str
+  //   {
+  //     let mut left_hand = "";
+  //     let mut right_hand = "";
+  //     let mut comp = Comp::Less;
+  //     if constraint.contains("<=")
+  //     {
+  //       (left_hand, right_hand) = constraint.split("<=").collect_tuple().unwrap();
+  //     }
+
+  //     if constraint.contains(">=")
+  //     {
+  //       (left_hand, right_hand) = constraint.split(">=").collect_tuple().unwrap();
+  //       comp = Comp::Greater;
+  //     }
+      
+  //     let mut coeffs = Vec::new();
+  //     let mut expr = FlatEx::<f64>::parse(left_hand).unwrap();
+      
+  //     let con_var_names = expr.var_names();
+  //     let con_var_names = con_var_names.into_iter().cloned().collect::<HashSet<_>>();
+  //     let unused_vars = var_names.difference(&con_var_names);
+  //     for unused_var in unused_vars
+  //     {
+  //       expr = expr.operate_binary(FlatEx::<f64>::parse((String::from("0*") + unused_var).as_str()).unwrap(), "+").unwrap();
+  //     }
+  //     let var_number = expr.var_indices_ordered().len();
+  //     for val in 0..var_number
+  //     {
+  //       let deep_ex = expr.clone().to_deepex().unwrap();
+  //       let coeff = deep_ex.partial(val).unwrap();
+  //       coeffs.push(coeff.eval(vec![0.0; var_number].as_slice()).unwrap());
+        
+  //     }
+  //     constraints.push( Constraint {
+  //       coefs: coeffs,
+  //       value: FlatEx::<f64>::parse(right_hand).unwrap().eval(&[]).unwrap(),
+  //       comparison: comp,
+  //     });
+  //   }
+
+  //   dbg!(Problem {
+  //     constraints,
+  //     var_coeffs: z_coeffs,
+  //     mins: Vec::new(),
+  //     maxs: Vec::new(),
+  //   })
+  // }
+
+  fn normalize( &mut self )
+  {
+    let mut equations_coefficients = Vec::new();
+    for i in 1..= self.constraints.len()
+    {
+      let mut coeffs = self.constraints[ i - 1 ].coefs.clone();
+      for _ in 1..=self.constraints.len()
+      {
+        coeffs.push( 0.0 );
+      }
+      match self.constraints[ i-1 ].comparison
+      {
+        Comp::Less => 
+        {
+            coeffs[ self.var_coeffs.len() + i - 1 ] = 1.0;
+        }
+        Comp::Greater =>
+        {
+            coeffs[ self.var_coeffs.len() + i - 1 ] = -1.0;
+        }
+        Comp::Equal => {}
+      }
+      equations_coefficients.push( coeffs );
+    }
+
+    let new_constraints = self.constraints
+    .iter()
+    .enumerate()
+    .map( | ( i, constraint ) | 
+      Constraint::new(equations_coefficients[ i ].clone(), constraint.value, Comp::Equal ) )
+    .collect_vec()
+    ;
+
+    self.constraints = new_constraints;
+  }
 }
 
 /// Represents inequation constraint.
-#[ derive( Clone, Debug ) ]
+#[ derive( Clone, Debug, PartialEq ) ]
 pub struct Constraint 
 {
   /// Coefficients of variables in inequation.
@@ -41,7 +161,7 @@ pub struct Constraint
 }
 
 /// Type of comparison in inequation.
-#[ derive( Clone, Debug ) ]
+#[ derive( Clone, Debug, PartialEq ) ]
 pub enum Comp
 {
   /// Less than comparison.
@@ -99,7 +219,7 @@ impl ExtremePoint
     {
       if solution.bv.contains( &index )
       {
-        point[ index - 1 ] = solution.bv_values[ index - 1 ];
+        point[ index - 1 ] = solution.bv_values[ solution.bv.iter().position( | a | *a == index ).unwrap() ];
       }
     }
 
@@ -161,49 +281,18 @@ pub struct SimplexSolver {}
 
 impl SimplexSolver
 {
-  fn normalized_problem( p : &Problem ) -> Problem
+  fn extreme_points ( p : &mut Problem ) -> Vec< ExtremePoint >
   {
-    let mut equations_coefficients = Vec::new();
-    for i in 1..= p.constraints.len()
-    {
-      let mut coeffs = p.constraints[ i - 1 ].coefs.clone();
-      for _ in 1..=p.constraints.len()
-      {
-        coeffs.push( 0.0 );
-      }
-      match p.constraints[ i-1 ].comparison
-      {
-        Comp::Less => 
-        {
-            coeffs[ p.var_coeffs.len() + i - 1 ] = 1.0;
-        }
-        Comp::Greater =>
-        {
-            coeffs[ p.var_coeffs.len() + i - 1 ] = -1.0;
-        }
-        Comp::Equal => {}
-      }
-      equations_coefficients.push( coeffs );
-    }
-
-    let new_constraints = p.constraints
-    .iter()
-    .enumerate()
-    .map( | ( i, constraint ) | 
-      Constraint::new(equations_coefficients[ i ].clone(), constraint.value, Comp::Equal ) )
-    .collect_vec()
+    let bfs = Self::basic_feasible_solutions( p.clone() );
+    let extreme_points = bfs
+    .into_iter()
+    .map( | s | ExtremePoint::new( s, p.var_coeffs.clone() ) )
+    .collect::< Vec< ExtremePoint > >()
     ;
 
-    Problem
-    {
-      var_coeffs : p.var_coeffs.clone(),
-      maxs : p.maxs.clone(),
-      mins : p.mins.clone(),
-      constraints : new_constraints,
-    }
+    extreme_points
   }
-
-  fn basic_feasible_solutions( p : Problem ) -> Vec< BasicSolution >
+  fn basic_feasible_solutions( mut p : Problem ) -> Vec< BasicSolution >
   {
     let total_variables_number = p.var_coeffs.len() + p.constraints.len();
     let basic_variables_number = p.var_coeffs.len();
@@ -211,7 +300,7 @@ impl SimplexSolver
     let number_of_basic_solutions : u128 = ( 1..=total_variables_number as u128 ).product::< u128 >() 
       / ( ( 1..=basic_variables_number as u128 ).product::< u128 >() * ( 1..=non_basic_variables_number as u128 ).product::< u128 >() );
 
-    let p = SimplexSolver::normalized_problem(&p);
+    p.normalize();
 
     let mut bs = vec![ BasicSolution 
       { 
@@ -262,6 +351,7 @@ impl SimplexSolver
     for ( index, bs ) in bs.iter_mut().enumerate()
     {
       bs.bv = final_result[ index ].clone().iter().map( | elem | *elem ).collect_vec();
+      bs.bv.sort();
     }
 
     for basic_solution in bs.iter_mut() 
@@ -273,22 +363,23 @@ impl SimplexSolver
     }
     for basic_solution in bs.iter_mut() 
     {
-      let mut vec_of_coeffs = Vec::new();
+      let rows = basic_solution.nbv.len();
+      let columns = basic_solution.bv.len();
+      let mut vec_of_coeffs = vec![ 0.0; rows * columns ];
         
-      for bv in basic_solution.bv.iter() 
+      for ( index, bv ) in basic_solution.bv.iter().enumerate() 
       {
         for i in 0..p.constraints.len() 
         {
-          vec_of_coeffs.push( p.constraints[ i ].coefs[ bv - 1 ] );
+          vec_of_coeffs[ i * columns + index ] = p.constraints[ i ].coefs[ bv - 1 ];
         }
       }
-      let rows = basic_solution.nbv.len();
-      let columns = basic_solution.bv.len();
+
       
       let v = p.constraints.iter().map(|c| c.value).collect::<Vec<_>>();
 
       let m1: ndarray::Array2<f64> = ndarray::Array2::from_shape_vec((rows, columns), vec_of_coeffs).unwrap();
-      let mut b : ndarray::Array1<f64> = ndarray::ArrayBase::from_vec(v.clone());
+      let b : ndarray::Array1<f64> = ndarray::ArrayBase::from_vec(v.clone());
 
       let b = ndarray_linalg::Solve::solve_into(&m1, b);
 
@@ -314,10 +405,10 @@ impl SimplexSolver
   }
 
   /// Solves linear problem using Simplex method.
-  pub fn solve( &self, p : Problem ) -> ExtremePoint
+  pub fn solve( &self, mut p : Problem ) -> ExtremePoint
   {
-    let bfs = Self::basic_feasible_solutions( p.clone() );
-    let extreme_points = bfs.into_iter().map( | s | ExtremePoint::new( s, p.var_coeffs.clone() ) ).collect::< Vec< ExtremePoint > >();
+    //let bfs = Self::basic_feasible_solutions( p.clone() );
+    let extreme_points = Self::extreme_points(&mut p);
     let mut queue: std::collections::BinaryHeap<ExtremePoint> = extreme_points.into_iter().collect::< BinaryHeap< _ > >();
     let max_point = queue.pop().unwrap();
 
@@ -371,6 +462,38 @@ mod simplex_tests {
 
     let solution = SimplexSolver{}.solve( p );
     assert_eq!( solution.point, vec![ 0.0, 0.0, 3.0 ] )
+  }
+
+  #[ test ]
+  fn problem_draw() 
+  {
+    let mut p = Problem::new
+    ( 
+      vec![ 3.0, 2.0 ], 
+      vec![ Constraint::new( vec![ 2.0, 1.0 ], 9.0, Comp::Less ), Constraint::new( vec![ 1.0, 2.0 ], 9.0, Comp::Less ) ],
+      Vec::new(), 
+      Vec::new()
+    );
+
+    let ex_points = SimplexSolver::extreme_points(&mut p);
+    drawing::draw_problem(&p, ex_points);
+  }
+  
+  #[ cfg( feature = "lp_parse" ) ]
+  #[ test ]
+  fn problem_parse() 
+  {
+    let mut p = Problem::new
+    ( 
+      vec![ 2.0, -3.0, 4.0 ], 
+      vec![ Constraint::new( vec![ 2.0, -3.0, 1.0 ], 3.0, Comp::Less ), Constraint::new( vec![ 1.0, -1.0, 0.0 ], 4.0, Comp::Less ) ],
+      Vec::new(), 
+      Vec::new()
+    );
+    let parsed = parser::ProblemParser::parse("2*x - 3*y + 4*z", vec!["2*x -3*y +z <= 3", "-y + x <=4"]);
+    
+    assert_eq!(p.var_coeffs, parsed.var_coeffs);
+    assert_eq!(p.constraints, parsed.constraints);
   }
 
 }
