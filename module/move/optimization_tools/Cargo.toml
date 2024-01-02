@@ -49,9 +49,10 @@ env_logger = "0.10.1"
 log = "0.4.20"
 rand = "0.8.5"
 statrs = "0.16.0"
-blas-src = { version = "0.9", features = [ "openblas" ] }
+# blas-src = { version = "0.9", features = [ "openblas" ] }
+# openblas-src = { version = "0.10.5", features = [ "system" ] }
 ndarray = "0.15.6"
-ndarray-linalg = { version = "0.16", features = [ "openblas" ] }
+ndarray-linalg = { version = "0.16", features = [ "openblas-system" ] }
 plotters = { version = "0.3.5" }
 plotters-backend = { version = "0.3.5", optional = true }
 piston_window = { version = "0.120.0", optional = true }
