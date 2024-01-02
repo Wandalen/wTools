@@ -181,6 +181,75 @@ impl Board
     error
   }
 
+  /// Calculates number of errors in column and row that given cell position belongs to.
+  pub fn cross_error_for_value( &self, index : CellIndex, value : CellVal, other_index : CellIndex, other_value : CellVal ) -> usize
+  {
+    let mut error : usize = 0;
+    
+    error += 9 - self
+    .col( index.col() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into()
+      {
+        if i == index.row() as usize && index.col() != other_index.col()
+        {
+          return Some( value )
+        }
+
+        Some( e )
+      } else { None } 
+    }).unique().count();
+
+    error += 9 - self
+    .row( index.row() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into()
+      {
+        if i == index.col() as usize && index.row() != other_index.row()
+        {
+          return Some( value )
+        }
+        Some( e )
+      } else { None } 
+    }).unique().count();
+
+    error += 9 - self
+    .col( other_index.col() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into()
+      {
+        if i == other_index.row() as usize && index.col() != other_index.col()
+        {
+          return Some( other_value )
+        }
+        Some( e )
+      } else { None } 
+    }).unique().count();
+
+    error += 9 - self
+    .row( other_index.row() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into()
+      {
+        if i == other_index.col() as usize && index.row() != other_index.row()
+        {
+          return Some( other_value )
+        }
+        Some( e )
+      } else { None } 
+    }).unique().count();
+
+    error
+  }
+
   /// Calculates number of errors(duplicate digits) in sudoku board.
   pub fn total_error( &self ) -> usize
   {
