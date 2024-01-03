@@ -3,166 +3,12 @@
 
 use std::{ vec, collections::{ HashSet, BinaryHeap } };
 use iter_tools::Itertools;
-//use ndarray;
 
 pub mod drawing;
+pub mod linear_problem;
+use linear_problem::{ Problem, BasicSolution };
 #[ cfg( feature = "lp_parse" ) ]
 pub mod parser;
-
-/// Represents linear problem.
-#[ derive( Clone, Debug ) ]
-pub struct Problem 
-{
-    /// Coefficients of variables in function to optimize.
-    pub var_coeffs : Vec< f64 >,
-    /// Set of inequation constraints.
-    pub constraints : Vec< Constraint >,
-    variables : Vec< Variable >,
-}
-
-impl Problem 
-{
-  /// Create new linear problem.
-  pub fn new( vars : Vec< Variable >, constraints : Vec< Constraint > ) -> Self
-  {
-
-    Self { var_coeffs : vars.iter().map(|var| var.coefficient).collect_vec(), constraints, variables : vars }
-  }
-
-  fn normalize( &mut self )
-  {
-    let mut equations_coefficients = Vec::new();
-    for i in 1..= self.constraints.len()
-    {
-      let mut coeffs = self.constraints[ i - 1 ].coefs.clone();
-      for _ in 1..=self.constraints.len()
-      {
-        coeffs.push( 0.0 );
-      }
-      match self.constraints[ i-1 ].comparison
-      {
-        Comp::Less => 
-        {
-            coeffs[ self.var_coeffs.len() + i - 1 ] = 1.0;
-        }
-        Comp::Greater =>
-        {
-            coeffs[ self.var_coeffs.len() + i - 1 ] = -1.0;
-        }
-        Comp::Equal => {}
-      }
-      equations_coefficients.push( coeffs );
-    }
-
-    let new_constraints = self.constraints
-    .iter()
-    .enumerate()
-    .map( | ( i, constraint ) | 
-      Constraint::new(equations_coefficients[ i ].clone(), constraint.value, Comp::Equal ) )
-    .collect_vec()
-    ;
-
-    self.constraints = new_constraints;
-  }
-
-  pub fn is_feasible_solution( &self, bs : &BasicSolution ) -> bool
-  {
-    for ( index, bv ) in bs.bv.iter().enumerate()
-    {
-      if let Some( var ) = self.variables.get( bv - 1 )
-      {
-        if !var.is_in_bounds( bs.bv_values[ index ] )
-        {
-          return false;
-        }
-      }
-      else 
-      {
-        if bs.bv_values[ index ] < 0.0
-        {
-          return false
-        }
-      }
-    }
-    true
-  }
-}
-
-#[ derive( Clone, Debug, PartialEq ) ]
-pub struct Variable 
-{
-  pub coefficient : f64,
-  pub max : f64,
-  pub min : f64,
-}
-
-impl Variable
-{
-  pub fn new( coeff : f64 ) -> Self
-  {
-    Self { coefficient : coeff, min : f64::MIN, max : f64::MAX }
-  }
-
-  pub fn max( self, max : f64 ) -> Self
-  {
-    Self { max, coefficient : self.coefficient, min : self.min }
-  }
-
-  pub fn min( self, min : f64 ) -> Self
-  {
-    Self { min, coefficient : self.coefficient, max : self.max }
-  }
-
-  pub fn is_in_bounds( &self, val : f64 ) -> bool
-  {
-    if val >= self.min && val <= self.max
-    {
-      true
-    }
-    else 
-    {
-      false
-    }
-  }
-}
-
-/// Represents inequation constraint.
-#[ derive( Clone, Debug, PartialEq ) ]
-pub struct Constraint 
-{
-  /// Coefficients of variables in inequation.
-  pub coefs : Vec< f64 >,
-  /// Right-hand constant value.
-  pub value : f64,
-  /// Type of comparison.
-  pub comparison : Comp,
-}
-
-/// Type of comparison in inequation.
-#[ derive( Clone, Debug, PartialEq ) ]
-pub enum Comp
-{
-  /// Less than comparison.
-  Less,
-  /// Greater than comparison.
-  Greater,
-  /// Constraint is equation.
-  Equal,
-}
-
-impl Constraint 
-{
-  /// Create new constraint.
-  pub fn new( coefs : Vec< f64 >, value : f64, comparison : Comp ) -> Self
-  {
-    Self
-    {
-      coefs,
-      value,
-      comparison,
-    }
-  }
-}
 
 /// Extreme point of feasible region.
 #[ derive( Clone, Debug, PartialEq ) ]
@@ -182,7 +28,7 @@ impl Default for ExtremePoint
 {
   fn default() -> Self 
   {
-    Self { bv : Vec::new(), point : Vec::new() , z : 0.0 }
+    Self { bv : Vec::new(), point : Vec::new(), z : 0.0 }
   }
 }
 
@@ -225,18 +71,6 @@ impl ExtremePoint
     }
     false
   }
-}
-
-/// Basic solution of linear problem.
-#[ derive( Clone, Debug ) ]
-pub struct BasicSolution
-{
-  /// Non-basic variables indices.
-  nbv : Vec< usize >,
-  /// Basic variables indices.
-  bv : Vec< usize >,
-  /// Basic variables values.
-  bv_values : Vec< f64 >,
 }
 
 impl PartialOrd for ExtremePoint 
@@ -397,6 +231,7 @@ impl SimplexSolver
 #[ cfg( test ) ]
 mod simplex_tests {
   use super::*;
+  use linear_problem::{ Problem, Constraint, Comp, Variable };
 
   #[ test ]
   fn constraint() 
@@ -455,12 +290,14 @@ mod simplex_tests {
   #[ test ]
   fn problem_parse() 
   {
-    let mut p = Problem::new
+    let p = Problem::new
     ( 
-      vec![ 2.0, -3.0, 4.0 ], 
-      vec![ Constraint::new( vec![ 2.0, -3.0, 1.0 ], 3.0, Comp::Less ), Constraint::new( vec![ 1.0, -1.0, 0.0 ], 4.0, Comp::Less ) ],
-      Vec::new(), 
-      Vec::new()
+      vec![ Variable::new( 2.0 ).min( 0.0 ), Variable::new( -3.0 ).min( 0.0 ), Variable::new( 4.0 ).min( 0.0 ) ], 
+      vec!
+      [ 
+        Constraint::new( vec![ 2.0, -3.0, 1.0 ], 3.0, Comp::Less ), 
+        Constraint::new( vec![ 1.0, -1.0, 0.0 ], 4.0, Comp::Less ) 
+      ],
     );
     let parsed = parser::ProblemParser::parse( "2*x - 3*y + 4*z", vec![ "2*x -3*y +z <= 3", "-y + x <=4" ] );
     

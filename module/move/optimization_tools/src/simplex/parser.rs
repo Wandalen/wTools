@@ -1,5 +1,5 @@
-use super::*;
-use exmex::{ prelude::*, DeepEx, ops_factory, BinOp, MakeOperators, Operator };
+use super::{ *, linear_problem:: { Problem, Variable, Constraint, Comp } };
+use exmex::{ prelude::*, ops_factory, BinOp, MakeOperators, Operator };
 
 pub struct ProblemParser {}
 
@@ -9,18 +9,18 @@ impl ProblemParser
   {
     ops_factory!
     (
-        BitwiseOpsFactory,
-        bool,
-        Operator::make_bin
-        (
+      BitwiseOpsFactory,
+      bool,
+      Operator::make_bin
+      (
         "<=",
         BinOp 
         {
-            apply: | a, b | a <= b,
-            prio: 0,
-            is_commutative : false,
+          apply: | a, b | a <= b,
+          prio: 0,
+          is_commutative : false,
         }
-        )
+      )
     );
   
     let mut z_coeffs = Vec::new();
@@ -81,12 +81,17 @@ impl ProblemParser
         comparison : comp,
       } );
     }
-    Problem 
-    {
+
+    let variables = z_coeffs
+    .into_iter()
+    .map( | coeff | Variable::new( coeff ).min( 0.0 ) )
+    .collect_vec()
+    ;
+
+    Problem::new
+    (
+      variables,
       constraints,
-      var_coeffs : z_coeffs,
-      mins : Vec::new(),
-      maxs : Vec::new(),
-    }
+    )
   }
 }
