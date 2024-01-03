@@ -104,29 +104,33 @@ impl Problem
   /// Create new linear problem.
   pub fn new( vars : Vec< Variable >, constraints : Vec< Constraint > ) -> Self
   {
-    Self { var_coeffs : vars.iter().map(|var| var.coefficient).collect_vec(), constraints, variables : vars }
+    Self { var_coeffs : vars.iter().map( | var | var.coefficient ).collect_vec(), constraints, variables : vars }
   }
 
   /// Create normalized problem from linear programming problem.
   pub fn normalized( &self ) -> NormalizedProblem
   {
     let mut equations_coefficients = Vec::new();
-    for i in 1..= self.constraints.len()
+    let mut vars = self.variables.clone();
+
+    for i in 1..=self.constraints.len()
     {
       let mut coeffs = self.constraints[ i - 1 ].coefs.clone();
       for _ in 1..=self.constraints.len()
       {
         coeffs.push( 0.0 );
       }
-      match self.constraints[ i-1 ].comparison
+      match self.constraints[ i - 1 ].comparison
       {
         Comp::Less => 
         {
           coeffs[ self.var_coeffs.len() + i - 1 ] = 1.0;
+          vars.push( Variable::new( 0.0 ).min( 0.0 ) );
         }
         Comp::Greater =>
         {
           coeffs[ self.var_coeffs.len() + i - 1 ] = -1.0;
+          vars.push( Variable::new( 0.0 ).min( 0.0 ) );
         }
         Comp::Equal => {}
       }
@@ -138,7 +142,7 @@ impl Problem
     ( 
       &equations_coefficients, 
       &self.constraints.iter().map( | c | c.value ).collect_vec(),
-      &self.variables,
+      &vars,
     )
   }
 
@@ -182,13 +186,6 @@ impl NormalizedProblem
         if !var.is_in_bounds( bs.bv_values[ index ] )
         {
           return false;
-        }
-      }
-      else 
-      {
-        if bs.bv_values[ index ] < 0.0
-        {
-          return false
         }
       }
     }
