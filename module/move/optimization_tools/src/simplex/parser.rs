@@ -1,10 +1,18 @@
-use super::{ *, linear_problem:: { Problem, Variable, Constraint, Comp } };
-use exmex::{ prelude::*, ops_factory, BinOp, MakeOperators, Operator };
+//! Parser for linear programming problem.
+//! 
 
+use super::linear_problem::{ Problem, Variable, Constraint, Comp };
+use exmex::{ prelude::*, ops_factory, BinOp, MakeOperators, Operator };
+use iter_tools::Itertools;
+use std::collections::HashSet;
+
+/// Parses linear programming problem from str to Problem struct.
+#[ derive( Debug ) ]
 pub struct ProblemParser {}
 
 impl ProblemParser
 {
+  /// Creates Problem struct from objective function and constraints passed as string slices.
   pub fn parse( opt_function : &str, constraints_str : Vec< &str > ) -> Problem
   {
     ops_factory!
@@ -16,8 +24,8 @@ impl ProblemParser
         "<=",
         BinOp 
         {
-          apply: | a, b | a <= b,
-          prio: 0,
+          apply : | a, b | a <= b,
+          prio : 0,
           is_commutative : false,
         }
       )
@@ -30,9 +38,9 @@ impl ProblemParser
     let var_names = z_expr.var_names().into_iter().cloned().collect::< HashSet< _ > >();
     for val in 0..var_number
     {
-        let deep_ex = z_expr.clone().to_deepex().unwrap();
-        let coeff = deep_ex.partial(val).unwrap();
-        z_coeffs.push( coeff.eval( vec![ 0.0; var_number ].as_slice() ).unwrap() );
+      let deep_ex = z_expr.clone().to_deepex().unwrap();
+      let coeff = deep_ex.partial( val ).unwrap();
+      z_coeffs.push( coeff.eval( vec![ 0.0; var_number ].as_slice() ).unwrap() );
     }
       
     let mut constraints = Vec::new();

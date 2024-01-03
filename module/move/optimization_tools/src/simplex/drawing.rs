@@ -15,7 +15,7 @@ use plotters::
   chart::ChartBuilder
 };
 
-use super::{ Problem, ExtremePoint };
+use super::{ solver::ExtremePoint, linear_problem::Problem };
 
 /// Create plot with linear programming problem.
 pub fn draw_problem
