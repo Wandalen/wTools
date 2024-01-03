@@ -7,7 +7,7 @@ use plotters::
   style::
   {
     full_palette::{ BLACK, WHITE, RED },
-    Color, IntoFont, TextStyle,
+    Color, IntoFont,
   }, 
   chart::ChartBuilder
 };

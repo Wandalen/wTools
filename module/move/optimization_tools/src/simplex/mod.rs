@@ -5,7 +5,7 @@ use std::{ vec, collections::{ HashSet, BinaryHeap } };
 use iter_tools::Itertools;
 //use ndarray;
 
-mod drawing;
+pub mod drawing;
 #[ cfg( feature = "lp_parse" ) ]
 pub mod parser;
 
