@@ -272,7 +272,7 @@ pub struct SudokuMutagen
   pub cell2 : CellIndex,
 }
 
-/// Represents initial configuration of SA optimization process for sudoku solving.
+/// Represents initial state of board and configuration of SA optimization process for sudoku solving.
 #[ derive( Clone, Debug ) ]
 pub struct SudokuInitial
 {
@@ -282,6 +282,7 @@ pub struct SudokuInitial
   pub config : InitialConfig,
 }
 
+/// Represents initial configuration of SA optimization process for sudoku solving.
 #[derive(Clone,Debug)]
 pub struct InitialConfig
 {
@@ -524,7 +525,7 @@ impl< 'a > SudokuGeneration< 'a >
       }
 
       let mutagen = self.person.mutagen( self.initial_board, self.hrng.clone() );
-      let mut mutagen_cross_cost = self.person.board.cross_error_for_value
+      let mutagen_cross_cost = self.person.board.cross_error_for_value
       (
         mutagen.cell1, 
         self.person.board.cell(mutagen.cell2),

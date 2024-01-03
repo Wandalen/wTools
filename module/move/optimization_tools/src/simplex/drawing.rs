@@ -1,3 +1,6 @@
+//! Tools for graphical representation of two dimensional linear programming problem.
+//! 
+
 use plotters::
 {
   backend::BitMapBackend,
@@ -12,8 +15,9 @@ use plotters::
   chart::ChartBuilder
 };
 
-use super::{ Problem, ExtremePoint };
+use super::{ solver::ExtremePoint, linear_problem::Problem };
 
+/// Create plot with linear programming problem.
 pub fn draw_problem
 (
   problem : &Problem,
