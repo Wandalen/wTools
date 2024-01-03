@@ -213,7 +213,7 @@ tests_impls!
       matches!
       (
         ca.perform( "command" ), 
-        Err( Error::Validation( ValidationError::Parser( _ ) ) ) 
+        Err( Error::Validation( ValidationError::Parser { .. } ) )
       ), 
       "Unexpected validation error type, expected ValidationError::Parser."
     );

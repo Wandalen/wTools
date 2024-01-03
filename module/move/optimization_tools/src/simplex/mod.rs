@@ -1,9 +1,13 @@
 //! Contains implementation of Simplex optimization method.
 //! 
 
-use std::{ vec, collections::{HashSet, BinaryHeap} };
+use std::{ vec, collections::{ HashSet, BinaryHeap } };
 use iter_tools::Itertools;
 //use ndarray;
+
+pub mod drawing;
+#[ cfg( feature = "lp_parse" ) ]
+pub mod parser;
 
 /// Represents linear problem.
 #[ derive( Clone, Debug ) ]
@@ -13,23 +17,117 @@ pub struct Problem
     pub var_coeffs : Vec< f64 >,
     /// Set of inequation constraints.
     pub constraints : Vec< Constraint >,
-    /// Min allowed values for variables.
-    pub mins : Vec< f64 >,
-    /// Max allowed values for variables.
-    pub maxs : Vec< f64 >,
+    variables : Vec< Variable >,
 }
 
 impl Problem 
 {
   /// Create new linear problem.
-  pub fn new( var_coeffs : Vec< f64 >, constraints : Vec< Constraint >, mins : Vec< f64 >, maxs : Vec< f64 > ) -> Self
+  pub fn new( vars : Vec< Variable >, constraints : Vec< Constraint > ) -> Self
   {
-    Self { var_coeffs, constraints, mins, maxs }
+
+    Self { var_coeffs : vars.iter().map(|var| var.coefficient).collect_vec(), constraints, variables : vars }
+  }
+
+  fn normalize( &mut self )
+  {
+    let mut equations_coefficients = Vec::new();
+    for i in 1..= self.constraints.len()
+    {
+      let mut coeffs = self.constraints[ i - 1 ].coefs.clone();
+      for _ in 1..=self.constraints.len()
+      {
+        coeffs.push( 0.0 );
+      }
+      match self.constraints[ i-1 ].comparison
+      {
+        Comp::Less => 
+        {
+            coeffs[ self.var_coeffs.len() + i - 1 ] = 1.0;
+        }
+        Comp::Greater =>
+        {
+            coeffs[ self.var_coeffs.len() + i - 1 ] = -1.0;
+        }
+        Comp::Equal => {}
+      }
+      equations_coefficients.push( coeffs );
+    }
+
+    let new_constraints = self.constraints
+    .iter()
+    .enumerate()
+    .map( | ( i, constraint ) | 
+      Constraint::new(equations_coefficients[ i ].clone(), constraint.value, Comp::Equal ) )
+    .collect_vec()
+    ;
+
+    self.constraints = new_constraints;
+  }
+
+  pub fn is_feasible_solution( &self, bs : &BasicSolution ) -> bool
+  {
+    for ( index, bv ) in bs.bv.iter().enumerate()
+    {
+      if let Some( var ) = self.variables.get( bv - 1 )
+      {
+        if !var.is_in_bounds( bs.bv_values[ index ] )
+        {
+          return false;
+        }
+      }
+      else 
+      {
+        if bs.bv_values[ index ] < 0.0
+        {
+          return false
+        }
+      }
+    }
+    true
+  }
+}
+
+#[ derive( Clone, Debug, PartialEq ) ]
+pub struct Variable 
+{
+  pub coefficient : f64,
+  pub max : f64,
+  pub min : f64,
+}
+
+impl Variable
+{
+  pub fn new( coeff : f64 ) -> Self
+  {
+    Self { coefficient : coeff, min : f64::MIN, max : f64::MAX }
+  }
+
+  pub fn max( self, max : f64 ) -> Self
+  {
+    Self { max, coefficient : self.coefficient, min : self.min }
+  }
+
+  pub fn min( self, min : f64 ) -> Self
+  {
+    Self { min, coefficient : self.coefficient, max : self.max }
+  }
+
+  pub fn is_in_bounds( &self, val : f64 ) -> bool
+  {
+    if val >= self.min && val <= self.max
+    {
+      true
+    }
+    else 
+    {
+      false
+    }
   }
 }
 
 /// Represents inequation constraint.
-#[ derive( Clone, Debug ) ]
+#[ derive( Clone, Debug, PartialEq ) ]
 pub struct Constraint 
 {
   /// Coefficients of variables in inequation.
@@ -41,7 +139,7 @@ pub struct Constraint
 }
 
 /// Type of comparison in inequation.
-#[ derive( Clone, Debug ) ]
+#[ derive( Clone, Debug, PartialEq ) ]
 pub enum Comp
 {
   /// Less than comparison.
@@ -70,11 +168,11 @@ impl Constraint
 #[ derive( Clone, Debug, PartialEq ) ]
 pub struct ExtremePoint
 {
-//   problem_var_coeffs : Vec< f64 >,
   /// Basic variables indices.
   bv : Vec< usize >,
   /// Extreme point coordinates.
   point : Vec< f64 >,
+  /// Value of function to optimize.
   z : f64,
 }
 
@@ -90,7 +188,7 @@ impl Default for ExtremePoint
 
 impl ExtremePoint
 {
-
+  /// Create new extreme point from basic solution and coeffiicients of function to optimize.
   pub fn new( solution : BasicSolution, problem_coeffs : Vec< f64 > ) -> Self
   {
     let m = solution.bv.len();
@@ -99,7 +197,7 @@ impl ExtremePoint
     {
       if solution.bv.contains( &index )
       {
-        point[ index - 1 ] = solution.bv_values[ index - 1 ];
+        point[ index - 1 ] = solution.bv_values[ solution.bv.iter().position( | a | *a == index ).unwrap() ];
       }
     }
 
@@ -129,6 +227,7 @@ impl ExtremePoint
   }
 }
 
+/// Basic solution of linear problem.
 #[ derive( Clone, Debug ) ]
 pub struct BasicSolution
 {
@@ -136,6 +235,7 @@ pub struct BasicSolution
   nbv : Vec< usize >,
   /// Basic variables indices.
   bv : Vec< usize >,
+  /// Basic variables values.
   bv_values : Vec< f64 >,
 }
 
@@ -161,49 +261,20 @@ pub struct SimplexSolver {}
 
 impl SimplexSolver
 {
-  fn normalized_problem( p : &Problem ) -> Problem
+  fn extreme_points ( p : &mut Problem ) -> Vec< ExtremePoint >
   {
-    let mut equations_coefficients = Vec::new();
-    for i in 1..= p.constraints.len()
-    {
-      let mut coeffs = p.constraints[ i - 1 ].coefs.clone();
-      for _ in 1..=p.constraints.len()
-      {
-        coeffs.push( 0.0 );
-      }
-      match p.constraints[ i-1 ].comparison
-      {
-        Comp::Less => 
-        {
-            coeffs[ p.var_coeffs.len() + i - 1 ] = 1.0;
-        }
-        Comp::Greater =>
-        {
-            coeffs[ p.var_coeffs.len() + i - 1 ] = -1.0;
-        }
-        Comp::Equal => {}
-      }
-      equations_coefficients.push( coeffs );
-    }
-
-    let new_constraints = p.constraints
-    .iter()
-    .enumerate()
-    .map( | ( i, constraint ) | 
-      Constraint::new(equations_coefficients[ i ].clone(), constraint.value, Comp::Equal ) )
-    .collect_vec()
+    let bfs = Self::basic_feasible_solutions( p.clone() );
+    let extreme_points = bfs
+    .into_iter()
+    .map( | s | ExtremePoint::new( s, p.var_coeffs.clone() ) )
+    .collect::< Vec< ExtremePoint > >()
     ;
 
-    Problem
-    {
-      var_coeffs : p.var_coeffs.clone(),
-      maxs : p.maxs.clone(),
-      mins : p.mins.clone(),
-      constraints : new_constraints,
-    }
+    extreme_points
   }
 
-  fn basic_feasible_solutions( p : Problem ) -> Vec< BasicSolution >
+  /// Calculates basic feasible solutions for linear problem.
+  fn basic_feasible_solutions( mut p : Problem ) -> Vec< BasicSolution >
   {
     let total_variables_number = p.var_coeffs.len() + p.constraints.len();
     let basic_variables_number = p.var_coeffs.len();
@@ -211,7 +282,7 @@ impl SimplexSolver
     let number_of_basic_solutions : u128 = ( 1..=total_variables_number as u128 ).product::< u128 >() 
       / ( ( 1..=basic_variables_number as u128 ).product::< u128 >() * ( 1..=non_basic_variables_number as u128 ).product::< u128 >() );
 
-    let p = SimplexSolver::normalized_problem(&p);
+    p.normalize();
 
     let mut bs = vec![ BasicSolution 
       { 
@@ -223,19 +294,14 @@ impl SimplexSolver
 
     let mut result = ( 1..=total_variables_number )
     .into_iter()
-    .map(| elem | 
-    {
-      let mut h = HashSet::new(); 
-      h.insert(elem); 
-      h
-    })
+    .map( | elem | { HashSet::from( [ elem ] ) } )
     .collect_vec()
     ;
 
     for _ in 0..basic_variables_number
     {
       result = ( 1..=total_variables_number )
-      .cartesian_product( result.clone()).map( | ( elem, mut set ) | 
+      .cartesian_product( result ).map( | ( elem, mut set ) | 
       {
         set.insert( elem );
         set
@@ -262,6 +328,7 @@ impl SimplexSolver
     for ( index, bs ) in bs.iter_mut().enumerate()
     {
       bs.bv = final_result[ index ].clone().iter().map( | elem | *elem ).collect_vec();
+      bs.bv.sort();
     }
 
     for basic_solution in bs.iter_mut() 
@@ -273,24 +340,24 @@ impl SimplexSolver
     }
     for basic_solution in bs.iter_mut() 
     {
-      let mut vec_of_coeffs = Vec::new();
+      let rows = basic_solution.nbv.len();
+      let columns = basic_solution.bv.len();
+      let mut vec_of_coeffs = vec![ 0.0; rows * columns ];
         
-      for bv in basic_solution.bv.iter() 
+      for ( index, bv ) in basic_solution.bv.iter().enumerate() 
       {
         for i in 0..p.constraints.len() 
         {
-          vec_of_coeffs.push( p.constraints[ i ].coefs[ bv - 1 ] );
+          vec_of_coeffs[ i * columns + index ] = p.constraints[ i ].coefs[ bv - 1 ];
         }
       }
-      let rows = basic_solution.nbv.len();
-      let columns = basic_solution.bv.len();
       
-      let v = p.constraints.iter().map(|c| c.value).collect::<Vec<_>>();
+      let v = p.constraints.iter().map( | c | c.value ).collect_vec();
 
-      let m1: ndarray::Array2<f64> = ndarray::Array2::from_shape_vec((rows, columns), vec_of_coeffs).unwrap();
-      let mut b : ndarray::Array1<f64> = ndarray::ArrayBase::from_vec(v.clone());
+      let m1: ndarray::Array2<f64> = ndarray::Array2::from_shape_vec( ( rows, columns ), vec_of_coeffs ).unwrap();
+      let b : ndarray::Array1<f64> = ndarray::ArrayBase::from_vec( v.clone() );
 
-      let b = ndarray_linalg::Solve::solve_into(&m1, b);
+      let b = ndarray_linalg::Solve::solve_into( &m1, b );
 
       if let Ok( solution ) = b
       {
@@ -298,26 +365,28 @@ impl SimplexSolver
       }
     }
 
-    bs.into_iter().filter_map( | b_s | 
-      {
-        for b_value in b_s.bv_values.iter() 
-        {
-          if b_value < &0.0
-          {
-            return None;
-          }
-        }
-        Some( b_s )
-      }
-    ).collect_vec()
+    // bs.into_iter().filter_map( | b_s | 
+    //   {
+    //     for b_value in b_s.bv_values.iter() 
+    //     {
+    //       if b_value < &0.0
+    //       {
+    //         return None;
+    //       }
+    //     }
+    //     Some( b_s )
+    //   }
+    // ).collect_vec()
+
+    bs.into_iter().filter( | bs | p.is_feasible_solution( bs ) ).collect_vec()
 
   }
 
   /// Solves linear problem using Simplex method.
-  pub fn solve( &self, p : Problem ) -> ExtremePoint
+  pub fn solve( &self, mut p : Problem ) -> ExtremePoint
   {
-    let bfs = Self::basic_feasible_solutions( p.clone() );
-    let extreme_points = bfs.into_iter().map( | s | ExtremePoint::new( s, p.var_coeffs.clone() ) ).collect::< Vec< ExtremePoint > >();
+    //let bfs = Self::basic_feasible_solutions( p.clone() );
+    let extreme_points = Self::extreme_points( &mut p );
     let mut queue: std::collections::BinaryHeap<ExtremePoint> = extreme_points.into_iter().collect::< BinaryHeap< _ > >();
     let max_point = queue.pop().unwrap();
 
@@ -341,10 +410,8 @@ mod simplex_tests {
   {
     let p = Problem::new
     ( 
-      vec![ 3.0, 2.0 ], 
+      vec![ Variable::new( 3.0 ).min( 0.0 ), Variable::new( 2.0 ).min( 0.0 ) ], 
       vec![ Constraint::new( vec![ 2.0, 1.0 ], 9.0, Comp::Less ), Constraint::new( vec![ 1.0, 2.0 ], 9.0, Comp::Less ) ],
-      Vec::new(), 
-      Vec::new()
     );
     let c = Constraint::new( vec![ 1.0, 2.0 ], 4.0, Comp::Greater );
     assert_eq!( c.value, 4.0 );
@@ -358,19 +425,47 @@ mod simplex_tests {
   {
     let p = Problem::new
     ( 
-      vec![ 0.0, 0.0, 1.0 ], 
+      vec![ Variable::new( 0.0 ).min( 0.0 ), Variable::new( 0.0 ).min( 0.0 ), Variable::new( 1.0 ).min( 0.0 ) ], 
       vec!
       [ 
         Constraint::new( vec![ 1.0, 2.0, 0.0 ], 2.0, Comp::Less ), 
         Constraint::new( vec![ 0.0, 3.0, 1.0 ], 3.0, Comp::Less ),
         Constraint::new( vec![ 3.0, 0.0, 2.0 ], 6.0, Comp::Less ),
       ],
-      Vec::new(), 
-      Vec::new()
     );
 
     let solution = SimplexSolver{}.solve( p );
     assert_eq!( solution.point, vec![ 0.0, 0.0, 3.0 ] )
+  }
+
+  #[ test ]
+  fn problem_draw() 
+  {
+    let mut p = Problem::new
+    ( 
+      vec![ Variable::new( 3.0 ), Variable::new( 2.0 ) ], 
+      vec![ Constraint::new( vec![ 2.0, 1.0 ], 9.0, Comp::Less ), Constraint::new( vec![ 1.0, 2.0 ], 9.0, Comp::Less ) ],
+    );
+
+    let ex_points = SimplexSolver::extreme_points( &mut p );
+    let _ = drawing::draw_problem( &p, ex_points );
+  }
+  
+  #[ cfg( feature = "lp_parse" ) ]
+  #[ test ]
+  fn problem_parse() 
+  {
+    let mut p = Problem::new
+    ( 
+      vec![ 2.0, -3.0, 4.0 ], 
+      vec![ Constraint::new( vec![ 2.0, -3.0, 1.0 ], 3.0, Comp::Less ), Constraint::new( vec![ 1.0, -1.0, 0.0 ], 4.0, Comp::Less ) ],
+      Vec::new(), 
+      Vec::new()
+    );
+    let parsed = parser::ProblemParser::parse( "2*x - 3*y + 4*z", vec![ "2*x -3*y +z <= 3", "-y + x <=4" ] );
+    
+    assert_eq!( p.var_coeffs, parsed.var_coeffs );
+    assert_eq!( p.constraints, parsed.constraints );
   }
 
 }
