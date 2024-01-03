@@ -2,62 +2,33 @@
 //! 
 
 use iter_tools::Itertools;
+use ndarray::{ Array1, Array2, ArrayBase };
 
 /// Represents linear problem.
 #[ derive( Clone, Debug ) ]
-pub struct Problem 
+pub struct NormalizedProblem 
 {
-    /// Coefficients of variables in function to optimize.
-    pub var_coeffs : Vec< f64 >,
-    /// Set of inequation constraints.
-    pub constraints : Vec< Constraint >,
-    variables : Vec< Variable >,
+  /// Coefficients of variables in function to optimize.
+  pub coeffs : Array2< f64 >,
+  /// Set of inequation constraints.
+  pub rhs : Array1< f64 >,
+  variables : Vec< Variable >,
 }
 
-impl Problem 
+impl NormalizedProblem
 {
-  /// Create new linear problem.
-  pub fn new( vars : Vec< Variable >, constraints : Vec< Constraint > ) -> Self
+  pub fn new( matrix : &Vec< Vec< f64 > >, rhs : &Vec< f64 >, vars : &Vec< Variable > ) -> Self
   {
-
-    Self { var_coeffs : vars.iter().map(|var| var.coefficient).collect_vec(), constraints, variables : vars }
-  }
-
-  /// Normalize linear problem.
-  pub fn normalize( &mut self )
-  {
-    let mut equations_coefficients = Vec::new();
-    for i in 1..= self.constraints.len()
+    Self
     {
-      let mut coeffs = self.constraints[ i - 1 ].coefs.clone();
-      for _ in 1..=self.constraints.len()
-      {
-        coeffs.push( 0.0 );
-      }
-      match self.constraints[ i-1 ].comparison
-      {
-        Comp::Less => 
-        {
-            coeffs[ self.var_coeffs.len() + i - 1 ] = 1.0;
-        }
-        Comp::Greater =>
-        {
-            coeffs[ self.var_coeffs.len() + i - 1 ] = -1.0;
-        }
-        Comp::Equal => {}
-      }
-      equations_coefficients.push( coeffs );
+      coeffs : Array2::from_shape_vec
+      ( 
+        ( matrix.len(), matrix[ 0 ].len() ), 
+        matrix.iter().flat_map( | vec | vec.clone() ).collect_vec()
+      ).unwrap(),
+      rhs : ArrayBase::from_vec( rhs.clone() ),
+      variables : vars.clone(),
     }
-
-    let new_constraints = self.constraints
-    .iter()
-    .enumerate()
-    .map( | ( i, constraint ) | 
-      Constraint::new(equations_coefficients[ i ].clone(), constraint.value, Comp::Equal ) )
-    .collect_vec()
-    ;
-
-    self.constraints = new_constraints;
   }
 
   /// Check if basic solution is feasible.
@@ -82,6 +53,100 @@ impl Problem
     }
     true
   }
+}
+
+/// Represents linear problem.
+#[ derive( Clone, Debug ) ]
+pub struct Problem 
+{
+  /// Coefficients of variables in function to optimize.
+  pub var_coeffs : Vec< f64 >,
+  /// Set of inequation constraints.
+  pub constraints : Vec< Constraint >,
+  variables : Vec< Variable >,
+}
+
+impl Problem 
+{
+  /// Create new linear problem.
+  pub fn new( vars : Vec< Variable >, constraints : Vec< Constraint > ) -> Self
+  {
+    Self { var_coeffs : vars.iter().map(|var| var.coefficient).collect_vec(), constraints, variables : vars }
+  }
+
+  /// Normalize linear problem.
+  pub fn normalized( &self ) -> NormalizedProblem
+  {
+    let mut equations_coefficients = Vec::new();
+    for i in 1..= self.constraints.len()
+    {
+      let mut coeffs = self.constraints[ i - 1 ].coefs.clone();
+      for _ in 1..=self.constraints.len()
+      {
+        coeffs.push( 0.0 );
+      }
+      match self.constraints[ i-1 ].comparison
+      {
+        Comp::Less => 
+        {
+          coeffs[ self.var_coeffs.len() + i - 1 ] = 1.0;
+        }
+        Comp::Greater =>
+        {
+          coeffs[ self.var_coeffs.len() + i - 1 ] = -1.0;
+        }
+        Comp::Equal => {}
+      }
+      equations_coefficients.push( coeffs );
+
+    }
+
+    NormalizedProblem::new
+    ( 
+      &equations_coefficients, 
+      &self.constraints.iter().map( | c | c.value ).collect_vec(),
+      &self.variables,
+    )
+  }
+
+//   /// Normalize linear problem.
+//   pub fn normalize( &mut self )
+//   {
+//     let mut equations_coefficients = Vec::new();
+//     for i in 1..= self.constraints.len()
+//     {
+//       let mut coeffs = self.constraints[ i - 1 ].coefs.clone();
+//       for _ in 1..=self.constraints.len()
+//       {
+//         coeffs.push( 0.0 );
+//       }
+//       match self.constraints[ i-1 ].comparison
+//       {
+//         Comp::Less => 
+//         {
+//           coeffs[ self.var_coeffs.len() + i - 1 ] = 1.0;
+//         }
+//         Comp::Greater =>
+//         {
+//           coeffs[ self.var_coeffs.len() + i - 1 ] = -1.0;
+//         }
+//         Comp::Equal => {}
+//       }
+//       equations_coefficients.push( coeffs );
+//     }
+
+//     let new_constraints = self.constraints
+//     .iter()
+//     .enumerate()
+//     .map( | ( i, constraint ) | 
+//       Constraint::new(equations_coefficients[ i ].clone(), constraint.value, Comp::Equal ) )
+//     .collect_vec()
+//     ;
+
+//     self.constraints = new_constraints;
+//   }
+
+
 }
 
 /// Variable of objective function.

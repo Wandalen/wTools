@@ -108,7 +108,7 @@ impl SimplexSolver
   }
 
   /// Calculates basic feasible solutions for linear problem.
-  fn basic_feasible_solutions( mut p : Problem ) -> Vec< BasicSolution >
+  fn basic_feasible_solutions( p : Problem ) -> Vec< BasicSolution >
   {
     let total_variables_number = p.var_coeffs.len() + p.constraints.len();
     let basic_variables_number = p.var_coeffs.len();
@@ -116,7 +116,7 @@ impl SimplexSolver
     let number_of_basic_solutions : u128 = ( 1..=total_variables_number as u128 ).product::< u128 >() 
       / ( ( 1..=basic_variables_number as u128 ).product::< u128 >() * ( 1..=non_basic_variables_number as u128 ).product::< u128 >() );
 
-    p.normalize();
+    let p = p.normalized();
 
     let mut bs = vec![ BasicSolution 
       { 
@@ -176,41 +176,25 @@ impl SimplexSolver
     {
       let rows = basic_solution.nbv.len();
       let columns = basic_solution.bv.len();
-      let mut vec_of_coeffs = vec![ 0.0; rows * columns ];
-        
+
+      let mut m = ndarray::Array::zeros( ( rows, columns ) );
       for ( index, bv ) in basic_solution.bv.iter().enumerate() 
       {
-        for i in 0..p.constraints.len() 
+        for i in 0..m.shape()[ 1 ] 
         {
-          vec_of_coeffs[ i * columns + index ] = p.constraints[ i ].coefs[ bv - 1 ];
+          m.row_mut( i )[ index ] = p.coeffs.row( i )[ bv - 1 ];
         }
       }
       
-      let v = p.constraints.iter().map( | c | c.value ).collect_vec();
+      let b = p.rhs.clone();
 
-      let m1: ndarray::Array2<f64> = ndarray::Array2::from_shape_vec( ( rows, columns ), vec_of_coeffs ).unwrap();
-      let b : ndarray::Array1<f64> = ndarray::ArrayBase::from_vec( v.clone() );
-
-      let b = ndarray_linalg::Solve::solve_into( &m1, b );
+      let b = ndarray_linalg::Solve::solve_into( &m, b );
 
       if let Ok( solution ) = b
       {
         basic_solution.bv_values = solution.iter().map( | a | *a ).collect_vec();
       }
     }
-
-    // bs.into_iter().filter_map( | b_s | 
-    //   {
-    //     for b_value in b_s.bv_values.iter() 
-    //     {
-    //       if b_value < &0.0
-    //       {
-    //         return None;
-    //       }
-    //     }
-    //     Some( b_s )
-    //   }
-    // ).collect_vec()
 
     bs.into_iter().filter( | bs | p.is_feasible_solution( bs ) ).collect_vec()
 
