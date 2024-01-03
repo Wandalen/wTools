@@ -139,7 +139,7 @@ impl SimplexSolver
       {
         set.insert( elem );
         set
-      })
+      } )
       .collect_vec()
       ;
     }
@@ -186,14 +186,13 @@ impl SimplexSolver
         }
       }
       
-      let b = p.rhs.clone();
+      let b = faer::Mat::from_fn( p.rhs.len(), 1, | i, _ | p.rhs[ i ] );
+      let m = faer::IntoFaer::into_faer( m.view() );
+      let lu = faer::FaerMat::partial_piv_lu( &m );
+      
+      let solution = faer::sparse::solvers::SpSolver::solve(&lu, &b);
 
-      let b = ndarray_linalg::Solve::solve_into( &m, b );
-
-      if let Ok( solution ) = b
-      {
-        basic_solution.bv_values = solution.iter().map( | a | *a ).collect_vec();
-      }
+      basic_solution.bv_values = solution.col_as_slice(0).iter().map( | a | *a ).collect_vec();
     }
 
     bs.into_iter().filter( | bs | p.is_feasible_solution( bs ) ).collect_vec()
@@ -205,7 +204,7 @@ impl SimplexSolver
   {
     //let bfs = Self::basic_feasible_solutions( p.clone() );
     let extreme_points = Self::extreme_points( &mut p );
-    let mut queue: std::collections::BinaryHeap<ExtremePoint> = extreme_points.into_iter().collect::< BinaryHeap< _ > >();
+    let mut queue: BinaryHeap<ExtremePoint> = extreme_points.into_iter().collect::< BinaryHeap< _ > >();
     let max_point = queue.pop().unwrap();
 
     max_point
