@@ -1,10 +1,5 @@
 use optimization_tools::*;
-use simplex::
-{
-    *,
-  linear_problem::{ Problem, Constraint, Comp, Variable },
-  drawing,
-};
+use simplex::*;
 
 #[ test ]
 fn constraint() 
@@ -14,7 +9,7 @@ fn constraint()
 }
 
 #[ test ]
-fn problem() 
+fn problem_2_vars() 
 {
   let p = Problem::new
   ( 
@@ -29,7 +24,7 @@ fn problem()
 }
 
 #[ test ]
-fn problem3d_2() 
+fn problem_3_vars() 
 {
   let p = Problem::new
   ( 
@@ -44,6 +39,31 @@ fn problem3d_2()
 
   let solution = SimplexSolver{}.solve( p );
   assert_eq!( solution.point, vec![ 0.0, 0.0, 3.0 ] )
+}
+
+#[ test ]
+fn problem_4_vars() 
+{
+  let p = Problem::new
+  ( 
+    vec!
+    [ 
+      Variable::new( -5.0 ).min( 0.0 ), 
+      Variable::new( -10.0 ).min( 0.0 ), 
+      Variable::new( -15.0 ).min( 0.0 ),
+      Variable::new( -4.0 ).min( 0.0 ),
+    ], 
+    vec!
+    [ 
+      Constraint::new( vec![ 1.0, 1.0, 0.0, 0.0 ], 700.0, Comp::Less ), 
+      Constraint::new( vec![ 0.0, 0.0, 1.0, 1.0 ], 800.0, Comp::Less ),
+      Constraint::new( vec![ 1.0, 0.0, 1.0, 0.0 ], 600.0, Comp::Greater ),
+      Constraint::new( vec![ 0.0, 1.0, 0.0, 1.0 ], 400.0, Comp::Greater ),
+    ],
+  );
+
+  let solution = SimplexSolver{}.solve( p );
+  assert_eq!( solution.point, vec![ 600.0, 0.0, 0.0, 400.0 ] )
 }
 
 #[ test ]
