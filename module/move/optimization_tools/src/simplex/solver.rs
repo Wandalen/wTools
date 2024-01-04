@@ -6,7 +6,7 @@ use iter_tools::Itertools;
 use super::linear_problem::{ Problem, BasicSolution };
 
 /// Extreme point of feasible region.
-#[ derive( Clone, Debug, PartialEq ) ]
+#[ derive( Clone, Debug ) ]
 pub struct ExtremePoint
 {
   /// Basic variables indices.
@@ -17,13 +17,19 @@ pub struct ExtremePoint
   z : f64,
 }
 
+impl PartialEq for ExtremePoint {
+    fn eq(&self, other: &Self) -> bool {
+        self.point == other.point
+    }
+}
+
 impl Eq for ExtremePoint {}
 
 impl Default for ExtremePoint
 {
   fn default() -> Self 
   {
-    Self { bv : Vec::new(), point : Vec::new(), z : 0.0 }
+    Self { bv : Vec::new(), point : Vec::new(), z : f64::MAX }
   }
 }
 
@@ -195,7 +201,7 @@ impl SimplexSolver
   }
 
   /// Solves linear problem using Simplex method.
-  pub fn solve( &self, p : Problem ) -> ExtremePoint
+  pub fn solve( &self, p : Problem ) -> Vec< ExtremePoint >
   {
     let basic_variables_number = p.var_coeffs.len();
 
@@ -203,6 +209,7 @@ impl SimplexSolver
     let mut table = Vec::new();
 
     let mut z_coeff = p.variables.iter().map( | var | -var.coefficient ).collect_vec();
+
     z_coeff.push( 0.0 );
     table.push( z_coeff );
 
@@ -214,7 +221,10 @@ impl SimplexSolver
       table.push( vec_rhs );
     }
 
-    let point = loop 
+    let mut points = Vec::new();
+    let mut candidate = ExtremePoint::default();
+
+    loop 
     {
       let mut bv_pos = Vec::new();
       let mut nbv_pos = Vec::new();
@@ -284,21 +294,47 @@ impl SimplexSolver
 
       let initial_point = ExtremePoint::new( initial_bs.clone(), p.variables.iter().map( | var | var.coefficient ).collect_vec() );
 
-      let mut min_coeff = 0.0;
+      let mut min_coeff = f64::MAX;
       let mut pos = 0;
       for ( index, coeff ) in table[ 0 ].iter().enumerate()
       {
-        if coeff < &min_coeff
+        if initial_bs.nbv.contains( &( index + 1 ) )
         {
-          min_coeff = *coeff;
-          pos = index + 1;
+          if coeff < &min_coeff
+          {
+            min_coeff = *coeff;
+            pos = index + 1;
+          }
         }
+      }
+
+      if candidate.z == initial_point.z
+      {
+        if !points.contains( &initial_point )
+        {
+          points.push(initial_point.clone());
+        }
+        break;
       }
 
       if min_coeff == 0.0
       {
-        break initial_point;
+        if !points.contains( &initial_point )
+        {
+          points.push(initial_point.clone());
+        }
+        if points.len() > initial_bs.bv.len()
+        {
+          break;
+        }
       }
+
+      if min_coeff > 0.0
+      {
+        points.push( initial_point.clone() );
+        break;
+      }
+      candidate = initial_point;
 
       let mut var_row = 1;
       let mut r = table[ 1 ].last().unwrap() / table[ 1 ][ pos - 1 ];
@@ -311,6 +347,7 @@ impl SimplexSolver
           var_row = i;
         }
       }
+      
 
       let mut new_table = table.clone();
       for i in 0..table[ 0 ].len()
@@ -333,6 +370,6 @@ impl SimplexSolver
       table = new_table;
     };
 
-    point
+    points
   }
 }

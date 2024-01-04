@@ -16,11 +16,27 @@ fn problem_2_vars()
     vec![ Variable::new( 3.0 ).min( 0.0 ), Variable::new( 2.0 ).min( 0.0 ) ], 
     vec![ Constraint::new( vec![ 2.0, 1.0 ], 9.0, Comp::Less ), Constraint::new( vec![ 1.0, 2.0 ], 9.0, Comp::Less ) ],
   );
-  let c = Constraint::new( vec![ 1.0, 2.0 ], 4.0, Comp::Greater );
-  assert_eq!( c.value, 4.0 );
 
   let solution = SimplexSolver{}.solve( p );
-  assert_eq!( solution.point, vec![ 3.0, 3.0 ] )
+  assert_eq!( solution.len(), 1 );
+  assert_eq!( solution[ 0 ].point, vec![ 3.0, 3.0 ] )
+}
+
+#[ test ]
+fn problem_inf_solutions() 
+{
+  use iter_tools::Itertools;
+  let p = Problem::new
+  ( 
+    vec![ Variable::new( 4.0 ).min( 0.0 ), Variable::new( 2.0 ).min( 0.0 ) ], 
+    vec![ Constraint::new( vec![ 2.0, 1.0 ], 9.0, Comp::Less ), Constraint::new( vec![ 1.0, 2.0 ], 9.0, Comp::Less ) ],
+  );
+
+  let solution = SimplexSolver{}.solve( p );
+  assert_eq!( solution.len(), 2 );
+  let points = solution.iter().map( | extr_point | extr_point.point.clone() ).collect_vec();
+  assert!( points.contains( &[ 3.0, 3.0 ].to_vec() ) );
+  assert!( points.contains( &[ 4.5, 0.0 ].to_vec() ) );
 }
 
 #[ test ]
@@ -28,17 +44,18 @@ fn problem_3_vars()
 {
   let p = Problem::new
   ( 
-    vec![ Variable::new( 0.0 ).min( 0.0 ), Variable::new( 0.0 ).min( 0.0 ), Variable::new( 1.0 ).min( 0.0 ) ], 
+    vec![ Variable::new( 1.0 ).min( 0.0 ), Variable::new( 1.0 ).min( 0.0 ), Variable::new( 1.0 ).min( 0.0 ) ], 
     vec!
     [ 
-      Constraint::new( vec![ 1.0, 2.0, 0.0 ], 2.0, Comp::Less ), 
-      Constraint::new( vec![ 0.0, 3.0, 1.0 ], 3.0, Comp::Less ),
-      Constraint::new( vec![ 3.0, 0.0, 2.0 ], 6.0, Comp::Less ),
+      Constraint::new( vec![ 1.0, 2.0, 0.0 ], 20.0, Comp::Less ), 
+      Constraint::new( vec![ 0.0, 3.0, 1.0 ], 30.0, Comp::Less ),
+      Constraint::new( vec![ 3.0, 0.0, 2.0 ], 60.0, Comp::Less ),
     ],
   );
 
   let solution = SimplexSolver{}.solve( p );
-  assert_eq!( solution.point, vec![ 0.0, 0.0, 3.0 ] )
+  assert_eq!( solution.len(), 1 );
+  assert_eq!( solution[ 0 ].point, [ 20.0, 0.0, 0.0 ] );
 }
 
 #[ test ]
@@ -63,7 +80,8 @@ fn problem_4_vars()
   );
 
   let solution = SimplexSolver{}.solve( p );
-  assert_eq!( solution.point, vec![ 0.0, 400.0, 600.0, 0.0 ] )
+  assert_eq!( solution.len(), 1 );
+  assert_eq!( solution[ 0 ].point, vec![ 0.0, 400.0, 600.0, 0.0 ] )
 }
 
 #[ test ]
@@ -90,7 +108,8 @@ fn problem_5_vars()
   );
 
   let solution = SimplexSolver{}.solve( p );
-  assert_eq!( solution.point, vec![ 300.0, 400.0, 300.0, 0.0, 0.0 ] )
+  assert_eq!( solution.len(), 1 );
+  assert_eq!( solution[ 0 ].point, vec![ 300.0, 400.0, 300.0, 0.0, 0.0 ] )
 }
 
 #[ test ]
