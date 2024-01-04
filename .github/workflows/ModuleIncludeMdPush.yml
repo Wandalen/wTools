@@ -1,0 +1,15 @@
+name : include_md
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/core/include_md/Cargo.toml'
+      module_name : 'include_md'
+      commit_message : ${{ github.event.head_commit.message }}

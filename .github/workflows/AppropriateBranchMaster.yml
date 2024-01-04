@@ -1,14 +1,13 @@
-
 name : appropriate_branch_master
-
+        
 on :
   pull_request_target :
     branches :
       - main
       - master
-
+        
 jobs :
-
+        
   appropriate_branch :
     uses : Wandalen/wTools/.github/workflows/AppropriateBranch.yml@alpha
     with :

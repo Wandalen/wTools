@@ -1,8 +1,7 @@
-
 name : appropriate_branch
-
+    
 on :
-
+    
   workflow_call :
     inputs :
       src_branch :
@@ -11,22 +10,22 @@ on :
       dst_branch :
         required : true
         type : string
-    secrets :
-      PRIVATE_GITHUB_BOT_TOKEN :
-        description : 'Github bot token'
-        required : true
-
+      secrets :
+        PRIVATE_GITHUB_BOT_TOKEN :
+          description : 'Github bot token'
+          required : true
+    
 env :
-
+    
   CARGO_TERM_COLOR : always
-
+    
 concurrency :
-
+    
   group : appropraite_branch_${{ inputs.src_branch }}_${{ inputs.dst_branch }}
   cancel-in-progress : true
-
+    
 jobs :
-
+    
   check :
     runs-on : ubuntu-latest
     outputs :
@@ -45,7 +44,7 @@ jobs :
             The unstable branch is `alpha`. All user pull requests should be opened to this branch.
             The staging branch is `beta`. Changes to this branch are forwarded by a pull request from branch `alpha` automatically.
             The stable branch is `master`. Changes to this branch are forwarded by a pull request from branch `beta` automatically.
-
+    
             The pull request was automatically converted to draft.
             Please, change base branch taking into account the described system `alpha -> beta -> master`.
       - name : Convert to draft

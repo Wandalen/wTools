@@ -7,8 +7,6 @@ env :
 
 jobs :
 
-  # for_each
-
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :

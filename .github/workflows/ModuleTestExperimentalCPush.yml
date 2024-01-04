@@ -1,0 +1,15 @@
+name : test_experimental_c
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/test/c/Cargo.toml'
+      module_name : 'test_experimental_c'
+      commit_message : ${{ github.event.head_commit.message }}

@@ -7,20 +7,9 @@ env :
 
 jobs :
 
-  # error_tools
-
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/core/error_tools/Cargo.toml'
       module_name : 'error_tools'
-      commit_message : ${{ github.event.head_commit.message }}
-
-  # werror
-
-  test_werror :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
-    with :
-      manifest_path : 'module/alias/werror/Cargo.toml'
-      module_name : 'werror'
       commit_message : ${{ github.event.head_commit.message }}

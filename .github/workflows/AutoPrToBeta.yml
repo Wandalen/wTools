@@ -3,7 +3,8 @@ name : auto_pr_to_beta
 
 on :
   push :
-    branches : [ alpha ]
+    branches :
+     - alpha
 
 jobs :
 

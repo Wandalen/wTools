@@ -1,0 +1,15 @@
+name : optimization_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/move/optimization_tools/Cargo.toml'
+      module_name : 'optimization_tools'
+      commit_message : ${{ github.event.head_commit.message }}

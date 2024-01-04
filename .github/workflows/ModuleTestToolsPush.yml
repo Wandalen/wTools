@@ -7,8 +7,6 @@ env :
 
 jobs :
 
-  # test_tools
-
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
