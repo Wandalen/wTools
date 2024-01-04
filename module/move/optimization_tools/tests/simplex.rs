@@ -48,22 +48,49 @@ fn problem_4_vars()
   ( 
     vec!
     [ 
-      Variable::new( -5.0 ).min( 0.0 ), 
-      Variable::new( -10.0 ).min( 0.0 ), 
-      Variable::new( -15.0 ).min( 0.0 ),
-      Variable::new( -4.0 ).min( 0.0 ),
+      Variable::new( 5.0 ).min( 0.0 ), 
+      Variable::new( 10.0 ).min( 0.0 ), 
+      Variable::new( 15.0 ).min( 0.0 ),
+      Variable::new( 4.0 ).min( 0.0 ),
     ], 
     vec!
     [ 
       Constraint::new( vec![ 1.0, 1.0, 0.0, 0.0 ], 700.0, Comp::Less ), 
       Constraint::new( vec![ 0.0, 0.0, 1.0, 1.0 ], 800.0, Comp::Less ),
-      Constraint::new( vec![ 1.0, 0.0, 1.0, 0.0 ], 600.0, Comp::Greater ),
-      Constraint::new( vec![ 0.0, 1.0, 0.0, 1.0 ], 400.0, Comp::Greater ),
+      Constraint::new( vec![ 1.0, 0.0, 1.0, 0.0 ], 600.0, Comp::Less ),
+      Constraint::new( vec![ 0.0, 1.0, 0.0, 1.0 ], 400.0, Comp::Less ),
     ],
   );
 
   let solution = SimplexSolver{}.solve( p );
-  assert_eq!( solution.point, vec![ 600.0, 0.0, 0.0, 400.0 ] )
+  assert_eq!( solution.point, vec![ 0.0, 400.0, 600.0, 0.0 ] )
+}
+
+#[ test ]
+fn problem_5_vars() 
+{
+  let p = Problem::new
+  ( 
+    vec!
+    [ 
+      Variable::new( 5.0 ).min( 0.0 ), 
+      Variable::new( 10.0 ).min( 0.0 ), 
+      Variable::new( 15.0 ).min( 0.0 ),
+      Variable::new( 4.0 ).min( 0.0 ),
+      Variable::new( 8.0 ).min( 0.0 ),
+    ], 
+    vec!
+    [ 
+      Constraint::new( vec![ 1.0, 1.0, 0.0, 0.0, 0.0 ], 700.0, Comp::Less ), 
+      Constraint::new( vec![ 0.0, 0.0, 1.0, 1.0, 0.0 ], 800.0, Comp::Less ),
+      Constraint::new( vec![ 1.0, 0.0, 0.0, 0.0, 1.0 ], 600.0, Comp::Less ),
+      Constraint::new( vec![ 0.0, 1.0, 0.0, 1.0, 0.0 ], 400.0, Comp::Less ),
+      Constraint::new( vec![ 0.0, 0.0, 1.0, 0.0, 1.0 ], 300.0, Comp::Less ),
+    ],
+  );
+
+  let solution = SimplexSolver{}.solve( p );
+  assert_eq!( solution.point, vec![ 300.0, 400.0, 300.0, 0.0, 0.0 ] )
 }
 
 #[ test ]

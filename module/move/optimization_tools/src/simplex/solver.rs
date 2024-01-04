@@ -1,7 +1,7 @@
 //! Solver of linear programming problems by Simplex Method.
 //! 
 
-use std::{ vec, collections::{ HashSet, BinaryHeap } };
+use std::collections::HashSet;
 use iter_tools::Itertools;
 use super::linear_problem::{ Problem, BasicSolution };
 
@@ -145,7 +145,7 @@ impl SimplexSolver
     .collect_vec()
     ;
 
-    let mut final_result = Vec::new();
+    let mut final_result = Vec::with_capacity(number_of_basic_solutions as usize);
     while let Some( combination ) = result.pop() 
     {
       if !result.contains( &combination )
@@ -195,12 +195,144 @@ impl SimplexSolver
   }
 
   /// Solves linear problem using Simplex method.
-  pub fn solve( &self, mut p : Problem ) -> ExtremePoint
+  pub fn solve( &self, p : Problem ) -> ExtremePoint
   {
-    let extreme_points = Self::extreme_points( &mut p );
-    let mut queue: BinaryHeap<ExtremePoint> = extreme_points.into_iter().collect::< BinaryHeap< _ > >();
-    let max_point = queue.pop().unwrap();
+    let basic_variables_number = p.var_coeffs.len();
 
-    max_point
+    let p = p.normalized();
+    let mut table = Vec::new();
+
+    let mut z_coeff = p.variables.iter().map( | var | -var.coefficient ).collect_vec();
+    z_coeff.push( 0.0 );
+    table.push( z_coeff );
+
+    for i in 0..p.coeffs.shape()[ 0 ]
+    {
+      let vec_rhs = p.coeffs.row( i ).clone();
+      let mut vec_rhs = vec_rhs.to_slice().unwrap().to_vec();
+      vec_rhs.push( p.rhs[ i ] );
+      table.push( vec_rhs );
+    }
+
+    let point = loop 
+    {
+      let mut bv_pos = Vec::new();
+      let mut nbv_pos = Vec::new();
+
+      for j in 0..table[ 0 ].len() - 1
+      {
+        let mut is_bv = true;
+        let mut non_zero_count = 0;
+        for i in 1..table.len()
+        {
+          if table[ i ][ j ].abs() != 0.0
+          {
+            non_zero_count += 1;
+            if table[ i ][ j ].abs() != 1.0
+            {
+              is_bv = false;
+            }
+          } 
+        }
+
+        if is_bv && non_zero_count == 1
+        {
+          bv_pos.push( j + 1 );
+          for i in 1..table.len()
+          {
+            if table[ i ][ j ] == -1.0
+            {
+              for k in 0..table[ 0 ].len()
+              {
+                table[ i ][ k ] = - table[ i ][ k ];
+              }
+              }
+          }
+        } 
+        else
+        {
+          nbv_pos.push( j + 1 );
+        }
+      }
+
+      let mut initial_bs = BasicSolution 
+      { 
+        bv_values: vec![ -1.0; basic_variables_number ], 
+        bv: bv_pos, 
+        nbv: nbv_pos,
+      };
+
+      let rows = initial_bs.nbv.len();
+      let columns = initial_bs.bv.len();
+
+      let mut m = ndarray::Array::zeros( ( rows, columns ) );
+      for ( index, bv ) in initial_bs.bv.iter().enumerate() 
+      {
+        for i in 0..m.shape()[ 1 ] 
+        {
+          m.row_mut( i )[ index ] = p.coeffs.row( i )[ bv - 1 ];
+        }
+      }
+    
+      let b = faer::Mat::from_fn( p.rhs.len(), 1, | i, _ | p.rhs[ i ] );
+      let m = faer::IntoFaer::into_faer( m.view() );
+      let lu = faer::FaerMat::partial_piv_lu( &m );
+        
+      let solution = faer::sparse::solvers::SpSolver::solve( &lu, &b );
+
+      initial_bs.bv_values = solution.col_as_slice( 0 ).iter().map( | a | *a ).collect_vec();
+
+      let initial_point = ExtremePoint::new( initial_bs.clone(), p.variables.iter().map( | var | var.coefficient ).collect_vec() );
+
+      let mut min_coeff = 0.0;
+      let mut pos = 0;
+      for ( index, coeff ) in table[ 0 ].iter().enumerate()
+      {
+        if coeff < &min_coeff
+        {
+          min_coeff = *coeff;
+          pos = index + 1;
+        }
+      }
+
+      if min_coeff == 0.0
+      {
+        break initial_point;
+      }
+
+      let mut var_row = 1;
+      let mut r = table[ 1 ].last().unwrap() / table[ 1 ][ pos - 1 ];
+      for i in 2..table.len()
+      {
+        let row_r = table[ i ].last().unwrap() / table[ i ][ pos - 1 ];
+        if row_r < r 
+        {
+          r = row_r;
+          var_row = i;
+        }
+      }
+
+      let mut new_table = table.clone();
+      for i in 0..table[ 0 ].len()
+      {
+        new_table[ var_row ][ i ] = table[ var_row ][ i ] / table[ var_row ][ pos - 1 ];
+      }
+
+      for i in 0..table.len()
+      {
+        if i == var_row
+        {
+          continue;
+        }
+        let coeff = table[ i ][ pos - 1 ];
+        for j in 0..table[ 0 ].len()
+        {
+          new_table[ i ][ j ] = table[ i ][ j ] - new_table[ var_row ][ j ] * coeff;
+        }
+      }
+      table = new_table;
+    };
+
+    point
   }
 }
