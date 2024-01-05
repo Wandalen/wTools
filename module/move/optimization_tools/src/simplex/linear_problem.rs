@@ -156,7 +156,7 @@ pub struct NormalizedProblem
   pub coeffs : Array2< f64 >,
   /// Rhs values of equations.
   pub rhs : Array1< f64 >,
-  variables : Vec< Variable >,
+  pub variables : Vec< Variable >,
 }
 
 impl NormalizedProblem
