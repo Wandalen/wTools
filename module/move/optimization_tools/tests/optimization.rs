@@ -58,7 +58,7 @@ fn initial_temperature()
 ///
 /// cargo test solve_with_sa --release --features rapidity_6
 ///
- #[ cfg( feature = "rapidity_6" ) ]
+#[ cfg( feature = "rapidity_6" ) ]
 #[ test ]
 fn solve_with_sa()
 {
