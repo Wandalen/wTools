@@ -162,7 +162,6 @@ pub fn plot_data
 ) -> Result< (), Box< dyn std::error::Error > > 
 {
   let dir_path = format!( "{}/target/plots", crate::simplex::drawing::workspace_dir().to_string_lossy() );
-  println!("{}", dir_path);
   _ = std::fs::create_dir( &dir_path );
   let path = format!( "{}/{}.png", dir_path, description.filename.clone() );
   let root = BitMapBackend::new( &path, ( 4000, 960 ) ).into_drawing_area();

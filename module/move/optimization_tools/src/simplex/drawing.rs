@@ -18,7 +18,8 @@ use std::{ env, path::{ PathBuf, Path }, process::Command };
 use super::{ solver::ExtremePoint, linear_problem::Problem };
 
 /// Get path of workspace or return current if fail to get path of workspace.
-pub fn workspace_dir() -> PathBuf {
+pub fn workspace_dir() -> PathBuf 
+{
   let output = Command::new( env!( "CARGO" ) )
   .arg( "locate-project" )
   .arg( "--workspace" )
@@ -46,7 +47,6 @@ pub fn draw_problem
 ) -> Result< (), Box< dyn std::error::Error > > 
 {
   let dir_path = format!( "{}/target/plots", workspace_dir().to_string_lossy() );
-  println!("{}", dir_path);
   _ = std::fs::create_dir( &dir_path );
   let path = format!( "{}/{}.png", dir_path, file_name );
   let root = BitMapBackend::new( &path, ( 640, 480 ) ).into_drawing_area();
