@@ -122,7 +122,7 @@ fn problem_draw()
   );
 
   let ex_points = SimplexSolver::extreme_points( &mut p );
-  let _ = drawing::draw_problem( &p, ex_points );
+  let _ = drawing::draw_problem( &p, ex_points, String::from("plot") );
 }
 
 #[ cfg( feature = "lp_parse" ) ]

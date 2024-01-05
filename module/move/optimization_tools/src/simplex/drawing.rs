@@ -14,17 +14,42 @@ use plotters::
   }, 
   chart::ChartBuilder
 };
-
+use std::{ env, path::{ PathBuf, Path }, process::Command };
 use super::{ solver::ExtremePoint, linear_problem::Problem };
+
+/// Get path of workspace or return current if fail to get path of workspace.
+pub fn workspace_dir() -> PathBuf {
+  let output = Command::new( env!( "CARGO" ) )
+  .arg( "locate-project" )
+  .arg( "--workspace" )
+  .arg( "--message-format=plain" )
+  .output()
+  ;
+  if let Ok( output ) = output
+  {
+    let path = output.stdout;
+    let cargo_path = Path::new( std::str::from_utf8( &path ).unwrap().trim() );
+    cargo_path.parent().unwrap().to_path_buf()
+  }
+  else 
+  {
+    std::env::current_dir().unwrap()
+  }
+}
 
 /// Create plot with linear programming problem.
 pub fn draw_problem
 (
   problem : &Problem,
   extreme_points : Vec< ExtremePoint >,
+  file_name : String,
 ) -> Result< (), Box< dyn std::error::Error > > 
 {
-  let root = BitMapBackend::new( "./plot/2d.png", ( 640, 480 ) ).into_drawing_area();
+  let dir_path = format!( "{}/target/plots", workspace_dir().to_string_lossy() );
+  println!("{}", dir_path);
+  _ = std::fs::create_dir( &dir_path );
+  let path = format!( "{}/{}.png", dir_path, file_name );
+  let root = BitMapBackend::new( &path, ( 640, 480 ) ).into_drawing_area();
   root.fill( &WHITE )?;
   let mut chart = ChartBuilder::on( &root )
       .caption( "2d problem", ( "sans-serif", 30 ).into_font() )
