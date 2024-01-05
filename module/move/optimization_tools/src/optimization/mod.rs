@@ -340,6 +340,21 @@ impl SudokuInitial
     }
   }
 
+  pub fn set_temp_decrease_factor( &mut self, factor : f64 )
+  {
+    self.config.temperature_decrease_factor = factor.into();
+  }
+
+  pub fn set_temp_increase_factor( &mut self, factor : f64 )
+  {
+    self.config.temperature_increase_factor = factor.into();
+  }
+
+  pub fn set_mutations_per_generation( &mut self, number : usize )
+  {
+    self.config.n_mutations_per_generation_limit = number;
+  }
+
   /// Create the initial generation for the simulated annealing algorithm.
   pub fn initial_generation< 'initial >( &'initial self ) -> SudokuGeneration < 'initial >
   {
