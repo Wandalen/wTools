@@ -228,6 +228,58 @@ tests_impls!
       "Unexpected validation error type, expected ValidationError::ExecutorConverter."
     );
   }
+
+  fn subject_with_colon() 
+  {
+    let grammar = GrammarConverter::former()
+    .command
+    (
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .subject( "A path to directory.", wca::Type::Path, true )
+      .form()
+    )
+    .form();
+
+    let executor = ExecutorConverter::former()
+    .routine( "command", Routine::new( | _ | { println!( "hello" ); Ok( () ) } ) )
+    .form();
+
+    let ca = CommandsAggregator::former()
+    .grammar_converter( grammar )
+    .executor_converter( executor )
+    .build();
+
+    let command = r#".command "./path:to_dir" "#;
+
+    a_id!( (), ca.perform( command ).unwrap() );
+
+    let wrong_command = r#".command ./path:to_dir "#;
+
+    a_true!
+    (
+      matches!
+      (
+        ca.perform( wrong_command ), 
+        Err( Error::Validation( ValidationError::Parser { .. } ) ) 
+      ), 
+      "It is a sentence that con not be parsed: `/path:to_dir`"
+    );
+
+    let wrong_command = r#".command wrong:path "#;
+
+    a_true!
+    (
+      matches!
+      (
+        ca.perform( wrong_command ), 
+        Err( Error::Validation( ValidationError::GrammarConverter { .. } ) ) 
+      ), 
+      "property `wrong` not found for command `.command`"
+    );
+  }
 }
 
 //
@@ -240,4 +292,5 @@ tests_index!
   custom_parser,
   dot_command,
   error_types,
+  subject_with_colon,
 }
