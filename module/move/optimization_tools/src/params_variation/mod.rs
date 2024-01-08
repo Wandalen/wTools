@@ -9,9 +9,9 @@ pub fn get_time_for_step< T, F >
   step : T,
   number_of_iterations : usize, 
 ) -> Vec< ( Duration, T ) >
-where F : Fn( T ), T : Clone + std::ops::Add<Output = T>
+where F : Fn( T ), T : Clone + std::ops::Add< Output = T >
 {
-  let mut results: Vec<(Duration, T)> = Vec::new();
+  let mut results: Vec< ( Duration, T ) > = Vec::new();
   let mut input = starting_value;
   loop
   {
@@ -29,11 +29,53 @@ where F : Fn( T ), T : Clone + std::ops::Add<Output = T>
     .into_iter()
     .fold(0, | acc, elem | acc + elem.as_millis() / size )
     ;
-    if results.len() == 0 || (*results.last().unwrap()).0.as_millis() >= average
+    if results.len() == 0 || ( *results.last().unwrap() ).0.as_millis() >= average
     {
       results.push( ( Duration::from_millis( average as u64 ), input.clone() ) );
 
       input = input + step.clone();
+    }
+    else 
+    {
+      results.push( ( Duration::from_millis( average as u64 ), input.clone() ) );
+      break;
+    }
+  }
+  results
+} 
+
+pub fn get_time_for_coefficient< T, F >
+( 
+  proc : F,
+  starting_value : T,
+  coef : T,
+  number_of_iterations : usize, 
+) -> Vec< ( Duration, T ) >
+where F : Fn( T ), T : Clone + std::ops::Mul< Output = T >
+{
+  let mut results: Vec< ( Duration, T ) > = Vec::new();
+  let mut input = starting_value;
+  loop
+  {
+    let mut current_results: Vec< Duration > = Vec::new();
+    for _ in 0..number_of_iterations
+    {
+      let val = input.clone();
+      let now = Instant::now();
+      proc( val );
+      let elapsed = now.elapsed();
+      current_results.push( elapsed );
+    }
+    let size = current_results.len() as u128;
+    let average = current_results
+    .into_iter()
+    .fold(0, | acc, elem | acc + elem.as_millis() / size )
+    ;
+    if results.len() == 0 || ( *results.last().unwrap() ).0.as_millis() >= average
+    {
+      results.push( ( Duration::from_millis( average as u64 ), input.clone() ) );
+
+      input = input * coef.clone();
     }
     else 
     {
@@ -76,7 +118,7 @@ where F : Fn( T ) + Send + Sync + 'static, T : Clone + Send + Sync + 'static
           }
         } );
 
-        match receiver.recv_timeout(max_execution_time)
+        match receiver.recv_timeout( max_execution_time )
         {
           Ok( duration ) => current_results.push( Some( duration ) ),
           Err( mpsc::RecvTimeoutError::Timeout ) => {
