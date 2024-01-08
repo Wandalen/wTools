@@ -229,6 +229,8 @@ tests_impls!
     );
   }
 
+  // tests bug fix when passing a subject with a colon character
+  // example: passing the path to a directory with a colon in its name
   fn subject_with_colon() 
   {
     let grammar = GrammarConverter::former()
