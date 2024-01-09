@@ -1,3 +1,4 @@
+use std::cmp::{min, min_by, max_by, max};
 use std::collections::{ HashMap, BTreeMap };
 use std::time::{ Instant, Duration };
 
@@ -52,16 +53,31 @@ where F : Fn( ParamsCase )
     let size = results.len() as u128;
     let average = results
     .into_iter()
-    .fold(0, | acc, elem | acc + elem.as_millis() / size )
+    .fold( 0, | acc, elem | acc + elem.as_millis() / size )
     ;
     Duration::from_millis( average as u64 )
   }
 
-  pub fn get_min_points( &self ) -> ParamsCase
+  pub fn get_min_points( &self ) -> ( Duration, ParamsCase )
   {
     let mut decrease_factor_range = ( self.lower_bound_case.temp_decrease, self.upper_bound_case.temp_decrease );
     let mut increase_factor_range = ( self.lower_bound_case.temp_increase, self.upper_bound_case.temp_increase );
     let mut gen_number_range = ( self.lower_bound_case.gen_number, self.upper_bound_case.gen_number );
+    let mut start_case = ParamsCase {
+      temp_decrease: ( decrease_factor_range.0 + decrease_factor_range.1 ) / 2.0,
+      temp_increase : ( increase_factor_range.0 + increase_factor_range.1 ) / 2.0,
+      gen_number : ( gen_number_range.0 + gen_number_range.1 ) / 2,
+    };
+
+    let mut start_duration = self.get_case_results( start_case.clone() );
+
+    let df_step = decrease_factor_range.1 - decrease_factor_range.0 / 5.0;
+    let if_step = increase_factor_range.1 - increase_factor_range.0 / 5.0;
+    let gn_step = ( gen_number_range.1 - gen_number_range.0 ) / 5;
+
+    decrease_factor_range = ( start_case.temp_decrease - df_step, start_case.temp_decrease + df_step );
+    increase_factor_range = ( start_case.temp_increase - if_step, start_case.temp_increase + if_step );
+    gen_number_range = ( start_case.gen_number - gn_step, start_case.gen_number + gn_step );
 
     let mut results = BTreeMap::new();
     for _ in 0..5
@@ -90,69 +106,31 @@ where F : Fn( ParamsCase )
       }
       println!("");
 
-      let upper_res = results
-      .iter()
-      //.sorted_by( | ( res1, _ ), ( res2, _ ) |  res1.cmp( res2 ) )
-      .take( 3 )
-      .collect_vec()
-      ;
-
-      for res in &upper_res
+      let candidate = results.pop_first().unwrap();
+      if candidate.0 < start_duration
       {
-        println!("- {:?}", res );
+        start_case = candidate.1;
+        start_duration = candidate.0;
       }
-      println!("");
 
-      let min_point = upper_res.first().clone().unwrap(); 
+      decrease_factor_range = 
+      ( 
+        max_by( start_case.temp_decrease - df_step, self.lower_bound_case.temp_decrease, | v1, v2 | v1.total_cmp( v2 ) ), 
+        min_by( start_case.temp_decrease + df_step, self.upper_bound_case.temp_increase, | v1, v2 | v1.total_cmp( v2 ) ) 
+      );
+      increase_factor_range = 
+      ( 
+        max_by( start_case.temp_increase - if_step, self.lower_bound_case.temp_increase, | v1, v2 | v1.total_cmp( v2 ) ), 
+        min_by( start_case.temp_increase + if_step, self.upper_bound_case.temp_increase, | v1, v2 | v1.total_cmp( v2 ) )
+      );
+      gen_number_range = 
+      ( 
+        max( start_case.gen_number - gn_step, self.lower_bound_case.gen_number ),
+        min( start_case.gen_number + gn_step, self.upper_bound_case.gen_number ) 
+      );
 
-      let distance = upper_res
-      .iter()
-      .skip( 1 )
-      .map( | ( _, case ) | case.temp_decrease )
-      .map( | val | ( min_point.1.temp_decrease - val ).abs() )
-      .max_by( | val1, val2 | val1.total_cmp( &val2 ) )
-      .unwrap()
-      ;
-
-      decrease_factor_range.0 = min_point.1.temp_decrease - distance;
-
-      decrease_factor_range.1 = min_point.1.temp_decrease + distance;
-
-      let distance = upper_res
-      .iter()
-      .skip( 1 )
-      .map( | ( _, case ) | case.temp_increase )
-      .map( | val | ( min_point.1.temp_increase - val ).abs() )
-      .max_by( | val1, val2 | val1.total_cmp( &val2 ) )
-      .unwrap()
-      ;
-
-      increase_factor_range.0 = min_point.1.temp_increase - distance;
-
-      increase_factor_range.1 = min_point.1.temp_increase + distance;
-
-      let distance = upper_res
-      .iter()
-      .map( | ( _, case ) | case.gen_number )
-      .map( | val | ( min_point.1.gen_number as isize - val as isize ).abs() as usize )
-      .max_by( | val1, val2 | val1.cmp( &val2 ) )
-      .unwrap()
-      ;
-
-      println!("{}, {}", distance, min_point.1.gen_number);
-
-      gen_number_range.0 = min_point.1.gen_number - distance;
-
-      gen_number_range.1 = min_point.1.gen_number + distance;
-
-      // gen_number_range.1 = upper_res
-      // .iter()
-      // .map( | ( _, case ) | case.gen_number )
-      // .max()
-      // .unwrap()
-      // ;
     }
-    results.pop_first().unwrap().1.clone()
+    results.pop_first().unwrap().clone()
   }
 }
 
