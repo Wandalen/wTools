@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{ HashMap, BTreeMap };
 use std::time::{ Instant, Duration };
 
 use iter_tools::Itertools;
@@ -63,90 +63,102 @@ where F : Fn( ParamsCase )
     let mut increase_factor_range = ( self.lower_bound_case.temp_increase, self.upper_bound_case.temp_increase );
     let mut gen_number_range = ( self.lower_bound_case.gen_number, self.upper_bound_case.gen_number );
 
-    let mut res : ParamsCase = self.lower_bound_case.clone();
-
+    let mut results = BTreeMap::new();
     for _ in 0..5
     {
-      let mut results = Vec::new();
       for _ in 0..10
       {
-        let step = rand::distributions::Uniform::new( decrease_factor_range.0, decrease_factor_range.1 );
         let mut rng = rand::thread_rng();
+        let step = rand::distributions::Uniform::new( decrease_factor_range.0, decrease_factor_range.1 );
         let d_factor = rand::distributions::Distribution::sample(&step, &mut rng);
   
         let step = rand::distributions::Uniform::new( increase_factor_range.0, increase_factor_range.1 );
-        let mut rng = rand::thread_rng();
         let i_factor = rand::distributions::Distribution::sample(&step, &mut rng);
   
         let step = rand::distributions::Uniform::new( gen_number_range.0, gen_number_range.1 );
-        let mut rng = rand::thread_rng();
         let gen_num = rand::distributions::Distribution::sample( &step, &mut rng );
 
         let case = ParamsCase::new( d_factor, i_factor, gen_num );
   
         let result = self.get_case_results( case.clone() );
-        println!("{:?}", result);
-        results.push( ( result, case ) );
+
+        results.insert( result, case );
       }
+      for res in &results
+      {
+        println!("{:?}", res );
+      }
+      println!("");
+
       let upper_res = results
       .iter()
-      .sorted_by( | ( res1, _ ), ( res2, _ ) |  res1.cmp( res2 ) )
+      //.sorted_by( | ( res1, _ ), ( res2, _ ) |  res1.cmp( res2 ) )
       .take( 3 )
       .collect_vec()
       ;
 
-      decrease_factor_range.0 = upper_res
+      for res in &upper_res
+      {
+        println!("- {:?}", res );
+      }
+      println!("");
+
+      let min_point = upper_res.first().clone().unwrap(); 
+
+      let distance = upper_res
       .iter()
+      .skip( 1 )
       .map( | ( _, case ) | case.temp_decrease )
-      .min_by( | val1, val2 | val1.total_cmp( val2 ) )
+      .map( | val | ( min_point.1.temp_decrease - val ).abs() )
+      .max_by( | val1, val2 | val1.total_cmp( &val2 ) )
       .unwrap()
       ;
 
-      decrease_factor_range.1 = upper_res
-      .iter()
-      .map( | ( _, case ) | case.temp_decrease )
-      .max_by( | val1, val2 | val1.total_cmp( val2 ) )
-      .unwrap()
-      ;
+      decrease_factor_range.0 = min_point.1.temp_decrease - distance;
 
-      increase_factor_range.0 = upper_res
+      decrease_factor_range.1 = min_point.1.temp_decrease + distance;
+
+      let distance = upper_res
       .iter()
+      .skip( 1 )
       .map( | ( _, case ) | case.temp_increase )
-      .min_by( | val1, val2 | val1.total_cmp( val2 ) )
+      .map( | val | ( min_point.1.temp_increase - val ).abs() )
+      .max_by( | val1, val2 | val1.total_cmp( &val2 ) )
       .unwrap()
       ;
 
-      increase_factor_range.1 = upper_res
-      .iter()
-      .map( | ( _, case ) | case.temp_increase )
-      .max_by( | val1, val2 | val1.total_cmp( val2 ) )
-      .unwrap()
-      ;
+      increase_factor_range.0 = min_point.1.temp_increase - distance;
 
-      gen_number_range.0 = upper_res
+      increase_factor_range.1 = min_point.1.temp_increase + distance;
+
+      let distance = upper_res
       .iter()
       .map( | ( _, case ) | case.gen_number )
-      .min()
+      .map( | val | ( min_point.1.gen_number as isize - val as isize ).abs() as usize )
+      .max_by( | val1, val2 | val1.cmp( &val2 ) )
       .unwrap()
       ;
 
-      gen_number_range.1 = upper_res
-      .iter()
-      .map( | ( _, case ) | case.gen_number )
-      .max()
-      .unwrap()
-      ;
+      println!("{}, {}", distance, min_point.1.gen_number);
 
-      res = upper_res.first().unwrap().1.clone();
+      gen_number_range.0 = min_point.1.gen_number - distance;
+
+      gen_number_range.1 = min_point.1.gen_number + distance;
+
+      // gen_number_range.1 = upper_res
+      // .iter()
+      // .map( | ( _, case ) | case.gen_number )
+      // .max()
+      // .unwrap()
+      // ;
     }
-
-    res
+    results.pop_first().unwrap().1.clone()
   }
 }
 
 pub fn calculate_difficulty( sudoku : Board ) -> f64
 {
-  let mut possible_values: Vec<Vec<Vec<usize>>> = vec![ vec![ vec![ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]; 9 ]; 9 ];
+  let mut possible_values: Vec< Vec <Vec < usize > > > = vec![ vec![ vec![ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]; 9 ]; 9 ];
 
   let _clues = sudoku
   .cells()

@@ -7,14 +7,34 @@ use optimization_tools::
   params_variation::{ calculate_difficulty, ParamsFitChecker, ParamsCase },
 };
 
+// easy <= 2
+// 2 < medium <= 2.5
+// 2.5 < hard <= 3
+// 3 < expert/master
+
 fn main()
 {
   let dir = std::env::current_dir().unwrap();
 
-  let mut file = std::fs::File::open(format!("{}/src/resources/hard.txt", dir.to_string_lossy())).unwrap();
+  for level in [ "easy", "medium", "hard", "expert", "master" ]
+  {
+    let mut file = std::fs::File::open(format!("{}/src/resources/{}.txt", dir.to_string_lossy(), level ) ).unwrap();
+    let mut contents = String::new();
+    std::io::Read::read_to_string(&mut file, &mut contents).unwrap();
+    let boards = contents.split( "\n\n" ).collect_vec();
+
+    let mut diff_coeffs = Vec::new();
+    for board_str in boards
+    {
+      diff_coeffs.push( calculate_difficulty( Board::from( board_str ) ) );
+    }
+
+    println!("{} : {:?}", level, diff_coeffs);
+  }
+
+  let mut file = std::fs::File::open(format!("{}/src/resources/easy.txt", dir.to_string_lossy())).unwrap();
   let mut contents = String::new();
   std::io::Read::read_to_string(&mut file, &mut contents).unwrap();
-
   let boards = contents.split( "\n\n" ).collect_vec();
 
   let mut diff_params = Vec::new();
@@ -32,8 +52,8 @@ fn main()
         let ( _reason, _generation ) = initial.solve_with_sa();
         
       },
-      lower_bound_case : ParamsCase::new( 0.0001, 1.0, 1000 ),
-      upper_bound_case : ParamsCase::new( 0.0002, 1.5, 1500 ),
+      lower_bound_case : ParamsCase::new( 0.0002, 1.0, 1000 ),
+      upper_bound_case : ParamsCase::new( 0.0003, 1.5, 1500 ),
       number_of_iterations : 3,
   
     };
