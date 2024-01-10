@@ -1,34 +1,55 @@
+/// Implementation of Nelder–Mead method used to find the minimum of an objective function in a multidimensional space.
 #[ derive( Debug, Clone ) ] 
-pub struct NelderMeadOptimizer< F >
-where F : Fn( Vec< f64 > ) -> f64
+pub struct NelderMeadOptimizer
 {
-  pub f : F,
-  pub x0 : Vec< f64 >,
-  pub step : f64,
+  /// Termination criterion, stop if improvement is less than improvement_threshold.
   pub improvement_threshold : f64,
+  /// Max number of iteration for optimization process.
   pub max_iterations : usize,
-  pub max_no_improvment_steps : usize,
+  /// Max number of steps without improvement, stop execution if exceeded.
+  pub max_no_improvement_steps : usize,
+  /// Coefficient used for calculating reflection point.
   pub alpha : f64,
+  /// Coefficient used for calculating expansion point.
   pub gamma : f64,
+  /// Coefficient used for calculating contraction point.
   pub rho : f64,
+  /// Coefficient used for shrinking simplex.
   pub sigma : f64,
 }
 
-impl< F > NelderMeadOptimizer< F >
-where F : Fn( Vec< f64 > ) -> f64
+impl Default for NelderMeadOptimizer
 {
-  pub fn optimize( &self ) -> ( Vec< f64 >, f64 )
+  fn default() -> Self {
+      Self
+      {
+        improvement_threshold : 10e-6,
+        max_iterations : 1000,
+        max_no_improvement_steps : 10,
+        alpha : 1.0,
+        gamma : 2.0,
+        rho : -0.5,
+        sigma : 0.5,
+      }
+  }
+}
+
+impl NelderMeadOptimizer
+{
+  /// Perform optimization.
+  pub fn optimize< F >( &self, f : F, x0 : Vec< f64 >, step : Vec< f64 >, ) -> ( Vec< f64 >, f64 )
+  where F : Fn( Vec< f64 > ) -> f64
   {
-    let dimensions = self.x0.len();
-    let mut prev_best = ( self.f )( self.x0.clone() );
+    let dimensions = x0.len();
+    let mut prev_best = f( x0.clone() );
     let mut steps_with_no_improv = 0;
-    let mut res = vec![ ( self.x0.clone(), prev_best ) ];
+    let mut res = vec![ ( x0.clone(), prev_best ) ];
 
     for i in 0..dimensions
     {
-      let mut x = self.x0.clone();
-      x[ i ] += self.step;
-      let score = ( self.f )( x.clone() );
+      let mut x = x0.clone();
+      x[ i ] += step[ i ];
+      let score = f( x.clone() );
       res.push( ( x, score ) );
     }
 
@@ -36,7 +57,7 @@ where F : Fn( Vec< f64 > ) -> f64
     loop
     {
       res.sort_by( | ( _, a ), ( _, b ) | a.total_cmp( b ) );
-      // println!("array : {:?}", res );
+
       let best = res.first().clone().unwrap();
 
       if self.max_iterations <= iterations
@@ -56,7 +77,7 @@ where F : Fn( Vec< f64 > ) -> f64
         steps_with_no_improv += 1;   
       }
 
-      if steps_with_no_improv >= self.max_no_improvment_steps
+      if steps_with_no_improv >= self.max_no_improvement_steps
       {
         return res[ 0 ].clone();
       }
@@ -79,7 +100,7 @@ where F : Fn( Vec< f64 > ) -> f64
         x_ref[ i ] = x0_center[ i ] + self.alpha * ( x0_center[ i ] - worst_dir.0[ i ] );
       }
     
-      let reflection_score = ( self.f )( x_ref.clone() );
+      let reflection_score = f( x_ref.clone() );
       let second_worst = res[ res.len() - 2 ].1;
       if res.first().clone().unwrap().1 <= reflection_score && reflection_score < second_worst
       {
@@ -96,7 +117,7 @@ where F : Fn( Vec< f64 > ) -> f64
         {
           x_exp[ i ] = x0_center[ i ] + self.gamma * ( x0_center[ i ] - worst_dir.0[ i ] );
         }
-        let expansion_score = ( self.f )( x_exp.clone() );
+        let expansion_score = f( x_exp.clone() );
 
         if expansion_score < reflection_score
         {
@@ -118,7 +139,7 @@ where F : Fn( Vec< f64 > ) -> f64
       {
         x_con[ i ] = x0_center[ i ] + self.rho * ( x0_center[ i ] - worst_dir.0[ i ] );
       }
-      let contraction_score = ( self.f )( x_con.clone() );
+      let contraction_score = f( x_con.clone() );
 
       if contraction_score < worst_dir.1
       {
@@ -137,7 +158,7 @@ where F : Fn( Vec< f64 > ) -> f64
         {
           x_shrink[ i ] = x1[ i ] + self.sigma * ( point[ i ] - x1[ i ] );
         }
-        let score = ( self.f )( x_shrink.clone() );
+        let score = f( x_shrink.clone() );
         new_res.push( ( x_shrink, score ) );
       }
 

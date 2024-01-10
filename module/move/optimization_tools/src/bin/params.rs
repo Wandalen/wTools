@@ -11,20 +11,21 @@ fn main()
 {
   let dir = std::env::current_dir().unwrap();
 
-  // for level in [ "easy", "medium", "hard", "expert", "master" ]
-  // {
-  //   let mut file = std::fs::File::open(format!("{}/src/resources/{}.txt", dir.to_string_lossy(), level ) ).unwrap();
-  //   let mut contents = String::new();
-  //   std::io::Read::read_to_string(&mut file, &mut contents).unwrap();
-  //   let boards = contents.split( "\n\n" ).collect_vec();
+  for level in [ "easy", "medium", "hard", "expert", "master" ]
+  {
+    let mut file = std::fs::File::open(format!("{}/src/resources/{}.txt", dir.to_string_lossy(), level ) ).unwrap();
+    let mut contents = String::new();
+    std::io::Read::read_to_string(&mut file, &mut contents).unwrap();
+    let boards = contents.split( "\n\n" ).collect_vec();
 
-  //   let mut diff_coeffs = Vec::new();
-  //   for board_str in &boards
-  //   {
-  //     diff_coeffs.push( calculate_difficulty( Board::from( board_str ) ) );
-  //   }
+    let mut diff_coeffs = Vec::new();
+    for board_str in &boards
+    {
+      diff_coeffs.push( Board::from( board_str ).calculate_difficulty() );
+    }
 
-  //   println!("{} : {:?}", level, diff_coeffs);
+    println!("{} : {:?}", level, diff_coeffs);
+  }
 
   //   let mut diff_params = Vec::new();
   //   for board_str in &boards
@@ -59,43 +60,38 @@ fn main()
   std::io::Read::read_to_string(&mut file, &mut contents).unwrap();
   let boards = contents.split( "\n\n" ).collect_vec();
 
-  // let optimizer = NelderMeadOptimizer
-  // {
-  //   f : | case : Vec< f64 > |
-  //     {
-  //       let mut initial = SudokuInitial::new( Board::from( boards[ 0 ] ), Seed::default() );
-  //       initial.set_temp_decrease_factor( case[ 0 ] );
-  //       initial.set_temp_increase_factor( case[ 1 ] );
-  //       initial.set_mutations_per_generation( case[ 2 ] as usize );
-        
-  //       let mut results: Vec< std::time::Duration > = Vec::new();
-  //       for _ in 0..3
-  //       {
-  //         let now = std::time::Instant::now();
-  //         let ( _reason, _generation ) = initial.solve_with_sa();
-  //         let elapsed = now.elapsed();
-  //         results.push( elapsed );
-  //       }
-  //       let size = results.len() as u128;
-  //       let average = results
-  //       .into_iter()
-  //       .fold( 0, | acc, elem | acc + elem.as_millis() / size )
-  //       ;
-  //       std::time::Duration::from_millis( average as u64 )
-  //     }, 
-  //     step : 0.1,
-  //     improvement_threshold : std::time::Duration::from_millis( 100 ),
-  //     alpha : 1.0,
-  //     max_no_improvment_steps : 3,
-  //     x0 : vec![ 0.0001, 1.0, 1000.0 ],
-  //     sigma : 0.5,
-  //     gamma : 2.0,
-  //     max_iterations : 10,
-  //     rho : -0.5,
-  // };
+  let mut optimizer = NelderMeadOptimizer::default();
+  optimizer.improvement_threshold = 100.0;
 
-  // let res = optimizer.optimize();
-  // println!( "{:?} : {:?}", res.0, res.1 );
+  let res = optimizer.optimize
+  (
+    | case : Vec< f64 > |
+    {
+      let mut initial = SudokuInitial::new( Board::from( boards[ 0 ] ), Seed::default() );
+      initial.set_temp_decrease_factor( case[ 0 ] );
+      initial.set_temp_increase_factor( case[ 1 ] );
+      initial.set_mutations_per_generation( case[ 2 ] as usize );
+      
+      let mut results: Vec< std::time::Duration > = Vec::new();
+      for _ in 0..3
+      {
+        let now = std::time::Instant::now();
+        let ( _reason, _generation ) = initial.solve_with_sa();
+        let elapsed = now.elapsed();
+        results.push( elapsed );
+      }
+      let size = results.len() as u128;
+      let average = results
+      .into_iter()
+      .fold( 0, | acc, elem | acc + elem.as_millis() / size )
+      ;
+      average as f64
+    }, 
+    vec![ 0.0001, 1.0, 1000.0 ],
+    vec![ 0.00005, 0.1, 200.0 ],
+  );
+
+  println!( "{:?} : {:?}", res.0, res.1 );
 
   // let mut diff_params = Vec::new();
   // for board_str in boards
