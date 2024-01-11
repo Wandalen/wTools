@@ -2,7 +2,8 @@
 #[ derive( Debug, Clone ) ] 
 pub struct NelderMeadOptimizer
 {
-  /// Termination criterion, stop if improvement is less than improvement_threshold.
+  /// Threshold used to detect improvement in optimization process.
+  /// If difference between current best value and previous best value is less than the threshold, it is considered that no improvement was achieved.
   pub improvement_threshold : f64,
   /// Max number of iteration for optimization process.
   pub max_iterations : usize,
