@@ -2,39 +2,51 @@ use std::collections::HashMap;
 
 use deterministic_rand::Seed;
 use iter_tools::Itertools;
-use optimization_tools::
+use crate::
 { 
   sudoku::*, 
   optimization::SudokuInitial,
   nelder_mead::NelderMeadOptimizer,
 };
 
-fn main()
+mod sudoku_sets;
+
+/// Level of difficulty of sudoku board.
+#[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
+pub enum Level
 {
-  let dir = std::env::current_dir().unwrap();
-  let mut boards = HashMap::new();
-  let levels = [ "easy", "medium", "hard", "expert" ];
+  Easy,
+  Medium,
+  Hard,
+  Expert,
+}
 
-  for level in levels
+impl Level {
+  pub fn iterator() -> impl Iterator< Item = Level > 
   {
-    let mut file = std::fs::File::open( format!( "{}/src/resources/{}.txt", dir.to_string_lossy(), level ) ).unwrap();
-    let mut contents = String::new();
-    std::io::Read::read_to_string( &mut file, &mut contents ).unwrap();
-    let boards_str = contents.split( "\n\n" ).collect_vec();
-    boards.insert( level, Vec::new() );
+    use Level::*;
+    [ Easy, Medium, Hard, Expert ].iter().copied()
+  }
+}
 
+pub fn get_optimal_params()
+{
+  let mut boards = HashMap::new();
+  let mut control_boards = HashMap::new();
+
+  for ( index, level ) in Level::iterator().enumerate()
+  {
+    boards.insert( level, sudoku_sets::TRAINING[ index ].iter().map( | str | Board::from( str ) ).collect_vec() );
+    control_boards.insert( level, sudoku_sets::CONTROL[ index ].iter().map( | str | Board::from( str ) ).collect_vec() );
+  }
+
+  for ( level, level_boards ) in &boards
+  {
     let mut diff_coeffs = Vec::new();
-    for board_str in boards_str
+    for board in level_boards
     {
-      let board = Board::from( board_str );
       diff_coeffs.push( board.calculate_difficulty() );
-      // let s = SudokuInitial::new( board.clone(), Seed::default() );
-      // println!( "{:?}", board );
-      // s.solve_with_sa();
-      boards.get_mut( level ).unwrap().push( board );
     }
-
-    println!( "{} : {:?}", level, diff_coeffs );
   }
 
   let mut optimizer = NelderMeadOptimizer::default();
@@ -44,18 +56,11 @@ fn main()
 
   let mut level_average = HashMap::new();
   
-  for level in levels
+  for ( level, level_boards ) in &boards
   {
-    let mut level_results: HashMap<&str, Vec<(Vec<f64>, f64)>> = HashMap::new();
-    let level_boards = boards.get( level ).unwrap();
-    let mut starting_point = vec![ 0.001, 1.0, 2000.0 ];
-    if let Some( prev_level ) =  levels.iter().position( | l| l == &level ).and_then( | pos | if pos > 0 { levels.get( pos - 1 ) } else { None } )
-    {
-      //let average: (f64, ) = *level_average.get( prev_level ).unwrap();
-      //starting_point = vec![ average.0, ];
-      //let average: (f64, f64, f64) = *level_average.get( prev_level ).unwrap();
-      //starting_point = vec![ average.0, average.1, average.2 ];
-    }
+    let mut level_results = HashMap::new();
+
+    let _starting_point = vec![ 0.001, 1.0, 2000.0 ];
 
     level_results.insert( level, Vec::new() );
     for board in level_boards
@@ -85,12 +90,10 @@ fn main()
           average as f64
         }, 
         vec![ 0.001, 1.0, 2000.0 ],
-        vec![ 0.005, 0.2, 200.0 ],
-        //starting_point.clone(),
-        //vec![ 0.0002, -0.5, -300.0 ],
+        vec![ 0.002, 0.2, 200.0 ],
       );
       //println!( "{}: {:?} : {:?}", level, res.0, res.1 );
-      let results = level_results.get_mut( level ).unwrap();
+      let results = level_results.get_mut( &level ).unwrap();
       results.push( res );
     }
 
@@ -112,44 +115,31 @@ fn main()
         ),
       );
     }
-    println!( "Average: {:?}", level_average );
+    // println!( "Average: {:?}", level_average );
   }
 
   //check improvement
-  for level in [ "easy", "medium", "hard", "expert" ]
-  {
-    let mut file = std::fs::File::open( format!( "{}/src/resources/{}-check.txt", dir.to_string_lossy(), level ) ).unwrap();
-    let mut contents = String::new();
-    std::io::Read::read_to_string( &mut file, &mut contents ).unwrap();
-    let boards_str = contents.split( "\n\n" ).collect_vec();
-    println!( "{}", level );
 
-    for board_str in boards_str
+  for level in Level::iterator()
+  {
+    for board in control_boards.get( &level ).unwrap()
     {
-      let board = Board::from( board_str );
-      println!( "Difficulty: {}", board.calculate_difficulty() );
       // initial
       let mut initial = SudokuInitial::new( board.clone(), Seed::default() );
-      
       let now = std::time::Instant::now();
       let ( _reason, _generation ) = initial.solve_with_sa();
       let elapsed = now.elapsed();
 
-      println!( "Without optimization: {:?}", elapsed );
       // optimized
       initial = SudokuInitial::new( board.clone(), Seed::default() );
       let optimized_params = level_average.get( &level ).unwrap();
-      initial.set_temp_decrease_factor( 0.0078 );
+      initial.set_temp_decrease_factor( 0.0023 );
       initial.set_temp_increase_factor( optimized_params.1 );
       initial.set_mutations_per_generation( optimized_params.2 as usize );
       
       let now = std::time::Instant::now();
       let ( _reason, _generation ) = initial.solve_with_sa();
       let elapsed = now.elapsed();
-
-      println!( "Optimized: {:?}", elapsed );
     }
-
-    
   }
 }
