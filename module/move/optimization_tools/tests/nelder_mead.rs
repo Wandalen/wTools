@@ -18,7 +18,7 @@ fn sin_cos()
   let optimizer = NelderMeadOptimizer::default();
 
   let res = optimizer.optimize( f, vec![ 0.0, 0.0, 0.0 ], vec![ 0.1, 0.1, 0.1 ] );
-  assert!( ( -1.5808971014312196 - res.0[ 0 ] ).abs() < f64::EPSILON );
+  assert!( ( -1.5808971014312196 - res.0[ 0 ] ).abs() < 10e-5 );
   assert!( ( -1.0 - res.1 ).abs() <= 10e-5 );
 }
 

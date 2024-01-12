@@ -57,7 +57,9 @@ impl NelderMeadOptimizer
     let mut iterations = 0;
     loop
     {
+      
       res.sort_by( | ( _, a ), ( _, b ) | a.total_cmp( b ) );
+      println!("{:?}", res);
 
       let best = res.first().clone().unwrap();
 
@@ -103,7 +105,7 @@ impl NelderMeadOptimizer
     
       let reflection_score = f( x_ref.clone() );
       let second_worst = res[ res.len() - 2 ].1;
-      if res.first().clone().unwrap().1 <= reflection_score && reflection_score < second_worst
+      if res[ 0 ].clone().1 <= reflection_score && reflection_score < second_worst
       {
         res.pop();
         res.push( ( x_ref, reflection_score ) );
@@ -111,12 +113,12 @@ impl NelderMeadOptimizer
       }
 
       //expansion
-      if reflection_score < res.first().clone().unwrap().1
+      if reflection_score < res[ 0 ].1
       {
         let mut x_exp = vec![ 0.0; dimensions ];
         for i in 0..dimensions
         {
-          x_exp[ i ] = x0_center[ i ] + self.gamma * ( x0_center[ i ] - worst_dir.0[ i ] );
+          x_exp[ i ] = x0_center[ i ] + self.gamma * ( x_ref[ i ] - x0_center[ i ] );
         }
         let expansion_score = f( x_exp.clone() );
 
@@ -164,6 +166,7 @@ impl NelderMeadOptimizer
       }
 
       res = new_res;
+      println!("{:?}", res);
     }
   }
 }
