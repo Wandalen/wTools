@@ -11,7 +11,7 @@ fn power_two()
   ;
 
   let res = optimizer.optimize( f );
-  assert!( res.1.abs() < 10e-6 );
+  assert!( res.obj_value.abs() < 10e-6 );
 }
 
 #[ test ]
@@ -24,8 +24,8 @@ fn sin_cos()
   ;
 
   let res = optimizer.optimize( f );
-  assert!( ( -1.5808971014312196 - res.0.coords[ 0 ] ).abs() < 10e-5 );
-  assert!( ( -1.0 - res.1 ).abs() <= 10e-5 );
+  assert!( ( -1.5808971014312196 - res.point.coords[ 0 ] ).abs() < 10e-5 );
+  assert!( ( -1.0 - res.obj_value ).abs() <= 10e-5 );
 }
 
 #[ test ]
@@ -38,8 +38,8 @@ fn rosenbrock()
   ;
 
   let res = optimizer.optimize( f );
-  assert!( ( 1.0 - res.0.coords[ 0 ] ).abs() < 10e-5 );
-  assert!( ( 1.0 - res.0.coords[ 1 ] ).abs() < 10e-5 );
+  assert!( ( 1.0 - res.point.coords[ 0 ] ).abs() < 10e-5 );
+  assert!( ( 1.0 - res.point.coords[ 1 ] ).abs() < 10e-5 );
   assert!( res.1 < 10e-5 );
 }
 
@@ -58,11 +58,11 @@ fn himmelblau()
 
   for minima in [ ( 3.0, 2.0 ), ( -2.805118, 3.131312 ), ( -3.779310, -3.283186 ), ( 3.584428, -1.848126 ) ]
   {
-    if ( ( minima.0 - res.0.coords[ 0 ] ).abs() < 10e-5 ) && ( ( minima.1 - res.0.coords[ 1 ] ).abs() < 10e-5 )
+    if ( ( minima.0 - res.point.coords[ 0 ] ).abs() < 10e-5 ) && ( ( minima.1 - res.point.coords[ 1 ] ).abs() < 10e-5 )
     {
         is_one_of_minima_points = true;
     }
   }
   assert!( is_one_of_minima_points );
-  assert!( res.1 < 10e-5 );
+  assert!( res.obj_value < 10e-5 );
 }

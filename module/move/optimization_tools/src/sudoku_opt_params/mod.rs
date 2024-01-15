@@ -55,7 +55,7 @@ pub fn get_optimal_params()
   {
     let mut level_results = HashMap::new();
     level_results.insert( level, Vec::new() );
-    
+
     for board in level_boards
     {  
       let optimizer = NelderMeadOptimizer::new()
@@ -106,9 +106,9 @@ pub fn get_optimal_params()
           ( 0.0, 0.0, 0.0 ), 
           | acc, elem | 
           ( 
-            acc.0 + elem.0.coords[ 0 ] / size, 
-            acc.1 + elem.0.coords[ 1 ] / size, 
-            acc.2 + elem.0.coords[ 2 ] / size, 
+            acc.0 + elem.point.coords[ 0 ] / size, 
+            acc.1 + elem.point.coords[ 1 ] / size, 
+            acc.2 + elem.point.coords[ 2 ] / size, 
           )
         ),
       );

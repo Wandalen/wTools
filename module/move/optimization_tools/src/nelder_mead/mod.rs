@@ -1,33 +1,49 @@
 //! Implementation of Nelder–Mead method used to find the minimum of an objective function in a multidimensional space.
-//!
+//! It operates by adjusting a simplex(geometric shape) to explore and converge toward the optimal solution.
 //! 
 
-use std::ops::{ Bound, Range, RangeBounds };
+use std::ops::{ Bound, Range, RangeBounds, RangeInclusive };
 
-/// 
+/// Represents point in multidimensional space where optimization is performed.
 #[ derive( Debug, Clone ) ] 
 pub struct Point
 {
+  /// Coordinates of the point.
   pub coords : Vec< f64 >,
 }
 
 impl Point
 {
+  /// Create new point from given coordinates.
   pub fn new( coords : Vec< f64 > ) -> Self
   {
     Self { coords }
   }
 }
 
+/// Represents geometric shape formed by a set of n+1 points in a multidimensional space, where n is a number of dimensions.
+/// Simplex is used to navigate through solution space, adjusting its shape based on the performance of the objective function at different points.
 #[ derive( Debug, Clone ) ] 
 pub struct Simplex
 {
+  /// Points of simplex.
   pub points : Vec< Point >,
 }
 
+/// Struct that indicates state of optimizer where the bounds for optimization space were not yet initialized.
+#[ derive( Debug, Clone ) ] 
 pub struct NoBounds {}
+
+/// Struct that indicates state of optimizer where the starting point for optimization process was not yet initialized.
+#[ derive( Debug, Clone ) ] 
 pub struct NoPoint {}
+
+/// Struct that indicates state of optimizer where the initial simplex for optimization process was not yet created.
+#[ derive( Debug, Clone ) ] 
 pub struct NoSimplex {}
+
+/// Struct which holds initial configuration for NelderMead optimization, and can perform optimization if all necessary information were provided during initialization process.
+#[ derive( Debug, Clone ) ] 
 pub struct NelderMeadOptimizer< B, P, S >
 {
   config : NelderMeadConfig,
@@ -35,33 +51,37 @@ pub struct NelderMeadOptimizer< B, P, S >
   starting_point : P,
   initial_simplex : S,
 }
-impl NelderMeadOptimizer<NoBounds, NoPoint, NoSimplex> 
+
+impl NelderMeadOptimizer< NoBounds, NoPoint, NoSimplex > 
 {
+  /// Create new optimizer with default configuration and uninitialized bounds, starting point and simplex. 
   pub fn new() -> Self
   {
     Self {
       config : NelderMeadConfig::default(),
-      bounds : NoBounds{},
-      starting_point : NoPoint{},
-      initial_simplex : NoSimplex{},
+      bounds : NoBounds {},
+      starting_point : NoPoint {},
+      initial_simplex : NoSimplex {},
     }
   }
 
+  /// Create new optimizer with default configuration and privided space bounds, and with uninitialized starting point and simplex. 
   pub fn new_bounded< R : RangeBounds< f64 > >( bounds : Vec< R > ) -> NelderMeadOptimizer< Vec< R >, NoPoint, NoSimplex >
   {
     NelderMeadOptimizer 
     {
       config : NelderMeadConfig::default(),
       bounds,
-      starting_point : NoPoint{},
-      initial_simplex : NoSimplex{},
+      starting_point : NoPoint {},
+      initial_simplex : NoSimplex {},
     }
-}
+  }
 }
 
 impl< S, R > NelderMeadOptimizer< Vec< R >, NoPoint, S >
 where R : RangeBounds< f64 >
 {
+  /// Set staring point for optimizer with initialized bounds.
   pub fn starting_point( self, p : Point ) -> NelderMeadOptimizer< Vec< R >, Point, S > 
   {
     NelderMeadOptimizer 
@@ -73,9 +93,11 @@ where R : RangeBounds< f64 >
     }
   }
 }
-impl< S > NelderMeadOptimizer< Vec< std::ops::RangeInclusive< f64 > >, NoPoint, S >
+
+impl< S > NelderMeadOptimizer< Vec< RangeInclusive< f64 > >, NoPoint, S >
 {
-  pub fn random_starting_point( self ) -> NelderMeadOptimizer< Vec< std::ops::RangeInclusive< f64 > >, Point, S > 
+  /// Set random point from bounded space as starting point.
+  pub fn random_starting_point( self ) -> NelderMeadOptimizer< Vec< RangeInclusive< f64 > >, Point, S > 
   {
     let mut coords = Vec::new();
     let mut rng = rand::thread_rng();
@@ -98,6 +120,7 @@ impl< S > NelderMeadOptimizer< Vec< std::ops::RangeInclusive< f64 > >, NoPoint, 
 
 impl< S > NelderMeadOptimizer< NoBounds, NoPoint, S >
 {
+  /// Set starting point for optimizer with uninitialized bounds and initialize bounds implicitly as range from negative infinity to positive infinity for every dimension. 
   pub fn starting_point( self, p : Point ) -> NelderMeadOptimizer< Vec< Range< f64 > >, Point, S > 
   {
     let mut bounds = Vec::new();
@@ -118,6 +141,7 @@ impl< S > NelderMeadOptimizer< NoBounds, NoPoint, S >
 impl< R > NelderMeadOptimizer< Vec< R >, Point, NoSimplex >
 where R : RangeBounds< f64 >
 {
+  /// Initialize simplex by providing its size for optimizer with initialized starting point.
   pub fn simplex_size( self, size : Vec< f64 > ) -> NelderMeadOptimizer< Vec< R >, Point, Simplex > 
   {
     let mut points = vec![ self.starting_point.clone() ];
@@ -138,62 +162,80 @@ where R : RangeBounds< f64 >
   }
 }
 
-impl< S > NelderMeadOptimizer< Vec< std::ops::RangeInclusive< f64 > >, NoPoint, S >
+impl< S > NelderMeadOptimizer< Vec< RangeInclusive< f64 > >, Point, S >
 {
-  pub fn random_simplex_size( self ) -> NelderMeadOptimizer< Vec< std::ops::RangeInclusive< f64 > >, Point, S > 
+  /// Initialize simplex by providing its size for optimizer with initialized starting point.
+  pub fn random_simplex_size( self ) -> NelderMeadOptimizer< Vec< RangeInclusive< f64 > >, Point, Simplex > 
   {
-    let mut coords = Vec::new();
+    let mut points = vec![ self.starting_point.clone() ];
+    let smallest_dimension = self.bounds
+    .iter()
+    .map( | d | d.end() - d.start() )
+    .min_by( | a, b | a.total_cmp( &b ) )
+    .unwrap()
+    ;
+
     let mut rng = rand::thread_rng();
-    
-    for range in &self.bounds
+    for i in 0..self.bounds.len()
     {
-      let x = rand::Rng::gen_range(&mut rng, range.clone() );
-      coords.push( x );
+      let mut x = self.starting_point.clone();
+      x.coords[ i ] += rand::Rng::gen_range(&mut rng, 2.0..( 0.1 * smallest_dimension ) );
+      points.push( x );
     }
 
     NelderMeadOptimizer {
       config : self.config,
       bounds : self.bounds,
-      starting_point : Point::new( coords ),
-      initial_simplex : self.initial_simplex,
+      starting_point : self.starting_point,
+      initial_simplex : Simplex { points },
     }
   }
 }
 
 impl< R, P, S > NelderMeadOptimizer< R, P, S >
 {
+  /// Set improvement threshold, min value used to detect improvement in optimization process.
   pub fn set_improvement_threshold( mut self, thr : f64 ) -> Self
   {
     self.config.improvement_threshold = thr;
     self
   }
 
+  /// Set max number of iterations of optimization process. 
   pub fn set_max_iterations( mut self, iters : usize ) -> Self
   {
     self.config.max_iterations = iters;
     self
   }
+
+  /// Set max number of iterations where no improvement in objective function values happens. 
   pub fn set_max_no_improvement_steps( mut self, steps : usize ) -> Self
   {
     self.config.max_no_improvement_steps = steps;
     self
   }
   
+  /// Set coefficient for calculating reflection point. 
   pub fn set_alpha( mut self, a : f64 ) -> Self
   {
     self.config.alpha = a;
     self
   }
+  /// Set coefficient for calculating expansion point. 
   pub fn set_gamma( mut self, g : f64 ) -> Self
   {
     self.config.gamma = g;
     self
   }
+
+  /// Set coefficient for calculating contraction point. 
   pub fn set_rho( mut self, r : f64 ) -> Self
   {
     self.config.rho = r;
     self
   }
+
+  /// Set coefficient for adjusting simplex size in all dimensions. 
   pub fn set_sigma( mut self, s : f64 ) -> Self
   {
     self.config.sigma = s;
@@ -204,10 +246,11 @@ impl< R, P, S > NelderMeadOptimizer< R, P, S >
 impl< R > NelderMeadOptimizer< Vec< R >, Point, Simplex >
 where R : RangeBounds< f64 >
 {
+  /// Checks if point left the domain, if so, performs projection: all coordinates that lie out of domain bounds are set to closest coordinate included in bounded space.
+  /// Returns projected point.
   fn check_bounds( &self, point : Point ) -> Point
   {
-    // check if point left the domain, if so, perform projection:
-    // x[ i ] = min or x[ i ] = max
+
     let mut coords = point.coords;
     for i in 0..coords.len()
     {
@@ -253,8 +296,9 @@ where R : RangeBounds< f64 >
     }
     Point::new( coords )
   }
-  /// Perform optimization.
-  pub fn optimize< F >( &self, f : F ) -> ( Point, f64 )
+
+  /// Optimize provided objective function with using initialized configuration.
+  pub fn optimize< F >( &self, f : F ) -> NMResult
   where F : Fn( Point ) -> f64
   {
     let x0 = self.starting_point.clone();
@@ -275,13 +319,17 @@ where R : RangeBounds< f64 >
     loop
     {
       res.sort_by( | ( _, a ), ( _, b ) | a.total_cmp( b ) );
-      println!("{:?}", res);
 
       let best = res.first().clone().unwrap();
 
       if self.config.max_iterations <= iterations
       {
-        return res[ 0 ].clone();
+        return NMResult 
+        {
+          point : res[ 0 ].0.clone(),
+          obj_value : res[ 0 ].1,
+          reason : NMTerminationReason::MaxIterations,
+        }
       }
 
       iterations += 1;
@@ -298,7 +346,12 @@ where R : RangeBounds< f64 >
 
       if steps_with_no_improv >= self.config.max_no_improvement_steps
       {
-        return res[ 0 ].clone();
+        return NMResult 
+        {
+          point : res[ 0 ].0.clone(),
+          obj_value : res[ 0 ].1,
+          reason : NMTerminationReason::NoImprovement,
+        }
       }
 
       //centroid
@@ -393,23 +446,31 @@ where R : RangeBounds< f64 >
   }
 }
 
+/// Configuration for Nelder-Mead optimization process.
 #[ derive( Debug, Clone ) ] 
 pub struct NelderMeadConfig
 {
   /// Threshold used to detect improvement in optimization process.
   /// If difference between current best value and previous best value is less than the threshold, it is considered that no improvement was achieved.
   pub improvement_threshold : f64,
-  /// Max number of iteration for optimization process.
+  /// Max number of iteration for optimization process, stop execution if exceeded.
   pub max_iterations : usize,
   /// Max number of steps without improvement, stop execution if exceeded.
   pub max_no_improvement_steps : usize,
-  /// Coefficient used for calculating reflection point.
+  /// Coefficient used for calculating reflection point - point opposite to one with the highest value of objective function.
+  /// It is expected that lower values of objective function lie in the opposite direction from point with highest value. 
   pub alpha : f64,
-  /// Coefficient used for calculating expansion point.
+  /// Coefficient used for calculating expansion point. 
+  /// Expansion happents if previously calculated reflection point has the lowest value.
+  /// If so, expand simplex in the same direction by calculating expansion point.
   pub gamma : f64,
-  /// Coefficient used for calculating contraction point.
+  /// Coefficient used for calculating contraction point. 
+  /// Contraction happens when previously calculated reflection point is the worst point in the simplex.
+  /// It means that minimum lies within the simplex, so contracting vertices helps to find better values.
   pub rho : f64,
   /// Coefficient used for shrinking simplex.
+  /// If previously calculated contraction point doesn't improve the objective function shrinking is performed to adjust simplex size. 
+  /// Shrinking involves reducing the distance between the vertices of the simplex, making it smaller.
   pub sigma : f64,
 }
 
@@ -427,4 +488,26 @@ impl Default for NelderMeadConfig
         sigma : 0.5,
       }
   }
+}
+
+/// Result of optimization process.
+#[ derive( Debug, Clone ) ] 
+pub struct NMResult
+{
+  /// Point in which objective function had the lowest value at the moment of termination.
+  pub point : Point,
+  /// Lowest value of objective function found during optimization.
+  pub obj_value : f64,
+  /// Reason for termination.
+  pub reason : NMTerminationReason,
+}
+
+/// Reasons for termination of optimization process.
+#[ derive( Debug, Clone ) ] 
+pub enum NMTerminationReason
+{
+  /// Reached limit of total iterations.
+  MaxIterations,
+  /// Reached limit of iterations without improvement in objective function values.
+  NoImprovement,
 }
