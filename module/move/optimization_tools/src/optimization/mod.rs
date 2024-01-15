@@ -4,6 +4,8 @@
 use crate::*;
 #[ cfg( feature="static_plot" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };
+use rand::seq::SliceRandom;
+use rayon::iter::{IntoParallelIterator, ParallelIterator, IndexedParallelIterator};
 use sudoku::{ Board, BlockIndex, CellIndex };
 use deterministic_rand::Seed;
 // use log::*;
@@ -245,7 +247,7 @@ impl SudokuPerson
   {
     let mutagen;
     loop 
-    {
+    { 
       let rng_ref = hrng.rng_ref();
       let mut rng = rng_ref.lock().unwrap();
       let block : BlockIndex = rng.gen();
@@ -255,7 +257,6 @@ impl SudokuPerson
         mutagen = m;
         break;
       }
-
     }
     mutagen.into()
   }
@@ -507,12 +508,14 @@ impl< 'a > SudokuGeneration< 'a >
     let mut n_mutations : usize = 0;
     let mut n_resets : usize = self.n_resets;
 
+    let mut expected_number_of_mutations = 4;
+
     loop
     {
-
       if n_mutations > initial.n_mutations_per_generation_limit
       {
         n_resets += 1;
+        expected_number_of_mutations = 4;
         if n_resets >= initial.n_resets_limit
         {
           return Reason::ResetLimit;
@@ -523,33 +526,82 @@ impl< 'a > SudokuGeneration< 'a >
         temperature = temperature2;
         n_mutations = 0;
       }
-
-      let mutagen = self.person.mutagen( self.initial_board, self.hrng.clone() );
-      let mutagen_cross_cost = self.person.board.cross_error_for_value
-      (
-        mutagen.cell1, 
-        self.person.board.cell(mutagen.cell2),
-        mutagen.cell2, 
-        self.person.board.cell(mutagen.cell1)
-      );
-
-      let mut original_cross_cost = 0;
-      original_cross_cost += self.person.board.cross_error(mutagen.cell1 );
-      original_cross_cost += self.person.board.cross_error(mutagen.cell2 );
-
       let rng_ref = self.hrng.rng_ref();
       let mut rng = rng_ref.lock().unwrap();
 
-      let cost_difference = 0.5 + mutagen_cross_cost as f64 - original_cross_cost as f64;
-      let threshold = ( - cost_difference / temperature.unwrap() ).exp();
+      let candidates = rayon::iter::repeat( () )
+      .take( expected_number_of_mutations )
+      .enumerate()
+      .map( | ( i, _ ) | self.hrng.child( i ) )
+      .flat_map( | hrng | 
+        {
+          
+          let mutagen = self.person.mutagen( self.initial_board, hrng.clone() );
+          
+          let mutagen_cross_cost = self.person.board.cross_error_for_value
+          (
+            mutagen.cell1, 
+            self.person.board.cell( mutagen.cell2 ),
+            mutagen.cell2, 
+            self.person.board.cell( mutagen.cell1 )
+          );
+          
+          let mut original_cross_cost = 0;
+          original_cross_cost += self.person.board.cross_error( mutagen.cell1 );
+          original_cross_cost += self.person.board.cross_error( mutagen.cell2 );
+    
+          let rng_ref = hrng.rng_ref();
+          let mut rng = rng_ref.lock().unwrap();
+    
+          let cost_difference = 0.5 + mutagen_cross_cost as f64 - original_cross_cost as f64;
+          let threshold = ( - cost_difference / temperature.unwrap() ).exp();
+    
+          log::trace!
+          (
+            "cost : {}  | cost_difference : {cost_difference} | temperature : {temperature}",
+            self.person.cost,
+          );
+          let rand : f64 = rng.gen();
+          let vital = rand < threshold;
 
-      log::trace!
-      (
-        "cost : {}  | cost_difference : {cost_difference} | temperature : {temperature}",
-        self.person.cost,
-      );
-      let rand : f64 = rng.gen();
-      let vital = rand < threshold;
+          if vital
+          {
+            let emoji = if cost_difference > 0.0
+            {
+              "🔼"
+            }
+            else if cost_difference < 0.0
+            {
+              "✔️"
+            }
+            else
+            {
+              "🔘"
+            };
+            log::trace!( " {emoji} vital | rand( {rand} ) < threshold( {threshold} )" );
+            if cost_difference == 0.0
+            {
+              // sleep();
+            }
+            Some( mutagen )
+          }
+          else
+          {
+            log::trace!( " ❌ non-vital | rand( {rand} ) > threshold( {threshold} )" );
+            None
+          }
+        }
+      )
+      .collect::< Vec< _ > >()
+      ;
+
+      let candidate = candidates.choose( &mut *rng );
+
+      if let Some( mutagen ) = candidate
+      {
+        self.person.mutate( &mutagen );
+        break;
+      }
 
       //plotting
       // #[ cfg( feature="static_plot" ) ]
@@ -573,41 +625,11 @@ impl< 'a > SudokuGeneration< 'a >
       //   plot( options );
       // }
 
-      if vital
+      n_mutations += expected_number_of_mutations;
+      if expected_number_of_mutations < 32
       {
-        let emoji = if cost_difference > 0.0
-        {
-          "🔼"
-        }
-        else if cost_difference < 0.0
-        {
-          "✔️"
-        }
-        else
-        {
-          "🔘"
-        };
-        log::trace!( " {emoji} vital | rand( {rand} ) < threshold( {threshold} )" );
-        if cost_difference == 0.0
-        {
-          // sleep();
-        }
+        expected_number_of_mutations += 4;
       }
-      else
-      {
-        log::trace!( " ❌ non-vital | rand( {rand} ) > threshold( {threshold} )" );
-      }
-
-
-      // info!( target = threshold ); xxx
-
-      if vital
-      {
-        self.person.mutate( &mutagen );
-        break;
-      }
-
-      n_mutations += 1;
     };
 
     self.n_generation = self.n_generation + 1;
