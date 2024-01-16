@@ -5,7 +5,7 @@ use crate::*;
 #[ cfg( feature="static_plot" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };
 use rand::seq::SliceRandom;
-use rayon::iter::{IntoParallelIterator, ParallelIterator, IndexedParallelIterator};
+use rayon::iter::{ ParallelIterator, IndexedParallelIterator};
 use sudoku::{ Board, BlockIndex, CellIndex };
 use deterministic_rand::Seed;
 // use log::*;
@@ -341,6 +341,24 @@ impl SudokuInitial
     }
   }
 
+  /// Set temperature increase factor.
+  pub fn set_temp_decrease_factor( &mut self, factor : f64 )
+  {
+    self.config.temperature_decrease_factor = factor.into();
+  }
+
+  /// Set temperature decrease factor.
+  pub fn set_temp_increase_factor( &mut self, factor : f64 )
+  {
+    self.config.temperature_increase_factor = factor.into();
+  }
+
+  /// Set max amount of mutations per one generation.
+  pub fn set_mutations_per_generation( &mut self, number : usize )
+  {
+    self.config.n_mutations_per_generation_limit = number;
+  }
+
   /// Create the initial generation for the simulated annealing algorithm.
   pub fn initial_generation< 'initial >( &'initial self ) -> SudokuGeneration < 'initial >
   {
@@ -351,21 +369,6 @@ impl SudokuInitial
     let n_generation = 0;
     SudokuGeneration { initial : self.config.clone(), initial_board: &self.board, hrng, person, temperature, n_resets, n_generation }
   }
-
-  // pub fn initial_generation< 'initial >
-  // ( 
-  //   config : &'initial InitialConfig, 
-  //   initial_board : &'initial Board, 
-  // ) -> SudokuGeneration < 'initial >
-  // {
-    
-  //   let temperature = Self::initial_temperature(initial_board, config.hrng.clone());
-  //   // let hrng = config.hrng.clone();
-  //   let n_resets = 0;
-  //   let n_generation = 0;
-  //   let person = SudokuPerson::new( initial_board.fill_missing_randomly(config.hrng.clone()) );
-  //   SudokuGeneration { initial : config.clone(), initial_board, person, temperature, n_resets, n_generation }
-  // }
 
   /// Calculate the initial temperature for the optimization process.
   pub fn initial_temperature( &self ) -> Temperature
@@ -526,6 +529,7 @@ impl< 'a > SudokuGeneration< 'a >
         temperature = temperature2;
         n_mutations = 0;
       }
+
       let rng_ref = self.hrng.rng_ref();
       let mut rng = rng_ref.lock().unwrap();
 
