@@ -60,7 +60,9 @@ pub fn get_optimal_params()
     {  
       let optimizer = NelderMeadOptimizer::new()
       .starting_point( Point::new( vec![ 0.001, 1.0, 2000.0 ] ) )
+      .unwrap()
       .simplex_size( vec![ 0.002, 0.2, 200.0 ] )
+      .unwrap()
       .set_improvement_threshold( 10.0 )
       .set_max_no_improvement_steps( 5 )
       .set_max_iterations( 25 )
@@ -117,9 +119,10 @@ pub fn get_optimal_params()
   }
 
   //check improvement
-
+  let mut level_improvement = HashMap::new();
   for level in Level::iterator()
   {
+    let mut results = Vec::new();
     for board in control_boards.get( &level ).unwrap()
     {
       // initial
@@ -131,13 +134,16 @@ pub fn get_optimal_params()
       // optimized
       initial = SudokuInitial::new( board.clone(), Seed::default() );
       let optimized_params = level_average.get( &level ).unwrap();
-      initial.set_temp_decrease_factor( 0.0023 );
+      initial.set_temp_decrease_factor( optimized_params.0 );
       initial.set_temp_increase_factor( optimized_params.1 );
       initial.set_mutations_per_generation( optimized_params.2 as usize );
       
       let now = std::time::Instant::now();
       let ( _reason, _generation ) = initial.solve_with_sa();
-      let elapsed = now.elapsed();
+      let opt_elapsed = now.elapsed();
+      let res = elapsed.as_millis() as i128 - opt_elapsed.as_millis() as i128;
+      results.push( res );
     }
+    level_improvement.insert( level, results );
   }
 }

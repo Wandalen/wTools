@@ -48,7 +48,7 @@ pub struct NelderMeadOptimizer< B, P, S >
 {
   config : NelderMeadConfig,
   bounds : B,
-  starting_point : P,
+  start_point : P,
   initial_simplex : S,
 }
 
@@ -57,24 +57,30 @@ impl NelderMeadOptimizer< NoBounds, NoPoint, NoSimplex >
   /// Create new optimizer with default configuration and uninitialized bounds, starting point and simplex. 
   pub fn new() -> Self
   {
-    Self {
+    Self 
+    {
       config : NelderMeadConfig::default(),
       bounds : NoBounds {},
-      starting_point : NoPoint {},
+      start_point : NoPoint {},
       initial_simplex : NoSimplex {},
     }
   }
 
   /// Create new optimizer with default configuration and privided space bounds, and with uninitialized starting point and simplex. 
-  pub fn new_bounded< R : RangeBounds< f64 > >( bounds : Vec< R > ) -> NelderMeadOptimizer< Vec< R >, NoPoint, NoSimplex >
+  pub fn new_bounded< R : RangeBounds< f64 > >( bounds : Vec< R > ) -> Result< NelderMeadOptimizer< Vec< R >, NoPoint, NoSimplex >, NMError >
   {
-    NelderMeadOptimizer 
+    if bounds.len() == 0
     {
-      config : NelderMeadConfig::default(),
-      bounds,
-      starting_point : NoPoint {},
-      initial_simplex : NoSimplex {},
+      return Err( NMError::ZeroDimError );
     }
+    Ok ( NelderMeadOptimizer 
+      {
+        config : NelderMeadConfig::default(),
+        bounds,
+        start_point : NoPoint {},
+        initial_simplex : NoSimplex {},
+      }
+    )
   }
 }
 
@@ -82,15 +88,24 @@ impl< S, R > NelderMeadOptimizer< Vec< R >, NoPoint, S >
 where R : RangeBounds< f64 >
 {
   /// Set staring point for optimizer with initialized bounds.
-  pub fn starting_point( self, p : Point ) -> NelderMeadOptimizer< Vec< R >, Point, S > 
+  pub fn starting_point( self, p : Point ) -> Result< NelderMeadOptimizer< Vec< R >, Point, S >, NMError >
   {
-    NelderMeadOptimizer 
+    if p.coords.len() != self.bounds.len()
     {
-      config : self.config,
-      bounds : self.bounds,
-      starting_point : p,
-      initial_simplex : self.initial_simplex,
+      return Err( NMError::PointDimError );
     }
+    if !self.in_bounds( &p )
+    {
+      return Err( NMError::StartPointOutOfBoundsError );
+    }
+    Ok( NelderMeadOptimizer 
+      {
+        config : self.config,
+        bounds : self.bounds,
+        start_point : p,
+        initial_simplex : self.initial_simplex,
+      }
+    )
   }
 }
 
@@ -104,7 +119,7 @@ impl< S > NelderMeadOptimizer< Vec< RangeInclusive< f64 > >, NoPoint, S >
     
     for range in &self.bounds
     {
-      let x = rand::Rng::gen_range(&mut rng, range.clone() );
+      let x = rand::Rng::gen_range( &mut rng, range.clone() );
       coords.push( x );
     }
 
@@ -112,7 +127,7 @@ impl< S > NelderMeadOptimizer< Vec< RangeInclusive< f64 > >, NoPoint, S >
     {
       config : self.config,
       bounds : self.bounds,
-      starting_point : Point::new( coords ),
+      start_point : Point::new( coords ),
       initial_simplex : self.initial_simplex,
     }
   }
@@ -121,20 +136,25 @@ impl< S > NelderMeadOptimizer< Vec< RangeInclusive< f64 > >, NoPoint, S >
 impl< S > NelderMeadOptimizer< NoBounds, NoPoint, S >
 {
   /// Set starting point for optimizer with uninitialized bounds and initialize bounds implicitly as range from negative infinity to positive infinity for every dimension. 
-  pub fn starting_point( self, p : Point ) -> NelderMeadOptimizer< Vec< Range< f64 > >, Point, S > 
+  pub fn starting_point( self, p : Point ) -> Result< NelderMeadOptimizer< Vec< Range< f64 > >, Point, S >, NMError >
   {
+    if p.coords.len() == 0
+    {
+      return Err( NMError::ZeroDimError );
+    }
     let mut bounds = Vec::new();
     for _ in 0..p.coords.len()
     {
       bounds.push( f64::NEG_INFINITY..f64::INFINITY );
     }
-    NelderMeadOptimizer 
-    {
-      config : self.config,
-      bounds,
-      starting_point : p,
-      initial_simplex : self.initial_simplex,
-    }
+    Ok( NelderMeadOptimizer 
+      {
+        config : self.config,
+        bounds,
+        start_point : p,
+        initial_simplex : self.initial_simplex,
+      }
+    )
   }
 }
 
@@ -142,23 +162,28 @@ impl< R > NelderMeadOptimizer< Vec< R >, Point, NoSimplex >
 where R : RangeBounds< f64 >
 {
   /// Initialize simplex by providing its size for optimizer with initialized starting point.
-  pub fn simplex_size( self, size : Vec< f64 > ) -> NelderMeadOptimizer< Vec< R >, Point, Simplex > 
+  pub fn simplex_size( self, size : Vec< f64 > ) -> Result< NelderMeadOptimizer< Vec< R >, Point, Simplex >, NMError >
   {
-    let mut points = vec![ self.starting_point.clone() ];
+    if size.len() != self.start_point.coords.len()
+    {
+      return Err( NMError::SimplexSizeDimError )
+    }
+    let mut points = vec![ self.start_point.clone() ];
     for i in 0..size.len()
     {
-      let mut x = self.starting_point.clone();
+      let mut x = self.start_point.clone();
       x.coords[ i ] += size[ i ];
       points.push( x );
 
     }
-    NelderMeadOptimizer 
-    {
-      config : self.config,
-      bounds : self.bounds,
-      starting_point : self.starting_point,
-      initial_simplex : Simplex { points },
-    }
+    Ok( NelderMeadOptimizer 
+      {
+        config : self.config,
+        bounds : self.bounds,
+        start_point : self.start_point,
+        initial_simplex : Simplex { points },
+      }
+    )
   }
 }
 
@@ -167,7 +192,7 @@ impl< S > NelderMeadOptimizer< Vec< RangeInclusive< f64 > >, Point, S >
   /// Initialize simplex by providing its size for optimizer with initialized starting point.
   pub fn random_simplex_size( self ) -> NelderMeadOptimizer< Vec< RangeInclusive< f64 > >, Point, Simplex > 
   {
-    let mut points = vec![ self.starting_point.clone() ];
+    let mut points = vec![ self.start_point.clone() ];
     let smallest_dimension = self.bounds
     .iter()
     .map( | d | d.end() - d.start() )
@@ -178,17 +203,37 @@ impl< S > NelderMeadOptimizer< Vec< RangeInclusive< f64 > >, Point, S >
     let mut rng = rand::thread_rng();
     for i in 0..self.bounds.len()
     {
-      let mut x = self.starting_point.clone();
-      x.coords[ i ] += rand::Rng::gen_range(&mut rng, 2.0..( 0.1 * smallest_dimension ) );
+      let mut x = self.start_point.clone();
+      x.coords[ i ] += rand::Rng::gen_range( &mut rng, 2.0..( 0.1 * smallest_dimension ) );
       points.push( x );
     }
 
-    NelderMeadOptimizer {
+    NelderMeadOptimizer 
+    {
       config : self.config,
       bounds : self.bounds,
-      starting_point : self.starting_point,
+      start_point : self.start_point,
       initial_simplex : Simplex { points },
     }
+  }
+}
+
+impl< S, P, R > NelderMeadOptimizer< Vec< R >, P, S >
+where R : RangeBounds< f64 >
+{
+  /// Checks if point is in bounded region.
+  pub fn in_bounds( &self, point : &Point ) -> bool
+  {
+    let coords = &point.coords;
+    let mut res = true;
+    for i in 0..coords.len()
+    {
+      if !self.bounds[ i ].contains( &coords[ i ] )
+      {
+        res = false;
+      }
+    }
+    res
   }
 }
 
@@ -301,7 +346,7 @@ where R : RangeBounds< f64 >
   pub fn optimize< F >( &self, f : F ) -> NMResult
   where F : Fn( Point ) -> f64
   {
-    let x0 = self.starting_point.clone();
+    let x0 = self.start_point.clone();
     
     let dimensions = x0.coords.len();
     let mut prev_best = f( x0.clone() );
@@ -441,7 +486,7 @@ where R : RangeBounds< f64 >
       }
 
       res = new_res;
-      println!("{:?}", res);
+      // println!("{:?}", res);
     }
   }
 }
@@ -476,17 +521,18 @@ pub struct NelderMeadConfig
 
 impl Default for NelderMeadConfig
 {
-  fn default() -> Self {
-      Self
-      {
-        improvement_threshold : 10e-6,
-        max_iterations : 1000,
-        max_no_improvement_steps : 10,
-        alpha : 1.0,
-        gamma : 2.0,
-        rho : -0.5,
-        sigma : 0.5,
-      }
+  fn default() -> Self 
+  {
+    Self
+    {
+      improvement_threshold : 10e-6,
+      max_iterations : 1000,
+      max_no_improvement_steps : 10,
+      alpha : 1.0,
+      gamma : 2.0,
+      rho : -0.5,
+      sigma : 0.5,
+    }
   }
 }
 
@@ -510,4 +556,20 @@ pub enum NMTerminationReason
   MaxIterations,
   /// Reached limit of iterations without improvement in objective function values.
   NoImprovement,
+}
+
+/// Possible error when building NMOptimizer.
+#[ derive( thiserror::Error, Debug ) ]
+pub enum NMError {
+  #[ error( "optimizer must operate on space with at least 1 dimension" ) ]
+  ZeroDimError,
+
+  #[ error( "simplex size must have exactly one value for every dimension" ) ]
+  SimplexSizeDimError,
+
+  #[error("staring point must have same dimensions as bounded space")]
+  PointDimError,
+
+  #[error("starting point is out of bounds")]
+  StartPointOutOfBoundsError,
 }
