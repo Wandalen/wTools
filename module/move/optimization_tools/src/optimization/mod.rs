@@ -4,6 +4,7 @@
 use crate::*;
 #[ cfg( feature="static_plot" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };
+use iter_tools::Itertools;
 use rand::seq::SliceRandom;
 use rayon::iter::{ ParallelIterator, IndexedParallelIterator};
 use sudoku::{ Board, BlockIndex, CellIndex };
@@ -211,10 +212,10 @@ pub struct SudokuPerson
 impl SudokuPerson
 {
   /// Create new SudokuPerson from initial configuration of sudoku board.
-  pub fn new( initial : &SudokuInitial ) -> Self
+  pub fn new< M >( initial : &SudokuInitial< M > ) -> Self
   {
     let mut board = initial.board.clone();
-    board.fill_missing_randomly( initial.config.hrng.clone() );
+    board.fill_missing_randomly( initial.method_config.hrng.clone() );
     let cost : SudokuCost = board.total_error().into();
     SudokuPerson { board, cost }
   }
@@ -234,7 +235,7 @@ impl SudokuPerson
   }
 
   /// Create random mutagen and apply it current board.
-  pub fn mutate_random( &self, initial : &SudokuInitial, hrng : Hrng ) -> Self
+  pub fn mutate_random< M >( &self, initial : &SudokuInitial< M >, hrng : Hrng ) -> Self
   {
     let mutagen = self.mutagen( &initial.board, hrng );
     let mut p = self.clone();
@@ -275,16 +276,16 @@ pub struct SudokuMutagen
 
 /// Represents initial state of board and configuration of SA optimization process for sudoku solving.
 #[ derive( Clone, Debug ) ]
-pub struct SudokuInitial
+pub struct SudokuInitial< C >
 {
   /// Initial state of sudoku board with fixed values.
   pub board : Board,
   /// Seed for random numbers generator.
-  pub config : InitialConfig,
+  pub method_config : C,
 }
 
 /// Represents initial configuration of SA optimization process for sudoku solving.
-#[derive(Clone,Debug)]
+#[ derive( Clone, Debug ) ]
 pub struct InitialConfig
 {
     /// Seed for random numbers generator.
@@ -314,7 +315,7 @@ pub struct InitialConfig
 //   }
 // }
 
-impl SudokuInitial
+impl SudokuInitial< InitialConfig >
 {
   /// Create new initial state for SA.
   pub fn new( board : Board, seed : Seed ) -> Self
@@ -328,7 +329,7 @@ impl SudokuInitial
     Self
     {
       board,
-      config : InitialConfig 
+      method_config : InitialConfig 
       {
         seed,
         hrng,
@@ -344,19 +345,19 @@ impl SudokuInitial
   /// Set temperature increase factor.
   pub fn set_temp_decrease_factor( &mut self, factor : f64 )
   {
-    self.config.temperature_decrease_factor = factor.into();
+    self.method_config.temperature_decrease_factor = factor.into();
   }
 
   /// Set temperature decrease factor.
   pub fn set_temp_increase_factor( &mut self, factor : f64 )
   {
-    self.config.temperature_increase_factor = factor.into();
+    self.method_config.temperature_increase_factor = factor.into();
   }
 
   /// Set max amount of mutations per one generation.
   pub fn set_mutations_per_generation( &mut self, number : usize )
   {
-    self.config.n_mutations_per_generation_limit = number;
+    self.method_config.n_mutations_per_generation_limit = number;
   }
 
   /// Create the initial generation for the simulated annealing algorithm.
@@ -364,10 +365,10 @@ impl SudokuInitial
   {
     let person = SudokuPerson::new( self );
     let temperature = self.initial_temperature();
-    let hrng = self.config.hrng.clone();
+    let hrng = self.method_config.hrng.clone();
     let n_resets = 0;
     let n_generation = 0;
-    SudokuGeneration { initial : self.config.clone(), initial_board: &self.board, hrng, person, temperature, n_resets, n_generation }
+    SudokuGeneration { initial : self.method_config.clone(), initial_board: &self.board, hrng, person, temperature, n_resets, n_generation }
   }
 
   /// Calculate the initial temperature for the optimization process.
@@ -379,7 +380,7 @@ impl SudokuInitial
     let mut costs : [ f64 ; N ] = [ 0.0 ; N ];
     for i in 0..N
     {
-      let state2 = state.mutate_random( self, self.config.hrng.clone() );
+      let state2 = state.mutate_random( self, self.method_config.hrng.clone() );
       costs[ i ] = state2.cost.into();
     }
     costs[..].std_dev().into()
@@ -395,7 +396,7 @@ impl SudokuInitial
     loop
     {
       // n_generation += 1;
-      if generation.n_generation > self.config.n_generations_limit
+      if generation.n_generation > self.method_config.n_generations_limit
       {
         return ( Reason::GenerationLimit, None );
       }
@@ -648,4 +649,104 @@ impl< 'a > SudokuGeneration< 'a >
     self.person.cost == 0.into()
   }
 
+}
+
+#[ derive( Clone, Debug ) ]
+pub struct GAInitialConfig
+{
+    /// Seed for random numbers generator.
+    pub seed : Seed,
+    /// Random numbers generator used for creating new state of SA.
+    pub hrng : Hrng,
+    population_size : usize,
+    selection_rate : f64,
+    random_selection_rate: f64,
+    number_of_children : usize,
+    max_generation_number : usize,
+    mutation_rate : f64,
+}
+
+impl SudokuInitial< GAInitialConfig >
+{
+  /// Create new initial state for SA.
+  pub fn new( board : Board, seed : Seed ) -> Self
+  {
+    let hrng = Hrng::master_with_seed( seed.clone() );
+    Self
+    {
+      board,
+      method_config : GAInitialConfig 
+      {
+        seed,
+        hrng,
+        population_size : 5000,
+        selection_rate : 0.25,
+        random_selection_rate: 0.25,
+        number_of_children : 4,
+        max_generation_number : 10000,
+        mutation_rate : 0.25,
+      }
+    }
+  }
+
+  pub fn initial_population( &self ) -> Vec< SudokuPerson >
+  {
+    let mut population = Vec::with_capacity( self.method_config.population_size );
+    for _ in 0..self.method_config.population_size
+    {
+      let person = SudokuPerson::new( self );
+      population.push( person );
+    }
+    population
+  }
+
+  pub fn compete( &self, candidates : &Vec< SudokuPerson > ) -> &SudokuPerson
+  {
+    let rng_ref = self.method_config.hrng.rng_ref();
+    let mut rng = rng_ref.lock().unwrap();
+    let candidate1 = candidates.choose( &mut *rng ).unwrap();
+    let candidate2 = candidates.choose( &mut *rng ).unwrap();
+
+    let selection_rate = 0.85;
+    let rand : f64 = rng.gen();
+
+    if rand < selection_rate
+    {
+      [ candidate1, candidate2 ].into_iter().min_by( | p1, p2 | p1.cost.cmp( &p2.cost ) ).unwrap()
+    }
+    else 
+    {
+      [ candidate1, candidate2 ].into_iter().max_by( | p1, p2 | p1.cost.cmp( &p2.cost ) ).unwrap()
+    }
+  }
+
+  // pub fn crossover( &self, parent1 : &SudokuPerson, parent2 : &SudokuPerson ) -> ( SudokuPerson, SudokuPerson )
+  // {
+    
+  // }
+
+  pub fn solve_with_ga( &self ) -> ( Reason, Option< SudokuGeneration > )
+  {
+    let mut population = self.initial_population();
+    let mut generation_number = 1;
+
+    loop
+    {
+      population.sort_by( | p1, p2 | p1.cost.cmp( &p2.cost ) );
+
+      let elites = population.iter().take( ( self.method_config.population_size as f64 * self.method_config.selection_rate ) as usize ).collect_vec();
+
+      for _ in elites.len()..self.method_config.population_size
+      {
+        let parent1 = self.compete( &population );
+        let parent2 = self.compete( &population );
+      }
+
+      if generation_number > self.method_config.max_generation_number
+      {
+
+      }
+
+    }
+  }
 }
