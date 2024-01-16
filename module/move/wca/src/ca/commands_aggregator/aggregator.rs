@@ -245,7 +245,7 @@ pub( crate ) mod private
       for i in 0..args.len()
       {
         let path = std::path::Path::new( &args[ i ] );
-        if path.is_dir() && !(path == std::path::Path::new("."))
+        if path.is_dir() && !( path == std::path::Path::new(".") )
         {
           let new_char = '"';
           args[ i ] = format!( "{}{}{}", new_char, args[ i ], new_char );

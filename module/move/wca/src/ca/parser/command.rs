@@ -161,7 +161,7 @@ pub( crate ) mod private
 
       Box::new
       (
-        move | input : &str |
+        move | input : &str |{
         alt
         ((
           // quoted subject
@@ -186,13 +186,19 @@ pub( crate ) mod private
               }
             }
           )
-        ))( input )
+        ))( input )}
       )
     }
   }
 
   impl Parser
   {
+    fn is_property(&self) -> bool
+    {
+      
+      true
+    }
+
     fn propery_name( &self ) -> impl Fn( &str ) -> IResult< &str, &str >
     {
       let property_delimeter = self.prop_delimeter;

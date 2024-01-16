@@ -231,16 +231,16 @@ tests_impls!
 
   // tests bug fix when passing a subject with a colon character
   // example: passing the path to a directory with a colon in its name
-  fn subject_with_colon() 
+  fn path_subject_with_colon() 
   {
     let grammar = GrammarConverter::former()
     .command
     (
-      wca::Command::former()
+      TheModule::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "A path to directory.", wca::Type::Path, true )
+      .subject( "A path to directory.", TheModule::Type::Path, true )
       .form()
     )
     .form();
@@ -282,6 +282,43 @@ tests_impls!
       "property `wrong` not found for command `.command`"
     );
   }
+
+  fn string_subject_with_colon() 
+  {
+    let grammar = GrammarConverter::former()
+    .command
+    (
+      TheModule::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .subject( "Any string.", TheModule::Type::String, true )
+      .property( "nightly", "Some property.", TheModule::Type::String, true )
+      .form()
+    )
+    .form();
+
+    let executor = ExecutorConverter::former()
+    .routine( "command", Routine::new( | _ | { println!( "hello" ); Ok( () ) } ) )
+    .form();
+
+    let ca = CommandsAggregator::former()
+    .grammar_converter( grammar.clone() )
+    .executor_converter( executor )
+    .build();
+
+    let command = r#".command qwe:rty nightly:true "#;
+
+    let parser = Parser::former().form();
+
+    use TheModule::CommandParser;
+    let raw_command = parser.command( command ).unwrap();
+    let grammar_command = grammar.to_command( raw_command ).unwrap();
+
+    a_id!( (), ca.perform( command ).unwrap() );
+
+    a_id!( grammar_command.subjects, vec![ TheModule::Value::String("qwe:rty".into()) ] );
+  }
 }
 
 //
@@ -294,5 +331,6 @@ tests_index!
   custom_parser,
   dot_command,
   error_types,
-  subject_with_colon,
+  path_subject_with_colon,
+  string_subject_with_colon
 }
