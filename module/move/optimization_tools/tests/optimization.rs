@@ -12,14 +12,14 @@ fn person_mutate()
 {
   logger_init();
 
-  let initial = SudokuInitial::new( Board::default(), Seed::default() );
+  let initial = SudokuInitial::new_sa( Board::default(), Seed::default() );
 
-  let mut person = SudokuPerson::new( &initial );
+  let mut person = SudokuPerson::new( &initial.board, initial.hrng.clone() );
   log::trace!( "{person:#?}" );
   a_id!( person.cost, 45.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
-  let mutagen = person.mutagen( &initial.board, initial.config.hrng.clone() );
+  let mutagen = person.mutagen( &initial.board, initial.hrng.clone() );
   // make sure block is the same
   a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
   person.mutate(  &mutagen );
@@ -27,7 +27,7 @@ fn person_mutate()
   a_id!( person.cost, 48.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
-  let mutagen = person.mutagen( &initial.board, initial.config.hrng.clone() );
+  let mutagen = person.mutagen( &initial.board, initial.hrng.clone() );
   // make sure block is the same
   a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
   person.mutate( &mutagen );
@@ -43,7 +43,7 @@ fn initial_temperature()
 {
   logger_init();
 
-  let initial = SudokuInitial::new( Board::default(), Seed::default() );
+  let initial = SudokuInitial::new_sa( Board::default(), Seed::default() );
 
   let temperature = &initial.initial_temperature();
   a_true!( temperature.unwrap() >= 0f64 );
@@ -69,7 +69,7 @@ fn solve_with_sa()
   // let seed : Seed = "seed2".into();
   let seed : Seed = "seed3".into();
   // let seed = Seed::random();
-  let mut initial = SudokuInitial::new( Board::default(), seed );
+  let mut initial = SudokuInitial::new_sa( Board::default(), seed );
 
   log::set_max_level( log::LevelFilter::max() );
   let ( reason, generation ) = initial.solve_with_sa();
@@ -111,7 +111,7 @@ fn solve_empty_full_block()
 
   let seed : Seed = "seed3".into();
   // let seed = Seed::random();
-  let mut initial = SudokuInitial::new( Board::from(sudoku), seed );
+  let mut initial = SudokuInitial::new_sa( Board::from(sudoku), seed );
 
   log::set_max_level( log::LevelFilter::max() );
   let ( reason, generation ) = initial.solve_with_sa();
@@ -139,7 +139,7 @@ fn solve_empty_full_block()
 
   let seed : Seed = "seed3".into();
   // let seed = Seed::random();
-  let mut initial = SudokuInitial::new( Board::from(sudoku), seed );
+  let mut initial = SudokuInitial::new_sa( Board::from(sudoku), seed );
 
   log::set_max_level( log::LevelFilter::max() );
   let ( reason, generation ) = initial.solve_with_sa();
@@ -189,7 +189,7 @@ fn solve_empty_full_block()
 fn time_measure()
 {
   for i in 0..=9 {
-    let mut initial = SudokuInitial::new( Board::default(), Seed::new( i.to_string() ) );
+    let mut initial = SudokuInitial::new_sa( Board::default(), Seed::new( i.to_string() ) );
 
     let ( _reason, _generation ) = initial.solve_with_sa();
   }

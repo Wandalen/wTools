@@ -1,8 +1,6 @@
 //! Contains implementation of Simmulated Annealing optimization method.
 //! 
 
-use std::collections::HashSet;
-
 use crate::*;
 #[ cfg( feature="static_plot" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };
@@ -12,7 +10,9 @@ use rand::seq::{SliceRandom, IteratorRandom};
 use rayon::iter::{ ParallelIterator, IndexedParallelIterator};
 use sudoku::{ Board, BlockIndex, CellIndex };
 use deterministic_rand::Seed;
-// use log::*;
+
+mod gen_alg;
+use gen_alg::*;
 
 /// Pause execution of SA.
 pub fn sleep()
@@ -66,7 +66,7 @@ impl BoardExt for Board
 }
 
 /// Get a pair of random non-fixed cells in a specified block.
-pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : Hrng ) -> Option<( CellIndex, CellIndex )>
+pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : Hrng ) -> Option< ( CellIndex, CellIndex ) >
 {
 
   if !initial.validate_block_has_non_fixed_cells( block.clone() )
@@ -308,19 +308,6 @@ pub struct SASudokuInitial
   /// Random numbers generator used for creating new state of SA.
   pub hrng : Hrng,
   pub config : SAConfig,
-}
-
-/// Represents initial state of board and configuration of GA optimization process for sudoku solving.
-#[ derive( Clone, Debug ) ]
-pub struct GASudokuInitial
-{
-  /// Initial state of sudoku board with fixed values.
-  pub board : Board,
-  /// Seed for random numbers generator.
-  pub seed : Seed,
-  /// Random numbers generator used for creating new state of SA.
-  pub hrng : Hrng,
-  pub config : GAConfig,
 }
 
 /// Represents initial configuration of SA optimization process for sudoku solving.
@@ -718,237 +705,4 @@ impl< 'a > SudokuGeneration< 'a >
     self.person.cost == 0.into()
   }
 
-}
-
-#[ derive( Clone, Debug ) ]
-pub struct GAConfig
-{
-    population_size : usize,
-    selection_rate : f64,
-    random_selection_rate : f64,
-    max_stale_iterations: usize,
-    selection_pressure : f64,
-    max_generation_number : usize,
-    mutation_rate : f64,
-}
-
-impl Default for GAConfig
-{
-  fn default() -> Self 
-  {
-    Self
-    {
-      population_size : 10000,
-      selection_rate : 0.25,
-      random_selection_rate : 0.25,
-      max_stale_iterations: 100,
-      selection_pressure : 0.85,
-      max_generation_number : 10000,
-      mutation_rate : 0.5,
-    }
-  }
-}
-
-impl GASudokuInitial
-{
-  /// Create new initial state for SA.
-  pub fn new( board : Board, seed : Seed ) -> Self
-  {
-    let hrng = Hrng::master_with_seed( seed.clone() );
-    Self
-    {
-      seed,
-      hrng,
-      board,
-      config : GAConfig::default()
-    }
-  }
-
-  pub fn initial_population( &self ) -> Vec< SudokuPerson >
-  {
-    let mut population = Vec::with_capacity( self.config.population_size );
-    for _ in 0..self.config.population_size
-    {
-      let person = SudokuPerson::new( &self.board, self.hrng.clone() );
-      population.push( person );
-    }
-    population
-  }
-
-  pub fn tournament< 'a >( &self, candidates : &'a Vec< SudokuPerson > ) -> &'a SudokuPerson
-  {
-    let rng_ref = self.hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-    let candidate1 = candidates.choose( &mut *rng ).unwrap();
-    let candidate2 = candidates.choose( &mut *rng ).unwrap();
-
-    let rand : f64 = rng.gen();
-
-    if rand < self.config.selection_pressure
-    {
-      [ candidate1, candidate2 ].into_iter().min_by( | p1, p2 | p1.cost.cmp( &p2.cost ) ).unwrap()
-    }
-    else 
-    {
-      [ candidate1, candidate2 ].into_iter().max_by( | p1, p2 | p1.cost.cmp( &p2.cost ) ).unwrap()
-    }
-  }
-
-  pub fn crossover( &self, parent1 : &SudokuPerson, parent2 : &SudokuPerson ) -> SudokuPerson
-  {
-    let rng_ref = self.hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-
-    let possible_values = [ 1, 2, 3, 4, 5, 6, 7, 8 ];
-    let first_parent_blocks_number = possible_values.choose( &mut *rng ).unwrap();
-    let mut first_parent_blocks : HashSet< BlockIndex > = HashSet::new();
-
-    while first_parent_blocks.len() != *first_parent_blocks_number
-    {
-      first_parent_blocks.insert( rng.gen() );
-    }
-
-    let mut child_storage: Vec< CellVal > = vec![ 0.into(); 81 ];
-    let mut child_blocks = Vec::new();
-
-    for i in parent1.board.blocks()
-    {
-      if first_parent_blocks.contains( &i )
-      {
-        let parent_block = parent1.board.block( i ).collect_vec();
-        child_blocks.push( parent1.board.block( i ).collect_vec() );
-        let cells = parent1.board.block_cells( i );
-        for ( index, cell_index ) in cells.enumerate()
-        {
-          child_storage[ usize::from( cell_index ) ] = parent_block[ index ];
-        }
-      }
-      else 
-      {
-        let parent_block = parent2.board.block( i ).collect_vec();
-        child_blocks.push( parent2.board.block( i ).collect_vec() );
-        let cells = parent2.board.block_cells( i );
-        for ( index, cell_index ) in cells.enumerate()
-        {
-          child_storage[ usize::from( cell_index ) ] = parent_block[ index ];
-        }
-      }
-    }
-
-    let child = SudokuPerson::with_board( Board::new( child_storage ) );
-    child
-  }
-      
-  pub fn mutate_population( &self, population : &mut Vec< SudokuPerson > )
-  {
-    let rng_ref = self.hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-
-    let number_of_mutants = ( population.len() as f64 * self.config.mutation_rate ) as usize;
-    let mutants = population.choose_multiple( &mut *rng, number_of_mutants );
-    drop( rng );
-    for person in mutants
-    {
-      person.mutate_random( &self.board, self.hrng.clone() );
-    }
-  }
-
-  pub fn generate_new_breed( &self, population : &Vec< SudokuPerson > ) -> Vec< SudokuPerson >
-  {
-    let elites = population.iter().take( ( self.config.population_size as f64 * self.config.selection_rate ) as usize ).collect_vec();
-      
-    let rng_ref = self.hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-    let random_population = population.choose_multiple( &mut *rng, ( self.config.population_size as f64 * self.config.random_selection_rate ) as usize );
-    drop( rng );
-    let mut breeders = Vec::new();
-    
-    breeders.extend( elites.into_iter().map( | p | p.clone() ) );
-    breeders.extend( random_population.into_iter().map( | p | p.clone() ) );
-
-    let mut new_population = Vec::new();
-
-    while new_population.len() < population.len()
-    {
-      let rng_ref = self.hrng.rng_ref();
-      let mut rng = rng_ref.lock().unwrap();
-      let parent1 = breeders.choose( &mut *rng ).unwrap();
-      let parent2 = breeders.choose( &mut *rng ).unwrap();
-      drop( rng );
-      let child = self.crossover( parent1, parent2 );
-      new_population.push( child );
-      let child = self.crossover( parent1, parent2 );
-      new_population.push( child );
-      let child = self.crossover( parent1, parent2 );
-      new_population.push( child );
-      let child = self.crossover( parent1, parent2 );
-      new_population.push( child );
-    }
-    new_population
-  }
-
-  pub fn solve_with_ga( &self ) -> ( Reason, Option< SudokuPerson > )
-  {
-    let mut population = self.initial_population();
-    let mut generation_number = 1;
-    let mut stale = 0;
-
-    loop
-    {
-      if generation_number > self.config.max_generation_number
-      {
-        return ( Reason::GenerationLimit, None );
-      }
-
-      population.sort_by( | p1, p2 | p1.cost.cmp( &p2.cost ) );
-      println!( "{:?}", population[0].cost);
-      
-      if population[ 0 ].cost == 0.into()
-      {
-        return ( Reason::GoodEnough, Some( population[ 0 ].clone() ) );
-      }
-
-      if population[ 0 ].cost == population[ 1 ].cost
-      {
-        stale += 1;
-      }
-      else
-      {
-        stale = 0;
-      }
-
-      if stale >= self.config.max_stale_iterations
-      {
-        population = self.initial_population();
-      }
-
-
-      let elites = population.iter().take( ( self.config.population_size as f64 * self.config.selection_rate ) as usize ).collect_vec();
-      
-      let rng_ref = self.hrng.rng_ref();
-      let mut rng = rng_ref.lock().unwrap();
-      let random_population = population.choose_multiple( &mut *rng, ( self.config.population_size as f64 * self.config.random_selection_rate ) as usize );
-      drop( rng );
-      let mut new_population = Vec::new();
-      
-      new_population.extend( elites.into_iter().map( | p | p.clone() ) );
-      new_population.extend( random_population.into_iter().map( | p | p.clone() ) );
-
-      while new_population.len() < population.len()
-      {
-        let parent1 = self.tournament( &population );
-        let parent2 = self.tournament( &population );
-
-        let child = self.crossover( parent1, parent2 );
-        new_population.push( child );
-        let child = self.crossover( parent1, parent2 );
-        new_population.push( child );
-      }
-      
-      self.mutate_population( &mut new_population );
-
-      population = new_population;
-      generation_number += 1;
-    }
-  }
 }
