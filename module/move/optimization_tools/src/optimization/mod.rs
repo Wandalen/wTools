@@ -4,9 +4,7 @@
 use crate::*;
 #[ cfg( feature="static_plot" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };
-use crate::sudoku::CellVal;
-use iter_tools::Itertools;
-use rand::seq::{SliceRandom, IteratorRandom};
+use rand::seq::SliceRandom;
 use rayon::iter::{ ParallelIterator, IndexedParallelIterator};
 use sudoku::{ Board, BlockIndex, CellIndex };
 use deterministic_rand::Seed;
