@@ -71,7 +71,7 @@ pub fn get_optimal_params()
       (
         | case : Point |
         {
-          let mut initial = SudokuInitial::new( board.clone(), Seed::default() );
+          let mut initial = SudokuInitial::new_sa( board.clone(), Seed::default() );
           initial.set_temp_decrease_factor( case.coords[ 0 ] );
           initial.set_temp_increase_factor( case.coords[ 1 ] );
           initial.set_mutations_per_generation( case.coords[ 2 ] as usize );
@@ -126,13 +126,13 @@ pub fn get_optimal_params()
     for board in control_boards.get( &level ).unwrap()
     {
       // initial
-      let mut initial = SudokuInitial::new( board.clone(), Seed::default() );
+      let mut initial = SudokuInitial::new_sa( board.clone(), Seed::default() );
       let now = std::time::Instant::now();
       let ( _reason, _generation ) = initial.solve_with_sa();
       let elapsed = now.elapsed();
 
       // optimized
-      initial = SudokuInitial::new( board.clone(), Seed::default() );
+      initial = SudokuInitial::new_sa( board.clone(), Seed::default() );
       let optimized_params = level_average.get( &level ).unwrap();
       initial.set_temp_decrease_factor( optimized_params.0 );
       initial.set_temp_increase_factor( optimized_params.1 );
