@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use deterministic_rand::Seed;
 use iter_tools::Itertools;
-use rayon::result;
 use crate::
 { 
   sudoku::*, 
@@ -152,14 +151,8 @@ pub fn get_optimal_params()
 pub fn ga_optimal_params()
 {
   let mut boards = HashMap::new();
-  //let mut control_boards = HashMap::new();
-
-  //for ( index, level ) in Level::iterator().enumerate()
-  //{
-    boards.insert( Level::Easy, sudoku_sets::TRAINING[ 0 ].iter().map( | str | Board::from( str ) ).collect_vec() );
-  //}
+  boards.insert( Level::Easy, sudoku_sets::TRAINING[ 0 ].iter().map( | str | Board::from( str ) ).collect_vec() );
   let mut level_results = HashMap::new();
-  //let mut level_average = HashMap::new();
   
   for ( level, level_boards ) in &boards
   {
@@ -206,26 +199,5 @@ pub fn ga_optimal_params()
       results.push( res );
     }
     println!( "results: {:?}", level_results );
-
-    // for ( level, results ) in level_results
-    // {
-    //   let size = results.len() as f64;
-    //   level_average.insert
-    //   ( 
-    //     level,  
-    //     results.iter().fold
-    //     ( 
-    //       ( 0.0, 0.0, 0.0 ), 
-    //       | acc, elem | 
-    //       ( 
-    //         acc.0 + elem.point.coords[ 0 ] / size, 
-    //         acc.1 + elem.point.coords[ 1 ] / size, 
-    //         acc.2 + elem.point.coords[ 2 ] / size, 
-    //       )
-    //     ),
-    //   );
-    // }
-    // println!( "Average: {:?}", level_average );
   }
-
 }
