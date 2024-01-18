@@ -21,7 +21,6 @@ pub fn sleep()
 /// Trait that implements SA specific methods for sudoku board.
 trait BoardExt
 {
-
   /// Validate that each bloack has at least one non-fixed cell.
   fn validate_each_block_has_non_fixed_cell( &self ) -> bool;
   fn validate_block_has_non_fixed_cells( &self, block : BlockIndex ) -> bool;
