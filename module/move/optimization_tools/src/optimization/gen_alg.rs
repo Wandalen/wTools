@@ -31,7 +31,7 @@ use crate::{ sudoku::*, optimization::* };
 #[ derive( Clone, Debug ) ]
 pub struct GAConfig
 {
-  /// Size of population
+  /// Size of population.
   pub population_size : usize,
   /// Number of fittest individuals that will be selected as possible breeders of new population.
   pub elite_selection_rate : f64,
@@ -55,8 +55,8 @@ impl Default for GAConfig
   {
     Self
     {
-      population_size : 20000,
-      elite_selection_rate : 0.25,
+      population_size : 50000,
+      elite_selection_rate : 0.15,
       random_selection_rate : 0.25,
       max_stale_iterations: 30,
       tournament_size : 2,
@@ -109,23 +109,39 @@ impl GASudokuInitial
 
   /// Implementention of tournament selection method:
   /// Several individuals are randomly chosen from population, they take part in competition where the fittest are the most likely to win.
-  pub fn tournament< 'a >( &self, candidates : &'a Vec< SudokuPerson > ) -> &'a SudokuPerson
+  pub fn tournament< 'a >( &self, population : &'a Vec< SudokuPerson > ) -> &'a SudokuPerson
   {
     let rng_ref = self.hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
-    let candidate1 = candidates.choose( &mut *rng ).unwrap();
-    let candidate2 = candidates.choose( &mut *rng ).unwrap();
+    let mut candidates = Vec::new();
+    for _ in 0..self.config.tournament_size
+    {
+      candidates.push( population.choose( &mut *rng ).unwrap() );
+    }
+    candidates.sort_by( | c1, c2 | c1.cost.cmp( &c2.cost ) );
+    //let candidate2 = candidates.choose( &mut *rng ).unwrap();
 
     let rand : f64 = rng.gen();
-
-    if rand < self.config.tournament_selection_pressure
+    let mut selection_pressure = self.config.tournament_selection_pressure;
+    let mut winner = *candidates.last().unwrap();
+    for i in 0..self.config.tournament_size
     {
-      [ candidate1, candidate2 ].into_iter().min_by( | p1, p2 | p1.cost.cmp( &p2.cost ) ).unwrap()
+      if rand < selection_pressure
+      {
+        winner = candidates[ i ];
+        break;
+      }
+      selection_pressure += selection_pressure * ( 1.0 - selection_pressure );
     }
-    else 
-    {
-      [ candidate1, candidate2 ].into_iter().max_by( | p1, p2 | p1.cost.cmp( &p2.cost ) ).unwrap()
-    }
+    winner
+    // if rand < self.config.tournament_selection_pressure
+    // {
+    //   [ candidate1, candidate2 ].into_iter().min_by( | p1, p2 | p1.cost.cmp( &p2.cost ) ).unwrap()
+    // }
+    // else 
+    // {
+    //   [ candidate1, candidate2 ].into_iter().max_by( | p1, p2 | p1.cost.cmp( &p2.cost ) ).unwrap()
+    // }
   }
 
   /// Crossover genetic operator, combines genetic material from two parent individuals to produce offspring.
@@ -145,14 +161,12 @@ impl GASudokuInitial
     }
 
     let mut child_storage: Vec< CellVal > = vec![ 0.into(); 81 ];
-    let mut child_blocks = Vec::new();
 
     for i in parent1.board.blocks()
     {
       if first_parent_blocks.contains( &i )
       {
         let parent_block = parent1.board.block( i ).collect_vec();
-        child_blocks.push( parent1.board.block( i ).collect_vec() );
         let cells = parent1.board.block_cells( i );
         for ( index, cell_index ) in cells.enumerate()
         {
@@ -162,7 +176,6 @@ impl GASudokuInitial
       else 
       {
         let parent_block = parent2.board.block( i ).collect_vec();
-        child_blocks.push( parent2.board.block( i ).collect_vec() );
         let cells = parent2.board.block_cells( i );
         for ( index, cell_index ) in cells.enumerate()
         {
@@ -192,38 +205,105 @@ impl GASudokuInitial
   }
 
   ///
-  pub fn generate_new_breed( &self, population : &Vec< SudokuPerson > ) -> Vec< SudokuPerson >
+  pub fn crossover_rows_columns( &self, parent1 : &SudokuPerson, parent2 : &SudokuPerson ) -> ( SudokuPerson, SudokuPerson )
   {
-    let elites = population.iter().take( ( self.config.population_size as f64 * self.config.elite_selection_rate ) as usize ).collect_vec();
-      
-    let rng_ref = self.hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-    let random_population = population.choose_multiple( &mut *rng, ( self.config.population_size as f64 * self.config.random_selection_rate ) as usize );
-    drop( rng );
-    let mut breeders = Vec::new();
-    
-    breeders.extend( elites.into_iter().map( | p | p.clone() ) );
-    breeders.extend( random_population.into_iter().map( | p | p.clone() ) );
-
-    let mut new_population = Vec::new();
-
-    while new_population.len() < population.len()
+    let mut rows_costs = vec![ Vec::new(); 2 ];
+    let mut columns_costs = vec![ Vec::new(); 2 ];
+    for ( index, parent ) in [ parent1, parent2 ].iter().enumerate()
     {
-      let rng_ref = self.hrng.rng_ref();
-      let mut rng = rng_ref.lock().unwrap();
-      let parent1 = breeders.choose( &mut *rng ).unwrap();
-      let parent2 = breeders.choose( &mut *rng ).unwrap();
-      drop( rng );
-      let child = self.crossover( parent1, parent2 );
-      new_population.push( child );
-      let child = self.crossover( parent1, parent2 );
-      new_population.push( child );
-      let child = self.crossover( parent1, parent2 );
-      new_population.push( child );
-      let child = self.crossover( parent1, parent2 );
-      new_population.push( child );
+      rows_costs[ index ] = parent.board
+      .rows()
+      .map( | row | row.collect::< HashSet< _ > >().len() )
+      .collect_vec()
+      .chunks( 3 )
+      .map( | costs | 27 - costs.iter().fold( 0, | acc, cost | acc + cost ) )
+      .collect_vec()
+      ;
+
+      columns_costs[ index ] = parent.board
+      .cols()
+      .map( | row | row.collect::< HashSet< _ > >().len() )
+      .collect_vec()
+      .chunks( 3 )
+      .map( | costs | 27 - costs.iter().fold( 0, | acc, cost | acc + cost ) )
+      .collect_vec()
+      ;
     }
-    new_population
+
+    //let mut child1_blocks = Vec::new();
+    let mut child1_storage = vec![ CellVal::from( 0 ); 81 ];
+    for i in 0..3
+    {
+      if rows_costs[ 0 ][ i ] < rows_costs[ 1 ][ i ]
+      {
+        for j in 0..3
+        {
+          let parent_block = parent1.board.block( BlockIndex::from( ( j as u8, i as u8 ) ) ).collect_vec();
+          let cells = parent1.board.block_cells( BlockIndex::from( ( j as u8, i as u8 ) ) );
+          for ( index, cell_index ) in cells.enumerate()
+          {
+            child1_storage[ usize::from( cell_index ) ] = parent_block[ index ];
+          }
+        }
+      }
+      else
+      {
+        for j in 0..3
+        {
+          let parent_block = parent2.board.block( BlockIndex::from( ( j as u8, i as u8 ) ) ).collect_vec();
+          let cells = parent2.board.block_cells( BlockIndex::from( ( j as u8, i as u8 ) ) );
+          for ( index, cell_index ) in cells.enumerate()
+          {
+            child1_storage[ usize::from( cell_index ) ] = parent_block[ index ];
+          }
+        }
+      }
+    }
+
+    //let mut child2_blocks = Vec::new();
+    let mut child2_storage = vec![ CellVal::from( 0 ); 81 ];
+    for i in 0..3
+    {
+      for j in 0..3
+      {
+        if columns_costs[ 0 ][ j ] < columns_costs[ 1 ][ j ]
+        {
+          let parent_block = parent1.board.block( BlockIndex::from( ( j as u8, i as u8 ) ) ).collect_vec();
+          let cells = parent1.board.block_cells( BlockIndex::from( ( j as u8, i as u8 ) ) );
+          for ( index, cell_index ) in cells.enumerate()
+          {
+            child2_storage[ usize::from( cell_index ) ] = parent_block[ index ];
+          }
+        }
+        else 
+        {
+          let parent_block = parent2.board.block( BlockIndex::from( ( j as u8, i as u8 ) ) ).collect_vec();
+          let cells = parent2.board.block_cells( BlockIndex::from( ( j as u8, i as u8 ) ) );
+          for ( index, cell_index ) in cells.enumerate()
+          {
+            child2_storage[ usize::from( cell_index ) ] = parent_block[ index ];
+          }
+        }
+      }
+    }
+    // let mut child1_storage = Vec::new();
+    // let mut child2_storage = Vec::new();
+    // for i in 0..3
+    // {
+    //   for j in 0..3
+    //   {
+    //     for k in 0..3
+    //     {
+    //       for l in 0..3
+    //       {
+    //         child1_storage.push( child1_blocks[ 3 * i + j ][ 3 * k + l ] );
+    //         child2_storage.push( child2_blocks[ 3 * i + j ][ 3 * k + l ] );
+    //       }
+    //     }
+    //   }
+    // }
+    ( SudokuPerson::with_board( Board::new( child1_storage ) ), SudokuPerson::with_board( Board::new( child2_storage ) ) )
+    
   }
 
   /// Applies genetic algorithm to solve sudoku.
@@ -292,12 +372,12 @@ impl GASudokuInitial
         let parent1 = self.tournament( &population );
         let parent2 = self.tournament( &population );
 
-        let child = self.crossover( parent1, parent2 );
-        new_population.push( child );
-        let child = self.crossover( parent1, parent2 );
-        new_population.push( child );
+        let children = self.crossover_rows_columns( parent1, parent2 );
+        new_population.push( children.0 );
+        new_population.push( children.1 );
+        // let child = self.crossover( parent1, parent2 );
+        // new_population.push( child );
       }
-      //let mut new_population = self.generate_new_breed(&population);
       
       self.mutate_population( &mut new_population );
 
