@@ -5,7 +5,7 @@ use iter_tools::Itertools;
 use crate::
 { 
   sudoku::*, 
-  optimization::SudokuInitial,
+  optimization::{SudokuInitial, HybridOptimizer, SAConfig, GAConfig},
   nelder_mead::{NelderMeadOptimizer, Point},
 };
 
@@ -71,16 +71,21 @@ pub fn get_optimal_params()
       (
         | case : Point |
         {
-          let mut initial = SudokuInitial::new_sa( board.clone(), Seed::default() );
-          initial.set_temp_decrease_factor( case.coords[ 0 ] );
-          initial.set_temp_increase_factor( case.coords[ 1 ] );
-          initial.set_mutations_per_generation( case.coords[ 2 ] as usize );
+          
+          let mut initial = SudokuInitial::new( board.clone() );
+          let mut sa_config = SAConfig::default();
+          sa_config.set_temp_decrease_factor( case.coords[ 0 ] );
+          sa_config.set_temp_increase_factor( case.coords[ 1 ] );
+          sa_config.set_mutations_per_generation( case.coords[ 2 ] as usize );
+          let optimizer = HybridOptimizer::new( Seed::default(), initial )
+          .with_sa_config( sa_config )
+          ;
           
           let mut results: Vec< std::time::Duration > = Vec::new();
           for _ in 0..3
           {
             let now = std::time::Instant::now();
-            let ( _reason, _generation ) = initial.solve_with_sa();
+            let ( _reason, _generation ) = optimizer.optimize();
             let elapsed = now.elapsed();
             results.push( elapsed );
           }
@@ -126,20 +131,26 @@ pub fn get_optimal_params()
     for board in control_boards.get( &level ).unwrap()
     {
       // initial
-      let mut initial = SudokuInitial::new_sa( board.clone(), Seed::default() );
+      let mut initial = SudokuInitial::new( board.clone() );
+      let optimizer = HybridOptimizer::new( Seed::default(), initial );
+      //let mut initial = SudokuInitial::new_sa( board.clone(), Seed::default() );
       let now = std::time::Instant::now();
-      let ( _reason, _generation ) = initial.solve_with_sa();
+      let ( _reason, _generation ) = optimizer.optimize();
       let elapsed = now.elapsed();
 
       // optimized
-      initial = SudokuInitial::new_sa( board.clone(), Seed::default() );
       let optimized_params = level_average.get( &level ).unwrap();
-      initial.set_temp_decrease_factor( optimized_params.0 );
-      initial.set_temp_increase_factor( optimized_params.1 );
-      initial.set_mutations_per_generation( optimized_params.2 as usize );
+      let mut initial = SudokuInitial::new( board.clone() );
+      let mut sa_config = SAConfig::default();
+      sa_config.set_temp_decrease_factor( optimized_params.0 );
+      sa_config.set_temp_increase_factor( optimized_params.1 );
+      sa_config.set_mutations_per_generation( optimized_params.2 as usize );
+      let optimizer = HybridOptimizer::new( Seed::default(), initial )
+      .with_sa_config( sa_config )
+      ;
       
       let now = std::time::Instant::now();
-      let ( _reason, _generation ) = initial.solve_with_sa();
+      let ( _reason, _generation ) = optimizer.optimize();
       let opt_elapsed = now.elapsed();
       let res = elapsed.as_millis() as i128 - opt_elapsed.as_millis() as i128;
       results.push( res );
@@ -173,17 +184,21 @@ pub fn ga_optimal_params()
       (
         | case : Point |
         {
-          let initial = SudokuInitial::new_ga( board.clone(), Seed::default() )
+          let mut initial = SudokuInitial::new( board.clone() );
+          let mut ga_config = GAConfig::default()
           .set_elite_selection_rate( case.coords[ 0 ] )
           .set_random_selection_rate( case.coords[ 1 ] )
           .set_mutation_rate( case.coords[ 2 ] )
+          ;
+          let optimizer = HybridOptimizer::new( Seed::default(), initial )
+          .with_ga_config( ga_config )
           ;
           
           let mut results: Vec< std::time::Duration > = Vec::new();
           for _ in 0..3
           {
             let now = std::time::Instant::now();
-            let ( _reason, _generation ) = initial.solve_with_ga();
+            let ( _reason, _generation ) = optimizer.optimize();
             let elapsed = now.elapsed();
             results.push( elapsed );
           }

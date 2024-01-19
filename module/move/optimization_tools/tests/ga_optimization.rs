@@ -2,8 +2,7 @@ use iter_tools::Itertools;
 use optimization_tools::*;
 use sudoku::*;
 use optimization::*;
-use test_tools::prelude::*;
-use deterministic_rand::Seed;
+use deterministic_rand::{ Seed, Hrng };
 
 mod tools;
 use tools::*;
@@ -13,15 +12,18 @@ fn crossover()
 {
   logger_init();
 
-  let initial = SudokuInitial::new_ga( Board::default(), Seed::from_integer( 1 ) );
+  let board = Board::default();
+  let hrng = Hrng::master_with_seed( Seed::default() );
 
-  let parent1 = SudokuPerson::new( &initial.board, initial.hrng.clone() );
+  let parent1 = SudokuPerson::new( &board, hrng.clone() );
   log::trace!( "parent 1{parent1:#?}" );
   
-  let parent2 = SudokuPerson::new( &initial.board, initial.hrng.clone() );
+  let parent2 = SudokuPerson::new( &board, hrng.clone() );
   log::trace!( "parent 2{parent2:#?}" );
 
-  let child = initial.crossover( &parent1, &parent2 );
+  let operator = MultiplePointsBlockCrossover {};
+
+  let child = operator.crossover( hrng.clone(), &parent1, &parent2 );
   log::trace!( "child {child:#?}" );
   let mut is_child = true;
   let mut has_first_parent_blocks = false;

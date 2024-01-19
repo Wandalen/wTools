@@ -4,13 +4,14 @@
 use crate::*;
 #[ cfg( feature="static_plot" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };
-use rand::seq::SliceRandom;
 use rayon::iter::{ ParallelIterator, IndexedParallelIterator};
 use sudoku::{ Board, BlockIndex, CellIndex };
 use deterministic_rand::Seed;
 
 mod gen_alg;
-use gen_alg::*;
+pub use gen_alg::*;
+mod sim_anneal;
+pub use sim_anneal::*;
 
 /// Pause execution of SA.
 pub fn sleep()
@@ -28,7 +29,6 @@ trait BoardExt
 
 impl BoardExt for Board
 {
-
   fn validate_each_block_has_non_fixed_cell( &self ) -> bool
   {
     for block in self.blocks()
@@ -59,7 +59,6 @@ impl BoardExt for Board
 
     true
   }
-
 }
 
 /// Get a pair of random non-fixed cells in a specified block.
@@ -125,63 +124,6 @@ impl From< SudokuCost > for f64
   fn from( src : SudokuCost ) -> Self
   {
     src.0 as f64
-  }
-}
-
-/// Represents temperature of SA process.
-#[ derive( Default, Debug, Display, Clone, Copy, PartialEq, PartialOrd, FromInner, InnerFrom ) ]
-#[ derive( Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign ) ]
-pub struct Temperature( f64 );
-
-impl Temperature
-{
-  /// Returns inner value of Temperature struct.
-  pub fn unwrap( &self ) -> f64
-  {
-    self.0
-  }
-}
-
-/// Transforms Temperature value into f64.
-impl From< f32 > for Temperature
-{
-  #[ inline ]
-  fn from( src : f32 ) -> Self
-  {
-    Self( src as f64 )
-  }
-}
-
-/// Struct that represents coefficient to change temperature value.
-#[ derive( Debug, Display, Clone, Copy, PartialEq, PartialOrd, FromInner, InnerFrom ) ]
-#[ derive( Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign ) ]
-pub struct TemperatureFactor( f64 );
-
-impl TemperatureFactor
-{
-  /// Returns inner value of TemperatureFactor struct.
-  pub fn unwrap( &self ) -> f64
-  {
-    self.0
-  }
-}
-
-/// Default value of TemperatureFactor struct.
-impl Default for TemperatureFactor
-{
-  fn default() -> Self
-  {
-    0.001.into()
-  }
-}
-
-/// Transforms f32 value into TemperatureFactor.
-impl From< f32 > for TemperatureFactor
-{
-  #[ inline ]
-  fn from( src : f32 ) -> Self
-  {
-    Self( src as f64 )
   }
 }
 
@@ -282,424 +224,111 @@ pub struct SudokuMutagen
   pub cell2 : CellIndex,
 }
 
-/// Represents initial state of board and configuration of SA optimization process for sudoku solving.
+/// Represents a state in the Simulated Annealing optimization process for solving Sudoku.
 #[ derive( Clone, Debug ) ]
+pub struct SudokuGeneration
+{
+  /// Initial board with fixed values.
+  initial_board : Board,
+  /// Current temperature in the optimization process.
+  temperature : Option< Temperature >,
+  /// Number of resets performed.
+  n_resets : usize,
+  /// Amount of generations before current genetration.
+  n_generation : usize,
+  pub population : Vec< SudokuPerson >
+}
+
 pub struct SudokuInitial
 {
-  /// Initial state of sudoku board with fixed values.
-  pub board : Board,
-  /// Seed for random numbers generator.
-  pub seed : Seed,
-  /// Random numbers generator used for creating new state of SA.
-  pub hrng : Hrng,
-}
-
-/// Represents initial state of board and configuration of SA optimization process for sudoku solving.
-#[ derive( Clone, Debug ) ]
-pub struct SASudokuInitial
-{
-  /// Initial state of sudoku board with fixed values.
-  pub board : Board,
-  /// Seed for random numbers generator.
-  pub seed : Seed,
-  /// Random numbers generator used for creating new state of SA.
-  pub hrng : Hrng,
-  pub config : SAConfig,
-}
-
-/// Represents initial configuration of SA optimization process for sudoku solving.
-#[ derive( Clone, Debug ) ]
-pub struct SAConfig
-{
-    /// Max amount of mutations in generation.
-    pub n_mutations_per_generation_limit : usize,
-    /// Max allowed number of resets.
-    pub n_resets_limit : usize,
-    /// Max number of generations created during SA process.
-    pub n_generations_limit : usize,
-    /// Coefficient for lowering SA temperature.
-    pub temperature_decrease_factor : TemperatureFactor,
-    /// Coefficient for increasing SA temperature during reset.
-    pub temperature_increase_factor : TemperatureFactor,
-}
-
-impl Default for SAConfig
-{
-  fn default() -> Self
-  {
-    Self
-    {
-      temperature_decrease_factor : Default::default(),
-      temperature_increase_factor : 1.0f64.into(),
-      n_mutations_per_generation_limit : 2_000,
-      n_resets_limit : 1_000,
-      n_generations_limit : 1_000_000,
-    }
-  }
+  board : Board,
 }
 
 impl SudokuInitial
 {
-  /// Create new initial state for SA.
-  pub fn new_sa( board : Board, seed : Seed ) -> SASudokuInitial
+  pub fn new( board : Board ) -> Self
   {
-    let hrng = Hrng::master_with_seed( seed.clone() );
-
-    SASudokuInitial
-    {
-      board,
-      seed,
-      hrng,
-      config : SAConfig::default(),
-    }
-  }
-
-  /// Create new initial state for SA.
-  pub fn new_ga( board : Board, seed : Seed ) -> GASudokuInitial
-  {
-    let hrng = Hrng::master_with_seed( seed.clone() );
-    GASudokuInitial
-    {
-      board,
-      seed,
-      hrng,
-      config : GAConfig::default(),
-    }
+    Self { board }
   }
 }
 
-impl SASudokuInitial
+impl SeederOperator for SudokuInitial
 {
-  /// Create new initial state for SA.
-  pub fn new( board : Board, seed : Seed ) -> Self
+  type Generation = SudokuGeneration;
+  /// Create the initial generation for the optimization algorithm.
+  fn initial_generation( &self, hrng : Hrng ) -> SudokuGeneration
   {
-    let hrng = Hrng::master_with_seed( seed.clone() );
-    let temperature_decrease_factor = Default::default();
-    let temperature_increase_factor = 1.0f64.into(); // xxx
-    let n_mutations_per_generation_limit = 2_000; // xxx
-    let n_resets_limit = 1_000; // xxx
-    let n_generations_limit = 1_000_000;
+    let person = SudokuPerson::new( &self.board, hrng.clone() );
+    let n_generation = 0;
+    SudokuGeneration { initial_board: self.board.clone(), population: vec![ person ], n_resets: 0, n_generation, temperature : None }
+  }
+  
+}
+
+pub struct HybridOptimizer< S : SeederOperator >
+{
+  pub sa_config : SAConfig,
+  pub ga_config : GAConfig,
+  pub seed : Seed,
+  pub hrng : Hrng,
+  pub generation_limit : usize,
+  pub seeder : S,
+}
+
+impl< S : SeederOperator > HybridOptimizer< S >
+{
+  pub fn new( random_seed : Seed, population_seeder : S ) -> Self
+  {
     Self
     {
-      board,
-      seed,
-      hrng,
-      config : SAConfig
-      {
-        n_mutations_per_generation_limit,
-        n_resets_limit,
-        n_generations_limit,
-        temperature_decrease_factor,
-        temperature_increase_factor,
-      }
+      sa_config : SAConfig::default(),
+      ga_config : GAConfig::default(),
+      seed : random_seed.clone(),
+      hrng : Hrng::master_with_seed( random_seed ),
+      generation_limit : 10_000,
+      seeder : population_seeder
     }
   }
 
-  /// Set temperature increase factor.
-  pub fn set_temp_decrease_factor( &mut self, factor : f64 )
+  pub fn with_sa_config( self, config : SAConfig ) -> Self
   {
-    self.config.temperature_decrease_factor = factor.into();
-  }
-
-  /// Set temperature decrease factor.
-  pub fn set_temp_increase_factor( &mut self, factor : f64 )
-  {
-    self.config.temperature_increase_factor = factor.into();
-  }
-
-  /// Set max amount of mutations per one generation.
-  pub fn set_mutations_per_generation( &mut self, number : usize )
-  {
-    self.config.n_mutations_per_generation_limit = number;
-  }
-
-  /// Create the initial generation for the simulated annealing algorithm.
-  pub fn initial_generation< 'initial >( &'initial self ) -> SudokuGeneration < 'initial >
-  {
-    let person = SudokuPerson::new( &self.board, self.hrng.clone() );
-    let temperature = self.initial_temperature();
-    let hrng = self.hrng.clone();
-    let n_resets = 0;
-    let n_generation = 0;
-    SudokuGeneration { initial : self.config.clone(), initial_board: &self.board, hrng, person, temperature, n_resets, n_generation }
-  }
-
-  /// Calculate the initial temperature for the optimization process.
-  pub fn initial_temperature( &self ) -> Temperature
-  {
-    use statrs::statistics::Statistics;
-    let state = SudokuPerson::new( &self.board, self.hrng.clone() );
-    const N : usize = 16;
-    let mut costs : [ f64 ; N ] = [ 0.0 ; N ];
-    for i in 0..N
+    Self
     {
-      let state2 = state.mutate_random( &self.board, self.hrng.clone() );
-      costs[ i ] = state2.cost.into();
+      sa_config : config,
+      ..self
     }
-    costs[..].std_dev().into()
   }
 
-  /// Main loop for solving sudoku with simulated annealing. Returns reason that inidicates why loop exited and solved sudoku if optimization was successful.
-  pub fn solve_with_sa( &self ) -> ( Reason, Option< SudokuGeneration < '_ > > )
+  pub fn with_ga_config( self, config : GAConfig ) -> Self
   {
-    let mut generation = self.initial_generation();
-    // let mut n_generation : usize = 0;
+    Self
+    {
+      ga_config : config,
+      ..self
+    }
+  }
 
-    // xxx : optimize, make sure it use not more than 2 enitties of generation
+  pub fn optimize( &self ) -> ( Reason, Option< < S as SeederOperator >::Generation > )
+  {
+    let mut generation = self.seeder.initial_generation( self.hrng.clone() );
+    let mut generation_number = 1;
+
     loop
     {
-      // n_generation += 1;
-      if generation.n_generation > self.config.n_generations_limit
+      if generation_number > self.generation_limit
       {
         return ( Reason::GenerationLimit, None );
       }
-
-      log::trace!( "\n= n_generation : {}\n", generation.n_generation );
-
-      // log::trace!( "\n= n_generation : {n_generation}\n" );
-      // println!( "max_level : {}", log::max_level() );
-
-
-      let  reason = generation.mutate();
-      if reason!= Reason::NotFinished
-      {
-        return ( reason, None );
-      }
-      //let generation2 = generation2.unwrap();
-
-      //plotting
-      // #[ cfg( feature="static_plot" ) ]
-      // {
-      //   let options = PlotOptions 
-      //   {
-      //     x : generation.n_generation as f32,
-      //     y : generation.person.cost.0 as f32,
-      //     name : String::from( "Cost change" ),
-      //     description : PlotDescription
-      //     {
-      //       x_label : String::from( "Step" ),
-      //       y_label : String::from( "Cost" ),
-      //       filename : String::from( "cost_plot" ),
-      //       ..Default::default()
-      //     }
-      //   };
-      //   plot( options );
-
-      // }
-
-      // #[ cfg( feature="dynamic_plot" ) ]
-      // {
-      //   let options = PlotOptions 
-      //   {
-      //     x : generation.n_generation as f32,
-      //     y : generation.person.cost.0 as f32,
-      //     name : String::from( "Cost change" ),
-      //     description : PlotDescription
-      //     {
-      //       x_label : String::from( "Step" ),
-      //       y_label : String::from( "Cost" ),
-      //       filename : String::from( "cost_plot" ),
-      //       ..Default::default()
-      //     }
-      //   };
-      //   plot_dynamic::dyn_plot( options );
-      // }
-
-      // #[ cfg( feature="static_plot" ) ]
-      // {
-      //   let options = PlotOptions 
-      //   {
-      //     x : generation.n_generation as f32,
-      //     y : generation.temperature.unwrap() as f32,
-      //     name : String::from( "Temperature change" ),
-      //     description : PlotDescription
-      //     {
-      //       x_label : String::from( "Step" ),
-      //       y_label : String::from( "Temperature" ),
-      //       filename : String::from( "temp_plot" ),
-      //       ..Default::default()
-      //     }
-      //   };
-
-      //   plot( options );
-      // }
 
       if generation.is_good_enough()
       {
         return ( Reason::GoodEnough, Some( generation ) );
       }
 
-      //generation = generation2;
+      let  new_generation = generation.evolve( self.hrng.clone(), EvolutionMode::SA( &self.sa_config ) );
+
+      generation = new_generation;
+      generation_number += 1;
     }
-  }
-
-}
-
-/// Represents a state in the Simulated Annealing optimization process for solving Sudoku.
-#[ derive( Clone, Debug ) ]
-pub struct SudokuGeneration< 'a >
-{
-  /// Initial configuration of the Sudoku puzzle.
-  initial : SAConfig,
-  /// Initial board with fixed values.
-  initial_board : &'a Board,
-  /// Random number generator for generating new state.
-  hrng : Hrng,
-  /// Current state of sudoku board.
-  pub person : SudokuPerson,
-  /// Current temperature in the optimization process.
-  temperature : Temperature,
-  /// Number of resets performed.
-  n_resets : usize,
-  /// Amount of generations before current genetration.
-  n_generation : usize,
-}
-
-impl< 'a > SudokuGeneration< 'a >
-{
-  /// Performs single iteration of optimization process, returns a tuple containing the reason to stop or continue optimization process and the new Sudoku generation if successful.
-  pub fn mutate( &mut self ) -> Reason
-  {
-    let initial = self.initial.clone();
-    let mut temperature = self.temperature;
-    let mut n_mutations : usize = 0;
-    let mut n_resets : usize = self.n_resets;
-
-    let mut expected_number_of_mutations = 4;
-
-    loop
-    {
-      if n_mutations > initial.n_mutations_per_generation_limit
-      {
-        n_resets += 1;
-        expected_number_of_mutations = 4;
-        if n_resets >= initial.n_resets_limit
-        {
-          return Reason::ResetLimit;
-        }
-        let temperature2 = ( temperature.unwrap() + initial.temperature_increase_factor.unwrap() ).into();
-        log::trace!( " 🔄 reset temperature {temperature} -> {temperature2}" );
-        sleep();
-        temperature = temperature2;
-        n_mutations = 0;
-      }
-
-      let rng_ref = self.hrng.rng_ref();
-      let mut rng = rng_ref.lock().unwrap();
-
-      let candidates = rayon::iter::repeat( () )
-      .take( expected_number_of_mutations )
-      .enumerate()
-      .map( | ( i, _ ) | self.hrng.child( i ) )
-      .flat_map( | hrng | 
-        {
-          
-          let mutagen = self.person.mutagen( self.initial_board, hrng.clone() );
-          
-          let mutagen_cross_cost = self.person.board.cross_error_for_value
-          (
-            mutagen.cell1, 
-            self.person.board.cell( mutagen.cell2 ),
-            mutagen.cell2, 
-            self.person.board.cell( mutagen.cell1 )
-          );
-          
-          let mut original_cross_cost = 0;
-          original_cross_cost += self.person.board.cross_error( mutagen.cell1 );
-          original_cross_cost += self.person.board.cross_error( mutagen.cell2 );
-    
-          let rng_ref = hrng.rng_ref();
-          let mut rng = rng_ref.lock().unwrap();
-    
-          let cost_difference = 0.5 + mutagen_cross_cost as f64 - original_cross_cost as f64;
-          let threshold = ( - cost_difference / temperature.unwrap() ).exp();
-    
-          log::trace!
-          (
-            "cost : {}  | cost_difference : {cost_difference} | temperature : {temperature}",
-            self.person.cost,
-          );
-          let rand : f64 = rng.gen();
-          let vital = rand < threshold;
-
-          if vital
-          {
-            let emoji = if cost_difference > 0.0
-            {
-              "🔼"
-            }
-            else if cost_difference < 0.0
-            {
-              "✔️"
-            }
-            else
-            {
-              "🔘"
-            };
-            log::trace!( " {emoji} vital | rand( {rand} ) < threshold( {threshold} )" );
-            if cost_difference == 0.0
-            {
-              // sleep();
-            }
-            Some( mutagen )
-          }
-          else
-          {
-            log::trace!( " ❌ non-vital | rand( {rand} ) > threshold( {threshold} )" );
-            None
-          }
-        }
-      )
-      .collect::< Vec< _ > >()
-      ;
-
-      let candidate = candidates.choose( &mut *rng );
-
-      if let Some( mutagen ) = candidate
-      {
-        self.person.mutate( &mutagen );
-        break;
-      }
-
-      //plotting
-      // #[ cfg( feature="static_plot" ) ]
-      // {
-      //   let accept = if threshold > 1.0 { 1.0 } else { threshold };
-      //   let options = PlotOptions 
-      //   {
-      //     x : self.n_generation as f32,
-      //     y : accept as f32,
-      //     name : String::from( "Treshold" ),
-      //     description : PlotDescription
-      //     {
-      //       x_label : String::from( "Step" ),
-      //       y_label : String::from( "Acceptance probability" ),
-      //       filename : String::from( "ac_prob_plot" ),
-      //       plot_line : false,
-      //       y_log_coords : false,
-      //       ..Default::default()
-      //     }
-      //   };
-      //   plot( options );
-      // }
-
-      n_mutations += expected_number_of_mutations;
-      if expected_number_of_mutations < 32
-      {
-        expected_number_of_mutations += 4;
-      }
-    };
-
-    self.n_generation = self.n_generation + 1;
-    self.temperature = Temperature::from( temperature.unwrap() * ( 1.0f64 - self.initial.temperature_decrease_factor.unwrap() ) );
-    self.n_resets = n_resets;
-    Reason::NotFinished
-  }
-
-  /// Checks if the current state is considered good enough as a solution.
-  pub fn is_good_enough( &self ) -> bool
-  {
-    self.person.cost == 0.into()
-  }
-
+  } 
 }

@@ -2,7 +2,7 @@ use optimization_tools::*;
 use sudoku::*;
 use optimization::*;
 use test_tools::prelude::*;
-use deterministic_rand::Seed;
+use deterministic_rand::{Seed, Hrng};
 
 mod tools;
 use tools::*;
@@ -12,14 +12,16 @@ fn person_mutate()
 {
   logger_init();
 
-  let initial = SudokuInitial::new_sa( Board::default(), Seed::default() );
+  //let initial = SudokuInitial::new_sa( Board::default(), Seed::default() );
+  let board = Board::default();
+  let hrng = Hrng::master_with_seed( Seed::default() );
 
-  let mut person = SudokuPerson::new( &initial.board, initial.hrng.clone() );
+  let mut person = SudokuPerson::new( &board, hrng.clone() );
   log::trace!( "{person:#?}" );
   a_id!( person.cost, 45.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
-  let mutagen = person.mutagen( &initial.board, initial.hrng.clone() );
+  let mutagen = person.mutagen( &board, hrng.clone() );
   // make sure block is the same
   a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
   person.mutate(  &mutagen );
@@ -27,7 +29,7 @@ fn person_mutate()
   a_id!( person.cost, 48.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
-  let mutagen = person.mutagen( &initial.board, initial.hrng.clone() );
+  let mutagen = person.mutagen( &board, hrng.clone() );
   // make sure block is the same
   a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
   person.mutate( &mutagen );
@@ -42,12 +44,13 @@ fn person_mutate()
 fn initial_temperature()
 {
   logger_init();
+  let hrng = Hrng::master_with_seed( Seed::default() );
+  let initial = SudokuInitial::new( Board::default() );
 
-  let initial = SudokuInitial::new_sa( Board::default(), Seed::default() );
-
-  let temperature = &initial.initial_temperature();
+  let generation = initial.initial_generation( hrng.clone() );
+  let temperature = generation.initial_temperature( hrng.clone() );
   a_true!( temperature.unwrap() >= 0f64 );
-  a_id!( temperature.unwrap(), 1.591644851508443 );
+  a_id!( temperature.unwrap(), 1.02469507659596 );
 
   // a_true!( false );
 }
