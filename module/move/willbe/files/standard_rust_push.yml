@@ -1,3 +1,4 @@
+
 name : rust_push
 
 on :
@@ -101,3 +102,4 @@ jobs :
         run : cargo install cargo-hack
       - name : Run tests with each feature
         run : cargo hack test --manifest-path ${{ inputs.manifest_path }} --each-feature
+

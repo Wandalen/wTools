@@ -86,7 +86,7 @@ mod private
   
     file_write( &workflow_root.join( "AppropriateBranch.yml" ), include_str!( "../../files/appropriate_branch.yml" ) )?;
 
-    let data = map_prepare_for_appropriative_branch( "- beta\n", username_and_repository, "alpha", "alpha", "beta" );
+    let data = map_prepare_for_appropriative_branch( "- beta", username_and_repository, "alpha", "alpha", "beta" );
     file_write( &workflow_root.join( "AppropriateBranchBeta.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
 
     let data = map_prepare_for_appropriative_branch( "- main\n      - master", username_and_repository, "alpha", "beta", "master" );
@@ -106,19 +106,19 @@ mod private
     data.insert
     ( 
       "branches",  
-      "- '*'
-     - '*/*' 
-     - '**' 
-     - '!master' 
-     - '!main' 
-     - '!alpha' 
-     - '!beta' 
-     - '!*test*' 
-     - '!*test*/*' 
-     - '!*/*test*' 
-     - '!*experiment*' 
-     - '!*experiment*/*' 
-     - '!*/*experiment*' " 
+      " - '*'
+      - '*/*'
+      - '**'
+      - '!master'
+      - '!main'
+      - '!alpha'
+      - '!beta'
+      - '!*test*'
+      - '!*test*/*'
+      - '!*/*test*'
+      - '!*experiment*'
+      - '!*experiment*/*'
+      - '!*/*experiment*'"
     );
     data.insert( "username_and_repository", username_and_repository.as_str() );
     data.insert( "uses_branch", "alpha" );
