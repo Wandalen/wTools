@@ -1,4 +1,4 @@
-//! Contains implementation of Simmulated Annealing optimization method.
+//! Contains implementation of hybrid optimization using Simulated Annealing and Genetic optimization methods.
 //! 
 
 use crate::*;
@@ -207,7 +207,6 @@ impl SudokuPerson
         mutagen = m;
         break;
       }
-      
     }
     mutagen.into()
   }
@@ -234,18 +233,31 @@ pub struct SudokuGeneration
   temperature : Option< Temperature >,
   /// Number of resets performed.
   n_resets : usize,
-  /// Amount of generations before current genetration.
-  n_generation : usize,
+  /// Population of individuals in current generation.
   pub population : Vec< SudokuPerson >
 }
 
+/// Initial sudoku.
+#[ derive( Debug ) ]
 pub struct SudokuInitial
 {
+  /// Initial sudoku board with empty fields.
   board : Board,
+}
+
+/// Mode which represents algorithm used for optimization of current generation.
+#[ derive( Debug ) ]
+pub enum EvolutionMode< 'a >
+{
+  /// Simulated annealing optimization method.
+  SA( &'a SAConfig ),
+  /// Genetic optimization method.
+  GA( &'a GAConfig ),
 }
 
 impl SudokuInitial
 {
+  /// Create new instance of initial sudoku.
   pub fn new( board : Board ) -> Self
   {
     Self { board }
@@ -255,41 +267,48 @@ impl SudokuInitial
 impl SeederOperator for SudokuInitial
 {
   type Generation = SudokuGeneration;
-  /// Create the initial generation for the optimization algorithm.
-  fn initial_generation( &self, hrng : Hrng ) -> SudokuGeneration
+  
+  fn initial_generation( &self, hrng : Hrng, size : usize ) -> SudokuGeneration
   {
-    let person = SudokuPerson::new( &self.board, hrng.clone() );
-    let n_generation = 0;
-    SudokuGeneration { initial_board: self.board.clone(), population: vec![ person ], n_resets: 0, n_generation, temperature : None }
+    let mut population = Vec::new();
+    for _ in 0..size
+    {
+      population.push( SudokuPerson::new( &self.board, hrng.clone() ) );
+    }
+    SudokuGeneration { initial_board: self.board.clone(), population, n_resets: 0, temperature : None }
   }
   
 }
 
+/// Represents hybrid optimization method with both Simulated Annealing and Genetic Algorithm.
+#[ derive( Debug ) ]
 pub struct HybridOptimizer< S : SeederOperator >
 {
+  /// Configuration for SA optimization.
   pub sa_config : SAConfig,
+  /// Configuration for GA optimization.
   pub ga_config : GAConfig,
-  pub seed : Seed,
+  /// Hierarchical random numbers generator.
   pub hrng : Hrng,
-  pub generation_limit : usize,
+  /// Struct responsible for creation of initial generation.
   pub seeder : S,
 }
 
 impl< S : SeederOperator > HybridOptimizer< S >
 {
+  /// Create new instance of HybridOptimizer with default config for SA and GA.
   pub fn new( random_seed : Seed, population_seeder : S ) -> Self
   {
     Self
     {
       sa_config : SAConfig::default(),
       ga_config : GAConfig::default(),
-      seed : random_seed.clone(),
       hrng : Hrng::master_with_seed( random_seed ),
-      generation_limit : 10_000,
       seeder : population_seeder
     }
   }
 
+  /// Create new instance of HybridOptimizer with provided SA config.
   pub fn with_sa_config( self, config : SAConfig ) -> Self
   {
     Self
@@ -299,6 +318,7 @@ impl< S : SeederOperator > HybridOptimizer< S >
     }
   }
 
+  /// Create new instance of HybridOptimizer with provided GA config.
   pub fn with_ga_config( self, config : GAConfig ) -> Self
   {
     Self
@@ -308,14 +328,15 @@ impl< S : SeederOperator > HybridOptimizer< S >
     }
   }
 
-  pub fn optimize( &self ) -> ( Reason, Option< < S as SeederOperator >::Generation > )
+  /// Perform hybrid SA/GA optimization.
+  pub fn optimize( &self, strategy : &HybridStrategy ) -> ( Reason, Option< < S as SeederOperator >::Generation > )
   {
-    let mut generation = self.seeder.initial_generation( self.hrng.clone() );
+    let mut generation = self.seeder.initial_generation( self.hrng.clone(), strategy.population_size );
     let mut generation_number = 1;
 
     loop
     {
-      if generation_number > self.generation_limit
+      if generation_number > strategy.generation_limit
       {
         return ( Reason::GenerationLimit, None );
       }
@@ -325,10 +346,95 @@ impl< S : SeederOperator > HybridOptimizer< S >
         return ( Reason::GoodEnough, Some( generation ) );
       }
 
-      let  new_generation = generation.evolve( self.hrng.clone(), EvolutionMode::SA( &self.sa_config ) );
+      let mode;
+      let mut iterations = generation_number;
+      let mut cycle = 1usize;
+      while let Some( res ) = cycle.checked_sub( strategy.sa_generations_number + strategy.ga_generations_number )
+      {
+        
+        cycle += 1;
+        iterations = res;
+      }
+      if cycle > strategy.number_of_cycles
+      {
+        if let StrategyMode::GA = strategy.finalize_with
+        {
+          mode = EvolutionMode::GA( &self.ga_config );
+        }
+        else 
+        {
+          mode = EvolutionMode::SA( &self.sa_config );
+        }
+      }
+      else 
+      {
+        match strategy.start_with
+        {
+          StrategyMode::GA if iterations > strategy.ga_generations_number && strategy.sa_generations_number > 0 =>
+          {
+            mode = EvolutionMode::SA( &self.sa_config );
+          },
+          StrategyMode::GA => mode = EvolutionMode::GA( &self.ga_config ),
+          StrategyMode::SA if iterations > strategy.sa_generations_number && strategy.ga_generations_number > 0 =>
+          {
+            mode = EvolutionMode::GA( &self.ga_config );
+          }
+          StrategyMode::SA => mode = EvolutionMode::SA( &self.sa_config ),
+        }
+      }
+
+      let new_generation = generation.evolve( self.hrng.clone(), mode );
 
       generation = new_generation;
       generation_number += 1;
     }
   } 
+}
+
+/// Strategy for combination of SA and GA optimization. Performs cyclic optimization with iteration of SA and GA methods in order defined by srart_with field.
+#[ derive( Debug ) ]
+pub struct HybridStrategy
+{
+  /// Starting method of optimization.
+  pub start_with : StrategyMode,
+  /// Finishing method of optimization.
+  pub finalize_with : StrategyMode,
+  /// Number of cycles of optimization with GA and SA algorithms.
+  pub number_of_cycles : usize,
+  /// Number of generations optimized by SA algorithm in each cycle of optimization.
+  pub sa_generations_number : usize,
+  /// Number of generations optimized by GA algorithm in each cycle of optimization.
+  pub ga_generations_number : usize,
+  /// Percent of population selected for next cycle of optimization.
+  pub population_percent : f64,
+  /// Max number of generations, termination condition.
+  pub generation_limit : usize,
+  /// Number of Individuals in initial generation of solutions.
+  pub population_size : usize,
+}
+
+impl Default for HybridStrategy
+{
+  fn default() -> Self 
+  {
+    Self
+    {
+      sa_generations_number : 1000,
+      ga_generations_number : 1000,
+      number_of_cycles : 1,
+      finalize_with : StrategyMode::SA,
+      population_percent : 1.0,
+      start_with : StrategyMode::GA,
+      generation_limit : 10_000_000,
+      population_size : 1000,
+    }
+  }
+}
+
+/// Methods of optimization.
+#[ derive( Debug ) ]
+pub enum StrategyMode
+{
+  SA,
+  GA,
 }

@@ -2,6 +2,7 @@ use iter_tools::Itertools;
 use optimization_tools::*;
 use sudoku::*;
 use optimization::*;
+use test_tools::prelude::*;
 use deterministic_rand::{ Seed, Hrng };
 
 mod tools;
@@ -75,17 +76,31 @@ fn solve_with_ga()
   logger_init();
   log::set_max_level( log::LevelFilter::Warn );
 
-  let mut initial = SudokuInitial::new_ga( Board::from( sudoku ), Seed::default() );
+  let initial = SudokuInitial::new( Board::from( sudoku ) );
 
-  let ( reason, generation ) = initial.solve_with_sa();
+  let optimizer = HybridOptimizer::new( Seed::default(), initial );
+
+  let strategy = HybridStrategy
+  {
+    start_with : StrategyMode::GA,
+    finalize_with : StrategyMode::GA,
+    number_of_cycles : 1,
+    ga_generations_number : 1000,
+    sa_generations_number : 0,
+    population_percent : 1.0,
+    generation_limit : 100_000_000,
+    population_size : 10_000,
+  };
+
+  let ( reason, generation ) = optimizer.optimize( &strategy );
 
   log::trace!( "reason : {reason}" );
   a_true!( generation.is_some() );
   let generation = generation.unwrap();
   log::trace!( "{generation:#?}" );
-  log::trace!( "{:#?}", generation.board );
+  log::trace!( "{:#?}", generation.population[ 0 ].board );
 
-  a_id!( generation.cost, 0.into() );
+  a_id!( generation.population[ 0 ].cost, 0.into() );
 
 }
 

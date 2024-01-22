@@ -5,7 +5,7 @@ use iter_tools::Itertools;
 use crate::
 { 
   sudoku::*, 
-  optimization::{SudokuInitial, HybridOptimizer, SAConfig, GAConfig},
+  optimization::{SudokuInitial, HybridOptimizer, SAConfig, GAConfig, HybridStrategy, StrategyMode},
   nelder_mead::{NelderMeadOptimizer, Point},
 };
 
@@ -72,7 +72,7 @@ pub fn get_optimal_params()
         | case : Point |
         {
           
-          let mut initial = SudokuInitial::new( board.clone() );
+          let initial = SudokuInitial::new( board.clone() );
           let mut sa_config = SAConfig::default();
           sa_config.set_temp_decrease_factor( case.coords[ 0 ] );
           sa_config.set_temp_increase_factor( case.coords[ 1 ] );
@@ -80,12 +80,24 @@ pub fn get_optimal_params()
           let optimizer = HybridOptimizer::new( Seed::default(), initial )
           .with_sa_config( sa_config )
           ;
-          
+
+          let strategy = HybridStrategy
+          {
+            start_with : StrategyMode::SA,
+            finalize_with : StrategyMode::SA,
+            number_of_cycles : 1,
+            ga_generations_number : 0,
+            sa_generations_number : 1000,
+            population_percent : 1.0,
+            generation_limit : 100_000_000,
+            population_size : 1,
+          };
+
           let mut results: Vec< std::time::Duration > = Vec::new();
           for _ in 0..3
           {
             let now = std::time::Instant::now();
-            let ( _reason, _generation ) = optimizer.optimize();
+            let ( _reason, _generation ) = optimizer.optimize( &strategy );
             let elapsed = now.elapsed();
             results.push( elapsed );
           }
@@ -131,16 +143,26 @@ pub fn get_optimal_params()
     for board in control_boards.get( &level ).unwrap()
     {
       // initial
-      let mut initial = SudokuInitial::new( board.clone() );
+      let initial = SudokuInitial::new( board.clone() );
       let optimizer = HybridOptimizer::new( Seed::default(), initial );
-      //let mut initial = SudokuInitial::new_sa( board.clone(), Seed::default() );
+      let strategy = HybridStrategy
+      {
+        start_with : StrategyMode::SA,
+        finalize_with : StrategyMode::SA,
+        number_of_cycles : 1,
+        ga_generations_number : 0,
+        sa_generations_number : 1000,
+        population_percent : 1.0,
+        generation_limit : 100_000_000,
+        population_size : 1,
+      };
       let now = std::time::Instant::now();
-      let ( _reason, _generation ) = optimizer.optimize();
+      let ( _reason, _generation ) = optimizer.optimize( &strategy );
       let elapsed = now.elapsed();
 
       // optimized
       let optimized_params = level_average.get( &level ).unwrap();
-      let mut initial = SudokuInitial::new( board.clone() );
+      let initial = SudokuInitial::new( board.clone() );
       let mut sa_config = SAConfig::default();
       sa_config.set_temp_decrease_factor( optimized_params.0 );
       sa_config.set_temp_increase_factor( optimized_params.1 );
@@ -150,7 +172,7 @@ pub fn get_optimal_params()
       ;
       
       let now = std::time::Instant::now();
-      let ( _reason, _generation ) = optimizer.optimize();
+      let ( _reason, _generation ) = optimizer.optimize( &strategy );
       let opt_elapsed = now.elapsed();
       let res = elapsed.as_millis() as i128 - opt_elapsed.as_millis() as i128;
       results.push( res );
@@ -184,8 +206,8 @@ pub fn ga_optimal_params()
       (
         | case : Point |
         {
-          let mut initial = SudokuInitial::new( board.clone() );
-          let mut ga_config = GAConfig::default()
+          let initial = SudokuInitial::new( board.clone() );
+          let ga_config = GAConfig::default()
           .set_elite_selection_rate( case.coords[ 0 ] )
           .set_random_selection_rate( case.coords[ 1 ] )
           .set_mutation_rate( case.coords[ 2 ] )
@@ -193,12 +215,24 @@ pub fn ga_optimal_params()
           let optimizer = HybridOptimizer::new( Seed::default(), initial )
           .with_ga_config( ga_config )
           ;
+
+          let strategy = HybridStrategy
+          {
+            start_with : StrategyMode::GA,
+            finalize_with : StrategyMode::GA,
+            number_of_cycles : 1,
+            ga_generations_number : 1000,
+            sa_generations_number : 0,
+            population_percent : 1.0,
+            generation_limit : 100_000_000,
+            population_size : 10000,
+          };
           
           let mut results: Vec< std::time::Duration > = Vec::new();
           for _ in 0..3
           {
             let now = std::time::Instant::now();
-            let ( _reason, _generation ) = optimizer.optimize();
+            let ( _reason, _generation ) = optimizer.optimize( &strategy );
             let elapsed = now.elapsed();
             results.push( elapsed );
           }

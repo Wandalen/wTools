@@ -21,7 +21,7 @@
 
 use std::{collections::HashSet, fmt::Debug};
 
-use deterministic_rand::{ Hrng, Seed };
+use deterministic_rand::Hrng;
 use iter_tools::Itertools;
 use rand::{ seq::SliceRandom, Rng };
 
@@ -31,48 +31,41 @@ use crate::{ sudoku::*, optimization::* };
 #[ derive( Debug ) ]
 pub struct GAConfig
 {
-  /// Size of population.
-  pub population_size : usize,
   /// Number of fittest individuals that will be selected as possible breeders of new population.
   pub elite_selection_rate : f64,
   /// Number of random individuals that will be selected as possible breeders of new population.
   pub random_selection_rate : f64,
   /// Probabilistic measure of a individual mutation likelihood.
   pub mutation_rate : f64,
-
-  //pub tournament_size : usize,
-  /// Probabilistic measure of a individuals likelihood of being selected in the tournament.
-  //pub tournament_selection_pressure : f64,
-  /// Recalculate fitnell on every iteration.
+  /// Recalculate fitness on every iteration.
   pub fitness_recalculation : bool,
   /// Max number of iteration without improvement in population.
   pub max_stale_iterations: usize,
   /// Max total number of iterations.
   pub max_generation_number : usize,
+  /// Crossover genetic opertor, which defines how new Individuals are produced by combiniting traits of Individuals from current generation.
   pub crossover_operator : Box< dyn CrossoverOperator >,
+  /// Selection genetic operator, which defines how Individuals from current generation are selected to be breeders of new generation.
   pub selection_operator : Box< dyn SelectionOperator >,
 }
 
 impl GAConfig
 {
-  pub fn set_population_size( mut self, size : usize ) -> Self
-  {
-    self.population_size = size;
-    self
-  }
-
+  /// Set mutation rate for GA.
   pub fn set_mutation_rate( mut self, rate : f64 ) -> Self
   {
     self.mutation_rate = rate;
     self
   }
 
+  /// Set percent of most fit Individuals that will be cloned to next generation.
   pub fn set_elite_selection_rate( mut self, rate : f64 ) -> Self
   {
     self.elite_selection_rate = rate;
     self
   }
 
+  /// Set percent of random individuals that will be cloned to next generation.
   pub fn set_random_selection_rate( mut self, rate : f64 ) -> Self
   {
     self.random_selection_rate = rate;
@@ -86,7 +79,6 @@ impl Default for GAConfig
   {
     Self
     {
-      population_size : 50000,
       elite_selection_rate : 0.15,
       random_selection_rate : 0.25,
       max_stale_iterations: 30,
@@ -103,11 +95,14 @@ impl Default for GAConfig
   }
 }
 
+/// Functionality of crossover genetic operator.
 pub trait CrossoverOperator : Debug
 {
+  /// Produce new Individual using genetic matherial of two selected Individuals.
   fn crossover( &self, hrng : Hrng, parent1 : &SudokuPerson, parent2 : &SudokuPerson ) -> SudokuPerson;
 }
 
+/// Crossover is performed by combining blocks from parents' boards, split in several randomly chosen crossover points.
 #[ derive( Debug ) ]
 pub struct MultiplePointsBlockCrossover {}
 
@@ -156,89 +151,13 @@ impl CrossoverOperator for MultiplePointsBlockCrossover
   }
 }
 
-pub trait SelectionOperator : Debug
-{
-  fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< SudokuPerson > ) -> &'a SudokuPerson;
-}
-
+/// Crossover performed by selecting blocks with best rows or columns from two Individuals.
 #[ derive( Debug ) ]
-pub struct TournamentSelection 
+pub struct BestRowsColumnsCrossover {}
+
+impl CrossoverOperator for BestRowsColumnsCrossover
 {
-  size : usize,
-  selection_pressure : f64,
-}
-
-impl SelectionOperator for TournamentSelection
-{
-  fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< SudokuPerson > ) -> &'a SudokuPerson 
-  {
-    let rng_ref = hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-    let mut candidates = Vec::new();
-    for _ in 0..self.size
-    {
-      candidates.push( population.choose( &mut *rng ).unwrap() );
-    }
-    candidates.sort_by( | c1, c2 | c1.fitness().cmp( &c2.fitness() ) );
-
-    let rand : f64 = rng.gen();
-    let mut selection_pressure = self.selection_pressure;
-    let mut winner = *candidates.last().unwrap();
-    for i in 0..self.size
-    {
-      if rand < selection_pressure
-      {
-        winner = candidates[ i ];
-        break;
-      }
-      selection_pressure += selection_pressure * ( 1.0 - selection_pressure );
-    }
-    winner
-  }
-}
-
-/// Represents initial state of board and configuration of GA optimization process for sudoku solving.
-#[ derive( Debug ) ]
-pub struct GASudokuInitial
-{
-  /// Initial state of sudoku board with fixed values.
-  pub board : Board,
-  /// Seed for random numbers generator.
-  pub seed : Seed,
-  /// Random numbers generator used for creating new populations of GA.
-  pub hrng : Hrng,
-  pub config : GAConfig,
-}
-
-impl GASudokuInitial
-{
-  /// Create new initial state for GA.
-  pub fn new( board : Board, seed : Seed ) -> Self
-  {
-    let hrng = Hrng::master_with_seed( seed.clone() );
-    Self
-    {
-      seed,
-      hrng,
-      board,
-      config : GAConfig::default()
-    }
-  }
-
-  /// Seed initial population of solutions.
-  pub fn initial_population( &self ) -> Vec< SudokuPerson >
-  {
-    let mut population = Vec::with_capacity( self.config.population_size );
-    for _ in 0..self.config.population_size
-    {
-      let person = SudokuPerson::new( &self.board, self.hrng.clone() );
-      population.push( person );
-    }
-    population
-  }
-
-  ///
-  pub fn crossover_rows_columns( &self, parent1 : &SudokuPerson, parent2 : &SudokuPerson ) -> ( SudokuPerson, SudokuPerson )
+  fn crossover( &self, _hrng : Hrng, parent1 : &SudokuPerson, parent2 : &SudokuPerson ) -> SudokuPerson 
   {
     let mut rows_costs = vec![ Vec::new(); 2 ];
     let mut columns_costs = vec![ Vec::new(); 2 ];
@@ -292,7 +211,6 @@ impl GASudokuInitial
       }
     }
 
-    //let mut child2_blocks = Vec::new();
     let mut child2_storage = vec![ CellVal::from( 0 ); 81 ];
     for i in 0..3
     {
@@ -319,17 +237,72 @@ impl GASudokuInitial
       }
     }
 
-    ( SudokuPerson::with_board( Board::new( child1_storage ) ), SudokuPerson::with_board( Board::new( child2_storage ) ) )
-    
-  }
+    let min_board = [ Board::new( child1_storage ), Board::new( child2_storage ) ]
+    .into_iter()
+    .min_by( | b1, b2 | b1.total_error().cmp( &b2.total_error() ) )
+    .unwrap()
+    ;
 
+    SudokuPerson::with_board( min_board )   
+  }
 }
 
+/// Performs selection of Individuals for genetic crossover and production of new Individual for next generation.
+pub trait SelectionOperator : Debug
+{
+  /// Select Individuals which will be used by GA crossover and mutation operators for production of new individual.
+  fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< SudokuPerson > ) -> &'a SudokuPerson;
+}
+
+/// Selection operator which randomly selects a group of individuals from the population( the number of individuals selected is equal to the size value) and choosing the most fit with probability defined by selection_pressure value.
+#[ derive( Debug ) ]
+pub struct TournamentSelection 
+{
+  /// Number of Individuals selected to compete in tournament.
+  size : usize,
+  /// Probabilistic measure of a individuals likelihood of being selected in the tournament.
+  selection_pressure : f64,
+}
+
+impl SelectionOperator for TournamentSelection
+{
+  fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< SudokuPerson > ) -> &'a SudokuPerson 
+  {
+    let rng_ref = hrng.rng_ref();
+    let mut rng = rng_ref.lock().unwrap();
+    let mut candidates = Vec::new();
+    for _ in 0..self.size
+    {
+      candidates.push( population.choose( &mut *rng ).unwrap() );
+    }
+    candidates.sort_by( | c1, c2 | c1.fitness().cmp( &c2.fitness() ) );
+
+    let rand : f64 = rng.gen();
+    let mut selection_pressure = self.selection_pressure;
+    let mut winner = *candidates.last().unwrap();
+    for i in 0..self.size
+    {
+      if rand < selection_pressure
+      {
+        winner = candidates[ i ];
+        break;
+      }
+      selection_pressure += selection_pressure * ( 1.0 - selection_pressure );
+    }
+    winner
+  }
+}
+
+/// Functionality of Individual(potential solution) for optimization with SA and GA.
 pub trait Individual< G : Generation >
 {
+  /// Objective function value that is used to measure how close Individual solution is to optimum.
   fn fitness( &self ) -> usize;
+  /// Recalculate fitness value of individual.
   fn update_fitness( &mut self );
-  fn evolve( &self, hrng : Hrng, generation : &G, mode : &EvolutionMode ) -> Self;
+  /// Optimize current Individual using GA or SA method as specified by mode.
+  fn evolve< 'a >( &self, hrng : Hrng, generation : &G, mode : &EvolutionMode< 'a > ) -> Self;
+  /// Check if current solution is optimal.
   fn is_optimal( &self ) -> bool;
 }
 
@@ -357,7 +330,7 @@ impl Individual< SudokuGeneration > for SudokuPerson
     self.cost = self.board.total_error().into();
   }
 
-  fn evolve( &self, hrng : Hrng, generation : &SudokuGeneration, mode : &EvolutionMode ) -> SudokuPerson
+  fn evolve< 'a >( &self, hrng : Hrng, generation : &SudokuGeneration, mode : &EvolutionMode< 'a > ) -> SudokuPerson
   {
     match mode
     {
@@ -377,8 +350,8 @@ impl Individual< SudokuGeneration > for SudokuPerson
           return self.clone();
         }
         drop( rng );
-        let parent1 = config.selection_operator.select( hrng.clone(),&generation.population );
-        let parent2 = config.selection_operator.select( hrng.clone(),&generation.population );
+        let parent1 = config.selection_operator.select( hrng.clone(), &generation.population );
+        let parent2 = config.selection_operator.select( hrng.clone(), &generation.population );
         let child = config.crossover_operator.crossover( hrng.clone(), parent1, parent2 );
     
         let rng_ref = hrng.rng_ref();
@@ -509,26 +482,36 @@ impl Individual< SudokuGeneration > for SudokuPerson
   }
 }
 
+/// Fuctionality of operator responsible for creation of initial solutions generation.
 pub trait SeederOperator
 {
+  /// Type that represents generation of solutions in optimization process.
   type Generation : Generation;
-  fn initial_generation( &self, hrng : Hrng ) -> Self::Generation;
+
+  /// Create the initial generation for the optimization algorithm.
+  fn initial_generation( &self, hrng : Hrng, size : usize ) -> Self::Generation;
 }
 
+/// Functionality of generation of solutions for optimization.
 pub trait Generation
 {
-  fn evolve( &mut self, hrng : Hrng, mode : EvolutionMode ) -> Self;
+  /// Performs evolution of generation, either as SA mutation of every Individual or using GA genetic operators defined in GAConfig.
+  fn evolve< 'a >( &mut self, hrng : Hrng, mode : EvolutionMode< 'a > ) -> Self;
+
+  /// Calculate initial temperature for SA optimization.
   fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
+
+  /// Check if current generation contains optimal solution.
   fn is_good_enough( &self ) -> bool;
 }
 
 impl Generation for SudokuGeneration
 {
-  fn evolve( &mut self, hrng : Hrng, mode : EvolutionMode ) -> Self 
+  fn evolve< 'a >( &mut self, hrng : Hrng, mode : EvolutionMode< 'a > ) -> Self 
   {
     let mut new_population = Vec::new();
+    self.population.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
 
-    let population_size = self.population.len();
     if let EvolutionMode::SA( config ) = mode
     {
       if self.temperature.is_none()
@@ -540,14 +523,21 @@ impl Generation for SudokuGeneration
         self.temperature = Some( Temperature::from( self.temperature.unwrap() * ( 1.0f64 - config.temperature_decrease_factor.unwrap() ) ) );
       }
     }
-    for i in 0..population_size
+    else 
     {
-      new_population.push( self.population[ i ].evolve( hrng.clone(), & *self, &mode ) );
+      if self.temperature.is_some()
+      {
+        self.temperature = None;
+      }
     }
 
-    if self.temperature.is_some()
+    for i in 0..self.population.len()
     {
-        
+      new_population.push( self.population[ i ].evolve( hrng.clone(), & *self, &mode ) );
+      if new_population.last().unwrap().is_optimal()
+      {
+        break;
+      }
     }
     
     SudokuGeneration
@@ -556,6 +546,7 @@ impl Generation for SudokuGeneration
       ..self.clone()
     }
   }
+
   /// Calculate the initial temperature for the optimization process.
   fn initial_temperature( &self, hrng : Hrng ) -> Temperature
   {
@@ -582,10 +573,4 @@ impl Generation for SudokuGeneration
     }
     false
   }
-}
-
-pub enum EvolutionMode< 'a >
-{
-  SA( &'a SAConfig ),
-  GA( &'a GAConfig ),
 }
