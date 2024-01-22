@@ -59,7 +59,8 @@ pub( crate ) mod private
   /// Parses first word from string. All characters before first space
   pub fn any_word( input : &str ) -> IResult< &str, &str >
   {
-    take_while( | c : char | !c.is_whitespace() )( input )
+    let s = take_while( | c : char | !c.is_whitespace() )( input );
+    s
   }
 }
 

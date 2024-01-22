@@ -209,6 +209,7 @@ pub( crate ) mod private
 
         cmd = Some( variant );
       }
+
       let Some( cmd ) = cmd else
       {
         error::for_app::bail!
@@ -241,13 +242,33 @@ pub( crate ) mod private
       };
 
       let properties = raw_command.properties
+      .clone()
       .into_iter()
       .map
       (
         |( key, value )|
         // find a key
         if cmd.properties.contains_key( &key ) { Ok( key ) }
-        else { cmd.properties_aliases.get( &key ).cloned().ok_or_else( || err!( "property `{}` not found for command `.{}`", key, &raw_command.name ) ) }
+        else 
+        { 
+          if raw_command.properties.len() > cmd.properties.len() 
+          {
+            let subj = format!( "{key}:{value}" );
+            subjects.push( crate::ca::grammar::types::private::Value::String( subj ) );
+            if cmd.properties.is_empty() 
+            {
+              cmd.properties_aliases.get( &key ).cloned().ok_or_else( || err!( "property `{}` not found for command `.{}`", key, &raw_command.name ) ) 
+            }
+            else 
+            {
+              Ok( cmd.properties.keys().next().unwrap().to_string() )
+            }
+          }
+          else 
+          {
+            cmd.properties_aliases.get( &key ).cloned().ok_or_else( || err!( "property `{}` not found for command `.{}`", key, &raw_command.name ) ) 
+          }
+        }
         // give a description
         .map( | key | ( key.clone(), cmd.properties.get( &key ).unwrap(), value ) )
       )
