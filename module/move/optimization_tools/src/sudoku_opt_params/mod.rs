@@ -5,8 +5,8 @@ use iter_tools::Itertools;
 use crate::
 { 
   sudoku::*, 
-  optimization::{SudokuInitial, HybridOptimizer, SAConfig, GAConfig, HybridStrategy, StrategyMode},
-  nelder_mead::{NelderMeadOptimizer, Point},
+  optimization::{ SudokuInitial, HybridOptimizer, HybridStrategy, StrategyMode },
+  nelder_mead::{ NelderMeadOptimizer, Point },
 };
 
 mod sudoku_sets;
@@ -73,12 +73,11 @@ pub fn get_optimal_params()
         {
           
           let initial = SudokuInitial::new( board.clone() );
-          let mut sa_config = SAConfig::default();
-          sa_config.set_temp_decrease_factor( case.coords[ 0 ] );
-          sa_config.set_temp_increase_factor( case.coords[ 1 ] );
-          sa_config.set_mutations_per_generation( case.coords[ 2 ] as usize );
+
           let optimizer = HybridOptimizer::new( Seed::default(), initial )
-          .with_sa_config( sa_config )
+          .set_sa_temp_decrease_factor( case.coords[ 0 ] )
+          .set_sa_temp_increase_factor( case.coords[ 1 ] )
+          .set_sa_mutations_per_generation( case.coords[ 2 ] as usize )
           ;
 
           let strategy = HybridStrategy
@@ -163,12 +162,11 @@ pub fn get_optimal_params()
       // optimized
       let optimized_params = level_average.get( &level ).unwrap();
       let initial = SudokuInitial::new( board.clone() );
-      let mut sa_config = SAConfig::default();
-      sa_config.set_temp_decrease_factor( optimized_params.0 );
-      sa_config.set_temp_increase_factor( optimized_params.1 );
-      sa_config.set_mutations_per_generation( optimized_params.2 as usize );
+
       let optimizer = HybridOptimizer::new( Seed::default(), initial )
-      .with_sa_config( sa_config )
+      .set_sa_temp_decrease_factor( optimized_params.0 )
+      .set_sa_temp_increase_factor( optimized_params.1 )
+      .set_sa_mutations_per_generation( optimized_params.2 as usize )
       ;
       
       let now = std::time::Instant::now();
@@ -207,13 +205,11 @@ pub fn ga_optimal_params()
         | case : Point |
         {
           let initial = SudokuInitial::new( board.clone() );
-          let ga_config = GAConfig::default()
-          .set_elite_selection_rate( case.coords[ 0 ] )
-          .set_random_selection_rate( case.coords[ 1 ] )
-          .set_mutation_rate( case.coords[ 2 ] )
-          ;
+
           let optimizer = HybridOptimizer::new( Seed::default(), initial )
-          .with_ga_config( ga_config )
+          .set_ga_elite_selection_rate( case.coords[ 0 ] )
+          .set_ga_random_selection_rate( case.coords[ 1 ] )
+          .set_ga_mutation_rate( case.coords[ 2 ] )
           ;
 
           let strategy = HybridStrategy

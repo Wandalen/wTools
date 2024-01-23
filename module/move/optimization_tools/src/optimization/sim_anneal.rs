@@ -57,68 +57,28 @@ impl From< f32 > for TemperatureFactor
   }
 }
 
-/// Represents initial configuration of SA optimization process for sudoku solving.
-#[ derive( Clone, Debug ) ]
-pub struct SAConfig
+pub trait TemperatureSchedule
 {
-    /// Max amount of mutations in generation.
-    pub n_mutations_per_generation_limit : usize,
-    /// Max allowed number of resets.
-    pub n_resets_limit : usize,
-    /// Max number of generations created during SA process.
-    pub n_generations_limit : usize,
-    /// Coefficient for lowering SA temperature.
-    pub temperature_decrease_factor : TemperatureFactor,
-    /// Coefficient for increasing SA temperature during reset.
-    pub temperature_increase_factor : TemperatureFactor,
+  fn calculate_next_temp( &self, prev_temp : f64 ) -> f64;
+  fn reset_temperature( &self, prev_temp : f64 ) -> f64;
 }
 
-impl SAConfig
+pub struct LinearTempSchedule
 {
-  /// Calculate the initial temperature for the optimization process.
-  pub fn initial_temperature( &self, hrng : Hrng, initial_board : &Board, person : &SudokuPerson ) -> Temperature
-  {
-    use statrs::statistics::Statistics;
-    let state = person.clone();
-    const N : usize = 16;
-    let mut costs : [ f64 ; N ] = [ 0.0 ; N ];
-    for i in 0..N
-    {
-      let state2 = state.mutate_random( initial_board, hrng.clone() );
-      costs[ i ] = state2.cost.into();
-    }
-    costs[..].std_dev().into()
-  }
-  /// Set temperature increase factor.
-  pub fn set_temp_decrease_factor( &mut self, factor : f64 )
-  {
-    self.temperature_decrease_factor = factor.into();
-  }
-
-  /// Set temperature decrease factor.
-  pub fn set_temp_increase_factor( &mut self, factor : f64 )
-  {
-    self.temperature_increase_factor = factor.into();
-  }
-
-  /// Set max amount of mutations per one generation.
-  pub fn set_mutations_per_generation( &mut self, number : usize )
-  {
-    self.n_mutations_per_generation_limit = number;
-  }
+  pub constant : f64,
+  pub coefficient : f64,
+  pub reset_coefficient : f64,
 }
 
-impl Default for SAConfig
+impl TemperatureSchedule for LinearTempSchedule
 {
-  fn default() -> Self
+  fn calculate_next_temp( &self, prev_temp : f64 ) -> f64 
   {
-    Self
-    {
-      temperature_decrease_factor : Default::default(),
-      temperature_increase_factor : 1.0f64.into(),
-      n_mutations_per_generation_limit : 2_000,
-      n_resets_limit : 1_000,
-      n_generations_limit : 1_000_000,
-    }
+    prev_temp * self.coefficient + self.constant
+  }
+
+  fn reset_temperature( &self, prev_temp : f64 ) -> f64 
+  {
+    prev_temp + self.reset_coefficient
   }
 }

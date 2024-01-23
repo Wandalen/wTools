@@ -231,8 +231,6 @@ pub struct SudokuGeneration
   initial_board : Board,
   /// Current temperature in the optimization process.
   temperature : Option< Temperature >,
-  /// Number of resets performed.
-  n_resets : usize,
   /// Population of individuals in current generation.
   pub population : Vec< SudokuPerson >
 }
@@ -250,9 +248,24 @@ pub struct SudokuInitial
 pub enum EvolutionMode< 'a >
 {
   /// Simulated annealing optimization method.
-  SA( &'a SAConfig ),
+  SA
+  {
+    temperature_decrease_factor : TemperatureFactor,
+    temperature_increase_factor : TemperatureFactor,
+    mutations_per_generation_limit : usize,
+    resets_limit : usize,
+  },
   /// Genetic optimization method.
-  GA( &'a GAConfig ),
+  GA
+  {
+    elite_selection_rate : f64,
+    random_selection_rate : f64,
+    max_stale_iterations: usize,
+    fitness_recalculation : bool,
+    mutation_rate : f64,
+    crossover_operator : &'a Box< dyn CrossoverOperator >,
+    selection_operator : &'a Box< dyn SelectionOperator >
+  }
 }
 
 impl SudokuInitial
@@ -275,7 +288,7 @@ impl SeederOperator for SudokuInitial
     {
       population.push( SudokuPerson::new( &self.board, hrng.clone() ) );
     }
-    SudokuGeneration { initial_board: self.board.clone(), population, n_resets: 0, temperature : None }
+    SudokuGeneration { initial_board: self.board.clone(), population, temperature : None }
   }
   
 }
@@ -284,12 +297,42 @@ impl SeederOperator for SudokuInitial
 #[ derive( Debug ) ]
 pub struct HybridOptimizer< S : SeederOperator >
 {
-  /// Configuration for SA optimization.
-  pub sa_config : SAConfig,
-  /// Configuration for GA optimization.
-  pub ga_config : GAConfig,
+  /// Max amount of mutations in generation.
+  pub sa_mutations_per_generation_limit : usize,
+
+  /// Max allowed number of resets.
+  pub sa_resets_limit : usize,
+
+  /// Coefficient for lowering SA temperature.
+  pub sa_temperature_decrease_factor : TemperatureFactor,
+
+  /// Coefficient for increasing SA temperature during reset.
+  pub sa_temperature_increase_factor : TemperatureFactor,
+
+  /// Number of fittest individuals that will be cloned to new population.
+  pub ga_elite_selection_rate : f64,
+
+  /// Number of random individuals that will be cloned to new population.
+  pub ga_random_selection_rate : f64,
+
+  /// Probabilistic measure of a individual mutation likelihood.
+  pub ga_mutation_rate : f64,
+
+  /// Recalculate fitness on every iteration.
+  pub fitness_recalculation : bool,
+
+  /// Max number of iteration without improvement in population.
+  pub ga_max_stale_iterations : usize,
+
+  /// Crossover genetic opertor, which defines how new Individuals are produced by combiniting traits of Individuals from current generation.
+  pub ga_crossover_operator : Box< dyn CrossoverOperator >,
+
+  /// Selection genetic operator, which defines how Individuals from current generation are selected to be breeders of new generation.
+  pub ga_selection_operator : Box< dyn SelectionOperator >,
+
   /// Hierarchical random numbers generator.
   pub hrng : Hrng,
+  
   /// Struct responsible for creation of initial generation.
   pub seeder : S,
 }
@@ -301,31 +344,66 @@ impl< S : SeederOperator > HybridOptimizer< S >
   {
     Self
     {
-      sa_config : SAConfig::default(),
-      ga_config : GAConfig::default(),
+      sa_temperature_decrease_factor : Default::default(),
+      sa_temperature_increase_factor : 1.0f64.into(),
+      sa_mutations_per_generation_limit : 2_000,
+      sa_resets_limit : 1_000,
+      ga_elite_selection_rate : 0.15,
+      ga_random_selection_rate : 0.25,
+      ga_max_stale_iterations: 30,
+      fitness_recalculation : false,
+      ga_mutation_rate : 0.5,
+      ga_crossover_operator : Box::new( MultiplePointsBlockCrossover {} ),
+      ga_selection_operator : Box::new( TournamentSelection
+      {
+        size : 2,
+        selection_pressure : 0.85,
+      } ),
       hrng : Hrng::master_with_seed( random_seed ),
       seeder : population_seeder
     }
   }
 
-  /// Create new instance of HybridOptimizer with provided SA config.
-  pub fn with_sa_config( self, config : SAConfig ) -> Self
+  /// Set temperature increase factor.
+  pub fn set_sa_temp_decrease_factor( mut self, factor : f64 ) -> Self
   {
-    Self
-    {
-      sa_config : config,
-      ..self
-    }
+    self.sa_temperature_decrease_factor = factor.into();
+    self
   }
 
-  /// Create new instance of HybridOptimizer with provided GA config.
-  pub fn with_ga_config( self, config : GAConfig ) -> Self
+  /// Set temperature decrease factor.
+  pub fn set_sa_temp_increase_factor( mut self, factor : f64 ) -> Self
   {
-    Self
-    {
-      ga_config : config,
-      ..self
-    }
+    self.sa_temperature_increase_factor = factor.into();
+    self
+  }
+
+  /// Set max amount of mutations per one generation.
+  pub fn set_sa_mutations_per_generation( mut self, number : usize ) -> Self
+  {
+    self.sa_mutations_per_generation_limit = number;
+    self
+  }
+
+  /// Set mutation rate for GA.
+  pub fn set_ga_mutation_rate( mut self, rate : f64 ) -> Self
+  {
+    self.ga_mutation_rate = rate;
+    self
+  }
+
+  /// Set percent of most fit Individuals that will be cloned to next generation.
+  pub fn set_ga_elite_selection_rate( mut self, rate : f64 ) -> Self
+  {
+    self.ga_elite_selection_rate = rate;
+    self
+  }
+
+  /// Set percent of random individuals that will be cloned to next generation.
+  pub fn set_ga_random_selection_rate( mut self, rate : f64 ) -> Self
+  {
+    self.ga_random_selection_rate = rate;
+    self
   }
 
   /// Perform hybrid SA/GA optimization.
@@ -333,6 +411,24 @@ impl< S : SeederOperator > HybridOptimizer< S >
   {
     let mut generation = self.seeder.initial_generation( self.hrng.clone(), strategy.population_size );
     let mut generation_number = 1;
+    let ga_mode = EvolutionMode::GA 
+    { 
+      elite_selection_rate: self.ga_elite_selection_rate, 
+      random_selection_rate: self.ga_random_selection_rate, 
+      max_stale_iterations: self.ga_max_stale_iterations, 
+      fitness_recalculation: self.fitness_recalculation, 
+      mutation_rate: self.ga_mutation_rate, 
+      crossover_operator: &self.ga_crossover_operator, 
+      selection_operator: &self.ga_selection_operator,
+    };
+
+    let sa_mode = EvolutionMode::SA 
+    { 
+      temperature_decrease_factor : self.sa_temperature_decrease_factor,
+      temperature_increase_factor : self.sa_temperature_increase_factor,
+      mutations_per_generation_limit : self.sa_mutations_per_generation_limit,
+      resets_limit : self.sa_resets_limit,
+    };
 
     loop
     {
@@ -359,11 +455,11 @@ impl< S : SeederOperator > HybridOptimizer< S >
       {
         if let StrategyMode::GA = strategy.finalize_with
         {
-          mode = EvolutionMode::GA( &self.ga_config );
+          mode = &ga_mode;
         }
         else 
         {
-          mode = EvolutionMode::SA( &self.sa_config );
+          mode = &sa_mode;
         }
       }
       else 
@@ -372,14 +468,14 @@ impl< S : SeederOperator > HybridOptimizer< S >
         {
           StrategyMode::GA if iterations > strategy.ga_generations_number && strategy.sa_generations_number > 0 =>
           {
-            mode = EvolutionMode::SA( &self.sa_config );
+            mode = &sa_mode;
           },
-          StrategyMode::GA => mode = EvolutionMode::GA( &self.ga_config ),
+          StrategyMode::GA => mode = &ga_mode,
           StrategyMode::SA if iterations > strategy.sa_generations_number && strategy.ga_generations_number > 0 =>
           {
-            mode = EvolutionMode::GA( &self.ga_config );
+            mode = &ga_mode;
           }
-          StrategyMode::SA => mode = EvolutionMode::SA( &self.sa_config ),
+          StrategyMode::SA => mode = &sa_mode,
         }
       }
 
