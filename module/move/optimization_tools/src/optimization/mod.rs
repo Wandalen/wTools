@@ -332,7 +332,7 @@ pub struct HybridOptimizer< S : SeederOperator >
 
   /// Hierarchical random numbers generator.
   pub hrng : Hrng,
-  
+
   /// Struct responsible for creation of initial generation.
   pub seeder : S,
 }
@@ -379,7 +379,7 @@ impl< S : SeederOperator > HybridOptimizer< S >
   }
 
   /// Set max amount of mutations per one generation.
-  pub fn set_sa_mutations_per_generation( mut self, number : usize ) -> Self
+  pub fn set_sa_max_mutations_per_generation( mut self, number : usize ) -> Self
   {
     self.sa_mutations_per_generation_limit = number;
     self

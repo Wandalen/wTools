@@ -6,7 +6,7 @@ use crate::
 { 
   sudoku::*, 
   optimization::{ SudokuInitial, HybridOptimizer, HybridStrategy, StrategyMode },
-  nelder_mead::{ NelderMeadOptimizer, Point },
+  nelder_mead::{ NelderMeadOptimizer, Point, NMResult },
 };
 
 mod sudoku_sets;
@@ -77,7 +77,7 @@ pub fn get_optimal_params()
           let optimizer = HybridOptimizer::new( Seed::default(), initial )
           .set_sa_temp_decrease_factor( case.coords[ 0 ] )
           .set_sa_temp_increase_factor( case.coords[ 1 ] )
-          .set_sa_mutations_per_generation( case.coords[ 2 ] as usize )
+          .set_sa_max_mutations_per_generation( case.coords[ 2 ] as usize )
           ;
 
           let strategy = HybridStrategy
@@ -166,7 +166,7 @@ pub fn get_optimal_params()
       let optimizer = HybridOptimizer::new( Seed::default(), initial )
       .set_sa_temp_decrease_factor( optimized_params.0 )
       .set_sa_temp_increase_factor( optimized_params.1 )
-      .set_sa_mutations_per_generation( optimized_params.2 as usize )
+      .set_sa_max_mutations_per_generation( optimized_params.2 as usize )
       ;
       
       let now = std::time::Instant::now();
@@ -245,4 +245,84 @@ pub fn ga_optimal_params()
     }
     println!( "results: {:?}", level_results );
   }
+}
+
+pub fn hybrid_optimal_params() -> Vec< ( Level, Vec< NMResult > ) >
+{
+  let mut boards = HashMap::new();
+  boards.insert( Level::Easy, sudoku_sets::TRAINING[ 0 ].iter().map( | str | Board::from( str ) ).collect_vec() );
+  let mut level_results = HashMap::new();
+  
+  for ( level, level_boards ) in &boards
+  {
+    level_results.insert( level, Vec::new() );
+
+    for board in level_boards
+    {  
+      let optimizer = NelderMeadOptimizer::new()
+      .starting_point( Point::new( vec![ 0.002, 0.2, 200.0, 0.25, 0.25, 0.5 ] ) )
+      .unwrap()
+      .simplex_size( vec![ 0.001, 1.0, 2000.0, 0.1, 0.1, 0.2 ] )
+      .unwrap()
+      .set_improvement_threshold( 10.0 )
+      .set_max_no_improvement_steps( 5 )
+      .set_max_iterations( 25 )
+      ;
+      let res = optimizer.optimize
+      (
+        | case : Point |
+        {
+          let initial = SudokuInitial::new( board.clone() );
+
+          let optimizer = HybridOptimizer::new( Seed::default(), initial )
+          .set_sa_temp_decrease_factor( case.coords[ 0 ] )
+          .set_sa_temp_increase_factor( case.coords[ 1 ] )
+          .set_sa_max_mutations_per_generation( case.coords[ 2 ] as usize )
+          .set_ga_elite_selection_rate( case.coords[ 3 ] )
+          .set_ga_random_selection_rate( case.coords[ 4 ] )
+          .set_ga_mutation_rate( case.coords[ 5 ] )
+          ;
+
+          let strategy = HybridStrategy
+          {
+            start_with : StrategyMode::GA,
+            finalize_with : StrategyMode::SA,
+            number_of_cycles : 2,
+            ga_generations_number : 1000,
+            sa_generations_number : 1000,
+            population_percent : 1.0,
+            generation_limit : 1_000_000,
+            population_size : 10000,
+          };
+          
+          let mut results: Vec< std::time::Duration > = Vec::new();
+          for _ in 0..3
+          {
+            let now = std::time::Instant::now();
+            let ( _reason, _generation ) = optimizer.optimize( &strategy );
+            let elapsed = now.elapsed();
+            results.push( elapsed );
+          }
+          let size = results.len() as u128;
+          let average = results
+          .into_iter()
+          .fold( 0, | acc, elem | acc + elem.as_millis() / size )
+          ;
+          
+          log::info!
+              (
+                "point : {:?}, duration in ms : {}",
+                case,
+                average
+              );
+          average as f64
+        }, 
+      );
+      let results = level_results.get_mut( &level ).unwrap();
+      results.push( res );
+    }
+
+    log::info!( "results: {:?}", level_results );
+  }
+  level_results.into_iter().map( | ( l, res ) | ( *l, res ) ).collect_vec()
 }
