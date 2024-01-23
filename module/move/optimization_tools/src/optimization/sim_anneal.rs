@@ -57,17 +57,25 @@ impl From< f32 > for TemperatureFactor
   }
 }
 
+/// Functionality of temperature schedule for SA responsible for updating temperature value.
 pub trait TemperatureSchedule : std::fmt::Debug
 {
+  /// Calculate next temperature value from current value.
   fn calculate_next_temp( &self, prev_temp : Temperature ) -> Temperature;
+
+  /// Update temperature for reset in SA.
   fn reset_temperature( &self, prev_temp : Temperature ) -> Temperature;
 }
 
+/// Temperature schedule for SA that uses linear function for calculation of new temperature value.
 #[ derive( Debug ) ]
 pub struct LinearTempSchedule
 {
+  /// Constant term of linear function.
   pub constant : Temperature,
+  /// Slope coefficient of linear function.
   pub coefficient : TemperatureFactor,
+  /// Value for increasing temperature for reset.
   pub reset_increase_value : Temperature,
 }
 

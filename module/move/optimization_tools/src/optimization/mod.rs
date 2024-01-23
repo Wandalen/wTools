@@ -247,19 +247,29 @@ pub enum EvolutionMode< 'a >
   /// Simulated annealing optimization method.
   SA
   {
+    /// Temperature update operator.
     temp_schedule : &'a Box< dyn TemperatureSchedule >,
+    /// Max amount of mutations in generation.
     mutations_per_generation_limit : usize,
+    /// Max allowed number of resets.
     resets_limit : usize,
   },
   /// Genetic optimization method.
   GA
   {
+    /// Number of fittest individuals that will be cloned to new population.
     elite_selection_rate : f64,
+    /// Number of random individuals that will be cloned to new population.
     random_selection_rate : f64,
+    /// Max number of iteration without improvement in population.
     max_stale_iterations: usize,
+    /// Recalculate fitness on every iteration.
     fitness_recalculation : bool,
+    /// Probabilistic measure of a individual mutation likelihood.
     mutation_rate : f64,
+    /// Genetic operator for recombination of genetic matherial.
     crossover_operator : &'a Box< dyn CrossoverOperator >,
+    /// Genetic operator for selection of breeders for new population.
     selection_operator : &'a Box< dyn SelectionOperator >
   }
 }
@@ -317,7 +327,7 @@ pub struct HybridOptimizer< S : SeederOperator >
   /// Max number of iteration without improvement in population.
   pub ga_max_stale_iterations : usize,
 
-  /// Crossover genetic opertor, which defines how new Individuals are produced by combiniting traits of Individuals from current generation.
+  /// Crossover genetic operator, which defines how new Individuals are produced by combiniting traits of Individuals from current generation.
   pub ga_crossover_operator : Box< dyn CrossoverOperator >,
 
   /// Selection genetic operator, which defines how Individuals from current generation are selected to be breeders of new generation.
@@ -516,10 +526,12 @@ impl Default for HybridStrategy
   }
 }
 
-/// Methods of optimization.
+/// Possible methods of optimization for optimization cycle.
 #[ derive( Debug ) ]
 pub enum StrategyMode
 {
+  /// Simualated annealing.
   SA,
+  /// Genetic algorithm.
   GA,
 }

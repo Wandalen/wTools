@@ -232,7 +232,7 @@ pub trait Individual< G : Generation >
   /// Recalculate fitness value of individual.
   fn update_fitness( &mut self );
   /// Optimize current Individual using GA or SA method as specified by mode.
-  fn evolve< 'a >( &self, hrng : Hrng, generation : &G, mode : &EvolutionMode ) -> Self;
+  fn evolve( &self, hrng : Hrng, generation : &G, mode : &EvolutionMode< '_ > ) -> Self;
   /// Check if current solution is optimal.
   fn is_optimal( &self ) -> bool;
 }
@@ -261,7 +261,7 @@ impl Individual< SudokuGeneration > for SudokuPerson
     self.cost = self.board.total_error().into();
   }
 
-  fn evolve< 'a >( &self, hrng : Hrng, generation : &SudokuGeneration, mode : &EvolutionMode ) -> SudokuPerson
+  fn evolve( &self, hrng : Hrng, generation : &SudokuGeneration, mode : &EvolutionMode< '_ > ) -> SudokuPerson
   {
     match mode
     {
@@ -439,7 +439,7 @@ pub trait SeederOperator
 pub trait Generation
 {
   /// Performs evolution of generation, either as SA mutation of every Individual or using GA genetic operators defined in GAConfig.
-  fn evolve< 'a >( &mut self, hrng : Hrng, mode : &'a EvolutionMode ) -> Self;
+  fn evolve( &mut self, hrng : Hrng, mode : &EvolutionMode< '_ > ) -> Self;
 
   /// Calculate initial temperature for SA optimization.
   fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
@@ -450,7 +450,7 @@ pub trait Generation
 
 impl Generation for SudokuGeneration
 {
-  fn evolve< 'a >( &mut self, hrng : Hrng, mode : &'a  EvolutionMode ) -> Self 
+  fn evolve( &mut self, hrng : Hrng, mode : &EvolutionMode< '_ > ) -> Self 
   {
     let mut new_population = Vec::new();
     self.population.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );

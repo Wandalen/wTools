@@ -1,5 +1,7 @@
-use std::collections::HashMap;
+//! Funcions for calculation optimal config parameters.
+//! 
 
+use std::collections::HashMap;
 use deterministic_rand::Seed;
 use iter_tools::Itertools;
 use crate::
@@ -15,13 +17,18 @@ mod sudoku_sets;
 #[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
 pub enum Level
 {
+  /// Easy level with difficulty <= 2.
   Easy,
+  /// Medium, 2 < difficulty <= 2.5.
   Medium,
+  /// Hard level, 2.5 < difficulty <= 3.
   Hard,
+  /// Expert level with difficulty > 3.
   Expert,
 }
 
 impl Level {
+  /// Iterates over sudoku difficulty levels.
   pub fn iterator() -> impl Iterator< Item = Level > 
   {
     use Level::*;
@@ -29,7 +36,8 @@ impl Level {
   }
 }
 
-pub fn get_optimal_params()
+/// Calculate optimal params for SA optimization.
+pub fn get_sa_optimal_params()
 {
   let mut boards = HashMap::new();
   let mut control_boards = HashMap::new();
@@ -189,6 +197,7 @@ pub fn get_optimal_params()
   }
 }
 
+/// Calculate optimal params for GA optimization.
 pub fn ga_optimal_params()
 {
   let mut boards = HashMap::new();
@@ -257,6 +266,7 @@ pub fn ga_optimal_params()
   }
 }
 
+/// Calculate optimal params for hybrid optimization.
 pub fn hybrid_optimal_params() -> Vec< ( Level, Vec< NMResult > ) >
 {
   let mut boards = HashMap::new();
