@@ -446,7 +446,6 @@ impl< S : SeederOperator > HybridOptimizer< S >
       let mut cycle = 1usize;
       while let Some( res ) = cycle.checked_sub( strategy.sa_generations_number + strategy.ga_generations_number )
       {
-        
         cycle += 1;
         iterations = res;
       }

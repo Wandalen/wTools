@@ -270,7 +270,7 @@ impl Individual< SudokuGeneration > for SudokuPerson
         elite_selection_rate, 
         random_selection_rate, 
         max_stale_iterations : _, 
-        fitness_recalculation : _, 
+        fitness_recalculation, 
         mutation_rate, 
         crossover_operator, 
         selection_operator ,
@@ -292,20 +292,24 @@ impl Individual< SudokuGeneration > for SudokuPerson
         drop( rng );
         let parent1 = selection_operator.select( hrng.clone(), &generation.population );
         let parent2 = selection_operator.select( hrng.clone(), &generation.population );
-        let child = crossover_operator.crossover( hrng.clone(), parent1, parent2 );
+        let mut child = crossover_operator.crossover( hrng.clone(), parent1, parent2 );
     
         let rng_ref = hrng.rng_ref();
         let mut rng = rng_ref.lock().unwrap();
         let rand : f64 = rng.gen();
         drop( rng );
+
         if rand < *mutation_rate
         {
-          child.mutate_random( &self.board, hrng.clone() )
+          child = child.mutate_random( &self.board, hrng.clone() );
         }
-        else 
+
+        if *fitness_recalculation
         {
-          child
+          child.update_fitness();
         }
+
+        child
       },
       EvolutionMode::SA 
       { 
