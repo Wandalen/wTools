@@ -57,28 +57,29 @@ impl From< f32 > for TemperatureFactor
   }
 }
 
-pub trait TemperatureSchedule
+pub trait TemperatureSchedule : std::fmt::Debug
 {
-  fn calculate_next_temp( &self, prev_temp : f64 ) -> f64;
-  fn reset_temperature( &self, prev_temp : f64 ) -> f64;
+  fn calculate_next_temp( &self, prev_temp : Temperature ) -> Temperature;
+  fn reset_temperature( &self, prev_temp : Temperature ) -> Temperature;
 }
 
+#[ derive( Debug ) ]
 pub struct LinearTempSchedule
 {
-  pub constant : f64,
-  pub coefficient : f64,
-  pub reset_coefficient : f64,
+  pub constant : Temperature,
+  pub coefficient : TemperatureFactor,
+  pub reset_increase_value : Temperature,
 }
 
 impl TemperatureSchedule for LinearTempSchedule
 {
-  fn calculate_next_temp( &self, prev_temp : f64 ) -> f64 
+  fn calculate_next_temp( &self, prev_temp : Temperature ) -> Temperature 
   {
-    prev_temp * self.coefficient + self.constant
+    Temperature::from( prev_temp.unwrap() * self.coefficient.unwrap() ) + self.constant
   }
 
-  fn reset_temperature( &self, prev_temp : f64 ) -> f64 
+  fn reset_temperature( &self, prev_temp : Temperature ) -> Temperature 
   {
-    prev_temp + self.reset_coefficient
+    prev_temp + self.reset_increase_value
   }
 }

@@ -133,8 +133,6 @@ pub enum Reason
 {
   /// SA process was finished with optimal result.
   GoodEnough,
-  /// SA process has not yet finished.
-  NotFinished,
   /// SA process finished due to reaching limit of resets.
   ResetLimit,
   /// SA process finished due to reaching limit of generations.
@@ -175,7 +173,6 @@ impl SudokuPerson
     let old_cross_error = self.board.cross_error( mutagen.cell1 )
       + self.board.cross_error( mutagen.cell2 );
     
-    //let mut new = self.clone();
     log::trace!( "cells_swap( {:?}, {:?} )", mutagen.cell1, mutagen.cell2 );
     self.board.cells_swap( mutagen.cell1, mutagen.cell2 );
     self.cost -= old_cross_error.into();
@@ -250,8 +247,7 @@ pub enum EvolutionMode< 'a >
   /// Simulated annealing optimization method.
   SA
   {
-    temperature_decrease_factor : TemperatureFactor,
-    temperature_increase_factor : TemperatureFactor,
+    temp_schedule : &'a Box< dyn TemperatureSchedule >,
     mutations_per_generation_limit : usize,
     resets_limit : usize,
   },
@@ -303,11 +299,8 @@ pub struct HybridOptimizer< S : SeederOperator >
   /// Max allowed number of resets.
   pub sa_resets_limit : usize,
 
-  /// Coefficient for lowering SA temperature.
-  pub sa_temperature_decrease_factor : TemperatureFactor,
-
-  /// Coefficient for increasing SA temperature during reset.
-  pub sa_temperature_increase_factor : TemperatureFactor,
+  /// Temperature update operator.
+  pub sa_temperature_schedule : Box< dyn TemperatureSchedule >,
 
   /// Number of fittest individuals that will be cloned to new population.
   pub ga_elite_selection_rate : f64,
@@ -344,8 +337,12 @@ impl< S : SeederOperator > HybridOptimizer< S >
   {
     Self
     {
-      sa_temperature_decrease_factor : Default::default(),
-      sa_temperature_increase_factor : 1.0f64.into(),
+      sa_temperature_schedule : Box::new( LinearTempSchedule
+      {
+        coefficient : ( 1.0 - TemperatureFactor::default().unwrap() ).into(),
+        constant : 0f64.into(),
+        reset_increase_value : 1f64.into()
+      } ),
       sa_mutations_per_generation_limit : 2_000,
       sa_resets_limit : 1_000,
       ga_elite_selection_rate : 0.15,
@@ -364,17 +361,10 @@ impl< S : SeederOperator > HybridOptimizer< S >
     }
   }
 
-  /// Set temperature increase factor.
-  pub fn set_sa_temp_decrease_factor( mut self, factor : f64 ) -> Self
+  /// Set temperature schedule for SA.
+  pub fn set_sa_temp_schedule( mut self, schedule : Box< dyn TemperatureSchedule > ) -> Self
   {
-    self.sa_temperature_decrease_factor = factor.into();
-    self
-  }
-
-  /// Set temperature decrease factor.
-  pub fn set_sa_temp_increase_factor( mut self, factor : f64 ) -> Self
-  {
-    self.sa_temperature_increase_factor = factor.into();
+    self.sa_temperature_schedule = schedule;
     self
   }
 
@@ -424,8 +414,7 @@ impl< S : SeederOperator > HybridOptimizer< S >
 
     let sa_mode = EvolutionMode::SA 
     { 
-      temperature_decrease_factor : self.sa_temperature_decrease_factor,
-      temperature_increase_factor : self.sa_temperature_increase_factor,
+      temp_schedule : &self.sa_temperature_schedule,
       mutations_per_generation_limit : self.sa_mutations_per_generation_limit,
       resets_limit : self.sa_resets_limit,
     };

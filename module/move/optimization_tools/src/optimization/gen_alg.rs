@@ -309,8 +309,7 @@ impl Individual< SudokuGeneration > for SudokuPerson
       },
       EvolutionMode::SA 
       { 
-        temperature_decrease_factor: _, 
-        temperature_increase_factor, 
+        temp_schedule,
         mutations_per_generation_limit, 
         resets_limit 
       } => 
@@ -331,7 +330,7 @@ impl Individual< SudokuGeneration > for SudokuPerson
             {
               return self.clone();
             }
-            let temperature2 = ( temperature.unwrap() + temperature_increase_factor.unwrap() ).into();
+            let temperature2 = temp_schedule.reset_temperature( temperature );
             log::trace!( " 🔄 reset temperature {temperature} -> {temperature2}" );
             sleep();
             temperature = temperature2;
@@ -456,7 +455,7 @@ impl Generation for SudokuGeneration
     let mut new_population = Vec::new();
     self.population.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
 
-    if let EvolutionMode::SA { temperature_decrease_factor, .. } = mode
+    if let EvolutionMode::SA { temp_schedule, .. } = mode
     {
       if self.temperature.is_none()
       {
@@ -464,7 +463,7 @@ impl Generation for SudokuGeneration
       }
       else 
       {
-        self.temperature = Some( Temperature::from( self.temperature.unwrap() * ( 1.0f64 - temperature_decrease_factor.unwrap() ) ) );
+        self.temperature = Some( temp_schedule.calculate_next_temp( self.temperature.unwrap() ) );
       }
     }
     else 

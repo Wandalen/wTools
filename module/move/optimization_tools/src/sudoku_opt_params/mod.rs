@@ -5,7 +5,7 @@ use iter_tools::Itertools;
 use crate::
 { 
   sudoku::*, 
-  optimization::{ SudokuInitial, HybridOptimizer, HybridStrategy, StrategyMode },
+  optimization::{ SudokuInitial, HybridOptimizer, HybridStrategy, StrategyMode, LinearTempSchedule },
   nelder_mead::{ NelderMeadOptimizer, Point, NMResult },
 };
 
@@ -59,7 +59,7 @@ pub fn get_optimal_params()
     for board in level_boards
     {  
       let optimizer = NelderMeadOptimizer::new()
-      .starting_point( Point::new( vec![ 0.001, 1.0, 2000.0 ] ) )
+      .starting_point( Point::new( vec![ 0.999, 1.0, 2000.0 ] ) )
       .unwrap()
       .simplex_size( vec![ 0.002, 0.2, 200.0 ] )
       .unwrap()
@@ -73,10 +73,15 @@ pub fn get_optimal_params()
         {
           
           let initial = SudokuInitial::new( board.clone() );
+          let temp_schedule = LinearTempSchedule
+          {
+            constant : 0.0.into(),
+            coefficient : case.coords[ 0 ].into(),
+            reset_increase_value : case.coords[ 1 ].into(),
+          };
 
           let optimizer = HybridOptimizer::new( Seed::default(), initial )
-          .set_sa_temp_decrease_factor( case.coords[ 0 ] )
-          .set_sa_temp_increase_factor( case.coords[ 1 ] )
+          .set_sa_temp_schedule( Box::new( temp_schedule ) )
           .set_sa_max_mutations_per_generation( case.coords[ 2 ] as usize )
           ;
 
@@ -162,10 +167,15 @@ pub fn get_optimal_params()
       // optimized
       let optimized_params = level_average.get( &level ).unwrap();
       let initial = SudokuInitial::new( board.clone() );
+      let temp_schedule = LinearTempSchedule
+      {
+        constant : 0.0.into(),
+        coefficient : optimized_params.0.into(),
+        reset_increase_value : optimized_params.1.into(),
+      };
 
       let optimizer = HybridOptimizer::new( Seed::default(), initial )
-      .set_sa_temp_decrease_factor( optimized_params.0 )
-      .set_sa_temp_increase_factor( optimized_params.1 )
+      .set_sa_temp_schedule( Box::new( temp_schedule ) )
       .set_sa_max_mutations_per_generation( optimized_params.2 as usize )
       ;
       
@@ -260,9 +270,9 @@ pub fn hybrid_optimal_params() -> Vec< ( Level, Vec< NMResult > ) >
     for board in level_boards
     {  
       let optimizer = NelderMeadOptimizer::new()
-      .starting_point( Point::new( vec![ 0.002, 0.2, 200.0, 0.25, 0.25, 0.5 ] ) )
+      .starting_point( Point::new( vec![ 0.999, 1.0, 2000.0, 0.25, 0.25, 0.5 ] ) )
       .unwrap()
-      .simplex_size( vec![ 0.001, 1.0, 2000.0, 0.1, 0.1, 0.2 ] )
+      .simplex_size( vec![ 0.002, 0.2, 200.0, 0.1, 0.1, 0.2 ] )
       .unwrap()
       .set_improvement_threshold( 10.0 )
       .set_max_no_improvement_steps( 5 )
@@ -273,10 +283,15 @@ pub fn hybrid_optimal_params() -> Vec< ( Level, Vec< NMResult > ) >
         | case : Point |
         {
           let initial = SudokuInitial::new( board.clone() );
+          let temp_schedule = LinearTempSchedule
+          {
+            constant : 0.0.into(),
+            coefficient : case.coords[ 0 ].into(),
+            reset_increase_value : case.coords[ 1 ].into(),
+          };
 
           let optimizer = HybridOptimizer::new( Seed::default(), initial )
-          .set_sa_temp_decrease_factor( case.coords[ 0 ] )
-          .set_sa_temp_increase_factor( case.coords[ 1 ] )
+          .set_sa_temp_schedule( Box::new( temp_schedule ) )
           .set_sa_max_mutations_per_generation( case.coords[ 2 ] as usize )
           .set_ga_elite_selection_rate( case.coords[ 3 ] )
           .set_ga_random_selection_rate( case.coords[ 4 ] )
