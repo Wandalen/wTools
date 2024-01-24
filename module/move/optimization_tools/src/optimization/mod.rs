@@ -241,38 +241,38 @@ pub struct SudokuInitial
 }
 
 /// Mode which represents algorithm used for optimization of current generation.
-#[ derive( Debug ) ]
-pub enum EvolutionMode< 'a >
-{
-  /// Simulated annealing optimization method.
-  SA
-  {
-    /// Temperature update operator.
-    temp_schedule : &'a Box< dyn TemperatureSchedule >,
-    /// Max amount of mutations in generation.
-    mutations_per_generation_limit : usize,
-    /// Max allowed number of resets.
-    resets_limit : usize,
-  },
-  /// Genetic optimization method.
-  GA
-  {
-    /// Number of fittest individuals that will be cloned to new population.
-    elite_selection_rate : f64,
-    /// Number of random individuals that will be cloned to new population.
-    random_selection_rate : f64,
-    /// Max number of iteration without improvement in population.
-    max_stale_iterations: usize,
-    /// Recalculate fitness on every iteration.
-    fitness_recalculation : bool,
-    /// Probabilistic measure of a individual mutation likelihood.
-    mutation_rate : f64,
-    /// Genetic operator for recombination of genetic matherial.
-    crossover_operator : &'a Box< dyn CrossoverOperator >,
-    /// Genetic operator for selection of breeders for new population.
-    selection_operator : &'a Box< dyn SelectionOperator >
-  }
-}
+// #[ derive( Debug ) ]
+// pub enum EvolutionMode< 'a >
+// {
+//   /// Simulated annealing optimization method.
+//   SA
+//   {
+//     /// Temperature update operator.
+//     temp_schedule : &'a Box< dyn TemperatureSchedule >,
+//     /// Max amount of mutations in generation.
+//     mutations_per_generation_limit : usize,
+//     /// Max allowed number of resets.
+//     resets_limit : usize,
+//   },
+//   /// Genetic optimization method.
+//   GA
+//   {
+//     /// Number of fittest individuals that will be cloned to new population.
+//     elite_selection_rate : f64,
+//     /// Number of random individuals that will be cloned to new population.
+//     random_selection_rate : f64,
+//     /// Max number of iteration without improvement in population.
+//     max_stale_iterations: usize,
+//     /// Recalculate fitness on every iteration.
+//     fitness_recalculation : bool,
+//     /// Probabilistic measure of a individual mutation likelihood.
+//     mutation_rate : f64,
+//     /// Genetic operator for recombination of genetic matherial.
+//     crossover_operator : &'a Box< dyn CrossoverOperator >,
+//     /// Genetic operator for selection of breeders for new population.
+//     selection_operator : &'a Box< dyn SelectionOperator >
+//   }
+// }
 
 impl SudokuInitial
 {
@@ -285,29 +285,45 @@ impl SudokuInitial
 
 impl SeederOperator for SudokuInitial
 {
-  type Generation = SudokuGeneration;
+  type Person = SudokuPerson;
   
-  fn initial_generation( &self, hrng : Hrng, size : usize ) -> SudokuGeneration
+  fn initial_generation( &self, hrng : Hrng, size : usize ) -> Vec< SudokuPerson >
   {
     let mut population = Vec::new();
     for _ in 0..size
     {
       population.push( SudokuPerson::new( &self.board, hrng.clone() ) );
     }
-    SudokuGeneration { initial_board: self.board.clone(), population, temperature : None }
+    //SudokuGeneration { initial_board: self.board.clone(), population, temperature : None }
+    population
+  }
+
+  fn initial_temperature( &self, hrng : Hrng ) -> Temperature
+  {
+    use statrs::statistics::Statistics;
+    let state = SudokuPerson::new( &self.board, hrng.clone() );
+    const N : usize = 16;
+    let mut costs : [ f64 ; N ] = [ 0.0 ; N ];
+    for i in 0..N
+    {
+      let state2 = state.mutate_random( &self.board, hrng.clone() );
+      costs[ i ] = state2.cost.into();
+    }
+    costs[..].std_dev().into()
   }
   
 }
 
 /// Represents hybrid optimization method with both Simulated Annealing and Genetic Algorithm.
 #[ derive( Debug ) ]
-pub struct HybridOptimizer< S : SeederOperator >
+pub struct HybridOptimizer< S : SeederOperator, C, M >
 {
+
   /// Max amount of mutations in generation.
   pub sa_mutations_per_generation_limit : usize,
 
   /// Max allowed number of resets.
-  pub sa_resets_limit : usize,
+  pub reset_limit : usize,
 
   /// Temperature update operator.
   pub sa_temperature_schedule : Box< dyn TemperatureSchedule >,
@@ -316,35 +332,57 @@ pub struct HybridOptimizer< S : SeederOperator >
   pub ga_elite_selection_rate : f64,
 
   /// Number of random individuals that will be cloned to new population.
-  pub ga_random_selection_rate : f64,
+  ///pub ga_random_selection_rate : f64,
 
   /// Probabilistic measure of a individual mutation likelihood.
-  pub ga_mutation_rate : f64,
+  pub mutation_rate : f64,
 
   /// Recalculate fitness on every iteration.
   pub fitness_recalculation : bool,
 
   /// Max number of iteration without improvement in population.
-  pub ga_max_stale_iterations : usize,
+  // pub ga_max_stale_iterations : usize,
 
   /// Crossover genetic operator, which defines how new Individuals are produced by combiniting traits of Individuals from current generation.
-  pub ga_crossover_operator : Box< dyn CrossoverOperator >,
+  pub ga_crossover_operator : C,
 
   /// Selection genetic operator, which defines how Individuals from current generation are selected to be breeders of new generation.
-  pub ga_selection_operator : Box< dyn SelectionOperator >,
+  pub ga_selection_operator : Box< dyn SelectionOperator< < S as SeederOperator >::Person > >,
 
   /// Hierarchical random numbers generator.
   pub hrng : Hrng,
 
   /// Struct responsible for creation of initial generation.
   pub seeder : S,
+
+  /// Percent of population selected for next cycle of optimization.
+  //pub population_percent : f64,
+
+  /// Max number of generations, termination condition.
+  pub generation_limit : usize,
+
+  /// Number of Individuals in initial generation of solutions.
+  pub population_size : usize,
+
+  pub mutation_operator : M,
+
+  pub temperature : Temperature,
 }
 
-impl< S : SeederOperator > HybridOptimizer< S >
+impl< S : SeederOperator, C : CrossoverOperator::< Person = < S as SeederOperator>::Person >, M > HybridOptimizer< S, C, M >
+where M : MutationOperator::< Person = < S as SeederOperator>::Person >
+
 {
   /// Create new instance of HybridOptimizer with default config for SA and GA.
-  pub fn new( random_seed : Seed, population_seeder : S ) -> Self
+  pub fn new( random_seed : Seed, population_seeder : S, crossover_op : C, mutation_op : M ) -> Self
+  where gen_alg::TournamentSelection: gen_alg::SelectionOperator<<S as gen_alg::SeederOperator>::Person>
   {
+  let so = Box::new( TournamentSelection
+    {
+      size : 2,
+      selection_pressure : 0.85,
+    } );
+  
     Self
     {
       sa_temperature_schedule : Box::new( LinearTempSchedule
@@ -354,20 +392,20 @@ impl< S : SeederOperator > HybridOptimizer< S >
         reset_increase_value : 1f64.into()
       } ),
       sa_mutations_per_generation_limit : 2_000,
-      sa_resets_limit : 1_000,
-      ga_elite_selection_rate : 0.15,
-      ga_random_selection_rate : 0.25,
-      ga_max_stale_iterations: 30,
+      reset_limit : 1_000,
+      ga_elite_selection_rate : 0.25,
+      //ga_random_selection_rate : 0.0,
+      //ga_max_stale_iterations: 30,
       fitness_recalculation : false,
-      ga_mutation_rate : 0.5,
-      ga_crossover_operator : Box::new( MultiplePointsBlockCrossover {} ),
-      ga_selection_operator : Box::new( TournamentSelection
-      {
-        size : 2,
-        selection_pressure : 0.85,
-      } ),
+      mutation_rate : 0.5,
+      ga_crossover_operator : crossover_op,
+      ga_selection_operator : so as Box<dyn SelectionOperator< < S as SeederOperator >::Person > >,
       hrng : Hrng::master_with_seed( random_seed ),
-      seeder : population_seeder
+      seeder : population_seeder,
+      generation_limit : 10_000,
+      population_size : 10_000,
+      temperature : 1000.0.into(),
+      mutation_operator : mutation_op,
     }
   }
 
@@ -388,7 +426,7 @@ impl< S : SeederOperator > HybridOptimizer< S >
   /// Set mutation rate for GA.
   pub fn set_ga_mutation_rate( mut self, rate : f64 ) -> Self
   {
-    self.ga_mutation_rate = rate;
+    self.mutation_rate = rate;
     self
   }
 
@@ -399,35 +437,11 @@ impl< S : SeederOperator > HybridOptimizer< S >
     self
   }
 
-  /// Set percent of random individuals that will be cloned to next generation.
-  pub fn set_ga_random_selection_rate( mut self, rate : f64 ) -> Self
-  {
-    self.ga_random_selection_rate = rate;
-    self
-  }
-
   /// Perform hybrid SA/GA optimization.
-  pub fn optimize( &self, strategy : &HybridStrategy ) -> ( Reason, Option< < S as SeederOperator >::Generation > )
+  pub fn optimize( &self, strategy : &HybridStrategy ) -> ( Reason, Option< < S as SeederOperator >::Person > )
   {
     let mut generation = self.seeder.initial_generation( self.hrng.clone(), strategy.population_size );
     let mut generation_number = 1;
-    let ga_mode = EvolutionMode::GA 
-    { 
-      elite_selection_rate: self.ga_elite_selection_rate, 
-      random_selection_rate: self.ga_random_selection_rate, 
-      max_stale_iterations: self.ga_max_stale_iterations, 
-      fitness_recalculation: self.fitness_recalculation, 
-      mutation_rate: self.ga_mutation_rate, 
-      crossover_operator: &self.ga_crossover_operator, 
-      selection_operator: &self.ga_selection_operator,
-    };
-
-    let sa_mode = EvolutionMode::SA 
-    { 
-      temp_schedule : &self.sa_temperature_schedule,
-      mutations_per_generation_limit : self.sa_mutations_per_generation_limit,
-      resets_limit : self.sa_resets_limit,
-    };
 
     loop
     {
@@ -436,54 +450,166 @@ impl< S : SeederOperator > HybridOptimizer< S >
         return ( Reason::GenerationLimit, None );
       }
 
-      if generation.is_good_enough()
+      if self.population_has_solution( &generation )
       {
-        return ( Reason::GoodEnough, Some( generation ) );
+        return ( Reason::GoodEnough, Some( generation[ 0 ] ) );
       }
 
-      let mode;
-      let mut iterations = generation_number;
-      let mut cycle = 1usize;
-      while let Some( res ) = cycle.checked_sub( strategy.sa_generations_number + strategy.ga_generations_number )
-      {
-        cycle += 1;
-        iterations = res;
-      }
-      if cycle > strategy.number_of_cycles
-      {
-        if let StrategyMode::GA = strategy.finalize_with
-        {
-          mode = &ga_mode;
-        }
-        else 
-        {
-          mode = &sa_mode;
-        }
-      }
-      else 
-      {
-        match strategy.start_with
-        {
-          StrategyMode::GA if iterations > strategy.ga_generations_number && strategy.sa_generations_number > 0 =>
-          {
-            mode = &sa_mode;
-          },
-          StrategyMode::GA => mode = &ga_mode,
-          StrategyMode::SA if iterations > strategy.sa_generations_number && strategy.ga_generations_number > 0 =>
-          {
-            mode = &ga_mode;
-          }
-          StrategyMode::SA => mode = &sa_mode,
-        }
-      }
+      let mut new_generation = Vec::new();
+      generation.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
 
-      let new_generation = generation.evolve( self.hrng.clone(), mode );
+      for i in 0..generation.len()
+      {
+        new_generation.push( self.evolve( generation[ i ], &generation ) );
+        if new_generation.last().unwrap().is_optimal()
+        {
+          break;
+        }
+      }
 
       generation = new_generation;
       generation_number += 1;
     }
-  } 
+  }
+
+  fn population_has_solution( &self, population : &Vec< < S as SeederOperator >::Person > ) -> bool
+  {
+    for person in population
+    {
+      if person.is_optimal()
+      {
+        return true;
+      }
+    }
+    false
+  }
+
+  fn evolve( &self, person : < S as SeederOperator >::Person, population : &Vec< < S as SeederOperator >::Person > ) -> < S as SeederOperator >::Person
+  {
+    let mut child =
+    if population.iter().position( | p | *p == person ).unwrap() <= ( population.len() as f64 * self.ga_elite_selection_rate ) as usize
+    {
+      person.clone()
+    }
+    else 
+    {
+      let parent1 = self.ga_selection_operator.select( self.hrng.clone(), &population );
+      let parent2 = self.ga_selection_operator.select( self.hrng.clone(), &population );
+      self.ga_crossover_operator.crossover( self.hrng.clone(), parent1, parent2 )
+    };
+ 
+    let rng_ref = self.hrng.rng_ref();
+    let mut rng = rng_ref.lock().unwrap();
+    let rand : f64 = rng.gen();
+    drop( rng );
+
+    if rand < self.mutation_rate
+    {
+
+    let mut n_mutations : usize = 0;
+    let mut n_resets = 0;
+    let mut expected_number_of_mutations = 4;
+    let mut new_person = self.clone();
+
+    loop
+    {
+      if n_mutations > self.sa_mutations_per_generation_limit
+      {
+        n_resets += 1;
+        expected_number_of_mutations = 4;
+        if n_resets >= self.reset_limit
+        {
+          return person.clone();
+        }
+        let temperature2 = self.sa_temperature_schedule.reset_temperature( self.temperature );
+        log::trace!( " 🔄 reset temperature {} -> {temperature2}", self.temperature );
+        sleep();
+        self.temperature = temperature2;
+        n_mutations = 0;
+      }
+  
+      let rng_ref = self.hrng.rng_ref();
+      let mut rng = rng_ref.lock().unwrap();
+  
+      let candidates = rayon::iter::repeat( () )
+      .take( expected_number_of_mutations )
+      .enumerate()
+      .map( | ( i, _ ) | self.hrng.child( i ) )
+      .flat_map( | hrng | 
+        {
+          let candidate = child.clone();
+          self.mutation_operator.mutate( self.hrng.clone(), &mut candidate );
+      
+          let rng_ref = hrng.rng_ref();
+          let mut rng = rng_ref.lock().unwrap();
+      
+          let cost_difference = 0.5 + candidate.fitness() as f64 - child.fitness() as f64;
+          let threshold = ( - cost_difference / self.temperature.unwrap() ).exp();
+      
+          log::trace!
+          (
+            "cost : {}  | cost_difference : {cost_difference} | temperature : {}",
+            person.fitness(),
+            self.temperature,
+          );
+          let rand : f64 = rng.gen();
+          let vital = rand < threshold;  
+          if vital
+          {
+            let emoji = if cost_difference > 0.0
+            {
+              "🔼"
+            }
+            else if cost_difference < 0.0
+            {
+              "✔️"
+            }
+            else
+            {
+              "🔘"
+            };
+            log::trace!( " {emoji} vital | rand( {rand} ) < threshold( {threshold} )" );
+            if cost_difference == 0.0
+            {
+              // sleep();
+            }
+            Some( candidate )
+          }
+          else
+          {
+            log::trace!( " ❌ non-vital | rand( {rand} ) > threshold( {threshold} )" );
+            None
+          }
+            
+        } )
+        .collect::< Vec< _ > >()
+        ;
+
+      let candidate = candidates.choose( &mut *rng );
+
+      if let Some( new_child ) = candidate
+      {
+        child = new_child;
+        break;
+      }
+
+      n_mutations += expected_number_of_mutations;
+      if expected_number_of_mutations < 32
+      {
+        expected_number_of_mutations += 4;
+      }
+    }
+  }
+
+    if self.fitness_recalculation
+    {
+      child.update_fitness();
+    }
+
+    child
+  }
 }
+
 
 /// Strategy for combination of SA and GA optimization. Performs cyclic optimization with iteration of SA and GA methods in order defined by srart_with field.
 #[ derive( Debug ) ]

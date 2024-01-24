@@ -29,8 +29,9 @@ use crate::{ sudoku::*, optimization::* };
 /// Functionality of crossover genetic operator.
 pub trait CrossoverOperator : Debug
 {
+  type Person : Individual + Clone;
   /// Produce new Individual using genetic matherial of two selected Individuals.
-  fn crossover( &self, hrng : Hrng, parent1 : &SudokuPerson, parent2 : &SudokuPerson ) -> SudokuPerson;
+  fn crossover( &self, hrng : Hrng, parent1 : &Self::Person, parent2 : &Self::Person ) -> Self::Person;
 }
 
 /// Crossover is performed by combining blocks from parents' boards, split in several randomly chosen crossover points.
@@ -39,7 +40,8 @@ pub struct MultiplePointsBlockCrossover {}
 
 impl CrossoverOperator for MultiplePointsBlockCrossover
 {
-  fn crossover( &self, hrng : Hrng, parent1 : &SudokuPerson, parent2 : &SudokuPerson ) -> SudokuPerson 
+  type Person = SudokuPerson;
+  fn crossover( &self, hrng : Hrng, parent1 : &Self::Person, parent2 : &Self::Person ) -> Self::Person 
   {
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
@@ -88,6 +90,7 @@ pub struct BestRowsColumnsCrossover {}
 
 impl CrossoverOperator for BestRowsColumnsCrossover
 {
+  type Person = < SudokuInitial as SeederOperator >::Person;
   fn crossover( &self, _hrng : Hrng, parent1 : &SudokuPerson, parent2 : &SudokuPerson ) -> SudokuPerson 
   {
     let mut rows_costs = vec![ Vec::new(); 2 ];
@@ -179,10 +182,10 @@ impl CrossoverOperator for BestRowsColumnsCrossover
 }
 
 /// Performs selection of Individuals for genetic crossover and production of new Individual for next generation.
-pub trait SelectionOperator : Debug
+pub trait SelectionOperator< P : Individual > : Debug
 {
   /// Select Individuals which will be used by GA crossover and mutation operators for production of new individual.
-  fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< SudokuPerson > ) -> &'a SudokuPerson;
+  fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< P > ) -> &'a P;
 }
 
 /// Selection operator which randomly selects a group of individuals from the population( the number of individuals selected is equal to the size value) and choosing the most fit with probability defined by selection_pressure value.
@@ -195,9 +198,10 @@ pub struct TournamentSelection
   pub selection_pressure : f64,
 }
 
-impl SelectionOperator for TournamentSelection
+
+impl< 'initial > SelectionOperator< <SudokuInitial as SeederOperator>::Person > for TournamentSelection
 {
-  fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< SudokuPerson > ) -> &'a SudokuPerson 
+  fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< <SudokuInitial as SeederOperator>::Person > ) -> &'a <SudokuInitial as SeederOperator>::Person
   {
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
@@ -225,19 +229,20 @@ impl SelectionOperator for TournamentSelection
 }
 
 /// Functionality of Individual(potential solution) for optimization with SA and GA.
-pub trait Individual< G : Generation >
+pub trait Individual
 {
   /// Objective function value that is used to measure how close Individual solution is to optimum.
   fn fitness( &self ) -> usize;
   /// Recalculate fitness value of individual.
   fn update_fitness( &mut self );
   /// Optimize current Individual using GA or SA method as specified by mode.
-  fn evolve( &self, hrng : Hrng, generation : &G, mode : &EvolutionMode< '_ > ) -> Self;
+  //fn evolve( &self, hrng : Hrng, generation : &G, mode : &EvolutionMode< '_ > ) -> Self;
   /// Check if current solution is optimal.
   fn is_optimal( &self ) -> bool;
+  fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
 }
 
-impl Individual< SudokuGeneration > for SudokuPerson
+impl Individual for SudokuPerson
 {
   fn is_optimal( &self ) -> bool
   {
@@ -261,192 +266,85 @@ impl Individual< SudokuGeneration > for SudokuPerson
     self.cost = self.board.total_error().into();
   }
 
-  fn evolve( &self, hrng : Hrng, generation : &SudokuGeneration, mode : &EvolutionMode< '_ > ) -> SudokuPerson
+  /// Calculate the initial temperature for the optimization process.
+  fn initial_temperature( &self, hrng : Hrng ) -> Temperature
   {
-    match mode
+    //   use statrs::statistics::Statistics;
+    //   let state = SudokuPerson::new( &self.initial_board, hrng.clone() );
+    //   const N : usize = 16;
+    //   let mut costs : [ f64 ; N ] = [ 0.0 ; N ];
+    //   for i in 0..N
+    //   {
+    //   let state2 = state.mutate_random( &self.initial_board, hrng.clone() );
+    //   costs[ i ] = state2.cost.into();
+    //   }
+    //   costs[..].std_dev().into()
+      1.1.into()
+  }
+
+}
+    
+pub trait MutationOperator : Debug
+{
+  type Person : Individual;
+
+  fn mutate( &self, hrng : Hrng, person : &mut Self::Person );
+}
+
+#[ derive( Debug ) ]
+pub struct RandomPairInBlockMutation {}
+
+impl MutationOperator for RandomPairInBlockMutation
+{
+  type Person = SudokuPerson;
+
+  fn mutate( &self, hrng : Hrng, person : &mut Self::Person ) 
     {
-      EvolutionMode::GA 
-      { 
-        elite_selection_rate, 
-        random_selection_rate, 
-        max_stale_iterations : _, 
-        fitness_recalculation, 
-        mutation_rate, 
-        crossover_operator, 
-        selection_operator ,
-      } => 
-      {
-        if generation.population.iter().position( | p | p == self ).unwrap() <= ( generation.population.len() as f64 * elite_selection_rate ) as usize
-        {
-          return self.clone();
-        }
-    
-        let rng_ref = hrng.rng_ref();
-        let mut rng = rng_ref.lock().unwrap();
-    
-        let rand : f64 = rng.gen();
-        if rand < *random_selection_rate
-        {
-          return self.clone();
-        }
-        drop( rng );
-        let parent1 = selection_operator.select( hrng.clone(), &generation.population );
-        let parent2 = selection_operator.select( hrng.clone(), &generation.population );
-        let mut child = crossover_operator.crossover( hrng.clone(), parent1, parent2 );
-    
-        let rng_ref = hrng.rng_ref();
-        let mut rng = rng_ref.lock().unwrap();
-        let rand : f64 = rng.gen();
-        drop( rng );
-
-        if rand < *mutation_rate
-        {
-          child = child.mutate_random( &self.board, hrng.clone() );
-        }
-
-        if *fitness_recalculation
-        {
-          child.update_fitness();
-        }
-
-        child
-      },
-      EvolutionMode::SA 
-      { 
-        temp_schedule,
-        mutations_per_generation_limit, 
-        resets_limit 
-      } => 
-      {
-        let mut temperature = generation.temperature.unwrap();
-        let mut n_mutations : usize = 0;
-        let mut n_resets = 0;
-        let mut expected_number_of_mutations = 4;
-        let mut new_person = self.clone();
-
-        loop
-        {
-          if n_mutations > *mutations_per_generation_limit
-          {
-            n_resets += 1;
-            expected_number_of_mutations = 4;
-            if n_resets >= *resets_limit
-            {
-              return self.clone();
-            }
-            let temperature2 = temp_schedule.reset_temperature( temperature );
-            log::trace!( " 🔄 reset temperature {temperature} -> {temperature2}" );
-            sleep();
-            temperature = temperature2;
-            n_mutations = 0;
-          }
-  
+        let mutagen : SudokuMutagen =
+        loop 
+        { 
           let rng_ref = hrng.rng_ref();
           let mut rng = rng_ref.lock().unwrap();
-  
-          let candidates = rayon::iter::repeat( () )
-          .take( expected_number_of_mutations )
-          .enumerate()
-          .map( | ( i, _ ) | hrng.child( i ) )
-          .flat_map( | hrng | 
-            {
-              let mutagen = self.mutagen( &generation.initial_board, hrng.clone() );
-                   
-              let mutagen_cross_cost = self.board.cross_error_for_value
-              (
-                mutagen.cell1, 
-                self.board.cell( mutagen.cell2 ),
-                mutagen.cell2, 
-                self.board.cell( mutagen.cell1 )
-              );
-            
-              let mut original_cross_cost = 0;
-              original_cross_cost += self.board.cross_error( mutagen.cell1 );
-              original_cross_cost += self.board.cross_error( mutagen.cell2 );
-          
-              let rng_ref = hrng.rng_ref();
-              let mut rng = rng_ref.lock().unwrap();
-          
-              let cost_difference = 0.5 + mutagen_cross_cost as f64 - original_cross_cost as f64;
-              let threshold = ( - cost_difference / temperature.unwrap() ).exp();
-          
-              log::trace!
-              (
-                "cost : {}  | cost_difference : {cost_difference} | temperature : {temperature}",
-                self.cost,
-              );
-              let rand : f64 = rng.gen();
-              let vital = rand < threshold;  
-              if vital
-              {
-                let emoji = if cost_difference > 0.0
-                {
-                  "🔼"
-                }
-                else if cost_difference < 0.0
-                {
-                  "✔️"
-                }
-                else
-                {
-                  "🔘"
-                };
-                log::trace!( " {emoji} vital | rand( {rand} ) < threshold( {threshold} )" );
-                if cost_difference == 0.0
-                {
-                  // sleep();
-                }
-                Some( mutagen )
-              }
-              else
-              {
-                log::trace!( " ❌ non-vital | rand( {rand} ) > threshold( {threshold} )" );
-                None
-              }
-                
-            } )
-            .collect::< Vec< _ > >()
-            ;
-
-          let candidate = candidates.choose( &mut *rng );
-
-          if let Some( mutagen ) = candidate
+          let block : BlockIndex = rng.gen();
+          drop( rng );
+          if let Some( m ) = cells_pair_random_in_block( &person.initial, block, hrng.clone() )
           {
-            new_person.mutate( &mutagen );
-            break;
+            break m;
           }
-
-          n_mutations += expected_number_of_mutations;
-          if expected_number_of_mutations < 32
-          {
-            expected_number_of_mutations += 4;
-          }
-        };
-        new_person
-      }
+        }.into();
+      let old_cross_error = person.board.cross_error( mutagen.cell1 )
+        + person.board.cross_error( mutagen.cell2 );
+      
+      log::trace!( "cells_swap( {:?}, {:?} )", mutagen.cell1, mutagen.cell2 );
+      person.board.cells_swap( mutagen.cell1, mutagen.cell2 );
+      person.cost -= old_cross_error.into();
+      person.cost += person.board.cross_error( mutagen.cell1 ).into();
+      person.cost += person.board.cross_error( mutagen.cell2 ).into();
     }
-    
-  }
+
 }
 
 /// Fuctionality of operator responsible for creation of initial solutions generation.
 pub trait SeederOperator
 {
   /// Type that represents generation of solutions in optimization process.
-  type Generation : Generation;
+  type Person : Individual + Clone + PartialEq;
 
   /// Create the initial generation for the optimization algorithm.
-  fn initial_generation( &self, hrng : Hrng, size : usize ) -> Self::Generation;
+  fn initial_generation( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person >;
+
+  /// Create the initial generation for the optimization algorithm.
+  fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
 }
 
 /// Functionality of generation of solutions for optimization.
 pub trait Generation
 {
   /// Performs evolution of generation, either as SA mutation of every Individual or using GA genetic operators defined in GAConfig.
-  fn evolve( &mut self, hrng : Hrng, mode : &EvolutionMode< '_ > ) -> Self;
+  //fn evolve( &mut self, hrng : Hrng ) -> Self;
 
   /// Calculate initial temperature for SA optimization.
-  fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
+  //fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
 
   /// Check if current generation contains optimal solution.
   fn is_good_enough( &self ) -> bool;
@@ -454,60 +352,28 @@ pub trait Generation
 
 impl Generation for SudokuGeneration
 {
-  fn evolve( &mut self, hrng : Hrng, mode : &EvolutionMode< '_ > ) -> Self 
-  {
-    let mut new_population = Vec::new();
-    self.population.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
+//   fn evolve( &mut self, hrng : Hrng ) -> Self 
+//   {
+//     let mut new_population = Vec::new();
+//     self.population.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
 
-    if let EvolutionMode::SA { temp_schedule, .. } = mode
-    {
-      if self.temperature.is_none()
-      {
-        self.temperature = Some( self.initial_temperature( hrng.clone() ) );
-      }
-      else 
-      {
-        self.temperature = Some( temp_schedule.calculate_next_temp( self.temperature.unwrap() ) );
-      }
-    }
-    else 
-    {
-      if self.temperature.is_some()
-      {
-        self.temperature = None;
-      }
-    }
-
-    for i in 0..self.population.len()
-    {
-      new_population.push( self.population[ i ].evolve( hrng.clone(), & *self, &mode ) );
-      if new_population.last().unwrap().is_optimal()
-      {
-        break;
-      }
-    }
+//     for i in 0..self.population.len()
+//     {
+//       //new_population.push( self.population[ i ].evolve( hrng.clone(), & *self ) );
+//       if new_population.last().unwrap().is_optimal()
+//       {
+//         break;
+//       }
+//     }
     
-    SudokuGeneration
-    {
-      population : new_population,
-      ..self.clone()
-    }
-  }
+//     SudokuGeneration
+//     {
+//       population : new_population,
+//       ..self.clone()
+//     }
+//   }
 
-  /// Calculate the initial temperature for the optimization process.
-  fn initial_temperature( &self, hrng : Hrng ) -> Temperature
-  {
-    use statrs::statistics::Statistics;
-    let state = SudokuPerson::new( &self.initial_board, hrng.clone() );
-    const N : usize = 16;
-    let mut costs : [ f64 ; N ] = [ 0.0 ; N ];
-    for i in 0..N
-    {
-      let state2 = state.mutate_random( &self.initial_board, hrng.clone() );
-      costs[ i ] = state2.cost.into();
-    }
-    costs[..].std_dev().into()
-  }
+
 
   fn is_good_enough( &self ) -> bool 
   {
