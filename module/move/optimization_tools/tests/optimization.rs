@@ -2,7 +2,7 @@ use optimization_tools::*;
 use sudoku::*;
 use optimization::*;
 use test_tools::prelude::*;
-use deterministic_rand::Seed;
+use deterministic_rand::{ Seed, Hrng };
 
 mod tools;
 use tools::*;
@@ -12,14 +12,16 @@ fn person_mutate()
 {
   logger_init();
 
-  let initial = SudokuInitial::new( Board::default(), Seed::default() );
+  //let initial = SudokuInitial::new_sa( Board::default(), Seed::default() );
+  let board = Board::default();
+  let hrng = Hrng::master_with_seed( Seed::default() );
 
-  let mut person = SudokuPerson::new( &initial );
+  let mut person = SudokuPerson::new( &board, hrng.clone() );
   log::trace!( "{person:#?}" );
   a_id!( person.cost, 45.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
-  let mutagen = person.mutagen( &initial.board, initial.config.hrng.clone() );
+  let mutagen = person.mutagen( &board, hrng.clone() );
   // make sure block is the same
   a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
   person.mutate(  &mutagen );
@@ -27,7 +29,7 @@ fn person_mutate()
   a_id!( person.cost, 48.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
-  let mutagen = person.mutagen( &initial.board, initial.config.hrng.clone() );
+  let mutagen = person.mutagen( &board, hrng.clone() );
   // make sure block is the same
   a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
   person.mutate( &mutagen );
@@ -42,14 +44,14 @@ fn person_mutate()
 fn initial_temperature()
 {
   logger_init();
+  let hrng = Hrng::master_with_seed( Seed::default() );
+  let initial = SudokuInitial::new( Board::default() );
 
-  let initial = SudokuInitial::new( Board::default(), Seed::default() );
-
-  let temperature = &initial.initial_temperature();
+  let generation = initial.initial_generation( hrng.clone(), 1 );
+  let temperature = generation.initial_temperature( hrng.clone() );
   a_true!( temperature.unwrap() >= 0f64 );
-  a_id!( temperature.unwrap(), 1.591644851508443 );
+  a_id!( temperature.unwrap(), 1.02469507659596 );
 
-  // a_true!( false );
 }
 
 /// Test SA on sudoku
@@ -69,18 +71,31 @@ fn solve_with_sa()
   // let seed : Seed = "seed2".into();
   let seed : Seed = "seed3".into();
   // let seed = Seed::random();
-  let mut initial = SudokuInitial::new( Board::default(), seed );
+  let initial = SudokuInitial::new( Board::default() );
+  let optimizer = HybridOptimizer::new( seed, initial );
+
+  let strategy = HybridStrategy
+  {
+    start_with : StrategyMode::SA,
+    finalize_with : StrategyMode::SA,
+    number_of_cycles : 1,
+    ga_generations_number : 0,
+    sa_generations_number : 1000,
+    population_percent : 1.0,
+    generation_limit : 100_000_000,
+    population_size : 1,
+  };
 
   log::set_max_level( log::LevelFilter::max() );
-  let ( reason, generation ) = initial.solve_with_sa();
+  let ( reason, generation ) = optimizer.optimize( &strategy );
 
   log::trace!( "reason : {reason}" );
   a_true!( generation.is_some() );
   let generation = generation.unwrap();
   log::trace!( "{generation:#?}" );
-  log::trace!( "{:#?}", generation.person.board );
+  log::trace!( "{:#?}", generation.population[ 0 ].board );
 
-  a_id!( generation.person.cost, 0.into() );
+  a_id!( generation.population[ 0 ].cost, 0.into() );
   #[ cfg( feature = "static_plot" ) ]
   plot::draw_plots();
   // a_true!( false );
@@ -110,19 +125,30 @@ fn solve_empty_full_block()
   log::set_max_level( log::LevelFilter::Warn );
 
   let seed : Seed = "seed3".into();
-  // let seed = Seed::random();
-  let mut initial = SudokuInitial::new( Board::from(sudoku), seed );
+  let mut initial = SudokuInitial::new( Board::from( sudoku ) );
+  let optimizer = HybridOptimizer::new( seed, initial );
 
+  let strategy = HybridStrategy
+  {
+    start_with : StrategyMode::SA,
+    finalize_with : StrategyMode::SA,
+    number_of_cycles : 1,
+    ga_generations_number : 0,
+    sa_generations_number : 1000,
+    population_percent : 1.0,
+    generation_limit : 100_000_000,
+    population_size : 1,
+  };
   log::set_max_level( log::LevelFilter::max() );
-  let ( reason, generation ) = initial.solve_with_sa();
+  let ( reason, generation ) = optimizer.optimize( &strategy );
 
   log::trace!( "reason : {reason}" );
   a_true!( generation.is_some() );
   let generation = generation.unwrap();
   log::trace!( "{generation:#?}" );
-  println!( "{:#?}", generation.person.board );
+  println!( "{:#?}", generation.population[ 0 ].board );
 
-  a_id!( generation.person.cost, 0.into() );
+  a_id!( generation.population[ 0 ].cost, 0.into() );
 
   let sudoku : &str = r#"
   350964170
@@ -138,19 +164,30 @@ fn solve_empty_full_block()
   log::set_max_level( log::LevelFilter::Warn );
 
   let seed : Seed = "seed3".into();
-  // let seed = Seed::random();
-  let mut initial = SudokuInitial::new( Board::from(sudoku), seed );
+  initial = SudokuInitial::new( Board::from( sudoku ) );
+  let optimizer = HybridOptimizer::new( seed, initial );
 
+  let strategy = HybridStrategy
+  {
+    start_with : StrategyMode::SA,
+    finalize_with : StrategyMode::SA,
+    number_of_cycles : 1,
+    ga_generations_number : 0,
+    sa_generations_number : 1000,
+    population_percent : 1.0,
+    generation_limit : 100_000_000,
+    population_size : 1,
+  };
   log::set_max_level( log::LevelFilter::max() );
-  let ( reason, generation ) = initial.solve_with_sa();
+  let ( reason, generation ) = optimizer.optimize( &strategy );
 
   log::trace!( "reason : {reason}" );
   a_true!( generation.is_some() );
   let generation = generation.unwrap();
   log::trace!( "{generation:#?}" );
-  println!( "{:#?}", generation.person.board );
+  println!( "{:#?}", generation.population[ 0 ].board );
 
-  a_id!( generation.person.cost, 0.into() );
+  a_id!( generation.population[ 0 ].cost, 0.into() );
  }
 
 //
@@ -188,10 +225,22 @@ fn solve_empty_full_block()
 #[ test ]
 fn time_measure()
 {
-  for i in 0..=9 {
-    let mut initial = SudokuInitial::new( Board::default(), Seed::new( i.to_string() ) );
+  let strategy = HybridStrategy
+  {
+    start_with : StrategyMode::SA,
+    finalize_with : StrategyMode::SA,
+    number_of_cycles : 1,
+    ga_generations_number : 0,
+    sa_generations_number : 1000,
+    population_percent : 1.0,
+    generation_limit : 100_000_000,
+    population_size : 1,
+  };
 
-    let ( _reason, _generation ) = initial.solve_with_sa();
+  for i in 0..=9 {
+    let initial = SudokuInitial::new( Board::default() );
+    let optimizer = HybridOptimizer::new( Seed::new( i.to_string() ), initial );
+    let ( _reason, _generation ) = optimizer.optimize( &strategy );
   }
 
 }

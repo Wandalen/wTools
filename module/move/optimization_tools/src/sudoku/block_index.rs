@@ -6,7 +6,7 @@ use deterministic_rand::{ Rng, distributions::{Distribution, Standard } };
 use core::ops::Range;
 
 /// Represents the index of a Sudoku block.
-#[ derive( Default, Debug, Clone, Copy, PartialEq, Eq ) ]
+#[ derive( Default, Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
 pub struct BlockIndex( u8, u8 );
 
 impl BlockIndex

@@ -96,6 +96,7 @@ pub struct SimplexSolver {}
 
 impl SimplexSolver
 {
+  /// Calculates extreme points of linear problem.
   pub fn extreme_points ( p : &mut Problem ) -> Vec< ExtremePoint >
   {
     let bfs = Self::basic_feasible_solutions( p.clone() );
