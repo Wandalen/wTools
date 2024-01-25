@@ -4,6 +4,7 @@
 use crate::*;
 #[ cfg( feature="static_plot" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };
+use iter_tools::Itertools;
 use rand::seq::IteratorRandom;
 use rayon::iter::{ ParallelIterator, IndexedParallelIterator};
 use deterministic_rand::Seed;
@@ -75,7 +76,7 @@ pub struct HybridOptimizer< S : SeederOperator, C, M >
   pub seeder : S,
 
   /// Percent of population selected for next cycle of optimization.
-  //pub population_percent : f64,
+  pub population_percent : f64,
 
   /// Max number of generations, termination condition.
   pub generation_limit : usize,
@@ -126,6 +127,7 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
       population_size : 10_000,
       temperature : start_temp,
       mutation_operator : mutation_op,
+      population_percent : 1.0,
     }
   }
 
@@ -203,9 +205,10 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
           break;
         }
       }
+      new_generation.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
       self.temperature = self.sa_temperature_schedule.calculate_next_temp( self.temperature );
 
-      generation = new_generation;
+      generation = new_generation.into_iter().take( ( generation.len() as f64 * self.population_percent ) as usize ).collect_vec();
       generation_number += 1;
     }
   }
@@ -248,7 +251,6 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
 
     if rand < self.mutation_rate
     {
-
     let mut n_mutations : usize = 0;
     let mut expected_number_of_mutations = 4;
 
@@ -336,13 +338,13 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
           break;
         }
 
-      n_mutations += expected_number_of_mutations;
-      if expected_number_of_mutations < 32
-      {
-        expected_number_of_mutations += 4;
+        n_mutations += expected_number_of_mutations;
+        if expected_number_of_mutations < 32
+        {
+          expected_number_of_mutations += 4;
+        }
       }
     }
-  }
 
     if self.fitness_recalculation
     {
