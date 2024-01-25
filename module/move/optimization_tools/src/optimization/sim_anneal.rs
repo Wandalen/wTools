@@ -1,5 +1,3 @@
-use crate::optimization::*;
-
 /// Represents temperature of SA process.
 #[ derive( Default, Debug, Display, Clone, Copy, PartialEq, PartialOrd, FromInner, InnerFrom ) ]
 #[ derive( Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign ) ]
@@ -23,6 +21,8 @@ impl From< f32 > for Temperature
     Self( src as f64 )
   }
 }
+use derive_tools::{ FromInner, InnerFrom, Display };
+use derive_tools::{ Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign };
 
 /// Struct that represents coefficient to change temperature value.
 #[ derive( Debug, Display, Clone, Copy, PartialEq, PartialOrd, FromInner, InnerFrom ) ]

@@ -7,7 +7,7 @@ use iter_tools::Itertools;
 use crate::
 { 
   sudoku::*, 
-  optimization::{ SudokuInitial, HybridOptimizer, LinearTempSchedule, BestRowsColumnsCrossover, RandomPairInBlockMutation },
+  optimization::{ HybridOptimizer, LinearTempSchedule, SudokuInitial, BestRowsColumnsCrossover, RandomPairInBlockMutation },
   nelder_mead::{ NelderMeadOptimizer, Point, NMResult },
 };
 
