@@ -1,7 +1,7 @@
 //! Performs solving of sudoku puzzle using Simmulated Annealing algorithm.
 //! 
 
-use optimization_tools::{ *, optimization::{ HybridOptimizer, StrategyMode, HybridStrategy } };
+use optimization_tools::{ *, optimization::{ HybridOptimizer, BestRowsColumnsCrossover, RandomPairInBlockMutation } };
 use sudoku::*;
 
 const INPUT : &str = r#"
@@ -26,25 +26,15 @@ fn main()
   let board = Board::from( INPUT );
   println!("{board}");
   let initial = optimization::SudokuInitial::new( board );
-  let optimizer = HybridOptimizer::new( seed, initial );
-  let strategy = HybridStrategy
-  {
-    start_with : StrategyMode::SA,
-    finalize_with : StrategyMode::SA,
-    number_of_cycles : 1,
-    ga_generations_number : 0,
-    sa_generations_number : 1000,
-    population_percent : 1.0,
-    generation_limit : 100_000_000,
-    population_size : 1,
-  };
-  let ( reason, generation ) = optimizer.optimize( &strategy );
+  let mut optimizer = HybridOptimizer::new( seed, initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+
+  let ( reason, solution ) = optimizer.optimize( );
 
   log::trace!( "reason : {reason}" );
-  assert!( generation.is_some() );
-  let generation = generation.unwrap();
-  log::trace!( "{generation:#?}" );
-  log::trace!( "{:#?}", generation.population[ 0 ].board );
+  assert!( solution.is_some() );
+  let solution = solution.unwrap();
+  log::trace!( "{solution:#?}" );
+  log::trace!( "{:#?}", solution.board );
 
   // let mut dp = plot_dynamic::init_dyn_plotter( String::from( "Cost change" ), 800, 400 );
 
