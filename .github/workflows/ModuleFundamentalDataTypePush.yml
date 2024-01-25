@@ -7,6 +7,8 @@ env :
 
 jobs :
 
+  # fundamental_data_type
+
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :

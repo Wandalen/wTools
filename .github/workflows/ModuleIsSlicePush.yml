@@ -7,6 +7,8 @@ env :
 
 jobs :
 
+  # is_slice
+
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :

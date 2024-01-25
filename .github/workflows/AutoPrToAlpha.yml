@@ -4,19 +4,19 @@ name : auto_pr_to_alpha
 on :
   push :
     branches :
-     - '*'
-     - '*/*' 
-     - '**' 
-     - '!master' 
-     - '!main' 
-     - '!alpha' 
-     - '!beta' 
-     - '!*test*' 
-     - '!*test*/*' 
-     - '!*/*test*' 
-     - '!*experiment*' 
-     - '!*experiment*/*' 
-     - '!*/*experiment*' 
+      - '*'
+      - '*/*'
+      - '**'
+      - '!master'
+      - '!main'
+      - '!alpha'
+      - '!beta'
+      - '!*test*'
+      - '!*test*/*'
+      - '!*/*test*'
+      - '!*experiment*'
+      - '!*experiment*/*'
+      - '!*/*experiment*'
 
 jobs :
 
