@@ -410,14 +410,14 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
         return ( Reason::GenerationLimit, None );
       }
 
+      let mut new_generation = Vec::new();
+      generation.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
+
       if self.population_has_solution( &generation )
       {
         return ( Reason::GoodEnough, Some( generation[ 0 ].clone() ) );
       }
-
-      let mut new_generation = Vec::new();
-      generation.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
-
+      
       if generation[ 0 ].fitness() != prev_fitness
       {
         stale_generations = 0;
@@ -557,14 +557,20 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
         } )
         .collect::< Vec< _ > >()
         ;
-        let rng_ref = self.hrng.rng_ref();
-        let mut rng = rng_ref.lock().unwrap();
-        
-        let index = ( 0..candidates.len() - 1 ).choose( &mut *rng );
-        drop( rng );
-        if let Some( i ) = index
+
+        if candidates.len() > 0
         {
-          child = candidates[ i ].clone();
+          let rng_ref = self.hrng.rng_ref();
+          let mut rng = rng_ref.lock().unwrap();
+          
+          if let Some( index ) = ( 0..candidates.len() - 1 ).choose( &mut *rng )
+          {
+            child = candidates[ index ].clone();
+          }
+          else 
+          {
+            child = candidates[ 0 ].clone();
+          }
           break;
         }
 

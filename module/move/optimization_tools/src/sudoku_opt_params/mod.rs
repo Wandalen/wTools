@@ -7,7 +7,7 @@ use iter_tools::Itertools;
 use crate::
 { 
   sudoku::*, 
-  optimization::{ SudokuInitial, HybridOptimizer, HybridStrategy, StrategyMode, LinearTempSchedule },
+  optimization::{ SudokuInitial, HybridOptimizer, LinearTempSchedule, BestRowsColumnsCrossover, RandomPairInBlockMutation },
   nelder_mead::{ NelderMeadOptimizer, Point, NMResult },
 };
 
@@ -88,28 +88,16 @@ pub fn get_sa_optimal_params()
             reset_increase_value : case.coords[ 1 ].into(),
           };
 
-          let optimizer = HybridOptimizer::new( Seed::default(), initial )
+          let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} )
           .set_sa_temp_schedule( Box::new( temp_schedule ) )
           .set_sa_max_mutations_per_generation( case.coords[ 2 ] as usize )
           ;
-
-          let strategy = HybridStrategy
-          {
-            start_with : StrategyMode::SA,
-            finalize_with : StrategyMode::SA,
-            number_of_cycles : 1,
-            ga_generations_number : 0,
-            sa_generations_number : 1000,
-            population_percent : 1.0,
-            generation_limit : 100_000_000,
-            population_size : 1,
-          };
 
           let mut results: Vec< std::time::Duration > = Vec::new();
           for _ in 0..3
           {
             let now = std::time::Instant::now();
-            let ( _reason, _generation ) = optimizer.optimize( &strategy );
+            let ( _reason, _generation ) = optimizer.optimize();
             let elapsed = now.elapsed();
             results.push( elapsed );
           }
@@ -156,20 +144,10 @@ pub fn get_sa_optimal_params()
     {
       // initial
       let initial = SudokuInitial::new( board.clone() );
-      let optimizer = HybridOptimizer::new( Seed::default(), initial );
-      let strategy = HybridStrategy
-      {
-        start_with : StrategyMode::SA,
-        finalize_with : StrategyMode::SA,
-        number_of_cycles : 1,
-        ga_generations_number : 0,
-        sa_generations_number : 1000,
-        population_percent : 1.0,
-        generation_limit : 100_000_000,
-        population_size : 1,
-      };
+      let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+
       let now = std::time::Instant::now();
-      let ( _reason, _generation ) = optimizer.optimize( &strategy );
+      let ( _reason, _generation ) = optimizer.optimize();
       let elapsed = now.elapsed();
 
       // optimized
@@ -182,13 +160,13 @@ pub fn get_sa_optimal_params()
         reset_increase_value : optimized_params.1.into(),
       };
 
-      let optimizer = HybridOptimizer::new( Seed::default(), initial )
+      let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} )
       .set_sa_temp_schedule( Box::new( temp_schedule ) )
       .set_sa_max_mutations_per_generation( optimized_params.2 as usize )
       ;
       
       let now = std::time::Instant::now();
-      let ( _reason, _generation ) = optimizer.optimize( &strategy );
+      let ( _reason, _generation ) = optimizer.optimize();
       let opt_elapsed = now.elapsed();
       let res = elapsed.as_millis() as i128 - opt_elapsed.as_millis() as i128;
       results.push( res );
@@ -211,9 +189,9 @@ pub fn ga_optimal_params()
     for board in level_boards
     {  
       let optimizer = NelderMeadOptimizer::new()
-      .starting_point( Point::new( vec![ 0.25, 0.25, 0.5 ] ) )
+      .starting_point( Point::new( vec![ 0.25, 0.5 ] ) )
       .unwrap()
-      .simplex_size( vec![ 0.1, 0.1, 0.2 ] )
+      .simplex_size( vec![ 0.1, 0.2 ] )
       .unwrap()
       .set_improvement_threshold( 10.0 )
       .set_max_no_improvement_steps( 5 )
@@ -225,29 +203,16 @@ pub fn ga_optimal_params()
         {
           let initial = SudokuInitial::new( board.clone() );
 
-          let optimizer = HybridOptimizer::new( Seed::default(), initial )
+          let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  )
           .set_ga_elite_selection_rate( case.coords[ 0 ] )
-          .set_ga_random_selection_rate( case.coords[ 1 ] )
-          .set_ga_mutation_rate( case.coords[ 2 ] )
+          .set_ga_mutation_rate( case.coords[ 1 ] )
           ;
-
-          let strategy = HybridStrategy
-          {
-            start_with : StrategyMode::GA,
-            finalize_with : StrategyMode::GA,
-            number_of_cycles : 1,
-            ga_generations_number : 1000,
-            sa_generations_number : 0,
-            population_percent : 1.0,
-            generation_limit : 100_000_000,
-            population_size : 10000,
-          };
           
           let mut results: Vec< std::time::Duration > = Vec::new();
           for _ in 0..3
           {
             let now = std::time::Instant::now();
-            let ( _reason, _generation ) = optimizer.optimize( &strategy );
+            let ( _reason, _generation ) = optimizer.optimize();
             let elapsed = now.elapsed();
             results.push( elapsed );
           }
@@ -280,9 +245,9 @@ pub fn hybrid_optimal_params() -> Vec< ( Level, Vec< NMResult > ) >
     for board in level_boards
     {  
       let optimizer = NelderMeadOptimizer::new()
-      .starting_point( Point::new( vec![ 0.999, 1.0, 2000.0, 0.25, 0.25, 0.5 ] ) )
+      .starting_point( Point::new( vec![ 0.999, 1.0, 2000.0, 0.25, 0.5 ] ) )
       .unwrap()
-      .simplex_size( vec![ 0.002, 0.2, 200.0, 0.1, 0.1, 0.2 ] )
+      .simplex_size( vec![ 0.002, 0.2, 200.0, 0.1, 0.2 ] )
       .unwrap()
       .set_improvement_threshold( 10.0 )
       .set_max_no_improvement_steps( 5 )
@@ -300,31 +265,18 @@ pub fn hybrid_optimal_params() -> Vec< ( Level, Vec< NMResult > ) >
             reset_increase_value : case.coords[ 1 ].into(),
           };
 
-          let optimizer = HybridOptimizer::new( Seed::default(), initial )
+          let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  )
           .set_sa_temp_schedule( Box::new( temp_schedule ) )
           .set_sa_max_mutations_per_generation( case.coords[ 2 ] as usize )
           .set_ga_elite_selection_rate( case.coords[ 3 ] )
-          .set_ga_random_selection_rate( case.coords[ 4 ] )
-          .set_ga_mutation_rate( case.coords[ 5 ] )
+          .set_ga_mutation_rate( case.coords[ 4 ] )
           ;
-
-          let strategy = HybridStrategy
-          {
-            start_with : StrategyMode::GA,
-            finalize_with : StrategyMode::SA,
-            number_of_cycles : 2,
-            ga_generations_number : 1000,
-            sa_generations_number : 1000,
-            population_percent : 1.0,
-            generation_limit : 1_000_000,
-            population_size : 10000,
-          };
           
           let mut results: Vec< std::time::Duration > = Vec::new();
           for _ in 0..3
           {
             let now = std::time::Instant::now();
-            let ( _reason, _generation ) = optimizer.optimize( &strategy );
+            let ( _reason, _generation ) = optimizer.optimize();
             let elapsed = now.elapsed();
             results.push( elapsed );
           }

@@ -1,7 +1,7 @@
 //! Performs solving of sudoku puzzle using Simmulated Annealing algorithm.
 //! 
 
-use optimization_tools::{ *, optimization::{ HybridOptimizer, StrategyMode, HybridStrategy, BestRowsColumnsCrossover, RandomPairInBlockMutation } };
+use optimization_tools::{ *, optimization::{ HybridOptimizer, BestRowsColumnsCrossover, RandomPairInBlockMutation } };
 use sudoku::*;
 
 const INPUT : &str = r#"
