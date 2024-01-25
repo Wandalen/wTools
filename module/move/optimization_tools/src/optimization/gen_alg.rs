@@ -41,7 +41,7 @@ pub struct MultiplePointsBlockCrossover {}
 impl CrossoverOperator for MultiplePointsBlockCrossover
 {
   type Person = SudokuPerson;
-  fn crossover( &self, hrng : Hrng, parent1 : &Self::Person, parent2 : &Self::Person ) -> Self::Person 
+  fn crossover( &self, hrng : Hrng, parent1 : &Self::Person, parent2 : &Self::Person ) -> Self::Person
   {
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
@@ -78,6 +78,7 @@ impl CrossoverOperator for MultiplePointsBlockCrossover
         }
       }
     }
+    
 
     let child = SudokuPerson::with_board( Board::new( child_storage ) );
     child
@@ -91,7 +92,8 @@ pub struct BestRowsColumnsCrossover {}
 impl CrossoverOperator for BestRowsColumnsCrossover
 {
   type Person = < SudokuInitial as SeederOperator >::Person;
-  fn crossover( &self, _hrng : Hrng, parent1 : &SudokuPerson, parent2 : &SudokuPerson ) -> SudokuPerson 
+  
+  fn crossover( &self, _hrng : Hrng, parent1 : &Self::Person, parent2 : &Self::Person ) -> Self::Person
   {
     let mut rows_costs = vec![ Vec::new(); 2 ];
     let mut columns_costs = vec![ Vec::new(); 2 ];
@@ -199,7 +201,7 @@ pub struct TournamentSelection
 }
 
 
-impl< 'initial > SelectionOperator< <SudokuInitial as SeederOperator>::Person > for TournamentSelection
+impl SelectionOperator< <SudokuInitial as SeederOperator>::Person > for TournamentSelection
 {
   fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< <SudokuInitial as SeederOperator>::Person > ) -> &'a <SudokuInitial as SeederOperator>::Person
   {
@@ -235,11 +237,8 @@ pub trait Individual
   fn fitness( &self ) -> usize;
   /// Recalculate fitness value of individual.
   fn update_fitness( &mut self );
-  /// Optimize current Individual using GA or SA method as specified by mode.
-  //fn evolve( &self, hrng : Hrng, generation : &G, mode : &EvolutionMode< '_ > ) -> Self;
   /// Check if current solution is optimal.
   fn is_optimal( &self ) -> bool;
-  fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
 }
 
 impl Individual for SudokuPerson
@@ -266,29 +265,14 @@ impl Individual for SudokuPerson
     self.cost = self.board.total_error().into();
   }
 
-  /// Calculate the initial temperature for the optimization process.
-  fn initial_temperature( &self, hrng : Hrng ) -> Temperature
-  {
-    //   use statrs::statistics::Statistics;
-    //   let state = SudokuPerson::new( &self.initial_board, hrng.clone() );
-    //   const N : usize = 16;
-    //   let mut costs : [ f64 ; N ] = [ 0.0 ; N ];
-    //   for i in 0..N
-    //   {
-    //   let state2 = state.mutate_random( &self.initial_board, hrng.clone() );
-    //   costs[ i ] = state2.cost.into();
-    //   }
-    //   costs[..].std_dev().into()
-      1.1.into()
-  }
-
 }
     
 pub trait MutationOperator : Debug
 {
   type Person : Individual;
+  type Context;
 
-  fn mutate( &self, hrng : Hrng, person : &mut Self::Person );
+  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, context : &Self::Context );
 }
 
 #[ derive( Debug ) ]
@@ -297,8 +281,9 @@ pub struct RandomPairInBlockMutation {}
 impl MutationOperator for RandomPairInBlockMutation
 {
   type Person = SudokuPerson;
+  type Context = Board;
 
-  fn mutate( &self, hrng : Hrng, person : &mut Self::Person ) 
+  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, context : &Self::Context ) 
     {
         let mutagen : SudokuMutagen =
         loop 
@@ -307,7 +292,7 @@ impl MutationOperator for RandomPairInBlockMutation
           let mut rng = rng_ref.lock().unwrap();
           let block : BlockIndex = rng.gen();
           drop( rng );
-          if let Some( m ) = cells_pair_random_in_block( &person.initial, block, hrng.clone() )
+          if let Some( m ) = cells_pair_random_in_block( &context, block, hrng.clone() )
           {
             break m;
           }
@@ -328,62 +313,22 @@ impl MutationOperator for RandomPairInBlockMutation
 pub trait SeederOperator
 {
   /// Type that represents generation of solutions in optimization process.
-  type Person : Individual + Clone + PartialEq;
+  type Person : Individual + Clone + PartialEq + Send + Sync;
+  type Context : Sync;
 
   /// Create the initial generation for the optimization algorithm.
   fn initial_generation( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person >;
 
   /// Create the initial generation for the optimization algorithm.
   fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
+
+  fn context( &self ) -> &Self::Context;
 }
 
 /// Functionality of generation of solutions for optimization.
 pub trait Generation
 {
-  /// Performs evolution of generation, either as SA mutation of every Individual or using GA genetic operators defined in GAConfig.
-  //fn evolve( &mut self, hrng : Hrng ) -> Self;
-
-  /// Calculate initial temperature for SA optimization.
-  //fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
-
   /// Check if current generation contains optimal solution.
   fn is_good_enough( &self ) -> bool;
 }
 
-impl Generation for SudokuGeneration
-{
-//   fn evolve( &mut self, hrng : Hrng ) -> Self 
-//   {
-//     let mut new_population = Vec::new();
-//     self.population.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
-
-//     for i in 0..self.population.len()
-//     {
-//       //new_population.push( self.population[ i ].evolve( hrng.clone(), & *self ) );
-//       if new_population.last().unwrap().is_optimal()
-//       {
-//         break;
-//       }
-//     }
-    
-//     SudokuGeneration
-//     {
-//       population : new_population,
-//       ..self.clone()
-//     }
-//   }
-
-
-
-  fn is_good_enough( &self ) -> bool 
-  {
-    for person in &self.population
-    {
-      if person.is_optimal()
-      {
-        return true;
-      }
-    }
-    false
-  }
-}

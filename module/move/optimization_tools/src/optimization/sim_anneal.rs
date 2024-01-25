@@ -27,7 +27,7 @@ impl From< f32 > for Temperature
 /// Struct that represents coefficient to change temperature value.
 #[ derive( Debug, Display, Clone, Copy, PartialEq, PartialOrd, FromInner, InnerFrom ) ]
 #[ derive( Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign ) ]
-pub struct TemperatureFactor( f64 );
+pub struct TemperatureFactor( pub f64 );
 
 impl TemperatureFactor
 {
