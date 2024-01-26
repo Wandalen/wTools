@@ -15,12 +15,3 @@ jobs :
       manifest_path : 'module/core/strs_tools/Cargo.toml'
       module_name : 'strs_tools'
       commit_message : ${{ github.event.head_commit.message }}
-
-  # wstring_tools
-
-  test_wstring_tools :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
-    with :
-      manifest_path : 'module/alias/wstring_tools/Cargo.toml'
-      module_name : 'wstring_tools'
-      commit_message : ${{ github.event.head_commit.message }}

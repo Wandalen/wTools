@@ -1,4 +1,5 @@
 /// Internal namespace.
+#[ cfg( not( feature = "no_std" ) ) ]
 pub( crate ) mod private
 {
   // use crate::protected::*;
@@ -76,6 +77,7 @@ pub( crate ) mod private
 
 }
 
+#[ cfg( not( feature = "no_std" ) ) ]
 ::meta_tools::mod_interface!
 {
 
