@@ -235,10 +235,9 @@ impl SudokuInitial
   }
 }
 
-impl SeederOperator for SudokuInitial
+impl InitialProblem for SudokuInitial
 {
   type Person = SudokuPerson;
-  type Context = Board;
   
   fn initial_generation( &self, hrng : Hrng, size : usize ) -> Vec< SudokuPerson >
   {
@@ -268,23 +267,19 @@ impl SeederOperator for SudokuInitial
   {
     person.board.total_error() as f64
   }
-
-  fn context( &self ) -> &Board
-  {
-    &self.board
-  }
   
 }
 
+/// Mutation that randomly swaps two values in sudoku board, excluding values set in initial board.
 #[ derive( Debug ) ]
 pub struct RandomPairInBlockMutation {}
 
 impl MutationOperator for RandomPairInBlockMutation
 {
   type Person = SudokuPerson;
-  type Context = Board;
+  type Problem = SudokuInitial;
 
-  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, context : &Self::Context ) 
+  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, context : &Self::Problem ) 
     {
         let mutagen : SudokuMutagen =
         loop 
@@ -293,7 +288,7 @@ impl MutationOperator for RandomPairInBlockMutation
           let mut rng = rng_ref.lock().unwrap();
           let block : BlockIndex = rng.gen();
           drop( rng );
-          if let Some( m ) = cells_pair_random_in_block( &context, block, hrng.clone() )
+          if let Some( m ) = cells_pair_random_in_block( &context.board, block, hrng.clone() )
           {
             break m;
           }
@@ -310,9 +305,13 @@ impl MutationOperator for RandomPairInBlockMutation
 
 }
 
-impl SelectionOperator< <SudokuInitial as SeederOperator>::Person > for TournamentSelection
+impl SelectionOperator< <SudokuInitial as InitialProblem>::Person > for TournamentSelection
 {
-  fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< <SudokuInitial as SeederOperator>::Person > ) -> &'a <SudokuInitial as SeederOperator>::Person
+  fn select< 'a >
+  ( 
+    &self, hrng : Hrng, 
+    population : &'a Vec< <SudokuInitial as InitialProblem>::Person > 
+  ) -> &'a <SudokuInitial as InitialProblem>::Person
   {
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
@@ -396,7 +395,7 @@ pub struct BestRowsColumnsCrossover {}
 
 impl CrossoverOperator for BestRowsColumnsCrossover
 {
-  type Person = < SudokuInitial as SeederOperator >::Person;
+  type Person = < SudokuInitial as InitialProblem >::Person;
   
   fn crossover( &self, _hrng : Hrng, parent1 : &Self::Person, parent2 : &Self::Person ) -> Self::Person
   {

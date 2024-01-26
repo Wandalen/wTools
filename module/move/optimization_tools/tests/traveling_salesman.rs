@@ -14,7 +14,7 @@ fn tsp_person()
   let hrng = Hrng::master_with_seed( Seed::default() );
   let graph = TSPGraph::default();
 
-  let tsp_initial = TSPSeeder{ graph, starting_node : NodeIndex( 1 ) };
+  let tsp_initial = TSProblem{ graph, starting_node : NodeIndex( 1 ) };
   let population = tsp_initial.initial_generation( hrng.clone(), 1 );
   let person = population[ 0 ].clone();
 
@@ -37,7 +37,7 @@ fn tsp_person_mutate()
   let hrng = Hrng::master_with_seed( Seed::from_integer(1) );
   let graph = TSPGraph::default();
 
-  let tsp_initial = TSPSeeder{ graph, starting_node : NodeIndex( 1 ) };
+  let tsp_initial = TSProblem{ graph, starting_node : NodeIndex( 1 ) };
   let population = tsp_initial.initial_generation( hrng.clone(), 1 );
   let mut person = population[ 0 ].clone();
 
@@ -89,7 +89,7 @@ fn find_route()
 
   let graph = TSPGraph::default();
 
-  let tsp_initial = TSPSeeder{ graph, starting_node : NodeIndex( 1 ) };
+  let tsp_initial = TSProblem{ graph, starting_node : NodeIndex( 1 ) };
 
   let mut optimizer = HybridOptimizer::new( seed, tsp_initial, OrderedRouteCrossover{}, TSRouteMutation{} )
   .set_population_size( 100 )

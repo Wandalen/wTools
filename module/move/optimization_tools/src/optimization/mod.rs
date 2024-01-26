@@ -39,7 +39,7 @@ pub enum Reason
 
 /// Represents hybrid optimization method with both Simulated Annealing and Genetic Algorithm.
 #[ derive( Debug ) ]
-pub struct HybridOptimizer< S : SeederOperator, C, M >
+pub struct HybridOptimizer< S : InitialProblem, C, M >
 {
 
   /// Max amount of mutations in generation.
@@ -67,7 +67,7 @@ pub struct HybridOptimizer< S : SeederOperator, C, M >
   pub ga_crossover_operator : C,
 
   /// Selection genetic operator, which defines how Individuals from current generation are selected to be breeders of new generation.
-  pub ga_selection_operator : Box< dyn SelectionOperator< < S as SeederOperator >::Person > >,
+  pub ga_selection_operator : Box< dyn SelectionOperator< < S as InitialProblem >::Person > >,
 
   /// Hierarchical random numbers generator.
   pub hrng : Hrng,
@@ -84,18 +84,20 @@ pub struct HybridOptimizer< S : SeederOperator, C, M >
   /// Number of Individuals in initial generation of solutions.
   pub population_size : usize,
 
+  /// Mutation operator, randomly changes person's genome to introduce diversity into population.
   pub mutation_operator : M,
 
+  /// Current temperature of optimization process.
   pub temperature : Temperature,
 }
 
-impl< S : SeederOperator, C : CrossoverOperator::< Person = < S as SeederOperator>::Person >, M > HybridOptimizer< S, C, M >
-where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
-  M : MutationOperator::< Context = < S as SeederOperator>::Context > + Sync
+impl< S : InitialProblem + Sync, C : CrossoverOperator::< Person = < S as InitialProblem>::Person >, M > HybridOptimizer< S, C, M >
+where M : MutationOperator::< Person = < S as InitialProblem>::Person > + Sync,
+  M : MutationOperator::< Problem = S > + Sync
 {
   /// Create new instance of HybridOptimizer with default config for SA and GA.
   pub fn new( random_seed : Seed, population_seeder : S, crossover_op : C, mutation_op : M ) -> Self
-  where gen_alg::TournamentSelection : gen_alg::SelectionOperator< < S as gen_alg::SeederOperator >::Person >
+  where TournamentSelection : SelectionOperator< < S as InitialProblem >::Person >
   {
     let selection_operator = Box::new( TournamentSelection
     {
@@ -120,7 +122,7 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
       fitness_recalculation : false,
       mutation_rate : 0.5,
       ga_crossover_operator : crossover_op,
-      ga_selection_operator : selection_operator as Box<dyn SelectionOperator< < S as SeederOperator >::Person > >,
+      ga_selection_operator : selection_operator as Box<dyn SelectionOperator< < S as InitialProblem >::Person > >,
       hrng,
       seeder : population_seeder,
       generation_limit : 10_000,
@@ -131,12 +133,14 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
     }
   }
 
+  /// Set size of initial population.
   pub fn set_population_size( mut self, size : usize ) -> Self
   {
     self.population_size = size;
     self
   }
 
+  /// Set max generation number.
   pub fn set_generation_limit( mut self, limit : usize ) -> Self
   {
     self.generation_limit = limit;
@@ -172,7 +176,7 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
   }
 
   /// Perform hybrid SA/GA optimization.
-  pub fn optimize( &mut self ) -> ( Reason, Option< < S as SeederOperator >::Person > )
+  pub fn optimize( &mut self ) -> ( Reason, Option< < S as InitialProblem >::Person > )
   {
     let mut generation = self.seeder.initial_generation( self.hrng.clone(), self.population_size );
     let mut generation_number = 1;
@@ -229,7 +233,7 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
     }
   }
 
-  fn population_has_solution( &self, population : &Vec< < S as SeederOperator >::Person > ) -> bool
+  fn population_has_solution( &self, population : &Vec< < S as InitialProblem >::Person > ) -> bool
   {
     for person in population
     {
@@ -244,9 +248,9 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
   fn evolve
   ( 
     &self, 
-    person : < S as SeederOperator >::Person, 
-    population : &Vec< < S as SeederOperator >::Person >,
-  ) -> < S as SeederOperator >::Person
+    person : < S as InitialProblem >::Person, 
+    population : &Vec< < S as InitialProblem >::Person >,
+  ) -> < S as InitialProblem >::Person
   {
     let mut child =
     if population.iter().position( | p | *p == person ).unwrap() <= ( population.len() as f64 * self.ga_elite_selection_rate ) as usize
@@ -282,7 +286,7 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
       let hrng = self.hrng.clone();
       let mutation_op = &self.mutation_operator;
       let temperature = self.temperature;
-      let mutation_context = self.seeder.context();
+      let mutation_context = &self.seeder;
 
       let candidates = rayon::iter::repeat( () )
       .take( expected_number_of_mutations )

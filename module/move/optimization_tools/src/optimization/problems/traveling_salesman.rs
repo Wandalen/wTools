@@ -1,3 +1,19 @@
+//! Solving Traveling Salesman Problem using HybridOptiomizer.
+//! 
+//! Initial population generated as random routes where each node appears exactly once( except for starting node, which apperars at the beginning and at the end ).
+//! 
+//! Selection operator performes tourmanent selection: randomly selecting a group of individuals from the population( the number of individuals selected is equal to the tournament_size value).
+//! Likelihood of win of the fittest participant is determined by tournament_selection_pressure.
+//! 
+//! Crossover operator performs ordered crossover to preserve uniqueness of each node in route: a subroute from the first parent is selected and the remainder of the route is filled 
+//! with the nodes from the second parent in the order in which they appear, without duplicating any nodes in the selected subroute from the first parent.
+//! 
+//! Mutation operator alters solution in one of three different ways, determined randomly: 
+//! - by swapping two nodes within the route( start and end nodes excluded ), 
+//! - by reversing subroute, 
+//! - by changing position of subroute.
+//! 
+
 use std::collections::HashMap;
 use crate::optimization::*;
 
@@ -5,25 +21,38 @@ use derive_tools::{ FromInner, InnerFrom };
 use deterministic_rand::{ Hrng, Rng, seq::SliceRandom };
 use iter_tools::Itertools;
 
-
+/// Functionality for symmetrical traveling salesman problem undirected graph representation.
 pub trait Graph 
 {
+  /// Graph node type.
   type N;
+  /// Graph edge type.
   type E;
+
+  /// Checks if edge connecting two nodes exists.
   fn has_edge( &self, node1 : &Self::N, node2 : &Self::N ) -> bool;
+
+  /// Adds edge to graph, connecting two nodes. 
   fn add_edge( &mut self, node1 : Self::N, node2 : Self::N, weight : f64 );
-  fn nodes_number( &self ) -> usize; 
+
+  /// Return list of graph nodes.
   fn nodes( &self ) -> Vec< Self::N >;
+
+  /// Get edge that connects two given nodes. Returns None if edge doesn't exist.
   fn get_edge( &self, node1 : &Self::N, node2 : &Self::N  ) -> Option< Self::E >;
 }
 
+/// Graph for traveling salesman problem.
+#[ derive( Debug ) ]
 pub struct TSPGraph
 {
+  /// Maps nodes of the graph with list of connected nodes and weight of edge that connects them.
   adjacency_list : HashMap< NodeIndex, Vec < ( NodeIndex, EdgeWeight ) > >,
 }
 
 impl TSPGraph
 {
+  /// Create new instance of graph.
   pub fn new() -> Self
   {
     Self { adjacency_list : HashMap::new() }
@@ -45,23 +74,31 @@ impl Default for TSPGraph
   }
 }
 
+/// Node for traveling salesman route graph.
 #[ derive( Debug, PartialEq, Eq, Hash ) ]
-pub struct Node
+pub struct Node< T >
 {
-  pub value : String,
-  pub index : usize,
+  /// Value of node.
+  pub value : T,
+  /// Index of node.
+  pub index : NodeIndex,
 }
 
+/// Wrapper for index of graph node.
 #[ derive( Debug, PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord ) ]
 pub struct NodeIndex( pub usize );
 
+/// Weight of grtaph edge.
 #[ derive( Debug, FromInner, InnerFrom, Clone, Copy ) ]
-pub struct EdgeWeight( f64 );
+pub struct EdgeWeight( pub f64 );
 
+/// Edge for undirected weighted graph.
+#[ derive( Debug, Clone ) ]
 pub struct Edge( NodeIndex, NodeIndex, EdgeWeight );
 
 impl Edge
 {
+  /// Get weight of the edge.
   pub fn weight( &self ) -> EdgeWeight
   {
     self.2
@@ -102,32 +139,37 @@ impl Graph for TSPGraph
     self.adjacency_list.entry( node2 ).or_default().push( ( node1, weight.into() ) );
   }
 
-  fn nodes_number( &self ) -> usize 
-  {
-    self.adjacency_list.keys().len()
-  }
-
   fn nodes( &self ) -> Vec< NodeIndex >
   {
     self.adjacency_list.keys().map( | k | *k ).collect_vec()
   }
 }
 
-pub struct TSPSeeder
+/// Initial configuration of symmetrical traveling salesman problem.
+#[ derive( Debug ) ]
+pub struct TSProblem
 {
+  /// Node to start route from.
   pub starting_node : NodeIndex,
+
+  /// Weighted graph with nodes and weighted edges that connect them.
   pub graph : TSPGraph,
 }
 
+/// Possible solution of traveling salesman problem, contains route and its distance.
 #[ derive( Debug, PartialEq, Clone ) ]
 pub struct TSPerson 
 {
+  /// Route which contains starting node at first and last position and every other node exactly once.
   pub route : Vec< NodeIndex >,
+
+  /// Total distance of the route.
   pub distance : f64,
 }
 
 impl TSPerson
 {
+  /// Create new instance of TSPerson from given list of nodes and with defaul distance.
   pub fn new( route : Vec< NodeIndex > ) -> Self
   {
     Self { route, distance : Default::default() }
@@ -152,10 +194,10 @@ impl Individual for TSPerson
   }
 }
 
-impl SeederOperator for TSPSeeder
+impl InitialProblem for TSProblem
 {
   type Person = TSPerson;
-  type Context = ();
+
   fn initial_generation( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person > 
   {
     let mut population = Vec::new();
@@ -193,11 +235,6 @@ impl SeederOperator for TSPSeeder
     }
 
     dist
-  }
-
-  fn context( &self ) -> &Self::Context 
-  {
-    &()
   }
 
   fn initial_temperature( &self, _hrng : Hrng ) -> Temperature 
@@ -260,6 +297,7 @@ impl SelectionOperator< TSPerson > for TournamentSelection
   }
 }
 
+/// Randomly selects a subroute from the first parent and fills the remainder of the route with the nodes from the second parent in the order in which they appear, without duplicating any nodes in the selected subroute from the first parent.
 #[ derive( Debug ) ]
 pub struct OrderedRouteCrossover {}
 
@@ -300,11 +338,13 @@ impl CrossoverOperator for OrderedRouteCrossover
   }
 }
 
+/// Randomly mutates route in three different ways: by swapping two nodes, by reversing subroute, or by changing position of subroute.
 #[ derive( Debug ) ]
 pub struct TSRouteMutation {}
 
 impl TSRouteMutation
 {
+  /// Randomly selects subroute(omitting starting node) and reverses it.
   pub fn reverse_subroute( hrng : Hrng, person : &mut TSPerson )
   {
     let rng_ref = hrng.rng_ref();
@@ -321,6 +361,7 @@ impl TSRouteMutation
     person.route = new_route;
   }
 
+  /// Randomly chooses two nodes that aren't starting node, and swaps them.
   pub fn swap_nodes( hrng : Hrng, person : &mut TSPerson )
   {
     let rng_ref = hrng.rng_ref();
@@ -332,6 +373,7 @@ impl TSRouteMutation
     let _ = std::mem::replace( &mut person.route[ pos1 ], node2 );
   }
 
+  /// Randomly selects subroute(omitting starting node) and inserts selected subroute into random position within route.
   pub fn move_subroute( hrng :Hrng, person : &mut TSPerson )
   {
     let rng_ref = hrng.rng_ref();
@@ -357,9 +399,9 @@ impl TSRouteMutation
 impl MutationOperator for TSRouteMutation
 {
   type Person = TSPerson;
-  type Context = ();
+  type Problem = TSProblem;
 
-  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, _context : &Self::Context ) 
+  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, _context : &Self::Problem ) 
   {
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();

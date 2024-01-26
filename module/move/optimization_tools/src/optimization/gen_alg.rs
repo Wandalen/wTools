@@ -26,7 +26,9 @@ use crate::optimization::*;
 /// Functionality of crossover genetic operator.
 pub trait CrossoverOperator : Debug
 {
+  /// 
   type Person : Individual + Clone;
+
   /// Produce new Individual using genetic matherial of two selected Individuals.
   fn crossover( &self, hrng : Hrng, parent1 : &Self::Person, parent2 : &Self::Person ) -> Self::Person;
 }
@@ -58,21 +60,25 @@ pub trait Individual
   /// Check if current solution is optimal.
   fn is_optimal( &self ) -> bool;
 }
-    
+
+/// Mutation operator, used to randomly change person's genome and intoduce more diversity into population.
 pub trait MutationOperator : Debug
 {
+  /// Type that represents possible solution of initial problem.
   type Person : Individual;
-  type Context;
+  /// Additional Information for mutation.
+  type Problem : InitialProblem;
 
-  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, context : &Self::Context );
+  /// Randomly changes person's genome.
+  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, context : &Self::Problem );
 }
 
 /// Fuctionality of operator responsible for creation of initial solutions generation.
-pub trait SeederOperator
+pub trait InitialProblem
 {
   /// Type that represents generation of solutions in optimization process.
   type Person : Individual + Clone + PartialEq + Send + Sync;
-  type Context : Sync;
+  // type Context : Sync;
 
   /// Create the initial generation for the optimization algorithm.
   fn initial_generation( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person >;
@@ -80,9 +86,10 @@ pub trait SeederOperator
   /// Create the initial generation for the optimization algorithm.
   fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
 
+  /// Evaluate fitness of provided solution.
   fn evaluate( &self, person : &Self::Person ) -> f64;
 
-  fn context( &self ) -> &Self::Context;
+  // fn context( &self ) -> &Self::Context;
 }
 
 /// Functionality of generation of solutions for optimization.
