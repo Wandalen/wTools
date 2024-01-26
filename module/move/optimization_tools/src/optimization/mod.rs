@@ -124,11 +124,23 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
       hrng,
       seeder : population_seeder,
       generation_limit : 10_000,
-      population_size : 10_000,
+      population_size : 10000,
       temperature : start_temp,
       mutation_operator : mutation_op,
       population_percent : 1.0,
     }
+  }
+
+  pub fn set_population_size( mut self, size : usize ) -> Self
+  {
+    self.population_size = size;
+    self
+  }
+
+  pub fn set_generation_limit( mut self, limit : usize ) -> Self
+  {
+    self.generation_limit = limit;
+    self
   }
 
   /// Set temperature schedule for SA.
@@ -171,7 +183,7 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
     {
       if generation_number > self.generation_limit
       {
-        return ( Reason::GenerationLimit, None );
+        return ( Reason::GenerationLimit, Some( generation[ 0 ].clone() ) );
       }
 
       let mut new_generation = Vec::new();
@@ -199,7 +211,11 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
 
       for i in 0..generation.len()
       {
-        new_generation.push( self.evolve( generation[ i ].clone(), &generation ) );
+        let mut person = self.evolve( generation[ i ].clone(), &generation );
+
+        person.update_fitness( self.seeder.evaluate( &person ) );
+        new_generation.push( person );
+
         if new_generation.last().unwrap().is_optimal()
         {
           break;
