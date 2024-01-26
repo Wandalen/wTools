@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 use crate::optimization::*;
 
-use derive_tools::{ FromInner, InnerFrom, Display };
-use derive_tools::{ Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign };
+use derive_tools::{ FromInner, InnerFrom };
 use deterministic_rand::{ Hrng, Rng, seq::SliceRandom };
 use iter_tools::Itertools;
 
@@ -54,7 +53,7 @@ impl Graph for TSPGraph
   {
     if let Some( node_vec ) = self.adjacency_list.get( &node1 )
     {
-      if node_vec.iter().find( | ( n, w ) | n == node2 ).is_some()
+      if node_vec.iter().find( | ( n, _ ) | n == node2 ).is_some()
       {
         return true;
       }
@@ -66,7 +65,7 @@ impl Graph for TSPGraph
   {
     if let Some( node_vec ) = self.adjacency_list.get( &node1 )
     {
-      if let Some( ( _, weight ) ) = node_vec.iter().find( | ( n, w ) | n == node2 )
+      if let Some( ( _, weight ) ) = node_vec.iter().find( | ( n, _ ) | n == node2 )
       {
         return Some( Edge( *node1, *node2, *weight ) );
       }
@@ -138,9 +137,9 @@ impl Individual for TSPerson
     false
   }
 
-  fn update_fitness( &mut self ) 
+  fn update_fitness( &mut self, value : f64 ) 
   {
-    self.distance;
+    self.distance = value;
   }
 }
 
@@ -152,7 +151,7 @@ impl SeederOperator for TSPSeeder
   {
     let mut population = Vec::new();
     
-    for i in 0..size
+    for _ in 0..size
     {
       let mut list = Vec::new();
       list.push( self.starting_node );
@@ -168,7 +167,7 @@ impl SeederOperator for TSPSeeder
       let mut person = TSPerson::new( list );
       let dist = self.evaluate( &person );
 
-      //person.update_fitness( dist );
+      person.update_fitness( dist );
 
       population.push( person );
     }
@@ -176,14 +175,50 @@ impl SeederOperator for TSPSeeder
     population
   }
 
+  fn evaluate( &self, person : &TSPerson ) -> f64 
+  {
+    let mut dist = 0.0;
+    for ( node1, node2 ) in person.route.iter().tuples()
+    {
+      dist += f64::from( self.graph.get_edge( node1, node2 ).unwrap().weight() );
+    }
+
+    dist
+  }
+
   fn context( &self ) -> &Self::Context 
   {
     &()
   }
 
-  fn initial_temperature( &self, hrng : Hrng ) -> Temperature 
+  fn initial_temperature( &self, _hrng : Hrng ) -> Temperature 
   {
-    100.0.into()
+        
+    let nodes = self.graph.nodes();
+
+    let mut dist_vec = Vec::new();
+    for i in 0..nodes.len() - 1
+    {
+      for j in i + 1..nodes.len()
+      {
+        dist_vec.push( self.graph.get_edge( &nodes[ i ], &nodes[ j ] ).unwrap().weight() );
+      }
+    }
+
+    dist_vec.sort_by( | w1, w2 | w1.0.total_cmp( &w2.0 ) );
+
+    let dist_len = dist_vec.len();
+
+    let mut prev_diff = dist_vec.iter().skip( 1 ).fold( 0.0, | acc, w | acc + ( w.0 - dist_vec[ 0 ].0 ));
+
+    let mut total_diff = prev_diff;
+    for i in 1..dist_len
+    {
+      prev_diff = prev_diff - ( dist_vec[ i ].0 - dist_vec[ i - 1 ].0 ) * ( ( dist_len - i ) as f64 );
+      total_diff += prev_diff;
+    }
+
+    ( total_diff / ( ( dist_len * ( dist_len - 1 ) ) as f64 / 2.0 ) ).into()
   }
 }
 
@@ -236,9 +271,6 @@ impl CrossoverOperator for OrderedRouteCrossover
     let end = subroute_point1.max( subroute_point2 );
 
     let mut parent1_part = parent1.route.iter().skip( start ).take( end - start ).collect_vec();
-
-    let mut parent_index = 0;
-
     let mut parent2_part = parent2.route.iter().filter( | n | parent1_part.contains( n ) ).collect_vec();
     child_list.push( parent1.route[ 0 ] );
 
@@ -287,11 +319,29 @@ impl TSRouteMutation
     let mut rng = rng_ref.lock().unwrap();
 
     let ( pos1, pos2 ) = ( 1..person.route.len() - 2 ).choose_multiple( &mut *rng, 2 ).into_iter().collect_tuple().unwrap();
-    // let node2 = std::mem::replace( &mut person.route[ pos1 ],  person.route[ pos2 ] );
+    let node1 = person.route[ pos1 ];
+    let node2 = std::mem::replace( &mut person.route[ pos2 ], node1 );
+    let _ = std::mem::replace( &mut person.route[ pos1 ], node2 );
   }
 
   fn move_subroute( hrng :Hrng, person : &mut TSPerson )
-  {}
+  {
+    let rng_ref = hrng.rng_ref();
+    let mut rng = rng_ref.lock().unwrap();
+    let ( pos1, pos2,  ) = ( 1..person.route.len() - 1 ).choose_multiple( &mut *rng, 2 ).into_iter().collect_tuple().unwrap();
+    let start = pos1.min( pos2 );
+    let end = pos1.max( pos2 );
+    let mut sub_route = Vec::new();
+    sub_route.extend( person.route.iter().take( start ) );
+    sub_route.extend( person.route.iter().skip( end ) );
+    let insert_position = ( 1..sub_route.len() - 1 ).choose( &mut *rng ).unwrap();
+    let mut new_route = Vec::new();
+    new_route.extend( sub_route.iter().take( insert_position - 1 ) );
+    new_route.extend( person.route.iter().skip( start ).take( end - start ) );
+    new_route.extend( sub_route.iter().skip( insert_position - 1 ) );
+
+    person.route = new_route;
+  }
 }
 
 impl MutationOperator for TSRouteMutation
@@ -299,8 +349,19 @@ impl MutationOperator for TSRouteMutation
   type Person = TSPerson;
   type Context = ();
 
-  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, context : &Self::Context ) 
+  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, _context : &Self::Context ) 
   {
-    
+    let rng_ref = hrng.rng_ref();
+    let mut rng = rng_ref.lock().unwrap();
+    let mutation = [ 1, 2, 3 ].choose( &mut *rng ).unwrap();
+    drop( rng );
+
+    match mutation
+    {
+      1 => Self::move_subroute( hrng.clone(), person ),
+      2 => Self::reverse_subroute( hrng.clone(), person ),
+      3 => Self::swap_nodes( hrng.clone(), person ),
+      _ => unreachable!()
+    }
   }
 }

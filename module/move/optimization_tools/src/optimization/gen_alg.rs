@@ -54,7 +54,7 @@ pub trait Individual
   /// Objective function value that is used to measure how close Individual solution is to optimum.
   fn fitness( &self ) -> usize;
   /// Recalculate fitness value of individual.
-  fn update_fitness( &mut self );
+  fn update_fitness( &mut self, value : f64 );
   /// Check if current solution is optimal.
   fn is_optimal( &self ) -> bool;
 }
@@ -79,6 +79,8 @@ pub trait SeederOperator
 
   /// Create the initial generation for the optimization algorithm.
   fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
+
+  fn evaluate( &self, person : &Self::Person ) -> f64;
 
   fn context( &self ) -> &Self::Context;
 }

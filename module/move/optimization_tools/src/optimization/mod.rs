@@ -348,7 +348,7 @@ where M : MutationOperator::< Person = < S as SeederOperator>::Person > + Sync,
 
     if self.fitness_recalculation
     {
-      child.update_fitness();
+      child.update_fitness( self.seeder.evaluate( &child ) );
     }
 
     child

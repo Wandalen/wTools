@@ -142,9 +142,9 @@ impl Individual for SudokuPerson
     self.cost.into()
   }
 
-  fn update_fitness( &mut self )
+  fn update_fitness( &mut self, value : f64 )
   {
-    self.cost = self.board.total_error().into();
+    self.cost = ( value as usize ).into();
   }
 }
 
@@ -262,6 +262,11 @@ impl SeederOperator for SudokuInitial
       costs[ i ] = state2.cost.into();
     }
     costs[..].std_dev().into()
+  }
+
+  fn evaluate( &self, person : &SudokuPerson ) -> f64 
+  {
+    person.board.total_error() as f64
   }
 
   fn context( &self ) -> &Board
