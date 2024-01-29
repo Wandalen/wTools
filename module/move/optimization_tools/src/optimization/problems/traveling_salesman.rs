@@ -88,7 +88,7 @@ pub struct Node< T >
 #[ derive( Debug, PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord ) ]
 pub struct NodeIndex( pub usize );
 
-/// Weight of grtaph edge.
+/// Weight of graph edge.
 #[ derive( Debug, FromInner, InnerFrom, Clone, Copy ) ]
 pub struct EdgeWeight( pub f64 );
 
@@ -231,7 +231,14 @@ impl InitialProblem for TSProblem
     let mut dist = 0.0;
     for ( node1, node2 ) in person.route.iter().tuple_windows()
     {
-      dist += f64::from( self.graph.get_edge( node1, node2 ).unwrap().weight() );
+      if let Some( edge ) = self.graph.get_edge( node1, node2 )
+      {
+        dist += f64::from( edge.weight() )
+      }
+      else 
+      {
+        dist += f64::from( f64::INFINITY );
+      }
     }
 
     dist
@@ -247,7 +254,10 @@ impl InitialProblem for TSProblem
     {
       for j in i + 1..nodes.len()
       {
-        dist_vec.push( self.graph.get_edge( &nodes[ i ], &nodes[ j ] ).unwrap().weight() );
+        if let Some( edge ) = self.graph.get_edge( &nodes[ i ], &nodes[ j ] )
+        {
+          dist_vec.push( edge.weight() );
+        }
       }
     }
 
@@ -351,10 +361,15 @@ impl TSRouteMutation
     let mut rng = rng_ref.lock().unwrap();
     let ( pos1, pos2 ) = ( 1..person.route.len() - 2 ).choose_multiple( &mut *rng, 2 ).into_iter().collect_tuple().unwrap();
     let start = pos1.min( pos2 );
-    let end = pos1.max( pos2 );
+    let mut end = pos1.max( pos2 );
 
-    let mut new_route = person.route.iter().take( start - 1 ).collect_vec();
-    new_route.extend( person.route.iter().skip( start - 1 ).take( end - start ).rev() );
+    if end - start == 0
+    {
+      end += 1;
+    }
+
+    let mut new_route = person.route.iter().take( start ).collect_vec();
+    new_route.extend( person.route.iter().skip( start ).take( end - start - 1 ).rev() );
     new_route.extend( person.route.iter().skip( end - 1 ) );
     let new_route = new_route.into_iter().map( | n | *n ).collect_vec();
     
