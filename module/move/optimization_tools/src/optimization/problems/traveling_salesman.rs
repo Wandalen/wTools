@@ -198,7 +198,7 @@ impl InitialProblem for TSProblem
 {
   type Person = TSPerson;
 
-  fn initial_generation( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person > 
+  fn initial_population( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person > 
   {
     let mut population = Vec::new();
     
@@ -226,6 +226,27 @@ impl InitialProblem for TSProblem
     population
   }
 
+  fn get_random_person( &self, hrng : Hrng ) -> TSPerson 
+  {
+    let mut list = Vec::new();
+    list.push( self.starting_node );
+
+    let rng_ref = hrng.rng_ref();
+    let mut rng = rng_ref.lock().unwrap();
+
+    let mut nodes = self.graph.nodes().iter().cloned().filter( | &n | n != self.starting_node ).collect_vec();
+    deterministic_rand::seq::SliceRandom::shuffle( nodes.as_mut_slice(), &mut *rng );
+
+    list.append( &mut nodes );
+    list.push( self.starting_node );
+    let mut person = TSPerson::new( list );
+    let dist = self.evaluate( &person );
+
+    person.update_fitness( dist );
+
+    person
+  }
+
   fn evaluate( &self, person : &TSPerson ) -> f64 
   {
     let mut dist = 0.0;
@@ -242,39 +263,6 @@ impl InitialProblem for TSProblem
     }
 
     dist
-  }
-
-  fn initial_temperature( &self, _hrng : Hrng ) -> Temperature 
-  {
-        
-    let nodes = self.graph.nodes();
-
-    let mut dist_vec = Vec::new();
-    for i in 0..nodes.len() - 1
-    {
-      for j in i + 1..nodes.len()
-      {
-        if let Some( edge ) = self.graph.get_edge( &nodes[ i ], &nodes[ j ] )
-        {
-          dist_vec.push( edge.weight() );
-        }
-      }
-    }
-
-    dist_vec.sort_by( | w1, w2 | w1.0.total_cmp( &w2.0 ) );
-
-    let dist_len = dist_vec.len();
-
-    let mut prev_diff = dist_vec.iter().skip( 1 ).fold( 0.0, | acc, w | acc + ( w.0 - dist_vec[ 0 ].0 ));
-
-    let mut total_diff = prev_diff;
-    for i in 1..dist_len
-    {
-      prev_diff = prev_diff - ( dist_vec[ i ].0 - dist_vec[ i - 1 ].0 ) * ( ( dist_len - i ) as f64 );
-      total_diff += prev_diff;
-    }
-
-    ( total_diff / ( ( dist_len * ( dist_len - 1 ) ) as f64 / 2.0 ) ).into()
   }
 }
 

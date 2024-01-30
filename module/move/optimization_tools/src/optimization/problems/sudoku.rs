@@ -239,7 +239,7 @@ impl InitialProblem for SudokuInitial
 {
   type Person = SudokuPerson;
   
-  fn initial_generation( &self, hrng : Hrng, size : usize ) -> Vec< SudokuPerson >
+  fn initial_population( &self, hrng : Hrng, size : usize ) -> Vec< SudokuPerson >
   {
     let mut population = Vec::new();
     for _ in 0..size
@@ -249,25 +249,15 @@ impl InitialProblem for SudokuInitial
     population
   }
 
-  fn initial_temperature( &self, hrng : Hrng ) -> Temperature
+  fn get_random_person( &self, hrng : Hrng ) -> SudokuPerson 
   {
-    use statrs::statistics::Statistics;
-    let state = SudokuPerson::new( &self.board, hrng.clone() );
-    const N : usize = 16;
-    let mut costs : [ f64 ; N ] = [ 0.0 ; N ];
-    for i in 0..N
-    {
-      let state2 = state.mutate_random( &self.board, hrng.clone() );
-      costs[ i ] = state2.cost.into();
-    }
-    costs[..].std_dev().into()
+    SudokuPerson::new( &self.board, hrng.clone() )
   }
 
   fn evaluate( &self, person : &SudokuPerson ) -> f64 
   {
     person.board.total_error() as f64
   }
-  
 }
 
 /// Mutation that randomly swaps two values in sudoku board, excluding values set in initial board.

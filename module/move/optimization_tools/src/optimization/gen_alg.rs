@@ -15,18 +15,16 @@
 //! 
 //! New population is modified by appling mutation to some individuals in the population. Individual's likelihood of being mutated id determined by mutation_rate value.
 //! 
-//! Termination: process is stopped if sudoku solution is found or if max_generation_number value is exseeded.
+//! Termination: process is stopped if sudoku solution is found or if max_dynasties_number value is exseeded.
 //! 
 
 use std::fmt::Debug;
 use deterministic_rand::Hrng;
 
-use crate::optimization::*;
-
 /// Functionality of crossover genetic operator.
 pub trait CrossoverOperator : Debug
 {
-  /// 
+  /// Type that represents solution that crossover is performed on.
   type Person : Individual + Clone;
 
   /// Produce new Individual using genetic matherial of two selected Individuals.
@@ -73,29 +71,19 @@ pub trait MutationOperator : Debug
   fn mutate( &self, hrng : Hrng, person : &mut Self::Person, context : &Self::Problem );
 }
 
-/// Fuctionality of operator responsible for creation of initial solutions generation.
+/// Fuctionality of operator responsible for creation of initial solutions population.
 pub trait InitialProblem
 {
-  /// Type that represents generation of solutions in optimization process.
+  /// Type that represents Individual in population of solutions in optimization process.
   type Person : Individual + Clone + PartialEq + Send + Sync;
   // type Context : Sync;
 
-  /// Create the initial generation for the optimization algorithm.
-  fn initial_generation( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person >;
+  /// Create the initial population for the optimization algorithm.
+  fn initial_population( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person >;
 
-  /// Create the initial generation for the optimization algorithm.
-  fn initial_temperature( &self, hrng : Hrng ) -> Temperature;
+  fn get_random_person( &self, hrng : Hrng ) -> Self::Person;
 
   /// Evaluate fitness of provided solution.
   fn evaluate( &self, person : &Self::Person ) -> f64;
-
-  // fn context( &self ) -> &Self::Context;
-}
-
-/// Functionality of generation of solutions for optimization.
-pub trait Generation
-{
-  /// Check if current generation contains optimal solution.
-  fn is_good_enough( &self ) -> bool;
 }
 
