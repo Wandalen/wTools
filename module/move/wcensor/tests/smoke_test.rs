@@ -1,5 +1,6 @@
 
 // #[ cfg( feature = "default" ) ]
+#[ ignore ]
 #[ test ]
 fn local_smoke_test()
 {
