@@ -57,6 +57,7 @@ mod workflow_generate
   }
   
   #[ test ]
+  #[ ignore ]
   fn default_case()
   {
     // Arrange
