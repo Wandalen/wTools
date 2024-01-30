@@ -373,7 +373,6 @@ impl CrossoverOperator for MultiplePointsBlockCrossover
       }
     }
     
-
     let child = SudokuPerson::with_board( Board::new( child_storage ) );
     child
   }

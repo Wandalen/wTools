@@ -75,7 +75,7 @@ pub trait MutationOperator : Debug
 pub trait InitialProblem
 {
   /// Type that represents Individual in population of solutions in optimization process.
-  type Person : Individual + Clone + PartialEq + Send + Sync;
+  type Person : Individual + Clone + PartialEq + Send + Sync + Debug;
   // type Context : Sync;
 
   /// Create the initial population for the optimization algorithm.

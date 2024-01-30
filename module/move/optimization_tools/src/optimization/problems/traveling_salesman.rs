@@ -210,10 +210,10 @@ impl InitialProblem for TSProblem
       let rng_ref = hrng.rng_ref();
       let mut rng = rng_ref.lock().unwrap();
 
-      let mut nodes = self.graph.nodes().iter().cloned().filter( | &n | n != self.starting_node ).collect_vec();
+      let mut nodes = self.graph.nodes().iter().sorted_by( | n1, n2 | n1.cmp( &n2 ) ).cloned().filter( | &n | n != self.starting_node ).map( | n | n.0 ).collect_vec();
       deterministic_rand::seq::SliceRandom::shuffle( nodes.as_mut_slice(), &mut *rng );
 
-      list.append( &mut nodes );
+      list.append( &mut nodes.into_iter().map( | n | NodeIndex( n ) ).collect_vec() );
       list.push( self.starting_node );
       let mut person = TSPerson::new( list );
       let dist = self.evaluate( &person );
@@ -234,7 +234,7 @@ impl InitialProblem for TSProblem
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
 
-    let mut nodes = self.graph.nodes().iter().cloned().filter( | &n | n != self.starting_node ).collect_vec();
+    let mut nodes = self.graph.nodes().iter().cloned().sorted_by( | n1, n2 | n1.cmp( &n2 ) ).filter( | &n | n != self.starting_node ).collect_vec();
     deterministic_rand::seq::SliceRandom::shuffle( nodes.as_mut_slice(), &mut *rng );
 
     list.append( &mut nodes );

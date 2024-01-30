@@ -204,8 +204,8 @@ pub fn ga_optimal_params()
           let initial = SudokuInitial::new( board.clone() );
 
           let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  )
-          .set_ga_elite_selection_rate( case.coords[ 0 ] )
-          .set_ga_mutation_rate( case.coords[ 1 ] )
+          .set_ga_mutation_rate( case.coords[ 0 ] )
+          .set_ga_crossover_rate( case.coords[ 1 ] )
           ;
           
           let mut results: Vec< std::time::Duration > = Vec::new();
@@ -268,8 +268,8 @@ pub fn hybrid_optimal_params() -> Vec< ( Level, Vec< NMResult > ) >
           let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  )
           .set_sa_temp_schedule( Box::new( temp_schedule ) )
           .set_sa_max_mutations_per_dynasty( case.coords[ 2 ] as usize )
-          .set_ga_elite_selection_rate( case.coords[ 3 ] )
-          .set_ga_mutation_rate( case.coords[ 4 ] )
+          .set_ga_mutation_rate( case.coords[ 3 ] )
+          .set_ga_crossover_rate( case.coords[ 4 ] )
           ;
           
           let mut results: Vec< std::time::Duration > = Vec::new();

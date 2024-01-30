@@ -10,15 +10,15 @@ For parameters:
  - reset limit : 1_000,
  - elite selection rate : 0.25,
  - mutation rate : 0.5,
+ - crossover_rate : 0.25,
  - population percent included in next generation : 1.0,
+ - tournament_selection_pressure : 0.85,
+ - tournament_selection_size : 2,
 
 
-| Number of nodes in graph | Population number | Generation number | Execution time |
+| Number of nodes in graph | Population size   | Dynasties limit   | Execution time |
 | ------------------------ | ----------------- | ----------------- | -------------- |
-| 4                        | 10                | 10                | 15 ms          |
-| 10                       | 100               | 1000              | 11500 ms       |
-| 15                       | 200               | 1500              | 36000 ms       |
-| 15                       | 100               | 3000              | 35400 ms       |
+| 10                       | 1000              | 800               | 117 s          |
 
 For parameters ( pure simulated annealing ):
  - temperature decrease coefficient : 0.999,
@@ -26,16 +26,17 @@ For parameters ( pure simulated annealing ):
  - ga_max_stale_iterations : 20,
  - sa_mutations_per_generation_limit : 2_000,
  - reset limit : 1_000,
- - elite selection rate : 1,
- - mutation rate : 1,
+ - <em>elite selection rate</em> : 0,
+ - <em>mutation rate</em> : 1,
+ - <em>crossover_rate</em> : 0,
  - population percent included in next generation : 1.0,
+ - tournament_selection_pressure : 0.85,
+ - tournament_selection_size : 2,
 
 
-| Number of nodes in graph | Population number | Generation number | Execution time             |
+| Number of nodes in graph | Population size   | Dynasties limit   | Execution time             |
 | ------------------------ | ----------------- | ----------------- | -------------------------- |
-| 4                        | 1                 | 1000              | Optimal Solution not found |
 | 10                       | 1                 | 10000             | Optimal Solution not found |
-| 15                       | 1                 | 1000000           | Optimal Solution not found |
 
 
 For parameters ( pure genetic algorithm ):
@@ -46,11 +47,13 @@ For parameters ( pure genetic algorithm ):
  - reset limit : 1_000,
  - elite selection rate : 0.25,
  - mutation rate : 0.5,
+ - crossover_rate : 0.25,
  - population percent included in next generation : 1.0,
+ - tournament_selection_pressure : 0.85,
+ - tournament_selection_size : 2,
 
 
-| Number of nodes in graph | Population number | Generation number | Execution time    |
+| Number of nodes in graph | Population size   | Dynasties limit   | Execution time    |
 | ------------------------ | ----------------- | ----------------- | ----------------- |
-| 4                        | 100               | 100               | 1000 ms           |
 | 10                       | 100               | 1000              | 11000 ms          |
-| 15                       | 100               | 5000              | 60550 ms          |
+
