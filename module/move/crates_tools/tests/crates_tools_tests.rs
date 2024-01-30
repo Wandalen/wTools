@@ -1,6 +1,8 @@
 use std::path::Path;
+#[ cfg( feature = "enabled" ) ]
 use crates_tools::CrateArchive;
 
+#[ cfg( feature = "enabled" ) ]
 #[ test ]
 fn download()
 {
