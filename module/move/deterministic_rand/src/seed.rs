@@ -6,6 +6,10 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  #[ cfg( feature = "no_std" ) ]
+  extern crate alloc;
+  #[ cfg( feature = "no_std" ) ]
+  use alloc::string;
 
   /// Master seed.
   #[ derive( Clone, Debug, PartialEq, Eq ) ]

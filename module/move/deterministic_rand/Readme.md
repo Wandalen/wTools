@@ -52,19 +52,22 @@ The `deterministic_rand` provides means to address the first three sources of ra
 The most trivial use case. Just generating a random number.
 
 ```rust
-// `Rng`` is re-exported from `rand` and `Hrng` stands for hierarchical random number generators.
-use deterministic_rand::{ Rng, Hrng };
-// Make master random number generator with a seed.
-let hrng = Hrng::master_with_seed( "master1".into() );
-// Get a reference to the current random number generator using a reference counter and mutex.
-let rng_ref = hrng.rng_ref();
-// Lock it producing a guard.
-let mut rng = rng_ref.lock().unwrap();
-// Generate a number.
-let got : u64 = rng.gen();
-// If determinism is enabled then sequence of generated rundom numbers will be the same.
-#[ cfg( feature = "determinism" ) ]
-assert_eq!( got, 8185996568056992464 );
+#[ cfg( not( feature = "no_std" ) ) ]
+{
+  // `Rng`` is re-exported from `rand` and `Hrng` stands for hierarchical random number generators.
+  use deterministic_rand::{ Rng, Hrng };
+  // Make master random number generator with a seed.
+  let hrng = Hrng::master_with_seed( "master1".into() );
+  // Get a reference to the current random number generator using a reference counter and mutex.
+  let rng_ref = hrng.rng_ref();
+  // Lock it producing a guard.
+  let mut rng = rng_ref.lock().unwrap();
+  // Generate a number.
+  let got : u64 = rng.gen();
+  // If determinism is enabled then sequence of generated rundom numbers will be the same.
+  #[ cfg( feature = "determinism" ) ]
+  assert_eq!( got, 8185996568056992464 );
+}
 ```
 
 ### How to deal with parallelism-caused non-determinism
@@ -127,6 +130,7 @@ let got = ( 0..1000 )
 let got_pi = 4. * ( got as f64 ) / ( ( 10_000 * 1000 ) as f64 );
 
 // If determinism is enabled, assert that the calculated value of Pi matches the expected result.
+#[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "determinism" ) ]
 assert_eq!( got_pi, 3.1410448 );
 

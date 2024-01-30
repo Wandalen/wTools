@@ -6,10 +6,12 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-
-  use std::cmp::Ordering;
+  
+  use core::cmp::Ordering;
   #[ cfg( feature = "determinism" ) ]
-  use std::vec::IntoIter;
+  extern crate alloc;
+  #[ cfg( feature = "determinism" ) ]
+  use alloc::vec::IntoIter;
   #[ cfg( feature = "determinism" ) ]
   use iter_tools::exposed::Itertools;
 
