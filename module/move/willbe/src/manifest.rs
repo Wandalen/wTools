@@ -2,13 +2,20 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use std::io::Read;
-  use std::{ fs, process, path::PathBuf };
-  use std::path::Path;
-  use wtools::error;
-  use wtools::error::for_app::{ anyhow, Context };
-  use error_tools::for_lib::Error;
-  use wtools::error::thiserror;
+
+  use std::
+  {
+    io::Read,
+    fs,
+    path::{ Path, PathBuf },
+  };
+  use wtools::error::
+  {
+    Result,
+    thiserror,
+    for_lib::Error,
+    for_app::{ Error as wError, Context, format_err },
+  };
   use path::AbsolutePath;
 
   /// Path to crate directory
@@ -26,13 +33,13 @@ pub( crate ) mod private
   impl TryFrom< AbsolutePath > for CrateDir
   {
     // qqq : make better errors
-    type Error = error::for_app::Error;
+    type Error = wError;
 
     fn try_from( crate_dir_path : AbsolutePath ) -> Result< Self, Self::Error >
     {
       if !crate_dir_path.as_ref().join( "Cargo.toml" ).exists()
       {
-        return Err( anyhow!( "The path is not a crate directory path" ) );
+        return Err( format_err!( "The path is not a crate directory path" ) );
       }
 
       Ok( Self( crate_dir_path ) )
@@ -68,13 +75,13 @@ pub( crate ) mod private
   impl TryFrom< AbsolutePath > for Manifest
   {
     // qqq : make better errors
-    type Error = error::for_app::Error;
+    type Error = wError;
 
     fn try_from( manifest_path : AbsolutePath ) -> Result< Self, Self::Error >
     {
       if !manifest_path.as_ref().ends_with( "Cargo.toml" )
       {
-        return Err( anyhow!( "The path is not a manifest path" ) );
+        return Err( format_err!( "The path is not a manifest path" ) );
       }
 
       Ok
@@ -115,7 +122,7 @@ pub( crate ) mod private
     }
 
     /// Load manifest from path.
-    pub fn load( &mut self ) -> error::for_app::Result< () >
+    pub fn load( &mut self ) -> Result< () >
     {
       let read = fs::read_to_string( &self.manifest_path ).context( "Read manifest" )?;
       let result = read.parse::< toml_edit::Document >().context( "Pars manifest" )?;
@@ -126,21 +133,12 @@ pub( crate ) mod private
 
     // qqq : for Bohdan : don't abuse anyhow
     /// Store manifest.
-    pub fn store( &self ) -> error::for_app::Result< () >
+    pub fn store( &self ) -> Result< () >
     {
-      let data = self.manifest_data.as_ref().ok_or( anyhow!( "Manifest data wasn't loaded" ) )?.to_string();
-      println!( "Saved manifest data to {:?}\n", &self.manifest_path );
-      println!( "{}", &data );
+      let data = self.manifest_data.as_ref().ok_or( format_err!( "Manifest data wasn't loaded" ) )?.to_string();
 
       // qqq : for Bohdan : make proper errors handling
-      fs::write( &self.manifest_path, &data ).unwrap_or_else
-      (
-        | err |
-        {
-          eprintln!( "{}", err );
-          process::exit( -1 );
-        }
-      );
+      fs::write( &self.manifest_path, &data ).map_err( | err | format_err!( "IO: Failed to write manifest. Details: {err}" ) )?;
 
       Ok( () )
     }
@@ -173,7 +171,7 @@ pub( crate ) mod private
 
   /// Create and load manifest by specified path
   // qqq : for Bohdan : use newtype, add proper errors handing
-  pub fn open( path : impl Into< PathBuf > ) -> error::for_app::Result< Manifest >
+  pub fn open( path : impl Into< PathBuf > ) -> Result< Manifest >
   {
     let path = AbsolutePath::try_from( path.into() )?;
     let mut manifest = if let Ok( dir ) = CrateDir::try_from( path.clone() )
@@ -191,13 +189,13 @@ pub( crate ) mod private
   }
 
   /// Retrieves the repository URL of a package from its `Cargo.toml` file.
-  pub fn repo_url( package_path: &Path ) -> error::for_app::Result< String >
+  pub fn repo_url( package_path: &Path ) -> Result< String >
   {
     let path = package_path.join( "Cargo.toml" );
     if path.exists() 
     {
       let mut contents = String::new();
-      std::fs::File::open( path )?.read_to_string( &mut contents )?;
+      fs::File::open( path )?.read_to_string( &mut contents )?;
       let doc = contents.parse::< toml_edit::Document >()?;
 
       let repo_url = doc
@@ -206,17 +204,17 @@ pub( crate ) mod private
       .and_then( | i | i.as_str() );
       if let Some( repo_url ) = repo_url 
       {
-        url::extract_repo_url( repo_url ).ok_or_else( || anyhow!( "Fail to extract repository url ") ) 
+        url::extract_repo_url( repo_url ).ok_or_else( || format_err!( "Fail to extract repository url ") )
       }
       else 
       {
         let report = crate::process::start_sync( "git ls-remote --get-url", package_path )?;
-        url::extract_repo_url( &report.out.trim() ).ok_or_else( || anyhow!( "Fail to extract repository url from git remote.") )
+        url::extract_repo_url( &report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
       }
     }
     else
     {
-      Err( anyhow!( "No Cargo.toml found" ) )
+      Err( format_err!( "No Cargo.toml found" ) )
     }
   }
 

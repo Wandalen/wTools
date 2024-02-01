@@ -1,47 +1,39 @@
 mod private
 {
   use crate::*;
-  use crate::manifest::private::repo_url;
+
   use std::
   {
-    fs,
-    path::PathBuf
+    str::FromStr,
+    fs::{ OpenOptions, File, read_dir },
+    path::{ Path, PathBuf },
+    io::{ Write, Read, Seek, SeekFrom },
+    collections::HashMap,
   };
-  use std::collections::HashMap;
-  use std::io::
-  {
-    Read,
-    Seek,
-    SeekFrom
-  };
-  use std::io::Write;
   use cargo_metadata::
   {
     Dependency,
     DependencyKind,
     Package
   };
+  use convert_case::{ Case, Casing };
   use toml_edit::Document;
-  use convert_case::Case;
-  use convert_case::Casing;
-  use std::fs::
-  {
-    OpenOptions, 
-    File
-  };
-  use std::path::Path;
-  use std::str::FromStr;
-
-  use error_tools::for_app::
-  {
-    Error,
-    Result,
-    bail,
-    Context,
-  };
-  use anyhow::anyhow;
-  use workspace::Workspace;
   use regex::bytes::Regex;
+
+  use wtools::error::
+  {
+    err,
+    for_app::
+    {
+      Error,
+      Result,
+      Context,
+      format_err,
+      bail,
+    }
+  };
+  use manifest::private::repo_url;
+  use workspace::Workspace;
   use path::AbsolutePath;
 
   static TAG_TEMPLATE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
@@ -85,7 +77,7 @@ mod private
         "stable" => Ok( Stability::Stable ),
         "frozen" => Ok( Stability::Frozen ),
         "deprecated" => Ok( Stability::Deprecated ),
-        _ => Err( anyhow!( "Fail to parse stability" ) ),
+        _ => Err( err!( "Fail to parse stability" ) ),
       }
     }
   }
@@ -111,7 +103,7 @@ mod private
     }
     else
     {
-      Err( anyhow!( "No Cargo.toml found" ) )
+      Err( err!( "No Cargo.toml found" ) )
     }
   } 
 
@@ -231,7 +223,7 @@ mod private
     let workspace_root = workspace_root( &mut cargo_metadata )?;
     let mut parameters = GlobalTableParameters::initialize_from_path( &workspace_root )?;
 
-    let read_me_path = workspace_root.join( readme_path(&workspace_root ).ok_or_else( || anyhow!( "Fail to find README.md" ) )?);
+    let read_me_path = workspace_root.join( readme_path(&workspace_root ).ok_or_else( || format_err!( "Fail to find README.md" ) )?);
     let mut file = OpenOptions::new()
     .read( true )
     .write( true )
@@ -255,9 +247,9 @@ mod private
           let raw_table_params = std::str::from_utf8
           (
           TAG_TEMPLATE.get().unwrap().captures( open.as_bytes() )
-          .ok_or( anyhow!( "Fail to parse tag" ) )?
+          .ok_or( format_err!( "Fail to parse tag" ) )?
           .get( 1 )
-          .ok_or( anyhow!( "Fail to parse group" ) )?
+          .ok_or( format_err!( "Fail to parse group" ) )?
           .as_bytes()
           )?;
           let params: TableParameters  = query::parse( raw_table_params ).unwrap().into();
@@ -302,7 +294,7 @@ mod private
       &cache
       .load()?
       .packages_get() 
-      .map_err( | err | anyhow!( err ) )?
+      .map_err( | err | format_err!( err ) )?
     )?;
     let mut table = table_header_generate( parameters, &table_parameters );
     for package_name in directory_names
@@ -321,7 +313,7 @@ mod private
         parameters.core_url = repo_url( &module_path )
         .context
         ( 
-          anyhow!( "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", module_path.display(), cache.workspace_root()?.join( "Cargo.toml" ).display(), module_path.join( "Cargo.toml" ).display() ) 
+          format_err!( "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", module_path.display(), cache.workspace_root()?.join( "Cargo.toml" ).display(), module_path.join( "Cargo.toml" ).display() )
         )?;
         parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
       }
@@ -356,7 +348,7 @@ mod private
       package::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
     let module_graph = graph::construct( &module_packages_map );
-    graph::toposort( module_graph ).map_err( | err | anyhow!( "{}", err ) )
+    graph::toposort( module_graph ).map_err( | err | err!( "{}", err ) )
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
@@ -502,7 +494,7 @@ mod private
   /// directory.
   fn readme_in_dir_find( path: &Path ) -> Option< PathBuf >
   {
-    fs::read_dir( path )
+    read_dir( path )
     .ok()?
     .filter_map( Result::ok )
     .filter( | p | p.path().is_file() )

@@ -2,16 +2,18 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use std::fmt::Formatter;
-  use std::path::{ Path, PathBuf };
-  use std::process::
+
+  use std::
   {
-    Command,
-    Stdio,
+    fmt::Formatter,
+    path::{ Path, PathBuf },
+    process::{ Command, Stdio },
   };
-  use anyhow::Context;
-use wca::wtools::Itertools;
-  use wtools::error;
+  use wtools::
+  {
+    iter::Itertools,
+    error::{ anyhow::{ Context, format_err }, Result },
+  };
 
 
   /// Process command output.
@@ -56,7 +58,7 @@ use wca::wtools::Itertools;
     exec_path : &str,
     current_path : impl Into< PathBuf >,
   )
-  -> error::for_app::Result< CmdReport >
+  -> Result< CmdReport >
   {
     let current_path = current_path.into();
     let ( program, args ) =
@@ -86,7 +88,7 @@ use wca::wtools::Itertools;
     args: Args,
     path : P,
   )
-  -> error::for_app::Result< CmdReport >
+  -> Result< CmdReport >
   where
     AP : AsRef< Path >,
     Args : IntoIterator< Item = Arg >,
@@ -122,7 +124,7 @@ use wca::wtools::Itertools;
     }
     else
     {
-      Err( error::for_app::anyhow!( report ) )
+      Err( format_err!( report ) )
     }
   }
 }

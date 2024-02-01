@@ -1,43 +1,21 @@
 mod private
 {
+  use crate::*;
+
   use std::
   {
-    path::
-    {
-      Path,
-    }, 
+    path::Path,
     fs::File,
-    io::
-    {
-      Write, 
-      Read
-    }, 
+    io::{ Write, Read },
     collections::BTreeMap
   };
 
-  use convert_case::
-  {
-    Casing, 
-    Case
-  };
-  use error_tools::
-  {
-    for_app::
-    {
-      Result,
-      anyhow,
-    }
-  };
+  use convert_case::{ Casing, Case };
   use toml_edit::Document;
 
-  use crate::
-  {
-    workspace::Workspace, 
-    url, 
-    manifest,
-    path::AbsolutePath,
-  };
-    
+  use wtools::error::for_app::{ Result, anyhow };
+  use path::AbsolutePath;
+
   /// Generate workflows for modules in .github/workflows directory.
   pub fn workflow_generate( base_path: &Path ) -> Result< () >
   {

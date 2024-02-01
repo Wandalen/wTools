@@ -1,6 +1,7 @@
 mod private
 {
   use crate::*;
+
   use std::
   {
     path::{ Path, PathBuf },
@@ -10,21 +11,26 @@ mod private
   use std::hash::Hash;
   use cargo_metadata::{ Dependency, DependencyKind, Package as PackageMetadata };
   use toml_edit::value;
-  use tools::
-  {
-    process,
-  };
+
+  use tools::process;
   use manifest::{ Manifest, ManifestError };
-  use { cargo, git, version, path, wtools };
+  // use { cargo, git, version, path, wtools }; // qqq: why is it required?
   use crates_tools::CrateArchive;
   
-  use wca::wtools::Itertools; // qqq : use wtools::...!
-  use wtools::error::for_app::{ anyhow, Error as wError, Context };
   use workspace::Workspace;
   use path::AbsolutePath;
 
-  use error_tools::for_lib::Error;
-  use wtools::error::thiserror;
+  use wtools::
+  {
+    iter::Itertools,
+    error::
+    {
+      thiserror,
+      Result,
+      for_lib::Error,
+      for_app::{ anyhow, Error as wError, Context },
+    }
+  };
 
   ///
   #[ derive( Debug ) ]
@@ -169,7 +175,7 @@ mod private
     }
 
     /// Check that module is local.
-    pub fn local_is( &self ) -> Result<bool, ManifestError>
+    pub fn local_is( &self ) -> Result< bool, ManifestError >
     {
       match self
       {
@@ -475,7 +481,7 @@ mod private
     manifest : &Package,
     graph: &mut HashMap< CrateId, HashSet< CrateId > >,
     opts: DependenciesOptions
-  ) -> wtools::error::Result< CrateId >
+  ) -> Result< CrateId >
   {
     let DependenciesOptions
     {
@@ -529,7 +535,7 @@ mod private
   /// # Returns
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
-  pub fn dependencies( workspace : &mut Workspace, manifest : &Package, opts: DependenciesOptions ) -> wtools::error::Result< Vec< CrateId > >
+  pub fn dependencies( workspace : &mut Workspace, manifest : &Package, opts: DependenciesOptions ) -> Result< Vec< CrateId > >
   {
     let mut graph = HashMap::new();
     let root = _dependencies( workspace, manifest, &mut graph, opts.clone() )?;
@@ -570,7 +576,7 @@ mod private
   ///
   /// # Returns:
   /// The local packed `.crate` file of the package
-  pub fn local_path< 'a >( name : &'a str, version : &'a str, crate_dir: CrateDir ) -> anyhow::Result< PathBuf >
+  pub fn local_path< 'a >( name : &'a str, version : &'a str, crate_dir: CrateDir ) -> Result< PathBuf >
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
 
@@ -702,7 +708,6 @@ mod private
   }
 
 }
-
 
 //
 
