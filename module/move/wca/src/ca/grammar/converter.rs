@@ -302,47 +302,6 @@ pub( crate ) mod private
         .collect::< Result< HashMap< _, _ > > >()?
       };
 
-      // let properties = raw_command.properties
-      // .clone()
-      // .into_iter()
-      // .map
-      // (
-      //   |( key, value )|
-      //   // find a key
-      //   if cmd.properties.contains_key( &key ) { Ok( key ) }
-      //   else 
-      //   { 
-      //     if raw_command.properties.len() > cmd.properties.len() 
-      //     {
-      //       let subj = format!( "{key}:{value}" );
-      //       subjects.push( crate::ca::grammar::types::private::Value::String( subj ) );
-      //       if cmd.properties.is_empty() 
-      //       {
-      //         cmd.properties_aliases.get( &key ).cloned().ok_or_else( || err!( "property `{}` not found for command `.{}`", key, &raw_command.name ) ) 
-      //       }
-      //       else 
-      //       {
-      //         Ok( cmd.properties.keys().next().unwrap().to_string() )
-      //       }
-      //     }
-      //     else 
-      //     {
-      //       cmd.properties_aliases.get( &key ).cloned().ok_or_else( || err!( "property `{}` not found for command `.{}`", key, &raw_command.name ) ) 
-      //     }
-      //   }
-      //   // give a description
-      //   .map( | key | ( key.clone(), cmd.properties.get( &key ).unwrap(), value ) )
-      // )
-      // .collect::< Result< Vec< _ > > >()?
-      // .into_iter()
-      // // an error can be extended with the value's hint
-      // .map
-      // (
-      //   |( key, value_description, value )|
-      //   value_description.kind.try_cast( value ).map( | v | ( key.clone(), v ) )
-      // )
-      // .collect::< Result< HashMap< _, _ > > >()?;
-
       Ok( GrammarCommand
       {
         phrase : cmd.phrase.to_owned(),
