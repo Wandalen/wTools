@@ -4,6 +4,8 @@
 use crate::*;
 #[ cfg( feature="static_plot" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };
+use rand::seq::SliceRandom;
+use rayon::iter::{ ParallelIterator, IndexedParallelIterator};
 use sudoku::{ Board, BlockIndex, CellIndex };
 use deterministic_rand::Seed;
 // use log::*;
@@ -20,7 +22,7 @@ trait BoardExt
 
   /// Validate that each bloack has at least one non-fixed cell.
   fn validate_each_block_has_non_fixed_cell( &self ) -> bool;
-
+  fn validate_block_has_non_fixed_cells( &self, block : BlockIndex ) -> bool;
 }
 
 impl BoardExt for Board
@@ -34,7 +36,7 @@ impl BoardExt for Board
       .map( | cell | self.cell( cell ) )
       .fold( 0, | acc, e | if e == 0.into() { acc + 1 } else { acc } )
       ;
-      if fixed == 0 || fixed >= 9
+      if fixed <= 1 || fixed >= 10
       {
         return false;
       }
@@ -42,13 +44,31 @@ impl BoardExt for Board
     true
   }
 
+  fn validate_block_has_non_fixed_cells( &self, block : BlockIndex ) -> bool
+  {
+    let fixed = self.block_cells( block )
+    .map( | cell | self.cell( cell ) )
+    .fold( 0, | acc, e | if e == 0.into() { acc + 1 } else { acc } )
+    ;
+    if fixed <= 1 || fixed >= 10
+    {
+      log::info!( "can't swap cells in block {block:?} that has {fixed} fixed cells" );
+      return false;
+    }
+
+    true
+  }
+
 }
 
 /// Get a pair of random non-fixed cells in a specified block.
-pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : Hrng ) -> ( CellIndex, CellIndex )
+pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : Hrng ) -> Option<( CellIndex, CellIndex )>
 {
 
-  debug_assert!( initial.validate_each_block_has_non_fixed_cell() );
+  if !initial.validate_block_has_non_fixed_cells( block.clone() )
+  {
+    return None;
+  }
 
   let cell1 = loop
   {
@@ -76,7 +96,7 @@ pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : 
     }
   };
 
-  ( cell1, cell2 )
+  Some( ( cell1, cell2 ) )
 }
 
 use derive_tools::{ FromInner, InnerFrom, Display };
@@ -194,43 +214,54 @@ impl SudokuPerson
   pub fn new( initial : &SudokuInitial ) -> Self
   {
     let mut board = initial.board.clone();
-    board.fill_missing_randomly( initial.hrng.clone() );
+    board.fill_missing_randomly( initial.config.hrng.clone() );
     let cost : SudokuCost = board.total_error().into();
     SudokuPerson { board, cost }
   }
 
   /// Change state of the board by applying provided mutagen to current sudoku board.
-  pub fn mutate( &self, _initial : &SudokuInitial, mutagen : &SudokuMutagen ) -> Self
+  pub fn mutate( &mut self, mutagen : &SudokuMutagen )
   {
-    let mut new = self.clone();
+    let old_cross_error = self.board.cross_error( mutagen.cell1 )
+      + self.board.cross_error( mutagen.cell2 );
+    
+    //let mut new = self.clone();
     log::trace!( "cells_swap( {:?}, {:?} )", mutagen.cell1, mutagen.cell2 );
-    new.board.cells_swap( mutagen.cell1, mutagen.cell2 );
-    new.cost -= self.board.cross_error( mutagen.cell1 ).into();
-    new.cost -= self.board.cross_error( mutagen.cell2 ).into();
-    new.cost += new.board.cross_error( mutagen.cell1 ).into();
-    new.cost += new.board.cross_error( mutagen.cell2 ).into();
-    new
+    self.board.cells_swap( mutagen.cell1, mutagen.cell2 );
+    self.cost -= old_cross_error.into();
+    self.cost += self.board.cross_error( mutagen.cell1 ).into();
+    self.cost += self.board.cross_error( mutagen.cell2 ).into();
   }
 
   /// Create random mutagen and apply it current board.
   pub fn mutate_random( &self, initial : &SudokuInitial, hrng : Hrng ) -> Self
   {
-    let mutagen = self.mutagen( initial, hrng );
-    self.mutate( &initial, &mutagen.into() )
+    let mutagen = self.mutagen( &initial.board, hrng );
+    let mut p = self.clone();
+    p.mutate( &mutagen.into() );
+    p
   }
 
   /// Create new SudokuMutagen as random cells pair in random sudoku block in current board.
-  pub fn mutagen( &self, initial : &SudokuInitial, hrng : Hrng ) -> SudokuMutagen
+  pub fn mutagen( &self, initial : &Board, hrng : Hrng ) -> SudokuMutagen
   {
-    let rng_ref = hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-    let block : BlockIndex = rng.gen();
-    drop( rng );
-    let mutagen = cells_pair_random_in_block( &initial.board, block, hrng );
+    let mutagen;
+    loop 
+    { 
+      let rng_ref = hrng.rng_ref();
+      let mut rng = rng_ref.lock().unwrap();
+      let block : BlockIndex = rng.gen();
+      drop( rng );
+      if let Some( m ) = cells_pair_random_in_block( &initial, block, hrng.clone() )
+      {
+        mutagen = m;
+        break;
+      }
+    }
     mutagen.into()
   }
-
 }
+
 
 /// Represents single change(mutation) which contains indeces of two swapped cells. It is used to generate new state of the board for sudoku solving process.
 #[ derive( PartialEq, Eq, Clone, Debug, FromInner, InnerFrom ) ]
@@ -242,26 +273,34 @@ pub struct SudokuMutagen
   pub cell2 : CellIndex,
 }
 
-/// Represents initial configuration of SA optimization process for sudoku solving.
+/// Represents initial state of board and configuration of SA optimization process for sudoku solving.
 #[ derive( Clone, Debug ) ]
 pub struct SudokuInitial
 {
   /// Initial state of sudoku board with fixed values.
   pub board : Board,
   /// Seed for random numbers generator.
-  pub seed : Seed,
-  /// Random numbers generator used for creating new state of SA.
-  pub hrng : Hrng,
-  /// Max amount of mutations in generation.
-  pub n_mutations_per_generation_limit : usize,
-  /// Max allowed number of resets.
-  pub n_resets_limit : usize,
-  /// Max number of generations created during SA process.
-  pub n_generations_limit : usize,
-  /// Coefficient for lowering SA temperature.
-  pub temperature_decrease_factor : TemperatureFactor,
-  /// Coefficient for increasing SA temperature during reset.
-  pub temperature_increase_factor : TemperatureFactor,
+  pub config : InitialConfig,
+}
+
+/// Represents initial configuration of SA optimization process for sudoku solving.
+#[derive(Clone,Debug)]
+pub struct InitialConfig
+{
+    /// Seed for random numbers generator.
+    pub seed : Seed,
+    /// Random numbers generator used for creating new state of SA.
+    pub hrng : Hrng,
+    /// Max amount of mutations in generation.
+    pub n_mutations_per_generation_limit : usize,
+    /// Max allowed number of resets.
+    pub n_resets_limit : usize,
+    /// Max number of generations created during SA process.
+    pub n_generations_limit : usize,
+    /// Coefficient for lowering SA temperature.
+    pub temperature_decrease_factor : TemperatureFactor,
+    /// Coefficient for increasing SA temperature during reset.
+    pub temperature_increase_factor : TemperatureFactor,
 }
 
 // impl Default for SudokuInitial
@@ -289,14 +328,35 @@ impl SudokuInitial
     Self
     {
       board,
-      seed,
-      hrng,
-      n_mutations_per_generation_limit,
-      n_resets_limit,
-      n_generations_limit,
-      temperature_decrease_factor,
-      temperature_increase_factor,
+      config : InitialConfig 
+      {
+        seed,
+        hrng,
+        n_mutations_per_generation_limit,
+        n_resets_limit,
+        n_generations_limit,
+        temperature_decrease_factor,
+        temperature_increase_factor,
+      }
     }
+  }
+
+  /// Set temperature increase factor.
+  pub fn set_temp_decrease_factor( &mut self, factor : f64 )
+  {
+    self.config.temperature_decrease_factor = factor.into();
+  }
+
+  /// Set temperature decrease factor.
+  pub fn set_temp_increase_factor( &mut self, factor : f64 )
+  {
+    self.config.temperature_increase_factor = factor.into();
+  }
+
+  /// Set max amount of mutations per one generation.
+  pub fn set_mutations_per_generation( &mut self, number : usize )
+  {
+    self.config.n_mutations_per_generation_limit = number;
   }
 
   /// Create the initial generation for the simulated annealing algorithm.
@@ -304,10 +364,10 @@ impl SudokuInitial
   {
     let person = SudokuPerson::new( self );
     let temperature = self.initial_temperature();
-    let hrng = self.hrng.clone();
+    let hrng = self.config.hrng.clone();
     let n_resets = 0;
     let n_generation = 0;
-    SudokuGeneration { initial : self, hrng, person, temperature, n_resets, n_generation }
+    SudokuGeneration { initial : self.config.clone(), initial_board: &self.board, hrng, person, temperature, n_resets, n_generation }
   }
 
   /// Calculate the initial temperature for the optimization process.
@@ -319,7 +379,7 @@ impl SudokuInitial
     let mut costs : [ f64 ; N ] = [ 0.0 ; N ];
     for i in 0..N
     {
-      let state2 = state.mutate_random( self, self.hrng.clone() );
+      let state2 = state.mutate_random( self, self.config.hrng.clone() );
       costs[ i ] = state2.cost.into();
     }
     costs[..].std_dev().into()
@@ -335,7 +395,7 @@ impl SudokuInitial
     loop
     {
       // n_generation += 1;
-      if generation.n_generation > self.n_generations_limit
+      if generation.n_generation > self.config.n_generations_limit
       {
         return ( Reason::GenerationLimit, None );
       }
@@ -346,12 +406,12 @@ impl SudokuInitial
       // println!( "max_level : {}", log::max_level() );
 
 
-      let ( reason, generation2 ) = generation.mutate( generation.hrng.clone() );
-      if generation2.is_none()
+      let  reason = generation.mutate();
+      if reason!= Reason::NotFinished
       {
         return ( reason, None );
       }
-      let generation2 = generation2.unwrap();
+      //let generation2 = generation2.unwrap();
 
       //plotting
       // #[ cfg( feature="static_plot" ) ]
@@ -410,12 +470,12 @@ impl SudokuInitial
       //   plot( options );
       // }
 
-      if generation2.is_good_enough()
+      if generation.is_good_enough()
       {
-        return ( Reason::GoodEnough, Some( generation2 ) );
+        return ( Reason::GoodEnough, Some( generation ) );
       }
 
-      generation = generation2;
+      //generation = generation2;
     }
   }
 
@@ -426,7 +486,9 @@ impl SudokuInitial
 pub struct SudokuGeneration< 'a >
 {
   /// Initial configuration of the Sudoku puzzle.
-  initial : &'a SudokuInitial,
+  initial : InitialConfig,
+  /// Initial board with fixed values.
+  initial_board : &'a Board,
   /// Random number generator for generating new state.
   hrng : Hrng,
   /// Current state of sudoku board.
@@ -442,22 +504,24 @@ pub struct SudokuGeneration< 'a >
 impl< 'a > SudokuGeneration< 'a >
 {
   /// Performs single iteration of optimization process, returns a tuple containing the reason to stop or continue optimization process and the new Sudoku generation if successful.
-  pub fn mutate( &self, hrng : Hrng ) -> ( Reason, Option< Self > )
+  pub fn mutate( &mut self ) -> Reason
   {
-    let initial = self.initial;
+    let initial = self.initial.clone();
     let mut temperature = self.temperature;
     let mut n_mutations : usize = 0;
     let mut n_resets : usize = self.n_resets;
 
-    let person = loop
-    {
+    let mut expected_number_of_mutations = 4;
 
+    loop
+    {
       if n_mutations > initial.n_mutations_per_generation_limit
       {
         n_resets += 1;
+        expected_number_of_mutations = 4;
         if n_resets >= initial.n_resets_limit
         {
-          return ( Reason::ResetLimit, None );
+          return Reason::ResetLimit;
         }
         let temperature2 = ( temperature.unwrap() + initial.temperature_increase_factor.unwrap() ).into();
         log::trace!( " 🔄 reset temperature {temperature} -> {temperature2}" );
@@ -466,23 +530,82 @@ impl< 'a > SudokuGeneration< 'a >
         n_mutations = 0;
       }
 
-      let mutagen = self.person.mutagen( initial, hrng.clone() );
-      let person = self.person.mutate( initial, &mutagen );
-
-      let rng_ref = hrng.rng_ref();
+      let rng_ref = self.hrng.rng_ref();
       let mut rng = rng_ref.lock().unwrap();
 
-      let cost_difference = 0.5 + person.cost.unwrap() as f64 - self.person.cost.unwrap() as f64;
-      let threshold = ( - cost_difference / temperature.unwrap() ).exp();
+      let candidates = rayon::iter::repeat( () )
+      .take( expected_number_of_mutations )
+      .enumerate()
+      .map( | ( i, _ ) | self.hrng.child( i ) )
+      .flat_map( | hrng | 
+        {
+          
+          let mutagen = self.person.mutagen( self.initial_board, hrng.clone() );
+          
+          let mutagen_cross_cost = self.person.board.cross_error_for_value
+          (
+            mutagen.cell1, 
+            self.person.board.cell( mutagen.cell2 ),
+            mutagen.cell2, 
+            self.person.board.cell( mutagen.cell1 )
+          );
+          
+          let mut original_cross_cost = 0;
+          original_cross_cost += self.person.board.cross_error( mutagen.cell1 );
+          original_cross_cost += self.person.board.cross_error( mutagen.cell2 );
+    
+          let rng_ref = hrng.rng_ref();
+          let mut rng = rng_ref.lock().unwrap();
+    
+          let cost_difference = 0.5 + mutagen_cross_cost as f64 - original_cross_cost as f64;
+          let threshold = ( - cost_difference / temperature.unwrap() ).exp();
+    
+          log::trace!
+          (
+            "cost : {}  | cost_difference : {cost_difference} | temperature : {temperature}",
+            self.person.cost,
+          );
+          let rand : f64 = rng.gen();
+          let vital = rand < threshold;
 
-      log::trace!
-      (
-        "cost : {} -> {} | cost_difference : {cost_difference} | temperature : {temperature}",
-        self.person.cost,
-        person.cost,
-      );
-      let rand : f64 = rng.gen();
-      let vital = rand < threshold;
+          if vital
+          {
+            let emoji = if cost_difference > 0.0
+            {
+              "🔼"
+            }
+            else if cost_difference < 0.0
+            {
+              "✔️"
+            }
+            else
+            {
+              "🔘"
+            };
+            log::trace!( " {emoji} vital | rand( {rand} ) < threshold( {threshold} )" );
+            if cost_difference == 0.0
+            {
+              // sleep();
+            }
+            Some( mutagen )
+          }
+          else
+          {
+            log::trace!( " ❌ non-vital | rand( {rand} ) > threshold( {threshold} )" );
+            None
+          }
+        }
+      )
+      .collect::< Vec< _ > >()
+      ;
+
+      let candidate = candidates.choose( &mut *rng );
+
+      if let Some( mutagen ) = candidate
+      {
+        self.person.mutate( &mutagen );
+        break;
+      }
 
       //plotting
       // #[ cfg( feature="static_plot" ) ]
@@ -506,48 +629,17 @@ impl< 'a > SudokuGeneration< 'a >
       //   plot( options );
       // }
 
-      if vital
+      n_mutations += expected_number_of_mutations;
+      if expected_number_of_mutations < 32
       {
-        let emoji = if cost_difference > 0.0
-        {
-          "🔼"
-        }
-        else if cost_difference < 0.0
-        {
-          "✔️"
-        }
-        else
-        {
-          "🔘"
-        };
-        log::trace!( " {emoji} vital | rand( {rand} ) < threshold( {threshold} )" );
-        if cost_difference == 0.0
-        {
-          // sleep();
-        }
+        expected_number_of_mutations += 4;
       }
-      else
-      {
-        log::trace!( " ❌ non-vital | rand( {rand} ) > threshold( {threshold} )" );
-      }
-
-
-      // info!( target = threshold ); xxx
-
-      if vital
-      {
-        break person;
-      }
-
-      n_mutations += 1;
     };
 
-    temperature = Temperature::from( temperature.unwrap() * ( 1.0f64 - self.initial.temperature_decrease_factor.unwrap() ) );
-    let n_generation = self.n_generation + 1;
-
-    let generation = SudokuGeneration { initial, hrng, person, temperature, n_resets, n_generation };
-
-    ( Reason::NotFinished, Some( generation ) )
+    self.n_generation = self.n_generation + 1;
+    self.temperature = Temperature::from( temperature.unwrap() * ( 1.0f64 - self.initial.temperature_decrease_factor.unwrap() ) );
+    self.n_resets = n_resets;
+    Reason::NotFinished
   }
 
   /// Checks if the current state is considered good enough as a solution.

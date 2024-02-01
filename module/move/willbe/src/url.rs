@@ -2,7 +2,7 @@ mod private
 {
   use error_tools::for_app::
   {
-    anyhow,
+    format_err,
     Result,
   };
 
@@ -34,7 +34,7 @@ mod private
     }
     else
     {
-      Err( anyhow!( "Fail to extract  git username and repository name" ) )
+      Err( format_err!( "Fail to extract  git username and repository name" ) )
     }
   }
 }

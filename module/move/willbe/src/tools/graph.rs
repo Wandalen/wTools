@@ -1,10 +1,13 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use std::collections::{ HashMap, HashSet };
-  use std::fmt::Debug;
-  use std::hash::Hash;
-  use std::ops::Index;
+  use std::
+  {
+    ops::Index,
+    fmt::Debug,
+    hash::Hash,
+    collections::{ HashMap, HashSet }
+  };
   use petgraph::
   {
     graph::Graph,

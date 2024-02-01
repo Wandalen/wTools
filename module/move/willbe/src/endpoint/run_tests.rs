@@ -1,14 +1,19 @@
 /// Internal namespace.
 mod private 
 {
-  use std::{path::Path, collections::HashMap};
+	use crate::*;
 
-	use crate::{ wtools, process::{ self, CmdReport } };
+	use core::fmt::Formatter;
+  use std::
+	{
+		path::Path,
+		collections::HashMap,
+		sync::{ Arc, RwLock }
+	};
+
 	use rayon::prelude::*;
-	use wtools::error::Result;
-	use anyhow::anyhow;
-  use core::fmt::Formatter;
-	use std::sync::{Arc, RwLock};
+	use wtools::error::{ err, Result };
+	use process::CmdReport;
 
 	#[ derive( Debug, Default, Clone ) ]
   pub struct TestReport
@@ -70,7 +75,7 @@ mod private
 
 		if metadata.is_err() || metadata.as_ref().unwrap().packages.iter().find( |x| x.manifest_path == path ).is_none()
 		{
-			return Err( anyhow!( "Directory path is not a crate" ) );
+			return Err( err!( "Directory path is not a crate" ) );
 		}
 		let metadata = metadata.unwrap();
 

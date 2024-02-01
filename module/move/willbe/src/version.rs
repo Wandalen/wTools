@@ -2,10 +2,15 @@
 mod private
 {
   use crate::*;
-  use std::fmt;
-  use std::str::FromStr;
+
+  use std::
+  {
+    fmt,
+    str::FromStr,
+  };
   use toml_edit::value;
   use semver::Version as SemVersion;
+
   use wtools::error::for_app::{ Result, anyhow };
   use manifest::Manifest;
 
@@ -25,7 +30,7 @@ mod private
 
   impl fmt::Display for Version
   {
-    fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
       write!( f, "{}", self.0.to_string() )
     }

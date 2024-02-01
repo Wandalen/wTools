@@ -2,16 +2,17 @@
 mod private
 {
   use crate::*;
-  use package::{ DependenciesOptions, DependenciesSort };
+
   use std::
   {
     collections::HashSet, io,
   };
   use core::fmt::Formatter;
-  use workspace::Workspace;
-  use package::{ CrateId, Package };
+
   use wtools::error::for_app::{ Error, anyhow };
   use path::AbsolutePath;
+  use workspace::Workspace;
+  use package::{ CrateId, Package, DependenciesOptions, DependenciesSort };
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport

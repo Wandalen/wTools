@@ -1,7 +1,9 @@
 mod private
 {
   use crate::*;
+
   use std::path::Path;
+
   use process::CmdReport;
   use wtools::error::Result;
 

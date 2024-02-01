@@ -1,19 +1,9 @@
 mod private
 {
-  use crate::
-  { 
-    endpoint,
-    wtools, 
-  };
+  use crate::*;
 
-  use wca::
-  { 
-    Args, 
-    Props,
-  };
-  
-  use wtools::error::Result;
-  use anyhow::*;
+  use wca::{ Args, Props };
+  use wtools::error::{ anyhow::Context, Result };
 
   ///
   /// Generate table.

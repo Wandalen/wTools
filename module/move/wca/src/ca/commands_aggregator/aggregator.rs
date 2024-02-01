@@ -34,13 +34,19 @@ pub( crate ) mod private
   {
     /// This variant is used to represent parser errors. 
     /// It carries a `String` payload that provides additional information about the error.
-    #[ error( "Parser error.\nCause:\n{0}" ) ]
-    Parser( wError ),
+    #[ error( "The following input is not recognized: `{input}`.\nDetails: {error}" ) ]
+    Parser
+    {
+      /// source of the program
+      input : String,
+      /// original error
+      error : wError,
+    },
     /// This variant represents errors that occur during grammar conversion.
-    #[ error( "Grammar converter error.\nCause:\n{0}" ) ]
+    #[ error( "Can not identify a command.\nDetails: {0}" ) ]
     GrammarConverter( wError ),
     /// This variant is used to represent errors that occur during executor conversion.
-    #[ error( "Executor converter error.\nCause:\n{0}" ) ]
+    #[ error( "Can not found a routine for a command.\nDetails: {0}" ) ]
     ExecutorConverter( wError ),
   }
 
@@ -50,10 +56,10 @@ pub( crate ) mod private
   {
     /// This variant is used to represent validation errors. 
     /// It carries a `ValidationError` payload that provides additional information about the error.
-    #[ error( "Validation error:\n{0}" ) ]
+    #[ error( "Validation error. {0}" ) ]
     Validation( ValidationError ),
     /// This variant represents execution errors.
-    #[ error( "Execution error.\nCause:\n{0}" ) ]
+    #[ error( "Execution failed. {0:?}" ) ]
     Execution( wError ),
   }
 
@@ -231,7 +237,7 @@ pub( crate ) mod private
     {
       let program = program.as_ref();
 
-      let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser( e ) ) )?;
+      let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : program.to_string(), error:  e } ) )?;
       let grammar_program = self.grammar_converter.to_program( raw_program ).map_err( | e | Error::Validation( ValidationError::GrammarConverter( e ) ) )?;
       let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | e | Error::Validation( ValidationError::ExecutorConverter( e ) ) )?;
 

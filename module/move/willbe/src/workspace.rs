@@ -1,12 +1,12 @@
 mod private
 {
+  use crate::*;
+
   use std::path::Path;
-  use anyhow::Context;
-  use cargo_metadata::{Metadata, MetadataCommand, Package};
-  use error_tools::for_lib::Error;
-  use wca::wtools::error;
-  use crate::CrateDir;
-  use crate::path::AbsolutePath;
+  use cargo_metadata::{ Metadata, MetadataCommand, Package };
+
+  use wtools::error::{ for_app::Context, for_lib::Error, Result };
+  use path::AbsolutePath;
 
   /// Stores information about current workspace.
   #[ derive( Debug, Clone ) ]
@@ -28,7 +28,7 @@ mod private
   impl Workspace
   {
     /// Load data from current directory
-    pub fn from_current_path() -> error::Result< Self >
+    pub fn from_current_path() -> Result< Self >
     {
       let current_path = AbsolutePath::try_from( std::env::current_dir().unwrap_or_default() )?;
       Ok( Self
@@ -39,7 +39,7 @@ mod private
     }
 
     /// Load data from current directory
-    pub fn with_crate_dir( crate_dir : CrateDir ) -> anyhow::Result< Self >
+    pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self >
     {
       Ok
       (
@@ -71,7 +71,7 @@ mod private
   {
     /// Load data from the current location or from cache
     // FIX: Maybe unsafe. Take metadata of workspace in current dir.
-    pub fn load( &mut self ) -> anyhow::Result< &mut Self >
+    pub fn load( &mut self ) -> Result< &mut Self >
     {
       if self.metadata.is_none()
       {
@@ -84,7 +84,7 @@ mod private
 
     /// Force loads data from the current location
     // FIX: Maybe unsafe. Take metadata of workspace in current dir.
-    pub fn force_reload( &mut self ) -> anyhow::Result< &mut Self >
+    pub fn force_reload( &mut self ) -> Result< &mut Self >
     {
       let metadata = Self::with_crate_dir( self.manifest_dir.clone() )?.metadata.unwrap();
       _ = self.metadata.insert( metadata );

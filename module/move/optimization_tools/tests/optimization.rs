@@ -14,26 +14,26 @@ fn person_mutate()
 
   let initial = SudokuInitial::new( Board::default(), Seed::default() );
 
-  let person = SudokuPerson::new( &initial );
+  let mut person = SudokuPerson::new( &initial );
   log::trace!( "{person:#?}" );
   a_id!( person.cost, 45.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
-  let mutagen = person.mutagen( &initial, initial.hrng.clone() );
+  let mutagen = person.mutagen( &initial.board, initial.config.hrng.clone() );
   // make sure block is the same
   a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
-  let person2 = person.mutate( &initial, &mutagen );
-  log::trace!( "{person2:#?}" );
-  a_id!( person2.cost, 48.into() );
-  a_id!( person2.cost, person2.board.total_error().into() );
+  person.mutate(  &mutagen );
+  log::trace!( "{person:#?}" );
+  a_id!( person.cost, 48.into() );
+  a_id!( person.cost, person.board.total_error().into() );
 
-  let mutagen = person2.mutagen( &initial, initial.hrng.clone() );
+  let mutagen = person.mutagen( &initial.board, initial.config.hrng.clone() );
   // make sure block is the same
   a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
-  let person3 = person2.mutate( &initial, &mutagen );
-  log::trace!( "{person3:#?}" );
-  a_id!( person3.cost, 48.into() );
-  a_id!( person3.cost, person3.board.total_error().into() );
+  person.mutate( &mutagen );
+  log::trace!( "{person:#?}" );
+  a_id!( person.cost, 48.into() );
+  a_id!( person.cost, person.board.total_error().into() );
 
   // a_true!( false );
 }
@@ -45,9 +45,9 @@ fn initial_temperature()
 
   let initial = SudokuInitial::new( Board::default(), Seed::default() );
 
-  let temperature = initial.initial_temperature();
+  let temperature = &initial.initial_temperature();
   a_true!( temperature.unwrap() >= 0f64 );
-  a_id!( temperature, 1.591644851508443.into() );
+  a_id!( temperature.unwrap(), 1.591644851508443 );
 
   // a_true!( false );
 }
@@ -69,7 +69,7 @@ fn solve_with_sa()
   // let seed : Seed = "seed2".into();
   let seed : Seed = "seed3".into();
   // let seed = Seed::random();
-  let initial = SudokuInitial::new( Board::default(), seed );
+  let mut initial = SudokuInitial::new( Board::default(), seed );
 
   log::set_max_level( log::LevelFilter::max() );
   let ( reason, generation ) = initial.solve_with_sa();
@@ -81,11 +81,77 @@ fn solve_with_sa()
   log::trace!( "{:#?}", generation.person.board );
 
   a_id!( generation.person.cost, 0.into() );
-
   #[ cfg( feature = "static_plot" ) ]
   plot::draw_plots();
   // a_true!( false );
 }
+
+/// Test SA on sudoku
+///
+/// # Usage
+///
+/// cargo test solve_empty_full_block --release --features rapidity_6
+///
+#[ cfg( feature = "rapidity_6" ) ]
+#[ test ]
+fn solve_empty_full_block()
+{
+  let sudoku : &str = r#"
+  402000000
+  000038000
+  090000018
+  000000601
+  000007530
+  000120000
+  000056100
+  003940000
+  206080047
+  "#;
+  log::set_max_level( log::LevelFilter::Warn );
+
+  let seed : Seed = "seed3".into();
+  // let seed = Seed::random();
+  let mut initial = SudokuInitial::new( Board::from(sudoku), seed );
+
+  log::set_max_level( log::LevelFilter::max() );
+  let ( reason, generation ) = initial.solve_with_sa();
+
+  log::trace!( "reason : {reason}" );
+  a_true!( generation.is_some() );
+  let generation = generation.unwrap();
+  log::trace!( "{generation:#?}" );
+  println!( "{:#?}", generation.person.board );
+
+  a_id!( generation.person.cost, 0.into() );
+
+  let sudoku : &str = r#"
+  350964170
+  700020003
+  019003524
+  491758032
+  507302801
+  283600090
+  900580317
+  800017209
+  170039406
+  "#;
+  log::set_max_level( log::LevelFilter::Warn );
+
+  let seed : Seed = "seed3".into();
+  // let seed = Seed::random();
+  let mut initial = SudokuInitial::new( Board::from(sudoku), seed );
+
+  log::set_max_level( log::LevelFilter::max() );
+  let ( reason, generation ) = initial.solve_with_sa();
+
+  log::trace!( "reason : {reason}" );
+  a_true!( generation.is_some() );
+  let generation = generation.unwrap();
+  log::trace!( "{generation:#?}" );
+  println!( "{:#?}", generation.person.board );
+
+  a_id!( generation.person.cost, 0.into() );
+ }
 
 //
 // seed: "seed1"
@@ -123,9 +189,9 @@ fn solve_with_sa()
 fn time_measure()
 {
   for i in 0..=9 {
-    let initial = SudokuInitial::new( Board::default(), Seed::new( i.to_string() ) );
+    let mut initial = SudokuInitial::new( Board::default(), Seed::new( i.to_string() ) );
 
-    let ( reason, generation ) = initial.solve_with_sa();
+    let ( _reason, _generation ) = initial.solve_with_sa();
   }
 
 }

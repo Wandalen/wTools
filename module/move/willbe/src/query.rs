@@ -1,8 +1,13 @@
 mod private
 {
-  use std::collections::HashMap;
-  use std::str::FromStr;
-  use error_tools::for_app::anyhow;
+  use crate::*;
+
+  use std::
+  {
+    str::FromStr,
+    collections::HashMap
+  };
+  use wtools::error::{ for_app::{ Error, format_err }, Result };
   
   #[ derive( Debug, PartialEq, Eq ) ]
   /// Parser result enum
@@ -18,7 +23,7 @@ mod private
 
   impl FromStr for Value 
   {
-    type Err = error_tools::for_app::Error;
+    type Err = Error;
 
     fn from_str( s: &str ) -> Result< Self, Self::Err > 
     {
@@ -100,73 +105,77 @@ mod private
   /// ```
   ///  
   
-  pub fn parse(input_string: &str) -> Result<HashMap<String, Value>, error_tools::for_app::Error> 
+  pub fn parse( input_string: &str ) -> Result< HashMap< String, Value > >
   {
     let input_string = input_string.trim();
     let mut map = HashMap::new();
-    if input_string.is_empty() {
-        return Ok(map);
+    if input_string.is_empty()
+    {
+      return Ok( map );
     }
     let mut start = 0;
     let mut in_quotes = false;
     let mut escaped = false;
     let mut has_named_values = false;
 
-    for (i, c) in input_string.chars().enumerate() {
-        match c {
-            '\\' => {
-                if in_quotes {
-                    escaped = !escaped;
-                }
+    for ( i, c ) in input_string.chars().enumerate()
+    {
+      match c
+      {
+        '\\' => if in_quotes { escaped = !escaped }
+        ',' if !in_quotes =>
+        {
+          let item = &input_string[ start..i ];
+          let parts = item.splitn( 2, ':' ).map( | s | s.trim() ).collect::< Vec< _ > >();
+          if parts.len() == 2
+          {
+            if let Ok( value ) = parts[ 1 ].trim_matches( '\'' ).parse()
+            {
+              map.insert( parts[ 0 ].to_string(), value );
+              has_named_values = true;
             }
-            ',' if !in_quotes => {
-                let item = &input_string[start..i];
-                let parts: Vec<&str> = item.splitn(2, ':').map(|s| s.trim()).collect();
-                if parts.len() == 2 {
-                    if let Ok(value) = parts[1].trim_matches('\'').parse() {
-                        map.insert(parts[0].to_string(), value);
-                        has_named_values = true;
-                    }
-                } else if parts.len() == 1 {
-                    if has_named_values {
-                        return Err(anyhow!("Unnamed value found after named values"));
-                    }
-                    if let Ok(value) = parts[0].trim_matches('\'').parse::<Value>() {
-                        map.insert("path".to_string(), value);
-                    }
-                }
-                start = i + 1;
+          }
+          else if parts.len() == 1
+          {
+            if has_named_values
+            {
+              return Err( format_err!( "Unnamed value found after named values" ) );
             }
-            '\'' => {
-                if !escaped {
-                    in_quotes = !in_quotes;
-                } else {
-                    escaped = false;
-                }
+            if let Ok( value ) = parts[ 0 ].trim_matches( '\'' ).parse::< Value >()
+            {
+              map.insert( "path".to_string(), value );
             }
-            _ => {
-                escaped = false;
-            }
+          }
+          start = i + 1;
         }
+        '\'' => if !escaped { in_quotes = !in_quotes } else { escaped = false }
+        _ => escaped = false,
+      }
     }
 
-    let item = &input_string[start..];
-    let parts: Vec<&str> = item.splitn(2, ':').map(|s| s.trim()).collect();
-    if parts.len() == 2 {
-        if let Ok(value) = parts[1].trim_matches('\'').parse() {
-            map.insert(parts[0].to_string(), value);
-        }
-    } else if parts.len() == 1 {
-        if has_named_values {
-            return Err(anyhow!("Unnamed value found after named values"));
-        }
-        if let Ok(value) = parts[0].trim_matches('\'').parse::<Value>() {
-            map.insert("path".to_string(), value);
-        }
+    let item = &input_string[ start.. ];
+    let parts = item.splitn( 2, ':' ).map( | s | s.trim() ).collect::< Vec< _ > >();
+    if parts.len() == 2
+    {
+      if let Ok( value ) = parts[ 1 ].trim_matches( '\'' ).parse()
+      {
+        map.insert( parts[ 0 ].to_string(), value );
+      }
     }
-    Ok(map)
-}
+    else if parts.len() == 1
+    {
+      if has_named_values
+      {
+        return Err( format_err!( "Unnamed value found after named values" ) );
+      }
+      if let Ok( value ) = parts[ 0 ].trim_matches( '\'' ).parse::< Value >()
+      {
+        map.insert( "path".to_string(), value );
+      }
+    }
 
+    Ok( map )
+  }
 }
 
 crate::mod_interface!
