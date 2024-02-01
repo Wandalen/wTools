@@ -56,8 +56,9 @@ mod workflow_generate
     commit_message: String,
   }
   
+  // qqq for Petro: this test does not work
+  // error: called `Result::unwrap()` on an `Err` value: No such file or directory (os error 2)
   #[ test ]
-  #[ ignore ]
   fn default_case()
   {
     // Arrange
