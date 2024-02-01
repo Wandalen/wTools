@@ -305,7 +305,7 @@ tests_impls!
 
     a_id!( (), ca.perform( command ).unwrap() );
 
-    a_id!( grammar_command.subjects, vec![ TheModule::Value::String("qwe:rty".into()) ] );
+    a_id!( grammar_command.subjects, vec![ TheModule::Value::String( "qwe:rty".into() ) ] );
   }
 
   fn no_prop_subject_with_colon() 
