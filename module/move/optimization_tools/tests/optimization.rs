@@ -44,10 +44,10 @@ fn person_mutate()
 fn initial_temperature()
 {
   logger_init();
-  let hrng = Hrng::master_with_seed( Seed::default() );
   let initial = SudokuInitial::new( Board::default() );
+  let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
 
-  let temperature = initial.initial_temperature( hrng.clone() );
+  let temperature = optimizer.initial_temperature();
   a_true!( temperature.unwrap() >= 0f64 );
   a_id!( temperature.unwrap(), 1.591644851508443 );
 

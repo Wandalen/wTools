@@ -88,7 +88,7 @@ pub struct Node< T >
 #[ derive( Debug, PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord ) ]
 pub struct NodeIndex( pub usize );
 
-/// Weight of grtaph edge.
+/// Weight of graph edge.
 #[ derive( Debug, FromInner, InnerFrom, Clone, Copy ) ]
 pub struct EdgeWeight( pub f64 );
 
@@ -198,7 +198,7 @@ impl InitialProblem for TSProblem
 {
   type Person = TSPerson;
 
-  fn initial_generation( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person > 
+  fn initial_population( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person > 
   {
     let mut population = Vec::new();
     
@@ -210,10 +210,10 @@ impl InitialProblem for TSProblem
       let rng_ref = hrng.rng_ref();
       let mut rng = rng_ref.lock().unwrap();
 
-      let mut nodes = self.graph.nodes().iter().cloned().filter( | &n | n != self.starting_node ).collect_vec();
+      let mut nodes = self.graph.nodes().iter().sorted_by( | n1, n2 | n1.cmp( &n2 ) ).cloned().filter( | &n | n != self.starting_node ).map( | n | n.0 ).collect_vec();
       deterministic_rand::seq::SliceRandom::shuffle( nodes.as_mut_slice(), &mut *rng );
 
-      list.append( &mut nodes );
+      list.append( &mut nodes.into_iter().map( | n | NodeIndex( n ) ).collect_vec() );
       list.push( self.starting_node );
       let mut person = TSPerson::new( list );
       let dist = self.evaluate( &person );
@@ -226,45 +226,43 @@ impl InitialProblem for TSProblem
     population
   }
 
+  fn get_random_person( &self, hrng : Hrng ) -> TSPerson 
+  {
+    let mut list = Vec::new();
+    list.push( self.starting_node );
+
+    let rng_ref = hrng.rng_ref();
+    let mut rng = rng_ref.lock().unwrap();
+
+    let mut nodes = self.graph.nodes().iter().cloned().sorted_by( | n1, n2 | n1.cmp( &n2 ) ).filter( | &n | n != self.starting_node ).collect_vec();
+    deterministic_rand::seq::SliceRandom::shuffle( nodes.as_mut_slice(), &mut *rng );
+
+    list.append( &mut nodes );
+    list.push( self.starting_node );
+    let mut person = TSPerson::new( list );
+    let dist = self.evaluate( &person );
+
+    person.update_fitness( dist );
+
+    person
+  }
+
   fn evaluate( &self, person : &TSPerson ) -> f64 
   {
     let mut dist = 0.0;
     for ( node1, node2 ) in person.route.iter().tuple_windows()
     {
-      dist += f64::from( self.graph.get_edge( node1, node2 ).unwrap().weight() );
-    }
-
-    dist
-  }
-
-  fn initial_temperature( &self, _hrng : Hrng ) -> Temperature 
-  {
-        
-    let nodes = self.graph.nodes();
-
-    let mut dist_vec = Vec::new();
-    for i in 0..nodes.len() - 1
-    {
-      for j in i + 1..nodes.len()
+      if let Some( edge ) = self.graph.get_edge( node1, node2 )
       {
-        dist_vec.push( self.graph.get_edge( &nodes[ i ], &nodes[ j ] ).unwrap().weight() );
+        dist += f64::from( edge.weight() )
+      }
+      else 
+      {
+        dist += f64::from( f64::INFINITY );
       }
     }
 
-    dist_vec.sort_by( | w1, w2 | w1.0.total_cmp( &w2.0 ) );
-
-    let dist_len = dist_vec.len();
-
-    let mut prev_diff = dist_vec.iter().skip( 1 ).fold( 0.0, | acc, w | acc + ( w.0 - dist_vec[ 0 ].0 ));
-
-    let mut total_diff = prev_diff;
-    for i in 1..dist_len
-    {
-      prev_diff = prev_diff - ( dist_vec[ i ].0 - dist_vec[ i - 1 ].0 ) * ( ( dist_len - i ) as f64 );
-      total_diff += prev_diff;
-    }
-
-    ( total_diff / ( ( dist_len * ( dist_len - 1 ) ) as f64 / 2.0 ) ).into()
+    dist
   }
 }
 
@@ -351,10 +349,15 @@ impl TSRouteMutation
     let mut rng = rng_ref.lock().unwrap();
     let ( pos1, pos2 ) = ( 1..person.route.len() - 2 ).choose_multiple( &mut *rng, 2 ).into_iter().collect_tuple().unwrap();
     let start = pos1.min( pos2 );
-    let end = pos1.max( pos2 );
+    let mut end = pos1.max( pos2 );
 
-    let mut new_route = person.route.iter().take( start - 1 ).collect_vec();
-    new_route.extend( person.route.iter().skip( start - 1 ).take( end - start ).rev() );
+    if end - start == 0
+    {
+      end += 1;
+    }
+
+    let mut new_route = person.route.iter().take( start ).collect_vec();
+    new_route.extend( person.route.iter().skip( start ).take( end - start - 1 ).rev() );
     new_route.extend( person.route.iter().skip( end - 1 ) );
     let new_route = new_route.into_iter().map( | n | *n ).collect_vec();
     
