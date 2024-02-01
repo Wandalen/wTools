@@ -51,7 +51,16 @@ pub( crate ) mod private
     {
       self.program_fn()( input.trim() )
       .map( |( _, program )| program )
-      .map_err( | e | { dbg!( e ); err!( "Fail to parse `Program`" ) } )
+      .map_err
+      (
+        | e |
+        {
+          match e
+          {
+            nom::Err::Incomplete( _ ) => { err!( "Program has incomplete sentences" ) },
+            nom::Err::Error( nom::error::Error { input, .. } ) | nom::Err::Failure( nom::error::Error { input, .. } ) => { err!( "It is a sentence that con not be parsed: `{}`", input ) }
+          }
+        } )
     }
   }
 }

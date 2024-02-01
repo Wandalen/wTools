@@ -161,8 +161,10 @@ pub fn plot_data
   description : &PlotDescription,
 ) -> Result< (), Box< dyn std::error::Error > > 
 {
-  let file_path = dst_file_path( description.filename.clone() )?;
-  let root = BitMapBackend::new( &file_path, ( 4000, 960 ) ).into_drawing_area();
+  let dir_path = format!( "{}/target/plots", crate::simplex::drawing::workspace_dir().to_string_lossy() );
+  _ = std::fs::create_dir( &dir_path );
+  let path = format!( "{}/{}.png", dir_path, description.filename.clone() );
+  let root = BitMapBackend::new( &path, ( 4000, 960 ) ).into_drawing_area();
 
   root.fill( &WHITE )?;
   let root = root.margin( 20, 20, 20, 20 );

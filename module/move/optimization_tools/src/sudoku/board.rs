@@ -181,6 +181,75 @@ impl Board
     error
   }
 
+  /// Calculates number of errors in column and row that given cell position belongs to.
+  pub fn cross_error_for_value( &self, index : CellIndex, value : CellVal, other_index : CellIndex, other_value : CellVal ) -> usize
+  {
+    let mut error : usize = 0;
+    
+    error += 9 - self
+    .col( index.col() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into()
+      {
+        if i == index.row() as usize && index.col() != other_index.col()
+        {
+          return Some( value )
+        }
+
+        Some( e )
+      } else { None } 
+    }).unique().count();
+
+    error += 9 - self
+    .row( index.row() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into()
+      {
+        if i == index.col() as usize && index.row() != other_index.row()
+        {
+          return Some( value )
+        }
+        Some( e )
+      } else { None } 
+    }).unique().count();
+
+    error += 9 - self
+    .col( other_index.col() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into()
+      {
+        if i == other_index.row() as usize && index.col() != other_index.col()
+        {
+          return Some( other_value )
+        }
+        Some( e )
+      } else { None } 
+    }).unique().count();
+
+    error += 9 - self
+    .row( other_index.row() as usize )
+    .enumerate()
+    .filter_map( | ( i, e ) | 
+    {  
+      if e != 0.into()
+      {
+        if i == other_index.col() as usize && index.row() != other_index.row()
+        {
+          return Some( other_value )
+        }
+        Some( e )
+      } else { None } 
+    }).unique().count();
+
+    error
+  }
+
   /// Calculates number of errors(duplicate digits) in sudoku board.
   pub fn total_error( &self ) -> usize
   {
@@ -198,6 +267,76 @@ impl Board
     self.storage.swap( index1.into(), index2.into() );
   }
 
+  /// Calculates coefficient which determines difficulty level of the board.
+  /// easy <= 2
+  /// 2 < medium <= 2.5
+  /// 2.5 < hard <= 3
+  /// 3 < expert/master
+  pub fn calculate_difficulty( &self ) -> f64
+  {
+    let mut possible_values: Vec< Vec <Vec < usize > > > = vec![ vec![ vec![ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]; 9 ]; 9 ];
+
+    let _clues = self
+    .cells()
+    .filter( | cell | cell.1 != 0.into() )
+    .map( | cell | ( usize::from( cell.1 ), cell.0.row(), cell.0.col()) )
+    .for_each( | ( val, row, col ) | 
+    {
+      for (index, possible_vals ) in possible_values[ row as usize ].iter_mut().enumerate()
+      {
+        if index == col as usize
+        {
+          *possible_vals = possible_vals.iter().filter( | &&v | v == val ).map( | v | *v ).collect_vec();
+        }
+        else 
+        {
+          if possible_vals.contains( &val )
+          {
+            *possible_vals = possible_vals.iter().filter( | &&v | v != val ).map( | v | *v ).collect_vec();
+          }
+        }
+      }
+
+      for ( index, possible_vals ) in possible_values.iter_mut().enumerate()
+      {
+        if index != row as usize
+        {
+          if possible_vals[ col as usize  ].contains( &val )
+          {
+            possible_vals[ col as usize  ] = possible_vals[ col as usize  ].iter().filter( | &&v | v != val ).map( | v | *v ).collect_vec();
+          }
+        }
+      }
+
+      let block = BlockIndex::from( crate::sudoku::CellIndex::from( ( col, row ) ) );
+      let ( cols, rows ) = block.cells_intervals();
+      for i in rows
+      {
+        for j in cols.clone()
+        {
+          if !( row as usize == i && col as usize == j )
+          {
+            if possible_values[ i ][ j ].contains( &val )
+            {
+              possible_values[ i ][ j ] = possible_values[ i ][ j ].iter().filter( | &&v | v != val ).map( | v | *v ).collect_vec();
+            }
+          }
+        }
+      }
+    } );
+
+    let mut possibilities_count = std::collections::HashMap::new();
+
+    for row in &possible_values
+    {
+      for val in row
+      {
+        possibilities_count.entry( val.len() ).and_modify( | num | *num += 1 ).or_insert_with( || 1usize );
+      }
+    }
+    let coeff = possibilities_count.into_iter().fold( 0, | acc, val | acc + val.0 * val.1 )  as f64 / 81.0 ;
+    coeff
+  }
 }
 
 /// Sets default value for board.

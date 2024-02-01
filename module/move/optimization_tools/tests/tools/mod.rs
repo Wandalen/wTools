@@ -12,7 +12,7 @@ pub fn logger_init()
 
   let _ = env_logger::builder()
   // Ensure events are captured by `cargo test`
-  // .is_test( true )
+  .is_test( true )
   // Include all events in tests
   .filter_level( log::LevelFilter::max() )
   .format( | buf, record |
