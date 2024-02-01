@@ -25,7 +25,7 @@ mod private
 
   impl fmt::Display for Version
   {
-    fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
       write!( f, "{}", self.0.to_string() )
     }
@@ -59,7 +59,29 @@ mod private
     }
   }
 
-  // qqq : for Bohdan : should return report
+  /// A structure that represents a bump report, which contains information about a version bump.
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct BumpReport
+  {
+    name: Option< String >,
+    old_version: Option< String >,
+    new_version: Option< String >,
+  }
+
+  impl fmt::Display for BumpReport
+  {
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+    {
+      let Self { name, old_version, new_version } = self;
+      match ( name, old_version, new_version )
+      {
+        ( Some( name ), Some( old_version ), Some( new_version ) )
+        => f.write_fmt( format_args!( "`{name}` bumped from {old_version} to {new_version}" ) ),
+        _ => f.write_fmt( format_args!( "Bump failed" ) )
+      }
+    }
+  }
+
   /// Bump version by manifest.
   /// It takes data from the manifest and increments the version number according to the semantic versioning scheme.
   /// It then writes the updated manifest file back to the same path, unless the flag is set to true, in which case it only returns the new version number as a string.
@@ -73,8 +95,10 @@ mod private
   /// # Returns:
   /// - `Ok` - the new version number as a string;
   /// - `Err` - if the manifest file cannot be read, written, parsed.
-  pub fn bump( manifest : &mut Manifest, dry : bool ) -> Result< String >
+  pub fn bump( manifest : &mut Manifest, dry : bool ) -> Result< BumpReport >
   {
+    let mut report = BumpReport::default();
+
     let version=
     {
       if manifest.manifest_data.is_none()
@@ -95,11 +119,15 @@ mod private
       {
         return Err( anyhow!( "`{}` - can not read the version", manifest.manifest_path().as_ref().display() ) );
       }
+      let version = version.unwrap().as_str().unwrap();
+      report.name = Some( package[ "name" ].as_str().unwrap().to_string() );
+      report.old_version = Some( version.to_string() );
 
-      Version::from_str( version.unwrap().as_str().unwrap() )?
+      Version::from_str( version )?
     };
 
     let new_version = version.bump().to_string();
+    report.new_version = Some( new_version.clone() );
 
     if !dry
     {
@@ -108,7 +136,7 @@ mod private
       manifest.store()?;
     }
 
-    Ok( new_version )
+    Ok( report )
   }
 }
 
@@ -207,6 +235,10 @@ crate::mod_interface!
 {
   /// Version entity.
   protected use Version;
+
+  /// Report for bump operation.
+  protected use BumpReport;
+
   /// Bump version.
   protected use bump;
 }

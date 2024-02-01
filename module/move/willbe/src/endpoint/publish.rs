@@ -13,11 +13,14 @@ mod private
   use wtools::error::for_app::Error;
   use path::AbsolutePath;
 
+  /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
   {
-    workspace_root_dir : Option<AbsolutePath>,
-    packages : Vec<( AbsolutePath, package::PublishReport )>
+    /// Represents the absolute path to the root directory of the workspace.
+    pub workspace_root_dir : Option< AbsolutePath >,
+    /// Represents a collection of packages and their associated publishing reports.
+    pub packages : Vec<( AbsolutePath, package::PublishReport )>
   }
 
   impl std::fmt::Display for PublishReport
@@ -112,7 +115,6 @@ mod private
         queue.push( crate_id );
       }
     }
-    let queue_empty = queue.is_empty();
 
     for path in queue.into_iter().filter_map( | id | id.path )
     {
@@ -126,12 +128,6 @@ mod private
         }
       )?;
       report.packages.push(( path, current_report ));
-    }
-
-    if dry && !queue_empty
-    {
-      // qqq: Is this command proposal suitable? It may be out of date and require support
-      println!( "To perform actual publishing, call the command with `dry:0` property.\n  .publish {} dry:0", patterns.join( "," ) )
     }
 
     Ok( report )

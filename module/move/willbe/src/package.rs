@@ -21,6 +21,7 @@ mod private
   use wtools::error::for_app::{ anyhow, Error, Context };
   use workspace::Workspace;
   use path::AbsolutePath;
+  use version::BumpReport;
 
   ///
   #[ derive( Debug ) ]
@@ -174,17 +175,24 @@ mod private
     }
   }
 
-  /// Describe publishing outcomes.
+  /// Holds information about the publishing process.
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
   {
-    get_info : Option< process::CmdReport >,
-    publish_required : bool,
-    bump : Option< BumpReport >,
-    add : Option< process::CmdReport >,
-    commit : Option< process::CmdReport >,
-    push : Option< process::CmdReport >,
-    publish : Option< process::CmdReport >,
+    /// Retrieves information about the package.
+    pub get_info : Option< process::CmdReport >,
+    /// Indicates whether publishing is required for the package.
+    pub publish_required : bool,
+    /// Bumps the version of the package.
+    pub bump : Option< ExtendedBumpReport >,
+    /// Report of adding changes to the Git repository.
+    pub add : Option< process::CmdReport >,
+    /// Report of committing changes to the Git repository.
+    pub commit : Option< process::CmdReport >,
+    /// Report of pushing changes to the Git repository.
+    pub push : Option< process::CmdReport >,
+    /// Report of publishes the package using the `cargo publish` command.
+    pub publish : Option< process::CmdReport >,
   }
 
   impl std::fmt::Display for PublishReport
@@ -241,27 +249,27 @@ mod private
     }
   }
 
-  /// Report about changing version.
+  /// Report about a changing version.
   #[ derive( Debug, Default, Clone ) ]
-  pub struct BumpReport
+  pub struct ExtendedBumpReport
   {
-    package_name : String,
-    new_version : String,
+    base : BumpReport,
     changed_files : Vec< AbsolutePath >
   }
 
-  impl std::fmt::Display for BumpReport
+  impl std::fmt::Display for ExtendedBumpReport
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
+      let Self { base, changed_files } = self;
       if self.changed_files.is_empty()
       {
         f.write_str( "Files were not changed during bumping the version" )?;
         return Ok( () )
       }
 
-      let files = self.changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
-      f.write_fmt( format_args!( "`{}` bumped to `{}`\n  changed files:\n    {files}\n", self.package_name, self.new_version ) )?;
+      let files = changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
+      f.write_fmt( format_args!( "{base}\n  changed files:\n    {files}\n" ) )?;
 
       Ok( () )
     }
@@ -302,13 +310,14 @@ mod private
       report.publish_required = true;
 
       let mut files_changed_for_bump = vec![];
-      // bump version in the package manifest
-      let new_version = version::bump( &mut package.manifest(), dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+      // bump a version in the package manifest
+      let bump_report = version::bump( &mut package.manifest(), dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
       files_changed_for_bump.push( package.manifest_path() );
+      let new_version = package.version();
 
       let package_name = package.name();
 
-      // bump the package version in dependents(so far, only workspace)
+      // bump the package version in dependents (so far, only workspace)
       let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( package.crate_dir() ).workspace_root().try_into().unwrap();
       let workspace_manifest_path = workspace_manifest_dir.join( "Cargo.toml" );
 
@@ -339,7 +348,7 @@ mod private
       let files_changed_for_bump : Vec< _ > = files_changed_for_bump.into_iter().unique().collect();
       let objects_to_add : Vec< _ > = files_changed_for_bump.iter().map( | f | f.as_ref().strip_prefix( &workspace_manifest_dir ).unwrap().to_string_lossy() ).collect();
 
-      report.bump = Some( BumpReport { package_name : package_name.to_string(), new_version : new_version.clone(), changed_files : files_changed_for_bump.clone() } );
+      report.bump = Some( ExtendedBumpReport { base : bump_report, changed_files : files_changed_for_bump.clone() } );
 
       let commit_message = format!( "{package_name}-v{new_version}" );
       let res = git::add( workspace_manifest_dir, objects_to_add, dry ).map_err( | e | ( report.clone(), e ) )?;
