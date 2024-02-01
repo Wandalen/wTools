@@ -5,9 +5,9 @@ pub( crate ) mod private
 
   use std::
   {
-    io::Read,
+    io::{ self, Read },
     fs,
-    path::{ Path, PathBuf },
+    path::Path,
   };
   use wtools::error::
   {
@@ -46,6 +46,15 @@ pub( crate ) mod private
     }
   }
 
+  impl CrateDir
+  {
+    /// Returns an absolute path.
+    pub fn absolute_path( &self ) -> AbsolutePath
+    {
+      self.0.clone()
+    }
+  }
+
 
 
 /// Represents errors related to manifest data processing.
@@ -57,7 +66,7 @@ pub( crate ) mod private
     EmptyManifestData,
     /// Cannot find the specified tag in the TOML file.
     #[ error( "Cannot find tag {0} in toml file." ) ]
-    CannotFindValue(String),
+    CannotFindValue( String ),
   }
 
   ///
@@ -131,14 +140,14 @@ pub( crate ) mod private
       Ok( () )
     }
 
-    // qqq : for Bohdan : don't abuse anyhow
     /// Store manifest.
-    pub fn store( &self ) -> Result< () >
+    pub fn store( &self ) -> io::Result< () >
     {
-      let data = self.manifest_data.as_ref().ok_or( format_err!( "Manifest data wasn't loaded" ) )?.to_string();
-
-      // qqq : for Bohdan : make proper errors handling
-      fs::write( &self.manifest_path, &data ).map_err( | err | format_err!( "IO: Failed to write manifest. Details: {err}" ) )?;
+      // If the `manifest_data` doesn't contain any data, then there's no point in attempting to write
+      if let Some( data ) = &self.manifest_data
+      {
+        fs::write( &self.manifest_path, data.to_string() )?;
+      }
 
       Ok( () )
     }
@@ -170,10 +179,8 @@ pub( crate ) mod private
   }
 
   /// Create and load manifest by specified path
-  // qqq : for Bohdan : use newtype, add proper errors handing
-  pub fn open( path : impl Into< PathBuf > ) -> Result< Manifest >
+  pub fn open( path : AbsolutePath ) -> Result< Manifest >
   {
-    let path = AbsolutePath::try_from( path.into() )?;
     let mut manifest = if let Ok( dir ) = CrateDir::try_from( path.clone() )
     {
       Manifest::from( dir )
