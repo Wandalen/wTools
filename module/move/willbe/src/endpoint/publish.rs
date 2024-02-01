@@ -112,6 +112,7 @@ mod private
         queue.push( crate_id );
       }
     }
+    let queue_empty = queue.is_empty();
 
     for path in queue.into_iter().filter_map( | id | id.path )
     {
@@ -125,6 +126,12 @@ mod private
         }
       )?;
       report.packages.push(( path, current_report ));
+    }
+
+    if dry && !queue_empty
+    {
+      // qqq: Is this command proposal suitable? It may be out of date and require support
+      println!( "To perform actual publishing, call the command with `dry:0` property.\n  .publish {} dry:0", patterns.join( "," ) )
     }
 
     Ok( report )
