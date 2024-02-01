@@ -48,7 +48,7 @@ mod private
   {
     /// Manifest error.
     #[ error( "Manifest error. Reason: {0}." ) ]
-    Manifest(ManifestError),
+    Manifest( ManifestError ),
     /// Fail to load metadata.
     #[ error( "Fail to load metadata." ) ]
     Metadata,
@@ -70,7 +70,7 @@ mod private
 
     fn try_from( value : AbsolutePath ) -> Result< Self, Self::Error >
     {
-      let manifest =  manifest::open( value.as_ref() )?;
+      let manifest =  manifest::open( value.clone() )?;
       if !manifest.package_is()?
       {
         return Err( anyhow!( "`{}` - not a package", value.as_ref().display() ) );
@@ -195,8 +195,11 @@ mod private
     {
       match self
       {
-        Package::Manifest( manifest ) => Ok(manifest.clone()),
-        Package::Metadata( metadata ) => manifest::open( metadata.manifest_path.as_std_path() ).map_err( | _ | PackageError::Metadata ),
+        Package::Manifest( manifest ) => Ok( manifest.clone() ),
+        Package::Metadata( metadata ) => manifest::open
+        (
+          AbsolutePath::try_from( metadata.manifest_path.as_path() ).map_err( | _ | PackageError::LocalPath )? )
+          .map_err( | _ | PackageError::Metadata ),
       }
     }
 
@@ -357,7 +360,7 @@ mod private
       // qqq: should be refactored
       if !dry
       {
-        let mut workspace_manifest = manifest::open( workspace_manifest_path.as_ref() ).map_err( | e | ( report.clone(), e ) )?;
+        let mut workspace_manifest = manifest::open( workspace_manifest_path.clone() ).map_err( | e | ( report.clone(), e ) )?;
         let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().ok_or_else( || ( report.clone(), anyhow!( PackageError::Manifest( ManifestError::EmptyManifestData ) ) ) )?;
         workspace_manifest_data
         .get_mut( "workspace" )
@@ -376,7 +379,7 @@ mod private
               }
             }
         );
-        workspace_manifest.store().map_err( | err | ( report.clone(), err ) )?;
+        workspace_manifest.store().map_err( | err | ( report.clone(), err.into() ) )?;
       }
 
       files_changed_for_bump.push( workspace_manifest_path );
@@ -678,7 +681,6 @@ mod private
     let version = package.version()?;
     let local_package_path = local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )?;
 
-    // qqq : for Bohdan : bad, properly handle errors
     let local_package = CrateArchive::read( local_package_path ).map_err( | _ | PackageError::ReadArchive )?;
     let remote_package = match CrateArchive::download_crates_io( name, version )
     {

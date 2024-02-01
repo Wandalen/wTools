@@ -157,11 +157,11 @@ mod private
   /// List workspace packages.
   ///
 
-  pub fn list( path_to_manifest : CrateDir, format : ListFormat, filter : ListFilter ) -> Result< ListReport, ( ListReport, Error ) >
+  pub fn list( crate_dir : CrateDir, format : ListFormat, filter : ListFilter ) -> Result< ListReport, ( ListReport, Error ) >
   {
     let mut report = ListReport::default();
 
-    let manifest = manifest::open( &path_to_manifest.as_ref() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let manifest = manifest::open( crate_dir.absolute_path() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
     let mut metadata = Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | err | ( report.clone(), format_err!( err ) ) )?;
 
     let root_crate = manifest
