@@ -158,6 +158,16 @@ mod private
   /// Create and write or rewrite content in file.
   pub fn file_write( filename: &Path, content: &str ) -> Result< () > 
   {
+    if let Some( folder ) = filename.parent()
+    {
+      match std::fs::create_dir_all( folder )
+      {
+        Ok( _ ) => {},
+        Err( e ) if e.kind() == std::io::ErrorKind::AlreadyExists => {},
+        Err( e ) => return Err( e.into() ),
+      }
+    }
+
     let mut file = File::create( filename )?;
     file.write_all( content.as_bytes() )?;
     Ok( () )
