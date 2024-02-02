@@ -62,22 +62,23 @@ tests_impls!
     a_id!( vec![ Value::String( "subject".to_string() ) ], grammar_command.subjects );
     a_true!( grammar_command.properties.is_empty() );
 
-    // with more subjects that it is setted
+    // with more subjects that it is set
     let raw_command = parser.command( ".command subject1 subject2" ).unwrap();
 
     let grammar_command = grammar_converter.to_command( raw_command );
     a_true!( grammar_command.is_err() );
 
-    // with subject and property that isn't declareted
+    // with subject and property that isn't declared
     let raw_command = parser.command( ".command subject prop:value" ).unwrap();
 
     a_true!( grammar_converter.to_command( raw_command ).is_err() );
 
-    // with property that isn't declareted and without subject
+    // subject with colon when property not declared
     let raw_command = parser.command( ".command prop:value" ).unwrap();
 
-    let grammar_command = grammar_converter.to_command( raw_command );
-    a_true!( grammar_command.is_err() );
+    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+    a_id!( vec![ Value::String( "prop:value".to_string() ) ], grammar_command.subjects );
+    a_true!( grammar_command.properties.is_empty() );
   }
 
   fn subject_type_check()
