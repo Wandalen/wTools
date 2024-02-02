@@ -146,78 +146,168 @@ pub( crate ) mod private
       Ok( Namespace { commands } )
     }
 
+    #[ cfg( feature = "on_unknown_command_error_suggest" ) ]
+    fn suggest_command( &self, user_input: &str ) -> Option< &str >
+    {
+      let jaro = eddie::JaroWinkler::new();
+      let sim = self
+      .commands
+      .iter()
+      .map( |( name, c )| ( jaro.similarity( name, user_input ), c ) )
+      .max_by( |( s1, _ ), ( s2, _ )| s1.total_cmp( s2 ) );
+      if let Some(( sim, variant )) = sim
+      {
+        if sim > 0.0
+        {
+          let phrase = &variant[ 0 ].phrase;
+          return Some( phrase );
+        }
+      }
+
+      None
+    }
+
+    fn find_variant< 'a >
+    (
+      variants: &'a [ Command ],
+      raw_command : &RawCommand,
+    ) -> Option< &'a Command >
+    {
+      let mut maybe_valid_variants = vec![];
+
+      for variant @ Command
+      {
+        subjects,
+        properties,
+        properties_aliases,
+        ..
+      }
+      in variants
+      {
+        let raw_subjects_count = raw_command.subjects.len();
+        let expected_subjects_count = subjects.len();
+        if raw_subjects_count > expected_subjects_count { continue; }
+
+        let mut maybe_subjects_count = 0_usize;
+        for ( k, _v ) in &raw_command.properties
+        {
+          if properties.contains_key( k ) { continue; }
+          if let Some( key ) = properties_aliases.get( k )
+          {
+            if properties.contains_key( key ) { continue; }
+          }
+          maybe_subjects_count += 1;
+        }
+
+        if raw_subjects_count + maybe_subjects_count > expected_subjects_count { continue; }
+
+        maybe_valid_variants.push( variant );
+      }
+
+      // if maybe_valid_variants.len() == 1 { return Some( maybe_valid_variants[ 0 ] ) }
+      // qqq: provide better variant selection( E.g. based on types )
+      if !maybe_valid_variants.is_empty() { return Some( maybe_valid_variants[ 0 ] ) }
+      else { None }
+    }
+
+    fn extract_subjects( command : &Command, raw_command : &RawCommand, used_properties : &[ &String ] ) -> Result< Vec< Value > >
+    {
+      let mut subjects = vec![];
+
+      let all_subjects = raw_command
+      .subjects.clone().into_iter()
+      .chain
+      (
+        raw_command.properties.iter()
+        .filter( |( key, _ )| !used_properties.contains( key ) )
+        .map( |( key, value )| format!( "{key}:{value}" ) )
+      )
+      .collect::< Vec< _ > >();
+      let mut rc_subjects_iter = all_subjects.iter();
+      let mut current = rc_subjects_iter.next();
+
+      for ValueDescription { kind, optional, .. } in &command.subjects
+      {
+        let value = match current.and_then( | v | kind.try_cast( v.clone() ).ok() )
+        {
+          Some( v ) => v,
+          None if *optional => continue,
+          _ => return Err( err!( "Missing not optional subject" ) ),
+        };
+        subjects.push( value );
+        current = rc_subjects_iter.next();
+      }
+      if let Some( value ) = current { return Err( err!( "Can not identify a subject: `{}`", value ) ) }
+
+      Ok( subjects )
+    }
+
+    fn extract_properties( command: &Command, raw_command : HashMap< String, String > ) -> Result< HashMap< String, Value > >
+    {
+      raw_command.into_iter()
+      .filter_map
+      (
+        |( key, value )|
+        // try to find a key
+        if command.properties.contains_key( &key ) { Some( key ) }
+        else if let Some( original_key ) = command.properties_aliases.get( &key ) { Some( original_key.clone() ) }
+        else { None }
+        // give a description. unwrap is safe because previous checks
+        .map( | key | ( command.properties.get( &key ).unwrap(), key, value ) )
+      )
+      .map
+      (
+        |( value_description, key, value )|
+        value_description.kind.try_cast( value ).map( | v | ( key.clone(), v ) )
+      )
+      .collect::< Result< HashMap< _, _ > > >()
+    }
+
+    fn group_properties_and_their_aliases< 'a, Ks >( aliases : &'a HashMap< String, String >, used_keys :  Ks ) -> Vec< &String >
+    where
+      Ks : Iterator< Item = &'a String >
+    {
+      let reverse_aliases =
+      {
+        let mut map = HashMap::< &String, Vec< &String > >::new();
+        for ( property, alias ) in aliases
+        {
+          map.entry( alias ).or_default().push( property );
+        }
+        map
+      };
+
+      used_keys.flat_map( | key |
+      {
+        reverse_aliases.get( key ).into_iter().flatten().map( | k | *k ).chain( Some( key ) )
+      })
+      .collect::< Vec< _ > >()
+    }
+
     /// Converts raw command to grammatically correct
     ///
     /// Make sure that this command is described in the grammar and matches it(command itself and all it options too).
     pub fn to_command( &self, raw_command : RawCommand ) -> Result< GrammarCommand >
     {
-      let variants = self
-      .commands
-      .get( &raw_command.name )
+      let variants = self.commands.get( &raw_command.name )
       .ok_or_else::< error::for_app::Error, _ >
       (
         ||
         {
           #[ cfg( feature = "on_unknown_command_error_suggest" ) ]
-          {
-            let jaro = eddie::JaroWinkler::new();
-            let sim = self
-              .commands
-              .iter()
-              .map( |( name, c )| ( jaro.similarity( name, &raw_command.name ), c ) )
-              .max_by( |( s1, _ ), ( s2, _ )| s1.total_cmp( s2 ) );
-            if let Some(( sim, variant )) = sim
-            {
-              if sim > 0.0
-              {
-                let phrase = &variant[ 0 ].phrase;
-                return err!( "Command not found. Maybe you mean `.{}`?", phrase );
-              }
-            }
-          }
+          if let Some( phrase ) = self.suggest_command( &raw_command.name )
+          { return err!( "Command not found. Maybe you mean `.{}`?", phrase ) }
           err!( "Command not found. Please use `.` command to see the list of available commands. Sorry for the inconvenience. 😔" )
         }
       )?;
 
-      let mut cmd = None;
-      let mut subjects = vec![];
-
-      // find a variant that meets requirements
-      'variants_loop: for variant in variants
-      {
-        subjects.clear();
-
-        if raw_command.subjects.len() > variant.subjects.len() { continue; }
-        let mut rc_subjects_iter = raw_command.subjects.iter();
-
-        let mut current = rc_subjects_iter.next();
-        // try to match subjects
-        'internal: for ValueDescription { kind, optional, .. } in &variant.subjects
-        {
-          let value = match current.and_then( | v | kind.try_cast( v.clone() ).ok() )
-          {
-            Some( v ) => v,
-            None if *optional => continue 'internal,
-            _ => continue 'variants_loop,
-          };
-
-          subjects.push( value );
-          current = rc_subjects_iter.next();
-        }
-        // if something exists after all expected subjects - this isn't correct variant
-        if current.is_some() { continue 'variants_loop; }
-
-        cmd = Some( variant );
-      }
-
-      let Some( cmd ) = cmd else
+      let Some( cmd ) = Self::find_variant( variants, &raw_command ) else
       {
         error::for_app::bail!
         (
           "`{}` command with specified subjects not found. Available variants `{:#?}`",
           &raw_command.name,
-          variants
-          .iter()
+          variants.iter()
           .map
           (
             | x |
@@ -227,80 +317,17 @@ pub( crate ) mod private
               &raw_command.name,
               {
                 let variants = x.subjects.iter().filter( | x | !x.optional ).map( | x | format!( "{:?}", x.kind ) ).collect::< Vec< _ > >();
-                if variants.is_empty()
-                {
-                  String::new()
-                }
-                else
-                {
-                  variants.join( "" )
-                }
+                if variants.is_empty() { String::new() } else { variants.join( "" ) }
               }
             )
-          ).collect::< Vec< _ > >()
+          )
+          .collect::< Vec< _ > >()
         );
       };
 
-      let properties = if cmd.properties.is_empty() 
-      {
-        for ( key, value ) in &raw_command.properties 
-        {
-          let subj = format!( "{key}:{value}" );
-          if cmd.subjects.len() > raw_command.subjects.len()  
-          {
-            subjects.push( Value::String( subj ) );
-          }
-          else 
-          {
-            return Err( err!( "Too many subjects provided. Something wrong here: {}", subj ) );
-          }
-        }
-
-        HashMap::new()
-      }
-      else 
-      {
-        raw_command.properties
-        .clone()
-        .into_iter()
-        .map
-        (
-          |( key, value )|
-          // find a key
-          if cmd.properties.contains_key( &key ) { Ok( key ) }
-          else 
-          { 
-            if raw_command.properties.len() > cmd.properties.len() 
-            {
-              let subj = format!( "{key}:{value}" );
-              subjects.push( Value::String( subj ) );
-              if cmd.properties.is_empty() 
-              {
-                cmd.properties_aliases.get( &key ).cloned().ok_or_else( || err!( "property `{}` not found for command `.{}`", key, &raw_command.name ) ) 
-              }
-              else 
-              {
-                Ok( cmd.properties.keys().next().unwrap().to_string() )
-              }
-            }
-            else 
-            {
-              cmd.properties_aliases.get( &key ).cloned().ok_or_else( || err!( "property `{}` not found for command `.{}`", key, &raw_command.name ) ) 
-            }
-          }
-          // give a description
-          .map( | key | ( key.clone(), cmd.properties.get( &key ).unwrap(), value ) )
-        )
-        .collect::< Result< Vec< _ > > >()?
-        .into_iter()
-        // an error can be extended with the value's hint
-        .map
-        (
-          |( key, value_description, value )|
-          value_description.kind.try_cast( value ).map( | v | ( key.clone(), v ) )
-        )
-        .collect::< Result< HashMap< _, _ > > >()?
-      };
+      let properties = Self::extract_properties( cmd, raw_command.properties.clone() )?;
+      let used_properties_with_their_aliases = Self::group_properties_and_their_aliases( &cmd.properties_aliases, properties.keys() );
+      let subjects = Self::extract_subjects( cmd, &raw_command, &used_properties_with_their_aliases )?;
 
       Ok( GrammarCommand
       {

@@ -344,8 +344,7 @@ tests_impls!
     a_id!( grammar_command.subjects, vec![ TheModule::Value::String( "qwe:rty".into() ) ] );
   }
 
-  // qqq: subject should be parsed if optional property is not specified
-  fn optional_prop_subject_with_colon() 
+  fn optional_prop_subject_with_colon()
   {
     let grammar = GrammarConverter::former()
     .command
