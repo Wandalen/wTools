@@ -51,8 +51,6 @@ pub( crate ) mod private
     deps
   }
 
-  // qqq : add test
-  // qqq : cyclic test?
   /// Performs a topological sort of a graph of packages
   ///
   /// Arg:
