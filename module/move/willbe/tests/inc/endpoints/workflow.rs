@@ -16,6 +16,7 @@ mod workflow_generate
     io::Read, 
     collections::HashMap
   };
+  use std::fs::{create_dir, create_dir_all};
   use serde::Deserialize;
 
   use super::*;
@@ -28,7 +29,7 @@ mod workflow_generate
 
     let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( sample_dir ), &[ "**" ] ).unwrap();
-
+    create_dir_all(temp.path().join(".github").join("workflows")).unwrap();
     temp
   }
 
