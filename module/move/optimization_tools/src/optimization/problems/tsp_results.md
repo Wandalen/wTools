@@ -5,8 +5,8 @@ Traveling salesman problem is initialized as graph with nodes representing citie
 For parameters:
  - temperature decrease coefficient : 0.999,
  - temperature increase value : 1.0,
- - ga_max_stale_iterations : 20,
- - sa_mutations_per_generation_limit : 2_000,
+ - ga_max_stale_iterations : 30,
+ - sa_mutations_per_generation_limit : 300,
  - reset limit : 1_000,
  - elite selection rate : 0.25,
  - mutation rate : 0.5,
@@ -18,13 +18,13 @@ For parameters:
 
 | Number of nodes in graph | Population size   | Dynasties limit   | Execution time |
 | ------------------------ | ----------------- | ----------------- | -------------- |
-| 10                       | 1000              | 800               | 117 s          |
+| 10                       | 500               | 1000              | 56.67s         |
 
 For parameters ( pure simulated annealing ):
  - temperature decrease coefficient : 0.999,
  - temperature increase value : 1.0,
- - ga_max_stale_iterations : 20,
- - sa_mutations_per_generation_limit : 2_000,
+ - ga_max_stale_iterations : 30,
+ - sa_mutations_per_generation_limit : 300,
  - reset limit : 1_000,
  - <em>elite selection rate</em> : 0,
  - <em>mutation rate</em> : 1,
@@ -34,20 +34,20 @@ For parameters ( pure simulated annealing ):
  - tournament_selection_size : 2,
 
 
-| Number of nodes in graph | Population size   | Dynasties limit   | Execution time             |
-| ------------------------ | ----------------- | ----------------- | -------------------------- |
-| 10                       | 1                 | 10000             | Optimal Solution not found |
+| Number of nodes in graph | Population size   | Dynasties limit   | Execution time     |
+| ------------------------ | ----------------- | ----------------- | ------------------ |
+| 10                       | 1                 | 150_000             | 82.35s             |
 
 
 For parameters ( pure genetic algorithm ):
  - temperature decrease coefficient : 1.0,
  - temperature increase value : 0.0,
- - ga_max_stale_iterations : 20,
- - sa_mutations_per_generation_limit : 2_000,
+ - ga_max_stale_iterations : 30,
+ - sa_mutations_per_generation_limit : 300,
  - reset limit : 1_000,
  - elite selection rate : 0.25,
- - mutation rate : 0.5,
- - crossover_rate : 0.25,
+ - mutation rate : 0.25,
+ - crossover_rate : 0.5,
  - population percent included in next generation : 1.0,
  - tournament_selection_pressure : 0.85,
  - tournament_selection_size : 2,
@@ -55,5 +55,5 @@ For parameters ( pure genetic algorithm ):
 
 | Number of nodes in graph | Population size   | Dynasties limit   | Execution time    |
 | ------------------------ | ----------------- | ----------------- | ----------------- |
-| 10                       | 100               | 1000              | 11000 ms          |
+| 10                       | 5000              | 100               | 44.59s            |
 
