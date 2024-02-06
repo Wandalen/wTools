@@ -76,11 +76,11 @@ pub trait InitialProblem
 {
   /// Type that represents Individual in population of solutions in optimization process.
   type Person : Individual + Clone + PartialEq + Send + Sync + Debug;
-  // type Context : Sync;
 
   /// Create the initial population for the optimization algorithm.
   fn initial_population( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person >;
 
+  /// Get random initial solution.
   fn get_random_person( &self, hrng : Hrng ) -> Self::Person;
 
   /// Evaluate fitness of provided solution.

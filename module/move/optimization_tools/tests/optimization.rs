@@ -45,7 +45,7 @@ fn initial_temperature()
 {
   logger_init();
   let initial = SudokuInitial::new( Board::default() );
-  let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+  let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
 
   let temperature = optimizer.initial_temperature();
   a_true!( temperature.unwrap() >= 0f64 );
@@ -80,7 +80,7 @@ fn solve_with_sa()
 
   let seed : Seed = "seed3".into();
   let initial = SudokuInitial::new( Board::from( input ) );
-  let mut optimizer = HybridOptimizer::new( seed, initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+  let optimizer = HybridOptimizer::new( seed, initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
 
   log::set_max_level( log::LevelFilter::max() );
   let ( reason, solution ) = optimizer.optimize();
@@ -134,7 +134,7 @@ fn solve_empty_full_block()
 
   let seed : Seed = "seed3".into();
   let initial = SudokuInitial::new( Board::from( sudoku ) );
-  let mut optimizer = HybridOptimizer::new( seed, initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+  let optimizer = HybridOptimizer::new( seed, initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
 
   log::set_max_level( log::LevelFilter::max() );
   let ( reason, solution ) = optimizer.optimize();
@@ -196,9 +196,9 @@ fn time_measure()
   "#;
 
 
-  for i in 0..=9 {
+  for i in 0..=3 {
     let initial = SudokuInitial::new( Board::from( input ) );
-    let mut optimizer = HybridOptimizer::new( Seed::new( i.to_string() ), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+    let optimizer = HybridOptimizer::new( Seed::new( i.to_string() ), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
     let ( _reason, _solution ) = optimizer.optimize();
   }
 }

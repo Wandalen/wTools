@@ -91,7 +91,7 @@ fn find_route()
 
   let tsp_initial = TSProblem{ graph, starting_node : NodeIndex( 1 ) };
 
-  let mut optimizer = HybridOptimizer::new( seed, tsp_initial, OrderedRouteCrossover{}, TSRouteMutation{} )
+  let optimizer = HybridOptimizer::new( seed, tsp_initial, OrderedRouteCrossover{}, TSRouteMutation{} )
   .set_population_size( 100 )
   .set_dynasties_limit( 100 );
 

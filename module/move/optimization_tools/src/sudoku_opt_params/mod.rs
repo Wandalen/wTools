@@ -7,7 +7,7 @@ use iter_tools::Itertools;
 use crate::
 { 
   sudoku::*, 
-  optimization::{ HybridOptimizer, LinearTempSchedule, SudokuInitial, BestRowsColumnsCrossover, RandomPairInBlockMutation },
+  optimization::{ HybridOptimizer, LinearTempSchedule, SudokuInitial, BestRowsColumnsCrossover, RandomPairInBlockMutation, PopulationModificationProportions },
   nelder_mead::{ NelderMeadOptimizer, Point, NMResult },
 };
 
@@ -88,7 +88,7 @@ pub fn get_sa_optimal_params()
             reset_increase_value : case.coords[ 1 ].into(),
           };
 
-          let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} )
+          let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} )
           .set_sa_temp_schedule( Box::new( temp_schedule ) )
           .set_sa_max_mutations_per_dynasty( case.coords[ 2 ] as usize )
           ;
@@ -144,7 +144,7 @@ pub fn get_sa_optimal_params()
     {
       // initial
       let initial = SudokuInitial::new( board.clone() );
-      let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+      let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
 
       let now = std::time::Instant::now();
       let ( _reason, _solution ) = optimizer.optimize();
@@ -160,7 +160,7 @@ pub fn get_sa_optimal_params()
         reset_increase_value : optimized_params.1.into(),
       };
 
-      let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} )
+      let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} )
       .set_sa_temp_schedule( Box::new( temp_schedule ) )
       .set_sa_max_mutations_per_dynasty( optimized_params.2 as usize )
       ;
@@ -203,9 +203,13 @@ pub fn ga_optimal_params()
         {
           let initial = SudokuInitial::new( board.clone() );
 
-          let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  )
-          .set_ga_mutation_rate( case.coords[ 0 ] )
-          .set_ga_crossover_rate( case.coords[ 1 ] )
+          let props = PopulationModificationProportions::new()
+          .set_mutation_rate( case.coords[ 0 ] )
+          .set_crossover_rate( case.coords[ 1 ] )
+          ;
+
+          let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  )
+          .set_population_proportions( props )
           ;
           
           let mut results: Vec< std::time::Duration > = Vec::new();
@@ -278,12 +282,15 @@ pub fn hybrid_optimal_params() -> Vec< ( Level, Vec< NMResult > ) >
             reset_increase_value : 1.0.into(),
           };
 
-          let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  )
+          let props = crate::optimization::PopulationModificationProportions::new()
+          .set_crossover_rate( case.coords[ 3 ] )
+          .set_mutation_rate( case.coords[ 2 ] )
+          ;
+
+          let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  )
           .set_sa_temp_schedule( Box::new( temp_schedule ) )
           .set_sa_max_mutations_per_dynasty( case.coords[ 1 ] as usize )
-          .set_ga_mutation_rate( case.coords[ 2 ] )
-          .set_ga_crossover_rate( case.coords[ 3 ] )
-          .set_ga_elite_selection_rate( 1.0 - ( case.coords[ 2 ] + case.coords[ 3 ] ) )
+          .set_population_proportions( props )
           .set_max_stale_iterations( case.coords[ 4 ] as usize )
           .set_population_size( case.coords[ 5 ] as usize )
           .set_dynasties_limit( case.coords[ 6 ] as usize )
@@ -355,12 +362,15 @@ pub fn tsp_hybrid_optimal_params() -> Vec< NMResult >
         reset_increase_value : 1.0.into(),
       };
 
-      let mut optimizer = HybridOptimizer::new( Seed::default(), initial, OrderedRouteCrossover{}, TSRouteMutation{}  )
+      let props = PopulationModificationProportions::new()
+      .set_mutation_rate( case.coords[ 2 ] )
+      .set_crossover_rate( case.coords[ 3 ] )
+      ;
+
+      let optimizer = HybridOptimizer::new( Seed::default(), initial, OrderedRouteCrossover{}, TSRouteMutation{}  )
       .set_sa_temp_schedule( Box::new( temp_schedule ) )
       .set_sa_max_mutations_per_dynasty( case.coords[ 1 ] as usize )
-      .set_ga_mutation_rate( case.coords[ 2 ] )
-      .set_ga_crossover_rate( case.coords[ 3 ] )
-      .set_ga_elite_selection_rate( 1.0 - ( case.coords[ 2 ] + case.coords[ 3 ] ) )
+      .set_population_proportions( props )
       .set_max_stale_iterations( case.coords[ 4 ] as usize )
       .set_dynasties_limit( case.coords[ 5 ] as usize )
       .set_population_size( 1 )
