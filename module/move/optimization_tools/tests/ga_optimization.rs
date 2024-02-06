@@ -78,7 +78,10 @@ fn solve_with_ga()
 
   let initial = SudokuInitial::new( Board::from( sudoku ) );
 
-  let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+  let optimizer = HybridOptimizer::new( Seed::default(), initial )
+  .set_crossover_operator( BestRowsColumnsCrossover{} )
+  .set_mutation_operator( RandomPairInBlockMutation{} )
+  ;
 
   let ( reason, solution ) = optimizer.optimize();
 

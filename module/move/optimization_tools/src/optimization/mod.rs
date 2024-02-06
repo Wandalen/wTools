@@ -90,12 +90,15 @@ pub struct HybridOptimizer< S : InitialProblem, C, M >
   pub mutation_operator : M,
 }
 
-impl< S : InitialProblem + Sync, C : CrossoverOperator::< Person = < S as InitialProblem>::Person >, M > HybridOptimizer< S, C, M >
-where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
-  M : MutationOperator::< Problem = S > + Sync
+/// Inidicates state of hybrid optimizer with no mutation operator set.
+pub struct NoMutOp;
+/// Inidicates state of hybrid optimizer with no crossover operator set.
+pub struct NoCrOp;
+
+impl< S : InitialProblem + Sync > HybridOptimizer< S, NoCrOp, NoMutOp >
 {
   /// Create new instance of HybridOptimizer with default config for SA and GA.
-  pub fn new( random_seed : Seed, population_seeder : S, crossover_op : C, mutation_op : M ) -> Self
+  pub fn new( random_seed : Seed, population_seeder : S ) -> HybridOptimizer< S, NoCrOp, NoMutOp >
   where TournamentSelection : SelectionOperator< < S as InitialProblem >::Person >
   {
     let selection_operator = Box::new( TournamentSelection
@@ -120,17 +123,79 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
       fitness_recalculation : false,
       mutation_rate : 0.25,
       elite_selection_rate : 0.25,
-      ga_crossover_operator : crossover_op,
+      ga_crossover_operator : NoCrOp,
       ga_selection_operator : selection_operator as Box< dyn SelectionOperator< < S as InitialProblem >::Person > >,
       hrng,
       seeder : population_seeder,
       dynasties_limit : 10_000,
       population_size : 10_000,
-      mutation_operator : mutation_op,
+      mutation_operator : NoMutOp,
       population_percent : 1.0,
     }
   }
+}
 
+impl< S : InitialProblem + Sync, C > HybridOptimizer< S, C, NoMutOp >
+{
+  /// Set operator for mutating population.
+  pub fn set_mutation_operator< M >( self, mutation_op : M ) -> HybridOptimizer< S, C, M >
+  where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
+  M : MutationOperator::< Problem = S > + Sync
+  {
+    HybridOptimizer
+    {
+      sa_temperature_schedule : self.sa_temperature_schedule,
+      max_stale_iterations : self.max_stale_iterations,
+      sa_mutations_per_dynasty_limit : self.sa_mutations_per_dynasty_limit,
+      reset_limit : self.reset_limit,
+      crossover_rate : self.crossover_rate,
+      fitness_recalculation : self.fitness_recalculation,
+      mutation_rate : self.mutation_rate,
+      elite_selection_rate : self.elite_selection_rate,
+      ga_crossover_operator : self.ga_crossover_operator,
+      ga_selection_operator : self.ga_selection_operator,
+      hrng : self.hrng,
+      seeder : self.seeder,
+      dynasties_limit : self.dynasties_limit,
+      population_size : self.population_size,
+      mutation_operator : mutation_op,
+      population_percent : self.population_percent,
+    }
+  }
+}
+
+impl< S : InitialProblem + Sync, M > HybridOptimizer< S, NoCrOp, M >
+{
+  /// Set operator for producing offspring for new population.
+  pub fn set_crossover_operator< C >( self, crossover_op : C ) -> HybridOptimizer< S, C, M >
+  where C : CrossoverOperator::< Person = < S as InitialProblem>::Person >
+  {
+    HybridOptimizer
+    {
+      sa_temperature_schedule : self.sa_temperature_schedule,
+      max_stale_iterations : self.max_stale_iterations,
+      sa_mutations_per_dynasty_limit : self.sa_mutations_per_dynasty_limit,
+      reset_limit : self.reset_limit,
+      crossover_rate : self.crossover_rate,
+      fitness_recalculation : self.fitness_recalculation,
+      mutation_rate : self.mutation_rate,
+      elite_selection_rate : self.elite_selection_rate,
+      ga_crossover_operator : crossover_op,
+      ga_selection_operator : self.ga_selection_operator,
+      hrng : self.hrng,
+      seeder : self.seeder,
+      dynasties_limit : self.dynasties_limit,
+      population_size : self.population_size,
+      mutation_operator : self.mutation_operator,
+      population_percent : self.population_percent,
+    }
+  }
+}
+
+impl< S : InitialProblem + Sync, C : CrossoverOperator::< Person = < S as InitialProblem>::Person >, M > HybridOptimizer< S, C, M >
+where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
+  M : MutationOperator::< Problem = S > + Sync
+{
   /// Set size of initial population.
   pub fn set_population_size( mut self, size : usize ) -> Self
   {
@@ -149,6 +214,13 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
   pub fn set_sa_temp_schedule( mut self, schedule : Box< dyn TemperatureSchedule > ) -> Self
   {
     self.sa_temperature_schedule = schedule;
+    self
+  }
+
+  /// Set selection operator.
+  pub fn set_selection_operator( mut self, selection_op : Box< dyn SelectionOperator< < S as InitialProblem >::Person > > ) -> Self
+  {
+    self.ga_selection_operator = selection_op;
     self
   }
 

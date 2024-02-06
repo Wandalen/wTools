@@ -88,11 +88,11 @@ pub trait InitialProblem
 }
 
 /// Indicates state of population proportions with no percentage for elites selection set.
-pub struct NoElites{}
+pub struct NoElites;
 /// Indicates state of population proportions with no percentage for mutating population set.
-pub struct NoMutations{}
+pub struct NoMutations;
 /// Indicates state of population proportions with no percentage for crossover set.
-pub struct NoCrossover{}
+pub struct NoCrossover;
 
 /// Proportion of population modifications with crossover, mutations and elites cloning.
 pub struct PopulationModificationProportions< E, M, C >
@@ -109,9 +109,9 @@ impl PopulationModificationProportions< NoElites, NoMutations, NoCrossover >
   {
     PopulationModificationProportions
     {
-      elite_selection_rate : NoElites{},
-      mutation_rate : NoMutations{},
-      crossover_rate : NoCrossover{},
+      elite_selection_rate : NoElites,
+      mutation_rate : NoMutations,
+      crossover_rate : NoCrossover,
     }
   }
 

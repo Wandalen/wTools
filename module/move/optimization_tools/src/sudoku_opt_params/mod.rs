@@ -88,7 +88,9 @@ pub fn get_sa_optimal_params()
             reset_increase_value : case.coords[ 1 ].into(),
           };
 
-          let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} )
+          let optimizer = HybridOptimizer::new( Seed::default(), initial )
+          .set_mutation_operator( RandomPairInBlockMutation{} )
+          .set_crossover_operator( BestRowsColumnsCrossover{} )
           .set_sa_temp_schedule( Box::new( temp_schedule ) )
           .set_sa_max_mutations_per_dynasty( case.coords[ 2 ] as usize )
           ;
@@ -144,7 +146,10 @@ pub fn get_sa_optimal_params()
     {
       // initial
       let initial = SudokuInitial::new( board.clone() );
-      let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+      let optimizer = HybridOptimizer::new( Seed::default(), initial )
+      .set_crossover_operator( BestRowsColumnsCrossover{} )
+      .set_mutation_operator( RandomPairInBlockMutation{} )
+      ;
 
       let now = std::time::Instant::now();
       let ( _reason, _solution ) = optimizer.optimize();
@@ -160,7 +165,9 @@ pub fn get_sa_optimal_params()
         reset_increase_value : optimized_params.1.into(),
       };
 
-      let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} )
+      let optimizer = HybridOptimizer::new( Seed::default(), initial )
+      .set_crossover_operator( BestRowsColumnsCrossover{} )
+      .set_mutation_operator( RandomPairInBlockMutation{} )
       .set_sa_temp_schedule( Box::new( temp_schedule ) )
       .set_sa_max_mutations_per_dynasty( optimized_params.2 as usize )
       ;
@@ -208,7 +215,9 @@ pub fn ga_optimal_params()
           .set_crossover_rate( case.coords[ 1 ] )
           ;
 
-          let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  )
+          let optimizer = HybridOptimizer::new( Seed::default(), initial )
+          .set_crossover_operator( BestRowsColumnsCrossover{} )
+          .set_mutation_operator( RandomPairInBlockMutation{} )
           .set_population_proportions( props )
           ;
           
@@ -287,7 +296,9 @@ pub fn hybrid_optimal_params() -> Vec< ( Level, Vec< NMResult > ) >
           .set_mutation_rate( case.coords[ 2 ] )
           ;
 
-          let optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  )
+          let optimizer = HybridOptimizer::new( Seed::default(), initial )
+          .set_crossover_operator( BestRowsColumnsCrossover{} )
+          .set_mutation_operator( RandomPairInBlockMutation{} )
           .set_sa_temp_schedule( Box::new( temp_schedule ) )
           .set_sa_max_mutations_per_dynasty( case.coords[ 1 ] as usize )
           .set_population_proportions( props )
@@ -367,7 +378,9 @@ pub fn tsp_hybrid_optimal_params() -> Vec< NMResult >
       .set_crossover_rate( case.coords[ 3 ] )
       ;
 
-      let optimizer = HybridOptimizer::new( Seed::default(), initial, OrderedRouteCrossover{}, TSRouteMutation{}  )
+      let optimizer = HybridOptimizer::new( Seed::default(), initial )
+      .set_crossover_operator( OrderedRouteCrossover{} ) 
+      .set_mutation_operator( TSRouteMutation{} )
       .set_sa_temp_schedule( Box::new( temp_schedule ) )
       .set_sa_max_mutations_per_dynasty( case.coords[ 1 ] as usize )
       .set_population_proportions( props )
