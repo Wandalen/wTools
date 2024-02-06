@@ -36,143 +36,6 @@ pub enum Reason
   DynastiesLimit,
 }
 
-/// Indicates state of population proportions with no percentage for elites selection set.
-pub struct NoElites{}
-/// Indicates state of population proportions with no percentage for mutating population set.
-pub struct NoMutations{}
-/// Indicates state of population proportions with no percentage for crossover set.
-pub struct NoCrossover{}
-
-/// Proportion of population modifications with crossover, mutations and elites cloning.
-pub struct PopulationModificationProportions< E, M, C >
-{
-  elite_selection_rate : E,
-  mutation_rate : M,
-  crossover_rate : C,
-}
-
-impl PopulationModificationProportions< NoElites, NoMutations, NoCrossover >
-{
-  /// Create new uniniatialized proportions.
-  pub fn new() -> PopulationModificationProportions< NoElites, NoMutations, NoCrossover >
-  {
-    PopulationModificationProportions
-    {
-      elite_selection_rate : NoElites{},
-      mutation_rate : NoMutations{},
-      crossover_rate : NoCrossover{},
-    }
-  }
-
-  /// Set part of population that will be replaced by crossover.
-  pub fn set_crossover_rate( self, crossover : f64 ) -> PopulationModificationProportions< NoElites, NoMutations, f64 >
-  {
-    PopulationModificationProportions
-    {
-      crossover_rate : crossover,
-      elite_selection_rate : self.elite_selection_rate,
-      mutation_rate : self.mutation_rate,
-    }
-  }
-
-  /// Set part of population tha will be mutated to create new population.
-  pub fn set_mutation_rate( self, mutation : f64 ) -> PopulationModificationProportions< NoElites, f64, NoCrossover >
-  {
-    PopulationModificationProportions
-    {
-      crossover_rate : self.crossover_rate,
-      elite_selection_rate : self.elite_selection_rate,
-      mutation_rate : mutation,
-    }
-  }
-
-  /// Set part of most fit population that will be cloned.
-  pub fn set_elites_selection_rate( self, elites : f64 ) -> PopulationModificationProportions< f64, NoMutations, NoCrossover >
-  {
-    PopulationModificationProportions
-    {
-      crossover_rate : self.crossover_rate,
-      elite_selection_rate : elites,
-      mutation_rate : self.mutation_rate,
-    }
-  }
-}
-
-impl PopulationModificationProportions< f64, NoMutations, NoCrossover >
-{
-  /// Set part of population that will be replaced by crossover, calculate remaining mutation part.
-  pub fn set_crossover_rate( self, crossover : f64 ) -> PopulationModificationProportions< f64, f64, f64 >
-  {
-    PopulationModificationProportions
-    {
-      crossover_rate : crossover,
-      elite_selection_rate : self.elite_selection_rate,
-      mutation_rate : 1.0 - self.elite_selection_rate - crossover,
-    }
-  }
-
-  /// Set part of population tha will be mutated to create new population, calculate remaining crossover part.
-  pub fn set_mutation_rate( self, mutation : f64 ) -> PopulationModificationProportions< f64, f64, f64 >
-  {
-    PopulationModificationProportions
-    {
-      crossover_rate : 1.0 - self.elite_selection_rate - mutation,
-      elite_selection_rate : self.elite_selection_rate,
-      mutation_rate : mutation,
-    }
-  }
-}
-
-impl PopulationModificationProportions< NoElites, f64, NoCrossover >
-{
-  /// Set part of population that will be replaced by crossover, calculate remaining elites part.
-  pub fn set_crossover_rate( self, crossover : f64 ) -> PopulationModificationProportions< f64, f64, f64 >
-  {
-    PopulationModificationProportions
-    {
-      crossover_rate : crossover,
-      elite_selection_rate : 1.0 - self.mutation_rate - crossover,
-      mutation_rate : self.mutation_rate,
-    }
-  }
-
-  /// Set part of most fit population that will be cloned, calculate remaining crossover part.
-  pub fn set_elites_selection_rate( self, elites : f64 ) -> PopulationModificationProportions< f64, f64, f64 >
-  {
-    PopulationModificationProportions
-    {
-      crossover_rate : 1.0 - elites - self.mutation_rate,
-      elite_selection_rate : elites,
-      mutation_rate : self.mutation_rate,
-    }
-  }
-}
-
-impl PopulationModificationProportions< NoElites, NoMutations, f64 >
-{
-  /// Set part of population tha will be mutated to create new population, calculate remaining elites part.
-  pub fn set_mutation_rate( self, mutation : f64 ) -> PopulationModificationProportions< f64, f64, f64 >
-  {
-    PopulationModificationProportions
-    {
-      crossover_rate : self.crossover_rate,
-      elite_selection_rate : 1.0 - mutation - self.crossover_rate,
-      mutation_rate : mutation,
-    }
-  }
-
-  /// Set part of most fit population that will be cloned, calculate remaining mutated part.
-  pub fn set_elites_selection_rate( self, elites : f64 ) -> PopulationModificationProportions< f64, f64, f64 >
-  {
-    PopulationModificationProportions
-    {
-      mutation_rate : 1.0 - elites - self.crossover_rate,
-      elite_selection_rate : elites,
-      crossover_rate : self.crossover_rate,
-    }
-  }
-}
-
 /// Represents hybrid optimization method with both Simulated Annealing and Genetic Algorithm.
 #[ derive( Debug ) ]
 pub struct HybridOptimizer< S : InitialProblem, C, M >
@@ -282,7 +145,7 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
     self
   }
 
-  /// Set temperature schedule for SA.
+  /// Set temperature schedule for optimization.
   pub fn set_sa_temp_schedule( mut self, schedule : Box< dyn TemperatureSchedule > ) -> Self
   {
     self.sa_temperature_schedule = schedule;
@@ -299,9 +162,9 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
   /// Set mutation rate for GA.
   pub fn set_population_proportions( mut self, proportions : PopulationModificationProportions< f64, f64, f64 > ) -> Self
   {
-    self.mutation_rate = proportions.mutation_rate;
-    self.elite_selection_rate = proportions.elite_selection_rate;
-    self.crossover_rate = proportions.crossover_rate;
+    self.mutation_rate = proportions.mutation_rate();
+    self.elite_selection_rate = proportions.elite_selection_rate();
+    self.crossover_rate = proportions.crossover_rate();
     self
   }
 
