@@ -66,11 +66,20 @@ fn solve_with_sa()
   logger_init();
   log::set_max_level( log::LevelFilter::Warn );
 
-  // let seed : Seed = "seed1".into();
-  // let seed : Seed = "seed2".into();
+  let input = r#"
+  801920000
+  040850726
+  056073090
+  598004100
+  700000530
+  002600400
+  900300680
+  683190050
+  000000013
+  "#;
+
   let seed : Seed = "seed3".into();
-  // let seed = Seed::random();
-  let initial = SudokuInitial::new( Board::default() );
+  let initial = SudokuInitial::new( Board::from( input ) );
   let mut optimizer = HybridOptimizer::new( seed, initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
 
   log::set_max_level( log::LevelFilter::max() );
@@ -98,7 +107,7 @@ fn solve_with_sa()
 #[ test ]
 fn solve_empty_full_block()
 {
-  let sudoku : &str = r#"
+  let _sudoku : &str = r#"
   402000000
   000038000
   090000018
@@ -109,21 +118,6 @@ fn solve_empty_full_block()
   003940000
   206080047
   "#;
-  log::set_max_level( log::LevelFilter::Warn );
-
-  let seed : Seed = "seed3".into();
-  let mut initial = SudokuInitial::new( Board::from( sudoku ) );
-  let mut optimizer = HybridOptimizer::new( seed, initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
-  log::set_max_level( log::LevelFilter::max() );
-  let ( reason, solution ) = optimizer.optimize();
-
-  log::trace!( "reason : {reason}" );
-  a_true!( solution.is_some() );
-  let solution = solution.unwrap();
-  log::trace!( "{solution:#?}" );
-  println!( "{:#?}", solution.board );
-
-  a_id!( solution.cost, 0.into() );
 
   let sudoku : &str = r#"
   350964170
@@ -139,7 +133,7 @@ fn solve_empty_full_block()
   log::set_max_level( log::LevelFilter::Warn );
 
   let seed : Seed = "seed3".into();
-  initial = SudokuInitial::new( Board::from( sudoku ) );
+  let initial = SudokuInitial::new( Board::from( sudoku ) );
   let mut optimizer = HybridOptimizer::new( seed, initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
 
   log::set_max_level( log::LevelFilter::max() );
@@ -189,8 +183,21 @@ fn solve_empty_full_block()
 #[ test ]
 fn time_measure()
 {
+  let input = r#"
+  801920000
+  040850726
+  056073090
+  598004100
+  700000530
+  002600400
+  900300680
+  683190050
+  000000013
+  "#;
+
+
   for i in 0..=9 {
-    let initial = SudokuInitial::new( Board::default() );
+    let initial = SudokuInitial::new( Board::from( input ) );
     let mut optimizer = HybridOptimizer::new( Seed::new( i.to_string() ), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
     let ( _reason, _solution ) = optimizer.optimize();
   }

@@ -180,6 +180,14 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
     self
   }
 
+
+  /// Set stale iterations limit.
+  pub fn set_max_stale_iterations( mut self, limit : usize ) -> Self
+  {
+    self.max_stale_iterations = limit;
+    self
+  }
+
   /// Perform hybrid SA/GA optimization.
   pub fn optimize( &mut self ) -> ( Reason, Option< < S as InitialProblem >::Person > )
   {
