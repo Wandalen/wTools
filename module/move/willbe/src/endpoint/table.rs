@@ -341,10 +341,10 @@ mod private
         d.path.is_some() && d.kind != DependencyKind::Development && d.path.as_ref().unwrap().starts_with( &path_clone )
       )
     );
-    let module_packages_map = package::packages_filter_map
+    let module_packages_map = packages::filter
     (
       packages,
-      package::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
+      packages::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
     let module_graph = graph::construct( &module_packages_map );
     graph::toposort( module_graph )
