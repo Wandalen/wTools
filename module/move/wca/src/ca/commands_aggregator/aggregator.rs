@@ -237,24 +237,6 @@ pub( crate ) mod private
     {
       let program = program.as_ref();
 
-      let mut args: Vec< String > = program
-      .split_whitespace()
-      .map( | s | s.to_string() )
-      .collect();
-
-      for i in 0..args.len()
-      {
-        let path = std::path::Path::new( &args[ i ] );
-        if path.is_dir() && !( path == std::path::Path::new(".") )
-        {
-          let new_char = '"';
-          args[ i ] = format!( "{}{}{}", new_char, args[ i ], new_char );
-        }
-      }
-
-      let binding = args.join( " " );
-      let program = binding.as_ref();
-
       let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : program.to_string(), error:  e } ) )?;
       let grammar_program = self.grammar_converter.to_program( raw_program ).map_err( | e | Error::Validation( ValidationError::GrammarConverter( e ) ) )?;
       let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | e | Error::Validation( ValidationError::ExecutorConverter( e ) ) )?;

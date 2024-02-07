@@ -161,44 +161,40 @@ pub( crate ) mod private
 
       Box::new
       (
-        move | input : &str |{
-        alt
-        ((
-          // quoted subject
-          map( delimited( tag( "\"" ), escaped( none_of( "\\\"" ), '\\', one_of( "\\\"" ) ), tag( "\"" ) ), | s : &str | s.replace( "\\\"", "\"" ).replace( "\\\\", "\\" ) ),
-          map( delimited( tag( "'" ), escaped( none_of( "\\'" ), '\\', one_of( "\\'" ) ), tag( "'" ) ), | s : &str | s.replace( "\\\'", "'" ).replace( "\\\\", "\\" ) ),
-          // single word subject
-          map_opt
-          (
-            any_word,
-            | word |
-            {
-              // if next word - is a command => it isn't subject
-              // if you want pass command as subject - take it in quotes
-              let not_a_command = self.command_fn()( word ).is_err();
-              if not_a_command && !word.contains( prop_delimeter ) && !word.contains( &*namespace_delimeter )
+        move | input : &str |
+        {
+          alt
+          ((
+            // quoted subject
+            map( delimited( tag( "\"" ), escaped( none_of( "\\\"" ), '\\', one_of( "\\\"" ) ), tag( "\"" ) ), | s : &str | s.replace( "\\\"", "\"" ).replace( "\\\\", "\\" ) ),
+            map( delimited( tag( "'" ), escaped( none_of( "\\'" ), '\\', one_of( "\\'" ) ), tag( "'" ) ), | s : &str | s.replace( "\\\'", "'" ).replace( "\\\\", "\\" ) ),
+            // single word subject
+            map_opt
+            (
+              any_word,
+              | word |
               {
-                Some( word.to_owned() )
+                // if next word - is a command => it isn't subject
+                // if you want pass command as subject - take it in quotes
+                let not_a_command = self.command_fn()( word ).is_err();
+                if not_a_command && !word.contains( prop_delimeter ) && !word.contains( &*namespace_delimeter )
+                {
+                  Some( word.to_owned() )
+                }
+                else
+                {
+                  None
+                }
               }
-              else
-              {
-                None
-              }
-            }
-          )
-        ))( input )}
+            )
+          ))( input )
+        }
       )
     }
   }
 
   impl Parser
   {
-    fn is_property(&self) -> bool
-    {
-      
-      true
-    }
-
     fn propery_name( &self ) -> impl Fn( &str ) -> IResult< &str, &str >
     {
       let property_delimeter = self.prop_delimeter;
