@@ -70,7 +70,7 @@ pub( crate ) mod private
     ([
       ( "publish".to_owned(), Routine::new( crate::commands::publish::publish ) ),
       ( "workspace.publish".to_owned(), Routine::new( crate::commands::publish::workspace_publish ) ),
-      // ( "list".to_owned(), Routine::new( crate::commands::list::list ) ),
+      ( "list".to_owned(), Routine::new( crate::commands::list::list ) ),
     ])
   }
 }

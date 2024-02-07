@@ -4,13 +4,13 @@ pub( crate ) mod private
   use crate::protected::*;
   use std::env;
   use wca::{ Args, Props };
-  use wca::wtools::error::BasicError;
+  use wca::wtools::error::Result;
 
   ///
   /// List packages.
   ///
 
-  pub fn list( ( args, _ ) : ( Args, Props ) ) -> Result< (), BasicError >
+  pub fn list( ( args, _ ) : ( Args, Props ) ) -> Result< () >
   {
     let current_path = env::current_dir().unwrap();
 
