@@ -1,7 +1,7 @@
 //! Sudoku sets for finding optimal parameters for solving sudoku with SA algorithm.
 //! Grouped by difficulty level.
 
-pub const TRAINING : [ &[ &str ]; 4 ] = 
+pub const _TRAINING : [ &[ &str ]; 4 ] = 
 // easy
 [
   &[
@@ -457,7 +457,7 @@ pub const TRAINING : [ &[ &str ]; 4 ] =
   ],
 ];
 
-pub const CONTROL : [ &[ &str ]; 4 ] = 
+pub const _CONTROL : [ &[ &str ]; 4 ] = 
 [
   // easy
   &[
