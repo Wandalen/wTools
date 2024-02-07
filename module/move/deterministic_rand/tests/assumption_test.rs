@@ -8,18 +8,22 @@ fn assumption_gen()
   let rng = Hrng::master().rng_ref();
   let mut rng = rng.lock().unwrap();
   let _got : u64 = rng.gen();
+  #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
   assert_eq!( _got, 6165676721551962567 );
   let _got : u64 = rng.gen();
+  #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
   assert_eq!( _got, 15862033778988354993 );
 
   let rng = Hrng::master().rng_ref();
   let mut rng = rng.lock().unwrap();
   let _got : u64 = rng.gen();
+  #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
   assert_eq!( _got, 6165676721551962567 );
   let _got : u64 = rng.gen();
+  #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
   assert_eq!( _got, 15862033778988354993 );
 }
@@ -27,6 +31,7 @@ fn assumption_gen()
 #[ test ]
 fn assumption_choose()
 {
+  #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
   {
     use rand::seq::IteratorRandom;
@@ -44,6 +49,7 @@ fn assumption_choose()
 #[ test ]
 fn assumption_choose_stable()
 {
+  #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
   {
     use rand::seq::IteratorRandom;
@@ -61,6 +67,7 @@ fn assumption_choose_stable()
 #[ test ]
 fn assumption_choose_multiple()
 {
+  #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
   {
     use rand::seq::{ IteratorRandom, SliceRandom };
@@ -91,6 +98,7 @@ fn assumption_choose_multiple()
 #[ test ]
 fn assumption_choose_weighted()
 {
+  #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
   {
      use deterministic_rand::seq::SliceRandom;
@@ -119,6 +127,7 @@ fn assumption_choose_weighted()
 #[ test ]
 fn assumption_choose_multiple_weighted()
 {
+  #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
   {
      use deterministic_rand::seq::SliceRandom;

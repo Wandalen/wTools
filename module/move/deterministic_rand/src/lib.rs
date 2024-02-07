@@ -11,14 +11,16 @@
 
 use mod_interface::mod_interface;
 
+#[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "determinism" ) ]
 pub mod hrng_deterministic;
-#[ cfg( not( feature = "determinism" ) ) ]
+#[ cfg( any( not( feature = "determinism" ), feature = "no_std" ) ) ]
 pub mod hrng_non_deterministic;
 
+#[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "determinism" ) ]
 pub use hrng_deterministic as hrng;
-#[ cfg( not( feature = "determinism" ) ) ]
+#[ cfg( any( not( feature = "determinism" ), feature = "no_std" ) ) ]
 pub use hrng_non_deterministic as hrng;
 
 mod_interface!
@@ -41,5 +43,6 @@ mod_interface!
   // layer hrng_non_deterministic as hrng;
 
   layer iter;
+  #[ cfg( not( feature = "no_std" ) ) ]
   layer seed;
 }
