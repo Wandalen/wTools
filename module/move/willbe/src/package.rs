@@ -3,7 +3,7 @@ mod private
   use crate::*;
   use std::
   {
-    path::{ Path, PathBuf },
+    path::Path,
     collections::{ HashMap, HashSet },
   };
   use std::fmt::Formatter;
@@ -22,6 +22,8 @@ mod private
   use workspace::Workspace;
   use path::AbsolutePath;
   use version::BumpReport;
+  use packed_crate::local_path;
+
 
   ///
   #[ derive( Debug ) ]
@@ -530,95 +532,6 @@ mod private
     Ok( output )
   }
 
-  // qqq : for Bohdan : move to file packed_crate as well as relevant functions
-
-  /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.
-  ///
-  /// # Args:
-  /// - `name` - the name of the package.
-  /// - `version` - the version of the package.
-  /// - `manifest_path` - path to the package `Cargo.toml` file.
-  ///
-  /// # Returns:
-  /// The local packed `.crate` file of the package
-  pub fn local_path< 'a >( name : &'a str, version : &'a str, crate_dir: CrateDir ) -> PathBuf
-  {
-    let buf = format!( "package/{0}-{1}.crate", name, version );
-
-    let workspace = Workspace::with_crate_dir( crate_dir );
-
-    let mut local_package_path = PathBuf::new();
-    local_package_path.push( workspace.target_directory() );
-    local_package_path.push( buf );
-
-    local_package_path
-  }
-
-  //
-
-  /// A configuration struct for specifying optional filters when using the
-  /// `packages_filter_map` function. It allows users to provide custom filtering
-  /// functions for packages and dependencies.
-  #[ derive( Default ) ]
-  pub struct FilterMapOptions
-  {
-    /// An optional package filtering function. If provided, this function is
-    /// applied to each package, and only packages that satisfy the condition
-    /// are included in the final result. If not provided, a default filter that
-    /// accepts all packages is used.
-    pub package_filter: Option< Box< dyn Fn( &PackageMetadata ) -> bool > >,
-
-    /// An optional dependency filtering function. If provided, this function
-    /// is applied to each dependency of each package, and only dependencies
-    /// that satisfy the condition are included in the final result. If not
-    /// provided, a default filter that accepts all dependencies is used.
-    pub dependency_filter: Option< Box< dyn Fn( &PackageMetadata, &Dependency ) -> bool  > >,
-  }
-
-  impl std::fmt::Debug for FilterMapOptions
-  {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
-    {
-      f
-      .debug_struct( "FilterMapOptions" )
-      .field( "package_filter", &"package_filter" )
-      .field( "dependency_filter", &"dependency_filter" )
-      .finish()
-    }
-  }
-
-  /// Type aliasing for String
-  pub type PackageName = String;
-
-  // qqq : for Bohdan : move to packages::filter
-
-  /// Given a slice of `Package` instances and a set of filtering options,
-  /// this function filters and maps the packages and their dependencies
-  /// based on the provided filters. It returns a `HashMap` where the keys
-  /// are package names, and the values are `HashSet` instances containing
-  /// the names of filtered dependencies for each package.
-  pub fn packages_filter_map( packages : &[ PackageMetadata ], filter_map_options : FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
-  {
-    let FilterMapOptions { package_filter, dependency_filter } = filter_map_options;
-    let package_filter = package_filter.unwrap_or_else( || Box::new( | _ | true ) );
-    let dependency_filter = dependency_filter.unwrap_or_else( || Box::new( | _, _ | true ) );
-    packages
-    .iter()
-    .filter( | &p | package_filter( p ) )
-    .map
-    (
-      | package |
-      (
-        package.name.clone(),
-        package.dependencies
-        .iter()
-        .filter( | &d | dependency_filter( package, d ) )
-        .map( | d | d.name.clone() )
-        .collect::< HashSet< _ > >()
-      )
-    ).collect()
-  }
-
   //
 
   /// Determines whether a package needs to be published by comparing `.crate` files from the local and remote package.
@@ -682,12 +595,8 @@ crate::mod_interface!
 
   protected use PublishReport;
   protected use publish_single;
-  protected use local_path;
-  protected use PackageName;
   protected use Package;
 
-  protected use FilterMapOptions;
-  protected use packages_filter_map;
   protected use publish_need;
 
   protected use CrateId;

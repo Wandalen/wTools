@@ -3,7 +3,6 @@ mod private
 {
   use crate::*;
   // use std::path::PathBuf;
-  use tools::bool_like::BoolLike;
   use wca::{ Args, Props };
   use wtools::error;
 
@@ -18,9 +17,7 @@ mod private
 
     let dry: bool = properties
     .get_owned( "dry" )
-    .map( | dry : String | dry.parse().map_or_else( | _ | BoolLike::True, | e | e ) )
-    .unwrap_or_else( || BoolLike::True )
-    .into();
+    .unwrap_or( true );
 
     match endpoint::publish( patterns, dry )
     {

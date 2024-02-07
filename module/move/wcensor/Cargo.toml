@@ -53,7 +53,7 @@ path = "tests/censor/censor_tests.rs"
 
 [[test]]
 name = "censor_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+path = "tests/smoke_test.rs"
 
 # [[example]]
 # name = "censor_trivial"
@@ -61,6 +61,8 @@ path = "tests/_integration_test/smoke_test.rs"
 
 [dependencies]
 wtools = { workspace = true }
+error_tools ={ workspace = true }
+meta_tools = { workspace = true, features = [ "full" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

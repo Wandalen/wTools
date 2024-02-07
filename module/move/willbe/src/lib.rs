@@ -65,6 +65,9 @@ wtools::meta::mod_interface!
   /// Offers capabilities for package management, facilitating the handling and organization of packages.
   layer package;
 
+  /// Provides a set of functionalities for handling and manipulating packages.
+  layer packages;
+
   /// The parse function parses an input string into a HashMap where the keys are String and the values are of type Value.
   layer query;
 
@@ -85,5 +88,8 @@ wtools::meta::mod_interface!
 
   /// To manipulate manifest data.
   layer manifest;
+
+  /// Handles operations related to packed Rust crates
+  layer packed_crate;
 
 }

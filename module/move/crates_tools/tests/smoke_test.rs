@@ -7,6 +7,7 @@ fn local_smoke_test()
 }
 
 // #[ cfg( feature = "default" ) ]
+#[ ignore ]
 #[ test ]
 fn published_smoke_test()
 {

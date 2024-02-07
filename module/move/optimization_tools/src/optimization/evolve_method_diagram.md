@@ -12,9 +12,7 @@ flowchart TB
         *population*,
         *tamperature*`"]
     -- start -->
-    id5{{"`*person* is in elites ?`"}}
-    id5 -->|Yes| id10[ clone person ]
-    id5 -->|No| id6{{"`rand > *mutation_rate* ?`"}}
+    id6{{"`rand > *mutation_rate* ?`"}}
     id6 -->|No| id7["`use *crossover_operator* `"]
     id6 -->|Yes| id8["`use *mutation_operator* `"]
     id7 -->id9["`select parents with *selection_operator*`"]
@@ -33,7 +31,6 @@ flowchart TB
     id19 --> id13
     id11 --> id16([End])
     id14 --> id16
-    id10 --> id16
     
     
 

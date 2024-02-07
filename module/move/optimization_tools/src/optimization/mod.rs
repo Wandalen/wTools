@@ -28,11 +28,11 @@ pub fn sleep()
 #[ derive( PartialEq, Eq, Clone, Copy, Debug, Display ) ]
 pub enum Reason
 {
-  /// SA process was finished with optimal result.
+  /// Optimization process was finished with optimal result.
   GoodEnough,
-  /// SA process finished due to reaching limit of resets.
+  /// Optimization process finished due to reaching limit of resets.
   ResetLimit,
-  /// SA process finished due to reaching limit of dynasties.
+  /// Optimization process finished due to reaching limit of dynasties.
   DynastiesLimit,
 }
 
@@ -63,7 +63,7 @@ pub struct HybridOptimizer< S : InitialProblem, C, M >
   pub fitness_recalculation : bool,
 
   /// Max number of iteration without improvement in population.
-  pub ga_max_stale_iterations : usize,
+  pub max_stale_iterations : usize,
 
   /// Crossover genetic operator, which defines how new Individuals are produced by combiniting traits of Individuals from current generation.
   pub ga_crossover_operator : C,
@@ -90,12 +90,15 @@ pub struct HybridOptimizer< S : InitialProblem, C, M >
   pub mutation_operator : M,
 }
 
-impl< S : InitialProblem + Sync, C : CrossoverOperator::< Person = < S as InitialProblem>::Person >, M > HybridOptimizer< S, C, M >
-where M : MutationOperator::< Person = < S as InitialProblem>::Person > + Sync,
-  M : MutationOperator::< Problem = S > + Sync
+/// Inidicates state of hybrid optimizer with no mutation operator set.
+pub struct NoMutOp;
+/// Inidicates state of hybrid optimizer with no crossover operator set.
+pub struct NoCrOp;
+
+impl< S : InitialProblem + Sync > HybridOptimizer< S, NoCrOp, NoMutOp >
 {
   /// Create new instance of HybridOptimizer with default config for SA and GA.
-  pub fn new( random_seed : Seed, population_seeder : S, crossover_op : C, mutation_op : M ) -> Self
+  pub fn new( random_seed : Seed, population_seeder : S ) -> HybridOptimizer< S, NoCrOp, NoMutOp >
   where TournamentSelection : SelectionOperator< < S as InitialProblem >::Person >
   {
     let selection_operator = Box::new( TournamentSelection
@@ -113,24 +116,86 @@ where M : MutationOperator::< Person = < S as InitialProblem>::Person > + Sync,
         constant : 0f64.into(),
         reset_increase_value : 1f64.into()
       } ),
-      ga_max_stale_iterations : 20,
-      sa_mutations_per_dynasty_limit : 2_000,
+      max_stale_iterations : 100,
+      sa_mutations_per_dynasty_limit : 300,
       reset_limit : 1_000,
-      crossover_rate : 0.25,
+      crossover_rate : 0.5,
       fitness_recalculation : false,
-      mutation_rate : 0.5,
+      mutation_rate : 0.25,
       elite_selection_rate : 0.25,
-      ga_crossover_operator : crossover_op,
+      ga_crossover_operator : NoCrOp,
       ga_selection_operator : selection_operator as Box< dyn SelectionOperator< < S as InitialProblem >::Person > >,
       hrng,
       seeder : population_seeder,
       dynasties_limit : 10_000,
       population_size : 10_000,
-      mutation_operator : mutation_op,
+      mutation_operator : NoMutOp,
       population_percent : 1.0,
     }
   }
+}
 
+impl< S : InitialProblem + Sync, C > HybridOptimizer< S, C, NoMutOp >
+{
+  /// Set operator for mutating population.
+  pub fn set_mutation_operator< M >( self, mutation_op : M ) -> HybridOptimizer< S, C, M >
+  where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
+  M : MutationOperator::< Problem = S > + Sync
+  {
+    HybridOptimizer
+    {
+      sa_temperature_schedule : self.sa_temperature_schedule,
+      max_stale_iterations : self.max_stale_iterations,
+      sa_mutations_per_dynasty_limit : self.sa_mutations_per_dynasty_limit,
+      reset_limit : self.reset_limit,
+      crossover_rate : self.crossover_rate,
+      fitness_recalculation : self.fitness_recalculation,
+      mutation_rate : self.mutation_rate,
+      elite_selection_rate : self.elite_selection_rate,
+      ga_crossover_operator : self.ga_crossover_operator,
+      ga_selection_operator : self.ga_selection_operator,
+      hrng : self.hrng,
+      seeder : self.seeder,
+      dynasties_limit : self.dynasties_limit,
+      population_size : self.population_size,
+      mutation_operator : mutation_op,
+      population_percent : self.population_percent,
+    }
+  }
+}
+
+impl< S : InitialProblem + Sync, M > HybridOptimizer< S, NoCrOp, M >
+{
+  /// Set operator for producing offspring for new population.
+  pub fn set_crossover_operator< C >( self, crossover_op : C ) -> HybridOptimizer< S, C, M >
+  where C : CrossoverOperator::< Person = < S as InitialProblem>::Person >
+  {
+    HybridOptimizer
+    {
+      sa_temperature_schedule : self.sa_temperature_schedule,
+      max_stale_iterations : self.max_stale_iterations,
+      sa_mutations_per_dynasty_limit : self.sa_mutations_per_dynasty_limit,
+      reset_limit : self.reset_limit,
+      crossover_rate : self.crossover_rate,
+      fitness_recalculation : self.fitness_recalculation,
+      mutation_rate : self.mutation_rate,
+      elite_selection_rate : self.elite_selection_rate,
+      ga_crossover_operator : crossover_op,
+      ga_selection_operator : self.ga_selection_operator,
+      hrng : self.hrng,
+      seeder : self.seeder,
+      dynasties_limit : self.dynasties_limit,
+      population_size : self.population_size,
+      mutation_operator : self.mutation_operator,
+      population_percent : self.population_percent,
+    }
+  }
+}
+
+impl< S : InitialProblem + Sync, C : CrossoverOperator::< Person = < S as InitialProblem>::Person >, M > HybridOptimizer< S, C, M >
+where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
+  M : MutationOperator::< Problem = S > + Sync
+{
   /// Set size of initial population.
   pub fn set_population_size( mut self, size : usize ) -> Self
   {
@@ -145,10 +210,17 @@ where M : MutationOperator::< Person = < S as InitialProblem>::Person > + Sync,
     self
   }
 
-  /// Set temperature schedule for SA.
+  /// Set temperature schedule for optimization.
   pub fn set_sa_temp_schedule( mut self, schedule : Box< dyn TemperatureSchedule > ) -> Self
   {
     self.sa_temperature_schedule = schedule;
+    self
+  }
+
+  /// Set selection operator.
+  pub fn set_selection_operator( mut self, selection_op : Box< dyn SelectionOperator< < S as InitialProblem >::Person > > ) -> Self
+  {
+    self.ga_selection_operator = selection_op;
     self
   }
 
@@ -160,80 +232,98 @@ where M : MutationOperator::< Person = < S as InitialProblem>::Person > + Sync,
   }
 
   /// Set mutation rate for GA.
-  pub fn set_ga_mutation_rate( mut self, rate : f64 ) -> Self
+  pub fn set_population_proportions( mut self, proportions : PopulationModificationProportions< f64, f64, f64 > ) -> Self
   {
-    self.mutation_rate = rate;
+    self.mutation_rate = proportions.mutation_rate();
+    self.elite_selection_rate = proportions.elite_selection_rate();
+    self.crossover_rate = proportions.crossover_rate();
     self
   }
 
-  /// Set percent of most fit Individuals that will be cloned to next generation.
-  pub fn set_ga_crossover_rate( mut self, rate : f64 ) -> Self
+  /// Set stale iterations limit.
+  pub fn set_max_stale_iterations( mut self, limit : usize ) -> Self
   {
-    self.crossover_rate = rate;
+    self.max_stale_iterations = limit;
     self
   }
 
   /// Perform hybrid SA/GA optimization.
-  pub fn optimize( &mut self ) -> ( Reason, Option< < S as InitialProblem >::Person > )
+  pub fn optimize( &self ) -> ( Reason, Option< < S as InitialProblem >::Person > )
   {
     let mut population = self.seeder.initial_population( self.hrng.clone(), self.population_size );
     population.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
-    let mut dynasties_number = 1;
+    let mut dynasties_number = 0;
     let mut stale_generations = 0;
-    let mut prev_best_fitness = population[ 0 ].fitness();
+    let mut prev_best = population[ 0 ].clone();
     let mut temperature = self.initial_temperature();
+    let mut reset_number = 0;
 
     loop
     {
       if dynasties_number > self.dynasties_limit
       {
-        return ( Reason::DynastiesLimit, Some( population[ 0 ].clone() ) );
+        
+        return ( Reason::DynastiesLimit, [ prev_best, population[ 0 ].clone() ].into_iter().min_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) ) );
       }
+
       if self.population_has_solution( &population )
       {
         return ( Reason::GoodEnough, Some( population[ 0 ].clone() ) );
       }
 
-      if stale_generations > self.ga_max_stale_iterations
+      if reset_number > self.reset_limit
       {
-        temperature = self.sa_temperature_schedule.reset_temperature( temperature );
-        //population = self.seeder.initial_population( self.hrng.clone(), self.population_size );
-        dynasties_number += 1;
+        population = self.seeder.initial_population( self.hrng.clone(), self.population_size );
+        temperature = self.initial_temperature();
+      }
+
+      if stale_generations > self.max_stale_iterations
+      {
+        if temperature > self.initial_temperature()
+        {
+          population = self.seeder.initial_population( self.hrng.clone(), self.population_size );
+          temperature = self.initial_temperature();
+          reset_number = 0;
+        }
+        else
+        {
+          temperature = self.sa_temperature_schedule.reset_temperature( temperature );
+          reset_number += 1;
+        }
       }
       
-      if population[ 0 ].fitness() != prev_best_fitness
+      if population[ 0 ].fitness() < prev_best.fitness()
       {
         stale_generations = 0;
-        prev_best_fitness = population[ 0 ].fitness();
+        
+        {
+          prev_best = population[ 0 ].clone();
+        }
       }
       else
       {
         stale_generations += 1;
       }
 
-      let mut new_population = Vec::new();
-      for i in 0..population.len()
+      let mut new_population = Vec::with_capacity( population.len() );
+
+      new_population.extend(
+        population
+        .iter()
+        .cloned()
+        .take( ( ( population.len() as f64 ) * self.elite_selection_rate ) as usize )
+     );
+      for i in ( ( ( population.len() as f64 ) * self.elite_selection_rate ) as usize )..population.len()
       {
         let mut person = self.evolve( population[ i ].clone(), &population, &temperature );
 
         person.update_fitness( self.seeder.evaluate( &person ) );
-        if self.is_vital( &population[ i ], &person, &temperature )
+        if person.is_optimal()
         {
-          new_population.push( person );
+          return ( Reason::GoodEnough, Some( person.clone() ) );
         }
-      }
 
-      log::trace!("new population vital individuals number : {}", new_population.len() );
-
-      if population.len() - new_population.len() > 0
-      {
-        new_population.extend(
-           population
-           .iter()
-           .cloned()
-           .skip( ( ( population.len() as f64 ) * self.elite_selection_rate ) as usize )
-           .take( population.len() - new_population.len() )
-        );
+        new_population.push( person );
       }
 
       new_population.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
@@ -245,6 +335,7 @@ where M : MutationOperator::< Person = < S as InitialProblem>::Person > + Sync,
     }
   }
 
+  /// Check if candidate person represents vital state.
   fn is_vital
   ( 
     &self, 
@@ -263,6 +354,7 @@ where M : MutationOperator::< Person = < S as InitialProblem>::Person > + Sync,
     rand < threshold  
   }
 
+  /// Check if population has solution.
   fn population_has_solution( &self, population : &Vec< < S as InitialProblem >::Person > ) -> bool
   {
     for person in population
@@ -275,6 +367,7 @@ where M : MutationOperator::< Person = < S as InitialProblem>::Person > + Sync,
     false
   }
 
+  /// Update person using crossover operator or mutation.
   fn evolve
   ( 
     &self, 
@@ -283,123 +376,123 @@ where M : MutationOperator::< Person = < S as InitialProblem>::Person > + Sync,
     temperature : &Temperature,
   ) -> < S as InitialProblem >::Person
   {
-    
-    let mut child =
-    if population.iter().position( | p | *p == person ).unwrap() <= ( population.len() as f64 * self.elite_selection_rate ) as usize
-    {
-      person.clone()
-    }
-    else 
-    {
  
-      let rng_ref = self.hrng.rng_ref();
-      let mut rng = rng_ref.lock().unwrap();
+    let rng_ref = self.hrng.rng_ref();
+    let mut rng = rng_ref.lock().unwrap();
 
-      let operator = [ ( 0, self.mutation_rate ), ( 1, self.crossover_rate ) ]
-      .choose_weighted( &mut *rng, | item | item.1 )
-      .unwrap()
-      .0
-      ; 
-      drop( rng );
+    let operator = [ ( 0, self.mutation_rate ), ( 1, self.crossover_rate ) ]
+    .choose_weighted( &mut *rng, | item | item.1 )
+    .unwrap()
+    .0
+    ; 
+    drop( rng );
 
-      if operator == 1
+    let mut child = 
+    if operator == 1
+    {
+      let parent1 = self.ga_selection_operator.select( self.hrng.clone(), &population );
+      let parent2 = self.ga_selection_operator.select( self.hrng.clone(), &population );
+      let candidate = self.ga_crossover_operator.crossover( self.hrng.clone(), parent1, parent2 );
+      if self.is_vital( &person, &candidate, temperature )
       {
-        let parent1 = self.ga_selection_operator.select( self.hrng.clone(), &population );
-        let parent2 = self.ga_selection_operator.select( self.hrng.clone(), &population );
-        self.ga_crossover_operator.crossover( self.hrng.clone(), parent1, parent2 )
+        candidate
       }
       else
       {
-        let mut n_mutations : usize = 0;
-        let mut expected_number_of_mutations = 4;
+        person.clone()
+      }
+    }
+    else
+    {
+      let mut n_mutations : usize = 0;
+      let mut expected_number_of_mutations = 4;
 
-        loop
+      loop
+      {
+        if n_mutations > self.sa_mutations_per_dynasty_limit
         {
-          if n_mutations > self.sa_mutations_per_dynasty_limit
           {
-            {
-              return person.clone();
-            }
+            return person.clone();
           }
-      
-          let hrng = self.hrng.clone();
-          let mutation_op = &self.mutation_operator;
-          let mutation_context = &self.seeder;
+        }
+    
+        let hrng = self.hrng.clone();
+        let mutation_op = &self.mutation_operator;
+        let mutation_context = &self.seeder;
 
-          let candidates = rayon::iter::repeat( () )
-          .take( expected_number_of_mutations )
-          .enumerate()
-          .map( | ( i, _ ) | hrng.child( i ) )
-          .flat_map( | hrng | 
+        let candidates = rayon::iter::repeat( () )
+        .take( expected_number_of_mutations )
+        .enumerate()
+        .map( | ( i, _ ) | hrng.child( i ) )
+        .flat_map( | hrng | 
+          {
+            let mut candidate = person.clone();
+            mutation_op.mutate( hrng.clone(), &mut candidate, mutation_context );
+        
+            let rng_ref = hrng.rng_ref();
+            let mut rng = rng_ref.lock().unwrap();
+        
+            let cost_difference = 0.5 + candidate.fitness() as f64 - person.fitness() as f64;
+            let threshold = ( - cost_difference / temperature.unwrap() ).exp();
+        
+            log::trace!
+            (
+              "cost : {}  | cost_difference : {cost_difference} | temperature : {}",
+              person.fitness(),
+              temperature,
+            );
+            let rand : f64 = rng.gen();
+            let vital = rand < threshold;  
+            if vital
             {
-              let mut candidate = person.clone();
-              mutation_op.mutate( hrng.clone(), &mut candidate, mutation_context );
-          
-              let rng_ref = hrng.rng_ref();
-              let mut rng = rng_ref.lock().unwrap();
-          
-              let cost_difference = 0.5 + candidate.fitness() as f64 - person.fitness() as f64;
-              let threshold = ( - cost_difference / temperature.unwrap() ).exp();
-          
-              log::trace!
-              (
-                "cost : {}  | cost_difference : {cost_difference} | temperature : {}",
-                person.fitness(),
-                temperature,
-              );
-              let rand : f64 = rng.gen();
-              let vital = rand < threshold;  
-              if vital
+              let emoji = if cost_difference > 0.0
               {
-                let emoji = if cost_difference > 0.0
-                {
-                  "🔼"
-                }
-                else if cost_difference < 0.0
-                {
-                  "✔️"
-                }
-                else
-                {
-                  "🔘"
-                };
-                log::trace!( " {emoji} vital | rand( {rand} ) < threshold( {threshold} )" );
-                if cost_difference == 0.0
-                {
-                  // sleep();
-                }
-                Some( candidate )
+                "🔼"
+              }
+              else if cost_difference < 0.0
+              {
+                "✔️"
               }
               else
               {
-                log::trace!( " ❌ non-vital | rand( {rand} ) > threshold( {threshold} )" );
-                None
+                "🔘"
+              };
+              log::trace!( " {emoji} vital | rand( {rand} ) < threshold( {threshold} )" );
+              if cost_difference == 0.0
+              {
+                // sleep();
               }
-                
-            } )
-          .collect::< Vec< _ > >()
-          ;
-
-          if candidates.len() > 0
-          {
-            let rng_ref = self.hrng.rng_ref();
-            let mut rng = rng_ref.lock().unwrap();
-            
-            if let Some( index ) = ( 0..candidates.len() - 1 ).choose( &mut *rng )
-            {
-              break candidates[ index ].clone()
+              Some( candidate )
             }
-            else 
+            else
             {
-              break candidates[ 0 ].clone()
+              log::trace!( " ❌ non-vital | rand( {rand} ) > threshold( {threshold} )" );
+              None
             }
-          }
+              
+          } )
+        .collect::< Vec< _ > >()
+        ;
 
-          n_mutations += expected_number_of_mutations;
-          if expected_number_of_mutations < 32
+        if candidates.len() > 0
+        {
+          let rng_ref = self.hrng.rng_ref();
+          let mut rng = rng_ref.lock().unwrap();
+          
+          if let Some( index ) = ( 0..candidates.len() - 1 ).choose( &mut *rng )
           {
-            expected_number_of_mutations += 4;
+            break candidates[ index ].clone()
           }
+          else 
+          {
+            break candidates[ 0 ].clone()
+          }
+        }
+
+        n_mutations += expected_number_of_mutations;
+        if expected_number_of_mutations < 32
+        {
+          expected_number_of_mutations += 4;
         }
       }
     };

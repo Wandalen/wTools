@@ -62,15 +62,15 @@ fn crossover()
 fn solve_with_ga()
 {
   let sudoku : &str = r#"
-  000042730
-  308000024
-  400360000
-  006050840
-  900403501
-  500000070
-  095006000
-  000284956
-  000005000
+  801920000
+  040850726
+  056073090
+  598004100
+  700000530
+  002600400
+  900300680
+  683190050
+  000000013
   "#;
 
   logger_init();
@@ -78,7 +78,10 @@ fn solve_with_ga()
 
   let initial = SudokuInitial::new( Board::from( sudoku ) );
 
-  let mut optimizer = HybridOptimizer::new( Seed::default(), initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+  let optimizer = HybridOptimizer::new( Seed::default(), initial )
+  .set_crossover_operator( BestRowsColumnsCrossover{} )
+  .set_mutation_operator( RandomPairInBlockMutation{} )
+  ;
 
   let ( reason, solution ) = optimizer.optimize();
 

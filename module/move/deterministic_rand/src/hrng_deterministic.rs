@@ -11,6 +11,7 @@ pub( crate ) mod private
 {
 
   use crate::*;
+  #[ cfg( not( feature = "no_std" ) ) ]
   use std::sync::{ Arc, Mutex, RwLock };
   use rand_chacha::ChaCha8Rng;
 

@@ -267,19 +267,7 @@ tests_impls!
         ca.perform( wrong_command ), 
         Err( Error::Validation( ValidationError::Parser { .. } ) ) 
       ), 
-      "It is a sentence that con not be parsed: `/path:to_dir`"
-    );
-
-    let wrong_command = r#".command wrong:path "#;
-
-    a_true!
-    (
-      matches!
-      (
-        ca.perform( wrong_command ), 
-        Err( Error::Validation( ValidationError::GrammarConverter { .. } ) ) 
-      ), 
-      "property `wrong` not found for command `.command`"
+      "It is a sentence that can not be parsed: `/path:to_dir`"
     );
   }
 
@@ -317,6 +305,79 @@ tests_impls!
 
     a_id!( (), ca.perform( command ).unwrap() );
 
+    a_id!( grammar_command.subjects, vec![ TheModule::Value::String( "qwe:rty".into() ) ] );
+  }
+
+  fn no_prop_subject_with_colon() 
+  {
+    let grammar = GrammarConverter::former()
+    .command
+    (
+      TheModule::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .subject( "Any string.", TheModule::Type::String, true )
+      .form()
+    )
+    .form();
+
+    let executor = ExecutorConverter::former()
+    .routine( "command", Routine::new( | _ | { println!( "hello" ); Ok( () ) } ) )
+    .form();
+
+    let ca = CommandsAggregator::former()
+    .grammar_converter( grammar.clone() )
+    .executor_converter( executor )
+    .build();
+
+    let command = r#".command qwe:rty"#;
+
+    let parser = Parser::former().form();
+
+    use TheModule::CommandParser;
+    let raw_command = parser.command( command ).unwrap();
+    let grammar_command = grammar.to_command( raw_command ).unwrap();
+
+    a_id!( (), ca.perform( command ).unwrap() );
+
+    a_id!( grammar_command.subjects, vec![ TheModule::Value::String( "qwe:rty".into() ) ] );
+  }
+
+  fn optional_prop_subject_with_colon()
+  {
+    let grammar = GrammarConverter::former()
+    .command
+    (
+      TheModule::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "command" )
+      .subject( "Any string.", TheModule::Type::String, true )
+      .property( "nightly", "Some property.", TheModule::Type::String, true )
+      .form()
+    )
+    .form();
+
+    let executor = ExecutorConverter::former()
+    .routine( "command", Routine::new( | _ | { println!( "hello" ); Ok( () ) } ) )
+    .form();
+
+    let ca = CommandsAggregator::former()
+    .grammar_converter( grammar.clone() )
+    .executor_converter( executor )
+    .build();
+
+    let command = r#".command qwe:rty"#;
+
+    let parser = Parser::former().form();
+
+    use TheModule::CommandParser;
+    let raw_command = parser.command( command ).unwrap();
+    let grammar_command = grammar.to_command( raw_command ).unwrap();
+
+    a_id!( (), ca.perform( command ).unwrap() );
+
     a_id!( grammar_command.subjects, vec![ TheModule::Value::String("qwe:rty".into()) ] );
   }
 }
@@ -332,5 +393,7 @@ tests_index!
   dot_command,
   error_types,
   path_subject_with_colon,
-  string_subject_with_colon
+  string_subject_with_colon,
+  no_prop_subject_with_colon,
+  optional_prop_subject_with_colon,
 }

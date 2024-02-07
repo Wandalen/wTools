@@ -51,8 +51,6 @@ pub( crate ) mod private
     deps
   }
 
-  // qqq : add test
-  // qqq : cyclic test?
   /// Performs a topological sort of a graph of packages
   ///
   /// Arg:
@@ -65,8 +63,7 @@ pub( crate ) mod private
   /// If there is a cycle in the dependency graph
   pub fn toposort< 'a, PackageIdentifier : Clone + std::fmt::Debug >
   (
-    graph : Graph< &'a PackageIdentifier,
-    &'a PackageIdentifier >
+    graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier >
   )
   -> Vec< PackageIdentifier >
   {
