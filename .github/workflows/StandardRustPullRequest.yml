@@ -33,7 +33,7 @@ jobs :
           length=$(jq 'length' response.json)
           index=$(($length - 1))
           latest_commit=$(jq --argjson index $index '.[$index]' response.json)
-          latest_commit_message=$(echo "$latest_commit" | jq -r '.commit.message')
+          latest_commit_message=$(echo "$latest_commit" | jq -r '.commit.message' | tr -d '\n')
           echo "message=$latest_commit_message" >> $GITHUB_OUTPUT
       - name : Set output
         id: run
