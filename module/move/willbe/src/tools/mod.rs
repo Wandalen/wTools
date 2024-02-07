@@ -1,8 +1,6 @@
 
 crate::mod_interface!
 {
-  /// Work with bools.
-  orphan mod bool_like;
   /// Make sha-1 hash for data.
   orphan mod sha;
   /// Operate over files.
