@@ -53,6 +53,39 @@ tests_impls!
     a_id!( "some string", inner_string );
   }
 
+  fn boolean()
+  {
+    // 1 -> Value(true) -> true
+    let boolean = Type::Bool.try_cast( "1".into() );
+
+    let boolean = boolean.unwrap();
+    a_id!( Value::Bool( true ) , boolean );
+
+    let inner_boolean : bool = boolean.into();
+    a_id!( true, inner_boolean );
+
+    // 0 -> Value(false) -> false
+    let boolean = Type::Bool.try_cast( "0".into() );
+
+    let boolean = boolean.unwrap();
+    a_id!( Value::Bool( false ) , boolean );
+
+    let inner_boolean : bool = boolean.into();
+    a_id!( false, inner_boolean );
+
+    // true -> Value(true)
+    let boolean = Type::Bool.try_cast( "true".into() );
+
+    let boolean = boolean.unwrap();
+    a_id!( Value::Bool( true ) , boolean );
+
+    // false -> Value(false)
+    let boolean = Type::Bool.try_cast( "false".into() );
+
+    let boolean = boolean.unwrap();
+    a_id!( Value::Bool( false ) , boolean );
+  }
+
   fn path()
   {
     use std::str::FromStr;
@@ -102,5 +135,6 @@ tests_index!
   number,
   string,
   path,
+  boolean,
   values_list,
 }
