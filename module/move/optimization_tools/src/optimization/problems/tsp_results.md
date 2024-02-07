@@ -18,7 +18,7 @@ For parameters:
 
 | Number of nodes in graph | Population size   | Dynasties limit   | Execution time |
 | ------------------------ | ----------------- | ----------------- | -------------- |
-| 4                        | 78                | 80                | 112.7s         |
+| 4                        | 78                | 80                | 0.318s         |
 
 For parameters ( pure simulated annealing ):
  - temperature decrease coefficient : 0.999,
