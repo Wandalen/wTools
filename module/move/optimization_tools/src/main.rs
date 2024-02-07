@@ -26,7 +26,10 @@ fn main()
   let board = Board::from( INPUT );
   println!("{board}");
   let initial = optimization::SudokuInitial::new( board );
-  let mut optimizer = HybridOptimizer::new( seed, initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+  let mut optimizer = HybridOptimizer::new( seed, initial )
+  .set_crossover_operator( BestRowsColumnsCrossover{} )
+  .set_mutation_operator( RandomPairInBlockMutation{} )
+  ;
 
   let ( reason, solution ) = optimizer.optimize( );
 
