@@ -11,7 +11,7 @@ pub( crate ) mod private
 {
 
   use crate::*;
-  use std::{ ops::Deref, ops::DerefMut };
+  use core::{ ops::Deref, ops::DerefMut };
 
   /// Emulates behavior of `Arc<Mutex<ThreadRng>>` for compatibility.
 
@@ -116,6 +116,7 @@ pub( crate ) mod private
     /// let got : u64 = rng.gen();
     /// ```
 
+    #[ cfg( not( feature = "no_std" ) ) ]
     #[ inline( always ) ]
     pub fn master_with_seed( _ : Seed ) -> Self
     {

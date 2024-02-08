@@ -23,11 +23,7 @@ mod private
     for_app::{ Error, Context, format_err },
     err
   };
-  use package::
-  {
-    FilterMapOptions,
-    packages_filter_map
-  };
+  use packages::{ FilterMapOptions, filter };
   use workspace::Workspace;
 
   /// Args for `list` endpoint.
@@ -106,9 +102,18 @@ mod private
   }
 
   /// Wrapper to redirect output from `ptree` graph to `fmt::Write`
-  pub( crate ) struct Io2FmtWrite< 'a, W >
+  pub struct Io2FmtWrite< 'a, W >
   {
+    /// This struct provides a mutable reference to a writer and is used as a formatting writer.
     pub f : &'a mut W,
+  }
+
+  impl< T > std::fmt::Debug for Io2FmtWrite< '_, T >
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      f.debug_struct( std::any::type_name::< Self >() ).finish()
+    }
   }
 
   impl< W : std::fmt::Write > std::io::Write for Io2FmtWrite< '_, W >
@@ -193,7 +198,7 @@ mod private
       }
     };
 
-    let packages_map =  packages_filter_map
+    let packages_map =  packages::filter
     (
       &metadata
       .load()
@@ -275,32 +280,6 @@ mod private
   }
 }
 
-// qqq : for Bohdan : move to tests folder
-mod tests
-{
-  #[ test ]
-  fn io2fmt_write()
-  {
-    use super::private::Io2FmtWrite;
-
-    // Arrange
-    fn accepts_io_write< W : std::io::Write >( mut w : W ) -> std::io::Result< () >
-    {
-      w.write( b"Hello, world!" )?;
-
-      Ok( () )
-    }
-
-    let mut string = String::new();
-
-    // Act
-    accepts_io_write( Io2FmtWrite { f : &mut string } ).unwrap();
-
-    // Assert
-    assert_eq!( "Hello, world!", &string );
-  }
-}
-
 //
 
 crate::mod_interface!
@@ -313,4 +292,6 @@ crate::mod_interface!
   protected use ListReport;
   /// List packages in workspace.
   orphan use list;
+  /// Wrapper to redirect output from `io::Write` to `fmt::Write`
+  protected use Io2FmtWrite;
 }

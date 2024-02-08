@@ -18,17 +18,19 @@ mod private
 
     let dry: bool = properties
     .get_owned( "dry" )
-    .map( | dry : String | dry.parse().map_or_else( | _ | BoolLike::True, | e | e ) )
-    .unwrap_or_else( || BoolLike::True )
-    .into()
-    ;
+    .unwrap_or( true );
 
-    // println!( "`publish` command patterns: {patterns:?}, dry: {dry}" );
     match endpoint::publish( patterns, dry )
     {
       core::result::Result::Ok( report ) =>
       {
         println!( "{report}" );
+
+        if dry && report.packages.iter().find( |( _, p )| p.publish_required ).is_some()
+        {
+          println!( "To perform actual publishing, call the command with `dry:0` property." )
+        }
+
         Ok( () )
       }
       Err( ( report, e ) ) =>

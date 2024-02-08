@@ -1,7 +1,7 @@
 //! Performs solving of sudoku puzzle using Simmulated Annealing algorithm.
 //! 
 
-use optimization_tools::*;
+use optimization_tools::{ *, optimization::{ HybridOptimizer, BestRowsColumnsCrossover, RandomPairInBlockMutation } };
 use sudoku::*;
 
 const INPUT : &str = r#"
@@ -25,15 +25,19 @@ fn main()
   let seed : Seed = "seed1".into();
   let board = Board::from( INPUT );
   println!("{board}");
-  let initial = optimization::SudokuInitial::new( board, seed );
-  println!("{}", initial.board);
-  let ( reason, generation ) = initial.solve_with_sa();
+  let initial = optimization::SudokuInitial::new( board );
+  let mut optimizer = HybridOptimizer::new( seed, initial )
+  .set_crossover_operator( BestRowsColumnsCrossover{} )
+  .set_mutation_operator( RandomPairInBlockMutation{} )
+  ;
+
+  let ( reason, solution ) = optimizer.optimize( );
 
   log::trace!( "reason : {reason}" );
-  assert!( generation.is_some() );
-  let generation = generation.unwrap();
-  log::trace!( "{generation:#?}" );
-  log::trace!( "{:#?}", generation.person.board );
+  assert!( solution.is_some() );
+  let solution = solution.unwrap();
+  log::trace!( "{solution:#?}" );
+  log::trace!( "{:#?}", solution.board );
 
   // let mut dp = plot_dynamic::init_dyn_plotter( String::from( "Cost change" ), 800, 400 );
 

@@ -1,8 +1,10 @@
 /// Private namespace of the module.
 pub( crate ) mod private
 {
-  pub use wtools::error::{ err, BasicError };
   use std::collections::HashMap;
+
+  use error_tools::BasicError;
+  use error_tools::err;
 
   ///
   /// Instruction.
@@ -212,7 +214,7 @@ pub( crate ) mod private
 
 //
 
-crate::mod_interface!
+::meta_tools::mod_interface!
 {
   // qqq : for Dima : bad : list all elements, don't use * for private /* aaa : Dmytro : expanded */
   prelude use Instruction;

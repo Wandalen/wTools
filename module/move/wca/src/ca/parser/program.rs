@@ -58,7 +58,7 @@ pub( crate ) mod private
           match e
           {
             nom::Err::Incomplete( _ ) => { err!( "Program has incomplete sentences" ) },
-            nom::Err::Error( nom::error::Error { input, .. } ) | nom::Err::Failure( nom::error::Error { input, .. } ) => { err!( "It is a sentence that con not be parsed: `{}`", input ) }
+            nom::Err::Error( nom::error::Error { input, .. } ) | nom::Err::Failure( nom::error::Error { input, .. } ) => { err!( "It is a sentence that can not be parsed: `{}`", input ) }
           }
         } )
     }
