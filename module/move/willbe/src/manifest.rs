@@ -14,9 +14,15 @@ pub( crate ) mod private
     Result,
     thiserror,
     for_lib::Error,
-    for_app::{ Error as wError, Context, format_err },
+    for_app::format_err,
   };
   use path::AbsolutePath;
+
+  #[ derive( Debug, Error ) ]
+  pub enum CrateDirError {
+    #[ error( "Failed to create a `CrateDir` object due to `{0}`" ) ]
+    Validation( String ),
+  }
 
   /// Path to crate directory
   #[ derive( Debug, Clone ) ]
@@ -33,13 +39,14 @@ pub( crate ) mod private
   impl TryFrom< AbsolutePath > for CrateDir
   {
     // qqq : make better errors
-    type Error = wError;
+    // aaa : use `CrateDirError` for it
+    type Error = CrateDirError;
 
     fn try_from( crate_dir_path : AbsolutePath ) -> Result< Self, Self::Error >
     {
       if !crate_dir_path.as_ref().join( "Cargo.toml" ).exists()
       {
-        return Err( format_err!( "The path is not a crate directory path" ) );
+        return Err( CrateDirError::Validation( "The path is not a crate directory path".into() ) );
       }
 
       Ok( Self( crate_dir_path ) )
@@ -67,6 +74,15 @@ pub( crate ) mod private
     /// Cannot find the specified tag in the TOML file.
     #[ error( "Cannot find tag {0} in toml file." ) ]
     CannotFindValue( String ),
+    /// Try to read or write
+    #[ error( "Io operation with manifest failed. Details: {0}" ) ]
+    Io( #[ from ] io::Error ),
+    /// It was expected to be a package, but it wasn't
+    #[ error( "Is not a package" ) ]
+    NotAPackage,
+    /// It was expected to be a package, but it wasn't
+    #[ error( "Invalid value `{0}` in manifest file." ) ]
+    InvalidValue( String ),
   }
 
   ///
@@ -84,13 +100,15 @@ pub( crate ) mod private
   impl TryFrom< AbsolutePath > for Manifest
   {
     // qqq : make better errors
-    type Error = wError;
+    // aaa : return `ManifestError`
+    type Error = ManifestError;
 
     fn try_from( manifest_path : AbsolutePath ) -> Result< Self, Self::Error >
     {
       if !manifest_path.as_ref().ends_with( "Cargo.toml" )
       {
-        return Err( format_err!( "The path is not a manifest path" ) );
+        let err =  io::Error::new( io::ErrorKind::NotFound, "Cannot find manifest" );
+        return Err( ManifestError::Io( err ) );
       }
 
       Ok
@@ -131,15 +149,17 @@ pub( crate ) mod private
     }
 
     /// Load manifest from path.
-    pub fn load( &mut self ) -> Result< () >
+    pub fn load( &mut self ) -> Result< (), ManifestError >
     {
-      let read = fs::read_to_string( &self.manifest_path ).context( "Read manifest" )?;
-      let result = read.parse::< toml_edit::Document >().context( "Pars manifest" )?;
+      let read = fs::read_to_string( &self.manifest_path )?;
+      let result = read.parse::< toml_edit::Document >().map_err( | e | io::Error::new( io::ErrorKind::InvalidData, e ) )?;
       self.manifest_data = Some( result );
 
       Ok( () )
     }
 
+    // qqq : for Bohdan : don't abuse anyhow
+    // aaa : return `io` error
     /// Store manifest.
     pub fn store( &self ) -> io::Result< () >
     {
@@ -179,7 +199,9 @@ pub( crate ) mod private
   }
 
   /// Create and load manifest by specified path
-  pub fn open( path : AbsolutePath ) -> Result< Manifest >
+  // qqq : for Bohdan : use newtype, add proper errors handing
+  // aaa : return `ManifestError`
+  pub fn open( path : AbsolutePath ) -> Result< Manifest, ManifestError >
   {
     let mut manifest = if let Ok( dir ) = CrateDir::try_from( path.clone() )
     {

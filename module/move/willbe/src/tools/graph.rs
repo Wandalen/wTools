@@ -91,6 +91,8 @@ pub( crate ) mod private
         .collect::< Vec< _ > >()
       ),
       Err( index ) => Err( GraphError::Cycle( ( *graph.index( index.node_id() ) ).clone() ) ),
+      // qqq : for Bohdan : bad, make proper error handling
+      // aaa : now returns `GraphError`
     }
   }
 }
