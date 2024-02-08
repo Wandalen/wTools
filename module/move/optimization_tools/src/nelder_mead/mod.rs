@@ -34,9 +34,9 @@ pub struct Simplex
 #[ derive( Debug, Clone ) ] 
 pub struct NelderMeadOptimizer< R >
 {
-  bounds : Vec< Option< R > >,
-  start_point : Point,
-  initial_simplex : Simplex,
+  pub bounds : Vec< Option< R > >,
+  pub start_point : Point,
+  pub initial_simplex : Simplex,
   /// Threshold used to detect improvement in optimization process.
   /// If difference between current best value and previous best value is less than the threshold, it is considered that no improvement was achieved.
   pub improvement_threshold : f64,
@@ -68,7 +68,7 @@ impl< R : RangeBounds< f64 > > Default for NelderMeadOptimizer< R >
     Self
     {
       bounds : Vec::new(),
-      start_point : Point::new( vec![ 0.0 ] ),
+      start_point : Point::new( Vec::new() ),
       initial_simplex : Simplex { points : Vec::new() },
       improvement_threshold : 10e-6,
       max_iterations : 1000,
@@ -119,7 +119,7 @@ impl< R : RangeBounds< f64 > > NelderMeadOptimizer< R >
     let mut res = false;
     for i in 0..coords.len()
     {
-      if let Some( bound ) = self.bounds[ i ]
+      if let Some( bound ) = &self.bounds[ i ]
       {
         if bound.contains( &coords[ i ] )
         {
@@ -136,9 +136,9 @@ impl< R : RangeBounds< f64 > > NelderMeadOptimizer< R >
   {
 
     let mut coords = point.coords;
-    for i in 0..coords.len()
+    for i in 0..self.bounds.len()
     {
-      if let Some( bound ) = self.bounds[ i ]
+      if let Some( bound ) = &self.bounds[ i ]
       {
         if !bound.contains( &coords[ i ] )
         {
@@ -184,10 +184,112 @@ impl< R : RangeBounds< f64 > > NelderMeadOptimizer< R >
     Point::new( coords )
   }
 
+  fn calculate_regular_simplex( &mut self )
+  {
+    let n = self.start_point.coords.len() as f64;
+
+    let p = ( 1.0 / ( n * 2f64.sqrt() ) ) * ( n - 1.0 + ( n + 1.0 ).sqrt() );
+    let q = ( 1.0 / ( n * 2f64.sqrt() ) ) * ( ( n + 1.0 ).sqrt() - 1.0 );
+
+    let mut points = Vec::new();
+
+    points.push( self.start_point.clone() );
+
+    for i in 1..self.start_point.coords.len() + 1
+    {
+      let mut coords = Vec::new();
+      for j in 0..self.start_point.coords.len()
+      {
+        if j == i - 1
+        {
+          coords.push( self.start_point.coords[ j ] + p );
+        }
+        else
+        {
+          coords.push( self.start_point.coords[ j ] + q );
+        }
+      }
+
+      points.push( Point::new( coords ) )
+    }
+    self.initial_simplex = Simplex { points }
+  }
+
   /// Optimize provided objective function with using initialized configuration.
-  pub fn optimize< F >( &self, f : F ) -> Solution
+  pub fn optimize< F >( &mut self, f : F ) -> Result< Solution, Error >
   where F : Fn( Point ) -> f64
   {
+    if self.start_point.coords.len() == 0
+    {
+      let mut new_coords = Vec::new();
+      for bound in &self.bounds
+      {
+        if let Some( bound ) = bound
+        {
+          if bound.start_bound() != Bound::Unbounded
+          {
+            let mut start_bound = 0.0;
+            if let Bound::Excluded( val ) = bound.start_bound()
+            {
+              start_bound = *val;
+            }
+            if let Bound::Included( val ) = bound.start_bound()
+            {
+              start_bound = *val;
+            }
+            if bound.end_bound() != Bound::Unbounded
+            {
+              let mut end_bound = 0.0;
+              if let Bound::Excluded( val ) = bound.end_bound()
+              {
+                end_bound = *val;
+              }
+              if let Bound::Included( val ) = bound.end_bound()
+              {
+                end_bound = *val;
+              }
+              new_coords.push( ( start_bound + end_bound ) / 2.0 )
+            }
+            else 
+            {
+              new_coords.push( start_bound )
+            }
+          }
+          else 
+          {
+            if bound.end_bound() != Bound::Unbounded
+            {
+              let mut end_bound = 0.0;
+              if let Bound::Excluded( val ) = bound.end_bound()
+              {
+                end_bound = *val;
+              }
+              if let Bound::Included( val ) = bound.end_bound()
+              {
+                end_bound = *val;
+              }
+              new_coords.push( end_bound )
+            }
+            else 
+            {
+              new_coords.push( 0.0 )
+            }
+          }
+        }
+      }
+      self.start_point = Point::new( new_coords );
+    }
+
+    if self.start_point.coords.len() == 0
+    {
+      return Err ( Error::StartPointError );
+    }
+
+    if self.initial_simplex.points.len() == 0
+    {
+      self.calculate_regular_simplex();
+    }
+
     let x0 = self.start_point.clone();
     
     let dimensions = x0.coords.len();
@@ -211,12 +313,12 @@ impl< R : RangeBounds< f64 > > NelderMeadOptimizer< R >
 
       if self.max_iterations <= iterations
       {
-        return Solution 
+        return Ok ( Solution 
         {
           point : res[ 0 ].0.clone(),
           objective : res[ 0 ].1,
           reason : TerminationReason::MaxIterations,
-        }
+        } )
       }
 
       iterations += 1;
@@ -233,12 +335,12 @@ impl< R : RangeBounds< f64 > > NelderMeadOptimizer< R >
 
       if steps_with_no_improv >= self.max_no_improvement_steps
       {
-        return Solution 
+        return Ok ( Solution 
         {
           point : res[ 0 ].0.clone(),
           objective : res[ 0 ].1,
           reason : TerminationReason::NoImprovement,
-        }
+        } )
       }
 
       //centroid
@@ -363,8 +465,8 @@ pub enum Error {
   #[ error( "simplex size must have exactly one value for every dimension" ) ]
   SimplexSizeDimError,
 
-  #[error("staring point must have same dimensions as bounded space")]
-  PointDimError,
+  #[error("cannot calculate starting point, no bounds provided")]
+  StartPointError,
 
   #[error("starting point is out of bounds")]
   StartPointOutOfBoundsError,

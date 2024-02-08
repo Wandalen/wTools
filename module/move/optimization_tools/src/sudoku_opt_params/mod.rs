@@ -3,6 +3,7 @@
 
 use std::ops::RangeBounds;
 use deterministic_rand::Seed;
+use iter_tools::Itertools;
 use crate::
 { 
   sudoku::*, 
@@ -55,10 +56,10 @@ impl Default for OptimalParamsConfig
   }
 } 
 
-pub struct OptimalProblem< F : Fn( Point) -> f64, R : RangeBounds< f64 > >
+pub struct OptimalProblem< F : Fn( Point ) -> f64, R : RangeBounds< f64 > >
 {
-  pub bounds : Vec< R >,
-  pub starting_point : Point,
+  pub bounds : Vec< Option< R > >,
+  pub starting_point : Option< Point >,
   pub simplex_size : Vec< f64 >,
   pub obj_function : F
 }
@@ -69,16 +70,11 @@ where F : Fn( Point ) -> f64, R : RangeBounds< f64 >
 {
   let mut results = Vec::new();
 
-  let optimizer = NelderMeadOptimizer::new_bounded( problem.bounds )
-  .unwrap()
-  .starting_point( problem.starting_point )
-  .unwrap()
-  .simplex_size( problem.simplex_size )
-  .unwrap()
-  .set_improvement_threshold( config.improvement_threshold )
-  .set_max_no_improvement_steps( config.max_no_improvement_steps )
-  .set_max_iterations( config.max_iterations )
-  ;
+  let mut optimizer: NelderMeadOptimizer<std::ops::Range< f64 >> = NelderMeadOptimizer::default();
+  // optimizer.set_bounds( problem.bounds )
+  // .starting_point( problem.starting_point )
+  // .simplex_size( problem.simplex_size )
+  // ;
   let res = optimizer.optimize
   (
     problem.obj_function
@@ -86,5 +82,5 @@ where F : Fn( Point ) -> f64, R : RangeBounds< f64 >
   results.push( res );
     
   log::info!( "results: {:?}", results );
-  results
+  results.into_iter().filter_map( | res | res.ok() ).collect_vec()
 }
