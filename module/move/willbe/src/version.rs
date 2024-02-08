@@ -11,7 +11,7 @@ mod private
   use toml_edit::value;
   use semver::Version as SemVersion;
 
-  use wtools::error::for_app::{ Result, anyhow };
+  use wtools::error::for_app::Result;
   use manifest::Manifest;
 
   /// Wrapper for a SemVer structure
@@ -100,7 +100,7 @@ mod private
   /// # Returns:
   /// - `Ok` - the new version number as a string;
   /// - `Err` - if the manifest file cannot be read, written, parsed.
-  pub fn bump( manifest : &mut Manifest, dry : bool ) -> Result< BumpReport >
+  pub fn bump( manifest : &mut Manifest, dry : bool ) -> Result< BumpReport, ManifestError >
   {
     let mut report = BumpReport::default();
 
@@ -115,20 +115,21 @@ mod private
       {
         // qqq : for Bohdan : rid off untyped errors, make proper errors handing
         // https://www.lpalmieri.com/posts/error-handling-rust/
-        return Err( anyhow!( "`{}` - not a package", manifest.manifest_path().as_ref().display() ) );
+        // aaa : used `ManifestError` instead of anyhow.
+        return Err( ManifestError::NotAPackage );
       }
       let package = data.get( "package" ).unwrap();
 
       let version = package.get( "version" );
       if version.is_none()
       {
-        return Err( anyhow!( "`{}` - can not read the version", manifest.manifest_path().as_ref().display() ) );
+        return Err( ManifestError::CannotFindValue( "version".into() ) );
       }
       let version = version.unwrap().as_str().unwrap();
       report.name = Some( package[ "name" ].as_str().unwrap().to_string() );
       report.old_version = Some( version.to_string() );
 
-      Version::from_str( version )?
+      Version::from_str( version ).map_err( | e | ManifestError::InvalidValue( e.to_string() ) )?
     };
 
     let new_version = version.bump().to_string();

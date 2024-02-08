@@ -31,7 +31,7 @@ mod private
       thiserror,
       Result,
       for_lib::Error,
-      for_app::{ anyhow, Error as wError, Context },
+      for_app::{ format_err, Error as wError, Context },
     }
   };
 
@@ -51,7 +51,7 @@ mod private
   {
     /// Manifest error.
     #[ error( "Manifest error. Reason: {0}." ) ]
-    Manifest( ManifestError ),
+    Manifest( #[ from ] ManifestError ),
     /// Fail to load metadata.
     #[ error( "Fail to load metadata." ) ]
     Metadata,
@@ -64,19 +64,23 @@ mod private
     /// Fail to read archive
     #[ error( "Fail to read archive" ) ]
     ReadArchive,
+    /// Try to identify something as a package.
+    #[ error( "Not a package" ) ]
+    NotAPackage,
   }
 
   impl TryFrom< AbsolutePath > for Package
   {
     // qqq : make better errors
-    type Error = wError;
+    // aaa : return `PackageError` instead of `anohow` message
+    type Error = PackageError;
 
     fn try_from( value : AbsolutePath ) -> Result< Self, Self::Error >
     {
       let manifest =  manifest::open( value.clone() )?;
       if !manifest.package_is()?
       {
-        return Err( anyhow!( "`{}` - not a package", value.as_ref().display() ) );
+        return Err( PackageError::NotAPackage );
       }
 
       Ok( Self::Manifest( manifest ) )
@@ -86,13 +90,14 @@ mod private
   impl TryFrom< Manifest > for Package
   {
     // qqq : make better errors
-    type Error = wError;
+    // aaa : return `PackageError` instead of `anohow` message
+    type Error = PackageError;
 
     fn try_from( value : Manifest ) -> Result< Self, Self::Error >
     {
       if !value.package_is()?
       {
-        return Err( anyhow!( "`{}` - not a package", value.manifest_path.as_ref().display() ) );
+        return Err( PackageError::NotAPackage );
       }
 
       Ok( Self::Manifest( value ) )
@@ -334,7 +339,7 @@ mod private
   pub fn publish_single( package : &Package, dry : bool ) -> Result< PublishReport, ( PublishReport, wError ) >
   {
     let mut report = PublishReport::default();
-    if package.local_is().map_err( | err | ( report.clone(), anyhow!( err ) ) )?
+    if package.local_is().map_err( | err | ( report.clone(), format_err!( err ) ) )?
     {
       return Ok( report );
     }
@@ -344,32 +349,32 @@ mod private
     let output = cargo::package( &package_dir, false ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
     if output.err.contains( "not yet committed")
     {
-      return Err(( report, anyhow!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
+      return Err(( report, format_err!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
     }
     report.get_info = Some( output );
 
-    if publish_need( &package ).map_err( | err | (report.clone(), anyhow!( err ) ) )?
+    if publish_need( &package ).map_err( | err | (report.clone(), format_err!( err ) ) )?
     {
       report.publish_required = true;
 
       let mut files_changed_for_bump = vec![];
-      let mut manifest = package.manifest().map_err( | err | ( report.clone(), anyhow!( err ) ) )?;
+      let mut manifest = package.manifest().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
       // bump a version in the package manifest
       let bump_report = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
       files_changed_for_bump.push( package.manifest_path() );
-      let new_version = package.version().map_err( | err | ( report.clone(), anyhow!( err ) ) )?;
+      let new_version = package.version().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
 
-      let package_name = package.name().map_err( | err | ( report.clone(), anyhow!( err ) ) )?;
+      let package_name = package.name().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
 
       // bump the package version in dependents (so far, only workspace)
-      let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( package.crate_dir() ).map_err( | err | ( report.clone(), err ) )?.workspace_root().map_err( | err | ( report.clone(), anyhow!( err ) ) )?.try_into().unwrap();
+      let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( package.crate_dir() ).map_err( | err | ( report.clone(), err ) )?.workspace_root().map_err( | err | ( report.clone(), format_err!( err ) ) )?.try_into().unwrap();
       let workspace_manifest_path = workspace_manifest_dir.join( "Cargo.toml" );
 
       // qqq: should be refactored
       if !dry
       {
-        let mut workspace_manifest = manifest::open( workspace_manifest_path.clone() ).map_err( | e | ( report.clone(), e ) )?;
-        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().ok_or_else( || ( report.clone(), anyhow!( PackageError::Manifest( ManifestError::EmptyManifestData ) ) ) )?;
+        let mut workspace_manifest = manifest::open( workspace_manifest_path.clone() ).map_err( | e | ( report.clone(), format_err!( e ) ) )?;
+        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().ok_or_else( || ( report.clone(), format_err!( PackageError::Manifest( ManifestError::EmptyManifestData ) ) ) )?;
         workspace_manifest_data
         .get_mut( "workspace" )
         .and_then( | workspace | workspace.get_mut( "dependencies" ) )
@@ -508,7 +513,7 @@ mod private
     let package = workspace
     .load()?
     .package_find_by_manifest( &manifest_path )
-    .ok_or( anyhow!( "Package not found in the workspace with path: `{}`", manifest_path.as_ref().display() ) )?;
+    .ok_or( format_err!( "Package not found in the workspace with path: `{}`", manifest_path.as_ref().display() ) )?;
 
     let deps = package
     .dependencies
@@ -569,7 +574,7 @@ mod private
       }
       DependenciesSort::Topological =>
       {
-        graph::toposort( graph::construct( &graph ) ).map_err( | err | anyhow!( "{}", err ) )?.into_iter().filter( | x | x != &root ).collect()
+        graph::toposort( graph::construct( &graph ) ).map_err( | err | format_err!( "{}", err ) )?.into_iter().filter( | x | x != &root ).collect()
       },
     };
 
