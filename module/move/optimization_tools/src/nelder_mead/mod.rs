@@ -2,7 +2,7 @@
 //! It operates by adjusting a simplex(geometric shape) to explore and converge toward the optimal solution.
 //! 
 
-use std::ops::{ Bound, Range, RangeBounds, RangeInclusive };
+use std::ops::{ Bound, RangeBounds };
 
 /// Represents point in multidimensional space where optimization is performed.
 #[ derive( Debug, Clone ) ] 
@@ -32,7 +32,7 @@ pub struct Simplex
 
 /// Struct which holds initial configuration for NelderMead optimization, and can perform optimization if all necessary information were provided during initialization process.
 #[ derive( Debug, Clone ) ] 
-pub struct NelderMeadOptimizer< R >
+pub struct Optimizer< R >
 {
   pub bounds : Vec< Option< R > >,
   pub start_point : Point,
@@ -61,7 +61,7 @@ pub struct NelderMeadOptimizer< R >
   pub sigma : f64,
 }
 
-impl< R : RangeBounds< f64 > > Default for NelderMeadOptimizer< R >
+impl< R : RangeBounds< f64 > > Default for Optimizer< R >
 {
   fn default() -> Self 
   {
@@ -81,7 +81,7 @@ impl< R : RangeBounds< f64 > > Default for NelderMeadOptimizer< R >
   }
 }
 
-impl< R : RangeBounds< f64 > > NelderMeadOptimizer< R >
+impl< R : RangeBounds< f64 > > Optimizer< R >
 {
   /// Create new optimizer with default configuration and privided space bounds, and with uninitialized starting point and simplex. 
   pub fn set_bounds( &mut self, bounds : Vec< Option< R > > )
@@ -98,6 +98,17 @@ impl< R : RangeBounds< f64 > > NelderMeadOptimizer< R >
   /// Initialize simplex by providing its size for optimizer with initialized starting point.
   pub fn set_simplex_size( &mut self, size : Vec< f64 > )
   {
+    if self.start_point.coords.len() == 0
+    {
+      if self.bounds.len() != 0
+      {
+        self.calculate_start_point();
+      }
+      else 
+      {
+        self.start_point.coords = vec![ 0.0; size.len() ];
+      }
+    }
 
     let mut points = vec![ self.start_point.clone() ];
     for i in 0..size.len()
@@ -215,69 +226,74 @@ impl< R : RangeBounds< f64 > > NelderMeadOptimizer< R >
     self.initial_simplex = Simplex { points }
   }
 
+  fn calculate_start_point( &mut self )
+  {
+    let mut new_coords = Vec::new();
+    for bound in &self.bounds
+    {
+      if let Some( bound ) = bound
+      {
+        if bound.start_bound() != Bound::Unbounded
+        {
+          let mut start_bound = 0.0;
+          if let Bound::Excluded( val ) = bound.start_bound()
+          {
+            start_bound = *val;
+          }
+          if let Bound::Included( val ) = bound.start_bound()
+          {
+            start_bound = *val;
+          }
+          if bound.end_bound() != Bound::Unbounded
+          {
+            let mut end_bound = 0.0;
+            if let Bound::Excluded( val ) = bound.end_bound()
+            {
+              end_bound = *val;
+            }
+            if let Bound::Included( val ) = bound.end_bound()
+            {
+              end_bound = *val;
+            }
+            new_coords.push( ( start_bound + end_bound ) / 2.0 )
+          }
+          else 
+          {
+            new_coords.push( start_bound )
+          }
+        }
+        else 
+        {
+          if bound.end_bound() != Bound::Unbounded
+          {
+            let mut end_bound = 0.0;
+            if let Bound::Excluded( val ) = bound.end_bound()
+            {
+              end_bound = *val;
+            }
+            if let Bound::Included( val ) = bound.end_bound()
+            {
+              end_bound = *val;
+            }
+            new_coords.push( end_bound )
+          }
+          else 
+          {
+            new_coords.push( 0.0 )
+          }
+        }
+      }
+    }
+    self.start_point = Point::new( new_coords );
+  }
+
   /// Optimize provided objective function with using initialized configuration.
   pub fn optimize< F >( &mut self, f : F ) -> Result< Solution, Error >
   where F : Fn( Point ) -> f64
   {
     if self.start_point.coords.len() == 0
     {
-      let mut new_coords = Vec::new();
-      for bound in &self.bounds
-      {
-        if let Some( bound ) = bound
-        {
-          if bound.start_bound() != Bound::Unbounded
-          {
-            let mut start_bound = 0.0;
-            if let Bound::Excluded( val ) = bound.start_bound()
-            {
-              start_bound = *val;
-            }
-            if let Bound::Included( val ) = bound.start_bound()
-            {
-              start_bound = *val;
-            }
-            if bound.end_bound() != Bound::Unbounded
-            {
-              let mut end_bound = 0.0;
-              if let Bound::Excluded( val ) = bound.end_bound()
-              {
-                end_bound = *val;
-              }
-              if let Bound::Included( val ) = bound.end_bound()
-              {
-                end_bound = *val;
-              }
-              new_coords.push( ( start_bound + end_bound ) / 2.0 )
-            }
-            else 
-            {
-              new_coords.push( start_bound )
-            }
-          }
-          else 
-          {
-            if bound.end_bound() != Bound::Unbounded
-            {
-              let mut end_bound = 0.0;
-              if let Bound::Excluded( val ) = bound.end_bound()
-              {
-                end_bound = *val;
-              }
-              if let Bound::Included( val ) = bound.end_bound()
-              {
-                end_bound = *val;
-              }
-              new_coords.push( end_bound )
-            }
-            else 
-            {
-              new_coords.push( 0.0 )
-            }
-          }
-        }
-      }
-      self.start_point = Point::new( new_coords );
+      self.calculate_start_point();
     }
 
     if self.start_point.coords.len() == 0

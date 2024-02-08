@@ -68,7 +68,7 @@ pub trait TemperatureSchedule : std::fmt::Debug
 }
 
 /// Temperature schedule for SA that uses linear function for calculation of new temperature value.
-#[ derive( Debug ) ]
+#[ derive( Debug, Clone ) ]
 pub struct LinearTempSchedule
 {
   /// Constant term of linear function.

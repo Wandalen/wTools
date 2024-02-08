@@ -43,7 +43,7 @@ pub trait Graph
 }
 
 /// Graph for traveling salesman problem.
-#[ derive( Debug ) ]
+#[ derive( Debug, Clone ) ]
 pub struct TSPGraph
 {
   /// Maps nodes of the graph with list of connected nodes and weight of edge that connects them.
@@ -146,7 +146,7 @@ impl Graph for TSPGraph
 }
 
 /// Initial configuration of symmetrical traveling salesman problem.
-#[ derive( Debug ) ]
+#[ derive( Debug, Clone ) ]
 pub struct TSProblem
 {
   /// Node to start route from.
@@ -296,7 +296,7 @@ impl SelectionOperator< TSPerson > for TournamentSelection
 }
 
 /// Randomly selects a subroute from the first parent and fills the remainder of the route with the nodes from the second parent in the order in which they appear, without duplicating any nodes in the selected subroute from the first parent.
-#[ derive( Debug ) ]
+#[ derive( Debug, Clone ) ]
 pub struct OrderedRouteCrossover {}
 
 impl CrossoverOperator for OrderedRouteCrossover
@@ -337,7 +337,7 @@ impl CrossoverOperator for OrderedRouteCrossover
 }
 
 /// Randomly mutates route in three different ways: by swapping two nodes, by reversing subroute, or by changing position of subroute.
-#[ derive( Debug ) ]
+#[ derive( Debug, Clone ) ]
 pub struct TSRouteMutation {}
 
 impl TSRouteMutation

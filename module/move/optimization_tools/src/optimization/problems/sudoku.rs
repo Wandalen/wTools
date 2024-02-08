@@ -219,7 +219,7 @@ pub struct SudokuMutagen
 }
 
 /// Initial sudoku.
-#[ derive( Debug ) ]
+#[ derive( Debug, Clone ) ]
 pub struct SudokuInitial
 {
   /// Initial sudoku board with empty fields.
@@ -261,7 +261,7 @@ impl InitialProblem for SudokuInitial
 }
 
 /// Mutation that randomly swaps two values in sudoku board, excluding values set in initial board.
-#[ derive( Debug ) ]
+#[ derive( Debug, Clone ) ]
 pub struct RandomPairInBlockMutation {}
 
 impl MutationOperator for RandomPairInBlockMutation
@@ -329,7 +329,7 @@ impl SelectionOperator< <SudokuInitial as InitialProblem>::Person > for Tourname
 }
 
 /// Crossover is performed by combining blocks from parents' boards, split in several randomly chosen crossover points.
-#[ derive( Debug ) ]
+#[ derive( Debug, Clone ) ]
 pub struct MultiplePointsBlockCrossover {}
 
 impl CrossoverOperator for MultiplePointsBlockCrossover
@@ -379,7 +379,7 @@ impl CrossoverOperator for MultiplePointsBlockCrossover
 }
 
 /// Crossover performed by selecting blocks with best rows or columns from two Individuals.
-#[ derive( Debug ) ]
+#[ derive( Debug, Clone ) ]
 pub struct BestRowsColumnsCrossover {}
 
 impl CrossoverOperator for BestRowsColumnsCrossover
