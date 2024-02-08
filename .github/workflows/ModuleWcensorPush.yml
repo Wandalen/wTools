@@ -1,0 +1,17 @@
+name : wcensor
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # wcensor
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/move/wcensor/Cargo.toml'
+      module_name : 'wcensor'
+      commit_message : ${{ github.event.head_commit.message }}

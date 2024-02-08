@@ -1,3 +1,5 @@
+//! example
+
 use test_tools::*;
 
 tests_impls!

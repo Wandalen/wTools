@@ -57,7 +57,7 @@ path = "tests/plot/plot_interface_tests.rs"
 
 [[test]]
 name = "plot_interface_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
+path = "tests/smoke_test.rs"
 
 # [[example]]
 # name = "plot_interface_trivial_sample"

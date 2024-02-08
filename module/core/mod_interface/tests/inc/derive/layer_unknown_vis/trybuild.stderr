@@ -1,5 +1,5 @@
 error: expected one of: `mod`, `use`, `layer`
- --> $WORKSPACE/module/core/mod_interface/tests/inc/derive/layer_unknown_vis/mod.rs
+ --> tests/inc/derive/layer_unknown_vis/mod.rs
   |
   |   xyz layer layer_a;
   |   ^^^

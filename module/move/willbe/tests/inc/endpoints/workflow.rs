@@ -10,15 +10,16 @@ use crate::TheModule::endpoint::
 
 mod workflow_generate
 {
+  use super::*;
+
   use std::
   {
     fs::File, 
     io::Read, 
     collections::HashMap
   };
+  use std::fs::create_dir_all;
   use serde::Deserialize;
-
-  use super::*;
 
   fn arrange( sample_dir: &str ) -> assert_fs::TempDir
   {
@@ -28,7 +29,7 @@ mod workflow_generate
 
     let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( sample_dir ), &[ "**" ] ).unwrap();
-
+    create_dir_all(temp.path().join(".github").join("workflows")).unwrap();
     temp
   }
 
@@ -56,6 +57,8 @@ mod workflow_generate
     commit_message: String,
   }
   
+  // qqq for Petro: this test does not work
+  // error: called `Result::unwrap()` on an `Err` value: No such file or directory (os error 2)
   #[ test ]
   fn default_case()
   {

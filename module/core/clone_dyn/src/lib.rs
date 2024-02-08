@@ -30,7 +30,9 @@ pub mod dependency
 #[ cfg( feature = "enabled" ) ]
 pub( crate ) mod private
 {
-  #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+  #[ cfg( all( feature = "no_std" ) ) ]
+  extern crate alloc;
+  #[ cfg( all( feature = "no_std" ) ) ]
   use alloc::boxed::Box;
   #[ cfg( all( feature = "use_std", not( feature = "use_alloc" ) ) ) ]
   use std::boxed::Box;

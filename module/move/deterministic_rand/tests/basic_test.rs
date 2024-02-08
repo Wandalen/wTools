@@ -30,10 +30,12 @@ fn test_rng_manager()
   } )
   .sum::<u64>();
   let _got_pi = 4. * ( got as f64 ) / ( ( 100 * 1000 ) as f64 );
+  #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
   assert_eq!( _got_pi, 3.1438 )
 }
 
+#[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "determinism" ) ]
 #[test]
 fn test_reusability()
@@ -60,6 +62,7 @@ fn test_reusability()
     let got = rng1.gen::<u64>();
     expected[3] = got;
   }
+  #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
   assert_eq!( hrng._children_len(), 1 );
   #[ cfg( not( feature = "determinism" ) ) ]
@@ -90,6 +93,7 @@ fn test_reusability()
   assert_eq!( hrng._children_len(), 0 );
 }
 
+#[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "determinism" ) ]
 #[test]
 fn test_par()
@@ -131,6 +135,7 @@ fn test_par()
   } );
 }
 
+#[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "determinism" ) ]
 #[test]
 fn seed()

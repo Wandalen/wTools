@@ -1,3 +1,5 @@
+//! example
+
 use variadic_from::exposed::*;
 
 fn main()

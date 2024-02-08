@@ -152,10 +152,11 @@ impl Problem
 #[ derive( Clone, Debug ) ]
 pub struct NormalizedProblem 
 {
-  /// Coefficients normalized equations.
+  /// Coefficients of normalized equations.
   pub coeffs : Array2< f64 >,
   /// Rhs values of equations.
   pub rhs : Array1< f64 >,
+  /// Variables of objective function.
   pub variables : Vec< Variable >,
 }
 

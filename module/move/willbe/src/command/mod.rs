@@ -17,9 +17,9 @@ pub( crate ) mod private
     .long_hint( "Publish package on `crates.io`." )
     .phrase( "publish" )
     .subject( "A path to package. Should be a directory with file `Cargo.toml`.", Type::List( Type::String.into(), ',' ), true )
-    .property( "dry", "Run command dry. Default is false.", Type::String, true )
-    .property( "verbosity", "Setup level of verbosity.", Type::String, true )
-    .property_alias( "verbosity", "v" )
+    .property( "dry", "Run command dry. Default is false.", Type::Bool, true )
+    // .property( "verbosity", "Setup level of verbosity.", Type::String, true )
+    // .property_alias( "verbosity", "v" )
     .form();
 
     let list_command = wca::Command::former()
@@ -43,10 +43,10 @@ pub( crate ) mod private
     .long_hint( "Run tests in a specified crate" )
     .phrase("tests.run")
     .subject( "A path to directories with packages.", Type::Path, true )
-    .property( "nightly", "Run tests on nightly. Default is false.", Type::String, true )
+    .property( "nightly", "Run tests on nightly. Default is false.", Type::Bool, true )
     .property( "exclude", "List of features to exclude.", Type::List( Type::String.into(), ',' ), true )
     .property( "include", "List of features to include.", Type::List( Type::String.into(), ',' ), true )
-    .property( "parallel", "Run tests with different a set of features in parallel. Default is false.", Type::String, true )
+    .property( "parallel", "Run tests with different a set of features in parallel. Default is false.", Type::Bool, true )
     .form();
 
     let generate_workflow = wca::Command::former()

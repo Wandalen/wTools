@@ -30,6 +30,8 @@ pub( crate ) mod private
     Number,
     /// Path
     Path,
+    /// Bool
+    Bool,
     /// List of some type values separated a delimiter character
     List( Box< Type >, char ),
   }
@@ -79,6 +81,8 @@ pub( crate ) mod private
     Number( f64 ),
     /// Path
     Path( std::path::PathBuf ),
+    /// Bool
+    Bool( bool ),
     /// List
     List( Vec< Value > ),
   }
@@ -114,6 +118,8 @@ pub( crate ) mod private
       i64 => | value | value as i64,
       f32 => | value | value as f32,
       f64 => | value | value;
+    Value::Bool =>
+      bool => | value | value;
     Value::String =>
       String => String::from,
       &'static str => | value : String | Box::leak( value.into_boxed_str() );
@@ -142,6 +148,7 @@ pub( crate ) mod private
         Self::String => Ok( Value::String( value ) ),
         Self::Number => value.parse().map_err( | _ | err!( "Can not parse number from `{}`", value ) ).map( Value::Number ),
         Self::Path => Ok( Value::Path( value.into() ) ),
+        Self::Bool => Ok( Value::Bool( match value.as_str() { "1" | "true" => true, "0" | "false" => false, _ => return Err( err!( "Can not parse bool from `{}`", value ) ) } ) ),
         Self::List( kind, delimeter ) =>
         {
           let values = value

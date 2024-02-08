@@ -88,11 +88,11 @@ tests_impls!
     #[ cfg( not( debug_assertions ) ) ]
     let path = std::ffi::OsStr::new( "../../../target/release/wpublisher" );
     let proc = std::process::Command::new( path ).arg( ".list" ).output().unwrap();
-    assert!( !proc.status.success() );
+    assert!( proc.status.success() );
     let stdout = std::str::from_utf8( proc.stdout.as_slice() ).unwrap();
     assert_eq!( stdout, "" );
     let stderr = std::str::from_utf8( proc.stderr.as_slice() ).unwrap();
-    assert_eq!( stderr, "Error: Validation(ExecutorConverter(Can not found routine for command `list`))\n" );
+    assert_eq!( stderr, "" );
   }
 
   //

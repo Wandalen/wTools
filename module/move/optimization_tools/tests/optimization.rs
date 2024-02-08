@@ -2,7 +2,7 @@ use optimization_tools::*;
 use sudoku::*;
 use optimization::*;
 use test_tools::prelude::*;
-use deterministic_rand::Seed;
+use deterministic_rand::{ Seed, Hrng };
 
 mod tools;
 use tools::*;
@@ -12,14 +12,16 @@ fn person_mutate()
 {
   logger_init();
 
-  let initial = SudokuInitial::new( Board::default(), Seed::default() );
+  //let initial = SudokuInitial::new_sa( Board::default(), Seed::default() );
+  let board = Board::default();
+  let hrng = Hrng::master_with_seed( Seed::default() );
 
-  let mut person = SudokuPerson::new( &initial );
+  let mut person = SudokuPerson::new( &board, hrng.clone() );
   log::trace!( "{person:#?}" );
   a_id!( person.cost, 45.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
-  let mutagen = person.mutagen( &initial.board, initial.config.hrng.clone() );
+  let mutagen = person.mutagen( &board, hrng.clone() );
   // make sure block is the same
   a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
   person.mutate(  &mutagen );
@@ -27,7 +29,7 @@ fn person_mutate()
   a_id!( person.cost, 48.into() );
   a_id!( person.cost, person.board.total_error().into() );
 
-  let mutagen = person.mutagen( &initial.board, initial.config.hrng.clone() );
+  let mutagen = person.mutagen( &board, hrng.clone() );
   // make sure block is the same
   a_id!( BlockIndex::from( mutagen.cell1 ), BlockIndex::from( mutagen.cell2 ) );
   person.mutate( &mutagen );
@@ -42,14 +44,16 @@ fn person_mutate()
 fn initial_temperature()
 {
   logger_init();
+  let initial = SudokuInitial::new( Board::default() );
+  let optimizer = HybridOptimizer::new( Seed::default(), initial )
+  .set_crossover_operator( BestRowsColumnsCrossover{} )
+  .set_mutation_operator( RandomPairInBlockMutation{} )
+  ;
 
-  let initial = SudokuInitial::new( Board::default(), Seed::default() );
-
-  let temperature = &initial.initial_temperature();
+  let temperature = optimizer.initial_temperature();
   a_true!( temperature.unwrap() >= 0f64 );
   a_id!( temperature.unwrap(), 1.591644851508443 );
 
-  // a_true!( false );
 }
 
 /// Test SA on sudoku
@@ -65,22 +69,35 @@ fn solve_with_sa()
   logger_init();
   log::set_max_level( log::LevelFilter::Warn );
 
-  // let seed : Seed = "seed1".into();
-  // let seed : Seed = "seed2".into();
+  let input = r#"
+  801920000
+  040850726
+  056073090
+  598004100
+  700000530
+  002600400
+  900300680
+  683190050
+  000000013
+  "#;
+
   let seed : Seed = "seed3".into();
-  // let seed = Seed::random();
-  let mut initial = SudokuInitial::new( Board::default(), seed );
+  let initial = SudokuInitial::new( Board::from( input ) );
+  let optimizer = HybridOptimizer::new( Seed::default(), initial )
+  .set_crossover_operator( BestRowsColumnsCrossover{} )
+  .set_mutation_operator( RandomPairInBlockMutation{} )
+  ;
 
   log::set_max_level( log::LevelFilter::max() );
-  let ( reason, generation ) = initial.solve_with_sa();
+  let ( reason, solution ) = optimizer.optimize();
 
   log::trace!( "reason : {reason}" );
-  a_true!( generation.is_some() );
-  let generation = generation.unwrap();
-  log::trace!( "{generation:#?}" );
-  log::trace!( "{:#?}", generation.person.board );
+  a_true!( solution.is_some() );
+  let solution = solution.unwrap();
+  log::trace!( "{solution:#?}" );
+  log::trace!( "{:#?}", solution.board );
 
-  a_id!( generation.person.cost, 0.into() );
+  a_id!( solution.cost, 0.into() );
   #[ cfg( feature = "static_plot" ) ]
   plot::draw_plots();
   // a_true!( false );
@@ -96,7 +113,7 @@ fn solve_with_sa()
 #[ test ]
 fn solve_empty_full_block()
 {
-  let sudoku : &str = r#"
+  let _sudoku : &str = r#"
   402000000
   000038000
   090000018
@@ -107,22 +124,6 @@ fn solve_empty_full_block()
   003940000
   206080047
   "#;
-  log::set_max_level( log::LevelFilter::Warn );
-
-  let seed : Seed = "seed3".into();
-  // let seed = Seed::random();
-  let mut initial = SudokuInitial::new( Board::from(sudoku), seed );
-
-  log::set_max_level( log::LevelFilter::max() );
-  let ( reason, generation ) = initial.solve_with_sa();
-
-  log::trace!( "reason : {reason}" );
-  a_true!( generation.is_some() );
-  let generation = generation.unwrap();
-  log::trace!( "{generation:#?}" );
-  println!( "{:#?}", generation.person.board );
-
-  a_id!( generation.person.cost, 0.into() );
 
   let sudoku : &str = r#"
   350964170
@@ -138,19 +139,22 @@ fn solve_empty_full_block()
   log::set_max_level( log::LevelFilter::Warn );
 
   let seed : Seed = "seed3".into();
-  // let seed = Seed::random();
-  let mut initial = SudokuInitial::new( Board::from(sudoku), seed );
+  let initial = SudokuInitial::new( Board::from( sudoku ) );
+  let optimizer = HybridOptimizer::new( Seed::default(), initial )
+  .set_crossover_operator( BestRowsColumnsCrossover{} )
+  .set_mutation_operator( RandomPairInBlockMutation{} )
+  ;
 
   log::set_max_level( log::LevelFilter::max() );
-  let ( reason, generation ) = initial.solve_with_sa();
+  let ( reason, solution ) = optimizer.optimize();
 
   log::trace!( "reason : {reason}" );
-  a_true!( generation.is_some() );
-  let generation = generation.unwrap();
-  log::trace!( "{generation:#?}" );
-  println!( "{:#?}", generation.person.board );
+  a_true!( solution.is_some() );
+  let solution = solution.unwrap();
+  log::trace!( "{solution:#?}" );
+  println!( "{:#?}", solution.board );
 
-  a_id!( generation.person.cost, 0.into() );
+  a_id!( solution.cost, 0.into() );
  }
 
 //
@@ -188,10 +192,26 @@ fn solve_empty_full_block()
 #[ test ]
 fn time_measure()
 {
-  for i in 0..=9 {
-    let mut initial = SudokuInitial::new( Board::default(), Seed::new( i.to_string() ) );
+  let input = r#"
+  801920000
+  040850726
+  056073090
+  598004100
+  700000530
+  002600400
+  900300680
+  683190050
+  000000013
+  "#;
 
-    let ( _reason, _generation ) = initial.solve_with_sa();
+
+  for i in 0..=3 {
+    let initial = SudokuInitial::new( Board::from( input ) );
+
+    let optimizer = HybridOptimizer::new( Seed::new( i.to_string() ), initial )
+    .set_crossover_operator( BestRowsColumnsCrossover{} )
+    .set_mutation_operator( RandomPairInBlockMutation{} )
+    ;
+    let ( _reason, _solution ) = optimizer.optimize();
   }
-
 }
