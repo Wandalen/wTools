@@ -23,7 +23,7 @@ mod private
     for_app::{ Error, Context, format_err },
     err
   };
-  use packages::{ FilterMapOptions, filter };
+  use packages::FilterMapOptions;
   use workspace::Workspace;
 
   /// Args for `list` endpoint.

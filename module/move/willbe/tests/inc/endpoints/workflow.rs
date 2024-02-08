@@ -10,16 +10,16 @@ use crate::TheModule::endpoint::
 
 mod workflow_generate
 {
+  use super::*;
+
   use std::
   {
     fs::File, 
     io::Read, 
     collections::HashMap
   };
-  use std::fs::{create_dir, create_dir_all};
+  use std::fs::create_dir_all;
   use serde::Deserialize;
-
-  use super::*;
 
   fn arrange( sample_dir: &str ) -> assert_fs::TempDir
   {

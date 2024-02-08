@@ -4,7 +4,6 @@ mod private
   use crate::*;
 
   use wca::{ Args, Props };
-  use tools::bool_like::BoolLike;
   use wtools::error::Result;
 
 

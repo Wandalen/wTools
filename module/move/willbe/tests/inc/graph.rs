@@ -30,7 +30,7 @@ mod toposort
     let _node1 = graph.add_node( &"A" );
     let _node2 = graph.add_node( &"B" );
 
-    let sorted = toposort( graph );
+    let sorted = toposort( graph ).unwrap();
 
     let index_map = IndexMap::new( sorted );
     let node1_position = index_map.position( &"A" );
@@ -49,7 +49,7 @@ mod toposort
 
     graph.add_edge( node1, node2, &"" );
 
-    let sorted = toposort( graph );
+    let sorted = toposort( graph ).unwrap();
 
     let index_map = IndexMap::new( sorted );
     let node1_position = index_map.position( &"A" );
@@ -70,7 +70,7 @@ mod toposort
     graph.add_edge( a, b, &"" );
     graph.add_edge( a, c, &"" );
 
-    let sorted = toposort( graph );
+    let sorted = toposort( graph ).unwrap();
 
     let index_map = IndexMap::new( sorted );
     let a_position = index_map.position( &"A" );
@@ -93,7 +93,7 @@ mod toposort
     graph.add_edge( a, b, &"" );
     graph.add_edge( b, c, &"" );
 
-    let sorted = toposort( graph );
+    let sorted = toposort( graph ).unwrap();
 
     let index_map = IndexMap::new( sorted );
     let a_position = index_map.position( &"A" );
@@ -116,6 +116,6 @@ mod toposort
     graph.add_edge( node1, node2, &"" );
     graph.add_edge( node2, node1, &"" );
 
-    let _sorted = toposort( graph );
+    let _sorted = toposort( graph ).unwrap();
   }
 }

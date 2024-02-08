@@ -1,8 +1,6 @@
 /// Internal namespace.
 mod private 
 {
-  use crate::*;
-
   use std::path::PathBuf;
 
   use crate::{ wtools, endpoint, path };

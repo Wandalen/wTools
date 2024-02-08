@@ -4,7 +4,7 @@ mod private
 
   use std::
   {
-    path::{ Path, PathBuf },
+    path::Path,
     collections::{ HashMap, HashSet },
   };
   use std::fmt::Formatter;
@@ -355,11 +355,11 @@ mod private
       let mut files_changed_for_bump = vec![];
       let mut manifest = package.manifest().map_err( | err | ( report.clone(), anyhow!( err ) ) )?;
       // bump a version in the package manifest
-      let bump_report = version::bump( &mut package.manifest(), dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+      let bump_report = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
       files_changed_for_bump.push( package.manifest_path() );
-      let new_version = package.version();
+      let new_version = package.version().map_err( | err | ( report.clone(), anyhow!( err ) ) )?;
 
-      let package_name = package.name();
+      let package_name = package.name().map_err( | err | ( report.clone(), anyhow!( err ) ) )?;
 
       // bump the package version in dependents (so far, only workspace)
       let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( package.crate_dir() ).map_err( | err | ( report.clone(), err ) )?.workspace_root().map_err( | err | ( report.clone(), anyhow!( err ) ) )?.try_into().unwrap();
@@ -596,8 +596,8 @@ mod private
     // - `Cargo.toml.orig` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
     const IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml.orig" ];
 
-    let name = package.name();
-    let version = package.version();
+    let name = package.name()?;
+    let version = package.version()?;
     let local_package_path = local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )?;
 
     // qqq : for Bohdan : bad, properly handle errors
