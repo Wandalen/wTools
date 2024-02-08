@@ -19,12 +19,17 @@ mod private
     .get_owned( "dry" )
     .unwrap_or( true );
 
-    // println!( "`publish` command patterns: {patterns:?}, dry: {dry}" );
     match endpoint::publish( patterns, dry )
     {
       core::result::Result::Ok( report ) =>
       {
         println!( "{report}" );
+
+        if dry && report.packages.iter().find( |( _, p )| p.publish_required ).is_some()
+        {
+          println!( "To perform actual publishing, call the command with `dry:0` property." )
+        }
+
         Ok( () )
       }
       Err( ( report, e ) ) =>

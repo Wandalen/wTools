@@ -13,11 +13,14 @@ mod private
   use wtools::error::for_app::Error;
   use path::AbsolutePath;
 
+  /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
   {
-    workspace_root_dir : Option<AbsolutePath>,
-    packages : Vec<( AbsolutePath, package::PublishReport )>
+    /// Represents the absolute path to the root directory of the workspace.
+    pub workspace_root_dir : Option< AbsolutePath >,
+    /// Represents a collection of packages and their associated publishing reports.
+    pub packages : Vec<( AbsolutePath, package::PublishReport )>
   }
 
   impl std::fmt::Display for PublishReport
