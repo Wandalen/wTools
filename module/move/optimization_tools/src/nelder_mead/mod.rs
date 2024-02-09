@@ -4,6 +4,9 @@
 
 use std::ops::{ Bound, RangeBounds };
 
+use iter_tools::Itertools;
+use rayon::iter::{ IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator };
+
 /// Represents point in multidimensional space where optimization is performed.
 #[ derive( Debug, Clone ) ] 
 pub struct Point
@@ -81,21 +84,21 @@ impl< R : RangeBounds< f64 > > Default for Optimizer< R >
   }
 }
 
-impl< R : RangeBounds< f64 > > Optimizer< R >
+impl< R : RangeBounds< f64 > + Sync > Optimizer< R >
 {
-  /// Create new optimizer with default configuration and privided space bounds, and with uninitialized starting point and simplex. 
+  /// Set bounds for parameters. 
   pub fn set_bounds( &mut self, bounds : Vec< Option< R > > )
   {
     self.bounds = bounds
   }
 
-  /// Set staring point for optimizer with initialized bounds.
+  /// Set staring point for optimizer.
   pub fn set_starting_point( &mut self, p : Point )
   {
     self.start_point = p;
   }
 
-  /// Initialize simplex by providing its size for optimizer with initialized starting point.
+  /// Initialize simplex by providing its size for optimizer.
   pub fn set_simplex_size( &mut self, size : Vec< f64 > )
   {
     if self.start_point.coords.len() == 0
@@ -287,9 +290,189 @@ impl< R : RangeBounds< f64 > > Optimizer< R >
     self.start_point = Point::new( new_coords );
   }
 
-  /// Optimize provided objective function with using initialized configuration.
-  pub fn optimize< F >( &mut self, f : F ) -> Result< Solution, Error >
-  where F : Fn( Point ) -> f64
+  pub fn optimize_parallel_by_points< F >( &mut self, f : F ) -> Result< Solution, Error >
+  where F : Fn( Point ) -> f64 + std::marker::Sync
+  {
+    if self.start_point.coords.len() == 0
+    {
+      self.calculate_start_point();
+    }
+
+    if self.start_point.coords.len() == 0
+    {
+      return Err ( Error::StartPointError );
+    }
+
+    if self.initial_simplex.points.len() == 0
+    {
+      self.calculate_regular_simplex();
+    }
+
+    let x0 = self.start_point.clone();
+    let dimensions = x0.coords.len();
+    let mut steps_with_no_improv = 0;
+
+    let mut res : Vec<(Point, f64)> = self.initial_simplex.points.par_iter().map( | x | 
+    {
+      ( x.clone(), f( x.clone() ) )
+    } ).collect();
+    let mut prev_best = res.iter().min_by( | ( _, a ), ( _, b ) | a.total_cmp( b ) ).unwrap().1;
+
+    let mut iterations = 0;
+    loop
+    {
+      res.sort_by( | ( _, a ), ( _, b ) | a.total_cmp( b ) );
+
+      let best = res.first().clone().unwrap();
+
+      if self.max_iterations <= iterations
+      {
+        return Ok ( Solution 
+        {
+          point : res[ 0 ].0.clone(),
+          objective : res[ 0 ].1,
+          reason : TerminationReason::MaxIterations,
+        } )
+      }
+
+      iterations += 1;
+
+      if best.1 < prev_best - self.improvement_threshold
+      {
+        steps_with_no_improv = 0;
+        prev_best = best.1;
+      }
+      else
+      {
+        steps_with_no_improv += 1;   
+      }
+
+      if steps_with_no_improv >= self.max_no_improvement_steps
+      {
+        println!("{}", iterations);
+        return Ok ( Solution 
+        {
+          point : res[ 0 ].0.clone(),
+          objective : res[ 0 ].1,
+          reason : TerminationReason::NoImprovement,
+        } )
+      }
+
+      //centroid
+      let mut x0_center = vec![ 0.0; dimensions ];
+      for ( point, _ ) in res.iter().take( res.len() - 1 )
+      {
+        for ( i, coordinate ) in point.coords.iter().enumerate()
+        {
+          x0_center[ i ] += coordinate / ( res.len() - 1 ) as f64;
+        }
+      }
+
+      let worst_direction = res.last().unwrap().clone();
+
+      //reflection
+      let mut points = rayon::iter::repeat( () )
+        .take( 3 )
+        .enumerate()
+        .map( | ( i, _ ) | {
+        match i
+        {
+          0 => { 
+            let mut x_ref = vec![ 0.0; dimensions ];
+            for i in 0..dimensions
+            {
+              x_ref[ i ] = x0_center[ i ] + self.alpha * ( x0_center[ i ] - worst_direction.0.coords[ i ] );
+            }
+            // check if point left the domain, if so, perform projection
+            let x_ref = self.check_bounds( Point::new( x_ref ) );
+      
+            let reflection_score = f( x_ref.clone() );
+            ( i, x_ref, reflection_score )
+          },
+          1 => {
+            let mut x_exp = vec![ 0.0; dimensions ];
+            for i in 0..dimensions
+            {
+              x_exp[ i ] = x0_center[ i ] + self.gamma * ( self.alpha * ( x0_center[ i ] - worst_direction.0.coords[ i ] ) );
+            }
+            // check if point left the domain, if so, perform projection
+            let x_exp = self.check_bounds( Point::new( x_exp ) );
+            let expansion_score = f( x_exp.clone() );
+            ( i, x_exp, expansion_score )
+          },
+          _ => 
+          {
+            let mut x_con = vec![ 0.0; dimensions ];
+            for i in 0..dimensions
+            {
+              x_con[ i ] = x0_center[ i ] + self.rho * ( x0_center[ i ] - worst_direction.0.coords[ i ] );
+            }
+            let x_con = Point::new( x_con );
+            let contraction_score = f( x_con.clone() );
+            ( i, x_con, contraction_score )
+          }
+        }
+  
+      } ).collect::< Vec< _ > >();
+      points.sort_by( | ( i1, _, _ ), ( i2, _, _ ) | i1.cmp( &i2 ) );
+
+      //reflection
+      let second_worst = res[ res.len() - 2 ].1;
+      if res[ 0 ].clone().1 <= points[ 0 ].2 && points[ 0 ].2 < second_worst
+      {
+        res.pop();
+        res.push( ( points[ 0 ].1.clone(), points[ 0 ].2 ) );
+        continue;
+      }
+
+      //expansion
+      if points[ 0 ].2 < res[ 0 ].1
+      {
+
+        if points[ 1 ].2 < points[ 0 ].2
+        {
+          res.pop();
+          res.push( ( points[ 1 ].1.clone(), points[ 1 ].2 ) );
+          continue;
+        }
+        else 
+        {
+          res.pop();
+          res.push( ( points[ 0 ].1.clone(), points[ 0 ].2 ) );
+          continue;
+        }
+      }
+
+      //contraction
+      if points[ 2 ].2 < worst_direction.1
+      {
+        res.pop();
+        res.push( ( points[ 2 ].1.clone(), points[ 2 ].2 ) );
+        continue;
+      }
+
+      //shrink
+      let x1 = res[ 0 ].clone().0;
+      let mut new_res = Vec::new();
+      for ( point, _ ) in &res
+      {
+        let mut x_shrink = vec![ 0.0; dimensions ];
+        for i in 0..dimensions
+        {
+          x_shrink[ i ] = x1.coords[ i ] + self.sigma * ( point.coords[ i ] - x1.coords[ i ] );
+        }
+        let x_shrink = Point::new( x_shrink );
+        let score = f( x_shrink.clone() );
+        new_res.push( ( x_shrink, score ) );
+      }
+
+      res = new_res;
+    }
+    
+  }
+
+  pub fn optimize_parallel_by_direction< F >( &mut self, f : F ) -> Result< Solution, Error >
+  where F : Fn( Point ) -> f64 + std::marker::Sync
   {
     if self.start_point.coords.len() == 0
     {
@@ -351,6 +534,180 @@ impl< R : RangeBounds< f64 > > Optimizer< R >
 
       if steps_with_no_improv >= self.max_no_improvement_steps
       {
+        return Ok ( Solution 
+        {
+          point : res[ 0 ].0.clone(),
+          objective : res[ 0 ].1,
+          reason : TerminationReason::NoImprovement,
+        } )
+      }
+      
+      let number_of_updated_direction = res.len() / 2;
+
+      //centroid
+      let mut x0_center = vec![ 0.0; dimensions ];
+      for ( point, _ ) in res.iter().take( res.len() - number_of_updated_direction )
+      {
+        for ( i, coordinate ) in point.coords.iter().enumerate()
+        {
+          x0_center[ i ] += coordinate / ( res.len() - number_of_updated_direction ) as f64;
+        }
+      }
+
+      let worst_directions = res.iter().skip( res.len() / 2 ).cloned().collect_vec();
+
+      //reflection
+      let candidates : Vec< ( Point, f64 ) > = worst_directions.into_par_iter().filter_map( | worst_dir | {
+        let mut x_ref = vec![ 0.0; dimensions ];
+        for i in 0..dimensions
+        {
+          x_ref[ i ] = x0_center[ i ] + self.alpha * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
+        }
+        // check if point left the domain, if so, perform projection
+        let x_ref = self.check_bounds( Point::new( x_ref ) );
+  
+        let reflection_score = f( x_ref.clone() );
+        let second_worst = res[ res.len() - 2 ].1;
+        if res[ 0 ].clone().1 <= reflection_score && reflection_score < second_worst
+        {
+          return Some( ( x_ref, reflection_score ) );
+        }
+
+        //expansion
+        if reflection_score < res[ 0 ].1
+        {
+          let mut x_exp = vec![ 0.0; dimensions ];
+          for i in 0..dimensions
+          {
+            x_exp[ i ] = x0_center[ i ] + self.gamma * ( x_ref.coords[ i ] - x0_center[ i ] );
+          }
+          // check if point left the domain, if so, perform projection
+          let x_exp = self.check_bounds( Point::new( x_exp ) );
+          let expansion_score = f( x_exp.clone() );
+
+          if expansion_score < reflection_score
+          {
+            return Some( ( x_exp, expansion_score ) );
+          }
+          else 
+          {
+            return Some( ( x_ref, reflection_score ) );
+          }
+        }
+
+        //contraction
+        let mut x_con = vec![ 0.0; dimensions ];
+        for i in 0..dimensions
+        {
+          x_con[ i ] = x0_center[ i ] + self.rho * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
+        }
+        let x_con = Point::new( x_con );
+        let contraction_score = f( x_con.clone() );
+
+        if contraction_score < worst_dir.1
+        {
+          return Some( ( x_con, contraction_score ) );
+        }
+
+        None
+      } ).collect();
+
+      if candidates.len() != 0
+      {
+        for i in 0..candidates.len()
+        {
+          res.pop();
+          res.push( candidates[ i ].clone() );
+        }
+        continue;
+      }
+
+      //shrink
+      let x1 = res[ 0 ].clone().0;
+      let mut new_res = Vec::new();
+      for ( point, _ ) in &res
+      {
+        let mut x_shrink = vec![ 0.0; dimensions ];
+        for i in 0..dimensions
+        {
+          x_shrink[ i ] = x1.coords[ i ] + self.sigma * ( point.coords[ i ] - x1.coords[ i ] );
+        }
+        let x_shrink = Point::new( x_shrink );
+        let score = f( x_shrink.clone() );
+        new_res.push( ( x_shrink, score ) );
+      }
+
+      res = new_res;
+    }
+    
+  }
+
+  /// Optimize provided objective function with using initialized configuration.
+  pub fn optimize< F >( &mut self, f : F ) -> Result< Solution, Error >
+  where F : Fn( Point ) -> f64
+  {
+    if self.start_point.coords.len() == 0
+    {
+      self.calculate_start_point();
+    }
+
+    if self.start_point.coords.len() == 0
+    {
+      return Err ( Error::StartPointError );
+    }
+
+    if self.initial_simplex.points.len() == 0
+    {
+      self.calculate_regular_simplex();
+    }
+
+    let x0 = self.start_point.clone();
+    
+    let dimensions = x0.coords.len();
+    let mut prev_best = f( x0.clone() );
+    let mut steps_with_no_improv = 0;
+    let mut res = vec![ ( x0.clone(), prev_best ) ];
+
+    for i in 1..=dimensions
+    {
+      let x = self.initial_simplex.points[ i ].clone();
+      let score = f( x.clone() );
+      res.push( ( x, score ) );
+    }
+
+    let mut iterations = 0;
+    loop
+    {
+      res.sort_by( | ( _, a ), ( _, b ) | a.total_cmp( b ) );
+
+      let best = res.first().clone().unwrap();
+
+      if self.max_iterations <= iterations
+      {
+        println!("{}", iterations);
+        return Ok ( Solution 
+        {
+          point : res[ 0 ].0.clone(),
+          objective : res[ 0 ].1,
+          reason : TerminationReason::MaxIterations,
+        } )
+      }
+
+      iterations += 1;
+
+      if best.1 < prev_best - self.improvement_threshold
+      {
+        steps_with_no_improv = 0;
+        prev_best = best.1;
+      }
+      else
+      {
+        steps_with_no_improv += 1;   
+      }
+
+      if steps_with_no_improv >= self.max_no_improvement_steps
+      {
+        println!("{}", iterations);
         return Ok ( Solution 
         {
           point : res[ 0 ].0.clone(),
@@ -447,6 +804,7 @@ impl< R : RangeBounds< f64 > > Optimizer< R >
 
       res = new_res;
     }
+
   }
 }
 

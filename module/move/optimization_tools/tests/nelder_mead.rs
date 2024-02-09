@@ -26,6 +26,7 @@ fn sin_cos() -> Result< (), nelder_mead::Error >
   optimizer.set_simplex_size( vec![ 0.1, 0.1, 0.1 ] );
 
   let res = optimizer.optimize( f )?;
+
   assert!( ( -1.5808971014312196 - res.point.coords[ 0 ] ).abs() < 10e-5 );
   assert!( ( -1.0 - res.objective ).abs() <= 10e-5 );
 
@@ -41,9 +42,42 @@ fn rosenbrock() -> Result< (), nelder_mead::Error >
   optimizer.set_simplex_size( vec![ 0.1, 0.1 ] );
 
   let res = optimizer.optimize( f )?;
+
   assert!( ( 1.0 - res.point.coords[ 0 ] ).abs() < 10e-5 );
   assert!( ( 1.0 - res.point.coords[ 1 ] ).abs() < 10e-5 );
   assert!( res.objective < 10e-5 );
+
+  Ok( () )
+}
+
+#[ test ]
+fn rosenbrock_extended() -> Result< (), nelder_mead::Error >
+{
+  
+  let f = | x : Point | 
+  {
+    let mut y = 0.0;
+    for i in 0..30
+    {
+      y += ( 1.0 - x.coords[ i ] ).powi( 2 ) + 100.0 * ( x.coords[ i + 1 ] - x.coords[ i ].powi( 2 )).powi( 2 )
+    }
+    y
+  };
+  let mut optimizer: nelder_mead::Optimizer< Range< f64 > > = nelder_mead::Optimizer::default();
+  optimizer.start_point = Point::new( vec![ 10.0; 31 ] );
+  optimizer.set_simplex_size( vec![ 0.1; 31 ] );
+
+  let start1 = std::time::Instant::now();
+  let res1 = optimizer.optimize( f )?;
+  let _elapsed1 = start1.elapsed();
+
+  let start2 = std::time::Instant::now();
+  let res2 = optimizer.optimize_parallel_by_direction( f )?;
+  let _elapsed2 = start2.elapsed();
+
+  //assert_eq!( elapsed1.as_nanos(), elapsed2.as_nanos() );
+
+  assert_eq!( res1.objective, res2.objective );
 
   Ok( () )
 }

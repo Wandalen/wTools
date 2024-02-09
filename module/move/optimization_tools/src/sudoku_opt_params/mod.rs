@@ -77,7 +77,7 @@ pub fn find_hybrid_optimal_params< R, S, C, M >
   problem : OptimalProblem< R >, 
   hybrid_problem : Problem< S, C, M > 
 ) -> Result< nelder_mead::Solution, nelder_mead::Error >
-where  R : RangeBounds< f64 >,
+where  R : RangeBounds< f64 > + Sync,
   S : InitialProblem + Sync + Clone, 
   C : CrossoverOperator::< Person = < S as InitialProblem>::Person > + Clone,
   M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
@@ -141,7 +141,7 @@ where  R : RangeBounds< f64 >,
 }
 
 pub fn optimize_by_time< F, R >( config : OptimalParamsConfig, problem : OptimalProblem< R >, objective_function : F ) -> Result< nelder_mead::Solution, nelder_mead::Error >
-where F : Fn( nelder_mead::Point ), R : RangeBounds< f64 >
+where F : Fn( nelder_mead::Point ), R : RangeBounds< f64 > + Sync
 {
   let mut optimizer = nelder_mead::Optimizer::default();
   optimizer.bounds = problem.bounds;

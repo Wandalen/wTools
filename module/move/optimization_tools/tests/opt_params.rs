@@ -1,6 +1,5 @@
-use optimization_tools::{nelder_mead::Point, sudoku::Board, sudoku_opt_params::{OptimalParamsConfig, OptimalProblem}, *};
+use optimization_tools::{ nelder_mead::Point, sudoku::Board, sudoku_opt_params::{ OptimalParamsConfig, OptimalProblem }, * };
 use optimization::*;
-use test_tools::prelude::*;
 
 mod tools;
 use tools::*;
