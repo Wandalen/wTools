@@ -54,7 +54,7 @@ mod private
     .dependency_categories( categories )
     .form();
 
-    match endpoint::list( args )
+    match endpoint::listv2( args )
     {
       core::result::Result::Ok( report ) =>
       {

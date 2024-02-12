@@ -4,7 +4,8 @@ mod private
   use crate::*;
   use std::
   {
-    fmt::Formatter,
+    fmt::{ Formatter, Write },
+    path::PathBuf,
     collections::HashSet,
   };
   use petgraph::
@@ -218,6 +219,201 @@ mod private
     dependency_categories: HashSet< DependencyCategory >,
   }
 
+  #[ derive( Debug, Clone ) ]
+  pub struct ListNodeReport
+  {
+    name: String,
+    version: Option< String >,
+    path: Option< PathBuf >,
+    normal_dependencies: Vec< ListNodeReport >,
+    dev_dependencies: Vec< ListNodeReport >,
+    build_dependencies: Vec< ListNodeReport >,
+  }
+
+  impl ListNodeReport
+  {
+    fn display_with_spacer( &self, spacer : &str, depth : usize ) -> Result< String, std::fmt::Error >
+    {
+      let mut f = String::new();
+
+      write!( f, "{spacer}{}", self.name )?;
+      if let Some( version ) = &self.version { write!( f, " {version}" )? }
+      if let Some( path ) = &self.path { write!( f, " {}", path.display() )? }
+      write!( f, "\n" )?;
+
+      let spacer = format!( "{spacer}[{depth}] " );
+      let depth = depth + 1;
+
+      for dep in &self.normal_dependencies
+      {
+        write!( f, "{}", dep.display_with_spacer( &spacer, depth )? )?;
+      }
+      if !self.dev_dependencies.is_empty()
+      {
+        write!( f, "{spacer}[dev-dependencies]\n" )?;
+        let spacer = format!( "{spacer}| " );
+        for dep in &self.dev_dependencies
+        {
+          write!( f, "{}", dep.display_with_spacer( &spacer, depth )? )?;
+        }
+      }
+      if !self.build_dependencies.is_empty()
+      {
+        write!( f, "{spacer}[build-dependencies]\n" )?;
+        let spacer = format!( "{spacer}| " );
+        for dep in &self.build_dependencies
+        {
+          write!( f, "{}", dep.display_with_spacer( &spacer, depth )? )?;
+        }
+      }
+
+      Ok( f )
+    }
+  }
+
+  impl std::fmt::Display for ListNodeReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      write!( f, "{}", self.display_with_spacer( "", 0 )? )?;
+
+      Ok( () )
+    }
+  }
+
+  #[ derive( Debug, Default, Clone ) ]
+  pub enum ListReportV2
+  {
+    Tree( Vec< ListNodeReport > ),
+    #[ default ]
+    Empty,
+  }
+
+  impl std::fmt::Display for ListReportV2
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      match self
+      {
+        Self::Tree( v ) => write!( f, "{}", v.iter().map( | l | l.to_string() ).collect::< Vec< _ > >().join( "\n" ) ),
+        Self::Empty => write!( f, "" ),
+      }
+    }
+  }
+
+  fn process_deps( workspace : &Workspace, dep: &Dependency, args : &ListArgs, visited : &mut HashSet< String > ) -> ListNodeReport
+  {
+    let mut dep_rep = ListNodeReport
+    {
+      name : dep.name.clone(),
+      version : Some( dep.req.to_string() ),
+      path : dep.path.as_ref().map( | p | p.clone().into_std_path_buf() ),
+      normal_dependencies : vec![],
+      dev_dependencies : vec![],
+      build_dependencies : vec![],
+    };
+
+    // if this is a cycle (we have visited this node before)
+    if visited.contains( &dep.name )
+    {
+      dep_rep.name = format!( "{} (*)", dep_rep.name );
+
+      return dep_rep;
+    }
+
+    // if we have not visited this node before, mark it as visited
+    visited.insert( dep.name.clone() );
+    if let Some( path ) = &dep.path
+    {
+      if let Some( package ) = workspace.package_find_by_manifest( path.as_std_path().join( "Cargo.toml" ) )
+      {
+        // qqq: DRY
+        for dependency in &package.dependencies {
+          if dependency.path.is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
+          if dependency.path.is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
+
+          let mut temp_vis = visited.clone();
+          let dependency_rep = process_deps( workspace, dependency, args, &mut temp_vis );
+
+          match dependency.kind
+          {
+            DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) =>
+              dep_rep.normal_dependencies.push( dependency_rep ),
+            DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) =>
+              dep_rep.dev_dependencies.push( dependency_rep ),
+            DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) =>
+              dep_rep.build_dependencies.push( dependency_rep ),
+            _ => { visited.remove( &dependency.name ); std::mem::swap( &mut temp_vis, visited ); }
+          };
+          *visited = std::mem::take( &mut temp_vis );
+        }
+      }
+    }
+
+    // once we have processed all dependencies of this node, we can mark it as unvisited
+    // visited.remove( &dep.name );
+
+    dep_rep
+  }
+
+  /// -
+  pub fn listv2( args : ListArgs ) -> Result< ListReportV2, ( ListReportV2, Error ) >
+  {
+    let mut report = ListReportV2::default();
+
+    let manifest = manifest::open( args.path_to_manifest.absolute_path() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let metadata = Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | err | ( report.clone(), format_err!( err ) ) )?;
+
+    let root_crate = manifest.manifest_path;
+
+    match args.format
+    {
+      ListFormat::Tree =>
+      {
+        let package = metadata.package_find_by_manifest( root_crate ).unwrap();
+        let mut package_report = ListNodeReport
+        {
+          name: package.name.clone(),
+          version: Some( package.version.to_string() ),
+          path: Some( package.manifest_path.clone().into_std_path_buf() ),
+          normal_dependencies: vec![],
+          dev_dependencies: vec![],
+          build_dependencies: vec![],
+        };
+        let mut visited = HashSet::new();
+        // qqq: DRY
+        for dep in &package.dependencies
+        {
+          if dep.path.is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
+          if dep.path.is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
+
+          let mut temp_vis = visited.clone();
+          let dep_rep = process_deps( &metadata, dep, &args, &mut temp_vis );
+          match dep.kind
+          {
+            DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) =>
+              package_report.normal_dependencies.push( dep_rep ),
+            DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) =>
+              package_report.dev_dependencies.push( dep_rep ),
+            DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) =>
+              package_report.build_dependencies.push( dep_rep ),
+            _ => { visited.remove( &dep.name ); std::mem::swap( &mut temp_vis, &mut visited ); }
+          };
+          visited = std::mem::take( &mut temp_vis );
+        }
+
+        report = match report
+        {
+          ListReportV2::Tree( mut v ) => ListReportV2::Tree( { v.extend([ package_report ]); v } ),
+          ListReportV2::Empty => ListReportV2::Tree( vec![ package_report ] ),
+        };
+      }
+      _ => { unimplemented!() }
+    }
+
+    Ok( report )
+  }
+
   ///
   /// List workspace packages.
   ///
@@ -269,6 +465,7 @@ mod private
 
     match args.format
     {
+      // all crates
       ListFormat::Tree if root_crate.is_empty() =>
       {
         let mut names = vec![ sorted[ 0 ] ];
@@ -281,6 +478,7 @@ mod private
         }
         report = ListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
       },
+      // specific crate as root
       ListFormat::Tree =>
       {
         let names = sorted
@@ -290,6 +488,7 @@ mod private
 
         report = ListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
       }
+      // all crates
       ListFormat::Topological if root_crate.is_empty() =>
       {
         let names = sorted
@@ -300,6 +499,7 @@ mod private
 
         report = ListReport::List( names );
       },
+      // specific crate as root
       ListFormat::Topological =>
       {
         let node = graph.node_indices().find( | n | graph.node_weight( *n ).unwrap() == &&root_crate ).unwrap();
@@ -353,6 +553,7 @@ crate::mod_interface!
   protected use ListReport;
   /// List packages in workspace.
   orphan use list;
+  orphan use listv2;
   /// Wrapper to redirect output from `io::Write` to `fmt::Write`
   protected use Io2FmtWrite;
 }
