@@ -36,19 +36,14 @@ pub enum Reason
   DynastiesLimit,
 }
 
-/// Represents hybrid optimization method with both Simulated Annealing and Genetic Algorithm.
 #[ derive( Debug ) ]
-pub struct HybridOptimizer< S : InitialProblem, C, M >
+pub struct Config
 {
-
   /// Max amount of mutations in dynasty.
   pub sa_mutations_per_dynasty_limit : usize,
 
   /// Max allowed number of resets.
   pub reset_limit : usize,
-
-  /// Temperature update operator.
-  pub sa_temperature_schedule : Box< dyn TemperatureSchedule >,
 
   /// Number of fittest individuals that will be cloned to new population.
   pub elite_selection_rate : f64,
@@ -65,17 +60,8 @@ pub struct HybridOptimizer< S : InitialProblem, C, M >
   /// Max number of iteration without improvement in population.
   pub max_stale_iterations : usize,
 
-  /// Crossover genetic operator, which defines how new Individuals are produced by combiniting traits of Individuals from current generation.
-  pub ga_crossover_operator : C,
-
-  /// Selection genetic operator, which defines how Individuals from current generation are selected to be breeders of new generation.
-  pub ga_selection_operator : Box< dyn SelectionOperator< < S as InitialProblem >::Person > >,
-
   /// Hierarchical random numbers generator.
   pub hrng : Hrng,
-
-  /// Struct responsible for creation of initial population.
-  pub seeder : S,
 
   /// Percent of population selected for next cycle of optimization.
   pub population_percent : f64,
@@ -85,20 +71,51 @@ pub struct HybridOptimizer< S : InitialProblem, C, M >
 
   /// Number of Individuals in initial generation of solutions.
   pub population_size : usize,
+}
+
+impl Default for Config
+{
+  fn default() -> Self 
+  {
+    Self
+    {
+        max_stale_iterations : 100,
+        sa_mutations_per_dynasty_limit : 300,
+        reset_limit : 1_000,
+        crossover_rate : 0.5,
+        fitness_recalculation : false,
+        mutation_rate : 0.25,
+        elite_selection_rate : 0.25,
+        hrng : Hrng::master_with_seed( Seed::default() ),
+        dynasties_limit : 10_000,
+        population_size : 10_000,
+        population_percent : 1.0,
+    }
+  }
+}
+
+#[ derive( Debug ) ]
+pub struct Problem< S : InitialProblem, C, M >
+{
+  /// Temperature update operator.
+  pub sa_temperature_schedule : Box< dyn TemperatureSchedule >,
+
+  /// Crossover genetic operator, which defines how new Individuals are produced by combiniting traits of Individuals from current generation.
+  pub ga_crossover_operator : C,
+
+  /// Selection genetic operator, which defines how Individuals from current generation are selected to be breeders of new generation.
+  pub ga_selection_operator : Box< dyn SelectionOperator< < S as InitialProblem >::Person > >,
+
+  /// Struct responsible for creation of initial population.
+  pub seeder : S,
 
   /// Mutation operator, randomly changes person's genome to introduce diversity into population.
   pub mutation_operator : M,
 }
 
-/// Inidicates state of hybrid optimizer with no mutation operator set.
-pub struct NoMutOp;
-/// Inidicates state of hybrid optimizer with no crossover operator set.
-pub struct NoCrOp;
-
-impl< S : InitialProblem + Sync > HybridOptimizer< S, NoCrOp, NoMutOp >
+impl< S : InitialProblem, C, M > Problem< S, C, M >
 {
-  /// Create new instance of HybridOptimizer with default config for SA and GA.
-  pub fn new( random_seed : Seed, population_seeder : S ) -> HybridOptimizer< S, NoCrOp, NoMutOp >
+  pub fn new( initial : S, crossover_operator : C, mutation_operator : M ) -> Self
   where TournamentSelection : SelectionOperator< < S as InitialProblem >::Person >
   {
     let selection_operator = Box::new( TournamentSelection
@@ -107,150 +124,100 @@ impl< S : InitialProblem + Sync > HybridOptimizer< S, NoCrOp, NoMutOp >
       selection_pressure : 0.85,
     } );
 
-    let hrng = Hrng::master_with_seed( random_seed );
     Self
     {
+      seeder : initial,
       sa_temperature_schedule : Box::new( LinearTempSchedule
-      {
-        coefficient : ( 0.999 ).into(),
-        constant : 0f64.into(),
-        reset_increase_value : 1f64.into()
-      } ),
-      max_stale_iterations : 100,
-      sa_mutations_per_dynasty_limit : 300,
-      reset_limit : 1_000,
-      crossover_rate : 0.5,
-      fitness_recalculation : false,
-      mutation_rate : 0.25,
-      elite_selection_rate : 0.25,
-      ga_crossover_operator : NoCrOp,
-      ga_selection_operator : selection_operator as Box< dyn SelectionOperator< < S as InitialProblem >::Person > >,
-      hrng,
-      seeder : population_seeder,
-      dynasties_limit : 10_000,
-      population_size : 10_000,
-      mutation_operator : NoMutOp,
-      population_percent : 1.0,
+        {
+          coefficient : ( 0.999 ).into(),
+          constant : 0f64.into(),
+          reset_increase_value : 1f64.into()
+        } ),
+      ga_crossover_operator : crossover_operator,
+      ga_selection_operator : selection_operator,
+      mutation_operator : mutation_operator,
     }
   }
 }
 
-impl< S : InitialProblem + Sync, C > HybridOptimizer< S, C, NoMutOp >
+/// Represents hybrid optimization method with both Simulated Annealing and Genetic Algorithm.
+#[ derive( Debug ) ]
+pub struct HybridOptimizer< S : InitialProblem, C, M >
 {
-  /// Set operator for mutating population.
-  pub fn set_mutation_operator< M >( self, mutation_op : M ) -> HybridOptimizer< S, C, M >
-  where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
-  M : MutationOperator::< Problem = S > + Sync
-  {
-    HybridOptimizer
-    {
-      sa_temperature_schedule : self.sa_temperature_schedule,
-      max_stale_iterations : self.max_stale_iterations,
-      sa_mutations_per_dynasty_limit : self.sa_mutations_per_dynasty_limit,
-      reset_limit : self.reset_limit,
-      crossover_rate : self.crossover_rate,
-      fitness_recalculation : self.fitness_recalculation,
-      mutation_rate : self.mutation_rate,
-      elite_selection_rate : self.elite_selection_rate,
-      ga_crossover_operator : self.ga_crossover_operator,
-      ga_selection_operator : self.ga_selection_operator,
-      hrng : self.hrng,
-      seeder : self.seeder,
-      dynasties_limit : self.dynasties_limit,
-      population_size : self.population_size,
-      mutation_operator : mutation_op,
-      population_percent : self.population_percent,
-    }
-  }
+  config : Config,
+
+  problem : Problem< S, C, M >,
 }
 
-impl< S : InitialProblem + Sync, M > HybridOptimizer< S, NoCrOp, M >
-{
-  /// Set operator for producing offspring for new population.
-  pub fn set_crossover_operator< C >( self, crossover_op : C ) -> HybridOptimizer< S, C, M >
-  where C : CrossoverOperator::< Person = < S as InitialProblem>::Person >
-  {
-    HybridOptimizer
-    {
-      sa_temperature_schedule : self.sa_temperature_schedule,
-      max_stale_iterations : self.max_stale_iterations,
-      sa_mutations_per_dynasty_limit : self.sa_mutations_per_dynasty_limit,
-      reset_limit : self.reset_limit,
-      crossover_rate : self.crossover_rate,
-      fitness_recalculation : self.fitness_recalculation,
-      mutation_rate : self.mutation_rate,
-      elite_selection_rate : self.elite_selection_rate,
-      ga_crossover_operator : crossover_op,
-      ga_selection_operator : self.ga_selection_operator,
-      hrng : self.hrng,
-      seeder : self.seeder,
-      dynasties_limit : self.dynasties_limit,
-      population_size : self.population_size,
-      mutation_operator : self.mutation_operator,
-      population_percent : self.population_percent,
-    }
-  }
-}
 
 impl< S : InitialProblem + Sync, C : CrossoverOperator::< Person = < S as InitialProblem>::Person >, M > HybridOptimizer< S, C, M >
 where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
   M : MutationOperator::< Problem = S > + Sync
 {
+
+  pub fn new( config : Config, problem : Problem<S, C, M> ) -> Self
+  {
+    Self
+    {
+      config,
+      problem,
+    }
+  }
   /// Set size of initial population.
   pub fn set_population_size( mut self, size : usize ) -> Self
   {
-    self.population_size = size;
+    self.config.population_size = size;
     self
   }
 
   /// Set max dynasties number.
   pub fn set_dynasties_limit( mut self, limit : usize ) -> Self
   {
-    self.dynasties_limit = limit;
+    self.config.dynasties_limit = limit;
     self
   }
 
   /// Set temperature schedule for optimization.
   pub fn set_sa_temp_schedule( mut self, schedule : Box< dyn TemperatureSchedule > ) -> Self
   {
-    self.sa_temperature_schedule = schedule;
+    self.problem.sa_temperature_schedule = schedule;
     self
   }
 
   /// Set selection operator.
   pub fn set_selection_operator( mut self, selection_op : Box< dyn SelectionOperator< < S as InitialProblem >::Person > > ) -> Self
   {
-    self.ga_selection_operator = selection_op;
+    self.problem.ga_selection_operator = selection_op;
     self
   }
 
   /// Set max amount of mutations per one dynasty.
   pub fn set_sa_max_mutations_per_dynasty( mut self, number : usize ) -> Self
   {
-    self.sa_mutations_per_dynasty_limit = number;
+    self.config.sa_mutations_per_dynasty_limit = number;
     self
   }
 
   /// Set mutation rate for GA.
   pub fn set_population_proportions( mut self, proportions : PopulationModificationProportions< f64, f64, f64 > ) -> Self
   {
-    self.mutation_rate = proportions.mutation_rate();
-    self.elite_selection_rate = proportions.elite_selection_rate();
-    self.crossover_rate = proportions.crossover_rate();
+    self.config.mutation_rate = proportions.mutation_rate();
+    self.config.elite_selection_rate = proportions.elite_selection_rate();
+    self.config.crossover_rate = proportions.crossover_rate();
     self
   }
 
   /// Set stale iterations limit.
   pub fn set_max_stale_iterations( mut self, limit : usize ) -> Self
   {
-    self.max_stale_iterations = limit;
+    self.config.max_stale_iterations = limit;
     self
   }
 
   /// Perform hybrid SA/GA optimization.
   pub fn optimize( &self ) -> ( Reason, Option< < S as InitialProblem >::Person > )
   {
-    let mut population = self.seeder.initial_population( self.hrng.clone(), self.population_size );
+    let mut population = self.problem.seeder.initial_population( self.config.hrng.clone(), self.config.population_size );
     population.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
     let mut dynasties_number = 0;
     let mut stale_generations = 0;
@@ -260,7 +227,7 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
 
     loop
     {
-      if dynasties_number > self.dynasties_limit
+      if dynasties_number > self.config.dynasties_limit
       {
         
         return ( Reason::DynastiesLimit, [ prev_best, population[ 0 ].clone() ].into_iter().min_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) ) );
@@ -271,23 +238,23 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
         return ( Reason::GoodEnough, Some( population[ 0 ].clone() ) );
       }
 
-      if reset_number > self.reset_limit
+      if reset_number > self.config.reset_limit
       {
-        population = self.seeder.initial_population( self.hrng.clone(), self.population_size );
+        population = self.problem.seeder.initial_population( self.config.hrng.clone(), self.config.population_size );
         temperature = self.initial_temperature();
       }
 
-      if stale_generations > self.max_stale_iterations
+      if stale_generations > self.config.max_stale_iterations
       {
         if temperature > self.initial_temperature()
         {
-          population = self.seeder.initial_population( self.hrng.clone(), self.population_size );
+          population = self.problem.seeder.initial_population( self.config.hrng.clone(), self.config.population_size );
           temperature = self.initial_temperature();
           reset_number = 0;
         }
         else
         {
-          temperature = self.sa_temperature_schedule.reset_temperature( temperature );
+          temperature = self.problem.sa_temperature_schedule.reset_temperature( temperature );
           reset_number += 1;
         }
       }
@@ -311,13 +278,13 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
         population
         .iter()
         .cloned()
-        .take( ( ( population.len() as f64 ) * self.elite_selection_rate ) as usize )
+        .take( ( ( population.len() as f64 ) * self.config.elite_selection_rate ) as usize )
      );
-      for i in ( ( ( population.len() as f64 ) * self.elite_selection_rate ) as usize )..population.len()
+      for i in ( ( ( population.len() as f64 ) * self.config.elite_selection_rate ) as usize )..population.len()
       {
         let mut person = self.evolve( population[ i ].clone(), &population, &temperature );
 
-        person.update_fitness( self.seeder.evaluate( &person ) );
+        person.update_fitness( self.problem.seeder.evaluate( &person ) );
         if person.is_optimal()
         {
           return ( Reason::GoodEnough, Some( person.clone() ) );
@@ -327,9 +294,9 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
       }
 
       new_population.sort_by( | p1, p2 | p1.fitness().cmp( &p2.fitness() ) );
-      temperature = self.sa_temperature_schedule.calculate_next_temp( temperature );
+      temperature = self.problem.sa_temperature_schedule.calculate_next_temp( temperature );
 
-      population = new_population.into_iter().take( ( population.len() as f64 * self.population_percent ) as usize ).collect_vec();
+      population = new_population.into_iter().take( ( population.len() as f64 * self.config.population_percent ) as usize ).collect_vec();
       
       dynasties_number += 1;
     }
@@ -344,7 +311,7 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
     temperature : &Temperature 
   ) -> bool
   {
-    let rng_ref = self.hrng.rng_ref();
+    let rng_ref = self.config.hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
 
     let cost_difference = 0.5 + candidate.fitness() as f64 - person.fitness() as f64;
@@ -377,10 +344,10 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
   ) -> < S as InitialProblem >::Person
   {
  
-    let rng_ref = self.hrng.rng_ref();
+    let rng_ref = self.config.hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
 
-    let operator = [ ( 0, self.mutation_rate ), ( 1, self.crossover_rate ) ]
+    let operator = [ ( 0, self.config.mutation_rate ), ( 1, self.config.crossover_rate ) ]
     .choose_weighted( &mut *rng, | item | item.1 )
     .unwrap()
     .0
@@ -390,9 +357,9 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
     let mut child = 
     if operator == 1
     {
-      let parent1 = self.ga_selection_operator.select( self.hrng.clone(), &population );
-      let parent2 = self.ga_selection_operator.select( self.hrng.clone(), &population );
-      let candidate = self.ga_crossover_operator.crossover( self.hrng.clone(), parent1, parent2 );
+      let parent1 = self.problem.ga_selection_operator.select( self.config.hrng.clone(), &population );
+      let parent2 = self.problem.ga_selection_operator.select( self.config.hrng.clone(), &population );
+      let candidate = self.problem.ga_crossover_operator.crossover( self.config.hrng.clone(), parent1, parent2 );
       if self.is_vital( &person, &candidate, temperature )
       {
         candidate
@@ -409,16 +376,16 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
 
       loop
       {
-        if n_mutations > self.sa_mutations_per_dynasty_limit
+        if n_mutations > self.config.sa_mutations_per_dynasty_limit
         {
           {
             return person.clone();
           }
         }
     
-        let hrng = self.hrng.clone();
-        let mutation_op = &self.mutation_operator;
-        let mutation_context = &self.seeder;
+        let hrng = self.config.hrng.clone();
+        let mutation_op = &self.problem.mutation_operator;
+        let mutation_context = &self.problem.seeder;
 
         let candidates = rayon::iter::repeat( () )
         .take( expected_number_of_mutations )
@@ -476,7 +443,7 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
 
         if candidates.len() > 0
         {
-          let rng_ref = self.hrng.rng_ref();
+          let rng_ref = self.config.hrng.rng_ref();
           let mut rng = rng_ref.lock().unwrap();
           
           if let Some( index ) = ( 0..candidates.len() - 1 ).choose( &mut *rng )
@@ -497,9 +464,9 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
       }
     };
 
-    if self.fitness_recalculation
+    if self.config.fitness_recalculation
     {
-      child.update_fitness( self.seeder.evaluate( &child ) );
+      child.update_fitness( self.problem.seeder.evaluate( &child ) );
     }
 
     child
@@ -509,14 +476,14 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
   pub fn initial_temperature( &self ) -> Temperature
   {
     use statrs::statistics::Statistics;
-    let rand_person = self.seeder.get_random_person( self.hrng.clone() );
+    let rand_person = self.problem.seeder.get_random_person( self.config.hrng.clone() );
     const N : usize = 16;
     let mut costs : [ f64 ; N ] = [ 0.0 ; N ];
     for i in 0..N
     {
       let mut person2 = rand_person.clone();
-      self.mutation_operator.mutate( self.hrng.clone(), &mut person2, &self.seeder );
-      costs[ i ] = self.seeder.evaluate( &person2 ) as f64;
+      self.problem.mutation_operator.mutate( self.config.hrng.clone(), &mut person2, &self.problem.seeder );
+      costs[ i ] = self.problem.seeder.evaluate( &person2 ) as f64;
     }
     costs[..].std_dev().into()
   }

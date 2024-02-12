@@ -45,10 +45,8 @@ fn initial_temperature()
 {
   logger_init();
   let initial = SudokuInitial::new( Board::default() );
-  let optimizer = HybridOptimizer::new( Seed::default(), initial )
-  .set_crossover_operator( BestRowsColumnsCrossover{} )
-  .set_mutation_operator( RandomPairInBlockMutation{} )
-  ;
+  let p = Problem::new( initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{}  );
+  let optimizer = HybridOptimizer::new( Config::default(), p );
 
   let temperature = optimizer.initial_temperature();
   a_true!( temperature.unwrap() >= 0f64 );
