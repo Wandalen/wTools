@@ -1,10 +1,12 @@
 mod private
 {
+  use crate::*;
+
   use std::path::Path;
-  use cargo_metadata::*;
-  use wca::wtools::error;
-  use crate::CrateDir;
-  use crate::path::AbsolutePath;
+  use cargo_metadata::{ Metadata, MetadataCommand, Package };
+
+  use wtools::error::{ for_app::Context, for_lib::Error, Result };
+  use path::AbsolutePath;
 
   /// Stores information about current workspace.
   #[ derive( Debug, Clone ) ]
@@ -14,27 +16,39 @@ mod private
     manifest_dir : CrateDir,
   }
 
+  /// Represents errors related to workspace operations.
+  #[ derive( Debug, Error ) ]
+  pub enum WorkspaceError
+  {
+    /// Metadata is non.
+    #[ error( "Metadata is non " ) ]
+    MetadataError,
+  }
+
   impl Workspace
   {
     /// Load data from current directory
-    pub fn from_current_path() -> error::Result< Self >
+    pub fn from_current_path() -> Result< Self >
     {
       let current_path = AbsolutePath::try_from( std::env::current_dir().unwrap_or_default() )?;
       Ok( Self
       {
-        metadata : Some( MetadataCommand::new().no_deps().exec().unwrap() ),
+        metadata : Some( MetadataCommand::new().no_deps().exec().context("fail to load CargoMetadata")? ),
         manifest_dir : CrateDir::try_from( current_path )?,
       })
     }
 
     /// Load data from current directory
-    pub fn with_crate_dir( crate_dir : CrateDir ) -> Self
+    pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self >
     {
-      Self
-      {
-        metadata : Some( MetadataCommand::new().current_dir( crate_dir.as_ref() ).no_deps().exec().unwrap() ),
-        manifest_dir : crate_dir,
-      }
+      Ok
+      (
+        Self
+        {
+        metadata: Some( MetadataCommand::new().current_dir( crate_dir.as_ref() ).no_deps().exec().context( "fail to load CargoMetadata" )? ),
+        manifest_dir: crate_dir,
+        }
+      )
     }
   }
 
@@ -57,44 +71,46 @@ mod private
   {
     /// Load data from the current location or from cache
     // FIX: Maybe unsafe. Take metadata of workspace in current dir.
-    pub fn load( &mut self ) -> &mut Self
+    pub fn load( &mut self ) -> Result< &mut Self >
     {
       if self.metadata.is_none()
       {
-        self.metadata.get_or_insert_with( || Self::with_crate_dir( self.manifest_dir.clone() ).metadata.unwrap() );
+        let metadata = Self::with_crate_dir( self.manifest_dir.clone() )?.metadata.unwrap();
+        _ = self.metadata.insert( metadata );
       }
 
-      self
+      Ok( self )
     }
 
     /// Force loads data from the current location
     // FIX: Maybe unsafe. Take metadata of workspace in current dir.
-    pub fn force_reload( &mut self ) -> &mut Self
+    pub fn force_reload( &mut self ) -> Result< &mut Self >
     {
-      _ = self.metadata.insert( Self::with_crate_dir( self.manifest_dir.clone() ).metadata.unwrap() );
+      let metadata = Self::with_crate_dir( self.manifest_dir.clone() )?.metadata.unwrap();
+      _ = self.metadata.insert( metadata );
 
-      self
+      Ok( self )
     }
   }
 
   impl Workspace
   {
     /// Returns list of all packages
-    pub fn packages_get( &self ) -> &[ Package ]
+    pub fn packages_get( &self ) -> Result< &[ Package ], WorkspaceError >
     {
-      &self.metadata.as_ref().unwrap().packages
+      self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError ).map( | metadata | metadata.packages.as_slice() )
     }
 
     /// Returns the path to workspace root
-    pub fn workspace_root( &self ) -> &Path
+    pub fn workspace_root( &self ) -> Result< &Path, WorkspaceError >
     {
-      self.metadata.as_ref().unwrap().workspace_root.as_std_path()
+      Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.workspace_root.as_std_path() )
     }
 
     /// Returns the path to target directory
-    pub fn target_directory( &self ) -> &Path
+    pub fn target_directory( &self ) -> Result< &Path, WorkspaceError >
     {
-      self.metadata.as_ref().unwrap().target_directory.as_std_path()
+      Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.target_directory.as_std_path() )
     }
 
     /// Find a package by its manifest file path
@@ -102,7 +118,16 @@ mod private
     where
       P : AsRef< Path >,
     {
-      self.packages_get().iter().find( | &p | p.manifest_path.as_std_path() == manifest_path.as_ref() )
+      self
+      .packages_get()
+      .ok()
+      .and_then
+      (
+        | packages |
+        packages
+        .iter()
+        .find( | &p | p.manifest_path.as_std_path() == manifest_path.as_ref() ) 
+      )
     }
   }
 }
@@ -112,4 +137,5 @@ mod private
 crate::mod_interface!
 {
   orphan use Workspace;
+  orphan use WorkspaceError;
 }

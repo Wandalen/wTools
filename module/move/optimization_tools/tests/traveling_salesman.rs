@@ -85,15 +85,14 @@ fn find_route()
 {
   logger_init();
   log::set_max_level( log::LevelFilter::Warn );
-  let seed : Seed = "stp".into();
 
   let graph = TSPGraph::default();
 
   let tsp_initial = TSProblem{ graph, starting_node : NodeIndex( 1 ) };
 
-  let optimizer = HybridOptimizer::new( seed, tsp_initial )
-  .set_crossover_operator( OrderedRouteCrossover{} )
-  .set_mutation_operator( TSRouteMutation{} )
+  let tsp = Problem::new( tsp_initial, OrderedRouteCrossover{}, TSRouteMutation{} );
+
+  let optimizer = HybridOptimizer::new( Config::default(), tsp )
   .set_population_size( 100 )
   .set_dynasties_limit( 100 );
 

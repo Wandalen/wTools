@@ -9,15 +9,15 @@ mod private
   };
   use petgraph::
   {
-    algo::toposort,
-    algo::has_path_connecting,
-    Graph
+    prelude::*,
+    algo::{ toposort, has_path_connecting },
+    visit::Topo,
   };
   use std::str::FromStr;
   use packages::FilterMapOptions;
   use wtools::error::
   {
-    for_app::{ Error, Context },
+    for_app::{ Error, Context, format_err },
     err
   };
   use cargo_metadata::
@@ -27,8 +27,8 @@ mod private
     Package
   };
   use petgraph::prelude::{ Dfs, EdgeRef };
-  use petgraph::visit::Topo;
   use former::Former;
+
   use workspace::Workspace;
 
   /// Args for `list` endpoint.
@@ -226,8 +226,8 @@ mod private
   {
     let mut report = ListReport::default();
 
-    let manifest = manifest::open( &args.path_to_manifest.as_ref() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let mut metadata = Workspace::with_crate_dir( manifest.crate_dir() );
+    let manifest = manifest::open( args.path_to_manifest.absolute_path() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let mut metadata = Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | err | ( report.clone(), format_err!( err ) ) )?;
 
     let root_crate = manifest
     .manifest_data
@@ -255,7 +255,11 @@ mod private
 
     let packages_map =  packages::filter
     (
-      &metadata.load().packages_get(),
+      &metadata
+      .load()
+      .map_err( | err | ( report.clone(), format_err!( err ) ) )?
+      .packages_get()
+      .map_err( | err | ( report.clone(), format_err!( err ) ) )?,
       FilterMapOptions{ dependency_filter: Some( Box::new( dep_filter ) ), ..Default::default() }
     );
 

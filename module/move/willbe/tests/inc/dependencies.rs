@@ -15,7 +15,7 @@ fn arrange( asset_name : &str ) -> ( TempDir, Workspace )
 {
   let mut metadata = Workspace::from_current_path().unwrap();
 
-  let root_path = metadata.load().workspace_root();
+  let root_path = metadata.load().unwrap().workspace_root().unwrap();
   let assets_relative_path = std::path::Path::new( ASSETS_PATH );
   let assets_path = root_path.join( assets_relative_path );
 
@@ -23,7 +23,7 @@ fn arrange( asset_name : &str ) -> ( TempDir, Workspace )
   temp.copy_from( assets_path.join( asset_name ), &[ "**" ] ).unwrap();
 
   let temp_crate_dir = CrateDir::try_from( AbsolutePath::try_from( temp.to_path_buf() ).unwrap() ).unwrap();
-  let metadata = Workspace::with_crate_dir( temp_crate_dir );
+  let metadata = Workspace::with_crate_dir( temp_crate_dir ).unwrap();
 
   ( temp, metadata )
 }

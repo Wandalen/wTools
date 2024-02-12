@@ -2,15 +2,18 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use std::fmt::Formatter;
-  use std::path::{ Path, PathBuf };
-  use std::process::
+
+  use std::
   {
-    Command,
-    Stdio,
+    fmt::Formatter,
+    path::{ Path, PathBuf },
+    process::{ Command, Stdio },
   };
-  use wca::wtools::Itertools;
-  use wtools::error;
+  use wtools::
+  {
+    iter::Itertools,
+    error::{ anyhow::{ Context, format_err }, Result },
+  };
 
 
   /// Process command output.
@@ -55,7 +58,7 @@ pub( crate ) mod private
     exec_path : &str,
     current_path : impl Into< PathBuf >,
   )
-  -> error::for_app::Result< CmdReport >
+  -> Result< CmdReport >
   {
     let current_path = current_path.into();
     let ( program, args ) =
@@ -85,7 +88,7 @@ pub( crate ) mod private
     args: Args,
     path : P,
   )
-  -> error::for_app::Result< CmdReport >
+  -> Result< CmdReport >
   where
     AP : AsRef< Path >,
     Args : IntoIterator< Item = Arg >,
@@ -101,18 +104,18 @@ pub( crate ) mod private
     .stderr( Stdio::piped() )
     .current_dir( path )
     .spawn()
-    .expect( "failed to spawn process" );
+    .context( "failed to spawn process" )?;
 
     let output = child
     .wait_with_output()
-    .expect( "failed to wait on child" );
+    .context( "failed to wait on child" )?;
 
     let report = CmdReport
     {
       command : format!( "{} {}", application.display(), args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
       path : path.to_path_buf(),
-      out : String::from_utf8( output.stdout ).expect( "Found invalid UTF-8" ),
-      err : String::from_utf8( output.stderr ).expect( "Found invalid UTF-8" ),
+      out : String::from_utf8( output.stdout ).context( "Found invalid UTF-8" )?,
+      err : String::from_utf8( output.stderr ).context( "Found invalid UTF-8" )?,
     };
 
     if output.status.success()
@@ -121,7 +124,7 @@ pub( crate ) mod private
     }
     else
     {
-      Err( error::for_app::anyhow!( report ) )
+      Err( format_err!( report ) )
     }
   }
 }

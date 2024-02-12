@@ -48,6 +48,18 @@ pub struct TournamentSelection
   pub selection_pressure : f64,
 }
 
+impl Default for TournamentSelection
+{
+  fn default() -> Self 
+  {
+    Self
+    {
+      size : 2,
+      selection_pressure : 0.85,
+    }
+  }
+}
+
 /// Functionality of Individual(potential solution) for optimization with SA and GA.
 pub trait Individual
 {

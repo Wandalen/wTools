@@ -2,16 +2,16 @@
 mod private
 {
   use crate::*;
-  // use std::path::PathBuf;
+
   use wca::{ Args, Props };
-  use wtools::error;
+  use wtools::error::Result;
 
 
   ///
   /// Publish package.
   ///
 
-  pub fn publish( ( args, properties ) : ( Args, Props ) ) -> error::Result< () >
+  pub fn publish( ( args, properties ) : ( Args, Props ) ) -> Result< () >
   {
     let patterns : Vec< _ > = args.get_owned( 0 ).unwrap_or_else( || vec![ "./".into() ] );
 

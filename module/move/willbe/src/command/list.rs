@@ -2,22 +2,27 @@
 mod private
 {
   use crate::*;
-  use std::path::PathBuf;
-  use std::str::FromStr;
-  use std::collections::HashSet;
+
   use { endpoint, wtools };
 
+  use std::
+  {
+    str::FromStr,
+    path::PathBuf,
+    collections::HashSet,
+  };
+
   use wca::{ Args, Props };
-  use endpoint::{ list as l, list::{ ListFormat, ListArgs } };
-  use wtools::error::for_app::Context;
-  use wtools::error;
+  use wtools::error::{ for_app::Context, Result };
+
   use path::AbsolutePath;
+  use endpoint::{ list as l, list::{ ListFormat, ListArgs } };
 
   ///
   /// List workspace packages.
   ///
 
-  pub fn list( ( args, properties ) : ( Args, Props ) ) -> error::Result< () >
+  pub fn list( ( args, properties ) : ( Args, Props ) ) -> Result< () >
   {
     let path_to_workspace : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
     let path_to_workspace = AbsolutePath::try_from( path_to_workspace )?;

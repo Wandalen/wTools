@@ -2,18 +2,21 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use wtools::error;
-  use wtools::error::for_app::Context;
+
+  use std::
+  {
+    io::Read,
+    fmt::Write,
+    time::Duration
+  };
+  use wtools::error::{ for_app::Context, Result };
   use ureq::Agent;
-  use std::time::Duration;
-  use core::fmt::Write;
-  use std::io::Read;
 
   ///
   /// Get data of remote package.
   ///
 
-  pub fn retrieve_bytes< 'a >( name : &'a str, version : &'a str ) -> error::for_app::Result< Vec< u8 > >
+  pub fn retrieve_bytes< 'a >( name : &'a str, version : &'a str ) -> Result< Vec< u8 > >
   {
     let agent: Agent = ureq::AgentBuilder::new()
     .timeout_read( Duration::from_secs( 5 ) )

@@ -22,14 +22,11 @@ fn main()
   .filter_level( log::LevelFilter::max() )
   .try_init();
 
-  let seed : Seed = "seed1".into();
   let board = Board::from( INPUT );
   println!("{board}");
   let initial = optimization::SudokuInitial::new( board );
-  let mut optimizer = HybridOptimizer::new( seed, initial )
-  .set_crossover_operator( BestRowsColumnsCrossover{} )
-  .set_mutation_operator( RandomPairInBlockMutation{} )
-  ;
+  let sudoku_problem = optimization::Problem::new( initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+  let optimizer = HybridOptimizer::new( optimization::Config::default(), sudoku_problem );
 
   let ( reason, solution ) = optimizer.optimize( );
 

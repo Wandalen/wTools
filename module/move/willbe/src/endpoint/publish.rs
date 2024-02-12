@@ -2,16 +2,17 @@
 mod private
 {
   use crate::*;
-  use package::{ DependenciesOptions, DependenciesSort };
+
   use std::
   {
-    collections::HashSet,
+    collections::HashSet, io,
   };
   use core::fmt::Formatter;
-  use workspace::Workspace;
-  use package::{ CrateId, Package };
-  use wtools::error::for_app::Error;
+
+  use wtools::error::for_app::{ Error, anyhow };
   use path::AbsolutePath;
+  use workspace::Workspace;
+  use package::{ CrateId, Package, DependenciesOptions, DependenciesSort };
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -79,13 +80,22 @@ mod private
       let current_path = paths.iter().next().unwrap().clone();
       let dir = CrateDir::try_from( current_path ).map_err( | e | ( report.clone(), e.into() ) )?;
 
-      Workspace::with_crate_dir( dir )
+      Workspace::with_crate_dir( dir ).map_err( | err | ( report.clone(), anyhow!( err ) ) )?
     };
-    report.workspace_root_dir = Some( metadata.workspace_root().try_into().unwrap() );
+    report.workspace_root_dir = Some
+    ( 
+      metadata
+      .workspace_root()
+      .map_err( | err | ( report.clone(), anyhow!( err ) ) )?
+      .try_into()
+      .map_err( | err: io::Error | ( report.clone(), anyhow!( err ) ) )?
+    );
 
     let packages_to_publish : Vec< _ >= metadata
     .load()
+    .map_err( | err | ( report.clone(), anyhow!( err ) ) )?
     .packages_get()
+    .map_err( | err | ( report.clone(), anyhow!( err ) ) )?
     .iter()
     .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path.as_std_path().parent().unwrap() ).unwrap() ) )
     .cloned()
