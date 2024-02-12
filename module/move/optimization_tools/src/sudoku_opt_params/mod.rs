@@ -79,7 +79,7 @@ pub fn find_hybrid_optimal_params< R, S, C, M >
 ) -> Result< nelder_mead::Solution, nelder_mead::Error >
 where  R : RangeBounds< f64 > + Sync,
   S : InitialProblem + Sync + Clone, 
-  C : CrossoverOperator::< Person = < S as InitialProblem>::Person > + Clone,
+  C : CrossoverOperator::< Person = < S as InitialProblem>::Person > + Clone + Sync,
   M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
   M : MutationOperator::< Problem = S > + Sync + Clone,
   TournamentSelection: SelectionOperator<<S as InitialProblem>::Person>
@@ -141,24 +141,8 @@ where  R : RangeBounds< f64 > + Sync,
 }
 
 pub fn optimize_by_time< F, R >( config : OptimalParamsConfig, problem : OptimalProblem< R >, objective_function : F ) -> Result< nelder_mead::Solution, nelder_mead::Error >
-where F : Fn( nelder_mead::Point ), R : RangeBounds< f64 > + Sync
+where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
 {
-  let mut optimizer = nelder_mead::Optimizer::default();
-  optimizer.bounds = problem.bounds;
-  if let Some( start_point ) = problem.starting_point
-  {
-    optimizer.start_point = start_point;
-  }
-
-  if let Some( simplex_size ) = problem.simplex_size
-  {
-    optimizer.set_simplex_size( simplex_size );
-  }
-
-  optimizer.improvement_threshold = config.improvement_threshold;
-  optimizer.max_iterations = config.max_iterations;
-  optimizer.max_no_improvement_steps = config.max_no_improvement_steps;
-
   let objective_function = | case : nelder_mead::Point |
   {
 
@@ -174,6 +158,22 @@ where F : Fn( nelder_mead::Point ), R : RangeBounds< f64 > + Sync
     elapsed.as_secs_f64()
   }; 
 
-  optimizer.optimize( objective_function )
+  let mut optimizer = nelder_mead::Optimizer::new( objective_function );
+  optimizer.bounds = problem.bounds;
+  if let Some( start_point ) = problem.starting_point
+  {
+    optimizer.start_point = start_point;
+  }
+
+  if let Some( simplex_size ) = problem.simplex_size
+  {
+    optimizer.set_simplex_size( simplex_size );
+  }
+
+  optimizer.improvement_threshold = config.improvement_threshold;
+  optimizer.max_iterations = config.max_iterations;
+  optimizer.max_no_improvement_steps = config.max_no_improvement_steps;
+
+  optimizer.optimize()
 }
 
