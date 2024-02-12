@@ -1,6 +1,7 @@
 mod private
 {
   use crate::*;
+
   use std::
   {
     path::Path,
@@ -10,20 +11,29 @@ mod private
   use std::hash::Hash;
   use cargo_metadata::{ Dependency, DependencyKind, Package as PackageMetadata };
   use toml_edit::value;
-  use tools::
-  {
-    process,
-  };
-  use manifest::Manifest;
-  use { cargo, git, version, path, wtools };
+
+  use tools::process;
+  use manifest::{ Manifest, ManifestError };
+  // use { cargo, git, version, path, wtools }; // qqq: why is it required?
   use crates_tools::CrateArchive;
-  use wca::wtools::Itertools; // qqq : use wtools::...!
-  use wtools::error::for_app::{ anyhow, Error, Context };
+
   use workspace::Workspace;
   use path::AbsolutePath;
   use version::BumpReport;
   use packed_crate::local_path;
 
+
+  use wtools::
+  {
+    iter::Itertools,
+    error::
+    {
+      thiserror,
+      Result,
+      for_lib::Error,
+      for_app::{ format_err, Error as wError, Context },
+    }
+  };
 
   ///
   #[ derive( Debug ) ]
@@ -35,17 +45,42 @@ mod private
     Metadata( PackageMetadata ),
   }
 
+  /// Represents errors related to package handling.
+  #[ derive( Debug, Error ) ]
+  pub enum PackageError
+  {
+    /// Manifest error.
+    #[ error( "Manifest error. Reason: {0}." ) ]
+    Manifest( #[ from ] ManifestError ),
+    /// Fail to load metadata.
+    #[ error( "Fail to load metadata." ) ]
+    Metadata,
+    /// Fail to load remote package.
+    #[ error( "Fail to load remote package." ) ]
+    LoadRemotePackage,
+    /// Fail to get crate local path.
+    #[ error( "Fail to get crate local path." ) ]
+    LocalPath,
+    /// Fail to read archive
+    #[ error( "Fail to read archive" ) ]
+    ReadArchive,
+    /// Try to identify something as a package.
+    #[ error( "Not a package" ) ]
+    NotAPackage,
+  }
+
   impl TryFrom< AbsolutePath > for Package
   {
     // qqq : make better errors
-    type Error = Error;
+    // aaa : return `PackageError` instead of `anohow` message
+    type Error = PackageError;
 
     fn try_from( value : AbsolutePath ) -> Result< Self, Self::Error >
     {
-      let manifest =  manifest::open( value.as_ref() )?;
-      if !manifest.package_is()
+      let manifest =  manifest::open( value.clone() )?;
+      if !manifest.package_is()?
       {
-        return Err( anyhow!( "`{}` - not a package", value.as_ref().display() ) );
+        return Err( PackageError::NotAPackage );
       }
 
       Ok( Self::Manifest( manifest ) )
@@ -55,13 +90,14 @@ mod private
   impl TryFrom< Manifest > for Package
   {
     // qqq : make better errors
-    type Error = Error;
+    // aaa : return `PackageError` instead of `anohow` message
+    type Error = PackageError;
 
     fn try_from( value : Manifest ) -> Result< Self, Self::Error >
     {
-      if !value.package_is()
+      if !value.package_is()?
       {
-        return Err( anyhow!( "`{}` - not a package", value.manifest_path.as_ref().display() ) );
+        return Err( PackageError::NotAPackage );
       }
 
       Ok( Self::Manifest( value ) )
@@ -105,74 +141,84 @@ mod private
     }
 
     /// Package name
-    pub fn name( &self ) -> String
+    pub fn name( &self ) -> Result< String, PackageError >
     {
       match self
       {
         Self::Manifest( manifest ) =>
         {
-          let data = manifest.manifest_data.as_ref().unwrap();
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
 
-          data[ "package" ][ "name" ].as_str().unwrap().to_string()
+          // Unwrap safely because of the `Package` type guarantee
+          Ok( data[ "package" ][ "name" ].as_str().unwrap().to_string() )
         }
         Self::Metadata( metadata ) =>
         {
-          metadata.name.clone()
+          Ok( metadata.name.clone() )
         }
       }
     }
 
     /// Package version
-    pub fn version( &self ) -> String
+    pub fn version( &self ) -> Result< String, PackageError >
     {
       match self
       {
         Self::Manifest( manifest ) =>
         {
-          let data = manifest.manifest_data.as_ref().unwrap();
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
 
-          data[ "package" ][ "version" ].as_str().unwrap().to_string()
+          // Unwrap safely because of the `Package` type guarantee
+          Ok( data[ "package" ][ "version" ].as_str().unwrap().to_string() )
         }
         Self::Metadata( metadata ) =>
         {
-          metadata.version.to_string()
+          Ok( metadata.version.to_string() )
         }
       }
     }
 
     /// Check that module is local.
-    pub fn local_is( &self ) -> bool
+    pub fn local_is( &self ) -> Result< bool, ManifestError >
     {
       match self
       {
         Self::Manifest( manifest ) =>
         {
+          // verify that manifest not empty
           manifest.local_is()
         }
         Self::Metadata( metadata ) =>
         {
-          metadata.publish.is_none() || metadata.publish.as_ref().is_some_and( | p | p.is_empty() )
+          Ok( metadata.publish.is_none() || metadata.publish.as_ref().is_some_and( | p | p.is_empty() ) )
         }
       }
     }
 
     /// Returns the `Manifest`
-    pub fn manifest( &self ) -> Manifest
+    pub fn manifest( &self ) -> Result< Manifest, PackageError >
     {
       match self
       {
-        Package::Manifest( manifest ) => manifest.clone(),
-        Package::Metadata( metadata ) => manifest::open( metadata.manifest_path.as_std_path() ).unwrap(),
+        Package::Manifest( manifest ) => Ok( manifest.clone() ),
+        Package::Metadata( metadata ) => manifest::open
+        (
+          AbsolutePath::try_from( metadata.manifest_path.as_path() ).map_err( | _ | PackageError::LocalPath )? )
+          .map_err( | _ | PackageError::Metadata ),
       }
     }
 
     /// Returns the `Metadata`
-    pub fn metadata( &self ) -> PackageMetadata
+    pub fn metadata( &self ) -> Result< PackageMetadata, PackageError >
     {
       match self
       {
-        Package::Manifest( manifest ) => Workspace::with_crate_dir( manifest.crate_dir() ).package_find_by_manifest( &manifest.manifest_path ).unwrap().clone(),
-        Package::Metadata( metadata ) => metadata.clone(),
+        Package::Manifest( manifest ) =>
+        Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | _ | PackageError::Metadata )?
+        .package_find_by_manifest( &manifest.manifest_path )
+        .ok_or_else( || PackageError::Metadata )
+        .cloned(),
+        Package::Metadata( metadata ) => Ok( metadata.clone() ),
       }
     }
   }
@@ -290,10 +336,10 @@ mod private
   ///
   /// Returns:
   /// Returns a result containing a report indicating the result of the operation.
-  pub fn publish_single( package : &Package, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
+  pub fn publish_single( package : &Package, dry : bool ) -> Result< PublishReport, ( PublishReport, wError ) >
   {
     let mut report = PublishReport::default();
-    if package.local_is()
+    if package.local_is().map_err( | err | ( report.clone(), format_err!( err ) ) )?
     {
       return Ok( report );
     }
@@ -303,31 +349,32 @@ mod private
     let output = cargo::package( &package_dir, false ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
     if output.err.contains( "not yet committed")
     {
-      return Err(( report, anyhow!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
+      return Err(( report, format_err!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
     }
     report.get_info = Some( output );
 
-    if publish_need( &package )
+    if publish_need( &package ).map_err( | err | (report.clone(), format_err!( err ) ) )?
     {
       report.publish_required = true;
 
       let mut files_changed_for_bump = vec![];
+      let mut manifest = package.manifest().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
       // bump a version in the package manifest
-      let bump_report = version::bump( &mut package.manifest(), dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+      let bump_report = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
       files_changed_for_bump.push( package.manifest_path() );
-      let new_version = package.version();
+      let new_version = package.version().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
 
-      let package_name = package.name();
+      let package_name = package.name().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
 
       // bump the package version in dependents (so far, only workspace)
-      let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( package.crate_dir() ).workspace_root().try_into().unwrap();
+      let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( package.crate_dir() ).map_err( | err | ( report.clone(), err ) )?.workspace_root().map_err( | err | ( report.clone(), format_err!( err ) ) )?.try_into().unwrap();
       let workspace_manifest_path = workspace_manifest_dir.join( "Cargo.toml" );
 
       // qqq: should be refactored
       if !dry
       {
-        let mut workspace_manifest = manifest::open( workspace_manifest_path.as_ref() ).map_err( | e | ( report.clone(), e ) )?;
-        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().unwrap();
+        let mut workspace_manifest = manifest::open( workspace_manifest_path.clone() ).map_err( | e | ( report.clone(), format_err!( e ) ) )?;
+        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().ok_or_else( || ( report.clone(), format_err!( PackageError::Manifest( ManifestError::EmptyManifestData ) ) ) )?;
         workspace_manifest_data
         .get_mut( "workspace" )
         .and_then( | workspace | workspace.get_mut( "dependencies" ) )
@@ -336,14 +383,16 @@ mod private
         (
           | dependency |
             {
-              let previous_version = dependency.get( "version" ).and_then( | v | v.as_str() ).unwrap().to_string();
-              if previous_version.starts_with( '~' )
+              if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
               {
-                dependency[ "version" ] = value( format!( "~{new_version}" ) );
+                if previous_version.starts_with('~')
+                {
+                  dependency["version"] = value(format!("~{new_version}"));
+                }
               }
             }
         );
-        workspace_manifest.store().unwrap();
+        workspace_manifest.store().map_err( | err | ( report.clone(), err.into() ) )?;
       }
 
       files_changed_for_bump.push( workspace_manifest_path );
@@ -448,7 +497,7 @@ mod private
     manifest : &Package,
     graph: &mut HashMap< CrateId, HashSet< CrateId > >,
     opts: DependenciesOptions
-  ) -> wtools::error::Result< CrateId >
+  ) -> Result< CrateId >
   {
     let DependenciesOptions
     {
@@ -462,9 +511,9 @@ mod private
     let manifest_path = &manifest.manifest_path();
 
     let package = workspace
-    .load()
+    .load()?
     .package_find_by_manifest( &manifest_path )
-    .ok_or( anyhow!( "Package not found in the workspace with path: `{}`", manifest_path.as_ref().display() ) )?;
+    .ok_or( format_err!( "Package not found in the workspace with path: `{}`", manifest_path.as_ref().display() ) )?;
 
     let deps = package
     .dependencies
@@ -502,7 +551,7 @@ mod private
   /// # Returns
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
-  pub fn dependencies( workspace : &mut Workspace, manifest : &Package, opts: DependenciesOptions ) -> wtools::error::Result< Vec< CrateId > >
+  pub fn dependencies( workspace : &mut Workspace, manifest : &Package, opts: DependenciesOptions ) -> Result< Vec< CrateId > >
   {
     let mut graph = HashMap::new();
     let root = _dependencies( workspace, manifest, &mut graph, opts.clone() )?;
@@ -525,7 +574,7 @@ mod private
       }
       DependenciesSort::Topological =>
       {
-        graph::toposort( graph::construct( &graph ) ).into_iter().filter( | x | x != &root ).collect()
+        graph::toposort( graph::construct( &graph ) ).map_err( | err | format_err!( "{}", err ) )?.into_iter().filter( | x | x != &root ).collect()
       },
     };
 
@@ -544,7 +593,7 @@ mod private
   ///
   /// Panics if the manifest is not loaded or local package is not packed.
 
-  pub fn publish_need( package : &Package ) -> bool
+  pub fn publish_need( package : &Package ) -> Result< bool, PackageError >
   {
     // These files are ignored because they can be safely changed without affecting functionality
     //
@@ -552,25 +601,26 @@ mod private
     // - `Cargo.toml.orig` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
     const IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml.orig" ];
 
-    let name = package.name();
-    let version = package.version();
-    let local_package_path = local_path( &name, &version, package.crate_dir() );
+    let name = package.name()?;
+    let version = package.version()?;
+    let local_package_path = local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )?;
 
     // qqq : for Bohdan : bad, properly handle errors
-    let local_package = CrateArchive::read( local_package_path ).expect( "Failed to read local package. Please, run `cargo package` before." );
+    // aaa : return result instead of panic
+    let local_package = CrateArchive::read( local_package_path ).map_err( | _ | PackageError::ReadArchive )?;
     let remote_package = match CrateArchive::download_crates_io( name, version )
     {
       Ok( archive ) => archive,
       // qqq: fix. we don't have to know about the http status code
-      Err( ureq::Error::Status( 403, _ ) ) => return true,
-      _ => /* return an error */ panic!( "Failed to load remote package" ),
+      Err( ureq::Error::Status( 403, _ ) ) => return Ok( true ),
+      _ => return Err( PackageError::LoadRemotePackage ),
     };
 
     let filter_ignore_list = | p : &&Path | !IGNORE_LIST.contains( &p.file_name().unwrap().to_string_lossy().as_ref() );
     let local_package_files : Vec< _ > = local_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
     let remote_package_files : Vec< _ > = remote_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
 
-    if local_package_files != remote_package_files { return true; }
+    if local_package_files != remote_package_files { return Ok( true ); }
 
     let mut is_same = true;
     for path in local_package_files
@@ -582,11 +632,10 @@ mod private
       is_same &= local == remote;
     }
 
-    !is_same
+    Ok( !is_same )
   }
 
 }
-
 
 //
 
@@ -596,6 +645,7 @@ crate::mod_interface!
   protected use PublishReport;
   protected use publish_single;
   protected use Package;
+  protected use PackageError;
 
   protected use publish_need;
 
@@ -603,5 +653,4 @@ crate::mod_interface!
   protected use DependenciesSort;
   protected use DependenciesOptions;
   protected use dependencies;
-
 }

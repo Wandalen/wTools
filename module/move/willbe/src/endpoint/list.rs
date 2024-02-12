@@ -2,29 +2,28 @@
 mod private
 {
   use crate::*;
+
   use std::fmt::Formatter;
   use petgraph::
   {
-    algo::toposort,
-    algo::has_path_connecting,
-    Graph
+    prelude::*,
+    algo::{ toposort, has_path_connecting },
+    visit::Topo,
   };
   use std::str::FromStr;
-  // use anyhow::Context;
-  use packages::FilterMapOptions;
-  use wtools::error::
-  {
-    for_app::{ Error, Context },
-    err
-  };
   use cargo_metadata::
   {
     Dependency,
     DependencyKind,
     Package
   };
-  use petgraph::prelude::{ Dfs, EdgeRef };
-  use petgraph::visit::Topo;
+
+  use wtools::error::
+  {
+    for_app::{ Error, Context, format_err },
+    err
+  };
+  use packages::FilterMapOptions;
   use workspace::Workspace;
 
   /// Args for `list` endpoint.
@@ -163,12 +162,12 @@ mod private
   /// List workspace packages.
   ///
 
-  pub fn list( path_to_manifest : CrateDir, format : ListFormat, filter : ListFilter ) -> Result< ListReport, ( ListReport, Error ) >
+  pub fn list( crate_dir : CrateDir, format : ListFormat, filter : ListFilter ) -> Result< ListReport, ( ListReport, Error ) >
   {
     let mut report = ListReport::default();
 
-    let manifest = manifest::open( &path_to_manifest.as_ref() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let mut metadata = Workspace::with_crate_dir( manifest.crate_dir() );
+    let manifest = manifest::open( crate_dir.absolute_path() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let mut metadata = Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | err | ( report.clone(), format_err!( err ) ) )?;
 
     let root_crate = manifest
     .manifest_data
@@ -201,7 +200,11 @@ mod private
 
     let packages_map =  packages::filter
     (
-      &metadata.load().packages_get(),
+      &metadata
+      .load()
+      .map_err( | err | ( report.clone(), format_err!( err ) ) )?
+      .packages_get()
+      .map_err( | err | ( report.clone(), format_err!( err ) ) )?,
       FilterMapOptions{ dependency_filter: dep_filter, ..Default::default() }
     );
 

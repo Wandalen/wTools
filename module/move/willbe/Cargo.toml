@@ -40,9 +40,9 @@ error_tools = { workspace = true, features = [ "default" ] }
 flate2 = "~1.0"
 former = { workspace = true, features = [ "default" ] }
 globwalk = "~0.8"
+iter_tools = { workspace = true, features = [ "default" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 wca = { workspace = true, features = [ "default" ] }
-anyhow = "~1.0"
 toml_edit = "~0.14"
 petgraph = "~0.6"
 ptree = "~0.4"
