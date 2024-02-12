@@ -2,7 +2,11 @@
 mod private
 {
   use crate::*;
-  use std::fmt::Formatter;
+  use std::
+  {
+    fmt::Formatter,
+    collections::HashSet,
+  };
   use petgraph::
   {
     algo::toposort,
@@ -10,7 +14,6 @@ mod private
     Graph
   };
   use std::str::FromStr;
-  // use anyhow::Context;
   use packages::FilterMapOptions;
   use wtools::error::
   {
@@ -25,6 +28,7 @@ mod private
   };
   use petgraph::prelude::{ Dfs, EdgeRef };
   use petgraph::visit::Topo;
+  use former::Former;
   use workspace::Workspace;
 
   /// Args for `list` endpoint.
@@ -53,6 +57,44 @@ mod private
 
       Ok( value )
     }
+  }
+
+  /// Enum representing the different dependency categories.
+  ///
+  /// These categories include:
+  /// - `Primary`: This category represents primary dependencies.
+  /// - `Dev`: This category represents development dependencies.
+  /// - `Build`: This category represents build-time dependencies.
+  #[ derive( Debug, Copy, Clone, Hash, Eq, PartialEq ) ]
+  pub enum DependencyCategory
+  {
+    /// Represents the primary dependencies, i.e., libraries or packages that
+    /// are required for your code to run. These are typically listed in your
+    /// `Cargo.toml`'s `[dependencies]` section.
+    Primary,
+    /// Represents the development dependencies. These are used for compiling
+    /// tests, examples, or benchmarking code. They are not used when compiling
+    /// the normal application or library. These are typically listed in your
+    /// `Cargo.toml`'s `[dev-dependencies]` section.
+    Dev,
+    /// Represents build-time dependencies. These are used only to compile
+    /// build scripts (`build.rs`) but not for the package code itself. These
+    /// are typically listed in your `Cargo.toml`'s `[build-dependencies]` section.
+    Build,
+  }
+
+  /// Enum representing the source of a dependency.
+  ///
+  /// This enum has the following values:
+  /// * `Local` - Represents a dependency located locally.
+  /// * `Remote` - Represents a dependency fetched from a remote source.
+  #[ derive( Debug, Copy, Clone, Hash, Eq, PartialEq ) ]
+  pub enum DependencySource
+  {
+    /// Represents a dependency that is located on the local file system.
+    Local,
+    /// Represents a dependency that is to be fetched from a remote source.
+    Remote,
   }
 
   /// Args for `list` endpoint.
@@ -149,7 +191,7 @@ mod private
       {
         ListReport::Tree { graph, names } => for n in names
         {
-          ptree::graph::write_graph_with(&graph, *n, Io2FmtWrite { f }, &ptree::PrintConfig::from_env() ).unwrap();
+          ptree::graph::write_graph_with( &graph, *n, Io2FmtWrite { f }, &ptree::PrintConfig::from_env() ).unwrap();
         },
         ListReport::List ( list ) => for ( i ,e ) in list.iter().enumerate() { writeln!( f, "{i}) {e}" )? },
         _ => {},
@@ -159,15 +201,32 @@ mod private
     }
   }
 
+  /// A struct representing the arguments for listing crates.
+  ///
+  /// This struct is used to pass the necessary arguments for listing crates. It includes the
+  /// following fields:
+  ///
+  /// - `path_to_manifest`: A `CrateDir` representing the path to the manifest of the crates.
+  /// - `format`: A `ListFormat` enum representing the desired format of the output.
+  /// - `dependency_sources`: A `HashSet` of `DependencySource` representing the sources of the dependencies.
+  #[ derive( Debug, Former ) ]
+  pub struct ListArgs
+  {
+    path_to_manifest : CrateDir,
+    format : ListFormat,
+    dependency_sources: HashSet< DependencySource >,
+    dependency_categories: HashSet< DependencyCategory >,
+  }
+
   ///
   /// List workspace packages.
   ///
 
-  pub fn list( path_to_manifest : CrateDir, format : ListFormat, filter : ListFilter ) -> Result< ListReport, ( ListReport, Error ) >
+  pub fn list( args : ListArgs ) -> Result< ListReport, ( ListReport, Error ) >
   {
     let mut report = ListReport::default();
 
-    let manifest = manifest::open( &path_to_manifest.as_ref() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let manifest = manifest::open( &args.path_to_manifest.as_ref() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
     let mut metadata = Workspace::with_crate_dir( manifest.crate_dir() );
 
     let root_crate = manifest
@@ -180,36 +239,31 @@ mod private
 
     // let packages_map =  metadata.packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
 
-    let dep_filter: Option< Box< dyn Fn( &Package, &Dependency ) -> bool > > = match filter
+    let dep_filter = move | _p: &Package, d: &Dependency |
     {
-      ListFilter::Nothing =>
-      // qqq: Dev dependencies do loop in the graph, but it would be great if there was some way around that
-      {
-        Some
-          (
-            Box::new( | _p: &Package, d: &Dependency | d.kind != DependencyKind::Development )
-          )
-      }
-      ListFilter::Local =>
-      {
-        Some
-        (
-          Box::new( | _p: &Package, d: &Dependency | d.path.is_some() && d.kind != DependencyKind::Development )
-        )
-      }
+      (
+        args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind == DependencyKind::Normal
+        || args.dependency_categories.contains( &DependencyCategory::Dev ) && d.kind == DependencyKind::Development
+        || args.dependency_categories.contains( &DependencyCategory::Build ) && d.kind == DependencyKind::Build
+      )
+      &&
+      (
+        args.dependency_sources.contains( &DependencySource::Remote ) && d.path.is_none()
+        || args.dependency_sources.contains( &DependencySource::Local ) && d.path.is_some()
+      )
     };
 
     let packages_map =  packages::filter
     (
       &metadata.load().packages_get(),
-      FilterMapOptions{ dependency_filter: dep_filter, ..Default::default() }
+      FilterMapOptions{ dependency_filter: Some( Box::new( dep_filter ) ), ..Default::default() }
     );
 
     let graph = graph::construct( &packages_map );
 
     let sorted = toposort( &graph, None ).map_err( | e | { use std::ops::Index; ( report.clone(), err!( "Failed to process toposort for package: {:?}", graph.index( e.node_id() ) ) ) } )?;
 
-    match format
+    match args.format
     {
       ListFormat::Tree if root_crate.is_empty() =>
       {
@@ -281,6 +335,12 @@ mod private
 
 crate::mod_interface!
 {
+  /// Arguments for `list` endpoint.
+  protected use ListArgs;
+  /// Represents where a dependency located.
+  protected use DependencySource;
+  /// Represents the category of a dependency.
+  protected use DependencyCategory;
   /// Argument for `list` endpoint. Sets the output format.
   protected use ListFormat;
   /// Argument for `list` endpoint. Sets filter(local or all) packages should be in the output.
