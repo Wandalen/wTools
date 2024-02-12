@@ -5,6 +5,7 @@ use crate::*;
 #[ cfg( feature="static_plot" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };
 use iter_tools::Itertools;
+use std::ops::RangeInclusive;
 use rayon::iter::{ ParallelIterator, IndexedParallelIterator};
 use deterministic_rand::{ Seed, seq::{ SliceRandom, IteratorRandom } };
 
@@ -16,6 +17,8 @@ mod sim_anneal;
 pub use sim_anneal::*;
 
 use derive_tools::Display;
+
+use self::hybrid_opt_params::OptimalProblem;
 
 
 /// Pause execution of optimizer.
@@ -144,17 +147,17 @@ impl< S : InitialProblem, C, M > Problem< S, C, M >
 #[ derive( Debug ) ]
 pub struct HybridOptimizer< S : InitialProblem, C, M >
 {
+
   config : Config,
 
   problem : Problem< S, C, M >,
 }
 
-
 impl< S : InitialProblem + Sync, C : CrossoverOperator::< Person = < S as InitialProblem>::Person >, M > HybridOptimizer< S, C, M >
 where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
   M : MutationOperator::< Problem = S > + Sync
 {
-
+  /// Create new instance of hybrid optimizer using given problem and configuration.
   pub fn new( config : Config, problem : Problem<S, C, M> ) -> Self
   {
     Self
@@ -487,4 +490,47 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
     }
     costs[..].std_dev().into()
   }
+
+}
+
+pub fn starting_params_for_hybrid() -> Result< OptimalProblem< RangeInclusive< f64 > >, hybrid_opt_params::Error >
+{
+  let opt_problem = OptimalProblem::new()
+  .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?
+  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=2000.0 ), Some( 300.0 ), Some( 20.0 ) )?
+  .add( Some( String::from( "mutation rate" ) ), Some( 0.0..=0.5 ), Some( 0.25 ), Some( 0.1 ) )?
+  .add( Some( String::from( "crossover rate" ) ), Some( 0.0..=0.5 ), Some( 0.5 ), Some( 0.2 ) )?
+  .add( Some( String::from( "population size" ) ), Some( 1.0..=1000.0 ), Some( 300.0 ), Some( 200.0 ) )?
+  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=5000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
+  ;
+
+  Ok( opt_problem )
+}
+
+pub fn starting_params_for_sa() -> Result< OptimalProblem< RangeInclusive< f64 > >, hybrid_opt_params::Error >
+{
+  let opt_problem = OptimalProblem::new()
+  .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?
+  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=2000.0 ), Some( 300.0 ), Some( 20.0 ) )?
+  .add( Some( String::from( "mutation rate" ) ), Some( 1.0..=1.0 ), Some( 1.0 ), Some( 0.0 ) )?
+  .add( Some( String::from( "crossover rate" ) ), Some( 0.0..=0.0 ), Some( 0.0 ), Some( 0.0 ) )?
+  .add( Some( String::from( "population size" ) ), Some( 1.0..=1.0 ), Some( 1.0 ), Some( 0.0 ) )?
+  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=10000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
+  ;
+
+  Ok( opt_problem )
+}
+
+pub fn starting_params_for_ga() -> Result< OptimalProblem< RangeInclusive< f64 > >, hybrid_opt_params::Error >
+{
+  let opt_problem = OptimalProblem::new()
+  .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?
+  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=2000.0 ), Some( 300.0 ), Some( 20.0 ) )?
+  .add( Some( String::from( "mutation rate" ) ), Some( 0.1..=0.5 ), Some( 0.25 ), Some( 0.1 ) )?
+  .add( Some( String::from( "crossover rate" ) ), Some( 0.1..=0.5 ), Some( 0.5 ), Some( 0.2 ) )?
+  .add( Some( String::from( "population size" ) ), Some( 10.0..=5000.0 ), Some( 300.0 ), Some( 200.0 ) )?
+  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=5000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
+  ;
+
+  Ok( opt_problem )
 }

@@ -10,7 +10,7 @@ fn power_two() -> Result< (), nelder_mead::Error >
   let mut optimizer = nelder_mead::Optimizer::new( f );
   optimizer.bounds = vec![ Some( -1.0..=8.0 ), Some( 2.0..=4.0 ), Some( 3.0..=6.0 ) ];
   optimizer.start_point = Point::new( vec![ 3.0, 3.0, 3.0 ] );
-  optimizer.set_simplex_size( vec![ 0.1, 0.1, 0.1 ] );
+  optimizer.set_simplex_size( vec![ Some( 0.1 ), Some( 0.1 ), Some( 0.1 ) ] );
 
   let res = optimizer.optimize()?;
   assert!( res.objective.abs() < 10e-6 );
@@ -23,7 +23,7 @@ fn sin_cos() -> Result< (), nelder_mead::Error >
 {
   let f = | x : Point | x.coords[ 0 ].sin() * x.coords[ 1 ].cos() * ( 1.0 / ( x.coords[ 2 ].abs() + 1.0 ) );
   let mut optimizer: nelder_mead::Optimizer< Range< f64 >, _ > = nelder_mead::Optimizer::new( f );
-  optimizer.set_simplex_size( vec![ 0.1, 0.1, 0.1 ] );
+  optimizer.set_simplex_size( vec![ Some( 0.1 ), Some( 0.1 ), Some( 0.1 ) ] );
 
   let res = optimizer.optimize()?;
 
@@ -39,7 +39,7 @@ fn rosenbrock() -> Result< (), nelder_mead::Error >
   let f = | x : Point | ( 1.0 - x.coords[ 0 ] ).powi( 2 ) + 100.0 * ( x.coords[ 1 ] - x.coords[ 0 ].powi( 2 )).powi( 2 ) ;
   let mut optimizer: nelder_mead::Optimizer< Range< f64 >, _ > = nelder_mead::Optimizer::new( f );
   optimizer.start_point = Point::new( vec![ 0.0, 0.0 ] );
-  optimizer.set_simplex_size( vec![ 0.1, 0.1 ] );
+  optimizer.set_simplex_size( vec![ Some( 0.1 ), Some( 0.1 ) ] );
 
   let res = optimizer.optimize()?;
 
@@ -65,7 +65,7 @@ fn rosenbrock_extended() -> Result< (), nelder_mead::Error >
   };
   let mut optimizer: nelder_mead::Optimizer< Range< f64 >, _ > = nelder_mead::Optimizer::new( f );
   optimizer.start_point = Point::new( vec![ 10.0; 31 ] );
-  optimizer.set_simplex_size( vec![ 0.1; 31 ] );
+  optimizer.set_simplex_size( vec![ Some( 0.1 ); 31 ] );
 
   let start1 = std::time::Instant::now();
   let res1 = optimizer.optimize()?;
@@ -88,7 +88,7 @@ fn himmelblau() -> Result< (), nelder_mead::Error >
   let f = | x : Point | ( x.coords[ 0 ].powi( 2 ) + x.coords[ 1 ] -11.0 ).powi( 2 ) + ( x.coords[ 0 ] + x.coords[ 1 ].powi( 2 ) - 7.0 ).powi( 2 ) ;
   let mut optimizer: nelder_mead::Optimizer< Range< f64 >, _ > = nelder_mead::Optimizer::new( f );
   optimizer.start_point = Point::new( vec![ 0.0, 0.0 ] );
-  optimizer.set_simplex_size( vec![ 0.1, 0.1 ] );
+  optimizer.set_simplex_size( vec![ Some( 0.1 ); 2 ] );
   optimizer.max_no_improvement_steps = 15;
 
   let res = optimizer.optimize()?;

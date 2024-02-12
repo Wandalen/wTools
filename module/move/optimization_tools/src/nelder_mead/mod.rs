@@ -65,26 +65,6 @@ pub struct Optimizer< R, F >
   pub sigma : f64,
 }
 
-// impl< R : RangeBounds< f64 > > Default for Optimizer< R,  >
-// {
-//   fn default() -> Self 
-//   {
-//     Self
-//     {
-//       bounds : Vec::new(),
-//       start_point : Point::new( Vec::new() ),
-//       initial_simplex : Simplex { points : Vec::new() },
-//       improvement_threshold : 10e-6,
-//       max_iterations : 1000,
-//       max_no_improvement_steps : 10,
-//       alpha : 1.0,
-//       gamma : 2.0,
-//       rho : -0.5,
-//       sigma : 0.5,
-//     }
-//   }
-// }
-
 impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< R, F >
 {
   pub fn new( objective_function : F ) -> Self 
@@ -112,13 +92,20 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
   }
 
   /// Set staring point for optimizer.
-  pub fn set_starting_point( &mut self, p : Point )
+  pub fn set_starting_point( &mut self, p : Vec< Option< f64 > > )
   {
-    self.start_point = p;
+    self.calculate_start_point();
+    for i in 0..p.len()
+    {
+      if let Some( value ) = p[ i ]
+      {
+        self.start_point.coords[ i ] = value
+      }
+    }
   }
 
   /// Initialize simplex by providing its size for optimizer.
-  pub fn set_simplex_size( &mut self, size : Vec< f64 > )
+  pub fn set_simplex_size( &mut self, size : Vec< Option< f64 > > )
   {
     if self.start_point.coords.len() == 0
     {
@@ -132,17 +119,17 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
       }
     }
 
-    let mut points = vec![ self.start_point.clone() ];
+    self.calculate_regular_simplex();
+
     for i in 0..size.len()
     {
-      let mut x = self.start_point.clone();
-      x.coords[ i ] += size[ i ];
-      points.push( x );
-
+      if let Some( size ) = size[ i ]
+      {
+        let mut x = self.start_point.clone();
+        x.coords[ i ] += size;
+        self.initial_simplex.points[ i + 1 ] = x;
+      }
     }
-
-    self.initial_simplex = Simplex { points };
-
   }
 
   /// Checks if point is in bounded region.

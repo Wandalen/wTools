@@ -2,6 +2,8 @@
 //! 
 
 use std::ops::RangeBounds;
+use iter_tools::Itertools;
+
 use crate::
 { 
   optimization::{ 
@@ -63,9 +65,60 @@ impl Default for OptimalParamsConfig
 
 pub struct OptimalProblem< R : RangeBounds< f64 > >
 {
+  pub params_names : Vec< Option< String > >,
   pub bounds : Vec< Option< R > >,
-  pub starting_point : Option< nelder_mead::Point >,
-  pub simplex_size : Option< Vec< f64 > >,
+  pub starting_point : Vec< Option< f64 > >,
+  pub simplex_size : Vec< Option< f64 > >,
+}
+
+impl< 'a, R : RangeBounds< f64 > > OptimalProblem< R >
+{
+  pub fn new() -> Self
+  {
+    Self
+    {
+      params_names : Vec::new(),
+      bounds : Vec::new(),
+      starting_point : Vec::new(),
+      simplex_size : Vec::new(),
+    }
+  }
+
+  pub fn add
+  ( 
+    mut self,
+    name : Option< String >, 
+    bounds : Option< R >, 
+    start_value : Option< f64 >, 
+    simplex_size : Option< f64 >, 
+  ) -> Result< Self, Error >
+  {
+    if let Some( ref name ) = name
+    {
+      if self.params_names.iter().cloned().filter_map( | n | n ).contains( name )
+      {
+        return Err( Error::NameError );
+      }
+    }
+
+    if let Some( start_value ) = start_value
+    {
+      if let Some( ref bounds ) = bounds
+      {
+        if !bounds.contains( &start_value )
+        {
+          return Err( Error::OutOfBoundsError );
+        }
+      }
+    }
+
+    self.params_names.push( name );
+    self.bounds.push( bounds );
+    self.simplex_size.push( simplex_size );
+    self.starting_point.push( start_value );
+
+    Ok( self )
+  }
 }
 
 /// Calculate optimal params for hybrid optimization.
@@ -158,15 +211,8 @@ where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
 
   let mut optimizer = nelder_mead::Optimizer::new( objective_function );
   optimizer.bounds = problem.bounds;
-  if let Some( start_point ) = problem.starting_point
-  {
-    optimizer.start_point = start_point;
-  }
-
-  if let Some( simplex_size ) = problem.simplex_size
-  {
-    optimizer.set_simplex_size( simplex_size );
-  }
+  optimizer.set_starting_point( problem.starting_point );
+  optimizer.set_simplex_size( problem.simplex_size );
 
   optimizer.improvement_threshold = config.improvement_threshold;
   optimizer.max_iterations = config.max_iterations;
@@ -175,3 +221,12 @@ where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
   optimizer.optimize()
 }
 
+/// Possible error when building NMOptimizer.
+#[ derive( thiserror::Error, Debug ) ]
+pub enum Error {
+  #[ error( "parameter with similar name exists" ) ]
+  NameError,
+
+  #[ error( "starting value is out of bounds" ) ]
+  OutOfBoundsError,
+}
