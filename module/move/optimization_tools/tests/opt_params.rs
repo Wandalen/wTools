@@ -1,4 +1,4 @@
-use optimization_tools::{ nelder_mead::Point, sudoku::Board, sudoku_opt_params::{ OptimalParamsConfig, OptimalProblem }, * };
+use optimization_tools::{ nelder_mead::Point, sudoku::Board, hybrid_opt_params::{ OptimalParamsConfig, OptimalProblem }, * };
 use optimization::*;
 
 mod tools;
@@ -35,7 +35,7 @@ fn find_opt_params_sudoku()
 
   let hybrid_problem = Problem::new( initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
 
-  let res = sudoku_opt_params::find_hybrid_optimal_params( config, opt_problem, hybrid_problem );
+  let res = hybrid_opt_params::find_hybrid_optimal_params( config, opt_problem, hybrid_problem );
   assert!( res.is_ok() );
 
 }
@@ -58,7 +58,7 @@ fn find_opt_params_tsp()
     simplex_size : Some( vec![ 0.0002, 20.0, 0.1, 0.2, 5.0, 200.0, 300.0 ] ),
   };
 
-  let res = sudoku_opt_params::find_hybrid_optimal_params( config, opt_problem, hybrid_problem );
+  let res = hybrid_opt_params::find_hybrid_optimal_params( config, opt_problem, hybrid_problem );
   assert!( res.is_ok() );
 
 }

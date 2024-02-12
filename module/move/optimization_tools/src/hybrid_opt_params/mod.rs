@@ -18,8 +18,6 @@ use crate::
   nelder_mead,
 };
 
-mod sudoku_sets;
-
 /// Level of difficulty of sudoku board.
 #[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
 pub enum Level
