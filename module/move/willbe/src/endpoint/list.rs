@@ -31,6 +31,7 @@ mod private
   use former::Former;
 
   use workspace::Workspace;
+  use path::AbsolutePath;
 
   /// Args for `list` endpoint.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -301,7 +302,37 @@ mod private
     }
   }
 
-  fn process_deps( workspace : &Workspace, dep: &Dependency, args : &ListArgs, visited : &mut HashSet< String > ) -> ListNodeReport
+  fn process_package_dependency
+  (
+    workspace : &Workspace,
+    package : &Package,
+    args : &ListArgs,
+    dep_rep : &mut ListNodeReport,
+    visited : &mut HashSet< String >
+  )
+  {
+    for dependency in &package.dependencies
+    {
+      if dependency.path.is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
+      if dependency.path.is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
+      let dep_id = format!( "{}+{}+{}", dependency.name, dependency.req, dependency.path.as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
+
+      let mut temp_vis = visited.clone();
+      let dependency_rep = process_dependency( workspace, dependency, args, &mut temp_vis );
+
+      match dependency.kind
+      {
+        DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) => dep_rep.normal_dependencies.push( dependency_rep ),
+        DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) => dep_rep.dev_dependencies.push( dependency_rep ),
+        DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) => dep_rep.build_dependencies.push( dependency_rep ),
+        _ => { visited.remove( &dep_id ); std::mem::swap( &mut temp_vis, visited ); }
+      }
+
+      *visited = std::mem::take( &mut temp_vis );
+    }
+  }
+
+  fn process_dependency( workspace : &Workspace, dep: &Dependency, args : &ListArgs, visited : &mut HashSet< String > ) -> ListNodeReport
   {
     let mut dep_rep = ListNodeReport
     {
@@ -313,8 +344,9 @@ mod private
       build_dependencies : vec![],
     };
 
+    let dep_id = format!( "{}+{}+{}", dep.name, dep.req, dep.path.as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
     // if this is a cycle (we have visited this node before)
-    if visited.contains( &dep.name )
+    if visited.contains( &dep_id )
     {
       dep_rep.name = format!( "{} (*)", dep_rep.name );
 
@@ -322,38 +354,29 @@ mod private
     }
 
     // if we have not visited this node before, mark it as visited
-    visited.insert( dep.name.clone() );
+    visited.insert( dep_id );
     if let Some( path ) = &dep.path
     {
       if let Some( package ) = workspace.package_find_by_manifest( path.as_std_path().join( "Cargo.toml" ) )
       {
-        // qqq: DRY
-        for dependency in &package.dependencies {
-          if dependency.path.is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
-          if dependency.path.is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
-
-          let mut temp_vis = visited.clone();
-          let dependency_rep = process_deps( workspace, dependency, args, &mut temp_vis );
-
-          match dependency.kind
-          {
-            DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) =>
-              dep_rep.normal_dependencies.push( dependency_rep ),
-            DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) =>
-              dep_rep.dev_dependencies.push( dependency_rep ),
-            DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) =>
-              dep_rep.build_dependencies.push( dependency_rep ),
-            _ => { visited.remove( &dependency.name ); std::mem::swap( &mut temp_vis, visited ); }
-          };
-          *visited = std::mem::take( &mut temp_vis );
-        }
+        process_package_dependency( workspace, package, args, &mut dep_rep, visited );
       }
     }
 
-    // once we have processed all dependencies of this node, we can mark it as unvisited
-    // visited.remove( &dep.name );
-
     dep_rep
+  }
+
+  trait ErrWith< T, T1, E >
+  {
+    fn err_with( self, v : T ) -> std::result::Result< T1, ( T, E ) >;
+  }
+
+  impl< T, T1, E > ErrWith< T, T1, E > for Result< T1, E >
+  {
+    fn err_with( self, v : T ) -> Result< T1, ( T, E ) >
+    {
+      self.map_err( | e | ( v, e ) )
+    }
   }
 
   /// -
@@ -361,52 +384,47 @@ mod private
   {
     let mut report = ListReportV2::default();
 
-    let manifest = manifest::open( args.path_to_manifest.absolute_path() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let metadata = Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | err | ( report.clone(), format_err!( err ) ) )?;
+    let manifest = manifest::open( args.path_to_manifest.absolute_path() ).context( "List of packages by specified manifest path" ).err_with( report.clone() )?;
+    let metadata = Workspace::with_crate_dir( manifest.crate_dir() ).err_with( report.clone() )?;
 
-    let root_crate = manifest.manifest_path;
+    let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
 
+    let tree_package_report = | path : AbsolutePath, report : &mut ListReportV2, visited : &mut HashSet< String > |
+    {
+      let package = metadata.package_find_by_manifest( path ).unwrap();
+      let mut package_report = ListNodeReport
+      {
+        name: package.name.clone(),
+        version: Some( package.version.to_string() ),
+        path: Some( package.manifest_path.clone().into_std_path_buf() ),
+        normal_dependencies: vec![],
+        dev_dependencies: vec![],
+        build_dependencies: vec![],
+      };
+
+      process_package_dependency( &metadata, package, &args, &mut package_report, visited );
+
+      *report = match report
+      {
+        ListReportV2::Tree( ref mut v ) => ListReportV2::Tree( { v.extend([ package_report ]); v.clone() } ),
+        ListReportV2::Empty => ListReportV2::Tree( vec![ package_report ] ),
+      };
+    };
     match args.format
     {
+      ListFormat::Tree if is_package =>
+      {
+        let mut visited = HashSet::new();
+        tree_package_report( manifest.manifest_path, &mut report, &mut visited )
+      }
       ListFormat::Tree =>
       {
-        let package = metadata.package_find_by_manifest( root_crate ).unwrap();
-        let mut package_report = ListNodeReport
+        let packages = metadata.packages_get().context( "workspace packages" ).err_with( report.clone() )?;
+        let mut visited = packages.iter().map( | p | format!( "{}+{}+{}", p.name, p.version.to_string(), p.manifest_path ) ).collect();
+        for package in packages
         {
-          name: package.name.clone(),
-          version: Some( package.version.to_string() ),
-          path: Some( package.manifest_path.clone().into_std_path_buf() ),
-          normal_dependencies: vec![],
-          dev_dependencies: vec![],
-          build_dependencies: vec![],
-        };
-        let mut visited = HashSet::new();
-        // qqq: DRY
-        for dep in &package.dependencies
-        {
-          if dep.path.is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
-          if dep.path.is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
-
-          let mut temp_vis = visited.clone();
-          let dep_rep = process_deps( &metadata, dep, &args, &mut temp_vis );
-          match dep.kind
-          {
-            DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) =>
-              package_report.normal_dependencies.push( dep_rep ),
-            DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) =>
-              package_report.dev_dependencies.push( dep_rep ),
-            DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) =>
-              package_report.build_dependencies.push( dep_rep ),
-            _ => { visited.remove( &dep.name ); std::mem::swap( &mut temp_vis, &mut visited ); }
-          };
-          visited = std::mem::take( &mut temp_vis );
+          tree_package_report( package.manifest_path.as_path().try_into().unwrap(), &mut report, &mut visited )
         }
-
-        report = match report
-        {
-          ListReportV2::Tree( mut v ) => ListReportV2::Tree( { v.extend([ package_report ]); v } ),
-          ListReportV2::Empty => ListReportV2::Tree( vec![ package_report ] ),
-        };
       }
       _ => { unimplemented!() }
     }
@@ -431,7 +449,6 @@ mod private
     .and_then( | m | m.get( "package" ) )
     .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
     .unwrap_or_default();
-
 
     // let packages_map =  metadata.packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
 
