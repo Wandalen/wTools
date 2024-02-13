@@ -237,7 +237,7 @@ pub( crate ) mod private
       }
       else 
       {
-        let report = crate::process::start_sync( "git ls-remote --get-url", package_path )?;
+        let report = git::ls_remote_url( package_path )?;
         url::extract_repo_url( &report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
       }
     }

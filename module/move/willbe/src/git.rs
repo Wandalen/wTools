@@ -120,6 +120,24 @@ mod private
       process::start2_sync( program, args, path )
     }
   }
+
+  /// Retrieves the remote URL of a Git repository.
+  ///
+  /// # Arguments
+  ///
+  /// * `path` - A `Path` reference to the local Git repository.
+  ///
+  /// # Returns
+  ///
+  /// A `Result` containing a `CmdReport`, which represents the result of the command execution.
+  pub fn ls_remote_url< P >( path : P ) -> Result< CmdReport >
+  where
+    P : AsRef< Path >,
+  {
+    let ( program, args ) = ( "git", [ "ls-remote", "--get-url" ] );
+
+    process::start2_sync( program, args, path )
+  }
 }
 
 //
@@ -129,4 +147,6 @@ crate::mod_interface!
   protected use add;
   protected use commit;
   protected use push;
+
+  protected use ls_remote_url;
 }

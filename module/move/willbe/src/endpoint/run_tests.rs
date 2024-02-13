@@ -81,16 +81,16 @@ mod private
 
 		let toolchain = if nightly 
 		{
-			"nightly"
+			cargo::Channel::Nightly
 		}
 		else 
 		{
-			"stable"
+			cargo::Channel::Stable
 		};
 
 		report.write().unwrap().package_name = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().name.clone();
 		
-		let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test" ), dir )?;
+		let mut cmd_rep = cargo::test( dir, cargo::TestArgs::former().channel( toolchain ).form(), false )?;
 		if cmd_rep.out.is_empty() 
 		{
 			cmd_rep.out = cmd_rep.err.clone();
@@ -116,8 +116,17 @@ mod private
 					{
 						return;
 					}
-					let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features --features {feature}" ), dir ).unwrap();
-					if cmd_rep.out.is_empty() 
+					let mut cmd_rep = cargo::test
+					(
+						dir,
+						cargo::TestArgs::former()
+						.channel( toolchain )
+						.with_default_features( false )
+						.enable_features([ ( *feature ).clone() ])
+						.form(),
+						false
+					).unwrap();
+					if cmd_rep.out.is_empty()
 					{
 						cmd_rep.out = cmd_rep.err.clone();
 						report.write().unwrap().compilation_status.push_str( &format!( "Error while compiling tests with feature [{}]\n", feature ) );
@@ -134,8 +143,17 @@ mod private
 				{
 					continue;
 				}
-				let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features --features {feature}" ), dir )?;
-				if cmd_rep.out.is_empty() 
+				let mut cmd_rep = cargo::test
+				(
+					dir,
+					cargo::TestArgs::former()
+					.channel( toolchain )
+					.with_default_features( false )
+					.enable_features([ ( *feature ).clone() ])
+					.form(),
+					false
+				).unwrap();
+				if cmd_rep.out.is_empty()
 				{
 					cmd_rep.out = cmd_rep.err.clone();
 					report.write().unwrap().compilation_status.push_str( &format!( "Error while compiling tests with feature [{}]\n", feature ) );
@@ -144,8 +162,16 @@ mod private
 			}
 		}
 		
-		let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features" ), dir )?;
-		if cmd_rep.out.is_empty() 
+		let mut cmd_rep = cargo::test
+		(
+			dir,
+			cargo::TestArgs::former()
+			.channel( toolchain )
+			.with_default_features( false )
+			.form(),
+			false
+		).unwrap();
+		if cmd_rep.out.is_empty()
 		{
 			cmd_rep.out = cmd_rep.err.clone();
 			report.write().unwrap().compilation_status.push_str( "Error while compiling tests with feature [No features]\n" );
