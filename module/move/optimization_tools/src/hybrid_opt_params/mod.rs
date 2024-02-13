@@ -56,7 +56,7 @@ impl Default for OptimalParamsConfig
   {
     Self 
     {
-      improvement_threshold : 10.0,
+      improvement_threshold : 0.1,
       max_no_improvement_steps : 5,
       max_iterations : 25,
     }
@@ -211,7 +211,7 @@ where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
 
   let mut optimizer = nelder_mead::Optimizer::new( objective_function );
   optimizer.bounds = problem.bounds;
-  optimizer.set_starting_point( problem.starting_point );
+  optimizer.set_starting_point( problem.starting_point.clone() );
   optimizer.set_simplex_size( problem.simplex_size );
 
   optimizer.improvement_threshold = config.improvement_threshold;

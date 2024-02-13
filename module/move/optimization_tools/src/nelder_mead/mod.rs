@@ -354,7 +354,6 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
 
       if steps_with_no_improv >= self.max_no_improvement_steps
       {
-        println!("{}", iterations);
         return Ok ( Solution 
         {
           point : res[ 0 ].0.clone(),
@@ -663,7 +662,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
     {
       self.calculate_regular_simplex();
     }
-
+    
     let x0 = self.start_point.clone();
     
     let dimensions = x0.coords.len();
@@ -677,7 +676,6 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
       let score = ( self.objective_function )( x.clone() );
       res.push( ( x, score ) );
     }
-
     let mut iterations = 0;
     loop
     {
@@ -687,7 +685,6 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
 
       if self.max_iterations <= iterations
       {
-        println!("{}", iterations);
         return Ok ( Solution 
         {
           point : res[ 0 ].0.clone(),
@@ -710,7 +707,6 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
 
       if steps_with_no_improv >= self.max_no_improvement_steps
       {
-        println!("{}", iterations);
         return Ok ( Solution 
         {
           point : res[ 0 ].0.clone(),
