@@ -159,12 +159,12 @@ mod private
   #[ derive( Debug, Clone ) ]
   pub struct ListNodeReport
   {
-    name: String,
-    version: Option< String >,
-    path: Option< PathBuf >,
-    normal_dependencies: Vec< ListNodeReport >,
-    dev_dependencies: Vec< ListNodeReport >,
-    build_dependencies: Vec< ListNodeReport >,
+    pub name: String,
+    pub version: Option< String >,
+    pub path: Option< PathBuf >,
+    pub normal_dependencies: Vec< ListNodeReport >,
+    pub dev_dependencies: Vec< ListNodeReport >,
+    pub build_dependencies: Vec< ListNodeReport >,
   }
 
   impl ListNodeReport
