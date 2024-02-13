@@ -39,14 +39,16 @@ pub( crate ) mod private
     .form();
 
     let run_tests_command = wca::Command::former()
-    .hint( "Run tests in a specified crate" )
-    .long_hint( "Run tests in a specified crate" )
+    .hint( "execute tests in specific packages" )
+    .long_hint( "this command runs tests in designated packages based on the provided path. It allows for inclusion and exclusion of features, testing on different Rust version channels, parallel execution, and feature combination settings." )
     .phrase("tests.run")
-    .subject( "A path to directories with packages.", Type::Path, true )
-    .property( "nightly", "Run tests on nightly. Default is false.", Type::Bool, true )
-    .property( "exclude", "List of features to exclude.", Type::List( Type::String.into(), ',' ), true )
-    .property( "include", "List of features to include.", Type::List( Type::String.into(), ',' ), true )
-    .property( "parallel", "Run tests with different a set of features in parallel. Default is false.", Type::Bool, true )
+    .subject( "A path to directories with packages. If no path is provided, the current directory is used.", Type::Path, true )
+    .property( "with_stable", "Specifies whether or not to run tests on stable Rust version. Default is `true`", Type::Bool, true )
+    .property( "with_nightly", "Specifies whether or not to run tests on nightly Rust version. Default is `false`.", Type::Bool, true )
+    .property( "parallel", "Indicates if tests with different feature sets should be run in parallel. Default is `true`.", Type::Bool, true )
+    .property( "power", "Defines the depth of feature combination testing. Default is `1`.", Type::Number, true )
+    .property( "include", "A list of features to include in testing. Separate multiple features by comma.", Type::List( Type::String.into(), ',' ), true )
+    .property( "exclude", "A list of features to exclude from testing. Separate multiple features by comma.", Type::List( Type::String.into(), ',' ), true )
     .form();
 
     let generate_workflow = wca::Command::former()

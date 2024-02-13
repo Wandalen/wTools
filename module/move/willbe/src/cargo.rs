@@ -3,10 +3,12 @@ mod private
   use crate::*;
 
   use std::{ fmt::Formatter, path::Path };
+  use std::collections::{ BTreeSet, HashSet };
 
   use process::CmdReport;
   use wtools::error::Result;
   use former::Former;
+  use wtools::iter::Itertools;
 
   ///
   /// Assemble the local package into a distributable tarball.
@@ -67,7 +69,7 @@ mod private
   }
 
   /// The `Channel` enum represents different release channels for rust.
-  #[ derive( Debug, Default, Copy, Clone ) ]
+  #[ derive( Debug, Default, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd ) ]
   pub enum Channel
   {
     /// Represents the stable release channel.
@@ -104,7 +106,7 @@ mod private
     #[ default( false ) ]
     with_all_features : bool,
     /// Specifies a list of features to be enabled in the test.
-    enable_features : Vec< String >,
+    enable_features : BTreeSet< String >,
   }
 
   impl TestArgs
@@ -115,7 +117,7 @@ mod private
       .into_iter()
       .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
-      .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.join( "," ) ]) }.into_iter().flatten() )
+      .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.iter().join( "," ) ]) }.into_iter().flatten() )
       .collect()
     }
   }
@@ -156,6 +158,31 @@ mod private
       process::start2_sync( program, args, path )
     }
   }
+
+  /// Retrieves a list of available channels.
+  ///
+  /// This function takes a path and returns a `Result` with a vector of strings representing the available channels.
+  pub fn available_channels< P >( path : P ) -> Result< HashSet< Channel > >
+  where
+    P : AsRef< Path >,
+  {
+    let ( program, args ) = ( "rustup", [ "toolchain", "list" ] );
+    let report = process::start2_sync( program, args, path )?;
+    
+    let list = report
+    .out
+    .lines()
+    .map( | l | l.split_once( '-' ).unwrap().0 )
+    .filter_map( | c | match c
+    {
+      "stable" => Some( Channel::Stable ),
+      "nightly" => Some( Channel::Nightly ),
+      _ => None
+    } )
+    .collect();
+    
+    Ok( list )
+  }
 }
 
 //
@@ -164,7 +191,10 @@ crate::mod_interface!
 {
   protected use package;
   protected use publish;
+  
   protected use Channel;
   protected use TestArgs;
   protected use test;
+  
+  protected use available_channels;
 }
