@@ -28,6 +28,8 @@ pub( crate ) mod private
     .phrase( "list" )
     .subject( "The command will generate a list of packages based on a path that must containing a `Cargo.toml` file. If no path is provided, the current directory is used.", Type::Path, true )
     .property( "format", "Adjusts the output format - 'topsort' for a topologically sorted list or 'tree' for a structure of independent crates trees. The default is `tree`.", Type::String, true )
+    .property( "with_version", "`true` to include the versions of the packages in the output. Defaults to `false`.", Type::Bool, true )
+    .property( "with_path", "`true` to include the paths of the packages in the output. Defaults to `false`.", Type::Bool, true )
     .property( "with_primary", "`true` to include primary packages in the output, `false` otherwise. Defaults to `true`.", Type::Bool, true )
     .property( "with_dev", "`true` to include development packages in the output, `false` otherwise. Defaults to `false`.", Type::Bool, true )
     .property( "with_build", "`true` to include build packages in the output, `false` otherwise. Defaults to `false`.", Type::Bool, true )

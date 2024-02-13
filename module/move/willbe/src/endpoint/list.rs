@@ -8,17 +8,18 @@ mod private
     path::PathBuf,
     collections::HashSet,
   };
+  use std::collections::HashMap;
   use petgraph::
   {
     prelude::*,
-    algo::{ toposort, has_path_connecting },
+    algo::toposort,
     visit::Topo,
   };
   use std::str::FromStr;
   use packages::FilterMapOptions;
   use wtools::error::
   {
-    for_app::{ Error, Context, format_err },
+    for_app::{ Error, Context },
     err
   };
   use cargo_metadata::
@@ -127,80 +128,14 @@ mod private
     }
   }
 
-  /// Output of the `list` endpoint
-  #[ derive( Debug, Default, Clone ) ]
-  pub enum ListReport
+  /// Additional information to include in a package report.
+  #[ derive( Debug, Copy, Clone, Hash, Eq, PartialEq ) ]
+  pub enum PackageAdditionalInfo
   {
-    /// With tree format.
-    Tree
-    {
-      /// Dependencies graph.
-      graph : Graph< String, String >,
-      /// Packages indexes to display.
-      names : Vec< petgraph::stable_graph::NodeIndex >,
-    },
-    /// With topologically sorted list.
-    List( Vec< String > ),
-    /// Nothing to show.
-    #[ default ]
-    Empty
-  }
-
-  /// Wrapper to redirect output from `ptree` graph to `fmt::Write`
-  pub struct Io2FmtWrite< 'a, W >
-  {
-    /// This struct provides a mutable reference to a writer and is used as a formatting writer.
-    pub f : &'a mut W,
-  }
-
-  impl< T > std::fmt::Debug for Io2FmtWrite< '_, T >
-  {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
-    {
-      f.debug_struct( std::any::type_name::< Self >() ).finish()
-    }
-  }
-
-  impl< W : std::fmt::Write > std::io::Write for Io2FmtWrite< '_, W >
-  {
-    fn write( &mut self, buf : &[ u8 ] ) -> std::io::Result< usize >
-    {
-      use std::io::ErrorKind;
-
-      let size = buf.len();
-
-      self.f.write_str
-      (
-        std::str::from_utf8( buf )
-        .map_err( | _ | std::io::Error::new( ErrorKind::InvalidData, "Allow only valid UTF-8 string" ) )?
-      )
-      .map_err( | e | std::io::Error::new( ErrorKind::Other, e ) )?;
-
-      Ok( size )
-    }
-
-    fn flush( &mut self ) -> std::io::Result< () >
-    {
-      Ok( () )
-    }
-  }
-
-  impl std::fmt::Display for ListReport
-  {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
-    {
-      match self
-      {
-        ListReport::Tree { graph, names } => for n in names
-        {
-          ptree::graph::write_graph_with( &graph, *n, Io2FmtWrite { f }, &ptree::PrintConfig::from_env() ).unwrap();
-        },
-        ListReport::List ( list ) => for ( i ,e ) in list.iter().enumerate() { writeln!( f, "{i}) {e}" )? },
-        _ => {},
-      }
-
-      Ok( () )
-    }
+    /// Include the version of the package, if possible.
+    Version,
+    /// Include the path to the package, if it exists.
+    Path,
   }
 
   /// A struct representing the arguments for listing crates.
@@ -216,6 +151,7 @@ mod private
   {
     path_to_manifest : CrateDir,
     format : ListFormat,
+    info: HashSet< PackageAdditionalInfo >,
     dependency_sources: HashSet< DependencySource >,
     dependency_categories: HashSet< DependencyCategory >,
   }
@@ -282,22 +218,28 @@ mod private
     }
   }
 
+  /// Represents the different report formats for the `list` endpoint.
   #[ derive( Debug, Default, Clone ) ]
-  pub enum ListReportV2
+  pub enum ListReport
   {
+    /// Represents a tree-like report format.
     Tree( Vec< ListNodeReport > ),
+    /// Represents a standard list report format in topological order.
+    List( Vec< String > ),
+    /// Represents an empty report format.
     #[ default ]
     Empty,
   }
 
-  impl std::fmt::Display for ListReportV2
+  impl std::fmt::Display for ListReport
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       match self
       {
         Self::Tree( v ) => write!( f, "{}", v.iter().map( | l | l.to_string() ).collect::< Vec< _ > >().join( "\n" ) ),
-        Self::Empty => write!( f, "" ),
+        Self::List( v ) => write!( f, "{}", v.iter().enumerate().map( |( i, v )| format!( "[{i}] {v}" ) ).collect::< Vec< _ > >().join( "\n" ) ),
+        Self::Empty => write!( f, "Nothing" ),
       }
     }
   }
@@ -337,8 +279,8 @@ mod private
     let mut dep_rep = ListNodeReport
     {
       name : dep.name.clone(),
-      version : Some( dep.req.to_string() ),
-      path : dep.path.as_ref().map( | p | p.clone().into_std_path_buf() ),
+      version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( dep.req.to_string() ) } else { None },
+      path : if args.info.contains( &PackageAdditionalInfo::Path ) { dep.path.as_ref().map( | p | p.clone().into_std_path_buf() ) } else { None },
       normal_dependencies : vec![],
       dev_dependencies : vec![],
       build_dependencies : vec![],
@@ -379,24 +321,33 @@ mod private
     }
   }
 
-  /// -
-  pub fn listv2( args : ListArgs ) -> Result< ListReportV2, ( ListReportV2, Error ) >
+  /// Retrieve a list of packages based on the given arguments.
+  ///
+  /// # Arguments
+  ///
+  /// - `args`: ListArgs - The arguments for listing packages.
+  ///
+  /// # Returns
+  ///
+  /// - `Result<ListReport, (ListReport, Error)>` - A result containing the list report if successful,
+  ///   or a tuple containing the list report and error if not successful.
+  pub fn list( args : ListArgs ) -> Result< ListReport, ( ListReport, Error ) >
   {
-    let mut report = ListReportV2::default();
+    let mut report = ListReport::default();
 
     let manifest = manifest::open( args.path_to_manifest.absolute_path() ).context( "List of packages by specified manifest path" ).err_with( report.clone() )?;
     let metadata = Workspace::with_crate_dir( manifest.crate_dir() ).err_with( report.clone() )?;
 
     let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
 
-    let tree_package_report = | path : AbsolutePath, report : &mut ListReportV2, visited : &mut HashSet< String > |
+    let tree_package_report = | path : AbsolutePath, report : &mut ListReport, visited : &mut HashSet< String > |
     {
       let package = metadata.package_find_by_manifest( path ).unwrap();
       let mut package_report = ListNodeReport
       {
         name: package.name.clone(),
-        version: Some( package.version.to_string() ),
-        path: Some( package.manifest_path.clone().into_std_path_buf() ),
+        version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version.to_string() ) } else { None },
+        path : if args.info.contains( &PackageAdditionalInfo::Path ) { Some( package.manifest_path.clone().into_std_path_buf() ) } else { None },
         normal_dependencies: vec![],
         dev_dependencies: vec![],
         build_dependencies: vec![],
@@ -406,8 +357,9 @@ mod private
 
       *report = match report
       {
-        ListReportV2::Tree( ref mut v ) => ListReportV2::Tree( { v.extend([ package_report ]); v.clone() } ),
-        ListReportV2::Empty => ListReportV2::Tree( vec![ package_report ] ),
+        ListReport::Tree(ref mut v ) => ListReport::Tree( { v.extend([ package_report ]); v.clone() } ),
+        ListReport::Empty => ListReport::Tree( vec![ package_report ] ),
+        ListReport::List(_ ) => unreachable!(),
       };
     };
     match args.format
@@ -426,125 +378,114 @@ mod private
           tree_package_report( package.manifest_path.as_path().try_into().unwrap(), &mut report, &mut visited )
         }
       }
-      _ => { unimplemented!() }
-    }
-
-    Ok( report )
-  }
-
-  ///
-  /// List workspace packages.
-  ///
-
-  pub fn list( args : ListArgs ) -> Result< ListReport, ( ListReport, Error ) >
-  {
-    let mut report = ListReport::default();
-
-    let manifest = manifest::open( args.path_to_manifest.absolute_path() ).context( "List of packages by specified manifest path" ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let mut metadata = Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | err | ( report.clone(), format_err!( err ) ) )?;
-
-    let root_crate = manifest
-    .manifest_data
-    .as_ref()
-    .and_then( | m | m.get( "package" ) )
-    .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
-    .unwrap_or_default();
-
-    // let packages_map =  metadata.packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
-
-    let dep_filter = move | _p: &Package, d: &Dependency |
-    {
-      (
-        args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind == DependencyKind::Normal
-        || args.dependency_categories.contains( &DependencyCategory::Dev ) && d.kind == DependencyKind::Development
-        || args.dependency_categories.contains( &DependencyCategory::Build ) && d.kind == DependencyKind::Build
-      )
-      &&
-      (
-        args.dependency_sources.contains( &DependencySource::Remote ) && d.path.is_none()
-        || args.dependency_sources.contains( &DependencySource::Local ) && d.path.is_some()
-      )
-    };
-
-    let packages_map =  packages::filter
-    (
-      &metadata
-      .load()
-      .map_err( | err | ( report.clone(), format_err!( err ) ) )?
-      .packages_get()
-      .map_err( | err | ( report.clone(), format_err!( err ) ) )?,
-      FilterMapOptions{ dependency_filter: Some( Box::new( dep_filter ) ), ..Default::default() }
-    );
-
-    let graph = graph::construct( &packages_map );
-
-    let sorted = toposort( &graph, None ).map_err( | e | { use std::ops::Index; ( report.clone(), err!( "Failed to process toposort for package: {:?}", graph.index( e.node_id() ) ) ) } )?;
-
-    match args.format
-    {
-      // all crates
-      ListFormat::Tree if root_crate.is_empty() =>
-      {
-        let mut names = vec![ sorted[ 0 ] ];
-        for node in sorted.iter().skip( 1 )
-        {
-          if names.iter().all( | name | !has_path_connecting( &graph, *name, *node, None ) ) && !names.contains( node )
-          {
-            names.push( *node );
-          }
-        }
-        report = ListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
-      },
-      // specific crate as root
-      ListFormat::Tree =>
-      {
-        let names = sorted
-        .iter()
-        .filter_map( | idx | if graph.node_weight( *idx ).unwrap() == &&root_crate { Some( *idx ) } else { None } )
-        .collect::< Vec< _ > >();
-
-        report = ListReport::Tree { graph : graph.map( | _, &n | String::from( n ), | _, &e | String::from( e ) ), names };
-      }
-      // all crates
-      ListFormat::Topological if root_crate.is_empty() =>
-      {
-        let names = sorted
-        .iter()
-        .rev()
-        .map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() )
-        .collect::< Vec< String > >();
-
-        report = ListReport::List( names );
-      },
-      // specific crate as root
       ListFormat::Topological =>
       {
-        let node = graph.node_indices().find( | n | graph.node_weight( *n ).unwrap() == &&root_crate ).unwrap();
-        let mut dfs = Dfs::new( &graph, node );
-        let mut subgraph = Graph::new();
-        let mut node_map = std::collections::HashMap::new();
-        while let Some( n )= dfs.next( &graph )
-        {
-          node_map.insert( n, subgraph.add_node( graph[ n ] ) );
-        }
+        let root_crate = manifest
+        .manifest_data
+        .as_ref()
+        .and_then( | m | m.get( "package" ) )
+        .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
+        .unwrap_or_default();
 
-        for e in graph.edge_references()
+        let dep_filter = move | _p: &Package, d: &Dependency |
         {
-          if let ( Some( &s ), Some( &t ) ) = ( node_map.get( &e.source() ), node_map.get( &e.target() ) )
+          (
+            args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind == DependencyKind::Normal
+            || args.dependency_categories.contains( &DependencyCategory::Dev ) && d.kind == DependencyKind::Development
+            || args.dependency_categories.contains( &DependencyCategory::Build ) && d.kind == DependencyKind::Build
+          )
+          &&
+          (
+            args.dependency_sources.contains( &DependencySource::Remote ) && d.path.is_none()
+            || args.dependency_sources.contains( &DependencySource::Local ) && d.path.is_some()
+          )
+        };
+
+        let packages = metadata.packages_get().context( "workspace packages" ).err_with( report.clone() )?;
+        let packages_map =  packages::filter
+        (
+          packages,
+          FilterMapOptions{ dependency_filter: Some( Box::new( dep_filter ) ), ..Default::default() }
+        );
+
+        let graph = graph::construct( &packages_map );
+
+        let sorted = toposort( &graph, None ).map_err( | e | { use std::ops::Index; ( report.clone(), err!( "Failed to process toposort for package: {:?}", graph.index( e.node_id() ) ) ) } )?;
+        let packages_info = packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
+
+        if root_crate.is_empty()
+        {
+          let names = sorted
+          .iter()
+          .rev()
+          .map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() )
+          .map
+          (
+            | mut name |
+            {
+              if let Some( p ) = packages_info.get( &name )
+              {
+                if args.info.contains( &PackageAdditionalInfo::Version )
+                {
+                  name.push_str( " " );
+                  name.push_str( &p.version.to_string() );
+                }
+                if args.info.contains( &PackageAdditionalInfo::Path )
+                {
+                  name.push_str( " " );
+                  name.push_str( &p.manifest_path.to_string() );
+                }
+              }
+              name
+            }
+          )
+          .collect::< Vec< String > >();
+
+          report = ListReport::List( names );
+        }
+        else
+        {
+          let node = graph.node_indices().find( | n | graph.node_weight( *n ).unwrap() == &&root_crate ).unwrap();
+          let mut dfs = Dfs::new( &graph, node );
+          let mut subgraph = Graph::new();
+          let mut node_map = std::collections::HashMap::new();
+          while let Some( n )= dfs.next( &graph )
           {
-            subgraph.add_edge( s, t, () );
+            node_map.insert( n, subgraph.add_node( graph[ n ] ) );
           }
-        }
 
-        let mut topo = Topo::new( &subgraph );
-        let mut names = Vec::new();
-        while let Some( n ) = topo.next( &subgraph )
-        {
-          names.push( subgraph[ n ].clone() );
-        }
-        names.reverse();
+          for e in graph.edge_references()
+          {
+            if let ( Some( &s ), Some( &t ) ) = ( node_map.get( &e.source() ), node_map.get( &e.target() ) )
+            {
+              subgraph.add_edge( s, t, () );
+            }
+          }
 
-        report = ListReport::List( names );
+          let mut topo = Topo::new( &subgraph );
+          let mut names = Vec::new();
+          while let Some( n ) = topo.next( &subgraph )
+          {
+            let mut name = subgraph[ n ].clone();
+            if let Some( p ) = packages_info.get( &name )
+            {
+              if args.info.contains( &PackageAdditionalInfo::Version )
+              {
+                name.push_str( " " );
+                name.push_str( &p.version.to_string() );
+              }
+              if args.info.contains( &PackageAdditionalInfo::Path )
+              {
+                name.push_str( " " );
+                name.push_str( &p.manifest_path.to_string() );
+              }
+            }
+            names.push( name );
+          }
+          names.reverse();
+
+          report = ListReport::List( names );
+        }
       }
     }
 
@@ -558,6 +499,8 @@ crate::mod_interface!
 {
   /// Arguments for `list` endpoint.
   protected use ListArgs;
+  /// Additional information to include in a package report.
+  protected use PackageAdditionalInfo;
   /// Represents where a dependency located.
   protected use DependencySource;
   /// Represents the category of a dependency.
@@ -570,7 +513,4 @@ crate::mod_interface!
   protected use ListReport;
   /// List packages in workspace.
   orphan use list;
-  orphan use listv2;
-  /// Wrapper to redirect output from `io::Write` to `fmt::Write`
-  protected use Io2FmtWrite;
 }
