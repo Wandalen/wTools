@@ -156,6 +156,14 @@ pub struct TSProblem
   pub graph : TSPGraph,
 }
 
+impl TSProblem
+{
+  pub fn new( graph : TSPGraph, starting_node : NodeIndex ) -> Self
+  {
+    Self { graph, starting_node }
+  }
+}
+
 /// Possible solution of traveling salesman problem, contains route and its distance.
 #[ derive( Debug, PartialEq, Clone ) ]
 pub struct TSPerson 

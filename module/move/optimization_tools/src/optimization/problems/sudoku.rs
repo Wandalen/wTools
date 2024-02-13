@@ -295,7 +295,7 @@ impl MutationOperator for RandomPairInBlockMutation
 
 }
 
-impl SelectionOperator< <SudokuInitial as InitialProblem>::Person > for TournamentSelection
+impl SelectionOperator< SudokuPerson > for TournamentSelection
 {
   fn select< 'a >
   ( 
