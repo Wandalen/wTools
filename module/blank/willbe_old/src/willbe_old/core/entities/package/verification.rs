@@ -59,7 +59,7 @@ pub( crate ) mod private
 
 //
 
-wtools::mod_interface!
+crate::mod_interface!
 {
   prelude use Verification;
 }

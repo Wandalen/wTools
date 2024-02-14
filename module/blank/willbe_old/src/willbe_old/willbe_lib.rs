@@ -16,8 +16,9 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 //
+use mod_interface::mod_interface;
 
-wtools::mod_interface!
+mod_interface!
 {
   /// Features of Application Programming Interface that 100% should be implemented
   #[ cfg( not( feature = "no_std" ) ) ]

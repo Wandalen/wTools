@@ -5,7 +5,7 @@ pub( crate ) mod private
 
   use path_absolutize::*;
 
-  use wtools::Itertools;
+  use iter_tools::Itertools;
 
   ///
   /// Iterate over unique files in directory using globs 
@@ -28,7 +28,7 @@ pub( crate ) mod private
 
 //
 
-wtools::mod_interface!
+crate::mod_interface!
 {
   prelude use unique_walk;
 }

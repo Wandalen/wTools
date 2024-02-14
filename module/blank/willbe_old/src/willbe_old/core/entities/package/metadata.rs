@@ -3,9 +3,9 @@ pub( crate ) mod private
 {
   use std::path::PathBuf;
 
-use cargo_metadata::MetadataCommand;
+  use cargo_metadata::MetadataCommand;
 
-  use wtools::{ BasicError, err };
+  use error_tools::{ BasicError, err };
 
   use crate::Package;
 
@@ -113,7 +113,7 @@ use cargo_metadata::MetadataCommand;
 
 //
 
-wtools::mod_interface!
+crate::mod_interface!
 {
   prelude use PackageMetadata;
 }

@@ -11,3 +11,5 @@ pub mod cell_val;
 pub use cell_val::*;
 pub mod board;
 pub use board::*;
+pub mod sudoku_sets;
+pub use sudoku_sets::*;

@@ -64,6 +64,9 @@ path = "tests/willbe_old/willbe_test.rs"
 [dependencies]
 wtools = { workspace = true }
 wca = { workspace = true }
+mod_interface = { workspace = true, features = [ "default" ] }
+iter_tools = { workspace = true, features = [ "default" ] }
+error_tools = { workspace = true, features = [ "default" ] }
 toml = "0.5"
 globwalk = "0.8"
 cargo_metadata = "0.15"
