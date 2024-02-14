@@ -1,5 +1,5 @@
 
-wtools::mod_interface!
+crate::mod_interface!
 {
   /// Package
   layer package;

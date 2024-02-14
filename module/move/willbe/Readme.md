@@ -21,7 +21,7 @@ Utility to publish multi-crate and multi-workspace environments and maintain the
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust no_run
 use willbe::*;
 
 fn main() -> Result< (), wtools::error::for_app::Error >

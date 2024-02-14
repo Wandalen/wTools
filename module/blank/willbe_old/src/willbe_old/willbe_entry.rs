@@ -18,7 +18,7 @@ use ::willbe_old::*;
 //
 
 #[ cfg( not( feature = "no_std" ) ) ]
-fn main() -> wca::Result< () >
+fn main() -> error_tools::Result< () >
 {
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
 
@@ -27,7 +27,7 @@ fn main() -> wca::Result< () >
   .executor( commands::executor_form() )
   .build();
 
-  ca.perform( if args.is_empty() { "".to_owned() } else { args.join( " " ) + " .end" } )
+  Ok( ca.perform( if args.is_empty() { "".to_owned() } else { args.join( " " ) + " .end" } )? )
 }
 
 #[ cfg( feature = "no_std" ) ]
