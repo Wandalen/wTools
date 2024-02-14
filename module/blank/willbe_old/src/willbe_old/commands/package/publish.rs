@@ -7,8 +7,8 @@ pub( crate ) mod private
   {
     Args, Props,
     Context,
-    Result, err,
   };
+  use error_tools::{ Result, for_app::format_err };
 
   /// Publish command declaration
   pub fn publish_command() -> wca::Command
@@ -36,13 +36,13 @@ pub( crate ) mod private
       {
         let path = env::current_dir().unwrap().to_owned();
         Package::try_from( path )
-        .map_err( | _ | err!( "Package not found at current directory" ) )?
+        .map_err( | _ | format_err!( "Package not found at current directory" ) )?
       }
       _ => return Ok( () )
     };
 
     let info = PackageMetadata::try_from( package )
-    .map_err( | _ | err!( "Can not parse package metadata" ) )?;
+    .map_err( | _ | format_err!( "Can not parse package metadata" ) )?;
 
     println!
     (

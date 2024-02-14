@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use crate::{ Package, PackageMetadata };
-  use wtools::{ DynArray, Itertools };
+  use iter_tools::prelude::*;
 
   /// Represent with which order strategy to iterate over packages
   #[ derive( Debug, Clone, Copy ) ]
@@ -19,7 +19,7 @@ pub( crate ) mod private
   /// This trait defines a method to sort packages by selected order strategy
   pub trait Ordered : Iterator
   where
-    DynArray< Package > : FromIterator< < Self as Iterator >::Item >
+    Vec< Package > : FromIterator< < Self as Iterator >::Item >
   {
     /// Collect all iterator elements into a sorted vector
     fn ordered( self, order : OrderStrategy ) -> Vec< Package >
@@ -63,7 +63,7 @@ pub( crate ) mod private
   {
     use petgraph::Graph;
     use cargo_metadata::DependencyKind;
-    use wtools::HashMap;
+    use std::collections::HashMap;
 
     let ( deps, package_map ) = packages.iter()
     .filter_map( | p | PackageMetadata::try_from( p.to_owned() ).ok() )
@@ -112,12 +112,12 @@ pub( crate ) mod private
 
 
   impl< T : ?Sized > Ordered for T
-  where T : Iterator, DynArray< Package >: FromIterator< < T as Iterator >::Item > {}
+  where T : Iterator, Vec< Package >: FromIterator< < T as Iterator >::Item > {}
 }
 
 //
 
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
   prelude use OrderStrategy;
   prelude use Ordered;

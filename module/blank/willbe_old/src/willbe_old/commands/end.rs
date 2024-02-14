@@ -5,8 +5,8 @@ pub( crate ) mod private
   {
     Args, Props,
     Context,
-    Result, BasicError,
   };
+  use error_tools::{ Result, BasicError };
 
   use crate::commands::{ StartPointStack, EndPointStack };
 

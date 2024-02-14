@@ -4,7 +4,7 @@ pub( crate ) mod private
   use std::path::PathBuf;
   use toml::Value;
 
-  use wtools::{ BasicError, err };
+  use error_tools::{ BasicError, err };
 
   /// Package
   #[ derive( Debug, Clone ) ]
@@ -47,7 +47,7 @@ pub( crate ) mod private
 
 //
 
-wtools::meta::mod_interface!
+crate::mod_interface!
 {
   prelude use Package;
 }
