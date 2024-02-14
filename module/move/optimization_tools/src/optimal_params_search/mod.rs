@@ -43,9 +43,9 @@ impl Default for OptimalParamsConfig
   {
     Self 
     {
-      improvement_threshold : 0.1,
-      max_no_improvement_steps : 5,
-      max_iterations : 25,
+      improvement_threshold : 0.005,
+      max_no_improvement_steps : 10,
+      max_iterations : 100,
     }
   }
 } 

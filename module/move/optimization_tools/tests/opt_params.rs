@@ -6,12 +6,12 @@ use hybrid_optimizer::*;
 mod tools;
 use tools::*;
 
-fn write_results( filename : String, title : String, hybrid_res : Vec< f64 >, sa_res : Vec< f64 > ) -> Result< (), std::io::Error >
+fn write_results( filename : String, title : String, hybrid_res : Vec< f64 >, sa_res : Vec< f64 >, ga_res : Vec< f64 > ) -> Result< (), std::io::Error >
 {
   let mut file = std::fs::File::create( format!( "{}.md", filename ) )?;
   std::io::Write::write(&mut file, format!( "{}\n\n", title).as_bytes() )?;
 
-  for params in [ hybrid_res, sa_res ]
+  for params in [ hybrid_res, sa_res, ga_res ]
   {
     std::io::Write::write(&mut file, b"For parameters:\n")?;
     std::io::Write::write( &mut file,format!( " - temperature decrease coefficient : {:.4};\n", params[ 0 ] ).as_bytes() )?;
@@ -56,7 +56,7 @@ fn write_results( filename : String, title : String, hybrid_res : Vec< f64 >, sa
   
     std::io::Write::write( &mut file, format!("\n\n{}\n", title ).as_bytes() )?;
     std::io::Write::write( &mut file, format!("{}\n", line ).as_bytes() )?;
-    std::io::Write::write( &mut file, format!("{}\n", result ).as_bytes() )?;
+    std::io::Write::write( &mut file, format!("{}\n\n\n\n", result ).as_bytes() )?;
   }
 
 
@@ -88,6 +88,7 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   let hybrid_problem = Problem::new( initial.clone(), BestRowsColumnsCrossover, RandomPairInBlockMutation );
   let res = optimal_params_search::find_hybrid_optimal_params( config.clone(), hybrid_optimizer::starting_params_for_hybrid()?, hybrid_problem );
   assert!( res.is_ok() );
+  
 
   let mut hybrid_res = Vec::new();
   if let Ok( solution ) = res
@@ -98,7 +99,7 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
 
   // SA
   let hybrid_problem = Problem::new( initial.clone(), BestRowsColumnsCrossover, RandomPairInBlockMutation );
-  let res = optimal_params_search::find_hybrid_optimal_params( config, hybrid_optimizer::starting_params_for_sa()?, hybrid_problem );
+  let res = optimal_params_search::find_hybrid_optimal_params( config.clone(), hybrid_optimizer::starting_params_for_sa()?, hybrid_problem );
   assert!( res.is_ok() );
 
   let mut sa_res = Vec::new();
@@ -107,7 +108,19 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
     sa_res = solution.point.coords.clone();
     sa_res.push( solution.objective );
   }
-  write_results( String::from( "sudoku_results" ), String::from( "Sudoku Problem" ), hybrid_res, sa_res )?;
+
+  // GA
+  let hybrid_problem = Problem::new( initial.clone(), BestRowsColumnsCrossover, RandomPairInBlockMutation );
+  let res = optimal_params_search::find_hybrid_optimal_params( config, hybrid_optimizer::starting_params_for_ga()?, hybrid_problem );
+  assert!( res.is_ok() );
+
+  let mut ga_res = Vec::new();
+  if let Ok( solution ) = res
+  {
+    ga_res = solution.point.coords.clone();
+    ga_res.push( solution.objective );
+  }
+  write_results( String::from( "sudoku_results" ), String::from( "Sudoku Problem" ), hybrid_res, sa_res, ga_res )?;
   Ok( () )
 }
 
@@ -120,15 +133,39 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
 
   let config = OptimalParamsConfig::default();
   let initial = TSProblem { graph : TSPGraph::default(), starting_node : NodeIndex( 1 ) };
-  let hybrid_problem = Problem::new( initial, OrderedRouteCrossover{}, TSRouteMutation{} );
 
-  let res = optimal_params_search::find_hybrid_optimal_params( config, hybrid_optimizer::starting_params_for_hybrid()?, hybrid_problem );
+  let hybrid_problem = Problem::new( initial.clone(), OrderedRouteCrossover{}, TSRouteMutation{} );
+  let res = optimal_params_search::find_hybrid_optimal_params( config.clone(), hybrid_optimizer::starting_params_for_hybrid()?, hybrid_problem );
   assert!( res.is_ok() );
+  let mut hybrid_res = Vec::new();
   if let Ok( solution ) = res
   {
-    let mut result = solution.point.coords.clone();
-    result.push( solution.objective );
-    write_results( String::from( "tsp_results" ), String::from( "Traveling Salesman Problem" ), result, Vec::new() )?;
+    hybrid_res = solution.point.coords.clone();
+    hybrid_res.push( solution.objective );
   }
+
+  // SA
+  let hybrid_problem = Problem::new( initial.clone(), OrderedRouteCrossover{}, TSRouteMutation{} );
+  let res = optimal_params_search::find_hybrid_optimal_params( config.clone(), hybrid_optimizer::starting_params_for_sa()?, hybrid_problem );
+  assert!( res.is_ok() );
+  let mut sa_res = Vec::new();
+  if let Ok( solution ) = res
+  {
+    sa_res = solution.point.coords.clone();
+    sa_res.push( solution.objective );
+  }
+
+  // GA
+  let hybrid_problem = Problem::new( initial, OrderedRouteCrossover{}, TSRouteMutation{} );
+  let res = optimal_params_search::find_hybrid_optimal_params( config, hybrid_optimizer::starting_params_for_ga()?, hybrid_problem );
+  assert!( res.is_ok() );
+  let mut ga_res = Vec::new();
+  if let Ok( solution ) = res
+  {
+    ga_res = solution.point.coords.clone();
+    ga_res.push( solution.objective );
+  }
+
+  write_results( String::from( "tsp_results" ), String::from( "Traveling Salesman Problem" ), hybrid_res, sa_res, ga_res )?;
   Ok( () )
 }
