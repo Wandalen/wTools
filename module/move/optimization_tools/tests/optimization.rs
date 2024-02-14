@@ -1,6 +1,6 @@
 use optimization_tools::*;
-use sudoku::*;
-use optimization::*;
+use problems::sudoku::*;
+use hybrid_optimizer::*;
 use test_tools::prelude::*;
 use deterministic_rand::{ Seed, Hrng };
 
@@ -81,10 +81,8 @@ fn solve_with_sa()
 
   let seed : Seed = "seed3".into();
   let initial = SudokuInitial::new( Board::from( input ) );
-  let optimizer = HybridOptimizer::new( Seed::default(), initial )
-  .set_crossover_operator( BestRowsColumnsCrossover{} )
-  .set_mutation_operator( RandomPairInBlockMutation{} )
-  ;
+  let problem = Problem::new( initial, BestRowsColumnsCrossover, RandomPairInBlockMutation );
+  let optimizer = HybridOptimizer::new( Config::default(), problem );
 
   log::set_max_level( log::LevelFilter::max() );
   let ( reason, solution ) = optimizer.optimize();
@@ -136,12 +134,9 @@ fn solve_empty_full_block()
   "#;
   log::set_max_level( log::LevelFilter::Warn );
 
-  let seed : Seed = "seed3".into();
   let initial = SudokuInitial::new( Board::from( sudoku ) );
-  let optimizer = HybridOptimizer::new( Seed::default(), initial )
-  .set_crossover_operator( BestRowsColumnsCrossover{} )
-  .set_mutation_operator( RandomPairInBlockMutation{} )
-  ;
+  let problem = Problem::new( initial, BestRowsColumnsCrossover, RandomPairInBlockMutation );
+  let optimizer = HybridOptimizer::new( Config::default(), problem );
 
   log::set_max_level( log::LevelFilter::max() );
   let ( reason, solution ) = optimizer.optimize();
@@ -206,10 +201,11 @@ fn time_measure()
   for i in 0..=3 {
     let initial = SudokuInitial::new( Board::from( input ) );
 
-    let optimizer = HybridOptimizer::new( Seed::new( i.to_string() ), initial )
-    .set_crossover_operator( BestRowsColumnsCrossover{} )
-    .set_mutation_operator( RandomPairInBlockMutation{} )
-    ;
+    let mut config = Config::default();
+    config.hrng = Hrng::master_with_seed( Seed::new( i.to_string() ) );
+    let problem = Problem::new( initial, BestRowsColumnsCrossover, RandomPairInBlockMutation );
+
+    let optimizer = HybridOptimizer::new( config, problem );
     let ( _reason, _solution ) = optimizer.optimize();
   }
 }

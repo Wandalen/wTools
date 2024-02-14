@@ -15,10 +15,10 @@
 //! 
 
 use std::collections::HashMap;
-use crate::optimization::*;
+use crate::hybrid_optimizer::*;
 
 use derive_tools::{ FromInner, InnerFrom };
-use deterministic_rand::{ Hrng, Rng, seq::SliceRandom };
+use deterministic_rand::{ Hrng, seq::{ SliceRandom, IteratorRandom } };
 use iter_tools::Itertools;
 
 /// Functionality for symmetrical traveling salesman problem undirected graph representation.
@@ -206,34 +206,6 @@ impl InitialProblem for TSProblem
 {
   type Person = TSPerson;
 
-  fn initial_population( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person > 
-  {
-    let mut population = Vec::new();
-    
-    for _ in 0..size
-    {
-      let mut list = Vec::new();
-      list.push( self.starting_node );
-
-      let rng_ref = hrng.rng_ref();
-      let mut rng = rng_ref.lock().unwrap();
-
-      let mut nodes = self.graph.nodes().iter().sorted_by( | n1, n2 | n1.cmp( &n2 ) ).cloned().filter( | &n | n != self.starting_node ).map( | n | n.0 ).collect_vec();
-      deterministic_rand::seq::SliceRandom::shuffle( nodes.as_mut_slice(), &mut *rng );
-
-      list.append( &mut nodes.into_iter().map( | n | NodeIndex( n ) ).collect_vec() );
-      list.push( self.starting_node );
-      let mut person = TSPerson::new( list );
-      let dist = self.evaluate( &person );
-
-      person.update_fitness( dist );
-
-      population.push( person );
-    }
-
-    population
-  }
-
   fn get_random_person( &self, hrng : Hrng ) -> TSPerson 
   {
     let mut list = Vec::new();
@@ -271,35 +243,6 @@ impl InitialProblem for TSProblem
     }
 
     dist
-  }
-}
-
-impl SelectionOperator< TSPerson > for TournamentSelection
-{
-  fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< TSPerson > ) -> &'a TSPerson 
-  {
-    let rng_ref = hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-    let mut candidates = Vec::new();
-    for _ in 0..self.size
-    {
-      candidates.push( population.choose( &mut *rng ).unwrap() );
-    }
-    candidates.sort_by( | c1, c2 | c1.fitness().cmp( &c2.fitness() ) );
-
-    let rand : f64 = rng.gen();
-    let mut selection_pressure = self.selection_pressure;
-    let mut winner = *candidates.last().unwrap();
-    for i in 0..self.size
-    {
-      if rand < selection_pressure
-      {
-        winner = candidates[ i ];
-        break;
-      }
-      selection_pressure += selection_pressure * ( 1.0 - selection_pressure );
-    }
-    winner
   }
 }
 

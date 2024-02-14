@@ -1,15 +1,15 @@
 use std::ops::Range;
 
 use optimization_tools::*;
-use nelder_mead::*;
+use optimal_params_search::nelder_mead;
 
 #[ test ]
 fn power_two() -> Result< (), nelder_mead::Error >
 {
-  let f = | x : Point | x.coords[ 0 ] * x.coords[ 0 ];
+  let f = | x : nelder_mead::Point | x.coords[ 0 ] * x.coords[ 0 ];
   let mut optimizer = nelder_mead::Optimizer::new( f );
   optimizer.bounds = vec![ Some( -1.0..=8.0 ), Some( 2.0..=4.0 ), Some( 3.0..=6.0 ) ];
-  optimizer.start_point = Point::new( vec![ 3.0, 3.0, 3.0 ] );
+  optimizer.start_point = nelder_mead::Point::new( vec![ 3.0, 3.0, 3.0 ] );
   optimizer.set_simplex_size( vec![ Some( 0.1 ), Some( 0.1 ), Some( 0.1 ) ] );
 
   let res = optimizer.optimize()?;
@@ -21,7 +21,7 @@ fn power_two() -> Result< (), nelder_mead::Error >
 #[ test ]
 fn sin_cos() -> Result< (), nelder_mead::Error >
 {
-  let f = | x : Point | x.coords[ 0 ].sin() * x.coords[ 1 ].cos() * ( 1.0 / ( x.coords[ 2 ].abs() + 1.0 ) );
+  let f = | x : nelder_mead::Point | x.coords[ 0 ].sin() * x.coords[ 1 ].cos() * ( 1.0 / ( x.coords[ 2 ].abs() + 1.0 ) );
   let mut optimizer: nelder_mead::Optimizer< Range< f64 >, _ > = nelder_mead::Optimizer::new( f );
   optimizer.set_simplex_size( vec![ Some( 0.1 ), Some( 0.1 ), Some( 0.1 ) ] );
 
@@ -36,9 +36,9 @@ fn sin_cos() -> Result< (), nelder_mead::Error >
 #[ test ]
 fn rosenbrock() -> Result< (), nelder_mead::Error >
 {
-  let f = | x : Point | ( 1.0 - x.coords[ 0 ] ).powi( 2 ) + 100.0 * ( x.coords[ 1 ] - x.coords[ 0 ].powi( 2 )).powi( 2 ) ;
+  let f = | x : nelder_mead::Point | ( 1.0 - x.coords[ 0 ] ).powi( 2 ) + 100.0 * ( x.coords[ 1 ] - x.coords[ 0 ].powi( 2 )).powi( 2 ) ;
   let mut optimizer: nelder_mead::Optimizer< Range< f64 >, _ > = nelder_mead::Optimizer::new( f );
-  optimizer.start_point = Point::new( vec![ 0.0, 0.0 ] );
+  optimizer.start_point = nelder_mead::Point::new( vec![ 0.0, 0.0 ] );
   optimizer.set_simplex_size( vec![ Some( 0.1 ), Some( 0.1 ) ] );
 
   let res = optimizer.optimize()?;
@@ -54,7 +54,7 @@ fn rosenbrock() -> Result< (), nelder_mead::Error >
 fn rosenbrock_extended() -> Result< (), nelder_mead::Error >
 {
   
-  let f = | x : Point | 
+  let f = | x : nelder_mead::Point | 
   {
     let mut y = 0.0;
     for i in 0..30
@@ -64,7 +64,7 @@ fn rosenbrock_extended() -> Result< (), nelder_mead::Error >
     y
   };
   let mut optimizer: nelder_mead::Optimizer< Range< f64 >, _ > = nelder_mead::Optimizer::new( f );
-  optimizer.start_point = Point::new( vec![ 10.0; 31 ] );
+  optimizer.start_point = nelder_mead::Point::new( vec![ 10.0; 31 ] );
   optimizer.set_simplex_size( vec![ Some( 0.1 ); 31 ] );
 
   let start1 = std::time::Instant::now();
@@ -85,9 +85,9 @@ fn rosenbrock_extended() -> Result< (), nelder_mead::Error >
 #[ test ]
 fn himmelblau() -> Result< (), nelder_mead::Error >
 {
-  let f = | x : Point | ( x.coords[ 0 ].powi( 2 ) + x.coords[ 1 ] -11.0 ).powi( 2 ) + ( x.coords[ 0 ] + x.coords[ 1 ].powi( 2 ) - 7.0 ).powi( 2 ) ;
+  let f = | x : nelder_mead::Point | ( x.coords[ 0 ].powi( 2 ) + x.coords[ 1 ] -11.0 ).powi( 2 ) + ( x.coords[ 0 ] + x.coords[ 1 ].powi( 2 ) - 7.0 ).powi( 2 ) ;
   let mut optimizer: nelder_mead::Optimizer< Range< f64 >, _ > = nelder_mead::Optimizer::new( f );
-  optimizer.start_point = Point::new( vec![ 0.0, 0.0 ] );
+  optimizer.start_point = nelder_mead::Point::new( vec![ 0.0, 0.0 ] );
   optimizer.set_simplex_size( vec![ Some( 0.1 ); 2 ] );
   optimizer.max_no_improvement_steps = 15;
 

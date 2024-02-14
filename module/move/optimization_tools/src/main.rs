@@ -1,8 +1,9 @@
 //! Performs solving of sudoku puzzle using Simmulated Annealing algorithm.
 //! 
 
-use optimization_tools::{ *, optimization::{ HybridOptimizer, BestRowsColumnsCrossover, RandomPairInBlockMutation } };
-use sudoku::*;
+use optimization_tools::*;
+use hybrid_optimizer::HybridOptimizer;
+use problems::sudoku::*;
 
 const INPUT : &str = r#"
 024007000
@@ -24,9 +25,9 @@ fn main()
 
   let board = Board::from( INPUT );
   println!("{board}");
-  let initial = optimization::SudokuInitial::new( board );
-  let sudoku_problem = optimization::Problem::new( initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
-  let optimizer = HybridOptimizer::new( optimization::Config::default(), sudoku_problem );
+  let initial = SudokuInitial::new( board );
+  let sudoku_problem = hybrid_optimizer::Problem::new( initial, BestRowsColumnsCrossover{}, RandomPairInBlockMutation{} );
+  let optimizer = HybridOptimizer::new( hybrid_optimizer::Config::default(), sudoku_problem );
 
   let ( reason, solution ) = optimizer.optimize( );
 

@@ -1,24 +1,10 @@
 //! Funcions for calculation optimal config parameters.
 //! 
-
+pub mod nelder_mead;
 use std::ops::RangeBounds;
 use iter_tools::Itertools;
 
-use crate::
-{ 
-  optimization::{ 
-    Config, 
-    CrossoverOperator, 
-    HybridOptimizer, 
-    InitialProblem, 
-    LinearTempSchedule, 
-    MutationOperator, 
-    Problem, 
-    SelectionOperator, 
-    TournamentSelection 
-  },
-  nelder_mead,
-};
+use crate::hybrid_optimizer::*;
 
 /// Level of difficulty of sudoku board.
 #[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
@@ -43,6 +29,7 @@ impl Level {
   }
 }
 
+#[ derive( Debug, Clone ) ]
 pub struct OptimalParamsConfig
 {
   improvement_threshold : f64,
@@ -63,6 +50,7 @@ impl Default for OptimalParamsConfig
   }
 } 
 
+#[ derive( Debug, Clone ) ]
 pub struct OptimalProblem< R : RangeBounds< f64 > >
 {
   pub params_names : Vec< Option< String > >,
@@ -169,7 +157,7 @@ where  R : RangeBounds< f64 > + Sync,
       mutation_operator : mutation_operator.clone(),
     };
 
-    let props = crate::optimization::PopulationModificationProportions::new()
+    let props = crate::hybrid_optimizer::PopulationModificationProportions::new()
     .set_crossover_rate( case.coords[ 3 ] )
     .set_mutation_rate( case.coords[ 2 ] )
     ;

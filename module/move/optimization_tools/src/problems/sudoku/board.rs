@@ -308,7 +308,7 @@ impl Board
         }
       }
 
-      let block = BlockIndex::from( crate::sudoku::CellIndex::from( ( col, row ) ) );
+      let block = BlockIndex::from( crate::problems::sudoku::CellIndex::from( ( col, row ) ) );
       let ( cols, rows ) = block.cells_intervals();
       for i in rows
       {

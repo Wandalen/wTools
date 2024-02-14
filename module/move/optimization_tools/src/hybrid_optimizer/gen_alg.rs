@@ -19,7 +19,7 @@
 //! 
 
 use std::fmt::Debug;
-use deterministic_rand::Hrng;
+use deterministic_rand::{ Rng, Hrng, seq::SliceRandom };
 
 /// Functionality of crossover genetic operator.
 pub trait CrossoverOperator : Debug
@@ -90,7 +90,15 @@ pub trait InitialProblem
   type Person : Individual + Clone + PartialEq + Send + Sync + Debug;
 
   /// Create the initial population for the optimization algorithm.
-  fn initial_population( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person >;
+  fn initial_population( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person >
+  {
+    let mut population = Vec::new();
+    for _ in 0..size
+    {
+      population.push( self.get_random_person( hrng.clone() ) );
+    }
+    population
+  }
 
   /// Get random initial solution.
   fn get_random_person( &self, hrng : Hrng ) -> Self::Person;
@@ -254,5 +262,38 @@ impl PopulationModificationProportions< f64, f64, f64 >
   pub fn crossover_rate( &self ) -> f64
   {
     self.crossover_rate
+  }
+}
+
+impl< P : Individual > SelectionOperator< P > for TournamentSelection
+{
+  fn select< 'a >
+  ( 
+    &self, hrng : Hrng, 
+    population : &'a Vec< P > 
+  ) -> &'a P
+  {
+    let rng_ref = hrng.rng_ref();
+    let mut rng = rng_ref.lock().unwrap();
+    let mut candidates = Vec::new();
+    for _ in 0..self.size
+    {
+      candidates.push( population.choose( &mut *rng ).unwrap() );
+    }
+    candidates.sort_by( | c1, c2 | c1.fitness().cmp( &c2.fitness() ) );
+
+    let rand : f64 = rng.gen();
+    let mut selection_pressure = self.selection_pressure;
+    let mut winner = *candidates.last().unwrap();
+    for i in 0..self.size
+    {
+      if rand < selection_pressure
+      {
+        winner = candidates[ i ];
+        break;
+      }
+      selection_pressure += selection_pressure * ( 1.0 - selection_pressure );
+    }
+    winner
   }
 }

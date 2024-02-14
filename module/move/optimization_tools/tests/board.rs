@@ -1,5 +1,5 @@
 use optimization_tools::*;
-use sudoku::*;
+use problems::sudoku::*;
 use test_tools::prelude::*;
 use deterministic_rand::Hrng;
 

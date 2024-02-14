@@ -1,7 +1,9 @@
 //! Example usage of hybrid optimizer for finding optimal route in traveling salesman problem.
 //!
 
-use optimization_tools::optimization::*;
+use optimization_tools::*;
+use problems::traveling_salesman::*;
+use hybrid_optimizer::*;
 
 fn main()
 {

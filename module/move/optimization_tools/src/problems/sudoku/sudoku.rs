@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
-use crate::optimization::*;
-use crate::sudoku::*;
+use crate::hybrid_optimizer::*;
+use crate::problems::sudoku::*;
 
 use derive_tools::{ FromInner, InnerFrom, Display };
 use derive_tools::{ Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign };
@@ -238,16 +238,6 @@ impl SudokuInitial
 impl InitialProblem for SudokuInitial
 {
   type Person = SudokuPerson;
-  
-  fn initial_population( &self, hrng : Hrng, size : usize ) -> Vec< SudokuPerson >
-  {
-    let mut population = Vec::new();
-    for _ in 0..size
-    {
-      population.push( SudokuPerson::new( &self.board, hrng.clone() ) );
-    }
-    population
-  }
 
   fn get_random_person( &self, hrng : Hrng ) -> SudokuPerson 
   {
@@ -262,7 +252,7 @@ impl InitialProblem for SudokuInitial
 
 /// Mutation that randomly swaps two values in sudoku board, excluding values set in initial board.
 #[ derive( Debug, Clone ) ]
-pub struct RandomPairInBlockMutation {}
+pub struct RandomPairInBlockMutation;
 
 impl MutationOperator for RandomPairInBlockMutation
 {
@@ -295,42 +285,9 @@ impl MutationOperator for RandomPairInBlockMutation
 
 }
 
-impl SelectionOperator< SudokuPerson > for TournamentSelection
-{
-  fn select< 'a >
-  ( 
-    &self, hrng : Hrng, 
-    population : &'a Vec< <SudokuInitial as InitialProblem>::Person > 
-  ) -> &'a <SudokuInitial as InitialProblem>::Person
-  {
-    let rng_ref = hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-    let mut candidates = Vec::new();
-    for _ in 0..self.size
-    {
-      candidates.push( population.choose( &mut *rng ).unwrap() );
-    }
-    candidates.sort_by( | c1, c2 | c1.fitness().cmp( &c2.fitness() ) );
-
-    let rand : f64 = rng.gen();
-    let mut selection_pressure = self.selection_pressure;
-    let mut winner = *candidates.last().unwrap();
-    for i in 0..self.size
-    {
-      if rand < selection_pressure
-      {
-        winner = candidates[ i ];
-        break;
-      }
-      selection_pressure += selection_pressure * ( 1.0 - selection_pressure );
-    }
-    winner
-  }
-}
-
 /// Crossover is performed by combining blocks from parents' boards, split in several randomly chosen crossover points.
 #[ derive( Debug, Clone ) ]
-pub struct MultiplePointsBlockCrossover {}
+pub struct MultiplePointsBlockCrossover;
 
 impl CrossoverOperator for MultiplePointsBlockCrossover
 {
@@ -380,7 +337,7 @@ impl CrossoverOperator for MultiplePointsBlockCrossover
 
 /// Crossover performed by selecting blocks with best rows or columns from two Individuals.
 #[ derive( Debug, Clone ) ]
-pub struct BestRowsColumnsCrossover {}
+pub struct BestRowsColumnsCrossover;
 
 impl CrossoverOperator for BestRowsColumnsCrossover
 {
