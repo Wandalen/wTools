@@ -1,5 +1,6 @@
 //! Funcions for calculation optimal config parameters.
 //! 
+pub mod results_serialize;
 pub mod nelder_mead;
 use std::ops::RangeBounds;
 use iter_tools::Itertools;
