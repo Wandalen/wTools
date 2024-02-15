@@ -1,0 +1,5 @@
+error: expected one of: `mod`, `use`, `layer`
+ --> tests/inc/derive/layer_unknown_vis/mod.rs
+  |
+  |   xyz layer layer_a;
+  |   ^^^

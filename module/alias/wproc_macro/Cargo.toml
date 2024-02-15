@@ -4,8 +4,7 @@ version = "0.1.1"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Volodymyr M. <volodymyr.migdal@gmail.com>",
-  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
@@ -18,8 +17,12 @@ Tools for writing procedural macroses.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[lints]
+workspace = true
+
 [package.metadata.docs.rs]
-all-features = true
+features = [ "full" ]
+all-features = false
 
 include = [
   "/rust/impl/proc_macro/wproc_macro_lib.rs",
@@ -29,27 +32,29 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std", "use_alloc" ]
-use_std = []
+default = [ "enabled" ]
+full = [ "enabled" ]
+# use_std = []
+no_std = []
 use_alloc = []
+enabled = []
 
 [lib]
 name = "wproc_macro"
-path = "rust/impl/proc_macro/wproc_macro_lib.rs"
+path = "src/proc_macro/wproc_macro_lib.rs"
 
 [[test]]
 name = "macro_tools_test"
-path = "rust/test/proc_macro/wproc_macro_tests.rs"
+path = "tests/wproc_macro_tests.rs"
 
-[[test]]
-name = "wproc_macro_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
+# [[test]]
+# name = "wproc_macro_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
 
 [dependencies]
-proc_macro_tools = { version = "~0.1", path = "../../rust/proc_macro_tools" }
+macro_tools = { workspace = true }
 
 [dev-dependencies]
 trybuild = { version = "~1.0", features = [ "diff" ] }
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+test_tools = { workspace = true }
 # quote = "~1.0"

@@ -4,7 +4,7 @@
 
 Video generation example.
 
-## Sample  :: trivial
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 

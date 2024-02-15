@@ -1,0 +1,105 @@
+
+name : rust_push
+
+on :
+
+  workflow_call :
+    inputs :
+      manifest_path :
+        required : true
+        type : string
+      module_name :
+        required : true
+        type : string
+      commit_message :
+        required : true
+        type : string
+      with_smoke :
+        required : false
+        type : string
+        default : true
+
+concurrency :
+
+  group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_
+    ${{ contains( inputs.commit_message, '!test' ) || startsWith( inputs.commit_message, 'Merge' ) || contains( inputs.commit_message, inputs.module_name ) }}_
+    ${{ !contains( inputs.commit_message, '!only_js' )}}
+  cancel-in-progress : true
+
+env :
+
+  RUST_BACKTRACE : 1
+  CARGO_TERM_COLOR : always
+  WITH_SMOKE : ${{ inputs.with_smoke }}
+
+jobs :
+
+  fast :
+    if : |
+      !contains( inputs.commit_message, '!test' )
+      && !startsWith( inputs.commit_message, 'Merge' )
+      && contains( inputs.commit_message, inputs.module_name )
+      && !contains( inputs.commit_message, '!only_js' )
+    concurrency :
+      group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_${{ matrix.os }}
+      cancel-in-progress : true
+    strategy :
+      fail-fast : false
+      matrix :
+        os : [ ubuntu-latest ]
+    runs-on : ${{ matrix.os }}
+    steps :
+      - name : Install latest stable toolchain
+        uses : Wandalen/wretry.action@master
+        with :
+          action : actions-rs/toolchain@v1
+          with : |
+            toolchain : stable
+            override : true
+          attempt_limit : 3
+          attempt_delay: 10000
+      - uses : actions/checkout@v3
+      - name : Run tests with default features
+        run : cargo test --manifest-path ${{ inputs.manifest_path }}
+      - name : Run tests without default features
+        run : cargo test --manifest-path ${{ inputs.manifest_path }} --no-default-features
+
+  full :
+    if : |
+      startsWith( inputs.commit_message, 'Merge' )
+      || ( contains( inputs.commit_message, '!test' ) && !contains( inputs.commit_message, '!only_js' ) )
+    concurrency :
+      group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_${{ matrix.os }}
+      cancel-in-progress : true
+    strategy :
+      fail-fast : false
+      matrix :
+        os : [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on : ${{ matrix.os }}
+    steps :
+      - name : Install latest stable toolchain
+        uses : Wandalen/wretry.action@master
+        with :
+          action : actions-rs/toolchain@v1
+          with : |
+            toolchain : stable
+            override : true
+          attempt_limit : 3
+          attempt_delay: 10000
+      - uses : actions/checkout@v3
+      - name : Run tests in release mode
+        run : cargo test --manifest-path ${{ inputs.manifest_path }} --release
+      - name : Install latest nightly toolchain
+        uses : Wandalen/wretry.action@master
+        with :
+          action : actions-rs/toolchain@v1
+          with : |
+            toolchain : nightly
+            override : true
+          attempt_limit : 3
+          attempt_delay: 10000
+      - name : Install cargo-hack
+        run : cargo install cargo-hack
+      - name : Run tests with each feature
+        run : cargo hack test --manifest-path ${{ inputs.manifest_path }} --each-feature
+

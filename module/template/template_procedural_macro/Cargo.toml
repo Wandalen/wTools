@@ -4,21 +4,25 @@ version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/procedural_macro"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/procedural_macro"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/procedural_macro"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/procedural_macro"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/procedural_macro"
 description = """
 Template.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
 
+[lints]
+workspace = true
+
 [package.metadata.docs.rs]
-all-features = true
+features = [ "full" ]
+all-features = false
 
 include = [
   "/rust/impl/meta/procedural_macro_lib.rs",
@@ -29,31 +33,33 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std", "use_alloc" ]
-use_std = []
+default = [ "enabled" ]
+full = [ "enabled" ]
+# use_std = []
+no_std = []
 use_alloc = []
+enabled = []
 
 [lib]
 name = "procedural_macro"
-path = "rust/impl/meta/procedural_macro/front/procedural_macro_lib.rs"
+path = "src/meta/procedural_macro/front/procedural_macro_lib.rs"
 
 [[test]]
 name = "procedural_macro_test"
-path = "rust/test/meta/procedural_macro_tests.rs"
+path = "tests/meta/procedural_macro_tests.rs"
 
 [[test]]
 name = "procedural_macro_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
+path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "procedural_macro_trivial"
-# path = "sample/rust/procedural_macro_trivial_sample/src/main.rs"
+# path = "examples/procedural_macro_trivial_sample/src/main.rs"
 
 [dependencies]
-procedural_macro_meta = { version = "~0.1", path = "../../rust/procedural_macro_meta" }
-procedural_macro_runtime = { version = "~0.1", path = "../../rust/procedural_macro_runtime" }
+procedural_macro_meta = { workspace = true }
+procedural_macro_runtime = { workspace = true }
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+test_tools = { workspace = true }
 # trybuild = { version = "~1.0", features = [ "diff" ] }

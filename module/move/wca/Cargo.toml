@@ -1,8 +1,12 @@
 [package]
 name = "wca"
-version = "0.1.3"
+version = "0.5.0"
 edition = "2021"
-authors = ["Kostiantyn Wandalen <wandalen@obox.systems>", "Volodymyr M. <volodymyr.migdal@gmail.com>", "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>" ]
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+  "Bogdan Balushkin <bohdan.b@obox.systems>",
+]
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/wca"
@@ -14,21 +18,20 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 categories = [ "command-line-interface", "command-line-utilities" ]
 keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
 
-[package.metadata.docs.rs]
-all-features = true
+[lints]
+workspace = true
 
-include = [
-  "/rust/impl/ca",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std", "use_alloc" ]
+default = [ "enabled" ]
+full = [ "enabled" ]
 use_std = [ "default_handlers" ]
 use_alloc = []
+enabled = []
 
 default_handlers = [
   "on_error_default",
@@ -39,36 +42,26 @@ default_handlers = [
   "on_print_commands_default",
 ]
 
-on_error_default = []
-on_syntax_error_default = []
-on_ambiguity_default = []
-on_unknown_command_error_default = []
-on_get_help_default = []
-on_print_commands_default = []
-
-[lib]
-name = "wca"
-path = "rust/impl/ca/wca_lib.rs"
-
-[[test]]
-name = "wca_test"
-path = "rust/test/ca/wca_tests.rs"
-
-[[test]]
-name = "wca_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
-
-[[example]]
-name = "wca_trivial_sample"
-path = "sample/rust/wca_trivial_sample/src/main.rs"
+on_error_default = [ "enabled" ]
+on_syntax_error_default = [ "enabled" ]
+on_ambiguity_default = [ "enabled" ]
+on_unknown_command_error_default = [ "enabled" ]
+on_unknown_command_error_suggest = [ "eddie" ]
+on_get_help_default = [ "enabled" ]
+on_print_commands_default = [ "enabled" ]
 
 [dependencies]
-wtools = { version = "~0.2", path = "../../rust/wtools" }
-former = { version = "~0.1", path = "../../rust/former" } # zzz : remove. fix
+error_tools = { workspace = true, features = [ "default" ] }
+strs_tools = { workspace = true, features = [ "default" ] }
+mod_interface = { workspace = true, features = [ "default" ] }
+iter_tools = { workspace = true, features = [ "default" ] }
+former = { workspace = true, features = [ "default" ] }
 anymap = "0.12"
 log = "0.4"
 nom = "7.1"
 closure = "0.3"
+# fuzzy commands search
+eddie = { version = "0.4", optional = true }
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+test_tools = { workspace = true }

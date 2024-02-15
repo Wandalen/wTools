@@ -1,9 +1,0 @@
-[package]
-name = "automata_tools_trivial_sample"
-version = "0.0.0"
-edition = "2021"
-publish = false
-
-[dependencies]
-automata_tools = { version = "*", path = "../../../module/move/automata_tools" }
-wtools = { version = "*", path = "../../../module/rust/wtools" }

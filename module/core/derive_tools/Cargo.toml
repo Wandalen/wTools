@@ -1,0 +1,186 @@
+[package]
+name = "derive_tools"
+version = "0.8.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/derive_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools"
+description = """
+Collection of derives which extend STD.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+exclude = [ "/tests", "/examples", "-*" ]
+
+[features]
+
+default = [
+  "enabled",
+
+  "derive_variadic_from",
+  "type_variadic_from",
+
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_inner_from",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_display",
+  "derive_from_str",
+
+  "derive_clone_dyn",
+  # "derive_clone_dyn_use_std",
+
+  "strum_derive",
+  "strum_phf",
+
+  # "use_std",
+]
+
+full = [
+  "enabled",
+
+  "derive_variadic_from",
+  "type_variadic_from",
+
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_display",
+  "derive_from_str",
+
+  "derive_clone_dyn",
+  # "derive_clone_dyn_use_std",
+
+  "strum_derive",
+  "strum_phf",
+
+  # "use_std",
+]
+no_std = []
+use_alloc = []
+enabled = []
+
+nightly = [ "derive_more/nightly" ]
+
+type_variadic_from = [ "variadic_from/type_variadic_from" ]
+derive_variadic_from = [ "type_variadic_from", "derive_tools_meta/derive_variadic_from", "variadic_from/derive_variadic_from" ]
+
+enable_track_caller = [ "derive_more", "derive_more/track-caller" ]
+
+derive_add_assign = [ "derive_more", "derive_more/add_assign" ]
+derive_add = [ "derive_more", "derive_more/add" ]
+derive_as_mut = [ "derive_tools_meta/derive_as_mut" ]
+derive_as_ref = [ "derive_tools_meta/derive_as_ref" ]
+# derive_as_mut = [ "derive_more", "derive_more/as_mut" ]
+# derive_as_ref = [ "derive_more", "derive_more/as_ref" ]
+derive_constructor = [ "derive_more", "derive_more/constructor" ]
+derive_deref = [ "derive_tools_meta/derive_deref" ]
+derive_deref_mut = [ "derive_tools_meta/derive_deref_mut" ]
+# derive_deref = [ "derive_more", "derive_more/deref" ]
+# derive_deref_mut = [ "derive_more", "derive_more/deref_mut" ]
+derive_error = [ "derive_more", "derive_more/error" ]
+# derive_from = [ "derive_more", "derive_more/from" ]
+# derive_from = [ "derive_tools_meta/derive_from" ]
+derive_from = [ "derive_tools_meta/derive_from" ]
+derive_inner_from = [ "derive_tools_meta/derive_inner_from" ]
+
+derive_index = [ "derive_more", "derive_more/index" ]
+derive_index_mut = [ "derive_more", "derive_more/index_mut" ]
+derive_into = [ "derive_more", "derive_more/into" ]
+derive_into_iterator = [ "derive_more", "derive_more/into_iterator" ]
+derive_iterator = [ "derive_more", "derive_more/iterator" ]
+derive_mul_assign = [ "derive_more", "derive_more/mul_assign" ]
+derive_mul = [ "derive_more", "derive_more/mul" ]
+derive_not = [ "derive_more", "derive_more/not" ]
+derive_sum = [ "derive_more", "derive_more/sum" ]
+derive_try_into = [ "derive_more", "derive_more/try_into" ]
+derive_is_variant = [ "derive_more", "derive_more/is_variant" ]
+derive_unwrap = [ "derive_more", "derive_more/unwrap" ]
+derive_convert_case = [ "derive_more", "derive_more/convert_case" ]
+
+derive_display = [ "parse-display" ]
+derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex" ]
+# derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex", "parse-display/once_cell" ]
+
+strum_derive = [ "strum/std", "strum/derive", "strum/strum_macros" ]
+strum_phf = [ "strum/std", "strum/phf", "strum/strum_macros" ]
+# zzz : review features
+
+derive_clone_dyn = [ "clone_dyn" ]
+# derive_clone_dyn_use_std = [ "derive_clone_dyn", "clone_dyn/use_std" ]
+# derive_clone_dyn_no_std = [ "derive_clone_dyn", "clone_dyn/no_std" ]
+derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
+
+[dependencies]
+
+## external
+derive_more = { version = "~0.99.17", optional = true, default-features = false }
+strum = { version = "~0.25", optional = true, default-features = false }
+# strum_macros = { version = "~0.25.3", optional = true, default-features = false }
+parse-display = { version = "~0.8.2", optional = true, default-features = false }
+
+## internal
+derive_tools_meta = { workspace = true, features = [ "enabled" ] }
+variadic_from = { workspace = true, features = [] }
+clone_dyn = { workspace = true, optional = true }
+# xxx
+
+[dev-dependencies]
+test_tools = { workspace = true }
+
+[build-dependencies]
+cfg_aliases = "0.1.1"

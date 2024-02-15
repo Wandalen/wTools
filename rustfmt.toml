@@ -1,3 +1,6 @@
+# WARNING : Formatting in this project is non-standard and unfortunetely `cargo fmt` does not support "out of the box" formatting.
+# Here you can find closest possible set of settings for `cargo fmt`, but it is not even close to desirable.
+
 edition = "2021"
 hard_tabs = false
 max_width = 130

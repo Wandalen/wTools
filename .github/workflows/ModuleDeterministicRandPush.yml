@@ -1,0 +1,17 @@
+name : deterministic_rand
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # deterministic_rand
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/move/deterministic_rand/Cargo.toml'
+      module_name : 'deterministic_rand'
+      commit_message : ${{ github.event.head_commit.message }}

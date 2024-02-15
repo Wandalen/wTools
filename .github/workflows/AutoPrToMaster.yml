@@ -3,7 +3,8 @@ name : auto_pr_to_master
 
 on :
   push :
-    branches : [ beta ]
+    branches :
+     - beta
 
 jobs :
 
@@ -14,5 +15,3 @@ jobs :
       dst_branch : 'master'
     secrets :
       PRIVATE_GITHUB_BOT_TOKEN : '${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}'
-
-

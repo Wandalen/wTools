@@ -1,0 +1,8 @@
+[package]
+name = "test_experimental_c"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+description = """
+Module publishing test
+"""

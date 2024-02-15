@@ -1,5 +1,0 @@
-error: expected one of: `mod`, `use`, `layer`
- --> ../../../rust/test/meta/mod_interface/front/micro_modules_unknown_vis/mod.rs
-  |
-  |   not_vis mod mod_exposed;
-  |   ^^^^^^^

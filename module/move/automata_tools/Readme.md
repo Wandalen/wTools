@@ -5,11 +5,11 @@
 
 Automata tools.
 
-## Sample  :: trivial
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 
-```rust
+```rust ignore
 use automata_tools::prelude::*;
 use wtools::prelude::*;
 let node : automata_tools::canonical::Node<i32, i32> = automata_tools::canonical::Node::_make_with_id( 13 );
@@ -29,6 +29,6 @@ cargo add automata_tools
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/automata_tools_trivial_sample
+cd examples/automata_tools_trivial_sample
 cargo run
 ```

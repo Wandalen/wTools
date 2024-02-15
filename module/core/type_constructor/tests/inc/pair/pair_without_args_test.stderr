@@ -1,0 +1,11 @@
+error: no rules expected the token `>`
+  --> tests/dt/type_constructor/pair/pair_without_args_test.rs:5:27
+   |
+5  |   types!( pair Empty : <  > );
+   |                           ^ no rules expected this token in macro call
+   |
+note: while trying to match meta-variable `$ParamName1:ident`
+  --> rust/impl/dt/type_constructor/pair.rs
+   |
+   |         $ParamName1 : ident $( : $ParamTy1x1 : ident $( :: $ParamTy1xN : ident )* $( + $ParamTy1x2 : path )* )?,
+   |         ^^^^^^^^^^^^^^^^^^^

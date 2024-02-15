@@ -1,0 +1,7 @@
+error: Layer should not have explicitly defined visibility because all its subnamespaces are used.
+         #[doc = " layer_a"] pub layer layer_a;
+ --> tests/inc/derive/layer_bad_vis/mod.rs
+  |
+  | /   /// layer_a
+  | |   pub layer layer_a;
+  | |____________________^

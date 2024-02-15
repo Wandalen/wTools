@@ -1,0 +1,17 @@
+name : willbe2
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # willbe2
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/alias/willbe2/Cargo.toml'
+      module_name : 'willbe2'
+      commit_message : ${{ github.event.head_commit.message }}
