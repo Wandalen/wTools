@@ -8,18 +8,13 @@ use iter_tools::Itertools;
 use std::ops::RangeInclusive;
 use rayon::iter::{ ParallelIterator, IndexedParallelIterator};
 use deterministic_rand::{ Seed, seq::{ SliceRandom, IteratorRandom } };
+use derive_tools::Display;
+use optimal_params_search::OptimalProblem;
 
-mod problems;
-pub use problems::*;
 mod gen_alg;
 pub use gen_alg::*;
 mod sim_anneal;
 pub use sim_anneal::*;
-
-use derive_tools::Display;
-
-use self::hybrid_opt_params::OptimalProblem;
-
 
 /// Pause execution of optimizer.
 pub fn sleep()
@@ -493,7 +488,7 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
 
 }
 
-pub fn starting_params_for_hybrid() -> Result< OptimalProblem< RangeInclusive< f64 > >, hybrid_opt_params::Error >
+pub fn starting_params_for_hybrid() -> Result< OptimalProblem< RangeInclusive< f64 > >, optimal_params_search::Error >
 {
   let opt_problem = OptimalProblem::new()
   .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?
@@ -508,7 +503,7 @@ pub fn starting_params_for_hybrid() -> Result< OptimalProblem< RangeInclusive< f
   Ok( opt_problem )
 }
 
-pub fn starting_params_for_sa() -> Result< OptimalProblem< RangeInclusive< f64 > >, hybrid_opt_params::Error >
+pub fn starting_params_for_sa() -> Result< OptimalProblem< RangeInclusive< f64 > >, optimal_params_search::Error >
 {
   let opt_problem = OptimalProblem::new()
   .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?
@@ -523,7 +518,7 @@ pub fn starting_params_for_sa() -> Result< OptimalProblem< RangeInclusive< f64 >
   Ok( opt_problem )
 }
 
-pub fn starting_params_for_ga() -> Result< OptimalProblem< RangeInclusive< f64 > >, hybrid_opt_params::Error >
+pub fn starting_params_for_ga() -> Result< OptimalProblem< RangeInclusive< f64 > >, optimal_params_search::Error >
 {
   let opt_problem = OptimalProblem::new()
   .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?

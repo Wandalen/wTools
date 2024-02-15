@@ -4,11 +4,10 @@
 use deterministic_rand::{ Hrng, Rng };
 pub use deterministic_rand::Seed;
 
-pub mod nelder_mead;
-pub mod sudoku;
-pub mod optimization;
+pub mod problems;
+pub mod hybrid_optimizer;
 pub mod simplex;
-pub mod hybrid_opt_params;
+pub mod optimal_params_search;
 #[ cfg( feature="static_plot" ) ]
 pub mod plot;
 #[ cfg( feature="dynamic_plot" ) ]

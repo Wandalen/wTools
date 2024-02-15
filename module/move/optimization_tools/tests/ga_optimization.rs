@@ -1,8 +1,7 @@
 use iter_tools::Itertools;
 use optimization_tools::*;
-use sudoku::*;
-use optimization::*;
-use test_tools::prelude::*;
+use hybrid_optimizer::CrossoverOperator;
+use problems::sudoku::*;
 use deterministic_rand::{ Seed, Hrng };
 
 mod tools;
@@ -22,7 +21,7 @@ fn crossover()
   let parent2 = SudokuPerson::new( &board, hrng.clone() );
   log::trace!( "parent 2{parent2:#?}" );
 
-  let operator = MultiplePointsBlockCrossover {};
+  let operator = MultiplePointsBlockCrossover;
 
   let child = operator.crossover( hrng.clone(), &parent1, &parent2 );
   log::trace!( "child {child:#?}" );
@@ -61,6 +60,8 @@ fn crossover()
 #[ test ]
 fn solve_with_ga()
 {
+  use test_tools::prelude::*;
+  use hybrid_optimizer::{ Config, HybridOptimizer, Problem };
   let sudoku : &str = r#"
   801920000
   040850726
@@ -77,11 +78,9 @@ fn solve_with_ga()
   log::set_max_level( log::LevelFilter::Warn );
 
   let initial = SudokuInitial::new( Board::from( sudoku ) );
+  let problem = Problem::new( initial, BestRowsColumnsCrossover, RandomPairInBlockMutation );
 
-  let optimizer = HybridOptimizer::new( Seed::default(), initial )
-  .set_crossover_operator( BestRowsColumnsCrossover{} )
-  .set_mutation_operator( RandomPairInBlockMutation{} )
-  ;
+  let optimizer = HybridOptimizer::new( Config::default(), problem );
 
   let ( reason, solution ) = optimizer.optimize();
 

@@ -15,6 +15,10 @@ Simulated Annealing starts with an initial solution and iteratively explores nei
    - [Video explanation](https://www.youtube.com/watch?v=21EDdFVMz8I)
    - [Wikipedia page](https://en.wikipedia.org/wiki/Simulated_annealing)
 
+### Illustration of solving Traveling Salesman problem with Simulated Annealing 
+
+<img src="img/Travelling_salesman_problem_solved_with_simulated_annealing.gif" width="400" height="400" />
+
 ## Genetic Algorithm
 
 A genetic algorithm (GA) is an optimization technique inspired by the principles of natural selection and genetics. It begins with a population of candidate solutions, randomly generated. Each candidate solution is evaluated using a fitness function that quantifies how well it solves the problem at hand. Solutions with higher fitness values are considered better.
@@ -22,6 +26,9 @@ A genetic algorithm (GA) is an optimization technique inspired by the principles
 To produce new population genetic operators are used: selection, crossover, mutation and elitism. 
 - Mutation introduces random changes (mutations) to some individuals to maintain diversity in the population and prevent premature convergence.
 - Some individuals are replaced by offspring. First parent individuals are selected from the population based on their fitness. Individuals with higher fitness have a higher chance of being selected. Than selected individuals create offspring using crossover operator, which performs recombination of their genetic material. This mimics the mating process in natural genetics.
+
+<img src="img/Genetic_algorithm.png" height="200" />
+
 - Some most fit individuals(elites) are cloned to new population without changes.
 
 These operations are performed repeatedly for a certain number of generations or until a termination condition is met (e.g., reaching a satisfactory solution).
@@ -128,31 +135,15 @@ pub struct SubsetProblem
 impl InitialProblem for SubsetProblem
 {
   type Person = SubsetPerson;
-  fn initial_population( &self, hrng : Hrng, size : usize ) -> Vec< Self::Person > 
-  {
-    let mut population = Vec::new();
-    for _ in 0..size
-    {
-      population.push( self.get_random_person( hrng.clone() ) );
-    }
-    population
-  }
 
   fn get_random_person( &self, hrng : Hrng ) -> SubsetPerson 
   {
     let mut subset = vec![ false; self.items.len() ];
 
-    let rng_ref = hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
+    // Create subset with random number of random items.
+    ...
 
-    let number_of_elements = rng.gen_range( 1..subset.len() );
-    let positions = ( 0..subset.len() ).choose_multiple ( &mut *rng, number_of_elements );
-
-    for position in positions
-    {
-      subset[ position ] = true;
-    }
-
+    // Create new person with subset.
     let mut person = SubsetPerson::new( subset );
     let diff = self.evaluate( &person );
     person.update_fitness( diff );
@@ -162,46 +153,10 @@ impl InitialProblem for SubsetProblem
 
   fn evaluate( &self, person : &SubsetPerson ) -> f64 
   {
-    let mut sum = 0;
-    for i in 0..person.subset.len()
-    {
-      if person.subset[ i ] == true
-      {
-        sum += self.items[ i ];
-      }
-    }
+    // Calculate difference between sum of subset elements and baseline.
+    ...
 
-    ( self.value - sum ) as f64
-  }
-}
-
-// Implement selection operator trait which uses Tournament selection with SubsetPerson.
-impl SelectionOperator< SubsetPerson > for TournamentSelection
-{
-  fn select< 'a >( &self, hrng : Hrng, population : &'a Vec< SubsetPerson > ) -> &'a SubsetPerson 
-  {
-    let rng_ref = hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-    let mut candidates = Vec::new();
-    for _ in 0..self.size
-    {
-      candidates.push( population.choose( &mut *rng ).unwrap() );
-    }
-    candidates.sort_by( | c1, c2 | c1.fitness().cmp( &c2.fitness() ) );
-
-    let rand : f64 = rng.gen();
-    let mut selection_pressure = self.selection_pressure;
-    let mut winner = *candidates.last().unwrap();
-    for i in 0..self.size
-    {
-      if rand < selection_pressure
-      {
-        winner = candidates[ i ];
-        break;
-      }
-      selection_pressure += selection_pressure * ( 1.0 - selection_pressure );
-    }
-    winner
+    ( self.baseline - sum ).abs() as f64
   }
 }
 
@@ -212,9 +167,8 @@ impl CrossoverOperator for SubsetCrossover
   type Person = SubsetPerson;
   fn crossover( &self, hrng : Hrng, parent1 : &Self::Person, parent2 : &Self::Person ) -> Self::Person 
   {
-    let rng_ref = hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-
+    ...
+    // Get random crossover point.
     let point = ( 1..parent1.subset.len() - 2 ).choose( &mut *rng ).unwrap();
     let child = parent1.subset.iter().cloned().take( point ).chain( parent2.subset.iter().cloned().skip( point ) ).collect_vec();
 
@@ -227,15 +181,10 @@ pub struct SubsetMutation;
 
 impl MutationOperator for SubsetMutation
 {
-  type Person = SubsetPerson;
-  type Problem = SubsetProblem;
-
   fn mutate( &self, hrng : Hrng, person : &mut Self::Person, _context : &Self::Problem ) 
   {
-    let rng_ref = hrng.rng_ref();
-    let mut rng = rng_ref.lock().unwrap();
-
-    //remove random item
+    ...
+    // Remove random item.
     loop 
     {
       let position = ( 0..person.subset.len() ).choose( &mut *rng ).unwrap();
@@ -246,16 +195,8 @@ impl MutationOperator for SubsetMutation
       }
     }
 
-    //add random item
-    loop 
-    {
-      let position = ( 0..person.subset.len() ).choose( &mut *rng ).unwrap();
-      if person.subset[ position ] == false
-      {
-        person.subset[ position ] = true;
-        break;
-      }
-    }
+    // In the same way add random item to list.
+    ...
   }
 }
 ```
@@ -283,9 +224,9 @@ Depending on the evaluation results, the simplex is updated to move towards the 
 - Termination:
 Termination criteria includes reaching a maximum number of iterations or achieving a desired level of accuracy. The algorithm outputs the best point found, which corresponds to the minimum of the function.
 
-### Illustration
+### Illustration of usage for Himmelblau function
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/d/de/Nelder-Mead_Himmelblau.gif" width="400" height="400" />
+<img src="img/Nelder-Mead_Himmelblau.gif" width="400" height="400" />
 
 ### More:
  - [Video explanation](https://www.youtube.com/watch?v=-GWze-wtu60)
@@ -310,4 +251,16 @@ let hybrid_problem = Problem::new( initial, OrderedRouteCrossover{}, TSRouteMuta
 // Using starting configuration for hybrid mode of optimization and hybrid problem, find optimal parameters for that problem.
 let res = hybrid_opt_params::find_hybrid_optimal_params( config, optimization::starting_params_for_hybrid()?, hybrid_problem );
 ```
+### To add to your project
+```bash
+cargo add optimization_tools
+```
 
+### Try out from the repository
+``` shell test
+git clone https://github.com/Wandalen/wTools
+cd wTools
+cd module/move/optimization_tools
+cargo run --example traveling_salesman
+cargo run --example custom_problem
+```

@@ -1,5 +1,7 @@
 use iter_tools::Itertools;
-use optimization_tools::optimization::*;
+use optimization_tools::*;
+use problems::traveling_salesman::*;
+use hybrid_optimizer::*;
 use test_tools::prelude::*;
 use deterministic_rand::{ Seed, Hrng };
 

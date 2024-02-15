@@ -776,7 +776,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
       {
         x_con[ i ] = x0_center[ i ] + self.rho * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
       }
-      let x_con = Point::new( x_con );
+      let x_con = self.check_bounds( Point::new( x_con ) );
       let contraction_score = ( self.objective_function )( x_con.clone() );
 
       if contraction_score < worst_dir.1
@@ -796,7 +796,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
         {
           x_shrink[ i ] = x1.coords[ i ] + self.sigma * ( point.coords[ i ] - x1.coords[ i ] );
         }
-        let x_shrink = Point::new( x_shrink );
+        let x_shrink = self.check_bounds( Point::new( x_shrink ) );
         let score = ( self.objective_function )( x_shrink.clone() );
         new_res.push( ( x_shrink, score ) );
       }
