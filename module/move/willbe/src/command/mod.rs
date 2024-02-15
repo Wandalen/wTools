@@ -1,4 +1,3 @@
-
 /// Internal namespace.
 pub( crate ) mod private
 {

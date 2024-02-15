@@ -6,21 +6,25 @@ mod private
 	use core::fmt::Formatter;
   use std::
 	{
-		path::Path,
-		collections::HashMap,
-		sync::{ Arc, RwLock }
+		collections::{ BTreeMap, BTreeSet, HashSet },
+		sync::{ Arc, Mutex },
 	};
 
-	use rayon::prelude::*;
-	use wtools::error::{ err, Result };
+	use rayon::ThreadPoolBuilder;
+	use former::Former;
+	use wtools::
+	{
+		iter::Itertools,
+		error::{ Result, for_app::format_err },
+	};
 	use process::CmdReport;
 
 	#[ derive( Debug, Default, Clone ) ]
   pub struct TestReport
   {
-    tests : HashMap<String, CmdReport>,
 		package_name: String,
-		compilation_status: String,
+		// < Channel, < Features, Result > >
+    tests : BTreeMap< cargo::Channel, BTreeMap< String, CmdReport > >,
   }
 
   impl std::fmt::Display for TestReport
@@ -34,21 +38,45 @@ mod private
 				return Ok( () );
 			}
 
-			if self.tests.values().next().unwrap().err.contains( "toolchain 'nightly" ) 
+			for ( channel, features ) in &self.tests
 			{
-				f.write_fmt( format_args!( "unlucky, nightly not installed.\n For installation perform `rustup install nightly`" ) )?;
-				return Ok( () );
+				for (feature, result) in features
+				{
+					if !result.out.contains( "failures" )
+					{
+						let feature = if feature.is_empty() { "no-features" } else { feature };
+						f.write_fmt(format_args!("  [ {} | {} ]: {}\n", channel, feature, if result.out.contains("failures") { "❌ failed" } else { "✅ successful" } ) )?;
+					}
+					else
+					{
+						let feature = if feature.is_empty() { "no-features" } else { feature };
+						f.write_fmt( format_args!( "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n", channel, feature, if result.out.contains( "failures" ) { "❌ failed" } else { "✅ successful" }, result.out ) )?;
+					}
+				}
 			}
-      
-			for (feature, result) in &self.tests 
-			{
-				f.write_fmt( format_args!( "  Feature: [ {} ]:\n Tests status: {}\n", feature, result.out ) )?;
-			}
-			f.write_fmt( format_args!( "Compilation status:\n  {} ", self.compilation_status ) )?;
-			
+
       Ok( () )
     }
   }
+
+	/// Used to store arguments for running tests.
+	///
+	/// - The `dir` field represents the directory of the crate under test.
+	/// - The `channels` field is a set of `Channel` enums representing the channels for which the tests should be run.
+	/// - The `parallel` field determines whether the tests should be run in parallel or not.
+	/// - The `exclude_features` field is a vector of strings representing the names of features to exclude when running tests.
+	/// - The `include_features` field is a vector of strings representing the names of features to include when running tests.
+	#[ derive( Debug, Former ) ]
+	pub struct TestsArgs
+	{
+		dir : CrateDir,
+		channels : HashSet< cargo::Channel >,
+		#[ default( true ) ]
+		parallel : bool,
+		power : u32,
+		include_features : Vec< String >,
+		exclude_features : Vec< String >,
+	}
 
 	/// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable). 
 	/// Tests are run with each feature separately, with all features together, and without any features. 
@@ -56,109 +84,61 @@ mod private
 	/// It is possible to enable and disable various features of the crate. 
 	/// The function also has the ability to run tests in parallel using `Rayon` crate. 
 	/// The result of the tests is written to the structure `TestReport` and returned as a result of the function execution.
-	pub fn run_tests( 
-		dir : &Path, 
-		nightly : bool, 
-		exclude_features : Vec< String >, 
-		include_features : Vec< String >, 
-		parallel : bool 
-	) -> Result< TestReport >
+	pub fn run_tests( args : TestsArgs ) -> Result< TestReport >
 	{
-		let report = Arc::new( RwLock::new( TestReport::default() ) );
-
-		let path = dir.join("Cargo.toml");
-
-		let metadata = cargo_metadata::MetadataCommand::new()
-		.manifest_path( &path )
-		.features( cargo_metadata::CargoOpt::AllFeatures )
-		.exec();
-
-		if metadata.is_err() || metadata.as_ref().unwrap().packages.iter().find( |x| x.manifest_path == path ).is_none()
+		// fail fast if some additional installations required
+		let channels = cargo::available_channels( args.dir.as_ref() )?;
+		let channels_diff = args.channels.difference( &channels ).collect::< Vec< _ > >();
+		if !channels_diff.is_empty()
 		{
-			return Err( err!( "Directory path is not a crate" ) );
-		}
-		let metadata = metadata.unwrap();
-
-		let toolchain = if nightly 
-		{
-			"nightly"
-		}
-		else 
-		{
-			"stable"
-		};
-
-		report.write().unwrap().package_name = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().name.clone();
-		
-		let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test" ), dir )?;
-		if cmd_rep.out.is_empty() 
-		{
-			cmd_rep.out = cmd_rep.err.clone();
-			report.write().unwrap().compilation_status.push_str( "Error while compiling tests with feature [All features]\n" );
-		}
-		report.write().unwrap().tests.insert( "All features".to_string(), cmd_rep );
-		
-		let features = metadata.packages.iter().find( |x| x.manifest_path == path ).unwrap().features.clone();
-		let mut features = features.keys().collect::< Vec< &String > >();
-
-		if !include_features.is_empty() 
-		{
-			features = include_features.iter().map( | x | x ).collect();
+			return Err( format_err!( "Missing toolchain(-s) that was required: [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) )
 		}
 
-		if parallel 
+		let report = Arc::new( Mutex::new( TestReport::default() ) );
+
+		let path = args.dir.absolute_path().join("Cargo.toml");
+		let metadata = Workspace::with_crate_dir( args.dir.clone() )?;
+
+		let package = metadata.packages_get()?.into_iter().find( |x| x.manifest_path == path.as_ref() ).ok_or( format_err!( "Package not found" ) )?;
+		report.lock().unwrap().package_name = package.name.clone();
+
+		let exclude = args.exclude_features.iter().cloned().collect();
+		let features_powerset = package
+		.features
+		.keys()
+		.filter( | f | !args.exclude_features.contains( f ) && !args.include_features.contains( f ) )
+		.cloned()
+		.powerset()
+		.map( BTreeSet::from_iter )
+		.filter( | subset | subset.len() <= args.power as usize )
+		.map( | mut subset | { subset.extend( args.include_features.clone() ); subset.difference( &exclude ).cloned().collect() } )
+		.collect::< HashSet< BTreeSet< String > > >();
+
+		let mut pool = ThreadPoolBuilder::new().use_current_thread();
+		pool = if args.parallel { pool } else { pool.num_threads( 1 ) };
+		let pool = pool.build().unwrap();
+
+		pool.scope( | s |
 		{
-			features
-			.par_iter()
-			.for_each( |feature| 
-				{
-					if exclude_features.contains( &feature ) 
-					{
-						return;
-					}
-					let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features --features {feature}" ), dir ).unwrap();
-					if cmd_rep.out.is_empty() 
-					{
-						cmd_rep.out = cmd_rep.err.clone();
-						report.write().unwrap().compilation_status.push_str( &format!( "Error while compiling tests with feature [{}]\n", feature ) );
-					}
-					report.write().unwrap().tests.insert( feature.to_string(), cmd_rep );
-				}
-			);
-		}
-		else 
-		{
-			for feature in features
+			let dir = &args.dir;
+			for channel in args.channels
 			{
-				if exclude_features.contains( &feature ) 
+				for feature in &features_powerset
 				{
-					continue;
+					let r = report.clone();
+					s.spawn( move | _ |
+					{
+						let cmd_rep = cargo::test( dir, cargo::TestArgs::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), false ).unwrap_or_else( | rep | rep.downcast().unwrap() );
+						r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
+					});
 				}
-				let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features --features {feature}" ), dir )?;
-				if cmd_rep.out.is_empty() 
-				{
-					cmd_rep.out = cmd_rep.err.clone();
-					report.write().unwrap().compilation_status.push_str( &format!( "Error while compiling tests with feature [{}]\n", feature ) );
-				}
-				report.write().unwrap().tests.insert( feature.clone(), cmd_rep );
 			}
-		}
-		
-		let mut cmd_rep = process::start_sync( &format!( "cargo +{toolchain} test --no-default-features" ), dir )?;
-		if cmd_rep.out.is_empty() 
-		{
-			cmd_rep.out = cmd_rep.err.clone();
-			report.write().unwrap().compilation_status.push_str( "Error while compiling tests with feature [No features]\n" );
-		}
-		report.write().unwrap().tests.insert( "No features".to_string(), cmd_rep );
-		if report.read().unwrap().compilation_status.is_empty() 
-		{
-			report.write().unwrap().compilation_status.push_str( "Compilation of all tests with each feature variant was successful\n" );
-		}
+		});
 
-		let report_lock = report.read().unwrap();
-		let test_report: &TestReport = &*report_lock;
-		Ok( test_report.clone() )
+		// unpack. all tasks must be completed until now
+		let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
+
+		Ok( report )
 	}
 }
 
@@ -166,4 +146,5 @@ crate::mod_interface!
 {
   /// run all tests in all crates
   prelude use run_tests;
+	protected use TestsArgs;
 }
