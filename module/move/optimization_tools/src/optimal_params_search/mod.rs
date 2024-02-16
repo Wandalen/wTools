@@ -1,6 +1,8 @@
 //! Funcions for calculation optimal config parameters.
 //! 
+
 pub mod nelder_mead;
+pub mod sim_annealing;
 use std::ops::RangeBounds;
 use iter_tools::Itertools;
 
@@ -131,14 +133,14 @@ where  R : RangeBounds< f64 > + Sync,
   {
     log::info!
     (
-      "temp_decrease_coefficient : {:?}, max_mutations_per_dynasty: {}, mutation_rate: {}, crossover_rate: {};",
-      case.coords[ 0 ], case.coords[ 1 ], case.coords[ 2 ], case.coords[ 3 ]
+      "temp_decrease_coefficient : {:.4?}, max_mutations_per_dynasty: {}, mutation_rate: {:.2}, crossover_rate: {:.2};",
+      case.coords[ 0 ], case.coords[ 1 ] as usize, case.coords[ 2 ], case.coords[ 3 ]
     );
 
     log::info!
     (
       "max_stale_iterations : {:?}, population_size: {}, dynasties_limit: {};",
-      case.coords[ 4 ], case.coords[ 5 ], case.coords[ 6 ]
+      case.coords[ 4 ] as usize, case.coords[ 5 ] as usize, case.coords[ 6 ] as usize
     );
 
     let temp_schedule = LinearTempSchedule
@@ -191,20 +193,35 @@ where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
     
     log::info!
       (
-        "execution duration in ms : {:?}",
+        "execution duration: {:?}",
         elapsed
       );
     elapsed.as_secs_f64()
   }; 
 
-  let mut optimizer = nelder_mead::Optimizer::new( objective_function );
-  optimizer.bounds = problem.bounds;
-  optimizer.set_starting_point( problem.starting_point.clone() );
-  optimizer.set_simplex_size( problem.simplex_size );
+  let mut bounds = Vec::new();
+  for bound in problem.bounds
+  {
+    if let Some( bound ) = bound
+    {
+      bounds.push( bound );
+    }
+  }
+  
+  let mut optimizer = sim_annealing::Optimizer
+  {
+    bounds : bounds,
+    objective_function : objective_function,
+    max_iterations : 50,
+  };
+  // let mut optimizer = nelder_mead::Optimizer::new( objective_function );
+  // optimizer.bounds = problem.bounds;
+  // optimizer.set_starting_point( problem.starting_point.clone() );
+  // optimizer.set_simplex_size( problem.simplex_size );
 
-  optimizer.improvement_threshold = config.improvement_threshold;
-  optimizer.max_iterations = config.max_iterations;
-  optimizer.max_no_improvement_steps = config.max_no_improvement_steps;
+  // optimizer.improvement_threshold = config.improvement_threshold;
+  // optimizer.max_iterations = config.max_iterations;
+  // optimizer.max_no_improvement_steps = config.max_no_improvement_steps;
 
   optimizer.optimize()
 }
