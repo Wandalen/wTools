@@ -1,3 +1,5 @@
+//! Caching of results for optimal parameters search.
+
 use std::
 {
   fs::OpenOptions, path::{ PathBuf, Path },
@@ -20,6 +22,7 @@ struct ObjectiveFunctionValue
     value : f64,
 }
 
+/// Save results of optimal parameters search.
 pub fn save_result( point : Vec< f64 >, value : f64 ) -> Result< (), Box< dyn std::error::Error > >
 {
   let obj_value = ObjectiveFunctionValue{ point, value };
@@ -41,6 +44,7 @@ pub fn save_result( point : Vec< f64 >, value : f64 ) -> Result< (), Box< dyn st
   Ok( () )
 }
 
+/// Read results from previous execution.
 pub fn read_results() -> Result< (), Box< dyn std::error::Error > >
 {
 
@@ -53,11 +57,12 @@ pub fn read_results() -> Result< (), Box< dyn std::error::Error > >
   let mut buffer: Vec< u8 > = Vec::new();
   reader.read_until( 0x0A as u8, &mut buffer )?;
 
-  let archived = rkyv::check_archived_root::< ObjectiveFunctionValue >( &buffer[..] ).unwrap();
+  let _archived = rkyv::check_archived_root::< ObjectiveFunctionValue >( &buffer[..] ).unwrap();
 
   Ok( () )
 }
 
+/// Get workspace directory.
 pub fn workspace_dir() -> PathBuf 
 {
   let output = Command::new( env!( "CARGO" ) )

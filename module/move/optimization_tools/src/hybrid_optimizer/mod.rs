@@ -34,6 +34,7 @@ pub enum Reason
   DynastiesLimit,
 }
 
+/// Configuration for Hybrid Optimizer.
 #[ derive( Debug ) ]
 pub struct Config
 {
@@ -92,6 +93,7 @@ impl Default for Config
   }
 }
 
+/// Specific optimization problem for Hybrid Optimizer.
 #[ derive( Debug ) ]
 pub struct Problem< S : InitialProblem, C, M >
 {
@@ -113,6 +115,7 @@ pub struct Problem< S : InitialProblem, C, M >
 
 impl< S : InitialProblem, C, M > Problem< S, C, M >
 {
+  /// Create new instance of optimization problem for Hybrid Optimizer.
   pub fn new( initial : S, crossover_operator : C, mutation_operator : M ) -> Self
   where TournamentSelection : SelectionOperator< < S as InitialProblem >::Person >
   {
@@ -142,9 +145,10 @@ impl< S : InitialProblem, C, M > Problem< S, C, M >
 #[ derive( Debug ) ]
 pub struct HybridOptimizer< S : InitialProblem, C, M >
 {
-
+  /// Configuration of Hybrid Optimizer.
   config : Config,
 
+  /// Specific optimization problem.
   problem : Problem< S, C, M >,
 }
 
@@ -488,6 +492,7 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
 
 }
 
+/// Starting parameters for optimal parameters search for hybrid optimization configuration.
 pub fn starting_params_for_hybrid() -> Result< OptimalProblem< RangeInclusive< f64 > >, optimal_params_search::Error >
 {
   let opt_problem = OptimalProblem::new()
@@ -503,6 +508,7 @@ pub fn starting_params_for_hybrid() -> Result< OptimalProblem< RangeInclusive< f
   Ok( opt_problem )
 }
 
+/// Starting parameters for optimal parameters search for SA optimization configuration.
 pub fn starting_params_for_sa() -> Result< OptimalProblem< RangeInclusive< f64 > >, optimal_params_search::Error >
 {
   let opt_problem = OptimalProblem::new()
@@ -518,6 +524,7 @@ pub fn starting_params_for_sa() -> Result< OptimalProblem< RangeInclusive< f64 >
   Ok( opt_problem )
 }
 
+/// Starting parameters for optimal parameters search for GA optimization configuration.
 pub fn starting_params_for_ga() -> Result< OptimalProblem< RangeInclusive< f64 > >, optimal_params_search::Error >
 {
   let opt_problem = OptimalProblem::new()

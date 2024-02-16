@@ -38,9 +38,13 @@ pub struct Simplex
 #[ derive( Debug, Clone ) ] 
 pub struct Optimizer< R, F >
 {
+  /// Bounds for parameters of objective function, may be unbounded or bounded on one side.
   pub bounds : Vec< Option< R > >,
+  /// Staring point for optimization process.
   pub start_point : Point,
+  /// Initial simplex set in starting point.
   pub initial_simplex : Simplex,
+  /// Function to optimize.
   pub objective_function : F,
   /// Threshold used to detect improvement in optimization process.
   /// If difference between current best value and previous best value is less than the threshold, it is considered that no improvement was achieved.
@@ -68,6 +72,7 @@ pub struct Optimizer< R, F >
 
 impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< R, F >
 {
+  /// Create new instance of Nelder-Mead optimizer.
   pub fn new( objective_function : F ) -> Self 
   {
     Self
@@ -297,6 +302,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
     self.start_point = Point::new( new_coords );
   }
 
+  /// Parallel optimization by simultaneously processing reflection, expansion and contraction points.
   pub fn optimize_parallel_by_points( &mut self ) -> Result< Solution, Error >
   {
     if self.start_point.coords.len() == 0
@@ -476,6 +482,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
     
   }
 
+  /// Parallel optimization processing worst directions simultaneously.
   pub fn optimize_parallel_by_direction( &mut self ) -> Result< Solution, Error >
   {
     if self.start_point.coords.len() == 0
@@ -646,6 +653,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
     
   }
 
+  /// Optimization starting from several random points.
   pub fn optimize_from_random_points( &mut self ) -> Vec< Result< Solution, Error > >
   {
     let points_number = self.start_point.coords.len() * 4;
@@ -654,7 +662,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( Point ) -> f64 + Sync > Optimizer< 
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
 
-    for i in 0..points_number
+    for _ in 0..points_number
     {
       let mut point = Vec::new();
 
@@ -1016,15 +1024,15 @@ pub enum TerminationReason
 /// Possible error when building NMOptimizer.
 #[ derive( thiserror::Error, Debug ) ]
 pub enum Error {
-  #[ error( "optimizer must operate on space with at least 1 dimension" ) ]
-  ZeroDimError,
-
+  /// Error for Simplex size that have less dimessions than starting point.
   #[ error( "simplex size must have exactly one value for every dimension" ) ]
   SimplexSizeDimError,
 
+  /// Error if calculation of starting point failed.
   #[error("cannot calculate starting point, no bounds provided")]
   StartPointError,
 
+  /// Error for given starting point that lies out of provided bounds.
   #[error("starting point is out of bounds")]
   StartPointOutOfBoundsError,
 }

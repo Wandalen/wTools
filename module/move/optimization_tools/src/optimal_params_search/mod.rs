@@ -31,12 +31,18 @@ impl Level {
   }
 }
 
+/// 
 #[ derive( Debug, Clone ) ]
 pub struct OptimalParamsConfig
 {
-  improvement_threshold : f64,
-  max_no_improvement_steps : usize,
-  max_iterations : usize,
+  /// Minimal value detected as improvement in objective function result.
+  pub improvement_threshold : f64,
+
+  /// Max amount of steps performed without detected improvement, termination condition.
+  pub max_no_improvement_steps : usize,
+
+  /// Limit of total iterations of optimization process, termination condition.
+  pub max_iterations : usize,
 }
 
 impl Default for OptimalParamsConfig
@@ -52,17 +58,26 @@ impl Default for OptimalParamsConfig
   }
 } 
 
+/// Problem for optimal parameters search using Nelder-Mead algorithm.
 #[ derive( Debug, Clone ) ]
 pub struct OptimalProblem< R : RangeBounds< f64 > >
 {
+  /// Containes names of parameters if provided.
   pub params_names : Vec< Option< String > >,
+
+  /// Contains bounds for parameters, may be unbounded or bounded on one side.
   pub bounds : Vec< Option< R > >,
+
+  /// Starting point coordinates for optimization process.
   pub starting_point : Vec< Option< f64 > >,
+
+  /// Size of initial simplex for optimization.
   pub simplex_size : Vec< Option< f64 > >,
 }
 
 impl< 'a, R : RangeBounds< f64 > > OptimalProblem< R >
 {
+  /// Create new instance for optimization problem
   pub fn new() -> Self
   {
     Self
@@ -74,6 +89,7 @@ impl< 'a, R : RangeBounds< f64 > > OptimalProblem< R >
     }
   }
 
+  /// Add parameter to optimal parameters search problem.
   pub fn add
   ( 
     mut self,
@@ -181,7 +197,8 @@ where  R : RangeBounds< f64 > + Sync,
   res
 }
 
-pub fn optimize_by_time< F, R >( config : OptimalParamsConfig, problem : OptimalProblem< R >, objective_function : F ) -> Result< nelder_mead::Solution, nelder_mead::Error >
+/// Wrapper for optimizing objective function by execution time instead of value.
+pub fn optimize_by_time< F, R >( _config : OptimalParamsConfig, problem : OptimalProblem< R >, objective_function : F ) -> Result< nelder_mead::Solution, nelder_mead::Error >
 where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
 {
   let objective_function = | case : nelder_mead::Point |
@@ -208,7 +225,7 @@ where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
     }
   }
   
-  let mut optimizer = sim_annealing::Optimizer
+  let optimizer = sim_annealing::Optimizer
   {
     bounds : bounds,
     objective_function : objective_function,
@@ -228,10 +245,13 @@ where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
 
 /// Possible error when building NMOptimizer.
 #[ derive( thiserror::Error, Debug ) ]
-pub enum Error {
+pub enum Error 
+{
+  /// Error for parameters with duplicate names.
   #[ error( "parameter with similar name exists" ) ]
   NameError,
 
+  /// Error for value located out of its bounds.
   #[ error( "starting value is out of bounds" ) ]
   OutOfBoundsError,
 }
