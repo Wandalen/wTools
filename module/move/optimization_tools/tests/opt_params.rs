@@ -80,7 +80,7 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   "#;
 
   logger_init();
-  log::set_max_level( log::LevelFilter::Warn );
+  log::set_max_level( log::LevelFilter::Info );
 
   let config = OptimalParamsConfig::default();
   let initial = SudokuInitial::new( Board::from( easy ) );

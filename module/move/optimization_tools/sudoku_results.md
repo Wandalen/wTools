@@ -1,47 +1,47 @@
 Sudoku Problem
 
 For parameters:
- - temperature decrease coefficient : 0.9991;
- - max mutations per dynasty : 307;
- - mutation rate : 0.29;
- - crossover rate : 0.50;
- - elitism rate : 0.21;
- - max stale iterations : 31;
+ - temperature decrease coefficient : 0.8197;
+ - max mutations per dynasty : 638;
+ - mutation rate : 0.10;
+ - crossover rate : 0.32;
+ - elitism rate : 0.58;
+ - max stale iterations : 619;
 
 
 | Level                | Population size      | Dynasties limit      | Execution time       | 
 |----------------------|----------------------|----------------------|----------------------|-
-| Easy                 | 116                  | 1110                 | 0.571s               | 
+| Easy                 | 336                  | 1148                 | 0.617s               | 
 
 
 
 For parameters:
- - temperature decrease coefficient : 0.9992;
- - max mutations per dynasty : 299;
+ - temperature decrease coefficient : 0.9742;
+ - max mutations per dynasty : 638;
  - mutation rate : 1.00;
  - crossover rate : 0.00;
- - elitism rate : 0.00;
- - max stale iterations : 29;
+ - elitism rate : -0.00;
+ - max stale iterations : 746;
 
 
 | Level                | Population size      | Dynasties limit      | Execution time       | 
 |----------------------|----------------------|----------------------|----------------------|-
-| Easy                 | 1                    | 115                  | 0.052s               | 
+| Easy                 | 1                    | 2699                 | 0.028s               | 
 
 
 
 For parameters:
- - temperature decrease coefficient : 0.9991;
- - max mutations per dynasty : 285;
- - mutation rate : 0.24;
- - crossover rate : 0.46;
- - elitism rate : 0.30;
- - max stale iterations : 32;
+ - temperature decrease coefficient : 0.1622;
+ - max mutations per dynasty : 92;
+ - mutation rate : 0.20;
+ - crossover rate : 0.15;
+ - elitism rate : 0.65;
+ - max stale iterations : 215;
 
 
 | Level                | Population size      | Dynasties limit      | Execution time       | 
 |----------------------|----------------------|----------------------|----------------------|-
-| Easy                 | 265                  | 1167                 | 0.709s               | 
+| Easy                 | 789                  | 4852                 | 2.515s               | 
 
 
 
