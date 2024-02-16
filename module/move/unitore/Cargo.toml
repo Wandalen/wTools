@@ -1,0 +1,17 @@
+[package]
+name = "unitore"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1.36.0", features = [ "rt", "rt-multi-thread", "io-std", "macros" ] }
+hyper = { version = "1.1.0", features = [ "full" ] }
+hyper-tls = "0.6.0"
+hyper-util = { version = "0.1", features = [ "full" ] }
+http-body-util = "0.1"
+feed-rs = "1.4.0"
+
+[lints]
+workspace = true
