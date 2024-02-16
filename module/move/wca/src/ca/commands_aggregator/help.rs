@@ -79,9 +79,9 @@ pub( crate ) mod private
       let name = &command.phrase;
       let hint = if command.long_hint.is_empty() { &command.hint } else { &command.long_hint };
       let subjects = if command.subjects.is_empty() { "" } else { " <subjects> " };
-      let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{:?}]", subj.hint, subj.kind ) ).join( "\n\t" );
+      let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{:?}] {}", subj.hint, subj.kind, if subj.optional { "?" } else { "" } ) ).join( "\n\t" );
       let properties = if command.properties.is_empty() { " " } else { " <properties> " };
-      let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{name} - {} [{:?}]", value.hint, value.kind ) ).join( "\n\t" );
+      let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{name} - {} [{:?}] {}", value.hint, value.kind, if value.optional { "?" } else { "" } ) ).join( "\n\t" );
 
       format!( "{name}{subjects}{properties}- {hint}\n{}{}",
       if command.subjects.is_empty() { "".to_string() } else { format!( "\nSubjects:\n\t{}", &full_subjects ) },
