@@ -1,0 +1,8 @@
+error: Parametrized element should be single, because Many has only one element
+        many Bad : < T1, T2 >
+ --> tests/dt/type_constructor/many/many_with_two_args_test.rs:5:3
+  |
+5 |   types!( many Bad : < T1, T2 > );
+  |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `$crate::_many` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)

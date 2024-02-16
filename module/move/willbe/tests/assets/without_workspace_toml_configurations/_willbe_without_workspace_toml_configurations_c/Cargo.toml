@@ -1,0 +1,12 @@
+[package]
+name = "_willbe_without_workspace_toml_configurations_c"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/Testusername/TestProject/tree/alpha/module/core/test"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package.metadata]
+stability = "stable"
+
+[dependencies]

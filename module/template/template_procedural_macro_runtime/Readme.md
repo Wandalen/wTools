@@ -3,4 +3,4 @@
 
 ___
 
-Not intended to be used without derive. This module and derive is aggregate in module::procedural_macro is [here](https://github.com/Wandalen/wTools/tree/master/module/rust/procedural_macro).
+Not intended to be used without derive. This module and derive is aggregate in module::procedural_macro is [here](https://github.com/Wandalen/wTools/tree/master/module/core/procedural_macro).

@@ -1,0 +1,450 @@
+[package]
+name = "wtools"
+version = "0.2.20"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/wtools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/wtools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/wtools"
+description = """
+Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+# rustdoc-args = []
+
+exclude = [ "/tests", "/examples", "-*" ]
+
+# = features
+
+[features]
+
+# iter
+
+iter = [ "iter_tools" ]
+iter_default = [
+  "iter",
+  # "iter_use_std",
+  "iter_tools/default",
+]
+iter_full = [
+  "iter",
+  # "iter_use_std",
+  # "iter_use_alloc",
+]
+iter_no_std = [ "iter_tools/no_std" ]
+# iter_no_std = [ "iter", "iter_tools/no_std" ]
+iter_use_alloc = [ "iter", "iter_tools/use_alloc" ]
+
+# meta
+
+meta = [ "meta_tools" ]
+meta_default = [
+  "meta",
+  "meta_for_each",
+  "meta_impls_index",
+  "meta_mod_interface",
+  # "meta_former",
+  # "meta_options",
+  "meta_constructors",
+  "meta_idents_concat",
+]
+meta_full = [
+  "meta",
+  "meta_for_each",
+  "meta_impls_index",
+  "meta_mod_interface",
+  # "meta_former",
+  # "meta_options",
+  "meta_constructors",
+  "meta_idents_concat",
+]
+# meta_use_std = [ "meta", "meta_tools/use_std" ]
+meta_no_std = [ "meta", "meta_tools/no_std" ]
+meta_use_alloc = [ "meta", "meta_tools/use_alloc" ]
+
+meta_for_each = [ "meta", "meta_tools/meta_for_each" ]
+meta_impls_index = [ "meta", "meta_tools/meta_impls_index" ]
+meta_mod_interface = [ "meta" ]
+# meta_mod_interface = [ "meta", "meta_tools/mod_interface" ]
+meta_constructors = [ "meta", "meta_tools/meta_constructors" ]
+meta_idents_concat = [ "meta", "meta_tools/meta_idents_concat" ]
+# meta_former = [ "meta", "meta_tools/former" ]
+# meta_options = [ "meta", "meta_tools/options" ]
+
+# mem
+
+mem = [ "mem_tools" ]
+mem_default = [
+  "mem",
+]
+mem_full = [
+  "mem",
+]
+# mem_use_std = [ "mem", "mem_tools/use_std" ]
+mem_no_std = [ "mem", "mem_tools/no_std" ]
+mem_use_alloc = [ "mem", "mem_tools/use_alloc" ]
+
+# typing
+
+typing = [ "typing_tools" ]
+typing_default = [
+  "typing",
+  "typing_inspect_type",
+  "typing_is_slice",
+  "typing_implements",
+]
+typing_full = [
+  "typing",
+  "typing_inspect_type",
+  "typing_is_slice",
+  "typing_implements",
+]
+typing_no_std = [ "typing", "typing_tools/no_std" ]
+typing_use_alloc = [ "typing", "typing_tools/use_alloc" ]
+
+# typing_nightly = [ "typing", "nightly", "typing_tools/nightly", ]
+typing_inspect_type = [ "typing", "typing_tools/typing_inspect_type" ]
+typing_is_slice = [ "typing", "typing_tools/typing_is_slice" ]
+typing_implements = [ "typing", "typing_tools/typing_implements" ]
+
+# time
+
+time = [ "time_tools" ]
+time_default = [
+  "time",
+  "time_now",
+]
+time_full = [
+  "time",
+  "time_now",
+]
+# time_use_std = [ "time", "time_tools/use_std" ]
+time_no_std = [ "time", "time_tools/no_std" ]
+time_use_alloc = [ "time", "time_tools/use_alloc" ]
+
+time_now = [ "time", "time_tools/time_now" ]
+
+# string
+
+string = [ "strs_tools" ]
+string_default = [
+  "string",
+  # "string_use_std",
+  "string_indentation",
+  "string_isolate",
+  "string_parse_request",
+  "string_parse_number",
+  "string_split",
+]
+string_full = [
+  "string",
+  # "string_use_std",
+  "string_indentation",
+  "string_isolate",
+  "string_parse_request",
+  "string_parse_number",
+  "string_split",
+]
+# string_use_std = [ "string", "strs_tools/use_std" ]
+string_no_std = [ "string", "strs_tools/no_std" ]
+string_use_alloc = [ "string", "strs_tools/use_alloc" ]
+
+string_indentation = [ "string", "strs_tools/string_indentation" ]
+string_isolate = [ "string", "strs_tools/string_isolate" ]
+string_parse_request = [ "string", "string_isolate", "strs_tools/string_parse_request" ]
+string_parse_number = [ "string", "strs_tools/string_parse_number" ]
+string_split = [ "string", "strs_tools/string_split", "strs_tools/string_parse_request" ]
+
+# error
+
+error = [ "error_tools" ]
+error_default = [
+  "error",
+  "error_for_lib",
+  "error_for_app",
+  # "error_use_std",
+]
+error_full = [
+  "error",
+  "error_for_lib",
+  "error_for_app",
+  # "error_use_std",
+]
+# error_use_std = [ "error", "error_tools/use_std" ]
+error_no_std = [ "error", "error_tools/no_std" ]
+error_use_alloc = [ "error", "error_tools/use_alloc" ]
+
+error_for_lib = [ "error", "error_tools/error_for_lib" ]
+error_for_app = [ "error", "error_tools/error_for_app" ]
+
+# derive
+
+derive = [ "derive_tools" ]
+derive_full = [
+
+  "derive",
+  # "derive_nightly",
+
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_strum",
+  "derive_strum_phf",
+
+  "derive_display",
+  "derive_from_str",
+
+  "derive_clone_dyn",
+  # "derive_clone_dyn_use_std",
+
+]
+derive_default = [
+
+  "derive",
+  # "derive_nightly",
+
+  "derive_add_assign",
+  "derive_add",
+  "derive_as_mut",
+  "derive_as_ref",
+  "derive_constructor",
+  "derive_deref",
+  "derive_deref_mut",
+  "derive_error",
+  "derive_from",
+  "derive_index",
+  "derive_index_mut",
+  "derive_into",
+  "derive_into_iterator",
+  "derive_iterator",
+  "derive_mul_assign",
+  "derive_mul",
+  "derive_not",
+  "derive_sum",
+  "derive_try_into",
+  "derive_is_variant",
+  "derive_unwrap",
+  "derive_convert_case",
+
+  "derive_strum",
+  "derive_strum_phf",
+
+  "derive_display",
+  "derive_from_str",
+
+  "derive_clone_dyn",
+  # "derive_clone_dyn_use_std",
+
+]
+
+# derive_use_std = [ "derive", "derive_tools/use_std" ]
+derive_no_std = [ "derive", "derive_tools/no_std" ]
+derive_use_alloc = [ "derive", "derive_tools/use_alloc" ]
+
+derive_nightly = [ "derive", "nightly", "derive_tools/nightly" ]
+derive_enable_track_caller = [ "derive", "derive_tools/enable_track_caller" ]
+
+derive_add_assign = [ "derive", "derive_tools/derive_add_assign" ]
+derive_add = [ "derive", "derive_tools/derive_add" ]
+derive_as_mut = [ "derive", "derive_tools/derive_as_mut" ]
+derive_as_ref = [ "derive", "derive_tools/derive_as_ref" ]
+derive_constructor = [ "derive", "derive_tools/derive_constructor" ]
+derive_deref = [ "derive", "derive_tools/derive_deref" ]
+derive_deref_mut = [ "derive", "derive_tools/derive_deref_mut" ]
+derive_error = [ "derive", "derive_tools/derive_error" ]
+derive_from = [ "derive", "derive_tools/derive_from" ]
+derive_index = [ "derive", "derive_tools/derive_index" ]
+derive_index_mut = [ "derive", "derive_tools/derive_index_mut" ]
+derive_into = [ "derive", "derive_tools/derive_into" ]
+derive_into_iterator = [ "derive", "derive_tools/derive_into_iterator" ]
+derive_iterator = [ "derive", "derive_tools/derive_iterator" ]
+derive_mul_assign = [ "derive", "derive_tools/derive_mul_assign" ]
+derive_mul = [ "derive", "derive_tools/derive_mul" ]
+derive_not = [ "derive", "derive_tools/derive_not" ]
+derive_sum = [ "derive", "derive_tools/derive_sum" ]
+derive_try_into = [ "derive", "derive_tools/derive_try_into" ]
+derive_is_variant = [ "derive", "derive_tools/derive_is_variant" ]
+derive_unwrap = [ "derive", "derive_tools/derive_unwrap" ]
+derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
+
+derive_strum = [ "derive", "derive_tools/strum_derive" ]
+derive_strum_phf = [ "derive", "derive_tools/strum_phf" ]
+
+derive_display = [ "derive", "derive_tools/derive_display", "parse-display" ]
+derive_from_str = [ "derive", "derive_tools/derive_from_str", "parse-display" ]
+
+derive_clone_dyn = [ "derive", "derive_tools/derive_clone_dyn" ]
+# derive_clone_dyn_use_std = [ "derive_clone_dyn", "derive_tools/derive_clone_dyn_use_std" ]
+derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "derive_tools/derive_clone_dyn_use_alloc" ]
+
+# dt
+
+dt = [ "data_type" ]
+dt_default = [
+  "dt",
+  # "dt_use_std",
+  "data_type/default",
+  "dt_either",
+  "dt_prelude",
+  "dt_type_constructor",
+  "dt_make",
+  "dt_vectorized_from",
+  "dt_interval",
+]
+dt_full = [
+  "dt",
+  # "dt_use_std",
+  "data_type/full",
+  "dt_either",
+  "dt_prelude",
+  "dt_type_constructor",
+  "dt_make",
+  "dt_vectorized_from",
+  "dt_interval",
+]
+dt_no_std = [ "dt", "data_type/no_std" ]
+# dt_use_std = [ "dt", "data_type/use_std" ]
+dt_use_alloc = [ "dt", "data_type/use_alloc" ]
+
+dt_either = [ "dt", "data_type/dt_either" ]
+dt_prelude = [ "dt", "data_type/dt_prelude" ]
+dt_type_constructor = [ "dt", "data_type/dt_type_constructor" ]
+dt_make = [ "dt", "data_type/dt_make" ]
+dt_vectorized_from = [ "dt", "data_type/dt_vectorized_from" ]
+dt_interval = [ "dt", "data_type/dt_interval" ]
+
+# diagnostics
+
+diagnostics = [ "diagnostics_tools" ]
+diagnostics_full = [
+  "diagnostics",
+  "diagnostics_runtime_assertions",
+  "diagnostics_compiletime_assertions",
+]
+diagnostics_default = [
+  "diagnostics",
+  "diagnostics_tools/default",
+  "diagnostics_runtime_assertions",
+  "diagnostics_compiletime_assertions",
+]
+# diagnostics_use_std = [ "diagnostics", "diagnostics_tools/use_std" ]
+diagnostics_no_std = [ "diagnostics", "diagnostics_tools/no_std" ]
+diagnostics_use_alloc = [ "diagnostics", "diagnostics_tools/use_alloc" ]
+
+diagnostics_runtime_assertions = [ "diagnostics_tools/diagnostics_runtime_assertions" ]
+diagnostics_compiletime_assertions = [ "diagnostics_tools/diagnostics_compiletime_assertions" ]
+
+# common
+
+nightly = [] # must be empty
+
+# # use_std = []
+no_std = []
+use_alloc = []
+enabled = []
+
+# xxx : qqq : should it be filled by all non_std?
+# iter_no_std = [ "iter", "iter_tools/no_std" ]
+# iter_use_alloc = [ "iter", "iter_tools/use_alloc" ]
+
+full = [
+  "iter_full",
+  "meta_full",
+  "mem_full",
+  "typing_full",
+  "time_full",
+  "string_full",
+  "error_full",
+  "derive_full",
+  "dt_full",
+  "diagnostics_full",
+  # "use_std",
+  # "use_alloc",
+]
+
+default = [
+  "iter_default",
+  "meta_default",
+  "mem_default",
+  "typing_default",
+  "time_default",
+  "string_default",
+  "error_default",
+  "derive_default",
+  "dt_default",
+  "diagnostics_default",
+  # "use_std",
+]
+
+[dependencies]
+
+# iter
+iter_tools = { workspace = true, optional = true, features = [ "default" ] }
+
+# meta
+meta_tools = { workspace = true, optional = true, features = [ "default" ] }
+impls_index = { workspace = true } # despite impls_index is imported by meta_tools it should also be imported immediatly
+# qqq : fix that
+
+# mem
+mem_tools = { workspace = true, optional = true, features = [ "default" ] }
+
+# typing
+typing_tools = { workspace = true, optional = true, features = [ "default" ] }
+
+# time
+time_tools = { workspace = true, optional = true, features = [ "default" ] }
+
+# sting
+strs_tools = { workspace = true, optional = true, features = [ "default" ] }
+
+# err
+error_tools = { workspace = true, optional = true, features = [ "default" ] }
+
+# derive
+derive_tools = { workspace = true, optional = true, features = [ "default" ] }
+
+# data_type
+data_type = { workspace = true, optional = true, features = [ "default" ] }
+
+# diagnostics
+diagnostics_tools = { workspace = true, optional = true, features = [ "default" ] }
+
+# external
+parse-display = { version = "~0.5", optional = true, features = [ "default" ] } # have to be here because of problem with FromStr
+
+[dev-dependencies]
+test_tools = { workspace = true }

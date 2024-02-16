@@ -1,0 +1,51 @@
+[package]
+name = "former_meta"
+version = "0.2.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/former_meta"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former_meta"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former_meta"
+description = """
+Former - a variation of builder pattern. Implementation of its derive macro. Should not be used independently, instead use module::former which relies on the module.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+exclude = [ "/tests", "/examples", "-*" ]
+
+[features]
+default = [ "enabled" ]
+full = [ "enabled" ]
+enabled = []
+
+[lib]
+proc-macro = true
+
+[dependencies]
+macro_tools = { workspace = true, features = [ "default" ] }
+iter_tools = { workspace = true, features = [ "default" ] }
+
+# xxx : optimize features set
+
+# proc-macro2 = "~1.0"
+# quote = "~1.0"
+# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
+# iter_tools = { workspace = true, features = [ "default" ] }
+# macro_tools = { workspace = true, features = [ "default" ] }
+
+[dev-dependencies]
+# trybuild = { version = "~1.0", features = [ "diff" ] }
+test_tools = { workspace = true, features = [ "default" ] }

@@ -1,0 +1,7 @@
+error: Use either [ private, protected, orphan, exposed, prelude ] visibility:
+         #[doc = " layer_a"] pub use;
+  --> tests/inc/derive/use_bad_vis/mod.rs
+   |
+   | /   /// layer_a
+   | |   pub use f1;
+   | |_____________^

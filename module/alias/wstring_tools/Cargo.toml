@@ -1,10 +1,10 @@
 [package]
 name = "wstring_tools"
-version = "0.1.5"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
@@ -17,8 +17,12 @@ Tools to manipulate strings.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[lints]
+workspace = true
+
 [package.metadata.docs.rs]
-all-features = true
+features = [ "full" ]
+all-features = false
 
 include = [
   "/rust/impl/wstring_tools_lib.rs",
@@ -29,48 +33,47 @@ include = [
 
 [features]
 default = [
-  "use_std",
   "indentation",
-  "isolate",
-  "parse_request",
-  "split",
+  # "isolate",
+  # "parse_request",
+  # "split",
   "parse_number",
 ]
 full = [
-  "use_std",
   "indentation",
-  "isolate",
-  "parse_request",
-  "split",
+  # "isolate",
+  # "parse_request",
+  # "split",
   "parse_number",
 ]
-use_std = [ "strs_tools/use_std" ]
+# use_std = [ "strs_tools/use_std" ]
+no_std = [ "strs_tools/no_std" ]
 use_alloc = [ "strs_tools/use_alloc" ]
 
-indentation = [ "strs_tools/indentation" ]
-isolate = [ "strs_tools/isolate" ]
-parse_request  = [ "split", "isolate", "strs_tools/parse_request" ]
-parse_number = [ "strs_tools/parse_number" ]
-split = [ "strs_tools/split" ]
+indentation = [ "strs_tools/string_indentation" ]
+isolate = [ "strs_tools/string_isolate" ]
+parse_request  = [ "split", "isolate", "strs_tools/string_parse_request" ]
+parse_number = [ "strs_tools/string_parse_number" ]
+split = [ "strs_tools/string_split" ]
 
-[lib]
-name = "wstring_tools"
-path = "rust/impl/string/wstring_tools_lib.rs"
+# [lib]
+# name = "wstring_tools"
+# path = "src/string/wstring_tools_lib.rs"
 
-[[test]]
-name = "string_test"
-path = "rust/test/string/wstring_tools_tests.rs"
+# [[test]]
+# name = "string_test"
+# path = "tests/string/wstring_tools_tests.rs"
 
-[[test]]
-name = "string_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
+# [[test]]
+# name = "string_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "wstring_tools_trivial_sample"
-# path = "sample/rust/strs_tools_trivial_sample/src/main.rs"
+# path = "examples/strs_tools_trivial_sample/src/main.rs"
 
 [dependencies]
-strs_tools = { version = "~0.1", path = "../../rust/strs_tools" }
+strs_tools = { workspace = true }
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
+test_tools = { workspace = true }

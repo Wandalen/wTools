@@ -1,8 +1,0 @@
-[package]
-name = "typing_tools_trivial_sample"
-version = "0.0.0"
-edition = "2021"
-publish = false
-
-[dependencies]
-typing_tools = { version = "*", path = "../../../module/rust/typing_tools" }

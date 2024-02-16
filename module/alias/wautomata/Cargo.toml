@@ -1,24 +1,28 @@
 [package]
 name = "wautomata"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Dmytro Kryvoruchko <dm.vict.kr@gmail.com>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/wautomata"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/rust/wautomata"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/rust/wautomata"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/wautomata"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/wautomata"
 description = """
 Implementation of automata.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
+[lints]
+workspace = true
+
 [package.metadata.docs.rs]
-all-features = true
+features = [ "full" ]
+all-features = false
 
 include = [
   "/rust/impl/graph/wautomata_lib.rs",
@@ -28,31 +32,32 @@ include = [
 ]
 
 [features]
-default = [ "use_std" ]
-full = [ "use_std", "use_alloc" ]
-use_std = []
+default = [ "enabled" ]
+full = [ "enabled" ]
+# use_std = []
+no_std = []
 use_alloc = []
+enabled = []
 
 [lib]
 name = "wautomata"
-path = "rust/impl/graph/wautomata_lib.rs"
+path = "src/graph/wautomata_lib.rs"
 
 [[test]]
 name = "wautomata_test"
-path = "rust/test/graph/wautomata_tests.rs"
+path = "tests/wautomata_tests.rs"
 
-[[test]]
-name = "wautomata_smoke_test"
-path = "rust/test/_integration_test/smoke_test.rs"
+# [[test]]
+# name = "wautomata_smoke_test"
+# path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
 # name = "wautomata_trivial_sample"
-# path = "sample/rust/wautomata_trivial_sample/src/main.rs"
+# path = "examples/wautomata_trivial_sample/src/main.rs"
 
 [dependencies]
-automata_tools = { version = "~0.1", path = "../../move/automata_tools", features = [ "full" ] }
+automata_tools = { workspace = true, features = [ "full" ] }
 
 [dev-dependencies]
-test_tools = { version = "~0.1", path = "../../rust/test_tools" }
-wtools = { version = "~0.2", path = "../../rust/wtools", features = [ "full" ] }
-
+test_tools = { workspace = true }
+wtools = { workspace = true }

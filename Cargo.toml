@@ -1,18 +1,418 @@
 [workspace]
 resolver = "2"
 members = [
-  "module/rust/*",
   "module/alias/*",
+  "module/blank/*",
+  "module/core/*",
   "module/move/*",
-  "sample/rust/*",
+  # "module/step/*",
+  # "module/core/*/examples/*",
+  "module/test/*",
 ]
 exclude = [
-  "*",
+  "-*",
   "module/move/_video_experiment",
-  # "module/rust/-*",
-  # "sample/rust/-*",
-  # "module/rust/_*",
-  # "sample/rust/_*",
-  # "sample/rust/_select_matching",
 ]
-# default-members = [ "module/rust/wtools" ]
+# default-members = [ "module/core/wtools" ]
+
+[workspace.metadata]
+branches = [ "master", "alpha" ]
+
+# [metadata.cargo-suppress-warnings]
+# unused-manifest-key = true
+
+[workspace.lints.rust]
+rust_2018_idioms = "deny"
+missing_docs = "deny"
+missing_debug_implementations = "deny" # opt out where Debug is really redundant
+future_incompatible = "deny"
+
+[workspace.lints.clippy]
+restriction = "deny" # opt out where this is redundant
+pedantic = "deny" # opt out where this is redundant
+
+## top level
+
+[workspace.dependencies.wtools]
+version = "~0.2.0"
+path = "module/core/wtools"
+default-features = false
+
+[workspace.dependencies.non_std]
+version = "~0.1.4"
+path = "module/alias/non_std"
+
+[workspace.dependencies.std_tools]
+version = "~0.1.4"
+path = "module/alias/std_tools"
+
+[workspace.dependencies.std_x]
+version = "~0.1.4"
+path = "module/alias/std_x"
+
+## data_type
+
+[workspace.dependencies.data_type]
+version = "~0.1.9"
+path = "module/core/data_type"
+default-features = false
+
+# [workspace.dependencies.type_constructor_meta]
+# version = "~0.2.0"
+# path = "module/core/type_constructor_meta"
+# default-features = false
+
+# [workspace.dependencies.type_constructor_make_meta]
+# version = "~0.2.0"
+# path = "module/core/type_constructor_make_meta"
+#
+# [workspace.dependencies.type_constructor_derive_pair_meta]
+# version = "~0.1.0"
+# path = "module/core/type_constructor_derive_pair_meta"
+
+[workspace.dependencies.interval_adapter]
+version = "~0.3.0"
+path = "module/core/interval_adapter"
+default-features = false
+features = [ "enabled" ]
+
+[workspace.dependencies.winterval]
+version = "~0.3.0"
+path = "module/alias/winterval"
+default-features = false
+features = [ "enabled" ]
+
+
+## derive
+
+[workspace.dependencies.derive_tools]
+version = "~0.8.0"
+path = "module/core/derive_tools"
+default-features = false
+features = [ "enabled" ]
+
+[workspace.dependencies.derive_tools_meta]
+version = "~0.7.0"
+path = "module/core/derive_tools_meta"
+default-features = false
+features = [ "enabled" ]
+
+[workspace.dependencies.type_constructor]
+version = "~0.1.20"
+path = "module/core/type_constructor"
+default-features = false
+
+[workspace.dependencies.fundamental_data_type]
+version = "~0.1.6"
+path = "module/alias/fundamental_data_type"
+default-features = false
+
+[workspace.dependencies.variadic_from]
+version = "~0.2.0"
+path = "module/core/variadic_from"
+default-features = false
+features = [ "enabled" ]
+
+[workspace.dependencies.clone_dyn]
+version = "~0.4.0"
+path = "module/core/clone_dyn"
+default-features = false
+features = [ "enabled" ]
+
+[workspace.dependencies.clone_dyn_meta]
+version = "~0.4.0"
+path = "module/core/clone_dyn_meta"
+features = [ "enabled" ]
+
+
+## mem
+
+[workspace.dependencies.mem_tools]
+version = "~0.1.1"
+path = "module/core/mem_tools"
+default-features = false
+
+## diagnostics
+
+[workspace.dependencies.diagnostics_tools]
+version = "~0.3.0"
+path = "module/core/diagnostics_tools"
+default-features = false
+
+
+## iter
+
+[workspace.dependencies.iter_tools]
+version = "~0.4.0"
+path = "module/core/iter_tools"
+default-features = false
+
+
+## meta
+
+[workspace.dependencies.meta_tools]
+version = "~0.5.0"
+path = "module/core/meta_tools"
+default-features = false
+
+[workspace.dependencies.for_each]
+version = "~0.3.0"
+path = "module/core/for_each"
+default-features = false
+
+[workspace.dependencies.former]
+version = "~0.2.0"
+path = "module/core/former"
+default-features = false
+
+[workspace.dependencies.former_meta]
+version = "~0.2.0"
+path = "module/core/former_meta"
+
+# [workspace.dependencies.former_runtime]
+# version = "~0.1.12"
+# path = "module/core/former_runtime"
+
+[workspace.dependencies.impls_index]
+version = "~0.2.0"
+path = "module/core/impls_index"
+default-features = false
+
+[workspace.dependencies.impls_index_meta]
+version = "~0.2.0"
+path = "module/core/impls_index_meta"
+
+[workspace.dependencies.mod_interface]
+version = "~0.6.0"
+path = "module/core/mod_interface"
+default-features = false
+
+[workspace.dependencies.mod_interface_meta]
+version = "~0.6.0"
+path = "module/core/mod_interface_meta"
+default-features = false
+
+[workspace.dependencies.multilayer]
+version = "~0.1.3"
+path = "module/alias/multilayer"
+default-features = false
+
+# [workspace.dependencies.woptions]
+# version = "~0.1.4"
+# path = "module/core/woptions"
+# default-features = false
+#
+# [workspace.dependencies.woptions_meta]
+# version = "~0.1.4"
+# path = "module/core/woptions_meta"
+#
+# [workspace.dependencies.woptions_runtime]
+# version = "~0.1.4"
+# path = "module/core/woptions_runtime"
+
+
+## proc macro tools
+
+[workspace.dependencies.macro_tools]
+version = "~0.3.0"
+path = "module/core/macro_tools"
+default-features = false
+
+[workspace.dependencies.proc_macro_tools]
+version = "~0.2.0"
+path = "module/alias/proc_macro_tools"
+default-features = false
+
+[workspace.dependencies.wproc_macro]
+version = "~0.1.1"
+path = "module/alias/wproc_macro"
+default-features = false
+
+## time
+
+[workspace.dependencies.time_tools]
+version = "~0.1.5"
+path = "module/core/time_tools"
+default-features = false
+
+
+## typing
+
+[workspace.dependencies.typing_tools]
+version = "~0.3.0"
+path = "module/core/typing_tools"
+default-features = false
+
+[workspace.dependencies.implements]
+version = "~0.3.0"
+path = "module/core/implements"
+default-features = false
+
+[workspace.dependencies.instance_of]
+version = "~0.2.0"
+path = "module/alias/instance_of"
+default-features = false
+
+[workspace.dependencies.inspect_type]
+version = "~0.5.0"
+path = "module/core/inspect_type"
+default-features = false
+
+[workspace.dependencies.is_slice]
+version = "~0.4.0"
+path = "module/core/is_slice"
+default-features = false
+
+
+## error
+
+[workspace.dependencies.error_tools]
+version = "~0.4.0"
+path = "module/core/error_tools"
+default-features = false
+
+[workspace.dependencies.werror]
+version = "~0.4.0"
+path = "module/alias/werror"
+
+
+## strs
+
+[workspace.dependencies.strs_tools]
+version = "~0.3.0"
+path = "module/core/strs_tools"
+default-features = false
+
+[workspace.dependencies.wstring_tools]
+version = "~0.2.0"
+path = "module/alias/wstring_tools"
+
+
+## fs
+
+[workspace.dependencies.fs_tools]
+version = "~0.1.0"
+path = "module/move/fs_tools"
+default-features = false
+
+
+## test
+
+[workspace.dependencies.wtest]
+version = "~0.4.0"
+path = "module/alias/wtest"
+
+[workspace.dependencies.test_tools]
+version = "~0.5.0"
+path = "module/core/test_tools"
+
+[workspace.dependencies.wtest_basic]
+version = "~0.4.0"
+path = "module/alias/wtest_basic"
+
+## willbe
+
+[workspace.dependencies.willbe]
+version = "~0.4.0"
+path = "module/move/willbe"
+
+## graphs
+
+[workspace.dependencies.graphs_tools]
+version = "~0.2.0"
+path = "module/move/graphs_tools"
+default-features = false
+
+[workspace.dependencies.automata_tools]
+version = "~0.2.0"
+path = "module/move/automata_tools"
+default-features = false
+
+[workspace.dependencies.wautomata]
+version = "~0.2.0"
+path = "module/alias/wautomata"
+default-features = false
+
+
+## ca
+
+[workspace.dependencies.wca]
+version = "~0.5.0"
+path = "module/move/wca"
+
+
+## censor
+
+[workspace.dependencies.wcensor]
+version = "~0.1.1"
+path = "module/move/wcensor"
+
+
+## lang
+
+[workspace.dependencies.wlang]
+version = "~0.1.0"
+path = "module/move/wlang"
+
+
+## publisher
+
+[workspace.dependencies.wpublisher]
+version = "~0.1.3"
+path = "module/move/wpublisher"
+
+
+## plot
+
+[workspace.dependencies.wplot]
+version = "~0.2.0"
+path = "module/move/wplot"
+
+[workspace.dependencies.plot_interface]
+version = "~0.1.3"
+path = "module/move/plot_interface"
+
+
+## etc
+
+[workspace.dependencies.sqlx_query]
+version = "~0.2.0"
+path = "module/move/sqlx_query"
+
+[workspace.dependencies.deterministic_rand]
+version = "~0.4.0"
+path = "module/move/deterministic_rand"
+
+[workspace.dependencies.crates_tools]
+version = "~0.2.0"
+path = "module/move/crates_tools"
+
+
+## steps
+
+[workspace.dependencies.integration_test]
+path = "module/step/integration_test"
+default-features = true
+
+[workspace.dependencies.smoke_test]
+path = "module/step/smoke_test"
+default-features = true
+
+
+## test experimental
+
+[workspace.dependencies.test_experimental_a]
+version = "~0.1.0"
+path = "module/test/a"
+default-features = true
+
+[workspace.dependencies.test_experimental_b]
+version = "~0.1.0"
+path = "module/test/b"
+default-features = true
+
+[workspace.dependencies.test_experimental_c]
+version = "~0.2.0"
+path = "module/test/c"
+default-features = true
+

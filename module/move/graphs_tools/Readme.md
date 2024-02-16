@@ -5,7 +5,7 @@
 
 Graphs tools.
 
-## Sample  :: trivial
+### Basic use-case
 
 <!-- {{# generate.module_sample{} #}} -->
 
@@ -14,7 +14,7 @@ Graphs tools.
 {
   use graphs_tools::prelude::*;
   use wtools::prelude::*;
-  let node : graphs_tools::canonical::Node = make!( 13 );
+  let node : graphs_tools::canonical::Node = from!( 13 );
   assert_eq!( node.id(), 13.into() );
   println!( "{:?}", node );
   /* print : node::13 */
@@ -32,6 +32,6 @@ cargo add graphs_tools
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/graphs_tools_trivial_sample
+cd examples/graphs_tools_trivial_sample
 cargo run
 ```

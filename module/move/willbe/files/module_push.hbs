@@ -1,0 +1,17 @@
+name : {{name}}
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # {{name}}
+
+  test :
+    uses : {{username_and_repository}}/.github/workflows/StandardRustPush.yml@{{branch}}
+    with :
+      manifest_path : '{{manifest_path}}'
+      module_name : '{{name}}'
+      commit_message : $\{{ github.event.head_commit.message }}

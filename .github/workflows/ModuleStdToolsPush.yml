@@ -1,0 +1,17 @@
+name : std_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # std_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/alias/std_tools/Cargo.toml'
+      module_name : 'std_tools'
+      commit_message : ${{ github.event.head_commit.message }}

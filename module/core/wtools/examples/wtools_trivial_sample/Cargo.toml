@@ -1,0 +1,12 @@
+[package]
+name = "wtools_trivial_sample"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[features]
+typing = []
+default = [ "typing" ]
+
+[dependencies]
+wtools = { workspace = true }

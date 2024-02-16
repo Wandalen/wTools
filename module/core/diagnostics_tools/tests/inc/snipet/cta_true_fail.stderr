@@ -1,0 +1,8 @@
+error: Does not hold :
+         feature = "unknown"
+ --> tests/inc/snipet/cta_true_fail.rs:5:3
+  |
+5 |   cta_true!( feature = "unknown" );
+  |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `cta_true` (in Nightly builds, run with -Z macro-backtrace for more info)

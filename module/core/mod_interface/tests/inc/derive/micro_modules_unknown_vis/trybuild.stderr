@@ -1,0 +1,5 @@
+error: expected one of: `mod`, `use`, `layer`
+ --> tests/inc/derive/micro_modules_unknown_vis/mod.rs
+  |
+  |   not_vis mod mod_exposed;
+  |   ^^^^^^^

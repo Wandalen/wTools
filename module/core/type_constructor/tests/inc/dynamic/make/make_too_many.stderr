@@ -1,0 +1,10 @@
+error: Variadic constructor supports up to 3 arguments.
+       Open an issue if you need more.
+       You passed:
+       from! (0, 1, 2, 3, 4)
+ --> tests/dt/type_constructor/dynamic/make/make_too_many.rs:6:11
+  |
+6 |   let x = from!( 0, 1, 2, 3, 4 );
+  |           ^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `make` (in Nightly builds, run with -Z macro-backtrace for more info)

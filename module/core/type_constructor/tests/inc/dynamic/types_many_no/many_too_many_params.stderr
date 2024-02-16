@@ -1,0 +1,10 @@
+error: Type constructor `many` is available if eiter feature `use_std` or feature `use_alloc` is enabled. Also feature `many` should be enabled.
+ --> tests/dt/type_constructor/dynamic/types_many_no/many_too_many_params.rs:4:1
+  |
+4 | / types!
+5 | | {
+6 | |   pub many Many : < T1, T2 >;
+7 | | }
+  | |_^
+  |
+  = note: this error originates in the macro `$crate::_many` (in Nightly builds, run with -Z macro-backtrace for more info)

@@ -1,0 +1,41 @@
+[package]
+name = "clone_dyn"
+version = "0.4.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/clone_dyn"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/clone_dyn"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/clone_dyn"
+description = """
+Derive to clone dyn structures.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+exclude = [ "/tests", "/examples", "-*" ]
+
+[features]
+
+default = [ "enabled" ]
+full = [ "enabled" ]
+no_std = []
+use_alloc = []
+enabled = []
+
+[dependencies]
+clone_dyn_meta = { workspace = true }
+
+[dev-dependencies]
+test_tools = { workspace = true }

@@ -25,6 +25,6 @@ cargo add procedural_macro
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/rust/procedural_macro_trivial
+cd examples/procedural_macro_trivial
 cargo run
 ```

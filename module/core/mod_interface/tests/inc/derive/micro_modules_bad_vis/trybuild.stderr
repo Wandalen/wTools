@@ -1,0 +1,7 @@
+error: To include a non-standard module use either [ private, protected, orphan, exposed, prelude ] visibility:
+         #[doc = " mod_exposed"] pub mod mod_exposed;
+ --> tests/inc/derive/micro_modules_bad_vis/mod.rs
+  |
+  | /   /// mod_exposed
+  | |   pub mod mod_exposed;
+  | |______________________^

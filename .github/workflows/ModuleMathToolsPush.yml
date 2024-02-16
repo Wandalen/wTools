@@ -1,0 +1,17 @@
+name : math_tools
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # math_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    with :
+      manifest_path : 'module/blank/math_tools/Cargo.toml'
+      module_name : 'math_tools'
+      commit_message : ${{ github.event.head_commit.message }}
