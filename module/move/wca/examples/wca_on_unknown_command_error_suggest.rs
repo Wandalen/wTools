@@ -39,3 +39,7 @@ fn main() {
 		};
 }
 
+#[ cfg( not( feature = "on_unknown_command_error_suggest" ) ) ]
+fn main(){}
+
+
