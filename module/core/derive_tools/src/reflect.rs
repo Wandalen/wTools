@@ -94,7 +94,7 @@ pub( crate ) mod private
 
   impl< T > Entity for EntityDescriptor< T >
   where
-    T : InstanceMarker,
+    T : InstanceMarker + 'static,
   {
     #[ inline( always ) ]
     fn type_name( &self ) -> &'static str
@@ -108,7 +108,9 @@ pub( crate ) mod private
     }
   }
 
-  impl< T : InstanceMarker > std::fmt::Debug for EntityDescriptor< T >
+  impl< T > std::fmt::Debug for EntityDescriptor< T >
+  where
+    T : InstanceMarker + 'static,
   {
     fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
     {
@@ -311,47 +313,49 @@ pub( crate ) mod private
 
   // impl< T, const N : usize > IsContainer for [ T ; N ] {}
 
-  impl< T : Entity, const N : usize > Entity for EntityDescriptor< [ T ; N ] >
-  {
-
-    #[ inline( always ) ]
-    fn is_container( &self ) -> bool
-    {
-      true
-    }
-
-    #[ inline( always ) ]
-    fn len( &self ) -> usize
-    {
-      N
-    }
-
-    #[ inline( always ) ]
-    fn type_name( &self ) -> &'static str
-    {
-      core::any::type_name::< [ T ; N ] >()
-    }
-
-    #[ inline( always ) ]
-    fn type_id( &self ) -> core::any::TypeId
-    {
-      core::any::TypeId::of::< [ T ; N ] >()
-    }
-
-    #[ inline( always ) ]
-    fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > + '_ >
-    {
-
-      let result : [ KeyVal ; N ];
-      for ( k, e ) in self.iter().enumerate()
-      {
-        result[ k ] = KeyVal { key : "x", val : Box::new( (*e).clone() ) }
-      }
-
-      Box::new( result.into_iter() )
-    }
-
-  }
+  // impl< T, const N : usize > InstanceMarker for [ T ; N ] {}
+//   impl< T, const N : usize > Entity for EntityDescriptor< [ T ; N ] >
+//   {
+//
+//     #[ inline( always ) ]
+//     fn is_container( &self ) -> bool
+//     {
+//       true
+//     }
+//
+//     #[ inline( always ) ]
+//     fn len( &self ) -> usize
+//     {
+//       N
+//     }
+//
+//     #[ inline( always ) ]
+//     fn type_name( &self ) -> &'static str
+//     {
+//       core::any::type_name::< [ T ; N ] >()
+//     }
+//
+//     #[ inline( always ) ]
+//     fn type_id( &self ) -> core::any::TypeId
+//     {
+//       core::any::TypeId::of::< [ T ; N ] >()
+//     }
+//
+//     #[ inline( always ) ]
+//     // fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > + '_ >
+//     fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > >
+//     {
+//
+//       let result : [ KeyVal ; N ];
+//       for ( k, e ) in self.iter().enumerate()
+//       {
+//         result[ k ] = KeyVal { key : "x", val : Box::new( (*e).clone() ) }
+//       }
+//
+//       Box::new( result.into_iter() )
+//     }
+//
+//   }
 
 }
 
