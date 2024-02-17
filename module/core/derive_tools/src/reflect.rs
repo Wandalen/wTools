@@ -38,10 +38,10 @@ pub( crate ) mod private
   pub trait Instance
   {
     /// Return a descriptor of type of current instance of the type.
-    fn reflect( &self ) -> impl EntityInterface< I = Self >
+    fn reflect( &self ) -> impl EntityInterface
     where
       Self : Sized,
-      EntityDescriptor< Self > : EntityInterface< I = Self >,
+      EntityDescriptor< Self > : EntityInterface,
     {
       EntityDescriptor::< Self >::new()
     }
@@ -77,8 +77,8 @@ pub( crate ) mod private
   // pub trait EntityInterface< I : Instance > : core::any::Any
   pub trait EntityInterface
   {
-    /// Type of the instance the descriptor describe.
-    type I : Instance;
+    // /// Type of the instance the descriptor describe.
+    // type I : Instance;
 
     /// Determines if the entity acts as a container for other entities.
     ///
@@ -143,7 +143,7 @@ pub( crate ) mod private
 
     #[ inline( always ) ]
     // fn reflect_elements( &self ) -> Box< dyn Iterator< Item = KeyVal< Box< dyn Instance > > > >
-    fn reflect_elements( &self ) -> Box< dyn Iterator< Item = KeyVal< Box< dyn EntityInterface< I = dyn AnyInstance > > > > >
+    fn reflect_elements( &self ) -> Box< dyn Iterator< Item = KeyVal > >
     {
       Box::new( [].into_iter() )
     }
@@ -180,7 +180,7 @@ pub( crate ) mod private
   /// of its contents.
   ///
   // #[ derive( PartialEq, Debug ) ]
-  pub struct KeyVal< I >
+  pub struct KeyVal
   {
     /// The key associated with the value in the key-value pair.
     ///
@@ -192,22 +192,22 @@ pub( crate ) mod private
     /// It is boxed to allow for dynamic typing, enabling the storage of any entity
     /// that implements the `AnyEntity` trait. This facilitates runtime reflection
     /// and type inspection of the contained entity.
-    pub val : Box< dyn AnyEntity< I = I > >,
+    pub val : Box< dyn AnyEntity >,
   }
 
-  impl< I > std::fmt::Debug for KeyVal< I >
+  impl std::fmt::Debug for KeyVal
   {
     fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
     {
       f
       .debug_struct( "KeyVal" )
       .field( "key", &self.key )
-      .field( "val", &format_args!( "{}", core::any::type_name::< dyn AnyEntity< I = I > >() ) )
+      .field( "val", &format_args!( "{}", core::any::type_name::< dyn AnyEntity >() ) )
       .finish()
     }
   }
 
-  impl< I > PartialEq for KeyVal< I >
+  impl PartialEq for KeyVal
   {
     fn eq( &self, other : &Self ) -> bool
     {
@@ -229,18 +229,18 @@ pub( crate ) mod private
   impl Instance for String {}
   impl Instance for &'static str {}
 
-  impl EntityInterface for EntityDescriptor< i8 > { type I = i8; }
-  impl EntityInterface for EntityDescriptor< i16 > { type I = i16; }
-  impl EntityInterface for EntityDescriptor< i32 > { type I = i32; }
-  impl EntityInterface for EntityDescriptor< i64 > { type I = i64; }
-  impl EntityInterface for EntityDescriptor< u8 > { type I = u8; }
-  impl EntityInterface for EntityDescriptor< u16 > { type I = u16; }
-  impl EntityInterface for EntityDescriptor< u32 > { type I = u32; }
-  impl EntityInterface for EntityDescriptor< u64 > { type I = u64; }
-  impl EntityInterface for EntityDescriptor< f32 > { type I = f32; }
-  impl EntityInterface for EntityDescriptor< f64 > { type I = f64; }
-  impl EntityInterface for EntityDescriptor< String > { type I = String; }
-  impl EntityInterface for EntityDescriptor< &'static str > { type I = &'static str; }
+  impl EntityInterface for EntityDescriptor< i8 > {  }
+  impl EntityInterface for EntityDescriptor< i16 > {  }
+  impl EntityInterface for EntityDescriptor< i32 > {  }
+  impl EntityInterface for EntityDescriptor< i64 > {  }
+  impl EntityInterface for EntityDescriptor< u8 > {  }
+  impl EntityInterface for EntityDescriptor< u16 > {  }
+  impl EntityInterface for EntityDescriptor< u32 > {  }
+  impl EntityInterface for EntityDescriptor< u64 > {  }
+  impl EntityInterface for EntityDescriptor< f32 > {  }
+  impl EntityInterface for EntityDescriptor< f64 > {  }
+  impl EntityInterface for EntityDescriptor< String > {  }
+  impl EntityInterface for EntityDescriptor< &'static str > {  }
 
   impl IsScalar for i8 {}
   impl IsScalar for i16 {}
