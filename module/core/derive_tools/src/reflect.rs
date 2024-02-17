@@ -96,9 +96,15 @@ pub( crate ) mod private
   where
     T : InstanceMarker,
   {
+    #[ inline( always ) ]
     fn type_name( &self ) -> &'static str
     {
       core::any::type_name::< T >()
+    }
+    #[ inline( always ) ]
+    fn type_id( &self ) -> core::any::TypeId
+    {
+      core::any::TypeId::of::<String>()
     }
   }
 
@@ -107,7 +113,7 @@ pub( crate ) mod private
     fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
     {
       f
-      .write_str( format!( "{}#{}", self.type_name(), self.type_id() ) )
+      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
     }
   }
 
@@ -146,7 +152,7 @@ pub( crate ) mod private
       0
     }
 
-    /// Retrieves the type name of the entity.
+    /// Retrieves the type name.
     ///
     /// # Returns
     ///
@@ -155,6 +161,9 @@ pub( crate ) mod private
     /// This method leverages Rust's `type_name` function to provide the name at runtime,
     /// aiding in debugging and logging purposes.
     fn type_name( &self ) -> &'static str;
+
+    /// Retrives the typ id.
+    fn type_id( &self ) -> core::any::TypeId;
 
     /// Provides an iterator over the elements contained within the entity, if any.
     ///

@@ -63,6 +63,12 @@ impl reflect::Entity for EntityDescriptor< Struct1 >
   }
 
   #[ inline( always ) ]
+  fn type_id( &self ) -> core::any::TypeId
+  {
+    core::any::TypeId::of::< Struct1 >()
+  }
+
+  #[ inline( always ) ]
   fn elements(&self) -> Box< dyn Iterator< Item = reflect::KeyVal > >
   {
     let result = vec!
