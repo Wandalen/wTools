@@ -17,54 +17,107 @@ pub struct Struct2
   pub s3 : &'static str,
 }
 
-impl reflect::Entity for Struct1
+// --
+
+#[ derive( PartialEq, Debug ) ]
+pub struct EntityDescriptor< I : reflect::Instance >
 {
+  _phantom : core::marker::PhantomData< I >,
+}
+
+impl< I : reflect::Instance > EntityDescriptor< I >
+{
+  /// Constructor of the descriptor.
   #[ inline( always ) ]
-  fn reflect_is_container( &self ) -> bool
+  pub fn new() -> Self
   {
-    true
-  }
-  #[ inline( always ) ]
-  fn reflect_len( &self ) -> usize
-  {
-    3
-  }
-  #[ inline( always ) ]
-  fn reflect_elements( &self ) -> Box< dyn Iterator< Item = reflect::KeyVal > + '_ >
-  {
-    let result = vec!
-    [
-      reflect::KeyVal { key : "f1", val : Box::new( self.f1 ) },
-      reflect::KeyVal { key : "f2", val : Box::new( self.f2.clone() ) },
-      reflect::KeyVal { key : "f3", val : Box::new( self.f3.clone() ) },
-    ];
-    Box::new( result.into_iter() )
+    let _phantom = core::marker::PhantomData::< I >;
+    Self { _phantom }
   }
 }
 
-impl reflect::Entity for Struct2
+// --
+
+impl reflect::Instance for Struct1
 {
   #[ inline( always ) ]
-  fn reflect_is_container( &self ) -> bool
+  fn reflect( &self ) -> impl reflect::Entity
+  {
+    EntityDescriptor::< Self >::new()
+  }
+}
+
+impl reflect::Instance for Struct2
+{
+  #[ inline( always ) ]
+  fn reflect( &self ) -> impl reflect::Entity
+  {
+    EntityDescriptor::< Self >::new()
+  }
+}
+
+impl reflect::Entity for EntityDescriptor< Struct1 >
+{
+  #[ inline( always ) ]
+  fn is_container( &self ) -> bool
   {
     true
   }
   #[ inline( always ) ]
-  fn reflect_len( &self ) -> usize
+  fn len( &self ) -> usize
   {
     3
   }
   #[ inline( always ) ]
-  fn reflect_elements( &self ) -> Box< dyn Iterator< Item = reflect::KeyVal > + '_ >
+  fn type_name( &self ) -> &'static str
+  {
+    core::any::type_name::< Struct1 >()
+  }
+
+  #[ inline( always ) ]
+  fn elements(&self) -> Box< dyn Iterator< Item = reflect::KeyVal > >
   {
     let result = vec!
     [
-      reflect::KeyVal { key : "s1", val : Box::new( self.s1 ) },
-      reflect::KeyVal { key : "s2", val : Box::new( self.s2.clone() ) },
-      reflect::KeyVal { key : "s3", val : Box::new( self.s3 ) },
+      reflect::KeyVal { key: "f1", val: Box::new( reflect::EntityDescriptor::<i32>::new() ) },
+      reflect::KeyVal { key: "f2", val: Box::new( reflect::EntityDescriptor::<String>::new() ) },
+      reflect::KeyVal { key: "f3", val: Box::new( EntityDescriptor::<Struct2>::new() ) },
     ];
     Box::new( result.into_iter() )
   }
+
+}
+
+impl reflect::Entity for EntityDescriptor< Struct2 >
+{
+  #[ inline( always ) ]
+  fn is_container( &self ) -> bool
+  {
+    true
+  }
+  #[ inline( always ) ]
+  fn len( &self ) -> usize
+  {
+    3
+  }
+  #[ inline( always ) ]
+  fn type_name( &self ) -> &'static str
+  {
+    core::any::type_name::< Struct2 >()
+  }
+
+  #[ inline( always ) ]
+  fn elements(&self) -> Box< dyn Iterator< Item = reflect::KeyVal > >
+  {
+    let result = vec!
+    [
+      reflect::KeyVal { key: "s1", val: Box::new( reflect::EntityDescriptor::<i32>::new() ) },
+      reflect::KeyVal { key: "s2", val: Box::new( reflect::EntityDescriptor::<String>::new() ) },
+      reflect::KeyVal { key: "s3", val: Box::new( reflect::EntityDescriptor::<&'static str>::new() ) },
+    ];
+    Box::new( result.into_iter() )
+  }
+
 }
 
 include!( "./only_test/reflect_struct_in_struct.rs" );
