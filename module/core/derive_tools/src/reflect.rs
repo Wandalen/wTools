@@ -51,7 +51,7 @@ pub( crate ) mod private
   impl< T > Instance for T
   where
     EntityDescriptor< T > : Entity,
-    T : AutoInstance,
+    T : InstanceMarker,
   {
     type Entity = EntityDescriptor::< Self >;
     #[ inline( always ) ]
@@ -68,7 +68,7 @@ pub( crate ) mod private
   ///
   /// Type descriptor
   ///
-  #[ derive( PartialEq, Debug ) ]
+  #[ derive( PartialEq ) ]
   pub struct EntityDescriptor< I : Instance >
   {
     _phantom : core::marker::PhantomData< I >,
@@ -90,11 +90,11 @@ pub( crate ) mod private
   }
 
   /// Auto-implement descriptor for this type.
-  pub trait AutoInstance {}
+  pub trait InstanceMarker {}
 
   impl< T > Entity for EntityDescriptor< T >
   where
-    T : AutoInstance,
+    T : InstanceMarker,
   {
     fn type_name( &self ) -> &'static str
     {
@@ -102,11 +102,20 @@ pub( crate ) mod private
     }
   }
 
+  impl< T : InstanceMarker > std::fmt::Debug for EntityDescriptor< T >
+  {
+    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    {
+      f
+      .write_str( format!( "{}#{}", self.type_name(), self.type_id() ) )
+    }
+  }
+
   ///
   /// Type descriptor
   ///
   // pub trait Entity< I : Instance > : core::any::Any
-  pub trait Entity
+  pub trait Entity : core::fmt::Debug
   {
 
     /// Determines if the entity acts as a container for other entities.
@@ -195,8 +204,7 @@ pub( crate ) mod private
       f
       .debug_struct( "KeyVal" )
       .field( "key", &self.key )
-      // .field( "val", &format_args!( "{}", core::any::type_name::< dyn AnyEntity< I = I > >() ) )
-      // xxx
+      .field( "val", &format_args!( "{:?}", &self.val ) )
       .finish()
     }
   }
@@ -266,18 +274,18 @@ pub( crate ) mod private
   // impl_entity_for!( String );
   // impl_entity_for!( &'static str );
 
-  impl AutoInstance for i8 {}
-  impl AutoInstance for i16 {}
-  impl AutoInstance for i32 {}
-  impl AutoInstance for i64 {}
-  impl AutoInstance for u8 {}
-  impl AutoInstance for u16 {}
-  impl AutoInstance for u32 {}
-  impl AutoInstance for u64 {}
-  impl AutoInstance for f32 {}
-  impl AutoInstance for f64 {}
-  impl AutoInstance for String {}
-  impl AutoInstance for &'static str {}
+  impl InstanceMarker for i8 {}
+  impl InstanceMarker for i16 {}
+  impl InstanceMarker for i32 {}
+  impl InstanceMarker for i64 {}
+  impl InstanceMarker for u8 {}
+  impl InstanceMarker for u16 {}
+  impl InstanceMarker for u32 {}
+  impl InstanceMarker for u64 {}
+  impl InstanceMarker for f32 {}
+  impl InstanceMarker for f64 {}
+  impl InstanceMarker for String {}
+  impl InstanceMarker for &'static str {}
 
   impl IsScalar for i8 {}
   impl IsScalar for i16 {}
@@ -349,7 +357,7 @@ pub mod orphan
     IsContainer,
     IsScalar,
     Instance,
-    AutoInstance,
+    InstanceMarker,
     EntityDescriptor,
     Entity,
     KeyVal,
