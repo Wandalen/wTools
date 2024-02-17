@@ -13,7 +13,7 @@ pub( crate ) mod private
   /// which can hold zero or more elements. This trait is typically used in
   /// conjunction with reflection mechanisms to dynamically inspect, access,
   /// or modify the contents of a container at runtime.
-  pub trait IsContainer
+  pub trait IsContainer : Instance
   {
   }
 
@@ -25,7 +25,7 @@ pub( crate ) mod private
   /// like arrays or structs. This distinction can be useful in reflection-based
   /// APIs or generic programming to treat scalar values differently from containers
   /// or other complex types.
-  pub trait IsScalar
+  pub trait IsScalar : Instance
   {
   }
 
@@ -104,7 +104,7 @@ pub( crate ) mod private
     #[ inline( always ) ]
     fn type_id( &self ) -> core::any::TypeId
     {
-      core::any::TypeId::of::<String>()
+      core::any::TypeId::of::< T >()
     }
   }
 
@@ -309,37 +309,49 @@ pub( crate ) mod private
   impl IsScalar for String {}
   impl IsScalar for &'static str {}
 
-  impl< T, const N : usize > IsContainer for [ T ; N ] {}
+  // impl< T, const N : usize > IsContainer for [ T ; N ] {}
 
-//   impl< T : Entity, const N : usize > Entity for [ T ; N ]
-//   {
-//
-//     #[ inline( always ) ]
-//     fn is_container( &self ) -> bool
-//     {
-//       true
-//     }
-//
-//     #[ inline( always ) ]
-//     fn len( &self ) -> usize
-//     {
-//       N
-//     }
-//
-//     #[ inline( always ) ]
-//     fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > + '_ >
-//     {
-//
-//       let result : [ KeyVal ; N ];
-//       for ( k, e ) in self.iter().enumerate()
-//       {
-//         result[ k ] = KeyVal { key : "x", val : Box::new( (*e).clone() ) }
-//       }
-//
-//       Box::new( result.into_iter() )
-//     }
-//
-//   }
+  impl< T : Entity, const N : usize > Entity for EntityDescriptor< [ T ; N ] >
+  {
+
+    #[ inline( always ) ]
+    fn is_container( &self ) -> bool
+    {
+      true
+    }
+
+    #[ inline( always ) ]
+    fn len( &self ) -> usize
+    {
+      N
+    }
+
+    #[ inline( always ) ]
+    fn type_name( &self ) -> &'static str
+    {
+      core::any::type_name::< [ T ; N ] >()
+    }
+
+    #[ inline( always ) ]
+    fn type_id( &self ) -> core::any::TypeId
+    {
+      core::any::TypeId::of::< [ T ; N ] >()
+    }
+
+    #[ inline( always ) ]
+    fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > + '_ >
+    {
+
+      let result : [ KeyVal ; N ];
+      for ( k, e ) in self.iter().enumerate()
+      {
+        result[ k ] = KeyVal { key : "x", val : Box::new( (*e).clone() ) }
+      }
+
+      Box::new( result.into_iter() )
+    }
+
+  }
 
 }
 
