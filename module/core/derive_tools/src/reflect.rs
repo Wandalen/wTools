@@ -45,6 +45,7 @@ pub( crate ) mod private
       Self::Reflect()
     }
     /// Return a descriptor of type with type of instance.
+    #[ allow( non_snake_case ) ]
     fn Reflect() -> Self::Entity;
   }
 
@@ -110,7 +111,8 @@ pub( crate ) mod private
 
   impl< T > std::fmt::Debug for EntityDescriptor< T >
   where
-    T : InstanceMarker + 'static,
+    T : Instance + 'static,
+    EntityDescriptor< T > : Entity,
   {
     fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
     {
@@ -122,7 +124,6 @@ pub( crate ) mod private
   ///
   /// Type descriptor
   ///
-  // pub trait Entity< I : Instance > : core::any::Any
   pub trait Entity : core::fmt::Debug
   {
 
@@ -314,6 +315,18 @@ pub( crate ) mod private
   // impl< T, const N : usize > IsContainer for [ T ; N ] {}
 
   // impl< T, const N : usize > InstanceMarker for [ T ; N ] {}
+  impl< T, const N : usize > Instance for [ T ; N ]
+  where
+    EntityDescriptor< [ T ; N ] > : Entity,
+  {
+    type Entity = EntityDescriptor::< Self >;
+    #[ inline( always ) ]
+    fn Reflect() -> Self::Entity
+    {
+      EntityDescriptor::< Self >::new()
+    }
+  }
+
 //   impl< T, const N : usize > Entity for EntityDescriptor< [ T ; N ] >
 //   {
 //
