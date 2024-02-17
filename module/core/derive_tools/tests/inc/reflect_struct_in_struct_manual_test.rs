@@ -27,13 +27,14 @@ pub struct EntityDescriptor< I : reflect::Instance >
 
 impl< I : reflect::Instance > EntityDescriptor< I >
 {
-  /// Constructor of the descriptor.
+  /// Constructor of the descriptor of type.
   #[ inline( always ) ]
   pub fn new() -> Self
   {
     let _phantom = core::marker::PhantomData::< I >;
     Self { _phantom }
   }
+  /// Constructor of the descriptor of type.
 }
 
 // --
@@ -41,16 +42,16 @@ impl< I : reflect::Instance > EntityDescriptor< I >
 impl reflect::Instance for Struct1
 {
   #[ inline( always ) ]
-  fn reflect( &self ) -> impl reflect::Entity
+  fn Reflect() -> impl reflect::Entity
   {
     EntityDescriptor::< Self >::new()
   }
 }
 
-impl reflect::Instance for Struct2
+impl Reflect::Instance for Struct2
 {
   #[ inline( always ) ]
-  fn reflect( &self ) -> impl reflect::Entity
+  fn Reflect() -> impl reflect::Entity
   {
     EntityDescriptor::< Self >::new()
   }
@@ -73,15 +74,14 @@ impl reflect::Entity for EntityDescriptor< Struct1 >
   {
     core::any::type_name::< Struct1 >()
   }
-
   #[ inline( always ) ]
   fn elements(&self) -> Box< dyn Iterator< Item = reflect::KeyVal > >
   {
     let result = vec!
     [
-      reflect::KeyVal { key: "f1", val: Box::new( reflect::EntityDescriptor::<i32>::new() ) },
-      reflect::KeyVal { key: "f2", val: Box::new( reflect::EntityDescriptor::<String>::new() ) },
-      reflect::KeyVal { key: "f3", val: Box::new( EntityDescriptor::<Struct2>::new() ) },
+      reflect::KeyVal { key: "f1", val: Box::new( < i32 as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: "f2", val: Box::new( < String as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: "f3", val: Box::new( < Struct2 as reflect::Instance >::Reflect() ) },
     ];
     Box::new( result.into_iter() )
   }
@@ -111,9 +111,9 @@ impl reflect::Entity for EntityDescriptor< Struct2 >
   {
     let result = vec!
     [
-      reflect::KeyVal { key: "s1", val: Box::new( reflect::EntityDescriptor::<i32>::new() ) },
-      reflect::KeyVal { key: "s2", val: Box::new( reflect::EntityDescriptor::<String>::new() ) },
-      reflect::KeyVal { key: "s3", val: Box::new( reflect::EntityDescriptor::<&'static str>::new() ) },
+      reflect::KeyVal { key: "s1", val: Box::new( < i32 as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: "s2", val: Box::new( < String as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: "s3", val: Box::new( < &'static str as reflect::Instance >::Reflect() ) },
     ];
     Box::new( result.into_iter() )
   }

@@ -37,8 +37,15 @@ pub( crate ) mod private
   // pub trait Instance : core::any::Any
   pub trait Instance
   {
-    /// Return a descriptor of type of current instance of the type.
-    fn reflect( &self ) -> impl Entity;
+    /// Entity descriptor.
+    type Entity : Entity;
+    /// Return a descriptor of type with current instance.
+    fn reflect( &self ) -> Self::Entity
+    {
+      Self::Reflect()
+    }
+    /// Return a descriptor of type with type of instance.
+    fn Reflect() -> Self::Entity;
   }
 
   impl< T > Instance for T
@@ -46,8 +53,9 @@ pub( crate ) mod private
     EntityDescriptor< T > : Entity,
     T : AutoInstance,
   {
+    type Entity = EntityDescriptor::< Self >;
     #[ inline( always ) ]
-    fn reflect( &self ) -> impl Entity
+    fn Reflect() -> Self::Entity
     {
       EntityDescriptor::< Self >::new()
     }
@@ -342,11 +350,9 @@ pub mod orphan
     IsScalar,
     Instance,
     AutoInstance,
-    // AnyInstance,
     EntityDescriptor,
     Entity,
     KeyVal,
-    // AnyEntity,
   };
 }
 

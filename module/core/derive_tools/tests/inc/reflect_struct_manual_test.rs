@@ -31,8 +31,9 @@ impl< I : reflect::Instance > EntityDescriptor< I >
 // qqq : qqq for Yulia : implement derive ReflectInstance
 impl reflect::Instance for Struct1
 {
+  type Entity = EntityDescriptor::< Self >;
   #[ inline( always ) ]
-  fn reflect( &self ) -> impl reflect::Entity
+  fn Reflect() -> Self::Entity
   {
     EntityDescriptor::< Self >::new()
   }
@@ -66,9 +67,9 @@ impl reflect::Entity for EntityDescriptor< Struct1 >
   {
     let result = vec!
     [
-      reflect::KeyVal { key: "f1", val: Box::new( reflect::EntityDescriptor::<i32>::new() ) },
-      reflect::KeyVal { key: "f2", val: Box::new( reflect::EntityDescriptor::<String>::new() ) },
-      reflect::KeyVal { key: "f3", val: Box::new( reflect::EntityDescriptor::<&'static str>::new() ) },
+      reflect::KeyVal { key: "f1", val: Box::new( < i32 as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: "f2", val: Box::new( < String as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: "f3", val: Box::new( < &'static str as reflect::Instance >::Reflect() ) },
     ];
     Box::new( result.into_iter() )
   }

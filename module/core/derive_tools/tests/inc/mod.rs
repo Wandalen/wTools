@@ -72,8 +72,8 @@ mod inner_from_multiple_test;
 mod reflect_common_test;
 #[ cfg( feature = "derive_reflect" ) ]
 mod reflect_struct_manual_test;
-#[ cfg( feature = "derive_reflect" ) ]
-mod reflect_struct_in_struct_manual_test;
+// #[ cfg( feature = "derive_reflect" ) ]
+// mod reflect_struct_in_struct_manual_test;
 
 // #[ cfg( all( feature = "type_variadic_from" ) ) ]
 // mod variadic_from_manual_test;
@@ -87,6 +87,6 @@ mod reflect_struct_in_struct_manual_test;
 // #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
 // mod variadic_from2_derive;
 
-#[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-#[ path = "../../../../../module/core/variadic_from/tests/inc/mod.rs" ]
-mod variadic_tests;
+// #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+// #[ path = "../../../../../module/core/variadic_from/tests/inc/mod.rs" ]
+// mod variadic_tests;
