@@ -37,7 +37,14 @@ impl FeedClient
       }
     }
     let feed = feed_parser::parse( feed.as_slice() )?;
-    println!("New feed | id::{:?} | published::{:?} | ttl::{:?} | entries::{:?}", feed.id, feed.published, feed.ttl, feed.entries.len() );
+    println!("Feed | id::{:?} | published::{:?} | ttl::{:?} | entries::{:?}", feed.id, feed.published, feed.ttl, feed.entries.len() );
+
+    for e in feed.entries
+    {
+      println!("  Entry | id::{:?} | updated::{:?}", e.id, e.updated );
+      println!("    summary::{:20?}", e.summary );
+    }
+
     // println!("title::{:?}", feed.title );
     // println!("{:#?}", feed );
     Ok( () )

@@ -19,7 +19,8 @@ pub struct Feeds
 
 pub fn read_feed_config() -> Result< Vec< FeedConfig >, Box< dyn std::error::Error > >
 {
-  let path = format!( "./feeds.toml" );
+  let path = format!( "./config/feeds.toml" );
+  // qqq : parametrize
 
   let read_file = OpenOptions::new().read( true ).open( &path )?;
   let mut reader = BufReader::new( read_file );
