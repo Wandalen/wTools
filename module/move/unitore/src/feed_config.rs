@@ -33,4 +33,3 @@ pub fn read_feed_config() -> Result< Vec< FeedConfig >, Box< dyn std::error::Err
 
   Ok( feeds.config )
 }
-
