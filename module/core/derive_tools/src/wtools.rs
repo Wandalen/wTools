@@ -38,12 +38,14 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ cfg( feature = "type_variadic_from" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::from::orphan::*;
 }
 
-// #[ doc( inline ) ]
+#[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-// pub use exposed::*;
+pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude

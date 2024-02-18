@@ -1,5 +1,5 @@
-use std::{ fs::OpenOptions, io::{BufReader, Read} };
-
+// use super::*;
+use std::{ fs::OpenOptions, io::{ BufReader, Read } };
 use serde::Deserialize;
 
 #[ derive( Debug, Deserialize ) ]
@@ -19,7 +19,8 @@ pub struct Feeds
 
 pub fn read_feed_config() -> Result< Vec< FeedConfig >, Box< dyn std::error::Error > >
 {
-  let path = format!( "./test_feed_list.toml" );
+  let path = format!( "./config/feeds.toml" );
+  // qqq : parametrize
 
   let read_file = OpenOptions::new().read( true ).open( &path )?;
   let mut reader = BufReader::new( read_file );
@@ -28,8 +29,7 @@ pub fn read_feed_config() -> Result< Vec< FeedConfig >, Box< dyn std::error::Err
 
   let feeds : Feeds = toml::from_str( &String::from_utf8( buffer )? )?;
 
-  println!( "{:#?}", feeds );
+  // println!( "{:#?}", feeds );
 
   Ok( feeds.config )
 }
-

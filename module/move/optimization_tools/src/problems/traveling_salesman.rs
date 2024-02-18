@@ -1,18 +1,18 @@
 //! Solving Traveling Salesman Problem using HybridOptiomizer.
-//! 
+//!
 //! Initial population generated as random routes where each node appears exactly once( except for starting node, which apperars at the beginning and at the end ).
-//! 
+//!
 //! Selection operator performes tourmanent selection: randomly selecting a group of individuals from the population( the number of individuals selected is equal to the tournament_size value).
 //! Likelihood of win of the fittest participant is determined by tournament_selection_pressure.
-//! 
-//! Crossover operator performs ordered crossover to preserve uniqueness of each node in route: a subroute from the first parent is selected and the remainder of the route is filled 
+//!
+//! Crossover operator performs ordered crossover to preserve uniqueness of each node in route: a subroute from the first parent is selected and the remainder of the route is filled
 //! with the nodes from the second parent in the order in which they appear, without duplicating any nodes in the selected subroute from the first parent.
-//! 
-//! Mutation operator alters solution in one of three different ways, determined randomly: 
-//! - by swapping two nodes within the route( start and end nodes excluded ), 
-//! - by reversing subroute, 
+//!
+//! Mutation operator alters solution in one of three different ways, determined randomly:
+//! - by swapping two nodes within the route( start and end nodes excluded ),
+//! - by reversing subroute,
 //! - by changing position of subroute.
-//! 
+//!
 
 use std::collections::HashMap;
 use crate::hybrid_optimizer::*;
@@ -22,7 +22,7 @@ use deterministic_rand::{ Hrng, seq::{ SliceRandom, IteratorRandom } };
 use iter_tools::Itertools;
 
 /// Functionality for symmetrical traveling salesman problem undirected graph representation.
-pub trait Graph 
+pub trait Graph
 {
   /// Graph node type.
   type N;
@@ -32,7 +32,7 @@ pub trait Graph
   /// Checks if edge connecting two nodes exists.
   fn has_edge( &self, node1 : &Self::N, node2 : &Self::N ) -> bool;
 
-  /// Adds edge to graph, connecting two nodes. 
+  /// Adds edge to graph, connecting two nodes.
   fn add_edge( &mut self, node1 : Self::N, node2 : Self::N, weight : f64 );
 
   /// Return list of graph nodes.
@@ -61,7 +61,7 @@ impl TSPGraph
 
 impl Default for TSPGraph
 {
-  fn default() -> Self 
+  fn default() -> Self
   {
     let mut graph = TSPGraph::new();
     graph.add_edge( NodeIndex( 1 ), NodeIndex( 2 ), 10.0 );
@@ -133,7 +133,7 @@ impl Graph for TSPGraph
     None
   }
 
-  fn add_edge( &mut self, node1 : Self::N, node2 : Self::N, weight : f64 ) 
+  fn add_edge( &mut self, node1 : Self::N, node2 : Self::N, weight : f64 )
   {
     self.adjacency_list.entry( node1 ).or_default().push( ( node2, weight.into() ) );
     self.adjacency_list.entry( node2 ).or_default().push( ( node1, weight.into() ) );
@@ -166,7 +166,7 @@ impl TSProblem
 
 /// Possible solution of traveling salesman problem, contains route and its distance.
 #[ derive( Debug, PartialEq, Clone ) ]
-pub struct TSPerson 
+pub struct TSPerson
 {
   /// Route which contains starting node at first and last position and every other node exactly once.
   pub route : Vec< NodeIndex >,
@@ -191,12 +191,12 @@ impl Individual for TSPerson
     self.distance as usize
   }
 
-  fn is_optimal( &self ) -> bool 
+  fn is_optimal( &self ) -> bool
   {
     false
   }
 
-  fn update_fitness( &mut self, value : f64 ) 
+  fn update_fitness( &mut self, value : f64 )
   {
     self.distance = value;
   }
@@ -206,7 +206,7 @@ impl InitialProblem for TSProblem
 {
   type Person = TSPerson;
 
-  fn get_random_person( &self, hrng : Hrng ) -> TSPerson 
+  fn get_random_person( &self, hrng : Hrng ) -> TSPerson
   {
     let mut list = Vec::new();
     list.push( self.starting_node );
@@ -227,7 +227,7 @@ impl InitialProblem for TSProblem
     person
   }
 
-  fn evaluate( &self, person : &TSPerson ) -> f64 
+  fn evaluate( &self, person : &TSPerson ) -> f64
   {
     let mut dist = 0.0;
     for ( node1, node2 ) in person.route.iter().tuple_windows()
@@ -236,7 +236,7 @@ impl InitialProblem for TSProblem
       {
         dist += f64::from( edge.weight() )
       }
-      else 
+      else
       {
         dist += f64::from( f64::INFINITY );
       }
@@ -253,7 +253,7 @@ pub struct OrderedRouteCrossover {}
 impl CrossoverOperator for OrderedRouteCrossover
 {
   type Person = TSPerson;
-  fn crossover( &self, hrng : Hrng, parent1 : &Self::Person, parent2 : &Self::Person ) -> Self::Person 
+  fn crossover( &self, hrng : Hrng, parent1 : &Self::Person, parent2 : &Self::Person ) -> Self::Person
   {
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
@@ -311,7 +311,7 @@ impl TSRouteMutation
     new_route.extend( person.route.iter().skip( start ).take( end - start - 1 ).rev() );
     new_route.extend( person.route.iter().skip( end - 1 ) );
     let new_route = new_route.into_iter().map( | n | *n ).collect_vec();
-    
+
     person.route = new_route;
   }
 
@@ -355,7 +355,7 @@ impl MutationOperator for TSRouteMutation
   type Person = TSPerson;
   type Problem = TSProblem;
 
-  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, _context : &Self::Problem ) 
+  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, _context : &Self::Problem )
   {
     let rng_ref = hrng.rng_ref();
     let mut rng = rng_ref.lock().unwrap();
