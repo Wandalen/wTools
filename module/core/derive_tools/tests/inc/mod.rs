@@ -76,6 +76,8 @@ mod reflect_primitive_test;
 mod reflect_struct_manual_test;
 #[ cfg( feature = "derive_reflect" ) ]
 mod reflect_struct_in_struct_manual_test;
+#[ cfg( feature = "derive_reflect" ) ]
+mod reflect_struct_with_lifetime_manual_test;
 
 // #[ cfg( all( feature = "type_variadic_from" ) ) ]
 // mod variadic_from_manual_test;

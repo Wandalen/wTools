@@ -167,10 +167,6 @@ pub( crate ) mod private
     _phantom : core::marker::PhantomData< I >,
   }
 
-  // xxx : qqq : qqq for Yulia : implement derive Phantom
-  // #[ derive( PartialEq, Debug, Phantom ) ]
-  // pub struct EntityDescriptor< I : Instance >;
-
   impl< I : Instance > EntityDescriptor< I >
   {
     /// Constructor of the descriptor.

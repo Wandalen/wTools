@@ -2,58 +2,36 @@ use super::*;
 pub use TheModule::reflect;
 
 #[ derive( Debug, Clone, PartialEq ) ]
-pub struct Struct1
+pub struct Struct1< 'a, 'b >
 {
-  pub f1 : i32,
+  pub f1 : &'a i32,
   pub f2 : String,
-  pub f3 : &'static str,
+  pub f3 : &'b str,
 }
 
 // --
 
 #[ derive( PartialEq, Debug ) ]
-pub struct EntityDescriptor< I : reflect::Instance >
+pub struct EntityDescriptor< 'a, 'b, I : reflect::Instance >
 {
-  _phantom : core::marker::PhantomData< I >,
+  _phantom : core::marker::PhantomData< ( &'a (), &'b (), I ) >,
 }
 
-//
-// xxx : qqq : qqq for Yulia : implement derive Phantom
-//
-// #[ derive( PartialEq, Debug ) ]
-// pub struct EntityDescriptor< I : reflect::Instance >
-// {
-//   _phantom : core::marker::PhantomData< I >,
-// }
-//
-// #[ derive( PartialEq, Debug, Phantom ) ]
-// pub struct EntityDescriptor< I : Instance >;
-//
-// #[ derive( PartialEq, Debug, Phantom ) ]
-// pub struct EntityDescriptor< I : Instance > {};
-//
-// #[ derive( PartialEq, Debug ) ]
-// pub struct EntityDescriptor< 'a, 'b, I : reflect::Instance >
-// {
-//   _phantom : core::marker::PhantomData< ( &'a (), &'b (), I ) >,
-// }
-//
-
-impl< I : reflect::Instance > EntityDescriptor< I >
+impl< 'a, 'b, I : reflect::Instance > EntityDescriptor< 'a, 'b, I >
 {
   /// Constructor of the descriptor.
   #[ inline( always ) ]
   pub fn new() -> Self
   {
-    let _phantom = core::marker::PhantomData::< I >;
+    let _phantom = core::marker::PhantomData::< ( &'a (), &'b (), I ) >;
     Self { _phantom }
   }
 }
 
 // qqq : qqq for Yulia : implement derive ReflectInstance
-impl reflect::Instance for Struct1
+impl< 'a, 'b > reflect::Instance for Struct1< 'a, 'b >
 {
-  type Entity = EntityDescriptor::< Self >;
+  type Entity = EntityDescriptor::< 'a, 'b, Self >;
   #[ inline( always ) ]
   fn Reflect() -> Self::Entity
   {
@@ -63,7 +41,7 @@ impl reflect::Instance for Struct1
 
 // --
 
-impl reflect::Entity for EntityDescriptor< Struct1 >
+impl< 'a, 'b > reflect::Entity for EntityDescriptor< 'a, 'b, Struct1< 'a, 'b > >
 {
 
   #[ inline( always ) ]
@@ -81,13 +59,13 @@ impl reflect::Entity for EntityDescriptor< Struct1 >
   #[ inline( always ) ]
   fn type_name( &self ) -> &'static str
   {
-    core::any::type_name::< Struct1 >()
+    core::any::type_name::< Struct1< 'a, 'b > >()
   }
 
   #[ inline( always ) ]
   fn type_id( &self ) -> core::any::TypeId
   {
-    core::any::TypeId::of::< Struct1 >()
+    core::any::TypeId::of::< Struct1< 'static, 'static > >()
   }
 
   #[ inline( always ) ]
@@ -104,4 +82,4 @@ impl reflect::Entity for EntityDescriptor< Struct1 >
 
 }
 
-include!( "./only_test/reflect_struct.rs" );
+include!( "./only_test/reflect_struct_with_lifetime.rs" );
