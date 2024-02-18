@@ -39,6 +39,7 @@ default = [
   "derive_as_ref",
   "derive_as_mut",
   "derive_variadic_from",
+  "derive_reflect",
 ]
 full = [
   "enabled",
@@ -49,6 +50,7 @@ full = [
   "derive_as_ref",
   "derive_as_mut",
   "derive_variadic_from",
+  "derive_reflect",
 ]
 enabled = []
 
@@ -59,6 +61,7 @@ derive_deref_mut = []
 derive_from = []
 derive_inner_from = []
 derive_variadic_from = []
+derive_reflect = []
 
 [dependencies]
 macro_tools = { workspace = true, features = [ "full" ] }

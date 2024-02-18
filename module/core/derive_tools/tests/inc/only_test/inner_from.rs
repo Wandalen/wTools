@@ -1,4 +1,3 @@
-// qqq2 : move top 2 lines into test.rs file for each file in the dir
 #[ test ]
 fn from_outer_test()
 {

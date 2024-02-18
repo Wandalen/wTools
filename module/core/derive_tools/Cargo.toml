@@ -44,6 +44,8 @@ default = [
   "derive_error",
   "derive_from",
   "derive_inner_from",
+  "derive_reflect",
+
   "derive_index",
   "derive_index_mut",
   "derive_into",
@@ -85,6 +87,9 @@ full = [
   "derive_deref_mut",
   "derive_error",
   "derive_from",
+  "derive_inner_from",
+  "derive_reflect",
+
   "derive_index",
   "derive_index_mut",
   "derive_into",
@@ -137,6 +142,7 @@ derive_error = [ "derive_more", "derive_more/error" ]
 # derive_from = [ "derive_tools_meta/derive_from" ]
 derive_from = [ "derive_tools_meta/derive_from" ]
 derive_inner_from = [ "derive_tools_meta/derive_inner_from" ]
+derive_reflect = [ "derive_tools_meta/derive_reflect" ]
 
 derive_index = [ "derive_more", "derive_more/index" ]
 derive_index_mut = [ "derive_more", "derive_more/index_mut" ]

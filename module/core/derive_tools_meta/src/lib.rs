@@ -32,6 +32,7 @@
 		feature = "derive_from",
 		feature = "derive_inner_from",
 		feature = "derive_variadic_from",
+		feature = "derive_reflect",
 	)
 )]
 #[ cfg( feature = "enabled" ) ]
@@ -47,6 +48,7 @@ mod implementation;
 		feature = "derive_from",
 		feature = "derive_inner_from",
 		feature = "derive_variadic_from",
+		feature = "derive_reflect",
 	)
 )]
 #[ cfg( feature = "enabled" ) ]
@@ -376,12 +378,35 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// ```
 
+// qqq : xxx : why no run?
+
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_variadic_from" ) ]
 #[ proc_macro_derive( VariadicFrom ) ]
 pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = variadic_from::variadic_from( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+///
+/// Reflect structure of any kind.
+///
+/// ### Sample :: trivial.
+///
+/// qqq : write, please
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_reflect" ) ]
+#[ proc_macro_derive( Reflect ) ]
+pub fn derive_reflect( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = reflect::reflect( input );
   match result
   {
     Ok( stream ) => stream.into(),
