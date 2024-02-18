@@ -8,38 +8,43 @@
 //! Details: Command not found. Maybe you mean `.echo`?
 //! ```
 #[ cfg( feature = "on_unknown_command_error_suggest" ) ]
-fn main() {
-		use wca::prelude::*;
+fn main()
+{
+  use wca::prelude::*;
 
-		let ca = CommandsAggregator::former()
-		.grammar(
-		[
-		  Command::former()
-			.phrase("echo")
-			.hint("prints all subjects and properties")
-			.subject("Subject", Type::String, true)
-			.property("property", "simple property", Type::String, true)
-			.form(),
-		] )
-		.executor(
-		[
-		  ( "echo".to_owned(), Routine::new( | ( args, props ) |
-			{
-			  println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
-				Ok(())
-			} )
-			),
-		] )
-		.build();
+  let ca = CommandsAggregator::former()
+	.grammar(
+	[
+	  Command::former()
+		.phrase("echo")
+		.hint("prints all subjects and properties")
+		.subject("Subject", Type::String, true)
+		.property("property", "simple property", Type::String, true)
+		.form(),
+	] )
+	.executor (
+	[
+	( "echo".to_owned(), Routine::new( | ( args, props ) |
+	{
+	  println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
+		Ok( () )
+	} )
+	),
+	] )
+	.build();
 
-		let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
-		match ca.perform( args.join( " " ) ) {
-				Ok( _ ) => {}
-				Err( err ) => println!( "{err}" ),
-		};
+	let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
+	match ca.perform( args.join( " " ) )
+	{
+	  Ok( _ ) => {}
+		Err( err ) => println!( "{err}" ),
+	};
 }
 
 #[ cfg( not( feature = "on_unknown_command_error_suggest" ) ) ]
-fn main(){}
+fn main()
+{
+
+}
 
 
