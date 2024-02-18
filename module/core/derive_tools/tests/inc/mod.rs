@@ -71,7 +71,7 @@ mod inner_from_multiple_test;
 #[ cfg( feature = "derive_reflect" ) ]
 mod reflect_common_test;
 #[ cfg( feature = "derive_reflect" ) ]
-mod reflect_data_test;
+mod reflect_primitive_test;
 #[ cfg( feature = "derive_reflect" ) ]
 mod reflect_struct_manual_test;
 #[ cfg( feature = "derive_reflect" ) ]

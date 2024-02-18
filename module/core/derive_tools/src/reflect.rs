@@ -44,33 +44,33 @@ pub( crate ) mod private
   ///
   /// # Examples
   ///
-  /// Creating a `Data` instance with an integer:
+  /// Creating a `Primitive` instance with an integer:
   ///
   /// ```
-  /// # use derive_tools::Data;
-  /// let num = Data::i32(42);
+  /// # use derive_tools::Primitive;
+  /// let num = Primitive::i32(42);
   /// ```
   ///
-  /// Creating a `Data` instance with a string:
+  /// Creating a `Primitive` instance with a string:
   ///
   /// ```
-  /// # use derive_tools::Data;
-  /// let greeting = Data::String( "Hello, world!".to_string() );
+  /// # use derive_tools::Primitive;
+  /// let greeting = Primitive::String( "Hello, world!".to_string() );
   /// ```
   ///
-  /// Creating a `Data` instance with a binary slice:
+  /// Creating a `Primitive` instance with a binary slice:
   ///
   /// ```
-  /// # use derive_tools::Data;
-  /// let bytes = Data::binary(&[0xde, 0xad, 0xbe, 0xef]);
+  /// # use derive_tools::Primitive;
+  /// let bytes = Primitive::binary(&[0xde, 0xad, 0xbe, 0xef]);
   /// ```
   #[ allow( non_camel_case_types ) ]
   #[ derive( Debug, PartialEq, Default ) ]
-  pub enum Data
+  pub enum Primitive
   {
     /// None
     #[ default ]
-    none,
+    None,
     /// Represents a signed 8-bit integer.
     i8( i8 ),
     /// Represents a signed 16-bit integer.
@@ -101,6 +101,24 @@ pub( crate ) mod private
     str( &'static str ),
     /// Represents a statically allocated slice of bytes.
     binary( &'static [ u8 ] ),
+  }
+
+  #[ allow( non_camel_case_types ) ]
+  #[ derive( Debug, PartialEq ) ]
+  pub enum Data< const N : usize = 0 >
+  {
+    /// None
+    Primitive( Primitive ),
+    // 2/// Array
+    // array( &'a [ Data ; N ] ),
+  }
+
+  impl< const N : usize > Default for Data< N >
+  {
+    fn default() -> Self
+    {
+      Data::Primitive( Primitive::None )
+    }
   }
 
   ///
@@ -474,7 +492,7 @@ pub mod orphan
   pub use super::exposed::*;
   pub use super::private::
   {
-    Data,
+    Primitive,
     IsContainer,
     IsScalar,
     Instance,
