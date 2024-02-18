@@ -84,9 +84,9 @@ impl reflect::Entity for EntityDescriptor< Struct1 >
   {
     let result = vec!
     [
-      reflect::KeyVal { key: "f1", val: Box::new( < i32 as reflect::Instance >::Reflect() ) },
-      reflect::KeyVal { key: "f2", val: Box::new( < String as reflect::Instance >::Reflect() ) },
-      reflect::KeyVal { key: "f3", val: Box::new( < Struct2 as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: reflect::Primitive::str( "f1" ), val: Box::new( < i32 as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: reflect::Primitive::str( "f2" ), val: Box::new( < String as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: reflect::Primitive::str( "f3" ), val: Box::new( < Struct2 as reflect::Instance >::Reflect() ) },
     ];
     Box::new( result.into_iter() )
   }
@@ -120,9 +120,9 @@ impl reflect::Entity for EntityDescriptor< Struct2 >
   {
     let result = vec!
     [
-      reflect::KeyVal { key: "s1", val: Box::new( < i32 as reflect::Instance >::Reflect() ) },
-      reflect::KeyVal { key: "s2", val: Box::new( < String as reflect::Instance >::Reflect() ) },
-      reflect::KeyVal { key: "s3", val: Box::new( < &'static str as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: reflect::Primitive::str( "s1" ), val: Box::new( < i32 as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: reflect::Primitive::str( "s2" ), val: Box::new( < String as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key: reflect::Primitive::str( "s3" ), val: Box::new( < &'static str as reflect::Instance >::Reflect() ) },
     ];
     Box::new( result.into_iter() )
   }

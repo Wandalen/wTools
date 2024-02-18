@@ -459,8 +459,8 @@ pub( crate ) mod private
 //         result[ i ] = KeyVal { key : "x", val : Box::new( < T as Instance >::Reflect() ) }
 //       }
 
-      let result: Vec<KeyVal> = (0..N)
-      .map(|_| KeyVal { key : "x", val : Box::new( < T as Instance >::Reflect() ) } )
+      let result : Vec< KeyVal > = ( 0 .. N )
+      .map( | k | KeyVal { key : Primitive::usize( k ), val : Box::new( < T as Instance >::Reflect() ) } )
       .collect();
 
       Box::new( result.into_iter() )
