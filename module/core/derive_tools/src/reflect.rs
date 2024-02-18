@@ -183,7 +183,7 @@ pub( crate ) mod private
 
   impl< T > Entity for EntityDescriptor< T >
   where
-    T : InstanceMarker + Default + 'static,
+    T : InstanceMarker + 'static,
   {
     #[ inline( always ) ]
     fn type_name( &self ) -> &'static str
@@ -320,62 +320,6 @@ pub( crate ) mod private
     }
   }
 
-  // impl Instance for i8 {}
-  // impl Instance for i16 {}
-  // impl Instance for i32 {}
-  // impl Instance for i64 {}
-  // impl Instance for u8 {}
-  // impl Instance for u16 {}
-  // impl Instance for u32 {}
-  // impl Instance for u64 {}
-  // impl Instance for f32 {}
-  // impl Instance for f64 {}
-  // impl Instance for String {}
-  // impl Instance for &'static str {}
-
-  /// Implements Entity for a types.
-  #[ macro_export ]
-  macro_rules! impl_entity_for
-  {
-
-    (
-      $( $Path : tt )*
-    )
-    =>
-    {
-      impl crate::reflect::Entity for crate::reflect::EntityDescriptor< $( $Path )* >
-      {
-        #[ inline( always ) ]
-        fn type_name( &self ) -> &'static str
-        {
-          core::any::type_name::< $( $Path )* >()
-        }
-      }
-    };
-
-  }
-
-  // impl Entity for EntityDescriptor< i8 >
-  // {
-  //   fn type_name( &self ) -> &'static str
-  //   {
-  //     core::any::type_name::< i8 >()
-  //   }
-  // }
-
-  // impl_entity_for!( i8 );
-  // impl_entity_for!( i16 );
-  // impl_entity_for!( i32 );
-  // impl_entity_for!( i64 );
-  // impl_entity_for!( u8 );
-  // impl_entity_for!( u16 );
-  // impl_entity_for!( u32 );
-  // impl_entity_for!( u64 );
-  // impl_entity_for!( f32 );
-  // impl_entity_for!( f64 );
-  // impl_entity_for!( String );
-  // impl_entity_for!( &'static str );
-
   impl InstanceMarker for i8 {}
   impl InstanceMarker for i16 {}
   impl InstanceMarker for i32 {}
@@ -388,6 +332,10 @@ pub( crate ) mod private
   impl InstanceMarker for f64 {}
   impl InstanceMarker for String {}
   impl InstanceMarker for &'static str {}
+
+  impl< T > InstanceMarker for &T
+  where T : InstanceMarker
+  {}
 
   impl IsScalar for i8 {}
   impl IsScalar for i16 {}

@@ -5,7 +5,7 @@ pub use TheModule::reflect;
 pub struct Struct1< 'a, 'b >
 {
   pub f1 : &'a i32,
-  pub f2 : String,
+  pub f2 : i32,
   pub f3 : &'b str,
 }
 
@@ -73,8 +73,8 @@ impl< 'a, 'b > reflect::Entity for EntityDescriptor< 'a, 'b, Struct1< 'a, 'b > >
   {
     let result = vec!
     [
-      reflect::KeyVal { key : reflect::Primitive::str( "f1" ), val : Box::new( < i32 as reflect::Instance >::Reflect() ) },
-      reflect::KeyVal { key : reflect::Primitive::str( "f2" ), val : Box::new( < String as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key : reflect::Primitive::str( "f1" ), val : Box::new( < &'static i32 as reflect::Instance >::Reflect() ) },
+      reflect::KeyVal { key : reflect::Primitive::str( "f2" ), val : Box::new( < i32 as reflect::Instance >::Reflect() ) },
       reflect::KeyVal { key : reflect::Primitive::str( "f3" ), val : Box::new( < &'static str as reflect::Instance >::Reflect() ) },
     ];
     Box::new( result.into_iter() )
