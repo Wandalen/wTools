@@ -27,31 +27,31 @@ pub struct EntityDescriptor< I : reflect::Instance >
 
 impl< I : reflect::Instance > EntityDescriptor< I >
 {
-  /// Constructor of the descriptor of type.
   #[ inline( always ) ]
   pub fn new() -> Self
   {
     let _phantom = core::marker::PhantomData::< I >;
     Self { _phantom }
   }
-  /// Constructor of the descriptor of type.
 }
 
 // --
 
 impl reflect::Instance for Struct1
 {
+  type Entity = EntityDescriptor< Struct1 >;
   #[ inline( always ) ]
-  fn Reflect() -> impl reflect::Entity
+  fn Reflect() -> Self::Entity
   {
     EntityDescriptor::< Self >::new()
   }
 }
 
-impl Reflect::Instance for Struct2
+impl reflect::Instance for Struct2
 {
+  type Entity = EntityDescriptor< Struct2 >;
   #[ inline( always ) ]
-  fn Reflect() -> impl reflect::Entity
+  fn Reflect() -> Self::Entity
   {
     EntityDescriptor::< Self >::new()
   }
