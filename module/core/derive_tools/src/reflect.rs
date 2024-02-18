@@ -109,7 +109,7 @@ pub( crate ) mod private
   {
     /// None
     Primitive( Primitive ),
-    // 2/// Array
+    // /// Array
     // array( &'a [ Data ; N ] ),
   }
 
@@ -297,7 +297,8 @@ pub( crate ) mod private
   pub struct KeyVal
   {
     /// The key associated with the value in the key-value pair.
-    pub key : &'static str,
+    pub key : Primitive,
+    // pub key : &'static str,
     /// The value associated with the key in the key-value pair.
     pub val : Box< dyn Entity >,
   }
@@ -405,9 +406,6 @@ pub( crate ) mod private
   impl IsScalar for String {}
   impl IsScalar for &'static str {}
 
-  // impl< T, const N : usize > IsContainer for [ T ; N ] {}
-
-  // impl< T, const N : usize > InstanceMarker for [ T ; N ] {}
   impl< T, const N : usize > Instance for [ T ; N ]
   where
     EntityDescriptor< [ T ; N ] > : Entity,
@@ -462,7 +460,7 @@ pub( crate ) mod private
 //       }
 
       let result: Vec<KeyVal> = (0..N)
-      .map(|_| KeyVal { key: "x", val: Box::new( < T as Instance >::Reflect() ) } )
+      .map(|_| KeyVal { key : "x", val : Box::new( < T as Instance >::Reflect() ) } )
       .collect();
 
       Box::new( result.into_iter() )
