@@ -32,7 +32,7 @@ mod header_create_test
 		// Act
 		_ = endpoint::generate_main_header( &temp ).unwrap();
 
-		let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
+		let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
 		let mut actual = String::new();
 

@@ -126,9 +126,9 @@ mod private
 		let header_param = HeaderParameters::from_cargo_toml( &workspace_root )?;
 		let read_me_path = workspace_root.join( readme_path(&workspace_root ).ok_or_else( || format_err!( "Fail to find README.md" ) )?);
 		let mut file = OpenOptions::new()
-			.read( true )
-			.write( true )
-			.open( &read_me_path )?;
+		.read( true )
+		.write( true )
+		.open( &read_me_path )?;
 
 		let mut content = String::new();
 		file.read_to_string( &mut content )?;
