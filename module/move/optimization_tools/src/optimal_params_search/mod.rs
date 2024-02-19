@@ -8,6 +8,8 @@ use iter_tools::Itertools;
 
 use crate::hybrid_optimizer::*;
 
+use self::results_serialize::read_results;
+
 /// Level of difficulty of sudoku board.
 #[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
 pub enum Level
@@ -53,7 +55,7 @@ impl Default for OptimalParamsConfig
     {
       improvement_threshold : 0.005,
       max_no_improvement_steps : 10,
-      max_iterations : 100,
+      max_iterations : 10,
     }
   }
 } 
@@ -145,24 +147,24 @@ where  R : RangeBounds< f64 > + Sync,
   let ga_crossover_operator = hybrid_problem.ga_crossover_operator.clone();
   let mutation_operator = hybrid_problem.mutation_operator.clone();
 
-  let objective_function = | case : nelder_mead::Point |
+  let objective_function = | case : &nelder_mead::Point |
   {
     log::info!
     (
       "temp_decrease_coefficient : {:.4?}, max_mutations_per_dynasty: {}, mutation_rate: {:.2}, crossover_rate: {:.2};",
-      case.coords[ 0 ], case.coords[ 1 ] as usize, case.coords[ 2 ], case.coords[ 3 ]
+      case.coords[ 0 ], case.coords[ 1 ].into_inner() as usize, case.coords[ 2 ], case.coords[ 3 ]
     );
 
     log::info!
     (
       "max_stale_iterations : {:?}, population_size: {}, dynasties_limit: {};",
-      case.coords[ 4 ] as usize, case.coords[ 5 ] as usize, case.coords[ 6 ] as usize
+      case.coords[ 4 ].into_inner() as usize, case.coords[ 5 ].into_inner() as usize, case.coords[ 6 ].into_inner() as usize
     );
 
     let temp_schedule = LinearTempSchedule
     {
       constant : 0.0.into(),
-      coefficient : case.coords[ 0 ].into(),
+      coefficient : case.coords[ 0 ].into_inner().into(),
       reset_increase_value : 1.0.into(),
     };
 
@@ -176,16 +178,16 @@ where  R : RangeBounds< f64 > + Sync,
     };
 
     let props = crate::hybrid_optimizer::PopulationModificationProportions::new()
-    .set_crossover_rate( case.coords[ 3 ] )
-    .set_mutation_rate( case.coords[ 2 ] )
+    .set_crossover_rate( case.coords[ 3 ].into_inner() )
+    .set_mutation_rate( case.coords[ 2 ].into_inner() )
     ;
 
     let optimizer = HybridOptimizer::new( Config::default(), h_problem )
-    .set_sa_max_mutations_per_dynasty( case.coords[ 1 ] as usize )
+    .set_sa_max_mutations_per_dynasty( case.coords[ 1 ].into_inner() as usize )
     .set_population_proportions( props )
-    .set_max_stale_iterations( case.coords[ 4 ] as usize )
-    .set_population_size( case.coords[ 5 ] as usize )
-    .set_dynasties_limit( case.coords[ 6 ] as usize )
+    .set_max_stale_iterations( case.coords[ 4 ].into_inner() as usize )
+    .set_population_size( case.coords[ 5 ].into_inner() as usize )
+    .set_dynasties_limit( case.coords[ 6 ].into_inner() as usize )
     ;
     let ( _reason, _solution ) = optimizer.optimize();
   };
@@ -198,10 +200,10 @@ where  R : RangeBounds< f64 > + Sync,
 }
 
 /// Wrapper for optimizing objective function by execution time instead of value.
-pub fn optimize_by_time< F, R >( _config : OptimalParamsConfig, problem : OptimalProblem< R >, objective_function : F ) -> Result< nelder_mead::Solution, nelder_mead::Error >
-where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
+pub fn optimize_by_time< F, R >( config : OptimalParamsConfig, problem : OptimalProblem< R >, objective_function : F ) -> Result< nelder_mead::Solution, nelder_mead::Error >
+where F : Fn( &nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
 {
-  let objective_function = | case : nelder_mead::Point |
+  let objective_function = | case : &nelder_mead::Point |
   {
 
     let now = std::time::Instant::now();
@@ -216,31 +218,37 @@ where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
     elapsed.as_secs_f64()
   }; 
 
-  let mut bounds = Vec::new();
-  for bound in problem.bounds
-  {
-    if let Some( bound ) = bound
-    {
-      bounds.push( bound );
-    }
-  }
+  // let mut bounds = Vec::new();
+  // for bound in problem.bounds
+  // {
+  //   if let Some( bound ) = bound
+  //   {
+  //     bounds.push( bound );
+  //   }
+  // }
   
-  let optimizer = sim_annealing::Optimizer
+  // let optimizer = sim_annealing::Optimizer
+  // {
+  //   bounds : bounds,
+  //   objective_function : objective_function,
+  //   max_iterations : 50,
+  // };
+  let mut optimizer = nelder_mead::Optimizer::new( objective_function );
+  optimizer.bounds = problem.bounds;
+  optimizer.set_starting_point( problem.starting_point.clone() );
+  optimizer.set_simplex_size( problem.simplex_size );
+
+  optimizer.improvement_threshold = config.improvement_threshold;
+  optimizer.max_iterations = config.max_iterations;
+  optimizer.max_no_improvement_steps = config.max_no_improvement_steps;
+
+  let calculated_points = read_results();
+  if let Ok( calculated_points ) = calculated_points
   {
-    bounds : bounds,
-    objective_function : objective_function,
-    max_iterations : 50,
-  };
-  // let mut optimizer = nelder_mead::Optimizer::new( objective_function );
-  // optimizer.bounds = problem.bounds;
-  // optimizer.set_starting_point( problem.starting_point.clone() );
-  // optimizer.set_simplex_size( problem.simplex_size );
+    optimizer.set_calculated_results( calculated_points );
+  }
 
-  // optimizer.improvement_threshold = config.improvement_threshold;
-  // optimizer.max_iterations = config.max_iterations;
-  // optimizer.max_no_improvement_steps = config.max_no_improvement_steps;
-
-  optimizer.optimize()
+  optimizer.optimize_from_random_points()
 }
 
 /// Possible error when building NMOptimizer.

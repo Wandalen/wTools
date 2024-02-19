@@ -1,3 +1,4 @@
+use iter_tools::Itertools;
 use optimization_tools::*;
 use optimal_params_search::OptimalParamsConfig;
 use problems::{ sudoku::*, traveling_salesman::* };
@@ -93,7 +94,7 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   let mut hybrid_res = Vec::new();
   if let Ok( solution ) = res
   {
-    hybrid_res = solution.point.coords.clone();
+    hybrid_res = solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec();
     hybrid_res.push( solution.objective );
   }
 
@@ -105,7 +106,7 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   let mut sa_res = Vec::new();
   if let Ok( solution ) = res
   {
-    sa_res = solution.point.coords.clone();
+    sa_res = solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec();
     sa_res.push( solution.objective );
   }
 
@@ -117,7 +118,7 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   let mut ga_res = Vec::new();
   if let Ok( solution ) = res
   {
-    ga_res = solution.point.coords.clone();
+    ga_res = solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec();
     ga_res.push( solution.objective );
   }
   write_results( String::from( "sudoku_results" ), String::from( "Sudoku Problem" ), hybrid_res, sa_res, ga_res )?;
@@ -140,7 +141,7 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
   let mut hybrid_res = Vec::new();
   if let Ok( solution ) = res
   {
-    hybrid_res = solution.point.coords.clone();
+    hybrid_res = solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec();
     hybrid_res.push( solution.objective );
   }
 
@@ -151,7 +152,7 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
   let mut sa_res = Vec::new();
   if let Ok( solution ) = res
   {
-    sa_res = solution.point.coords.clone();
+    sa_res = solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec();
     sa_res.push( solution.objective );
   }
 
@@ -162,7 +163,7 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
   let mut ga_res = Vec::new();
   if let Ok( solution ) = res
   {
-    ga_res = solution.point.coords.clone();
+    ga_res = solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec();
     ga_res.push( solution.objective );
   }
 
