@@ -16,10 +16,10 @@ fn main()
 	.grammar(
 	[
 	  Command::former()
-		.phrase("echo")
-		.hint("prints all subjects and properties")
-		.subject("Subject", Type::String, true)
-		.property("property", "simple property", Type::String, true)
+		.phrase( "echo" )
+		.hint( "prints all subjects and properties" )
+		.subject( "Subject", Type::String, true )
+		.property( "property", "simple property", Type::String, true )
 		.form(),
 	] )
 	.executor (
@@ -46,5 +46,3 @@ fn main()
 {
 
 }
-
-
