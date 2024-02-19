@@ -14,3 +14,4 @@ use wca::
 
 mod basic;
 mod callback;
+mod help;

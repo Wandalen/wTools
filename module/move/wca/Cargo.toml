@@ -65,3 +65,4 @@ eddie = { version = "0.4", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+assert_fs = "1.0" 

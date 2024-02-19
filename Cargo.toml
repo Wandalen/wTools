@@ -2,7 +2,7 @@
 resolver = "2"
 members = [
   "module/alias/*",
-  "module/blank/*",
+  # "module/blank/*",
   "module/core/*",
   "module/move/*",
   # "module/step/*",
