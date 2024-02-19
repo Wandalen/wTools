@@ -61,13 +61,20 @@ pub( crate ) mod private
     .phrase( "workflow.generate")
     .form();
 
+    let headers_generate = wca::Command::former()
+    .hint( "asdasdasd" )
+    .long_hint( " asdasdasd " )
+    .phrase( "readme.modules.headers.generate" )
+    .form();
+
     vec!
     [
       publish_command,
       list_command,
       create_table_command,
       run_tests_command,
-      generate_workflow
+      generate_workflow,
+      headers_generate,
     ]
   }
 
@@ -85,6 +92,7 @@ pub( crate ) mod private
       ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
       ( "tests.run".to_owned(), Routine::new( run_tests ) ),
       ( "workflow.generate".to_owned(), Routine::new( workflow_generate ) ),
+      ( "readme.modules.headers.generate".to_owned(), Routine::new( headers_generate ) ),
     ])
   }
 }
@@ -105,4 +113,6 @@ crate::mod_interface!
   layer run_tests;
   /// Generate workflow
   layer workflow;
+  /// Generate headers
+  layer module_headers;
 }

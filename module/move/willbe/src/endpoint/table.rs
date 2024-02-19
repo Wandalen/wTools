@@ -50,7 +50,7 @@ mod private
 
   /// `Stability` is an enumeration that represents the stability level of a feature.
   #[ derive( Debug ) ]
-  enum Stability
+  pub enum Stability
   {
     /// The feature is still being tested and may change.
     Experimental,
@@ -83,7 +83,7 @@ mod private
   }
 
   /// Retrieves the stability level of a package from its `Cargo.toml` file.
-  fn stability_get( package_path: &Path ) -> Result< Stability > 
+  fn stability_get( package_path: &Path ) -> Result< Stability >
   {
     let path = package_path.join( "Cargo.toml" );
     if path.exists() 
@@ -375,7 +375,7 @@ mod private
   }
 
   /// Generate stability cell based on stability
-  fn stability_generate( stability: &Stability ) -> String
+  pub fn stability_generate( stability: &Stability ) -> String
   {
     match stability
     {
@@ -445,7 +445,7 @@ mod private
   }
 
   /// Return workspace root
-  fn workspace_root( metadata: &mut Workspace ) -> Result< PathBuf >
+  pub fn workspace_root( metadata: &mut Workspace ) -> Result< PathBuf >
   {
     Ok( metadata.load()?.workspace_root()?.to_path_buf() )
   }
@@ -468,7 +468,7 @@ mod private
   /// This function attempts to find a README file in the following subdirectories: ".github",
   /// the root directory, and "./docs". It returns the path to the first found README file, or
   /// `None` if no README file is found in any of these locations.
-  fn readme_path( dir_path : &Path ) -> Option< PathBuf >
+  pub fn readme_path( dir_path : &Path ) -> Option< PathBuf >
   {
     if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
     {
@@ -515,6 +515,14 @@ mod private
 
 crate::mod_interface!
 {
+  /// Return workspace root
+  protected use workspace_root;
+  /// Find readme.md file in directory
+  protected use readme_path;
+  /// Stability
+  protected use Stability;
+  /// Generate Stability badge
+  protected use stability_generate;
   /// Create Table.
   orphan use table_create;
 }

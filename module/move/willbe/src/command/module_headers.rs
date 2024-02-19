@@ -1,0 +1,18 @@
+mod private
+{
+	use crate::endpoint;
+	use crate::wtools::error::{ for_app::Context, Result };
+
+	/// Generate headers
+	pub fn headers_generate(( _, _ ) : (wca::Args, wca::Props ) ) -> Result< () >
+	{
+		endpoint::generate_modules_headers( &std::env::current_dir()? ).context( "Fail to generate headers" )
+	}
+
+}
+
+crate::mod_interface!
+{
+  /// List packages.
+  orphan use headers_generate;
+}

@@ -10,4 +10,6 @@ crate::mod_interface!
   layer run_tests;
   /// Workflow.
   layer workflow;
+  /// Module headers.
+  layer module_headers;
 }
