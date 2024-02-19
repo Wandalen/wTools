@@ -121,22 +121,44 @@ pub( crate ) mod private
     }
   }
 
+  /// Provides a reflection of an instance that implements the `Instance` trait.
   ///
-  /// Represents a trait for entity reflection.
+  /// This function is required to distinguish between instances of a type and references to an instance
+  /// in contexts where `self` is used. Without this function, associated trait functions would not differentiate
+  /// between `i32` and `&i32`, treating both identically.
   ///
-  /// This trait is designed to provide reflection capabilities to the implementing struct,
-  /// allowing runtime inspection of its properties, type name, and contained elements if any.
-  // pub trait Instance : core::any::Any
+  /// # Arguments
+  ///
+  /// * `src` - A reference to an instance that implements the `Instance` trait.
+  ///
+  /// # Returns
+  ///
+  /// Returns an entity descriptor that implements the `Entity` trait, providing
+  /// runtime reflection capabilities for the given instance.
+  pub fn reflect( src : &impl Instance ) -> impl Entity
+  {
+    src._reflect()
+  }
+
+  ///
+  /// Represents a trait for enabling runtime reflection of entities.
+  ///
+  /// This trait is designed to equip implementing structs with the ability to introspect
+  /// their properties, type names, and any contained elements. It facilitates runtime inspection
+  /// and manipulation of entities in a dynamic manner.
+  ///
   pub trait Instance
   {
-    /// Entity descriptor.
+    /// The entity descriptor associated with this instance.
     type Entity : Entity;
-    /// Return a descriptor of type with current instance.
-    fn reflect( &self ) -> Self::Entity
+    /// Returns a descriptor for the current instance.
+    ///
+    /// Don't use manually.
+    fn _reflect( &self ) -> Self::Entity
     {
       Self::Reflect()
     }
-    /// Return a descriptor of type with type of instance.
+    /// Returns a descriptor for the type of the instance.
     #[ allow( non_snake_case ) ]
     fn Reflect() -> Self::Entity;
   }
@@ -153,10 +175,6 @@ pub( crate ) mod private
       EntityDescriptor::< Self >::new()
     }
   }
-
-  // /// xxx
-  // pub trait AnyInstance : core::any::Any + Instance {}
-  // impl< T : core::any::Any + Instance > AnyInstance for T {}
 
   ///
   /// Type descriptor
@@ -271,6 +289,18 @@ pub( crate ) mod private
       Box::new( [].into_iter() )
     }
 
+    /// Returns a descriptor for the type of the instance.
+    ///
+    /// # Returns
+    ///
+    /// Returns an entity descriptor that implements the `Entity` trait.
+    #[ inline( always ) ]
+    fn element( &self, i : usize ) -> KeyVal
+    {
+      debug_assert!( i < self.len() );
+      self.elements().skip( i ).next().unwrap()
+    }
+
   }
 
   // /// A trait for entities that support dynamic type inspection and reflection.
@@ -349,6 +379,8 @@ pub( crate ) mod private
   impl IsScalar for f64 {}
   impl IsScalar for String {}
   impl IsScalar for &'static str {}
+
+  // qqq : xxx : implement for slice, Vec, HashMap, HashSet
 
   impl< T, const N : usize > Instance for [ T ; N ]
   where
@@ -434,6 +466,7 @@ pub mod orphan
   pub use super::exposed::*;
   pub use super::private::
   {
+    reflect,
     Primitive,
     IsContainer,
     IsScalar,
