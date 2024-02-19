@@ -1,33 +1,58 @@
 //!
-//! Types, which are extension of std.
+//! # System of Types for Reflection
 //!
+//! This crate provides a comprehensive system for runtime type reflection, enabling dynamic type inspection and manipulation. It is designed to facilitate the integration of types into systems that require advanced operations such as serialization, deserialization, object-relational mapping (ORM), and interaction with generic containers and algorithms that operate on heterogeneous collections of entities.
+//!
+//! ## Features
+//!
+//! - **Dynamic Type Inspection**: Retrieve detailed type information at runtime, supporting complex scenarios like serialization frameworks that need to dynamically handle different data types.
+//! - **Entity Manipulation**: Manipulate entities in a type-safe manner, leveraging Rust's powerful type system to ensure correctness while allowing dynamic behavior.
+//! - **Reflection API**: Utilize a rich set of APIs to introspect and manipulate entities based on their runtime type information, enabling patterns that are not possible with static typing alone.
+//! - **Support for Primitive and Composite Types**: Handle both primitive types (e.g., integers, floating-point numbers, strings) and composite entities (e.g., structs, arrays, maps) with a unified interface.
+//!
+//! ## Use Cases
+//!
+//! - **Serialization/Deserialization**: Automatically convert Rust structs to and from formats like JSON, XML, or binary representations, based on their runtime type information.
+//! - **Dynamic ORM**: Map Rust entities to database tables dynamically, enabling flexible schema evolution and complex queries without sacrificing type safety.
+//! - **Generic Algorithms**: Implement algorithms that operate on collections of heterogeneous types, performing runtime type checks and conversions as necessary.
+//! - **Plugin Architectures**: Build systems that load and interact with plugins or modules of unknown types at compile time, facilitating extensibility and modularity.
+//!
+//! ## Getting Started
+//!
+//! To start using the reflection system, define your entities using the provided traits and enums, and then use the `reflect` function to introspect their properties and behavior at runtime. The system is designed to be intuitive for Rust developers familiar with traits and enums, with minimal boilerplate required to make existing types compatible.
+//!
+//! ## Example
+//!
+//! ```rust, ignore
+//! # use derive_tools::reflect::{ reflect, Entity };
+//!
+//! // Define an entity that implements the Instance trait.
+//! #[ derive( Debug ) ]
+//! struct MyEntity
+//! {
+//!   id : i32,
+//!   name : String,
+//!   // other fields
+//! }
+//!
+//! // Implement the required traits for MyEntity.
+//! // ...
+//!
+//! // Use the reflection API to inspect `MyEntity`.
+//! let entity = MyEntity { id: 1, name: "Entity Name".to_string() /*, other fields*/ };
+//! let reflected = reflect( &entity );
+//! println!( "{:?}", reflected.type_name() ); // Outputs "MyEntity"
+//! ```
+//!
+//! ## Extending the System
+//!
+//! Implement additional traits for your types as needed to leverage the full power of the reflection system. The crate is designed to be extensible, allowing custom types to integrate seamlessly with the reflection mechanism.
+//!
+// qqq : make the example working. use tests for inpisrations
 
 /// Internal namespace.
 pub( crate ) mod private
 {
-
-  ///
-  /// Trait indicating that an entity is a container.
-  ///
-  /// Implementors of `IsContainer` are considered to be container types,
-  /// which can hold zero or more elements. This trait is typically used in
-  /// conjunction with reflection mechanisms to dynamically inspect, access,
-  /// or modify the contents of a container at runtime.
-  pub trait IsContainer : Instance
-  {
-  }
-
-  ///
-  /// Trait indicating that an entity is a scalar value.
-  ///
-  /// Implementors of `IsScalar` are considered to be scalar types,
-  /// representing single, indivisible values as opposed to composite entities
-  /// like arrays or structs. This distinction can be useful in reflection-based
-  /// APIs or generic programming to treat scalar values differently from containers
-  /// or other complex types.
-  pub trait IsScalar : Instance
-  {
-  }
 
   /// Represents a general-purpose data container that can hold various primitive types
   /// and strings. This enum is designed to encapsulate common data types in a unified
@@ -42,13 +67,13 @@ pub( crate ) mod private
   /// - `str`: A borrowed string slice (`&'static str`), typically used for string literals.
   /// - `binary`: A borrowed slice of bytes (`&'static [u8]`), useful for binary data.
   ///
-  /// # Examples
+  /// # Example
   ///
   /// Creating a `Primitive` instance with an integer:
   ///
   /// ```
   /// # use derive_tools::Primitive;
-  /// let num = Primitive::i32(42);
+  /// let num = Primitive::i32( 42 );
   /// ```
   ///
   /// Creating a `Primitive` instance with a string:
@@ -62,8 +87,9 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use derive_tools::Primitive;
-  /// let bytes = Primitive::binary(&[0xde, 0xad, 0xbe, 0xef]);
+  /// let bytes = Primitive::binary( &[ 0xde, 0xad, 0xbe, 0xef ] );
   /// ```
+  ///
   #[ allow( non_camel_case_types ) ]
   #[ derive( Debug, PartialEq, Default ) ]
   pub enum Primitive
@@ -141,6 +167,29 @@ pub( crate ) mod private
   }
 
   ///
+  /// Trait indicating that an entity is a container.
+  ///
+  /// Implementors of `IsContainer` are considered to be container types,
+  /// which can hold zero or more elements. This trait is typically used in
+  /// conjunction with reflection mechanisms to dynamically inspect, access,
+  /// or modify the contents of a container at runtime.
+  pub trait IsContainer : Instance
+  {
+  }
+
+  ///
+  /// Trait indicating that an entity is a scalar value.
+  ///
+  /// Implementors of `IsScalar` are considered to be scalar types,
+  /// representing single, indivisible values as opposed to composite entities
+  /// like arrays or structs. This distinction can be useful in reflection-based
+  /// APIs or generic programming to treat scalar values differently from containers
+  /// or other complex types.
+  pub trait IsScalar : Instance
+  {
+  }
+
+  ///
   /// Represents a trait for enabling runtime reflection of entities.
   ///
   /// This trait is designed to equip implementing structs with the ability to introspect
@@ -177,58 +226,70 @@ pub( crate ) mod private
   }
 
   ///
-  /// Type descriptor
+  /// The `Entity` trait defines a common interface for entities within a system, enabling
+  /// runtime reflection, inspection, and manipulation of their properties and elements. It
+  /// serves as a foundational component for dynamic entity handling, where entities can
+  /// represent data structures, components, or other logical units with introspectable
+  /// and manipulable state.
   ///
-  #[ derive( PartialEq, Default ) ]
-  pub struct EntityDescriptor< I : Instance >
-  {
-    _phantom : core::marker::PhantomData< I >,
-  }
-
-  impl< I : Instance > EntityDescriptor< I >
-  {
-    /// Constructor of the descriptor.
-    #[ inline( always ) ]
-    pub fn new() -> Self
-    {
-      let _phantom = core::marker::PhantomData::< I >;
-      Self { _phantom }
-    }
-  }
-
-  /// Auto-implement descriptor for this type.
-  pub trait InstanceMarker {}
-
-  impl< T > Entity for EntityDescriptor< T >
-  where
-    T : InstanceMarker + 'static,
-  {
-    #[ inline( always ) ]
-    fn type_name( &self ) -> &'static str
-    {
-      core::any::type_name::< T >()
-    }
-    #[ inline( always ) ]
-    fn type_id( &self ) -> core::any::TypeId
-    {
-      core::any::TypeId::of::< T >()
-    }
-  }
-
-  impl< T > std::fmt::Debug for EntityDescriptor< T >
-  where
-    T : Instance + 'static,
-    EntityDescriptor< T > : Entity,
-  {
-    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
-    {
-      f
-      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
-    }
-  }
-
+  /// ## Usage
   ///
-  /// Type descriptor
+  /// Implementing the `Entity` trait allows a type to be integrated into systems that require
+  /// dynamic type inspection and manipulation, such as serialization frameworks, object-relational
+  /// mapping (ORM) systems, or generic containers and algorithms that operate on heterogeneous
+  /// entity collections.
+  ///
+  /// ## Key Concepts
+  ///
+  /// - **Containment**: Entities can act as containers for other entities, enabling hierarchical
+  ///   or composite data models.
+  ///
+  /// - **Ordering**: The trait distinguishes between ordered and unordered entities, affecting
+  ///   how their elements are iterated over or accessed.
+  ///
+  /// - **Reflection**: Through type metadata and element access methods, entities support
+  ///   reflection, allowing programmatic querying and manipulation of their structure and state.
+  ///
+  /// ## Implementing `Entity`
+  ///
+  /// To implement the `Entity` trait, a type must provide implementations for all non-default
+  /// methods (`type_name`, `type_id`). The default method implementations assume non-container
+  /// entities with no elements and predictable ordering. Implementers should override these
+  /// defaults as appropriate to accurately reflect their specific semantics and behavior.
+  ///
+  /// ## Example
+  ///
+  /// ```
+  /// # use derive_tools::reflect::Entity;
+  ///
+  /// #[derive(Debug)]
+  /// struct MyEntity
+  /// {
+  ///   // Entity fields
+  /// }
+  ///
+  /// impl Entity for MyEntity
+  /// {
+  ///
+  ///   #[ inline ]
+  ///   fn type_name( &self ) -> &'static str
+  ///   {
+  ///     "MyEntity"
+  ///   }
+  ///
+  ///   #[ inline ]
+  ///   fn type_id(&self) -> core::any::TypeId
+  ///   {
+  ///     core::any::TypeId::of::< MyEntity >()
+  ///   }
+  ///
+  ///   // Additional method implementations as necessary...
+  /// }
+  /// ```
+  ///
+  /// This trait is designed to be flexible and extensible, accommodating a wide variety of entity
+  /// types and use cases. Implementers are encouraged to leverage Rust's type system and trait
+  /// mechanisms to provide rich, dynamic behavior in a type-safe manner.
   ///
   pub trait Entity : core::fmt::Debug
   {
@@ -245,6 +306,37 @@ pub( crate ) mod private
     fn is_container( &self ) -> bool
     {
       false
+    }
+
+    /// Determines if the elements of the container are maintained in a specific order.
+    ///
+    /// This method indicates whether the container preserves a specific order of its elements.
+    /// The concept of "order" can refer to:
+    /// - **Sorted Order**: Where elements are arranged based on a sorting criterion, typically
+    ///   through comparison operations.
+    /// - **Insertion Order**: Where elements retain the order in which they were added to the container.
+    ///
+    /// It is important to distinguish this property in collections to understand how iteration over
+    /// the elements will proceed and what expectations can be held about the sequence of elements
+    /// when accessed.
+    ///
+    /// # Returns
+    ///
+    /// - `true` if the container maintains its elements in a predictable order. This is typically
+    ///   true for data structures like arrays, slices, and vectors, where elements are accessed
+    ///   sequentially or are sorted based on inherent or specified criteria.
+    /// - `false` for collections where the arrangement of elements does not follow a predictable
+    ///   sequence from the perspective of an observer, such as sets and maps implemented via hashing.
+    ///   In these structures, the order of elements is determined by their hash and internal state,
+    ///   rather than the order of insertion or sorting.
+    ///
+    /// By default, this method returns `true`, assuming that the entity behaves like an array, slice,
+    /// or vector, where the order of elements is consistent and predictable. Implementers should override
+    /// this behavior for collections where element order is not maintained or is irrelevant.
+    #[ inline( always ) ]
+    fn is_ordered( &self ) -> bool
+    {
+      true
     }
 
     /// Returns the number of elements contained in the entity.
@@ -303,13 +395,56 @@ pub( crate ) mod private
 
   }
 
-  // /// A trait for entities that support dynamic type inspection and reflection.
-  // ///
-  // /// This trait extends both `core::any::Any` for type checking and downcasting capabilities,
-  // /// and `Entity` for reflection-based operations, enabling runtime inspection of
-  // /// entity properties and structures.
-  // pub trait AnyEntity : core::any::Any + Entity {}
-  // impl< T : core::any::Any + Entity > AnyEntity for T {}
+  ///
+  /// Type descriptor
+  ///
+  #[ derive( PartialEq, Default ) ]
+  pub struct EntityDescriptor< I : Instance >
+  {
+    _phantom : core::marker::PhantomData< I >,
+  }
+
+  impl< I : Instance > EntityDescriptor< I >
+  {
+    /// Constructor of the descriptor.
+    #[ inline( always ) ]
+    pub fn new() -> Self
+    {
+      let _phantom = core::marker::PhantomData::< I >;
+      Self { _phantom }
+    }
+  }
+
+  /// Auto-implement descriptor for this type.
+  trait InstanceMarker {}
+
+  impl< T > Entity for EntityDescriptor< T >
+  where
+    T : InstanceMarker + 'static,
+  {
+    #[ inline( always ) ]
+    fn type_name( &self ) -> &'static str
+    {
+      core::any::type_name::< T >()
+    }
+    #[ inline( always ) ]
+    fn type_id( &self ) -> core::any::TypeId
+    {
+      core::any::TypeId::of::< T >()
+    }
+  }
+
+  impl< T > std::fmt::Debug for EntityDescriptor< T >
+  where
+    T : Instance + 'static,
+    EntityDescriptor< T > : Entity,
+  {
+    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    {
+      f
+      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
+    }
+  }
 
   /// Represents a key-value pair where the key is a static string slice
   /// and the value is a boxed entity that implements the `AnyEntity` trait.
@@ -380,7 +515,10 @@ pub( crate ) mod private
   impl IsScalar for String {}
   impl IsScalar for &'static str {}
 
-  // qqq : xxx : implement for slice, Vec, HashMap, HashSet
+  // qqq : xxx : implement for slice
+  // qqq : xxx : implement for Vec
+  // qqq : xxx : implement for HashMap
+  // qqq : xxx : implement for HashSet
 
   impl< T, const N : usize > Instance for [ T ; N ]
   where
@@ -466,14 +604,15 @@ pub mod orphan
   pub use super::exposed::*;
   pub use super::private::
   {
-    reflect,
     Primitive,
+    // Data,
+    reflect,
     IsContainer,
     IsScalar,
     Instance,
-    InstanceMarker,
-    EntityDescriptor,
+    // InstanceMarker,
     Entity,
+    EntityDescriptor,
     KeyVal,
   };
 }
