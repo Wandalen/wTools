@@ -61,13 +61,20 @@ pub( crate ) mod private
     .phrase( "workflow.generate")
     .form();
 
+    let w_new = wca::Command::former()
+    .hint( "hint" )
+    .long_hint( "long hibt")
+    .phrase( "workspace.new")
+    .form();
+
     vec!
     [
       publish_command,
       list_command,
       create_table_command,
       run_tests_command,
-      generate_workflow
+      generate_workflow,
+      w_new,
     ]
   }
 
@@ -85,6 +92,7 @@ pub( crate ) mod private
       ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
       ( "tests.run".to_owned(), Routine::new( run_tests ) ),
       ( "workflow.generate".to_owned(), Routine::new( workflow_generate ) ),
+      ( "workspace.new".to_owned(), Routine::new( workspace_new ) ),
     ])
   }
 }
@@ -105,4 +113,6 @@ crate::mod_interface!
   layer run_tests;
   /// Generate workflow
   layer workflow;
+  /// Workspace new
+  layer workspace_new;
 }
