@@ -42,15 +42,17 @@ mod private
 			{
 				for (feature, result) in features
 				{
-					if !result.out.contains( "failures" )
+					// if tests failed or if build failed
+					let failed = result.out.contains( "failures" ) || result.err.contains( "error" );
+					if !failed
 					{
 						let feature = if feature.is_empty() { "no-features" } else { feature };
-						f.write_fmt(format_args!("  [ {} | {} ]: {}\n", channel, feature, if result.out.contains("failures") { "❌ failed" } else { "✅ successful" } ) )?;
+						f.write_fmt(format_args!("  [ {} | {} ]: {}\n", channel, feature, if failed { "❌ failed" } else { "✅ successful" } ) )?;
 					}
 					else
 					{
 						let feature = if feature.is_empty() { "no-features" } else { feature };
-						f.write_fmt( format_args!( "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n", channel, feature, if result.out.contains( "failures" ) { "❌ failed" } else { "✅ successful" }, result.out ) )?;
+						f.write_fmt( format_args!( "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out, result.err ) )?;
 					}
 				}
 			}
