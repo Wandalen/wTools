@@ -1,19 +1,20 @@
 mod private
 {
-	use std::fs::{File, OpenOptions};
-	use std::io::{Read, Seek, SeekFrom, Write};
+	use std::fs::{ File, OpenOptions };
+	use std::io::{ Read, Seek, SeekFrom, Write };
 	use std::path::Path;
-	use convert_case::{Case, Casing};
+	use convert_case::{ Case, Casing };
 	use toml_edit::Document;
 	use crate::path::AbsolutePath;
-	use crate::{CrateDir, url, Workspace};
-	use crate::endpoint::table::{readme_path, Stability, stability_generate};
+	use crate::{ CrateDir, url, Workspace };
+	use crate::endpoint::table::{ readme_path, Stability, stability_generate };
 	use crate::wtools::error::
 	{
 		err,
 	  for_app::{ bail, Result, Error },
 	};
 
+	/// The `ModuleHeader` structure represents a set of parameters, used for creating url for header.
 	struct ModuleHeader
 	{
 		stability: Stability,
@@ -23,6 +24,8 @@ mod private
 
 	impl ModuleHeader
 	{
+
+		/// Create `ModuleHeader` instance from the folder where Cargo.toml is stored.
 		fn from_cargo_toml( path: &Path ) -> Result< Self >
 		{
 			if !path.exists()
@@ -68,8 +71,10 @@ mod private
 				)
 		}
 
+		/// Convert `ModuleHeader`to header.
 		fn to_header( self ) -> Result< String >
 		{
+			let repo_url = url::extract_repo_url( &self.repository_url ).and_then( | r | url::git_info_extract( &r ).ok() ).ok_or_else::< Error, _ >( || err!( "Fail to parse repository url" ) )?;
 			Ok(format!
 			(
 				"{}\
@@ -78,19 +83,24 @@ mod private
 				[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/{})\
 				[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)",
 				stability_generate( &self.stability ),
-				url::git_info_extract( &self.repository_url )?, self.module_name.to_case( Case::Pascal ), url::git_info_extract( &self.repository_url )?, self.module_name.to_case( Case::Pascal ),
+				repo_url, self.module_name.to_case( Case::Pascal ), repo_url, self.module_name.to_case( Case::Pascal ),
 				self.module_name, self.module_name,
-				self.module_name, self.module_name, url::git_info_extract( &self.repository_url )?
+				self.module_name, self.module_name, repo_url,
 			))
 		}
 	}
 
-	/// Generates headers for each module
+	/// Generates headers in Readme.md in each module.
+	/// The location of header is defined by a tag:
+	/// 	``` md
+	/// 	<!--{ generate.module_header }-->
+	/// 	```
 	pub fn generate_modules_headers( path: &Path ) -> Result< () >
 	{
 		let absolute_path = AbsolutePath::try_from( path )?;
 		let cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
-		for path in cargo_metadata.packages_get()?.into_iter().map(|p| p.manifest_path.as_std_path() ) {
+		for path in cargo_metadata.packages_get()?.into_iter().map( |p| p.manifest_path.as_std_path() )
+		{
 			let header = ModuleHeader::from_cargo_toml( path )?.to_header()?;
 			let read_me_path =  path
 			.parent()

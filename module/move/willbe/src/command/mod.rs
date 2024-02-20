@@ -62,8 +62,8 @@ pub( crate ) mod private
     .form();
 
     let headers_generate = wca::Command::former()
-    .hint( "asdasdasd" )
-    .long_hint( " asdasdasd " )
+    .hint( "Generates header for each workspace member." )
+    .long_hint( "For use this command you need to specify:\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Wandalen/wTools/tree/master/module/move/test_module\"\n...\n[package.metadata]\nstability = \"Stable\"\nin module's Cargo.toml." )
     .phrase( "readme.modules.headers.generate" )
     .form();
 
