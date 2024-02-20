@@ -37,10 +37,6 @@ mod private
 	};
 
 	/// The `HeaderParameters` structure represents a set of parameters, used for creating url for header.
-	/// The location of header is defined by a tag:
-	/// ``` md
-	/// <!--{ generate.main_header }-->
-	/// ```
 	struct HeaderParameters
 	{
 		master_branch: String,
@@ -118,6 +114,10 @@ mod private
 	}
 
 	/// Generate header in main Readme.md.
+	/// The location of header is defined by a tag:
+	/// ``` md
+	/// <!--{ generate.main_header }-->
+	/// ```
 	pub fn generate_main_header( path: &Path ) -> Result< () >
 	{
 		let absolute_path = AbsolutePath::try_from( path )?;
