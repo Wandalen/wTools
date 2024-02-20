@@ -1,47 +1,47 @@
 Sudoku Problem
 
 For parameters:
- - temperature decrease coefficient : 0.8197;
- - max mutations per dynasty : 638;
- - mutation rate : 0.10;
- - crossover rate : 0.32;
- - elitism rate : 0.58;
- - max stale iterations : 619;
+ - temperature decrease coefficient : 0.9974;
+ - max mutations per dynasty : 277;
+ - mutation rate : 0.47;
+ - crossover rate : 0.41;
+ - elitism rate : 0.12;
+ - max stale iterations : 1000;
 
 
 | Level                | Population size      | Dynasties limit      | Execution time       | 
 |----------------------|----------------------|----------------------|----------------------|-
-| Easy                 | 336                  | 1148                 | 0.617s               | 
+| Easy                 | 2                    | 500                  | 0.265s               | 
 
 
 
 For parameters:
- - temperature decrease coefficient : 0.9742;
- - max mutations per dynasty : 638;
+ - temperature decrease coefficient : 0.9423;
+ - max mutations per dynasty : 340;
  - mutation rate : 1.00;
  - crossover rate : 0.00;
- - elitism rate : -0.00;
- - max stale iterations : 746;
+ - elitism rate : 0.00;
+ - max stale iterations : 62;
 
 
 | Level                | Population size      | Dynasties limit      | Execution time       | 
 |----------------------|----------------------|----------------------|----------------------|-
-| Easy                 | 1                    | 2699                 | 0.028s               | 
+| Easy                 | 1                    | 1357                 | 0.026s               | 
 
 
 
 For parameters:
- - temperature decrease coefficient : 0.1622;
- - max mutations per dynasty : 92;
- - mutation rate : 0.20;
- - crossover rate : 0.15;
- - elitism rate : 0.65;
- - max stale iterations : 215;
+ - temperature decrease coefficient : 0.9332;
+ - max mutations per dynasty : 240;
+ - mutation rate : 0.29;
+ - crossover rate : 0.50;
+ - elitism rate : 0.21;
+ - max stale iterations : 164;
 
 
 | Level                | Population size      | Dynasties limit      | Execution time       | 
 |----------------------|----------------------|----------------------|----------------------|-
-| Easy                 | 789                  | 4852                 | 2.515s               | 
+| Easy                 | 31                   | 1757                 | 0.294s               | 
 
 
 

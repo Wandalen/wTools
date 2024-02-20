@@ -1,15 +1,22 @@
-use std::ops::{Bound, RangeBounds};
+//! Optimal parameters search using Simulated Annealing.
 
-use deterministic_rand::{Hrng, Seed, seq::IteratorRandom, Rng};
-use rayon::iter::{IndexedParallelIterator, ParallelIterator};
+use std::ops::{ Bound, RangeBounds };
 
-use super::nelder_mead::{self, Point, Solution, TerminationReason};
+use deterministic_rand::{ Hrng, Seed, seq::IteratorRandom, Rng };
+use rayon::iter::{ IndexedParallelIterator, ParallelIterator };
+use super::nelder_mead::{ self, Point, Solution, TerminationReason };
 
+/// Optimizer for optimal parameters search using Simmulated Annealing.
 #[ derive( Debug, Clone ) ] 
 pub struct Optimizer< R, F >
 {
+  /// Bounds for parameters of objective function.
   pub bounds : Vec< R >,
+
+  /// Oblective function to optimize.
   pub objective_function : F,
+
+  /// Iterations limit, execution stops when exceeded.
   pub max_iterations : usize,
 }
 
@@ -34,8 +41,8 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( nelder_mead::Point ) -> f64 + Sync 
         Bound::Unbounded => unreachable!(),
       };
       let end = match bound.end_bound() {
-        Bound::Included(end) => *end + f64::EPSILON,
-        Bound::Excluded(end) => *end,
+        Bound::Included( end ) => *end + f64::EPSILON,
+        Bound::Excluded( end ) => *end,
         Bound::Unbounded => unreachable!(),
       };
       
@@ -58,8 +65,8 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( nelder_mead::Point ) -> f64 + Sync 
           Bound::Unbounded => unreachable!(),
         };
         let end = match bound.end_bound() {
-          Bound::Included(end) => *end + f64::EPSILON,
-          Bound::Excluded(end) => *end,
+          Bound::Included( end ) => *end + f64::EPSILON,
+          Bound::Excluded( end ) => *end,
           Bound::Unbounded => unreachable!(),
         };
         
@@ -70,6 +77,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( nelder_mead::Point ) -> f64 + Sync 
     costs[..].std_dev().into()
   }
 
+  /// Find optimal solution for objective function using Simulated Annealing. 
   pub fn optimize( &self ) -> Result< Solution, nelder_mead::Error >
   {
     let hrng = Hrng::master_with_seed( Seed::default() );
@@ -87,8 +95,8 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( nelder_mead::Point ) -> f64 + Sync 
         Bound::Unbounded => unreachable!(),
       };
       let end = match bound.end_bound() {
-        Bound::Included(end) => *end + f64::EPSILON,
-        Bound::Excluded(end) => *end,
+        Bound::Included( end ) => *end + f64::EPSILON,
+        Bound::Excluded( end ) => *end,
         Bound::Unbounded => unreachable!(),
       };
       
@@ -104,16 +112,13 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( nelder_mead::Point ) -> f64 + Sync 
 
     let mut best_found = ( point.clone(), value.clone() );
     let mut temperature = self.initial_temperature();
-    log::info!( "temp {:?}", temperature );
 
     loop
     {
-        log::info!( "iter {:?}", iterations );
       if iterations > self.max_iterations
       {
         break;
       }
-
       
       let solutions = rayon::iter::repeat( () )
       .take( expected_number_of_candidates )
@@ -134,8 +139,8 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( nelder_mead::Point ) -> f64 + Sync 
               Bound::Unbounded => unreachable!(),
             };
             let end = match bound.end_bound() {
-              Bound::Included(end) => *end + f64::EPSILON,
-              Bound::Excluded(end) => *end,
+              Bound::Included( end ) => *end + f64::EPSILON,
+              Bound::Excluded( end ) => *end,
               Bound::Unbounded => unreachable!(),
             };
             
@@ -145,9 +150,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( nelder_mead::Point ) -> f64 + Sync 
           let candidate_value = ( self.objective_function )( Point::new( candidate.clone() ) );
         
           let difference = candidate_value - value;
-          log::info!( "diff {:?}", difference );
           let threshold = ( - difference / temperature ).exp();
-          log::info!( "thres {:?}", threshold );
           let rand : f64 = rng.gen();
           let vital = rand < threshold;  
           if vital
@@ -165,7 +168,6 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( nelder_mead::Point ) -> f64 + Sync 
 
       if solutions.len() > 0
       {
-        log::info!( "sol {:?}",solutions.len() );
         let rng_ref = hrng.rng_ref();
         let mut rng = rng_ref.lock().unwrap();
         
@@ -182,7 +184,6 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( nelder_mead::Point ) -> f64 + Sync 
         if value < best_found.1
         {
           best_found = ( point.clone(), value );
-          log::info!( "best {:?}", best_found );
         }
       }
       else 
@@ -195,7 +196,6 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( nelder_mead::Point ) -> f64 + Sync 
 
       temperature *= 0.999;
       iterations += 1;
-      
     }
 
     Ok ( Solution
