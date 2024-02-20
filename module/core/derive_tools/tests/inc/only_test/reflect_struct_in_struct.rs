@@ -1,7 +1,7 @@
 #[ test ]
 fn reflect_struct_in_struct()
 {
-  use reflect::{ Instance, Entity };
+  use reflect::Entity;
 
   let ins = Struct1
   {
@@ -10,15 +10,15 @@ fn reflect_struct_in_struct()
     f3 : Struct2 { s1 : 10, s2 : "20".into(), s3 : "30" },
   };
 
-  a_id!( ins.reflect().is_container(), true );
-  a_id!( ins.reflect().len(), 3 );
-  a_id!( ins.reflect().type_name(), "derive_tests::inc::reflect_struct_in_struct_manual_test::Struct1" );
-  let names = ins.reflect().elements().map( | e | e.key ).collect::< Vec< _ > >();
+  a_id!( reflect::reflect( &ins ).is_container(), true );
+  a_id!( reflect::reflect( &ins ).len(), 3 );
+  a_id!( reflect::reflect( &ins ).type_name(), "derive_tests::inc::reflect_struct_in_struct_manual_test::Struct1" );
+  let names = reflect::reflect( &ins ).elements().map( | e | e.key ).collect::< Vec< _ > >();
   a_id!( names, vec![ reflect::Primitive::str( "f1" ), reflect::Primitive::str( "f2" ), reflect::Primitive::str( "f3" ) ] );
-  let types = ins.reflect().elements().map( | e | e.val.type_name() ).collect::< Vec< _ > >();
+  let types = reflect::reflect( &ins ).elements().map( | e | e.val.type_name() ).collect::< Vec< _ > >();
   a_id!( types, vec![ "i32", "alloc::string::String", "derive_tests::inc::reflect_struct_in_struct_manual_test::Struct2" ] );
 
-  let f3 = ins.reflect().elements().skip( 2 ).next().unwrap();
+  let f3 = reflect::reflect( &ins ).elements().skip( 2 ).next().unwrap();
   a_id!( f3.key, reflect::Primitive::str( "f3" ) );
   a_id!( f3.val.is_container(), true );
   a_id!( f3.val.len(), 3 );
