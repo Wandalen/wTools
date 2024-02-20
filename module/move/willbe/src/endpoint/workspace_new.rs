@@ -6,7 +6,7 @@ mod private
 	use error_tools::for_app::bail;
 	use error_tools::Result;
 
-	/// Todo
+	/// Creates workspace template
 	pub fn workspace_new( path: &Path ) -> Result< () >
 	{
 		if fs::read_dir( path )?.count() != 0
@@ -26,6 +26,8 @@ mod private
 		create_dir( path, "assets" )?;
 
 		create_dir( path, "docs" )?;
+
+		create_file( path, "Readme.md", include_str!("../../files/template/Readme.md" ) )?;
 
 		create_file( path, ".gitattributes", include_str!("../../files/template/.gitattributes" ) )?;
 
