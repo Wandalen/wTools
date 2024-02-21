@@ -173,7 +173,6 @@ where R : RangeBounds< f64 > + Sync,
       let valid = constraint_vec.iter().fold( true, | acc, constraint | acc && constraint( p ) );
       if !valid
       {
-        log::info!("constrained");
         return f64::INFINITY;
       }
     }
@@ -182,7 +181,6 @@ where R : RangeBounds< f64 > + Sync,
     {
       if let Some( value ) = points.get( &p )
       {
-        log::info!("from cached");
         return *value;
       }
     }
@@ -447,8 +445,6 @@ where R : RangeBounds< f64 > + Sync,
     
       points.push( Point::new( point ) );
     }
-
-    log::info!("Points : {:#?}", points);
 
     let results = points.into_par_iter().map( | point |
     {
