@@ -2,8 +2,13 @@
 //! It operates by adjusting a simplex(geometric shape) to explore and converge toward the optimal solution.
 //! 
 
-use std::{ collections::HashMap, ops::{ Bound, RangeBounds } };
-
+use std::
+{
+  collections::HashMap,
+  fs::{ File, OpenOptions },
+  ops::{ Bound, RangeBounds },
+  sync::{ Arc, Mutex },
+};
 use deterministic_rand::{ Hrng, Seed, Rng };
 use iter_tools::Itertools;
 use ordered_float::OrderedFloat;
@@ -27,6 +32,7 @@ impl Point
     Self { coords : coords.into_iter().map( | elem | elem.into() ).collect_vec() }
   }
 
+  /// Create new point from given coordinates.
   pub fn new_from_ordered( coords : Vec< OrderedFloat< f64 > > ) -> Self
   {
     Self { coords }
@@ -76,13 +82,16 @@ pub struct Optimizer< R, F >
   /// If previously calculated contraction point doesn't improve the objective function shrinking is performed to adjust simplex size. 
   /// Shrinking involves reducing the distance between the vertices of the simplex, making it smaller.
   pub sigma : f64,
-  pub calculated_results : Option< HashMap< Point, f64 > >
+  /// Values of objective function calculated in previous executions.
+  pub calculated_results : Option< HashMap< Point, f64 > >,
+  /// File for saving values of objective function during optimization process.
+  pub save_results_file : Option< Arc< Mutex< File > > >,
 }
 
 impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer< R, F >
 {
   /// Create new instance of Nelder-Mead optimizer.
-  pub fn new( objective_function : F ) -> Self 
+  pub fn new( objective_function : F ) -> Self
   {
     Self
     {
@@ -98,14 +107,33 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
       rho : -0.5,
       sigma : 0.5,
       calculated_results : None,
+      save_results_file : None,
     }
   }
 
+  /// Add set of previosly calculated values of objective function.
   pub fn set_calculated_results( &mut self, res : HashMap< Point, f64 > )
   {
     self.calculated_results = Some( res );
   }
 
+  /// Set file for saving results of calculations.
+  pub fn set_save_results_file( &mut self, file_path : String )
+  {
+    let file_res = OpenOptions::new()
+    .write( true )
+    .append( true )
+    .create( true )
+    .open( file_path )
+    ;
+
+    if let Ok( file ) = file_res
+    {
+      self.save_results_file = Some( Arc::new( Mutex::new( file ) ) );
+    }
+  }
+
+  /// Calculate value of objective function at given point or get previously calculated value if such exists.
   pub fn evaluate_point( &self, p : &Point ) -> f64
   {
     if let Some( points ) = &self.calculated_results
@@ -116,7 +144,16 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
       }
     }
     let result = ( self.objective_function )( p );
-    _ = save_result( p.coords.clone().into_iter().map( |val| val.into_inner() ).collect_vec(), result );
+
+    if let Some( file ) = &self.save_results_file
+    {
+      _ = save_result
+      (
+        p.coords.clone().into_iter().map( | val | val.into_inner() ).collect_vec(),
+        result,
+        file.clone(),
+      );
+    }
 
     result
   }
@@ -190,7 +227,6 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
   /// Returns projected point.
   fn check_bounds( &self, point : Point ) -> Point
   {
-
     let mut coords = point.coords;
     for i in 0..self.bounds.len()
     {
@@ -200,16 +236,16 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
         {
           match bound.start_bound()
           {
-            Bound::Included( val ) => 
+            Bound::Included( val ) =>
             {
-              if val < &coords[ i ] 
+              if val < &coords[ i ]
               {
                 coords[ i ] = ( *val ).into();
               }
             },
-            Bound::Excluded( val ) => 
+            Bound::Excluded( val ) =>
             {
-              if val <= &coords[ i ] 
+              if val <= &coords[ i ]
               {
                 coords[ i ] = ( val + f64::EPSILON ).into();
               }
@@ -218,16 +254,16 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
           }
           match bound.end_bound()
           {
-            Bound::Included( val ) => 
+            Bound::Included( val ) =>
             {
-              if val > &coords[ i ] 
+              if val > &coords[ i ]
               {
                 coords[ i ] = ( *val ).into();
               }
             },
-            Bound::Excluded( val ) => 
+            Bound::Excluded( val ) =>
             {
-              if val >= &coords[ i ] 
+              if val >= &coords[ i ]
               {
                 coords[ i ] = ( val - f64::EPSILON ).into();
               }
@@ -307,7 +343,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
             new_coords.push( start_bound )
           }
         }
-        else 
+        else
         {
           if bound.end_bound() != Bound::Unbounded
           {
@@ -356,8 +392,8 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
             Bound::Unbounded => unreachable!(),
           };
           let end = match bound.end_bound() {
-            Bound::Included(end) => *end + f64::EPSILON,
-            Bound::Excluded(end) => *end,
+            Bound::Included( end ) => *end + f64::EPSILON,
+            Bound::Excluded( end ) => *end,
             Bound::Unbounded => unreachable!(),
           };
           
@@ -369,9 +405,9 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
       points.push( Point::new( point ) );
     }
 
-    let results = points.into_par_iter().map( | point | {
+    let results = points.into_par_iter().map( | point |
+    {
       let x0 = point.clone();
-  
       let dimensions = x0.coords.len();
       let mut prev_best = self.evaluate_point( &x0 );
       let mut steps_with_no_improv = 0;

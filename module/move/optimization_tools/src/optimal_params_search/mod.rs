@@ -5,35 +5,10 @@ pub mod nelder_mead;
 pub mod sim_annealing;
 use std::ops::RangeBounds;
 use iter_tools::Itertools;
-
 use crate::hybrid_optimizer::*;
-
 use self::results_serialize::read_results;
 
-/// Level of difficulty of sudoku board.
-#[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
-pub enum Level
-{
-  /// Easy level with difficulty <= 2.
-  Easy,
-  /// Medium, 2 < difficulty <= 2.5.
-  Medium,
-  /// Hard level, 2.5 < difficulty <= 3.
-  Hard,
-  /// Expert level with difficulty > 3.
-  Expert,
-}
-
-impl Level {
-  /// Iterates over sudoku difficulty levels.
-  pub fn iterator() -> impl Iterator< Item = Level > 
-  {
-    use Level::*;
-    [ Easy, Medium, Hard, Expert ].iter().copied()
-  }
-}
-
-/// 
+/// Configuration for optimal parameters search.
 #[ derive( Debug, Clone ) ]
 pub struct OptimalParamsConfig
 {
@@ -49,13 +24,13 @@ pub struct OptimalParamsConfig
 
 impl Default for OptimalParamsConfig
 {
-  fn default() -> Self 
+  fn default() -> Self
   {
     Self 
     {
       improvement_threshold : 0.005,
       max_no_improvement_steps : 10,
-      max_iterations : 10,
+      max_iterations : 8,
     }
   }
 } 
@@ -93,12 +68,12 @@ impl< 'a, R : RangeBounds< f64 > > OptimalProblem< R >
 
   /// Add parameter to optimal parameters search problem.
   pub fn add
-  ( 
+  (
     mut self,
-    name : Option< String >, 
-    bounds : Option< R >, 
-    start_value : Option< f64 >, 
-    simplex_size : Option< f64 >, 
+    name : Option< String >,
+    bounds : Option< R >,
+    start_value : Option< f64 >,
+    simplex_size : Option< f64 >,
   ) -> Result< Self, Error >
   {
     if let Some( ref name ) = name
@@ -134,14 +109,15 @@ pub fn find_hybrid_optimal_params< R, S, C, M >
 ( 
   config : OptimalParamsConfig, 
   problem : OptimalProblem< R >, 
-  hybrid_problem : Problem< S, C, M > 
+  hybrid_problem : Problem< S, C, M >,
+  intermediate_results_file : Option< String >,
 ) -> Result< nelder_mead::Solution, nelder_mead::Error >
 where  R : RangeBounds< f64 > + Sync,
   S : InitialProblem + Sync + Clone, 
-  C : CrossoverOperator::< Person = < S as InitialProblem>::Person > + Clone + Sync,
+  C : CrossoverOperator::< Person = < S as InitialProblem >::Person > + Clone + Sync,
   M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
   M : MutationOperator::< Problem = S > + Sync + Clone,
-  TournamentSelection: SelectionOperator<<S as InitialProblem>::Person>
+  TournamentSelection: SelectionOperator< < S as InitialProblem >::Person >
 {
   let seeder = hybrid_problem.seeder.clone();
   let ga_crossover_operator = hybrid_problem.ga_crossover_operator.clone();
@@ -152,7 +128,7 @@ where  R : RangeBounds< f64 > + Sync,
     log::info!
     (
       "temp_decrease_coefficient : {:.4?}, max_mutations_per_dynasty: {}, mutation_rate: {:.2}, crossover_rate: {:.2};",
-      case.coords[ 0 ], case.coords[ 1 ].into_inner() as usize, case.coords[ 2 ], case.coords[ 3 ]
+      case.coords[ 0 ].into_inner(), case.coords[ 1 ].into_inner() as usize, case.coords[ 2 ], case.coords[ 3 ]
     );
 
     log::info!
@@ -192,7 +168,7 @@ where  R : RangeBounds< f64 > + Sync,
     let ( _reason, _solution ) = optimizer.optimize();
   };
 
-  let res = optimize_by_time( config, problem, objective_function );
+  let res = optimize_by_time( config, problem, objective_function, intermediate_results_file );
     
   log::info!( "result: {:?}", res );
 
@@ -200,7 +176,13 @@ where  R : RangeBounds< f64 > + Sync,
 }
 
 /// Wrapper for optimizing objective function by execution time instead of value.
-pub fn optimize_by_time< F, R >( config : OptimalParamsConfig, problem : OptimalProblem< R >, objective_function : F ) -> Result< nelder_mead::Solution, nelder_mead::Error >
+pub fn optimize_by_time< F, R >
+(
+  config : OptimalParamsConfig,
+  problem : OptimalProblem< R >,
+  objective_function : F,
+  intermediate_results_file : Option< String >,
+) -> Result< nelder_mead::Solution, nelder_mead::Error >
 where F : Fn( &nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
 {
   let objective_function = | case : &nelder_mead::Point |
@@ -233,25 +215,31 @@ where F : Fn( &nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
   //   objective_function : objective_function,
   //   max_iterations : 50,
   // };
+
   let mut optimizer = nelder_mead::Optimizer::new( objective_function );
   optimizer.bounds = problem.bounds;
-  optimizer.set_starting_point( problem.starting_point.clone() );
+  optimizer.set_starting_point( problem.starting_point );
   optimizer.set_simplex_size( problem.simplex_size );
 
   optimizer.improvement_threshold = config.improvement_threshold;
   optimizer.max_iterations = config.max_iterations;
   optimizer.max_no_improvement_steps = config.max_no_improvement_steps;
 
-  let calculated_points = read_results();
-  if let Ok( calculated_points ) = calculated_points
+  if let Some( results_file ) = intermediate_results_file
   {
-    optimizer.set_calculated_results( calculated_points );
+    let calculated_points = read_results( &results_file );
+    if let Ok( calculated_points ) = calculated_points
+    {
+      optimizer.set_calculated_results( calculated_points );
+    }
+
+    optimizer.set_save_results_file( results_file );
   }
 
   optimizer.optimize_from_random_points()
 }
 
-/// Possible error when building NMOptimizer.
+/// Possible error when building OptimalProblem.
 #[ derive( thiserror::Error, Debug ) ]
 pub enum Error 
 {

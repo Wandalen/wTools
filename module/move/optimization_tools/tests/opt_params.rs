@@ -7,7 +7,13 @@ use hybrid_optimizer::*;
 mod tools;
 use tools::*;
 
-fn write_results( filename : String, title : String, hybrid_res : Vec< f64 >, sa_res : Vec< f64 >, ga_res : Vec< f64 > ) -> Result< (), std::io::Error >
+fn write_results(
+  filename : String,
+  title : String,
+  hybrid_res : Vec< f64 >,
+  sa_res : Vec< f64 >,
+  ga_res : Vec< f64 >,
+) -> Result< (), std::io::Error >
 {
   let mut file = std::fs::File::create( format!( "{}.md", filename ) )?;
   std::io::Write::write(&mut file, format!( "{}\n\n", title).as_bytes() )?;
@@ -66,7 +72,7 @@ fn write_results( filename : String, title : String, hybrid_res : Vec< f64 >, sa
 
 #[ ignore ]
 #[ test ]
-fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > > 
+fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
 {
   let easy = r#"
   080924060
@@ -83,13 +89,25 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   logger_init();
   log::set_max_level( log::LevelFilter::Info );
 
+  let dir_path = format!( "{}/target", crate::simplex::drawing::workspace_dir().to_string_lossy() );
+  _ = std::fs::create_dir( &dir_path );
+  let path = format!( "{}/output_sudoku", dir_path );
+
   let config = OptimalParamsConfig::default();
   let initial = SudokuInitial::new( Board::from( easy ) );
 
-  let hybrid_problem = Problem::new( initial.clone(), BestRowsColumnsCrossover, RandomPairInBlockMutation );
-  let res = optimal_params_search::find_hybrid_optimal_params( config.clone(), hybrid_optimizer::starting_params_for_hybrid()?, hybrid_problem );
+  let hybrid_problem = Problem::new(
+    initial.clone(),
+    BestRowsColumnsCrossover,
+    RandomPairInBlockMutation,
+  );
+  let res = optimal_params_search::find_hybrid_optimal_params(
+    config.clone(),
+   hybrid_optimizer::starting_params_for_hybrid()?,
+   hybrid_problem,
+   Some( path.clone() ),
+  );
   assert!( res.is_ok() );
-  
 
   let mut hybrid_res = Vec::new();
   if let Ok( solution ) = res
@@ -99,8 +117,17 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   }
 
   // SA
-  let hybrid_problem = Problem::new( initial.clone(), BestRowsColumnsCrossover, RandomPairInBlockMutation );
-  let res = optimal_params_search::find_hybrid_optimal_params( config.clone(), hybrid_optimizer::starting_params_for_sa()?, hybrid_problem );
+  let hybrid_problem = Problem::new(
+    initial.clone(),
+    BestRowsColumnsCrossover,
+    RandomPairInBlockMutation,
+  );
+  let res = optimal_params_search::find_hybrid_optimal_params(
+    config.clone(),
+    hybrid_optimizer::starting_params_for_sa()?,
+    hybrid_problem,
+    Some( path.clone() ),
+  );
   assert!( res.is_ok() );
 
   let mut sa_res = Vec::new();
@@ -111,8 +138,17 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   }
 
   // GA
-  let hybrid_problem = Problem::new( initial.clone(), BestRowsColumnsCrossover, RandomPairInBlockMutation );
-  let res = optimal_params_search::find_hybrid_optimal_params( config, hybrid_optimizer::starting_params_for_ga()?, hybrid_problem );
+  let hybrid_problem = Problem::new(
+    initial.clone(),
+    BestRowsColumnsCrossover,
+    RandomPairInBlockMutation,
+  );
+  let res = optimal_params_search::find_hybrid_optimal_params(
+    config,
+    hybrid_optimizer::starting_params_for_ga()?,
+    hybrid_problem,
+    Some( path ),
+  );
   assert!( res.is_ok() );
 
   let mut ga_res = Vec::new();
@@ -127,16 +163,29 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
 
 #[ ignore ]
 #[ test ]
-fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > > 
+fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
 {
   logger_init();
-  log::set_max_level( log::LevelFilter::Warn );
+  log::set_max_level( log::LevelFilter::Info );
+
+  let dir_path = format!( "{}/target", crate::simplex::drawing::workspace_dir().to_string_lossy() );
+  _ = std::fs::create_dir( &dir_path );
+  let path = format!( "{}/output_tsp", dir_path );
 
   let config = OptimalParamsConfig::default();
   let initial = TSProblem { graph : TSPGraph::default(), starting_node : NodeIndex( 1 ) };
 
-  let hybrid_problem = Problem::new( initial.clone(), OrderedRouteCrossover{}, TSRouteMutation{} );
-  let res = optimal_params_search::find_hybrid_optimal_params( config.clone(), hybrid_optimizer::starting_params_for_hybrid()?, hybrid_problem );
+  let hybrid_problem = Problem::new(
+    initial.clone(),
+    OrderedRouteCrossover,
+    TSRouteMutation,
+  );
+  let res = optimal_params_search::find_hybrid_optimal_params(
+    config.clone(),
+    hybrid_optimizer::starting_params_for_hybrid()?,
+    hybrid_problem,
+    Some( path.clone() ),
+  );
   assert!( res.is_ok() );
   let mut hybrid_res = Vec::new();
   if let Ok( solution ) = res
@@ -146,8 +195,17 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
   }
 
   // SA
-  let hybrid_problem = Problem::new( initial.clone(), OrderedRouteCrossover{}, TSRouteMutation{} );
-  let res = optimal_params_search::find_hybrid_optimal_params( config.clone(), hybrid_optimizer::starting_params_for_sa()?, hybrid_problem );
+  let hybrid_problem = Problem::new(
+    initial.clone(),
+    OrderedRouteCrossover,
+    TSRouteMutation,
+  );
+  let res = optimal_params_search::find_hybrid_optimal_params(
+    config.clone(),
+    hybrid_optimizer::starting_params_for_sa()?,
+    hybrid_problem,
+    Some( path.clone() ),
+  );
   assert!( res.is_ok() );
   let mut sa_res = Vec::new();
   if let Ok( solution ) = res
@@ -157,8 +215,17 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
   }
 
   // GA
-  let hybrid_problem = Problem::new( initial, OrderedRouteCrossover{}, TSRouteMutation{} );
-  let res = optimal_params_search::find_hybrid_optimal_params( config, hybrid_optimizer::starting_params_for_ga()?, hybrid_problem );
+  let hybrid_problem = Problem::new(
+    initial,
+    OrderedRouteCrossover,
+    TSRouteMutation,
+  );
+  let res = optimal_params_search::find_hybrid_optimal_params(
+    config,
+    hybrid_optimizer::starting_params_for_ga()?,
+    hybrid_problem,
+    Some( path ),
+  );
   assert!( res.is_ok() );
   let mut ga_res = Vec::new();
   if let Ok( solution ) = res
