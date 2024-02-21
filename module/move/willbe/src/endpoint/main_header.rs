@@ -24,13 +24,7 @@ mod private
 		workspace_root
 	};
 	use crate::path::AbsolutePath;
-	use crate::
-	{
-		CrateDir,
-		url,
-		Workspace,
-		wtools
-	};
+	use crate::{CrateDir, query, url, Workspace, wtools};
 	use crate::wtools::error::anyhow::
 	{
 		bail,
@@ -43,7 +37,7 @@ mod private
 
 	fn regexes_initialize()
 	{
-		TAGS_TEMPLATE.set( Regex::new( r"<!--\{ generate\.main_header\.start \}-->(.|\n|\r\n)+<!--\{ generate\.main_header\.end \}-->" ).unwrap() ).ok();
+		TAGS_TEMPLATE.set( Regex::new( r"<!--\{ generate\.main_header\.start\((.+|)\) \}-->(.|\n|\r\n)+<!--\{ generate\.main_header\.end \}-->" ).unwrap() ).ok();
 	}
 
 
@@ -53,7 +47,7 @@ mod private
 		master_branch: String,
 	  repository_url: String,
 	  project_name: String,
-	  discord_url: String,
+	  discord_url: Option<String>,
 	}
 
 	impl HeaderParameters
@@ -100,9 +94,8 @@ mod private
 			.and_then( | workspace  | workspace.get( "metadata" ) )
 			.and_then( | metadata | metadata.get( "discord_url" ) )
 			.and_then( | url | url.as_str() )
-			.map( String::from )
-			.ok_or_else::< Error, _>( || err!( "discord_url not found in workspace Cargo.toml" ) )?;
-
+			.map( String::from );
+			
 			Ok
 			(
 				Self
@@ -118,16 +111,23 @@ mod private
 		/// Convert `Self`to header.
 		fn to_header(self) -> Result< String >
 		{
+			let discord = if self.discord_url.is_some()
+			{
+				format!("\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({})", self.discord_url.unwrap())
+			} else
+			{
+				"".into()
+			};
+			
 			Ok
 			(
 				format!
 			  (
-				  r#"[![{}](https://img.shields.io/github/actions/workflow/status/{}/StandardRustScheduled.yml?branch=master&label={}&logo=github)](https://github.com/{}/actions/workflows/StandardRustStatus.yml)
-[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({})
+				  r#"[![{}](https://img.shields.io/github/actions/workflow/status/{}/StandardRustScheduled.yml?branch=master&label={}&logo=github)](https://github.com/{}/actions/workflows/StandardRustStatus.yml){}
 [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/{})
 [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/{})"#,
 				  self.master_branch, url::git_info_extract( &self.repository_url )?, self.master_branch, url::git_info_extract( &self.repository_url )?,
-					self.discord_url,
+					discord,
 					self.project_name, self.project_name, url::git_info_extract( &self.repository_url )?,
 					self.project_name,
 				)
@@ -138,16 +138,16 @@ mod private
 	/// Generate header in main Readme.md.
 	/// The location of header is defined by a tag:
 	/// ``` md
-	/// <!--{ generate.main_header.start }-->
-	/// <!--{ generate.main_header.end }-->
+	/// <!--{ generate.main_header.start() }-->
+	/// <!--{ generate.main_header.end() }-->
 	/// ```
 	/// To use it you need to add these fields to Cargo.toml of workspace:
 	/// ``` toml
 	/// [workspace.metadata]
-	/// master_branch = "alpha"
+	/// master_branch = "alpha" (Optional)
 	/// project_name = "wtools"
 	/// repo_url = "https://github.com/Wandalen/wTools"
-	/// discord_url = "https://discord.gg/123123"
+	/// discord_url = "https://discord.gg/123123" (Optional)
 	/// ```
 	/// Result example:
 	/// ``` md
@@ -161,6 +161,7 @@ mod private
 	pub fn generate_main_header( path: AbsolutePath ) -> Result< () >
 	{
 		regexes_initialize();
+		
 		let mut cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( path )? )?;
 		let workspace_root = workspace_root( &mut cargo_metadata )?;
 		let header_param = HeaderParameters::from_cargo_toml( &workspace_root )?;
@@ -172,8 +173,19 @@ mod private
 
 		let mut content = String::new();
 		file.read_to_string( &mut content )?;
+		
+		let raw_params = TAGS_TEMPLATE
+		.get()
+		.unwrap()
+		.captures( &content )
+		.and_then( | c | c.get( 1 ) )
+		.map( | m | m.as_str() )
+		.unwrap_or_default();
+		
+		_ = query::parse( raw_params )?;
+		
 		let header = header_param.to_header()?;
-		let content: String = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.main_header.start }}-->\n{header}\n<!--{{ generate.main_header.end }}-->" ) ).into();
+		let content: String = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.main_header.start({raw_params}) }}-->\n{header}\n<!--{{ generate.main_header.end }}-->" ) ).into();
 		file.set_len( 0 )?;
 		file.seek( SeekFrom::Start( 0 ) )?;
 		file.write_all( content.as_bytes() )?;
