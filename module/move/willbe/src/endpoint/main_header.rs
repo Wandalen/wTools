@@ -173,7 +173,7 @@ mod private
 		let mut content = String::new();
 		file.read_to_string( &mut content )?;
 		let header = header_param.to_header()?;
-		let content: String = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.main_header.start }}-->\n{header}\n<!--{{ generate.main_header.end }}-->\n" ) ).into();
+		let content: String = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.main_header.start }}-->\n{header}\n<!--{{ generate.main_header.end }}-->" ) ).into();
 		file.set_len( 0 )?;
 		file.seek( SeekFrom::Start( 0 ) )?;
 		file.write_all( content.as_bytes() )?;
