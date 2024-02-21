@@ -6,7 +6,7 @@ pub mod sim_annealing;
 use std::ops::RangeBounds;
 use iter_tools::Itertools;
 use crate::hybrid_optimizer::*;
-use self::results_serialize::read_results;
+use results_serialize::read_results;
 
 /// Configuration for optimal parameters search.
 #[ derive( Debug, Clone ) ]
@@ -30,7 +30,7 @@ impl Default for OptimalParamsConfig
     {
       improvement_threshold : 0.005,
       max_no_improvement_steps : 10,
-      max_iterations : 8,
+      max_iterations : 10,
     }
   }
 } 
@@ -220,6 +220,7 @@ where F : Fn( &nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
   optimizer.bounds = problem.bounds;
   optimizer.set_starting_point( problem.starting_point );
   optimizer.set_simplex_size( problem.simplex_size );
+  optimizer.add_constraint( | p : &nelder_mead::Point | p.coords[ 2 ] + p.coords[ 3 ] <= 1.0.into() );
 
   optimizer.improvement_threshold = config.improvement_threshold;
   optimizer.max_iterations = config.max_iterations;

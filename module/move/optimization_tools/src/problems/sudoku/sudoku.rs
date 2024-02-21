@@ -433,26 +433,3 @@ impl CrossoverOperator for BestRowsColumnsCrossover
     SudokuPerson::with_board( min_board )   
   }
 }
-
-/// Level of difficulty of sudoku board.
-#[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
-pub enum Level
-{
-  /// Easy level with difficulty <= 2.
-  Easy,
-  /// Medium, 2 < difficulty <= 2.5.
-  Medium,
-  /// Hard level, 2.5 < difficulty <= 3.
-  Hard,
-  /// Expert level with difficulty > 3.
-  Expert,
-}
-
-impl Level {
-  /// Iterates over sudoku difficulty levels.
-  pub fn iterator() -> impl Iterator< Item = Level >
-  {
-    use Level::*;
-    [ Easy, Medium, Hard, Expert ].iter().copied()
-  }
-}

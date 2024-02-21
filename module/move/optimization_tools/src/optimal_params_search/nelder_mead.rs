@@ -41,15 +41,36 @@ impl Point
 
 /// Represents geometric shape formed by a set of n+1 points in a multidimensional space, where n is a number of dimensions.
 /// Simplex is used to navigate through solution space, adjusting its shape based on the performance of the objective function at different points.
-#[ derive( Debug, Clone ) ] 
+#[ derive( Debug, Clone ) ]
 pub struct Simplex
 {
   /// Points of simplex.
   pub points : Vec< Point >,
 }
 
+/// Constraints for points of optimization process.
+#[ derive( Debug, Clone ) ]
+pub enum Constraints
+{
+  NoConstraints,
+  WithConstraints( Vec< fn( &Point ) -> bool > ),
+}
+
+impl Constraints
+{
+  /// Add constraint to constraints list.
+  pub fn add_constraint( &mut self, constraint : fn( &Point ) -> bool )
+  {
+    match self
+    {
+      Self::NoConstraints => *self = Self::WithConstraints( vec![ constraint ] ),
+      Self::WithConstraints( constraints ) => constraints.push( constraint ),
+    }
+  }
+}
+
 /// Struct which holds initial configuration for NelderMead optimization, and can perform optimization if all necessary information were provided during initialization process.
-#[ derive( Debug, Clone ) ] 
+#[ derive( Debug, Clone ) ]
 pub struct Optimizer< R, F >
 {
   /// Bounds for parameters of objective function, may be unbounded or bounded on one side.
@@ -86,9 +107,13 @@ pub struct Optimizer< R, F >
   pub calculated_results : Option< HashMap< Point, f64 > >,
   /// File for saving values of objective function during optimization process.
   pub save_results_file : Option< Arc< Mutex< File > > >,
+  /// Additional constraint for coordinates of function.
+  pub constraints : Constraints,
 }
 
-impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer< R, F >
+impl< R, F > Optimizer< R, F >
+where R : RangeBounds< f64 > + Sync,
+  F : Fn( &Point ) -> f64 + Sync,
 {
   /// Create new instance of Nelder-Mead optimizer.
   pub fn new( objective_function : F ) -> Self
@@ -108,6 +133,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
       sigma : 0.5,
       calculated_results : None,
       save_results_file : None,
+      constraints : Constraints::NoConstraints,
     }
   }
 
@@ -133,13 +159,30 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
     }
   }
 
+ /// Add constraint function.
+  pub fn add_constraint( &mut self, constraint : fn( &Point ) -> bool )
+  {
+    self.constraints.add_constraint( constraint );
+  }
+
   /// Calculate value of objective function at given point or get previously calculated value if such exists.
   pub fn evaluate_point( &self, p : &Point ) -> f64
   {
+    if let Constraints::WithConstraints( constraint_vec ) = &self.constraints
+    {
+      let valid = constraint_vec.iter().fold( true, | acc, constraint | acc && constraint( p ) );
+      if !valid
+      {
+        log::info!("constrained");
+        return f64::INFINITY;
+      }
+    }
+
     if let Some( points ) = &self.calculated_results
     {
       if let Some( value ) = points.get( &p )
       {
+        log::info!("from cached");
         return *value;
       }
     }
@@ -404,6 +447,8 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
     
       points.push( Point::new( point ) );
     }
+
+    log::info!("Points : {:#?}", points);
 
     let results = points.into_par_iter().map( | point |
     {
