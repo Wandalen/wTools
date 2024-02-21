@@ -36,18 +36,21 @@ mod private
 		format_err
 	};
 
+	type CargoTomlLocation = Path;
+
 	/// The `HeaderParameters` structure represents a set of parameters, used for creating url for header.
 	struct HeaderParameters
 	{
 		master_branch: String,
 	  repository_url: String,
 	  project_name: String,
+	  discord_id: String,
 	}
 
 	impl HeaderParameters
 	{
 		/// Create `HeaderParameters` instance from the folder where Cargo.toml is stored.
-		fn from_cargo_toml( path: &Path ) -> Result< Self >
+		fn from_cargo_toml( path: &CargoTomlLocation ) -> Result< Self >
 		{
 			let cargo_toml_path = path.join( "Cargo.toml" );
 			if !cargo_toml_path.exists()
@@ -73,7 +76,7 @@ mod private
 			.and_then( | metadata | metadata.get( "master_branch" ) )
 			.and_then( | url | url.as_str() )
 			.map( String::from )
-			.ok_or_else::< Error, _>( || err!( "master_branch not found in workspace Cargo.toml" ) )?;
+			.unwrap_or( "master".into() );
 
 			let project_name = doc
 			.get( "workspace" )
@@ -83,6 +86,14 @@ mod private
 			.map( String::from )
 			.ok_or_else::< Error, _>( || err!( "project_name not found in workspace Cargo.toml" ) )?;
 
+			let discord_id = doc
+			.get( "workspace" )
+			.and_then( | workspace  | workspace.get( "metadata" ) )
+			.and_then( | metadata | metadata.get( "discord_id" ) )
+			.and_then( | url | url.as_str() )
+			.map( String::from )
+			.ok_or_else::< Error, _>( || err!( "discord_id not found in workspace Cargo.toml" ) )?;
+
 			Ok
 			(
 				Self
@@ -90,6 +101,7 @@ mod private
 					master_branch,
 					repository_url,
 					project_name,
+				  discord_id,
 				}
 			)
 		}
@@ -101,11 +113,12 @@ mod private
 			(
 				format!
 			  (
-				  r#"[![{}](https://img.shields.io/github/actions/workflow/status/{}/StandardRustScheduled.yml?branch={}&label={}&logo=github)](https://github.com/{}/actions/workflows/StandardRustStatus.yml)
-[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+				  r#"[![{}](https://img.shields.io/github/actions/workflow/status/{}/StandardRustScheduled.yml?branch=master&label={}&logo=github)](https://github.com/{}/actions/workflows/StandardRustStatus.yml)
+[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/{})
 [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/{})
 [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/{})"#,
-				  self.master_branch, url::git_info_extract( &self.repository_url )?, self.master_branch, self.master_branch, url::git_info_extract( &self.repository_url )?,
+				  self.master_branch, url::git_info_extract( &self.repository_url )?, self.master_branch, url::git_info_extract( &self.repository_url )?,
+					self.discord_id,
 					self.project_name, self.project_name, url::git_info_extract( &self.repository_url )?,
 					self.project_name,
 				)
@@ -118,10 +131,25 @@ mod private
 	/// ``` md
 	/// <!--{ generate.main_header }-->
 	/// ```
-	pub fn generate_main_header( path: &Path ) -> Result< () >
+	/// To use it you need to add these fields to Cargo.toml of workspace:
+	/// ``` toml
+	/// [workspace.metadata]
+	/// master_branch = "alpha"
+	/// project_name = "wtools"
+	/// repo_url = "https://github.com/Wandalen/wTools"
+	/// discord_id = "123123"
+	/// ```
+	/// Result example:
+	/// ``` md
+	/// <!--{ generate.main_header }-->
+	/// [![alpha](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/StandardRustScheduled.yml?branch=master&label=alpha&logo=github)](https://github.com/Wandalen/wTools/actions/workflows/StandardRustStatus.yml)
+	/// [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/123123)
+	/// [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fwtools_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20wtools_trivial_sample/https://github.com/Wandalen/wTools)
+	/// [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/wtools)
+	/// ```
+	pub fn generate_main_header( path: AbsolutePath ) -> Result< () >
 	{
-		let absolute_path = AbsolutePath::try_from( path )?;
-		let mut cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
+		let mut cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( path )? )?;
 		let workspace_root = workspace_root( &mut cargo_metadata )?;
 		let header_param = HeaderParameters::from_cargo_toml( &workspace_root )?;
 		let read_me_path = workspace_root.join( readme_path(&workspace_root ).ok_or_else( || format_err!( "Fail to find README.md" ) )?);

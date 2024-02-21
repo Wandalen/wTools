@@ -8,3 +8,4 @@ members = [
 master_branch = "test_branch"
 project_name = "test"
 repo_url = "https://github.com/Username/test"
+discord_id = "123123123"
