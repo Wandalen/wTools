@@ -13,6 +13,7 @@ mod private
 		Write
 	};
 	use std::path::Path;
+	use regex::Regex;
 	use toml_edit::Document;
 	use wtools::error::err;
 	use error_tools::Result;
@@ -38,13 +39,21 @@ mod private
 
 	type CargoTomlLocation = Path;
 
+	static TAGS_TEMPLATE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
+
+	fn regexes_initialize()
+	{
+		TAGS_TEMPLATE.set( Regex::new( r"<!--\{ generate\.main_header\.start \}-->(.|\n|\r\n)+<!--\{ generate\.main_header\.end \}-->" ).unwrap() ).ok();
+	}
+
+
 	/// The `HeaderParameters` structure represents a set of parameters, used for creating url for header.
 	struct HeaderParameters
 	{
 		master_branch: String,
 	  repository_url: String,
 	  project_name: String,
-	  discord_id: String,
+	  discord_url: String,
 	}
 
 	impl HeaderParameters
@@ -86,13 +95,13 @@ mod private
 			.map( String::from )
 			.ok_or_else::< Error, _>( || err!( "project_name not found in workspace Cargo.toml" ) )?;
 
-			let discord_id = doc
+			let discord_url = doc
 			.get( "workspace" )
 			.and_then( | workspace  | workspace.get( "metadata" ) )
-			.and_then( | metadata | metadata.get( "discord_id" ) )
+			.and_then( | metadata | metadata.get( "discord_url" ) )
 			.and_then( | url | url.as_str() )
 			.map( String::from )
-			.ok_or_else::< Error, _>( || err!( "discord_id not found in workspace Cargo.toml" ) )?;
+			.ok_or_else::< Error, _>( || err!( "discord_url not found in workspace Cargo.toml" ) )?;
 
 			Ok
 			(
@@ -101,7 +110,7 @@ mod private
 					master_branch,
 					repository_url,
 					project_name,
-				  discord_id,
+					discord_url,
 				}
 			)
 		}
@@ -114,11 +123,11 @@ mod private
 				format!
 			  (
 				  r#"[![{}](https://img.shields.io/github/actions/workflow/status/{}/StandardRustScheduled.yml?branch=master&label={}&logo=github)](https://github.com/{}/actions/workflows/StandardRustStatus.yml)
-[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/{})
+[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({})
 [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/{})
 [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/{})"#,
 				  self.master_branch, url::git_info_extract( &self.repository_url )?, self.master_branch, url::git_info_extract( &self.repository_url )?,
-					self.discord_id,
+					self.discord_url,
 					self.project_name, self.project_name, url::git_info_extract( &self.repository_url )?,
 					self.project_name,
 				)
@@ -129,7 +138,8 @@ mod private
 	/// Generate header in main Readme.md.
 	/// The location of header is defined by a tag:
 	/// ``` md
-	/// <!--{ generate.main_header }-->
+	/// <!--{ generate.main_header.start }-->
+	/// <!--{ generate.main_header.end }-->
 	/// ```
 	/// To use it you need to add these fields to Cargo.toml of workspace:
 	/// ``` toml
@@ -137,18 +147,20 @@ mod private
 	/// master_branch = "alpha"
 	/// project_name = "wtools"
 	/// repo_url = "https://github.com/Wandalen/wTools"
-	/// discord_id = "123123"
+	/// discord_url = "https://discord.gg/123123"
 	/// ```
 	/// Result example:
 	/// ``` md
-	/// <!--{ generate.main_header }-->
+	/// <!--{ generate.main_header.start }-->
 	/// [![alpha](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/StandardRustScheduled.yml?branch=master&label=alpha&logo=github)](https://github.com/Wandalen/wTools/actions/workflows/StandardRustStatus.yml)
 	/// [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/123123)
 	/// [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fwtools_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20wtools_trivial_sample/https://github.com/Wandalen/wTools)
 	/// [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/wtools)
+	/// <!--{ generate.main_header.end }-->
 	/// ```
 	pub fn generate_main_header( path: AbsolutePath ) -> Result< () >
 	{
+		regexes_initialize();
 		let mut cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( path )? )?;
 		let workspace_root = workspace_root( &mut cargo_metadata )?;
 		let header_param = HeaderParameters::from_cargo_toml( &workspace_root )?;
@@ -161,7 +173,7 @@ mod private
 		let mut content = String::new();
 		file.read_to_string( &mut content )?;
 		let header = header_param.to_header()?;
-		let content = content.replace( "<!--{ generate.main_header }-->", &format!( "<!--{{ generate.main_header }}-->\n{header}" ) );
+		let content: String = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.main_header.start }}-->\n{header}\n<!--{{ generate.main_header.end }}-->\n" ) ).into();
 		file.set_len( 0 )?;
 		file.seek( SeekFrom::Start( 0 ) )?;
 		file.write_all( content.as_bytes() )?;
