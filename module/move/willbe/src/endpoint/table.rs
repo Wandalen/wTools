@@ -143,7 +143,8 @@ mod private
       let include_stability = value.get( "with_stability" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_docs = value.get( "with_docs" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_sample = value.get( "with_gitpod" ).map( | v | bool::from( v ) ).unwrap_or( true );
-      let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" )
+      let b_p = value.get( "0" );
+      let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" ).xor( b_p )
       {
         path
       }

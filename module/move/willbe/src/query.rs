@@ -7,7 +7,7 @@ mod private
     str::FromStr,
     collections::HashMap
   };
-  use wtools::error::{ for_app::{ Error, format_err }, Result };
+  use wtools::error::{ for_app::{ Error }, Result };
   
   #[ derive( Debug, PartialEq, Eq ) ]
   /// Parser result enum
@@ -80,14 +80,8 @@ mod private
   /// use std::collections::HashMap;
   /// 
   /// let mut expected_map = HashMap::new();
-  /// expected_map.insert( "path".to_string(), Value::String( "test/test".to_string() ) );
+  /// expected_map.insert( "0".to_string(), Value::String( "test/test".to_string() ) );
   /// assert_eq!( parse( "'test/test'" ).unwrap(), expected_map );
-  /// ```
-  /// * If the input string contains unnamed values after named values, the function returns an error.
-  /// ```rust should_panic
-  /// use willbe::query::parse;
-  /// 
-  /// _ = parse( "key1: 123, 'test/test'" ).unwrap();
   /// ```
   /// * All values inside "'" are considered to be a string and can have any characters inside them, to escape "'" use "\'".
   /// ``` rust
@@ -117,8 +111,9 @@ mod private
     let mut in_quotes = false;
     let mut escaped = false;
     let mut has_named_values = false;
-
-    for ( i, c ) in input_string.chars().enumerate()
+    
+    let mut counter = 0;
+    for ( i, c ) in input_string.char_indices()
     {
       match c
       {
@@ -137,13 +132,10 @@ mod private
           }
           else if parts.len() == 1
           {
-            if has_named_values
-            {
-              return Err( format_err!( "Unnamed value found after named values" ) );
-            }
             if let Ok( value ) = parts[ 0 ].trim_matches( '\'' ).parse::< Value >()
             {
-              map.insert( "path".to_string(), value );
+              map.insert( counter.to_string(), value );
+              counter+=1;
             }
           }
           start = i + 1;
@@ -164,13 +156,9 @@ mod private
     }
     else if parts.len() == 1
     {
-      if has_named_values
-      {
-        return Err( format_err!( "Unnamed value found after named values" ) );
-      }
       if let Ok( value ) = parts[ 0 ].trim_matches( '\'' ).parse::< Value >()
       {
-        map.insert( "path".to_string(), value );
+        map.insert( counter.to_string(), value );
       }
     }
 

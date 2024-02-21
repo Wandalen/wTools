@@ -35,7 +35,7 @@ fn parse_empty_string()
 fn parse_single_value() 
 {
   let mut expected_map = HashMap::new();
-  expected_map.insert( "path".to_string(), Value::String( "test/test".to_string() ) );
+  expected_map.insert( "0".to_string(), Value::String( "test/test".to_string() ) );
   assert_eq!( parse( "'test/test'" ).unwrap(), expected_map );
 }
 
@@ -46,13 +46,6 @@ fn parse_multiple_values()
   expected_map.insert( "key1".to_string(), Value::Int( 123 ) );
   expected_map.insert( "key2".to_string(), Value::Bool( true ) );
   assert_eq!( parse( "key1: 123, key2: true" ).unwrap(), expected_map );
-}
-
-#[ test ]
-#[ should_panic ]
-fn parse_mixed_values() 
-{
-  _ = parse( "key1: 123, 'test/test'" ).unwrap();
 }
 
 #[ test ]
@@ -105,3 +98,25 @@ fn with_multiple_spaces()
   assert_eq!( parse( r#"key    :    'test     ', key2  :      test     "# ).unwrap(), expected_map );
 }
 
+#[ test ]
+fn many_unnamed()
+{
+  let expected: HashMap< _, _ > = HashMap::from_iter
+  ( [
+    ( "0".to_string(), Value::Int( 123 ) ), 
+    ( "1".to_string(), Value::String( "test_aboba".to_string() ) ),
+  ] );
+  assert_eq!( parse( r#"123, 'test_aboba'"#).unwrap(), expected );
+}
+
+#[ test ]
+fn named_and_unnamed()
+{
+  let expected: HashMap< _, _ > = HashMap::from_iter
+    ( [
+      ( "0".to_string(), Value::Int( 123 ) ),
+      ( "1".to_string(), Value::String( "test_aboba".to_string() ) ),
+      ( "test".to_string(), Value::Bool(true))
+    ] );
+  assert_eq!( parse( r#"123, 'test_aboba', test: true"#).unwrap(), expected );
+}
