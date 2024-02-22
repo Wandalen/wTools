@@ -17,7 +17,7 @@ mod private
 
 	type CargoTomlLocation = Path;
 	
-	static TAGS_TEMPLATE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
+	static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
 	fn regexes_initialize()
 	{
@@ -27,17 +27,17 @@ mod private
 	/// The `ModuleHeader` structure represents a set of parameters, used for creating url for header.
 	struct ModuleHeader
 	{
-		stability: Stability,
-	  module_name: String,
-	  repository_url: String,
-	  discord_url: Option< String >,
+		stability : Stability,
+	  module_name : String,
+	  repository_url : String,
+	  discord_url : Option< String >,
 	}
 
 	impl ModuleHeader
 	{
 
 		/// Create `ModuleHeader` instance from the folder where Cargo.toml is stored.
-		fn from_cargo_toml( path: &CargoTomlLocation ) -> Result< Self >
+		fn from_cargo_toml( path : &CargoTomlLocation ) -> Result< Self >
 		{
 			if !path.exists()
 			{
@@ -62,14 +62,14 @@ mod private
 			.and_then( | metadata | metadata.get( "repository" ) )
 			.and_then( | url | url.as_str() )
 			.map( String::from )
-			.ok_or_else::< Error, _>( || err!( "package.repository not found in module Cargo.toml" ) )?;
+			.ok_or_else::< Error, _ >( || err!( "package.repository not found in module Cargo.toml" ) )?;
 
 			let module_name = doc
 			.get( "package" )
 			.and_then( | workspace  | workspace.get( "name" ) )
 			.and_then( | url | url.as_str() )
 			.map( String::from )
-			.ok_or_else::< Error, _>( || err!( "master_branch not found in module Cargo.toml" ) )?;
+			.ok_or_else::< Error, _ >( || err!( "master_branch not found in module Cargo.toml" ) )?;
 
 			let discord_url = doc
 			.get( "package" )
@@ -79,15 +79,15 @@ mod private
 			.map( String::from );
 
 			Ok
-				(
-					Self
-					{
-						stability,
-						module_name,
-						repository_url,
-						discord_url,
-					}
-				)
+			(
+				Self
+				{
+					stability,
+					module_name,
+					repository_url,
+					discord_url,
+				}
+			)
 		}
 
 		/// Convert `ModuleHeader`to header.
@@ -95,13 +95,14 @@ mod private
 		{
 			let discord = if self.discord_url.is_some()
 			{
-				format!("\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({})", self.discord_url.unwrap())
-			} else
+				format!( "\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({})", self.discord_url.unwrap() )
+			} 
+			else
 			{
 				"".into()
 			};
 			let repo_url = url::extract_repo_url( &self.repository_url ).and_then( | r | url::git_info_extract( &r ).ok() ).ok_or_else::< Error, _ >( || err!( "Fail to parse repository url" ) )?;
-			Ok(format!
+			Ok( format!
 			(
 				"{}\
 				[![rust-status](https://github.com/{}/actions/workflows/Module{}Push.yml/badge.svg)](https://github.com/{}/actions/workflows/Module{}Push.yml)\
@@ -112,7 +113,7 @@ mod private
 				self.module_name, self.module_name,
 				self.module_name, self.module_name, repo_url,
 				discord,
-			))
+			) )
 		}
 	}
 
@@ -138,17 +139,17 @@ mod private
 	/// [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml/badge.svg)](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml)[![docs.rs](https://img.shields.io/docsrs/_chain_of_packages_a?color=e3e8f0&logo=docs.rs)](https://docs.rs/_chain_of_packages_a)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_chain_of_packages_a_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_chain_of_packages_a_trivial_sample/https://github.com/Username/test)
 	/// <!--{ generate.module_header.end }-->
 	/// ```
-	pub fn generate_modules_headers( path: AbsolutePath ) -> Result< () >
+	pub fn generate_modules_headers( path : AbsolutePath ) -> Result< () >
 	{
 		regexes_initialize();
 		let cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( path )? )?;
-		for path in cargo_metadata.packages_get()?.into_iter().map( |p| p.manifest_path.as_std_path() )
+		for path in cargo_metadata.packages_get()?.into_iter().map( | p | p.manifest_path.as_std_path() )
 		{
 			let header = ModuleHeader::from_cargo_toml( path )?.to_header()?;
 			let read_me_path =  path
 			.parent()
 			.unwrap()
-			.join( readme_path( path.parent().unwrap() ).ok_or_else::< Error, _ >( || err!( "Fail to find README.md" ) )?);
+			.join( readme_path( path.parent().unwrap() ).ok_or_else::< Error, _ >( || err!( "Fail to find README.md" ) )? );
 
 			let mut file = OpenOptions::new()
 			.read( true )
@@ -159,12 +160,12 @@ mod private
 			file.read_to_string( &mut content )?;
 
 			let raw_params = TAGS_TEMPLATE
-				.get()
-				.unwrap()
-				.captures( &content )
-				.and_then( | c | c.get( 1 ) )
-				.map( | m | m.as_str() )
-				.unwrap_or_default();
+			.get()
+			.unwrap()
+			.captures( &content )
+			.and_then( | c | c.get( 1 ) )
+			.map( | m | m.as_str() )
+			.unwrap_or_default();
 
 			_ = query::parse( raw_params )?;
 			

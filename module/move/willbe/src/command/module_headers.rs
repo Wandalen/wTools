@@ -5,7 +5,7 @@ mod private
 	use crate::wtools::error::{ for_app::Context, Result };
 
 	/// Generate headers for workspace members
-	pub fn headers_generate(( _, _ ) : (wca::Args, wca::Props ) ) -> Result< () >
+	pub fn headers_generate( ( _, _ ) : ( wca::Args, wca::Props ) ) -> Result< () >
 	{
 		endpoint::generate_modules_headers( AbsolutePath::try_from( std::env::current_dir()? )? ).context( "Fail to generate headers" )
 	}

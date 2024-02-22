@@ -68,7 +68,7 @@ mod private
   {
     type Err = Error;
 
-    fn from_str( s: &str ) -> Result< Self, Self::Err >
+    fn from_str( s : &str ) -> Result< Self, Self::Err >
     {
       match s
       {
@@ -83,7 +83,7 @@ mod private
   }
 
   /// Retrieves the stability level of a package from its `Cargo.toml` file.
-  fn stability_get( package_path: &Path ) -> Result< Stability >
+  fn stability_get( package_path : &Path ) -> Result< Stability >
   {
     let path = package_path.join( "Cargo.toml" );
     if path.exists() 
@@ -137,7 +137,7 @@ mod private
 
   impl From< HashMap< String, query::Value > > for TableParameters
   {
-    fn from(value: HashMap< String, query::Value >) -> Self
+    fn from( value : HashMap< String, query::Value >) -> Self
     {
       let include_branches = value.get( "with_branches" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_stability = value.get( "with_stability" ).map( | v | bool::from( v ) ).unwrap_or( true );
@@ -158,7 +158,7 @@ mod private
   impl GlobalTableParameters
   {
     /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
-    fn initialize_from_path( path: &Path ) -> Result< Self > 
+    fn initialize_from_path( path : &Path ) -> Result< Self > 
     {
       let cargo_toml_path = path.join( "Cargo.toml" );
       if !cargo_toml_path.exists() 
@@ -215,7 +215,7 @@ mod private
   /// will mean that at this place the table with modules located in the directory module/core will be generated.
   /// The tags do not disappear after generation.
   /// Anything between the opening and closing tag will be destroyed.
-  pub fn table_create( path: &Path ) -> Result< () >
+  pub fn table_create( path : &Path ) -> Result< () >
   {
     regexes_initialize();
     let absolute_path = AbsolutePath::try_from( path )?;
@@ -265,7 +265,7 @@ mod private
   }
 
   /// Writes tables into a file at specified positions.
-  fn tables_write_into_file(  tags_closures: Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () > 
+  fn tables_write_into_file(  tags_closures : Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () > 
   {
     let mut buffer: Vec<u8> = vec![];
     let mut start: usize = 0;
@@ -284,7 +284,7 @@ mod private
 
   /// Generate table from `table_parameters`.
   /// Generate header, iterate over all modules in package (from table_parameters) and append row. 
-  fn package_table_create(  cache: &mut Workspace, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error > 
+  fn package_table_create( cache : &mut Workspace, table_parameters : &TableParameters, parameters : &mut GlobalTableParameters ) -> Result< String, Error > 
   {
     let directory_names = directory_names
     ( 
@@ -323,7 +323,7 @@ mod private
   }
 
   /// Return topologically sorted modules name, from packages list, in specified directory.
-  fn directory_names( path: PathBuf, packages: &[ Package ] ) -> Result< Vec< String > >
+  fn directory_names( path : PathBuf, packages : &[ Package ] ) -> Result< Vec< String > >
   {
     let path_clone = path.clone();
     let module_package_filter: Option< Box< dyn Fn( &Package ) -> bool > > = Some
@@ -352,7 +352,7 @@ mod private
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
-  fn row_generate( module_name: &str, stability: Option< &Stability >, parameters: &GlobalTableParameters, table_parameters: &TableParameters,  ) -> String
+  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableParameters, table_parameters : &TableParameters,  ) -> String
   {
     let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
     if table_parameters.include_stability
@@ -375,7 +375,7 @@ mod private
   }
 
   /// Generate stability cell based on stability
-  pub fn stability_generate( stability: &Stability ) -> String
+  pub fn stability_generate( stability : &Stability ) -> String
   {
     match stability
     {
@@ -388,7 +388,7 @@ mod private
   }
 
   /// Generate table header
-  fn table_header_generate( parameters: &GlobalTableParameters, table_parameters: &TableParameters ) -> String
+  fn table_header_generate( parameters : &GlobalTableParameters, table_parameters : &TableParameters ) -> String
   {
     let mut header = String::from( "| Module |" );
     let mut separator = String::from( "|--------|" );
@@ -427,7 +427,7 @@ mod private
   }
 
   /// Generate cells for each branch 
-  fn branch_cells_generate( table_parameters: &GlobalTableParameters, module_name: &str ) -> String
+  fn branch_cells_generate( table_parameters : &GlobalTableParameters, module_name : &str ) -> String
   {
     let cells = table_parameters
     .branches
@@ -445,12 +445,12 @@ mod private
   }
 
   /// Return workspace root
-  pub fn workspace_root( metadata: &mut Workspace ) -> Result< PathBuf >
+  pub fn workspace_root( metadata : &mut Workspace ) -> Result< PathBuf >
   {
     Ok( metadata.load()?.workspace_root()?.to_path_buf() )
   }
 
-  fn range_to_target_copy< T: Clone >( source: &[ T ], target: &mut Vec< T >, from: usize, to: usize ) -> Result< () >
+  fn range_to_target_copy< T: Clone >( source : &[ T ], target : &mut Vec< T >, from : usize, to : usize ) -> Result< () >
   {
     if from < source.len() && to < source.len() && from <= to
     {
@@ -492,7 +492,7 @@ mod private
   ///
   /// Given a directory path, this function searches for a file named "readme.md" in the specified
   /// directory.
-  fn readme_in_dir_find( path: &Path ) -> Option< PathBuf >
+  fn readme_in_dir_find( path : &Path ) -> Option< PathBuf >
   {
     read_dir( path )
     .ok()?
