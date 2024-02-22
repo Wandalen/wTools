@@ -337,6 +337,41 @@ impl Board
     let coeff = possibilities_count.into_iter().fold( 0, | acc, val | acc + val.0 * val.1 )  as f64 / 81.0 ;
     coeff
   }
+
+  pub fn calculate_level( &self ) -> Level
+  {
+    match self.calculate_difficulty()
+    {
+      n if n >= 0.0 && n<= 2.0 => Level::Easy,
+      n if n > 2.0 && n <= 2.5 => Level::Medium,
+      n if n > 2.5 && n < 3.0 => Level::Hard,
+      _ => Level::Expert,
+    }
+  }
+
+}
+
+/// Level of difficulty of sudoku board.
+#[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
+pub enum Level
+{
+  /// Easy level with difficulty <= 2.
+  Easy,
+  /// Medium, 2 < difficulty <= 2.5.
+  Medium,
+  /// Hard level, 2.5 < difficulty <= 3.
+  Hard,
+  /// Expert level with difficulty > 3.
+  Expert,
+}
+
+impl Level {
+  /// Iterates over sudoku difficulty levels.
+  pub fn iterator() -> impl Iterator< Item = Level >
+  {
+    use Level::*;
+    [ Easy, Medium, Hard, Expert ].iter().copied()
+  }
 }
 
 /// Sets default value for board.
