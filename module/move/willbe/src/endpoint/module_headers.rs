@@ -15,6 +15,8 @@ mod private
 	  for_app::{ bail, Result, Error },
 	};
 
+	type CargoTomlLocation = Path;
+	
 	static TAGS_TEMPLATE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
 
 	fn regexes_initialize()
@@ -35,7 +37,7 @@ mod private
 	{
 
 		/// Create `ModuleHeader` instance from the folder where Cargo.toml is stored.
-		fn from_cargo_toml( path: &Path ) -> Result< Self >
+		fn from_cargo_toml( path: &CargoTomlLocation ) -> Result< Self >
 		{
 			if !path.exists()
 			{
