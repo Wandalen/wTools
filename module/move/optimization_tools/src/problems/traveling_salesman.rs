@@ -158,6 +158,7 @@ pub struct TSProblem
 
 impl TSProblem
 {
+  /// Create new instance of Traveling Salesman Problem.
   pub fn new( graph : TSPGraph, starting_node : NodeIndex ) -> Self
   {
     Self { graph, starting_node }

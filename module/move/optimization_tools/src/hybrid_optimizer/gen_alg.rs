@@ -108,17 +108,24 @@ pub trait InitialProblem
 }
 
 /// Indicates state of population proportions with no percentage for elites selection set.
+#[ derive( Debug ) ]
 pub struct NoElites;
 /// Indicates state of population proportions with no percentage for mutating population set.
+#[ derive( Debug ) ]
 pub struct NoMutations;
 /// Indicates state of population proportions with no percentage for crossover set.
+#[ derive( Debug ) ]
 pub struct NoCrossover;
 
 /// Proportion of population modifications with crossover, mutations and elites cloning.
+#[ derive( Debug ) ]
 pub struct PopulationModificationProportions< E, M, C >
 {
+  /// Percent of most fit individuals cloned to next population. 
   elite_selection_rate : E,
+  /// Percent of individuals mutated in new population.
   mutation_rate : M,
+  /// Percent of individuals in new population created by crossover of two selected parents.
   crossover_rate : C,
 }
 

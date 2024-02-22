@@ -5,7 +5,7 @@ mod private
 
   use std::
   {
-    collections::HashSet, io,
+    collections::{ HashSet, HashMap }, io,
   };
   use core::fmt::Formatter;
 
@@ -20,6 +20,8 @@ mod private
   {
     /// Represents the absolute path to the root directory of the workspace.
     pub workspace_root_dir : Option< AbsolutePath >,
+    /// Represents a collection of packages that are roots of the trees.
+    pub wanted_to_publish : Vec< CrateDir >,
     /// Represents a collection of packages and their associated publishing reports.
     pub packages : Vec<( AbsolutePath, package::PublishReport )>
   }
@@ -33,7 +35,47 @@ mod private
         f.write_fmt( format_args!( "Nothing to publish" ) )?;
         return Ok( () );
       }
+      write!( f, "Tree(-s):\n" )?;
+      let name_bump_report = self
+      .packages
+      .iter()
+      .filter_map( |( _, r )| r.bump.as_ref() )
+      .map( | b | &b.base )
+      .filter_map( | b | b.name.as_ref().and_then( | name  | b.old_version.as_ref().and_then( | old | b.new_version.as_ref().map( | new | ( name, ( old, new ) ) ) ) ) )
+      .collect::< HashMap< _, _ > >();
+      for wanted in &self.wanted_to_publish
+      {
+        let list = endpoint::list
+        (
+          endpoint::list::ListArgs::former()
+          .path_to_manifest( wanted.clone() )
+          .format( endpoint::list::ListFormat::Tree )
+          .dependency_sources([ endpoint::list::DependencySource::Local ])
+          .dependency_categories([ endpoint::list::DependencyCategory::Primary ])
+          .form()
+        )
+        .map_err( |( _, _e )| std::fmt::Error )?;
+        let endpoint::list::ListReport::Tree( list ) = list else { unreachable!() };
 
+        fn callback( name_bump_report: &HashMap< &String, ( &String, &String) >, mut r : endpoint::list::ListNodeReport ) -> endpoint::list::ListNodeReport
+        {
+          if let Some(( old, new )) = name_bump_report.get( &r.name )
+          {
+            r.version = Some( format!( "({old} -> {new})" ) );
+          }
+          r.normal_dependencies = r.normal_dependencies.into_iter().map( | r | callback( name_bump_report, r ) ).collect();
+          r.dev_dependencies = r.dev_dependencies.into_iter().map( | r | callback( name_bump_report, r ) ).collect();
+          r.build_dependencies = r.build_dependencies.into_iter().map( | r | callback( name_bump_report, r ) ).collect();
+
+          r
+        }
+        let list = list.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
+
+        let list = endpoint::list::ListReport::Tree( list );
+        write!( f, "{}\n", list )?;
+      }
+
+      write!( f, "Actions:\n" )?;
       for ( path, report ) in &self.packages
       {
         let report = report.to_string().replace("\n", "\n  ");
@@ -100,6 +142,7 @@ mod private
     .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path.as_std_path().parent().unwrap() ).unwrap() ) )
     .cloned()
     .collect();
+    report.wanted_to_publish.extend( packages_to_publish.iter().map( | x | x.manifest_path.as_std_path().parent().unwrap() ).filter_map( | x | AbsolutePath::try_from( x ).ok() ).filter_map( | x | CrateDir::try_from( x ).ok() ) );
     let mut queue = vec![];
     for package in &packages_to_publish
     {

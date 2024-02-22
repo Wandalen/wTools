@@ -5,7 +5,6 @@ use serde::Deserialize;
 #[ derive( Debug, Deserialize ) ]
 pub struct FeedConfig
 {
-//   pub name : String,
   #[serde(with = "humantime_serde")]
   pub period : std::time::Duration,
   pub link : String,
@@ -17,12 +16,10 @@ pub struct Feeds
   pub config : Vec< FeedConfig >
 }
 
-pub fn read_feed_config() -> Result< Vec< FeedConfig >, Box< dyn std::error::Error > >
+pub fn read_feed_config( file_path : String ) -> Result< Vec< FeedConfig >, Box< dyn std::error::Error > >
 {
-  let path = format!( "./config/feeds.toml" );
-  // qqq : parametrize
 
-  let read_file = OpenOptions::new().read( true ).open( &path )?;
+  let read_file = OpenOptions::new().read( true ).open( &file_path )?;
   let mut reader = BufReader::new( read_file );
   let mut buffer: Vec< u8 > = Vec::new();
   reader.read_to_end( &mut buffer )?;

@@ -19,7 +19,7 @@ mod private
   {
     #[ default( true ) ]
     with_stable : bool,
-    #[ default( false ) ]
+    #[ default( true ) ]
     with_nightly : bool,
     #[ default( true ) ]
     parallel : bool,
