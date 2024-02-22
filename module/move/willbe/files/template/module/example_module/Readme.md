@@ -1,1 +1,2 @@
-<!--{ generate.module_header }-->
+<!--{ generate.module_header.start() }-->
+<!--{ generate.module_header.end }-->

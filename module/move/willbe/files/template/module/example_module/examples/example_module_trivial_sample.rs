@@ -5,7 +5,8 @@ use example_module::hello;
 // example
 
 ///test
-fn main() {
+fn main()
+{
 	let h = hello();
-	println!("{}", h);
+	println!( "{}", h );
 }

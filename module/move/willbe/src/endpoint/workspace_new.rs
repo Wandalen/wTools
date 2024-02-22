@@ -44,7 +44,7 @@ mod private
     create_file( path, ".gitattributes", include_str!( "../../files/template/.gitattributes" ) )?;
     create_file( path, ".gitignore", include_str!( "../../files/template/.gitignore" ) )?;
     create_file( path, ".gitpod.yml", include_str!( "../../files/template/.gitpod.yml" ) )?;
-    create_file( path, "Cargo.toml", include_str!("../../files/template/Cargo.toml" ) )?;
+    create_file( path, "Cargo.toml", include_str!( "../../files/template/Cargo.toml" ) )?;
     create_file( path, "Makefile", include_str!( "../../files/template/Makefile" ) )?;
     
     Ok( () )
@@ -61,7 +61,7 @@ mod private
   fn dot_github( path: &Path ) -> Result< () > 
   {
     create_dir( path, ".github" )?;
-    create_dir( &path.join( ".github" ),"workflow" )?;
+    create_dir( &path.join( ".github" ),"workflows" )?;
     
     Ok( () )
   }
