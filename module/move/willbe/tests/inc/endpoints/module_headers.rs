@@ -6,6 +6,7 @@ use crate::TheModule::endpoint::{ self };
 mod modules_headers_test
 {
 	use std::io::Read;
+	use willbe::path::AbsolutePath;
 
 	use super::*;
 
@@ -22,15 +23,15 @@ mod modules_headers_test
 	}
 
 	#[ test ]
-  fn default_case()
+  fn workspace_with_one_member()
 	{
 		// Arrange
 		let temp = arrange( "single_module" );
 
-		let expected = "<!--{ generate.module_header }-->\n[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestModulePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestModulePush.yml)[![docs.rs](https://img.shields.io/docsrs/test_module?color=e3e8f0&logo=docs.rs)](https://docs.rs/test_module)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_module_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_module_trivial_sample/https://github.com/Wandalen/wTools)[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)";
+		let expected = "<!--{ generate.module_header.start() }-->\n[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestModulePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestModulePush.yml)[![docs.rs](https://img.shields.io/docsrs/test_module?color=e3e8f0&logo=docs.rs)](https://docs.rs/test_module)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_module_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_module_trivial_sample/https://github.com/Wandalen/wTools)\n<!--{ generate.module_header.end }-->";
 
 		// Act
-		_ = endpoint::generate_modules_headers( &temp ).unwrap();
+		_ = endpoint::generate_modules_headers( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 		let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
 		let mut actual = String::new();
@@ -39,5 +40,59 @@ mod modules_headers_test
 
 		// Assert
 		assert_eq!( expected, actual );
+	}
+
+	#[ test ]
+	fn idempotency()
+	{
+		// Arrange
+		let temp = arrange( "single_module" );
+
+		let expected = "<!--{ generate.module_header.start() }-->\n[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestModulePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestModulePush.yml)[![docs.rs](https://img.shields.io/docsrs/test_module?color=e3e8f0&logo=docs.rs)](https://docs.rs/test_module)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_module_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_module_trivial_sample/https://github.com/Wandalen/wTools)\n<!--{ generate.module_header.end }-->";
+
+		// Act
+		_ = endpoint::generate_modules_headers( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+		_ = endpoint::generate_modules_headers( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+		_ = endpoint::generate_modules_headers( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+
+		let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
+
+		let mut actual = String::new();
+
+		_ = file.read_to_string( &mut actual ).unwrap();
+
+		// Assert
+		assert_eq!( expected, actual );
+	}
+	
+	#[ test ]
+	fn with_many_members_and_varius_config()
+	{
+		let temp = arrange( "three_packages" );
+
+		// without discord & stability
+		let expected_a = "<!--{ generate.module_header.start() }-->\n[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml/badge.svg)](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml)[![docs.rs](https://img.shields.io/docsrs/_chain_of_packages_a?color=e3e8f0&logo=docs.rs)](https://docs.rs/_chain_of_packages_a)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_chain_of_packages_a_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_chain_of_packages_a_trivial_sample/https://github.com/Username/test)\n<!--{ generate.module_header.end }-->";
+		// without discord & stability = stable
+		let expected_b = "<!--{ generate.module_header.start() }-->\n[![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable) | [![rust-status](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesBPush.yml/badge.svg)](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesBPush.yml)[![docs.rs](https://img.shields.io/docsrs/_chain_of_packages_b?color=e3e8f0&logo=docs.rs)](https://docs.rs/_chain_of_packages_b)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_chain_of_packages_b_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_chain_of_packages_b_trivial_sample/https://github.com/Username/test)\n<!--{ generate.module_header.end }-->";
+		// with discord & stability = stable
+		let expected_c = "<!--{ generate.module_header.start() }-->\n[![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable) | [![rust-status](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesCPush.yml/badge.svg)](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesCPush.yml)[![docs.rs](https://img.shields.io/docsrs/_chain_of_packages_c?color=e3e8f0&logo=docs.rs)](https://docs.rs/_chain_of_packages_c)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_chain_of_packages_c_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_chain_of_packages_c_trivial_sample/https://github.com/Username/test)\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)\n<!--{ generate.module_header.end }-->";
+
+		_ = endpoint::generate_modules_headers( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+
+		let mut file_a = std::fs::File::open( temp.path().join( "a" ).join( "Readme.md" ) ).unwrap();
+		let mut file_b = std::fs::File::open( temp.path().join( "b" ).join( "Readme.md" ) ).unwrap();
+		let mut file_c = std::fs::File::open( temp.path().join( "c" ).join( "Readme.md" ) ).unwrap();
+
+		let mut actual_a = String::new();
+		let mut actual_b = String::new();
+		let mut actual_c = String::new();
+
+		_ = file_a.read_to_string( &mut actual_a ).unwrap();
+		_ = file_b.read_to_string( &mut actual_b ).unwrap();
+		_ = file_c.read_to_string( &mut actual_c ).unwrap();
+		
+		assert_eq!(expected_a, actual_a);
+		assert_eq!(expected_b, actual_b);
+		assert_eq!(expected_c, actual_c);
 	}
 }
