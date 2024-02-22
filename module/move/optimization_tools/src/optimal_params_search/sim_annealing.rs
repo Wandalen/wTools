@@ -203,6 +203,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( nelder_mead::Point ) -> f64 + Sync 
       point : Point::new( best_found.0.clone() ),
       objective : best_found.1,
       reason : TerminationReason::MaxIterations,
+      stats : None,
     } )
   }
 }

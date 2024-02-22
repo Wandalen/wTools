@@ -69,6 +69,29 @@ impl Constraints
   }
 }
 
+#[ derive( Debug, Clone ) ] 
+pub struct Stats
+{
+  /// Sum of difference between starting value of parameter and new value, for every parameter.
+  pub diff_sum : Vec< f64 >,
+}
+
+impl Stats
+{
+  pub fn new( dimensions : usize ) -> Self
+  {
+    Self { diff_sum : vec![ 0.0; dimensions ] }
+  }
+
+  pub fn record_diff( &mut self, start_point : &Point, point : &Point )
+  {
+    for i in 0..start_point.coords.len()
+    {
+      self.diff_sum[ i ] += ( start_point.coords[ i ] - point.coords[ i ] ).abs() 
+    }
+  }
+}
+
 /// Struct which holds initial configuration for NelderMead optimization, and can perform optimization if all necessary information were provided during initialization process.
 #[ derive( Debug, Clone ) ]
 pub struct Optimizer< R, F >
@@ -264,6 +287,14 @@ where R : RangeBounds< f64 > + Sync,
     res
   }
 
+  // fn update_diff( point : &Point )
+  // {
+  //   for coordinate in point
+  //   {
+      
+  //   }
+  // }
+
   /// Checks if point left the domain, if so, performs projection: all coordinates that lie out of domain bounds are set to closest coordinate included in bounded space.
   /// Returns projected point.
   fn check_bounds( &self, point : Point ) -> Point
@@ -446,6 +477,8 @@ where R : RangeBounds< f64 > + Sync,
       points.push( Point::new( point ) );
     }
 
+    let stats = Arc::new( Mutex::new( Stats::new( self.start_point.coords.len() ) ) );
+
     let results = points.into_par_iter().map( | point |
     {
       let x0 = point.clone();
@@ -474,6 +507,7 @@ where R : RangeBounds< f64 > + Sync,
             point : res[ 0 ].0.clone(),
             objective : res[ 0 ].1,
             reason : TerminationReason::MaxIterations,
+            stats : None,
           } )
         }
   
@@ -496,6 +530,7 @@ where R : RangeBounds< f64 > + Sync,
             point : res[ 0 ].0.clone(),
             objective : res[ 0 ].1,
             reason : TerminationReason::NoImprovement,
+            stats : None,
           } )
         }
   
@@ -518,6 +553,7 @@ where R : RangeBounds< f64 > + Sync,
         }
         // check if point left the domain, if so, perform projection
         let x_ref = self.check_bounds( Point::new_from_ordered( x_ref ) );
+        stats.lock().unwrap().record_diff( &self.start_point, &x_ref );
   
         let reflection_score = self.evaluate_point( &x_ref );
         let second_worst = res[ res.len() - 2 ].1;
@@ -538,6 +574,7 @@ where R : RangeBounds< f64 > + Sync,
           }
           // check if point left the domain, if so, perform projection
           let x_exp = self.check_bounds( Point::new_from_ordered( x_exp ) );
+          stats.lock().unwrap().record_diff( &self.start_point, &x_exp );
           let expansion_score = self.evaluate_point( &x_exp );
   
           if expansion_score < reflection_score
@@ -561,6 +598,7 @@ where R : RangeBounds< f64 > + Sync,
           x_con[ i ] = x0_center[ i ] + OrderedFloat( self.rho ) * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
         }
         let x_con = self.check_bounds( Point::new_from_ordered( x_con ) );
+        stats.lock().unwrap().record_diff( &self.start_point, &x_con );
         let contraction_score = self.evaluate_point( &x_con );
   
         if contraction_score < worst_dir.1
@@ -581,6 +619,7 @@ where R : RangeBounds< f64 > + Sync,
             x_shrink[ i ] = x1.coords[ i ] + OrderedFloat( self.sigma ) * ( point.coords[ i ] - x1.coords[ i ] );
           }
           let x_shrink = self.check_bounds( Point::new_from_ordered( x_shrink ) );
+          stats.lock().unwrap().record_diff( &self.start_point, &x_shrink );
           let score = self.evaluate_point( &x_shrink );
           new_res.push( ( x_shrink, score ) );
         }
@@ -589,8 +628,12 @@ where R : RangeBounds< f64 > + Sync,
       }
     } ).collect::< Vec<_> >();
 
+    let stats = stats.lock().unwrap().clone();
+
     let results = results.into_iter().flatten().collect_vec();
-    Ok( results.into_iter().min_by( | res1, res2 | res1.objective.total_cmp( &res2.objective ) ).unwrap() )
+    let mut res = results.into_iter().min_by( | res1, res2 | res1.objective.total_cmp( &res2.objective ) ).unwrap();
+    res.stats = Some( stats );
+    Ok( res )
   }
 
   /// Optimize provided objective function with using initialized configuration.
@@ -638,6 +681,7 @@ where R : RangeBounds< f64 > + Sync,
           point : res[ 0 ].0.clone(),
           objective : res[ 0 ].1,
           reason : TerminationReason::MaxIterations,
+          stats : None,
         } )
       }
 
@@ -660,6 +704,7 @@ where R : RangeBounds< f64 > + Sync,
           point : res[ 0 ].0.clone(),
           objective : res[ 0 ].1,
           reason : TerminationReason::NoImprovement,
+          stats : None,
         } )
       }
 
@@ -764,6 +809,8 @@ pub struct Solution
   pub objective : f64,
   /// Reason for termination.
   pub reason : TerminationReason,
+  /// Staticstics.
+  pub stats : Option< Stats >,
 }
 
 /// Reasons for termination of optimization process.
