@@ -101,7 +101,7 @@ mod private
 		let path = args.dir.absolute_path().join("Cargo.toml");
 		let metadata = Workspace::with_crate_dir( args.dir.clone() )?;
 
-		let package = metadata.packages_get()?.into_iter().find( |x| x.manifest_path == path.as_ref() ).ok_or( format_err!( "Package not found" ) )?;
+		let package = metadata.packages()?.into_iter().find( |x| x.manifest_path == path.as_ref() ).ok_or( format_err!( "Package not found" ) )?;
 		report.lock().unwrap().package_name = package.name.clone();
 
 		let exclude = args.exclude_features.iter().cloned().collect();

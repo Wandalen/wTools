@@ -426,7 +426,7 @@ mod private
       }
       ListFormat::Tree =>
       {
-        let packages = metadata.packages_get().context( "workspace packages" ).err_with( report.clone() )?;
+        let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
         let mut visited = packages.iter().map( | p | format!( "{}+{}+{}", p.name, p.version.to_string(), p.manifest_path ) ).collect();
         for package in packages
         {
@@ -456,7 +456,7 @@ mod private
           )
         };
 
-        let packages = metadata.packages_get().context( "workspace packages" ).err_with( report.clone() )?;
+        let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
         let packages_map =  packages::filter
         (
           packages,

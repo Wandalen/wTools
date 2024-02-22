@@ -25,10 +25,10 @@ mod private
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard
-    let names = workspace_cache.packages_get().and_then( | packages | Ok(packages.iter().map( | p | &p.name).collect::< Vec< _ > >()) )?;
+    let names = workspace_cache.packages().and_then( |packages | Ok(packages.iter().map( |p | &p.name).collect::< Vec< _ > >()) )?;
     // map packages path to relative paths fom workspace root, for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = workspace_cache
-    .packages_get()
+    .packages()
     .map_err( | err | anyhow!( err ) )?
     .iter()
     .map( | p | &p.manifest_path )
@@ -201,7 +201,7 @@ mod private
       else 
       {
         let mut url = None;
-        for package in workspace.packages_get()?
+        for package in workspace.packages()?
         {
           if let Ok( wu ) = manifest::private::repo_url( package.manifest_path.parent().unwrap().as_std_path() )
           {

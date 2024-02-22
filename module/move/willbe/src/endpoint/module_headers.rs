@@ -1,6 +1,7 @@
 mod private
 {
-	use std::fs::{ File, OpenOptions };
+	use std::borrow::Cow;
+	use std::fs::{File, OpenOptions };
 	use std::io::{ Read, Seek, SeekFrom, Write };
 	use std::path::Path;
 	use convert_case::{ Case, Casing };
@@ -37,7 +38,7 @@ mod private
 	{
 
 		/// Create `ModuleHeader` instance from the folder where Cargo.toml is stored.
-		fn from_cargo_toml( path : &CargoTomlLocation ) -> Result< Self >
+		fn from_cargo_toml( path : &CargoTomlLocation, default_discord_url : &Option< String > ) -> Result< Self >
 		{
 			if !path.exists()
 			{
@@ -76,7 +77,8 @@ mod private
 			.and_then( | workspace  | workspace.get( "metadata" ) )
 			.and_then( | metadata | metadata.get( "discord_url" ) )
 			.and_then( | url | url.as_str() )
-			.map( String::from );
+			.map( String::from )
+			.or_else( || default_discord_url.clone() );
 
 			Ok
 			(
@@ -116,6 +118,29 @@ mod private
 			) )
 		}
 	}
+	
+	fn workspace_discord_url( path: &CargoTomlLocation ) -> Result< Option< String > >
+	{
+		if !path.exists()
+		{
+			bail!( "Cannot find Cargo.toml" )
+		}
+		let mut contents = String::new();
+
+		File::open( path )?.read_to_string( &mut contents )?;
+
+		let doc = contents.parse::< Document >()?;
+
+		let discord = doc
+		.get( "workspace" )
+		.and_then( | package | package.get( "metadata" ) )
+		.and_then( | metadata | metadata.get( "discord_url" ) )
+		.and_then( | i | i.as_str() )
+		.map( | s | s.to_string() );
+		
+		Ok( discord )
+	}
+	
 
 	/// Generate header in modules Readme.md.
 	/// The location of header is defined by a tag:
@@ -143,9 +168,10 @@ mod private
 	{
 		regexes_initialize();
 		let cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( path )? )?;
-		for path in cargo_metadata.packages_get()?.into_iter().map( | p | p.manifest_path.as_std_path() )
+		let discord_url = workspace_discord_url( &cargo_metadata.workspace_root()?.join( "Cargo.toml" ) )?;
+		for path in cargo_metadata.packages()?.into_iter().map( |p | p.manifest_path.as_std_path() )
 		{
-			let header = ModuleHeader::from_cargo_toml( path )?.to_header()?;
+			let header = ModuleHeader::from_cargo_toml( path, &discord_url )?;
 			let read_me_path =  path
 			.parent()
 			.unwrap()
@@ -169,13 +195,20 @@ mod private
 
 			_ = query::parse( raw_params )?;
 			
-			let content: String = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.module_header.start({raw_params}) }}-->\n{header}\n<!--{{ generate.module_header.end }}-->" ) ).into();
+			let content = header_content_generate( &content, header, raw_params )?;
 			
 			file.set_len( 0 )?;
 			file.seek( SeekFrom::Start( 0 ) )?;
 			file.write_all( content.as_bytes() )?;
 		}
 		Ok( () )
+	}
+	
+	fn header_content_generate< 'a >( content : &'a str, header : ModuleHeader, raw_params : &str ) -> Result< Cow< 'a, str > >
+	{
+		let header = header.to_header()?;
+		let result = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.module_header.start({raw_params}) }}-->\n{header}\n<!--{{ generate.module_header.end }}-->" ) ); 
+		Ok( result )
 	}
 }
 

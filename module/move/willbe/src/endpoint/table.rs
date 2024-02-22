@@ -293,7 +293,7 @@ mod private
       .join( &table_parameters.base_path ), 
       &cache
       .load()?
-      .packages_get() 
+      .packages() 
       .map_err( | err | format_err!( err ) )?
     )?;
     let mut table = table_header_generate( parameters, &table_parameters );
