@@ -445,7 +445,7 @@ mod private
   }
 
   /// Return workspace root
-  pub fn workspace_root( metadata: &mut Workspace ) -> Result< PathBuf >
+  pub fn workspace_root( metadata : &mut Workspace ) -> Result< PathBuf >
   {
     Ok( metadata.load()?.workspace_root()?.to_path_buf() )
   }
