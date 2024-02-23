@@ -82,7 +82,7 @@ mod private
     Ok( () )
   }
 
-  fn create_dir( path: &Path, name: &str ) -> Result< () > 
+  fn create_dir( path : &Path, name : &str ) -> Result< () > 
   { 
     fs::create_dir( path.join( name ) )?;
     
