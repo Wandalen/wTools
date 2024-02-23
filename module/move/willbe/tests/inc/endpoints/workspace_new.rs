@@ -1,9 +1,6 @@
 use assert_fs::prelude::*;
 
-use crate::TheModule::endpoint::
-{
-  self,
-};
+use crate::TheModule::endpoint;
 
 const ASSETS_PATH : &str = "tests/assets";
 
