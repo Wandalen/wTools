@@ -5,6 +5,8 @@ use optimization_tools::{ optimal_params_search::nelder_mead::Stats, * };
 use optimal_params_search::OptimalParamsConfig;
 use problems::{ sudoku::*, traveling_salesman::* };
 use hybrid_optimizer::*;
+use tabled::{ builder::Builder, settings::Style };
+
 
 mod tools;
 use tools::*;
@@ -111,55 +113,57 @@ fn write_results(
   mut ga_res : ResWithStats,
 ) -> Result< (), std::io::Error >
 {
-  use markdown_table::MarkdownTable;
   let mut file = std::fs::File::create( format!( "{}.md", filename ) )?;
-  std::io::Write::write( &mut file, format!( "{}\n\n", title ).as_bytes() )?;
+  std::io::Write::write( &mut file, format!( "# {}\n\n", title ).as_bytes() )?;
 
   for ( mode, params ) in &mut [ ( "hybrid", &mut hybrid_res ), ( "SA", &mut sa_res ), ( "GA", &mut ga_res ) ]
   {
     std::io::Write::write(&mut file, format!( "## For {}:\n\n", mode ).as_bytes() )?;
     let exec_time = params.pop().unwrap();
-    std::io::Write::write(&mut file, format!( "{}: {}\n\n", exec_time[ 0 ], exec_time[ 1 ] ).as_bytes() )?;
+    std::io::Write::write(&mut file, format!( " - {}: {}\n\n", exec_time[ 0 ], exec_time[ 1 ] ).as_bytes() )?;
     let level = params.pop().unwrap();
-    std::io::Write::write(&mut file, format!( "{}: {}\n\n", level[ 0 ], level[ 1 ] ).as_bytes() )?;
-    std::io::Write::write(&mut file, format!( "parameters: \n\n" ).as_bytes() )?;
-    let mut table = Vec::new();
+    std::io::Write::write(&mut file, format!( " - {}: {}\n\n", level[ 0 ], level[ 1 ] ).as_bytes() )?;
+    std::io::Write::write(&mut file, format!( " - parameters: \n\n" ).as_bytes() )?;
+
+    let mut builder = Builder::default();
+
     let row = [ "", "calculated value", "sum of differences", "expected value", "starting value", "bounds" ].into_iter().map( str::to_owned ).collect_vec();
-    table.push( row );
+    builder.push_record( row );
 
     for i in 0..params.len()
     {
       let mut row = Vec::new();
+    
       if *mode == "SA" && [ 2, 3, 4, 6 ].contains( &i )
       {
-        row.push( format!( "<em>{}</em>", params[ i ][ 0 ] ) );
+        row.push( format!( "<em>{}</em>", params[ i ][ 0 ].clone().replace( " ", "\n") ) );
       }
       else 
       {
-        row.push( params[ i ][ 0 ].clone() );
+        row.push( params[ i ][ 0 ].clone().replace( " ", "\n") );
       }
 
       row.extend( params[ i ].iter().skip( 1 ).cloned() );
-      table.push( row );
+      builder.push_record( row );
       
     }
 
-    let table = MarkdownTable::new( table ).as_markdown().unwrap();
-    std::io::Write::write( &mut file, format!( "{}", table ).as_bytes() )?;
+    let table = builder.build().with( Style::modern() ).to_string();
+    std::io::Write::write( &mut file, format!( "```\n{}\n```", table ).as_bytes() )?;
 
     std::io::Write::write( &mut file, format!("\n\n\n" ).as_bytes() )?;
   }
 
   //final table
-  std::io::Write::write(&mut file, format!( "## Summary:\n\n" ).as_bytes() )?;
-  let mut table_vec = Vec::new();
+  std::io::Write::write(&mut file, format!( "## Summary:\n" ).as_bytes() )?;
+  let mut builder = Builder::default();
   let mut headers = vec![ String::from( "mode" ) ];
   for i in 0..hybrid_res.len()
   {
     headers.push( hybrid_res[ i ][ 0 ].clone().replace( " ", "\n") );
   }
 
-  table_vec.push( headers );
+  builder.push_record( headers );
   for ( mode, params ) in [ ( "hybrid", &hybrid_res ), ( "SA", &sa_res ), ( "GA", &ga_res ) ]
   {
     let mut row = Vec::new();
@@ -175,12 +179,11 @@ fn write_results(
       }
     }
 
-    table_vec.push( row );
+    builder.push_record( row );
   }
 
-  let table = MarkdownTable::new( table_vec ).as_markdown().unwrap();
-
-  std::io::Write::write( &mut file, format!( "{}", table ).as_bytes() )?;
+  let table = builder.build().with( Style::modern() ).to_string();
+  std::io::Write::write( &mut file, format!( "```\n{}\n```", table ).as_bytes() )?;
 
   Ok( () )
 }

@@ -75,13 +75,11 @@ pub struct Stats
 
   pub starting_point : Point,
   pub differences : Vec< Vec< f64 > >,
-  //pub bounds : Vec< ( Bound< f64 >, Bound< f64 > ) >
 }
 
 impl Stats
 {
   pub fn new( starting_point : Point) -> Self
-  // pub fn new( starting_point : Point, bounds : Vec< ( Bound< f64 >, Bound< f64 > ) > ) -> Self
   {
     let dimensions = starting_point.coords.len();
     Self { starting_point, differences : vec![ Vec::new(); dimensions ] }
@@ -439,7 +437,7 @@ where R : RangeBounds< f64 > + Sync,
   /// Optimization starting from several random points.
   pub fn optimize_from_random_points( &mut self ) -> Result< Solution, Error >
   {
-    let points_number = self.start_point.coords.len();
+    let points_number = self.start_point.coords.len() * 4;
     let mut points = Vec::new();
     let hrng = Hrng::master_with_seed( Seed::default() );
     let rng_ref = hrng.rng_ref();
