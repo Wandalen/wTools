@@ -1,7 +1,7 @@
 mod private
 {
 	use std::borrow::Cow;
-	use std::fs::{File, OpenOptions };
+	use std::fs::{ File, OpenOptions };
 	use std::io::{ Read, Seek, SeekFrom, Write };
 	use std::path::Path;
 	use convert_case::{ Case, Casing };
