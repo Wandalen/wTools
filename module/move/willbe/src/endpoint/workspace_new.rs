@@ -58,7 +58,7 @@ mod private
     Ok( () )
   }
 
-  fn dot_github( path: &Path ) -> Result< () > 
+  fn dot_github( path : &Path ) -> Result< () > 
   {
     create_dir( path, ".github" )?;
     create_dir( &path.join( ".github" ), "workflows" )?;
