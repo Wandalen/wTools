@@ -74,7 +74,7 @@ mod private
     Ok( () )
   }
 
-  fn dot_cargo( path: &Path ) -> Result< () > 
+  fn dot_cargo( path : &Path ) -> Result< () > 
   {
     create_dir( path, ".cargo" )?;
     create_file( &path.join( ".cargo" ), "config.toml", include_str!( "../../files/template/.cargo/config.toml" ) )?;
