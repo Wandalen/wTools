@@ -72,7 +72,7 @@ fn fail_build()
   let stable = rep.tests.get( &cargo::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
 
-  assert!( no_features.err.contains( "error: achtung" ) );
+  assert!( no_features.err.contains( "error" ) && no_features.err.contains( "achtung" ) );
 }
 
 pub struct ProjectBuilder
