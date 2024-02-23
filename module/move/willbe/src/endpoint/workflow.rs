@@ -126,7 +126,7 @@ mod private
 
     file_write( &workflow_root.join( "AutoPrToMaster.yml" ), &handlebars.render( "auto_pr_to", &data )? )?;
 
-    file_write( &workflow_root.join( "RunsClean.yml" ),  include_str!("../../files/workflow/rust_clean.yml") )?;
+    file_write( &workflow_root.join( "RunsClean.yml" ),  include_str!( "../../files/workflow/rust_clean.yml" ) )?;
 
     let mut data = BTreeMap::new();
     data.insert( "username_and_repository", username_and_repository.as_str() );
