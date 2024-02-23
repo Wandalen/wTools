@@ -133,7 +133,7 @@ mod private
 
     file_write( &workflow_root.join( "StandardRustPullRequest.yml" ), &handlebars.render( "standard_rust_pull_request", &data )? )?;
 
-    file_write( &workflow_root.join( "StandardRustPush.yml" ), include_str!("../../files/workflow/standard_rust_push.yml") )?;
+    file_write( &workflow_root.join( "StandardRustPush.yml" ), include_str!( "../../files/workflow/standard_rust_push.yml" ) )?;
 
     file_write( &workflow_root.join( "StandardRustScheduled.yml" ), include_str!("../../files/workflow/standard_rust_scheduled.yml") )?;
 
