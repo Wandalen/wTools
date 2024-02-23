@@ -22,7 +22,7 @@ mod private
     Ok( () ) 
   }
 
-  fn example_module( path: &Path ) -> Result< () > 
+  fn example_module( path : &Path ) -> Result< () > 
   {
     create_dir( path, "module" )?;
     create_dir( &path.join( "module" ), "example_module" )?;
