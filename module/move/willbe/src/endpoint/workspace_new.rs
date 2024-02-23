@@ -50,7 +50,7 @@ mod private
     Ok( () )
   }
 
-  fn static_dirs( path: &Path ) -> Result< () > 
+  fn static_dirs( path : &Path ) -> Result< () > 
   {
     create_dir( path, "assets" )?;
     create_dir( path, "docs" )?;
