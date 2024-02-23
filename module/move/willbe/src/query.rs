@@ -7,6 +7,7 @@ mod private
     str::FromStr,
     collections::HashMap
   };
+  use error_tools::for_app::bail;
   use wtools::error::{ for_app::{ Error }, Result };
   
   #[ derive( Debug, PartialEq, Eq ) ]
@@ -99,71 +100,85 @@ mod private
   /// ```
   ///  
   
-  pub fn parse( input_string: &str ) -> Result< HashMap< String, Value > >
+  pub fn parse( input_string : &str ) -> Result< HashMap< String, Value > >
   {
-    let input_string = input_string.trim();
-    let mut map = HashMap::new();
-    if input_string.is_empty()
-    {
-      return Ok( map );
-    }
+    todo!()
+  }
+
+  fn split_string( input : &str ) -> Vec< String >
+  {
+    let mut result = Vec::new();
     let mut start = 0;
     let mut in_quotes = false;
-    let mut escaped = false;
-    let mut has_named_values = false;
-    
-    let mut counter = 0;
-    for ( i, c ) in input_string.char_indices()
+    for ( i, c ) in input.char_indices()
     {
       match c
       {
-        '\\' => if in_quotes { escaped = !escaped }
+        '"' | '\'' => in_quotes = !in_quotes,
         ',' if !in_quotes =>
         {
-          let item = &input_string[ start..i ];
-          let parts = item.splitn( 2, ':' ).map( | s | s.trim() ).collect::< Vec< _ > >();
-          if parts.len() == 2
-          {
-            if let Ok( value ) = parts[ 1 ].trim_matches( '\'' ).parse()
-            {
-              map.insert( parts[ 0 ].to_string(), value );
-              has_named_values = true;
-            }
-          }
-          else if parts.len() == 1
-          {
-            if let Ok( value ) = parts[ 0 ].trim_matches( '\'' ).parse::< Value >()
-            {
-              map.insert( counter.to_string(), value );
-              counter+=1;
-            }
-          }
+          result.push( input[ start..i ].trim().to_string() );
           start = i + 1;
         }
-        '\'' => if !escaped { in_quotes = !in_quotes } else { escaped = false }
-        _ => escaped = false,
+        _ => {}
       }
     }
+    result.push( input[ start.. ].trim().to_string() );
+    result
+  }
 
-    let item = &input_string[ start.. ];
-    let parts = item.splitn( 2, ':' ).map( | s | s.trim() ).collect::< Vec< _ > >();
-    if parts.len() == 2
+  fn parse_to_map(input: Vec<String> ) -> Result< HashMap< String, Value > > 
+  {
+    let mut map = HashMap::new();
+    for line in input 
     {
-      if let Ok( value ) = parts[ 1 ].trim_matches( '\'' ).parse()
+      let mut in_quotes = false;
+      let mut key = String::new();
+      let mut value = String::new();
+      let mut is_key = true;
+      for c in line.chars() 
       {
-        map.insert( parts[ 0 ].to_string(), value );
+        match c 
+        {
+          '"' | '\'' => 
+          {
+            in_quotes = !in_quotes;
+            if is_key 
+            {
+              key.push( c );
+            } 
+            else 
+            {
+              value.push( c );
+            }
+          }
+          ':' if !in_quotes => 
+          {
+            is_key = false;
+          }
+          _ => 
+          {
+            if is_key 
+            {
+              key.push( c );
+            } 
+            else 
+            {
+              value.push( c );
+            }
+          }
+        }
       }
-    }
-    else if parts.len() == 1
-    {
-      if let Ok( value ) = parts[ 0 ].trim_matches( '\'' ).parse::< Value >()
+      if value.trim().is_empty() 
       {
-        map.insert( counter.to_string(), value );
+        bail!( "Value is missing" )
       }
+      map.insert( key.trim().to_string(), Value::from_str( value.trim() )? );
     }
-
     Ok( map )
   }
+  
+  fn parse_to_vec( input: Vec< String >) -> 
 }
 
 crate::mod_interface!
