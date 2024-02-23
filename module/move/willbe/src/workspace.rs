@@ -112,6 +112,12 @@ mod private
     {
       Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.target_directory.as_std_path() )
     }
+    
+    /// Return discord url
+    pub fn discord_url( &self ) -> Result< Option< String >, WorkspaceError >
+    {
+      Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.workspace_metadata[ "discord_url" ].as_str().map( | url | url.to_string() ) )
+    }
 
     /// Find a package by its manifest file path
     pub fn package_find_by_manifest< P >( &self, manifest_path : P ) -> Option< &Package >

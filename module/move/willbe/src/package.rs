@@ -34,6 +34,7 @@ mod private
       for_app::{ format_err, Error as wError, Context },
     }
   };
+  use crate::endpoint::table::Stability;
 
   ///
   #[ derive( Debug ) ]
@@ -175,6 +176,62 @@ mod private
         {
           Ok( metadata.version.to_string() )
         }
+      }
+    }
+
+    /// Stability
+    pub fn stability( &self ) -> Result< Stability, PackageError >
+    {
+      match self
+      {
+        Self::Manifest( manifest ) =>
+          {
+            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+
+            // Unwrap safely because of the `Package` type guarantee
+            Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
+          }
+        Self::Metadata( metadata ) =>
+          {
+            Ok( metadata.metadata["stability"].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
+          }
+      }
+    }
+
+    /// Repository
+    pub fn repository( &self ) -> Result< Option< String >, PackageError >
+    {
+      match self
+      {
+        Self::Manifest( manifest ) =>
+          {
+            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+
+            // Unwrap safely because of the `Package` type guarantee
+            Ok( data[ "package" ].get( "repository" ).and_then( | r | r.as_str() ).map( | r | r.to_string()) )
+          }
+        Self::Metadata( metadata ) =>
+          {
+            Ok( metadata.repository.clone() )
+          }
+      }
+    }
+    
+    /// Discord url
+    pub fn discord_url( &self ) -> Result< Option< String >, PackageError >
+    {
+      match self
+      {
+        Self::Manifest( manifest ) =>
+          {
+            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+
+            Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
+          }
+        Self::Metadata( metadata ) =>
+          {
+            Ok( metadata.metadata[ "discord_url" ].as_str().map( | url | url.to_string() ) )
+          }
       }
     }
 
