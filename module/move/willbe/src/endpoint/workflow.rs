@@ -39,11 +39,11 @@ mod private
     // preparing templates
     let mut handlebars = handlebars::Handlebars::new();
 
-    handlebars.register_template_string( "auto_pr_to", include_str!("../../files/workflow/auto_pr_to.hbs") )?;
-    handlebars.register_template_string( "appropraite_branch_for", include_str!("../../files/workflow/appropraite_branch_for.hbs") )?;
-    handlebars.register_template_string( "auto_merge_to", include_str!("../../files/workflow/auto_merge_to.hbs") )?;
-    handlebars.register_template_string( "standard_rust_pull_request", include_str!("../../files/workflow/standard_rust_pull_request.hbs") )?;
-    handlebars.register_template_string( "module_push", include_str!("../../files/workflow/module_push.hbs") )?;
+    handlebars.register_template_string( "auto_pr_to", include_str!( "../../files/workflow/auto_pr_to.hbs" ) )?;
+    handlebars.register_template_string( "appropraite_branch_for", include_str!( "../../files/workflow/appropraite_branch_for.hbs" ) )?;
+    handlebars.register_template_string( "auto_merge_to", include_str!( "../../files/workflow/auto_merge_to.hbs" ) )?;
+    handlebars.register_template_string( "standard_rust_pull_request", include_str!( "../../files/workflow/standard_rust_pull_request.hbs" ) )?;
+    handlebars.register_template_string( "module_push", include_str!( "../../files/workflow/module_push.hbs" ) )?;
 
 
 
