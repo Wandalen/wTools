@@ -32,13 +32,13 @@ fn fail_test()
   .channels([ cargo::Channel::Stable ])
   .form();
 
-  let rep: TestReport = run_tests( args ).unwrap_err().downcast().unwrap();
+  let rep : TestReport = run_tests( args ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
   let stable = rep.tests.get( &cargo::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
 
-  assert!( no_features.err.contains( "failures" ) );
+  assert!( no_features.out.contains( "failures" ) );
 }
 
 #[ test ]
@@ -66,7 +66,7 @@ fn fail_build()
   .channels([ cargo::Channel::Stable ])
   .form();
 
-  let rep: TestReport = run_tests( args ).unwrap_err().downcast().unwrap();
+  let rep: TestReport = run_tests( args ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
   let stable = rep.tests.get( &cargo::Channel::Stable ).unwrap();
