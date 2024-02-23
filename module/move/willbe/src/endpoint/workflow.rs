@@ -139,7 +139,7 @@ mod private
 
     file_write( &workflow_root.join( "StandardRustStatus.yml" ), include_str!( "../../files/workflow/standard_rust_status.yml" ) )?;
 
-    file_write( &workflow_root.join( "StatusChecksRulesUpdate.yml" ), include_str!("../../files/workflow/status_checks_rules_update.yml") )?;
+    file_write( &workflow_root.join( "StatusChecksRulesUpdate.yml" ), include_str!( "../../files/workflow/status_checks_rules_update.yml" ) )?;
     Ok( () )
   }
 
