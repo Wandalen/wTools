@@ -96,7 +96,7 @@ mod private
   impl Workspace
   {
     /// Returns list of all packages
-    pub fn packages(&self ) -> Result< &[ Package ], WorkspaceError >
+    pub fn packages( &self ) -> Result< &[ Package ], WorkspaceError >
     {
       self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError ).map( | metadata | metadata.packages.as_slice() )
     }
