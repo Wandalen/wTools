@@ -38,7 +38,7 @@ mod private
     Ok( () )
   }
 
-  fn static_files(path: &Path) -> Result< () > 
+  fn static_files(path : &Path) -> Result< () > 
   { 
     create_file( path, "Readme.md", include_str!( "../../files/template/Readme.md" ) )?;
     create_file( path, ".gitattributes", include_str!( "../../files/template/.gitattributes" ) )?;
