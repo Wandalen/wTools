@@ -64,7 +64,7 @@ pub( crate ) mod private
     let w_new = wca::Command::former()
     .hint( "Create workspace template" )
     .long_hint( "Creates static files and directories.\nIn workspace`s Cargo.toml and module Cargo.toml you need to specify some fields, fill them before use this template.")
-    .phrase( "workspace.new")
+    .phrase( "workspace.new" )
     .form();
 
     vec!
