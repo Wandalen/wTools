@@ -352,7 +352,7 @@ mod private
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
-  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableParameters, table_parameters : &TableParameters,  ) -> String
+  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableParameters, table_parameters : &TableParameters ) -> String
   {
     let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
     if table_parameters.include_stability
