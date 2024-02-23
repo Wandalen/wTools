@@ -63,7 +63,7 @@ mod private
       file_write( &workflow_file_name, &content )?;
     }
   
-    file_write( &workflow_root.join( "AppropriateBranch.yml" ), include_str!("../../files/workflow/appropriate_branch.yml") )?;
+    file_write( &workflow_root.join( "AppropriateBranch.yml" ), include_str!( "../../files/workflow/appropriate_branch.yml" ) )?;
 
     let data = map_prepare_for_appropriative_branch( "- beta", username_and_repository, "alpha", "alpha", "beta" );
     file_write( &workflow_root.join( "AppropriateBranchBeta.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
