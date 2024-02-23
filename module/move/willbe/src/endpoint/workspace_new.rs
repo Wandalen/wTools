@@ -89,7 +89,7 @@ mod private
     Ok( () ) 
   }
   
-  fn create_file( path: &Path, name: &str, content: &str ) -> Result< () > 
+  fn create_file( path : &Path, name : &str, content : &str ) -> Result< () > 
   { 
     let mut file = fs::File::create( path.join( name ) )?;
     file.write_all( content.as_bytes() )?;
