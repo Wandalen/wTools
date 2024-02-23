@@ -25,7 +25,7 @@ mod private
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard
-    let names = workspace_cache.packages().and_then( |packages | Ok(packages.iter().map( |p | &p.name).collect::< Vec< _ > >()) )?;
+    let names = workspace_cache.packages().and_then( | packages | Ok( packages.iter().map( | p | &p.name ).collect::< Vec< _ > >() ) )?;
     // map packages path to relative paths fom workspace root, for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = workspace_cache
     .packages()
