@@ -119,7 +119,7 @@ mod private
 		}
 	}
 	
-	fn workspace_discord_url( path: &CargoTomlLocation ) -> Result< Option< String > >
+	fn workspace_discord_url( path : &CargoTomlLocation ) -> Result< Option< String > >
 	{
 		if !path.exists()
 		{
