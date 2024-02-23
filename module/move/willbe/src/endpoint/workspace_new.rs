@@ -8,7 +8,7 @@ mod private
   
   /// Creates workspace template
   pub fn workspace_new( path: &Path ) -> Result< () >
-	{
+  {
     if fs::read_dir( path )?.count() != 0
     { 
       bail!( "Directory should be empty" ) 
