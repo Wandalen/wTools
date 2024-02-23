@@ -17,6 +17,10 @@ exclude = [
 
 [workspace.metadata]
 branches = [ "master", "alpha" ]
+master_branch = "alpha"
+project_name = "wtools"
+repo_url = "https://github.com/Wandalen/wTools"
+discord_id = "m3YfbXpUUY"
 
 # [metadata.cargo-suppress-warnings]
 # unused-manifest-key = true

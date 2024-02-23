@@ -2,7 +2,7 @@
 
 ![wTools](./asset/img/logo_v3_trans_wide.png)
 
-<!--{ generate.main_header{} }-->
+<!--{ generate.main_header }-->
 
 [![alpha](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/StandardRustScheduled.yml?branch=master&label=alpha&logo=github)](https://github.com/Wandalen/wTools/actions/workflows/StandardRustStatus.yml)
 [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)

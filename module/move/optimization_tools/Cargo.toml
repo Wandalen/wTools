@@ -59,7 +59,7 @@ rayon = "1.8.0"
 thiserror = "1.0.56"
 rkyv = { version = "0.7.44", features = [ "validation" ] }
 ordered-float = "4.2.0"
-markdown-table = "0.2.0"
+tabled = "0.15.0"
 
 [dev-dependencies]
 test_tools = { workspace = true }
