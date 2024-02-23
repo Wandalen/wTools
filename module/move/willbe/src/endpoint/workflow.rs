@@ -78,7 +78,7 @@ mod private
 
     file_write( &workflow_root.join( "AutoMergeToBeta.yml" ), &handlebars.render( "auto_merge_to", &data )? )?;
 
-    file_write( &workflow_root.join( "AutoPr.yml" ), include_str!("../../files/workflow/auto_pr.yml") )?;
+    file_write( &workflow_root.join( "AutoPr.yml" ), include_str!( "../../files/workflow/auto_pr.yml" ) )?;
     
     let mut data = BTreeMap::new();
     data.insert( "name", "alpha" );
