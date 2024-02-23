@@ -13,7 +13,7 @@ project_name = "{{name}}"
 # url to project_repositiry
 repo_url = "{{url}}"
 # branches (includes master branch)
-branches = [{ { branches } } ]
+branches = [ {{ branches }} ]
 
 [workspace.lints.rust]
 rust_2018_idioms = "deny"
