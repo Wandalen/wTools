@@ -31,10 +31,12 @@ mod workspace_new
   fn default_case()
   {
     // Arrange
-    let temp = arrange( "empty_directory" );
+    let temp = assert_fs::TempDir::new().unwrap();
 
+    // Act
     _ = workspace_new( temp.path() ).unwrap();
     
+    // Assets
     assert!(temp.path().join("module").exists());
     assert!(temp.path().join("Readme.md").exists());
     assert!(temp.path().join(".gitattributes").exists());
@@ -50,5 +52,18 @@ mod workspace_new
     assert!(temp.path().join(".circleci/config.yml").exists());
     assert!(temp.path().join(".cargo").exists());
     assert!(temp.path().join(".cargo/config.toml").exists());
+  }
+  
+  #[ test ]
+  fn non_empty_dir()
+  {
+    // Arrange
+    let temp = arrange( "single_module" );
+    
+    // Act
+    let r = workspace_new( temp.path() );
+    
+    // Assert
+    assert!( r.is_err() );
   }
 }
