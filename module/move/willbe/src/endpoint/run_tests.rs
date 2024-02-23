@@ -19,12 +19,17 @@ mod private
 	};
 	use process::CmdReport;
 
-	#[ derive( Debug, Default, Clone ) ]
+	/// Represents a report of test results.
+  #[ derive( Debug, Default, Clone ) ]
   pub struct TestReport
   {
-		package_name: String,
-		// < Channel, < Features, Result > >
-    tests : BTreeMap< cargo::Channel, BTreeMap< String, CmdReport > >,
+    /// A string containing the name of the package being tested.
+		pub package_name : String,
+    /// A `BTreeMap` where the keys are `cargo::Channel` enums representing the channels
+    ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
+    ///   feature names and the values are `CmdReport` structs representing the test results for
+    ///   the specific feature and channel.
+    pub tests : BTreeMap< cargo::Channel, BTreeMap< String, CmdReport > >,
   }
 
   impl std::fmt::Display for TestReport
@@ -75,6 +80,7 @@ mod private
 		channels : HashSet< cargo::Channel >,
 		#[ default( true ) ]
 		parallel : bool,
+    #[ default( 1u32 ) ]
 		power : u32,
 		include_features : Vec< String >,
 		exclude_features : Vec< String >,
@@ -149,4 +155,5 @@ crate::mod_interface!
   /// run all tests in all crates
   prelude use run_tests;
 	protected use TestsArgs;
+  protected use TestReport;
 }

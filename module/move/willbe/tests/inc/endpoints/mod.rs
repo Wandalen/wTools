@@ -1,4 +1,6 @@
 use super::*;
-mod list;
-mod table;
-mod workflow;
+
+pub mod list;
+pub mod table;
+pub mod workflow;
+pub mod tests_run;
