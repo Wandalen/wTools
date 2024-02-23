@@ -450,7 +450,7 @@ mod private
     Ok( metadata.load()?.workspace_root()?.to_path_buf() )
   }
 
-  fn range_to_target_copy< T: Clone >( source : &[ T ], target : &mut Vec< T >, from : usize, to : usize ) -> Result< () >
+  fn range_to_target_copy< T : Clone >( source : &[ T ], target : &mut Vec< T >, from : usize, to : usize ) -> Result< () >
   {
     if from < source.len() && to < source.len() && from <= to
     {
