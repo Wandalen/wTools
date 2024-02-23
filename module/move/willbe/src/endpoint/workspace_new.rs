@@ -7,7 +7,7 @@ mod private
   use error_tools::Result;
   
   /// Creates workspace template
-  pub fn workspace_new( path: &Path ) -> Result< () >
+  pub fn workspace_new( path : &Path ) -> Result< () >
   {
     if fs::read_dir( path )?.count() != 0
     { 
