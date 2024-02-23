@@ -37,21 +37,21 @@ mod workspace_new
     _ = workspace_new( temp.path() ).unwrap();
     
     // Assets
-    assert!(temp.path().join("module").exists());
-    assert!(temp.path().join("Readme.md").exists());
-    assert!(temp.path().join(".gitattributes").exists());
-    assert!(temp.path().join(".gitignore").exists());
-    assert!(temp.path().join(".gitpod.yml").exists());
-    assert!(temp.path().join("Cargo.toml").exists());
-    assert!(temp.path().join("Makefile").exists());
-    assert!(temp.path().join("assets").exists());
-    assert!(temp.path().join("docs").exists());
-    assert!(temp.path().join(".github").exists());
-    assert!(temp.path().join(".github/workflows").exists());
-    assert!(temp.path().join(".circleci").exists());
-    assert!(temp.path().join(".circleci/config.yml").exists());
-    assert!(temp.path().join(".cargo").exists());
-    assert!(temp.path().join(".cargo/config.toml").exists());
+    assert!( temp.path().join( "module" ).exists() );
+    assert!( temp.path().join( "Readme.md" ).exists() );
+    assert!( temp.path().join( ".gitattributes" ).exists() );
+    assert!( temp.path().join( ".gitignore" ).exists() );
+    assert!( temp.path().join( ".gitpod.yml" ).exists() );
+    assert!( temp.path().join( "Cargo.toml" ).exists() );
+    assert!( temp.path().join( "Makefile" ).exists() );
+    assert!( temp.path().join( "assets" ).exists() );
+    assert!( temp.path().join( "docs" ).exists() );
+    assert!( temp.path().join( ".github" ).exists() );
+    assert!( temp.path().join( ".github/workflows" ).exists() );
+    assert!( temp.path().join( ".circleci" ).exists() );
+    assert!( temp.path().join( ".circleci/config.yml" ).exists() );
+    assert!( temp.path().join( ".cargo" ).exists() );
+    assert!( temp.path().join( ".cargo/config.toml" ).exists() );
   }
   
   #[ test ]
