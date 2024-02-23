@@ -95,6 +95,6 @@ mod header_create_test
     // Arrange
     let temp = arrange( "variadic_tag_configurations" ); 
     // Act
-    // _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap(); 
+    _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap(); 
   } 
 }
