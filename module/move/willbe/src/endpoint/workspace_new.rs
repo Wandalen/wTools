@@ -66,7 +66,7 @@ mod private
     Ok( () )
   }
 
-  fn dot_circleci( path: &Path ) -> Result< () > 
+  fn dot_circleci( path : &Path ) -> Result< () > 
   {
     create_dir( path, ".circleci" )?;
     create_file( &path.join( ".circleci" ), "config.yml", include_str!( "../../files/template/.circleci1/config.yml" ) )?;
