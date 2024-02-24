@@ -445,7 +445,7 @@ mod private
   }
 
   /// Return workspace root
-  fn workspace_root( metadata: &mut Workspace ) -> Result< PathBuf >
+  pub fn workspace_root( metadata : &mut Workspace ) -> Result< PathBuf >
   {
     Ok( metadata.load()?.workspace_root()?.to_path_buf() )
   }
@@ -468,7 +468,7 @@ mod private
   /// This function attempts to find a README file in the following subdirectories: ".github",
   /// the root directory, and "./docs". It returns the path to the first found README file, or
   /// `None` if no README file is found in any of these locations.
-  fn readme_path( dir_path : &Path ) -> Option< PathBuf >
+  pub fn readme_path( dir_path : &Path ) -> Option< PathBuf >
   {
     if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
     {
@@ -515,6 +515,10 @@ mod private
 
 crate::mod_interface!
 {
+  /// Return workspace root
+  protected use workspace_root;
+  /// Find readme.md file in directory
+  protected use readme_path;
   /// Create Table.
   orphan use table_create;
 }

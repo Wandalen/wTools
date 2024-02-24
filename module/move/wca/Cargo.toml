@@ -50,6 +50,10 @@ on_unknown_command_error_suggest = [ "eddie" ]
 on_get_help_default = [ "enabled" ]
 on_print_commands_default = [ "enabled" ]
 
+[[bench]]
+name = "bench"
+harness = false
+
 [dependencies]
 error_tools = { workspace = true, features = [ "default" ] }
 strs_tools = { workspace = true, features = [ "default" ] }
@@ -65,4 +69,5 @@ eddie = { version = "0.4", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-assert_fs = "1.0" 
+assert_fs = "1.0"
+criterion = "0.5"

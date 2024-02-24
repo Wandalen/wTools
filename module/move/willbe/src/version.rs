@@ -68,9 +68,12 @@ mod private
   #[ derive( Debug, Default, Clone ) ]
   pub struct BumpReport
   {
-    name: Option< String >,
-    old_version: Option< String >,
-    new_version: Option< String >,
+    /// Pacakge name.
+    pub name: Option< String >,
+    /// Package old version.
+    pub old_version: Option< String >,
+    /// Package new version.
+    pub new_version: Option< String >,
   }
 
   impl fmt::Display for BumpReport

@@ -59,3 +59,4 @@ test_tools = { workspace = true }
 assert_fs = "1.0"
 serde_yaml = "0.9"
 serde = "1.0"
+assert_cmd = "2.0"

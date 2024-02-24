@@ -301,8 +301,10 @@ mod private
   #[ derive( Debug, Default, Clone ) ]
   pub struct ExtendedBumpReport
   {
-    base : BumpReport,
-    changed_files : Vec< AbsolutePath >
+    /// Report base.
+    pub base : BumpReport,
+    /// Files that should(already) changed for bump.
+    pub changed_files : Vec< AbsolutePath >
   }
 
   impl std::fmt::Display for ExtendedBumpReport

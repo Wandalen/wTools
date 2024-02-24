@@ -57,6 +57,9 @@ piston_window = { version = "0.120.0", optional = true }
 exmex = { version = "0.18.0", features = [ "partial" ], optional = true }
 rayon = "1.8.0"
 thiserror = "1.0.56"
+rkyv = { version = "0.7.44", features = [ "validation" ] }
+ordered-float = "4.2.0"
+tabled = "0.15.0"
 
 [dev-dependencies]
 test_tools = { workspace = true }

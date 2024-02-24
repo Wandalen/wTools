@@ -3,13 +3,48 @@
 use super::*;
 use retriever::FeedClient;
 use feed_config::read_feed_config;
+use wca::prelude::*;
 
-pub async fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+{
+  
+  let ca = CommandsAggregator::former()
+  .grammar(
+  [
+    Command::former()
+    .phrase( "subscribe" )
+    .hint( "Subscribe to feed from sources provided in config file" )
+    .subject( "Source file", Type::String, false )
+    .form(),
+  ] )
+  .executor(
+  [
+    ( "subscribe".to_owned(), Routine::new( | ( args, props ) | 
+    {
+      println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
+
+      if let Some( path ) = args.get_owned( 0 )
+      {
+        let rt  = tokio::runtime::Runtime::new()?;
+        rt.block_on( fetch_from_config( path ) ).unwrap();
+      }
+
+      Ok( () )
+    } ) ),
+  ] )
+  .build();
+
+  let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
+  ca.perform( args.join( " " ) )?;
+
+  Ok( () )
+}
+
+pub async fn fetch_from_config( file_path : String ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 {
   let client = FeedClient;
-  //let _f = client.fetch( String::from( "https://feeds.bbci.co.uk/news/world/rss.xml" ) ).await?;
 
-  let feed_configs = read_feed_config().unwrap();
+  let feed_configs = read_feed_config( file_path ).unwrap();
 
   for config in feed_configs
   {
