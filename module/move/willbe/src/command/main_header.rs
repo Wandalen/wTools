@@ -14,5 +14,5 @@ mod private
 crate::mod_interface!
 {
   /// Generate header.
-  prelude use main_header_generate;
+  exposed use main_header_generate;
 }

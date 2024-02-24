@@ -1,11 +1,11 @@
 [workspace]
 resolver = "2"
 members = [
-    "module/*",
+  "module/*",
 ]
 
 exclude = [
-    "-*",
+  "-*",
 ]
 
 [workspace.metadata]
@@ -16,9 +16,9 @@ repo_url = "{{url}}"
 branches = [ {{ branches }} ]
 
 [workspace.lints.rust]
+missing_docs = "warn"
+missing_debug_implementations = "warn"
 rust_2018_idioms = "deny"
-missing_docs = "deny"
-missing_debug_implementations = "deny" # opt out where Debug is really redundant
 future_incompatible = "deny"
 
 [workspace.lints.clippy]

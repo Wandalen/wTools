@@ -26,7 +26,7 @@ mod private
   {
     format_err
   };
-  
+
   static TAGS_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
   fn regexes_initialize()
@@ -73,7 +73,7 @@ mod private
         format!( "\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({discord})" )
       )
       .unwrap_or_default();
-      
+
       Ok
       (
         format!
@@ -151,5 +151,5 @@ mod private
 crate::mod_interface!
 {
   /// Generate header.
-  prelude use generate_main_header;
+  exposed use generate_main_header;
 }

@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod private 
+mod private
 {
   use crate::*;
 
@@ -89,5 +89,5 @@ mod private
 crate::mod_interface!
 {
   /// run tests in specified crate
-  prelude use run_tests;
+  exposed use run_tests;
 }

@@ -4,7 +4,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ allow( unused_imports ) ]
-use ::cargo_will::*;
+use ::willbe2::*;
 
 // fn main() -> Result< (), wtools::error::for_app::Error >
 // {

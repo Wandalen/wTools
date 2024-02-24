@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod private 
+mod private
 {
 	use crate::*;
 
@@ -37,7 +37,7 @@ mod private
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
 			f.write_fmt( format_args!( "Package: [ {} ]:\n", self.package_name ) )?;
-			if self.tests.is_empty() 
+			if self.tests.is_empty()
 			{
 				f.write_fmt( format_args!( "unlucky" ) )?;
 				return Ok( () );
@@ -87,10 +87,10 @@ mod private
 	}
 
 	/// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
-	/// Tests are run with each feature separately, with all features together, and without any features. 
-	/// The tests are run in nightly and stable versions of Rust. 
-	/// It is possible to enable and disable various features of the crate. 
-	/// The function also has the ability to run tests in parallel using `Rayon` crate. 
+	/// Tests are run with each feature separately, with all features together, and without any features.
+	/// The tests are run in nightly and stable versions of Rust.
+	/// It is possible to enable and disable various features of the crate.
+	/// The function also has the ability to run tests in parallel using `Rayon` crate.
 	/// The result of the tests is written to the structure `TestReport` and returned as a result of the function execution.
 	pub fn run_tests( args : TestsArgs ) -> Result< TestReport, ( TestReport, Error ) >
 	{
@@ -160,7 +160,7 @@ mod private
 crate::mod_interface!
 {
   /// run all tests in all crates
-  prelude use run_tests;
+  exposed use run_tests;
 	protected use TestsArgs;
   protected use TestReport;
 }

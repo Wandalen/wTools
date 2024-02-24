@@ -17,6 +17,6 @@ mod private
 crate::mod_interface!
 {
   /// List packages.
-  prelude use workflow_generate;
+  exposed use workflow_generate;
 }
 

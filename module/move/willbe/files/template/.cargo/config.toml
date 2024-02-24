@@ -1,2 +1,0 @@
-[env]
-MODULES_PATH = { value = "module", relative = true }
