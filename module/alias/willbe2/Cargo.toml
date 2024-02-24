@@ -9,13 +9,14 @@ authors = [
 license = "MIT"
 readme = "Readme.md"
 documentation = "https://docs.rs/willbe2"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/willbe2"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/willbe2"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/willbe2"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/willbe2"
 description = """
 Utility to publish multi-crate and multi-workspace environments and maintain their consistency.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+# qqq : better classification is necessary
 
 [lints]
 workspace = true
@@ -31,6 +32,7 @@ use_alloc = []
 enabled = []
 
 [dependencies]
+# willbe = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
