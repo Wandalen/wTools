@@ -56,14 +56,15 @@ mod private
       Ok( report ) =>
       {
         println!( "{report} ");
+
+        Ok( () )
       }
-      Err( e ) =>
+      Err( ( report, e ) ) =>
       {
-        return Err( e.context( "package test command" ) );
+        eprintln!( "{report}" );
+        Err( e.context( "package test command" ) )
       }
     }
-
-	 	Ok(())
 	}
 
   impl TryFrom< Props > for RunTestsProperties
