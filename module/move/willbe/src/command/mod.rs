@@ -61,6 +61,11 @@ pub( crate ) mod private
     .phrase( "workflow.generate")
     .form();
 
+
+    let w_new = wca::Command::former()
+    .hint( "Create workspace template" )
+    .long_hint( "Creates static files and directories.\nIn workspace`s Cargo.toml and module Cargo.toml you need to specify some fields, fill them before use this template.")
+    .phrase( "workspace.new" )
     let generate_main_header = wca::Command::former()
     .hint( "Generate header in workspace`s Readme.md file")
     .long_hint( "For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nproject_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
@@ -74,6 +79,7 @@ pub( crate ) mod private
       create_table_command,
       run_tests_command,
       generate_workflow,
+      w_new,
       generate_main_header,
     ]
   }
@@ -92,6 +98,7 @@ pub( crate ) mod private
       ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
       ( "tests.run".to_owned(), Routine::new( run_tests ) ),
       ( "workflow.generate".to_owned(), Routine::new( workflow_generate ) ),
+      ( "workspace.new".to_owned(), Routine::new( workspace_new ) ),
       ( "readme.header.generate".to_owned(), Routine::new( main_header_generate ) ),
     ])
   }
@@ -113,6 +120,8 @@ crate::mod_interface!
   layer run_tests;
   /// Generate workflow
   layer workflow;
+  /// Workspace new
+  layer workspace_new;
   /// Generate header in main readme.md
   layer main_header;
 }
