@@ -40,7 +40,7 @@ mod private
   {
     master_branch : String,
     repository_url : String,
-    project_name : String,
+    workspace_name : String,
     discord_url : Option< String >,
   }
 
@@ -51,7 +51,7 @@ mod private
     {
       let repository_url = workspace.repository_url()?.ok_or_else::< Error, _ >( || err!( "repo_url not found in workspace Cargo.toml" ) )?;
       let master_branch = workspace.master_branch()?.unwrap_or( "master".into() );
-      let project_name = workspace.project_name()?.ok_or_else::< Error, _ >( || err!( "project_name not found in workspace Cargo.toml" ) )?;
+      let workspace_name = workspace.workspace_name()?.ok_or_else::< Error, _ >( || err!( "workspace_name not found in workspace Cargo.toml" ) )?;
       let discord_url = workspace.discord_url()?;
 
       Ok
@@ -60,7 +60,7 @@ mod private
         {
           master_branch,
           repository_url,
-          project_name,
+          workspace_name,
           discord_url,
         }
       )
@@ -83,8 +83,8 @@ mod private
 [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/{})"#,
           self.master_branch, url::git_info_extract( &self.repository_url )?, self.master_branch, url::git_info_extract( &self.repository_url )?,
           discord,
-          self.project_name, self.project_name, url::git_info_extract( &self.repository_url )?,
-          self.project_name,
+          self.workspace_name, self.workspace_name, url::git_info_extract( &self.repository_url )?,
+          self.workspace_name,
         )
       )
     }
@@ -100,7 +100,7 @@ mod private
   /// ``` toml
   /// [workspace.metadata]
   /// master_branch = "alpha" (Optional)
-  /// project_name = "wtools"
+  /// workspace_name = "wtools"
   /// repo_url = "https://github.com/Wandalen/wTools"
   /// discord_url = "https://discord.gg/123123" (Optional)
   /// ```

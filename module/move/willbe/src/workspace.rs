@@ -112,7 +112,7 @@ mod private
     {
       Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.target_directory.as_std_path() )
     }
-    
+
     /// Return the master branch
     pub fn master_branch( &self ) -> Result< Option< String >, WorkspaceError >
     {
@@ -125,10 +125,10 @@ mod private
       Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.workspace_metadata.get( "repo_url" ).and_then( | b | b.as_str() ).map( | b | b.to_string() ) )
     }
 
-    /// Return the project_name
-    pub fn project_name( &self ) -> Result< Option< String >, WorkspaceError >
+    /// Return the workspace_name
+    pub fn workspace_name( &self ) -> Result< Option< String >, WorkspaceError >
     {
-      Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.workspace_metadata.get( "project_name" ).and_then( | b | b.as_str() ).map( | b | b.to_string() ) )
+      Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.workspace_metadata.get( "workspace_name" ).and_then( | b | b.as_str() ).map( | b | b.to_string() ) )
     }
 
     /// Return discord url
@@ -150,7 +150,7 @@ mod private
         | packages |
         packages
         .iter()
-        .find( | &p | p.manifest_path.as_std_path() == manifest_path.as_ref() ) 
+        .find( | &p | p.manifest_path.as_std_path() == manifest_path.as_ref() )
       )
     }
   }

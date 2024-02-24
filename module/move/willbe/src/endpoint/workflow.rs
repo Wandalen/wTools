@@ -17,7 +17,7 @@ mod private
   use path::AbsolutePath;
 
   /// Generate workflows for modules in .github/workflows directory.
-  pub fn workflow_generate( base_path: &Path ) -> Result< () >
+  pub fn workflow_generate( base_path : &Path ) -> Result< () >
   {
     let mut workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
     let username_and_repository = &username_and_repository( &mut workspace_cache )?;
@@ -46,6 +46,7 @@ mod private
     handlebars.register_template_string( "module_push", include_str!( "../../template/workflow/module_push.hbs" ) )?;
 
 
+    // qqq : for Petro : instead of iterating each file manually, iterate each file in loop
 
     // creating workflow for each module
     for ( name, relative_path ) in names.iter().zip( relative_paths.iter() )
@@ -144,7 +145,15 @@ mod private
   }
 
   /// Prepare params for render appropriative_branch_for template.
-  fn map_prepare_for_appropriative_branch< 'a >( branches: &'a str, username_and_repository: &'a str, uses_branch: &'a str, src_branch: &'a str, name: &'a str ) -> BTreeMap< &'a str, &'a str >
+  fn map_prepare_for_appropriative_branch< 'a >
+  (
+    branches : &'a str,
+    username_and_repository : &'a str,
+    uses_branch : &'a str,
+    src_branch : &'a str,
+    name : &'a str
+  )
+  -> BTreeMap< &'a str, &'a str >
   {
     let mut data = BTreeMap::new();
     data.insert( "branches", branches );
@@ -173,11 +182,14 @@ mod private
     Ok( () )
   }
 
+  // qqq : for Petro : not clear how output should look
+  // qqq : for Petro : newtype?
+  // qqq : for Petro : why mut?
   /// Searches and extracts the username and repository name from the repository URL.
   /// The repository URL is first sought in the Cargo.toml file of the workspace;
   /// if not found there, it is then searched in the Cargo.toml file of the module.
   /// If it is still not found, the search continues in the GitHub remotes.
-  fn username_and_repository( workspace: &mut Workspace ) -> Result< String >
+  fn username_and_repository( workspace : &mut Workspace ) -> Result< String >
   {
     let cargo_toml_path = workspace.workspace_root()?.join( "Cargo.toml" );
     if cargo_toml_path.exists()

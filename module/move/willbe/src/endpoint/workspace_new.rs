@@ -6,6 +6,9 @@ mod private
   use error_tools::for_app::bail;
   use error_tools::Result;
 
+  // qqq : for Petro : should return report
+  // qqq : for Petro : should have typed error
+  // qqq : parametrized templates??
   /// Creates workspace template
   pub fn workspace_new( path : &Path ) -> Result< () >
   {

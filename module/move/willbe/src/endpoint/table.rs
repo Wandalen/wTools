@@ -10,6 +10,7 @@ mod private
     io::{ Write, Read, Seek, SeekFrom },
     collections::HashMap,
   };
+  // qqq : for Bohdan : should not be direct dependency on cargo_metadata
   use cargo_metadata::
   {
     Dependency,
@@ -41,7 +42,7 @@ mod private
 
 
   /// Initializes two global regular expressions that are used to match tags.
-  fn regexes_initialize() 
+  fn regexes_initialize()
   {
     TAG_TEMPLATE.set( regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( (.+) \) \} -->"# ).unwrap() ).ok();
     CLOSE_TAG.set( regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap() ).ok();
@@ -83,10 +84,10 @@ mod private
   }
 
   /// Retrieves the stability level of a package from its `Cargo.toml` file.
-  fn stability_get( package_path: &Path ) -> Result< Stability > 
+  fn stability_get( package_path: &Path ) -> Result< Stability >
   {
     let path = package_path.join( "Cargo.toml" );
-    if path.exists() 
+    if path.exists()
     {
       let mut contents = String::new();
       File::open( path )?.read_to_string( &mut contents )?;
@@ -105,7 +106,7 @@ mod private
     {
       Err( err!( "No Cargo.toml found" ) )
     }
-  } 
+  }
 
   /// Represents parameters that are common for all tables
   #[ derive( Debug ) ]
@@ -123,7 +124,7 @@ mod private
   #[ derive( Debug ) ]
   struct TableParameters
   {
-    // Relative path from workspace root to directory with modules 
+    // Relative path from workspace root to directory with modules
     base_path: String,
     // include branches column flag
     include_branches: bool,
@@ -131,7 +132,7 @@ mod private
     include_stability: bool,
     // include docs column flag
     include_docs: bool,
-    // include sample column flag 
+    // include sample column flag
     include_sample: bool,
   }
 
@@ -158,20 +159,20 @@ mod private
   impl GlobalTableParameters
   {
     /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
-    fn initialize_from_path( path: &Path ) -> Result< Self > 
+    fn initialize_from_path( path: &Path ) -> Result< Self >
     {
       let cargo_toml_path = path.join( "Cargo.toml" );
-      if !cargo_toml_path.exists() 
+      if !cargo_toml_path.exists()
       {
         bail!( "Cannot find Cargo.toml" )
-      } 
-      else 
+      }
+      else
       {
         let mut contents = String::new();
         File::open( cargo_toml_path )?.read_to_string( &mut contents )?;
         let doc = contents.parse::< Document >()?;
 
-        let core_url = 
+        let core_url =
         doc
         .get( "workspace" )
         .and_then( | workspace  | workspace.get( "metadata" ) )
@@ -179,7 +180,7 @@ mod private
         .and_then( | url | url.as_str() )
         .map( String::from );
 
-        let branches = 
+        let branches =
         doc
         .get( "workspace" )
         .and_then( | workspace | workspace.get( "metadata" ) )
@@ -187,7 +188,7 @@ mod private
         .and_then( | branches | branches.as_array())
         .map
         (
-          | array | 
+          | array |
           array
           .iter()
           .filter_map( | value | value.as_str() )
@@ -202,7 +203,7 @@ mod private
         Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches } )
       }
     }
-    
+
   }
 
   /// Create health table in README.md file
@@ -265,7 +266,7 @@ mod private
   }
 
   /// Writes tables into a file at specified positions.
-  fn tables_write_into_file(  tags_closures: Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () > 
+  fn tables_write_into_file(  tags_closures: Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () >
   {
     let mut buffer: Vec<u8> = vec![];
     let mut start: usize = 0;
@@ -283,17 +284,17 @@ mod private
   }
 
   /// Generate table from `table_parameters`.
-  /// Generate header, iterate over all modules in package (from table_parameters) and append row. 
-  fn package_table_create(  cache: &mut Workspace, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error > 
+  /// Generate header, iterate over all modules in package (from table_parameters) and append row.
+  fn package_table_create(  cache: &mut Workspace, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error >
   {
     let directory_names = directory_names
-    ( 
+    (
       cache
       .workspace_root()?
-      .join( &table_parameters.base_path ), 
+      .join( &table_parameters.base_path ),
       &cache
       .load()?
-      .packages_get() 
+      .packages_get()
       .map_err( | err | format_err!( err ) )?
     )?;
     let mut table = table_header_generate( parameters, &table_parameters );
@@ -307,12 +308,12 @@ mod private
       {
         None
       };
-      if parameters.core_url == "" 
+      if parameters.core_url == ""
       {
         let module_path = &cache.workspace_root()?.join( &table_parameters.base_path ).join( &package_name );
         parameters.core_url = repo_url( &module_path )
         .context
-        ( 
+        (
           format_err!( "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", module_path.display(), cache.workspace_root()?.join( "Cargo.toml" ).display(), module_path.join( "Cargo.toml" ).display() )
         )?;
         parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
@@ -426,7 +427,7 @@ mod private
     format!( "{}\n{}\n", header, separator )
   }
 
-  /// Generate cells for each branch 
+  /// Generate cells for each branch
   fn branch_cells_generate( table_parameters: &GlobalTableParameters, module_name: &str ) -> String
   {
     let cells = table_parameters
