@@ -3,9 +3,6 @@
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/derive_tools/latest/derive_tools/" ) ]
 
-// #![ feature( trait_alias ) ]
-// #![ feature( type_name_of_val ) ]
-
 //!
 //! Collection of derives which extend STD.
 //!

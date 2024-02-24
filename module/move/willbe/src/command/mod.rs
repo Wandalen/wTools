@@ -66,6 +66,8 @@ pub( crate ) mod private
     .hint( "Create workspace template" )
     .long_hint( "Creates static files and directories.\nIn workspace`s Cargo.toml and module Cargo.toml you need to specify some fields, fill them before use this template.")
     .phrase( "workspace.new" )
+    .form();
+
     let generate_main_header = wca::Command::former()
     .hint( "Generate header in workspace`s Readme.md file")
     .long_hint( "For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nproject_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
