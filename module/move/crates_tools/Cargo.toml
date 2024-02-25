@@ -26,9 +26,7 @@ all-features = false
 
 [features]
 default = [ "enabled" ]
-full = [ "enabled" ]
-no_std = []
-use_alloc = []
+full = [ "enabled", "network" ]
 enabled = [ "network" ]
 network = [ "ureq" ]
 

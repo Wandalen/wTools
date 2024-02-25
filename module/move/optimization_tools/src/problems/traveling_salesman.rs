@@ -249,7 +249,7 @@ impl InitialProblem for TSProblem
 
 /// Randomly selects a subroute from the first parent and fills the remainder of the route with the nodes from the second parent in the order in which they appear, without duplicating any nodes in the selected subroute from the first parent.
 #[ derive( Debug, Clone ) ]
-pub struct OrderedRouteCrossover {}
+pub struct OrderedRouteCrossover;
 
 impl CrossoverOperator for OrderedRouteCrossover
 {
@@ -290,7 +290,7 @@ impl CrossoverOperator for OrderedRouteCrossover
 
 /// Randomly mutates route in three different ways: by swapping two nodes, by reversing subroute, or by changing position of subroute.
 #[ derive( Debug, Clone ) ]
-pub struct TSRouteMutation {}
+pub struct TSRouteMutation;
 
 impl TSRouteMutation
 {

@@ -164,8 +164,10 @@ mod private
     right : &'static str,
   }
 
- const UTF8_SYMBOLS : Symbols = Symbols
- {
+  // qqq : fro Bohdan : abstract and move out tree printing. or reuse ready solution for tree printing
+  // stick to single responsibility
+  const UTF8_SYMBOLS : Symbols = Symbols
+  {
     down : "│",
     tee  : "├",
     ell  : "└",

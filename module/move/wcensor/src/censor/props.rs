@@ -69,7 +69,6 @@ pub( crate ) mod private
 
 ::meta_tools::mod_interface!
 {
-  // qqq : for Dima : bad : list all elements, don't use * for private /* aaa : Dmytro : expanded */
   prelude use PropsParseOptionsAdapter;
   prelude use PropsParseOptions;
   prelude use parse_from_splits;

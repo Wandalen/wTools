@@ -10,6 +10,8 @@ tests_impls!
     let mut a = 0;
 
     println!( "MODULES_PATH : {}", env!( "MODULES_PATH" ) );
+    println!( "WORKSPACE_PATH : {}", env!( "WORKSPACE_PATH" ) );
+    // xxx : add to path_tools::{ path::modules(), path::workspace() }
 
     macro_rules! macro1
     {

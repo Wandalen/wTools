@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod private 
+mod private
 {
   use crate::*;
 
@@ -56,14 +56,15 @@ mod private
       Ok( report ) =>
       {
         println!( "{report} ");
+
+        Ok( () )
       }
-      Err( e ) =>
+      Err( ( report, e ) ) =>
       {
-        return Err( e.context( "package test command" ) );
+        eprintln!( "{report}" );
+        Err( e.context( "package test command" ) )
       }
     }
-
-	 	Ok(())
 	}
 
   impl TryFrom< Props > for RunTestsProperties
@@ -88,5 +89,5 @@ mod private
 crate::mod_interface!
 {
   /// run tests in specified crate
-  prelude use run_tests;
+  exposed use run_tests;
 }

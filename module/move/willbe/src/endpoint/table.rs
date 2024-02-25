@@ -83,7 +83,7 @@ mod private
   }
 
   /// Retrieves the stability level of a package from its `Cargo.toml` file.
-  fn stability_get( package_path : &Path ) -> Result< Stability >
+  fn stability_get( package_path: &Path ) -> Result< Stability > 
   {
     let path = package_path.join( "Cargo.toml" );
     if path.exists() 
@@ -158,7 +158,7 @@ mod private
   impl GlobalTableParameters
   {
     /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
-    fn initialize_from_path( path : &Path ) -> Result< Self > 
+    fn initialize_from_path( path: &Path ) -> Result< Self > 
     {
       let cargo_toml_path = path.join( "Cargo.toml" );
       if !cargo_toml_path.exists() 
@@ -265,7 +265,7 @@ mod private
   }
 
   /// Writes tables into a file at specified positions.
-  fn tables_write_into_file(  tags_closures : Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () > 
+  fn tables_write_into_file(  tags_closures : Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () >
   {
     let mut buffer: Vec<u8> = vec![];
     let mut start: usize = 0;
@@ -284,7 +284,7 @@ mod private
 
   /// Generate table from `table_parameters`.
   /// Generate header, iterate over all modules in package (from table_parameters) and append row. 
-  fn package_table_create( cache : &mut Workspace, table_parameters : &TableParameters, parameters : &mut GlobalTableParameters ) -> Result< String, Error > 
+  fn package_table_create(  cache : &mut Workspace, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error >
   {
     let directory_names = directory_names
     ( 
@@ -293,7 +293,7 @@ mod private
       .join( &table_parameters.base_path ), 
       &cache
       .load()?
-      .packages() 
+      .packages()
       .map_err( | err | format_err!( err ) )?
     )?;
     let mut table = table_header_generate( parameters, &table_parameters );
@@ -427,7 +427,7 @@ mod private
   }
 
   /// Generate cells for each branch 
-  fn branch_cells_generate( table_parameters : &GlobalTableParameters, module_name : &str ) -> String
+  fn branch_cells_generate( table_parameters: &GlobalTableParameters, module_name: &str ) -> String
   {
     let cells = table_parameters
     .branches
