@@ -3,12 +3,12 @@
 ## Class diagram
 
 - `Parser`
-> This component takes in raw strings of text and converts them into `RawCommand` objects. These objects contain all of the information needed to represent a command, but they haven't been validated or processed in any way yet.
+> This component takes in raw strings of text and converts them into `ParsedCommand` objects. These objects contain all of the information needed to represent a command, but they haven't been validated or processed in any way yet.
 
 - `Grammar`
 > Contains available commands configured by the user.
 >
-> Once the `RawCommand` objects have been generated, the `Grammar` component steps in. This component takes in the `RawCommand`-s and converts them into `GrammarCommand` objects, which contain subject and property values that have been validated against a set of pre-defined grammar. This ensures that the user's input is structured correctly and can be understood by the system.
+> Once the `ParsedCommand` objects have been generated, the `Grammar` component steps in. This component takes in the `ParsedCommand`-s and converts them into `GrammarCommand` objects, which contain subject and property values that have been validated against a set of pre-defined grammar. This ensures that the user's input is structured correctly and can be understood by the system.
 
 - `Executor`
 > Contains available routines configured by the user.

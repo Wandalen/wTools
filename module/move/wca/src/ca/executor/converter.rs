@@ -1,14 +1,6 @@
 pub( crate ) mod private
 {
-  use crate::
-  {
-    Program, Namespace,
-
-    GrammarCommand, ExecutableCommand,
-
-    Routine, wtools,
-  };
-
+  use crate::*;
   use former::Former;
   use std::collections::HashMap;
   use wtools::{ error::Result, err };
@@ -48,7 +40,7 @@ pub( crate ) mod private
     pub fn routine< S >( mut self, phrase : S, routine : Routine ) -> Self
     where
       S : Into< String >,
-      Routine : Into< Routine >
+      Routine : Into< Routine >,
     {
       let mut routines = self.routines.unwrap_or_default();
 
@@ -89,9 +81,9 @@ pub( crate ) mod private
       self.routines
       .get( &command.phrase )
       .ok_or_else( || err!( "Can not found routine for command `{}`", command.phrase ) )
-      .map(
-        | routine |
-        ExecutableCommand
+      .map
+      (
+        | routine | ExecutableCommand
         {
           subjects : command.subjects,
           properties : command.properties,
@@ -106,5 +98,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use ExecutorConverter;
+  exposed use ExecutorConverter;
 }

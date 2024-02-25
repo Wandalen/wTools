@@ -3,8 +3,6 @@ pub( crate ) mod private
 {
   use std::collections::HashMap;
 
-  //
-
   ///
   /// Parse properties.
   ///

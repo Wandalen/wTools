@@ -1,11 +1,15 @@
 //!
 //! Shortcut to minimize boilerplate.
 //!
+//! ```shell
+//! cargo run --example wca_shortcut .echo a:1 b:2
+//! ```
+//!
 
 use wca::CommandExt;
 
 /// Example of a command.
-fn echo( () : (), args : wca::Args, _ : wca::Props ) -> Result< (), () >
+fn echo( () : (), args : wca::Args, _props : wca::Props ) -> Result< (), () >
 {
   let mut args = args.0.into_iter();
   wca::parse_args!( args, value: String );

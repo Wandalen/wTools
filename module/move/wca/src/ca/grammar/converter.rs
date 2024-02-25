@@ -1,20 +1,11 @@
 pub( crate ) mod private
 {
-  use crate::
-  {
-    Program, Namespace,
+  use crate::*;
 
-    Command, RawCommand,
-
-    TryCast,
-    Value,
-    ca::grammar::settings::ValueDescription, wtools,
-  };
-
+  use ca::grammar::settings::ValueDescription;
   use former::Former;
   use std::collections::HashMap;
-  use wtools::{ error::Result, err };
-  use crate::wtools::error;
+  use wtools::{ error, error::Result, err };
 
   /// Represents a grammatically correct command with a phrase descriptor, a list of command subjects, and a set of command options.
   ///
@@ -49,10 +40,10 @@ pub( crate ) mod private
   }
 
   // TODO: Remove Clone
-  /// Converts a `RawCommand` to a `GrammarCommand` by performing validation and type casting on values.
+  /// Converts a `ParsedCommand` to a `GrammarCommand` by performing validation and type casting on values.
   ///
   /// ```
-  /// # use wca::{ Command, Type, GrammarConverter, RawCommand };
+  /// # use wca::{ Command, Type, GrammarConverter, ParsedCommand };
   /// # use std::collections::HashMap;
   /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
   /// let grammar = GrammarConverter::former()
@@ -66,7 +57,7 @@ pub( crate ) mod private
   /// )
   /// .form();
   ///
-  /// let raw_command = RawCommand
+  /// let raw_command = ParsedCommand
   /// {
   ///   name: "command".to_string(),
   ///   subjects: vec![],
@@ -123,7 +114,8 @@ pub( crate ) mod private
     /// Converts raw program to grammatically correct
     ///
     /// Converts all namespaces into it with `to_namespace` method.
-    pub fn to_program( &self, raw_program : Program< Namespace< RawCommand > > ) -> Result< Program< Namespace< GrammarCommand > > >
+    pub fn to_program( &self, raw_program : Program< Namespace< ParsedCommand > > )
+    -> Result< Program< Namespace< GrammarCommand > > >
     {
       let namespaces = raw_program.namespaces
       .into_iter()
@@ -136,7 +128,7 @@ pub( crate ) mod private
     /// Converts raw namespace to grammatically correct
     ///
     /// Converts all commands into it with `to_command` method.
-    pub fn to_namespace( &self, raw_namespace : Namespace< RawCommand > ) -> Result< Namespace< GrammarCommand > >
+    pub fn to_namespace( &self, raw_namespace : Namespace< ParsedCommand > ) -> Result< Namespace< GrammarCommand > >
     {
       let commands = raw_namespace.commands
       .into_iter()
@@ -170,7 +162,7 @@ pub( crate ) mod private
     fn find_variant< 'a >
     (
       variants: &'a [ Command ],
-      raw_command : &RawCommand,
+      raw_command : &ParsedCommand,
     ) -> Option< &'a Command >
     {
       let mut maybe_valid_variants = vec![];
@@ -210,7 +202,7 @@ pub( crate ) mod private
       else { None }
     }
 
-    fn extract_subjects( command : &Command, raw_command : &RawCommand, used_properties : &[ &String ] ) -> Result< Vec< Value > >
+    fn extract_subjects( command : &Command, raw_command : &ParsedCommand, used_properties : &[ &String ] ) -> Result< Vec< Value > >
     {
       let mut subjects = vec![];
 
@@ -287,7 +279,7 @@ pub( crate ) mod private
     /// Converts raw command to grammatically correct
     ///
     /// Make sure that this command is described in the grammar and matches it(command itself and all it options too).
-    pub fn to_command( &self, raw_command : RawCommand ) -> Result< GrammarCommand >
+    pub fn to_command( &self, raw_command : ParsedCommand ) -> Result< GrammarCommand >
     {
       let variants = self.commands.get( &raw_command.name )
       .ok_or_else::< error::for_app::Error, _ >
@@ -297,7 +289,7 @@ pub( crate ) mod private
           #[ cfg( feature = "on_unknown_command_error_suggest" ) ]
           if let Some( phrase ) = self.suggest_command( &raw_command.name )
           { return err!( "Command not found. Maybe you mean `.{}`?", phrase ) }
-          err!( "Command not found. Please use `.` command to see the list of available commands. Sorry for the inconvenience. 😔" )
+          err!( "Command not found. Please use `.` command to see the list of available commands." )
         }
       )?;
 
@@ -343,6 +335,6 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use GrammarConverter;
-  prelude use GrammarCommand;
+  exposed use GrammarConverter;
+  exposed use GrammarCommand;
 }

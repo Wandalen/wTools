@@ -1,21 +1,12 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/wcensor/latest/wcensor/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
+#![ doc( html_root_url = "https://docs.rs/refiner/latest/refiner/" ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-//!
-//! Utility to operate files from a command line.
-//!
-
-#[ cfg( not( feature = "no_std" ) ) ]
 use std::env;
 #[ allow( unused_imports ) ]
-use ::wcensor::*;
+use ::refiner::*;
 
-#[ cfg( not( feature = "no_std" ) ) ]
 fn main()
 {
 
@@ -32,9 +23,4 @@ fn main()
   // .collect();
   // dbg!( &splits );
 
-}
-
-#[ cfg( feature = "no_std" ) ]
-fn main()
-{
 }

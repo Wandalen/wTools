@@ -3,8 +3,10 @@ pub( crate ) mod private
 {
   use std::collections::HashMap;
 
-  use error_tools::BasicError;
-  use error_tools::err;
+  // use wtools::error::{ BasicError, err };
+  use error_tools::error::{ BasicError, err };
+  // use error_tools::BasicError;
+  // use error_tools::err;
 
   ///
   /// Instruction.

@@ -15,7 +15,7 @@ tests_impls!
       [
         Namespace { commands : vec!
         [
-          RawCommand
+          ParsedCommand
           {
             name : "command".into(),
             subjects : vec![],
@@ -33,7 +33,7 @@ tests_impls!
       [
         Namespace { commands : vec!
         [
-          RawCommand
+          ParsedCommand
           {
             name : "command1".into(),
             subjects : vec![],
@@ -42,7 +42,7 @@ tests_impls!
         ]},
         Namespace { commands : vec!
         [
-          RawCommand
+          ParsedCommand
           {
             name : "command2".into(),
             subjects : vec![],
@@ -51,7 +51,7 @@ tests_impls!
         ]},
         Namespace { commands : vec!
         [
-          RawCommand
+          ParsedCommand
           {
             name : "command3".into(),
             subjects : vec![],

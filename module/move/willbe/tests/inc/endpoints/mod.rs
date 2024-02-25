@@ -5,4 +5,5 @@ pub mod table;
 pub mod workflow;
 pub mod tests_run;
 
-mod module_headers;
+pub mod module_headers;
+pub mod workspace_new;

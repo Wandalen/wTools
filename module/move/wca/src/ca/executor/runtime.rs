@@ -1,20 +1,12 @@
 pub( crate ) mod private
 {
-  use crate::
-  {
-    Namespace,
-
-    ExecutableCommand,
-
-    Args, Props,
-    Context, Routine, wtools,
-  };
-
+  use crate::*;
   use wtools::{ error::Result, err };
 
   /// State of a program runtime
   ///
-  /// `RuntimeState` contains information about the current state of a running program. It is used to store information that can be modified during program execution.
+  /// `RuntimeState` contains information about the current state of a running program.
+  /// It is used to store information that can be modified during program execution.
   ///
   /// Can be used to change execution position at runtime.
   ///
@@ -34,6 +26,7 @@ pub( crate ) mod private
     /// current execution position that can be changed by user
     pub pos : usize,
   }
+  // qqq : for Bohdan : why? how is it useful? is it?
 
   /// Represents the state of the program's runtime, including the current context, execution position, and namespace of executable commands.
   ///
@@ -65,6 +58,8 @@ pub( crate ) mod private
     /// namespace which must be executed
     pub namespace : Namespace< ExecutableCommand >,
   }
+  // qqq : for Bohdan : why? how is it useful? is it?
+  // qqq : why both Runtime and RuntimeState exist? probably one should removed
 
   impl Runtime
   {

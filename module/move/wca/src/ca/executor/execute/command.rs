@@ -1,7 +1,6 @@
 pub( crate ) mod private
 {
-  use crate::{ Routine, Value };
-
+  use crate::*;
   use std::collections::HashMap;
 
   /// Represents a command that can be executed, with a list of command subjects and a set of command options, and a callback function that defines the command logic.
@@ -14,8 +13,8 @@ pub( crate ) mod private
   /// ExecutableCommand
   /// {
   ///   subjects : vec![ Value::String( "subject_value".to_string() ), /* ... */ ],
-  ///   properties : HashMap::from_iter(
-  ///   [
+  ///   properties : HashMap::from_iter
+  ///   ([
   ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
   ///     /* ... */
   ///   ]),
@@ -39,5 +38,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use ExecutableCommand;
+  exposed use ExecutableCommand;
 }
