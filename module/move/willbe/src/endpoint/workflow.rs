@@ -16,6 +16,7 @@ mod private
   use wtools::error::for_app::{ Result, anyhow };
   use path::AbsolutePath;
 
+  // qqq : for Petro : should return Report and typed error in Result
   /// Generate workflows for modules in .github/workflows directory.
   pub fn workflow_generate( base_path : &Path ) -> Result< () >
   {
@@ -25,6 +26,7 @@ mod private
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard
+    // qqq : for Petro : avoid calling packages_get twice
     let names = workspace_cache.packages_get().and_then( | packages | Ok(packages.iter().map( | p | &p.name).collect::< Vec< _ > >()) )?;
     // map packages path to relative paths fom workspace root, for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = workspace_cache
