@@ -7,19 +7,19 @@ use wca::prelude::*;
 
 pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 {
-  
+
   let ca = CommandsAggregator::former()
-  .grammar(
-  [
+  .grammar
+  ([
     Command::former()
     .phrase( "subscribe" )
     .hint( "Subscribe to feed from sources provided in config file" )
     .subject( "Source file", Type::String, false )
     .form(),
-  ] )
-  .executor(
-  [
-    ( "subscribe".to_owned(), Routine::new( | ( args, props ) | 
+  ])
+  .executor
+  ([
+    ( "subscribe".to_owned(), Routine::new( | ( args, props ) |
     {
       println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
 

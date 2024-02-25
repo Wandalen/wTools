@@ -1,24 +1,23 @@
 pub( crate ) mod private
 {
   use std::{ sync::Arc, cell::RefCell };
-
   use anymap::{ Map, any::CloneAny };
 
   // CloneAny needs to deep clone of Context
   #[ derive( Debug, Clone, former::Former ) ]
   /// Container for contexts values
-  /// 
+  ///
   /// # Examples:
-  /// 
+  ///
   /// ```
   /// use wca::Context;
-  /// 
-  /// let ctx = Context::default(); 
-  /// 
+  ///
+  /// let ctx = Context::default();
+  ///
   /// ctx.insert( 42 );
   /// assert_eq!( 42, *ctx.get_ref().unwrap() );
   /// ```
-  /// 
+  ///
   /// ```
   /// # use wca::{ Routine, Context, Value, Args, Props };
   /// let routine = Routine::new_with_ctx
@@ -27,9 +26,9 @@ pub( crate ) mod private
   ///   {
   ///     let first_arg : i32 = args.get_owned( 0 ).unwrap_or_default();
   ///     let ctx_value : &mut i32 = ctx.get_or_default();
-  ///     
+  ///
   ///     *ctx_value += first_arg;
-  ///     
+  ///
   ///     Ok( () )
   ///   }
   /// );
@@ -74,7 +73,7 @@ pub( crate ) mod private
      {
        self.inner.borrow_mut().insert( value );
      }
- 
+
      /// Removes the T value from the context
      pub fn remove< T : CloneAny >( &mut self ) -> Option< T >
      {
@@ -114,6 +113,8 @@ pub( crate ) mod private
     }
 
     /// Make a deep clone of the context
+    // qqq : for Bohdan : why is it deep?
+    // qqq : how is it useful? Is it? Examples?
     pub( crate ) fn deep_clone( &self ) -> Self
     {
       Self { inner : Arc::new( RefCell::new( ( *self.inner ).borrow_mut().clone() ) ) }
@@ -125,5 +126,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use Context;
+  exposed use Context;
 }

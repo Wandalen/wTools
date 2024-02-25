@@ -1,14 +1,8 @@
 pub( crate ) mod private
 {
-  use crate::
-  {
-    Program, Namespace, ExecutableCommand,
+  use crate::*;
 
-    Context,
-    RuntimeState, Runtime,
-    ca::executor::runtime::_exec_command, wtools,
-  };
-
+  use ca::executor::runtime::_exec_command;
   use wtools::error::Result;
 
   /// Represents the type of executor to use for running commands.
@@ -36,8 +30,8 @@ pub( crate ) mod private
   /// let executable_command = ExecutableCommand
   /// {
   ///   subjects : vec![ Value::String( "subject_value".to_string() ), /* ... */ ],
-  ///   properties : HashMap::from_iter(
-  ///   [
+  ///   properties : HashMap::from_iter
+  ///   ([
   ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
   ///     /* ... */
   ///   ]),
@@ -119,6 +113,8 @@ pub( crate ) mod private
         state.pos = runtime.pos + 1;
         runtime.r#do()?;
         runtime.pos = runtime.context.get_ref::< RuntimeState >().unwrap().pos;
+        // qqq : for Bohdan : has `runtime.context` be used? seems not
+        // looks like unnecessary too complicated.
       }
 
       Ok( () )
@@ -132,6 +128,7 @@ pub( crate ) mod private
       _exec_command( command, self.context.clone() )
     }
 
+    // qqq : for Bohdan : probably redundant
     fn parallel_execution_loop( mut runtimes : Vec< Runtime > ) -> Result< () >
     {
       while

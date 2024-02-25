@@ -1,75 +1,71 @@
 pub( crate ) mod private
 {
-  use crate::
-  { 
-    ca::
-    {
-      GrammarConverter, ExecutorConverter,
-      Command,
-      Routine, Type, commands_aggregator::formatter::private::{HelpFormat, md_generator}
-    }, 
-    wtools 
+  use crate::*;
+  use ca::
+  {
+    GrammarConverter, ExecutorConverter,
+    Command,
+    Routine, Type, commands_aggregator::formatter::private::{HelpFormat, md_generator}
   };
 
   use wtools::{ Itertools, err };
-
   use std::rc::Rc;
   use error_tools::for_app::anyhow;
 
   /// Generate `dot` command
   pub fn dot_command( grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
   {
-      let empty = Command::former()
-      .hint( "prints all available commands" )
-      .phrase( "" )
-      .property( "command_prefix", "", Type::String, false )
-      .form();
+    let empty = Command::former()
+    .hint( "prints all available commands" )
+    .phrase( "" )
+    .property( "command_prefix", "", Type::String, false )
+    .form();
 
-      let to_command = Command::former()
-      .hint( "prints all available commands that starts with" )
-      .phrase( "" )
-      .subject( "command name", Type::String, true )
-      .property( "command_prefix", "", Type::String, true )
-      .form();
+    let to_command = Command::former()
+    .hint( "prints all available commands that starts with" )
+    .phrase( "" )
+    .subject( "command name", Type::String, true )
+    .property( "command_prefix", "", Type::String, true )
+    .form();
 
-      let command_variants = grammar.commands.entry( "".to_string() ).or_insert_with( Vec::new );
-      *command_variants = vec![ empty, to_command ];
+    let command_variants = grammar.commands.entry( "".to_string() ).or_insert_with( Vec::new );
+    *command_variants = vec![ empty, to_command ];
 
-      let mut available_commands = grammar.commands.keys().cloned().collect::< Vec< _ > >();
-      available_commands.sort();
+    let mut available_commands = grammar.commands.keys().cloned().collect::< Vec< _ > >();
+    available_commands.sort();
 
-      let routine = Routine::new
-      (
-        move |( args, props )|
+    let routine = Routine::new
+    (
+      move |( args, props )|
+      {
+        let prefix : String = props.get_owned( "command_prefix" ).unwrap();
+        if let Some( command ) = args.get_owned::< String >( 0 )
         {
-          let prefix : String = props.get_owned( "command_prefix" ).unwrap();
-          if let Some( command ) = args.get_owned::< String >( 0 )
-          {
-            let ac = available_commands
-            .iter()
-            .filter( | cmd | cmd.starts_with( &command ) )
-            .map( | cmd | format!( "{prefix}{cmd}" ) )
-            .collect::< Vec< _ > >();
+          let ac = available_commands
+          .iter()
+          .filter( | cmd | cmd.starts_with( &command ) )
+          .map( | cmd | format!( "{prefix}{cmd}" ) )
+          .collect::< Vec< _ > >();
 
-            if ac.is_empty()
-            {
-              return Err( err!( "Have no commands that starts with `{prefix}{command}`" ) );
-            }
-            else
-            {
-              println!( "{}", ac.join( "\n" ) );
-            }
+          if ac.is_empty()
+          {
+            return Err( err!( "Have no commands that starts with `{prefix}{command}`" ) );
           }
           else
           {
-            println!( "{}", available_commands.iter().map( | cmd | format!( "{prefix}{cmd}" ) ).join( "\n" ) );
-          };
-
-          Ok( () )
+            println!( "{}", ac.join( "\n" ) );
+          }
         }
-      );
+        else
+        {
+          println!( "{}", available_commands.iter().map( | cmd | format!( "{prefix}{cmd}" ) ).join( "\n" ) );
+        };
 
-      executor.routines.insert( "".to_string(), routine );
+        Ok( () )
+      }
+    );
+
+    executor.routines.insert( "".to_string(), routine );
   }
 
   fn generate_help_content( grammar : &GrammarConverter, command : Option< &Command > ) -> String

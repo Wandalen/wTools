@@ -30,7 +30,7 @@ pub( crate ) mod private
 
   /// Command descriptor.
   ///
-  /// Based on this structure, the structure( `RawCommand` ) obtained after parsing will be validated and converted to `GrammarCommand`.
+  /// Based on this structure, the structure( `ParsedCommand` ) obtained after parsing will be validated and converted to `GrammarCommand`.
   ///
   /// # Example:
   ///
@@ -123,6 +123,6 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use Command;
+  exposed use Command;
   protected use ValueDescription;
 }

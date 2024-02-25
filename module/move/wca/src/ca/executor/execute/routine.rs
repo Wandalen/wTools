@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use crate::{ Context, Value, wtools };
+  use crate::*;
 
   use std::collections::HashMap;
   use wtools::error::Result;
@@ -129,7 +129,8 @@ pub( crate ) mod private
     }
   }
 
-  type RoutineWithoutContextFn = dyn Fn(( Args, Props )) -> Result< () >;
+  // qqq : for Bohdan : is this features used anywhere?
+  type RoutineWithoutContextFn = dyn Fn( ( Args, Props ) ) -> Result< () >;
   type RoutineWithContextFn = dyn Fn( ( Args, Props ), Context ) -> Result< () >;
 
   ///
@@ -249,7 +250,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use Routine;
-  prelude use Args;
-  prelude use Props;
+  exposed use Routine;
+  exposed use Args;
+  exposed use Props;
 }

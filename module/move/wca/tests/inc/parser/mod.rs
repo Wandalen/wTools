@@ -1,7 +1,7 @@
 use super::*;
 use wca::
 {
-  Program, Namespace, RawCommand,
+  Program, Namespace, ParsedCommand,
 
   Parser,
   ProgramParser, NamespaceParser, CommandParser,

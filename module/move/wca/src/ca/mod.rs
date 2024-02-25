@@ -2,7 +2,7 @@
 crate::mod_interface!
 {
 
-  /// This component is responsible for parsing the raw string into `RawCommand`
+  /// This component is responsible for parsing the raw string into `ParsedCommand`
   layer parser;
   /// Performs validation and type casting on commands values
   layer grammar;

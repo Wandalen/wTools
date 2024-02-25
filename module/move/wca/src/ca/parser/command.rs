@@ -5,9 +5,9 @@ pub( crate ) mod private
     ca::
     {
       Parser,
-      RawCommand as Command,
+      ParsedCommand as Command,
       parser::parser::any_word,
-    }, 
+    },
     wtools
   };
   use std::collections::HashMap;

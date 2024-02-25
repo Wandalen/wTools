@@ -21,8 +21,8 @@ pub( crate ) mod private
   use std::fmt;
   use wtools::protected::thiserror;
   use wtools::error::
-  { 
-    Result, 
+  {
+    Result,
     for_app::Error as wError,
     for_lib::*,
   };
@@ -30,9 +30,9 @@ pub( crate ) mod private
 
   /// Validation errors that can occur in application.
   #[ derive( Error, Debug ) ]
-  pub enum ValidationError 
+  pub enum ValidationError
   {
-    /// This variant is used to represent parser errors. 
+    /// This variant is used to represent parser errors.
     /// It carries a `String` payload that provides additional information about the error.
     #[ error( "The following input is not recognized: `{input}`.\nDetails: {error}" ) ]
     Parser
@@ -52,9 +52,9 @@ pub( crate ) mod private
 
   /// Errors that can occur in application.
   #[ derive( Error, Debug ) ]
-  pub enum Error 
+  pub enum Error
   {
-    /// This variant is used to represent validation errors. 
+    /// This variant is used to represent validation errors.
     /// It carries a `ValidationError` payload that provides additional information about the error.
     #[ error( "Validation error. {0}" ) ]
     Validation( ValidationError ),
@@ -275,7 +275,7 @@ pub( crate ) mod private
       let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : program.to_string(), error:  e } ) )?;
       let grammar_program = self.grammar_converter.to_program( raw_program ).map_err( | e | Error::Validation( ValidationError::GrammarConverter( e ) ) )?;
       let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | e | Error::Validation( ValidationError::ExecutorConverter( e ) ) )?;
-      
+
       if let Some( callback ) = &self.callback_fn
       {
         callback.0( program, &exec_program )
@@ -290,7 +290,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use CommandsAggregator;
-  prelude use Error;
-  prelude use ValidationError;
+  exposed use CommandsAggregator;
+  exposed use Error;
+  exposed use ValidationError;
 }
