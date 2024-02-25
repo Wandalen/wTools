@@ -74,6 +74,12 @@ pub( crate ) mod private
     .phrase( "readme.header.generate" )
     .form();
 
+    let headers_generate = wca::Command::former()
+    .hint( "Generates header for each workspace member." )
+    .long_hint( "For use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
+    .phrase( "readme.modules.headers.generate" )
+    .form();
+
     vec!
     [
       publish_command,
@@ -83,6 +89,7 @@ pub( crate ) mod private
       generate_workflow,
       w_new,
       generate_main_header,
+      headers_generate,
     ]
   }
 
@@ -102,6 +109,7 @@ pub( crate ) mod private
       ( "workflow.generate".to_owned(), Routine::new( workflow_generate ) ),
       ( "workspace.new".to_owned(), Routine::new( workspace_new ) ),
       ( "readme.header.generate".to_owned(), Routine::new( main_header_generate ) ),
+      ( "readme.modules.headers.generate".to_owned(), Routine::new( headers_generate ) ),
     ])
   }
 }
@@ -126,4 +134,6 @@ crate::mod_interface!
   layer workspace_new;
   /// Generate header in main readme.md
   layer main_header;
+  /// Generate headers
+  layer module_headers;
 }

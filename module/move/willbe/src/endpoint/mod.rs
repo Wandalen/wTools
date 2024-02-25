@@ -14,4 +14,6 @@ crate::mod_interface!
   layer workspace_new;
   /// Main Header.
   layer main_header;
+  /// Module headers.
+  layer module_headers;
 }

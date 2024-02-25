@@ -27,10 +27,10 @@ mod private
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard
     // qqq : for Petro : avoid calling packages_get twice
-    let names = workspace_cache.packages_get().and_then( | packages | Ok(packages.iter().map( | p | &p.name).collect::< Vec< _ > >()) )?;
+    let names = workspace_cache.packages().and_then( | packages | Ok( packages.iter().map( | p | &p.name ).collect::< Vec< _ > >() ) )?;
     // map packages path to relative paths fom workspace root, for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = workspace_cache
-    .packages_get()
+    .packages()
     .map_err( | err | anyhow!( err ) )?
     .iter()
     .map( | p | &p.manifest_path )
@@ -86,8 +86,8 @@ mod private
     let mut data = BTreeMap::new();
     data.insert( "name", "alpha" );
     data.insert
-    (
-      "branches",
+    ( 
+      "branches",  
       " - '*'
       - '*/*'
       - '**'
@@ -111,7 +111,7 @@ mod private
 
     let mut data = BTreeMap::new();
     data.insert( "name", "beta" );
-    data.insert( "branches",  "- alpha" );
+    data.insert( "branches",  "- alpha" ); 
     data.insert( "username_and_repository", username_and_repository.as_str() );
     data.insert( "uses_branch", "alpha" );
     data.insert( "src_branch", "alpha" );
@@ -121,7 +121,7 @@ mod private
 
     let mut data = BTreeMap::new();
     data.insert( "name", "master" );
-    data.insert( "branches",  "- beta" );
+    data.insert( "branches",  "- beta" ); 
     data.insert( "username_and_repository", username_and_repository.as_str() );
     data.insert( "uses_branch", "alpha" );
     data.insert( "src_branch", "beta" );
@@ -167,7 +167,7 @@ mod private
   }
 
   /// Create and write or rewrite content in file.
-  pub fn file_write( filename: &Path, content: &str ) -> Result< () >
+  pub fn file_write( filename : &Path, content : &str ) -> Result< () >
   {
     if let Some( folder ) = filename.parent()
     {
@@ -194,28 +194,28 @@ mod private
   fn username_and_repository( workspace : &mut Workspace ) -> Result< String >
   {
     let cargo_toml_path = workspace.workspace_root()?.join( "Cargo.toml" );
-    if cargo_toml_path.exists()
+    if cargo_toml_path.exists() 
     {
       let mut contents = String::new();
       File::open( cargo_toml_path )?.read_to_string( &mut contents )?;
       let doc = contents.parse::< Document >()?;
-      let url =
+      let url =  
       doc
       .get( "workspace" )
       .and_then( | workspace  | workspace.get( "metadata" ) )
       .and_then( | metadata | metadata.get( "repo_url" ) )
       .and_then( | url | url.as_str() )
       .map( String::from );
-      if let Some( url ) = url
+      if let Some( url ) = url 
       {
         return url::extract_repo_url( &url )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .ok_or_else( || anyhow!( "Fail to parse repository url from workspace Cargo.toml"))
-      }
-      else
+      } 
+      else 
       {
         let mut url = None;
-        for package in workspace.packages_get()?
+        for package in workspace.packages()?
         {
           if let Ok( wu ) = manifest::private::repo_url( package.manifest_path.parent().unwrap().as_std_path() )
           {
@@ -228,8 +228,8 @@ mod private
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .ok_or_else( || anyhow!( "Fail to extract repository url") )
       }
-    }
-    else
+    } 
+    else 
     {
       return Err( anyhow!( "Fail to find workspace Cargo.toml" ) );
     }

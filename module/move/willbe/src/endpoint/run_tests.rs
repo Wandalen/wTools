@@ -109,7 +109,7 @@ mod private
 		let metadata = Workspace::with_crate_dir( args.dir.clone() ).map_err( | e | ( report.lock().unwrap().clone(), e ) )?;
 
 		let package = metadata
-    .packages_get()
+    .packages()
     .map_err( | e | ( report.lock().unwrap().clone(), format_err!( e ) ) )?
     .into_iter()
     .find( |x| x.manifest_path == path.as_ref() ).ok_or(( report.lock().unwrap().clone(), format_err!( "Package not found" ) ) )?;
