@@ -1,5 +1,5 @@
 /// Internal namespace.
-mod private 
+mod private
 {
 	use crate::*;
 
@@ -11,20 +11,25 @@ mod private
 	};
 
 	use rayon::ThreadPoolBuilder;
-	use former::Former;
+  use former::Former;
 	use wtools::
 	{
 		iter::Itertools,
-		error::{ Result, for_app::format_err },
+		error::{ Result, for_app::{ format_err, Error } },
 	};
 	use process::CmdReport;
 
-	#[ derive( Debug, Default, Clone ) ]
+	/// Represents a report of test results.
+  #[ derive( Debug, Default, Clone ) ]
   pub struct TestReport
   {
-		package_name: String,
-		// < Channel, < Features, Result > >
-    tests : BTreeMap< cargo::Channel, BTreeMap< String, CmdReport > >,
+    /// A string containing the name of the package being tested.
+		pub package_name : String,
+    /// A `BTreeMap` where the keys are `cargo::Channel` enums representing the channels
+    ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
+    ///   feature names and the values are `CmdReport` structs representing the test results for
+    ///   the specific feature and channel.
+    pub tests : BTreeMap< cargo::Channel, BTreeMap< String, CmdReport > >,
   }
 
   impl std::fmt::Display for TestReport
@@ -32,7 +37,7 @@ mod private
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
 			f.write_fmt( format_args!( "Package: [ {} ]:\n", self.package_name ) )?;
-			if self.tests.is_empty() 
+			if self.tests.is_empty()
 			{
 				f.write_fmt( format_args!( "unlucky" ) )?;
 				return Ok( () );
@@ -42,15 +47,17 @@ mod private
 			{
 				for (feature, result) in features
 				{
-					if !result.out.contains( "failures" )
+					// if tests failed or if build failed
+					let failed = result.out.contains( "failures" ) || result.err.contains( "error" );
+					if !failed
 					{
 						let feature = if feature.is_empty() { "no-features" } else { feature };
-						f.write_fmt(format_args!("  [ {} | {} ]: {}\n", channel, feature, if result.out.contains("failures") { "❌ failed" } else { "✅ successful" } ) )?;
+						f.write_fmt(format_args!("  [ {} | {} ]: {}\n", channel, feature, if failed { "❌ failed" } else { "✅ successful" } ) )?;
 					}
 					else
 					{
 						let feature = if feature.is_empty() { "no-features" } else { feature };
-						f.write_fmt( format_args!( "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n", channel, feature, if result.out.contains( "failures" ) { "❌ failed" } else { "✅ successful" }, result.out ) )?;
+						f.write_fmt( format_args!( "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out, result.err ) )?;
 					}
 				}
 			}
@@ -73,33 +80,39 @@ mod private
 		channels : HashSet< cargo::Channel >,
 		#[ default( true ) ]
 		parallel : bool,
+    #[ default( 1u32 ) ]
 		power : u32,
 		include_features : Vec< String >,
 		exclude_features : Vec< String >,
 	}
 
-	/// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable). 
-	/// Tests are run with each feature separately, with all features together, and without any features. 
-	/// The tests are run in nightly and stable versions of Rust. 
-	/// It is possible to enable and disable various features of the crate. 
-	/// The function also has the ability to run tests in parallel using `Rayon` crate. 
+	/// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
+	/// Tests are run with each feature separately, with all features together, and without any features.
+	/// The tests are run in nightly and stable versions of Rust.
+	/// It is possible to enable and disable various features of the crate.
+	/// The function also has the ability to run tests in parallel using `Rayon` crate.
 	/// The result of the tests is written to the structure `TestReport` and returned as a result of the function execution.
-	pub fn run_tests( args : TestsArgs ) -> Result< TestReport >
+	pub fn run_tests( args : TestsArgs ) -> Result< TestReport, ( TestReport, Error ) >
 	{
+    let report = TestReport::default();
 		// fail fast if some additional installations required
-		let channels = cargo::available_channels( args.dir.as_ref() )?;
+		let channels = cargo::available_channels( args.dir.as_ref() ).map_err( | e | ( report.clone(), e ) )?;
 		let channels_diff = args.channels.difference( &channels ).collect::< Vec< _ > >();
 		if !channels_diff.is_empty()
 		{
-			return Err( format_err!( "Missing toolchain(-s) that was required: [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) )
+			return Err(( report, format_err!( "Missing toolchain(-s) that was required: [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
 		}
 
-		let report = Arc::new( Mutex::new( TestReport::default() ) );
+		let report = Arc::new( Mutex::new( report ) );
 
 		let path = args.dir.absolute_path().join("Cargo.toml");
-		let metadata = Workspace::with_crate_dir( args.dir.clone() )?;
+		let metadata = Workspace::with_crate_dir( args.dir.clone() ).map_err( | e | ( report.lock().unwrap().clone(), e ) )?;
 
-		let package = metadata.packages_get()?.into_iter().find( |x| x.manifest_path == path.as_ref() ).ok_or( format_err!( "Package not found" ) )?;
+		let package = metadata
+    .packages_get()
+    .map_err( | e | ( report.lock().unwrap().clone(), format_err!( e ) ) )?
+    .into_iter()
+    .find( |x| x.manifest_path == path.as_ref() ).ok_or(( report.lock().unwrap().clone(), format_err!( "Package not found" ) ) )?;
 		report.lock().unwrap().package_name = package.name.clone();
 
 		let exclude = args.exclude_features.iter().cloned().collect();
@@ -138,13 +151,16 @@ mod private
 		// unpack. all tasks must be completed until now
 		let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
 
-		Ok( report )
+    let at_least_one_failed = report.tests.iter().flat_map( |( _, v )| v.iter().map( |( _, v)| v ) ).any( | r | r.out.contains( "failures" ) || r.err.contains( "error" ) );
+    if at_least_one_failed { Err(( report, format_err!( "Some tests was failed" ) )) }
+    else { Ok( report ) }
 	}
 }
 
 crate::mod_interface!
 {
   /// run all tests in all crates
-  prelude use run_tests;
+  exposed use run_tests;
 	protected use TestsArgs;
+  protected use TestReport;
 }

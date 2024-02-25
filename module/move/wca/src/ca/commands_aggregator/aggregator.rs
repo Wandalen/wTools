@@ -226,6 +226,41 @@ pub( crate ) mod private
     }
   }
 
+  mod private
+  {
+    #[ derive( Debug ) ]
+    pub struct Args( pub String );
+
+    pub trait IntoArgs
+    {
+      fn into_args( self ) -> Args;
+    }
+
+    impl IntoArgs for &str
+    {
+      fn into_args( self ) -> Args
+      {
+        Args( self.to_string() )
+      }
+    }
+
+    impl IntoArgs for String
+    {
+      fn into_args( self ) -> Args
+      {
+        Args( self )
+      }
+    }
+
+    impl IntoArgs for Vec< String >
+    {
+      fn into_args( self ) -> Args
+      {
+        Args( self.join( " " ) )
+      }
+    }
+  }
+
   impl CommandsAggregator
   {
     /// Parse, converts and executes a program
@@ -233,9 +268,9 @@ pub( crate ) mod private
     /// Takes a string with program and executes it
     pub fn perform< S >( &self, program : S ) -> Result< (), Error >
     where
-      S : AsRef< str >
+      S : private::IntoArgs
     {
-      let program = program.as_ref();
+      let private::Args( ref program ) = program.into_args();
 
       let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : program.to_string(), error:  e } ) )?;
       let grammar_program = self.grammar_converter.to_program( raw_program ).map_err( | e | Error::Validation( ValidationError::GrammarConverter( e ) ) )?;

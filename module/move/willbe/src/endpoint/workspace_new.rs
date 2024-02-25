@@ -7,6 +7,9 @@ mod private
   use error_tools::for_app::bail;
   use error_tools::Result;
 
+  // qqq : for Petro : should return report
+  // qqq : for Petro : should have typed error
+  // qqq : parametrized templates??
   /// Creates workspace template
   pub fn workspace_new( path : &Path ) -> Result< () >
   {
@@ -20,39 +23,39 @@ mod private
     let cargo_toml = &handlebars.render( "cargo_toml", &data )?;
 
     create_file( path, "Cargo.toml", cargo_toml )?;
-    
+
     dot_cargo( &path )?;
-    dot_circleci( &path )?;
+    // dot_circleci( &path )?;
     dot_github( &path )?;
     static_dirs( &path )?;
     static_files( &path )?;
-    example_module( &path )?;
+    module1( &path )?;
     Ok( () )
   }
 
-  fn example_module( path : &Path ) -> Result< () >
+  fn module1( path : &Path ) -> Result< () >
   {
     create_dir( path, "module" )?;
-    create_dir( &path.join( "module" ), "example_module" )?;
-    create_file( &path.join( "module" ).join( "example_module" ), "Cargo.toml", include_str!( "../../files/template/module/example_module/Cargo.toml" ) )?;
-    create_file( &path.join( "module" ).join( "example_module" ), "Readme.md", include_str!( "../../files/template/module/example_module/Readme.md" ) )?;
-    create_dir( &path.join( "module" ).join( "example_module" ), "examples" )?;
-    create_dir( &path.join( "module" ).join( "example_module" ), "src" )?;
-    create_dir( &path.join( "module" ).join( "example_module" ), "tests" )?;
-    create_file( &path.join( "module" ).join( "example_module" ).join( "examples" ), "example_module_trivial_sample.rs", include_str!( "../../files/template/module/example_module/examples/example_module_trivial_sample.rs" ) )?;
-    create_file( &path.join( "module" ).join( "example_module" ).join( "src" ), "lib.rs", include_str!( "../../files/template/module/example_module/src/lib.rs" ) )?;
-    create_file( &path.join( "module" ).join( "example_module" ).join( "tests" ), "hello_test.rs", include_str!( "../../files/template/module/example_module/tests/hello_test.rs" ) )?;
+    create_dir( &path.join( "module" ), "module1" )?;
+    create_file( &path.join( "module" ).join( "module1" ), "Cargo.toml", include_str!( "../../template/workspace/module/module1/Cargo.toml" ) )?;
+    create_file( &path.join( "module" ).join( "module1" ), "Readme.md", include_str!( "../../template/workspace/module/module1/Readme.md" ) )?;
+    create_dir( &path.join( "module" ).join( "module1" ), "examples" )?;
+    create_dir( &path.join( "module" ).join( "module1" ), "src" )?;
+    create_dir( &path.join( "module" ).join( "module1" ), "tests" )?;
+    create_file( &path.join( "module" ).join( "module1" ).join( "examples" ), "module1_trivial_sample.rs", include_str!( "../../template/workspace/module/module1/examples/module1_example.rs" ) )?;
+    create_file( &path.join( "module" ).join( "module1" ).join( "src" ), "lib.rs", include_str!( "../../template/workspace/module/module1/src/lib.rs" ) )?;
+    create_file( &path.join( "module" ).join( "module1" ).join( "tests" ), "hello_test.rs", include_str!( "../../template/workspace/module/module1/tests/hello_test.rs" ) )?;
 
     Ok( () )
   }
 
-  fn static_files(path : &Path) -> Result< () >
+  fn static_files( path : &Path ) -> Result< () >
   {
-    create_file( path, "Readme.md", include_str!( "../../files/template/Readme.md" ) )?;
-    create_file( path, ".gitattributes", include_str!( "../../files/template/.gitattributes" ) )?;
-    create_file( path, ".gitignore", include_str!( "../../files/template/.gitignore1" ) )?;
-    create_file( path, ".gitpod.yml", include_str!( "../../files/template/.gitpod.yml" ) )?;
-    create_file( path, "Makefile", include_str!( "../../files/template/Makefile" ) )?;
+    create_file( path, "Readme.md", include_str!( "../../template/workspace/Readme.md" ) )?;
+    create_file( path, ".gitattributes", include_str!( "../../template/workspace/.gitattributes" ) )?;
+    create_file( path, ".gitignore", include_str!( "../../template/workspace/.gitignore1" ) )?;
+    create_file( path, ".gitpod.yml", include_str!( "../../template/workspace/.gitpod.yml" ) )?;
+    create_file( path, "Makefile", include_str!( "../../template/workspace/Makefile" ) )?;
 
     Ok( () )
   }
@@ -73,18 +76,18 @@ mod private
     Ok( () )
   }
 
-  fn dot_circleci( path : &Path ) -> Result< () >
-  {
-    create_dir( path, ".circleci" )?;
-    create_file( &path.join( ".circleci" ), "config.yml", include_str!( "../../files/template/.circleci1/config.yml" ) )?;
-
-    Ok( () )
-  }
+//   fn dot_circleci( path : &Path ) -> Result< () >
+//   {
+//     create_dir( path, ".circleci" )?;
+//     create_file( &path.join( ".circleci" ), "config.yml", include_str!( "../../template/workspace/.circleci1/config.yml" ) )?;
+//
+//     Ok( () )
+//   }
 
   fn dot_cargo( path : &Path ) -> Result< () >
   {
     create_dir( path, ".cargo" )?;
-    create_file( &path.join( ".cargo" ), "config.toml", include_str!( "../../files/template/.cargo/config.toml" ) )?;
+    create_file( &path.join( ".cargo" ), "config.toml", include_str!( "../../template/workspace/.cargo/config.toml" ) )?;
 
     Ok( () )
   }
@@ -92,7 +95,6 @@ mod private
   fn create_dir( path : &Path, name : &str ) -> Result< () >
   {
     fs::create_dir( path.join( name ) )?;
-
     Ok( () )
   }
 
@@ -100,12 +102,11 @@ mod private
   {
     let mut file = fs::File::create( path.join( name ) )?;
     file.write_all( content.as_bytes() )?;
-
     Ok( () )
   }
 }
 
 crate::mod_interface!
 {
-  prelude use workspace_new;
+  exposed use workspace_new;
 }

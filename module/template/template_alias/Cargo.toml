@@ -1,16 +1,15 @@
 [package]
-name = "template_alias"
+name = "{{template_alias}}"
 version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
-  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/template_alias"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/template_alias"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/template_alias"
+documentation = "https://docs.rs/{{template_alias}}"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/alias/{{template_alias}}"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/alias/{{template_alias}}"
 description = """
 ___
 """
@@ -24,32 +23,12 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-include = [
-  "/rust/impl/_blank",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
-
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
-
-[lib]
-name = "template_alias"
-path = "src/_blank/standard_lib.rs"
-
-[[test]]
-name = "template_alias_test"
-path = "tests/_blank/tests.rs"
-
-[[test]]
-name = "template_alias_smoke_test"
-path = "tests/_integration_test/smoke_test.rs"
 
 [dependencies]
 

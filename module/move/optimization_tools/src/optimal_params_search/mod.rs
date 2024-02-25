@@ -1,68 +1,60 @@
 //! Funcions for calculation optimal config parameters.
 //! 
-
+pub mod results_serialize;
 pub mod nelder_mead;
 pub mod sim_annealing;
 use std::ops::RangeBounds;
 use iter_tools::Itertools;
-
 use crate::hybrid_optimizer::*;
+use results_serialize::read_results;
 
-/// Level of difficulty of sudoku board.
-#[ derive( Debug, Clone, Copy, PartialEq, Eq, Hash ) ]
-pub enum Level
-{
-  /// Easy level with difficulty <= 2.
-  Easy,
-  /// Medium, 2 < difficulty <= 2.5.
-  Medium,
-  /// Hard level, 2.5 < difficulty <= 3.
-  Hard,
-  /// Expert level with difficulty > 3.
-  Expert,
-}
-
-impl Level {
-  /// Iterates over sudoku difficulty levels.
-  pub fn iterator() -> impl Iterator< Item = Level > 
-  {
-    use Level::*;
-    [ Easy, Medium, Hard, Expert ].iter().copied()
-  }
-}
-
+/// Configuration for optimal parameters search.
 #[ derive( Debug, Clone ) ]
 pub struct OptimalParamsConfig
 {
-  improvement_threshold : f64,
-  max_no_improvement_steps : usize,
-  max_iterations : usize,
+  /// Minimal value detected as improvement in objective function result.
+  pub improvement_threshold : f64,
+
+  /// Max amount of steps performed without detected improvement, termination condition.
+  pub max_no_improvement_steps : usize,
+
+  /// Limit of total iterations of optimization process, termination condition.
+  pub max_iterations : usize,
 }
 
 impl Default for OptimalParamsConfig
 {
-  fn default() -> Self 
+  fn default() -> Self
   {
     Self 
     {
       improvement_threshold : 0.005,
       max_no_improvement_steps : 10,
-      max_iterations : 100,
+      max_iterations : 10,
     }
   }
 } 
 
+/// Problem for optimal parameters search using Nelder-Mead algorithm.
 #[ derive( Debug, Clone ) ]
 pub struct OptimalProblem< R : RangeBounds< f64 > >
 {
+  /// Containes names of parameters if provided.
   pub params_names : Vec< Option< String > >,
+
+  /// Contains bounds for parameters, may be unbounded or bounded on one side.
   pub bounds : Vec< Option< R > >,
+
+  /// Starting point coordinates for optimization process.
   pub starting_point : Vec< Option< f64 > >,
+
+  /// Size of initial simplex for optimization.
   pub simplex_size : Vec< Option< f64 > >,
 }
 
 impl< 'a, R : RangeBounds< f64 > > OptimalProblem< R >
 {
+  /// Create new instance for optimization problem
   pub fn new() -> Self
   {
     Self
@@ -74,13 +66,14 @@ impl< 'a, R : RangeBounds< f64 > > OptimalProblem< R >
     }
   }
 
+  /// Add parameter to optimal parameters search problem.
   pub fn add
-  ( 
+  (
     mut self,
-    name : Option< String >, 
-    bounds : Option< R >, 
-    start_value : Option< f64 >, 
-    simplex_size : Option< f64 >, 
+    name : Option< String >,
+    bounds : Option< R >,
+    start_value : Option< f64 >,
+    simplex_size : Option< f64 >,
   ) -> Result< Self, Error >
   {
     if let Some( ref name ) = name
@@ -116,37 +109,38 @@ pub fn find_hybrid_optimal_params< R, S, C, M >
 ( 
   config : OptimalParamsConfig, 
   problem : OptimalProblem< R >, 
-  hybrid_problem : Problem< S, C, M > 
+  hybrid_problem : Problem< S, C, M >,
+  intermediate_results_file : Option< String >,
 ) -> Result< nelder_mead::Solution, nelder_mead::Error >
 where  R : RangeBounds< f64 > + Sync,
   S : InitialProblem + Sync + Clone, 
-  C : CrossoverOperator::< Person = < S as InitialProblem>::Person > + Clone + Sync,
+  C : CrossoverOperator::< Person = < S as InitialProblem >::Person > + Clone + Sync,
   M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
   M : MutationOperator::< Problem = S > + Sync + Clone,
-  TournamentSelection: SelectionOperator<<S as InitialProblem>::Person>
+  TournamentSelection: SelectionOperator< < S as InitialProblem >::Person >
 {
   let seeder = hybrid_problem.seeder.clone();
   let ga_crossover_operator = hybrid_problem.ga_crossover_operator.clone();
   let mutation_operator = hybrid_problem.mutation_operator.clone();
 
-  let objective_function = | case : nelder_mead::Point |
+  let objective_function = | case : &nelder_mead::Point |
   {
     log::info!
     (
       "temp_decrease_coefficient : {:.4?}, max_mutations_per_dynasty: {}, mutation_rate: {:.2}, crossover_rate: {:.2};",
-      case.coords[ 0 ], case.coords[ 1 ] as usize, case.coords[ 2 ], case.coords[ 3 ]
+      case.coords[ 0 ].into_inner(), case.coords[ 1 ].into_inner() as usize, case.coords[ 2 ], case.coords[ 3 ]
     );
 
     log::info!
     (
       "max_stale_iterations : {:?}, population_size: {}, dynasties_limit: {};",
-      case.coords[ 4 ] as usize, case.coords[ 5 ] as usize, case.coords[ 6 ] as usize
+      case.coords[ 4 ].into_inner() as usize, case.coords[ 5 ].into_inner() as usize, case.coords[ 6 ].into_inner() as usize
     );
 
     let temp_schedule = LinearTempSchedule
     {
       constant : 0.0.into(),
-      coefficient : case.coords[ 0 ].into(),
+      coefficient : case.coords[ 0 ].into_inner().into(),
       reset_increase_value : 1.0.into(),
     };
 
@@ -160,31 +154,38 @@ where  R : RangeBounds< f64 > + Sync,
     };
 
     let props = crate::hybrid_optimizer::PopulationModificationProportions::new()
-    .set_crossover_rate( case.coords[ 3 ] )
-    .set_mutation_rate( case.coords[ 2 ] )
+    .set_crossover_rate( case.coords[ 3 ].into_inner() )
+    .set_mutation_rate( case.coords[ 2 ].into_inner() )
     ;
 
     let optimizer = HybridOptimizer::new( Config::default(), h_problem )
-    .set_sa_max_mutations_per_dynasty( case.coords[ 1 ] as usize )
+    .set_sa_max_mutations_per_dynasty( case.coords[ 1 ].into_inner() as usize )
     .set_population_proportions( props )
-    .set_max_stale_iterations( case.coords[ 4 ] as usize )
-    .set_population_size( case.coords[ 5 ] as usize )
-    .set_dynasties_limit( case.coords[ 6 ] as usize )
+    .set_max_stale_iterations( case.coords[ 4 ].into_inner() as usize )
+    .set_population_size( case.coords[ 5 ].into_inner() as usize )
+    .set_dynasties_limit( case.coords[ 6 ].into_inner() as usize )
     ;
     let ( _reason, _solution ) = optimizer.optimize();
   };
 
-  let res = optimize_by_time( config, problem, objective_function );
+  let res = optimize_by_time( config, problem, objective_function, intermediate_results_file );
     
   log::info!( "result: {:?}", res );
 
   res
 }
 
-pub fn optimize_by_time< F, R >( config : OptimalParamsConfig, problem : OptimalProblem< R >, objective_function : F ) -> Result< nelder_mead::Solution, nelder_mead::Error >
-where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
+/// Wrapper for optimizing objective function by execution time instead of value.
+pub fn optimize_by_time< F, R >
+(
+  config : OptimalParamsConfig,
+  problem : OptimalProblem< R >,
+  objective_function : F,
+  intermediate_results_file : Option< String >,
+) -> Result< nelder_mead::Solution, nelder_mead::Error >
+where F : Fn( &nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
 {
-  let objective_function = | case : nelder_mead::Point |
+  let objective_function = | case : &nelder_mead::Point |
   {
 
     let now = std::time::Instant::now();
@@ -199,39 +200,55 @@ where F : Fn( nelder_mead::Point ) + Sync, R : RangeBounds< f64 > + Sync
     elapsed.as_secs_f64()
   }; 
 
-  let mut bounds = Vec::new();
-  for bound in problem.bounds
-  {
-    if let Some( bound ) = bound
-    {
-      bounds.push( bound );
-    }
-  }
+  // let mut bounds = Vec::new();
+  // for bound in problem.bounds
+  // {
+  //   if let Some( bound ) = bound
+  //   {
+  //     bounds.push( bound );
+  //   }
+  // }
   
-  let mut optimizer = sim_annealing::Optimizer
+  // let optimizer = sim_annealing::Optimizer
+  // {
+  //   bounds : bounds,
+  //   objective_function : objective_function,
+  //   max_iterations : 50,
+  // };
+
+  let mut optimizer = nelder_mead::Optimizer::new( objective_function );
+  optimizer.bounds = problem.bounds;
+  optimizer.set_starting_point( problem.starting_point );
+  optimizer.set_simplex_size( problem.simplex_size );
+  optimizer.add_constraint( | p : &nelder_mead::Point | p.coords[ 2 ] + p.coords[ 3 ] <= 1.0.into() );
+
+  optimizer.improvement_threshold = config.improvement_threshold;
+  optimizer.max_iterations = config.max_iterations;
+  optimizer.max_no_improvement_steps = config.max_no_improvement_steps;
+
+  if let Some( results_file ) = intermediate_results_file
   {
-    bounds : bounds,
-    objective_function : objective_function,
-    max_iterations : 50,
-  };
-  // let mut optimizer = nelder_mead::Optimizer::new( objective_function );
-  // optimizer.bounds = problem.bounds;
-  // optimizer.set_starting_point( problem.starting_point.clone() );
-  // optimizer.set_simplex_size( problem.simplex_size );
+    let calculated_points = read_results( &results_file );
+    if let Ok( calculated_points ) = calculated_points
+    {
+      optimizer.set_calculated_results( calculated_points );
+    }
 
-  // optimizer.improvement_threshold = config.improvement_threshold;
-  // optimizer.max_iterations = config.max_iterations;
-  // optimizer.max_no_improvement_steps = config.max_no_improvement_steps;
+    optimizer.set_save_results_file( results_file );
+  }
 
-  optimizer.optimize()
+  optimizer.optimize_from_random_points()
 }
 
-/// Possible error when building NMOptimizer.
+/// Possible error when building OptimalProblem.
 #[ derive( thiserror::Error, Debug ) ]
-pub enum Error {
+pub enum Error 
+{
+  /// Error for parameters with duplicate names.
   #[ error( "parameter with similar name exists" ) ]
   NameError,
 
+  /// Error for value located out of its bounds.
   #[ error( "starting value is out of bounds" ) ]
   OutOfBoundsError,
 }

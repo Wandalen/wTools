@@ -1,5 +1,6 @@
-use std::collections::HashSet;
+//! Implementation of sudoku problem for Hybrid Optimizer.
 
+use std::collections::HashSet;
 use crate::hybrid_optimizer::*;
 use crate::problems::sudoku::*;
 
