@@ -161,6 +161,8 @@ pub( crate ) mod private
   ///   }
   /// );
 
+  // qqq : for Bohdan : instead of array of Enums, lets better have 5 different arrays of different Routine and no enum
+  // to use statical dispatch
   #[ derive( Clone ) ]
   pub enum Routine
   {

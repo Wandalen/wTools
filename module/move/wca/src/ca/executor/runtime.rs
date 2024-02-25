@@ -84,7 +84,7 @@ pub( crate ) mod private
   }
 
   // qqq : for Bohdan : _exec_command probably should be method of Runtime.
-  // qqq : for Bohdan :Accept reference instead of copy.
+  // qqq : for Bohdan : Accept reference instead of copy.
   /// executes a command
   pub fn _exec_command( command : ExecutableCommand_, ctx : Context ) -> Result< () >
   {
