@@ -47,7 +47,7 @@ on_error_default = [ "enabled" ]
 on_syntax_error_default = [ "enabled" ]
 on_ambiguity_default = [ "enabled" ]
 on_unknown_command_error_default = [ "enabled" ] # qqq : for Bohdan : what does this feature do?
-on_unknown_command_error_suggest = [ "eddie" ]
+on_unknown_suggest = [ "eddie" ]
 on_get_help_default = [ "enabled" ]
 on_print_commands_default = [ "enabled" ]
 

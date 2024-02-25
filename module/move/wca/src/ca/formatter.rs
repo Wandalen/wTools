@@ -1,7 +1,7 @@
 pub( crate ) mod private
 {
 
-  use crate::{ GrammarConverter, wtools };
+  use crate::*;
   use wtools::Itertools;
 
   /// -
@@ -12,7 +12,7 @@ pub( crate ) mod private
     Another,
   }
 
-  pub fn md_generator( grammar : &GrammarConverter ) -> String
+  pub fn md_generator( grammar : &Verifier ) -> String
   {
     let text = grammar.commands
     .iter()
@@ -24,9 +24,13 @@ pub( crate ) mod private
 
         let subjects = cmd.subjects.iter().fold( String::new(), | _, _ | format!( " `[Subject]`" ) );
         let properties = if cmd.properties.is_empty() { " " } else { " `[properties]` " };
-
-
-        format!( "[.{name}{subjects}{properties}](#{}{}{})", name.replace( '.', "" ), if cmd.subjects.is_empty() { "" } else { "-subject" }, if cmd.properties.is_empty() { "" } else { "-properties" } )
+        format!
+        (
+          "[.{name}{subjects}{properties}](#{}{}{})",
+          name.replace( '.', "" ),
+          if cmd.subjects.is_empty() { "" } else { "-subject" },
+          if cmd.properties.is_empty() { "" } else { "-properties" },
+        )
       })
     })
     .fold( String::new(), | acc, cmd |
@@ -52,12 +56,13 @@ pub( crate ) mod private
         let hint = if cmd.long_hint.is_empty() { &cmd.hint } else { &cmd.long_hint };
         let full_subjects = cmd.subjects.iter().enumerate().map( |( number, subj )| format!( "\n- {}subject_{number} - {} `[{:?}]`", if subj.optional { "`<optional>` " } else { "" }, subj.hint, subj.kind ) ).join( "\n" );
         let full_properties = cmd.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "\n- {}{name} - {} `[{:?}]`", if value.optional { "`<optional>` " } else { "" }, value.hint, value.kind ) ).join( "\n" );
+        // qqq : for Bohdan : toooooo log lines. 130 is max
 
         format!
-        ( 
-          "{heading}\n{}{}\n\n{hint}\n", 
-          if cmd.subjects.is_empty() { "".to_string() } else { format!( "\n\nSubjects:{}", &full_subjects ) }, 
-          if cmd.properties.is_empty() { "".to_string() } else { format!( "\n\nProperties:{}",&full_properties ) }
+        (
+          "{heading}\n{}{}\n\n{hint}\n",
+          if cmd.subjects.is_empty() { "".to_string() } else { format!( "\n\nSubjects:{}", &full_subjects ) },
+          if cmd.properties.is_empty() { "".to_string() } else { format!( "\n\nProperties:{}",&full_properties ) },
         )
 
       })
@@ -75,5 +80,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  
+
 }

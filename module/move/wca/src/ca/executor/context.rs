@@ -80,6 +80,7 @@ pub( crate ) mod private
        self.inner.borrow_mut().remove::< T >()
      }
 
+    // qqq : Bohdan : why unsafe?
     /// Return immutable reference on interior object. ! Unsafe !
     pub fn get_ref< T : CloneAny >( &self ) -> Option< &T >
     {
@@ -113,7 +114,7 @@ pub( crate ) mod private
     }
 
     /// Make a deep clone of the context
-    // qqq : for Bohdan : why is it deep?
+    // qqq : for Bohdan : why is it deep? how is it deep?
     // qqq : how is it useful? Is it? Examples?
     pub( crate ) fn deep_clone( &self ) -> Self
     {

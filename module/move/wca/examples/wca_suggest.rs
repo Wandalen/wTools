@@ -2,7 +2,7 @@
 //! a sentence with a correction, e.g. if you type:
 //!
 //! ```shell
-//! cargo run --features on_unknown_command_error_suggest --example wca_suggest .echoooo
+//! cargo run --features on_unknown_suggest --example wca_suggest .echoooo
 //! ```
 //!
 //! you will see the message:

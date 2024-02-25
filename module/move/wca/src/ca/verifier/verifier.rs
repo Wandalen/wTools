@@ -1,52 +1,22 @@
 pub( crate ) mod private
 {
   use crate::*;
+  // use super::super::*;
 
-  use ca::grammar::settings::ValueDescription;
+  use ca::grammar::command::ValueDescription;
   use former::Former;
   use std::collections::HashMap;
   use wtools::{ error, error::Result, err };
 
-  /// Represents a grammatically correct command with a phrase descriptor, a list of command subjects, and a set of command options.
-  ///
-  /// # Example:
-  ///
-  /// ```
-  /// # use wca::{ GrammarCommand, Value };
-  /// # use std::collections::HashMap;
-  /// GrammarCommand
-  /// {
-  ///   phrase : "command".to_string(),
-  ///   subjects : vec![ Value::String( "subject_value".to_string() ), /* ... */ ],
-  ///   properties : HashMap::from_iter(
-  ///   [
-  ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
-  ///     /* ... */
-  ///   ])
-  /// };
-  /// ```
-  ///
-  /// In the above example, a `GrammarCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a typed values.
-  ///
-  #[ derive( Debug ) ]
-  pub struct GrammarCommand
-  {
-    /// Phrase descriptor for command.
-    pub phrase : String,
-    /// Command subjects.
-    pub subjects : Vec< Value >,
-    /// Command options.
-    pub properties : HashMap< String, Value >,
-  }
-
   // TODO: Remove Clone
-  /// Converts a `ParsedCommand` to a `GrammarCommand` by performing validation and type casting on values.
+  /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.
   ///
   /// ```
-  /// # use wca::{ Command, Type, GrammarConverter, ParsedCommand };
+  /// # use wca::{ Command, Type, Verifier, ParsedCommand };
   /// # use std::collections::HashMap;
-  /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
-  /// let grammar = GrammarConverter::former()
+  /// # fn main() -> Result< (), Box< dyn std::error::Error > >
+  /// # {
+  /// let grammar = Verifier::former()
   /// .command
   /// (
   ///   Command::former()
@@ -65,11 +35,12 @@ pub( crate ) mod private
   /// };
   ///
   /// let grammar_command = grammar.to_command( raw_command )?;
-  /// # Ok( () ) }
+  /// # Ok( () )
+  /// # }
   /// ```
   #[ derive( Debug, Clone ) ]
   #[ derive( Former ) ]
-  pub struct GrammarConverter
+  pub struct Verifier
   {
     // TODO: Make getters
     /// all available commands
@@ -77,7 +48,7 @@ pub( crate ) mod private
     pub commands : HashMap< String, Vec< Command > >,
   }
 
-  impl GrammarConverterFormer
+  impl VerifierFormer
   {
     /// Insert a command to the commands list
     pub fn command( mut self, command : Command ) -> Self
@@ -109,36 +80,37 @@ pub( crate ) mod private
     }
   }
 
-  impl GrammarConverter
+  impl Verifier
   {
     /// Converts raw program to grammatically correct
     ///
     /// Converts all namespaces into it with `to_namespace` method.
     pub fn to_program( &self, raw_program : Program< Namespace< ParsedCommand > > )
-    -> Result< Program< Namespace< GrammarCommand > > >
+    -> Result< Program< Namespace< VerifiedCommand > > >
     {
       let namespaces = raw_program.namespaces
       .into_iter()
       .map( | n | self.to_namespace( n ) )
-      .collect::< Result< Vec< Namespace< GrammarCommand > > > >()?;
+      .collect::< Result< Vec< Namespace< VerifiedCommand > > > >()?;
 
       Ok( Program { namespaces } )
     }
 
+    // qqq : for Bohdan : probably rdundant
     /// Converts raw namespace to grammatically correct
     ///
     /// Converts all commands into it with `to_command` method.
-    pub fn to_namespace( &self, raw_namespace : Namespace< ParsedCommand > ) -> Result< Namespace< GrammarCommand > >
+    pub fn to_namespace( &self, raw_namespace : Namespace< ParsedCommand > ) -> Result< Namespace< VerifiedCommand > >
     {
       let commands = raw_namespace.commands
       .into_iter()
       .map( | c | self.to_command( c ) )
-      .collect::< Result< Vec< GrammarCommand > > >()?;
+      .collect::< Result< Vec< VerifiedCommand > > >()?;
 
       Ok( Namespace { commands } )
     }
 
-    #[ cfg( feature = "on_unknown_command_error_suggest" ) ]
+    #[ cfg( feature = "on_unknown_suggest" ) ]
     fn suggest_command( &self, user_input: &str ) -> Option< &str >
     {
       let jaro = eddie::JaroWinkler::new();
@@ -279,14 +251,14 @@ pub( crate ) mod private
     /// Converts raw command to grammatically correct
     ///
     /// Make sure that this command is described in the grammar and matches it(command itself and all it options too).
-    pub fn to_command( &self, raw_command : ParsedCommand ) -> Result< GrammarCommand >
+    pub fn to_command( &self, raw_command : ParsedCommand ) -> Result< VerifiedCommand >
     {
       let variants = self.commands.get( &raw_command.name )
       .ok_or_else::< error::for_app::Error, _ >
       (
         ||
         {
-          #[ cfg( feature = "on_unknown_command_error_suggest" ) ]
+          #[ cfg( feature = "on_unknown_suggest" ) ]
           if let Some( phrase ) = self.suggest_command( &raw_command.name )
           { return err!( "Command not found. Maybe you mean `.{}`?", phrase ) }
           err!( "Command not found. Please use `.` command to see the list of available commands." )
@@ -321,7 +293,7 @@ pub( crate ) mod private
       let used_properties_with_their_aliases = Self::group_properties_and_their_aliases( &cmd.properties_aliases, properties.keys() );
       let subjects = Self::extract_subjects( cmd, &raw_command, &used_properties_with_their_aliases )?;
 
-      Ok( GrammarCommand
+      Ok( VerifiedCommand
       {
         phrase : cmd.phrase.to_owned(),
         subjects,
@@ -335,6 +307,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  exposed use GrammarConverter;
-  exposed use GrammarCommand;
+  exposed use Verifier;
 }

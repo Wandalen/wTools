@@ -30,7 +30,7 @@ pub( crate ) mod private
 
   /// Command descriptor.
   ///
-  /// Based on this structure, the structure( `ParsedCommand` ) obtained after parsing will be validated and converted to `GrammarCommand`.
+  /// Based on this structure, the structure( `ParsedCommand` ) obtained after parsing will be validated and converted to `VerifiedCommand`.
   ///
   /// # Example:
   ///

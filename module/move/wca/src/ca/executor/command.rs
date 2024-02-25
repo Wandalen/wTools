@@ -8,9 +8,9 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ ExecutableCommand, Routine, Value };
+  /// # use wca::{ ExecutableCommand_, Routine, Value };
   /// # use std::collections::HashMap;
-  /// ExecutableCommand
+  /// ExecutableCommand_
   /// {
   ///   subjects : vec![ Value::String( "subject_value".to_string() ), /* ... */ ],
   ///   properties : HashMap::from_iter
@@ -23,7 +23,7 @@ pub( crate ) mod private
   /// ```
   ///
   #[ derive( Debug, Clone ) ]
-  pub struct ExecutableCommand
+  pub struct ExecutableCommand_
   {
     /// subjects values
     pub subjects : Vec< Value >,
@@ -32,11 +32,13 @@ pub( crate ) mod private
     /// function that will be called
     pub routine : Routine,
   }
+  // qqq : for Bohdan : rid off the structure. VerifiedCommand should be used and passed to userland.
+
 }
 
 //
 
 crate::mod_interface!
 {
-  exposed use ExecutableCommand;
+  exposed use ExecutableCommand_;
 }

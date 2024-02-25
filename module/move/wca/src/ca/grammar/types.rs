@@ -45,16 +45,16 @@ pub( crate ) mod private
 
   /// Container for a `Value` of a specific type
   ///
-  /// Uses for represent of subjects and properties in Commands( E.g. `GrammarCommand`, `ExecutableCommand` )
+  /// Uses for represent of subjects and properties in Commands( E.g. `VerifiedCommand`, `ExecutableCommand_` )
   /// With `wca::Type` enum and `TryCast` you can cast raw string into specific Type.
   /// You can also convert to a type that can be converted from the internal Value type.
   ///
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ GrammarCommand, Value };
+  /// # use wca::{ VerifiedCommand, Value };
   /// # use std::collections::HashMap;
-  /// let command = GrammarCommand
+  /// let command = VerifiedCommand
   /// {
   ///   phrase : "command".to_string(),
   ///   // Here is numeric value used

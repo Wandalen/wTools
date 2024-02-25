@@ -8,7 +8,7 @@ fn changes_state_of_local_variable_on_perform()
 
   let ca_history = Arc::clone( &history );
   let ca = CommandsAggregator::former()
-  .grammar( // list of commands -> Collect all to GrammarConverter
+  .grammar( // list of commands -> Collect all to Verifier
   [
     wca::Command::former()
     .hint( "hint" )

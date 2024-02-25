@@ -5,7 +5,7 @@ pub( crate ) mod private
   /// Represents a program that contains one or more namespaces, where each namespace contains a list of commands.
   ///
   /// A `Program` consists of one or more Namespaces, where each namespace contains a list of commands.
-  /// The `Namespace` can be any type that represents a namespace of commands, such as `ParsedCommand`, `GrammarCommand`, or `ExecutableCommand`.
+  /// The `Namespace` can be any type that represents a namespace of commands, such as `ParsedCommand`, `VerifiedCommand`, or `ExecutableCommand_`.
   ///
   /// The program can be executed by iterating over each namespace and executing its commands sequentially or in parallel.
   ///
@@ -50,17 +50,17 @@ pub( crate ) mod private
   ///
   /// In the above example, a Program is created with two Namespace objects. Each namespace contains a different set of ParsedCommand objects with different sets of subjects. The Program can be executed by iterating over each namespace and executing its commands in sequence.
   ///
+  // qqq : xxx : for Bohdan : Commands should be here instead of Namespace
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct Program< Namespace >
   {
     /// list of namespaces with commands
     pub namespaces : Vec< Namespace >,
   }
-  // xxx
 
   /// Represents a namespace of commands with the specified Command type. This is done to be flexible and not to duplicate code.
   ///
-  /// A `Namespace` contains a list of commands, where each command can be a `ParsedCommand`, `GrammarCommand`, `ExecutableCommand`, or any other command type that you define.
+  /// A `Namespace` contains a list of commands, where each command can be a `ParsedCommand`, `VerifiedCommand`, `ExecutableCommand_`, or any other command type that you define.
   ///
   /// In the future, each namespace can be executed in parallel.
   /// This means that commands in namespace will be executed synchronous but each namespace can be executed in parallel to each other.

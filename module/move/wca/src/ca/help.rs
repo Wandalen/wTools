@@ -3,17 +3,19 @@ pub( crate ) mod private
   use crate::*;
   use ca::
   {
-    GrammarConverter, ExecutorConverter,
+    Verifier, ExecutorConverter,
     Command,
-    Routine, Type, commands_aggregator::formatter::private::{HelpFormat, md_generator}
+    Routine, Type, formatter::private::{ HelpFormat, md_generator },
   };
 
   use wtools::{ Itertools, err };
   use std::rc::Rc;
   use error_tools::for_app::anyhow;
 
+  // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
+
   /// Generate `dot` command
-  pub fn dot_command( grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
+  pub fn dot_command( grammar : &mut Verifier, executor : &mut ExecutorConverter )
   {
     let empty = Command::former()
     .hint( "prints all available commands" )
@@ -68,7 +70,7 @@ pub( crate ) mod private
     executor.routines.insert( "".to_string(), routine );
   }
 
-  fn generate_help_content( grammar : &GrammarConverter, command : Option< &Command > ) -> String
+  fn generate_help_content( grammar : &Verifier, command : Option< &Command > ) -> String
   {
     if let Some( command ) = command
     {
@@ -123,7 +125,7 @@ pub( crate ) mod private
   impl HelpVariants
   {
     /// Generates help commands
-    pub fn generate( &self, helper : &HelpGeneratorFn, grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
+    pub fn generate( &self, helper : &HelpGeneratorFn, grammar : &mut Verifier, executor : &mut ExecutorConverter )
     {
       match self
       {
@@ -140,7 +142,7 @@ pub( crate ) mod private
     }
 
     // .help
-    fn general_help( &self, helper : &HelpGeneratorFn, grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
+    fn general_help( &self, helper : &HelpGeneratorFn, grammar : &mut Verifier, executor : &mut ExecutorConverter )
     {
       let phrase = "help".to_string();
 
@@ -194,7 +196,7 @@ pub( crate ) mod private
     }
 
     // .help command_name
-    fn subject_command_help( &self, helper : &HelpGeneratorFn, grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
+    fn subject_command_help( &self, helper : &HelpGeneratorFn, grammar : &mut Verifier, executor : &mut ExecutorConverter )
     {
       let phrase = "help".to_string();
 
@@ -246,7 +248,7 @@ pub( crate ) mod private
     }
 
     // .help.command_name
-    fn dot_command_help( &self, helper : &HelpGeneratorFn, grammar : &mut GrammarConverter, executor : &mut ExecutorConverter )
+    fn dot_command_help( &self, helper : &HelpGeneratorFn, grammar : &mut Verifier, executor : &mut ExecutorConverter )
     {
       // generate commands names
       let commands : Vec< _ > = grammar.commands.iter().map( |( name, cmd )| ( format!( "help.{name}" ), cmd.clone() ) ).collect();
@@ -257,7 +259,7 @@ pub( crate ) mod private
       .map( |( help_name, _ )| Command::former().hint( "prints full information about a specified command" ).phrase( help_name ).form() )
       .collect::< Vec< _ > >();
 
-      // add commands to GrammarConverter
+      // add commands to Verifier
       for cmd in grammar_helps
       {
         let command_variants = grammar.commands.entry( cmd.phrase.to_owned() ).or_insert_with( Vec::new );
@@ -299,21 +301,21 @@ pub( crate ) mod private
     }
   }
 
-  type HelpFunctionFn = Rc< dyn Fn( &GrammarConverter, Option< &Command > ) -> String >;
+  type HelpFunctionFn = Rc< dyn Fn( &Verifier, Option< &Command > ) -> String >;
 
   /// Container for function that generates help string for any command
   ///
   /// ```
   /// # use wca::commands_aggregator::help::HelpGeneratorFn;
-  /// use wca::{ GrammarConverter, Command };
+  /// use wca::{ Verifier, Command };
   ///
-  /// fn my_help_generator( grammar : &GrammarConverter, command : Option< &Command > ) -> String
+  /// fn my_help_generator( grammar : &Verifier, command : Option< &Command > ) -> String
   /// {
   ///   format!( "Help content based on grammar and command" )
   /// }
   ///
   /// let help_fn = HelpGeneratorFn::new( my_help_generator );
-  /// # let grammar = &GrammarConverter::former().form();
+  /// # let grammar = &Verifier::former().form();
   ///
   /// help_fn.exec( grammar, None );
   /// // or
@@ -336,7 +338,7 @@ pub( crate ) mod private
     /// Wrap a help function
     pub fn new< HelpFunction >( func : HelpFunction ) -> Self
     where
-      HelpFunction : Fn( &GrammarConverter, Option< &Command > ) -> String + 'static
+      HelpFunction : Fn( &Verifier, Option< &Command > ) -> String + 'static
     {
         Self( Rc::new( func ) )
     }
@@ -345,7 +347,7 @@ pub( crate ) mod private
   impl HelpGeneratorFn
   {
     /// Executes the function to generate help content
-    pub fn exec( &self, grammar : &GrammarConverter, command : Option< &Command > ) -> String
+    pub fn exec( &self, grammar : &Verifier, command : Option< &Command > ) -> String
     {
       self.0( grammar, command )
     }

@@ -129,7 +129,7 @@ pub( crate ) mod private
     }
   }
 
-  // qqq : for Bohdan : is this features used anywhere?
+  // qqq : make 0-arguments, 1-argument, 2-arguments, 3 arguments versions
   type RoutineWithoutContextFn = dyn Fn( ( Args, Props ) ) -> Result< () >;
   type RoutineWithContextFn = dyn Fn( ( Args, Props ), Context ) -> Result< () >;
 
@@ -169,6 +169,7 @@ pub( crate ) mod private
     /// Routine with context
     WithContext( Rc< RoutineWithContextFn > ),
   }
+  // qqq : why Rc is necessary? why not just box?
 
   impl Routine
   {

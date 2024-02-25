@@ -149,7 +149,7 @@ pub( crate ) mod private
     #[ inline ]
     pub fn arg( mut self, hint : &str, tag : Type ) -> Self
     {
-      self.command.subjects.push( grammar::settings::ValueDescription
+      self.command.subjects.push( grammar::command::ValueDescription
       {
         hint : hint.into(),
         kind : tag,
@@ -188,7 +188,7 @@ pub( crate ) mod private
       self.command.properties.insert
       (
         name.to_string(),
-        grammar::settings::ValueDescription
+        grammar::command::ValueDescription
         {
           hint : hint.to_string(),
           kind,

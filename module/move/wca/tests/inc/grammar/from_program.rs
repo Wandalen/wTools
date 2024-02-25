@@ -9,7 +9,7 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let grammar_converter = GrammarConverter::former()
+    let verifier = Verifier::former()
     .command
     (
       wca::Command::former()
@@ -34,7 +34,7 @@ tests_impls!
     let raw_program = parser.program( ".command1 subject" ).unwrap();
 
     // convert program
-    let grammar_program = grammar_converter.to_program( raw_program ).unwrap();
+    let grammar_program = verifier.to_program( raw_program ).unwrap();
     a_true!( grammar_program.namespaces.len() == 1 );
     a_true!( grammar_program.namespaces[ 0 ].commands.len() == 1 );
     a_id!( vec![ Value::String( "subject".to_string() ) ], grammar_program.namespaces[ 0 ].commands[ 0 ].subjects );
@@ -43,7 +43,7 @@ tests_impls!
     let raw_program = parser.program( ".command1 first_subj .also .command2 second_subj" ).unwrap();
 
     // convert program
-    let grammar_program = grammar_converter.to_program( raw_program ).unwrap();
+    let grammar_program = verifier.to_program( raw_program ).unwrap();
     a_true!( grammar_program.namespaces.len() == 2 );
     a_true!( grammar_program.namespaces[ 0 ].commands.len() == 1 );
     a_id!( vec![ Value::String( "first_subj".to_string() ) ], grammar_program.namespaces[ 0 ].commands[ 0 ].subjects );

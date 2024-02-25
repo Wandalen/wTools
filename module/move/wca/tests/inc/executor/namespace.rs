@@ -10,7 +10,7 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let grammar_converter = GrammarConverter::former()
+    let verifier = Verifier::former()
     .command
     (
       wca::Command::former()
@@ -29,7 +29,7 @@ tests_impls!
 
     // existed command | unknown command will fails on converter
     let raw_namespace = parser.namespace( ".command" ).unwrap();
-    let grammar_namespace = grammar_converter.to_namespace( raw_namespace ).unwrap();
+    let grammar_namespace = verifier.to_namespace( raw_namespace ).unwrap();
     let exec_namespace = executor_converter.to_namespace( grammar_namespace ).unwrap();
 
     // execute the command
@@ -43,7 +43,7 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let grammar_converter = GrammarConverter::former()
+    let verifier = Verifier::former()
     .command
     (
       wca::Command::former()
@@ -62,7 +62,7 @@ tests_impls!
       .form()
     )
     .form();
-  
+
     // starts with 0
     let mut ctx = wca::Context::default();
     ctx.insert( 0 );
@@ -109,14 +109,14 @@ tests_impls!
 
     // value in context = 0
     let raw_namespace = parser.namespace( ".eq 1" ).unwrap();
-    let grammar_namespace = grammar_converter.to_namespace( raw_namespace ).unwrap();
+    let grammar_namespace = verifier.to_namespace( raw_namespace ).unwrap();
     let exec_namespace = executor_converter.to_namespace( grammar_namespace ).unwrap();
 
     a_true!( executor.namespace( exec_namespace ).is_err() );
 
     // value in context = 0 + 1 = 1
     let raw_namespace = parser.namespace( ".inc .eq 1" ).unwrap();
-    let grammar_namespace = grammar_converter.to_namespace( raw_namespace ).unwrap();
+    let grammar_namespace = verifier.to_namespace( raw_namespace ).unwrap();
     let exec_namespace = executor_converter.to_namespace( grammar_namespace ).unwrap();
 
     a_true!( executor.namespace( exec_namespace ).is_ok() );

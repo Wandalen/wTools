@@ -6,7 +6,7 @@ fn main()
 {
   // use wca::prelude::*;
 
-  let ca = wca::CommandsAggregator::former()
+  let ca : wca::CommandsAggregator = wca::CommandsAggregator::former()
   .grammar
   ([
     wca::Command::former()

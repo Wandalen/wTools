@@ -8,12 +8,12 @@
 - `Grammar`
 > Contains available commands configured by the user.
 >
-> Once the `ParsedCommand` objects have been generated, the `Grammar` component steps in. This component takes in the `ParsedCommand`-s and converts them into `GrammarCommand` objects, which contain subject and property values that have been validated against a set of pre-defined grammar. This ensures that the user's input is structured correctly and can be understood by the system.
+> Once the `ParsedCommand` objects have been generated, the `Grammar` component steps in. This component takes in the `ParsedCommand`-s and converts them into `VerifiedCommand` objects, which contain subject and property values that have been validated against a set of pre-defined grammar. This ensures that the user's input is structured correctly and can be understood by the system.
 
 - `Executor`
 > Contains available routines configured by the user.
 >
-> Once the `GrammarCommand` objects have been generated, the `Executor` component takes over. This component converts the `GrammarCommands` into `ExecutableCommand` objects, which contain the actual routines that will be executed at runtime. This is where the system takes action based on the user's input.
+> Once the `VerifiedCommand` objects have been generated, the `Executor` component takes over. This component converts the `GrammarCommands` into `ExecutableCommand_` objects, which contain the actual routines that will be executed at runtime. This is where the system takes action based on the user's input.
 
 - `CommandsAggregator`
 > Finally, the `CommandsAggregator` component brings everything together. This component is responsible for configuring the `Parser`, `Grammar`, and `Executor` components based on the user's needs. It also manages the entire pipeline of processing, from parsing the raw text input to executing the final command(parse -> validate -> execute).

@@ -3,7 +3,7 @@ use super::*;
 use wca::
 {
   Parser,
-  GrammarConverter, ExecutorConverter,
+  Verifier, ExecutorConverter,
 
   CommandsAggregator,
   Routine,

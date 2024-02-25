@@ -56,10 +56,11 @@ pub( crate ) mod private
     /// current execution position
     pub pos : usize,
     /// namespace which must be executed
-    pub namespace : Namespace< ExecutableCommand >,
+    pub namespace : Namespace< ExecutableCommand_ >, // qqq : for Bohdan : use VerifiedCommand
   }
-  // qqq : for Bohdan : why? how is it useful? is it?
-  // qqq : why both Runtime and RuntimeState exist? probably one should removed
+  // qqq : for Bohdan : why both Runtime and RuntimeState exist? probably one should removed
+  // qqq : for Bohdan : why both Runtime and Context exist? What about incapsulating Context into Runtime maybe
+  // qqq : for Bohdan : why both Runtime and Executor exist? rid off of Executor. Incapsulating Executor into Runtime.
 
   impl Runtime
   {
@@ -82,12 +83,14 @@ pub( crate ) mod private
     }
   }
 
+  // qqq : for Bohdan : _exec_command probably should be method of Runtime.
+  // qqq : for Bohdan :Accept reference instead of copy.
   /// executes a command
-  pub fn _exec_command( command : ExecutableCommand, ctx : Context ) -> Result< () >
+  pub fn _exec_command( command : ExecutableCommand_, ctx : Context ) -> Result< () >
   {
     match command.routine
     {
-      Routine::WithoutContext( routine ) => routine(( Args( command.subjects ), Props( command.properties ) )),
+      Routine::WithoutContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) )),
       Routine::WithContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) ), ctx ),
     }
   }

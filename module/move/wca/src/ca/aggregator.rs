@@ -1,32 +1,25 @@
 pub( crate ) mod private
 {
-  use crate::
+  use crate::*;
+  use ca::
   {
-    ca::
-    {
-      Parser, GrammarConverter, ExecutorConverter,
-      Executor,
-
-      ProgramParser,
-
-      Command,
-      Routine,
-      commands_aggregator::help::{ HelpGeneratorFn, HelpVariants, dot_command },
-    },
-    ExecutableCommand, Namespace, Program,
-    wtools,
+    Parser, Verifier, ExecutorConverter,
+    Executor,
+    ProgramParser,
+    Command,
+    Routine,
+    help::{ HelpGeneratorFn, HelpVariants, dot_command },
   };
 
   use std::collections::{ HashMap, HashSet };
   use std::fmt;
-  use wtools::protected::thiserror;
+  use wtools::thiserror;
   use wtools::error::
   {
     Result,
     for_app::Error as wError,
     for_lib::*,
   };
-
 
   /// Validation errors that can occur in application.
   #[ derive( Error, Debug ) ]
@@ -44,9 +37,9 @@ pub( crate ) mod private
     },
     /// This variant represents errors that occur during grammar conversion.
     #[ error( "Can not identify a command.\nDetails: {0}" ) ]
-    GrammarConverter( wError ),
+    Verifier( wError ),
     /// This variant is used to represent errors that occur during executor conversion.
-    #[ error( "Can not found a routine for a command.\nDetails: {0}" ) ]
+    #[ error( "Can not find a routine for a command.\nDetails: {0}" ) ]
     ExecutorConverter( wError ),
   }
 
@@ -63,7 +56,9 @@ pub( crate ) mod private
     Execution( wError ),
   }
 
-  struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< Namespace< ExecutableCommand > > ) > );
+  // xxx : qqq : qqq2 : for Bohdan : one level is obviously redundant
+  // Program< Namespace< ExecutableCommand_ > > -> Program< ExecutableCommand_ >
+  struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< Namespace< ExecutableCommand_ > > ) > );
 
   impl fmt::Debug for CommandsAggregatorCallback
   {
@@ -113,16 +108,23 @@ pub( crate ) mod private
   {
     #[ default( Parser::former().form() ) ]
     parser : Parser,
+
     #[ setter( false ) ]
     #[ default( Executor::former().form() ) ]
     executor : Executor,
+
     help_generator : HelpGeneratorFn,
     #[ default( HashSet::from([ HelpVariants::All ]) ) ]
     help_variants : HashSet< HelpVariants >,
-    #[ default( GrammarConverter::former().form() ) ]
-    grammar_converter : GrammarConverter,
+    // qqq : for Bohdan : should not have fields help_generator and help_variants
+    // help_generator generateds VerifiedCommand(s) and stop to exist
+
+    #[ default( Verifier::former().form() ) ]
+    verifier : Verifier,
+
     #[ default( ExecutorConverter::former().form() ) ]
     executor_converter : ExecutorConverter,
+
     callback_fn : Option< CommandsAggregatorCallback >,
   }
 
@@ -135,11 +137,10 @@ pub( crate ) mod private
     where
       V : Into< Vec< Command > >
     {
-      let grammar = GrammarConverter::former()
+      let verifier = Verifier::former()
       .commands( commands )
       .form();
-
-      self.grammar_converter = Some( grammar );
+      self.verifier = Some( verifier );
       self
     }
 
@@ -174,11 +175,12 @@ pub( crate ) mod private
     /// ```
     pub fn help< HelpFunction >( mut self, func : HelpFunction ) -> Self
     where
-      HelpFunction : Fn( &GrammarConverter, Option< &Command > ) -> String + 'static
+      HelpFunction : Fn( &Verifier, Option< &Command > ) -> String + 'static
     {
       self.help_generator = Some( HelpGeneratorFn::new( func ) );
       self
     }
+    // qqq : it is good access method, but formed structure should not have help_generator anymore
 
     /// Set callback function that will be executed after validation state
     ///
@@ -197,7 +199,7 @@ pub( crate ) mod private
     /// ```
     pub fn callback< Callback >( mut self, callback : Callback ) -> Self
     where
-      Callback : Fn( &str, &Program< Namespace< ExecutableCommand > > ) + 'static,
+      Callback : Fn( &str, &Program< Namespace< ExecutableCommand_ > > ) + 'static,
     {
       self.callback_fn = Some( CommandsAggregatorCallback( Box::new( callback ) ) );
       self
@@ -210,54 +212,19 @@ pub( crate ) mod private
 
       if ca.help_variants.contains( &HelpVariants::All )
       {
-        HelpVariants::All.generate( &ca.help_generator, &mut ca.grammar_converter, &mut ca.executor_converter );
+        HelpVariants::All.generate( &ca.help_generator, &mut ca.verifier, &mut ca.executor_converter );
       }
       else
       {
         for help in &ca.help_variants
         {
-          help.generate( &ca.help_generator, &mut ca.grammar_converter, &mut ca.executor_converter );
+          help.generate( &ca.help_generator, &mut ca.verifier, &mut ca.executor_converter );
         }
       }
 
-      dot_command( &mut ca.grammar_converter, &mut ca.executor_converter );
+      dot_command( &mut ca.verifier, &mut ca.executor_converter );
 
       ca
-    }
-  }
-
-  mod private
-  {
-    #[ derive( Debug ) ]
-    pub struct Args( pub String );
-
-    pub trait IntoArgs
-    {
-      fn into_args( self ) -> Args;
-    }
-
-    impl IntoArgs for &str
-    {
-      fn into_args( self ) -> Args
-      {
-        Args( self.to_string() )
-      }
-    }
-
-    impl IntoArgs for String
-    {
-      fn into_args( self ) -> Args
-      {
-        Args( self )
-      }
-    }
-
-    impl IntoArgs for Vec< String >
-    {
-      fn into_args( self ) -> Args
-      {
-        Args( self.join( " " ) )
-      }
     }
   }
 
@@ -268,12 +235,12 @@ pub( crate ) mod private
     /// Takes a string with program and executes it
     pub fn perform< S >( &self, program : S ) -> Result< (), Error >
     where
-      S : private::IntoArgs
+      S : IntoInput
     {
-      let private::Args( ref program ) = program.into_args();
+      let Input( ref program ) = program.into_input();
 
-      let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : program.to_string(), error:  e } ) )?;
-      let grammar_program = self.grammar_converter.to_program( raw_program ).map_err( | e | Error::Validation( ValidationError::GrammarConverter( e ) ) )?;
+      let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : program.to_string(), error : e } ) )?;
+      let grammar_program = self.verifier.to_program( raw_program ).map_err( | e | Error::Validation( ValidationError::Verifier( e ) ) )?;
       let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | e | Error::Validation( ValidationError::ExecutorConverter( e ) ) )?;
 
       if let Some( callback ) = &self.callback_fn
@@ -284,6 +251,7 @@ pub( crate ) mod private
       self.executor.program( exec_program ).map_err( | e | Error::Execution( e ) )
     }
   }
+
 }
 
 //
