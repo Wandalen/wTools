@@ -1,5 +1,6 @@
 mod private
 {
+  use std::collections::BTreeMap;
   use std::fs;
   use std::io::Write;
   use std::path::Path;
@@ -13,6 +14,13 @@ mod private
     {
       bail!( "Directory should be empty" )
     }
+    let mut handlebars = handlebars::Handlebars::new();
+    let data = BTreeMap::from_iter( [ ( "project_name", path.file_name().unwrap().to_string_lossy() ) ] );
+    handlebars.register_template_string( "cargo_toml", include_str!( "../../files/template/Cargo.hbs" ) )?;
+    let cargo_toml = &handlebars.render( "cargo_toml", &data )?;
+
+    create_file( path, "Cargo.toml", cargo_toml )?;
+    
     dot_cargo( &path )?;
     dot_circleci( &path )?;
     dot_github( &path )?;
@@ -44,7 +52,6 @@ mod private
     create_file( path, ".gitattributes", include_str!( "../../files/template/.gitattributes" ) )?;
     create_file( path, ".gitignore", include_str!( "../../files/template/.gitignore1" ) )?;
     create_file( path, ".gitpod.yml", include_str!( "../../files/template/.gitpod.yml" ) )?;
-    create_file( path, "Cargo.toml", include_str!( "../../files/template/Cargo.toml" ) )?;
     create_file( path, "Makefile", include_str!( "../../files/template/Makefile" ) )?;
 
     Ok( () )

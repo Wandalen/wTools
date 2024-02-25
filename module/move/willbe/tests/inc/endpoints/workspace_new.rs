@@ -8,7 +8,8 @@ const ASSETS_PATH : &str = "tests/assets";
 
 mod workspace_new
 {
-
+  use std::fs;
+  use std::fs::create_dir;
   use endpoint::workspace_new;
 
   use super::*;
@@ -29,26 +30,33 @@ mod workspace_new
   {
     // Arrange
     let temp = assert_fs::TempDir::new().unwrap();
+    let temp_path = temp.join( "test_project_name" );
+    create_dir(temp.join("test_project_name" )).unwrap();
 
     // Act
-    _ = workspace_new( temp.path() ).unwrap();
+    _ = workspace_new( &temp.path().join("test_project_name" ) ).unwrap();
     
     // Assets
-    assert!( temp.path().join( "module" ).exists() );
-    assert!( temp.path().join( "Readme.md" ).exists() );
-    assert!( temp.path().join( ".gitattributes" ).exists() );
-    assert!( temp.path().join( ".gitignore" ).exists() );
-    assert!( temp.path().join( ".gitpod.yml" ).exists() );
-    assert!( temp.path().join( "Cargo.toml" ).exists() );
-    assert!( temp.path().join( "Makefile" ).exists() );
-    assert!( temp.path().join( "assets" ).exists() );
-    assert!( temp.path().join( "docs" ).exists() );
-    assert!( temp.path().join( ".github" ).exists() );
-    assert!( temp.path().join( ".github/workflows" ).exists() );
-    assert!( temp.path().join( ".circleci" ).exists() );
-    assert!( temp.path().join( ".circleci/config.yml" ).exists() );
-    assert!( temp.path().join( ".cargo" ).exists() );
-    assert!( temp.path().join( ".cargo/config.toml" ).exists() );
+    assert!( temp_path.join( "module" ).exists() );
+    assert!( temp_path.join( "Readme.md" ).exists() );
+    assert!( temp_path.join( ".gitattributes" ).exists() );
+    assert!( temp_path.join( ".gitignore" ).exists() );
+    assert!( temp_path.join( ".gitpod.yml" ).exists() );
+    assert!( temp_path.join( "Cargo.toml" ).exists() );
+    
+    let actual = fs::read_to_string(temp_path.join( "Cargo.toml")).unwrap();
+    let expected = "project_name = \"test_project_name\"";
+    
+    assert!( actual.contains( &expected ) );
+    assert!( temp_path.join( "Makefile" ).exists() );
+    assert!( temp_path.join( "assets" ).exists() );
+    assert!( temp_path.join( "docs" ).exists() );
+    assert!( temp_path.join( ".github" ).exists() );
+    assert!( temp_path.join( ".github/workflows" ).exists() );
+    assert!( temp_path.join( ".circleci" ).exists() );
+    assert!( temp_path.join( ".circleci/config.yml" ).exists() );
+    assert!( temp_path.join( ".cargo" ).exists() );
+    assert!( temp_path.join( ".cargo/config.toml" ).exists() );
   }
   
   #[ test ]
