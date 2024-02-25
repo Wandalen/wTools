@@ -96,7 +96,7 @@ mod private
   impl Workspace
   {
     /// Returns list of all packages
-    pub fn packages_get( &self ) -> Result< &[ Package ], WorkspaceError >
+    pub fn packages( &self ) -> Result< &[ Package ], WorkspaceError >
     {
       self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError ).map( | metadata | metadata.packages.as_slice() )
     }
@@ -111,6 +111,12 @@ mod private
     pub fn target_directory( &self ) -> Result< &Path, WorkspaceError >
     {
       Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.target_directory.as_std_path() )
+    }
+    
+    /// Return discord url
+    pub fn discord_url( &self ) -> Result< Option< String >, WorkspaceError >
+    {
+      Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.workspace_metadata[ "discord_url" ].as_str().map( | url | url.to_string() ) )
     }
 
     /// Return the master branch
@@ -131,19 +137,13 @@ mod private
       Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.workspace_metadata.get( "workspace_name" ).and_then( | b | b.as_str() ).map( | b | b.to_string() ) )
     }
 
-    /// Return discord url
-    pub fn discord_url( &self ) -> Result< Option< String >, WorkspaceError >
-    {
-      Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.workspace_metadata[ "discord_url" ].as_str().map( | url | url.to_string() ) )
-    }
-
     /// Find a package by its manifest file path
     pub fn package_find_by_manifest< P >( &self, manifest_path : P ) -> Option< &Package >
     where
       P : AsRef< Path >,
     {
       self
-      .packages_get()
+      .packages()
       .ok()
       .and_then
       (

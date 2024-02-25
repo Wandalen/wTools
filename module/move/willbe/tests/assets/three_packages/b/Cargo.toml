@@ -1,0 +1,12 @@
+[package]
+name = "_chain_of_packages_b"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/Username/test/b"
+
+[package.metadata]
+stability = "stable"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+_chain_of_packages_c = { path = "../c" }
