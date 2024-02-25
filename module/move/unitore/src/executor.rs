@@ -3,23 +3,23 @@
 use super::*;
 use retriever::FeedClient;
 use feed_config::read_feed_config;
-use wca::prelude::*;
+// use wca::prelude::*;
 
 pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 {
 
-  let ca = CommandsAggregator::former()
+  let ca = wca::CommandsAggregator::former()
   .grammar
   ([
-    Command::former()
+    wca::Command::former()
     .phrase( "subscribe" )
     .hint( "Subscribe to feed from sources provided in config file" )
-    .subject( "Source file", Type::String, false )
+    .subject( "Source file", wca::Type::String, false )
     .form(),
   ])
   .executor
   ([
-    ( "subscribe".to_owned(), Routine::new( | ( args, props ) |
+    ( "subscribe".to_owned(), wca::Routine::new( | ( args, props ) |
     {
       println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
 

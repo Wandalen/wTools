@@ -100,7 +100,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use RuntimeState;
-  prelude use Runtime;
+  exposed use RuntimeState;
+  exposed use Runtime;
   protected use _exec_command;
 }
