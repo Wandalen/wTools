@@ -2,7 +2,7 @@
 
 #![ cfg_attr( feature = "type_name_of_val", feature( type_name_of_val ) ) ]
 
-// #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
+// // #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 // #![ rustversion::attr( nightly, feature( type_name_of_val ) ) ]
 
 //

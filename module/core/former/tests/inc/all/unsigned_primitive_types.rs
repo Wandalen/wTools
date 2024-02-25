@@ -24,6 +24,7 @@ use super::*;
 
 tests_impls!
 {
+
   fn with_u8()
   {
     #[ derive( Debug, PartialEq, TheModule::Former ) ]
@@ -46,24 +47,25 @@ tests_impls!
 
   //
 
+// qqq : make it working
   fn with_u16()
   {
-    // #[ derive( Debug, PartialEq, Former ) ]
-    // pub struct Counter
-    // {
-    //   count : u16,
-    // }
-    //
-    // let counter = Counter::former()
-    // .count( 0 )
-    // .form();
-    //
-    // let expected = Counter
-    // {
-    //   count : 0,
-    // };
-    //
-    // a_id!( counter, expected );
+//     #[ derive( Debug, PartialEq, TheModule::Former ) ]
+//     pub struct Counter
+//     {
+//       count : u16,
+//     }
+//
+//     let counter = Counter::former()
+//     .count( 0 )
+//     .form();
+//
+//     let expected = Counter
+//     {
+//       count : 0,
+//     };
+//
+//     a_id!( counter, expected );
   }
 
   //
