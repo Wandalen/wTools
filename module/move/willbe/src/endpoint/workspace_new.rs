@@ -19,7 +19,7 @@ mod private
     }
     let mut handlebars = handlebars::Handlebars::new();
     let data = BTreeMap::from_iter( [ ( "project_name", path.file_name().unwrap().to_string_lossy() ) ] );
-    handlebars.register_template_string( "cargo_toml", include_str!( "../../files/template/Cargo.hbs" ) )?;
+    handlebars.register_template_string( "cargo_toml", include_str!( "../../template/workspace/Cargo.hbs" ) )?;
     let cargo_toml = &handlebars.render( "cargo_toml", &data )?;
 
     create_file( path, "Cargo.toml", cargo_toml )?;

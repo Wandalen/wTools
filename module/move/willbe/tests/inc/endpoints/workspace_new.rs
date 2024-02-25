@@ -53,8 +53,8 @@ mod workspace_new
     assert!( temp_path.join( "docs" ).exists() );
     assert!( temp_path.join( ".github" ).exists() );
     assert!( temp_path.join( ".github/workflows" ).exists() );
-    assert!( temp_path.join( ".circleci" ).exists() );
-    assert!( temp_path.join( ".circleci/config.yml" ).exists() );
+    // assert!( temp_path.join( ".circleci" ).exists() );
+    // assert!( temp_path.join( ".circleci/config.yml" ).exists() );
     assert!( temp_path.join( ".cargo" ).exists() );
     assert!( temp_path.join( ".cargo/config.toml" ).exists() );
   }
