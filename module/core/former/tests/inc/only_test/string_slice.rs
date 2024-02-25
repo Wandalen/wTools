@@ -11,8 +11,7 @@ tests_impls!
   {
     // test.case( "default" );
 
-    let command = Struct1::former()
-    .form();
+    let command = Struct1::former().form();
     let expected = Struct1
     {
       string_slice_1 : "",

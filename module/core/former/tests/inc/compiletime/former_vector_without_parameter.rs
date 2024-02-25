@@ -2,12 +2,13 @@ use former::Former;
 
 struct Vec
 {
+  f1 : i32,
 }
 
 #[derive( Former )]
 pub struct Struct1
 {
-  pub string_slice_1 : Vec<>,
+  f2 : Vec<>,
 }
 
 fn main()

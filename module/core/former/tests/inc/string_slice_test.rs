@@ -24,4 +24,4 @@ pub struct Struct1< 'a >
 
 //
 
-include!( "./string_slice_only_test.rs" );
+include!( "./only_test/string_slice.rs" );

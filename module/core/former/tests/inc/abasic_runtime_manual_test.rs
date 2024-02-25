@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[derive( Debug, PartialEq )]
+#[ derive( Debug, PartialEq ) ]
 pub struct Struct1
 {
   pub int_1 : i32,
@@ -34,7 +34,7 @@ impl Struct1
 
 //
 
-#[derive( Debug )]
+#[ derive( Debug ) ]
 pub struct Struct1Former
 {
   pub int_1 : core::option::Option< i32 >,
@@ -211,4 +211,5 @@ impl Struct1Former
 
 //
 
-include!( "basic_runtime_only_test.rs" );
+// include!( "basic_runtine_only_test.rs" );
+include!( "only_test/basic.rs" );

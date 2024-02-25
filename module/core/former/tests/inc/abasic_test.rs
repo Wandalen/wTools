@@ -1,22 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// only_for_aggregating_module!
-// {
-//   #[ allow( unused_imports ) ]
-//   use wtools::meta::*;
-//   #[ allow( unused_imports ) ]
-//   use wtools::former::Former;
-// }
-//
-// only_for_terminal_module!
-// {
-//   #[ allow( unused_imports ) ]
-//   use meta_tools::*;
-//   #[ allow( unused_imports ) ]
-//   use former::Former;
-// }
-
 use std::collections::HashMap;
 use std::collections::HashSet;
 
@@ -34,7 +18,10 @@ pub struct Struct1
 
 //
 
-include!( "basic_only_test.rs" );
+include!( "only_test/basic.rs" );
+
+// include!( "basic_runtine_only_test.rs" );
+// include!( "basic_only_test.rs" );
 
 //
 // output :

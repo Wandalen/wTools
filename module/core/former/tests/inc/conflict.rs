@@ -52,4 +52,4 @@ pub struct Struct1
 
 //
 
-include!( "basic_only_test.rs" );
+include!( "only_test/basic.rs" );

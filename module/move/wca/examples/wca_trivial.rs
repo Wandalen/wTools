@@ -32,14 +32,14 @@ fn main()
   //   .subject( "Subject", wca::Type::String, true )
   //   .property( "property", "simple property", wca::Type::String, true )
   //   .routine( f1 )
-  //   .form()
+  //   .perform()
   // .command( "exit" )
   //   .hint( "just exit" )
   //   .routine( || exit() )
-  //   .form()
-  // .form()
+  //   .perform()
+  // .perform()
   // ;
-  // ca.perform( args ).unwrap();
+  // ca.execute( input ).unwrap();
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
   ca.perform( args.join( " " ) ).unwrap();

@@ -1,30 +1,16 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// #[ allow( unused_imports ) ]
-// use test_tools::exposed::*;
-//
-// only_for_aggregating_module!
-// {
-//   #[ allow( unused_imports ) ]
-//   use wtools::meta::*;
-//   #[ allow( unused_imports ) ]
-//   use wtools::former::Former;
-// }
-//
-// only_for_terminal_module!
-// {
-//   #[ allow( unused_imports ) ]
-//   use meta_tools::*;
-//   #[ allow( unused_imports ) ]
-//   use former::Former;
-// }
+#[ derive( Debug, PartialEq, TheModule::Former ) ]
+pub struct Struct0
+{
+  pub int_1 : i32,
+}
 
 #[ derive( Debug, PartialEq, TheModule::Former ) ]
 #[ perform( fn perform1< 'a >() -> Option< &'a str > ) ]
 pub struct Struct1
 {
-  #[ default( 31 ) ]
   pub int_1 : i32,
 }
 
@@ -42,21 +28,39 @@ impl Struct1
 
 tests_impls!
 {
+
+  fn basecase()
+  {
+
+    let got = Struct0::former().form();
+    let expected = Struct0 { int_1 : 0 };
+    a_id!( got, expected );
+
+    let got = Struct0::former().perform();
+    let expected = Struct0 { int_1 : 0 };
+    a_id!( got, expected );
+
+  }
+
   fn basic()
   {
+
     let got = Struct1::former().form();
-    let expected = Struct1 { int_1 : 31 };
+    let expected = Struct1 { int_1 : 0 };
     a_id!( got, expected );
 
     let got = Struct1::former().perform();
     let expected = Some( "abc" );
     a_id!( got, expected );
+
   }
+
 }
 
 //
 
 tests_index!
 {
+  basecase,
   basic,
 }
