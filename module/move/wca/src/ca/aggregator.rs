@@ -13,6 +13,8 @@ pub( crate ) mod private
 
   use std::collections::{ HashMap, HashSet };
   use std::fmt;
+  use std::fmt::Formatter;
+  use std::rc::Rc;
   use wtools::thiserror;
   use wtools::error::
   {
@@ -126,6 +128,46 @@ pub( crate ) mod private
     executor_converter : ExecutorConverter,
 
     callback_fn : Option< CommandsAggregatorCallback >,
+  }
+
+  impl CommandsAggregator
+  {
+    /// Create a new instance of `CommandsAggregatorFluentBuilder`.
+    ///
+    /// This method ensures a fluent interface to build a `CommandsAggregator`.
+    ///
+    /// # Returns
+    ///
+    /// Returns a `CommandsAggregatorFluentBuilder` instance.
+    /// ```
+    /// use wca::{ Args, Context };
+    ///
+    /// let ca = wca::CommandsAggregator::fluent()
+    /// .command( "echo" )
+    ///   .hint( "prints all subjects and properties" )
+    ///   .subject( "Subject", wca::Type::String, true )
+    ///   .property( "property", "simple property", wca::Type::String, true )
+    ///   .routine( | args : Args, props | { println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) } )
+    ///   .perform()
+    /// .command( "inc" )
+    ///   .hint( "This command increments a state number each time it is called consecutively. (E.g. `.inc .inc`)" )
+    ///   .routine( | ctx : Context | { let i : &mut i32 = ctx.get_or_default(); println!( "i = {i}" ); *i += 1; } )
+    ///   .perform()
+    /// .command( "error" )
+    ///   .hint( "prints all subjects and properties" )
+    ///   .subject( "Error message", wca::Type::String, true )
+    ///   .routine( | args : Args | { println!( "Returns an error" ); Err( format!( "{}", args.get_owned::< String >( 0 ).unwrap_or_default() ) ) } )
+    ///   .perform()
+    /// .command( "exit" )
+    ///   .hint( "just exit" )
+    ///   .routine( || { println!( "exit" ); std::process::exit( 0 ) } )
+    ///   .perform()
+    /// .perform();
+    /// ```
+    pub fn fluent() -> CommandsAggregatorFluentBuilder
+    {
+      CommandsAggregatorFluentBuilder( Self::former().form() )
+    }
   }
 
   impl CommandsAggregatorFormer
@@ -252,13 +294,99 @@ pub( crate ) mod private
     }
   }
 
+  /// The `CommandsAggregatorFluentBuilder` struct is a builder for creating instances of the `CommandsAggregator` struct using a fluent interface.
+  ///
+  /// It allows for chaining multiple configuration methods together to customize the `CommandsAggregator` instance before building it.
+  #[ derive( Debug ) ]
+  pub struct CommandsAggregatorFluentBuilder( CommandsAggregator );
+
+  impl CommandsAggregatorFluentBuilder
+  {
+    pub fn command< P : Into< String > >( self, phrase : P ) -> CommandHandler
+    {
+      CommandHandler
+      {
+        ca : self.0,
+        grammar : Command::former().phrase( phrase ),
+        routine : Routine::WithoutContext( Rc::new( | _ | { panic!( "No routine available: A handler function for the command is missing" ) } ) )
+      }
+    }
+
+    pub fn perform( self ) -> CommandsAggregator
+    {
+      self.0
+    }
+  }
+
+  // qqq: rename
+  pub struct CommandHandler
+  {
+    ca : CommandsAggregator,
+    grammar : ca::grammar::CommandFormer,
+    routine : Routine,
+  }
+
+  impl std::fmt::Debug for CommandHandler
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> fmt::Result
+    {
+      f
+      .debug_struct( "CommandHandler" )
+      .field( "ca", &( self.ca ) )
+      .field( "grammar", &"" )
+      .finish()
+    }
+  }
+
+
+  impl CommandHandler
+  {
+    pub fn hint< H : Into< String > >( mut self, hint : H ) -> Self
+    {
+      self.grammar = self.grammar.hint( hint );
+      self
+    }
+
+    pub fn subject< H : Into< String > >( mut self, hint : H, kind : Type, optional : bool ) -> Self
+    {
+      self.grammar = self.grammar.subject( hint, kind, optional );
+      self
+    }
+
+    pub fn property< K : AsRef< str >, H : Into< String > >( mut self, key : K, hint : H, kind : Type, optional : bool ) -> Self
+    {
+      self.grammar = self.grammar.property( key, hint, kind, optional );
+      self
+    }
+
+    pub fn routine< I, R, F : Into< Handler< I, R > > >( mut self, f : F ) -> Self
+    where
+      Routine: From< Handler< I, R > >,
+    {
+      let h = f.into();
+      self.routine = h.into();
+      self
+    }
+
+    pub fn perform( mut self ) -> CommandsAggregatorFluentBuilder
+    {
+      let cmd= self.grammar.form();
+      let phrase = cmd.phrase.clone();
+
+      self.ca.verifier.commands.entry( phrase.clone() ).or_default().push( cmd );
+      assert!( !self.ca.executor_converter.routines.contains_key( &phrase ), "routine was duplicated" );
+      self.ca.executor_converter.routines.insert( phrase, self.routine );
+
+      CommandsAggregatorFluentBuilder( self.ca )
+    }
+  }
 }
 
 //
 
 crate::mod_interface!
 {
-  exposed use CommandsAggregator;
+  prelude use CommandsAggregator;
   exposed use Error;
   exposed use ValidationError;
 }

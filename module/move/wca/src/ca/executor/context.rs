@@ -128,5 +128,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  exposed use Context;
+  prelude use Context;
 }

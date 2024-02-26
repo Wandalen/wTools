@@ -101,7 +101,7 @@ pub( crate ) mod private
       self
     }
 
-    // Setter for separate properties aliases.
+    /// Setter for separate properties aliases.
     pub fn property_alias< S : Into< String > >( mut self, key : S, alias : S ) -> Self
     {
       let key = key.into();
@@ -125,6 +125,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   exposed use Command;
+  exposed use CommandFormer;
   protected use ValueDescription;
 }
 

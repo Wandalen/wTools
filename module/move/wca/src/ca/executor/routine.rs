@@ -6,6 +6,7 @@ pub( crate ) mod private
   use wtools::error::Result;
 
   use std::{ fmt::Formatter, rc::Rc };
+  use wtools::anyhow::anyhow;
 
   /// Command Args
   ///
@@ -130,6 +131,8 @@ pub( crate ) mod private
   }
 
   // qqq : make 0-arguments, 1-argument, 2-arguments, 3 arguments versions
+  // aaa : done. now it works with the following variants:
+  // fn(), fn(args), fn(props), fn(args, props), fn(context), fn(context, args), fn(context, props), fn(context, args, props)
   type RoutineWithoutContextFn = dyn Fn( ( Args, Props ) ) -> Result< () >;
   type RoutineWithContextFn = dyn Fn( ( Args, Props ), Context ) -> Result< () >;
 
@@ -161,7 +164,123 @@ pub( crate ) mod private
   ///   }
   /// );
 
-  // qqq : for Bohdan : instead of array of Enums, lets better have 5 different arrays of different Routine and no enum
+  pub struct Handler< I, O >( Box< dyn Fn( I ) -> O > );
+
+  impl< I, O > std::fmt::Debug for Handler< I, O >
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      f.debug_struct( "Handler" ).finish_non_exhaustive()
+    }
+  }
+
+  // without context
+  impl< F, R > From< F > for Handler< (), R >
+  where
+    R : IntoResult + 'static,
+    F : Fn() -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( move | () | value() ) )
+    }
+  }
+
+  impl< F, R > From< F > for Handler< Args, R >
+  where
+    R : IntoResult + 'static,
+    F : Fn( Args ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( value ) )
+    }
+  }
+
+  impl< F, R > From< F > for Handler< Props, R >
+    where
+      R : IntoResult + 'static,
+      F : Fn( Props ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( value ) )
+    }
+  }
+
+  impl< F, R > From< F > for Handler< ( Args, Props ), R >
+    where
+      R : IntoResult + 'static,
+      F : Fn( Args, Props ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( move |( a, p )| value( a, p ) ) )
+    }
+  }
+
+  // with context
+  impl< F, R > From< F > for Handler< Context, R >
+  where
+    R : IntoResult + 'static,
+    F : Fn( Context ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( value ) )
+    }
+  }
+
+  impl< F, R > From< F > for Handler< ( Context, Args ), R >
+    where
+      R : IntoResult + 'static,
+      F : Fn( Context, Args ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( move |( ctx, a )| value( ctx, a ) ) )
+    }
+  }
+
+  impl< F, R > From< F > for Handler< ( Context, Props ), R >
+    where
+      R : IntoResult + 'static,
+      F : Fn( Context, Props ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( move |( ctx, a )| value( ctx, a ) ) )
+    }
+  }
+
+  impl< F, R > From< F > for Handler< ( Context, Args, Props ), R >
+    where
+      R : IntoResult + 'static,
+      F : Fn( Context, Args, Props ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( move |( c, a, p )| value( c, a, p ) ) )
+    }
+  }
+
+  impl< I, O > From< Handler< I, O > > for Routine
+  where
+    I : 'static,
+    O : IntoResult + 'static,
+    Routine : From< Box< dyn Fn( I ) -> Result< () > > >,
+  {
+    fn from( value : Handler< I, O > ) -> Self
+    {
+      Routine::from( Box::new( move | x | value.0( x ).into_result() ) )
+    }
+  }
+
+  /// Represents different types of routines.
+  ///
+  /// - `WithoutContext`: A routine that does not require any context.
+  /// - `WithContext`: A routine that requires a context.
+// qqq : for Bohdan : instead of array of Enums, lets better have 5 different arrays of different Routine and no enum
   // to use statical dispatch
   #[ derive( Clone ) ]
   pub enum Routine
@@ -171,7 +290,88 @@ pub( crate ) mod private
     /// Routine with context
     WithContext( Rc< RoutineWithContextFn > ),
   }
+
+  impl std::fmt::Debug for Routine
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      match self
+      {
+        Routine::WithoutContext( _ ) => f.debug_struct( "Routine::WithoutContext" ).finish_non_exhaustive(),
+        Routine::WithContext( _ ) => f.debug_struct( "Routine::WithContext" ).finish_non_exhaustive(),
+      }
+    }
+  }
+
+  // without context
+  impl From< Box< dyn Fn( () ) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn( () ) -> Result< () > > ) -> Self
+    {
+      Self::WithoutContext( Rc::new( move | _ | { value( () )?; Ok( () ) } ) )
+    }
+  }
+
+  impl From< Box< dyn Fn( Args ) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn( Args ) -> Result< () > > ) -> Self
+    {
+      Self::WithoutContext( Rc::new( move |( a, _ )| { value( a )?; Ok( () ) } ) )
+    }
+  }
+
+  impl From< Box< dyn Fn( Props ) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn( Props ) -> Result< () > > ) -> Self
+    {
+      Self::WithoutContext( Rc::new( move |( _, p )| { value( p )?; Ok( () ) } ) )
+    }
+  }
+
+  impl From< Box< dyn Fn(( Args, Props )) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn(( Args, Props )) -> Result< () > > ) -> Self
+    {
+      Self::WithoutContext( Rc::new( move |( a, p )| { value(( a, p ))?; Ok( () ) } ) )
+    }
+  }
+
+  // with context
+  impl From< Box< dyn Fn( Context ) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn( Context ) -> Result< () > > ) -> Self
+    {
+      Self::WithContext( Rc::new( move | _, ctx | { value( ctx )?; Ok( () ) } ) )
+    }
+  }
+
+  impl From< Box< dyn Fn(( Context, Args )) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn(( Context, Args )) -> Result< () > > ) -> Self
+    {
+      Self::WithContext( Rc::new( move | ( a, _ ), ctx | { value(( ctx, a ))?; Ok( () ) } ) )
+    }
+  }
+
+  impl From< Box< dyn Fn(( Context, Props )) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn(( Context, Props )) -> Result< () > > ) -> Self
+    {
+      Self::WithContext( Rc::new( move | ( _, p ), ctx | { value(( ctx, p ))?; Ok( () ) } ) )
+    }
+  }
+
+  impl From< Box< dyn Fn(( Context, Args, Props )) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn(( Context, Args, Props )) -> Result< () > > ) -> Self
+    {
+      Self::WithContext( Rc::new( move |( a, p ), ctx | { value(( ctx, a, p ))?; Ok( () ) } ) )
+    }
+  }
+
+
   // qqq : why Rc is necessary? why not just box?
+  // aaa : to be able to clone Routines
 
   impl Routine
   {
@@ -222,31 +422,14 @@ pub( crate ) mod private
     }
   }
 
-  impl std::fmt::Debug for Routine
+  trait IntoResult
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
-    {
-      f.write_str( "Routine" )
-    }
+    fn into_result( self ) -> Result< () >;
   }
 
-  impl PartialEq for Routine
-  {
-    fn eq( &self, other : &Self ) -> bool
-    {
-      // We can't compare closures. Because every closure has a separate type, even if they're identical.
-      // Therefore, we check that the two Rc's point to the same closure (allocation).
-      #[ allow( clippy::vtable_address_comparisons ) ]
-      match ( self, other )
-      {
-        ( Routine::WithContext( this ), Routine::WithContext( other ) ) => Rc::ptr_eq( this, other ),
-        ( Routine::WithoutContext( this ), Routine::WithoutContext( other ) ) => Rc::ptr_eq( this, other ),
-        _ => false
-      }
-    }
-  }
-
-  impl Eq for Routine {}
+  impl IntoResult for std::convert::Infallible { fn into_result( self ) -> Result< () > { Ok( () ) } }
+  impl IntoResult for () { fn into_result( self ) -> Result< () > { Ok( () ) } }
+  impl< E : std::fmt::Display > IntoResult for Result< (), E > { fn into_result( self ) -> Result< () > { self.map_err( | e | anyhow!( "{e}" )) } }
 }
 
 //
@@ -254,6 +437,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   exposed use Routine;
-  exposed use Args;
-  exposed use Props;
+  exposed use Handler;
+  prelude use Args;
+  prelude use Props;
 }

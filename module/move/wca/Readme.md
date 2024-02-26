@@ -13,30 +13,37 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 ```rust
 #[ cfg( not( feature = "no_std" ) ) ]
 {
-    use wca::*;
+    use wca::prelude::*;
 
-    let ca = CommandsAggregator::former()
-    .grammar(
-    [
-      Command::former()
-      .phrase( "echo" )
-      .hint( "prints all subjects and properties" )
-      .subject( "Subject", Type::String, true )
-      .property( "property", "simple property", Type::String, true )
-      .form(),
-    ])
-    .executor(
-    [
-      ( "echo".to_owned(), Routine::new( |( args, props )|
-      {
-        println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
-        Ok( () )
-      })),
-    ])
-    .build();
+    fn main()
+    {
 
-    let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
-    ca.perform( args.join( " " ) ).unwrap();
+      let ca = wca::CommandsAggregator::fluent()
+      .command( "echo" )
+        .hint( "prints all subjects and properties" )
+        .subject( "Subject", Type::String, true )
+        .property( "property", "simple property", Type::String, true )
+        .routine( | args : Args, props | { println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) } )
+        .end()
+      .command( "inc" )
+        .hint( "This command increments a state number each time it is called consecutively. (E.g. `.inc .inc`)" )
+        .routine( | ctx : Context | { let i : &mut i32 = ctx.get_or_default(); println!( "i = {i}" ); *i += 1; } )
+        .end()
+      .command( "error" )
+        .hint( "prints all subjects and properties" )
+        .subject( "Error message", Type::String, true )
+        .routine( | args : Args | { println!( "Returns an error" ); Err( format!( "{}", args.get_owned::< String >( 0 ).unwrap_or_default() ) ) } )
+        .end()
+      .command( "exit" )
+        .hint( "just exit" )
+        .routine( || { println!( "exit" ); std::process::exit( 0 ) } )
+        .end()
+      .perform();
+
+      let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
+      ca.perform( args ).unwrap();
+
+    }
 }
 ```
 

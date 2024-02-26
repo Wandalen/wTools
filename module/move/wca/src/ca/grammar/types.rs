@@ -166,7 +166,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  exposed use Type;
+  prelude use Type;
   exposed use Value;
   prelude use TryCast;
 }
