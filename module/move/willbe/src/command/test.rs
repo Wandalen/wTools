@@ -18,6 +18,8 @@ mod private
   struct TestsProperties
   {
     #[ default( true ) ]
+    dry : bool,
+    #[ default( true ) ]
     with_stable : bool,
     #[ default( true ) ]
     with_nightly : bool,
@@ -34,7 +36,7 @@ mod private
 	{
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
-    let TestsProperties { with_stable, with_nightly, parallel, power, include, exclude } = properties.try_into()?;
+    let TestsProperties { dry, with_stable, with_nightly, parallel, power, include, exclude } = properties.try_into()?;
 
     let crate_dir = CrateDir::try_from( path )?;
 
@@ -51,7 +53,7 @@ mod private
     .include_features( include )
     .form();
 
-    match endpoint::test( args )
+    match endpoint::test( args, dry )
     {
       Ok( report ) =>
       {
@@ -74,6 +76,7 @@ mod private
     {
       let mut this = Self::former();
 
+      this = if let Some( v ) = value.get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_stable" ) { this.with_stable::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_nightly" ) { this.with_nightly::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "parallel" ) { this.parallel::< bool >( v ) } else { this };

@@ -47,6 +47,7 @@ pub( crate ) mod private
     .long_hint( "this command runs tests in designated packages based on the provided path. It allows for inclusion and exclusion of features, testing on different Rust version channels, parallel execution, and feature combination settings." )
     .phrase( "test" )
     .subject( "A path to directories with packages. If no path is provided, the current directory is used.", Type::Path, true )
+    .property( "dry", "Enables 'dry run'. Does not run tests, only simulates. Default is `true`.", Type::Bool, true )
     .property( "include", "A list of features to include in testing. Separate multiple features by comma.", Type::List( Type::String.into(), ',' ), true )
     .property( "exclude", "A list of features to exclude from testing. Separate multiple features by comma.", Type::List( Type::String.into(), ',' ), true )
     .property( "with_stable", "Specifies whether or not to run tests on stable Rust version. Default is `true`", Type::Bool, true )

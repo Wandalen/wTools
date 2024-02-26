@@ -23,6 +23,17 @@ mod private
   #[ derive( Debug, Default, Clone ) ]
   pub struct TestReport
   {
+    /// A boolean flag indicating whether or not the code is being run in dry mode.
+    ///
+    /// Dry mode is a mode in which the code performs a dry run, simulating the execution
+    /// of certain tasks without actually making any changes. When the `dry` flag is set to
+    /// `true`, the code will not perform any actual actions, but instead only output the
+    /// results it would have produced.
+    ///
+    /// This flag can be useful for testing and debugging purposes, as well as for situations
+    /// where it is important to verify the correctness of the actions being performed before
+    /// actually executing them.
+    pub dry : bool,
     /// A string containing the name of the package being tested.
 		pub package_name : String,
     /// A `BTreeMap` where the keys are `cargo::Channel` enums representing the channels
@@ -36,10 +47,15 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-			f.write_fmt( format_args!( "Package: [ {} ]:\n", self.package_name ) )?;
+      writeln!( f, "The tests will be executed using the following configurations:" )?;
+      for ( channel, feature ) in self.tests.iter().flat_map( | ( c, f ) | f.iter().map ( |( f, _ )| ( *c, f ) ) )
+      {
+        writeln!( f, "channel: {channel} | feature(-s): [{}]", if feature.is_empty() { "no-features" } else { feature } )?;
+      }
+			writeln!( f, "\nPackage: [ {} ]:", self.package_name )?;
 			if self.tests.is_empty()
 			{
-				f.write_fmt( format_args!( "unlucky" ) )?;
+				writeln!( f, "unlucky" )?;
 				return Ok( () );
 			}
 
@@ -47,18 +63,26 @@ mod private
 			{
 				for (feature, result) in features
 				{
-					// if tests failed or if build failed
-					let failed = result.out.contains( "failures" ) || result.err.contains( "error" );
-					if !failed
-					{
-						let feature = if feature.is_empty() { "no-features" } else { feature };
-						f.write_fmt(format_args!("  [ {} | {} ]: {}\n", channel, feature, if failed { "❌ failed" } else { "✅ successful" } ) )?;
-					}
-					else
-					{
-						let feature = if feature.is_empty() { "no-features" } else { feature };
-						f.write_fmt( format_args!( "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out, result.err ) )?;
-					}
+          if self.dry
+          {
+            let feature = if feature.is_empty() { "no-features" } else { feature };
+            writeln!( f, "[{channel} | {feature}]: `{}`", result.command )?
+          }
+          else
+          {
+            // if tests failed or if build failed
+            let failed = result.out.contains( "failures" ) || result.err.contains( "error" );
+            if !failed
+            {
+              let feature = if feature.is_empty() { "no-features" } else { feature };
+              writeln!( f, "  [ {} | {} ]: {}", channel, feature, if failed { "❌ failed" } else { "✅ successful" } )?;
+            }
+            else
+            {
+              let feature = if feature.is_empty() { "no-features" } else { feature };
+              write!( f, "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out, result.err )?;
+            }
+          }
 				}
 			}
 
@@ -92,7 +116,7 @@ mod private
 	/// It is possible to enable and disable various features of the crate.
 	/// The function also has the ability to run tests in parallel using `Rayon` crate.
 	/// The result of the tests is written to the structure `TestReport` and returned as a result of the function execution.
-	pub fn test( args : TestsArgs ) -> Result< TestReport, ( TestReport, Error ) >
+	pub fn test( args : TestsArgs, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
 	{
     let report = TestReport::default();
 		// fail fast if some additional installations required
@@ -104,8 +128,11 @@ mod private
 		}
 
 		let report = Arc::new( Mutex::new( report ) );
+    {
+      report.lock().unwrap().dry = dry;
+    }
 
-		let path = args.dir.absolute_path().join("Cargo.toml");
+		let path = args.dir.absolute_path().join( "Cargo.toml" );
 		let metadata = Workspace::with_crate_dir( args.dir.clone() ).map_err( | e | ( report.lock().unwrap().clone(), e ) )?;
 
 		let package = metadata
@@ -141,7 +168,7 @@ mod private
 					let r = report.clone();
 					s.spawn( move | _ |
 					{
-						let cmd_rep = cargo::test( dir, cargo::TestArgs::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), false ).unwrap_or_else( | rep | rep.downcast().unwrap() );
+						let cmd_rep = cargo::test( dir, cargo::TestArgs::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
 						r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
 					});
 				}
