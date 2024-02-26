@@ -92,7 +92,7 @@ mod private
 	/// It is possible to enable and disable various features of the crate.
 	/// The function also has the ability to run tests in parallel using `Rayon` crate.
 	/// The result of the tests is written to the structure `TestReport` and returned as a result of the function execution.
-	pub fn run_tests( args : TestsArgs ) -> Result< TestReport, ( TestReport, Error ) >
+	pub fn test( args : TestsArgs ) -> Result< TestReport, ( TestReport, Error ) >
 	{
     let report = TestReport::default();
 		// fail fast if some additional installations required
@@ -160,7 +160,7 @@ mod private
 crate::mod_interface!
 {
   /// run all tests in all crates
-  exposed use run_tests;
+  exposed use test;
 	protected use TestsArgs;
   protected use TestReport;
 }

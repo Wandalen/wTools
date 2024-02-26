@@ -45,7 +45,7 @@ pub( crate ) mod private
     let run_tests_command = wca::Command::former()
     .hint( "execute tests in specific packages" )
     .long_hint( "this command runs tests in designated packages based on the provided path. It allows for inclusion and exclusion of features, testing on different Rust version channels, parallel execution, and feature combination settings." )
-    .phrase("tests.run")
+    .phrase( "test" )
     .subject( "A path to directories with packages. If no path is provided, the current directory is used.", Type::Path, true )
     .property( "include", "A list of features to include in testing. Separate multiple features by comma.", Type::List( Type::String.into(), ',' ), true )
     .property( "exclude", "A list of features to exclude from testing. Separate multiple features by comma.", Type::List( Type::String.into(), ',' ), true )
@@ -105,7 +105,7 @@ pub( crate ) mod private
       ( "publish".to_owned(), Routine::new( publish ) ),
       ( "list".to_owned(), Routine::new( list ) ),
       ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
-      ( "tests.run".to_owned(), Routine::new( run_tests ) ),
+      ( "test".to_owned(), Routine::new( test ) ),
       ( "workflow.generate".to_owned(), Routine::new( workflow_generate ) ),
       ( "workspace.new".to_owned(), Routine::new( workspace_new ) ),
       ( "readme.header.generate".to_owned(), Routine::new( main_header_generate ) ),
@@ -127,7 +127,7 @@ crate::mod_interface!
   /// Generate tables
   layer table;
   /// Run all tests
-  layer run_tests;
+  layer test;
   /// Generate workflow
   layer workflow;
   /// Workspace new

@@ -7,7 +7,7 @@ crate::mod_interface!
   /// Tables.
   layer table;
   /// Run all tests
-  layer run_tests;
+  layer test;
   /// Workflow.
   layer workflow;
   /// Workspace new.

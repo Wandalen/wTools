@@ -10,12 +10,12 @@ mod private
   use wca::{ Args, Props };
   use wtools::error::Result;
   use path::AbsolutePath;
-  use endpoint::run_tests::TestsArgs;
+  use endpoint::test::TestsArgs;
   use former::Former;
   use cargo::Channel;
 
   #[ derive( Former ) ]
-  struct RunTestsProperties
+  struct TestsProperties
   {
     #[ default( true ) ]
     with_stable : bool,
@@ -30,11 +30,11 @@ mod private
   }
 
   /// run tests in specified crate
-	pub fn run_tests( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+	pub fn test( ( args, properties ) : ( Args, Props ) ) -> Result< () >
 	{
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
-    let RunTestsProperties { with_stable, with_nightly, parallel, power, include, exclude } = properties.try_into()?;
+    let TestsProperties { with_stable, with_nightly, parallel, power, include, exclude } = properties.try_into()?;
 
     let crate_dir = CrateDir::try_from( path )?;
 
@@ -51,7 +51,7 @@ mod private
     .include_features( include )
     .form();
 
-    match endpoint::run_tests( args )
+    match endpoint::test( args )
     {
       Ok( report ) =>
       {
@@ -67,7 +67,7 @@ mod private
     }
 	}
 
-  impl TryFrom< Props > for RunTestsProperties
+  impl TryFrom< Props > for TestsProperties
   {
     type Error = wtools::error::for_app::Error;
     fn try_from( value : Props ) -> Result< Self, Self::Error >
@@ -89,5 +89,5 @@ mod private
 crate::mod_interface!
 {
   /// run tests in specified crate
-  exposed use run_tests;
+  exposed use test;
 }
