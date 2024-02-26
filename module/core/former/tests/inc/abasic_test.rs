@@ -18,7 +18,9 @@ pub struct Struct1
 
 //
 
-// include!( "only_test/basic.rs" );
+// xxx : qqq : should be used basic_with_runtine instead of basic_without_runtime
+// include!( "only_test/basic_with_runtine.rs" );
+include!( "only_test/basic_without_runtime.rs" );
 
 //
 // output :

@@ -1,22 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// only_for_aggregating_module!
-// {
-//   #[ allow( unused_imports ) ]
-//   use wtools::meta::*;
-//   #[ allow( unused_imports ) ]
-//   use wtools::former::Former;
-// }
-//
-// only_for_terminal_module!
-// {
-//   #[ allow( unused_imports ) ]
-//   use meta_tools::*;
-//   #[ allow( unused_imports ) ]
-//   use former::Former;
-// }
-
 #[allow(dead_code)]
 type Option = ();
 #[allow(dead_code)]
@@ -52,4 +36,5 @@ pub struct Struct1
 
 //
 
-include!( "only_test/basic.rs" );
+// include!( "only_test/basic_with_runtine.rs" );
+include!( "only_test/basic_without_runtime.rs" );

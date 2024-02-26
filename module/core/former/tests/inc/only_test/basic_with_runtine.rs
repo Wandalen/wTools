@@ -5,6 +5,7 @@ use super::*;
 
 tests_impls!
 {
+
   fn test_int()
   {
 
@@ -396,6 +397,7 @@ tests_impls!
     #[ cfg( not( debug_assertions ) ) ]
     println!( "Debugging disabled" );
   }
+
 }
 
 //
