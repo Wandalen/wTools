@@ -97,7 +97,7 @@ fn named_results_list< R : RangeBounds< f64 > >( params : Vec< f64 >, stats : St
 
   for i in 0..params_name.len()
   {
-    list.push( vec![ params_name[ i ].to_owned(), str_params[ i ].clone(), diff_sum_vec[ i ].clone(), expectation_vec[ i ].clone(), start_params[ i ].clone(), bounds_vec[ i ].clone() ] );
+    list.push( vec![ params_name[ i ].to_owned(), start_params[ i ].clone(), bounds_vec[ i ].clone(), diff_sum_vec[ i ].clone(), expectation_vec[ i ].clone(), str_params[ i ].clone() ] );
   }
 
   list
@@ -127,7 +127,7 @@ fn write_results(
 
     let mut builder = Builder::default();
 
-    let row = [ "", "calculated value", "sum of differences", "expected value", "starting value", "bounds" ].into_iter().map( str::to_owned ).collect_vec();
+    let row = [ "", "starting value", "bounds", "sum of differences", "mathematical expectation", "calculated value" ].into_iter().map( str::to_owned ).collect_vec();
     builder.push_record( row );
 
     for i in 0..params.len()
@@ -175,7 +175,7 @@ fn write_results(
       }
       else
       {
-        row.push( params[ i - 1 ][ 1 ].clone() );
+        row.push( params[ i - 1 ].last().unwrap().clone() );
       }
     }
 
