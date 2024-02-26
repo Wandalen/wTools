@@ -10,13 +10,15 @@ mod private
   use wca::{ Args, Props };
   use wtools::error::Result;
   use path::AbsolutePath;
-  use endpoint::run_tests::TestsArgs;
+  use endpoint::test::TestsArgs;
   use former::Former;
   use cargo::Channel;
 
   #[ derive( Former ) ]
-  struct RunTestsProperties
+  struct TestsProperties
   {
+    #[ default( true ) ]
+    dry : bool,
     #[ default( true ) ]
     with_stable : bool,
     #[ default( true ) ]
@@ -30,11 +32,11 @@ mod private
   }
 
   /// run tests in specified crate
-	pub fn run_tests( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+	pub fn test( ( args, properties ) : ( Args, Props ) ) -> Result< () >
 	{
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
-    let RunTestsProperties { with_stable, with_nightly, parallel, power, include, exclude } = properties.try_into()?;
+    let TestsProperties { dry, with_stable, with_nightly, parallel, power, include, exclude } = properties.try_into()?;
 
     let crate_dir = CrateDir::try_from( path )?;
 
@@ -51,7 +53,7 @@ mod private
     .include_features( include )
     .form();
 
-    match endpoint::run_tests( args )
+    match endpoint::test( args, dry )
     {
       Ok( report ) =>
       {
@@ -67,13 +69,14 @@ mod private
     }
 	}
 
-  impl TryFrom< Props > for RunTestsProperties
+  impl TryFrom< Props > for TestsProperties
   {
     type Error = wtools::error::for_app::Error;
     fn try_from( value : Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 
+      this = if let Some( v ) = value.get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_stable" ) { this.with_stable::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_nightly" ) { this.with_nightly::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "parallel" ) { this.parallel::< bool >( v ) } else { this };
@@ -89,5 +92,5 @@ mod private
 crate::mod_interface!
 {
   /// run tests in specified crate
-  exposed use run_tests;
+  exposed use test;
 }
