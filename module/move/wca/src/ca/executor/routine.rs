@@ -232,9 +232,9 @@ pub( crate ) mod private
   }
 
   impl< F, R > From< F > for Handler< ( Context, Args ), R >
-    where
-      R : IntoResult + 'static,
-      F : Fn( Context, Args ) -> R + 'static,
+  where
+    R : IntoResult + 'static,
+    F : Fn( Context, Args ) -> R + 'static,
   {
     fn from( value : F ) -> Self
     {
@@ -243,9 +243,9 @@ pub( crate ) mod private
   }
 
   impl< F, R > From< F > for Handler< ( Context, Props ), R >
-    where
-      R : IntoResult + 'static,
-      F : Fn( Context, Props ) -> R + 'static,
+  where
+    R : IntoResult + 'static,
+    F : Fn( Context, Props ) -> R + 'static,
   {
     fn from( value : F ) -> Self
     {
@@ -254,9 +254,9 @@ pub( crate ) mod private
   }
 
   impl< F, R > From< F > for Handler< ( Context, Args, Props ), R >
-    where
-      R : IntoResult + 'static,
-      F : Fn( Context, Args, Props ) -> R + 'static,
+  where
+    R : IntoResult + 'static,
+    F : Fn( Context, Args, Props ) -> R + 'static,
   {
     fn from( value : F ) -> Self
     {
@@ -365,7 +365,7 @@ pub( crate ) mod private
   {
     fn from( value : Box< dyn Fn(( Context, Args, Props )) -> Result< () > > ) -> Self
     {
-      Self::WithContext( Rc::new( move |( a, p ), ctx | { value(( ctx, a, p ))?; Ok( () ) } ) )
+      Self::WithContext( Rc::new( move | ( a, p ), ctx | { value(( ctx, a, p ))?; Ok( () ) } ) )
     }
   }
 
