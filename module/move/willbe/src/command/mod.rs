@@ -74,10 +74,16 @@ pub( crate ) mod private
     .phrase( "readme.header.generate" )
     .form();
 
-    let headers_generate = wca::Command::former()
+    let modules_headers_generate = wca::Command::former()
     .hint( "Generates header for each workspace member." )
     .long_hint( "For use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
     .phrase( "readme.modules.headers.generate" )
+    .form();
+
+    let headers_generate = wca::Command::former()
+    .hint( "Generates header for workspace and for each workspace member." )
+    .long_hint( "For use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml\n\nAnd\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml." )
+    .phrase( "readme.headers.generate" )
     .form();
 
     vec!
@@ -89,6 +95,7 @@ pub( crate ) mod private
       generate_workflow,
       w_new,
       generate_main_header,
+      modules_headers_generate,
       headers_generate,
     ]
   }
@@ -110,6 +117,7 @@ pub( crate ) mod private
       ( "workspace.new".to_owned(), Routine::new( workspace_new ) ),
       ( "readme.header.generate".to_owned(), Routine::new( main_header_generate ) ),
       ( "readme.modules.headers.generate".to_owned(), Routine::new( headers_generate ) ),
+      ( "readme.headers.generate".to_owned(), Routine::new( readme_headers_generate ) ),
     ])
   }
 }
@@ -136,4 +144,6 @@ crate::mod_interface!
   layer main_header;
   /// Generate headers
   layer module_headers;
+  /// Generate main & module`s header
+  layer readme_headers_generate;
 }
