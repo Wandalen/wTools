@@ -39,6 +39,7 @@ feed-rs = "1.4.0"
 toml = "0.8.10"
 serde = "1.0.196"
 humantime-serde = "1.1.1"
+gluesql = "0.15.0"
 wca = { workspace = true }
 
 [dev-dependencies]

@@ -1,8 +1,11 @@
 //! Execute plan.
 
+use std::sync::{ Arc, Mutex };
+
 use super::*;
 use retriever::FeedClient;
 use feed_config::read_feed_config;
+use storage::save_feed;
 // use wca::prelude::*;
 
 pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
@@ -26,6 +29,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       if let Some( path ) = args.get_owned( 0 )
       {
         let rt  = tokio::runtime::Runtime::new()?;
+
         rt.block_on( fetch_from_config( path ) ).unwrap();
       }
 
@@ -43,12 +47,15 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 pub async fn fetch_from_config( file_path : String ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 {
   let client = FeedClient;
+  let db_glue = Arc::new( Mutex::new( storage::init_storage().await? ) );
 
   let feed_configs = read_feed_config( file_path ).unwrap();
 
-  for config in feed_configs
+  for i in  0..feed_configs.len()
   {
-    client.fetch( config.link ).await?;
+    let feed = client.fetch( feed_configs[ i ].link.clone() ).await?;
+    save_feed( feed.entries, db_glue.clone() ).await.unwrap();
   }
+
   Ok( () )
 }
