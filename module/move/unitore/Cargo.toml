@@ -40,7 +40,10 @@ toml = "0.8.10"
 serde = "1.0.196"
 humantime-serde = "1.1.1"
 gluesql = "0.15.0"
+async-trait = "0.1.41"
 wca = { workspace = true }
+mockall = "0.12.1"
 
 [dev-dependencies]
 test_tools = { workspace = true }
+

@@ -1,135 +1,162 @@
-use std::sync::{ Arc, Mutex };
-
+use std::sync::Arc;
+use  tokio::sync::Mutex;
 use feed_rs::model::Entry;
 use gluesql::
 {
   core::
   {
-    ast_builder::{ null, table, text, timestamp, Build, Execute, ExprNode },
+    ast_builder::{ col, null, table, text, timestamp, Build, Execute, ExprNode },
     chrono::SecondsFormat,
     data::Value,
     executor::Payload,
+    store::{ GStore, GStoreMut },
   },
   prelude::Glue,
-  sled_storage::SledStorage,
+  sled_storage::{ sled::Config, SledStorage },
 };
 use wca::wtools::Itertools;
 
-pub async fn init_storage() -> Result< Glue< SledStorage >, Box< dyn std::error::Error + Send + Sync > >
+pub struct FeedStorage< S : GStore + GStoreMut + Send >
 {
-  let storage = SledStorage::new( "data/temp" ).unwrap();
-  let mut glue = Glue::new( storage );
-
-  let drop = table( "Feed1" )
-  .drop_table_if_exists()
-  .build()?
-  ;
-
-  drop.execute( &mut glue ).await?;
-
-  let table = table( "Feed" )
-  .create_table_if_not_exists()
-  .add_column( "id TEXT PRIMARY KEY" )
-  .add_column( "title TEXT" )
-  .add_column( "updated TIMESTAMP" )
-  //.add_column( "authors LIST" )
-  .add_column( "content TEXT" )
-  .add_column( "links TEXT" )
-  .add_column( "summary TEXT" )
-  .add_column( "categories TEXT" )
-  .add_column( "contributors TEXT" )
-  .add_column( "published TIMESTAMP" )
-  .add_column( "source TEXT" )
-  .add_column( "rights TEXT" )
-  .add_column( "media TEXT" )
-  .add_column( "language TEXT" )
-  .build()?
-  ;
-
-  table.execute( &mut glue ).await?;
-
-  Ok( glue )
+  pub storage : Arc< Mutex< Glue< S > > >
 }
 
-pub async fn save_feed( feed : Vec< Entry >, glue : Arc< Mutex< Glue< SledStorage > > > ) -> Result< (), Box< dyn std::error::Error > >
+impl FeedStorage< SledStorage >
 {
-  let mut rows = Vec::new();
-  let mut glue = glue.lock().unwrap();
-
-  let existing = table( "Feed" )
-  .select()
-  .project( "id, updated" )
-  .execute( &mut glue )
-  .await?
-  ;
-
-  for row in existing.select().unwrap()
+  pub async fn init_storage( config : Config ) -> Result< Self, Box< dyn std::error::Error + Send + Sync > >
   {
-    println!( "{:?}", row );
+    let storage = SledStorage::try_from( config )?;
+    let mut glue = Glue::new( storage );
+  
+    // let drop = table( "Feed1" )
+    // .drop_table_if_exists()
+    // .build()?
+    // ;
+  
+    // drop.execute( &mut glue ).await?;
+  
+    let table = table( "Feed" )
+    .create_table_if_not_exists()
+    .add_column( "id TEXT PRIMARY KEY" )
+    .add_column( "title TEXT" )
+    .add_column( "updated TIMESTAMP" )
+    //.add_column( "authors LIST" )
+    .add_column( "content TEXT" )
+    .add_column( "links TEXT" )
+    .add_column( "summary TEXT" )
+    .add_column( "categories TEXT" )
+    .add_column( "contributors TEXT" )
+    .add_column( "published TIMESTAMP" )
+    .add_column( "source TEXT" )
+    .add_column( "rights TEXT" )
+    .add_column( "media TEXT" )
+    .add_column( "language TEXT" )
+    .build()?
+    ;
+  
+    table.execute( &mut glue ).await?;
+
+  
+    Ok( Self{ storage : Arc::new( Mutex::new( glue ) ) } )
   }
+}
 
-  let mut filtered = Vec::new();
-  if let Some( rows ) = existing.select()
+
+#[ mockall::automock ]
+#[ async_trait::async_trait(?Send ) ]
+pub trait FeedStore
+{
+  async fn save_feed( &mut self, feed : Vec< feed_rs::model::Entry > ) -> Result< (), Box< dyn std::error::Error > >;
+}
+
+#[ async_trait::async_trait(?Send) ]
+impl FeedStore for FeedStorage< SledStorage >
+{
+  async fn save_feed( &mut self, feed : Vec< feed_rs::model::Entry > ) -> Result< (), Box< dyn std::error::Error > >
   {
-    let existing_entries = rows.map( | r | ( r.get( "id" ).map( | &val | val.clone() ), r.get( "updated" ).map( | &val | val.clone() ) ) )
-    .flat_map( | ( id, updated ) | id.map( | id | ( id, updated.map( | date | match date { Value::Timestamp( date_time ) => Some( date_time ), _ => None } ).flatten() ) ) )
-    .flat_map( | ( id, updated ) | match id { Value::Str( id ) => Some( ( id, updated ) ), _ => None } )
-    .collect_vec()
+    let existing = table( "Feed" )
+    .select()
+    .project( "id, title, published, summary" )
+    .execute( &mut *self.storage.lock().await )
+    .await?
     ;
 
-    let existing_ids = existing_entries.iter().map( | ( id, _ ) | id ).collect_vec();
-    filtered = feed.into_iter().filter( | entry | 
-    {
-      if let Some( position ) = existing_ids.iter().position( | &id | id == &entry.id )
-      {
-        return false;
-        // if let Some( date ) = existing_entries[ position ].1
-        // {
-          
-        //   println!("{:?}  {:?}", date.and_utc( ), entry.updated.unwrap() );
-        //   if date.and_utc() == entry.updated.unwrap()
-        //   {
-            
-        //   }
-        // }
-      }
-      true
-    } ).collect_vec();
-  }
-
-  for i in 0..filtered.len()
-  {
-    println!("{:?}", filtered[ i ].id);
-    rows.push( entry_row( &filtered[ i ] ) );
-  }
-  
-  let insert = table( "Feed" )
-  .insert()
-  .columns( "id, title, updated, content, links, summary, categories, contributors, published, source, rights, media, language" )
-  .values( rows )
-  .execute( &mut glue )
-  .await?
-  ;
-
-  if let Payload::Insert( n ) = insert
-  {
-    println!("inserted {} entries", n );
-  }
-
-  let check = table( "Feed" )
-  .select()
-  .project( "id, title, summary" )
-  .execute( &mut glue )
-  .await?
-  ;
-
-  // for row in check.select().unwrap()
+  // for row in existing.select().unwrap()
   // {
   //   println!( "{:?}", row );
   // }
 
-  Ok( () )
+    let mut new_entries = Vec::new();
+    let mut modified_entries = Vec::new();
+    if let Some( rows ) = existing.select()
+    {
+      let existing_entries = rows
+      .map( | r | ( r.get( "id" ).map( | &val | val.clone() ), r.get( "published" ).map( | &val | val.clone() ) ) )
+      .flat_map( | ( id, published ) | id.map( | id | ( id, published.map( | date | match date { Value::Timestamp( date_time ) => Some( date_time ), _ => None } ).flatten() ) ) )
+      .flat_map( | ( id, published ) | match id { Value::Str( id ) => Some( ( id, published ) ), _ => None } )
+      .collect_vec()
+      ;
+
+      let existing_ids = existing_entries.iter().map( | ( id, _ ) | id ).collect_vec();
+
+      for entry in feed
+      {
+        if let Some( position ) = existing_ids.iter().position( | &id | id == &entry.id )
+        {
+          if let Some( date ) = existing_entries[ position ].1
+          {
+            if date.and_utc() != entry.published.unwrap()
+            {
+              modified_entries.push( entry_row( &entry ) );
+            }
+          }
+        }
+        else
+        {
+          new_entries.push( entry_row( &entry ) );
+        }
+      }
+    }
+  
+    let insert = table( "Feed" )
+    .insert()
+    .columns( "id, title, updated, content, links, summary, categories, contributors, published, source, rights, media, language" )
+    .values( new_entries )
+    .execute( &mut *self.storage.lock().await )
+    .await.unwrap()
+    ;
+
+    if let Payload::Insert( n ) = insert
+    {
+      println!("inserted {} entries", n );
+    }
+
+    for entry in modified_entries
+    {
+      let update = table( "Feed" )
+      .update()
+      .set( "title", entry[ 1 ].to_owned() )
+      .set( "content", entry[ 3 ].to_owned() )
+      .set( "links", entry[ 4 ].to_owned() )
+      .set( "summary", entry[ 5 ].to_owned() )
+      .set( "published", entry[ 8 ].to_owned() )
+      .set( "media", entry[ 11 ].to_owned() )
+      .filter( col( "id" ).eq( entry[ 0 ].to_owned() ) )
+      .execute( &mut *self.storage.lock().await )
+      .await?
+      ;
+
+      if let Payload::Update( n ) = update
+      {
+        println!("updated {} entries", n );
+      }
+      
+    }
+
+    Ok( () )
+  }
 }
+
 
 pub fn entry_row( entry : &Entry ) -> Vec< ExprNode< 'static > >
 {
