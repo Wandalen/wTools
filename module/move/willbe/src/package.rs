@@ -421,7 +421,7 @@ mod private
       // bump a version in the package manifest
       let bump_report = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
       files_changed_for_bump.push( package.manifest_path() );
-      let new_version = package.version().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
+      let new_version = bump_report.new_version.clone().unwrap();
 
       let package_name = package.name().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
 
