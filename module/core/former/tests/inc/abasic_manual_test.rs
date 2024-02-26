@@ -174,6 +174,22 @@ impl Struct1Former
     former::runtime::VectorFormer::new( self, container, on_end )
   }
 
+  // #[ derive( Debug, PartialEq ) ]
+  // pub struct Struct1
+  // {
+  //   pub int_1 : i32,
+  //   string_1 : String,
+  //   int_optional_1 : core::option::Option< i32 >,
+  //   string_optional_1 : Option< String >,
+  //   #[ former( former::runtime::VectorFormer ) ]
+  //   vec_1 : Vec< String >,
+  //   #[ former( former::runtime::HashMapFormer ) ]
+  //   hashmap_strings_1 : std::collections::HashMap< String, String >,
+  //   #[ former( former::runtime::HashSetFormer ) ]
+  //   hashset_strings_1 : std::collections::HashSet< String >,
+  // }
+
+  // xxx
   pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapFormer
   <
     String,
