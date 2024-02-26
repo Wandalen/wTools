@@ -138,6 +138,16 @@ mod private
 
     process::start2_sync( program, args, path )
   }
+  
+  /// todo
+  pub fn init< P >( path : P ) -> Result< CmdReport >
+  where 
+    P : AsRef< Path >,
+  {
+    let ( program, ars ) = ( "git", [ "init"]  );
+    
+    process::start2_sync( program, ars, path )
+  }
 }
 
 //
@@ -147,6 +157,6 @@ crate::mod_interface!
   protected use add;
   protected use commit;
   protected use push;
-
+  protected use init;
   protected use ls_remote_url;
 }
