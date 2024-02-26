@@ -18,7 +18,7 @@ tests_impls!
     };
     a_id!( command, expected );
 
-    // test.case( "set value" );
+    // test.case( "from slice" );
 
     let command = Struct1::former()
     .string_slice_1( "abc" )
@@ -28,6 +28,18 @@ tests_impls!
       string_slice_1 : "abc",
     };
     a_id!( command, expected );
+
+//     // test.case( "from string" );
+//
+//     let command = Struct1::former()
+//     .string_slice_1( "abc".to_string() )
+//     .form();
+//     let expected = Struct1
+//     {
+//       string_slice_1 : "abc",
+//     };
+//     a_id!( command, expected );
+
   }
 }
 

@@ -63,6 +63,7 @@ pub( crate ) mod private
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
+    // qqq : for Bohdan : routine should also be here
   }
 
   impl CommandFormer

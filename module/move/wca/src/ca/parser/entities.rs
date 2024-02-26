@@ -51,6 +51,8 @@ pub( crate ) mod private
   /// In the above example, a Program is created with two Namespace objects. Each namespace contains a different set of ParsedCommand objects with different sets of subjects. The Program can be executed by iterating over each namespace and executing its commands in sequence.
   ///
   // qqq : xxx : for Bohdan : Commands should be here instead of Namespace
+  // qqq : remove concept Namespace
+  // qqq : introduce concept Dictionary for grammar
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct Program< Namespace >
   {

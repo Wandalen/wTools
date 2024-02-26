@@ -246,7 +246,8 @@ fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
   let ident = Some( field.ident.clone() );
   let ty = field.ty.clone();
 
-  let ty2 = if is_optional( &ty )
+  // let ty2 = if is_optional( &ty )
+  let ty2 = if field.is_optional
   {
     qt! { #ty }
   }
@@ -446,8 +447,13 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
 /// Generate a setter for the 'field_ident' with the 'setter_name' name.
 ///
 
-#[inline]
-fn field_setter( field_ident: &syn::Ident, non_optional_type: &syn::Type, setter_name: &syn::Ident ) -> proc_macro2::TokenStream
+#[ inline ]
+fn field_setter
+(
+  field_ident : &syn::Ident,
+  non_optional_type : &syn::Type,
+  setter_name : &syn::Ident
+) -> proc_macro2::TokenStream
 {
   qt!
   {

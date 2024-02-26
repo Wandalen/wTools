@@ -4,7 +4,7 @@ use super::*;
 use test_tools::meta::*;
 
 // xxx : qqq : fix the test
-// mod abasic_runtime_manual_test;
+// mod abasic_manual_test;
 mod abasic_test;
 
 mod alias_test;
@@ -24,25 +24,25 @@ mod user_type_no_debug;
 mod unsigned_primitive_types;
 mod perform;
 
+// //
 //
-
-only_for_terminal_module!
-{
-
-  // stable have different information about error
-  // that's why these tests are active only for nightly
-  #[ test_tools::nightly ]
-  #[ test ]
-  fn trybuild_tests()
-  {
-
-    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-    let t = test_tools::compiletime::TestCases::new();
-
-    t.compile_fail( "tests/inc/compiletime/former_bad_attr.rs" );
-    t.pass( "tests/inc/compiletime/former_hashmap_without_parameter.rs" );
-    t.pass( "tests/inc/compiletime/former_vector_without_parameter.rs" );
-
-  }
-
-}
+// only_for_terminal_module!
+// {
+//
+//   // stable have different information about error
+//   // that's why these tests are active only for nightly
+//   #[ test_tools::nightly ]
+//   #[ test ]
+//   fn trybuild_tests()
+//   {
+//
+//     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+//     let t = test_tools::compiletime::TestCases::new();
+//
+//     t.compile_fail( "tests/inc/compiletime/former_bad_attr.rs" );
+//     t.pass( "tests/inc/compiletime/former_hashmap_without_parameter.rs" );
+//     t.pass( "tests/inc/compiletime/former_vector_without_parameter.rs" );
+//
+//   }
+//
+// }

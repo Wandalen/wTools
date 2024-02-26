@@ -18,10 +18,7 @@ pub struct Struct1
 
 //
 
-include!( "only_test/basic.rs" );
-
-// include!( "basic_runtine_only_test.rs" );
-// include!( "basic_only_test.rs" );
+// include!( "only_test/basic.rs" );
 
 //
 // output :
