@@ -377,7 +377,22 @@ pub( crate ) mod private
       assert!( !self.ca.executor_converter.routines.contains_key( &phrase ), "routine was duplicated" );
       self.ca.executor_converter.routines.insert( phrase, self.routine );
 
-      CommandsAggregatorFluentBuilder( self.ca )
+      let mut ca = self.ca;
+      if ca.help_variants.contains( &HelpVariants::All )
+      {
+        HelpVariants::All.generate( &ca.help_generator, &mut ca.verifier, &mut ca.executor_converter );
+      }
+      else
+      {
+        for help in &ca.help_variants
+        {
+          help.generate( &ca.help_generator, &mut ca.verifier, &mut ca.executor_converter );
+        }
+      }
+
+      dot_command( &mut ca.verifier, &mut ca.executor_converter );
+
+      CommandsAggregatorFluentBuilder( ca )
     }
   }
 }

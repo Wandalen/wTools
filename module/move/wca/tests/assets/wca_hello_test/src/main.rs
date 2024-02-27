@@ -5,26 +5,15 @@ fn main()
     CommandsAggregator, Command, Routine, Type,
   };
 
-  let ca = CommandsAggregator::former()
-  .grammar(
-  [
-    Command::former()
-    .phrase( "echo" )
+  let ca = wca::CommandsAggregator::fluent()
+  .command( "echo" )
     .hint( "prints all subjects and properties" )
     .subject( "Subject", Type::String, true )
     .property( "property", "simple property", Type::String, true )
-    .form(),
-  ] )
-  .executor(
-  [
-    ( "echo".to_owned(), Routine::new( | ( args, props ) |
-    {
-      println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
-      Ok( () )
-    } ) ),
-  ] )
-  .build();
+    .routine( | args : Args, props | { println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) } )
+    .perform()
+  .perform();
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
-  ca.perform( args.join( " " ) ).unwrap();
+  ca.perform( args ).unwrap();
 }

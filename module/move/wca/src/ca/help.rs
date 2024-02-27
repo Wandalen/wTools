@@ -103,7 +103,7 @@ pub( crate ) mod private
       })
       .fold( String::new(), | acc, cmd |
       {
-        format!( "{acc}\n{cmd}" )
+        format!( "{acc}{cmd}" )
       })
     }
   }
