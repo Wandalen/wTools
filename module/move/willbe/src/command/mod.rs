@@ -65,10 +65,10 @@ pub( crate ) mod private
 
     let w_new = wca::Command::former()
     .hint( "Create workspace template" )
-    .long_hint( "Creates static files and directories.\nIn workspace`s Cargo.toml and module Cargo.toml you need to specify some fields, fill them before use this template.")
+    .long_hint( "Creates static files and directories.\nIn workspace`s Cargo.toml and module Cargo.toml you need to specify some fields, fill them before use this template." )
     .phrase( "workspace.new" )
-    .property( "branches", "List of branches in your project.", Type::List( Box::new( Type::String ), ',' ), false )
-    .property( "repository_url", "Base repository url.", Type::String , false )
+    .property( "branches", "List of branches in your project, this parameter affects the branches that will be specified in Cargo.toml of workspace, which in turn will affect the operation of other commands.", Type::List( Box::new( Type::String ), ',' ), false )
+    .property( "repository_url", "Link to project repository, this parameter affects the repo_url will be specified in Cargo.toml of workspace, which in turn will affect the operation of other commands..", Type::String , false )
     .form();
 
     let generate_main_header = wca::Command::former()

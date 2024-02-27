@@ -1,5 +1,6 @@
 mod private
 {
+  use crate::*;
   use std::collections::BTreeMap;
   use std::fs;
   use std::io::Write;
@@ -7,7 +8,7 @@ mod private
   use handlebars::no_escape;
   use error_tools::for_app::bail;
   use error_tools::Result;
-  use crate::wtools::iter::Itertools;
+  use wtools::iter::Itertools;
 
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
