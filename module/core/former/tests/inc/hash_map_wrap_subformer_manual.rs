@@ -22,16 +22,16 @@ where
 
 pub trait Perform< T, Context >
 {
-  fn call( &self, context : &mut Context, container : Option< T > );
+  fn call( &self, container : Option< T >, context : Context ) -> Context;
 }
 
 impl< T, Context, F > Perform< T, Context > for F
 where
-  F : Fn( &mut Context, Option< T > ),
+  F : Fn( Option< T >, Context ) -> Context,
 {
-  fn call( &self, context : &mut Context, container : Option< T > )
+  fn call( &self, container : Option< T >, context : Context ) -> Context
   {
-    self( context, container );
+    self( container, context )
   }
 }
 
@@ -40,14 +40,16 @@ pub struct NoOpPerform;
 impl< T, Context > Perform< T, Context >
 for NoOpPerform
 {
-  fn call( &self, _context : &mut Context, _container : Option< T > )
+  #[ inline( always ) ]
+  fn call( &self, _container : Option< T >, context : Context ) -> Context
   {
+    context
   }
 }
 
 pub fn noop< T, Context >
 (
-  _context : &mut Context,
+  _context : Context,
   _container : core::option::Option< T >,
 )
 {
@@ -65,11 +67,11 @@ where
 
   pub fn former() -> HashMapWrapFormer< K, E, (), impl Perform< std::collections::HashMap< K, E >, () > >
   {
-    HashMapWrapFormer::< K, E, (), _ >::new
+    HashMapWrapFormer::< K, E, (), NoOpPerform >::new
     (
       core::option::Option::None,
       (),
-      noop::< std::collections::HashMap< K, E >, () >,
+      NoOpPerform,
     )
   }
 
@@ -138,10 +140,7 @@ where
   #[ inline( always ) ]
   pub fn end( mut self ) -> Context
   {
-    let container = self.container.take();
-    // ( self.on_perform )( &mut self.context, container );
-    self.on_perform.call( &mut self.context, container );
-    self.context
+    self.on_perform.call( self.container.take(), self.context )
   }
 
   /// Set the whole container instead of setting each element individually.
