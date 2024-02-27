@@ -5,6 +5,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+    use crate::reflect::{self, IsScalar};
+
 
   /// Represents a general-purpose data container that can hold various primitive types
   /// and strings. This enum is designed to encapsulate common data types in a unified
@@ -80,6 +82,14 @@ pub( crate ) mod private
     /// Represents a statically allocated slice of bytes.
     binary( &'static [ u8 ] ),
   }
+
+  // impl< T : IsScalar > From< T > for Primitive
+  // {
+  //   fn from( value: T ) -> Self
+  //   {
+  //     match reflect( value )
+  //   }
+  // }
 
   #[ allow( non_camel_case_types ) ]
   #[ derive( Debug, PartialEq ) ]

@@ -260,9 +260,11 @@ pub( crate ) mod private
   ///
   /// Type descriptor
   ///
-  #[ derive( PartialEq, Default ) ]
+  #[ derive( PartialEq, Default, Copy, Clone ) ]
   pub struct EntityDescriptor< I : Instance >
   {
+    /// Container description.
+    pub container_info : Option< usize >,
     _phantom : core::marker::PhantomData< I >,
   }
 
@@ -273,7 +275,14 @@ pub( crate ) mod private
     pub fn new() -> Self
     {
       let _phantom = core::marker::PhantomData::< I >;
-      Self { _phantom }
+      Self { _phantom, container_info : None }
+    }
+
+    /// Constructor of the descriptor of container type.
+    pub fn new_container( size : usize ) -> Self
+    {
+      let _phantom = core::marker::PhantomData::< I >;
+      Self { _phantom, container_info : Some( size ) }
     }
   }
 
@@ -326,6 +335,18 @@ pub( crate ) mod private
     pub val : Box< dyn Entity >,
   }
 
+  impl Default for KeyVal
+  {
+    fn default() -> Self
+    {
+      Self
+      {
+        key : primitive::Primitive::default(),
+        val : Box::new( EntityDescriptor::< i8 >::new() ) as Box::< dyn Entity >,
+      }
+    }
+  }
+
   impl std::fmt::Debug for KeyVal
   {
     fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
@@ -376,6 +397,21 @@ pub( crate ) mod private
   impl IsScalar for f64 {}
   impl IsScalar for String {}
   impl IsScalar for &'static str {}
+
+  impl< T : Instance + 'static, const N : usize > IsContainer for [ T ; N ] {}
+  impl< T : Instance > IsContainer for &'static [ T ]
+  {
+
+  }
+  impl< T : Instance + 'static > IsContainer for Vec< T >
+  {
+
+  }
+  impl< K : IsScalar + 'static, V : Instance + 'static > IsContainer for std::collections::HashMap< K, V >
+  {
+
+  }
+  impl< V : Instance + 'static > IsContainer for std::collections::HashSet< V > {}
 
   // qqq : xxx : implement for slice
   // qqq : xxx : implement for Vec
