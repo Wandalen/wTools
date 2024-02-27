@@ -5,7 +5,7 @@ use wca::
   ProgramParser, NamespaceParser, CommandParser,
 
   Type, Value,
-  GrammarConverter,
+  Verifier,
 };
 
 mod from_command;

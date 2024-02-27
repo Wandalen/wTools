@@ -2,8 +2,13 @@
 //! It operates by adjusting a simplex(geometric shape) to explore and converge toward the optimal solution.
 //! 
 
-use std::{ collections::HashMap, ops::{ Bound, RangeBounds } };
-
+use std::
+{
+  collections::HashMap,
+  fs::{ File, OpenOptions },
+  ops::{ Bound, RangeBounds },
+  sync::{ Arc, Mutex },
+};
 use deterministic_rand::{ Hrng, Seed, Rng };
 use iter_tools::Itertools;
 use ordered_float::OrderedFloat;
@@ -27,6 +32,7 @@ impl Point
     Self { coords : coords.into_iter().map( | elem | elem.into() ).collect_vec() }
   }
 
+  /// Create new point from given coordinates.
   pub fn new_from_ordered( coords : Vec< OrderedFloat< f64 > > ) -> Self
   {
     Self { coords }
@@ -35,15 +41,61 @@ impl Point
 
 /// Represents geometric shape formed by a set of n+1 points in a multidimensional space, where n is a number of dimensions.
 /// Simplex is used to navigate through solution space, adjusting its shape based on the performance of the objective function at different points.
-#[ derive( Debug, Clone ) ] 
+#[ derive( Debug, Clone ) ]
 pub struct Simplex
 {
   /// Points of simplex.
   pub points : Vec< Point >,
 }
 
-/// Struct which holds initial configuration for NelderMead optimization, and can perform optimization if all necessary information were provided during initialization process.
+/// Constraints for points of optimization process.
+#[ derive( Debug, Clone ) ]
+pub enum Constraints
+{
+  NoConstraints,
+  WithConstraints( Vec< fn( &Point ) -> bool > ),
+}
+
+impl Constraints
+{
+  /// Add constraint to constraints list.
+  pub fn add_constraint( &mut self, constraint : fn( &Point ) -> bool )
+  {
+    match self
+    {
+      Self::NoConstraints => *self = Self::WithConstraints( vec![ constraint ] ),
+      Self::WithConstraints( constraints ) => constraints.push( constraint ),
+    }
+  }
+}
+
 #[ derive( Debug, Clone ) ] 
+pub struct Stats
+{
+
+  pub starting_point : Point,
+  pub differences : Vec< Vec< f64 > >,
+}
+
+impl Stats
+{
+  pub fn new( starting_point : Point) -> Self
+  {
+    let dimensions = starting_point.coords.len();
+    Self { starting_point, differences : vec![ Vec::new(); dimensions ] }
+  }
+
+  pub fn record_diff( &mut self, start_point : &Point, point : &Point )
+  {
+    for i in 0..start_point.coords.len()
+    {
+      self.differences[ i ].push( ( start_point.coords[ i ] - point.coords[ i ] ).into() )
+    }
+  }
+}
+
+/// Struct which holds initial configuration for NelderMead optimization, and can perform optimization if all necessary information were provided during initialization process.
+#[ derive( Debug, Clone ) ]
 pub struct Optimizer< R, F >
 {
   /// Bounds for parameters of objective function, may be unbounded or bounded on one side.
@@ -76,13 +128,20 @@ pub struct Optimizer< R, F >
   /// If previously calculated contraction point doesn't improve the objective function shrinking is performed to adjust simplex size. 
   /// Shrinking involves reducing the distance between the vertices of the simplex, making it smaller.
   pub sigma : f64,
-  pub calculated_results : Option< HashMap< Point, f64 > >
+  /// Values of objective function calculated in previous executions.
+  pub calculated_results : Option< HashMap< Point, f64 > >,
+  /// File for saving values of objective function during optimization process.
+  pub save_results_file : Option< Arc< Mutex< File > > >,
+  /// Additional constraint for coordinates of function.
+  pub constraints : Constraints,
 }
 
-impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer< R, F >
+impl< R, F > Optimizer< R, F >
+where R : RangeBounds< f64 > + Sync,
+  F : Fn( &Point ) -> f64 + Sync,
 {
   /// Create new instance of Nelder-Mead optimizer.
-  pub fn new( objective_function : F ) -> Self 
+  pub fn new( objective_function : F ) -> Self
   {
     Self
     {
@@ -98,16 +157,51 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
       rho : -0.5,
       sigma : 0.5,
       calculated_results : None,
+      save_results_file : None,
+      constraints : Constraints::NoConstraints,
     }
   }
 
+  /// Add set of previosly calculated values of objective function.
   pub fn set_calculated_results( &mut self, res : HashMap< Point, f64 > )
   {
     self.calculated_results = Some( res );
   }
 
+  /// Set file for saving results of calculations.
+  pub fn set_save_results_file( &mut self, file_path : String )
+  {
+    let file_res = OpenOptions::new()
+    .write( true )
+    .append( true )
+    .create( true )
+    .open( file_path )
+    ;
+
+    if let Ok( file ) = file_res
+    {
+      self.save_results_file = Some( Arc::new( Mutex::new( file ) ) );
+    }
+  }
+
+ /// Add constraint function.
+  pub fn add_constraint( &mut self, constraint : fn( &Point ) -> bool )
+  {
+    self.constraints.add_constraint( constraint );
+  }
+
+  /// Calculate value of objective function at given point or get previously calculated value if such exists.
   pub fn evaluate_point( &self, p : &Point ) -> f64
   {
+    if let Constraints::WithConstraints( constraint_vec ) = &self.constraints
+    {
+      let valid = constraint_vec.iter().fold( true, | acc, constraint | acc && constraint( p ) );
+      if !valid
+      {
+        return f64::INFINITY;
+      }
+    }
+
     if let Some( points ) = &self.calculated_results
     {
       if let Some( value ) = points.get( &p )
@@ -116,7 +210,16 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
       }
     }
     let result = ( self.objective_function )( p );
-    _ = save_result( p.coords.clone().into_iter().map( |val| val.into_inner() ).collect_vec(), result );
+
+    if let Some( file ) = &self.save_results_file
+    {
+      _ = save_result
+      (
+        p.coords.clone().into_iter().map( | val | val.into_inner() ).collect_vec(),
+        result,
+        file.clone(),
+      );
+    }
 
     result
   }
@@ -190,7 +293,6 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
   /// Returns projected point.
   fn check_bounds( &self, point : Point ) -> Point
   {
-
     let mut coords = point.coords;
     for i in 0..self.bounds.len()
     {
@@ -200,16 +302,16 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
         {
           match bound.start_bound()
           {
-            Bound::Included( val ) => 
+            Bound::Included( val ) =>
             {
-              if val < &coords[ i ] 
+              if val < &coords[ i ]
               {
                 coords[ i ] = ( *val ).into();
               }
             },
-            Bound::Excluded( val ) => 
+            Bound::Excluded( val ) =>
             {
-              if val <= &coords[ i ] 
+              if val <= &coords[ i ]
               {
                 coords[ i ] = ( val + f64::EPSILON ).into();
               }
@@ -218,16 +320,16 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
           }
           match bound.end_bound()
           {
-            Bound::Included( val ) => 
+            Bound::Included( val ) =>
             {
-              if val > &coords[ i ] 
+              if val > &coords[ i ]
               {
                 coords[ i ] = ( *val ).into();
               }
             },
-            Bound::Excluded( val ) => 
+            Bound::Excluded( val ) =>
             {
-              if val >= &coords[ i ] 
+              if val >= &coords[ i ]
               {
                 coords[ i ] = ( val - f64::EPSILON ).into();
               }
@@ -307,7 +409,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
             new_coords.push( start_bound )
           }
         }
-        else 
+        else
         {
           if bound.end_bound() != Bound::Unbounded
           {
@@ -356,8 +458,8 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
             Bound::Unbounded => unreachable!(),
           };
           let end = match bound.end_bound() {
-            Bound::Included(end) => *end + f64::EPSILON,
-            Bound::Excluded(end) => *end,
+            Bound::Included( end ) => *end + f64::EPSILON,
+            Bound::Excluded( end ) => *end,
             Bound::Unbounded => unreachable!(),
           };
           
@@ -369,13 +471,14 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
       points.push( Point::new( point ) );
     }
 
-    let results = points.into_par_iter().map( | point | {
+    let results = points.into_par_iter().map( | point |
+    {
       let x0 = point.clone();
-  
       let dimensions = x0.coords.len();
       let mut prev_best = self.evaluate_point( &x0 );
       let mut steps_with_no_improv = 0;
       let mut res = vec![ ( x0.clone(), prev_best ) ];
+      let mut stats = Stats::new( point.clone() );
   
       for i in 1..=dimensions
       {
@@ -397,6 +500,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
             point : res[ 0 ].0.clone(),
             objective : res[ 0 ].1,
             reason : TerminationReason::MaxIterations,
+            stats : Some( stats ),
           } )
         }
   
@@ -419,6 +523,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
             point : res[ 0 ].0.clone(),
             objective : res[ 0 ].1,
             reason : TerminationReason::NoImprovement,
+            stats : Some( stats ),
           } )
         }
   
@@ -441,6 +546,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
         }
         // check if point left the domain, if so, perform projection
         let x_ref = self.check_bounds( Point::new_from_ordered( x_ref ) );
+        stats.record_diff( &self.start_point, &x_ref );
   
         let reflection_score = self.evaluate_point( &x_ref );
         let second_worst = res[ res.len() - 2 ].1;
@@ -461,6 +567,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
           }
           // check if point left the domain, if so, perform projection
           let x_exp = self.check_bounds( Point::new_from_ordered( x_exp ) );
+          stats.record_diff( &self.start_point, &x_exp );
           let expansion_score = self.evaluate_point( &x_exp );
   
           if expansion_score < reflection_score
@@ -484,6 +591,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
           x_con[ i ] = x0_center[ i ] + OrderedFloat( self.rho ) * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
         }
         let x_con = self.check_bounds( Point::new_from_ordered( x_con ) );
+        stats.record_diff( &self.start_point, &x_con );
         let contraction_score = self.evaluate_point( &x_con );
   
         if contraction_score < worst_dir.1
@@ -504,6 +612,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
             x_shrink[ i ] = x1.coords[ i ] + OrderedFloat( self.sigma ) * ( point.coords[ i ] - x1.coords[ i ] );
           }
           let x_shrink = self.check_bounds( Point::new_from_ordered( x_shrink ) );
+          stats.record_diff( &self.start_point, &x_shrink );
           let score = self.evaluate_point( &x_shrink );
           new_res.push( ( x_shrink, score ) );
         }
@@ -513,7 +622,8 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
     } ).collect::< Vec<_> >();
 
     let results = results.into_iter().flatten().collect_vec();
-    Ok( results.into_iter().min_by( | res1, res2 | res1.objective.total_cmp( &res2.objective ) ).unwrap() )
+    let res = results.into_iter().min_by( | res1, res2 | res1.objective.total_cmp( &res2.objective ) ).unwrap();
+    Ok( res )
   }
 
   /// Optimize provided objective function with using initialized configuration.
@@ -561,6 +671,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
           point : res[ 0 ].0.clone(),
           objective : res[ 0 ].1,
           reason : TerminationReason::MaxIterations,
+          stats : None,
         } )
       }
 
@@ -583,6 +694,7 @@ impl< R : RangeBounds< f64 > + Sync, F : Fn( &Point ) -> f64 + Sync > Optimizer<
           point : res[ 0 ].0.clone(),
           objective : res[ 0 ].1,
           reason : TerminationReason::NoImprovement,
+          stats : None,
         } )
       }
 
@@ -687,6 +799,8 @@ pub struct Solution
   pub objective : f64,
   /// Reason for termination.
   pub reason : TerminationReason,
+  /// Staticstics.
+  pub stats : Option< Stats >,
 }
 
 /// Reasons for termination of optimization process.

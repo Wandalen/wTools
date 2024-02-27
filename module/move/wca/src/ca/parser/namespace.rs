@@ -1,18 +1,15 @@
 pub( crate ) mod private
 {
-  use crate::
+  use crate::*;
+  use ca::
   {
-    ca::
+    Namespace, ParsedCommand,
+    Parser,
+    parser::
     {
-      Namespace, RawCommand,
-      Parser,
-      parser::
-      {
-        parser::any_word,
-        command::CommandParserFn,
-      }
-    }, 
-    wtools
+      parser::any_word,
+      command::CommandParserFn,
+    }
   };
   use wtools::{ error::Result, err };
   use nom::
@@ -25,11 +22,12 @@ pub( crate ) mod private
     IResult,
   };
 
+  // qqq : for Bohdan : bad documentation. what is it for? example of input and output?
   /// Can parse Namespaces
   pub trait NamespaceParser
   {
     /// Parses first namespace from string
-    fn namespace( &self, input : &str ) -> Result< Namespace< RawCommand > >;
+    fn namespace( &self, input : &str ) -> Result< Namespace< ParsedCommand > >;
   }
 
   pub( crate ) trait GetNamespaceDelimeter
@@ -42,7 +40,7 @@ pub( crate ) mod private
     fn get_namespace_delimeter( &self ) -> &str { &self.namespace_delimeter }
   }
 
-  type NamespaceParserFunction< 'a > = Box< dyn Fn( &str ) -> IResult< &str, Namespace< RawCommand > > + 'a >;
+  type NamespaceParserFunction< 'a > = Box< dyn Fn( &str ) -> IResult< &str, Namespace< ParsedCommand > > + 'a >;
 
   /// Can be used as function to parse a Namespace
   pub( crate ) trait NamespaceParserFn : CommandParserFn + GetNamespaceDelimeter
@@ -72,7 +70,7 @@ pub( crate ) mod private
 
   impl NamespaceParser for Parser
   {
-    fn namespace< 'a >( &'a self, input : &'a str ) -> Result< Namespace< RawCommand > >
+    fn namespace< 'a >( &'a self, input : &'a str ) -> Result< Namespace< ParsedCommand > >
     {
       self.namespace_fn()( input.trim() )
       .map( |( _, namespace )| namespace )

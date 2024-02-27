@@ -6,7 +6,7 @@ use wca::
   ProgramParser, NamespaceParser, CommandParser,
 
   Type,
-  GrammarConverter, ExecutorConverter,
+  Verifier, ExecutorConverter,
 
   Executor, ExecutorType,
   Routine, wtools

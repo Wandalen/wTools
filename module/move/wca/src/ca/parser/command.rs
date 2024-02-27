@@ -5,9 +5,9 @@ pub( crate ) mod private
     ca::
     {
       Parser,
-      RawCommand as Command,
+      ParsedCommand as Command,
       parser::parser::any_word,
-    }, 
+    },
     wtools
   };
   use std::collections::HashMap;
@@ -256,3 +256,5 @@ crate::mod_interface!
   exposed use CommandParser;
   protected use CommandParserFn;
 }
+
+// qqq : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs

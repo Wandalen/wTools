@@ -1,20 +1,12 @@
 pub( crate ) mod private
 {
-  use crate::
-  {
-    Namespace,
-
-    ExecutableCommand,
-
-    Args, Props,
-    Context, Routine, wtools,
-  };
-
+  use crate::*;
   use wtools::{ error::Result, err };
 
   /// State of a program runtime
   ///
-  /// `RuntimeState` contains information about the current state of a running program. It is used to store information that can be modified during program execution.
+  /// `RuntimeState` contains information about the current state of a running program.
+  /// It is used to store information that can be modified during program execution.
   ///
   /// Can be used to change execution position at runtime.
   ///
@@ -34,6 +26,7 @@ pub( crate ) mod private
     /// current execution position that can be changed by user
     pub pos : usize,
   }
+  // qqq : for Bohdan : why? how is it useful? is it?
 
   /// Represents the state of the program's runtime, including the current context, execution position, and namespace of executable commands.
   ///
@@ -63,8 +56,11 @@ pub( crate ) mod private
     /// current execution position
     pub pos : usize,
     /// namespace which must be executed
-    pub namespace : Namespace< ExecutableCommand >,
+    pub namespace : Namespace< ExecutableCommand_ >, // qqq : for Bohdan : use VerifiedCommand
   }
+  // qqq : for Bohdan : why both Runtime and RuntimeState exist? probably one should removed
+  // qqq : for Bohdan : why both Runtime and Context exist? What about incapsulating Context into Runtime maybe
+  // qqq : for Bohdan : why both Runtime and Executor exist? rid off of Executor. Incapsulating Executor into Runtime.
 
   impl Runtime
   {
@@ -87,12 +83,14 @@ pub( crate ) mod private
     }
   }
 
+  // qqq : for Bohdan : _exec_command probably should be method of Runtime.
+  // qqq : for Bohdan : Accept reference instead of copy.
   /// executes a command
-  pub fn _exec_command( command : ExecutableCommand, ctx : Context ) -> Result< () >
+  pub fn _exec_command( command : ExecutableCommand_, ctx : Context ) -> Result< () >
   {
     match command.routine
     {
-      Routine::WithoutContext( routine ) => routine(( Args( command.subjects ), Props( command.properties ) )),
+      Routine::WithoutContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) )),
       Routine::WithContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) ), ctx ),
     }
   }
@@ -102,7 +100,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use RuntimeState;
-  prelude use Runtime;
+  exposed use RuntimeState;
+  exposed use Runtime;
   protected use _exec_command;
 }

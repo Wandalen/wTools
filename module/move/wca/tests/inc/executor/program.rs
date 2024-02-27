@@ -10,7 +10,7 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let grammar_converter = GrammarConverter::former()
+    let verifier = Verifier::former()
     .command
     (
       wca::Command::former()
@@ -29,7 +29,7 @@ tests_impls!
 
     // existed command | unknown command will fails on converter
     let raw_program = parser.program( ".command" ).unwrap();
-    let grammar_program = grammar_converter.to_program( raw_program ).unwrap();
+    let grammar_program = verifier.to_program( raw_program ).unwrap();
     let exec_program = executor_converter.to_program( grammar_program ).unwrap();
 
     // execute the command
@@ -44,7 +44,7 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let grammar_converter = GrammarConverter::former()
+    let verifier = Verifier::former()
     .command
     (
       wca::Command::former()
@@ -109,14 +109,14 @@ tests_impls!
 
     // value in context = 0
     let raw_program = parser.program( ".eq 1" ).unwrap();
-    let grammar_program = grammar_converter.to_program( raw_program ).unwrap();
+    let grammar_program = verifier.to_program( raw_program ).unwrap();
     let exec_program = executor_converter.to_program( grammar_program ).unwrap();
 
     a_true!( executor.program( exec_program ).is_err() );
 
     // value in context = 0 + 1 = 1 | 1 + 1 + 1 = 3
     let raw_program = parser.program( ".inc .eq 1 .also .eq 1 .inc .inc .eq 3" ).unwrap();
-    let grammar_program = grammar_converter.to_program( raw_program ).unwrap();
+    let grammar_program = verifier.to_program( raw_program ).unwrap();
     let exec_program = executor_converter.to_program( grammar_program ).unwrap();
 
     a_true!( executor.program( exec_program ).is_ok() );
@@ -132,14 +132,14 @@ tests_impls!
 
     // value in context = 0
     let raw_program = parser.program( ".eq 1" ).unwrap();
-    let grammar_program = grammar_converter.to_program( raw_program ).unwrap();
+    let grammar_program = verifier.to_program( raw_program ).unwrap();
     let exec_program = executor_converter.to_program( grammar_program ).unwrap();
 
     a_true!( executor.program( exec_program ).is_err() );
 
     // value in context = 0 + 1 = 1 | 0 + 1 + 1 = 2
     let raw_program = parser.program( ".inc .eq 1 .also .eq 0 .inc .inc .eq 2" ).unwrap();
-    let grammar_program = grammar_converter.to_program( raw_program ).unwrap();
+    let grammar_program = verifier.to_program( raw_program ).unwrap();
     let exec_program = executor_converter.to_program( grammar_program ).unwrap();
 
     a_true!( executor.program( exec_program ).is_ok() );

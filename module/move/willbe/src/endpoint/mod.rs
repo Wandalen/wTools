@@ -7,7 +7,13 @@ crate::mod_interface!
   /// Tables.
   layer table;
   /// Run all tests
-  layer run_tests;
+  layer test;
   /// Workflow.
   layer workflow;
+  /// Workspace new.
+  layer workspace_new;
+  /// Main Header.
+  layer main_header;
+  /// Module headers.
+  layer module_headers;
 }

@@ -4,26 +4,27 @@ pub( crate ) mod private
 
   /// Represents a program that contains one or more namespaces, where each namespace contains a list of commands.
   ///
-  /// A `Program` consists of one or more Namespaces, where each namespace contains a list of commands. The `Namespace` can be any type that represents a namespace of commands, such as `RawCommand`, `GrammarCommand`, or `ExecutableCommand`.
+  /// A `Program` consists of one or more Namespaces, where each namespace contains a list of commands.
+  /// The `Namespace` can be any type that represents a namespace of commands, such as `ParsedCommand`, `VerifiedCommand`, or `ExecutableCommand_`.
   ///
   /// The program can be executed by iterating over each namespace and executing its commands sequentially or in parallel.
   ///
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ RawCommand, Namespace, Program };
+  /// # use wca::{ ParsedCommand, Namespace, Program };
   /// # use std::collections::HashMap;
   /// let namespace1 = Namespace
   /// {
   ///   commands : vec!
   ///   [
-  ///     RawCommand
+  ///     ParsedCommand
   ///     {
   ///       name : "cmd1".to_string(),
   ///       subjects : vec![ "sub1".to_string() ],
   ///       properties: HashMap::new(),
   ///     },
-  ///     RawCommand
+  ///     ParsedCommand
   ///     {
   ///       name: "cmd2".to_string(),
   ///       subjects: vec![ "sub2".to_string(), "sub3".to_string() ],
@@ -36,7 +37,7 @@ pub( crate ) mod private
   /// {
   ///   commands : vec!
   ///   [
-  ///     RawCommand
+  ///     ParsedCommand
   ///     {
   ///       name : "cmd1".to_string(),
   ///       subjects : vec![ "sub1".to_string() ],
@@ -47,8 +48,11 @@ pub( crate ) mod private
   /// let program = Program { namespaces : vec![ namespace1, namespace2, /* ... */ ] };
   /// ```
   ///
-  /// In the above example, a Program is created with two Namespace objects. Each namespace contains a different set of RawCommand objects with different sets of subjects. The Program can be executed by iterating over each namespace and executing its commands in sequence.
+  /// In the above example, a Program is created with two Namespace objects. Each namespace contains a different set of ParsedCommand objects with different sets of subjects. The Program can be executed by iterating over each namespace and executing its commands in sequence.
   ///
+  // qqq : xxx : for Bohdan : Commands should be here instead of Namespace
+  // qqq : remove concept Namespace
+  // qqq : introduce concept Dictionary for grammar
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct Program< Namespace >
   {
@@ -58,62 +62,62 @@ pub( crate ) mod private
 
   /// Represents a namespace of commands with the specified Command type. This is done to be flexible and not to duplicate code.
   ///
-  /// A `Namespace` contains a list of commands, where each command can be a `RawCommand`, `GrammarCommand`, `ExecutableCommand`, or any other command type that you define.
+  /// A `Namespace` contains a list of commands, where each command can be a `ParsedCommand`, `VerifiedCommand`, `ExecutableCommand_`, or any other command type that you define.
   ///
-  /// In the future, each namespace can be executed in parallel. This means that commands in namespace will be executed synchronous but each namespace can be executed in parallel to each other.
+  /// In the future, each namespace can be executed in parallel.
+  /// This means that commands in namespace will be executed synchronous but each namespace can be executed in parallel to each other.
   ///
   /// # Example:
   ///
   /// ```
-  /// # use wca::RawCommand;
-  /// # use wca::Namespace;
+  /// # use wca::{ ParsedCommand, Namespace };
   /// # use std::collections::HashMap;
   ///
   /// let commands = vec!
   /// [
-  ///     RawCommand
-  ///     {
-  ///         name: "cmd1".to_string(),
-  ///         subjects: vec![ "sub1".to_string() ],
-  ///         properties: HashMap::new(),
-  ///     },
-  ///     RawCommand
-  ///     {
-  ///         name: "cmd2".to_string(),
-  ///         subjects: vec![ "sub2".to_string(), "sub3".to_string() ],
-  ///         properties: HashMap::new(),
-  ///     },
-  ///     RawCommand
-  ///     {
-  ///         name: "cmd3".to_string(),
-  ///         subjects: vec![],
-  ///         properties: HashMap::new(),
-  ///     },
-  ///     /* ... */
+  ///   ParsedCommand
+  ///   {
+  ///     name : "cmd1".to_string(),
+  ///     subjects : vec![ "sub1".to_string() ],
+  ///     properties : HashMap::new(),
+  ///   },
+  ///   ParsedCommand
+  ///   {
+  ///     name : "cmd2".to_string(),
+  ///     subjects : vec![ "sub2".to_string(), "sub3".to_string() ],
+  ///     properties : HashMap::new(),
+  ///   },
+  ///   ParsedCommand
+  ///   {
+  ///     name : "cmd3".to_string(),
+  ///     subjects: vec![],
+  ///     properties: HashMap::new(),
+  ///   },
+  ///   /* ... */
   /// ];
   ///
   /// let namespace = Namespace { commands };
   /// ```
   ///
-  /// In the above example, a `Namespace` is created with three `RawCommand` objects. Each command has a different set of subjects.
+  /// In the above example, a `Namespace` is created with three `ParsedCommand` objects. Each command has a different set of subjects.
   ///
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   pub struct Namespace< Command >
   {
-      /// list of commands
-      pub commands : Vec< Command >,
+    /// list of commands
+    pub commands : Vec< Command >,
   }
 
   /// Represents a parsed command that has been extracted from an input string by a `Parser`.
   ///
-  /// The `RawCommand` struct is designed to be flexible and allow for a wide variety of commands to be parsed and represented. However, this flexibility also means that a `RawCommand` may contain invalid or unexpected data.
+  /// The `ParsedCommand` struct is designed to be flexible and allow for a wide variety of commands to be parsed and represented. However, this flexibility also means that a `ParsedCommand` may contain invalid or unexpected data.
   ///
   /// # Example:
   ///
   /// ```
-  /// # use wca::RawCommand;
+  /// # use wca::ParsedCommand;
   /// # use std::collections::HashMap;
-  /// RawCommand
+  /// ParsedCommand
   /// {
   ///   name : "command".to_string(),
   ///   subjects : vec![ "subject_value".to_string(), /* ... */ ],
@@ -125,10 +129,10 @@ pub( crate ) mod private
   /// };
   /// ```
   ///
-  /// In the above example, a `RawCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a raw value of "raw_prop_value".
+  /// In the above example, a `ParsedCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a raw value of "raw_prop_value".
   ///
   #[ derive( Default, Debug, Clone, PartialEq, Eq ) ]
-  pub struct RawCommand
+  pub struct ParsedCommand
   {
     /// name of command without delimiter
     pub name : String,
@@ -145,5 +149,5 @@ crate::mod_interface!
 {
   exposed use Program;
   exposed use Namespace;
-  exposed use RawCommand;
+  exposed use ParsedCommand;
 }

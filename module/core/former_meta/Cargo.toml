@@ -23,7 +23,6 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-
 exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
@@ -40,12 +39,5 @@ iter_tools = { workspace = true, features = [ "default" ] }
 
 # xxx : optimize features set
 
-# proc-macro2 = "~1.0"
-# quote = "~1.0"
-# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
-# iter_tools = { workspace = true, features = [ "default" ] }
-# macro_tools = { workspace = true, features = [ "default" ] }
-
 [dev-dependencies]
-# trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { workspace = true, features = [ "default" ] }

@@ -10,11 +10,11 @@ pub( crate ) mod private
   /// ```rust
   /// use wca::Value;
   ///
-  /// let mut args = vec![Value::Number(42.), Value::String("Rust".into())].into_iter();
-  /// wca::parse_args!(args, n: f64, name: String);
+  /// let mut args = vec![ Value::Number( 42. ), Value::String( "Rust".into() ) ].into_iter();
+  /// wca::parse_args!( args, n : f64, name : String );
   ///
-  /// assert_eq!(n, 42.);
-  /// assert_eq!(name, "Rust");
+  /// assert_eq!( n, 42. );
+  /// assert_eq!( name, "Rust" );
   /// ```
   #[macro_export]
   macro_rules! parse_args
@@ -33,7 +33,7 @@ pub( crate ) mod private
     {
       let $b = $args.next().unwrap();
       $crate::parse_args!( $args $( $rest )* )
-      };
+    };
     ( $args : ident, mut $b : ident $( $rest : tt )* ) =>
     {
       let mut $b = $args.next().unwrap();
@@ -67,13 +67,13 @@ pub( crate ) mod private
     /// The hint for the property.
     pub hint : &'a str,
     /// The tag representing the property's type.
-    pub tag : crate::Type,
+    pub tag : Type,
   }
 
   impl< 'a > Property< 'a >
   {
     /// Constructor of a property.
-    pub fn new( name : &'a str, hint : &'a str, tag : crate::Type ) -> Self { Self { name, hint, tag } }
+    pub fn new( name : &'a str, hint : &'a str, tag : Type ) -> Self { Self { name, hint, tag } }
   }
 
   /// A builder struct for constructing commands.
@@ -81,14 +81,14 @@ pub( crate ) mod private
   pub struct CommandBuilder< T >
   {
     state : T,
-    commands : Vec< crate::Command >,
-    handlers : std::collections::HashMap< String, crate::Routine >,
+    commands : Vec< Command >,
+    handlers : std::collections::HashMap< String, Routine >,
   }
 
   impl< T > CommandBuilder< T >
   {
     /// Constructs a `CommandBuilder` with the given state.
-    pub fn with_state( state: T ) -> Self
+    pub fn with_state( state : T ) -> Self
     {
       Self { state, handlers : <_>::default(), commands : vec![] }
     }
@@ -98,7 +98,7 @@ pub( crate ) mod private
   pub struct Builder< F >
   {
     handler : F,
-    command : crate::Command,
+    command : Command,
   }
 
   impl< F > Builder< F >
@@ -121,14 +121,14 @@ pub( crate ) mod private
     {
       let name =
       {
-        use crate::wtools::Itertools as _;
+        use wtools::Itertools as _;
 
         let name = std::any::type_name::< F >();
         let name = name.split("::").last().unwrap();
         name.split( '_' ).join( "." )
       };
 
-      Self { handler, command : crate::Command::former().phrase( name ).form() }
+      Self { handler, command : Command::former().phrase( name ).form() }
     }
 
     /// Adds an argument to the command.
@@ -140,16 +140,16 @@ pub( crate ) mod private
     /// # Arguments
     ///
     /// * `hint` - The hint for the argument, represented as a string slice (`&str`).
-    /// * `tag` - The type of the argument, represented by a `Type` object from the `crate::Type` module.
+    /// * `tag` - The type of the argument, represented by a `Type` object from the `Type` module.
     ///
     /// # Returns
     ///
     /// The modified command instance with the argument added.
     ///
     #[ inline ]
-    pub fn arg( mut self, hint : &str, tag : crate::Type ) -> Self
+    pub fn arg( mut self, hint : &str, tag : Type ) -> Self
     {
-      self.command.subjects.push( grammar::settings::ValueDescription
+      self.command.subjects.push( grammar::command::ValueDescription
       {
         hint : hint.into(),
         kind : tag,
@@ -176,18 +176,19 @@ pub( crate ) mod private
     ///
     /// * `name` - The name of the property. It should implement the `ToString` trait.
     /// * `hint` - The hint for the property. It should implement the `ToString` trait.
-    /// * `kind` - The type of the property, represented by a `Type` object from the `crate::Type` module.
+    /// * `kind` - The type of the property, represented by a `Type` object from the `Type` module.
     ///
     /// # Returns
     ///
     /// The modified command instance with the property added.
     ///
     #[ inline ]
-    pub fn property( mut self, name : impl ToString , hint : impl ToString, kind : crate::Type ) -> Self
+    pub fn property( mut self, name : impl ToString , hint : impl ToString, kind : Type ) -> Self
     {
-      self.command.properties.insert(
+      self.command.properties.insert
+      (
         name.to_string(),
-        grammar::settings::ValueDescription
+        grammar::command::ValueDescription
         {
           hint : hint.to_string(),
           kind,
@@ -237,10 +238,10 @@ pub( crate ) mod private
   {
     /// Adds a command to the `CommandBuilder`.
     /// ```no_rust
-    /// let ca = cui(()) // Add commands using the builder pattern
-    /// .command(command)
-    /// .command(command2)
-    /// .command(echo.arg("string", Type::String)) // Customize your commands by chaining methods such as properties
+    /// let ca = cui( () ) // Add commands using the builder pattern
+    /// .command( command )
+    /// .command( command2 )
+    /// .command( echo.arg("string", Type::String ) ) // Customize your commands by chaining methods such as properties
     ///                                            // property, and arg to add properties and arguments.
     /// .build();
     ///
@@ -251,7 +252,7 @@ pub( crate ) mod private
       command : impl IntoBuilder< F, T >,
     ) -> Self
     where
-      F : Fn( T, crate::Args, crate::Props ) -> Result< (), E > + 'static + Copy,
+      F : Fn( T, Args, Props ) -> Result< (), E > + 'static + Copy,
       E : fmt::Debug,
     {
       let Builder { handler, command } = command.into_builder();
@@ -260,10 +261,10 @@ pub( crate ) mod private
       let closure = closure::closure!( | ( args, props ) |
       {
         handler( state.clone(), args, props )
-        .map_err( | report | crate::BasicError::new( format!( "{report:?}" ) ).into() )
+        .map_err( | report | BasicError::new( format!( "{report:?}" ) ).into() )
       });
 
-      let handler = crate::Routine::new( closure );
+      let handler = Routine::new( closure );
 
       self.handlers.insert( command.phrase.clone(), handler );
       self.commands.push( command );
@@ -276,9 +277,9 @@ pub( crate ) mod private
     /// This method finalizes the construction of the `CommandBuilder` by
     /// creating a `wca::CommandsAggregator` instance with the accumulated
     /// commands and handlers.
-    pub fn build( self ) -> crate::CommandsAggregator
+    pub fn build( self ) -> CommandsAggregator
     {
-      crate::CommandsAggregator::former().grammar( self.commands ).executor( self.handlers ).build()
+      CommandsAggregator::former().grammar( self.commands ).executor( self.handlers ).build()
     }
   }
 
@@ -289,13 +290,13 @@ pub( crate ) mod private
   pub trait CommandExt< T > : Sized
   {
     /// Adds an argument to the command.
-    fn arg( self, hint : &str, tag : crate::Type ) -> Builder< Self >
+    fn arg( self, hint : &str, tag : Type ) -> Builder< Self >
     {
       Builder::new( self ).arg( hint, tag )
     }
 
     /// Adds property to the command.
-    fn property< const N: usize >( self, name : impl ToString , hint : impl ToString, kind : crate::Type ) -> Builder< Self >
+    fn property< const N: usize >( self, name : impl ToString , hint : impl ToString, kind : Type ) -> Builder< Self >
     {
       Builder::new( self ).property( name, hint, kind )
     }
@@ -307,7 +308,7 @@ pub( crate ) mod private
     }
   }
 
-  impl< F: Fn( T, crate::Args, crate::Props ) -> Result< (), E>, T, E > CommandExt< T > for F {}
+  impl< F: Fn( T, Args, Props ) -> Result< (), E>, T, E > CommandExt< T > for F {}
 
   /// A trait for converting a type into a `Builder`.
   pub trait IntoBuilder< F, T > : Sized
@@ -324,7 +325,7 @@ pub( crate ) mod private
     }
   }
 
-  impl< F: Fn( T, crate::Args, crate::Props ) -> Result< (), E >, T, E > IntoBuilder< F, T > for F
+  impl< F: Fn( T, Args, Props ) -> Result< (), E >, T, E > IntoBuilder< F, T > for F
   {
     fn into_builder( self ) -> Builder< F >
     {

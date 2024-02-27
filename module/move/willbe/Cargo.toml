@@ -1,6 +1,6 @@
 [package]
 name = "willbe"
-version = "0.2.0"
+version = "0.4.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -59,3 +59,4 @@ test_tools = { workspace = true }
 assert_fs = "1.0"
 serde_yaml = "0.9"
 serde = "1.0"
+assert_cmd = "2.0"

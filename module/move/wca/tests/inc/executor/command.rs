@@ -10,7 +10,7 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let grammar_converter = GrammarConverter::former()
+    let verifier = Verifier::former()
     .command
     (
       wca::Command::former()
@@ -28,7 +28,7 @@ tests_impls!
     .form();
 
     let raw_command = parser.command( ".command" ).unwrap();
-    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+    let grammar_command = verifier.to_command( raw_command ).unwrap();
     let exec_command = executor_converter.to_command( grammar_command ).unwrap();
 
     // execute the command
@@ -41,7 +41,7 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let grammar_converter = GrammarConverter::former()
+    let verifier = Verifier::former()
     .command
     (
       wca::Command::former()
@@ -65,7 +65,7 @@ tests_impls!
 
     // with subject
     let raw_command = parser.command( ".command subject" ).unwrap();
-    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+    let grammar_command = verifier.to_command( raw_command ).unwrap();
     let exec_command = executor_converter.to_command( grammar_command ).unwrap();
 
     // execute the command
@@ -73,7 +73,7 @@ tests_impls!
 
     // without subject
     let raw_command = parser.command( ".command" ).unwrap();
-    let grammar_command = grammar_converter.to_command( raw_command );
+    let grammar_command = verifier.to_command( raw_command );
     a_true!( grammar_command.is_err() );
   }
 
@@ -83,7 +83,7 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let grammar_converter = GrammarConverter::former()
+    let verifier = Verifier::former()
     .command
     (
       wca::Command::former()
@@ -107,7 +107,7 @@ tests_impls!
 
     // with property
     let raw_command = parser.command( ".command prop:value" ).unwrap();
-    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+    let grammar_command = verifier.to_command( raw_command ).unwrap();
     let exec_command = executor_converter.to_command( grammar_command ).unwrap();
 
     // execute the command
@@ -115,12 +115,12 @@ tests_impls!
 
     // with subject and without property
     let raw_command = parser.command( ".command subject" ).unwrap();
-    let grammar_command = grammar_converter.to_command( raw_command );
+    let grammar_command = verifier.to_command( raw_command );
     a_true!( grammar_command.is_err() );
 
     // with subject and with property
     let raw_command = parser.command( ".command subject prop:value" ).unwrap();
-    let grammar_command = grammar_converter.to_command( raw_command );
+    let grammar_command = verifier.to_command( raw_command );
     a_true!( grammar_command.is_err() );
   }
 
@@ -130,7 +130,7 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let grammar_converter = GrammarConverter::former()
+    let verifier = Verifier::former()
     .command
     (
       wca::Command::former()
@@ -165,7 +165,7 @@ tests_impls!
     .form();
 
     let raw_command = parser.command( ".check" ).unwrap();
-    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+    let grammar_command = verifier.to_command( raw_command ).unwrap();
     let exec_command = executor_converter.to_command( grammar_command ).unwrap();
 
     // execute the command
@@ -178,7 +178,7 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let grammar_converter = GrammarConverter::former()
+    let verifier = Verifier::former()
     .command
     (
       wca::Command::former()
@@ -194,7 +194,7 @@ tests_impls!
     let executor_converter = ExecutorConverter::former().form();
 
     let raw_command = parser.command( ".command" ).unwrap();
-    let grammar_command = grammar_converter.to_command( raw_command ).unwrap();
+    let grammar_command = verifier.to_command( raw_command ).unwrap();
 
     let exec_command = executor_converter.to_command( grammar_command );
     a_true!( exec_command.is_err() );

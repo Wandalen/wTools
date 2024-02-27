@@ -59,6 +59,7 @@ where
   }
 
   /// Set the whole container instead of setting each element individually.
+  #[ inline( always ) ]
   pub fn replace( mut self, container : HashSet ) -> Self
   {
     debug_assert!( self.container.is_none() );
@@ -67,6 +68,7 @@ where
   }
 
   /// Return former of your struct moving container there. Should be called after configuring the container.
+  #[ inline( always ) ]
   pub fn end( mut self ) -> Former
   {
     let container = self.container.take();
@@ -75,6 +77,7 @@ where
   }
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
+  #[ inline( always ) ]
   pub fn insert< E2 >( mut self, e : E2 ) -> Self
   where
     E2 : core::convert::Into< E >,

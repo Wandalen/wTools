@@ -8,7 +8,7 @@ pub( crate ) mod private
     IResult,
   };
 
-  /// `Parser` provides parsing command strings into `RawCommand` objects.
+  /// `Parser` provides parsing command strings into `ParsedCommand` objects.
   /// It allows you to specify the symbols that will be used to interpret the command string, such as the command delimiter, property delimiter, and namespace delimiter.
   ///
   /// ```

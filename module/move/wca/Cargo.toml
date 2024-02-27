@@ -27,10 +27,10 @@ all-features = false
 exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
-use_std = [ "default_handlers" ]
-use_alloc = []
+default = [ "enabled", "default_handlers" ]
+full = [ "enabled", "default_handlers" ]
+# use_std = [ "default_handlers" ]
+# use_alloc = []
 enabled = []
 
 default_handlers = [
@@ -42,13 +42,18 @@ default_handlers = [
   "on_print_commands_default",
 ]
 
+# qqq : for Bohdan : description of all features please
 on_error_default = [ "enabled" ]
 on_syntax_error_default = [ "enabled" ]
 on_ambiguity_default = [ "enabled" ]
-on_unknown_command_error_default = [ "enabled" ]
-on_unknown_command_error_suggest = [ "eddie" ]
+on_unknown_command_error_default = [ "enabled" ] # qqq : for Bohdan : what does this feature do?
+on_unknown_suggest = [ "eddie" ]
 on_get_help_default = [ "enabled" ]
 on_print_commands_default = [ "enabled" ]
+
+[[bench]]
+name = "bench"
+harness = false
 
 [dependencies]
 error_tools = { workspace = true, features = [ "default" ] }
@@ -65,4 +70,5 @@ eddie = { version = "0.4", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-assert_fs = "1.0" 
+assert_fs = "1.0"
+criterion = "0.5"

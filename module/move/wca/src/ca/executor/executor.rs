@@ -1,16 +1,11 @@
 pub( crate ) mod private
 {
-  use crate::
-  {
-    Program, Namespace, ExecutableCommand,
+  use crate::*;
 
-    Context,
-    RuntimeState, Runtime,
-    ca::executor::runtime::_exec_command, wtools,
-  };
-
+  use ca::executor::runtime::_exec_command;
   use wtools::error::Result;
 
+  // qqq : for Bohdan : how is it useful? where is it used?
   /// Represents the type of executor to use for running commands.
   #[ derive( Debug ) ]
   pub enum ExecutorType
@@ -24,20 +19,20 @@ pub( crate ) mod private
   /// Executor that is responsible for executing the program's commands.
   /// It uses the given `Context` to store and retrieve values during runtime.
   ///
-  /// It takes an `ExecutableCommand` which contains subjects and properties that will be passed to the callback function of the associated command's routine.
+  /// It takes an `ExecutableCommand_` which contains subjects and properties that will be passed to the callback function of the associated command's routine.
   ///
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ Executor, ExecutableCommand, Routine, Value };
+  /// # use wca::{ Executor, ExecutableCommand_, Routine, Value };
   /// # use std::collections::HashMap;
   /// let executor = Executor::former().form();
   ///
-  /// let executable_command = ExecutableCommand
+  /// let executable_command = ExecutableCommand_
   /// {
   ///   subjects : vec![ Value::String( "subject_value".to_string() ), /* ... */ ],
-  ///   properties : HashMap::from_iter(
-  ///   [
+  ///   properties : HashMap::from_iter
+  ///   ([
   ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
   ///     /* ... */
   ///   ]),
@@ -63,7 +58,7 @@ pub( crate ) mod private
     /// Executes a program
     ///
     /// Setup runtimes for each namespace into program and run it with specified execution type
-    pub fn program( &self, program : Program< Namespace< ExecutableCommand > > ) -> Result< () >
+    pub fn program( &self, program : Program< Namespace< ExecutableCommand_ > > ) -> Result< () >
     {
       let context = self.context.clone();
       let runtimes_number = program.namespaces.len();
@@ -103,7 +98,7 @@ pub( crate ) mod private
     /// Executes a namespace
     ///
     /// Configure `Runtime` and run commands from namespace at runtime position while it isn't finished
-    pub fn namespace( &self, namespace : Namespace< ExecutableCommand > ) -> Result< () >
+    pub fn namespace( &self, namespace : Namespace< ExecutableCommand_ > ) -> Result< () >
     {
       let context = self.context.clone();
       let mut runtime = Runtime
@@ -119,6 +114,8 @@ pub( crate ) mod private
         state.pos = runtime.pos + 1;
         runtime.r#do()?;
         runtime.pos = runtime.context.get_ref::< RuntimeState >().unwrap().pos;
+        // qqq : for Bohdan : has `runtime.context` be used? seems not
+        // looks like unnecessary too complicated.
       }
 
       Ok( () )
@@ -127,11 +124,12 @@ pub( crate ) mod private
     /// Executes a command
     ///
     /// Call command callback with context if it is necessary.
-    pub fn command( &self, command : ExecutableCommand ) -> Result< () >
+    pub fn command( &self, command : ExecutableCommand_ ) -> Result< () >
     {
       _exec_command( command, self.context.clone() )
     }
 
+    // qqq : for Bohdan : probably redundant
     fn parallel_execution_loop( mut runtimes : Vec< Runtime > ) -> Result< () >
     {
       while

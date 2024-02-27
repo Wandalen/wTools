@@ -164,8 +164,10 @@ mod private
     right : &'static str,
   }
 
- const UTF8_SYMBOLS : Symbols = Symbols
- {
+  // qqq : fro Bohdan : abstract and move out tree printing. or reuse ready solution for tree printing
+  // stick to single responsibility
+  const UTF8_SYMBOLS : Symbols = Symbols
+  {
     down : "│",
     tee  : "├",
     ell  : "└",
@@ -426,7 +428,7 @@ mod private
       }
       ListFormat::Tree =>
       {
-        let packages = metadata.packages_get().context( "workspace packages" ).err_with( report.clone() )?;
+        let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
         let mut visited = packages.iter().map( | p | format!( "{}+{}+{}", p.name, p.version.to_string(), p.manifest_path ) ).collect();
         for package in packages
         {
@@ -456,7 +458,7 @@ mod private
           )
         };
 
-        let packages = metadata.packages_get().context( "workspace packages" ).err_with( report.clone() )?;
+        let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
         let packages_map =  packages::filter
         (
           packages,

@@ -7,7 +7,7 @@ tests_impls!
   fn simple()
   {
     let ca = CommandsAggregator::former()
-    .grammar( // list of commands -> Collect all to GrammarConverter
+    .grammar( // list of commands -> Collect all to Verifier
     [
       wca::Command::former()
       .hint( "hint" )
@@ -43,7 +43,7 @@ tests_impls!
   fn with_only_general_help()
   {
     let ca = CommandsAggregator::former()
-    .grammar( // list of commands -> Collect all to GrammarConverter
+    .grammar( // list of commands -> Collect all to Verifier
     [
       wca::Command::former()
       .hint( "hint" )
@@ -73,7 +73,7 @@ tests_impls!
 
   fn custom_converters()
   {
-    let grammar = GrammarConverter::former()
+    let grammar = Verifier::former()
     .command
     (
       wca::Command::former()
@@ -97,7 +97,7 @@ tests_impls!
     .form();
 
     let ca = CommandsAggregator::former()
-    .grammar_converter( grammar )
+    .verifier( grammar )
     .executor_converter( executor )
     .build();
 
@@ -189,32 +189,32 @@ tests_impls!
     a_true!( ca.perform( ".command" ).is_ok() );
     // Expect execution error
     a_true!
-    ( 
+    (
       matches!
       (
-        ca.perform( ".command_with_execution_error" ), 
-        Err( Error::Execution( _ ) ) 
-      ), 
+        ca.perform( ".command_with_execution_error" ),
+        Err( Error::Execution( _ ) )
+      ),
       "Unexpected error type, expected Error::Execution."
     );
-    // Expect ValidationError::GrammarConverter
+    // Expect ValidationError::Verifier
     a_true!
     (
       matches!
       (
-        ca.perform( ".help.help.help" ), 
-        Err( Error::Validation( ValidationError::GrammarConverter( _ ) ) ) 
-      ), 
-      "Unexpected validation error type, expected ValidationError::GrammarConverter."
+        ca.perform( ".help.help.help" ),
+        Err( Error::Validation( ValidationError::Verifier( _ ) ) )
+      ),
+      "Unexpected validation error type, expected ValidationError::Verifier."
     );
     // Expect ValidationError::Parser
     a_true!
     (
       matches!
       (
-        ca.perform( "command" ), 
+        ca.perform( "command" ),
         Err( Error::Validation( ValidationError::Parser { .. } ) )
-      ), 
+      ),
       "Unexpected validation error type, expected ValidationError::Parser."
     );
     // Expect ValidationError::ExecutorConverter
@@ -222,18 +222,18 @@ tests_impls!
     (
       matches!
       (
-        ca.perform( ".command_without_executor" ), 
-        Err( Error::Validation( ValidationError::ExecutorConverter( _ ) ) ) 
-      ), 
+        ca.perform( ".command_without_executor" ),
+        Err( Error::Validation( ValidationError::ExecutorConverter( _ ) ) )
+      ),
       "Unexpected validation error type, expected ValidationError::ExecutorConverter."
     );
   }
 
   // tests bug fix when passing a subject with a colon character
   // example: passing the path to a directory with a colon in its name
-  fn path_subject_with_colon() 
+  fn path_subject_with_colon()
   {
-    let grammar = GrammarConverter::former()
+    let grammar = Verifier::former()
     .command
     (
       TheModule::Command::former()
@@ -250,7 +250,7 @@ tests_impls!
     .form();
 
     let ca = CommandsAggregator::former()
-    .grammar_converter( grammar )
+    .verifier( grammar )
     .executor_converter( executor )
     .build();
 
@@ -264,16 +264,16 @@ tests_impls!
     (
       matches!
       (
-        ca.perform( wrong_command ), 
-        Err( Error::Validation( ValidationError::Parser { .. } ) ) 
-      ), 
+        ca.perform( wrong_command ),
+        Err( Error::Validation( ValidationError::Parser { .. } ) )
+      ),
       "It is a sentence that can not be parsed: `/path:to_dir`"
     );
   }
 
-  fn string_subject_with_colon() 
+  fn string_subject_with_colon()
   {
-    let grammar = GrammarConverter::former()
+    let grammar = Verifier::former()
     .command
     (
       TheModule::Command::former()
@@ -291,7 +291,7 @@ tests_impls!
     .form();
 
     let ca = CommandsAggregator::former()
-    .grammar_converter( grammar.clone() )
+    .verifier( grammar.clone() )
     .executor_converter( executor )
     .build();
 
@@ -308,9 +308,9 @@ tests_impls!
     a_id!( grammar_command.subjects, vec![ TheModule::Value::String( "qwe:rty".into() ) ] );
   }
 
-  fn no_prop_subject_with_colon() 
+  fn no_prop_subject_with_colon()
   {
-    let grammar = GrammarConverter::former()
+    let grammar = Verifier::former()
     .command
     (
       TheModule::Command::former()
@@ -327,7 +327,7 @@ tests_impls!
     .form();
 
     let ca = CommandsAggregator::former()
-    .grammar_converter( grammar.clone() )
+    .verifier( grammar.clone() )
     .executor_converter( executor )
     .build();
 
@@ -346,7 +346,7 @@ tests_impls!
 
   fn optional_prop_subject_with_colon()
   {
-    let grammar = GrammarConverter::former()
+    let grammar = Verifier::former()
     .command
     (
       TheModule::Command::former()
@@ -364,7 +364,7 @@ tests_impls!
     .form();
 
     let ca = CommandsAggregator::former()
-    .grammar_converter( grammar.clone() )
+    .verifier( grammar.clone() )
     .executor_converter( executor )
     .build();
 

@@ -497,12 +497,12 @@ pub fn starting_params_for_hybrid() -> Result< OptimalProblem< RangeInclusive< f
 {
   let opt_problem = OptimalProblem::new()
   .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?
-  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=2000.0 ), Some( 300.0 ), Some( 20.0 ) )?
-  .add( Some( String::from( "mutation rate" ) ), Some( 0.0..=0.5 ), Some( 0.25 ), Some( 0.1 ) )?
-  .add( Some( String::from( "crossover rate" ) ), Some( 0.0..=0.5 ), Some( 0.5 ), Some( 0.2 ) )?
-  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=1000.0 ), Some( 30.0 ), Some( 5.0 ) )?
+  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=200.0 ), Some( 100.0 ), Some( 20.0 ) )?
+  .add( Some( String::from( "mutation rate" ) ), Some( 0.0..=1.0 ), Some( 0.25 ), Some( 0.1 ) )?
+  .add( Some( String::from( "crossover rate" ) ), Some( 0.0..=1.0 ), Some( 0.5 ), Some( 0.2 ) )?
+  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=100.0 ), Some( 30.0 ), Some( 5.0 ) )?
   .add( Some( String::from( "population size" ) ), Some( 1.0..=1000.0 ), Some( 300.0 ), Some( 200.0 ) )?
-  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=5000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
+  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=2000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
   ;
 
   Ok( opt_problem )
@@ -513,12 +513,12 @@ pub fn starting_params_for_sa() -> Result< OptimalProblem< RangeInclusive< f64 >
 {
   let opt_problem = OptimalProblem::new()
   .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?
-  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=2000.0 ), Some( 300.0 ), Some( 20.0 ) )?
+  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=200.0 ), Some( 100.0 ), Some( 20.0 ) )?
   .add( Some( String::from( "mutation rate" ) ), Some( 1.0..=1.0 ), Some( 1.0 ), Some( 0.0 ) )?
   .add( Some( String::from( "crossover rate" ) ), Some( 0.0..=0.0 ), Some( 0.0 ), Some( 0.0 ) )?
-  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=1000.0 ), Some( 30.0 ), Some( 5.0 ) )?
+  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=100.0 ), Some( 30.0 ), Some( 5.0 ) )?
   .add( Some( String::from( "population size" ) ), Some( 1.0..=1.0 ), Some( 1.0 ), Some( 0.0 ) )?
-  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=10000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
+  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=5000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
   ;
 
   Ok( opt_problem )
@@ -529,12 +529,12 @@ pub fn starting_params_for_ga() -> Result< OptimalProblem< RangeInclusive< f64 >
 {
   let opt_problem = OptimalProblem::new()
   .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?
-  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=2000.0 ), Some( 300.0 ), Some( 20.0 ) )?
-  .add( Some( String::from( "mutation rate" ) ), Some( 0.1..=0.5 ), Some( 0.25 ), Some( 0.1 ) )?
-  .add( Some( String::from( "crossover rate" ) ), Some( 0.1..=0.5 ), Some( 0.5 ), Some( 0.2 ) )?
-  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=1000.0 ), Some( 30.0 ), Some( 5.0 ) )?
-  .add( Some( String::from( "population size" ) ), Some( 10.0..=5000.0 ), Some( 300.0 ), Some( 200.0 ) )?
-  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=5000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
+  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=200.0 ), Some( 100.0 ), Some( 20.0 ) )?
+  .add( Some( String::from( "mutation rate" ) ), Some( 0.1..=1.0 ), Some( 0.25 ), Some( 0.1 ) )?
+  .add( Some( String::from( "crossover rate" ) ), Some( 0.1..=1.0 ), Some( 0.5 ), Some( 0.2 ) )?
+  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=100.0 ), Some( 30.0 ), Some( 5.0 ) )?
+  .add( Some( String::from( "population size" ) ), Some( 10.0..=2000.0 ), Some( 300.0 ), Some( 200.0 ) )?
+  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=2000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
   ;
 
   Ok( opt_problem )

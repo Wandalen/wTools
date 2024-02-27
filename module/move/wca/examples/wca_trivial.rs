@@ -2,24 +2,22 @@
 //! A trivial example.
 //!
 
-#[ cfg( not( feature = "no_std" ) ) ]
 fn main()
 {
-  use wca::prelude::*;
 
-  let ca = CommandsAggregator::former()
-  .grammar(
-  [
-    Command::former()
+  let ca = wca::CommandsAggregator::former()
+  .grammar
+  ([
+    wca::Command::former()
     .phrase( "echo" )
     .hint( "prints all subjects and properties" )
-    .subject( "Subject", Type::String, true )
-    .property( "property", "simple property", Type::String, true )
+    .subject( "Subject", wca::Type::String, true )
+    .property( "property", "simple property", wca::Type::String, true )
     .form(),
   ])
-  .executor(
-  [
-    ( "echo".to_owned(), Routine::new( |( args, props )|
+  .executor
+  ([
+    ( "echo".to_owned(), wca::Routine::new( |( args, props )|
     {
       println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
       Ok( () )
@@ -27,11 +25,22 @@ fn main()
   ])
   .build();
 
+  // qqq : qqq2 : for Bohdan : that should work
+  // let ca = wca::CommandsAggregator::former()
+  // .command( "echo" )
+  //   .hint( "prints all subjects and properties" )
+  //   .subject( "Subject", wca::Type::String, true )
+  //   .property( "property", "simple property", wca::Type::String, true )
+  //   .routine( f1 )
+  //   .perform()
+  // .command( "exit" )
+  //   .hint( "just exit" )
+  //   .routine( || exit() )
+  //   .perform()
+  // .perform()
+  // ;
+  // ca.execute( input ).unwrap();
+
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
   ca.perform( args.join( " " ) ).unwrap();
-}
-
-#[ cfg( feature = "no_std" ) ]
-fn main()
-{
 }

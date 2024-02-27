@@ -8,7 +8,7 @@ pub type Result< T > = std::result::Result< T, syn::Error >;
 /// Descripotr of a field.
 ///
 
-#[allow( dead_code )]
+#[ allow( dead_code ) ]
 struct FormerField< 'a >
 {
   pub attrs : Attributes,
@@ -29,6 +29,8 @@ struct Attributes
 {
   default : Option< AttributeDefault >,
   setter : Option< AttributeSetter >,
+  #[ allow( dead_code ) ]
+  former : Option< AttributeFormer >,
   alias : Option< AttributeAlias >,
 }
 
@@ -38,6 +40,7 @@ impl Attributes
   {
     let mut default = None;
     let mut setter = None;
+    let mut former = None;
     let mut alias = None;
     for attr in attributes
     {
@@ -56,6 +59,11 @@ impl Attributes
           let attr_setter = syn::parse2::< AttributeSetter >( attr.tokens.clone() )?;
           setter.replace( attr_setter );
         }
+        "former" =>
+        {
+          let attr_former = syn::parse2::< AttributeFormer >( attr.tokens.clone() )?;
+          former.replace( attr_former );
+        }
         "alias" =>
         {
           let attr_alias = syn::parse2::< AttributeAlias >( attr.tokens.clone() )?;
@@ -71,7 +79,7 @@ impl Attributes
       }
     }
 
-    Ok( Attributes { default, setter, alias } )
+    Ok( Attributes { default, setter, former, alias } )
   }
 }
 
@@ -81,7 +89,7 @@ impl Attributes
 /// `#[ perform = ( fn after1< 'a >() -> Option< &'a str > ) ]`
 ///
 
-#[allow( dead_code )]
+#[ allow( dead_code ) ]
 struct AttributeFormAfter
 {
   paren_token : syn::token::Paren,
@@ -107,7 +115,7 @@ impl syn::parse::Parse for AttributeFormAfter
 /// `#[ default = 13 ]`
 ///
 
-#[allow( dead_code )]
+#[ allow( dead_code ) ]
 struct AttributeDefault
 {
   // eq_token : syn::Token!{ = },
@@ -129,13 +137,14 @@ impl syn::parse::Parse for AttributeDefault
   }
 }
 
+// qqq : xxx : implement test for setter
+
 ///
 /// Attribute to enable/disable setter generation.
 ///
 /// `#[ setter = false ]`
 ///
-
-#[allow( dead_code )]
+#[ allow( dead_code ) ]
 struct AttributeSetter
 {
   paren_token : syn::token::Paren,
@@ -156,12 +165,38 @@ impl syn::parse::Parse for AttributeSetter
 }
 
 ///
+/// Attribute to enable/disable former generation.
+///
+/// `#[ former( former::runtime::VectorFormer ) ]`
+///
+
+#[ allow( dead_code ) ]
+struct AttributeFormer
+{
+  paren_token : syn::token::Paren,
+  expr : syn::Expr,
+}
+
+impl syn::parse::Parse for AttributeFormer
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+  {
+    let input2;
+    Ok( Self
+    {
+      paren_token : syn::parenthesized!( input2 in input ),
+      expr : input2.parse()?,
+    })
+  }
+}
+
+///
 /// Attribute to create alias.
 ///
 /// `#[ alias( name ) ]`
 ///
 
-#[allow( dead_code )]
+#[ allow( dead_code ) ]
 struct AttributeAlias
 {
   paren_token : syn::token::Paren,
@@ -246,7 +281,8 @@ fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
   let ident = Some( field.ident.clone() );
   let ty = field.ty.clone();
 
-  let ty2 = if is_optional( &ty )
+  // let ty2 = if is_optional( &ty )
+  let ty2 = if field.is_optional
   {
     qt! { #ty }
   }
@@ -446,8 +482,13 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
 /// Generate a setter for the 'field_ident' with the 'setter_name' name.
 ///
 
-#[inline]
-fn field_setter( field_ident: &syn::Ident, non_optional_type: &syn::Type, setter_name: &syn::Ident ) -> proc_macro2::TokenStream
+#[ inline ]
+fn field_setter
+(
+  field_ident : &syn::Ident,
+  non_optional_type : &syn::Type,
+  setter_name : &syn::Ident
+) -> proc_macro2::TokenStream
 {
   qt!
   {

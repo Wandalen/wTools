@@ -45,8 +45,9 @@ pub( crate ) mod private
     let run_tests_command = wca::Command::former()
     .hint( "execute tests in specific packages" )
     .long_hint( "this command runs tests in designated packages based on the provided path. It allows for inclusion and exclusion of features, testing on different Rust version channels, parallel execution, and feature combination settings." )
-    .phrase("tests.run")
+    .phrase( "test" )
     .subject( "A path to directories with packages. If no path is provided, the current directory is used.", Type::Path, true )
+    .property( "dry", "Enables 'dry run'. Does not run tests, only simulates. Default is `true`.", Type::Bool, true )
     .property( "include", "A list of features to include in testing. Separate multiple features by comma.", Type::List( Type::String.into(), ',' ), true )
     .property( "exclude", "A list of features to exclude from testing. Separate multiple features by comma.", Type::List( Type::String.into(), ',' ), true )
     .property( "with_stable", "Specifies whether or not to run tests on stable Rust version. Default is `true`", Type::Bool, true )
@@ -61,13 +62,35 @@ pub( crate ) mod private
     .phrase( "workflow.generate")
     .form();
 
+
+    let w_new = wca::Command::former()
+    .hint( "Create workspace template" )
+    .long_hint( "Creates static files and directories.\nIn workspace`s Cargo.toml and module Cargo.toml you need to specify some fields, fill them before use this template.")
+    .phrase( "workspace.new" )
+    .form();
+
+    let generate_main_header = wca::Command::former()
+    .hint( "Generate header in workspace`s Readme.md file")
+    .long_hint( "For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
+    .phrase( "readme.header.generate" )
+    .form();
+
+    let headers_generate = wca::Command::former()
+    .hint( "Generates header for each workspace member." )
+    .long_hint( "For use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
+    .phrase( "readme.modules.headers.generate" )
+    .form();
+
     vec!
     [
       publish_command,
       list_command,
       create_table_command,
       run_tests_command,
-      generate_workflow
+      generate_workflow,
+      w_new,
+      generate_main_header,
+      headers_generate,
     ]
   }
 
@@ -83,8 +106,11 @@ pub( crate ) mod private
       ( "publish".to_owned(), Routine::new( publish ) ),
       ( "list".to_owned(), Routine::new( list ) ),
       ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
-      ( "tests.run".to_owned(), Routine::new( run_tests ) ),
+      ( "test".to_owned(), Routine::new( test ) ),
       ( "workflow.generate".to_owned(), Routine::new( workflow_generate ) ),
+      ( "workspace.new".to_owned(), Routine::new( workspace_new ) ),
+      ( "readme.header.generate".to_owned(), Routine::new( main_header_generate ) ),
+      ( "readme.modules.headers.generate".to_owned(), Routine::new( headers_generate ) ),
     ])
   }
 }
@@ -102,7 +128,13 @@ crate::mod_interface!
   /// Generate tables
   layer table;
   /// Run all tests
-  layer run_tests;
+  layer test;
   /// Generate workflow
   layer workflow;
+  /// Workspace new
+  layer workspace_new;
+  /// Generate header in main readme.md
+  layer main_header;
+  /// Generate headers
+  layer module_headers;
 }

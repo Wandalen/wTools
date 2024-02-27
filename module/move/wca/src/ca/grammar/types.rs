@@ -1,7 +1,7 @@
 pub( crate ) mod private
 {
-  use crate::wtools;
-
+  use crate::*;
+  use wtools;
   use wtools::{ error::Result, err };
 
   /// Available types that can be converted to a `Value`
@@ -45,16 +45,16 @@ pub( crate ) mod private
 
   /// Container for a `Value` of a specific type
   ///
-  /// Uses for represent of subjects and properties in Commands( E.g. `GrammarCommand`, `ExecutableCommand` )
+  /// Uses for represent of subjects and properties in Commands( E.g. `VerifiedCommand`, `ExecutableCommand_` )
   /// With `wca::Type` enum and `TryCast` you can cast raw string into specific Type.
   /// You can also convert to a type that can be converted from the internal Value type.
   ///
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ GrammarCommand, Value };
+  /// # use wca::{ VerifiedCommand, Value };
   /// # use std::collections::HashMap;
-  /// let command = GrammarCommand
+  /// let command = VerifiedCommand
   /// {
   ///   phrase : "command".to_string(),
   ///   // Here is numeric value used
@@ -98,7 +98,7 @@ pub( crate ) mod private
           {
             match value
             {
-              #[ allow( clippy::redundant_closure_call ) ]// ok because of it improve understanding what is `value` at macro call
+              #[ allow( clippy::redundant_closure_call ) ] // ok because of it improve understanding what is `value` at macro call
               $value_kind( value ) => ( $cast )( value ),
               _ => panic!( "Unknown cast variant. Got `{value:?}` and try to cast to `{}`", stringify!( $kind ) )
             }
@@ -166,7 +166,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use Type;
-  prelude use Value;
+  exposed use Type;
+  exposed use Value;
   prelude use TryCast;
 }
