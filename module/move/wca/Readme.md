@@ -18,7 +18,7 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
     fn main()
     {
 
-      let ca = wca::CommandsAggregator::fluent()
+      let ca = wca::CommandsAggregator::former()
       .command( "echo" )
         .hint( "prints all subjects and properties" )
         .subject( "Subject", Type::String, true )

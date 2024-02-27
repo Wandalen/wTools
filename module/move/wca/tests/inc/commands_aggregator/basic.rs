@@ -25,7 +25,7 @@ tests_impls!
       ( "command".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
       ( "command2".to_owned(), Routine::new( | _ | { println!( "Command2" ); Ok( () ) } ) ),
     ])
-    .build();
+    .perform();
 
     a_id!( (), ca.perform( ".command2 .help" ).unwrap() ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
 
@@ -62,7 +62,7 @@ tests_impls!
       ( "command2".to_owned(), Routine::new( | _ | { println!( "Command2" ); Ok( () ) } ) ),
     ])
     .help_variants([ HelpVariants::General ])
-    .build();
+    .perform();
 
     a_id!( (), ca.perform( ".help" ).unwrap() ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
 
@@ -99,7 +99,7 @@ tests_impls!
     let ca = CommandsAggregator::former()
     .verifier( grammar )
     .executor_converter( executor )
-    .build();
+    .perform();
 
     a_id!( (), ca.perform( ".command" ).unwrap() );
   }
@@ -124,7 +124,7 @@ tests_impls!
     [
       ( "command".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
     ])
-    .build();
+    .perform();
 
     a_id!( (), ca.perform( "-command" ).unwrap() );
   }
@@ -150,7 +150,7 @@ tests_impls!
       ( "cmd.first".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
       ( "cmd.second".to_owned(), Routine::new( | _ | { println!( "Command2" ); Ok( () ) } ) ),
     ])
-    .build();
+    .perform();
 
     a_id!( (), ca.perform( "." ).unwrap() );
     a_id!( (), ca.perform( ".cmd." ).unwrap() );
@@ -184,7 +184,7 @@ tests_impls!
       ( "command".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
       ( "command_with_execution_error".to_owned(), Routine::new( | _ | { println!( "Command" ); Err( err!("todo") ) } ) ),
     ])
-    .build();
+    .perform();
 
     a_true!( ca.perform( ".command" ).is_ok() );
     // Expect execution error
@@ -252,7 +252,7 @@ tests_impls!
     let ca = CommandsAggregator::former()
     .verifier( grammar )
     .executor_converter( executor )
-    .build();
+    .perform();
 
     let command = r#".command "./path:to_dir" "#;
 
@@ -293,7 +293,7 @@ tests_impls!
     let ca = CommandsAggregator::former()
     .verifier( grammar.clone() )
     .executor_converter( executor )
-    .build();
+    .perform();
 
     let command = r#".command qwe:rty nightly:true "#;
 
@@ -329,7 +329,7 @@ tests_impls!
     let ca = CommandsAggregator::former()
     .verifier( grammar.clone() )
     .executor_converter( executor )
-    .build();
+    .perform();
 
     let command = r#".command qwe:rty"#;
 
@@ -366,7 +366,7 @@ tests_impls!
     let ca = CommandsAggregator::former()
     .verifier( grammar.clone() )
     .executor_converter( executor )
-    .build();
+    .perform();
 
     let command = r#".command qwe:rty"#;
 

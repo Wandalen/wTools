@@ -99,13 +99,14 @@ pub( crate ) mod private
   ///     Ok( () )
   ///   })),
   /// ])
-  /// .build();
+  /// .perform();
   ///
   /// ca.perform( ".echo something" )?;
   /// # Ok( () ) }
   /// ```
   #[ derive( Debug ) ]
   #[ derive( former::Former ) ]
+  #[ perform( fn build() -> CommandsAggregator ) ]
   pub struct CommandsAggregator
   {
     #[ default( Parser::former().form() ) ]
@@ -130,19 +131,17 @@ pub( crate ) mod private
     callback_fn : Option< CommandsAggregatorCallback >,
   }
 
-  impl CommandsAggregator
+  impl CommandsAggregatorFormer
   {
-    /// Create a new instance of `CommandsAggregatorFluentBuilder`.
+    /// The command method is a part of the CommandsAggregator builder pattern. It sets the name of the command in the building process of a command.
     ///
-    /// This method ensures a fluent interface to build a `CommandsAggregator`.
+    /// Arg:
+    /// - *name*: A string representing the name of the command.
     ///
-    /// # Returns
-    ///
-    /// Returns a `CommandsAggregatorFluentBuilder` instance.
     /// ```
     /// use wca::{ Args, Context };
     ///
-    /// let ca = wca::CommandsAggregator::fluent()
+    /// let ca = wca::CommandsAggregator::former()
     /// .command( "echo" )
     ///   .hint( "prints all subjects and properties" )
     ///   .subject( "Subject", wca::Type::String, true )
@@ -164,14 +163,13 @@ pub( crate ) mod private
     ///   .perform()
     /// .perform();
     /// ```
-    pub fn fluent() -> CommandsAggregatorFluentBuilder
+    pub fn command< P : Into< String > >( self, phrase : P ) -> CommandHandlerFormer
     {
-      CommandsAggregatorFluentBuilder( Self::former().form() )
+      CommandHandler::former()
+      .ca( self )
+      .grammar( Command::former().phrase( phrase ) )
     }
-  }
 
-  impl CommandsAggregatorFormer
-  {
     /// Setter for grammar
     ///
     /// Gets list of available commands
@@ -210,7 +208,7 @@ pub( crate ) mod private
     /// let ca = CommandsAggregator::former()
     /// // ...
     /// .help( | grammar, command | format!( "Replaced help content" ) )
-    /// .build();
+    /// .perform();
     ///
     /// ca.perform( ".help" )?;
     /// # Ok( () ) }
@@ -233,7 +231,7 @@ pub( crate ) mod private
     /// let ca = CommandsAggregator::former()
     /// // ...
     /// .callback( | _input, _program | println!( "Program is valid" ) )
-    /// .build();
+    /// .perform();
     ///
     /// // prints the "Program is valid" and after executes the program
     /// ca.perform( ".help" )?;
@@ -246,11 +244,14 @@ pub( crate ) mod private
       self.container.callback_fn = Some( CommandsAggregatorCallback( Box::new( callback ) ) );
       self
     }
+  }
 
+  impl CommandsAggregator
+  {
     /// Construct CommandsAggregator
-    pub fn build( self ) -> CommandsAggregator
+    fn build( self ) -> CommandsAggregator
     {
-      let mut ca = self.form();
+      let mut ca = self;
 
       if ca.help_variants.contains( &HelpVariants::All )
       {
@@ -268,10 +269,7 @@ pub( crate ) mod private
 
       ca
     }
-  }
 
-  impl CommandsAggregator
-  {
     /// Parse, converts and executes a program
     ///
     /// Takes a string with program and executes it
@@ -294,35 +292,15 @@ pub( crate ) mod private
     }
   }
 
-  /// The `CommandsAggregatorFluentBuilder` struct is a builder for creating instances of the `CommandsAggregator` struct using a fluent interface.
-  ///
-  /// It allows for chaining multiple configuration methods together to customize the `CommandsAggregator` instance before building it.
-  #[ derive( Debug ) ]
-  pub struct CommandsAggregatorFluentBuilder( CommandsAggregator );
-
-  impl CommandsAggregatorFluentBuilder
-  {
-    pub fn command< P : Into< String > >( self, phrase : P ) -> CommandHandler
-    {
-      CommandHandler
-      {
-        ca : self.0,
-        grammar : Command::former().phrase( phrase ),
-        routine : Routine::WithoutContext( Rc::new( | _ | { panic!( "No routine available: A handler function for the command is missing" ) } ) )
-      }
-    }
-
-    pub fn perform( self ) -> CommandsAggregator
-    {
-      self.0
-    }
-  }
-
   // qqq: rename
+  #[ derive( former::Former ) ]
+  #[ perform( fn perform1( mut self ) -> CommandsAggregatorFormer ) ]
   pub struct CommandHandler
   {
-    ca : CommandsAggregator,
-    grammar : ca::grammar::CommandFormer,
+    ca : CommandsAggregatorFormer,
+    grammar : CommandFormer,
+    #[ setter( false ) ]
+    #[ default( Routine::WithoutContext( Rc::new( | _ | { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
     routine : Routine,
   }
 
@@ -332,30 +310,30 @@ pub( crate ) mod private
     {
       f
       .debug_struct( "CommandHandler" )
-      .field( "ca", &( self.ca ) )
+      .field( "ca", &"" )
       .field( "grammar", &"" )
       .finish()
     }
   }
 
 
-  impl CommandHandler
+  impl CommandHandlerFormer
   {
     pub fn hint< H : Into< String > >( mut self, hint : H ) -> Self
     {
-      self.grammar = self.grammar.hint( hint );
+      self.grammar = Some( self.grammar.unwrap_or_else( ca::grammar::Command::former ).hint( hint ) );
       self
     }
 
     pub fn subject< H : Into< String > >( mut self, hint : H, kind : Type, optional : bool ) -> Self
     {
-      self.grammar = self.grammar.subject( hint, kind, optional );
+      self.grammar = Some( self.grammar.unwrap_or_else( ca::grammar::Command::former ).subject( hint, kind, optional ) );
       self
     }
 
     pub fn property< K : AsRef< str >, H : Into< String > >( mut self, key : K, hint : H, kind : Type, optional : bool ) -> Self
     {
-      self.grammar = self.grammar.property( key, hint, kind, optional );
+      self.grammar = Some( self.grammar.unwrap_or_else( ca::grammar::Command::former ).property( key, hint, kind, optional ) );
       self
     }
 
@@ -364,35 +342,28 @@ pub( crate ) mod private
       Routine: From< Handler< I, R > >,
     {
       let h = f.into();
-      self.routine = h.into();
+      self.routine = Some( h.into() );
       self
     }
+  }
 
-    pub fn perform( mut self ) -> CommandsAggregatorFluentBuilder
+  impl CommandHandler
+  {
+    fn perform1( mut self ) -> CommandsAggregatorFormer
     {
       let cmd= self.grammar.form();
       let phrase = cmd.phrase.clone();
 
-      self.ca.verifier.commands.entry( phrase.clone() ).or_default().push( cmd );
-      assert!( !self.ca.executor_converter.routines.contains_key( &phrase ), "routine was duplicated" );
-      self.ca.executor_converter.routines.insert( phrase, self.routine );
+      let mut verifier = self.ca.verifier.unwrap_or_else( || Verifier::former().form() );
+      verifier.commands.entry( phrase.clone() ).or_default().push( cmd );
+      self.ca.verifier = Some( verifier );
 
-      let mut ca = self.ca;
-      if ca.help_variants.contains( &HelpVariants::All )
-      {
-        HelpVariants::All.generate( &ca.help_generator, &mut ca.verifier, &mut ca.executor_converter );
-      }
-      else
-      {
-        for help in &ca.help_variants
-        {
-          help.generate( &ca.help_generator, &mut ca.verifier, &mut ca.executor_converter );
-        }
-      }
+      let mut executor_converter = self.ca.executor_converter.unwrap_or_else( || ExecutorConverter::former().form() );
+      assert!( !executor_converter.routines.contains_key( &phrase ), "routine was duplicated" );
+      executor_converter.routines.insert( phrase, self.routine );
+      self.ca.executor_converter = Some( executor_converter );
 
-      dot_command( &mut ca.verifier, &mut ca.executor_converter );
-
-      CommandsAggregatorFluentBuilder( ca )
+      self.ca
     }
   }
 }

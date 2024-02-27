@@ -12,7 +12,7 @@ use wca::{ Args, Context };
 fn main()
 {
 
-  let ca = wca::CommandsAggregator::fluent()
+  let ca = wca::CommandsAggregator::former()
   .command( "echo" )
     .hint( "prints all subjects and properties" )
     .subject( "Subject", wca::Type::String, true )

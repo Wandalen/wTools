@@ -31,7 +31,7 @@ pub( crate ) mod private
     .grammar( command::grammar_form() )
     .executor( command::executor_form() )
     .help_variants( [ wca::HelpVariants::General, wca::HelpVariants::SubjectCommand ] )
-    .build();
+    .perform();
 
     let program = args.join( " " );
     if program.is_empty()

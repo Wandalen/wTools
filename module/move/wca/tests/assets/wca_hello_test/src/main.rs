@@ -5,7 +5,7 @@ fn main()
     CommandsAggregator, Command, Routine, Type,
   };
 
-  let ca = wca::CommandsAggregator::fluent()
+  let ca = wca::CommandsAggregator::former()
   .command( "echo" )
     .hint( "prints all subjects and properties" )
     .subject( "Subject", Type::String, true )

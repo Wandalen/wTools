@@ -23,7 +23,7 @@ fn main()
       Ok( () )
     })),
   ])
-  .build();
+  .perform();
 
   // qqq : qqq2 : for Bohdan : that should work
   // let ca = wca::CommandsAggregator::former()

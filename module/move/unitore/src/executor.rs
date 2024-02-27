@@ -141,7 +141,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     } ) ),
   ] )
   .help_variants( [ wca::HelpVariants::General, wca::HelpVariants::SubjectCommand ] )
-  .build();
+  .perform();
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
   ca.perform( args.join( " " ) )?;

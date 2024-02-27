@@ -26,7 +26,7 @@ fn main() -> Result< (), wca::Error >
   // .exit_code_on_error( 1 )
   .grammar( commands::grammar_form() )
   .executor( commands::executor_form() )
-  .build();
+  .perform();
 
   let program = args.join( " " );
   if program.is_empty()

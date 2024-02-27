@@ -43,7 +43,7 @@ fn main()
     })
   ),
   ])
-  .build();
+  .perform();
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
   match ca.perform( args.join( " " ) )
