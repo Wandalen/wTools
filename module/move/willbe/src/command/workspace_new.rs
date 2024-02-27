@@ -20,7 +20,7 @@ mod private
   
   pub fn workspace_new( ( _, properties ) : ( Args, Props ) ) -> Result< () >
   {
-    let WorkspaceNewProperties { repository_url, branches} = WorkspaceNewProperties::try_from( properties )?;
+    let WorkspaceNewProperties { repository_url, branches } = WorkspaceNewProperties::try_from( properties )?;
     endpoint::workspace_new( &std::env::current_dir()?, repository_url, branches ).context( "Fail to workspace" )
   }
 
