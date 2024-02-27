@@ -43,7 +43,6 @@ where
 
 pub struct NoOpPerform;
 
-// impl< K, E, Context > Fn( &mut Context, core::option::Option< std::collections::HashMap< K, E > > )
 impl< K, E, Context > Perform< K, E, Context >
 for NoOpPerform
 where
@@ -53,13 +52,6 @@ where
   {
   }
 }
-
-// impl<K, E, Context> Perform<K, E, Context> for NoOpPerform
-// where
-//   K: core::hash::Hash + std::cmp::Eq,
-// {
-//   // fn call( &self, _context: &mut Context, _container: Option<std::collections::HashMap<K, E>> ) {}
-// }
 
 pub fn noop< K, E, Context >
 (
