@@ -73,7 +73,7 @@ where
 }
 
 // #[ derive( Debug, Default ) ]
-pub struct HashMapWrapFormer< K, E, Context = (), Perform = noop >
+pub struct HashMapWrapFormer< K, E, Context, Perform >
 where
   K : core::hash::Hash + std::cmp::Eq
 {
