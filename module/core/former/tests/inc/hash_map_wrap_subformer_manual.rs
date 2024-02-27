@@ -1,7 +1,7 @@
 // xxx : finish
 use super::*;
 
-#[ derive( Debug ) ]
+#[ derive( Debug, PartialEq ) ]
 pub struct HashMapWrap< K, E >
 where
   K : core::hash::Hash + std::cmp::Eq
@@ -20,7 +20,31 @@ where
   }
 }
 
-pub fn noop< K, E, Context >( context : &mut Context, container : core::option::Option< std::collections::HashMap< K, E > > )
+// pub type Perform : Fn< K, E, Context >( &mut Context, core::option::Option< std::collections::HashMap< K, E > > ) + Default;
+
+pub trait Perform< K, E, Context >
+where
+  K : core::hash::Hash + std::cmp::Eq,
+  Self : Fn( &mut Context, core::option::Option< std::collections::HashMap< K, E > > ),
+{
+}
+
+impl< K, E, Context, F > Perform< K, E, Context > for F
+where
+  K : core::hash::Hash + std::cmp::Eq,
+  F : Fn( &mut Context, Option< std::collections::HashMap< K, E > > ),
+{
+  // fn call( &self, context : &mut Context, container : Option< std::collections::HashMap< K, E > > )
+  // {
+  //   self( context, container );
+  // }
+}
+
+pub fn noop< K, E, Context >
+(
+  _context : &mut Context,
+  _container : core::option::Option< std::collections::HashMap< K, E > >,
+)
 where
   K : core::hash::Hash + std::cmp::Eq
 {
@@ -36,15 +60,13 @@ where
     Self { container }
   }
 
-  pub fn former< Context : Default, Perform >() -> HashMapWrapFormer< K, E, Context, Perform >
-  where
-    Perform : Fn( &mut Context, core::option::Option< std::collections::HashMap< K, E > > ) + Default,
+  pub fn former() -> HashMapWrapFormer< K, E, (), impl Perform< K, E, () > >
   {
-    HashMapWrapFormer::< K, E, Context, Perform >::new
+    HashMapWrapFormer::< K, E, (), _ >::new
     (
       core::option::Option::None,
-      Context::default(),
-      Perform::default(),
+      (),
+      noop::< K, E, () >,
     )
   }
 
@@ -62,11 +84,11 @@ where
   _k_phantom : core::marker::PhantomData< K >,
 }
 
-impl< K, E, Context, Perform >
-HashMapWrapFormer< K, E, Context, Perform >
+impl< K, E, Context, P >
+HashMapWrapFormer< K, E, Context, P >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  Perform : Fn( &mut Context, core::option::Option< std::collections::HashMap< K, E > > ),
+  P : Perform< K, E, Context >,
 {
 
   #[ inline( always ) ]
@@ -96,7 +118,7 @@ where
   (
     container : core::option::Option< std::collections::HashMap< K, E > >,
     context : Context,
-    on_perform : Perform,
+    on_perform : P,
   ) -> Self
   {
     Self
@@ -129,11 +151,11 @@ where
 
 }
 
-impl< K, E, Context, Perform >
-HashMapWrapFormer< K, E, Context, Perform >
+impl< K, E, Context, P >
+HashMapWrapFormer< K, E, Context, P >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  Perform : Fn( &mut Context, core::option::Option< std::collections::HashMap< K, E > > ),
+  P : Perform< K, E, Context >,
 {
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
