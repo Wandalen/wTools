@@ -20,22 +20,16 @@ where
   }
 }
 
-// pub type Perform : Fn< K, E, Context >( &mut Context, core::option::Option< std::collections::HashMap< K, E > > ) + Default;
-
-pub trait Perform< K, E, Context >
-where
-  K : core::hash::Hash + std::cmp::Eq,
-  // Self : Fn( &mut Context, core::option::Option< std::collections::HashMap< K, E > > ),
+pub trait Perform< T, Context >
 {
-  fn call( &self, context : &mut Context, container : Option< std::collections::HashMap< K, E > > );
+  fn call( &self, context : &mut Context, container : Option< T > );
 }
 
-impl< K, E, Context, F > Perform< K, E, Context > for F
+impl< T, Context, F > Perform< T, Context > for F
 where
-  K : core::hash::Hash + std::cmp::Eq,
-  F : Fn( &mut Context, Option< std::collections::HashMap< K, E > > ),
+  F : Fn( &mut Context, Option< T > ),
 {
-  fn call( &self, context : &mut Context, container : Option< std::collections::HashMap< K, E > > )
+  fn call( &self, context : &mut Context, container : Option< T > )
   {
     self( context, container );
   }
@@ -43,23 +37,19 @@ where
 
 pub struct NoOpPerform;
 
-impl< K, E, Context > Perform< K, E, Context >
+impl< T, Context > Perform< T, Context >
 for NoOpPerform
-where
-  K : core::hash::Hash + std::cmp::Eq,
 {
-  fn call( &self, _context : &mut Context, _container : Option< std::collections::HashMap< K, E> > )
+  fn call( &self, _context : &mut Context, _container : Option< T > )
   {
   }
 }
 
-pub fn noop< K, E, Context >
+pub fn noop< T, Context >
 (
   _context : &mut Context,
-  _container : core::option::Option< std::collections::HashMap< K, E > >,
+  _container : core::option::Option< T >,
 )
-where
-  K : core::hash::Hash + std::cmp::Eq
 {
 }
 
@@ -73,13 +63,13 @@ where
     Self { container }
   }
 
-  pub fn former() -> HashMapWrapFormer< K, E, (), impl Perform< K, E, () > >
+  pub fn former() -> HashMapWrapFormer< K, E, (), impl Perform< std::collections::HashMap< K, E >, () > >
   {
     HashMapWrapFormer::< K, E, (), _ >::new
     (
       core::option::Option::None,
       (),
-      noop::< K, E, () >,
+      noop::< std::collections::HashMap< K, E >, () >,
     )
   }
 
@@ -101,7 +91,7 @@ impl< K, E, Context, P >
 HashMapWrapFormer< K, E, Context, P >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  P : Perform< K, E, Context >,
+  P : Perform< std::collections::HashMap< K, E >, Context >,
 {
 
   #[ inline( always ) ]
@@ -169,7 +159,7 @@ impl< K, E, Context, P >
 HashMapWrapFormer< K, E, Context, P >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  P : Perform< K, E, Context >,
+  P : Perform< std::collections::HashMap< K, E >, Context >,
 {
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
