@@ -32,7 +32,7 @@ fn fail_test()
   .channels([ cargo::Channel::Stable ])
   .form();
 
-  let rep : TestReport = test( args ).unwrap_err().0;
+  let rep : TestReport = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
   let stable = rep.tests.get( &cargo::Channel::Stable ).unwrap();
@@ -66,7 +66,7 @@ fn fail_build()
   .channels([ cargo::Channel::Stable ])
   .form();
 
-  let rep: TestReport = test( args ).unwrap_err().0;
+  let rep : TestReport = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
   let stable = rep.tests.get( &cargo::Channel::Stable ).unwrap();

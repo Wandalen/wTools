@@ -1,6 +1,9 @@
 fn main()
 {
-  use wca::prelude::*;
+  use wca::
+  {
+    CommandsAggregator, Command, Routine, Type,
+  };
 
   let ca = CommandsAggregator::former()
   .grammar(

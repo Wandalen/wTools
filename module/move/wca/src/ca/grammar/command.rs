@@ -14,7 +14,7 @@ pub( crate ) mod private
   /// # Examples:
   ///
   /// ```
-  /// # use wca::{ Type, grammar::settings::ValueDescription };
+  /// # use wca::{ Type, ca::grammar::command::ValueDescription };
   /// let value_desc = ValueDescription { kind: Type::String, hint: "Enter your name".to_string(), optional: false };
   /// ```
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
