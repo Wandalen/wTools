@@ -4,7 +4,7 @@ use super::*;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-#[derive( Debug, PartialEq, TheModule::Former )]
+#[ derive( Debug, PartialEq, TheModule::Former ) ]
 pub struct Struct1
 {
   pub int_1 : i32,
@@ -18,10 +18,12 @@ pub struct Struct1
 
 //
 
-include!( "only_test/basic.rs" );
+// xxx : qqq : should be used basic_with_runtine instead of basic_without_runtime
+// // include!( "only_test/basic_with_runtine.rs" );
+// include!( "only_test/basic_without_runtime.rs" );
 
-// include!( "basic_runtine_only_test.rs" );
-// include!( "basic_only_test.rs" );
+// include!( "only_test/primitives_without_runtime.rs" );
+include!( "only_test/containers_without_runtime.rs" );
 
 //
 // output :

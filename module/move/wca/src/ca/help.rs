@@ -306,7 +306,7 @@ pub( crate ) mod private
   /// Container for function that generates help string for any command
   ///
   /// ```
-  /// # use wca::commands_aggregator::help::HelpGeneratorFn;
+  /// # use wca::ca::help::HelpGeneratorFn;
   /// use wca::{ Verifier, Command };
   ///
   /// fn my_help_generator( grammar : &Verifier, command : Option< &Command > ) -> String

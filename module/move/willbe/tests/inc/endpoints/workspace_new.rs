@@ -34,7 +34,7 @@ mod workspace_new
     create_dir(temp.join("test_project_name" )).unwrap();
 
     // Act
-    _ = workspace_new( &temp.path().join("test_project_name" ) ).unwrap();
+    _ = workspace_new( &temp.path().join("test_project_name" ), "https://github.con/Username/TestRepository".to_string(), vec![ "master".into() ] ).unwrap();
     
     // Assets
     assert!( temp_path.join( "module" ).exists() );
@@ -44,10 +44,16 @@ mod workspace_new
     assert!( temp_path.join( ".gitpod.yml" ).exists() );
     assert!( temp_path.join( "Cargo.toml" ).exists() );
     
-    let actual = fs::read_to_string(temp_path.join( "Cargo.toml")).unwrap();
-    let expected = "project_name = \"test_project_name\"";
+    let actual = fs::read_to_string(temp_path.join( "Cargo.toml" ) ).unwrap();
     
-    assert!( actual.contains( &expected ) );
+    let name = "project_name = \"test_project_name\"";
+    let repo_url = "repo_url = \"https://github.con/Username/TestRepository\"";
+    let branches = "branches = [\"master\"]";
+    
+    assert!( actual.contains( &name) );
+    assert!( actual.contains( &repo_url) );
+    assert!( actual.contains( &branches) );
+    
     assert!( temp_path.join( "Makefile" ).exists() );
     assert!( temp_path.join( "assets" ).exists() );
     assert!( temp_path.join( "docs" ).exists() );
@@ -66,7 +72,7 @@ mod workspace_new
     let temp = arrange( "single_module" );
     
     // Act
-    let r = workspace_new( temp.path() );
+    let r = workspace_new( temp.path(), "".into(), vec![] );
     
     // Assert
     assert!( r.is_err() );

@@ -1,24 +1,36 @@
 mod private
 {
+  use crate::*;
   use std::collections::BTreeMap;
   use std::fs;
   use std::io::Write;
   use std::path::Path;
+  use handlebars::no_escape;
   use error_tools::for_app::bail;
   use error_tools::Result;
+  use wtools::iter::Itertools;
 
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
   // qqq : parametrized templates??
   /// Creates workspace template
-  pub fn workspace_new( path : &Path ) -> Result< () >
+  pub fn workspace_new( path : &Path, repository_url : String, branches: Vec< String > ) -> Result< () >
   {
     if fs::read_dir( path )?.count() != 0
     {
       bail!( "Directory should be empty" )
     }
     let mut handlebars = handlebars::Handlebars::new();
-    let data = BTreeMap::from_iter( [ ( "project_name", path.file_name().unwrap().to_string_lossy() ) ] );
+    handlebars.register_escape_fn( no_escape );
+    let branches = branches.into_iter().map( | b | format!( r#""{}""#, b ) ).join( ", " );
+    let data = BTreeMap::from_iter
+    (
+      [
+        ( "project_name", path.file_name().unwrap().to_string_lossy() ),
+        ( "url", repository_url.into() ),
+        ( "branches", branches.into() ),
+      ]
+    );
     handlebars.register_template_string( "cargo_toml", include_str!( "../../template/workspace/Cargo.hbs" ) )?;
     let cargo_toml = &handlebars.render( "cargo_toml", &data )?;
 

@@ -35,6 +35,8 @@ pub( crate ) mod private
     /// Basic usage:
     ///
     /// ```
+    /// use wca::IntoInput;
+    ///
     /// let string_input: &str = "example string";
     /// let input_struct = string_input.into_input();
     ///

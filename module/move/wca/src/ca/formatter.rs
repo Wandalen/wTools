@@ -22,13 +22,13 @@ pub( crate ) mod private
       cmd.iter().fold( String::new(), | _, cmd |
       {
 
-        let subjects = cmd.subjects.iter().fold( String::new(), | _, _ | format!( " `[Subject]`" ) );
+        let subjects = cmd.subjects.iter().fold( String::new(), | _, _ | format!( " `[argument]`" ) );
         let properties = if cmd.properties.is_empty() { " " } else { " `[properties]` " };
         format!
         (
           "[.{name}{subjects}{properties}](#{}{}{})",
           name.replace( '.', "" ),
-          if cmd.subjects.is_empty() { "" } else { "-subject" },
+          if cmd.subjects.is_empty() { "" } else { "-argument" },
           if cmd.properties.is_empty() { "" } else { "-properties" },
         )
       })

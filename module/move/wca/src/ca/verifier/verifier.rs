@@ -45,7 +45,7 @@ pub( crate ) mod private
     // TODO: Make getters
     /// all available commands
     #[ setter( false ) ]
-    pub commands : HashMap< String, Vec< Command > >,
+    pub commands : HashMap< String, Vec< Command > >, // qqq : for Bohdan : <- introduce Dictionary for HashMap< String, Vec< Command > >
   }
 
   impl VerifierFormer

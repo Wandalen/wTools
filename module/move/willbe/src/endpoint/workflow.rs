@@ -9,29 +9,32 @@ mod private
     io::{ Write, Read },
     collections::BTreeMap
   };
+  use cargo_metadata::Package;
 
   use convert_case::{ Casing, Case };
   use toml_edit::Document;
 
   use wtools::error::for_app::{ Result, anyhow };
   use path::AbsolutePath;
+  
 
   // qqq : for Petro : should return Report and typed error in Result
   /// Generate workflows for modules in .github/workflows directory.
   pub fn workflow_generate( base_path : &Path ) -> Result< () >
   {
     let mut workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
-    let username_and_repository = &username_and_repository( &mut workspace_cache )?;
+    let packages = workspace_cache.packages()?;
+    let username_and_repository = &username_and_repository( &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?, packages )?;
     let workspace_root = workspace_cache.workspace_root()?;
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard
     // qqq : for Petro : avoid calling packages_get twice
-    let names = workspace_cache.packages().and_then( | packages | Ok( packages.iter().map( | p | &p.name ).collect::< Vec< _ > >() ) )?;
+    // aaa : remove it
+    let names = packages.iter().map( | p | &p.name ).collect::< Vec< _ > >();
     // map packages path to relative paths fom workspace root, for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
-    let relative_paths = workspace_cache
-    .packages()
-    .map_err( | err | anyhow!( err ) )?
+    let relative_paths = 
+    packages
     .iter()
     .map( | p | &p.manifest_path )
     .filter_map( | p | p.strip_prefix( workspace_root ).ok() )
@@ -58,7 +61,7 @@ mod private
       let path = relative_path.join( "Cargo.toml" );
       let mut data = BTreeMap::new();
       data.insert( "name", name.as_str() );
-      data.insert( "username_and_repository", username_and_repository.as_str() );
+      data.insert( "username_and_repository", username_and_repository.0.as_str() );
       data.insert( "branch", "alpha" );
       let path = path.as_str().replace( "\\", "/" );
       data.insert( "manifest_path", path.as_str() );
@@ -68,10 +71,10 @@ mod private
 
     file_write( &workflow_root.join( "AppropriateBranch.yml" ), include_str!( "../../template/workflow/appropriate_branch.yml" ) )?;
 
-    let data = map_prepare_for_appropriative_branch( "- beta", username_and_repository, "alpha", "alpha", "beta" );
+    let data = map_prepare_for_appropriative_branch( "- beta", username_and_repository.0.as_str(), "alpha", "alpha", "beta" );
     file_write( &workflow_root.join( "AppropriateBranchBeta.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
 
-    let data = map_prepare_for_appropriative_branch( "- main\n      - master", username_and_repository, "alpha", "beta", "master" );
+    let data = map_prepare_for_appropriative_branch( "- main\n      - master", username_and_repository.0.as_str(), "alpha", "beta", "master" );
     file_write( &workflow_root.join( "AppropriateBranchMaster.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
 
     let mut data = BTreeMap::new();
@@ -102,7 +105,7 @@ mod private
       - '!*experiment*/*'
       - '!*/*experiment*'"
     );
-    data.insert( "username_and_repository", username_and_repository.as_str() );
+    data.insert( "username_and_repository", username_and_repository.0.as_str() );
     data.insert( "uses_branch", "alpha" );
     data.insert( "src_branch", "${{ github.ref_name }}" );
     data.insert( "dest_branch", "alpha" );
@@ -112,7 +115,7 @@ mod private
     let mut data = BTreeMap::new();
     data.insert( "name", "beta" );
     data.insert( "branches",  "- alpha" ); 
-    data.insert( "username_and_repository", username_and_repository.as_str() );
+    data.insert( "username_and_repository", username_and_repository.0.as_str() );
     data.insert( "uses_branch", "alpha" );
     data.insert( "src_branch", "alpha" );
     data.insert( "dest_branch", "beta" );
@@ -122,7 +125,7 @@ mod private
     let mut data = BTreeMap::new();
     data.insert( "name", "master" );
     data.insert( "branches",  "- beta" ); 
-    data.insert( "username_and_repository", username_and_repository.as_str() );
+    data.insert( "username_and_repository", username_and_repository.0.as_str() );
     data.insert( "uses_branch", "alpha" );
     data.insert( "src_branch", "beta" );
     data.insert( "dest_branch", "master" );
@@ -132,7 +135,7 @@ mod private
     file_write( &workflow_root.join( "RunsClean.yml" ),  include_str!( "../../template/workflow/rust_clean.yml" ) )?;
 
     let mut data = BTreeMap::new();
-    data.insert( "username_and_repository", username_and_repository.as_str() );
+    data.insert( "username_and_repository", username_and_repository.0.as_str() );
 
     file_write( &workflow_root.join( "StandardRustPullRequest.yml" ), &handlebars.render( "standard_rust_pull_request", &data )? )?;
 
@@ -184,18 +187,21 @@ mod private
     Ok( () )
   }
 
+  struct UsernameAndRepository( String );
+
   // qqq : for Petro : not clear how output should look
+  // aaa : add to documentation
   // qqq : for Petro : newtype?
+  // aaa : replace to AbsolutePath
   // qqq : for Petro : why mut?
+  // aaa : change signature 
   /// Searches and extracts the username and repository name from the repository URL.
   /// The repository URL is first sought in the Cargo.toml file of the workspace;
   /// if not found there, it is then searched in the Cargo.toml file of the module.
   /// If it is still not found, the search continues in the GitHub remotes.
-  fn username_and_repository( workspace : &mut Workspace ) -> Result< String >
+  /// Result looks like this: `Wandalen/wTools`
+  fn username_and_repository( cargo_toml_path : &AbsolutePath, packages: &[Package] ) -> Result< UsernameAndRepository >
   {
-    let cargo_toml_path = workspace.workspace_root()?.join( "Cargo.toml" );
-    if cargo_toml_path.exists() 
-    {
       let mut contents = String::new();
       File::open( cargo_toml_path )?.read_to_string( &mut contents )?;
       let doc = contents.parse::< Document >()?;
@@ -210,12 +216,13 @@ mod private
       {
         return url::extract_repo_url( &url )
         .and_then( | url | url::git_info_extract( &url ).ok() )
+        .map( UsernameAndRepository )
         .ok_or_else( || anyhow!( "Fail to parse repository url from workspace Cargo.toml"))
       } 
       else 
       {
         let mut url = None;
-        for package in workspace.packages()?
+        for package in packages
         {
           if let Ok( wu ) = manifest::private::repo_url( package.manifest_path.parent().unwrap().as_std_path() )
           {
@@ -226,14 +233,10 @@ mod private
         return url
         .and_then( | url | url::extract_repo_url( &url ) )
         .and_then( | url | url::git_info_extract( &url ).ok() )
+        .map( UsernameAndRepository )
         .ok_or_else( || anyhow!( "Fail to extract repository url") )
       }
-    } 
-    else 
-    {
-      return Err( anyhow!( "Fail to find workspace Cargo.toml" ) );
     }
-  }
 
 }
 

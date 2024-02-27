@@ -14,7 +14,7 @@ pub( crate ) mod private
   /// # Examples:
   ///
   /// ```
-  /// # use wca::{ Type, grammar::settings::ValueDescription };
+  /// # use wca::{ Type, ca::grammar::command::ValueDescription };
   /// let value_desc = ValueDescription { kind: Type::String, hint: "Enter your name".to_string(), optional: false };
   /// ```
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
@@ -63,6 +63,7 @@ pub( crate ) mod private
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
+    // qqq : for Bohdan : routine should also be here
   }
 
   impl CommandFormer

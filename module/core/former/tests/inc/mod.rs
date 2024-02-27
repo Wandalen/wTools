@@ -3,9 +3,15 @@ use super::*;
 #[ allow( unused_imports ) ]
 use test_tools::meta::*;
 
-// xxx : qqq : fix the test
-// mod abasic_runtime_manual_test;
-mod abasic_test;
+mod a_primitives_manual_test;
+
+// mod a_containers_without_runtime_manual_test;
+mod a_containers_without_runtime_test;
+mod a_containers_with_runtime_manual_test;
+mod a_containers_with_runtime_test;
+
+// mod abasic_test;
+// mod abasic_with_runtime_test;
 
 mod alias_test;
 mod conflict;

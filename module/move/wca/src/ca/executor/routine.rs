@@ -14,7 +14,7 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// use wca::prelude::*;
+  /// use wca::{ Args, Value };
   ///
   /// let args = Args( vec![ Value::String( "Hello, World!".to_string() ) ] );
   ///
@@ -46,7 +46,7 @@ pub( crate ) mod private
     /// Returns owned casted value by its index
     ///
     /// ```
-    /// # use wca::prelude::*;
+    /// # use wca::{ Args, Value };
     ///
     /// let args = Args( vec![ Value::String( "Hello, World!".to_string() ) ] );
     ///
@@ -78,7 +78,7 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// use wca::prelude::*;
+  /// use wca::{ Props, Value };
   ///
   /// let props = Props( [ ( "hello".to_string(), Value::String( "World!".to_string() ) ) ].into() );
   /// let hello_prop : &str = props.get_owned( "hello" ).unwrap();
@@ -107,7 +107,7 @@ pub( crate ) mod private
     /// Returns owned casted value by its key
     ///
     /// ```
-    /// # use wca::prelude::*;
+    /// # use wca::{ Props, Value };
     ///
     /// let props = Props( [ ( "hello".to_string(), Value::String( "World!".to_string() ) ) ].into() );
     /// let hello_prop : &str = props.get_owned( "hello" ).unwrap();
