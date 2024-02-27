@@ -24,13 +24,12 @@ struct FormerField< 'a >
 ///
 /// Attributes of the field.
 ///
-
 struct Attributes
 {
   default : Option< AttributeDefault >,
   setter : Option< AttributeSetter >,
-  #[ allow( dead_code ) ]
-  former : Option< AttributeFormer >,
+  // #[ allow( dead_code ) ]
+  subformer : Option< AttributeFormer >,
   alias : Option< AttributeAlias >,
 }
 
@@ -40,7 +39,7 @@ impl Attributes
   {
     let mut default = None;
     let mut setter = None;
-    let mut former = None;
+    let mut subformer = None;
     let mut alias = None;
     for attr in attributes
     {
@@ -59,10 +58,10 @@ impl Attributes
           let attr_setter = syn::parse2::< AttributeSetter >( attr.tokens.clone() )?;
           setter.replace( attr_setter );
         }
-        "former" =>
+        "subformer" =>
         {
           let attr_former = syn::parse2::< AttributeFormer >( attr.tokens.clone() )?;
-          former.replace( attr_former );
+          subformer.replace( attr_former );
         }
         "alias" =>
         {
@@ -79,7 +78,7 @@ impl Attributes
       }
     }
 
-    Ok( Attributes { default, setter, former, alias } )
+    Ok( Attributes { default, setter, subformer, alias } )
   }
 }
 
@@ -174,7 +173,7 @@ impl syn::parse::Parse for AttributeSetter
 struct AttributeFormer
 {
   paren_token : syn::token::Paren,
-  expr : syn::Expr,
+  expr : syn::Type,
 }
 
 impl syn::parse::Parse for AttributeFormer
@@ -448,10 +447,11 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 /// ```
 ///
 
-#[inline]
+#[ inline ]
 fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
 {
   let ident = &field.ident;
+
   if let Some( setter_attr ) = &field.attrs.setter
   {
     if !setter_attr.condition.value()
@@ -461,21 +461,33 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
   }
 
   let non_optional_ty = &field.non_optional_ty;
-  let setter_tokens = field_setter( ident, non_optional_ty, ident );
+  // Either subformer or ordinary setter.
+  let setter_tokens = if let Some( subformer_ty ) = &field.attrs.subformer
+  {
+    subformer_field_setter( ident, ident, non_optional_ty, &subformer_ty.expr )
+    // field_setter( ident, ident, non_optional_ty )
+  }
+  else
+  {
+    field_setter( ident, ident, non_optional_ty )
+  };
+
   if let Some( alias_attr ) = &field.attrs.alias
   {
-    let alias_tokens = field_setter( ident, non_optional_ty, &alias_attr.alias );
+    let alias_tokens = field_setter( ident, &alias_attr.alias, non_optional_ty );
 
     let token = qt!
     {
       #setter_tokens
-
       #alias_tokens
     };
-    return Ok( token );
+    Ok( token )
+  }
+  else
+  {
+    Ok( setter_tokens )
   }
 
-  Ok( setter_tokens )
 }
 
 ///
@@ -486,20 +498,63 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
 fn field_setter
 (
   field_ident : &syn::Ident,
+  setter_name : &syn::Ident,
   non_optional_type : &syn::Type,
-  setter_name : &syn::Ident
-) -> proc_macro2::TokenStream
+)
+-> proc_macro2::TokenStream
 {
   qt!
   {
-    /// Setter for the '#field_ident' field.
-    #[inline]
+    #[ doc = "Setter for the '#field_ident' field." ]
+    #[ inline ]
     pub fn #setter_name< Src >( mut self, src : Src ) -> Self
     where Src : ::core::convert::Into< #non_optional_type >,
     {
       debug_assert!( self.#field_ident.is_none() );
       self.#field_ident = ::core::option::Option::Some( src.into() );
       self
+    }
+  }
+}
+
+///
+/// Generate a sub-former setter for the 'field_ident' with the 'setter_name' name.
+///
+
+#[ inline ]
+fn subformer_field_setter
+(
+  field_ident : &syn::Ident,
+  setter_name : &syn::Ident,
+  non_optional_type : &syn::Type,
+  subformer_type : &syn::Type,
+)
+-> proc_macro2::TokenStream
+{
+  let doc = format!
+  (
+    "Subformer setter for the '{}' field.",
+    field_ident
+  );
+
+  qt!
+  {
+    #[ doc = #doc ]
+    #[ inline ]
+    pub fn #setter_name( mut self ) -> #subformer_type
+    <
+      String,
+      #non_optional_type,
+      Self,
+      impl Fn( &mut Self, core::option::Option< #non_optional_type > ),
+    >
+    {
+      let container = self.#setter_name.take();
+      let on_end = | former : &mut Self, container : core::option::Option< #non_optional_type > |
+      {
+        former.#setter_name = container;
+      };
+      #subformer_type::new( self, container, on_end )
     }
   }
 }

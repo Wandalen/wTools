@@ -1,29 +1,29 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// use std::collections::HashMap;
-// use std::collections::HashSet;
+use std::collections::HashMap;
+use std::collections::HashSet;
 
 #[ derive( Debug, PartialEq, TheModule::Former ) ]
 pub struct Struct1
 {
   pub int_1 : i32,
   string_1 : String,
-  int_optional_1 : core::option::Option< i32 >,
+  int_optional_1 : Option< i32 >,
   string_optional_1 : Option< String >,
-  #[ former( former::runtime::VectorFormer ) ]
   vec_1 : Vec< String >,
-  #[ former( former::runtime::HashMapFormer ) ]
-  hashmap_strings_1 : std::collections::HashMap< String, String >,
-  #[ former( former::runtime::HashSetFormer ) ]
-  hashset_strings_1 : std::collections::HashSet< String >,
+  hashmap_strings_1 : HashMap< String, String >,
+  hashset_strings_1 : HashSet< String >,
 }
 
 //
 
 // xxx : qqq : should be used basic_with_runtine instead of basic_without_runtime
-// include!( "only_test/basic_with_runtine.rs" );
-include!( "only_test/basic_without_runtime.rs" );
+// // include!( "only_test/basic_with_runtine.rs" );
+// include!( "only_test/basic_without_runtime.rs" );
+
+// include!( "only_test/primitives_without_runtime.rs" );
+include!( "only_test/containers_without_runtime.rs" );
 
 //
 // output :

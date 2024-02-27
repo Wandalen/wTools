@@ -12,7 +12,7 @@ mod former_impl;
 ///
 
 // qqq : write good documentation
-#[ proc_macro_derive( Former, attributes( perform, default, setter, former, alias, doc ) ) ]
+#[ proc_macro_derive( Former, attributes( perform, default, setter, subformer, alias, doc ) ) ]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = former_impl::former( input );
