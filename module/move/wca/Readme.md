@@ -21,8 +21,8 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
       Command::former()
       .phrase( "echo" )
       .hint( "prints all subjects and properties" )
-      .subject( "Subject", Type::String )
-      .property( "property", "simple property", Type::String )
+      .subject( "Subject", Type::String, true )
+      .property( "property", "simple property", Type::String, true )
       .form(),
     ])
     .executor(

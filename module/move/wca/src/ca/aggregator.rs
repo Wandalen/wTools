@@ -76,7 +76,7 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// use wca::prelude::*;
+  /// use wca::{ CommandsAggregator, Command, Routine, Type };
   ///
   /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
   /// let ca = CommandsAggregator::former()
@@ -162,7 +162,7 @@ pub( crate ) mod private
     /// Setter for help content generator
     ///
     /// ```
-    /// use wca::prelude::*;
+    /// use wca::CommandsAggregator;
     ///
     /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
     /// let ca = CommandsAggregator::former()
@@ -185,7 +185,7 @@ pub( crate ) mod private
     /// Set callback function that will be executed after validation state
     ///
     /// ```
-    /// use wca::prelude::*;
+    /// use wca::CommandsAggregator;
     ///
     /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
     /// let ca = CommandsAggregator::former()
