@@ -29,6 +29,7 @@ impl< T, Context, F > Perform< T, Context > for F
 where
   F : Fn( Option< T >, Context ) -> Context,
 {
+  #[ inline( always ) ]
   fn call( &self, container : Option< T >, context : Context ) -> Context
   {
     self( container, context )
@@ -60,11 +61,13 @@ where
   K : core::hash::Hash + std::cmp::Eq
 {
 
+  #[ inline( always ) ]
   pub fn new( container : std::collections::HashMap< K, E > ) -> Self
   {
     Self { container }
   }
 
+  #[ inline( always ) ]
   pub fn former() -> HashMapWrapFormer< K, E, (), impl Perform< std::collections::HashMap< K, E >, () > >
   {
     HashMapWrapFormer::< K, E, (), NoOpPerform >::new
