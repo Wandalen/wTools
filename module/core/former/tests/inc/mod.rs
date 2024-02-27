@@ -26,7 +26,7 @@ mod conflict;
 mod unsigned_primitive_types;
 mod perform;
 
-// mod hash_map_wrap_subformer_manual;
+mod hash_map_wrap_subformer_manual;
 
 //
 

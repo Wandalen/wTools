@@ -158,4 +158,4 @@ where
 
 //
 
-// include!( "only_test/hash_map_wrap_subformer.rs" );
+include!( "only_test/hash_map_wrap_subformer.rs" );
