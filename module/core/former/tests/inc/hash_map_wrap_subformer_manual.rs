@@ -1,4 +1,5 @@
 // xxx : finish
+use super::*;
 
 #[ derive( Debug ) ]
 pub struct HashMapWrap< K, E >
@@ -29,6 +30,12 @@ impl< K, E > HashMapWrap< K, E >
 where
   K : core::hash::Hash + std::cmp::Eq
 {
+
+  pub fn new( container : std::collections::HashMap< K, E > ) -> Self
+  {
+    Self { container }
+  }
+
   pub fn former< Context : Default, Perform >() -> HashMapWrapFormer< K, E, Context, Perform >
   where
     Perform : Fn( &mut Context, core::option::Option< std::collections::HashMap< K, E > > ) + Default,
@@ -40,6 +47,7 @@ where
       Perform::default(),
     )
   }
+
 }
 
 // #[ derive( Debug, Default ) ]
@@ -149,3 +157,5 @@ where
 }
 
 //
+
+// include!( "only_test/hash_map_wrap_subformer.rs" );

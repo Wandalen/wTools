@@ -4,7 +4,6 @@ use super::*;
 use test_tools::meta::*;
 
 mod a_primitives_manual_test;
-
 mod a_containers_without_runtime_manual_test;
 mod a_containers_without_runtime_test;
 mod a_containers_with_runtime_manual_test;
@@ -27,7 +26,7 @@ mod conflict;
 mod unsigned_primitive_types;
 mod perform;
 
-// mod hash_map_subformer_manual;
+// mod hash_map_wrap_subformer_manual;
 
 //
 
