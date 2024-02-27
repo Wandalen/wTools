@@ -117,7 +117,15 @@ where
 
   }
 
-  /// Make a new HashMapWrapFormer. It should be called by a former generated for your structure.
+  #[ inline( always ) ]
+  pub fn container< Src >( mut self, src : Src ) -> Self
+  where Src : core::convert::Into< std::collections::HashMap< K, E > >
+  {
+    debug_assert!( self.container.is_none() );
+    self.container = Some( src.into() );
+    self
+  }
+
   #[ inline( always ) ]
   pub fn new
   (
