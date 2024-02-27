@@ -9,8 +9,8 @@ mod private
   };
   use error_tools::for_app::bail;
   use wtools::error::{ for_app::{ Error }, Result };
-  
-  #[ derive( Debug, PartialEq, Eq ) ]
+
+  #[ derive( Debug, PartialEq, Eq, Clone ) ]
   /// Parser result enum
   pub enum Value 
   {
@@ -55,54 +55,79 @@ mod private
     }
   }
 
-  /// The `parse` function parses an input string into a `HashMap` where the keys are `String` and the values are of type `Value`.
-  ///
-  /// # Arguments
-  ///
-  /// * `input_string`: A reference to a `str` that represents the input string to be parsed.
-  ///
-  /// # Returns
-  ///
-  /// This function returns a `Result` that contains a `HashMap<String, Value>` if the input string is successfully parsed, or error message if the input string cannot be parsed.
-  ///
-  /// # Edge Cases
-  ///
-  /// * If the input string is empty or contains only whitespace characters, the function returns an empty `HashMap`.
-  /// ```rust
-  /// use willbe::query::parse;
-  /// use std::collections::HashMap;
-  /// 
-  /// let expected_map = HashMap::new();
-  /// assert_eq!( parse( "" ).unwrap(), expected_map );
-  /// ```
-  /// * If the input string contains a single value enclosed in single quotes, the function returns a `HashMap` with a single entry where the key is `"path"` and the value is the input string.
-  /// ```rust
-  /// use willbe::query::{ parse, Value };
-  /// use std::collections::HashMap;
-  /// 
-  /// let mut expected_map = HashMap::new();
-  /// expected_map.insert( "0".to_string(), Value::String( "test/test".to_string() ) );
-  /// assert_eq!( parse( "'test/test'" ).unwrap(), expected_map );
-  /// ```
-  /// * All values inside "'" are considered to be a string and can have any characters inside them, to escape "'" use "\'".
-  /// ``` rust
-  /// use willbe::query::{ parse, Value };
-  /// use std::collections::HashMap;
-  /// 
-  /// let mut expected_map = HashMap::new();
-  /// expected_map.insert( "key".to_string(), Value::String( r#"hello\'test\'test"#.into() ) );
-  /// assert_eq!( parse( r#"key: 'hello\'test\'test'"# ).unwrap(), expected_map );
-  /// 
-  /// let mut expected_map = HashMap::new();
-  /// expected_map.insert( "key".to_string(), Value::String( "test     ".into() ) );
-  /// expected_map.insert( "key2".to_string(), Value::String( "test".into() ) );
-  /// assert_eq!( parse( r#"key    :    'test     ', key2  :      test     "# ).unwrap(), expected_map ); 
-  /// ```
-  ///  
-  
-  pub fn parse( input_string : &str ) -> Result< HashMap< String, Value > >
+  ///todo
+  #[ derive( Debug, Clone ) ]
+   pub enum ParseResult
   {
-    todo!()
+    ///todo
+    Named( HashMap< String, Value >),
+    ///todo
+    Positioning( Vec< Value >)
+  }
+
+  impl ParseResult
+  {
+    ///todo
+    pub fn into_vec( self ) -> Vec< Value >
+    {
+      match self
+      {
+        ParseResult::Named( map ) => map.values().cloned().collect(),
+        ParseResult::Positioning( vec ) => vec,
+      }
+    }
+
+    ///todo
+    pub fn into_map( self, names : Vec< String > ) -> HashMap< String, Value >
+    {
+      match self
+      {
+        ParseResult::Named( map ) => map,
+        ParseResult::Positioning( vec ) =>
+        {
+          let mut map = HashMap::new();
+          let mut counter = 0;
+          for ( index, value ) in vec.into_iter().enumerate() {
+            map.insert
+            ( 
+              names.get( index ).cloned().unwrap_or_else( || { counter+=1; counter.to_string() } ),
+              value 
+            );
+          }
+          map
+        }
+      }
+    }
+  }
+    
+  ///todo
+  pub fn parse( input_string : &str ) -> Result< ParseResult >
+  {
+    if input_string.len() < 2
+    {
+      bail!( "Input length should be two or more" )
+    }
+    if input_string.len() == 2
+    {
+      return Ok( ParseResult::Positioning( vec![] ) )
+    }
+    let start = input_string.chars().next().unwrap();
+    let input_string = &input_string[1..input_string.len()-1];
+    let params = split_string( input_string );
+    let result = match start
+    {
+      '{' =>
+      {
+        ParseResult::Named( parse_to_map( params )? )
+      },
+      '(' =>
+      {
+        ParseResult::Positioning( parse_to_vec( params )? )
+      },
+      _ => bail!( "Invalid start character" )
+    };
+    
+    Ok( result )
   }
 
   fn split_string( input : &str ) -> Vec< String >
@@ -178,7 +203,10 @@ mod private
     Ok( map )
   }
   
-  fn parse_to_vec( input: Vec< String >) -> 
+  fn parse_to_vec( input: Vec< String > ) -> Result< Vec< Value > >
+  {
+    Ok( input.into_iter().filter_map( | w | Value::from_str( w.trim() ).ok() ).collect() )
+  }
 }
 
 crate::mod_interface!
@@ -186,4 +214,5 @@ crate::mod_interface!
   /// Bump version.
   protected use parse;
   protected use Value;
+  protected use ParseResult;
 }

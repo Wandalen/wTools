@@ -31,7 +31,7 @@ mod private
 
   fn regexes_initialize()
   {
-    TAGS_TEMPLATE.set( Regex::new( r"<!--\{ generate\.main_header\.start\((.+|)\) \}-->(.|\n|\r\n)+<!--\{ generate\.main_header\.end \}-->" ).unwrap() ).ok();
+    TAGS_TEMPLATE.set( Regex::new( r"<!--\{ generate\.main_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.main_header\.end \}-->" ).unwrap() ).ok();
   }
 
 
@@ -140,7 +140,7 @@ mod private
     _ = query::parse( raw_params )?;
 
     let header = header_param.to_header()?;
-    let content: String = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.main_header.start({raw_params}) }}-->\n{header}\n<!--{{ generate.main_header.end }}-->" ) ).into();
+    let content: String = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.main_header.start{raw_params} }}-->\n{header}\n<!--{{ generate.main_header.end }}-->" ) ).into();
     file.set_len( 0 )?;
     file.seek( SeekFrom::Start( 0 ) )?;
     file.write_all( content.as_bytes() )?;
