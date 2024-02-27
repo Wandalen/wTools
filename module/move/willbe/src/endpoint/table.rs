@@ -254,7 +254,6 @@ mod private
           .as_bytes()
           )?;
           let params: TableParameters  = query::parse( raw_table_params ).unwrap().into_map( vec![] ).into();
-          dbg!(&params);
           let table = package_table_create( &mut cargo_metadata, &params, &mut parameters )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
@@ -439,7 +438,7 @@ mod private
     .map
     (
       | b |
-      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/Module{}Push.yml?label=&branch={b})]({}/actions/workflows/Module{}Push.yml)", table_parameters.user_and_repo, &module_name.to_case( Case::Pascal ), table_parameters.core_url, &module_name.to_case( Case::Pascal ) )
+      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/Module{}Push.yml?label=&branch={b})]({}/actions/workflows/Module{}Push.yml?query=branch%3A{})", table_parameters.user_and_repo, &module_name.to_case( Case::Pascal ), table_parameters.core_url, &module_name.to_case( Case::Pascal ), b )
     )
     .collect::< Vec< String > >()
     .join( " | " );

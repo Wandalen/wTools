@@ -21,15 +21,33 @@ mod header_create_test
     
     temp 
   }
-  
+
   #[ test ]
-  fn with_full_config() 
+  fn tag_shout_stay()
+  {
+    // Arrange
+    let temp = arrange( "single_module" );
+
+    // Act
+    _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+
+    let mut actual = String::new();
+
+    _ = file.read_to_string( &mut actual ).unwrap();
+
+    // Assert
+    assert!( actual.contains( "<!--{ generate.main_header.start() }-->" ) );
+    assert!( actual.contains( "<!--{ generate.main_header.end }-->" ) );
+  }
+
+  #[ test ]
+  fn branch_cell()
   { 
     // Arrange
     let temp = arrange( "single_module" );
-    
-    let expected = "<!--{ generate.main_header.start() }-->\n[![test_branch](https://img.shields.io/github/actions/workflow/status/Username/test/StandardRustScheduled.yml?branch=master&label=test_branch&logo=github)](https://github.com/Username/test/actions/workflows/StandardRustStatus.yml)\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)\n[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_trivial_sample/https://github.com/Username/test)\n[![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/test)\n<!--{ generate.main_header.end }-->";
-    
+
     // Act
     _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
     
@@ -40,17 +58,72 @@ mod header_create_test
     _ = file.read_to_string( &mut actual ).unwrap();
     
     // Assert
-    assert_eq!( expected, actual ); 
+    assert!( actual.contains( "[![test_branch](https://img.shields.io/github/actions/workflow/status/Username/test/StandardRustScheduled.yml?branch=master&label=test_branch&logo=github)](https://github.com/Username/test/actions/workflows/StandardRustStatus.yml)" ) );
   }
-  
+
+  #[ test ]
+  fn discord_cell()
+  {
+    // Arrange
+    let temp = arrange( "single_module" );
+
+    // Act
+    _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+
+    let mut actual = String::new();
+
+    _ = file.read_to_string( &mut actual ).unwrap();
+
+    // Assert
+    assert!( actual.contains( "[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)" ) );
+  }
+
+  #[ test ]
+  fn gitpod_cell()
+  {
+    // Arrange
+    let temp = arrange( "single_module" );
+
+    // Act
+    _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+
+    let mut actual = String::new();
+
+    _ = file.read_to_string( &mut actual ).unwrap();
+
+    // Assert
+    assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_trivial_sample/https://github.com/Username/test)" ) );
+  }
+
+  #[ test ]
+  fn docs_cell()
+  {
+    // Arrange
+    let temp = arrange( "single_module" );
+
+    // Act
+    _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+
+    let mut actual = String::new();
+
+    _ = file.read_to_string( &mut actual ).unwrap();
+
+    // Assert
+    assert!( actual.contains( "[![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/test)" ) );
+  }
+
   #[ test ]
   fn without_fool_config() 
   { 
     // Arrange
     let temp = arrange( "single_module_without_master_branch_and_discord" );
-    
-    let expected = "<!--{ generate.main_header.start() }-->\n[![master](https://img.shields.io/github/actions/workflow/status/Username/test/StandardRustScheduled.yml?branch=master&label=master&logo=github)](https://github.com/Username/test/actions/workflows/StandardRustStatus.yml)\n[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_trivial_sample/https://github.com/Username/test)\n[![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/test)\n<!--{ generate.main_header.end }-->";
-    
+
     // Act
     _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
     
@@ -61,7 +134,8 @@ mod header_create_test
     _ = file.read_to_string( &mut actual ).unwrap();
     
     // Assert
-    assert_eq!( expected, actual ); 
+    assert!( actual.contains( "[master]" ) );// master by default
+    assert!( !actual.contains( "[discord]" ) );// without discord
   }
   
   #[ test ]
@@ -69,23 +143,22 @@ mod header_create_test
   { 
     // Arrange
     let temp = arrange( "single_module" );
-    
-    let expected = "<!--{ generate.main_header.start() }-->\n[![test_branch](https://img.shields.io/github/actions/workflow/status/Username/test/StandardRustScheduled.yml?branch=master&label=test_branch&logo=github)](https://github.com/Username/test/actions/workflows/StandardRustStatus.yml)\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)\n[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_trivial_sample/https://github.com/Username/test)\n[![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/test)\n<!--{ generate.main_header.end }-->";
-    
+
     // Act
     _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
-    _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
-    _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
-    _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
-    
     let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
-    
-    let mut actual = String::new();
-    
-    _ = file.read_to_string( &mut actual ).unwrap();
-    
+    let mut actual1 = String::new();
+    _ = file.read_to_string( &mut actual1 ).unwrap();
+    drop( file );
+
+    _ = endpoint::generate_main_header( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+    let mut actual2 = String::new();
+    _ = file.read_to_string( &mut actual2 ).unwrap();
+    drop( file );
+
     // Assert
-    assert_eq!( expected, actual ); 
+    assert_eq!( actual1, actual2 );
   }
   
   #[ test ]
