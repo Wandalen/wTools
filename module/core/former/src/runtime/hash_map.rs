@@ -25,31 +25,31 @@ where
 /// Class for forming hashmap-like fields.
 ///
 
-#[derive( Debug, Default )]
-pub struct HashMapFormer< K, E, HashMap, Former, ContainerEnd >
+#[ derive( Debug, Default ) ]
+pub struct HashMapFormer< K, E, HashMap, Context, ContainerEnd >
 where
   K : core::cmp::Eq + core::hash::Hash,
   HashMap : HashMapLike< K, E > + core::default::Default,
-  ContainerEnd : Fn( &mut Former, core::option::Option< HashMap > ),
+  ContainerEnd : Fn( &mut Context, core::option::Option< HashMap > ),
 {
   container : Option< HashMap >,
-  former : Former,
+  former : Context,
   on_end : ContainerEnd,
   _e_phantom : core::marker::PhantomData< E >,
   _k_phantom : core::marker::PhantomData< K >,
 }
 
-impl< K, E, HashMap, Former, ContainerEnd >
-HashMapFormer< K, E, HashMap, Former, ContainerEnd >
+impl< K, E, HashMap, Context, ContainerEnd >
+HashMapFormer< K, E, HashMap, Context, ContainerEnd >
 where
   K : core::cmp::Eq + core::hash::Hash,
   HashMap : HashMapLike< K, E > + core::default::Default,
-  ContainerEnd : Fn( &mut Former, core::option::Option< HashMap > ),
+  ContainerEnd : Fn( &mut Context, core::option::Option< HashMap > ),
 {
 
   /// Make a new HashMapFormer. It should be called by a former generated for your structure.
   #[ inline( always ) ]
-  pub fn new( former : Former, container : core::option::Option< HashMap >, on_end : ContainerEnd ) -> Self
+  pub fn new( former : Context, container : core::option::Option< HashMap >, on_end : ContainerEnd ) -> Self
   {
     Self
     {
@@ -61,6 +61,15 @@ where
     }
   }
 
+  /// Return former of your struct moving container there. Should be called after configuring the container.
+  #[ inline( always ) ]
+  pub fn end( mut self ) -> Context
+  {
+    let container = self.container.take();
+    ( self.on_end )( &mut self.former, container );
+    self.former
+  }
+
   /// Set the whole container instead of setting each element individually.
   #[ inline( always ) ]
   pub fn replace( mut self, container : HashMap ) -> Self
@@ -70,14 +79,15 @@ where
     self
   }
 
-  /// Return former of your struct moving container there. Should be called after configuring the container.
-  #[ inline( always ) ]
-  pub fn end( mut self ) -> Former
-  {
-    let container = self.container.take();
-    ( self.on_end )( &mut self.former, container );
-    self.former
-  }
+}
+
+impl< K, E, HashMap, Context, ContainerEnd >
+HashMapFormer< K, E, HashMap, Context, ContainerEnd >
+where
+  K : core::cmp::Eq + core::hash::Hash,
+  HashMap : HashMapLike< K, E > + core::default::Default,
+  ContainerEnd : Fn( &mut Context, core::option::Option< HashMap > ),
+{
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
   #[ inline( always ) ]

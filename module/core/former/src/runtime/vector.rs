@@ -21,7 +21,7 @@ impl< E > VectorLike< E > for std::vec::Vec< E >
 /// Class for forming vector-like fields.
 ///
 
-#[derive( Debug, Default )]
+#[ derive( Debug, Default ) ]
 pub struct VectorFormer< E, Vector, Former, ContainerEnd >
 where
   Vector : VectorLike< E > + core::fmt::Debug + core::cmp::PartialEq + core::default::Default,

@@ -10,9 +10,6 @@ mod a_containers_without_runtime_test;
 mod a_containers_with_runtime_manual_test;
 mod a_containers_with_runtime_test;
 
-mod alias_test;
-mod conflict;
-
 mod default_container;
 mod default_primitive;
 mod former_hashmap_without_parameter;
@@ -24,8 +21,13 @@ mod string_slice_test;
 mod default_user_type;
 mod user_type_no_default;
 mod user_type_no_debug;
+
+mod alias_test;
+mod conflict;
 mod unsigned_primitive_types;
 mod perform;
+
+// mod hash_map_subformer_manual;
 
 //
 

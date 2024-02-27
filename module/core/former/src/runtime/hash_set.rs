@@ -25,7 +25,7 @@ where
 /// Class for forming hashset-like fields.
 ///
 
-#[derive( Debug, Default )]
+#[ derive( Debug, Default ) ]
 pub struct HashSetFormer< E, HashSet, Former, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
