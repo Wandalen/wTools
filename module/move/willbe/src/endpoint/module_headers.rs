@@ -19,7 +19,7 @@ mod private
   
   fn regexes_initialize() 
   { 
-    TAGS_TEMPLATE.set( Regex::new( r"<!--\{ generate\.module_header\.start\((.+|)\) \}-->(.|\n|\r\n)+<!--\{ generate\.module_header\.end \}-->" ).unwrap() ).ok(); 
+    TAGS_TEMPLATE.set( Regex::new( r"<!--\{ generate\.module_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.module_header\.end \}-->" ).unwrap() ).ok(); 
   }
   
   /// The `ModuleHeader` structure represents a set of parameters, used for creating url for header. 
@@ -148,7 +148,7 @@ mod private
   fn header_content_generate< 'a >( content : &'a str, header : ModuleHeader, raw_params : &str ) -> Result< Cow< 'a, str > > 
   { 
     let header = header.to_header()?;
-    let result = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.module_header.start({raw_params}) }}-->\n{header}\n<!--{{ generate.module_header.end }}-->" ) );
+    let result = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.module_header.start{raw_params} }}-->\n{header}\n<!--{{ generate.module_header.end }}-->" ) );
     Ok( result ) 
   } 
 }
