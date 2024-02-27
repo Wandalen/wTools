@@ -11,7 +11,7 @@ mod private
   use wtools::error::{ for_app::{ Error }, Result };
 
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
-  /// Parser result enum
+  /// Parser value enum
   pub enum Value 
   {
     /// string value
@@ -55,19 +55,31 @@ mod private
     }
   }
 
-  ///todo
+  /// Represents the result of parsing.
   #[ derive( Debug, Clone ) ]
    pub enum ParseResult
   {
-    ///todo
+    /// Named parsing result.
     Named( HashMap< String, Value >),
-    ///todo
+    /// Positional parsing result.
     Positioning( Vec< Value >)
   }
 
   impl ParseResult
   {
-    ///todo
+    /// Converts the parsing result into a vector of values.
+    /// ``` rust
+    /// use std::collections::HashMap;
+    /// use willbe::query::{ ParseResult, Value };
+    ///
+    /// let params = HashMap::from( [ ( "v1".to_string(), Value::Int( 1 ) ), ( "v2".to_string(), Value::Int( 2 ) ), ( "v3".to_string(), Value::Int( 3 ) ) ] );
+    ///
+    /// let result = ParseResult::Named( params ).into_vec();
+    ///
+    /// assert!( result.contains( &Value::Int( 1 ) ) );
+    /// assert!( result.contains( &Value::Int( 2 ) ) );
+    /// assert!( result.contains( &Value::Int( 3 ) ) );
+    /// ```
     pub fn into_vec( self ) -> Vec< Value >
     {
       match self
@@ -77,7 +89,23 @@ mod private
       }
     }
 
-    ///todo
+    /// Converts the parsing result into a hashmap, using a vector of names as keys.
+    /// ```rust
+    ///  use std::collections::HashMap;
+    ///  use willbe::query::{ ParseResult, Value };
+    ///  
+    ///  let params = vec![ Value::Int( 1 ), Value::Int( 2 ), Value::Int( 3 ) ];
+    ///  let result = ParseResult::Positioning( params );
+    ///  
+    ///  let named_map = result.clone().into_map( vec![ "var0".into(), "var1".into(),"var2".into() ] );
+    ///  let unnamed_map = result.clone().into_map( vec![] );
+    ///  let mixed_map = result.clone().into_map( vec![ "var0".into() ] );
+    ///  let vec = result.into_vec();
+    ///  
+    ///  assert_eq!( HashMap::from( [ ( "var0".to_string(), Value::Int( 1 ) ), ( "var1".to_string(),Value::Int( 2 ) ), ( "var2".to_string(),Value::Int( 3 ) ) ] ), named_map );
+    ///  assert_eq!( HashMap::from( [ ( "1".to_string(), Value::Int( 1 ) ), ( "2".to_string(),Value::Int( 2 ) ), ( "3".to_string(),Value::Int( 3 ) ) ] ), unnamed_map );
+    ///  assert_eq!( HashMap::from( [ ( "var0".to_string(), Value::Int( 1 ) ), ( "1".to_string(),Value::Int( 2 ) ), ( "2".to_string(),Value::Int( 3 ) ) ] ), mixed_map );
+    /// ```
     pub fn into_map( self, names : Vec< String > ) -> HashMap< String, Value >
     {
       match self
@@ -100,7 +128,21 @@ mod private
     }
   }
     
-  ///todo
+  /// Parses an input string and returns a parsing result.
+  /// ```rust
+  /// use willbe::query::{ parse, Value };
+  /// use std::collections::HashMap;
+  ///
+  /// assert_eq!( parse( "()" ).unwrap().into_vec(), vec![] );
+  ///
+  /// let mut expected_map = HashMap::new();  
+  /// expected_map.insert( "1".to_string(), Value::String( "test/test".to_string() ) );
+  /// assert_eq!( parse( "('test/test')" ).unwrap().into_map( vec![] ), expected_map );
+  /// 
+  /// let mut expected_map = HashMap::new();
+  /// expected_map.insert( "key".to_string(), Value::String( r#"hello\'test\'test"#.into() ) );
+  /// assert_eq!( parse( r#"{ key: 'hello\'test\'test' }"# ).unwrap().into_map( vec![] ), expected_map );
+  /// ```
   pub fn parse( input_string : &str ) -> Result< ParseResult >
   {
     if input_string.len() < 2
