@@ -25,8 +25,9 @@ where
 pub trait Perform< K, E, Context >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  Self : Fn( &mut Context, core::option::Option< std::collections::HashMap< K, E > > ),
+  // Self : Fn( &mut Context, core::option::Option< std::collections::HashMap< K, E > > ),
 {
+  fn call( &self, context : &mut Context, container : Option< std::collections::HashMap< K, E > > );
 }
 
 impl< K, E, Context, F > Perform< K, E, Context > for F
@@ -34,11 +35,31 @@ where
   K : core::hash::Hash + std::cmp::Eq,
   F : Fn( &mut Context, Option< std::collections::HashMap< K, E > > ),
 {
-  // fn call( &self, context : &mut Context, container : Option< std::collections::HashMap< K, E > > )
-  // {
-  //   self( context, container );
-  // }
+  fn call( &self, context : &mut Context, container : Option< std::collections::HashMap< K, E > > )
+  {
+    self( context, container );
+  }
 }
+
+pub struct NoOpPerform;
+
+// impl< K, E, Context > Fn( &mut Context, core::option::Option< std::collections::HashMap< K, E > > )
+impl< K, E, Context > Perform< K, E, Context >
+for NoOpPerform
+where
+  K : core::hash::Hash + std::cmp::Eq,
+{
+  fn call( &self, _context : &mut Context, _container : Option< std::collections::HashMap< K, E> > )
+  {
+  }
+}
+
+// impl<K, E, Context> Perform<K, E, Context> for NoOpPerform
+// where
+//   K: core::hash::Hash + std::cmp::Eq,
+// {
+//   // fn call( &self, _context: &mut Context, _container: Option<std::collections::HashMap<K, E>> ) {}
+// }
 
 pub fn noop< K, E, Context >
 (
@@ -73,7 +94,7 @@ where
 }
 
 // #[ derive( Debug, Default ) ]
-pub struct HashMapWrapFormer< K, E, Context, Perform >
+pub struct HashMapWrapFormer< K, E, Context = (), Perform = NoOpPerform >
 where
   K : core::hash::Hash + std::cmp::Eq
 {
@@ -136,7 +157,8 @@ where
   pub fn end( mut self ) -> Context
   {
     let container = self.container.take();
-    ( self.on_perform )( &mut self.context, container );
+    // ( self.on_perform )( &mut self.context, container );
+    self.on_perform.call( &mut self.context, container );
     self.context
   }
 
