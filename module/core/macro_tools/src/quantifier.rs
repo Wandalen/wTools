@@ -5,19 +5,13 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::exposed::*;
-  // use type_constructor::prelude::*;
+  use super::super::*;
 
   ///
   /// Marker saying how to parse several elements of such type in a row.
   ///
 
   pub trait AsMuchAsPossibleNoDelimiter {}
-  // pub trait WhileDelimiter
-  // {
-  //   type Peek : syn::parse::Peek;
-  //   type Delimiter : syn::token::Token + Default + Copy + Into< Self::Peek >;
-  // }
 
   /// Element of parsing.
   pub trait Element
@@ -99,22 +93,12 @@ pub( crate ) mod private
     }
   }
 
-  //
+  ///
+  /// Parse as much elements as possible.
+  ///
 
-  // types!
-  // {
-    ///
-    /// Parse as much elements as possible.
-    ///
-
-    // #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    // pub many Many : < T : quote::ToTokens >
-    // xxx : apply maybe collection of derives for TDD
-
-    #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    pub struct Many< T : quote::ToTokens >( pub Vec< T > );
-
-  // }
+  #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+  pub struct Many< T : quote::ToTokens >( pub Vec< T > );
 
   impl< T > Many< T >
   where
@@ -315,9 +299,6 @@ pub( crate ) mod private
 
 }
 
-// #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-// pub use exposed::*;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]

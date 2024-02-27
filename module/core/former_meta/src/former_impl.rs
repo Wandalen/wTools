@@ -537,13 +537,18 @@ fn subformer_field_setter
     field_ident
   );
 
+  // tree_print!( non_optional_type );
+  // code_print!( non_optional_type );
+  let params = type_parameters( &non_optional_type, .. );
+  // params.iter().for_each( | e | println!( "{}", qt!( #e ) ) );
+
   qt!
   {
     #[ doc = #doc ]
     #[ inline ]
     pub fn #setter_name( mut self ) -> #subformer_type
     <
-      String,
+      #( #params, )*
       #non_optional_type,
       Self,
       impl Fn( &mut Self, core::option::Option< #non_optional_type > ),
@@ -681,7 +686,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     let colon_token = &field.colon_token;
     let ty = &field.ty;
     let is_optional = is_optional( ty );
-    let type_container_kind = macro_tools::type_container_kind( ty );
+    let type_container_kind = macro_tools::type_optional_container_kind( ty ).0;
     let non_optional_ty : &syn::Type = if is_optional { parameter_internal_first( ty )? } else { ty };
     let former_field = FormerField { attrs, vis, ident, colon_token, ty, non_optional_ty, is_optional, type_container_kind };
     Ok( former_field )
@@ -722,278 +727,54 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       }
     }
 
-    // #[doc = #doc_former_mod]
-    // mod #former_mod_ident
-    // {
-      // use;
-      // use super::*;
-      // use super::#name_ident;
-      // #[cfg( feature = "in_wtools" )]
-      // use wtools::former;
+    #[ doc = #doc_former_struct ]
+    #[ automatically_derived ]
+    pub struct #former_name_ident #generics
+    {
+      #(
+        /// A field
+        #fields_optional,
+      )*
+    }
 
-      #[doc = #doc_former_struct]
-      pub struct #former_name_ident #generics
+    impl #generics #former_name_ident #generics
+    {
+      ///
+      /// Finish setting options and call perform on formed entity.
+      ///
+      /// If `perform` defined then associated method is called and its result returned instead of entity.
+      /// For example `perform()` of structure with : `#[ perform( fn after1< 'a >() -> Option< &'a str > )` returns `Option< &'a str >`.
+      ///
+      #[inline]
+      pub fn perform #perform_generics ( self ) -> #perform_output
       {
-        #(
-          /// A field
-          #fields_optional,
-        )*
+        let result = self.form();
+        #perform
       }
 
-      impl #generics #former_name_ident #generics
+      ///
+      /// Finish setting options and return formed entity.
+      ///
+      /// `perform` has no effect on method `form`, but change behavior and returned type of mehod `perform`.
+      ///
+      #[inline]
+      pub fn form( mut self ) -> #name_ident #generics
       {
-        ///
-        /// Finish setting options and call perform on formed entity.
-        ///
-        /// If `perform` defined then associated method is called and its result returned instead of entity.
-        /// For example `perform()` of structure with : `#[ perform( fn after1< 'a >() -> Option< &'a str > )` returns `Option< &'a str >`.
-        ///
-        #[inline]
-        pub fn perform #perform_generics ( self ) -> #perform_output
+        #( #fields_form )*
+        let result = #name_ident
         {
-          let result = self.form();
-          #perform
-        }
-
-        ///
-        /// Finish setting options and return formed entity.
-        ///
-        /// `perform` has no effect on method `form`, but change behavior and returned type of mehod `perform`.
-        ///
-        #[inline]
-        pub fn form( mut self ) -> #name_ident #generics
-        {
-          #( #fields_form )*
-          let result = #name_ident
-          {
-            #( #fields_names, )*
-          };
-          return result;
-        }
-
-        #(
-          #fields_setter
-        )*
-
+          #( #fields_names, )*
+        };
+        return result;
       }
 
-    // }
-    // pub use #former_mod_ident::#former_name_ident;
+      #(
+        #fields_setter
+      )*
+
+    }
 
   };
 
   Ok( result )
 }
-
-//
-// = Input :
-//
-// #[derive( Debug, PartialEq )]
-// pub struct Struct1
-// {
-//   pub int_1 : i32,
-//   string_1 : String,
-//   int_optional_1 : core::option::Option< i32 >,
-//   string_optional_1 : Option< String >,
-//   vec_1 : Vec< String >,
-//   hashmap_strings_1 : std::collections::HashMap< String, String >,
-//   hashset_strings_1 : std::collections::HashSet< String >,
-// }
-
-//
-// = Output :
-//
-// impl Struct1
-// {
-//   pub fn former() -> Struct1Former
-//   {
-//     Struct1Former
-//     {
-//       int_1 : core::option::Option::None,
-//       string_1 : core::option::Option::None,
-//       int_optional_1 : core::option::Option::None,
-//       string_optional_1 : core::option::Option::None,
-//       vec_1 : core::option::Option::None,
-//       hashmap_strings_1 : core::option::Option::None,
-//       hashset_strings_1 : core::option::Option::None,
-//     }
-//   }
-// }
-//
-// //
-//
-// #[derive( Debug )]
-// pub struct Struct1Former
-// {
-//   pub int_1 : core::option::Option< i32 >,
-//   pub string_1 : core::option::Option< String >,
-//   pub int_optional_1 :  core::option::Option< i32 >,
-//   pub string_optional_1 : core::option::Option< String >,
-//   pub vec_1 : core::option::Option< Vec< String > >,
-//   pub hashmap_strings_1 : core::option::Option< std::collections::HashMap< String, String > >,
-//   pub hashset_strings_1 : core::option::Option< std::collections::HashSet< String > >,
-// }
-//
-// //
-//
-// impl Struct1Former
-// {
-//   fn form( mut self ) -> Struct1
-//   {
-//
-//     let int_1 = if self.int_1.is_some()
-//     {
-//       self.int_1.take().unwrap()
-//     }
-//     else
-//     {
-//       let val : i32 = Default::default();
-//       val
-//     };
-//
-//     let string_1 = if self.string_1.is_some()
-//     {
-//       self.string_1.take().unwrap()
-//     }
-//     else
-//     {
-//       let val : String = Default::default();
-//       val
-//     };
-//
-//     let int_optional_1 = if self.int_optional_1.is_some()
-//     {
-//       Some( self.int_optional_1.take().unwrap() )
-//     }
-//     else
-//     {
-//       None
-//     };
-//
-//     let string_optional_1 = if self.string_optional_1.is_some()
-//     {
-//       Some( self.string_optional_1.take().unwrap() )
-//     }
-//     else
-//     {
-//       None
-//     };
-//
-//     let vec_1 = if self.vec_1.is_some()
-//     {
-//       self.vec_1.take().unwrap()
-//     }
-//     else
-//     {
-//       let val : Vec< String > = Default::default();
-//       val
-//     };
-//
-//     let hashmap_strings_1 = if self.hashmap_strings_1.is_some()
-//     {
-//       self.hashmap_strings_1.take().unwrap()
-//     }
-//     else
-//     {
-//       let val : std::collections::HashMap< String, String > = Default::default();
-//       val
-//     };
-//
-//     let hashset_strings_1 = if self.hashset_strings_1.is_some()
-//     {
-//       self.hashset_strings_1.take().unwrap()
-//     }
-//     else
-//     {
-//       let val : std::collections::HashSet< String > = Default::default();
-//       val
-//     };
-//
-//     Struct1
-//     {
-//       int_1,
-//       string_1,
-//       int_optional_1,
-//       string_optional_1,
-//       vec_1,
-//       hashmap_strings_1,
-//       hashset_strings_1,
-//     }
-//
-//   }
-//
-//   pub fn int_1< Src >( mut self, src : Src ) -> Self
-//   where Src : core::convert::Into< i32 >,
-//   {
-//     debug_assert!( self.int_1.is_none() );
-//     self.int_1 = Some( src.into() );
-//     self
-//   }
-//
-//   pub fn string_1< Src >( mut self, src : Src ) -> Self
-//   where Src : core::convert::Into< String >,
-//   {
-//     debug_assert!( self.string_1.is_none() );
-//     self.string_1 = Some( src.into() );
-//     self
-//   }
-//
-//   pub fn string_optional_1< Src >( mut self, src : Src ) -> Self
-//   where Src : core::convert::Into< String >
-//   {
-//     debug_assert!( self.string_optional_1.is_none() );
-//     self.string_optional_1 = Some( src.into() );
-//     self
-//   }
-//
-//   pub fn vec_1( mut self ) -> former::runtime::VectorFormer
-//   <
-//     String,
-//     Vec< String >,
-//     Struct1Former,
-//     impl Fn( &mut Struct1Former, core::option::Option< Vec< String > > )
-//   >
-//   {
-//     let container = self.vec_1.take();
-//     let on_end = | former : &mut Struct1Former, container : core::option::Option< Vec< String > > |
-//     {
-//       former.vec_1 = container;
-//     };
-//     former::runtime::VectorFormer::new( self, container, on_end )
-//   }
-//
-//   pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapFormer
-//   <
-//     String,
-//     String,
-//     std::collections::HashMap< String, String >,
-//     Struct1Former,
-//     impl Fn( &mut Struct1Former, core::option::Option< std::collections::HashMap< String, String > > )
-//   >
-//   {
-//     let container = self.hashmap_strings_1.take();
-//     let on_end = | former : &mut Struct1Former, container : core::option::Option< std::collections::HashMap< String, String > > |
-//     {
-//       former.hashmap_strings_1 = container;
-//     };
-//     former::runtime::HashMapFormer::new( self, container, on_end )
-//   }
-//
-//   pub fn hashset_strings_1( mut self ) -> former::runtime::HashSetFormer
-//   <
-//     String,
-//     std::collections::HashSet< String >,
-//     Struct1Former,
-//     impl Fn( &mut Struct1Former, core::option::Option< std::collections::HashSet< String > > )
-//   >
-//   {
-//     let container = self.hashset_strings_1.take();
-//     let on_end = | former : &mut Struct1Former, container : core::option::Option< std::collections::HashSet< String > > |
-//     {
-//       former.hashset_strings_1 = container;
-//     };
-//     former::runtime::HashSetFormer::new( self, container, on_end )
-//   }
-//
-// }
-//

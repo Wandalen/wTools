@@ -195,8 +195,8 @@ pub( crate ) mod private
         // code_print!( attr.tokens );
 
         let good = true
-          && code_export_str!( attr.path ) == "debug"
-          && code_export_str!( attr.tokens ).is_empty()
+          && code_to_str!( attr.path ) == "debug"
+          && code_to_str!( attr.tokens ).is_empty()
         ;
 
         if !good
@@ -219,7 +219,7 @@ pub( crate ) mod private
     {
       self.head.iter().any( | attr |
       {
-        code_export_str!( attr.path ) == "debug"
+        code_to_str!( attr.path ) == "debug"
       })
     }
   }

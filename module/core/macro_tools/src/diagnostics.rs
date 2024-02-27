@@ -102,7 +102,7 @@ pub( crate ) mod private
   ///
 
   #[ macro_export ]
-  macro_rules! code_export_str
+  macro_rules! code_to_str
   {
     ( $src:expr ) =>
     {{
@@ -169,139 +169,13 @@ pub( crate ) mod private
     };
   }
 
-  /// Check is the rightmost item of path refering a type is specified type.
-  ///
-  /// Good to verify `core::option::Option< i32 >` is optional.
-  /// Good to verify `alloc::vec::Vec< i32 >` is vector.
-  ///
-  /// ### Basic use-case.
-  /// ```
-  /// use macro_tools::*;
-  ///
-  /// let code = qt!( core::option::Option< i32 > );
-  /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let got = type_rightmost( &tree_type );
-  /// assert_eq!( got, Some( "Option".to_string() ) );
-  /// ```
-
-  pub fn type_rightmost( ty : &syn::Type ) -> Option< String >
-  {
-    if let syn::Type::Path( path ) = ty
-    {
-      let last = &path.path.segments.last();
-      if last.is_none()
-      {
-        return None;
-      }
-      return Some( last.unwrap().ident.to_string() );
-    }
-    None
-  }
-
-  use interval_adapter::IterableInterval;
-
-  /// Return the specified number of parameters of the type.
-  ///
-  /// Good to getting `i32` from `core::option::Option< i32 >` or `alloc::vec::Vec< i32 >`
-  ///
-  /// ### Basic use-case.
-  /// ```
-  /// use macro_tools::*;
-  ///
-  /// let code = qt!( core::option::Option< i8, i16, i32, i64 > );
-  /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let got = type_parameters( &tree_type, 0..=2 );
-  /// got.iter().for_each( | e | println!( "{}", qt!( #e ) ) );
-  /// // < i8
-  /// // < i16
-  /// // < i32
-  /// ```
-
-  // pub fn type_parameters< R >( ty : &syn::Type, range : R ) -> Vec< &syn::Type >
-  // where
-  //   R : std::convert::Into< Interval >
-  pub fn type_parameters( ty : &syn::Type, range : impl IterableInterval ) -> Vec< &syn::Type >
-  // where
-    // R : std::convert::Into< Interval >
-  {
-    // let range = range.into();
-    if let syn::Type::Path( syn::TypePath{ path : syn::Path { ref segments, .. }, .. } ) = ty
-    {
-      let last = &segments.last();
-      if last.is_none()
-      {
-        return vec![ ty ]
-      }
-      let args = &last.unwrap().arguments;
-      if let syn::PathArguments::AngleBracketed( ref args2 ) = args
-      {
-        let args3 = &args2.args;
-        let selected : Vec< &syn::Type > = args3
-        .iter()
-        .skip_while( | e | !matches!( e, syn::GenericArgument::Type( _ ) ) )
-        .skip( range.closed_left().try_into().unwrap() )
-        .take( range.closed_len().try_into().unwrap() )
-        .map( | e | if let syn::GenericArgument::Type( ty ) = e { ty } else { unreachable!( "Expects Type" ) } )
-        .collect();
-        return selected;
-      }
-    }
-    vec![ ty ]
-  }
-
-  ///
-  /// For attribute like `#[former( default = 31 )]` return key `default` and value `31`,
-  /// as well as syn::Meta as the last element of result tuple.
-  ///
-  /// ### Basic use-case.
-  /// ``` ignore
-  /// let ( key, val, meta ) = attr_pair_single( &attr )?;
-  /// ```
-
-  pub fn attr_pair_single( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ) >
-  {
-    use syn::spanned::Spanned;
-    let meta = attr.parse_meta()?;
-
-    // zzz : try to use helper from toolbox
-    let ( key, val );
-    match meta
-    {
-      syn::Meta::List( ref meta_list ) =>
-      match meta_list.nested.first()
-      {
-        Some( nested_meta ) => match nested_meta
-        {
-          syn::NestedMeta::Meta( meta2 ) => match meta2
-          {
-            syn::Meta::NameValue( name_value ) => // match &name_value.lit
-            {
-              if meta_list.nested.len() != 1
-              {
-                return Err( syn::Error::new( attr.span(), format!( "Expected single element of the list, but got {}", meta_list.nested.len() ) ) );
-              }
-              key = name_value.path.get_ident().unwrap().to_string();
-              val = name_value.lit.clone();
-            },
-            _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::NameValue( name_value )" ) ),
-          },
-          _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::NestedMeta::Meta( meta2 )" ) ),
-        },
-        _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected Some( nested_meta )" ) ),
-      },
-      _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
-    };
-
-    Ok( ( key, val, meta ) )
-  }
-
   pub use
   {
     tree_print,
     code_print,
     tree_diagnostics_str,
     code_diagnostics_str,
-    code_export_str,
+    code_to_str,
     syn_err,
   };
 
@@ -330,6 +204,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
@@ -339,9 +214,9 @@ pub mod exposed
   pub use super::private::
   {
     Result,
-    type_rightmost,
-    type_parameters,
-    attr_pair_single,
+    // type_rightmost,
+    // type_parameters,
+    // attr_pair_single,
   };
 
 }
@@ -358,7 +233,7 @@ pub mod prelude
     code_print,
     tree_diagnostics_str,
     code_diagnostics_str,
-    code_export_str,
+    code_to_str,
     syn_err,
   };
 

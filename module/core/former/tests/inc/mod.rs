@@ -5,13 +5,10 @@ use test_tools::meta::*;
 
 mod a_primitives_manual_test;
 
-// mod a_containers_without_runtime_manual_test;
+mod a_containers_without_runtime_manual_test;
 mod a_containers_without_runtime_test;
 mod a_containers_with_runtime_manual_test;
 mod a_containers_with_runtime_test;
-
-// mod abasic_test;
-// mod abasic_with_runtime_test;
 
 mod alias_test;
 mod conflict;

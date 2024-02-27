@@ -58,7 +58,8 @@ pub( crate ) mod private
       {
         Bound::Included( v ) => *v,
         Bound::Excluded( v ) => *v + 1.into(),
-        Bound::Unbounded => isize::MIN.into(),
+        Bound::Unbounded => 0.into(),
+        // Bound::Unbounded => isize::MIN.into(),
       }
     }
     #[ inline( always ) ]

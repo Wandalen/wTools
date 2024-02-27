@@ -1,34 +1,66 @@
 //!
-//! Advanced syntax elements.
+//! Attributes analyzys and manipulation.
 //!
 
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use type_constructor::prelude::*;
-  use crate::exposed::*;
-  use crate::exposed::{ Pair, Many };
-  use crate::Result;
+  use super::super::*;
 
-  // =
+  ///
+  /// For attribute like `#[former( default = 31 )]` return key `default` and value `31`,
+  /// as well as syn::Meta as the last element of result tuple.
+  ///
+  /// ### Basic use-case.
+  /// ``` ignore
+  /// let ( key, val, meta ) = attr_pair_single( &attr )?;
+  /// ```
 
-  // types!
-  // {
+  pub fn attr_pair_single( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ) >
+  {
+    // use syn::spanned::Spanned;
+    let meta = attr.parse_meta()?;
 
-    ///
-    /// Attribute which is inner.
-    ///
-    /// For example: `// #![ deny( missing_docs ) ]`.
-    ///
+    // zzz : try to use helper from toolbox
+    let ( key, val );
+    match meta
+    {
+      syn::Meta::List( ref meta_list ) =>
+      match meta_list.nested.first()
+      {
+        Some( nested_meta ) => match nested_meta
+        {
+          syn::NestedMeta::Meta( meta2 ) => match meta2
+          {
+            syn::Meta::NameValue( name_value ) => // match &name_value.lit
+            {
+              if meta_list.nested.len() != 1
+              {
+                return Err( syn::Error::new( attr.span(), format!( "Expected single element of the list, but got {}", meta_list.nested.len() ) ) );
+              }
+              key = name_value.path.get_ident().unwrap().to_string();
+              val = name_value.lit.clone();
+            },
+            _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::NameValue( name_value )" ) ),
+          },
+          _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::NestedMeta::Meta( meta2 )" ) ),
+        },
+        _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected Some( nested_meta )" ) ),
+      },
+      _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
+    };
 
-    // #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    // pub many AttributesInner : syn::Attribute;
-    // xxx : apply maybe collection of derives for TDD
+    Ok( ( key, val, meta ) )
+  }
 
-    #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    pub struct AttributesInner( pub Vec< syn::Attribute > );
+  ///
+  /// Attribute which is inner.
+  ///
+  /// For example: `// #![ deny( missing_docs ) ]`.
+  ///
 
-  // }
+  #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+  pub struct AttributesInner( pub Vec< syn::Attribute > );
 
   impl From< Vec< syn::Attribute > > for AttributesInner
   {
@@ -183,6 +215,8 @@ pub( crate ) mod private
   /// Attribute and ident.
   ///
 
+  // qqq : example?
+
   pub type AttributedIdent = Pair< Many< AttributesInner >, syn::Ident >;
 
   impl From< syn::Ident > for AttributedIdent
@@ -203,9 +237,25 @@ pub( crate ) mod private
 
 }
 
-// #[ doc( inline ) ]
+#[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-// pub use exposed::*;
+pub use protected::*;
+
+/// Protected namespace of the module.
+pub mod protected
+{
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::orphan::*;
+}
+
+/// Orphan namespace of the module.
+pub mod orphan
+{
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::exposed::*;
+}
 
 /// Exposed namespace of the module.
 pub mod exposed
@@ -217,6 +267,7 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
+    attr_pair_single,
     AttributesInner,
     AttributesOuter,
     AttributedIdent,

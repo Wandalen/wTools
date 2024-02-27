@@ -5,7 +5,7 @@ use super::*;
 
 tests_impls!
 {
-  #[ test ]
+
   fn tree_diagnostics_str_basic()
   {
 
@@ -67,7 +67,6 @@ TokenStream [
 
   //
 
-  #[ test ]
   fn syn_err_basic()
   {
 
@@ -125,7 +124,6 @@ TokenStream [
 
   //
 
-  #[ test ]
   fn type_container_kind_basic()
   {
 
@@ -199,7 +197,6 @@ TokenStream [
 
   //
 
-  #[ test ]
   fn type_optional_container_kind_basic()
   {
 
@@ -282,7 +279,6 @@ TokenStream [
 
   //
 
-  #[ test ]
   fn type_rightmost_basic()
   {
 
@@ -296,7 +292,6 @@ TokenStream [
 
   //
 
-  #[ test ]
   fn type_parameters_basic()
   {
 
@@ -332,12 +327,26 @@ TokenStream [
     let exp = vec![ q!( i8 ), q!( i16 ) ];
     a_id!( got, exp );
 
+    // unbound
+    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
+    let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ), q!( i64 ) ];
+    a_id!( got, exp );
+
+    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
+    let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ), q!( i64 ) ];
+    a_id!( got, exp );
+
+    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
+    let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ), q!( i64 ) ];
+    a_id!( got, exp );
+
   }
 
   //
 
   // fn attr_pair_single( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ), syn::Error >
 
+  // qqq : xxx : fix
   // #[test]
   // fn attr_pair_single_basic() -> Result< (), syn::Error >
   // {

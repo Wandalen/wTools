@@ -6,6 +6,7 @@
 pub( crate ) mod private
 {
 
+  // xxx : qqq : examples. documentation
   /// Result of generics analyze.
   #[ derive( Debug ) ]
   pub struct GenericsAnalysis

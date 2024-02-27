@@ -40,9 +40,6 @@ pub mod exposed
   pub use super::from::orphan::*;
 }
 
-// #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-// pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude

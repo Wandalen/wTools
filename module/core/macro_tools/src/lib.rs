@@ -1,24 +1,15 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/proc_macro_tools/latest/proc_macro_tools/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
-
-// #![ feature( type_name_of_val ) ]
-
-//!
-//! Tools for writing procedural macroses.
-//!
-
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+pub mod attr;
 pub mod container_kind;
-pub mod helper;
+pub mod diagnostics;
+pub mod generic_analyze; // xxx
 pub mod name;
 pub mod quantifier;
-pub mod syntax;
-pub mod generic_analyze;
+pub mod typ;
 
 ///
 /// Dependencies of the module.
@@ -43,7 +34,17 @@ pub mod protected
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use super::
+  {
+    orphan::*,
+    attr::orphan::*,
+    container_kind::orphan::*,
+    generic_analyze::orphan::*,
+    diagnostics::orphan::*,
+    name::orphan::*,
+    quantifier::orphan::*,
+    typ::orphan::*,
+  };
 }
 
 /// Parented namespace of the module.
@@ -70,12 +71,13 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
+    attr::exposed::*,
     container_kind::exposed::*,
     generic_analyze::exposed::*,
-    helper::exposed::*,
+    diagnostics::exposed::*,
     name::exposed::*,
     quantifier::exposed::*,
-    syntax::exposed::*,
+    typ::exposed::*,
   };
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -94,7 +96,7 @@ pub mod prelude
   #[ allow( unused_imports ) ]
   pub use ::interval_adapter::prelude::*;
   // #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+  // #[ allow( unused_imports ) ]
   // pub use ::type_constructor::prelude::*;
 
   #[ doc( inline ) ]
@@ -136,12 +138,13 @@ pub mod prelude
   #[ allow( unused_imports ) ]
   pub use super::
   {
+    attr::prelude::*,
     container_kind::prelude::*,
     generic_analyze::prelude::*,
-    helper::prelude::*,
+    diagnostics::prelude::*,
     name::prelude::*,
     quantifier::prelude::*,
-    syntax::prelude::*,
+    typ::prelude::*,
   };
 
 }
