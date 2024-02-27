@@ -43,7 +43,7 @@ mod private
   /// Initializes two global regular expressions that are used to match tags.
   fn regexes_initialize() 
   {
-    TAG_TEMPLATE.set( regex::bytes::Regex::new( r#"<!--\{ generate.healthtable\( (.+) \) \} -->"# ).unwrap() ).ok();
+    TAG_TEMPLATE.set( regex::bytes::Regex::new( r#"<!--\{ generate.healthtable(\(\)|\{\}|\(.*?\)|\{.*?\}) \} -->"# ).unwrap() ).ok();
     CLOSE_TAG.set( regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap() ).ok();
   }
 
@@ -143,7 +143,8 @@ mod private
       let include_stability = value.get( "with_stability" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_docs = value.get( "with_docs" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_sample = value.get( "with_gitpod" ).map( | v | bool::from( v ) ).unwrap_or( true );
-      let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" )
+      let b_p = value.get( "1" );
+      let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" ).or( b_p )
       {
         path
       }
@@ -252,7 +253,7 @@ mod private
           .ok_or( format_err!( "Fail to parse group" ) )?
           .as_bytes()
           )?;
-          let params: TableParameters  = query::parse( raw_table_params ).unwrap().into();
+          let params: TableParameters  = query::parse( raw_table_params ).unwrap().into_map( vec![] ).into();
           let table = package_table_create( &mut cargo_metadata, &params, &mut parameters )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
@@ -437,7 +438,7 @@ mod private
     .map
     (
       | b |
-      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/Module{}Push.yml?label=&branch={b})]({}/actions/workflows/Module{}Push.yml)", table_parameters.user_and_repo, &module_name.to_case( Case::Pascal ), table_parameters.core_url, &module_name.to_case( Case::Pascal ) )
+      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/Module{}Push.yml?label=&branch={b})]({}/actions/workflows/Module{}Push.yml?query=branch%3A{})", table_parameters.user_and_repo, &module_name.to_case( Case::Pascal ), table_parameters.core_url, &module_name.to_case( Case::Pascal ), b )
     )
     .collect::< Vec< String > >()
     .join( " | " );
