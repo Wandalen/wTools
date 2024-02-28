@@ -199,6 +199,7 @@ tests_impls_optional!
 
   fn test_complex()
   {
+
     let command = Struct1::former()
     // .int_1( 13 )
     // .string_1( "Abcd".to_string() )
