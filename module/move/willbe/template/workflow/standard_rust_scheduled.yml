@@ -92,3 +92,36 @@ jobs :
 
       - name : Test with miri
         run : cargo miri test
+
+  will_test :
+    strategy :
+      matrix :
+        os : [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on : ${{ matrix.os }}
+    steps :
+      - name: Install latest stable toolchain
+        uses: Wandalen/wretry.action@master
+        with:
+          action: actions-rs/toolchain@v1
+          with: |
+            toolchain : stable
+            override : true
+          attempt_limit: 3
+          attempt_delay: 10000
+      - name: Install latest nightly toolchain
+        uses: Wandalen/wretry.action@master
+        with:
+          action: actions-rs/toolchain@v1
+          with: |
+            toolchain : nightly
+            override : true
+            components : miri
+          attempt_limit: 3
+          attempt_delay: 10000
+      - uses: actions/checkout@v3
+        with:
+          ref: alpha
+      - name: Install will
+        run: cargo install --git https://github.com/Wandalen/wTools --branch alpha willbe
+      - name: Run tests with each feature
+        run: will .test dry:0

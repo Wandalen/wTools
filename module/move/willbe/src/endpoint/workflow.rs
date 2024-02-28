@@ -64,7 +64,9 @@ mod private
       data.insert( "username_and_repository", username_and_repository.0.as_str() );
       data.insert( "branch", "alpha" );
       let path = path.as_str().replace( "\\", "/" );
+      let module_path = relative_path.as_str().replace( "\\", "/" );
       data.insert( "manifest_path", path.as_str() );
+      data.insert( "module_path", module_path.as_str() );
       let content = handlebars.render( "module_push", &data )?;
       file_write( &workflow_file_name, &content )?;
     }
