@@ -18,4 +18,18 @@ where
   }
 }
 
+/// Don't do any processing, but retunr context as is.
+#[ derive( Debug, Default ) ]
+pub struct NoEnd;
+
+impl< T, Context > OnEnd< T, Context >
+for NoEnd
+{
+  #[ inline( always ) ]
+  fn call( &self, _container : T, context : Context ) -> Context
+  {
+    context
+  }
+}
+
 //
