@@ -62,7 +62,6 @@ where
   #[ inline( always ) ]
   pub fn replace( mut self, container : HashSet ) -> Self
   {
-    debug_assert!( self.container.is_none() );
     self.container = Some( container );
     self
   }

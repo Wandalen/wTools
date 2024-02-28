@@ -74,7 +74,6 @@ where
   #[ inline( always ) ]
   pub fn replace( mut self, container : HashMap ) -> Self
   {
-    debug_assert!( self.container.is_none() );
     self.container = Some( container );
     self
   }

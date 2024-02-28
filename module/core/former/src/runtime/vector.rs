@@ -56,7 +56,6 @@ where
   #[ inline( always ) ]
   pub fn replace( mut self, vector : Vector ) -> Self
   {
-    debug_assert!( self.container.is_none() );
     self.container = Some( vector );
     self
   }
