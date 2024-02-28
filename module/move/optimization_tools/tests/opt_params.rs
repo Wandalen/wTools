@@ -11,7 +11,12 @@ use tabled::{ builder::Builder, settings::Style };
 mod tools;
 use tools::*;
 
-fn named_results_list< R : RangeBounds< f64 > >( params : Vec< f64 >, stats : Stats, bounds : Vec< Option< R > > ) -> Vec< Vec< String > >
+fn named_results_list< R : RangeBounds< f64 > >
+(
+  params : Vec< f64 >,
+  stats : Stats,
+  bounds : Vec< Option< R > >,
+) -> Vec< Vec< String > >
 {
   let mut str_params = Vec::new();
   str_params.push( format!( "{:.4}", params[ 0 ] ) );
@@ -45,19 +50,33 @@ fn named_results_list< R : RangeBounds< f64 > >( params : Vec< f64 >, stats : St
     "dynasties limit",
   ];
 
-  let mut diff_sum_vec = stats.differences.iter().map( | vec | vec.iter().fold( 0.0, | acc, val | acc + val.abs() ) ).map( | val | format!( "{:.2}", val ) ).collect_vec();
+  let mut diff_sum_vec = stats.differences
+  .iter()
+  .map( | vec | format!( "{:.2}", vec.iter().fold( 0.0, | acc, val | acc + val.abs() ) ) )
+  .collect_vec()
+  ;
+
   diff_sum_vec.insert( 4, String::from( "-" ) );
 
   let mut expectation_vec = Vec::new();
   for i in 0..stats.differences.len()
   { 
-    expectation_vec.push( format!( "{:.2}", stats.differences[ i ].iter().fold( 0.0, | acc, val | acc + ( val + stats.starting_point.coords[ i ].into_inner() ) / stats.differences[ i ].len() as f64 ) ) );
+    expectation_vec.push
+    (
+      format!
+      (
+        "{:.2}",
+        stats.differences[ i ]
+        .iter()
+        .fold( 0.0, | acc, val | acc + val.abs() / stats.differences[ i ].len() as f64 )
+      )
+    );
   }
   expectation_vec.insert( 4, String::from( "-" ) );
 
   let mut bounds_vec = bounds.iter().map( | bounds | 
     {
-      let mut str = String::from( "-" );
+      let mut str = ( String::from( "-" ), String::from( "-" ) );
       if let Some( range ) = bounds
       {
         let mut upper = String::new();
@@ -66,11 +85,11 @@ fn named_results_list< R : RangeBounds< f64 > >( params : Vec< f64 >, stats : St
         {
           Bound::Included( val ) =>
           {
-            upper = format!( "[ {:.2}", val );
+            upper = format!( "{:.2}", val );
           },
           Bound::Excluded( val ) =>
           {
-            upper = format!( "( {:.2}", val );
+            upper = format!( "{:.2}", val );
           },
           Bound::Unbounded => {}
         }
@@ -79,28 +98,64 @@ fn named_results_list< R : RangeBounds< f64 > >( params : Vec< f64 >, stats : St
         {
           Bound::Included( val ) =>
           {
-            lower = format!( "{:.2} ]", val );
+            lower = format!( "{:.2}", val );
           },
           Bound::Excluded( val ) =>
           {
-            lower = format!( "{:.2} )", val );
+            lower = format!( "{:.2}", val );
           },
           Bound::Unbounded => {}
         }
-        str = format!( "{}; {}", upper, lower );
+        str = ( lower, upper );
       }
       str
     } ).collect_vec();
-  bounds_vec.insert( 4, String::from( "-" ) );
+  bounds_vec.insert( 4, ( String::from( "-" ), String::from( "-" ) ) );
+
+  let mut change_vec = Vec::new();
+  for i in 0..stats.positive_change.len()
+  { 
+    change_vec.push( format!( "{}", stats.positive_change[ i ] ) );
+  }
+  // elitism
+  change_vec.insert( 4, String::from( "-" ) );
 
   let mut list = Vec::new();
 
   for i in 0..params_name.len()
   {
-    list.push( vec![ params_name[ i ].to_owned(), start_params[ i ].clone(), bounds_vec[ i ].clone(), diff_sum_vec[ i ].clone(), expectation_vec[ i ].clone(), str_params[ i ].clone() ] );
+    list.push
+    ( 
+      vec!
+      [
+        params_name[ i ].to_owned(),
+        start_params[ i ].clone(),
+        bounds_vec[ i ].0.clone(),
+        bounds_vec[ i ].1.clone(),
+        diff_sum_vec[ i ].clone(),
+        expectation_vec[ i ].clone(),
+        change_vec[ i ].clone(),
+        str_params[ i ].clone()
+      ]
+    );
   }
 
   list
+}
+
+pub fn legend() -> String
+{
+  let str_legend = concat!(
+    " - `start. val.` : starting value\n",
+    " - `l. b.` : lower bound of parameter\n",
+    " - `u. b.` : upper bound of parameter\n",
+    " - `sum of diff.` : sum of differences between starting value and next value\n",
+    " - `math. exp.` : mathematical expectation of difference between starting value and next value\n",
+    " - `s. ch.` : munber of successful changes of parameter value to more optimal\n",
+    " - `calc. val.` : calculated value of parameter for which execution time was the lowest\n",
+  );
+
+  str_legend.to_owned()
 }
 
 type ResWithStats = Vec< Vec< String > >;
@@ -127,8 +182,13 @@ fn write_results(
 
     let mut builder = Builder::default();
 
-    let row = [ "", "starting value", "bounds", "sum of differences", "mathematical expectation", "calculated value" ].into_iter().map( str::to_owned ).collect_vec();
-    builder.push_record( row );
+    let head_row = [ "", "start. val.", "l. b.", "u. b.", "sum of diff.", "math. exp.", "s. ch.", "calc. val." ]
+    .into_iter()
+    .map( str::to_owned )
+    .collect_vec()
+    ;
+
+    builder.push_record( head_row.clone() );
 
     for i in 0..params.len()
     {
@@ -136,7 +196,7 @@ fn write_results(
     
       if *mode == "SA" && [ 2, 3, 4, 6 ].contains( &i )
       {
-        row.push( format!( "<em>{}</em>", params[ i ][ 0 ].clone().replace( " ", "\n") ) );
+        row.push( format!( "{}", params[ i ][ 0 ].clone().replace( " ", "\n") ) );
       }
       else 
       {
@@ -152,6 +212,7 @@ fn write_results(
     std::io::Write::write( &mut file, format!( "```\n{}\n```", table ).as_bytes() )?;
 
     std::io::Write::write( &mut file, format!("\n\n\n" ).as_bytes() )?;
+    std::io::Write::write( &mut file, legend().as_bytes() )?;
   }
 
   //final table
@@ -162,6 +223,8 @@ fn write_results(
   {
     headers.push( hybrid_res[ i ][ 0 ].clone().replace( " ", "\n") );
   }
+
+  headers.push( String::from( "execution\ntime" ) );
 
   builder.push_record( headers );
   for ( mode, params ) in [ ( "hybrid", &hybrid_res ), ( "SA", &sa_res ), ( "GA", &ga_res ) ]
@@ -178,6 +241,7 @@ fn write_results(
         row.push( params[ i - 1 ].last().unwrap().clone() );
       }
     }
+    row.push( params.last().unwrap()[ 1 ].clone() );
 
     builder.push_record( row );
   }
@@ -214,13 +278,15 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   let config = OptimalParamsConfig::default();
   let initial = SudokuInitial::new( Board::from( easy ) );
 
-  let hybrid_problem = Problem::new(
+  let hybrid_problem = Problem::new
+  (
     initial.clone(),
     BestRowsColumnsCrossover,
     RandomPairInBlockMutation,
   );
   let starting_params = hybrid_optimizer::starting_params_for_hybrid()?;
-  let res = optimal_params_search::find_hybrid_optimal_params(
+  let res = optimal_params_search::find_hybrid_optimal_params
+  (
     config.clone(),
     starting_params.clone(),
     hybrid_problem,
@@ -231,19 +297,29 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   let mut hybrid_res = Vec::new();
   if let Ok( solution ) = res
   {
-    hybrid_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
+    hybrid_res = named_results_list
+    (
+      solution.point.coords
+      .into_iter()
+      .map( | val | val.into_inner() )
+      .collect_vec(),
+      solution.stats.unwrap(),
+      starting_params.bounds,
+    );
     hybrid_res.push( vec![ String::from( "level" ), format!( "{:?}", Board::from( easy ).calculate_level() ) ] );
     hybrid_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
   }
 
   // SA
-  let hybrid_problem = Problem::new(
+  let hybrid_problem = Problem::new
+  (
     initial.clone(),
     BestRowsColumnsCrossover,
     RandomPairInBlockMutation,
   );
   let starting_params = hybrid_optimizer::starting_params_for_sa()?;
-  let res = optimal_params_search::find_hybrid_optimal_params(
+  let res = optimal_params_search::find_hybrid_optimal_params
+  (
     config.clone(),
     starting_params.clone(),
     hybrid_problem,
@@ -254,7 +330,12 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   let mut sa_res = Vec::new();
   if let Ok( solution ) = res
   {
-    sa_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
+    sa_res = named_results_list
+    (
+      solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(),
+      solution.stats.unwrap(),
+      starting_params.bounds,
+    );
     sa_res.push( vec![ String::from( "level" ), format!( "{:?}", Board::from( easy ).calculate_level() ) ] );
     sa_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
   }
@@ -266,7 +347,8 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
     RandomPairInBlockMutation,
   );
   let starting_params = hybrid_optimizer::starting_params_for_ga()?;
-  let res = optimal_params_search::find_hybrid_optimal_params(
+  let res = optimal_params_search::find_hybrid_optimal_params
+  (
     config,
     starting_params.clone(),
     hybrid_problem,
@@ -277,7 +359,12 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   let mut ga_res = Vec::new();
   if let Ok( solution ) = res
   {
-    ga_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
+    ga_res = named_results_list
+    (
+      solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(),
+      solution.stats.unwrap(),
+      starting_params.bounds,
+    );
     ga_res.push( vec![ String::from( "level" ), format!( "{:?}", Board::from( easy ).calculate_level() ) ] );
     ga_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
   }
@@ -307,7 +394,8 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
     TSRouteMutation,
   );
   let starting_params = hybrid_optimizer::starting_params_for_hybrid()?;
-  let res = optimal_params_search::find_hybrid_optimal_params(
+  let res = optimal_params_search::find_hybrid_optimal_params
+  (
     config.clone(),
     starting_params.clone(),
     hybrid_problem,
@@ -317,7 +405,12 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
   let mut hybrid_res = Vec::new();
   if let Ok( solution ) = res
   {
-    hybrid_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
+    hybrid_res = named_results_list
+    (
+      solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(),
+      solution.stats.unwrap(),
+      starting_params.bounds,
+    );
     hybrid_res.push( vec![ String::from( "number of nodes" ), number_of_nodes.to_string() ] );
     hybrid_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
   }
@@ -339,7 +432,12 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
   let mut sa_res = Vec::new();
   if let Ok( solution ) = res
   {
-    sa_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
+    sa_res = named_results_list
+    (
+      solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(),
+      solution.stats.unwrap(),
+      starting_params.bounds,
+    );
     sa_res.push( vec![ String::from( "number of nodes" ), number_of_nodes.to_string() ] );
     sa_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
   }
@@ -361,7 +459,12 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
   let mut ga_res = Vec::new();
   if let Ok( solution ) = res
   {
-    ga_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
+    ga_res = named_results_list
+    (
+      solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(),
+      solution.stats.unwrap(),
+      starting_params.bounds,
+    );
     ga_res.push( vec![ String::from( "number of nodes" ), number_of_nodes.to_string() ] );
     ga_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
   }
@@ -369,3 +472,5 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
   write_results( String::from( "tsp_results" ), String::from( "Traveling Salesman Problem" ), hybrid_res, sa_res, ga_res )?;
   Ok( () )
 }
+
+//"starting value", "lower bound", "upper bound", "sum of differences", "expected value", "calculated value" ]
