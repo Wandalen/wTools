@@ -258,13 +258,25 @@ pub( crate ) mod private
   }
 
   ///
+  /// Additional information for container types
+  ///
+  #[ derive( Debug, PartialEq, Default, Clone ) ]
+  pub struct ContainerDescription
+  {
+    /// Container length.
+    pub len : usize,
+    /// Container keys.
+    pub keys : Option< Vec< primitive::Primitive > >,
+  }
+
+  ///
   /// Type descriptor
   ///
-  #[ derive( PartialEq, Default, Copy, Clone ) ]
+  #[ derive( PartialEq, Default, Clone ) ]
   pub struct EntityDescriptor< I : Instance >
   {
     /// Container description.
-    pub container_info : Option< usize >,
+    pub container_info : Option< ContainerDescription >,
     _phantom : core::marker::PhantomData< I >,
   }
 
@@ -279,10 +291,14 @@ pub( crate ) mod private
     }
 
     /// Constructor of the descriptor of container type.
-    pub fn new_container( size : usize ) -> Self
+    pub fn new_container( size : usize, keys : Option< Vec< primitive::Primitive > > ) -> Self
     {
       let _phantom = core::marker::PhantomData::< I >;
-      Self { _phantom, container_info : Some( size ) }
+      Self 
+      { 
+        _phantom, 
+        container_info : Some( ContainerDescription { len : size, keys } )
+      }
     }
   }
 
@@ -359,12 +375,26 @@ pub( crate ) mod private
     }
   }
 
+  // qqq aaa: added comparison by val
   impl PartialEq for KeyVal
   {
     fn eq( &self, other : &Self ) -> bool
     {
-      self.key == other.key
-      // qqq : compare also by val
+      let mut equal = self.key == other.key
+        && self.val.is_container() == other.val.is_container()
+        && self.val.type_id() == other.val.type_id()
+        && self.val.type_name() == other.val.type_name()
+        && self.val.len() == other.val.len()
+        && self.val.is_ordered() == other.val.is_ordered();
+
+      if equal
+      {
+        for i in 0..self.val.len()
+        {
+          equal = equal && ( self.val.element( i ) == other.val.element( i ) )
+        }
+      }
+      equal
     }
   }
 
@@ -399,24 +429,15 @@ pub( crate ) mod private
   impl IsScalar for &'static str {}
 
   impl< T : Instance + 'static, const N : usize > IsContainer for [ T ; N ] {}
-  impl< T : Instance > IsContainer for &'static [ T ]
-  {
-
-  }
-  impl< T : Instance + 'static > IsContainer for Vec< T >
-  {
-
-  }
+   // qqq : aaa : added implementation for slice
+  impl< T : Instance > IsContainer for &'static [ T ] {}
+   // qqq : aaa : added implementation for Vec
+  impl< T : Instance + 'static > IsContainer for Vec< T > {}
+  // qqq : aaa : added implementation for HashMap
   impl< K : IsScalar + 'static, V : Instance + 'static > IsContainer for std::collections::HashMap< K, V >
-  {
-
-  }
+  where primitive::Primitive : From< K > {}
+  // qqq : aaa : added implementation for HashSet
   impl< V : Instance + 'static > IsContainer for std::collections::HashSet< V > {}
-
-  // qqq : xxx : implement for slice
-  // qqq : xxx : implement for Vec
-  // qqq : xxx : implement for HashMap
-  // qqq : xxx : implement for HashSet
 
 }
 

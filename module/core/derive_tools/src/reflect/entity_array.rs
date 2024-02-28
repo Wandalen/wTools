@@ -17,7 +17,7 @@ pub mod private
     type Entity = EntityDescriptor::< &'static [ T ] >;
     fn _reflect( &self ) -> Self::Entity
     {
-      EntityDescriptor::< Self >::new_container( self.len() )
+      EntityDescriptor::< Self >::new_container( self.len(), None )
     }
     #[ inline( always ) ]
     fn Reflect() -> Self::Entity
@@ -40,9 +40,9 @@ pub mod private
     #[ inline( always ) ]
     fn len( &self ) -> usize
     {
-      if let Some( len ) = self.container_info
+      if let Some( description ) = &self.container_info
       {
-        len
+        description.len
       }
       else
       {
@@ -82,7 +82,7 @@ pub mod private
     type Entity = EntityDescriptor::< Vec< T > >;
     fn _reflect( &self ) -> Self::Entity
     {
-      EntityDescriptor::< Self >::new_container( self.len() )
+      EntityDescriptor::< Self >::new_container( self.len(), None )
     }
     #[ inline( always ) ]
     fn Reflect() -> Self::Entity
@@ -105,9 +105,9 @@ pub mod private
     #[ inline( always ) ]
     fn len( &self ) -> usize
     {
-      if let Some( len ) = self.container_info
+      if let Some( description ) = &self.container_info
       {
-        len
+        description.len
       }
       else
       {
@@ -130,7 +130,6 @@ pub mod private
     #[ inline( always ) ]
     fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > >
     {
-
       let result : Vec< KeyVal > = ( 0 .. self.len() )
       .map( | k | KeyVal { key : Primitive::usize( k ), val : Box::new( < T as Instance >::Reflect() ) } )
       .collect();
@@ -144,11 +143,16 @@ pub mod private
   impl< K, V > Instance for HashMap< K, V >
   where
     EntityDescriptor< HashMap< K, V > > : Entity,
+    primitive::Primitive : From< K >,
   {
     type Entity = EntityDescriptor::< HashMap< K, V > >;
     fn _reflect( &self ) -> Self::Entity
     {
-      EntityDescriptor::< Self >::new_container( self.len() )
+      EntityDescriptor::< Self >::new_container
+      (
+        self.len(),
+        Some( self.keys().clone().into_iter().map( | k | k.into() ).collect::< Vec< _ > >() ),
+      )
     }
     #[ inline( always ) ]
     fn Reflect() -> Self::Entity
@@ -161,6 +165,7 @@ pub mod private
   impl< K, V > Entity for EntityDescriptor< HashMap< K, V > >
   where
     K : 'static + Instance + IsScalar,
+    primitive::Primitive : From< K >,
     V : 'static + Instance,
   {
 
@@ -173,9 +178,9 @@ pub mod private
     #[ inline( always ) ]
     fn len( &self ) -> usize
     {
-      if let Some( len ) = self.container_info
+      if let Some( description ) = &self.container_info
       {
-        len
+        description.len
       }
       else
       {
@@ -198,11 +203,22 @@ pub mod private
     #[ inline( always ) ]
     fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > >
     {
-      //let primitive = k.into();
-
-      let result : Vec< KeyVal > = ( 0..self.len() )
+      let mut result : Vec< KeyVal > = ( 0 .. self.len() )
       .map( | k | KeyVal { key : Primitive::usize( k ), val : Box::new( < V as Instance >::Reflect() ) } )
       .collect();
+
+      if let Some( description ) = &self.container_info
+      {
+        let keys = description.keys
+        .clone()
+        .unwrap_or( ( 0..self.len() ).map( primitive::Primitive::usize ).into_iter().collect() )
+        ;
+      
+        for i in 0..self.len()
+        {
+          result[ i ] = KeyVal { key : keys[ i ].clone(), val : Box::new( < V as Instance >::Reflect() ) }
+        }
+      }
 
       Box::new( result.into_iter() )
     }
@@ -217,7 +233,7 @@ pub mod private
     type Entity = EntityDescriptor::< HashSet< T > >;
     fn _reflect( &self ) -> Self::Entity
     {
-      EntityDescriptor::< Self >::new_container( self.len() )
+      EntityDescriptor::< Self >::new_container( self.len(), None )
     }
     #[ inline( always ) ]
     fn Reflect() -> Self::Entity
@@ -241,9 +257,9 @@ pub mod private
     #[ inline( always ) ]
     fn len( &self ) -> usize
     {
-      if let Some( len ) = self.container_info
+      if let Some( description ) = &self.container_info
       {
-        len
+        description.len
       }
       else
       {
