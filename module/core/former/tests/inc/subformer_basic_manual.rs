@@ -62,7 +62,7 @@ where
   {
     CommandFormer::< K, (), NoEnd >::begin
     (
-      (),
+      None,
       NoEnd,
     )
   }
@@ -142,7 +142,7 @@ where
   #[ inline( always ) ]
   pub fn begin
   (
-    context : Context,
+    context :  core::option::Option< Context >,
     on_end : P,
   ) -> Self
   {
@@ -152,7 +152,7 @@ where
       hint : None,
       subject : None,
       properties : None,
-      context : Some( context ),
+      context : context,
       on_end : Some( on_end ),
     }
   }
@@ -198,7 +198,7 @@ where
       former.properties = Some( container );
       former
     };
-    former::runtime::HashMapSubformer::begin( self, container, on_end )
+    former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
   }
 
 }

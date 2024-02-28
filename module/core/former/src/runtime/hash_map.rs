@@ -67,11 +67,16 @@ where
 
   /// Make a new HashMapSubformer. It should be called by a context generated for your structure.
   #[ inline( always ) ]
-  pub fn begin( context : Context, container : core::option::Option< HashMap >, on_end : ContainerEnd ) -> Self
+  pub fn begin
+  (
+    context : core::option::Option< Context >,
+    container : core::option::Option< HashMap >,
+    on_end : ContainerEnd,
+  ) -> Self
   {
     Self
     {
-      context : Some( context ),
+      context : context,
       container,
       on_end : Some( on_end ),
       _e_phantom : core::marker::PhantomData,

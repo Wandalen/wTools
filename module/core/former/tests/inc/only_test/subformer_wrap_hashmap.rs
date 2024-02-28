@@ -11,7 +11,7 @@ fn basic()
   a_id!( got, exp );
 
   let got = HashMapWrap::< &str, &str >::former().insert( "abc", "def" ).end();
-  let exp = ();
+  let exp = hmap!{ "abc" => "def" };
   a_id!( got, exp );
 
   let got = HashMapWrap::< &str, &str >::former().container( hmap!{ "abc" => "def" } ).form();

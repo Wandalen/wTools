@@ -18,7 +18,7 @@ where
   }
 }
 
-/// Don't do any processing, but retunr context as is.
+/// Don't do any processing, but return context as is.
 #[ derive( Debug, Default ) ]
 pub struct NoEnd;
 
@@ -29,6 +29,20 @@ for NoEnd
   fn call( &self, _container : T, context : Context ) -> Context
   {
     context
+  }
+}
+
+/// Don't do any processing, but return container instrad of context.
+#[ derive( Debug, Default ) ]
+pub struct JustContainerEnd;
+
+impl< T > OnEnd< T, T >
+for JustContainerEnd
+{
+  #[ inline( always ) ]
+  fn call( &self, container : T, _context : T ) -> T
+  {
+    container
   }
 }
 

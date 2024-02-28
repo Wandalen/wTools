@@ -560,7 +560,7 @@ fn subformer_field_setter
         former.#setter_name = Some( container );
         former
       };
-      #subformer_type::begin( self, container, on_end )
+      #subformer_type::begin( Some( self ), container, on_end )
     }
   }
 

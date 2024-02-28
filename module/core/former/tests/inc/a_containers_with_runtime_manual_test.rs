@@ -111,7 +111,7 @@ impl Struct1Former
       former.vec_1 = Some( container );
       former
     };
-    former::runtime::VectorSubformer::begin( self, container, on_end )
+    former::runtime::VectorSubformer::begin( Some( self ), container, on_end )
   }
 
   pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapSubformer
@@ -129,7 +129,7 @@ impl Struct1Former
       former.hashmap_strings_1 = Some( container );
       former
     };
-    former::runtime::HashMapSubformer::begin( self, container, on_end )
+    former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
   }
 
   pub fn hashset_strings_1( mut self ) -> former::runtime::HashSetSubformer
@@ -146,7 +146,7 @@ impl Struct1Former
       former.hashset_strings_1 = Some( container );
       former
     };
-    former::runtime::HashSetSubformer::begin( self, container, on_end )
+    former::runtime::HashSetSubformer::begin( Some( self ), container, on_end )
   }
 
 }
