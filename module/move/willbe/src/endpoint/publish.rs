@@ -8,11 +8,12 @@ mod private
     collections::{ HashSet, HashMap }, io,
   };
   use core::fmt::Formatter;
+  use petgraph::prelude::*;
 
   use wtools::error::for_app::{ Error, anyhow };
   use path::AbsolutePath;
   use workspace::Workspace;
-  use package::{ CrateId, Package, DependenciesOptions, DependenciesSort };
+  use package::{ publish_need, Package };
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -132,7 +133,6 @@ mod private
       .try_into()
       .map_err( | err: io::Error | ( report.clone(), anyhow!( err ) ) )?
     );
-
     let packages_to_publish : Vec< _ >= metadata
     .load()
     .map_err( | err | ( report.clone(), anyhow!( err ) ) )?
@@ -140,50 +140,111 @@ mod private
     .map_err( | err | ( report.clone(), anyhow!( err ) ) )?
     .iter()
     .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path.as_std_path().parent().unwrap() ).unwrap() ) )
-    .cloned()
+    .map( | p | p.name.clone() )
     .collect();
-    report.wanted_to_publish.extend( packages_to_publish.iter().map( | x | x.manifest_path.as_std_path().parent().unwrap() ).filter_map( | x | AbsolutePath::try_from( x ).ok() ).filter_map( | x | CrateDir::try_from( x ).ok() ) );
-    let mut queue = vec![];
-    for package in &packages_to_publish
-    {
-      let local_deps_args = DependenciesOptions
-      {
-        recursive: true,
-        sort: DependenciesSort::Topological,
-        ..Default::default()
-      };
-      let deps = package::dependencies( &mut metadata, &Package::from( package.clone() ), local_deps_args )
-      .map_err( | e | ( report.clone(), e.into() ) )?;
+    let package_map = metadata.packages().unwrap().into_iter().map( | p | ( p.name.clone(), Package::from( p.clone() ) ) ).collect::< HashMap< _, _ > >();
 
-      for dep in deps
+    let graph = graph( &metadata );
+    let subgraph_wanted = subgraph( &graph, &packages_to_publish );
+    let reversed_subgraph =
+    {
+      let roots = subgraph_wanted.node_indices().map( | i | &graph[ subgraph_wanted[ i ] ] ).filter_map( | n | package_map.get( n ).map( | p | ( n, p ) ) ).inspect( |( _, p )| { cargo::package( p.crate_dir(), false ).unwrap(); } ).filter( |( _, package )| publish_need( package ).unwrap() ).map( |( name, _ )| name.clone() ).collect::< Vec< _ > >();
+
+      let mut reversed = graph.clone();
+      reversed.reverse();
+      subgraph( &reversed, &roots )
+    };
+    {
+      for node in reversed_subgraph.node_indices()
       {
-        if !queue.contains( &dep )
+        // `Incoming` - because of reversed
+        if graph.neighbors_directed( reversed_subgraph[ node ], Incoming ).count() == 0
         {
-          queue.push( dep );
+          report.wanted_to_publish.push( package_map.get( &graph[ reversed_subgraph[ node ] ] ).unwrap().crate_dir() );
         }
       }
-      let crate_id = CrateId::from( package );
-      if !queue.contains( &crate_id )
-      {
-        queue.push( crate_id );
-      }
     }
+    let subgraph = reversed_subgraph.map( | _, y | &graph[ *y ], | _, y | &graph[ subgraph_wanted[ *y ] ] );
 
-    for path in queue.into_iter().filter_map( | id | id.path )
+    let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).rev().collect::< Vec< _ > >();
+
+    for package in queue
     {
-      let current_report = package::publish_single( &Package::try_from( path.clone() ).unwrap(), dry )
+      let current_report = package::publish_single( package, true, dry )
       .map_err
       (
         | ( current_report, e ) |
         {
-          report.packages.push(( path.clone(), current_report.clone() ));
+          report.packages.push(( package.crate_dir().absolute_path(), current_report.clone() ));
           ( report.clone(), e.context( "Publish list of packages" ).into() )
         }
       )?;
-      report.packages.push(( path, current_report ));
+      report.packages.push(( package.crate_dir().absolute_path(), current_report ));
     }
 
     Ok( report )
+  }
+
+  fn graph( workspace : &Workspace ) -> Graph< String, String >
+  {
+    let packages = workspace.packages().unwrap();
+    let module_package_filter: Option< Box< dyn Fn( &cargo_metadata::Package ) -> bool > > = Some
+    (
+      Box::new( move | p | p.publish.is_none() )
+    );
+    let module_dependency_filter: Option< Box< dyn Fn( &cargo_metadata::Package, &cargo_metadata::Dependency) -> bool > > = Some
+    (
+      Box::new
+      (
+        move | _, d | d.path.is_some() && d.kind != cargo_metadata::DependencyKind::Development
+      )
+    );
+    let module_packages_map = packages::filter
+    (
+      packages,
+      packages::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
+    );
+
+    graph::construct( &module_packages_map ).map( | _, x | x.to_string(), | _, x | x.to_string() )
+  }
+
+  fn subgraph( graph : &Graph< String, String >, roots : &[ String ] ) -> Graph< NodeIndex, NodeIndex >
+  {
+    let mut subgraph = Graph::new();
+    let mut node_map = HashMap::new();
+
+    for root in roots
+    {
+      let root_id = graph.node_indices().find( | x | &graph[ *x ] == root ).unwrap();
+      let mut dfs = Dfs::new( graph, root_id );
+      while let Some( nx ) = dfs.next( &graph )
+      {
+        if !node_map.contains_key( &nx )
+        {
+          let sub_node = subgraph.add_node( nx );
+          node_map.insert( nx, sub_node );
+        }
+      }
+    }
+
+    for ( _, sub_node_id ) in &node_map
+    {
+      let node_id_graph = subgraph[ *sub_node_id ];
+
+      for edge in graph.edges( node_id_graph )
+      {
+        match ( node_map.get( &edge.source() ), node_map.get( &edge.target() ) )
+        {
+          ( Some( &from ), Some( &to ) ) =>
+          {
+            subgraph.add_edge( from, to, from );
+          }
+          _ => {}
+        }
+      }
+    }
+
+    subgraph
   }
 }
 
