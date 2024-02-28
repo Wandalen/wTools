@@ -9,8 +9,9 @@ mod private
 		collections::{ BTreeMap, BTreeSet, HashSet },
 		sync::{ Arc, Mutex },
 	};
+  use cargo_metadata::Package;
 
-	use rayon::ThreadPoolBuilder;
+  use rayon::ThreadPoolBuilder;
   use former::Former;
 	use wtools::
 	{
@@ -18,7 +19,8 @@ mod private
 		error::{ Result, for_app::{ format_err, Error } },
 	};
 	use process::CmdReport;
-
+	use crate::path::AbsolutePath;
+	
 	/// Represents a report of test results.
   #[ derive( Debug, Default, Clone ) ]
   pub struct TestReport
@@ -90,6 +92,52 @@ mod private
     }
   }
 
+	/// Represents a vector of reposts
+	#[ derive( Debug, Default, Clone ) ]
+  pub struct TestsReport 
+  { 
+    /// A boolean flag indicating whether or not the code is being run in dry mode.
+    ///
+    /// Dry mode is a mode in which the code performs a dry run, simulating the execution
+    /// of certain tasks without actually making any changes. When the `dry` flag is set to
+    /// `true`, the code will not perform any actual actions, but instead only output the
+    /// results it would have produced.
+    ///
+    /// This flag can be useful for testing and debugging purposes, as well as for situations
+    /// where it is important to verify the correctness of the actions being performed before
+    /// actually executing them.
+	  pub dry : bool,
+	  /// Vector of succses reports.
+	  pub succses_reports : Vec< TestReport >,
+    /// Vector of failure reports.
+    pub failure_reports : Vec< TestReport >,
+	}
+	
+	impl std::fmt::Display for TestsReport
+	{
+		fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+		{
+      if self.succses_reports.is_empty() && self.failure_reports.is_empty()
+      {
+        writeln!(f, "The tests have not been run.")?;
+        return Ok(());
+      }
+      
+      writeln!( f, "Successful:" )?;
+      for report in &self.succses_reports
+      {
+        writeln!( f, "{}", report )?;
+      }
+      
+      writeln!( f, "Failure:" )?;
+      for report in &self.failure_reports
+      {
+        writeln!( f, "{}", report )?;
+      }
+      Ok( () )
+		}
+	}
+
 	/// Used to store arguments for running tests.
 	///
 	/// - The `dir` field represents the directory of the crate under test.
@@ -100,7 +148,7 @@ mod private
 	#[ derive( Debug, Former ) ]
 	pub struct TestsArgs
 	{
-		dir : CrateDir,
+		dir : AbsolutePath,
 		channels : HashSet< cargo::Channel >,
 		#[ default( true ) ]
 		parallel : bool,
@@ -116,71 +164,119 @@ mod private
 	/// It is possible to enable and disable various features of the crate.
 	/// The function also has the ability to run tests in parallel using `Rayon` crate.
 	/// The result of the tests is written to the structure `TestReport` and returned as a result of the function execution.
-	pub fn test( args : TestsArgs, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
+	pub fn test( args : TestsArgs, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
 	{
-    let report = TestReport::default();
+    let mut reports = TestsReport::default();
 		// fail fast if some additional installations required
-		let channels = cargo::available_channels( args.dir.as_ref() ).map_err( | e | ( report.clone(), e ) )?;
+		let channels = cargo::available_channels( args.dir.as_ref() ).map_err( | e | ( reports.clone(), e ) )?;
 		let channels_diff = args.channels.difference( &channels ).collect::< Vec< _ > >();
 		if !channels_diff.is_empty()
 		{
-			return Err(( report, format_err!( "Missing toolchain(-s) that was required: [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
+			return Err(( reports, format_err!( "Missing toolchain(-s) that was required: [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
 		}
 
-		let report = Arc::new( Mutex::new( report ) );
-    {
-      report.lock().unwrap().dry = dry;
-    }
-
-		let path = args.dir.absolute_path().join( "Cargo.toml" );
-		let metadata = Workspace::with_crate_dir( args.dir.clone() ).map_err( | e | ( report.lock().unwrap().clone(), e ) )?;
-
-		let package = metadata
-    .packages()
-    .map_err( | e | ( report.lock().unwrap().clone(), format_err!( e ) ) )?
-    .into_iter()
-    .find( |x| x.manifest_path == path.as_ref() ).ok_or(( report.lock().unwrap().clone(), format_err!( "Package not found" ) ) )?;
-		report.lock().unwrap().package_name = package.name.clone();
+		reports.dry = true;
 
 		let exclude = args.exclude_features.iter().cloned().collect();
-		let features_powerset = package
-		.features
-		.keys()
-		.filter( | f | !args.exclude_features.contains( f ) && !args.include_features.contains( f ) )
-		.cloned()
-		.powerset()
-		.map( BTreeSet::from_iter )
-		.filter( | subset | subset.len() <= args.power as usize )
-		.map( | mut subset | { subset.extend( args.include_features.clone() ); subset.difference( &exclude ).cloned().collect() } )
-		.collect::< HashSet< BTreeSet< String > > >();
+		for package in needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?
+    {
+      match run_tests( &args, dry, &exclude, package ) 
+      {
+        Ok( report ) => 
+        {
+          reports.succses_reports.push( report );
+        }
+        Err(( report, _ )) => 
+        {
+          reports.failure_reports.push( report );
+        }
+      }
+    }
+    if reports.failure_reports.is_empty()
+    {
+      Ok( reports )
+    }
+    else
+    {
+      Err(( reports, format_err!( "Some tests was failed" ) ))
+    }
+	}
 
-		let mut pool = ThreadPoolBuilder::new().use_current_thread();
-		pool = if args.parallel { pool } else { pool.num_threads( 1 ) };
-		let pool = pool.build().unwrap();
+  fn run_tests(args : &TestsArgs, dry : bool, exclude : &BTreeSet< String >, package : Package ) -> Result< TestReport, ( TestReport, Error ) > 
+  {
+    let report = Arc::new( Mutex::new( TestReport::default() ) );
+    let features_powerset = package
+    .features
+    .keys()
+    .filter( | f | !args.exclude_features.contains( f ) && !args.include_features.contains( f ) )
+    .cloned()
+    .powerset()
+    .map( BTreeSet::from_iter )
+    .filter( | subset | subset.len() <= args.power as usize )
+    .map
+    ( 
+      | mut subset | 
+      {
+        subset.extend( args.include_features.clone() );
+        subset.difference( &exclude ).cloned().collect()
+      }
+    )
+    .collect::< HashSet< BTreeSet< String > > >();
 
-		pool.scope( | s |
+    let mut pool = ThreadPoolBuilder::new().use_current_thread();
+    pool = if args.parallel { pool } else { pool.num_threads( 1 ) };
+    let pool = pool.build().unwrap();
+
+    pool.scope
+    (
+      | s |
+      {
+        let dir = &args.dir;
+        for channel in args.channels.clone()
+        {
+          for feature in &features_powerset
+          {
+            let r = report.clone();
+            s.spawn
+            ( 
+              move | _ | 
+              {
+                let cmd_rep = cargo::test( dir, cargo::TestArgs::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
+                r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
+              }
+            );
+          }
+        }
+      }
+    );
+
+    // unpack. all tasks must be completed until now
+    let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
+
+    let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.err.contains( "error" ) );
+    if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
+  }
+
+  fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >
+	{
+		let path = if path.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
 		{
-			let dir = &args.dir;
-			for channel in args.channels
-			{
-				for feature in &features_powerset
-				{
-					let r = report.clone();
-					s.spawn( move | _ |
-					{
-						let cmd_rep = cargo::test( dir, cargo::TestArgs::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
-						r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
-					});
-				}
-			}
-		});
-
-		// unpack. all tasks must be completed until now
-		let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
-
-    let at_least_one_failed = report.tests.iter().flat_map( |( _, v )| v.iter().map( |( _, v)| v ) ).any( | r | r.out.contains( "failures" ) || r.err.contains( "error" ) );
-    if at_least_one_failed { Err(( report, format_err!( "Some tests was failed" ) )) }
-    else { Ok( report ) }
+			path.parent().unwrap()
+		}
+		else
+		{
+			path
+		};
+		let metadata = Workspace::with_crate_dir( CrateDir::try_from( path.clone() )? )?;
+		
+		let result = metadata
+		.packages()?
+		.into_iter()
+		.cloned()
+		.filter( move | x | x.manifest_path.starts_with( path.as_ref() ) )
+		.collect();
+		
+		Ok( result )
 	}
 }
 
@@ -190,4 +286,5 @@ crate::mod_interface!
   exposed use test;
 	protected use TestsArgs;
   protected use TestReport;
+	protected use TestsReport;
 }

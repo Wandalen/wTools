@@ -5,7 +5,6 @@ use assert_fs::TempDir;
 
 use crate::TheModule::*;
 use endpoint::test::{ test, TestsArgs };
-use endpoint::test::TestReport;
 use path::AbsolutePath;
 
 #[ test ]
@@ -25,17 +24,17 @@ fn fail_test()
   .build( temp )
   .unwrap();
   let abs = AbsolutePath::try_from( project ).unwrap();
-  let crate_dir = CrateDir::try_from( abs ).unwrap();
+  // let crate_dir = CrateDir::try_from( abs ).unwrap();
 
   let args = TestsArgs::former()
-  .dir( crate_dir )
+  .dir( abs )
   .channels([ cargo::Channel::Stable ])
   .form();
 
-  let rep : TestReport = test( args, false ).unwrap_err().0;
+  let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-  let stable = rep.tests.get( &cargo::Channel::Stable ).unwrap();
+  let stable = rep.failure_reports[0].tests.get( &cargo::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
 
   assert!( no_features.out.contains( "failures" ) );
@@ -59,17 +58,16 @@ fn fail_build()
   .build( temp )
   .unwrap();
   let abs = AbsolutePath::try_from( project ).unwrap();
-  let crate_dir = CrateDir::try_from( abs ).unwrap();
 
   let args = TestsArgs::former()
-  .dir( crate_dir )
+  .dir( abs )
   .channels([ cargo::Channel::Stable ])
   .form();
 
-  let rep : TestReport = test( args, false ).unwrap_err().0;
+  let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-  let stable = rep.tests.get( &cargo::Channel::Stable ).unwrap();
+  let stable = rep.failure_reports[ 0 ].tests.get( &cargo::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
 
   assert!( no_features.err.contains( "error" ) && no_features.err.contains( "achtung" ) );

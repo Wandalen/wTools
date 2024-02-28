@@ -37,15 +37,13 @@ mod private
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
     let TestsProperties { dry, with_stable, with_nightly, parallel, power, include, exclude } = properties.try_into()?;
-
-    let crate_dir = CrateDir::try_from( path )?;
-
+    
     let mut channels = HashSet::new();
     if with_stable { channels.insert( Channel::Stable ); }
     if with_nightly { channels.insert( Channel::Nightly ); }
 
     let args = TestsArgs::former()
-    .dir( crate_dir )
+    .dir( path )
     .parallel( parallel)
     .channels( channels )
     .power( power )
