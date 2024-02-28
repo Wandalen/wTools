@@ -73,6 +73,61 @@ fn fail_build()
   assert!( no_features.err.contains( "error" ) && no_features.err.contains( "achtung" ) );
 }
 
+#[ test ]
+fn call_from_workspace_root()
+{
+  let temp = TempDir::new().unwrap();
+  let temp = &temp;
+
+  let fail_project = ProjectBuilder::new( "fail_test" )
+  .toml_file( "" )
+  .test_file( r#"
+  #[test]
+  fn should_fail123() {
+    panic!()
+  }
+  "#);
+
+  let pass_project = ProjectBuilder::new( "apass_test" )
+    .toml_file( "" )
+    .test_file( r#"
+  #[test]
+  fn should_pass() {
+    assert_eq!(1,1);
+  }
+  "#);
+
+  let pass_project2 = ProjectBuilder::new( "pass_test2" )
+    .toml_file( "" )
+    .test_file( r#"
+  #[test]
+  fn should_pass() {
+    assert_eq!(1,1);
+  }
+  "#);
+  
+  let workspace = WorkspaceBuilder::new()
+  .member( fail_project )
+  .member( pass_project )
+  .member( pass_project2 )
+  .build( temp );
+
+  let abs = AbsolutePath::try_from( workspace.clone() ).unwrap();
+
+  let args = TestsArgs::former()
+    .dir( abs )
+    .parallel( true )
+    .channels([ cargo::Channel::Stable ])
+    .form();
+  
+  
+  let rep = test( args, false ).unwrap_err().0;
+
+  assert_eq!( rep.failure_reports.len(), 1 );
+  assert_eq!( rep.succses_reports.len(), 2 );
+}
+
+#[ derive( Debug ) ]
 pub struct ProjectBuilder
 {
   name : String,
@@ -138,5 +193,41 @@ impl ProjectBuilder
     }
 
     Ok( project_path.to_path_buf() )
+  }
+}
+
+struct WorkspaceBuilder
+{
+  members: Vec< ProjectBuilder >,
+  toml_content: String,
+}
+
+impl WorkspaceBuilder
+{
+  fn new() -> Self
+  {
+    Self
+    {
+      members: vec![],
+      toml_content: "[workspace]\nresolver = \"2\"\nmembers = [\n    \"modules/*\",\n]\n".to_string(),
+    }
+  }
+  
+  fn member( mut self, project : ProjectBuilder ) -> Self
+  {
+    self.members.push( project );
+    self
+  }
+  
+  fn build<  P: AsRef< Path > >( self, path : P ) -> PathBuf
+  {
+    let project_path = path.as_ref();
+    fs::create_dir_all( project_path.join( "modules" ) ).unwrap();
+    let mut file = File::create( project_path.join( "Cargo.toml" ) ).unwrap();
+    write!( file, "{}", self.toml_content ).unwrap();
+    for member in self.members {
+      member.build(project_path.join("modules").join( &member.name ) ).unwrap();
+    }
+    project_path.into()
   }
 }

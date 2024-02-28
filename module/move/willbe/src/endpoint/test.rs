@@ -175,12 +175,12 @@ mod private
 			return Err(( reports, format_err!( "Missing toolchain(-s) that was required: [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
 		}
 
-		reports.dry = true;
+		reports.dry = dry;
 
 		let exclude = args.exclude_features.iter().cloned().collect();
-		for package in needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?
+		for package in needed_packages(args.dir.clone()).map_err(|e| (reports.clone(), e))?
     {
-      match run_tests( &args, dry, &exclude, package ) 
+      match run_tests(&args, dry, &exclude, package)
       {
         Ok( report ) => 
         {
@@ -204,7 +204,10 @@ mod private
 
   fn run_tests(args : &TestsArgs, dry : bool, exclude : &BTreeSet< String >, package : Package ) -> Result< TestReport, ( TestReport, Error ) > 
   {
-    let report = Arc::new( Mutex::new( TestReport::default() ) );
+    let mut report = TestReport::default();
+    report.package_name = package.name; 
+    let report = Arc::new( Mutex::new( report ) );
+    
     let features_powerset = package
     .features
     .keys()
@@ -223,7 +226,7 @@ mod private
     )
     .collect::< HashSet< BTreeSet< String > > >();
 
-    let mut pool = ThreadPoolBuilder::new().use_current_thread();
+    let mut pool = ThreadPoolBuilder::new();
     pool = if args.parallel { pool } else { pool.num_threads( 1 ) };
     let pool = pool.build().unwrap();
 
@@ -231,7 +234,7 @@ mod private
     (
       | s |
       {
-        let dir = &args.dir;
+        let dir = package.manifest_path.parent().unwrap();
         for channel in args.channels.clone()
         {
           for feature in &features_powerset
@@ -252,7 +255,6 @@ mod private
 
     // unpack. all tasks must be completed until now
     let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
-
     let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.err.contains( "error" ) );
     if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
   }
@@ -275,7 +277,6 @@ mod private
 		.cloned()
 		.filter( move | x | x.manifest_path.starts_with( path.as_ref() ) )
 		.collect();
-		
 		Ok( result )
 	}
 }
