@@ -58,7 +58,7 @@ fn properties()
   };
   a_id!( got, exp );
 
-  // with HashMapFormer
+  // with HashMapSubformer
   let got = Command::< &str >::former()
   .hint( "a" )
   .subject( "b" )

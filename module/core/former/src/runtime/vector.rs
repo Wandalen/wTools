@@ -1,3 +1,4 @@
+use super::*;
 
 ///
 /// Trait VectorLike adopter for Vector-like containers.
@@ -22,35 +23,77 @@ impl< E > VectorLike< E > for std::vec::Vec< E >
 ///
 
 #[ derive( Debug, Default ) ]
-pub struct VectorFormer< E, Vector, Former, ContainerEnd >
+pub struct VectorSubformer< E, Vector, Context, ContainerEnd >
 where
   Vector : VectorLike< E > + core::fmt::Debug + core::cmp::PartialEq + core::default::Default,
-  ContainerEnd : Fn( &mut Former, core::option::Option< Vector > ),
+  ContainerEnd : OnEnd< Vector, Context >,
 {
-  container : Option< Vector >,
-  former : Former,
-  on_end : ContainerEnd,
+  // container : Option< Vector >,
+  // context : Context,
+  // on_end : ContainerEnd,
+  container : core::option::Option< Vector >,
+  context : core::option::Option< Context >,
+  on_end : core::option::Option< ContainerEnd >,
   _phantom : core::marker::PhantomData< E >,
 }
 
-impl< E, Vector, Former, ContainerEnd > VectorFormer< E, Vector, Former, ContainerEnd >
+impl< E, Vector, Context, ContainerEnd > VectorSubformer< E, Vector, Context, ContainerEnd >
 where
   Vector : VectorLike< E > + core::fmt::Debug + core::cmp::PartialEq + core::default::Default,
-  ContainerEnd : Fn( &mut Former, core::option::Option< Vector > ),
+  ContainerEnd : OnEnd< Vector, Context >,
 {
 
-  /// Make a new VectorFormer. It should be called by a former generated for your structure.
+  /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn new( former : Former, container : core::option::Option< Vector >, on_end : ContainerEnd ) -> Self
+  fn form( mut self ) -> Vector
+  {
+    let container = if self.container.is_some()
+    {
+      self.container.take().unwrap()
+    }
+    else
+    {
+      let val = Default::default();
+      val
+    };
+    container
+  }
+
+  /// Make a new VectorSubformer. It should be called by a context generated for your structure.
+  #[ inline( always ) ]
+  pub fn begin( context : Context, container : core::option::Option< Vector >, on_end : ContainerEnd ) -> Self
   {
     Self
     {
-      former,
+      context : Some( context ),
       container,
-      on_end,
+      on_end : Some( on_end ),
       _phantom : core::marker::PhantomData,
+      // context,
+      // container,
+      // on_end,
+      // _phantom : core::marker::PhantomData,
     }
   }
+
+  /// Return context of your struct moving container there. Should be called after configuring the container.
+  #[ inline( always ) ]
+  pub fn end( mut self ) -> Context
+  {
+    let on_end = self.on_end.take().unwrap();
+    let context = self.context.take().unwrap();
+    let container = self.form();
+    on_end.call( container, context )
+  }
+
+  // /// Return context of your struct moving container there. Should be called after configuring the container.
+  // #[ inline( always ) ]
+  // pub fn end( mut self ) -> Context
+  // {
+  //   let container = self.container.take();
+  //   ( self.on_end )( &mut self.context, container );
+  //   self.context
+  // }
 
   /// Set the whole container instead of setting each element individually.
   #[ inline( always ) ]
@@ -58,15 +101,6 @@ where
   {
     self.container = Some( vector );
     self
-  }
-
-  /// Return former of your struct moving container there. Should be called after configuring the container.
-  #[ inline( always ) ]
-  pub fn end( mut self ) -> Former
-  {
-    let container = self.container.take();
-    ( self.on_end )( &mut self.former, container );
-    self.former
   }
 
   /// Appends an element to the back of a container. Make a new container if it was not made so far.
@@ -87,5 +121,5 @@ where
 
 }
 
-// pub type VectorFormerStdVec< Former, E > =
-//   VectorFormer< E, std::vec::Vec< E >, Former, impl Fn( &mut Former, core::option::Option< std::vec::Vec< E > > ) >;
+// pub type VectorFormerStdVec< Context, E > =
+//   VectorSubformer< E, std::vec::Vec< E >, Context, impl Fn( &mut Context, core::option::Option< std::vec::Vec< E > > ) >;

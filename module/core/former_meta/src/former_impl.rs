@@ -166,7 +166,7 @@ impl syn::parse::Parse for AttributeSetter
 ///
 /// Attribute to enable/disable former generation.
 ///
-/// `#[ former( former::runtime::VectorFormer ) ]`
+/// `#[ former( former::runtime::VectorSubformer ) ]`
 ///
 
 #[ allow( dead_code ) ]
@@ -551,17 +551,37 @@ fn subformer_field_setter
       #( #params, )*
       #non_optional_type,
       Self,
-      impl Fn( &mut Self, core::option::Option< #non_optional_type > ),
+      impl Fn( #non_optional_type, Self ) -> Self,
     >
     {
       let container = self.#setter_name.take();
-      let on_end = | former : &mut Self, container : core::option::Option< #non_optional_type > |
+      let on_end = | container : #non_optional_type, mut former : Self | -> Self
       {
-        former.#setter_name = container;
+        former.#setter_name = Some( container );
+        former
       };
-      #subformer_type::new( self, container, on_end )
+      #subformer_type::begin( self, container, on_end )
     }
   }
+
+  // pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapSubformer
+  // <
+  //   String,
+  //   String,
+  //   std::collections::HashMap< String, String >,
+  //   Struct1Former,
+  //   impl Fn( std::collections::HashMap< String, String >, Self ) -> Self
+  // >
+  // {
+  //   let container = self.hashmap_strings_1.take();
+  //   let on_end = | container : std::collections::HashMap< String, String >, mut former : Self | -> Self
+  //   {
+  //     former.hashmap_strings_1 = Some( container );
+  //     former
+  //   };
+  //   former::runtime::HashMapSubformer::begin( self, container, on_end )
+  // }
+
 }
 
 ///

@@ -79,7 +79,7 @@ where
   #[ inline( always ) ]
   pub fn former() -> HashMapWrapFormer< K, E, (), impl End< std::collections::HashMap< K, E >, () > >
   {
-    HashMapWrapFormer::< K, E, (), NoEnd >::new
+    HashMapWrapFormer::< K, E, (), NoEnd >::begin
     (
       core::option::Option::None,
       (),
@@ -127,6 +127,24 @@ where
     container
   }
 
+  #[ inline( always ) ]
+  pub fn begin
+  (
+    container : core::option::Option< std::collections::HashMap< K, E > >,
+    context : Context,
+    on_end : P,
+  ) -> Self
+  {
+    Self
+    {
+      container,
+      context : Some( context ),
+      on_end : Some( on_end ),
+      _e_phantom : core::marker::PhantomData,
+      _k_phantom : core::marker::PhantomData,
+    }
+  }
+
   /// Return former of your struct moving container there. Should be called after configuring the container.
   #[ inline( always ) ]
   pub fn end( mut self ) -> Context
@@ -144,24 +162,6 @@ where
     debug_assert!( self.container.is_none() );
     self.container = Some( src.into() );
     self
-  }
-
-  #[ inline( always ) ]
-  pub fn new
-  (
-    container : core::option::Option< std::collections::HashMap< K, E > >,
-    context : Context,
-    on_end : P,
-  ) -> Self
-  {
-    Self
-    {
-      container,
-      context : Some( context ),
-      on_end : Some( on_end ),
-      _e_phantom : core::marker::PhantomData,
-      _k_phantom : core::marker::PhantomData,
-    }
   }
 
   /// Set the whole container instead of setting each element individually.

@@ -3,7 +3,10 @@
 //! Former - variation of builder pattern. Implementation of its runtime.
 //!
 
-/// Former of a fector.
+/// Axiomatic things.
+#[ cfg( not( feature = "no_std" ) ) ]
+mod axiomatic;
+/// Former of a vector.
 #[ cfg( not( feature = "no_std" ) ) ]
 mod vector;
 /// Former of a hash map.
@@ -23,6 +26,10 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::exposed::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
+  pub use super::axiomatic::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( not( feature = "no_std" ) ) ]

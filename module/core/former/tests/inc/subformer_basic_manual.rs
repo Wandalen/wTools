@@ -111,7 +111,7 @@ where
   #[ inline( always ) ]
   pub fn former() -> CommandFormer< K, (), impl End< Command< K >, () > >
   {
-    CommandFormer::< K, (), NoEnd >::new
+    CommandFormer::< K, (), NoEnd >::begin
     (
       (),
       NoEnd,
@@ -191,7 +191,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn new
+  pub fn begin
   (
     context : Context,
     on_end : P,
@@ -234,22 +234,31 @@ where
     self
   }
 
-  pub fn properties( mut self ) -> former::runtime::HashMapFormer
+  pub fn properties( mut self ) -> former::runtime::HashMapSubformer
   <
     K,
     Property< K >,
     std::collections::HashMap< K, Property< K > >,
     CommandFormer< K, Context, P >,
-    impl Fn( &mut CommandFormer< K, Context, P >, core::option::Option< std::collections::HashMap< K, Property< K > > > )
+    impl Fn( std::collections::HashMap< K, Property< K > >, Self ) -> Self
+    // impl Fn( &mut CommandFormer< K, Context, P >, core::option::Option< std::collections::HashMap< K, Property< K > > > )
   >
   {
     let container = self.properties.take();
-    let on_end =
-    | former : &mut CommandFormer< K, Context, P >, container : core::option::Option< std::collections::HashMap< K, Property< K > > > |
+    let on_end = | container : std::collections::HashMap< K, Property< K > >, mut former : Self | -> Self
     {
-      former.properties = container;
+      former.properties = Some( container );
+      former
     };
-    former::runtime::HashMapFormer::new( self, container, on_end )
+    former::runtime::HashMapSubformer::begin( self, container, on_end )
+// // --
+//     let container = self.properties.take();
+//     let on_end =
+//     | former : &mut CommandFormer< K, Context, P >, container : core::option::Option< std::collections::HashMap< K, Property< K > > > |
+//     {
+//       former.properties = container;
+//     };
+//     former::runtime::HashMapSubformer::begin( self, container, on_end )
   }
 
 }
