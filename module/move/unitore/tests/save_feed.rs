@@ -17,20 +17,19 @@ impl FeedFetch for TestClient
 }
 
 #[ tokio::test ]
-async fn test_save_feed() -> Result< (), Box< dyn std::error::Error + Sync + Send > >
+async fn test_save_feed_plain() -> Result< (), Box< dyn std::error::Error + Sync + Send > >
 {
   let mut f_store = MockFeedStore::new();
   f_store
-  .expect_save_feed()
+  .expect_process_feed()
   .times( 1 )
-    // .with( eq( description ) )
   .returning( | _ | Ok( () ) )
   ;
 
   let feed_config = FeedConfig
   {
     period : std::time::Duration::from_secs( 1000 ),
-    link : String::from( "https://rss.nytimes.com/services/xml/rss/nyt/World.xml" ),
+    link : String::from( "test" ),
   };
 
   let mut manager = FeedManager
