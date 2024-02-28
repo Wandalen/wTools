@@ -10,7 +10,7 @@ fn basic()
   {
     hint : "a".to_string(),
     subject : "b".to_string(),
-    properties : hset!{},
+    properties : std::collections::HashMap::< &str, String >::new(),
   };
   a_id!( got, exp );
 
