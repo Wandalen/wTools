@@ -121,6 +121,22 @@ pub( crate ) mod private
     }
   }
 
+  impl From< u8 > for Primitive
+  {
+    fn from( value: u8 ) -> Self
+    {
+      Self::u8( value )
+    }
+  }
+
+  impl From< u16 > for Primitive
+  {
+    fn from( value: u16 ) -> Self
+    {
+      Self::u16( value )
+    }
+  }
+
   impl From< u32 > for Primitive
   {
     fn from( value: u32 ) -> Self
@@ -128,6 +144,31 @@ pub( crate ) mod private
       Self::u32( value )
     }
   }
+
+  impl From< u64 > for Primitive
+  {
+    fn from( value: u64 ) -> Self
+    {
+      Self::u64( value )
+    }
+  }
+
+  impl From< f32 > for Primitive
+  {
+    fn from( value: f32 ) -> Self
+    {
+      Self::f32( value )
+    }
+  }
+
+  impl From< f64 > for Primitive
+  {
+    fn from( value: f64 ) -> Self
+    {
+      Self::f64( value )
+    }
+  }
+
 
   impl From< &'static str > for Primitive
   {
