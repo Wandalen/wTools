@@ -257,17 +257,17 @@ pub( crate ) mod private
 
   }
 
-  ///
-  /// Additional information for container types
-  ///
-  #[ derive( Debug, PartialEq, Default, Clone ) ]
-  pub struct ContainerDescription
-  {
-    /// Container length.
-    pub len : usize,
-    /// Container keys.
-    pub keys : Option< Vec< primitive::Primitive > >,
-  }
+  // ///
+  // /// Additional information for container types
+  // ///
+  // #[ derive( Debug, PartialEq, Default, Clone ) ]
+  // pub struct ContainerDescription
+  // {
+  //   /// Container length.
+  //   pub len : usize,
+  //   /// Container keys.
+  //   pub keys : Option< Vec< primitive::Primitive > >,
+  // }
 
   ///
   /// Type descriptor
@@ -275,8 +275,6 @@ pub( crate ) mod private
   #[ derive( PartialEq, Default, Clone ) ]
   pub struct EntityDescriptor< I : Instance >
   {
-    /// Container description.
-    pub container_info : Option< ContainerDescription >,
     _phantom : core::marker::PhantomData< I >,
   }
 
@@ -287,18 +285,47 @@ pub( crate ) mod private
     pub fn new() -> Self
     {
       let _phantom = core::marker::PhantomData::< I >;
-      Self { _phantom, container_info : None }
+      Self { _phantom }
     }
+  }
 
+  ///
+  /// Collection descriptor
+  ///
+  #[ derive( PartialEq, Default, Clone ) ]
+  pub struct CollectionDescriptor< I : Instance >
+  {
+    /// Container length.
+    pub len : usize,
+    /// Container keys.
+    pub keys : Option< Vec< primitive::Primitive > >,
+    _phantom : core::marker::PhantomData< I >,
+  }
+
+  impl< I : Instance > CollectionDescriptor< I >
+  {
     /// Constructor of the descriptor of container type.
-    pub fn new_container( size : usize, keys : Option< Vec< primitive::Primitive > > ) -> Self
+    pub fn new( size : usize, keys : Option< Vec< primitive::Primitive > > ) -> Self
     {
       let _phantom = core::marker::PhantomData::< I >;
       Self 
       { 
         _phantom, 
-        container_info : Some( ContainerDescription { len : size, keys } )
+        len : size,
+        keys,
       }
+    }
+  }
+
+  impl< T > std::fmt::Debug for CollectionDescriptor< T >
+  where
+    T : Instance + 'static,
+    CollectionDescriptor< T > : Entity,
+  {
+    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    {
+      f
+      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
     }
   }
 
@@ -434,7 +461,7 @@ pub( crate ) mod private
    // qqq : aaa : added implementation for Vec
   impl< T : Instance + 'static > IsContainer for Vec< T > {}
   // qqq : aaa : added implementation for HashMap
-  impl< K : IsScalar + 'static, V : Instance + 'static > IsContainer for std::collections::HashMap< K, V >
+  impl< K : IsScalar + Clone + 'static, V : Instance + 'static > IsContainer for std::collections::HashMap< K, V >
   where primitive::Primitive : From< K > {}
   // qqq : aaa : added implementation for HashSet
   impl< V : Instance + 'static > IsContainer for std::collections::HashSet< V > {}
@@ -470,6 +497,7 @@ pub mod orphan
     // InstanceMarker,
     Entity,
     EntityDescriptor,
+    CollectionDescriptor,
     KeyVal,
   };
 }

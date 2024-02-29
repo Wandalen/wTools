@@ -5,6 +5,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+
   /// Represents a general-purpose data container that can hold various primitive types
   /// and strings. This enum is designed to encapsulate common data types in a unified
   /// format, simplifying the handling of different types of data in generic contexts.
@@ -80,12 +81,19 @@ pub( crate ) mod private
     binary( &'static [ u8 ] ),
   }
 
-  impl< T > From< &T > for Primitive
-  where Primitive : From< T >
+  impl From< i8 > for Primitive
   {
-    fn from( value: &T ) -> Self
+    fn from( value: i8 ) -> Self
     {
-      value.to_owned().into()
+      Self::i8( value )
+    }
+  }
+
+  impl From< i16 > for Primitive
+  {
+    fn from( value: i16 ) -> Self
+    {
+      Self::i16( value )
     }
   }
 
@@ -97,11 +105,19 @@ pub( crate ) mod private
     }
   }
 
-  impl From< String > for Primitive
+  impl From< i64 > for Primitive
   {
-    fn from( value: String ) -> Self
+    fn from( value: i64 ) -> Self
     {
-      Self::String( value )
+      Self::i64( value )
+    }
+  }
+
+  impl From< isize > for Primitive
+  {
+    fn from( value: isize ) -> Self
+    {
+      Self::isize( value )
     }
   }
 
@@ -110,6 +126,30 @@ pub( crate ) mod private
     fn from( value: u32 ) -> Self
     {
       Self::u32( value )
+    }
+  }
+
+  impl From< &'static str > for Primitive
+  {
+    fn from( value: &'static str ) -> Self
+    {
+      Self::str( value )
+    }
+  }
+
+  impl From< String > for Primitive
+  {
+    fn from( value: String ) -> Self
+    {
+      Self::String( value )
+    }
+  }
+
+  impl From< &'static [ u8 ] > for Primitive
+  {
+    fn from( value: &'static [ u8 ] ) -> Self
+    {
+      Self::binary( value )
     }
   }
 
