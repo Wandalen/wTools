@@ -26,6 +26,7 @@ mod private
 
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
+  // aaa : add typed error
   // qqq : parametrized templates??
   /// Creates workspace template
   pub fn workspace_new( path : &Path, repository_url : String, branches: Vec< String > ) -> Result< (), WorkspaceNewError >
