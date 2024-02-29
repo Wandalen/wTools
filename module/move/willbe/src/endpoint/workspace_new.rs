@@ -5,20 +5,34 @@ mod private
   use std::fs;
   use std::io::Write;
   use std::path::Path;
-  use handlebars::no_escape;
-  use error_tools::for_app::bail;
-  use error_tools::Result;
+  use handlebars::{no_escape, RenderError, TemplateError};
+  use error_tools::for_lib::Error;
+  use error_tools::dependency::*;
   use wtools::iter::Itertools;
+  
+  #[ derive( Debug, Error ) ]
+  pub enum WorkspaceNewError
+  {
+    #[ error ( "Directory should be empty" ) ]
+    NonEmptyDirectory,
+    #[ error( "I/O error: {0}" ) ]
+    IO(#[ from ] std::io::Error ),
+    #[ error( "Template error: {0}") ]
+    Template( #[ from ] TemplateError ),
+    #[ error( "Render error: {0}" ) ]
+    Render( #[ from ] RenderError ),
+  }
+  
 
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
   // qqq : parametrized templates??
   /// Creates workspace template
-  pub fn workspace_new( path : &Path, repository_url : String, branches: Vec< String > ) -> Result< () >
+  pub fn workspace_new( path : &Path, repository_url : String, branches: Vec< String > ) -> Result< (), WorkspaceNewError >
   {
     if fs::read_dir( path )?.count() != 0
     {
-      bail!( "Directory should be empty" )
+      return Err( WorkspaceNewError::NonEmptyDirectory )
     }
     let mut handlebars = handlebars::Handlebars::new();
     handlebars.register_escape_fn( no_escape );
@@ -45,7 +59,7 @@ mod private
     Ok( () )
   }
 
-  fn module1( path : &Path ) -> Result< () >
+  fn module1( path : &Path ) -> std::io::Result< () >
   {
     create_dir( path, "module" )?;
     create_dir( &path.join( "module" ), "module1" )?;
@@ -61,7 +75,7 @@ mod private
     Ok( () )
   }
 
-  fn static_files( path : &Path ) -> Result< () >
+  fn static_files( path : &Path ) -> std::io::Result< () >
   {
     create_file( path, "Readme.md", include_str!( "../../template/workspace/Readme.md" ) )?;
     create_file( path, ".gitattributes", include_str!( "../../template/workspace/.gitattributes" ) )?;
@@ -72,7 +86,7 @@ mod private
     Ok( () )
   }
 
-  fn static_dirs( path : &Path ) -> Result< () >
+  fn static_dirs( path : &Path ) -> std::io::Result< () >
   {
     create_dir( path, "assets" )?;
     create_dir( path, "docs" )?;
@@ -80,7 +94,7 @@ mod private
     Ok( () )
   }
 
-  fn dot_github( path : &Path ) -> Result< () >
+  fn dot_github( path : &Path ) -> std::io::Result< () >
   {
     create_dir( path, ".github" )?;
     create_dir( &path.join( ".github" ), "workflows" )?;
@@ -96,7 +110,7 @@ mod private
 //     Ok( () )
 //   }
 
-  fn dot_cargo( path : &Path ) -> Result< () >
+  fn dot_cargo( path : &Path ) -> std::io::Result< () >
   {
     create_dir( path, ".cargo" )?;
     create_file( &path.join( ".cargo" ), "config.toml", include_str!( "../../template/workspace/.cargo/config.toml" ) )?;
@@ -104,13 +118,13 @@ mod private
     Ok( () )
   }
 
-  fn create_dir( path : &Path, name : &str ) -> Result< () >
+  fn create_dir( path : &Path, name : &str ) -> std::io::Result< () >
   {
     fs::create_dir( path.join( name ) )?;
     Ok( () )
   }
 
-  fn create_file( path : &Path, name : &str, content : &str ) -> Result< () >
+  fn create_file( path : &Path, name : &str, content : &str ) -> std::io::Result< () >
   {
     let mut file = fs::File::create( path.join( name ) )?;
     file.write_all( content.as_bytes() )?;
