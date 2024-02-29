@@ -21,7 +21,7 @@ mod workflow_generate
   use std::fs::create_dir_all;
   use serde::Deserialize;
 
-  fn arrange( sample_dir: &str ) -> assert_fs::TempDir
+  fn arrange( sample_dir : &str ) -> assert_fs::TempDir
   {
     let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
     let assets_relative_path = std::path::Path::new( ASSETS_PATH );
@@ -29,32 +29,33 @@ mod workflow_generate
 
     let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( sample_dir ), &[ "**" ] ).unwrap();
-    create_dir_all(temp.path().join(".github").join("workflows")).unwrap();
+    create_dir_all(temp.path().join( ".github" ).join( "workflows" ) ).unwrap();
     temp
   }
 
   #[ derive( Debug, PartialEq, Deserialize ) ]
   struct Workflow 
   {
-    name: String,
-    on: String,
-    env: HashMap< String, String >,
-    jobs: HashMap< String, Job >,
+    name : String,
+    on : String,
+    env : HashMap< String, String >,
+    jobs : HashMap< String, Job >,
   }
   
   #[ derive( Debug, PartialEq, Deserialize ) ]
   struct Job 
   {
-    uses: String,
-    with: With,
+    uses : String,
+    with : With,
   }
   
   #[ derive( Debug, PartialEq, Deserialize ) ]
   struct With 
   {
-    manifest_path: String,
-    module_name: String,
-    commit_message: String,
+    manifest_path : String,
+    module_path : String,
+    module_name : String,
+    commit_message : String,
   }
   
   // qqq for Petro: this test does not work
@@ -69,21 +70,22 @@ mod workflow_generate
     let file_path = base_path.join( "ModuleTestModulePush.yml" );
     let with = With
     { 
-      manifest_path: "test_module/Cargo.toml".into(), 
-      module_name: "test_module".into(), 
-      commit_message: "${{ github.event.head_commit.message }}".into() 
+      manifest_path : "test_module/Cargo.toml".into(),
+      module_path : "test_module/".into(),
+      module_name : "test_module".into(), 
+      commit_message : "${{ github.event.head_commit.message }}".into() 
     };
     let job = Job
     { 
-      uses: "Username/test/.github/workflows/StandardRustPush.yml@alpha".into(), 
+      uses : "Username/test/.github/workflows/StandardRustPush.yml@alpha".into(), 
       with 
     };
     let expected = Workflow
     {
-      name: "test_module".into(),
-      on: "push".into(),
-      env: HashMap::from_iter( [ ( "CARGO_TERM_COLOR".to_string(), "always".to_string() ) ] ),
-      jobs: HashMap::from_iter( [ ( "test".to_string(), job ) ] ),
+      name : "test_module".into(),
+      on : "push".into(),
+      env : HashMap::from_iter( [ ( "CARGO_TERM_COLOR".to_string(), "always".to_string() ) ] ),
+      jobs : HashMap::from_iter( [ ( "test".to_string(), job ) ] ),
     };
 
     // Act
@@ -93,7 +95,7 @@ mod workflow_generate
     let mut file = File::open( file_path ).unwrap();
     let mut content = String::new();
     _ = file.read_to_string( &mut content ).unwrap();
-    let actual: Workflow = serde_yaml::from_str( &content ).unwrap();
+    let actual : Workflow = serde_yaml::from_str( &content ).unwrap();
     assert_eq!( expected, actual );
 
     assert!( base_path.join( "AppropriateBranch.yml" ).exists() );
