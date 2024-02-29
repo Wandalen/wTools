@@ -31,8 +31,22 @@ impl FeedStorage< SledStorage >
   {
     let storage = SledStorage::try_from( config )?;
     let mut glue = Glue::new( storage );
+
+    let feed_table = table( "Feeds" )
+    .create_table_if_not_exists()
+    .add_column( "id TEXT PRIMARY KEY" )
+    .add_column( "type TEXT" )
+    .add_column( "title TEXT" )
+    .add_column( "updated TIMESTAMP" )
+    .add_column( "authors TEXT" )
+    .add_column( "description TEXT" )
+    .add_column( "published TIMESTAMP" )
+    .build()?
+    ;
+
+    feed_table.execute( &mut glue ).await?;
   
-    let table = table( "Feed" )
+    let table = table( "Frames" )
     .create_table_if_not_exists()
     .add_column( "id TEXT PRIMARY KEY" )
     .add_column( "title TEXT" )
@@ -48,6 +62,7 @@ impl FeedStorage< SledStorage >
     .add_column( "rights TEXT" )
     .add_column( "media TEXT" )
     .add_column( "language TEXT" )
+    .add_column( "feed TEXT FOREIGN KEY REFERENCES Feeds(id)" )
     .build()?
     ;
   
@@ -63,16 +78,19 @@ impl FeedStorage< SledStorage >
 pub trait FeedStore
 {
   /// Insert items from list into feed table.
-  async fn save_feed( &mut self, feed : Vec< feed_rs::model::Entry > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
+  async fn save_feed( &mut self, feed : Vec< ( feed_rs::model::Entry, String ) > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
 
   /// Update items from list in feed table.
-  async fn update_feed( &mut self, feed : Vec< feed_rs::model::Entry > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
+  async fn update_feed( &mut self, feed : Vec< ( feed_rs::model::Entry, String ) > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
 
   /// Process fetched feed, new items will be saved, modified items will be updated.
-  async fn process_feed( &mut self, feed : Vec< feed_rs::model::Entry > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
+  async fn process_feeds( &mut self, feeds : Vec< feed_rs::model::Feed > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
 
   /// Get all feed frames from storage.
-  async fn get_all_feed( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
+  async fn get_all_frames( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
+
+  /// Get all feeds from storage.
+  async fn get_all_feeds( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
 
   /// Execute custom query passed as String.
   async fn execute_query( &mut self, query : String ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
@@ -86,7 +104,7 @@ impl FeedStore for FeedStorage< SledStorage >
 {
   async fn columns_titles( &mut self ) -> Vec< String >
   {
-    let columns = table( "Feed" ).show_columns().execute( &mut *self.storage.lock().await ).await;
+    let columns = table( "Frames" ).show_columns().execute( &mut *self.storage.lock().await ).await;
     match columns
     {
       Ok( ShowColumns( col_vec ) ) => col_vec.into_iter().map( | c | c.0 ).collect_vec(),
@@ -97,7 +115,7 @@ impl FeedStore for FeedStorage< SledStorage >
   async fn execute_query( &mut self, query : String ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   {
     let glue = &mut *self.storage.lock().await;
-    let payloads = glue.execute( &query ).await.unwrap();
+    let payloads = glue.execute( &query ).await?;
 
     for payload in payloads
     {
@@ -134,18 +152,24 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( () )
   }
 
-  async fn get_all_feed( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  async fn get_all_frames( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
   {
     //let result = Vec::new();
-    let res = table( "Feed" ).select().execute( &mut *self.storage.lock().await ).await?;
+    let res = table( "Frames" ).select().execute( &mut *self.storage.lock().await ).await?;
     Ok( res )
   }
 
-  async fn save_feed( &mut self, feed : Vec< feed_rs::model::Entry > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+  async fn get_all_feeds( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  {
+    let res = table( "Feeds" ).select().project( "id, title" ).execute( &mut *self.storage.lock().await ).await?;
+    Ok( res )
+  }
+
+  async fn save_feed( &mut self, feed : Vec< ( feed_rs::model::Entry, String ) > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   {
     let entries_rows = feed.into_iter().map( | entry | entry_row( &entry ) ).collect_vec();
 
-    let insert = table( "Feed" )
+    let _insert = table( "Frames" )
     .insert()
     .columns
     (
@@ -162,7 +186,8 @@ impl FeedStore for FeedStorage< SledStorage >
       source,
       rights,
       media,
-      language",
+      language,
+      feed",
     )
     .values( entries_rows )
     .execute( &mut *self.storage.lock().await )
@@ -172,13 +197,13 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( () )
   }
 
-  async fn update_feed( &mut self, feed : Vec< feed_rs::model::Entry > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+  async fn update_feed( &mut self, feed : Vec< ( feed_rs::model::Entry, String ) > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   {
     let entries_rows = feed.into_iter().map( | entry | entry_row( &entry ) ).collect_vec();
 
     for entry in entries_rows
     {
-      let update = table( "Feed" )
+      let _update = table( "Frames" )
       .update()
       .set( "title", entry[ 1 ].to_owned() )
       .set( "content", entry[ 4 ].to_owned() )
@@ -190,19 +215,26 @@ impl FeedStore for FeedStorage< SledStorage >
       .execute( &mut *self.storage.lock().await )
       .await?
       ;
-      
     }
-
     Ok( () )
   }
 
-  async fn process_feed
+  async fn process_feeds
   (
     &mut self,
-    feed : Vec< feed_rs::model::Entry >,
+    feeds : Vec< feed_rs::model::Feed >,
   ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   {
-    let existing = table( "Feed" )
+    let new_feed_ids = feeds.iter().map( | feed | format!("'{}'", feed.id ) ).join( "," );
+    let existing_feeds = table( "Feeds" )
+    .select()
+    .filter( format!( "id IN ({})", new_feed_ids ).as_str() )
+    .project( "id" )
+    .execute( &mut *self.storage.lock().await )
+    .await?
+    ;
+
+    let existing_frames = table( "Frames" )
     .select()
     .project( "id, published" )
     .execute( &mut *self.storage.lock().await )
@@ -211,47 +243,85 @@ impl FeedStore for FeedStorage< SledStorage >
 
     let mut new_entries = Vec::new();
     let mut modified_entries = Vec::new();
-    if let Some( rows ) = existing.select()
+
+    for feed in &feeds
     {
-      let existing_entries = rows
-      .map( | r | ( r.get( "id" ).map( | &val | val.clone() ), r.get( "published" ).map( | &val | val.clone() ) ) )
-      .flat_map( | ( id, published ) |
-        id.map( | id |
-          (
-            id,
-            published.map( | date |
-              {
-                match date 
+      // check if feed is new
+      if let Some( existing_feeds ) = existing_feeds.select()
+      {
+        let existing_ids = existing_feeds.filter_map( | feed | feed.get( "id" ).map( | id | id.to_owned() ) ).filter_map( | id | 
+          match id
+          {
+            Value::Str( s ) => Some( s ),
+            _ => None,
+          }
+        ).collect_vec();
+
+        if existing_ids.contains( &&feed.id )
+        {
+          // self.save_feed(  )
+          // let insert = table( "Feeds" )
+          // .insert()
+          // .columns
+          // (
+          //   "id,
+          //   title,
+          //   updated,
+          //   authors,
+          //   description,
+          //   published",
+          // )
+          // .values( entries_rows )
+          // .execute( &mut *self.storage.lock().await )
+          // .await?
+          // ;
+          
+          new_entries.extend( feed.entries.clone().into_iter().zip( std::iter::repeat( feed.id.clone() ).take( feed.entries.len() ) ) )
+        }
+        continue;
+      }
+      if let Some( rows ) = existing_frames.select()
+      {
+        let existing_entries = rows
+        .map( | r | ( r.get( "id" ).map( | &val | val.clone() ), r.get( "published" ).map( | &val | val.clone() ) ) )
+        .flat_map( | ( id, published ) |
+          id.map( | id |
+            (
+              id,
+              published.map( | date |
                 {
-                  Value::Timestamp( date_time ) => Some( date_time ),
-                  _ => None,
-                } 
-              } )
-            .flatten()
+                  match date 
+                  {
+                    Value::Timestamp( date_time ) => Some( date_time ),
+                    _ => None,
+                  } 
+                } )
+              .flatten()
+            )
           )
         )
-      )
-      .flat_map( | ( id, published ) | match id { Value::Str( id ) => Some( ( id, published ) ), _ => None } )
-      .collect_vec()
-      ;
+        .flat_map( | ( id, published ) | match id { Value::Str( id ) => Some( ( id, published ) ), _ => None } )
+        .collect_vec()
+        ;
 
-      let existing_ids = existing_entries.iter().map( | ( id, _ ) | id ).collect_vec();
+        let existing_ids = existing_entries.iter().map( | ( id, _ ) | id ).collect_vec();
 
-      for entry in feed
-      {
-        if let Some( position ) = existing_ids.iter().position( | &id | id == &entry.id )
+        for entry in &feed.entries
         {
-          if let Some( date ) = existing_entries[ position ].1
+          if let Some( position ) = existing_ids.iter().position( | &id | id == &entry.id )
           {
-            if date.and_utc() != entry.published.unwrap()
+            if let Some( date ) = existing_entries[ position ].1
             {
-              modified_entries.push( entry );
+              if date.and_utc() != entry.published.unwrap()
+              {
+                modified_entries.push( ( entry.clone(), feed.id.clone() ) );
+              }
             }
           }
-        }
-        else
-        {
-          new_entries.push( entry );
+          else
+          {
+            new_entries.push( ( entry.clone(), feed.id.clone() ) );
+          }
         }
       }
     }
@@ -270,8 +340,10 @@ impl FeedStore for FeedStorage< SledStorage >
 }
 
 /// Create row for QlueSQL storage from Feed Entry type.
-pub fn entry_row( entry : &Entry ) -> Vec< ExprNode< 'static > >
+pub fn entry_row( entry : &( Entry, String ) ) -> Vec< ExprNode< 'static > >
 {
+  let feed_id = entry.1.clone();
+  let entry = &entry.0;
   let mut res = Vec::new();
   res.push( text( entry.id.clone() ) );
   res.push( entry.title.clone().map( | title | text( title.content ) ).unwrap_or( null() ) );
@@ -351,5 +423,6 @@ pub fn entry_row( entry : &Entry ) -> Vec< ExprNode< 'static > >
     res.push( null() );
   }
   res.push( entry.language.clone().map( | l | text( l ) ).unwrap_or( null() ) );
+  res.push( text( feed_id ) );
   res
 }

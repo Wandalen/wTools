@@ -21,7 +21,7 @@ async fn test_save_feed_plain() -> Result< (), Box< dyn std::error::Error + Sync
 {
   let mut f_store = MockFeedStore::new();
   f_store
-  .expect_process_feed()
+  .expect_process_feeds()
   .times( 1 )
   .returning( | _ | Ok( () ) )
   ;

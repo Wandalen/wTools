@@ -19,20 +19,43 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .hint( "Subscribe to feed from sources provided in config file" )
     .subject( "Source file", wca::Type::String, false )
     .form(),
+    wca::Command::former()
+    .phrase( "fields.list" )
+    .hint( "List fields" )
+    .form(),
+    wca::Command::former()
+    .phrase( "feeds.list" )
+    .hint( "List feeds" )
+    .form(),
+    wca::Command::former()
+    .phrase( "frames.list" )
+    .hint( "List feeds" )
+    .form(),
   ] )
   .executor
   ( [
-    ( "subscribe".to_owned(), wca::Routine::new( | ( args, props ) |
+    ( "subscribe".to_owned(), wca::Routine::new( | ( args, _props ) |
     {
-      println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
-
       if let Some( path ) = args.get_owned( 0 )
       {
         let rt  = tokio::runtime::Runtime::new()?;
-
         rt.block_on( fetch_from_config( path ) ).unwrap();
       }
 
+      Ok( () )
+    } ) ),
+
+    ( "fields.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
+    {
+      let rt  = tokio::runtime::Runtime::new()?;
+      rt.block_on( list_fields() ).unwrap();
+      Ok( () )
+    } ) ),
+    ( "frames.list".to_owned(), wca::Routine::new( | ( args, props ) |
+    {
+      println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
+      let rt  = tokio::runtime::Runtime::new()?;
+      rt.block_on( list_frames() ).unwrap();
       Ok( () )
     } ) ),
   ] )
@@ -86,19 +109,26 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
   /// Update modified frames and save new items.
   pub async fn update_feed( &mut self ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   {
+    let mut feeds = Vec::new();
     for i in  0..self.config.len()
     {
       let feed = self.client.fetch( self.config[ i ].link.clone() ).await?;
-      self.storage.process_feed( feed.entries ).await?;
+      feeds.push( feed );
     }
-
+    self.storage.process_feeds( feeds ).await?;
     Ok( () )
   }
 
   /// Get all frames currently in storage.
-  pub async fn get_all_entries( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  pub async fn get_all_frames( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
   {
-    self.storage.get_all_feed().await
+    self.storage.get_all_frames().await
+  }
+
+  /// Get all feeds currently in storage.
+  pub async fn get_all_feeds( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  {
+    self.storage.get_all_feeds().await
   }
 
   /// Execute custom query, print result.
@@ -108,10 +138,9 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
   }
 
   /// Get columns names of Feed table.
-  pub async fn get_columns( &mut self ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+  pub async fn get_columns( &mut self ) -> Result< Vec< String >, Box< dyn std::error::Error + Send + Sync > >
   {
-    self.storage.columns_titles().await;
-    Ok( () )
+    Ok( self.storage.columns_titles().await )
   }
 }
 
@@ -127,6 +156,59 @@ pub async fn fetch_from_config( file_path : String ) -> Result< (), Box< dyn std
   let mut manager = FeedManager::new( feed_storage );
   manager.set_config( feed_configs );
   manager.update_feed().await?;
+
+  Ok( () )
+}
+
+/// List all fields.
+pub async fn list_fields() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+{
+  let config = Config::default()
+  .path( "data/temp".to_owned() )
+  ;
+
+  let feed_storage = FeedStorage::init_storage( config ).await?;
+
+  let mut manager = FeedManager::new( feed_storage );
+  let fields = manager.get_columns().await?;
+  let first_field = fields.first().expect( "no fields in table" ).clone();
+  println!( "{}", fields.into_iter().skip( 1 ).fold( first_field, | acc, val | format!( "{}, {}", acc, val ) ) );
+
+  Ok( () )
+}
+
+/// List all frames.
+pub async fn list_frames() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+{
+  let config = Config::default()
+  .path( "data/temp".to_owned() )
+  ;
+
+  let feed_storage = FeedStorage::init_storage( config ).await?;
+
+  let mut manager = FeedManager::new( feed_storage );
+  let frames = manager.get_all_frames().await?;
+  println!( "{:?}", frames );
+
+  Ok( () )
+}
+
+/// List all feeds.
+pub async fn list_feeds() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+{
+  let config = Config::default()
+  .path( "data/temp".to_owned() )
+  ;
+
+  let feed_storage = FeedStorage::init_storage( config ).await?;
+
+  let mut manager = FeedManager::new( feed_storage );
+  let feeds = manager.get_all_feeds().await?;
+
+  // for feed in feeds
+  // {
+    println!( "{:?}", feeds );
+  // }
 
   Ok( () )
 }

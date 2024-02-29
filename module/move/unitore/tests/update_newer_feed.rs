@@ -53,16 +53,10 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
   // check
   let payload = manager.get_all_entries().await?;
 
-  // let entries = payload
-  // .select()
-  // .expect( "no entries found" )
-  // .map( | entry | ( entry.get( "id" ).expect( "no id field" ).to_owned(), entry.get( "published" ).expect( "no published date field" ).to_owned() ) )
-  // .collect_vec()
-  // ;
-
   let entries = payload
   .select()
-  .expect( "no entries found" );
+  .expect( "no entries found" )
+  ;
 
   let entries = entries.map( | entry |
     {
