@@ -183,7 +183,7 @@ mod private
 		reports.dry = dry;
 
 		let exclude = args.exclude_features.iter().cloned().collect();
-    let mut pool = ThreadPoolBuilder::new();
+    let mut pool = ThreadPoolBuilder::new().use_current_thread();
     pool = if args.parallel { pool } else { pool.num_threads( 1 ) };
     let pool = pool.build().unwrap();
 
