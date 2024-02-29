@@ -11,7 +11,7 @@ mod private
 	};
   use cargo_metadata::Package;
 
-  use rayon::ThreadPoolBuilder;
+  use rayon::{ThreadPool, ThreadPoolBuilder};
   use former::Former;
 	use wtools::
 	{
@@ -63,7 +63,7 @@ mod private
 
 			for ( channel, features ) in &self.tests
 			{
-				for (feature, result) in features
+				for ( feature, result ) in features
 				{
           if self.dry
           {
@@ -122,17 +122,21 @@ mod private
         writeln!(f, "The tests have not been run.")?;
         return Ok(());
       }
-      
-      writeln!( f, "Successful:" )?;
-      for report in &self.succses_reports
-      {
-        writeln!( f, "{}", report )?;
+      if !self.succses_reports.is_empty()
+      { 
+        writeln!( f, "Successful:" )?;
+        for report in &self.succses_reports 
+        { 
+          writeln!( f, "{}", report )?; 
+        }
       }
-      
-      writeln!( f, "Failure:" )?;
-      for report in &self.failure_reports
-      {
-        writeln!( f, "{}", report )?;
+      if !self.failure_reports.is_empty() 
+      { 
+        writeln!( f, "Failure:" )?;
+        for report in &self.failure_reports 
+        { 
+          writeln!( f, "{}", report )?; 
+        }
       }
       Ok( () )
 		}
@@ -178,9 +182,13 @@ mod private
 		reports.dry = dry;
 
 		let exclude = args.exclude_features.iter().cloned().collect();
-		for package in needed_packages(args.dir.clone()).map_err(|e| (reports.clone(), e))?
+    let mut pool = ThreadPoolBuilder::new();
+    pool = if args.parallel { pool } else { pool.num_threads( 1 ) };
+    let pool = pool.build().unwrap();
+
+    for package in needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?
     {
-      match run_tests(&args, dry, &exclude, package)
+      match run_tests( &args, dry, &exclude, package, &pool )
       {
         Ok( report ) => 
         {
@@ -202,7 +210,7 @@ mod private
     }
 	}
 
-  fn run_tests(args : &TestsArgs, dry : bool, exclude : &BTreeSet< String >, package : Package ) -> Result< TestReport, ( TestReport, Error ) > 
+  fn run_tests(args : &TestsArgs, dry : bool, exclude : &BTreeSet< String >, package : Package, pool : &ThreadPool ) -> Result< TestReport, ( TestReport, Error ) >
   {
     let mut report = TestReport::default();
     report.package_name = package.name; 
@@ -225,10 +233,6 @@ mod private
       }
     )
     .collect::< HashSet< BTreeSet< String > > >();
-
-    let mut pool = ThreadPoolBuilder::new();
-    pool = if args.parallel { pool } else { pool.num_threads( 1 ) };
-    let pool = pool.build().unwrap();
 
     pool.scope
     (

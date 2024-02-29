@@ -24,7 +24,6 @@ fn fail_test()
   .build( temp )
   .unwrap();
   let abs = AbsolutePath::try_from( project ).unwrap();
-  // let crate_dir = CrateDir::try_from( abs ).unwrap();
 
   let args = TestsArgs::former()
   .dir( abs )
@@ -89,8 +88,8 @@ fn call_from_workspace_root()
   "#);
 
   let pass_project = ProjectBuilder::new( "apass_test" )
-    .toml_file( "" )
-    .test_file( r#"
+  .toml_file( "" )
+  .test_file( r#"
   #[test]
   fn should_pass() {
     assert_eq!(1,1);
@@ -98,8 +97,8 @@ fn call_from_workspace_root()
   "#);
 
   let pass_project2 = ProjectBuilder::new( "pass_test2" )
-    .toml_file( "" )
-    .test_file( r#"
+  .toml_file( "" )
+  .test_file( r#"
   #[test]
   fn should_pass() {
     assert_eq!(1,1);
@@ -112,17 +111,19 @@ fn call_from_workspace_root()
   .member( pass_project2 )
   .build( temp );
 
+  // from workspace root
   let abs = AbsolutePath::try_from( workspace.clone() ).unwrap();
-
+  
   let args = TestsArgs::former()
-    .dir( abs )
-    .parallel( true )
-    .channels([ cargo::Channel::Stable ])
-    .form();
+  .dir( abs )
+  .parallel( false )
+  .channels([ cargo::Channel::Stable ])
+  .form();
   
   
   let rep = test( args, false ).unwrap_err().0;
 
+  
   assert_eq!( rep.failure_reports.len(), 1 );
   assert_eq!( rep.succses_reports.len(), 2 );
 }
@@ -226,7 +227,7 @@ impl WorkspaceBuilder
     let mut file = File::create( project_path.join( "Cargo.toml" ) ).unwrap();
     write!( file, "{}", self.toml_content ).unwrap();
     for member in self.members {
-      member.build(project_path.join("modules").join( &member.name ) ).unwrap();
+      member.build( project_path.join( "modules" ).join( &member.name ) ).unwrap();
     }
     project_path.into()
   }
