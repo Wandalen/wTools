@@ -4,7 +4,7 @@ use std::path::{ Path, PathBuf };
 use assert_fs::TempDir;
 
 use crate::TheModule::*;
-use endpoint::test::{ test, TestsArgs };
+use endpoint::test::{test, TestsCommandArgs};
 use path::AbsolutePath;
 
 #[ test ]
@@ -25,7 +25,7 @@ fn fail_test()
   .unwrap();
   let abs = AbsolutePath::try_from( project ).unwrap();
 
-  let args = TestsArgs::former()
+  let args = TestsCommandArgs::former()
   .dir( abs )
   .channels([ cargo::Channel::Stable ])
   .form();
@@ -58,7 +58,7 @@ fn fail_build()
   .unwrap();
   let abs = AbsolutePath::try_from( project ).unwrap();
 
-  let args = TestsArgs::former()
+  let args = TestsCommandArgs::former()
   .dir( abs )
   .channels([ cargo::Channel::Stable ])
   .form();
@@ -114,7 +114,7 @@ fn call_from_workspace_root()
   // from workspace root
   let abs = AbsolutePath::try_from( workspace.clone() ).unwrap();
   
-  let args = TestsArgs::former()
+  let args = TestsCommandArgs::former()
   .dir( abs )
   .parallel( false )
   .channels([ cargo::Channel::Stable ])

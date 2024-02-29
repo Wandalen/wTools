@@ -10,7 +10,7 @@ mod private
   use wca::{ Args, Props };
   use wtools::error::Result;
   use path::AbsolutePath;
-  use endpoint::test::TestsArgs;
+  use endpoint::test::TestsCommandArgs;
   use former::Former;
   use cargo::Channel;
 
@@ -42,7 +42,7 @@ mod private
     if with_stable { channels.insert( Channel::Stable ); }
     if with_nightly { channels.insert( Channel::Nightly ); }
 
-    let args = TestsArgs::former()
+    let args = TestsCommandArgs::former()
     .dir( path )
     .parallel( parallel)
     .channels( channels )
