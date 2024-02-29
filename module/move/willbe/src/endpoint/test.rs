@@ -19,7 +19,8 @@ mod private
 		error::{ Result, for_app::{ format_err, Error } },
 	};
 	use process::CmdReport;
-	use crate::path::AbsolutePath;
+  use crate::cargo;
+  use crate::path::AbsolutePath;
 	
 	/// Represents a report of test results.
   #[ derive( Debug, Default, Clone ) ]
@@ -213,7 +214,7 @@ mod private
   fn run_tests(args : &TestsArgs, dry : bool, exclude : &BTreeSet< String >, package : Package, pool : &ThreadPool ) -> Result< TestReport, ( TestReport, Error ) >
   {
     let mut report = TestReport::default();
-    report.package_name = package.name; 
+    report.package_name = package.name.clone(); 
     let report = Arc::new( Mutex::new( report ) );
     
     let features_powerset = package
@@ -233,7 +234,7 @@ mod private
       }
     )
     .collect::< HashSet< BTreeSet< String > > >();
-
+    print_temp_report( &package.name, &args.channels, &features_powerset );
     pool.scope
     (
       | s |
@@ -243,6 +244,7 @@ mod private
         {
           for feature in &features_powerset
           {
+            
             let r = report.clone();
             s.spawn
             ( 
@@ -283,6 +285,19 @@ mod private
 		.collect();
 		Ok( result )
 	}
+  
+  fn print_temp_report(package_name : &str, channels : &HashSet< cargo::Channel >, features : &HashSet< BTreeSet< String > > )
+  {
+    println!( "Package : {}", package_name );
+    for channel in channels
+    {
+      for feature in features
+      {
+        let feature = if feature.is_empty() { "no-features".to_string() } else { feature.iter().join( "," ) };
+        println!( "[{channel} | {feature}]" );
+      }
+    }
+  }
 }
 
 crate::mod_interface!
