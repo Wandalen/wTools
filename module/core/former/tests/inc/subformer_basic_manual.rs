@@ -33,7 +33,7 @@ impl< Name > Property< Name >
   #[ inline ]
   pub fn new< Description, Code >( name : Name, description : Description, code : Code ) -> Self
   where
-    Name : core::convert::Into< Name > + Clone,
+    Name : core::convert::Into< Name >,
     Description : core::convert::Into< String >,
     Code : core::convert::Into< isize >,
   {
@@ -146,7 +146,6 @@ where
     on_end : End,
   ) -> Self
   {
-
     Self
     {
       hint : None,
