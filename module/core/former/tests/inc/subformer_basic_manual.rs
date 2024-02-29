@@ -58,7 +58,7 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn former() -> CommandFormer< K, (), impl OnEnd< Command< K >, () > >
+  pub fn former() -> CommandFormer< K >
   {
     CommandFormer::< K, (), NoEnd >::begin
     (
