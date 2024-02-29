@@ -12,15 +12,37 @@ mod private
   use cargo_metadata::Package;
 
   use convert_case::{ Casing, Case };
+  use handlebars::{RenderError, TemplateError};
   use toml_edit::Document;
+  use error_tools::for_lib::Error;
+  use error_tools::dependency::*;
 
   use wtools::error::for_app::{ Result, anyhow };
   use path::AbsolutePath;
+  use crate::manifest::private::CrateDirError;
+
+  #[ derive( Debug, Error ) ]
+  pub enum WorkflowGenerateError
+  {
+    #[ error( "Common error: {0}" ) ]
+    Common(#[ from ] anyhow::Error ),
+    #[ error( "I/O error: {0}" ) ]
+    IO( #[ from ] std::io::Error ),
+    #[ error( "Crate directory error: {0}" ) ]
+    CrateDir( #[ from ] CrateDirError ),
+    #[ error( "Workspace error: {0}" ) ]
+    Workspace( #[ from ] WorkspaceError),
+    #[ error( "Template error: {0}" ) ]
+    Template( #[ from ] TemplateError ),
+    #[ error( "Render error: {0}" ) ]
+    Render( #[ from ] RenderError ),
+  }
   
 
   // qqq : for Petro : should return Report and typed error in Result
+  // aaa : add typed error
   /// Generate workflows for modules in .github/workflows directory.
-  pub fn workflow_generate( base_path : &Path ) -> Result< () >
+  pub fn workflow_generate( base_path : &Path ) -> Result< (), WorkflowGenerateError >
   {
     let mut workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
     let packages = workspace_cache.packages()?;
