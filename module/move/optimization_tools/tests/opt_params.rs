@@ -143,24 +143,10 @@ fn named_results_list< R : RangeBounds< f64 > >
   list
 }
 
-pub fn legend() -> String
-{
-  let str_legend = concat!(
-    " - `start. val.` : starting value\n",
-    " - `l. b.` : lower bound of parameter\n",
-    " - `u. b.` : upper bound of parameter\n",
-    " - `sum of diff.` : sum of differences between starting value and next value\n",
-    " - `math. exp.` : mathematical expectation of difference between starting value and next value\n",
-    " - `s. ch.` : munber of successful changes of parameter value to more optimal\n",
-    " - `calc. val.` : calculated value of parameter for which execution time was the lowest\n",
-  );
-
-  str_legend.to_owned()
-}
-
 type ResWithStats = Vec< Vec< String > >;
 
-fn write_results(
+fn write_results
+(
   filename : String,
   title : String,
   mut hybrid_res : ResWithStats,
@@ -174,15 +160,15 @@ fn write_results(
   for ( mode, params ) in &mut [ ( "hybrid", &mut hybrid_res ), ( "SA", &mut sa_res ), ( "GA", &mut ga_res ) ]
   {
     std::io::Write::write(&mut file, format!( "## For {}:\n\n", mode ).as_bytes() )?;
-    let exec_time = params.pop().unwrap();
+    let exec_time = params.last().unwrap();
     std::io::Write::write(&mut file, format!( " - {}: {}\n\n", exec_time[ 0 ], exec_time[ 1 ] ).as_bytes() )?;
-    let level = params.pop().unwrap();
+    let level = params[ params.len() - 2 ].clone();
     std::io::Write::write(&mut file, format!( " - {}: {}\n\n", level[ 0 ], level[ 1 ] ).as_bytes() )?;
     std::io::Write::write(&mut file, format!( " - parameters: \n\n" ).as_bytes() )?;
 
     let mut builder = Builder::default();
 
-    let head_row = [ "", "start. val.", "l. b.", "u. b.", "sum of diff.", "math. exp.", "s. ch.", "calc. val." ]
+    let head_row = [ "", "start", "min", "max", "sum of diff", "expected", "changes", "final" ]
     .into_iter()
     .map( str::to_owned )
     .collect_vec()
@@ -190,7 +176,7 @@ fn write_results(
 
     builder.push_record( head_row.clone() );
 
-    for i in 0..params.len()
+    for i in 0..params.len() - 2
     {
       let mut row = Vec::new();
     
@@ -210,16 +196,27 @@ fn write_results(
 
     let table = builder.build().with( Style::modern() ).to_string();
     std::io::Write::write( &mut file, format!( "```\n{}\n```", table ).as_bytes() )?;
-
     std::io::Write::write( &mut file, format!("\n\n\n" ).as_bytes() )?;
-    std::io::Write::write( &mut file, legend().as_bytes() )?;
+
+    let str_legend = concat!
+    (
+      " - `start` : initial value of parameter in starting point\n",
+      " - `min` : lower bound of parameter\n",
+      " - `max` : upper bound of parameter\n",
+      " - `sum of diff` : sum of absolute differences between starting value and next value\n",
+      " - `expected` : mathematical expectation of difference between starting value and next value\n",
+      " - `changes` : number of successful changes of parameter value to more optimal\n",
+      " - `final` : calculated value of parameter for which execution time was the lowest\n",
+    );
+  
+    std::io::Write::write( &mut file, str_legend.as_bytes() )?;
   }
 
   //final table
   std::io::Write::write(&mut file, format!( "## Summary:\n" ).as_bytes() )?;
   let mut builder = Builder::default();
   let mut headers = vec![ String::from( "mode" ) ];
-  for i in 0..hybrid_res.len()
+  for i in 0..hybrid_res.len() - 2
   {
     headers.push( hybrid_res[ i ][ 0 ].clone().replace( " ", "\n") );
   }
@@ -230,7 +227,7 @@ fn write_results(
   for ( mode, params ) in [ ( "hybrid", &hybrid_res ), ( "SA", &sa_res ), ( "GA", &ga_res ) ]
   {
     let mut row = Vec::new();
-    for i in 0..params.len() + 1
+    for i in 0..params.len() - 1
     {
       if i == 0
       {
@@ -248,6 +245,23 @@ fn write_results(
 
   let table = builder.build().with( Style::modern() ).to_string();
   std::io::Write::write( &mut file, format!( "```\n{}\n```", table ).as_bytes() )?;
+
+  let final_legend = concat!
+  (
+    "\n\n",
+    " - `temperature decrease coefficient` : coefficient by which temperature is lowered at each iteration of optimization process\n",
+    " - `max mutations per dynasty` : max number of mutations used to produce vital individual in dynasty\n",
+    " - `mutation rate` : percent of individuals in population that are created using mutation\n",
+    " - `crossover rate` : percent of individuals in population that are created using crossover of selected parents\n",
+    " - `elitism rate` : percent of most fit individuals in population that are cloned without changes\n",
+    " - sum of mutation rate, crossover rate and elitism rate always equals 1\n",
+    " - `max stale iterations` : max allowed number of iterations that do not produce individuals with better fittness\n",
+    " - `population size` : number of individuals in population\n",
+    " - `dynasties limit` : max number of dynasties of new solutions produced during optimization process, terminates if exceeded\n",
+    " - `execution time` : time spent searching for optimal solution, measured in seconds\n",
+  );
+
+  std::io::Write::write( &mut file, final_legend.as_bytes() )?;
 
   Ok( () )
 }
@@ -472,5 +486,3 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
   write_results( String::from( "tsp_results" ), String::from( "Traveling Salesman Problem" ), hybrid_res, sa_res, ga_res )?;
   Ok( () )
 }
-
-//"starting value", "lower bound", "upper bound", "sum of differences", "expected value", "calculated value" ]
