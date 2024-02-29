@@ -247,7 +247,7 @@ mod private
         }
         Self::Metadata( metadata ) =>
         {
-          Ok( metadata.publish.is_none() || metadata.publish.as_ref().is_some_and( | p | p.is_empty() ) )
+          Ok( !( metadata.publish.is_none() || metadata.publish.as_ref().is_some_and( | p | p.is_empty() ) ) )
         }
       }
     }
@@ -395,7 +395,7 @@ mod private
   ///
   /// Returns:
   /// Returns a result containing a report indicating the result of the operation.
-  pub fn publish_single( package : &Package, dry : bool ) -> Result< PublishReport, ( PublishReport, wError ) >
+  pub fn publish_single( package : &Package, force : bool, dry : bool ) -> Result< PublishReport, ( PublishReport, wError ) >
   {
     let mut report = PublishReport::default();
     if package.local_is().map_err( | err | ( report.clone(), format_err!( err ) ) )?
@@ -412,7 +412,7 @@ mod private
     }
     report.get_info = Some( output );
 
-    if publish_need( &package ).map_err( | err | (report.clone(), format_err!( err ) ) )?
+    if force || publish_need( &package ).map_err( | err | ( report.clone(), format_err!( err ) ) )?
     {
       report.publish_required = true;
 
@@ -421,7 +421,7 @@ mod private
       // bump a version in the package manifest
       let bump_report = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
       files_changed_for_bump.push( package.manifest_path() );
-      let new_version = package.version().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
+      let new_version = bump_report.new_version.clone().unwrap();
 
       let package_name = package.name().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
 
@@ -441,16 +441,21 @@ mod private
         .map
         (
           | dependency |
+          {
+            if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
             {
-              if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
+              if previous_version.starts_with('~')
               {
-                if previous_version.starts_with('~')
-                {
-                  dependency["version"] = value(format!("~{new_version}"));
-                }
+                dependency[ "version" ] = value( format!( "~{new_version}" ) );
+              }
+              else
+              {
+                dependency[ "version" ] = value( new_version.clone() );
               }
             }
-        );
+          }
+        )
+        .unwrap();
         workspace_manifest.store().map_err( | err | ( report.clone(), err.into() ) )?;
       }
 
@@ -687,6 +692,10 @@ mod private
       // unwraps is safe because the paths to the files was compared previously
       let local = local_package.content_bytes( path ).unwrap();
       let remote = remote_package.content_bytes( path ).unwrap();
+      // if local != remote
+      // {
+      //   println!( "local:\n===\n{}\n===\nremote:\n===\n{}\n===", String::from_utf8_lossy( local ), String::from_utf8_lossy( remote ) );
+      // }
 
       is_same &= local == remote;
     }

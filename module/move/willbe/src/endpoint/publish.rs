@@ -3,16 +3,14 @@ mod private
 {
   use crate::*;
 
-  use std::
-  {
-    collections::{ HashSet, HashMap }, io,
-  };
+  use std::collections::{ HashSet, HashMap };
   use core::fmt::Formatter;
+  use petgraph::prelude::*;
 
   use wtools::error::for_app::{ Error, anyhow };
   use path::AbsolutePath;
   use workspace::Workspace;
-  use package::{ CrateId, Package, DependenciesOptions, DependenciesSort };
+  use package::{ publish_need, Package };
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -107,83 +105,108 @@ mod private
     // find all packages by specified folders
     for pattern in &patterns
     {
-      let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) ).map_err( | e | ( report.clone(), e.into() ) )?;
+      let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) ).err_with( || report.clone() )?;
       // let current_paths = files::find( current_path, &[ "Cargo.toml" ] );
       paths.extend( Some( current_path ) );
     }
 
     let mut metadata = if paths.is_empty()
     {
-      Workspace::from_current_path().map_err( | e | ( report.clone(), e.into() ) )?
+      Workspace::from_current_path().err_with( || report.clone() )?
     }
     else
     {
       // FIX: patterns can point to different workspaces. Current solution take first random path from list
       let current_path = paths.iter().next().unwrap().clone();
-      let dir = CrateDir::try_from( current_path ).map_err( | e | ( report.clone(), e.into() ) )?;
+      let dir = CrateDir::try_from( current_path ).err_with( || report.clone() )?;
 
-      Workspace::with_crate_dir( dir ).map_err( | err | ( report.clone(), anyhow!( err ) ) )?
+      Workspace::with_crate_dir( dir ).err_with( || report.clone() )?
     };
     report.workspace_root_dir = Some
     ( 
       metadata
       .workspace_root()
-      .map_err( | err | ( report.clone(), anyhow!( err ) ) )?
+      .err_with( || report.clone() )?
       .try_into()
-      .map_err( | err: io::Error | ( report.clone(), anyhow!( err ) ) )?
+      .err_with( || report.clone() )?
     );
-
-    let packages_to_publish : Vec< _ >= metadata
-    .load()
-    .map_err( | err | ( report.clone(), anyhow!( err ) ) )?
-    .packages()
-    .map_err( | err | ( report.clone(), anyhow!( err ) ) )?
+    let packages = metadata.load().err_with( || report.clone() )?.packages().err_with( || report.clone() )?;
+    let packages_to_publish : Vec< _ > = packages
     .iter()
     .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path.as_std_path().parent().unwrap() ).unwrap() ) )
-    .cloned()
+    .map( | p | p.name.clone() )
     .collect();
-    report.wanted_to_publish.extend( packages_to_publish.iter().map( | x | x.manifest_path.as_std_path().parent().unwrap() ).filter_map( | x | AbsolutePath::try_from( x ).ok() ).filter_map( | x | CrateDir::try_from( x ).ok() ) );
-    let mut queue = vec![];
-    for package in &packages_to_publish
-    {
-      let local_deps_args = DependenciesOptions
-      {
-        recursive: true,
-        sort: DependenciesSort::Topological,
-        ..Default::default()
-      };
-      let deps = package::dependencies( &mut metadata, &Package::from( package.clone() ), local_deps_args )
-      .map_err( | e | ( report.clone(), e.into() ) )?;
+    let package_map = packages.into_iter().map( | p | ( p.name.clone(), Package::from( p.clone() ) ) ).collect::< HashMap< _, _ > >();
 
-      for dep in deps
+    let graph = metadata.graph();
+    let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish );
+    let reversed_subgraph =
+    {
+      let roots = subgraph_wanted
+      .node_indices()
+      .map( | i | &graph[ subgraph_wanted[ i ] ] )
+      .filter_map( | n | package_map.get( n )
+      .map( | p | ( n, p ) ) )
+      .map( |( n, p )| cargo::package( p.crate_dir(), false ).map( | _ | ( n, p ) ) )
+      .collect::< Result< Vec< _ >, _ > >()
+      .err_with( || report.clone() )?
+      .into_iter()
+      .filter( |( _, package )| publish_need( package ).unwrap() )
+      .map( |( name, _ )| name.clone() )
+      .collect::< Vec< _ > >();
+
+      let mut reversed = graph.clone();
+      reversed.reverse();
+      graph::subgraph( &reversed, &roots )
+    };
+    {
+      for node in reversed_subgraph.node_indices()
       {
-        if !queue.contains( &dep )
+        // `Incoming` - because of reversed
+        if graph.neighbors_directed( reversed_subgraph[ node ], Incoming ).count() == 0
         {
-          queue.push( dep );
+          report.wanted_to_publish.push( package_map.get( &graph[ reversed_subgraph[ node ] ] ).unwrap().crate_dir() );
         }
       }
-      let crate_id = CrateId::from( package );
-      if !queue.contains( &crate_id )
-      {
-        queue.push( crate_id );
-      }
     }
+    let subgraph = reversed_subgraph.map( | _, y | &graph[ *y ], | _, y | &graph[ *y ] );
 
-    for path in queue.into_iter().filter_map( | id | id.path )
+    let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).rev().collect::< Vec< _ > >();
+
+    for package in queue
     {
-      let current_report = package::publish_single( &Package::try_from( path.clone() ).unwrap(), dry )
+      let current_report = package::publish_single( package, true, dry )
       .map_err
       (
         | ( current_report, e ) |
         {
-          report.packages.push(( path.clone(), current_report.clone() ));
+          report.packages.push(( package.crate_dir().absolute_path(), current_report.clone() ));
           ( report.clone(), e.context( "Publish list of packages" ).into() )
         }
       )?;
-      report.packages.push(( path, current_report ));
+      report.packages.push(( package.crate_dir().absolute_path(), current_report ));
     }
 
     Ok( report )
+  }
+
+  trait ErrWith< T, T1, E >
+  {
+    fn err_with< F >( self, f : F ) -> std::result::Result< T1, ( T, E ) >
+    where
+      F : FnOnce() -> T;
+  }
+
+  impl< T, T1, E > ErrWith< T, T1, Error > for Result< T1, E >
+  where
+    E : std::fmt::Debug + std::fmt::Display + Send + Sync + 'static,
+  {
+    fn err_with< F >( self, f : F ) -> Result< T1, ( T, Error ) >
+    where
+      F : FnOnce() -> T,
+    {
+      self.map_err( | e | ( f(), anyhow!( e ) ) )
+    }
   }
 }
 

@@ -406,12 +406,12 @@ default-features = true
 ## test experimental
 
 [workspace.dependencies.test_experimental_a]
-version = "~0.1.0"
+version = "~0.2.0"
 path = "module/test/a"
 default-features = true
 
 [workspace.dependencies.test_experimental_b]
-version = "~0.1.0"
+version = "~0.2.0"
 path = "module/test/b"
 default-features = true
 
