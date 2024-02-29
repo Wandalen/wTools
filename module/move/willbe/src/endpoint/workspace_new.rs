@@ -2,6 +2,7 @@ mod private
 {
   use crate::*;
   use std::collections::BTreeMap;
+  use std::fmt::Formatter;
   use std::fs;
   use std::io::Write;
   use std::path::Path;
@@ -22,18 +23,40 @@ mod private
     #[ error( "Render error: {0}" ) ]
     Render( #[ from ] RenderError ),
   }
-  
+
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct WorkspaceReport
+  {
+    created_elements : Vec< String >,
+  }
+
+  impl std::fmt::Display for WorkspaceReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result {
+      if self.created_elements.len() < 7
+      {
+        writeln!( f, "Something went wrong, not all files have been created" )?;
+      }
+      for created_element in &self.created_elements
+      {
+        writeln!( f, "File - {} - created ✅", created_element )?;
+      }
+
+      Ok( () )
+    }
+  }
 
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
   // aaa : add typed error
   // qqq : parametrized templates??
   /// Creates workspace template
-  pub fn workspace_new( path : &Path, repository_url : String, branches: Vec< String > ) -> Result< (), WorkspaceNewError >
+  pub fn workspace_new( path : &Path, repository_url : String, branches: Vec< String > ) -> Result< WorkspaceReport, ( WorkspaceReport, WorkspaceNewError ) >
   {
-    if fs::read_dir( path )?.count() != 0
+    let mut report = WorkspaceReport::default();
+    if fs::read_dir( path ).map_err( | e | ( report.clone(), WorkspaceNewError::from( e ) ) )?.count() != 0
     {
-      return Err( WorkspaceNewError::NonEmptyDirectory )
+      return Err( ( report.clone(), WorkspaceNewError::NonEmptyDirectory ) )
     }
     let mut handlebars = handlebars::Handlebars::new();
     handlebars.register_escape_fn( no_escape );
@@ -46,18 +69,26 @@ mod private
         ( "branches", branches.into() ),
       ]
     );
-    handlebars.register_template_string( "cargo_toml", include_str!( "../../template/workspace/Cargo.hbs" ) )?;
-    let cargo_toml = &handlebars.render( "cargo_toml", &data )?;
+    handlebars.register_template_string( "cargo_toml", include_str!( "../../template/workspace/Cargo.hbs" ) ).map_err( | e | ( report.clone(), WorkspaceNewError::from( e ) ) )?;
+    let cargo_toml = &handlebars.render( "cargo_toml", &data ).map_err( | e | ( report.clone(), WorkspaceNewError::from( e ) ) )?;
 
-    create_file( path, "Cargo.toml", cargo_toml )?;
+    create_file( path, "Cargo.toml", cargo_toml ).map_err( | e | ( report.clone(), WorkspaceNewError::from( e ) ) )?;
+    report.created_elements.push( "Cargo.toml".into() );
 
-    dot_cargo( &path )?;
+    dot_cargo( &path ).map_err( | e | ( report.clone(), WorkspaceNewError::from( e ) ) )?;
+    report.created_elements.push( ".cargo".into() );
     // dot_circleci( &path )?;
-    dot_github( &path )?;
-    static_dirs( &path )?;
-    static_files( &path )?;
-    module1( &path )?;
-    Ok( () )
+    dot_github( &path ).map_err( | e | ( report.clone(), WorkspaceNewError::from( e ) ) )?;
+    report.created_elements.push( ".github".into() );
+    static_dirs( &path ).map_err( | e | ( report.clone(), WorkspaceNewError::from( e ) ) )?;
+    report.created_elements.push( "assets".into() );
+    report.created_elements.push( "docs".into() );
+    static_files( &path ).map_err( | e | ( report.clone(), WorkspaceNewError::from( e ) ) )?;
+    report.created_elements.push( "static files ( 'Readme.md', '.gitattributes', '.gitignore', '.gitpod.yml', 'Makefile')".into() );
+    module1( &path ).map_err( | e | ( report.clone(), WorkspaceNewError::from( e ) ) )?;
+    report.created_elements.push( "module1".into() );
+
+    Ok( report )
   }
 
   fn module1( path : &Path ) -> std::io::Result< () >

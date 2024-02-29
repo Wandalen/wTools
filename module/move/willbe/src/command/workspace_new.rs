@@ -4,8 +4,7 @@ mod private
   use crate::*;
 
   use wca::{ Args, Props };
-  use wtools::error::{ anyhow::Context, Result };
-  use crate::endpoint::list::ListFormat;
+  use wtools::error::Result;
 
   #[ derive( Former ) ]
   struct WorkspaceNewProperties
@@ -21,7 +20,20 @@ mod private
   pub fn workspace_new( ( _, properties ) : ( Args, Props ) ) -> Result< () >
   {
     let WorkspaceNewProperties { repository_url, branches } = WorkspaceNewProperties::try_from( properties )?;
-    endpoint::workspace_new( &std::env::current_dir()?, repository_url, branches ).context( "Fail to workspace" )
+    match endpoint::workspace_new(&std::env::current_dir()?, repository_url, branches )
+    {
+      Ok( report ) =>
+        {
+          println!( "{report} ");
+
+          Ok( () )
+        }
+      Err( ( report, e ) ) =>
+        {
+          eprintln!( "{report}" );
+          Err( e.into() )
+        }
+    }
   }
 
   impl TryFrom< Props > for WorkspaceNewProperties

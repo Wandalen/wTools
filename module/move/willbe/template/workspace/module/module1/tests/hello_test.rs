@@ -1,4 +1,4 @@
-use example_module::*;
+use module1::*;
 
 /// Tests
 
