@@ -13,6 +13,8 @@ pub( crate ) mod private
     graph::Graph,
     algo::toposort as pg_toposort,
   };
+  use petgraph::graph::NodeIndex;
+  use petgraph::prelude::*;
 
   use error_tools::for_lib::Error;
 
@@ -95,6 +97,62 @@ pub( crate ) mod private
       // aaa : now returns `GraphError`
     }
   }
+
+  /// Creates a subgraph from the given graph, containing only the nodes and edges reachable from the roots.
+  ///
+  /// # Arguments
+  /// * `graph` - The original graph from which to create the subgraph.
+  /// * `roots` - An array of nodes that will serve as the roots of the subgraph.
+  ///
+  /// # Returns
+  /// A new graph that represents the subgraph.
+  ///
+  /// # Generic Types
+  /// * `N` - The type of the node in the original graph.
+  /// * `E` - The type of the edge in the original graph.
+  ///
+  /// # Constraints
+  /// * `N` must implement the `PartialEq` trait.
+  pub fn subgraph< N, E >( graph : &Graph< N, E >, roots : &[ N ] ) -> Graph< NodeIndex, EdgeIndex >
+  where
+    N : PartialEq< N >,
+  {
+    let mut subgraph = Graph::new();
+    let mut node_map = HashMap::new();
+
+    for root in roots
+    {
+      let root_id = graph.node_indices().find( | x | graph[ *x ] == *root ).unwrap();
+      let mut dfs = Dfs::new( graph, root_id );
+      while let Some( nx ) = dfs.next( &graph )
+      {
+        if !node_map.contains_key( &nx )
+        {
+          let sub_node = subgraph.add_node( nx );
+          node_map.insert( nx, sub_node );
+        }
+      }
+    }
+
+    for ( _, sub_node_id ) in &node_map
+    {
+      let node_id_graph = subgraph[ *sub_node_id ];
+
+      for edge in graph.edges( node_id_graph )
+      {
+        match ( node_map.get( &edge.source() ), node_map.get( &edge.target() ) )
+        {
+          ( Some( &from ), Some( &to ) ) =>
+          {
+            subgraph.add_edge( from, to, edge.id() );
+          }
+          _ => {}
+        }
+      }
+    }
+
+    subgraph
+  }
 }
 
 //
@@ -103,4 +161,5 @@ crate::mod_interface!
 {
   protected use construct;
   protected use toposort;
+  protected use subgraph;
 }
