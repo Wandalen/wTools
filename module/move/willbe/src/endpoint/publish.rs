@@ -5,12 +5,11 @@ mod private
 
   use std::collections::{ HashSet, HashMap };
   use core::fmt::Formatter;
-  use petgraph::prelude::*;
 
   use wtools::error::for_app::{ Error, anyhow };
   use path::AbsolutePath;
   use workspace::Workspace;
-  use package::{ publish_need, Package };
+  use package::Package;
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -72,8 +71,20 @@ mod private
         let list = endpoint::list::ListReport::Tree( list );
         write!( f, "{}\n", list )?;
       }
+      writeln!( f, "The following packages are pending for publication:" )?;
+      for ( idx, package ) in self.packages.iter().map( |( _, p )| p ).enumerate()
+      {
+        if let Some( bump ) = &package.bump
+        {
+          match ( &bump.base.name, &bump.base.old_version, &bump.base.new_version )
+          {
+            ( Some( name ), Some( old ), Some( new ) ) => writeln!( f, "[{idx}] {name} ({old} -> {new})" )?,
+            _ => {}
+          }
+        }
+      }
 
-      write!( f, "Actions:\n" )?;
+      write!( f, "\nActions:\n" )?;
       for ( path, report ) in &self.packages
       {
         let report = report.to_string().replace("\n", "\n  ");
@@ -137,41 +148,20 @@ mod private
     .map( | p | p.name.clone() )
     .collect();
     let package_map = packages.into_iter().map( | p | ( p.name.clone(), Package::from( p.clone() ) ) ).collect::< HashMap< _, _ > >();
+    {
+      for node in &packages_to_publish
+      {
+        report.wanted_to_publish.push( package_map.get( node ).unwrap().crate_dir() );
+      }
+    }
 
     let graph = metadata.graph();
     let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish );
-    let reversed_subgraph =
-    {
-      let roots = subgraph_wanted
-      .node_indices()
-      .map( | i | &graph[ subgraph_wanted[ i ] ] )
-      .filter_map( | n | package_map.get( n )
-      .map( | p | ( n, p ) ) )
-      .map( |( n, p )| cargo::package( p.crate_dir(), false ).map( | _ | ( n, p ) ) )
-      .collect::< Result< Vec< _ >, _ > >()
-      .err_with( || report.clone() )?
-      .into_iter()
-      .filter( |( _, package )| publish_need( package ).unwrap() )
-      .map( |( name, _ )| name.clone() )
-      .collect::< Vec< _ > >();
+    let tmp = subgraph_wanted.map( | _, n | graph[ *n ].clone(), | _, e | graph[ *e ].clone() );
+    let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish );
+    let subgraph = subgraph.map( | _, n | n, | _, e | e );
 
-      let mut reversed = graph.clone();
-      reversed.reverse();
-      graph::subgraph( &reversed, &roots )
-    };
-    {
-      for node in reversed_subgraph.node_indices()
-      {
-        // `Incoming` - because of reversed
-        if graph.neighbors_directed( reversed_subgraph[ node ], Incoming ).count() == 0
-        {
-          report.wanted_to_publish.push( package_map.get( &graph[ reversed_subgraph[ node ] ] ).unwrap().crate_dir() );
-        }
-      }
-    }
-    let subgraph = reversed_subgraph.map( | _, y | &graph[ *y ], | _, y | &graph[ *y ] );
-
-    let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).rev().collect::< Vec< _ > >();
+    let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).collect::< Vec< _ > >();
 
     for package in queue
     {
