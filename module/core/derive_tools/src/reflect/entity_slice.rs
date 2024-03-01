@@ -9,7 +9,8 @@ pub mod private
 {
   use super::*;
 
-  // aaa : implementation for slice
+  // qqq : xxx : implement for slice
+  // aaa : added implementation of Instance trait for slice
   impl< T > Instance for &'static [ T ]
   where
     CollectionDescriptor< &'static [ T ] > : Entity,

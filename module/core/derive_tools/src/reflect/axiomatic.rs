@@ -257,18 +257,6 @@ pub( crate ) mod private
 
   }
 
-  // ///
-  // /// Additional information for container types
-  // ///
-  // #[ derive( Debug, PartialEq, Default, Clone ) ]
-  // pub struct ContainerDescription
-  // {
-  //   /// Container length.
-  //   pub len : usize,
-  //   /// Container keys.
-  //   pub keys : Option< Vec< primitive::Primitive > >,
-  // }
-
   ///
   /// Type descriptor
   ///
@@ -290,7 +278,7 @@ pub( crate ) mod private
   }
 
   ///
-  /// Collection descriptor
+  /// Dynamically sized collection descriptor
   ///
   #[ derive( PartialEq, Default, Clone ) ]
   pub struct CollectionDescriptor< I : Instance >
@@ -408,11 +396,9 @@ pub( crate ) mod private
     fn eq( &self, other : &Self ) -> bool
     {
       let mut equal = self.key == other.key
-        && self.val.is_container() == other.val.is_container()
         && self.val.type_id() == other.val.type_id()
         && self.val.type_name() == other.val.type_name()
-        && self.val.len() == other.val.len()
-        && self.val.is_ordered() == other.val.is_ordered();
+        && self.val.len() == other.val.len();
 
       if equal
       {
@@ -456,9 +442,9 @@ pub( crate ) mod private
   impl IsScalar for &'static str {}
 
   impl< T : Instance + 'static, const N : usize > IsContainer for [ T ; N ] {}
-   // qqq : aaa : added implementation for slice
+  // qqq : aaa : added implementation for slice
   impl< T : Instance > IsContainer for &'static [ T ] {}
-   // qqq : aaa : added implementation for Vec
+  // qqq : aaa : added implementation for Vec
   impl< T : Instance + 'static > IsContainer for Vec< T > {}
   // qqq : aaa : added implementation for HashMap
   impl< K : IsScalar + Clone + 'static, V : Instance + 'static > IsContainer for std::collections::HashMap< K, V >

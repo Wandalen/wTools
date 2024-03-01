@@ -9,7 +9,8 @@ pub mod private
 {
   use super::*;
 
-  // aaa : implementation for HashSet
+  // qqq : xxx : implement for HashSet
+  // aaa : added implementation of Instance trait for HashSet
   use std::collections::HashSet;
   impl< T > Instance for HashSet< T >
   where

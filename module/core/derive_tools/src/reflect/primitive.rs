@@ -153,6 +153,14 @@ pub( crate ) mod private
     }
   }
 
+  impl From< usize > for Primitive
+  {
+    fn from( value: usize ) -> Self
+    {
+      Self::usize( value )
+    }
+  }
+
   impl From< f32 > for Primitive
   {
     fn from( value: f32 ) -> Self
@@ -168,7 +176,6 @@ pub( crate ) mod private
       Self::f64( value )
     }
   }
-
 
   impl From< &'static str > for Primitive
   {

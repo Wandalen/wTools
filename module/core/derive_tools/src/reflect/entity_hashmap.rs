@@ -8,8 +8,8 @@ use super::*;
 pub mod private
 {
   use super::*;
-
-  // qqq : implementation for HashMap 
+  // qqq : xxx : implement for HashMap
+  // aaa : added implementation of Instance trait for HashMap
   use std::collections::HashMap;
   impl< K, V > Instance for HashMap< K, V >
   where

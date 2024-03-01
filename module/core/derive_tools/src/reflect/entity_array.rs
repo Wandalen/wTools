@@ -55,7 +55,7 @@ pub mod private
     {
 
       // qqq : write optimal implementation
-      //let mut result : [ KeyVal ; N ] = [ KeyVal::default() ; N ];
+     // let mut result : [ KeyVal ; N ] = [ KeyVal::default() ; N ];
 //
 //       for i in 0..N
 //       {

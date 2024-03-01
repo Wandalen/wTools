@@ -9,7 +9,8 @@ pub mod private
 {
   use super::*;
 
-  // aaa : implementation for Vec
+  // qqq : xxx : implement for Vec
+  // aaa : added implementation of Instance trait for Vec
   impl< T > Instance for Vec< T >
   where
     CollectionDescriptor< Vec< T > > : Entity,
