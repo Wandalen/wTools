@@ -307,7 +307,7 @@ version = "~0.4.0"
 path = "module/alias/wtest"
 
 [workspace.dependencies.test_tools]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/core/test_tools"
 
 [workspace.dependencies.wtest_basic]
