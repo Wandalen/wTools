@@ -178,7 +178,7 @@ path = "module/core/former_meta"
 # path = "module/core/former_runtime"
 
 [workspace.dependencies.impls_index]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/core/impls_index"
 default-features = false
 
