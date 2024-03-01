@@ -155,7 +155,7 @@ default-features = false
 ## meta
 
 [workspace.dependencies.meta_tools]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/core/meta_tools"
 default-features = false
 
