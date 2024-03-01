@@ -85,11 +85,11 @@ fn named_results_list< R : RangeBounds< f64 > >
         {
           Bound::Included( val ) =>
           {
-            upper = format!( "{:.2}", val );
+            lower = format!( "{:.2}", val );
           },
           Bound::Excluded( val ) =>
           {
-            upper = format!( "{:.2}", val );
+            lower = format!( "{:.2}", val );
           },
           Bound::Unbounded => {}
         }
@@ -98,11 +98,11 @@ fn named_results_list< R : RangeBounds< f64 > >
         {
           Bound::Included( val ) =>
           {
-            lower = format!( "{:.2}", val );
+            upper = format!( "{:.2}", val );
           },
           Bound::Excluded( val ) =>
           {
-            lower = format!( "{:.2}", val );
+            upper = format!( "{:.2}", val );
           },
           Bound::Unbounded => {}
         }
