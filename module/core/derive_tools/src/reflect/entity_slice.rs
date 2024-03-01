@@ -18,12 +18,12 @@ pub mod private
     type Entity = CollectionDescriptor::< &'static [ T ] >;
     fn _reflect( &self ) -> Self::Entity
     {
-      CollectionDescriptor::< Self >::new( self.len(), None )
+      CollectionDescriptor::< Self >::new( self.len() )
     }
     #[ inline( always ) ]
     fn Reflect() -> Self::Entity
     {
-      CollectionDescriptor::< Self >::new( 1, None )
+      CollectionDescriptor::< Self >::new( 1 )
     }
   }
 

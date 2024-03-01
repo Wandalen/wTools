@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use feed_rs::parser as feed_parser;
-use unitore::{ executor::FeedManager, feed_config::FeedConfig, retriever::FeedFetch };
+use unitore::{ executor::FeedManager, feed_config::SubscriptionConfig, retriever::FeedFetch };
 use unitore::storage::MockFeedStore;
 
 pub struct TestClient;
@@ -21,12 +21,12 @@ async fn test_save_feed_plain() -> Result< (), Box< dyn std::error::Error + Sync
 {
   let mut f_store = MockFeedStore::new();
   f_store
-  .expect_process_feed()
+  .expect_process_feeds()
   .times( 1 )
   .returning( | _ | Ok( () ) )
   ;
 
-  let feed_config = FeedConfig
+  let feed_config = SubscriptionConfig
   {
     period : std::time::Duration::from_secs( 1000 ),
     link : String::from( "test" ),

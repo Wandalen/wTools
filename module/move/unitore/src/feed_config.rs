@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 /// Configuration for subscription to feed resource.
 #[ derive( Debug, Deserialize ) ]
-pub struct FeedConfig
+pub struct SubscriptionConfig
 {
   /// Update period.
   #[serde(with = "humantime_serde")]
@@ -18,11 +18,11 @@ pub struct FeedConfig
 pub struct Subscriptions
 {
   /// List of subscriptions configurations.
-  pub config : Vec< FeedConfig >
+  pub config : Vec< SubscriptionConfig >
 }
 
 /// Reads provided configuration file with list of subscriptions.
-pub fn read_feed_config( file_path : String ) -> Result< Vec< FeedConfig >, Box< dyn std::error::Error > >
+pub fn read_feed_config( file_path : String ) -> Result< Vec< SubscriptionConfig >, Box< dyn std::error::Error > >
 {
   let read_file = OpenOptions::new().read( true ).open( &file_path )?;
   let mut reader = BufReader::new( read_file );

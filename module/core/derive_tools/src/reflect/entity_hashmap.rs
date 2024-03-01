@@ -13,27 +13,27 @@ pub mod private
   use std::collections::HashMap;
   impl< K, V > Instance for HashMap< K, V >
   where
-    CollectionDescriptor< HashMap< K, V > > : Entity,
+    KeyedCollectionDescriptor< HashMap< K, V > > : Entity,
     primitive::Primitive : From< K >,
     K : Clone,
   {
-    type Entity = CollectionDescriptor::< HashMap< K, V > >;
+    type Entity = KeyedCollectionDescriptor::< HashMap< K, V > >;
     fn _reflect( &self ) -> Self::Entity
     {
-      CollectionDescriptor::< Self >::new
+      KeyedCollectionDescriptor::< Self >::new
       (
         self.len(),
-        Some( self.keys().into_iter().map( | k | primitive::Primitive::from( k.clone() ) ).collect::< Vec< _ > >() ),
+        self.keys().into_iter().map( | k | primitive::Primitive::from( k.clone() ) ).collect::< Vec< _ > >(),
       )
     }
     #[ inline( always ) ]
     fn Reflect() -> Self::Entity
     {
-      CollectionDescriptor::< Self >::new( 0, None )
+      KeyedCollectionDescriptor::< Self >::new( 0, Vec::new() )
     }
   }
   
-  impl< K, V > Entity for CollectionDescriptor< HashMap< K, V > >
+  impl< K, V > Entity for KeyedCollectionDescriptor< HashMap< K, V > >
   where
     K : 'static + Instance + IsScalar + Clone,
     primitive::Primitive : From< K >,
@@ -69,15 +69,10 @@ pub mod private
       let mut result : Vec< KeyVal > = ( 0 .. self.len() )
       .map( | k | KeyVal { key : Primitive::usize( k ), val : Box::new( < V as Instance >::Reflect() ) } )
       .collect();
-
-      let keys = self.keys
-      .clone()
-      .unwrap_or( ( 0..self.len() ).map( primitive::Primitive::usize ).into_iter().collect() )
-      ;
       
       for i in 0..self.len()
       {
-          result[ i ] = KeyVal { key : keys[ i ].clone(), val : Box::new( < V as Instance >::Reflect() ) }
+          result[ i ] = KeyVal { key : self.keys[ i ].clone(), val : Box::new( < V as Instance >::Reflect() ) }
       }
 
       Box::new( result.into_iter() )
