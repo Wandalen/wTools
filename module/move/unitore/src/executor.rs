@@ -21,15 +21,15 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .form(),
     wca::Command::former()
     .phrase( "fields.list" )
-    .hint( "List fields" )
+    .hint( "List all fields in Frames table with explanation." )
     .form(),
     wca::Command::former()
     .phrase( "feeds.list" )
-    .hint( "List feeds" )
+    .hint( "List all feeds from storage." )
     .form(),
     wca::Command::former()
     .phrase( "frames.list" )
-    .hint( "List feeds" )
+    .hint( "List all frames saved in storage." )
     .form(),
   ] )
   .executor
@@ -146,9 +146,9 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
   }
 
   /// Get columns names of Frames table.
-  pub async fn get_columns( &mut self ) -> Result< Vec< String >, Box< dyn std::error::Error + Send + Sync > >
+  pub fn get_columns( &mut self ) -> Result< Vec< [ &'static str; 3 ] >, Box< dyn std::error::Error + Send + Sync > >
   {
-    Ok( self.storage.columns_titles().await )
+    Ok( self.storage.columns_titles() )
   }
 }
 
@@ -178,8 +178,11 @@ pub async fn list_fields() -> Result< (), Box< dyn std::error::Error + Send + Sy
   let feed_storage = FeedStorage::init_storage( config ).await?;
 
   let mut manager = FeedManager::new( feed_storage );
-  let fields = manager.get_columns().await?;
-  println!( "{:#?}", fields );
+  let fields = manager.get_columns()?;
+  for field in fields
+  {
+    println!( "{}, type {} : {}\n", field[ 0 ], field[ 1 ], field[ 2 ] );
+  }
 
   Ok( () )
 }
@@ -192,7 +195,6 @@ pub async fn list_frames() -> Result< (), Box< dyn std::error::Error + Send + Sy
   ;
 
   let feed_storage = FeedStorage::init_storage( config ).await?;
-
   let mut manager = FeedManager::new( feed_storage );
   let frames = manager.get_all_frames().await?;
   println!( "{:#?}", frames );
@@ -212,10 +214,7 @@ pub async fn list_feeds() -> Result< (), Box< dyn std::error::Error + Send + Syn
   let mut manager = FeedManager::new( feed_storage );
   let feeds = manager.get_all_feeds().await?;
 
-  // for feed in feeds
-  // {
-    println!( "{:#?}", feeds );
-  // }
+  println!( "{:#?}", feeds );
 
   Ok( () )
 }
