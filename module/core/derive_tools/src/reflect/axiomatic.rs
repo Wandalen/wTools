@@ -260,7 +260,7 @@ pub( crate ) mod private
   ///
   /// Type descriptor
   ///
-  #[ derive( PartialEq, Default ) ]
+  #[ derive( PartialEq, Default, Clone ) ]
   pub struct EntityDescriptor< I : Instance >
   {
     _phantom : core::marker::PhantomData< I >,
@@ -274,6 +274,46 @@ pub( crate ) mod private
     {
       let _phantom = core::marker::PhantomData::< I >;
       Self { _phantom }
+    }
+  }
+
+  ///
+  /// Dynamically sized collection descriptor
+  ///
+  #[ derive( PartialEq, Default, Clone ) ]
+  pub struct CollectionDescriptor< I : Instance >
+  {
+    /// Container length.
+    pub len : usize,
+    /// Container keys.
+    pub keys : Option< Vec< primitive::Primitive > >,
+    _phantom : core::marker::PhantomData< I >,
+  }
+
+  impl< I : Instance > CollectionDescriptor< I >
+  {
+    /// Constructor of the descriptor of container type.
+    pub fn new( size : usize, keys : Option< Vec< primitive::Primitive > > ) -> Self
+    {
+      let _phantom = core::marker::PhantomData::< I >;
+      Self 
+      { 
+        _phantom, 
+        len : size,
+        keys,
+      }
+    }
+  }
+
+  impl< T > std::fmt::Debug for CollectionDescriptor< T >
+  where
+    T : Instance + 'static,
+    CollectionDescriptor< T > : Entity,
+  {
+    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    {
+      f
+      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
     }
   }
 
@@ -326,6 +366,18 @@ pub( crate ) mod private
     pub val : Box< dyn Entity >,
   }
 
+  impl Default for KeyVal
+  {
+    fn default() -> Self
+    {
+      Self
+      {
+        key : primitive::Primitive::default(),
+        val : Box::new( EntityDescriptor::< i8 >::new() ) as Box::< dyn Entity >,
+      }
+    }
+  }
+
   impl std::fmt::Debug for KeyVal
   {
     fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
@@ -338,12 +390,24 @@ pub( crate ) mod private
     }
   }
 
+  // qqq aaa: added comparison by val
   impl PartialEq for KeyVal
   {
     fn eq( &self, other : &Self ) -> bool
     {
-      self.key == other.key
-      // qqq : compare also by val
+      let mut equal = self.key == other.key
+        && self.val.type_id() == other.val.type_id()
+        && self.val.type_name() == other.val.type_name()
+        && self.val.len() == other.val.len();
+
+      if equal
+      {
+        for i in 0..self.val.len()
+        {
+          equal = equal && ( self.val.element( i ) == other.val.element( i ) )
+        }
+      }
+      equal
     }
   }
 
@@ -377,10 +441,16 @@ pub( crate ) mod private
   impl IsScalar for String {}
   impl IsScalar for &'static str {}
 
-  // qqq : xxx : implement for slice
-  // qqq : xxx : implement for Vec
-  // qqq : xxx : implement for HashMap
-  // qqq : xxx : implement for HashSet
+  impl< T : Instance + 'static, const N : usize > IsContainer for [ T ; N ] {}
+  // qqq : aaa : added implementation for slice
+  impl< T : Instance > IsContainer for &'static [ T ] {}
+  // qqq : aaa : added implementation for Vec
+  impl< T : Instance + 'static > IsContainer for Vec< T > {}
+  // qqq : aaa : added implementation for HashMap
+  impl< K : IsScalar + Clone + 'static, V : Instance + 'static > IsContainer for std::collections::HashMap< K, V >
+  where primitive::Primitive : From< K > {}
+  // qqq : aaa : added implementation for HashSet
+  impl< V : Instance + 'static > IsContainer for std::collections::HashSet< V > {}
 
 }
 
@@ -413,6 +483,7 @@ pub mod orphan
     // InstanceMarker,
     Entity,
     EntityDescriptor,
+    CollectionDescriptor,
     KeyVal,
   };
 }

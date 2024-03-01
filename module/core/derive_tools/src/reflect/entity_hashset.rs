@@ -1,5 +1,5 @@
 //!
-//! Implementation of Entity for an array.
+//! Implementation of Entity for a HashSet.
 //!
 
 use super::*;
@@ -9,19 +9,26 @@ pub mod private
 {
   use super::*;
 
-  impl< T, const N : usize > Instance for [ T ; N ]
+  // qqq : xxx : implement for HashSet
+  // aaa : added implementation of Instance trait for HashSet
+  use std::collections::HashSet;
+  impl< T > Instance for HashSet< T >
   where
-    EntityDescriptor< [ T ; N ] > : Entity,
+    CollectionDescriptor< HashSet< T > > : Entity,
   {
-    type Entity = EntityDescriptor::< Self >;
+    type Entity = CollectionDescriptor::< HashSet< T > >;
+    fn _reflect( &self ) -> Self::Entity
+    {
+      CollectionDescriptor::< Self >::new( self.len(), None )
+    }
     #[ inline( always ) ]
     fn Reflect() -> Self::Entity
     {
-      EntityDescriptor::< Self >::new()
+      CollectionDescriptor::< Self >::new( 0, None )
     }
   }
-
-  impl< T, const N : usize > Entity for EntityDescriptor< [ T ; N ] >
+  
+  impl< T > Entity for CollectionDescriptor< HashSet< T > >
   where
     T : 'static + Instance,
   {
@@ -35,42 +42,31 @@ pub mod private
     #[ inline( always ) ]
     fn len( &self ) -> usize
     {
-      N
+      self.len
     }
 
     #[ inline( always ) ]
     fn type_name( &self ) -> &'static str
     {
-      core::any::type_name::< [ T ; N ] >()
+      core::any::type_name::< HashSet< T > >()
     }
 
     #[ inline( always ) ]
     fn type_id( &self ) -> core::any::TypeId
     {
-      core::any::TypeId::of::< [ T ; N ] >()
+      core::any::TypeId::of::< HashSet< T > >()
     }
 
     #[ inline( always ) ]
     fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > >
     {
-
-      // qqq : write optimal implementation
-     // let mut result : [ KeyVal ; N ] = [ KeyVal::default() ; N ];
-//
-//       for i in 0..N
-//       {
-//         result[ i ] = KeyVal { key : "x", val : Box::new( < T as Instance >::Reflect() ) }
-//       }
-
-      let result : Vec< KeyVal > = ( 0 .. N )
+      let result : Vec< KeyVal > = ( 0..self.len() )
       .map( | k | KeyVal { key : Primitive::usize( k ), val : Box::new( < T as Instance >::Reflect() ) } )
       .collect();
 
       Box::new( result.into_iter() )
     }
-
   }
-
 }
 
 #[ doc( inline ) ]
