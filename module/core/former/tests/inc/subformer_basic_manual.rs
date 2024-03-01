@@ -1,4 +1,4 @@
-// xxx : finish
+// xxx : complete
 use super::*;
 use former::runtime::{ OnEnd, NoEnd };
 
@@ -239,7 +239,7 @@ where
 
 }
 
-// xxx
+// == aggregator
 
 #[ derive( Debug, PartialEq ) ]
 pub struct Aggregator< K >
@@ -361,27 +361,27 @@ where
     self
   }
 
-  // #[ inline( always ) ]
-  // pub fn commands( mut self ) -> former::runtime::HashMapSubformer
-  // <
-  //   String,
-  //   Command< K >,
-  //   std::collections::HashMap< String, Command< K > >,
-  //   CommandFormer< K, Context, End >,
-  //   impl Fn( std::collections::HashMap< String, Aggregator< K > >, Self ) -> Self
-  // >
-  // {
-  //   let container = self.commands.take();
-  //   let on_end = | container : std::collections::HashMap< K, Property< K > >, mut former : Self | -> Self
-  //   {
-  //     former.commands = Some( container );
-  //     former
-  //   };
-  //   former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
-  // }
+  #[ inline( always ) ]
+  pub fn commands( mut self ) -> former::runtime::HashMapSubformer
+  <
+    String,
+    Command< K >,
+    std::collections::HashMap< String, Command< K > >,
+    AggregatorFormer< K, Context, End >,
+    impl Fn( std::collections::HashMap< String, Command< K > >, Self ) -> Self,
+  >
+  {
+    let container = self.commands.take();
+    let on_end = | container : std::collections::HashMap< String, Command< K > >, mut former : Self | -> Self
+    {
+      former.commands = Some( container );
+      former
+    };
+    former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
+  }
 
 }
 
-// xxx
+// ==
 
 include!( "only_test/subformer_basic.rs" );
