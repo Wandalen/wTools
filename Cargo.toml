@@ -170,7 +170,7 @@ path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/core/former_meta"
 
 # [workspace.dependencies.former_runtime]
