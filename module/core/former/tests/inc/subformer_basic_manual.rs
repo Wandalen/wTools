@@ -380,6 +380,29 @@ where
     former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
   }
 
+  #[ inline( always ) ]
+  pub fn command( self, name : String ) -> CommandFormer< K, Self, impl OnEnd< Command< K >, Self > >
+  where
+    K : core::hash::Hash + std::cmp::Eq,
+  {
+    let on_end = | command : Command< K >, mut former : Self | -> Self
+    {
+      if let Some( ref mut commands ) = former.commands
+      {
+        commands.insert( command.name.clone(), command );
+      }
+      else
+      {
+        let mut commands : std::collections::HashMap< String, Command< K > > = Default::default();
+        commands.insert( command.name.clone(), command );
+        former.commands = Some( commands );
+      }
+      former
+    };
+    let former = CommandFormer::begin( Some( self ), on_end );
+    former.name( name )
+  }
+
 }
 
 // ==

@@ -82,3 +82,55 @@ fn properties()
   a_id!( got, exp );
 
 }
+
+//
+
+#[ test ]
+fn aggregator()
+{
+
+  // with helper
+  let got = Aggregator::< &str >::former()
+  .parameter1( "p1" )
+  .command( "command1".to_string() )
+    // .name( "a" )
+    .subject( "b" )
+    .property( "property1", "simple property", 13isize )
+    .property( "property2", "simple property 3", 113isize )
+    .end()
+  .command( "command2".to_string() )
+    .subject( "c" )
+    .property( "property3", "x", 113isize )
+    .end()
+  .form()
+  ;
+
+  let command1 = Command::< &str >
+  {
+    name : "command1".to_string(),
+    subject : "b".to_string(),
+    properties : hmap!
+    {
+      "property1" => Property::new( "property1", "simple property", 13isize ),
+      "property2" => Property::new( "property2", "simple property 3", 113isize ),
+    },
+  };
+  let command2 = Command::< &str >
+  {
+    name : "command2".to_string(),
+    subject : "c".to_string(),
+    properties : hmap!
+    {
+      "property3" => Property::new( "property3", "x", 113isize ),
+    },
+  };
+  let exp = Aggregator
+  {
+    parameter1 : "p1".to_string(),
+    commands : hmap!{ "command1" => command1, "command2" => command2 },
+  };
+  dbg!( &got );
+  dbg!( &exp );
+  a_id!( got, exp );
+
+}
