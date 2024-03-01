@@ -102,7 +102,7 @@ default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.type_constructor]
-version = "~0.1.20"
+version = "~0.2.0"
 path = "module/core/type_constructor"
 default-features = false
 
