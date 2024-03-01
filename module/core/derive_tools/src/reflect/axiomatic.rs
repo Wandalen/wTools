@@ -285,15 +285,40 @@ pub( crate ) mod private
   {
     /// Container length.
     pub len : usize,
-    /// Container keys.
-    pub keys : Option< Vec< primitive::Primitive > >,
     _phantom : core::marker::PhantomData< I >,
   }
 
   impl< I : Instance > CollectionDescriptor< I >
   {
     /// Constructor of the descriptor of container type.
-    pub fn new( size : usize, keys : Option< Vec< primitive::Primitive > > ) -> Self
+    pub fn new( size : usize ) -> Self
+    {
+      let _phantom = core::marker::PhantomData::< I >;
+      Self 
+      { 
+        _phantom, 
+        len : size,
+      }
+    }
+  }
+
+  ///
+  /// Dynamically sized key-value collection descriptor
+  ///
+  #[ derive( PartialEq, Default, Clone ) ]
+  pub struct KeyedCollectionDescriptor< I : Instance >
+  {
+    /// Container length.
+    pub len : usize,
+    /// Container keys.
+    pub keys : Vec< primitive::Primitive >,
+    _phantom : core::marker::PhantomData< I >,
+  }
+
+  impl< I : Instance > KeyedCollectionDescriptor< I >
+  {
+    /// Constructor of the descriptor of container type.
+    pub fn new( size : usize, keys : Vec< primitive::Primitive > ) -> Self
     {
       let _phantom = core::marker::PhantomData::< I >;
       Self 
@@ -302,18 +327,6 @@ pub( crate ) mod private
         len : size,
         keys,
       }
-    }
-  }
-
-  impl< T > std::fmt::Debug for CollectionDescriptor< T >
-  where
-    T : Instance + 'static,
-    CollectionDescriptor< T > : Entity,
-  {
-    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
-    {
-      f
-      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
     }
   }
 
@@ -340,6 +353,30 @@ pub( crate ) mod private
   where
     T : Instance + 'static,
     EntityDescriptor< T > : Entity,
+  {
+    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    {
+      f
+      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
+    }
+  }
+
+  impl< T > std::fmt::Debug for CollectionDescriptor< T >
+  where
+    T : Instance + 'static,
+    CollectionDescriptor< T > : Entity,
+  {
+    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    {
+      f
+      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
+    }
+  }
+
+  impl< T > std::fmt::Debug for KeyedCollectionDescriptor< T >
+  where
+    T : Instance + 'static,
+    KeyedCollectionDescriptor< T > : Entity,
   {
     fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
     {
@@ -484,6 +521,7 @@ pub mod orphan
     Entity,
     EntityDescriptor,
     CollectionDescriptor,
+    KeyedCollectionDescriptor,
     KeyVal,
   };
 }
