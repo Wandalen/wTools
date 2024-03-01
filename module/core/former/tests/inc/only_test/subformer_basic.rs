@@ -1,12 +1,12 @@
 // let ca = wca::CommandsAggregator::former()
 // .command( "echo" )
-//   .hint( "prints all subjects and properties" )
+//   .name( "prints all subjects and properties" )
 //   .subject( "Subject", wca::Type::String, true )
 //   .property( "property", "simple property", wca::Type::String, true )
 //   .routine( f1 )
 //   .perform()
 // .command( "exit" )
-//   .hint( "just exit" )
+//   .name( "just exit" )
 //   .routine( || exit() )
 //   .perform()
 // .perform()
@@ -18,12 +18,12 @@ fn basic()
 {
 
   let got = Command::< &str >::former()
-  .hint( "a" )
+  .name( "a" )
   .subject( "b" )
   .form();
   let exp = Command::< &str >
   {
-    hint : "a".to_string(),
+    name : "a".to_string(),
     subject : "b".to_string(),
     properties : std::collections::HashMap::< &str, Property< &str > >::new(),
   };
@@ -39,7 +39,7 @@ fn properties()
 
   // with helper
   let got = Command::< &str >::former()
-  .hint( "a" )
+  .name( "a" )
   .subject( "b" )
   .property( "property1", "simple property", 13isize )
   .property( "property2", "simple property 2", 13isize )
@@ -47,7 +47,7 @@ fn properties()
   .form();
   let exp = Command::< &str >
   {
-    hint : "a".to_string(),
+    name : "a".to_string(),
     subject : "b".to_string(),
     properties : hmap!
     {
@@ -60,7 +60,7 @@ fn properties()
 
   // with HashMapSubformer
   let got = Command::< &str >::former()
-  .hint( "a" )
+  .name( "a" )
   .subject( "b" )
   .properties()
     .insert( "property1", Property::new( "property1", "simple property", 13isize ) )
@@ -70,7 +70,7 @@ fn properties()
   .form();
   let exp = Command::< &str >
   {
-    hint : "a".to_string(),
+    name : "a".to_string(),
     subject : "b".to_string(),
     properties : hmap!
     {
