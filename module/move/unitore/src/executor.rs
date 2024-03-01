@@ -1,7 +1,7 @@
 //! Execute plan.
 
 use super::*;
-use feed_config::FeedConfig;
+use feed_config::SubscriptionConfig;
 use gluesql::{ core::executor::Payload, sled_storage::sled::Config };
 use retriever::{ FeedClient, FeedFetch };
 use feed_config::read_feed_config;
@@ -15,7 +15,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   .grammar
   ( [
     wca::Command::former()
-    .phrase( "subscribe" )
+    .phrase( "frames.download" )
     .hint( "Subscribe to feed from sources provided in config file" )
     .subject( "Source file", wca::Type::String, false )
     .form(),
@@ -34,7 +34,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   ] )
   .executor
   ( [
-    ( "subscribe".to_owned(), wca::Routine::new( | ( args, _props ) |
+    ( "frames.download".to_owned(), wca::Routine::new( | ( args, _props ) |
     {
       if let Some( path ) = args.get_owned( 0 )
       {
@@ -51,14 +51,22 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       rt.block_on( list_fields() ).unwrap();
       Ok( () )
     } ) ),
-    ( "frames.list".to_owned(), wca::Routine::new( | ( args, props ) |
+
+    ( "frames.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
     {
-      println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
       let rt  = tokio::runtime::Runtime::new()?;
       rt.block_on( list_frames() ).unwrap();
       Ok( () )
     } ) ),
+
+    ( "feeds.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
+    {
+      let rt  = tokio::runtime::Runtime::new()?;
+      rt.block_on( list_feeds() ).unwrap();
+      Ok( () )
+    } ) ),
   ] )
+  .help_variants( [ wca::HelpVariants::General, wca::HelpVariants::SubjectCommand ] )
   .build();
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
@@ -71,7 +79,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 pub struct FeedManager< C, S : FeedStore + Send >
 {
   /// Subscription configuration with link and update period.
-  pub config : Vec< FeedConfig >,
+  pub config : Vec< SubscriptionConfig >,
   /// Storage for saving feed.
   pub storage : S,
   /// Client for fetching feed from links in FeedConfig.
@@ -95,7 +103,7 @@ impl< S : FeedStore + Send > FeedManager< FeedClient, S >
 impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
 {
   /// Set configurations for subscriptions.
-  pub fn set_config( &mut self, configs : Vec< FeedConfig > )
+  pub fn set_config( &mut self, configs : Vec< SubscriptionConfig > )
   {
     self.config = configs;
   }
@@ -137,7 +145,7 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
     self.storage.execute_query( query ).await
   }
 
-  /// Get columns names of Feed table.
+  /// Get columns names of Frames table.
   pub async fn get_columns( &mut self ) -> Result< Vec< String >, Box< dyn std::error::Error + Send + Sync > >
   {
     Ok( self.storage.columns_titles().await )
@@ -171,8 +179,7 @@ pub async fn list_fields() -> Result< (), Box< dyn std::error::Error + Send + Sy
 
   let mut manager = FeedManager::new( feed_storage );
   let fields = manager.get_columns().await?;
-  let first_field = fields.first().expect( "no fields in table" ).clone();
-  println!( "{}", fields.into_iter().skip( 1 ).fold( first_field, | acc, val | format!( "{}, {}", acc, val ) ) );
+  println!( "{:#?}", fields );
 
   Ok( () )
 }
@@ -188,7 +195,7 @@ pub async fn list_frames() -> Result< (), Box< dyn std::error::Error + Send + Sy
 
   let mut manager = FeedManager::new( feed_storage );
   let frames = manager.get_all_frames().await?;
-  println!( "{:?}", frames );
+  println!( "{:#?}", frames );
 
   Ok( () )
 }
@@ -207,7 +214,7 @@ pub async fn list_feeds() -> Result< (), Box< dyn std::error::Error + Send + Syn
 
   // for feed in feeds
   // {
-    println!( "{:?}", feeds );
+    println!( "{:#?}", feeds );
   // }
 
   Ok( () )

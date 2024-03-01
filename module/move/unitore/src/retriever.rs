@@ -40,15 +40,8 @@ impl FeedFetch for FeedClient
         feed.extend( chunk.to_vec() );
       }
     }
-    println!( "{:?}", String::from_utf8( feed.clone() ) );
-    let feed = feed_parser::parse( feed.as_slice() )?;
-    //println!("Feed | id::{:?} | published::{:?} | ttl::{:?} | entries::{:?}", feed.id, feed.published, feed.ttl, feed.entries.len() );
 
-    // for e in &feed.entries
-    // {
-    //   println!("  Entry | id::{:?} | updated::{:?}", e.id, e.updated );
-    //   println!("    summary::{:20?}", e.summary );
-    // }
+    let feed = feed_parser::parse( feed.as_slice() )?;
 
     Ok( feed )
   }

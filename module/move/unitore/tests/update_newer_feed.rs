@@ -5,7 +5,7 @@ use gluesql::
   core::{ chrono::{  DateTime, Utc} , data::Value },
   sled_storage::sled::Config,
 };
-use unitore::{ executor::FeedManager, feed_config::FeedConfig, retriever::FeedFetch, storage::FeedStorage };
+use unitore::{ executor::FeedManager, feed_config::SubscriptionConfig, retriever::FeedFetch, storage::FeedStorage };
 use wca::wtools::Itertools;
 pub struct TestClient ( String );
 
@@ -30,7 +30,7 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
 
   let feed_storage = FeedStorage::init_storage( config ).await?;
 
-  let feed_config = FeedConfig
+  let feed_config = SubscriptionConfig
   {
     period : std::time::Duration::from_secs( 1000 ),
     link : String::from( "test" ),
@@ -51,7 +51,7 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
   manager.update_feed().await?;
 
   // check
-  let payload = manager.get_all_entries().await?;
+  let payload = manager.get_all_frames().await?;
 
   let entries = payload
   .select()

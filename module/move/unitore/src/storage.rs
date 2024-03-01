@@ -78,7 +78,10 @@ impl FeedStorage< SledStorage >
 pub trait FeedStore
 {
   /// Insert items from list into feed table.
-  async fn save_feed( &mut self, feed : Vec< ( feed_rs::model::Entry, String ) > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
+  async fn save_frames( &mut self, feed : Vec< ( feed_rs::model::Entry, String ) > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
+
+  /// Insert items from list into feed table.
+  async fn save_feed( &mut self, feed : Vec< feed_rs::model::Feed > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
 
   /// Update items from list in feed table.
   async fn update_feed( &mut self, feed : Vec< ( feed_rs::model::Entry, String ) > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
@@ -165,7 +168,7 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( res )
   }
 
-  async fn save_feed( &mut self, feed : Vec< ( feed_rs::model::Entry, String ) > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+  async fn save_frames( &mut self, feed : Vec< ( feed_rs::model::Entry, String ) > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   {
     let entries_rows = feed.into_iter().map( | entry | entry_row( &entry ) ).collect_vec();
 
@@ -190,6 +193,29 @@ impl FeedStore for FeedStorage< SledStorage >
       feed",
     )
     .values( entries_rows )
+    .execute( &mut *self.storage.lock().await )
+    .await?
+    ;
+
+    Ok( () )
+  }
+
+  async fn save_feed( &mut self, feed : Vec< feed_rs::model::Feed > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+  {
+    let feeds_rows = feed.into_iter().map( | feed | FeedRow::from( feed ).0 ).collect_vec();
+
+    let insert = table( "Feeds" )
+    .insert()
+    .columns
+    (
+      "id,
+      title,
+      updated,
+      authors,
+      description,
+      published",
+    )
+    .values( feeds_rows )
     .execute( &mut *self.storage.lock().await )
     .await?
     ;
@@ -234,13 +260,15 @@ impl FeedStore for FeedStorage< SledStorage >
     .await?
     ;
 
+    println!( "{:?}", existing_feeds );
+
     let existing_frames = table( "Frames" )
     .select()
     .project( "id, published" )
     .execute( &mut *self.storage.lock().await )
     .await?
     ;
-
+    println!( "{:?}", existing_frames );
     let mut new_entries = Vec::new();
     let mut modified_entries = Vec::new();
 
@@ -257,28 +285,13 @@ impl FeedStore for FeedStorage< SledStorage >
           }
         ).collect_vec();
 
-        if existing_ids.contains( &&feed.id )
+        if !existing_ids.contains( &&feed.id )
         {
-          // self.save_feed(  )
-          // let insert = table( "Feeds" )
-          // .insert()
-          // .columns
-          // (
-          //   "id,
-          //   title,
-          //   updated,
-          //   authors,
-          //   description,
-          //   published",
-          // )
-          // .values( entries_rows )
-          // .execute( &mut *self.storage.lock().await )
-          // .await?
-          // ;
+          self.save_feed( vec![ feed.clone() ] ).await?;
           
-          new_entries.extend( feed.entries.clone().into_iter().zip( std::iter::repeat( feed.id.clone() ).take( feed.entries.len() ) ) )
+          new_entries.extend( feed.entries.clone().into_iter().zip( std::iter::repeat( feed.id.clone() ).take( feed.entries.len() ) ) );
+          continue;
         }
-        continue;
       }
       if let Some( rows ) = existing_frames.select()
       {
@@ -328,7 +341,7 @@ impl FeedStore for FeedStorage< SledStorage >
     
     if new_entries.len() > 0
     {
-      self.save_feed( new_entries ).await?;
+      self.save_frames( new_entries ).await?;
     }
     if modified_entries.len() > 0
     {
@@ -336,6 +349,24 @@ impl FeedStore for FeedStorage< SledStorage >
     }
     
     Ok( () )
+  }
+}
+
+pub struct FeedRow( Vec< ExprNode< 'static > > );
+
+impl From< feed_rs::model::Feed > for FeedRow
+{
+  fn from( value : feed_rs::model::Feed ) -> Self
+  {
+    let mut row = Vec::new();
+    row.push( text( value.id.clone() ) );
+    row.push( value.title.clone().map( | title | text( title.content ) ).unwrap_or( null() ) );
+    row.push( value.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ) );
+    row.push( text( value.authors.iter().map( | p | p.name.clone() ).fold( String::new(), | acc, val | format!( "{}, {}", acc, val ) ) ).to_owned() );
+    row.push( value.description.clone().map( | desc | text( desc.content ) ).unwrap_or( null() ) );
+    row.push( value.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ) );
+
+    FeedRow( row )
   }
 }
 
