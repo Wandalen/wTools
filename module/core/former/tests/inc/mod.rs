@@ -1,8 +1,5 @@
 use super::*;
 
-#[ allow( unused_imports ) ]
-use test_tools::meta::*;
-
 mod a_primitives_manual_test;
 mod a_containers_without_runtime_manual_test;
 mod a_containers_without_runtime_test;
@@ -27,12 +24,11 @@ mod unsigned_primitive_types;
 mod perform;
 
 mod parametrized_struct_manual;
+// mod parametrized_struct; // xx
 
 mod subformer_basic_manual;
-// mod subformer_basic;
+// mod subformer_basic; // xxx
 mod subformer_wrap_hashmap_manual;
-
-//
 
 only_for_terminal_module!
 {

@@ -1,7 +1,8 @@
 #[ test ]
-fn command()
+fn command_form()
 {
 
+  // form
   let got = Command::< &str >::former()
   .name( "a" )
   .form();
@@ -12,6 +13,7 @@ fn command()
   };
   a_id!( got, exp );
 
+  // perform
   let got = Command::< &str >::former()
   .name( "a" )
   .perform();
@@ -22,6 +24,7 @@ fn command()
   };
   a_id!( got, exp );
 
+  // end
   let got = Command::< &str >::former()
   .name( "a" )
   .end();

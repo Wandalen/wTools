@@ -98,6 +98,12 @@ where
   }
 
   #[ inline( always ) ]
+  pub fn perform( self ) -> Command< K >
+  {
+    self.form()
+  }
+
+  #[ inline( always ) ]
   pub fn new() -> CommandFormer< K >
   {
     CommandFormer::< K >::begin
@@ -105,12 +111,6 @@ where
       None,
       former::ReturnContainer,
     )
-  }
-
-  #[ inline( always ) ]
-  pub fn perform( self ) -> Command< K >
-  {
-    self.form()
   }
 
   #[ inline( always ) ]
