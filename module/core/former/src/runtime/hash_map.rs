@@ -32,7 +32,7 @@ where
   K : core::cmp::Eq + core::hash::Hash,
   HashMap : HashMapLike< K, E > + core::default::Default,
   // ContainerEnd : Fn( &mut Context, core::option::Option< HashMap > ),
-  ContainerEnd : OnEnd< HashMap, Context >,
+  ContainerEnd : ToSuperFormer< HashMap, Context >,
 {
   container : core::option::Option< HashMap >,
   context : core::option::Option< Context >,
@@ -46,7 +46,7 @@ HashMapSubformer< K, E, HashMap, Context, ContainerEnd >
 where
   K : core::cmp::Eq + core::hash::Hash,
   HashMap : HashMapLike< K, E > + core::default::Default,
-  ContainerEnd : OnEnd< HashMap, Context >,
+  ContainerEnd : ToSuperFormer< HashMap, Context >,
 {
 
   /// Form current former into target structure.
@@ -89,7 +89,7 @@ where
   pub fn end( mut self ) -> Context
   {
     let on_end = self.on_end.take().unwrap();
-    let context = self.context.take().unwrap();
+    let context = self.context.take();
     let container = self.form();
     on_end.call( container, context )
   }
@@ -109,7 +109,7 @@ HashMapSubformer< K, E, HashMap, Context, ContainerEnd >
 where
   K : core::cmp::Eq + core::hash::Hash,
   HashMap : HashMapLike< K, E > + core::default::Default,
-  ContainerEnd : OnEnd< HashMap, Context >,
+  ContainerEnd : ToSuperFormer< HashMap, Context >,
 {
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.

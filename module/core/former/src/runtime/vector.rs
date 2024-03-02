@@ -26,7 +26,7 @@ impl< E > VectorLike< E > for std::vec::Vec< E >
 pub struct VectorSubformer< E, Vector, Context, ContainerEnd >
 where
   Vector : VectorLike< E > + core::fmt::Debug + core::cmp::PartialEq + core::default::Default,
-  ContainerEnd : OnEnd< Vector, Context >,
+  ContainerEnd : ToSuperFormer< Vector, Context >,
 {
   // container : Option< Vector >,
   // context : Context,
@@ -40,7 +40,7 @@ where
 impl< E, Vector, Context, ContainerEnd > VectorSubformer< E, Vector, Context, ContainerEnd >
 where
   Vector : VectorLike< E > + core::fmt::Debug + core::cmp::PartialEq + core::default::Default,
-  ContainerEnd : OnEnd< Vector, Context >,
+  ContainerEnd : ToSuperFormer< Vector, Context >,
 {
 
   /// Form current former into target structure.
@@ -86,7 +86,7 @@ where
   pub fn end( mut self ) -> Context
   {
     let on_end = self.on_end.take().unwrap();
-    let context = self.context.take().unwrap();
+    let context = self.context.take();
     let container = self.form();
     on_end.call( container, context )
   }

@@ -14,7 +14,7 @@
 // ca.execute( input ).unwrap();
 
 #[ test ]
-fn basic()
+fn command()
 {
 
   let got = Command::< &str >::former()
@@ -29,12 +29,36 @@ fn basic()
   };
   a_id!( got, exp );
 
+  let got = Command::< &str >::former()
+  .name( "a" )
+  .subject( "b" )
+  .perform();
+  let exp = Command::< &str >
+  {
+    name : "a".to_string(),
+    subject : "b".to_string(),
+    properties : std::collections::HashMap::< &str, Property< &str > >::new(),
+  };
+  a_id!( got, exp );
+
+  let got = Command::< &str >::former()
+  .name( "a" )
+  .subject( "b" )
+  .end();
+  let exp = Command::< &str >
+  {
+    name : "a".to_string(),
+    subject : "b".to_string(),
+    properties : std::collections::HashMap::< &str, Property< &str > >::new(),
+  };
+  a_id!( got, exp );
+
 }
 
 //
 
 #[ test ]
-fn properties()
+fn command_properties()
 {
 
   // with helper
@@ -92,8 +116,8 @@ fn aggregator()
   // with helper
   let got = Aggregator::< &str >::former()
   .parameter1( "p1" )
+  .commands().insert( "name1", CommandFormer::< &str >::new().name( "name1" ).subject( "s" ).end() ).end()
   .command( "command1".to_string() )
-    // .name( "a" )
     .subject( "b" )
     .property( "property1", "simple property", 13isize )
     .property( "property2", "simple property 3", 113isize )
@@ -105,6 +129,12 @@ fn aggregator()
   .form()
   ;
 
+  let name1 = Command::< &str >
+  {
+    name : "name1".to_string(),
+    subject : "s".to_string(),
+    properties : hmap!{},
+  };
   let command1 = Command::< &str >
   {
     name : "command1".to_string(),
@@ -127,10 +157,47 @@ fn aggregator()
   let exp = Aggregator
   {
     parameter1 : "p1".to_string(),
-    commands : hmap!{ "command1" => command1, "command2" => command2 },
+    commands : hmap!{ "name1" => name1, "command1" => command1, "command2" => command2 },
   };
   dbg!( &got );
   dbg!( &exp );
+  a_id!( got, exp );
+
+}
+
+//
+
+#[ test ]
+fn aggregator_alternative_form()
+{
+
+  let exp = Aggregator::< &str >::former()
+  .parameter1( "p1" )
+  .command( "command1".to_string() )
+    .subject( "b" )
+    .property( "property2", "simple property 3", 113isize )
+    .end()
+  .form()
+  ;
+
+  let got = Aggregator::< &str >::former()
+  .parameter1( "p1" )
+  .command( "command1".to_string() )
+    .subject( "b" )
+    .property( "property2", "simple property 3", 113isize )
+    .end()
+  .perform()
+  ;
+  a_id!( got, exp );
+
+  let got = Aggregator::< &str >::former()
+  .parameter1( "p1" )
+  .command( "command1".to_string() )
+    .subject( "b" )
+    .property( "property2", "simple property 3", 113isize )
+    .end()
+  .end()
+  ;
   a_id!( got, exp );
 
 }

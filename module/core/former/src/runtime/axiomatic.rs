@@ -1,18 +1,18 @@
 
 
 /// Handler which is called on end of subforming to return origina context.
-pub trait OnEnd< T, Context >
+pub trait ToSuperFormer< T, Context >
 {
   /// Function to call.
-  fn call( &self, container : T, context : Context ) -> Context;
+  fn call( &self, container : T, context : core::option::Option< Context > ) -> Context;
 }
 
-impl< T, Context, F > OnEnd< T, Context > for F
+impl< T, Context, F > ToSuperFormer< T, Context > for F
 where
-  F : Fn( T, Context ) -> Context,
+  F : Fn( T, core::option::Option< Context > ) -> Context,
 {
   #[ inline( always ) ]
-  fn call( &self, container : T, context : Context ) -> Context
+  fn call( &self, container : T, context : core::option::Option< Context > ) -> Context
   {
     self( container, context )
   }
@@ -22,25 +22,25 @@ where
 #[ derive( Debug, Default ) ]
 pub struct NoEnd;
 
-impl< T, Context > OnEnd< T, Context >
+impl< T, Context > ToSuperFormer< T, Context >
 for NoEnd
 {
   #[ inline( always ) ]
-  fn call( &self, _container : T, context : Context ) -> Context
+  fn call( &self, _container : T, context : core::option::Option< Context > ) -> Context
   {
-    context
+    context.unwrap()
   }
 }
 
 /// Don't do any processing, but return container instrad of context.
 #[ derive( Debug, Default ) ]
-pub struct JustContainerEnd;
+pub struct ReturnContainer;
 
-impl< T > OnEnd< T, T >
-for JustContainerEnd
+impl< T > ToSuperFormer< T, T >
+for ReturnContainer
 {
   #[ inline( always ) ]
-  fn call( &self, container : T, _context : T ) -> T
+  fn call( &self, container : T, _context : core::option::Option< T > ) -> T
   {
     container
   }

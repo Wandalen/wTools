@@ -31,7 +31,7 @@ pub struct HashSetSubformer< E, HashSet, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
   HashSet : HashSetLike< E > + core::default::Default,
-  ContainerEnd : OnEnd< HashSet, Context >,
+  ContainerEnd : ToSuperFormer< HashSet, Context >,
 {
   container : core::option::Option< HashSet >,
   context : core::option::Option< Context >,
@@ -44,7 +44,7 @@ HashSetSubformer< E, HashSet, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
   HashSet : HashSetLike< E > + core::default::Default,
-  ContainerEnd : OnEnd< HashSet, Context >,
+  ContainerEnd : ToSuperFormer< HashSet, Context >,
 {
 
   /// Form current former into target structure.
@@ -86,18 +86,10 @@ where
   pub fn end( mut self ) -> Context
   {
     let on_end = self.on_end.take().unwrap();
-    let context = self.context.take().unwrap();
+    let context = self.context.take();
     let container = self.form();
     on_end.call( container, context )
   }
-
-  // #[ inline( always ) ]
-  // pub fn end( mut self ) -> Context
-  // {
-  //   let container = self.container.take();
-  //   ( self.on_end )( &mut self.context, container );
-  //   self.context
-  // }
 
   /// Set the whole container instead of setting each element individually.
   #[ inline( always ) ]

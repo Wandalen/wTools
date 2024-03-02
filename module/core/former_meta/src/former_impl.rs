@@ -434,18 +434,6 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///
 /// Generate a former setter for the field.
 ///
-/// ### Basic use-case. of output
-///
-/// ```compile_fail
-/// pub fn int_1< Src >( mut self, src : Src ) -> Self
-/// where Src : Into< i32 >,
-/// {
-///   debug_assert!( self.int_1.is_none() );
-///   self.int_1 = Some( src.into() );
-///   self
-/// }
-/// ```
-///
 
 #[ inline ]
 fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
@@ -551,12 +539,13 @@ fn subformer_field_setter
       #( #params, )*
       #non_optional_type,
       Self,
-      impl Fn( #non_optional_type, Self ) -> Self,
+      impl Fn( #non_optional_type, core::option::Option< Self > ) -> Self,
     >
     {
       let container = self.#setter_name.take();
-      let on_end = | container : #non_optional_type, mut former : Self | -> Self
+      let on_end = | container : #non_optional_type, former : core::option::Option< Self > | -> Self
       {
+        let mut former = former.unwrap();
         former.#setter_name = Some( container );
         former
       };
@@ -570,11 +559,11 @@ fn subformer_field_setter
   //   String,
   //   std::collections::HashMap< String, String >,
   //   Struct1Former,
-  //   impl Fn( std::collections::HashMap< String, String >, Self ) -> Self
+  //   impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self
   // >
   // {
   //   let container = self.hashmap_strings_1.take();
-  //   let on_end = | container : std::collections::HashMap< String, String >, mut former : Self | -> Self
+  //   let on_end = | container : std::collections::HashMap< String, String >, mut former : core::option::Option< Self > | -> Self
   //   {
   //     former.hashmap_strings_1 = Some( container );
   //     former
