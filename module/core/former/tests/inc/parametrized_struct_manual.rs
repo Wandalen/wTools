@@ -158,11 +158,11 @@ where
   >
   {
     let container = self.properties.take();
-    let on_end = | container : std::collections::HashMap< K, Property< K > >, former : core::option::Option< Self > | -> Self
+    let on_end = | container : std::collections::HashMap< K, Property< K > >, super_former : core::option::Option< Self > | -> Self
     {
-      let mut former = former.unwrap();
-      former.properties = Some( container );
-      former
+      let mut super_former = super_former.unwrap();
+      super_former.properties = Some( container );
+      super_former
     };
     former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
   }

@@ -106,11 +106,11 @@ impl Struct1Former
   >
   {
     let container = self.vec_1.take();
-    let on_end = | container : Vec< String >, former : core::option::Option< Self > | -> Self
+    let on_end = | container : Vec< String >, super_former : core::option::Option< Self > | -> Self
     {
-      let mut former = former.unwrap();
-      former.vec_1 = Some( container );
-      former
+      let mut super_former = super_former.unwrap();
+      super_former.vec_1 = Some( container );
+      super_former
     };
     former::runtime::VectorSubformer::begin( Some( self ), container, on_end )
   }
@@ -125,11 +125,11 @@ impl Struct1Former
   >
   {
     let container = self.hashmap_strings_1.take();
-    let on_end = | container : std::collections::HashMap< String, String >, former : core::option::Option< Self > | -> Self
+    let on_end = | container : std::collections::HashMap< String, String >, super_former : core::option::Option< Self > | -> Self
     {
-      let mut former = former.unwrap();
-      former.hashmap_strings_1 = Some( container );
-      former
+      let mut super_former = super_former.unwrap();
+      super_former.hashmap_strings_1 = Some( container );
+      super_former
     };
     former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
   }
@@ -143,11 +143,11 @@ impl Struct1Former
   >
   {
     let container = self.hashset_strings_1.take();
-    let on_end = | container : std::collections::HashSet< String >, former : core::option::Option< Self > | -> Self
+    let on_end = | container : std::collections::HashSet< String >, super_former : core::option::Option< Self > | -> Self
     {
-      let mut former = former.unwrap();
-      former.hashset_strings_1 = Some( container );
-      former
+      let mut super_former = super_former.unwrap();
+      super_former.hashset_strings_1 = Some( container );
+      super_former
     };
     former::runtime::HashSetSubformer::begin( Some( self ), container, on_end )
   }

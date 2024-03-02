@@ -199,11 +199,11 @@ where
   >
   {
     let container = self.properties.take();
-    let on_end = | container : std::collections::HashMap< K, Property< K > >, former : core::option::Option< Self > | -> Self
+    let on_end = | container : std::collections::HashMap< K, Property< K > >, super_former : core::option::Option< Self > | -> Self
     {
-      let mut former = former.unwrap();
-      former.properties = Some( container );
-      former
+      let mut super_former = super_former.unwrap();
+      super_former.properties = Some( container );
+      super_former
     };
     former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
   }
@@ -385,11 +385,11 @@ where
   >
   {
     let container = self.commands.take();
-    let on_end = | container : std::collections::HashMap< String, Command< K > >, former : core::option::Option< Self > | -> Self
+    let on_end = | container : std::collections::HashMap< String, Command< K > >, super_former : core::option::Option< Self > | -> Self
     {
-      let mut former = former.unwrap();
-      former.commands = Some( container );
-      former
+      let mut super_former = super_former.unwrap();
+      super_former.commands = Some( container );
+      super_former
     };
     former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
   }
@@ -399,10 +399,10 @@ where
   where
     K : core::hash::Hash + std::cmp::Eq,
   {
-    let on_end = | command : Command< K >, former : core::option::Option< Self > | -> Self
+    let on_end = | command : Command< K >, super_former : core::option::Option< Self > | -> Self
     {
-      let mut former = former.unwrap();
-      if let Some( ref mut commands ) = former.commands
+      let mut super_former = super_former.unwrap();
+      if let Some( ref mut commands ) = super_former.commands
       {
         commands.insert( command.name.clone(), command );
       }
@@ -410,9 +410,9 @@ where
       {
         let mut commands : std::collections::HashMap< String, Command< K > > = Default::default();
         commands.insert( command.name.clone(), command );
-        former.commands = Some( commands );
+        super_former.commands = Some( commands );
       }
-      former
+      super_former
     };
     let former = CommandFormer::begin( Some( self ), on_end );
     former.name( name )
