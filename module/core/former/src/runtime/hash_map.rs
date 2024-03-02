@@ -31,7 +31,6 @@ pub struct HashMapSubformer< K, E, HashMap, Context, ContainerEnd >
 where
   K : core::cmp::Eq + core::hash::Hash,
   HashMap : HashMapLike< K, E > + core::default::Default,
-  // ContainerEnd : Fn( &mut Context, core::option::Option< HashMap > ),
   ContainerEnd : ToSuperFormer< HashMap, Context >,
 {
   container : core::option::Option< HashMap >,

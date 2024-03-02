@@ -26,8 +26,11 @@ mod conflict;
 mod unsigned_primitive_types;
 mod perform;
 
-mod subformer_wrap_hashmap_manual;
+mod parametrized_struct_manual;
+
 mod subformer_basic_manual;
+// mod subformer_basic;
+mod subformer_wrap_hashmap_manual;
 
 //
 
