@@ -28,7 +28,7 @@ mod parametrized_struct_imm;
 mod parametrized_struct_where;
 
 mod subformer_basic_manual;
-// mod subformer_basic; // xxx
+mod subformer_basic; // xxx
 mod subformer_wrap_hashmap_manual;
 
 only_for_terminal_module!
