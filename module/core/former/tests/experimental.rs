@@ -8,5 +8,5 @@ use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
 use former as TheModule;
 
-#[ path = "./inc/parametrized_struct.rs" ]
-mod parametrized_struct;
+// #[ path = "./inc/parametrized_struct.rs" ]
+// mod parametrized_struct_imm;

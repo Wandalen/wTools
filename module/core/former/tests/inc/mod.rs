@@ -24,7 +24,8 @@ mod unsigned_primitive_types;
 mod perform;
 
 mod parametrized_struct_manual;
-// mod parametrized_struct; // xx
+mod parametrized_struct_imm;
+mod parametrized_struct_where;
 
 mod subformer_basic_manual;
 // mod subformer_basic; // xxx

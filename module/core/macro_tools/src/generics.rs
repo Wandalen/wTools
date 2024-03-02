@@ -65,7 +65,6 @@ pub( crate ) mod private
   ///
   /// assert_eq!( got, exp );
 
-  ///
   pub fn merge( a : &syn::Generics, b : &syn::Generics ) -> syn::Generics
   {
 
@@ -110,6 +109,80 @@ pub( crate ) mod private
 
     result
   }
+
+  /// Extracts parameter names from the given `Generics`,
+  /// dropping bounds, defaults, and the where clause.
+  ///
+  /// This function simplifies the generics to include only the names of the type parameters,
+  /// lifetimes, and const parameters, without any of their associated bounds or default values.
+  /// The resulting `Generics` will have an empty where clause.
+  ///
+  /// # Arguments
+  ///
+  /// * `generics` - The `Generics` instance from which to extract parameter names.
+  ///
+  /// # Returns
+  ///
+  /// Returns a new `Generics` instance containing only the names of the parameters.
+  ///
+  /// # Examples
+  ///
+  /// ```rust
+  /// # use macro_tools::syn::parse_quote;
+  ///
+  /// let mut generics : syn::Generics = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > };
+  /// generics.where_clause = parse_quote!{ where T: std::fmt::Debug };
+  /// // let generics : Generics = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > where T: std::fmt::Debug };
+  /// let simplified_generics = macro_tools::generics::params_names( &generics );
+  ///
+  /// assert_eq!( simplified_generics.params.len(), 4 ); // Contains T, U, 'a, and N
+  /// assert!( simplified_generics.where_clause.is_none() ); // Where clause is removed
+  /// ```
+
+  pub fn params_names( generics : &syn::Generics ) -> syn::Generics
+  {
+    use syn::{ Generics, GenericParam, LifetimeDef, TypeParam, ConstParam };
+
+    let result = Generics
+    {
+      params : generics.params.iter().map( | param | match param
+      {
+        GenericParam::Type( TypeParam { ident, .. } ) => GenericParam::Type( TypeParam
+        {
+          attrs : Vec::new(),
+          ident : ident.clone(),
+          colon_token : None,
+          bounds : Default::default(),
+          eq_token : None,
+          default : None,
+        }),
+        GenericParam::Lifetime( LifetimeDef { lifetime, .. } ) => GenericParam::Lifetime( LifetimeDef
+        {
+          attrs : Vec::new(),
+          lifetime : lifetime.clone(),
+          colon_token : None,
+          bounds : Default::default(),
+        }),
+        GenericParam::Const( ConstParam { ident, ty, .. } ) => GenericParam::Const( ConstParam
+        {
+          attrs : Vec::new(),
+          const_token : Default::default(),
+          ident : ident.clone(),
+          colon_token : Default::default(),
+          ty : ty.clone(),
+          eq_token : Default::default(),
+          default : None,
+        }),
+      }).collect(),
+      where_clause : None,
+      lt_token : generics.lt_token,
+      gt_token : generics.gt_token,
+    };
+
+    result
+  }
+
+
 }
 
 #[ doc( inline ) ]
@@ -125,6 +198,9 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::private::merge;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::params_names;
 }
 
 /// Orphan namespace of the module.
@@ -143,7 +219,6 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
-    // private::GenericsAnalysis,
   };
 }
 

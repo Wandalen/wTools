@@ -248,7 +248,7 @@ fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 /// ```
 ///
 
-#[inline]
+#[ inline( always ) ]
 fn field_none_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 {
   let ident = Some( field.ident.clone() );
@@ -274,7 +274,7 @@ fn field_none_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 /// ```
 ///
 
-#[inline]
+#[ inline( always ) ]
 fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 {
   let ident = Some( field.ident.clone() );
@@ -315,7 +315,7 @@ fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 /// ```
 ///
 
-#[inline]
+#[ inline( always ) ]
 fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
 {
   let ident = field.ident;
@@ -425,7 +425,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 /// Extract name of a field out.
 ///
 
-#[inline]
+#[ inline( always ) ]
 fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 {
   field.ident.clone()
@@ -625,21 +625,46 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   };
 
   let name_ident = &ast.ident;
-  let generics = &ast.generics;
-  let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
   let former_name = format!( "{}Former", name_ident );
   let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
 
-  // let mut extra_generics : syn::Generics = parse_quote!{ < Context = #name_ident #generics_ty, End = former::ReturnContainer > };
-  // extra_generics.where_clause = parse_quote!{ where V : Sized };
-  // let generics2 = generics::merge( &generics, &extra_generics );
-  // let ( generics2_impl, generics2_ty, generics2_where ) = generics2.split_for_impl();
+  let generics = &ast.generics;
+  let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
+  // macro_tools::code_print!( generics_ty );
+  // let _generics_params : syn::Generics = syn::parse( qt!( generics_ty ).into() )?;
+  // let generics_params = _generics_params.params;
+  // macro_tools::code_print!( generics_params );
+  let _generics_params = generics::params_names( generics ).params;
+  let generics_params = if _generics_params.len() == 0
+  {
+    qt!{}
+  }
+  else
+  {
+    qt!{ #_generics_params, }
+  };
+  // macro_tools::code_print!( generics_params );
 
-  // impl< K, Context, End >
-  // CommandFormer< K, Context, End >
+
+  // add embedded generic parameters
+  let mut extra_generics : syn::Generics = parse_quote!{ < Context = #name_ident #generics_ty, End = former::ReturnContainer > };
+  extra_generics.where_clause = parse_quote!{ where End : former::ToSuperFormer< #name_ident #generics_ty, Context >, };
+  let generics_of_former = generics::merge( &generics, &extra_generics );
+  let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
+  let generics_of_former_with_defaults = generics_of_former.params.clone();
+  // macro_tools::code_print!( generics_of_former_with_defaults );
+  // macro_tools::code_print!( extra_generics );
+
+  // pub struct CommandFormer< K, Context = Command< K >, End = former::ReturnContainer >
   // where
   //   K : core::hash::Hash + std::cmp::Eq,
   //   End : former::ToSuperFormer< Command< K >, Context >,
+  // {
+  //   name : core::option::Option< String >,
+  //   properties : core::option::Option< std::collections::HashMap< K, Property< K > > >,
+  //   context : core::option::Option< Context >,
+  //   on_end : core::option::Option< End >,
+  // }
 
   // use heck::ToSnakeCase;
   // let former_snake = name_ident.to_string().to_snake_case();
@@ -733,33 +758,44 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   let result = qt!
   {
 
-    // let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
-    impl #generics_impl #name_ident #generics_ty #generics_where
+      // pub struct xxx {}
+
+    #[ automatically_derived ]
+    impl #generics_impl #name_ident #generics_ty
+    #generics_where
     {
       ///
       /// Make former, variation of builder pattern to form structure defining values of fields step by step.
       ///
-      #[inline]
-      pub fn former() -> #former_name_ident #generics_ty
+      #[ inline( always ) ]
+      pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
       {
-        #former_name_ident
-        {
-          #( #fields_none, )*
-        }
+        // #former_name_ident :: new()
+        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnContainer > :: new()
+        // #former_name_ident
+        // {
+        //   #( #fields_none, )*
+        // }
       }
     }
 
     #[ doc = #doc_former_struct ]
     #[ automatically_derived ]
-    pub struct #former_name_ident #generics_ty
+    pub struct #former_name_ident < #generics_of_former_with_defaults >
+    #generics_of_former_where
     {
       #(
         /// A field
         #fields_optional,
       )*
+      context : core::option::Option< Context >,
+      on_end : core::option::Option< End >,
+      // xxx : use double underscore
     }
 
-    impl #generics_impl #former_name_ident #generics_ty
+    #[ automatically_derived ]
+    impl #generics_of_former_impl #former_name_ident #generics_of_former_ty
+    #generics_of_former_where
     {
 
       ///
@@ -767,7 +803,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       ///
       /// `perform` has no effect on method `form`, but change behavior and returned type of mehod `perform`.
       ///
-      #[inline]
+      #[ inline( always ) ]
       pub fn form( mut self ) -> #name_ident #generics_ty
       {
         #( #fields_form )*
@@ -778,66 +814,65 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
         return result;
       }
 
-      #(
-        #fields_setter
-      )*
-
       ///
       /// Finish setting options and call perform on formed entity.
       ///
       /// If `perform` defined then associated method is called and its result returned instead of entity.
       /// For example `perform()` of structure with : `#[ perform( fn after1() -> &str > )` returns `&str`.
       ///
-      #[inline]
+      #[ inline( always ) ]
       pub fn perform #perform_generics ( self ) -> #perform_output
       {
         let result = self.form();
         #perform
       }
 
-//       ///
-//       /// Construct new instance of former with default parameters.
-//       ///
-//       #[ inline( always ) ]
-//       pub fn new() -> CommandFormer< K >
-//       {
-//         CommandFormer::< K >::begin
-//         (
-//           None,
-//           former::ReturnContainer,
-//         )
-//       }
-//
-//       ///
-//       /// Begin the process of forming. Expects context of forming to return it after forming.
-//       ///
-//       #[ inline( always ) ]
-//       pub fn begin
-//       (
-//         context :  core::option::Option< Context >,
-//         on_end : End,
-//       ) -> Self
-//       {
-//         Self
-//         {
-//           name : None,
-//           properties : None,
-//           context : context,
-//           on_end : Some( on_end ),
-//         }
-//       }
-//
-//       ///
-//       /// End the process of forming returning original context of forming.
-//       ///
-//       #[ inline( always ) ]
-//       pub fn end( mut self ) -> Context
-//       {
-//         let on_end = self.on_end.take().unwrap();
-//         let context = self.context.take();
-//         let container = self.form();
-//         on_end.call( container, context )
-//       }
+      ///
+      /// Construct new instance of former with default parameters.
+      ///
+      #[ inline( always ) ]
+      pub fn new() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
+      {
+        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnContainer > :: begin
+        (
+          None,
+          former::ReturnContainer,
+        )
+      }
+
+      ///
+      /// Begin the process of forming. Expects context of forming to return it after forming.
+      ///
+      #[ inline( always ) ]
+      pub fn begin
+      (
+        context :  core::option::Option< Context >,
+        on_end : End,
+      ) -> Self
+      {
+        Self
+        {
+          #( #fields_none, )*
+          context : context,
+          on_end : ::core::option::Option::Some( on_end ),
+        }
+      }
+
+      ///
+      /// End the process of forming returning original context of forming.
+      ///
+      #[ inline( always ) ]
+      pub fn end( mut self ) -> Context
+      {
+        let on_end = self.on_end.take().unwrap();
+        let context = self.context.take();
+        let container = self.form();
+        on_end.call( container, context )
+      }
+
+      #(
+        #fields_setter
+      )*
 
     }
 
