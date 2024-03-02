@@ -630,6 +630,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   let former_name = format!( "{}Former", name_ident );
   let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
 
+  // let mut extra_generics : syn::Generics = parse_quote!{ < Context = #name_ident #generics_ty, End = former::ReturnContainer > };
+  // extra_generics.where_clause = parse_quote!{ where V : Sized };
+  // let generics2 = generics::merge( &generics, &extra_generics );
+  // let ( generics2_impl, generics2_ty, generics2_where ) = generics2.split_for_impl();
+
   // impl< K, Context, End >
   // CommandFormer< K, Context, End >
   // where

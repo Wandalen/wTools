@@ -6,7 +6,8 @@
 pub mod attr;
 pub mod container_kind;
 pub mod diagnostics;
-pub mod generic_analyze; // xxx
+pub mod generic_analyze;
+pub mod generics;
 pub mod name;
 pub mod quantifier;
 pub mod typ;
@@ -40,6 +41,7 @@ pub mod protected
     attr::orphan::*,
     container_kind::orphan::*,
     generic_analyze::orphan::*,
+    generics::orphan::*,
     diagnostics::orphan::*,
     name::orphan::*,
     quantifier::orphan::*,
@@ -74,6 +76,7 @@ pub mod exposed
     attr::exposed::*,
     container_kind::exposed::*,
     generic_analyze::exposed::*,
+    generics::exposed::*,
     diagnostics::exposed::*,
     name::exposed::*,
     quantifier::exposed::*,
@@ -95,9 +98,6 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::interval_adapter::prelude::*;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::type_constructor::prelude::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -141,6 +141,7 @@ pub mod prelude
     attr::prelude::*,
     container_kind::prelude::*,
     generic_analyze::prelude::*,
+    generics::prelude::*,
     diagnostics::prelude::*,
     name::prelude::*,
     quantifier::prelude::*,

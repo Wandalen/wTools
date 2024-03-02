@@ -216,7 +216,7 @@ pub mod exposed
     Result,
     // type_rightmost,
     // type_parameters,
-    // attr_pair_single,
+    // eq_pair,
   };
 
 }
