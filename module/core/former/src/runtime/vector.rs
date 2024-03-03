@@ -23,29 +23,26 @@ impl< E > VectorLike< E > for std::vec::Vec< E >
 ///
 
 #[ derive( Debug, Default ) ]
-pub struct VectorSubformer< E, Vector, Context, ContainerEnd >
+pub struct VectorSubformer< E, Container, Context, ContainerEnd >
 where
-  Vector : VectorLike< E > + core::fmt::Debug + core::cmp::PartialEq + core::default::Default,
-  ContainerEnd : ToSuperFormer< Vector, Context >,
+  Container : VectorLike< E > + core::default::Default,
+  ContainerEnd : ToSuperFormer< Container, Context >,
 {
-  // container : Option< Vector >,
-  // context : Context,
-  // on_end : ContainerEnd,
-  container : core::option::Option< Vector >,
+  container : core::option::Option< Container >,
   context : core::option::Option< Context >,
   on_end : core::option::Option< ContainerEnd >,
   _phantom : core::marker::PhantomData< E >,
 }
 
-impl< E, Vector, Context, ContainerEnd > VectorSubformer< E, Vector, Context, ContainerEnd >
+impl< E, Container, Context, ContainerEnd > VectorSubformer< E, Container, Context, ContainerEnd >
 where
-  Vector : VectorLike< E > + core::fmt::Debug + core::cmp::PartialEq + core::default::Default,
-  ContainerEnd : ToSuperFormer< Vector, Context >,
+  Container : VectorLike< E > + core::default::Default,
+  ContainerEnd : ToSuperFormer< Container, Context >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  fn form( mut self ) -> Vector
+  fn form( mut self ) -> Container
   {
     let container = if self.container.is_some()
     {
@@ -59,12 +56,24 @@ where
     container
   }
 
+  /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
+  #[ inline( always ) ]
+  pub fn new() -> VectorSubformer< E, Container, Container, impl ToSuperFormer< Container, Container > >
+  {
+    VectorSubformer::begin
+    (
+      None,
+      None,
+      crate::ReturnContainer,
+    )
+  }
+
   /// Make a new VectorSubformer. It should be called by a context generated for your structure.
   #[ inline( always ) ]
   pub fn begin
   (
     context : core::option::Option< Context >,
-    container : core::option::Option< Vector >,
+    container : core::option::Option< Container >,
     on_end : ContainerEnd
   ) -> Self
   {
@@ -91,18 +100,9 @@ where
     on_end.call( container, context )
   }
 
-  // /// Return context of your struct moving container there. Should be called after configuring the container.
-  // #[ inline( always ) ]
-  // pub fn end( mut self ) -> Context
-  // {
-  //   let container = self.container.take();
-  //   ( self.on_end )( &mut self.context, container );
-  //   self.context
-  // }
-
   /// Set the whole container instead of setting each element individually.
   #[ inline( always ) ]
-  pub fn replace( mut self, vector : Vector ) -> Self
+  pub fn replace( mut self, vector : Container ) -> Self
   {
     self.container = Some( vector );
     self
@@ -125,6 +125,3 @@ where
   }
 
 }
-
-// pub type VectorFormerStdVec< Context, E > =
-//   VectorSubformer< E, std::vec::Vec< E >, Context, impl Fn( &mut Context, core::option::Option< std::vec::Vec< E > > ) >;

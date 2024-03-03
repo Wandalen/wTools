@@ -27,29 +27,29 @@ where
 ///
 
 #[ derive( Debug, Default ) ]
-pub struct HashSetSubformer< E, HashSet, Context, ContainerEnd >
+pub struct HashSetSubformer< E, Container, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
-  HashSet : HashSetLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< HashSet, Context >,
+  Container : HashSetLike< E > + core::default::Default,
+  ContainerEnd : ToSuperFormer< Container, Context >,
 {
-  container : core::option::Option< HashSet >,
+  container : core::option::Option< Container >,
   context : core::option::Option< Context >,
   on_end : core::option::Option< ContainerEnd >,
   _e_phantom : core::marker::PhantomData< E >,
 }
 
-impl< E, HashSet, Context, ContainerEnd >
-HashSetSubformer< E, HashSet, Context, ContainerEnd >
+impl< E, Container, Context, ContainerEnd >
+HashSetSubformer< E, Container, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
-  HashSet : HashSetLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< HashSet, Context >,
+  Container : HashSetLike< E > + core::default::Default,
+  ContainerEnd : ToSuperFormer< Container, Context >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  fn form( mut self ) -> HashSet
+  fn form( mut self ) -> Container
   {
     let container = if self.container.is_some()
     {
@@ -63,12 +63,24 @@ where
     container
   }
 
+  /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
+  #[ inline( always ) ]
+  pub fn new() -> HashSetSubformer< E, Container, Container, impl ToSuperFormer< Container, Container > >
+  {
+    HashSetSubformer::begin
+    (
+      None,
+      None,
+      crate::ReturnContainer,
+    )
+  }
+
   /// Make a new HashSetSubformer. It should be called by a context generated for your structure.
   #[ inline( always ) ]
   pub fn begin
   (
     context : core::option::Option< Context >,
-    container : core::option::Option< HashSet >,
+    container : core::option::Option< Container >,
     on_end : ContainerEnd,
   ) -> Self
   {
@@ -93,7 +105,7 @@ where
 
   /// Set the whole container instead of setting each element individually.
   #[ inline( always ) ]
-  pub fn replace( mut self, container : HashSet ) -> Self
+  pub fn replace( mut self, container : Container ) -> Self
   {
     self.container = Some( container );
     self

@@ -394,6 +394,16 @@ where
     former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
   }
 
+}
+
+// manual
+impl< K, Context, End >
+AggregatorFormer< K, Context, End >
+where
+  K : core::hash::Hash + std::cmp::Eq,
+  End : former::ToSuperFormer< Aggregator< K >, Context >,
+{
+
   #[ inline( always ) ]
   pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< K, Self, impl former::ToSuperFormer< Command< K >, Self > >
   where
