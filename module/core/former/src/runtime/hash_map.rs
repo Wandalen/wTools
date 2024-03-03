@@ -27,25 +27,25 @@ where
 ///
 
 #[ derive( Debug, Default ) ]
-pub struct HashMapSubformer< K, E, HashMap, Context, ContainerEnd >
+pub struct HashMapSubformer< K, E, HashMap, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   HashMap : HashMapLike< K, E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< HashMap, Context >,
+  End : ToSuperFormer< HashMap, Context >,
 {
   container : core::option::Option< HashMap >,
   context : core::option::Option< Context >,
-  on_end : core::option::Option< ContainerEnd >,
+  on_end : core::option::Option< End >,
   _e_phantom : core::marker::PhantomData< E >,
   _k_phantom : core::marker::PhantomData< K >,
 }
 
-impl< K, E, HashMap, Context, ContainerEnd >
-HashMapSubformer< K, E, HashMap, Context, ContainerEnd >
+impl< K, E, HashMap, Context, End >
+HashMapSubformer< K, E, HashMap, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   HashMap : HashMapLike< K, E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< HashMap, Context >,
+  End : ToSuperFormer< HashMap, Context >,
 {
 
   /// Form current former into target structure.
@@ -64,13 +64,15 @@ where
     container
   }
 
+  // xxx : add new
+
   /// Make a new HashMapSubformer. It should be called by a context generated for your structure.
   #[ inline( always ) ]
   pub fn begin
   (
     context : core::option::Option< Context >,
     container : core::option::Option< HashMap >,
-    on_end : ContainerEnd,
+    on_end : End,
   ) -> Self
   {
     Self
@@ -103,12 +105,12 @@ where
 
 }
 
-impl< K, E, HashMap, Context, ContainerEnd >
-HashMapSubformer< K, E, HashMap, Context, ContainerEnd >
+impl< K, E, HashMap, Context, End >
+HashMapSubformer< K, E, HashMap, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   HashMap : HashMapLike< K, E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< HashMap, Context >,
+  End : ToSuperFormer< HashMap, Context >,
 {
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
