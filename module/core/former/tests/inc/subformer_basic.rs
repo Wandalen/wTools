@@ -17,6 +17,8 @@ use super::*;
 // ;
 // ca.execute( input ).unwrap();
 
+// == property
+
 #[ derive( Debug, PartialEq, Default ) ]
 pub struct Property< Name >
 {
@@ -39,6 +41,8 @@ impl< Name > Property< Name >
   }
 }
 
+// == command
+
 #[ derive( Debug, PartialEq, former::Former ) ]
 pub struct Command< K >
 where
@@ -46,6 +50,7 @@ where
 {
   pub name : String,
   pub subject : String,
+  #[ subformer( former::HashMapSubformer ) ]
   pub properties : std::collections::HashMap< K, Property< K > >,
 }
 
@@ -92,6 +97,7 @@ where
   K : core::hash::Hash + std::cmp::Eq,
 {
   pub parameter1 : String,
+  #[ subformer( former::HashMapSubformer ) ]
   pub commands : std::collections::HashMap< String, Command< K > >,
 }
 
@@ -103,12 +109,11 @@ where
   End : former::ToSuperFormer< Aggregator< K >, Context >,
 {
 
-  // xxx : use Into< String >
   #[ inline( always ) ]
-  pub fn command( self, name : String ) -> CommandFormer< K, Self, impl former::ToSuperFormer< Command< K >, Self > >
+  pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< K, Self, impl former::ToSuperFormer< Command< K >, Self > >
   where
     K : core::hash::Hash + std::cmp::Eq,
-    // IntoName : core::convert::Into< String >,
+    IntoName : core::convert::Into< String >,
   {
     let on_end = | command : Command< K >, super_former : core::option::Option< Self > | -> Self
     {
@@ -133,4 +138,4 @@ where
 
 // ==
 
-// include!( "only_test/subformer_basic.rs" );
+include!( "only_test/subformer_basic.rs" );

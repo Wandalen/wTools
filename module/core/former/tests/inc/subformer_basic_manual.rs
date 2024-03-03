@@ -395,9 +395,10 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn command( self, name : String ) -> CommandFormer< K, Self, impl former::ToSuperFormer< Command< K >, Self > >
+  pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< K, Self, impl former::ToSuperFormer< Command< K >, Self > >
   where
     K : core::hash::Hash + std::cmp::Eq,
+    IntoName : core::convert::Into< String >,
   {
     let on_end = | command : Command< K >, super_former : core::option::Option< Self > | -> Self
     {
