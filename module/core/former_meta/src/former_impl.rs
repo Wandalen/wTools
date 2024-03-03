@@ -137,6 +137,7 @@ impl syn::parse::Parse for AttributeDefault
 }
 
 // qqq : xxx : implement test for setter
+// qqq : xxx : update documentation
 
 ///
 /// Attribute to enable/disable setter generation.
@@ -300,16 +301,16 @@ fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 ///
 /// Generate code converting a field of the former to the field of the structure.
 ///
-/// ### Basic use-case. of output
+/// ### Example of generated code
 ///
-/// ```compile_fail
-/// let int_1 = if self.int_1.is_some()
+/// ```ignore
+/// let int_1 = if self.container.int_1.is_some()
 /// {
-///   self.int_1.take().unwrap()
+///   self.container.int_1.take().unwrap()
 /// }
 /// else
 /// {
-///   let val : i32 = Default::default();
+///   let val : i32 = core::default::Default::default();
 ///   val
 /// };
 /// ```
@@ -344,9 +345,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
     qt!
     {
-      let #ident = if self.#ident.is_some()
+      let #ident = if self.container.#ident.is_some()
       {
-        ::core::option::Option::Some( self.#ident.take().unwrap() )
+        ::core::option::Option::Some( self.container.#ident.take().unwrap() )
       }
       else
       {
@@ -392,6 +393,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
           ( &::core::marker::PhantomData::< #ty > ).maybe_default()
         };
+        // qqq : xxx : test that and document example of generated code
       }
     }
     else
@@ -405,9 +407,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
     qt!
     {
-      let #ident = if self.#ident.is_some()
+      let #ident = if self.container.#ident.is_some()
       {
-        self.#ident.take().unwrap()
+        self.container.#ident.take().unwrap()
       }
       else
       {
@@ -434,6 +436,19 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///
 /// Generate a former setter for the field.
 ///
+/// # Example of output
+/// ```ignore
+/// #[ doc = "Setter for the '#field_ident' field." ]
+/// #[inline]
+/// pub fn int_1< Src >( mut self, src : Src ) -> Self
+/// where
+///   Src : ::core::convert::Into< i32 >,
+/// {
+///   debug_assert!( self.int_1.is_none() );
+///   self.container.int_1 = ::core::option::Option::Some( src.into() );
+///   self
+/// }
+/// ```
 
 #[ inline ]
 fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
@@ -460,10 +475,9 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
     field_setter( ident, ident, non_optional_ty )
   };
 
-  if let Some( alias_attr ) = &field.attrs.alias
+  let r = if let Some( alias_attr ) = &field.attrs.alias
   {
     let alias_tokens = field_setter( ident, &alias_attr.alias, non_optional_ty );
-
     let token = qt!
     {
       #setter_tokens
@@ -474,8 +488,10 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
   else
   {
     Ok( setter_tokens )
-  }
+  };
 
+  // tree_print!( r.as_ref().unwrap() );
+  r
 }
 
 ///
@@ -498,8 +514,8 @@ fn field_setter
     pub fn #setter_name< Src >( mut self, src : Src ) -> Self
     where Src : ::core::convert::Into< #non_optional_type >,
     {
-      debug_assert!( self.#field_ident.is_none() );
-      self.#field_ident = ::core::option::Option::Some( src.into() );
+      debug_assert!( self.container.#field_ident.is_none() );
+      self.container.#field_ident = ::core::option::Option::Some( src.into() );
       self
     }
   }
@@ -508,6 +524,27 @@ fn field_setter
 ///
 /// Generate a sub-former setter for the 'field_ident' with the 'setter_name' name.
 ///
+/// # Example of generated code
+///
+/// ```ignore
+/// pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapSubformer
+/// <
+///   String,
+///   String,
+///   std::collections::HashMap< String, String >,
+///   Struct1Former,
+///   impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self
+/// >
+/// {
+///   let container = self.hashmap_strings_1.take();
+///   let on_end = | container : std::collections::HashMap< String, String >, mut former : core::option::Option< Self > | -> Self
+///   {
+///     former.hashmap_strings_1 = Some( container );
+///     former
+///   };
+///   former::runtime::HashMapSubformer::begin( self, container, on_end )
+/// }
+/// ```
 
 #[ inline ]
 fn subformer_field_setter
@@ -542,34 +579,16 @@ fn subformer_field_setter
       impl Fn( #non_optional_type, core::option::Option< Self > ) -> Self,
     >
     {
-      let container = self.#setter_name.take();
+      let container = self.container.#setter_name.take();
       let on_end = | container : #non_optional_type, former : core::option::Option< Self > | -> Self
       {
         let mut former = former.unwrap();
-        former.#setter_name = Some( container );
+        former.container.#setter_name = Some( container );
         former
       };
       #subformer_type::begin( Some( self ), container, on_end )
     }
   }
-
-  // pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapSubformer
-  // <
-  //   String,
-  //   String,
-  //   std::collections::HashMap< String, String >,
-  //   Struct1Former,
-  //   impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self
-  // >
-  // {
-  //   let container = self.hashmap_strings_1.take();
-  //   let on_end = | container : std::collections::HashMap< String, String >, mut former : core::option::Option< Self > | -> Self
-  //   {
-  //     former.hashmap_strings_1 = Some( container );
-  //     former
-  //   };
-  //   former::runtime::HashMapSubformer::begin( self, container, on_end )
-  // }
 
 }
 
@@ -624,16 +643,18 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     Err( err ) => return Err( err ),
   };
 
+  /* names */
+
   let name_ident = &ast.ident;
   let former_name = format!( "{}Former", name_ident );
   let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
+  let former_container_name = format!( "{}FormerContainer", name_ident );
+  let former_container_name_ident = syn::Ident::new( &former_container_name, name_ident.span() );
+
+  /* generic parameters */
 
   let generics = &ast.generics;
   let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
-  // macro_tools::code_print!( generics_ty );
-  // let _generics_params : syn::Generics = syn::parse( qt!( generics_ty ).into() )?;
-  // let generics_params = _generics_params.params;
-  // macro_tools::code_print!( generics_params );
   let _generics_params = generics::params_names( generics ).params;
   let generics_params = if _generics_params.len() == 0
   {
@@ -643,8 +664,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   {
     qt!{ #_generics_params, }
   };
-  // macro_tools::code_print!( generics_params );
-
 
   // add embedded generic parameters
   let mut extra_generics : syn::Generics = parse_quote!{ < Context = #name_ident #generics_ty, End = former::ReturnContainer > };
@@ -665,11 +684,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   //   context : core::option::Option< Context >,
   //   on_end : core::option::Option< End >,
   // }
-
-  // use heck::ToSnakeCase;
-  // let former_snake = name_ident.to_string().to_snake_case();
-  // let former_mod = format!( "{}_former", former_snake );
-  // let former_mod_ident = syn::Ident::new( &former_mod, name_ident.span() );
 
   /* structure attribute */
 
@@ -779,18 +793,51 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       }
     }
 
-    #[ doc = #doc_former_struct ]
-    #[ automatically_derived ]
-    pub struct #former_name_ident < #generics_of_former_with_defaults >
-    #generics_of_former_where
+    #[ doc = "Container of a correcsponding former." ]
+    pub struct #former_container_name_ident #generics_ty
+    #generics_where
+    // where
+    //   K : core::hash::Hash + std::cmp::Eq,
     {
       #(
         /// A field
         #fields_optional,
       )*
+      // name : core::option::Option< String >,
+      // properties : core::option::Option< std::collections::HashMap< K, Property< K > > >,
+    }
+
+    impl #generics_impl core::default::Default for #former_container_name_ident #generics_ty
+    #generics_where
+    // where
+    //   K : core::hash::Hash + std::cmp::Eq,
+    {
+
+      #[ inline( always ) ]
+      fn default() -> Self
+      {
+        Self
+        {
+          #( #fields_none, )*
+          // name : None,
+          // properties : None,
+        }
+      }
+
+    }
+
+    #[ doc = #doc_former_struct ]
+    #[ automatically_derived ]
+    pub struct #former_name_ident < #generics_of_former_with_defaults >
+    #generics_of_former_where
+    {
+      // #(
+      //   /// A field
+      //   #fields_optional,
+      // )*
+      container : #former_container_name_ident #generics_ty,
       context : core::option::Option< Context >,
       on_end : core::option::Option< End >,
-      // xxx : use double underscore
     }
 
     #[ automatically_derived ]
@@ -852,7 +899,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       {
         Self
         {
-          #( #fields_none, )*
+          // #( #fields_none, )*
+          container : core::default::Default::default(),
           context : context,
           on_end : ::core::option::Option::Some( on_end ),
         }

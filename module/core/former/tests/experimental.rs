@@ -9,4 +9,7 @@ use test_tools::exposed::*;
 use former as TheModule;
 
 // #[ path = "./inc/parametrized_struct.rs" ]
-// mod parametrized_struct_imm;
+// mod experimental;
+
+#[ path = "./inc/name_conflict.rs" ]
+mod experimental;
