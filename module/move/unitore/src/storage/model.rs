@@ -4,9 +4,10 @@ use gluesql::
   core::
   {
     ast_builder::{ null, text, timestamp, ExprNode },
-    chrono::SecondsFormat,
+    chrono::{ SecondsFormat, Utc },
   },
 };
+use crate::storage::SubscriptionConfig;
 
 pub struct FeedRow( pub Vec< ExprNode< 'static > > );
 
@@ -96,5 +97,22 @@ impl From< ( Entry, String ) > for FrameRow
     let language = entry.language.clone().map( | l | text( l ) ).unwrap_or( null() );
 
     FrameRow( vec![ id, title, updated, authors, content,links, summary, categories, published, source, rights, media, language, feed_id ] )
+  }
+}
+
+pub struct SubscriptionRow( pub Vec< ExprNode< 'static > > );
+
+impl From< SubscriptionConfig > for SubscriptionRow
+{
+  fn from( value : SubscriptionConfig ) -> Self
+  {
+    let mut row = SubscriptionRow( vec!
+    [
+      text( value.link ),
+      text( value.period.as_secs().to_string() ),
+      timestamp( Utc::now().to_rfc3339_opts( SecondsFormat::Millis, true ) )
+    ] );
+
+    row
   }
 }
