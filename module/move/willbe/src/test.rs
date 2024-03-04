@@ -18,8 +18,8 @@ mod private
     /// `channels` - A set of Cargo channels that are to be tested.
     pub channels : HashSet< cargo::Channel >,
 
-    /// `parallel` - A boolean value indicating whether the tests should be run in parallel.
-    pub parallel : bool,
+    /// `parallel` - A usize value indicating how much test`s can be run at the same time.
+    pub parallel : u32,
 
     /// `power` - An integer value indicating the power or intensity of testing.
     pub power : u32,
@@ -212,30 +212,36 @@ mod private
   /// Run tests for given packages.
   pub fn run_tests( args : &TestArgs, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
-    let mut report = TestsReport::default();
-    let mut pool = ThreadPoolBuilder::new().use_current_thread();
-    pool = if args.parallel { pool } else { pool.num_threads( 1 ) };
-    let pool = pool.build().unwrap();
+    let report = Arc::new( Mutex::new( TestsReport::default() ) );
+    let pool = ThreadPoolBuilder::new().use_current_thread().num_threads( args.parallel as usize ).build().unwrap();
     pool.scope
     (
-      | _ |
+      | s |
       {
         for package in packages
-        { 
-          match run_test( &args, package, dry )
-          { 
-            Ok( r ) => 
+        {
+          let report = report.clone();
+          s.spawn
+          (
+            move | _ | 
             {
-              report.succses_reports.push( r );
+              match run_test( &args, package, dry )
+              {
+                Ok( r ) =>
+                { 
+                  report.lock().unwrap().succses_reports.push( r );
+                }
+                Err(( r, _ )) => 
+                { 
+                  report.lock().unwrap().failure_reports.push( r );
+                }
+              }
             }
-            Err(( r, _ )) =>
-            { 
-              report.failure_reports.push( r );
-            }
-          }
+          );
         }
       }
     );
+    let report = Arc::into_inner( report ).unwrap().into_inner().unwrap();
     if report.failure_reports.is_empty()
     {
       Ok( report )

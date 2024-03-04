@@ -23,8 +23,8 @@ mod private
     with_stable : bool,
     #[ default( true ) ]
     with_nightly : bool,
-    #[ default( true ) ]
-    parallel : bool,
+    #[ default( 0u32 ) ]
+    parallel : u32,
     #[ default( 1u32 ) ]
     power : u32,
     include : Vec< String >,
@@ -77,7 +77,7 @@ mod private
       this = if let Some( v ) = value.get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_stable" ) { this.with_stable::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_nightly" ) { this.with_nightly::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "parallel" ) { this.parallel::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "parallel" ) { this.parallel::< u32 >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "power" ) { this.power::< u32 >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "include" ) { this.include::< Vec< String > >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "exclude" ) { this.exclude::< Vec< String > >( v ) } else { this };
