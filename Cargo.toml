@@ -112,7 +112,7 @@ path = "module/alias/fundamental_data_type"
 default-features = false
 
 [workspace.dependencies.variadic_from]
-version = "~0.4.0"
+version = "~0.5.0"
 path = "module/core/variadic_from"
 default-features = false
 features = [ "enabled" ]
