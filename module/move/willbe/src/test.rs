@@ -65,7 +65,7 @@ mod private
       {
         writeln!( f, "channel : {channel} | features : [ {} ]", if feature.is_empty() { "no-features" } else { feature } )?;
       }
-      writeln!( f, "\nModule: {} :", self.package_name )?;
+      writeln!( f, "\n=== Module: {} :", self.package_name )?;
       if self.tests.is_empty()
       {
         writeln!( f, "unlucky" )?;
