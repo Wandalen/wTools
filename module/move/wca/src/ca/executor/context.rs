@@ -3,8 +3,6 @@ pub( crate ) mod private
   use std::{ sync::Arc, cell::RefCell };
   use anymap::{ Map, any::CloneAny };
 
-  // CloneAny needs to deep clone of Context
-  #[ derive( Debug, Clone, former::Former ) ]
   /// Container for contexts values
   ///
   /// # Examples:
@@ -39,6 +37,9 @@ pub( crate ) mod private
   /// }
   /// assert_eq!( 1, *ctx.get_ref().unwrap() );
   /// ```
+  // CloneAny needs to deep clone of Context
+  // qqq : ?
+  #[ derive( Debug, Clone, former::Former ) ]
   pub struct Context
   {
     inner : Arc< RefCell< Map::< dyn CloneAny > > >
@@ -49,11 +50,11 @@ pub( crate ) mod private
     /// Initialize Context with some value
     pub fn with< T : CloneAny >( mut self, value : T ) -> Self
     {
-      if self.inner.is_none()
+      if self.container.inner.is_none()
       {
-        self.inner = Some( Arc::new( RefCell::new( Map::< dyn CloneAny >::new() ) ) );
+        self.container.inner = Some( Arc::new( RefCell::new( Map::< dyn CloneAny >::new() ) ) );
       }
-      self.inner.as_ref().map( | inner | inner.borrow_mut().insert( value ) );
+      self.container.inner.as_ref().map( | inner | inner.borrow_mut().insert( value ) );
       self
     }
   }

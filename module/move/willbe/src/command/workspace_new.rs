@@ -5,7 +5,6 @@ mod private
 
   use wca::{ Args, Props };
   use wtools::error::{ anyhow::Context, Result };
-  use crate::endpoint::list::ListFormat;
 
   #[ derive( Former ) ]
   struct WorkspaceNewProperties

@@ -75,6 +75,7 @@ pub struct Stats
 
   pub starting_point : Point,
   pub differences : Vec< Vec< f64 > >,
+  pub positive_change : Vec< usize >,
 }
 
 impl Stats
@@ -82,7 +83,7 @@ impl Stats
   pub fn new( starting_point : Point) -> Self
   {
     let dimensions = starting_point.coords.len();
-    Self { starting_point, differences : vec![ Vec::new(); dimensions ] }
+    Self { starting_point, differences : vec![ Vec::new(); dimensions ], positive_change : vec![ 0; dimensions ] }
   }
 
   pub fn record_diff( &mut self, start_point : &Point, point : &Point )
@@ -90,6 +91,17 @@ impl Stats
     for i in 0..start_point.coords.len()
     {
       self.differences[ i ].push( ( start_point.coords[ i ] - point.coords[ i ] ).into() )
+    }
+  }
+
+  pub fn record_positive_change( &mut self, prev_point : &Point, point : &Point )
+  {
+    for i in 0..point.coords.len()
+    {
+      if ( prev_point.coords[ i ] - point.coords[ i ] ).abs() > 0.0
+      {
+        self.positive_change[ i ] += 1;
+      }
     }
   }
 }
@@ -552,7 +564,8 @@ where R : RangeBounds< f64 > + Sync,
         let second_worst = res[ res.len() - 2 ].1;
         if res[ 0 ].clone().1 <= reflection_score && reflection_score < second_worst
         {
-          res.pop();
+          let prev_point = res.pop().unwrap().0;
+          stats.record_positive_change( &prev_point, &x_ref );
           res.push( ( x_ref, reflection_score ) );
           continue;
         }
@@ -572,13 +585,15 @@ where R : RangeBounds< f64 > + Sync,
   
           if expansion_score < reflection_score
           {
-            res.pop();
+            let prev_point = res.pop().unwrap().0;
+            stats.record_positive_change( &prev_point, &x_exp );
             res.push( ( x_exp, expansion_score ) );
             continue;
           }
           else 
           {
-            res.pop();
+            let prev_point = res.pop().unwrap().0;
+            stats.record_positive_change( &prev_point, &x_ref );
             res.push( ( x_ref, reflection_score ) );
             continue;
           }
@@ -596,7 +611,8 @@ where R : RangeBounds< f64 > + Sync,
   
         if contraction_score < worst_dir.1
         {
-          res.pop();
+          let prev_point = res.pop().unwrap().0;
+          stats.record_positive_change( &prev_point, &x_con );
           res.push( ( x_con, contraction_score ) );
           continue;
         }

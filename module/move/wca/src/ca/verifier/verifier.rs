@@ -53,12 +53,12 @@ pub( crate ) mod private
     /// Insert a command to the commands list
     pub fn command( mut self, command : Command ) -> Self
     {
-      let mut commands = self.commands.unwrap_or_default();
+      let mut commands = self.container.commands.unwrap_or_default();
 
       let command_variants = commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
       command_variants.push( command );
 
-      self.commands = Some( commands );
+      self.container.commands = Some( commands );
       self
     }
 
@@ -67,7 +67,7 @@ pub( crate ) mod private
     where
       V : Into< Vec< Command > >
     {
-      let mut self_commands = self.commands.unwrap_or_default();
+      let mut self_commands = self.container.commands.unwrap_or_default();
 
       for command in commands.into()
       {
@@ -75,7 +75,7 @@ pub( crate ) mod private
         command_variants.push( command );
       }
 
-      self.commands = Some( self_commands );
+      self.container.commands = Some( self_commands );
       self
     }
   }

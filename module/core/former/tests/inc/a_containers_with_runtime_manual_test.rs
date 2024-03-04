@@ -102,14 +102,15 @@ impl Struct1Former
     String,
     Vec< String >,
     Struct1Former,
-    impl Fn( Vec< String >, Self ) -> Self
+    impl Fn( Vec< String >, core::option::Option< Self > ) -> Self
   >
   {
     let container = self.vec_1.take();
-    let on_end = | container : Vec< String >, mut former : Self | -> Self
+    let on_end = | container : Vec< String >, super_former : core::option::Option< Self > | -> Self
     {
-      former.vec_1 = Some( container );
-      former
+      let mut super_former = super_former.unwrap();
+      super_former.vec_1 = Some( container );
+      super_former
     };
     former::runtime::VectorSubformer::begin( Some( self ), container, on_end )
   }
@@ -120,14 +121,15 @@ impl Struct1Former
     String,
     std::collections::HashMap< String, String >,
     Struct1Former,
-    impl Fn( std::collections::HashMap< String, String >, Self ) -> Self
+    impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self
   >
   {
     let container = self.hashmap_strings_1.take();
-    let on_end = | container : std::collections::HashMap< String, String >, mut former : Self | -> Self
+    let on_end = | container : std::collections::HashMap< String, String >, super_former : core::option::Option< Self > | -> Self
     {
-      former.hashmap_strings_1 = Some( container );
-      former
+      let mut super_former = super_former.unwrap();
+      super_former.hashmap_strings_1 = Some( container );
+      super_former
     };
     former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
   }
@@ -137,14 +139,15 @@ impl Struct1Former
     String,
     std::collections::HashSet< String >,
     Struct1Former,
-    impl Fn( std::collections::HashSet< String >, Self ) -> Self
+    impl Fn( std::collections::HashSet< String >, core::option::Option< Self > ) -> Self
   >
   {
     let container = self.hashset_strings_1.take();
-    let on_end = | container : std::collections::HashSet< String >, mut former : Self | -> Self
+    let on_end = | container : std::collections::HashSet< String >, super_former : core::option::Option< Self > | -> Self
     {
-      former.hashset_strings_1 = Some( container );
-      former
+      let mut super_former = super_former.unwrap();
+      super_former.hashset_strings_1 = Some( container );
+      super_former
     };
     former::runtime::HashSetSubformer::begin( Some( self ), container, on_end )
   }

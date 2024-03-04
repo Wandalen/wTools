@@ -78,6 +78,16 @@ mod reflect_struct_manual_test;
 mod reflect_struct_in_struct_manual_test;
 #[ cfg( feature = "derive_reflect" ) ]
 mod reflect_struct_with_lifetime_manual_test;
+#[ cfg( feature = "derive_reflect" ) ]
+mod reflect_slice_test;
+#[ cfg( feature = "derive_reflect" ) ]
+mod reflect_vec_test;
+#[ cfg( feature = "derive_reflect" ) ]
+mod reflect_hashset_test;
+#[ cfg( feature = "derive_reflect" ) ]
+mod reflect_hashmap_test;
+#[ cfg( feature = "derive_reflect" ) ]
+mod reflect_array_test;
 
 // #[ cfg( all( feature = "type_variadic_from" ) ) ]
 // mod variadic_from_manual_test;

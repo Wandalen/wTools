@@ -1,7 +1,7 @@
 use super::*;
 
 ///
-/// Trait HashMapLike adopter for HashMap-like containers.
+/// Trait HashMapLike adopter for Container-like containers.
 ///
 
 pub trait HashMapLike< K, E >
@@ -27,31 +27,30 @@ where
 ///
 
 #[ derive( Debug, Default ) ]
-pub struct HashMapSubformer< K, E, HashMap, Context, ContainerEnd >
+pub struct HashMapSubformer< K, E, Container, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  HashMap : HashMapLike< K, E > + core::default::Default,
-  // ContainerEnd : Fn( &mut Context, core::option::Option< HashMap > ),
-  ContainerEnd : OnEnd< HashMap, Context >,
+  Container : HashMapLike< K, E > + core::default::Default,
+  End : ToSuperFormer< Container, Context >,
 {
-  container : core::option::Option< HashMap >,
+  container : core::option::Option< Container >,
   context : core::option::Option< Context >,
-  on_end : core::option::Option< ContainerEnd >,
+  on_end : core::option::Option< End >,
   _e_phantom : core::marker::PhantomData< E >,
   _k_phantom : core::marker::PhantomData< K >,
 }
 
-impl< K, E, HashMap, Context, ContainerEnd >
-HashMapSubformer< K, E, HashMap, Context, ContainerEnd >
+impl< K, E, Container, Context, End >
+HashMapSubformer< K, E, Container, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  HashMap : HashMapLike< K, E > + core::default::Default,
-  ContainerEnd : OnEnd< HashMap, Context >,
+  Container : HashMapLike< K, E > + core::default::Default,
+  End : ToSuperFormer< Container, Context >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn form( mut self ) -> HashMap
+  pub fn form( mut self ) -> Container
   {
     let container = if self.container.is_some()
     {
@@ -65,18 +64,30 @@ where
     container
   }
 
+  /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
+  #[ inline( always ) ]
+  pub fn new() -> HashMapSubformer< K, E, Container, Container, impl ToSuperFormer< Container, Container > >
+  {
+    HashMapSubformer::begin
+    (
+      None,
+      None,
+      crate::ReturnContainer,
+    )
+  }
+
   /// Make a new HashMapSubformer. It should be called by a context generated for your structure.
   #[ inline( always ) ]
   pub fn begin
   (
     context : core::option::Option< Context >,
-    container : core::option::Option< HashMap >,
-    on_end : ContainerEnd,
+    container : core::option::Option< Container >,
+    on_end : End,
   ) -> Self
   {
     Self
     {
-      context : context,
+      context,
       container,
       on_end : Some( on_end ),
       _e_phantom : core::marker::PhantomData,
@@ -89,14 +100,14 @@ where
   pub fn end( mut self ) -> Context
   {
     let on_end = self.on_end.take().unwrap();
-    let context = self.context.take().unwrap();
+    let context = self.context.take();
     let container = self.form();
     on_end.call( container, context )
   }
 
   /// Set the whole container instead of setting each element individually.
   #[ inline( always ) ]
-  pub fn replace( mut self, container : HashMap ) -> Self
+  pub fn replace( mut self, container : Container ) -> Self
   {
     self.container = Some( container );
     self
@@ -104,12 +115,12 @@ where
 
 }
 
-impl< K, E, HashMap, Context, ContainerEnd >
-HashMapSubformer< K, E, HashMap, Context, ContainerEnd >
+impl< K, E, Container, Context, End >
+HashMapSubformer< K, E, Container, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  HashMap : HashMapLike< K, E > + core::default::Default,
-  ContainerEnd : OnEnd< HashMap, Context >,
+  Container : HashMapLike< K, E > + core::default::Default,
+  End : ToSuperFormer< Container, Context >,
 {
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
