@@ -63,9 +63,9 @@ mod private
       writeln!( f, "The tests will be executed using the following configurations:" )?;
       for ( channel, feature ) in self.tests.iter().flat_map( | ( c, f ) | f.iter().map ( |( f, _ )| ( *c, f ) ) )
       {
-        writeln!( f, "channel: {channel} | feature(-s): [{}]", if feature.is_empty() { "no-features" } else { feature } )?;
+        writeln!( f, "channel : {channel} | features : [ {} ]", if feature.is_empty() { "no-features" } else { feature } )?;
       }
-      writeln!( f, "\nPackage: [ {} ]:", self.package_name )?;
+      writeln!( f, "\nModule: {} :", self.package_name )?;
       if self.tests.is_empty()
       {
         writeln!( f, "unlucky" )?;
