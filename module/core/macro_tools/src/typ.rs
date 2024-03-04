@@ -6,6 +6,7 @@
 pub( crate ) mod private
 {
   use super::super::*;
+  use interval_adapter::BoundExt;
   // use crate::exposed::{ Pair, Many };
   // use crate::Result;
 
@@ -37,8 +38,6 @@ pub( crate ) mod private
     }
     None
   }
-
-  use interval_adapter::{ NonIterableInterval, BoundExt };
 
   /// Return the specified number of parameters of the type.
   ///

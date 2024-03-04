@@ -772,8 +772,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   let result = qt!
   {
 
-      // pub struct xxx {}
-
     #[ automatically_derived ]
     impl #generics_impl #name_ident #generics_ty
     #generics_where
@@ -784,33 +782,22 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       #[ inline( always ) ]
       pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
       {
-        // #former_name_ident :: new()
         #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnContainer > :: new()
-        // #former_name_ident
-        // {
-        //   #( #fields_none, )*
-        // }
       }
     }
 
     #[ doc = "Container of a correcsponding former." ]
     pub struct #former_container_name_ident #generics_ty
     #generics_where
-    // where
-    //   K : core::hash::Hash + std::cmp::Eq,
     {
       #(
         /// A field
         #fields_optional,
       )*
-      // name : core::option::Option< String >,
-      // properties : core::option::Option< std::collections::HashMap< K, Property< K > > >,
     }
 
     impl #generics_impl core::default::Default for #former_container_name_ident #generics_ty
     #generics_where
-    // where
-    //   K : core::hash::Hash + std::cmp::Eq,
     {
 
       #[ inline( always ) ]
@@ -819,8 +806,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
         Self
         {
           #( #fields_none, )*
-          // name : None,
-          // properties : None,
         }
       }
 
@@ -831,10 +816,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     pub struct #former_name_ident < #generics_of_former_with_defaults >
     #generics_of_former_where
     {
-      // #(
-      //   /// A field
-      //   #fields_optional,
-      // )*
       container : #former_container_name_ident #generics_ty,
       context : core::option::Option< __FormerContext >,
       on_end : core::option::Option< __FormerEnd >,
@@ -899,7 +880,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       {
         Self
         {
-          // #( #fields_none, )*
           container : core::default::Default::default(),
           context : context,
           on_end : ::core::option::Option::Some( on_end ),

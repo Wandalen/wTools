@@ -5,8 +5,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::exposed::*;
-  use crate::type_rightmost;
+  use crate::*;
+  // use crate::type_rightmost;
 
   ///
   /// Kind of container.
