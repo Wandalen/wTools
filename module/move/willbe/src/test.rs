@@ -6,6 +6,7 @@ mod private
   use std::fmt::Formatter;
   use std::sync::{ Arc, Mutex };
   use cargo_metadata::Package;
+  use colored::Colorize;
   use rayon::ThreadPoolBuilder;
   use crate::process::CmdReport;
   use crate::wtools::error::anyhow::{ Error, format_err };
@@ -65,7 +66,7 @@ mod private
       {
         writeln!( f, "channel : {channel} | features : [ {} ]", if feature.is_empty() { "no-features" } else { feature } )?;
       }
-      writeln!( f, "\n=== Module: {} :", self.package_name )?;
+      writeln!(f, "{} {}", "\n=== Module: {} :".bold(), self.package_name.bold() )?;
       if self.tests.is_empty()
       {
         writeln!( f, "unlucky" )?;
@@ -93,7 +94,7 @@ mod private
             else
             {
               let feature = if feature.is_empty() { "no-features" } else { feature };
-              write!( f, "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out, result.err )?;
+              write!( f, "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out, result.err.replace( "\n", "\n      " ) )?;
             }
           }
         }
