@@ -60,7 +60,6 @@ pub struct HashMapWrapFormer< K, E, Context = std::collections::HashMap< K, E >,
 where
   K : core::hash::Hash + std::cmp::Eq,
   P : ToSuperFormer< std::collections::HashMap< K, E >, Context >,
-  // P : ToSuperFormer< std::collections::HashMap< K, E >, Context >,
 {
   container : core::option::Option< std::collections::HashMap< K, E > >,
   context : core::option::Option< Context >,
@@ -75,7 +74,6 @@ HashMapWrapFormer< K, E, Context, P >
 where
   K : core::cmp::Eq + core::hash::Hash,
   P : ToSuperFormer< std::collections::HashMap< K, E >, Context >,
-  // P : ToSuperFormer< std::collections::HashMap< K, E >, Context >,
 {
 
   #[ inline( always ) ]

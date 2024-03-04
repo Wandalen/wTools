@@ -1,4 +1,4 @@
-// xxx : complete
+// xxx : complete and write tutrial
 use super::*;
 
 // let ca = Aggregator::former()
@@ -16,6 +16,17 @@ use super::*;
 // .perform()
 // ;
 // ca.execute( input ).unwrap();
+
+//
+// - tutorial
+// -- primitives
+// -- custom setter
+// -- custom setter and default attribute
+// -- complex custom setter
+// -- default attribute
+// -- subformers for containers
+// -- custom subformer
+//
 
 // == property
 
