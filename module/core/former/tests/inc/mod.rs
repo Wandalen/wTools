@@ -1,9 +1,9 @@
 use super::*;
 
 mod a_primitives_manual_test;
-mod a_containers_without_runtime_manual_test;  /// xxx : introduce FormerContainer
+mod a_containers_without_runtime_manual_test;
 mod a_containers_without_runtime_test;
-mod a_containers_with_runtime_manual_test;  /// xxx : introduce FormerContainer
+mod a_containers_with_runtime_manual_test;
 mod a_containers_with_runtime_test;
 
 mod default_container;
@@ -33,8 +33,6 @@ mod parametrized_struct_where;
 mod subformer_basic_manual;
 mod subformer_basic; // xxx : complete
 mod subformer_wrap_hashmap_manual;
-
-// mod bug_x; // xxx
 
 only_for_terminal_module!
 {

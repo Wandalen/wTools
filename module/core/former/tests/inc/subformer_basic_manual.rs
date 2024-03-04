@@ -411,7 +411,6 @@ where
     Command< K >,
     std::collections::HashMap< String, Command< K > >,
     AggregatorFormer< K, Context, End >,
-    // impl Fn( std::collections::HashMap< String, Command< K > >, Self ) -> Self,
     impl former::ToSuperFormer< std::collections::HashMap< String, Command< K > >, Self >,
   >
   {
