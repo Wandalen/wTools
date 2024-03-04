@@ -66,7 +66,7 @@ mod private
       {
         writeln!( f, "channel : {channel} | features : [ {} ]", if feature.is_empty() { "no-features" } else { feature } )?;
       }
-      writeln!(f, "{} {}", "\n=== Module: {} :".bold(), self.package_name.bold() )?;
+      writeln!(f, "{} {}", "\n=== Module".bold(), self.package_name.bold() )?;
       if self.tests.is_empty()
       {
         writeln!( f, "unlucky" )?;
@@ -94,7 +94,7 @@ mod private
             else
             {
               let feature = if feature.is_empty() { "no-features" } else { feature };
-              write!( f, "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out, result.err.replace( "\n", "\n      " ) )?;
+              write!( f, "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out.replace( "\n", "\n      " ), result.err.replace( "\n", "\n      " ) )?;
             }
           }
         }
