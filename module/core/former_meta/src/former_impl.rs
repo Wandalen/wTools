@@ -666,23 +666,23 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   };
 
   // add embedded generic parameters
-  let mut extra_generics : syn::Generics = parse_quote!{ < Context = #name_ident #generics_ty, End = former::ReturnContainer > };
-  extra_generics.where_clause = parse_quote!{ where End : former::ToSuperFormer< #name_ident #generics_ty, Context >, };
+  let mut extra_generics : syn::Generics = parse_quote!{ < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnContainer > };
+  extra_generics.where_clause = parse_quote!{ where __FormerEnd : former::ToSuperFormer< #name_ident #generics_ty, __FormerContext >, };
   let generics_of_former = generics::merge( &generics, &extra_generics );
   let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
   let generics_of_former_with_defaults = generics_of_former.params.clone();
   // macro_tools::code_print!( generics_of_former_with_defaults );
   // macro_tools::code_print!( extra_generics );
 
-  // pub struct CommandFormer< K, Context = Command< K >, End = former::ReturnContainer >
+  // pub struct CommandFormer< K, __FormerContext = Command< K >, __FormerEnd = former::ReturnContainer >
   // where
   //   K : core::hash::Hash + std::cmp::Eq,
-  //   End : former::ToSuperFormer< Command< K >, Context >,
+  //   __FormerEnd : former::ToSuperFormer< Command< K >, __FormerContext >,
   // {
   //   name : core::option::Option< String >,
   //   properties : core::option::Option< std::collections::HashMap< K, Property< K > > >,
-  //   context : core::option::Option< Context >,
-  //   on_end : core::option::Option< End >,
+  //   context : core::option::Option< __FormerContext >,
+  //   on_end : core::option::Option< __FormerEnd >,
   // }
 
   /* structure attribute */
@@ -836,8 +836,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       //   #fields_optional,
       // )*
       container : #former_container_name_ident #generics_ty,
-      context : core::option::Option< Context >,
-      on_end : core::option::Option< End >,
+      context : core::option::Option< __FormerContext >,
+      on_end : core::option::Option< __FormerEnd >,
     }
 
     #[ automatically_derived ]
@@ -893,8 +893,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       #[ inline( always ) ]
       pub fn begin
       (
-        context :  core::option::Option< Context >,
-        on_end : End,
+        context :  core::option::Option< __FormerContext >,
+        on_end : __FormerEnd,
       ) -> Self
       {
         Self
@@ -910,7 +910,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn end( mut self ) -> Context
+      pub fn end( mut self ) -> __FormerContext
       {
         let on_end = self.on_end.take().unwrap();
         let context = self.context.take();

@@ -23,7 +23,7 @@ mod private
   use crate::*;
   use crate::path::AbsolutePath;
   use crate::test::*;
-  
+
 	/// Used to store arguments for running tests.
 	///
 	/// - The `dir` field represents the directory of the crate under test.
@@ -32,7 +32,7 @@ mod private
 	/// - The `exclude_features` field is a vector of strings representing the names of features to exclude when running tests.
 	/// - The `include_features` field is a vector of strings representing the names of features to include when running tests.
 	#[ derive( Debug, Former ) ]
-	pub struct TestsCommandArgs
+	pub struct TestsCommandOptions
 	{
 		dir : AbsolutePath,
 		channels : HashSet< cargo::Channel >,
@@ -43,14 +43,14 @@ mod private
 		include_features : Vec< String >,
 		exclude_features : Vec< String >,
 	}
-  
+
 	/// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
 	/// Tests are run with each feature separately, with all features together, and without any features.
 	/// The tests are run in nightly and stable versions of Rust.
 	/// It is possible to enable and disable various features of the crate.
 	/// The function also has the ability to run tests in parallel using `Rayon` crate.
 	/// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
-	pub fn test( args : TestsCommandArgs, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
+	pub fn test( args : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
 	{
     let mut reports = TestsReport::default();
 		// fail fast if some additional installations required
@@ -62,16 +62,16 @@ mod private
 		}
 
 		reports.dry = dry;
-    let TestsCommandArgs
-    { 
-      dir : _ , 
-      channels, 
-      parallel, 
-      power, 
-      include_features, 
-      exclude_features 
+    let TestsCommandOptions
+    {
+      dir : _ ,
+      channels,
+      parallel,
+      power,
+      include_features,
+      exclude_features
     } = args;
-    
+
     let t_args = TestArgs
     {
       channels,
@@ -81,10 +81,10 @@ mod private
       exclude_features,
     };
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
-    
+
     run_tests( &t_args, &packages, dry )
 	}
-  
+
   fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >
 	{
 		let path = if path.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
@@ -96,7 +96,7 @@ mod private
 			path
 		};
 		let metadata = Workspace::with_crate_dir( CrateDir::try_from( path.clone() )? )?;
-		
+
 		let result = metadata
 		.packages()?
 		.into_iter()
@@ -111,5 +111,5 @@ crate::mod_interface!
 {
   /// run all tests in all crates
   exposed use test;
-	protected use TestsCommandArgs;
+	protected use TestsCommandOptions;
 }

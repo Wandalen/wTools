@@ -74,11 +74,11 @@ pub( crate ) mod private
       let hint = hint.into();
       let subject = ValueDescription { hint, kind, optional };
 
-      let mut subjects = self.subjects.unwrap_or_default();
+      let mut subjects = self.container.subjects.unwrap_or_default();
 
       subjects.push( subject );
 
-      self.subjects = Some( subjects );
+      self.container.subjects = Some( subjects );
       self
     }
 
@@ -89,15 +89,15 @@ pub( crate ) mod private
       let hint = hint.into();
       let property = ValueDescription { hint, kind, optional };
 
-      let mut properties = self.properties.unwrap_or_default();
-      let properties_aliases = self.properties_aliases.unwrap_or_default();
+      let mut properties = self.container.properties.unwrap_or_default();
+      let properties_aliases = self.container.properties_aliases.unwrap_or_default();
       debug_assert!( !properties.contains_key( key ), "Property name `{key}` is already used for `{:?}`", properties[ key ] );
       debug_assert!( !properties_aliases.contains_key( key ), "Name `{key}` is already used for `{}` as alias", properties_aliases[ key ] );
 
       properties.insert( key.into(), property );
 
-      self.properties = Some( properties );
-      self.properties_aliases = Some( properties_aliases );
+      self.container.properties = Some( properties );
+      self.container.properties_aliases = Some( properties_aliases );
       self
     }
 
@@ -106,15 +106,15 @@ pub( crate ) mod private
     {
       let key = key.into();
       let alias = alias.into();
-      let properties = self.properties.unwrap_or_default();
-      let mut properties_aliases = self.properties_aliases.unwrap_or_default();
+      let properties = self.container.properties.unwrap_or_default();
+      let mut properties_aliases = self.container.properties_aliases.unwrap_or_default();
       debug_assert!( !properties.contains_key( &alias ), "Name `{key}` is already used for `{:?} as property name`", properties[ &alias ] );
       debug_assert!( !properties_aliases.contains_key( &alias ), "Alias `{alias}` is already used for `{}`", properties_aliases[ &alias ] );
 
       properties_aliases.insert( alias, key );
 
-      self.properties = Some( properties );
-      self.properties_aliases = Some( properties_aliases );
+      self.container.properties = Some( properties );
+      self.container.properties_aliases = Some( properties_aliases );
       self
     }
   }
