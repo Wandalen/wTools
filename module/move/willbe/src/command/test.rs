@@ -10,7 +10,7 @@ mod private
   use wca::{ Args, Props };
   use wtools::error::Result;
   use path::AbsolutePath;
-  use endpoint::test::TestsCommandArgs;
+  use endpoint::test::TestsCommandOptions;
   use former::Former;
   use cargo::Channel;
 
@@ -37,12 +37,12 @@ mod private
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
     let TestsProperties { dry, with_stable, with_nightly, parallel, power, include, exclude } = properties.try_into()?;
-    
+
     let mut channels = HashSet::new();
     if with_stable { channels.insert( Channel::Stable ); }
     if with_nightly { channels.insert( Channel::Nightly ); }
 
-    let args = TestsCommandArgs::former()
+    let args = TestsCommandOptions::former()
     .dir( path )
     .parallel( parallel)
     .channels( channels )

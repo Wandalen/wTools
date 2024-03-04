@@ -4,7 +4,7 @@ use std::path::{ Path, PathBuf };
 use assert_fs::TempDir;
 
 use crate::TheModule::*;
-use endpoint::test::{test, TestsCommandArgs};
+use endpoint::test::{test, TestsCommandOptions};
 use path::AbsolutePath;
 
 #[ test ]
@@ -25,7 +25,7 @@ fn fail_test()
   .unwrap();
   let abs = AbsolutePath::try_from( project ).unwrap();
 
-  let args = TestsCommandArgs::former()
+  let args = TestsCommandOptions::former()
   .dir( abs )
   .channels([ cargo::Channel::Stable ])
   .form();
@@ -58,7 +58,7 @@ fn fail_build()
   .unwrap();
   let abs = AbsolutePath::try_from( project ).unwrap();
 
-  let args = TestsCommandArgs::former()
+  let args = TestsCommandOptions::former()
   .dir( abs )
   .channels([ cargo::Channel::Stable ])
   .form();
@@ -104,7 +104,7 @@ fn call_from_workspace_root()
     assert_eq!(1,1);
   }
   "#);
-  
+
   let workspace = WorkspaceBuilder::new()
   .member( fail_project )
   .member( pass_project )
@@ -113,17 +113,17 @@ fn call_from_workspace_root()
 
   // from workspace root
   let abs = AbsolutePath::try_from( workspace.clone() ).unwrap();
-  
-  let args = TestsCommandArgs::former()
+
+  let args = TestsCommandOptions::former()
   .dir( abs )
   .parallel( false )
   .channels([ cargo::Channel::Stable ])
   .form();
-  
-  
+
+
   let rep = test( args, false ).unwrap_err().0;
 
-  
+
   assert_eq!( rep.failure_reports.len(), 1 );
   assert_eq!( rep.succses_reports.len(), 2 );
 }
@@ -213,13 +213,13 @@ impl WorkspaceBuilder
       toml_content: "[workspace]\nresolver = \"2\"\nmembers = [\n    \"modules/*\",\n]\n".to_string(),
     }
   }
-  
+
   fn member( mut self, project : ProjectBuilder ) -> Self
   {
     self.members.push( project );
     self
   }
-  
+
   fn build<  P: AsRef< Path > >( self, path : P ) -> PathBuf
   {
     let project_path = path.as_ref();

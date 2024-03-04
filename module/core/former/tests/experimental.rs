@@ -8,8 +8,5 @@ use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
 use former as TheModule;
 
-// #[ path = "./inc/parametrized_struct.rs" ]
-// mod experimental;
-
-#[ path = "./inc/name_conflict.rs" ]
-mod experimental;
+// #[ path = "./inc/bug_x.rs" ]
+// mod name_collision_context;
