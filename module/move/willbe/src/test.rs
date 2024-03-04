@@ -2,17 +2,18 @@ mod private
 {
   
   use crate::*;
-  use std::collections::{BTreeMap, BTreeSet, HashSet};
+  use std::collections::{ BTreeMap, BTreeSet, HashSet };
   use std::fmt::Formatter;
-  use std::sync::{Arc, Mutex};
+  use std::sync::{ Arc, Mutex };
   use cargo_metadata::Package;
+  use rayon::ThreadPoolBuilder;
   use crate::process::CmdReport;
-  use crate::wtools::error::anyhow::{Error, format_err};
+  use crate::wtools::error::anyhow::{ Error, format_err };
   use crate::wtools::iter::Itertools;
 
   /// `TestsArgs` is a structure used to store the arguments for tests.
-  #[derive(Debug)]
-  pub struct TestsArgs
+  #[ derive( Debug ) ]
+  pub struct TestArgs
   {
     /// `channels` - A set of Cargo channels that are to be tested.
     pub channels : HashSet< cargo::Channel >,
@@ -101,10 +102,60 @@ mod private
       Ok( () )
     }
   }
+
+  /// Represents a vector of reposts
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct TestsReport
+  {
+    /// A boolean flag indicating whether or not the code is being run in dry mode.
+    ///
+    /// Dry mode is a mode in which the code performs a dry run, simulating the execution
+    /// of certain tasks without actually making any changes. When the `dry` flag is set to
+    /// `true`, the code will not perform any actual actions, but instead only output the
+    /// results it would have produced.
+    ///
+    /// This flag can be useful for testing and debugging purposes, as well as for situations
+    /// where it is important to verify the correctness of the actions being performed before
+    /// actually executing them.
+    pub dry : bool,
+    /// Vector of succses reports.
+    pub succses_reports : Vec< TestReport >,
+    /// Vector of failure reports.
+    pub failure_reports : Vec< TestReport >,
+  }
+
+  impl std::fmt::Display for TestsReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      if self.succses_reports.is_empty() && self.failure_reports.is_empty()
+      {
+        writeln!( f, "The tests have not been run."  )?;
+        return Ok( () );
+      }
+      if !self.succses_reports.is_empty()
+      {
+        writeln!( f, "Successful:" )?;
+        for report in &self.succses_reports
+        {
+          writeln!( f, "{}", report )?;
+        }
+      }
+      if !self.failure_reports.is_empty()
+      {
+        writeln!( f, "Failure:" )?;
+        for report in &self.failure_reports
+        {
+          writeln!( f, "{}", report )?;
+        }
+      }
+      Ok( () )
+    }
+  }
   
   /// `run_tests` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run_tests( args : &TestsArgs, package : Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
+  pub fn run_test( args : &TestArgs, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
   {
     let exclude = args.exclude_features.iter().cloned().collect();
     let mut report = TestReport::default();
@@ -158,7 +209,42 @@ mod private
     if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
   }
   
-  
+  /// Run tests for given packages.
+  pub fn run_tests( args : &TestArgs, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
+  {
+    let mut report = TestsReport::default();
+    let mut pool = ThreadPoolBuilder::new().use_current_thread();
+    pool = if args.parallel { pool } else { pool.num_threads( 1 ) };
+    let pool = pool.build().unwrap();
+    pool.scope
+    (
+      | _ |
+      {
+        for package in packages
+        { 
+          match run_test( &args, package, dry )
+          { 
+            Ok( r ) => 
+            {
+              report.succses_reports.push( r );
+            }
+            Err(( r, _ )) =>
+            { 
+              report.failure_reports.push( r );
+            }
+          }
+        }
+      }
+    );
+    if report.failure_reports.is_empty()
+    {
+      Ok( report )
+    }
+    else
+    {
+      Err(( report, format_err!( "Some tests was failed" ) ))
+    }
+  }
 
   fn print_temp_report( package_name : &str, channels : &HashSet< cargo::Channel >, features : &HashSet< BTreeSet< String > > )
   {
@@ -176,7 +262,9 @@ mod private
 
 crate::mod_interface!
 {
-  protected use TestsArgs;
+  protected use TestArgs;
   protected use TestReport;
+  protected use TestsReport;
+  protected use run_test;
   protected use run_tests;
 }
