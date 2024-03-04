@@ -18,8 +18,8 @@ mod private
     /// `channels` - A set of Cargo channels that are to be tested.
     pub channels : HashSet< cargo::Channel >,
 
-    /// `parallel` - A usize value indicating how much test`s can be run at the same time.
-    pub parallel : u32,
+    /// `concurrent` - A usize value indicating how much test`s can be run at the same time.
+    pub concurrent: u32,
 
     /// `power` - An integer value indicating the power or intensity of testing.
     pub power : u32,
@@ -213,7 +213,7 @@ mod private
   pub fn run_tests( args : &TestArgs, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
     let report = Arc::new( Mutex::new( TestsReport::default() ) );
-    let pool = ThreadPoolBuilder::new().use_current_thread().num_threads( args.parallel as usize ).build().unwrap();
+    let pool = ThreadPoolBuilder::new().use_current_thread().num_threads( args.concurrent as usize ).build().unwrap();
     pool.scope
     (
       | s |

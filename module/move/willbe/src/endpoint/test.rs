@@ -28,7 +28,7 @@ mod private
 	///
 	/// - The `dir` field represents the directory of the crate under test.
 	/// - The `channels` field is a set of `Channel` enums representing the channels for which the tests should be run.
-	/// - The `parallel` field determines how match tests can be run at the same time.
+	/// - The `concurrent` field determines how match tests can be run at the same time.
 	/// - The `exclude_features` field is a vector of strings representing the names of features to exclude when running tests.
 	/// - The `include_features` field is a vector of strings representing the names of features to include when running tests.
 	#[ derive( Debug, Former ) ]
@@ -37,7 +37,7 @@ mod private
 		dir : AbsolutePath,
 		channels : HashSet< cargo::Channel >,
 		#[ default( 0u32 ) ]
-		parallel : u32,
+    concurrent: u32,
     #[ default( 1u32 ) ]
 		power : u32,
 		include_features : Vec< String >,
@@ -66,7 +66,7 @@ mod private
     {
       dir : _ ,
       channels,
-      parallel,
+      concurrent: parallel,
       power,
       include_features,
       exclude_features
@@ -75,7 +75,7 @@ mod private
     let t_args = TestArgs
     {
       channels,
-      parallel,
+      concurrent: parallel,
       power,
       include_features,
       exclude_features,
