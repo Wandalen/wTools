@@ -6,6 +6,7 @@ mod private
   use std::fmt::Formatter;
   use std::sync::{ Arc, Mutex };
   use cargo_metadata::Package;
+  use colored::Colorize;
   use rayon::ThreadPoolBuilder;
   use crate::process::CmdReport;
   use crate::wtools::error::anyhow::{ Error, format_err };
@@ -61,18 +62,18 @@ mod private
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       writeln!( f, "The tests will be executed using the following configurations:" )?;
-      for ( channel, feature ) in self.tests.iter().flat_map( | ( c, f ) | f.iter().map ( |( f, _ )| ( *c, f ) ) )
+      for ( channel, feature ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) ).flat_map( | ( c, f ) | f.iter().map( |( f, _ )| ( *c, f ) ) )
       {
-        writeln!( f, "channel: {channel} | feature(-s): [{}]", if feature.is_empty() { "no-features" } else { feature } )?;
+        writeln!( f, "channel : {channel} | features : [ {} ]", if feature.is_empty() { "no-features" } else { feature } )?;
       }
-      writeln!( f, "\nPackage: [ {} ]:", self.package_name )?;
+      writeln!(f, "{} {}", "\n=== Module".bold(), self.package_name.bold() )?;
       if self.tests.is_empty()
       {
         writeln!( f, "unlucky" )?;
         return Ok( () );
       }
 
-      for ( channel, features ) in &self.tests
+      for ( channel, features ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) )
       {
         for ( feature, result ) in features
         {
@@ -93,7 +94,7 @@ mod private
             else
             {
               let feature = if feature.is_empty() { "no-features" } else { feature };
-              write!( f, "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out, result.err )?;
+              write!( f, "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out.replace( "\n", "\n      " ), result.err.replace( "\n", "\n      " ) )?;
             }
           }
         }
@@ -249,7 +250,7 @@ mod private
   fn print_temp_report( package_name : &str, channels : &HashSet< cargo::Channel >, features : &HashSet< BTreeSet< String > > )
   {
     println!( "Package : {}", package_name );
-    for channel in channels
+    for channel in channels.iter().sorted()
     {
       for feature in features
       {
