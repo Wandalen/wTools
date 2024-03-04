@@ -1,3 +1,4 @@
+use super::*;
 
 ///
 /// Trait HashSetLike adopter for HashSet-like containers.
@@ -26,54 +27,88 @@ where
 ///
 
 #[ derive( Debug, Default ) ]
-pub struct HashSetFormer< E, HashSet, Former, ContainerEnd >
+pub struct HashSetSubformer< E, Container, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
-  HashSet : HashSetLike< E > + core::default::Default,
-  ContainerEnd : Fn( &mut Former, core::option::Option< HashSet > ),
+  Container : HashSetLike< E > + core::default::Default,
+  ContainerEnd : ToSuperFormer< Container, Context >,
 {
-  container : Option< HashSet >,
-  former : Former,
-  on_end : ContainerEnd,
+  container : core::option::Option< Container >,
+  context : core::option::Option< Context >,
+  on_end : core::option::Option< ContainerEnd >,
   _e_phantom : core::marker::PhantomData< E >,
 }
 
-impl< E, HashSet, Former, ContainerEnd >
-HashSetFormer< E, HashSet, Former, ContainerEnd >
+impl< E, Container, Context, ContainerEnd >
+HashSetSubformer< E, Container, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
-  HashSet : HashSetLike< E > + core::default::Default,
-  ContainerEnd : Fn( &mut Former, core::option::Option< HashSet > ),
+  Container : HashSetLike< E > + core::default::Default,
+  ContainerEnd : ToSuperFormer< Container, Context >,
 {
 
-  /// Make a new HashSetFormer. It should be called by a former generated for your structure.
-  pub fn new( former : Former, container : core::option::Option< HashSet >, on_end : ContainerEnd ) -> Self
+  /// Form current former into target structure.
+  #[ inline( always ) ]
+  fn form( mut self ) -> Container
+  {
+    let container = if self.container.is_some()
+    {
+      self.container.take().unwrap()
+    }
+    else
+    {
+      let val = Default::default();
+      val
+    };
+    container
+  }
+
+  /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
+  #[ inline( always ) ]
+  pub fn new() -> HashSetSubformer< E, Container, Container, impl ToSuperFormer< Container, Container > >
+  {
+    HashSetSubformer::begin
+    (
+      None,
+      None,
+      crate::ReturnContainer,
+    )
+  }
+
+  /// Make a new HashSetSubformer. It should be called by a context generated for your structure.
+  #[ inline( always ) ]
+  pub fn begin
+  (
+    context : core::option::Option< Context >,
+    container : core::option::Option< Container >,
+    on_end : ContainerEnd,
+  ) -> Self
   {
     Self
     {
-      former,
+      context : context,
       container,
-      on_end,
+      on_end : Some( on_end ),
       _e_phantom : core::marker::PhantomData,
     }
   }
 
-  /// Set the whole container instead of setting each element individually.
+  /// Return context of your struct moving container there. Should be called after configuring the container.
   #[ inline( always ) ]
-  pub fn replace( mut self, container : HashSet ) -> Self
+  pub fn end( mut self ) -> Context
   {
-    debug_assert!( self.container.is_none() );
-    self.container = Some( container );
-    self
+    let on_end = self.on_end.take().unwrap();
+    let context = self.context.take();
+    let container = self.form();
+    on_end.call( container, context )
   }
 
-  /// Return former of your struct moving container there. Should be called after configuring the container.
+  /// Set the whole container instead of setting each element individually.
   #[ inline( always ) ]
-  pub fn end( mut self ) -> Former
+  pub fn replace( mut self, container : Container ) -> Self
   {
-    let container = self.container.take();
-    ( self.on_end )( &mut self.former, container );
-    self.former
+    self.container = Some( container );
+    self
   }
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.

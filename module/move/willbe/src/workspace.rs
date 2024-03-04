@@ -4,6 +4,7 @@ mod private
 
   use std::path::Path;
   use cargo_metadata::{ Metadata, MetadataCommand, Package };
+  use petgraph::Graph;
 
   use wtools::error::{ for_app::Context, for_lib::Error, Result };
   use path::AbsolutePath;
@@ -152,6 +153,30 @@ mod private
         .iter()
         .find( | &p | p.manifest_path.as_std_path() == manifest_path.as_ref() )
       )
+    }
+
+    /// Returns a graph of packages.
+    pub( crate ) fn graph( &self ) -> Graph< String, String >
+    {
+      let packages = self.packages().unwrap();
+      let module_package_filter: Option< Box< dyn Fn( &cargo_metadata::Package ) -> bool > > = Some
+      (
+        Box::new( move | p | p.publish.is_none() )
+      );
+      let module_dependency_filter: Option< Box< dyn Fn( &cargo_metadata::Package, &cargo_metadata::Dependency) -> bool > > = Some
+      (
+        Box::new
+        (
+          move | _, d | d.path.is_some() && d.kind != cargo_metadata::DependencyKind::Development
+        )
+      );
+      let module_packages_map = packages::filter
+      (
+        packages,
+        packages::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
+      );
+
+      graph::construct( &module_packages_map ).map( | _, x | x.to_string(), | _, x | x.to_string() )
     }
   }
 }

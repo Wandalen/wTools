@@ -5,14 +5,9 @@
 use super::*;
 
 /// Internal namespace.
-pub( crate ) mod private
+pub mod private
 {
   use super::*;
-
-  // qqq : xxx : implement for slice
-  // qqq : xxx : implement for Vec
-  // qqq : xxx : implement for HashMap
-  // qqq : xxx : implement for HashSet
 
   impl< T, const N : usize > Instance for [ T ; N ]
   where
@@ -60,7 +55,7 @@ pub( crate ) mod private
     {
 
       // qqq : write optimal implementation
-//       let mut result : [ KeyVal ; N ] = Default::default();
+     // let mut result : [ KeyVal ; N ] = [ KeyVal::default() ; N ];
 //
 //       for i in 0..N
 //       {

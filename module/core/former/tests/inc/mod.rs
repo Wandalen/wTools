@@ -1,12 +1,9 @@
 use super::*;
 
-#[ allow( unused_imports ) ]
-use test_tools::meta::*;
-
 mod a_primitives_manual_test;
-mod a_containers_without_runtime_manual_test;
+mod a_containers_without_runtime_manual_test;  /// xxx : introduce FormerContainer
 mod a_containers_without_runtime_test;
-mod a_containers_with_runtime_manual_test;
+mod a_containers_with_runtime_manual_test;  /// xxx : introduce FormerContainer
 mod a_containers_with_runtime_test;
 
 mod default_container;
@@ -22,13 +19,17 @@ mod user_type_no_default;
 mod user_type_no_debug;
 
 mod alias_test;
-mod conflict;
+mod name_conflict; // xxx : fix
 mod unsigned_primitive_types;
 mod perform;
 
-mod hash_map_wrap_subformer_manual;
+mod parametrized_struct_manual;
+mod parametrized_struct_imm;
+mod parametrized_struct_where;
 
-//
+mod subformer_basic_manual;
+mod subformer_basic; // xxx : complete
+mod subformer_wrap_hashmap_manual;
 
 only_for_terminal_module!
 {

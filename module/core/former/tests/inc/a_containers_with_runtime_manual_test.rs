@@ -81,53 +81,75 @@ impl Struct1Former
 
   }
 
-  pub fn vec_1( mut self ) -> former::runtime::VectorFormer
+  // pub fn vec_1( mut self ) -> former::runtime::VectorSubformer
+  // <
+  //   String,
+  //   Vec< String >,
+  //   Self,
+  //   impl Fn( &mut Self, core::option::Option< Vec< String > > ),
+  // >
+  // {
+  //   let container = self.vec_1.take();
+  //   let on_end = | former : &mut Self, container : core::option::Option< Vec< String > > |
+  //   {
+  //     former.vec_1 = container;
+  //   };
+  //   former::runtime::VectorSubformer::begin( self, container, on_end )
+  // }
+
+  pub fn vec_1( mut self ) -> former::runtime::VectorSubformer
   <
     String,
     Vec< String >,
-    Self,
-    impl Fn( &mut Self, core::option::Option< Vec< String > > ),
+    Struct1Former,
+    impl Fn( Vec< String >, core::option::Option< Self > ) -> Self
   >
   {
     let container = self.vec_1.take();
-    let on_end = | former : &mut Self, container : core::option::Option< Vec< String > > |
+    let on_end = | container : Vec< String >, super_former : core::option::Option< Self > | -> Self
     {
-      former.vec_1 = container;
+      let mut super_former = super_former.unwrap();
+      super_former.vec_1 = Some( container );
+      super_former
     };
-    former::runtime::VectorFormer::new( self, container, on_end )
+    former::runtime::VectorSubformer::begin( Some( self ), container, on_end )
   }
 
-  pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapFormer
+  pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapSubformer
   <
     String,
     String,
     std::collections::HashMap< String, String >,
     Struct1Former,
-    impl Fn( &mut Struct1Former, core::option::Option< std::collections::HashMap< String, String > > )
+    impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self
   >
   {
     let container = self.hashmap_strings_1.take();
-    let on_end = | former : &mut Struct1Former, container : core::option::Option< std::collections::HashMap< String, String > > |
+    let on_end = | container : std::collections::HashMap< String, String >, super_former : core::option::Option< Self > | -> Self
     {
-      former.hashmap_strings_1 = container;
+      let mut super_former = super_former.unwrap();
+      super_former.hashmap_strings_1 = Some( container );
+      super_former
     };
-    former::runtime::HashMapFormer::new( self, container, on_end )
+    former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
   }
 
-  pub fn hashset_strings_1( mut self ) -> former::runtime::HashSetFormer
+  pub fn hashset_strings_1( mut self ) -> former::runtime::HashSetSubformer
   <
     String,
     std::collections::HashSet< String >,
     Struct1Former,
-    impl Fn( &mut Struct1Former, core::option::Option< std::collections::HashSet< String > > )
+    impl Fn( std::collections::HashSet< String >, core::option::Option< Self > ) -> Self
   >
   {
     let container = self.hashset_strings_1.take();
-    let on_end = | former : &mut Struct1Former, container : core::option::Option< std::collections::HashSet< String > > |
+    let on_end = | container : std::collections::HashSet< String >, super_former : core::option::Option< Self > | -> Self
     {
-      former.hashset_strings_1 = container;
+      let mut super_former = super_former.unwrap();
+      super_former.hashset_strings_1 = Some( container );
+      super_former
     };
-    former::runtime::HashSetFormer::new( self, container, on_end )
+    former::runtime::HashSetSubformer::begin( Some( self ), container, on_end )
   }
 
 }

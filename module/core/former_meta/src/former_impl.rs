@@ -137,6 +137,7 @@ impl syn::parse::Parse for AttributeDefault
 }
 
 // qqq : xxx : implement test for setter
+// qqq : xxx : update documentation
 
 ///
 /// Attribute to enable/disable setter generation.
@@ -166,7 +167,7 @@ impl syn::parse::Parse for AttributeSetter
 ///
 /// Attribute to enable/disable former generation.
 ///
-/// `#[ former( former::runtime::VectorFormer ) ]`
+/// `#[ former( former::runtime::VectorSubformer ) ]`
 ///
 
 #[ allow( dead_code ) ]
@@ -248,7 +249,7 @@ fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 /// ```
 ///
 
-#[inline]
+#[ inline( always ) ]
 fn field_none_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 {
   let ident = Some( field.ident.clone() );
@@ -274,7 +275,7 @@ fn field_none_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 /// ```
 ///
 
-#[inline]
+#[ inline( always ) ]
 fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 {
   let ident = Some( field.ident.clone() );
@@ -300,22 +301,22 @@ fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 ///
 /// Generate code converting a field of the former to the field of the structure.
 ///
-/// ### Basic use-case. of output
+/// ### Example of generated code
 ///
-/// ```compile_fail
-/// let int_1 = if self.int_1.is_some()
+/// ```ignore
+/// let int_1 = if self.container.int_1.is_some()
 /// {
-///   self.int_1.take().unwrap()
+///   self.container.int_1.take().unwrap()
 /// }
 /// else
 /// {
-///   let val : i32 = Default::default();
+///   let val : i32 = core::default::Default::default();
 ///   val
 /// };
 /// ```
 ///
 
-#[inline]
+#[ inline( always ) ]
 fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
 {
   let ident = field.ident;
@@ -344,9 +345,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
     qt!
     {
-      let #ident = if self.#ident.is_some()
+      let #ident = if self.container.#ident.is_some()
       {
-        ::core::option::Option::Some( self.#ident.take().unwrap() )
+        ::core::option::Option::Some( self.container.#ident.take().unwrap() )
       }
       else
       {
@@ -392,6 +393,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
           ( &::core::marker::PhantomData::< #ty > ).maybe_default()
         };
+        // qqq : xxx : test that and document example of generated code
       }
     }
     else
@@ -405,9 +407,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
     qt!
     {
-      let #ident = if self.#ident.is_some()
+      let #ident = if self.container.#ident.is_some()
       {
-        self.#ident.take().unwrap()
+        self.container.#ident.take().unwrap()
       }
       else
       {
@@ -425,7 +427,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 /// Extract name of a field out.
 ///
 
-#[inline]
+#[ inline( always ) ]
 fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 {
   field.ident.clone()
@@ -434,18 +436,19 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///
 /// Generate a former setter for the field.
 ///
-/// ### Basic use-case. of output
-///
-/// ```compile_fail
+/// # Example of output
+/// ```ignore
+/// #[ doc = "Setter for the '#field_ident' field." ]
+/// #[inline]
 /// pub fn int_1< Src >( mut self, src : Src ) -> Self
-/// where Src : Into< i32 >,
+/// where
+///   Src : ::core::convert::Into< i32 >,
 /// {
 ///   debug_assert!( self.int_1.is_none() );
-///   self.int_1 = Some( src.into() );
+///   self.container.int_1 = ::core::option::Option::Some( src.into() );
 ///   self
 /// }
 /// ```
-///
 
 #[ inline ]
 fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
@@ -472,10 +475,9 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
     field_setter( ident, ident, non_optional_ty )
   };
 
-  if let Some( alias_attr ) = &field.attrs.alias
+  let r = if let Some( alias_attr ) = &field.attrs.alias
   {
     let alias_tokens = field_setter( ident, &alias_attr.alias, non_optional_ty );
-
     let token = qt!
     {
       #setter_tokens
@@ -486,8 +488,10 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenS
   else
   {
     Ok( setter_tokens )
-  }
+  };
 
+  // tree_print!( r.as_ref().unwrap() );
+  r
 }
 
 ///
@@ -510,8 +514,8 @@ fn field_setter
     pub fn #setter_name< Src >( mut self, src : Src ) -> Self
     where Src : ::core::convert::Into< #non_optional_type >,
     {
-      debug_assert!( self.#field_ident.is_none() );
-      self.#field_ident = ::core::option::Option::Some( src.into() );
+      debug_assert!( self.container.#field_ident.is_none() );
+      self.container.#field_ident = ::core::option::Option::Some( src.into() );
       self
     }
   }
@@ -520,6 +524,27 @@ fn field_setter
 ///
 /// Generate a sub-former setter for the 'field_ident' with the 'setter_name' name.
 ///
+/// # Example of generated code
+///
+/// ```ignore
+/// pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapSubformer
+/// <
+///   String,
+///   String,
+///   std::collections::HashMap< String, String >,
+///   Struct1Former,
+///   impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self
+/// >
+/// {
+///   let container = self.hashmap_strings_1.take();
+///   let on_end = | container : std::collections::HashMap< String, String >, mut former : core::option::Option< Self > | -> Self
+///   {
+///     former.hashmap_strings_1 = Some( container );
+///     former
+///   };
+///   former::runtime::HashMapSubformer::begin( self, container, on_end )
+/// }
+/// ```
 
 #[ inline ]
 fn subformer_field_setter
@@ -551,17 +576,20 @@ fn subformer_field_setter
       #( #params, )*
       #non_optional_type,
       Self,
-      impl Fn( &mut Self, core::option::Option< #non_optional_type > ),
+      impl Fn( #non_optional_type, core::option::Option< Self > ) -> Self,
     >
     {
-      let container = self.#setter_name.take();
-      let on_end = | former : &mut Self, container : core::option::Option< #non_optional_type > |
+      let container = self.container.#setter_name.take();
+      let on_end = | container : #non_optional_type, former : core::option::Option< Self > | -> Self
       {
-        former.#setter_name = container;
+        let mut former = former.unwrap();
+        former.container.#setter_name = Some( container );
+        former
       };
-      #subformer_type::new( self, container, on_end )
+      #subformer_type::begin( Some( self ), container, on_end )
     }
   }
+
 }
 
 ///
@@ -615,15 +643,47 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     Err( err ) => return Err( err ),
   };
 
+  /* names */
+
   let name_ident = &ast.ident;
-  let generics = &ast.generics;
   let former_name = format!( "{}Former", name_ident );
   let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
+  let former_container_name = format!( "{}FormerContainer", name_ident );
+  let former_container_name_ident = syn::Ident::new( &former_container_name, name_ident.span() );
 
-  // use heck::ToSnakeCase;
-  // let former_snake = name_ident.to_string().to_snake_case();
-  // let former_mod = format!( "{}_former", former_snake );
-  // let former_mod_ident = syn::Ident::new( &former_mod, name_ident.span() );
+  /* generic parameters */
+
+  let generics = &ast.generics;
+  let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
+  let _generics_params = generics::params_names( generics ).params;
+  let generics_params = if _generics_params.len() == 0
+  {
+    qt!{}
+  }
+  else
+  {
+    qt!{ #_generics_params, }
+  };
+
+  // add embedded generic parameters
+  let mut extra_generics : syn::Generics = parse_quote!{ < Context = #name_ident #generics_ty, End = former::ReturnContainer > };
+  extra_generics.where_clause = parse_quote!{ where End : former::ToSuperFormer< #name_ident #generics_ty, Context >, };
+  let generics_of_former = generics::merge( &generics, &extra_generics );
+  let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
+  let generics_of_former_with_defaults = generics_of_former.params.clone();
+  // macro_tools::code_print!( generics_of_former_with_defaults );
+  // macro_tools::code_print!( extra_generics );
+
+  // pub struct CommandFormer< K, Context = Command< K >, End = former::ReturnContainer >
+  // where
+  //   K : core::hash::Hash + std::cmp::Eq,
+  //   End : former::ToSuperFormer< Command< K >, Context >,
+  // {
+  //   name : core::option::Option< String >,
+  //   properties : core::option::Option< std::collections::HashMap< K, Property< K > > >,
+  //   context : core::option::Option< Context >,
+  //   on_end : core::option::Option< End >,
+  // }
 
   /* structure attribute */
 
@@ -631,7 +691,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   {
     return result;
   };
-  let mut perform_output = qt!{ #name_ident #generics };
+  let mut perform_output = qt!{ #name_ident #generics_ty };
   let mut perform_generics = qt!{};
   for attr in ast.attrs.iter()
   {
@@ -712,53 +772,86 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   let result = qt!
   {
 
-    impl #generics #name_ident #generics
+      // pub struct xxx {}
+
+    #[ automatically_derived ]
+    impl #generics_impl #name_ident #generics_ty
+    #generics_where
     {
       ///
       /// Make former, variation of builder pattern to form structure defining values of fields step by step.
       ///
-      #[inline]
-      pub fn former() -> #former_name_ident #generics
+      #[ inline( always ) ]
+      pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
       {
-        #former_name_ident
-        {
-          #( #fields_none, )*
-        }
+        // #former_name_ident :: new()
+        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnContainer > :: new()
+        // #former_name_ident
+        // {
+        //   #( #fields_none, )*
+        // }
       }
     }
 
-    #[ doc = #doc_former_struct ]
-    #[ automatically_derived ]
-    pub struct #former_name_ident #generics
+    #[ doc = "Container of a correcsponding former." ]
+    pub struct #former_container_name_ident #generics_ty
+    #generics_where
+    // where
+    //   K : core::hash::Hash + std::cmp::Eq,
     {
       #(
         /// A field
         #fields_optional,
       )*
+      // name : core::option::Option< String >,
+      // properties : core::option::Option< std::collections::HashMap< K, Property< K > > >,
     }
 
-    impl #generics #former_name_ident #generics
+    impl #generics_impl core::default::Default for #former_container_name_ident #generics_ty
+    #generics_where
+    // where
+    //   K : core::hash::Hash + std::cmp::Eq,
     {
-      ///
-      /// Finish setting options and call perform on formed entity.
-      ///
-      /// If `perform` defined then associated method is called and its result returned instead of entity.
-      /// For example `perform()` of structure with : `#[ perform( fn after1< 'a >() -> Option< &'a str > )` returns `Option< &'a str >`.
-      ///
-      #[inline]
-      pub fn perform #perform_generics ( self ) -> #perform_output
+
+      #[ inline( always ) ]
+      fn default() -> Self
       {
-        let result = self.form();
-        #perform
+        Self
+        {
+          #( #fields_none, )*
+          // name : None,
+          // properties : None,
+        }
       }
+
+    }
+
+    #[ doc = #doc_former_struct ]
+    #[ automatically_derived ]
+    pub struct #former_name_ident < #generics_of_former_with_defaults >
+    #generics_of_former_where
+    {
+      // #(
+      //   /// A field
+      //   #fields_optional,
+      // )*
+      container : #former_container_name_ident #generics_ty,
+      context : core::option::Option< Context >,
+      on_end : core::option::Option< End >,
+    }
+
+    #[ automatically_derived ]
+    impl #generics_of_former_impl #former_name_ident #generics_of_former_ty
+    #generics_of_former_where
+    {
 
       ///
       /// Finish setting options and return formed entity.
       ///
       /// `perform` has no effect on method `form`, but change behavior and returned type of mehod `perform`.
       ///
-      #[inline]
-      pub fn form( mut self ) -> #name_ident #generics
+      #[ inline( always ) ]
+      pub fn form( mut self ) -> #name_ident #generics_ty
       {
         #( #fields_form )*
         let result = #name_ident
@@ -766,6 +859,63 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
           #( #fields_names, )*
         };
         return result;
+      }
+
+      ///
+      /// Finish setting options and call perform on formed entity.
+      ///
+      /// If `perform` defined then associated method is called and its result returned instead of entity.
+      /// For example `perform()` of structure with : `#[ perform( fn after1() -> &str > )` returns `&str`.
+      ///
+      #[ inline( always ) ]
+      pub fn perform #perform_generics ( self ) -> #perform_output
+      {
+        let result = self.form();
+        #perform
+      }
+
+      ///
+      /// Construct new instance of former with default parameters.
+      ///
+      #[ inline( always ) ]
+      pub fn new() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
+      {
+        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnContainer > :: begin
+        (
+          None,
+          former::ReturnContainer,
+        )
+      }
+
+      ///
+      /// Begin the process of forming. Expects context of forming to return it after forming.
+      ///
+      #[ inline( always ) ]
+      pub fn begin
+      (
+        context :  core::option::Option< Context >,
+        on_end : End,
+      ) -> Self
+      {
+        Self
+        {
+          // #( #fields_none, )*
+          container : core::default::Default::default(),
+          context : context,
+          on_end : ::core::option::Option::Some( on_end ),
+        }
+      }
+
+      ///
+      /// End the process of forming returning original context of forming.
+      ///
+      #[ inline( always ) ]
+      pub fn end( mut self ) -> Context
+      {
+        let on_end = self.on_end.take().unwrap();
+        let context = self.context.take();
+        let container = self.form();
+        on_end.call( container, context )
       }
 
       #(

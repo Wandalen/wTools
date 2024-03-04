@@ -3,7 +3,10 @@
 //! Former - variation of builder pattern. Implementation of its runtime.
 //!
 
-/// Former of a fector.
+/// Axiomatic things.
+#[ cfg( not( feature = "no_std" ) ) ]
+mod axiomatic;
+/// Former of a vector.
 #[ cfg( not( feature = "no_std" ) ) ]
 mod vector;
 /// Former of a hash map.
@@ -23,6 +26,18 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::exposed::*;
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::prelude::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
+  pub use super::axiomatic::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( not( feature = "no_std" ) ) ]
@@ -35,14 +50,6 @@ pub mod protected
   #[ allow( unused_imports ) ]
   #[ cfg( not( feature = "no_std" ) ) ]
   pub use super::hash_set::*;
-}
-
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

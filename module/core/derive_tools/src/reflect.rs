@@ -58,6 +58,10 @@ pub( crate ) mod private
 
 pub mod axiomatic;
 pub mod entity_array;
+pub mod entity_slice;
+pub mod entity_vec;
+pub mod entity_hashmap;
+pub mod entity_hashset;
 pub mod primitive;
 
 #[ doc( inline ) ]
@@ -76,6 +80,18 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::entity_array::orphan::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_slice::orphan::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_vec::orphan::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_hashmap::orphan::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_hashset::orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::primitive::orphan::*;
@@ -104,6 +120,18 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::entity_array::exposed::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_slice::exposed::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_vec::exposed::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_hashmap::exposed::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_hashset::exposed::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::primitive::exposed::*;

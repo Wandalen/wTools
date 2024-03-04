@@ -67,6 +67,9 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use former_meta::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::runtime::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
