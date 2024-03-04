@@ -93,6 +93,8 @@ where
     container
   }
 
+  // xxx : new, perform
+
   #[ inline( always ) ]
   pub fn begin
   (
@@ -172,3 +174,5 @@ where
 //
 
 include!( "only_test/subformer_wrap_hashmap.rs" );
+
+// xxx : qqq : check and improve quality of generated documentation
