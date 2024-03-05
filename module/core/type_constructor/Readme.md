@@ -365,7 +365,7 @@ impl From< MyPair > for ( i32, i64 )
   fn from( src : MyPair ) -> Self { ( src.0, src.1 ) }
 }
 
-#[cfg( feature = "make" )]
+#[cfg( feature = "make" ) ]
 impl From_2< i32, i64 > for MyPair
 {
   fn from_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
@@ -669,7 +669,7 @@ Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has
 //     feature = "many",
 //     any( not( feature = "no_std" ), feature = "use_alloc" ),
 //   )
-// )]
+// ) ]
 // {
 //   use type_constructor::prelude::*;
 //

@@ -23,7 +23,7 @@ use super::*;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-#[derive( Debug, PartialEq, TheModule::Former )]
+#[ derive( Debug, PartialEq, TheModule::Former ) ]
 pub struct Struct1
 {
   #[ default( 31 ) ]

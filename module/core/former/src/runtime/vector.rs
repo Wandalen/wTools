@@ -1,9 +1,10 @@
 use super::*;
 
+/// Trait for containers that behave like a vector, providing an interface for element addition.
 ///
-/// Trait VectorLike adopter for Vector-like containers.
+/// This trait enables the use of custom or standard vector-like containers within the builder pattern,
+/// allowing for a unified and flexible approach to constructing collections.
 ///
-
 pub trait VectorLike< E >
 {
   /// Appends an element to the back of a container.
@@ -18,10 +19,30 @@ impl< E > VectorLike< E > for std::vec::Vec< E >
   }
 }
 
+/// A builder for constructing `VectorLike` containers, facilitating a fluent and flexible interface.
 ///
-/// Class for forming vector-like fields.
+/// `VectorSubformer` leverages the `VectorLike` trait to enable the construction and manipulation
+/// of vector-like containers in a builder pattern style, promoting readability and ease of use.
 ///
-
+/// # Example
+/// ```rust
+/// #[ derive( Debug, PartialEq, former::Former ) ]
+/// pub struct StructWithVec
+/// {
+///   #[ subformer( former::runtime::VectorSubformer ) ]
+///   vec : Vec< &'static str >,
+/// }
+///
+/// let instance = StructWithVec::former()
+/// .vec()
+///   .push( "apple" )
+///   .push( "banana" )
+///   .end()
+/// .form();
+///
+/// assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
+///```
+///
 #[ derive( Debug, Default ) ]
 pub struct VectorSubformer< E, Container, Context, ContainerEnd >
 where
@@ -56,7 +77,12 @@ where
     container
   }
 
-  /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
+  /// Initializes a new `VectorSubformer` instance, starting with an empty container.
+  /// This function serves as the entry point for the builder pattern.
+  ///
+  /// # Returns
+  /// A new instance of `VectorSubformer` with an empty internal container.
+  ///
   #[ inline( always ) ]
   pub fn new() -> VectorSubformer< E, Container, Container, impl ToSuperFormer< Container, Container > >
   {
@@ -68,7 +94,7 @@ where
     )
   }
 
-  /// Make a new VectorSubformer. It should be called by a context generated for your structure.
+  /// Begins the building process, optionally initializing with a context and container.
   #[ inline( always ) ]
   pub fn begin
   (
@@ -90,7 +116,7 @@ where
     }
   }
 
-  /// Return context of your struct moving container there. Should be called after configuring the container.
+  /// Finalizes the building process, returning the container or a context incorporating it.
   #[ inline( always ) ]
   pub fn end( mut self ) -> Context
   {
@@ -100,7 +126,7 @@ where
     on_end.call( container, context )
   }
 
-  /// Set the whole container instead of setting each element individually.
+  /// Replaces the current container with a provided one, allowing for a reset or redirection of the building process.
   #[ inline( always ) ]
   pub fn replace( mut self, vector : Container ) -> Self
   {
@@ -108,7 +134,15 @@ where
     self
   }
 
-  /// Appends an element to the back of a container. Make a new container if it was not made so far.
+}
+
+impl< E, Container, Context, ContainerEnd > VectorSubformer< E, Container, Context, ContainerEnd >
+where
+  Container : VectorLike< E > + core::default::Default,
+  ContainerEnd : ToSuperFormer< Container, Context >,
+{
+
+  /// Appends an element to the end of the container, expanding the internal collection.
   #[ inline( always ) ]
   pub fn push< E2 >( mut self, e : E2 ) -> Self
   where E2 : core::convert::Into< E >,

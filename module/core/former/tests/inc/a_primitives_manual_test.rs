@@ -120,14 +120,14 @@ where
 
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn perform(self) -> Struct1
   {
     let result = self.form();
     return result;
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn new() -> Struct1Former<Struct1, former::ReturnContainer>
   {
     Struct1Former::
@@ -137,7 +137,7 @@ where
     >::begin(None, former::ReturnContainer)
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn begin
   (
     context : core::option::Option< __FormerContext >,
@@ -152,7 +152,7 @@ where
     }
   }
 
-  #[inline(always)]
+  #[ inline( always ) ]
   pub fn end( mut self ) -> __FormerContext
   {
     let on_end = self.on_end.take().unwrap();

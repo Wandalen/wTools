@@ -1,6 +1,6 @@
 // pub use is_slice::*;
 // // pub use instance_of::*;
-// #[cfg( feature = "inspect_type" )]
+// #[cfg( feature = "inspect_type" ) ]
 // pub use inspect_type::*;
 
 // pub use inspect_type::*;

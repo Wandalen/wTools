@@ -24,15 +24,16 @@ mod name_collision_context;
 mod name_collision_end;
 mod name_collision_on_end;
 mod unsigned_primitive_types;
-mod perform;
+
+mod attribute_perform;
+mod attribute_setter;
 
 mod parametrized_struct_manual;
 mod parametrized_struct_imm;
 mod parametrized_struct_where;
 
 mod subformer_basic_manual;
-mod subformer_basic; // xxx : complete
-mod subformer_wrap_hashmap_manual;
+mod subformer_basic;
 
 only_for_terminal_module!
 {

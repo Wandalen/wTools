@@ -484,7 +484,7 @@ tests_impls!
         //     feature = "many",
         //     any( not( feature = "no_std" ), feature = "use_alloc" ),
         //   )
-        // )]
+        // ) ]
         // many MyMany : f32;
         // #[ cfg
         // (
@@ -493,7 +493,7 @@ tests_impls!
         //     feature = "many",
         //     any( not( feature = "no_std" ), feature = "use_alloc" ),
         //   )
-        // )]
+        // ) ]
         // many ManyWithParametrized : std::sync::Arc< T : Copy >;
         // #[ cfg
         // (
@@ -502,7 +502,7 @@ tests_impls!
         //     feature = "many",
         //     any( not( feature = "no_std" ), feature = "use_alloc" ),
         //   )
-        // )]
+        // ) ]
         // many ManyWithParameter : < T >;
       }
     }
@@ -525,7 +525,7 @@ tests_impls!
           feature = "many",
           any( not( feature = "no_std" ), feature = "use_alloc" ),
         )
-      )]
+      ) ]
       {
         let vec_of_i32_in_tuple = TheModule::Many::< i32 >::from([ 1, 2, 3 ]);
         dbg!( vec_of_i32_in_tuple );
