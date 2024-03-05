@@ -1,25 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// #[ allow( unused_imports ) ]
-// use test_tools::exposed::*;
-//
-// only_for_aggregating_module!
-// {
-//   #[ allow( unused_imports ) ]
-//   use wtools::meta::*;
-//   #[ allow( unused_imports ) ]
-//   use wtools::former::Former;
-// }
-//
-// only_for_terminal_module!
-// {
-//   #[ allow( unused_imports ) ]
-//   use meta_tools::*;
-//   #[ allow( unused_imports ) ]
-//   use former::Former;
-// }
-
 use std::collections::HashMap;
 use std::collections::HashSet;
 
@@ -49,9 +30,7 @@ tests_impls!
 {
   fn test_complex()
   {
-
     let command = Struct1::former().form();
-
     let expected = Struct1
     {
       vec_ints : vec![ 1, 2, 3 ],
@@ -71,4 +50,3 @@ tests_index!
 {
   test_complex,
 }
-

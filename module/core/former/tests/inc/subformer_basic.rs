@@ -1,6 +1,9 @@
-// xxx : complete and write tutrial
+
 use super::*;
 
+//
+// this should work
+//
 // let ca = Aggregator::former()
 // .parameter1( "val" )
 // .command( "echo" )
@@ -16,19 +19,6 @@ use super::*;
 // .perform()
 // ;
 // ca.execute( input ).unwrap();
-
-//
-// - tutorial
-// -- primitives
-
-// -- custom setter
-// -- custom setter and default attribute
-// -- complex custom setter
-
-// -- default attribute
-// -- subformers for containers
-// -- custom subformer
-//
 
 // == property
 

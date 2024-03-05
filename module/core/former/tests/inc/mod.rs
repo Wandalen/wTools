@@ -6,8 +6,8 @@ mod a_containers_without_runtime_test;
 mod a_containers_with_runtime_manual_test;
 mod a_containers_with_runtime_test;
 
-mod default_container;
-mod default_primitive;
+mod attribute_default_container;
+mod attribute_default_primitive;
 mod former_hashmap_without_parameter;
 mod former_vector_without_parameter;
 
