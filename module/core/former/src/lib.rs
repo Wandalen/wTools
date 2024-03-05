@@ -2,17 +2,6 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
-
-// #![ feature( type_name_of_val ) ]
-// #![ feature( trace_macros ) ]
-
-//!
-//! Former - variation of builder pattern.
-//!
-
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Former - variation of builder pattern. Implementation of its runtime.
@@ -22,9 +11,6 @@ pub mod runtime;
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  // // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
-  // pub use former_runtime;
-  // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   pub use former_meta;
 }
 
@@ -76,3 +62,6 @@ pub mod exposed
 pub mod prelude
 {
 }
+
+// xxx : qqq : check and improve quality of generated documentation
+// xxx : rename runtime

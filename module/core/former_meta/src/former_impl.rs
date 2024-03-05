@@ -609,10 +609,10 @@ r#" Implementation of former for [{}].
   let doc_example1 =
 r#"
 use former::Former;
-#[derive( Former )]
+#[ derive( Former ) ]
 pub struct Struct1
 {
-  #[default( 31 )]
+  #[default( 31 ) ]
   field1 : i32,
 }
 "#;

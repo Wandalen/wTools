@@ -8,7 +8,7 @@ pub( crate ) mod private
   use super::super::*;
 
   ///
-  /// For attribute like `#[former( default = 31 )]` return key `default` and value `31`,
+  /// For attribute like `#[former( default = 31 ) ]` return key `default` and value `31`,
   /// as well as syn::Meta as the last element of result tuple.
   ///
   /// ### Basic use-case.

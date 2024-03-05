@@ -1,6 +1,6 @@
 use former::Former;
 
-#[derive( Former )]
+#[ derive( Former ) ]
 pub struct Struct1
 {
   #[ defaultx( 31 ) ]

@@ -33,7 +33,7 @@ tests_impls!
       Off,
     }
 
-    #[derive( Debug, PartialEq, TheModule::Former )]
+    #[ derive( Debug, PartialEq, TheModule::Former ) ]
     pub struct Device
     {
       device : String,
@@ -65,7 +65,7 @@ tests_impls!
       Off,
     }
 
-    #[derive( Debug, PartialEq, TheModule::Former )]
+    #[ derive( Debug, PartialEq, TheModule::Former ) ]
     pub struct Device
     {
       device : String,

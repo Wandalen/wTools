@@ -350,7 +350,7 @@ tests_impls!
       {
         name : "".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() )]),
+        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() ) ]),
       },
       parser.command( "." ).unwrap()
     );
@@ -362,7 +362,7 @@ tests_impls!
       {
         name : "".into(),
         subjects : vec![ "command.".into() ],
-        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() )]),
+        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() ) ]),
       },
       parser.command( ".command." ).unwrap()
     );
@@ -374,7 +374,7 @@ tests_impls!
       {
         name : "".into(),
         subjects : vec![ "command.".into() ],
-        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() )]),
+        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() ) ]),
       },
       parser.command( ".command. <this will be ignored>" ).unwrap()
     );

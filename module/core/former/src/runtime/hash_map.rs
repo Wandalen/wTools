@@ -1,30 +1,88 @@
 use super::*;
 
+/// A trait for types that behave like hash maps, supporting insertion and custom forming behaviors.
 ///
-/// Trait HashMapLike adopter for Container-like containers.
+/// This trait allows for generic operations on hash map-like data structures, enabling the insertion
+/// of key-value pairs and the creation of formers for more complex construction patterns.
 ///
-
+/// # Type Parameters
+/// - `K`: The type of keys stored in the hash map. Must implement `Eq` and `Hash`.
+/// - `E`: The type of elements (values) stored in the hash map.
 pub trait HashMapLike< K, E >
 where
   K : core::cmp::Eq + core::hash::Hash,
+  Self : Sized + Default,
 {
+
   /// Inserts a key-value pair into the map.
   fn insert( &mut self, k : K, e : E ) -> Option< E >;
+
+  /// Return former.
+  #[ inline( always ) ]
+  fn former( self )
+  -> HashMapSubformer< K, E, Self, Self, impl ToSuperFormer< Self, Self > >
+  {
+    HashMapSubformer::begin( Some( self ), None, ReturnContainer )
+  }
+
+  /// Return former with a custom context.
+  #[ inline( always ) ]
+  fn former_begin< Context, End >( self, context : Context, end : End )
+  -> HashMapSubformer< K, E, Self, Context, End >
+  where End : ToSuperFormer< Self, Context >
+  {
+    HashMapSubformer::begin( Some( context ), Some( self ), end )
+  }
+
 }
 
 impl< K, E > HashMapLike< K, E > for std::collections::HashMap< K, E >
 where
   K : core::cmp::Eq + core::hash::Hash,
+  Self : Sized + Default,
 {
+
+  #[ inline( always ) ]
   fn insert( &mut self, k : K, e : E ) -> Option< E >
   {
     std::collections::HashMap::insert( self, k, e )
   }
+
 }
 
+/// A builder for constructing hash map-like structures with a fluent interface.
 ///
-/// Class for forming hashmap-like fields.
+/// `HashMapSubformer` leverages the `HashMapLike` trait to enable a flexible and customizable
+/// way to build hash map-like structures. It supports the chaining of insert operations and
+/// allows for the definition of custom end actions to finalize the building process.
 ///
+/// # Type Parameters
+/// - `K`: Key type, must implement `Eq` and `Hash`.
+/// - `E`: Element (value) type.
+/// - `Container`: The hash map-like container being built.
+/// - `Context`: Type of the optional context used during the building process.
+/// - `End`: End-of-forming action to be executed upon completion.
+///
+/// # Examples
+/// ```
+/// # use test_tools::exposed::*;
+///
+/// #[ derive( Debug, PartialEq, former::Former ) ]
+/// pub struct StructWithMap
+/// {
+///   #[ subformer( former::runtime::HashMapSubformer ) ]
+///   map : std::collections::HashMap< &'static str, &'static str >,
+/// }
+///
+/// let struct1 = StructWithMap::former()
+/// .map()
+///   .insert( "a", "b" )
+///   .insert( "c", "d" )
+///   .end()
+/// .form()
+/// ;
+/// assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
+/// ```
 
 #[ derive( Debug, Default ) ]
 pub struct HashMapSubformer< K, E, Container, Context, End >
@@ -77,6 +135,7 @@ where
   }
 
   /// Make a new HashMapSubformer. It should be called by a context generated for your structure.
+  /// The context is returned after completion of forming by function `on_end``.
   #[ inline( always ) ]
   pub fn begin
   (
@@ -123,7 +182,15 @@ where
   End : ToSuperFormer< Container, Context >,
 {
 
-  /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
+  /// Inserts a key-value pair into the container. If the container doesn't exist, it is created.
+  ///
+  /// # Parameters
+  /// - `k`: The key for the value to be inserted. Will be converted into the container's key type.
+  /// - `e`: The value to be inserted. Will be converted into the container's value type.
+  ///
+  /// # Returns
+  /// Returns `self` for chaining further insertions or operations.
+  ///
   #[ inline( always ) ]
   pub fn insert< K2, E2 >( mut self, k : K2, e : E2 ) -> Self
   where
@@ -139,6 +206,24 @@ where
       container.insert( k.into(), e.into() );
     }
     self
+  }
+
+  /// Alias for insert.
+  ///
+  /// # Parameters
+  /// - `k`: The key for the value to be inserted. Will be converted into the container's key type.
+  /// - `e`: The value to be inserted. Will be converted into the container's value type.
+  ///
+  /// # Returns
+  /// Returns `self` for chaining further insertions or operations.
+  ///
+  #[ inline( always ) ]
+  pub fn push< K2, E2 >( self, k : K2, e : E2 ) -> Self
+  where
+    K2 : core::convert::Into< K >,
+    E2 : core::convert::Into< E >,
+  {
+    self.insert( k, e )
   }
 
 }
