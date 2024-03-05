@@ -133,7 +133,7 @@ The `Former` crate enhances struct initialization in Rust by allowing the specif
 use former::Former;
 
 /// Structure with default attributes.
-#[derive( Debug, PartialEq, Former ) ]
+#[ derive(  Debug, PartialEq, Former ) ]
 pub struct ExampleStruct
 {
   #[ default( 5 ) ]
@@ -185,7 +185,7 @@ The following example illustrates how to use a `VectorSubformer` to construct a 
 #[ derive( Debug, PartialEq, former::Former ) ]
 pub struct StructWithVec
 {
-  #[ subformer( former::runtime::VectorSubformer ) ]
+  #[ subformer( former::VectorSubformer ) ]
   vec : Vec< &'static str >,
 }
 
@@ -209,7 +209,7 @@ use test_tools::exposed::*;
 #[ derive( Debug, PartialEq, former::Former ) ]
 pub struct StructWithMap
 {
-  #[ subformer( former::runtime::HashMapSubformer ) ]
+  #[ subformer( former::HashMapSubformer ) ]
   map : std::collections::HashMap< &'static str, &'static str >,
 }
 
@@ -233,7 +233,7 @@ use test_tools::exposed::*;
 #[ derive( Debug, PartialEq, former::Former ) ]
 pub struct StructWithSet
 {
-  #[ subformer( former::runtime::HashSetSubformer ) ]
+  #[ subformer( former::HashSetSubformer ) ]
   set : std::collections::HashSet< &'static str >,
 }
 
@@ -246,6 +246,101 @@ let instance = StructWithSet::former()
 
 assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
 ```
+
+### Custom Subformer
+
+It is possible to use former of one structure to construct field of another one and integrate it into former of the last one.
+
+The example below illustrates how to incorporate the builder pattern of one structure as a subformer in another, enabling nested struct initialization within a single fluent interface.
+
+
+example of how to use former of another structure as subformer of former of current one
+function `command` integrate `CommandFormer` into `AggregatorFormer`.
+
+``` rust
+fn main()
+{
+  use std::collections::HashMap;
+  use former::Former;
+
+  // Command struct with Former derived for builder pattern support
+  #[ derive( Debug, PartialEq, Former ) ]
+  pub struct Command
+  {
+    name : String,
+    description : String,
+  }
+
+  // Aggregator struct to hold commands
+  #[ derive( Debug, PartialEq, Former ) ]
+  pub struct Aggregator
+  {
+    #[ setter( false ) ]
+    command : HashMap< String, Command >,
+  }
+
+  // Implementation for AggregatorFormer to add commands by name
+  impl< Context, End > AggregatorFormer< Context, End >
+  where
+    End : former::ToSuperFormer< Aggregator, Context >,
+  {
+    #[ inline( always ) ]
+    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::ToSuperFormer< Command, Self > >
+    where
+      IntoName: core::convert::Into<String>,
+    {
+      let on_end = |command: Command, super_former: core::option::Option<Self>| -> Self
+      {
+        let mut super_former = super_former.unwrap();
+        if let Some( ref mut commands ) = super_former.container.command
+        {
+          commands.insert(command.name.clone(), command);
+        }
+        else
+        {
+          let mut commands: HashMap< String, Command > = Default::default();
+          commands.insert( command.name.clone(), command );
+          super_former.container.command = Some( commands );
+        }
+        super_former
+      };
+      let former = CommandFormer::begin( Some( self ), on_end );
+      former.name( name )
+    }
+  }
+
+  let ca = Aggregator::former()
+  .command( "echo" )
+    .description( "prints all subjects and properties" ) // sets additional properties using custom subformer
+    .end()
+  .command( "exit" )
+    .description( "just exit" ) // Sets additional properties using using custom subformer
+    .end()
+  .form();
+
+  dbg!( &ca );
+  // > &ca = Aggregator {
+  // >     command: {
+  // >          "echo": Command {
+  // >              name: "echo",
+  // >              description: "prints all subjects and properties",
+  // >          },
+  // >          "exit": Command {
+  // >              name: "exit",
+  // >              description: "just exit",
+  // >          },
+  // >     },
+  // > }
+}
+```
+
+In this example, the `Aggregator` struct functions as a container for multiple `Command` structs, each identified by a unique command name. The `AggregatorFormer` implements a custom method `command`, which serves as a subformer for adding `Command` instances into the `Aggregator`.
+
+- **Command Definition**: Each `Command` consists of a `name` and a `description`, and we derive `Former` to enable easy setting of these properties using a builder pattern.
+- **Aggregator Definition**: It holds a collection of `Command` objects in a `HashMap`. The `#[setter(false)]` attribute is used to disable the default setter, and a custom method `command` is defined to facilitate the addition of commands with specific attributes.
+- **Custom Subformer Integration**: The `command` method in the `AggregatorFormer` initializes a `CommandFormer` with a closure that integrates the `Command` into the `Aggregator`'s `command` map upon completion.
+
+This pattern of using a structure's former as a subformer within another facilitates the creation of deeply nested or complex data structures through a coherent and fluent interface, showcasing the powerful capabilities of the `Former` framework for Rust applications.
 
 ### To add to your project
 

@@ -14,7 +14,7 @@ fn main()
   use former::Former;
 
   /// Structure with default attributes.
-  #[derive( Debug, PartialEq, Former ) ]
+  #[ derive(  Debug, PartialEq, Former ) ]
   pub struct ExampleStruct
   {
     #[ default( 5 ) ]

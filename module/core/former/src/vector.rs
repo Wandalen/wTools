@@ -29,7 +29,7 @@ impl< E > VectorLike< E > for std::vec::Vec< E >
 /// #[ derive( Debug, PartialEq, former::Former ) ]
 /// pub struct StructWithVec
 /// {
-///   #[ subformer( former::runtime::VectorSubformer ) ]
+///   #[ subformer( former::VectorSubformer ) ]
 ///   vec : Vec< &'static str >,
 /// }
 ///

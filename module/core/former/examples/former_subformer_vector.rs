@@ -9,7 +9,7 @@ fn main()
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithVec
   {
-    #[ subformer( former::runtime::VectorSubformer ) ]
+    #[ subformer( former::VectorSubformer ) ]
     vec : Vec< &'static str >,
   }
 

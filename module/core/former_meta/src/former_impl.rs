@@ -167,7 +167,7 @@ impl syn::parse::Parse for AttributeSetter
 ///
 /// Attribute to enable/disable former generation.
 ///
-/// `#[ former( former::runtime::VectorSubformer ) ]`
+/// `#[ former( former::VectorSubformer ) ]`
 ///
 
 #[ allow( dead_code ) ]
@@ -527,7 +527,7 @@ fn field_setter
 /// # Example of generated code
 ///
 /// ```ignore
-/// pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapSubformer
+/// pub fn hashmap_strings_1( mut self ) -> former::HashMapSubformer
 /// <
 ///   String,
 ///   String,
@@ -542,7 +542,7 @@ fn field_setter
 ///     former.hashmap_strings_1 = Some( container );
 ///     former
 ///   };
-///   former::runtime::HashMapSubformer::begin( self, container, on_end )
+///   former::HashMapSubformer::begin( self, container, on_end )
 /// }
 /// ```
 

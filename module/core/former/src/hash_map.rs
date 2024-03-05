@@ -70,7 +70,7 @@ where
 /// #[ derive( Debug, PartialEq, former::Former ) ]
 /// pub struct StructWithMap
 /// {
-///   #[ subformer( former::runtime::HashMapSubformer ) ]
+///   #[ subformer( former::HashMapSubformer ) ]
 ///   map : std::collections::HashMap< &'static str, &'static str >,
 /// }
 ///
