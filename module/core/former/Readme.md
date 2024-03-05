@@ -8,7 +8,7 @@ A flexible and extensible implementation of the builder pattern.
 
 It offers specialized subformers for common Rust collections like `Vec`, `HashMap`, and `HashSet`, enabling the construction of complex data structures in a fluent and intuitive manner.
 
-## How Former Works
+### How Former Works
 
 - **Trait Derivation** : By deriving `Former` on a struct, you automatically generate builder methods for each field.
 - **Fluent Interface** : Each field's builder method allows for setting the value of that field and returns a mutable reference to the builder,
