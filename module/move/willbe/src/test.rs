@@ -292,7 +292,7 @@ mod private
       for feature in features
       {
         let feature = if feature.is_empty() { "no-features".to_string() } else { feature.iter().join( "," ) };
-        println!( "[ channel : {channel} | feature : {feature} ]" );
+        println!( "  [ channel : {channel} | feature : {feature} ]" );
       }
     }
   }
