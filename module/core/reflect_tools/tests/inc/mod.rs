@@ -1,6 +1,9 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
+#[ cfg( feature = "reflect_newtype" ) ]
+mod newtype_experiment;
+
 #[ cfg( feature = "reflect_reflect" ) ]
 mod reflect_common_test;
 #[ cfg( feature = "reflect_reflect" ) ]

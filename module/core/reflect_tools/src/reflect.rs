@@ -22,6 +22,7 @@
 //! To start using the reflection system, define your entities using the provided traits and enums, and then use the `reflect` function to introspect their properties and behavior at runtime. The system is designed to be intuitive for Rust developers familiar with traits and enums, with minimal boilerplate required to make existing types compatible.
 //!
 //! ## Example
+// qqq : for Yulia : no ignore!
 //!
 //! ```rust, ignore
 //! # use reflect_tools::reflect::{ reflect, Entity };
@@ -137,11 +138,28 @@ pub mod exposed
   pub use super::primitive::exposed::*;
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use exposed::*;
-
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::axiomatic::prelude::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_array::prelude::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_slice::prelude::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_vec::prelude::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_hashmap::prelude::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::entity_hashset::prelude::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::primitive::prelude::*;
 }
