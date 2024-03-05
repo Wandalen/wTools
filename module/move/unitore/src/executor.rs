@@ -16,12 +16,12 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   ( [
     wca::Command::former()
     .phrase( "frames.download" )
-    .hint( "Subscribe to feed from sources provided in config file" )
+    .hint( "Subscribe to feed from sources provided in config file. Subject: path to config file." )
     .subject( "Source file", wca::Type::String, false )
     .form(),
     wca::Command::former()
     .phrase( "fields.list" )
-    .hint( "List all fields in Frames table with explanation." )
+    .hint( "List all fields in Frames table with explanation and type." )
     .form(),
     wca::Command::former()
     .phrase( "feeds.list" )
@@ -33,12 +33,12 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .form(),
     wca::Command::former()
     .phrase( "config.add" )
-    .hint( "Add subscription configuration." )
+    .hint( "Add subscription configuration. Subject: link to feed source." )
     .subject( "Link", wca::Type::String, false )
     .form(),
     wca::Command::former()
     .phrase( "config.delete" )
-    .hint( "Delete subscription configuraiton." )
+    .hint( "Delete subscription configuraiton. Subject: link to feed source." )
     .subject( "Link", wca::Type::String, false )
     .form(),
     wca::Command::former()
@@ -47,8 +47,20 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .form(),
     wca::Command::former()
     .phrase( "query.execute" )
-    .hint( "Execute custom query." )
-    .subject( "Query", wca::Type::List( Box::new( wca::Type::String ), ' ' ), false )
+    .hint
+    ( 
+      concat!
+      (
+        "Execute custom query. Subject: query string, with special characters escaped.\n",
+        "Example query:\n  - select all frames:\n",
+        r#"  .query.execute \'SELECT \* FROM Frames\'"#,
+        "\n",
+        "  - select title and link to the most recent frame:\n",
+        r#"  .query.execute \'SELECT title, links, MIN\(published\) FROM Frames\'"#,
+        "\n\n",
+      )
+    )
+    .subject( "Query", wca::Type::String, false )
     .form(),
   ] )
   .executor
@@ -119,9 +131,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     } ) ),
     ( "query.execute".to_owned(), wca::Routine::new( | ( args, _props ) |
     {
-      if let Some( query ) = args.get_owned::<Vec<String>>( 0 )
+      if let Some( query ) = args.get_owned( 0 )
       {
-        let report = execute_query( query.join( " " ) ).unwrap();
+        let report = execute_query( query ).unwrap();
         report.report();
       }
 
