@@ -144,7 +144,7 @@ mod private
     {
       if self.dry
       {
-        writeln!( f, "You can execute the command with the dry-run:0." )?;
+        writeln!( f, "\nYou can execute the command with the dry-run:0, for example 'will .test dry:0'." )?;
         return Ok( () )
       }
       if self.succses_reports.is_empty() && self.failure_reports.is_empty()
@@ -292,7 +292,7 @@ mod private
       for feature in features
       {
         let feature = if feature.is_empty() { "no-features".to_string() } else { feature.iter().join( "," ) };
-        println!( "[ channel : {channel} | feature : {feature}]" );
+        println!( "  [ channel : {channel} | feature : {feature} ]" );
       }
     }
   }
