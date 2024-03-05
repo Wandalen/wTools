@@ -67,11 +67,6 @@ mod private
       }
       let mut failed = 0;
       let mut success = 0;
-      writeln!( f, "The tests will be executed using the following configurations:" )?;
-      for ( channel, feature ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) ).flat_map( | ( c, f ) | f.iter().map( |( f, _ )| ( *c, f ) ) )
-      {
-        writeln!( f, "channel : {channel} | features : [ {} ]", if feature.is_empty() { "no-features" } else { feature } )?;
-      }
       writeln!(f, "{} {}\n", "\n=== Module".bold(), self.package_name.bold() )?;
       if self.tests.is_empty()
       {
@@ -84,28 +79,18 @@ mod private
         for ( feature, result ) in features
         {
           // if tests failed or if build failed
-          match ( result.out.contains( "failures" ), result.err.contains( "error" ) )
+          if result.out.contains( "failures" ) || result.out.contains( "error" )
           {
-            ( true, _ ) =>
-            {
-              let mut out = result.out.replace( "\n", "\n      " );
-              out.push_str( "\n" );
-              failed += 1;
-              write!( f, "  [ {} | {} ]: ❌  failed\n  \n{out}", channel, feature )?;
-            }
-            ( _, true ) =>
-            {
-              let mut err = result.err.replace("\n", "\n      " );
-              err.push_str( "\n" );
-              failed += 1;
-              write!(f, "  [ {} | {} ]: ❌  failed\n  \n{err}", channel, feature )?;
-            }
-            ( false, false ) =>
-            {
-              let feature = if feature.is_empty() { "no-features" } else { feature };
-              success += 1;
-              writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
-            }
+            let mut out = result.out.replace( "\n", "\n      " );
+            out.push_str( "\n" );
+            failed += 1;
+            write!( f, "  [ {} | {} ]: ❌  failed\n  \n{out}", channel, feature )?;
+          }
+          else 
+          { 
+            let feature = if feature.is_empty() { "no-features" } else { feature };
+            success += 1;
+            writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
           }
         }
       }
