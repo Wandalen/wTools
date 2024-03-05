@@ -136,8 +136,7 @@ impl syn::parse::Parse for AttributeDefault
   }
 }
 
-// qqq : xxx : implement test for setter
-// qqq : xxx : update documentation
+// qqq : make sure that documentation for each entity is up to date
 
 ///
 /// Attribute to enable/disable setter generation.
@@ -393,7 +392,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
           ( &::core::marker::PhantomData::< #ty > ).maybe_default()
         };
-        // qqq : xxx : test that and document example of generated code
+        // qqq : test that and document example of generated code
       }
     }
     else
