@@ -13,5 +13,6 @@ jobs :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/core/impls_index/Cargo.toml'
+      module_path: 'module/core/impls_index/'
       module_name : 'impls_index'
       commit_message : ${{ github.event.head_commit.message }}

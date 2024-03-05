@@ -13,5 +13,6 @@ jobs :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/alias/cargo_will/Cargo.toml'
+      module_path: 'module/alias/cargo_will/'
       module_name : 'cargo_will'
       commit_message : ${{ github.event.head_commit.message }}

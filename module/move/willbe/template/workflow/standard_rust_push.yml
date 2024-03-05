@@ -35,8 +35,7 @@ env :
 jobs :
 
   will_test :
-    if : |
-      contains( inputs.commit_message, '!test' )
+    if : contains( inputs.commit_message, '!test' ) || contains( inputs.commit_message, 'merge' )
     concurrency :
       group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_${{ matrix.os }}
       cancel-in-progress : true

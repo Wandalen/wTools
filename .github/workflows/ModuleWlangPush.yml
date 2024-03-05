@@ -13,5 +13,6 @@ jobs :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/move/wlang/Cargo.toml'
+      module_path: 'module/move/wlang/'
       module_name : 'wlang'
       commit_message : ${{ github.event.head_commit.message }}

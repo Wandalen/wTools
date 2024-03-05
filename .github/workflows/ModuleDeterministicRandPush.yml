@@ -13,5 +13,6 @@ jobs :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/move/deterministic_rand/Cargo.toml'
+      module_path: 'module/move/deterministic_rand/'
       module_name : 'deterministic_rand'
       commit_message : ${{ github.event.head_commit.message }}
