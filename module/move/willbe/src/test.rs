@@ -95,28 +95,28 @@ mod private
                 let mut out = result.out.replace( "\n", "\n      " );
                 out.push_str( "\n" );
                 failed += 1;
-                write!( f, "  [ {} | {} ]: ❌ failed\n  \n{out}", channel, feature )?;
+                write!( f, "  [ {} | {} ]: ❌  failed\n  \n{out}", channel, feature )?;
               }
               ( _, true ) =>
               {
                 let mut err = result.err.replace("\n", "\n      " );
                 err.push_str( "\n" );
                 failed += 1;
-                write!(f, "  [ {} | {} ]: ❌ failed\n  \n{err}", channel, feature )?;
+                write!(f, "  [ {} | {} ]: ❌  failed\n  \n{err}", channel, feature )?;
               }
               ( false, false ) =>
               {
                 let feature = if feature.is_empty() { "no-features" } else { feature };
                 success += 1;
-                writeln!( f, "  [ {} | {} ]: ✅ successful", channel, feature )?;
+                writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
               }
             }
           }
         }
       }
-      writeln!( f, "\n=== Module report ===" )?;
-      writeln!( f, "✅ Number of successfully passed test variants : {success}" )?;
-      writeln!( f, "❌ Number of failed test variants : {failed}" )?;
+      writeln!( f, "\nModule report" )?;
+      writeln!( f, "  ✅  Number of successfully passed test variants : {success}" )?;
+      writeln!( f, "  ❌  Number of failed test variants : {failed}" )?;
 
       Ok( () )
     }
@@ -168,9 +168,9 @@ mod private
           writeln!( f, "{}", report )?;
         }
       }
-      writeln!( f, "==== Global report ====" )?;
-      writeln!( f, "✅ Number of successfully passed modules : {}", self.succses_reports.len() )?;
-      writeln!( f, "❌ Number of failed modules : {}", self.failure_reports.len() )?;
+      writeln!( f, "Global report" )?;
+      writeln!( f, "  ✅  Number of successfully passed modules : {}", self.succses_reports.len() )?;
+      writeln!( f, "  ❌  Number of failed modules : {}", self.failure_reports.len() )?;
       if !self.dry
       {
         writeln!( f, "You can execute the command with the dry-run:0." )?;
