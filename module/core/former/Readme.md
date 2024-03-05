@@ -279,7 +279,7 @@ fn main()
     command : HashMap< String, Command >,
   }
 
-  // Implementation for AggregatorFormer to add commands by name
+  // Use CommandFormer as custom subformer for AggregatorFormer to add commands by name.
   impl< Context, End > AggregatorFormer< Context, End >
   where
     End : former::ToSuperFormer< Aggregator, Context >,
@@ -287,14 +287,14 @@ fn main()
     #[ inline( always ) ]
     pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::ToSuperFormer< Command, Self > >
     where
-      IntoName: core::convert::Into<String>,
+      IntoName: core::convert::Into< String >,
     {
-      let on_end = |command: Command, super_former: core::option::Option<Self>| -> Self
+      let on_end = | command : Command, super_former : core::option::Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
         if let Some( ref mut commands ) = super_former.container.command
         {
-          commands.insert(command.name.clone(), command);
+          commands.insert( command.name.clone(), command );
         }
         else
         {
