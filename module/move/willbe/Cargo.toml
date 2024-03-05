@@ -61,6 +61,7 @@ tar = "~0.4"
 handlebars = "4.5.0"
 ureq = "~2.9"
 colored = "2.1.0"
+duct = "0.13.7"
 
 [dev-dependencies]
 test_tools = { workspace = true }
