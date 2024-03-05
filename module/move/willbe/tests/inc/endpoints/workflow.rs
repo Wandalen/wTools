@@ -23,7 +23,7 @@ mod workflow_generate
 
   fn arrange( sample_dir : &str ) -> assert_fs::TempDir
   {
-    let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+    let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) ); 
     let assets_relative_path = std::path::Path::new( ASSETS_PATH );
     let assets_path = root_path.join( assets_relative_path );
 
