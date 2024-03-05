@@ -66,7 +66,7 @@ mod private
       {
         writeln!( f, "channel : {channel} | features : [ {} ]", if feature.is_empty() { "no-features" } else { feature } )?;
       }
-      writeln!(f, "{} {}", "\n=== Module".bold(), self.package_name.bold() )?;
+      writeln!(f, "{} {}\n", "\n=== Module".bold(), self.package_name.bold() )?;
       if self.tests.is_empty()
       {
         writeln!( f, "unlucky" )?;
@@ -85,16 +85,25 @@ mod private
           else
           {
             // if tests failed or if build failed
-            let failed = result.out.contains( "failures" ) || result.err.contains( "error" );
-            if !failed
-            {
-              let feature = if feature.is_empty() { "no-features" } else { feature };
-              writeln!( f, "  [ {} | {} ]: {}", channel, feature, if failed { "❌ failed" } else { "✅ successful" } )?;
-            }
-            else
-            {
-              let feature = if feature.is_empty() { "no-features" } else { feature };
-              write!( f, "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out.replace( "\n", "\n      " ), result.err.replace( "\n", "\n      " ) )?;
+            match ( result.out.contains( "failures" ), result.err.contains( "error" ) ) 
+            { 
+              ( true, _ ) => 
+              {
+                let mut out = result.out.replace( "\n", "\n      " );
+                out.push_str( "\n" );
+                write!( f, "  [ {} | {} ]: ❌ failed\n  \n{out}", channel, feature )?;
+              }
+              ( _, true ) =>
+              {
+                let mut err = result.err.replace("\n", "\n      " );
+                err.push_str( "\n" );
+                write!(f, "  [ {} | {} ]: ❌ failed\n  \n{err}", channel, feature )?;
+              }
+              ( false, false ) =>
+              {
+                let feature = if feature.is_empty() { "no-features" } else { feature };
+                writeln!( f, "  [ {} | {} ]: ✅ successful", channel, feature )?;
+              }
             }
           }
         }
@@ -149,6 +158,10 @@ mod private
         {
           writeln!( f, "{}", report )?;
         }
+      }
+      if !self.dry
+      {
+        writeln!( f, "You can execute the command with the dry-run:0." )?;
       }
       Ok( () )
     }
