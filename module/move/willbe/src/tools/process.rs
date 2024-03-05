@@ -140,22 +140,23 @@ pub( crate ) mod private
   pub fn start3_sync< AP, Args, Arg, P >
   (
     application : AP,
-    args: Args,
+    args : Args,
     path : P,
   )
-    -> Result< CmdReport >
-    where
-      AP : AsRef< Path >,
-      Args : IntoIterator< Item = Arg >,
-      Arg : AsRef< std::ffi::OsStr >,
-      P : AsRef< Path >,
+  -> Result< CmdReport >
+  where
+    AP : AsRef< Path >,
+    Args : IntoIterator< Item = Arg >,
+    Arg : AsRef< std::ffi::OsStr >,
+    P : AsRef< Path >,
   {
     let ( application, path ) = ( application.as_ref(), path.as_ref() );
     let args = args.into_iter().map( | a | a.as_ref().into() ).collect::< Vec< std::ffi::OsString > >();
-    let output = cmd(application, &args )
+    let output = cmd( application.as_os_str(), &args )
     .dir( path )
     .stderr_to_stdout()
     .stdout_capture()
+    .unchecked()
     .run()?;
     let report = CmdReport
     {

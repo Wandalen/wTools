@@ -88,7 +88,7 @@ mod private
           else
           {
             // if tests failed or if build failed
-            match ( result.out.contains( "failures" ), result.err.contains( "error" ) )
+            match ( result.out.contains( "failures" ), result.out.contains( "error" ) )
             {
               ( true, _ ) =>
               {
@@ -99,7 +99,7 @@ mod private
               }
               ( _, true ) =>
               {
-                let mut err = result.err.replace("\n", "\n      " );
+                let mut err = result.out.replace("\n", "\n      " );
                 err.push_str( "\n" );
                 failed += 1;
                 write!(f, "  [ {} | {} ]: ❌  failed\n  \n{err}", channel, feature )?;
@@ -231,7 +231,7 @@ mod private
 
     // unpack. all tasks must be completed until now
     let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
-    let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.err.contains( "error" ) );
+    let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.out.contains( "error" ) );
     if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
   }
   

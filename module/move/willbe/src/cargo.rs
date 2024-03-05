@@ -155,7 +155,7 @@ mod private
     }
     else
     {
-      process::start2_sync( program, args, path )
+      process::start3_sync( program, args, path )
     }
   }
 
