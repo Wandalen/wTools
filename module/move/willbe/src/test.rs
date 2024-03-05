@@ -61,6 +61,10 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
+      if self.dry
+      {
+        return Ok( () )
+      }
       let mut failed = 0;
       let mut success = 0;
       writeln!( f, "The tests will be executed using the following configurations:" )?;
@@ -79,44 +83,40 @@ mod private
       {
         for ( feature, result ) in features
         {
-          if self.dry
+          // if tests failed or if build failed
+          match ( result.out.contains( "failures" ), result.err.contains( "error" ) )
           {
-            let feature = if feature.is_empty() { "no-features" } else { feature };
-            success += 1;
-            writeln!( f, "[{channel} | {feature}]: `{}`", result.command )?
-          }
-          else
-          {
-            // if tests failed or if build failed
-            match ( result.out.contains( "failures" ), result.out.contains( "error" ) )
+            ( true, _ ) =>
             {
-              ( true, _ ) =>
-              {
-                let mut out = result.out.replace( "\n", "\n      " );
-                out.push_str( "\n" );
-                failed += 1;
-                write!( f, "  [ {} | {} ]: ❌  failed\n  \n{out}", channel, feature )?;
-              }
-              ( _, true ) =>
-              {
-                let mut err = result.out.replace("\n", "\n      " );
-                err.push_str( "\n" );
-                failed += 1;
-                write!(f, "  [ {} | {} ]: ❌  failed\n  \n{err}", channel, feature )?;
-              }
-              ( false, false ) =>
-              {
-                let feature = if feature.is_empty() { "no-features" } else { feature };
-                success += 1;
-                writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
-              }
+              let mut out = result.out.replace( "\n", "\n      " );
+              out.push_str( "\n" );
+              failed += 1;
+              write!( f, "  [ {} | {} ]: ❌  failed\n  \n{out}", channel, feature )?;
+            }
+            ( _, true ) =>
+            {
+              let mut err = result.err.replace("\n", "\n      " );
+              err.push_str( "\n" );
+              failed += 1;
+              write!(f, "  [ {} | {} ]: ❌  failed\n  \n{err}", channel, feature )?;
+            }
+            ( false, false ) =>
+            {
+              let feature = if feature.is_empty() { "no-features" } else { feature };
+              success += 1;
+              writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
             }
           }
         }
       }
-      writeln!( f, "\nModule report" )?;
-      writeln!( f, "  ✅  Number of successfully passed test variants : {success}" )?;
-      writeln!( f, "  ❌  Number of failed test variants : {failed}" )?;
+      if success == failed + success
+      {
+        writeln!( f, "  ✅  All passed {success} / {}", failed + success )?;
+      }
+      else
+      {
+        writeln!( f, "  ❌  Not all passed {success} / {}", failed + success )?;
+      }
 
       Ok( () )
     }
@@ -147,6 +147,11 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
+      if self.dry
+      {
+        writeln!( f, "You can execute the command with the dry-run:0." )?;
+        return Ok( () )
+      }
       if self.succses_reports.is_empty() && self.failure_reports.is_empty()
       {
         writeln!( f, "The tests have not been run."  )?;
@@ -169,12 +174,15 @@ mod private
         }
       }
       writeln!( f, "Global report" )?;
-      writeln!( f, "  ✅  Number of successfully passed modules : {}", self.succses_reports.len() )?;
-      writeln!( f, "  ❌  Number of failed modules : {}", self.failure_reports.len() )?;
-      if !self.dry
+      if self.succses_reports.len() == self.failure_reports.len() + self.succses_reports.len()
       {
-        writeln!( f, "You can execute the command with the dry-run:0." )?;
+        writeln!( f, "  ✅  All passed {} / {}", self.succses_reports.len(),  self.succses_reports.len() )?;
       }
+      else
+      {
+        writeln!( f, "  ❌  Not all passed {} / {}", self.succses_reports.len(),  self.failure_reports.len() + self.succses_reports.len() )?;
+      }
+
       Ok( () )
     }
   }
@@ -185,6 +193,7 @@ mod private
   {
     let exclude = args.exclude_features.iter().cloned().collect();
     let mut report = TestReport::default();
+    report.dry = dry;
     report.package_name = package.name.clone();
     let report = Arc::new( Mutex::new( report ) );
 
@@ -238,7 +247,9 @@ mod private
   /// Run tests for given packages.
   pub fn run_tests( args : &TestArgs, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
-    let report = Arc::new( Mutex::new( TestsReport::default() ) );
+    let mut report = TestsReport::default();
+    report.dry = dry;
+    let report = Arc::new( Mutex::new( report ) );
     let pool = ThreadPoolBuilder::new().use_current_thread().num_threads( args.concurrent as usize ).build().unwrap();
     pool.scope
     (
@@ -280,13 +291,13 @@ mod private
 
   fn print_temp_report( package_name : &str, channels : &HashSet< cargo::Channel >, features : &HashSet< BTreeSet< String > > )
   {
-    println!( "Package : {}", package_name );
+    println!( "Package : {}\nThe tests will be executed using the following configurations:", package_name );
     for channel in channels.iter().sorted()
     {
       for feature in features
       {
         let feature = if feature.is_empty() { "no-features".to_string() } else { feature.iter().join( "," ) };
-        println!( "[{channel} | {feature}]" );
+        println!( "[ channel : {channel} | feature : {feature}]" );
       }
     }
   }

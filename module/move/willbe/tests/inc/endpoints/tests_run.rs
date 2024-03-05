@@ -116,7 +116,7 @@ fn call_from_workspace_root()
 
   let args = TestsCommandOptions::former()
   .dir( abs )
-  .concurrent( false )
+  .concurrent( 1u32 )
   .channels([ cargo::Channel::Stable ])
   .form();
 
