@@ -1,31 +1,32 @@
 #![ cfg_attr( feature = "no_std", no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/iter_tools/latest/iter_tools/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
+#![ doc( html_root_url = "https://docs.rs/reflect_tools/latest/reflect_tools/" ) ]
 
 //!
-//! Collection of general purpose tools to iterate. Currently it simply reexports itertools.
+//! Collection of derives which extend STD.
 //!
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Core module.
 #[ cfg( feature = "enabled" ) ]
-pub mod iter;
+#[ cfg( feature = "reflect_reflect" ) ]
+pub mod reflect;
 
-/// Namespace with dependencies.
+// use reflect_tools_meta::Deref;
+// use reflect_tools_meta::VariadicFrom;
+
+/// Dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  pub use ::itertools;
+  #[ cfg( any_derive ) ]
+  pub use ::reflect_tools_meta;
 }
 
+#[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-#[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
 /// Protected namespace of the module.
@@ -35,6 +36,10 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
+  #[ cfg( feature = "reflect_reflect" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::reflect::orphan::*;
 }
 
 /// Orphan namespace of the module.
@@ -53,16 +58,27 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
+
+  #[ cfg( feature = "reflect_reflect" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::iter::exposed::*;
+  pub use super::reflect::exposed::*;
+
+  // #[ cfg( any_derive ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use ::reflect_tools_meta::*;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
+
+  #[ cfg( feature = "reflect_reflect" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::iter::prelude::*;
+  pub use super::reflect::prelude::*;
+
 }

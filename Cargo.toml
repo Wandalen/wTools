@@ -25,15 +25,29 @@ discord_id = "m3YfbXpUUY"
 # [metadata.cargo-suppress-warnings]
 # unused-manifest-key = true
 
+
 [workspace.lints.rust]
+# Source :: https://github.com/obox-systems/conventions/blob/master/code_style.md#lints-and-warnings
+
+# Denies non-idiomatic code for Rust 2018 edition.
 rust_2018_idioms = "deny"
-missing_docs = "deny"
-missing_debug_implementations = "deny" # opt out where Debug is really redundant
+# Denies using features that may break in future Rust versions.
 future_incompatible = "deny"
+# Warns if public items lack documentation.
+missing_docs = "warn"
+# Warns for public types not implementing Debug.
+missing_debug_implementations = "warn"
+# Denies all unsafe code usage.
+unsafe-code = "warn"
 
 [workspace.lints.clippy]
-restriction = "deny" # opt out where this is redundant
-pedantic = "deny" # opt out where this is redundant
+# Denies restrictive lints, limiting certain language features/patterns.
+restriction = "warn"
+# Denies pedantic lints, enforcing strict coding styles and conventions.
+pedantic = "warn"
+# Denies undocumented unsafe blocks.
+undocumented_unsafe_blocks = "deny"
+
 
 ## top level
 
@@ -98,6 +112,18 @@ features = [ "enabled" ]
 [workspace.dependencies.derive_tools_meta]
 version = "~0.10.0"
 path = "module/core/derive_tools_meta"
+default-features = false
+features = [ "enabled" ]
+
+[workspace.dependencies.reflect_tools]
+version = "~0.1.0"
+path = "module/core/reflect_tools"
+default-features = false
+features = [ "enabled" ]
+
+[workspace.dependencies.reflect_tools_meta]
+version = "~0.1.0"
+path = "module/core/reflect_tools_meta"
 default-features = false
 features = [ "enabled" ]
 

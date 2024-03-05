@@ -12,7 +12,7 @@ documentation = "https://docs.rs/derive_tools_meta"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools_meta"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools_meta"
 description = """
-Derive to clone dyn structures.
+Collection of derives which extend STD. Its meta module. Don't use directly.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
@@ -39,7 +39,6 @@ default = [
   "derive_as_ref",
   "derive_as_mut",
   "derive_variadic_from",
-  "derive_reflect",
 ]
 full = [
   "enabled",
@@ -50,7 +49,6 @@ full = [
   "derive_as_ref",
   "derive_as_mut",
   "derive_variadic_from",
-  "derive_reflect",
 ]
 enabled = []
 
@@ -61,12 +59,11 @@ derive_deref_mut = []
 derive_from = []
 derive_inner_from = []
 derive_variadic_from = []
-derive_reflect = []
 
 [dependencies]
 macro_tools = { workspace = true, features = [ "full" ] }
 iter_tools = { workspace = true, features = [ "full" ] }
-# xxx : optimize features set
+# xxx : qqq : optimize features set
 
 [dev-dependencies]
 test_tools = { workspace = true }
