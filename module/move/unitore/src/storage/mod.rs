@@ -13,13 +13,12 @@ use gluesql::
   prelude::Glue,
   sled_storage::{ sled::Config, SledStorage },
 };
-use crate::storage::model::SubscriptionRow;
 use crate::feed_config::SubscriptionConfig;
-use crate::executor::FramesReport;
+use crate::report::{ FramesReport, FieldsReport, FeedsReport, SelectedEntries, QueryReport, ConfigReport };
 use wca::wtools::Itertools;
 
 mod model;
-use model::{ FeedRow, FrameRow };
+use model::{ FeedRow, FrameRow, SubscriptionRow };
 
 /// Storage for feed frames.
 pub struct FeedStorage< S : GStore + GStoreMut + Send >
@@ -97,7 +96,7 @@ impl FeedStorage< SledStorage >
 
 /// Functionality of feed storage.
 #[ mockall::automock ]
-#[ async_trait::async_trait(?Send ) ]
+#[ async_trait::async_trait( ?Send ) ]
 pub trait FeedStore
 {
   /// Insert items from list into feed table.
@@ -113,86 +112,86 @@ pub trait FeedStore
   async fn process_feeds( &mut self, feeds : Vec< Feed > ) -> Result< FramesReport, Box< dyn std::error::Error + Send + Sync > >;
 
   /// Get all feed frames from storage.
-  async fn get_all_frames( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
+  async fn get_all_frames( &mut self ) -> Result< FramesReport, Box< dyn std::error::Error + Send + Sync > >;
 
   /// Get all feeds from storage.
-  async fn get_all_feeds( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
+  async fn get_all_feeds( &mut self ) -> Result< FeedsReport, Box< dyn std::error::Error + Send + Sync > >;
 
   /// Execute custom query passed as String.
-  async fn execute_query( &mut self, query : String ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
+  async fn execute_query( &mut self, query : String ) -> Result< QueryReport, Box< dyn std::error::Error + Send + Sync > >;
 
   /// Get list of column titles of feed table.
-  fn columns_titles( &mut self ) -> Vec< [ &'static str; 3 ] >;
+  fn columns_titles( &mut self ) -> FieldsReport;
 
   /// Add subscription.
-  async fn add_subscription( &mut self, sub : SubscriptionConfig ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
+  async fn add_subscription( &mut self, sub : SubscriptionConfig ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >;
 
   /// Remove subscription.
-  async fn remove_subscription( &mut self, link : String ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
+  async fn remove_subscription( &mut self, link : String ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >;
 
   /// List subscriptions.
-  async fn list_subscriptions( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
+  async fn list_subscriptions( &mut self ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >;
 }
 
-#[ async_trait::async_trait(?Send) ]
+#[ async_trait::async_trait( ?Send ) ]
 impl FeedStore for FeedStorage< SledStorage >
 {
-  fn columns_titles( &mut self ) -> Vec< [ &'static str; 3 ] >
+  fn columns_titles( &mut self ) -> FieldsReport
   {
-    self.frame_fields.clone()
+    FieldsReport
+    {
+      fields_list : self.frame_fields.clone()
+    }
   }
 
-  async fn execute_query( &mut self, query : String ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+  async fn execute_query( &mut self, query : String ) -> Result< QueryReport, Box< dyn std::error::Error + Send + Sync > >
   {
     let glue = &mut *self.storage.lock().await;
     let payloads = glue.execute( &query ).await?;
 
-    for payload in payloads
-    {
-      match payload
-      {
-        Payload::ShowColumns( columns ) =>
-        {
-          for column in columns
-          {
-            println!( "{} : {}", column.0, column.1 )
-          }
-        },
-        Payload::Create => println!( "Table created" ),
-        Payload::Insert( number ) => println!( "Inserted {} rows", number ),
-        Payload::Delete( number ) => println!( "Deleted {} rows", number ),
-        Payload::Update( number ) => println!( "Updated {} rows", number ),
-        Payload::DropTable => println!( "Table dropped" ),
-        Payload::Select { labels: label_vec, rows: rows_vec } =>
-        {
-          println!( "labels : {}", label_vec.iter().fold( String::new(), | acc, val | format!( "{}, {}", acc, val ) ) );
-          for row in rows_vec
-          {
-            println!( "{}", row.iter().fold( String::new(), | acc, val | format!( "{}, {:?}", acc, val ) ) );
-          }
-        },
-        Payload::AlterTable => println!( "Table altered" ),
-        Payload::StartTransaction => println!( "Transaction started" ),
-        Payload::Commit => println!( "Transaction commited" ),
-        Payload::Rollback => println!( "Transaction rolled back" ),
-        _ => {},
-      };
-    }
+    let report = QueryReport { result : payloads };
 
-    Ok( () )
+    Ok( report )
   }
 
-  async fn get_all_frames( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  async fn get_all_frames( &mut self ) -> Result< FramesReport, Box< dyn std::error::Error + Send + Sync > >
   {
     let res = table( "Frames" ).select().execute( &mut *self.storage.lock().await ).await?;
-    Ok( res )
+
+    let mut report = FramesReport::new();
+    match res
+    {
+      Payload::Select { labels: label_vec, rows: rows_vec } =>
+      {
+        report.selected_frames = SelectedEntries
+        {
+          selected_rows : rows_vec,
+          selected_columns : label_vec,
+        }
+      },
+      _ => {},
+    }
+    Ok( report )
   }
 
-  async fn get_all_feeds( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  async fn get_all_feeds( &mut self ) -> Result< FeedsReport, Box< dyn std::error::Error + Send + Sync > >
   {
-    //HashMap< &str, &Value >
     let res = table( "Feeds" ).select().project( "id, title" ).execute( &mut *self.storage.lock().await ).await?;
-    Ok( res )
+    let mut report = FeedsReport::new();
+    match res
+    {
+      Payload::Select { labels: label_vec, rows: rows_vec } =>
+      {
+        report.selected_entries = SelectedEntries
+        {
+          selected_rows : rows_vec,
+          selected_columns : label_vec,
+        }
+      },
+      _ => {},
+    }
+
+    Ok( report )
   }
 
   async fn save_frames( &mut self, frames : Vec< ( Entry, String ) > ) -> Result< FramesReport, Box< dyn std::error::Error + Send + Sync > >
@@ -380,7 +379,7 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( report )
   }
 
-  async fn add_subscription( &mut self, sub : SubscriptionConfig ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  async fn add_subscription( &mut self, sub : SubscriptionConfig ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
   {
     let sub_row : SubscriptionRow = sub.into();
     
@@ -396,10 +395,10 @@ impl FeedStore for FeedStorage< SledStorage >
     .execute( &mut *self.storage.lock().await )
     .await?;
 
-    Ok( res )
+    Ok( ConfigReport { result : res } )
   }
 
-  async fn remove_subscription( &mut self, link : String ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  async fn remove_subscription( &mut self, link : String ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
   {
     let res = table( "Subscriptions" )
     .delete()
@@ -407,12 +406,12 @@ impl FeedStore for FeedStorage< SledStorage >
     .execute( &mut *self.storage.lock().await )
     .await?;
 
-    Ok( res )
+    Ok( ConfigReport { result : res } )
   }
 
-  async fn list_subscriptions( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  async fn list_subscriptions( &mut self ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
   {
     let res = table( "Subscriptions" ).select().execute( &mut *self.storage.lock().await ).await?;
-    Ok( res )
+    Ok( ConfigReport { result : res } )
   }
 }

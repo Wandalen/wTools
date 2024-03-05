@@ -1,11 +1,8 @@
 use feed_rs::model::{ Entry, Feed };
-use gluesql::
+use gluesql::core::
 {
-  core::
-  {
-    ast_builder::{ null, text, timestamp, ExprNode },
-    chrono::{ SecondsFormat, Utc },
-  },
+  ast_builder::{ null, text, timestamp, ExprNode },
+  chrono::{ SecondsFormat, Utc },
 };
 use crate::storage::SubscriptionConfig;
 
@@ -106,7 +103,7 @@ impl From< SubscriptionConfig > for SubscriptionRow
 {
   fn from( value : SubscriptionConfig ) -> Self
   {
-    let mut row = SubscriptionRow( vec!
+    let row = SubscriptionRow( vec!
     [
       text( value.link ),
       text( value.period.as_secs().to_string() ),

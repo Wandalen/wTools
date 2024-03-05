@@ -1,11 +1,11 @@
 //! Execute plan.
-
 use super::*;
 use feed_config::SubscriptionConfig;
-use gluesql::{ core::executor::Payload, sled_storage::sled::Config, prelude::Value };
+use gluesql::sled_storage::sled::Config;
 use retriever::{ FeedClient, FeedFetch };
 use feed_config::read_feed_config;
 use storage::{ FeedStorage, FeedStore };
+use report::{ Report, FramesReport, FieldsReport, FeedsReport, QueryReport, ConfigReport };
 // use wca::prelude::*;
 
 /// Run feed updates.
@@ -48,7 +48,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     wca::Command::former()
     .phrase( "query.execute" )
     .hint( "Execute custom query." )
-    .subject( "Query", wca::Type::List( Box::new( wca::Type::String ), ',' ), false )
+    .subject( "Query", wca::Type::List( Box::new( wca::Type::String ), ' ' ), false )
     .form(),
   ] )
   .executor
@@ -57,8 +57,8 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     {
       if let Some( path ) = args.get_owned( 0 )
       {
-        let rt  = tokio::runtime::Runtime::new()?;
-        rt.block_on( fetch_from_config( path ) ).unwrap();
+        let report = fetch_from_file( path ).unwrap();
+        report.report();
       }
 
       Ok( () )
@@ -66,30 +66,33 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 
     ( "fields.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
     {
-      let rt  = tokio::runtime::Runtime::new()?;
-      rt.block_on( list_fields() ).unwrap();
+      let report = list_fields().unwrap();
+      report.report();
+
       Ok( () )
     } ) ),
 
     ( "frames.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
     {
-      let rt  = tokio::runtime::Runtime::new()?;
-      rt.block_on( list_frames() ).unwrap();
+      let report = list_frames().unwrap();
+      report.report();
+
       Ok( () )
     } ) ),
 
     ( "feeds.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
     {
-      let rt  = tokio::runtime::Runtime::new()?;
-      rt.block_on( list_feeds() ).unwrap();
+      let report = list_feeds().unwrap();
+      report.report();
+
       Ok( () )
     } ) ),
 
-
     ( "config.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
     {
-      let rt  = tokio::runtime::Runtime::new()?;
-      rt.block_on( list_subscriptions() ).unwrap();
+      let report = list_subscriptions().unwrap();
+      report.report();
+
       Ok( () )
     } ) ),
 
@@ -97,13 +100,8 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     {
       if let Some( link ) = args.get_owned( 0 )
       {
-        let config = SubscriptionConfig
-        {
-          link,
-          period : std::time::Duration::from_secs( 1000 ),
-        };
-        let rt  = tokio::runtime::Runtime::new()?;
-        rt.block_on( add_subscription( config ) ).unwrap();
+        let report = add_subscription( link ).unwrap();
+        report.report();
       }
 
       Ok( () )
@@ -113,20 +111,18 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     {
       if let Some( link ) = args.get_owned( 0 )
       {
-        let rt  = tokio::runtime::Runtime::new()?;
-        rt.block_on( remove_subscription( link ) ).unwrap();
+        let report = remove_subscription( link ).unwrap();
+        report.report();
       }
 
       Ok( () )
     } ) ),
     ( "query.execute".to_owned(), wca::Routine::new( | ( args, _props ) |
     {
-      println!( "{:?}", args );
       if let Some( query ) = args.get_owned::<Vec<String>>( 0 )
       {
-        println!( "{:?}", query );
-        let rt  = tokio::runtime::Runtime::new()?;
-        rt.block_on( execute_query( query.join( " " ) ) ).unwrap();
+        let report = execute_query( query.join( " " ) ).unwrap();
+        report.report();
       }
 
       Ok( () )
@@ -139,24 +135,6 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   ca.perform( args.join( " " ) )?;
 
   Ok( () )
-}
-
-pub struct FramesReport
-{
-  pub updated_frames : usize,
-  pub new_frames : usize,
-}
-
-impl FramesReport
-{
-  pub fn new() -> Self
-  {
-    Self
-    {
-      updated_frames : 0,
-      new_frames : 0,
-    }
-  }
 }
 
 /// Manages feed subsriptions and updates.
@@ -199,7 +177,7 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
   }
 
   /// Update modified frames and save new items.
-  pub async fn update_feed( &mut self ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+  pub async fn update_feed( &mut self ) -> Result< FramesReport, Box< dyn std::error::Error + Send + Sync > >
   {
     let mut feeds = Vec::new();
     for i in  0..self.config.len()
@@ -207,156 +185,176 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
       let feed = self.client.fetch( self.config[ i ].link.clone() ).await?;
       feeds.push( feed );
     }
-    self.storage.process_feeds( feeds ).await?;
-    Ok( () )
+    self.storage.process_feeds( feeds ).await
   }
 
   /// Get all frames currently in storage.
-  pub async fn get_all_frames( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  pub async fn get_all_frames( &mut self ) -> Result< FramesReport, Box< dyn std::error::Error + Send + Sync > >
   {
     self.storage.get_all_frames().await
   }
 
   /// Get all feeds currently in storage.
-  pub async fn get_all_feeds( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  pub async fn get_all_feeds( &mut self ) -> Result< FeedsReport, Box< dyn std::error::Error + Send + Sync > >
   {
     self.storage.get_all_feeds().await
   }
 
   /// Execute custom query, print result.
-  pub async fn execute_custom_query( &mut self, query : String ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+  pub async fn execute_custom_query( &mut self, query : String ) -> Result< QueryReport, Box< dyn std::error::Error + Send + Sync > >
   {
     self.storage.execute_query( query ).await
   }
 
   /// Get columns names of Frames table.
-  pub fn get_columns( &mut self ) -> Result< Vec< [ &'static str; 3 ] >, Box< dyn std::error::Error + Send + Sync > >
+  pub fn get_columns( &mut self ) -> Result< FieldsReport, Box< dyn std::error::Error + Send + Sync > >
   {
     Ok( self.storage.columns_titles() )
   }
 
-  pub async fn list_subscriptions( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
+  pub async fn list_subscriptions( &mut self ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
   {
     self.storage.list_subscriptions().await
   }
 }
 
 /// Update all feed from subscriptions in file.
-pub async fn fetch_from_config( file_path : String ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+pub fn fetch_from_file( file_path : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
-  let config = Config::default()
-  .path( "data/temp".to_owned() )
-  ;
-  let feed_configs = read_feed_config( file_path ).unwrap();
-  let feed_storage = FeedStorage::init_storage( config ).await?;
+  let rt  = tokio::runtime::Runtime::new()?;
+  let report = rt.block_on( async move 
+  {
+    let config = Config::default()
+    .path( "data/temp".to_owned() )
+    ;
+    let feed_configs = read_feed_config( file_path ).unwrap();
+    let feed_storage = FeedStorage::init_storage( config ).await?;
+  
+    let mut manager = FeedManager::new( feed_storage );
+    manager.set_config( feed_configs );
+    manager.update_feed().await
 
-  let mut manager = FeedManager::new( feed_storage );
-  manager.set_config( feed_configs );
-  manager.update_feed().await?;
+  } );
 
-  Ok( () )
+  report
 }
 
 /// List all fields.
-pub async fn list_fields() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+pub fn list_fields() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
-  let config = Config::default()
-  .path( "data/temp".to_owned() )
-  ;
-
-  let feed_storage = FeedStorage::init_storage( config ).await?;
-
-  let mut manager = FeedManager::new( feed_storage );
-  let fields = manager.get_columns()?;
-  for field in fields
+  let rt  = tokio::runtime::Runtime::new()?;
+  rt.block_on( async move
   {
-    println!( "{}, type {} : {}\n", field[ 0 ], field[ 1 ], field[ 2 ] );
-  }
-
-  Ok( () )
+    let config = Config::default()
+    .path( "data/temp".to_owned() )
+    ;
+  
+    let feed_storage = FeedStorage::init_storage( config ).await?;
+  
+    let mut manager = FeedManager::new( feed_storage );
+    manager.get_columns()
+  } )
 }
 
 /// List all frames.
-pub async fn list_frames() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+pub fn list_frames() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
   .path( "data/temp".to_owned() )
   ;
+  let rt  = tokio::runtime::Runtime::new()?;
 
-  let feed_storage = FeedStorage::init_storage( config ).await?;
-  let mut manager = FeedManager::new( feed_storage );
-  let frames = manager.get_all_frames().await?;
-  println!( "{:#?}", frames );
-
-  Ok( () )
+  rt.block_on( async move
+  {
+    let feed_storage = FeedStorage::init_storage( config ).await?;
+    let mut manager = FeedManager::new( feed_storage );
+    manager.get_all_frames().await
+  } )
 }
 
 /// List all feeds.
-pub async fn list_feeds() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+pub fn list_feeds() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
   .path( "data/temp".to_owned() )
   ;
 
-  let feed_storage = FeedStorage::init_storage( config ).await?;
+  let rt  = tokio::runtime::Runtime::new()?;
+  let report = rt.block_on( async move
+    {
+      let feed_storage = FeedStorage::init_storage( config ).await?;
 
-  let mut manager = FeedManager::new( feed_storage );
-  let feeds = manager.get_all_feeds().await?;
+      let mut manager = FeedManager::new( feed_storage );
+      manager.get_all_feeds().await
+    } )?;
 
-  println!( "{:#?}", feeds );
+  Ok( report )
 
-  Ok( () )
 }
 
-pub async fn list_subscriptions() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+pub fn list_subscriptions() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
   .path( "data/temp".to_owned() )
   ;
-  let feed_storage = FeedStorage::init_storage( config ).await?;
+  let rt  = tokio::runtime::Runtime::new()?;
+  rt.block_on( async move
+  {
+    let feed_storage = FeedStorage::init_storage( config ).await?;
 
-  let mut manager = FeedManager::new( feed_storage );
-  let res = manager.list_subscriptions().await?;
-  println!( "{:?}", res );
-
-  Ok( () )
+    let mut manager = FeedManager::new( feed_storage );
+    manager.storage.list_subscriptions().await
+  } )
 }
 
-pub async fn add_subscription( sub_config : SubscriptionConfig ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+pub fn add_subscription( link : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
   .path( "data/temp".to_owned() )
   ;
-  let feed_storage = FeedStorage::init_storage( config ).await?;
 
-  let mut manager = FeedManager::new( feed_storage );
-  manager.storage.add_subscription( sub_config ).await?;
+  let sub_config = SubscriptionConfig
+  {
+    link,
+    period : std::time::Duration::from_secs( 1000 ),
+  };
 
-  Ok( () )
+  let rt  = tokio::runtime::Runtime::new()?;
+  rt.block_on( async move
+  {
+    let feed_storage = FeedStorage::init_storage( config ).await?;
+
+    let mut manager = FeedManager::new( feed_storage );
+    manager.storage.add_subscription( sub_config ).await
+  } )
 }
 
-pub async fn remove_subscription( link : String ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+pub fn remove_subscription( link : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
   .path( "data/temp".to_owned() )
   ;
-  let feed_storage = FeedStorage::init_storage( config ).await?;
+  let rt  = tokio::runtime::Runtime::new()?;
+  rt.block_on( async move
+  {
+    let feed_storage = FeedStorage::init_storage( config ).await?;
 
-  let mut manager = FeedManager::new( feed_storage );
-  manager.storage.remove_subscription( link ).await?;
-
-  Ok( () )
+    let mut manager = FeedManager::new( feed_storage );
+    manager.storage.remove_subscription( link ).await
+  } )
 }
 
-pub async fn execute_query( query : String ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+pub fn execute_query( query : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
   .path( "data/temp".to_owned() )
   ;
-  let feed_storage = FeedStorage::init_storage( config ).await?;
+  let rt  = tokio::runtime::Runtime::new()?;
+  rt.block_on( async move
+  {
+    let feed_storage = FeedStorage::init_storage( config ).await?;
 
-  let mut manager = FeedManager::new( feed_storage );
-  manager.storage.execute_query( query ).await?;
-
-  Ok( () )
+    let mut manager = FeedManager::new( feed_storage );
+    manager.storage.execute_query( query ).await
+  } )
 }
