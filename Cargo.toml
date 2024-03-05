@@ -122,7 +122,7 @@ default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.reflect_tools_meta]
-version = "~0.1.0"
+version = "~0.2.0"
 path = "module/core/reflect_tools_meta"
 default-features = false
 features = [ "enabled" ]
