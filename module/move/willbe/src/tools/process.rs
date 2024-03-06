@@ -54,7 +54,7 @@ pub( crate ) mod private
   /// Run external processes.
   ///
 
-  pub fn start_sync
+  pub fn process_run_without_params
   (
     exec_path : &str,
     current_path : impl Into< PathBuf >,
@@ -72,7 +72,7 @@ pub( crate ) mod private
       ( "sh", [ "-c", exec_path ] )
     };
 
-    start2_sync( program, args, current_path )
+    process_run_with_params(program, args, current_path )
   }
 
   ///
@@ -83,7 +83,7 @@ pub( crate ) mod private
   /// - `args` - command-line arguments to the application
   /// - `path` - path to directory where to run the application
   ///
-  pub fn start2_sync< AP, Args, Arg, P >
+  pub fn process_run_with_params< AP, Args, Arg, P >
   (
     application : AP,
     args: Args,
@@ -137,7 +137,7 @@ pub( crate ) mod private
   /// - `args` - command-line arguments to the application
   /// - `path` - path to directory where to run the application
   ///
-  pub fn start3_sync< AP, Args, Arg, P >
+  pub fn process_run_with_param_and_joined_steams< AP, Args, Arg, P >
   (
     application : AP,
     args : Args,
@@ -183,8 +183,8 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use CmdReport;
-  protected use start_sync;
-  protected use start2_sync;
-  protected use start3_sync;
+  protected use process_run_without_params;
+  protected use process_run_with_params;
+  protected use process_run_with_param_and_joined_steams;
 }
 

@@ -53,7 +53,7 @@ pub fn path_to_exe( name : &str ) -> PathBuf
 fn err_first()
 {
   let args: [ OsString ; 0 ] = [];
-  let report = process::start3_sync( path_to_exe( "err_first" ), args, workspace_dir() ).unwrap().out;
+  let report = process::process_run_with_param_and_joined_steams(path_to_exe( "err_first" ), args, workspace_dir() ).unwrap().out;
   assert_eq!( "This is stderr text\nThis is stdout text\n", report );
 }
 
@@ -61,7 +61,7 @@ fn err_first()
 fn out_first()
 {
   let args: [ OsString ; 0 ] = [];
-  let report = process::start3_sync( path_to_exe( "out_first" ), args, workspace_dir() ).unwrap().out;
+  let report = process::process_run_with_param_and_joined_steams(path_to_exe( "out_first" ), args, workspace_dir() ).unwrap().out;
   assert_eq!( "This is stdout text\nThis is stderr text\n", report );
 }
 
