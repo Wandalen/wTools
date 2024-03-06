@@ -192,24 +192,13 @@ mod private
     report.package_name = package.name.clone();
     let report = Arc::new( Mutex::new( report ) );
 
-    let mut features_powerset = HashSet::new();
-
-    let filtered_features: Vec<_> = package
-    .features
-    .keys()
-    .filter(|f| !args.exclude_features.contains(f))
-    .cloned()
-    .collect();
-
-    for subset_size in 0..= std::cmp::min( filtered_features.len(), args.power as usize ) 
-    {
-      for combination in filtered_features.iter().combinations( subset_size ) 
-      {
-        let mut subset: BTreeSet< String > = combination.into_iter().cloned().collect();
-        subset.extend( args.include_features.iter().cloned() );
-        features_powerset.insert( subset );
-      }
-    }
+    let features_powerset = features::features_powerset
+    ( 
+      package, 
+      args.power as usize, 
+      &args.exclude_features, 
+      &args.include_features 
+    );
     
     print_temp_report( &package.name, &args.channels, &features_powerset );
     rayon::scope
