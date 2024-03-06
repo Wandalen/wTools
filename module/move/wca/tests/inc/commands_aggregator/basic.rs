@@ -40,6 +40,34 @@ tests_impls!
     a_true!( ca.perform( ".help.help.help" ).is_err() );
   }
 
+  fn with_custom_sub_former()
+  {
+    let ca = CommandsAggregator::former()
+    .command( "command" )
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .routine( Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) )
+      .end()
+    .command( "command2" )
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .routine( Routine::new( | _ | { println!( "Command2" ); Ok( () ) } ) )
+      .end()
+    .build();
+
+    a_id!( (), ca.perform( ".command2 .help" ).unwrap() ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
+
+    a_id!( (), ca.perform( ".help command" ).unwrap() );
+    a_id!( (), ca.perform( ".help command2" ).unwrap() );
+    a_id!( (), ca.perform( ".help help" ).unwrap() );
+
+    a_id!( (), ca.perform( ".help.command" ).unwrap() );
+    a_id!( (), ca.perform( ".help.command2" ).unwrap() );
+    a_id!( (), ca.perform( ".help.help" ).unwrap() );
+
+    a_true!( ca.perform( ".help.help.help" ).is_err() );
+  }
+
   fn with_only_general_help()
   {
     let ca = CommandsAggregator::former()
@@ -387,6 +415,7 @@ tests_impls!
 tests_index!
 {
   simple,
+  with_custom_sub_former,
   with_only_general_help,
   custom_converters,
   custom_parser,

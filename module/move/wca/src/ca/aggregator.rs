@@ -7,6 +7,7 @@ pub( crate ) mod private
     Executor,
     ProgramParser,
     Command,
+    grammar::command::private::CommandFormer,
     Routine,
     help::{ HelpGeneratorFn, HelpVariants, dot_command },
   };
@@ -104,6 +105,7 @@ pub( crate ) mod private
   /// ```
   #[ derive( Debug ) ]
   #[ derive( former::Former ) ]
+  #[ perform( fn build() -> CommandsAggregator ) ]
   pub struct CommandsAggregator
   {
     #[ default( Parser::former().form() ) ]
@@ -126,6 +128,40 @@ pub( crate ) mod private
     executor_converter : ExecutorConverter,
 
     callback_fn : Option< CommandsAggregatorCallback >,
+  }
+
+  impl< Context, End > CommandsAggregatorFormer< Context, End >
+  where
+    End : former::ToSuperFormer< CommandsAggregator, Context >,
+  {
+    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::ToSuperFormer< Command, Self > >
+    where
+      IntoName : Into< String >,
+    {
+      let on_end = | command : Command, super_former : Option< Self > | -> Self
+      {
+        let mut super_former = super_former.unwrap();
+        if let Some( ref mut commands ) = super_former.container.verifier
+        {
+          commands.commands.entry( command.phrase.clone() ).or_default().push( command.clone() );
+        }
+        else
+        {
+          super_former.container.verifier = Some( Verifier::former().command( command.clone() ).form() );
+        }
+        if let Some( ref mut commands ) = super_former.container.executor_converter
+        {
+          commands.routines.insert( command.phrase, command.routine );
+        }
+        else
+        {
+          super_former.container.executor_converter = Some( ExecutorConverter::former().routine( command.phrase, command.routine ).form() );
+        }
+        super_former
+      };
+      let former = CommandFormer::begin( Some( self ), on_end );
+      former.phrase( name )
+    }
   }
 
   impl CommandsAggregatorFormer
@@ -208,7 +244,15 @@ pub( crate ) mod private
     /// Construct CommandsAggregator
     pub fn build( self ) -> CommandsAggregator
     {
-      let mut ca = self.form();
+      self.form().build()
+    }
+  }
+
+  impl CommandsAggregator
+  {
+    fn build( self ) -> CommandsAggregator
+    {
+      let mut ca = self;
 
       if ca.help_variants.contains( &HelpVariants::All )
       {
@@ -226,10 +270,7 @@ pub( crate ) mod private
 
       ca
     }
-  }
 
-  impl CommandsAggregator
-  {
     /// Parse, converts and executes a program
     ///
     /// Takes a string with program and executes it
