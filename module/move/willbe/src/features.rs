@@ -4,11 +4,11 @@ mod private
   use cargo_metadata::Package;
   use crate::wtools::iter::Itertools;
 
-  /// Generates a powerset of the features available in the given `package`, 
-  /// filtered according to specified inclusion and exclusion criteria, 
+  /// Generates a powerset of the features available in the given `package`,
+  /// filtered according to specified inclusion and exclusion criteria,
   /// and limited by a specified maximum size (`power`).
   ///
-  /// This function is useful for generating combinations of feature sets 
+  /// This function is useful for generating combinations of feature sets
   /// to test different feature configurations in a Rust package.
   ///
   /// # Arguments
@@ -35,12 +35,12 @@ mod private
   /// ```
 
   pub fn features_powerset
-  ( 
-    package : &Package, 
-    power : usize, 
-    exclude_features : &[ String ], 
-    include_features : &[ String ], 
-  ) 
+  (
+    package : &Package,
+    power : usize,
+    exclude_features : &[ String ],
+    include_features : &[ String ],
+  )
     -> HashSet< BTreeSet< String > >
   {
     let mut features_powerset = HashSet::new();
@@ -51,7 +51,7 @@ mod private
     .filter( | f | !exclude_features.contains( f ) )
     .cloned()
     .collect();
-    
+
     for subset_size in 0..= std::cmp::min( filtered_features.len(), power )
     {
       for combination in filtered_features.iter().combinations( subset_size )
@@ -61,7 +61,7 @@ mod private
         features_powerset.insert( subset );
       }
     }
-    
+
     features_powerset
   }
 }
