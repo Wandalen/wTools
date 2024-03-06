@@ -5,13 +5,13 @@ export SECRET_CSP_HETZNER ?= $(shell cat key/SECRET_CSP_HETZNER)
 # Base terraform directory
 export tf_dir ?= terraform
 # Location for deployed resources
-export TF_VAR_REGION ?= europe-central2
+export TF_VAR_REGION ?= {{gcp_region}}
 # Project id for deployed resources
-export TF_VAR_PROJECT_ID ?= project-a-415508
+export TF_VAR_PROJECT_ID ?= {{gcp_project_id}}
 # Artifact Repository name for pushing the Docker images
-export TF_VAR_REPO_NAME ?= uarust-conf-site
+export TF_VAR_REPO_NAME ?= {{gcp_artifact_repo_name}}
 # Pushed image name
-export TF_VAR_IMAGE_NAME ?= uarust_conf_site
+export TF_VAR_IMAGE_NAME ?= {{docker_image_name}}
 # Helper var for tagging local image
 export tag ?= $(TF_VAR_REGION)-docker.pkg.dev/$(TF_VAR_PROJECT_ID)/$(TF_VAR_REPO_NAME)/$(TF_VAR_IMAGE_NAME)
 # Path to the service account credentials

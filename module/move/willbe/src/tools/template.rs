@@ -4,6 +4,7 @@ mod private
   use std::fs;
   use std::io::Write;
   use error_tools::Result;
+use wca::Props;
   use std::path::Path;
   use std::path::PathBuf;
   use wca::Value;
@@ -101,6 +102,13 @@ mod private
     {
       Self( parameters.into_iter().map( | parameter | parameter.to_string() ).collect() )
     }
+
+    /// todo
+    pub fn values_from_props( &self, props: &Props ) -> TemplateValues
+    {
+      let values = self.0.iter().map( | param | ( param.clone(), props.get( param ).map( Value::clone ) ) ).collect();
+      TemplateValues(values)
+    }
   }
 
   /// todo
@@ -130,7 +138,7 @@ mod private
                 }
               }
             )
-            .unwrap_or_default();
+            .unwrap_or("UNSPECIFIED_DURING_CREATING_FROM_TEMPLATE".to_string());
           ( key.to_owned(), value)
         }
       )
