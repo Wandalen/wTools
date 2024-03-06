@@ -25,14 +25,6 @@ include = [
   "/License",
 ]
 
-[[bin]]
-name = "err_first"
-path = "tests/bin/err_first.rs"
-
-[[bin]]
-name = "out_first"
-path = "tests/bin/out_first.rs"
-
 [lints]
 workspace = true
 
