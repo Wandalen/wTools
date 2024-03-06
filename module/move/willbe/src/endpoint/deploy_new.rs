@@ -108,7 +108,7 @@ mod private {
           .build();
         files.push( file );
       }
-      for (filename, data, path ) in templated_files
+      for (filename, data, path ) in non_templated_files
       {
         let file = DeployFileDescriptor::builder( filename )
           .data( data )
