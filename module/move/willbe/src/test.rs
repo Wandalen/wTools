@@ -186,29 +186,31 @@ mod private
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
   pub fn run_test( args : &TestArgs, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
   {
-    let exclude = args.exclude_features.iter().cloned().collect();
+    // let exclude = args.exclude_features.iter().cloned().collect();
     let mut report = TestReport::default();
     report.dry = dry;
     report.package_name = package.name.clone();
     let report = Arc::new( Mutex::new( report ) );
 
-    let features_powerset = package
+    let mut features_powerset = HashSet::new();
+
+    let filtered_features: Vec<_> = package
     .features
     .keys()
-    .filter( | f | !args.exclude_features.contains( f ) && !args.include_features.contains( f ) )
+    .filter(|f| !args.exclude_features.contains(f))
     .cloned()
-    .powerset()
-    .map( BTreeSet::from_iter )
-    .filter( | subset | subset.len() <= args.power as usize )
-    .map
-    (
-      | mut subset | 
-      { 
-        subset.extend( args.include_features.clone() );
-        subset.difference( &exclude ).cloned().collect()
+    .collect();
+
+    for subset_size in 0..= std::cmp::min( filtered_features.len(), args.power as usize ) 
+    {
+      for combination in filtered_features.iter().combinations( subset_size ) 
+      {
+        let mut subset: BTreeSet< String > = combination.into_iter().cloned().collect();
+        subset.extend( args.include_features.iter().cloned() );
+        features_powerset.insert( subset );
       }
-    )
-    .collect::< HashSet< BTreeSet< String > > >();
+    }
+    
     print_temp_report( &package.name, &args.channels, &features_powerset );
     rayon::scope
     (
