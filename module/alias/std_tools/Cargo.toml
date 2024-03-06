@@ -204,9 +204,9 @@ derive_full = [
   "derive_from_str",
   "derive_index",
   "derive_index_mut",
-  "derive_into",
+  "derive_inner_from",
   "derive_into_iterator",
-  "derive_iterator",
+  # "derive_iterator",
   "derive_mul_assign",
   "derive_mul",
   "derive_not",
@@ -214,7 +214,7 @@ derive_full = [
   "derive_try_into",
   "derive_is_variant",
   "derive_unwrap",
-  "derive_convert_case",
+  # "derive_convert_case",
 
   "derive_strum",
   "derive_strum_phf",
@@ -242,9 +242,9 @@ derive_default = [
   "derive_from_str",
   "derive_index",
   "derive_index_mut",
-  "derive_into",
+  "derive_inner_from",
   "derive_into_iterator",
-  "derive_iterator",
+  # "derive_iterator",
   "derive_mul_assign",
   "derive_mul",
   "derive_not",
@@ -252,7 +252,7 @@ derive_default = [
   "derive_try_into",
   "derive_is_variant",
   "derive_unwrap",
-  "derive_convert_case",
+  # "derive_convert_case",
 
   "derive_strum",
   "derive_strum_phf",
@@ -268,8 +268,8 @@ derive_default = [
 derive_no_std = [ "wtools/derive_no_std" ]
 derive_use_alloc = [ "wtools/derive_use_alloc" ]
 
-derive_nightly = [ "derive", "nightly", "wtools/derive_nightly" ]
-derive_enable_track_caller = [ "derive", "wtools/derive_enable_track_caller" ]
+# derive_nightly = [ "derive", "nightly", "wtools/derive_nightly" ]
+# derive_enable_track_caller = [ "derive", "wtools/derive_enable_track_caller" ]
 
 # derive_more = [ "derive", "wtools/derive_more" ]
 derive_add_assign = [ "derive", "wtools/derive_add_assign" ]
@@ -283,9 +283,9 @@ derive_error = [ "derive", "wtools/derive_error" ]
 derive_from = [ "derive", "wtools/derive_from" ]
 derive_index = [ "derive", "wtools/derive_index" ]
 derive_index_mut = [ "derive", "wtools/derive_index_mut" ]
-derive_into = [ "derive", "wtools/derive_into" ]
+derive_inner_from = [ "derive", "wtools/derive_inner_from" ]
 derive_into_iterator = [ "derive", "wtools/derive_into_iterator" ]
-derive_iterator = [ "derive", "wtools/derive_iterator" ]
+# derive_iterator = [ "derive", "wtools/derive_iterator" ]
 derive_mul_assign = [ "derive", "wtools/derive_mul_assign" ]
 derive_mul = [ "derive", "wtools/derive_mul" ]
 derive_not = [ "derive", "wtools/derive_not" ]
@@ -293,7 +293,7 @@ derive_sum = [ "derive", "wtools/derive_sum" ]
 derive_try_into = [ "derive", "wtools/derive_try_into" ]
 derive_is_variant = [ "derive", "wtools/derive_is_variant" ]
 derive_unwrap = [ "derive", "wtools/derive_unwrap" ]
-derive_convert_case = [ "derive", "wtools/derive_convert_case" ]
+# derive_convert_case = [ "derive", "wtools/derive_convert_case" ]
 
 derive_strum = [ "derive", "wtools/derive_strum" ]
 derive_strum_phf = [ "derive", "wtools/derive_strum_phf" ]

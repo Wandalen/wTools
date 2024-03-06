@@ -1,16 +1,13 @@
 use super::*;
 
-#[ allow( unused_imports ) ]
-use test_tools::meta::*;
-
 mod a_primitives_manual_test;
 mod a_containers_without_runtime_manual_test;
 mod a_containers_without_runtime_test;
 mod a_containers_with_runtime_manual_test;
 mod a_containers_with_runtime_test;
 
-mod default_container;
-mod default_primitive;
+mod attribute_default_container;
+mod attribute_default_primitive;
 mod former_hashmap_without_parameter;
 mod former_vector_without_parameter;
 
@@ -22,14 +19,21 @@ mod user_type_no_default;
 mod user_type_no_debug;
 
 mod alias_test;
-mod conflict;
+mod name_collisions;
+mod name_collision_context;
+mod name_collision_end;
+mod name_collision_on_end;
 mod unsigned_primitive_types;
-mod perform;
 
-mod subformer_wrap_hashmap_manual;
+mod attribute_perform;
+mod attribute_setter;
+
+mod parametrized_struct_manual;
+mod parametrized_struct_imm;
+mod parametrized_struct_where;
+
 mod subformer_basic_manual;
-
-//
+mod subformer_basic;
 
 only_for_terminal_module!
 {

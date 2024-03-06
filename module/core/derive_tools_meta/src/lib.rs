@@ -2,15 +2,8 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/clone_dyn_meta/latest/clone_dyn_meta/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
-#![ warn( clippy::undocumented_unsafe_blocks ) ]
-#![ allow( non_snake_case ) ]
-#![ allow( non_upper_case_globals ) ]
-
-// #![ feature( type_name_of_val ) ]
-// #![ feature( trace_macros ) ]
+// #![ allow( non_snake_case ) ]
+// #![ allow( non_upper_case_globals ) ]
 
 //!
 //! Derive to clone dyn structures.
@@ -23,33 +16,31 @@
 
 #[ cfg
 (
-	any
-	(
-		feature = "derive_as_mut",
-		feature = "derive_as_ref",
-		feature = "derive_deref",
-		feature = "derive_deref_mut",
-		feature = "derive_from",
-		feature = "derive_inner_from",
-		feature = "derive_variadic_from",
-		feature = "derive_reflect",
-	)
+  any
+  (
+    feature = "derive_as_mut",
+    feature = "derive_as_ref",
+    feature = "derive_deref",
+    feature = "derive_deref_mut",
+    feature = "derive_from",
+    feature = "derive_inner_from",
+    feature = "derive_variadic_from",
+  )
 )]
 #[ cfg( feature = "enabled" ) ]
 mod implementation;
 #[ cfg
 (
-	any
-	(
-		feature = "derive_as_mut",
-		feature = "derive_as_ref",
-		feature = "derive_deref",
-		feature = "derive_deref_mut",
-		feature = "derive_from",
-		feature = "derive_inner_from",
-		feature = "derive_variadic_from",
-		feature = "derive_reflect",
-	)
+  any
+  (
+    feature = "derive_as_mut",
+    feature = "derive_as_ref",
+    feature = "derive_deref",
+    feature = "derive_deref_mut",
+    feature = "derive_from",
+    feature = "derive_inner_from",
+    feature = "derive_variadic_from",
+  )
 )]
 #[ cfg( feature = "enabled" ) ]
 use implementation::*;

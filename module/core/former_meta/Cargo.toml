@@ -1,6 +1,6 @@
 [package]
 name = "former_meta"
-version = "0.3.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -37,7 +37,7 @@ proc-macro = true
 macro_tools = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 
-# xxx : optimize features set
+# qqq : optimize features set
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "default" ] }

@@ -295,6 +295,7 @@ pub( crate ) mod private
     }
     else
     {
+      // qqq : xxx : use is_cicd() and return false if false
       true
     };
     if run
@@ -321,6 +322,7 @@ pub( crate ) mod private
     }
     else
     {
+      // qqq : xxx : use is_cicd() and return false if false
       true
     };
     if run

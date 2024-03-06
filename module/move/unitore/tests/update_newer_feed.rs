@@ -53,20 +53,17 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
   // check
   let payload = manager.get_all_frames().await?;
 
-  let entries = payload
-  .select()
-  .expect( "no entries found" )
-  ;
+  let entries = payload.selected_frames.selected_rows;
 
-  let entries = entries.map( | entry |
+  let entries = entries.iter().map( | entry |
     {
-      let id = match entry.get( "id" ).expect( "no id field" )
+      let id = match &entry[ 0 ]
       {
         Value::Str( s ) => s.to_owned(),
         _ => String::new(),
       };
 
-      let published = match entry.get( "published" ).expect( "no published date field" )
+      let published = match &entry[ 8 ]
       {
         Value::Timestamp( date_time ) => date_time.and_utc(),
         _ => DateTime::< Utc >::default(),

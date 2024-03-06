@@ -179,7 +179,7 @@ pub( crate ) mod private
   ///
   /// Canonical implementation of interval. Other implementations of interval is convertible to it.
   ///
-  /// Both [Range], [RangeInclusive] are convertable to [crate::Interval]
+  /// Both [core::ops::Range], [core::ops::RangeInclusive] are convertable to [crate::Interval]
   ///
 
   #[ derive( PartialEq, Eq, Debug, Clone, Copy ) ]
