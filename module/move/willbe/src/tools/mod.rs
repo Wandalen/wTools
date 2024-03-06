@@ -13,4 +13,6 @@ crate::mod_interface!
   orphan mod path;
   /// Tools for working with dependencies graph.
   orphan mod graph;
+  /// Traits and structs for templates.
+  orphan mod template;
 }
