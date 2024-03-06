@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use crate::visibility::ClauseKind;
+  // use visibility::ClauseKind;
   use macro_tools::exposed::*;
   use std::collections::HashMap;
 

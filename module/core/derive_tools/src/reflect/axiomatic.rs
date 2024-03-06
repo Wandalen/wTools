@@ -124,7 +124,7 @@ pub( crate ) mod private
   /// ```
   /// # use derive_tools::reflect::Entity;
   ///
-  /// #[derive(Debug)]
+  /// #[ derive(Debug)]
   /// struct MyEntity
   /// {
   ///   // Entity fields
@@ -294,9 +294,9 @@ pub( crate ) mod private
     pub fn new( size : usize ) -> Self
     {
       let _phantom = core::marker::PhantomData::< I >;
-      Self 
-      { 
-        _phantom, 
+      Self
+      {
+        _phantom,
         len : size,
       }
     }
@@ -321,9 +321,9 @@ pub( crate ) mod private
     pub fn new( size : usize, keys : Vec< primitive::Primitive > ) -> Self
     {
       let _phantom = core::marker::PhantomData::< I >;
-      Self 
-      { 
-        _phantom, 
+      Self
+      {
+        _phantom,
         len : size,
         keys,
       }

@@ -355,10 +355,10 @@ TokenStream [
   //   // test.case( "basic" );
   //   let input = qt!
   //   {
-  //     #[derive( Former )]
+  //     #[ derive( Former ) ]
   //     pub struct Struct1
   //     {
-  //       #[former( default = 31 )]
+  //       #[former( default = 31 ) ]
   //       pub int_1 : i32,
   //     }
   //   };

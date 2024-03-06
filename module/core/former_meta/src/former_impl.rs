@@ -136,8 +136,7 @@ impl syn::parse::Parse for AttributeDefault
   }
 }
 
-// qqq : xxx : implement test for setter
-// qqq : xxx : update documentation
+// qqq : make sure that documentation for each entity is up to date
 
 ///
 /// Attribute to enable/disable setter generation.
@@ -167,7 +166,7 @@ impl syn::parse::Parse for AttributeSetter
 ///
 /// Attribute to enable/disable former generation.
 ///
-/// `#[ former( former::runtime::VectorSubformer ) ]`
+/// `#[ former( former::VectorSubformer ) ]`
 ///
 
 #[ allow( dead_code ) ]
@@ -393,7 +392,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
           ( &::core::marker::PhantomData::< #ty > ).maybe_default()
         };
-        // qqq : xxx : test that and document example of generated code
+        // qqq : test that and document example of generated code
       }
     }
     else
@@ -527,7 +526,7 @@ fn field_setter
 /// # Example of generated code
 ///
 /// ```ignore
-/// pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapSubformer
+/// pub fn hashmap_strings_1( mut self ) -> former::HashMapSubformer
 /// <
 ///   String,
 ///   String,
@@ -542,7 +541,7 @@ fn field_setter
 ///     former.hashmap_strings_1 = Some( container );
 ///     former
 ///   };
-///   former::runtime::HashMapSubformer::begin( self, container, on_end )
+///   former::HashMapSubformer::begin( self, container, on_end )
 /// }
 /// ```
 
@@ -609,10 +608,10 @@ r#" Implementation of former for [{}].
   let doc_example1 =
 r#"
 use former::Former;
-#[derive( Former )]
+#[ derive( Former ) ]
 pub struct Struct1
 {
-  #[default( 31 )]
+  #[default( 31 ) ]
   field1 : i32,
 }
 "#;
@@ -772,8 +771,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   let result = qt!
   {
 
-      // pub struct xxx {}
-
     #[ automatically_derived ]
     impl #generics_impl #name_ident #generics_ty
     #generics_where
@@ -784,33 +781,22 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       #[ inline( always ) ]
       pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
       {
-        // #former_name_ident :: new()
         #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnContainer > :: new()
-        // #former_name_ident
-        // {
-        //   #( #fields_none, )*
-        // }
       }
     }
 
     #[ doc = "Container of a correcsponding former." ]
     pub struct #former_container_name_ident #generics_ty
     #generics_where
-    // where
-    //   K : core::hash::Hash + std::cmp::Eq,
     {
       #(
         /// A field
         #fields_optional,
       )*
-      // name : core::option::Option< String >,
-      // properties : core::option::Option< std::collections::HashMap< K, Property< K > > >,
     }
 
     impl #generics_impl core::default::Default for #former_container_name_ident #generics_ty
     #generics_where
-    // where
-    //   K : core::hash::Hash + std::cmp::Eq,
     {
 
       #[ inline( always ) ]
@@ -819,8 +805,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
         Self
         {
           #( #fields_none, )*
-          // name : None,
-          // properties : None,
         }
       }
 
@@ -831,10 +815,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     pub struct #former_name_ident < #generics_of_former_with_defaults >
     #generics_of_former_where
     {
-      // #(
-      //   /// A field
-      //   #fields_optional,
-      // )*
       container : #former_container_name_ident #generics_ty,
       context : core::option::Option< __FormerContext >,
       on_end : core::option::Option< __FormerEnd >,
@@ -899,7 +879,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
       {
         Self
         {
-          // #( #fields_none, )*
           container : core::default::Default::default(),
           context : context,
           on_end : ::core::option::Option::Some( on_end ),

@@ -73,7 +73,7 @@ pub( crate ) mod private
               | _ |
               Command
               {
-                properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() )]), ..Default::default()
+                properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() ) ]), ..Default::default()
               }
             )
           )),
@@ -85,7 +85,7 @@ pub( crate ) mod private
             Command {
               name : "".to_string(),
               subjects : vec![ command.name ],
-              properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() )]),
+              properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() ) ]),
             }
           }
           else

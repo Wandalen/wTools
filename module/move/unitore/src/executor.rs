@@ -46,8 +46,8 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .form(),
     wca::Command::former()
     .phrase( "query.execute" )
-    .long_hint
-    ( 
+    .hint
+    (
       concat!
       (
         "Execute custom query. Subject: query string, with special characters escaped.\n",
@@ -162,7 +162,7 @@ impl< S : FeedStore + Send > FeedManager< FeedClient, S >
   pub fn new( storage : S ) -> FeedManager< FeedClient, S >
   {
     Self
-    { 
+    {
       storage,
       config : Vec::new(),
       client : FeedClient,
@@ -251,15 +251,15 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
 pub fn update_feed() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let rt  = tokio::runtime::Runtime::new()?;
-  let report = rt.block_on( async move 
+  let report = rt.block_on( async move
   {
     let config = Config::default()
-    .path( "data/temp".to_owned() )
+    .path( "_data/temp".to_owned() )
     ;
 
     //let feed_configs = read_feed_config( file_path ).unwrap();
     let feed_storage = FeedStorage::init_storage( config ).await?;
-  
+
     let mut manager = FeedManager::new( feed_storage );
     let configs = manager.list_subscriptions().await?.configs();
 
@@ -284,11 +284,11 @@ pub fn list_fields() -> Result< impl Report, Box< dyn std::error::Error + Send +
   rt.block_on( async move
   {
     let config = Config::default()
-    .path( "data/temp".to_owned() )
+    .path( "_data/temp".to_owned() )
     ;
-  
+
     let feed_storage = FeedStorage::init_storage( config ).await?;
-  
+
     let mut manager = FeedManager::new( feed_storage );
     manager.get_columns()
   } )
@@ -298,7 +298,7 @@ pub fn list_fields() -> Result< impl Report, Box< dyn std::error::Error + Send +
 pub fn list_frames() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
-  .path( "data/temp".to_owned() )
+  .path( "_data/temp".to_owned() )
   ;
   let rt  = tokio::runtime::Runtime::new()?;
 
@@ -314,7 +314,7 @@ pub fn list_frames() -> Result< impl Report, Box< dyn std::error::Error + Send +
 pub fn list_feeds() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
-  .path( "data/temp".to_owned() )
+  .path( "_data/temp".to_owned() )
   ;
 
   let rt  = tokio::runtime::Runtime::new()?;
@@ -333,7 +333,7 @@ pub fn list_feeds() -> Result< impl Report, Box< dyn std::error::Error + Send + 
 pub fn list_subscriptions() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
-  .path( "data/temp".to_owned() )
+  .path( "_data/temp".to_owned() )
   ;
   let rt  = tokio::runtime::Runtime::new()?;
   rt.block_on( async move
@@ -348,7 +348,7 @@ pub fn list_subscriptions() -> Result< impl Report, Box< dyn std::error::Error +
 pub fn add_config( path : std::path::PathBuf ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
-  .path( "data/temp".to_owned() )
+  .path( "_data/temp".to_owned() )
   ;
 
   let rt  = tokio::runtime::Runtime::new()?;
@@ -366,7 +366,7 @@ pub fn add_config( path : std::path::PathBuf ) -> Result< impl Report, Box< dyn 
 pub fn remove_subscription( link : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
-  .path( "data/temp".to_owned() )
+  .path( "_data/temp".to_owned() )
   ;
   let rt  = tokio::runtime::Runtime::new()?;
   rt.block_on( async move
@@ -381,7 +381,7 @@ pub fn remove_subscription( link : String ) -> Result< impl Report, Box< dyn std
 pub fn execute_query( query : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
-  .path( "data/temp".to_owned() )
+  .path( "_data/temp".to_owned() )
   ;
   let rt  = tokio::runtime::Runtime::new()?;
   rt.block_on( async move

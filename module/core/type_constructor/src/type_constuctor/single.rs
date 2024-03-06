@@ -173,7 +173,9 @@ pub( crate ) mod private
         #[ inline ]
         fn as_tuple( &self ) -> &( $ParamName, )
         {
+          // to be deprecated
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
+          #[ allow( unsafe_code ) ]
           unsafe
           {
             core::mem::transmute::< _, _ >( self )
@@ -188,7 +190,9 @@ pub( crate ) mod private
         #[ inline ]
         fn as_array( &self ) -> &[ $ParamName ; 1 ]
         {
+          // to be deprecated
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
+          #[ allow( unsafe_code ) ]
           unsafe
           {
             core::mem::transmute::< _, _ >( self )
@@ -437,7 +441,9 @@ pub( crate ) mod private
         #[ inline ]
         fn as_tuple( &self ) -> &( $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )?, )
         {
+          // to be deprecated
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
+          #[ allow( unsafe_code ) ]
           unsafe
           {
             core::mem::transmute::< _, _ >( self )
@@ -454,7 +460,9 @@ pub( crate ) mod private
         #[ inline ]
         fn as_array( &self ) -> &[ $TypeSplit1 $( :: $TypeSplitN )* $( < $( $ParamName ),* > )? ; 1 ]
         {
+          // to be deprecated
           /* Safety : in case of single elemet it is safe to assume that layout is the same. It does not have to have #[repr(C)]. */
+          #[ allow( unsafe_code ) ]
           unsafe
           {
             core::mem::transmute::< _, _ >( self )

@@ -44,7 +44,7 @@ pub( crate ) mod private
     }
   }
 
-  impl<T> Into<Vec<T>> for OpType<T>
+  impl<T> Into<Vec< T > > for OpType<T>
   {
     fn into( self ) -> Vec<T>
     {

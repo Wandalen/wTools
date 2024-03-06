@@ -1,4 +1,3 @@
-// xxx : complete
 use super::*;
 
 // let ca = Aggregator::former()
@@ -219,7 +218,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn properties( mut self ) -> former::runtime::HashMapSubformer
+  pub fn properties( mut self ) -> former::HashMapSubformer
   <
     K,
     Property< K >,
@@ -235,7 +234,7 @@ where
       super_former.container.properties = Some( container );
       super_former
     };
-    former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
+    former::HashMapSubformer::begin( Some( self ), container, on_end )
   }
 
 }
@@ -405,13 +404,12 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn commands( mut self ) -> former::runtime::HashMapSubformer
+  pub fn commands( mut self ) -> former::HashMapSubformer
   <
     String,
     Command< K >,
     std::collections::HashMap< String, Command< K > >,
     AggregatorFormer< K, Context, End >,
-    // impl Fn( std::collections::HashMap< String, Command< K > >, Self ) -> Self,
     impl former::ToSuperFormer< std::collections::HashMap< String, Command< K > >, Self >,
   >
   {
@@ -422,7 +420,7 @@ where
       super_former.commands = Some( container );
       super_former
     };
-    former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
+    former::HashMapSubformer::begin( Some( self ), container, on_end )
   }
 
 }
