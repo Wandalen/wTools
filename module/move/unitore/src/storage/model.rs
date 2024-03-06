@@ -99,20 +99,3 @@ impl From< ( Entry, String ) > for FrameRow
     FrameRow( vec![ id, title, updated, authors, content,links, summary, categories, published, source, rights, media, language, feed_id ] )
   }
 }
-
-// pub struct SubscriptionRow( pub Vec< ExprNode< 'static > > );
-
-// impl From< SubscriptionConfig > for SubscriptionRow
-// {
-//   fn from( value : SubscriptionConfig ) -> Self
-//   {
-//     let row = SubscriptionRow( vec!
-//     [
-//       text( value.link ),
-//       text( value.period.as_secs().to_string() ),
-//       timestamp( Utc::now().to_rfc3339_opts( SecondsFormat::Millis, true ) )
-//     ] );
-
-//     row
-//   }
-// }

@@ -6,8 +6,53 @@ Feed reader with the ability to set updates frequency.
 
 ### Basic use-case
 
-```rust 
+To start using unitore, create configuration toml file with list of feed information - its link and update period.
+Example:
+
+
+```toml
+[[config]]
+name = "bbc" 
+period = "2days" 
+link = "https://feeds.bbci.co.uk/news/world/rss.xml"
+
+[[config]]
+name = "times"
+period = "2days"
+link = "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
+
 ```
+Add created config file to unitore storage using command `.config.add` with path to config file.
+You can add more than one file, by executing `.config.add` for every file. Example:
+```bash
+cargo run .config.add ./config/feeds.toml
+```
+To download feeds from sources specified in config file into storage use command `.frames.download`.
+Every time this command is run, feeds from all sources listed in all config files will be updated.
+```bash
+cargo run .frames.download
+```
+To get all frames that are currently in storage run:
+```bash
+cargo run .frames.list
+```
+To get all feeds that are currently in storage run:
+```bash
+cargo run .feeds.list
+```
+To get custom information about feeds or frames run SQL query to storage database using command `.query.execute` with query string:
+```bash
+cargo run .query.execute \'SELECT title, links, MIN\(published\) FROM Frames\'
+```
+To remove config file from storage use command `.config.delete` with path to config file:
+```bash
+cargo run .config.delete ./config/feeds.toml
+```
+To see all config files with feed sources:
+```bash
+cargo run .config.list
+```
+
 
 ### To add to your project
 

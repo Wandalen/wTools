@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use feed_rs::parser as feed_parser;
 use unitore::{
   executor::FeedManager, 
-  report::{ SelectedEntries, FramesReport },
+  report::{ SelectedEntries, FramesReport, UpdateReport },
   feed_config::SubscriptionConfig,
   retriever::FeedFetch,
   storage::MockFeedStore,
@@ -28,7 +28,16 @@ async fn test_save_feed_plain() -> Result< (), Box< dyn std::error::Error + Sync
   f_store
   .expect_process_feeds()
   .times( 1 )
-  .returning( | _ | Ok( FramesReport { new_frames : 2, updated_frames : 0, selected_frames : SelectedEntries::new() } ) )
+  .returning( | _ | Ok( UpdateReport(
+    vec! [ FramesReport
+    {
+      new_frames : 2,
+      updated_frames : 0,
+      selected_frames : SelectedEntries::new(),
+      existing_frames : 0,
+      feed_name : String::new(),
+      is_new_feed : false,
+    } ] ) ) )
   ;
 
   let feed_config = SubscriptionConfig

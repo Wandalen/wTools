@@ -1,4 +1,6 @@
 use gluesql::prelude::{ Payload, Value };
+use std::io::Write;
+use tabwriter::TabWriter;
 
 /// Information about result of execution of command for frames.
 pub struct FramesReport
@@ -70,13 +72,18 @@ pub struct FieldsReport
 
 impl std::fmt::Display for FieldsReport
 {
+
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
     writeln!( f, "Frames fields:" )?;
+    let mut fields = String::new();
     for field in &self.fields_list
     {
       writeln!( f, "{}, type {} : {}", field[ 0 ], field[ 1 ], field[ 2 ] )?;
     }
+      // let mut tw = TabWriter::new( vec![] );
+      // write!( &mut tw, "{}", fields ).unwrap();
+      // tw.flush().unwrap();
     Ok( () )
   }
 }
@@ -310,12 +317,12 @@ impl std::fmt::Display for UpdateReport
   {
     for report in &self.0
     {
-      writeln!( f, "{}", report );
+      writeln!( f, "{}", report )?;
     }
-    writeln!( f, "\n\n" );
+    writeln!( f, "\n\n" )?;
     writeln!( f, "Total new feeds dowloaded : {}", self.0.iter().filter( | fr_report | fr_report.is_new_feed ).count() )?;
     writeln!( f, "Total feeds with updated or new frames : {}", self.0.iter().filter( | fr_report | !fr_report.is_new_feed ).count() )?;
-    writeln!( f, "" );
+    writeln!( f, "" )?;
     writeln!( f, "Total new frames : {}", self.0.iter().fold( 0, | acc, fr_report | acc + fr_report.new_frames ) )?;
     writeln!( f, "Total updated frames : {}", self.0.iter().fold( 0, | acc, fr_report | acc + fr_report.updated_frames ) )?;
 

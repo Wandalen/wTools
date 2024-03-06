@@ -372,18 +372,14 @@ impl FeedStore for FeedStorage< SledStorage >
       }
       reports.push( frames_report );
     }
-
-    // let mut report = FramesReport::new();
     
     if new_entries.len() > 0
     {
-      let saved_report = self.save_frames( new_entries ).await?;
-      // report.new_frames += saved_report.new_frames;
+      let _saved_report = self.save_frames( new_entries ).await?;
     }
     if modified_entries.len() > 0
     {
-      let updated_report = self.update_feed( modified_entries ).await?;
-      // report.updated_frames += updated_report.updated_frames;
+      let _updated_report = self.update_feed( modified_entries ).await?;
     }
     
     Ok( UpdateReport( reports ) )

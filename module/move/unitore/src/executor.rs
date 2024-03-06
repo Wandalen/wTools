@@ -46,7 +46,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .form(),
     wca::Command::former()
     .phrase( "query.execute" )
-    .hint
+    .long_hint
     ( 
       concat!
       (

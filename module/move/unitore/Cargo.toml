@@ -43,6 +43,7 @@ gluesql = "0.15.0"
 async-trait = "0.1.41"
 wca = { workspace = true }
 mockall = "0.12.1"
+tabwriter = "1.4.0"
 
 [dev-dependencies]
 test_tools = { workspace = true }
