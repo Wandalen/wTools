@@ -2,6 +2,8 @@
 mod private
 {
   use std::collections::HashSet;
+  use std::{env, fs};
+  use std::time::{SystemTime, UNIX_EPOCH};
 
   use cargo_metadata::Package;
 
@@ -81,8 +83,23 @@ mod private
       exclude_features,
     };
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
+    
+    let current_time = SystemTime::now()
+    .duration_since( UNIX_EPOCH )
+    .map_err( | e | ( reports.clone(), e.into() ) )?
+    .as_millis();
+    
+    let unique_name = format!("temp_dir_for_test_command{}", current_time);
+    
+    let temp_dir = env::temp_dir().join( unique_name );
 
-    run_tests( &t_args, &packages, dry )
+    fs::create_dir( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
+
+    let report = run_tests( &t_args, &packages, dry, Some( &temp_dir ) );
+
+    fs::remove_dir_all(&temp_dir).map_err( | e | ( reports.clone(), e.into() ) )?;
+    
+    report
 	}
 
   fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >

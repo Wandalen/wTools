@@ -134,11 +134,13 @@ mod private
   ///
   /// Returns a `Result` containing a `CmdReport` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn test< P >( path : P, args : TestArgs, dry : bool ) -> Result< CmdReport >
+  pub fn test< P, Pb >( path : P, args : TestArgs, dry : bool, temp_dir : Option< Pb > ) -> Result< CmdReport >
   where
-    P : AsRef< Path >
+    P : AsRef< Path >,
+    Pb : AsRef< Path >,
   {
-    let ( program, args ) = ( "rustup", args.as_rustup_args() );
+    let target_dir = temp_dir.map( | p | vec![ /*"--".to_string(),*/ "--target-dir".to_string(),  p.as_ref().to_string_lossy().into() ] );
+    let ( program, args ) = ( "rustup", args.as_rustup_args().into_iter().chain(target_dir.into_iter().flatten()).collect::<Vec<String>>() );
 
     if dry
     {

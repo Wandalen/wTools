@@ -4,6 +4,7 @@ mod private
   use crate::*;
   use std::collections::{ BTreeMap, BTreeSet, HashSet };
   use std::fmt::Formatter;
+  use std::path::Path;
   use std::sync::{ Arc, Mutex };
   use cargo_metadata::Package;
   use colored::Colorize;
@@ -184,7 +185,7 @@ mod private
   
   /// `run_tests` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run_test( args : &TestArgs, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
+  pub fn run_test( args : &TestArgs, package : &Package, dry : bool, base_temp_dir : Option< &Path > ) -> Result< TestReport, ( TestReport, Error ) >
   {
     let exclude = args.exclude_features.iter().cloned().collect();
     let mut report = TestReport::default();
@@ -223,8 +224,17 @@ mod private
             s.spawn
             (
               move | _ | 
-              { 
-                let cmd_rep = cargo::test( dir, cargo::TestArgs::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
+              {
+                let temp_dir_path = base_temp_dir.map
+                ( 
+                  | p | 
+                  {
+                    let path = p.join( format!("{}_{}_{}", package.name.clone(), channel,  feature.iter().join( "," ) ) );
+                    std::fs::create_dir_all( &path ).unwrap();
+                    path
+                  } 
+                );
+                let cmd_rep = cargo::test( dir, cargo::TestArgs::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry, temp_dir_path ).unwrap_or_else( | rep | rep.downcast().unwrap() );
                 r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
               }
             );
@@ -240,7 +250,7 @@ mod private
   }
   
   /// Run tests for given packages.
-  pub fn run_tests( args : &TestArgs, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
+  pub fn run_tests( args : &TestArgs, packages : &[ Package ], dry : bool, base_temp_dir : Option< &Path > ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
     let mut report = TestsReport::default();
     report.dry = dry;
@@ -257,7 +267,7 @@ mod private
           (
             move | _ | 
             {
-              match run_test( &args, package, dry )
+              match run_test( &args, package, dry, base_temp_dir )
               {
                 Ok( r ) =>
                 { 
