@@ -41,9 +41,9 @@ async fn test_save_feed_plain() -> Result< (), Box< dyn std::error::Error + Sync
   {
     storage : f_store,
     client : TestClient,
-    config : vec![ feed_config ],
+    config : vec![],
   };
-  manager.update_feed().await?;
+  manager.update_feed( vec![ feed_config ] ).await?;
 
   Ok( () )
 }

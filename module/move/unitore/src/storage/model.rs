@@ -1,25 +1,28 @@
+use std::time::Duration;
+
 use feed_rs::model::{ Entry, Feed };
 use gluesql::core::
 {
   ast_builder::{ null, text, timestamp, ExprNode },
   chrono::{ SecondsFormat, Utc },
 };
-use crate::storage::SubscriptionConfig;
 
 pub struct FeedRow( pub Vec< ExprNode< 'static > > );
 
-impl From< Feed > for FeedRow
+impl From< ( Feed, Duration ) > for FeedRow
 {
-  fn from( value : Feed ) -> Self
+  fn from( value : ( Feed, Duration ) ) -> Self
   {
     let mut row = Vec::new();
+    let duration = value.1;
+    let value = value.0;
     row.push( text( value.id.clone() ) );
     row.push( value.title.clone().map( | title | text( title.content ) ).unwrap_or( null() ) );
     row.push( value.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ) );
     row.push( text( value.authors.iter().map( | p | p.name.clone() ).fold( String::new(), | acc, val | format!( "{}, {}", acc, val ) ) ).to_owned() );
     row.push( value.description.clone().map( | desc | text( desc.content ) ).unwrap_or( null() ) );
     row.push( value.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ) );
-
+    row.push( text( duration.as_secs().to_string() ) );
     FeedRow( row )
   }
 }
@@ -97,19 +100,19 @@ impl From< ( Entry, String ) > for FrameRow
   }
 }
 
-pub struct SubscriptionRow( pub Vec< ExprNode< 'static > > );
+// pub struct SubscriptionRow( pub Vec< ExprNode< 'static > > );
 
-impl From< SubscriptionConfig > for SubscriptionRow
-{
-  fn from( value : SubscriptionConfig ) -> Self
-  {
-    let row = SubscriptionRow( vec!
-    [
-      text( value.link ),
-      text( value.period.as_secs().to_string() ),
-      timestamp( Utc::now().to_rfc3339_opts( SecondsFormat::Millis, true ) )
-    ] );
+// impl From< SubscriptionConfig > for SubscriptionRow
+// {
+//   fn from( value : SubscriptionConfig ) -> Self
+//   {
+//     let row = SubscriptionRow( vec!
+//     [
+//       text( value.link ),
+//       text( value.period.as_secs().to_string() ),
+//       timestamp( Utc::now().to_rfc3339_opts( SecondsFormat::Millis, true ) )
+//     ] );
 
-    row
-  }
-}
+//     row
+//   }
+// }

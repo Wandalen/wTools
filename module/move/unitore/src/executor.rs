@@ -5,7 +5,7 @@ use gluesql::sled_storage::sled::Config;
 use retriever::{ FeedClient, FeedFetch };
 use feed_config::read_feed_config;
 use storage::{ FeedStorage, FeedStore };
-use report::{ Report, FramesReport, FieldsReport, FeedsReport, QueryReport, ConfigReport };
+use report::{ Report, FramesReport, FieldsReport, FeedsReport, QueryReport, ConfigReport, UpdateReport };
 // use wca::prelude::*;
 
 /// Run feed updates.
@@ -16,8 +16,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   ( [
     wca::Command::former()
     .phrase( "frames.download" )
-    .hint( "Subscribe to feed from sources provided in config file. Subject: path to config file." )
-    .subject( "Source file", wca::Type::String, false )
+    .hint( "Download frames from feed sources provided in config files." )
     .form(),
     wca::Command::former()
     .phrase( "fields.list" )
@@ -34,7 +33,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     wca::Command::former()
     .phrase( "config.add" )
     .hint( "Add subscription configuration. Subject: link to feed source." )
-    .subject( "Link", wca::Type::String, false )
+    .subject( "Link", wca::Type::Path, false )
     .form(),
     wca::Command::former()
     .phrase( "config.delete" )
@@ -60,18 +59,15 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
         "\n\n",
       )
     )
-    .subject( "Query", wca::Type::String, false )
+    .subject( "Query", wca::Type::List( Box::new( wca::Type::String ), ' ' ), false )
     .form(),
   ] )
   .executor
   ( [
-    ( "frames.download".to_owned(), wca::Routine::new( | ( args, _props ) |
+    ( "frames.download".to_owned(), wca::Routine::new( | ( _args, _props ) |
     {
-      if let Some( path ) = args.get_owned( 0 )
-      {
-        let report = fetch_from_file( path ).unwrap();
-        report.report();
-      }
+      let report = update_feed().unwrap();
+      report.report();
 
       Ok( () )
     } ) ),
@@ -110,9 +106,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 
     ( "config.add".to_owned(), wca::Routine::new( | ( args, _props ) |
     {
-      if let Some( link ) = args.get_owned( 0 )
+      if let Some( path ) = args.get_owned::< wca::Value >( 0 )
       {
-        let report = add_subscription( link ).unwrap();
+        let report = add_config( path.into() ).unwrap();
         report.report();
       }
 
@@ -131,9 +127,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     } ) ),
     ( "query.execute".to_owned(), wca::Routine::new( | ( args, _props ) |
     {
-      if let Some( query ) = args.get_owned( 0 )
+      if let Some( query ) = args.get_owned::< Vec::< String > >( 0 )
       {
-        let report = execute_query( query ).unwrap();
+        let report = execute_query( query.join( " " ) ).unwrap();
         report.report();
       }
 
@@ -189,19 +185,19 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
   }
 
   /// Update modified frames and save new items.
-  pub async fn update_feed( &mut self ) -> Result< FramesReport, Box< dyn std::error::Error + Send + Sync > >
+  pub async fn update_feed( &mut self, subscriptions : Vec< SubscriptionConfig > ) -> Result< UpdateReport, Box< dyn std::error::Error + Send + Sync > >
   {
     let mut feeds = Vec::new();
-    for i in  0..self.config.len()
+    for i in  0..subscriptions.len()
     {
-      let feed = self.client.fetch( self.config[ i ].link.clone() ).await?;
-      feeds.push( feed );
+      let feed = self.client.fetch( subscriptions[ i ].link.clone() ).await?;
+      feeds.push( ( feed, subscriptions[ i ].period.clone() ) );
     }
     self.storage.process_feeds( feeds ).await
   }
 
   /// Get all frames currently in storage.
-  pub async fn get_all_frames( &mut self ) -> Result< FramesReport, Box< dyn std::error::Error + Send + Sync > >
+  pub async fn get_all_frames( &mut self ) -> Result< UpdateReport, Box< dyn std::error::Error + Send + Sync > >
   {
     self.storage.get_all_frames().await
   }
@@ -230,8 +226,29 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
   }
 }
 
-/// Update all feed from subscriptions in file.
-pub fn fetch_from_file( file_path : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+// /// Update all feed from subscriptions in file.
+// pub fn fetch_from_file( file_path : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+// {
+//   let rt  = tokio::runtime::Runtime::new()?;
+//   let report = rt.block_on( async move 
+//   {
+//     let config = Config::default()
+//     .path( "data/temp".to_owned() )
+//     ;
+//     let feed_configs = read_feed_config( file_path ).unwrap();
+//     let feed_storage = FeedStorage::init_storage( config ).await?;
+  
+//     let mut manager = FeedManager::new( feed_storage );
+//     manager.set_config( feed_configs );
+//     manager.update_feed().await
+
+//   } );
+
+//   report
+// }
+
+/// Update all feed from config files saved in storage.
+pub fn update_feed() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let rt  = tokio::runtime::Runtime::new()?;
   let report = rt.block_on( async move 
@@ -239,12 +256,21 @@ pub fn fetch_from_file( file_path : String ) -> Result< impl Report, Box< dyn st
     let config = Config::default()
     .path( "data/temp".to_owned() )
     ;
-    let feed_configs = read_feed_config( file_path ).unwrap();
+
+    //let feed_configs = read_feed_config( file_path ).unwrap();
     let feed_storage = FeedStorage::init_storage( config ).await?;
   
     let mut manager = FeedManager::new( feed_storage );
-    manager.set_config( feed_configs );
-    manager.update_feed().await
+    let configs = manager.list_subscriptions().await?.configs();
+
+    let mut subscriptions = Vec::new();
+    for config in configs
+    {
+      
+      let sub_vec = read_feed_config( config )?;
+      subscriptions.extend( sub_vec );
+    }
+    manager.update_feed( subscriptions ).await
 
   } );
 
@@ -319,25 +345,21 @@ pub fn list_subscriptions() -> Result< impl Report, Box< dyn std::error::Error +
   } )
 }
 
-pub fn add_subscription( link : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+pub fn add_config( path : std::path::PathBuf ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
   let config = Config::default()
   .path( "data/temp".to_owned() )
   ;
 
-  let sub_config = SubscriptionConfig
-  {
-    link,
-    period : std::time::Duration::from_secs( 1000 ),
-  };
-
   let rt  = tokio::runtime::Runtime::new()?;
   rt.block_on( async move
   {
     let feed_storage = FeedStorage::init_storage( config ).await?;
+    let path = path.canonicalize().expect( "Invalid path" );
+
 
     let mut manager = FeedManager::new( feed_storage );
-    manager.storage.add_subscription( sub_config ).await
+    manager.storage.add_config( path.to_string_lossy().to_string() ).await
   } )
 }
 

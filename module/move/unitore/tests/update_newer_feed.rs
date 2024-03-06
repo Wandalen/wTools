@@ -40,15 +40,15 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
   {
     storage : feed_storage,
     client : TestClient( "./tests/fixtures/plain_feed.xml".to_owned() ),
-    config : vec![ feed_config ],
+    config : vec![],
   };
   // initial fetch
-  manager.update_feed().await?;
+  manager.update_feed( vec![ feed_config.clone() ] ).await?;
 
   manager.set_client( TestClient( "./tests/fixtures/updated_one_frame.xml".to_owned() ) );
 
   // updated fetch
-  manager.update_feed().await?;
+  manager.update_feed( vec![ feed_config ] ).await?;
 
   // check
   let payload = manager.get_all_frames().await?;

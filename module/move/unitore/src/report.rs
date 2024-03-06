@@ -3,20 +3,26 @@ use gluesql::prelude::{ Payload, Value };
 /// Information about result of execution of command for frames.
 pub struct FramesReport
 {
+  pub feed_name : String,
   pub updated_frames : usize,
   pub new_frames : usize,
   pub selected_frames : SelectedEntries,
+  pub existing_frames : usize,
+  pub is_new_feed : bool,
 }
 
 impl FramesReport
 {
-  pub fn new() -> Self
+  pub fn new( feed_title : String ) -> Self
   {
     Self
     {
+      feed_name : feed_title,
       updated_frames : 0,
       new_frames : 0,
       selected_frames : SelectedEntries::new(),
+      existing_frames : 0,
+      is_new_feed : false,
     }
   }
 }
@@ -34,8 +40,10 @@ impl std::fmt::Display for FramesReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
+    writeln!( f, "Feed title: {}", self.feed_name )?;
     writeln!( f, "Updated frames: {}", self.updated_frames )?;
     writeln!( f, "Inserted frames: {}", self.new_frames )?;
+    writeln!( f, "Number of frames in storage: {}", self.existing_frames )?;
     if !self.selected_frames.selected_columns.is_empty()
     {
       writeln!( f, "Selected frames:" )?;
@@ -43,7 +51,7 @@ impl std::fmt::Display for FramesReport
       {
         for i in 0..self.selected_frames.selected_columns.len()
         {
-            writeln!( f, "{} : {}, ", self.selected_frames.selected_columns[ i ], DisplayValue( &row[ i ] ) )?;
+            writeln!( f, "{} : {}, ", self.selected_frames.selected_columns[ i ], RowValue( &row[ i ] ) )?;
         }
         writeln!( f, "" )?;
       }
@@ -99,7 +107,7 @@ impl std::fmt::Display for SelectedEntries
       {
         for i in 0..self.selected_columns.len()
         {
-          write!( f, "{} : {}, ", self.selected_columns[ i ], DisplayValue( &row[ i ] ) )?;
+          write!( f, "{} : {}, ", self.selected_columns[ i ], RowValue( &row[ i ] ) )?;
         }
         writeln!( f, "" )?;
       }
@@ -173,7 +181,7 @@ impl std::fmt::Display for QueryReport
           {
             for i in 0..label_vec.len()
             {
-              writeln!( f, "{} : {} ", label_vec[ i ], DisplayValue( &row[ i ] ) )?;
+              writeln!( f, "{} : {} ", label_vec[ i ], RowValue( &row[ i ] ) )?;
             }
             writeln!( f, "" )?;
           }
@@ -192,9 +200,9 @@ impl std::fmt::Display for QueryReport
 
 impl Report for QueryReport {}
 
-struct DisplayValue< 'a >( pub &'a Value );
+struct RowValue< 'a >( pub &'a Value );
 
-impl std::fmt::Display for DisplayValue< '_ >
+impl std::fmt::Display for RowValue< '_ >
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
@@ -224,10 +232,45 @@ impl std::fmt::Display for DisplayValue< '_ >
   }
 }
 
+impl From< RowValue< '_ > > for String
+{
+  fn from( value : RowValue< '_ > ) -> Self
+  {
+    use Value::*;
+    match &value.0
+    {
+      Str( val ) => val.clone(),
+      _ => String::new(),
+    }
+  }
+}
+
 /// Information about result of command for subscription config.
 pub struct ConfigReport
 {
   pub result : Payload,
+}
+
+impl ConfigReport
+{
+  pub fn configs( &self ) -> Vec< String >
+  {
+    match &self.result
+    {
+      Payload::Select { labels: _, rows: rows_vec } =>
+      {
+        rows_vec.into_iter().filter_map( | val | 
+        {
+          match &val[ 0 ]
+          {
+            Value::Str( path ) => Some( path.to_owned() ),
+            _ => None,
+          }
+        } ).collect::< Vec< _ > >()
+      },
+      _ => Vec::new(),
+    }
+  }
 }
 
 impl std::fmt::Display for ConfigReport
@@ -245,7 +288,7 @@ impl std::fmt::Display for ConfigReport
         {
           for i in 0..label_vec.len()
           {
-            writeln!( f, "{} : {} ", label_vec[ i ], DisplayValue( &row[ i ] ) )?;
+            writeln!( f, "{} : {} ", label_vec[ i ], RowValue( &row[ i ] ) )?;
           }
           writeln!( f, "" )?;
         }
@@ -258,3 +301,26 @@ impl std::fmt::Display for ConfigReport
 }
 
 impl Report for ConfigReport {}
+
+pub struct UpdateReport( pub Vec< FramesReport > );
+
+impl std::fmt::Display for UpdateReport
+{
+  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  {
+    for report in &self.0
+    {
+      writeln!( f, "{}", report );
+    }
+    writeln!( f, "\n\n" );
+    writeln!( f, "Total new feeds dowloaded : {}", self.0.iter().filter( | fr_report | fr_report.is_new_feed ).count() )?;
+    writeln!( f, "Total feeds with updated or new frames : {}", self.0.iter().filter( | fr_report | !fr_report.is_new_feed ).count() )?;
+    writeln!( f, "" );
+    writeln!( f, "Total new frames : {}", self.0.iter().fold( 0, | acc, fr_report | acc + fr_report.new_frames ) )?;
+    writeln!( f, "Total updated frames : {}", self.0.iter().fold( 0, | acc, fr_report | acc + fr_report.updated_frames ) )?;
+
+    Ok( () )
+  }
+}
+
+impl Report for UpdateReport {}
