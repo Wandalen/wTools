@@ -1,6 +1,8 @@
 pub( crate ) mod private
 {
-  use crate::{ Routine, Type };
+  use crate::*;
+
+  use { Handler, Routine, Type };
 
   use std::collections::HashMap;
   use former::Former;
@@ -67,11 +69,14 @@ pub( crate ) mod private
     // aaa : here it is
     // qqq : make it usable and remove default(?)
     /// The type `Routine` represents the specific implementation of the routine.
-    #[ default( Routine::new( | _ | Ok( () ) ) ) ]
+    #[ setter( false ) ]
+    #[ default( Routine::new( | _ | { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ]
     pub routine : Routine,
   }
-
-  impl CommandFormer
+  impl< Context, End >
+  CommandFormer< Context, End >
+  where
+    End : former::ToSuperFormer< Command, Context >,
   {
     /// Setter for separate properties.
     pub fn subject< S : Into< String > >( mut self, hint : S, kind : Type, optional : bool ) -> Self
@@ -120,6 +125,41 @@ pub( crate ) mod private
 
       self.container.properties = Some( properties );
       self.container.properties_aliases = Some( properties_aliases );
+      self
+    }
+
+    /// Sets the command routine.
+    ///
+    /// You can set the following types of command routines:
+    /// - `fn()`: A command routine without any argument or property.
+    /// - `fn(args)`: A command routine with arguments.
+    /// - `fn(props)`: A command routine with properties.
+    /// - `fn(args, props)`: A command routine with arguments and properties.
+    /// - `fn(context)`: A command routine with a context.
+    /// - `fn(context, args)`: A command routine with a context and arguments.
+    /// - `fn(context, props)`: A command routine with a context and properties.
+    /// - `fn(context, args, props)`: A command routine with a context, arguments, and properties.
+    ///
+    /// # Type Parameters
+    ///
+    /// * `I`: The input type for the handler function.
+    /// * `R`: The return type for the handler function.
+    /// * `F`: The function type that can be converted into a handler.
+    ///
+    /// # Parameters
+    ///
+    /// * `self`: The current `CommandFormer` instance. This instance will be consumed by this method.
+    /// * `f`: The function that will be set as the command routine.
+    ///
+    /// # Returns
+    ///
+    /// Returns the `CommandFormer` instance with the new command routine set.
+    pub fn routine< I, R, F : Into< Handler< I, R > > >( mut self, f : F ) -> Self
+    where
+      Routine: From< Handler< I, R > >,
+    {
+      let h = f.into();
+      self.container.routine = Some( h.into() );
       self
     }
   }
