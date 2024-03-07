@@ -139,26 +139,26 @@ pub( crate ) mod private
       IntoName : Into< String >,
     {
       let on_end = | command : Command, super_former : Option< Self > | -> Self
+      {
+        let mut super_former = super_former.unwrap();
+        if let Some( ref mut commands ) = super_former.container.verifier
         {
-          let mut super_former = super_former.unwrap();
-          if let Some( ref mut commands ) = super_former.container.verifier
-          {
-            commands.commands.entry( command.phrase.clone() ).or_default().push( command.clone() );
-          }
-          else
-          {
-            super_former.container.verifier = Some( Verifier::former().command( command.clone() ).form() );
-          }
-          if let Some( ref mut commands ) = super_former.container.executor_converter
-          {
-            commands.routines.insert( command.phrase, command.routine );
-          }
-          else
-          {
-            super_former.container.executor_converter = Some( ExecutorConverter::former().routine( command.phrase, command.routine ).form() );
-          }
-          super_former
-        };
+          commands.commands.entry( command.phrase.clone() ).or_default().push( command.clone() );
+        }
+        else
+        {
+          super_former.container.verifier = Some( Verifier::former().command( command.clone() ).form() );
+        }
+        if let Some( ref mut commands ) = super_former.container.executor_converter
+        {
+          commands.routines.insert( command.phrase, command.routine );
+        }
+        else
+        {
+          super_former.container.executor_converter = Some( ExecutorConverter::former().routine( command.phrase, command.routine ).form() );
+        }
+        super_former
+      };
       let former = CommandFormer::begin( Some( self ), on_end );
       former.phrase( name )
     }
@@ -293,7 +293,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  prelude use CommandsAggregator;
+  exposed use CommandsAggregator;
   exposed use Error;
   exposed use ValidationError;
 }

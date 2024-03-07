@@ -13,7 +13,7 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 ```rust
 #[ cfg( not( feature = "no_std" ) ) ]
 {
-    use wca::prelude::*;
+    use wca::{ Args, Context, Type };
 
     fn main()
     {

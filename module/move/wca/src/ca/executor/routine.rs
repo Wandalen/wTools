@@ -456,6 +456,6 @@ crate::mod_interface!
 {
   exposed use Routine;
   exposed use Handler;
-  prelude use Args;
-  prelude use Props;
+  exposed use Args;
+  exposed use Props;
 }
