@@ -360,6 +360,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
     let _else = if default == None
     {
+      // qqq : document, explain why and add example of generated code. if possible to improve -- suggest improvements
       let panic_msg = format!( "Field '{}' isn't initialized", ident );
       qt!
       {

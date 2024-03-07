@@ -47,7 +47,7 @@ tests_impls!
 
   //
 
-// qqq : make it working
+// zzz : make it working
   fn with_u16()
   {
 //     #[ derive( Debug, PartialEq, TheModule::Former ) ]
