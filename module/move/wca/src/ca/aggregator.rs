@@ -7,14 +7,13 @@ pub( crate ) mod private
     Executor,
     ProgramParser,
     Command,
+    grammar::command::private::CommandFormer,
     Routine,
     help::{ HelpGeneratorFn, HelpVariants, dot_command },
   };
 
   use std::collections::{ HashMap, HashSet };
   use std::fmt;
-  use std::fmt::Formatter;
-  use std::rc::Rc;
   use wtools::thiserror;
   use wtools::error::
   {
@@ -131,45 +130,42 @@ pub( crate ) mod private
     callback_fn : Option< CommandsAggregatorCallback >,
   }
 
+  impl< Context, End > CommandsAggregatorFormer< Context, End >
+  where
+    End : former::ToSuperFormer< CommandsAggregator, Context >,
+  {
+    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::ToSuperFormer< Command, Self > >
+    where
+      IntoName : Into< String >,
+    {
+      let on_end = | command : Command, super_former : Option< Self > | -> Self
+        {
+          let mut super_former = super_former.unwrap();
+          if let Some( ref mut commands ) = super_former.container.verifier
+          {
+            commands.commands.entry( command.phrase.clone() ).or_default().push( command.clone() );
+          }
+          else
+          {
+            super_former.container.verifier = Some( Verifier::former().command( command.clone() ).form() );
+          }
+          if let Some( ref mut commands ) = super_former.container.executor_converter
+          {
+            commands.routines.insert( command.phrase, command.routine );
+          }
+          else
+          {
+            super_former.container.executor_converter = Some( ExecutorConverter::former().routine( command.phrase, command.routine ).form() );
+          }
+          super_former
+        };
+      let former = CommandFormer::begin( Some( self ), on_end );
+      former.phrase( name )
+    }
+  }
+
   impl CommandsAggregatorFormer
   {
-    /// The command method is a part of the CommandsAggregator builder pattern. It sets the name of the command in the building process of a command.
-    ///
-    /// Arg:
-    /// - *name*: A string representing the name of the command.
-    ///
-    /// ```
-    /// use wca::{ Args, Context };
-    ///
-    /// let ca = wca::CommandsAggregator::former()
-    /// .command( "echo" )
-    ///   .hint( "prints all subjects and properties" )
-    ///   .subject( "Subject", wca::Type::String, true )
-    ///   .property( "property", "simple property", wca::Type::String, true )
-    ///   .routine( | args : Args, props | { println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) } )
-    ///   .perform()
-    /// .command( "inc" )
-    ///   .hint( "This command increments a state number each time it is called consecutively. (E.g. `.inc .inc`)" )
-    ///   .routine( | ctx : Context | { let i : &mut i32 = ctx.get_or_default(); println!( "i = {i}" ); *i += 1; } )
-    ///   .perform()
-    /// .command( "error" )
-    ///   .hint( "prints all subjects and properties" )
-    ///   .subject( "Error message", wca::Type::String, true )
-    ///   .routine( | args : Args | { println!( "Returns an error" ); Err( format!( "{}", args.get_owned::< String >( 0 ).unwrap_or_default() ) ) } )
-    ///   .perform()
-    /// .command( "exit" )
-    ///   .hint( "just exit" )
-    ///   .routine( || { println!( "exit" ); std::process::exit( 0 ) } )
-    ///   .perform()
-    /// .perform();
-    /// ```
-    pub fn command< P : Into< String > >( self, phrase : P ) -> CommandHandlerFormer
-    {
-      CommandHandler::former()
-      .ca( self )
-      .grammar( Command::former().phrase( phrase ) )
-    }
-
     /// Setter for grammar
     ///
     /// Gets list of available commands
@@ -289,81 +285,6 @@ pub( crate ) mod private
       }
 
       self.executor.program( exec_program ).map_err( | e | Error::Execution( e ) )
-    }
-  }
-
-  // qqq: rename
-  #[ derive( former::Former ) ]
-  #[ perform( fn perform1( mut self ) -> CommandsAggregatorFormer ) ]
-  pub struct CommandHandler
-  {
-    ca : CommandsAggregatorFormer,
-    grammar : CommandFormer,
-    #[ setter( false ) ]
-    #[ default( Routine::WithoutContext( Rc::new( | _ | { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
-    routine : Routine,
-  }
-
-  impl std::fmt::Debug for CommandHandler
-  {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> fmt::Result
-    {
-      f
-      .debug_struct( "CommandHandler" )
-      .field( "ca", &"" )
-      .field( "grammar", &"" )
-      .finish()
-    }
-  }
-
-
-  impl CommandHandlerFormer
-  {
-    pub fn hint< H : Into< String > >( mut self, hint : H ) -> Self
-    {
-      self.grammar = Some( self.grammar.unwrap_or_else( ca::grammar::Command::former ).hint( hint ) );
-      self
-    }
-
-    pub fn subject< H : Into< String > >( mut self, hint : H, kind : Type, optional : bool ) -> Self
-    {
-      self.grammar = Some( self.grammar.unwrap_or_else( ca::grammar::Command::former ).subject( hint, kind, optional ) );
-      self
-    }
-
-    pub fn property< K : AsRef< str >, H : Into< String > >( mut self, key : K, hint : H, kind : Type, optional : bool ) -> Self
-    {
-      self.grammar = Some( self.grammar.unwrap_or_else( ca::grammar::Command::former ).property( key, hint, kind, optional ) );
-      self
-    }
-
-    pub fn routine< I, R, F : Into< Handler< I, R > > >( mut self, f : F ) -> Self
-    where
-      Routine: From< Handler< I, R > >,
-    {
-      let h = f.into();
-      self.routine = Some( h.into() );
-      self
-    }
-  }
-
-  impl CommandHandler
-  {
-    fn perform1( mut self ) -> CommandsAggregatorFormer
-    {
-      let cmd= self.grammar.form();
-      let phrase = cmd.phrase.clone();
-
-      let mut verifier = self.ca.verifier.unwrap_or_else( || Verifier::former().form() );
-      verifier.commands.entry( phrase.clone() ).or_default().push( cmd );
-      self.ca.verifier = Some( verifier );
-
-      let mut executor_converter = self.ca.executor_converter.unwrap_or_else( || ExecutorConverter::former().form() );
-      assert!( !executor_converter.routines.contains_key( &phrase ), "routine was duplicated" );
-      executor_converter.routines.insert( phrase, self.routine );
-      self.ca.executor_converter = Some( executor_converter );
-
-      self.ca
     }
   }
 }

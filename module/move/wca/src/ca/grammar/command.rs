@@ -1,6 +1,6 @@
 pub( crate ) mod private
 {
-  use crate::Type;
+  use crate::{ Routine, Type };
 
   use std::collections::HashMap;
   use former::Former;
@@ -64,6 +64,11 @@ pub( crate ) mod private
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
     // qqq : for Bohdan : routine should also be here
+    // aaa : here it is
+    // qqq : make it usable and remove default(?)
+    /// The type `Routine` represents the specific implementation of the routine.
+    #[ default( Routine::new( | _ | Ok( () ) ) ) ]
+    pub routine : Routine,
   }
 
   impl CommandFormer

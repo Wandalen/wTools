@@ -422,6 +422,24 @@ pub( crate ) mod private
     }
   }
 
+  impl PartialEq for Routine
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      // We can't compare closures. Because every closure has a separate type, even if they're identical.
+      // Therefore, we check that the two Rc's point to the same closure (allocation).
+      #[ allow( clippy::vtable_address_comparisons ) ]
+      match ( self, other )
+      {
+        ( Routine::WithContext( this ), Routine::WithContext( other ) ) => Rc::ptr_eq( this, other ),
+        ( Routine::WithoutContext( this ), Routine::WithoutContext( other ) ) => Rc::ptr_eq( this, other ),
+        _ => false
+      }
+    }
+  }
+
+  impl Eq for Routine {}
+
   trait IntoResult
   {
     fn into_result( self ) -> Result< () >;
