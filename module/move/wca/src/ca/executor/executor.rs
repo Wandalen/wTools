@@ -58,16 +58,16 @@ pub( crate ) mod private
     /// Executes a program
     ///
     /// Setup runtimes for each namespace into program and run it with specified execution type
-    pub fn program( &self, program : Program< Namespace< ExecutableCommand_ > > ) -> Result< () >
+    pub fn program( &self, program : Program< ExecutableCommand_ > ) -> Result< () >
     {
       let context = self.context.clone();
-      let runtimes_number = program.namespaces.len();
-      let runtimes = program.namespaces
+      let runtimes_number = program.commands.len();
+      let runtimes = program.commands
       .into_iter()
       .fold
       (
         Vec::with_capacity( runtimes_number ),
-        | mut acc, namespace |
+        | mut acc, command |
         {
           // local context for each namespace
           let context = match self.kind
@@ -79,7 +79,7 @@ pub( crate ) mod private
           {
             context,
             pos : 0,
-            namespace,
+            namespace : vec![ command ],
           };
           acc.push( runtime );
           acc
@@ -90,32 +90,6 @@ pub( crate ) mod private
       {
         ExecutorType::ResetsContext => Self::parallel_execution_loop( runtimes )?,
         ExecutorType::Simple => Self::sequential_execution_loop( runtimes )?,
-      }
-
-      Ok( () )
-    }
-
-    /// Executes a namespace
-    ///
-    /// Configure `Runtime` and run commands from namespace at runtime position while it isn't finished
-    pub fn namespace( &self, namespace : Namespace< ExecutableCommand_ > ) -> Result< () >
-    {
-      let context = self.context.clone();
-      let mut runtime = Runtime
-      {
-        context,
-        pos : 0,
-        namespace,
-      };
-
-      while !runtime.is_finished()
-      {
-        let state = runtime.context.get_or_default::< RuntimeState >();
-        state.pos = runtime.pos + 1;
-        runtime.r#do()?;
-        runtime.pos = runtime.context.get_ref::< RuntimeState >().unwrap().pos;
-        // qqq : for Bohdan : has `runtime.context` be used? seems not
-        // looks like unnecessary too complicated.
       }
 
       Ok( () )

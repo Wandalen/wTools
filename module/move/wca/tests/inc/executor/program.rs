@@ -114,31 +114,8 @@ tests_impls!
 
     a_true!( executor.program( exec_program ).is_err() );
 
-    // value in context = 0 + 1 = 1 | 1 + 1 + 1 = 3
-    let raw_program = parser.program( ".inc .eq 1 .also .eq 1 .inc .inc .eq 3" ).unwrap();
-    let grammar_program = verifier.to_program( raw_program ).unwrap();
-    let exec_program = executor_converter.to_program( grammar_program ).unwrap();
-
-    a_true!( executor.program( exec_program ).is_ok() );
-
-    // starts with 0
-    let mut ctx = wca::Context::default();
-    ctx.insert( 0 );
-    // init resetable executor
-    let executor = Executor::former()
-    .context( ctx )
-    .kind( ExecutorType::ResetsContext )
-    .form();
-
-    // value in context = 0
-    let raw_program = parser.program( ".eq 1" ).unwrap();
-    let grammar_program = verifier.to_program( raw_program ).unwrap();
-    let exec_program = executor_converter.to_program( grammar_program ).unwrap();
-
-    a_true!( executor.program( exec_program ).is_err() );
-
-    // value in context = 0 + 1 = 1 | 0 + 1 + 1 = 2
-    let raw_program = parser.program( ".inc .eq 1 .also .eq 0 .inc .inc .eq 2" ).unwrap();
+    // value in context = 1 + 1 + 1 = 3
+    let raw_program = parser.program( ".eq 0 .inc .inc .eq 2" ).unwrap();
     let grammar_program = verifier.to_program( raw_program ).unwrap();
     let exec_program = executor_converter.to_program( grammar_program ).unwrap();
 

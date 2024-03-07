@@ -1,7 +1,6 @@
 pub( crate ) mod private
 {
   use crate::*;
-  // use super::super::*;
 
   use ca::grammar::command::ValueDescription;
   use former::Former;
@@ -85,29 +84,15 @@ pub( crate ) mod private
     /// Converts raw program to grammatically correct
     ///
     /// Converts all namespaces into it with `to_namespace` method.
-    pub fn to_program( &self, raw_program : Program< Namespace< ParsedCommand > > )
-    -> Result< Program< Namespace< VerifiedCommand > > >
+    pub fn to_program( &self, raw_program : Program< ParsedCommand > )
+    -> Result< Program< VerifiedCommand > >
     {
-      let namespaces = raw_program.namespaces
+      let commands = raw_program.commands
       .into_iter()
-      .map( | n | self.to_namespace( n ) )
-      .collect::< Result< Vec< Namespace< VerifiedCommand > > > >()?;
-
-      Ok( Program { namespaces } )
-    }
-
-    // qqq : for Bohdan : probably rdundant
-    /// Converts raw namespace to grammatically correct
-    ///
-    /// Converts all commands into it with `to_command` method.
-    pub fn to_namespace( &self, raw_namespace : Namespace< ParsedCommand > ) -> Result< Namespace< VerifiedCommand > >
-    {
-      let commands = raw_namespace.commands
-      .into_iter()
-      .map( | c | self.to_command( c ) )
+      .map( | n | self.to_command( n ) )
       .collect::< Result< Vec< VerifiedCommand > > >()?;
 
-      Ok( Namespace { commands } )
+      Ok( Program { commands } )
     }
 
     #[ cfg( feature = "on_unknown_suggest" ) ]

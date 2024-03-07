@@ -3,7 +3,7 @@ use wtools::err;
 use wca::
 {
   Parser,
-  ProgramParser, NamespaceParser, CommandParser,
+  ProgramParser, CommandParser,
 
   Type,
   Verifier, ExecutorConverter,
@@ -13,5 +13,4 @@ use wca::
 };
 
 mod command;
-mod namespace;
 mod program;

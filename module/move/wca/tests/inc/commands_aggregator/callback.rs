@@ -27,7 +27,7 @@ fn changes_state_of_local_variable_on_perform()
     .push(
     (
       input.to_string(),
-      program.namespaces.iter().flat_map( | n | &n.commands ).cloned().collect::< Vec< _ > >() )
+      program.commands.clone() )
     ))
   .perform();
 

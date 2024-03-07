@@ -35,15 +35,12 @@ pub( crate ) mod private
   /// It performs callbacks to commands at the current execution position and, if necessary, provides context for them.
   ///
   /// ```
-  /// # use wca::{ Runtime, Namespace, Context };
+  /// # use wca::{ Runtime, Context };
   /// let runtime = Runtime
   /// {
   ///   context : Context::default(),
   ///   pos : 0,
-  ///   namespace : Namespace
-  ///   {
-  ///     commands: vec![]
-  ///   }
+  ///   namespace :vec![],
   /// };
   ///
   /// assert!( runtime.is_finished() );
@@ -56,7 +53,7 @@ pub( crate ) mod private
     /// current execution position
     pub pos : usize,
     /// namespace which must be executed
-    pub namespace : Namespace< ExecutableCommand_ >, // qqq : for Bohdan : use VerifiedCommand
+    pub namespace : Vec< ExecutableCommand_ >, // qqq : for Bohdan : use VerifiedCommand
   }
   // qqq : for Bohdan : why both Runtime and RuntimeState exist? probably one should removed
   // qqq : for Bohdan : why both Runtime and Context exist? What about incapsulating Context into Runtime maybe
@@ -67,13 +64,14 @@ pub( crate ) mod private
     /// returns true if execution position at the end
     pub fn is_finished( &self ) -> bool
     {
-      self.namespace.commands.len() == self.pos
+      self.namespace.len() == self.pos
     }
 
     /// executes current command( command at current execution position )
     pub fn r#do( &mut self ) -> Result< () >
     {
-      self.namespace.commands
+      self
+      .namespace
       .get( self.pos )
       .ok_or_else( || err!( "No command here. Current execution pos was `{}`", self.pos ) )
       .and_then( | cmd |

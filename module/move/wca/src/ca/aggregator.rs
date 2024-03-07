@@ -59,7 +59,7 @@ pub( crate ) mod private
 
   // xxx : qqq : qqq2 : for Bohdan : one level is obviously redundant
   // Program< Namespace< ExecutableCommand_ > > -> Program< ExecutableCommand_ >
-  struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< Namespace< ExecutableCommand_ > > ) > );
+  struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< ExecutableCommand_ > ) > );
 
   impl fmt::Debug for CommandsAggregatorCallback
   {
@@ -235,7 +235,7 @@ pub( crate ) mod private
     /// ```
     pub fn callback< Callback >( mut self, callback : Callback ) -> Self
     where
-      Callback : Fn( &str, &Program< Namespace< ExecutableCommand_ > > ) + 'static,
+      Callback : Fn( &str, &Program< ExecutableCommand_ > ) + 'static,
     {
       self.container.callback_fn = Some( CommandsAggregatorCallback( Box::new( callback ) ) );
       self
