@@ -176,29 +176,20 @@ mod private
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
   pub fn run_test( args : &TestArgs, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
   {
-    let exclude = args.exclude_features.iter().cloned().collect();
+    // let exclude = args.exclude_features.iter().cloned().collect();
     let mut report = TestReport::default();
     report.dry = dry;
     report.package_name = package.name.clone();
     let report = Arc::new( Mutex::new( report ) );
 
-    let features_powerset = package
-    .features
-    .keys()
-    .filter( | f | !args.exclude_features.contains( f ) && !args.include_features.contains( f ) )
-    .cloned()
-    .powerset()
-    .map( BTreeSet::from_iter )
-    .filter( | subset | subset.len() <= args.power as usize )
-    .map
-    (
-      | mut subset | 
-      { 
-        subset.extend( args.include_features.clone() );
-        subset.difference( &exclude ).cloned().collect()
-      }
-    )
-    .collect::< HashSet< BTreeSet< String > > >();
+    let features_powerset = features::features_powerset
+    ( 
+      package, 
+      args.power as usize, 
+      &args.exclude_features, 
+      &args.include_features 
+    );
+    
     print_temp_report( &package.name, &args.channels, &features_powerset );
     rayon::scope
     (
