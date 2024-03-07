@@ -8,15 +8,18 @@ pub( crate ) mod private
   use super::super::*;
 
   ///
-  /// For attribute like `#[former( default = 31 )]` return key `default` and value `31`,
+  /// For attribute like `#[former( default = 31 ) ]` return key `default` and value `31`,
   /// as well as syn::Meta as the last element of result tuple.
   ///
   /// ### Basic use-case.
-  /// ``` ignore
-  /// let ( key, val, meta ) = attr_pair_single( &attr )?;
+  /// ```
+  /// let attr : syn::Attribute = syn::parse_quote!( #[ former( default = 31 ) ] );
+  /// let ( key, val, _meta ) = macro_tools::attr::eq_pair( &attr ).unwrap();
+  /// assert_eq!( key, "default" );
+  /// assert_eq!( val, syn::Lit::Int( syn::LitInt::new( "31", proc_macro2::Span::call_site() ) ) );
   /// ```
 
-  pub fn attr_pair_single( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ) >
+  pub fn eq_pair( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ) >
   {
     // use syn::spanned::Spanned;
     let meta = attr.parse_meta()?;
@@ -267,7 +270,7 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
-    attr_pair_single,
+    eq_pair,
     AttributesInner,
     AttributesOuter,
     AttributedIdent,

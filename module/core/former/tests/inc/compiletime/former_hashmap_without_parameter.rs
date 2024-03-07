@@ -5,7 +5,7 @@ struct HashMap< T >
   f1 : T,
 }
 
-#[derive( Former )]
+#[ derive( Former ) ]
 pub struct Struct1
 {
   f2 : HashMap< i32 >,

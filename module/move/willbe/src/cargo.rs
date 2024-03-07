@@ -38,7 +38,7 @@ mod private
     }
     else
     {
-      process::start2_sync( program, args, path )
+      process::process_run_with_params(program, args, path )
     }
   }
   
@@ -64,7 +64,7 @@ mod private
     }
     else
     {
-      process::start2_sync( program, args, path )
+      process::process_run_with_params(program, args, path )
     }
   }
 
@@ -155,7 +155,7 @@ mod private
     }
     else
     {
-      process::start2_sync( program, args, path )
+      process::process_run_with_param_and_joined_steams(program, args, path )
     }
   }
 
@@ -167,7 +167,7 @@ mod private
     P : AsRef< Path >,
   {
     let ( program, args ) = ( "rustup", [ "toolchain", "list" ] );
-    let report = process::start2_sync( program, args, path )?;
+    let report = process::process_run_with_params(program, args, path )?;
     
     let list = report
     .out

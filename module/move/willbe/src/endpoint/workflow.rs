@@ -44,7 +44,7 @@ mod private
   /// Generate workflows for modules in .github/workflows directory.
   pub fn workflow_generate( base_path : &Path ) -> Result< (), WorkflowGenerateError >
   {
-    let mut workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
+    let workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
     let packages = workspace_cache.packages()?;
     let username_and_repository = &username_and_repository( &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?, packages )?;
     let workspace_root = workspace_cache.workspace_root()?;

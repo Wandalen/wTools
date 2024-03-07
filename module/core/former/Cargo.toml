@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "0.2.0"
+version = "0.7.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -12,7 +12,7 @@ documentation = "https://docs.rs/former"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 description = """
-Former - variation of builder pattern.
+A flexible and extensible implementation of the builder pattern.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]

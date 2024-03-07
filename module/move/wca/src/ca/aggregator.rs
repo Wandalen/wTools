@@ -140,7 +140,7 @@ pub( crate ) mod private
       let verifier = Verifier::former()
       .commands( commands )
       .form();
-      self.verifier = Some( verifier );
+      self.container.verifier = Some( verifier );
       self
     }
 
@@ -155,7 +155,7 @@ pub( crate ) mod private
       .routines( routines )
       .form();
 
-      self.executor_converter = Some( executor );
+      self.container.executor_converter = Some( executor );
       self
     }
 
@@ -177,7 +177,7 @@ pub( crate ) mod private
     where
       HelpFunction : Fn( &Verifier, Option< &Command > ) -> String + 'static
     {
-      self.help_generator = Some( HelpGeneratorFn::new( func ) );
+      self.container.help_generator = Some( HelpGeneratorFn::new( func ) );
       self
     }
     // qqq : it is good access method, but formed structure should not have help_generator anymore
@@ -201,7 +201,7 @@ pub( crate ) mod private
     where
       Callback : Fn( &str, &Program< Namespace< ExecutableCommand_ > > ) + 'static,
     {
-      self.callback_fn = Some( CommandsAggregatorCallback( Box::new( callback ) ) );
+      self.container.callback_fn = Some( CommandsAggregatorCallback( Box::new( callback ) ) );
       self
     }
 

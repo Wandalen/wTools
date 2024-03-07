@@ -8,6 +8,39 @@ tests_impls!
 
   //
 
+  fn internals()
+  {
+
+    // test.case( "vector : construction" );
+
+    let former = Struct1::former();
+    a_id!( former.container.vec_1, None );
+    a_id!( former.container.hashmap_strings_1, None );
+    a_id!( former.container.hashset_strings_1, None );
+    a_id!( former.context, None );
+    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( former::ReturnContainer ) ) );
+    let former2 = Struct1Former::< Struct1, former::ReturnContainer >::new();
+    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+
+    let command = Struct1::former().form();
+    a_id!( command.vec_1, Vec::< String >::new() );
+    a_id!( command.hashmap_strings_1, hmap!{} );
+    a_id!( command.hashset_strings_1, hset![] );
+
+    let command = Struct1::former().perform();
+    a_id!( command.vec_1, Vec::< String >::new() );
+    a_id!( command.hashmap_strings_1, hmap!{} );
+    a_id!( command.hashset_strings_1, hset![] );
+
+    let command = Struct1::former().end();
+    a_id!( command.vec_1, Vec::< String >::new() );
+    a_id!( command.hashmap_strings_1, hmap!{} );
+    a_id!( command.hashset_strings_1, hset![] );
+
+  }
+
+  //
+
   fn test_vector()
   {
 
@@ -117,6 +150,7 @@ tests_impls!
 
 tests_index!
 {
+  internals,
   test_vector,
   test_hashmap,
   test_hashset,

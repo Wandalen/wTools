@@ -5,7 +5,7 @@ use gluesql::
   core::{ chrono::{  DateTime, Utc} , data::Value },
   sled_storage::sled::Config,
 };
-use unitore::{ executor::FeedManager, feed_config::FeedConfig, retriever::FeedFetch, storage::FeedStorage };
+use unitore::{ executor::FeedManager, feed_config::SubscriptionConfig, retriever::FeedFetch, storage::FeedStorage };
 use wca::wtools::Itertools;
 pub struct TestClient ( String );
 
@@ -30,7 +30,7 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
 
   let feed_storage = FeedStorage::init_storage( config ).await?;
 
-  let feed_config = FeedConfig
+  let feed_config = SubscriptionConfig
   {
     period : std::time::Duration::from_secs( 1000 ),
     link : String::from( "test" ),
@@ -51,28 +51,19 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
   manager.update_feed().await?;
 
   // check
-  let payload = manager.get_all_entries().await?;
+  let payload = manager.get_all_frames().await?;
 
-  // let entries = payload
-  // .select()
-  // .expect( "no entries found" )
-  // .map( | entry | ( entry.get( "id" ).expect( "no id field" ).to_owned(), entry.get( "published" ).expect( "no published date field" ).to_owned() ) )
-  // .collect_vec()
-  // ;
+  let entries = payload.selected_frames.selected_rows;
 
-  let entries = payload
-  .select()
-  .expect( "no entries found" );
-
-  let entries = entries.map( | entry |
+  let entries = entries.iter().map( | entry |
     {
-      let id = match entry.get( "id" ).expect( "no id field" )
+      let id = match &entry[ 0 ]
       {
         Value::Str( s ) => s.to_owned(),
         _ => String::new(),
       };
 
-      let published = match entry.get( "published" ).expect( "no published date field" )
+      let published = match &entry[ 8 ]
       {
         Value::Timestamp( date_time ) => date_time.and_utc(),
         _ => DateTime::< Utc >::default(),

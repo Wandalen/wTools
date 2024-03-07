@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[derive(  Debug, PartialEq  )]
+#[ derive(  Debug, PartialEq  ) ]
 pub struct Struct1< 'a >
 {
   pub string_slice_1 : &'a str,

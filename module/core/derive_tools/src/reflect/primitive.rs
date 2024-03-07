@@ -43,7 +43,7 @@ pub( crate ) mod private
   /// ```
   ///
   #[ allow( non_camel_case_types ) ]
-  #[ derive( Debug, PartialEq, Default ) ]
+  #[ derive( Debug, PartialEq, Default, Clone ) ]
   pub enum Primitive
   {
     /// None
@@ -79,6 +79,126 @@ pub( crate ) mod private
     str( &'static str ),
     /// Represents a statically allocated slice of bytes.
     binary( &'static [ u8 ] ),
+  }
+
+  impl From< i8 > for Primitive
+  {
+    fn from( value: i8 ) -> Self
+    {
+      Self::i8( value )
+    }
+  }
+
+  impl From< i16 > for Primitive
+  {
+    fn from( value: i16 ) -> Self
+    {
+      Self::i16( value )
+    }
+  }
+
+  impl From< i32 > for Primitive
+  {
+    fn from( value: i32 ) -> Self
+    {
+      Self::i32( value )
+    }
+  }
+
+  impl From< i64 > for Primitive
+  {
+    fn from( value: i64 ) -> Self
+    {
+      Self::i64( value )
+    }
+  }
+
+  impl From< isize > for Primitive
+  {
+    fn from( value: isize ) -> Self
+    {
+      Self::isize( value )
+    }
+  }
+
+  impl From< u8 > for Primitive
+  {
+    fn from( value: u8 ) -> Self
+    {
+      Self::u8( value )
+    }
+  }
+
+  impl From< u16 > for Primitive
+  {
+    fn from( value: u16 ) -> Self
+    {
+      Self::u16( value )
+    }
+  }
+
+  impl From< u32 > for Primitive
+  {
+    fn from( value: u32 ) -> Self
+    {
+      Self::u32( value )
+    }
+  }
+
+  impl From< u64 > for Primitive
+  {
+    fn from( value: u64 ) -> Self
+    {
+      Self::u64( value )
+    }
+  }
+
+  impl From< usize > for Primitive
+  {
+    fn from( value: usize ) -> Self
+    {
+      Self::usize( value )
+    }
+  }
+
+  impl From< f32 > for Primitive
+  {
+    fn from( value: f32 ) -> Self
+    {
+      Self::f32( value )
+    }
+  }
+
+  impl From< f64 > for Primitive
+  {
+    fn from( value: f64 ) -> Self
+    {
+      Self::f64( value )
+    }
+  }
+
+  impl From< &'static str > for Primitive
+  {
+    fn from( value: &'static str ) -> Self
+    {
+      Self::str( value )
+    }
+  }
+
+  impl From< String > for Primitive
+  {
+    fn from( value: String ) -> Self
+    {
+      Self::String( value )
+    }
+  }
+
+  impl From< &'static [ u8 ] > for Primitive
+  {
+    fn from( value: &'static [ u8 ] ) -> Self
+    {
+      Self::binary( value )
+    }
   }
 
   #[ allow( non_camel_case_types ) ]

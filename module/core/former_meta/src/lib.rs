@@ -3,15 +3,12 @@
 #![ doc( html_root_url = "https://docs.rs/former_derive_meta/latest/former_derive_meta/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// use macro_tools::prelude::*;
-
 mod former_impl;
 
 ///
 /// Derive macro to generate former for a structure. Former is variation of Builder Pattern.
 ///
 
-// qqq : write good documentation
 #[ proc_macro_derive( Former, attributes( perform, default, setter, subformer, alias, doc ) ) ]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {

@@ -38,7 +38,7 @@ cargo add proc_macro_tools
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/proc_macro_tools_trivial
+cd examples/macro_tools_trivial
 cargo run
 ```
 

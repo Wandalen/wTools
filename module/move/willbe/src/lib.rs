@@ -91,5 +91,10 @@ wtools::meta::mod_interface!
 
   /// Handles operations related to packed Rust crates
   layer packed_crate;
-
+  
+  /// Operations with tests
+  layer test;
+  
+  /// Operation with features
+  layer features;
 }

@@ -2,6 +2,8 @@
 //! Analyze generic to provide more information than trivial syntax node.
 //!
 
+// xxx : is it used?
+
 /// Internal namespace.
 pub( crate ) mod private
 {

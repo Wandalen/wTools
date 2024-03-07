@@ -344,7 +344,7 @@ TokenStream [
 
   //
 
-  // fn attr_pair_single( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ), syn::Error >
+  // fn eq_pair( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ), syn::Error >
 
   // qqq : xxx : fix
   // #[test]
@@ -355,10 +355,10 @@ TokenStream [
   //   // test.case( "basic" );
   //   let input = qt!
   //   {
-  //     #[derive( Former )]
+  //     #[ derive( Former ) ]
   //     pub struct Struct1
   //     {
-  //       #[former( default = 31 )]
+  //       #[former( default = 31 ) ]
   //       pub int_1 : i32,
   //     }
   //   };
@@ -384,7 +384,7 @@ TokenStream [
   //
   //   let attr = fields.first().ok_or_else( || err( "No field" ) )?.attrs.first().ok_or_else( || err( "No attr" ) )?;
   //
-  //   let ( key, val, meta ) = TheModule::attr_pair_single( &attr )?;
+  //   let ( key, val, meta ) = TheModule::eq_pair( &attr )?;
   //   a_id!( key, "default".to_string() );
   //   a_id!( qt!( #val ).to_string(), "31".to_string() );
   //   let is = match meta

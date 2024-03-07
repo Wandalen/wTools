@@ -329,7 +329,7 @@ pub( crate ) mod private
   ///   fn from( src : MyPair ) -> Self { ( src.0, src.1 ) }
   /// }
   ///
-  /// #[cfg( feature = "make" )]
+  /// #[cfg( feature = "make" ) ]
   /// impl From_2< i32, i64 > for MyPair
   /// {
   ///   fn from_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }

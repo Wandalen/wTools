@@ -52,10 +52,8 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ allow( unused_imports ) ]
   pub use super::iter::exposed::*;
 }

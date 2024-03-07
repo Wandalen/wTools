@@ -52,7 +52,7 @@ pub( crate ) mod private
     .property( "exclude", "A list of features to exclude from testing. Separate multiple features by comma.", Type::List( Type::String.into(), ',' ), true )
     .property( "with_stable", "Specifies whether or not to run tests on stable Rust version. Default is `true`", Type::Bool, true )
     .property( "with_nightly", "Specifies whether or not to run tests on nightly Rust version. Default is `false`.", Type::Bool, true )
-    .property( "parallel", "Indicates if tests with different feature sets should be run in parallel. Default is `true`.", Type::Bool, true )
+    .property( "concurrent", "Indicates how match test will be run at the same time. Default is `0` - which means the same number of cores.", Type::Number, true )
     .property( "power", "Defines the depth of feature combination testing. Default is `1`.", Type::Number, true )
     .form();
 
