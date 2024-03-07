@@ -46,5 +46,6 @@ jobs :
     uses : {{username_and_repository}}/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : './Cargo.toml'
+      module_path : './'
       module_name : $\{{ github.event.base.ref }}_$\{{ github.event.number }}
       commit_message : $\{{ github.event.base.ref }}_$\{{ github.event.number }}
