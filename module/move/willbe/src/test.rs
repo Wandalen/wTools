@@ -8,9 +8,9 @@ mod private
   use cargo_metadata::Package;
   use colored::Colorize;
   use rayon::ThreadPoolBuilder;
-  use crate::process::CmdReport;
-  use crate::wtools::error::anyhow::{ Error, format_err };
-  use crate::wtools::iter::Itertools;
+  use process::CmdReport;
+  use wtools::error::anyhow::{ Error, format_err };
+  use wtools::iter::Itertools;
 
   /// `TestOptions` is a structure used to store the arguments for tests.
   #[ derive( Debug ) ]

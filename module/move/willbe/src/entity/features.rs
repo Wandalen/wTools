@@ -1,8 +1,9 @@
 mod private
 {
+  use crate::*;
   use std::collections::{ BTreeSet, HashSet };
   use cargo_metadata::Package;
-  use crate::wtools::iter::Itertools;
+  use wtools::iter::Itertools;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,

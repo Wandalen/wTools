@@ -34,10 +34,10 @@ mod private
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       f
-        .debug_struct( "FilterMapOptions" )
-        .field( "package_filter", &"package_filter" )
-        .field( "dependency_filter", &"dependency_filter" )
-        .finish()
+      .debug_struct( "FilterMapOptions" )
+      .field( "package_filter", &"package_filter" )
+      .field( "dependency_filter", &"dependency_filter" )
+      .finish()
     }
   }
 
@@ -68,6 +68,9 @@ mod private
   /// * `dependency_filter`: When specified, it's used with each package and its dependencies to decide
   ///   which dependencies should be included in the return for that package. If not provided, all
   ///   dependencies for a package are included.
+
+  // qqq : for Bohdan : for Petro : bad. don't use PackageMetadata directly, use its abstraction only!
+
   pub fn filter( packages : &[ PackageMetadata ], options : FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
   {
     let FilterMapOptions { package_filter, dependency_filter } = options;

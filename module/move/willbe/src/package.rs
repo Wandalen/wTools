@@ -12,7 +12,7 @@ mod private
   use cargo_metadata::{ Dependency, DependencyKind, Package as PackageMetadata };
   use toml_edit::value;
 
-  use tools::process;
+  use tool::process;
   use manifest::{ Manifest, ManifestError };
   // use { cargo, git, version, path, wtools }; // qqq : why is it required?
   use crates_tools::CrateArchive;
@@ -20,7 +20,6 @@ mod private
   use workspace::Workspace;
   use path::AbsolutePath;
   use version::BumpReport;
-  use packed_crate::local_path;
 
   use wtools::
   {
@@ -666,7 +665,7 @@ mod private
 
     let name = package.name()?;
     let version = package.version()?;
-    let local_package_path = local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )?;
+    let local_package_path = packed_crate::local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )?;
 
     // qqq : for Bohdan : bad, properly handle errors
     // aaa : return result instead of panic

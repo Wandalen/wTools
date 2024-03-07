@@ -30,7 +30,7 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
     let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
@@ -50,7 +50,7 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
     let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
@@ -69,7 +69,7 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
     let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
@@ -88,7 +88,7 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
     let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
@@ -107,7 +107,7 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
     let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
@@ -126,7 +126,7 @@ mod header_create_test
     let temp = arrange( "single_module_without_master_branch_and_discord" );
 
     // Act
-    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
     let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
@@ -146,13 +146,13 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
     let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
     let mut actual1 = String::new();
     _ = file.read_to_string( &mut actual1 ).unwrap();
     drop( file );
 
-    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
     let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
     let mut actual2 = String::new();
     _ = file.read_to_string( &mut actual2 ).unwrap();
@@ -169,6 +169,6 @@ mod header_create_test
     // Arrange
     let temp = arrange( "variadic_tag_configurations" );
     // Act
-    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
   }
 }

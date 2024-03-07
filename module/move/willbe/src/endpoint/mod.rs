@@ -14,9 +14,9 @@ crate::mod_interface!
   /// Workspace new.
   layer workspace_renew;
   /// Deploy new.
-  layer deploy_new;
+  layer deploy_renew;
   /// Main Header.
   layer main_header;
   /// Module headers.
-  layer readme_modules_headers_generate;
+  layer readme_modules_headers_renew;
 }

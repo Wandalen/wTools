@@ -1,11 +1,6 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/willbe/" ) ]
-
-//!
-//! Utility with set of tools for managing developer routines.
-//!
-
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 use mod_interface::mod_interface;
@@ -48,13 +43,16 @@ pub( crate ) mod private
   }
 }
 
-wtools::meta::mod_interface!
+mod_interface!
 {
 
   protected use run;
 
-  /// The tools for operating over packages.
-  layer tools;
+  /// Entities of which spaces consists of.
+  layer entity;
+
+  /// Genera-purpose tools which might be moved out one day.
+  layer tool;
 
   /// Describes CLI commands.
   layer command;
@@ -89,12 +87,7 @@ wtools::meta::mod_interface!
   /// To manipulate manifest data.
   layer manifest;
 
-  /// Handles operations related to packed Rust crates
-  layer packed_crate;
-
   /// Operations with tests
   layer test;
 
-  /// Operation with features
-  layer features;
 }

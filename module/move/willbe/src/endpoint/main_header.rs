@@ -112,7 +112,7 @@ mod private
   /// [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/wtools)
   /// <!--{ generate.main_header.end }-->
   /// ```
-  pub fn readme_header_generate( path : AbsolutePath ) -> Result< () >
+  pub fn readme_header_renew( path : AbsolutePath ) -> Result< () >
   {
     regexes_initialize();
 
@@ -150,5 +150,5 @@ mod private
 crate::mod_interface!
 {
   /// Generate header.
-  orphan use readme_header_generate;
+  orphan use readme_header_renew;
 }

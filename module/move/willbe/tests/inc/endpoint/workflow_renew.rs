@@ -1,13 +1,12 @@
 const ASSETS_PATH : &str = "tests/assets";
 
+use crate::*;
 use assert_fs::prelude::*;
-use crate::TheModule::endpoint::
-{
-  self,
-};
+use TheModule::endpoint;
 
 //
 
+// qqq : for Petro : rid off redundant namespace. ask
 mod workflow_renew
 {
   use super::*;
@@ -21,7 +20,7 @@ mod workflow_renew
   use std::fs::create_dir_all;
   use serde::Deserialize;
 
-  fn arrange( sample_dir: &str ) -> assert_fs::TempDir
+  fn arrange( sample_dir : &str ) -> assert_fs::TempDir
   {
     let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
     let assets_relative_path = std::path::Path::new( ASSETS_PATH );
@@ -36,30 +35,27 @@ mod workflow_renew
   #[ derive( Debug, PartialEq, Deserialize ) ]
   struct Workflow
   {
-    name: String,
-    on: String,
-    env: HashMap< String, String >,
-    jobs: HashMap< String, Job >,
+    name : String,
+    on : String,
+    env : HashMap< String, String >,
+    jobs : HashMap< String, Job >,
   }
 
   #[ derive( Debug, PartialEq, Deserialize ) ]
   struct Job
   {
-    uses: String,
-    with: With,
+    uses : String,
+    with : With,
   }
 
   #[ derive( Debug, PartialEq, Deserialize ) ]
   struct With
   {
-    manifest_path: String,
-    module_name: String,
-    commit_message: String,
+    manifest_path : String,
+    module_name : String,
+    commit_message : String,
   }
 
-  // qqq for Petro: this test does not work
-  // error: called `Result::unwrap()` on an `Err` value: No such file or directory (os error 2)
-  // aaa : It is working now
   #[ test ]
   fn default_case()
   {
@@ -112,3 +108,4 @@ mod workflow_renew
     assert!( base_path.join( "StatusChecksRulesUpdate.yml" ).exists() );
   }
 }
+// qqq : for Petro : fix styles

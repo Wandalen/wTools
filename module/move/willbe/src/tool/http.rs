@@ -15,9 +15,7 @@ pub( crate ) mod private
   ///
   /// Get data of remote package.
   ///
-
-  // xxx : rename
-  pub fn retrieve_bytes< 'a >( name : &'a str, version : &'a str ) -> Result< Vec< u8 > >
+  pub fn download< 'a >( name : &'a str, version : &'a str ) -> Result< Vec< u8 > >
   {
     let agent : Agent = ureq::AgentBuilder::new()
     .timeout_read( Duration::from_secs( 5 ) )
@@ -39,11 +37,12 @@ pub( crate ) mod private
 
     Ok( bytes )
   }
+
 }
 
 //
 
 crate::mod_interface!
 {
-  orphan use retrieve_bytes;
+  orphan use download;
 }

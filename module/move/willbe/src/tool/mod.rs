@@ -5,8 +5,6 @@ crate::mod_interface!
   orphan mod sha;
   /// Operate over files.
   orphan mod files;
-  /// Work with crate on `crates.io`.
-  orphan mod http;
   /// Run external processes.
   orphan mod process;
   /// Work with paths.

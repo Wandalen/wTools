@@ -103,7 +103,7 @@ mod private
   /// [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml/badge.svg)](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml)[![docs.rs](https://img.shields.io/docsrs/_chain_of_packages_a?color=e3e8f0&logo=docs.rs)](https://docs.rs/_chain_of_packages_a)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_chain_of_packages_a_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_chain_of_packages_a_trivial_sample/https://github.com/Username/test)
   /// <!--{ generate.module_header.end }-->
   /// ```
-  pub fn readme_modules_headers_generate( path : AbsolutePath ) -> Result< () >
+  pub fn readme_modules_headers_renew( path : AbsolutePath ) -> Result< () >
   {
     regexes_initialize();
     let cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( path )? )?;
@@ -157,5 +157,5 @@ mod private
 crate::mod_interface!
 {
   /// Generate headers in modules
-  orphan use readme_modules_headers_generate;
+  orphan use readme_modules_headers_renew;
 }

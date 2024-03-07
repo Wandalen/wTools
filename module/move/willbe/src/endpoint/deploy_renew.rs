@@ -1,9 +1,9 @@
-mod private {
+mod private
+{
   use crate::*;
   use std::path::Path;
   use error_tools::Result;
-
-  use tools::template::*;
+  use tool::template::*;
 
   /// Template for creating deploy files.
   ///
@@ -116,7 +116,7 @@ mod private {
   }
 
   /// Creates deploy template
-  pub fn deploy_new
+  pub fn deploy_renew
   (
     path : &Path,
     template : DeployTemplate
@@ -125,10 +125,11 @@ mod private {
     template.create_all( path )?;
     Ok( () )
   }
+
 }
 
 crate::mod_interface!
 {
-  orphan use deploy_new;
+  orphan use deploy_renew;
   orphan use DeployTemplate;
 }

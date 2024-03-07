@@ -66,7 +66,7 @@ pub( crate ) mod private
     let w_new = wca::Command::former()
     .hint( "Create workspace template" )
     .long_hint( "Creates static files and directories.\nIn workspace`s Cargo.toml and module Cargo.toml you need to specify some fields, fill them before use this template." )
-    .phrase( "workspace.new" )
+    .phrase( "workspace.renew" )
     .property( "branches", "List of branches in your project, this parameter affects the branches that will be specified in Cargo.toml of workspace, which in turn will affect the operation of other commands.", Type::List( Box::new( Type::String ), ',' ), false )
     .property( "repository_url", "Link to project repository, this parameter affects the repo_url will be specified in Cargo.toml of workspace, which in turn will affect the operation of other commands..", Type::String , false )
     .form();
@@ -74,20 +74,20 @@ pub( crate ) mod private
     let d_new = wca::Command::former()
     .hint( "Create deploy template" )
     .long_hint( "" )
-    .phrase( "deploy.new" )
+    .phrase( "deploy.renew" )
     .property( "gcp_project_id", "", Type::String , false )
     .property( "gcp_region", "", Type::String , false )
     .property( "gcp_artifact_repo_name", "", Type::String , false )
     .property( "docker_image_name", "", Type::String , false )
     .form();
 
-    let readme_header_generate = wca::Command::former()
+    let readme_header_renew = wca::Command::former()
     .hint( "Generate header in workspace`s Readme.md file")
     .long_hint( "For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
     .phrase( "readme.header.generate" )
     .form();
 
-    let readme_modules_headers_generate = wca::Command::former()
+    let readme_modules_headers_renew = wca::Command::former()
     .hint( "Generates header for each workspace member." )
     .long_hint( "For use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
     .phrase( "readme.modules.headers.generate" )
@@ -102,8 +102,8 @@ pub( crate ) mod private
       generate_workflow,
       w_new,
       d_new,
-      readme_header_generate,
-      readme_modules_headers_generate,
+      readme_header_renew,
+      readme_modules_headers_renew,
     ]
   }
 
@@ -122,9 +122,9 @@ pub( crate ) mod private
       ( "test".to_owned(), Routine::new( test ) ),
       ( "workflow.renew".to_owned(), Routine::new( workflow_renew ) ),
       ( "workspace.renew".to_owned(), Routine::new( workspace_renew ) ),
-      ( "deploy.new".to_owned(), Routine::new( deploy_new ) ),
-      ( "readme.header.generate".to_owned(), Routine::new( main_header_generate ) ),
-      ( "readme.modules.headers.generate".to_owned(), Routine::new( readme_modules_headers_generate ) ),
+      ( "deploy.renew".to_owned(), Routine::new( deploy_renew ) ),
+      ( "readme.header.generate".to_owned(), Routine::new( readme_header_renew ) ),
+      ( "readme.modules.headers.generate".to_owned(), Routine::new( readme_modules_headers_renew ) ),
     ])
   }
 }
@@ -149,10 +149,10 @@ crate::mod_interface!
   /// Workspace new
   layer workspace_renew;
   /// Deploy new
-  layer deploy_new;
+  layer deploy_renew;
   /// Generate header in main readme.md
   layer main_header;
   /// Generate headers
-  layer readme_modules_headers_generate;
+  layer readme_modules_headers_renew;
 
 }
