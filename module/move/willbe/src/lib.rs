@@ -94,4 +94,7 @@ wtools::meta::mod_interface!
   
   /// Operations with tests
   layer test;
+  
+  /// Operation with features
+  layer features;
 }
