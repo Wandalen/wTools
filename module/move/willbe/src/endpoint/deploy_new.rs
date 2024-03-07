@@ -1,8 +1,6 @@
 mod private {
   use crate::*;
   use std::path::Path;
-  use std::path::PathBuf;
-  use error_tools::for_app::Context;
   use error_tools::Result;
 
   use tools::template::*;
@@ -16,7 +14,7 @@ mod private {
     values : TemplateValues,
   }
 
-  impl Template< DeployTemplateFiles, DeployFileDescriptor > for DeployTemplate
+  impl Template< DeployTemplateFiles > for DeployTemplate
   {
     fn create_all( self, path : &Path ) -> Result< () >
     {
@@ -58,73 +56,51 @@ mod private {
 
   /// todo
   #[ derive( Debug ) ]
-  pub struct DeployTemplateFiles( Vec< DeployFileDescriptor > );
+  pub struct DeployTemplateFiles( Vec< TemplateFileDescriptor > );
 
   impl Default for DeployTemplateFiles
   {
     fn default() -> Self
     {
-      let mut files = vec![];
-      let templated_files =
-      [
-        // root
-        ( "Makefile", include_str!( "../../template/deploy/Makefile" ), "./" ),
-      ];
-      let non_templated_files =
-      [
-        // /key
-        ( "pack.sh", include_str!( "../../template/deploy/key/pack.sh" ), "./key" ),
-        ( "Readme.md", include_str!( "../../template/deploy/key/Readme.md" ), "./key" ),
-        // /terraform/
-        ( "Dockerfile", include_str!( "../../template/deploy/terraform/Dockerfile" ), "./terraform" ),
-        ( "Readme.md", include_str!( "../../template/deploy/terraform/Readme.md" ), "./terraform" ),
-        // /terraform/gar
-        ( "Readme.md", include_str!( "../../template/deploy/terraform/gar/Readme.md" ), "./terraform/gar" ),
-        ( "main.tf", include_str!( "../../template/deploy/terraform/gar/main.tf" ), "./terraform/gar" ),
-        ( "outputs.tf", include_str!( "../../template/deploy/terraform/gar/outputs.tf" ), "./terraform/gar" ),
-        ( "variables.tf", include_str!( "../../template/deploy/terraform/gar/variables.tf" ), "./terraform/gar" ),
-        // /terraform/gce
-        ( "Readme.md", include_str!( "../../template/deploy/terraform/gce/Readme.md" ), "./terraform/gce" ),
-        ( "main.tf", include_str!( "../../template/deploy/terraform/gce/main.tf" ), "./terraform/gce" ),
-        ( "outputs.tf", include_str!( "../../template/deploy/terraform/gce/outputs.tf" ), "./terraform/gce" ),
-        ( "variables.tf", include_str!( "../../template/deploy/terraform/gce/variables.tf" ), "./terraform/gce" ),
-        // /terraform/gce/templates
-        ( "cloud-init.tpl", include_str!( "../../template/deploy/terraform/gce/templates/cloud-init.tpl" ), "./terraform/gce/templates" ),
-        // /terraform/gcs
-        ( "main.tf", include_str!( "../../template/deploy/terraform/gcs/main.tf" ), "./terraform/gcs" ),
-        // /terraform/hetzner
-        ( "main.tf", include_str!( "../../template/deploy/terraform/hetzner/main.tf" ), "./terraform/hetzner" ),
-        ( "outputs.tf", include_str!( "../../template/deploy/terraform/hetzner/outputs.tf" ), "./terraform/hetzner" ),
-        ( "variables.tf", include_str!( "../../template/deploy/terraform/hetzner/variables.tf" ), "./terraform/hetzner" ),
-        // /terraform/hetzner/templates
-        ( "cloud-init.tpl", include_str!( "../../template/deploy/terraform/hetzner/templates/cloud-init.tpl" ), "./terraform/hetzner/templates" ),
-      ];
-      for (filename, data, path ) in templated_files
-      {
-        let file = DeployFileDescriptor::builder( filename )
-          .data( data )
-          .templated( true )
-          .path( path )
-          .build();
-        files.push( file );
-      }
-      for (filename, data, path ) in non_templated_files
-      {
-        let file = DeployFileDescriptor::builder( filename )
-          .data( data )
-          .path( path )
-          .build();
-        files.push( file );
-      } 
+      let formed = TemplateFilesBuilder::former()
+      // root
+      .file().data( include_str!( "../../template/deploy/Makefile" ) ).path( "./Makefile" ).is_template( true ).end()
+      // /key
+      .file().data( include_str!( "../../template/deploy/key/pack.sh" ) ).path( "./key/pack.sh" ).end()
+      .file().data( include_str!( "../../template/deploy/key/Readme.md" ) ).path( "./key/Readme.md" ).end()
+      // /terraform/
+      .file().data( include_str!( "../../template/deploy/terraform/Dockerfile" ) ).path( "./terraform/Dockerfile" ).end()
+      .file().data( include_str!( "../../template/deploy/terraform/Readme.md" ) ).path( "./terraform/Readme.md" ).end()
+      // /terraform/gar
+      .file().data( include_str!( "../../template/deploy/terraform/gar/Readme.md" ) ).path( "./terraform/gar/Readme.md" ).end()
+      .file().data( include_str!( "../../template/deploy/terraform/gar/main.tf" ) ).path( "./terraform/gar/main.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/terraform/gar/outputs.tf" ) ).path( "./terraform/gar/outputs.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/terraform/gar/variables.tf" ) ).path( "./terraform/gar/variables.tf" ).end()
+      // /terraform/gce
+      .file().data( include_str!( "../../template/deploy/terraform/gce/Readme.md" ) ).path( "./terraform/gce/Readme.md" ).end()
+      .file().data( include_str!( "../../template/deploy/terraform/gce/main.tf" ) ).path( "./terraform/gce/main.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/terraform/gce/outputs.tf" ) ).path( "./terraform/gce/outputs.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/terraform/gce/variables.tf" ) ).path( "./terraform/gce/variables.tf" ).end()
+      // /terraform/gce/templates
+      .file().data( include_str!( "../../template/deploy/terraform/gce/templates/cloud-init.tpl" ) ).path( "./terraform/gce/templates/cloud-init.tpl" ).end()
+      // /terraform/gcs
+      .file().data( include_str!( "../../template/deploy/terraform/gcs/main.tf" ) ).path( "./terraform/gcs/main.tf" ).end()
+      // /terraform/hetzner
+      .file().data( include_str!( "../../template/deploy/terraform/hetzner/main.tf" ) ).path( "./terraform/hetzner/main.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/terraform/hetzner/outputs.tf" ) ).path( "./terraform/hetzner/outputs.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/terraform/hetzner/variables.tf" ) ).path( "./terraform/hetzner/variables.tf" ).end()
+      // /terraform/hetzner/templates
+      .file().data( include_str!( "../../template/deploy/terraform/hetzner/templates/cloud-init.tpl" ) ).path( "./terraform/hetzner/templates/cloud-init.tpl" ).end()
+      .form();
 
-      Self(files)
+      Self( formed.files )
     }
   }
 
-  impl TemplateFiles< DeployFileDescriptor > for DeployTemplateFiles {}
+  impl TemplateFiles for DeployTemplateFiles {}
   impl IntoIterator for DeployTemplateFiles
   {
-    type Item = DeployFileDescriptor;
+    type Item = TemplateFileDescriptor;
   
     type IntoIter = std::vec::IntoIter< Self::Item >;
   
@@ -132,64 +108,6 @@ mod private {
     {
       self.0.into_iter()
     }
-  }
-  
-  /// todo
-  #[ derive( Debug ) ]
-  pub struct DeployFileDescriptor
-  {
-    path : PathBuf,
-    filename : String,
-    data : &'static str,
-    is_template : bool,
-  }
-
-  impl TemplateFileDescriptor for DeployFileDescriptor
-  {
-    fn new
-    (
-      path : PathBuf,
-      filename : String,
-      data : &'static str,
-      is_template : bool,
-    ) -> Self {
-      Self
-      {
-        path,
-        filename,
-        data,
-        is_template : is_template,
-      }  
-    }
-
-    fn path( &self ) -> &Path
-    {
-      &self.path
-    }
-  
-    fn filename( &self ) -> &str
-    {
-      &self.filename
-    }
-    
-    fn data( &self ) -> &'static str
-    {
-      self.data
-    }
-    
-    fn templated( &self ) -> bool
-    {
-      self.is_template
-    }
-    
-    fn build_template( data : &'static str, values : &TemplateValues ) -> Result< String >
-    {
-      let mut handlebars = handlebars::Handlebars::new();
-      handlebars.register_escape_fn( handlebars::no_escape );
-      handlebars.register_template_string( "templated_file", data )?;
-      handlebars.render( "templated_file", &values.to_serializable() ).context( "Failed creating a templated file" )
-    }
-    
   }
 
   /// Creates deploy template
