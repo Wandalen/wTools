@@ -5,7 +5,7 @@
 
 Utility to publish multi-crate and multi-workspace environments and maintain their consistency.
 
-### Basic use-case
+### Purpose
 
 1. **Multi-Workspace Consistency**: In a project setup involving multiple workspaces with shared dependencies, `willbe` maintains consistency. It ensures all workspaces are updated with compatible dependency versions.
 
@@ -19,27 +19,18 @@ Utility to publish multi-crate and multi-workspace environments and maintain the
 
 6. **Automating CI/CD Workflow Generation**: Automatically generate a series of CI/CD operations suitable for the task at hand to enhance productivity and improve the development process.
 
-<!-- {{# generate.module_sample{} #}} -->
-
-```rust no_run
-use willbe::*;
-
-fn main() -> Result< (), wtools::error::for_app::Error >
-{
-  Ok( willbe::run()? )
-}
-```
-
-### To add to your project
+### To install
 
 ```bash
-cargo add willbe
+cargo install willbe
+will .
 ```
 
 ### Try out from the repository
 
 ``` shell test
 git clone https://github.com/Wandalen/wTools
-cd wTools
-cargo run --package willbe
+cd wTools/module/move/willbe
+cargo install --path .
+will .
 ```

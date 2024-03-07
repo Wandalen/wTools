@@ -38,4 +38,12 @@ crate::mod_interface!
   layer channel;
   orphan use super::channel;
 
+  /// The parse function parses an input string into a HashMap where the keys are String and the values are of type Value.
+  layer query;
+  orphan use super::query;
+
+  /// Tools for parsing and extracting information from url.
+  layer url;
+  orphan use super::url;
+
 }

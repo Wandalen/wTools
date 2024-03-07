@@ -253,7 +253,6 @@ mod private
 
 crate::mod_interface!
 {
-  /// Bump version.
   protected use parse;
   protected use Value;
   protected use ParseResult;

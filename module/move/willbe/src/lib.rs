@@ -60,10 +60,4 @@ mod_interface!
   /// Describes functions that can be called from an interface.
   layer action;
 
-  /// The parse function parses an input string into a HashMap where the keys are String and the values are of type Value.
-  layer query;
-
-  /// Tools for parsing and extracting information from url.
-  layer url;
-
 }
