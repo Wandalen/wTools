@@ -4,6 +4,7 @@ mod private
 
   use std::{ fmt::Formatter, path::Path };
   use std::collections::{ BTreeSet, HashSet };
+  use std::path::PathBuf;
 
   use process::CmdReport;
   use wtools::error::Result;
@@ -41,15 +42,29 @@ mod private
       process::process_run_with_params(program, args, path )
     }
   }
+
+  /// Represents the arguments for the test.
+  #[ derive( Debug, Former, Clone, Default ) ]
+  pub struct PublishArgs
+  {
+    temp_path : Option< PathBuf >,
+  }
+  
+  impl PublishArgs
+  {
+    fn as_cargo_args(&self ) -> Vec< String >
+    {
+      let target_dir = self.temp_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] );
+      [ "publish".to_string() ].into_iter().chain( target_dir.into_iter().flatten() ).collect::< Vec< String > >()
+    }
+  }
   
  /// Upload a package to the registry
-  pub fn publish< P, Pb >( path : P, dry : bool, temp_dir : Option< Pb > ) -> Result< CmdReport >
+  pub fn publish< P >( path : P, args : PublishArgs, dry : bool ) -> Result< CmdReport >
   where
     P : AsRef< Path >,
-    Pb : AsRef< Path >,
   {
-    let target_dir = temp_dir.map( | p | vec![ "--target-dir".to_string(), p.as_ref().to_string_lossy().into() ] );
-    let ( program, args ) = ( "cargo", [ "publish".to_string() ].into_iter().chain( target_dir.into_iter().flatten() ).collect::< Vec< String > >() );
+    let ( program, arguments) = ( "cargo", args.as_cargo_args() );
 
     if dry
     {
@@ -57,7 +72,7 @@ mod private
       (
         CmdReport
         {
-          command : format!( "{program} {}", args.join( " " ) ),
+          command : format!( "{program} {}", arguments.join( " " ) ),
           path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
@@ -66,7 +81,7 @@ mod private
     }
     else
     {
-      process::process_run_with_params(program, args, path )
+      process::process_run_with_params( program, arguments, path )
     }
   }
 
@@ -193,6 +208,7 @@ crate::mod_interface!
 {
   protected use package;
   protected use publish;
+  protected use PublishArgs;
   
   protected use Channel;
   protected use TestArgs;

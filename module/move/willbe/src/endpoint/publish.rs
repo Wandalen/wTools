@@ -6,6 +6,7 @@ mod private
   use std::collections::{ HashSet, HashMap };
   use core::fmt::Formatter;
   use std::{ env, fs };
+  use std::time::{ SystemTime, UNIX_EPOCH };
 
   use wtools::error::for_app::{ Error, anyhow };
   use path::AbsolutePath;
@@ -164,16 +165,21 @@ mod private
 
     let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).collect::< Vec< _ > >();
 
+    let mut unique_name = format!( "temp_dir_for_test_command_{}", generate_unique_folder_name().err_with( || report.clone() )? );
 
-    let unique_name = format!( "temp_dir_for_test_command_{}", uuid::Uuid::new_v4() );
-
-    let temp_dir = env::temp_dir().join( unique_name );
+    let mut temp_dir = env::temp_dir().join( unique_name );
+    
+    while temp_dir.exists() 
+    {
+      unique_name = format!( "temp_dir_for_test_command_{}", generate_unique_folder_name().err_with( || report.clone() )? );
+      temp_dir = env::temp_dir().join( unique_name );
+    }
 
     fs::create_dir( &temp_dir ).err_with( || report.clone() )?;
     
     for package in queue
     {
-      let current_report = package::publish_single( package, true, dry, None )
+      let current_report = package::publish_single( package, true, dry, Some( &temp_dir ) )
       .map_err
       (
         | ( current_report, e ) |
@@ -189,6 +195,16 @@ mod private
     
     Ok( report )
   }
+
+  fn generate_unique_folder_name() -> Result< String, Error > 
+  {
+    let timestamp = SystemTime::now()
+    .duration_since(UNIX_EPOCH)?
+    .as_nanos();
+
+    Ok( format!( "{}", timestamp ) )
+  }
+  
 
   trait ErrWith< T, T1, E >
   {

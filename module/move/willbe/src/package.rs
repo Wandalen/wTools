@@ -473,16 +473,16 @@ mod private
       let res = git::push( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.push = Some( res );
 
-      let temp_dir_path = base_temp_dir.map
+      let args = base_temp_dir.map
       (
         | p |
         {
           let path = p.join( format!( "{}_{}", package_dir.as_ref().file_name().unwrap().to_string_lossy(), new_version ) );
           std::fs::create_dir_all( &path ).unwrap();
-          path
+          cargo::PublishArgs::former().temp_path( path ).form()
         }
       );
-      let res = cargo::publish( package_dir, dry, temp_dir_path ).map_err( | e | ( report.clone(), e ) )?;
+      let res = cargo::publish( package_dir, args.unwrap_or_default(), dry ).map_err( | e | ( report.clone(), e ) )?;
       report.publish = Some( res );
     }
 
