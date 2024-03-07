@@ -31,7 +31,7 @@ mod private
   pub trait TemplateFiles : IntoIterator< Item = TemplateFileDescriptor > + Sized
   {
     /// todo
-    fn create_all( self, path : &Path, values: &TemplateValues ) -> Result< () >
+    fn create_all( self, path : &Path, values : &TemplateValues ) -> Result< () >
     {
       for file in self.into_iter()
       {
@@ -67,7 +67,7 @@ mod private
     pub fn values_from_props( &self, props : &Props ) -> TemplateValues
     {
       let values = self.0.iter().map( | param | ( param.clone(), props.get( param ).map( Value::clone ) ) ).collect();
-      TemplateValues(values)
+      TemplateValues( values )
     }
   }
 
@@ -119,9 +119,12 @@ mod private
   {
     fn contents( &self, values : &TemplateValues ) -> Result< String >
     {
-      if self.is_template {
+      if self.is_template
+      {
         self.build_template( values )
-      } else {
+      }
+      else
+      {
         Ok( self.data.to_owned() )
       }
     }
@@ -148,7 +151,7 @@ mod private
   {
     /// todo
     #[ setter( false ) ]
-    pub files: Vec< TemplateFileDescriptor >,
+    pub files : Vec< TemplateFileDescriptor >,
   }
 
   impl< Context, End > TemplateFilesBuilderFormer< Context, End >
