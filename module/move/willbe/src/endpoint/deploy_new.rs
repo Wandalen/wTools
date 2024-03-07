@@ -5,7 +5,10 @@ mod private {
 
   use tools::template::*;
 
-  /// todo
+  /// Template for creating deploy files.
+  /// 
+  /// Includes terraform deploy options to GCP, and Hetzner,
+  /// a Makefile for useful commands, and a key directory.
   #[ derive( Debug ) ]
   pub struct DeployTemplate
   {
@@ -54,7 +57,9 @@ mod private {
     }
   }
 
-  /// todo
+  /// Files for the deploy template.
+  /// 
+  /// Default implementation contains all required files.
   #[ derive( Debug ) ]
   pub struct DeployTemplateFiles( Vec< TemplateFileDescriptor > );
 

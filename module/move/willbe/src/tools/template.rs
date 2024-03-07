@@ -12,25 +12,31 @@ mod private
   use wca::Value;
   use std::collections::HashMap;
 
-  /// todo
+  /// Trait for creating a template for a file structure.
   pub trait Template< F > : Sized
   where
     F : TemplateFiles + Default
   {
-    /// todo
+    /// Creates all files in the template.
+    /// 
+    /// Path is the base path for the template to be created in.
     fn create_all( self, path : &Path ) -> Result< () >;
 
-    /// todo
+    /// Returns all parameters used by the template.
     fn parameters( &self ) -> &TemplateParameters;
 
-    /// todo
+    /// Sets values for provided parameters.
     fn set_values( &mut self, values : TemplateValues );
   }
 
-  /// todo
+  /// Files stored in a template.
+  /// 
+  /// Can be iterated over, consuming the owner of the files.
   pub trait TemplateFiles : IntoIterator< Item = TemplateFileDescriptor > + Sized
   {
-    /// todo
+    /// Creates all files in provided path with values for required parameters.
+    /// 
+    /// Consumes owner of the files.
     fn create_all( self, path : &Path, values : &TemplateValues ) -> Result< () >
     {
       let fsw = DefaultFSWriter;
@@ -52,19 +58,22 @@ mod private
     }
   }
 
-  /// todo
+  /// Parameters required for the template.
   #[ derive( Debug, Default ) ]
   pub struct TemplateParameters( Vec< String > );
 
   impl TemplateParameters
   {
-    /// todo
+    /// Creates new template parameters from a list of strings.
+    /// 
+    /// Type of the parameter will be automatically converted from value
+    /// that was provided during template creation.
     pub fn new( parameters : &[ &str ] ) -> Self
     {
       Self( parameters.into_iter().map( | parameter | parameter.to_string() ).collect() )
     }
 
-    /// todo
+    /// Extracts template values from props for parameters required for this template.
     pub fn values_from_props( &self, props : &Props ) -> TemplateValues
     {
       let values = self.0.iter().map( | param | ( param.clone(), props.get( param ).map( Value::clone ) ) ).collect();
@@ -72,13 +81,15 @@ mod private
     }
   }
 
-  /// todo
+  /// Holds a map of parameters and their values.
   #[ derive( Debug, Default ) ]
   pub struct TemplateValues( HashMap< String, Option< Value > > );
 
   impl TemplateValues
   {
-    /// todo
+    /// Converts values to a serializable object.
+    /// 
+    /// Currently only `String`, `Number`, and `Bool` are supported.
     pub fn to_serializable( &self ) -> BTreeMap< String, String >
     {
       self.0.iter().map
@@ -107,7 +118,10 @@ mod private
     }
   }
 
-  /// todo
+  /// File descriptor for the template.
+  /// 
+  /// Holds raw template data, relative path for the file, and a flag that
+  /// specifies whether the raw data should be treated as a template.
   #[ derive( Debug, Former ) ]
   pub struct TemplateFileDescriptor
   {
@@ -129,7 +143,7 @@ mod private
         Ok( self.data.to_owned() )
       }
     }
-    /// todo
+
     fn build_template( &self, values : &TemplateValues ) -> Result< String >
     {
       let mut handlebars = handlebars::Handlebars::new();
@@ -137,7 +151,7 @@ mod private
       handlebars.register_template_string( "templated_file", self.data )?;
       handlebars.render( "templated_file", &values.to_serializable() ).context( "Failed creating a templated file" )
     }
-    /// todo
+
     fn create_file< W: FileSystemWriter >( &self, writer: &W, path : &Path, values : &TemplateValues ) -> Result< () >
     {
       let mut file = writer.create_file( &path.join( &self.path ) )?;
@@ -146,11 +160,11 @@ mod private
     }
   }
 
-  /// todo
+  /// Helper builder for full template file list.
   #[ derive( Debug, Former ) ]
   pub struct TemplateFilesBuilder
   {
-    /// todo
+    /// Stores all file descriptors for current template.
     #[ setter( false ) ]
     pub files : Vec< TemplateFileDescriptor >,
   }
@@ -179,17 +193,17 @@ mod private
     }
   }
 
-    /// todo
+  /// Describes how template file creation should be handled.
   pub trait FileSystemWriter
   {
-    /// todo
+    /// File creation implementation.
     fn create_file( &self, path : &PathBuf ) -> Result< fs::File >
     {
       fs::File::create( path ).context( "Failed creating file" )
     }
 
-    /// todo
-    fn write_to_file( &self, file : &mut fs::File, contents : &[u8] ) -> Result< () >
+    /// Writing to file implementation
+    fn write_to_file< W : Write >( &self, file : &mut W, contents : &[u8] ) -> Result< () >
     {
       file.write_all( contents ).context( "Failed writing to file" )
     }
