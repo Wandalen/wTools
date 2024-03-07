@@ -343,7 +343,7 @@ path = "module/alias/wtest_basic"
 ## willbe
 
 [workspace.dependencies.willbe]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/move/willbe"
 
 ## graphs
