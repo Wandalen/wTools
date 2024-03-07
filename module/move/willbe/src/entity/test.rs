@@ -209,7 +209,7 @@ mod private
     {
       if self.dry
       {
-        writeln!( f, "\nYou can execute the command with the dry-run :0, for example 'will .test dry :0'." )?;
+        writeln!( f, "\nYou can execute the command with the dry-run :0, for example 'will .test dry : 0'." )?;
         return Ok( () )
       }
       if self.succses_reports.is_empty() && self.failure_reports.is_empty()

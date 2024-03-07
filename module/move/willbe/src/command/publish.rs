@@ -27,7 +27,7 @@ mod private
 
         if dry && report.packages.iter().find( |( _, p )| p.publish_required ).is_some()
         {
-          println!( "To perform actual publishing, call the command with `dry :0` property." )
+          println!( "To perform actual publishing, call the command with `dry : 0` property." )
         }
 
         Ok( () )
