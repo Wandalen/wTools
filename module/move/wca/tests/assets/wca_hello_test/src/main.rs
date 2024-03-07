@@ -3,6 +3,7 @@ fn main()
   use wca::
   {
     CommandsAggregator, Command, Routine, Type,
+    Args,
   };
 
   let ca = wca::CommandsAggregator::former()
@@ -11,7 +12,7 @@ fn main()
     .subject( "Subject", Type::String, true )
     .property( "property", "simple property", Type::String, true )
     .routine( | args : Args, props | { println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) } )
-    .perform()
+    .end()
   .perform();
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
