@@ -39,7 +39,7 @@ mod private
     /// Consumes owner of the files.
     fn create_all( self, path : &Path, values : &TemplateValues ) -> Result< () >
     {
-      let fsw = DefaultFSWriter;
+      let fsw = FileSystem;
       for file in self.into_iter()
       {
         let full_path = path.join( &file.path );
@@ -154,8 +154,9 @@ mod private
 
     fn create_file< W: FileSystemWriter >( &self, writer: &W, path : &Path, values : &TemplateValues ) -> Result< () >
     {
-      let mut file = writer.create_file( &path.join( &self.path ) )?;
-      writer.write_to_file( &mut file, self.contents( values )?.as_bytes() )?;
+      let data = self.contents( values )?.as_bytes().to_vec();
+      let instruction = FileWriteInstruction { path: path.join( &self.path ), data };
+      writer.write( &instruction )?;
       Ok( () )
     }
   }
@@ -193,24 +194,31 @@ mod private
     }
   }
 
+  /// Instruction for writing a file.
+  #[ derive( Debug ) ]
+  pub struct FileWriteInstruction
+  {
+    path: PathBuf,
+    data: Vec<u8>,
+  }
+
   /// Describes how template file creation should be handled.
   pub trait FileSystemWriter
   {
-    /// File creation implementation.
-    fn create_file( &self, path : &PathBuf ) -> Result< fs::File >
-    {
-      fs::File::create( path ).context( "Failed creating file" )
-    }
-
-    /// Writing to file implementation
-    fn write_to_file< W : Write >( &self, file : &mut W, contents : &[u8] ) -> Result< () >
-    {
-      file.write_all( contents ).context( "Failed writing to file" )
-    }
+    /// Writing to file implementation.
+    fn write( &self, instruction: &FileWriteInstruction ) -> Result< () >;
   }
 
-  struct DefaultFSWriter;
-  impl FileSystemWriter for DefaultFSWriter {}
+  struct FileSystem;
+  impl FileSystemWriter for FileSystem
+  {
+    fn write( &self, instruction: &FileWriteInstruction ) -> Result< () >
+    {
+      let FileWriteInstruction { path, data } = instruction;
+      let mut file = fs::File::create( path ).context( "Failed creating file" )?;
+      file.write_all( data ).context( "Failed writing to file" )
+    }
+  }
 }
 
 //
@@ -224,4 +232,5 @@ crate::mod_interface!
   orphan use TemplateValues;
   orphan use TemplateFilesBuilder;
   orphan use FileSystemWriter;
+  orphan use FileWriteInstruction;
 }
