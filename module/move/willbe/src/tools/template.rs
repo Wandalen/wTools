@@ -33,6 +33,7 @@ mod private
     /// todo
     fn create_all( self, path : &Path, values : &TemplateValues ) -> Result< () >
     {
+      let fsw = DefaultFSWriter;
       for file in self.into_iter()
       {
         let full_path = path.join( &file.path );
@@ -44,7 +45,7 @@ mod private
         }
         if !full_path.exists()
         {
-          file.create_file( path, values )?;
+          file.create_file( &fsw, path, values )?;
         }
       }
       Ok( () )
@@ -137,10 +138,10 @@ mod private
       handlebars.render( "templated_file", &values.to_serializable() ).context( "Failed creating a templated file" )
     }
     /// todo
-    fn create_file( &self, path : &Path, values : &TemplateValues ) -> Result< () >
+    fn create_file< W: FileSystemWriter >( &self, writer: &W, path : &Path, values : &TemplateValues ) -> Result< () >
     {
-      let mut file = fs::File::create( path.join( &self.path ) )?;
-      file.write_all( self.contents( values )?.as_bytes() )?;
+      let mut file = writer.create_file( &path.join( &self.path ) )?;
+      writer.write_to_file( &mut file, self.contents( values )?.as_bytes() )?;
       Ok( () )
     }
   }
@@ -178,6 +179,24 @@ mod private
     }
   }
 
+    /// todo
+  pub trait FileSystemWriter
+  {
+    /// todo
+    fn create_file( &self, path : &PathBuf ) -> Result< fs::File >
+    {
+      fs::File::create( path ).context( "Failed creating file" )
+    }
+
+    /// todo
+    fn write_to_file( &self, file : &mut fs::File, contents : &[u8] ) -> Result< () >
+    {
+      file.write_all( contents ).context( "Failed writing to file" )
+    }
+  }
+
+  struct DefaultFSWriter;
+  impl FileSystemWriter for DefaultFSWriter {}
 }
 
 //
@@ -190,4 +209,5 @@ crate::mod_interface!
   orphan use TemplateParameters;
   orphan use TemplateValues;
   orphan use TemplateFilesBuilder;
+  orphan use FileSystemWriter;
 }
