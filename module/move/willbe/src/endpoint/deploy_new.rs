@@ -138,10 +138,10 @@ mod private {
   #[ derive( Debug ) ]
   pub struct DeployFileDescriptor
   {
-    path: PathBuf,
-    filename: String,
-    data: &'static str,
-    templated: bool,
+    path : PathBuf,
+    filename : String,
+    data : &'static str,
+    is_template : bool,
   }
 
   impl TemplateFileDescriptor for DeployFileDescriptor
@@ -151,14 +151,14 @@ mod private {
       path : PathBuf,
       filename : String,
       data : &'static str,
-      templated : bool,
+      is_template : bool,
     ) -> Self {
       Self
       {
         path,
         filename,
         data,
-        templated,
+        is_template : is_template,
       }  
     }
 
@@ -179,7 +179,7 @@ mod private {
     
     fn templated( &self ) -> bool
     {
-      self.templated
+      self.is_template
     }
     
     fn build_template( data : &'static str, values : &TemplateValues ) -> Result< String >

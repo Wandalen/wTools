@@ -4,7 +4,7 @@ mod private
   use std::fs;
   use std::io::Write;
   use error_tools::Result;
-use wca::Props;
+  use wca::Props;
   use std::path::Path;
   use std::path::PathBuf;
   use wca::Value;
@@ -83,7 +83,7 @@ use wca::Props;
     /// todo
     fn build_template( data : &'static str, values : &TemplateValues ) -> Result< String >;
     /// todo
-    fn create_file( &self, path : &Path, values: &TemplateValues ) -> Result< () >
+    fn create_file( &self, path : &Path, values : &TemplateValues ) -> Result< () >
     {
       let mut file = fs::File::create( path.join( self.path() ).join( self.filename() ) )?;
       file.write_all( self.contents( values )?.as_bytes() )?;
@@ -104,7 +104,7 @@ use wca::Props;
     }
 
     /// todo
-    pub fn values_from_props( &self, props: &Props ) -> TemplateValues
+    pub fn values_from_props( &self, props : &Props ) -> TemplateValues
     {
       let values = self.0.iter().map( | param | ( param.clone(), props.get( param ).map( Value::clone ) ) ).collect();
       TemplateValues(values)
@@ -130,16 +130,16 @@ use wca::Props;
               {
                 match value
                 {
-                  Value::String(val) => val.to_string(),
-                  Value::Number(val) => val.to_string(),
-                  Value::Path(_) => "unsupported".to_string(),
-                  Value::Bool(val) => val.to_string(),
-                  Value::List(_) => "unsupported".to_string(),
+                  Value::String( val ) => val.to_string(),
+                  Value::Number( val ) => val.to_string(),
+                  Value::Path( _ ) => "unsupported".to_string(),
+                  Value::Bool( val ) => val.to_string(),
+                  Value::List( _ ) => "unsupported".to_string(),
                 }
               }
             )
-            .unwrap_or("UNSPECIFIED_DURING_CREATING_FROM_TEMPLATE".to_string());
-          ( key.to_owned(), value)
+            .unwrap_or( "UNSPECIFIED_DURING_CREATING_FROM_TEMPLATE".to_string() );
+          ( key.to_owned(), value )
         }
       )
       .collect()
@@ -150,30 +150,30 @@ use wca::Props;
   #[ derive( Debug ) ]
   pub struct FileDescriptorBuilder
   {
-    path: Option<PathBuf>,
-    filename: String,
-    data: &'static str,
-    templated: bool,
+    path : Option< PathBuf >,
+    filename : String,
+    data : &'static str,
+    is_template : bool,
   }
 
   impl FileDescriptorBuilder
   {
     /// todo
-    fn new( filename : &str) -> Self
+    fn new( filename : &str ) -> Self
     {
       Self
       {
         path : None,
         filename : filename.into(),
         data : "",
-        templated : false,
+        is_template : false,
       }
     }
 
     /// todo
     pub fn build< D : TemplateFileDescriptor >( self ) -> D
     {
-      let Self { path, filename, data, templated } = self;
+      let Self { path, filename, data, is_template: templated } = self;
       D::new( path.unwrap_or( ".".into() ), filename, data, templated )
     }
 
@@ -184,13 +184,13 @@ use wca::Props;
       self
     }
 
-    pub fn templated( mut self, templated: bool ) -> Self
+    pub fn templated( mut self, is_template : bool ) -> Self
     {
-      self.templated = templated;
+      self.is_template = is_template;
       self
     }
 
-    pub fn path( mut self, path: &str ) -> Self
+    pub fn path( mut self, path : &str ) -> Self
     {
       self.path = Some( path.into() );
       self

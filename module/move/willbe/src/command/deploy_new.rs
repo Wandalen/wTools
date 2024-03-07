@@ -16,7 +16,7 @@ mod private
     let mut template = DeployTemplate::default();
     let parameters = template.parameters();
     let values = parameters.values_from_props( &properties );
-    template.set_values(values);
+    template.set_values( values );
     endpoint::deploy_new( &std::env::current_dir()?, template ).context( "Fail to create deploy template" )
   }
 }
