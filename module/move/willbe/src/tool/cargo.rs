@@ -37,7 +37,7 @@ mod private
     }
     else
     {
-      process::process_run_with_params(program, options, path )
+      process::run(program, options, path )
     }
   }
 
@@ -63,7 +63,7 @@ mod private
     }
     else
     {
-      process::process_run_with_params(program, options, path )
+      process::run(program, options, path )
     }
   }
 

@@ -54,7 +54,7 @@ pub( crate ) mod private
   /// Run external processes.
   ///
 
-  pub fn process_run_without_params
+  pub fn shell_run
   (
     exec_path : &str,
     current_path : impl Into< PathBuf >,
@@ -72,7 +72,7 @@ pub( crate ) mod private
       ( "sh", [ "-c", exec_path ] )
     };
 
-    process_run_with_params(program, args, current_path )
+    run(program, args, current_path )
   }
 
   ///
@@ -83,7 +83,7 @@ pub( crate ) mod private
   /// - `args` - command-line arguments to the application
   /// - `path` - path to directory where to run the application
   ///
-  pub fn process_run_with_params< AP, Args, Arg, P >
+  pub fn run< AP, Args, Arg, P >
   (
     application : AP,
     args : Args,
@@ -183,8 +183,9 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use CmdReport;
-  protected use process_run_without_params;
-  protected use process_run_with_params;
+  protected use shell_run;
+  protected use run;
   protected use process_run_with_param_and_joined_steams;
+  // qqq : for Petro : rid off process_run_with_param_and_joined_steams
+  // add functionality of process_run_with_param_and_joined_steams under option/argument into process::run
 }
-
