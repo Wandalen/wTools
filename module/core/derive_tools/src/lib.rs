@@ -67,8 +67,54 @@ mod derive_more
 {
   #[ cfg( feature = "derive_add" ) ]
   pub use ::derive_more::Add;
+  #[ cfg( feature = "derive_add_assign" ) ]
+  pub use ::derive_more::AddAssign;
+  #[ cfg( feature = "derive_add" ) ]
+  pub use ::derive_more::Sub;
+  #[ cfg( feature = "derive_add_assign" ) ]
+  pub use ::derive_more::SubAssign;
+  #[ cfg( feature = "derive_as_mut" ) ]
+  pub use ::derive_more::AsMut;
+  #[ cfg( feature = "derive_as_ref" ) ]
+  pub use ::derive_more::AsRef;
+  #[ cfg( feature = "derive_constructor" ) ]
+  pub use ::derive_more::Constructor;
+  #[ cfg( feature = "derive_deref_mut" ) ]
+  pub use ::derive_more::DerefMut;
+  #[ cfg( feature = "derive_deref" ) ]
+  pub use ::derive_more::Deref;
+  #[ cfg( feature = "derive_error" ) ]
+  pub use ::derive_more::Error;
+  #[ cfg( feature = "derive_from" ) ]
+  pub use ::derive_more::From;
+  #[ cfg( feature = "derive_index_mut" ) ]
+  pub use ::derive_more::IndexMut;
+  #[ cfg( feature = "derive_index" ) ]
+  pub use ::derive_more::Index;
+  #[ cfg( feature = "derive_into" ) ]
+  pub use ::derive_more::Into;
+  #[ cfg( feature = "derive_iterator" ) ]
+  pub use ::derive_more::Iterator;
+  #[ cfg( feature = "derive_into_iterator" ) ]
+  pub use ::derive_more::IntoIterator;
+  #[ cfg( feature = "derive_mul" ) ]
+  pub use ::derive_more::Mul;
+  #[ cfg( feature = "derive_mul_assign" ) ]
+  pub use ::derive_more::MulAssign;
+  #[ cfg( feature = "derive_mul" ) ]
+  pub use ::derive_more::Div;
+  #[ cfg( feature = "derive_mul_assign" ) ]
+  pub use ::derive_more::DivAssign;
+  #[ cfg( feature = "derive_not" ) ]
+  pub use ::derive_more::Not;
+  #[ cfg( feature = "derive_sum" ) ]
+  pub use ::derive_more::Sum;
+  #[ cfg( feature = "derive_try_into" ) ]
+  pub use ::derive_more::TryInto;
   #[ cfg( feature = "derive_is_variant" ) ]
   pub use ::derive_more::IsVariant;
+  #[ cfg( feature = "derive_unwrap" ) ]
+  pub use ::derive_more::Unwrap;
 
   // qqq2 : list all
   // qqq2 : make sure all features of derive_more is reexported

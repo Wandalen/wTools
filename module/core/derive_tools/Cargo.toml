@@ -175,8 +175,8 @@ derive_inner_from = [ "derive_tools_meta/derive_inner_from" ]
 [dependencies]
 
 ## external
-# derive_more = { version = "~0.99.17", optional = true, default-features = false }
-derive_more = { version = "~1.0.0-beta.6", optional = true, default-features = false }
+derive_more = { version = "~0.99.17", optional = true, default-features = false }
+# derive_more = { version = "~1.0.0-beta.6", optional = true, default-features = false }
 strum = { version = "~0.25", optional = true, default-features = false }
 # strum_macros = { version = "~0.25.3", optional = true, default-features = false }
 parse-display = { version = "~0.8.2", optional = true, default-features = false }
