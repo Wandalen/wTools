@@ -43,7 +43,7 @@ mod private
     }
     else
     {
-      process::start2_sync( program, args, path )
+      process::process_run_with_params(program, args, path )
     }
   }
 
@@ -81,7 +81,7 @@ mod private
     }
     else
     {
-      process::start2_sync( program, args, path )
+      process::process_run_with_params(program, args, path )
     }
   }
 
@@ -117,7 +117,7 @@ mod private
     }
     else
     {
-      process::start2_sync( program, args, path )
+      process::process_run_with_params(program, args, path )
     }
   }
 
@@ -136,7 +136,7 @@ mod private
   {
     let ( program, args ) = ( "git", [ "ls-remote", "--get-url" ] );
 
-    process::start2_sync( program, args, path )
+    process::process_run_with_params(program, args, path )
   }
 }
 

@@ -24,7 +24,7 @@ tests_impls!
   fn cta_type_same_align_pass()
   {
     struct Int1( i16 );
-    #[ repr( align( 128 ) )]
+    #[ repr( align( 128 ) ) ]
     struct Int2( i16 );
     let got = cta_type_same_align!( Int1, i16 );
     assert!( got );
@@ -81,7 +81,7 @@ only_for_terminal_module!
     let current_exe_path = std::env::current_exe().expect( "No such file or directory" );
 
     let exe_directory = current_exe_path.parent().expect( "No such file or directory" );
-    fn find_workspace_root( start_path : &std::path::Path ) -> Option< &std::path::Path > 
+    fn find_workspace_root( start_path : &std::path::Path ) -> Option< &std::path::Path >
     {
       start_path
       .ancestors()
@@ -90,7 +90,7 @@ only_for_terminal_module!
 
     let workspace_root = find_workspace_root( exe_directory ).expect( "No such file or directory" );
     let current_dir = workspace_root.join( "module/core/diagnostics_tools" );
-    
+
     t.compile_fail( current_dir.join("tests/inc/snipet/cta_type_same_size_fail.rs") );
     t.compile_fail( current_dir.join("tests/inc/snipet/cta_type_same_align_fail.rs") );
     t.compile_fail( current_dir.join("tests/inc/snipet/cta_ptr_same_size_fail.rs") );

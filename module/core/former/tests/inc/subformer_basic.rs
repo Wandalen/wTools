@@ -1,6 +1,9 @@
-// xxx : complete
+
 use super::*;
 
+//
+// this should work
+//
 // let ca = Aggregator::former()
 // .parameter1( "val" )
 // .command( "echo" )

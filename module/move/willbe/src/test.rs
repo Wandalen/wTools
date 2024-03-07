@@ -19,8 +19,8 @@ mod private
     /// `channels` - A set of Cargo channels that are to be tested.
     pub channels : HashSet< cargo::Channel >,
 
-    /// `parallel` - A boolean value indicating whether the tests should be run in parallel.
-    pub parallel : bool,
+    /// `concurrent` - A usize value indicating how much test`s can be run at the same time.
+    pub concurrent: u32,
 
     /// `power` - An integer value indicating the power or intensity of testing.
     pub power : u32,
@@ -61,12 +61,13 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      writeln!( f, "The tests will be executed using the following configurations:" )?;
-      for ( channel, feature ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) ).flat_map( | ( c, f ) | f.iter().map( |( f, _ )| ( *c, f ) ) )
+      if self.dry
       {
-        writeln!( f, "channel : {channel} | features : [ {} ]", if feature.is_empty() { "no-features" } else { feature } )?;
+        return Ok( () )
       }
-      writeln!(f, "{} {}", "\n=== Module".bold(), self.package_name.bold() )?;
+      let mut failed = 0;
+      let mut success = 0;
+      writeln!(f, "{} {}\n", "\n=== Module".bold(), self.package_name.bold() )?;
       if self.tests.is_empty()
       {
         writeln!( f, "unlucky" )?;
@@ -77,27 +78,29 @@ mod private
       {
         for ( feature, result ) in features
         {
-          if self.dry
+          // if tests failed or if build failed
+          if result.out.contains( "failures" ) || result.out.contains( "error" )
           {
-            let feature = if feature.is_empty() { "no-features" } else { feature };
-            writeln!( f, "[{channel} | {feature}]: `{}`", result.command )?
+            let mut out = result.out.replace( "\n", "\n      " );
+            out.push_str( "\n" );
+            failed += 1;
+            write!( f, "  [ {} | {} ]: ❌  failed\n  \n{out}", channel, feature )?;
           }
-          else
-          {
-            // if tests failed or if build failed
-            let failed = result.out.contains( "failures" ) || result.err.contains( "error" );
-            if !failed
-            {
-              let feature = if feature.is_empty() { "no-features" } else { feature };
-              writeln!( f, "  [ {} | {} ]: {}", channel, feature, if failed { "❌ failed" } else { "✅ successful" } )?;
-            }
-            else
-            {
-              let feature = if feature.is_empty() { "no-features" } else { feature };
-              write!( f, "  Feature: [ {} | {} ]:\n  Tests status: {}\n{}\n{}", channel, feature, if failed { "❌ failed" } else { "✅ successful" }, result.out.replace( "\n", "\n      " ), result.err.replace( "\n", "\n      " ) )?;
-            }
+          else 
+          { 
+            let feature = if feature.is_empty() { "no-features" } else { feature };
+            success += 1;
+            writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
           }
         }
+      }
+      if success == failed + success
+      {
+        writeln!( f, "  ✅  All passed {success} / {}", failed + success )?;
+      }
+      else
+      {
+        writeln!( f, "  ❌  Not all passed {success} / {}", failed + success )?;
       }
 
       Ok( () )
@@ -129,6 +132,11 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
+      if self.dry
+      {
+        writeln!( f, "\nYou can execute the command with the dry-run:0, for example 'will .test dry:0'." )?;
+        return Ok( () )
+      }
       if self.succses_reports.is_empty() && self.failure_reports.is_empty()
       {
         writeln!( f, "The tests have not been run."  )?;
@@ -150,6 +158,16 @@ mod private
           writeln!( f, "{}", report )?;
         }
       }
+      writeln!( f, "Global report" )?;
+      if self.succses_reports.len() == self.failure_reports.len() + self.succses_reports.len()
+      {
+        writeln!( f, "  ✅  All passed {} / {}", self.succses_reports.len(),  self.succses_reports.len() )?;
+      }
+      else
+      {
+        writeln!( f, "  ❌  Not all passed {} / {}", self.succses_reports.len(),  self.failure_reports.len() + self.succses_reports.len() )?;
+      }
+
       Ok( () )
     }
   }
@@ -158,28 +176,20 @@ mod private
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
   pub fn run_test( args : &TestArgs, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
   {
-    let exclude = args.exclude_features.iter().cloned().collect();
+    // let exclude = args.exclude_features.iter().cloned().collect();
     let mut report = TestReport::default();
+    report.dry = dry;
     report.package_name = package.name.clone();
     let report = Arc::new( Mutex::new( report ) );
 
-    let features_powerset = package
-    .features
-    .keys()
-    .filter( | f | !args.exclude_features.contains( f ) && !args.include_features.contains( f ) )
-    .cloned()
-    .powerset()
-    .map( BTreeSet::from_iter )
-    .filter( | subset | subset.len() <= args.power as usize )
-    .map
-    (
-      | mut subset | 
-      { 
-        subset.extend( args.include_features.clone() );
-        subset.difference( &exclude ).cloned().collect()
-      }
-    )
-    .collect::< HashSet< BTreeSet< String > > >();
+    let features_powerset = features::features_powerset
+    ( 
+      package, 
+      args.power as usize, 
+      &args.exclude_features, 
+      &args.include_features 
+    );
+    
     print_temp_report( &package.name, &args.channels, &features_powerset );
     rayon::scope
     (
@@ -206,7 +216,7 @@ mod private
 
     // unpack. all tasks must be completed until now
     let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
-    let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.err.contains( "error" ) );
+    let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.out.contains( "error" ) );
     if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
   }
   
@@ -214,29 +224,37 @@ mod private
   pub fn run_tests( args : &TestArgs, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
     let mut report = TestsReport::default();
-    let mut pool = ThreadPoolBuilder::new().use_current_thread();
-    pool = if args.parallel { pool } else { pool.num_threads( 1 ) };
-    let pool = pool.build().unwrap();
+    report.dry = dry;
+    let report = Arc::new( Mutex::new( report ) );
+    let pool = ThreadPoolBuilder::new().use_current_thread().num_threads( args.concurrent as usize ).build().unwrap();
     pool.scope
     (
-      | _ |
+      | s |
       {
         for package in packages
-        { 
-          match run_test( &args, package, dry )
-          { 
-            Ok( r ) => 
+        {
+          let report = report.clone();
+          s.spawn
+          (
+            move | _ | 
             {
-              report.succses_reports.push( r );
+              match run_test( &args, package, dry )
+              {
+                Ok( r ) =>
+                { 
+                  report.lock().unwrap().succses_reports.push( r );
+                }
+                Err(( r, _ )) => 
+                { 
+                  report.lock().unwrap().failure_reports.push( r );
+                }
+              }
             }
-            Err(( r, _ )) =>
-            { 
-              report.failure_reports.push( r );
-            }
-          }
+          );
         }
       }
     );
+    let report = Arc::into_inner( report ).unwrap().into_inner().unwrap();
     if report.failure_reports.is_empty()
     {
       Ok( report )
@@ -249,13 +267,13 @@ mod private
 
   fn print_temp_report( package_name : &str, channels : &HashSet< cargo::Channel >, features : &HashSet< BTreeSet< String > > )
   {
-    println!( "Package : {}", package_name );
+    println!( "Package : {}\nThe tests will be executed using the following configurations:", package_name );
     for channel in channels.iter().sorted()
     {
       for feature in features
       {
         let feature = if feature.is_empty() { "no-features".to_string() } else { feature.iter().join( "," ) };
-        println!( "[{channel} | {feature}]" );
+        println!( "  [ channel : {channel} | feature : {feature} ]" );
       }
     }
   }

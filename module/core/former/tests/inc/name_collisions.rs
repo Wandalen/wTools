@@ -22,7 +22,7 @@ type HashSet = ();
 #[allow(dead_code)]
 type HashMap = ();
 
-#[derive( Debug, PartialEq, TheModule::Former )]
+#[ derive( Debug, PartialEq, TheModule::Former ) ]
 pub struct Struct1
 {
   vec_1 : Vec< String >,
@@ -32,4 +32,4 @@ pub struct Struct1
 
 //
 
-// include!( "only_test/containers_without_runtime.rs" );
+include!( "only_test/containers_without_runtime.rs" );

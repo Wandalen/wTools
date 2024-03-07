@@ -5,14 +5,14 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::exposed::*;
-  use crate::type_rightmost;
+  use crate::*;
+  // use crate::type_rightmost;
 
   ///
   /// Kind of container.
   ///
 
-  #[derive( Debug, PartialEq, Eq, Copy, Clone )]
+  #[ derive( Debug, PartialEq, Eq, Copy, Clone ) ]
   pub enum ContainerKind
   {
     /// Not a container.

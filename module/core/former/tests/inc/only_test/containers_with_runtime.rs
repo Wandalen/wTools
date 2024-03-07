@@ -8,6 +8,39 @@ tests_impls_optional!
 
   //
 
+  fn internals()
+  {
+
+    // test.case( "vector : construction" );
+
+    let former = Struct1::former();
+    a_id!( former.container.vec_1, None );
+    a_id!( former.container.hashmap_strings_1, None );
+    a_id!( former.container.hashset_strings_1, None );
+    a_id!( former.context, None );
+    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( former::ReturnContainer ) ) );
+    let former2 = Struct1Former::< Struct1, former::ReturnContainer >::new();
+    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+
+    let command = Struct1::former().form();
+    a_id!( command.vec_1, Vec::< String >::new() );
+    a_id!( command.hashmap_strings_1, hmap!{} );
+    a_id!( command.hashset_strings_1, hset![] );
+
+    let command = Struct1::former().perform();
+    a_id!( command.vec_1, Vec::< String >::new() );
+    a_id!( command.hashmap_strings_1, hmap!{} );
+    a_id!( command.hashset_strings_1, hset![] );
+
+    let command = Struct1::former().end();
+    a_id!( command.vec_1, Vec::< String >::new() );
+    a_id!( command.hashmap_strings_1, hmap!{} );
+    a_id!( command.hashset_strings_1, hset![] );
+
+  }
+
+  //
+
   fn test_vector()
   {
 
@@ -201,21 +234,14 @@ tests_impls_optional!
   {
 
     let command = Struct1::former()
-    // .int_1( 13 )
-    // .string_1( "Abcd".to_string() )
     .vec_1().push( "ghi" ).push( "klm" ).end()
     .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
     .hashset_strings_1().insert( "k1" ).end()
-    // .string_optional_1( "dir1" )
     .form();
     // dbg!( &command );
 
     let expected = Struct1
     {
-      // int_1 : 13,
-      // string_1 : "Abcd".to_string(),
-      // int_optional_1 : None,
-      // string_optional_1 : Some( "dir1".to_string() ),
       vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
       hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
       hashset_strings_1 : hset!{ "k1".to_string() },
@@ -230,6 +256,7 @@ tests_impls_optional!
 
 tests_index!
 {
+  internals,
   test_vector,
   test_hashmap,
   test_hashset,

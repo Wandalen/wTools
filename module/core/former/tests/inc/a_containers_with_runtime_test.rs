@@ -7,11 +7,11 @@ use super::*;
 #[ derive( Debug, PartialEq, TheModule::Former ) ]
 pub struct Struct1
 {
-  #[ subformer( former::runtime::VectorSubformer ) ]
+  #[ subformer( former::VectorSubformer ) ]
   vec_1 : Vec< String >,
-  #[ subformer( former::runtime::HashMapSubformer ) ]
+  #[ subformer( former::HashMapSubformer ) ]
   hashmap_strings_1 : std::collections::HashMap< String, String >,
-  #[ subformer( former::runtime::HashSetSubformer ) ]
+  #[ subformer( former::HashSetSubformer ) ]
   hashset_strings_1 : std::collections::HashSet< String >,
 }
 

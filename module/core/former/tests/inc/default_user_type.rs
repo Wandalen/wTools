@@ -1,39 +1,18 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// #[ allow( unused_imports ) ]
-// use test_tools::exposed::*;
-//
-// only_for_aggregating_module!
-// {
-//   #[ allow( unused_imports ) ]
-//   use wtools::meta::*;
-//   #[ allow( unused_imports ) ]
-//   use wtools::former::Former;
-// }
-//
-// only_for_terminal_module!
-// {
-//   #[ allow( unused_imports ) ]
-//   use meta_tools::*;
-//   #[ allow( unused_imports ) ]
-//   use former::Former;
-// }
-
-//
-
 tests_impls!
 {
   fn test_user_type_with_default()
   {
-    #[derive( Debug, PartialEq, Default )]
+    #[ derive( Debug, PartialEq, Default ) ]
     pub struct UserType
     {
       int : i32,
       uint : u32,
     }
 
-    #[derive( Debug, PartialEq, TheModule::Former )]
+    #[ derive( Debug, PartialEq, TheModule::Former ) ]
     pub struct Struct2
     {
       user : UserType,

@@ -45,6 +45,15 @@ pub( crate ) mod private
   where
     T : ?Sized,
   {
+    // Explanation for the use of `unsafe`:
+    // The `unsafe` block is necessary here because we're performing low-level memory manipulations
+    // that cannot be checked by the Rust compiler for safety. Specifically, we're manually handling
+    // raw pointers and converting them to and from `Box<T>`, which is considered unsafe as it
+    // bypasses Rust's ownership and borrowing rules. This is done to dynamically clone a boxed
+    // trait object, which doesn't support cloning through the standard `Clone` trait. The operations
+    // within this block are carefully crafted to ensure memory safety manually, including proper
+    // allocation and deallocation of heap memory for the clone.
+    #[ allow( unsafe_code ) ]
     unsafe
     {
       let mut ptr = t as *const T;

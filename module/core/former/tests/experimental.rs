@@ -8,5 +8,5 @@ use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
 use former as TheModule;
 
-// #[ path = "./inc/bug_x.rs" ]
-// mod name_collision_context;
+#[ path = "./inc/a_containers_without_runtime_test.rs" ]
+mod experimental;

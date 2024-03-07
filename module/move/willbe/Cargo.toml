@@ -17,6 +17,13 @@ Utility with set of tools for managing developer routines.
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 default-run = "main"
+include = [
+  "/src",
+  "/template",
+  "/Cargo.toml",
+  "/Readme.md",
+  "/License",
+]
 
 [lints]
 workspace = true
@@ -54,10 +61,12 @@ tar = "~0.4"
 handlebars = "4.5.0"
 ureq = "~2.9"
 colored = "2.1.0"
+duct = "0.13.7"
 
 [dev-dependencies]
 test_tools = { workspace = true }
 assert_fs = "1.0"
 serde_yaml = "0.9"
+serde_json = "1.0.114"
 serde = "1.0"
 assert_cmd = "2.0"
