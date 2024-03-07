@@ -43,12 +43,20 @@ default_handlers = [
 ]
 
 # qqq : for Bohdan : description of all features please
+
+# outdated feature
 on_error_default = [ "enabled" ]
+# outdated feature
 on_syntax_error_default = [ "enabled" ]
+# outdated feature
 on_ambiguity_default = [ "enabled" ]
+# outdated feature
 on_unknown_command_error_default = [ "enabled" ] # qqq : for Bohdan : what does this feature do?
+# This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
 on_unknown_suggest = [ "eddie" ]
+# outdated feature
 on_get_help_default = [ "enabled" ]
+# outdated feature
 on_print_commands_default = [ "enabled" ]
 
 [[bench]]
