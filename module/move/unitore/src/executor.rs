@@ -338,11 +338,7 @@ pub fn update_feed() -> Result< impl Report, Box< dyn std::error::Error + Send +
   let report = rt.block_on( async move
   {
     let config = Config::default()
-<<<<<<< HEAD
     .path( path_to_storage )
-=======
-    .path( "_data/temp".to_owned() )
->>>>>>> 174c7b72e92756ff2954969fee8d91e947a6ec7d
     ;
 
     let feed_storage = FeedStorage::init_storage( config ).await?;
@@ -374,11 +370,7 @@ pub fn list_fields() -> Result< impl Report, Box< dyn std::error::Error + Send +
   rt.block_on( async move
   {
     let config = Config::default()
-<<<<<<< HEAD
     .path( path_to_storage )
-=======
-    .path( "_data/temp".to_owned() )
->>>>>>> 174c7b72e92756ff2954969fee8d91e947a6ec7d
     ;
 
     let feed_storage = FeedStorage::init_storage( config ).await?;
@@ -395,11 +387,7 @@ pub fn list_frames() -> Result< impl Report, Box< dyn std::error::Error + Send +
   .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
 
   let config = Config::default()
-<<<<<<< HEAD
   .path( path_to_storage )
-=======
-  .path( "_data/temp".to_owned() )
->>>>>>> 174c7b72e92756ff2954969fee8d91e947a6ec7d
   ;
   let rt  = tokio::runtime::Runtime::new()?;
 
@@ -418,11 +406,7 @@ pub fn list_feeds() -> Result< impl Report, Box< dyn std::error::Error + Send + 
   .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
 
   let config = Config::default()
-<<<<<<< HEAD
   .path( path_to_storage )
-=======
-  .path( "_data/temp".to_owned() )
->>>>>>> 174c7b72e92756ff2954969fee8d91e947a6ec7d
   ;
 
   let rt  = tokio::runtime::Runtime::new()?;
@@ -444,11 +428,7 @@ pub fn list_subscriptions() -> Result< impl Report, Box< dyn std::error::Error +
   .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
 
   let config = Config::default()
-<<<<<<< HEAD
   .path( path_to_storage )
-=======
-  .path( "_data/temp".to_owned() )
->>>>>>> 174c7b72e92756ff2954969fee8d91e947a6ec7d
   ;
   let rt  = tokio::runtime::Runtime::new()?;
   rt.block_on( async move
@@ -462,14 +442,8 @@ pub fn list_subscriptions() -> Result< impl Report, Box< dyn std::error::Error +
 
 pub fn add_config( path : std::path::PathBuf ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
-<<<<<<< HEAD
   let path_to_storage = std::env::var( "UNITORE_STORAGE" )
   .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
-=======
-  let config = Config::default()
-  .path( "_data/temp".to_owned() )
-  ;
->>>>>>> 174c7b72e92756ff2954969fee8d91e947a6ec7d
 
   let config = Config::default()
   .path( path_to_storage )
@@ -493,12 +467,9 @@ pub fn remove_subscription( path : String ) -> Result< impl Report, Box< dyn std
   .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
 
   let config = Config::default()
-<<<<<<< HEAD
   .path( path_to_storage )
-=======
-  .path( "_data/temp".to_owned() )
->>>>>>> 174c7b72e92756ff2954969fee8d91e947a6ec7d
   ;
+
   let rt  = tokio::runtime::Runtime::new()?;
   rt.block_on( async move
   {
@@ -515,11 +486,7 @@ pub fn execute_query( query : String ) -> Result< impl Report, Box< dyn std::err
   .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
 
   let config = Config::default()
-<<<<<<< HEAD
   .path( path_to_storage )
-=======
-  .path( "_data/temp".to_owned() )
->>>>>>> 174c7b72e92756ff2954969fee8d91e947a6ec7d
   ;
   let rt  = tokio::runtime::Runtime::new()?;
   rt.block_on( async move
