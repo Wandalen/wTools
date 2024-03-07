@@ -51,10 +51,29 @@ pub( crate ) mod private
   }
 
   ///
-  /// Run external processes.
+  /// Executes an external process using the system shell.
+  ///
+  /// This function abstracts over the differences between shells on Windows and Unix-based
+  /// systems, allowing for a unified interface to execute shell commands.
+  ///
+  /// # Parameters:
+  /// - `exec_path`: The command line string to execute in the shell.
+  /// - `current_path`: The working directory path where the command is executed.
+  ///
+  /// # Returns:
+  /// A `Result` containing a `CmdReport` on success, which includes the command's output,
+  /// or an error if the command fails to execute or complete.
+  ///
+  /// # Examples:
+  /// ```rust
+  /// use willbe::process;
+  ///
+  /// let report = process::run_with_shell( "echo Hello World", "." ).unwrap();
+  /// println!( "{}", report.out );
+  /// ```
   ///
 
-  pub fn shell_run
+  pub fn run_with_shell
   (
     exec_path : &str,
     current_path : impl Into< PathBuf >,
@@ -76,13 +95,33 @@ pub( crate ) mod private
   }
 
   ///
-  /// Run external processes.
+  /// Executes an external process in a specified directory without using a shell.
   ///
-  /// # Args :
-  /// - `application` - path to executable application
-  /// - `args` - command-line arguments to the application
-  /// - `path` - path to directory where to run the application
+  /// # Arguments:
+  /// - `application`: Path to the executable application.
+  /// - `args`: Command-line arguments for the application.
+  /// - `path`: Directory path to run the application in.
   ///
+  /// # Returns:
+  /// A `Result` containing `CmdReport` on success, detailing execution output,
+  /// or an error message on failure.
+  ///
+  /// # Errors:
+  /// Returns an error if the process fails to spawn, complete, or if output
+  /// cannot be decoded as UTF-8.
+  ///
+  /// # Example
+  /// ```rust
+  /// use std::path::Path;
+  /// use willbe::process;
+  ///
+  /// let command = if cfg!( target_os = "windows" ) { "dir" } else { "ls" };
+  /// let args : [ String ; 0 ] = [];
+  /// let path = ".";
+  ///
+  /// let report = process::run( command, args, Path::new( path ) ).unwrap();
+  /// println!( "Command output: {}", report.out );
+  /// ```
   pub fn run< AP, Args, Arg, P >
   (
     application : AP,
@@ -183,7 +222,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use CmdReport;
-  protected use shell_run;
+  protected use run_with_shell;
   protected use run;
   protected use process_run_with_param_and_joined_steams;
   // qqq : for Petro : rid off process_run_with_param_and_joined_steams

@@ -35,6 +35,8 @@ mod private
   /// // Use `feature_combinations` as needed.
   /// ```
 
+  // qqq : for Petro : bad, don't use ignore with need
+
   pub fn features_powerset
   (
     package : &Package,
