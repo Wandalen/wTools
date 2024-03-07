@@ -206,16 +206,14 @@ mod private
             (
               move | _ | 
               {
-                let temp_dir_path = base_temp_dir.map
-                ( 
-                  | p | 
-                  {
-                    let path = p.join( format!("{}_{}_{}", package.name.clone(), channel,  feature.iter().join( "," ) ) );
-                    std::fs::create_dir_all( &path ).unwrap();
-                    path
-                  } 
-                );
-                let cmd_rep = cargo::test( dir, cargo::TestArgs::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry, temp_dir_path ).unwrap_or_else( | rep | rep.downcast().unwrap() );
+                let mut args = cargo::TestArgs::former().channel( channel ).with_default_features( false );
+                if let Some( p ) = base_temp_dir
+                {
+                  let path = p.join( format!("{}_{}_{}", package.name.clone(), channel,  feature.iter().join( "," ) ) );
+                  std::fs::create_dir_all( &path ).unwrap();
+                  args = args.target_temp_directory( path );
+                }
+                let cmd_rep = cargo::test( dir, args.form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
                 r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
               }
             );

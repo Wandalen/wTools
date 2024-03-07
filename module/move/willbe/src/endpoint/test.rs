@@ -3,6 +3,7 @@ mod private
 {
   use std::collections::HashSet;
   use std::{ env, fs };
+  use std::time::{ SystemTime, UNIX_EPOCH };
 
   use cargo_metadata::Package;
 
@@ -82,10 +83,16 @@ mod private
       exclude_features,
     };
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
-    
-    let unique_name = format!( "temp_dir_for_test_command_{}", uuid::Uuid::new_v4() );
-    
-    let temp_dir = env::temp_dir().join( unique_name );
+
+    let mut unique_name = format!( "temp_dir_for_test_command_{}", generate_unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
+
+    let mut temp_dir = env::temp_dir().join( unique_name );
+
+    while temp_dir.exists()
+    {
+      unique_name = format!( "temp_dir_for_test_command_{}", generate_unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
+      temp_dir = env::temp_dir().join( unique_name );
+    }
 
     fs::create_dir( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
 
@@ -95,6 +102,15 @@ mod private
     
     report
 	}
+
+  fn generate_unique_folder_name() -> Result< String, Error >
+  {
+    let timestamp = SystemTime::now()
+    .duration_since( UNIX_EPOCH )?
+    .as_nanos();
+
+    Ok( format!( "{}", timestamp ) )
+  }
 
   fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >
 	{

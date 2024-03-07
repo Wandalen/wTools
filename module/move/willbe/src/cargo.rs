@@ -4,6 +4,7 @@ mod private
 
   use std::{ fmt::Formatter, path::Path };
   use std::collections::{ BTreeSet, HashSet };
+  use std::path::PathBuf;
 
   use process::CmdReport;
   use wtools::error::Result;
@@ -107,17 +108,20 @@ mod private
     with_all_features : bool,
     /// Specifies a list of features to be enabled in the test.
     enable_features : BTreeSet< String >,
+    /// Target temp directory path
+    target_temp_directory : Option< PathBuf >,
   }
 
   impl TestArgs
   {
-    fn as_rustup_args(&self ) -> Vec< String >
+    fn as_rustup_args( &self ) -> Vec< String >
     {
       [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
       .into_iter()
       .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
       .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.iter().join( "," ) ]) }.into_iter().flatten() )
+      .chain( self.target_temp_directory.clone().map( | p | vec![ "--target-dir".to_string(),  p.to_string_lossy().into() ] ).into_iter().flatten() )
       .collect()
     }
   }
@@ -134,13 +138,11 @@ mod private
   ///
   /// Returns a `Result` containing a `CmdReport` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn test< P, Pb >( path : P, args : TestArgs, dry : bool, temp_dir : Option< Pb > ) -> Result< CmdReport >
+  pub fn test< P >( path : P, args : TestArgs, dry : bool ) -> Result< CmdReport >
   where
     P : AsRef< Path >,
-    Pb : AsRef< Path >,
   {
-    let target_dir = temp_dir.map( | p | vec![ "--target-dir".to_string(),  p.as_ref().to_string_lossy().into() ] );
-    let ( program, args ) = ( "rustup", args.as_rustup_args().into_iter().chain( target_dir.into_iter().flatten() ).collect::< Vec< String > >() );
+    let ( program, args ) = ( "rustup", args.as_rustup_args() );
 
     if dry
     {
@@ -157,7 +159,7 @@ mod private
     }
     else
     {
-      process::process_run_with_param_and_joined_steams(program, args, path )
+      process::process_run_with_param_and_joined_steams( program, args, path )
     }
   }
 
