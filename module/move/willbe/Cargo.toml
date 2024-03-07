@@ -12,7 +12,7 @@ documentation = "https://docs.rs/willbe"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/willbe"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/willbe"
 description = """
-Utility with set of tools for managing developer routines.
+Utility to publish multi-crate and multi-workspace environments and maintain their consistency.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
