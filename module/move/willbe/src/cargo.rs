@@ -41,7 +41,7 @@ mod private
       process::process_run_with_params(program, args, path )
     }
   }
-  
+
  /// Upload a package to the registry
   pub fn publish< P >( path : P, dry : bool ) -> Result< CmdReport >
   where
@@ -91,9 +91,10 @@ mod private
     }
   }
 
+
   /// Represents the arguments for the test.
   #[ derive( Debug, Former, Clone ) ]
-  pub struct TestArgs
+  pub struct TestOptions
   {
     /// Specifies the release channels for rust.
     channel : Channel,
@@ -109,7 +110,7 @@ mod private
     enable_features : BTreeSet< String >,
   }
 
-  impl TestArgs
+  impl TestOptions
   {
     fn as_rustup_args(&self ) -> Vec< String >
     {
@@ -134,7 +135,7 @@ mod private
   ///
   /// Returns a `Result` containing a `CmdReport` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn test< P >( path : P, args : TestArgs, dry : bool ) -> Result< CmdReport >
+  pub fn test< P >( path : P, args : TestOptions, dry : bool ) -> Result< CmdReport >
   where
     P : AsRef< Path >
   {
@@ -168,7 +169,7 @@ mod private
   {
     let ( program, args ) = ( "rustup", [ "toolchain", "list" ] );
     let report = process::process_run_with_params(program, args, path )?;
-    
+
     let list = report
     .out
     .lines()
@@ -180,7 +181,7 @@ mod private
       _ => None
     } )
     .collect();
-    
+
     Ok( list )
   }
 }
@@ -191,10 +192,10 @@ crate::mod_interface!
 {
   protected use package;
   protected use publish;
-  
+
   protected use Channel;
-  protected use TestArgs;
+  protected use TestOptions;
   protected use test;
-  
+
   protected use available_channels;
 }

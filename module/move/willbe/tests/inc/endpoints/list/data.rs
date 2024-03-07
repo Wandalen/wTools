@@ -38,11 +38,11 @@ mod chain_of_three_packages
     // Arrange
     let temp = arrange();
     let args = ListArgs::former()
-      .path_to_manifest( crate_dir( &temp.join( "a" ) ) )
-      .format( ListFormat::Tree )
-      .dependency_sources([ DependencySource::Local ])
-      .dependency_categories([ DependencyCategory::Primary ])
-      .form();
+    .path_to_manifest( crate_dir( &temp.join( "a" ) ) )
+    .format( ListFormat::Tree )
+    .dependency_sources([ DependencySource::Local ])
+    .dependency_categories([ DependencyCategory::Primary ])
+    .form();
 
     // Act
     let output = endpoint::list( args ).unwrap();

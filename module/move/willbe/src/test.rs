@@ -1,6 +1,6 @@
 mod private
 {
-  
+
   use crate::*;
   use std::collections::{ BTreeMap, BTreeSet, HashSet };
   use std::fmt::Formatter;
@@ -12,9 +12,9 @@ mod private
   use crate::wtools::error::anyhow::{ Error, format_err };
   use crate::wtools::iter::Itertools;
 
-  /// `TestsArgs` is a structure used to store the arguments for tests.
+  /// `TestOptions` is a structure used to store the arguments for tests.
   #[ derive( Debug ) ]
-  pub struct TestArgs
+  pub struct TestOptions
   {
     /// `channels` - A set of Cargo channels that are to be tested.
     pub channels : HashSet< cargo::Channel >,
@@ -86,8 +86,8 @@ mod private
             failed += 1;
             write!( f, "  [ {} | {} ]: ❌  failed\n  \n{out}", channel, feature )?;
           }
-          else 
-          { 
+          else
+          {
             let feature = if feature.is_empty() { "no-features" } else { feature };
             success += 1;
             writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
@@ -171,10 +171,10 @@ mod private
       Ok( () )
     }
   }
-  
+
   /// `run_tests` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run_test( args : &TestArgs, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
+  pub fn run_test( args : &TestOptions, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
   {
     // let exclude = args.exclude_features.iter().cloned().collect();
     let mut report = TestReport::default();
@@ -183,29 +183,29 @@ mod private
     let report = Arc::new( Mutex::new( report ) );
 
     let features_powerset = features::features_powerset
-    ( 
-      package, 
-      args.power as usize, 
-      &args.exclude_features, 
-      &args.include_features 
+    (
+      package,
+      args.power as usize,
+      &args.exclude_features,
+      &args.include_features
     );
-    
+
     print_temp_report( &package.name, &args.channels, &features_powerset );
     rayon::scope
     (
-      | s | 
-      { 
+      | s |
+      {
         let dir = package.manifest_path.parent().unwrap();
         for channel in args.channels.clone()
-        { 
-          for feature in &features_powerset 
+        {
+          for feature in &features_powerset
           {
             let r = report.clone();
             s.spawn
             (
-              move | _ | 
-              { 
-                let cmd_rep = cargo::test( dir, cargo::TestArgs::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
+              move | _ |
+              {
+                let cmd_rep = cargo::test( dir, cargo::TestOptions::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
                 r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
               }
             );
@@ -219,9 +219,9 @@ mod private
     let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.out.contains( "error" ) );
     if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
   }
-  
+
   /// Run tests for given packages.
-  pub fn run_tests( args : &TestArgs, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
+  pub fn run_tests( args : &TestOptions, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
     let mut report = TestsReport::default();
     report.dry = dry;
@@ -236,16 +236,16 @@ mod private
           let report = report.clone();
           s.spawn
           (
-            move | _ | 
+            move | _ |
             {
               match run_test( &args, package, dry )
               {
                 Ok( r ) =>
-                { 
+                {
                   report.lock().unwrap().succses_reports.push( r );
                 }
-                Err(( r, _ )) => 
-                { 
+                Err(( r, _ )) =>
+                {
                   report.lock().unwrap().failure_reports.push( r );
                 }
               }
@@ -281,7 +281,7 @@ mod private
 
 crate::mod_interface!
 {
-  protected use TestArgs;
+  protected use TestOptions;
   protected use TestReport;
   protected use TestsReport;
   protected use run_test;

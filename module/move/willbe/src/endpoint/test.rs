@@ -72,7 +72,7 @@ mod private
       exclude_features
     } = args;
 
-    let t_args = TestArgs
+    let t_args = TestOptions
     {
       channels,
       concurrent: parallel,
