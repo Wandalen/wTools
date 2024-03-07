@@ -71,6 +71,16 @@ pub( crate ) mod private
     .property( "repository_url", "Link to project repository, this parameter affects the repo_url will be specified in Cargo.toml of workspace, which in turn will affect the operation of other commands..", Type::String , false )
     .form();
 
+    let d_new = wca::Command::former()
+    .hint( "Create deploy template" )
+    .long_hint( "" )
+    .phrase( "deploy.new" )
+    .property( "gcp_project_id", "", Type::String , false )
+    .property( "gcp_region", "", Type::String , false )
+    .property( "gcp_artifact_repo_name", "", Type::String , false )
+    .property( "docker_image_name", "", Type::String , false )
+    .form();
+
     let generate_main_header = wca::Command::former()
     .hint( "Generate header in workspace`s Readme.md file")
     .long_hint( "For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
@@ -91,6 +101,7 @@ pub( crate ) mod private
       run_tests_command,
       generate_workflow,
       w_new,
+      d_new,
       generate_main_header,
       headers_generate,
     ]
@@ -111,6 +122,7 @@ pub( crate ) mod private
       ( "test".to_owned(), Routine::new( test ) ),
       ( "workflow.generate".to_owned(), Routine::new( workflow_generate ) ),
       ( "workspace.new".to_owned(), Routine::new( workspace_new ) ),
+      ( "deploy.new".to_owned(), Routine::new( deploy_new ) ),
       ( "readme.header.generate".to_owned(), Routine::new( main_header_generate ) ),
       ( "readme.modules.headers.generate".to_owned(), Routine::new( headers_generate ) ),
     ])
@@ -135,6 +147,8 @@ crate::mod_interface!
   layer workflow;
   /// Workspace new
   layer workspace_new;
+  /// Deploy new
+  layer deploy_new;
   /// Generate header in main readme.md
   layer main_header;
   /// Generate headers
