@@ -1,40 +1,39 @@
 mod private
 {
-  use crate::*;
+  use crate ::*;
 
-  use std::
+  use std ::
   {
-    path::Path,
-    collections::{ HashMap, HashSet },
+    path ::Path,
+    collections ::{ HashMap, HashSet },
   };
-  use std::fmt::Formatter;
-  use std::hash::Hash;
-  use cargo_metadata::{ Dependency, DependencyKind, Package as PackageMetadata };
-  use toml_edit::value;
+  use std ::fmt ::Formatter;
+  use std ::hash ::Hash;
+  use cargo_metadata ::{ Dependency, DependencyKind, Package as PackageMetadata };
+  use toml_edit ::value;
 
-  use tools::process;
-  use manifest::{ Manifest, ManifestError };
-  // use { cargo, git, version, path, wtools }; // qqq: why is it required?
-  use crates_tools::CrateArchive;
+  use tools ::process;
+  use manifest ::{ Manifest, ManifestError };
+  // use { cargo, git, version, path, wtools }; // qqq : why is it required?
+  use crates_tools ::CrateArchive;
 
-  use workspace::Workspace;
-  use path::AbsolutePath;
-  use version::BumpReport;
-  use packed_crate::local_path;
+  use workspace ::Workspace;
+  use path ::AbsolutePath;
+  use version ::BumpReport;
+  use packed_crate ::local_path;
 
-
-  use wtools::
+  use wtools ::
   {
-    iter::Itertools,
-    error::
+    iter ::Itertools,
+    error ::
     {
       thiserror,
       Result,
-      for_lib::Error,
-      for_app::{ format_err, Error as wError, Context },
+      for_lib ::Error,
+      for_app ::{ format_err, Error as wError, Context },
     }
   };
-  use crate::endpoint::table::Stability;
+  use endpoint ::readme_health_table_renew ::Stability;
 
   ///
   #[ derive( Debug ) ]
@@ -51,7 +50,7 @@ mod private
   pub enum PackageError
   {
     /// Manifest error.
-    #[ error( "Manifest error. Reason: {0}." ) ]
+    #[ error( "Manifest error. Reason : {0}." ) ]
     Manifest( #[ from ] ManifestError ),
     /// Fail to load metadata.
     #[ error( "Fail to load metadata." ) ]
@@ -76,15 +75,15 @@ mod private
     // aaa : return `PackageError` instead of `anohow` message
     type Error = PackageError;
 
-    fn try_from( value : AbsolutePath ) -> Result< Self, Self::Error >
+    fn try_from( value : AbsolutePath ) -> Result< Self, Self ::Error >
     {
-      let manifest =  manifest::open( value.clone() )?;
+      let manifest =  manifest ::open( value.clone() )?;
       if !manifest.package_is()?
       {
-        return Err( PackageError::NotAPackage );
+        return Err( PackageError ::NotAPackage );
       }
 
-      Ok( Self::Manifest( manifest ) )
+      Ok( Self ::Manifest( manifest ) )
     }
   }
 
@@ -94,14 +93,14 @@ mod private
     // aaa : return `PackageError` instead of `anohow` message
     type Error = PackageError;
 
-    fn try_from( value : Manifest ) -> Result< Self, Self::Error >
+    fn try_from( value : Manifest ) -> Result< Self, Self ::Error >
     {
       if !value.package_is()?
       {
-        return Err( PackageError::NotAPackage );
+        return Err( PackageError ::NotAPackage );
       }
 
-      Ok( Self::Manifest( value ) )
+      Ok( Self ::Manifest( value ) )
     }
   }
 
@@ -109,7 +108,7 @@ mod private
   {
     fn from( value : PackageMetadata ) -> Self
     {
-      Self::Metadata( value )
+      Self ::Metadata( value )
     }
   }
 
@@ -120,8 +119,8 @@ mod private
     {
       match self
       {
-        Self::Manifest( manifest ) => manifest.manifest_path.clone(),
-        Self::Metadata( metadata ) => AbsolutePath::try_from( metadata.manifest_path.as_std_path().to_path_buf() ).unwrap(),
+        Self ::Manifest( manifest ) => manifest.manifest_path.clone(),
+        Self ::Metadata( metadata ) => AbsolutePath ::try_from( metadata.manifest_path.as_std_path().to_path_buf() ).unwrap(),
       }
     }
 
@@ -130,13 +129,13 @@ mod private
     {
       match self
       {
-        Self::Manifest( manifest ) => manifest.crate_dir(),
-        Self::Metadata( metadata ) =>
+        Self ::Manifest( manifest ) => manifest.crate_dir(),
+        Self ::Metadata( metadata ) =>
         {
           let path = metadata.manifest_path.parent().unwrap().as_std_path().to_path_buf();
-          let absolute = AbsolutePath::try_from( path ).unwrap();
+          let absolute = AbsolutePath ::try_from( path ).unwrap();
 
-          CrateDir::try_from( absolute ).unwrap()
+          CrateDir ::try_from( absolute ).unwrap()
         },
       }
     }
@@ -146,14 +145,14 @@ mod private
     {
       match self
       {
-        Self::Manifest( manifest ) =>
+        Self ::Manifest( manifest ) =>
         {
-          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError ::Manifest( ManifestError ::EmptyManifestData ) )?;
 
           // Unwrap safely because of the `Package` type guarantee
           Ok( data[ "package" ][ "name" ].as_str().unwrap().to_string() )
         }
-        Self::Metadata( metadata ) =>
+        Self ::Metadata( metadata ) =>
         {
           Ok( metadata.name.clone() )
         }
@@ -165,14 +164,14 @@ mod private
     {
       match self
       {
-        Self::Manifest( manifest ) =>
+        Self ::Manifest( manifest ) =>
         {
-          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError ::Manifest( ManifestError ::EmptyManifestData ) )?;
 
           // Unwrap safely because of the `Package` type guarantee
           Ok( data[ "package" ][ "version" ].as_str().unwrap().to_string() )
         }
-        Self::Metadata( metadata ) =>
+        Self ::Metadata( metadata ) =>
         {
           Ok( metadata.version.to_string() )
         }
@@ -184,16 +183,16 @@ mod private
     {
       match self
       {
-        Self::Manifest( manifest ) =>
+        Self ::Manifest( manifest ) =>
           {
-            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError ::Manifest( ManifestError ::EmptyManifestData ) )?;
 
             // Unwrap safely because of the `Package` type guarantee
-            Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
+            Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse ::< Stability >().ok() ).unwrap_or( Stability ::Experimental)  )
           }
-        Self::Metadata( metadata ) =>
+        Self ::Metadata( metadata ) =>
           {
-            Ok( metadata.metadata["stability"].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
+            Ok( metadata.metadata["stability"].as_str().and_then( | s | s.parse ::< Stability >().ok() ).unwrap_or( Stability ::Experimental) )
           }
       }
     }
@@ -203,32 +202,32 @@ mod private
     {
       match self
       {
-        Self::Manifest( manifest ) =>
+        Self ::Manifest( manifest ) =>
           {
-            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError ::Manifest( ManifestError ::EmptyManifestData ) )?;
 
             // Unwrap safely because of the `Package` type guarantee
             Ok( data[ "package" ].get( "repository" ).and_then( | r | r.as_str() ).map( | r | r.to_string()) )
           }
-        Self::Metadata( metadata ) =>
+        Self ::Metadata( metadata ) =>
           {
             Ok( metadata.repository.clone() )
           }
       }
     }
-    
+
     /// Discord url
     pub fn discord_url( &self ) -> Result< Option< String >, PackageError >
     {
       match self
       {
-        Self::Manifest( manifest ) =>
+        Self ::Manifest( manifest ) =>
           {
-            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError ::Manifest( ManifestError ::EmptyManifestData ) )?;
 
             Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
           }
-        Self::Metadata( metadata ) =>
+        Self ::Metadata( metadata ) =>
           {
             Ok( metadata.metadata[ "discord_url" ].as_str().map( | url | url.to_string() ) )
           }
@@ -240,12 +239,12 @@ mod private
     {
       match self
       {
-        Self::Manifest( manifest ) =>
+        Self ::Manifest( manifest ) =>
         {
           // verify that manifest not empty
           manifest.local_is()
         }
-        Self::Metadata( metadata ) =>
+        Self ::Metadata( metadata ) =>
         {
           Ok( !( metadata.publish.is_none() || metadata.publish.as_ref().is_some_and( | p | p.is_empty() ) ) )
         }
@@ -257,11 +256,11 @@ mod private
     {
       match self
       {
-        Package::Manifest( manifest ) => Ok( manifest.clone() ),
-        Package::Metadata( metadata ) => manifest::open
+        Package ::Manifest( manifest ) => Ok( manifest.clone() ),
+        Package ::Metadata( metadata ) => manifest ::open
         (
-          AbsolutePath::try_from( metadata.manifest_path.as_path() ).map_err( | _ | PackageError::LocalPath )? )
-          .map_err( | _ | PackageError::Metadata ),
+          AbsolutePath ::try_from( metadata.manifest_path.as_path() ).map_err( | _ | PackageError ::LocalPath )? )
+          .map_err( | _ | PackageError ::Metadata ),
       }
     }
 
@@ -270,12 +269,12 @@ mod private
     {
       match self
       {
-        Package::Manifest( manifest ) =>
-        Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | _ | PackageError::Metadata )?
+        Package ::Manifest( manifest ) =>
+        Workspace ::with_crate_dir( manifest.crate_dir() ).map_err( | _ | PackageError ::Metadata )?
         .package_find_by_manifest( &manifest.manifest_path )
-        .ok_or_else( || PackageError::Metadata )
+        .ok_or_else( || PackageError ::Metadata )
         .cloned(),
-        Package::Metadata( metadata ) => Ok( metadata.clone() ),
+        Package ::Metadata( metadata ) => Ok( metadata.clone() ),
       }
     }
   }
@@ -285,24 +284,24 @@ mod private
   pub struct PublishReport
   {
     /// Retrieves information about the package.
-    pub get_info : Option< process::CmdReport >,
+    pub get_info : Option< process ::CmdReport >,
     /// Indicates whether publishing is required for the package.
     pub publish_required : bool,
     /// Bumps the version of the package.
     pub bump : Option< ExtendedBumpReport >,
     /// Report of adding changes to the Git repository.
-    pub add : Option< process::CmdReport >,
+    pub add : Option< process ::CmdReport >,
     /// Report of committing changes to the Git repository.
-    pub commit : Option< process::CmdReport >,
+    pub commit : Option< process ::CmdReport >,
     /// Report of pushing changes to the Git repository.
-    pub push : Option< process::CmdReport >,
+    pub push : Option< process ::CmdReport >,
     /// Report of publishes the package using the `cargo publish` command.
-    pub publish : Option< process::CmdReport >,
+    pub publish : Option< process ::CmdReport >,
   }
 
-  impl std::fmt::Display for PublishReport
+  impl std ::fmt ::Display for PublishReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std ::fmt ::Result
     {
       let PublishReport
       {
@@ -364,9 +363,9 @@ mod private
     pub changed_files : Vec< AbsolutePath >
   }
 
-  impl std::fmt::Display for ExtendedBumpReport
+  impl std ::fmt ::Display for ExtendedBumpReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std ::fmt ::Result
     {
       let Self { base, changed_files } = self;
       if self.changed_files.is_empty()
@@ -376,7 +375,7 @@ mod private
       }
 
       let files = changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
-      f.write_fmt( format_args!( "{base}\n  changed files:\n    {files}\n" ) )?;
+      f.write_fmt( format_args!( "{base}\n  changed files :\n    {files}\n" ) )?;
 
       Ok( () )
     }
@@ -386,18 +385,18 @@ mod private
   ///
   /// This function is designed to publish a single package. It does not publish any of the package's dependencies.
   ///
-  /// Args:
+  /// Args :
   ///
   /// - package - a package that will be published
   /// - dry - a flag that indicates whether to apply the changes or not
   ///   - true - do not publish, but only show what steps should be taken
   ///   - false - publishes the package
   ///
-  /// Returns:
+  /// Returns :
   /// Returns a result containing a report indicating the result of the operation.
   pub fn publish_single( package : &Package, force : bool, dry : bool ) -> Result< PublishReport, ( PublishReport, wError ) >
   {
-    let mut report = PublishReport::default();
+    let mut report = PublishReport ::default();
     if package.local_is().map_err( | err | ( report.clone(), format_err!( err ) ) )?
     {
       return Ok( report );
@@ -405,7 +404,7 @@ mod private
 
     let package_dir = &package.crate_dir();
 
-    let output = cargo::package( &package_dir, dry ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
+    let output = cargo ::package( &package_dir, dry ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
     if output.err.contains( "not yet committed")
     {
       return Err(( report, format_err!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
@@ -419,21 +418,21 @@ mod private
       let mut files_changed_for_bump = vec![];
       let mut manifest = package.manifest().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
       // bump a version in the package manifest
-      let bump_report = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+      let bump_report = version ::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
       files_changed_for_bump.push( package.manifest_path() );
       let new_version = bump_report.new_version.clone().unwrap();
 
       let package_name = package.name().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
 
       // bump the package version in dependents (so far, only workspace)
-      let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( package.crate_dir() ).map_err( | err | ( report.clone(), err ) )?.workspace_root().map_err( | err | ( report.clone(), format_err!( err ) ) )?.try_into().unwrap();
+      let workspace_manifest_dir : AbsolutePath = Workspace ::with_crate_dir( package.crate_dir() ).map_err( | err | ( report.clone(), err ) )?.workspace_root().map_err( | err | ( report.clone(), format_err!( err ) ) )?.try_into().unwrap();
       let workspace_manifest_path = workspace_manifest_dir.join( "Cargo.toml" );
 
-      // qqq: should be refactored
+      // qqq : should be refactored
       if !dry
       {
-        let mut workspace_manifest = manifest::open( workspace_manifest_path.clone() ).map_err( | e | ( report.clone(), format_err!( e ) ) )?;
-        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().ok_or_else( || ( report.clone(), format_err!( PackageError::Manifest( ManifestError::EmptyManifestData ) ) ) )?;
+        let mut workspace_manifest = manifest ::open( workspace_manifest_path.clone() ).map_err( | e | ( report.clone(), format_err!( e ) ) )?;
+        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().ok_or_else( || ( report.clone(), format_err!( PackageError ::Manifest( ManifestError ::EmptyManifestData ) ) ) )?;
         workspace_manifest_data
         .get_mut( "workspace" )
         .and_then( | workspace | workspace.get_mut( "dependencies" ) )
@@ -466,14 +465,14 @@ mod private
       report.bump = Some( ExtendedBumpReport { base : bump_report, changed_files : files_changed_for_bump.clone() } );
 
       let commit_message = format!( "{package_name}-v{new_version}" );
-      let res = git::add( workspace_manifest_dir, objects_to_add, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git ::add( workspace_manifest_dir, objects_to_add, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.add = Some( res );
-      let res = git::commit( package_dir, commit_message, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git ::commit( package_dir, commit_message, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.commit = Some( res );
-      let res = git::push( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git ::push( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.push = Some( res );
 
-      let res = cargo::publish( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = cargo ::publish( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.publish = Some( res );
     }
 
@@ -511,7 +510,7 @@ mod private
       Self
       {
         recursive : true,
-        sort : DependenciesSort::Unordered,
+        sort : DependenciesSort ::Unordered,
         with_dev : false,
         with_remote : false,
       }
@@ -524,9 +523,9 @@ mod private
   #[ derive( Debug, Clone, Hash, Eq, PartialEq ) ]
   pub struct CrateId
   {
-    /// TODO: make it private
+    /// TODO : make it private
     pub name : String,
-    /// TODO: make it private
+    /// TODO : make it private
     pub path : Option< AbsolutePath >,
   }
 
@@ -537,7 +536,7 @@ mod private
       Self
       {
         name : value.name.clone(),
-        path : Some( AbsolutePath::try_from( value.manifest_path.parent().unwrap() ).unwrap() ),
+        path : Some( AbsolutePath ::try_from( value.manifest_path.parent().unwrap() ).unwrap() ),
       }
     }
   }
@@ -549,7 +548,7 @@ mod private
       Self
       {
         name : value.name.clone(),
-        path : value.path.clone().map( | path | AbsolutePath::try_from( path ).unwrap() ),
+        path : value.path.clone().map( | path | AbsolutePath ::try_from( path ).unwrap() ),
       }
     }
   }
@@ -559,14 +558,14 @@ mod private
   (
     workspace : &mut Workspace,
     manifest : &Package,
-    graph: &mut HashMap< CrateId, HashSet< CrateId > >,
-    opts: DependenciesOptions
+    graph : &mut HashMap< CrateId, HashSet< CrateId > >,
+    opts : DependenciesOptions
   ) -> Result< CrateId >
   {
     let DependenciesOptions
     {
       recursive,
-      sort: _,
+      sort : _,
       with_dev,
       with_remote,
     } = opts;
@@ -577,16 +576,16 @@ mod private
     let package = workspace
     .load()?
     .package_find_by_manifest( &manifest_path )
-    .ok_or( format_err!( "Package not found in the workspace with path: `{}`", manifest_path.as_ref().display() ) )?;
+    .ok_or( format_err!( "Package not found in the workspace with path : `{}`", manifest_path.as_ref().display() ) )?;
 
     let deps = package
     .dependencies
     .iter()
-    .filter( | dep | ( with_remote || dep.path.is_some() ) && ( with_dev || dep.kind != DependencyKind::Development ) )
-    .map( CrateId::from )
-    .collect::< HashSet< _ > >();
+    .filter( | dep | ( with_remote || dep.path.is_some() ) && ( with_dev || dep.kind != DependencyKind ::Development ) )
+    .map( CrateId ::from )
+    .collect ::< HashSet< _ > >();
 
-    let package = CrateId::from( package );
+    let package = CrateId ::from( package );
     graph.insert( package.clone(), deps.clone() );
 
     if recursive
@@ -615,14 +614,14 @@ mod private
   /// # Returns
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
-  pub fn dependencies( workspace : &mut Workspace, manifest : &Package, opts: DependenciesOptions ) -> Result< Vec< CrateId > >
+  pub fn dependencies( workspace : &mut Workspace, manifest : &Package, opts : DependenciesOptions ) -> Result< Vec< CrateId > >
   {
-    let mut graph = HashMap::new();
+    let mut graph = HashMap ::new();
     let root = _dependencies( workspace, manifest, &mut graph, opts.clone() )?;
 
     let output = match opts.sort
     {
-      DependenciesSort::Unordered =>
+      DependenciesSort ::Unordered =>
       {
         graph
         .into_iter()
@@ -636,9 +635,9 @@ mod private
         .filter( | x | x != &root )
         .collect()
       }
-      DependenciesSort::Topological =>
+      DependenciesSort ::Topological =>
       {
-        graph::toposort( graph::construct( &graph ) ).map_err( | err | format_err!( "{}", err ) )?.into_iter().filter( | x | x != &root ).collect()
+        graph ::toposort( graph ::construct( &graph ) ).map_err( | err | format_err!( "{}", err ) )?.into_iter().filter( | x | x != &root ).collect()
       },
     };
 
@@ -651,7 +650,7 @@ mod private
   ///
   /// This function requires the local package to be previously packed.
   ///
-  /// # Returns:
+  /// # Returns :
   /// - `true` if the package needs to be published.
   /// - `false` if there is no need to publish the package.
   ///
@@ -667,17 +666,17 @@ mod private
 
     let name = package.name()?;
     let version = package.version()?;
-    let local_package_path = local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )?;
+    let local_package_path = local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError ::LocalPath )?;
 
     // qqq : for Bohdan : bad, properly handle errors
     // aaa : return result instead of panic
-    let local_package = CrateArchive::read( local_package_path ).map_err( | _ | PackageError::ReadArchive )?;
-    let remote_package = match CrateArchive::download_crates_io( name, version )
+    let local_package = CrateArchive ::read( local_package_path ).map_err( | _ | PackageError ::ReadArchive )?;
+    let remote_package = match CrateArchive ::download_crates_io( name, version )
     {
       Ok( archive ) => archive,
-      // qqq: fix. we don't have to know about the http status code
-      Err( ureq::Error::Status( 403, _ ) ) => return Ok( true ),
-      _ => return Err( PackageError::LoadRemotePackage ),
+      // qqq : fix. we don't have to know about the http status code
+      Err( ureq ::Error ::Status( 403, _ ) ) => return Ok( true ),
+      _ => return Err( PackageError ::LoadRemotePackage ),
     };
 
     let filter_ignore_list = | p : &&Path | !IGNORE_LIST.contains( &p.file_name().unwrap().to_string_lossy().as_ref() );
@@ -694,7 +693,7 @@ mod private
       let remote = remote_package.content_bytes( path ).unwrap();
       // if local != remote
       // {
-      //   println!( "local:\n===\n{}\n===\nremote:\n===\n{}\n===", String::from_utf8_lossy( local ), String::from_utf8_lossy( remote ) );
+      //   println!( "local :\n===\n{}\n===\nremote :\n===\n{}\n===", String ::from_utf8_lossy( local ), String ::from_utf8_lossy( remote ) );
       // }
 
       is_same &= local == remote;
@@ -707,7 +706,7 @@ mod private
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
 
   protected use PublishReport;

@@ -1,15 +1,15 @@
 /// Internal namespace.
 mod private
 {
-  use crate::*;
+  use crate ::*;
 
-  use std::collections::{ HashSet, HashMap };
-  use core::fmt::Formatter;
+  use std ::collections ::{ HashSet, HashMap };
+  use core ::fmt ::Formatter;
 
-  use wtools::error::for_app::{ Error, anyhow };
-  use path::AbsolutePath;
-  use workspace::Workspace;
-  use package::Package;
+  use wtools ::error ::for_app ::{ Error, anyhow };
+  use path ::AbsolutePath;
+  use workspace ::Workspace;
+  use package ::Package;
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -20,12 +20,12 @@ mod private
     /// Represents a collection of packages that are roots of the trees.
     pub wanted_to_publish : Vec< CrateDir >,
     /// Represents a collection of packages and their associated publishing reports.
-    pub packages : Vec<( AbsolutePath, package::PublishReport )>
+    pub packages : Vec<( AbsolutePath, package ::PublishReport )>
   }
 
-  impl std::fmt::Display for PublishReport
+  impl std ::fmt ::Display for PublishReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std ::fmt ::Result
     {
       if self.packages.is_empty()
       {
@@ -39,22 +39,22 @@ mod private
       .filter_map( |( _, r )| r.bump.as_ref() )
       .map( | b | &b.base )
       .filter_map( | b | b.name.as_ref().and_then( | name  | b.old_version.as_ref().and_then( | old | b.new_version.as_ref().map( | new | ( name, ( old, new ) ) ) ) ) )
-      .collect::< HashMap< _, _ > >();
+      .collect ::< HashMap< _, _ > >();
       for wanted in &self.wanted_to_publish
       {
-        let list = endpoint::list
+        let list = endpoint ::list
         (
-          endpoint::list::ListArgs::former()
+          endpoint ::list ::ListOptions ::former()
           .path_to_manifest( wanted.clone() )
-          .format( endpoint::list::ListFormat::Tree )
-          .dependency_sources([ endpoint::list::DependencySource::Local ])
-          .dependency_categories([ endpoint::list::DependencyCategory::Primary ])
+          .format( endpoint ::list ::ListFormat ::Tree )
+          .dependency_sources([ endpoint ::list ::DependencySource ::Local ])
+          .dependency_categories([ endpoint ::list ::DependencyCategory ::Primary ])
           .form()
         )
-        .map_err( |( _, _e )| std::fmt::Error )?;
-        let endpoint::list::ListReport::Tree( list ) = list else { unreachable!() };
+        .map_err( |( _, _e )| std ::fmt ::Error )?;
+        let endpoint ::list ::ListReport ::Tree( list ) = list else { unreachable!() };
 
-        fn callback( name_bump_report: &HashMap< &String, ( &String, &String) >, mut r : endpoint::list::ListNodeReport ) -> endpoint::list::ListNodeReport
+        fn callback( name_bump_report : &HashMap< &String, ( &String, &String) >, mut r : endpoint ::list ::ListNodeReport ) -> endpoint ::list ::ListNodeReport
         {
           if let Some(( old, new )) = name_bump_report.get( &r.name )
           {
@@ -68,10 +68,10 @@ mod private
         }
         let list = list.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
 
-        let list = endpoint::list::ListReport::Tree( list );
+        let list = endpoint ::list ::ListReport ::Tree( list );
         write!( f, "{}\n", list )?;
       }
-      writeln!( f, "The following packages are pending for publication:" )?;
+      writeln!( f, "The following packages are pending for publication :" )?;
       for ( idx, package ) in self.packages.iter().map( |( _, p )| p ).enumerate()
       {
         if let Some( bump ) = &package.bump
@@ -84,11 +84,11 @@ mod private
         }
       }
 
-      write!( f, "\nActions:\n" )?;
+      write!( f, "\nActions :\n" )?;
       for ( path, report ) in &self.packages
       {
         let report = report.to_string().replace("\n", "\n  ");
-        // qqq: remove unwrap
+        // qqq : remove unwrap
         let path = if let Some( wrd ) = &self.workspace_root_dir
         {
           path.as_ref().strip_prefix( &wrd.as_ref() ).unwrap()
@@ -110,31 +110,31 @@ mod private
 
   pub fn publish( patterns : Vec< String >, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
-    let mut report = PublishReport::default();
+    let mut report = PublishReport ::default();
 
-    let mut paths = HashSet::new();
+    let mut paths = HashSet ::new();
     // find all packages by specified folders
     for pattern in &patterns
     {
-      let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) ).err_with( || report.clone() )?;
-      // let current_paths = files::find( current_path, &[ "Cargo.toml" ] );
+      let current_path = AbsolutePath ::try_from( std ::path ::PathBuf ::from( pattern ) ).err_with( || report.clone() )?;
+      // let current_paths = files ::find( current_path, &[ "Cargo.toml" ] );
       paths.extend( Some( current_path ) );
     }
 
     let mut metadata = if paths.is_empty()
     {
-      Workspace::from_current_path().err_with( || report.clone() )?
+      Workspace ::from_current_path().err_with( || report.clone() )?
     }
     else
     {
-      // FIX: patterns can point to different workspaces. Current solution take first random path from list
+      // FIX : patterns can point to different workspaces. Current solution take first random path from list
       let current_path = paths.iter().next().unwrap().clone();
-      let dir = CrateDir::try_from( current_path ).err_with( || report.clone() )?;
+      let dir = CrateDir ::try_from( current_path ).err_with( || report.clone() )?;
 
-      Workspace::with_crate_dir( dir ).err_with( || report.clone() )?
+      Workspace ::with_crate_dir( dir ).err_with( || report.clone() )?
     };
     report.workspace_root_dir = Some
-    ( 
+    (
       metadata
       .workspace_root()
       .err_with( || report.clone() )?
@@ -144,10 +144,10 @@ mod private
     let packages = metadata.load().err_with( || report.clone() )?.packages().err_with( || report.clone() )?;
     let packages_to_publish : Vec< _ > = packages
     .iter()
-    .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path.as_std_path().parent().unwrap() ).unwrap() ) )
+    .filter( | &package | paths.contains( &AbsolutePath ::try_from( package.manifest_path.as_std_path().parent().unwrap() ).unwrap() ) )
     .map( | p | p.name.clone() )
     .collect();
-    let package_map = packages.into_iter().map( | p | ( p.name.clone(), Package::from( p.clone() ) ) ).collect::< HashMap< _, _ > >();
+    let package_map = packages.into_iter().map( | p | ( p.name.clone(), Package ::from( p.clone() ) ) ).collect ::< HashMap< _, _ > >();
     {
       for node in &packages_to_publish
       {
@@ -156,16 +156,16 @@ mod private
     }
 
     let graph = metadata.graph();
-    let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish );
+    let subgraph_wanted = graph ::subgraph( &graph, &packages_to_publish );
     let tmp = subgraph_wanted.map( | _, n | graph[ *n ].clone(), | _, e | graph[ *e ].clone() );
-    let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish );
+    let subgraph = graph ::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish );
     let subgraph = subgraph.map( | _, n | n, | _, e | e );
 
-    let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).collect::< Vec< _ > >();
+    let queue = graph ::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).collect ::< Vec< _ > >();
 
     for package in queue
     {
-      let current_report = package::publish_single( package, true, dry )
+      let current_report = package ::publish_single( package, true, dry )
       .map_err
       (
         | ( current_report, e ) |
@@ -182,14 +182,14 @@ mod private
 
   trait ErrWith< T, T1, E >
   {
-    fn err_with< F >( self, f : F ) -> std::result::Result< T1, ( T, E ) >
+    fn err_with< F >( self, f : F ) -> std ::result ::Result< T1, ( T, E ) >
     where
       F : FnOnce() -> T;
   }
 
   impl< T, T1, E > ErrWith< T, T1, Error > for Result< T1, E >
   where
-    E : std::fmt::Debug + std::fmt::Display + Send + Sync + 'static,
+    E : std ::fmt ::Debug + std ::fmt ::Display + Send + Sync + 'static,
   {
     fn err_with< F >( self, f : F ) -> Result< T1, ( T, Error ) >
     where
@@ -202,7 +202,7 @@ mod private
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   /// Publish package.
   orphan use publish;

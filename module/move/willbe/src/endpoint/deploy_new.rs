@@ -1,12 +1,12 @@
 mod private {
-  use crate::*;
-  use std::path::Path;
-  use error_tools::Result;
+  use crate ::*;
+  use std ::path ::Path;
+  use error_tools ::Result;
 
-  use tools::template::*;
+  use tools ::template ::*;
 
   /// Template for creating deploy files.
-  /// 
+  ///
   /// Includes terraform deploy options to GCP, and Hetzner,
   /// a Makefile for useful commands, and a key directory.
   #[ derive( Debug ) ]
@@ -28,7 +28,7 @@ mod private {
     {
       &self.parameters
     }
-    
+
     fn set_values( &mut self, values : TemplateValues )
     {
       self.values = values
@@ -41,8 +41,8 @@ mod private {
     {
       Self
       {
-        files : Default::default(),
-        parameters : TemplateParameters::new
+        files : Default ::default(),
+        parameters : TemplateParameters ::new
           (
             &
             [
@@ -52,13 +52,13 @@ mod private {
               "docker_image_name"
             ]
           ),
-        values : Default::default(),
+        values : Default ::default(),
       }
     }
   }
 
   /// Files for the deploy template.
-  /// 
+  ///
   /// Default implementation contains all required files.
   #[ derive( Debug ) ]
   pub struct DeployTemplateFiles( Vec< TemplateFileDescriptor > );
@@ -67,7 +67,7 @@ mod private {
   {
     fn default() -> Self
     {
-      let formed = TemplateFilesBuilder::former()
+      let formed = TemplateFilesBuilder ::former()
       // root
       .file().data( include_str!( "../../template/deploy/Makefile" ) ).path( "./Makefile" ).is_template( true ).end()
       // /key
@@ -106,10 +106,10 @@ mod private {
   impl IntoIterator for DeployTemplateFiles
   {
     type Item = TemplateFileDescriptor;
-  
-    type IntoIter = std::vec::IntoIter< Self::Item >;
-  
-    fn into_iter( self ) -> Self::IntoIter
+
+    type IntoIter = std ::vec ::IntoIter< Self ::Item >;
+
+    fn into_iter( self ) -> Self ::IntoIter
     {
       self.0.into_iter()
     }
@@ -118,8 +118,8 @@ mod private {
   /// Creates deploy template
   pub fn deploy_new
   (
-    path: &Path,
-    template: DeployTemplate
+    path : &Path,
+    template : DeployTemplate
   ) -> Result< () >
   {
     template.create_all( path )?;
@@ -127,8 +127,8 @@ mod private {
   }
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
-  exposed use deploy_new;
+  orphan use deploy_new;
   orphan use DeployTemplate;
 }

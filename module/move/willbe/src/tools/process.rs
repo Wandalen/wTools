@@ -1,19 +1,19 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  use crate ::*;
 
-  use std::
+  use std ::
   {
-    fmt::Formatter,
-    path::{ Path, PathBuf },
-    process::{ Command, Stdio },
+    fmt ::Formatter,
+    path ::{ Path, PathBuf },
+    process ::{ Command, Stdio },
   };
-  use duct::cmd;
-  use wtools::
+  use duct ::cmd;
+  use wtools ::
   {
-    iter::Itertools,
-    error::{ anyhow::{ Context, format_err }, Result },
+    iter ::Itertools,
+    error ::{ anyhow ::{ Context, format_err }, Result },
   };
 
 
@@ -31,9 +31,9 @@ pub( crate ) mod private
     pub err : String,
   }
 
-  impl std::fmt::Display for CmdReport
+  impl std ::fmt ::Display for CmdReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std ::fmt ::Result
     {
       // Trim prevents writing unnecessary whitespace or empty lines
       f.write_fmt( format_args!( "> {}\n", self.command ) )?;
@@ -43,7 +43,7 @@ pub( crate ) mod private
       }
       if !self.err.trim().is_empty()
       {
-        f.write_fmt( format_args!( "  path: {}\n  {}\n", self.path.display(), self.err.replace( '\n', "\n  " ) ) )?;
+        f.write_fmt( format_args!( "  path : {}\n  {}\n", self.path.display(), self.err.replace( '\n', "\n  " ) ) )?;
       }
 
       Ok( () )
@@ -78,7 +78,7 @@ pub( crate ) mod private
   ///
   /// Run external processes.
   ///
-  /// # Args:
+  /// # Args :
   /// - `application` - path to executable application
   /// - `args` - command-line arguments to the application
   /// - `path` - path to directory where to run the application
@@ -86,23 +86,23 @@ pub( crate ) mod private
   pub fn process_run_with_params< AP, Args, Arg, P >
   (
     application : AP,
-    args: Args,
+    args : Args,
     path : P,
   )
   -> Result< CmdReport >
   where
     AP : AsRef< Path >,
     Args : IntoIterator< Item = Arg >,
-    Arg : AsRef< std::ffi::OsStr >,
+    Arg : AsRef< std ::ffi ::OsStr >,
     P : AsRef< Path >,
   {
     let ( application, path ) = ( application.as_ref(), path.as_ref() );
-    let args = args.into_iter().map( | a | a.as_ref().into() ).collect::< Vec< std::ffi::OsString > >();
+    let args = args.into_iter().map( | a | a.as_ref().into() ).collect ::< Vec< std ::ffi ::OsString > >();
 
-    let child = Command::new( application )
+    let child = Command ::new( application )
     .args( &args )
-    .stdout( Stdio::piped() )
-    .stderr( Stdio::piped() )
+    .stdout( Stdio ::piped() )
+    .stderr( Stdio ::piped() )
     .current_dir( path )
     .spawn()
     .context( "failed to spawn process" )?;
@@ -115,8 +115,8 @@ pub( crate ) mod private
     {
       command : format!( "{} {}", application.display(), args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
       path : path.to_path_buf(),
-      out : String::from_utf8( output.stdout ).context( "Found invalid UTF-8" )?,
-      err : String::from_utf8( output.stderr ).context( "Found invalid UTF-8" )?,
+      out : String ::from_utf8( output.stdout ).context( "Found invalid UTF-8" )?,
+      err : String ::from_utf8( output.stderr ).context( "Found invalid UTF-8" )?,
     };
 
     if output.status.success()
@@ -130,9 +130,9 @@ pub( crate ) mod private
   }
 
   ///
-  /// Run external processes. Natural ordered out will be in std::out (std::err - None)
+  /// Run external processes. Natural ordered out will be in std ::out (std ::err - None)
   ///
-  /// # Args:
+  /// # Args :
   /// - `application` - path to executable application
   /// - `args` - command-line arguments to the application
   /// - `path` - path to directory where to run the application
@@ -147,11 +147,11 @@ pub( crate ) mod private
   where
     AP : AsRef< Path >,
     Args : IntoIterator< Item = Arg >,
-    Arg : AsRef< std::ffi::OsStr >,
+    Arg : AsRef< std ::ffi ::OsStr >,
     P : AsRef< Path >,
   {
     let ( application, path ) = ( application.as_ref(), path.as_ref() );
-    let args = args.into_iter().map( | a | a.as_ref().into() ).collect::< Vec< std::ffi::OsString > >();
+    let args = args.into_iter().map( | a | a.as_ref().into() ).collect ::< Vec< std ::ffi ::OsString > >();
     let output = cmd( application.as_os_str(), &args )
     .dir( path )
     .stderr_to_stdout()
@@ -162,8 +162,8 @@ pub( crate ) mod private
     {
       command : format!( "{} {}", application.display(), args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
       path : path.to_path_buf(),
-      out : String::from_utf8( output.stdout ).context( "Found invalid UTF-8" )?,
-      err : Default::default(),
+      out : String ::from_utf8( output.stdout ).context( "Found invalid UTF-8" )?,
+      err : Default ::default(),
     };
 
     if output.status.success()
@@ -180,7 +180,7 @@ pub( crate ) mod private
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   protected use CmdReport;
   protected use process_run_without_params;

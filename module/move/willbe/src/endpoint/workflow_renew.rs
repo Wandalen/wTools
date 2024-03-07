@@ -16,11 +16,11 @@ mod private
 
   use wtools::error::for_app::{ Result, anyhow };
   use path::AbsolutePath;
-  
+
 
   // qqq : for Petro : should return Report and typed error in Result
   /// Generate workflows for modules in .github/workflows directory.
-  pub fn workflow_generate( base_path : &Path ) -> Result< () >
+  pub fn workflow_renew( base_path : &Path ) -> Result< () >
   {
     let workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
     let packages = workspace_cache.packages()?;
@@ -32,8 +32,8 @@ mod private
     // qqq : for Petro : avoid calling packages_get twice
     // aaa : remove it
     let names = packages.iter().map( | p | &p.name ).collect::< Vec< _ > >();
-    // map packages path to relative paths fom workspace root, for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
-    let relative_paths = 
+    // map packages path to relative paths fom workspace root, for example D :/work/wTools/module/core/iter_tools => module/core/iter_tools
+    let relative_paths =
     packages
     .iter()
     .map( | p | &p.manifest_path )
@@ -89,8 +89,8 @@ mod private
     let mut data = BTreeMap::new();
     data.insert( "name", "alpha" );
     data.insert
-    ( 
-      "branches",  
+    (
+      "branches",
       " - '*'
       - '*/*'
       - '**'
@@ -114,7 +114,7 @@ mod private
 
     let mut data = BTreeMap::new();
     data.insert( "name", "beta" );
-    data.insert( "branches",  "- alpha" ); 
+    data.insert( "branches",  "- alpha" );
     data.insert( "username_and_repository", username_and_repository.0.as_str() );
     data.insert( "uses_branch", "alpha" );
     data.insert( "src_branch", "alpha" );
@@ -124,7 +124,7 @@ mod private
 
     let mut data = BTreeMap::new();
     data.insert( "name", "master" );
-    data.insert( "branches",  "- beta" ); 
+    data.insert( "branches",  "- beta" );
     data.insert( "username_and_repository", username_and_repository.0.as_str() );
     data.insert( "uses_branch", "alpha" );
     data.insert( "src_branch", "beta" );
@@ -194,7 +194,7 @@ mod private
   // qqq : for Petro : newtype?
   // aaa : replace to AbsolutePath
   // qqq : for Petro : why mut?
-  // aaa : change signature 
+  // aaa : change signature
   /// Searches and extracts the username and repository name from the repository URL.
   /// The repository URL is first sought in the Cargo.toml file of the workspace;
   /// if not found there, it is then searched in the Cargo.toml file of the module.
@@ -205,21 +205,21 @@ mod private
       let mut contents = String::new();
       File::open( cargo_toml_path )?.read_to_string( &mut contents )?;
       let doc = contents.parse::< Document >()?;
-      let url =  
+      let url =
       doc
       .get( "workspace" )
       .and_then( | workspace  | workspace.get( "metadata" ) )
       .and_then( | metadata | metadata.get( "repo_url" ) )
       .and_then( | url | url.as_str() )
       .map( String::from );
-      if let Some( url ) = url 
+      if let Some( url ) = url
       {
         return url::extract_repo_url( &url )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
         .ok_or_else( || anyhow!( "Fail to parse repository url from workspace Cargo.toml"))
-      } 
-      else 
+      }
+      else
       {
         let mut url = None;
         for package in packages
@@ -242,5 +242,5 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use workflow_generate;
+  exposed use workflow_renew;
 }

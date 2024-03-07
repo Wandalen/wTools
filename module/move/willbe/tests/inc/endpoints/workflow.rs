@@ -2,20 +2,20 @@ const ASSETS_PATH : &str = "tests/assets";
 
 use assert_fs::prelude::*;
 use crate::TheModule::endpoint::
-{ 
-  self, 
+{
+  self,
 };
 
 //
 
-mod workflow_generate
+mod workflow_renew
 {
   use super::*;
 
   use std::
   {
-    fs::File, 
-    io::Read, 
+    fs::File,
+    io::Read,
     collections::HashMap
   };
   use std::fs::create_dir_all;
@@ -34,29 +34,29 @@ mod workflow_generate
   }
 
   #[ derive( Debug, PartialEq, Deserialize ) ]
-  struct Workflow 
+  struct Workflow
   {
     name: String,
     on: String,
     env: HashMap< String, String >,
     jobs: HashMap< String, Job >,
   }
-  
+
   #[ derive( Debug, PartialEq, Deserialize ) ]
-  struct Job 
+  struct Job
   {
     uses: String,
     with: With,
   }
-  
+
   #[ derive( Debug, PartialEq, Deserialize ) ]
-  struct With 
+  struct With
   {
     manifest_path: String,
     module_name: String,
     commit_message: String,
   }
-  
+
   // qqq for Petro: this test does not work
   // error: called `Result::unwrap()` on an `Err` value: No such file or directory (os error 2)
   // aaa : It is working now
@@ -68,15 +68,15 @@ mod workflow_generate
     let base_path = temp.path().join( ".github" ).join( "workflows" );
     let file_path = base_path.join( "ModuleTestModulePush.yml" );
     let with = With
-    { 
-      manifest_path: "test_module/Cargo.toml".into(), 
-      module_name: "test_module".into(), 
-      commit_message: "${{ github.event.head_commit.message }}".into() 
+    {
+      manifest_path: "test_module/Cargo.toml".into(),
+      module_name: "test_module".into(),
+      commit_message: "${{ github.event.head_commit.message }}".into()
     };
     let job = Job
-    { 
-      uses: "Username/test/.github/workflows/StandardRustPush.yml@alpha".into(), 
-      with 
+    {
+      uses: "Username/test/.github/workflows/StandardRustPush.yml@alpha".into(),
+      with
     };
     let expected = Workflow
     {
@@ -87,7 +87,7 @@ mod workflow_generate
     };
 
     // Act
-    _ = endpoint::workflow_generate( &temp ).unwrap();
+    _ = endpoint::workflow_renew( &temp ).unwrap();
 
     // Assert
     let mut file = File::open( file_path ).unwrap();

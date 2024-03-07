@@ -8,15 +8,15 @@ mod private
   ///
   /// Generate table.
   ///
-  pub fn workflow_generate( ( _, _ ) : ( Args, Props ) ) -> Result< () >
+  pub fn workflow_renew( ( _, _ ) : ( Args, Props ) ) -> Result< () >
   {
-    endpoint::workflow_generate( &std::env::current_dir()? ).context( "Fail to generate workflow" )
+    endpoint::workflow_renew( &std::env::current_dir()? ).context( "Fail to generate workflow" )
   }
 }
 
 crate::mod_interface!
 {
   /// List packages.
-  exposed use workflow_generate;
+  exposed use workflow_renew;
 }
 

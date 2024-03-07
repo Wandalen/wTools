@@ -1,5 +1,5 @@
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   /// Make sha-1 hash for data.
   orphan mod sha;

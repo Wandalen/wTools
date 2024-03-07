@@ -1,3 +1,5 @@
+// qqq : rid off the file. ask
+
 use gluesql::prelude::{ Payload, Value };
 use cli_table::
 {
@@ -74,9 +76,9 @@ impl std::fmt::Display for FramesReport
         let table_struct = rows.table()
         .border( Border::builder().build() )
         .separator( Separator::builder().build() );
-    
-        let table = table_struct.display().unwrap(); 
-    
+
+        let table = table_struct.display().unwrap();
+
         writeln!( f, "{}\n", table )?;
       }
     }
@@ -115,11 +117,11 @@ impl std::fmt::Display for FieldsReport
     .border( Border::builder().build() )
     .separator( Separator::builder().build() );
 
-    let table = table_struct.display().unwrap(); 
+    let table = table_struct.display().unwrap();
 
     writeln!( f, "\n\n\nFrames fields:" )?;
     writeln!( f, "{}", table )?;
-    
+
     Ok( () )
   }
 }
@@ -196,8 +198,8 @@ impl std::fmt::Display for FeedsReport
       .title( headers )
       .border( Border::builder().build() )
       .separator( Separator::builder().build() );
-  
-      let table = table_struct.display().unwrap(); 
+
+      let table = table_struct.display().unwrap();
       writeln!( f, "{}", table )?;
     }
     else
@@ -259,9 +261,9 @@ impl std::fmt::Display for QueryReport
             let table_struct = rows.table()
             .border( Border::builder().build() )
             .separator( Separator::builder().build() );
-        
-            let table = table_struct.display().unwrap(); 
-        
+
+            let table = table_struct.display().unwrap();
+
             writeln!( f, "{}\n", table )?;
           }
         },
@@ -339,7 +341,7 @@ impl ConfigReport
     {
       Payload::Select { labels: _, rows: rows_vec } =>
       {
-        rows_vec.into_iter().filter_map( | val | 
+        rows_vec.into_iter().filter_map( | val |
         {
           match &val[ 0 ]
           {
@@ -374,9 +376,9 @@ impl std::fmt::Display for ConfigReport
         let table_struct = rows.table()
         .border( Border::builder().build() )
         .separator( Separator::builder().build() );
-    
-        let table = table_struct.display().unwrap(); 
-    
+
+        let table = table_struct.display().unwrap();
+
         writeln!( f, "{}", table )?;
 
       },

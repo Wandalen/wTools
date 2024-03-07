@@ -1,18 +1,18 @@
 /// Internal namespace.
 mod private
 {
-  use crate::*;
+  use crate ::*;
 
-  use std::
+  use std ::
   {
     fmt,
-    str::FromStr,
+    str ::FromStr,
   };
-  use toml_edit::value;
-  use semver::Version as SemVersion;
+  use toml_edit ::value;
+  use semver ::Version as SemVersion;
 
-  use wtools::error::for_app::Result;
-  use manifest::Manifest;
+  use wtools ::error ::for_app ::Result;
+  use manifest ::Manifest;
 
   /// Wrapper for a SemVer structure
   #[ derive( Debug, Clone, Eq, PartialEq ) ]
@@ -20,17 +20,17 @@ mod private
 
   impl FromStr for Version
   {
-    type Err =  semver::Error;
+    type Err =  semver ::Error;
 
-    fn from_str( s : &str ) -> std::result::Result< Self, Self::Err >
+    fn from_str( s : &str ) -> std ::result ::Result< Self, Self ::Err >
     {
-      Ok( Self( SemVersion::from_str( s )? ) )
+      Ok( Self( SemVersion ::from_str( s )? ) )
     }
   }
 
-  impl fmt::Display for Version
+  impl fmt ::Display for Version
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+    fn fmt( &self, f : &mut fmt ::Formatter< '_ > ) -> fmt ::Result
     {
       write!( f, "{}", self.0.to_string() )
     }
@@ -69,16 +69,16 @@ mod private
   pub struct BumpReport
   {
     /// Pacakge name.
-    pub name: Option< String >,
+    pub name : Option< String >,
     /// Package old version.
-    pub old_version: Option< String >,
+    pub old_version : Option< String >,
     /// Package new version.
-    pub new_version: Option< String >,
+    pub new_version : Option< String >,
   }
 
-  impl fmt::Display for BumpReport
+  impl fmt ::Display for BumpReport
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+    fn fmt( &self, f : &mut fmt ::Formatter< '_ > ) -> fmt ::Result
     {
       let Self { name, old_version, new_version } = self;
       match ( name, old_version, new_version )
@@ -94,18 +94,18 @@ mod private
   /// It takes data from the manifest and increments the version number according to the semantic versioning scheme.
   /// It then writes the updated manifest file back to the same path, unless the flag is set to true, in which case it only returns the new version number as a string.
   ///
-  /// # Args:
+  /// # Args :
   /// - `manifest` - a manifest mutable reference
   /// - `dry` - a flag that indicates whether to apply the changes or not
   ///         - `true` - does not modify the manifest file, but only returns the new version;
   ///         - `false` - overwrites the manifest file with the new version.
   ///
-  /// # Returns:
+  /// # Returns :
   /// - `Ok` - the new version number as a string;
   /// - `Err` - if the manifest file cannot be read, written, parsed.
   pub fn bump( manifest : &mut Manifest, dry : bool ) -> Result< BumpReport, ManifestError >
   {
-    let mut report = BumpReport::default();
+    let mut report = BumpReport ::default();
 
     let version=
     {
@@ -119,20 +119,20 @@ mod private
         // qqq : for Bohdan : rid off untyped errors, make proper errors handing
         // https://www.lpalmieri.com/posts/error-handling-rust/
         // aaa : used `ManifestError` instead of anyhow.
-        return Err( ManifestError::NotAPackage );
+        return Err( ManifestError ::NotAPackage );
       }
       let package = data.get( "package" ).unwrap();
 
       let version = package.get( "version" );
       if version.is_none()
       {
-        return Err( ManifestError::CannotFindValue( "version".into() ) );
+        return Err( ManifestError ::CannotFindValue( "version".into() ) );
       }
       let version = version.unwrap().as_str().unwrap();
       report.name = Some( package[ "name" ].as_str().unwrap().to_string() );
       report.old_version = Some( version.to_string() );
 
-      Version::from_str( version ).map_err( | e | ManifestError::InvalidValue( e.to_string() ) )?
+      Version ::from_str( version ).map_err( | e | ManifestError ::InvalidValue( e.to_string() ) )?
     };
 
     let new_version = version.bump().to_string();
@@ -151,7 +151,7 @@ mod private
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   /// Version entity.
   protected use Version;

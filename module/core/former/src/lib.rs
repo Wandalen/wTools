@@ -99,3 +99,7 @@ pub mod prelude
 }
 
 // qqq : check and improve quality of generated documentation
+
+// xxx : debug attribute
+// xxx : expanded example
+// xxx : explain role of container in former

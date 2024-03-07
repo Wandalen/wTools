@@ -1,25 +1,25 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  use crate ::*;
 
-  use std::
+  use std ::
   {
-    ops::Index,
-    fmt::Debug,
-    hash::Hash,
-    collections::{ HashMap, HashSet }
+    ops ::Index,
+    fmt ::Debug,
+    hash ::Hash,
+    collections ::{ HashMap, HashSet }
   };
-  use petgraph::
+  use petgraph ::
   {
-    graph::Graph,
-    algo::toposort as pg_toposort,
+    graph ::Graph,
+    algo ::toposort as pg_toposort,
   };
-  use petgraph::graph::NodeIndex;
-  use petgraph::prelude::*;
+  use petgraph ::graph ::NodeIndex;
+  use petgraph ::prelude ::*;
 
-  use error_tools::for_lib::Error;
-  use package::{ Package, publish_need };
+  use error_tools ::for_lib ::Error;
+  use package ::{ Package, publish_need };
 
   #[ derive( Debug, Error ) ]
   pub enum GraphError< T : Debug >
@@ -30,10 +30,10 @@ pub( crate ) mod private
 
   /// Build a graph from map of packages and its dependencies
   ///
-  /// Arg:
+  /// Arg :
   /// - packages - a map, where key is a package identifier and value - the package dependencies identifiers
   ///
-  /// Returns:
+  /// Returns :
   /// The graph with all accepted packages
   pub fn construct< PackageIdentifier >
   (
@@ -44,7 +44,7 @@ pub( crate ) mod private
   where
     PackageIdentifier : PartialEq + Eq + Hash,
   {
-    let nudes: HashSet< _ > = packages
+    let nudes : HashSet< _ > = packages
     .iter()
     .flat_map( | ( name, dependency ) |
     {
@@ -52,7 +52,7 @@ pub( crate ) mod private
       .iter()
       .chain( Some( name ) )
     }).collect();
-    let mut deps = Graph::new();
+    let mut deps = Graph ::new();
     for nude in nudes
     {
       deps.add_node( nude );
@@ -71,7 +71,7 @@ pub( crate ) mod private
 
   /// Performs a topological sort of a graph of packages
   ///
-  /// Arg:
+  /// Arg :
   /// - `graph` - a directed graph of packages and their dependencies.
   ///
   /// Returns
@@ -79,7 +79,7 @@ pub( crate ) mod private
   ///
   /// # Panics
   /// If there is a cycle in the dependency graph
-  pub fn toposort< 'a, PackageIdentifier : Clone + std::fmt::Debug >
+  pub fn toposort< 'a, PackageIdentifier : Clone + std ::fmt ::Debug >
   (
     graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier >
   )
@@ -93,9 +93,9 @@ pub( crate ) mod private
         .iter()
         .rev()
         .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
-        .collect::< Vec< _ > >()
+        .collect ::< Vec< _ > >()
       ),
-      Err( index ) => Err( GraphError::Cycle( ( *graph.index( index.node_id() ) ).clone() ) ),
+      Err( index ) => Err( GraphError ::Cycle( ( *graph.index( index.node_id() ) ).clone() ) ),
       // qqq : for Bohdan : bad, make proper error handling
       // aaa : now returns `GraphError`
     }
@@ -120,13 +120,13 @@ pub( crate ) mod private
   where
     N : PartialEq< N >,
   {
-    let mut subgraph = Graph::new();
-    let mut node_map = HashMap::new();
+    let mut subgraph = Graph ::new();
+    let mut node_map = HashMap ::new();
 
     for root in roots
     {
       let root_id = graph.node_indices().find( | x | graph[ *x ] == *root ).unwrap();
-      let mut dfs = Dfs::new( graph, root_id );
+      let mut dfs = Dfs ::new( graph, root_id );
       while let Some( nx ) = dfs.next( &graph )
       {
         if !node_map.contains_key( &nx )
@@ -170,13 +170,13 @@ pub( crate ) mod private
   /// A new `Graph` with the nodes that are not required to be published removed.
   pub fn remove_not_required_to_publish( package_map : &HashMap< String, Package >, graph : &Graph< String, String >, roots : &[ String ] ) -> Graph< String, String >
   {
-    let mut nodes = HashSet::new();
-    let mut cleared_graph = Graph::new();
+    let mut nodes = HashSet ::new();
+    let mut cleared_graph = Graph ::new();
 
     for root in roots
     {
       let root = graph.node_indices().find( | &i | graph[ i ] == *root ).unwrap();
-      let mut dfs = DfsPostOrder::new( &graph, root );
+      let mut dfs = DfsPostOrder ::new( &graph, root );
       'main : while let Some( n ) = dfs.next(&graph)
       {
         for neighbor in graph.neighbors_directed( n, Outgoing )
@@ -188,14 +188,14 @@ pub( crate ) mod private
           }
         }
         let package = package_map.get( &graph[ n ] ).unwrap();
-        _ = cargo::package( package.crate_dir(), false ).unwrap();
+        _ = cargo ::package( package.crate_dir(), false ).unwrap();
         if publish_need( package ).unwrap()
         {
           nodes.insert( n );
         }
       }
     }
-    let mut new_map = HashMap::new();
+    let mut new_map = HashMap ::new();
     for node in nodes.iter().copied() { new_map.insert( node, cleared_graph.add_node( graph[ node ].clone() ) ); }
 
     for sub_node_id in nodes
@@ -219,7 +219,7 @@ pub( crate ) mod private
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   protected use construct;
   protected use toposort;

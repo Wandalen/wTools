@@ -1,29 +1,29 @@
 mod private
 {
-  use crate::*;
-  use std::collections::BTreeMap;
-  use std::fs;
-  use std::io::Write;
-  use std::path::Path;
-  use handlebars::no_escape;
-  use error_tools::for_app::bail;
-  use error_tools::Result;
-  use wtools::iter::Itertools;
+  use crate ::*;
+  use std ::collections ::BTreeMap;
+  use std ::fs;
+  use std ::io ::Write;
+  use std ::path ::Path;
+  use handlebars ::no_escape;
+  use error_tools ::for_app ::bail;
+  use error_tools ::Result;
+  use wtools ::iter ::Itertools;
 
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
   // qqq : parametrized templates??
   /// Creates workspace template
-  pub fn workspace_new( path : &Path, repository_url : String, branches: Vec< String > ) -> Result< () >
+  pub fn workspace_renew( path : &Path, repository_url : String, branches : Vec< String > ) -> Result< () >
   {
-    if fs::read_dir( path )?.count() != 0
+    if fs ::read_dir( path )?.count() != 0
     {
       bail!( "Directory should be empty" )
     }
-    let mut handlebars = handlebars::Handlebars::new();
+    let mut handlebars = handlebars ::Handlebars ::new();
     handlebars.register_escape_fn( no_escape );
     let branches = branches.into_iter().map( | b | format!( r#""{}""#, b ) ).join( ", " );
-    let data = BTreeMap::from_iter
+    let data = BTreeMap ::from_iter
     (
       [
         ( "project_name", path.file_name().unwrap().to_string_lossy() ),
@@ -106,19 +106,19 @@ mod private
 
   fn create_dir( path : &Path, name : &str ) -> Result< () >
   {
-    fs::create_dir( path.join( name ) )?;
+    fs ::create_dir( path.join( name ) )?;
     Ok( () )
   }
 
   fn create_file( path : &Path, name : &str, content : &str ) -> Result< () >
   {
-    let mut file = fs::File::create( path.join( name ) )?;
+    let mut file = fs ::File ::create( path.join( name ) )?;
     file.write_all( content.as_bytes() )?;
     Ok( () )
   }
 }
 
-crate::mod_interface!
+crate ::mod_interface!
 {
-  exposed use workspace_new;
+  exposed use workspace_renew;
 }

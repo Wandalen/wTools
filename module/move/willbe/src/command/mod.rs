@@ -81,13 +81,13 @@ pub( crate ) mod private
     .property( "docker_image_name", "", Type::String , false )
     .form();
 
-    let generate_main_header = wca::Command::former()
+    let readme_header_generate = wca::Command::former()
     .hint( "Generate header in workspace`s Readme.md file")
     .long_hint( "For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
     .phrase( "readme.header.generate" )
     .form();
 
-    let headers_generate = wca::Command::former()
+    let readme_modules_headers_generate = wca::Command::former()
     .hint( "Generates header for each workspace member." )
     .long_hint( "For use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
     .phrase( "readme.modules.headers.generate" )
@@ -102,8 +102,8 @@ pub( crate ) mod private
       generate_workflow,
       w_new,
       d_new,
-      generate_main_header,
-      headers_generate,
+      readme_header_generate,
+      readme_modules_headers_generate,
     ]
   }
 
@@ -118,13 +118,13 @@ pub( crate ) mod private
     ([
       ( "publish".to_owned(), Routine::new( publish ) ),
       ( "list".to_owned(), Routine::new( list ) ),
-      ( "readme.health.table.generate".to_owned(), Routine::new( table_generate ) ),
+      ( "readme.health.table.generate".to_owned(), Routine::new( readme_health_table_renew ) ),
       ( "test".to_owned(), Routine::new( test ) ),
-      ( "workflow.generate".to_owned(), Routine::new( workflow_generate ) ),
-      ( "workspace.new".to_owned(), Routine::new( workspace_new ) ),
+      ( "workflow.renew".to_owned(), Routine::new( workflow_renew ) ),
+      ( "workspace.renew".to_owned(), Routine::new( workspace_renew ) ),
       ( "deploy.new".to_owned(), Routine::new( deploy_new ) ),
       ( "readme.header.generate".to_owned(), Routine::new( main_header_generate ) ),
-      ( "readme.modules.headers.generate".to_owned(), Routine::new( headers_generate ) ),
+      ( "readme.modules.headers.generate".to_owned(), Routine::new( readme_modules_headers_generate ) ),
     ])
   }
 }
@@ -140,13 +140,14 @@ crate::mod_interface!
   /// Publish packages.
   layer publish;
   /// Generate tables
-  layer table;
+  // qqq : for Petro : what a table??
+  layer readme_health_table_renew;
   /// Run all tests
   layer test;
   /// Generate workflow
-  layer workflow;
+  layer workflow_renew;
   /// Workspace new
-  layer workspace_new;
+  layer workspace_renew;
   /// Deploy new
   layer deploy_new;
   /// Generate header in main readme.md

@@ -1,19 +1,19 @@
 mod private
 {
-  use crate::*;
+  use crate ::*;
 
-  use std::{ fmt::Formatter, path::Path };
-  use std::collections::{ BTreeSet, HashSet };
+  use std ::{ fmt ::Formatter, path ::Path };
+  use std ::collections ::{ BTreeSet, HashSet };
 
-  use process::CmdReport;
-  use wtools::error::Result;
-  use former::Former;
-  use wtools::iter::Itertools;
+  use process ::CmdReport;
+  use wtools ::error ::Result;
+  use former ::Former;
+  use wtools ::iter ::Itertools;
 
   ///
   /// Assemble the local package into a distributable tarball.
   ///
-  /// # Args:
+  /// # Args :
   /// - `path` - path to the package directory
   /// - `dry` - a flag that indicates whether to execute the command or not
   ///
@@ -31,14 +31,14 @@ mod private
         {
           command : format!( "{program} {}", args.join( " " ) ),
           path : path.as_ref().to_path_buf(),
-          out : String::new(),
-          err : String::new(),
+          out : String ::new(),
+          err : String ::new(),
         }
       )
     }
     else
     {
-      process::process_run_with_params(program, args, path )
+      process ::process_run_with_params(program, args, path )
     }
   }
 
@@ -57,14 +57,14 @@ mod private
         {
           command : format!( "{program} {}", args.join( " " ) ),
           path : path.as_ref().to_path_buf(),
-          out : String::new(),
-          err : String::new(),
+          out : String ::new(),
+          err : String ::new(),
         }
       )
     }
     else
     {
-      process::process_run_with_params(program, args, path )
+      process ::process_run_with_params(program, args, path )
     }
   }
 
@@ -79,14 +79,14 @@ mod private
     Nightly,
   }
 
-  impl std::fmt::Display for Channel
+  impl std ::fmt ::Display for Channel
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std ::fmt ::Result
     {
       match self
       {
-        Self::Stable => write!( f, "stable" ),
-        Self::Nightly => write!( f, "nightly" ),
+        Self ::Stable => write!( f, "stable" ),
+        Self ::Nightly => write!( f, "nightly" ),
       }
     }
   }
@@ -149,14 +149,14 @@ mod private
         {
           command : format!( "{program} {}", args.join( " " ) ),
           path : path.as_ref().to_path_buf(),
-          out : String::new(),
-          err : String::new(),
+          out : String ::new(),
+          err : String ::new(),
         }
       )
     }
     else
     {
-      process::process_run_with_param_and_joined_steams(program, args, path )
+      process ::process_run_with_param_and_joined_steams(program, args, path )
     }
   }
 
@@ -168,7 +168,7 @@ mod private
     P : AsRef< Path >,
   {
     let ( program, args ) = ( "rustup", [ "toolchain", "list" ] );
-    let report = process::process_run_with_params(program, args, path )?;
+    let report = process ::process_run_with_params(program, args, path )?;
 
     let list = report
     .out
@@ -176,8 +176,8 @@ mod private
     .map( | l | l.split_once( '-' ).unwrap().0 )
     .filter_map( | c | match c
     {
-      "stable" => Some( Channel::Stable ),
-      "nightly" => Some( Channel::Nightly ),
+      "stable" => Some( Channel ::Stable ),
+      "nightly" => Some( Channel ::Nightly ),
       _ => None
     } )
     .collect();
@@ -188,7 +188,7 @@ mod private
 
 //
 
-crate::mod_interface!
+crate ::mod_interface!
 {
   protected use package;
   protected use publish;
