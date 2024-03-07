@@ -19,7 +19,8 @@ pub( crate ) mod private
   use path::AbsolutePath;
 
   #[ derive( Debug, Error ) ]
-  pub enum CrateDirError {
+  pub enum CrateDirError
+  {
     #[ error( "Failed to create a `CrateDir` object due to `{0}`" ) ]
     Validation( String ),
   }
@@ -253,8 +254,8 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  orphan use Manifest;
-  orphan use CrateDir;
+  exposed use Manifest;
+  exposed use CrateDir;
   orphan use ManifestError;
   protected use open;
   protected use repo_url;

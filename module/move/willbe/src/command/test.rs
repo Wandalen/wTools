@@ -5,14 +5,12 @@ mod private
 
   use std::collections::HashSet;
   use std::path::PathBuf;
-
-
   use wca::{ Args, Props };
   use wtools::error::Result;
   use path::AbsolutePath;
-  use endpoint::test::TestsCommandOptions;
+  use action::test::TestsCommandOptions;
   use former::Former;
-  use cargo::Channel;
+  use channel::Channel;
 
   #[ derive( Former ) ]
   struct TestsProperties
@@ -51,7 +49,7 @@ mod private
     .include_features( include )
     .form();
 
-    match endpoint::test( args, dry )
+    match action::test( args, dry )
     {
       Ok( report ) =>
       {

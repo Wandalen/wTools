@@ -4,7 +4,7 @@ use std::path::{ Path, PathBuf };
 use assert_fs::TempDir;
 
 use crate::TheModule::*;
-use endpoint::test::{test, TestsCommandOptions};
+use action::test::{test, TestsCommandOptions};
 use path::AbsolutePath;
 
 #[ test ]
@@ -27,13 +27,13 @@ fn fail_test()
 
   let args = TestsCommandOptions::former()
   .dir( abs )
-  .channels([ cargo::Channel::Stable ])
+  .channels([ channel::Channel::Stable ])
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-  let stable = rep.failure_reports[0].tests.get( &cargo::Channel::Stable ).unwrap();
+  let stable = rep.failure_reports[0].tests.get( &channel::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
 
   assert!( no_features.out.contains( "failures" ) );
@@ -60,13 +60,13 @@ fn fail_build()
 
   let args = TestsCommandOptions::former()
   .dir( abs )
-  .channels([ cargo::Channel::Stable ])
+  .channels([ channel::Channel::Stable ])
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-  let stable = rep.failure_reports[ 0 ].tests.get( &cargo::Channel::Stable ).unwrap();
+  let stable = rep.failure_reports[ 0 ].tests.get( &channel::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
 
   assert!( no_features.out.contains( "error" ) && no_features.out.contains( "achtung" ) );
@@ -117,7 +117,7 @@ fn call_from_workspace_root()
   let args = TestsCommandOptions::former()
   .dir( abs )
   .concurrent( 1u32 )
-  .channels([ cargo::Channel::Stable ])
+  .channels([ channel::Channel::Stable ])
   .form();
 
 

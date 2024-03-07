@@ -188,7 +188,7 @@ pub( crate ) mod private
           }
         }
         let package = package_map.get( &graph[ n ] ).unwrap();
-        _ = cargo::package( package.crate_dir(), false ).unwrap();
+        _ = cargo::pack( package.crate_dir(), false ).unwrap();
         if publish_need( package ).unwrap()
         {
           nodes.insert( n );

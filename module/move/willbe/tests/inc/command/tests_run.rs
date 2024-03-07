@@ -2,7 +2,7 @@ use crate::*;
 use assert_cmd::Command;
 use inc::
 {
-  endpoint::tests_run::ProjectBuilder,
+  action::tests_run::ProjectBuilder,
   // qqq : for Petro : move to helper. don't reuse test-rs files in command and endpoints
   command::BINARY_NAME,
 };

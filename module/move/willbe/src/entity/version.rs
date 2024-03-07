@@ -103,7 +103,7 @@ mod private
   /// # Returns :
   /// - `Ok` - the new version number as a string;
   /// - `Err` - if the manifest file cannot be read, written, parsed.
-  pub fn bump( manifest : &mut Manifest, dry : bool ) -> Result< BumpReport, ManifestError >
+  pub fn bump( manifest : &mut Manifest, dry : bool ) -> Result< BumpReport, manifest::ManifestError >
   {
     let mut report = BumpReport::default();
 
@@ -116,23 +116,20 @@ mod private
       let data = manifest.manifest_data.as_ref().unwrap();
       if !manifest.package_is()?
       {
-        // qqq : for Bohdan : rid off untyped errors, make proper errors handing
-        // https://www.lpalmieri.com/posts/error-handling-rust/
-        // aaa : used `ManifestError` instead of anyhow.
-        return Err( ManifestError::NotAPackage );
+        return Err( manifest::ManifestError::NotAPackage );
       }
       let package = data.get( "package" ).unwrap();
 
       let version = package.get( "version" );
       if version.is_none()
       {
-        return Err( ManifestError::CannotFindValue( "version".into() ) );
+        return Err( manifest::ManifestError::CannotFindValue( "version".into() ) );
       }
       let version = version.unwrap().as_str().unwrap();
       report.name = Some( package[ "name" ].as_str().unwrap().to_string() );
       report.old_version = Some( version.to_string() );
 
-      Version::from_str( version ).map_err( | e | ManifestError::InvalidValue( e.to_string() ) )?
+      Version::from_str( version ).map_err( | e | manifest::ManifestError::InvalidValue( e.to_string() ) )?
     };
 
     let new_version = version.bump().to_string();

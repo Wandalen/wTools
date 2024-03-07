@@ -42,19 +42,19 @@ mod private
       .collect::< HashMap< _, _ > >();
       for wanted in &self.wanted_to_publish
       {
-        let list = endpoint::list
+        let list = action::list
         (
-          endpoint::list::ListOptions::former()
+          action::list::ListOptions::former()
           .path_to_manifest( wanted.clone() )
-          .format( endpoint::list::ListFormat::Tree )
-          .dependency_sources([ endpoint::list::DependencySource::Local ])
-          .dependency_categories([ endpoint::list::DependencyCategory::Primary ])
+          .format( action::list::ListFormat::Tree )
+          .dependency_sources([ action::list::DependencySource::Local ])
+          .dependency_categories([ action::list::DependencyCategory::Primary ])
           .form()
         )
         .map_err( |( _, _e )| std::fmt::Error )?;
-        let endpoint::list::ListReport::Tree( list ) = list else { unreachable!() };
+        let action::list::ListReport::Tree( list ) = list else { unreachable!() };
 
-        fn callback( name_bump_report : &HashMap< &String, ( &String, &String) >, mut r : endpoint::list::ListNodeReport ) -> endpoint::list::ListNodeReport
+        fn callback( name_bump_report : &HashMap< &String, ( &String, &String) >, mut r : action::list::ListNodeReport ) -> action::list::ListNodeReport
         {
           if let Some(( old, new )) = name_bump_report.get( &r.name )
           {
@@ -68,7 +68,7 @@ mod private
         }
         let list = list.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
 
-        let list = endpoint::list::ListReport::Tree( list );
+        let list = action::list::ListReport::Tree( list );
         write!( f, "{}\n", list )?;
       }
       writeln!( f, "The following packages are pending for publication :" )?;

@@ -2,7 +2,7 @@ const ASSETS_PATH : &str = "tests/assets";
 
 use crate::*;
 use assert_fs::prelude::*;
-use TheModule::endpoint;
+use TheModule::action;
 
 //
 
@@ -83,7 +83,7 @@ mod workflow_renew
     };
 
     // Act
-    _ = endpoint::workflow_renew( &temp ).unwrap();
+    _ = action::workflow_renew( &temp ).unwrap();
 
     // Assert
     let mut file = File::open( file_path ).unwrap();

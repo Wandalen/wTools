@@ -27,7 +27,7 @@ fn package_path< P : AsRef< Path > >( path : P ) -> PathBuf
 fn package< P : AsRef< Path > >( path : P ) -> Package
 {
   let path = path.as_ref();
-  _ = cargo::package( path, false ).expect( "Failed to package a package" );
+  _ = cargo::pack( path, false ).expect( "Failed to package a package" );
   let absolute = AbsolutePath::try_from( path ).unwrap();
 
   Package::try_from( absolute ).unwrap()
@@ -42,7 +42,7 @@ fn no_changes()
   // aaa : use `package_path` function
   let package_path = package_path( "c" );
 
-  _ = cargo::package( &package_path, false ).expect( "Failed to package a package" );
+  _ = cargo::pack( &package_path, false ).expect( "Failed to package a package" );
   let absolute = AbsolutePath::try_from( package_path ).unwrap();
   let package = Package::try_from( absolute ).unwrap();
 
@@ -67,7 +67,7 @@ fn with_changes()
   let mut manifest = manifest::open( absolute ).unwrap();
   version::bump( &mut manifest, false ).unwrap();
 
-  _ = cargo::package( &temp, false ).expect( "Failed to package a package" );
+  _ = cargo::pack( &temp, false ).expect( "Failed to package a package" );
 
   let absolute = AbsolutePath::try_from( temp.as_ref() ).unwrap();
   let package = Package::try_from( absolute ).unwrap();

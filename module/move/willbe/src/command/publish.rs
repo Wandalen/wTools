@@ -19,7 +19,7 @@ mod private
     .get_owned( "dry" )
     .unwrap_or( true );
 
-    match endpoint::publish( patterns, dry )
+    match action::publish( patterns, dry )
     {
       core::result::Result::Ok( report ) =>
       {

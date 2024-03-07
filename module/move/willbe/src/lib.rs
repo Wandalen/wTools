@@ -58,36 +58,12 @@ mod_interface!
   layer command;
 
   /// Describes functions that can be called from an interface.
-  layer endpoint;
-
-  /// Offers capabilities for package management, facilitating the handling and organization of packages.
-  layer package;
-
-  /// Provides a set of functionalities for handling and manipulating packages.
-  layer packages;
+  layer action;
 
   /// The parse function parses an input string into a HashMap where the keys are String and the values are of type Value.
   layer query;
 
   /// Tools for parsing and extracting information from url.
   layer url;
-
-  /// Provides an opportunity to work with versions.
-  layer version;
-
-  /// Git interaction module that enables seamless integration and management of version control workflows.
-  layer git;
-
-  /// Interaction module with the `cargo` utilities.
-  layer cargo;
-
-  /// It features the ability to interact with workspaces, manage their participants, and other functionalities.
-  layer workspace;
-
-  /// To manipulate manifest data.
-  layer manifest;
-
-  /// Operations with tests
-  layer test;
 
 }

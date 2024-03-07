@@ -35,7 +35,7 @@ mod private
   pub struct TestsCommandOptions
   {
     dir : AbsolutePath,
-    channels : HashSet< cargo::Channel >,
+    channels : HashSet< channel::Channel >,
     #[ default( 0u32 ) ]
     concurrent : u32,
     #[ default( 1u32 ) ]
@@ -54,7 +54,7 @@ mod private
   {
     let mut reports = TestsReport::default();
     // fail fast if some additional installations required
-    let channels = cargo::available_channels( args.dir.as_ref() ).map_err( | e | ( reports.clone(), e ) )?;
+    let channels = channel::available_channels( args.dir.as_ref() ).map_err( | e | ( reports.clone(), e ) )?;
     let channels_diff = args.channels.difference( &channels ).collect::< Vec< _ > >();
     if !channels_diff.is_empty()
     {
@@ -82,7 +82,7 @@ mod private
     };
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
-    run_tests( &t_args, &packages, dry )
+    tests_run( &t_args, &packages, dry )
   }
 
   fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >

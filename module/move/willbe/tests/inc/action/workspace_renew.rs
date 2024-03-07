@@ -1,6 +1,6 @@
 use assert_fs::prelude::*;
 
-use crate::TheModule::endpoint;
+use crate::TheModule::action;
 
 const ASSETS_PATH : &str = "tests/assets";
 
@@ -10,7 +10,7 @@ mod workspace_renew
 {
   use std::fs;
   use std::fs::create_dir;
-  use endpoint::workspace_renew;
+  use action::workspace_renew;
 
   use super::*;
 

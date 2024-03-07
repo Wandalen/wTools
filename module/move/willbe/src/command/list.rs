@@ -3,7 +3,7 @@ mod private
 {
   use crate::*;
 
-  use { endpoint, wtools };
+  use { action, wtools };
 
   use std::
   {
@@ -16,7 +16,7 @@ mod private
   use wtools::error::{ for_app::Context, Result };
 
   use path::AbsolutePath;
-  use endpoint::{ list as l, list::{ ListFormat, ListOptions } };
+  use action::{ list as l, list::{ ListFormat, ListOptions } };
   use former::Former;
 
   #[ derive( Former ) ]
@@ -77,7 +77,7 @@ mod private
     .dependency_categories( categories )
     .form();
 
-    match endpoint::list( args )
+    match action::list( args )
     {
       Ok( report ) =>
       {

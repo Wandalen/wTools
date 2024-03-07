@@ -7,7 +7,7 @@ mod private
   /// Generate headers for workspace members
   pub fn readme_modules_headers_renew( ( _, _ ) : ( wca::Args, wca::Props ) ) -> Result< () >
   {
-    endpoint::readme_modules_headers_renew( AbsolutePath::try_from( std::env::current_dir()? )? ).context( "Fail to generate headers" )
+    action::readme_modules_headers_renew( AbsolutePath::try_from( std::env::current_dir()? )? ).context( "Fail to generate headers" )
   }
 
 }

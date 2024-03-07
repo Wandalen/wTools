@@ -1,7 +1,7 @@
 use super::*;
 
 use assert_fs::prelude::*;
-use TheModule::endpoint::{ self, list::* };
+use TheModule::action::{ self, list::* };
 use willbe::CrateDir;
 use willbe::path::AbsolutePath;
 
@@ -45,7 +45,7 @@ mod chain_of_three_packages
     .form();
 
     // Act
-    let output = endpoint::list( args ).unwrap();
+    let output = action::list( args ).unwrap();
 
     // Assert
     let ListReport::Tree( trees ) = &output else { panic!( "Expected `Tree` format, but found another" ) };
@@ -86,7 +86,7 @@ mod chain_of_three_packages
       .form();
 
     // Act
-    let output = endpoint::list( args ).unwrap();
+    let output = action::list( args ).unwrap();
 
     // Assert
     let ListReport::List( names ) = &output else { panic!("Expected `Topological` format, but found another") };
@@ -107,7 +107,7 @@ mod chain_of_three_packages
       .form();
 
     // Act
-    let output = endpoint::list( args ).unwrap();
+    let output = action::list( args ).unwrap();
 
     // Assert
     let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
@@ -146,7 +146,7 @@ mod package_with_remote_dependency
       .form();
 
     // Act
-    let output = endpoint::list( args ).unwrap();
+    let output = action::list( args ).unwrap();
 
     // Assert
     let ListReport::Tree( trees ) = &output else { panic!( "Expected `Tree` format, but found another" ) };
@@ -184,7 +184,7 @@ mod package_with_remote_dependency
       .form();
 
     // Act
-    let output = endpoint::list( args ).unwrap();
+    let output = action::list( args ).unwrap();
 
     // Assert
     let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
@@ -209,7 +209,7 @@ mod package_with_remote_dependency
       .form();
 
     // Act
-    let output = endpoint::list( args ).unwrap();
+    let output = action::list( args ).unwrap();
 
     // Assert
     let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
@@ -243,7 +243,7 @@ mod workspace_with_cyclic_dependency
       .form();
 
     // Act
-    let output = endpoint::list( args ).unwrap();
+    let output = action::list( args ).unwrap();
 
     // Assert
     let ListReport::Tree( trees ) = &output else { panic!( "Expected `Tree` format, but found another" ) };
@@ -303,7 +303,7 @@ mod workspace_with_cyclic_dependency
       .form();
 
     // Act
-    let output = endpoint::list( args );
+    let output = action::list( args );
 
     // Assert
 

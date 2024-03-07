@@ -1,16 +1,41 @@
 
 crate::mod_interface!
 {
+
   /// Make sha-1 hash for data.
-  orphan mod sha;
+  layer sha;
+  orphan use super::sha;
+
   /// Operate over files.
-  orphan mod files;
+  layer files;
+  orphan use super::files;
+
   /// Run external processes.
-  orphan mod process;
+  layer process;
+  orphan use super::process;
+
   /// Work with paths.
-  orphan mod path;
+  layer path;
+  orphan use super::path;
+
   /// Tools for working with dependencies graph.
-  orphan mod graph;
+  layer graph;
+  orphan use super::graph;
+
   /// Traits and structs for templates.
-  orphan mod template;
+  layer template;
+  orphan use super::template;
+
+  /// Git interaction module that enables seamless integration and management of version control workflows.
+  layer git;
+  orphan use super::git;
+
+  /// Interaction module with the `cargo` utilities.
+  layer cargo;
+  orphan use super::cargo;
+
+  /// Rust toolchain channel: stable/nightly.
+  layer channel;
+  orphan use super::channel;
+
 }

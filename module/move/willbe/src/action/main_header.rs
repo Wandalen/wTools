@@ -1,5 +1,6 @@
 mod private
 {
+  use crate::*;
   use std::fs::
   {
     OpenOptions
@@ -15,14 +16,14 @@ mod private
   use wtools::error::err;
   use error_tools::Result;
   use wca::wtools::anyhow::Error;
-  use crate::endpoint::readme_health_table_renew::
+  use action::readme_health_table_renew::
   {
     readme_path,
     workspace_root
   };
-  use crate::path::AbsolutePath;
-  use crate::{ CrateDir, query, url, Workspace, wtools };
-  use crate::wtools::error::anyhow::
+  use path::AbsolutePath;
+  use { CrateDir, query, url, Workspace, wtools };
+  use wtools::error::anyhow::
   {
     format_err
   };

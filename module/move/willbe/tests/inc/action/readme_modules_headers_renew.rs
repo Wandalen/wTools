@@ -2,7 +2,7 @@ const ASSETS_PATH : &str = "tests/assets";
 
 use crate::*;
 use assert_fs::prelude::*;
-use TheModule::endpoint;
+use TheModule::action;
 use std::io::Read;
 use willbe::path::AbsolutePath;
 
@@ -30,7 +30,7 @@ fn tags_should_stay()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = endpoint::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
@@ -49,7 +49,7 @@ fn default_stability()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = endpoint::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
@@ -67,7 +67,7 @@ fn docs()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = endpoint::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
@@ -85,7 +85,7 @@ fn gitpod()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = endpoint::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
@@ -103,7 +103,7 @@ fn discord()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = endpoint::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
@@ -121,7 +121,7 @@ fn status()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = endpoint::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
@@ -139,13 +139,13 @@ fn idempotency()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = endpoint::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
   let mut actual1 = String::new();
   _ = file.read_to_string( &mut actual1 ).unwrap();
   drop( file );
 
-  _ = endpoint::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
   let mut actual2 = String::new();
   _ = file.read_to_string( &mut actual2 ).unwrap();
@@ -160,7 +160,7 @@ fn with_many_members_and_varius_config()
 {
   let temp = arrange( "three_packages" );
 
-  _ = endpoint::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
   let mut file_b = std::fs::File::open( temp.path().join( "b" ).join( "Readme.md" ) ).unwrap();
   let mut file_c = std::fs::File::open( temp.path().join( "c" ).join( "Readme.md" ) ).unwrap();
@@ -187,5 +187,5 @@ fn without_needed_config()
   let temp = arrange( "variadic_tag_configurations" );
 
   // Act
-  _ = endpoint::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 }

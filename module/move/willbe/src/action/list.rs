@@ -34,7 +34,7 @@ mod private
   use workspace::Workspace;
   use path::AbsolutePath;
 
-  /// Args for `list` endpoint.
+  /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
   pub enum ListFormat
   {
@@ -100,7 +100,7 @@ mod private
     Remote,
   }
 
-  /// Args for `list` endpoint.
+  /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
   pub enum ListFilter
   {
@@ -275,7 +275,7 @@ mod private
     }
   }
 
-  /// Represents the different report formats for the `list` endpoint.
+  /// Represents the different report formats for the `list` action.
   #[ derive( Debug, Default, Clone ) ]
   pub enum ListReport
   {
@@ -554,7 +554,7 @@ mod private
 
 crate::mod_interface!
 {
-  /// Arguments for `list` endpoint.
+  /// Arguments for `list` action.
   protected use ListOptions;
   /// Additional information to include in a package report.
   protected use PackageAdditionalInfo;
@@ -562,13 +562,13 @@ crate::mod_interface!
   protected use DependencySource;
   /// Represents the category of a dependency.
   protected use DependencyCategory;
-  /// Argument for `list` endpoint. Sets the output format.
+  /// Argument for `list` action. Sets the output format.
   protected use ListFormat;
-  /// Argument for `list` endpoint. Sets filter(local or all) packages should be in the output.
+  /// Argument for `list` action. Sets filter(local or all) packages should be in the output.
   protected use ListFilter;
-  /// Contains output of the endpoint.
+  /// Contains output of the action.
   protected use ListReport;
-  /// Contains output of a single node of the endpoint.
+  /// Contains output of a single node of the action.
   protected use ListNodeReport;
   /// List packages in workspace.
   orphan use list;

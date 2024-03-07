@@ -2,22 +2,97 @@ mod private
 {
 
   use crate::*;
-  use std::collections::{ BTreeMap, BTreeSet, HashSet };
-  use std::fmt::Formatter;
-  use std::sync::{ Arc, Mutex };
+  use std::
+  {
+    collections::{ BTreeMap, BTreeSet, HashSet },
+    fmt::Formatter,
+    sync::{ Arc, Mutex },
+    path::Path,
+  };
   use cargo_metadata::Package;
   use colored::Colorize;
   use rayon::ThreadPoolBuilder;
   use process::CmdReport;
   use wtools::error::anyhow::{ Error, format_err };
   use wtools::iter::Itertools;
+  use wtools::error::Result;
+  use former::Former;
+  use channel::Channel;
+
+  /// Represents the arguments for the test.
+  #[ derive( Debug, Former, Clone ) ]
+  pub struct SingleTestOptions
+  {
+    /// Specifies the release channels for rust.
+    channel : Channel,
+    /// Determines whether to use default features in the test.
+    /// Enabled by default.
+    #[ default( true ) ]
+    with_default_features : bool,
+    /// Determines whether to use all available features in the test.
+    /// Disabled by default.
+    #[ default( false ) ]
+    with_all_features : bool,
+    /// Specifies a list of features to be enabled in the test.
+    enable_features : BTreeSet< String >,
+  }
+
+  impl SingleTestOptions
+  {
+    fn as_rustup_args(&self ) -> Vec< String >
+    {
+      [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
+      .into_iter()
+      .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
+      .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
+      .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.iter().join( "," ) ]) }.into_iter().flatten() )
+      .collect()
+    }
+  }
+
+  /// Executes a test command with the given arguments.
+  ///
+  /// # Arguments
+  ///
+  /// * `path` - The path to the test command.
+  /// * `options` - The options for the test command.
+  /// * `dry` - A boolean indicating whether to perform a dry run or not.
+  ///
+  /// # Returns
+  ///
+  /// Returns a `Result` containing a `CmdReport` if the command is executed successfully,
+  /// or an error if the command fails to execute.
+  pub fn _run< P >( path : P, options : SingleTestOptions, dry : bool ) -> Result< CmdReport >
+  where
+    P : AsRef< Path >
+  {
+    let ( program, options ) = ( "rustup", options.as_rustup_args() );
+
+    if dry
+    {
+      Ok
+      (
+        CmdReport
+        {
+          command : format!( "{program} {}", options.join( " " ) ),
+          path : path.as_ref().to_path_buf(),
+          out : String::new(),
+          err : String::new(),
+        }
+      )
+    }
+    else
+    {
+      process::process_run_with_param_and_joined_steams(program, options, path )
+    }
+  }
 
   /// `TestOptions` is a structure used to store the arguments for tests.
   #[ derive( Debug ) ]
   pub struct TestOptions
   {
     /// `channels` - A set of Cargo channels that are to be tested.
-    pub channels : HashSet< cargo::Channel >,
+    pub channels : HashSet< Channel >,
 
     /// `concurrent` - A usize value indicating how much test`s can be run at the same time.
     pub concurrent : u32,
@@ -50,11 +125,11 @@ mod private
     pub dry : bool,
     /// A string containing the name of the package being tested.
     pub package_name : String,
-    /// A `BTreeMap` where the keys are `cargo::Channel` enums representing the channels
+    /// A `BTreeMap` where the keys are `channel::Channel` enums representing the channels
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
     ///   feature names and the values are `CmdReport` structs representing the test results for
     ///   the specific feature and channel.
-    pub tests : BTreeMap< cargo::Channel, BTreeMap< String, CmdReport > >,
+    pub tests : BTreeMap< channel::Channel, BTreeMap< String, CmdReport > >,
   }
 
   impl std::fmt::Display for TestReport
@@ -172,9 +247,9 @@ mod private
     }
   }
 
-  /// `run_tests` is a function that runs tests on a given package with specified arguments.
+  /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run_test( args : &TestOptions, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
+  pub fn run( args : &TestOptions, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
   {
     // let exclude = args.exclude_features.iter().cloned().collect();
     let mut report = TestReport::default();
@@ -205,7 +280,8 @@ mod private
             (
               move | _ |
               {
-                let cmd_rep = cargo::test( dir, cargo::TestOptions::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
+                // qqq : for Petro : bad. tooooo long line. cap on 100 ch
+                let cmd_rep = _run( dir, SingleTestOptions::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
                 r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
               }
             );
@@ -221,7 +297,7 @@ mod private
   }
 
   /// Run tests for given packages.
-  pub fn run_tests( args : &TestOptions, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
+  pub fn tests_run( args : &TestOptions, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
     let mut report = TestsReport::default();
     report.dry = dry;
@@ -238,7 +314,7 @@ mod private
           (
             move | _ |
             {
-              match run_test( &args, package, dry )
+              match run( &args, package, dry )
               {
                 Ok( r ) =>
                 {
@@ -265,7 +341,7 @@ mod private
     }
   }
 
-  fn print_temp_report( package_name : &str, channels : &HashSet< cargo::Channel >, features : &HashSet< BTreeSet< String > > )
+  fn print_temp_report( package_name : &str, channels : &HashSet< channel::Channel >, features : &HashSet< BTreeSet< String > > )
   {
     println!( "Package : {}\nThe tests will be executed using the following configurations :", package_name );
     for channel in channels.iter().sorted()
@@ -281,9 +357,13 @@ mod private
 
 crate::mod_interface!
 {
+
+  protected use SingleTestOptions;
+  protected use _run;
+
   protected use TestOptions;
   protected use TestReport;
   protected use TestsReport;
-  protected use run_test;
-  protected use run_tests;
+  protected use run;
+  protected use tests_run;
 }

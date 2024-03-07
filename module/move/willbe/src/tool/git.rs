@@ -1,9 +1,7 @@
 mod private
 {
   use crate::*;
-
   use std::path::Path;
-
   use process::CmdReport;
   use wtools::error::Result;
 
@@ -147,6 +145,5 @@ crate::mod_interface!
   protected use add;
   protected use commit;
   protected use push;
-
   protected use ls_remote_url;
 }

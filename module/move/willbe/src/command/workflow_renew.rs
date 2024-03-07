@@ -10,7 +10,7 @@ mod private
   ///
   pub fn workflow_renew( ( _, _ ) : ( Args, Props ) ) -> Result< () >
   {
-    endpoint::workflow_renew( &std::env::current_dir()? ).context( "Fail to generate workflow" )
+    action::workflow_renew( &std::env::current_dir()? ).context( "Fail to generate workflow" )
   }
 }
 

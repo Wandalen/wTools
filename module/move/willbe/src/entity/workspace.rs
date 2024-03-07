@@ -5,7 +5,6 @@ mod private
   use std::path::Path;
   use cargo_metadata::{ Metadata, MetadataCommand, Package };
   use petgraph::Graph;
-
   use wtools::error::{ for_app::Context, for_lib::Error, Result };
   use path::AbsolutePath;
 
@@ -185,6 +184,6 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use Workspace;
+  exposed use Workspace;
   orphan use WorkspaceError;
 }

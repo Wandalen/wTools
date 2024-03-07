@@ -1,13 +1,13 @@
 mod private
 {
   use error_tools::{ for_app::Context, Result };
-  use crate::endpoint;
+  use crate::action;
   use crate::path::AbsolutePath;
 
   /// Generates header to main Readme.md file.
   pub fn readme_header_renew( ( _, _ ) : ( wca::Args, wca::Props ) ) -> Result< () >
   {
-    endpoint::readme_header_renew( AbsolutePath::try_from( std::env::current_dir()? )? ).context( "Fail to create table" )
+    action::readme_header_renew( AbsolutePath::try_from( std::env::current_dir()? )? ).context( "Fail to create table" )
   }
 }
 

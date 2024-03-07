@@ -8,7 +8,7 @@ mod private
   // qqq : for Petro : rid off crate::x. ask
   use crate::path::AbsolutePath;
   use crate::{ CrateDir, query, url, Workspace };
-  use crate::endpoint::readme_health_table_renew::{ readme_path, Stability, stability_generate };
+  use crate::action::readme_health_table_renew::{ readme_path, Stability, stability_generate };
   use crate::package::Package;
   use crate::wtools::error::
   {
