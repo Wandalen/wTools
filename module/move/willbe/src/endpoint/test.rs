@@ -2,8 +2,7 @@
 mod private
 {
   use std::collections::HashSet;
-  use std::{env, fs};
-  use std::time::{SystemTime, UNIX_EPOCH};
+  use std::{ env, fs };
 
   use cargo_metadata::Package;
 
@@ -84,12 +83,7 @@ mod private
     };
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
     
-    let current_time = SystemTime::now()
-    .duration_since( UNIX_EPOCH )
-    .map_err( | e | ( reports.clone(), e.into() ) )?
-    .as_millis();
-    
-    let unique_name = format!("temp_dir_for_test_command{}", current_time);
+    let unique_name = format!( "temp_dir_for_test_command_{}", uuid::Uuid::new_v4() );
     
     let temp_dir = env::temp_dir().join( unique_name );
 

@@ -139,8 +139,8 @@ mod private
     P : AsRef< Path >,
     Pb : AsRef< Path >,
   {
-    let target_dir = temp_dir.map( | p | vec![ /*"--".to_string(),*/ "--target-dir".to_string(),  p.as_ref().to_string_lossy().into() ] );
-    let ( program, args ) = ( "rustup", args.as_rustup_args().into_iter().chain(target_dir.into_iter().flatten()).collect::<Vec<String>>() );
+    let target_dir = temp_dir.map( | p | vec![ "--target-dir".to_string(),  p.as_ref().to_string_lossy().into() ] );
+    let ( program, args ) = ( "rustup", args.as_rustup_args().into_iter().chain( target_dir.into_iter().flatten() ).collect::< Vec< String > >() );
 
     if dry
     {
