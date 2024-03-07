@@ -13,7 +13,16 @@ use gluesql::
   prelude::Glue,
   sled_storage::{ sled::Config, SledStorage },
 };
-use crate::report::{ FramesReport, FieldsReport, FeedsReport, SelectedEntries, QueryReport, ConfigReport, UpdateReport };
+use crate::report::{
+  FramesReport,
+  FieldsReport,
+  FeedsReport,
+  SelectedEntries,
+  QueryReport,
+  ConfigReport,
+  UpdateReport,
+  ListReport,
+};
 use wca::wtools::Itertools;
 
 mod model;
@@ -110,7 +119,7 @@ pub trait FeedStore
   async fn process_feeds( &mut self, feeds : Vec< ( Feed, Duration ) > ) -> Result< UpdateReport, Box< dyn std::error::Error + Send + Sync > >;
 
   /// Get all feed frames from storage.
-  async fn get_all_frames( &mut self ) -> Result< UpdateReport, Box< dyn std::error::Error + Send + Sync > >;
+  async fn get_all_frames( &mut self ) -> Result< ListReport, Box< dyn std::error::Error + Send + Sync > >;
 
   /// Get all feeds from storage.
   async fn get_all_feeds( &mut self ) -> Result< FeedsReport, Box< dyn std::error::Error + Send + Sync > >;
@@ -152,12 +161,12 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( report )
   }
 
-  async fn get_all_frames( &mut self ) -> Result< UpdateReport, Box< dyn std::error::Error + Send + Sync > >
+  async fn get_all_frames( &mut self ) -> Result< ListReport, Box< dyn std::error::Error + Send + Sync > >
   {
     let res = table( "frame" ).select().execute( &mut *self.storage.lock().await ).await?;
 
-    let mut report = Vec::new();
-    let frames = match res
+    let mut reports = Vec::new();
+    let all_frames = match res
     {
       Payload::Select { labels: label_vec, rows: rows_vec } =>
       {
@@ -170,18 +179,27 @@ impl FeedStore for FeedStorage< SledStorage >
       _ => SelectedEntries::new(),
     };
 
-    let mut frames_map = HashMap::new();
+    let mut feeds_map = HashMap::new();
 
-    for row in frames.selected_rows
+    for row in all_frames.selected_rows
     {
       let title_val = row.last().unwrap().clone();
       let title = String::from( title_val );
-      frames_map.entry( title )
-      .and_modify( | vec : &mut Vec< Vec< Value > > | vec.push( row ) )
-      .or_insert( Vec::new() )
+      feeds_map.entry( title )
+      .and_modify( | vec : &mut Vec< Vec< Value > > | vec.push( row.clone() ) )
+      .or_insert( vec![ row ] )
       ;
     }
-    Ok( UpdateReport( report ) )
+
+    for ( title, frames ) in feeds_map
+    {
+      let mut report = FramesReport::new( title );
+      report.existing_frames = frames.len();
+      report.selected_frames = SelectedEntries { selected_rows : frames, selected_columns : all_frames.selected_columns.clone() };
+      reports.push( report );
+    }
+
+    Ok( ListReport( reports ) )
   }
 
   async fn get_all_feeds( &mut self ) -> Result< FeedsReport, Box< dyn std::error::Error + Send + Sync > >
@@ -252,7 +270,7 @@ impl FeedStore for FeedStorage< SledStorage >
     // let mut report = FramesReport::new();
     for entry in entries_rows
     {
-      let update = table( "frame" )
+      let _update = table( "frame" )
       .update()
       .set( "title", entry[ 1 ].to_owned() )
       .set( "content", entry[ 4 ].to_owned() )

@@ -49,7 +49,6 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
 
   // updated fetch
   manager.update_feed( vec![ feed_config ] ).await?;
-
   // check
   let payload = manager.get_all_frames().await?;
 
@@ -75,7 +74,7 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
   ;
 
   // no duplicates
-  //assert!( entries.len() == 2 );
+  assert_eq!( entries.len(), 2 );
 
   // check date
   let updated = entries.iter().find( | ( id, _published ) | id == "https://www.nasa.gov/?p=622174" );

@@ -6,7 +6,8 @@ Feed reader with the ability to set updates frequency.
 
 ### Basic use-case
 
-To start using unitore, create configuration toml file with list of feed information - its link and update period.
+To start using unitore, set environment variable `UNITORE_STORAGE` to path to desired storage location.
+Then create configuration toml file with list of feed information - its link and update period.
 Example:
 
 
@@ -42,7 +43,7 @@ cargo run .feeds.list
 ```
 To get custom information about feeds or frames run SQL query to storage database using command `.query.execute` with query string:
 ```bash
-cargo run .query.execute \'SELECT title, links, MIN\(published\) FROM Frames\'
+cargo run .query.execute \'SELECT title, links, MIN\(published\) FROM frame\'
 ```
 To remove config file from storage use command `.config.delete` with path to config file:
 ```bash

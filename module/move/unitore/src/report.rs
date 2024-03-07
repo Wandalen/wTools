@@ -1,11 +1,19 @@
 use gluesql::prelude::{ Payload, Value };
-use std::io::Write;
-use tabwriter::TabWriter;
+use cli_table::
+{
+  Cell,
+  Table,
+  Style,
+  format::{ Separator, Border},
+};
+
+const EMPTY_CELL : &'static str = "  ";
 
 /// Information about result of execution of command for frames.
+#[ derive( Debug ) ]
 pub struct FramesReport
 {
-  pub feed_name : String,
+  pub feed_title : String,
   pub updated_frames : usize,
   pub new_frames : usize,
   pub selected_frames : SelectedEntries,
@@ -19,7 +27,7 @@ impl FramesReport
   {
     Self
     {
-      feed_name : feed_title,
+      feed_title,
       updated_frames : 0,
       new_frames : 0,
       selected_frames : SelectedEntries::new(),
@@ -30,7 +38,7 @@ impl FramesReport
 }
 
 /// General report.
-pub trait Report : std::fmt::Display
+pub trait Report : std::fmt::Display + std::fmt::Debug
 {
   fn report( &self )
   {
@@ -42,22 +50,37 @@ impl std::fmt::Display for FramesReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    writeln!( f, "Feed title: {}", self.feed_name )?;
+    writeln!( f, "\n" )?;
+    writeln!( f, "Feed id: {}", self.feed_title )?;
     writeln!( f, "Updated frames: {}", self.updated_frames )?;
     writeln!( f, "Inserted frames: {}", self.new_frames )?;
     writeln!( f, "Number of frames in storage: {}", self.existing_frames )?;
     if !self.selected_frames.selected_columns.is_empty()
     {
-      writeln!( f, "Selected frames:" )?;
-      for row in &self.selected_frames.selected_rows
+      writeln!( f, "\nSelected frames:" )?;
+      for frame in &self.selected_frames.selected_rows
       {
+        let mut rows = Vec::new();
         for i in 0..self.selected_frames.selected_columns.len()
         {
-            writeln!( f, "{} : {}, ", self.selected_frames.selected_columns[ i ], RowValue( &row[ i ] ) )?;
+          let new_row = vec!
+          [
+            EMPTY_CELL.cell(),
+            self.selected_frames.selected_columns[ i ].clone().cell(),
+            textwrap::fill( &String::from( frame[ i ].clone() ), 120 ).cell(),
+          ];
+          rows.push( new_row );
         }
-        writeln!( f, "" )?;
+        let table_struct = rows.table()
+        .border( Border::builder().build() )
+        .separator( Separator::builder().build() );
+    
+        let table = table_struct.display().unwrap(); 
+    
+        writeln!( f, "{}\n", table )?;
       }
     }
+
     Ok( () )
   }
 }
@@ -65,6 +88,7 @@ impl std::fmt::Display for FramesReport
 impl Report for FramesReport {}
 
 /// Information about result of execution of command for fileds.
+#[ derive( Debug ) ]
 pub struct FieldsReport
 {
   pub fields_list : Vec< [ &'static str; 3 ] >,
@@ -75,21 +99,34 @@ impl std::fmt::Display for FieldsReport
 
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    writeln!( f, "Frames fields:" )?;
-    let mut fields = String::new();
+    let mut rows = Vec::new();
     for field in &self.fields_list
     {
-      writeln!( f, "{}, type {} : {}", field[ 0 ], field[ 1 ], field[ 2 ] )?;
+      rows.push( vec![ EMPTY_CELL.cell(), field[ 0 ].cell(), field[ 1 ].cell(), field[ 2 ].cell() ] );
     }
-      // let mut tw = TabWriter::new( vec![] );
-      // write!( &mut tw, "{}", fields ).unwrap();
-      // tw.flush().unwrap();
+    let table_struct = rows.table()
+    .title( vec!
+    [
+      EMPTY_CELL.cell(),
+      "name".cell().bold( true ),
+      "type".cell().bold( true ),
+      "explanation".cell().bold( true ),
+    ] )
+    .border( Border::builder().build() )
+    .separator( Separator::builder().build() );
+
+    let table = table_struct.display().unwrap(); 
+
+    writeln!( f, "\n\n\nFrames fields:" )?;
+    writeln!( f, "{}", table )?;
+    
     Ok( () )
   }
 }
 
 impl Report for FieldsReport {}
 
+#[ derive( Debug ) ]
 pub struct SelectedEntries
 {
   pub selected_columns : Vec< String >,
@@ -125,6 +162,7 @@ impl std::fmt::Display for SelectedEntries
 }
 
 /// Information about result of execution of command for feed.
+#[ derive( Debug ) ]
 pub struct FeedsReport
 {
   pub selected_entries : SelectedEntries,
@@ -142,10 +180,29 @@ impl std::fmt::Display for FeedsReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
+    writeln!( f, "\n\n\nSelected feeds:" )?;
     if !self.selected_entries.selected_columns.is_empty()
     {
-      writeln!( f, "Selected feeds:" )?;
-      println!( "{}", self.selected_entries );
+      let mut rows = Vec::new();
+      for row in &self.selected_entries.selected_rows
+      {
+        let mut new_row = vec![ EMPTY_CELL.cell() ];
+        new_row.extend( row.iter().map( | cell | String::from( cell ).cell() ) );
+        rows.push( new_row );
+      }
+      let mut headers = vec![ EMPTY_CELL.cell() ];
+      headers.extend( self.selected_entries.selected_columns.iter().map( | header | header.cell().bold( true ) ) );
+      let table_struct = rows.table()
+      .title( headers )
+      .border( Border::builder().build() )
+      .separator( Separator::builder().build() );
+  
+      let table = table_struct.display().unwrap(); 
+      writeln!( f, "{}", table )?;
+    }
+    else
+    {
+      writeln!( f, "No items found!" )?;
     }
 
     Ok( () )
@@ -155,6 +212,7 @@ impl std::fmt::Display for FeedsReport
 impl Report for FeedsReport {}
 
 /// Information about result of execution of custom query.
+#[ derive( Debug ) ]
 pub struct QueryReport
 {
   pub result : Vec< gluesql::prelude::Payload >,
@@ -164,6 +222,7 @@ impl std::fmt::Display for QueryReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
+    writeln!( f, "\n\n" )?;
     for payload in &self.result
     {
       match payload
@@ -183,14 +242,27 @@ impl std::fmt::Display for QueryReport
         Payload::DropTable => writeln!( f, "Table dropped" )?,
         Payload::Select { labels: label_vec, rows: rows_vec } =>
         {
-          writeln!( f, "Selected rows:" )?;
+          writeln!( f, "Selected entries:" )?;
           for row in rows_vec
           {
+            let mut rows = Vec::new();
             for i in 0..label_vec.len()
             {
-              writeln!( f, "{} : {} ", label_vec[ i ], RowValue( &row[ i ] ) )?;
+              let new_row = vec!
+              [
+                EMPTY_CELL.cell(),
+                label_vec[ i ].clone().cell(),
+                textwrap::fill( &String::from( row[ i ].clone() ), 120 ).cell(),
+              ];
+              rows.push( new_row );
             }
-            writeln!( f, "" )?;
+            let table_struct = rows.table()
+            .border( Border::builder().build() )
+            .separator( Separator::builder().build() );
+        
+            let table = table_struct.display().unwrap(); 
+        
+            writeln!( f, "{}\n", table )?;
           }
         },
         Payload::AlterTable => writeln!( f, "Table altered" )?,
@@ -253,6 +325,7 @@ impl From< RowValue< '_ > > for String
 }
 
 /// Information about result of command for subscription config.
+#[ derive( Debug ) ]
 pub struct ConfigReport
 {
   pub result : Payload,
@@ -284,21 +357,28 @@ impl std::fmt::Display for ConfigReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
+    writeln!( f, "\n\n" )?;
     match &self.result
     {
-      Payload::Insert( number ) => writeln!( f, "Create {} config", number )?,
+      Payload::Insert( number ) => writeln!( f, "Created {} config", number )?,
       Payload::Delete( number ) => writeln!( f, "Deleted {} config", number )?,
-      Payload::Select { labels: label_vec, rows: rows_vec } =>
+      Payload::Select { labels: _label_vec, rows: rows_vec } =>
       {
         writeln!( f, "Selected configs:" )?;
+        let mut rows = Vec::new();
         for row in rows_vec
         {
-          for i in 0..label_vec.len()
-          {
-            writeln!( f, "{} : {} ", label_vec[ i ], RowValue( &row[ i ] ) )?;
-          }
-          writeln!( f, "" )?;
+          rows.push( vec![ EMPTY_CELL.cell(), String::from( row[ 0 ].clone() ).cell() ] );
         }
+
+        let table_struct = rows.table()
+        .border( Border::builder().build() )
+        .separator( Separator::builder().build() );
+    
+        let table = table_struct.display().unwrap(); 
+    
+        writeln!( f, "{}", table )?;
+
       },
       _ => {},
     };
@@ -309,6 +389,7 @@ impl std::fmt::Display for ConfigReport
 
 impl Report for ConfigReport {}
 
+#[ derive( Debug ) ]
 pub struct UpdateReport( pub Vec< FramesReport > );
 
 impl std::fmt::Display for UpdateReport
@@ -319,9 +400,13 @@ impl std::fmt::Display for UpdateReport
     {
       writeln!( f, "{}", report )?;
     }
-    writeln!( f, "\n\n" )?;
     writeln!( f, "Total new feeds dowloaded : {}", self.0.iter().filter( | fr_report | fr_report.is_new_feed ).count() )?;
-    writeln!( f, "Total feeds with updated or new frames : {}", self.0.iter().filter( | fr_report | !fr_report.is_new_feed ).count() )?;
+    writeln!
+    (
+      f,
+      "Total feeds with updated or new frames : {}",
+      self.0.iter().filter( | fr_report | fr_report.updated_frames + fr_report.new_frames > 0 ).count()
+    )?;
     writeln!( f, "" )?;
     writeln!( f, "Total new frames : {}", self.0.iter().fold( 0, | acc, fr_report | acc + fr_report.new_frames ) )?;
     writeln!( f, "Total updated frames : {}", self.0.iter().fold( 0, | acc, fr_report | acc + fr_report.updated_frames ) )?;
@@ -331,3 +416,34 @@ impl std::fmt::Display for UpdateReport
 }
 
 impl Report for UpdateReport {}
+
+#[ derive( Debug ) ]
+pub struct ListReport( pub Vec< FramesReport > );
+
+impl std::fmt::Display for ListReport
+{
+  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  {
+    for report in &self.0
+    {
+      writeln!( f, "{}", report )?;
+    }
+    writeln!
+    (
+      f,
+      "Total feeds in storage: {}",
+      self.0.len()
+    )?;
+    writeln!
+    (
+      f,
+      "Total frames in storage: {}",
+      self.0.iter().fold( 0, | acc, fr_report | acc + fr_report.selected_frames.selected_rows.len() )
+    )?;
+    writeln!( f, "" )?;
+
+    Ok( () )
+  }
+}
+
+impl Report for ListReport {}

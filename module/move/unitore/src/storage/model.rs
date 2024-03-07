@@ -4,7 +4,7 @@ use feed_rs::model::{ Entry, Feed };
 use gluesql::core::
 {
   ast_builder::{ null, text, timestamp, ExprNode },
-  chrono::{ SecondsFormat, Utc },
+  chrono::SecondsFormat,
 };
 
 pub struct FeedRow( pub Vec< ExprNode< 'static > > );

@@ -35,7 +35,7 @@ async fn test_save_feed_plain() -> Result< (), Box< dyn std::error::Error + Sync
       updated_frames : 0,
       selected_frames : SelectedEntries::new(),
       existing_frames : 0,
-      feed_name : String::new(),
+      feed_title : String::new(),
       is_new_feed : false,
     } ] ) ) )
   ;
