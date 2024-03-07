@@ -1,16 +1,16 @@
 mod private
 {
-  use std ::collections ::BTreeMap;
-  use std ::fs;
-  use std ::io ::Write;
-  use error_tools ::for_app ::Context;
-  use error_tools ::Result;
-  use former ::Former;
-  use wca ::Props;
-  use std ::path ::Path;
-  use std ::path ::PathBuf;
-  use wca ::Value;
-  use std ::collections ::HashMap;
+  use std::collections::BTreeMap;
+  use std::fs;
+  use std::io::Write;
+  use error_tools::for_app::Context;
+  use error_tools::Result;
+  use former::Former;
+  use wca::Props;
+  use std::path::Path;
+  use std::path::PathBuf;
+  use wca::Value;
+  use std::collections::HashMap;
 
   /// Trait for creating a template for a file structure.
   pub trait Template< F > : Sized
@@ -47,7 +47,7 @@ mod private
 
         if !dir.exists()
         {
-          fs ::create_dir_all( dir )?;
+          fs::create_dir_all( dir )?;
         }
         if !full_path.exists()
         {
@@ -76,7 +76,7 @@ mod private
     /// Extracts template values from props for parameters required for this template.
     pub fn values_from_props( &self, props : &Props ) -> TemplateValues
     {
-      let values = self.0.iter().map( | param | ( param.clone(), props.get( param ).map( Value ::clone ) ) ).collect();
+      let values = self.0.iter().map( | param | ( param.clone(), props.get( param ).map( Value::clone ) ) ).collect();
       TemplateValues( values )
     }
   }
@@ -102,11 +102,11 @@ mod private
               {
                 match value
                 {
-                  Value ::String( val ) => val.to_string(),
-                  Value ::Number( val ) => val.to_string(),
-                  Value ::Path( _ ) => "unsupported".to_string(),
-                  Value ::Bool( val ) => val.to_string(),
-                  Value ::List( _ ) => "unsupported".to_string(),
+                  Value::String( val ) => val.to_string(),
+                  Value::Number( val ) => val.to_string(),
+                  Value::Path( _ ) => "unsupported".to_string(),
+                  Value::Bool( val ) => val.to_string(),
+                  Value::List( _ ) => "unsupported".to_string(),
                 }
               }
             )
@@ -146,8 +146,8 @@ mod private
 
     fn build_template( &self, values : &TemplateValues ) -> Result< String >
     {
-      let mut handlebars = handlebars ::Handlebars ::new();
-      handlebars.register_escape_fn( handlebars ::no_escape );
+      let mut handlebars = handlebars::Handlebars::new();
+      handlebars.register_escape_fn( handlebars::no_escape );
       handlebars.register_template_string( "templated_file", self.data )?;
       handlebars.render( "templated_file", &values.to_serializable() ).context( "Failed creating a templated file" )
     }
@@ -172,12 +172,12 @@ mod private
 
   impl< Context, End > TemplateFilesBuilderFormer< Context, End >
   where
-    End : former ::ToSuperFormer< TemplateFilesBuilder, Context >,
+    End : former::ToSuperFormer< TemplateFilesBuilder, Context >,
   {
     #[ inline( always ) ]
-    pub fn file( self ) -> TemplateFileDescriptorFormer< Self, impl former ::ToSuperFormer< TemplateFileDescriptor, Self > >
+    pub fn file( self ) -> TemplateFileDescriptorFormer< Self, impl former::ToSuperFormer< TemplateFileDescriptor, Self > >
     {
-      let on_end = | descriptor : TemplateFileDescriptor, super_former : core ::option ::Option< Self > | -> Self
+      let on_end = | descriptor : TemplateFileDescriptor, super_former : core::option::Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
         if let Some( ref mut files ) = super_former.container.files
@@ -190,7 +190,7 @@ mod private
         }
         super_former
       };
-      TemplateFileDescriptorFormer ::begin( Some( self ), on_end )
+      TemplateFileDescriptorFormer::begin( Some( self ), on_end )
     }
   }
 
@@ -215,7 +215,7 @@ mod private
     fn write( &self, instruction : &FileWriteInstruction ) -> Result< () >
     {
       let FileWriteInstruction { path, data } = instruction;
-      let mut file = fs ::File ::create( path ).context( "Failed creating file" )?;
+      let mut file = fs::File::create( path ).context( "Failed creating file" )?;
       file.write_all( data ).context( "Failed writing to file" )
     }
   }
@@ -223,7 +223,7 @@ mod private
 
 //
 
-crate ::mod_interface!
+crate::mod_interface!
 {
   orphan use Template;
   orphan use TemplateFiles;

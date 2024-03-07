@@ -153,5 +153,6 @@ crate::mod_interface!
   /// Generate header in main readme.md
   layer main_header;
   /// Generate headers
-  layer module_headers;
+  layer readme_modules_headers_generate;
+
 }

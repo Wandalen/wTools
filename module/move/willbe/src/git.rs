@@ -1,11 +1,11 @@
 mod private
 {
-  use crate ::*;
+  use crate::*;
 
-  use std ::path ::Path;
+  use std::path::Path;
 
-  use process ::CmdReport;
-  use wtools ::error ::Result;
+  use process::CmdReport;
+  use wtools::error::Result;
 
   /// Adds changes to the Git staging area.
   ///
@@ -26,7 +26,7 @@ mod private
   {
     let objects = objects.as_ref().iter().map( | x | x.as_ref() );
 
-    let ( program, args ) = ( "git", Some( "add" ).into_iter().chain( objects ).collect ::< Vec< _ > >() );
+    let ( program, args ) = ( "git", Some( "add" ).into_iter().chain( objects ).collect::< Vec< _ > >() );
 
     if dry
     {
@@ -36,14 +36,14 @@ mod private
         {
           command : format!( "{program} {}", args.join( " " ) ),
           path : path.as_ref().to_path_buf(),
-          out : String ::new(),
-          err : String ::new(),
+          out : String::new(),
+          err : String::new(),
         }
       )
     }
     else
     {
-      process ::process_run_with_params(program, args, path )
+      process::process_run_with_params(program, args, path )
     }
   }
 
@@ -74,14 +74,14 @@ mod private
         {
           command : format!( "{program} {}", args.join( " " ) ),
           path : path.as_ref().to_path_buf(),
-          out : String ::new(),
-          err : String ::new(),
+          out : String::new(),
+          err : String::new(),
         }
       )
     }
     else
     {
-      process ::process_run_with_params(program, args, path )
+      process::process_run_with_params(program, args, path )
     }
   }
 
@@ -110,14 +110,14 @@ mod private
         {
           command : format!( "{program} {}", args.join( " " ) ),
           path : path.as_ref().to_path_buf(),
-          out : String ::new(),
-          err : String ::new(),
+          out : String::new(),
+          err : String::new(),
         }
       )
     }
     else
     {
-      process ::process_run_with_params(program, args, path )
+      process::process_run_with_params(program, args, path )
     }
   }
 
@@ -136,13 +136,13 @@ mod private
   {
     let ( program, args ) = ( "git", [ "ls-remote", "--get-url" ] );
 
-    process ::process_run_with_params(program, args, path )
+    process::process_run_with_params(program, args, path )
   }
 }
 
 //
 
-crate ::mod_interface!
+crate::mod_interface!
 {
   protected use add;
   protected use commit;

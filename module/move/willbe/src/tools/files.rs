@@ -3,7 +3,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use std ::path ::{ Path, PathBuf };
+  use std::path::{ Path, PathBuf };
 
   ///
   /// Find paths.
@@ -15,20 +15,20 @@ pub( crate ) mod private
     P : AsRef< Path >,
     S : AsRef< str >,
   {
-    globwalk ::GlobWalkerBuilder ::from_patterns( base_dir, patterns )
+    globwalk::GlobWalkerBuilder::from_patterns( base_dir, patterns )
     .follow_links( false )
     .build().unwrap()
     .into_iter()
-    .filter_map( Result ::ok )
+    .filter_map( Result::ok )
     .map( | s | s.path().to_path_buf() )
-    .collect ::< Vec< PathBuf > >()
+    .collect::< Vec< PathBuf > >()
   }
 
 }
 
 //
 
-crate ::mod_interface!
+crate::mod_interface!
 {
   orphan use find;
 }

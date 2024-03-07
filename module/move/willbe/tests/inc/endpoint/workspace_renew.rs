@@ -1,6 +1,6 @@
-use assert_fs ::prelude ::*;
+use assert_fs::prelude::*;
 
-use crate ::TheModule ::endpoint;
+use crate::TheModule::endpoint;
 
 const ASSETS_PATH : &str = "tests/assets";
 
@@ -8,19 +8,19 @@ const ASSETS_PATH : &str = "tests/assets";
 
 mod workspace_renew
 {
-  use std ::fs;
-  use std ::fs ::create_dir;
-  use endpoint ::workspace_renew;
+  use std::fs;
+  use std::fs::create_dir;
+  use endpoint::workspace_renew;
 
-  use super ::*;
+  use super::*;
 
-  fn arrange( sample_dir : &str ) -> assert_fs ::TempDir
+  fn arrange( sample_dir : &str ) -> assert_fs::TempDir
   {
-    let root_path = std ::path ::Path ::new( env!( "CARGO_MANIFEST_DIR" ) );
-    let assets_relative_path = std ::path ::Path ::new( ASSETS_PATH );
+    let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+    let assets_relative_path = std::path::Path::new( ASSETS_PATH );
     let assets_path = root_path.join( assets_relative_path );
 
-    let temp = assert_fs ::TempDir ::new().unwrap();
+    let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( sample_dir ), &[ "**" ] ).unwrap();
     temp
   }
@@ -29,7 +29,7 @@ mod workspace_renew
   fn default_case()
   {
     // Arrange
-    let temp = assert_fs ::TempDir ::new().unwrap();
+    let temp = assert_fs::TempDir::new().unwrap();
     let temp_path = temp.join( "test_project_name" );
     create_dir(temp.join("test_project_name" )).unwrap();
 
@@ -44,7 +44,7 @@ mod workspace_renew
     assert!( temp_path.join( ".gitpod.yml" ).exists() );
     assert!( temp_path.join( "Cargo.toml" ).exists() );
 
-    let actual = fs ::read_to_string(temp_path.join( "Cargo.toml" ) ).unwrap();
+    let actual = fs::read_to_string(temp_path.join( "Cargo.toml" ) ).unwrap();
 
     let name = "project_name = \"test_project_name\"";
     let repo_url = "repo_url = \"https://github.con/Username/TestRepository\"";

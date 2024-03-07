@@ -1,11 +1,11 @@
 mod private
 {
-  use std ::
+  use std::
   {
-    fmt ::Formatter,
-    collections ::{ HashMap, HashSet },
+    fmt::Formatter,
+    collections::{ HashMap, HashSet },
   };
-  use cargo_metadata ::{ Dependency, Package as PackageMetadata };
+  use cargo_metadata::{ Dependency, Package as PackageMetadata };
 
   /// Type aliasing for String
   pub type PackageName = String;
@@ -29,9 +29,9 @@ mod private
     pub dependency_filter : Option< Box< dyn Fn( &PackageMetadata, &Dependency ) -> bool  > >,
   }
 
-  impl std ::fmt ::Debug for FilterMapOptions
+  impl std::fmt::Debug for FilterMapOptions
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std ::fmt ::Result
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       f
         .debug_struct( "FilterMapOptions" )
@@ -71,8 +71,8 @@ mod private
   pub fn filter( packages : &[ PackageMetadata ], options : FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
   {
     let FilterMapOptions { package_filter, dependency_filter } = options;
-    let package_filter = package_filter.unwrap_or_else( || Box ::new( | _ | true ) );
-    let dependency_filter = dependency_filter.unwrap_or_else( || Box ::new( | _, _ | true ) );
+    let package_filter = package_filter.unwrap_or_else( || Box::new( | _ | true ) );
+    let dependency_filter = dependency_filter.unwrap_or_else( || Box::new( | _, _ | true ) );
     packages
     .iter()
     .filter( | &p | package_filter( p ) )
@@ -85,7 +85,7 @@ mod private
         .iter()
         .filter( | &d | dependency_filter( package, d ) )
         .map( | d | d.name.clone() )
-        .collect ::< HashSet< _ > >()
+        .collect::< HashSet< _ > >()
       )
     )
     .collect()
@@ -94,7 +94,7 @@ mod private
 
 //
 
-crate ::mod_interface!
+crate::mod_interface!
 {
 
   protected use PackageName;

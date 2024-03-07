@@ -1,9 +1,9 @@
 mod private {
-  use crate ::*;
-  use std ::path ::Path;
-  use error_tools ::Result;
+  use crate::*;
+  use std::path::Path;
+  use error_tools::Result;
 
-  use tools ::template ::*;
+  use tools::template::*;
 
   /// Template for creating deploy files.
   ///
@@ -41,8 +41,8 @@ mod private {
     {
       Self
       {
-        files : Default ::default(),
-        parameters : TemplateParameters ::new
+        files : Default::default(),
+        parameters : TemplateParameters::new
           (
             &
             [
@@ -52,7 +52,7 @@ mod private {
               "docker_image_name"
             ]
           ),
-        values : Default ::default(),
+        values : Default::default(),
       }
     }
   }
@@ -67,7 +67,7 @@ mod private {
   {
     fn default() -> Self
     {
-      let formed = TemplateFilesBuilder ::former()
+      let formed = TemplateFilesBuilder::former()
       // root
       .file().data( include_str!( "../../template/deploy/Makefile" ) ).path( "./Makefile" ).is_template( true ).end()
       // /key
@@ -107,9 +107,9 @@ mod private {
   {
     type Item = TemplateFileDescriptor;
 
-    type IntoIter = std ::vec ::IntoIter< Self ::Item >;
+    type IntoIter = std::vec::IntoIter< Self::Item >;
 
-    fn into_iter( self ) -> Self ::IntoIter
+    fn into_iter( self ) -> Self::IntoIter
     {
       self.0.into_iter()
     }
@@ -127,7 +127,7 @@ mod private {
   }
 }
 
-crate ::mod_interface!
+crate::mod_interface!
 {
   orphan use deploy_new;
   orphan use DeployTemplate;

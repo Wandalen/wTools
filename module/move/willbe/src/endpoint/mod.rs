@@ -18,5 +18,5 @@ crate::mod_interface!
   /// Main Header.
   layer main_header;
   /// Module headers.
-  layer module_headers;
+  layer readme_modules_headers_generate;
 }

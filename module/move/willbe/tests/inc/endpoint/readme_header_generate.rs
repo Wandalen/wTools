@@ -1,22 +1,23 @@
 const ASSETS_PATH : &str = "tests/assets";
 
-use assert_fs ::prelude ::*;
-use crate ::TheModule ::endpoint ::{ self };
+use crate::*;
+use assert_fs::prelude::*;
+use TheModule::endpoint;
 
 mod header_create_test
 {
-  use std ::io ::Read;
-  use willbe ::path ::AbsolutePath;
+  use std::io::Read;
+  use willbe::path::AbsolutePath;
 
-  use super ::*;
+  use super::*;
 
-  fn arrange( source : &str ) -> assert_fs ::TempDir
+  fn arrange( source : &str ) -> assert_fs::TempDir
   {
-    let root_path = std ::path ::Path ::new( env!( "CARGO_MANIFEST_DIR" ) );
-    let assets_relative_path = std ::path ::Path ::new( ASSETS_PATH );
+    let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+    let assets_relative_path = std::path::Path::new( ASSETS_PATH );
     let assets_path = root_path.join( assets_relative_path );
 
-    let temp = assert_fs ::TempDir ::new().unwrap();
+    let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( source ), &[ "**" ] ).unwrap();
 
     temp
@@ -29,11 +30,11 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_header_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-    let mut file = std ::fs ::File ::open( temp.path().join( "Readme.md" ) ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -49,11 +50,11 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_header_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-    let mut file = std ::fs ::File ::open( temp.path().join( "Readme.md" ) ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -68,11 +69,11 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_header_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-    let mut file = std ::fs ::File ::open( temp.path().join( "Readme.md" ) ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -87,11 +88,11 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_header_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-    let mut file = std ::fs ::File ::open( temp.path().join( "Readme.md" ) ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -106,11 +107,11 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_header_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-    let mut file = std ::fs ::File ::open( temp.path().join( "Readme.md" ) ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -125,11 +126,11 @@ mod header_create_test
     let temp = arrange( "single_module_without_master_branch_and_discord" );
 
     // Act
-    _ = endpoint ::readme_header_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-    let mut file = std ::fs ::File ::open( temp.path().join( "Readme.md" ) ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -145,15 +146,15 @@ mod header_create_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_header_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std ::fs ::File ::open( temp.path().join( "Readme.md" ) ).unwrap();
-    let mut actual1 = String ::new();
+    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+    let mut actual1 = String::new();
     _ = file.read_to_string( &mut actual1 ).unwrap();
     drop( file );
 
-    _ = endpoint ::readme_header_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std ::fs ::File ::open( temp.path().join( "Readme.md" ) ).unwrap();
-    let mut actual2 = String ::new();
+    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+    let mut actual2 = String::new();
     _ = file.read_to_string( &mut actual2 ).unwrap();
     drop( file );
 
@@ -168,6 +169,6 @@ mod header_create_test
     // Arrange
     let temp = arrange( "variadic_tag_configurations" );
     // Act
-    _ = endpoint ::readme_header_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_header_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
   }
 }

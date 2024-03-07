@@ -1,23 +1,23 @@
 mod private
 {
 
-  use crate ::*;
-  use std ::collections ::{ BTreeMap, BTreeSet, HashSet };
-  use std ::fmt ::Formatter;
-  use std ::sync ::{ Arc, Mutex };
-  use cargo_metadata ::Package;
-  use colored ::Colorize;
-  use rayon ::ThreadPoolBuilder;
-  use crate ::process ::CmdReport;
-  use crate ::wtools ::error ::anyhow ::{ Error, format_err };
-  use crate ::wtools ::iter ::Itertools;
+  use crate::*;
+  use std::collections::{ BTreeMap, BTreeSet, HashSet };
+  use std::fmt::Formatter;
+  use std::sync::{ Arc, Mutex };
+  use cargo_metadata::Package;
+  use colored::Colorize;
+  use rayon::ThreadPoolBuilder;
+  use crate::process::CmdReport;
+  use crate::wtools::error::anyhow::{ Error, format_err };
+  use crate::wtools::iter::Itertools;
 
   /// `TestOptions` is a structure used to store the arguments for tests.
   #[ derive( Debug ) ]
   pub struct TestOptions
   {
     /// `channels` - A set of Cargo channels that are to be tested.
-    pub channels : HashSet< cargo ::Channel >,
+    pub channels : HashSet< cargo::Channel >,
 
     /// `concurrent` - A usize value indicating how much test`s can be run at the same time.
     pub concurrent : u32,
@@ -50,16 +50,16 @@ mod private
     pub dry : bool,
     /// A string containing the name of the package being tested.
     pub package_name : String,
-    /// A `BTreeMap` where the keys are `cargo ::Channel` enums representing the channels
+    /// A `BTreeMap` where the keys are `cargo::Channel` enums representing the channels
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
     ///   feature names and the values are `CmdReport` structs representing the test results for
     ///   the specific feature and channel.
-    pub tests : BTreeMap< cargo ::Channel, BTreeMap< String, CmdReport > >,
+    pub tests : BTreeMap< cargo::Channel, BTreeMap< String, CmdReport > >,
   }
 
-  impl std ::fmt ::Display for TestReport
+  impl std::fmt::Display for TestReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std ::fmt ::Result
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       if self.dry
       {
@@ -128,9 +128,9 @@ mod private
     pub failure_reports : Vec< TestReport >,
   }
 
-  impl std ::fmt ::Display for TestsReport
+  impl std::fmt::Display for TestsReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std ::fmt ::Result
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       if self.dry
       {
@@ -177,12 +177,12 @@ mod private
   pub fn run_test( args : &TestOptions, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
   {
     // let exclude = args.exclude_features.iter().cloned().collect();
-    let mut report = TestReport ::default();
+    let mut report = TestReport::default();
     report.dry = dry;
     report.package_name = package.name.clone();
-    let report = Arc ::new( Mutex ::new( report ) );
+    let report = Arc::new( Mutex::new( report ) );
 
-    let features_powerset = features ::features_powerset
+    let features_powerset = features::features_powerset
     (
       package,
       args.power as usize,
@@ -191,7 +191,7 @@ mod private
     );
 
     print_temp_report( &package.name, &args.channels, &features_powerset );
-    rayon ::scope
+    rayon::scope
     (
       | s |
       {
@@ -205,7 +205,7 @@ mod private
             (
               move | _ |
               {
-                let cmd_rep = cargo ::test( dir, cargo ::TestOptions ::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
+                let cmd_rep = cargo::test( dir, cargo::TestOptions::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
                 r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
               }
             );
@@ -215,7 +215,7 @@ mod private
     );
 
     // unpack. all tasks must be completed until now
-    let report = Mutex ::into_inner( Arc ::into_inner( report ).unwrap() ).unwrap();
+    let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
     let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.out.contains( "error" ) );
     if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
   }
@@ -223,10 +223,10 @@ mod private
   /// Run tests for given packages.
   pub fn run_tests( args : &TestOptions, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
-    let mut report = TestsReport ::default();
+    let mut report = TestsReport::default();
     report.dry = dry;
-    let report = Arc ::new( Mutex ::new( report ) );
-    let pool = ThreadPoolBuilder ::new().use_current_thread().num_threads( args.concurrent as usize ).build().unwrap();
+    let report = Arc::new( Mutex::new( report ) );
+    let pool = ThreadPoolBuilder::new().use_current_thread().num_threads( args.concurrent as usize ).build().unwrap();
     pool.scope
     (
       | s |
@@ -254,7 +254,7 @@ mod private
         }
       }
     );
-    let report = Arc ::into_inner( report ).unwrap().into_inner().unwrap();
+    let report = Arc::into_inner( report ).unwrap().into_inner().unwrap();
     if report.failure_reports.is_empty()
     {
       Ok( report )
@@ -265,7 +265,7 @@ mod private
     }
   }
 
-  fn print_temp_report( package_name : &str, channels : &HashSet< cargo ::Channel >, features : &HashSet< BTreeSet< String > > )
+  fn print_temp_report( package_name : &str, channels : &HashSet< cargo::Channel >, features : &HashSet< BTreeSet< String > > )
   {
     println!( "Package : {}\nThe tests will be executed using the following configurations :", package_name );
     for channel in channels.iter().sorted()
@@ -279,7 +279,7 @@ mod private
   }
 }
 
-crate ::mod_interface!
+crate::mod_interface!
 {
   protected use TestOptions;
   protected use TestReport;

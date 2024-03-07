@@ -1,28 +1,28 @@
 /// Internal namespace.
 mod private
 {
-  use std ::collections ::HashSet;
+  use std::collections::HashSet;
 
-  use cargo_metadata ::Package;
+  use cargo_metadata::Package;
 
-  use former ::Former;
-  use wtools ::
+  use former::Former;
+  use wtools::
   {
-    error ::
+    error::
     {
-      for_app ::
+      for_app::
       {
         Error,
         format_err
       },
       Result
     },
-    iter ::Itertools,
+    iter::Itertools,
   };
 
-  use crate ::*;
-  use crate ::path ::AbsolutePath;
-  use crate ::test ::*;
+  use crate::*;
+  use crate::path::AbsolutePath;
+  use crate::test::*;
 
   /// Used to store arguments for running tests.
   ///
@@ -35,7 +35,7 @@ mod private
   pub struct TestsCommandOptions
   {
     dir : AbsolutePath,
-    channels : HashSet< cargo ::Channel >,
+    channels : HashSet< cargo::Channel >,
     #[ default( 0u32 ) ]
     concurrent : u32,
     #[ default( 1u32 ) ]
@@ -52,10 +52,10 @@ mod private
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
   pub fn test( args : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
-    let mut reports = TestsReport ::default();
+    let mut reports = TestsReport::default();
     // fail fast if some additional installations required
-    let channels = cargo ::available_channels( args.dir.as_ref() ).map_err( | e | ( reports.clone(), e ) )?;
-    let channels_diff = args.channels.difference( &channels ).collect ::< Vec< _ > >();
+    let channels = cargo::available_channels( args.dir.as_ref() ).map_err( | e | ( reports.clone(), e ) )?;
+    let channels_diff = args.channels.difference( &channels ).collect::< Vec< _ > >();
     if !channels_diff.is_empty()
     {
       return Err(( reports, format_err!( "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
@@ -95,7 +95,7 @@ mod private
     {
       path
     };
-    let metadata = Workspace ::with_crate_dir( CrateDir ::try_from( path.clone() )? )?;
+    let metadata = Workspace::with_crate_dir( CrateDir::try_from( path.clone() )? )?;
 
     let result = metadata
     .packages()?
@@ -107,7 +107,7 @@ mod private
   }
 }
 
-crate ::mod_interface!
+crate::mod_interface!
 {
   /// run all tests in all crates
   orphan use test;

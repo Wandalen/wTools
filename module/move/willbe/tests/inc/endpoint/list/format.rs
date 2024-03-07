@@ -1,6 +1,6 @@
-use super ::*;
+use super::*;
 
-use TheModule ::endpoint ::list ::ListNodeReport;
+use TheModule::endpoint::list::ListNodeReport;
 
 #[ test ]
 fn node_with_depth_two_leaves_stop_spacer()

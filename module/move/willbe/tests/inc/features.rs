@@ -1,18 +1,18 @@
-use std ::collections ::HashMap;
-use cargo_metadata ::Package;
-use serde ::Deserialize;
-use willbe ::features ::features_powerset;
+use std::collections::HashMap;
+use cargo_metadata::Package;
+use serde::Deserialize;
+use willbe::features::features_powerset;
 
 /// Constructs a mock `Package` with specified features for testing.
 fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> Package
 {
-  let mut features_map : HashMap< String, Vec< _ > > = HashMap ::new();
+  let mut features_map : HashMap< String, Vec< _ > > = HashMap::new();
   for ( feature, deps ) in features
   {
     features_map.insert( feature.to_string(), deps.iter().map( | &dep | dep.to_string() ).collect() );
   }
 
-  let json = serde_json ::json!
+  let json = serde_json::json!
   (
     {
     "name" : "mock_package",
@@ -29,7 +29,7 @@ fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> Package
     }
   );
 
-  Package ::deserialize( json ).unwrap()
+  Package::deserialize( json ).unwrap()
 }
 
 #[ test ]

@@ -1,22 +1,22 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate ::*;
+  use crate::*;
 
-  use std ::
+  use std::
   {
-    io ::{ self, Read },
+    io::{ self, Read },
     fs,
-    path ::Path,
+    path::Path,
   };
-  use wtools ::error ::
+  use wtools::error::
   {
     Result,
     thiserror,
-    for_lib ::Error,
-    for_app ::format_err,
+    for_lib::Error,
+    for_app::format_err,
   };
-  use path ::AbsolutePath;
+  use path::AbsolutePath;
 
   #[ derive( Debug, Error ) ]
   pub enum CrateDirError {
@@ -42,11 +42,11 @@ pub( crate ) mod private
     // aaa : use `CrateDirError` for it
     type Error = CrateDirError;
 
-    fn try_from( crate_dir_path : AbsolutePath ) -> Result< Self, Self ::Error >
+    fn try_from( crate_dir_path : AbsolutePath ) -> Result< Self, Self::Error >
     {
       if !crate_dir_path.as_ref().join( "Cargo.toml" ).exists()
       {
-        return Err( CrateDirError ::Validation( "The path is not a crate directory path".into() ) );
+        return Err( CrateDirError::Validation( "The path is not a crate directory path".into() ) );
       }
 
       Ok( Self( crate_dir_path ) )
@@ -76,7 +76,7 @@ pub( crate ) mod private
     CannotFindValue( String ),
     /// Try to read or write
     #[ error( "Io operation with manifest failed. Details : {0}" ) ]
-    Io( #[ from ] io ::Error ),
+    Io( #[ from ] io::Error ),
     /// It was expected to be a package, but it wasn't
     #[ error( "Is not a package" ) ]
     NotAPackage,
@@ -94,7 +94,7 @@ pub( crate ) mod private
     /// Path to `Cargo.toml`
     pub manifest_path : AbsolutePath,
     /// Strict type of `Cargo.toml` manifest.
-    pub manifest_data : Option< toml_edit ::Document >,
+    pub manifest_data : Option< toml_edit::Document >,
   }
 
   impl TryFrom< AbsolutePath > for Manifest
@@ -103,12 +103,12 @@ pub( crate ) mod private
     // aaa : return `ManifestError`
     type Error = ManifestError;
 
-    fn try_from( manifest_path : AbsolutePath ) -> Result< Self, Self ::Error >
+    fn try_from( manifest_path : AbsolutePath ) -> Result< Self, Self::Error >
     {
       if !manifest_path.as_ref().ends_with( "Cargo.toml" )
       {
-        let err =  io ::Error ::new( io ::ErrorKind ::NotFound, "Cannot find manifest" );
-        return Err( ManifestError ::Io( err ) );
+        let err =  io::Error::new( io::ErrorKind::NotFound, "Cannot find manifest" );
+        return Err( ManifestError::Io( err ) );
       }
 
       Ok
@@ -151,8 +151,8 @@ pub( crate ) mod private
     /// Load manifest from path.
     pub fn load( &mut self ) -> Result< (), ManifestError >
     {
-      let read = fs ::read_to_string( &self.manifest_path )?;
-      let result = read.parse ::< toml_edit ::Document >().map_err( | e | io ::Error ::new( io ::ErrorKind ::InvalidData, e ) )?;
+      let read = fs::read_to_string( &self.manifest_path )?;
+      let result = read.parse::< toml_edit::Document >().map_err( | e | io::Error::new( io::ErrorKind::InvalidData, e ) )?;
       self.manifest_data = Some( result );
 
       Ok( () )
@@ -161,12 +161,12 @@ pub( crate ) mod private
     // qqq : for Bohdan : don't abuse anyhow
     // aaa : return `io` error
     /// Store manifest.
-    pub fn store( &self ) -> io ::Result< () >
+    pub fn store( &self ) -> io::Result< () >
     {
       // If the `manifest_data` doesn't contain any data, then there's no point in attempting to write
       if let Some( data ) = &self.manifest_data
       {
-        fs ::write( &self.manifest_path, data.to_string() )?;
+        fs::write( &self.manifest_path, data.to_string() )?;
       }
 
       Ok( () )
@@ -175,7 +175,7 @@ pub( crate ) mod private
     /// Check that the current manifest is the manifest of the package (can also be a virtual workspace).
     pub fn package_is( &self ) -> Result< bool, ManifestError>
     {
-      let data = self.manifest_data.as_ref().ok_or_else( || ManifestError ::EmptyManifestData )?;
+      let data = self.manifest_data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
       if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
       {
         return Ok( true );
@@ -187,11 +187,11 @@ pub( crate ) mod private
     /// The package is defined as local if the `publish` field is set to `false' or the registers are specified.
     pub fn local_is( &self ) -> Result<bool, ManifestError>
     {
-      let data = self.manifest_data.as_ref().ok_or_else( || ManifestError ::EmptyManifestData )?;
+      let data = self.manifest_data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
       if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
       {
         let remote = data[ "package" ].get( "publish" ).is_none()
-                     || data[ "package" ][ "publish" ].as_bool().ok_or_else( || ManifestError ::CannotFindValue( "[package], [publish]".into() ) )?;
+                     || data[ "package" ][ "publish" ].as_bool().ok_or_else( || ManifestError::CannotFindValue( "[package], [publish]".into() ) )?;
         return Ok(!remote);
       }
       Ok(true)
@@ -203,13 +203,13 @@ pub( crate ) mod private
   // aaa : return `ManifestError`
   pub fn open( path : AbsolutePath ) -> Result< Manifest, ManifestError >
   {
-    let mut manifest = if let Ok( dir ) = CrateDir ::try_from( path.clone() )
+    let mut manifest = if let Ok( dir ) = CrateDir::try_from( path.clone() )
     {
-      Manifest ::from( dir )
+      Manifest::from( dir )
     }
     else
     {
-      Manifest ::try_from( path )?
+      Manifest::try_from( path )?
     };
 
     manifest.load()?;
@@ -223,9 +223,9 @@ pub( crate ) mod private
     let path = package_path.join( "Cargo.toml" );
     if path.exists()
     {
-      let mut contents = String ::new();
-      fs ::File ::open( path )?.read_to_string( &mut contents )?;
-      let doc = contents.parse ::< toml_edit ::Document >()?;
+      let mut contents = String::new();
+      fs::File::open( path )?.read_to_string( &mut contents )?;
+      let doc = contents.parse::< toml_edit::Document >()?;
 
       let repo_url = doc
       .get( "package" )
@@ -233,12 +233,12 @@ pub( crate ) mod private
       .and_then( | i | i.as_str() );
       if let Some( repo_url ) = repo_url
       {
-        url ::extract_repo_url( repo_url ).ok_or_else( || format_err!( "Fail to extract repository url ") )
+        url::extract_repo_url( repo_url ).ok_or_else( || format_err!( "Fail to extract repository url ") )
       }
       else
       {
-        let report = git ::ls_remote_url( package_path )?;
-        url ::extract_repo_url( &report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
+        let report = git::ls_remote_url( package_path )?;
+        url::extract_repo_url( &report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
       }
     }
     else
@@ -251,7 +251,7 @@ pub( crate ) mod private
 
 //
 
-crate ::mod_interface!
+crate::mod_interface!
 {
   orphan use Manifest;
   orphan use CrateDir;

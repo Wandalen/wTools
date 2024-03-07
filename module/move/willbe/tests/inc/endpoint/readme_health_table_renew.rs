@@ -1,18 +1,17 @@
+use super::*;
+use assert_fs::prelude::*;
+use TheModule::endpoint;
+use std::io::Read;
+
 const ASSETS_PATH : &str = "tests/assets";
 
-use assert_fs ::prelude ::*;
-use crate ::TheModule ::endpoint ::{ self };
-use std ::io ::Read;
-
-use super ::*;
-
-fn arrange( source : &str ) -> assert_fs ::TempDir
+fn arrange( source : &str ) -> assert_fs::TempDir
 {
-  let root_path = std ::path ::Path ::new( env!( "CARGO_MANIFEST_DIR" ) );
-  let assets_relative_path = std ::path ::Path ::new( ASSETS_PATH );
+  let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+  let assets_relative_path = std::path::Path::new( ASSETS_PATH );
   let assets_path = root_path.join( assets_relative_path );
 
-  let temp = assert_fs ::TempDir ::new().unwrap();
+  let temp = assert_fs::TempDir::new().unwrap();
   temp.copy_from( assets_path.join( source ), &[ "**" ] ).unwrap();
 
   temp
@@ -26,7 +25,7 @@ fn without_any_toml_configurations_test()
   // Arrange
   let temp = arrange( "without_any_toml_configurations" );
   // Act
-  _  = endpoint ::readme_health_table_renew( &temp ).unwrap();
+  _  = endpoint::readme_health_table_renew( &temp ).unwrap();
 }
 
 #[ test ]
@@ -36,11 +35,11 @@ fn tags_should_stay()
   let temp = arrange( "without_module_toml_configurations" );
 
   // Act
-  _  = endpoint ::readme_health_table_renew( &temp ).unwrap();
+  _  = endpoint::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
-  let mut file = std ::fs ::File ::open( temp.path().join( "readme.md" ) ).unwrap();
-  let mut actual = String ::new();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
+  let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
   assert!( actual.contains( "<!--{ generate.healthtable( '.' ) } -->" ) );
@@ -55,11 +54,11 @@ fn stability_experimental_by_default()
   let temp = arrange( "without_module_toml_configurations" );
 
   // Act
-  _  = endpoint ::readme_health_table_renew( &temp ).unwrap();
+  _  = endpoint::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
-  let mut file = std ::fs ::File ::open( temp.path().join( "readme.md" ) ).unwrap();
-  let mut actual = String ::new();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
+  let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
   assert!( actual.contains( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)" ) );
@@ -73,11 +72,11 @@ fn stability_and_repository_from_module_toml()
   let temp = arrange( "without_workspace_toml_configurations" );
 
   // Act
-  _  = endpoint ::readme_health_table_renew( &temp ).unwrap();
+  _  = endpoint::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
-  let mut file = std ::fs ::File ::open( temp.path().join( "readme.md" ) ).unwrap();
-  let mut actual = String ::new();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
+  let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
   assert!( actual.contains( "[![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable)" ) );
@@ -105,11 +104,11 @@ fn variadic_tag_configuration_test()
   let temp = arrange( "variadic_tag_configurations" );
 
   // Act
-  _  = endpoint ::readme_health_table_renew( &temp ).unwrap();
+  _  = endpoint::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
-  let mut file = std ::fs ::File ::open( temp.path().join( "readme.md" ) ).unwrap();
-  let mut content = String ::new();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
+  let mut content = String::new();
   _ = file.read_to_string( &mut content ).unwrap();
   for ( index, actual ) in content.split( "###" ).into_iter().enumerate()
   {
@@ -125,11 +124,11 @@ fn module_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = endpoint ::readme_health_table_renew( &temp ).unwrap();
+  _  = endpoint::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
-  let mut file = std ::fs ::File ::open( temp.path().join( "readme.md" ) ).unwrap();
-  let mut actual = String ::new();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
+  let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
   assert!( actual.contains( "[_willbe_variadic_tag_configurations_c](./_willbe_variadic_tag_configurations_c)" ) );
@@ -142,11 +141,11 @@ fn stability_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = endpoint ::readme_health_table_renew( &temp ).unwrap();
+  _  = endpoint::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
-  let mut file = std ::fs ::File ::open( temp.path().join( "readme.md" ) ).unwrap();
-  let mut actual = String ::new();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
+  let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
   assert!( actual.contains( "[![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)" ) );
@@ -159,11 +158,11 @@ fn branches_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = endpoint ::readme_health_table_renew( &temp ).unwrap();
+  _  = endpoint::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
-  let mut file = std ::fs ::File ::open( temp.path().join( "readme.md" ) ).unwrap();
-  let mut actual = String ::new();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
+  let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
   assert!( actual.contains( "| [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/ModuleWillbeVariadicTagConfigurationsCPush.yml?label=&branch=test_branch1)](https://github.com/SomeName/SomeCrate/C/actions/workflows/ModuleWillbeVariadicTagConfigurationsCPush.yml?query=branch%3Atest_branch1) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/ModuleWillbeVariadicTagConfigurationsCPush.yml?label=&branch=test_branch2)](https://github.com/SomeName/SomeCrate/C/actions/workflows/ModuleWillbeVariadicTagConfigurationsCPush.yml?query=branch%3Atest_branch2) |" ) );
@@ -176,11 +175,11 @@ fn docs_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = endpoint ::readme_health_table_renew( &temp ).unwrap();
+  _  = endpoint::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
-  let mut file = std ::fs ::File ::open( temp.path().join( "readme.md" ) ).unwrap();
-  let mut actual = String ::new();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
+  let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
   assert!( actual.contains( "[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/_willbe_variadic_tag_configurations_c)" ) );
@@ -193,11 +192,11 @@ fn sample_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = endpoint ::readme_health_table_renew( &temp ).unwrap();
+  _  = endpoint::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
-  let mut file = std ::fs ::File ::open( temp.path().join( "readme.md" ) ).unwrap();
-  let mut actual = String ::new();
+  let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
+  let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
   assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_willbe_variadic_tag_configurations_c_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_willbe_variadic_tag_configurations_c_trivial_sample/https://github.com/SomeName/SomeCrate/C)" ) );

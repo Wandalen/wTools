@@ -1,10 +1,10 @@
 /// Internal namespace.
 mod private
 {
-  use crate ::*;
+  use crate::*;
 
-  use wca ::{ Args, Props };
-  use wtools ::error ::Result;
+  use wca::{ Args, Props };
+  use wtools::error::Result;
 
 
   ///
@@ -19,9 +19,9 @@ mod private
     .get_owned( "dry" )
     .unwrap_or( true );
 
-    match endpoint ::publish( patterns, dry )
+    match endpoint::publish( patterns, dry )
     {
-      core ::result ::Result ::Ok( report ) =>
+      core::result::Result::Ok( report ) =>
       {
         println!( "{report}" );
 
@@ -43,7 +43,7 @@ mod private
 
 //
 
-crate ::mod_interface!
+crate::mod_interface!
 {
   /// List packages.
   orphan use publish;

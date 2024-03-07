@@ -1,23 +1,24 @@
 const ASSETS_PATH : &str = "tests/assets";
 
-use assert_fs ::prelude ::*;
-use crate ::TheModule ::endpoint ::{ self };
+use crate::*;
+use assert_fs::prelude::*;
+use TheModule::endpoint;
 
 // xxx : rid off namespaces
 mod modules_headers_test
 {
-  use std ::io ::Read;
-  use willbe ::path ::AbsolutePath;
+  use std::io::Read;
+  use willbe::path::AbsolutePath;
 
-  use super ::*;
+  use super::*;
 
-  fn arrange( source : &str ) -> assert_fs ::TempDir
+  fn arrange( source : &str ) -> assert_fs::TempDir
   {
-    let root_path = std ::path ::Path ::new( env!( "CARGO_MANIFEST_DIR" ) );
-    let assets_relative_path = std ::path ::Path ::new( ASSETS_PATH );
+    let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+    let assets_relative_path = std::path::Path::new( ASSETS_PATH );
     let assets_path = root_path.join( assets_relative_path );
 
-    let temp = assert_fs ::TempDir ::new().unwrap();
+    let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( source ), &[ "**" ] ).unwrap();
 
     temp
@@ -35,10 +36,10 @@ mod modules_headers_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_modules_headers_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std ::fs ::File ::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
+    _ = endpoint::readme_modules_headers_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -54,10 +55,10 @@ mod modules_headers_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_modules_headers_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std ::fs ::File ::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
+    _ = endpoint::readme_modules_headers_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -72,10 +73,10 @@ mod modules_headers_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_modules_headers_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std ::fs ::File ::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
+    _ = endpoint::readme_modules_headers_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -90,10 +91,10 @@ mod modules_headers_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_modules_headers_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std ::fs ::File ::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
+    _ = endpoint::readme_modules_headers_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -108,10 +109,10 @@ mod modules_headers_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_modules_headers_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std ::fs ::File ::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
+    _ = endpoint::readme_modules_headers_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -126,10 +127,10 @@ mod modules_headers_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_modules_headers_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std ::fs ::File ::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
+    _ = endpoint::readme_modules_headers_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
-    let mut actual = String ::new();
+    let mut actual = String::new();
 
     _ = file.read_to_string( &mut actual ).unwrap();
 
@@ -144,15 +145,15 @@ mod modules_headers_test
     let temp = arrange( "single_module" );
 
     // Act
-    _ = endpoint ::readme_modules_headers_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std ::fs ::File ::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
-    let mut actual1 = String ::new();
+    _ = endpoint::readme_modules_headers_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
+    let mut actual1 = String::new();
     _ = file.read_to_string( &mut actual1 ).unwrap();
     drop( file );
 
-    _ = endpoint ::readme_modules_headers_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std ::fs ::File ::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
-    let mut actual2 = String ::new();
+    _ = endpoint::readme_modules_headers_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+    let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
+    let mut actual2 = String::new();
     _ = file.read_to_string( &mut actual2 ).unwrap();
     drop( file );
 
@@ -165,15 +166,15 @@ mod modules_headers_test
   {
     let temp = arrange( "three_packages" );
 
-    _ = endpoint ::readme_modules_headers_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_modules_headers_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-    let mut file_b = std ::fs ::File ::open( temp.path().join( "b" ).join( "Readme.md" ) ).unwrap();
-    let mut file_c = std ::fs ::File ::open( temp.path().join( "c" ).join( "Readme.md" ) ).unwrap();
-    let mut file_d = std ::fs ::File ::open( temp.path().join( "d" ).join( "Readme.md" ) ).unwrap();
+    let mut file_b = std::fs::File::open( temp.path().join( "b" ).join( "Readme.md" ) ).unwrap();
+    let mut file_c = std::fs::File::open( temp.path().join( "c" ).join( "Readme.md" ) ).unwrap();
+    let mut file_d = std::fs::File::open( temp.path().join( "d" ).join( "Readme.md" ) ).unwrap();
 
-    let mut actual_b = String ::new();
-    let mut actual_c = String ::new();
-    let mut actual_d = String ::new();
+    let mut actual_b = String::new();
+    let mut actual_c = String::new();
+    let mut actual_d = String::new();
 
     _ = file_b.read_to_string( &mut actual_b ).unwrap();
     _ = file_c.read_to_string( &mut actual_c ).unwrap();
@@ -192,7 +193,7 @@ mod modules_headers_test
     let temp = arrange( "variadic_tag_configurations" );
 
     // Act
-    _ = endpoint ::readme_modules_headers_generate( AbsolutePath ::try_from( temp.path() ).unwrap() ).unwrap();
+    _ = endpoint::readme_modules_headers_generate( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
   }
 
 }

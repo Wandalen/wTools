@@ -1,14 +1,14 @@
 mod toposort
 {
-  use crate ::TheModule ::graph ::toposort;
-  use std ::collections ::HashMap;
-  use petgraph ::Graph;
+  use crate::TheModule::graph::toposort;
+  use std::collections::HashMap;
+  use petgraph::Graph;
 
   struct IndexMap< T >( HashMap< T, usize > );
 
   impl< T > IndexMap< T >
   where
-    T : std ::hash ::Hash + Eq,
+    T : std::hash::Hash + Eq,
   {
     pub fn new( elements : Vec< T > ) -> Self
     {
@@ -25,14 +25,14 @@ mod toposort
   #[ test ]
   fn no_dependency()
   {
-    let mut graph = Graph ::new();
+    let mut graph = Graph::new();
 
     let _node1 = graph.add_node( &"A" );
     let _node2 = graph.add_node( &"B" );
 
     let sorted = toposort( graph ).unwrap();
 
-    let index_map = IndexMap ::new( sorted );
+    let index_map = IndexMap::new( sorted );
     let node1_position = index_map.position( &"A" );
     let node2_position = index_map.position( &"B" );
 
@@ -42,7 +42,7 @@ mod toposort
   #[ test ]
   fn a_depends_on_b()
   {
-    let mut graph = Graph ::new();
+    let mut graph = Graph::new();
 
     let node1 = graph.add_node( &"A" );
     let node2 = graph.add_node( &"B" );
@@ -51,7 +51,7 @@ mod toposort
 
     let sorted = toposort( graph ).unwrap();
 
-    let index_map = IndexMap ::new( sorted );
+    let index_map = IndexMap::new( sorted );
     let node1_position = index_map.position( &"A" );
     let node2_position = index_map.position( &"B" );
 
@@ -61,7 +61,7 @@ mod toposort
   #[ test ]
   fn multiple_dependencies()
   {
-    let mut graph = Graph ::new();
+    let mut graph = Graph::new();
 
     let a = graph.add_node( &"A" );
     let b = graph.add_node( &"B" );
@@ -72,7 +72,7 @@ mod toposort
 
     let sorted = toposort( graph ).unwrap();
 
-    let index_map = IndexMap ::new( sorted );
+    let index_map = IndexMap::new( sorted );
     let a_position = index_map.position( &"A" );
     let b_position = index_map.position( &"B" );
     let c_position = index_map.position( &"C" );
@@ -84,7 +84,7 @@ mod toposort
   #[ test ]
   fn transitive_dependencies()
   {
-    let mut graph = Graph ::new();
+    let mut graph = Graph::new();
 
     let a = graph.add_node( &"A" );
     let b = graph.add_node( &"B" );
@@ -95,7 +95,7 @@ mod toposort
 
     let sorted = toposort( graph ).unwrap();
 
-    let index_map = IndexMap ::new( sorted );
+    let index_map = IndexMap::new( sorted );
     let a_position = index_map.position( &"A" );
     let b_position = index_map.position( &"B" );
     let c_position = index_map.position( &"C" );
@@ -108,7 +108,7 @@ mod toposort
   #[ should_panic( expected = "Cycle" ) ]
   fn cycle()
   {
-    let mut graph = Graph ::new();
+    let mut graph = Graph::new();
 
     let node1 = graph.add_node( &"A" );
     let node2 = graph.add_node( &"B" );

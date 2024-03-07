@@ -1,32 +1,32 @@
-use super ::*;
+use super::*;
 
-use assert_fs ::prelude ::*;
-use TheModule ::endpoint ::{ self, list ::* };
-use willbe ::CrateDir;
-use willbe ::path ::AbsolutePath;
+use assert_fs::prelude::*;
+use TheModule::endpoint::{ self, list::* };
+use willbe::CrateDir;
+use willbe::path::AbsolutePath;
 
 const ASSETS_PATH : &str = "tests/assets";
 
 //
 
-fn crate_dir( path : &std ::path ::Path ) -> CrateDir
+fn crate_dir( path : &std::path::Path ) -> CrateDir
 {
-  let absolut = AbsolutePath ::try_from( path ).unwrap();
-  CrateDir ::try_from( absolut ).unwrap()
+  let absolut = AbsolutePath::try_from( path ).unwrap();
+  CrateDir::try_from( absolut ).unwrap()
 }
 
 // a -> b -> c
 mod chain_of_three_packages
 {
-  use super ::*;
+  use super::*;
 
-  fn arrange() -> assert_fs ::TempDir
+  fn arrange() -> assert_fs::TempDir
   {
-    let root_path = std ::path ::Path ::new( env!( "CARGO_MANIFEST_DIR" ) );
-    let assets_relative_path = std ::path ::Path ::new( ASSETS_PATH );
+    let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+    let assets_relative_path = std::path::Path::new( ASSETS_PATH );
     let assets_path = root_path.join( assets_relative_path );
 
-    let temp = assert_fs ::TempDir ::new().unwrap();
+    let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( "chain_of_packages" ), &[ "**" ] ).unwrap();
 
     temp
@@ -37,18 +37,18 @@ mod chain_of_three_packages
   {
     // Arrange
     let temp = arrange();
-    let args = ListOptions ::former()
+    let args = ListOptions::former()
     .path_to_manifest( crate_dir( &temp.join( "a" ) ) )
-    .format( ListFormat ::Tree )
-    .dependency_sources([ DependencySource ::Local ])
-    .dependency_categories([ DependencyCategory ::Primary ])
+    .format( ListFormat::Tree )
+    .dependency_sources([ DependencySource::Local ])
+    .dependency_categories([ DependencyCategory::Primary ])
     .form();
 
     // Act
-    let output = endpoint ::list( args ).unwrap();
+    let output = endpoint::list( args ).unwrap();
 
     // Assert
-    let ListReport ::Tree( trees ) = &output else { panic!( "Expected `Tree` format, but found another" ) };
+    let ListReport::Tree( trees ) = &output else { panic!( "Expected `Tree` format, but found another" ) };
 
     assert_eq!( 1, trees.len() );
     let tree = &trees[ 0 ];
@@ -78,18 +78,18 @@ mod chain_of_three_packages
   {
     // Arrange
     let temp = arrange();
-    let args = ListOptions ::former()
+    let args = ListOptions::former()
       .path_to_manifest( crate_dir( &temp.join( "a" ) ) )
-      .format( ListFormat ::Topological )
-      .dependency_sources([ DependencySource ::Local ])
-      .dependency_categories([ DependencyCategory ::Primary ])
+      .format( ListFormat::Topological )
+      .dependency_sources([ DependencySource::Local ])
+      .dependency_categories([ DependencyCategory::Primary ])
       .form();
 
     // Act
-    let output = endpoint ::list( args ).unwrap();
+    let output = endpoint::list( args ).unwrap();
 
     // Assert
-    let ListReport ::List( names ) = &output else { panic!("Expected `Topological` format, but found another") };
+    let ListReport::List( names ) = &output else { panic!("Expected `Topological` format, but found another") };
 
     assert_eq!( &[ "_chain_of_packages_c".to_string(), "_chain_of_packages_b".to_string(), "_chain_of_packages_a".to_string() ], names.as_slice() );
   }
@@ -99,18 +99,18 @@ mod chain_of_three_packages
   {
     // Arrange
     let temp = arrange();
-    let args = ListOptions ::former()
+    let args = ListOptions::former()
       .path_to_manifest( crate_dir( &temp ) )
-      .format( ListFormat ::Topological )
-      .dependency_sources([ DependencySource ::Local ])
-      .dependency_categories([ DependencyCategory ::Primary ])
+      .format( ListFormat::Topological )
+      .dependency_sources([ DependencySource::Local ])
+      .dependency_categories([ DependencyCategory::Primary ])
       .form();
 
     // Act
-    let output = endpoint ::list( args ).unwrap();
+    let output = endpoint::list( args ).unwrap();
 
     // Assert
-    let ListReport ::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
+    let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
 
     assert_eq!( &[ "_chain_of_packages_c".to_string(), "_chain_of_packages_b".to_string(), "_chain_of_packages_a".to_string() ], names.as_slice() );
   }
@@ -119,15 +119,15 @@ mod chain_of_three_packages
 // a -> ( remote, b )
 mod package_with_remote_dependency
 {
-  use super ::*;
+  use super::*;
 
-  fn arrange() -> assert_fs ::TempDir
+  fn arrange() -> assert_fs::TempDir
   {
-    let root_path = std ::path ::Path ::new( env!( "CARGO_MANIFEST_DIR" ) );
-    let assets_relative_path = std ::path ::Path ::new( ASSETS_PATH );
+    let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+    let assets_relative_path = std::path::Path::new( ASSETS_PATH );
     let assets_path = root_path.join( assets_relative_path );
 
-    let temp = assert_fs ::TempDir ::new().unwrap();
+    let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( "package_with_remote_dependency" ), &[ "**" ] ).unwrap();
 
     temp
@@ -138,18 +138,18 @@ mod package_with_remote_dependency
   {
     // Arrange
     let temp = arrange();
-    let args = ListOptions ::former()
+    let args = ListOptions::former()
       .path_to_manifest( crate_dir( &temp.join( "a" ) ) )
-      .format( ListFormat ::Tree )
-      .dependency_sources([ DependencySource ::Local, DependencySource ::Remote ])
-      .dependency_categories([ DependencyCategory ::Primary ])
+      .format( ListFormat::Tree )
+      .dependency_sources([ DependencySource::Local, DependencySource::Remote ])
+      .dependency_categories([ DependencyCategory::Primary ])
       .form();
 
     // Act
-    let output = endpoint ::list( args ).unwrap();
+    let output = endpoint::list( args ).unwrap();
 
     // Assert
-    let ListReport ::Tree( trees ) = &output else { panic!( "Expected `Tree` format, but found another" ) };
+    let ListReport::Tree( trees ) = &output else { panic!( "Expected `Tree` format, but found another" ) };
 
     assert_eq!( 1, trees.len() );
     let tree = &trees[ 0 ];
@@ -176,18 +176,18 @@ mod package_with_remote_dependency
   {
     // Arrange
     let temp = arrange();
-    let args = ListOptions ::former()
+    let args = ListOptions::former()
       .path_to_manifest( crate_dir( &temp.join( "a" ) ) )
-      .format( ListFormat ::Topological )
-      .dependency_sources([ DependencySource ::Local, DependencySource ::Remote ])
-      .dependency_categories([ DependencyCategory ::Primary ])
+      .format( ListFormat::Topological )
+      .dependency_sources([ DependencySource::Local, DependencySource::Remote ])
+      .dependency_categories([ DependencyCategory::Primary ])
       .form();
 
     // Act
-    let output = endpoint ::list( args ).unwrap();
+    let output = endpoint::list( args ).unwrap();
 
     // Assert
-    let ListReport ::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
+    let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
 
     assert_eq!( 3, names.len() );
     // `a` must be last
@@ -201,18 +201,18 @@ mod package_with_remote_dependency
   {
     // Arrange
     let temp = arrange();
-    let args = ListOptions ::former()
+    let args = ListOptions::former()
       .path_to_manifest( crate_dir( &temp.join( "a" ) ) )
-      .format( ListFormat ::Topological )
-      .dependency_sources([ DependencySource ::Local ])
-      .dependency_categories([ DependencyCategory ::Primary ])
+      .format( ListFormat::Topological )
+      .dependency_sources([ DependencySource::Local ])
+      .dependency_categories([ DependencyCategory::Primary ])
       .form();
 
     // Act
-    let output = endpoint ::list( args ).unwrap();
+    let output = endpoint::list( args ).unwrap();
 
     // Assert
-    let ListReport ::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
+    let ListReport::List( names ) = &output else { panic!( "Expected `Topological` format, but found another" ) };
 
     assert_eq!( &[ "_package_with_remote_dep_b".to_string(), "_package_with_remote_dep_a".to_string() ], names.as_slice() );
   }
@@ -221,32 +221,32 @@ mod package_with_remote_dependency
 // a -> b -> a
 mod workspace_with_cyclic_dependency
 {
-  use super ::*;
+  use super::*;
 
   #[ test ]
   fn tree_format()
   {
     // Arrange
-    let root_path = std ::path ::Path ::new( env!( "CARGO_MANIFEST_DIR" ) );
-    let assets_relative_path = std ::path ::Path ::new( ASSETS_PATH );
+    let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+    let assets_relative_path = std::path::Path::new( ASSETS_PATH );
     let assets_path = root_path.join( assets_relative_path );
 
-    let temp = assert_fs ::TempDir ::new().unwrap();
+    let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( "workspace_with_cyclic_dependency" ), &[ "**" ] ).unwrap();
 
-    let args = ListOptions ::former()
+    let args = ListOptions::former()
       .path_to_manifest( crate_dir( &temp.join( "a" ) ) )
-      .format( ListFormat ::Tree )
-      .info([ PackageAdditionalInfo ::Version ])
-      .dependency_sources([ DependencySource ::Local, DependencySource ::Remote ])
-      .dependency_categories([ DependencyCategory ::Primary, DependencyCategory ::Dev ])
+      .format( ListFormat::Tree )
+      .info([ PackageAdditionalInfo::Version ])
+      .dependency_sources([ DependencySource::Local, DependencySource::Remote ])
+      .dependency_categories([ DependencyCategory::Primary, DependencyCategory::Dev ])
       .form();
 
     // Act
-    let output = endpoint ::list( args ).unwrap();
+    let output = endpoint::list( args ).unwrap();
 
     // Assert
-    let ListReport ::Tree( trees ) = &output else { panic!( "Expected `Tree` format, but found another" ) };
+    let ListReport::Tree( trees ) = &output else { panic!( "Expected `Tree` format, but found another" ) };
     dbg!( trees );
 
     assert_eq!( 1, trees.len() );
@@ -288,22 +288,22 @@ mod workspace_with_cyclic_dependency
   fn can_not_show_list_with_cyclic_dependencies()
   {
     // Arrange
-    let root_path = std ::path ::Path ::new( env!( "CARGO_MANIFEST_DIR" ) );
-    let assets_relative_path = std ::path ::Path ::new( ASSETS_PATH );
+    let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+    let assets_relative_path = std::path::Path::new( ASSETS_PATH );
     let assets_path = root_path.join( assets_relative_path );
 
-    let temp = assert_fs ::TempDir ::new().unwrap();
+    let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( "workspace_with_cyclic_dependency" ), &[ "**" ] ).unwrap();
 
-    let args = ListOptions ::former()
+    let args = ListOptions::former()
       .path_to_manifest( crate_dir( &temp.join( "a" ) ) )
-      .format( ListFormat ::Topological )
-      .dependency_sources([ DependencySource ::Local, DependencySource ::Remote ])
-      .dependency_categories([ DependencyCategory ::Primary, DependencyCategory ::Dev ])
+      .format( ListFormat::Topological )
+      .dependency_sources([ DependencySource::Local, DependencySource::Remote ])
+      .dependency_categories([ DependencyCategory::Primary, DependencyCategory::Dev ])
       .form();
 
     // Act
-    let output = endpoint ::list( args );
+    let output = endpoint::list( args );
 
     // Assert
 

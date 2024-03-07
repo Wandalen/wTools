@@ -1,6 +1,6 @@
 mod private
 {
-  use error_tools ::for_app ::
+  use error_tools::for_app::
   {
     format_err,
     Result,
@@ -39,7 +39,7 @@ mod private
   }
 }
 
-crate ::mod_interface!
+crate::mod_interface!
 {
   protected use extract_repo_url;
   protected use git_info_extract;

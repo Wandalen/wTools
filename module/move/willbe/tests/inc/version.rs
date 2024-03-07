@@ -1,11 +1,11 @@
-use crate ::TheModule ::version ::Version;
-use std ::str ::FromStr;
+use crate::TheModule::version::Version;
+use std::str::FromStr;
 
 #[ test ]
 fn patch()
 {
   // Arrange
-  let version = Version ::from_str( "0.0.0" ).unwrap();
+  let version = Version::from_str( "0.0.0" ).unwrap();
 
   // Act
   let new_version = version.bump();
@@ -18,7 +18,7 @@ fn patch()
 fn minor_without_patches()
 {
   // Arrange
-  let version = Version ::from_str( "0.1.0" ).unwrap();
+  let version = Version::from_str( "0.1.0" ).unwrap();
 
   // Act
   let new_version = version.bump();
@@ -31,7 +31,7 @@ fn minor_without_patches()
 fn minor_with_patch()
 {
   // Arrange
-  let version = Version ::from_str( "0.1.1" ).unwrap();
+  let version = Version::from_str( "0.1.1" ).unwrap();
 
   // Act
   let new_version = version.bump();
@@ -44,7 +44,7 @@ fn minor_with_patch()
 fn major_without_patches()
 {
   // Arrange
-  let version = Version ::from_str( "1.0.0" ).unwrap();
+  let version = Version::from_str( "1.0.0" ).unwrap();
 
   // Act
   let new_version = version.bump();
@@ -57,7 +57,7 @@ fn major_without_patches()
 fn major_with_minor()
 {
   // Arrange
-  let version = Version ::from_str( "1.1.0" ).unwrap();
+  let version = Version::from_str( "1.1.0" ).unwrap();
 
   // Act
   let new_version = version.bump();
@@ -70,7 +70,7 @@ fn major_with_minor()
 fn major_with_patches()
 {
   // Arrange
-  let version = Version ::from_str( "1.1.1" ).unwrap();
+  let version = Version::from_str( "1.1.1" ).unwrap();
 
   // Act
   let new_version = version.bump();

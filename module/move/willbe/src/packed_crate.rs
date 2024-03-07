@@ -1,9 +1,9 @@
 mod private
 {
-  use crate ::*;
+  use crate::*;
 
-  use std ::path ::PathBuf;
-  use wtools ::error ::Result;
+  use std::path::PathBuf;
+  use wtools::error::Result;
 
   /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.
   ///
@@ -18,9 +18,9 @@ mod private
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
 
-    let workspace = Workspace ::with_crate_dir( crate_dir )?;
+    let workspace = Workspace::with_crate_dir( crate_dir )?;
 
-    let mut local_package_path = PathBuf ::new();
+    let mut local_package_path = PathBuf::new();
     local_package_path.push( workspace.target_directory()? );
     local_package_path.push( buf );
 
@@ -30,7 +30,7 @@ mod private
 
 //
 
-crate ::mod_interface!
+crate::mod_interface!
 {
 
   protected use local_path;

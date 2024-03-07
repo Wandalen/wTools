@@ -4,9 +4,9 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ allow( unused_imports ) ]
-use ::willbe ::*;
+use::willbe::*;
 
-fn main() -> Result< (), wtools ::error ::for_app ::Error >
+fn main() -> Result< (), wtools::error::for_app::Error >
 {
-  Ok( willbe ::run()? )
+  Ok( willbe::run()? )
 }

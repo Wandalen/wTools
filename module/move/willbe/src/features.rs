@@ -1,8 +1,8 @@
 mod private
 {
-  use std ::collections ::{ BTreeSet, HashSet };
-  use cargo_metadata ::Package;
-  use crate ::wtools ::iter ::Itertools;
+  use std::collections::{ BTreeSet, HashSet };
+  use cargo_metadata::Package;
+  use crate::wtools::iter::Itertools;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,
@@ -43,7 +43,7 @@ mod private
   )
     -> HashSet< BTreeSet< String > >
   {
-    let mut features_powerset = HashSet ::new();
+    let mut features_powerset = HashSet::new();
 
     let filtered_features : Vec<_> = package
     .features
@@ -52,7 +52,7 @@ mod private
     .cloned()
     .collect();
 
-    for subset_size in 0..= std ::cmp ::min( filtered_features.len(), power )
+    for subset_size in 0..= std::cmp::min( filtered_features.len(), power )
     {
       for combination in filtered_features.iter().combinations( subset_size )
       {
@@ -66,7 +66,7 @@ mod private
   }
 }
 
-crate ::mod_interface!
+crate::mod_interface!
 {
   /// Features
   protected use features_powerset;

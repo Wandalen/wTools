@@ -1,19 +1,19 @@
-use std ::fs ::{ self, File };
-use std ::io ::Write;
-use std ::path ::{ Path, PathBuf };
-use assert_fs ::TempDir;
+use std::fs::{ self, File };
+use std::io::Write;
+use std::path::{ Path, PathBuf };
+use assert_fs::TempDir;
 
-use crate ::TheModule ::*;
-use endpoint ::test ::{test, TestsCommandOptions};
-use path ::AbsolutePath;
+use crate::TheModule::*;
+use endpoint::test::{test, TestsCommandOptions};
+use path::AbsolutePath;
 
 #[ test ]
 fn fail_test()
 {
-  let temp = TempDir ::new().unwrap();
+  let temp = TempDir::new().unwrap();
   let temp = &temp;
 
-  let project = ProjectBuilder ::new( "fail_test" )
+  let project = ProjectBuilder::new( "fail_test" )
   .toml_file( "" )
   .test_file( r#"
     #[test]
@@ -23,17 +23,17 @@ fn fail_test()
   "#)
   .build( temp )
   .unwrap();
-  let abs = AbsolutePath ::try_from( project ).unwrap();
+  let abs = AbsolutePath::try_from( project ).unwrap();
 
-  let args = TestsCommandOptions ::former()
+  let args = TestsCommandOptions::former()
   .dir( abs )
-  .channels([ cargo ::Channel ::Stable ])
+  .channels([ cargo::Channel::Stable ])
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-  let stable = rep.failure_reports[0].tests.get( &cargo ::Channel ::Stable ).unwrap();
+  let stable = rep.failure_reports[0].tests.get( &cargo::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
 
   assert!( no_features.out.contains( "failures" ) );
@@ -42,10 +42,10 @@ fn fail_test()
 #[ test ]
 fn fail_build()
 {
-  let temp = TempDir ::new().unwrap();
+  let temp = TempDir::new().unwrap();
   let temp = &temp;
 
-  let project = ProjectBuilder ::new( "fail_build" )
+  let project = ProjectBuilder::new( "fail_build" )
   .lib_file( "compile_error!( \"achtung\" );" )
   .toml_file( "" )
   .test_file( r#"
@@ -56,17 +56,17 @@ fn fail_build()
   "#)
   .build( temp )
   .unwrap();
-  let abs = AbsolutePath ::try_from( project ).unwrap();
+  let abs = AbsolutePath::try_from( project ).unwrap();
 
-  let args = TestsCommandOptions ::former()
+  let args = TestsCommandOptions::former()
   .dir( abs )
-  .channels([ cargo ::Channel ::Stable ])
+  .channels([ cargo::Channel::Stable ])
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-  let stable = rep.failure_reports[ 0 ].tests.get( &cargo ::Channel ::Stable ).unwrap();
+  let stable = rep.failure_reports[ 0 ].tests.get( &cargo::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
 
   assert!( no_features.out.contains( "error" ) && no_features.out.contains( "achtung" ) );
@@ -75,10 +75,10 @@ fn fail_build()
 #[ test ]
 fn call_from_workspace_root()
 {
-  let temp = TempDir ::new().unwrap();
+  let temp = TempDir::new().unwrap();
   let temp = &temp;
 
-  let fail_project = ProjectBuilder ::new( "fail_test" )
+  let fail_project = ProjectBuilder::new( "fail_test" )
   .toml_file( "" )
   .test_file( r#"
   #[test]
@@ -87,7 +87,7 @@ fn call_from_workspace_root()
   }
   "#);
 
-  let pass_project = ProjectBuilder ::new( "apass_test" )
+  let pass_project = ProjectBuilder::new( "apass_test" )
   .toml_file( "" )
   .test_file( r#"
   #[test]
@@ -96,7 +96,7 @@ fn call_from_workspace_root()
   }
   "#);
 
-  let pass_project2 = ProjectBuilder ::new( "pass_test2" )
+  let pass_project2 = ProjectBuilder::new( "pass_test2" )
   .toml_file( "" )
   .test_file( r#"
   #[test]
@@ -105,19 +105,19 @@ fn call_from_workspace_root()
   }
   "#);
 
-  let workspace = WorkspaceBuilder ::new()
+  let workspace = WorkspaceBuilder::new()
   .member( fail_project )
   .member( pass_project )
   .member( pass_project2 )
   .build( temp );
 
   // from workspace root
-  let abs = AbsolutePath ::try_from( workspace.clone() ).unwrap();
+  let abs = AbsolutePath::try_from( workspace.clone() ).unwrap();
 
-  let args = TestsCommandOptions ::former()
+  let args = TestsCommandOptions::former()
   .dir( abs )
   .concurrent( 1u32 )
-  .channels([ cargo ::Channel ::Stable ])
+  .channels([ cargo::Channel::Stable ])
   .form();
 
 
@@ -143,7 +143,7 @@ impl ProjectBuilder
   {
     Self
     {
-      name : String ::from( name ),
+      name : String::from( name ),
       lib_content : None,
       test_content : None,
       toml_content : None,
@@ -168,20 +168,20 @@ impl ProjectBuilder
     self
   }
 
-  pub fn build< P : AsRef< Path > >( &self, path : P ) -> std ::io ::Result< PathBuf >
+  pub fn build< P : AsRef< Path > >( &self, path : P ) -> std::io::Result< PathBuf >
   {
     let project_path = path.as_ref();
 
-    fs ::create_dir_all( project_path.join( "src" ) )?;
-    fs ::create_dir_all( project_path.join( "tests" ) )?;
+    fs::create_dir_all( project_path.join( "src" ) )?;
+    fs::create_dir_all( project_path.join( "tests" ) )?;
 
     if let Some( content ) = &self.toml_content
     {
-      let mut file = File ::create( project_path.join( "Cargo.toml" ) )?;
+      let mut file = File::create( project_path.join( "Cargo.toml" ) )?;
       write!( file, "{}", content )?;
     }
 
-    let mut file = File ::create( project_path.join( "src/lib.rs" ) )?;
+    let mut file = File::create( project_path.join( "src/lib.rs" ) )?;
     if let Some( content ) = &self.lib_content
     {
       write!( file, "{}", content )?;
@@ -189,7 +189,7 @@ impl ProjectBuilder
 
     if let Some( content ) = &self.test_content
     {
-      let mut file = File ::create( project_path.join( "tests/tests.rs" ) )?;
+      let mut file = File::create( project_path.join( "tests/tests.rs" ) )?;
       write!( file, "{}", content )?;
     }
 
@@ -223,8 +223,8 @@ impl WorkspaceBuilder
   fn build<  P : AsRef< Path > >( self, path : P ) -> PathBuf
   {
     let project_path = path.as_ref();
-    fs ::create_dir_all( project_path.join( "modules" ) ).unwrap();
-    let mut file = File ::create( project_path.join( "Cargo.toml" ) ).unwrap();
+    fs::create_dir_all( project_path.join( "modules" ) ).unwrap();
+    let mut file = File::create( project_path.join( "Cargo.toml" ) ).unwrap();
     write!( file, "{}", self.toml_content ).unwrap();
     for member in self.members {
       member.build( project_path.join( "modules" ).join( &member.name ) ).unwrap();
