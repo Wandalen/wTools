@@ -9,6 +9,7 @@ mod private
   use cargo_metadata::Package;
   use colored::Colorize;
   use rayon::ThreadPoolBuilder;
+  use former::Former;
   use crate::process::CmdReport;
   use crate::wtools::error::anyhow::{ Error, format_err };
   use crate::wtools::iter::Itertools;
@@ -173,31 +174,50 @@ mod private
     }
   }
   
+  #[ derive( Debug, Former ) ]
+  pub struct RunTestOptions< 'a >
+  {
+    args : &'a TestArgs,
+    package : &'a Package,
+    dry : bool,
+    base_temp_dir : Option< &'a Path >,
+  }
+  
+  impl < 'a >RunTestOptionsFormer< 'a >
+  {
+    fn option_base_temp_dir( mut self, value : impl Into< Option< &'a Path > > ) -> Self
+    {
+      self.container.base_temp_dir = value.into();
+      self
+    }
+  }
+  
+  
   /// `run_tests` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run_test( args : &TestArgs, package : &Package, dry : bool, base_temp_dir : Option< &Path > ) -> Result< TestReport, ( TestReport, Error ) >
+  pub fn run_test< 'a >( run_test_options: RunTestOptions< 'a > ) -> Result< TestReport, ( TestReport, Error ) >
   {
     // let exclude = args.exclude_features.iter().cloned().collect();
     let mut report = TestReport::default();
-    report.dry = dry;
-    report.package_name = package.name.clone();
+    report.dry = run_test_options.dry;
+    report.package_name = run_test_options.package.name.clone();
     let report = Arc::new( Mutex::new( report ) );
 
     let features_powerset = features::features_powerset
-    ( 
-      package, 
-      args.power as usize, 
-      &args.exclude_features, 
-      &args.include_features 
+    (
+      run_test_options.package,
+      run_test_options.args.power as usize, 
+      &run_test_options.args.exclude_features, 
+      &run_test_options.args.include_features 
     );
     
-    print_temp_report( &package.name, &args.channels, &features_powerset );
+    print_temp_report( &run_test_options.package.name, &run_test_options.args.channels, &features_powerset );
     rayon::scope
     (
       | s | 
       { 
-        let dir = package.manifest_path.parent().unwrap();
-        for channel in args.channels.clone()
+        let dir = run_test_options.package.manifest_path.parent().unwrap();
+        for channel in run_test_options.args.channels.clone()
         { 
           for feature in &features_powerset 
           {
@@ -207,13 +227,13 @@ mod private
               move | _ | 
               {
                 let mut args = cargo::TestArgs::former().channel( channel ).with_default_features( false );
-                if let Some( p ) = base_temp_dir
+                if let Some( p ) = run_test_options.base_temp_dir
                 {
-                  let path = p.join( format!("{}_{}_{}", package.name.clone(), channel,  feature.iter().join( "," ) ) );
+                  let path = p.join( format!("{}_{}_{}", run_test_options.package.name.clone(), channel,  feature.iter().join( "," ) ) );
                   std::fs::create_dir_all( &path ).unwrap();
                   args = args.target_temp_directory( path );
                 }
-                let cmd_rep = cargo::test( dir, args.form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
+                let cmd_rep = cargo::test( dir, args.form(), run_test_options.dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
                 r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
               }
             );
@@ -246,7 +266,8 @@ mod private
           (
             move | _ | 
             {
-              match run_test( &args, package, dry, base_temp_dir )
+              let args = RunTestOptions::former().args( args ).package( package ).dry( dry ).option_base_temp_dir( base_temp_dir ).form();
+              match run_test( args )
               {
                 Ok( r ) =>
                 { 

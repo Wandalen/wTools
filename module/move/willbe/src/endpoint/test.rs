@@ -3,7 +3,6 @@ mod private
 {
   use std::collections::HashSet;
   use std::{ env, fs };
-  use std::time::{ SystemTime, UNIX_EPOCH };
 
   use cargo_metadata::Package;
 
@@ -44,6 +43,7 @@ mod private
 		power : u32,
 		include_features : Vec< String >,
 		exclude_features : Vec< String >,
+    cli : bool,
 	}
 
 	/// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
@@ -71,7 +71,8 @@ mod private
       concurrent: parallel,
       power,
       include_features,
-      exclude_features
+      exclude_features,
+      cli,
     } = args;
 
     let t_args = TestArgs
@@ -84,33 +85,32 @@ mod private
     };
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
-    let mut unique_name = format!( "temp_dir_for_test_command_{}", generate_unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
-
-    let mut temp_dir = env::temp_dir().join( unique_name );
-
-    while temp_dir.exists()
+    if cli
     {
-      unique_name = format!( "temp_dir_for_test_command_{}", generate_unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
-      temp_dir = env::temp_dir().join( unique_name );
+      let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
+
+      let mut temp_dir = env::temp_dir().join( unique_name );
+
+      while temp_dir.exists()
+      {
+        unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
+        temp_dir = env::temp_dir().join( unique_name );
+      }
+
+      fs::create_dir( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
+
+      let report = run_tests( &t_args, &packages, dry, Some( &temp_dir ) );
+
+      fs::remove_dir_all(&temp_dir).map_err( | e | ( reports.clone(), e.into() ) )?;
+
+      report
     }
-
-    fs::create_dir( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
-
-    let report = run_tests( &t_args, &packages, dry, Some( &temp_dir ) );
-
-    fs::remove_dir_all(&temp_dir).map_err( | e | ( reports.clone(), e.into() ) )?;
-    
-    report
+    else
+    {
+      run_tests( &t_args, &packages, dry, None )
+    }
+   
 	}
-
-  fn generate_unique_folder_name() -> Result< String, Error >
-  {
-    let timestamp = SystemTime::now()
-    .duration_since( UNIX_EPOCH )?
-    .as_nanos();
-
-    Ok( format!( "{}", timestamp ) )
-  }
 
   fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >
 	{

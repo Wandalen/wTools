@@ -2,6 +2,7 @@
 pub( crate ) mod private
 {
   use std::path::{ Path, PathBuf };
+  use std::time::{ SystemTime, UNIX_EPOCH };
   use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
 
   /// Absolute path.
@@ -126,6 +127,16 @@ pub( crate ) mod private
     Ok( path )
   }
 
+  /// Generate name based on system time  
+  pub fn unique_folder_name_generate() -> crate::wtools::error::Result< String >
+  {
+    let timestamp = SystemTime::now()
+    .duration_since( UNIX_EPOCH )?
+    .as_nanos();
+
+    Ok( format!( "{}", timestamp ) )
+  }
+
 }
 
 crate::mod_interface!
@@ -133,6 +144,7 @@ crate::mod_interface!
   protected use glob_is;
   protected use valid_is;
   protected use canonicalize;
+  protected use unique_folder_name_generate;
 
   protected use AbsolutePath;
 }
