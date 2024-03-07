@@ -47,6 +47,7 @@ mod private
   }
 
   // qqq : for Petro : should return report
+  // aaa : add report
   // qqq : for Petro : should have typed error
   // aaa : add typed error
   // qqq : parametrized templates??
