@@ -395,7 +395,7 @@ mod private
   ///
   /// Returns:
   /// Returns a result containing a report indicating the result of the operation.
-  pub fn publish_single( package : &Package, force : bool, dry : bool ) -> Result< PublishReport, ( PublishReport, wError ) >
+  pub fn publish_single( package : &Package, force : bool, dry : bool, base_temp_dir : Option< &Path > ) -> Result< PublishReport, ( PublishReport, wError ) >
   {
     let mut report = PublishReport::default();
     if package.local_is().map_err( | err | ( report.clone(), format_err!( err ) ) )?
@@ -473,7 +473,16 @@ mod private
       let res = git::push( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.push = Some( res );
 
-      let res = cargo::publish( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let temp_dir_path = base_temp_dir.map
+      (
+        | p |
+        {
+          let path = p.join( format!( "{}_{}", package_dir.as_ref().file_name().unwrap().to_string_lossy(), new_version ) );
+          std::fs::create_dir_all( &path ).unwrap();
+          path
+        }
+      );
+      let res = cargo::publish( package_dir, dry, temp_dir_path ).map_err( | e | ( report.clone(), e ) )?;
       report.publish = Some( res );
     }
 

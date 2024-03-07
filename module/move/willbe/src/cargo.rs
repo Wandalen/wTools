@@ -43,11 +43,13 @@ mod private
   }
   
  /// Upload a package to the registry
-  pub fn publish< P >( path : P, dry : bool ) -> Result< CmdReport >
+  pub fn publish< P, Pb >( path : P, dry : bool, temp_dir : Option< Pb > ) -> Result< CmdReport >
   where
-    P : AsRef< Path >
+    P : AsRef< Path >,
+    Pb : AsRef< Path >,
   {
-    let ( program, args ) = ( "cargo", [ "publish" ] );
+    let target_dir = temp_dir.map( | p | vec![ "--target-dir".to_string(), p.as_ref().to_string_lossy().into() ] );
+    let ( program, args ) = ( "cargo", [ "publish".to_string() ].into_iter().chain( target_dir.into_iter().flatten() ).collect::< Vec< String > >() );
 
     if dry
     {

@@ -5,6 +5,7 @@ mod private
 
   use std::collections::{ HashSet, HashMap };
   use core::fmt::Formatter;
+  use std::{ env, fs };
 
   use wtools::error::for_app::{ Error, anyhow };
   use path::AbsolutePath;
@@ -163,9 +164,16 @@ mod private
 
     let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).collect::< Vec< _ > >();
 
+
+    let unique_name = format!( "temp_dir_for_test_command_{}", uuid::Uuid::new_v4() );
+
+    let temp_dir = env::temp_dir().join( unique_name );
+
+    fs::create_dir( &temp_dir ).err_with( || report.clone() )?;
+    
     for package in queue
     {
-      let current_report = package::publish_single( package, true, dry )
+      let current_report = package::publish_single( package, true, dry, None )
       .map_err
       (
         | ( current_report, e ) |
@@ -176,7 +184,9 @@ mod private
       )?;
       report.packages.push(( package.crate_dir().absolute_path(), current_report ));
     }
-
+    
+    fs::remove_dir_all( &temp_dir ).err_with( || report.clone() )?;
+    
     Ok( report )
   }
 
