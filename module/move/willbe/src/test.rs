@@ -79,28 +79,18 @@ mod private
         for ( feature, result ) in features
         {
           // if tests failed or if build failed
-          match ( result.out.contains( "failures" ), result.err.contains( "error" ) )
+          if result.out.contains( "failures" ) || result.out.contains( "error" )
           {
-            ( true, _ ) =>
-            {
-              let mut out = result.out.replace( "\n", "\n      " );
-              out.push_str( "\n" );
-              failed += 1;
-              write!( f, "  [ {} | {} ]: ❌  failed\n  \n{out}", channel, feature )?;
-            }
-            ( _, true ) =>
-            {
-              let mut err = result.err.replace("\n", "\n      " );
-              err.push_str( "\n" );
-              failed += 1;
-              write!(f, "  [ {} | {} ]: ❌  failed\n  \n{err}", channel, feature )?;
-            }
-            ( false, false ) =>
-            {
-              let feature = if feature.is_empty() { "no-features" } else { feature };
-              success += 1;
-              writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
-            }
+            let mut out = result.out.replace( "\n", "\n      " );
+            out.push_str( "\n" );
+            failed += 1;
+            write!( f, "  [ {} | {} ]: ❌  failed\n  \n{out}", channel, feature )?;
+          }
+          else 
+          { 
+            let feature = if feature.is_empty() { "no-features" } else { feature };
+            success += 1;
+            writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
           }
         }
       }
@@ -235,7 +225,7 @@ mod private
 
     // unpack. all tasks must be completed until now
     let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
-    let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.err.contains( "error" ) );
+    let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.out.contains( "error" ) );
     if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
   }
   

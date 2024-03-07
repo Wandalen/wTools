@@ -9,6 +9,7 @@ pub( crate ) mod private
     path::{ Path, PathBuf },
     process::{ Command, Stdio },
   };
+  use duct::cmd;
   use wtools::
   {
     iter::Itertools,
@@ -53,7 +54,7 @@ pub( crate ) mod private
   /// Run external processes.
   ///
 
-  pub fn start_sync
+  pub fn process_run_without_params
   (
     exec_path : &str,
     current_path : impl Into< PathBuf >,
@@ -71,7 +72,7 @@ pub( crate ) mod private
       ( "sh", [ "-c", exec_path ] )
     };
 
-    start2_sync( program, args, current_path )
+    process_run_with_params(program, args, current_path )
   }
 
   ///
@@ -82,7 +83,7 @@ pub( crate ) mod private
   /// - `args` - command-line arguments to the application
   /// - `path` - path to directory where to run the application
   ///
-  pub fn start2_sync< AP, Args, Arg, P >
+  pub fn process_run_with_params< AP, Args, Arg, P >
   (
     application : AP,
     args: Args,
@@ -127,6 +128,54 @@ pub( crate ) mod private
       Err( format_err!( report ) )
     }
   }
+
+  ///
+  /// Run external processes. Natural ordered out will be in std::out (std::err - None)
+  ///
+  /// # Args:
+  /// - `application` - path to executable application
+  /// - `args` - command-line arguments to the application
+  /// - `path` - path to directory where to run the application
+  ///
+  pub fn process_run_with_param_and_joined_steams< AP, Args, Arg, P >
+  (
+    application : AP,
+    args : Args,
+    path : P,
+  )
+  -> Result< CmdReport >
+  where
+    AP : AsRef< Path >,
+    Args : IntoIterator< Item = Arg >,
+    Arg : AsRef< std::ffi::OsStr >,
+    P : AsRef< Path >,
+  {
+    let ( application, path ) = ( application.as_ref(), path.as_ref() );
+    let args = args.into_iter().map( | a | a.as_ref().into() ).collect::< Vec< std::ffi::OsString > >();
+    let output = cmd( application.as_os_str(), &args )
+    .dir( path )
+    .stderr_to_stdout()
+    .stdout_capture()
+    .unchecked()
+    .run()?;
+    let report = CmdReport
+    {
+      command : format!( "{} {}", application.display(), args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
+      path : path.to_path_buf(),
+      out : String::from_utf8( output.stdout ).context( "Found invalid UTF-8" )?,
+      err : Default::default(),
+    };
+
+    if output.status.success()
+    {
+      Ok( report )
+    }
+    else
+    {
+      Err( format_err!( report ) )
+    }
+  }
+
 }
 
 //
@@ -134,7 +183,8 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use CmdReport;
-  protected use start_sync;
-  protected use start2_sync;
+  protected use process_run_without_params;
+  protected use process_run_with_params;
+  protected use process_run_with_param_and_joined_steams;
 }
 

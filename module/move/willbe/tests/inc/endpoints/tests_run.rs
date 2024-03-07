@@ -69,7 +69,7 @@ fn fail_build()
   let stable = rep.failure_reports[ 0 ].tests.get( &cargo::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
 
-  assert!( no_features.err.contains( "error" ) && no_features.err.contains( "achtung" ) );
+  assert!( no_features.out.contains( "error" ) && no_features.out.contains( "achtung" ) );
 }
 
 #[ test ]
