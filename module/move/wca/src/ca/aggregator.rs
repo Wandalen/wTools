@@ -59,6 +59,7 @@ pub( crate ) mod private
 
   // xxx : qqq : qqq2 : for Bohdan : one level is obviously redundant
   // Program< Namespace< ExecutableCommand_ > > -> Program< ExecutableCommand_ >
+  // aaa : done. The concept of `Namespace` has been removed
   struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< ExecutableCommand_ > ) > );
 
   impl fmt::Debug for CommandsAggregatorCallback

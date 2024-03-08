@@ -73,6 +73,7 @@ pub( crate ) mod private
     #[ default( Routine::new( | _ | { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ]
     pub routine : Routine,
   }
+
   impl< Context, End >
   CommandFormer< Context, End >
   where

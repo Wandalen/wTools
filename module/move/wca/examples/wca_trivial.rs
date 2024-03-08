@@ -25,21 +25,22 @@ fn main()
   ])
   .perform();
 
-  // qqq : qqq2 : for Bohdan : that should work
+  // aaa : qqq2 : for Bohdan : that should work
   // let ca = wca::CommandsAggregator::former()
   // .command( "echo" )
   //   .hint( "prints all subjects and properties" )
   //   .subject( "Subject", wca::Type::String, true )
   //   .property( "property", "simple property", wca::Type::String, true )
   //   .routine( f1 )
-  //   .perform()
+  //   .end()
   // .command( "exit" )
   //   .hint( "just exit" )
   //   .routine( || exit() )
-  //   .perform()
+  //   .end()
   // .perform()
   // ;
   // ca.execute( input ).unwrap();
+  //aaa: works
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
   ca.perform( args.join( " " ) ).unwrap();
