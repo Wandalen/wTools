@@ -4,10 +4,10 @@ use serde::Deserialize;
 use willbe::features::features_powerset;
 
 /// Constructs a mock `Package` with specified features for testing.
-fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> Package 
+fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> Package
 {
   let mut features_map : HashMap< String, Vec< _ > > = HashMap::new();
-  for ( feature, deps ) in features 
+  for ( feature, deps ) in features
   {
     features_map.insert( feature.to_string(), deps.iter().map( | &dep | dep.to_string() ).collect() );
   }
@@ -33,16 +33,16 @@ fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> Package
 }
 
 #[ test ]
-fn test_features_powerset() 
+fn test_features_powerset()
 {
   let package = mock_package
   (
     vec!
     [
-      ( "feature1", vec![] ), 
-      ( "feature2", vec![] ), 
-      ( "feature3", vec![] ), 
-    ] 
+      ( "feature1", vec![] ),
+      ( "feature2", vec![] ),
+      ( "feature3", vec![] ),
+    ]
   );
 
   let power = 2;
