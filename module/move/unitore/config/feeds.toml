@@ -1,6 +1,6 @@
 [[config]]
-name = "bbc" 
-period = "2days" 
+name = "bbc"
+period = "2days"
 link = "https://feeds.bbci.co.uk/news/world/rss.xml"
 
 [[config]]
