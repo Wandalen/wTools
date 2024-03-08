@@ -49,7 +49,7 @@ mod private
   {
     create_dir( path, "module" )?;
     create_dir( &path.join( "module" ), "module1" )?;
-    create_file( &path.join( "module" ).join( "module1" ), "Cargo.toml", include_str!( "../../template/workspace/module/module1/Cargo.toml" ) )?;
+    create_file( &path.join( "module" ).join( "module1" ), "Cargo.toml", include_str!( "../../template/workspace/module/module1/Cargo.toml.x" ) )?;
     create_file( &path.join( "module" ).join( "module1" ), "Readme.md", include_str!( "../../template/workspace/module/module1/Readme.md" ) )?;
     create_dir( &path.join( "module" ).join( "module1" ), "examples" )?;
     create_dir( &path.join( "module" ).join( "module1" ), "src" )?;

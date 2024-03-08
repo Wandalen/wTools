@@ -37,7 +37,7 @@ proc-macro = true
 macro_tools = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 
-# qqq : optimize features set
+# zzz : optimize features set
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "default" ] }
