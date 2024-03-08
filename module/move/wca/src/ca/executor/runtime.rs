@@ -46,20 +46,21 @@ pub( crate ) mod private
   /// assert!( runtime.is_finished() );
   /// ```
   #[ derive( Debug, Clone ) ]
-  pub struct Runtime
+  pub struct Runtime< 'a >
   {
+    pub dictionary : &'a Dictionary,
     /// context for current runtime
     pub context : Context,
     /// current execution position
     pub pos : usize,
     /// namespace which must be executed
-    pub namespace : Vec< ExecutableCommand_ >, // qqq : for Bohdan : use VerifiedCommand
+    pub namespace : Vec< VerifiedCommand >, // qqq : for Bohdan : use VerifiedCommand
   }
   // qqq : for Bohdan : why both Runtime and RuntimeState exist? probably one should removed
   // qqq : for Bohdan : why both Runtime and Context exist? What about incapsulating Context into Runtime maybe
   // qqq : for Bohdan : why both Runtime and Executor exist? rid off of Executor. Incapsulating Executor into Runtime.
 
-  impl Runtime
+  impl Runtime< '_ >
   {
     /// returns true if execution position at the end
     pub fn is_finished( &self ) -> bool
@@ -76,7 +77,8 @@ pub( crate ) mod private
       .ok_or_else( || err!( "No command here. Current execution pos was `{}`", self.pos ) )
       .and_then( | cmd |
       {
-        _exec_command( cmd.clone(), self.context.clone() )
+        let routine = self.dictionary.command( &cmd.phrase ).unwrap().routine.clone();
+        _exec_command( cmd.clone(), routine, self.context.clone() )
       })
     }
   }
@@ -84,9 +86,9 @@ pub( crate ) mod private
   // qqq : for Bohdan : _exec_command probably should be method of Runtime.
   // qqq : for Bohdan : Accept reference instead of copy.
   /// executes a command
-  pub fn _exec_command( command : ExecutableCommand_, ctx : Context ) -> Result< () >
+  pub fn _exec_command( command : VerifiedCommand, routine : Routine, ctx : Context ) -> Result< () >
   {
-    match command.routine
+    match routine
     {
       Routine::WithoutContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) )),
       Routine::WithContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) ), ctx ),

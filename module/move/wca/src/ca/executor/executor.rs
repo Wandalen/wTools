@@ -48,11 +48,12 @@ pub( crate ) mod private
     /// Executes a program
     ///
     /// Setup runtimes for each namespace into program and run it with specified execution type
-    pub fn program( &self, program : Program< ExecutableCommand_ > ) -> Result< () >
+    pub fn program( &self, dictionary : &Dictionary, program : Program< VerifiedCommand > ) -> Result< () >
     {
       let context = self.context.clone();
       let runtime = Runtime
       {
+        dictionary,
         context,
         pos : 0,
         namespace : program.commands,
@@ -66,15 +67,16 @@ pub( crate ) mod private
     /// Executes a command
     ///
     /// Call command callback with context if it is necessary.
-    pub fn command( &self, command : ExecutableCommand_ ) -> Result< () >
+    pub fn command( &self, dictionary : &Dictionary, command : VerifiedCommand ) -> Result< () >
     {
-      _exec_command( command, self.context.clone() )
+      let routine = dictionary.command( &command.phrase ).unwrap().routine.clone();
+      _exec_command( command, routine, self.context.clone() )
     }
 
     // qqq : for Bohdan : probably redundant
     // aaa : removed `parallel_execution_loop`
 
-    fn sequential_execution_loop( mut runtime : Runtime ) -> Result< () >
+    fn sequential_execution_loop( mut runtime : Runtime< '_ > ) -> Result< () >
     {
       while !runtime.is_finished()
       {
