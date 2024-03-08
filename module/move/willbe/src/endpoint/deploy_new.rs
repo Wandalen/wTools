@@ -73,29 +73,29 @@ mod private {
       // /key
       .file().data( include_str!( "../../template/deploy/key/pack.sh" ) ).path( "./key/pack.sh" ).end()
       .file().data( include_str!( "../../template/deploy/key/Readme.md" ) ).path( "./key/Readme.md" ).end()
-      // /terraform/
-      .file().data( include_str!( "../../template/deploy/terraform/Dockerfile" ) ).path( "./terraform/Dockerfile" ).end()
-      .file().data( include_str!( "../../template/deploy/terraform/Readme.md" ) ).path( "./terraform/Readme.md" ).end()
-      // /terraform/gar
-      .file().data( include_str!( "../../template/deploy/terraform/gar/Readme.md" ) ).path( "./terraform/gar/Readme.md" ).end()
-      .file().data( include_str!( "../../template/deploy/terraform/gar/main.tf" ) ).path( "./terraform/gar/main.tf" ).end()
-      .file().data( include_str!( "../../template/deploy/terraform/gar/outputs.tf" ) ).path( "./terraform/gar/outputs.tf" ).end()
-      .file().data( include_str!( "../../template/deploy/terraform/gar/variables.tf" ) ).path( "./terraform/gar/variables.tf" ).end()
-      // /terraform/gce
-      .file().data( include_str!( "../../template/deploy/terraform/gce/Readme.md" ) ).path( "./terraform/gce/Readme.md" ).end()
-      .file().data( include_str!( "../../template/deploy/terraform/gce/main.tf" ) ).path( "./terraform/gce/main.tf" ).end()
-      .file().data( include_str!( "../../template/deploy/terraform/gce/outputs.tf" ) ).path( "./terraform/gce/outputs.tf" ).end()
-      .file().data( include_str!( "../../template/deploy/terraform/gce/variables.tf" ) ).path( "./terraform/gce/variables.tf" ).end()
-      // /terraform/gce/templates
-      .file().data( include_str!( "../../template/deploy/terraform/gce/templates/cloud-init.tpl" ) ).path( "./terraform/gce/templates/cloud-init.tpl" ).end()
-      // /terraform/gcs
-      .file().data( include_str!( "../../template/deploy/terraform/gcs/main.tf" ) ).path( "./terraform/gcs/main.tf" ).end()
-      // /terraform/hetzner
-      .file().data( include_str!( "../../template/deploy/terraform/hetzner/main.tf" ) ).path( "./terraform/hetzner/main.tf" ).end()
-      .file().data( include_str!( "../../template/deploy/terraform/hetzner/outputs.tf" ) ).path( "./terraform/hetzner/outputs.tf" ).end()
-      .file().data( include_str!( "../../template/deploy/terraform/hetzner/variables.tf" ) ).path( "./terraform/hetzner/variables.tf" ).end()
-      // /terraform/hetzner/templates
-      .file().data( include_str!( "../../template/deploy/terraform/hetzner/templates/cloud-init.tpl" ) ).path( "./terraform/hetzner/templates/cloud-init.tpl" ).end()
+      // /deploy/
+      .file().data( include_str!( "../../template/deploy/deploy/Dockerfile" ) ).path( "./deploy/Dockerfile" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/Readme.md" ) ).path( "./deploy/Readme.md" ).end()
+      // /deploy/gar
+      .file().data( include_str!( "../../template/deploy/deploy/gar/Readme.md" ) ).path( "./deploy/gar/Readme.md" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/gar/main.tf" ) ).path( "./deploy/gar/main.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/gar/outputs.tf" ) ).path( "./deploy/gar/outputs.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/gar/variables.tf" ) ).path( "./deploy/gar/variables.tf" ).end()
+      // /deploy/gce
+      .file().data( include_str!( "../../template/deploy/deploy/gce/Readme.md" ) ).path( "./deploy/gce/Readme.md" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/gce/main.tf" ) ).path( "./deploy/gce/main.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/gce/outputs.tf" ) ).path( "./deploy/gce/outputs.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/gce/variables.tf" ) ).path( "./deploy/gce/variables.tf" ).end()
+      // /deploy/gce/templates
+      .file().data( include_str!( "../../template/deploy/deploy/gce/templates/cloud-init.tpl" ) ).path( "./deploy/gce/templates/cloud-init.tpl" ).end()
+      // /deploy/gcs
+      .file().data( include_str!( "../../template/deploy/deploy/gcs/main.tf" ) ).path( "./deploy/gcs/main.tf" ).end()
+      // /deploy/hetzner
+      .file().data( include_str!( "../../template/deploy/deploy/hetzner/main.tf" ) ).path( "./deploy/hetzner/main.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/hetzner/outputs.tf" ) ).path( "./deploy/hetzner/outputs.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/hetzner/variables.tf" ) ).path( "./deploy/hetzner/variables.tf" ).end()
+      // /deploy/hetzner/templates
+      .file().data( include_str!( "../../template/deploy/deploy/hetzner/templates/cloud-init.tpl" ) ).path( "./deploy/hetzner/templates/cloud-init.tpl" ).end()
       .form();
 
       Self( formed.files )
