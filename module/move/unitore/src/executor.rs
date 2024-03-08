@@ -331,8 +331,8 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
 /// Update all feed from config files saved in storage.
 pub fn update_feed() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
-  let path_to_storage = std::env::var( "UNITORE_STORAGE" )
-  .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
+  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+  .unwrap_or( String::from( "./_data" ) );
 
   let rt  = tokio::runtime::Runtime::new()?;
   let report = rt.block_on( async move
@@ -363,8 +363,9 @@ pub fn update_feed() -> Result< impl Report, Box< dyn std::error::Error + Send +
 /// List all fields.
 pub fn list_fields() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
-  let path_to_storage = std::env::var( "UNITORE_STORAGE" )
-  .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
+  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+  .unwrap_or( String::from( "./_data" ) )
+  ;
 
   let rt  = tokio::runtime::Runtime::new()?;
   rt.block_on( async move
@@ -383,8 +384,9 @@ pub fn list_fields() -> Result< impl Report, Box< dyn std::error::Error + Send +
 /// List all frames.
 pub fn list_frames() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
-  let path_to_storage = std::env::var( "UNITORE_STORAGE" )
-  .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
+  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+  .unwrap_or( String::from( "./_data" ) )
+  ;
 
   let config = Config::default()
   .path( path_to_storage )
@@ -402,8 +404,9 @@ pub fn list_frames() -> Result< impl Report, Box< dyn std::error::Error + Send +
 /// List all feeds.
 pub fn list_feeds() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
-  let path_to_storage = std::env::var( "UNITORE_STORAGE" )
-  .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
+  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+  .unwrap_or( String::from( "./_data" ) )
+  ;
 
   let config = Config::default()
   .path( path_to_storage )
@@ -424,8 +427,9 @@ pub fn list_feeds() -> Result< impl Report, Box< dyn std::error::Error + Send + 
 
 pub fn list_subscriptions() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
-  let path_to_storage = std::env::var( "UNITORE_STORAGE" )
-  .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
+  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+  .unwrap_or( String::from( "./_data" ) )
+  ;
 
   let config = Config::default()
   .path( path_to_storage )
@@ -442,8 +446,9 @@ pub fn list_subscriptions() -> Result< impl Report, Box< dyn std::error::Error +
 
 pub fn add_config( path : std::path::PathBuf ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
-  let path_to_storage = std::env::var( "UNITORE_STORAGE" )
-  .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
+  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+  .unwrap_or( String::from( "./_data" ) )
+  ;
 
   let config = Config::default()
   .path( path_to_storage )
@@ -463,8 +468,9 @@ pub fn add_config( path : std::path::PathBuf ) -> Result< impl Report, Box< dyn 
 
 pub fn remove_subscription( path : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
-  let path_to_storage = std::env::var( "UNITORE_STORAGE" )
-  .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
+  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+  .unwrap_or( String::from( "./_data" ) )
+  ;
 
   let config = Config::default()
   .path( path_to_storage )
@@ -482,8 +488,9 @@ pub fn remove_subscription( path : String ) -> Result< impl Report, Box< dyn std
 
 pub fn execute_query( query : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
 {
-  let path_to_storage = std::env::var( "UNITORE_STORAGE" )
-  .expect( "Please provide path to your storage in environment variable UNITORE_STORAGE" );
+  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+  .unwrap_or( String::from( "./_data" ) )
+  ;
 
   let config = Config::default()
   .path( path_to_storage )

@@ -360,7 +360,7 @@ impl std::fmt::Display for ConfigReport
     writeln!( f, "\n\n" )?;
     match &self.result
     {
-      Payload::Insert( number ) => writeln!( f, "Created {} config", number )?,
+      Payload::Insert( number ) => writeln!( f, "Added {} config", number )?,
       Payload::Delete( number ) => writeln!( f, "Deleted {} config", number )?,
       Payload::Select { labels: _label_vec, rows: rows_vec } =>
       {
