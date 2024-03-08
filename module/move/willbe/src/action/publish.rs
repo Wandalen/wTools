@@ -6,7 +6,6 @@ mod private
   use std::collections::{ HashSet, HashMap };
   use core::fmt::Formatter;
   use std::{ env, fs };
-  use std::time::{ SystemTime, UNIX_EPOCH };
 
   use wtools::error::for_app::{ Error, anyhow };
   use path::AbsolutePath;
@@ -161,7 +160,7 @@ mod private
     let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish );
     let tmp = subgraph_wanted.map( | _, n | graph[ *n ].clone(), | _, e | graph[ *e ].clone() );
 
-    let mut unique_name = format!( "temp_dir_for_publish_command_{}", generate_unique_folder_name().err_with( || report.clone() )? );
+    let mut unique_name = format!( "temp_dir_for_publish_command_{}", path::unique_folder_name_generate().err_with( || report.clone() )? );
 
     let dir = if temp
     {
@@ -169,7 +168,7 @@ mod private
 
       while temp_dir.exists()
       {
-        unique_name = format!( "temp_dir_for_publish_command_{}", generate_unique_folder_name().err_with( || report.clone() )? );
+        unique_name = format!( "temp_dir_for_publish_command_{}", path::unique_folder_name_generate().err_with( || report.clone() )? );
         temp_dir = env::temp_dir().join( unique_name );
       }
 
@@ -207,15 +206,6 @@ mod private
     }
     
     Ok( report )
-  }
-
-  fn generate_unique_folder_name() -> Result< String, Error > 
-  {
-    let timestamp = SystemTime::now()
-    .duration_since(UNIX_EPOCH)?
-    .as_nanos();
-
-    Ok( format!( "{}", timestamp ) )
   }
   
 
