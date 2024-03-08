@@ -3,7 +3,7 @@
 export SECRET_CSP_HETZNER ?= $(shell cat key/SECRET_CSP_HETZNER)
 
 # Base terraform directory
-export tf_dir ?= terraform
+export tf_dir ?= deploy
 # Location for deployed resources
 export TF_VAR_REGION ?= {{gcp_region}}
 # Project id for deployed resources
