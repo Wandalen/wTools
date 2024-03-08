@@ -166,7 +166,7 @@ fn select_mut()
   let mut board = Board::default();
 
   let indices = board.block_cells( ( 0, 0 ).into() );
-  board.select_mut( indices ).for_each( | e | *e = *e + 1.into() );
+  board.select_mut( indices ).for_each( | e | *e = CellVal::from( e.unwrap() + 1 ) );
   let indices = board.block_cells( ( 0, 0 ).into() );
   let got : Vec< CellVal > = board.select( indices ).collect();
   let exp : Vec< CellVal > = each_into([ 4, 2, 1, 1, 1, 7, 1, 1, 1 ]).collect();

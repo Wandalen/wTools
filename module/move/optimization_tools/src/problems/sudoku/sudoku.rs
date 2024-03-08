@@ -5,7 +5,6 @@ use crate::hybrid_optimizer::*;
 use crate::problems::sudoku::*;
 
 use derive_tools::{ FromInner, InnerFrom, Display };
-use derive_tools::{ Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign };
 use deterministic_rand::{ Hrng, Rng, seq::SliceRandom };
 use iter_tools::Itertools;
 
@@ -91,7 +90,6 @@ pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : 
 
 /// Represents number of errors in sudoku board.
 #[ derive( Default, Debug, Display, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash, FromInner, InnerFrom ) ]
-#[ derive( Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign ) ]
 pub struct SudokuCost( usize );
 
 // xxx : derive, please
@@ -175,9 +173,9 @@ impl SudokuPerson
     
     log::trace!( "cells_swap( {:?}, {:?} )", mutagen.cell1, mutagen.cell2 );
     self.board.cells_swap( mutagen.cell1, mutagen.cell2 );
-    self.cost -= old_cross_error.into();
-    self.cost += self.board.cross_error( mutagen.cell1 ).into();
-    self.cost += self.board.cross_error( mutagen.cell2 ).into();
+    self.cost = SudokuCost( self.cost.unwrap() - old_cross_error ) ;
+    self.cost = SudokuCost( self.cost.unwrap() + self.board.cross_error( mutagen.cell1 ) );
+    self.cost = SudokuCost( self.cost.unwrap() + self.board.cross_error( mutagen.cell2 ) );
   }
 
   /// Create random mutagen and apply it current board.
@@ -279,9 +277,9 @@ impl MutationOperator for RandomPairInBlockMutation
       
       log::trace!( "cells_swap( {:?}, {:?} )", mutagen.cell1, mutagen.cell2 );
       person.board.cells_swap( mutagen.cell1, mutagen.cell2 );
-      person.cost -= old_cross_error.into();
-      person.cost += person.board.cross_error( mutagen.cell1 ).into();
-      person.cost += person.board.cross_error( mutagen.cell2 ).into();
+      person.cost = SudokuCost( person.cost.unwrap() - old_cross_error );
+      person.cost = SudokuCost( person.cost.unwrap() + person.board.cross_error( mutagen.cell1 ) );
+      person.cost = SudokuCost( person.cost.unwrap() + person.board.cross_error( mutagen.cell2 ) );
     }
 
 }
