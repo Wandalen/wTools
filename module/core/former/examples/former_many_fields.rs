@@ -1,6 +1,21 @@
-//! example
-
-use std::collections::HashMap;
+//!
+//! Utilizing the Former Crate for Struct Initialization
+//!
+//! This example demonstrates the capability of the `Former` crate to simplify struct initialization through the builder pattern, particularly for structs with a mix of required and optional fields, as well as collections like vectors and hash maps.
+//!
+//! The `Structure1` struct is defined with various field types to showcase the flexibility of `Former`:
+//! - `int_1`: A required integer field.
+//! - `string_1`: A required string field.
+//! - `vec_1`: A vector of unsigned integers, showcasing collection handling.
+//! - `hashmap_strings_1`: A hash map storing key-value pairs, both strings, illustrating how `Former` can manage more complex data structures.
+//! - `int_optional_1`: An optional integer field, demonstrating `Former`'s capability to handle optional fields seamlessly.
+//! - `string_optional_1`: An optional string field, further exemplifying optional field handling.
+//!
+//! A hash map is first created and populated with two key-value pairs. The `Structure1` struct is then instantiated using the fluent builder pattern methods provided by `Former`. Each method corresponds to one of `Structure1`'s fields, allowing for intuitive and clear field assignment. The `.form()` method completes the construction of the `Structure1` instance.
+//!
+//! The builder pattern methods significantly streamline the process of struct initialization, especially for structs with complex or optional fields. By leveraging `Former`, developers can write more readable and maintainable initialization code, avoiding the verbosity and complexity often associated with manual struct instantiation.
+//!
+//! The `dbg!` macro is utilized to print the constructed `Structure1` instance, confirming that all fields are correctly assigned, including the handling of optional fields and collections. This example underscores the power and convenience of using `Former` for struct initialization in Rust projects.
 
 fn main()
 {
@@ -16,7 +31,7 @@ fn main()
     int_optional_1 : core::option::Option< i32 >,
     string_optional_1 : Option< String >,
   }
-  let hashmap = HashMap::from
+  let hashmap = std::collections::HashMap::from
   ([
     ( "k1".to_string(), "v1".to_string() ),
     ( "k2".to_string(), "v2".to_string() ),

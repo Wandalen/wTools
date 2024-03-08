@@ -40,33 +40,29 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
   {
     storage : feed_storage,
     client : TestClient( "./tests/fixtures/plain_feed.xml".to_owned() ),
-    config : vec![ feed_config ],
+    config : vec![],
   };
   // initial fetch
-  manager.update_feed().await?;
+  manager.update_feed( vec![ feed_config.clone() ] ).await?;
 
   manager.set_client( TestClient( "./tests/fixtures/updated_one_frame.xml".to_owned() ) );
 
   // updated fetch
-  manager.update_feed().await?;
-
+  manager.update_feed( vec![ feed_config ] ).await?;
   // check
   let payload = manager.get_all_frames().await?;
 
-  let entries = payload
-  .select()
-  .expect( "no entries found" )
-  ;
+  let entries = payload.0.iter().map( | val | val.selected_frames.selected_rows.clone() ).flatten().collect::< Vec< _ > >();
 
-  let entries = entries.map( | entry |
+  let entries = entries.iter().map( | entry |
     {
-      let id = match entry.get( "id" ).expect( "no id field" )
+      let id = match &entry[ 0 ]
       {
         Value::Str( s ) => s.to_owned(),
         _ => String::new(),
       };
 
-      let published = match entry.get( "published" ).expect( "no published date field" )
+      let published = match &entry[ 8 ]
       {
         Value::Timestamp( date_time ) => date_time.and_utc(),
         _ => DateTime::< Utc >::default(),
@@ -78,7 +74,7 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
   ;
 
   // no duplicates
-  assert!( entries.len() == 2 );
+  assert_eq!( entries.len(), 2 );
 
   // check date
   let updated = entries.iter().find( | ( id, _published ) | id == "https://www.nasa.gov/?p=622174" );

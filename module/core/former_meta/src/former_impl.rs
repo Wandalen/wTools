@@ -136,8 +136,7 @@ impl syn::parse::Parse for AttributeDefault
   }
 }
 
-// qqq : xxx : implement test for setter
-// qqq : xxx : update documentation
+// qqq : make sure that documentation for each entity is up to date
 
 ///
 /// Attribute to enable/disable setter generation.
@@ -167,7 +166,7 @@ impl syn::parse::Parse for AttributeSetter
 ///
 /// Attribute to enable/disable former generation.
 ///
-/// `#[ former( former::runtime::VectorSubformer ) ]`
+/// `#[ former( former::VectorSubformer ) ]`
 ///
 
 #[ allow( dead_code ) ]
@@ -361,6 +360,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
     let _else = if default == None
     {
+      // qqq : document, explain why and add example of generated code. if possible to improve -- suggest improvements
       let panic_msg = format!( "Field '{}' isn't initialized", ident );
       qt!
       {
@@ -393,7 +393,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStr
 
           ( &::core::marker::PhantomData::< #ty > ).maybe_default()
         };
-        // qqq : xxx : test that and document example of generated code
+        // qqq : test that and document example of generated code
       }
     }
     else
@@ -527,7 +527,7 @@ fn field_setter
 /// # Example of generated code
 ///
 /// ```ignore
-/// pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapSubformer
+/// pub fn hashmap_strings_1( mut self ) -> former::HashMapSubformer
 /// <
 ///   String,
 ///   String,
@@ -542,7 +542,7 @@ fn field_setter
 ///     former.hashmap_strings_1 = Some( container );
 ///     former
 ///   };
-///   former::runtime::HashMapSubformer::begin( self, container, on_end )
+///   former::HashMapSubformer::begin( self, container, on_end )
 /// }
 /// ```
 

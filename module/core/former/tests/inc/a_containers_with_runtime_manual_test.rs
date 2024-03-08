@@ -147,7 +147,7 @@ where
     on_end.call( container, context )
   }
 
-  pub fn vec_1( mut self ) -> former::runtime::VectorSubformer
+  pub fn vec_1( mut self ) -> former::VectorSubformer
   <
     String,
     Vec< String >,
@@ -162,10 +162,10 @@ where
       super_former.container.vec_1 = Some( container );
       super_former
     };
-    former::runtime::VectorSubformer::< String, Vec< String >, Self, _ >::begin( Some( self ), container, on_end )
+    former::VectorSubformer::< String, Vec< String >, Self, _ >::begin( Some( self ), container, on_end )
   }
 
-  pub fn hashmap_strings_1( mut self ) -> former::runtime::HashMapSubformer
+  pub fn hashmap_strings_1( mut self ) -> former::HashMapSubformer
   <
     String,
     String,
@@ -181,10 +181,10 @@ where
       super_former.container.hashmap_strings_1 = Some( container );
       super_former
     };
-    former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
+    former::HashMapSubformer::begin( Some( self ), container, on_end )
   }
 
-  pub fn hashset_strings_1( mut self ) -> former::runtime::HashSetSubformer
+  pub fn hashset_strings_1( mut self ) -> former::HashSetSubformer
   <
     String,
     std::collections::HashSet< String >,
@@ -199,7 +199,7 @@ where
       super_former.container.hashset_strings_1 = Some( container );
       super_former
     };
-    former::runtime::HashSetSubformer::begin( Some( self ), container, on_end )
+    former::HashSetSubformer::begin( Some( self ), container, on_end )
   }
 
 }

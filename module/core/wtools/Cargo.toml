@@ -209,9 +209,9 @@ derive_full = [
   "derive_from",
   "derive_index",
   "derive_index_mut",
-  "derive_into",
+  "derive_inner_from",
   "derive_into_iterator",
-  "derive_iterator",
+  # "derive_iterator",
   "derive_mul_assign",
   "derive_mul",
   "derive_not",
@@ -219,7 +219,7 @@ derive_full = [
   "derive_try_into",
   "derive_is_variant",
   "derive_unwrap",
-  "derive_convert_case",
+  # "derive_convert_case",
 
   "derive_strum",
   "derive_strum_phf",
@@ -247,9 +247,9 @@ derive_default = [
   "derive_from",
   "derive_index",
   "derive_index_mut",
-  "derive_into",
+  "derive_inner_from",
   "derive_into_iterator",
-  "derive_iterator",
+  # "derive_iterator",
   "derive_mul_assign",
   "derive_mul",
   "derive_not",
@@ -257,7 +257,7 @@ derive_default = [
   "derive_try_into",
   "derive_is_variant",
   "derive_unwrap",
-  "derive_convert_case",
+  # "derive_convert_case",
 
   "derive_strum",
   "derive_strum_phf",
@@ -274,8 +274,8 @@ derive_default = [
 derive_no_std = [ "derive", "derive_tools/no_std" ]
 derive_use_alloc = [ "derive", "derive_tools/use_alloc" ]
 
-derive_nightly = [ "derive", "nightly", "derive_tools/nightly" ]
-derive_enable_track_caller = [ "derive", "derive_tools/enable_track_caller" ]
+# derive_nightly = [ "derive", "nightly", "derive_tools/nightly" ]
+# derive_enable_track_caller = [ "derive", "derive_tools/enable_track_caller" ]
 
 derive_add_assign = [ "derive", "derive_tools/derive_add_assign" ]
 derive_add = [ "derive", "derive_tools/derive_add" ]
@@ -288,9 +288,9 @@ derive_error = [ "derive", "derive_tools/derive_error" ]
 derive_from = [ "derive", "derive_tools/derive_from" ]
 derive_index = [ "derive", "derive_tools/derive_index" ]
 derive_index_mut = [ "derive", "derive_tools/derive_index_mut" ]
-derive_into = [ "derive", "derive_tools/derive_into" ]
+derive_inner_from = [ "derive", "derive_tools/derive_inner_from" ]
 derive_into_iterator = [ "derive", "derive_tools/derive_into_iterator" ]
-derive_iterator = [ "derive", "derive_tools/derive_iterator" ]
+# derive_iterator = [ "derive", "derive_tools/derive_iterator" ]
 derive_mul_assign = [ "derive", "derive_tools/derive_mul_assign" ]
 derive_mul = [ "derive", "derive_tools/derive_mul" ]
 derive_not = [ "derive", "derive_tools/derive_not" ]
@@ -298,7 +298,7 @@ derive_sum = [ "derive", "derive_tools/derive_sum" ]
 derive_try_into = [ "derive", "derive_tools/derive_try_into" ]
 derive_is_variant = [ "derive", "derive_tools/derive_is_variant" ]
 derive_unwrap = [ "derive", "derive_tools/derive_unwrap" ]
-derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
+# derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
 
 derive_strum = [ "derive", "derive_tools/strum_derive" ]
 derive_strum_phf = [ "derive", "derive_tools/strum_phf" ]

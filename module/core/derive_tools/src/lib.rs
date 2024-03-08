@@ -61,6 +61,19 @@ pub mod protected
   pub use super::reflect::orphan::*;
 }
 
+#[ cfg( all( feature = "derive_more" ) ) ]
+#[ allow( unused_imports ) ]
+mod derive_more
+{
+  #[ cfg( feature = "derive_add" ) ]
+  pub use ::derive_more::Add;
+  #[ cfg( feature = "derive_is_variant" ) ]
+  pub use ::derive_more::IsVariant;
+
+  // qqq2 : list all
+  // qqq2 : make sure all features of derive_more is reexported
+}
+
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod orphan
@@ -78,11 +91,73 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 
-  #[ cfg( feature = "derive_more" ) ]
+  #[ cfg( all( feature = "derive_more" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::derive_more::*;
-  // qqq2 : list instead of asteris
+  pub use super::derive_more::*;
+
+  // #[ cfg( all( feature = "derive_more", feature = "derive_add" ) ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::derive_more::Add;
+
+  // #[ allow( ambiguous_glob_reexports ) ]
+  // #[ cfg( feature = "derive_more" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::derive_more::
+  // {
+  //   Add,
+  //   AddAssign,
+  //   AsMut,
+  //   AsRef,
+  //   Binary,
+  //   BitAnd,
+  //   BitAndAssign,
+  //   BitOr,
+  //   BitOrAssign,
+  //   BitXor,
+  //   BitXorAssign,
+  //   Constructor,
+  //   Debug,
+  //   Deref,
+  //   DerefMut,
+  //   Display,
+  //   Div,
+  //   DivAssign,
+  //   Error,
+  //   From,
+  //   FromStr,
+  //   Index,
+  //   IndexMut,
+  //   Into,
+  //   IntoIterator,
+  //   IsVariant,
+  //   LowerExp,
+  //   LowerHex,
+  //   Mul,
+  //   MulAssign,
+  //   Neg,
+  //   Not,
+  //   Octal,
+  //   Pointer,
+  //   Product,
+  //   Rem,
+  //   RemAssign,
+  //   Shl,
+  //   ShlAssign,
+  //   Shr,
+  //   ShrAssign,
+  //   Sub,
+  //   SubAssign,
+  //   Sum,
+  //   TryFrom,
+  //   TryInto,
+  //   TryUnwrap,
+  //   Unwrap,
+  //   UpperExp,
+  //   UpperHex,
+  // };
 
   #[ cfg( feature = "strum" ) ]
   #[ doc( inline ) ]
@@ -117,6 +192,11 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::derive_tools_meta::*;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "derive_from" ) ]
+  pub use ::derive_tools_meta::From;
 
 }
 

@@ -29,9 +29,9 @@ fn main()
   }
 
   let profile = UserProfile::former()
-  .age(30)
-  .username("JohnDoe".to_string())
-  .bio_optional("Software Developer".to_string()) // Optionally provide a bio
+  .age( 30 )
+  .username( "JohnDoe".to_string() )
+  .bio_optional( "Software Developer".to_string() ) // Optionally provide a bio
   .form();
 
   dbg!( &profile );

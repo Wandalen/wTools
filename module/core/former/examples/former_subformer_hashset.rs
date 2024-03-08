@@ -10,7 +10,7 @@ fn main()
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithSet
   {
-    #[ subformer( former::runtime::HashSetSubformer ) ]
+    #[ subformer( former::HashSetSubformer ) ]
     set : std::collections::HashSet< &'static str >,
   }
 

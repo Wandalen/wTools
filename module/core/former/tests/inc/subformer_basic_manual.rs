@@ -218,7 +218,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn properties( mut self ) -> former::runtime::HashMapSubformer
+  pub fn properties( mut self ) -> former::HashMapSubformer
   <
     K,
     Property< K >,
@@ -234,7 +234,7 @@ where
       super_former.container.properties = Some( container );
       super_former
     };
-    former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
+    former::HashMapSubformer::begin( Some( self ), container, on_end )
   }
 
 }
@@ -404,7 +404,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn commands( mut self ) -> former::runtime::HashMapSubformer
+  pub fn commands( mut self ) -> former::HashMapSubformer
   <
     String,
     Command< K >,
@@ -420,7 +420,7 @@ where
       super_former.commands = Some( container );
       super_former
     };
-    former::runtime::HashMapSubformer::begin( Some( self ), container, on_end )
+    former::HashMapSubformer::begin( Some( self ), container, on_end )
   }
 
 }
