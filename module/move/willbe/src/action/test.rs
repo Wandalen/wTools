@@ -1,7 +1,13 @@
 /// Internal namespace.
 mod private
 {
+  use crate::*;
+  use test::*;
+  use path::AbsolutePath;
+
   use std::collections::HashSet;
+
+  use std::{ env, fs };
 
   use cargo_metadata::Package;
 
@@ -19,10 +25,6 @@ mod private
     },
     iter::Itertools,
   };
-
-  use crate::*;
-  use crate::path::AbsolutePath;
-  use crate::test::*;
 
   /// Used to store arguments for running tests.
   ///
@@ -42,6 +44,8 @@ mod private
     power : u32,
     include_features : Vec< String >,
     exclude_features : Vec< String >,
+    #[ default( true ) ]
+    temp : bool,
   }
 
   /// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
@@ -66,23 +70,59 @@ mod private
     {
       dir : _ ,
       channels,
-      concurrent : parallel,
-      power,
-      include_features,
-      exclude_features
-    } = args;
-
-    let t_args = TestOptions
-    {
-      channels,
-      concurrent : parallel,
+      concurrent,
       power,
       include_features,
       exclude_features,
-    };
+      temp
+    } = args;
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
-    tests_run( &t_args, &packages, dry )
+    if temp
+    {
+      
+      let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
+
+      let mut temp_dir = env::temp_dir().join( unique_name );
+
+      while temp_dir.exists()
+      {
+        unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
+        temp_dir = env::temp_dir().join( unique_name );
+      }
+
+      fs::create_dir( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
+
+      let t_args = TestOptions
+      {
+        channels,
+        concurrent,
+        power,
+        include_features,
+        exclude_features,
+        temp_path: Some( temp_dir.clone() ),
+      };
+      
+      let report = tests_run( &t_args, &packages, dry );
+
+      fs::remove_dir_all(&temp_dir).map_err( | e | ( reports.clone(), e.into() ) )?;
+
+      report
+    }
+    else
+    {
+      let t_args = TestOptions
+      {
+        channels,
+        concurrent,
+        power,
+        include_features,
+        exclude_features,
+        temp_path: None,
+      };
+
+      tests_run( &t_args, &packages, dry )
+    }
   }
 
   fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >

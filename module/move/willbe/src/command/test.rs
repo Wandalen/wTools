@@ -27,6 +27,8 @@ mod private
     power : u32,
     include : Vec< String >,
     exclude : Vec< String >,
+    #[ default( true ) ]
+    temp : bool,
   }
 
   /// run tests in specified crate
@@ -34,8 +36,8 @@ mod private
   {
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
-    let TestsProperties { dry, with_stable, with_nightly, concurrent, power, include, exclude } = properties.try_into()?;
-
+    let TestsProperties { dry, with_stable, with_nightly, concurrent, power, include, exclude, temp } = properties.try_into()?;
+    
     let mut channels = HashSet::new();
     if with_stable { channels.insert( Channel::Stable ); }
     if with_nightly { channels.insert( Channel::Nightly ); }
@@ -47,6 +49,7 @@ mod private
     .power( power )
     .exclude_features( exclude )
     .include_features( include )
+    .temp( temp )
     .form();
 
     match action::test( args, dry )
@@ -73,6 +76,7 @@ mod private
       let mut this = Self::former();
 
       this = if let Some( v ) = value.get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "temp" ) { this.dry::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_stable" ) { this.with_stable::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_nightly" ) { this.with_nightly::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "concurrent" ) { this.concurrent::< u32 >( v ) } else { this };
