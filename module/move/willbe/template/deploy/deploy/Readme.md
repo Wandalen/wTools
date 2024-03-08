@@ -15,5 +15,6 @@ This directory contains [Compute Engine](gce/) and [Artifact Registry](gar/) ter
   - [templates](./templates/) - Contains templates to be used for resource creation.
     - [templates/cloud-init.tpl](./templates/cloud-init.tpl) - Cloud-init script template to start docker container containing the webapp.
 
+To push an image to be deployed you need to have a [../Dockerfile](../Dockerfile) in the the same directory as your [../Makefile](../Makefile). 
 
 [Compute Engine](gce/) is dependant on [Artifact Registry](gar/) so it's required to create [Artifact Registry](gar/) resources first.
