@@ -1,11 +1,7 @@
 mod private
 {
   use crate::*;
-
-  use std::
-  {
-    path::Path,
-  };
+  
   use std::path::PathBuf;
   use former::Former;
   use process::CmdReport;
@@ -15,6 +11,7 @@ mod private
   #[ derive( Debug, Former ) ]
   pub struct PackOptions
   {
+    path : PathBuf,
     temp_path : Option< PathBuf >,
   }
   
@@ -45,9 +42,7 @@ mod private
   /// - `path` - path to the package directory
   /// - `dry` - a flag that indicates whether to execute the command or not
   ///
-  pub fn pack< P >( path : P, args : PackOptions, dry : bool ) -> Result< CmdReport >
-  where
-    P : AsRef< Path >
+  pub fn pack( args : PackOptions, dry : bool ) -> Result< CmdReport >
   {
     let ( program, options ) = ( "cargo", args.to_pack_args() );
 
@@ -58,7 +53,7 @@ mod private
         CmdReport
         {
           command : format!( "{program} {}", options.join( " " ) ),
-          path : path.as_ref().to_path_buf(),
+          path : args.path.to_path_buf(),
           out : String::new(),
           err : String::new(),
         }
@@ -66,7 +61,7 @@ mod private
     }
     else
     {
-      process::run(program, options, path )
+      process::run(program, options, args.path )
     }
   }
 
@@ -75,6 +70,7 @@ mod private
   #[ derive( Debug, Former, Clone, Default ) ]
   pub struct PublishOptions
   {
+    path : PathBuf,
     temp_path : Option< PathBuf >,
   }
   
@@ -97,9 +93,7 @@ mod private
   }
 
  /// Upload a package to the registry
-  pub fn publish< P >(path : P, args : PublishOptions, dry : bool ) -> Result< CmdReport >
-  where
-    P : AsRef< Path >
+  pub fn publish( args : PublishOptions, dry : bool ) -> Result< CmdReport >
   {
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
 
@@ -110,7 +104,7 @@ mod private
           CmdReport
           {
             command : format!( "{program} {}", arguments.join( " " ) ),
-            path : path.as_ref().to_path_buf(),
+            path : args.path.to_path_buf(),
             out : String::new(),
             err : String::new(),
           }
@@ -118,7 +112,7 @@ mod private
     }
     else
     {
-      process::run(program, arguments, path )
+      process::run(program, arguments, args.path )
     }
   }
 }

@@ -431,8 +431,11 @@ mod private
         }
     );
     
-    let pack_args = cargo::PackOptions::former().option_temp_path( temp_dir.clone() ).form();
-    let output = cargo::pack( &package_dir, pack_args, dry ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
+    let pack_args = cargo::PackOptions::former()
+    .path( package_dir.absolute_path().as_ref().to_path_buf() )
+    .option_temp_path( temp_dir.clone() )
+    .form();
+    let output = cargo::pack( pack_args, dry ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
     if output.err.contains( "not yet committed")
     {
       return Err(( report, format_err!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
@@ -500,7 +503,13 @@ mod private
       let res = git::push( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.push = Some( res );
       
-      let res = cargo::publish( package_dir, cargo::PublishOptions::former().option_temp_path( temp_dir ).form(), dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = cargo::publish
+      ( 
+        cargo::PublishOptions::former()
+        .path( package_dir.absolute_path().as_ref().to_path_buf() )
+        .option_temp_path( temp_dir ).form(), dry 
+      )
+      .map_err( | e | ( report.clone(), e ) )?;
       report.publish = Some( res );
     }
 

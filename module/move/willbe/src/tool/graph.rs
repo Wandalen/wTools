@@ -169,7 +169,14 @@ pub( crate ) mod private
   /// # Returns
   ///
   /// A new `Graph` with the nodes that are not required to be published removed.
-  pub fn remove_not_required_to_publish( package_map : &HashMap< String, Package >, graph : &Graph< String, String >, roots : &[ String ], temp_path : Option< PathBuf > ) -> Graph< String, String >
+  pub fn remove_not_required_to_publish
+  ( 
+    package_map : &HashMap< String, Package >, 
+    graph : &Graph< String, String >, 
+    roots : &[ String ], 
+    temp_path : Option< PathBuf >,
+  ) 
+  -> Graph< String, String >
   {
     let mut nodes = HashSet::new();
     let mut cleared_graph = Graph::new();
@@ -189,7 +196,12 @@ pub( crate ) mod private
           }
         }
         let package = package_map.get( &graph[ n ] ).unwrap();
-        _ = cargo::pack( package.crate_dir(), cargo::PackOptions::former().option_temp_path( temp_path.clone() ).form(),false ).unwrap();
+        _ = cargo::pack
+        ( 
+          cargo::PackOptions::former()
+          .path( package.crate_dir().absolute_path().as_ref().to_path_buf() )
+          .option_temp_path( temp_path.clone() ).form(),false 
+        ).unwrap();
         if publish_need( package, temp_path.clone() ).unwrap()
         {
           nodes.insert( n );
