@@ -27,7 +27,7 @@ fn package_path< P : AsRef< Path > >( path : P ) -> PathBuf
 fn package< P : AsRef< Path > >( path : P ) -> Package
 {
   let path = path.as_ref();
-  _ = cargo::pack( path, false ).expect( "Failed to package a package" );
+  _ = cargo::pack( cargo::PackOptions::former().path( path.to_path_buf() ).dry( false ).form() ).expect( "Failed to package a package" );
   let absolute = AbsolutePath::try_from( path ).unwrap();
 
   Package::try_from( absolute ).unwrap()
@@ -42,12 +42,12 @@ fn no_changes()
   // aaa : use `package_path` function
   let package_path = package_path( "c" );
 
-  _ = cargo::pack( &package_path, false ).expect( "Failed to package a package" );
+  _ = cargo::pack( cargo::PackOptions::former().path( package_path.clone() ).dry( false ).form() ).expect( "Failed to package a package" );
   let absolute = AbsolutePath::try_from( package_path ).unwrap();
   let package = Package::try_from( absolute ).unwrap();
 
   // Act
-  let publish_needed = publish_need( &package ).unwrap();
+  let publish_needed = publish_need( &package, None ).unwrap();
 
   // Assert
   assert!( !publish_needed );
@@ -67,13 +67,13 @@ fn with_changes()
   let mut manifest = manifest::open( absolute ).unwrap();
   version::bump( &mut manifest, false ).unwrap();
 
-  _ = cargo::pack( &temp, false ).expect( "Failed to package a package" );
+  _ = cargo::pack( cargo::PackOptions::former().path( temp.path().to_path_buf() ).dry( false ).form() ).expect( "Failed to package a package" );
 
   let absolute = AbsolutePath::try_from( temp.as_ref() ).unwrap();
   let package = Package::try_from( absolute ).unwrap();
 
   // Act
-  let publish_needed = publish_need( &package ).unwrap();
+  let publish_needed = publish_need( &package, None ).unwrap();
 
   // Assert
   assert!( publish_needed );
@@ -85,7 +85,7 @@ fn cascade_with_changes()
 {
   let abc = [ "a", "b", "c" ].into_iter().map( package_path ).map( package ).collect::< Vec< _ > >();
   let [ a, b, c ] = abc.as_slice() else { unreachable!() };
-  if ![ c, b, a ].into_iter().inspect( | x | { dbg!( x.name().unwrap() ); } ).map( publish_need ).inspect( | x | { dbg!(x); } ).all( | p | !p.expect( "There was an error verifying whether the package needs publishing or not" ) )
+  if ![ c, b, a ].into_iter().inspect( | x | { dbg!( x.name().unwrap() ); } ).map( | a | publish_need( a, None ) ).inspect( | x | { dbg!(x); } ).all( | p | !p.expect( "There was an error verifying whether the package needs publishing or not" ) )
   {
     panic!( "The packages must be up-to-dated" );
   }
@@ -128,7 +128,7 @@ default-features = true
   let b_temp = package( b_temp_path );
   let a_temp = package( a_temp_path );
 
-  assert!( publish_need( &c_temp ).unwrap() );
-  assert!( publish_need( &b_temp ).unwrap() );
-  assert!( publish_need( &a_temp ).unwrap() );
+  assert!( publish_need( &c_temp, None ).unwrap() );
+  assert!( publish_need( &b_temp, None ).unwrap() );
+  assert!( publish_need( &a_temp, None ).unwrap() );
 }
