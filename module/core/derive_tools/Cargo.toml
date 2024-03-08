@@ -125,8 +125,8 @@ derive_variadic_from = [ "type_variadic_from", "derive_tools_meta/derive_variadi
 
 # enable_track_caller = [ "derive_more", "derive_more/track-caller" ]
 
-derive_add_assign = [ "derive_more", "derive_more/add_assign" ]
-derive_add = [ "derive_more", "derive_more/add" ]
+derive_add_assign = [ "derive_more", "derive_more/std", "derive_more/add_assign" ]
+derive_add = [ "derive_more", "derive_more/std", "derive_more/add" ]
 derive_as_mut = [ "derive_tools_meta/derive_as_mut" ]
 derive_as_ref = [ "derive_tools_meta/derive_as_ref" ]
 # derive_as_mut = [ "derive_more", "derive_more/as_mut" ]
@@ -146,8 +146,8 @@ derive_index_mut = [ "derive_more", "derive_more/index_mut" ]
 # derive_inner_from = [ "derive_more", "derive_more/into" ]
 derive_into_iterator = [ "derive_more", "derive_more/into_iterator" ]
 # derive_iterator = [ "derive_more", "derive_more/iterator" ]
-derive_mul_assign = [ "derive_more", "derive_more/mul_assign" ]
-derive_mul = [ "derive_more", "derive_more/mul" ]
+derive_mul_assign = [ "derive_more", "derive_more/std", "derive_more/mul_assign" ]
+derive_mul = [ "derive_more", "derive_more/std", "derive_more/mul" ]
 derive_not = [ "derive_more", "derive_more/not" ]
 derive_sum = [ "derive_more", "derive_more/sum" ]
 derive_try_into = [ "derive_more", "derive_more/try_into" ]
@@ -175,8 +175,8 @@ derive_inner_from = [ "derive_tools_meta/derive_inner_from" ]
 [dependencies]
 
 ## external
-derive_more = { version = "~0.99.17", optional = true, default-features = false }
-# derive_more = { version = "~1.0.0-beta.6", optional = true, default-features = false }
+# derive_more = { version = "~0.99.17", optional = true, default-features = false }
+derive_more = { version = "~1.0.0-beta.6", optional = true, default-features = false }
 strum = { version = "~0.25", optional = true, default-features = false }
 # strum_macros = { version = "~0.25.3", optional = true, default-features = false }
 parse-display = { version = "~0.8.2", optional = true, default-features = false }

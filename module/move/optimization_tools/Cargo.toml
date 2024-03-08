@@ -37,7 +37,7 @@ dynamic_plot = [ "static_plot", "plotters-backend", "piston_window" ]
 lp_parse = [ "exmex" ]
 
 [dependencies]
-derive_tools = { workspace = true, features = ["default"] }
+derive_tools = { workspace = true, features = [ "full", "derive_more" ] }
 deterministic_rand = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 meta_tools = { workspace = true, features = [ "meta_constructors" ] }

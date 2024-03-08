@@ -66,27 +66,13 @@ pub mod protected
 mod derive_more
 {
   #[ cfg( feature = "derive_add" ) ]
-  pub use ::derive_more::Add;
+  pub use ::derive_more::{ Add, Sub };
   #[ cfg( feature = "derive_add_assign" ) ]
-  pub use ::derive_more::AddAssign;
-  #[ cfg( feature = "derive_add" ) ]
-  pub use ::derive_more::Sub;
-  #[ cfg( feature = "derive_add_assign" ) ]
-  pub use ::derive_more::SubAssign;
-  #[ cfg( feature = "derive_as_mut" ) ]
-  pub use ::derive_more::AsMut;
-  #[ cfg( feature = "derive_as_ref" ) ]
-  pub use ::derive_more::AsRef;
+  pub use ::derive_more::{ AddAssign, SubAssign };
   #[ cfg( feature = "derive_constructor" ) ]
   pub use ::derive_more::Constructor;
-  #[ cfg( feature = "derive_deref_mut" ) ]
-  pub use ::derive_more::DerefMut;
-  #[ cfg( feature = "derive_deref" ) ]
-  pub use ::derive_more::Deref;
   #[ cfg( feature = "derive_error" ) ]
   pub use ::derive_more::Error;
-  #[ cfg( feature = "derive_from" ) ]
-  pub use ::derive_more::From;
   #[ cfg( feature = "derive_index_mut" ) ]
   pub use ::derive_more::IndexMut;
   #[ cfg( feature = "derive_index" ) ]
@@ -98,13 +84,9 @@ mod derive_more
   #[ cfg( feature = "derive_into_iterator" ) ]
   pub use ::derive_more::IntoIterator;
   #[ cfg( feature = "derive_mul" ) ]
-  pub use ::derive_more::Mul;
+  pub use ::derive_more::{ Mul, Div };
   #[ cfg( feature = "derive_mul_assign" ) ]
-  pub use ::derive_more::MulAssign;
-  #[ cfg( feature = "derive_mul" ) ]
-  pub use ::derive_more::Div;
-  #[ cfg( feature = "derive_mul_assign" ) ]
-  pub use ::derive_more::DivAssign;
+  pub use ::derive_more::{ MulAssign, DivAssign };
   #[ cfg( feature = "derive_not" ) ]
   pub use ::derive_more::Not;
   #[ cfg( feature = "derive_sum" ) ]
