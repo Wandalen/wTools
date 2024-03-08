@@ -145,7 +145,6 @@ tests_impls!
     ctx.insert( 1 );
     // init executor
     let executor = Executor::former()
-    .kind( ExecutorType::Simple )
     .context( ctx )
     .form();
 

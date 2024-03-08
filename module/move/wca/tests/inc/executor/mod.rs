@@ -8,7 +8,7 @@ use wca::
   Type,
   Verifier, ExecutorConverter,
 
-  Executor, ExecutorType,
+  Executor,
   Routine, wtools
 };
 

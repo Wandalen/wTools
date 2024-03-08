@@ -70,7 +70,6 @@ tests_impls!
     // init simple executor
     let executor = Executor::former()
     .context( ctx )
-    .kind( ExecutorType::Simple )
     .form();
     let executor_converter = ExecutorConverter::former()
     .routine
