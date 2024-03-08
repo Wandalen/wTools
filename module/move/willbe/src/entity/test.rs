@@ -160,8 +160,9 @@ mod private
       {
         for ( feature, result ) in features
         {
+          let feature = if feature.is_empty() { "no-features" } else { feature };
           // if tests failed or if build failed
-          if result.out.contains( "failures" ) || result.out.contains( "error" )
+          if result.out.contains( "failures" ) || result.out.contains( "could not compile" )
           {
             let mut out = result.out.replace( "\n", "\n      " );
             out.push_str( "\n" );
@@ -170,7 +171,6 @@ mod private
           }
           else
           {
-            let feature = if feature.is_empty() { "no-features" } else { feature };
             success += 1;
             writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
           }
@@ -310,7 +310,7 @@ mod private
 
     // unpack. all tasks must be completed until now
     let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
-    let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.out.contains( "error" ) );
+    let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.out.contains( "could not compile" ) );
     if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
   }
 
