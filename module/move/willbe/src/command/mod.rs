@@ -48,6 +48,7 @@ pub( crate ) mod private
     .phrase( "test" )
     .subject( "A path to directories with packages. If no path is provided, the current directory is used.", Type::Path, true )
     .property( "dry", "Enables 'dry run'. Does not run tests, only simulates. Default is `true`.", Type::Bool, true )
+    .property( "temp", "If flag is `1` all test will be running in temporary directories. Default `1`.", Type::Bool, true )
     .property( "include", "A list of features to include in testing. Separate multiple features by comma.", Type::List( Type::String.into(), ',' ), true )
     .property( "exclude", "A list of features to exclude from testing. Separate multiple features by comma.", Type::List( Type::String.into(), ',' ), true )
     .property( "with_stable", "Specifies whether or not to run tests on stable Rust version. Default is `true`", Type::Bool, true )
