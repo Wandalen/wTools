@@ -80,7 +80,7 @@ mod private
 
     if temp
     {
-
+      
       let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
@@ -102,7 +102,7 @@ mod private
         exclude_features,
         temp_path: Some( temp_dir.clone() ),
       };
-
+      
       let report = tests_run( &t_args, &packages, dry );
 
       fs::remove_dir_all(&temp_dir).map_err( | e | ( reports.clone(), e.into() ) )?;

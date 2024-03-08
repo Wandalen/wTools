@@ -15,7 +15,6 @@ mod private
 
   use tool::process;
   use manifest::{ Manifest, ManifestError };
-  // use { cargo, git, version, path, wtools }; // qqq: why is it required?
   use crates_tools::CrateArchive;
 
   use workspace::Workspace;
@@ -376,7 +375,7 @@ mod private
       }
 
       let files = changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
-      f.write_fmt( format_args!( "{base}\n  changed files:\n    {files}\n" ) )?;
+      f.write_fmt( format_args!( "{base}\n  changed files :\n    {files}\n" ) )?;
 
       Ok( () )
     }
