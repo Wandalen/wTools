@@ -18,7 +18,7 @@ mod private
     let dry : bool = properties
     .get_owned( "dry" )
     .unwrap_or( true );
-    
+
     let temp : bool = properties
     .get_owned( "temp" )
     .unwrap_or( true );

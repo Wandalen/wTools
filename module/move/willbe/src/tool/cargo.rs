@@ -59,7 +59,7 @@ mod private
       [ "publish".to_string() ].into_iter().chain( target_dir.into_iter().flatten() ).collect::< Vec< String > >()
     }
   }
-  
+
  /// Upload a package to the registry
   pub fn publish< P >(path : P, args : PublishOptions, dry : bool ) -> Result< CmdReport >
   where
@@ -93,7 +93,7 @@ crate::mod_interface!
 {
   protected use pack;
   protected use publish;
-  
+
   protected use PublishOptions;
 
 }

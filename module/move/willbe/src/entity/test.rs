@@ -9,6 +9,7 @@ mod private
     sync::{ Arc, Mutex },
     path::Path,
   };
+  use std::path::PathBuf;
   use cargo_metadata::Package;
   use colored::Colorize;
   use rayon::ThreadPoolBuilder;
@@ -35,17 +36,20 @@ mod private
     with_all_features : bool,
     /// Specifies a list of features to be enabled in the test.
     enable_features : BTreeSet< String >,
+    /// Temp directory path
+    temp_directory_path : Option< PathBuf >,
   }
 
   impl SingleTestOptions
   {
-    fn as_rustup_args(&self ) -> Vec< String >
+    fn as_rustup_args( &self ) -> Vec< String >
     {
       [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
       .into_iter()
       .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
       .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.iter().join( "," ) ]) }.into_iter().flatten() )
+        .chain( self.temp_directory_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
       .collect()
     }
   }
@@ -105,6 +109,9 @@ mod private
 
     /// `exclude_features` - A vector of strings, each representing a feature to be excluded during testing.
     pub exclude_features : Vec< String >,
+  
+    /// 'temp_path' - path to temp directory.
+    pub temp_path : Option< PathBuf >,
   }
 
 
@@ -280,8 +287,19 @@ mod private
             (
               move | _ |
               {
-                // qqq : for Petro : bad. tooooo long line. cap on 100 ch
-                let cmd_rep = _run( dir, SingleTestOptions::former().channel( channel ).with_default_features( false ).enable_features( feature.clone() ).form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
+                let mut args_t = SingleTestOptions::former()
+                .channel( channel )
+                .with_default_features( false )
+                .enable_features( feature.clone() );
+                if let Some( p ) = args.temp_path.clone()
+                {
+                  let path = p.join( format!("{}_{}_{}", package.name.clone(), channel,  feature.iter().join( "," ) ) );
+                  std::fs::create_dir_all( &path ).unwrap();
+                  args_t = args_t.temp_directory_path( path );
+                }
+                // aaa : for Petro : bad. tooooo long line. cap on 100 ch
+                // aaa : strip
+                let cmd_rep = _run( dir, args_t.form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
                 r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
               }
             );
