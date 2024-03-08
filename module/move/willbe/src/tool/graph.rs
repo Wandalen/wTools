@@ -10,6 +10,7 @@ pub( crate ) mod private
     hash::Hash,
     collections::{ HashMap, HashSet }
   };
+  use std::path::PathBuf;
   use petgraph::
   {
     graph::Graph,
@@ -168,7 +169,7 @@ pub( crate ) mod private
   /// # Returns
   ///
   /// A new `Graph` with the nodes that are not required to be published removed.
-  pub fn remove_not_required_to_publish( package_map : &HashMap< String, Package >, graph : &Graph< String, String >, roots : &[ String ] ) -> Graph< String, String >
+  pub fn remove_not_required_to_publish( package_map : &HashMap< String, Package >, graph : &Graph< String, String >, roots : &[ String ], temp_path : Option< PathBuf > ) -> Graph< String, String >
   {
     let mut nodes = HashSet::new();
     let mut cleared_graph = Graph::new();
@@ -188,8 +189,8 @@ pub( crate ) mod private
           }
         }
         let package = package_map.get( &graph[ n ] ).unwrap();
-        _ = cargo::pack( package.crate_dir(), false ).unwrap();
-        if publish_need( package ).unwrap()
+        _ = cargo::pack( package.crate_dir(), cargo::PackOptions::former().option_temp_path( temp_path.clone() ).form(),false ).unwrap();
+        if publish_need( package, temp_path.clone() ).unwrap()
         {
           nodes.insert( n );
         }

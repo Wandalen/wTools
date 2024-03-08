@@ -421,15 +421,25 @@ mod private
     }
 
     let package_dir = &args.package.crate_dir();
-
-    let output = cargo::pack( &package_dir, dry ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
+    let temp_dir = args.base_temp_dir.as_ref().map
+    (
+      | p |
+        {
+          let path = p.join( package_dir.as_ref().file_name().unwrap() );
+          std::fs::create_dir_all( &path ).unwrap();
+          path
+        }
+    );
+    
+    let pack_args = cargo::PackOptions::former().option_temp_path( temp_dir.clone() ).form();
+    let output = cargo::pack( &package_dir, pack_args, dry ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
     if output.err.contains( "not yet committed")
     {
       return Err(( report, format_err!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
     }
     report.get_info = Some( output );
 
-    if args.force || publish_need( &args.package ).map_err( | err | ( report.clone(), format_err!( err ) ) )?
+    if args.force || publish_need( &args.package, temp_dir.clone() ).map_err( | err | ( report.clone(), format_err!( err ) ) )?
     {
       report.publish_required = true;
 
@@ -489,17 +499,8 @@ mod private
       report.commit = Some( res );
       let res = git::push( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
       report.push = Some( res );
-
-      let args = args.base_temp_dir.as_ref().map
-      (
-        | p |
-        {
-          let path = p.join( format!( "{}_{}", package_dir.as_ref().file_name().unwrap().to_string_lossy(), new_version ) );
-          std::fs::create_dir_all( &path ).unwrap();
-          cargo::PublishOptions::former().temp_path( path ).form()
-        }
-      );
-      let res = cargo::publish( package_dir, args.unwrap_or_default(), dry ).map_err( | e | ( report.clone(), e ) )?;
+      
+      let res = cargo::publish( package_dir, cargo::PublishOptions::former().option_temp_path( temp_dir ).form(), dry ).map_err( | e | ( report.clone(), e ) )?;
       report.publish = Some( res );
     }
 
@@ -683,7 +684,7 @@ mod private
   ///
   /// Panics if the manifest is not loaded or local package is not packed.
 
-  pub fn publish_need( package : &Package ) -> Result< bool, PackageError >
+  pub fn publish_need( package : &Package, path : Option< PathBuf > ) -> Result< bool, PackageError >
   {
     // These files are ignored because they can be safely changed without affecting functionality
     //
@@ -693,7 +694,9 @@ mod private
 
     let name = package.name()?;
     let version = package.version()?;
-    let local_package_path = packed_crate::local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )?;
+    let local_package_path = path
+    .map( | p | p.join( format!( "package/{0}-{1}.crate", name, version ) ) )
+    .unwrap_or( packed_crate::local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )? );
 
     // qqq : for Bohdan : bad, properly handle errors
     // aaa : return result instead of panic

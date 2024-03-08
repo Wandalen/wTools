@@ -160,12 +160,8 @@ mod private
     let graph = metadata.graph();
     let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish );
     let tmp = subgraph_wanted.map( | _, n | graph[ *n ].clone(), | _, e | graph[ *e ].clone() );
-    let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish );
-    let subgraph = subgraph.map( | _, n | n, | _, e | e );
 
-    let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).collect::< Vec< _ > >();
-
-    let mut unique_name = format!( "temp_dir_for_test_command_{}", generate_unique_folder_name().err_with( || report.clone() )? );
+    let mut unique_name = format!( "temp_dir_for_publish_command_{}", generate_unique_folder_name().err_with( || report.clone() )? );
 
     let dir = if temp
     {
@@ -173,7 +169,7 @@ mod private
 
       while temp_dir.exists()
       {
-        unique_name = format!( "temp_dir_for_test_command_{}", generate_unique_folder_name().err_with( || report.clone() )? );
+        unique_name = format!( "temp_dir_for_publish_command_{}", generate_unique_folder_name().err_with( || report.clone() )? );
         temp_dir = env::temp_dir().join( unique_name );
       }
 
@@ -185,6 +181,10 @@ mod private
       None
     };
     
+    let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish, dir.clone() );
+    let subgraph = subgraph.map( | _, n | n, | _, e | e );
+
+    let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).collect::< Vec< _ > >();
     
     for package in queue
     {

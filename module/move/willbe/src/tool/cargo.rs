@@ -11,6 +11,33 @@ mod private
   use process::CmdReport;
   use wtools::error::Result;
 
+  /// Represents pack options
+  #[ derive( Debug, Former ) ]
+  pub struct PackOptions
+  {
+    temp_path : Option< PathBuf >,
+  }
+  
+  impl PackOptionsFormer
+  {
+    pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
+    {
+      self.container.temp_path = value.into();
+      self
+    }
+  }
+  
+  impl PackOptions
+  {
+    fn to_pack_args( &self ) -> Vec< String >
+    {
+      [ "package".to_string() ]
+      .into_iter()
+      .chain( self.temp_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
+      .collect()
+    }
+  }
+  
   ///
   /// Assemble the local package into a distributable tarball.
   ///
@@ -18,11 +45,11 @@ mod private
   /// - `path` - path to the package directory
   /// - `dry` - a flag that indicates whether to execute the command or not
   ///
-  pub fn pack< P >( path : P, dry : bool ) -> Result< CmdReport >
+  pub fn pack< P >( path : P, args : PackOptions, dry : bool ) -> Result< CmdReport >
   where
     P : AsRef< Path >
   {
-    let ( program, options ) = ( "cargo", [ "package" ] );
+    let ( program, options ) = ( "cargo", args.to_pack_args() );
 
     if dry
     {
@@ -49,6 +76,15 @@ mod private
   pub struct PublishOptions
   {
     temp_path : Option< PathBuf >,
+  }
+  
+  impl PublishOptionsFormer
+  {
+    pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
+    {
+      self.container.temp_path = value.into();
+      self
+    }
   }
 
   impl PublishOptions
@@ -95,5 +131,6 @@ crate::mod_interface!
   protected use publish;
 
   protected use PublishOptions;
+  protected use PackOptions;
 
 }
