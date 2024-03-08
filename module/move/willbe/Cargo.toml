@@ -1,6 +1,6 @@
 [package]
 name = "willbe"
-version = "0.4.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -12,7 +12,7 @@ documentation = "https://docs.rs/willbe"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/willbe"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/willbe"
 description = """
-Utility with set of tools for managing developer routines.
+Utility to publish multi-crate and multi-workspace environments and maintain their consistency.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
@@ -61,10 +61,12 @@ tar = "~0.4"
 handlebars = "4.5.0"
 ureq = "~2.9"
 colored = "2.1.0"
+duct = "0.13.7"
 
 [dev-dependencies]
 test_tools = { workspace = true }
 assert_fs = "1.0"
 serde_yaml = "0.9"
+serde_json = "1.0.114"
 serde = "1.0"
 assert_cmd = "2.0"
