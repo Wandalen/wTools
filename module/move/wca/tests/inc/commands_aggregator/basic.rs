@@ -380,6 +380,28 @@ tests_impls!
 
     a_id!( grammar_command.subjects, vec![ TheModule::Value::String("qwe:rty".into()) ] );
   }
+
+  fn subject_with_spaces()
+  {
+    let query = "SELECT title, links, MIN( published ) FROM Frames";
+    let ca = CommandsAggregator::former()
+    .grammar(
+    [
+      wca::Command::former()
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .phrase( "query.execute" )
+      .subject( "SQL query", Type::String, false )
+      .form(),
+    ])
+    .executor(
+    [
+      ( "query.execute".to_owned(), Routine::new( move |( args, _ )| { assert_eq!( query, args.get_owned::< &str >( 0 ).unwrap() ); Ok( () ) } ) ),
+    ])
+    .build();
+
+    a_id!( (), ca.perform( vec![ ".query.execute".to_string(), query.into() ] ).unwrap() );
+  }
 }
 
 //
@@ -396,4 +418,5 @@ tests_index!
   string_subject_with_colon,
   no_prop_subject_with_colon,
   optional_prop_subject_with_colon,
+  subject_with_spaces,
 }

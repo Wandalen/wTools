@@ -146,6 +146,56 @@ tests_impls!
     );
   }
 
+  // qqq : the parser must be able to accept a list of arguments(std::env::args())
+  fn with_spaces_in_value()
+  {
+    let parser = Parser::former().form();
+
+    a_id!
+    (
+      ParsedCommand
+      {
+        name : "command".into(),
+        subjects : vec![ "value with spaces".into() ],
+        properties : HashMap::new(),
+      },
+      parser.command( vec![ ".command".to_string(), "value with spaces".into() ] ).unwrap()
+    );
+
+    a_id!
+    (
+      ParsedCommand
+      {
+        name : "command".into(),
+        subjects : vec![],
+        properties : HashMap::from_iter([ ( "prop".into(), "value with spaces".into() ) ]),
+      },
+      parser.command( vec![ ".command".to_string(), "prop:value with spaces".into() ] ).unwrap()
+    );
+
+    a_id!
+    (
+      ParsedCommand
+      {
+        name : "command".into(),
+        subjects : vec![],
+        properties : HashMap::from_iter([ ( "prop".into(), "value with spaces".into() ) ]),
+      },
+      parser.command( vec![ ".command".to_string(), "prop:".into(), "value with spaces".into() ] ).unwrap()
+    );
+
+    a_id!
+    (
+      ParsedCommand
+      {
+        name : "command".into(),
+        subjects : vec![],
+        properties : HashMap::from_iter([ ( "prop".into(), "value with spaces".into() ) ]),
+      },
+      parser.command( vec![ ".command".to_string(), "prop".into(), ":".into(), "value with spaces".into() ] ).unwrap()
+    );
+  }
+
   fn not_only_alphanumeric_symbols()
   {
     let parser = Parser::former().form();
@@ -387,6 +437,7 @@ tests_index!
 {
   basic,
   with_spaces,
+  with_spaces_in_value,
   not_only_alphanumeric_symbols,
   same_command_and_prop_delimeter,
   path_in_subject,

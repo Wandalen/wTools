@@ -7,6 +7,7 @@ use wca::
 
   CommandsAggregator,
   Routine,
+  Type,
   HelpVariants,
   Error,
   ValidationError,
