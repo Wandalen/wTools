@@ -19,6 +19,7 @@ mod private
     template.set_values( values );
     action::deploy_renew( &std::env::current_dir()?, template ).context( "Fail to create deploy template" )
   }
+
 }
 
 crate::mod_interface!
