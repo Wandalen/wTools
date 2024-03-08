@@ -84,19 +84,24 @@ pub( crate ) mod private
     /// Converts raw program to grammatically correct
     ///
     /// Converts all namespaces into it with `to_namespace` method.
-    pub fn to_program( dictionary : &Dictionary, raw_program : Program< ParsedCommand > )
+    pub fn to_program
+    (
+      &self,
+      dictionary : &Dictionary,
+      raw_program : Program< ParsedCommand >
+    )
     -> Result< Program< VerifiedCommand > >
     {
       let commands = raw_program.commands
       .into_iter()
-      .map( | n | Self::to_command( dictionary, n ) )
+      .map( | n | self.to_command( dictionary, n ) )
       .collect::< Result< Vec< VerifiedCommand > > >()?;
 
       Ok( Program { commands } )
     }
 
     #[ cfg( feature = "on_unknown_suggest" ) ]
-    fn suggest_command( dictionary : &Dictionary, user_input: &str ) -> Option< &str >
+    fn suggest_command< 'a >( dictionary : &'a Dictionary, user_input: &str ) -> Option< &'a str >
     {
       let jaro = eddie::JaroWinkler::new();
       let sim = dictionary
@@ -236,7 +241,7 @@ pub( crate ) mod private
     /// Converts raw command to grammatically correct
     ///
     /// Make sure that this command is described in the grammar and matches it(command itself and all it options too).
-    pub fn to_command( dictionary : &Dictionary, raw_command : ParsedCommand ) -> Result< VerifiedCommand >
+    pub fn to_command( &self, dictionary : &Dictionary, raw_command : ParsedCommand ) -> Result< VerifiedCommand >
     {
       let variants = dictionary.command( &raw_command.name )
       .ok_or_else::< error::for_app::Error, _ >

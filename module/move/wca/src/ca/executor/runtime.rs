@@ -46,9 +46,8 @@ pub( crate ) mod private
   /// assert!( runtime.is_finished() );
   /// ```
   #[ derive( Debug, Clone ) ]
-  pub struct Runtime< 'a >
+  pub struct Runtime
   {
-    pub dictionary : &'a Dictionary,
     /// context for current runtime
     pub context : Context,
     /// current execution position
@@ -60,7 +59,7 @@ pub( crate ) mod private
   // qqq : for Bohdan : why both Runtime and Context exist? What about incapsulating Context into Runtime maybe
   // qqq : for Bohdan : why both Runtime and Executor exist? rid off of Executor. Incapsulating Executor into Runtime.
 
-  impl Runtime< '_ >
+  impl Runtime
   {
     /// returns true if execution position at the end
     pub fn is_finished( &self ) -> bool
@@ -69,7 +68,7 @@ pub( crate ) mod private
     }
 
     /// executes current command( command at current execution position )
-    pub fn r#do( &mut self ) -> Result< () >
+    pub fn r#do( &mut self, dictionary : &Dictionary ) -> Result< () >
     {
       self
       .namespace
@@ -77,7 +76,7 @@ pub( crate ) mod private
       .ok_or_else( || err!( "No command here. Current execution pos was `{}`", self.pos ) )
       .and_then( | cmd |
       {
-        let routine = self.dictionary.command( &cmd.phrase ).unwrap().routine.clone();
+        let routine = dictionary.command( &cmd.phrase ).unwrap().routine.clone();
         _exec_command( cmd.clone(), routine, self.context.clone() )
       })
     }

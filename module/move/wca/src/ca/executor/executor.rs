@@ -53,13 +53,12 @@ pub( crate ) mod private
       let context = self.context.clone();
       let runtime = Runtime
       {
-        dictionary,
         context,
         pos : 0,
         namespace : program.commands,
       };
 
-      Self::sequential_execution_loop( runtime )?;
+      Self::sequential_execution_loop( dictionary, runtime )?;
 
       Ok( () )
     }
@@ -76,13 +75,13 @@ pub( crate ) mod private
     // qqq : for Bohdan : probably redundant
     // aaa : removed `parallel_execution_loop`
 
-    fn sequential_execution_loop( mut runtime : Runtime< '_ > ) -> Result< () >
+    fn sequential_execution_loop( dictionary : &Dictionary, mut runtime : Runtime ) -> Result< () >
     {
       while !runtime.is_finished()
       {
         let state = runtime.context.get_or_default::< RuntimeState >();
         state.pos = runtime.pos + 1;
-        runtime.r#do()?;
+        runtime.r#do( &dictionary )?;
         runtime.pos = runtime.context.get_ref::< RuntimeState >().unwrap().pos;
       }
 

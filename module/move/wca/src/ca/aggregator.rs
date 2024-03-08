@@ -127,7 +127,8 @@ pub( crate ) mod private
     // help_generator generateds VerifiedCommand(s) and stop to exist
 
     // #[ default( Verifier::former().form() ) ]
-    // verifier : Verifier,
+    #[ default( Verifier ) ]
+    verifier : Verifier,
 
     // #[ default( ExecutorConverter::former().form() ) ]
     // executor_converter : ExecutorConverter,
@@ -271,7 +272,7 @@ pub( crate ) mod private
       let Input( ref program ) = program.into_input();
 
       let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : program.to_string(), error : e } ) )?;
-      let grammar_program = Verifier::to_program( &self.dictionary, raw_program ).map_err( | e | Error::Validation( ValidationError::Verifier( e ) ) )?;
+      let grammar_program = self.verifier.to_program( &self.dictionary, raw_program ).map_err( | e | Error::Validation( ValidationError::Verifier( e ) ) )?;
       // let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | e | Error::Validation( ValidationError::ExecutorConverter( e ) ) )?;
 
       if let Some( callback ) = &self.callback_fn
