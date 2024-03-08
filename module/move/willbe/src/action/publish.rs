@@ -187,8 +187,13 @@ mod private
     
     for package in queue
     {
-      let args = package::PublishSingleOptions::former().package( package ).force( true ).option_base_temp_dir( &dir ).form();
-      let current_report = package::publish_single( args, dry )
+      let args = package::PublishSingleOptions::former()
+      .package( package )
+      .force( true )
+      .option_base_temp_dir( &dir )
+      .dry( dry )
+      .form();
+      let current_report = package::publish_single( args )
       .map_err
       (
         | ( current_report, e ) |

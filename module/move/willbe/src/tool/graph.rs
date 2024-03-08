@@ -200,7 +200,9 @@ pub( crate ) mod private
         ( 
           cargo::PackOptions::former()
           .path( package.crate_dir().absolute_path().as_ref().to_path_buf() )
-          .option_temp_path( temp_path.clone() ).form(),false 
+          .option_temp_path( temp_path.clone() )
+          .dry( false )
+          .form()
         ).unwrap();
         if publish_need( package, temp_path.clone() ).unwrap()
         {

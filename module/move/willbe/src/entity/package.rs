@@ -388,6 +388,7 @@ mod private
     package : &'a Package,
     force : bool,
     base_temp_dir : &'a Option< PathBuf >,
+    dry : bool,
   }
 
   impl < 'a >PublishSingleOptionsFormer< 'a >
@@ -412,7 +413,7 @@ mod private
   ///
   /// Returns :
   /// Returns a result containing a report indicating the result of the operation.
-  pub fn publish_single< 'a >( args : PublishSingleOptions< 'a >, dry : bool ) -> Result< PublishReport, ( PublishReport, wError ) >
+  pub fn publish_single< 'a >( args : PublishSingleOptions< 'a > ) -> Result< PublishReport, ( PublishReport, wError ) >
   {
     let mut report = PublishReport::default();
     if args.package.local_is().map_err( | err | ( report.clone(), format_err!( err ) ) )?
@@ -434,8 +435,9 @@ mod private
     let pack_args = cargo::PackOptions::former()
     .path( package_dir.absolute_path().as_ref().to_path_buf() )
     .option_temp_path( temp_dir.clone() )
+    .dry( args.dry )
     .form();
-    let output = cargo::pack( pack_args, dry ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
+    let output = cargo::pack( pack_args ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
     if output.err.contains( "not yet committed")
     {
       return Err(( report, format_err!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
@@ -449,7 +451,7 @@ mod private
       let mut files_changed_for_bump = vec![];
       let mut manifest = args.package.manifest().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
       // bump a version in the package manifest
-      let bump_report = version::bump( &mut manifest, dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+      let bump_report = version::bump( &mut manifest, args.dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
       files_changed_for_bump.push( args.package.manifest_path() );
       let new_version = bump_report.new_version.clone().unwrap();
 
@@ -460,7 +462,7 @@ mod private
       let workspace_manifest_path = workspace_manifest_dir.join( "Cargo.toml" );
 
       // qqq : should be refactored
-      if !dry
+      if !args.dry
       {
         let mut workspace_manifest = manifest::open( workspace_manifest_path.clone() ).map_err( | e | ( report.clone(), format_err!( e ) ) )?;
         let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().ok_or_else( || ( report.clone(), format_err!( PackageError::Manifest( ManifestError::EmptyManifestData ) ) ) )?;
@@ -496,18 +498,20 @@ mod private
       report.bump = Some( ExtendedBumpReport { base : bump_report, changed_files : files_changed_for_bump.clone() } );
 
       let commit_message = format!( "{package_name}-v{new_version}" );
-      let res = git::add( workspace_manifest_dir, objects_to_add, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git::add( workspace_manifest_dir, objects_to_add, args.dry ).map_err( | e | ( report.clone(), e ) )?;
       report.add = Some( res );
-      let res = git::commit( package_dir, commit_message, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git::commit( package_dir, commit_message, args.dry ).map_err( | e | ( report.clone(), e ) )?;
       report.commit = Some( res );
-      let res = git::push( package_dir, dry ).map_err( | e | ( report.clone(), e ) )?;
+      let res = git::push( package_dir, args.dry ).map_err( | e | ( report.clone(), e ) )?;
       report.push = Some( res );
       
       let res = cargo::publish
       ( 
         cargo::PublishOptions::former()
         .path( package_dir.absolute_path().as_ref().to_path_buf() )
-        .option_temp_path( temp_dir ).form(), dry 
+        .option_temp_path( temp_dir )
+        .dry( args.dry )
+        .form()
       )
       .map_err( | e | ( report.clone(), e ) )?;
       report.publish = Some( res );
