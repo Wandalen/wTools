@@ -89,7 +89,7 @@ default-features = false
 # path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/interval_adapter"
 default-features = false
 features = [ "enabled" ]
