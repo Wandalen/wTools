@@ -24,6 +24,11 @@ mod hash_map;
 #[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod hash_set;
+/// Component-based forming.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "derive_component_from" ) ]
+mod component;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
@@ -32,7 +37,13 @@ pub mod dependency
   pub use former_meta;
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -43,11 +54,8 @@ pub mod protected
   pub use former_meta as derive;
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use protected::*;
-
 /// Parented namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -56,6 +64,7 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
@@ -95,8 +104,15 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "enabled" ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( feature = "derive_component_from" ) ]
+  pub use super::component::*;
 }
 
 // qqq : check and improve quality of generated documentation

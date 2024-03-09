@@ -12,8 +12,8 @@
 #[ cfg( feature = "enabled" ) ]
 pub mod wtools;
 
-#[ cfg( feature = "derive_reflect" ) ]
-pub mod reflect;
+// #[ cfg( feature = "derive_reflect" ) ]
+// pub mod reflect;
 
 // use derive_tools_meta::Deref;
 // use derive_tools_meta::VariadicFrom;
@@ -55,10 +55,10 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::wtools::orphan::*;
-  #[ cfg( feature = "derive_reflect" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::reflect::orphan::*;
+  // #[ cfg( feature = "derive_reflect" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::reflect::orphan::*;
 }
 
 #[ cfg( all( feature = "derive_more" ) ) ]
@@ -211,10 +211,10 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::wtools::exposed::*;
 
-  #[ cfg( feature = "derive_reflect" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::reflect::exposed::*;
+  // #[ cfg( feature = "derive_reflect" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::reflect::exposed::*;
 
   // #[ cfg( any_derive ) ]
   #[ doc( inline ) ]
@@ -245,10 +245,10 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::clone_dyn::clone_dyn;
-  #[ cfg( feature = "derive_reflect" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::reflect::prelude::*;
+  // #[ cfg( feature = "derive_reflect" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::reflect::prelude::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

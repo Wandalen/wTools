@@ -1,15 +1,5 @@
 use super::*;
-
-///
-/// Set component trait.
-///
-
-pub trait SetComponent< T, IntoT >
-where
-  IntoT : Into< T >,
-{
-  fn set( &mut self, component : IntoT );
-}
+use TheModule::SetComponent;
 
 ///
 /// Options1
@@ -22,33 +12,6 @@ pub struct Options1
   field2 : String,
   field3 : f32,
 }
-
-// impl From< &Options1 > for i32
-// {
-//   #[ inline( always ) ]
-//   fn from( src : &Options1 ) -> Self
-//   {
-//     src.field1.clone()
-//   }
-// }
-//
-// impl From< &Options1 > for String
-// {
-//   #[ inline( always ) ]
-//   fn from( src : &Options1 ) -> Self
-//   {
-//     src.field2.clone()
-//   }
-// }
-//
-// impl From< &Options1 > for f32
-// {
-//   #[ inline( always ) ]
-//   fn from( src : &Options1 ) -> Self
-//   {
-//     src.field3.clone()
-//   }
-// }
 
 impl< IntoT > SetComponent< i32, IntoT > for Options1
 where
