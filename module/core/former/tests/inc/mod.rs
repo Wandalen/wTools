@@ -35,7 +35,7 @@ mod parametrized_struct_where;
 mod subformer_basic_manual;
 mod subformer_basic;
 
-// mod experiment_identities;
+mod experiment_identities;
 
 only_for_terminal_module!
 {
