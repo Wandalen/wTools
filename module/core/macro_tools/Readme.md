@@ -13,7 +13,7 @@ Tools for writing procedural macros.
 ```rust
 #[ cfg( not( feature = "no_std" ) ) ]
 {
-  use macro_tools::*;
+  use macro_tools::exposed::*;
 
   let code = qt!( core::option::Option< i8, i16, i32, i64 > );
   let tree_type = syn::parse2::< syn::Type >( code ).unwrap();

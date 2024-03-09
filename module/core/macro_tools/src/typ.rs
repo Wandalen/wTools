@@ -15,7 +15,7 @@ pub( crate ) mod private
   ///
   /// ### Basic use-case.
   /// ```rust
-  /// use macro_tools::*;
+  /// use macro_tools::exposed::*;
   ///
   /// let code = qt!( core::option::Option< i32 > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
@@ -123,6 +123,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as typ;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;

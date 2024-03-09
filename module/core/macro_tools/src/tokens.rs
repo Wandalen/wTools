@@ -17,7 +17,7 @@ pub( crate ) mod private
   /// Creating a new `Tokens` instance from a token stream :
   ///
   /// ```rust
-  /// use macro_tools::*;
+  /// use macro_tools::exposed::*;
   ///
   /// let ts : proc_macro2::TokenStream = qt! { let x = 10; };
   /// let tokens = tokens::Tokens::new( ts );
@@ -98,7 +98,7 @@ pub( crate ) mod private
   /// Parsing an equation from macro input:
   ///
   /// ```rust
-  /// use macro_tools::*;
+  /// use macro_tools::exposed::*;
   /// let got : tokens::Equation = syn::parse_quote!( default = 31 );
   /// tree_print!( got );
   /// assert_eq!( code_to_str!( got ), "default = 31".to_string() );
@@ -172,6 +172,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as tokens;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;

@@ -43,6 +43,7 @@ syn = { version = "~2.0.52", features = [ "full", "extra-traits" ] }
 
 ## internal
 interval_adapter = { workspace = true, features = [ "default" ] }
+# strs_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

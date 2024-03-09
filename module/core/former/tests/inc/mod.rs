@@ -70,9 +70,14 @@ mod subformer_basic_manual;
 mod subformer_basic;
 
 #[ cfg( feature = "derive_component_from" ) ]
-mod components_basic_manual;
+mod components_component_from_manual;
 #[ cfg( feature = "derive_component_from" ) ]
-mod components_basic;
+mod components_component_from;
+
+#[ cfg( all( feature = "derive_component_from", feature = "derive_set_component" ) ) ]
+mod components_composite_manual;
+#[ cfg( all( feature = "derive_component_from", feature = "derive_set_component" ) ) ]
+mod components_composite;
 
 only_for_terminal_module!
 {

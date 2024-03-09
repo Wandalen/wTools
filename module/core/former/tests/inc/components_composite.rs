@@ -8,7 +8,7 @@ use former::SetComponent;
 ///
 
 #[ derive( Debug, Default, PartialEq, TheModule::ComponentFrom, TheModule::SetComponent ) ]
-// qqq : make these traits working for generic struct
+// qqq : make these traits working for generic struct, use `split_for_impl`
 pub struct Options1
 {
   field1 : i32,
@@ -103,4 +103,4 @@ impl SetWithType for Options2
 
 //
 
-include!( "only_test/components_basic.rs" );
+include!( "only_test/components_composite.rs" );

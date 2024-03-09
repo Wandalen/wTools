@@ -3,7 +3,9 @@ pub( crate ) mod private
 {
   use crate::*;
   // use visibility::ClauseKind;
+  // use macro_tools::exposed::*;
   use macro_tools::exposed::*;
+  // use macro_tools::diag;
   use std::collections::HashMap;
 
 // = use
@@ -90,21 +92,6 @@ pub( crate ) mod private
   // exposed mod { mod_exposed1, mod_exposed2 };
   // prelude mod { mod_prelude1, mod_prelude2 };
 
-//   ///
-//   /// Get vector of a clause.
-//   ///
-//
-//   macro_rules! clause
-//   {
-//     (
-//       $ClauseMap:ident,
-//       $( $Key:tt )+
-//     )
-//     =>
-//     {
-//       $ClauseMap.get_mut( &$( $Key )+() ).unwrap()
-//     };
-//   }
   // zzz : clause should not expect the first argument
 
   /// Context for handlign a record. Cotnains clauses map and debug attribute.
@@ -161,26 +148,6 @@ pub( crate ) mod private
       });
     }
 
-    // use syn::UseTree::*;
-    // match &path.tree
-    // {
-    //   Rename( e ) =>
-    //   {
-    //     let rename = &e.rename;
-    //     c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
-    //     {
-    //       use #path as #rename;
-    //     });
-    //   },
-    //   Glob( _e ) =>
-    //   {
-    //     return Err( syn_err!( "Complex glob uses like `use module1::*` are not supported." ) );
-    //   },
-    //   _ => {}
-    // };
-
-    // clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
-    // clause!( clauses_map, VisProtected::Kind ).push( qt!
     c.clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
@@ -189,8 +156,6 @@ pub( crate ) mod private
       pub use #adjsuted_path::orphan::*;
     });
 
-    // clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
-    // clause!( clauses_map, VisExposed::Kind ).push( qt!
     c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
@@ -199,8 +164,6 @@ pub( crate ) mod private
       pub use #adjsuted_path::exposed::*;
     });
 
-    // clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
-    // clause!( clauses_map, VisPrelude::Kind ).push( qt!
     c.clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
@@ -240,15 +203,6 @@ pub( crate ) mod private
       ));
     }
 
-    // let path2 = if path.prefix_is_needed()
-    // {
-    //   qt!{ super::private::#path }
-    // }
-    // else
-    // {
-    //   qt!{ #path }
-    // };
-
     let adjsuted_path = path.adjsuted_explicit_path();
 
     let vis2 = if vis.restriction().is_some()
@@ -260,8 +214,6 @@ pub( crate ) mod private
       qt!{ pub }
     };
 
-    // clauses_map.get_mut( &vis.kind() ).unwrap().push( qt!
-    // clause!( clauses_map, vis.kind ).push( qt!
     c.clauses_map.get_mut( &vis.kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
@@ -282,7 +234,6 @@ pub( crate ) mod private
     record : &Record,
     element : &Pair< AttributesOuter, syn::Path >,
     c : &'_ mut RecordContext< '_ >,
-    // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
   )
   ->
   Result< () >
@@ -291,8 +242,6 @@ pub( crate ) mod private
     let attrs2 = &element.0;
     let path = &element.1;
 
-    // clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
-    // clause!( clauses_map, ClauseImmediates::Kind ).push( qt!
     c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
     {
       #attrs1
@@ -311,10 +260,6 @@ pub( crate ) mod private
       ));
     }
 
-    // println!( "clauses_map.contains_key( {} ) : {}", record.vis.kind(), clauses_map.contains_key( &record.vis.kind() ) );
-    // let fixes_list = clauses_map.get_mut( &record.vis.kind() ).ok_or_else( || syn_err!( "Error!" ) )?;
-    // clauses_map.get_mut( &record.vis.kind() ).unwrap().push( qt!
-    // clause!( clauses_map, record.vis.kind ).push( qt!
     c.clauses_map.get_mut( &record.vis.kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
@@ -335,7 +280,6 @@ pub( crate ) mod private
   (
     record : &Record,
     element : &Pair< AttributesOuter, syn::Path >,
-    // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
     c : &'_ mut RecordContext< '_ >,
   )
   ->
@@ -355,8 +299,6 @@ pub( crate ) mod private
       ));
     }
 
-    // clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
-    // clause!( clauses_map, ClauseImmediates::Kind ).push( qt!
     c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
     {
       #attrs1
@@ -364,8 +306,6 @@ pub( crate ) mod private
       pub mod #path;
     });
 
-    // clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
-    // clause!( clauses_map, VisProtected::Kind ).push( qt!
     c.clauses_map.get_mut( &VisProtected::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
@@ -375,8 +315,6 @@ pub( crate ) mod private
       pub use super::#path::orphan::*;
     });
 
-    // clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
-    // clause!( clauses_map, VisExposed::Kind ).push( qt!
     c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
@@ -386,8 +324,6 @@ pub( crate ) mod private
       pub use super::#path::exposed::*;
     });
 
-    // clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
-    // clause!( clauses_map, VisPrelude::Kind ).push( qt!
     c.clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
@@ -527,17 +463,7 @@ pub( crate ) mod private
 
     if has_debug
     {
-
-      // zzz : implement maybe
-      // let sections = Sections::new
-      // ( vec![
-      //   ( "original", original_input ),
-      //   ( "result", qt!{ #result } ),
-      // ]);
-      // println!( "{}", sections );
-
-      println!( "\n = original : \n\n{}\n", original_input );
-      println!( "\n = result : \n\n{}\n", qt!{ #result } );
+      diag::debug_report_print( original_input, &result );
     }
 
     Ok( result )

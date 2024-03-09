@@ -1,11 +1,13 @@
 
 use super::*;
-use macro_tools::{ type_struct, Result };
+use macro_tools::{ attr, diag, type_struct, Result };
 
 /// Generates `From` implementations for each unique component (field) of the structure.
 pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
+  let original_input = input.clone();
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
+  let has_debug = attr::has_debug( parsed.item.attrs.iter() )?;
 
   let for_field = parsed.fields_many().iter().map( | field |
   {
@@ -17,6 +19,11 @@ pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2:
   {
     #( #for_field )*
   };
+
+  if has_debug
+  {
+    diag::debug_report_print( original_input, &result );
+  }
 
   Ok( result )
 }

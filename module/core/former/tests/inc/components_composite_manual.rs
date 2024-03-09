@@ -202,4 +202,4 @@ impl SetWithType for Options2
 
 //
 
-include!( "only_test/components_basic.rs" );
+include!( "only_test/components_composite.rs" );

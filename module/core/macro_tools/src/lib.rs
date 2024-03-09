@@ -8,7 +8,7 @@ pub mod attr;
 #[ cfg( feature = "enabled" ) ]
 pub mod container_kind;
 #[ cfg( feature = "enabled" ) ]
-pub mod diagnostics;
+pub mod diag;
 #[ cfg( feature = "enabled" ) ]
 pub mod generic_analyze;
 #[ cfg( feature = "enabled" ) ]
@@ -54,7 +54,7 @@ pub mod protected
     orphan::*,
     attr::orphan::*,
     container_kind::orphan::*,
-    diagnostics::orphan::*,
+    diag::orphan::*,
     generic_analyze::orphan::*,
     generics::orphan::*,
     name::orphan::*,
@@ -93,7 +93,7 @@ pub mod exposed
     prelude::*,
     attr::exposed::*,
     container_kind::exposed::*,
-    diagnostics::exposed::*,
+    diag::exposed::*,
     generic_analyze::exposed::*,
     generics::exposed::*,
     name::exposed::*,
@@ -161,7 +161,7 @@ pub mod prelude
   {
     attr::prelude::*,
     container_kind::prelude::*,
-    diagnostics::prelude::*,
+    diag::prelude::*,
     generic_analyze::prelude::*,
     generics::prelude::*,
     name::prelude::*,

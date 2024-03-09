@@ -13,7 +13,7 @@ pub( crate ) mod private
   ///
   /// ### Basic use-case.
   /// ```rust
-  /// use macro_tools::*;
+  /// use macro_tools::exposed::*;
   /// let attr : syn::Attribute = syn::parse_quote!( #[ former( default = 31 ) ] );
   /// // tree_print!( attr );
   /// let got = equation( &attr ).unwrap();
@@ -32,6 +32,69 @@ pub( crate ) mod private
       }
       _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
     };
+  }
+
+  /// Checks if the given iterator of attributes contains an attribute named `debug`.
+  ///
+  /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
+  /// enum, or other item in a Rust Abstract Syntax Tree ( AST ), and determines whether any of the attributes
+  /// is exactly named `debug`.
+  ///
+  /// # Parameters
+  /// - `attrs` : An iterator over `syn::Attribute`. This could be obtained from parsing Rust code
+  ///   with the `syn` crate, where the iterator represents attributes applied to a Rust item ( like a struct or function ).
+  ///
+  /// # Returns
+  /// - `Ok( true )` if the `debug` attribute is present.
+  /// - `Ok( false )` if the `debug` attribute is not found.
+  /// - `Err( syn::Error )` if an unknown or improperly formatted attribute is encountered.
+  ///
+  /// # Example
+  ///
+  /// Suppose you have the following struct definition in a procedural macro input:
+  ///
+  /// ```rust, ignore
+  /// #[ derive( SomeDerive ) ]
+  /// #[ debug ]
+  /// struct MyStruct
+  /// {
+  ///   field : i32,
+  /// }
+  /// ```
+  ///
+  /// You can use `has_debug` to check for the presence of the `debug` attribute:
+  ///
+  /// ```rust
+  /// use macro_tools::exposed::*;
+  ///
+  /// // Example struct attribute
+  /// let attrs : Vec< syn::Attribute > = vec![ syn::parse_quote!( #[ debug ] ) ];
+  ///
+  /// // Checking for 'debug' attribute
+  /// let contains_debug = attr::has_debug( ( &attrs ).into_iter() ).unwrap();
+  ///
+  /// assert!( contains_debug, "Expected to find 'debug' attribute" );
+  /// ```
+  ///
+
+  pub fn has_debug< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< bool >
+  {
+    for attr in attrs
+    {
+      if let Some( ident ) = attr.path().get_ident()
+      {
+        let ident_string = format!( "{}", ident );
+        if ident_string == "debug"
+        {
+          return Ok( true )
+        }
+      }
+      else
+      {
+        return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
+      }
+    }
+    return Ok( false )
   }
 
   ///
@@ -243,6 +306,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as attr;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
@@ -251,6 +315,7 @@ pub mod exposed
   pub use super::private::
   {
     equation,
+    has_debug,
     AttributesInner,
     AttributesOuter,
     AttributedIdent,

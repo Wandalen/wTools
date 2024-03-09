@@ -32,7 +32,7 @@ pub( crate ) mod private
   ///
   /// ### Basic use-case.
   /// ```
-  /// use macro_tools::*;
+  /// use macro_tools::exposed::*;
   ///
   /// let code = qt!( std::collections::HashMap< i32, i32 > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
@@ -67,7 +67,7 @@ pub( crate ) mod private
   ///
   /// ### Basic use-case.
   /// ```
-  /// use macro_tools::*;
+  /// use macro_tools::exposed::*;
   ///
   /// let code = qt!( Option< std::collections::HashMap< i32, i32 > > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
@@ -129,10 +129,11 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as container_kind;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
-
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

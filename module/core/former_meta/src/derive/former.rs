@@ -2,9 +2,7 @@
 use super::*;
 use iter_tools::{ Itertools, process_results };
 use macro_tools::{ typ, generics, container_kind, Result };
-// use macro_tools::*;
-// pub type Result< T > = std::result::Result< T, syn::Error >;
-
+use proc_macro2::TokenStream;
 ///
 /// Descripotr of a field.
 ///
@@ -285,7 +283,7 @@ fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 ///
 
 #[ inline( always ) ]
-fn field_none_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
+fn field_none_map( field : &FormerField< '_ > ) -> TokenStream
 {
   let ident = Some( field.ident.clone() );
   let tokens = qt! { ::core::option::Option::None };
@@ -311,7 +309,7 @@ fn field_none_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 ///
 
 #[ inline( always ) ]
-fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
+fn field_optional_map( field : &FormerField< '_ > ) -> TokenStream
 {
   let ident = Some( field.ident.clone() );
   let ty = field.ty.clone();
@@ -352,7 +350,7 @@ fn field_optional_map( field : &FormerField< '_ > ) -> proc_macro2::TokenStream
 ///
 
 #[ inline( always ) ]
-fn field_form_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
+fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 {
   let ident = field.ident;
   let ty = field.ty;
@@ -487,7 +485,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 /// ```
 
 #[ inline ]
-fn field_setter_map( field : &FormerField< '_ > ) -> Result< proc_macro2::TokenStream >
+fn field_setter_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 {
   let ident = &field.ident;
 
@@ -541,7 +539,7 @@ fn field_setter
   setter_name : &syn::Ident,
   non_optional_type : &syn::Type,
 )
--> proc_macro2::TokenStream
+-> TokenStream
 {
   qt!
   {
@@ -590,7 +588,7 @@ fn subformer_field_setter
   non_optional_type : &syn::Type,
   subformer_type : &syn::Type,
 )
--> proc_macro2::TokenStream
+-> TokenStream
 {
   let doc = format!
   (
@@ -670,67 +668,22 @@ For specifing custom default value use attribute `default`. For example:
 
 //
 
-pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+pub fn performer< 'a >
+(
+  name_ident : &syn::Ident,
+  generics_ty : &syn::TypeGenerics< '_ >,
+  attrs : impl Iterator< Item = &'a syn::Attribute >,
+)
+-> Result< ( TokenStream, TokenStream, TokenStream ) >
 {
 
-  let ast = match syn::parse::< syn::DeriveInput >( input )
-  {
-    Ok( syntax_tree ) => syntax_tree,
-    Err( err ) => return Err( err ),
-  };
-
-  /* names */
-
-  let name_ident = &ast.ident;
-  let former_name = format!( "{}Former", name_ident );
-  let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
-  let former_container_name = format!( "{}FormerContainer", name_ident );
-  let former_container_name_ident = syn::Ident::new( &former_container_name, name_ident.span() );
-
-  /* generic parameters */
-
-  let generics = &ast.generics;
-  let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
-  let _generics_params = generics::params_names( generics ).params;
-  let generics_params = if _generics_params.len() == 0
-  {
-    qt!{}
-  }
-  else
-  {
-    qt!{ #_generics_params, }
-  };
-
-  // add embedded generic parameters
-  let mut extra_generics : syn::Generics = parse_quote!{ < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnContainer > };
-  extra_generics.where_clause = parse_quote!{ where __FormerEnd : former::ToSuperFormer< #name_ident #generics_ty, __FormerContext >, };
-  let generics_of_former = generics::merge( &generics, &extra_generics );
-  let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
-  let generics_of_former_with_defaults = generics_of_former.params.clone();
-  // macro_tools::code_print!( generics_of_former_with_defaults );
-  // macro_tools::code_print!( extra_generics );
-
-  // pub struct CommandFormer< K, __FormerContext = Command< K >, __FormerEnd = former::ReturnContainer >
-  // where
-  //   K : core::hash::Hash + std::cmp::Eq,
-  //   __FormerEnd : former::ToSuperFormer< Command< K >, __FormerContext >,
-  // {
-  //   name : core::option::Option< String >,
-  //   properties : core::option::Option< std::collections::HashMap< K, Property< K > > >,
-  //   context : core::option::Option< __FormerContext >,
-  //   on_end : core::option::Option< __FormerEnd >,
-  // }
-
-  /* structure attribute */
-
-  // xxx : move out
   let mut perform = qt!
   {
     return result;
   };
   let mut perform_output = qt!{ #name_ident #generics_ty };
   let mut perform_generics = qt!{};
-  for attr in ast.attrs.iter()
+  for attr in attrs
   {
     if let Some( ident ) = attr.path().get_ident()
     {
@@ -764,9 +717,64 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
     }
     else
     {
-      return Err( syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } ) );
+      return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
     }
   }
+
+  Ok( ( perform, perform_output, perform_generics ) )
+}
+
+//
+
+pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
+{
+
+  let ast = match syn::parse::< syn::DeriveInput >( input )
+  {
+    Ok( syntax_tree ) => syntax_tree,
+    Err( err ) => return Err( err ),
+  };
+
+  /* names */
+
+  let name_ident = &ast.ident;
+  let former_name = format!( "{}Former", name_ident );
+  let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
+  let former_container_name = format!( "{}FormerContainer", name_ident );
+  let former_container_name_ident = syn::Ident::new( &former_container_name, name_ident.span() );
+
+  /* generic parameters */
+
+  let generics = &ast.generics;
+  let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
+  let _generics_params = generics::params_names( generics ).params;
+  let generics_params = if _generics_params.len() == 0
+  {
+    qt!{}
+  }
+  else
+  {
+    qt!{ #_generics_params, }
+  };
+
+  // add embedded generic parameters
+  let mut extra_generics : syn::Generics = parse_quote!{ < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnContainer > };
+  extra_generics.where_clause = parse_quote!{ where __FormerEnd : former::ToSuperFormer< #name_ident #generics_ty, __FormerContext >, };
+  // xxx : write helper to fix the bug
+  let generics_of_former = generics::merge( &generics, &extra_generics );
+  let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
+  let generics_of_former_with_defaults = generics_of_former.params.clone();
+  // macro_tools::code_print!( generics_of_former_with_defaults );
+  // macro_tools::code_print!( extra_generics );
+
+  /* structure attribute */
+
+  let ( perform, perform_output, perform_generics ) = performer
+  (
+    &name_ident,
+    &generics_ty,
+    ast.attrs.iter(),
+  )?;
 
   /* */
 

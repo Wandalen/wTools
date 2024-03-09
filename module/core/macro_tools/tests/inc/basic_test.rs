@@ -126,6 +126,7 @@ TokenStream [
 
   fn type_container_kind_basic()
   {
+    use TheModule::exposed::container_kind;
 
     // test.case( "core::option::Option< i32 >" );
     let code = qt!( core::option::Option< i32 > );

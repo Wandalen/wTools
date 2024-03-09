@@ -504,6 +504,8 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as parse_request;
+
   pub use super::private::
   {
     ParseOptionsAdapter,
