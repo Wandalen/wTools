@@ -24,17 +24,49 @@ pub( crate ) mod private
     pub item_name : syn::Ident,
     /// Collection of struct's fields, including visibility, attributes, and types.
     pub fields : syn::Fields,
-    // xxx : rid off fields below. them are deduced from fields and should be implemented with function
-    /// Collection of fields for convenient iteration. Planned for deprecation.
-    pub fields_many : Many< syn::Field >,
-    /// Types of each field in a vector for easy access. Planned for deprecation.
-    pub field_types: Vec< syn::Type >,
-    /// Names of each field if available, otherwise `None`. Planned for deprecation.
-    pub field_names: Option< Vec< syn::Ident > >,
+
+    // // xxx : rid off fields below. them are deduced from fields and should be implemented with function
+    // /// Collection of fields for convenient iteration. Planned for deprecation.
+    // pub fields_many : Many< syn::Field >,
+    // /// Types of each field in a vector for easy access. Planned for deprecation.
+    // pub field_types: Vec< syn::Type >,
+    // /// Names of each field if available, otherwise `None`. Planned for deprecation.
+    // pub field_names: Option< Vec< syn::Ident > >,
   }
 
   impl TypeStructParsed
   {
+
+    /// Returns a vector of the struct's fields for iteration.
+    pub fn fields_many( &self ) -> Vec< syn::Field >
+    {
+      match &self.fields
+      {
+        syn::Fields::Unnamed( fields ) => fields.unnamed.iter().cloned().collect(),
+        syn::Fields::Named( fields ) => fields.named.iter().cloned().collect(),
+        syn::Fields::Unit => Vec::new(),
+      }
+    }
+
+    /// Extracts the types of each field into a vector.
+    pub fn field_types( &self ) -> Vec< syn::Type >
+    {
+      self.fields_many().iter().map( |field| field.ty.clone() ).collect()
+    }
+
+    /// Retrieves the names of each field, if they exist.
+    pub fn field_names( &self ) -> Option< Vec< syn::Ident > >
+    {
+      let names: Vec< Option< syn::Ident > > = self.fields_many().iter().map( |field| field.ident.clone() ).collect();
+      if names.iter().any( Option::is_none )
+      {
+        None
+      }
+      else
+      {
+        Some( names.into_iter().filter_map( core::convert::identity ).collect() )
+      }
+    }
 
     /// Retrieves the type of the first field of the struct.
     ///
@@ -97,18 +129,20 @@ pub( crate ) mod private
 
       let item_name = item.ident.clone();
       let fields = item.fields.clone();
-      let fields_many : Vec< syn::Field > = match item.fields
-      {
-        syn::Fields::Unnamed( ref fields ) => { fields.unnamed.iter().cloned().collect() },
-        syn::Fields::Named( ref fields ) => { fields.named.iter().cloned().collect() },
-        _ => return Ok( Self { item, item_name, fields, fields_many: Many(vec![]), field_types: vec![], field_names: None } ),
-      };
 
-      // if fields.len() != 1
-      let fields_many = fields_many.into();
-      let field_types = field_types( &fields_many )?;
-      let field_names = field_names( &fields_many )?;
-      Ok( Self { item, item_name, fields, fields_many, field_types, field_names } )
+//       let fields_many : Vec< syn::Field > = match item.fields
+//       {
+//         syn::Fields::Unnamed( ref fields ) => { fields.unnamed.iter().cloned().collect() },
+//         syn::Fields::Named( ref fields ) => { fields.named.iter().cloned().collect() },
+//         _ => return Ok( Self { item, item_name, fields, fields_many: Many(vec![]), field_types: vec![], field_names: None } ),
+//       };
+//
+//       let fields_many = fields_many.into();
+//       let field_types = field_types( &fields_many )?;
+//       let field_names = field_names( &fields_many )?;
+//       Ok( Self { item, item_name, fields, fields_many, field_types, field_names } )
+
+      Ok( Self { item, item_name, fields } )
     }
   }
 
@@ -122,32 +156,32 @@ pub( crate ) mod private
     }
   }
 
-  fn field_types( fields : &Many< syn::Field > ) -> Result< Vec< syn::Type> >
-  {
-    let mut field_types : Vec< syn::Type > = vec![];
-    for elem in fields
-    {
-      field_types.push( elem.ty.clone() );
-    }
-    Ok( field_types )
-  }
-
-  fn field_names( fields : &Many< syn::Field > ) -> Result< Option< Vec< syn::Ident > > >
-  {
-    let mut field_names : Vec< syn::Ident > = vec![];
-    for elem in fields
-    {
-      if let Some( ident ) = &elem.ident
-      {
-        field_names.push( ident.clone() );
-      }
-      else
-      {
-          return Ok( None );
-      }
-    }
-    Ok( Some( field_names ) )
-  }
+//   fn field_types( fields : &Many< syn::Field > ) -> Result< Vec< syn::Type> >
+//   {
+//     let mut field_types : Vec< syn::Type > = vec![];
+//     for elem in fields
+//     {
+//       field_types.push( elem.ty.clone() );
+//     }
+//     Ok( field_types )
+//   }
+//
+//   fn field_names( fields : &Many< syn::Field > ) -> Result< Option< Vec< syn::Ident > > >
+//   {
+//     let mut field_names : Vec< syn::Ident > = vec![];
+//     for elem in fields
+//     {
+//       if let Some( ident ) = &elem.ident
+//       {
+//         field_names.push( ident.clone() );
+//       }
+//       else
+//       {
+//           return Ok( None );
+//       }
+//     }
+//     Ok( Some( field_names ) )
+//   }
 
 }
 

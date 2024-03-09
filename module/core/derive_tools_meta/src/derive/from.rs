@@ -6,8 +6,8 @@ use macro_tools::{ type_struct, Result };
 pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
-  let field_types = parsed.field_types;
-  let field_names = parsed.field_names;
+  let field_types = parsed.field_types();
+  let field_names = parsed.field_names();
   let item_name = parsed.item_name;
   let result =
   match ( field_types.len(), field_names )
