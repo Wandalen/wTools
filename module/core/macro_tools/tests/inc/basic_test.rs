@@ -130,68 +130,68 @@ TokenStream [
     // test.case( "core::option::Option< i32 >" );
     let code = qt!( core::option::Option< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_type( &tree_type );
-    a_id!( got, TheModule::ContainerKind::No );
+    let got = container_kind::of_type( &tree_type );
+    a_id!( got, TheModule::container_kind::ContainerKind::No );
 
     // test.case( "core::option::Option< Vec >" );
     let code = qt!( core::option::Option< Vec > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_type( &tree_type );
-    a_id!( got, TheModule::ContainerKind::No );
+    let got = container_kind::of_type( &tree_type );
+    a_id!( got, TheModule::container_kind::ContainerKind::No );
 
     // test.case( "alloc::vec::Vec< i32 >" );
     let code = qt!( alloc::vec::Vec< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_type( &tree_type );
-    a_id!( got, TheModule::ContainerKind::Vector );
+    let got = container_kind::of_type( &tree_type );
+    a_id!( got, TheModule::container_kind::ContainerKind::Vector );
 
     // test.case( "alloc::vec::Vec" );
     let code = qt!( alloc::vec::Vec );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_type( &tree_type );
-    a_id!( got, TheModule::ContainerKind::Vector );
+    let got = container_kind::of_type( &tree_type );
+    a_id!( got, TheModule::container_kind::ContainerKind::Vector );
 
     // test.case( "std::vec::Vec< i32 >" );
     let code = qt!( std::vec::Vec< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_type( &tree_type );
-    a_id!( got, TheModule::ContainerKind::Vector );
+    let got = container_kind::of_type( &tree_type );
+    a_id!( got, TheModule::container_kind::ContainerKind::Vector );
 
     // test.case( "std::vec::Vec" );
     let code = qt!( std::vec::Vec );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_type( &tree_type );
-    a_id!( got, TheModule::ContainerKind::Vector );
+    let got = container_kind::of_type( &tree_type );
+    a_id!( got, TheModule::container_kind::ContainerKind::Vector );
 
     // test.case( "std::Vec< i32 >" );
     let code = qt!( std::Vec< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_type( &tree_type );
-    a_id!( got, TheModule::ContainerKind::Vector );
+    let got = container_kind::of_type( &tree_type );
+    a_id!( got, TheModule::container_kind::ContainerKind::Vector );
 
     // test.case( "std::Vec" );
     let code = qt!( std::Vec );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_type( &tree_type );
-    a_id!( got, TheModule::ContainerKind::Vector );
+    let got = container_kind::of_type( &tree_type );
+    a_id!( got, TheModule::container_kind::ContainerKind::Vector );
 
     // test.case( "not vector" );
     let code = qt!( std::SomeVector< i32, i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_type( &tree_type );
-    a_id!( got, TheModule::ContainerKind::No );
+    let got = container_kind::of_type( &tree_type );
+    a_id!( got, TheModule::container_kind::ContainerKind::No );
 
     // test.case( "hash map" );
     let code = qt!( std::collections::HashMap< i32, i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_type( &tree_type );
-    a_id!( got, TheModule::ContainerKind::HashMap );
+    let got = container_kind::of_type( &tree_type );
+    a_id!( got, TheModule::container_kind::ContainerKind::HashMap );
 
     // test.case( "hash set" );
     let code = qt!( std::collections::HashSet< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_type( &tree_type );
-    a_id!( got, TheModule::ContainerKind::HashSet );
+    let got = container_kind::of_type( &tree_type );
+    a_id!( got, TheModule::container_kind::ContainerKind::HashSet );
 
   }
 
@@ -203,77 +203,77 @@ TokenStream [
     // test.case( "non optional not container" );
     let code = qt!( i32 );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::No, false ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::No, false ) );
 
     // test.case( "optional not container" );
     let code = qt!( core::option::Option< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::No, true ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::No, true ) );
 
     // test.case( "optional not container" );
     let code = qt!( Option< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::No, true ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::No, true ) );
 
 
     // test.case( "optional vector" );
     let code = qt!( core::option::Option< Vec > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::Vector, true ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::Vector, true ) );
 
     // test.case( "optional vector" );
     let code = qt!( Option< Vec > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::Vector, true ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::Vector, true ) );
 
     // test.case( "non optional vector" );
     let code = qt!( std::Vec< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::Vector, false ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::Vector, false ) );
 
 
     // test.case( "optional vector" );
     let code = qt!( core::option::Option< std::collections::HashMap< i32, i32 > > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::HashMap, true ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::HashMap, true ) );
 
     // test.case( "optional vector" );
     let code = qt!( Option< HashMap > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::HashMap, true ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::HashMap, true ) );
 
     // test.case( "non optional vector" );
     let code = qt!( HashMap< i32, i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::HashMap, false ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::HashMap, false ) );
 
 
     // test.case( "optional vector" );
     let code = qt!( core::option::Option< std::collections::HashSet< i32, i32 > > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::HashSet, true ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::HashSet, true ) );
 
     // test.case( "optional vector" );
     let code = qt!( Option< HashSet > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::HashSet, true ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::HashSet, true ) );
 
     // test.case( "non optional vector" );
     let code = qt!( HashSet< i32, i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::of_optional( &tree_type );
-    a_id!( got, ( TheModule::ContainerKind::HashSet, false ) );
+    let got = TheModule::container_kind::of_optional( &tree_type );
+    a_id!( got, ( TheModule::container_kind::ContainerKind::HashSet, false ) );
 
   }
 
@@ -285,7 +285,7 @@ TokenStream [
     // test.case( "core::option::Option< i32 >" );
     let code = qt!( core::option::Option< i32 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-    let got = TheModule::type_rightmost( &tree_type );
+    let got = TheModule::typ::type_rightmost( &tree_type );
     a_id!( got, Some( "Option".to_string() ) );
 
   }
@@ -307,36 +307,36 @@ TokenStream [
     let code = qt!( core::option::Option< i8, i16, i32, i64 > );
     let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
 
-    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..=0 ).into_iter().cloned().collect();
+    let got : Vec< syn::Type > = TheModule::typ::type_parameters( &tree_type, 0..=0 ).into_iter().cloned().collect();
     let exp = vec![ q!( i8 ) ];
     a_id!( got, exp );
-    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..=1 ).into_iter().cloned().collect();
+    let got : Vec< syn::Type > = TheModule::typ::type_parameters( &tree_type, 0..=1 ).into_iter().cloned().collect();
     let exp = vec![ q!( i8 ), q!( i16 ) ];
     a_id!( got, exp );
-    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..=2 ).into_iter().cloned().collect();
+    let got : Vec< syn::Type > = TheModule::typ::type_parameters( &tree_type, 0..=2 ).into_iter().cloned().collect();
     let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ) ];
     a_id!( got, exp );
 
-    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..0 ).into_iter().cloned().collect();
+    let got : Vec< syn::Type > = TheModule::typ::type_parameters( &tree_type, 0..0 ).into_iter().cloned().collect();
     let exp : Vec< syn::Type > = vec![];
     a_id!( got, exp );
-    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..1 ).into_iter().cloned().collect();
+    let got : Vec< syn::Type > = TheModule::typ::type_parameters( &tree_type, 0..1 ).into_iter().cloned().collect();
     let exp = vec![ q!( i8 ) ];
     a_id!( got, exp );
-    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, 0..2 ).into_iter().cloned().collect();
+    let got : Vec< syn::Type > = TheModule::typ::type_parameters( &tree_type, 0..2 ).into_iter().cloned().collect();
     let exp = vec![ q!( i8 ), q!( i16 ) ];
     a_id!( got, exp );
 
     // unbound
-    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
+    let got : Vec< syn::Type > = TheModule::typ::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
     let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ), q!( i64 ) ];
     a_id!( got, exp );
 
-    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
+    let got : Vec< syn::Type > = TheModule::typ::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
     let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ), q!( i64 ) ];
     a_id!( got, exp );
 
-    let got : Vec< syn::Type > = TheModule::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
+    let got : Vec< syn::Type > = TheModule::typ::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
     let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ), q!( i64 ) ];
     a_id!( got, exp );
 

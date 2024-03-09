@@ -16,6 +16,10 @@
 //! This approach abstracts away the need for manually implementing a builder for each struct, making code more readable and maintainable.
 //!
 
+#[ cfg( not( feature = "derive_former" ) ) ]
+fn main() {}
+
+#[ cfg( feature = "derive_former" ) ]
 fn main()
 {
   use former::Former;

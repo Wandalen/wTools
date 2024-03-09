@@ -23,19 +23,23 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-
-exclude = [ "/tests", "/examples", "-*" ]
+exclude = [ "/tests", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
+# xxx : replicate for all modules
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+
+default = [ "enabled", "derive_former", "derive_component_from" ]
+full = [ "enabled", "derive_former", "derive_component_from" ]
+enabled = [ "former_meta/enabled" ]
 no_std = []
 use_alloc = []
-enabled = []
+
+derive_former = [ "former_meta/derive_former" ]
+derive_component_from = [ "former_meta/derive_component_from" ]
 
 [dependencies]
-former_meta = { workspace = true, features = [ "default" ] }
-# former_runtime = { workspace = true, features = [ "default" ] }
+former_meta = { workspace = true }
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "default" ] }
+test_tools = { workspace = true, features = [ "full" ] }

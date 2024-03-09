@@ -26,12 +26,13 @@ all-features = false
 exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
+
 default = [ "enabled", "derive_former", "derive_component_from" ]
 full = [ "enabled", "derive_former", "derive_component_from" ]
-enabled = []
+enabled = [ "former/enabled" ]
 
-derive_former = []
-derive_component_from = []
+derive_former = [ "former/derive_former" ]
+derive_component_from = [ "former/derive_component_from" ]
 
 [lib]
 proc-macro = true
@@ -40,7 +41,8 @@ proc-macro = true
 macro_tools = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 
-# zzz : optimize features set
+# xxx : optimize features set
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "default" ] }
+test_tools = { workspace = true, features = [ "full" ] }
+former = { workspace = true }

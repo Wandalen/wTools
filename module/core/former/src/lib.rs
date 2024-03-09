@@ -5,16 +5,24 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Axiomatic things.
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
+// #[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "derive_former" ) ]
 mod axiomatic;
 /// Former of a vector.
+#[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "derive_former" ) ]
 mod vector;
 /// Former of a hash map.
+#[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "derive_former" ) ]
 mod hash_map;
 /// Former of a hash set.
+#[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "derive_former" ) ]
 mod hash_set;
 
 /// Namespace with dependencies.
@@ -62,19 +70,26 @@ pub mod exposed
   pub use super::prelude::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( feature = "enabled" ) ]
+  #[ cfg( feature = "derive_former" ) ]
   pub use super::axiomatic::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  #[ cfg( feature = "enabled" ) ]
   #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( feature = "derive_former" ) ]
   pub use super::vector::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  #[ cfg( feature = "enabled" ) ]
   #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( feature = "derive_former" ) ]
   pub use super::hash_map::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  #[ cfg( feature = "enabled" ) ]
   #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( feature = "derive_former" ) ]
   pub use super::hash_set::*;
 
 }

@@ -198,10 +198,7 @@ default-features = false
 [workspace.dependencies.former_meta]
 version = "~0.7.0"
 path = "module/core/former_meta"
-
-# [workspace.dependencies.former_runtime]
-# version = "~0.1.12"
-# path = "module/core/former_runtime"
+default-features = false
 
 [workspace.dependencies.impls_index]
 version = "~0.3.0"

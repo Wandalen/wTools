@@ -24,7 +24,43 @@ pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 }
 
 ///
-/// Macro to implement From for each component of a structre.
+/// Macro to implement `From` for each component (field) of a structure.
+/// This macro simplifies the creation of `From` trait implementations for struct fields,
+/// enabling easy conversion from a struct reference to its field types.
+///
+/// # Features
+///
+/// - Requires the `derive_component_from` feature to be enabled for use.
+/// - The `ComponentFrom` derive macro can be applied to structs to automatically generate
+///   `From` implementations for each field.
+///
+/// # Attributes
+///
+/// - `debug` : Optional attribute to enable debug-level output during the macro expansion process.
+///
+/// # Examples
+///
+/// Assuming the `derive_component_from` feature is enabled in your `Cargo.toml`, you can use the macro as follows :
+///
+/// ```rust
+/// # fn main()
+/// # {
+/// #[ derive( former::ComponentFrom ) ]
+/// struct MyStruct
+/// {
+///   pub field1 : i32,
+///   pub field2 : String,
+/// }
+///
+/// let my_struct = MyStruct { field1 : 10, field2 : "Hello".into() };
+/// let field1 : i32 = From::from( &my_struct );
+/// let field2 : String = From::from( &my_struct );
+/// dbg!( field1 );
+/// dbg!( field2 );
+/// // > field1 = 10
+/// // > field2 = "Hello"
+/// # }
+/// ```
 ///
 
 #[ cfg( feature = "enabled" ) ]

@@ -440,7 +440,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 /// # Example of output
 /// ```ignore
 /// #[ doc = "Setter for the '#field_ident' field." ]
-/// #[inline]
+/// #[ inline ]
 /// pub fn int_1< Src >( mut self, src : Src ) -> Self
 /// where
 ///   Src : ::core::convert::Into< i32 >,

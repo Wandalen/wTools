@@ -33,12 +33,11 @@ pub( crate ) mod private
   /// ### Basic use-case.
   /// ```
   /// use macro_tools::*;
-  /// use quote::quote;
   ///
-  /// let code = quote!( std::collections::HashMap< i32, i32 > );
+  /// let code = qt!( std::collections::HashMap< i32, i32 > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let kind = of_type( &tree_type );
-  /// assert_eq!( kind, ContainerKind::HashMap );
+  /// let kind = container_kind::of_type( &tree_type );
+  /// assert_eq!( kind, container_kind::ContainerKind::HashMap );
   /// ```
 
   pub fn of_type( ty : &syn::Type ) -> ContainerKind
@@ -69,12 +68,11 @@ pub( crate ) mod private
   /// ### Basic use-case.
   /// ```
   /// use macro_tools::*;
-  /// use quote::quote;
   ///
-  /// let code = quote!( Option< std::collections::HashMap< i32, i32 > > );
+  /// let code = qt!( Option< std::collections::HashMap< i32, i32 > > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let ( kind, optional ) = of_optional( &tree_type );
-  /// assert_eq!( kind, ContainerKind::HashMap );
+  /// let ( kind, optional ) = container_kind::of_optional( &tree_type );
+  /// assert_eq!( kind, container_kind::ContainerKind::HashMap );
   /// assert_eq!( optional, true );
   /// ```
 

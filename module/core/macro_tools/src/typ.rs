@@ -14,12 +14,12 @@ pub( crate ) mod private
   /// Good to verify `alloc::vec::Vec< i32 >` is vector.
   ///
   /// ### Basic use-case.
-  /// ```
+  /// ```rust
   /// use macro_tools::*;
   ///
   /// let code = qt!( core::option::Option< i32 > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let got = type_rightmost( &tree_type );
+  /// let got = typ::type_rightmost( &tree_type );
   /// assert_eq!( got, Some( "Option".to_string() ) );
   /// ```
 
@@ -43,11 +43,11 @@ pub( crate ) mod private
   ///
   /// ### Basic use-case.
   /// ```
-  /// use macro_tools::*;
+  /// use macro_tools::{ typ, qt };
   ///
   /// let code = qt!( core::option::Option< i8, i16, i32, i64 > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let got = type_parameters( &tree_type, 0..=2 );
+  /// let got = typ::type_parameters( &tree_type, 0..=2 );
   /// got.iter().for_each( | e | println!( "{}", qt!( #e ) ) );
   /// // < i8
   /// // < i16

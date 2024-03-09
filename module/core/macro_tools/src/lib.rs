@@ -3,14 +3,23 @@
 #![ doc( html_root_url = "https://docs.rs/proc_macro_tools/latest/proc_macro_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ cfg( feature = "enabled" ) ]
 pub mod attr;
+#[ cfg( feature = "enabled" ) ]
 pub mod container_kind;
+#[ cfg( feature = "enabled" ) ]
 pub mod diagnostics;
+#[ cfg( feature = "enabled" ) ]
 pub mod generic_analyze;
+#[ cfg( feature = "enabled" ) ]
 pub mod generics;
+#[ cfg( feature = "enabled" ) ]
 pub mod name;
+#[ cfg( feature = "enabled" ) ]
 pub mod quantifier;
+#[ cfg( feature = "enabled" ) ]
 pub mod typ;
+#[ cfg( feature = "enabled" ) ]
 pub mod type_struct;
 
 ///
@@ -29,9 +38,11 @@ pub mod dependency
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -52,6 +63,7 @@ pub mod protected
 }
 
 /// Parented namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -60,6 +72,7 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
@@ -95,6 +108,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
 

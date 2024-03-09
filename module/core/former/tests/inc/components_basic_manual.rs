@@ -1,3 +1,4 @@
+use super::*;
 
 ///
 /// Set component trait.
@@ -14,7 +15,7 @@ where
 /// Options1
 ///
 
-#[ derive( Debug, Default, PartialEq ) ]
+#[ derive( Debug, Default, PartialEq, TheModule::ComponentFrom ) ]
 pub struct Options1
 {
   field1 : i32,
@@ -22,32 +23,32 @@ pub struct Options1
   field3 : f32,
 }
 
-impl From< &Options1 > for i32
-{
-  #[ inline( always ) ]
-  fn from( src : &Options1 ) -> Self
-  {
-    src.field1.clone()
-  }
-}
-
-impl From< &Options1 > for String
-{
-  #[ inline( always ) ]
-  fn from( src : &Options1 ) -> Self
-  {
-    src.field2.clone()
-  }
-}
-
-impl From< &Options1 > for f32
-{
-  #[ inline( always ) ]
-  fn from( src : &Options1 ) -> Self
-  {
-    src.field3.clone()
-  }
-}
+// impl From< &Options1 > for i32
+// {
+//   #[ inline( always ) ]
+//   fn from( src : &Options1 ) -> Self
+//   {
+//     src.field1.clone()
+//   }
+// }
+//
+// impl From< &Options1 > for String
+// {
+//   #[ inline( always ) ]
+//   fn from( src : &Options1 ) -> Self
+//   {
+//     src.field2.clone()
+//   }
+// }
+//
+// impl From< &Options1 > for f32
+// {
+//   #[ inline( always ) ]
+//   fn from( src : &Options1 ) -> Self
+//   {
+//     src.field3.clone()
+//   }
+// }
 
 impl< IntoT > SetComponent< i32, IntoT > for Options1
 where
