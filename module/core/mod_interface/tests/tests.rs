@@ -1,6 +1,3 @@
-// #![ cfg_attr( all(), feature( module_is_terminal ) ) ]
-// #![ feature( trace_macros ) ]
-// #![ feature( type_name_of_val ) ]
 
 ///  A struct for testing purpose.
 #[ derive( Debug, PartialEq ) ]

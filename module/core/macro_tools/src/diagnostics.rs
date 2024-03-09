@@ -165,7 +165,7 @@ pub( crate ) mod private
   {
     ( $( $Arg : tt )* ) =>
     {
-      $crate::syn_err!( $( $Arg )* )
+      return Result::Err( $crate::syn_err!( $( $Arg )* ) )
     };
   }
 
@@ -177,6 +177,7 @@ pub( crate ) mod private
     code_diagnostics_str,
     code_to_str,
     syn_err,
+    return_syn_err,
   };
 
 }
@@ -214,9 +215,6 @@ pub mod exposed
   pub use super::private::
   {
     Result,
-    // type_rightmost,
-    // type_parameters,
-    // eq_pair,
   };
 
 }
@@ -235,6 +233,7 @@ pub mod prelude
     code_diagnostics_str,
     code_to_str,
     syn_err,
+    return_syn_err,
   };
 
   // #[ doc( inline ) ]

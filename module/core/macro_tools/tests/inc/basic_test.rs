@@ -344,7 +344,7 @@ TokenStream [
 
   //
 
-  // fn eq_pair( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ), syn::Error >
+  // fn equation( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ), syn::Error >
 
   // qqq : xxx : fix
   // #[test]
@@ -384,7 +384,7 @@ TokenStream [
   //
   //   let attr = fields.first().ok_or_else( || err( "No field" ) )?.attrs.first().ok_or_else( || err( "No attr" ) )?;
   //
-  //   let ( key, val, meta ) = TheModule::eq_pair( &attr )?;
+  //   let ( key, val, meta ) = TheModule::equation( &attr )?;
   //   a_id!( key, "default".to_string() );
   //   a_id!( qt!( #val ).to_string(), "31".to_string() );
   //   let is = match meta

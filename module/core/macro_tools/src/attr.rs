@@ -12,48 +12,26 @@ pub( crate ) mod private
   /// as well as syn::Meta as the last element of result tuple.
   ///
   /// ### Basic use-case.
-  /// ```
+  /// ```rust
+  /// use macro_tools::*;
   /// let attr : syn::Attribute = syn::parse_quote!( #[ former( default = 31 ) ] );
-  /// let ( key, val, _meta ) = macro_tools::attr::eq_pair( &attr ).unwrap();
-  /// assert_eq!( key, "default" );
-  /// assert_eq!( val, syn::Lit::Int( syn::LitInt::new( "31", proc_macro2::Span::call_site() ) ) );
+  /// // tree_print!( attr );
+  /// let got = equation( &attr ).unwrap();
+  /// assert_eq!( code_to_str!( got ), "default = 31".to_string() );
   /// ```
 
-  pub fn eq_pair( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ) >
+  pub fn equation( attr : &syn::Attribute ) -> Result< tokens::Equation >
   {
-    // use syn::spanned::Spanned;
-    let meta = attr.parse_meta()?;
-
-    // zzz : try to use helper from toolbox
-    let ( key, val );
-    match meta
+    let meta = &attr.meta;
+    return match meta
     {
       syn::Meta::List( ref meta_list ) =>
-      match meta_list.nested.first()
       {
-        Some( nested_meta ) => match nested_meta
-        {
-          syn::NestedMeta::Meta( meta2 ) => match meta2
-          {
-            syn::Meta::NameValue( name_value ) => // match &name_value.lit
-            {
-              if meta_list.nested.len() != 1
-              {
-                return Err( syn::Error::new( attr.span(), format!( "Expected single element of the list, but got {}", meta_list.nested.len() ) ) );
-              }
-              key = name_value.path.get_ident().unwrap().to_string();
-              val = name_value.lit.clone();
-            },
-            _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::NameValue( name_value )" ) ),
-          },
-          _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::NestedMeta::Meta( meta2 )" ) ),
-        },
-        _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected Some( nested_meta )" ) ),
-      },
+        let eq : tokens::Equation = syn::parse2( meta_list.tokens.clone() )?;
+        Ok( eq )
+      }
       _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
     };
-
-    Ok( ( key, val, meta ) )
   }
 
   ///
@@ -111,8 +89,9 @@ pub( crate ) mod private
           pound_token : input.parse()?,
           style : syn::AttrStyle::Inner( input.parse()? ),
           bracket_token : bracketed!( input2 in input ),
-          path : input2.call( syn::Path::parse_mod_style )?,
-          tokens : input2.parse()?,
+          // path : input2.call( syn::Path::parse_mod_style )?,
+          // tokens : input2.parse()?,
+          meta : input2.parse()?,
         };
         result.0.push( element );
       }
@@ -195,8 +174,9 @@ pub( crate ) mod private
           pound_token : input.parse()?,
           style : syn::AttrStyle::Outer,
           bracket_token : bracketed!( input2 in input ),
-          path : input2.call( syn::Path::parse_mod_style )?,
-          tokens : input2.parse()?,
+          // path : input2.call( syn::Path::parse_mod_style )?,
+          // tokens : input2.parse()?,
+          meta : input2.parse()?,
         };
         result.0.push( element );
       }
@@ -270,7 +250,7 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
-    eq_pair,
+    equation,
     AttributesInner,
     AttributesOuter,
     AttributedIdent,

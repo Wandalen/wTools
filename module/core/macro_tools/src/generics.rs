@@ -141,8 +141,8 @@ pub( crate ) mod private
 
   pub fn params_names( generics : &syn::Generics ) -> syn::Generics
   {
-    use syn::{ Generics, GenericParam, LifetimeDef, TypeParam, ConstParam };
-    // use syn::{ Generics, GenericParam, Lifetime, TypeParam, ConstParam };
+    // use syn::{ Generics, GenericParam, LifetimeDef, TypeParam, ConstParam };
+    use syn::{ Generics, GenericParam, LifetimeParam, TypeParam, ConstParam };
 
     let result = Generics
     {
@@ -157,7 +157,7 @@ pub( crate ) mod private
           eq_token : None,
           default : None,
         }),
-        GenericParam::Lifetime( LifetimeDef { lifetime, .. } ) => GenericParam::Lifetime( LifetimeDef
+        GenericParam::Lifetime( LifetimeParam { lifetime, .. } ) => GenericParam::Lifetime( LifetimeParam
         {
           attrs : Vec::new(),
           lifetime : lifetime.clone(),
@@ -182,7 +182,6 @@ pub( crate ) mod private
 
     result
   }
-
 
 }
 

@@ -15,3 +15,4 @@ mod basic_test;
 mod generics_test;
 mod quantifier_test;
 mod syntax_test;
+mod tokens_test;

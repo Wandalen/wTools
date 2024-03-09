@@ -44,30 +44,60 @@ impl Attributes
     let mut alias = None;
     for attr in attributes
     {
-      let key_ident = attr.path.get_ident()
-      .ok_or_else( || syn_err!( attr, "Expects simple key of an attirbute, but got:\n  {}", qt!{ #attr } ) )?;
+      let key_ident = attr.path().get_ident()
+      .ok_or_else( || syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
       let key_str = format!( "{}", key_ident );
       match key_str.as_ref()
       {
         "default" =>
         {
-          let attr_default = syn::parse2::< AttributeDefault >( attr.tokens.clone() )?;
-          default.replace( attr_default );
+          match attr.meta
+          {
+            syn::Meta::List( ref meta_list ) =>
+            {
+              default.replace( syn::parse2::< AttributeDefault >( meta_list.tokens.clone() )? );
+            },
+            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+          }
         }
         "setter" =>
         {
-          let attr_setter = syn::parse2::< AttributeSetter >( attr.tokens.clone() )?;
-          setter.replace( attr_setter );
+          match attr.meta
+          {
+            syn::Meta::List( ref meta_list ) =>
+            {
+              setter.replace( syn::parse2::< AttributeSetter >( meta_list.tokens.clone() )? );
+            },
+            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+          }
+          // let attr_setter = syn::parse2::< AttributeSetter >( attr.tokens.clone() )?;
+          // setter.replace( attr_setter );
         }
         "subformer" =>
         {
-          let attr_former = syn::parse2::< AttributeFormer >( attr.tokens.clone() )?;
-          subformer.replace( attr_former );
+          match attr.meta
+          {
+            syn::Meta::List( ref meta_list ) =>
+            {
+              subformer.replace( syn::parse2::< AttributeFormer >( meta_list.tokens.clone() )? );
+            },
+            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+          }
+          // let attr_former = syn::parse2::< AttributeFormer >( attr.tokens.clone() )?;
+          // subformer.replace( attr_former );
         }
         "alias" =>
         {
-          let attr_alias = syn::parse2::< AttributeAlias >( attr.tokens.clone() )?;
-          alias.replace( attr_alias );
+          match attr.meta
+          {
+            syn::Meta::List( ref meta_list ) =>
+            {
+              alias.replace( syn::parse2::< AttributeAlias >( meta_list.tokens.clone() )? );
+            },
+            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+          }
+          // let attr_alias = syn::parse2::< AttributeAlias >( attr.tokens.clone() )?;
+          // alias.replace( attr_alias );
         }
         "doc" =>
         {
@@ -92,7 +122,7 @@ impl Attributes
 #[ allow( dead_code ) ]
 struct AttributeFormAfter
 {
-  paren_token : syn::token::Paren,
+  // paren_token : syn::token::Paren,
   signature : syn::Signature,
 }
 
@@ -100,11 +130,12 @@ impl syn::parse::Parse for AttributeFormAfter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
-    let input2;
+    // let input2;
     Ok( Self
     {
-      paren_token : syn::parenthesized!( input2 in input ),
-      signature : input2.parse()?,
+      // paren_token : syn::parenthesized!( input2 in input ),
+      // signature : input2.parse()?,
+      signature : input.parse()?,
     })
   }
 }
@@ -112,14 +143,14 @@ impl syn::parse::Parse for AttributeFormAfter
 ///
 /// Attribute to hold information about default value.
 ///
-/// `#[ default = 13 ]`
+/// `#[ default( 13 ) ]`
 ///
 
 #[ allow( dead_code ) ]
 struct AttributeDefault
 {
   // eq_token : syn::Token!{ = },
-  paren_token : syn::token::Paren,
+  // paren_token : syn::token::Paren,
   expr : syn::Expr,
 }
 
@@ -127,12 +158,13 @@ impl syn::parse::Parse for AttributeDefault
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
-    let input2;
+    // let input2;
     Ok( Self
     {
-      paren_token : syn::parenthesized!( input2 in input ),
+      // paren_token : syn::parenthesized!( input2 in input ),
       // eq_token : input.parse()?,
-      expr : input2.parse()?,
+      // expr : input2.parse()?,
+      expr : input.parse()?,
     })
   }
 }
@@ -147,7 +179,7 @@ impl syn::parse::Parse for AttributeDefault
 #[ allow( dead_code ) ]
 struct AttributeSetter
 {
-  paren_token : syn::token::Paren,
+  // paren_token : syn::token::Paren,
   condition : syn::LitBool,
 }
 
@@ -155,11 +187,12 @@ impl syn::parse::Parse for AttributeSetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
-    let input2;
+    // let input2;
     Ok( Self
     {
-      paren_token : syn::parenthesized!( input2 in input ),
-      condition : input2.parse()?,
+      // paren_token : syn::parenthesized!( input2 in input ),
+      // condition : input2.parse()?,
+      condition : input.parse()?,
     })
   }
 }
@@ -173,7 +206,7 @@ impl syn::parse::Parse for AttributeSetter
 #[ allow( dead_code ) ]
 struct AttributeFormer
 {
-  paren_token : syn::token::Paren,
+  // paren_token : syn::token::Paren,
   expr : syn::Type,
 }
 
@@ -181,11 +214,12 @@ impl syn::parse::Parse for AttributeFormer
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
-    let input2;
+    // let input2;
     Ok( Self
     {
-      paren_token : syn::parenthesized!( input2 in input ),
-      expr : input2.parse()?,
+      // paren_token : syn::parenthesized!( input2 in input ),
+      // expr : input2.parse()?,
+      expr : input.parse()?,
     })
   }
 }
@@ -199,7 +233,7 @@ impl syn::parse::Parse for AttributeFormer
 #[ allow( dead_code ) ]
 struct AttributeAlias
 {
-  paren_token : syn::token::Paren,
+  // paren_token : syn::token::Paren,
   alias : syn::Ident,
 }
 
@@ -207,11 +241,12 @@ impl syn::parse::Parse for AttributeAlias
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
-    let input2;
+    // let input2;
     Ok( Self
     {
-      paren_token : syn::parenthesized!( input2 in input ),
-      alias : input2.parse()?,
+      // paren_token : syn::parenthesized!( input2 in input ),
+      // alias : input2.parse()?,
+      alias : input.parse()?,
     })
   }
 }
@@ -688,6 +723,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 
   /* structure attribute */
 
+  // xxx : move out
   let mut perform = qt!
   {
     return result;
@@ -696,25 +732,34 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   let mut perform_generics = qt!{};
   for attr in ast.attrs.iter()
   {
-    if let Some( ident ) = attr.path.get_ident()
+    if let Some( ident ) = attr.path().get_ident()
     {
       let ident_string = format!( "{}", ident );
       if ident_string == "perform"
       {
-        let attr_perform = syn::parse2::< AttributeFormAfter >( attr.tokens.clone() )?;
-        let signature = &attr_perform.signature;
-        let generics = &signature.generics;
-        perform_generics = qt!{ #generics };
-        let perform_ident = &signature.ident;
-        let output = &signature.output;
-        if let syn::ReturnType::Type( _, boxed_type ) = output
+        match attr.meta
         {
-          perform_output = qt!{ #boxed_type };
+          syn::Meta::List( ref meta_list ) =>
+          {
+            // default.replace( syn::parse2::< AttributeDefault >( meta_list.tokens.clone() )? );
+            // let attr_perform = syn::parse2::< AttributeFormAfter >( attr.tokens.clone() )?;
+            let attr_perform = syn::parse2::< AttributeFormAfter >( meta_list.tokens.clone() )?;
+            let signature = &attr_perform.signature;
+            let generics = &signature.generics;
+            perform_generics = qt!{ #generics };
+            let perform_ident = &signature.ident;
+            let output = &signature.output;
+            if let syn::ReturnType::Type( _, boxed_type ) = output
+            {
+              perform_output = qt!{ #boxed_type };
+            }
+            perform = qt!
+            {
+              return result.#perform_ident();
+            };
+          },
+          _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
         }
-        perform = qt!
-        {
-          return result.#perform_ident();
-        };
       }
     }
     else

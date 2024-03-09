@@ -18,6 +18,8 @@ pub mod name;
 #[ cfg( feature = "enabled" ) ]
 pub mod quantifier;
 #[ cfg( feature = "enabled" ) ]
+pub mod tokens;
+#[ cfg( feature = "enabled" ) ]
 pub mod typ;
 #[ cfg( feature = "enabled" ) ]
 pub mod type_struct;
@@ -57,6 +59,7 @@ pub mod protected
     generics::orphan::*,
     name::orphan::*,
     quantifier::orphan::*,
+    tokens::orphan::*,
     typ::orphan::*,
     type_struct::orphan::*,
   };
@@ -95,16 +98,17 @@ pub mod exposed
     generics::exposed::*,
     name::exposed::*,
     quantifier::exposed::*,
+    tokens::exposed::*,
     typ::exposed::*,
     type_struct::exposed::*,
   };
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::quantifier::
-  {
-    Pair,
-    Many,
-  };
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::quantifier::
+  // {
+  //   Pair,
+  //   Many,
+  // };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -162,6 +166,7 @@ pub mod prelude
     generics::prelude::*,
     name::prelude::*,
     quantifier::prelude::*,
+    tokens::prelude::*,
     typ::prelude::*,
     type_struct::prelude::*,
   };
