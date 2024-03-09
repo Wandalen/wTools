@@ -3,16 +3,36 @@
 #![ doc( html_root_url = "https://docs.rs/former_derive_meta/latest/former_derive_meta/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-mod former_impl;
+#[ cfg( feature = "enabled" ) ]
+mod derive;
 
 ///
 /// Derive macro to generate former for a structure. Former is variation of Builder Pattern.
 ///
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_former" ) ]
 #[ proc_macro_derive( Former, attributes( perform, default, setter, subformer, alias, doc ) ) ]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = former_impl::former( input );
+  let result = derive::former::former( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+///
+/// Macro to implement From for each component of a structre.
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_component_from" ) ]
+#[ proc_macro_derive( ComponentFrom, attributes( debug ) ) ]
+pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::component_from::component_from( input );
   match result
   {
     Ok( stream ) => stream.into(),

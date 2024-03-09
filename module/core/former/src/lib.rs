@@ -4,9 +4,6 @@
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// /// Former - variation of builder pattern. Implementation of its runtime.
-// pub mod runtime;
-
 /// Axiomatic things.
 #[ cfg( not( feature = "no_std" ) ) ]
 mod axiomatic;
@@ -33,12 +30,6 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
-  // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // use super::runtime;
-  // pub use former_runtime as runtime;
-  // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use former_meta as derive;
@@ -62,14 +53,9 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
-  // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use former_meta::*;
-
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::runtime::exposed::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

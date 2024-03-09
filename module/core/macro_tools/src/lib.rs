@@ -11,6 +11,7 @@ pub mod generics;
 pub mod name;
 pub mod quantifier;
 pub mod typ;
+pub mod type_struct;
 
 ///
 /// Dependencies of the module.
@@ -40,12 +41,13 @@ pub mod protected
     orphan::*,
     attr::orphan::*,
     container_kind::orphan::*,
+    diagnostics::orphan::*,
     generic_analyze::orphan::*,
     generics::orphan::*,
-    diagnostics::orphan::*,
     name::orphan::*,
     quantifier::orphan::*,
     typ::orphan::*,
+    type_struct::orphan::*,
   };
 }
 
@@ -75,12 +77,13 @@ pub mod exposed
     prelude::*,
     attr::exposed::*,
     container_kind::exposed::*,
+    diagnostics::exposed::*,
     generic_analyze::exposed::*,
     generics::exposed::*,
-    diagnostics::exposed::*,
     name::exposed::*,
     quantifier::exposed::*,
     typ::exposed::*,
+    type_struct::exposed::*,
   };
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -140,12 +143,13 @@ pub mod prelude
   {
     attr::prelude::*,
     container_kind::prelude::*,
+    diagnostics::prelude::*,
     generic_analyze::prelude::*,
     generics::prelude::*,
-    diagnostics::prelude::*,
     name::prelude::*,
     quantifier::prelude::*,
     typ::prelude::*,
+    type_struct::prelude::*,
   };
 
 }

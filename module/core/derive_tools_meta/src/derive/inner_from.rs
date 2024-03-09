@@ -1,13 +1,12 @@
 
-use macro_tools::proc_macro2::TokenStream;
-
 use super::*;
+use macro_tools::{ type_struct, Result };
 
 //
 
 pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
-  let parsed = syn::parse::< InputParsed >( input )?;
+  let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
   let field_types = parsed.field_types;
   let field_names = parsed.field_names;
   let item_name = parsed.item_name;
@@ -28,17 +27,17 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
     }
     ( _, Some( field_names ) ) =>
     {
-      let params: Vec< TokenStream > = field_names.iter()
+      let params : Vec< proc_macro2::TokenStream > = field_names.iter()
       .map( | field_name | qt! { src.#field_name } )
       .collect();
       generate_from_impl_multiple_fields( item_name, &field_types, &params )
     }
     ( _, None ) =>
     {
-      let params: Vec< TokenStream > = ( 0..field_types.len() )
+      let params : Vec< proc_macro2::TokenStream > = ( 0..field_types.len() )
       .map( | index |
       {
-        let index: TokenStream = index.to_string().parse().unwrap();
+        let index : proc_macro2::TokenStream = index.to_string().parse().unwrap();
         qt! { src.#index }
       })
       .collect();
@@ -48,7 +47,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
   Ok( result )
 }
 
-fn generate_from_impl_named( item_name: syn::Ident, field_type: &syn::Type, field_name: &syn::Ident ) -> TokenStream
+fn generate_from_impl_named( item_name: syn::Ident, field_type: &syn::Type, field_name: &syn::Ident ) -> proc_macro2::TokenStream
 {
   qt!
   {
@@ -68,7 +67,7 @@ fn generate_from_impl_named( item_name: syn::Ident, field_type: &syn::Type, fiel
   }
 }
 
-fn generate_from_impl( item_name: syn::Ident, field_type: &syn::Type ) -> TokenStream
+fn generate_from_impl( item_name: syn::Ident, field_type: &syn::Type ) -> proc_macro2::TokenStream
 {
   qt!
   {
@@ -87,7 +86,12 @@ fn generate_from_impl( item_name: syn::Ident, field_type: &syn::Type ) -> TokenS
   }
 }
 
-fn generate_from_impl_multiple_fields ( item_name: syn::Ident, field_types: &Vec< syn::Type >, params: &Vec< TokenStream > ) -> TokenStream
+fn generate_from_impl_multiple_fields
+(
+  item_name : syn::Ident,
+  field_types : &Vec< syn::Type >,
+  params : &Vec< proc_macro2::TokenStream >,
+) -> proc_macro2::TokenStream
 {
   qt!
   {
@@ -107,7 +111,7 @@ fn generate_from_impl_multiple_fields ( item_name: syn::Ident, field_types: &Vec
   }
 }
 
-fn generate_unit( item_name: syn::Ident ) -> TokenStream
+fn generate_unit( item_name : syn::Ident ) -> proc_macro2::TokenStream
 {
   qt!
   {

@@ -1,5 +1,6 @@
 
 use super::*;
+use macro_tools::{ type_struct, Result };
 use iter::{ IterExt, Itertools };
 
 //
@@ -7,7 +8,7 @@ use iter::{ IterExt, Itertools };
 pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
 
-  let parsed = syn::parse::< InputParsed >( input )?;
+  let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
   let item_name = parsed.item_name;
 
   let result = match &parsed.fields

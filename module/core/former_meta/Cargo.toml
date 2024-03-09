@@ -26,9 +26,12 @@ all-features = false
 exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+default = [ "enabled", "derive_former", "derive_component_from" ]
+full = [ "enabled", "derive_former", "derive_component_from" ]
 enabled = []
+
+derive_former = []
+derive_component_from = []
 
 [lib]
 proc-macro = true

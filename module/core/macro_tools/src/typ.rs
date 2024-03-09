@@ -7,8 +7,6 @@ pub( crate ) mod private
 {
   use super::super::*;
   use interval_adapter::BoundExt;
-  // use crate::exposed::{ Pair, Many };
-  // use crate::Result;
 
   /// Check is the rightmost item of path refering a type is specified type.
   ///
@@ -104,6 +102,14 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::
+  {
+    type_rightmost,
+    type_parameters,
+    // xxx : rename
+  };
 }
 
 /// Orphan namespace of the module.
@@ -120,13 +126,6 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
-  {
-    type_rightmost,
-    type_parameters,
-  };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

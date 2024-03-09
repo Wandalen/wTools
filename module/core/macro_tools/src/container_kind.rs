@@ -37,11 +37,11 @@ pub( crate ) mod private
   ///
   /// let code = quote!( std::collections::HashMap< i32, i32 > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let kind = type_container_kind( &tree_type );
+  /// let kind = of_type( &tree_type );
   /// assert_eq!( kind, ContainerKind::HashMap );
   /// ```
 
-  pub fn type_container_kind( ty : &syn::Type ) -> ContainerKind
+  pub fn of_type( ty : &syn::Type ) -> ContainerKind
   {
 
     if let syn::Type::Path( path ) = ty
@@ -62,7 +62,7 @@ pub( crate ) mod private
     ContainerKind::No
   }
 
-  /// Return kind of container specified by type. Unlike [type_container_kind] it also understand optional types.
+  /// Return kind of container specified by type. Unlike [of_type] it also understand optional types.
   ///
   /// Good to verify `Option< alloc::vec::Vec< i32 > >` is optional vector.
   ///
@@ -73,29 +73,27 @@ pub( crate ) mod private
   ///
   /// let code = quote!( Option< std::collections::HashMap< i32, i32 > > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let ( kind, optional ) = type_optional_container_kind( &tree_type );
+  /// let ( kind, optional ) = of_optional( &tree_type );
   /// assert_eq!( kind, ContainerKind::HashMap );
   /// assert_eq!( optional, true );
   /// ```
 
-  pub fn type_optional_container_kind( ty : &syn::Type ) -> ( ContainerKind, bool )
+  pub fn of_optional( ty : &syn::Type ) -> ( ContainerKind, bool )
   {
 
-    // use inspect_type::*;
-
-    if type_rightmost( ty ) == Some( "Option".to_string() )
+    if typ::type_rightmost( ty ) == Some( "Option".to_string() )
     {
-      let ty2 = type_parameters( ty, 0 ..= 0 ).first().copied();
+      let ty2 = typ::type_parameters( ty, 0 ..= 0 ).first().copied();
       // inspect_type::inspect_type_of!( ty2 );
       if ty2.is_none()
       {
         return ( ContainerKind::No, false )
       }
       let ty2 = ty2.unwrap();
-      return ( type_container_kind( ty2 ), true )
+      return ( of_type( ty2 ), true )
     }
 
-    ( type_container_kind( ty ), false )
+    ( of_type( ty ), false )
   }
 
 }
@@ -110,6 +108,16 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::
+  {
+    ContainerKind,
+    of_type,
+    of_optional,
+  };
+
 }
 
 /// Orphan namespace of the module.
@@ -126,15 +134,6 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
-  {
-    ContainerKind,
-    type_container_kind,
-    type_optional_container_kind,
-  };
 
 }
 
