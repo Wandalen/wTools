@@ -162,16 +162,24 @@ where
   }
 }
 
-// impl Into< Options2 > for &T
-// where
-//
-// {
-//   #[ inline( always ) ]
-//   fn into( self ) -> String
-//   {
-//     self.field2.clone()
-//   }
-// }
+impl< T > From< T > for Options2
+where
+  T : Into< i32 >,
+  T : Into< String >,
+  T : Clone,
+{
+  #[ inline( always ) ]
+  fn from( src : T ) -> Self
+  {
+    let field1 = Into::< i32 >::into( src.clone() );
+    let field2 = Into::< String >::into( src.clone() );
+    Options2
+    {
+      field1,
+      field2,
+    }
+  }
+}
 
 ///
 /// Set with type.
@@ -258,14 +266,16 @@ fn main()
   let exp = Options1 { field1 : 42, field2 : "Hello, world!".to_string(), field3 : 0.0 };
   assert_eq!( o1, exp );
 
-//   // o2 : Options2 = o1.into()
-//
-//   let mut o1 = Options1::default();
-//   o1.set( 42 );
-//   o1.set( "Hello, world!" );
-//   o1.set( 13.01 );
-//   let o2 : Options2 = o1.into();
-//   let exp = Options2 { field1 : 42, field2 : "Hello, world!".to_string() };
-//   assert_eq!( o2, exp );
+  // o2 : Options2 = o1.into()
+
+  let mut o1 = Options1::default();
+  o1.set( 42 );
+  o1.set( "Hello, world!" );
+  o1.set( 13.01 );
+  let o2 : Options2 = Into::< Options2 >::into( &o1 );
+  let exp = Options2 { field1 : 42, field2 : "Hello, world!".to_string() };
+  assert_eq!( o2, exp );
+  let o2 : Options2 = (&o1).into();
+  assert_eq!( o2, exp );
 
 }
