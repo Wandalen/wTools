@@ -1,11 +1,13 @@
+#[ allow( unused_imports ) ]
 use super::*;
-use TheModule::SetComponent;
+#[ allow( unused_imports ) ]
+use former::SetComponent;
 
 ///
 /// Options1
 ///
 
-#[ derive( Debug, Default, PartialEq, TheModule::ComponentFrom ) ]
+#[ derive( Debug, Default, PartialEq ) ]
 pub struct Options1
 {
   field1 : i32,
@@ -13,7 +15,34 @@ pub struct Options1
   field3 : f32,
 }
 
-impl< IntoT > SetComponent< i32, IntoT > for Options1
+impl From< &Options1 > for i32
+{
+  #[ inline( always ) ]
+  fn from( src : &Options1 ) -> Self
+  {
+    src.field1.clone()
+  }
+}
+
+impl From< &Options1 > for String
+{
+  #[ inline( always ) ]
+  fn from( src : &Options1 ) -> Self
+  {
+    src.field2.clone()
+  }
+}
+
+impl From< &Options1 > for f32
+{
+  #[ inline( always ) ]
+  fn from( src : &Options1 ) -> Self
+  {
+    src.field3.clone()
+  }
+}
+
+impl< IntoT > former::SetComponent< i32, IntoT > for Options1
 where
   IntoT : Into< i32 >,
 {
@@ -24,7 +53,7 @@ where
   }
 }
 
-impl< IntoT > SetComponent< String, IntoT > for Options1
+impl< IntoT > former::SetComponent< String, IntoT > for Options1
 where
   IntoT : Into< String >,
 {
@@ -35,7 +64,7 @@ where
   }
 }
 
-impl< IntoT > SetComponent< f32, IntoT > for Options1
+impl< IntoT > former::SetComponent< f32, IntoT > for Options1
 where
   IntoT : Into< f32 >,
 {
@@ -75,7 +104,7 @@ impl From< &Options2 > for String
   }
 }
 
-impl< IntoT > SetComponent< i32, IntoT > for Options2
+impl< IntoT > former::SetComponent< i32, IntoT > for Options2
 where
   IntoT : Into< i32 >,
 {
@@ -86,7 +115,7 @@ where
   }
 }
 
-impl< IntoT > SetComponent< String, IntoT > for Options2
+impl< IntoT > former::SetComponent< String, IntoT > for Options2
 where
   IntoT : Into< String >,
 {
@@ -112,8 +141,8 @@ where
 
 impl< T, IntoT > Options2SetComponents< IntoT > for T
 where
-  T : SetComponent< i32, IntoT >,
-  T : SetComponent< String, IntoT >,
+  T : former::SetComponent< i32, IntoT >,
+  T : former::SetComponent< String, IntoT >,
   IntoT : Into< i32 >,
   IntoT : Into< String >,
   IntoT : Clone,
@@ -121,8 +150,8 @@ where
   #[ inline( always ) ]
   fn components_set( &mut self, component : IntoT )
   {
-    SetComponent::< i32, _ >::set( self, component.clone() );
-    SetComponent::< String, _ >::set( self, component.clone() );
+    former::SetComponent::< i32, _ >::set( self, component.clone() );
+    former::SetComponent::< String, _ >::set( self, component.clone() );
   }
 }
 
@@ -154,7 +183,7 @@ pub trait SetWithType
   fn set_with_type< T, IntoT >( &mut self, component : IntoT )
   where
     IntoT : Into< T >,
-    Self : SetComponent< T, IntoT >;
+    Self : former::SetComponent< T, IntoT >;
 }
 
 impl SetWithType for Options2
@@ -164,9 +193,9 @@ impl SetWithType for Options2
   fn set_with_type< T, IntoT >( &mut self, component : IntoT )
   where
     IntoT : Into< T >,
-    Self : SetComponent< T, IntoT >,
+    Self : former::SetComponent< T, IntoT >,
   {
-    SetComponent::< T, IntoT >::set( self, component );
+    former::SetComponent::< T, IntoT >::set( self, component );
   }
 
 }
