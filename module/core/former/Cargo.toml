@@ -25,18 +25,20 @@ features = [ "full" ]
 all-features = false
 exclude = [ "/tests", "-*" ]
 # exclude = [ "/tests", "/examples", "-*" ]
-# xxx : replicate for all modules
+# xxx : check and replicate for all modules
 
 [features]
 
-default = [ "enabled", "derive_former", "derive_component_from" ]
-full = [ "enabled", "derive_former", "derive_component_from" ]
-enabled = [ "former_meta/enabled" ]
 no_std = []
 use_alloc = []
 
+default = [ "enabled", "derive_former", "derive_component_from", "derive_set_component" ]
+full = [ "enabled", "derive_former", "derive_component_from", "derive_set_component" ]
+enabled = [ "former_meta/enabled" ]
+
 derive_former = [ "former_meta/derive_former" ]
 derive_component_from = [ "former_meta/derive_component_from" ]
+derive_set_component = [ "former_meta/derive_set_component" ]
 
 [dependencies]
 former_meta = { workspace = true }

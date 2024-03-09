@@ -7,15 +7,15 @@ pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 {
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
 
-  let from_impls = parsed.fields_many().iter().map( | field |
+  let for_field = parsed.fields_many().iter().map( | field |
   {
-    generate_from_impl( field, &parsed.item_name )
+    for_each_field( field, &parsed.item_name )
   })
   .collect::< Result< Vec< _ >  > >()?;
 
   let result = qt!
   {
-    #( #from_impls )*
+    #( #for_field )*
   };
 
   Ok( result )
@@ -43,9 +43,10 @@ pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 /// }
 ///
 
-fn generate_from_impl( field : &syn::Field, item_name : &syn::Ident ) -> Result< proc_macro2::TokenStream >
+fn for_each_field( field : &syn::Field, item_name : &syn::Ident ) -> Result< proc_macro2::TokenStream >
 {
-  let field_name = field.ident.as_ref().ok_or_else( || syn::Error::new( field.span(), "Field without a name" ) )?;
+  let field_name = field.ident.as_ref()
+  .ok_or_else( || syn::Error::new( field.span(), "Field without a name" ) )?;
   let field_type = &field.ty;
 
   Ok( qt!

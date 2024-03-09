@@ -7,7 +7,8 @@ use former::SetComponent;
 /// Options1
 ///
 
-#[ derive( Debug, Default, PartialEq, TheModule::ComponentFrom ) ]
+#[ derive( Debug, Default, PartialEq, TheModule::ComponentFrom, TheModule::SetComponent ) ]
+// qqq : make these traits working for generic struct
 pub struct Options1
 {
   field1 : i32,
@@ -15,88 +16,15 @@ pub struct Options1
   field3 : f32,
 }
 
-impl< IntoT > former::SetComponent< i32, IntoT > for Options1
-where
-  IntoT : Into< i32 >,
-{
-  #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
-  {
-    self.field1 = component.into().clone();
-  }
-}
-
-impl< IntoT > former::SetComponent< String, IntoT > for Options1
-where
-  IntoT : Into< String >,
-{
-  #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
-  {
-    self.field2 = component.into().clone();
-  }
-}
-
-impl< IntoT > former::SetComponent< f32, IntoT > for Options1
-where
-  IntoT : Into< f32 >,
-{
-  #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
-  {
-    self.field3 = component.into().clone();
-  }
-}
-
 ///
 /// Options2
 ///
 
-#[ derive( Debug, Default, PartialEq ) ]
+#[ derive( Debug, Default, PartialEq, TheModule::ComponentFrom, TheModule::SetComponent ) ]
 pub struct Options2
 {
   field1 : i32,
   field2 : String,
-}
-
-impl From< &Options2 > for i32
-{
-  #[ inline( always ) ]
-  fn from( src : &Options2 ) -> Self
-  {
-    src.field1.clone()
-  }
-}
-
-impl From< &Options2 > for String
-{
-  #[ inline( always ) ]
-  fn from( src : &Options2 ) -> Self
-  {
-    src.field2.clone()
-  }
-}
-
-impl< IntoT > former::SetComponent< i32, IntoT > for Options2
-where
-  IntoT : Into< i32 >,
-{
-  #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
-  {
-    self.field1 = component.into().clone();
-  }
-}
-
-impl< IntoT > former::SetComponent< String, IntoT > for Options2
-where
-  IntoT : Into< String >,
-{
-  #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
-  {
-    self.field2 = component.into().clone();
-  }
 }
 
 ///

@@ -19,7 +19,7 @@
 #[ cfg( not( feature = "derive_former" ) ) ]
 fn main() {}
 
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 fn main()
 {
   use former::Former;
@@ -29,7 +29,7 @@ fn main()
   {
     age : i32,
     username : String,
-    bio_optional : Option<String>, // Fields could be optional
+    bio_optional : Option< String >, // Fields could be optional
   }
 
   let profile = UserProfile::former()
