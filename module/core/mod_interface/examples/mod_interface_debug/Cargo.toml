@@ -1,12 +1,8 @@
 [package]
-name = "mod_interface_with_debug_sample"
+name = "mod_interface_debug"
 version = "0.0.0"
 edition = "2021"
 publish = false
-
-[[bin]]
-name = "mod_interface_trivial_sample"
-path = "src/main.rs"
 
 [dependencies]
 mod_interface = { workspace = true }
