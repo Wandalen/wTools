@@ -9,6 +9,7 @@ tests_impls!
 
   //
 
+  // qqq : organize tests in the same way tests organized for derive_tools
   fn manual()
   {
 
@@ -34,6 +35,7 @@ tests_impls!
 
     //
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c > Clone
     for Box< dyn Trait1 + 'c >
     {
@@ -41,6 +43,7 @@ tests_impls!
       fn clone( &self ) -> Self { _clone_boxed( &**self ) }
     }
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c > Clone
     for Box< dyn Trait1 + Send + 'c >
     {
@@ -48,6 +51,7 @@ tests_impls!
       fn clone( &self ) -> Self { _clone_boxed( &**self ) }
     }
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c > Clone
     for Box< dyn Trait1 + Sync + 'c >
     {
@@ -55,6 +59,7 @@ tests_impls!
       fn clone( &self ) -> Self { _clone_boxed( &**self ) }
     }
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c > Clone
     for Box< dyn Trait1 + Send + Sync + 'c >
     {

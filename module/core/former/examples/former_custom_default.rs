@@ -9,6 +9,10 @@
 //! This approach significantly simplifies struct construction, particularly for complex types or where defaults beyond the `Default` trait's capability are required. By utilizing the `default` attribute, developers can ensure their structs are initialized safely and predictably, enhancing code clarity and maintainability.
 //!
 
+#[ cfg( not( feature = "derive_former" ) ) ]
+fn main() {}
+
+#[ cfg( feature = "derive_former" ) ]
 fn main()
 {
   use former::Former;
