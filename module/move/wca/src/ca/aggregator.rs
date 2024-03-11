@@ -3,16 +3,15 @@ pub( crate ) mod private
   use crate::*;
   use ca::
   {
-    Parser, Verifier,// ExecutorConverter,
+    Parser, Verifier,
     Executor,
     ProgramParser,
     Command,
     grammar::command::private::CommandFormer,
-    // Routine,
-    // help::{ HelpGeneratorFn, HelpVariants, dot_command },
+    help::{ HelpGeneratorFn, HelpVariants, dot_command },
   };
 
-  // use std::collections::{ HashMap, HashSet };
+  use std::collections::HashSet;
   use std::fmt;
   use wtools::thiserror;
   use wtools::error::
@@ -119,9 +118,9 @@ pub( crate ) mod private
     #[ default( Executor::former().form() ) ]
     executor : Executor,
 
-    // help_generator : HelpGeneratorFn,
-    // #[ default( HashSet::from([ HelpVariants::All ]) ) ]
-    // help_variants : HashSet< HelpVariants >,
+    help_generator : HelpGeneratorFn,
+    #[ default( HashSet::from([ HelpVariants::All ]) ) ]
+    help_variants : HashSet< HelpVariants >,
     // qqq : for Bohdan : should not have fields help_generator and help_variants
     // help_generator generateds VerifiedCommand(s) and stop to exist
 
@@ -191,27 +190,27 @@ pub( crate ) mod private
     //   self
     // }
 
-    // /// Setter for help content generator
-    // ///
-    // /// ```
-    // /// use wca::CommandsAggregator;
-    // ///
-    // /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
-    // /// let ca = CommandsAggregator::former()
-    // /// // ...
-    // /// .help( | grammar, command | format!( "Replaced help content" ) )
-    // /// .perform();
-    // ///
-    // /// ca.perform( ".help" )?;
-    // /// # Ok( () ) }
-    // /// ```
-    // pub fn help< HelpFunction >( mut self, func : HelpFunction ) -> Self
-    // where
-    //   HelpFunction : Fn( &Verifier, Option< &Command > ) -> String + 'static
-    // {
-    //   self.container.help_generator = Some( HelpGeneratorFn::new( func ) );
-    //   self
-    // }
+    /// Setter for help content generator
+    ///
+    /// ```
+    /// use wca::CommandsAggregator;
+    ///
+    /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
+    /// let ca = CommandsAggregator::former()
+    /// // ...
+    /// .help( | grammar, command | format!( "Replaced help content" ) )
+    /// .perform();
+    ///
+    /// ca.perform( ".help" )?;
+    /// # Ok( () ) }
+    /// ```
+    pub fn help< HelpFunction >( mut self, func : HelpFunction ) -> Self
+    where
+      HelpFunction : Fn( &Dictionary, Option< &Command > ) -> String + 'static
+    {
+      self.container.help_generator = Some( HelpGeneratorFn::new( func ) );
+      self
+    }
     // qqq : it is good access method, but formed structure should not have help_generator anymore
 
     /// Set callback function that will be executed after validation state
@@ -243,23 +242,23 @@ pub( crate ) mod private
     /// Construct CommandsAggregator
     fn build( self ) -> CommandsAggregator
     {
-      // let mut ca = self;
+      let mut ca = self;
 
-      // if ca.help_variants.contains( &HelpVariants::All )
-      // {
-      //   HelpVariants::All.generate( &ca.help_generator, &mut ca.dictionary );
-      // }
-      // else
-      // {
-      //   for help in &ca.help_variants
-      //   {
-      //     help.generate( &ca.help_generator, &mut ca.dictionary );
-      //   }
-      // }
-      //
-      // dot_command( &mut ca.dictionary );
+      if ca.help_variants.contains( &HelpVariants::All )
+      {
+        HelpVariants::All.generate( &ca.help_generator, &mut ca.dictionary );
+      }
+      else
+      {
+        for help in &ca.help_variants
+        {
+          help.generate( &ca.help_generator, &mut ca.dictionary );
+        }
+      }
 
-      self
+      dot_command( &mut ca.dictionary );
+
+      ca
     }
 
     /// Parse, converts and executes a program

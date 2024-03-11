@@ -17,7 +17,7 @@ pub( crate ) mod private
   /// A collection of commands.
   ///
   /// This structure holds a hashmap of commands where each command is mapped to its name.
-  #[ derive( Debug, Default, Former ) ]
+  #[ derive( Debug, Default, Former, Clone ) ]
   pub struct Dictionary
   {
     #[ setter( false ) ]
@@ -45,9 +45,9 @@ pub( crate ) mod private
     /// # Arguments
     ///
     /// * `command` - The command to be registered.
-    pub fn register( &mut self, command : Command )
+    pub fn register( &mut self, command : Command ) -> Option< Command >
     {
-      self.commands.insert( command.phrase.clone(), command );
+      self.commands.insert( command.phrase.clone(), command )
     }
 
     /// Retrieves the command with the specified `name` from the `commands` hashmap.
