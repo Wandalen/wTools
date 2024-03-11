@@ -5,6 +5,7 @@ mod private
 
   use std::collections::{ HashSet, HashMap };
   use core::fmt::Formatter;
+  use std::{ env, fs };
 
   use wtools::error::for_app::{ Error, anyhow };
   use path::AbsolutePath;
@@ -108,7 +109,7 @@ mod private
   /// Publish packages.
   ///
 
-  pub fn publish( patterns : Vec< String >, dry : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
+  pub fn publish( patterns : Vec< String >, dry : bool, temp : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
 
@@ -158,14 +159,41 @@ mod private
     let graph = metadata.graph();
     let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish );
     let tmp = subgraph_wanted.map( | _, n | graph[ *n ].clone(), | _, e | graph[ *e ].clone() );
-    let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish );
+
+    let mut unique_name = format!( "temp_dir_for_publish_command_{}", path::unique_folder_name_generate().err_with( || report.clone() )? );
+
+    let dir = if temp
+    {
+      let mut temp_dir = env::temp_dir().join( unique_name );
+
+      while temp_dir.exists()
+      {
+        unique_name = format!( "temp_dir_for_publish_command_{}", path::unique_folder_name_generate().err_with( || report.clone() )? );
+        temp_dir = env::temp_dir().join( unique_name );
+      }
+
+      fs::create_dir( &temp_dir ).err_with( || report.clone() )?;
+      Some( temp_dir )
+    }
+    else
+    {
+      None
+    };
+    
+    let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish, dir.clone() );
     let subgraph = subgraph.map( | _, n | n, | _, e | e );
 
     let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).collect::< Vec< _ > >();
-
+    
     for package in queue
     {
-      let current_report = package::publish_single( package, true, dry )
+      let args = package::PublishSingleOptions::former()
+      .package( package )
+      .force( true )
+      .option_base_temp_dir( &dir )
+      .dry( dry )
+      .form();
+      let current_report = package::publish_single( args )
       .map_err
       (
         | ( current_report, e ) |
@@ -176,9 +204,15 @@ mod private
       )?;
       report.packages.push(( package.crate_dir().absolute_path(), current_report ));
     }
-
+    
+    if temp
+    {
+      fs::remove_dir_all( dir.unwrap() ).err_with( || report.clone() )?;
+    }
+    
     Ok( report )
   }
+  
 
   trait ErrWith< T, T1, E >
   {

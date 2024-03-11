@@ -10,6 +10,8 @@ pub( crate ) mod private
     process::{ Command, Stdio },
   };
   use duct::cmd;
+  use error_tools::err;
+  use error_tools::for_app::Error;
   use wtools::
   {
     iter::Itertools,
@@ -18,7 +20,7 @@ pub( crate ) mod private
 
 
   /// Process command output.
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Debug, Clone, Default ) ]
   pub struct CmdReport
   {
     /// Command that was executed.
@@ -169,7 +171,7 @@ pub( crate ) mod private
     args : Args,
     path : P,
   )
-  -> Result< CmdReport >
+  -> Result< CmdReport, ( CmdReport, Error ) >
   where
     AP : AsRef< Path >,
     Args : IntoIterator< Item = Arg >,
@@ -183,12 +185,13 @@ pub( crate ) mod private
     .stderr_to_stdout()
     .stdout_capture()
     .unchecked()
-    .run()?;
+    .run()
+    .map_err( | e | ( Default::default(), e.into() ) )?;
     let report = CmdReport
     {
       command : format!( "{} {}", application.display(), args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
       path : path.to_path_buf(),
-      out : String::from_utf8( output.stdout ).context( "Found invalid UTF-8" )?,
+      out : String::from_utf8( output.stdout ).context( "Found invalid UTF-8" ).map_err( | e | ( Default::default(), e.into() ) )?,
       err : Default::default(),
     };
 
@@ -198,7 +201,7 @@ pub( crate ) mod private
     }
     else
     {
-      Err( format_err!( report ) )
+      Err( ( report, err!( "Process was finished with error code : {}", output.status ) ) )
     }
   }
 

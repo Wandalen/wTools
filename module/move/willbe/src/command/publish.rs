@@ -19,7 +19,11 @@ mod private
     .get_owned( "dry" )
     .unwrap_or( true );
 
-    match action::publish( patterns, dry )
+    let temp : bool = properties
+    .get_owned( "temp" )
+    .unwrap_or( true );
+
+    match action::publish( patterns, dry, temp )
     {
       Ok( report ) =>
       {

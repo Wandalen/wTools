@@ -26,7 +26,6 @@ mod private
     iter::Itertools,
   };
 
-
   /// Used to store arguments for running tests.
   ///
   /// - The `dir` field represents the directory of the crate under test.
@@ -121,7 +120,7 @@ mod private
         exclude_features,
         temp_path: None,
       };
-      
+
       tests_run( &t_args, &packages, dry )
     }
   }

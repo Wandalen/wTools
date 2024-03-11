@@ -35,8 +35,8 @@ fn fail_test()
 
   let stable = rep.failure_reports[0].tests.get( &channel::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
-
-  assert!( no_features.out.contains( "failures" ) );
+  assert!( no_features.is_err() );
+  assert!( no_features.clone().unwrap_err().out.contains( "failures" ) );
 }
 
 #[ test ]
@@ -69,7 +69,7 @@ fn fail_build()
   let stable = rep.failure_reports[ 0 ].tests.get( &channel::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
 
-  assert!( no_features.out.contains( "error" ) && no_features.out.contains( "achtung" ) );
+  assert!( no_features.clone().unwrap_err().out.contains( "error" ) && no_features.clone().unwrap_err().out.contains( "achtung" ) );
 }
 
 #[ test ]

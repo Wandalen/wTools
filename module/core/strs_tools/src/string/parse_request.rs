@@ -1,8 +1,12 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::string::split::*;
-  use crate::string::isolate::isolate_right;
+  use crate::*;
+  use string::
+  {
+    split::*,
+    // isolate::isolate_right,
+  };
   use std::collections::HashMap;
 
   ///
@@ -10,17 +14,17 @@ pub( crate ) mod private
   ///
 
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
-  pub enum OpType<T>
+  pub enum OpType< T >
   {
-    /// Wrapper over single element of type <T>.
+    /// Wrapper over single element of type < T >.
     Primitive( T ),
-    /// Wrapper over vector of elements of type <T>.
-    Vector( Vec<T> ),
-    /// Wrapper over hash map of elements of type <T>.
+    /// Wrapper over vector of elements of type < T >.
+    Vector( Vec< T > ),
+    /// Wrapper over hash map of elements of type < T >.
     Map( HashMap<String, T> ),
   }
 
-  impl<T : Default> Default for OpType<T>
+  impl<T : Default> Default for OpType< T >
   {
     fn default() -> Self
     {
@@ -28,7 +32,7 @@ pub( crate ) mod private
     }
   }
 
-  impl<T> From<T> for OpType<T>
+  impl< T > From< T > for OpType< T >
   {
     fn from( value: T ) -> Self
     {
@@ -36,17 +40,17 @@ pub( crate ) mod private
     }
   }
 
-  impl<T> From<Vec<T>> for OpType<T>
+  impl< T > From<Vec< T >> for OpType< T >
   {
-    fn from( value: Vec<T> ) -> Self
+    fn from( value: Vec< T > ) -> Self
     {
       OpType::Vector( value )
     }
   }
 
-  impl<T> Into<Vec< T > > for OpType<T>
+  impl< T > Into<Vec< T > > for OpType< T >
   {
-    fn into( self ) -> Vec<T>
+    fn into( self ) -> Vec< T >
     {
       match self
       {
@@ -56,11 +60,11 @@ pub( crate ) mod private
     }
   }
 
-  impl<T : Clone> OpType<T>
+  impl<T : Clone> OpType< T >
   {
     /// Append item of OpType to current value. If current type is `Primitive`, then it will be converted to
     /// `Vector`.
-    pub fn append( mut self, item : OpType<T> ) -> OpType<T>
+    pub fn append( mut self, item : OpType< T > ) -> OpType< T >
     {
       let mut mut_item = item;
       match self
@@ -104,7 +108,7 @@ pub( crate ) mod private
     }
 
     /// Unwrap primitive value. Consumes self.
-    pub fn primitive( self ) -> Option<T>
+    pub fn primitive( self ) -> Option< T >
     {
       match self
       {
@@ -114,7 +118,7 @@ pub( crate ) mod private
     }
 
     /// Unwrap vector value. Consumes self.
-    pub fn vector( self ) -> Option<Vec<T>>
+    pub fn vector( self ) -> Option<Vec< T >>
     {
       match self
       {
@@ -504,6 +508,8 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as parse_request;
+
   pub use super::private::
   {
     ParseOptionsAdapter,

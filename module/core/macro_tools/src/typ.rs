@@ -7,8 +7,6 @@ pub( crate ) mod private
 {
   use super::super::*;
   use interval_adapter::BoundExt;
-  // use crate::exposed::{ Pair, Many };
-  // use crate::Result;
 
   /// Check is the rightmost item of path refering a type is specified type.
   ///
@@ -16,12 +14,12 @@ pub( crate ) mod private
   /// Good to verify `alloc::vec::Vec< i32 >` is vector.
   ///
   /// ### Basic use-case.
-  /// ```
-  /// use macro_tools::*;
+  /// ```rust
+  /// use macro_tools::exposed::*;
   ///
   /// let code = qt!( core::option::Option< i32 > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let got = type_rightmost( &tree_type );
+  /// let got = typ::type_rightmost( &tree_type );
   /// assert_eq!( got, Some( "Option".to_string() ) );
   /// ```
 
@@ -45,11 +43,11 @@ pub( crate ) mod private
   ///
   /// ### Basic use-case.
   /// ```
-  /// use macro_tools::*;
+  /// use macro_tools::{ typ, qt };
   ///
   /// let code = qt!( core::option::Option< i8, i16, i32, i64 > );
   /// let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
-  /// let got = type_parameters( &tree_type, 0..=2 );
+  /// let got = typ::type_parameters( &tree_type, 0..=2 );
   /// got.iter().for_each( | e | println!( "{}", qt!( #e ) ) );
   /// // < i8
   /// // < i16
@@ -104,6 +102,14 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::
+  {
+    type_rightmost,
+    type_parameters,
+    // xxx : rename
+  };
 }
 
 /// Orphan namespace of the module.
@@ -117,16 +123,10 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as typ;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
-  {
-    type_rightmost,
-    type_parameters,
-  };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
