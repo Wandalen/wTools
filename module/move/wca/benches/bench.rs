@@ -29,7 +29,7 @@ fn init( count : usize, command : wca::Command ) -> CommandsAggregator
   CommandsAggregator::former()
   .grammar( commands )
   .executor( routines )
-  .build()
+  .perform()
 }
 
 fn initialize_commands_without_args( count : usize ) -> CommandsAggregator

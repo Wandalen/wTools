@@ -279,7 +279,7 @@ pub( crate ) mod private
     /// commands and handlers.
     pub fn build( self ) -> CommandsAggregator
     {
-      CommandsAggregator::former().grammar( self.commands ).executor( self.handlers ).build()
+      CommandsAggregator::former().grammar( self.commands ).executor( self.handlers ).perform()
     }
   }
 

@@ -27,29 +27,17 @@ all-features = false
 exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
-default = [ "enabled", "default_handlers" ]
-full = [ "enabled", "default_handlers" ]
+default = [ "enabled" ]
+full = [ "enabled", "on_unknown_suggest" ]
 # use_std = [ "default_handlers" ]
 # use_alloc = []
 enabled = []
 
-default_handlers = [
-  "on_error_default",
-  "on_syntax_error_default",
-  "on_ambiguity_default",
-  "on_unknown_command_error_default",
-  "on_get_help_default",
-  "on_print_commands_default",
-]
+# aaa : for Bohdan : description of all features please
+# aaa : removed redundant features
 
-# qqq : for Bohdan : description of all features please
-on_error_default = [ "enabled" ]
-on_syntax_error_default = [ "enabled" ]
-on_ambiguity_default = [ "enabled" ]
-on_unknown_command_error_default = [ "enabled" ] # qqq : for Bohdan : what does this feature do?
+# This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
 on_unknown_suggest = [ "eddie" ]
-on_get_help_default = [ "enabled" ]
-on_print_commands_default = [ "enabled" ]
 
 [[bench]]
 name = "bench"

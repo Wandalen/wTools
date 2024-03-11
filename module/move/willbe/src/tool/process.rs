@@ -111,19 +111,6 @@ pub( crate ) mod private
   /// # Errors:
   /// Returns an error if the process fails to spawn, complete, or if output
   /// cannot be decoded as UTF-8.
-  ///
-  /// # Example
-  /// ```rust
-  /// use std::path::Path;
-  /// use willbe::process;
-  ///
-  /// let command = if cfg!( target_os = "windows" ) { "dir" } else { "ls" };
-  /// let args : [ String ; 0 ] = [];
-  /// let path = ".";
-  ///
-  /// let report = process::run( command, args, Path::new( path ) ).unwrap();
-  /// println!( "Command output: {}", report.out );
-  /// ```
   pub fn run< AP, Args, Arg, P >
   (
     application : AP,

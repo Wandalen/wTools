@@ -2,13 +2,12 @@ mod private
 {
   use crate::*;
 
-  use wca::{ Args, Props };
   use wtools::error::{ anyhow::Context, Result };
 
   ///
   /// Generate table.
   ///
-  pub fn workflow_renew( ( _, _ ) : ( Args, Props ) ) -> Result< () >
+  pub fn workflow_renew() -> Result< () >
   {
     action::workflow_renew( &std::env::current_dir()? ).context( "Fail to generate workflow" )
   }
