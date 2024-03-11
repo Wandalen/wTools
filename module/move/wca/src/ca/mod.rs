@@ -16,14 +16,14 @@ crate::mod_interface!
 
   /// User input
   layer input;
-  /// The missing batteries of WCA.
-  layer facade;
+  // /// The missing batteries of WCA.
+  // layer facade;
 
   /// Responsible for aggregating all commands that the user defines, and for parsing and executing them
   layer aggregator;
   /// Helper commands
   layer help;
-  /// -
+  /// Responsible for generating Markdown formatted documentation for commands
   layer formatter;
   // qqq : for Bohdan : write concise documentations
 
