@@ -23,7 +23,6 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-
 exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
@@ -36,16 +35,15 @@ enabled = [ "mod_interface_meta/enabled" ]
 # keep these examples in directories
 
 [[example]]
-name = "mod_interface_trivial_sample"
-path = "examples/mod_interface_trivial_sample/src/main.rs"
+name = "mod_interface_trivial"
+path = "examples/mod_interface_trivial/src/main.rs"
 
 [[example]]
-name = "mod_interface_with_debug_sample"
-path = "examples/mod_interface_with_debug_sample/src/main.rs"
+name = "mod_interface_debug"
+path = "examples/mod_interface_debug/src/main.rs"
 
 [dependencies]
 mod_interface_meta = { workspace = true }
-# mod_interface_runtime = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }

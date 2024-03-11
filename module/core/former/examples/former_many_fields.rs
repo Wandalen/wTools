@@ -17,6 +17,10 @@
 //!
 //! The `dbg!` macro is utilized to print the constructed `Structure1` instance, confirming that all fields are correctly assigned, including the handling of optional fields and collections. This example underscores the power and convenience of using `Former` for struct initialization in Rust projects.
 
+#[ cfg( not( feature = "derive_former" ) ) ]
+fn main() {}
+
+#[ cfg( feature = "derive_former" ) ]
 fn main()
 {
   use former::Former;

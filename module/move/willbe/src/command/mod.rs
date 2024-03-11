@@ -17,6 +17,7 @@ pub( crate ) mod private
     .phrase( "publish" )
     .subject( "Provide path(s) to the package(s) that you want to publish.\n\t  Each path should point to a directory that contains a `Cargo.toml` file.\n\t  Paths should be separated by a comma.", Type::List( Type::String.into(), ',' ), true )
     .property( "dry", "Enables 'dry run'. Does not publish, only simulates. Default is `true`.", Type::Bool, true )
+    .property( "temp", "If flag is `1` all test will be running in temporary directories. Default `1`.", Type::Bool, true )
     // .property( "verbosity", "Setup level of verbosity.", Type::String, true )
     // .property_alias( "verbosity", "v" )
     .form();

@@ -85,6 +85,7 @@ pub mod exposed
     prelude::*,
     private::GenericsAnalysis,
   };
+  pub use super::protected as generic_analyze;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
