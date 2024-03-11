@@ -1,8 +1,9 @@
 
 use super::*;
 use iter_tools::{ Itertools, process_results };
-use macro_tools::{ typ, generics, container_kind, Result };
+use macro_tools::{ attr, diag, generics, container_kind, typ, Result };
 use proc_macro2::TokenStream;
+
 ///
 /// Descripotr of a field.
 ///
@@ -472,7 +473,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///
 /// # Example of output
 /// ```ignore
-/// #[ doc = "Setter for the '#field_ident' field." ]
+/// #[ doc = "Setter for the 'name' field." ]
 /// #[ inline ]
 /// pub fn int_1< Src >( mut self, src : Src ) -> Self
 /// where
@@ -541,9 +542,15 @@ fn field_setter
 )
 -> TokenStream
 {
+  let doc = format!
+  (
+    "Setter for the '{}' field.",
+    field_ident,
+  );
+
   qt!
   {
-    #[ doc = "Setter for the '#field_ident' field." ]
+    #[ doc = #doc ]
     #[ inline ]
     pub fn #setter_name< Src >( mut self, src : Src ) -> Self
     where Src : ::core::convert::Into< #non_optional_type >,
@@ -729,11 +736,14 @@ pub fn performer< 'a >
 pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 {
 
+  let original_input = input.clone();
   let ast = match syn::parse::< syn::DeriveInput >( input )
   {
     Ok( syntax_tree ) => syntax_tree,
     Err( err ) => return Err( err ),
   };
+  let has_debug = attr::has_debug( ast.attrs.iter() )?;
+
 
   /* names */
 
@@ -959,6 +969,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
   };
+
+  if has_debug
+  {
+    diag::debug_report_print( original_input, &result );
+  }
 
   Ok( result )
 }

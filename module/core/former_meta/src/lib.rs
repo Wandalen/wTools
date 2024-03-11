@@ -4,7 +4,24 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ cfg( feature = "enabled" ) ]
-mod derive;
+mod derive
+{
+
+  //!
+  //! Implement couple of derives of general-purpose.
+  //!
+
+  #[ allow( unused_imports ) ]
+  use macro_tools::prelude::*;
+
+  #[ cfg( feature = "derive_former" ) ]
+  pub mod former;
+  #[ cfg( feature = "derive_component_from" ) ]
+  pub mod component_from;
+  #[ cfg( feature = "derive_set_component" ) ]
+  pub mod set_component;
+
+}
 
 ///
 /// Derive macro to generate former for a structure. Former is variation of Builder Pattern.
@@ -210,7 +227,7 @@ mod derive;
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
-#[ proc_macro_derive( Former, attributes( perform, default, setter, subformer, alias, doc ) ) ]
+#[ proc_macro_derive( Former, attributes( debug, perform, default, setter, subformer, alias, doc ) ) ]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::former::former( input );

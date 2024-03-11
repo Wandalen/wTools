@@ -74,10 +74,16 @@ mod components_component_from_manual;
 #[ cfg( feature = "derive_component_from" ) ]
 mod components_component_from;
 
+#[ cfg( feature = "derive_component_from" ) ]
+mod components_set_component_manual;
+#[ cfg( feature = "derive_component_from" ) ]
+mod components_set_component;
+
 #[ cfg( all( feature = "derive_component_from", feature = "derive_set_component" ) ) ]
 mod components_composite_manual;
 #[ cfg( all( feature = "derive_component_from", feature = "derive_set_component" ) ) ]
 mod components_composite;
+
 
 only_for_terminal_module!
 {

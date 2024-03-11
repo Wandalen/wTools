@@ -42,4 +42,4 @@ impl From< &Options1 > for f32
 
 //
 
-include!( "only_test/components_from.rs" );
+include!( "only_test/components_component_from.rs" );

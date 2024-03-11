@@ -2,10 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
-  // use visibility::ClauseKind;
-  // use macro_tools::exposed::*;
   use macro_tools::exposed::*;
-  // use macro_tools::diag;
   use std::collections::HashMap;
 
 // = use
@@ -505,5 +502,6 @@ pub mod prelude
   };
 }
 
+// xxx : clean up, ad solve problems
 // - example based on simpified version of test::layer_have_layer with single sublayer
 // - example with attribute `#![ debug ]`
