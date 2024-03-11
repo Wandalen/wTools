@@ -110,7 +110,7 @@ mod private
                 }
               }
             )
-            .unwrap_or( "UNSPECIFIED_DURING_CREATING_FROM_TEMPLATE".to_string() );
+            .unwrap_or( "___UNSPECIFIED___".to_string() );
           ( key.to_owned(), value )
         }
       )
