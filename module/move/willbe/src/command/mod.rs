@@ -74,12 +74,10 @@ pub( crate ) mod private
 
     let d_new = wca::Command::former()
     .hint( "Create deploy template" )
-    .long_hint( "" )
+    .long_hint( "Creates static files and directories.\nDeployment to different hosts is done via Makefile." )
     .phrase( "deploy.renew" )
-    .property( "gcp_project_id", "", Type::String , false )
-    .property( "gcp_region", "", Type::String , false )
-    .property( "gcp_artifact_repo_name", "", Type::String , false )
-    .property( "docker_image_name", "", Type::String , false )
+    .property( "gcp_project_id", "Google Cloud Platform Project id for image deployment, terraform state bucket, and, if specified, GCE instance deployment.", Type::String , false )
+    .property( "gcp_region", "Google Cloud Platform region location. Default: `europe-central2` (Warsaw)", Type::String , true )
     .form();
 
     let readme_header_renew = wca::Command::former()
