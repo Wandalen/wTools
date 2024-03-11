@@ -39,7 +39,7 @@ pub( crate ) mod private
   /// Publish package.
   ///
 
-  pub fn publish( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn publish( args : Args, properties : Props ) -> Result< () >
   {
     let current_path = env::current_dir().unwrap();
 
@@ -175,7 +175,7 @@ pub( crate ) mod private
   ///
   /// Publish packages from workspace.
   ///
-  pub fn workspace_publish( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn workspace_publish( args : Args, properties : Props ) -> Result< () >
   {
     let current_path = env::current_dir().unwrap();
 

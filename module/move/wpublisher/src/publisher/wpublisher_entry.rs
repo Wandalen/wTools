@@ -22,14 +22,9 @@ fn main() -> Result< (), wca::Error >
 {
   let args = env::args().skip( 1 ).collect::< Vec< String > >();
 
-  let ca = wca::CommandsAggregator::former()
-  // .exit_code_on_error( 1 )
-  .grammar( commands::grammar_form() )
-  .executor( commands::executor_form() )
-  .perform();
+  let ca = init::ca().perform();
 
-  let program = args.join( " " );
-  if program.is_empty()
+  if args.is_empty()
   {
     eprintln!( "Ambiguity. Did you mean?" );
     ca.perform( ".help" )?;
@@ -37,7 +32,7 @@ fn main() -> Result< (), wca::Error >
   }
   else
   {
-    ca.perform( program.as_str() )
+    ca.perform( args )
   }
 }
 
