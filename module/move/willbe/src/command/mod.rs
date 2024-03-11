@@ -79,6 +79,8 @@ pub( crate ) mod private
     .phrase( "deploy.renew" )
     .property( "gcp_project_id", "Google Cloud Platform Project id for image deployment, terraform state bucket, and, if specified, GCE instance deployment.", Type::String , false )
     .property( "gcp_region", "Google Cloud Platform region location. Default: `europe-central2` (Warsaw)", Type::String , true )
+    .property( "gcp_artifact_repo_name", "Google Cloud Platform Artifact Repositry to store docker image in. Will be generated from current directory name if unspecified.", Type::String , false )
+    .property( "docker_image_name", "Docker image name to build and deploy. Will be generated from current directory name if unspecified.", Type::String , false )
     .form();
 
     let readme_header_renew = wca::Command::former()
