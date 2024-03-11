@@ -12,5 +12,5 @@ mod grammar;
 mod executor;
 #[ cfg( not( feature = "no_std" ) ) ]
 mod commands_aggregator;
-#[ cfg( not( feature = "no_std" ) ) ]
-mod adapter;
+// #[ cfg( not( feature = "no_std" ) ) ]
+// mod adapter;

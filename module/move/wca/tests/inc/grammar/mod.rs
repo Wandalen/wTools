@@ -1,10 +1,11 @@
 use super::*;
-use wca::
+use TheModule::
 {
   Parser,
   ProgramParser, CommandParser,
 
   Type, Value,
+  Dictionary,
   Verifier,
 };
 

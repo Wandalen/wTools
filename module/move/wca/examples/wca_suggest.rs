@@ -20,29 +20,21 @@
 //! ```
 //!
 
+use wca::{ CommandsAggregator, Args, Props };
+
 fn main()
 {
-  // use wca::prelude::*;
 
-  let ca = wca::CommandsAggregator::former()
-  .grammar
-  ([
-    wca::Command::former()
-    .phrase( "echo" )
+  let ca = CommandsAggregator::former()
+  .command( "echo" )
     .hint( "prints all subjects and properties" )
     .subject( "Subject", wca::Type::String, true )
     .property( "property", "simple property", wca::Type::String, true )
-    .form(),
-  ])
-  .executor
-  ([
-   ( "echo".to_owned(), wca::Routine::new( | ( args, props ) |
+    .routine( | args : Args, props : Props |
     {
       println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
-      Ok( () )
     })
-  ),
-  ])
+    .end()
   .perform();
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();

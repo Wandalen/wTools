@@ -109,7 +109,6 @@ pub( crate ) mod private
   #[ perform( fn build() -> CommandsAggregator ) ]
   pub struct CommandsAggregator
   {
-    #[ setter( false ) ]
     #[ default( Dictionary::default() ) ]
     dictionary : Dictionary,
 
@@ -162,6 +161,7 @@ pub( crate ) mod private
 
   impl CommandsAggregatorFormer
   {
+    // qqq : delete on completion
     // /// Setter for grammar
     // ///
     // /// Gets list of available commands
@@ -243,7 +243,7 @@ pub( crate ) mod private
     /// Construct CommandsAggregator
     fn build( self ) -> CommandsAggregator
     {
-      let mut ca = self;
+      // let mut ca = self;
 
       // if ca.help_variants.contains( &HelpVariants::All )
       // {
@@ -259,7 +259,7 @@ pub( crate ) mod private
       //
       // dot_command( &mut ca.dictionary );
 
-      ca
+      self
     }
 
     /// Parse, converts and executes a program

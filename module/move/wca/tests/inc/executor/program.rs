@@ -10,30 +10,28 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let verifier = Verifier::former()
+    let dictionary = &Dictionary::former()
     .command
     (
       wca::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
+      .routine( || println!( "hello" ) )
       .form()
     )
     .form();
+    let verifier = Verifier;
 
     // init executor
     let executor = Executor::former().form();
-    let executor_converter = ExecutorConverter::former()
-    .routine( "command", Routine::new( | _ | { println!( "hello" ); Ok( () ) } ) )
-    .form();
 
-    // existed command | unknown command will fails on converter
+    // existed command | unknown command will fail on converter
     let raw_program = parser.program( ".command" ).unwrap();
-    let grammar_program = verifier.to_program( raw_program ).unwrap();
-    let exec_program = executor_converter.to_program( grammar_program ).unwrap();
+    let grammar_program = verifier.to_program( dictionary, raw_program ).unwrap();
 
     // execute the command
-    a_true!( executor.program( exec_program ).is_ok() );
+    a_true!( executor.program( dictionary, grammar_program ).is_ok() );
   }
 
   fn with_context()
@@ -44,13 +42,21 @@ tests_impls!
     let parser = Parser::former().form();
 
     // init converter
-    let verifier = Verifier::former()
+    let dictionary = &Dictionary::former()
     .command
     (
       wca::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "inc" )
+      .routine
+      (
+        | ctx : Context |
+        ctx
+        .get_mut()
+        .ok_or_else( || "Have no value" )
+        .and_then( | x : &mut i32 | { *x += 1; Ok( () ) } )
+      )
       .form()
     )
     .command
@@ -60,9 +66,26 @@ tests_impls!
       .long_hint( "long_hint" )
       .phrase( "eq" )
       .subject( "number", Type::Number, true )
+      .routine
+      (
+        | ctx : Context, args : Args |
+        ctx
+        .get_ref()
+        .ok_or_else( || "Have no value".to_string() )
+        .and_then
+        (
+          | &x : &i32 |
+          {
+            let y : i32 = args.get( 0 ).ok_or_else( || "Missing subject".to_string() ).unwrap().to_owned().into();
+
+            if dbg!( x ) != y { Err( format!( "{} not eq {}", x, y ) ) } else { Ok( () ) }
+          }
+        )
+      )
       .form()
     )
     .form();
+    let verifier = Verifier;
 
     // starts with 0
     let mut ctx = wca::Context::default();
@@ -71,54 +94,18 @@ tests_impls!
     let executor = Executor::former()
     .context( ctx )
     .form();
-    let executor_converter = ExecutorConverter::former()
-    .routine
-    (
-      "inc",
-      Routine::new_with_ctx
-      (
-        | _, ctx |
-        ctx
-        .get_mut()
-        .ok_or_else( || err!( "Have no value" ) )
-        .and_then( | x : &mut i32 | { *x += 1; Ok( () ) } )
-      )
-    )
-    .routine
-    (
-      "eq",
-      Routine::new_with_ctx
-      (
-        | ( args, _ ), ctx |
-        ctx
-        .get_ref()
-        .ok_or_else( || err!( "Have no value" ) )
-        .and_then
-        (
-          | &x : &i32 |
-          {
-            let y : i32 = args.get( 0 ).ok_or_else::<Error, _>( || err!( "" ) ).unwrap().to_owned().into();
-
-            if dbg!( x ) != y { Err( err!( "{} not eq {}", x, y ) ) } else { Ok( () ) }
-          }
-        )
-      )
-    )
-    .form();
 
     // value in context = 0
     let raw_program = parser.program( ".eq 1" ).unwrap();
-    let grammar_program = verifier.to_program( raw_program ).unwrap();
-    let exec_program = executor_converter.to_program( grammar_program ).unwrap();
+    let grammar_program = verifier.to_program( dictionary, raw_program ).unwrap();
 
-    a_true!( executor.program( exec_program ).is_err() );
+    a_true!( executor.program( dictionary, grammar_program ).is_err() );
 
     // value in context = 1 + 1 + 1 = 3
     let raw_program = parser.program( ".eq 0 .inc .inc .eq 2" ).unwrap();
-    let grammar_program = verifier.to_program( raw_program ).unwrap();
-    let exec_program = executor_converter.to_program( grammar_program ).unwrap();
+    let grammar_program = verifier.to_program( dictionary, raw_program ).unwrap();
 
-    a_true!( executor.program( exec_program ).is_ok() );
+    a_true!( executor.program( dictionary, grammar_program ).is_ok() );
   }
 }
 

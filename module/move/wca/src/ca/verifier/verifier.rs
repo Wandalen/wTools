@@ -3,7 +3,7 @@ pub( crate ) mod private
   use crate::*;
 
   use ca::grammar::command::ValueDescription;
-  use former::Former;
+  // use former::Former;
   use std::collections::HashMap;
   use wtools::{ error, error::Result, err };
 
@@ -40,6 +40,7 @@ pub( crate ) mod private
   #[ derive( Debug, Clone ) ]
   // #[ derive( Former ) ]
   pub struct Verifier;
+  // qqq : delete on completion
   // {
   //   // TODO: Make getters
   //   /// all available commands
