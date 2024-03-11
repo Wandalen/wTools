@@ -11,30 +11,6 @@ pub( crate ) mod private
 
   /// Executor that is responsible for executing the program's commands.
   /// It uses the given `Context` to store and retrieve values during runtime.
-  ///
-  /// It takes an `ExecutableCommand_` which contains subjects and properties that will be passed to the callback function of the associated command's routine.
-  ///
-  /// # Example:
-  ///
-  /// ```
-  /// # use wca::{ Executor, ExecutableCommand_, Routine, Value };
-  /// # use std::collections::HashMap;
-  /// let executor = Executor::former().form();
-  ///
-  /// let executable_command = ExecutableCommand_
-  /// {
-  ///   subjects : vec![ Value::String( "subject_value".to_string() ), /* ... */ ],
-  ///   properties : HashMap::from_iter
-  ///   ([
-  ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
-  ///     /* ... */
-  ///   ]),
-  ///   routine : Routine::new( |( args, props )| Ok( () ) )
-  /// };
-  ///
-  /// assert!( executor.command( executable_command ).is_ok() );
-  /// ```
-  ///
   #[ derive( Debug, former::Former ) ]
   pub struct Executor
   {

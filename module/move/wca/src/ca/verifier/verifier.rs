@@ -11,19 +11,13 @@ pub( crate ) mod private
   /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.
   ///
   /// ```
-  /// # use wca::{ Command, Type, Verifier, ParsedCommand };
+  /// # use wca::{ Command, Type, Verifier, Dictionary, ParsedCommand };
   /// # use std::collections::HashMap;
   /// # fn main() -> Result< (), Box< dyn std::error::Error > >
   /// # {
-  /// let grammar = Verifier::former()
-  /// .command
-  /// (
-  ///   Command::former()
-  ///   .hint( "hint" )
-  ///   .long_hint( "long_hint" )
-  ///   .phrase( "command" )
-  ///   .form()
-  /// )
+  /// # let verifier = Verifier;
+  /// let dictionary = Dictionary::former()
+  /// .command( Command::former().phrase( "command" ).form() )
   /// .form();
   ///
   /// let raw_command = ParsedCommand
@@ -33,7 +27,7 @@ pub( crate ) mod private
   ///   properties: HashMap::new(),
   /// };
   ///
-  /// let grammar_command = grammar.to_command( raw_command )?;
+  /// let grammar_command = verifier.to_command( &dictionary, raw_command )?;
   /// # Ok( () )
   /// # }
   /// ```

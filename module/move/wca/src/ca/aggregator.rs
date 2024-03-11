@@ -77,27 +77,16 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// use wca::{ CommandsAggregator, Command, Routine, Type };
+  /// use wca::{ CommandsAggregator, Args, Props, Type };
   ///
   /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
   /// let ca = CommandsAggregator::former()
-  /// .grammar(
-  /// [
-  ///   Command::former()
-  ///   .phrase( "echo" )
+  /// .command( "echo" )
   ///   .hint( "prints all subjects and properties" )
-  ///   .subject( "argument", Type::String, false )
-  ///   .property( "property", "simple property", Type::String, false )
-  ///   .form(),
-  /// ])
-  /// .executor(
-  /// [
-  ///   ( "echo".to_owned(), Routine::new( |( args, props )|
-  ///   {
-  ///     println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
-  ///     Ok( () )
-  ///   })),
-  /// ])
+  ///   .subject().hint( "argument" ).kind( Type::String ).optional( false ).end()
+  ///   .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( false ).end()
+  ///   .routine( | args : Args, props : Props | println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) )
+  ///   .end()
   /// .perform();
   ///
   /// ca.perform( ".echo something" )?;

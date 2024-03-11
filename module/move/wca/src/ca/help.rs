@@ -280,15 +280,15 @@ pub( crate ) mod private
   ///
   /// ```
   /// # use wca::ca::help::HelpGeneratorFn;
-  /// use wca::{ Verifier, Command };
+  /// use wca::{ Command, Dictionary };
   ///
-  /// fn my_help_generator( grammar : &Verifier, command : Option< &Command > ) -> String
+  /// fn my_help_generator( grammar : &Dictionary, command : Option< &Command > ) -> String
   /// {
   ///   format!( "Help content based on grammar and command" )
   /// }
   ///
   /// let help_fn = HelpGeneratorFn::new( my_help_generator );
-  /// # let grammar = &Verifier::former().form();
+  /// # let grammar = &Dictionary::former().form();
   ///
   /// help_fn.exec( grammar, None );
   /// // or
