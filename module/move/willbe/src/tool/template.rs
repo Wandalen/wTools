@@ -117,11 +117,23 @@ mod private
       .collect()
     }
 
+    /// Inserts new value if parameter wasn't initialized before.
     pub fn insert_if_empty( &mut self, key : &str, value : Value )
     {
       if let None = self.0.get( key ).and_then( | v | v.as_ref() )
       {
         self.0.insert( key.into() , Some( value ) );
+      }
+    }
+
+    /// Interactively asks user to provide value for a parameter.
+    pub fn interactive_if_empty( &mut self, key : &str )
+    {
+      if let None = self.0.get( key ).and_then( | v | v.as_ref() )
+      {
+        println! ("Parameter `{key}` is not set" );
+        let answer = wca::ask( "Enter value" );
+        self.0.insert( key.into(), Some( Value::String( answer ) ) );
       }
     }
   }
