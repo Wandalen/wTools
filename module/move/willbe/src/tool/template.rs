@@ -116,6 +116,14 @@ mod private
       )
       .collect()
     }
+
+    pub fn insert_if_empty( &mut self, key : &str, value : Value )
+    {
+      if let None = self.0.get( key ).and_then( | v | v.as_ref() )
+      {
+        self.0.insert( key.into() , Some( value ) );
+      }
+    }
   }
 
   /// File descriptor for the template.
