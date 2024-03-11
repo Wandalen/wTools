@@ -5,11 +5,12 @@ use TheModule::
   Parser,
 
   CommandsAggregator,
-  // HelpVariants,
+  HelpVariants,
+  Type,
   Error,
   ValidationError,
 };
 
 mod basic;
 mod callback;
-// mod help;
+mod help;

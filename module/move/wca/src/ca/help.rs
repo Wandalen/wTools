@@ -50,8 +50,9 @@ pub( crate ) mod private
     let cmd = Command::former()
     .hint( "prints all available commands" )
     .phrase( "" )
-    .subject( "command name", Type::String, true )
-    .property( "command_prefix", "", Type::String, true )
+    .subject().hint( "command name" ).kind( Type::String ).optional( true ).end()
+    // qqq : missing hint
+    .property( "command_prefix" ).hint( "?" ).kind( Type::String ).optional( true ).end()
     .routine( routine )
     .form();
 
@@ -166,7 +167,11 @@ pub( crate ) mod private
       };
       let help = Command::former()
       .hint( "prints information about existing commands" )
-      .property( "format", "help generates in format witch you write", Type::String, true )
+      .property( "format" )
+        .hint( "help generates in format witch you write" )
+        .kind( Type::String )
+        .optional( true )
+        .end()
       .phrase( &phrase )
       .routine( routine )
       .form();
@@ -206,8 +211,8 @@ pub( crate ) mod private
 
       let help = Command::former()
       .hint( "prints full information about a specified command" )
-      .subject( "command name", Type::String, true )
-      .property( "format", "help generates in format witch you write", Type::String, true )
+      .subject().hint( "command name" ).kind( Type::String ).optional( true ).end()
+      .property( "format" ).hint( "help generates in format witch you write" ).kind( Type::String ).optional( true ).end()
       .phrase( &phrase )
       .routine( routine )
       .form();

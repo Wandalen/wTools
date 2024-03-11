@@ -17,36 +17,23 @@ tests_impls!
     a_id!( (), ca.perform( ".command" ).unwrap() ); // Parse -> Validate -> Execute
   }
 
-  // fn with_only_general_help()
-  // {
-  //   let ca = CommandsAggregator::former()
-  //   .grammar( // list of commands -> Collect all to Verifier
-  //   [
-  //     wca::Command::former()
-  //     .hint( "hint" )
-  //     .long_hint( "long_hint" )
-  //     .phrase( "command" )
-  //     .form(),
-  //     wca::Command::former()
-  //     .hint( "hint" )
-  //     .long_hint( "long_hint" )
-  //     .phrase( "command2" )
-  //     .form(),
-  //   ])
-  //   .executor( // hashmap of routines -> ExecutorConverter
-  //   [
-  //     ( "command".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
-  //     ( "command2".to_owned(), Routine::new( | _ | { println!( "Command2" ); Ok( () ) } ) ),
-  //   ])
-  //   .help_variants([ HelpVariants::General ])
-  //   .perform();
-  //
-  //   a_id!( (), ca.perform( ".help" ).unwrap() ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
-  //
-  //   a_true!( ca.perform( ".help command" ).is_err() );
-  //
-  //   a_true!( ca.perform( ".help.command" ).is_err() );
-  // }
+  fn with_only_general_help()
+  {
+    let ca = CommandsAggregator::former()
+    .command( "command" )
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .routine( || println!( "Command" ) )
+      .end()
+    .help_variants([ HelpVariants::General ])
+    .perform();
+
+    a_id!( (), ca.perform( ".help" ).unwrap() ); // raw string -> GrammarProgram -> ExecutableProgram -> execute
+
+    a_true!( ca.perform( ".help command" ).is_err() );
+
+    a_true!( ca.perform( ".help.command" ).is_err() );
+  }
 
   fn custom_parser()
   {
@@ -65,36 +52,28 @@ tests_impls!
 
     a_id!( (), ca.perform( "-command" ).unwrap() );
   }
-  //
-  // fn dot_command()
-  // {
-  //   let ca = CommandsAggregator::former()
-  //   .grammar(
-  //   [
-  //     wca::Command::former()
-  //     .hint( "hint" )
-  //     .long_hint( "long_hint" )
-  //     .phrase( "cmd.first" )
-  //     .form(),
-  //     wca::Command::former()
-  //     .hint( "hint" )
-  //     .long_hint( "long_hint" )
-  //     .phrase( "cmd.second" )
-  //     .form(),
-  //   ])
-  //   .executor(
-  //   [
-  //     ( "cmd.first".to_owned(), Routine::new( | _ | { println!( "Command" ); Ok( () ) } ) ),
-  //     ( "cmd.second".to_owned(), Routine::new( | _ | { println!( "Command2" ); Ok( () ) } ) ),
-  //   ])
-  //   .perform();
-  //
-  //   a_id!( (), ca.perform( "." ).unwrap() );
-  //   a_id!( (), ca.perform( ".cmd." ).unwrap() );
-  //
-  //   a_true!( ca.perform( ".c." ).is_err() );
-  // }
-  //
+
+  fn dot_command()
+  {
+    let ca = CommandsAggregator::former()
+    .command( "cmd.first" )
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .routine( || println!( "Command" ) )
+      .end()
+    .command( "cmd.second" )
+      .hint( "hint" )
+      .long_hint( "long_hint" )
+      .routine( || println!( "Command2" ) )
+      .end()
+    .perform();
+
+    a_id!( (), ca.perform( "." ).unwrap() );
+    a_id!( (), ca.perform( ".cmd." ).unwrap() );
+
+    a_true!( ca.perform( ".c." ).is_err() );
+  }
+
   fn error_types()
   {
     let ca = CommandsAggregator::former()
@@ -151,7 +130,7 @@ tests_impls!
     .command( "command" )
       .hint( "hint" )
       .long_hint( "long_hint" )
-      .subject( "A path to directory.", TheModule::Type::Path, true )
+      .subject().hint( "A path to directory." ).kind( Type::Path ).optional( true ).end()
       .routine( || println!( "hello" ) )
       .end()
     .perform();
@@ -182,8 +161,8 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "Any string.", TheModule::Type::String, true )
-      .property( "nightly", "Some property.", TheModule::Type::String, true )
+      .subject().hint( "Any string." ).kind( Type::String ).optional( true ).end()
+      .property( "nightly" ).hint( "Some property." ).kind( Type::String ).optional( true ).end()
       .routine( || println!( "hello" ) )
       .form()
     )
@@ -212,7 +191,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "Any string.", TheModule::Type::String, true )
+      .subject().hint( "Any string." ).kind( Type::String ).optional( true ).end()
       .routine( || println!( "hello" ) )
       .form()
     )
@@ -242,8 +221,8 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "Any string.", TheModule::Type::String, true )
-      .property( "nightly", "Some property.", TheModule::Type::String, true )
+      .subject().hint( "Any string." ).kind( Type::String ).optional( true ).end()
+      .property( "nightly" ).hint( "Some property." ).kind( Type::String ).optional( true ).end()
       .routine( || println!( "hello" ) )
       .form()
     )
@@ -270,9 +249,9 @@ tests_impls!
 tests_index!
 {
   simple,
-  // with_only_general_help,
+  with_only_general_help,
   custom_parser,
-  // dot_command,
+  dot_command,
   error_types,
   path_subject_with_colon,
   string_subject_with_colon,

@@ -20,7 +20,7 @@
 //! ```
 //!
 
-use wca::{ CommandsAggregator, Args, Props };
+use wca::{ CommandsAggregator, Args, Props, Type };
 
 fn main()
 {
@@ -28,8 +28,8 @@ fn main()
   let ca = CommandsAggregator::former()
   .command( "echo" )
     .hint( "prints all subjects and properties" )
-    .subject( "Subject", wca::Type::String, true )
-    .property( "property", "simple property", wca::Type::String, true )
+    .subject().kind( Type::String ).optional( true ).end()
+    .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
     .routine( | args : Args, props : Props |
     {
       println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );

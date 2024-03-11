@@ -19,7 +19,7 @@ pub( crate ) mod private
   /// # use wca::{ Type, ca::grammar::command::ValueDescription };
   /// let value_desc = ValueDescription { kind: Type::String, hint: "Enter your name".to_string(), optional: false };
   /// ```
-  #[ derive( Debug, Clone, PartialEq, Eq ) ]
+  #[ derive( Debug, Clone, PartialEq, Eq, Former ) ]
   pub struct ValueDescription
   {
     /// providing guidance to the user for entering a valid value
@@ -27,8 +27,44 @@ pub( crate ) mod private
     /// expected type of a value
     pub kind : Type,
     /// subject optional parameter
+    #[ default( false ) ]
     pub optional : bool,
   }
+
+  #[ derive( Debug, Former ) ]
+  pub struct PropertyDescription
+  {
+    name : String,
+    // qqq : how to re-use ValueDescriptionFormer without additional end?
+    // value : ValueDescription,
+    /// providing guidance to the user for entering a valid value
+    hint : String,
+    /// expected type of a value
+    kind : Type,
+    /// subject optional parameter
+    #[ default( false ) ]
+    optional : bool,
+    #[ setter( false ) ]
+    #[ default( Vec::new() ) ]
+    properties_aliases : Vec< String >,
+  }
+
+  impl< C, End > PropertyDescriptionFormer< C, End >
+  where
+    End : former::ToSuperFormer< PropertyDescription, C >,
+  {
+    pub fn alias< IntoName >( mut self, name : IntoName ) -> Self
+    where
+      IntoName : Into< String >,
+    {
+      let mut aliases = self.container.properties_aliases.unwrap_or_default();
+      aliases.push( name.into() );
+      self.container.properties_aliases = Some( aliases );
+
+      self
+    }
+  }
+
 
   /// Command descriptor.
   ///
@@ -42,7 +78,9 @@ pub( crate ) mod private
   /// .hint( "hint" )
   /// .long_hint( "long_hint" )
   /// .phrase( "command" )
-  /// .subject( "subject", Type::String, false )
+  /// .subject()
+  ///   .kind( Type::String )
+  ///   .end()
   /// .form();
   /// ```
 
@@ -74,44 +112,10 @@ pub( crate ) mod private
     pub routine : Routine,
   }
 
-  impl< Context, End >
-  CommandFormer< Context, End >
+  impl< Context, End > CommandFormer< Context, End >
   where
     End : former::ToSuperFormer< Command, Context >,
   {
-    /// Setter for separate properties.
-    pub fn subject< S : Into< String > >( mut self, hint : S, kind : Type, optional : bool ) -> Self
-    {
-      let hint = hint.into();
-      let subject = ValueDescription { hint, kind, optional };
-
-      let mut subjects = self.container.subjects.unwrap_or_default();
-
-      subjects.push( subject );
-
-      self.container.subjects = Some( subjects );
-      self
-    }
-
-    /// Setter for separate properties.
-    pub fn property< S : AsRef< str >, H : Into< String > >( mut self, key : S, hint : H, kind : Type, optional : bool ) -> Self
-    {
-      let key = key.as_ref();
-      let hint = hint.into();
-      let property = ValueDescription { hint, kind, optional };
-
-      let mut properties = self.container.properties.unwrap_or_default();
-      let properties_aliases = self.container.properties_aliases.unwrap_or_default();
-      debug_assert!( !properties.contains_key( key ), "Property name `{key}` is already used for `{:?}`", properties[ key ] );
-      debug_assert!( !properties_aliases.contains_key( key ), "Name `{key}` is already used for `{}` as alias", properties_aliases[ key ] );
-
-      properties.insert( key.into(), property );
-
-      self.container.properties = Some( properties );
-      self.container.properties_aliases = Some( properties_aliases );
-      self
-    }
-
     /// Setter for separate properties aliases.
     pub fn property_alias< S : Into< String > >( mut self, key : S, alias : S ) -> Self
     {
@@ -162,6 +166,70 @@ pub( crate ) mod private
       let h = f.into();
       self.container.routine = Some( h.into() );
       self
+    }
+  }
+
+  impl< Context, End > CommandFormer< Context, End >
+  where
+    End : former::ToSuperFormer< Command, Context >,
+  {
+    /// Implements the `subject` method for a value.
+    ///
+    /// This method allows chaining, where `subject` is the current value and `ValueDescription` is the super-former.
+    /// It returns a `ValueDescriptionFormer` which can be used to further build the super-former.
+    pub fn subject( self ) -> ValueDescriptionFormer< Self, impl former::ToSuperFormer< ValueDescription, Self > >
+    {
+      let on_end = | subject : ValueDescription, super_former : Option< Self > | -> Self
+      {
+        let mut super_former = super_former.unwrap();
+        let mut subjects = super_former.container.subjects.unwrap_or_default();
+        subjects.push( subject );
+
+        super_former.container.subjects = Some( subjects );
+
+        super_former
+      };
+      ValueDescriptionFormer::begin( Some( self ), on_end )
+    }
+
+    /// Sets the name and other properties of the current property.
+    ///
+    /// This method takes ownership of `self` and the name of the property as input.
+    /// It returns a `PropertyDescriptionFormer` instance that allows chaining of different property
+    /// descriptions.
+    ///
+    /// # Arguments
+    ///
+    /// * `name` - The name of the property. It should implement the `Into<String>` trait.
+    pub fn property< IntoName >( self, name : IntoName ) -> PropertyDescriptionFormer< Self, impl former::ToSuperFormer< PropertyDescription, Self > >
+    where
+      IntoName : Into< String >,
+    {
+      let on_end = | property : PropertyDescription, super_former : Option< Self > | -> Self
+      {
+        let mut super_former = super_former.unwrap();
+        let mut properties = super_former.container.properties.unwrap_or_default();
+        let value = ValueDescription
+        {
+          hint : property.hint,
+          kind : property.kind,
+          optional : property.optional,
+        };
+        debug_assert!( !properties.contains_key( &property.name ), "Property name `{}` is already used for `{:?}`", property.name, properties[ &property.name ] );
+        properties.insert( property.name.clone(), value );
+
+        let mut aliases = super_former.container.properties_aliases.unwrap_or_default();
+        debug_assert!( !aliases.contains_key( &property.name ), "Name `{}` is already used for `{}` as alias", property.name, aliases[ &property.name ] );
+
+        aliases.extend( property.properties_aliases.into_iter().map( | alias | ( alias, property.name.clone() ) ) );
+
+        super_former.container.properties = Some( properties );
+        super_former.container.properties_aliases = Some( aliases );
+
+        super_former
+      };
+      let former = PropertyDescriptionFormer::begin( Some( self ), on_end );
+      former.name( name )
     }
   }
 }

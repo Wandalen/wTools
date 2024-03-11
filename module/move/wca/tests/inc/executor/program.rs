@@ -65,7 +65,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "eq" )
-      .subject( "number", Type::Number, true )
+      .subject().hint( "number" ).kind( Type::Number ).optional( true ).end()
       .routine
       (
         | ctx : Context, args : Args |

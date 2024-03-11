@@ -49,7 +49,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "first subject", Type::String, false )
+      .subject().hint( "first subject" ).kind( Type::String ).end()
       .form()
     )
     .form();
@@ -96,7 +96,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "number value", Type::Number, true )
+      .subject().hint( "number value" ).kind( Type::Number ).optional( true ).end()
       .form()
     )
     .form();
@@ -125,7 +125,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "Subjects list", Type::List( Type::String.into(), ',' ), true )
+      .subject().hint( "Subjects list" ).kind( Type::List( Type::String.into(), ',' ) ).optional( true ).end()
       .form()
     )
     .form();
@@ -160,7 +160,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "This subject is optional", Type::String, true )
+      .subject().hint( "This subject is optional" ).kind( Type::String ).optional( true ).end()
       .form()
     )
     .form();
@@ -188,8 +188,8 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .subject( "This subject is optional and type number", Type::Number, true )
-      .subject( "This subject is required and type that accepts the optional one", Type::String, false )
+      .subject().hint( "This subject is optional and type number" ).kind( Type::Number ).optional( true ).end()
+      .subject().hint( "This subject is required and type that accepts the optional one" ).kind( Type::String ).optional( false ).end()
       .form()
     )
     .form();
@@ -227,7 +227,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .property( "prop1", "hint of prop1", Type::String, true )
+      .property( "prop1" ).hint( "hint of prop1" ).kind( Type::String ).optional( true ).end()
       .form()
     )
     .form();
@@ -272,7 +272,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .property( "prop", "Number property", Type::Number, true )
+      .property( "prop" ).hint( "Number property" ).kind( Type::Number ).optional( true ).end()
       .form()
     )
     .form();
@@ -301,7 +301,7 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .property( "prop", "Numbers list property", Type::List( Type::Number.into(), ',' ), true )
+      .property( "prop" ).hint( "Numbers list property" ).kind( Type::List( Type::Number.into(), ',' ) ).optional( true ).end()
       .form()
     )
     .form();
@@ -332,9 +332,13 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .property( "property", "string property", Type::String, true )
-      .property_alias( "property", "prop" )
-      .property_alias( "property", "p" )
+      .property( "property" )
+        .hint( "string property" )
+        .kind( Type::String )
+        .optional( true )
+        .alias( "prop" )
+        .alias( "p" )
+        .end()
       .form()
     )
     .form();
@@ -369,13 +373,8 @@ tests_impls!
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
-      .property( "property", "string property", Type::String, true )
-      // .property( "property", "number property with alredy used name", Type::Number ) // panic because this property name alredy used
-      .property_alias( "property", "p" )
-      // .property_alias( "property", "proposal" ) // panic at next property beacuse this name alredy used as alias
-      .property( "proposal", "string property", Type::String, true )
-      // .property_alias( "proposal", "property" ) // panic because this name alredy used as property name
-      // .property_alias( "proposal", "p" ) // panic because this alias alredy used
+      .property( "property" ).hint( "string property" ).kind( Type::String ).optional( true ).alias( "p" ).end()
+      .property( "proposal" ).hint( "string property" ).kind( Type::String ).optional( true ).end()
       .form()
     )
     .form();

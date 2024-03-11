@@ -7,7 +7,7 @@
 //!
 
 
-use wca::{ Args, Context };
+use wca::{ Args, Context, Type };
 
 fn main()
 {
@@ -15,8 +15,8 @@ fn main()
   let ca = wca::CommandsAggregator::former()
   .command( "echo" )
     .hint( "prints all subjects and properties" )
-    .subject( "Subject", wca::Type::String, true )
-    .property( "property", "simple property", wca::Type::String, true )
+    .subject().kind( Type::String ).optional( true ).end()
+    .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
     .routine( | args : Args, props | { println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) } )
     .end()
   .command( "inc" )
@@ -25,7 +25,7 @@ fn main()
     .end()
   .command( "error" )
     .hint( "prints all subjects and properties" )
-    .subject( "Error message", wca::Type::String, true )
+    .subject().kind( Type::String ).optional( true ).end()
     .routine( | args : Args | { println!( "Returns an error" ); Err( format!( "{}", args.get_owned::< String >( 0 ).unwrap_or_default() ) ) } )
     .end()
   .command( "exit" )
