@@ -21,10 +21,7 @@ pub( crate ) mod private
   {
     let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
 
-    let ca = wca::CommandsAggregator::former()
-    // .exit_code_on_error( 1 )
-    .grammar( command::grammar_form() )
-    .executor( command::executor_form() )
+    let ca = command::ca()
     .help_variants( [ wca::HelpVariants::General, wca::HelpVariants::SubjectCommand ] )
     .perform();
 

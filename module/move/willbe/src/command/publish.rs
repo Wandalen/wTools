@@ -11,7 +11,7 @@ mod private
   /// Publish package.
   ///
 
-  pub fn publish( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn publish( args : Args, properties : Props ) -> Result< () >
   {
     let patterns : Vec< _ > = args.get_owned( 0 ).unwrap_or_else( || vec![ "./".into() ] );
 
@@ -21,7 +21,7 @@ mod private
 
     match action::publish( patterns, dry )
     {
-      core::result::Result::Ok( report ) =>
+      Ok( report ) =>
       {
         println!( "{report}" );
 

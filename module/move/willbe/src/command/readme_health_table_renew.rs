@@ -7,7 +7,7 @@ mod private
   ///
   /// Generate table.
   ///
-  pub fn readme_health_table_renew( ( _, _ ) : ( wca::Args, wca::Props ) ) -> Result< () >
+  pub fn readme_health_table_renew() -> Result< () >
   {
     action::readme_health_table_renew( &std::env::current_dir()? ).context( "Fail to create table" )
   }

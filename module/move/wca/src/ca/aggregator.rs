@@ -138,6 +138,11 @@ pub( crate ) mod private
   where
     End : former::ToSuperFormer< CommandsAggregator, Context >,
   {
+    /// Creates a command in the command chain.
+    ///
+    /// # Arguments
+    ///
+    /// * `name` - The name of the command.
     pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::ToSuperFormer< Command, Self > >
     where
       IntoName : Into< String >,
@@ -289,6 +294,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   exposed use CommandsAggregator;
+  exposed use CommandsAggregatorFormer;
   exposed use Error;
   exposed use ValidationError;
 }
