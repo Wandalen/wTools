@@ -60,7 +60,8 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .long_hint(
       concat!
       (
-        "Add file with feeds configurations. Subject: path to config file.\n",
+        "Add toml file with feeds configurations. Subject: path to config file.\n",
+        "    File content: list of \n",
         "    Example: .config.add ./config/feeds.toml",
       )
     )
@@ -88,6 +89,28 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     )
     .form(),
     wca::Command::former()
+    .phrase( "tables.list" )
+    .long_hint(
+      concat!
+      (
+        "List all tables saved in storage.\n",
+        "    Example: .tables.list",
+      )
+    )
+    .form(),
+    wca::Command::former()
+    .phrase( "table.list" )
+    .long_hint(
+      concat!
+      (
+        "List fields of specified table.\n",
+        "Subject: table name.\n",
+        "    Example: .table.list feed",
+      )
+    )
+    .subject( "Name", wca::Type::String, false )
+    .form(),
+    wca::Command::former()
     .phrase( "query.execute" )
     .long_hint
     ( 
@@ -96,10 +119,10 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
         "Execute custom query. Subject: query string, with special characters escaped.\n",
         "    Example query:\n",
         "  - select all frames:\n",
-        r#"    .query.execute \'SELECT \* FROM Frames\'"#,
+        r#"    .query.execute \'SELECT \* FROM frame\'"#,
         "\n",
         "  - select title and link to the most recent frame:\n",
-        r#"    .query.execute \'SELECT title, links, MIN\(published\) FROM Frames\'"#,
+        r#"    .query.execute \'SELECT title, links, MIN\(published\) FROM frame\'"#,
         "\n\n",
       )
     )
@@ -108,7 +131,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   ] )
   .executor
   ( [
-    ( "frames.download".to_owned(), wca::Routine::new(| ( _args, _props ) |
+    ( "frames.download".to_owned(), wca::Routine::new( | ( _args, _props ) |
     {
       let report = update_feed();
       if report.is_ok()
@@ -123,7 +146,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       Ok( () )
     } ) ),
 
-    ( "fields.list".to_owned(), wca::Routine::new(| ( _args, _props ) |
+    ( "fields.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
     {
       let report = list_fields();
       if report.is_ok()
@@ -138,7 +161,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       Ok( () )
     } ) ),
 
-    ( "frames.list".to_owned(), wca::Routine::new(| ( _args, _props ) |
+    ( "frames.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
     {
       let report = list_frames();
       if report.is_ok()
@@ -153,7 +176,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       Ok( () )
     } ) ),
 
-    ( "feeds.list".to_owned(), wca::Routine::new(| ( _args, _props ) |
+    ( "feeds.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
     {
       let report = list_feeds();
       if report.is_ok()
@@ -168,7 +191,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       Ok( () )
     } ) ),
 
-    ( "config.list".to_owned(), wca::Routine::new(| ( _args, _props ) |
+    ( "config.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
     {
       let report = list_subscriptions();
       if report.is_ok()
@@ -183,7 +206,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       Ok( () )
     } ) ),
 
-    ( "config.add".to_owned(), wca::Routine::new(| ( args, _props ) |
+    ( "config.add".to_owned(), wca::Routine::new( | ( args, _props ) |
     {
       if let Some( path ) = args.get_owned::< wca::Value >( 0 )
       {
@@ -200,8 +223,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 
       Ok( () )
     } ) ),
-
-    ( "config.delete".to_owned(), wca::Routine::new(| ( args, _props ) |
+    ( "config.delete".to_owned(), wca::Routine::new( | ( args, _props ) |
     {
       if let Some( path ) = args.get_owned( 0 )
       {
@@ -218,7 +240,37 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 
       Ok( () )
     } ) ),
-    ( "query.execute".to_owned(), wca::Routine::new(| ( args, _props ) |
+    ( "table.list".to_owned(), wca::Routine::new( | ( args, _props ) |
+    {
+      if let Some( table_name ) = args.get_owned::< String >( 0 )
+      {
+        let report = list_columns( table_name );
+        if report.is_ok()
+        {
+          report.unwrap().report();
+        }
+        else
+        {
+          println!( "{}", report.unwrap_err() );
+        }
+      }
+      Ok( () )
+    } ) ),
+    ( "tables.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
+    {
+      let report = list_tables();
+      if report.is_ok()
+      {
+        report.unwrap().report();
+      }
+      else
+      {
+        println!( "{}", report.unwrap_err() );
+      }
+
+      Ok( () )
+    } ) ),
+    ( "query.execute".to_owned(), wca::Routine::new( | ( args, _props ) |
     {
       if let Some( query ) = args.get_owned::< Vec::< String > >( 0 )
       {
@@ -293,7 +345,7 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
     for i in  0..subscriptions.len()
     {
       let feed = self.client.fetch( subscriptions[ i ].link.clone() ).await?;
-      feeds.push( ( feed, subscriptions[ i ].period.clone() ) );
+      feeds.push( ( feed, subscriptions[ i ].update_period.clone() ) );
     }
     self.storage.process_feeds( feeds ).await
   }
@@ -441,6 +493,46 @@ pub fn list_subscriptions() -> Result< impl Report, Box< dyn std::error::Error +
 
     let mut manager = FeedManager::new( feed_storage );
     manager.storage.list_subscriptions().await
+  } )
+}
+
+pub fn list_tables() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+{
+  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+  .unwrap_or( String::from( "./_data" ) )
+  ;
+
+  let config = Config::default()
+  .path( path_to_storage )
+  ;
+
+  let rt  = tokio::runtime::Runtime::new()?;
+  rt.block_on( async move
+  {
+    let feed_storage = FeedStorage::init_storage( config ).await?;
+
+    let mut manager = FeedManager::new( feed_storage );
+    manager.storage.list_tables().await
+  } )
+}
+
+pub fn list_columns( table_name : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+{
+  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+  .unwrap_or( String::from( "./_data" ) )
+  ;
+
+  let config = Config::default()
+  .path( path_to_storage )
+  ;
+
+  let rt  = tokio::runtime::Runtime::new()?;
+  rt.block_on( async move
+  {
+    let feed_storage = FeedStorage::init_storage( config ).await?;
+
+    let mut manager = FeedManager::new( feed_storage );
+    manager.storage.list_columns( table_name ).await
   } )
 }
 

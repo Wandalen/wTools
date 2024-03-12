@@ -1,9 +1,9 @@
 [[config]]
 name = "bbc" 
-period = "2days" 
+update_period = "1min" 
 link = "https://feeds.bbci.co.uk/news/world/rss.xml"
 
 [[config]]
 name = "times"
-period = "2days"
+update_period = "1min"
 link = "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"

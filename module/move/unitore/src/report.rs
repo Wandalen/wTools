@@ -7,7 +7,7 @@ use cli_table::
   format::{ Separator, Border},
 };
 
-const EMPTY_CELL : &'static str = "  ";
+const EMPTY_CELL : &'static str = "";
 
 /// Information about result of execution of command for frames.
 #[ derive( Debug ) ]
@@ -50,14 +50,64 @@ impl std::fmt::Display for FramesReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    writeln!( f, "\n" )?;
-    writeln!( f, "Feed id: {}", self.feed_title )?;
+    // writeln!( f, "Feed title: {}", self.feed_title )?;
+
+    // let mut rows = vec![
+    //   vec![ EMPTY_CELL.cell(), format!( "Updated frames: {}", self.updated_frames ).cell() ],
+    //   vec![ EMPTY_CELL.cell(), format!( "Inserted frames: {}", self.new_frames ).cell() ],
+    //   vec![ EMPTY_CELL.cell(), format!( "Number of frames in storage: {}", self.existing_frames ).cell() ],
+    // ];
+
+    // if !self.selected_frames.selected_columns.is_empty()
+    // {
+    //   rows.push( vec![ EMPTY_CELL.cell(), format!( "Selected frames:" ).cell() ] );
+
+    //   let mut row = vec![ EMPTY_CELL.cell() ];
+      
+    //   for frame in &self.selected_frames.selected_rows
+    //   {
+    //     for i in 0..self.selected_frames.selected_columns.len()
+    //     {
+    //       let inner_row = vec!
+    //       [
+    //         EMPTY_CELL.cell(),
+    //         EMPTY_CELL.cell(),
+    //         self.selected_frames.selected_columns[ i ].clone().cell(),
+    //         textwrap::fill( &String::from( frame[ i ].clone() ), 120 ).cell(),
+    //       ];
+    //       inner_rows.push( new_row );
+    //     }
+        
+    //     let table_struct = inner_rows.table()
+    //     .border( Border::builder().build() )
+    //     .separator( Separator::builder().build() )
+    //     ;
+        
+    
+    //     let table = table_struct.display().unwrap();
+    //     println!( "{}", table );
+    
+    //     row.push( table.to_string().cell() );
+      
+    //   }
+    //   rows.push( row );
+    // }
+    // let table_struct = rows.table()
+    // .border( Border::builder().build() )
+    // .separator( Separator::builder().build() );
+
+    // let table = table_struct.display().unwrap(); 
+
+    // writeln!( f, "{}", table )?;
+
+
+
     writeln!( f, "Updated frames: {}", self.updated_frames )?;
     writeln!( f, "Inserted frames: {}", self.new_frames )?;
     writeln!( f, "Number of frames in storage: {}", self.existing_frames )?;
     if !self.selected_frames.selected_columns.is_empty()
     {
-      writeln!( f, "\nSelected frames:" )?;
+      writeln!( f, "Selected frames:" )?;
       for frame in &self.selected_frames.selected_rows
       {
         let mut rows = Vec::new();
@@ -77,7 +127,7 @@ impl std::fmt::Display for FramesReport
     
         let table = table_struct.display().unwrap(); 
     
-        writeln!( f, "{}\n", table )?;
+        writeln!( f, "{}", table )?;
       }
     }
 
@@ -180,8 +230,8 @@ impl std::fmt::Display for FeedsReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    writeln!( f, "\n\n\nSelected feeds:" )?;
-    if !self.selected_entries.selected_columns.is_empty()
+    writeln!( f, "Selected feeds:" )?;
+    if !self.selected_entries.selected_rows.is_empty()
     {
       let mut rows = Vec::new();
       for row in &self.selected_entries.selected_rows
@@ -202,7 +252,7 @@ impl std::fmt::Display for FeedsReport
     }
     else
     {
-      writeln!( f, "No items found!" )?;
+      writeln!( f, "No items currently in storage!" )?;
     }
 
     Ok( () )
@@ -407,7 +457,6 @@ impl std::fmt::Display for UpdateReport
       "Total feeds with updated or new frames : {}",
       self.0.iter().filter( | fr_report | fr_report.updated_frames + fr_report.new_frames > 0 ).count()
     )?;
-    writeln!( f, "" )?;
     writeln!( f, "Total new frames : {}", self.0.iter().fold( 0, | acc, fr_report | acc + fr_report.new_frames ) )?;
     writeln!( f, "Total updated frames : {}", self.0.iter().fold( 0, | acc, fr_report | acc + fr_report.updated_frames ) )?;
 
@@ -447,3 +496,82 @@ impl std::fmt::Display for ListReport
 }
 
 impl Report for ListReport {}
+
+#[ derive( Debug ) ]
+pub struct TablesReport
+{
+  tables : std::collections::HashMap< String, Vec< String > >
+}
+
+impl TablesReport
+{
+  pub fn new( payload : Vec< Payload > ) -> Self
+  {
+    let mut result = std::collections::HashMap::new();
+    match &payload[ 0 ]
+    {
+      Payload::Select { labels: _label_vec, rows: rows_vec } =>
+      {
+        for row in rows_vec
+        {
+          let table = String::from( row[ 0 ].clone() );
+          result.entry( table )
+          .and_modify( | vec : &mut Vec< String > | vec.push( String::from( row[ 1 ].clone() ) ) )
+          .or_insert( vec![ String::from( row[ 1 ].clone() ) ] )
+          ;
+        }
+      },
+      _ => {},
+    }
+    TablesReport{ tables : result }
+  }
+}
+
+impl std::fmt::Display for TablesReport
+{
+  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  {
+    writeln!( f, "Storage tables:" )?;
+    let mut rows = Vec::new();
+    for ( table_name, columns ) in &self.tables
+    {
+      let columns_str = if !columns.is_empty()
+      {
+        let first = columns[ 0 ].clone();
+        columns.iter().skip( 1 ).fold( first, | acc, val | format!( "{}, {}", acc, val ) )
+      }
+      else
+      {
+        String::from( "No columns" )
+      };
+
+      rows.push
+      (
+        vec!
+        [
+          EMPTY_CELL.cell(),
+          table_name.cell(),
+          columns_str.cell(),
+        ]
+      );
+    }
+
+    let table_struct = rows.table()
+    .border( Border::builder().build() )
+    .separator( Separator::builder().build() )
+    .title( vec!
+    [
+      EMPTY_CELL.cell(),
+      "name".cell().bold( true ),
+      "columns".cell().bold( true ),
+    ] );
+
+    let table = table_struct.display().unwrap(); 
+
+    writeln!( f, "{}", table )?;
+
+    Ok( () )
+  }
+}
+
+impl Report for TablesReport {}

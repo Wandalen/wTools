@@ -42,7 +42,7 @@ async fn test_save_feed_plain() -> Result< (), Box< dyn std::error::Error + Sync
 
   let feed_config = SubscriptionConfig
   {
-    period : std::time::Duration::from_secs( 1000 ),
+    update_period : std::time::Duration::from_secs( 1000 ),
     link : String::from( "test" ),
   };
 

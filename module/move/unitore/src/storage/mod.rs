@@ -22,6 +22,7 @@ use crate::report::{
   ConfigReport,
   UpdateReport,
   ListReport,
+  TablesReport,
 };
 use wca::wtools::Itertools;
 
@@ -138,6 +139,12 @@ pub trait FeedStore
 
   /// List subscriptions.
   async fn list_subscriptions( &mut self ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >;
+
+  /// List tables in storage.
+  async fn list_tables( &mut self ) -> Result< TablesReport, Box< dyn std::error::Error + Send + Sync > >;
+
+  /// List columns of table.
+  async fn list_columns( &mut self, table_name : String ) -> Result< TablesReport, Box< dyn std::error::Error + Send + Sync > >;
 }
 
 #[ async_trait::async_trait( ?Send ) ]
@@ -157,6 +164,27 @@ impl FeedStore for FeedStorage< SledStorage >
     let payloads = glue.execute( &query ).await?;
 
     let report = QueryReport { result : payloads };
+
+    Ok( report )
+  }
+
+  async fn list_tables( &mut self ) -> Result< TablesReport, Box< dyn std::error::Error + Send + Sync > >
+  {
+    let glue = &mut *self.storage.lock().await;
+    let payloads = glue.execute( "SELECT * FROM GLUE_TABLE_COLUMNS" ).await?;
+
+    let report = TablesReport::new( payloads );
+
+    Ok( report )
+  }
+
+  async fn list_columns( &mut self, table_name : String ) -> Result< TablesReport, Box< dyn std::error::Error + Send + Sync > >
+  {
+    let glue = &mut *self.storage.lock().await;
+    let query_str = format!( "SELECT * FROM GLUE_TABLE_COLUMNS WHERE TABLE_NAME='{}'", table_name );
+    let payloads = glue.execute( &query_str ).await?;
+
+    let report = TablesReport::new( payloads );
 
     Ok( report )
   }
