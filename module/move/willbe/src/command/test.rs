@@ -32,7 +32,7 @@ mod private
   }
 
   /// run tests in specified crate
-  pub fn test( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn test( args : Args, properties : Props ) -> Result< () >
   {
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;

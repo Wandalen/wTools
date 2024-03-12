@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::SetComponent;
+use former::{ SetComponent, SetWithType };
 
 ///
 /// Options1
@@ -73,32 +73,6 @@ where
       field2,
     }
   }
-}
-
-///
-/// Set with type.
-///
-
-pub trait SetWithType
-{
-  fn set_with_type< T, IntoT >( &mut self, component : IntoT )
-  where
-    IntoT : Into< T >,
-    Self : former::SetComponent< T, IntoT >;
-}
-
-impl SetWithType for Options2
-{
-
-  #[ inline( always ) ]
-  fn set_with_type< T, IntoT >( &mut self, component : IntoT )
-  where
-    IntoT : Into< T >,
-    Self : former::SetComponent< T, IntoT >,
-  {
-    former::SetComponent::< T, IntoT >::set( self, component );
-  }
-
 }
 
 //

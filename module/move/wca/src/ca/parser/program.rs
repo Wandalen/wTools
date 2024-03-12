@@ -1,12 +1,12 @@
 pub( crate ) mod private
 {
-  use crate::
-  {
-    Program, Namespace, ParsedCommand,
+  use crate::*;
+  use {
+    Program, ParsedCommand,
     Parser,
-    ca::parser::namespace::private::NamespaceParserFn, wtools,
+    ca::parser::command::CommandParserFn,
+    wtools::{ error::Result, err },
   };
-  use wtools::{ error::Result, err };
   use nom::
   {
     character::complete::anychar,
@@ -19,13 +19,13 @@ pub( crate ) mod private
   pub trait ProgramParser
   {
     /// Parses program from string
-    fn program( &self, input : &str ) -> Result< Program< Namespace< ParsedCommand > > >;
+    fn program( &self, input : &str ) -> Result< Program< ParsedCommand > >;
   }
 
-  type ProgramParserFunction< 'a > = Box< dyn Fn( &str ) -> IResult< &str, Program< Namespace< ParsedCommand > > > + 'a >;
+  type ProgramParserFunction< 'a > = Box< dyn Fn( &str ) -> IResult< &str, Program< ParsedCommand > > + 'a >;
 
   /// Can be used as function to parse a Namespace
-  pub( crate ) trait ProgramParserFn : NamespaceParserFn
+  pub( crate ) trait ProgramParserFn : CommandParserFn
   {
     /// Returns function that can parse a Namespace
     fn program_fn( &self ) -> ProgramParserFunction< '_ >
@@ -35,9 +35,9 @@ pub( crate ) mod private
         move | input : &str |
         map( many_till
         (
-          self.namespace_fn(),
+          self.command_fn(),
           not( anychar )
-        ), |( namespaces, _ )| Program { namespaces }
+        ), |( commands, _ )| Program { commands }
         )( input )
       )
     }
@@ -47,7 +47,7 @@ pub( crate ) mod private
 
   impl ProgramParser for Parser
   {
-    fn program< 'a >( &'a self, input : &'a str ) -> Result< Program< Namespace< ParsedCommand > > >
+    fn program< 'a >( &'a self, input : &'a str ) -> Result< Program< ParsedCommand > >
     {
       self.program_fn()( input.trim() )
       .map( |( _, program )| program )

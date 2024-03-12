@@ -1,10 +1,9 @@
 pub( crate ) mod private
 {
   use crate::*;
-  // use super::super::*;
 
   use ca::grammar::command::ValueDescription;
-  use former::Former;
+  // use former::Former;
   use std::collections::HashMap;
   use wtools::{ error, error::Result, err };
 
@@ -12,19 +11,13 @@ pub( crate ) mod private
   /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.
   ///
   /// ```
-  /// # use wca::{ Command, Type, Verifier, ParsedCommand };
+  /// # use wca::{ Command, Type, Verifier, Dictionary, ParsedCommand };
   /// # use std::collections::HashMap;
   /// # fn main() -> Result< (), Box< dyn std::error::Error > >
   /// # {
-  /// let grammar = Verifier::former()
-  /// .command
-  /// (
-  ///   Command::former()
-  ///   .hint( "hint" )
-  ///   .long_hint( "long_hint" )
-  ///   .phrase( "command" )
-  ///   .form()
-  /// )
+  /// # let verifier = Verifier;
+  /// let dictionary = Dictionary::former()
+  /// .command( Command::former().phrase( "command" ).form() )
   /// .form();
   ///
   /// let raw_command = ParsedCommand
@@ -34,87 +27,79 @@ pub( crate ) mod private
   ///   properties: HashMap::new(),
   /// };
   ///
-  /// let grammar_command = grammar.to_command( raw_command )?;
+  /// let grammar_command = verifier.to_command( &dictionary, raw_command )?;
   /// # Ok( () )
   /// # }
   /// ```
   #[ derive( Debug, Clone ) ]
-  #[ derive( Former ) ]
-  pub struct Verifier
-  {
-    // TODO: Make getters
-    /// all available commands
-    #[ setter( false ) ]
-    pub commands : HashMap< String, Vec< Command > >, // qqq : for Bohdan : <- introduce Dictionary for HashMap< String, Vec< Command > >
-  }
+  // #[ derive( Former ) ]
+  pub struct Verifier;
+  // qqq : delete on completion
+  // {
+  //   // TODO: Make getters
+  //   /// all available commands
+  //   #[ setter( false ) ]
+  //   pub commands : &'a Dictionary, // qqq : for Bohdan : <- introduce Dictionary for HashMap< String, Vec< Command > >
+  // }
 
-  impl VerifierFormer
-  {
-    /// Insert a command to the commands list
-    pub fn command( mut self, command : Command ) -> Self
-    {
-      let mut commands = self.container.commands.unwrap_or_default();
-
-      let command_variants = commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
-      command_variants.push( command );
-
-      self.container.commands = Some( commands );
-      self
-    }
-
-    /// Expands the list of commands with received commands
-    pub fn commands< V >( mut self, commands : V ) -> Self
-    where
-      V : Into< Vec< Command > >
-    {
-      let mut self_commands = self.container.commands.unwrap_or_default();
-
-      for command in commands.into()
-      {
-        let command_variants = self_commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
-        command_variants.push( command );
-      }
-
-      self.container.commands = Some( self_commands );
-      self
-    }
-  }
+  // impl VerifierFormer
+  // {
+  //   /// Insert a command to the commands list
+  //   pub fn command( mut self, command : Command ) -> Self
+  //   {
+  //     let mut commands = self.container.commands.unwrap_or_default();
+  //
+  //     let command_variants = commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
+  //     command_variants.push( command );
+  //
+  //     self.container.commands = Some( commands );
+  //     self
+  //   }
+  //
+  //   /// Expands the list of commands with received commands
+  //   pub fn commands< V >( mut self, commands : V ) -> Self
+  //   where
+  //     V : Into< Vec< Command > >
+  //   {
+  //     let mut self_commands = self.container.commands.unwrap_or_default();
+  //
+  //     for command in commands.into()
+  //     {
+  //       let command_variants = self_commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
+  //       command_variants.push( command );
+  //     }
+  //
+  //     self.container.commands = Some( self_commands );
+  //     self
+  //   }
+  // }
 
   impl Verifier
   {
     /// Converts raw program to grammatically correct
     ///
     /// Converts all namespaces into it with `to_namespace` method.
-    pub fn to_program( &self, raw_program : Program< Namespace< ParsedCommand > > )
-    -> Result< Program< Namespace< VerifiedCommand > > >
+    pub fn to_program
+    (
+      &self,
+      dictionary : &Dictionary,
+      raw_program : Program< ParsedCommand >
+    )
+    -> Result< Program< VerifiedCommand > >
     {
-      let namespaces = raw_program.namespaces
+      let commands = raw_program.commands
       .into_iter()
-      .map( | n | self.to_namespace( n ) )
-      .collect::< Result< Vec< Namespace< VerifiedCommand > > > >()?;
-
-      Ok( Program { namespaces } )
-    }
-
-    // qqq : for Bohdan : probably rdundant
-    /// Converts raw namespace to grammatically correct
-    ///
-    /// Converts all commands into it with `to_command` method.
-    pub fn to_namespace( &self, raw_namespace : Namespace< ParsedCommand > ) -> Result< Namespace< VerifiedCommand > >
-    {
-      let commands = raw_namespace.commands
-      .into_iter()
-      .map( | c | self.to_command( c ) )
+      .map( | n | self.to_command( dictionary, n ) )
       .collect::< Result< Vec< VerifiedCommand > > >()?;
 
-      Ok( Namespace { commands } )
+      Ok( Program { commands } )
     }
 
     #[ cfg( feature = "on_unknown_suggest" ) ]
-    fn suggest_command( &self, user_input: &str ) -> Option< &str >
+    fn suggest_command< 'a >( dictionary : &'a Dictionary, user_input: &str ) -> Option< &'a str >
     {
       let jaro = eddie::JaroWinkler::new();
-      let sim = self
+      let sim = dictionary
       .commands
       .iter()
       .map( |( name, c )| ( jaro.similarity( name, user_input ), c ) )
@@ -123,7 +108,7 @@ pub( crate ) mod private
       {
         if sim > 0.0
         {
-          let phrase = &variant[ 0 ].phrase;
+          let phrase = &variant.phrase;
           return Some( phrase );
         }
       }
@@ -133,7 +118,7 @@ pub( crate ) mod private
 
     fn find_variant< 'a >
     (
-      variants: &'a [ Command ],
+      variants: &'a Command,
       raw_command : &ParsedCommand,
     ) -> Option< &'a Command >
     {
@@ -146,7 +131,7 @@ pub( crate ) mod private
         properties_aliases,
         ..
       }
-      in variants
+      in [ variants ]
       {
         let raw_subjects_count = raw_command.subjects.len();
         let expected_subjects_count = subjects.len();
@@ -251,15 +236,15 @@ pub( crate ) mod private
     /// Converts raw command to grammatically correct
     ///
     /// Make sure that this command is described in the grammar and matches it(command itself and all it options too).
-    pub fn to_command( &self, raw_command : ParsedCommand ) -> Result< VerifiedCommand >
+    pub fn to_command( &self, dictionary : &Dictionary, raw_command : ParsedCommand ) -> Result< VerifiedCommand >
     {
-      let variants = self.commands.get( &raw_command.name )
+      let variants = dictionary.command( &raw_command.name )
       .ok_or_else::< error::for_app::Error, _ >
       (
         ||
         {
           #[ cfg( feature = "on_unknown_suggest" ) ]
-          if let Some( phrase ) = self.suggest_command( &raw_command.name )
+          if let Some( phrase ) = Self::suggest_command( dictionary, &raw_command.name )
           { return err!( "Command not found. Maybe you mean `.{}`?", phrase ) }
           err!( "Command not found. Please use `.` command to see the list of available commands." )
         }
@@ -271,7 +256,8 @@ pub( crate ) mod private
         (
           "`{}` command with specified subjects not found. Available variants `{:#?}`",
           &raw_command.name,
-          variants.iter()
+          [ variants ]
+          .into_iter()
           .map
           (
             | x |
