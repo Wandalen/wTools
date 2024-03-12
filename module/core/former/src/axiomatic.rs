@@ -23,6 +23,7 @@ pub trait ToSuperFormer< T, Context >
   ///
   /// # Returns
   /// Returns the transformed or original context based on the implementation.
+  #[ allow( dead_code ) ]
   fn call( &self, container : T, context : core::option::Option< Context > ) -> Context;
 }
 

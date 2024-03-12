@@ -9,7 +9,7 @@ pub struct Struct1< 'a >
 
 impl< 'a > Struct1< 'a >
 {
-  #[inline]
+  #[ inline ]
   pub fn former() -> Struct1Former< 'a >
   {
     Struct1Former
@@ -26,7 +26,7 @@ pub struct Struct1Former< 'a >
 
 impl< 'a > Struct1Former< 'a >
 {
-  #[inline]
+  #[ inline ]
   pub fn form( mut self ) -> Struct1< 'a >
   {
     let string_slice_1 = if self.string_slice_1.is_some()
@@ -41,7 +41,7 @@ impl< 'a > Struct1Former< 'a >
     Struct1 { string_slice_1 }
   }
 
-  #[inline]
+  #[ inline ]
   pub fn string_slice_1< Src >( mut self, src : Src ) -> Self
   where
     Src : ::core::convert::Into< &'a str >,

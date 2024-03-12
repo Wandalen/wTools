@@ -11,23 +11,27 @@ mod private
   /// Publish package.
   ///
 
-  pub fn publish( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn publish( args : Args, properties : Props ) -> Result< () >
   {
     let patterns : Vec< _ > = args.get_owned( 0 ).unwrap_or_else( || vec![ "./".into() ] );
 
-    let dry: bool = properties
+    let dry : bool = properties
     .get_owned( "dry" )
     .unwrap_or( true );
 
-    match endpoint::publish( patterns, dry )
+    let temp : bool = properties
+    .get_owned( "temp" )
+    .unwrap_or( true );
+
+    match action::publish( patterns, dry, temp )
     {
-      core::result::Result::Ok( report ) =>
+      Ok( report ) =>
       {
         println!( "{report}" );
 
         if dry && report.packages.iter().find( |( _, p )| p.publish_required ).is_some()
         {
-          println!( "To perform actual publishing, call the command with `dry:0` property." )
+          println!( "To perform actual publishing, call the command with `dry : 0` property." )
         }
 
         Ok( () )

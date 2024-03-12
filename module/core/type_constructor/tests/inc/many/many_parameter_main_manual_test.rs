@@ -17,7 +17,7 @@ struct Many< T > ( pub TheModule::_Vec < T > );
 impl< T > core::ops::Deref for Many< T >
 {
   type Target = TheModule::_Vec < T >;
-  #[inline]
+  #[ inline ]
   fn deref( &self) -> & Self::Target
   {
     &self.0
@@ -26,7 +26,7 @@ impl< T > core::ops::Deref for Many< T >
 
 impl< T > core::ops::DerefMut for Many< T >
 {
-  #[inline]
+  #[ inline ]
   fn deref_mut( &mut self) -> & mut Self::Target
   {
     &mut self.0
@@ -49,7 +49,7 @@ where
 
 // impl< T > From < T > for Many< T >
 // {
-//   #[inline]
+//   #[ inline ]
 //   fn from( src : T ) -> Self
 //   {
 //     Self( TheModule::_vec![ src ] )
@@ -59,7 +59,7 @@ where
 // impl < T > From < & T > for Many< T >
 // where T : Clone,
 // {
-//   #[inline]
+//   #[ inline ]
 //   fn from( src : &T ) -> Self
 //   {
 //     Self( TheModule::_vec![ src.clone() ] )
@@ -68,7 +68,7 @@ where
 //
 // impl< T > From < ( T, ) > for Many< T >
 // {
-//   #[inline]
+//   #[ inline ]
 //   fn from( src : ( T, ) ) -> Self
 //   {
 //     Self( TheModule::_vec![ src.0 ] )
@@ -77,7 +77,7 @@ where
 //
 // impl < T, const N : usize > From < [T ; N] > for Many< T >
 // {
-//   #[inline]
+//   #[ inline ]
 //   fn from( src : [ T ; N ] ) -> Self
 //   {
 //     Self( TheModule::_Vec::from( src ) )
@@ -86,7 +86,7 @@ where
 //
 // impl< T > From < &[ T ] > for Many< T > where T : Clone,
 // {
-//   #[inline]
+//   #[ inline ]
 //   fn from( src : &[ T ] ) -> Self
 //   {
 //     Self( TheModule::_Vec::from( src ) )
@@ -95,7 +95,7 @@ where
 
 impl< T > TheModule::AsSlice< T > for Many< T >
 {
-  #[inline] fn as_slice(& self) -> &[ T ]
+  #[ inline ] fn as_slice(& self) -> &[ T ]
   {
     &self[ .. ]
   }
@@ -106,7 +106,7 @@ TheModule::_if_from!
 
   // impl< T > TheModule::From_0 for Many< T >
   // {
-  //   #[inline]
+  //   #[ inline ]
   //   fn from_0() -> Self
   //   {
   //     Self( TheModule::_Vec::new() )
@@ -115,7 +115,7 @@ TheModule::_if_from!
 
   impl< T > TheModule::From_1 < T > for Many< T >
   {
-    #[inline]
+    #[ inline ]
     fn from_1(_0 : T) -> Self
     {
       Self(TheModule::_vec! [_0])
@@ -124,7 +124,7 @@ TheModule::_if_from!
 
   impl< T > TheModule::From_2 < T, T > for Many< T >
   {
-    #[inline]
+    #[ inline ]
     fn from_2(_0 : T, _1 : T) -> Self
     {
       Self( TheModule::_vec![ _0, _1 ] )
@@ -133,7 +133,7 @@ TheModule::_if_from!
 
   impl< T > TheModule::From_3 < T, T, T > for Many< T >
   {
-    #[inline] fn from_3(_0 : T, _1 : T, _2 : T) -> Self
+    #[ inline ] fn from_3(_0 : T, _1 : T, _2 : T) -> Self
     {
       Self( TheModule::_vec![ _0, _1, _2 ] )
     }

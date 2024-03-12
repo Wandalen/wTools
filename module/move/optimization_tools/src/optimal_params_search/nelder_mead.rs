@@ -11,17 +11,16 @@ use std::
 };
 use deterministic_rand::{ Hrng, Seed, Rng };
 use iter_tools::Itertools;
-use ordered_float::OrderedFloat;
 use rayon::iter::{ IntoParallelIterator, ParallelIterator };
 
 use super::results_serialize::save_result;
 
 /// Represents point in multidimensional space where optimization is performed.
-#[ derive( Debug, Clone, PartialEq, Hash, Eq ) ] 
+#[ derive( Debug, Clone ) ] 
 pub struct Point
 {
   /// Coordinates of the point.
-  pub coords : Vec< OrderedFloat< f64 > >,
+  pub coords : Vec< f64 >,
 }
 
 impl Point
@@ -30,12 +29,6 @@ impl Point
   pub fn new( coords : Vec< f64 > ) -> Self
   {
     Self { coords : coords.into_iter().map( | elem | elem.into() ).collect_vec() }
-  }
-
-  /// Create new point from given coordinates.
-  pub fn new_from_ordered( coords : Vec< OrderedFloat< f64 > > ) -> Self
-  {
-    Self { coords }
   }
 }
 
@@ -76,6 +69,7 @@ pub struct Stats
   pub starting_point : Point,
   pub differences : Vec< Vec< f64 > >,
   pub positive_change : Vec< usize >,
+  pub cached_points : ( usize, usize ),
 }
 
 impl Stats
@@ -83,7 +77,13 @@ impl Stats
   pub fn new( starting_point : Point) -> Self
   {
     let dimensions = starting_point.coords.len();
-    Self { starting_point, differences : vec![ Vec::new(); dimensions ], positive_change : vec![ 0; dimensions ] }
+    Self
+    {
+      starting_point,
+      differences : vec![ Vec::new(); dimensions ],
+      positive_change : vec![ 0; dimensions ],
+      cached_points : ( 0, 0 ),
+    }
   }
 
   pub fn record_diff( &mut self, start_point : &Point, point : &Point )
@@ -141,7 +141,7 @@ pub struct Optimizer< R, F >
   /// Shrinking involves reducing the distance between the vertices of the simplex, making it smaller.
   pub sigma : f64,
   /// Values of objective function calculated in previous executions.
-  pub calculated_results : Option< HashMap< Point, f64 > >,
+  pub calculated_results : Option< HashMap< super::Point, f64 > >,
   /// File for saving values of objective function during optimization process.
   pub save_results_file : Option< Arc< Mutex< File > > >,
   /// Additional constraint for coordinates of function.
@@ -175,7 +175,7 @@ where R : RangeBounds< f64 > + Sync,
   }
 
   /// Add set of previosly calculated values of objective function.
-  pub fn set_calculated_results( &mut self, res : HashMap< Point, f64 > )
+  pub fn set_calculated_results( &mut self, res : HashMap< super::Point, f64 > )
   {
     self.calculated_results = Some( res );
   }
@@ -203,7 +203,7 @@ where R : RangeBounds< f64 > + Sync,
   }
 
   /// Calculate value of objective function at given point or get previously calculated value if such exists.
-  pub fn evaluate_point( &self, p : &Point ) -> f64
+  pub fn evaluate_point( &self, p : &Point, stats : &mut Stats ) -> f64
   {
     if let Constraints::WithConstraints( constraint_vec ) = &self.constraints
     {
@@ -216,18 +216,20 @@ where R : RangeBounds< f64 > + Sync,
 
     if let Some( points ) = &self.calculated_results
     {
-      if let Some( value ) = points.get( &p )
+      if let Some( value ) = points.get( &p.clone().into() )
       {
+        stats.cached_points.0 += 1;
         return *value;
       }
     }
     let result = ( self.objective_function )( p );
+    stats.cached_points.1 += 1;
 
     if let Some( file ) = &self.save_results_file
     {
       _ = save_result
       (
-        p.coords.clone().into_iter().map( | val | val.into_inner() ).collect_vec(),
+        p.clone().into(),
         result,
         file.clone(),
       );
@@ -266,7 +268,7 @@ where R : RangeBounds< f64 > + Sync,
       }
       else 
       {
-        self.start_point.coords = vec![ OrderedFloat( 0.0 ); size.len() ];
+        self.start_point.coords = vec![ 0.0; size.len() ];
       }
     }
 
@@ -351,7 +353,7 @@ where R : RangeBounds< f64 > + Sync,
         }
       }
     }
-    Point::new_from_ordered( coords )
+    Point::new( coords )
   }
 
   fn calculate_regular_simplex( &mut self )
@@ -380,7 +382,7 @@ where R : RangeBounds< f64 > + Sync,
         }
       }
 
-      points.push( Point::new_from_ordered( coords ) )
+      points.push( Point::new( coords ) )
     }
     self.initial_simplex = Simplex { points }
   }
@@ -485,17 +487,17 @@ where R : RangeBounds< f64 > + Sync,
 
     let results = points.into_par_iter().map( | point |
     {
+      let mut stats = Stats::new( point.clone() );
       let x0 = point.clone();
       let dimensions = x0.coords.len();
-      let mut prev_best = self.evaluate_point( &x0 );
+      let mut prev_best = self.evaluate_point( &x0, &mut stats );
       let mut steps_with_no_improv = 0;
       let mut res = vec![ ( x0.clone(), prev_best ) ];
-      let mut stats = Stats::new( point.clone() );
   
       for i in 1..=dimensions
       {
         let x = self.initial_simplex.points[ i ].clone();
-        let score = self.evaluate_point( &x );
+        let score = self.evaluate_point( &x, &mut stats );
         res.push( ( x, score ) );
       }
       let mut iterations = 0;
@@ -540,7 +542,7 @@ where R : RangeBounds< f64 > + Sync,
         }
   
         //centroid
-        let mut x0_center = vec![ OrderedFloat( 0.0 ); dimensions ];
+        let mut x0_center = vec![ 0.0; dimensions ];
         for ( point, _ ) in res.iter().take( res.len() - 1 )
         {
           for ( i, coordinate ) in point.coords.iter().enumerate()
@@ -551,69 +553,74 @@ where R : RangeBounds< f64 > + Sync,
   
         //reflection
         let worst_dir = res.last().clone().unwrap();
-        let mut x_ref = vec![ OrderedFloat( 0.0 ); dimensions ];
+        let mut x_ref = vec![ 0.0; dimensions ];
         for i in 0..dimensions
         {
-          x_ref[ i ] = x0_center[ i ] + OrderedFloat( self.alpha ) * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
+          x_ref[ i ] = x0_center[ i ] + self.alpha * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
         }
         // check if point left the domain, if so, perform projection
-        let x_ref = self.check_bounds( Point::new_from_ordered( x_ref ) );
+        let x_ref = self.check_bounds( Point::new( x_ref ) );
         stats.record_diff( &self.start_point, &x_ref );
   
-        let reflection_score = self.evaluate_point( &x_ref );
+        let reflection_score = self.evaluate_point( &x_ref, &mut stats );
         let second_worst = res[ res.len() - 2 ].1;
         if res[ 0 ].clone().1 <= reflection_score && reflection_score < second_worst
         {
           let prev_point = res.pop().unwrap().0;
           stats.record_positive_change( &prev_point, &x_ref );
           res.push( ( x_ref, reflection_score ) );
+          // log::info!("reflection");
           continue;
         }
   
         //expansion
         if reflection_score < res[ 0 ].1
         {
-          let mut x_exp = vec![ OrderedFloat( 0.0 ); dimensions ];
+          let mut x_exp = vec![ 0.0; dimensions ];
           for i in 0..dimensions
           {
-            x_exp[ i ] = x0_center[ i ] + OrderedFloat( self.gamma ) * ( x_ref.coords[ i ] - x0_center[ i ] );
+            x_exp[ i ] = x0_center[ i ] + self.gamma * ( x_ref.coords[ i ] - x0_center[ i ] );
           }
           // check if point left the domain, if so, perform projection
-          let x_exp = self.check_bounds( Point::new_from_ordered( x_exp ) );
+          let x_exp = self.check_bounds( Point::new( x_exp ) );
           stats.record_diff( &self.start_point, &x_exp );
-          let expansion_score = self.evaluate_point( &x_exp );
+          let expansion_score = self.evaluate_point( &x_exp, &mut stats );
   
           if expansion_score < reflection_score
           {
             let prev_point = res.pop().unwrap().0;
             stats.record_positive_change( &prev_point, &x_exp );
             res.push( ( x_exp, expansion_score ) );
+            // log::info!("expansion");
             continue;
+            
           }
           else 
           {
             let prev_point = res.pop().unwrap().0;
             stats.record_positive_change( &prev_point, &x_ref );
             res.push( ( x_ref, reflection_score ) );
+            // log::info!("expansion");
             continue;
           }
         }
   
         //contraction
-        let mut x_con = vec![ OrderedFloat( 0.0 ); dimensions ];
+        let mut x_con = vec![ 0.0; dimensions ];
         for i in 0..dimensions
         {
-          x_con[ i ] = x0_center[ i ] + OrderedFloat( self.rho ) * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
+          x_con[ i ] = x0_center[ i ] + self.rho * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
         }
-        let x_con = self.check_bounds( Point::new_from_ordered( x_con ) );
+        let x_con = self.check_bounds( Point::new( x_con ) );
         stats.record_diff( &self.start_point, &x_con );
-        let contraction_score = self.evaluate_point( &x_con );
+        let contraction_score = self.evaluate_point( &x_con, &mut stats );
   
         if contraction_score < worst_dir.1
         {
           let prev_point = res.pop().unwrap().0;
           stats.record_positive_change( &prev_point, &x_con );
           res.push( ( x_con, contraction_score ) );
+          // log::info!("contraction");
           continue;
         }
   
@@ -622,17 +629,17 @@ where R : RangeBounds< f64 > + Sync,
         let mut new_res = Vec::new();
         for ( point, _ ) in res
         {
-          let mut x_shrink = vec![ OrderedFloat( 0.0 ); dimensions ];
+          let mut x_shrink = vec![ 0.0; dimensions ];
           for i in 0..dimensions
           {
-            x_shrink[ i ] = x1.coords[ i ] + OrderedFloat( self.sigma ) * ( point.coords[ i ] - x1.coords[ i ] );
+            x_shrink[ i ] = x1.coords[ i ] + self.sigma * ( point.coords[ i ] - x1.coords[ i ] );
           }
-          let x_shrink = self.check_bounds( Point::new_from_ordered( x_shrink ) );
+          let x_shrink = self.check_bounds( Point::new( x_shrink ) );
           stats.record_diff( &self.start_point, &x_shrink );
-          let score = self.evaluate_point( &x_shrink );
+          let score = self.evaluate_point( &x_shrink, &mut stats );
           new_res.push( ( x_shrink, score ) );
         }
-  
+        // log::info!("shrink");
         res = new_res;
       }
     } ).collect::< Vec<_> >();
@@ -645,6 +652,7 @@ where R : RangeBounds< f64 > + Sync,
   /// Optimize provided objective function with using initialized configuration.
   pub fn optimize( &mut self ) -> Result< Solution, Error >
   {
+    let mut stats = Stats::new(  self.start_point.clone() );
     if self.start_point.coords.len() == 0
     {
       self.calculate_start_point();
@@ -663,14 +671,14 @@ where R : RangeBounds< f64 > + Sync,
     let x0 = self.start_point.clone();
     
     let dimensions = x0.coords.len();
-    let mut prev_best = self.evaluate_point( &x0 );
+    let mut prev_best = self.evaluate_point( &x0, &mut stats );
     let mut steps_with_no_improv = 0;
     let mut res = vec![ ( x0.clone(), prev_best ) ];
 
     for i in 1..=dimensions
     {
       let x = self.initial_simplex.points[ i ].clone();
-      let score = self.evaluate_point( &x );
+      let score = self.evaluate_point( &x, &mut stats );
       res.push( ( x, score ) );
     }
     let mut iterations = 0;
@@ -715,7 +723,7 @@ where R : RangeBounds< f64 > + Sync,
       }
 
       //centroid
-      let mut x0_center = vec![ OrderedFloat( 0.0 ); dimensions ];
+      let mut x0_center = vec![ 0.0; dimensions ];
       for ( point, _ ) in res.iter().take( res.len() - 1 )
       {
         for ( i, coordinate ) in point.coords.iter().enumerate()
@@ -726,15 +734,15 @@ where R : RangeBounds< f64 > + Sync,
 
       //reflection
       let worst_dir = res.last().clone().unwrap();
-      let mut x_ref = vec![ OrderedFloat( 0.0 ); dimensions ];
+      let mut x_ref = vec![ 0.0; dimensions ];
       for i in 0..dimensions
       {
-        x_ref[ i ] = x0_center[ i ] + OrderedFloat( self.alpha ) * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
+        x_ref[ i ] = x0_center[ i ] + self.alpha * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
       }
       // check if point left the domain, if so, perform projection
-      let x_ref = self.check_bounds( Point::new_from_ordered( x_ref ) );
+      let x_ref = self.check_bounds( Point::new( x_ref ) );
 
-      let reflection_score = self.evaluate_point( &x_ref );
+      let reflection_score = self.evaluate_point( &x_ref, &mut stats );
       let second_worst = res[ res.len() - 2 ].1;
       if res[ 0 ].clone().1 <= reflection_score && reflection_score < second_worst
       {
@@ -746,14 +754,14 @@ where R : RangeBounds< f64 > + Sync,
       //expansion
       if reflection_score < res[ 0 ].1
       {
-        let mut x_exp = vec![ OrderedFloat( 0.0 ); dimensions ];
+        let mut x_exp = vec![ 0.0; dimensions ];
         for i in 0..dimensions
         {
-          x_exp[ i ] = x0_center[ i ] + OrderedFloat( self.gamma ) * ( x_ref.coords[ i ] - x0_center[ i ] );
+          x_exp[ i ] = x0_center[ i ] + self.gamma * ( x_ref.coords[ i ] - x0_center[ i ] );
         }
         // check if point left the domain, if so, perform projection
-        let x_exp = self.check_bounds( Point::new_from_ordered( x_exp ) );
-        let expansion_score = self.evaluate_point( &x_exp );
+        let x_exp = self.check_bounds( Point::new( x_exp ) );
+        let expansion_score = self.evaluate_point( &x_exp, &mut stats );
 
         if expansion_score < reflection_score
         {
@@ -770,13 +778,13 @@ where R : RangeBounds< f64 > + Sync,
       }
 
       //contraction
-      let mut x_con = vec![ OrderedFloat( 0.0 ); dimensions ];
+      let mut x_con = vec![ 0.0; dimensions ];
       for i in 0..dimensions
       {
-        x_con[ i ] = x0_center[ i ] + OrderedFloat( self.rho ) * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
+        x_con[ i ] = x0_center[ i ] + self.rho * ( x0_center[ i ] - worst_dir.0.coords[ i ] );
       }
-      let x_con = self.check_bounds( Point::new_from_ordered( x_con ) );
-      let contraction_score = self.evaluate_point( &x_con );
+      let x_con = self.check_bounds( Point::new( x_con ) );
+      let contraction_score = self.evaluate_point( &x_con, &mut stats );
 
       if contraction_score < worst_dir.1
       {
@@ -790,13 +798,13 @@ where R : RangeBounds< f64 > + Sync,
       let mut new_res = Vec::new();
       for ( point, _ ) in res
       {
-        let mut x_shrink = vec![ OrderedFloat( 0.0 ); dimensions ];
+        let mut x_shrink = vec![ 0.0; dimensions ];
         for i in 0..dimensions
         {
-          x_shrink[ i ] = x1.coords[ i ] + OrderedFloat( self.sigma ) * ( point.coords[ i ] - x1.coords[ i ] );
+          x_shrink[ i ] = x1.coords[ i ] + self.sigma * ( point.coords[ i ] - x1.coords[ i ] );
         }
-        let x_shrink = self.check_bounds( Point::new_from_ordered( x_shrink ) );
-        let score = self.evaluate_point( &x_shrink );
+        let x_shrink = self.check_bounds( Point::new( x_shrink ) );
+        let score = self.evaluate_point( &x_shrink, &mut stats );
         new_res.push( ( x_shrink, score ) );
       }
 

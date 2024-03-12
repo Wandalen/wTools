@@ -141,7 +141,8 @@ pub( crate ) mod private
 
   pub fn params_names( generics : &syn::Generics ) -> syn::Generics
   {
-    use syn::{ Generics, GenericParam, LifetimeDef, TypeParam, ConstParam };
+    // use syn::{ Generics, GenericParam, LifetimeDef, TypeParam, ConstParam };
+    use syn::{ Generics, GenericParam, LifetimeParam, TypeParam, ConstParam };
 
     let result = Generics
     {
@@ -156,7 +157,7 @@ pub( crate ) mod private
           eq_token : None,
           default : None,
         }),
-        GenericParam::Lifetime( LifetimeDef { lifetime, .. } ) => GenericParam::Lifetime( LifetimeDef
+        GenericParam::Lifetime( LifetimeParam { lifetime, .. } ) => GenericParam::Lifetime( LifetimeParam
         {
           attrs : Vec::new(),
           lifetime : lifetime.clone(),
@@ -181,7 +182,6 @@ pub( crate ) mod private
 
     result
   }
-
 
 }
 
@@ -214,6 +214,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as generics;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::

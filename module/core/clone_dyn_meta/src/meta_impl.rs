@@ -1,6 +1,6 @@
 
 use macro_tools::prelude::*;
-pub type Result< T > = std::result::Result< T, syn::Error >;
+use macro_tools::Result;
 
 //
 
@@ -24,6 +24,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
   {
     #item_parsed
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c, #generics_params > Clone
     for Box< dyn #name_ident< #( #generics_names ),* > + 'c >
     // where
@@ -33,6 +34,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
       fn clone( &self ) -> Self { clone_dyn::_clone_boxed( &**self ) }
     }
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c, #generics_params > Clone
     for Box< dyn #name_ident< #( #generics_names ),* > + Send + 'c >
     // where
@@ -42,6 +44,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
       fn clone( &self ) -> Self { clone_dyn::_clone_boxed( &**self ) }
     }
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c, #generics_params > Clone
     for Box< dyn #name_ident< #( #generics_names ),* > + Sync + 'c >
     // where
@@ -51,6 +54,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
       fn clone( &self ) -> Self { clone_dyn::_clone_boxed( &**self ) }
     }
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c, #generics_params > Clone
     for Box< dyn #name_ident< #( #generics_names ),* > + Send + Sync + 'c >
     // where

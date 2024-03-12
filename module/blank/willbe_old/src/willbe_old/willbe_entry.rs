@@ -25,7 +25,7 @@ fn main() -> error_tools::Result< () >
   let ca = wca::CommandsAggregator::former()
   .grammar( commands::grammar_form() )
   .executor( commands::executor_form() )
-  .build();
+  .perform();
 
   Ok( ca.perform( if args.is_empty() { "".to_owned() } else { args.join( " " ) + " .end" } )? )
 }
