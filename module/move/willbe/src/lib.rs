@@ -19,6 +19,11 @@ pub( crate ) mod private
   /// Do not support interactive mode.
   pub fn run() -> Result< (), wtools::error::for_app::Error >
   {
+    #[ cfg( feature = "tracing" ) ]
+    {
+      tracing_subscriber::fmt().pretty().init();
+    }
+
     let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
 
     let ca = command::ca()
