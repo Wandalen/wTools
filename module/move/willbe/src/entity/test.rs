@@ -66,7 +66,7 @@ mod private
   ///
   /// Returns a `Result` containing a `CmdReport` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn _run< P >( path : P, options : SingleTestOptions, dry : bool ) -> Result< CmdReport >
+  pub fn _run< P >( path : P, options : SingleTestOptions, dry : bool ) -> Result< CmdReport, ( CmdReport, Error ) >
   where
     P : AsRef< Path >
   {
@@ -87,7 +87,7 @@ mod private
     }
     else
     {
-      process::process_run_with_param_and_joined_steams(program, options, path )
+      process::process_run_with_param_and_joined_steams( program, options, path )
     }
   }
 
@@ -136,7 +136,7 @@ mod private
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
     ///   feature names and the values are `CmdReport` structs representing the test results for
     ///   the specific feature and channel.
-    pub tests : BTreeMap< channel::Channel, BTreeMap< String, CmdReport > >,
+    pub tests : BTreeMap< channel::Channel, BTreeMap< String, Result< CmdReport, CmdReport > > >,
   }
 
   impl std::fmt::Display for TestReport
@@ -162,17 +162,20 @@ mod private
         {
           let feature = if feature.is_empty() { "no-features" } else { feature };
           // if tests failed or if build failed
-          if result.out.contains( "failures" ) || result.out.contains( "could not compile" )
+          match result 
           {
-            let mut out = result.out.replace( "\n", "\n      " );
-            out.push_str( "\n" );
-            failed += 1;
-            write!( f, "  [ {} | {} ]: ❌  failed\n  \n{out}", channel, feature )?;
-          }
-          else
-          {
-            success += 1;
-            writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
+            Ok( _ ) => 
+            {
+              success += 1;
+              writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
+            }
+            Err( result ) => 
+            {
+              let mut out = result.out.replace( "\n", "\n      " );
+              out.push_str( "\n" );
+              failed += 1;
+              write!( f, "  [ {} | {} ]: ❌  failed\n  \n{out}", channel, feature )?;
+            }
           }
         }
       }
@@ -299,8 +302,8 @@ mod private
                 }
                 // aaa : for Petro : bad. tooooo long line. cap on 100 ch
                 // aaa : strip
-                let cmd_rep = _run( dir, args_t.form(), dry ).unwrap_or_else( | rep | rep.downcast().unwrap() );
-                r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep );
+                let cmd_rep = _run( dir, args_t.form(), dry );
+                r.lock().unwrap().tests.entry( channel ).or_default().insert( feature.iter().join( "," ), cmd_rep.map_err( | e | e.0 ) );
               }
             );
           }
@@ -310,7 +313,7 @@ mod private
 
     // unpack. all tasks must be completed until now
     let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
-    let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.out.contains( "failures" ) || r.out.contains( "could not compile" ) );
+    let at_least_one_failed = report.tests.iter().flat_map( | ( _, v ) | v.iter().map( | ( _, v ) | v ) ).any( | r | r.is_err() );
     if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
   }
 

@@ -48,7 +48,15 @@ rand = "0.8.5"
 statrs = "0.16.0"
 faer = { version = "0.16.0", features = [ "ndarray" ] }
 ndarray = "0.15.6"
-plotters = { version = "0.3.5" }
+plotters = { version = "0.3.5", default-features=false, features = [
+  "bitmap_encoder",
+  "ttf",
+  "area_series",
+  "point_series",
+  "line_series",
+  "full_palette",
+  "bitmap_backend",
+] }
 plotters-backend = { version = "0.3.5", optional = true }
 piston_window = { version = "0.120.0", optional = true }
 exmex = { version = "0.18.0", features = [ "partial" ], optional = true }

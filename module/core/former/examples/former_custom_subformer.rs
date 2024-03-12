@@ -1,6 +1,10 @@
 //! example of how to use former of another structure as subformer of former of current one
 //! function `command` integrate `CommandFormer` into `AggregatorFormer`.
 
+#[ cfg( not( feature = "derive_former" ) ) ]
+fn main() {}
+
+#[ cfg( feature = "derive_former" ) ]
 fn main()
 {
   use std::collections::HashMap;

@@ -197,6 +197,8 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as isolate;
+
   use super::private as i;
 
   pub use i::IsolateOptionsAdapter;

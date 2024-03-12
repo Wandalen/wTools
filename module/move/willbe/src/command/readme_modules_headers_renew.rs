@@ -5,7 +5,7 @@ mod private
   use wtools::error::{ for_app::Context, Result };
 
   /// Generate headers for workspace members
-  pub fn readme_modules_headers_renew( ( _, _ ) : ( wca::Args, wca::Props ) ) -> Result< () >
+  pub fn readme_modules_headers_renew() -> Result< () >
   {
     action::readme_modules_headers_renew( AbsolutePath::try_from( std::env::current_dir()? )? ).context( "Fail to generate headers" )
   }

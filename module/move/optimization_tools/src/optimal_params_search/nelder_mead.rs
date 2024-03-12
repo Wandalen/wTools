@@ -841,18 +841,6 @@ pub enum TerminationReason
   NoImprovement,
 }
 
-// impl std::fmt::Display for TerminationReason
-// {
-//   fn fmt( &self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-//   {
-//     match self
-//     {
-//       Self::MaxIterations => write!( f, "Exceeded max number of total iterations" ),
-//       Self::NoImprovement => write!( f, "Exceeded max number of iterations without improvement" ),
-//     }
-//   }
-// }
-
 /// Possible error when building NMOptimizer.
 #[ derive( thiserror::Error, Debug ) ]
 pub enum Error {
