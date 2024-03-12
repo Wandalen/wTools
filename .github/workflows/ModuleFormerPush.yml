@@ -13,6 +13,5 @@ jobs :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/core/former/Cargo.toml'
-      module_path: 'module/core/former/'
       module_name : 'former'
       commit_message : ${{ github.event.head_commit.message }}

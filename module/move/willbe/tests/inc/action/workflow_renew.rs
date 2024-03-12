@@ -52,7 +52,6 @@ mod workflow_renew
   struct With
   {
     manifest_path : String,
-    module_path : String,
     module_name : String,
     commit_message : String,
   }
@@ -67,7 +66,6 @@ mod workflow_renew
     let with = With
     { 
       manifest_path : "test_module/Cargo.toml".into(),
-      module_path : "test_module/".into(),
       module_name : "test_module".into(),
       commit_message : "${{ github.event.head_commit.message }}".into()
     };

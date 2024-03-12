@@ -13,6 +13,5 @@ jobs :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/alias/wproc_macro/Cargo.toml'
-      module_path: 'module/alias/wproc_macro/'
       module_name : 'wproc_macro'
       commit_message : ${{ github.event.head_commit.message }}

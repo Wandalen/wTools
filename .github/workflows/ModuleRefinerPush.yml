@@ -13,6 +13,5 @@ jobs :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/move/refiner/Cargo.toml'
-      module_path: 'module/move/refiner/'
       module_name : 'refiner'
       commit_message : ${{ github.event.head_commit.message }}

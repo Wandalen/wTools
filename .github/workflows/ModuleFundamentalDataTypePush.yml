@@ -13,6 +13,5 @@ jobs :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/alias/fundamental_data_type/Cargo.toml'
-      module_path: 'module/alias/fundamental_data_type/'
       module_name : 'fundamental_data_type'
       commit_message : ${{ github.event.head_commit.message }}

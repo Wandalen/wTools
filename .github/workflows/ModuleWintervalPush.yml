@@ -13,6 +13,5 @@ jobs :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
       manifest_path : 'module/alias/winterval/Cargo.toml'
-      module_path: 'module/alias/winterval/'
       module_name : 'winterval'
       commit_message : ${{ github.event.head_commit.message }}
