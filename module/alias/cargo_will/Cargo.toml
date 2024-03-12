@@ -32,9 +32,10 @@ use_alloc = []
 enabled = []
 
 [dependencies]
-# willbe = { workspace = true }
+ willbe = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
 
-# qqq : for Petro : make it working
+# aaa : for Petro : make it working
+# aaa : now it`s working
