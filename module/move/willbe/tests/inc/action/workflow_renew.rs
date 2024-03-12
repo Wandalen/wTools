@@ -28,7 +28,7 @@ mod workflow_renew
 
     let temp = assert_fs::TempDir::new().unwrap();
     temp.copy_from( assets_path.join( sample_dir ), &[ "**" ] ).unwrap();
-    create_dir_all(temp.path().join(".github").join("workflows")).unwrap();
+    create_dir_all( temp.path().join( ".github" ).join( "workflows") ).unwrap();
     temp
   }
 
@@ -65,21 +65,21 @@ mod workflow_renew
     let file_path = base_path.join( "ModuleTestModulePush.yml" );
     let with = With
     {
-      manifest_path: "test_module/Cargo.toml".into(),
-      module_name: "test_module".into(),
-      commit_message: "${{ github.event.head_commit.message }}".into()
+      manifest_path : "test_module/Cargo.toml".into(),
+      module_name : "test_module".into(),
+      commit_message : "${{ github.event.head_commit.message }}".into()
     };
     let job = Job
     {
-      uses: "Username/test/.github/workflows/StandardRustPush.yml@alpha".into(),
+      uses : "Username/test/.github/workflows/StandardRustPush.yml@alpha".into(),
       with
     };
     let expected = Workflow
     {
-      name: "test_module".into(),
-      on: "push".into(),
-      env: HashMap::from_iter( [ ( "CARGO_TERM_COLOR".to_string(), "always".to_string() ) ] ),
-      jobs: HashMap::from_iter( [ ( "test".to_string(), job ) ] ),
+      name : "test_module".into(),
+      on : "push".into(),
+      env : HashMap::from_iter( [ ( "CARGO_TERM_COLOR".to_string(), "always".to_string() ) ] ),
+      jobs : HashMap::from_iter( [ ( "test".to_string(), job ) ] ),
     };
 
     // Act
@@ -108,4 +108,5 @@ mod workflow_renew
     assert!( base_path.join( "StatusChecksRulesUpdate.yml" ).exists() );
   }
 }
-// qqq : for Petro : fix styles
+// aaa : for Petro : fix styles
+// aaa : ✅
