@@ -62,7 +62,7 @@ mod private
     }
     else
     {
-      process::run(program, options, args.path )
+      process::run(program, options, args.path, false ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -114,7 +114,7 @@ mod private
     }
     else
     {
-      process::run(program, arguments, args.path )
+      process::run(program, arguments, args.path, false ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 }

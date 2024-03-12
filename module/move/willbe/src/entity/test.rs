@@ -87,7 +87,7 @@ mod private
     }
     else
     {
-      process::process_run_with_param_and_joined_steams( program, options, path )
+      process::run( program, options, path, true )
     }
   }
 

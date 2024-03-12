@@ -29,11 +29,12 @@ fn err_out_err()
 
   let args : [ OsString ; 0 ] = [];
 
-  let report = process::process_run_with_param_and_joined_steams
+  let report = process::run
   (
     path_to_exe( &assets_path.join( "err_out_test" ).join( "err_out_err.rs" ), temp.path() ),
     args,
-    temp.path()
+    temp.path(),
+    true,
   )
   .unwrap()
   .out;
@@ -51,11 +52,12 @@ fn out_err_out()
 
   let args : [ OsString ; 0 ] = [];
 
-  let report = process::process_run_with_param_and_joined_steams
+  let report = process::run
   (
     path_to_exe( &assets_path.join( "err_out_test" ).join( "out_err_out.rs" ), temp.path() ),
     args,
-    temp.path()
+    temp.path(),
+    true,
   )
   .unwrap()
   .out;

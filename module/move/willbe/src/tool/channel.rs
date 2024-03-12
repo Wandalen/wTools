@@ -40,7 +40,7 @@ mod private
     P : AsRef< Path >,
   {
     let ( program, options ) = ( "rustup", [ "toolchain", "list" ] );
-    let report = process::run(program, options, path )?;
+    let report = process::run(program, options, path, false ).map_err( | ( report, err ) | err.context( report ) )?;
 
     let list = report
     .out

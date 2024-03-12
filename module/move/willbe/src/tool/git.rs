@@ -41,7 +41,7 @@ mod private
     }
     else
     {
-      process::run( program, args, path )
+      process::run( program, args, path, false ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -79,7 +79,7 @@ mod private
     }
     else
     {
-      process::run(program, args, path )
+      process::run(program, args, path, false ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -115,7 +115,7 @@ mod private
     }
     else
     {
-      process::run(program, args, path )
+      process::run( program, args, path, false ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -134,7 +134,7 @@ mod private
   {
     let ( program, args ) = ( "git", [ "ls-remote", "--get-url" ] );
 
-    process::run(program, args, path )
+    process::run(program, args, path, false ).map_err( | ( report, err ) | err.context( report ) )
   }
 }
 
