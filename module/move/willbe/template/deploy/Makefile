@@ -1,6 +1,13 @@
 .PHONY: deploy
 
-export SECRET_CSP_HETZNER ?= $(shell cat key/SECRET_CSP_HETZNER)
+SERVICE_KEY_ERROR := $(shell [ ! -f key/service_account.json ] && echo "ERROR: File key/service_account.json does not exist")
+STATE_KEY_ERROR := $(shell [ ! -f key/SECRET_STATE_ARCHIVE_KEY ] && echo "ERROR: File key/SECRET_STATE_ARCHIVE_KEY does not exist")
+HETZNER_KEY_ERROR := $(shell [ ! -f key/SECRET_CSP_HETZNER ] && echo "ERROR: File key/SECRET_CSP_HETZNER does not exist")
+
+# Hetzner API token
+export SECRET_CSP_HETZNER ?= $(shell cat key/SECRET_CSP_HETZNER 2> /dev/null)
+# Cloud Storage file encryption key
+export SECRET_STATE_ARCHIVE_KEY ?= $(shell cat key/SECRET_STATE_ARCHIVE_KEY 2> /dev/null)
 
 # Base terraform directory
 export tf_dir ?= deploy
@@ -18,14 +25,36 @@ export tag ?= $(TF_VAR_REGION)-docker.pkg.dev/$(TF_VAR_PROJECT_ID)/$(TF_VAR_REPO
 export google_sa_creds ?= key/service_account.json
 # Zone location for the resource
 export TF_VAR_ZONE ?= $(TF_VAR_REGION)-a
-# Cloud Storage file encryption key
-export SECRET_STATE_ARCHIVE_KEY ?= $(shell cat key/SECRET_STATE_ARCHIVE_KEY)
 # Cloud Storage bucket name
 export TF_VAR_BUCKET_NAME ?= uaconf_tfstate
 # Hetzner Cloud auth token
 export TF_VAR_HCLOUD_TOKEN ?= $(SECRET_CSP_HETZNER)
 # Specifies where to deploy the project. Possible values: `hetzner`, `gce`
 export CSP ?= hetzner
+
+# Prints key related errors
+print-key-errors:
+ifneq ($(SERVICE_KEY_ERROR),)
+	@echo $(SERVICE_KEY_ERROR)
+endif
+ifneq ($(STATE_KEY_ERROR),)
+	@echo $(STATE_KEY_ERROR)
+endif
+ifneq ($(HETZNER_KEY_ERROR),)
+	@echo $(HETZNER_KEY_ERROR)
+endif
+
+# Check Hetzner related keys 
+check-hetzner-key: print-key-errors
+ifneq ($(HETZNER_KEY_ERROR),)
+	@exit 1
+endif
+
+# Check if required keys are present
+check-keys: print-key-errors
+ifneq ($(SERVICE_KEY_ERROR),$(STATE_KEY_ERROR))
+	@exit 1
+endif
 
 # Start local docker container
 start:
@@ -98,14 +127,14 @@ create-gce: gcp-service state_storage_pull push-image
 	terraform -chdir=$(tf_dir)/gce apply -auto-approve
 
 # Creates Hetzner instance with the website configured on boot
-create-hetzner: gcp-service state_storage_pull push-image
+create-hetzner: check-hetzner-key gcp-service state_storage_pull push-image
 	terraform -chdir=$(tf_dir)/hetzner apply -auto-approve
 
 # Deploys everything and updates terraform states
 deploy-in-container: create-$(CSP) state_storage_push
 
 # Deploys using tools from the container
-deploy: build-image
+deploy: check-keys build-image
 	docker build . -t deploy-$(TF_VAR_IMAGE_NAME) -f ./$(tf_dir)/Dockerfile --build-arg google_sa_creds="$(google_sa_creds)"
 	@docker run -v //var/run/docker.sock:/var/run/docker.sock -v .:/app -e SECRET_STATE_ARCHIVE_KEY=$(SECRET_STATE_ARCHIVE_KEY) -e TF_VAR_HCLOUD_TOKEN=$(TF_VAR_HCLOUD_TOKEN) -e CSP=$(CSP) --rm deploy-$(TF_VAR_IMAGE_NAME)
 
