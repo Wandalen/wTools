@@ -10,6 +10,7 @@ pub( crate ) mod private
   use wtools::Itertools;
   use std::rc::Rc;
   use error_tools::for_app::anyhow;
+  use former::Former;
 
   // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
 
@@ -50,20 +51,46 @@ pub( crate ) mod private
     let cmd = Command::former()
     .hint( "prints all available commands" )
     .phrase( "" )
-    .subject().hint( "command name" ).kind( Type::String ).optional( true ).end()
-    // qqq : missing hint
-    .property( "command_prefix" ).hint( "?" ).kind( Type::String ).optional( true ).end()
     .routine( routine )
     .form();
 
     dictionary.register( cmd );
   }
 
-  fn generate_help_content( dictionary : &Dictionary, command : Option< &Command > ) -> String
+  #[ derive( Debug, Default, Copy, Clone, PartialEq, Eq ) ]
+  pub enum LevelOfDetail
   {
-    if let Some( command ) = command
+    #[ default ]
+    None,
+    Simple,
+    Detailed,
+  }
+
+  /// Container for arguments passed to a help generator function.
+  #[ derive( Debug, Former ) ]
+  pub struct HelpGeneratorArgs< 'a >
+  {
+    for_command : Option< &'a Command >,
+    subject_detailing : LevelOfDetail,
+    property_detailing : LevelOfDetail,
+    description_detailing : LevelOfDetail,
+    with_details : bool,
+  }
+
+  fn generate_help_content( dictionary : &Dictionary, args : HelpGeneratorArgs< '_ > ) -> String
+  {
+    if let Some( command ) = args.for_command
     {
       let name = &command.phrase;
+      let hint = match args.description_detailing
+      {
+        LevelOfDetail::None => "",
+        _ if command.hint.is_empty() && command.long_hint.is_empty() => "",
+        LevelOfDetail::Simple if !command.hint.is_empty() => command.hint.as_str(),
+        LevelOfDetail::Detailed if !command.long_hint.is_empty() => command.long_hint.as_str(),
+        _ if !command.long_hint.is_empty() => command.long_hint.as_str(),
+        _ if !command.hint.is_empty() => command.hint.as_str(),
+      };
       let hint = if command.long_hint.is_empty() { &command.hint } else { &command.long_hint };
       let subjects = if command.subjects.is_empty() { "" } else { " <subjects> " };
       let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{:?}] {}", subj.hint, subj.kind, if subj.optional { "?" } else { "" } ) ).join( "\n\t" );
@@ -95,7 +122,7 @@ pub( crate ) mod private
   }
 
   /// Available help commands variants
-  #[ derive( Debug, Hash, PartialEq, Eq ) ]
+  #[ derive( Debug, Hash, Eq, PartialEq, Ord, PartialOrd ) ]
   pub enum HelpVariants
   {
     /// Make all available variants
@@ -158,7 +185,7 @@ pub( crate ) mod private
             }
             else
             {
-              println!( "Help command\n{text}", text = generator.exec( &grammar, None ) );
+              println!( "Help command\n{text}", text = generator.exec( &grammar, HelpGeneratorArgs::former().form() ) );
             }
           }
         }
@@ -200,7 +227,8 @@ pub( crate ) mod private
             let command = args.get_owned::< String >( 0 ).unwrap();
             let cmd = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
 
-            let text = generator.exec( &grammar, Some( cmd ) );
+            let args = HelpGeneratorArgs::former().for_command( cmd ).form();
+            let text = generator.exec( &grammar, args );
 
             println!( "{text}" );
           }
@@ -274,12 +302,12 @@ pub( crate ) mod private
     // }
   }
 
-  type HelpFunctionFn = Rc< dyn Fn( &Dictionary, Option< &Command > ) -> String >;
+  type HelpFunctionFn = Rc< dyn Fn( &Dictionary, HelpGeneratorArgs< '_ > ) -> String >;
 
   /// Container for function that generates help string for any command
   ///
   /// ```
-  /// # use wca::ca::help::HelpGeneratorFn;
+  /// # use wca::ca::help::{ HelpGeneratorArgs, HelpGeneratorFn };
   /// use wca::{ Command, Dictionary };
   ///
   /// fn my_help_generator( grammar : &Dictionary, command : Option< &Command > ) -> String
@@ -290,10 +318,10 @@ pub( crate ) mod private
   /// let help_fn = HelpGeneratorFn::new( my_help_generator );
   /// # let grammar = &Dictionary::former().form();
   ///
-  /// help_fn.exec( grammar, None );
+  /// help_fn.exec( grammar, HelpGeneratorArgs::former().form() );
   /// // or
   /// # let cmd = Command::former().form();
-  /// help_fn.exec( grammar, Some( &cmd ) );
+  /// help_fn.exec( grammar, HelpGeneratorArgs::former().for_command( &cmd ).form() );
   /// ```
   #[ derive( Clone ) ]
   pub struct HelpGeneratorFn( HelpFunctionFn );
@@ -311,7 +339,7 @@ pub( crate ) mod private
     /// Wrap a help function
     pub fn new< HelpFunction >( func : HelpFunction ) -> Self
     where
-      HelpFunction : Fn( &Dictionary, Option< &Command > ) -> String + 'static
+      HelpFunction : Fn( &Dictionary, HelpGeneratorArgs< '_ > ) -> String + 'static
     {
         Self( Rc::new( func ) )
     }
@@ -320,9 +348,9 @@ pub( crate ) mod private
   impl HelpGeneratorFn
   {
     /// Executes the function to generate help content
-    pub fn exec( &self, dictionary : &Dictionary, command : Option< &Command > ) -> String
+    pub fn exec( &self, dictionary : &Dictionary, args : HelpGeneratorArgs< '_ > ) -> String
     {
-      self.0( dictionary, command )
+      self.0( dictionary, args )
     }
   }
 
@@ -340,6 +368,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use HelpGeneratorFn;
+  protected use HelpGeneratorArgs;
   protected use dot_command;
   prelude use HelpVariants;
 }

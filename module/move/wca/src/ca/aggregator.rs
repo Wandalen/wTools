@@ -8,7 +8,7 @@ pub( crate ) mod private
     ProgramParser,
     Command,
     grammar::command::private::CommandFormer,
-    help::{ HelpGeneratorFn, HelpVariants, dot_command },
+    help::{ HelpGeneratorFn, HelpGeneratorArgs, HelpVariants, dot_command },
   };
 
   use std::collections::HashSet;
@@ -20,6 +20,7 @@ pub( crate ) mod private
     for_app::Error as wError,
     for_lib::*,
   };
+  use wtools::Itertools;
 
   /// Validation errors that can occur in application.
   #[ derive( Error, Debug ) ]
@@ -200,7 +201,7 @@ pub( crate ) mod private
     /// ```
     pub fn help< HelpFunction >( mut self, func : HelpFunction ) -> Self
     where
-      HelpFunction : Fn( &Dictionary, Option< &Command > ) -> String + 'static
+      HelpFunction : Fn( &Dictionary, HelpGeneratorArgs< '_ > ) -> String + 'static
     {
       self.container.help_generator = Some( HelpGeneratorFn::new( func ) );
       self
@@ -244,7 +245,7 @@ pub( crate ) mod private
       }
       else
       {
-        for help in &ca.help_variants
+        for help in ca.help_variants.iter().sorted()
         {
           help.generate( &ca.help_generator, &mut ca.dictionary );
         }
