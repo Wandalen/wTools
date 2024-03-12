@@ -64,22 +64,22 @@ mod workflow_renew
     let base_path = temp.path().join( ".github" ).join( "workflows" );
     let file_path = base_path.join( "ModuleTestModulePush.yml" );
     let with = With
-    {
-      manifest_path: "test_module/Cargo.toml".into(),
-      module_name: "test_module".into(),
-      commit_message: "${{ github.event.head_commit.message }}".into()
+    { 
+      manifest_path : "test_module/Cargo.toml".into(),
+      module_name : "test_module".into(),
+      commit_message : "${{ github.event.head_commit.message }}".into()
     };
     let job = Job
-    {
-      uses: "Username/test/.github/workflows/StandardRustPush.yml@alpha".into(),
-      with
+    { 
+      uses : "Username/test/.github/workflows/StandardRustPush.yml@alpha".into(),
+      with 
     };
     let expected = Workflow
     {
-      name: "test_module".into(),
-      on: "push".into(),
-      env: HashMap::from_iter( [ ( "CARGO_TERM_COLOR".to_string(), "always".to_string() ) ] ),
-      jobs: HashMap::from_iter( [ ( "test".to_string(), job ) ] ),
+      name : "test_module".into(),
+      on : "push".into(),
+      env : HashMap::from_iter( [ ( "CARGO_TERM_COLOR".to_string(), "always".to_string() ) ] ),
+      jobs : HashMap::from_iter( [ ( "test".to_string(), job ) ] ),
     };
 
     // Act
@@ -89,7 +89,7 @@ mod workflow_renew
     let mut file = File::open( file_path ).unwrap();
     let mut content = String::new();
     _ = file.read_to_string( &mut content ).unwrap();
-    let actual: Workflow = serde_yaml::from_str( &content ).unwrap();
+    let actual : Workflow = serde_yaml::from_str( &content ).unwrap();
     assert_eq!( expected, actual );
 
     assert!( base_path.join( "AppropriateBranch.yml" ).exists() );
