@@ -9,6 +9,7 @@ mod private
     sync::{ Arc, Mutex },
     path::Path,
   };
+  use std::ffi::OsString;
   use std::path::PathBuf;
   use cargo_metadata::Package;
   use colored::Colorize;
@@ -87,7 +88,13 @@ mod private
     }
     else
     {
-      process::run( program, options, path, true )
+      let options = process::RunOptions::former()
+      .application( program )
+      .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .path( path.as_ref().to_path_buf() )
+      .join_steam( true )
+      .form();
+      process::run( options )
     }
   }
 

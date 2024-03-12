@@ -9,9 +9,11 @@ pub( crate ) mod private
     path::{ Path, PathBuf },
     process::{ Command, Stdio },
   };
+  use std::ffi::OsString;
   use duct::cmd;
   use error_tools::err;
   use error_tools::for_app::Error;
+  use former::Former;
   use wtools::
   {
     iter::Itertools,
@@ -50,6 +52,17 @@ pub( crate ) mod private
 
       Ok( () )
     }
+  }
+  
+  /// Option for `run` function
+  #[ derive( Debug, Former ) ]
+  pub struct RunOptions
+  {
+    application : PathBuf,
+    args : Vec< OsString >,
+    path : PathBuf,
+    #[ default( false ) ]
+    join_steam : bool,
   }
 
   ///
@@ -92,8 +105,12 @@ pub( crate ) mod private
     {
       ( "sh", [ "-c", exec_path ] )
     };
-
-    run(program, args, current_path, false )
+    let options = RunOptions::former()
+    .application( program )
+    .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+    .path( current_path )
+    .form();
+    run( options )
   }
 
   ///
@@ -111,25 +128,12 @@ pub( crate ) mod private
   /// # Errors:
   /// Returns an error if the process fails to spawn, complete, or if output
   /// cannot be decoded as UTF-8.
-  pub fn run< AP, Args, Arg, P >
-  (
-    application : AP,
-    args : Args,
-    path : P,
-    join_steam : bool,
-  )
-  -> Result< CmdReport, ( CmdReport, Error ) >
-  where
-    AP : AsRef< Path >,
-    Args : IntoIterator< Item = Arg >,
-    Arg : AsRef< std::ffi::OsStr >,
-    P : AsRef< Path >,
+  pub fn run( options: RunOptions ) -> Result< CmdReport, (CmdReport, Error ) >
   {
-    let ( application, path ) = ( application.as_ref(), path.as_ref() );
-    let args = args.into_iter().map( | a | a.as_ref().into() ).collect::< Vec< std::ffi::OsString > >();
-    if join_steam
+    let ( application, path ) : ( &Path, &Path ) = ( options.application.as_ref(), options.path.as_ref() );
+    if options.join_steam
     {
-      let output = cmd( application.as_os_str(), &args )
+      let output = cmd( application.as_os_str(), &options.args )
       .dir( path )
       .stderr_to_stdout()
       .stdout_capture()
@@ -138,7 +142,7 @@ pub( crate ) mod private
       .map_err( | e | ( Default::default(), e.into() ) )?;
       let report = CmdReport
       {
-        command : format!( "{} {}", application.display(), args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
+        command : format!( "{} {}", application.display(), options.args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
         path : path.to_path_buf(),
         out : String::from_utf8( output.stdout ).context( "Found invalid UTF-8" ).map_err( | e | ( Default::default(), e.into() ) )?,
         err : Default::default(),
@@ -156,7 +160,7 @@ pub( crate ) mod private
     else
     {
       let child = Command::new( application )
-      .args( &args )
+      .args( &options.args )
       .stdout( Stdio::piped() )
       .stderr( Stdio::piped() )
       .current_dir( path )
@@ -171,7 +175,7 @@ pub( crate ) mod private
 
       let report = CmdReport
       {
-        command : format!( "{} {}", application.display(), args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
+        command : format!( "{} {}", application.display(), options.args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
         path : path.to_path_buf(),
         out : String::from_utf8( output.stdout ).context( "Found invalid UTF-8" ).map_err( | e | ( Default::default(), e.into() ) )?,
         err : String::from_utf8( output.stderr ).context( "Found invalid UTF-8" ).map_err( | e | ( Default::default(), e.into() ) )?,
@@ -194,6 +198,7 @@ crate::mod_interface!
   protected use CmdReport;
   protected use run_with_shell;
   protected use run;
+  protected use RunOptions;
   // aaa : for Petro : rid off process_run_with_param_and_joined_steams
   // add functionality of process_run_with_param_and_joined_steams under option/argument into process::run
   // aaa : add bool flag
