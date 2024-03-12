@@ -103,6 +103,8 @@ only_for_terminal_module!
     t.pass( "tests/inc/compiletime/former_hashmap_without_parameter.rs" );
     t.pass( "tests/inc/compiletime/former_vector_without_parameter.rs" );
 
+    //t.compile_fail( "tests/inc/compiletime/components_component_from_debug.rs" );
+
   }
 
 }

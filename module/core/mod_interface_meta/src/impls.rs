@@ -460,7 +460,7 @@ pub( crate ) mod private
 
     if has_debug
     {
-      diag::debug_report_print( original_input, &result );
+      diag::debug_report_print( "derive : mod_interface", original_input, &result );
     }
 
     Ok( result )

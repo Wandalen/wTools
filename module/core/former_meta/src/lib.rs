@@ -20,6 +20,8 @@ mod derive
   pub mod component_from;
   #[ cfg( feature = "derive_set_component" ) ]
   pub mod set_component;
+  #[ cfg( feature = "derive_set_components" ) ]
+  pub mod set_components;
 
 }
 
@@ -278,7 +280,6 @@ pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// ```
 ///
 
-// qqq : xxx : implement debug
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_component_from" ) ]
 #[ proc_macro_derive( ComponentFrom, attributes( debug ) ) ]
@@ -370,13 +371,27 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// This allows any type that can be converted into an `i32` or `String` to be set as
 /// the value of the `age` or `name` fields of `Person` instances, respectively.
 
-// qqq : xxx : implement debug
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_set_component" ) ]
 #[ proc_macro_derive( SetComponent, attributes( debug ) ) ]
 pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::set_component::set_component( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+/// Derives the `SetComponents` trait for a struct, enabling `components_set` which set all fields at once.
+// xxx : extend documentation
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_set_components" ) ]
+#[ proc_macro_derive( SetComponents, attributes( debug ) ) ]
+pub fn set_components( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::set_components::set_components( input );
   match result
   {
     Ok( stream ) => stream.into(),
