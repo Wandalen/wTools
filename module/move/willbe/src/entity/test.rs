@@ -116,7 +116,7 @@ mod private
 
     /// `exclude_features` - A vector of strings, each representing a feature to be excluded during testing.
     pub exclude_features : Vec< String >,
-  
+
     /// 'temp_path' - path to temp directory.
     pub temp_path : Option< PathBuf >,
   }
@@ -167,16 +167,16 @@ mod private
       {
         for ( feature, result ) in features
         {
-          let feature = if feature.is_empty() { "no-features" } else { feature };
+          let feature = if feature.is_empty() { "-" } else { feature };
           // if tests failed or if build failed
-          match result 
+          match result
           {
-            Ok( _ ) => 
+            Ok( _ ) =>
             {
               success += 1;
               writeln!( f, "  [ {} | {} ]: ✅  successful", channel, feature )?;
             }
-            Err( result ) => 
+            Err( result ) =>
             {
               let mut out = result.out.replace( "\n", "\n      " );
               out.push_str( "\n" );
@@ -226,7 +226,7 @@ mod private
     {
       if self.dry
       {
-        writeln!( f, "\nYou can execute the command with the dry-run :0, for example 'will .test dry : 0'." )?;
+        writeln!( f, "\nYou can execute the plan with 'will .test dry : 0'." )?;
         return Ok( () )
       }
       if self.succses_reports.is_empty() && self.failure_reports.is_empty()
@@ -376,7 +376,7 @@ mod private
     {
       for feature in features
       {
-        let feature = if feature.is_empty() { "no-features".to_string() } else { feature.iter().join( "," ) };
+        let feature = if feature.is_empty() { "-".to_string() } else { feature.iter().join( "," ) };
         println!( "  [ channel : {channel} | feature : {feature} ]" );
       }
     }

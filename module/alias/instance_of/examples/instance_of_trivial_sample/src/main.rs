@@ -1,5 +1,4 @@
-//! example
-pub use instance_of::*;
+//! qqq : write proper descriptionpub use instance_of::*;
 
 fn main()
 {

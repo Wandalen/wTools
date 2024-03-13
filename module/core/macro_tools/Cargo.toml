@@ -23,14 +23,11 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-
 exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-no_std = []
-use_alloc = []
 enabled = []
 
 [dependencies]
@@ -39,7 +36,6 @@ enabled = []
 proc-macro2 = { version = "~1.0.78", features = [] }
 quote = { version = "~1.0.35", features = [] }
 syn = { version = "~2.0.52", features = [ "full", "extra-traits" ] }
-# syn = { version = "~1.0", features = [ "full", "extra-traits" ] }
 
 ## internal
 interval_adapter = { workspace = true, features = [ "default" ] }

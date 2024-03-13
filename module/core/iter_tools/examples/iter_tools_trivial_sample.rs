@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 fn main()
 {
   #[ cfg( feature = "itertools" ) ]

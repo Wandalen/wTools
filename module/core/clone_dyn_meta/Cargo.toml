@@ -23,7 +23,6 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-
 exclude = [ "/tests", "/examples", "-*" ]
 
 [lib]
@@ -32,7 +31,7 @@ proc-macro = true
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = []
+enabled = [ "macro_tools/enabled" ]
 
 [dependencies]
 macro_tools = { workspace = true }
