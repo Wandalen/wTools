@@ -12,7 +12,7 @@ write_files:
 
     [Service]
     Environment="HOME=/root"
-    ExecStart=/usr/bin/docker run -d -p 80:80 --name=${image_name} ${location}-docker.pkg.dev/${project_id}/${repo_name}/${image_name}
+    ExecStart=/usr/bin/docker run --restart unless-stopped -d -p 80:80 --name=${image_name} ${location}-docker.pkg.dev/${project_id}/${repo_name}/${image_name}
 - path: /root/service_account.json
   permissions: 0600
   owner: root

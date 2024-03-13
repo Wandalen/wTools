@@ -9,7 +9,7 @@ A list of all keys you'd need to deploy your project on different hosts.
     - [How to get `service_account.json`](#how-to-get-service_accountjson)
     - [How to get `SECRET_STATE_ARCHIVE_KEY`](#how-to-get-secret_state_archive_key)
     - [How to get `SECRET_CSP_HETZNER`](#how-to-get-secret_csp_hetzner)
-
+    - [How to get `SECRET_AWS_ACCESS_KEY_ID` and `SECRET_AWS_ACCESS_KEY`](#how-to-get-secret_aws_access_key_id-and-secret_aws_access_key)
 
 ## Files
 
@@ -18,6 +18,8 @@ All secrets can be provided as files in current directory:
 - [service_account.json](./service_account.json) - default credentials for the service account to use in deployment.
 - [`SECRET_STATE_ARCHIVE_KEY`](./SECRET_STATE_ARCHIVE_KEY) - [📃] base64 encoded AES256 key to encrypt and decrypt .tfstate files.
 - [`SECRET_CSP_HETZNER`](./SECRET_CSP_HETZNER) - [📃] Hetzner token for deploying a server.
+- [`SECRET_AWS_ACCESS_KEY_ID`](./SECRET_AWS_ACCESS_KEY_ID) - [📃] Access Key ID from AWS Credentials. Created at the same time as the Access Key itself.
+- [`SECRET_AWS_ACCESS_KEY`](./SECRET_AWS_ACCESS_KEY) - [📃] Access Key for AWS API. Has to be accompanied with respectful Access Key ID.
 
 ## Env vars
 
@@ -25,6 +27,8 @@ Some secrets can be presented as an env var:
 
 - [`SECRET_STATE_ARCHIVE_KEY`](./SECRET_STATE_ARCHIVE_KEY) - [📃] base64 encoded AES256 key to encrypt and decrypt .tfstate files.
 - [`SECRET_CSP_HETZNER`](./SECRET_CSP_HETZNER) - [📃] Hetzner token for deploying a server.
+- [`SECRET_AWS_ACCESS_KEY_ID`](./SECRET_AWS_ACCESS_KEY_ID) - [📃] Access Key ID from AWS Credentials. Created at the same time as the Access Key itself.
+- [`SECRET_AWS_ACCESS_KEY`](./SECRET_AWS_ACCESS_KEY) - [📃] Access Key for AWS API. Has to be accompanied with respectful Access Key ID.
 
 Env vars have a higher priority then the files.
 
@@ -69,3 +73,20 @@ This key can be retrieved from your Hetzner dashboard.
 Cloud Console -> Security -> API Tokens -> Generate API Token
 
 Fill the token description and all `Read & Write` access, since this key will be used for instance creation.
+
+### How to get `SECRET_AWS_ACCESS_KEY_ID` and `SECRET_AWS_ACCESS_KEY`
+
+Can be created in your AWS Console on the following the link:
+https://console.aws.amazon.com/iam/home?#security_credential
+
+Access Keys -> Create Access Key -> Other -> Next -> Fill key description -> Create Access Key
+
+The Access Key ID will be always available to view, but secret access key is only visible after the key creation.
+
+You need to have credential creation permissions on your AWS account.
+
+An example of permissions to give to an account managing the deployment can be found here:
+https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_aws_my-sec-creds-self-manage-no-mfa.html
+
+You also need to give [AmazonEC2FullAccess](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEC2FullAccess.html)
+permission for your user to create an EC2 instance.

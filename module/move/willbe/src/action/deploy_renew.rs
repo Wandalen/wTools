@@ -96,6 +96,12 @@ mod private
       .file().data( include_str!( "../../template/deploy/deploy/hetzner/variables.tf" ) ).path( "./deploy/hetzner/variables.tf" ).end()
       // /deploy/hetzner/templates
       .file().data( include_str!( "../../template/deploy/deploy/hetzner/templates/cloud-init.tpl" ) ).path( "./deploy/hetzner/templates/cloud-init.tpl" ).end()
+      // /deploy/aws
+      .file().data( include_str!( "../../template/deploy/deploy/aws/main.tf" ) ).path( "./deploy/aws/main.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/aws/outputs.tf" ) ).path( "./deploy/aws/outputs.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/aws/variables.tf" ) ).path( "./deploy/aws/variables.tf" ).end()
+      // /deploy/aws/templates
+      .file().data( include_str!( "../../template/deploy/deploy/aws/templates/cloud-init.tpl" ) ).path( "./deploy/aws/templates/cloud-init.tpl" ).end()
       .form();
 
       Self( formed.files )

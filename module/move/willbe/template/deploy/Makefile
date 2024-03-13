@@ -3,11 +3,17 @@
 SERVICE_KEY_ERROR := $(shell [ ! -f key/service_account.json ] && echo "ERROR: File key/service_account.json does not exist")
 STATE_KEY_ERROR := $(shell [ ! -f key/SECRET_STATE_ARCHIVE_KEY ] && echo "ERROR: File key/SECRET_STATE_ARCHIVE_KEY does not exist")
 HETZNER_KEY_ERROR := $(shell [ ! -f key/SECRET_CSP_HETZNER ] && echo "ERROR: File key/SECRET_CSP_HETZNER does not exist")
+AWS_ACCESS_KEY_ID_ERROR := $(shell [ ! -f key/SECRET_AWS_ACCESS_KEY_ID ] && echo "ERROR: File key/SECRET_AWS_ACCESS_KEY_ID does not exist")
+AWS_ACCESS_KEY_ERROR := $(shell [ ! -f key/SECRET_AWS_ACCESS_KEY ] && echo "ERROR: File key/SECRET_AWS_ACCESS_KEY does not exist")
 
 # Hetzner API token
 export SECRET_CSP_HETZNER ?= $(shell cat key/SECRET_CSP_HETZNER 2> /dev/null)
 # Cloud Storage file encryption key
 export SECRET_STATE_ARCHIVE_KEY ?= $(shell cat key/SECRET_STATE_ARCHIVE_KEY 2> /dev/null)
+# AWS Access Key id
+export SECRET_AWS_ACCESS_KEY_ID ?= $(shell cat key/SECRET_AWS_ACCESS_KEY_ID 2> /dev/null)
+# AWS Access Key
+export SECRET_AWS_ACCESS_KEY ?= $(shell cat key/SECRET_AWS_ACCESS_KEY 2> /dev/null)
 
 # Base terraform directory
 export tf_dir ?= deploy
@@ -29,8 +35,12 @@ export TF_VAR_ZONE ?= $(TF_VAR_REGION)-a
 export TF_VAR_BUCKET_NAME ?= uaconf_tfstate
 # Hetzner Cloud auth token
 export TF_VAR_HCLOUD_TOKEN ?= $(SECRET_CSP_HETZNER)
-# Specifies where to deploy the project. Possible values: `hetzner`, `gce`
+# Specifies where to deploy the project. Possible values: `hetzner`, `gce`, `aws`
 export CSP ?= hetzner
+# AWS Access key for deploying to an EC2 instance
+export AWS_ACCESS_KEY_ID ?= $(SECRET_AWS_ACCESS_KEY_ID)
+# AWS Secret Access key for deploying to an EC2 instance
+export AWS_SECRET_ACCESS_KEY ?= $(SECRET_AWS_ACCESS_KEY)
 
 # Prints key related errors
 print-key-errors:
@@ -43,10 +53,22 @@ endif
 ifneq ($(HETZNER_KEY_ERROR),)
 	@echo $(HETZNER_KEY_ERROR)
 endif
+ifneq ($(AWS_ACCESS_KEY_ID_ERROR),)
+	@echo $(AWS_ACCESS_KEY_ID_ERROR)
+endif
+ifneq ($(AWS_ACCESS_KEY_ERROR),)
+	@echo $(AWS_ACCESS_KEY_ERROR)
+endif
 
 # Check Hetzner related keys 
 check-hetzner-key: print-key-errors
 ifneq ($(HETZNER_KEY_ERROR),)
+	@exit 1
+endif
+
+# Check AWS related keys 
+check-aws-keys: print-key-errors
+ifneq ($(AWS_ACCESS_KEY_ID_ERROR),$(AWS_ACCESS_KEY_ERROR))
 	@exit 1
 endif
 
@@ -109,6 +131,7 @@ tf-init:
 	terraform -chdir=$(tf_dir)/gar init
 	terraform -chdir=$(tf_dir)/gce init
 	terraform -chdir=$(tf_dir)/hetzner init
+	terraform -chdir=$(tf_dir)/aws init
 
 # Creates Artifact Registry repository on GCP in specified location
 create-artifact-repo: tf-init
@@ -125,6 +148,10 @@ push-image: gcp-docker create-artifact-repo
 # Creates GCE instance with the website configured on boot
 create-gce: gcp-service state_storage_pull push-image
 	terraform -chdir=$(tf_dir)/gce apply -auto-approve
+
+# Creates AWS EC2 instance with the website configured on boot
+create-aws: check-aws-keys gcp-service state_storage_pull push-image
+	terraform -chdir=$(tf_dir)/aws apply -auto-approve
 
 # Creates Hetzner instance with the website configured on boot
 create-hetzner: check-hetzner-key gcp-service state_storage_pull push-image
@@ -143,12 +170,14 @@ tf-plan: tf-init
 	terraform -chdir=$(tf_dir)/gar plan
 	terraform -chdir=$(tf_dir)/gce plan
 	terraform -chdir=$(tf_dir)/hetzner plan
+	terraform -chdir=$(tf_dir)/aws plan
 
 # Destroy created infrastracture on GCP
 tf-destroy: tf-init
 	terraform -chdir=$(tf_dir)/gar destroy
 	terraform -chdir=$(tf_dir)/gce destroy
 	terraform -chdir=$(tf_dir)/hetzner destroy
+	terraform -chdir=$(tf_dir)/aws destroy
 
 # Pushes encrypted terraform state files to the GCS Bucket
 state_storage_push:
@@ -156,6 +185,7 @@ state_storage_push:
 	@gcloud storage cp $(tf_dir)/gce/terraform.tfstate gs://$(TF_VAR_BUCKET_NAME)/gce.tfstate --encryption-key="$(SECRET_STATE_ARCHIVE_KEY)"
 	@gcloud storage cp $(tf_dir)/gar/terraform.tfstate gs://$(TF_VAR_BUCKET_NAME)/gar.tfstate --encryption-key="$(SECRET_STATE_ARCHIVE_KEY)"
 	@gcloud storage cp $(tf_dir)/hetzner/terraform.tfstate gs://$(TF_VAR_BUCKET_NAME)/hetzner.tfstate --encryption-key="$(SECRET_STATE_ARCHIVE_KEY)"
+	@gcloud storage cp $(tf_dir)/aws/terraform.tfstate gs://$(TF_VAR_BUCKET_NAME)/aws.tfstate --encryption-key="$(SECRET_STATE_ARCHIVE_KEY)"
 
 # Pulls and decrypts terraform state files to the GCS Bucket
 state_storage_pull:
@@ -163,6 +193,7 @@ state_storage_pull:
 	-@gcloud storage cp gs://$(TF_VAR_BUCKET_NAME)/gce.tfstate $(tf_dir)/gce/terraform.tfstate --decryption-keys="$(SECRET_STATE_ARCHIVE_KEY)"
 	-@gcloud storage cp gs://$(TF_VAR_BUCKET_NAME)/gar.tfstate $(tf_dir)/gar/terraform.tfstate --decryption-keys="$(SECRET_STATE_ARCHIVE_KEY)"
 	-@gcloud storage cp gs://$(TF_VAR_BUCKET_NAME)/hetzner.tfstate $(tf_dir)/hetzner/terraform.tfstate --decryption-keys="$(SECRET_STATE_ARCHIVE_KEY)"
+	-@gcloud storage cp gs://$(TF_VAR_BUCKET_NAME)/aws.tfstate $(tf_dir)/aws/terraform.tfstate --decryption-keys="$(SECRET_STATE_ARCHIVE_KEY)"
 
 # Creates GCS Bucket for terraform states
 state_storage_init:
