@@ -2,7 +2,6 @@ mod private
 {
   use std::collections::BTreeMap;
   use std::fs;
-  use std::io::Write;
   use error_tools::for_app::Context;
   use error_tools::Result;
   use former::Former;
@@ -27,6 +26,72 @@ mod private
 
     /// Sets values for provided parameters.
     fn set_values( &mut self, values : TemplateValues );
+
+    /// Loads provided parameters from previous run.
+    fn load_existing_params( &mut self ) -> Option< () >
+    {
+      let data = fs::read_to_string( ".template_params.toml" ).ok()?;
+      let document = data.parse::< toml_edit::Document >().ok()?;
+      let parameters = self.parameters().descriptors.iter().map( | d | &d.parameter ).cloned().collect::< Vec< _ > >();
+      for parameter in parameters
+      {
+        let value = document.get( &parameter )
+        .and_then
+        (
+          | item |
+          match item
+          {
+            toml_edit::Item::Value( toml_edit::Value::String( val ) ) => Some( val.value() ),
+            _ => None
+          }
+        );
+        if let Some( value ) = value
+        {
+          self.get_values_mut().insert_if_empty( &parameter, Value::String( value.into() ) );
+        }
+      }
+      Some( () )
+    }
+
+    /// Get all template values.
+    fn get_values( &self ) -> &TemplateValues;
+
+    /// Get all template values as a mutable reference.
+    fn get_values_mut( &mut self ) -> &mut TemplateValues;
+
+    /// Saves parameter values after current run.
+    fn save_param_values( &self ) -> Result< () >
+    {
+      let data = fs::read_to_string( ".template_params.toml" ).unwrap_or_default();
+      let mut document = data.parse::< toml_edit::Document >()?;
+      for ( parameter, value ) in self.get_values().to_serializable()
+      {
+        let value = toml_edit::Item::Value( toml_edit::Value::String( toml_edit::Formatted::new( value ) ) );
+        match document.get_mut( &parameter )
+        {
+          Some( item ) =>
+          {
+            *item = value;
+          },
+          None => document[ &parameter ] = value,
+        }
+      }
+      fs::write( ".template_params.toml", document.to_string() )?;
+
+      Ok( () )
+    }
+
+    /// Fetches mandatory parameters that are not set yet.
+    fn get_missing_mandatory( &self ) -> Vec< &str >
+    {
+      let values = self.get_values();
+      self
+      .parameters()
+      .get_mandatory()
+      .into_iter()
+      .filter( | key | values.0.get( *key ).map( | val | val.as_ref() ).flatten().is_none() )
+      .collect()
+    }
   }
 
   /// Files stored in a template.
@@ -42,17 +107,7 @@ mod private
       let fsw = FileSystem;
       for file in self.into_iter()
       {
-        let full_path = path.join( &file.path );
-        let dir = full_path.parent().context( "Invalid file path provided" )?;
-
-        if !dir.exists()
-        {
-          fs::create_dir_all( dir )?;
-        }
-        if !full_path.exists()
-        {
-          file.create_file( &fsw, path, values )?;
-        }
+        file.create_file( &fsw, path, values )?;
       }
       Ok( () )
     }
@@ -70,7 +125,11 @@ mod private
     /// Extracts template values from props for parameters required for this template.
     pub fn values_from_props( &self, props : &Props ) -> TemplateValues
     {
-      let values = self.descriptors.iter().map( | d | &d.parameter ).map( | param | ( param.clone(), props.get( param ).map( Value::clone ) ) ).collect();
+      let values = self.descriptors
+      .iter()
+      .map( | d | &d.parameter )
+      .map( | param | ( param.clone(), props.get( param ).map( Value::clone ) ) )
+      .collect();
       TemplateValues( values )
     }
 
@@ -267,8 +326,12 @@ mod private
     fn write( &self, instruction : &FileWriteInstruction ) -> Result< () >
     {
       let FileWriteInstruction { path, data } = instruction;
-      let mut file = fs::File::create( path ).context( "Failed creating file" )?;
-      file.write_all( data ).context( "Failed writing to file" )
+      let dir = path.parent().context( "Invalid file path provided" )?;
+      if !dir.exists()
+      {
+        fs::create_dir_all( dir )?;
+      }
+      fs::write( path, data ).context( "Failed creating and writing to file" )
     }
   }
 }

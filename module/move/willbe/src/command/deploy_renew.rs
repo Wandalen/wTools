@@ -14,9 +14,10 @@ mod private
   pub fn deploy_renew( properties : Props ) -> Result< () >
   {
     let mut template = DeployTemplate::default();
+    _ = template.load_existing_params();
     let parameters = template.parameters();
     let mut values = parameters.values_from_props( &properties );
-    for mandatory in parameters.get_mandatory()
+    for mandatory in template.get_missing_mandatory()
     {
       values.interactive_if_empty( mandatory );
     }

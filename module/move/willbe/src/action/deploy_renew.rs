@@ -33,6 +33,16 @@ mod private
     {
       self.values = values
     }
+    
+    fn get_values( &self ) -> &TemplateValues
+    {
+      &self.values
+    }
+
+    fn get_values_mut( &mut self ) -> &mut TemplateValues
+    {
+      &mut self.values
+    }
   }
 
   impl Default for DeployTemplate
@@ -141,12 +151,16 @@ mod private
     mut template : DeployTemplate
   ) -> Result< () >
   {
-    let current_dir = get_dir_name()?;
-    let artifact_repo_name = dir_name_to_formatted( &current_dir, "-" );
-    let docker_image_name = dir_name_to_formatted( &current_dir, "_" );
-    template.values.insert_if_empty( "gcp_artifact_repo_name", wca::Value::String( artifact_repo_name ) );
-    template.values.insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );
-    template.values.insert_if_empty( "gcp_region", wca::Value::String( "europe-central2".into() ) );
+    if let None = template.load_existing_params()
+    {
+      let current_dir = get_dir_name()?;
+      let artifact_repo_name = dir_name_to_formatted( &current_dir, "-" );
+      let docker_image_name = dir_name_to_formatted( &current_dir, "_" );
+      template.values.insert_if_empty( "gcp_artifact_repo_name", wca::Value::String( artifact_repo_name ) );
+      template.values.insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );
+      template.values.insert_if_empty( "gcp_region", wca::Value::String( "europe-central2".into() ) );
+    }
+    template.save_param_values()?;
     template.create_all( path )?;
     Ok( () )
   }
