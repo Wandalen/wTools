@@ -30,6 +30,8 @@ default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = []
 
+# qqq : put all files under features: macro_attr, macro_container_kind, ...
+
 [dependencies]
 
 ## external

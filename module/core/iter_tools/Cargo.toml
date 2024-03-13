@@ -35,6 +35,7 @@ enabled = []
 
 [dependencies]
 itertools = { version = "~0.11.0", features = [ "use_std" ] }
+# qqq : update
 
 [dev-dependencies]
 test_tools = { workspace = true }

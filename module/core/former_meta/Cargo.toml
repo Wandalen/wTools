@@ -28,7 +28,7 @@ all-features = false
 
 default = [ "enabled", "derive_former", "derive_component_from", "derive_set_component", "derive_set_components", "derive_from_components" ]
 full = [ "enabled", "derive_former", "derive_component_from", "derive_set_component", "derive_set_components", "derive_from_components" ]
-enabled = []
+enabled = [ "macro_tools/enabled", "iter_tools/enabled" ]
 
 derive_former = []
 derive_component_from = []
@@ -40,10 +40,8 @@ derive_from_components = []
 proc-macro = true
 
 [dependencies]
-macro_tools = { workspace = true, features = [ "default" ] }
-iter_tools = { workspace = true, features = [ "default" ] }
-
-# xxx : optimize features set
+macro_tools = { workspace = true }
+iter_tools = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

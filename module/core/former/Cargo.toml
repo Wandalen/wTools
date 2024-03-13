@@ -23,9 +23,6 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
-# exclude = [ "/tests", "/examples", "-*" ]
-# xxx : check and replicate for all modules
 
 [features]
 
