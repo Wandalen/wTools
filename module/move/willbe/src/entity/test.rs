@@ -20,7 +20,7 @@ mod private
   use wtools::error::Result;
   use former::Former;
   use channel::Channel;
-  use mode::Mode;
+  use optimization::Optimization;
 
   /// Represents the arguments for the test.
   #[ derive( Debug, Former, Clone ) ]
@@ -40,8 +40,8 @@ mod private
     enable_features : BTreeSet< String >,
     /// Temp directory path
     temp_directory_path : Option< PathBuf >,
-    /// Specifies the modes for rust.
-    mode : Mode,
+    /// Specifies the optimization for rust.
+    optimization : Optimization,
   }
 
   impl SingleTestOptions
@@ -50,7 +50,7 @@ mod private
     {
       [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
       .into_iter()
-      .chain( if self.mode == Mode::Release { Some( "--release".into() ) } else { None } )
+      .chain( if self.optimization == Optimization::Release { Some( "--release".into() ) } else { None } )
       .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
       .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.iter().join( "," ) ]) }.into_iter().flatten() )
@@ -124,8 +124,8 @@ mod private
     /// `temp_path` - path to temp directory.
     pub temp_path : Option< PathBuf >,
 
-    ///  todo
-    pub mods : HashSet< Mode >,
+    ///  optimizations
+    pub optimizations : HashSet< Optimization >,
   }
 
 
@@ -150,7 +150,7 @@ mod private
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
     ///   feature names and the values are `CmdReport` structs representing the test results for
     ///   the specific feature and channel.
-    pub tests : BTreeMap< Mode, BTreeMap< Channel, BTreeMap< String, Result< CmdReport, CmdReport > > > >,
+    pub tests : BTreeMap< Optimization, BTreeMap< Channel, BTreeMap< String, Result< CmdReport, CmdReport > > > >,
   }
 
   impl std::fmt::Display for TestReport
@@ -170,7 +170,7 @@ mod private
         return Ok( () );
       }
 
-      for ( mode, channels ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) )
+      for ( optimization, channels ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) )
       {
         for ( channel, features ) in channels.iter().sorted_by( | a, b | a.0.cmp( b.0 ) ) {
           for ( feature, result ) in features
@@ -182,14 +182,14 @@ mod private
               Ok(_) =>
                 {
                   success += 1;
-                  writeln!(f, "  [ {} | {} | {} ]: ✅  successful", mode, channel, feature)?;
+                  writeln!( f, "  [ {} | {} | {} ]: ✅  successful", optimization, channel, feature )?;
                 }
               Err(result) =>
                 {
                   let mut out = result.out.replace("\n", "\n      ");
                   out.push_str("\n");
                   failed += 1;
-                  write!(f, "  [ {} | {} | {} ]: ❌  failed\n  \n{out}", mode, channel, feature)?;
+                  write!( f, "  [ {} | {} | {} ]: ❌  failed\n  \n{out}", optimization, channel, feature )?;
                 }
             }
           }
@@ -291,13 +291,13 @@ mod private
       &args.include_features
     );
 
-    print_temp_report( &package.name, &args.mods, &args.channels, &features_powerset );
+    print_temp_report( &package.name, &args.optimizations, &args.channels, &features_powerset );
     rayon::scope
     (
       | s |
       {
         let dir = package.manifest_path.parent().unwrap();
-        for mode in args.mods.clone()
+        for optimization in args.optimizations.clone()
         {
           for channel in args.channels.clone()
           {
@@ -310,13 +310,13 @@ mod private
                 {
                   let mut args_t = SingleTestOptions::former()
                   .channel( channel )
-                  .mode( mode )
+                  .optimization( optimization )
                   .with_default_features( false )
                   .enable_features( feature.clone() );
                   
                   if let Some( p ) = args.temp_path.clone()
                   {
-                    let path = p.join( format!( "{}_{}_{}_{}", package.name.clone(), mode, channel, feature.iter().join( "," ) ) );
+                    let path = p.join( format!( "{}_{}_{}_{}", package.name.clone(), optimization, channel, feature.iter().join( "," ) ) );
                     std::fs::create_dir_all( &path ).unwrap();
                     args_t = args_t.temp_directory_path( path );
                   }
@@ -327,7 +327,7 @@ mod private
                   .lock()
                   .unwrap()
                   .tests
-                  .entry( mode )
+                  .entry( optimization )
                   .or_default()
                   .entry( channel )
                   .or_default()
@@ -400,17 +400,17 @@ mod private
     }
   }
 
-  fn print_temp_report( package_name : &str, modes : &HashSet< Mode >, channels : &HashSet< channel::Channel >, features : &HashSet< BTreeSet< String > > )
+  fn print_temp_report( package_name : &str, optimizations : &HashSet< Optimization >, channels : &HashSet< channel::Channel >, features : &HashSet< BTreeSet< String > > )
   {
     println!( "Package : {}\nThe tests will be executed using the following configurations :", package_name );
-    for mode in modes.iter().sorted()
+    for optimization in optimizations.iter().sorted()
     {
       for channel in channels.iter().sorted()
       {
         for feature in features
         {
           let feature = if feature.is_empty() { "no-features".to_string() } else { feature.iter().join( "," ) };
-          println!( "  [ mode : {mode} | channel : {channel} | feature : {feature} ]" );
+          println!( "  [ optimization : {optimization} | channel : {channel} | feature : {feature} ]" );
         }
       }
     }

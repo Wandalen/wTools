@@ -2,9 +2,9 @@ mod private
 {
   use std::fmt::Formatter;
 
-  /// Rust mode
+  /// Rust optimization
   #[ derive( Debug, Default, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd ) ]
-  pub enum Mode
+  pub enum Optimization
   {
     /// Debug
     #[ default ]
@@ -13,14 +13,14 @@ mod private
     Release,
   }
 
-  impl std::fmt::Display for Mode
+  impl std::fmt::Display for Optimization
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result 
     {
       match self
       {
-        Mode::Debug => write!( f, "debug" ),
-        Mode::Release => write!( f, "release" ),
+        Optimization::Debug => write!( f, "debug" ),
+        Optimization::Release => write!( f, "release" ),
       }
     }
   }
@@ -28,5 +28,5 @@ mod private
 
 crate::mod_interface!
 {
-  protected use Mode;
+  protected use Optimization;
 }

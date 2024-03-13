@@ -45,7 +45,7 @@ crate::mod_interface!
   layer url;
   orphan use super::url;
 
-  /// Rust build mode: debug/release
-  layer mode;
-  orphan use super::mode;
+  /// Rust build optimization: debug/release
+  layer optimization;
+  orphan use super::optimization;
 }

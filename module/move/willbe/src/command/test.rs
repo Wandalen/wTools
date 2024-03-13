@@ -12,7 +12,7 @@ mod private
   use former::Former;
   use channel::Channel;
   use error_tools::for_app::bail;
-  use mode::Mode;
+  use optimization::Optimization;
 
   #[ derive( Former ) ]
   struct TestsProperties
@@ -60,11 +60,11 @@ mod private
     if with_stable { channels.insert( Channel::Stable ); }
     if with_nightly { channels.insert( Channel::Nightly ); }
     
-    let mut mods = HashSet::new();
-    if with_release { mods.insert( Mode::Release ); }
-    if with_debug { mods.insert( Mode::Debug ); }
+    let mut optimizations = HashSet::new();
+    if with_release { optimizations.insert( Optimization::Release ); }
+    if with_debug { optimizations.insert( Optimization::Debug ); }
     
-    if mods.is_empty()
+    if optimizations.is_empty()
     {
       bail!( "Cannot run tests if with_debug and with_release are both false. Set at least one of them to true." );
     }
@@ -78,7 +78,7 @@ mod private
     .exclude_features( exclude )
     .include_features( include )
     .temp( temp )
-    .mods( mods )
+    .optimizations( optimizations )
     .form();
 
     match action::test( args, dry )
