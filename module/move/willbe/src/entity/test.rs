@@ -227,6 +227,7 @@ mod private
       if self.dry
       {
         writeln!( f, "\nYou can execute the plan with 'will .test dry : 0'." )?;
+        // qqq : for Petro : bad. should be exact command with exact parameters
         return Ok( () )
       }
       if self.succses_reports.is_empty() && self.failure_reports.is_empty()
