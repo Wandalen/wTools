@@ -23,19 +23,18 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 
 default = [ "enabled", "derive_former", "derive_component_from", "derive_set_component", "derive_set_components", "derive_from_components" ]
 full = [ "enabled", "derive_former", "derive_component_from", "derive_set_component", "derive_set_components", "derive_from_components" ]
-enabled = [ "former/enabled" ]
+enabled = []
 
-derive_former = [ "former/derive_former" ]
-derive_component_from = [ "former/derive_component_from" ]
-derive_set_component = [ "former/derive_set_component" ]
-derive_set_components = [ "former/derive_set_components" ]
-derive_from_components = [ "former/derive_from_components" ]
+derive_former = []
+derive_component_from = []
+derive_set_component = []
+derive_set_components = []
+derive_from_components = []
 
 [lib]
 proc-macro = true
@@ -48,4 +47,4 @@ iter_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
-former = { workspace = true }
+former = { workspace = true, features = [ "full" ] }
