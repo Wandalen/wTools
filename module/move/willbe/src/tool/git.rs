@@ -1,6 +1,7 @@
 mod private
 {
   use crate::*;
+  use std::ffi::OsString;
   use std::path::Path;
   use process::CmdReport;
   use wtools::error::Result;
@@ -41,7 +42,13 @@ mod private
     }
     else
     {
-      process::run( program, args, path )
+      let options = 
+      process::RunOptions::former()
+      .application( program )      
+      .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .path( path.as_ref().to_path_buf() )
+      .form();
+      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -79,7 +86,13 @@ mod private
     }
     else
     {
-      process::run(program, args, path )
+      let options = 
+      process::RunOptions::former()
+      .application( program )      
+      .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .path( path.as_ref().to_path_buf() )
+      .form();
+      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -115,7 +128,14 @@ mod private
     }
     else
     {
-      process::run(program, args, path )
+      let options = 
+      process::RunOptions::former()
+      .application( program )
+      .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .path( path.as_ref().to_path_buf() )
+      .form();
+      
+      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -133,8 +153,14 @@ mod private
     P : AsRef< Path >,
   {
     let ( program, args ) = ( "git", [ "ls-remote", "--get-url" ] );
-
-    process::run(program, args, path )
+    
+    let options = 
+    process::RunOptions::former()
+    .application( program )
+    .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+    .path( path.as_ref().to_path_buf() )
+    .form();
+    process::run( options ).map_err( | ( report, err ) | err.context( report ) )
   }
 }
 

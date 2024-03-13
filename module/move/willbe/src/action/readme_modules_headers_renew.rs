@@ -1,20 +1,21 @@
 mod private
 {
+  use crate::*;
+  use path::AbsolutePath;
+  use action::readme_health_table_renew::{ readme_path, Stability, stability_generate };
+  use package::Package;
+  use wtools::error::
+  {
+    err,
+    for_app::{ Result, Error },
+  };
   use std::borrow::Cow;
   use std::fs::{ OpenOptions };
   use std::io::{ Read, Seek, SeekFrom, Write };
   use convert_case::{ Case, Casing };
   use regex::Regex;
-  // qqq : for Petro : rid off crate::x. ask
-  use crate::path::AbsolutePath;
-  use crate::{ CrateDir, query, url, Workspace };
-  use crate::action::readme_health_table_renew::{ readme_path, Stability, stability_generate };
-  use crate::package::Package;
-  use crate::wtools::error::
-  {
-    err,
-    for_app::{ Result, Error },
-  };
+  // aaa : for Petro : rid off crate::x. ask
+  // aaa : add `use crate::*` first
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
