@@ -425,11 +425,11 @@ mod private
     let temp_dir = args.base_temp_dir.as_ref().map
     (
       | p |
-        {
-          let path = p.join( package_dir.as_ref().file_name().unwrap() );
-          std::fs::create_dir_all( &path ).unwrap();
-          path
-        }
+      {
+        let path = p.join( package_dir.as_ref().file_name().unwrap() );
+        std::fs::create_dir_all( &path ).unwrap();
+        path
+      }
     );
     
     let pack_args = cargo::PackOptions::former()

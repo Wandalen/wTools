@@ -1,5 +1,6 @@
 mod private
 {
+  use std::ffi::OsString;
   use crate::*;
   
   use std::path::PathBuf;
@@ -43,6 +44,12 @@ mod private
   /// - `path` - path to the package directory
   /// - `dry` - a flag that indicates whether to execute the command or not
   ///
+  #[ cfg_attr
+  (
+    feature = "tracing",
+    track_caller,
+    tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
+  )]
   pub fn pack( args : PackOptions ) -> Result< CmdReport >
   {
     let ( program, options ) = ( "cargo", args.to_pack_args() );
@@ -62,7 +69,13 @@ mod private
     }
     else
     {
-      process::run(program, options, args.path )
+      let options =
+      process::RunOptions::former()
+      .application( program )
+      .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .path( args.path )
+      .form();
+      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -95,6 +108,12 @@ mod private
   }
 
  /// Upload a package to the registry
+  #[ cfg_attr
+  (
+    feature = "tracing",
+    track_caller,
+    tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
+  )]
   pub fn publish( args : PublishOptions ) -> Result< CmdReport >
   {
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
@@ -114,7 +133,13 @@ mod private
     }
     else
     {
-      process::run(program, arguments, args.path )
+      let options = 
+      process::RunOptions::former()
+      .application( program )
+      .args( arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .path( args.path )
+      .form();
+      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 }

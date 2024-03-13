@@ -6,11 +6,11 @@
 #[ allow( unused_imports ) ]
 use ::cargo_will::*;
 
-// fn main() -> Result< (), wtools::error::for_app::Error >
-// {
-//   Ok( willbe::run()? )
-// }
-
-fn main()
+fn main() -> Result< (), wtools::error::for_app::Error >
 {
+  Ok( willbe::run()? )
 }
+
+// fn main()
+// {
+// }
