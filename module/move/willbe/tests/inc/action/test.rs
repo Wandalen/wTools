@@ -8,6 +8,7 @@ use action::test::{test, TestsCommandOptions};
 use path::AbsolutePath;
 
 #[ test ]
+// if the test fails => the report is returned as an error ( Err(CmdReport) )
 fn fail_test()
 {
   let temp = TempDir::new().unwrap();
@@ -40,6 +41,7 @@ fn fail_test()
 }
 
 #[ test ]
+// if a compilation error occurred => the report is returned as an error ( Err(CmdReport) )
 fn fail_build()
 {
   let temp = TempDir::new().unwrap();
@@ -73,6 +75,7 @@ fn fail_build()
 }
 
 #[ test ]
+// if there are 3 members in the workspace (two of them pass the tests and one of them fails) => the global report will contain 2 successful reports and 1 defeats
 fn call_from_workspace_root()
 {
   let temp = TempDir::new().unwrap();

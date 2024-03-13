@@ -5,6 +5,7 @@ use former::SetComponent;
 
 
 #[ derive( Default, PartialEq, Debug, former::SetComponent ) ]
+#[ debug ]
 struct Person
 {
   age : i32,

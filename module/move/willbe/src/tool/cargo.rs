@@ -1,5 +1,6 @@
 mod private
 {
+  use std::ffi::OsString;
   use crate::*;
   
   use std::path::PathBuf;
@@ -68,7 +69,13 @@ mod private
     }
     else
     {
-      process::run( program, options, args.path )
+      let options =
+      process::RunOptions::former()
+      .application( program )
+      .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .path( args.path )
+      .form();
+      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -126,7 +133,13 @@ mod private
     }
     else
     {
-      process::run(program, arguments, args.path )
+      let options = 
+      process::RunOptions::former()
+      .application( program )
+      .args( arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .path( args.path )
+      .form();
+      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 }

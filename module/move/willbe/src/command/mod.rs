@@ -153,27 +153,26 @@ pub( crate ) mod private
       .routine( command::workspace_renew )
       .end()
 
-    // qqq : missing hints
     .command( "deploy.renew" )
       .hint( "Create deploy template" )
-      .long_hint( "" )
+      .long_hint( "Creates static files and directories.\nDeployment to different hosts is done via Makefile." )
       .property( "gcp_project_id" )
-        .hint( "" )
+        .hint( "Google Cloud Platform Project id for image deployment, terraform state bucket, and, if specified, GCE instance deployment." )
         .kind( Type::String )
         .optional( false )
         .end()
       .property( "gcp_region" )
-        .hint( "" )
+        .hint( "Google Cloud Platform region location. Default: `europe-central2` (Warsaw)" )
         .kind( Type::String )
-        .optional( false )
+        .optional( true )
         .end()
       .property( "gcp_artifact_repo_name" )
-        .hint( "" )
+        .hint( "Google Cloud Platform Artifact Repository to store docker image in. Will be generated from current directory name if unspecified." )
         .kind( Type::String )
         .optional( false )
         .end()
       .property( "docker_image_name" )
-        .hint( "" )
+        .hint( "Docker image name to build and deploy. Will be generated from current directory name if unspecified." )
         .kind( Type::String )
         .optional( false )
         .end()
@@ -203,8 +202,9 @@ crate::mod_interface!
   layer list;
   /// Publish packages.
   layer publish;
-  /// Generate tables
-  // qqq : for Petro : what a table??
+  /// Generates health table in main Readme.md file of workspace.
+  // aaa : for Petro : what a table??
+  // aaa : add more details to documentation
   layer readme_health_table_renew;
   /// Run all tests
   layer test;

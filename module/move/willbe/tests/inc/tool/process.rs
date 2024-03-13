@@ -29,14 +29,14 @@ fn err_out_err()
 
   let args : [ OsString ; 0 ] = [];
 
-  let report = process::process_run_with_param_and_joined_steams
-  (
-    path_to_exe( &assets_path.join( "err_out_test" ).join( "err_out_err.rs" ), temp.path() ),
-    args,
-    temp.path()
-  )
-  .unwrap()
-  .out;
+  let options = process::RunOptions::former()
+  .application( path_to_exe( &assets_path.join( "err_out_test" ).join( "err_out_err.rs" ), temp.path() ) )
+  .args( args.to_vec() )
+  .path( temp.to_path_buf() )
+  .join_steam( true )
+  .form();
+  
+  let report = process::run( options ).unwrap().out;
 
   assert_eq!( "This is stderr text\nThis is stdout text\nThis is stderr text\n", report );
 }
@@ -51,14 +51,13 @@ fn out_err_out()
 
   let args : [ OsString ; 0 ] = [];
 
-  let report = process::process_run_with_param_and_joined_steams
-  (
-    path_to_exe( &assets_path.join( "err_out_test" ).join( "out_err_out.rs" ), temp.path() ),
-    args,
-    temp.path()
-  )
-  .unwrap()
-  .out;
+  let options = process::RunOptions::former()
+  .application( path_to_exe( &assets_path.join( "err_out_test" ).join( "out_err_out.rs" ), temp.path() ) )
+  .args( args.to_vec() )
+  .path( temp.to_path_buf() )
+  .join_steam( true )
+  .form();
+  let report = process::run( options ).unwrap().out;
 
   assert_eq!( "This is stdout text\nThis is stderr text\nThis is stdout text\n", report );
 }

@@ -29,7 +29,7 @@ mod private
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard
-    // qqq : for Petro : avoid calling packages_get twice
+    // aaa : for Petro : avoid calling packages_get twice
     // aaa : remove it
     let names = packages.iter().map( | p | &p.name ).collect::< Vec< _ > >();
     // map packages path to relative paths fom workspace root, for example D :/work/wTools/module/core/iter_tools => module/core/iter_tools
@@ -189,11 +189,11 @@ mod private
 
   struct UsernameAndRepository( String );
 
-  // qqq : for Petro : not clear how output should look
+  // aaa : for Petro : not clear how output should look
   // aaa : add to documentation
-  // qqq : for Petro : newtype?
+  // aaa : for Petro : newtype?
   // aaa : replace to AbsolutePath
-  // qqq : for Petro : why mut?
+  // aaa : for Petro : why mut?
   // aaa : change signature
   /// Searches and extracts the username and repository name from the repository URL.
   /// The repository URL is first sought in the Cargo.toml file of the workspace;

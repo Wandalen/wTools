@@ -6,7 +6,8 @@ use super::*;
 ///
 
 #[ derive( Debug, Default, PartialEq, TheModule::ComponentFrom ) ]
-// #[ debug ]
+#[ debug ]
+// zzz : enable the test
 pub struct Options1
 {
   field1 : i32,
@@ -15,6 +16,3 @@ pub struct Options1
 }
 
 //
-
-
-include!( "only_test/components_component_from.rs" );

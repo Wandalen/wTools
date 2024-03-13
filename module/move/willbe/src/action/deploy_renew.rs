@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
   use std::path::Path;
-  use error_tools::Result;
+  use error_tools::{for_app::Context, Result};
   use tool::template::*;
 
   /// Template for creating deploy files.
@@ -115,13 +115,35 @@ mod private
     }
   }
 
+  fn get_dir_name() -> Result< String >
+  {
+    let current_dir = std::env::current_dir()?;
+    let current_dir = current_dir.components().last().context( "Invalid current directory" )?;
+    Ok( current_dir.as_os_str().to_string_lossy().into() )
+  }
+
+  fn dir_name_to_formatted( dir_name : &str, separator : &str ) -> String
+  {
+    dir_name
+    .replace( ' ', separator )
+    .replace( '_', separator )
+    .to_lowercase()
+  }
+
   /// Creates deploy template
   pub fn deploy_renew
   (
     path : &Path,
-    template : DeployTemplate
+    mut template : DeployTemplate
   ) -> Result< () >
   {
+    let current_dir = get_dir_name()?;
+    let artifact_repo_name = dir_name_to_formatted( &current_dir, "-" );
+    let docker_image_name = dir_name_to_formatted( &current_dir, "_" );
+    template.values.insert_if_empty( "gcp_artifact_repo_name", wca::Value::String( artifact_repo_name ) );
+    template.values.insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );
+    template.values.insert_if_empty( "gcp_region", wca::Value::String( "europe-central2".into() ) );
+    template.values.interactive_if_empty( "gcp_project_id" );
     template.create_all( path )?;
     Ok( () )
   }
