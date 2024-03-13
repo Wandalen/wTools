@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 use mem_tools as mem;
 
 fn main()

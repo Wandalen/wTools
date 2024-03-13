@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 use feed_rs::parser as feed_parser;
 use unitore::{
-  executor::FeedManager, 
-  report::{ SelectedEntries, FramesReport, UpdateReport },
+  executor::{
+    endpoints::frames::{ FramesReport, SelectedEntries, UpdateReport }, FeedManager
+  },
   feed_config::SubscriptionConfig,
   retriever::FeedFetch,
   storage::MockFeedStore,
@@ -42,7 +43,7 @@ async fn test_save_feed_plain() -> Result< (), Box< dyn std::error::Error + Sync
 
   let feed_config = SubscriptionConfig
   {
-    period : std::time::Duration::from_secs( 1000 ),
+    update_period : std::time::Duration::from_secs( 1000 ),
     link : String::from( "test" ),
   };
 
