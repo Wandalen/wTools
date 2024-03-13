@@ -972,7 +972,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   if has_debug
   {
-    diag::debug_report_print( original_input, &result );
+    diag::debug_report_print( "derive : Former",original_input, &result );
   }
 
   Ok( result )

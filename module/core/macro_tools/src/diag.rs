@@ -130,21 +130,24 @@ pub( crate ) mod private
   /// };
   ///
   /// // Format the debug report for printing or logging
-  /// let formatted_report = debug_report_format( original_input, &generated_code );
+  /// let formatted_report = debug_report_format( "derive :: MyDerive", original_input, &generated_code );
   /// println!( "{}", formatted_report );
   /// ```
   ///
   /// This will output a formatted report showing the original input code and the generated code side by side,
   /// each line indented for clarity.
   ///
-  pub fn debug_report_format< IntoTokens >
+  pub fn debug_report_format< IntoAbout, IntoTokens >
   (
-    input : IntoTokens, output : &proc_macro2::TokenStream
+    about : IntoAbout, input : IntoTokens, output : &proc_macro2::TokenStream
   ) -> String
   where
+    IntoAbout : Into< String >,
+    // xxx : qqq : use AsRef<>
     IntoTokens : Into< proc_macro2::TokenStream >,
   {
     format!( "\n" ) +
+    &format!( " = context\n\n{}\n\n", indentation( "  ", about.into(), "" ) ) +
     &format!( " = original\n\n{}\n\n", indentation( "  ", input.into().to_string(), "" ) ) +
     &format!( " = generated\n\n{}\n", indentation( "  ", qt!{ #output }.to_string(), "" ) )
   }
@@ -184,20 +187,21 @@ pub( crate ) mod private
   /// };
   ///
   /// // Directly print the debug report
-  /// debug_report_print( original_input, &generated_code );
+  /// debug_report_print( "derive :: MyDerive", original_input, &generated_code );
   /// ```
   ///
   /// This will output a formatted report showing the original input code and the generated code side by side,
   /// each line indented for clarity.
 
-  pub fn debug_report_print< IntoTokens >
+  pub fn debug_report_print< IntoAbout, IntoTokens >
   (
-    input : IntoTokens, output : &proc_macro2::TokenStream
+    about : IntoAbout, input : IntoTokens, output : &proc_macro2::TokenStream
   )
   where
+    IntoAbout : Into< String >,
     IntoTokens : Into< proc_macro2::TokenStream >,
   {
-    println!( "{}", debug_report_format( input, output ) );
+    println!( "{}", debug_report_format( about, input, output ) );
   }
 
   ///

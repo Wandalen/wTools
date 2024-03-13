@@ -22,7 +22,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 
   if has_debug
   {
-    diag::debug_report_print( original_input, &result );
+    diag::debug_report_print( "derive : ComponentFrom", original_input, &result );
   }
 
   Ok( result )

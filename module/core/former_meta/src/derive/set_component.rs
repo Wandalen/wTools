@@ -23,7 +23,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> Result< proc_macro2::
 
   if has_debug
   {
-    diag::debug_report_print( original_input, &result );
+    diag::debug_report_print( "derive : SetComponent", original_input, &result );
   }
 
   Ok( result )
