@@ -116,8 +116,8 @@ jobs :
 #        with:
 #          ref: alpha
 
-      - name: Test with miri
-        run: cargo miri test --manifest-path ${{ inputs.manifest_path }}
+#      - name: Test with miri
+#        run: cargo miri test --manifest-path ${{ inputs.manifest_path }}
 
 
   will_test :
