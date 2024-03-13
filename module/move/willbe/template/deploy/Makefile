@@ -1,10 +1,6 @@
 .PHONY: deploy
 
-SERVICE_KEY_ERROR := $(shell [ ! -f key/service_account.json ] && echo "ERROR: File key/service_account.json does not exist")
-STATE_KEY_ERROR := $(shell [ ! -f key/SECRET_STATE_ARCHIVE_KEY ] && echo "ERROR: File key/SECRET_STATE_ARCHIVE_KEY does not exist")
-HETZNER_KEY_ERROR := $(shell [ ! -f key/SECRET_CSP_HETZNER ] && echo "ERROR: File key/SECRET_CSP_HETZNER does not exist")
-AWS_ACCESS_KEY_ID_ERROR := $(shell [ ! -f key/SECRET_AWS_ACCESS_KEY_ID ] && echo "ERROR: File key/SECRET_AWS_ACCESS_KEY_ID does not exist")
-AWS_ACCESS_KEY_ERROR := $(shell [ ! -f key/SECRET_AWS_ACCESS_KEY ] && echo "ERROR: File key/SECRET_AWS_ACCESS_KEY does not exist")
+# Secrets that can be provided via ENV vars or files in ./key/ directory.
 
 # Hetzner API token
 export SECRET_CSP_HETZNER ?= $(shell cat key/SECRET_CSP_HETZNER 2> /dev/null)
@@ -14,6 +10,8 @@ export SECRET_STATE_ARCHIVE_KEY ?= $(shell cat key/SECRET_STATE_ARCHIVE_KEY 2> /
 export SECRET_AWS_ACCESS_KEY_ID ?= $(shell cat key/SECRET_AWS_ACCESS_KEY_ID 2> /dev/null)
 # AWS Access Key
 export SECRET_AWS_ACCESS_KEY ?= $(shell cat key/SECRET_AWS_ACCESS_KEY 2> /dev/null)
+
+# Configuration variables for deployment. Can be edited for desired behavior.
 
 # Base terraform directory
 export tf_dir ?= deploy
@@ -25,58 +23,62 @@ export TF_VAR_PROJECT_ID ?= {{gcp_project_id}}
 export TF_VAR_REPO_NAME ?= {{gcp_artifact_repo_name}}
 # Pushed image name
 export TF_VAR_IMAGE_NAME ?= {{docker_image_name}}
-# Helper var for tagging local image
-export tag ?= $(TF_VAR_REGION)-docker.pkg.dev/$(TF_VAR_PROJECT_ID)/$(TF_VAR_REPO_NAME)/$(TF_VAR_IMAGE_NAME)
 # Path to the service account credentials
 export google_sa_creds ?= key/service_account.json
-# Zone location for the resource
-export TF_VAR_ZONE ?= $(TF_VAR_REGION)-a
 # Cloud Storage bucket name
 export TF_VAR_BUCKET_NAME ?= uaconf_tfstate
-# Hetzner Cloud auth token
-export TF_VAR_HCLOUD_TOKEN ?= $(SECRET_CSP_HETZNER)
 # Specifies where to deploy the project. Possible values: `hetzner`, `gce`, `aws`
 export CSP ?= hetzner
+
+# Helper variables for deployment.
+
+# Helper var for tagging local image
+export tag ?= $(TF_VAR_REGION)-docker.pkg.dev/$(TF_VAR_PROJECT_ID)/$(TF_VAR_REPO_NAME)/$(TF_VAR_IMAGE_NAME)
+# Zone location for the resource
+export TF_VAR_ZONE ?= $(TF_VAR_REGION)-a
+# Hetzner Cloud auth token
+export TF_VAR_HCLOUD_TOKEN ?= $(SECRET_CSP_HETZNER)
 # AWS Access key for deploying to an EC2 instance
 export AWS_ACCESS_KEY_ID ?= $(SECRET_AWS_ACCESS_KEY_ID)
 # AWS Secret Access key for deploying to an EC2 instance
 export AWS_SECRET_ACCESS_KEY ?= $(SECRET_AWS_ACCESS_KEY)
 
 # Check Hetzner and deployment related keys 
-check-hetzner-keys: check-gcp-keys
-ifneq ($(HETZNER_KEY_ERROR),)
-	@echo $(HETZNER_KEY_ERROR)
-endif
-ifeq ($(SECRET_CSP_HETZNER),)
-	@exit 1
-endif
+check-hetzner-keys:
+	@[ -f key/SECRET_CSP_HETZNER ] \
+    || [ ! -z "${SECRET_CSP_HETZNER}" ] \
+    || { echo "ERROR: File key/SECRET_CSP_HETZNER does not exist"; exit 1; }
 
 # Check AWS and deployment related keys 
-check-aws-keys: check-gcp-keys
-ifneq ($(AWS_ACCESS_KEY_ID_ERROR),)
-	@echo $(AWS_ACCESS_KEY_ID_ERROR)
-endif
-ifneq ($(AWS_ACCESS_KEY_ERROR),)
-	@echo $(AWS_ACCESS_KEY_ERROR)
-endif
-ifeq ($(SECRET_AWS_ACCESS_KEY_ID),$(SECRET_AWS_ACCESS_KEY))
-	@exit 1
-endif
+check-aws-keys:
+	@[ -f key/SECRET_AWS_ACCESS_KEY_ID ] \
+    || [ ! -z "${SECRET_AWS_ACCESS_KEY_ID}" ] \
+    || echo "ERROR: File key/SECRET_AWS_ACCESS_KEY_ID does not exist"
+	@[ -f key/SECRET_AWS_ACCESS_KEY ] \
+    || [ ! -z "${SECRET_AWS_ACCESS_KEY}" ] \
+    || echo "ERROR: File key/SECRET_AWS_ACCESS_KEY does not exist"
+	@[ -f key/SECRET_AWS_ACCESS_KEY_ID ] \
+    || [ ! -z "${SECRET_AWS_ACCESS_KEY_ID}" ] \
+    || exit 1
+	@[ -f key/SECRET_AWS_ACCESS_KEY ] \
+    || [ ! -z "${SECRET_AWS_ACCESS_KEY}" ] \
+    || exit 1
 
-check-gce-keys: check-gcp-keys
+check-gce-keys:
 	@echo "All required GCE keys are the same as GCP keys" 
 
 # Check if required GCP keys are present
 check-gcp-keys:
-ifneq ($(SERVICE_KEY_ERROR),)
-	@echo $(SERVICE_KEY_ERROR)
-endif
-ifneq ($(STATE_KEY_ERROR),)
-	@echo $(STATE_KEY_ERROR)
-endif
-ifeq ($(SECRET_STATE_ARCHIVE_KEY),)
-	@exit 1
-endif
+	@[ -f key/service_account.json ] \
+    || echo "ERROR: File key/service_account.json does not exist"
+	@[ -f key/SECRET_STATE_ARCHIVE_KEY ] \
+    || [ ! -z "${SECRET_STATE_ARCHIVE_KEY}" ] \
+    || echo "ERROR: File key/SECRET_STATE_ARCHIVE_KEY does not exist"
+	@[ -f key/service_account.json ] \
+    || exit 1
+	@[ -f key/SECRET_STATE_ARCHIVE_KEY ] \
+    || [ ! -z "${SECRET_STATE_ARCHIVE_KEY}" ] \
+    || exit 1
 
 # Start local docker container
 start:
@@ -146,7 +148,7 @@ push-image: gcp-docker create-artifact-repo
 	docker push $(tag)
 
 # Creates GCE instance with the website configured on boot
-create-gce: gcp-service state_storage_pull push-image
+create-gce: check-gce-keys gcp-service state_storage_pull push-image
 	terraform -chdir=$(tf_dir)/gce apply -auto-approve
 
 # Creates AWS EC2 instance with the website configured on boot
@@ -161,9 +163,15 @@ create-hetzner: check-hetzner-keys gcp-service state_storage_pull push-image
 deploy-in-container: create-$(CSP) state_storage_push
 
 # Deploys using tools from the container
-deploy: check-$(CSP)-keys build-image
+deploy: check-gcp-keys build-image
 	docker build . -t deploy-$(TF_VAR_IMAGE_NAME) -f ./$(tf_dir)/Dockerfile --build-arg google_sa_creds="$(google_sa_creds)"
-	@docker run -v //var/run/docker.sock:/var/run/docker.sock -v .:/app -e SECRET_STATE_ARCHIVE_KEY=$(SECRET_STATE_ARCHIVE_KEY) -e TF_VAR_HCLOUD_TOKEN=$(TF_VAR_HCLOUD_TOKEN) -e CSP=$(CSP) --rm deploy-$(TF_VAR_IMAGE_NAME)
+	@docker run -v //var/run/docker.sock:/var/run/docker.sock -v .:/app \
+    -e SECRET_STATE_ARCHIVE_KEY=$(SECRET_STATE_ARCHIVE_KEY) \
+    -e SECRET_CSP_HETZNER=$(SECRET_CSP_HETZNER) \
+    -e SECRET_AWS_ACCESS_KEY_ID=$(SECRET_AWS_ACCESS_KEY_ID) \
+    -e SECRET_AWS_ACCESS_KEY=$(SECRET_AWS_ACCESS_KEY) \
+    -e CSP=$(CSP) \
+    --rm deploy-$(TF_VAR_IMAGE_NAME)
 
 # Review changes that terraform will do on apply
 tf-plan: tf-init
