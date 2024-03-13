@@ -29,12 +29,13 @@ fn fail_test()
   let args = TestsCommandOptions::former()
   .dir( abs )
   .channels([ channel::Channel::Stable ])
+  .mods([ mode::Mode::Debug ])
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-  let stable = rep.failure_reports[0].tests.get( &channel::Channel::Stable ).unwrap();
+  let stable = rep.failure_reports[0].tests.get( &mode::Mode::Debug ).unwrap().get( &channel::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
   assert!( no_features.is_err() );
   assert!( no_features.clone().unwrap_err().out.contains( "failures" ) );
@@ -63,12 +64,13 @@ fn fail_build()
   let args = TestsCommandOptions::former()
   .dir( abs )
   .channels([ channel::Channel::Stable ])
+  .mods([ mode::Mode::Debug ])
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-  let stable = rep.failure_reports[ 0 ].tests.get( &channel::Channel::Stable ).unwrap();
+  let stable = rep.failure_reports[ 0 ].tests.get( &mode::Mode::Debug ).unwrap().get( &channel::Channel::Stable ).unwrap();
   let no_features = stable.get( "" ).unwrap();
 
   assert!( no_features.clone().unwrap_err().out.contains( "error" ) && no_features.clone().unwrap_err().out.contains( "achtung" ) );
@@ -121,10 +123,12 @@ fn call_from_workspace_root()
   .dir( abs )
   .concurrent( 1u32 )
   .channels([ channel::Channel::Stable ])
+  .mods([ mode::Mode::Debug ])
   .form();
 
 
-  let rep = test( args, false ).unwrap_err().0;
+  let rep = test( args, false );
+  let rep = rep.unwrap_err().0;
 
 
   assert_eq!( rep.failure_reports.len(), 1 );
