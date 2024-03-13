@@ -5,9 +5,9 @@ error[E0277]: `({integer}, {integer})` is not an iterator
   |   ^^^ `({integer}, {integer})` is not an iterator
   |
   = help: the trait `Iterator` is not implemented for `({integer}, {integer})`
-  = help: the trait `From<Collection>` is implemented for `Bad<T>`
+  = help: the trait `From< Collection >` is implemented for `Bad< T >`
   = note: required for `({integer}, {integer})` to implement `IntoIterator`
-note: required for `Bad<_>` to implement `From<({integer}, {integer})>`
+note: required for `Bad< _ >` to implement `From<({integer}, {integer})>`
  --> tests/dt/type_constructor/many/many_from_tuple_test.rs:5:3
   |
 5 |   types!( many Bad : < T > );

@@ -78,7 +78,7 @@ pub( crate ) mod private
           /* skip alpha channel */
           let data = data.iter().enumerate()
           .filter_map( | ( i, v ) | if ( i + 1 ) % 4 == 0 { None } else { Some( *v ) } )
-          .collect::<Vec<u8>>();
+          .collect::<Vec< u8 >>();
           Some( data )
         },
         ColorType::Yuv444 =>

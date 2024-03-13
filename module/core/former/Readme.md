@@ -33,7 +33,7 @@ pub struct UserProfile
 {
   age : i32,
   username : String,
-  bio_optional : Option<String>, // Fields could be optional
+  bio_optional : Option< String >, // Fields could be optional
 }
 
 let profile = UserProfile::former()

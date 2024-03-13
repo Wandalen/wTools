@@ -19,7 +19,7 @@ tests_impls!
     /* */
 
     let op = parse::OpType::from( vec![ 1, 2 ] );
-    let got : Vec<isize> = op.into();
+    let got : Vec< isize > = op.into();
     a_id!( got, vec![ 1, 2 ] );
 
     /* */
@@ -29,14 +29,14 @@ tests_impls!
     a_id!( got.unwrap(), 1 );
 
     let op = parse::OpType::from( vec![ 1, 2 ] );
-    let got : Vec<isize> = op.vector().unwrap();
+    let got : Vec< isize > = op.vector().unwrap();
     a_id!( got, vec![ 1, 2 ] );
 
     let op = parse::OpType::from( 1 );
     let got = op.vector();
     a_id!( got, None );
 
-    let op : parse::OpType<usize> = parse::OpType::from( vec![ 1, 2 ] );
+    let op : parse::OpType< usize > = parse::OpType::from( vec![ 1, 2 ] );
     let got = op.primitive();
     a_id!( got, None );
   }

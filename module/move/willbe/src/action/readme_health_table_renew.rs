@@ -36,8 +36,8 @@ mod private
   use workspace::Workspace;
   use path::AbsolutePath;
 
-  static TAG_TEMPLATE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
-  static CLOSE_TAG: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
+  static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
+  static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
 
   /// Initializes two global regular expressions that are used to match tags.
@@ -268,7 +268,7 @@ mod private
   /// Writes tables into a file at specified positions.
   fn tables_write_into_file(  tags_closures : Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () >
   {
-    let mut buffer: Vec<u8> = vec![];
+    let mut buffer: Vec< u8 > = vec![];
     let mut start: usize = 0;
     for ( ( end_of_start_tag, start_of_end_tag ), con ) in tags_closures.iter().zip( tables.iter() )
     {
