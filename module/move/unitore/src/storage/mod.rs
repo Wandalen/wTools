@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc, time::Duration};
+use std::{ collections::HashMap, sync::Arc, time::Duration };
 use tokio::sync::Mutex;
 use feed_rs::model::{ Entry, Feed };
 use gluesql::
@@ -14,21 +14,21 @@ use gluesql::
   sled_storage::{ sled::Config, SledStorage },
 };
 // qqq : ask
-use crate::report::
-{
+// use crate::report::
+// {
   // qqq : don't put report into different file, keep the in the same file where it used
-  FramesReport,
-  FieldsReport,
-  FeedsReport,
-  SelectedEntries,
-  QueryReport,
-  ConfigReport,
-  UpdateReport,
-  ListReport,
+  // aaa: put into separate files with functions that use them
+// };
+use crate::executor::endpoints::{
+  feeds::FeedsReport,
+  query::QueryReport,
+  frames::{ UpdateReport, ListReport },
+  table::TablesReport,
+  list_fields::FieldsReport,
 };
 use wca::wtools::Itertools;
 
-mod model;
+pub mod model;
 use model::{ FeedRow, FrameRow };
 
 /// Storage for feed frames.
@@ -60,6 +60,7 @@ impl FeedStorage< SledStorage >
     .add_column( "id TEXT PRIMARY KEY" )
     .add_column( "type TEXT" )
     .add_column( "title TEXT" )
+    .add_column( "link TEXT UNIQUE" )
     .add_column( "updated TIMESTAMP" )
     .add_column( "authors TEXT" )
     .add_column( "description TEXT" )
@@ -134,13 +135,22 @@ pub trait FeedStore
   fn columns_titles( &mut self ) -> FieldsReport;
 
   /// Add subscription.
-  async fn add_config( &mut self, config : String ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >;
+  async fn add_config( &mut self, config : String ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
 
   /// Remove subscription.
-  async fn remove_subscription( &mut self, link : String ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >;
+  async fn remove_config( &mut self, link : String ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
 
   /// List subscriptions.
-  async fn list_subscriptions( &mut self ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >;
+  async fn list_configs( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
+
+  /// List tables in storage.
+  async fn list_tables( &mut self ) -> Result< TablesReport, Box< dyn std::error::Error + Send + Sync > >;
+
+  /// List columns of table.
+  async fn list_columns( &mut self, table_name : String ) -> Result< TablesReport, Box< dyn std::error::Error + Send + Sync > >;
+
+  /// Add feeds entries.
+  async fn add_feeds( &mut self, feeds : Vec< FeedRow > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >;
 }
 
 #[ async_trait::async_trait( ?Send ) ]
@@ -164,6 +174,27 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( report )
   }
 
+  async fn list_tables( &mut self ) -> Result< TablesReport, Box< dyn std::error::Error + Send + Sync > >
+  {
+    let glue = &mut *self.storage.lock().await;
+    let payloads = glue.execute( "SELECT * FROM GLUE_TABLE_COLUMNS" ).await?;
+
+    let report = TablesReport::new( payloads );
+
+    Ok( report )
+  }
+
+  async fn list_columns( &mut self, table_name : String ) -> Result< TablesReport, Box< dyn std::error::Error + Send + Sync > >
+  {
+    let glue = &mut *self.storage.lock().await;
+    let query_str = format!( "SELECT * FROM GLUE_TABLE_COLUMNS WHERE TABLE_NAME='{}'", table_name );
+    let payloads = glue.execute( &query_str ).await?;
+
+    let report = TablesReport::new( payloads );
+
+    Ok( report )
+  }
+
   async fn get_all_frames( &mut self ) -> Result< ListReport, Box< dyn std::error::Error + Send + Sync > >
   {
     let res = table( "frame" ).select().execute( &mut *self.storage.lock().await ).await?;
@@ -173,13 +204,13 @@ impl FeedStore for FeedStorage< SledStorage >
     {
       Payload::Select { labels: label_vec, rows: rows_vec } =>
       {
-        SelectedEntries
+        crate::executor::endpoints::frames::SelectedEntries
         {
           selected_rows : rows_vec,
           selected_columns : label_vec,
         }
       },
-      _ => SelectedEntries::new(),
+      _ => crate::executor::endpoints::frames::SelectedEntries::new(),
     };
 
     let mut feeds_map = HashMap::new();
@@ -196,9 +227,9 @@ impl FeedStore for FeedStorage< SledStorage >
 
     for ( title, frames ) in feeds_map
     {
-      let mut report = FramesReport::new( title );
+      let mut report = crate::executor::endpoints::frames::FramesReport::new( title );
       report.existing_frames = frames.len();
-      report.selected_frames = SelectedEntries { selected_rows : frames, selected_columns : all_frames.selected_columns.clone() };
+      report.selected_frames = crate::executor::endpoints::frames::SelectedEntries { selected_rows : frames, selected_columns : all_frames.selected_columns.clone() };
       reports.push( report );
     }
 
@@ -207,13 +238,13 @@ impl FeedStore for FeedStorage< SledStorage >
 
   async fn get_all_feeds( &mut self ) -> Result< FeedsReport, Box< dyn std::error::Error + Send + Sync > >
   {
-    let res = table( "feed" ).select().project( "id, title" ).execute( &mut *self.storage.lock().await ).await?;
+    let res = table( "feed" ).select().project( "id, title, link" ).execute( &mut *self.storage.lock().await ).await?;
     let mut report = FeedsReport::new();
     match res
     {
       Payload::Select { labels: label_vec, rows: rows_vec } =>
       {
-        report.selected_entries = SelectedEntries
+        report.selected_entries = crate::executor::endpoints::frames::SelectedEntries
         {
           selected_rows : rows_vec,
           selected_columns : label_vec,
@@ -253,6 +284,7 @@ impl FeedStore for FeedStorage< SledStorage >
     (
       "id,
       title,
+      link,
       updated,
       authors,
       description,
@@ -270,7 +302,7 @@ impl FeedStore for FeedStorage< SledStorage >
   async fn update_feed( &mut self, feed : Vec< ( Entry, String ) > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
   {
     let entries_rows = feed.into_iter().map( | entry | FrameRow::from( entry ).0 ).collect_vec();
-    // let mut report = FramesReport::new();
+
     for entry in entries_rows
     {
       let _update = table( "frame" )
@@ -295,11 +327,11 @@ impl FeedStore for FeedStorage< SledStorage >
     feeds : Vec< ( Feed, Duration ) >,
   ) -> Result< UpdateReport, Box< dyn std::error::Error + Send + Sync > >
   {
-    let new_feed_ids = feeds.iter().map( | feed | format!("'{}'", feed.0.id ) ).join( "," );
+    let new_feed_ids = feeds.iter().filter_map( | feed | feed.0.links.get( 0 ) ).map( | link | format!("'{}'", link.href ) ).join( "," );
     let existing_feeds = table( "feed" )
     .select()
-    .filter( format!( "id IN ({})", new_feed_ids ).as_str() )
-    .project( "id" )
+    .filter( format!( "link IN ({})", new_feed_ids ).as_str() )
+    .project( "link" )
     .execute( &mut *self.storage.lock().await )
     .await?
     ;
@@ -310,26 +342,29 @@ impl FeedStore for FeedStorage< SledStorage >
 
     for feed in &feeds
     {
-      let mut frames_report = FramesReport::new( feed.0.title.clone().unwrap().content );
+      let mut frames_report = crate::executor::endpoints::frames::FramesReport::new( feed.0.title.clone().unwrap().content );
       // check if feed is new
       if let Some( existing_feeds ) = existing_feeds.select()
       {
 
-        let existing_ids = existing_feeds.filter_map( | feed | feed.get( "id" ).map( | id | id.to_owned() ) ).filter_map( | id |
-          match id
-          {
-            Value::Str( s ) => Some( s ),
-            _ => None,
-          }
-        ).collect_vec();
+        let existing_feeds = existing_feeds
+        .filter_map( | feed | feed.get( "link" ).map( | link | String::from( crate::storage::model::RowValue( link ) ) ))
+        .collect_vec()
+        ;
 
-        if !existing_ids.contains( &&feed.0.id )
+        if !existing_feeds.contains( &&feed.0.links[ 0 ].href )
         {
           self.save_feed( vec![ feed.clone() ] ).await?;
           frames_report.new_frames = feed.0.entries.len();
           frames_report.is_new_feed = true;
 
-          new_entries.extend( feed.0.entries.clone().into_iter().zip( std::iter::repeat( feed.0.id.clone() ).take( feed.0.entries.len() ) ) );
+          new_entries.extend
+          (
+            feed.0.entries
+            .clone()
+            .into_iter()
+            .zip( std::iter::repeat( feed.0.id.clone() ).take( feed.0.entries.len() ) )
+          );
           reports.push( frames_report );
           continue;
         }
@@ -406,7 +441,7 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( UpdateReport( reports ) )
   }
 
-  async fn add_config( &mut self, config : String ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
+  async fn add_config( &mut self, config : String ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
   {
 
     let res = table( "config" )
@@ -419,10 +454,10 @@ impl FeedStore for FeedStorage< SledStorage >
     .execute( &mut *self.storage.lock().await )
     .await?;
 
-    Ok( ConfigReport { result : res } )
+    Ok( res )
   }
 
-  async fn remove_subscription( &mut self, link : String ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
+  async fn remove_config( &mut self, link : String ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
   {
     let res = table( "config" )
     .delete()
@@ -430,12 +465,37 @@ impl FeedStore for FeedStorage< SledStorage >
     .execute( &mut *self.storage.lock().await )
     .await?;
 
-    Ok( ConfigReport { result : res } )
+    Ok( res )
   }
 
-  async fn list_subscriptions( &mut self ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
+  async fn list_configs( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
   {
     let res = table( "config" ).select().execute( &mut *self.storage.lock().await ).await?;
-    Ok( ConfigReport { result : res } )
+    Ok( res )
+  }
+
+  async fn add_feeds( &mut self, feed : Vec< FeedRow > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
+  {
+    let feeds_rows = feed.into_iter().map( | feed | feed.0 ).collect_vec();
+
+    let _insert = table( "feed" )
+    .insert()
+    .columns
+    (
+      "id,
+      title,
+      link,
+      updated,
+      authors,
+      description,
+      published,
+      update_period",
+    )
+    .values( feeds_rows )
+    .execute( &mut *self.storage.lock().await )
+    .await?
+    ;
+
+    Ok( () )
   }
 }
