@@ -15,7 +15,11 @@ mod private
   {
     let mut template = DeployTemplate::default();
     let parameters = template.parameters();
-    let values = parameters.values_from_props( &properties );
+    let mut values = parameters.values_from_props( &properties );
+    for mandatory in parameters.get_mandatory()
+    {
+      values.interactive_if_empty( mandatory );
+    }
     template.set_values( values );
     action::deploy_renew( &std::env::current_dir()?, template ).context( "Fail to create deploy template" )
   }

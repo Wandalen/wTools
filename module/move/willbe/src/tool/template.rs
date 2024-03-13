@@ -59,25 +59,57 @@ mod private
   }
 
   /// Parameters required for the template.
-  #[ derive( Debug, Default ) ]
-  pub struct TemplateParameters( Vec< String > );
+  #[ derive( Debug, Default, Former ) ]
+  pub struct TemplateParameters
+  {
+    descriptors : Vec< TemplateParameterDescriptor >
+  }
 
   impl TemplateParameters
   {
-    /// Creates new template parameters from a list of strings.
-    ///
-    /// Type of the parameter will be automatically converted from value
-    /// that was provided during template creation.
-    pub fn new( parameters : &[ &str ] ) -> Self
-    {
-      Self( parameters.into_iter().map( | parameter | parameter.to_string() ).collect() )
-    }
-
     /// Extracts template values from props for parameters required for this template.
     pub fn values_from_props( &self, props : &Props ) -> TemplateValues
     {
-      let values = self.0.iter().map( | param | ( param.clone(), props.get( param ).map( Value::clone ) ) ).collect();
+      let values = self.descriptors.iter().map( | d | &d.parameter ).map( | param | ( param.clone(), props.get( param ).map( Value::clone ) ) ).collect();
       TemplateValues( values )
+    }
+
+    /// Get a list of all mandatory parameters.
+    pub fn get_mandatory( &self ) -> Vec< &str >
+    {
+      self.descriptors.iter().filter( | d | d.is_mandatory ).map( | d | d.parameter.as_str() ).collect()
+    }
+  }
+  
+  /// Parameter description.
+  #[ derive( Debug, Default, Former ) ]
+  pub struct TemplateParameterDescriptor
+  {
+    parameter : String,
+    is_mandatory : bool
+  }
+
+  impl< Context, End > TemplateParametersFormer< Context, End >
+  where
+    End : former::ToSuperFormer< TemplateParameters, Context >,
+  {
+    #[ inline( always ) ]
+    pub fn parameter( self, name : &str ) -> TemplateParameterDescriptorFormer< Self, impl former::ToSuperFormer< TemplateParameterDescriptor, Self > >
+    {
+      let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self
+      {
+        let mut super_former = super_former.unwrap();
+        if let Some( ref mut descriptors ) = super_former.container.descriptors
+        {
+          descriptors.push( descriptor );
+        }
+        else
+        {
+          super_former.container.descriptors = Some( vec![ descriptor ] );
+        }
+        super_former
+      };
+      TemplateParameterDescriptorFormer::begin( Some( self ), on_end ).parameter( name )
     }
   }
 
@@ -249,6 +281,7 @@ crate::mod_interface!
   orphan use TemplateFiles;
   orphan use TemplateFileDescriptor;
   orphan use TemplateParameters;
+  orphan use TemplateParameterDescriptor;
   orphan use TemplateValues;
   orphan use TemplateFilesBuilder;
   orphan use FileSystemWriter;

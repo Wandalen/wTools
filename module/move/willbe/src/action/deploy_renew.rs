@@ -39,19 +39,17 @@ mod private
   {
     fn default() -> Self
     {
+      let parameters = TemplateParameters::former()
+      .parameter( "gcp_project_id" ).is_mandatory( true ).end()
+      .parameter( "gcp_region" ).end()
+      .parameter( "gcp_artifact_repo_name" ).end()
+      .parameter( "docker_image_name" ).end()
+      .form();
+      
       Self
       {
         files : Default::default(),
-        parameters : TemplateParameters::new
-          (
-            &
-            [
-              "gcp_project_id",
-              "gcp_region",
-              "gcp_artifact_repo_name",
-              "docker_image_name"
-            ]
-          ),
+        parameters,
         values : Default::default(),
       }
     }
@@ -149,7 +147,6 @@ mod private
     template.values.insert_if_empty( "gcp_artifact_repo_name", wca::Value::String( artifact_repo_name ) );
     template.values.insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );
     template.values.insert_if_empty( "gcp_region", wca::Value::String( "europe-central2".into() ) );
-    template.values.interactive_if_empty( "gcp_project_id" );
     template.create_all( path )?;
     Ok( () )
   }
