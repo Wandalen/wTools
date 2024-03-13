@@ -98,23 +98,23 @@ jobs :
       - name: Make release build
         run: cargo build --manifest-path ${{ inputs.manifest_path }} --release
 
-  miri:
-    if: contains( inputs.commit_message, '!test' ) || contains( inputs.commit_message, 'merge' )
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install latest nightly toolchain
-        uses: Wandalen/wretry.action@master
-        with:
-          action: actions-rs/toolchain@v1
-          with: |
-            toolchain : nightly
-            override : true
-            components : miri
-          attempt_limit: 3
-          attempt_delay: 10000
-      - uses: actions/checkout@v3
-        with:
-          ref: alpha
+#  miri:
+#    if: contains( inputs.commit_message, '!test' ) || contains( inputs.commit_message, 'merge' )
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Install latest nightly toolchain
+#        uses: Wandalen/wretry.action@master
+#        with:
+#          action: actions-rs/toolchain@v1
+#          with: |
+#            toolchain : nightly
+#            override : true
+#            components : miri
+#          attempt_limit: 3
+#          attempt_delay: 10000
+#      - uses: actions/checkout@v3
+#        with:
+#          ref: alpha
 
       - name: Test with miri
         run: cargo miri test --manifest-path ${{ inputs.manifest_path }}
