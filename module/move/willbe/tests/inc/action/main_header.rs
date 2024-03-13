@@ -4,171 +4,167 @@ use crate::*;
 use assert_fs::prelude::*;
 use TheModule::action;
 
-mod header_create_test
+use std::io::Read;
+use willbe::path::AbsolutePath;
+  
+
+fn arrange( source : &str ) -> assert_fs::TempDir
 {
-  use std::io::Read;
-  use willbe::path::AbsolutePath;
+  let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+  let assets_relative_path = std::path::Path::new( ASSETS_PATH );
+  let assets_path = root_path.join( assets_relative_path );
 
-  use super::*;
+  let temp = assert_fs::TempDir::new().unwrap();
+  temp.copy_from( assets_path.join( source ), &[ "**" ] ).unwrap();
 
-  fn arrange( source : &str ) -> assert_fs::TempDir
-  {
-    let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
-    let assets_relative_path = std::path::Path::new( ASSETS_PATH );
-    let assets_path = root_path.join( assets_relative_path );
+  temp
+}
 
-    let temp = assert_fs::TempDir::new().unwrap();
-    temp.copy_from( assets_path.join( source ), &[ "**" ] ).unwrap();
+#[ test ]
+fn tag_shout_stay()
+{
+  // Arrange
+  let temp = arrange( "single_module" );
 
-    temp
-  }
+  // Act
+  _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  #[ test ]
-  fn tag_shout_stay()
-  {
-    // Arrange
-    let temp = arrange( "single_module" );
+  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    // Act
-    _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  let mut actual = String::new();
 
-    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  _ = file.read_to_string( &mut actual ).unwrap();
 
-    let mut actual = String::new();
+  // Assert
+  assert!( actual.contains( "<!--{ generate.main_header.start() }-->" ) );
+  assert!( actual.contains( "<!--{ generate.main_header.end }-->" ) );
+}
 
-    _ = file.read_to_string( &mut actual ).unwrap();
+#[ test ]
+fn branch_cell()
+{
+  // Arrange
+  let temp = arrange( "single_module" );
 
-    // Assert
-    assert!( actual.contains( "<!--{ generate.main_header.start() }-->" ) );
-    assert!( actual.contains( "<!--{ generate.main_header.end }-->" ) );
-  }
+  // Act
+  _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  #[ test ]
-  fn branch_cell()
-  {
-    // Arrange
-    let temp = arrange( "single_module" );
+  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    // Act
-    _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  let mut actual = String::new();
 
-    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  _ = file.read_to_string( &mut actual ).unwrap();
 
-    let mut actual = String::new();
+  // Assert
+  assert!( actual.contains( "[![test_branch](https://img.shields.io/github/actions/workflow/status/Username/test/StandardRustScheduled.yml?branch=master&label=test_branch&logo=github)](https://github.com/Username/test/actions/workflows/StandardRustStatus.yml)" ) );
+}
 
-    _ = file.read_to_string( &mut actual ).unwrap();
+#[ test ]
+fn discord_cell()
+{
+  // Arrange
+  let temp = arrange( "single_module" );
 
-    // Assert
-    assert!( actual.contains( "[![test_branch](https://img.shields.io/github/actions/workflow/status/Username/test/StandardRustScheduled.yml?branch=master&label=test_branch&logo=github)](https://github.com/Username/test/actions/workflows/StandardRustStatus.yml)" ) );
-  }
+  // Act
+  _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  #[ test ]
-  fn discord_cell()
-  {
-    // Arrange
-    let temp = arrange( "single_module" );
+  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    // Act
-    _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  let mut actual = String::new();
 
-    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  _ = file.read_to_string( &mut actual ).unwrap();
 
-    let mut actual = String::new();
+  // Assert
+  assert!( actual.contains( "[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)" ) );
+}
 
-    _ = file.read_to_string( &mut actual ).unwrap();
+#[ test ]
+fn gitpod_cell()
+{
+  // Arrange
+  let temp = arrange( "single_module" );
 
-    // Assert
-    assert!( actual.contains( "[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)" ) );
-  }
+  // Act
+  _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  #[ test ]
-  fn gitpod_cell()
-  {
-    // Arrange
-    let temp = arrange( "single_module" );
+  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    // Act
-    _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  let mut actual = String::new();
 
-    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  _ = file.read_to_string( &mut actual ).unwrap();
 
-    let mut actual = String::new();
+  // Assert
+  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_trivial_sample/https://github.com/Username/test)" ) );
+}
 
-    _ = file.read_to_string( &mut actual ).unwrap();
+#[ test ]
+fn docs_cell()
+{
+  // Arrange
+  let temp = arrange( "single_module" );
 
-    // Assert
-    assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_trivial_sample/https://github.com/Username/test)" ) );
-  }
+  // Act
+  _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  #[ test ]
-  fn docs_cell()
-  {
-    // Arrange
-    let temp = arrange( "single_module" );
+  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    // Act
-    _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  let mut actual = String::new();
 
-    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  _ = file.read_to_string( &mut actual ).unwrap();
 
-    let mut actual = String::new();
+  // Assert
+  assert!( actual.contains( "[![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/test)" ) );
+}
 
-    _ = file.read_to_string( &mut actual ).unwrap();
+#[ test ]
+fn without_fool_config()
+{
+  // Arrange
+  let temp = arrange( "single_module_without_master_branch_and_discord" );
 
-    // Assert
-    assert!( actual.contains( "[![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/test)" ) );
-  }
+  // Act
+  _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 
-  #[ test ]
-  fn without_fool_config()
-  {
-    // Arrange
-    let temp = arrange( "single_module_without_master_branch_and_discord" );
+  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
 
-    // Act
-    _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  let mut actual = String::new();
 
-    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  _ = file.read_to_string( &mut actual ).unwrap();
 
-    let mut actual = String::new();
+  // Assert
+  assert!( actual.contains( "[master]" ) );// master by default
+  assert!( !actual.contains( "[discord]" ) );// without discord
+}
 
-    _ = file.read_to_string( &mut actual ).unwrap();
+#[ test ]
+fn idempotency()
+{
+  // Arrange
+  let temp = arrange( "single_module" );
 
-    // Assert
-    assert!( actual.contains( "[master]" ) );// master by default
-    assert!( !actual.contains( "[discord]" ) );// without discord
-  }
+  // Act
+  _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  let mut actual1 = String::new();
+  _ = file.read_to_string( &mut actual1 ).unwrap();
+  drop( file );
 
-  #[ test ]
-  fn idempotency()
-  {
-    // Arrange
-    let temp = arrange( "single_module" );
+  _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
+  let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
+  let mut actual2 = String::new();
+  _ = file.read_to_string( &mut actual2 ).unwrap();
+  drop( file );
 
-    // Act
-    _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
-    let mut actual1 = String::new();
-    _ = file.read_to_string( &mut actual1 ).unwrap();
-    drop( file );
+  // Assert
+  assert_eq!( actual1, actual2 );
+}
 
-    _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
-    let mut file = std::fs::File::open( temp.path().join( "Readme.md" ) ).unwrap();
-    let mut actual2 = String::new();
-    _ = file.read_to_string( &mut actual2 ).unwrap();
-    drop( file );
-
-    // Assert
-    assert_eq!( actual1, actual2 );
-  }
-
-  #[ test ]
-  #[ should_panic ]
-  fn without_needed_config()
-  {
-    // Arrange
-    let temp = arrange( "variadic_tag_configurations" );
-    // Act
-    _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
-  }
+#[ test ]
+#[ should_panic ]
+fn without_needed_config()
+{
+  // Arrange
+  let temp = arrange( "variadic_tag_configurations" );
+  // Act
+  _ = action::readme_header_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
 }

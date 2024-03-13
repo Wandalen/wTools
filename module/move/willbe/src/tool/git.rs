@@ -1,7 +1,7 @@
 mod private
 {
-  use std::ffi::OsString;
   use crate::*;
+  use std::ffi::OsString;
   use std::path::Path;
   use process::CmdReport;
   use wtools::error::Result;
