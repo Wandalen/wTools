@@ -6,295 +6,204 @@ use retriever::{ FeedClient, FeedFetch };
 use feed_config::read_feed_config;
 use storage::{ FeedStorage, FeedStore };
 use report::{ Report, FieldsReport, FeedsReport, QueryReport, ConfigReport, UpdateReport, ListReport };
+use wca::{ Args, Type };
 // use wca::prelude::*;
 
 /// Run feed updates.
 pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 {
   let ca = wca::CommandsAggregator::former()
-  .grammar
-  ( [
-    wca::Command::former()
-    .phrase( "frames.download" )
+  .command( "frames.download" )
     .hint( "Download frames from feed sources provided in config files." )
-    .long_hint(
-      concat!
-      (
-        "Download frames from feed sources provided in config files.\n",
-        "    Example: .frames.download",
-      )
-    )
-    .form(),
-    wca::Command::former()
-    .phrase( "fields.list" )
-    .long_hint(
-      concat!
-      (
-        "List all fields in frame table with explanation and type.\n",
-        "    Example: .fields.list",
-      )
-    )
-    .form(),
-    wca::Command::former()
-    .phrase( "feeds.list" )
-    .long_hint(
-      concat!
-      (
-        "List all feeds from storage.\n",
-        "    Example: .feeds.list",
-      )
-    )
-    .form(),
-    wca::Command::former()
-    .phrase( "frames.list" )
-    .long_hint(
-      concat!
-      (
-        "List all frames saved in storage.\n",
-        "    Example: .frames.list",
-      )
-    )
-    .form(),
-    wca::Command::former()
-    .phrase( "config.add" )
-    .long_hint(
-      concat!
-      (
-        "Add toml file with feeds configurations. Subject: path to config file.\n",
-        "    File content: list of \n",
-        "    Example: .config.add ./config/feeds.toml",
-      )
-    )
-    .subject( "Link", wca::Type::Path, false )
-    .form(),
-    wca::Command::former()
-    .phrase( "config.delete" )
-    .long_hint(
-      concat!
-      (
-        "Delete file with feeds configuraiton. Subject: path to config file.\n",
-        "    Example: .config.delete ./config/feeds.toml",
-      )
-    )
-    .subject( "Link", wca::Type::String, false )
-    .form(),
-    wca::Command::former()
-    .phrase( "config.list" )
-    .long_hint(
-      concat!
-      (
-        "List all config files saved in storage.\n",
-        "    Example: .config.list",
-      )
-    )
-    .form(),
-    wca::Command::former()
-    .phrase( "tables.list" )
-    .long_hint(
-      concat!
-      (
-        "List all tables saved in storage.\n",
-        "    Example: .tables.list",
-      )
-    )
-    .form(),
-    wca::Command::former()
-    .phrase( "table.list" )
-    .long_hint(
-      concat!
-      (
-        "List fields of specified table.\n",
-        "Subject: table name.\n",
-        "    Example: .table.list feed",
-      )
-    )
-    .subject( "Name", wca::Type::String, false )
-    .form(),
-    wca::Command::former()
-    .phrase( "query.execute" )
-    .long_hint
-    ( 
-      concat!
-      (
-        "Execute custom query. Subject: query string, with special characters escaped.\n",
-        "    Example query:\n",
-        "  - select all frames:\n",
-        r#"    .query.execute \'SELECT \* FROM frame\'"#,
-        "\n",
-        "  - select title and link to the most recent frame:\n",
-        r#"    .query.execute \'SELECT title, links, MIN\(published\) FROM frame\'"#,
-        "\n\n",
-      )
-    )
-    .subject( "Query", wca::Type::List( Box::new( wca::Type::String ), ' ' ), false )
-    .form(),
-  ] )
-  .executor
-  ( [
-    ( "frames.download".to_owned(), wca::Routine::new( | ( _args, _props ) |
+    .long_hint(concat!
+    (
+      "Download frames from feed sources provided in config files.\n",
+      "    Example: .frames.download",
+    ))
+    .routine( ||
     {
-      let report = update_feed();
-      if report.is_ok()
+      match update_feed()
       {
-        report.unwrap().report();
+        Ok( report ) => report.report(),
+        Err( report ) => println!( "{report}" ),
       }
-      else
-      {
-        println!( "{}", report.unwrap_err() );
-      }
-
-      Ok( () )
-    } ) ),
-
-    ( "fields.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
+    })
+    .end()
+    .command( "fields.list" )
+    .long_hint( concat!
+    (
+      "List all fields in frame table with explanation and type.\n",
+      "    Example: .fields.list",
+    ))
+    .routine( ||
     {
-      let report = list_fields();
-      if report.is_ok()
+      match list_fields()
       {
-        report.unwrap().report();
+        Ok( report ) => report.report(),
+        Err( report ) => println!( "{report}" ),
       }
-      else
-      {
-        println!( "{}", report.unwrap_err() );
-      }
+    })
+    .end()
 
-      Ok( () )
-    } ) ),
-
-    ( "frames.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
+  .command( "feeds.list" )
+    .long_hint( concat!
+    (
+      "List all feeds from storage.\n",
+      "    Example: .feeds.list",
+    ))
+    .routine( ||
     {
-      let report = list_frames();
-      if report.is_ok()
+      match list_feeds()
       {
-        report.unwrap().report();
+        Ok( report ) => report.report(),
+        Err( report ) => println!( "{report}" ),
       }
-      else
-      {
-        println!( "{}", report.unwrap_err() );
-      }
-
-      Ok( () )
-    } ) ),
-
-    ( "feeds.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
+    })
+    .end()
+  
+  .command( "frames.list" )
+    .long_hint( concat!
+    (
+      "List all frames saved in storage.\n",
+      "    Example: .frames.list",
+    ))
+    .routine( ||
     {
-      let report = list_feeds();
-      if report.is_ok()
+      match list_frames()
       {
-        report.unwrap().report();
+        Ok( report ) => report.report(),
+        Err( report ) => println!( "{report}" ),
       }
-      else
-      {
-        println!( "{}", report.unwrap_err() );
-      }
+    })
+    .end()
 
-      Ok( () )
-    } ) ),
-
-    ( "config.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
-    {
-      let report = list_subscriptions();
-      if report.is_ok()
-      {
-        report.unwrap().report();
-      }
-      else
-      {
-        println!( "{}", report.unwrap_err() );
-      }
-
-      Ok( () )
-    } ) ),
-
-    ( "config.add".to_owned(), wca::Routine::new( | ( args, _props ) |
+  .command( "config.add" )
+    .long_hint( concat!
+    (
+      "Add file with feeds configurations. Subject: path to config file.\n",
+      "    Example: .config.add ./config/feeds.toml",
+    ))
+    .subject().hint( "Link" ).kind( Type::Path ).optional( false ).end()
+    .routine( | args : Args |
     {
       if let Some( path ) = args.get_owned::< wca::Value >( 0 )
       {
-        let report = add_config( path.into() );
-        if report.is_ok()
+        match add_config( path.into() )
         {
-          report.unwrap().report();
-        }
-        else
-        {
-          println!( "{}", report.unwrap_err() );
+          Ok( report ) => report.report(),
+          Err( report ) => println!( "{report}" ),
         }
       }
+    })
+    .end()
 
-      Ok( () )
-    } ) ),
-    ( "config.delete".to_owned(), wca::Routine::new( | ( args, _props ) |
+  .command( "config.delete" )
+    .long_hint( concat!
+    (
+      "Delete file with feeds configuraiton. Subject: path to config file.\n",
+      "    Example: .config.delete ./config/feeds.toml",
+    ))
+    .subject().hint( "Link" ).kind( Type::Path ).optional( false ).end()
+    .routine( | args : Args |
     {
       if let Some( path ) = args.get_owned( 0 )
       {
-        let report = remove_subscription( path );
-        if report.is_ok()
+        match remove_subscription( path )
         {
-          report.unwrap().report();
-        }
-        else
-        {
-          println!( "{}", report.unwrap_err() );
+          Ok( report ) => report.report(),
+          Err( report ) => println!( "{report}" ),
         }
       }
+    })
+    .end()
 
-      Ok( () )
-    } ) ),
-    ( "table.list".to_owned(), wca::Routine::new( | ( args, _props ) |
+  .command( "config.list" )
+    .long_hint( concat!
+    (
+      "List all config files saved in storage.\n",
+      "    Example: .config.list",
+    ))
+    .routine( ||
     {
-      if let Some( table_name ) = args.get_owned::< String >( 0 )
+      match list_subscriptions()
       {
-        let report = list_columns( table_name );
-        if report.is_ok()
-        {
-          report.unwrap().report();
-        }
-        else
-        {
-          println!( "{}", report.unwrap_err() );
-        }
+        Ok( report ) => report.report(),
+        Err( report ) => println!( "{report}" ),
       }
-      Ok( () )
-    } ) ),
-    ( "tables.list".to_owned(), wca::Routine::new( | ( _args, _props ) |
-    {
-      let report = list_tables();
-      if report.is_ok()
-      {
-        report.unwrap().report();
-      }
-      else
-      {
-        println!( "{}", report.unwrap_err() );
-      }
+    })
+    .end()
 
-      Ok( () )
-    } ) ),
-    ( "query.execute".to_owned(), wca::Routine::new( | ( args, _props ) |
+  .command( "tables.list" )
+    .long_hint( concat!
+    (
+      "List all tables saved in storage.\n",
+      "    Example: .tables.list",
+    ))
+    .routine( ||
+    {
+      match list_tables()
+      {
+        Ok( report ) => report.report(),
+        Err( report ) => println!( "{report}" ),
+      }
+    })
+    .end()
+
+  .command( "table.list" )
+    .long_hint( concat!
+    (
+      "List fields of specified table.\n",
+      "Subject: table name.\n",
+      "    Example: .table.list feed",
+    ))
+    .subject().hint( "Name" ).kind( wca::Type::String ).optional( false ).end()
+    .routine( | args : Args |
+    {
+      if let Some( table_name ) = args.get_owned( 0 )
+      {
+        match list_columns( table_name )
+        {
+          Ok( report ) => report.report(),
+          Err( report ) => println!( "{report}" ),
+        }
+      }
+    })
+    .end()
+
+  .command( "query.execute" )
+    .long_hint( concat!
+    (
+      "Execute custom query. Subject: query string, with special characters escaped.\n",
+      "    Example query:\n",
+      "  - select all frames:\n",
+      r#"    .query.execute \'SELECT \* FROM Frames\'"#,
+      "\n",
+      "  - select title and link to the most recent frame:\n",
+      r#"    .query.execute \'SELECT title, links, MIN\(published\) FROM Frames\'"#,
+      "\n\n",
+    ))
+    .subject().hint( "Query" ).kind( Type::List( Type::String.into(), ' ' ) ).optional( false ).end()
+    .routine( | args : Args |
     {
       if let Some( query ) = args.get_owned::< Vec::< String > >( 0 )
       {
-        let report = execute_query( query.join( " " ) );
-        if report.is_ok()
+        match execute_query( query.join( " " ) )
         {
-          report.unwrap().report();
-        }
-        else
-        {
-          let err = report.unwrap_err();
-          println!( "Error while executing SQL query:" );
-          println!( "{}", err );
+          Ok( report ) => report.report(),
+          Err( err ) =>
+          {
+            println!( "Error while executing SQL query:" );
+            println!( "{}", err );
+          }
         }
       }
-
-      Ok( () )
-    } ) ),
-  ] )
+    })
+    .end()
   .help_variants( [ wca::HelpVariants::General, wca::HelpVariants::SubjectCommand ] )
-  .build();
+  .perform();
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
-  ca.perform( args.join( " " ) )?;
+  ca.perform( args )?;
 
   Ok( () )
 }

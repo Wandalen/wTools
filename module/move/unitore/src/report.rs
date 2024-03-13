@@ -1,3 +1,5 @@
+// qqq : rid off the file. ask
+
 use gluesql::prelude::{ Payload, Value };
 use cli_table::
 {
@@ -50,58 +52,6 @@ impl std::fmt::Display for FramesReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    // writeln!( f, "Feed title: {}", self.feed_title )?;
-
-    // let mut rows = vec![
-    //   vec![ EMPTY_CELL.cell(), format!( "Updated frames: {}", self.updated_frames ).cell() ],
-    //   vec![ EMPTY_CELL.cell(), format!( "Inserted frames: {}", self.new_frames ).cell() ],
-    //   vec![ EMPTY_CELL.cell(), format!( "Number of frames in storage: {}", self.existing_frames ).cell() ],
-    // ];
-
-    // if !self.selected_frames.selected_columns.is_empty()
-    // {
-    //   rows.push( vec![ EMPTY_CELL.cell(), format!( "Selected frames:" ).cell() ] );
-
-    //   let mut row = vec![ EMPTY_CELL.cell() ];
-      
-    //   for frame in &self.selected_frames.selected_rows
-    //   {
-    //     for i in 0..self.selected_frames.selected_columns.len()
-    //     {
-    //       let inner_row = vec!
-    //       [
-    //         EMPTY_CELL.cell(),
-    //         EMPTY_CELL.cell(),
-    //         self.selected_frames.selected_columns[ i ].clone().cell(),
-    //         textwrap::fill( &String::from( frame[ i ].clone() ), 120 ).cell(),
-    //       ];
-    //       inner_rows.push( new_row );
-    //     }
-        
-    //     let table_struct = inner_rows.table()
-    //     .border( Border::builder().build() )
-    //     .separator( Separator::builder().build() )
-    //     ;
-        
-    
-    //     let table = table_struct.display().unwrap();
-    //     println!( "{}", table );
-    
-    //     row.push( table.to_string().cell() );
-      
-    //   }
-    //   rows.push( row );
-    // }
-    // let table_struct = rows.table()
-    // .border( Border::builder().build() )
-    // .separator( Separator::builder().build() );
-
-    // let table = table_struct.display().unwrap(); 
-
-    // writeln!( f, "{}", table )?;
-
-
-
     writeln!( f, "Updated frames: {}", self.updated_frames )?;
     writeln!( f, "Inserted frames: {}", self.new_frames )?;
     writeln!( f, "Number of frames in storage: {}", self.existing_frames )?;
@@ -165,11 +115,11 @@ impl std::fmt::Display for FieldsReport
     .border( Border::builder().build() )
     .separator( Separator::builder().build() );
 
-    let table = table_struct.display().unwrap(); 
+    let table = table_struct.display().unwrap();
 
     writeln!( f, "\n\n\nFrames fields:" )?;
     writeln!( f, "{}", table )?;
-    
+
     Ok( () )
   }
 }
@@ -246,8 +196,8 @@ impl std::fmt::Display for FeedsReport
       .title( headers )
       .border( Border::builder().build() )
       .separator( Separator::builder().build() );
-  
-      let table = table_struct.display().unwrap(); 
+
+      let table = table_struct.display().unwrap();
       writeln!( f, "{}", table )?;
     }
     else
@@ -309,9 +259,9 @@ impl std::fmt::Display for QueryReport
             let table_struct = rows.table()
             .border( Border::builder().build() )
             .separator( Separator::builder().build() );
-        
-            let table = table_struct.display().unwrap(); 
-        
+
+            let table = table_struct.display().unwrap();
+
             writeln!( f, "{}\n", table )?;
           }
         },
@@ -389,7 +339,7 @@ impl ConfigReport
     {
       Payload::Select { labels: _, rows: rows_vec } =>
       {
-        rows_vec.into_iter().filter_map( | val | 
+        rows_vec.into_iter().filter_map( | val |
         {
           match &val[ 0 ]
           {
@@ -424,9 +374,9 @@ impl std::fmt::Display for ConfigReport
         let table_struct = rows.table()
         .border( Border::builder().build() )
         .separator( Separator::builder().build() );
-    
-        let table = table_struct.display().unwrap(); 
-    
+
+        let table = table_struct.display().unwrap();
+
         writeln!( f, "{}", table )?;
 
       },

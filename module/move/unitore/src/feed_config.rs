@@ -21,6 +21,7 @@ pub struct Subscriptions
   pub config : Vec< SubscriptionConfig >
 }
 
+// qqq : don't name like that. ask
 /// Reads provided configuration file with list of subscriptions.
 pub fn read_feed_config( file_path : String ) -> Result< Vec< SubscriptionConfig >, Box< dyn std::error::Error + Send + Sync > >
 {

@@ -24,7 +24,7 @@ pub( crate ) mod private
   ///
   /// In the above example, a `VerifiedCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a typed values.
   ///
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct VerifiedCommand
   {
     /// Phrase descriptor for command.

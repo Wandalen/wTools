@@ -23,6 +23,9 @@ This approach abstracts away the need for manually implementing a builder for ea
 The provided code snippet illustrates a basic use-case of the Former crate in Rust, which is used to apply the builder pattern for structured and flexible object creation. Below is a detailed explanation of each part of the markdown chapter, aimed at clarifying how the Former trait simplifies struct instantiation.
 
 ```rust
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# {
+
 use former::Former;
 
 #[ derive( Debug, PartialEq, Former ) ]
@@ -47,6 +50,220 @@ dbg!( &profile );
 //   bio_optional: Some("Software Developer"),
 // }
 
+# }
+```
+
+Code above is expanded into
+
+```rust
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# #[ allow( dead_code ) ]
+# {
+
+  #[ derive( Debug, PartialEq ) ]
+  pub struct UserProfile
+  {
+    age : i32,
+    username : String,
+    bio_optional : Option< String >, // Fields could be optional
+  }
+
+  impl UserProfile
+  {
+    #[ inline( always ) ]
+    pub fn former() -> UserProfileFormer< UserProfile, former::ReturnContainer >
+    {
+      UserProfileFormer::< UserProfile, former::ReturnContainer >::new()
+    }
+  }
+
+  #[ derive( Debug, Default ) ]
+  pub struct UserProfileFormerContainer
+  {
+    age : Option< i32 >,
+    username : Option< String >,
+    bio_optional : Option< String >,
+  }
+
+  pub struct UserProfileFormer
+  <
+    FormerContext = UserProfile,
+    FormerEnd = former::ReturnContainer,
+  >
+  where
+    FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+  {
+    container : UserProfileFormerContainer,
+    context : Option< FormerContext >,
+    on_end : Option< FormerEnd >,
+  }
+
+  impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
+  where
+    FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+  {
+    #[ inline( always ) ]
+    pub fn form( mut self ) -> UserProfile
+    {
+      let age = if self.container.age.is_some()
+      {
+        self.container.age.take().unwrap()
+      }
+      else
+      {
+        let val : i32 =
+        {
+          trait NotDefault< T >
+          {
+            fn maybe_default( self : &Self ) -> T { panic!( "Field 'age' isn't initialized" ) }
+          }
+          trait WithDefault< T >
+          {
+            fn maybe_default( self : &Self ) -> T;
+          }
+          impl< T > NotDefault< T > for &::core::marker::PhantomData< T > {}
+          impl< T > WithDefault< T > for ::core::marker::PhantomData< T >
+          where
+            T : ::core::default::Default,
+          {
+            fn maybe_default( self : &Self ) -> T
+            {
+              T::default()
+            }
+          }
+          ( &::core::marker::PhantomData::< i32 > ).maybe_default()
+        };
+        val
+      };
+      let username = if self.container.username.is_some()
+      {
+        self.container.username.take().unwrap()
+      }
+      else
+      {
+        let val : String =
+        {
+          trait NotDefault< T >
+          {
+            fn maybe_default( self : &Self ) -> T { panic!( "Field 'username' isn't initialized" ) }
+          }
+          trait WithDefault< T >
+          {
+            fn maybe_default( self : &Self ) -> T;
+          }
+          impl< T > NotDefault< T > for &::core::marker::PhantomData< T > {}
+          impl< T > WithDefault< T > for ::core::marker::PhantomData< T >
+          where
+            T : ::core::default::Default,
+          {
+            fn maybe_default( self : &Self ) -> T
+            {
+              T::default()
+            }
+          }
+          ( &::core::marker::PhantomData::< String > ).maybe_default()
+        };
+        val
+      };
+      let bio_optional = if self.container.bio_optional.is_some()
+      {
+        Option::Some( self.container.bio_optional.take().unwrap() )
+      }
+      else
+      {
+        Option::None
+      };
+      let result = UserProfile
+      {
+        age,
+        username,
+        bio_optional,
+      };
+      return result;
+    }
+
+    #[ inline( always ) ]
+    pub fn perform( self ) -> UserProfile
+    {
+      let result = self.form();
+      return result;
+    }
+
+    #[ inline( always ) ]
+    pub fn new() -> UserProfileFormer< UserProfile, former::ReturnContainer >
+    {
+      UserProfileFormer::< UserProfile, former::ReturnContainer >::begin( None, former::ReturnContainer )
+    }
+
+    #[ inline( always ) ]
+    pub fn begin(
+      context : Option< FormerContext >,
+      on_end : FormerEnd,
+    ) -> Self
+    {
+      Self
+      {
+        container : core::default::Default::default(),
+        context : context,
+        on_end : Option::Some( on_end ),
+      }
+    }
+
+    #[ inline( always ) ]
+    pub fn end( mut self ) -> FormerContext
+    {
+      let on_end = self.on_end.take().unwrap();
+      let context = self.context.take();
+      let container = self.form();
+      on_end.call( container, context )
+    }
+
+    #[ inline ]
+    pub fn age< Src >( mut self, src : Src ) -> Self
+    where
+      Src : Into< i32 >,
+    {
+      debug_assert!( self.container.age.is_none() );
+      self.container.age = Option::Some( src.into() );
+      self
+    }
+
+    #[ inline ]
+    pub fn username< Src >( mut self, src : Src ) -> Self
+    where
+      Src : Into< String >,
+    {
+      debug_assert!( self.container.username.is_none() );
+      self.container.username = Option::Some( src.into() );
+      self
+    }
+
+    #[ inline ]
+    pub fn bio_optional< Src >( mut self, src : Src ) -> Self
+    where
+      Src : Into< String >,
+    {
+      debug_assert!( self.container.bio_optional.is_none() );
+      self.container.bio_optional = Option::Some( src.into() );
+      self
+    }
+  }
+
+  let profile = UserProfile::former()
+  .age( 30 )
+  .username( "JohnDoe".to_string() )
+  .bio_optional( "Software Developer".to_string() )
+  .form();
+
+  dbg!( &profile );
+  // Expected output:
+  // &profile = UserProfile {
+  //   age: 30,
+  //   username: "JohnDoe",
+  //   bio_optional: Some("Software Developer"),
+  // }
+
+}
 ```
 
 ### Custom and Alternative Setters
@@ -54,6 +271,9 @@ dbg!( &profile );
 With help of `Former`, it is possible to define multiple versions of a setter for a single field, providing the flexibility to include custom logic within the setter methods. This feature is particularly useful when you need to preprocess data or enforce specific constraints before assigning values to fields. Custom setters should have unique names to differentiate them from the default setters generated by `Former`, allowing for specialized behavior while maintaining clarity in your code.
 
 ```rust
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# {
+
 use former::Former;
 
 /// Structure with a custom setter.
@@ -85,6 +305,8 @@ let example = StructWithCustomSetters::former()
 .word_exclaimed( "Hello" )
 .form();
 assert_eq!( example.word, "Hello!".to_string() );
+
+# }
 ```
 
 In the example above showcases a custom alternative setter, `word_exclaimed`, which appends an exclamation mark to the input string before storing it. This approach allows for additional processing or validation of the input data without compromising the simplicity of the builder pattern.
@@ -94,6 +316,9 @@ In the example above showcases a custom alternative setter, `word_exclaimed`, wh
 But it's also possible to completely override setter and write its own from scratch. For that use attribe `[ setter( false ) ]` to disable setter.
 
 ```rust
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# {
+
 use former::Former;
 
 /// Structure with a custom setter.
@@ -121,6 +346,7 @@ let example = StructWithCustomSetters::former()
 .word( "Hello" )
 .form();
 assert_eq!( example.word, "Hello!".to_string() );
+# }
 ```
 
 In the example above, the default setter for `word` is disabled, and a custom setter is defined to automatically append an exclamation mark to the string. This method allows for complete control over the data assignment process, enabling the inclusion of any necessary logic or validation steps.
@@ -130,6 +356,9 @@ In the example above, the default setter for `word` is disabled, and a custom se
 The `Former` crate enhances struct initialization in Rust by allowing the specification of custom default values for fields through the `default` attribute. This feature not only provides a way to set initial values for struct fields without relying on the `Default` trait but also adds flexibility in handling cases where a field's type does not implement `Default`, or a non-standard default value is desired.
 
 ```rust
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# {
+
 use former::Former;
 
 /// Structure with default attributes.
@@ -164,6 +393,7 @@ dbg!( &instance );
 // >        30,
 // >    ],
 // > }
+# }
 ```
 
 The above code snippet showcases the `Former` crate's ability to initialize struct fields with custom default values:
@@ -182,6 +412,10 @@ Subformers are specialized builders used within the `Former` framework to constr
 The following example illustrates how to use a `VectorSubformer` to construct a `Vec` field within a struct. The subformer enables adding elements to the vector with a fluent interface, streamlining the process of populating collection fields within structs.
 
 ```rust
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
+
 #[ derive( Debug, PartialEq, former::Former ) ]
 pub struct StructWithVec
 {
@@ -197,6 +431,7 @@ let instance = StructWithVec::former()
 .form();
 
 assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
+# }
 ```
 
 ### Subformer example: Building a Hashmap
@@ -204,6 +439,10 @@ assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
 This example demonstrates the use of a `HashMapSubformer` to build a hash map within a struct. The subformer provides a concise way to insert key-value pairs into the map, making it easier to manage and construct hash map fields.
 
 ```rust
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
+
 use test_tools::exposed::*;
 
 #[ derive( Debug, PartialEq, former::Former ) ]
@@ -221,6 +460,7 @@ let struct1 = StructWithMap::former()
 .form()
 ;
 assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
+# }
 ```
 
 ### Subformer example: Building a Hashset
@@ -228,6 +468,10 @@ assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
 In the following example, a `HashSetSubformer` is utilized to construct a hash set within a struct. This illustrates the convenience of adding elements to a set using the builder pattern facilitated by subformers.
 
 ```rust
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# #[ cfg( not( feature = "no_std" ) ) ]
+# {
+
 use test_tools::exposed::*;
 
 #[ derive( Debug, PartialEq, former::Former ) ]
@@ -245,6 +489,7 @@ let instance = StructWithSet::former()
 .form();
 
 assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
+# }
 ```
 
 ### Custom Subformer
@@ -257,7 +502,10 @@ The example below illustrates how to incorporate the builder pattern of one stru
 example of how to use former of another structure as subformer of former of current one
 function `command` integrate `CommandFormer` into `AggregatorFormer`.
 
-``` rust
+```rust
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# {
+
 fn main()
 {
   use std::collections::HashMap;
@@ -332,6 +580,7 @@ fn main()
   // >     },
   // > }
 }
+# }
 ```
 
 In this example, the `Aggregator` struct functions as a container for multiple `Command` structs, each identified by a unique command name. The `AggregatorFormer` implements a custom method `command`, which serves as a subformer for adding `Command` instances into the `Aggregator`.

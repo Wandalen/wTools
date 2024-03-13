@@ -672,6 +672,8 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as split;
+
   pub use super::private::
   {
     SplitOptionsAdapter,

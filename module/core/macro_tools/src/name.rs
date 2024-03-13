@@ -29,7 +29,7 @@ pub( crate ) mod private
         // syn::Item::ForeignMod( item ) => item.name(),
         syn::Item::Impl( item ) => item.name(),
         syn::Item::Macro( item ) => item.name(),
-        syn::Item::Macro2( item ) => item.name(),
+        // syn::Item::Macro2( item ) => item.name(),
         syn::Item::Mod( item ) => item.name(),
         syn::Item::Static( item ) => item.name(),
         syn::Item::Struct( item ) => item.name(),
@@ -124,13 +124,13 @@ pub( crate ) mod private
     }
   }
 
-  impl Name for syn::ItemMacro2
-  {
-    fn name( &self ) -> String
-    {
-      self.ident.to_string()
-    }
-  }
+  // impl Name for syn::ItemMacro2
+  // {
+  //   fn name( &self ) -> String
+  //   {
+  //     self.ident.to_string()
+  //   }
+  // }
 
   impl Name for syn::ItemMod
   {
@@ -247,6 +247,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as name;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;

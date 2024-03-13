@@ -13,7 +13,10 @@ use gluesql::
   prelude::Glue,
   sled_storage::{ sled::Config, SledStorage },
 };
-use crate::report::{
+// qqq : ask
+use crate::report::
+{
+  // qqq : don't put report into different file, keep the in the same file where it used
   FramesReport,
   FieldsReport,
   FeedsReport,
@@ -67,7 +70,7 @@ impl FeedStorage< SledStorage >
     ;
 
     feed_table.execute( &mut glue ).await?;
-  
+
     let frame_fields = vec!
     [
       [ "id", "TEXT", "A unique identifier for this frame in the feed. " ],
@@ -95,7 +98,7 @@ impl FeedStorage< SledStorage >
     let table = table.add_column( "feed_id TEXT FOREIGN KEY REFERENCES Feeds(id)" )
     .build()?
     ;
-  
+
     table.execute( &mut glue ).await?;
 
     Ok( Self{ storage : Arc::new( Mutex::new( glue ) ), frame_fields } )
@@ -339,8 +342,8 @@ impl FeedStore for FeedStorage< SledStorage >
       // check if feed is new
       if let Some( existing_feeds ) = existing_feeds.select()
       {
-        
-        let existing_ids = existing_feeds.filter_map( | feed | feed.get( "id" ).map( | id | id.to_owned() ) ).filter_map( | id | 
+
+        let existing_ids = existing_feeds.filter_map( | feed | feed.get( "id" ).map( | id | id.to_owned() ) ).filter_map( | id |
           match id
           {
             Value::Str( s ) => Some( s ),
@@ -353,7 +356,7 @@ impl FeedStore for FeedStorage< SledStorage >
           self.save_feed( vec![ feed.clone() ] ).await?;
           frames_report.new_frames = feed.0.entries.len();
           frames_report.is_new_feed = true;
-          
+
           new_entries.extend( feed.0.entries.clone().into_iter().zip( std::iter::repeat( feed.0.id.clone() ).take( feed.0.entries.len() ) ) );
           reports.push( frames_report );
           continue;
@@ -367,7 +370,7 @@ impl FeedStore for FeedStorage< SledStorage >
       .execute( &mut *self.storage.lock().await )
       .await?
       ;
-      
+
       if let Some( rows ) = existing_frames.select()
       {
         let rows = rows.collect::< Vec< _ > >();
@@ -380,11 +383,11 @@ impl FeedStore for FeedStorage< SledStorage >
               id,
               published.map( | date |
                 {
-                  match date 
+                  match date
                   {
                     Value::Timestamp( date_time ) => Some( date_time ),
                     _ => None,
-                  } 
+                  }
                 } )
               .flatten()
             )
@@ -418,7 +421,7 @@ impl FeedStore for FeedStorage< SledStorage >
       }
       reports.push( frames_report );
     }
-    
+
     if new_entries.len() > 0
     {
       let _saved_report = self.save_frames( new_entries ).await?;
@@ -427,13 +430,13 @@ impl FeedStore for FeedStorage< SledStorage >
     {
       let _updated_report = self.update_feed( modified_entries ).await?;
     }
-    
+
     Ok( UpdateReport( reports ) )
   }
 
   async fn add_config( &mut self, config : String ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
   {
-    
+
     let res = table( "config" )
     .insert()
     .columns

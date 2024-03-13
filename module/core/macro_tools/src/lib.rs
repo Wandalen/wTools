@@ -3,14 +3,26 @@
 #![ doc( html_root_url = "https://docs.rs/proc_macro_tools/latest/proc_macro_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ cfg( feature = "enabled" ) ]
 pub mod attr;
+#[ cfg( feature = "enabled" ) ]
 pub mod container_kind;
-pub mod diagnostics;
+#[ cfg( feature = "enabled" ) ]
+pub mod diag;
+#[ cfg( feature = "enabled" ) ]
 pub mod generic_analyze;
+#[ cfg( feature = "enabled" ) ]
 pub mod generics;
+#[ cfg( feature = "enabled" ) ]
 pub mod name;
+#[ cfg( feature = "enabled" ) ]
 pub mod quantifier;
+#[ cfg( feature = "enabled" ) ]
+pub mod tokens;
+#[ cfg( feature = "enabled" ) ]
 pub mod typ;
+#[ cfg( feature = "enabled" ) ]
+pub mod type_struct;
 
 ///
 /// Dependencies of the module.
@@ -28,9 +40,11 @@ pub mod dependency
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -40,16 +54,19 @@ pub mod protected
     orphan::*,
     attr::orphan::*,
     container_kind::orphan::*,
+    diag::orphan::*,
     generic_analyze::orphan::*,
     generics::orphan::*,
-    diagnostics::orphan::*,
     name::orphan::*,
     quantifier::orphan::*,
+    tokens::orphan::*,
     typ::orphan::*,
+    type_struct::orphan::*,
   };
 }
 
 /// Parented namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -58,6 +75,7 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
@@ -75,23 +93,26 @@ pub mod exposed
     prelude::*,
     attr::exposed::*,
     container_kind::exposed::*,
+    diag::exposed::*,
     generic_analyze::exposed::*,
     generics::exposed::*,
-    diagnostics::exposed::*,
     name::exposed::*,
     quantifier::exposed::*,
+    tokens::exposed::*,
     typ::exposed::*,
+    type_struct::exposed::*,
   };
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::quantifier::
-  {
-    Pair,
-    Many,
-  };
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::quantifier::
+  // {
+  //   Pair,
+  //   Many,
+  // };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
 
@@ -140,12 +161,14 @@ pub mod prelude
   {
     attr::prelude::*,
     container_kind::prelude::*,
+    diag::prelude::*,
     generic_analyze::prelude::*,
     generics::prelude::*,
-    diagnostics::prelude::*,
     name::prelude::*,
     quantifier::prelude::*,
+    tokens::prelude::*,
     typ::prelude::*,
+    type_struct::prelude::*,
   };
 
 }

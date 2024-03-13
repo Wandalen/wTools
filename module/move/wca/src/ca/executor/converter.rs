@@ -54,26 +54,14 @@ pub( crate ) mod private
   impl ExecutorConverter
   {
     /// Converts raw program to executable
-    pub fn to_program( &self, raw_program : Program< Namespace< VerifiedCommand > > ) -> Result< Program< Namespace< ExecutableCommand_ > > >
+    pub fn to_program( &self, raw_program : Program< VerifiedCommand > ) -> Result< Program< ExecutableCommand_ > >
     {
-      let namespaces = raw_program.namespaces
+      let commands = raw_program.commands
       .into_iter()
-      .map( | n | self.to_namespace( n ) )
-      .collect::< Result< Vec< Namespace< ExecutableCommand_ > > > >()?;
-
-      Ok( Program { namespaces } )
-    }
-
-    // qqq : for Bohdan : probably redundant
-    /// Converts raw namespace to executable
-    pub fn to_namespace( &self, raw_namespace : Namespace< VerifiedCommand > ) -> Result< Namespace< ExecutableCommand_ > >
-    {
-      let commands = raw_namespace.commands
-      .into_iter()
-      .map( | c | self.to_command( c ) )
+      .map( | n | self.to_command( n ) )
       .collect::< Result< Vec< ExecutableCommand_ > > >()?;
 
-      Ok( Namespace { commands } )
+      Ok( Program { commands } )
     }
 
     /// Converts raw command to executable
