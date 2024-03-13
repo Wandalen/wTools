@@ -3,13 +3,11 @@
 use gluesql::prelude::{ Payload, Value };
 use cli_table::
 {
-  Cell,
-  Table,
-  Style,
-  format::{ Separator, Border},
+  format::{ Border, Separator}, Cell, Style, Table
 };
 
 const EMPTY_CELL : &'static str = "";
+const INDENT_CELL : &'static str = "  ";
 
 /// Information about result of execution of command for frames.
 #[ derive( Debug ) ]
@@ -52,33 +50,54 @@ impl std::fmt::Display for FramesReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    writeln!( f, "Updated frames: {}", self.updated_frames )?;
-    writeln!( f, "Inserted frames: {}", self.new_frames )?;
-    writeln!( f, "Number of frames in storage: {}", self.existing_frames )?;
+    let initial = vec![ vec![ format!( "Feed title: {}", self.feed_title).cell().bold( true )  ] ];
+    let table_struct = initial.table()
+    .border( Border::builder().build() )
+    .separator( Separator::builder().build() );
+
+    let table = table_struct.display().unwrap(); 
+    write!( f, "{}", table )?;
+
+    let mut rows = vec![
+      vec![ EMPTY_CELL.cell(), format!( "Updated frames: {}", self.updated_frames ).cell() ],
+      vec![ EMPTY_CELL.cell(), format!( "Inserted frames: {}", self.new_frames ).cell() ],
+      vec![ EMPTY_CELL.cell(), format!( "Number of frames in storage: {}", self.existing_frames ).cell() ],
+    ];
+
     if !self.selected_frames.selected_columns.is_empty()
     {
-      writeln!( f, "Selected frames:" )?;
-      for frame in &self.selected_frames.selected_rows
+      rows.push( vec![ EMPTY_CELL.cell(), format!( "Selected frames:" ).cell() ] );
+    }
+    let table_struct = rows.table()
+    .border( Border::builder().build() )
+    .separator( Separator::builder().build() );
+
+    let table = table_struct.display().unwrap(); 
+
+    write!( f, "{}", table )?;
+      
+    for frame in &self.selected_frames.selected_rows
+    {
+      let mut rows = Vec::new();
+      for i in 0..self.selected_frames.selected_columns.len()
       {
-        let mut rows = Vec::new();
-        for i in 0..self.selected_frames.selected_columns.len()
-        {
-          let new_row = vec!
-          [
-            EMPTY_CELL.cell(),
-            self.selected_frames.selected_columns[ i ].clone().cell(),
-            textwrap::fill( &String::from( frame[ i ].clone() ), 120 ).cell(),
-          ];
-          rows.push( new_row );
-        }
-        let table_struct = rows.table()
-        .border( Border::builder().build() )
-        .separator( Separator::builder().build() );
-    
-        let table = table_struct.display().unwrap(); 
-    
-        writeln!( f, "{}", table )?;
+        let inner_row = vec!
+        [
+          INDENT_CELL.cell(),
+          self.selected_frames.selected_columns[ i ].clone().cell(),
+          textwrap::fill( &String::from( frame[ i ].clone() ), 120 ).cell(),
+        ];
+        rows.push( inner_row );
       }
+      
+      let table_struct = rows.table()
+      .border( Border::builder().build() )
+      .separator( Separator::builder().build() )
+      ;
+      
+  
+      let table = table_struct.display().unwrap();
+      writeln!( f, "{}", table )?;
     }
 
     Ok( () )
@@ -222,7 +241,6 @@ impl std::fmt::Display for QueryReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    writeln!( f, "\n\n" )?;
     for payload in &self.result
     {
       match payload
@@ -262,7 +280,7 @@ impl std::fmt::Display for QueryReport
 
             let table = table_struct.display().unwrap();
 
-            writeln!( f, "{}\n", table )?;
+            writeln!( f, "{}", table )?;
           }
         },
         Payload::AlterTable => writeln!( f, "Table altered" )?,
@@ -425,7 +443,7 @@ impl std::fmt::Display for ListReport
   {
     for report in &self.0
     {
-      writeln!( f, "{}", report )?;
+      write!( f, "{}", report )?;
     }
     writeln!
     (

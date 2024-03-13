@@ -176,10 +176,10 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "Execute custom query. Subject: query string, with special characters escaped.\n",
       "    Example query:\n",
       "  - select all frames:\n",
-      r#"    .query.execute \'SELECT \* FROM Frames\'"#,
+      r#"    .query.execute \'SELECT \* FROM frame\'"#,
       "\n",
       "  - select title and link to the most recent frame:\n",
-      r#"    .query.execute \'SELECT title, links, MIN\(published\) FROM Frames\'"#,
+      r#"    .query.execute \'SELECT title, links, MIN\(published\) FROM frame\'"#,
       "\n\n",
     ))
     .subject().hint( "Query" ).kind( Type::List( Type::String.into(), ' ' ) ).optional( false ).end()
