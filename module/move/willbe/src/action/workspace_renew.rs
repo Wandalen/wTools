@@ -9,6 +9,96 @@ mod private
   use error_tools::for_app::bail;
   use error_tools::Result;
   use wtools::iter::Itertools;
+  use crate::template::{Template, TemplateFileDescriptor, TemplateFiles, TemplateFilesBuilder, TemplateParameters, TemplateValues};
+
+  /// Template for creating deploy files.
+  ///
+  /// Includes terraform deploy options to GCP, and Hetzner,
+  /// a Makefile for useful commands, and a key directory.
+  #[ derive( Debug ) ]
+  pub struct WorkspaceTemplate
+  {
+    files : WorkspaceTemplateFiles,
+    parameters : TemplateParameters,
+    values : TemplateValues,
+  }
+
+  impl Template<WorkspaceTemplateFiles> for WorkspaceTemplate
+  {
+    fn create_all( self, path : &Path ) -> Result< () >
+    {
+      self.files.create_all( path, &self.values )
+    }
+
+    fn parameters( &self ) -> &TemplateParameters
+    {
+      &self.parameters
+    }
+
+    fn set_values( &mut self, values : TemplateValues )
+    {
+      self.values = values
+    }
+  }
+
+  impl Default for WorkspaceTemplate
+  {
+    fn default() -> Self
+    {
+      Self
+      {
+        files : Default::default(),
+        parameters : TemplateParameters::new
+          (
+            &
+              [
+                "project_name",
+                "url",
+                "branches",
+              ]
+          ),
+        values : Default::default(),
+      }
+    }
+  }
+
+  /// Files for the deploy template.
+  ///
+  /// Default implementation contains all required files.
+  #[ derive( Debug ) ]
+  pub struct WorkspaceTemplateFiles(Vec< TemplateFileDescriptor > );
+
+  impl Default for WorkspaceTemplateFiles
+  {
+    fn default() -> Self
+    {
+      let formed = TemplateFilesBuilder::former()
+        .file().data( include_str!( "../../template/workspace/.gitattributes" ) ).path( "./.gitattributes" ).end()
+        .file().data( include_str!( "../../template/workspace/.gitignore1" ) ).path( "./.gitignore" ).end()
+        .file().data( include_str!( "../../template/workspace/.gitpod.yml" ) ).path( "./.gitpod.yml" ).end()
+        .file().data( include_str!( "../../template/workspace/Cargo.hbs" ) ).path( "./Cargo.toml" ).is_template( true ).end()
+        .file().data( include_str!( "../../template/workspace/Makefile" ) ).path( "./Makefile" ).is_template( true ).end()
+        .file().data( include_str!( "../../template/workspace/Readme.md" ) ).path( "./Makefile" ).is_template( true ).end()
+
+        .file().data( include_str!( "../../template/workspace/.cargo/config.toml" ) ).path( "./.cargo/config.toml" ).end()
+        .form();
+
+      Self( formed.files )
+    }
+  }
+
+  impl TemplateFiles for WorkspaceTemplateFiles {}
+  impl IntoIterator for WorkspaceTemplateFiles
+  {
+    type Item = TemplateFileDescriptor;
+
+    type IntoIter = std::vec::IntoIter< Self::Item >;
+
+    fn into_iter( self ) -> Self::IntoIter
+    {
+      self.0.into_iter()
+    }
+  }
 
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
