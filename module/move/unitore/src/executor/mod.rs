@@ -1,13 +1,48 @@
 //! Execute plan.
+
 use super::*;
 use feed_config::SubscriptionConfig;
-use gluesql::sled_storage::sled::Config;
+use gluesql::sled_storage::{sled::Config, SledStorage};
 use retriever::{ FeedClient, FeedFetch };
-use feed_config::read_feed_config;
 use storage::{ FeedStorage, FeedStore };
-use report::{ Report, FieldsReport, FeedsReport, QueryReport, ConfigReport, UpdateReport, ListReport };
 use wca::{ Args, Type };
+use executor::endpoints::Report;
 // use wca::prelude::*;
+
+pub mod endpoints;
+use endpoints::{
+  list_fields::list_fields,
+  frames::{ list_frames, download_frames, ListReport },
+  feeds::list_feeds,
+  config::{ add_config, remove_config, list_configs },
+  query::execute_query,
+  table::{ list_columns, list_tables },
+  list_fields::FieldsReport,
+};
+
+use std::future::Future;
+
+fn endpoint< 'a, F, Fut, R >( async_endpoint : F, args : &'a Args ) -> Result< R, Box< dyn std::error::Error + Send + Sync > >
+where
+  F : FnOnce( FeedStorage< SledStorage >, &'a Args ) -> Fut,
+  Fut : Future< Output = Result< R, Box< dyn std::error::Error + Send + Sync > > >,
+  R : endpoints::Report,
+{
+  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+  .unwrap_or( String::from( "./_data" ) )
+  ;
+
+  let config = Config::default()
+  .path( path_to_storage )
+  ;
+  let rt  = tokio::runtime::Runtime::new()?;
+
+  rt.block_on( async move
+  {
+    let feed_storage = FeedStorage::init_storage( config ).await?;
+    async_endpoint( feed_storage, args ).await
+  } )
+}
 
 /// Run feed updates.
 pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
@@ -20,9 +55,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "Download frames from feed sources provided in config files.\n",
       "    Example: .frames.download",
     ))
-    .routine( ||
+    .routine( | args |
     {
-      match update_feed()
+      match endpoint( download_frames, &args )
       {
         Ok( report ) => report.report(),
         Err( report ) => println!( "{report}" ),
@@ -35,9 +70,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "List all fields in frame table with explanation and type.\n",
       "    Example: .fields.list",
     ))
-    .routine( ||
+    .routine( | args |
     {
-      match list_fields()
+      match endpoint( list_fields, &args )
       {
         Ok( report ) => report.report(),
         Err( report ) => println!( "{report}" ),
@@ -51,9 +86,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "List all feeds from storage.\n",
       "    Example: .feeds.list",
     ))
-    .routine( ||
+    .routine( | args |
     {
-      match list_feeds()
+      match endpoint( list_feeds, &args )
       {
         Ok( report ) => report.report(),
         Err( report ) => println!( "{report}" ),
@@ -67,9 +102,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "List all frames saved in storage.\n",
       "    Example: .frames.list",
     ))
-    .routine( ||
+    .routine( | args |
     {
-      match list_frames()
+      match endpoint( list_frames, &args )
       {
         Ok( report ) => report.report(),
         Err( report ) => println!( "{report}" ),
@@ -86,14 +121,14 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
     .routine( | args : Args |
     {
-      if let Some( path ) = args.get_owned::< wca::Value >( 0 )
-      {
-        match add_config( path.into() )
+      // if let Some( path ) = args.get_owned::< wca::Value >( 0 )
+      // {
+        match endpoint( add_config, &args )
         {
           Ok( report ) => report.report(),
           Err( report ) => println!( "{report}" ),
         }
-      }
+      //}
     })
     .end()
 
@@ -106,13 +141,10 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Link" ).kind( Type::Path ).optional( false ).end()
     .routine( | args : Args |
     {
-      if let Some( path ) = args.get_owned( 0 )
+      match endpoint( remove_config, &args )
       {
-        match remove_subscription( path )
-        {
-          Ok( report ) => report.report(),
-          Err( report ) => println!( "{report}" ),
-        }
+        Ok( report ) => report.report(),
+        Err( report ) => println!( "{report}" ),
       }
     })
     .end()
@@ -123,9 +155,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "List all config files saved in storage.\n",
       "    Example: .config.list",
     ))
-    .routine( ||
+    .routine( | args |
     {
-      match list_subscriptions()
+      match endpoint( list_configs, &args )
       {
         Ok( report ) => report.report(),
         Err( report ) => println!( "{report}" ),
@@ -139,9 +171,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "List all tables saved in storage.\n",
       "    Example: .tables.list",
     ))
-    .routine( ||
+    .routine( | args |
     {
-      match list_tables()
+      match endpoint( list_tables, &args )
       {
         Ok( report ) => report.report(),
         Err( report ) => println!( "{report}" ),
@@ -159,13 +191,10 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Name" ).kind( wca::Type::String ).optional( false ).end()
     .routine( | args : Args |
     {
-      if let Some( table_name ) = args.get_owned( 0 )
+      match endpoint( list_columns, &args )
       {
-        match list_columns( table_name )
-        {
-          Ok( report ) => report.report(),
-          Err( report ) => println!( "{report}" ),
-        }
+        Ok( report ) => report.report(),
+        Err( report ) => println!( "{report}" ),
       }
     })
     .end()
@@ -185,16 +214,13 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Query" ).kind( Type::List( Type::String.into(), ' ' ) ).optional( false ).end()
     .routine( | args : Args |
     {
-      if let Some( query ) = args.get_owned::< Vec::< String > >( 0 )
+      match endpoint( execute_query, &args )
       {
-        match execute_query( query.join( " " ) )
+        Ok( report ) => report.report(),
+        Err( err ) =>
         {
-          Ok( report ) => report.report(),
-          Err( err ) =>
-          {
-            println!( "Error while executing SQL query:" );
-            println!( "{}", err );
-          }
+          println!( "Error while executing SQL query:" );
+          println!( "{}", err );
         }
       }
     })
@@ -248,7 +274,7 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
   }
 
   /// Update modified frames and save new items.
-  pub async fn update_feed( &mut self, subscriptions : Vec< SubscriptionConfig > ) -> Result< UpdateReport, Box< dyn std::error::Error + Send + Sync > >
+  pub async fn update_feed( &mut self, subscriptions : Vec< SubscriptionConfig > ) -> Result< impl endpoints::Report, Box< dyn std::error::Error + Send + Sync > >
   {
     let mut feeds = Vec::new();
     for i in  0..subscriptions.len()
@@ -266,13 +292,13 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
   }
 
   /// Get all feeds currently in storage.
-  pub async fn get_all_feeds( &mut self ) -> Result< FeedsReport, Box< dyn std::error::Error + Send + Sync > >
+  pub async fn get_all_feeds( &mut self ) -> Result< endpoints::feeds::FeedsReport, Box< dyn std::error::Error + Send + Sync > >
   {
     self.storage.get_all_feeds().await
   }
 
   /// Execute custom query, print result.
-  pub async fn execute_custom_query( &mut self, query : String ) -> Result< QueryReport, Box< dyn std::error::Error + Send + Sync > >
+  pub async fn execute_custom_query( &mut self, query : String ) -> Result< impl endpoints::Report, Box< dyn std::error::Error + Send + Sync > >
   {
     self.storage.execute_query( query ).await
   }
@@ -283,237 +309,4 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
     Ok( self.storage.columns_titles() )
   }
 
-  pub async fn list_subscriptions( &mut self ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
-  {
-    self.storage.list_subscriptions().await
-  }
-
-  pub async fn add_config( &mut self, path : std::path::PathBuf ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
-  {
-    let path = path.canonicalize().expect( "Invalid path" );
-    let config_report = self.storage.add_config( path.to_string_lossy().to_string() ).await;
-    let feeds = read_feed_config( path.to_string_lossy().to_string() )?
-    .into_iter()
-    .map( | feed | crate::storage::model::FeedRow::new( feed.link, feed.update_period ) )
-    .collect::< Vec< _ > >()
-    ;
-
-    self.storage.add_feeds( feeds ).await?;
-    config_report
-  }
-}
-
-/// Update all feed from config files saved in storage.
-pub fn update_feed() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
-{
-  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-  .unwrap_or( String::from( "./_data" ) );
-
-  let rt  = tokio::runtime::Runtime::new()?;
-  let report = rt.block_on( async move
-  {
-    let config = Config::default()
-    .path( path_to_storage )
-    ;
-
-    let feed_storage = FeedStorage::init_storage( config ).await?;
-
-    let mut manager = FeedManager::new( feed_storage );
-    let configs = manager.list_subscriptions().await?.configs();
-
-    let mut subscriptions = Vec::new();
-    for config in configs
-    {
-      
-      let sub_vec = read_feed_config( config )?;
-      subscriptions.extend( sub_vec );
-    }
-    manager.update_feed( subscriptions ).await
-
-  } );
-
-  report
-}
-
-/// List all fields.
-pub fn list_fields() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
-{
-  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-  .unwrap_or( String::from( "./_data" ) )
-  ;
-
-  let rt  = tokio::runtime::Runtime::new()?;
-  rt.block_on( async move
-  {
-    let config = Config::default()
-    .path( path_to_storage )
-    ;
-
-    let feed_storage = FeedStorage::init_storage( config ).await?;
-
-    let mut manager = FeedManager::new( feed_storage );
-    manager.get_columns()
-  } )
-}
-
-/// List all frames.
-pub fn list_frames() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
-{
-  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-  .unwrap_or( String::from( "./_data" ) )
-  ;
-
-  let config = Config::default()
-  .path( path_to_storage )
-  ;
-  let rt  = tokio::runtime::Runtime::new()?;
-
-  rt.block_on( async move
-  {
-    let feed_storage = FeedStorage::init_storage( config ).await?;
-    let mut manager = FeedManager::new( feed_storage );
-    manager.get_all_frames().await
-  } )
-}
-
-/// List all feeds.
-pub fn list_feeds() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
-{
-  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-  .unwrap_or( String::from( "./_data" ) )
-  ;
-
-  let config = Config::default()
-  .path( path_to_storage )
-  ;
-
-  let rt  = tokio::runtime::Runtime::new()?;
-  let report = rt.block_on( async move
-    {
-      let feed_storage = FeedStorage::init_storage( config ).await?;
-
-      let mut manager = FeedManager::new( feed_storage );
-      manager.get_all_feeds().await
-    } )?;
-
-  Ok( report )
-
-}
-
-pub fn list_subscriptions() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
-{
-  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-  .unwrap_or( String::from( "./_data" ) )
-  ;
-
-  let config = Config::default()
-  .path( path_to_storage )
-  ;
-  let rt  = tokio::runtime::Runtime::new()?;
-  rt.block_on( async move
-  {
-    let feed_storage = FeedStorage::init_storage( config ).await?;
-
-    let mut manager = FeedManager::new( feed_storage );
-    manager.storage.list_subscriptions().await
-  } )
-}
-
-pub fn list_tables() -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
-{
-  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-  .unwrap_or( String::from( "./_data" ) )
-  ;
-
-  let config = Config::default()
-  .path( path_to_storage )
-  ;
-
-  let rt  = tokio::runtime::Runtime::new()?;
-  rt.block_on( async move
-  {
-    let feed_storage = FeedStorage::init_storage( config ).await?;
-
-    let mut manager = FeedManager::new( feed_storage );
-    manager.storage.list_tables().await
-  } )
-}
-
-pub fn list_columns( table_name : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
-{
-  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-  .unwrap_or( String::from( "./_data" ) )
-  ;
-
-  let config = Config::default()
-  .path( path_to_storage )
-  ;
-
-  let rt  = tokio::runtime::Runtime::new()?;
-  rt.block_on( async move
-  {
-    let feed_storage = FeedStorage::init_storage( config ).await?;
-
-    let mut manager = FeedManager::new( feed_storage );
-    manager.storage.list_columns( table_name ).await
-  } )
-}
-
-pub fn add_config( path : std::path::PathBuf ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
-{
-  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-  .unwrap_or( String::from( "./_data" ) )
-  ;
-
-  let config = Config::default()
-  .path( path_to_storage )
-  ;
-
-  let rt  = tokio::runtime::Runtime::new()?;
-  rt.block_on( async move
-  {
-    let feed_storage = FeedStorage::init_storage( config ).await?;
-
-    let mut manager = FeedManager::new( feed_storage );
-    manager.add_config( path ).await
-  } )
-}
-
-pub fn remove_subscription( path : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
-{
-  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-  .unwrap_or( String::from( "./_data" ) )
-  ;
-
-  let config = Config::default()
-  .path( path_to_storage )
-  ;
-
-  let rt  = tokio::runtime::Runtime::new()?;
-  rt.block_on( async move
-  {
-    let feed_storage = FeedStorage::init_storage( config ).await?;
-
-    let mut manager = FeedManager::new( feed_storage );
-    manager.storage.remove_subscription( path ).await
-  } )
-}
-
-pub fn execute_query( query : String ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
-{
-  let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-  .unwrap_or( String::from( "./_data" ) )
-  ;
-
-  let config = Config::default()
-  .path( path_to_storage )
-  ;
-  let rt  = tokio::runtime::Runtime::new()?;
-  rt.block_on( async move
-  {
-    let feed_storage = FeedStorage::init_storage( config ).await?;
-
-    let mut manager = FeedManager::new( feed_storage );
-    manager.storage.execute_query( query ).await
-  } )
 }

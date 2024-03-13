@@ -120,3 +120,48 @@ impl From< ( Entry, String ) > for FrameRow
     FrameRow( vec![ id, title, updated, authors, content,links, summary, categories, published, source, rights, media, language, feed_id ] )
   }
 }
+
+pub struct RowValue< 'a >( pub &'a gluesql::prelude::Value );
+
+impl std::fmt::Display for RowValue< '_ >
+{
+  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  {
+    use gluesql::prelude::Value::*;
+    match &self.0
+    {
+      Bool( val ) => write!( f, "{}", val )?,
+      I8( val ) => write!( f, "{}", val )?,
+      I16( val ) => write!( f, "{}", val )?,
+      I32( val ) => write!( f, "{}", val )?,
+      I64( val ) => write!( f, "{}", val )?,
+      I128( val ) => write!( f, "{}", val )?,
+      U8( val ) => write!( f, "{}", val )?,
+      U16( val ) => write!( f, "{}", val )?,
+      U32( val ) => write!( f, "{}", val )?,
+      U64( val ) => write!( f, "{}", val )?,
+      U128( val ) => write!( f, "{}", val )?,
+      F32( val ) => write!( f, "{}", val )?,
+      F64( val ) => write!( f, "{}", val )?,
+      Str( val ) => write!( f, "{}", val )?,
+      Null => write!( f, "Null" )?,
+      Timestamp( val ) => write!( f, "{}", val )?,
+      _ => write!( f, "" )?,
+    }
+
+    Ok( () )
+  }
+}
+
+impl From< RowValue< '_ > > for String
+{
+  fn from( value : RowValue< '_ > ) -> Self
+  {
+    use gluesql::core::data::Value::*;
+    match &value.0
+    {
+      Str( val ) => val.clone(),
+      _ => String::new(),
+    }
+  }
+}

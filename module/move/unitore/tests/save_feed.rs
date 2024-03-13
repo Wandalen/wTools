@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 use feed_rs::parser as feed_parser;
 use unitore::{
-  executor::FeedManager, 
-  report::{ SelectedEntries, FramesReport, UpdateReport },
+  executor::{
+    endpoints::frames::{ FramesReport, SelectedEntries, UpdateReport }, FeedManager
+  },
   feed_config::SubscriptionConfig,
   retriever::FeedFetch,
   storage::MockFeedStore,

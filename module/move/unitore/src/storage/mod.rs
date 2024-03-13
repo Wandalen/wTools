@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc, time::Duration};
+use std::{ collections::HashMap, sync::Arc, time::Duration };
 use tokio::sync::Mutex;
 use feed_rs::model::{ Entry, Feed };
 use gluesql::
@@ -14,18 +14,17 @@ use gluesql::
   sled_storage::{ sled::Config, SledStorage },
 };
 // qqq : ask
-use crate::report::
-{
+// use crate::report::
+// {
   // qqq : don't put report into different file, keep the in the same file where it used
-  FramesReport,
-  FieldsReport,
-  FeedsReport,
-  SelectedEntries,
-  QueryReport,
-  ConfigReport,
-  UpdateReport,
-  ListReport,
-  TablesReport,
+  // aaa: put into separate files with functions that use them
+// };
+use crate::executor::endpoints::{
+  feeds::FeedsReport,
+  query::QueryReport,
+  frames::{ UpdateReport, ListReport },
+  table::TablesReport,
+  list_fields::FieldsReport,
 };
 use wca::wtools::Itertools;
 
@@ -136,13 +135,13 @@ pub trait FeedStore
   fn columns_titles( &mut self ) -> FieldsReport;
 
   /// Add subscription.
-  async fn add_config( &mut self, config : String ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >;
+  async fn add_config( &mut self, config : String ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
 
   /// Remove subscription.
-  async fn remove_subscription( &mut self, link : String ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >;
+  async fn remove_config( &mut self, link : String ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
 
   /// List subscriptions.
-  async fn list_subscriptions( &mut self ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >;
+  async fn list_configs( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >;
 
   /// List tables in storage.
   async fn list_tables( &mut self ) -> Result< TablesReport, Box< dyn std::error::Error + Send + Sync > >;
@@ -205,13 +204,13 @@ impl FeedStore for FeedStorage< SledStorage >
     {
       Payload::Select { labels: label_vec, rows: rows_vec } =>
       {
-        SelectedEntries
+        crate::executor::endpoints::frames::SelectedEntries
         {
           selected_rows : rows_vec,
           selected_columns : label_vec,
         }
       },
-      _ => SelectedEntries::new(),
+      _ => crate::executor::endpoints::frames::SelectedEntries::new(),
     };
 
     let mut feeds_map = HashMap::new();
@@ -228,9 +227,9 @@ impl FeedStore for FeedStorage< SledStorage >
 
     for ( title, frames ) in feeds_map
     {
-      let mut report = FramesReport::new( title );
+      let mut report = crate::executor::endpoints::frames::FramesReport::new( title );
       report.existing_frames = frames.len();
-      report.selected_frames = SelectedEntries { selected_rows : frames, selected_columns : all_frames.selected_columns.clone() };
+      report.selected_frames = crate::executor::endpoints::frames::SelectedEntries { selected_rows : frames, selected_columns : all_frames.selected_columns.clone() };
       reports.push( report );
     }
 
@@ -245,7 +244,7 @@ impl FeedStore for FeedStorage< SledStorage >
     {
       Payload::Select { labels: label_vec, rows: rows_vec } =>
       {
-        report.selected_entries = SelectedEntries
+        report.selected_entries = crate::executor::endpoints::frames::SelectedEntries
         {
           selected_rows : rows_vec,
           selected_columns : label_vec,
@@ -343,13 +342,13 @@ impl FeedStore for FeedStorage< SledStorage >
 
     for feed in &feeds
     {
-      let mut frames_report = FramesReport::new( feed.0.title.clone().unwrap().content );
+      let mut frames_report = crate::executor::endpoints::frames::FramesReport::new( feed.0.title.clone().unwrap().content );
       // check if feed is new
       if let Some( existing_feeds ) = existing_feeds.select()
       {
 
         let existing_feeds = existing_feeds
-        .filter_map( | feed | feed.get( "link" ).map( | link | String::from( crate::report::RowValue( link ) ) ))
+        .filter_map( | feed | feed.get( "link" ).map( | link | String::from( crate::storage::model::RowValue( link ) ) ))
         .collect_vec()
         ;
 
@@ -442,7 +441,7 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( UpdateReport( reports ) )
   }
 
-  async fn add_config( &mut self, config : String ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
+  async fn add_config( &mut self, config : String ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
   {
 
     let res = table( "config" )
@@ -455,10 +454,10 @@ impl FeedStore for FeedStorage< SledStorage >
     .execute( &mut *self.storage.lock().await )
     .await?;
 
-    Ok( ConfigReport { result : res } )
+    Ok( res )
   }
 
-  async fn remove_subscription( &mut self, link : String ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
+  async fn remove_config( &mut self, link : String ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
   {
     let res = table( "config" )
     .delete()
@@ -466,13 +465,13 @@ impl FeedStore for FeedStorage< SledStorage >
     .execute( &mut *self.storage.lock().await )
     .await?;
 
-    Ok( ConfigReport { result : res } )
+    Ok( res )
   }
 
-  async fn list_subscriptions( &mut self ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
+  async fn list_configs( &mut self ) -> Result< Payload, Box< dyn std::error::Error + Send + Sync > >
   {
     let res = table( "config" ).select().execute( &mut *self.storage.lock().await ).await?;
-    Ok( ConfigReport { result : res } )
+    Ok( res )
   }
 
   async fn add_feeds( &mut self, feed : Vec< FeedRow > ) -> Result< (), Box< dyn std::error::Error + Send + Sync > >
