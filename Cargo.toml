@@ -144,7 +144,7 @@ default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/clone_dyn"
 default-features = false
 features = [ "enabled" ]
