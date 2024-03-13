@@ -83,7 +83,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "Add file with feeds configurations. Subject: path to config file.\n",
       "    Example: .config.add ./config/feeds.toml",
     ))
-    .subject().hint( "Link" ).kind( Type::Path ).optional( false ).end()
+    .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
     .routine( | args : Args |
     {
       if let Some( path ) = args.get_owned::< wca::Value >( 0 )
@@ -287,6 +287,20 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
   {
     self.storage.list_subscriptions().await
   }
+
+  pub async fn add_config( &mut self, path : std::path::PathBuf ) -> Result< ConfigReport, Box< dyn std::error::Error + Send + Sync > >
+  {
+    let path = path.canonicalize().expect( "Invalid path" );
+    let config_report = self.storage.add_config( path.to_string_lossy().to_string() ).await;
+    let feeds = read_feed_config( path.to_string_lossy().to_string() )?
+    .into_iter()
+    .map( | feed | crate::storage::model::FeedRow::new( feed.link, feed.update_period ) )
+    .collect::< Vec< _ > >()
+    ;
+
+    self.storage.add_feeds( feeds ).await?;
+    config_report
+  }
 }
 
 /// Update all feed from config files saved in storage.
@@ -459,11 +473,9 @@ pub fn add_config( path : std::path::PathBuf ) -> Result< impl Report, Box< dyn 
   rt.block_on( async move
   {
     let feed_storage = FeedStorage::init_storage( config ).await?;
-    let path = path.canonicalize().expect( "Invalid path" );
-
 
     let mut manager = FeedManager::new( feed_storage );
-    manager.storage.add_config( path.to_string_lossy().to_string() ).await
+    manager.add_config( path ).await
   } )
 }
 

@@ -3,26 +3,47 @@ use std::time::Duration;
 use feed_rs::model::{ Entry, Feed };
 use gluesql::core::
 {
-  ast_builder::{ null, text, timestamp, ExprNode },
+  ast_builder::{ function::generate_uuid, null, text, timestamp, ExprNode },
   chrono::SecondsFormat,
 };
 
 pub struct FeedRow( pub Vec< ExprNode< 'static > > );
 
+impl FeedRow
+{
+  pub fn new( feed_link : String, update_period : Duration ) -> Self
+  {
+    FeedRow( vec!
+    [
+      generate_uuid(),
+      null(),
+      text( feed_link ),
+      null(),
+      null(),
+      null(),
+      null(),
+      text( update_period.as_secs().to_string() ),
+    ] )
+  }
+}
+
 impl From< ( Feed, Duration ) > for FeedRow
 {
   fn from( value : ( Feed, Duration ) ) -> Self
   {
-    let mut row = Vec::new();
     let duration = value.1;
     let value = value.0;
-    row.push( text( value.id.clone() ) );
-    row.push( value.title.clone().map( | title | text( title.content ) ).unwrap_or( null() ) );
-    row.push( value.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ) );
-    row.push( text( value.authors.iter().map( | p | p.name.clone() ).fold( String::new(), | acc, val | format!( "{}, {}", acc, val ) ) ).to_owned() );
-    row.push( value.description.clone().map( | desc | text( desc.content ) ).unwrap_or( null() ) );
-    row.push( value.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ) );
-    row.push( text( duration.as_secs().to_string() ) );
+    let row = vec!
+    [
+      generate_uuid(),
+      value.title.clone().map( | title | text( title.content ) ).unwrap_or( null() ),
+      value.links.get( 0 ).map( | link | text( link.href.clone() ) ).unwrap_or( null() ),
+      value.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
+      text( value.authors.iter().map( | p | p.name.clone() ).fold( String::new(), | acc, val | format!( "{}, {}", acc, val ) ) ),
+      value.description.clone().map( | desc | text( desc.content ) ).unwrap_or( null() ),
+      value.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
+      text( duration.as_secs().to_string() ),
+    ];
     FeedRow( row )
   }
 }

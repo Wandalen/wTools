@@ -297,7 +297,7 @@ impl std::fmt::Display for QueryReport
 
 impl Report for QueryReport {}
 
-struct RowValue< 'a >( pub &'a Value );
+pub struct RowValue< 'a >( pub &'a Value );
 
 impl std::fmt::Display for RowValue< '_ >
 {
