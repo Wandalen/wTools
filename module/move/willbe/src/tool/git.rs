@@ -17,6 +17,7 @@ mod private
   ///
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
+  #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path, objects ), fields( path = %path.as_ref().display() ) ) ) ]
   pub fn add< P, Os, O >( path : P, objects : Os, dry : bool ) -> Result< CmdReport >
   where
     P : AsRef< Path >,
@@ -64,6 +65,7 @@ mod private
   ///
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
+  #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path, message ), fields( path = %path.as_ref().display(), message = %message.as_ref() ) ) ) ]
   pub fn commit< P, M >( path : P, message : M, dry : bool ) -> Result< CmdReport >
   where
     P : AsRef< Path >,
@@ -86,7 +88,7 @@ mod private
     }
     else
     {
-      let options = 
+      let options =
       process::RunOptions::former()
       .application( program )      
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
@@ -107,6 +109,7 @@ mod private
   ///
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
+  #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path ), fields( path = %path.as_ref().display() ) ) ) ]
   pub fn push< P >( path : P, dry : bool ) -> Result< CmdReport >
   where
     P : AsRef< Path >,
@@ -128,7 +131,7 @@ mod private
     }
     else
     {
-      let options = 
+      let options =
       process::RunOptions::former()
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )

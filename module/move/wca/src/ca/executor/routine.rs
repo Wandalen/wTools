@@ -447,7 +447,7 @@ pub( crate ) mod private
 
   impl IntoResult for std::convert::Infallible { fn into_result( self ) -> Result< () > { Ok( () ) } }
   impl IntoResult for () { fn into_result( self ) -> Result< () > { Ok( () ) } }
-  impl< E : std::fmt::Display > IntoResult for Result< (), E > { fn into_result( self ) -> Result< () > { self.map_err( | e | anyhow!( "{e}" )) } }
+  impl< E : std::fmt::Debug > IntoResult for Result< (), E > { fn into_result( self ) -> Result< () > { self.map_err( | e | anyhow!( "{e:?}" )) } }
 }
 
 //

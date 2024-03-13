@@ -44,6 +44,12 @@ mod private
   /// - `path` - path to the package directory
   /// - `dry` - a flag that indicates whether to execute the command or not
   ///
+  #[ cfg_attr
+  (
+    feature = "tracing",
+    track_caller,
+    tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
+  )]
   pub fn pack( args : PackOptions ) -> Result< CmdReport >
   {
     let ( program, options ) = ( "cargo", args.to_pack_args() );
@@ -63,7 +69,7 @@ mod private
     }
     else
     {
-      let options = 
+      let options =
       process::RunOptions::former()
       .application( program )
       .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
@@ -102,6 +108,12 @@ mod private
   }
 
  /// Upload a package to the registry
+  #[ cfg_attr
+  (
+    feature = "tracing",
+    track_caller,
+    tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
+  )]
   pub fn publish( args : PublishOptions ) -> Result< CmdReport >
   {
     let ( program, arguments) = ( "cargo", args.as_publish_args() );

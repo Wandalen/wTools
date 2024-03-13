@@ -109,6 +109,7 @@ mod private
   /// Publish packages.
   ///
 
+  #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn publish( patterns : Vec< String >, dry : bool, temp : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
@@ -199,7 +200,7 @@ mod private
         | ( current_report, e ) |
         {
           report.packages.push(( package.crate_dir().absolute_path(), current_report.clone() ));
-          ( report.clone(), e.context( "Publish list of packages" ).into() )
+          ( report.clone(), e.context( "Publish list of packages" ) )
         }
       )?;
       report.packages.push(( package.crate_dir().absolute_path(), current_report ));
