@@ -42,39 +42,39 @@ export AWS_ACCESS_KEY_ID ?= $(SECRET_AWS_ACCESS_KEY_ID)
 # AWS Secret Access key for deploying to an EC2 instance
 export AWS_SECRET_ACCESS_KEY ?= $(SECRET_AWS_ACCESS_KEY)
 
-# Prints key related errors
-print-key-errors:
-ifneq ($(SERVICE_KEY_ERROR),)
-	@echo $(SERVICE_KEY_ERROR)
-endif
-ifneq ($(STATE_KEY_ERROR),)
-	@echo $(STATE_KEY_ERROR)
-endif
+# Check Hetzner and deployment related keys 
+check-hetzner-keys: check-gcp-keys
 ifneq ($(HETZNER_KEY_ERROR),)
 	@echo $(HETZNER_KEY_ERROR)
 endif
+ifeq ($(SECRET_CSP_HETZNER),)
+	@exit 1
+endif
+
+# Check AWS and deployment related keys 
+check-aws-keys: check-gcp-keys
 ifneq ($(AWS_ACCESS_KEY_ID_ERROR),)
 	@echo $(AWS_ACCESS_KEY_ID_ERROR)
 endif
 ifneq ($(AWS_ACCESS_KEY_ERROR),)
 	@echo $(AWS_ACCESS_KEY_ERROR)
 endif
-
-# Check Hetzner related keys 
-check-hetzner-key: print-key-errors
-ifneq ($(HETZNER_KEY_ERROR),)
+ifeq ($(SECRET_AWS_ACCESS_KEY_ID),$(SECRET_AWS_ACCESS_KEY))
 	@exit 1
 endif
 
-# Check AWS related keys 
-check-aws-keys: print-key-errors
-ifneq ($(AWS_ACCESS_KEY_ID_ERROR),$(AWS_ACCESS_KEY_ERROR))
-	@exit 1
-endif
+check-gce-keys: check-gcp-keys
+	@echo "All required GCE keys are the same as GCP keys" 
 
-# Check if required keys are present
-check-keys: print-key-errors
-ifneq ($(SERVICE_KEY_ERROR),$(STATE_KEY_ERROR))
+# Check if required GCP keys are present
+check-gcp-keys:
+ifneq ($(SERVICE_KEY_ERROR),)
+	@echo $(SERVICE_KEY_ERROR)
+endif
+ifneq ($(STATE_KEY_ERROR),)
+	@echo $(STATE_KEY_ERROR)
+endif
+ifeq ($(SECRET_STATE_ARCHIVE_KEY),)
 	@exit 1
 endif
 
@@ -154,14 +154,14 @@ create-aws: check-aws-keys gcp-service state_storage_pull push-image
 	terraform -chdir=$(tf_dir)/aws apply -auto-approve
 
 # Creates Hetzner instance with the website configured on boot
-create-hetzner: check-hetzner-key gcp-service state_storage_pull push-image
+create-hetzner: check-hetzner-keys gcp-service state_storage_pull push-image
 	terraform -chdir=$(tf_dir)/hetzner apply -auto-approve
 
 # Deploys everything and updates terraform states
 deploy-in-container: create-$(CSP) state_storage_push
 
 # Deploys using tools from the container
-deploy: check-keys build-image
+deploy: check-$(CSP)-keys build-image
 	docker build . -t deploy-$(TF_VAR_IMAGE_NAME) -f ./$(tf_dir)/Dockerfile --build-arg google_sa_creds="$(google_sa_creds)"
 	@docker run -v //var/run/docker.sock:/var/run/docker.sock -v .:/app -e SECRET_STATE_ARCHIVE_KEY=$(SECRET_STATE_ARCHIVE_KEY) -e TF_VAR_HCLOUD_TOKEN=$(TF_VAR_HCLOUD_TOKEN) -e CSP=$(CSP) --rm deploy-$(TF_VAR_IMAGE_NAME)
 
