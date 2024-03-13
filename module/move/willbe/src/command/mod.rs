@@ -202,8 +202,9 @@ crate::mod_interface!
   layer list;
   /// Publish packages.
   layer publish;
-  /// Generate tables
-  // qqq : for Petro : what a table??
+  /// Generates health table in main Readme.md file of workspace.
+  // aaa : for Petro : what a table??
+  // aaa : add more details to documentation
   layer readme_health_table_renew;
   /// Run all tests
   layer test;

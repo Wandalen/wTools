@@ -2,9 +2,10 @@ use crate::*;
 use assert_cmd::Command;
 use inc::
 {
-  action::tests_run::ProjectBuilder,
-  // qqq : for Petro : move to helper. don't reuse test-rs files in command and endpoints
-  command::BINARY_NAME,
+  action::test::ProjectBuilder,
+  // aaa : for Petro : move to helper. don't reuse test-rs files in command and endpoints
+  // aaa : move to helper module
+  helpers::BINARY_NAME,
 };
 
 use assert_fs::TempDir;

@@ -24,14 +24,6 @@ pub( crate ) mod private
     pub item_name : syn::Ident,
     /// Collection of struct's fields, including visibility, attributes, and types.
     pub fields : syn::Fields,
-
-    // // xxx : rid off fields below. them are deduced from fields and should be implemented with function
-    // /// Collection of fields for convenient iteration. Planned for deprecation.
-    // pub fields_many : Many< syn::Field >,
-    // /// Types of each field in a vector for easy access. Planned for deprecation.
-    // pub field_types: Vec< syn::Type >,
-    // /// Names of each field if available, otherwise `None`. Planned for deprecation.
-    // pub field_names: Option< Vec< syn::Ident > >,
   }
 
   impl TypeStructParsed

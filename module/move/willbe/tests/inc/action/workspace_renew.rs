@@ -1,80 +1,73 @@
 use assert_fs::prelude::*;
 
-use crate::TheModule::action;
+use crate::*;
+use std::fs;
+use std::fs::create_dir;
+use TheModule::action::workspace_renew;
 
-const ASSETS_PATH : &str = "tests/assets";
+const ASSETS_PATH : &str = "tests/assets"; 
 
-//
 
-mod workspace_renew
+fn arrange( sample_dir : &str ) -> assert_fs::TempDir
 {
-  use std::fs;
-  use std::fs::create_dir;
-  use action::workspace_renew;
+  let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+  let assets_relative_path = std::path::Path::new( ASSETS_PATH );
+  let assets_path = root_path.join( assets_relative_path );
 
-  use super::*;
+  let temp = assert_fs::TempDir::new().unwrap();
+  temp.copy_from( assets_path.join( sample_dir ), &[ "**" ] ).unwrap();
+  temp
+}
 
-  fn arrange( sample_dir : &str ) -> assert_fs::TempDir
-  {
-    let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
-    let assets_relative_path = std::path::Path::new( ASSETS_PATH );
-    let assets_path = root_path.join( assets_relative_path );
+#[ test ]
+fn default_case()
+{
+  // Arrange
+  let temp = assert_fs::TempDir::new().unwrap();
+  let temp_path = temp.join( "test_project_name" );
+  create_dir(temp.join("test_project_name" )).unwrap();
 
-    let temp = assert_fs::TempDir::new().unwrap();
-    temp.copy_from( assets_path.join( sample_dir ), &[ "**" ] ).unwrap();
-    temp
-  }
+  // Act
+  _ = workspace_renew( &temp.path().join("test_project_name" ), "https://github.con/Username/TestRepository".to_string(), vec![ "master".into() ] ).unwrap();
 
-  #[ test ]
-  fn default_case()
-  {
-    // Arrange
-    let temp = assert_fs::TempDir::new().unwrap();
-    let temp_path = temp.join( "test_project_name" );
-    create_dir(temp.join("test_project_name" )).unwrap();
+  // Assets
+  assert!( temp_path.join( "module" ).exists() );
+  assert!( temp_path.join( "Readme.md" ).exists() );
+  assert!( temp_path.join( ".gitattributes" ).exists() );
+  assert!( temp_path.join( ".gitignore" ).exists() );
+  assert!( temp_path.join( ".gitpod.yml" ).exists() );
+  assert!( temp_path.join( "Cargo.toml" ).exists() );
 
-    // Act
-    _ = workspace_renew( &temp.path().join("test_project_name" ), "https://github.con/Username/TestRepository".to_string(), vec![ "master".into() ] ).unwrap();
+  let actual = fs::read_to_string(temp_path.join( "Cargo.toml" ) ).unwrap();
 
-    // Assets
-    assert!( temp_path.join( "module" ).exists() );
-    assert!( temp_path.join( "Readme.md" ).exists() );
-    assert!( temp_path.join( ".gitattributes" ).exists() );
-    assert!( temp_path.join( ".gitignore" ).exists() );
-    assert!( temp_path.join( ".gitpod.yml" ).exists() );
-    assert!( temp_path.join( "Cargo.toml" ).exists() );
+  let name = "project_name = \"test_project_name\"";
+  let repo_url = "repo_url = \"https://github.con/Username/TestRepository\"";
+  let branches = "branches = [\"master\"]";
 
-    let actual = fs::read_to_string(temp_path.join( "Cargo.toml" ) ).unwrap();
+  assert!( actual.contains( &name) );
+  assert!( actual.contains( &repo_url) );
+  assert!( actual.contains( &branches) );
 
-    let name = "project_name = \"test_project_name\"";
-    let repo_url = "repo_url = \"https://github.con/Username/TestRepository\"";
-    let branches = "branches = [\"master\"]";
+  assert!( temp_path.join( "Makefile" ).exists() );
+  assert!( temp_path.join( "assets" ).exists() );
+  assert!( temp_path.join( "docs" ).exists() );
+  assert!( temp_path.join( ".github" ).exists() );
+  assert!( temp_path.join( ".github/workflows" ).exists() );
+  // assert!( temp_path.join( ".circleci" ).exists() );
+  // assert!( temp_path.join( ".circleci/config.yml" ).exists() );
+  assert!( temp_path.join( ".cargo" ).exists() );
+  assert!( temp_path.join( ".cargo/config.toml" ).exists() );
+}
 
-    assert!( actual.contains( &name) );
-    assert!( actual.contains( &repo_url) );
-    assert!( actual.contains( &branches) );
+#[ test ]
+fn non_empty_dir()
+{
+  // Arrange
+  let temp = arrange( "single_module" );
 
-    assert!( temp_path.join( "Makefile" ).exists() );
-    assert!( temp_path.join( "assets" ).exists() );
-    assert!( temp_path.join( "docs" ).exists() );
-    assert!( temp_path.join( ".github" ).exists() );
-    assert!( temp_path.join( ".github/workflows" ).exists() );
-    // assert!( temp_path.join( ".circleci" ).exists() );
-    // assert!( temp_path.join( ".circleci/config.yml" ).exists() );
-    assert!( temp_path.join( ".cargo" ).exists() );
-    assert!( temp_path.join( ".cargo/config.toml" ).exists() );
-  }
+  // Act
+  let r = workspace_renew( temp.path(), "".into(), vec![] );
 
-  #[ test ]
-  fn non_empty_dir()
-  {
-    // Arrange
-    let temp = arrange( "single_module" );
-
-    // Act
-    let r = workspace_renew( temp.path(), "".into(), vec![] );
-
-    // Assert
-    assert!( r.is_err() );
-  }
+  // Assert
+  assert!( r.is_err() );
 }
