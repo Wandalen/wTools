@@ -6,6 +6,7 @@ use assert_fs::TempDir;
 use crate::TheModule::*;
 use action::test::{test, TestsCommandOptions};
 use path::AbsolutePath;
+use willbe::channel::Channel;
 
 #[ derive( Debug ) ]
 pub struct ProjectBuilder
@@ -239,4 +240,49 @@ fn call_from_workspace_root()
 
   assert_eq!( rep.failure_reports.len(), 1 );
   assert_eq!( rep.succses_reports.len(), 2 );
+}
+
+#[ test ]
+fn plan()
+{
+  let temp = TempDir::new().unwrap();
+  let temp = &temp;
+
+  let project = ProjectBuilder::new( "plan_test" )
+  .toml_file( "" )
+  .test_file( r#"
+  #[test]
+  fn should_pass() {
+    assert!(true);
+  }
+  "#)
+  .build( temp )
+  .unwrap();
+  let abs = AbsolutePath::try_from( project ).unwrap();
+
+  let args = TestsCommandOptions::former()
+  .dir( abs )
+  .channels([ channel::Channel::Stable, channel::Channel::Nightly ])
+  .optimizations([ optimization::Optimization::Debug, optimization::Optimization::Release ])
+  .form();
+
+  let rep = test( args, true ).unwrap().succses_reports[ 0 ].clone();
+
+  assert!( rep.tests.contains_key( &optimization::Optimization::Debug ) );
+  let debug = rep.tests.get( &optimization::Optimization::Debug ).unwrap().clone();
+  assert!( debug.contains_key( &Channel::Stable ) );
+  assert!( debug.contains_key( &Channel::Nightly ) );
+  let stable = debug.get( &Channel::Stable ).unwrap().clone();
+  assert!( stable.contains_key( "" ) );
+  let nightly = debug.get( &Channel::Nightly ).unwrap().clone();
+  assert!(nightly.contains_key( "" ));
+
+  assert!( rep.tests.contains_key( &optimization::Optimization::Release ) );
+  let release = rep.tests.get( &optimization::Optimization::Release ).unwrap().clone();
+  assert!( release.contains_key( &Channel::Stable ) );
+  assert!( release.contains_key( &Channel::Nightly ) );
+  let stable = release.get( &Channel::Stable ).unwrap().clone();
+  assert!( stable.contains_key( "" ) );
+  let nightly = debug.get( &Channel::Nightly ).unwrap().clone();
+  assert!( nightly.contains_key( "" ) );
 }
