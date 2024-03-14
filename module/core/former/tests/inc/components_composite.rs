@@ -7,7 +7,18 @@ use former::{ SetComponent, SetWithType };
 /// Options1
 ///
 
-#[ derive( Debug, Default, PartialEq, TheModule::ComponentFrom, TheModule::SetComponent ) ]
+#[
+  derive
+  (
+    Debug,
+    Default,
+    PartialEq,
+    TheModule::ComponentFrom,
+    TheModule::SetComponent,
+    // TheModule::SetComponents,
+    TheModule::FromComponents,
+  )
+]
 // #[ debug ]
 // qqq : make these traits working for generic struct, use `split_for_impl`
 pub struct Options1
@@ -21,7 +32,18 @@ pub struct Options1
 /// Options2
 ///
 
-#[ derive( Debug, Default, PartialEq, TheModule::ComponentFrom, TheModule::SetComponent, TheModule::SetComponents ) ]
+#[
+  derive
+  (
+    Debug,
+    Default,
+    PartialEq,
+    TheModule::ComponentFrom,
+    TheModule::SetComponent,
+    TheModule::SetComponents,
+    TheModule::FromComponents,
+  )
+]
 // #[ debug ]
 pub struct Options2
 {

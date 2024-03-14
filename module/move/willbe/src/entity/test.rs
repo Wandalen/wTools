@@ -22,12 +22,15 @@ mod private
   use channel::Channel;
   use optimization::Optimization;
 
-  /// Represents the arguments for the test.
+  /// Represents the options for the test.
   #[ derive( Debug, Former, Clone ) ]
   pub struct SingleTestOptions
   {
+    // qqq : for Petro : poor description
     /// Specifies the release channels for rust.
     channel : Channel,
+    /// Specifies the optimization for rust.
+    optimization : Optimization,
     /// Determines whether to use default features in the test.
     /// Enabled by default.
     #[ default( true ) ]
@@ -40,8 +43,6 @@ mod private
     enable_features : BTreeSet< String >,
     /// Temp directory path
     temp_directory_path : Option< PathBuf >,
-    /// Specifies the optimization for rust.
-    optimization : Optimization,
   }
 
   impl SingleTestOptions
@@ -151,6 +152,7 @@ mod private
     ///   feature names and the values are `CmdReport` structs representing the test results for
     ///   the specific feature and channel.
     pub tests : BTreeMap< Optimization, BTreeMap< Channel, BTreeMap< String, Result< CmdReport, CmdReport > > > >,
+    // qqq : for Petro : rid off map of map of map, keep flat map
   }
 
   impl std::fmt::Display for TestReport
@@ -314,7 +316,7 @@ mod private
                   .optimization( optimization )
                   .with_default_features( false )
                   .enable_features( feature.clone() );
-                  
+
                   if let Some( p ) = args.temp_path.clone()
                   {
                     let path = p.join( format!( "{}_{}_{}_{}", package.name.clone(), optimization, channel, feature.iter().join( "," ) ) );
@@ -333,9 +335,9 @@ mod private
                   .entry( channel )
                   .or_default()
                   .insert
-                  ( 
-                    feature.iter().join( "," ), 
-                    cmd_rep.map_err( | e | e.0 ) 
+                  (
+                    feature.iter().join( "," ),
+                    cmd_rep.map_err( | e | e.0 )
                   );
                 }
               );
@@ -410,7 +412,7 @@ mod private
       {
         for feature in features
         {
-          let feature = if feature.is_empty() { "no-features".to_string() } else { feature.iter().join( "," ) };
+          let feature = if feature.is_empty() { "-".to_string() } else { feature.iter().join( "," ) };
           println!( "  [ optimization : {optimization} | channel : {channel} | feature : {feature} ]" );
         }
       }
