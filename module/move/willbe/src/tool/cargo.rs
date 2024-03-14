@@ -2,21 +2,21 @@ mod private
 {
   use std::ffi::OsString;
   use crate::*;
-  
+
   use std::path::PathBuf;
   use former::Former;
   use process::CmdReport;
   use wtools::error::Result;
 
   /// Represents pack options
-  #[ derive( Debug, Former ) ]
+  #[ derive( Debug, Former, Clone ) ]
   pub struct PackOptions
   {
-    path : PathBuf,
-    temp_path : Option< PathBuf >,
-    dry : bool,
+    pub( crate ) path : PathBuf,
+    pub( crate ) temp_path : Option< PathBuf >,
+    pub( crate ) dry : bool,
   }
-  
+
   impl PackOptionsFormer
   {
     pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
@@ -25,7 +25,7 @@ mod private
       self
     }
   }
-  
+
   impl PackOptions
   {
     fn to_pack_args( &self ) -> Vec< String >
@@ -36,7 +36,7 @@ mod private
       .collect()
     }
   }
-  
+
   ///
   /// Assemble the local package into a distributable tarball.
   ///
@@ -84,11 +84,11 @@ mod private
   #[ derive( Debug, Former, Clone, Default ) ]
   pub struct PublishOptions
   {
-    path : PathBuf,
-    temp_path : Option< PathBuf >,
-    dry : bool, 
+    pub( crate ) path : PathBuf,
+    pub( crate ) temp_path : Option< PathBuf >,
+    pub( crate ) dry : bool,
   }
-  
+
   impl PublishOptionsFormer
   {
     pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
@@ -133,7 +133,7 @@ mod private
     }
     else
     {
-      let options = 
+      let options =
       process::RunOptions::former()
       .application( program )
       .args( arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >() )

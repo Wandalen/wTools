@@ -15,7 +15,7 @@ mod private
   use manifest::Manifest;
 
   /// Wrapper for a SemVer structure
-  #[ derive( Debug, Clone, Eq, PartialEq ) ]
+  #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd ) ]
   pub struct Version( SemVersion );
 
   impl FromStr for Version

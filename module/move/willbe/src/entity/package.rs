@@ -4,8 +4,7 @@ mod private
 
   use std::
   {
-    path::Path,
-    collections::{ HashMap, HashSet },
+    collections::{ HashMap, HashSet }, path::Path,
   };
   use std::fmt::Formatter;
   use std::hash::Hash;
@@ -184,16 +183,16 @@ mod private
       match self
       {
         Self::Manifest( manifest ) =>
-          {
-            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+        {
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
 
-            // Unwrap safely because of the `Package` type guarantee
-            Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
-          }
+          // Unwrap safely because of the `Package` type guarantee
+          Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
+        }
         Self::Metadata( metadata ) =>
-          {
-            Ok( metadata.metadata["stability"].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
-          }
+        {
+          Ok( metadata.metadata["stability"].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
+        }
       }
     }
 
@@ -277,6 +276,194 @@ mod private
         Package::Metadata( metadata ) => Ok( metadata.clone() ),
       }
     }
+  }
+
+  pub trait Plan
+  {
+    type Report;
+    fn perform( &self, dry : bool ) -> Result< Self::Report >;
+  }
+
+  pub struct CargoPackagePlan
+  {
+    crate_dir : CrateDir,
+  }
+
+  impl Plan for CargoPackagePlan
+  {
+    type Report = process::CmdReport;
+    fn perform( &self, dry : bool ) -> Result< Self::Report >
+    {
+      let args = cargo::PackOptions::former()
+      .path( self.crate_dir.as_ref() )
+      .dry( dry )
+      .form();
+
+      Ok( cargo::pack( args )? )
+    }
+  }
+
+  pub struct VersionBumpPlan
+  {
+    pub crate_dir : CrateDir,
+    pub old_version : version::Version,
+    pub new_version : version::Version,
+    pub dependencies : Vec< CrateDir >,
+  }
+
+  impl Plan for VersionBumpPlan
+  {
+    type Report = ExtendedBumpReport;
+    fn perform( &self, _dry : bool ) -> Result< Self::Report >
+    {
+      let mut report = Self::Report::default();
+      let package = Package::
+      report.base.name = Some( "peter".into() );
+      report.base.old_version = Some( self.old_version.to_string() );
+      report.changed_files = vec![];
+
+      Ok( report )
+    }
+  }
+
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct ExtendedGitReport
+  {
+    pub add : Option< process::CmdReport >,
+    pub commit : Option< process::CmdReport >,
+    pub push : Option< process::CmdReport >,
+  }
+
+  pub struct GitThingsPlan
+  {
+    pub git_root : AbsolutePath,
+    pub items : Vec< AbsolutePath >,
+    pub message : String,
+  }
+
+  impl Plan for GitThingsPlan
+  {
+    type Report = ExtendedGitReport;
+    fn perform( &self, dry : bool ) -> Result< Self::Report >
+    {
+      let mut report = Self::Report::default();
+      if self.items.is_empty() { return Ok( report ); }
+      let items = self
+      .items
+      .iter()
+      .map
+      (
+        | item | item.as_ref().strip_prefix( self.git_root.as_ref() ).map( Path::to_string_lossy )
+        .with_context( || format!( "git_root: {}, item: {}", self.git_root.as_ref().display(), item.as_ref().display() ) )
+      )
+      .collect::< Result< Vec< _ > > >()?;
+      let res = git::add( &self.git_root, &items, dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      report.add = Some( res );
+      let res = git::commit( &self.git_root, &self.message, dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      report.commit = Some( res );
+      let res = git::push( &self.git_root, dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      report.push = Some( res );
+
+      Ok( report )
+    }
+  }
+
+  pub struct CargoPublishPlan
+  {
+    crate_dir : CrateDir,
+  }
+
+  impl Plan for CargoPublishPlan
+  {
+    type Report = process::CmdReport;
+    fn perform( &self, dry : bool ) -> Result< Self::Report >
+    {
+      let args = cargo::PublishOptions::former()
+      .path( self.crate_dir.as_ref() )
+      .dry( dry )
+      .form();
+
+      Ok( cargo::publish( args )? )
+    }
+  }
+
+  pub struct PublishSinglePackagePlan
+  {
+    pub pack : CargoPackagePlan,
+    pub version_bump : VersionBumpPlan,
+    // qqq : rename
+    pub git_things : GitThingsPlan,
+    pub publish : CargoPublishPlan,
+  }
+
+  impl Plan for PublishSinglePackagePlan
+  {
+    type Report = PublishReport;
+    fn perform( &self, dry : bool ) -> Result< Self::Report >
+    {
+      let mut report = Self::Report::default();
+      let Self
+      {
+        pack,
+        version_bump,
+        git_things,
+        publish,
+      } = self;
+
+      report.get_info = Some( pack.perform( dry ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+      // qqq : redundant field?
+      report.publish_required = true;
+      report.bump = Some( version_bump.perform( dry ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+      let git = git_things.perform( dry ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )?;
+      report.add = git.add;
+      report.commit = git.commit;
+      report.push = git.push;
+      report.publish = Some( publish.perform( dry ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+
+      Ok( report )
+    }
+  }
+
+  pub struct PublishManyPackagesPlan( Vec< PublishSinglePackagePlan > );
+
+  impl Plan for PublishManyPackagesPlan
+  {
+    type Report = Vec< PublishReport >;
+    fn perform( &self, dry : bool ) -> Result< Self::Report >
+    {
+      let mut report = Self::Report::default();
+      for package in &self.0
+      {
+        let res = package.perform( dry ).map_err( | e | format_err!( "{report:#?}\n{e:#?}" ) )?;
+        report.push( res );
+      }
+
+      Ok( report )
+    }
+  }
+
+  #[test]
+  fn temporary_test() {
+    use core::str::FromStr;
+    let publish = PublishSinglePackagePlan {
+      pack: CargoPackagePlan {
+        crate_dir: AbsolutePath::try_from(".").unwrap().try_into().unwrap(),
+      },
+      version_bump: VersionBumpPlan {
+        crate_dir: AbsolutePath::try_from(".").unwrap().try_into().unwrap(),
+        old_version: version::Version::from_str("0.0.1").unwrap(),
+        new_version: version::Version::from_str("0.0.2").unwrap(),
+        dependencies: vec![],
+      },
+      git_things: GitThingsPlan { git_root: ".".try_into().unwrap(), items: vec![], message: "hello peter".into() },
+      publish: CargoPublishPlan {
+        crate_dir: AbsolutePath::try_from(".").unwrap().try_into().unwrap(),
+      }
+    };
+    let many = PublishManyPackagesPlan(vec![publish]);
+    let out = many.perform(true);
+    dbg!(out);
+    panic!()
   }
 
   /// Holds information about the publishing process.
@@ -431,7 +618,7 @@ mod private
         path
       }
     );
-    
+
     let pack_args = cargo::PackOptions::former()
     .path( package_dir.absolute_path().as_ref().to_path_buf() )
     .option_temp_path( temp_dir.clone() )
@@ -504,9 +691,9 @@ mod private
       report.commit = Some( res );
       let res = git::push( package_dir, args.dry ).map_err( | e | ( report.clone(), e ) )?;
       report.push = Some( res );
-      
+
       let res = cargo::publish
-      ( 
+      (
         cargo::PublishOptions::former()
         .path( package_dir.absolute_path().as_ref().to_path_buf() )
         .option_temp_path( temp_dir )
