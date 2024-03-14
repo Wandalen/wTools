@@ -20,7 +20,8 @@ use gluesql::
   // qqq : don't put report into different file, keep the in the same file where it used
   // aaa: put into separate files with functions that use them
 // };
-use crate::executor::endpoints::{
+use crate::executor::endpoints::
+{
   feeds::FeedsReport,
   query::QueryReport,
   frames::{ UpdateReport, ListReport },
@@ -356,7 +357,7 @@ impl FeedStore for FeedStorage< SledStorage >
           {
             return Some( format!( "'{}'", link.href.clone() ) );
           }
-        } 
+        }
         None
       } ).collect::< Vec< _ > >()[ 0 ]
       .clone()
@@ -388,7 +389,7 @@ impl FeedStore for FeedStorage< SledStorage >
         .filter_map( | feed | feed.get( "link" ).map( | link | String::from( crate::storage::model::RowValue( link ) ) ))
         .collect_vec()
         ;
-        
+
         let link = &feed.0.links.iter().filter_map( | link |
           {
             if let Some( media_type ) = &link.media_type
@@ -397,7 +398,7 @@ impl FeedStore for FeedStorage< SledStorage >
               {
                 return Some( link.href.clone() );
               }
-            } 
+            }
             None
           } ).collect::< Vec< _ > >()[ 0 ];
 
@@ -511,8 +512,8 @@ impl FeedStore for FeedStorage< SledStorage >
     //     {
     //       let res = match val_err
     //       {
-    //         gluesql::core::error::ValidateError::DuplicateEntryOnPrimaryKeyField( _ ) => 
-    //         { 
+    //         gluesql::core::error::ValidateError::DuplicateEntryOnPrimaryKeyField( _ ) =>
+    //         {
     //           res.context( "Config with same path already exists." )
     //         },
     //         _ => res.into()
