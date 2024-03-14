@@ -335,6 +335,9 @@ fn field_optional_map( field : &FormerField< '_ > ) -> TokenStream
 ///
 /// Generate code converting a field of the former to the field of the structure.
 ///
+/// In simple terms, used on `form()` call to unwrap contained values from the former's container.
+/// Will try to use default values if no values supplied by the former and the type implements `Default` trait.
+///
 /// ### Example of generated code
 ///
 /// ```ignore
@@ -361,19 +364,22 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
   let tokens = if field.is_optional
   {
 
-    let _else = if default == None
+    let _else = match default
     {
-      qt!
+      None =>
       {
-        ::core::option::Option::None
+        qt!
+        {
+          ::core::option::Option::None
+        }
       }
-    }
-    else
-    {
-      let default_val = default.unwrap();
-      qt!
+
+      Some( default_val ) =>
       {
-        ::core::option::Option::Some( ( #default_val ).into() )
+        qt!
+        {
+          ::core::option::Option::Some( ( #default_val ).into() )
+        }
       }
     };
 
@@ -393,50 +399,44 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
   else
   {
 
-    let _else = if default == None
+    let _else = match default
     {
-      // qqq : document, explain why and add example of generated code. if possible to improve -- suggest improvements
-      let panic_msg = format!( "Field '{}' isn't initialized", ident );
-      qt!
+      None =>
       {
-        let val : #ty =
+        let panic_msg = format!( "Field '{}' isn't initialized", ident );
+        qt!
         {
-          // Autoref specialization
-          trait NotDefault< T >
           {
-            fn maybe_default( self : &Self ) -> T { panic!( #panic_msg ) }
-          }
-
-          trait WithDefault< T >
-          {
-            fn maybe_default( self : &Self ) -> T;
-          }
-
-          impl< T > NotDefault< T >
-          for & ::core::marker::PhantomData< T >
-          {}
-
-          impl< T > WithDefault< T >
-          for ::core::marker::PhantomData< T >
-          where T : ::core::default::Default,
-          {
-            fn maybe_default( self : &Self ) -> T
+            // Utilizing deref coercion to implement conditional default.
+            trait MaybeDefault< T >
             {
-              T::default()
+              fn maybe_default( self : &Self ) -> T { panic!( #panic_msg ) }
             }
-          }
 
-          ( &::core::marker::PhantomData::< #ty > ).maybe_default()
-        };
-        // qqq : test that and document example of generated code
+            impl< T > MaybeDefault< T >
+            for ::core::marker::PhantomData< T >
+            {}
+
+            impl< T > MaybeDefault< T >
+            for &::core::marker::PhantomData< T >
+            where T : ::core::default::Default,
+            {
+              fn maybe_default( self : &Self ) -> T
+              {
+                T::default()
+              }
+            }
+
+            ( &::core::marker::PhantomData::< #ty > ).maybe_default()
+          }
+        }
       }
-    }
-    else
-    {
-      let default_val = default.unwrap();
-      qt!
+      Some( default_val ) =>
       {
-        let val : #ty = ( #default_val ).into();
+        qt!
+        {
+          ( #default_val ).into()
+        }
       }
     };
 
@@ -449,7 +449,6 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
       else
       {
         #_else
-        val
       };
     }
 
