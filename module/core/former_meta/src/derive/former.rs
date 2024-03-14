@@ -414,11 +414,11 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
             }
 
             impl< T > MaybeDefault< T >
-            for ::core::marker::PhantomData< T >
+            for &::core::marker::PhantomData< T >
             {}
 
             impl< T > MaybeDefault< T >
-            for &::core::marker::PhantomData< T >
+            for ::core::marker::PhantomData< T >
             where T : ::core::default::Default,
             {
               fn maybe_default( self : &Self ) -> T
