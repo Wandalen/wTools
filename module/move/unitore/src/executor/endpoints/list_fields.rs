@@ -1,5 +1,4 @@
 use crate::*;
-use cli_table::{ format::{ Border, Separator }, Cell, Style, Table };
 use executor::FeedManager;
 use super::Report;
 use storage::FeedStorage;
@@ -31,23 +30,26 @@ impl std::fmt::Display for FieldsReport
     let mut rows = Vec::new();
     for field in &self.fields_list
     {
-      rows.push( vec![ EMPTY_CELL.cell(), field[ 0 ].cell(), field[ 1 ].cell(), field[ 2 ].cell() ] );
+      rows.push( vec![ EMPTY_CELL.to_owned(), field[ 0 ].to_owned(), field[ 1 ].to_owned(), field[ 2 ].to_owned() ] );
     }
-    let table_struct = rows.table()
-    .title( vec!
-    [
-      EMPTY_CELL.cell(),
-      "name".cell().bold( true ),
-      "type".cell().bold( true ),
-      "explanation".cell().bold( true ),
-    ] )
-    .border( Border::builder().build() )
-    .separator( Separator::builder().build() );
 
-    let table = table_struct.display().unwrap();
+    let table = table::table_with_headers
+    (
+      vec!
+      [
+        EMPTY_CELL.to_owned(),
+        "name".to_owned(),
+        "type".to_owned(),
+        "explanation".to_owned(),
+      ],
+      rows
+    );
 
-    writeln!( f, "Frames fields:" )?;
-    writeln!( f, "{}", table )?;
+    if let Some( table ) = table
+    {
+      writeln!( f, "Frames fields:" )?;
+      writeln!( f, "{}", table )?;
+    }
 
     Ok( () )
   }

@@ -1,5 +1,4 @@
 use crate::*;
-use cli_table::{ format::{ Border, Separator }, Cell, Table };
 use gluesql::core::executor::Payload;
 use super::Report;
 use storage::{ FeedStorage, FeedStore };
@@ -62,19 +61,17 @@ impl std::fmt::Display for QueryReport
             {
               let new_row = vec!
               [
-                EMPTY_CELL.cell(),
-                label_vec[ i ].clone().cell(),
-                textwrap::fill( &String::from( row[ i ].clone() ), 120 ).cell(),
+                EMPTY_CELL.to_owned(),
+                label_vec[ i ].clone(),
+                textwrap::fill( &String::from( row[ i ].clone() ), 120 ),
               ];
               rows.push( new_row );
             }
-            let table_struct = rows.table()
-            .border( Border::builder().build() )
-            .separator( Separator::builder().build() );
-
-            let table = table_struct.display().unwrap();
-
-            writeln!( f, "{}", table )?;
+            let table = table::plain_table( rows );
+            if let Some( table ) = table
+            {
+              writeln!( f, "{}", table )?;
+            }
           }
         },
         Payload::AlterTable => writeln!( f, "Table altered" )?,

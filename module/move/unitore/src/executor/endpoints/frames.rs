@@ -4,7 +4,7 @@ use super::Report;
 use storage::{ FeedStorage, FeedStore };
 use gluesql::prelude::{ Payload, Value, SledStorage };
 use feed_config::read_feed_config;
-use error_tools::{err, Result};
+use error_tools::{ err, Result };
 
 /// List all frames.
 pub async fn list_frames(
@@ -60,11 +60,6 @@ pub async fn download_frames(
 
 }
 
-use cli_table::
-{
-  format::{ Border, Separator}, Cell, Style, Table
-};
-
 const EMPTY_CELL : &'static str = "";
 const INDENT_CELL : &'static str = "  ";
 
@@ -101,31 +96,30 @@ impl std::fmt::Display for FramesReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    let initial = vec![ vec![ format!( "Feed title: {}", self.feed_title).cell().bold( true )  ] ];
-    let table_struct = initial.table()
-    .border( Border::builder().build() )
-    .separator( Separator::builder().build() );
+    let initial = vec![ vec![ format!( "Feed title: {}", self.feed_title ) ] ];
+    let table = table::table_with_headers( initial[ 0 ].clone(), Vec::new() );
+    if let Some( table ) = table
+    {
+      write!( f, "{}", table )?;
+    }
 
-    let table = table_struct.display().unwrap(); 
-    write!( f, "{}", table )?;
-
-    let mut rows = vec![
-      vec![ EMPTY_CELL.cell(), format!( "Updated frames: {}", self.updated_frames ).cell() ],
-      vec![ EMPTY_CELL.cell(), format!( "Inserted frames: {}", self.new_frames ).cell() ],
-      vec![ EMPTY_CELL.cell(), format!( "Number of frames in storage: {}", self.existing_frames ).cell() ],
+    let mut rows = vec!
+    [
+      vec![ EMPTY_CELL.to_owned(), format!( "Updated frames: {}", self.updated_frames ) ],
+      vec![ EMPTY_CELL.to_owned(), format!( "Inserted frames: {}", self.new_frames ) ],
+      vec![ EMPTY_CELL.to_owned(), format!( "Number of frames in storage: {}", self.existing_frames ) ],
     ];
 
     if !self.selected_frames.selected_columns.is_empty()
     {
-      rows.push( vec![ EMPTY_CELL.cell(), format!( "Selected frames:" ).cell() ] );
+      rows.push( vec![ EMPTY_CELL.to_owned(), format!( "Selected frames:" ) ] );
     }
-    let table_struct = rows.table()
-    .border( Border::builder().build() )
-    .separator( Separator::builder().build() );
 
-    let table = table_struct.display().unwrap(); 
-
-    write!( f, "{}", table )?;
+    let table = table::plain_table( rows );
+    if let Some( table ) = table
+    {
+      write!( f, "{}", table )?;
+    }
       
     for frame in &self.selected_frames.selected_rows
     {
@@ -134,20 +128,18 @@ impl std::fmt::Display for FramesReport
       {
         let inner_row = vec!
         [
-          INDENT_CELL.cell(),
-          self.selected_frames.selected_columns[ i ].clone().cell(),
-          textwrap::fill( &String::from( frame[ i ].clone() ), 120 ).cell(),
+          INDENT_CELL.to_owned(),
+          self.selected_frames.selected_columns[ i ].clone(),
+          textwrap::fill( &String::from( frame[ i ].clone() ), 120 ),
         ];
         rows.push( inner_row );
       }
       
-      let table_struct = rows.table()
-      .border( Border::builder().build() )
-      .separator( Separator::builder().build() )
-      ;
-      
-      let table = table_struct.display().unwrap();
-      writeln!( f, "{}", table )?;
+      let table = table::plain_table( rows );
+      if let Some( table ) = table
+      {
+        writeln!( f, "{}", table )?;
+      }
     }
 
     Ok( () )

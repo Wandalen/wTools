@@ -4,10 +4,6 @@ use executor::FeedManager;
 use super::Report;
 use storage::{ FeedStorage, FeedStore };
 use gluesql::{ prelude::Payload, sled_storage::SledStorage };
-use cli_table::
-{
-  format::{ Border, Separator}, Cell, Table
-};
 
 use feed_config::read_feed_config;
 
@@ -25,7 +21,7 @@ pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args
   let config_report = manager.storage
   .add_config( path.to_string_lossy().to_string() )
   .await
-  .context( "Failed to add config file to storage." )?
+  .context( "Added 0 config files.\n Failed to add config file to storage." )?
   ;
 
   let feeds = read_feed_config( path.to_string_lossy().to_string() )?
@@ -91,7 +87,7 @@ impl std::fmt::Display for ConfigReport
     {
       Payload::Insert( number ) => 
       {
-        writeln!( f, "Added {} config", number )?;
+        writeln!( f, "Added {} config file(s)", number )?;
         writeln!(
           f,
           "Added {} feeds",
@@ -107,22 +103,21 @@ impl std::fmt::Display for ConfigReport
           .unwrap_or_default(),
         )?;
       },
-      Payload::Delete( number ) => writeln!( f, "Deleted {} config", number )?,
+      Payload::Delete( number ) => writeln!( f, "Deleted {} config file", number )?,
       Payload::Select { labels: _label_vec, rows: rows_vec } =>
       {
         writeln!( f, "Selected configs:" )?;
         let mut rows = Vec::new();
         for row in rows_vec
         {
-          rows.push( vec![ EMPTY_CELL.cell(), String::from( row[ 0 ].clone() ).cell() ] );
+          rows.push( vec![ EMPTY_CELL.to_owned(), String::from( row[ 0 ].clone() ) ] );
         }
 
-        let table_struct = rows.table()
-        .border( Border::builder().build() )
-        .separator( Separator::builder().build() );
-
-        let table = table_struct.display().unwrap();
-        writeln!( f, "{}", table )?;
+        let table = table::plain_table( rows );
+        if let Some( table ) = table
+        {
+          write!( f, "{}", table )?;
+        }
       },
       _ => {},
     };

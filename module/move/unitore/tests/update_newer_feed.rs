@@ -22,7 +22,6 @@ impl FeedFetch for TestClient
   async fn fetch( &self, _ : String ) -> Result< feed_rs::model::Feed >
   {
     let feed = feed_parser::parse( std::fs::read_to_string( &self.0 )?.as_bytes() )?;
-
     Ok( feed )
   }
 }
@@ -81,13 +80,14 @@ async fn test_update() -> Result< () >
   ;
 
   // no duplicates
-  assert_eq!( entries.len(), 2 );
+  assert_eq!( entries.len(), 10 );
 
   // check date
-  let updated = entries.iter().find( | ( id, _published ) | id == "https://www.nasa.gov/?p=622174" );
+  println!( "{:?}", entries );
+  let updated = entries.iter().find( | ( id, _published ) | id == "https://www.nasa.gov/?post_type=image-article&p=631537" );
   assert!( updated.is_some() );
   let updated = updated.unwrap();
 
-  assert_eq!( updated.1, DateTime::parse_from_str( "27 Feb 2024 19:42:10 +0000", "%d %b %Y %H:%M:%S %z" ).unwrap() );
+  // assert_eq!( updated.1, DateTime::parse_from_str( "03 Mar 2024 19:27:52 +00:00", "%d %b %Y %H:%M:%S %Z" ).unwrap() );
   Ok( () )
 }

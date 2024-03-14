@@ -117,7 +117,14 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .long_hint( concat!
     (
       "Add file with feeds configurations. Subject: path to config file.\n",
-      "    Example: .config.add ./config/feeds.toml",
+      "    Example: .config.add ./config/feeds.toml\n",
+      "    The file should contain config entities with fields:\n",
+      "   - `update_period` : update frequency for feed. Example values: `12h`, `1h 20min`, `2days 5h`;\n",
+      "   - `link` : URL for feed source;\n\n",
+      "    Example:\n",
+      "    [[config]]\n",
+      "    update_period = \"1min\"\n", 
+      "    link = \"https://feeds.bbci.co.uk/news/world/rss.xml\"\n",
     ))
     .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
     .routine( | args : Args |

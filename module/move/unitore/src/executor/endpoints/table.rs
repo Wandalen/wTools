@@ -1,5 +1,4 @@
 use crate::*;
-use cli_table::{ format::{ Border, Separator }, Cell, Style, Table };
 use executor::FeedManager;
 use gluesql::core::executor::Payload;
 use super::Report;
@@ -86,27 +85,28 @@ impl std::fmt::Display for TablesReport
       (
         vec!
         [
-          EMPTY_CELL.cell(),
-          table_name.cell(),
-          columns_str.cell(),
+          EMPTY_CELL.to_owned(),
+          table_name.to_owned(),
+          columns_str,
         ]
       );
     }
 
-    let table_struct = rows.table()
-    .border( Border::builder().build() )
-    .separator( Separator::builder().build() )
-    .title( vec!
-    [
-      EMPTY_CELL.cell(),
-      "name".cell().bold( true ),
-      "columns".cell().bold( true ),
-    ] );
-
-    let table = table_struct.display().unwrap(); 
-
-    writeln!( f, "{}", table )?;
-
+    let table = table::table_with_headers
+    (
+      vec!
+      [
+        EMPTY_CELL.to_owned(),
+        "name".to_owned(),
+        "columns".to_owned(),
+      ],
+      rows,
+    );
+    if let Some( table ) = table
+    {
+      writeln!( f, "{}", table )?;
+    }
+    
     Ok( () )
   }
 }
