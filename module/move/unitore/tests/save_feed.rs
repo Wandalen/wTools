@@ -8,13 +8,14 @@ use unitore::{
   retriever::FeedFetch,
   storage::MockFeedStore,
 };
+use error_tools::Result;
 
 pub struct TestClient;
 
 #[ async_trait ]
 impl FeedFetch for TestClient
 {
-  async fn fetch( &self, _ : String ) -> Result< feed_rs::model::Feed, Box< dyn std::error::Error + Send + Sync > >
+  async fn fetch( &self, _ : String ) -> Result< feed_rs::model::Feed >
   {
     let feed = feed_parser::parse( include_str!( "./fixtures/plain_feed.xml" ).as_bytes() )?;
 
@@ -23,7 +24,7 @@ impl FeedFetch for TestClient
 }
 
 #[ tokio::test ]
-async fn test_save_feed_plain() -> Result< (), Box< dyn std::error::Error + Sync + Send > >
+async fn test_save_feed_plain() -> Result< () >
 {
   let mut f_store = MockFeedStore::new();
   f_store

@@ -5,14 +5,21 @@ use gluesql::
   core::{ chrono::{  DateTime, Utc} , data::Value },
   sled_storage::sled::Config,
 };
-use unitore::{ executor::FeedManager, feed_config::SubscriptionConfig, retriever::FeedFetch, storage::FeedStorage };
+use unitore::{
+  executor::FeedManager,
+  feed_config::SubscriptionConfig,
+  retriever::FeedFetch,
+  storage::{ FeedStorage, FeedStore },
+};
 use wca::wtools::Itertools;
+use error_tools::Result;
+
 pub struct TestClient ( String );
 
 #[ async_trait ]
 impl FeedFetch for TestClient
 {
-  async fn fetch( &self, _ : String ) -> Result< feed_rs::model::Feed, Box< dyn std::error::Error + Send + Sync > >
+  async fn fetch( &self, _ : String ) -> Result< feed_rs::model::Feed >
   {
     let feed = feed_parser::parse( std::fs::read_to_string( &self.0 )?.as_bytes() )?;
 
@@ -21,7 +28,7 @@ impl FeedFetch for TestClient
 }
 
 #[ tokio::test ]
-async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send > >
+async fn test_update() -> Result< () >
 {
   let config = Config::default()
   .path( "./test".to_owned() )
@@ -50,7 +57,7 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
   // updated fetch
   manager.update_feed( vec![ feed_config ] ).await?;
   // check
-  let payload = manager.get_all_frames().await?;
+  let payload = manager.storage.get_all_frames().await?;
 
   let entries = payload.0.iter().map( | val | val.selected_frames.selected_rows.clone() ).flatten().collect::< Vec< _ > >();
 

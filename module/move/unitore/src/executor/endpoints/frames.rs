@@ -2,19 +2,25 @@ use crate::*;
 use executor::FeedManager;
 use super::Report;
 use storage::{ FeedStorage, FeedStore };
-use gluesql::prelude::{ Payload, Value };
+use gluesql::prelude::{ Payload, Value, SledStorage };
 use feed_config::read_feed_config;
-use gluesql::prelude::SledStorage;
+use error_tools::{err, Result};
 
 /// List all frames.
-pub async fn list_frames( storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+pub async fn list_frames(
+  storage : FeedStorage< SledStorage >,
+  _args : &wca::Args,
+) -> Result< impl Report >
 {
     let mut manager = FeedManager::new( storage );
-    manager.get_all_frames().await
+    manager.storage.get_all_frames().await
 }
 
 /// Update all frames from config files saved in storage.
-pub async fn download_frames( storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+pub async fn download_frames(
+  storage : FeedStorage< SledStorage >,
+  _args : &wca::Args,
+) -> Result< impl Report >
 {
   let mut manager = FeedManager::new( storage );
   let payload = manager.storage.list_configs().await?;
@@ -36,12 +42,20 @@ pub async fn download_frames( storage : FeedStorage< SledStorage >, _args : &wca
   };
 
   let mut subscriptions = Vec::new();
-  for config in configs
+  for config in &configs
   {
-    
-    let sub_vec = read_feed_config( config )?;
+    let sub_vec = read_feed_config( config.to_owned() )?;
     subscriptions.extend( sub_vec );
   }
+
+  if subscriptions.is_empty()
+  {
+    return Err( err!( format!(
+      "Failed to download frames.\n Config files {} contain no feed subscriptions!",
+      configs.join( ", " )
+    ) ) )
+  }
+
   manager.update_feed( subscriptions ).await
 
 }
@@ -68,6 +82,7 @@ pub struct FramesReport
 
 impl FramesReport
 {
+  /// Create new report.
   pub fn new( feed_title : String ) -> Self
   {
     Self
@@ -131,7 +146,6 @@ impl std::fmt::Display for FramesReport
       .separator( Separator::builder().build() )
       ;
       
-  
       let table = table_struct.display().unwrap();
       writeln!( f, "{}", table )?;
     }
@@ -142,10 +156,13 @@ impl std::fmt::Display for FramesReport
 
 impl Report for FramesReport {}
 
+/// Items get from select query from storage.
 #[ derive( Debug ) ]
 pub struct SelectedEntries
 {
+  /// Labels of selected columns.
   pub selected_columns : Vec< String >,
+  /// Selected rows with data.
   pub selected_rows : Vec< Vec< Value > >,
 }
 
@@ -204,6 +221,7 @@ impl std::fmt::Display for UpdateReport
 
 impl Report for UpdateReport {}
 
+/// Report for listing frames.
 #[ derive( Debug ) ]
 pub struct ListReport( pub Vec< FramesReport > );
 

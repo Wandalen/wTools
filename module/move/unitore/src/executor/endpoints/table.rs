@@ -4,15 +4,29 @@ use executor::FeedManager;
 use gluesql::core::executor::Payload;
 use super::Report;
 use storage::{ FeedStorage, FeedStore };
+use error_tools::{ err, BasicError, Result };
 
-pub async fn list_columns( storage : FeedStorage< gluesql::sled_storage::SledStorage >, args : &wca::Args ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+/// Get labels of column for specified table.
+pub async fn list_columns(
+  storage : FeedStorage< gluesql::sled_storage::SledStorage >,
+  args : &wca::Args,
+) -> Result< impl Report >
 {
-  let table_name = args.get_owned::< String >( 0 ).unwrap().into();
+  let table_name = args
+  .get_owned::< String >( 0 )
+  .ok_or_else::< BasicError, _ >( || err!( "Cannot get Name argument for command .table.list" ) )?
+  .into()
+  ;
+
   let mut manager = FeedManager::new( storage );
   manager.storage.list_columns( table_name ).await
 }
 
-pub async fn list_tables( storage : FeedStorage< gluesql::sled_storage::SledStorage >, _args : &wca::Args ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+/// Get names of tables in storage.
+pub async fn list_tables(
+  storage : FeedStorage< gluesql::sled_storage::SledStorage >,
+  _args : &wca::Args,
+) -> Result< impl Report >
 {
   let mut manager = FeedManager::new( storage );
   manager.storage.list_tables().await

@@ -4,10 +4,19 @@ use gluesql::core::executor::Payload;
 use super::Report;
 use storage::{ FeedStorage, FeedStore };
 use executor::FeedManager;
+use error_tools::{ err, BasicError, Result };
 
-pub async fn execute_query( storage : FeedStorage< gluesql::sled_storage::SledStorage >, args : &wca::Args ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+/// Execute query specified in query string.
+pub async fn execute_query(
+  storage : FeedStorage< gluesql::sled_storage::SledStorage >,
+  args : &wca::Args,
+) -> Result< impl Report >
 {
-  let query = args.get_owned::< Vec::< String > >( 0 ).unwrap().join( " " );
+  let query = args
+  .get_owned::< Vec::< String > >( 0 )
+  .ok_or_else::< BasicError, _ >( || err!( "Cannot get Query argument for command .query.execute" ) )?
+  .join( " " )
+  ;
 
   let mut manager = FeedManager::new( storage );
   manager.storage.execute_query( query ).await

@@ -3,9 +3,13 @@ use cli_table::{ format::{ Border, Separator }, Cell, Style, Table };
 use executor::FeedManager;
 use super::Report;
 use storage::FeedStorage;
+use error_tools::Result;
 
 /// List all fields.
-pub async fn list_fields( storage : FeedStorage< gluesql::sled_storage::SledStorage >, _args : &wca::Args ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+pub async fn list_fields(
+  storage : FeedStorage< gluesql::sled_storage::SledStorage >,
+  _args : &wca::Args,
+) -> Result< impl Report >
 {
   let mut manager = FeedManager::new( storage );
   manager.get_columns()

@@ -1,16 +1,18 @@
 use crate::*;
 use cli_table::{ format::{ Border, Separator }, Cell, Style, Table };
 use executor::FeedManager;
-use super::Report;
-use storage::FeedStorage;
-
-use super::frames::SelectedEntries;
+use super::{ Report, frames::SelectedEntries };
+use storage::{ FeedStorage, FeedStore };
+use error_tools::Result;
 
 /// List all feeds.
-pub async fn list_feeds( storage : FeedStorage< gluesql::sled_storage::SledStorage >, _args : &wca::Args ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+pub async fn list_feeds(
+  storage : FeedStorage< gluesql::sled_storage::SledStorage >,
+  _args : &wca::Args,
+) -> Result< impl Report >
 {
   let mut manager = FeedManager::new( storage );
-  manager.get_all_feeds().await
+  manager.storage.get_all_feeds().await
 }
 
 const EMPTY_CELL : &'static str = "";

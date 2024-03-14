@@ -10,12 +10,13 @@ use hyper_util::
 use http_body_util::{ Empty, BodyExt };
 use hyper::body::Bytes;
 use feed_rs::parser as feed_parser;
+use error_tools::Result;
 
 /// Fetch feed from provided source link.
 #[ async_trait::async_trait ]
 pub trait FeedFetch
 {
-  async fn fetch( &self, source : String ) -> Result< feed_rs::model::Feed, Box< dyn std::error::Error + Send + Sync > >;
+  async fn fetch( &self, source : String ) -> Result< feed_rs::model::Feed >;
 }
 
 /// Feed client for fetching feed.
@@ -25,7 +26,7 @@ pub struct FeedClient;
 #[ async_trait::async_trait ]
 impl FeedFetch for FeedClient
 {
-  async fn fetch( &self, source : String ) -> Result< feed_rs::model::Feed, Box< dyn std::error::Error + Send + Sync > >
+  async fn fetch( &self, source : String ) -> Result< feed_rs::model::Feed >
   {
     let https = HttpsConnector::new();
     let client = Client::builder( TokioExecutor::new() ).build::< _, Empty< Bytes > >( https );
