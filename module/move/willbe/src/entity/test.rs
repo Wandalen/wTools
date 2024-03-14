@@ -43,6 +43,7 @@ mod private
     enable_features : BTreeSet< String >,
     /// Temp directory path
     temp_directory_path : Option< PathBuf >,
+    // qqq : for Petro : why dry not here?
   }
 
   impl SingleTestOptions
@@ -79,7 +80,8 @@ mod private
     P : AsRef< Path >
   {
     let ( program, args ) = ( "rustup", options.as_rustup_args() );
-    // qqq : for Petro : rustup???
+    // qqq : for Petro : rustup ???
+    // qqq : for Petro : RUST_BACKTRACE=1 ??
 
     if dry
     {
