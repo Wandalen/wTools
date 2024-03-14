@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.13.0"
+version = "0.14.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,7 +23,7 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-exclude = [ "/tests", "/examples", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 

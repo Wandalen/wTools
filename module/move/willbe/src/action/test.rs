@@ -46,6 +46,7 @@ mod private
     exclude_features : Vec< String >,
     #[ default( true ) ]
     temp : bool,
+    optimizations : HashSet< optimization::Optimization >,
   }
 
   /// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
@@ -74,7 +75,8 @@ mod private
       power,
       include_features,
       exclude_features,
-      temp
+      temp,
+      optimizations,
     } = args;
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
@@ -101,6 +103,7 @@ mod private
         include_features,
         exclude_features,
         temp_path: Some( temp_dir.clone() ),
+        optimizations,
       };
       
       let report = tests_run( &t_args, &packages, dry );
@@ -119,6 +122,7 @@ mod private
         include_features,
         exclude_features,
         temp_path: None,
+        optimizations,
       };
 
       tests_run( &t_args, &packages, dry )

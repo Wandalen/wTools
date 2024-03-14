@@ -219,7 +219,7 @@ mod private
   pub struct FileWriteInstruction
   {
     path : PathBuf,
-    data : Vec<u8>,
+    data : Vec< u8 >,
   }
 
   /// Describes how template file creation should be handled.

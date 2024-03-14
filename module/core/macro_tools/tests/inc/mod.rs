@@ -5,14 +5,18 @@ use super::*;
 use test_tools::exposed::*;
 
 #[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
 use TheModule::exposed::*;
-// #[ allow( unused_imports ) ]
-// use TheModule::{ qt, Result };
 
+#[ cfg( feature = "enabled" ) ]
 mod attr_test;
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 mod basic_test;
+#[ cfg( feature = "enabled" ) ]
 mod generics_test;
+#[ cfg( feature = "enabled" ) ]
 mod quantifier_test;
+#[ cfg( feature = "enabled" ) ]
 mod syntax_test;
+#[ cfg( feature = "enabled" ) ]
 mod tokens_test;

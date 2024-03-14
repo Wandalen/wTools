@@ -28,7 +28,7 @@ fn test_rng_manager()
     }
     count
   } )
-  .sum::<u64>();
+  .sum::< u64 >();
   let _got_pi = 4. * ( got as f64 ) / ( ( 100 * 1000 ) as f64 );
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "determinism" ) ]
@@ -48,18 +48,18 @@ fn test_reusability()
     let child1 = hrng.child( 0 );
     let child1_ref = child1.rng_ref();
     let mut rng1 = child1_ref.lock().unwrap();
-    let got = rng1.gen::<u64>();
+    let got = rng1.gen::< u64 >();
     expected[0] = got;
-    let got = rng1.gen::<u64>();
+    let got = rng1.gen::< u64 >();
     expected[1] = got;
   }
   {
     let child1 = hrng.child( 0 );
     let child1_ref = child1.rng_ref();
     let mut rng1 = child1_ref.lock().unwrap();
-    let got = rng1.gen::<u64>();
+    let got = rng1.gen::< u64 >();
     expected[2] = got;
-    let got = rng1.gen::<u64>();
+    let got = rng1.gen::< u64 >();
     expected[3] = got;
   }
   #[ cfg( not( feature = "no_std" ) ) ]
@@ -73,18 +73,18 @@ fn test_reusability()
     let child1 = hrng.child( 0 );
     let child1_ref = child1.rng_ref();
     let mut rng1 = child1_ref.lock().unwrap();
-    let got = rng1.gen::<u64>();
+    let got = rng1.gen::< u64 >();
     assert_eq!( got, expected[0] );
-    let got = rng1.gen::<u64>();
+    let got = rng1.gen::< u64 >();
     assert_eq!( got, expected[1] );
   }
   {
     let child1 = hrng.child( 0 );
     let child1_ref = child1.rng_ref();
     let mut rng1 = child1_ref.lock().unwrap();
-    let got = rng1.gen::<u64>();
+    let got = rng1.gen::< u64 >();
     assert_eq!( got, expected[2] );
-    let got = rng1.gen::<u64>();
+    let got = rng1.gen::< u64 >();
     assert_eq!( got, expected[3] );
   }
   #[ cfg( feature = "determinism" ) ]
@@ -109,8 +109,8 @@ fn test_par()
   .map( |i| ( i, hrng.child( i ) ) )
   .for_each( |( i, child )|
   {
-    let got1 = child.rng_ref().lock().unwrap().gen::<u64>();
-    let got2 = child.rng_ref().lock().unwrap().gen::<u64>();
+    let got1 = child.rng_ref().lock().unwrap().gen::< u64 >();
+    let got2 = child.rng_ref().lock().unwrap().gen::< u64 >();
     match i {
       1 => *expected.0.lock().unwrap() = ( got1, got2 ),
       2 => *expected.1.lock().unwrap() = ( got1, got2 ),
@@ -124,8 +124,8 @@ fn test_par()
   .map( |i| ( i, hrng.child( i ) ) )
   .for_each( |( i, child )|
   {
-    let got1 = child.rng_ref().lock().unwrap().gen::<u64>();
-    let got2 = child.rng_ref().lock().unwrap().gen::<u64>();
+    let got1 = child.rng_ref().lock().unwrap().gen::< u64 >();
+    let got2 = child.rng_ref().lock().unwrap().gen::< u64 >();
     match i
     {
       1 => assert_eq!( ( got1, got2 ), *expected.0.lock().unwrap() ),

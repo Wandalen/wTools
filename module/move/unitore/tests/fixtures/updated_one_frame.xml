@@ -7,17 +7,25 @@
 	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
 	 xmlns:media="http://search.yahoo.com/mrss/" >
 
-<channel>
-	<title>NASA</title>
+< channel >
+	< title >NASA</title>
 	<atom:link href="https://www.nasa.gov/feed/" rel="self" type="application/rss+xml" />
+<<<<<<< HEAD
 	<link>https://www.nasa.gov</link>
 	<description>Official National Aeronautics and Space Administration Website</description>
 	<lastBuildDate>Thu, 14 Mar 2024 14:27:52 +0000</lastBuildDate>
 	<language>en-US</language>
+=======
+	< link >https://www.nasa.gov</link>
+	< description >Official National Aeronautics and Space Administration Website</description>
+	< lastBuildDate >Tue, 27 Feb 2024 21:29:30 +0000</lastBuildDate>
+	< language >en-US</language>
+>>>>>>> 11bee65213d6fb5ecc1f6555432cbdc3eb460cea
 	<sy:updatePeriod>
 	hourly	</sy:updatePeriod>
 	<sy:updateFrequency>
 	1	</sy:updateFrequency>
+<<<<<<< HEAD
 	<generator>https://wordpress.org/?v=6.3.3</generator>
 	<item>
 		<title>UPDATED! Icing Cloud Characterization Engineer Emily Timko</title>
@@ -1743,5 +1751,36 @@
 		
 		
 			</item>
+=======
+	< generator >https://wordpress.org/?v=6.3.3</generator>
+	< item >
+		< title >UPDATED : Langley Celebrates Black History Month: Matthew Hayes</title>
+		< link >https://www.nasa.gov/centers-and-facilities/langley/langley-celebrates-black-history-month-matthew-hayes/</link>
+
+		<dc:creator><![CDATA[Julia L. Bradshaw]]></dc:creator>
+		< pubDate >Tue, 27 Feb 2024 19:42:10 +0000</pubDate>
+				< category ><![CDATA[Langley Research Center]]></category>
+		< category ><![CDATA[Black History Month]]></category>
+		< category ><![CDATA[Diversity at NASA]]></category>
+		< category ><![CDATA[People of NASA]]></category>
+		<guid isPermaLink="false">https://www.nasa.gov/?p=622174</guid>
+
+					< description ><![CDATA[Matthew Hayes is a DEIA (diversity, equity, inclusion, and accessibility) project analyst with NASA’s Langley Research Center. His Langley career has spanned 16 years, starting in the model shop working on wind tunnel models and lunar rover projects. From there Hayes moved to the Electronic Systems Branch and contributed to the SAGE III mission for [&#8230;]]]></description>
+			</item>
+        < item >
+		< title >The CUTE Mission: Innovative Design Enables Observations of Extreme Exoplanets from a Small Package</title>
+		< link >https://science.nasa.gov/science-research/science-enabling-technology/the-cute-mission-innovative-design-enablesobservations-of-extreme-exoplanets-from-a-smallpackage/</link>
+
+		<dc:creator><![CDATA[]]></dc:creator>
+		< pubDate >Tue, 27 Feb 2024 16:02:34 +0000</pubDate>
+				< category ><![CDATA[Astrophysics]]></category>
+		< category ><![CDATA[Science-enabling Technology]]></category>
+		< category ><![CDATA[Technology Highlights]]></category>
+		<guid isPermaLink="false">https://science.nasa.gov/science-research/science-enabling-technology/the-cute-mission-innovative-design-enablesobservations-of-extreme-exoplanets-from-a-smallpackage/</guid>
+
+		< description ><![CDATA[Of the approximately 5,500 exoplanets discovered to date, many have been found to orbit very close to their parent stars. These close-in planets provide a unique opportunity to observe in detail the phenomena critical to the development and evolution of our own solar system, including atmospheric mass loss and interactions with the host star. NASA’s […]]]></description>
+
+		</item>
+>>>>>>> 11bee65213d6fb5ecc1f6555432cbdc3eb460cea
 	</channel>
 </rss>

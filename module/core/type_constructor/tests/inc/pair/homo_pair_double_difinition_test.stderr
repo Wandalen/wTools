@@ -101,7 +101,7 @@ error[E0119]: conflicting implementations of trait `From<main::Bad>` for type `[
    |
    = note: this error originates in the derive macro `type_constructor_derive_pair_meta::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0119]: conflicting implementations of trait `From<i32>` for type `main::Bad`
+error[E0119]: conflicting implementations of trait `From< i32 >` for type `main::Bad`
   --> tests/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
    |
 5  | /   types!
@@ -169,7 +169,7 @@ error[E0119]: conflicting implementations of trait `type_constructor::From_2<i32
    |
    = note: this error originates in the derive macro `type_constructor_derive_pair_meta::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0119]: conflicting implementations of trait `type_constructor::From_1<i32>` for type `main::Bad`
+error[E0119]: conflicting implementations of trait `type_constructor::From_1< i32 >` for type `main::Bad`
   --> tests/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
    |
 5  | /   types!
@@ -203,7 +203,7 @@ error[E0119]: conflicting implementations of trait `type_constructor::AsTuple<(i
    |
    = note: this error originates in the derive macro `type_constructor_derive_pair_meta::Pair` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0119]: conflicting implementations of trait `type_constructor::AsSlice<i32>` for type `main::Bad`
+error[E0119]: conflicting implementations of trait `type_constructor::AsSlice< i32 >` for type `main::Bad`
   --> tests/dt/type_constructor/pair/homo_pair_double_difinition_test.rs:5:3
    |
 5  | /   types!

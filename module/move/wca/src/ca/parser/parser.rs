@@ -51,7 +51,7 @@ pub( crate ) mod private
     ///
     /// namespace_delimiter = ".also"
     ///
-    /// "<commands1> .also <commands2>" -> Namespace( < commands1 > ), Namespace( < commands2 > )
+    /// "< commands1 > .also < commands2 >" -> Namespace( < commands1 > ), Namespace( < commands2 > )
     #[ default( ".also" ) ]
     pub namespace_delimeter : Cow< 'static, str >,
   }

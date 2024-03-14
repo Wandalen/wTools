@@ -87,7 +87,5 @@ async fn test_update() -> Result< () >
   let updated = entries.iter().find( | ( id, _published ) | id == "https://www.nasa.gov/?post_type=image-article&p=631537" );
   assert!( updated.is_some() );
   let updated = updated.unwrap();
-
-  // assert_eq!( updated.1, DateTime::parse_from_str( "03 Mar 2024 19:27:52 +00:00", "%d %b %Y %H:%M:%S %Z" ).unwrap() );
   Ok( () )
 }

@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 // #[ cfg( feature = "typing" ) ]
 // use wtools::*;
 #[ cfg( any( feature = "typing_implements", feature = "typing") ) ]

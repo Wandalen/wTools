@@ -5,7 +5,7 @@
 
 Derive to clone dyn structures.
 
-The crate's purpose is straightforward: it allows for easy cloning of `dyn< Trait >` with minimal effort and complexity, accomplished by applying the derive attribute to the trait.
+By default, Rust does not support cloning for trait objects due to the `Clone` trait requiring compile-time knowledge of the type's size. The `clone_dyn` crate addresses this limitation through procedural macros, allowing for cloning collections of trait objects. The crate's purpose is straightforward: it allows for easy cloning of `dyn< Trait >` with minimal effort and complexity, accomplished by applying the derive attribute to the trait.
 
 ### Alternative
 
@@ -15,9 +15,9 @@ There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [d
 
 <!-- begin {{# generate.module_sample( "example/clone_dyn_trivail_sample.rs" ) #}} -->
 
-```rust ignore
-#[ cfg( feature = "enabled" ) ]
-{
+```rust
+# #[ cfg( all( feature = "enabled", any( not( feature = "no_std" ), feature = "use_alloc" ) ) ) ]
+# {
   use clone_dyn::clone_dyn;
 
   #[ clone_dyn ]
@@ -27,7 +27,7 @@ There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [d
 
   let vec = Vec::< Box< dyn Trait1 > >::new();
   let vec2 = vec.clone(); /* <- it does not work without `clone_dyn` */
-}
+# }
 ```
 
 <!-- end -->
