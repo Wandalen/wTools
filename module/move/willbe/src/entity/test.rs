@@ -172,10 +172,11 @@ mod private
         return Ok( () );
       }
 
-      for ( optimization, channels ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) )
+      // qqq : for Petro : bad, DRY
+      for( optimization, channels ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) )
       {
-        for ( channel, features ) in channels.iter().sorted_by( | a, b | a.0.cmp( b.0 ) ) {
-          for ( feature, result ) in features
+        for( channel, features ) in channels.iter().sorted_by( | a, b | a.0.cmp( b.0 ) ) {
+          for( feature, result ) in features
           {
             let feature = if feature.is_empty() { "-" } else { feature };
             // if tests failed or if build failed
@@ -276,6 +277,7 @@ mod private
     }
   }
 
+  // qqq : for Petro : ?
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
   pub fn run( args : &TestOptions, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
@@ -300,6 +302,7 @@ mod private
       | s |
       {
         let dir = package.manifest_path.parent().unwrap();
+        // qqq : for Petro : bad, DRY
         for optimization in args.optimizations.clone()
         {
           for channel in args.channels.clone()
@@ -403,6 +406,8 @@ mod private
     }
   }
 
+  // qqq : for Petro : should be entity `struct Plan {}`
+  // qqq : for Petro : no! Plan should inplement Display
   fn print_temp_report( package_name : &str, optimizations : &HashSet< Optimization >, channels : &HashSet< channel::Channel >, features : &HashSet< BTreeSet< String > > )
   {
     println!( "Package : {}\nThe tests will be executed using the following configurations :", package_name );

@@ -82,7 +82,7 @@ mod private
 
     if temp
     {
-      
+
       let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
@@ -105,10 +105,11 @@ mod private
         temp_path: Some( temp_dir.clone() ),
         optimizations,
       };
-      
+
       let report = tests_run( &t_args, &packages, dry );
 
-      fs::remove_dir_all(&temp_dir).map_err( | e | ( reports.clone(), e.into() ) )?;
+      fs::remove_dir_all( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
+      // qqq : for Petro : why not RAII?
 
       report
     }
@@ -124,6 +125,7 @@ mod private
         temp_path: None,
         optimizations,
       };
+      // qqq : for Petro : DRY
 
       tests_run( &t_args, &packages, dry )
     }

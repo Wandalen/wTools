@@ -16,7 +16,7 @@ use former::{ SetComponent, SetWithType };
     TheModule::ComponentFrom,
     TheModule::SetComponent,
     // TheModule::SetComponents,
-    TheModule::FromComponents,
+    // TheModule::FromComponents,
   )
 ]
 // #[ debug ]
@@ -41,7 +41,7 @@ pub struct Options1
     TheModule::ComponentFrom,
     TheModule::SetComponent,
     TheModule::SetComponents,
-    TheModule::FromComponents,
+    // TheModule::FromComponents,
   )
 ]
 // #[ debug ]
