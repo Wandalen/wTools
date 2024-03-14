@@ -5,7 +5,7 @@ use macro_tools::{ attr, diag, generics, container_kind, typ, Result };
 use proc_macro2::TokenStream;
 
 ///
-/// Descripotr of a field.
+/// Descriptor of a field.
 ///
 
 #[ allow( dead_code ) ]
@@ -44,7 +44,7 @@ impl Attributes
     for attr in attributes
     {
       let key_ident = attr.path().get_ident()
-      .ok_or_else( || syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
+      .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
       let key_str = format!( "{}", key_ident );
       match key_str.as_ref()
       {
@@ -56,7 +56,7 @@ impl Attributes
             {
               default.replace( syn::parse2::< AttributeDefault >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
         }
         "setter" =>
@@ -67,7 +67,7 @@ impl Attributes
             {
               setter.replace( syn::parse2::< AttributeSetter >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
           // let attr_setter = syn::parse2::< AttributeSetter >( attr.tokens.clone() )?;
           // setter.replace( attr_setter );
@@ -80,7 +80,7 @@ impl Attributes
             {
               subformer.replace( syn::parse2::< AttributeFormer >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
           // let attr_former = syn::parse2::< AttributeFormer >( attr.tokens.clone() )?;
           // subformer.replace( attr_former );
@@ -93,7 +93,7 @@ impl Attributes
             {
               alias.replace( syn::parse2::< AttributeAlias >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
           // let attr_alias = syn::parse2::< AttributeAlias >( attr.tokens.clone() )?;
           // alias.replace( attr_alias );
@@ -661,7 +661,7 @@ pub struct Struct1
   (
 r#" Object to form [{}]. If field's values is not set then default value of the field is set.
 
-For specifing custom default value use attribute `default`. For example:
+For specifying custom default value use attribute `default`. For example:
 ```
 {}
 ```
@@ -717,7 +717,7 @@ pub fn performer< 'a >
               return result.#perform_ident();
             };
           },
-          _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+          _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
         }
       }
     }
@@ -849,7 +849,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
     }
 
-    #[ doc = "Container of a correcsponding former." ]
+    #[ doc = "Container of a corresponding former." ]
     pub struct #former_container_name_ident #generics_ty
     #generics_where
     {
@@ -892,7 +892,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       /// Finish setting options and return formed entity.
       ///
-      /// `perform` has no effect on method `form`, but change behavior and returned type of mehod `perform`.
+      /// `perform` has no effect on method `form`, but change behavior and returned type of method `perform`.
       ///
       #[ inline( always ) ]
       pub fn form( mut self ) -> #name_ident #generics_ty
