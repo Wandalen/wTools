@@ -1,9 +1,0 @@
-[[config]]
-name = "bbc" 
-period = "2days" 
-link = "https://feeds.bbci.co.uk/news/world/rss.xml"
-
-[[config]]
-name = "times"
-period = "2days"
-link = "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"

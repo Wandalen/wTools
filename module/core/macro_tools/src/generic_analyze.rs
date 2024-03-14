@@ -2,10 +2,13 @@
 //! Analyze generic to provide more information than trivial syntax node.
 //!
 
+// xxx : is it used?
+
 /// Internal namespace.
 pub( crate ) mod private
 {
 
+  // xxx : qqq : examples. documentation
   /// Result of generics analyze.
   #[ derive( Debug ) ]
   pub struct GenericsAnalysis
@@ -82,6 +85,7 @@ pub mod exposed
     prelude::*,
     private::GenericsAnalysis,
   };
+  pub use super::protected as generic_analyze;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

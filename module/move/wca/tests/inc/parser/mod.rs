@@ -1,12 +1,11 @@
 use super::*;
 use wca::
 {
-  Program, Namespace, RawCommand,
+  Program, ParsedCommand,
 
   Parser,
-  ProgramParser, NamespaceParser, CommandParser,
+  ProgramParser, CommandParser,
 };
 
 mod command;
-mod namespace;
 mod program;

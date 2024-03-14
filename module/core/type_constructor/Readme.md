@@ -2,7 +2,7 @@
 
 # Module :: type_constructor
 
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml) [![docs.rs](https://img.shields.io/docsrs/type_constructor?color=e3e8f0&logo=docs.rs)](https://docs.rs/type_constructor) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftype_constructor_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20type_constructor_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+[![deprecated](https://raster.shields.io/static/v1?label=stability&message=deprecated&color=red&logoColor=eee)](https://github.com/emersion/stability-badges#deprecated) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml) [![docs.rs](https://img.shields.io/docsrs/type_constructor?color=e3e8f0&logo=docs.rs)](https://docs.rs/type_constructor) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftype_constructor_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20type_constructor_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
 Fundamental data types and type constructors, like Single, Pair, Homopair, Many.
 
@@ -267,13 +267,13 @@ impl<T: Copy> core::ops::Deref for MySingle< T >
 }
 impl< T : Copy > From< std::sync::Arc< T > > for MySingle< T >
 {
-  fn from( src : std::sync::Arc<T>) -> Self {
+  fn from( src : std::sync::Arc< T >) -> Self {
     Self( src )
   }
 }
 impl< T : Copy > From< MySingle< T > > for std::sync::Arc< T >
 {
-  fn from(src: MySingle<T>) -> Self
+  fn from(src: MySingle< T >) -> Self
   {
     src.0
   }
@@ -365,7 +365,7 @@ impl From< MyPair > for ( i32, i64 )
   fn from( src : MyPair ) -> Self { ( src.0, src.1 ) }
 }
 
-#[cfg( feature = "make" )]
+#[cfg( feature = "make" ) ]
 impl From_2< i32, i64 > for MyPair
 {
   fn from_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
@@ -669,7 +669,7 @@ Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has
 //     feature = "many",
 //     any( not( feature = "no_std" ), feature = "use_alloc" ),
 //   )
-// )]
+// ) ]
 // {
 //   use type_constructor::prelude::*;
 //

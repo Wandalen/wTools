@@ -5,4 +5,7 @@ members = [
 ]
 
 [workspace.metadata]
+master_branch = "test_branch"
+project_name = "test"
 repo_url = "https://github.com/Username/test"
+discord_url = "https://discord.gg/m3YfbXpUUY"

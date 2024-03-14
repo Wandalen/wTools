@@ -1,6 +1,6 @@
 [package]
 name = "former_meta"
-version = "0.2.0"
+version = "0.9.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,28 +24,25 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-exclude = [ "/tests", "/examples", "-*" ]
-
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
-enabled = []
+
+default = [ "enabled", "derive_former", "derive_component_from", "derive_set_component", "derive_set_components", "derive_from_components" ]
+full = [ "enabled", "derive_former", "derive_component_from", "derive_set_component", "derive_set_components", "derive_from_components" ]
+enabled = [ "macro_tools/enabled", "iter_tools/enabled" ]
+
+derive_former = []
+derive_component_from = []
+derive_set_component = []
+derive_set_components = []
+derive_from_components = []
 
 [lib]
 proc-macro = true
 
 [dependencies]
-macro_tools = { workspace = true, features = [ "default" ] }
-iter_tools = { workspace = true, features = [ "default" ] }
-
-# xxx : optimize features set
-
-# proc-macro2 = "~1.0"
-# quote = "~1.0"
-# syn = { version = "~1.0", features = [ "full", "extra-traits", "parsing", "printing" ] }
-# iter_tools = { workspace = true, features = [ "default" ] }
-# macro_tools = { workspace = true, features = [ "default" ] }
+macro_tools = { workspace = true }
+iter_tools = { workspace = true }
 
 [dev-dependencies]
-# trybuild = { version = "~1.0", features = [ "diff" ] }
-test_tools = { workspace = true, features = [ "default" ] }
+test_tools = { workspace = true, features = [ "full" ] }
+former = { workspace = true, features = [ "full" ] }

@@ -126,6 +126,7 @@ pub( crate ) mod private
     {
       // SAFETY : safe because all elements are set in the funtions
       #[ allow( clippy::uninit_assumed_init ) ]
+      #[ allow( unsafe_code ) ]
       let mut result : Self = unsafe { core::mem::MaybeUninit::zeroed().assume_init() };
       for i in 0..N
       {
@@ -165,9 +166,6 @@ pub mod exposed
   pub use super::prelude::*;
 }
 
-// #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-// pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude

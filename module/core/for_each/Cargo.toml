@@ -1,6 +1,6 @@
 [package]
 name = "for_each"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,7 +24,7 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-exclude = [ "/tests", "/examples", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
 # include = [
 #   "/rust/impl/meta/for_each",
 #   "/Cargo.toml",

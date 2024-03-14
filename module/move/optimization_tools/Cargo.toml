@@ -32,15 +32,12 @@ full = [
 ]
 enabled = []
 rapidity_6 = [] # to enable slow tests
-rapidity_7 = [ "rapidity_6" ] # to enable slow tests
-rapidity_8 = [ "rapidity_7" ] # to enable slow tests
-rapidity_9 = [ "rapidity_8" ] # to enable slow tests
 static_plot = []
 dynamic_plot = [ "static_plot", "plotters-backend", "piston_window" ]
 lp_parse = [ "exmex" ]
 
 [dependencies]
-derive_tools = { workspace = true, features = ["default"] }
+derive_tools = { workspace = true, features = [ "derive_more", "full" ] }
 deterministic_rand = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 meta_tools = { workspace = true, features = [ "meta_constructors" ] }
@@ -57,6 +54,9 @@ piston_window = { version = "0.120.0", optional = true }
 exmex = { version = "0.18.0", features = [ "partial" ], optional = true }
 rayon = "1.8.0"
 thiserror = "1.0.56"
+rkyv = { version = "0.7.44", features = [ "validation" ] }
+ordered-float = "4.2.0"
+tabled = "0.15.0"
 
 [dev-dependencies]
 test_tools = { workspace = true }

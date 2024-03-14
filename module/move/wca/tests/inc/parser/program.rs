@@ -8,58 +8,45 @@ tests_impls!
   {
     let parser = Parser::former().form();
 
-    // only one command and only one namespace
+    // only one command
     a_id!
     (
-      Program { namespaces : vec!
+      Program { commands : vec!
       [
-        Namespace { commands : vec!
-        [
-          RawCommand
-          {
-            name : "command".into(),
-            subjects : vec![],
-            properties : HashMap::new(),
-          }
-        ]}
+        ParsedCommand
+        {
+          name : "command".into(),
+          subjects : vec![],
+          properties : HashMap::new(),
+        },
       ]},
       parser.program( ".command" ).unwrap()
     );
 
-    // one command at a time in many namespaces
     a_id!
     (
-      Program { namespaces : vec!
+      Program { commands : vec!
       [
-        Namespace { commands : vec!
-        [
-          RawCommand
-          {
-            name : "command1".into(),
-            subjects : vec![],
-            properties : HashMap::new(),
-          }
-        ]},
-        Namespace { commands : vec!
-        [
-          RawCommand
-          {
-            name : "command2".into(),
-            subjects : vec![],
-            properties : HashMap::new(),
-          }
-        ]},
-        Namespace { commands : vec!
-        [
-          RawCommand
-          {
-            name : "command3".into(),
-            subjects : vec![],
-            properties : HashMap::new(),
-          }
-        ]},
+        ParsedCommand
+        {
+          name : "command1".into(),
+          subjects : vec![],
+          properties : HashMap::new(),
+        },
+        ParsedCommand
+        {
+          name : "command2".into(),
+          subjects : vec![],
+          properties : HashMap::new(),
+        },
+        ParsedCommand
+        {
+          name : "command3".into(),
+          subjects : vec![],
+          properties : HashMap::new(),
+        }
       ]},
-      parser.program( ".command1 .also .command2 .also .command3" ).unwrap()
+      parser.program( ".command1 .command2 .command3" ).unwrap()
     );
   }
 }

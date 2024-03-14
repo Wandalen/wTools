@@ -2,12 +2,6 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/derive_tools/latest/derive_tools/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
-
-// #![ feature( trait_alias ) ]
-// #![ feature( type_name_of_val ) ]
 
 //!
 //! Collection of derives which extend STD.
@@ -17,6 +11,9 @@
 
 #[ cfg( feature = "enabled" ) ]
 pub mod wtools;
+
+// #[ cfg( feature = "derive_reflect" ) ]
+// pub mod reflect;
 
 // use derive_tools_meta::Deref;
 // use derive_tools_meta::VariadicFrom;
@@ -37,8 +34,12 @@ pub mod dependency
   pub use ::clone_dyn::dependency::*;
   #[ cfg( any_derive ) ]
   pub use ::derive_tools_meta;
-
 }
+
+#[ cfg( feature = "enabled" ) ]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
 
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
@@ -54,17 +55,52 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::wtools::orphan::*;
+  // #[ cfg( feature = "derive_reflect" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::reflect::orphan::*;
 }
 
-#[ cfg( feature = "enabled" ) ]
-#[ doc( inline ) ]
+#[ cfg( all( feature = "derive_more" ) ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+mod derive_more
+{
+  #[ cfg( feature = "derive_add" ) ]
+  pub use ::derive_more::{ Add, Sub };
+  #[ cfg( feature = "derive_add_assign" ) ]
+  pub use ::derive_more::{ AddAssign, SubAssign };
+  #[ cfg( feature = "derive_constructor" ) ]
+  pub use ::derive_more::Constructor;
+  #[ cfg( feature = "derive_error" ) ]
+  pub use ::derive_more::Error;
+  #[ cfg( feature = "derive_index_mut" ) ]
+  pub use ::derive_more::IndexMut;
+  #[ cfg( feature = "derive_index" ) ]
+  pub use ::derive_more::Index;
+  #[ cfg( feature = "derive_into" ) ]
+  pub use ::derive_more::Into;
+  #[ cfg( feature = "derive_iterator" ) ]
+  pub use ::derive_more::Iterator;
+  #[ cfg( feature = "derive_into_iterator" ) ]
+  pub use ::derive_more::IntoIterator;
+  #[ cfg( feature = "derive_mul" ) ]
+  pub use ::derive_more::{ Mul, Div };
+  #[ cfg( feature = "derive_mul_assign" ) ]
+  pub use ::derive_more::{ MulAssign, DivAssign };
+  #[ cfg( feature = "derive_not" ) ]
+  pub use ::derive_more::Not;
+  #[ cfg( feature = "derive_sum" ) ]
+  pub use ::derive_more::Sum;
+  #[ cfg( feature = "derive_try_into" ) ]
+  pub use ::derive_more::TryInto;
+  #[ cfg( feature = "derive_is_variant" ) ]
+  pub use ::derive_more::IsVariant;
+  #[ cfg( feature = "derive_unwrap" ) ]
+  pub use ::derive_more::Unwrap;
 
-#[ cfg( feature = "enabled" ) ]
-// #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-// pub use exposed::*;
+  // qqq2 : list all
+  // qqq2 : make sure all features of derive_more is reexported
+}
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
@@ -73,7 +109,6 @@ pub mod orphan
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::exposed::*;
-
 }
 
 /// Exposed namespace of the module.
@@ -84,11 +119,73 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 
-  #[ cfg( feature = "derive_more" ) ]
+  #[ cfg( all( feature = "derive_more" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::derive_more::*;
-  // qqq2 : list instead of asteris
+  pub use super::derive_more::*;
+
+  // #[ cfg( all( feature = "derive_more", feature = "derive_add" ) ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::derive_more::Add;
+
+  // #[ allow( ambiguous_glob_reexports ) ]
+  // #[ cfg( feature = "derive_more" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::derive_more::
+  // {
+  //   Add,
+  //   AddAssign,
+  //   AsMut,
+  //   AsRef,
+  //   Binary,
+  //   BitAnd,
+  //   BitAndAssign,
+  //   BitOr,
+  //   BitOrAssign,
+  //   BitXor,
+  //   BitXorAssign,
+  //   Constructor,
+  //   Debug,
+  //   Deref,
+  //   DerefMut,
+  //   Display,
+  //   Div,
+  //   DivAssign,
+  //   Error,
+  //   From,
+  //   FromStr,
+  //   Index,
+  //   IndexMut,
+  //   Into,
+  //   IntoIterator,
+  //   IsVariant,
+  //   LowerExp,
+  //   LowerHex,
+  //   Mul,
+  //   MulAssign,
+  //   Neg,
+  //   Not,
+  //   Octal,
+  //   Pointer,
+  //   Product,
+  //   Rem,
+  //   RemAssign,
+  //   Shl,
+  //   ShlAssign,
+  //   Shr,
+  //   ShrAssign,
+  //   Sub,
+  //   SubAssign,
+  //   Sum,
+  //   TryFrom,
+  //   TryInto,
+  //   TryUnwrap,
+  //   Unwrap,
+  //   UpperExp,
+  //   UpperHex,
+  // };
 
   #[ cfg( feature = "strum" ) ]
   #[ doc( inline ) ]
@@ -114,10 +211,20 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::wtools::exposed::*;
 
+  // #[ cfg( feature = "derive_reflect" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::reflect::exposed::*;
+
   // #[ cfg( any_derive ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::derive_tools_meta::*;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "derive_from" ) ]
+  pub use ::derive_tools_meta::From;
 
 }
 
@@ -138,6 +245,11 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::clone_dyn::clone_dyn;
+  // #[ cfg( feature = "derive_reflect" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::reflect::prelude::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::wtools::prelude::*;

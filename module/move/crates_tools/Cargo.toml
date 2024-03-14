@@ -1,6 +1,6 @@
 [package]
 name = "crates_tools"
-version = "0.2.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -26,9 +26,7 @@ all-features = false
 
 [features]
 default = [ "enabled" ]
-full = [ "enabled" ]
-no_std = []
-use_alloc = []
+full = [ "enabled", "network" ]
 enabled = [ "network" ]
 network = [ "ureq" ]
 
