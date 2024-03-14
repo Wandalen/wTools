@@ -89,7 +89,7 @@ default-features = false
 # path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/core/interval_adapter"
 default-features = false
 features = [ "enabled" ]
@@ -144,13 +144,13 @@ default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/clone_dyn"
 default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_meta]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/clone_dyn_meta"
 features = [ "enabled" ]
 
@@ -241,7 +241,7 @@ default-features = false
 ## proc macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.14.0"
+version = "~0.15.0"
 path = "module/core/macro_tools"
 default-features = false
 

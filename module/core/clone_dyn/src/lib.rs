@@ -2,17 +2,6 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/clone_dyn/latest/clone_dyn/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
-
-// #![ feature( trait_alias ) ]
-// #![ feature( type_name_of_val ) ]
-
-//!
-//! Derive to clone dyn structures.
-//!
-
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
@@ -26,13 +15,15 @@ pub mod dependency
 }
 
 /// Internal namespace.
-// #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "enabled" ) ]
 pub( crate ) mod private
 {
-  #[ cfg( all( feature = "no_std" ) ) ]
+
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   extern crate alloc;
-  #[ cfg( all( feature = "no_std" ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  #[ allow( unused_imports ) ]
   use alloc::boxed::Box;
   #[ cfg( all( feature = "use_std", not( feature = "use_alloc" ) ) ) ]
   use std::boxed::Box;
@@ -65,6 +56,11 @@ pub( crate ) mod private
 
 }
 
+#[ cfg( feature = "enabled" ) ]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
@@ -73,11 +69,6 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
-
-#[ cfg( feature = "enabled" ) ]
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use protected::*;
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
@@ -103,9 +94,10 @@ pub mod prelude
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   pub use ::clone_dyn_meta::clone_dyn;
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   pub use super::private::_clone_boxed;
 }

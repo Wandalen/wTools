@@ -11,7 +11,7 @@ Tools for writing procedural macros.
 <!-- {{# generate.module_sample{} #}} -->
 
 ```rust
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 {
   use macro_tools::exposed::*;
 

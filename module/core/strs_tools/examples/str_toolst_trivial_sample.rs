@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 #[ allow( unused_imports ) ]
 use strs_tools::*;
 

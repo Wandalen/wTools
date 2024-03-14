@@ -120,7 +120,7 @@ mod private
 
     /// `exclude_features` - A vector of strings, each representing a feature to be excluded during testing.
     pub exclude_features : Vec< String >,
-  
+
     /// `temp_path` - path to temp directory.
     pub temp_path : Option< PathBuf >,
 
@@ -175,7 +175,7 @@ mod private
         for ( channel, features ) in channels.iter().sorted_by( | a, b | a.0.cmp( b.0 ) ) {
           for ( feature, result ) in features
           {
-            let feature = if feature.is_empty() { "no-features" } else { feature };
+            let feature = if feature.is_empty() { "-" } else { feature };
             // if tests failed or if build failed
             match result
             {
@@ -235,7 +235,7 @@ mod private
     {
       if self.dry
       {
-        writeln!( f, "\nYou can execute the command with the dry-run :0, for example 'will .test dry : 0'." )?;
+        writeln!( f, "\nYou can execute the plan with 'will .test dry : 0'." )?;
         return Ok( () )
       }
       if self.succses_reports.is_empty() && self.failure_reports.is_empty()

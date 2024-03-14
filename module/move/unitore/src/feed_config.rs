@@ -8,7 +8,7 @@ pub struct SubscriptionConfig
 {
   /// Update period.
   #[serde(with = "humantime_serde")]
-  pub period : std::time::Duration,
+  pub update_period : std::time::Duration,
   /// Resource link.
   pub link : String,
 }
