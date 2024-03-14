@@ -46,6 +46,11 @@ mod private
     exclude_features : Vec< String >,
     #[ default( true ) ]
     temp : bool,
+    enabled_features : Vec< String >,
+    #[ default( false ) ]
+    with_all_features : bool,
+    #[ default( false ) ]
+    with_none_features : bool,
   }
 
   /// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
@@ -74,7 +79,10 @@ mod private
       power,
       include_features,
       exclude_features,
-      temp
+      temp, 
+      enabled_features, 
+      with_all_features, 
+      with_none_features
     } = args;
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
@@ -101,6 +109,9 @@ mod private
         include_features,
         exclude_features,
         temp_path: Some( temp_dir.clone() ),
+        enabled_features,
+        with_all_features,
+        with_none_features,
       };
       
       let report = tests_run( &t_args, &packages, dry );
@@ -119,6 +130,9 @@ mod private
         include_features,
         exclude_features,
         temp_path: None,
+        enabled_features,
+        with_all_features,
+        with_none_features,
       };
 
       tests_run( &t_args, &packages, dry )

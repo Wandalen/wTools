@@ -23,12 +23,17 @@ mod private
     with_nightly : bool,
     #[ default( 0u32 ) ]
     concurrent : u32,
-    #[ default( 1u32 ) ]
+    #[ default( 2u32 ) ]
     power : u32,
     include : Vec< String >,
     exclude : Vec< String >,
     #[ default( true ) ]
     temp : bool,
+    enabled_features : Vec< String >,
+    #[ default( false ) ]
+    with_all_features : bool,
+    #[ default( false ) ]
+    with_none_features : bool,
   }
 
   /// run tests in specified crate
@@ -36,7 +41,20 @@ mod private
   {
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
-    let TestsProperties { dry, with_stable, with_nightly, concurrent, power, include, exclude, temp } = properties.try_into()?;
+    let TestsProperties 
+    { 
+      dry, 
+      with_stable, 
+      with_nightly, 
+      concurrent, 
+      power, 
+      include, 
+      exclude, 
+      temp, 
+      enabled_features, 
+      with_all_features, 
+      with_none_features 
+    } = properties.try_into()?;
     
     let mut channels = HashSet::new();
     if with_stable { channels.insert( Channel::Stable ); }
@@ -50,6 +68,9 @@ mod private
     .exclude_features( exclude )
     .include_features( include )
     .temp( temp )
+    .enabled_features( enabled_features )
+    .with_all_features( with_all_features )
+    .with_none_features( with_none_features )
     .form();
 
     match action::test( args, dry )

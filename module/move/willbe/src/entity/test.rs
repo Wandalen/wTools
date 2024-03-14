@@ -119,6 +119,15 @@ mod private
 
     /// 'temp_path' - path to temp directory.
     pub temp_path : Option< PathBuf >,
+
+    /// todo
+    pub enabled_features : Vec< String >,
+    
+    /// todo
+    pub with_all_features : bool,
+    
+    /// todo
+    pub with_none_features : bool,
   }
 
 
@@ -280,7 +289,10 @@ mod private
       package,
       args.power as usize,
       &args.exclude_features,
-      &args.include_features
+      &args.include_features,
+      &args.enabled_features,
+      args.with_all_features,
+      args.with_none_features,
     );
 
     print_temp_report( &package.name, &args.channels, &features_powerset );
