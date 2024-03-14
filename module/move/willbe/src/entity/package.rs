@@ -35,7 +35,7 @@ mod private
   use former::Former;
 
   ///
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub enum Package
   {
     /// `Cargo.toml` file.
@@ -202,16 +202,16 @@ mod private
       match self
       {
         Self::Manifest( manifest ) =>
-          {
-            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+        {
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
 
-            // Unwrap safely because of the `Package` type guarantee
-            Ok( data[ "package" ].get( "repository" ).and_then( | r | r.as_str() ).map( | r | r.to_string()) )
-          }
+          // Unwrap safely because of the `Package` type guarantee
+          Ok( data[ "package" ].get( "repository" ).and_then( | r | r.as_str() ).map( | r | r.to_string()) )
+        }
         Self::Metadata( metadata ) =>
-          {
-            Ok( metadata.repository.clone() )
-          }
+        {
+          Ok( metadata.repository.clone() )
+        }
       }
     }
 
@@ -221,15 +221,15 @@ mod private
       match self
       {
         Self::Manifest( manifest ) =>
-          {
-            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+        {
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
 
-            Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
-          }
+          Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
+        }
         Self::Metadata( metadata ) =>
-          {
-            Ok( metadata.metadata[ "discord_url" ].as_str().map( | url | url.to_string() ) )
-          }
+        {
+          Ok( metadata.metadata[ "discord_url" ].as_str().map( | url | url.to_string() ) )
+        }
       }
     }
 
@@ -258,8 +258,9 @@ mod private
         Package::Manifest( manifest ) => Ok( manifest.clone() ),
         Package::Metadata( metadata ) => manifest::open
         (
-          AbsolutePath::try_from( metadata.manifest_path.as_path() ).map_err( | _ | PackageError::LocalPath )? )
-          .map_err( | _ | PackageError::Metadata ),
+          AbsolutePath::try_from( metadata.manifest_path.as_path() ).map_err( | _ | PackageError::LocalPath )?
+        )
+        .map_err( | _ | PackageError::Metadata ),
       }
     }
 
@@ -284,9 +285,11 @@ mod private
     fn perform( &self, dry : bool ) -> Result< Self::Report >;
   }
 
+  #[ derive( Debug ) ]
   pub struct CargoPackagePlan
   {
-    crate_dir : CrateDir,
+    pub crate_dir : CrateDir,
+    pub base_temp_dir : Option< PathBuf >,
   }
 
   impl Plan for CargoPackagePlan
@@ -296,6 +299,7 @@ mod private
     {
       let args = cargo::PackOptions::former()
       .path( self.crate_dir.as_ref() )
+      .option_temp_path( self.base_temp_dir.clone() )
       .dry( dry )
       .form();
 
@@ -303,6 +307,7 @@ mod private
     }
   }
 
+  #[ derive( Debug ) ]
   pub struct VersionBumpPlan
   {
     pub crate_dir : CrateDir,
@@ -314,13 +319,56 @@ mod private
   impl Plan for VersionBumpPlan
   {
     type Report = ExtendedBumpReport;
-    fn perform( &self, _dry : bool ) -> Result< Self::Report >
+    fn perform( &self, dry : bool ) -> Result< Self::Report >
     {
       let mut report = Self::Report::default();
-      let package = Package::
-      report.base.name = Some( "peter".into() );
+      let package_path = self.crate_dir.absolute_path().join( "Cargo.toml" );
+      let package = Package::try_from( package_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      let name = package.name().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      report.base.name = Some( name.clone() );
+      let package_version = package.version().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      let current_version = version::Version::try_from( package_version.as_str() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      if current_version > self.new_version
+      {
+        return Err( format_err!( "{report:?}\nThe current version of the package is higher than need to be set\n\tpackage: {name}\n\tcurrent_version: {current_version}\n\tnew_version: {}", self.new_version ) );
+      }
       report.base.old_version = Some( self.old_version.to_string() );
-      report.changed_files = vec![];
+      report.base.new_version = Some( self.new_version.to_string() );
+
+      let mut package_manifest = package.manifest().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      if !dry
+      {
+        let data = package_manifest.manifest_data.as_mut().unwrap();
+        data[ "package" ][ "version" ] = value( &self.new_version.to_string() );
+        package_manifest.store()?;
+      }
+      report.changed_files = vec![ package_path ];
+      let new_version = &self.new_version.to_string();
+      for dep in &self.dependencies
+      {
+        let manifest_path = dep.absolute_path().join( "Cargo.toml" );
+        let manifest = manifest::open( manifest_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+        let data = package_manifest.manifest_data.as_mut().unwrap();
+        let item = if let Some( item ) = data.get_mut( "package" ) { item }
+        else if let Some( item ) = data.get_mut( "workspace" ) { item }
+        else { return Err( format_err!( "{report:?}\nThe manifest nor the package and nor the workspace" ) ); };
+        if let Some( dependency ) = item.get_mut( "dependencies" ).and_then( | ds | ds.get_mut( &name ) )
+        {
+          if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
+          {
+            if previous_version.starts_with('~')
+            {
+              dependency[ "version" ] = value( format!( "~{new_version}" ) );
+            }
+            else
+            {
+              dependency[ "version" ] = value( new_version.clone() );
+            }
+          }
+        }
+        if !dry { manifest.store().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?; }
+        report.changed_files.push( manifest_path );
+      }
 
       Ok( report )
     }
@@ -334,6 +382,7 @@ mod private
     pub push : Option< process::CmdReport >,
   }
 
+  #[ derive( Debug ) ]
   pub struct GitThingsPlan
   {
     pub git_root : AbsolutePath,
@@ -368,9 +417,11 @@ mod private
     }
   }
 
+  #[ derive( Debug ) ]
   pub struct CargoPublishPlan
   {
-    crate_dir : CrateDir,
+    pub crate_dir : CrateDir,
+    pub base_temp_dir : Option< PathBuf >,
   }
 
   impl Plan for CargoPublishPlan
@@ -380,6 +431,7 @@ mod private
     {
       let args = cargo::PublishOptions::former()
       .path( self.crate_dir.as_ref() )
+      .option_temp_path( self.base_temp_dir.clone() )
       .dry( dry )
       .form();
 
@@ -387,6 +439,7 @@ mod private
     }
   }
 
+  #[ derive( Debug ) ]
   pub struct PublishSinglePackagePlan
   {
     pub pack : CargoPackagePlan,
@@ -394,6 +447,59 @@ mod private
     // qqq : rename
     pub git_things : GitThingsPlan,
     pub publish : CargoPublishPlan,
+  }
+
+  #[ derive( Debug, Former ) ]
+  #[ perform( fn build() -> PublishSinglePackagePlan ) ]
+  pub struct PublishSinglePackagePlanner
+  {
+    workspace : Workspace,
+    package : Package,
+    base_temp_dir : Option< PathBuf >,
+  }
+
+  impl PublishSinglePackagePlanner
+  {
+    fn build( self ) -> PublishSinglePackagePlan
+    {
+      let crate_dir = self.package.crate_dir();
+      let workspace_root : AbsolutePath = self.workspace.workspace_root().unwrap().try_into().unwrap();
+      let pack = CargoPackagePlan
+      {
+        crate_dir : crate_dir.clone(),
+        base_temp_dir : self.base_temp_dir.clone(),
+      };
+      let old_version : version::Version = self.package.version().as_ref().unwrap().try_into().unwrap();
+      let new_version = old_version.clone().bump();
+      // bump the package version in dependents (so far, only workspace)
+      let dependencies = vec![ CrateDir::try_from( workspace_root.clone() ).unwrap() ];
+      let version_bump = VersionBumpPlan
+      {
+        crate_dir : crate_dir.clone(),
+        old_version : old_version.clone(),
+        new_version : new_version.clone(),
+        dependencies : dependencies.clone(),
+      };
+      let git_things = GitThingsPlan
+      {
+        git_root : workspace_root,
+        items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.absolute_path().join( "Cargo.toml" ) ).collect(),
+        message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
+      };
+      let publish = CargoPublishPlan
+      {
+        crate_dir,
+        base_temp_dir : self.base_temp_dir.clone(),
+      };
+
+      PublishSinglePackagePlan
+      {
+        pack,
+        version_bump,
+        git_things,
+        publish,
+      }
+    }
   }
 
   impl Plan for PublishSinglePackagePlan
@@ -424,7 +530,54 @@ mod private
     }
   }
 
-  pub struct PublishManyPackagesPlan( Vec< PublishSinglePackagePlan > );
+  #[ derive( Debug, Former ) ]
+  pub struct PublishManyPackagesPlan
+  {
+    pub workspace : Workspace,
+    pub base_temp_dir : Option< PathBuf >,
+    #[ setter( false ) ]
+    pub plans : Vec< PublishSinglePackagePlan >,
+  }
+
+  impl PublishManyPackagesPlanFormer
+  {
+    pub fn package< IntoPackage >( mut self, package : IntoPackage ) -> Self
+    where
+      IntoPackage : Into< Package >,
+    {
+      let mut plan = PublishSinglePackagePlanner::former();
+      if let Some( workspace ) = &self.container.workspace
+      {
+        plan = plan.workspace( workspace.clone() );
+      }
+      if let Some( base_temp_dir ) = &self.container.base_temp_dir
+      {
+        plan = plan.base_temp_dir( base_temp_dir.clone() );
+      }
+      let plan = plan
+      .package( package )
+      .perform();
+      let mut plans = self.container.plans.unwrap_or_default();
+      plans.push( plan );
+
+      self.container.plans = Some( plans );
+
+      self
+    }
+
+    pub fn packages< IntoPackageIter, IntoPackage >( mut self, packages : IntoPackageIter ) -> Self
+    where
+      IntoPackageIter : IntoIterator< Item = IntoPackage >,
+      IntoPackage : Into< Package >,
+    {
+      for package in packages
+      {
+        self = self.package( package );
+      }
+
+      self
+    }
+  }
 
   impl Plan for PublishManyPackagesPlan
   {
@@ -432,7 +585,7 @@ mod private
     fn perform( &self, dry : bool ) -> Result< Self::Report >
     {
       let mut report = Self::Report::default();
-      for package in &self.0
+      for package in &self.plans
       {
         let res = package.perform( dry ).map_err( | e | format_err!( "{report:#?}\n{e:#?}" ) )?;
         report.push( res );
@@ -440,30 +593,6 @@ mod private
 
       Ok( report )
     }
-  }
-
-  #[test]
-  fn temporary_test() {
-    use core::str::FromStr;
-    let publish = PublishSinglePackagePlan {
-      pack: CargoPackagePlan {
-        crate_dir: AbsolutePath::try_from(".").unwrap().try_into().unwrap(),
-      },
-      version_bump: VersionBumpPlan {
-        crate_dir: AbsolutePath::try_from(".").unwrap().try_into().unwrap(),
-        old_version: version::Version::from_str("0.0.1").unwrap(),
-        new_version: version::Version::from_str("0.0.2").unwrap(),
-        dependencies: vec![],
-      },
-      git_things: GitThingsPlan { git_root: ".".try_into().unwrap(), items: vec![], message: "hello peter".into() },
-      publish: CargoPublishPlan {
-        crate_dir: AbsolutePath::try_from(".").unwrap().try_into().unwrap(),
-      }
-    };
-    let many = PublishManyPackagesPlan(vec![publish]);
-    let out = many.perform(true);
-    dbg!(out);
-    panic!()
   }
 
   /// Holds information about the publishing process.
@@ -938,6 +1067,10 @@ mod private
 
 crate::mod_interface!
 {
+
+  protected use PublishSinglePackagePlanner;
+  protected use PublishManyPackagesPlan;
+  protected use Plan;
 
   protected use PublishReport;
   protected use publish_single;

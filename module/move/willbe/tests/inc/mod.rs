@@ -3,6 +3,7 @@ use super::*;
 mod dependencies;
 mod command;
 mod action;
+mod package;
 mod publish_need;
 mod query;
 mod version;

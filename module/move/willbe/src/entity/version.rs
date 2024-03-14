@@ -28,6 +28,26 @@ mod private
     }
   }
 
+  impl TryFrom< &str > for Version
+  {
+    type Error = semver::Error;
+
+    fn try_from( value : &str ) -> Result< Self, Self::Error >
+    {
+      FromStr::from_str( value )
+    }
+  }
+
+  impl TryFrom< &String > for Version
+  {
+    type Error = semver::Error;
+
+    fn try_from( value : &String ) -> Result< Self, Self::Error >
+    {
+      Self::try_from( value.as_str() )
+    }
+  }
+
   impl fmt::Display for Version
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
