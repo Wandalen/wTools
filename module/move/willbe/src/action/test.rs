@@ -12,6 +12,9 @@ mod private
   use cargo_metadata::Package;
   // qqq : for Petro : don't use Package directly. rid it off for the whole willbe
 
+  // qqq : for Petro : should not be such combinations full,no_std
+  // [ release | nightly | full,no_std ]: ❌  failed
+
   // qqq : for Petro : improve formatting
   //
   // [ optimization : debug | channel : stable | feature : derive_component_from,use_alloc ]
