@@ -42,7 +42,7 @@ mod derive
 /// - `setter` : Enables or disables the generation of a setter method for a field.
 /// - `subformer` : Defines a sub-former for complex field types, allowing nested builders.
 /// - `alias` : Creates an alias for a field setter.
-/// - `doc` : Adds documentation to the generated setter methods.
+/// - `doc` : Adds documentation to the generated setter methods. (deprecated)
 ///
 /// # Input Example :
 ///
@@ -53,11 +53,25 @@ mod derive
 ///   use former::Former;
 ///
 ///   #[ derive( Debug, PartialEq, Former ) ]
+///   #[ perform( fn greet_user() ) ]
 ///   pub struct UserProfile
 ///   {
+///     #[default(1)]
 ///     age : i32,
+///     
 ///     username : String,
+///     
+///     #[alias(bio)]
 ///     bio_optional : Option< String >, // Fields could be optional
+///   }
+/// 
+///   impl UserProfile
+///   {
+///     fn greet_user(self) -> Self
+///     {
+///       println!("Hello, {}", self.username);
+///       self
+///     }
 ///   }
 ///
 ///   let profile = UserProfile::former()
@@ -65,6 +79,7 @@ mod derive
 ///   .username( "JohnDoe".to_string() )
 ///   .bio_optional( "Software Developer".to_string() ) // Optionally provide a bio
 ///   .form();
+///   // .perform(); // same as `form()` but will execute method passed to perform attribute
 ///
 ///   dbg!( &profile );
 ///   // Expected output:
@@ -132,22 +147,38 @@ mod derive
 ///     #[ inline( always ) ]
 ///     pub fn form( mut self ) -> UserProfile
 ///     {
-///       let age = self.container.age.take().unwrap_or_else( ||
+///       let age = if self.container.age.is_some()
 ///       {
-///         default_for_field::< i32 >( "age" )
-///       } );
-///       let username = self.container.username.take().unwrap_or_else( ||
+///         self.container.age.take().unwrap()
+///       }
+///       else
 ///       {
-///         default_for_field::< String >( "username" )
-///       } );
-///       let bio_optional = self.container.bio_optional.take();
+///         (1).into()
+///       };
+///       let username = if self.container.username.is_some()
+///       {
+///         self.container.username.take().unwrap()
+///       }
+///       else
+///       {
+///         String::default()
+///       };
+///       let bio_optional = if self.container.bio_optional.is_some()
+///       {
+///         Some( self.container.bio_optional.take().unwrap() )
+///       }
+///       else
+///       {
+///         None
+///       };
 ///       UserProfile { age, username, bio_optional }
 ///     }
 ///
 ///     #[ inline( always ) ]
 ///     pub fn perform( self ) -> UserProfile
 ///     {
-///       self.form()
+///       let result = self.form();
+///       return result.greet_user();
 ///     }
 ///
 ///      #[ inline( always ) ]
@@ -202,11 +233,15 @@ mod derive
 ///       self.container.bio_optional = Some( src.into() );
 ///       self
 ///     }
-///   }
-///
-///   fn default_for_field<T: Default>(field_name: &str) -> T {
-///     eprintln!("Field '{}' isn't initialized, using default value.", field_name);
-///     T::default()
+/// 
+///     #[inline]
+///     pub fn bio< Src >( mut self, src : Src ) -> Self
+///     where
+///       Src : Into< String >,
+///     {
+///       self.container.bio_optional = Some( src.into() );
+///       self
+///     }
 ///   }
 ///
 ///   let profile = UserProfile::former()
