@@ -6,10 +6,32 @@ mod private
   use path::AbsolutePath;
 
   use std::collections::HashSet;
-
   use std::{ env, fs };
+  // qqq : for Petro : https://github.com/obox-systems/conventions/blob/master/code_style.md#importing-structuring-std-imports
 
   use cargo_metadata::Package;
+  // qqq : for Petro : don't use Package directly. rid it off for the whole willbe
+
+  // qqq : for Petro : improve formatting
+  //
+  // [ optimization : debug | channel : stable | feature : derive_component_from,use_alloc ]
+  // [ optimization : debug | channel : stable | feature : default,enabled ]
+  // [ optimization : debug | channel : stable | feature : derive_set_components ]
+  // [ optimization : debug | channel : stable | feature : derive_component_from,derive_set_component ]
+  // [ optimization : debug | channel : stable | feature : derive_former,derive_set_component ]
+  // [ optimization : debug | channel : stable | feature : enabled ]
+  // [ optimization : debug | channel : stable | feature : derive_set_component,no_std ]
+  // [ optimization : debug | channel : stable | feature : default,derive_set_component ]
+  // [ optimization : debug | channel : stable | feature : no-features ]
+  //
+  // should be
+  //
+  // [ optimization : release | channel : nightly | feature : full ] -> [ optimization : release | channel : nightly | feature : [ list all features ] ]
+  // [ optimization : debug | channel : stable | feature : [] ]
+  //
+  // don't create artifical categories as no-features
+  //
+  // make table out of that
 
   use former::Former;
   use wtools::

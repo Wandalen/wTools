@@ -53,7 +53,9 @@ mod private
       .into_iter()
       .chain( if self.optimization == Optimization::Release { Some( "--release".into() ) } else { None } )
       .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
+      // qqq : for Petro : bad, --no-default-features is always enabled!
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
+      // qqq : for Petro : bad, --all-features is always disabled!
       .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.iter().join( "," ) ]) }.into_iter().flatten() )
       .chain( self.temp_directory_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
       .collect()
@@ -76,7 +78,8 @@ mod private
   where
     P : AsRef< Path >
   {
-    let ( program, options ) = ( "rustup", options.as_rustup_args() );
+    let ( program, args ) = ( "rustup", options.as_rustup_args() );
+    // qqq : for Petro : rustup???
 
     if dry
     {
@@ -84,7 +87,7 @@ mod private
       (
         CmdReport
         {
-          command : format!( "{program} {}", options.join( " " ) ),
+          command : format!( "{program} {}", args.join( " " ) ),
           path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
@@ -146,7 +149,7 @@ mod private
     /// actually executing them.
     pub dry : bool,
     /// A string containing the name of the package being tested.
-    pub package_name : String,
+    pub package_name : String, /* qqq : for Petro : bad, reuse newtype */
     /// A `BTreeMap` where the keys are `channel::Channel` enums representing the channels
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
     ///   feature names and the values are `CmdReport` structs representing the test results for
@@ -183,17 +186,17 @@ mod private
             match result
             {
               Ok(_) =>
-                {
-                  success += 1;
-                  writeln!( f, "  [ {} | {} | {} ]: ✅  successful", optimization, channel, feature )?;
-                }
+              {
+                success += 1;
+                writeln!( f, "  [ {} | {} | {} ]: ✅  successful", optimization, channel, feature )?;
+              }
               Err(result) =>
-                {
-                  let mut out = result.out.replace("\n", "\n      ");
-                  out.push_str("\n");
-                  failed += 1;
-                  write!( f, "  [ {} | {} | {} ]: ❌  failed\n  \n{out}", optimization, channel, feature )?;
-                }
+              {
+                let mut out = result.out.replace("\n", "\n      ");
+                out.push_str("\n");
+                failed += 1;
+                write!( f, "  [ {} | {} | {} ]: ❌  failed\n  \n{out}", optimization, channel, feature )?;
+              }
             }
           }
         }
@@ -272,7 +275,7 @@ mod private
       {
         writeln!( f, "  ❌  Not all passed {} / {}", self.succses_reports.len(),  self.failure_reports.len() + self.succses_reports.len() )?;
       }
-
+``
       Ok( () )
     }
   }
@@ -326,8 +329,6 @@ mod private
                     std::fs::create_dir_all( &path ).unwrap();
                     args_t = args_t.temp_directory_path( path );
                   }
-                  // aaa : for Petro : bad. tooooo long line. cap on 100 ch
-                  // aaa : strip
                   let cmd_rep = _run(dir, args_t.form(), dry);
                   r
                   .lock()

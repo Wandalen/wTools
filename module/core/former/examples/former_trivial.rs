@@ -16,7 +16,7 @@
 //! This approach abstracts away the need for manually implementing a builder for each struct, making code more readable and maintainable.
 //!
 
-#[ cfg( not( feature = "derive_former" ) ) ]
+#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 fn main() {}
 
 #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
