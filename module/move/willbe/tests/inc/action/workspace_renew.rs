@@ -1,13 +1,10 @@
 use assert_fs::prelude::*;
 
-use crate::*;
+use super::*;
 use std::fs;
 use std::fs::create_dir;
 use TheModule::action::workspace_renew;
-use willbe::action::WorkspaceTemplate;
-
-const ASSETS_PATH : &str = "tests/assets"; 
-
+use TheModule::action::WorkspaceTemplate;
 
 fn arrange( sample_dir : &str ) -> assert_fs::TempDir
 {
@@ -27,7 +24,7 @@ fn default_case()
   let temp = assert_fs::TempDir::new().unwrap();
   let temp_path = temp.join( "test_project_name" );
   create_dir(temp.join("test_project_name" )).unwrap();
-  
+
   // Act
   _ = workspace_renew( &temp.path().join( "test_project_name" ), WorkspaceTemplate::default(), "https://github.con/Username/TestRepository".to_string(), vec![ "master".to_string() ] ).unwrap();
 

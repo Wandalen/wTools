@@ -1,7 +1,11 @@
+use super::*;
+
+use TheModule::*;
+use TheModule::features::features_powerset;
+
 use std::collections::HashMap;
 use cargo_metadata::Package;
 use serde::Deserialize;
-use willbe::features::features_powerset;
 
 /// Constructs a mock `Package` with specified features for testing.
 fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> Package

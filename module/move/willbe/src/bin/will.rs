@@ -9,5 +9,5 @@ use::willbe::*;
 
 fn main() -> Result< (), wtools::error::for_app::Error >
 {
-  Ok( willbe::run()? )
+  Ok( willbe::run( std::env::args().collect() )? )
 }
