@@ -47,9 +47,6 @@ mod derive
 /// # Input Example :
 ///
 /// ```rust
-/// #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-/// fn main()
-/// {
 ///   use former::Former;
 ///
 ///   #[ derive( Debug, PartialEq, Former ) ]
@@ -88,8 +85,6 @@ mod derive
 ///   //   username: "JohnDoe",
 ///   //   bio_optional: Some("Software Developer"),
 ///   // }
-///
-/// }
 /// ```
 ///
 /// # Generated Code Example :

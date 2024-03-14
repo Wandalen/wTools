@@ -24,6 +24,7 @@ struct FormerField< 'a >
 ///
 /// Attributes of the field.
 ///
+
 struct Attributes
 {
   default : Option< AttributeDefault >,
@@ -115,7 +116,7 @@ impl Attributes
 ///
 /// Attribute to hold information about method to call after form.
 ///
-/// `#[ perform = ( fn after1< 'a >() -> Option< &'a str > ) ]`
+/// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
 ///
 
 #[ allow( dead_code ) ]
@@ -168,13 +169,12 @@ impl syn::parse::Parse for AttributeDefault
   }
 }
 
-// qqq : make sure that documentation for each entity is up to date
-
 ///
 /// Attribute to enable/disable setter generation.
 ///
-/// `#[ setter = false ]`
+/// `#[ setter( false ) ]`
 ///
+
 #[ allow( dead_code ) ]
 struct AttributeSetter
 {
@@ -198,8 +198,10 @@ impl syn::parse::Parse for AttributeSetter
 
 ///
 /// Attribute to enable/disable former generation.
+/// Also known as subformers, used for aggregation relationship, when a struct holds another struct, which needs to be build by invoking multiple methods
+/// Typical example is a struct holding a `Vec`
 ///
-/// `#[ former( former::VectorSubformer ) ]`
+/// `#[ subformer( former::VectorSubformer ) ]`
 ///
 
 #[ allow( dead_code ) ]
@@ -274,9 +276,11 @@ fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 ///
 /// Generate fields for initializer of a struct setting each field to `None`.
 ///
+/// Used for initializing a Container, where on initialization all fields are None. User can alter them through builder pattern
+///
 /// ### Basic use-case. of output
 ///
-/// ```compile_fail
+/// ```ignore
 /// int_1 : core::option::Option::None,
 /// string_1 : core::option::Option::None,
 /// int_optional_1 : core::option::Option::None,
@@ -298,10 +302,12 @@ fn field_none_map( field : &FormerField< '_ > ) -> TokenStream
 
 ///
 /// Generate field of the former for a field of the structure
+/// 
+/// Used to generate a Container
 ///
 /// ### Basic use-case. of output
 ///
-/// ```compile_fail
+/// ```ignore
 /// pub int_1 : core::option::Option< i32 >,
 /// pub string_1 : core::option::Option< String >,
 /// pub int_optional_1 :  core::option::Option< i32 >,
@@ -338,20 +344,31 @@ fn field_optional_map( field : &FormerField< '_ > ) -> TokenStream
 /// In simple terms, used on `form()` call to unwrap contained values from the former's container.
 /// Will try to use default values if no values supplied by the former and the type implements `Default` trait.
 ///
-/// ### Example of generated code
+/// ### Example of generated code for an optional field
 ///
 /// ```ignore
-/// let int_1 = if self.container.int_1.is_some()
+/// let int_1 : i32 = if self.container.int_1.is_some()
 /// {
-///   self.container.int_1.take().unwrap()
+///   Some( self.container.int_1.take().unwrap() )
 /// }
 /// else
 /// {
-///   let val : i32 = core::default::Default::default();
-///   val
+///   None
 /// };
 /// ```
 ///
+/// ### Example of generated code for a non-optional field
+/// 
+/// ```ignore
+/// let int_1 : i32 = if self.container.int_1.is_some()
+/// {
+///   self.container.int_1.unwrap()
+/// }
+/// else
+/// {
+///   i32::default() // oversimplified
+/// }
+/// ```
 
 #[ inline( always ) ]
 fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
@@ -407,16 +424,18 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
         qt!
         {
           {
-            // Utilizing deref coercion to implement conditional default.
+            // By hardly utilizing deref coercion, we achieve conditional trait implementation
             trait MaybeDefault< T >
             {
               fn maybe_default( self : &Self ) -> T { panic!( #panic_msg ) }
             }
 
+            // Panic on non-`Default` types
             impl< T > MaybeDefault< T >
             for &::core::marker::PhantomData< T >
             {}
 
+            // Return default value on `Default`` types
             impl< T > MaybeDefault< T >
             for ::core::marker::PhantomData< T >
             where T : ::core::default::Default,
@@ -427,6 +446,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
               }
             }
 
+            // default if `impl Default`, otherwise - panic
             ( &::core::marker::PhantomData::< #ty > ).maybe_default()
           }
         }
@@ -470,11 +490,24 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///
 /// Generate a former setter for the field.
 ///
+/// If aliases provided, also generate aliases
+///
 /// # Example of output
 /// ```ignore
-/// #[ doc = "Setter for the 'name' field." ]
+/// #[ doc = "Setter for the 'int_1' field." ]
 /// #[ inline ]
 /// pub fn int_1< Src >( mut self, src : Src ) -> Self
+/// where
+///   Src : ::core::convert::Into< i32 >,
+/// {
+///   debug_assert!( self.int_1.is_none() );
+///   self.container.int_1 = ::core::option::Option::Some( src.into() );
+///   self
+/// }
+/// 
+/// /// #[ doc = "Setter for the 'int_1' field." ]
+/// #[ inline ]
+/// pub fn int_1_alias< Src >( mut self, src : Src ) -> Self
 /// where
 ///   Src : ::core::convert::Into< i32 >,
 /// {
@@ -529,8 +562,23 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 }
 
 ///
-/// Generate a setter for the 'field_ident' with the 'setter_name' name.
+/// Generate a single setter for the 'field_ident' with the 'setter_name' name.
 ///
+/// Used as a helper function for field_setter_map(), which generates all alias setters
+/// 
+/// # Example of output
+/// ```ignore
+/// #[ doc = "Setter for the 'int_1' field." ]
+/// #[ inline ]
+/// pub fn int_1< Src >( mut self, src : Src ) -> Self
+/// where
+///   Src : ::core::convert::Into< i32 >,
+/// {
+///   debug_assert!( self.int_1.is_none() );
+///   self.container.int_1 = ::core::option::Option::Some( src.into() );
+///   self
+/// }
+/// ```
 
 #[ inline ]
 fn field_setter
@@ -674,6 +722,22 @@ For specifying custom default value use attribute `default`. For example:
 
 //
 
+///
+/// Generate parts, used for generating `perform()`` method.
+///
+/// Similar to `form()`, but will also invoke function from `perform` attribute, if specified.
+///
+/// # Example of returned tokens :
+///
+/// ## perform :
+/// return result;
+///
+/// ## perform_output :
+/// <T: Default>
+///
+/// ## perform_generics :
+/// Vec<T>
+
 pub fn performer< 'a >
 (
   name_ident : &syn::Ident,
@@ -731,6 +795,12 @@ pub fn performer< 'a >
 }
 
 //
+
+///
+/// Generate the whole Former ecosystem
+/// 
+/// Output examples can be found in [docs to former crate](https://docs.rs/former/latest/former/)
+///
 
 pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 {
