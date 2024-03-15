@@ -289,8 +289,10 @@ mod private
   #[ derive( Debug, Default ) ]
   pub enum WriteMode
   {
+    /// Overwrites existing files.
     #[default]
     Rewrite,
+    /// Attempts to extend existing toml files.
     TomlSupplement
   }
 
