@@ -1,4 +1,5 @@
-use crate::*;
+use super::*;
+use TheModule::*;
 use assert_cmd::Command;
 use inc::
 {

@@ -32,10 +32,17 @@ use_alloc = []
 enabled = []
 
 [dependencies]
- willbe = { workspace = true }
+willbe = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+assert_fs = "1.0"
+serde_yaml = "0.9"
+serde_json = "1.0.114"
+serde = "1.0"
+assert_cmd = "2.0"
+petgraph = "~0.6"
+cargo_metadata = "~0.14"
 
 # aaa : for Petro : make it working
 # aaa : now it`s working

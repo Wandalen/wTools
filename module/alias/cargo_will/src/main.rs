@@ -8,7 +8,7 @@ use ::cargo_will::*;
 
 fn main() -> Result< (), wtools::error::for_app::Error >
 {
-  Ok( willbe::run()? )
+  Ok( willbe::run( std::env::args().collect() )? )
 }
 
 // fn main()
