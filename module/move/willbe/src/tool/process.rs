@@ -110,7 +110,7 @@ pub( crate ) mod private
     .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
     .path( current_path )
     .form();
-    // xxx : qqq : for Petro : implement run for former
+    // xxx : qqq : for Petro : implement run for former та для RunOptions
     run( options )
   }
 

@@ -51,6 +51,7 @@ mod private
     enabled_features : &[ String ],
     with_all_features : bool,
     with_none_features : bool,
+    variants_cap : usize, // qqq максимальна кількість варіантів
   )
     -> HashSet< BTreeSet< String > >
   {

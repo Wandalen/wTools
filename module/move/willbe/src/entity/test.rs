@@ -83,7 +83,7 @@ mod private
   {
     let ( program, args ) = ( "rustup", options.as_rustup_args() );
     // qqq : for Petro : rustup ???
-    // qqq : for Petro : RUST_BACKTRACE=1 ??
+    // qqq : for Petro : RUST_BACKTRACE=1 ?? //  add to SingleTestOptions, by default true
 
     if dry
     {
@@ -168,7 +168,7 @@ mod private
     ///   feature names and the values are `CmdReport` structs representing the test results for
     ///   the specific feature and channel.
     pub tests : BTreeMap< Optimization, BTreeMap< Channel, BTreeMap< String, Result< CmdReport, CmdReport > > > >,
-    // qqq : for Petro : rid off map of map of map, keep flat map
+    // qqq : for Petro : rid off map of map of map, keep flat map // add new entity TestVariant {opt, channel, features}
   }
 
   impl std::fmt::Display for TestReport
@@ -255,7 +255,7 @@ mod private
       if self.dry
       {
         writeln!( f, "\nYou can execute the plan with 'will .test dry : 0'." )?;
-        // qqq : for Petro : bad. should be exact command with exact parameters
+        // qqq : for Petro : bad. should be exact command with exact parameters / при виклику зовнішніх команд повинен бути вивід у консоль про цей виклик і його аргументи за виключенням коли ційлий блок виводу прихований (у моєму випадку при фейлі)
         return Ok( () )
       }
       if self.succses_reports.is_empty() && self.failure_reports.is_empty()
@@ -425,7 +425,7 @@ mod private
 
   // qqq : for Petro : should be entity `struct Plan {}`
   // qqq : for Petro : no! Plan should inplement Display
-  fn print_temp_report( package_name : &str, optimizations : &HashSet< Optimization >, channels : &HashSet< channel::Channel >, features : &HashSet< BTreeSet< String > > )
+  fn print_temp_report( package_name : &str, optimizations : &HashSet< Optimization >, channels : &HashSet< Channel >, features : &HashSet< BTreeSet< String > > )
   {
     println!( "Package : {}\nThe tests will be executed using the following configurations :", package_name );
     for optimization in optimizations.iter().sorted()
