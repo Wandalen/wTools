@@ -2,19 +2,25 @@ use crate::*;
 use executor::FeedManager;
 use super::Report;
 use storage::{ FeedStorage, FeedStore };
-use gluesql::prelude::{ Payload, Value };
+use gluesql::prelude::{ Payload, Value, SledStorage };
 use feed_config::read_feed_config;
-use gluesql::prelude::SledStorage;
+use error_tools::{ err, Result };
 
 /// List all frames.
-pub async fn list_frames( storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+pub async fn list_frames(
+  storage : FeedStorage< SledStorage >,
+  _args : &wca::Args,
+) -> Result< impl Report >
 {
     let mut manager = FeedManager::new( storage );
-    manager.get_all_frames().await
+    manager.storage.get_all_frames().await
 }
 
 /// Update all frames from config files saved in storage.
-pub async fn download_frames( storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl Report, Box< dyn std::error::Error + Send + Sync > >
+pub async fn download_frames(
+  storage : FeedStorage< SledStorage >,
+  _args : &wca::Args,
+) -> Result< impl Report >
 {
   let mut manager = FeedManager::new( storage );
   let payload = manager.storage.list_configs().await?;
@@ -36,20 +42,23 @@ pub async fn download_frames( storage : FeedStorage< SledStorage >, _args : &wca
   };
 
   let mut subscriptions = Vec::new();
-  for config in configs
+  for config in &configs
   {
-    
-    let sub_vec = read_feed_config( config )?;
+    let sub_vec = read_feed_config( config.to_owned() )?;
     subscriptions.extend( sub_vec );
   }
+
+  if subscriptions.is_empty()
+  {
+    return Err( err!( format!(
+      "Failed to download frames.\n Config files {} contain no feed subscriptions!",
+      configs.join( ", " )
+    ) ) )
+  }
+
   manager.update_feed( subscriptions ).await
 
 }
-
-use cli_table::
-{
-  format::{ Border, Separator}, Cell, Style, Table
-};
 
 const EMPTY_CELL : &'static str = "";
 const INDENT_CELL : &'static str = "  ";
@@ -68,6 +77,7 @@ pub struct FramesReport
 
 impl FramesReport
 {
+  /// Create new report.
   pub fn new( feed_title : String ) -> Self
   {
     Self
@@ -86,31 +96,30 @@ impl std::fmt::Display for FramesReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    let initial = vec![ vec![ format!( "Feed title: {}", self.feed_title).cell().bold( true )  ] ];
-    let table_struct = initial.table()
-    .border( Border::builder().build() )
-    .separator( Separator::builder().build() );
+    let initial = vec![ vec![ format!( "Feed title: {}", self.feed_title ) ] ];
+    let table = table::table_with_headers( initial[ 0 ].clone(), Vec::new() );
+    if let Some( table ) = table
+    {
+      write!( f, "{}", table )?;
+    }
 
-    let table = table_struct.display().unwrap(); 
-    write!( f, "{}", table )?;
-
-    let mut rows = vec![
-      vec![ EMPTY_CELL.cell(), format!( "Updated frames: {}", self.updated_frames ).cell() ],
-      vec![ EMPTY_CELL.cell(), format!( "Inserted frames: {}", self.new_frames ).cell() ],
-      vec![ EMPTY_CELL.cell(), format!( "Number of frames in storage: {}", self.existing_frames ).cell() ],
+    let mut rows = vec!
+    [
+      vec![ EMPTY_CELL.to_owned(), format!( "Updated frames: {}", self.updated_frames ) ],
+      vec![ EMPTY_CELL.to_owned(), format!( "Inserted frames: {}", self.new_frames ) ],
+      vec![ EMPTY_CELL.to_owned(), format!( "Number of frames in storage: {}", self.existing_frames ) ],
     ];
 
     if !self.selected_frames.selected_columns.is_empty()
     {
-      rows.push( vec![ EMPTY_CELL.cell(), format!( "Selected frames:" ).cell() ] );
+      rows.push( vec![ EMPTY_CELL.to_owned(), format!( "Selected frames:" ) ] );
     }
-    let table_struct = rows.table()
-    .border( Border::builder().build() )
-    .separator( Separator::builder().build() );
 
-    let table = table_struct.display().unwrap(); 
-
-    write!( f, "{}", table )?;
+    let table = table::plain_table( rows );
+    if let Some( table ) = table
+    {
+      write!( f, "{}", table )?;
+    }
       
     for frame in &self.selected_frames.selected_rows
     {
@@ -119,21 +128,18 @@ impl std::fmt::Display for FramesReport
       {
         let inner_row = vec!
         [
-          INDENT_CELL.cell(),
-          self.selected_frames.selected_columns[ i ].clone().cell(),
-          textwrap::fill( &String::from( frame[ i ].clone() ), 120 ).cell(),
+          INDENT_CELL.to_owned(),
+          self.selected_frames.selected_columns[ i ].clone(),
+          textwrap::fill( &String::from( frame[ i ].clone() ), 120 ),
         ];
         rows.push( inner_row );
       }
       
-      let table_struct = rows.table()
-      .border( Border::builder().build() )
-      .separator( Separator::builder().build() )
-      ;
-      
-  
-      let table = table_struct.display().unwrap();
-      writeln!( f, "{}", table )?;
+      let table = table::plain_table( rows );
+      if let Some( table ) = table
+      {
+        writeln!( f, "{}", table )?;
+      }
     }
 
     Ok( () )
@@ -142,10 +148,13 @@ impl std::fmt::Display for FramesReport
 
 impl Report for FramesReport {}
 
+/// Items get from select query from storage.
 #[ derive( Debug ) ]
 pub struct SelectedEntries
 {
+  /// Labels of selected columns.
   pub selected_columns : Vec< String >,
+  /// Selected rows with data.
   pub selected_rows : Vec< Vec< Value > >,
 }
 
@@ -204,6 +213,7 @@ impl std::fmt::Display for UpdateReport
 
 impl Report for UpdateReport {}
 
+/// Report for listing frames.
 #[ derive( Debug ) ]
 pub struct ListReport( pub Vec< FramesReport > );
 

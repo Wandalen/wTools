@@ -74,51 +74,50 @@ jobs :
         run: cargo +nightly udeps --all-targets --manifest-path ${{ inputs.manifest_path }}
         continue-on-error: true
 
-  release:
-    if: contains( inputs.commit_message, '!test' ) || contains( inputs.commit_message, 'merge' )
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Install latest stable toolchain
-        uses: Wandalen/wretry.action@master
-        with:
-          action: actions-rs/toolchain@v1
-          with: |
-            toolchain : stable
-            override : true
-          attempt_limit: 3
-          attempt_delay: 10000
-      - uses: actions/checkout@v3
-        with:
-          ref: alpha
-
-      - name: Make release build
-        run: cargo build --manifest-path ${{ inputs.manifest_path }} --release
-
-#  miri:
+#  release:
 #    if: contains( inputs.commit_message, '!test' ) || contains( inputs.commit_message, 'merge' )
-#    runs-on: ubuntu-latest
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os: [ ubuntu-latest, windows-latest, macos-latest ]
+#    runs-on: ${{ matrix.os }}
 #    steps:
-#      - name: Install latest nightly toolchain
+#      - name: Install latest stable toolchain
 #        uses: Wandalen/wretry.action@master
 #        with:
 #          action: actions-rs/toolchain@v1
 #          with: |
-#            toolchain : nightly
+#            toolchain : stable
 #            override : true
-#            components : miri
 #          attempt_limit: 3
 #          attempt_delay: 10000
 #      - uses: actions/checkout@v3
 #        with:
 #          ref: alpha
+#
+#      - name: Make release build
+#        run: cargo build --manifest-path ${{ inputs.manifest_path }} --release
 
-#      - name: Test with miri
-#        run: cargo miri test --manifest-path ${{ inputs.manifest_path }}
+  #  miri:
+  #    if: contains( inputs.commit_message, '!test' ) || contains( inputs.commit_message, 'merge' )
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #      - name: Install latest nightly toolchain
+  #        uses: Wandalen/wretry.action@master
+  #        with:
+  #          action: actions-rs/toolchain@v1
+  #          with: |
+  #            toolchain : nightly
+  #            override : true
+  #            components : miri
+  #          attempt_limit: 3
+  #          attempt_delay: 10000
+  #      - uses: actions/checkout@v3
+  #        with:
+  #          ref: alpha
 
+  #      - name: Test with miri
+  #        run: cargo miri test --manifest-path ${{ inputs.manifest_path }}
 
   will_test :
     if : contains( inputs.commit_message, '!test' ) || contains( inputs.commit_message, 'merge' )
@@ -128,7 +127,7 @@ jobs :
     strategy :
       fail-fast : false
       matrix :
-        os : [ ubuntu-latest ]
+        os : [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on : ${{ matrix.os }}
     steps :
       - name : Install latest stable toolchain

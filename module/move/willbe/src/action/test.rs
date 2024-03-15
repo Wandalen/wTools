@@ -8,8 +8,34 @@ mod private
   use std::collections::HashSet;
 
   use std::{ env, fs };
+  // qqq : for Petro : https://github.com/obox-systems/conventions/blob/master/code_style.md#importing-structuring-std-imports
 
   use cargo_metadata::Package;
+  // qqq : for Petro : don't use Package directly. rid it off for the whole willbe
+
+  // qqq : for Petro : should not be such combinations full,no_std
+  // [ release | nightly | full,no_std ]: ❌  failed
+
+  // qqq : for Petro : improve formatting
+  //
+  // [ optimization : debug | channel : stable | feature : derive_component_from,use_alloc ]
+  // [ optimization : debug | channel : stable | feature : default,enabled ]
+  // [ optimization : debug | channel : stable | feature : derive_set_components ]
+  // [ optimization : debug | channel : stable | feature : derive_component_from,derive_set_component ]
+  // [ optimization : debug | channel : stable | feature : derive_former,derive_set_component ]
+  // [ optimization : debug | channel : stable | feature : enabled ]
+  // [ optimization : debug | channel : stable | feature : derive_set_component,no_std ]
+  // [ optimization : debug | channel : stable | feature : default,derive_set_component ]
+  // [ optimization : debug | channel : stable | feature : no-features ]
+  //
+  // should be
+  //
+  // [ optimization : release | channel : nightly | feature : full ] -> [ optimization : release | channel : nightly | feature : [ list all features ] ]
+  // [ optimization : debug | channel : stable | feature : [] ]
+  //
+  // don't create artifical categories as no-features
+  //
+  // make table out of that
 
   use former::Former;
   use wtools::
@@ -46,11 +72,6 @@ mod private
     exclude_features : Vec< String >,
     #[ default( true ) ]
     temp : bool,
-    enabled_features : Vec< String >,
-    #[ default( false ) ]
-    with_all_features : bool,
-    #[ default( false ) ]
-    with_none_features : bool,
   }
 
   /// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
@@ -79,10 +100,11 @@ mod private
       power,
       include_features,
       exclude_features,
-      temp, 
-      enabled_features, 
-      with_all_features, 
+      temp,
+      enabled_features,
+      with_all_features,
       with_none_features
+      optimizations,
     } = args;
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
@@ -112,11 +134,13 @@ mod private
         enabled_features,
         with_all_features,
         with_none_features,
+        optimizations,
       };
-      
+
       let report = tests_run( &t_args, &packages, dry );
 
-      fs::remove_dir_all(&temp_dir).map_err( | e | ( reports.clone(), e.into() ) )?;
+      fs::remove_dir_all( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
+      // qqq : for Petro : why not RAII?
 
       report
     }
@@ -130,10 +154,12 @@ mod private
         include_features,
         exclude_features,
         temp_path: None,
+        optimizations,
         enabled_features,
         with_all_features,
         with_none_features,
       };
+      // qqq : for Petro : DRY
 
       tests_run( &t_args, &packages, dry )
     }

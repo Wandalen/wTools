@@ -15,9 +15,9 @@ impl FeedRow
   {
     FeedRow( vec!
     [
-      generate_uuid(),
-      null(),
       text( feed_link ),
+      null(),
+      // text( feed_link ),
       null(),
       null(),
       null(),
@@ -35,9 +35,20 @@ impl From< ( Feed, Duration ) > for FeedRow
     let value = value.0;
     let row = vec!
     [
-      generate_uuid(),
+      value.links.iter().filter_map( | link |
+        {
+          if let Some( media_type ) = &link.media_type
+          {
+            if media_type == &String::from( "application/rss+xml" )
+            {
+              return Some( text( link.href.clone() ) );
+            }
+          } 
+          None
+        } ).collect::< Vec< _ > >()[ 0 ]
+        .clone(),
       value.title.clone().map( | title | text( title.content ) ).unwrap_or( null() ),
-      value.links.get( 0 ).map( | link | text( link.href.clone() ) ).unwrap_or( null() ),
+      // value.links.get( 0 ).map( | link | text( link.href.clone() ) ).unwrap_or( null() ),
       value.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
       text( value.authors.iter().map( | p | p.name.clone() ).fold( String::new(), | acc, val | format!( "{}, {}", acc, val ) ) ),
       value.description.clone().map( | desc | text( desc.content ) ).unwrap_or( null() ),

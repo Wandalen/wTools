@@ -62,7 +62,7 @@ mod private
     .filter( | f | !exclude_features.contains( f ) && ( include_features.contains( f ) || include_features.is_empty() ) )
     .cloned()
     .collect();
-    
+
     if with_all_features
     {
       features_powerset.insert( filtered_features.into_iter().collect() );
