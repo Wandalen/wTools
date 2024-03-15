@@ -35,7 +35,7 @@ mod private
     optimization : Optimization,
     /// Determines whether to use default features in the test.
     /// Enabled by default.
-    #[ default( true ) ]
+    #[ default( false ) ]
     with_default_features : bool,
     /// Determines whether to use all available features in the test.
     /// Disabled by default.
@@ -55,7 +55,7 @@ mod private
       [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
       .into_iter()
       .chain( if self.optimization == Optimization::Release { Some( "--release".into() ) } else { None } )
-      .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
+      .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } ) 
       // qqq : for Petro : bad, --no-default-features is always enabled!
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
       // qqq : for Petro : bad, --all-features is always disabled!
@@ -83,7 +83,7 @@ mod private
   {
     let ( program, args ) = ( "rustup", options.as_rustup_args() );
     // qqq : for Petro : rustup ???
-    // qqq : for Petro : RUST_BACKTRACE=1 ??
+    // qqq : for Petro : RUST_BACKTRACE=1 ?? //  add to SingleTestOptions, by default true
 
     if dry
     {
@@ -134,6 +134,18 @@ mod private
 
     ///  optimizations
     pub optimizations : HashSet< Optimization >,
+
+    /// todo
+    pub enabled_features : Vec< String >,
+
+    /// todo
+    pub with_all_features : bool,
+
+    /// todo
+    pub with_none_features : bool,
+
+    /// todo
+    pub variants_cap : u32,
   }
 
 
@@ -159,7 +171,7 @@ mod private
     ///   feature names and the values are `CmdReport` structs representing the test results for
     ///   the specific feature and channel.
     pub tests : BTreeMap< Optimization, BTreeMap< Channel, BTreeMap< String, Result< CmdReport, CmdReport > > > >,
-    // qqq : for Petro : rid off map of map of map, keep flat map
+    // qqq : for Petro : rid off map of map of map, keep flat map // add new entity TestVariant {opt, channel, features}
   }
 
   impl std::fmt::Display for TestReport
@@ -246,7 +258,7 @@ mod private
       if self.dry
       {
         writeln!( f, "\nYou can execute the plan with 'will .test dry : 0'." )?;
-        // qqq : for Petro : bad. should be exact command with exact parameters
+        // qqq : for Petro : bad. should be exact command with exact parameters / при виклику зовнішніх команд повинен бути вивід у консоль про цей виклик і його аргументи за виключенням коли ційлий блок виводу прихований (у моєму випадку при фейлі)
         return Ok( () )
       }
       if self.succses_reports.is_empty() && self.failure_reports.is_empty()
@@ -284,7 +296,6 @@ mod private
     }
   }
 
-  // qqq : for Petro : ?
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
   pub fn run( args : &TestOptions, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
@@ -293,15 +304,18 @@ mod private
     let mut report = TestReport::default();
     report.dry = dry;
     report.package_name = package.name.clone();
-    let report = Arc::new( Mutex::new( report ) );
-
     let features_powerset = features::features_powerset
-    (
-      package,
-      args.power as usize,
-      &args.exclude_features,
-      &args.include_features
-    );
+      (
+        package,
+        args.power as usize,
+        &args.exclude_features,
+        &args.include_features,
+        &args.enabled_features,
+        args.with_all_features,
+        args.with_none_features,
+        args.variants_cap,
+      ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let report = Arc::new( Mutex::new( report ) );
 
     print_temp_report( &package.name, &args.optimizations, &args.channels, &features_powerset );
     rayon::scope
@@ -325,6 +339,7 @@ mod private
                   .channel( channel )
                   .optimization( optimization )
                   .with_default_features( false )
+                  .with_all_features( false )
                   .enable_features( feature.clone() );
 
                   if let Some( p ) = args.temp_path.clone()
@@ -413,7 +428,7 @@ mod private
 
   // qqq : for Petro : should be entity `struct Plan {}`
   // qqq : for Petro : no! Plan should inplement Display
-  fn print_temp_report( package_name : &str, optimizations : &HashSet< Optimization >, channels : &HashSet< channel::Channel >, features : &HashSet< BTreeSet< String > > )
+  fn print_temp_report( package_name : &str, optimizations : &HashSet< Optimization >, channels : &HashSet< Channel >, features : &HashSet< BTreeSet< String > > )
   {
     println!( "Package : {}\nThe tests will be executed using the following configurations :", package_name );
     for optimization in optimizations.iter().sorted()
