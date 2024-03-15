@@ -1,4 +1,4 @@
-//! Frames commands endpoints.
+//! Frames commands actions.
 
 use crate::*;
 use super::*;

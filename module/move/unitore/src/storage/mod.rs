@@ -16,7 +16,7 @@ use gluesql::
   sled_storage::{ sled::Config, SledStorage },
 };
 
-use executor::endpoints::
+use executor::actions::
 {
   feeds::FeedsReport,
   query::QueryReport,
@@ -151,7 +151,7 @@ impl FeedStore for FeedStorage< SledStorage >
     {
       Payload::Select { labels: label_vec, rows: rows_vec } =>
       {
-        report.0 = crate::executor::endpoints::frames::SelectedEntries
+        report.0 = crate::executor::actions::frames::SelectedEntries
         {
           selected_rows : rows_vec,
           selected_columns : label_vec,
@@ -226,7 +226,7 @@ impl FeedStore for FeedStorage< SledStorage >
 
     for feed in &feeds
     {
-      let mut frames_report = crate::executor::endpoints::frames::FramesReport::new( feed.0.title.clone().unwrap().content );
+      let mut frames_report = crate::executor::actions::frames::FramesReport::new( feed.0.title.clone().unwrap().content );
       // check if feed is new
       if let Some( existing_feeds ) = existing_feeds.select()
       {

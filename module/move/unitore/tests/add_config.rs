@@ -20,7 +20,7 @@ async fn add_config_file() -> Result< () >
   ;
 
   let feed_storage = FeedStorage::init_storage( config ).await?;
-  unitore::executor::endpoints::config::add_config( feed_storage.clone(), &wca::Args( vec![ wca::Value::Path( path ) ] ) ).await?;
+  unitore::executor::actions::config::add_config( feed_storage.clone(), &wca::Args( vec![ wca::Value::Path( path ) ] ) ).await?;
 
   let mut manager = FeedManager::new( feed_storage );
   let res = manager.storage.get_all_feeds().await?;

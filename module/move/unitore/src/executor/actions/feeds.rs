@@ -4,7 +4,7 @@ use crate::*;
 use executor::
 {
   FeedManager,
-  endpoints::{ Report, frames::SelectedEntries },
+  actions::{ Report, frames::SelectedEntries },
 };
 use storage::{ FeedStorage, FeedStore };
 use error_tools::Result;

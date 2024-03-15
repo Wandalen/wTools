@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use feed_rs::parser as feed_parser;
 use unitore::
 {
-  executor::{ FeedManager, endpoints },
+  executor::{ FeedManager, actions },
   feed_config::SubscriptionConfig,
   retriever::FeedFetch,
   storage::{ FeedStorage, MockFeedStore, frame::FrameStore },

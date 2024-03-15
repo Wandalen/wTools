@@ -21,7 +21,7 @@ use gluesql::core::
   chrono::SecondsFormat,
 };
 
-use executor::endpoints::frames::{ FramesReport, ListReport, SelectedEntries };
+use executor::actions::frames::{ FramesReport, ListReport, SelectedEntries };
 use storage::FeedStorage;
 use wca::wtools::Itertools;
 
