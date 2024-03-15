@@ -115,8 +115,6 @@ pub mod prelude
   pub use super::component::*;
 }
 
-// qqq : check and improve quality of generated documentation
-
 // xxx : debug attribute
 // xxx : expanded example
 // xxx : explain role of container in former

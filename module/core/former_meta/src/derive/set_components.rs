@@ -2,6 +2,12 @@ use super::*;
 use macro_tools::{ attr, diag, type_struct, Result };
 use iter_tools::{ Itertools, process_results };
 
+///
+/// Generate `SetComponents` trait implementation for the type, providing `components_set` function
+///
+/// Output example can be found in in the root of the module
+///
+
 pub fn set_components( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
@@ -17,8 +23,8 @@ pub fn set_components( input : proc_macro::TokenStream ) -> Result< proc_macro2:
   let ( bounds1, bounds2, component_sets ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map( | field |
   {
     let field_type = &field.ty;
-    let bound1 = bound1( field_type );
-    let bound2 = bound2( field_type );
+    let bound1 = generate_trait_bounds( field_type );
+    let bound2 = generate_impl_bounds( field_type );
     let component_set = generate_component_set_call( field );
     ( bound1, bound2, component_set )
   }).multiunzip();
@@ -64,7 +70,16 @@ pub fn set_components( input : proc_macro::TokenStream ) -> Result< proc_macro2:
   Ok( result )
 }
 
-fn bound1( field_type : &syn::Type ) -> Result< proc_macro2::TokenStream >
+///
+/// Generate trait bounds needed for `set_components`
+///
+/// ### Output example
+///
+/// ```ignore
+/// IntoT : Into< i32 >
+/// ```
+///
+fn generate_trait_bounds( field_type : &syn::Type ) -> Result< proc_macro2::TokenStream >
 {
   Ok
   (
@@ -75,7 +90,16 @@ fn bound1( field_type : &syn::Type ) -> Result< proc_macro2::TokenStream >
   )
 }
 
-fn bound2( field_type : &syn::Type ) -> Result< proc_macro2::TokenStream >
+///
+/// Generate impl bounds needed for `set_components`
+///
+/// ### Output example
+///
+/// ```ignore
+/// T : former::SetComponent< i32, IntoT >,
+/// ```
+///
+fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::TokenStream >
 {
   Ok
   (
@@ -86,6 +110,16 @@ fn bound2( field_type : &syn::Type ) -> Result< proc_macro2::TokenStream >
   )
 }
 
+///
+/// Generate set calls needed by `set_components`
+/// Returns a "unit" of work of `components_set` function, performing `set` on each field.
+///
+/// Output example
+///
+/// ```ignore
+/// former::SetComponent::< i32, _ >::set( self.component.clone() );
+/// ```
+///
 fn generate_component_set_call( field : &syn::Field ) -> Result< proc_macro2::TokenStream >
 {
   // let field_name = field.ident.as_ref().expect( "Expected the field to have a name" );
