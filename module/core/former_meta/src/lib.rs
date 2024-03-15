@@ -55,13 +55,13 @@ mod derive
 ///   {
 ///     #[default(1)]
 ///     age : i32,
-///     
+///
 ///     username : String,
-///     
+///
 ///     #[alias(bio)]
 ///     bio_optional : Option< String >, // Fields could be optional
 ///   }
-/// 
+///
 ///   impl UserProfile
 ///   {
 ///     fn greet_user(self) -> Self
@@ -104,7 +104,7 @@ mod derive
 ///     username : String,
 ///     bio_optional : Option< String >, // Fields could be optional
 ///   }
-/// 
+///
 ///   impl UserProfile
 ///   {
 ///     fn greet_user(self) -> Self
@@ -237,7 +237,7 @@ mod derive
 ///       self.container.bio_optional = Some( src.into() );
 ///       self
 ///     }
-/// 
+///
 ///     #[inline]
 ///     pub fn bio< Src >( mut self, src : Src ) -> Self
 ///     where
@@ -332,10 +332,10 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
   }
 }
 
-/// Derives the `SetComponent` trait for struct fields, allowing each field to be set
+/// Derives the `ComponentSet` trait for struct fields, allowing each field to be set
 /// with a value that can be converted into the field's type.
 ///
-/// This macro facilitates the automatic implementation of the `SetComponent` trait for all
+/// This macro facilitates the automatic implementation of the `ComponentSet` trait for all
 /// fields within a struct, leveraging the power of Rust's type system to ensure type safety
 /// and conversion logic. It is particularly useful for builder patterns or mutating instances
 /// of data structures in a fluent and ergonomic manner.
@@ -350,12 +350,12 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 ///
 /// # Input Code Example
 ///
-/// Given a struct definition annotated with `#[ derive( SetComponent ) ]` :
+/// Given a struct definition annotated with `#[ derive( ComponentSet ) ]` :
 ///
 /// ```rust
-/// use former::SetComponent;
+/// use former::ComponentSet;
 ///
-/// #[ derive( Default, PartialEq, Debug, former::SetComponent ) ]
+/// #[ derive( Default, PartialEq, Debug, former::ComponentSet ) ]
 /// struct Person
 /// {
 ///   age : i32,
@@ -373,7 +373,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// The procedural macro generates the following implementations for `Person` :
 ///
 /// ```rust
-/// use former::SetComponent;
+/// use former::ComponentSet;
 ///
 /// #[ derive( Default, PartialEq, Debug ) ]
 /// struct Person
@@ -382,7 +382,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 ///   name : String,
 /// }
 ///
-/// impl< IntoT > SetComponent< i32, IntoT > for Person
+/// impl< IntoT > ComponentSet< i32, IntoT > for Person
 /// where
 ///   IntoT : Into< i32 >,
 /// {
@@ -392,7 +392,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 ///   }
 /// }
 ///
-/// impl< IntoT > SetComponent< String, IntoT > for Person
+/// impl< IntoT > ComponentSet< String, IntoT > for Person
 /// where
 ///   IntoT : Into< String >,
 /// {
@@ -412,7 +412,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_set_component" ) ]
-#[ proc_macro_derive( SetComponent, attributes( debug ) ) ]
+#[ proc_macro_derive( ComponentSet, attributes( debug ) ) ]
 pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::set_component::set_component( input );
@@ -424,7 +424,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 }
 
 ///
-/// Derives the `SetComponents` trait for a struct, enabling `components_set` which set all fields at once.
+/// Derives the `ComponentsSet` trait for a struct, enabling `components_set` which set all fields at once.
 ///
 /// This will work only if every field can be acquired from the passed value.
 /// In other words, the type passed as an argument to `components_set` must implement Into<T> for each field type.
@@ -436,7 +436,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// # Conditions
 ///
 /// - This macro is only enabled when the `derive_set_components` feature is active in your `Cargo.toml`.
-/// - The type must implement `SetComponent` (`derive( SetComponent )`)
+/// - The type must implement `ComponentSet` (`derive( ComponentSet )`)
 ///
 /// # Limitations
 /// This trait cannot be derived, if the struct has fields with identical types
@@ -446,9 +446,9 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// An example when we encapsulate parameters passed to a function in a struct.
 ///
 /// ```rust
-/// use former::{ SetComponent, SetComponents };
+/// use former::{ ComponentSet, ComponentsSet };
 ///
-/// #[ derive( Default, SetComponent, SetComponents ) ]
+/// #[ derive( Default, ComponentSet, ComponentsSet ) ]
 /// struct BigOpts
 /// {
 ///   cond : bool,
@@ -456,7 +456,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   str : String,
 /// }
 ///
-/// #[ derive( Default, SetComponent, SetComponents ) ]
+/// #[ derive( Default, ComponentSet, ComponentsSet ) ]
 /// struct SmallerOpts
 /// {
 ///   cond: bool,
@@ -505,8 +505,8 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// Which expands approximately into :
 ///
 /// ```rust
-/// use former::{ SetComponent, SetComponents };
-/// 
+/// use former::{ ComponentSet, ComponentsSet };
+///
 /// #[derive(Default)]
 /// struct BigOpts
 /// {
@@ -514,8 +514,8 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   int : i32,
 ///   str : String,
 /// }
-/// 
-/// impl< IntoT > SetComponent< bool, IntoT > for BigOpts
+///
+/// impl< IntoT > ComponentSet< bool, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< bool >,
 /// {
@@ -524,8 +524,8 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///     self.cond = component.into();
 ///   }
 /// }
-/// 
-/// impl< IntoT > SetComponent< i32, IntoT > for BigOpts
+///
+/// impl< IntoT > ComponentSet< i32, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< i32 >,
 /// {
@@ -534,8 +534,8 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///     self.int = component.into();
 ///   }
 /// }
-/// 
-/// impl< IntoT > SetComponent< String, IntoT > for BigOpts
+///
+/// impl< IntoT > ComponentSet< String, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< String >,
 /// {
@@ -544,8 +544,8 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///     self.str = component.into();
 ///   }
 /// }
-/// 
-/// pub trait BigOptsSetComponents< IntoT >
+///
+/// pub trait BigOptsComponentsSet< IntoT >
 /// where
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
@@ -554,12 +554,12 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// {
 ///   fn components_set( &mut self, component : IntoT );
 /// }
-/// 
-/// impl< T, IntoT > BigOptsSetComponents< IntoT > for T
+///
+/// impl< T, IntoT > BigOptsComponentsSet< IntoT > for T
 /// where
-///   T : former::SetComponent< bool, IntoT >,
-///   T : former::SetComponent< i32, IntoT >,
-///   T : former::SetComponent< String, IntoT >,
+///   T : former::ComponentSet< bool, IntoT >,
+///   T : former::ComponentSet< i32, IntoT >,
+///   T : former::ComponentSet< String, IntoT >,
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
 ///   IntoT : Into< String >,
@@ -567,9 +567,9 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// {
 ///   fn components_set( &mut self, component : IntoT )
 ///   {
-///     former::SetComponent::< bool, _ >::set( self, component.clone() );
-///     former::SetComponent::< i32, _ >::set( self, component.clone() );
-///     former::SetComponent::< String, _ >::set( self, component.clone() );
+///     former::ComponentSet::< bool, _ >::set( self, component.clone() );
+///     former::ComponentSet::< i32, _ >::set( self, component.clone() );
+///     former::ComponentSet::< String, _ >::set( self, component.clone() );
 ///   }
 /// }
 ///
@@ -580,7 +580,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   int : i32,
 /// }
 ///
-/// impl< IntoT > SetComponent< bool, IntoT > for SmallerOpts
+/// impl< IntoT > ComponentSet< bool, IntoT > for SmallerOpts
 /// where
 ///   IntoT : Into< bool >,
 /// {
@@ -590,7 +590,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   }
 /// }
 ///
-/// impl< IntoT > SetComponent< i32, IntoT > for SmallerOpts
+/// impl< IntoT > ComponentSet< i32, IntoT > for SmallerOpts
 /// where
 ///     IntoT : Into< i32 >,
 /// {
@@ -600,7 +600,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   }
 /// }
 ///
-/// pub trait SmallerOptsSetComponents< IntoT >
+/// pub trait SmallerOptsComponentsSet< IntoT >
 /// where
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
@@ -609,18 +609,18 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   fn components_set( &mut self, component : IntoT );
 /// }
 ///
-/// impl< T, IntoT > SmallerOptsSetComponents< IntoT > for T
+/// impl< T, IntoT > SmallerOptsComponentsSet< IntoT > for T
 /// where
-///   T : former::SetComponent< bool, IntoT >,
-///   T : former::SetComponent< i32, IntoT >,
+///   T : former::ComponentSet< bool, IntoT >,
+///   T : former::ComponentSet< i32, IntoT >,
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
 ///   IntoT : Clone,
 /// {
 ///   fn components_set( &mut self, component : IntoT )
 ///   {
-///     former::SetComponent::< bool, _ >::set( self, component.clone() );
-///     former::SetComponent::< i32, _ >::set( self, component.clone() );
+///     former::ComponentSet::< bool, _ >::set( self, component.clone() );
+///     former::ComponentSet::< i32, _ >::set( self, component.clone() );
 ///   }
 /// }
 ///
@@ -664,7 +664,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_set_components" ) ]
-#[ proc_macro_derive( SetComponents, attributes( debug ) ) ]
+#[ proc_macro_derive( ComponentsSet, attributes( debug ) ) ]
 pub fn set_components( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::set_components::set_components( input );

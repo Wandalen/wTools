@@ -3,7 +3,7 @@ use macro_tools::{ attr, diag, type_struct, Result };
 use iter_tools::{ Itertools, process_results };
 
 ///
-/// Generate `SetComponents` trait implementation for the type, providing `components_set` function
+/// Generate `ComponentsSet` trait implementation for the type, providing `components_set` function
 ///
 /// Output example can be found in in the root of the module
 ///
@@ -16,7 +16,7 @@ pub fn set_components( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 
   // name
   let item_name = parsed.item_name;
-  let trait_name = format!( "{}SetComponents", item_name );
+  let trait_name = format!( "{}ComponentsSet", item_name );
   let trait_ident = syn::Ident::new( &trait_name, item_name.span() );
 
   // fields
@@ -65,7 +65,7 @@ pub fn set_components( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 
   if has_debug
   {
-    diag::debug_report_print( "derive : SetComponents", original_input, &result );
+    diag::debug_report_print( "derive : ComponentsSet", original_input, &result );
   }
   Ok( result )
 }
@@ -96,7 +96,7 @@ fn generate_trait_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Toke
 /// ### Output example
 ///
 /// ```ignore
-/// T : former::SetComponent< i32, IntoT >,
+/// T : former::ComponentSet< i32, IntoT >,
 /// ```
 ///
 fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::TokenStream >
@@ -105,7 +105,7 @@ fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Token
   (
     qt!
     {
-      T : former::SetComponent< #field_type, IntoT >,
+      T : former::ComponentSet< #field_type, IntoT >,
     }
   )
 }
@@ -117,7 +117,7 @@ fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Token
 /// Output example
 ///
 /// ```ignore
-/// former::SetComponent::< i32, _ >::set( self.component.clone() );
+/// former::ComponentSet::< i32, _ >::set( self.component.clone() );
 /// ```
 ///
 fn generate_component_set_call( field : &syn::Field ) -> Result< proc_macro2::TokenStream >
@@ -128,16 +128,16 @@ fn generate_component_set_call( field : &syn::Field ) -> Result< proc_macro2::To
   (
     qt!
     {
-      former::SetComponent::< #field_type, _ >::set( self, component.clone() );
+      former::ComponentSet::< #field_type, _ >::set( self, component.clone() );
     }
   )
 }
 
 // ///
-// /// Options2SetComponents.
+// /// Options2ComponentsSet.
 // ///
 //
-// pub trait Options2SetComponents< IntoT >
+// pub trait Options2ComponentsSet< IntoT >
 // where
 //   IntoT : Into< i32 >,
 //   IntoT : Into< String >,
@@ -146,10 +146,10 @@ fn generate_component_set_call( field : &syn::Field ) -> Result< proc_macro2::To
 //   fn components_set( &mut self, component : IntoT );
 // }
 //
-// impl< T, IntoT > Options2SetComponents< IntoT > for T
+// impl< T, IntoT > Options2ComponentsSet< IntoT > for T
 // where
-//   T : former::SetComponent< i32, IntoT >,
-//   T : former::SetComponent< String, IntoT >,
+//   T : former::ComponentSet< i32, IntoT >,
+//   T : former::ComponentSet< String, IntoT >,
 //   IntoT : Into< i32 >,
 //   IntoT : Into< String >,
 //   IntoT : Clone,
@@ -157,7 +157,7 @@ fn generate_component_set_call( field : &syn::Field ) -> Result< proc_macro2::To
 //   #[ inline( always ) ]
 //   fn components_set( &mut self, component : IntoT )
 //   {
-//     former::SetComponent::< i32, _ >::set( self, component.clone() );
-//     former::SetComponent::< String, _ >::set( self, component.clone() );
+//     former::ComponentSet::< i32, _ >::set( self, component.clone() );
+//     former::ComponentSet::< String, _ >::set( self, component.clone() );
 //   }
 // }

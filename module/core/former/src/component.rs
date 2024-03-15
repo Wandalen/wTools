@@ -16,17 +16,17 @@
 ///
 /// # Examples
 ///
-/// Implementing `SetComponent` to set a name string on a struct :
+/// Implementing `ComponentSet` to set a name string on a struct :
 ///
 /// ```rust
-/// use former::SetComponent;
+/// use former::ComponentSet;
 ///
 /// struct MyStruct
 /// {
 ///   name : String,
 /// }
 ///
-/// impl< IntoT : Into< String > > SetComponent< String, IntoT > for MyStruct
+/// impl< IntoT : Into< String > > ComponentSet< String, IntoT > for MyStruct
 /// {
 ///   fn set( &mut self, component : IntoT )
 ///   {
@@ -38,7 +38,7 @@
 /// obj.set( "New Name" );
 /// assert_eq!( obj.name, "New Name" );
 /// ```
-pub trait SetComponent< T, IntoT >
+pub trait ComponentSet< T, IntoT >
 where
   IntoT : Into< T >,
 {
@@ -65,14 +65,14 @@ where
 /// ### Example
 ///
 /// ```rust
-/// use former::{ SetComponent, SetWithType };
+/// use former::{ ComponentSet, SetWithType };
 ///
 /// struct UserProfile
 /// {
 ///   username : String,
 /// }
 ///
-/// impl< IntoT : Into< String > > SetComponent< String, IntoT > for UserProfile
+/// impl< IntoT : Into< String > > ComponentSet< String, IntoT > for UserProfile
 //  where String: From< String >,
 /// {
 ///   fn set( &mut self, component : IntoT )
@@ -94,7 +94,7 @@ pub trait SetWithType
   fn set_with_type< T, IntoT >( &mut self, component : IntoT )
   where
     IntoT : Into< T >,
-    Self : SetComponent< T, IntoT >;
+    Self : ComponentSet< T, IntoT >;
 }
 
 impl< S > SetWithType for S
@@ -104,9 +104,9 @@ impl< S > SetWithType for S
   fn set_with_type< T, IntoT >( &mut self, component : IntoT )
   where
     IntoT : Into< T >,
-    Self : SetComponent< T, IntoT >,
+    Self : ComponentSet< T, IntoT >,
   {
-    SetComponent::< T, IntoT >::set( self, component );
+    ComponentSet::< T, IntoT >::set( self, component );
   }
 
 }

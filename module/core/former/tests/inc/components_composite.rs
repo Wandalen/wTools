@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::{ SetComponent, SetWithType };
+use former::{ ComponentSet, SetWithType };
 
 ///
 /// Options1
@@ -14,8 +14,8 @@ use former::{ SetComponent, SetWithType };
     Default,
     PartialEq,
     TheModule::ComponentFrom,
-    TheModule::SetComponent,
-    // TheModule::SetComponents,
+    TheModule::ComponentSet,
+    // TheModule::ComponentsSet,
     // TheModule::FromComponents,
   )
 ]
@@ -39,8 +39,8 @@ pub struct Options1
     Default,
     PartialEq,
     TheModule::ComponentFrom,
-    TheModule::SetComponent,
-    TheModule::SetComponents,
+    TheModule::ComponentSet,
+    TheModule::ComponentsSet,
     // TheModule::FromComponents,
   )
 ]

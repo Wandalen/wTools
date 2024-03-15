@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::{ SetComponent, SetWithType };
+use former::{ ComponentSet, SetWithType };
 
 ///
 /// Options1
@@ -42,7 +42,7 @@ impl From< &Options1 > for f32
   }
 }
 
-impl< IntoT > former::SetComponent< i32, IntoT > for Options1
+impl< IntoT > former::ComponentSet< i32, IntoT > for Options1
 where
   IntoT : Into< i32 >,
 {
@@ -53,7 +53,7 @@ where
   }
 }
 
-impl< IntoT > former::SetComponent< String, IntoT > for Options1
+impl< IntoT > former::ComponentSet< String, IntoT > for Options1
 where
   IntoT : Into< String >,
 {
@@ -64,7 +64,7 @@ where
   }
 }
 
-impl< IntoT > former::SetComponent< f32, IntoT > for Options1
+impl< IntoT > former::ComponentSet< f32, IntoT > for Options1
 where
   IntoT : Into< f32 >,
 {
@@ -104,7 +104,7 @@ impl From< &Options2 > for String
   }
 }
 
-impl< IntoT > former::SetComponent< i32, IntoT > for Options2
+impl< IntoT > former::ComponentSet< i32, IntoT > for Options2
 where
   IntoT : Into< i32 >,
 {
@@ -115,7 +115,7 @@ where
   }
 }
 
-impl< IntoT > former::SetComponent< String, IntoT > for Options2
+impl< IntoT > former::ComponentSet< String, IntoT > for Options2
 where
   IntoT : Into< String >,
 {
@@ -127,10 +127,10 @@ where
 }
 
 ///
-/// Options2SetComponents.
+/// Options2ComponentsSet.
 ///
 
-pub trait Options2SetComponents< IntoT >
+pub trait Options2ComponentsSet< IntoT >
 where
   IntoT : Into< i32 >,
   IntoT : Into< String >,
@@ -139,10 +139,10 @@ where
   fn components_set( &mut self, component : IntoT );
 }
 
-impl< T, IntoT > Options2SetComponents< IntoT > for T
+impl< T, IntoT > Options2ComponentsSet< IntoT > for T
 where
-  T : former::SetComponent< i32, IntoT >,
-  T : former::SetComponent< String, IntoT >,
+  T : former::ComponentSet< i32, IntoT >,
+  T : former::ComponentSet< String, IntoT >,
   IntoT : Into< i32 >,
   IntoT : Into< String >,
   IntoT : Clone,
@@ -150,8 +150,8 @@ where
   #[ inline( always ) ]
   fn components_set( &mut self, component : IntoT )
   {
-    former::SetComponent::< i32, _ >::set( self, component.clone() );
-    former::SetComponent::< String, _ >::set( self, component.clone() );
+    former::ComponentSet::< i32, _ >::set( self, component.clone() );
+    former::ComponentSet::< String, _ >::set( self, component.clone() );
   }
 }
 

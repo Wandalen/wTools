@@ -2,7 +2,7 @@ use super::*;
 use macro_tools::{ attr, diag, type_struct, Result };
 
 ///
-/// Generates implementations of the `SetComponent` trait for each field of a struct.
+/// Generates implementations of the `ComponentSet` trait for each field of a struct.
 ///
 pub fn set_component( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
@@ -23,17 +23,17 @@ pub fn set_component( input : proc_macro::TokenStream ) -> Result< proc_macro2::
 
   if has_debug
   {
-    diag::debug_report_print( "derive : SetComponent", original_input, &result );
+    diag::debug_report_print( "derive : ComponentSet", original_input, &result );
   }
 
   Ok( result )
 }
 
-/// Generates an implementation of the `SetComponent` trait for a specific field of a struct.
+/// Generates an implementation of the `ComponentSet` trait for a specific field of a struct.
 ///
 /// This function creates the trait implementation that enables setting a struct's field value
 /// with a type that can be converted into the field's type. It dynamically generates code
-/// during the macro execution to provide `SetComponent` trait implementations for each field
+/// during the macro execution to provide `ComponentSet` trait implementations for each field
 /// of the struct, facilitating an ergonomic API for modifying struct instances.
 ///
 /// # Parameters
@@ -44,7 +44,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> Result< proc_macro2::
 /// # Example of generated code
 ///
 /// ```rust, ignore
-/// impl< IntoT > former::SetComponent< i32, IntoT > for Options1
+/// impl< IntoT > former::ComponentSet< i32, IntoT > for Options1
 /// where
 ///   IntoT : Into< i32 >,
 /// {
@@ -64,7 +64,7 @@ fn for_each_field( field : &syn::Field, item_name : &syn::Ident ) -> Result< pro
   Ok( qt!
   {
     #[ allow( non_snake_case ) ]
-    impl< IntoT > SetComponent< #field_type, IntoT > for #item_name
+    impl< IntoT > ComponentSet< #field_type, IntoT > for #item_name
     where
       IntoT : Into< #field_type >,
     {

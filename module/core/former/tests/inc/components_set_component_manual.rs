@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::SetComponent;
+use former::ComponentSet;
 
 
 #[ derive( Default, PartialEq, Debug ) ]
@@ -11,7 +11,7 @@ struct Person
   name : String,
 }
 
-impl< IntoT > SetComponent< i32, IntoT > for Person
+impl< IntoT > ComponentSet< i32, IntoT > for Person
 where
   IntoT : Into< i32 >,
 {
@@ -21,7 +21,7 @@ where
   }
 }
 
-impl< IntoT > SetComponent< String, IntoT > for Person
+impl< IntoT > ComponentSet< String, IntoT > for Person
 where
   IntoT : Into< String >,
 {
