@@ -1,6 +1,4 @@
-const ASSETS_PATH : &str = "tests/assets";
-
-use crate::*;
+use super::*;
 use assert_fs::prelude::*;
 use TheModule::action;
 

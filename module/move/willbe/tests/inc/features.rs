@@ -1,7 +1,11 @@
+use super::*;
+
+use TheModule::*;
+use TheModule::features::features_powerset;
+
 use std::collections::HashMap;
 use cargo_metadata::Package;
 use serde::Deserialize;
-use willbe::features::features_powerset;
 
 /// Constructs a mock `Package` with specified features for testing.
 fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> Package
@@ -46,19 +50,19 @@ fn case_1()
   );
 
   let power = 1;
-  
+
   let exclude_features = vec![];
   let include_features = vec![];
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
-  ( 
-    &package, 
-    power, 
-    &exclude_features, 
-    &include_features, 
-    &enabled_features, 
-    false, 
-    false 
+  (
+    &package,
+    power,
+    &exclude_features,
+    &include_features,
+    &enabled_features,
+    false,
+    false
   );
   dbg!(&result);
 

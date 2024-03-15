@@ -1,10 +1,9 @@
+use super::*;
+use TheModule::process;
 use std::env::consts::EXE_EXTENSION;
 use std::ffi::OsString;
 use std::path::{ Path, PathBuf };
 use std::process::Command;
-use super::TheModule::*;
-
-const ASSETS_PATH : &str = "tests/assets";
 
 pub fn path_to_exe( name : &Path, temp_path : &Path ) -> PathBuf
 {
