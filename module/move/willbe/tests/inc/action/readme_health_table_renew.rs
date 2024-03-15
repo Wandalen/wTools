@@ -3,8 +3,6 @@ use assert_fs::prelude::*;
 use TheModule::action;
 use std::io::Read;
 
-const ASSETS_PATH : &str = "tests/assets";
-
 fn arrange( source : &str ) -> assert_fs::TempDir
 {
   let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );

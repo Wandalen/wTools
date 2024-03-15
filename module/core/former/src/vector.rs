@@ -8,14 +8,14 @@ use super::*;
 pub trait VectorLike< E >
 {
   /// Appends an element to the back of a container.
-  fn push( &mut self, e : E );
+  fn push( &mut self, element : E );
 }
 
 impl< E > VectorLike< E > for std::vec::Vec< E >
 {
-  fn push( &mut self, e : E )
+  fn push( &mut self, element : E )
   {
-    std::vec::Vec::push( self, e );
+    std::vec::Vec::push( self, element );
   }
 }
 
@@ -144,7 +144,7 @@ where
 
   /// Appends an element to the end of the container, expanding the internal collection.
   #[ inline( always ) ]
-  pub fn push< E2 >( mut self, e : E2 ) -> Self
+  pub fn push< E2 >( mut self, element : E2 ) -> Self
   where E2 : core::convert::Into< E >,
   {
     if self.container.is_none()
@@ -153,7 +153,7 @@ where
     }
     if let core::option::Option::Some( ref mut container ) = self.container
     {
-      container.push( e.into() );
+      container.push( element.into() );
     }
     self
   }

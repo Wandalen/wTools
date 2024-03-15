@@ -42,22 +42,33 @@ mod derive
 /// - `setter` : Enables or disables the generation of a setter method for a field.
 /// - `subformer` : Defines a sub-former for complex field types, allowing nested builders.
 /// - `alias` : Creates an alias for a field setter.
-/// - `doc` : Adds documentation to the generated setter methods.
+/// - `doc` : Adds documentation to the generated setter methods. (deprecated)
 ///
 /// # Input Example :
 ///
 /// ```rust
-/// #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-/// fn main()
-/// {
 ///   use former::Former;
 ///
 ///   #[ derive( Debug, PartialEq, Former ) ]
+///   #[ perform( fn greet_user() ) ]
 ///   pub struct UserProfile
 ///   {
+///     #[default(1)]
 ///     age : i32,
+///     
 ///     username : String,
+///     
+///     #[alias(bio)]
 ///     bio_optional : Option< String >, // Fields could be optional
+///   }
+/// 
+///   impl UserProfile
+///   {
+///     fn greet_user(self) -> Self
+///     {
+///       println!("Hello, {}", self.username);
+///       self
+///     }
 ///   }
 ///
 ///   let profile = UserProfile::former()
@@ -65,6 +76,7 @@ mod derive
 ///   .username( "JohnDoe".to_string() )
 ///   .bio_optional( "Software Developer".to_string() ) // Optionally provide a bio
 ///   .form();
+///   // .perform(); // same as `form()` but will execute method passed to perform attribute
 ///
 ///   dbg!( &profile );
 ///   // Expected output:
@@ -73,8 +85,6 @@ mod derive
 ///   //   username: "JohnDoe",
 ///   //   bio_optional: Some("Software Developer"),
 ///   // }
-///
-/// }
 /// ```
 ///
 /// # Generated Code Example :
@@ -93,6 +103,15 @@ mod derive
 ///     age : i32,
 ///     username : String,
 ///     bio_optional : Option< String >, // Fields could be optional
+///   }
+/// 
+///   impl UserProfile
+///   {
+///     fn greet_user(self) -> Self
+///     {
+///       println!("Hello, {}", self.username);
+///       self
+///     }
 ///   }
 ///
 ///   impl UserProfile
@@ -132,22 +151,38 @@ mod derive
 ///     #[ inline( always ) ]
 ///     pub fn form( mut self ) -> UserProfile
 ///     {
-///       let age = self.container.age.take().unwrap_or_else( ||
+///       let age = if self.container.age.is_some()
 ///       {
-///         default_for_field::< i32 >( "age" )
-///       } );
-///       let username = self.container.username.take().unwrap_or_else( ||
+///         self.container.age.take().unwrap()
+///       }
+///       else
 ///       {
-///         default_for_field::< String >( "username" )
-///       } );
-///       let bio_optional = self.container.bio_optional.take();
+///         (1).into()
+///       };
+///       let username = if self.container.username.is_some()
+///       {
+///         self.container.username.take().unwrap()
+///       }
+///       else
+///       {
+///         String::default()
+///       };
+///       let bio_optional = if self.container.bio_optional.is_some()
+///       {
+///         Some( self.container.bio_optional.take().unwrap() )
+///       }
+///       else
+///       {
+///         None
+///       };
 ///       UserProfile { age, username, bio_optional }
 ///     }
 ///
 ///     #[ inline( always ) ]
 ///     pub fn perform( self ) -> UserProfile
 ///     {
-///       self.form()
+///       let result = self.form();
+///       return result.greet_user();
 ///     }
 ///
 ///      #[ inline( always ) ]
@@ -202,11 +237,15 @@ mod derive
 ///       self.container.bio_optional = Some( src.into() );
 ///       self
 ///     }
-///   }
-///
-///   fn default_for_field<T: Default>(field_name: &str) -> T {
-///     eprintln!("Field '{}' isn't initialized, using default value.", field_name);
-///     T::default()
+/// 
+///     #[inline]
+///     pub fn bio< Src >( mut self, src : Src ) -> Self
+///     where
+///       Src : Into< String >,
+///     {
+///       self.container.bio_optional = Some( src.into() );
+///       self
+///     }
 ///   }
 ///
 ///   let profile = UserProfile::former()
@@ -384,8 +423,245 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
   }
 }
 
+///
 /// Derives the `SetComponents` trait for a struct, enabling `components_set` which set all fields at once.
-// xxx : extend documentation
+///
+/// This will work only if every field can be acquired from the passed value.
+/// In other words, the type passed as an argument to `components_set` must implement Into<T> for each field type.
+///
+/// # Attributes
+///
+/// - `debug` : An optional attribute to enable debugging of the trait derivation process.
+///
+/// # Conditions
+///
+/// - This macro is only enabled when the `derive_set_components` feature is active in your `Cargo.toml`.
+/// - The type must implement `SetComponent` (`derive( SetComponent )`)
+///
+/// # Limitations
+/// This trait cannot be derived, if the struct has fields with identical types
+///
+/// # Input Code Example
+///
+/// An example when we encapsulate parameters passed to a function in a struct.
+///
+/// ```rust
+/// use former::{ SetComponent, SetComponents };
+///
+/// #[ derive( Default, SetComponent, SetComponents ) ]
+/// struct BigOpts
+/// {
+///   cond : bool,
+///   int : i32,
+///   str : String,
+/// }
+///
+/// #[ derive( Default, SetComponent, SetComponents ) ]
+/// struct SmallerOpts
+/// {
+///   cond: bool,
+///   int: i32,
+/// }
+///
+/// impl From< &BigOpts > for bool
+/// {
+///   fn from( value : &BigOpts ) -> Self
+///   {
+///     value.cond
+///   }
+/// }
+///
+/// impl From< &BigOpts > for i32
+/// {
+///   fn from( value: &BigOpts ) -> Self
+///   {
+///     value.int
+///   }
+/// }
+///
+/// fn take_big_opts( options : &BigOpts ) -> &String
+/// {
+///   &options.str
+/// }
+///
+/// fn take_smaller_opts( options : &SmallerOpts ) -> bool
+/// {
+///   !options.cond
+/// }
+///
+/// let options1 = BigOpts
+/// {
+///   cond : true,
+///   int : -14,
+///   ..Default::default()
+/// };
+/// take_big_opts( &options1 );
+///
+/// let mut options2 = SmallerOpts::default();
+/// options2.components_set( &options1 );
+/// take_smaller_opts( &options2 );
+/// ```
+///
+/// Which expands approximately into :
+///
+/// ```rust
+/// use former::{ SetComponent, SetComponents };
+/// 
+/// #[derive(Default)]
+/// struct BigOpts
+/// {
+///   cond : bool,
+///   int : i32,
+///   str : String,
+/// }
+/// 
+/// impl< IntoT > SetComponent< bool, IntoT > for BigOpts
+/// where
+///   IntoT : Into< bool >,
+/// {
+///   fn set( &mut self, component : IntoT )
+///   {
+///     self.cond = component.into();
+///   }
+/// }
+/// 
+/// impl< IntoT > SetComponent< i32, IntoT > for BigOpts
+/// where
+///   IntoT : Into< i32 >,
+/// {
+///   fn set( &mut self, component : IntoT )
+///   {
+///     self.int = component.into();
+///   }
+/// }
+/// 
+/// impl< IntoT > SetComponent< String, IntoT > for BigOpts
+/// where
+///   IntoT : Into< String >,
+/// {
+///   fn set( &mut self, component : IntoT )
+///   {
+///     self.str = component.into();
+///   }
+/// }
+/// 
+/// pub trait BigOptsSetComponents< IntoT >
+/// where
+///   IntoT : Into< bool >,
+///   IntoT : Into< i32 >,
+///   IntoT : Into< String >,
+///   IntoT : Clone,
+/// {
+///   fn components_set( &mut self, component : IntoT );
+/// }
+/// 
+/// impl< T, IntoT > BigOptsSetComponents< IntoT > for T
+/// where
+///   T : former::SetComponent< bool, IntoT >,
+///   T : former::SetComponent< i32, IntoT >,
+///   T : former::SetComponent< String, IntoT >,
+///   IntoT : Into< bool >,
+///   IntoT : Into< i32 >,
+///   IntoT : Into< String >,
+///   IntoT : Clone,
+/// {
+///   fn components_set( &mut self, component : IntoT )
+///   {
+///     former::SetComponent::< bool, _ >::set( self, component.clone() );
+///     former::SetComponent::< i32, _ >::set( self, component.clone() );
+///     former::SetComponent::< String, _ >::set( self, component.clone() );
+///   }
+/// }
+///
+/// #[derive(Default)]
+/// struct SmallerOpts
+/// {
+///   cond : bool,
+///   int : i32,
+/// }
+///
+/// impl< IntoT > SetComponent< bool, IntoT > for SmallerOpts
+/// where
+///   IntoT : Into< bool >,
+/// {
+///   fn set( &mut self, component : IntoT )
+///   {
+///     self.cond = component.into();
+///   }
+/// }
+///
+/// impl< IntoT > SetComponent< i32, IntoT > for SmallerOpts
+/// where
+///     IntoT : Into< i32 >,
+/// {
+///   fn set( &mut self, component : IntoT )
+///   {
+///     self.int = component.into();
+///   }
+/// }
+///
+/// pub trait SmallerOptsSetComponents< IntoT >
+/// where
+///   IntoT : Into< bool >,
+///   IntoT : Into< i32 >,
+///   IntoT : Clone,
+/// {
+///   fn components_set( &mut self, component : IntoT );
+/// }
+///
+/// impl< T, IntoT > SmallerOptsSetComponents< IntoT > for T
+/// where
+///   T : former::SetComponent< bool, IntoT >,
+///   T : former::SetComponent< i32, IntoT >,
+///   IntoT : Into< bool >,
+///   IntoT : Into< i32 >,
+///   IntoT : Clone,
+/// {
+///   fn components_set( &mut self, component : IntoT )
+///   {
+///     former::SetComponent::< bool, _ >::set( self, component.clone() );
+///     former::SetComponent::< i32, _ >::set( self, component.clone() );
+///   }
+/// }
+///
+/// impl From< &BigOpts > for bool
+/// {
+///   fn from( value : &BigOpts ) -> Self
+///   {
+///     value.cond
+///   }
+/// }
+///
+/// impl From< &BigOpts > for i32
+/// {
+///   fn from( value : &BigOpts ) -> Self
+///   {
+///     value.int
+///   }
+/// }
+///
+/// fn take_big_opts( options : &BigOpts ) -> &String
+/// {
+///   &options.str
+/// }
+///
+/// fn take_smaller_opts( options : &SmallerOpts ) -> bool
+/// {
+///   !options.cond
+/// }
+///
+/// let options1 = BigOpts
+/// {
+///   cond : true,
+///   int : -14,
+///   ..Default::default()
+/// };
+/// take_big_opts( &options1 );
+/// let mut options2 = SmallerOpts::default();
+/// options2.components_set( &options1 );
+/// take_smaller_opts( &options2 );
+/// ```
+///
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_set_components" ) ]
 #[ proc_macro_derive( SetComponents, attributes( debug ) ) ]

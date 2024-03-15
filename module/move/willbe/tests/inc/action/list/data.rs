@@ -5,7 +5,6 @@ use TheModule::action::{ self, list::* };
 use willbe::CrateDir;
 use willbe::path::AbsolutePath;
 
-const ASSETS_PATH : &str = "tests/assets";
 
 //
 

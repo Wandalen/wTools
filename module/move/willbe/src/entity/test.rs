@@ -1,6 +1,8 @@
 mod private
 {
 
+  // qqq : for Petro : use https://github.com/console-rs/indicatif
+
   use crate::*;
   use std::
   {
@@ -43,6 +45,7 @@ mod private
     enable_features : BTreeSet< String >,
     /// Temp directory path
     temp_directory_path : Option< PathBuf >,
+    // qqq : for Petro : why dry not here?
   }
 
   impl SingleTestOptions
@@ -79,7 +82,8 @@ mod private
     P : AsRef< Path >
   {
     let ( program, args ) = ( "rustup", options.as_rustup_args() );
-    // qqq : for Petro : rustup???
+    // qqq : for Petro : rustup ???
+    // qqq : for Petro : RUST_BACKTRACE=1 ??
 
     if dry
     {
@@ -98,7 +102,7 @@ mod private
     {
       let options = process::RunOptions::former()
       .application( program )
-      .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
       .join_steam( true )
       .form();
@@ -275,7 +279,7 @@ mod private
       {
         writeln!( f, "  ❌  Not all passed {} / {}", self.succses_reports.len(),  self.failure_reports.len() + self.succses_reports.len() )?;
       }
-``
+
       Ok( () )
     }
   }
