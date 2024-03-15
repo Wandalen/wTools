@@ -56,31 +56,23 @@ mod private
   {
     let mut features_powerset = HashSet::new();
 
-    let filtered_features : Vec< _ > = package
+    let filtered_features : BTreeSet< _ > = package
     .features
     .keys()
     .filter( | f | !exclude_features.contains( f ) && ( include_features.contains( f ) || include_features.is_empty() ) )
     .cloned()
     .collect();
 
-    if with_all_features
-    {
-      features_powerset.insert( filtered_features.into_iter().collect() );
-      return features_powerset
-    }
-
-    if with_none_features
-    {
-      features_powerset.insert( [].into_iter().collect() );
-      return features_powerset
-    }
-
     for subset_size in 0..= std::cmp::min( filtered_features.len(), power )
     {
       for combination in filtered_features.iter().combinations( subset_size )
       {
-        let mut subset : BTreeSet< String > = combination.into_iter().cloned().collect();
-        subset.extend( enabled_features.iter().cloned() );
+        let subset : BTreeSet< String > = combination.into_iter().cloned().collect();
+        if subset.is_empty() || subset == filtered_features
+        {
+          continue
+        }
+        // subset.extend( enabled_features.iter().cloned() );
         features_powerset.insert( subset );
       }
     }

@@ -11,6 +11,8 @@ mod private
   use action::test::TestsCommandOptions;
   use former::Former;
   use channel::Channel;
+  use error_tools::for_app::bail;
+  use optimization::Optimization;
 
   #[ derive( Former ) ]
   struct TestsProperties

@@ -33,7 +33,7 @@ mod private
     optimization : Optimization,
     /// Determines whether to use default features in the test.
     /// Enabled by default.
-    #[ default( true ) ]
+    #[ default( false ) ]
     with_default_features : bool,
     /// Determines whether to use all available features in the test.
     /// Disabled by default.
@@ -53,7 +53,7 @@ mod private
       [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
       .into_iter()
       .chain( if self.optimization == Optimization::Release { Some( "--release".into() ) } else { None } )
-      .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
+      .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } ) 
       // qqq : for Petro : bad, --no-default-features is always enabled!
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
       // qqq : for Petro : bad, --all-features is always disabled!
@@ -334,6 +334,7 @@ mod private
                   .channel( channel )
                   .optimization( optimization )
                   .with_default_features( false )
+                  .with_all_features( false )
                   .enable_features( feature.clone() );
 
                   if let Some( p ) = args.temp_path.clone()
