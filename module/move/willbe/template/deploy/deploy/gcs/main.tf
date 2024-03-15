@@ -4,9 +4,11 @@ provider "google" {
 }
 
 
+# Storage bucket itself
 resource "google_storage_bucket" "tfstate-storage" {
   name                        = var.BUCKET_NAME
   location                    = var.REGION
+  # Delete files stored on the bucket when destroying the bucket
   force_destroy               = true
   uniform_bucket_level_access = true
   public_access_prevention    = "enforced"

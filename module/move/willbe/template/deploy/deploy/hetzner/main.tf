@@ -1,4 +1,5 @@
 terraform {
+  # Specifies terraform API provider to use for `hcloud`
   required_providers {
     hcloud = {
       source  = "hetznercloud/hcloud"
@@ -7,10 +8,13 @@ terraform {
   }
 }
 
+# Configures hcloud provider for deploy
 provider "hcloud" {
+  # Hetzner API token 
   token = var.HCLOUD_TOKEN
 }
 
+# Static IP for the instance
 resource "hcloud_primary_ip" "primary_ip" {
   name          = "uaconf-2024-ip"
   datacenter    = "hel1-dc2"
@@ -19,6 +23,7 @@ resource "hcloud_primary_ip" "primary_ip" {
   auto_delete   = false
 }
 
+# Hetzner instance itself
 resource "hcloud_server" "uaconf" {
   name        = "uaconf-2024"
   image       = "ubuntu-22.04"
@@ -31,6 +36,8 @@ resource "hcloud_server" "uaconf" {
     ipv6_enabled = false
   }
 
+  # Startup script for the instance
+  # Installs docker, gcloud CLI, downloads docker images and starts the container
   user_data = templatefile("${path.module}/templates/cloud-init.tpl", {
     location              = "${var.REGION}"
     project_id            = "${var.PROJECT_ID}"
