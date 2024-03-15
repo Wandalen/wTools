@@ -53,7 +53,7 @@ pub( crate ) mod private
       Ok( () )
     }
   }
-  
+
   /// Option for `run` function
   #[ derive( Debug, Former ) ]
   pub struct RunOptions
@@ -110,6 +110,7 @@ pub( crate ) mod private
     .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
     .path( current_path )
     .form();
+    // xxx : qqq : for Petro : implement run for former
     run( options )
   }
 
@@ -128,7 +129,7 @@ pub( crate ) mod private
   /// # Errors:
   /// Returns an error if the process fails to spawn, complete, or if output
   /// cannot be decoded as UTF-8.
-  pub fn run( options: RunOptions ) -> Result< CmdReport, (CmdReport, Error ) >
+  pub fn run( options : RunOptions ) -> Result< CmdReport, (CmdReport, Error ) >
   {
     let ( application, path ) : ( &Path, &Path ) = ( options.application.as_ref(), options.path.as_ref() );
     if options.join_steam
@@ -140,6 +141,7 @@ pub( crate ) mod private
       .unchecked()
       .run()
       .map_err( | e | ( Default::default(), e.into() ) )?;
+
       let report = CmdReport
       {
         command : format!( "{} {}", application.display(), options.args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
@@ -199,7 +201,4 @@ crate::mod_interface!
   protected use run_with_shell;
   protected use run;
   protected use RunOptions;
-  // aaa : for Petro : rid off process_run_with_param_and_joined_steams
-  // add functionality of process_run_with_param_and_joined_steams under option/argument into process::run
-  // aaa : add bool flag
 }

@@ -47,7 +47,11 @@ restriction = "warn"
 pedantic = "warn"
 # Denies undocumented unsafe blocks.
 undocumented_unsafe_blocks = "deny"
-
+# xxx : document
+single_call_fn = "allow"
+inline_always = "allow"
+module_name_repetitions = "allow"
+absolute_paths = "allow"
 
 ## top level
 

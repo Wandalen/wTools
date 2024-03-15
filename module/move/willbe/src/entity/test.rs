@@ -1,6 +1,8 @@
 mod private
 {
 
+  // qqq : for Petro : use https://github.com/console-rs/indicatif
+
   use crate::*;
   use std::
   {
@@ -22,12 +24,15 @@ mod private
   use channel::Channel;
   use optimization::Optimization;
 
-  /// Represents the arguments for the test.
+  /// Represents the options for the test.
   #[ derive( Debug, Former, Clone ) ]
   pub struct SingleTestOptions
   {
+    // qqq : for Petro : poor description
     /// Specifies the release channels for rust.
     channel : Channel,
+    /// Specifies the optimization for rust.
+    optimization : Optimization,
     /// Determines whether to use default features in the test.
     /// Enabled by default.
     #[ default( true ) ]
@@ -40,8 +45,7 @@ mod private
     enable_features : BTreeSet< String >,
     /// Temp directory path
     temp_directory_path : Option< PathBuf >,
-    /// Specifies the optimization for rust.
-    optimization : Optimization,
+    // qqq : for Petro : why dry not here?
   }
 
   impl SingleTestOptions
@@ -52,7 +56,9 @@ mod private
       .into_iter()
       .chain( if self.optimization == Optimization::Release { Some( "--release".into() ) } else { None } )
       .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
+      // qqq : for Petro : bad, --no-default-features is always enabled!
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
+      // qqq : for Petro : bad, --all-features is always disabled!
       .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.iter().join( "," ) ]) }.into_iter().flatten() )
       .chain( self.temp_directory_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
       .collect()
@@ -75,7 +81,9 @@ mod private
   where
     P : AsRef< Path >
   {
-    let ( program, options ) = ( "rustup", options.as_rustup_args() );
+    let ( program, args ) = ( "rustup", options.as_rustup_args() );
+    // qqq : for Petro : rustup ???
+    // qqq : for Petro : RUST_BACKTRACE=1 ??
 
     if dry
     {
@@ -83,7 +91,7 @@ mod private
       (
         CmdReport
         {
-          command : format!( "{program} {}", options.join( " " ) ),
+          command : format!( "{program} {}", args.join( " " ) ),
           path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
@@ -94,7 +102,7 @@ mod private
     {
       let options = process::RunOptions::former()
       .application( program )
-      .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
       .join_steam( true )
       .form();
@@ -145,12 +153,13 @@ mod private
     /// actually executing them.
     pub dry : bool,
     /// A string containing the name of the package being tested.
-    pub package_name : String,
+    pub package_name : String, /* qqq : for Petro : bad, reuse newtype */
     /// A `BTreeMap` where the keys are `channel::Channel` enums representing the channels
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
     ///   feature names and the values are `CmdReport` structs representing the test results for
     ///   the specific feature and channel.
     pub tests : BTreeMap< Optimization, BTreeMap< Channel, BTreeMap< String, Result< CmdReport, CmdReport > > > >,
+    // qqq : for Petro : rid off map of map of map, keep flat map
   }
 
   impl std::fmt::Display for TestReport
@@ -170,27 +179,28 @@ mod private
         return Ok( () );
       }
 
-      for ( optimization, channels ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) )
+      // qqq : for Petro : bad, DRY
+      for( optimization, channels ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) )
       {
-        for ( channel, features ) in channels.iter().sorted_by( | a, b | a.0.cmp( b.0 ) ) {
-          for ( feature, result ) in features
+        for( channel, features ) in channels.iter().sorted_by( | a, b | a.0.cmp( b.0 ) ) {
+          for( feature, result ) in features
           {
             let feature = if feature.is_empty() { "-" } else { feature };
             // if tests failed or if build failed
             match result
             {
               Ok(_) =>
-                {
-                  success += 1;
-                  writeln!( f, "  [ {} | {} | {} ]: ✅  successful", optimization, channel, feature )?;
-                }
+              {
+                success += 1;
+                writeln!( f, "  [ {} | {} | {} ]: ✅  successful", optimization, channel, feature )?;
+              }
               Err(result) =>
-                {
-                  let mut out = result.out.replace("\n", "\n      ");
-                  out.push_str("\n");
-                  failed += 1;
-                  write!( f, "  [ {} | {} | {} ]: ❌  failed\n  \n{out}", optimization, channel, feature )?;
-                }
+              {
+                let mut out = result.out.replace("\n", "\n      ");
+                out.push_str("\n");
+                failed += 1;
+                write!( f, "  [ {} | {} | {} ]: ❌  failed\n  \n{out}", optimization, channel, feature )?;
+              }
             }
           }
         }
@@ -274,6 +284,7 @@ mod private
     }
   }
 
+  // qqq : for Petro : ?
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
   pub fn run( args : &TestOptions, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
@@ -298,6 +309,7 @@ mod private
       | s |
       {
         let dir = package.manifest_path.parent().unwrap();
+        // qqq : for Petro : bad, DRY
         for optimization in args.optimizations.clone()
         {
           for channel in args.channels.clone()
@@ -314,15 +326,13 @@ mod private
                   .optimization( optimization )
                   .with_default_features( false )
                   .enable_features( feature.clone() );
-                  
+
                   if let Some( p ) = args.temp_path.clone()
                   {
                     let path = p.join( format!( "{}_{}_{}_{}", package.name.clone(), optimization, channel, feature.iter().join( "," ) ) );
                     std::fs::create_dir_all( &path ).unwrap();
                     args_t = args_t.temp_directory_path( path );
                   }
-                  // aaa : for Petro : bad. tooooo long line. cap on 100 ch
-                  // aaa : strip
                   let cmd_rep = _run(dir, args_t.form(), dry);
                   r
                   .lock()
@@ -333,9 +343,9 @@ mod private
                   .entry( channel )
                   .or_default()
                   .insert
-                  ( 
-                    feature.iter().join( "," ), 
-                    cmd_rep.map_err( | e | e.0 ) 
+                  (
+                    feature.iter().join( "," ),
+                    cmd_rep.map_err( | e | e.0 )
                   );
                 }
               );
@@ -401,6 +411,8 @@ mod private
     }
   }
 
+  // qqq : for Petro : should be entity `struct Plan {}`
+  // qqq : for Petro : no! Plan should inplement Display
   fn print_temp_report( package_name : &str, optimizations : &HashSet< Optimization >, channels : &HashSet< channel::Channel >, features : &HashSet< BTreeSet< String > > )
   {
     println!( "Package : {}\nThe tests will be executed using the following configurations :", package_name );
@@ -410,7 +422,7 @@ mod private
       {
         for feature in features
         {
-          let feature = if feature.is_empty() { "no-features".to_string() } else { feature.iter().join( "," ) };
+          let feature = if feature.is_empty() { "-".to_string() } else { feature.iter().join( "," ) };
           println!( "  [ optimization : {optimization} | channel : {channel} | feature : {feature} ]" );
         }
       }
