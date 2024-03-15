@@ -62,8 +62,9 @@ fn case_1()
     &include_features,
     &enabled_features,
     false,
-    false
-  );
+    false,
+    100,
+  ).unwrap();
   dbg!(&result);
 
   assert!( result.contains( &vec![ "f1".to_string(), "f2".to_string() ].into_iter().collect()) );
@@ -76,30 +77,31 @@ fn case_1()
 fn case_2()
 {
   let package = mock_package
-    (
-      vec!
-      [
-        ( "f1", vec![] ),
-        ( "f2", vec![] ),
-        ( "f3", vec![] ),
-      ]
-    );
+  (
+    vec!
+    [
+      ( "f1", vec![] ),
+      ( "f2", vec![] ),
+      ( "f3", vec![] ),
+    ]
+  );
 
   let power = 2;
   let exclude_features = vec![];
   let include_features = vec![];
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
-    (
-      &package,
-      power,
-      &exclude_features,
-      &include_features,
-      &enabled_features,
-      false,
-      false
-    );
-  dbg!(&result);
+  (
+    &package,
+    power,
+    &exclude_features,
+    &include_features,
+    &enabled_features,
+    false,
+    false,
+    100,
+  ).unwrap();
+  dbg!( &result );
 
   assert!( result.contains( &vec![ "f2".to_string() ].into_iter().collect()) );
   assert!( result.contains( &vec![ "f1".to_string(), "f2".to_string() ].into_iter().collect()) );
@@ -112,96 +114,106 @@ fn case_2()
 fn case_3()
 {
   let package = mock_package
-    (
-      vec!
-      [
-        ( "f1", vec![] ),
-        ( "f2", vec![] ),
-        ( "f3", vec![] ),
-      ]
-    );
+  (
+    vec!
+    [
+      ( "f1", vec![] ),
+      ( "f2", vec![] ),
+      ( "f3", vec![] ),
+    ]
+  );
 
   let power = 1;
   let exclude_features = vec![];
   let include_features = vec![];
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
-    (
-      &package,
-      power,
-      &exclude_features,
-      &include_features,
-      &enabled_features,
-      false,
-      true
-    );
-  dbg!(&result);
+  (
+    &package,
+    power,
+    &exclude_features,
+    &include_features,
+    &enabled_features,
+    false,
+    true,
+    100,
+  ).unwrap();
+  dbg!( &result );
 
   assert!( result.contains( &vec![].into_iter().collect()) );
-  assert_eq!( result.len(), 1 );
+  assert!( result.contains( &vec![ "f2".to_string() ].into_iter().collect()) );
+  assert!( result.contains( &vec![ "f1".to_string(), "f2".to_string() ].into_iter().collect()) );
+  assert!( result.contains( &vec![ "f2".to_string(), "f3".to_string() ].into_iter().collect()) );
+  assert_eq!( result.len(), 4 );
 }
 
 #[ test ]
 fn case_4()
 {
   let package = mock_package
-    (
-      vec!
-      [
-        ( "f1", vec![] ),
-        ( "f2", vec![] ),
-        ( "f3", vec![] ),
-      ]
-    );
+  (
+    vec!
+    [
+      ( "f1", vec![] ),
+      ( "f2", vec![] ),
+      ( "f3", vec![] ),
+    ]
+  );
 
   let power = 1;
   let exclude_features = vec![];
   let include_features = vec![];
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
-    (
-      &package,
-      power,
-      &exclude_features,
-      &include_features,
-      &enabled_features,
-      true,
-      false
-    );
-  dbg!(&result);
+  (
+    &package,
+    power,
+    &exclude_features,
+    &include_features,
+    &enabled_features,
+    true,
+    false,
+    100,
+  ).unwrap();
+  dbg!( &result );
 
   assert!( result.contains( &vec![ "f1".to_string(), "f2".to_string(), "f3".to_string(), ].into_iter().collect()) );
-  assert_eq!( result.len(), 1 );
+  assert!( result.contains( &vec![ "f2".to_string() ].into_iter().collect()) );
+  assert!( result.contains( &vec![ "f1".to_string(), "f2".to_string() ].into_iter().collect()) );
+  assert!( result.contains( &vec![ "f1".to_string(), "f2".to_string(), "f3".to_string() ].into_iter().collect()) );
+  assert!( result.contains( &vec![ "f2".to_string(), "f3".to_string() ].into_iter().collect()) );
+  assert_eq!( result.len(), 4 );
 }
 
 #[ test ]
 fn case_5()
 {
   let package = mock_package
-    (
-      vec!
-      [
-        ( "f1", vec![] ),
-        ( "f2", vec![] ),
-        ( "f3", vec![] ),
-      ]
-    );
+  (
+    vec!
+    [
+      ( "f1", vec![] ),
+      ( "f2", vec![] ),
+      ( "f3", vec![] ),
+    ]
+  );
 
   let power = 1;
   let exclude_features = vec![];
-  let include_features = vec![ "f1".to_string() ];
+  let include_features = vec![ "f1".to_string(), "f2".to_string() ];
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
-    (
-      &package,
-      power,
-      &exclude_features,
-      &include_features,
-      &enabled_features,
-      false,
-      false
-    );
-  dbg!(&result);
+  (
+    &package,
+    power,
+    &exclude_features,
+    &include_features,
+    &enabled_features,
+    false,
+    false,
+    100,
+  ).unwrap();
+  dbg!( &result );
 
   assert!( result.contains( &vec![ "f2".to_string() ].into_iter().collect()) );
   assert!( result.contains( &vec![ "f1".to_string(), "f2".to_string() ].into_iter().collect()) );
@@ -212,30 +224,31 @@ fn case_5()
 fn case_6()
 {
   let package = mock_package
-    (
-      vec!
-      [
-        ( "f1", vec![] ),
-        ( "f2", vec![] ),
-        ( "f3", vec![] ),
-      ]
-    );
+  (
+    vec!
+    [
+      ( "f1", vec![] ),
+      ( "f2", vec![] ),
+      ( "f3", vec![] ),
+    ]
+  );
 
   let power = 1;
   let exclude_features = vec![ "f3".to_string() ];
   let include_features = vec![];
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
-    (
-      &package,
-      power,
-      &exclude_features,
-      &include_features,
-      &enabled_features,
-      false,
-      false
-    );
-  dbg!(&result);
+  (
+    &package,
+    power,
+    &exclude_features,
+    &include_features,
+    &enabled_features,
+    false,
+    false,
+    100,
+  ).unwrap();
+  dbg!( &result );
 
   assert!( result.contains( &vec![ "f1".to_string(), "f2".to_string() ].into_iter().collect()) );
   assert!( result.contains( &vec![ "f2".to_string() ].into_iter().collect()) );

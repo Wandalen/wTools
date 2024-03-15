@@ -143,7 +143,7 @@ mod private
 
     /// todo
     pub with_none_features : bool,
-  
+
     /// todo
     pub variants_cap : u32,
   }
@@ -304,19 +304,18 @@ mod private
     let mut report = TestReport::default();
     report.dry = dry;
     report.package_name = package.name.clone();
-    let report = Arc::new( Mutex::new( report ) );
-
     let features_powerset = features::features_powerset
-    (
-      package,
-      args.power as usize,
-      &args.exclude_features,
-      &args.include_features,
-      &args.enabled_features,
-      args.with_all_features,
-      args.with_none_features,
-      args.variants_cap,
-    );
+      (
+        package,
+        args.power as usize,
+        &args.exclude_features,
+        &args.include_features,
+        &args.enabled_features,
+        args.with_all_features,
+        args.with_none_features,
+        args.variants_cap,
+      ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let report = Arc::new( Mutex::new( report ) );
 
     print_temp_report( &package.name, &args.optimizations, &args.channels, &features_powerset );
     rayon::scope

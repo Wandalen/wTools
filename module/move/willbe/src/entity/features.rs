@@ -3,6 +3,7 @@ mod private
   use crate::*;
   use std::collections::{ BTreeSet, HashSet };
   use cargo_metadata::Package;
+  use error_tools::for_app::{ bail, Result };
   use wtools::iter::Itertools;
 
   /// Generates a powerset of the features available in the given `package`,
@@ -53,18 +54,23 @@ mod private
     with_none_features : bool,
     variants_cap : u32,
   )
-    -> HashSet< BTreeSet< String > >
+    -> Result< HashSet< BTreeSet< String > > >
   {
     let mut features_powerset = HashSet::new();
 
     let filtered_features : BTreeSet< _ > = package
     .features
     .keys()
-    .filter( | f | !exclude_features.contains( f ) && ( include_features.contains( f ) || include_features.is_empty() ) )
+    .filter( | f | !exclude_features.contains( f ) && (include_features.contains(f) || include_features.is_empty()) )
     .cloned()
-    .collect();// N
+    .collect();
+    
+    if esimate_with( filtered_features.len(), power, with_all_features, with_none_features, enabled_features, package.features.len() ) > variants_cap as usize
+    {
+      bail!( "Feature powerset longer then cap." )
+    }
 
-    for subset_size in 0..= std::cmp::min( filtered_features.len(), power/* P */)
+    for subset_size in 0..= std::cmp::min( filtered_features.len(), power )
     {
       for combination in filtered_features.iter().combinations( subset_size )
       {
@@ -89,7 +95,7 @@ mod private
       features_powerset.insert( enabled_features.iter().cloned().collect() );
     }
 
-    features_powerset.into_iter().take( variants_cap as usize ).collect()
+    Ok( features_powerset )
   }
 
 
