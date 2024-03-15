@@ -24,12 +24,15 @@ mod private
   use channel::Channel;
   use optimization::Optimization;
   
-  /// todo
+  /// Represents a variant for testing purposes.
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Former ) ]
   pub struct TestVariant
   {
+    /// Represents the channel for the test variant.
     channel : Channel,
+    /// Represents the optimization setting for the test variant.
     optimization : Optimization,
+    /// Contains additional features or characteristics of the test variant.
     features : String,
   }
 
