@@ -293,6 +293,10 @@ mod private
     #[default]
     Rewrite,
     /// Attempts to extend existing toml files.
+    /// 
+    /// If files exists it searches for the same top-level items (tables, values)
+    /// and replaces them with template defined ones.
+    /// If file does not exist it creates a new one with contents provided by the template. 
     TomlSupplement
   }
 
