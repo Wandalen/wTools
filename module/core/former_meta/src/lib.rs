@@ -104,6 +104,15 @@ mod derive
 ///     username : String,
 ///     bio_optional : Option< String >, // Fields could be optional
 ///   }
+/// 
+///   impl UserProfile
+///   {
+///     fn greet_user(self) -> Self
+///     {
+///       println!("Hello, {}", self.username);
+///       self
+///     }
+///   }
 ///
 ///   impl UserProfile
 ///   {
@@ -498,6 +507,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// ```rust
 /// use former::{ SetComponent, SetComponents };
 /// 
+/// #[derive(Default)]
 /// struct BigOpts
 /// {
 ///   cond : bool,
@@ -563,6 +573,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   }
 /// }
 ///
+/// #[derive(Default)]
 /// struct SmallerOpts
 /// {
 ///   cond : bool,
