@@ -1,23 +1,32 @@
+//! Frames commands actions.
+
 use crate::*;
+use super::*;
 use executor::FeedManager;
-use super::Report;
-use storage::{ FeedStorage, FeedStore };
+use storage::
+{
+  FeedStorage,
+  config::ConfigStore,
+  frame::{ FrameStore, RowValue }
+};
 use gluesql::prelude::{ Payload, Value, SledStorage };
-use feed_config::read_feed_config;
+use feed_config;
 use error_tools::{ err, Result };
 
 /// List all frames.
-pub async fn list_frames(
+pub async fn list_frames
+(
   storage : FeedStorage< SledStorage >,
   _args : &wca::Args,
 ) -> Result< impl Report >
 {
     let mut manager = FeedManager::new( storage );
-    manager.storage.get_all_frames().await
+    manager.storage.list_frames().await
 }
 
 /// Update all frames from config files saved in storage.
-pub async fn download_frames(
+pub async fn download_frames
+(
   storage : FeedStorage< SledStorage >,
   _args : &wca::Args,
 ) -> Result< impl Report >
@@ -44,7 +53,7 @@ pub async fn download_frames(
   let mut subscriptions = Vec::new();
   for config in &configs
   {
-    let sub_vec = read_feed_config( config.to_owned() )?;
+    let sub_vec = feed_config::read( config.to_owned() )?;
     subscriptions.extend( sub_vec );
   }
 
@@ -67,22 +76,28 @@ const INDENT_CELL : &'static str = "  ";
 #[ derive( Debug ) ]
 pub struct FramesReport
 {
-  pub feed_title : String,
+  /// Link of the feed which contains the frames.
+  pub feed_link : String,
+  /// Number of frames from the feed that were updated.
   pub updated_frames : usize,
+  /// Number of new frames from the feed that were downloaded.
   pub new_frames : usize,
+  /// Selected frames for commands that list frames.
   pub selected_frames : SelectedEntries,
+  /// Number of frames that were in storage before update.
   pub existing_frames : usize,
+  /// True if feed is downloaded for the first time.
   pub is_new_feed : bool,
 }
 
 impl FramesReport
 {
   /// Create new report.
-  pub fn new( feed_title : String ) -> Self
+  pub fn new( feed_link : String ) -> Self
   {
     Self
     {
-      feed_title,
+      feed_link,
       updated_frames : 0,
       new_frames : 0,
       selected_frames : SelectedEntries::new(),
@@ -96,8 +111,8 @@ impl std::fmt::Display for FramesReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    let initial = vec![ vec![ format!( "Feed title: {}", self.feed_title ) ] ];
-    let table = table::table_with_headers( initial[ 0 ].clone(), Vec::new() );
+    let initial = vec![ vec![ format!( "Feed title: {}", self.feed_link ) ] ];
+    let table = table_display::table_with_headers( initial[ 0 ].clone(), Vec::new() );
     if let Some( table ) = table
     {
       write!( f, "{}", table )?;
@@ -115,7 +130,7 @@ impl std::fmt::Display for FramesReport
       rows.push( vec![ EMPTY_CELL.to_owned(), format!( "Selected frames:" ) ] );
     }
 
-    let table = table::plain_table( rows );
+    let table = table_display::plain_table( rows );
     if let Some( table ) = table
     {
       write!( f, "{}", table )?;
@@ -135,7 +150,7 @@ impl std::fmt::Display for FramesReport
         rows.push( inner_row );
       }
       
-      let table = table::plain_table( rows );
+      let table = table_display::plain_table( rows );
       if let Some( table ) = table
       {
         writeln!( f, "{}", table )?;
@@ -160,6 +175,7 @@ pub struct SelectedEntries
 
 impl SelectedEntries
 {
+  /// Create new empty selected entries struct.
   pub fn new() -> Self
   {
     SelectedEntries { selected_columns : Vec::new(), selected_rows : Vec::new() }
@@ -176,7 +192,7 @@ impl std::fmt::Display for SelectedEntries
       {
         for i in 0..self.selected_columns.len()
         {
-          write!( f, "{} : {}, ", self.selected_columns[ i ], storage::model::RowValue( &row[ i ] ) )?;
+          write!( f, "{} : {}, ", self.selected_columns[ i ], RowValue( &row[ i ] ) )?;
         }
         writeln!( f, "" )?;
       }
@@ -186,6 +202,7 @@ impl std::fmt::Display for SelectedEntries
   }
 }
 
+/// Report for downloading and updating frames.
 #[ derive( Debug ) ]
 pub struct UpdateReport( pub Vec< FramesReport > );
 

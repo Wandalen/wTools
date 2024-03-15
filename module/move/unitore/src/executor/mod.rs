@@ -1,24 +1,25 @@
 //! Execute plan.
 
+use self::storage::frame::FrameStore;
+
 use super::*;
 use feed_config::SubscriptionConfig;
 use gluesql::sled_storage::{ sled::Config, SledStorage };
 use retriever::{ FeedClient, FeedFetch };
-use storage::{ FeedStorage, FeedStore };
+use storage::{ FeedStorage, FeedStore, config::ConfigStore, tables::TableStore };
 use wca::{ Args, Type };
-use executor::endpoints::Report;
+use executor::actions::Report;
 use error_tools::Result;
 // use wca::prelude::*;
 
-pub mod endpoints;
-use endpoints::{
-  list_fields::list_fields,
+pub mod actions;
+use actions::
+{
   frames::{ list_frames, download_frames },
   feeds::list_feeds,
   config::{ add_config, delete_config, list_configs },
   query::execute_query,
-  table::{ list_columns, list_tables },
-  list_fields::FieldsReport,
+  table::{ list_columns, list_tables, FieldsReport },
 };
 
 use std::future::Future;
@@ -27,7 +28,7 @@ fn endpoint< 'a, F, Fut, R >( async_endpoint : F, args : &'a Args ) -> Result< R
 where
   F : FnOnce( FeedStorage< SledStorage >, &'a Args ) -> Fut,
   Fut : Future< Output = Result< R > >,
-  R : endpoints::Report,
+  R : actions::Report,
 {
   let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
   .unwrap_or( String::from( "./_data" ) )
@@ -59,21 +60,6 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .routine( | args |
     {
       match endpoint( download_frames, &args )
-      {
-        Ok( report ) => report.report(),
-        Err( err ) => println!( "{:?}", err ),
-      }
-    })
-    .end()
-    .command( "fields.list" )
-    .long_hint( concat!
-    (
-      "List all fields in frame table with explanation and type.\n",
-      "    Example: .fields.list",
-    ))
-    .routine( | args |
-    {
-      match endpoint( list_fields, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -236,7 +222,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 }
 
 /// Manages feed subsriptions and updates.
-pub struct FeedManager< C, S : FeedStore + Send >
+pub struct FeedManager< C, S : FeedStore + ConfigStore + FrameStore + Send >
 {
   /// Subscription configuration with link and update period.
   pub config : Vec< SubscriptionConfig >,
@@ -246,7 +232,7 @@ pub struct FeedManager< C, S : FeedStore + Send >
   pub client : C,
 }
 
-impl< S : FeedStore + Send > FeedManager< FeedClient, S >
+impl< S : FeedStore + ConfigStore + FrameStore + TableStore + Send > FeedManager< FeedClient, S >
 {
   /// Create new instance of FeedManager.
   pub fn new( storage : S ) -> FeedManager< FeedClient, S >
@@ -260,7 +246,7 @@ impl< S : FeedStore + Send > FeedManager< FeedClient, S >
   }
 }
 
-impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
+impl< C : FeedFetch, S : FeedStore + ConfigStore + FrameStore + TableStore + Send > FeedManager< C, S >
 {
   /// Set configurations for subscriptions.
   pub fn set_config( &mut self, configs : Vec< SubscriptionConfig > )
@@ -275,27 +261,21 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
   }
 
   /// Update modified frames and save new items.
-  pub async fn update_feed( &mut self, subscriptions : Vec< SubscriptionConfig > ) -> Result< impl endpoints::Report >
+  pub async fn update_feed( &mut self, subscriptions : Vec< SubscriptionConfig > ) -> Result< impl actions::Report >
   {
     let mut feeds = Vec::new();
     for i in  0..subscriptions.len()
     {
       let feed = self.client.fetch( subscriptions[ i ].link.clone() ).await?;
-      feeds.push( ( feed, subscriptions[ i ].update_period.clone() ) );
+      feeds.push( ( feed, subscriptions[ i ].update_period.clone(), subscriptions[ i ].link.clone() ) );
     }
     self.storage.process_feeds( feeds ).await
   }
 
   /// Execute custom query, print result.
-  pub async fn execute_custom_query( &mut self, query : String ) -> Result< impl endpoints::Report >
+  pub async fn execute_custom_query( &mut self, query : String ) -> Result< impl actions::Report >
   {
     self.storage.execute_query( query ).await
-  }
-
-  /// Get columns names of Frames table.
-  pub fn get_columns( &mut self ) -> Result< FieldsReport >
-  {
-    Ok( self.storage.columns_titles() )
   }
 
 }
