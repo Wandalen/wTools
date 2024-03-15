@@ -34,19 +34,23 @@ mod private
       self.values = values
     }
     
-    fn parameter_storage( &self ) -> &Path {
+    fn parameter_storage( &self ) -> &Path
+    {
       "./.workspace_template.toml".as_ref()
     }
     
-    fn template_name( &self ) -> &'static str {
+    fn template_name( &self ) -> &'static str
+    {
       "workspace"
     }
     
-    fn get_values( &self ) -> &TemplateValues {
+    fn get_values( &self ) -> &TemplateValues
+    {
       &self.values
     }
     
-    fn get_values_mut( &mut self ) -> &mut TemplateValues {
+    fn get_values_mut( &mut self ) -> &mut TemplateValues
+    {
       &mut self.values
     }
 
