@@ -245,7 +245,7 @@ default-features = false
 ## proc macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.16.0"
+version = "~0.17.0"
 path = "module/core/macro_tools"
 default-features = false
 
