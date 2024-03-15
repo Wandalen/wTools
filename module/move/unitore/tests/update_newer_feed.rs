@@ -2,19 +2,25 @@ use async_trait::async_trait;
 use feed_rs::parser as feed_parser;
 use gluesql::
 {
-  core::{ chrono::{  DateTime, Utc} , data::Value },
+  core::
+  { 
+    chrono::{ DateTime, Utc },
+    data::Value
+  },
   sled_storage::sled::Config,
 };
-use unitore::{
+use unitore::
+{
   executor::FeedManager,
   feed_config::SubscriptionConfig,
   retriever::FeedFetch,
-  storage::{ FeedStorage, FeedStore },
-  storage::frame::FrameStore,
+  storage::{ FeedStorage, frame::FrameStore },
 };
 use wca::wtools::Itertools;
 use error_tools::Result;
 
+/// Feed client for testing.
+#[derive(Debug)]
 pub struct TestClient ( String );
 
 #[ async_trait ]
@@ -87,6 +93,6 @@ async fn test_update() -> Result< () >
   println!( "{:?}", entries );
   let updated = entries.iter().find( | ( id, _published ) | id == "https://www.nasa.gov/?post_type=image-article&p=631537" );
   assert!( updated.is_some() );
-  let updated = updated.unwrap();
+  let _updated = updated.unwrap();
   Ok( () )
 }

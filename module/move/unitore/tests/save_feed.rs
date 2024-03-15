@@ -9,6 +9,8 @@ use unitore::
 };
 use error_tools::Result;
 
+/// Feed client for testing.
+#[derive(Debug)]
 pub struct TestClient;
 
 #[ async_trait ]

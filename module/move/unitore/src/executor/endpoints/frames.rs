@@ -3,15 +3,19 @@
 use crate::*;
 use super::*;
 use executor::FeedManager;
-use crate::storage::frame::FrameStore;
-use storage::{ FeedStorage, config::ConfigStore };
-use crate::storage::frame::RowValue;
+use storage::
+{
+  FeedStorage,
+  config::ConfigStore,
+  frame::{ FrameStore, RowValue }
+};
 use gluesql::prelude::{ Payload, Value, SledStorage };
 use feed_config;
 use error_tools::{ err, Result };
 
 /// List all frames.
-pub async fn list_frames(
+pub async fn list_frames
+(
   storage : FeedStorage< SledStorage >,
   _args : &wca::Args,
 ) -> Result< impl Report >
@@ -21,7 +25,8 @@ pub async fn list_frames(
 }
 
 /// Update all frames from config files saved in storage.
-pub async fn download_frames(
+pub async fn download_frames
+(
   storage : FeedStorage< SledStorage >,
   _args : &wca::Args,
 ) -> Result< impl Report >

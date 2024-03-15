@@ -260,6 +260,7 @@ impl FeedStore for FeedStorage< SledStorage >
             .clone()
             .into_iter()
             .zip( std::iter::repeat( feed.0.id.clone() ).take( feed.0.entries.len() ) )
+            .map( | entry | entry.into() )
           );
           reports.push( frames_report );
           continue;
@@ -312,14 +313,14 @@ impl FeedStore for FeedStorage< SledStorage >
               if date.and_utc() != entry.published.unwrap()
               {
                 frames_report.updated_frames += 1;
-                modified_entries.push( ( entry.clone(), feed.0.id.clone() ) );
+                modified_entries.push( ( entry.clone(), feed.0.id.clone() ).into() );
               }
             }
           }
           else
           {
             frames_report.new_frames += 1;
-            new_entries.push( ( entry.clone(), feed.0.id.clone() ) );
+            new_entries.push( ( entry.clone(), feed.0.id.clone() ).into() );
           }
         }
       }
