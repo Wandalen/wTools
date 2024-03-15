@@ -43,6 +43,14 @@ mod private
     {
       &mut self.values
     }
+    
+    fn parameter_storage( &self ) -> &Path {
+      "./.deploy_template.toml".as_ref()
+    }
+    
+    fn template_name( &self ) -> &'static str {
+      "deploy"
+    }
   }
 
   impl Default for DeployTemplate
@@ -77,7 +85,8 @@ mod private
     {
       let formed = TemplateFilesBuilder::former()
       // root
-      .file().data( include_str!( "../../template/deploy/Makefile" ) ).path( "./Makefile" ).is_template( true ).end()
+      .file().data( include_str!( "../../template/deploy/.deploy_template.toml.hbs" ) ).path( "./.deploy_template.toml" ).mode( WriteMode::TomlSupplement ).is_template( true ).end()
+      .file().data( include_str!( "../../template/deploy/Makefile.hbs" ) ).path( "./Makefile" ).is_template( true ).end()
       // /key
       .file().data( include_str!( "../../template/deploy/key/pack.sh" ) ).path( "./key/pack.sh" ).end()
       .file().data( include_str!( "../../template/deploy/key/Readme.md" ) ).path( "./key/Readme.md" ).end()
@@ -151,7 +160,7 @@ mod private
     mut template : DeployTemplate
   ) -> Result< () >
   {
-    if let None = template.load_existing_params()
+    if let None = template.load_existing_params( path )
     {
       let current_dir = get_dir_name()?;
       let artifact_repo_name = dir_name_to_formatted( &current_dir, "-" );
@@ -160,7 +169,6 @@ mod private
       template.values.insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );
       template.values.insert_if_empty( "gcp_region", wca::Value::String( "europe-central2".into() ) );
     }
-    template.save_param_values()?;
     template.create_all( path )?;
     Ok( () )
   }

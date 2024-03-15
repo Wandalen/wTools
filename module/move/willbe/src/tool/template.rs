@@ -27,15 +27,22 @@ mod private
     /// Sets values for provided parameters.
     fn set_values( &mut self, values : TemplateValues );
 
+    /// Relative path for parameter values storage.
+    fn parameter_storage( &self ) -> &Path;
+
+    /// 
+    fn template_name( &self ) -> &'static str;
+
     /// Loads provided parameters from previous run.
-    fn load_existing_params( &mut self ) -> Option< () >
+    fn load_existing_params( &mut self, path : &Path ) -> Option< () >
     {
-      let data = fs::read_to_string( ".template_params.toml" ).ok()?;
+      let data = fs::read_to_string( path.join( self.parameter_storage() ) ).ok()?;
       let document = data.parse::< toml_edit::Document >().ok()?;
       let parameters = self.parameters().descriptors.iter().map( | d | &d.parameter ).cloned().collect::< Vec< _ > >();
+      let template_table = document.get( self.template_name() )?;
       for parameter in parameters
       {
-        let value = document.get( &parameter )
+        let value = template_table.get( &parameter )
         .and_then
         (
           | item |
@@ -58,28 +65,6 @@ mod private
 
     /// Get all template values as a mutable reference.
     fn get_values_mut( &mut self ) -> &mut TemplateValues;
-
-    /// Saves parameter values after current run.
-    fn save_param_values( &self ) -> Result< () >
-    {
-      let data = fs::read_to_string( ".template_params.toml" ).unwrap_or_default();
-      let mut document = data.parse::< toml_edit::Document >()?;
-      for ( parameter, value ) in self.get_values().to_serializable()
-      {
-        let value = toml_edit::Item::Value( toml_edit::Value::String( toml_edit::Formatted::new( value ) ) );
-        match document.get_mut( &parameter )
-        {
-          Some( item ) =>
-          {
-            *item = value;
-          },
-          None => document[ &parameter ] = value,
-        }
-      }
-      fs::write( ".template_params.toml", document.to_string() )?;
-
-      Ok( () )
-    }
 
     /// Fetches mandatory parameters that are not set yet.
     fn get_missing_mandatory( &self ) -> Vec< &str >
@@ -239,19 +224,46 @@ mod private
     path : PathBuf,
     data : &'static str,
     is_template : bool,
+    mode : WriteMode
   }
 
   impl TemplateFileDescriptor
   {
-    fn contents( &self, values : &TemplateValues ) -> Result< String >
+    fn contents< FS : FileSystemPort >( &self, fs : &FS, path : &PathBuf, values : &TemplateValues ) -> Result< String >
     {
-      if self.is_template
+      let contents = if self.is_template
       {
-        self.build_template( values )
+        self.build_template( values )?
       }
       else
       {
-        Ok( self.data.to_owned() )
+        self.data.to_owned()
+      };
+      match self.mode
+      {
+        WriteMode::Rewrite => Ok( contents ),
+        WriteMode::TomlSupplement =>
+        {
+          let instruction = FileReadInstruction { path : path.into() };
+          if let Some(existing_contents) = fs.read( &instruction ).ok()
+          {
+            let document = contents.parse::< toml_edit::Document >().context( "Failed to parse template toml file" )?;
+            let template_items = document.iter();
+            let existing_toml_contents = String::from_utf8( existing_contents ).context( "Failed to read existing toml file as a UTF-8 String" )?;
+            let mut existing_document = existing_toml_contents.parse::< toml_edit::Document >().context( "Failed to parse existing toml file" )?;
+            for ( template_key, template_item ) in template_items
+            {
+              match existing_document.get_mut( &template_key )
+              {
+                Some( item ) => *item = template_item.to_owned(),
+                None => existing_document[ &template_key ] = template_item.to_owned(),
+              }
+            }
+            return Ok( existing_document.to_string() );
+          }
+
+          Ok( contents )
+        }
       }
     }
 
@@ -263,13 +275,23 @@ mod private
       handlebars.render( "templated_file", &values.to_serializable() ).context( "Failed creating a templated file" )
     }
 
-    fn create_file< W : FileSystemWriter >( &self, writer : &W, path : &Path, values : &TemplateValues ) -> Result< () >
+    fn create_file< FS : FileSystemPort >( &self, fs : &FS, path : &Path, values : &TemplateValues ) -> Result< () >
     {
-      let data = self.contents( values )?.as_bytes().to_vec();
-      let instruction = FileWriteInstruction { path : path.join( &self.path ), data };
-      writer.write( &instruction )?;
+      let path = path.join( &self.path );
+      let data = self.contents( fs, &path, values )?.as_bytes().to_vec();
+      let instruction = FileWriteInstruction { path, data };
+      fs.write( &instruction )?;
       Ok( () )
     }
+  }
+
+  /// Determines how the template file should be written. 
+  #[ derive( Debug, Default ) ]
+  pub enum WriteMode
+  {
+    #[default]
+    Rewrite,
+    TomlSupplement
   }
 
   /// Helper builder for full template file list.
@@ -313,15 +335,25 @@ mod private
     data : Vec<u8>,
   }
 
+  /// Instruction for reading from a file.
+  #[ derive( Debug ) ]
+  pub struct FileReadInstruction
+  {
+    path : PathBuf,
+  }
+
   /// Describes how template file creation should be handled.
-  pub trait FileSystemWriter
+  pub trait FileSystemPort
   {
     /// Writing to file implementation.
     fn write( &self, instruction : &FileWriteInstruction ) -> Result< () >;
+
+    /// Reading from a file implementation.
+    fn read( &self, instruction : &FileReadInstruction ) -> Result< Vec< u8 > >;
   }
 
   struct FileSystem;
-  impl FileSystemWriter for FileSystem
+  impl FileSystemPort for FileSystem
   {
     fn write( &self, instruction : &FileWriteInstruction ) -> Result< () >
     {
@@ -333,6 +365,13 @@ mod private
       }
       fs::write( path, data ).context( "Failed creating and writing to file" )
     }
+    
+    fn read( &self, instruction : &FileReadInstruction ) -> Result< Vec< u8 > >
+    {
+      let FileReadInstruction { path } = instruction;
+      fs::read( path ).context( "Failed reading a file" )
+    }
+    
   }
 }
 
@@ -347,6 +386,8 @@ crate::mod_interface!
   orphan use TemplateParameterDescriptor;
   orphan use TemplateValues;
   orphan use TemplateFilesBuilder;
-  orphan use FileSystemWriter;
+  orphan use FileSystemPort;
   orphan use FileWriteInstruction;
+  orphan use FileReadInstruction;
+  orphan use WriteMode;
 }

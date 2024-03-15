@@ -13,8 +13,9 @@ mod private
 
   pub fn deploy_renew( properties : Props ) -> Result< () >
   {
+    let current_dir = std::env::current_dir()?;
     let mut template = DeployTemplate::default();
-    _ = template.load_existing_params();
+    _ = template.load_existing_params( &current_dir );
     let parameters = template.parameters();
     let mut values = parameters.values_from_props( &properties );
     for mandatory in template.get_missing_mandatory()
@@ -22,7 +23,7 @@ mod private
       values.interactive_if_empty( mandatory );
     }
     template.set_values( values );
-    action::deploy_renew( &std::env::current_dir()?, template ).context( "Fail to create deploy template" )
+    action::deploy_renew( &current_dir, template ).context( "Fail to create deploy template" )
   }
 
 }
