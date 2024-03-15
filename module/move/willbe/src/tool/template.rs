@@ -242,7 +242,7 @@ mod private
       match self.mode
       {
         WriteMode::Rewrite => Ok( contents ),
-        WriteMode::TomlSupplement =>
+        WriteMode::TomlExtend =>
         {
           let instruction = FileReadInstruction { path : path.into() };
           if let Some(existing_contents) = fs.read( &instruction ).ok()
@@ -297,7 +297,7 @@ mod private
     /// If files exists it searches for the same top-level items (tables, values)
     /// and replaces them with template defined ones.
     /// If file does not exist it creates a new one with contents provided by the template. 
-    TomlSupplement
+    TomlExtend
   }
 
   /// Helper builder for full template file list.

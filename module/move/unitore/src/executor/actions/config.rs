@@ -1,11 +1,11 @@
+//! Endpoint and report for commands for config files.
+
 use crate::*;
+use super::*;
 use error_tools::{ err, for_app::Context, BasicError, Result };
 use executor::FeedManager;
-use super::Report;
-use storage::{ FeedStorage, FeedStore };
+use storage::{ FeedStorage, FeedStore, config::{ ConfigStore, Config } };
 use gluesql::{ prelude::Payload, sled_storage::SledStorage };
-
-use feed_config::read_feed_config;
 
 /// Add configuration file with subscriptions to storage.
 pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
@@ -15,16 +15,18 @@ pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args
   .ok_or_else::< BasicError, _ >( || err!( "Cannot get path argument for command .config.add" ) )?
   .into()
   ;
+  let path = path.canonicalize().context( format!( "Invalid path for config file {:?}", path ) )?;
+  let config = Config::new( path.to_string_lossy().to_string() );
 
   let mut manager = FeedManager::new( storage );
-  let path = path.canonicalize().context( format!( "Invalid path for config file {:?}", path ) )?;
+
   let config_report = manager.storage
-  .add_config( path.to_string_lossy().to_string() )
+  .add_config( &config )
   .await
   .context( "Added 0 config files.\n Failed to add config file to storage." )?
   ;
 
-  let feeds = read_feed_config( path.to_string_lossy().to_string() )?
+  let feeds = feed_config::read( config.path() )?
   .into_iter()
   .map( | feed | crate::storage::model::FeedRow::new( feed.link, feed.update_period ) )
   .collect::< Vec< _ > >()
@@ -45,10 +47,12 @@ pub async fn delete_config( storage : FeedStorage< SledStorage >, args : &wca::A
   ;
 
   let path = path.canonicalize().context( format!( "Invalid path for config file {:?}", path ) )?;
+  let config = Config::new( path.to_string_lossy().to_string() );
+
   let mut manager = FeedManager::new( storage );
   Ok( ConfigReport::new( 
     manager.storage
-    .delete_config( path.to_string_lossy().to_string() )
+    .delete_config( &config )
     .await
     .context( "Failed to remove config from storage." )?
   ) )
@@ -71,6 +75,7 @@ pub struct ConfigReport
 
 impl ConfigReport
 {
+  /// Create new report for config report with provided payload.
   pub fn new( payload : Payload ) -> Self
   {
     Self { payload, new_feeds : None }
@@ -113,7 +118,7 @@ impl std::fmt::Display for ConfigReport
           rows.push( vec![ EMPTY_CELL.to_owned(), String::from( row[ 0 ].clone() ) ] );
         }
 
-        let table = table::plain_table( rows );
+        let table = table_display::plain_table( rows );
         if let Some( table ) = table
         {
           write!( f, "{}", table )?;

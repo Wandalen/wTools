@@ -6,6 +6,7 @@ mod private
   use path::AbsolutePath;
 
   use std::collections::HashSet;
+
   use std::{ env, fs };
   // qqq : for Petro : https://github.com/obox-systems/conventions/blob/master/code_style.md#importing-structuring-std-imports
 
@@ -71,7 +72,14 @@ mod private
     exclude_features : Vec< String >,
     #[ default( true ) ]
     temp : bool,
+    enabled_features : Vec< String >,
+    #[ default( false ) ]
+    with_all_features : bool,
+    #[ default( false ) ]
+    with_none_features : bool,
     optimizations : HashSet< optimization::Optimization >,
+    #[ default( 200u32 ) ] 
+    variants_cap : u32,
   }
 
   /// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
@@ -101,13 +109,17 @@ mod private
       include_features,
       exclude_features,
       temp,
-      optimizations,
+      enabled_features,
+      with_all_features,
+      with_none_features,
+      optimizations, 
+      variants_cap,
     } = args;
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
     if temp
     {
-
+      
       let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
@@ -128,7 +140,11 @@ mod private
         include_features,
         exclude_features,
         temp_path: Some( temp_dir.clone() ),
+        enabled_features,
+        with_all_features,
+        with_none_features,
         optimizations,
+        variants_cap,
       };
 
       let report = tests_run( &t_args, &packages, dry );
@@ -149,6 +165,10 @@ mod private
         exclude_features,
         temp_path: None,
         optimizations,
+        enabled_features,
+        with_all_features,
+        with_none_features,
+        variants_cap,
       };
       // qqq : for Petro : DRY
 

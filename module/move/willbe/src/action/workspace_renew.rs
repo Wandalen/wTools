@@ -33,24 +33,43 @@ mod private
     {
       self.values = values
     }
+    
+    fn parameter_storage( &self ) -> &Path
+    {
+      "./.workspace_template.toml".as_ref()
+    }
+    
+    fn template_name( &self ) -> &'static str
+    {
+      "workspace"
+    }
+    
+    fn get_values( &self ) -> &TemplateValues
+    {
+      &self.values
+    }
+    
+    fn get_values_mut( &mut self ) -> &mut TemplateValues
+    {
+      &mut self.values
+    }
+
+    
   }
 
   impl Default for WorkspaceTemplate
   {
     fn default() -> Self
     {
+      let parameters = TemplateParameters::former()
+      .parameter( "project_name" ).is_mandatory( true ).end()
+      .parameter( "url" ).is_mandatory( true ).end()
+      .parameter( "branches" ).is_mandatory( true ).end()
+      .form();
       Self
       {
         files : Default::default(),
-        parameters : TemplateParameters::new
-          (
-            &
-              [
-                "project_name",
-                "url",
-                "branches",
-              ]
-          ),
+        parameters,
         values : Default::default(),
       }
     }
