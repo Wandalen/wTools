@@ -2,54 +2,60 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
-
-// #![ feature( type_name_of_val ) ]
-// #![ feature( trace_macros ) ]
-
-//!
-//! Former - variation of builder pattern.
-//!
-
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Former - variation of builder pattern. Implementation of its runtime.
-pub mod runtime;
+/// Axiomatic things.
+#[ cfg( feature = "enabled" ) ]
+// #[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod axiomatic;
+/// Former of a vector.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod vector;
+/// Former of a hash map.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod hash_map;
+/// Former of a hash set.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod hash_set;
+/// Component-based forming.
+#[ cfg( feature = "enabled" ) ]
+// #[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "derive_component_from" ) ]
+mod component;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  // // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
-  // pub use former_runtime;
-  // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   pub use former_meta;
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+#[ cfg( feature = "enabled" ) ]
+pub use protected::*;
+
 /// Protected namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
-  // #[ cfg( any( feature = "runtime", feature = "former_runtime" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  use super::runtime;
-  // pub use former_runtime as runtime;
-  // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use former_meta as derive;
 }
 
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use protected::*;
-
 /// Parented namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -58,18 +64,57 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
-  // #[ cfg( any( feature = "meta", feature = "former_meta" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use former_meta::*;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::prelude::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "enabled" ) ]
+  #[ cfg( feature = "derive_former" ) ]
+  pub use super::axiomatic::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "enabled" ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( feature = "derive_former" ) ]
+  pub use super::vector::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "enabled" ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( feature = "derive_former" ) ]
+  pub use super::hash_map::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "enabled" ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( feature = "derive_former" ) ]
+  pub use super::hash_set::*;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "enabled" ) ]
+  // #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( feature = "derive_component_from" ) ]
+  pub use super::component::*;
 }
+
+// xxx : debug attribute
+// xxx : expanded example
+// xxx : explain role of container in former

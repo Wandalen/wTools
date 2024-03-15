@@ -1,6 +1,6 @@
 [package]
 name = "wca"
-version = "0.5.0"
+version = "0.12.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,31 +24,24 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-exclude = [ "/tests", "/examples", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 default = [ "enabled" ]
-full = [ "enabled" ]
-use_std = [ "default_handlers" ]
-use_alloc = []
+full = [ "enabled", "on_unknown_suggest" ]
+# use_std = [ "default_handlers" ]
+# use_alloc = []
 enabled = []
 
-default_handlers = [
-  "on_error_default",
-  "on_syntax_error_default",
-  "on_ambiguity_default",
-  "on_unknown_command_error_default",
-  "on_get_help_default",
-  "on_print_commands_default",
-]
+# aaa : for Bohdan : description of all features please
+# aaa : removed redundant features
 
-on_error_default = [ "enabled" ]
-on_syntax_error_default = [ "enabled" ]
-on_ambiguity_default = [ "enabled" ]
-on_unknown_command_error_default = [ "enabled" ]
-on_unknown_command_error_suggest = [ "eddie" ]
-on_get_help_default = [ "enabled" ]
-on_print_commands_default = [ "enabled" ]
+# This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
+on_unknown_suggest = [ "eddie" ]
+
+[[bench]]
+name = "bench"
+harness = false
 
 [dependencies]
 error_tools = { workspace = true, features = [ "default" ] }
@@ -65,4 +58,5 @@ eddie = { version = "0.4", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-assert_fs = "1.0" 
+assert_fs = "1.0"
+criterion = "0.5"

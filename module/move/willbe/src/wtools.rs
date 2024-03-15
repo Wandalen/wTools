@@ -9,7 +9,7 @@ pub mod error
 {
   pub use error_tools::*;
   pub use error_tools::for_lib::*;
-  pub use ::error_tools::dependency::*;
+  pub use::error_tools::dependency::*;
 }
 
 /// This module provides utilities for working with iterators.

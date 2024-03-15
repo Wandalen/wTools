@@ -8,7 +8,7 @@ pub( crate ) mod private
     IResult,
   };
 
-  /// `Parser` provides parsing command strings into `RawCommand` objects.
+  /// `Parser` provides parsing command strings into `ParsedCommand` objects.
   /// It allows you to specify the symbols that will be used to interpret the command string, such as the command delimiter, property delimiter, and namespace delimiter.
   ///
   /// ```
@@ -51,7 +51,7 @@ pub( crate ) mod private
     ///
     /// namespace_delimiter = ".also"
     ///
-    /// "<commands1> .also <commands2>" -> Namespace( < commands1 > ), Namespace( < commands2 > )
+    /// "< commands1 > .also < commands2 >" -> Namespace( < commands1 > ), Namespace( < commands2 > )
     #[ default( ".also" ) ]
     pub namespace_delimeter : Cow< 'static, str >,
   }

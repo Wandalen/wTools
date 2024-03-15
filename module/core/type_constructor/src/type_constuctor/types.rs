@@ -237,13 +237,13 @@ pub( crate ) mod private
   /// }
   /// impl< T : Copy > From< std::sync::Arc< T > > for MySingle< T >
   /// {
-  ///   fn from( src : std::sync::Arc<T>) -> Self {
+  ///   fn from( src : std::sync::Arc< T >) -> Self {
   ///     Self( src )
   ///   }
   /// }
   /// impl< T : Copy > From< MySingle< T > > for std::sync::Arc< T >
   /// {
-  ///   fn from(src: MySingle<T>) -> Self
+  ///   fn from(src: MySingle< T >) -> Self
   ///   {
   ///     src.0
   ///   }
@@ -329,7 +329,7 @@ pub( crate ) mod private
   ///   fn from( src : MyPair ) -> Self { ( src.0, src.1 ) }
   /// }
   ///
-  /// #[cfg( feature = "make" )]
+  /// #[cfg( feature = "make" ) ]
   /// impl From_2< i32, i64 > for MyPair
   /// {
   ///   fn from_2( _0 : i32, _1 : i64 ) -> Self { Self( _0, _1 ) }
@@ -838,9 +838,6 @@ pub mod exposed
   pub use super::prelude::*;
 }
 
-// #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-// pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude

@@ -24,37 +24,14 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-include = [
-  "/rust/impl/proc_macro/wproc_macro_lib.rs",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
-
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
-no_std = []
-use_alloc = []
 enabled = []
-
-[lib]
-name = "wproc_macro"
-path = "src/proc_macro/wproc_macro_lib.rs"
-
-[[test]]
-name = "macro_tools_test"
-path = "tests/wproc_macro_tests.rs"
-
-# [[test]]
-# name = "wproc_macro_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
 
 [dependencies]
 macro_tools = { workspace = true }
 
 [dev-dependencies]
-trybuild = { version = "~1.0", features = [ "diff" ] }
+# trybuild = { version = "~1.0", features = [ "diff" ] }
 test_tools = { workspace = true }
-# quote = "~1.0"

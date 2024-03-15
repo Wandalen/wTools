@@ -1,0 +1,26 @@
+[workspace]
+resolver = "2"
+members = [
+  "module/*",
+]
+
+exclude = [
+  "-*",
+]
+
+[workspace.metadata]
+project_name = "{{project_name}}"
+# url to project_repositiry
+repo_url = "{{url}}"
+# branches (includes master branch)
+branches = [{{branches}}]
+
+[workspace.lints.rust]
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+rust_2018_idioms = "deny"
+future_incompatible = "deny"
+
+[workspace.lints.clippy]
+restriction = "deny" # opt out where this is redundant
+pedantic = "deny" # opt out where this is redundant

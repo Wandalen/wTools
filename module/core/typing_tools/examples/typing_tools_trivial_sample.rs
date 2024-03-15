@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 use typing_tools::*;
 
 fn main()

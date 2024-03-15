@@ -2,75 +2,53 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/clone_dyn_meta/latest/clone_dyn_meta/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
-#![ warn( clippy::undocumented_unsafe_blocks ) ]
-#![ allow( non_snake_case ) ]
-#![ allow( non_upper_case_globals ) ]
-
-// #![ feature( type_name_of_val ) ]
-// #![ feature( trace_macros ) ]
-
-//!
-//! Derive to clone dyn structures.
-//!
-
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ cfg
+(
+  any
+  (
+    feature = "derive_as_mut",
+    feature = "derive_as_ref",
+    feature = "derive_deref",
+    feature = "derive_deref_mut",
+    feature = "derive_from",
+    feature = "derive_inner_from",
+    feature = "derive_variadic_from",
+  )
+)]
+#[ cfg( feature = "enabled" ) ]
+mod derive;
+#[ cfg
+(
+  any
+  (
+    feature = "derive_as_mut",
+    feature = "derive_as_ref",
+    feature = "derive_deref",
+    feature = "derive_deref_mut",
+    feature = "derive_from",
+    feature = "derive_inner_from",
+    feature = "derive_variadic_from",
+  )
+)]
 // #[ cfg( feature = "enabled" ) ]
-// use macro_tools::prelude::*;
+// use derive::*;
 
-#[ cfg
-(
-	any
-	(
-		feature = "derive_as_mut",
-		feature = "derive_as_ref",
-		feature = "derive_deref",
-		feature = "derive_deref_mut",
-		feature = "derive_from",
-		feature = "derive_inner_from",
-		feature = "derive_variadic_from",
-		feature = "derive_reflect",
-	)
-)]
-#[ cfg( feature = "enabled" ) ]
-mod implementation;
-#[ cfg
-(
-	any
-	(
-		feature = "derive_as_mut",
-		feature = "derive_as_ref",
-		feature = "derive_deref",
-		feature = "derive_deref_mut",
-		feature = "derive_from",
-		feature = "derive_inner_from",
-		feature = "derive_variadic_from",
-		feature = "derive_reflect",
-	)
-)]
-#[ cfg( feature = "enabled" ) ]
-use implementation::*;
 
 ///
-/// Derive macro to implement From converting inner type into outer when-ever it's possible to do automatically.
+/// Provides an automatic `From` implementation for struct wrapping a single value.
 ///
-/// ### Sample :: struct instead of macro.
+/// This macro simplifies the conversion of an inner type to an outer struct type
+/// when the outer type is a simple wrapper around the inner type.
 ///
-/// Write this
+/// ## Example Usage
 ///
-/// ```rust
-/// # use derive_tools_meta::*;
-/// #[ derive( From ) ]
-/// pub struct IsTransparent( bool );
-/// ```
-///
-/// Instead of this
+/// Instead of manually implementing `From< bool >` for `IsTransparent`:
 ///
 /// ```rust
 /// pub struct IsTransparent( bool );
+///
 /// impl From< bool > for IsTransparent
 /// {
 ///   #[ inline( always ) ]
@@ -80,13 +58,24 @@ use implementation::*;
 ///   }
 /// }
 /// ```
+///
+/// Use `#[ derive( From ) ]` to automatically generate the implementation:
+///
+/// ```rust
+/// # use derive_tools_meta::*;
+/// #[ derive( From ) ]
+/// pub struct IsTransparent( bool );
+/// ```
+///
+/// The macro facilitates the conversion without additional boilerplate code.
+///
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_from" ) ]
 #[ proc_macro_derive( From ) ]
 pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = from_inner::from_inner( input );
+  let result = derive::from::from( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -95,22 +84,18 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 }
 
 ///
-/// Derive macro to implement From converting inner type into outer when-ever it's possible to do automatically.
+/// Alias for derive `From`. Provides an automatic `From` implementation for struct wrapping a single value.
 ///
-/// ### Sample :: struct instead of macro.
+/// This macro simplifies the conversion of an inner type to an outer struct type
+/// when the outer type is a simple wrapper around the inner type.
 ///
-/// Write this
+/// ## Example Usage
 ///
-/// ```rust
-/// # use derive_tools_meta::*;
-/// #[ derive( FromInner ) ]
-/// pub struct IsTransparent( bool );
-/// ```
-///
-/// Instead of this
+/// Instead of manually implementing `From< bool >` for `IsTransparent`:
 ///
 /// ```rust
 /// pub struct IsTransparent( bool );
+///
 /// impl From< bool > for IsTransparent
 /// {
 ///   #[ inline( always ) ]
@@ -120,13 +105,24 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///   }
 /// }
 /// ```
+///
+/// Use `#[ derive( FromInner ) ]` to automatically generate the implementation:
+///
+/// ```rust
+/// # use derive_tools_meta::*;
+/// #[ derive( FromInner ) ]
+/// pub struct IsTransparent( bool );
+/// ```
+///
+/// The macro facilitates the conversion without additional boilerplate code.
+///
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_from" ) ]
 #[ proc_macro_derive( FromInner ) ]
 pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = from_inner::from_inner( input );
+  let result = derive::from::from( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -166,7 +162,7 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 #[ proc_macro_derive( InnerFrom ) ]
 pub fn inner_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = inner_from::inner_from( input );
+  let result = derive::inner_from::inner_from( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -207,7 +203,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 #[ proc_macro_derive( Deref ) ]
 pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = deref::deref( input );
+  let result = derive::deref::deref( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -257,7 +253,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 #[ proc_macro_derive( DerefMut ) ]
 pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = deref_mut::deref_mut( input );
+  let result = derive::deref_mut::deref_mut( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -296,7 +292,7 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 #[ proc_macro_derive( AsRef ) ]
 pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = as_ref::as_ref( input );
+  let result = derive::as_ref::as_ref( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -336,7 +332,7 @@ pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 #[ proc_macro_derive( AsMut ) ]
 pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = as_mut::as_mut( input );
+  let result = derive::as_mut::as_mut( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -378,35 +374,14 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// ```
 
-// qqq : xxx : why no run?
+// qqq : xxx : why no run/ignore? fix
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_variadic_from" ) ]
 #[ proc_macro_derive( VariadicFrom ) ]
 pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = variadic_from::variadic_from( input );
-  match result
-  {
-    Ok( stream ) => stream.into(),
-    Err( err ) => err.to_compile_error().into(),
-  }
-}
-
-///
-/// Reflect structure of any kind.
-///
-/// ### Sample :: trivial.
-///
-/// qqq : write, please
-///
-
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_reflect" ) ]
-#[ proc_macro_derive( Reflect ) ]
-pub fn derive_reflect( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
-{
-  let result = reflect::reflect( input );
+  let result = derive::variadic_from::variadic_from( input );
   match result
   {
     Ok( stream ) => stream.into(),

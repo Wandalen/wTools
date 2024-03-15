@@ -1,14 +1,14 @@
 use super::*;
-use wca::
+use TheModule::
 {
   Parser,
-  ProgramParser, NamespaceParser, CommandParser,
+  ProgramParser, CommandParser,
 
   Type, Value,
-  GrammarConverter,
+  Dictionary,
+  Verifier,
 };
 
 mod from_command;
-mod from_namespace;
 mod from_program;
 mod types;

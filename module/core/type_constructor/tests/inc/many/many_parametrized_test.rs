@@ -162,29 +162,29 @@ tests_impls!
 //
 //     impl core :: ops :: Deref for Structs
 //     {
-//       type Target = TheModule :: _Vec < Struct > ; #[inline] fn deref(& self) -> &
+//       type Target = TheModule :: _Vec < Struct > ; #[ inline ] fn deref(& self) -> &
 //       Self :: Target { & self.0 }
 //     }
 //
 //     impl core :: ops :: DerefMut for Structs
 //     {
-//       #[inline] fn deref_mut(& mut self) -> & mut Self :: Target
+//       #[ inline ] fn deref_mut(& mut self) -> & mut Self :: Target
 //       { & mut self.0 }
 //     }
 //
 //     impl From < Struct > for Structs
-//     { #[inline] fn from(src : Struct) -> Self { Self(TheModule :: _vec! [src]) } }
+//     { #[ inline ] fn from(src : Struct) -> Self { Self(TheModule :: _vec! [src]) } }
 //
 //     impl < __FromRef > From < & __FromRef > for Structs where __FromRef : Clone,
 //     Self : From < __FromRef >,
 //     {
-//       #[inline] fn from(src : & __FromRef) -> Self
+//       #[ inline ] fn from(src : & __FromRef) -> Self
 //       { From :: from((* src).clone()) }
 //     }
 //
 //     impl From < (Struct,) > for Structs
 //     {
-//       #[inline] fn from(src : (Struct,)) -> Self
+//       #[ inline ] fn from(src : (Struct,)) -> Self
 //       { Self(TheModule :: _vec! [src.0]) }
 //     }
 //
@@ -192,43 +192,43 @@ tests_impls!
 //     for Structs
 //     // where Struct : Clone,
 //     {
-//       #[inline] fn from(src : [Struct ; N]) -> Self
+//       #[ inline ] fn from(src : [Struct ; N]) -> Self
 //       { Self(TheModule :: _Vec :: from(src)) }
 //     }
 //
 //     impl From < & [Struct] > for Structs
 //     where Struct : Clone,
 //     {
-//       // #[inline]
+//       // #[ inline ]
 //       fn from(src : & [Struct]) -> Self
 //       { Self(TheModule :: _Vec :: from(src)) }
 //     }
 //
 //     impl TheModule :: AsSlice < Struct > for Structs
 //     // where Struct : Clone,
-//     { #[inline] fn as_slice(& self) -> & [Struct] { & self [..] } }
+//     { #[ inline ] fn as_slice(& self) -> & [Struct] { & self [..] } }
 //
 //     impl TheModule :: From_0 for Structs
 //     {
-//       #[inline] fn from_0() -> Self
+//       #[ inline ] fn from_0() -> Self
 //       { Self(TheModule :: _Vec :: < Struct > :: new()) }
 //     }
 //
 //     impl TheModule :: From_1 < Struct > for Structs
 //     {
-//       #[inline] fn from_1(_0 : Struct,) -> Self
+//       #[ inline ] fn from_1(_0 : Struct,) -> Self
 //       { Self(TheModule :: _vec! [_0]) }
 //     }
 //
 //     impl TheModule :: From_2 < Struct, Struct, > for Structs
 //     {
-//       #[inline] fn from_2(_0 : Struct, _1 : Struct,) -> Self
+//       #[ inline ] fn from_2(_0 : Struct, _1 : Struct,) -> Self
 //       { Self(TheModule :: _vec! [_0, _1]) }
 //     }
 //
 //     impl TheModule :: From_3 < Struct, Struct, Struct, > for Structs
 //     {
-//       #[inline] fn from_3(_0 : Struct, _1 : Struct, _2 : Struct,) -> Self
+//       #[ inline ] fn from_3(_0 : Struct, _1 : Struct, _2 : Struct,) -> Self
 //       { Self(TheModule :: _vec! [_0, _1, _2]) }
 //     }
 //

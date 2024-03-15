@@ -34,6 +34,7 @@ pub enum Reason
   DynastiesLimit,
 }
 
+/// Configuration for Hybrid Optimizer.
 #[ derive( Debug ) ]
 pub struct Config
 {
@@ -92,6 +93,7 @@ impl Default for Config
   }
 }
 
+/// Specific optimization problem for Hybrid Optimizer.
 #[ derive( Debug ) ]
 pub struct Problem< S : InitialProblem, C, M >
 {
@@ -113,6 +115,7 @@ pub struct Problem< S : InitialProblem, C, M >
 
 impl< S : InitialProblem, C, M > Problem< S, C, M >
 {
+  /// Create new instance of optimization problem for Hybrid Optimizer.
   pub fn new( initial : S, crossover_operator : C, mutation_operator : M ) -> Self
   where TournamentSelection : SelectionOperator< < S as InitialProblem >::Person >
   {
@@ -142,9 +145,10 @@ impl< S : InitialProblem, C, M > Problem< S, C, M >
 #[ derive( Debug ) ]
 pub struct HybridOptimizer< S : InitialProblem, C, M >
 {
-
+  /// Configuration of Hybrid Optimizer.
   config : Config,
 
+  /// Specific optimization problem.
   problem : Problem< S, C, M >,
 }
 
@@ -488,46 +492,49 @@ where M : MutationOperator::< Person = < S as InitialProblem >::Person > + Sync,
 
 }
 
+/// Starting parameters for optimal parameters search for hybrid optimization configuration.
 pub fn starting_params_for_hybrid() -> Result< OptimalProblem< RangeInclusive< f64 > >, optimal_params_search::Error >
 {
   let opt_problem = OptimalProblem::new()
   .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?
-  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=2000.0 ), Some( 300.0 ), Some( 20.0 ) )?
-  .add( Some( String::from( "mutation rate" ) ), Some( 0.0..=0.5 ), Some( 0.25 ), Some( 0.1 ) )?
-  .add( Some( String::from( "crossover rate" ) ), Some( 0.0..=0.5 ), Some( 0.5 ), Some( 0.2 ) )?
-  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=1000.0 ), Some( 30.0 ), Some( 5.0 ) )?
+  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=200.0 ), Some( 100.0 ), Some( 20.0 ) )?
+  .add( Some( String::from( "mutation rate" ) ), Some( 0.0..=1.0 ), Some( 0.25 ), Some( 0.1 ) )?
+  .add( Some( String::from( "crossover rate" ) ), Some( 0.0..=1.0 ), Some( 0.5 ), Some( 0.2 ) )?
+  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=100.0 ), Some( 30.0 ), Some( 5.0 ) )?
   .add( Some( String::from( "population size" ) ), Some( 1.0..=1000.0 ), Some( 300.0 ), Some( 200.0 ) )?
-  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=5000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
+  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=2000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
   ;
 
   Ok( opt_problem )
 }
 
+/// Starting parameters for optimal parameters search for SA optimization configuration.
 pub fn starting_params_for_sa() -> Result< OptimalProblem< RangeInclusive< f64 > >, optimal_params_search::Error >
 {
   let opt_problem = OptimalProblem::new()
   .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?
-  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=2000.0 ), Some( 300.0 ), Some( 20.0 ) )?
+  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=200.0 ), Some( 100.0 ), Some( 20.0 ) )?
   .add( Some( String::from( "mutation rate" ) ), Some( 1.0..=1.0 ), Some( 1.0 ), Some( 0.0 ) )?
   .add( Some( String::from( "crossover rate" ) ), Some( 0.0..=0.0 ), Some( 0.0 ), Some( 0.0 ) )?
-  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=1000.0 ), Some( 30.0 ), Some( 5.0 ) )?
+  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=100.0 ), Some( 30.0 ), Some( 5.0 ) )?
   .add( Some( String::from( "population size" ) ), Some( 1.0..=1.0 ), Some( 1.0 ), Some( 0.0 ) )?
-  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=10000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
+  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=5000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
   ;
 
   Ok( opt_problem )
 }
 
+/// Starting parameters for optimal parameters search for GA optimization configuration.
 pub fn starting_params_for_ga() -> Result< OptimalProblem< RangeInclusive< f64 > >, optimal_params_search::Error >
 {
   let opt_problem = OptimalProblem::new()
   .add( Some( String::from( "temperature decrease factor" ) ), Some( 0.0..=1.0 ), Some( 0.999 ), Some( 0.0002 ) )?
-  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=2000.0 ), Some( 300.0 ), Some( 20.0 ) )?
-  .add( Some( String::from( "mutation rate" ) ), Some( 0.1..=0.5 ), Some( 0.25 ), Some( 0.1 ) )?
-  .add( Some( String::from( "crossover rate" ) ), Some( 0.1..=0.5 ), Some( 0.5 ), Some( 0.2 ) )?
-  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=1000.0 ), Some( 30.0 ), Some( 5.0 ) )?
-  .add( Some( String::from( "population size" ) ), Some( 10.0..=5000.0 ), Some( 300.0 ), Some( 200.0 ) )?
-  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=5000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
+  .add( Some( String::from( "mutation per dynasty" ) ), Some( 10.0..=200.0 ), Some( 100.0 ), Some( 20.0 ) )?
+  .add( Some( String::from( "mutation rate" ) ), Some( 0.1..=1.0 ), Some( 0.25 ), Some( 0.1 ) )?
+  .add( Some( String::from( "crossover rate" ) ), Some( 0.1..=1.0 ), Some( 0.5 ), Some( 0.2 ) )?
+  .add( Some( String::from( "max stale iterations" ) ), Some( 1.0..=100.0 ), Some( 30.0 ), Some( 5.0 ) )?
+  .add( Some( String::from( "population size" ) ), Some( 10.0..=2000.0 ), Some( 300.0 ), Some( 200.0 ) )?
+  .add( Some( String::from( "dynasties limit" ) ), Some( 100.0..=2000.0 ), Some( 1000.0 ), Some( 300.0 ) )?
   ;
 
   Ok( opt_problem )

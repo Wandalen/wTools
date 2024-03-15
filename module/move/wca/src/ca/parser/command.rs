@@ -5,9 +5,9 @@ pub( crate ) mod private
     ca::
     {
       Parser,
-      RawCommand as Command,
+      ParsedCommand as Command,
       parser::parser::any_word,
-    }, 
+    },
     wtools
   };
   use std::collections::HashMap;
@@ -73,7 +73,7 @@ pub( crate ) mod private
               | _ |
               Command
               {
-                properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() )]), ..Default::default()
+                properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() ) ]), ..Default::default()
               }
             )
           )),
@@ -85,7 +85,7 @@ pub( crate ) mod private
             Command {
               name : "".to_string(),
               subjects : vec![ command.name ],
-              properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() )]),
+              properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() ) ]),
             }
           }
           else
@@ -256,3 +256,5 @@ crate::mod_interface!
   exposed use CommandParser;
   protected use CommandParserFn;
 }
+
+// qqq : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs

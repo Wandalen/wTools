@@ -1,6 +1,6 @@
 #![ allow( unused_imports ) ]
 
-#![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
+// #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 
 use wtools as TheModule;
 use test_tools::exposed::*;
@@ -51,7 +51,7 @@ mod data_type;
 #[ cfg( feature = "diagnostics_tools" ) ]
 #[ cfg( not( feature = "meta_tools" ) ) ]
 #[ path = "../../../core/diagnostics_tools/tests/diagnostics_tests.rs" ]
-mod diagnostics_tools;
+mod diag_tools;
 
 
 #[ cfg( feature = "meta_tools" ) ]

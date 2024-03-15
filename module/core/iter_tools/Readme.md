@@ -11,9 +11,8 @@ Collection of general purpose tools to iterate. Currently it simply reexports it
 <!-- {{# generate.module_sample{} #}} -->
 
 ```rust
-
-#[ cfg( feature = "itertools" ) ]
-{
+# #[ cfg( feature = "itertools" ) ]
+# {
   use iter_tools::*;
 
   /* standard functions */
@@ -31,7 +30,7 @@ Collection of general purpose tools to iterate. Currently it simply reexports it
     result.push( ( *left, *right ) );
   }
   assert_eq!( result, vec![ ( 5, "a" ), ( 1, "b" ), ( -2, "c" ) ] );
-}
+# }
 ```
 
 <!-- # qqq : for Rust dev : please add --> <!-- aaa : done -->
@@ -50,9 +49,3 @@ cd wTools
 cd examples/iter_tools_trivial
 cargo run
 ```
-
-# Sample
-
-[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
-[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=sample%2Frust%2Fiter_tools_trivial_sample,SAMPLE_FILE=.%2Fsrc%2Fmain.rs/https://github.com/Wandalen/wTools)
-[![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/iter_tools)

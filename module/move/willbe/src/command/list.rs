@@ -3,7 +3,7 @@ mod private
 {
   use crate::*;
 
-  use { endpoint, wtools };
+  use { action, wtools };
 
   use std::
   {
@@ -16,7 +16,7 @@ mod private
   use wtools::error::{ for_app::Context, Result };
 
   use path::AbsolutePath;
-  use endpoint::{ list as l, list::{ ListFormat, ListArgs } };
+  use action::{ list as l, list::{ ListFormat, ListOptions } };
   use former::Former;
 
   #[ derive( Former ) ]
@@ -47,7 +47,7 @@ mod private
   /// List workspace packages.
   ///
 
-  pub fn list( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn list( args : Args, properties : Props ) -> Result< () >
   {
     let path_to_workspace : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
     let path_to_workspace = AbsolutePath::try_from( path_to_workspace )?;
@@ -69,7 +69,7 @@ mod private
     if with_dev { categories.insert( l::DependencyCategory::Dev ); }
     if with_build { categories.insert( l::DependencyCategory::Build ); }
 
-    let args = ListArgs::former()
+    let args = ListOptions::former()
     .path_to_manifest( crate_dir )
     .format( format )
     .info( additional_info )
@@ -77,7 +77,7 @@ mod private
     .dependency_categories( categories )
     .form();
 
-    match endpoint::list( args )
+    match action::list( args )
     {
       Ok( report ) =>
       {

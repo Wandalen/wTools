@@ -1,6 +1,6 @@
 [package]
 name = "willbe"
-version = "0.2.0"
+version = "0.7.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -12,11 +12,18 @@ documentation = "https://docs.rs/willbe"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/willbe"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/move/willbe"
 description = """
-Utility with set of tools for managing developer routines.
+Utility to publish multi-crate and multi-workspace environments and maintain their consistency.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
-default-run = "main"
+default-run = "will"
+# include = [
+#   "/src",
+#   "/template",
+#   "/Cargo.toml",
+#   "/Readme.md",
+#   "/License",
+# ]
 
 [lints]
 workspace = true
@@ -24,13 +31,14 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-exclude = [ "/tests", "/examples", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
 use_alloc = []
 enabled = []
+tracing = [ "dep:tracing", "dep:tracing-subscriber" ]
 
 [dependencies]
 cargo_metadata = "~0.14"
@@ -53,9 +61,15 @@ sha-1 = "~0.10"
 tar = "~0.4"
 handlebars = "4.5.0"
 ureq = "~2.9"
+colored = "2.1.0"
+duct = "0.13.7"
+tracing = { version = "0.1", features = [ "log-always" ], optional = true }
+tracing-subscriber = { version = "0.3", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
 assert_fs = "1.0"
 serde_yaml = "0.9"
+serde_json = "1.0.114"
 serde = "1.0"
+assert_cmd = "2.0"

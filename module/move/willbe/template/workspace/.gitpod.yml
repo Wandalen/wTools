@@ -1,0 +1,26 @@
+checkoutLocation : "."
+workspaceLocation : "."
+
+tasks :
+  - init : |
+      rustup default nightly
+      cd $RUN_PATH
+    command : |
+      code $SAMPLE_FILE
+      cargo run $RUN_POSTFIX
+      echo 'To get list of samples in the repository try running from the root:'
+      echo 'cargo run --example'
+
+vscode :
+  extensions :
+    - rust-lang.rust-analyzer
+
+github :
+  prebuilds :
+    addBadge : true
+    pullRequests : true
+
+#
+# # to list examples
+# if [[ "${HAS_SAMPLES}" == "true" ]] || [[ "${HAS_SAMPLES}" == "1" ]]; then cargo run --example; fi
+#

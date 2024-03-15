@@ -10,7 +10,7 @@
 // #![ feature( type_name_of_val ) ]
 // #![ cfg_attr( feature = "type_name_of_val", feature( type_name_of_val ) ) ]
 
-#![ cfg_attr( RUSTC_IS_NIGHTLY, feature( type_name_of_val ) ) ]
+// #![ cfg_attr( RUSTC_IS_NIGHTLY, feature( type_name_of_val ) ) ]
 
 //!
 //! Diagnostic-purpose tools to inspect type of a variable and its size.

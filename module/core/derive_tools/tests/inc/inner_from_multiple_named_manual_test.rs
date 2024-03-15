@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive( Debug, PartialEq, Eq ) ]
+#[ derive( Debug, PartialEq, Eq ) ]
 struct StructNamedFields
 {
   a: i32,

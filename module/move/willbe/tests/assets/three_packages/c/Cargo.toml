@@ -1,0 +1,12 @@
+[package]
+name = "_chain_of_packages_c"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/Username/test/c"
+
+[package.metadata]
+discord_url = "https://discord.gg/m3YfbXpUUY"
+stability = "stable"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
