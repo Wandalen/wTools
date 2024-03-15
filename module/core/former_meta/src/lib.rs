@@ -440,58 +440,57 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// use former::{ SetComponent, SetComponents };
 ///
 /// #[ derive( Default, SetComponent, SetComponents ) ]
-/// struct BigOptions
+/// struct BigOpts
 /// {
 ///   cond : bool,
 ///   int : i32,
 ///   str : String,
-///   vec : Vec< u8 >,
 /// }
 ///
 /// #[ derive( Default, SetComponent, SetComponents ) ]
-/// struct SubBigOptions
+/// struct SmallerOpts
 /// {
 ///   cond: bool,
 ///   int: i32,
 /// }
 ///
-/// impl From< &BigOptions > for bool
+/// impl From< &BigOpts > for bool
 /// {
-///   fn from( value : &BigOptions ) -> Self
+///   fn from( value : &BigOpts ) -> Self
 ///   {
 ///     value.cond
 ///   }
 /// }
 ///
-/// impl From< &BigOptions > for i32
+/// impl From< &BigOpts > for i32
 /// {
-///   fn from( value: &BigOptions ) -> Self
+///   fn from( value: &BigOpts ) -> Self
 ///   {
 ///     value.int
 ///   }
 /// }
 ///
-/// fn boo( options : &BigOptions ) -> &Vec< u8 >
+/// fn take_big_opts( options : &BigOpts ) -> &String
 /// {
-///   &options.vec
+///   &options.str
 /// }
 ///
-/// fn foo( options : &SubBigOptions ) -> bool
+/// fn take_smaller_opts( options : &SmallerOpts ) -> bool
 /// {
 ///   !options.cond
 /// }
 ///
-/// let options1 = BigOptions
+/// let options1 = BigOpts
 /// {
 ///   cond : true,
 ///   int : -14,
 ///   ..Default::default()
 /// };
-/// boo( &options1 );
+/// take_big_opts( &options1 );
 ///
-/// let mut options2 = SubBigOptions::default();
+/// let mut options2 = SmallerOpts::default();
 /// options2.components_set( &options1 );
-/// foo( &options2 );
+/// take_smaller_opts( &options2 );
 /// ```
 ///
 /// Which expands approximately into :
@@ -499,125 +498,98 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// ```rust
 /// use former::{ SetComponent, SetComponents };
 /// 
-/// struct BigOptions
+/// struct BigOpts
 /// {
 ///   cond : bool,
 ///   int : i32,
 ///   str : String,
-///   vec : Vec< u8 >,
 /// }
 /// 
-/// impl< IntoT > SetComponent< bool, IntoT > for BigOptions
+/// impl< IntoT > SetComponent< bool, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< bool >,
 /// {
-///   #[ inline( always ) ]
 ///   fn set( &mut self, component : IntoT )
 ///   {
 ///     self.cond = component.into();
 ///   }
 /// }
 /// 
-/// #[ allow( non_snake_case ) ]
-/// impl< IntoT > SetComponent< i32, IntoT > for BigOptions
+/// impl< IntoT > SetComponent< i32, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< i32 >,
 /// {
-///   #[ inline( always ) ]
 ///   fn set( &mut self, component : IntoT )
 ///   {
 ///     self.int = component.into();
 ///   }
 /// }
 /// 
-/// #[ allow( non_snake_case ) ]
-/// impl< IntoT > SetComponent< String, IntoT > for BigOptions
+/// impl< IntoT > SetComponent< String, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< String >,
 /// {
-///   #[ inline( always ) ]
 ///   fn set( &mut self, component : IntoT )
 ///   {
 ///     self.str = component.into();
 ///   }
 /// }
 /// 
-/// #[ allow( non_snake_case ) ]
-/// impl< IntoT > SetComponent< Vec< u8 >, IntoT > for BigOptions
-/// where
-///   IntoT : Into< Vec< u8 > >,
-/// {
-///   #[ inline( always ) ]
-///   fn set( &mut self, component : IntoT )
-///   {
-///     self.vec = component.into();
-///   }
-/// }
-/// 
-/// pub trait BigOptionsSetComponents< IntoT >
+/// pub trait BigOptsSetComponents< IntoT >
 /// where
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
 ///   IntoT : Into< String >,
-///   IntoT : Into< Vec< u8 > >,
 ///   IntoT : Clone,
 /// {
 ///   fn components_set( &mut self, component : IntoT );
 /// }
 /// 
-/// impl< T, IntoT > BigOptionsSetComponents< IntoT > for T
+/// impl< T, IntoT > BigOptsSetComponents< IntoT > for T
 /// where
 ///   T : former::SetComponent< bool, IntoT >,
 ///   T : former::SetComponent< i32, IntoT >,
 ///   T : former::SetComponent< String, IntoT >,
-///   T : former::SetComponent< Vec< u8 >, IntoT >,
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
 ///   IntoT : Into< String >,
-///   IntoT : Into< Vec< u8 > >,
 ///   IntoT : Clone,
 /// {
-///   #[ inline( always ) ]
 ///   fn components_set( &mut self, component : IntoT )
 ///   {
 ///     former::SetComponent::< bool, _ >::set( self, component.clone() );
 ///     former::SetComponent::< i32, _ >::set( self, component.clone() );
 ///     former::SetComponent::< String, _ >::set( self, component.clone() );
-///     former::SetComponent::< Vec< u8 >, _ >::set( self, component.clone() );
 ///   }
 /// }
 ///
-/// struct SubBigOptions
+/// struct SmallerOpts
 /// {
 ///   cond : bool,
 ///   int : i32,
 /// }
 ///
-/// #[ allow( non_snake_case ) ]
-/// impl< IntoT > SetComponent< bool, IntoT > for SubBigOptions
+/// impl< IntoT > SetComponent< bool, IntoT > for SmallerOpts
 /// where
 ///   IntoT : Into< bool >,
 /// {
-///   #[ inline( always ) ]
 ///   fn set( &mut self, component : IntoT )
 ///   {
 ///     self.cond = component.into();
 ///   }
 /// }
 ///
-/// #[ allow( non_snake_case ) ]
-/// impl< IntoT > SetComponent< i32, IntoT > for SubBigOptions
+/// impl< IntoT > SetComponent< i32, IntoT > for SmallerOpts
 /// where
 ///     IntoT : Into< i32 >,
 /// {
-///   #[ inline( always ) ]
 ///   fn set( &mut self, component : IntoT )
 ///   {
 ///     self.int = component.into();
 ///   }
 /// }
 ///
-/// pub trait SubBigOptionsSetComponents< IntoT >
+/// pub trait SmallerOptsSetComponents< IntoT >
 /// where
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
@@ -626,7 +598,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   fn components_set( &mut self, component : IntoT );
 /// }
 ///
-/// impl< T, IntoT > SubBigOptionsSetComponents< IntoT > for T
+/// impl< T, IntoT > SmallerOptsSetComponents< IntoT > for T
 /// where
 ///   T : former::SetComponent< bool, IntoT >,
 ///   T : former::SetComponent< i32, IntoT >,
@@ -634,7 +606,6 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   IntoT : Into< i32 >,
 ///   IntoT : Clone,
 /// {
-///   #[ inline( always ) ]
 ///   fn components_set( &mut self, component : IntoT )
 ///   {
 ///     former::SetComponent::< bool, _ >::set( self, component.clone() );
@@ -642,42 +613,42 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   }
 /// }
 ///
-/// impl From< &BigOptions > for bool
+/// impl From< &BigOpts > for bool
 /// {
-///   fn from( value : &BigOptions ) -> Self
+///   fn from( value : &BigOpts ) -> Self
 ///   {
 ///     value.cond
 ///   }
 /// }
 ///
-/// impl From< &BigOptions > for i32
+/// impl From< &BigOpts > for i32
 /// {
-///   fn from( value : &BigOptions ) -> Self
+///   fn from( value : &BigOpts ) -> Self
 ///   {
 ///     value.int
 ///   }
 /// }
 ///
-/// fn boo( options : &BigOptions ) -> &Vec< u8 >
+/// fn take_big_opts( options : &BigOpts ) -> &String
 /// {
-///   &options.vec
+///   &options.str
 /// }
 ///
-/// fn foo( options : &SubBigOptions ) -> bool
+/// fn take_smaller_opts( options : &SmallerOpts ) -> bool
 /// {
 ///   !options.cond
 /// }
 ///
-/// let options1 = BigOptions
+/// let options1 = BigOpts
 /// {
 ///   cond : true,
 ///   int : -14,
 ///   ..Default::default()
 /// };
-/// boo( &options1 );
-/// let mut options2 = SubBigOptions::default();
+/// take_big_opts( &options1 );
+/// let mut options2 = SmallerOpts::default();
 /// options2.components_set( &options1 );
-/// foo( &options2 );
+/// take_smaller_opts( &options2 );
 /// ```
 ///
 #[ cfg( feature = "enabled" ) ]
