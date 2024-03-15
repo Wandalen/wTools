@@ -29,12 +29,14 @@ impl FeedRow
   }
 }
 
-impl From< ( Feed, Duration ) > for FeedRow
+impl From< ( Feed, Duration, String ) > for FeedRow
 {
-  fn from( value : ( Feed, Duration ) ) -> Self
+  fn from( value : ( Feed, Duration, String ) ) -> Self
   {
     let duration = value.1;
+    let link = value.2;
     let value = value.0;
+    
     let row = vec!
     [
       value.links.iter().filter_map( | link |
@@ -47,7 +49,10 @@ impl From< ( Feed, Duration ) > for FeedRow
             }
           } 
           None
-        } ).collect::< Vec< _ > >()[ 0 ]
+        } )
+        .collect::< Vec< _ > >()
+        .get( 0 )
+        .unwrap_or( &text( link ) )
         .clone(),
       value.title.clone().map( | title | text( title.content ) ).unwrap_or( null() ),
       value.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),

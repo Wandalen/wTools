@@ -11,7 +11,6 @@ use error_tools::Result;
 async fn add_config_file() -> Result< () >
 {
   let path = PathBuf::from( "./tests/fixtures/test_config.toml" );
-  //println!("{:?}", res);
   let path = path.canonicalize().expect( "Invalid path" );
 
   let config = Config::default()

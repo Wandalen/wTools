@@ -115,10 +115,10 @@ pub trait FeedStore
 {
 
   /// Insert items from list into feed table.
-  async fn save_feed( &mut self, feed : Vec< ( Feed, Duration ) > ) -> Result< () >;
+  async fn save_feed( &mut self, feed : Vec< ( Feed, Duration, String ) > ) -> Result< () >;
 
   /// Process fetched feed, new items will be saved, modified items will be updated.
-  async fn process_feeds( &mut self, feeds : Vec< ( Feed, Duration ) > ) -> Result< UpdateReport >;
+  async fn process_feeds( &mut self, feeds : Vec< ( Feed, Duration, String ) > ) -> Result< UpdateReport >;
 
   /// Get all feeds from storage.
   async fn get_all_feeds( &mut self ) -> Result< FeedsReport >;
@@ -163,7 +163,7 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( report )
   }
 
-  async fn save_feed( &mut self, feed : Vec< ( Feed, Duration ) > ) -> Result< () >
+  async fn save_feed( &mut self, feed : Vec< ( Feed, Duration, String ) > ) -> Result< () >
   {
     let feeds_rows = feed.into_iter().map( | feed | FeedRow::from( feed ).0 ).collect_vec();
 
@@ -189,7 +189,7 @@ impl FeedStore for FeedStorage< SledStorage >
   async fn process_feeds
   (
     &mut self,
-    feeds : Vec< ( Feed, Duration ) >,
+    feeds : Vec< ( Feed, Duration, String ) >,
   ) -> Result< UpdateReport >
   {
     let new_feed_links = feeds
@@ -205,7 +205,10 @@ impl FeedStore for FeedStorage< SledStorage >
           }
         }
         None
-      } ).collect::< Vec< _ > >()[ 0 ]
+      } )
+      .collect::< Vec< _ > >()
+      .get( 0 )
+      .unwrap_or( &feed.2 )
       .clone()
     )
     .join( "," )
@@ -236,7 +239,7 @@ impl FeedStore for FeedStorage< SledStorage >
         .collect_vec()
         ;
 
-        let link = &feed.0.links.iter().filter_map( | link |
+        let links = &feed.0.links.iter().filter_map( | link |
           {
             if let Some( media_type ) = &link.media_type
             {
@@ -246,7 +249,10 @@ impl FeedStore for FeedStorage< SledStorage >
               }
             }
             None
-          } ).collect::< Vec< _ > >()[ 0 ];
+          } )
+          .collect::< Vec< _ > >();
+
+        let link = links.get( 0 ).unwrap_or( &feed.2 );
 
         if !existing_feeds.contains( link )
         {

@@ -267,7 +267,7 @@ impl< C : FeedFetch, S : FeedStore + ConfigStore + FrameStore + TableStore + Sen
     for i in  0..subscriptions.len()
     {
       let feed = self.client.fetch( subscriptions[ i ].link.clone() ).await?;
-      feeds.push( ( feed, subscriptions[ i ].update_period.clone() ) );
+      feeds.push( ( feed, subscriptions[ i ].update_period.clone(), subscriptions[ i ].link.clone() ) );
     }
     self.storage.process_feeds( feeds ).await
   }
