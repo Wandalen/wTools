@@ -24,6 +24,13 @@ mod private
   use channel::Channel;
   use optimization::Optimization;
   
+  pub struct TestPackagePlan
+  {
+    package : PathBuf,
+    test_variants : BTreeSet< TestVariant >,
+    temp_directory_path : Option< PathBuf >,
+  }
+  
   /// Represents a variant for testing purposes.
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Former ) ]
   pub struct TestVariant
@@ -210,17 +217,24 @@ mod private
           }
         }
       }
-      // qqq : for Petro : bad, DRY
-      if success == failed + success
-      {
-        writeln!( f, "  ✅  All passed {success} / {}", failed + success )?;
-      }
-      else
-      {
-        writeln!( f, "  ❌  Not all passed {success} / {}", failed + success )?;
-      }
+      // aaa : for Petro : bad, DRY
+      // aaa : replace with method
+      writeln!(f, "  {}", generate_summary_message(failed, success ) )?;
 
       Ok( () )
+    }
+  }
+
+  
+  fn generate_summary_message( failed : i32, success : i32 ) -> String 
+  {
+    if success == failed + success
+    {
+      format!( "✅  All passed {success} / {}", failed + success )
+    } 
+    else 
+    {
+      format!( "❌  Not all passed {success} / {}", failed + success )
     }
   }
 
@@ -277,14 +291,7 @@ mod private
         }
       }
       writeln!( f, "Global report" )?;
-      if self.succses_reports.len() == self.failure_reports.len() + self.succses_reports.len()
-      {
-        writeln!( f, "  ✅  All passed {} / {}", self.succses_reports.len(),  self.succses_reports.len() )?;
-      }
-      else
-      {
-        writeln!( f, "  ❌  Not all passed {} / {}", self.succses_reports.len(),  self.failure_reports.len() + self.succses_reports.len() )?;
-      }
+      writeln!( f, "  {}", generate_summary_message( self.failure_reports.len() as i32, self.succses_reports.len() as i32 ) )?;
 
       Ok( () )
     }
