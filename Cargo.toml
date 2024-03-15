@@ -415,7 +415,7 @@ version = "~0.4.0"
 path = "module/move/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/move/crates_tools"
 
 
