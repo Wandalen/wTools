@@ -344,31 +344,33 @@ fn field_optional_map( field : &FormerField< '_ > ) -> TokenStream
 /// In simple terms, used on `form()` call to unwrap contained values from the former's container.
 /// Will try to use default values if no values supplied by the former and the type implements `Default` trait.
 ///
-/// ### Example of generated code for an optional field
+/// ### Generated code will look similar to this :
 ///
 /// ```ignore
 /// let int_1 : i32 = if self.container.int_1.is_some()
 /// {
+///   // if int_1 is optional
 ///   Some( self.container.int_1.take().unwrap() )
+///
+///   // if int_1 isn't optional
+///   self.container.int_1.take().unwrap()
 /// }
 /// else
 /// {
+///   // if int_1 is optional and has default
+///   Some( i32::default().into() )
+///
+///   // if int_1 is optional and doesn't have default
 ///   None
+///
+///   // if int_1 isn't optional and has default
+///   i32::default().into()
+///
+///   // if int_1 isn't optional and hasn't default
+///   panic!( "Field 'int_1' isn't initialized" )
 /// };
 /// ```
 ///
-/// ### Example of generated code for a non-optional field
-/// 
-/// ```ignore
-/// let int_1 : i32 = if self.container.int_1.is_some()
-/// {
-///   self.container.int_1.unwrap()
-/// }
-/// else
-/// {
-///   i32::default() // oversimplified
-/// }
-/// ```
 
 #[ inline( always ) ]
 fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
