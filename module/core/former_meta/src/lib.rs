@@ -414,8 +414,155 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
   }
 }
 
+///
 /// Derives the `SetComponents` trait for a struct, enabling `components_set` which set all fields at once.
-// xxx : extend documentation
+///
+/// This will work only if every field can be acquired from the passed value.
+/// In other words, the type passed as an argument to `components_set`` must implement Into<T> for each field type.
+///
+/// # Attributes
+///
+/// - `debug` : An optional attribute to enable debugging of the trait derivation process.
+///
+/// # Conditions
+///
+/// - This macro is only enabled when the `derive_set_components` feature is active in your `Cargo.toml`.
+/// - The type must implement `SetComponent` (`derive( SetComponent )`)
+///
+/// # Limitations
+/// This trait cannot be derived, if the struct has fields with identical types
+///
+/// # Input Code Example
+///
+/// Given a struct definition annotated with `#[ derive( SetComponents ) ]` :
+///
+/// ```rust
+/// use former::{ SetComponent, SetComponents };
+///
+/// #[ derive( Debug, Default, PartialEq ) ]
+/// struct Hours
+/// {
+///   c : u8,
+/// }
+///
+/// impl From<u8> for Hours
+/// {
+///   fn from( value : u8 ) -> Self
+///   {
+///     Hours
+///     {
+///       c : value
+///     }
+///   }
+/// }
+///
+/// #[ derive( Debug, Default, PartialEq ) ]
+/// struct Minutes
+/// {
+///   c : u8,
+/// }
+///
+/// impl From<u8> for Minutes
+/// {
+///   fn from( value : u8 ) -> Self
+///   {
+///     Minutes
+///     {
+///       c : value
+///     }
+///   }
+/// }
+///
+/// #[ derive( Debug, Default, PartialEq, SetComponent, SetComponents ) ]
+/// pub struct Clock
+/// {
+///   hours : Hours,
+///   minutes : Minutes,
+/// }
+///
+/// let mut clock = Clock::default();
+/// clock.components_set( 3 );
+///
+/// assert_eq!(
+///   clock,
+///   Clock
+///   {
+///     hours : Hours{ c : 3_u8 },
+///     minutes : Minutes{ c : 3_u8 },
+///   });
+/// ```
+///
+/// Which expands approximately into :
+///
+/// ```rust
+/// use former::{ SetComponent, SetComponents };
+///
+/// struct Hours
+/// {
+///   c: u8,
+/// }
+///
+/// struct Minutes
+/// {
+///   c: u8,
+/// }
+///
+/// pub struct Clock
+/// {
+///   hours: Hours,
+///   minutes: Minutes,
+/// }
+///
+/// impl< IntoT > SetComponent< Hours, IntoT > for Clock
+/// where
+///     IntoT : Into< Hours >,
+/// {
+///   #[ inline( always ) ]
+///   fn set( &mut self, component : IntoT )
+///   {
+///     self.hours = component.into();
+///   }
+/// }
+///
+/// impl< IntoT > SetComponent< Minutes, IntoT > for Clock
+/// where
+///   IntoT : Into< Minutes >,
+/// {
+///   #[ inline( always ) ]
+///   fn set( &mut self, component : IntoT )
+///   {
+///     self.minutes = component.into();
+///   }
+/// }
+///
+/// pub trait ClockSetComponents< IntoT >
+/// where
+///   IntoT : Into<Hours>,
+///   IntoT : Into< Minutes >,
+///   IntoT : Clone,
+/// {
+///   fn components_set( &mut self, component : IntoT );
+/// }
+///
+/// impl< T, IntoT > ClockSetComponents< IntoT > for T
+/// where
+///   T : former::SetComponent< Hours, IntoT >,
+///   T : former::SetComponent< Minutes, IntoT >,
+///   IntoT : Into< Hours >,
+///   IntoT : Into< Minutes >,
+///   IntoT : Clone,
+/// {
+///   fn components_set( &mut self, component : IntoT )
+///   {
+///     former::SetComponent::< Hours, _ >::set( self, component.clone() );
+///     former::SetComponent::< Minutes, _ >::set( self, component.clone() );
+///   }
+/// }
+///
+/// let mut clock = Clock::default();
+/// clock.components_set( 3 );
+/// ```
+///
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_set_components" ) ]
 #[ proc_macro_derive( SetComponents, attributes( debug ) ) ]
