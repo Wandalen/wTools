@@ -8,7 +8,7 @@ use iter_tools::{ Itertools, process_results };
 /// Output example can be found in in the root of the module
 ///
 
-pub fn set_components( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+pub fn components_set( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
@@ -71,7 +71,7 @@ pub fn set_components( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 }
 
 ///
-/// Generate trait bounds needed for `set_components`
+/// Generate trait bounds needed for `components_set`
 ///
 /// ### Output example
 ///
@@ -91,7 +91,7 @@ fn generate_trait_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Toke
 }
 
 ///
-/// Generate impl bounds needed for `set_components`
+/// Generate impl bounds needed for `components_set`
 ///
 /// ### Output example
 ///
@@ -111,7 +111,7 @@ fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Token
 }
 
 ///
-/// Generate set calls needed by `set_components`
+/// Generate set calls needed by `components_set`
 /// Returns a "unit" of work of `components_set` function, performing `set` on each field.
 ///
 /// Output example

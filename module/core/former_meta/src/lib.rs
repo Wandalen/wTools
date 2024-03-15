@@ -18,10 +18,10 @@ mod derive
   pub mod former;
   #[ cfg( feature = "derive_component_from" ) ]
   pub mod component_from;
-  #[ cfg( feature = "derive_set_component" ) ]
-  pub mod set_component;
-  #[ cfg( feature = "derive_set_components" ) ]
-  pub mod set_components;
+  #[ cfg( feature = "derive_component_set" ) ]
+  pub mod component_set;
+  #[ cfg( feature = "derive_components_set" ) ]
+  pub mod components_set;
 
 }
 
@@ -346,7 +346,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 ///
 /// # Conditions
 ///
-/// - This macro is only enabled when the `derive_set_component` feature is active in your `Cargo.toml`.
+/// - This macro is only enabled when the `derive_component_set` feature is active in your `Cargo.toml`.
 ///
 /// # Input Code Example
 ///
@@ -411,11 +411,11 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// the value of the `age` or `name` fields of `Person` instances, respectively.
 
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_set_component" ) ]
+#[ cfg( feature = "derive_component_set" ) ]
 #[ proc_macro_derive( ComponentSet, attributes( debug ) ) ]
-pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+pub fn component_set( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::set_component::set_component( input );
+  let result = derive::component_set::component_set( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -435,7 +435,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///
 /// # Conditions
 ///
-/// - This macro is only enabled when the `derive_set_components` feature is active in your `Cargo.toml`.
+/// - This macro is only enabled when the `derive_components_set` feature is active in your `Cargo.toml`.
 /// - The type must implement `ComponentSet` (`derive( ComponentSet )`)
 ///
 /// # Limitations
@@ -663,11 +663,11 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// ```
 ///
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_set_components" ) ]
+#[ cfg( feature = "derive_components_set" ) ]
 #[ proc_macro_derive( ComponentsSet, attributes( debug ) ) ]
-pub fn set_components( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+pub fn components_set( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::set_components::set_components( input );
+  let result = derive::components_set::components_set( input );
   match result
   {
     Ok( stream ) => stream.into(),

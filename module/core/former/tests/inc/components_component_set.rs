@@ -14,4 +14,4 @@ struct Person
 
 //
 
-include!( "only_test/components_set_component.rs" );
+include!( "only_test/components_component_set.rs" );

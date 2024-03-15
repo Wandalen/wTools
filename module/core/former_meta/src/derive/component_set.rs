@@ -4,7 +4,7 @@ use macro_tools::{ attr, diag, type_struct, Result };
 ///
 /// Generates implementations of the `ComponentSet` trait for each field of a struct.
 ///
-pub fn set_component( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+pub fn component_set( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;

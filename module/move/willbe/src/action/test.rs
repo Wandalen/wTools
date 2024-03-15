@@ -20,12 +20,12 @@ mod private
   //
   // [ optimization : debug | channel : stable | feature : derive_component_from,use_alloc ]
   // [ optimization : debug | channel : stable | feature : default,enabled ]
-  // [ optimization : debug | channel : stable | feature : derive_set_components ]
-  // [ optimization : debug | channel : stable | feature : derive_component_from,derive_set_component ]
-  // [ optimization : debug | channel : stable | feature : derive_former,derive_set_component ]
+  // [ optimization : debug | channel : stable | feature : derive_components_set ]
+  // [ optimization : debug | channel : stable | feature : derive_component_from,derive_component_set ]
+  // [ optimization : debug | channel : stable | feature : derive_former,derive_component_set ]
   // [ optimization : debug | channel : stable | feature : enabled ]
-  // [ optimization : debug | channel : stable | feature : derive_set_component,no_std ]
-  // [ optimization : debug | channel : stable | feature : default,derive_set_component ]
+  // [ optimization : debug | channel : stable | feature : derive_component_set,no_std ]
+  // [ optimization : debug | channel : stable | feature : default,derive_component_set ]
   // [ optimization : debug | channel : stable | feature : no-features ]
   //
   // should be
@@ -78,7 +78,7 @@ mod private
     #[ default( false ) ]
     with_none_features : bool,
     optimizations : HashSet< optimization::Optimization >,
-    #[ default( 200u32 ) ] 
+    #[ default( 200u32 ) ]
     variants_cap : u32,
   }
 
@@ -112,14 +112,14 @@ mod private
       enabled_features,
       with_all_features,
       with_none_features,
-      optimizations, 
+      optimizations,
       variants_cap,
     } = args;
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
     if temp
     {
-      
+
       let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
