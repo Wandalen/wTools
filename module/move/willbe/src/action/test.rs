@@ -72,6 +72,14 @@ mod private
     exclude_features : Vec< String >,
     #[ default( true ) ]
     temp : bool,
+    enabled_features : Vec< String >,
+    #[ default( false ) ]
+    with_all_features : bool,
+    #[ default( false ) ]
+    with_none_features : bool,
+    optimizations : HashSet< optimization::Optimization >,
+    #[ default( 200u32 ) ] 
+    variants_cap : u32,
   }
 
   /// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
@@ -103,8 +111,9 @@ mod private
       temp,
       enabled_features,
       with_all_features,
-      with_none_features
-      optimizations,
+      with_none_features,
+      optimizations, 
+      variants_cap,
     } = args;
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
@@ -135,6 +144,7 @@ mod private
         with_all_features,
         with_none_features,
         optimizations,
+        variants_cap,
       };
 
       let report = tests_run( &t_args, &packages, dry );
@@ -158,6 +168,7 @@ mod private
         enabled_features,
         with_all_features,
         with_none_features,
+        variants_cap,
       };
       // qqq : for Petro : DRY
 

@@ -143,6 +143,9 @@ mod private
 
     /// todo
     pub with_none_features : bool,
+  
+    /// todo
+    pub variants_cap : u32,
   }
 
 
@@ -312,6 +315,7 @@ mod private
       &args.enabled_features,
       args.with_all_features,
       args.with_none_features,
+      args.variants_cap,
     );
 
     print_temp_report( &package.name, &args.optimizations, &args.channels, &features_powerset );

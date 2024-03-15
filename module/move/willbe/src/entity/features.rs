@@ -44,14 +44,14 @@ mod private
 
   pub fn features_powerset
   (
-    package : &Package,
+    package : &Package, 
     power : usize,
     exclude_features : &[ String ],
     include_features : &[ String ],
     enabled_features : &[ String ],
     with_all_features : bool,
     with_none_features : bool,
-    variants_cap : usize, // qqq максимальна кількість варіантів
+    variants_cap : u32,
   )
     -> HashSet< BTreeSet< String > >
   {
@@ -62,9 +62,9 @@ mod private
     .keys()
     .filter( | f | !exclude_features.contains( f ) && ( include_features.contains( f ) || include_features.is_empty() ) )
     .cloned()
-    .collect();
+    .collect();// N
 
-    for subset_size in 0..= std::cmp::min( filtered_features.len(), power )
+    for subset_size in 0..= std::cmp::min( filtered_features.len(), power/* P */)
     {
       for combination in filtered_features.iter().combinations( subset_size )
       {
@@ -86,9 +86,47 @@ mod private
     if with_none_features
     {
       features_powerset.insert( [].into_iter().collect() );
+      features_powerset.insert( enabled_features.iter().cloned().collect() );
     }
 
-    features_powerset.into_iter().take( variants_cap ).collect()
+    features_powerset.into_iter().take( variants_cap as usize ).collect()
+  }
+
+
+  fn esimate_with( filtered_length :  usize, power : usize, with_all : bool, with_none : bool, enabled : &[ String ], unfiltred_length : usize ) -> usize
+  {
+    let mut e = esimate( filtered_length, power);
+    if !enabled.is_empty() && with_none
+    {
+      e += 1;
+    }
+    if with_all && power + enabled.len() >= unfiltred_length
+    {
+      e += 1;
+    }
+    e
+  }
+
+  fn esimate( filtered_length : usize, power : usize ) -> usize
+  {
+    let mut r = 0;
+    for p in 1..power
+    {
+      r += factorial( filtered_length ) / (factorial(p) * factorial( filtered_length - p ) );
+    }
+    r
+  }
+
+  fn factorial( n : usize ) -> usize
+  {
+    return if n == 1
+    {
+      1
+    }
+    else
+    {
+      n * factorial(n - 1)
+    }
   }
 }
 

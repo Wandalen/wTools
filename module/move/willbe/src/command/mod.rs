@@ -152,6 +152,11 @@ pub( crate ) mod private
         .kind( Type::Bool )
         .optional( true )
         .end()
+      .property( "variants_cap" )
+        .hint( "Regulates the number of possible combinations")
+        .kind( Type::Number )
+        .optional( true )
+        .end()
       .routine( command::test )
       .end()
 
