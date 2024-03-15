@@ -23,6 +23,15 @@ mod private
   use former::Former;
   use channel::Channel;
   use optimization::Optimization;
+  
+  /// todo
+  #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Former ) ]
+  pub struct TestVariant
+  {
+    channel : Channel,
+    optimization : Optimization,
+    features : String,
+  }
 
   /// Represents the options for the test.
   #[ derive( Debug, Former, Clone ) ]
@@ -158,7 +167,7 @@ mod private
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
     ///   feature names and the values are `CmdReport` structs representing the test results for
     ///   the specific feature and channel.
-    pub tests : BTreeMap< Optimization, BTreeMap< Channel, BTreeMap< String, Result< CmdReport, CmdReport > > > >,
+    pub tests : BTreeMap< TestVariant, Result< CmdReport, CmdReport > > ,
     // qqq : for Petro : rid off map of map of map, keep flat map
   }
 
@@ -178,33 +187,27 @@ mod private
         writeln!( f, "unlucky" )?;
         return Ok( () );
       }
-
-      // qqq : for Petro : bad, DRY
-      for( optimization, channels ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) )
+      for ( variant, result) in &self.tests 
       {
-        for( channel, features ) in channels.iter().sorted_by( | a, b | a.0.cmp( b.0 ) ) {
-          for( feature, result ) in features
+        let feature = if variant.features.is_empty() { "-" } else { &variant.features };
+        // if tests failed or if build failed
+        match result
+        {
+          Ok( _ ) =>
           {
-            let feature = if feature.is_empty() { "-" } else { feature };
-            // if tests failed or if build failed
-            match result
-            {
-              Ok(_) =>
-              {
-                success += 1;
-                writeln!( f, "  [ {} | {} | {} ]: ✅  successful", optimization, channel, feature )?;
-              }
-              Err(result) =>
-              {
-                let mut out = result.out.replace("\n", "\n      ");
-                out.push_str("\n");
-                failed += 1;
-                write!( f, "  [ {} | {} | {} ]: ❌  failed\n  \n{out}", optimization, channel, feature )?;
-              }
-            }
+            success += 1;
+            writeln!( f, "  [ {} | {} | {} ]: ✅  successful", variant.optimization, variant.channel, feature )?;
+          }
+          Err( result) =>
+          {
+            let mut out = result.out.replace("\n", "\n      ");
+            out.push_str("\n");
+            failed += 1;
+            write!( f, "  [ {} | {} | {} ]: ❌  failed\n  \n{out}", variant.optimization, variant.channel, feature )?;
           }
         }
       }
+      // qqq : for Petro : bad, DRY
       if success == failed + success
       {
         writeln!( f, "  ✅  All passed {success} / {}", failed + success )?;
@@ -334,19 +337,8 @@ mod private
                     args_t = args_t.temp_directory_path( path );
                   }
                   let cmd_rep = _run(dir, args_t.form(), dry);
-                  r
-                  .lock()
-                  .unwrap()
-                  .tests
-                  .entry( optimization )
-                  .or_default()
-                  .entry( channel )
-                  .or_default()
-                  .insert
-                  (
-                    feature.iter().join( "," ),
-                    cmd_rep.map_err( | e | e.0 )
-                  );
+                  let variant = TestVariant::former().channel( channel ).optimization( optimization ).features( feature.iter().join( "," ) ).form();
+                  r.lock().unwrap().tests.insert( variant, cmd_rep.map_err( | e | e.0 ) );
                 }
               );
             }
@@ -360,9 +352,7 @@ mod private
     let at_least_one_failed = report
     .tests
     .iter()
-    .flat_map( | ( _, channel ) | channel.iter().map( | ( _, features ) | features ) )
-    .flat_map( | features | features.iter().map( | ( _, result ) | result ) )
-    .any( | result | result.is_err() );
+    .any( | ( _, result ) | result.is_err() );
     if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
   }
 
@@ -434,6 +424,7 @@ crate::mod_interface!
 {
 
   protected use SingleTestOptions;
+  protected use TestVariant;
   protected use _run;
 
   protected use TestOptions;

@@ -8,6 +8,7 @@ use action::test::{test, TestsCommandOptions};
 use path::AbsolutePath;
 use channel::*;
 use optimization::*;
+use willbe::test::TestVariant;
 
 #[ test ]
 // if the test fails => the report is returned as an error ( Err(CmdReport) )
@@ -37,8 +38,11 @@ fn fail_test()
   let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-  let stable = rep.failure_reports[ 0 ].tests.get( &Optimization::Debug ).unwrap().get( &Channel::Stable ).unwrap();
-  let no_features = stable.get( "" ).unwrap();
+  let no_features = rep
+  .failure_reports[ 0 ]
+  .tests.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( "" ).form() )
+  .unwrap();
+  
   assert!( no_features.is_err() );
   assert!( no_features.clone().unwrap_err().out.contains( "failures" ) );
 }
@@ -72,8 +76,10 @@ fn fail_build()
   let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-  let stable = rep.failure_reports[ 0 ].tests.get( &Optimization::Debug ).unwrap().get( &Channel::Stable ).unwrap();
-  let no_features = stable.get( "" ).unwrap();
+  let no_features = rep
+  .failure_reports[ 0 ]
+  .tests.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( "" ).form() )
+  .unwrap();
 
   assert!( no_features.clone().unwrap_err().out.contains( "error" ) && no_features.clone().unwrap_err().out.contains( "achtung" ) );
 }
@@ -161,25 +167,11 @@ fn plan()
   .optimizations([ Optimization::Debug, Optimization::Release ])
   .form();
 
-  let rep = test( args, true ).unwrap().succses_reports[ 0 ].clone();
-
-  assert!( rep.tests.contains_key( &Optimization::Debug ) );
-  let debug = rep.tests.get( &Optimization::Debug ).unwrap().clone();
-  assert!( debug.contains_key( &Channel::Stable ) );
-  assert!( debug.contains_key( &Channel::Nightly ) );
-  let stable = debug.get( &Channel::Stable ).unwrap().clone();
-  assert!( stable.contains_key( "" ) );
-  let nightly = debug.get( &Channel::Nightly ).unwrap().clone();
-  assert!(nightly.contains_key( "" ));
-
-  assert!( rep.tests.contains_key( &Optimization::Release ) );
-  let release = rep.tests.get( &Optimization::Release ).unwrap().clone();
-  assert!( release.contains_key( &Channel::Stable ) );
-  assert!( release.contains_key( &Channel::Nightly ) );
-  let stable = release.get( &Channel::Stable ).unwrap().clone();
-  assert!( stable.contains_key( "" ) );
-  let nightly = debug.get( &Channel::Nightly ).unwrap().clone();
-  assert!( nightly.contains_key( "" ) );
+  let rep = test( args, true ).unwrap().succses_reports[ 0 ].clone().tests;
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( "" ).form() ).is_some() );
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Nightly ).features( "" ).form() ).is_some() );
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Release ).channel( Channel::Stable ).features( "" ).form() ).is_some() );
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Release ).channel( Channel::Nightly ).features( "" ).form() ).is_some() );
 }
 
 #[ derive( Debug ) ]
