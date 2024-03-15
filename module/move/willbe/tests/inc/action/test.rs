@@ -20,7 +20,8 @@ fn fail_test()
   .toml_file( "" )
   .test_file( r#"
     #[test]
-    fn should_fail() {
+    fn should_fail()
+    {
       panic!()
     }
   "#)
@@ -37,7 +38,11 @@ fn fail_test()
   let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-  let stable = rep.failure_reports[ 0 ].tests.get( &Optimization::Debug ).unwrap().get( &Channel::Stable ).unwrap();
+  let stable = rep.failure_reports[ 0 ]
+  .tests.get( &Optimization::Debug )
+  .unwrap()
+  .get( &Channel::Stable )
+  .unwrap();
   let no_features = stable.get( "" ).unwrap();
   assert!( no_features.is_err() );
   assert!( no_features.clone().unwrap_err().out.contains( "failures" ) );

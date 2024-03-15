@@ -23,6 +23,7 @@ This approach abstracts away the need for manually implementing a builder for ea
 The provided code snippet illustrates a basic use-case of the Former crate in Rust, which is used to apply the builder pattern for structured and flexible object creation. Below is a detailed explanation of each part of the markdown chapter, aimed at clarifying how the Former trait simplifies struct instantiation.
 
 ```rust
+#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 fn main()
 {
   use former::Former;
