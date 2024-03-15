@@ -26,7 +26,7 @@ mod hash_map;
 mod hash_set;
 /// Component-based forming.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
+// #[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "derive_component_from" ) ]
 mod component;
 
@@ -110,7 +110,7 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]
-  #[ cfg( not( feature = "no_std" ) ) ]
+  // #[ cfg( not( feature = "no_std" ) ) ]
   #[ cfg( feature = "derive_component_from" ) ]
   pub use super::component::*;
 }

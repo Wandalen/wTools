@@ -16,12 +16,10 @@
 //! This approach abstracts away the need for manually implementing a builder for each struct, making code more readable and maintainable.
 //!
 
-#[ cfg( not( feature = "enabled" ) ) ]
-#[ allow( dead_code ) ]
+#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 fn main(){}
 
-#[ cfg( feature = "enabled" ) ]
-#[ allow( dead_code ) ]
+#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 fn main()
 {
 

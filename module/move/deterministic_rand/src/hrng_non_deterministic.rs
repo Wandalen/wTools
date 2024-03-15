@@ -13,7 +13,7 @@ pub( crate ) mod private
   use crate::*;
   use core::{ ops::Deref, ops::DerefMut };
 
-  /// Emulates behavior of `Arc<Mutex<ThreadRng>>` for compatibility.
+  /// Emulates behavior of `Arc<Mutex< ThreadRng >>` for compatibility.
 
   #[ derive( Debug ) ]
   pub struct SharedGenerator;
@@ -29,7 +29,7 @@ pub( crate ) mod private
     }
   }
 
-  /// Emulates behavior of `Arc<Mutex<ThreadRng>>` for compatibility.
+  /// Emulates behavior of `Arc<Mutex< ThreadRng >>` for compatibility.
 
   #[ derive( Debug) ]
   pub struct SharedGeneratorLock;
@@ -125,7 +125,7 @@ pub( crate ) mod private
 
     /// Get a reference to the current random number generator using a reference counter and mutex.
     ///
-    /// Returns a shared `Arc<Mutex<Generator>>`.
+    /// Returns a shared `Arc<Mutex< Generator >>`.
     ///
     /// ### Example
     ///

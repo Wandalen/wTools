@@ -2,14 +2,14 @@
 use super::*;
 use std::path::PathBuf;
 
-fn tmp_dir_get( prefix : impl AsRef<str> ) -> PathBuf
+fn tmp_dir_get( prefix : impl AsRef< str > ) -> PathBuf
 {
   let mut tmp_dir = std::env::temp_dir();
   tmp_dir.push( prefix.as_ref() );
   tmp_dir
 }
 
-fn asset_copy_to_tmp( asset_dir : impl AsRef<str>, prefix : impl AsRef<str> ) -> std::io::Result< () >
+fn asset_copy_to_tmp( asset_dir : impl AsRef< str >, prefix : impl AsRef< str > ) -> std::io::Result< () >
 {
   let tmp_dir = tmp_dir_get( prefix.as_ref() );
   // if the dir already exists - remove it and create new
@@ -55,7 +55,7 @@ fn dir_traverse( dir : impl AsRef< str >, tmp_dir : &PathBuf, strip : &PathBuf )
   Ok( () )
 }
 
-fn asset_clean_tmp( prefix : impl AsRef<str> ) -> std::io::Result< () >
+fn asset_clean_tmp( prefix : impl AsRef< str > ) -> std::io::Result< () >
 {
   let tmp_dir = tmp_dir_get( prefix );
   std::fs::remove_dir_all( tmp_dir )

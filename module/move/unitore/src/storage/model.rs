@@ -3,26 +3,58 @@ use std::time::Duration;
 use feed_rs::model::{ Entry, Feed };
 use gluesql::core::
 {
-  ast_builder::{ null, text, timestamp, ExprNode },
+  ast_builder::{ function::generate_uuid, null, text, timestamp, ExprNode },
   chrono::SecondsFormat,
 };
 
 pub struct FeedRow( pub Vec< ExprNode< 'static > > );
 
+impl FeedRow
+{
+  pub fn new( feed_link : String, update_period : Duration ) -> Self
+  {
+    FeedRow( vec!
+    [
+      text( feed_link ),
+      null(),
+      // text( feed_link ),
+      null(),
+      null(),
+      null(),
+      null(),
+      text( update_period.as_secs().to_string() ),
+    ] )
+  }
+}
+
 impl From< ( Feed, Duration ) > for FeedRow
 {
   fn from( value : ( Feed, Duration ) ) -> Self
   {
-    let mut row = Vec::new();
     let duration = value.1;
     let value = value.0;
-    row.push( text( value.id.clone() ) );
-    row.push( value.title.clone().map( | title | text( title.content ) ).unwrap_or( null() ) );
-    row.push( value.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ) );
-    row.push( text( value.authors.iter().map( | p | p.name.clone() ).fold( String::new(), | acc, val | format!( "{}, {}", acc, val ) ) ).to_owned() );
-    row.push( value.description.clone().map( | desc | text( desc.content ) ).unwrap_or( null() ) );
-    row.push( value.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ) );
-    row.push( text( duration.as_secs().to_string() ) );
+    let row = vec!
+    [
+      value.links.iter().filter_map( | link |
+        {
+          if let Some( media_type ) = &link.media_type
+          {
+            if media_type == &String::from( "application/rss+xml" )
+            {
+              return Some( text( link.href.clone() ) );
+            }
+          } 
+          None
+        } ).collect::< Vec< _ > >()[ 0 ]
+        .clone(),
+      value.title.clone().map( | title | text( title.content ) ).unwrap_or( null() ),
+      // value.links.get( 0 ).map( | link | text( link.href.clone() ) ).unwrap_or( null() ),
+      value.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
+      text( value.authors.iter().map( | p | p.name.clone() ).fold( String::new(), | acc, val | format!( "{}, {}", acc, val ) ) ),
+      value.description.clone().map( | desc | text( desc.content ) ).unwrap_or( null() ),
+      value.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
+      text( duration.as_secs().to_string() ),
+    ];
     FeedRow( row )
   }
 }
@@ -97,5 +129,50 @@ impl From< ( Entry, String ) > for FrameRow
     let language = entry.language.clone().map( | l | text( l ) ).unwrap_or( null() );
 
     FrameRow( vec![ id, title, updated, authors, content,links, summary, categories, published, source, rights, media, language, feed_id ] )
+  }
+}
+
+pub struct RowValue< 'a >( pub &'a gluesql::prelude::Value );
+
+impl std::fmt::Display for RowValue< '_ >
+{
+  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  {
+    use gluesql::prelude::Value::*;
+    match &self.0
+    {
+      Bool( val ) => write!( f, "{}", val )?,
+      I8( val ) => write!( f, "{}", val )?,
+      I16( val ) => write!( f, "{}", val )?,
+      I32( val ) => write!( f, "{}", val )?,
+      I64( val ) => write!( f, "{}", val )?,
+      I128( val ) => write!( f, "{}", val )?,
+      U8( val ) => write!( f, "{}", val )?,
+      U16( val ) => write!( f, "{}", val )?,
+      U32( val ) => write!( f, "{}", val )?,
+      U64( val ) => write!( f, "{}", val )?,
+      U128( val ) => write!( f, "{}", val )?,
+      F32( val ) => write!( f, "{}", val )?,
+      F64( val ) => write!( f, "{}", val )?,
+      Str( val ) => write!( f, "{}", val )?,
+      Null => write!( f, "Null" )?,
+      Timestamp( val ) => write!( f, "{}", val )?,
+      _ => write!( f, "" )?,
+    }
+
+    Ok( () )
+  }
+}
+
+impl From< RowValue< '_ > > for String
+{
+  fn from( value : RowValue< '_ > ) -> Self
+  {
+    use gluesql::core::data::Value::*;
+    match &value.0
+    {
+      Str( val ) => val.clone(),
+      _ => String::new(),
+    }
   }
 }

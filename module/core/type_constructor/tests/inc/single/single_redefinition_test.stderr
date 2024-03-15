@@ -16,7 +16,7 @@ error[E0428]: the name `Bad` is defined multiple times
    = note: `Bad` must be defined only once in the type namespace of this block
    = note: this error originates in the macro `$crate::_single` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0119]: conflicting implementations of trait `Deref` for type `main::Bad<_>`
+error[E0119]: conflicting implementations of trait `Deref` for type `main::Bad< _ >`
   --> tests/dt/type_constructor/single/single_redefinition_test.rs:5:3
    |
 5  | /   types!
@@ -29,11 +29,11 @@ error[E0119]: conflicting implementations of trait `Deref` for type `main::Bad<_
    | |   ^
    | |   |
    | |___first implementation here
-   |     conflicting implementation for `main::Bad<_>`
+   |     conflicting implementation for `main::Bad< _ >`
    |
    = note: this error originates in the macro `$crate::_single` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0119]: conflicting implementations of trait `DerefMut` for type `main::Bad<_>`
+error[E0119]: conflicting implementations of trait `DerefMut` for type `main::Bad< _ >`
   --> tests/dt/type_constructor/single/single_redefinition_test.rs:5:3
    |
 5  | /   types!
@@ -46,11 +46,11 @@ error[E0119]: conflicting implementations of trait `DerefMut` for type `main::Ba
    | |   ^
    | |   |
    | |___first implementation here
-   |     conflicting implementation for `main::Bad<_>`
+   |     conflicting implementation for `main::Bad< _ >`
    |
    = note: this error originates in the macro `$crate::_single` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0119]: conflicting implementations of trait `From<&_>` for type `main::Bad<_>`
+error[E0119]: conflicting implementations of trait `From<&_>` for type `main::Bad< _ >`
   --> tests/dt/type_constructor/single/single_redefinition_test.rs:5:3
    |
 5  | /   types!
@@ -63,6 +63,6 @@ error[E0119]: conflicting implementations of trait `From<&_>` for type `main::Ba
    | |   ^
    | |   |
    | |___first implementation here
-   |     conflicting implementation for `main::Bad<_>`
+   |     conflicting implementation for `main::Bad< _ >`
    |
    = note: this error originates in the macro `$crate::_single` which comes from the expansion of the macro `types` (in Nightly builds, run with -Z macro-backtrace for more info)

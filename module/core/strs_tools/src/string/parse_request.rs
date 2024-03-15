@@ -145,11 +145,11 @@ pub( crate ) mod private
     /// Parsed subject of first command.
     pub subject : String,
     /// All subjects of the commands in request.
-    pub subjects : Vec<String>,
+    pub subjects : Vec< String >,
     /// Options map of first command.
-    pub map : HashMap<String, OpType<String>>,
+    pub map : HashMap<String, OpType< String >>,
     /// All options maps of the commands in request.
-    pub maps : Vec<HashMap<String, OpType<String>>>,
+    pub maps : Vec<HashMap<String, OpType< String >>>,
   }
 
   ///
@@ -299,7 +299,7 @@ pub( crate ) mod private
         }
 
         let subject;
-        let mut map : HashMap<String, OpType<String>> = HashMap::new();
+        let mut map : HashMap<String, OpType< String >> = HashMap::new();
 
         if map_entries.1.is_some()
         {
@@ -376,7 +376,7 @@ pub( crate ) mod private
 
           /* */
 
-          let str_to_vec_maybe = | src : &str | -> Option<Vec<String>>
+          let str_to_vec_maybe = | src : &str | -> Option<Vec< String >>
           {
             if !src.starts_with( '[' ) || !src.ends_with( ']' )
             {
@@ -392,7 +392,7 @@ pub( crate ) mod private
             .preserving_delimeters( false )
             .preserving_quoting( false )
             .perform()
-            .map( | e | String::from( e ).trim().to_owned() ).collect::< Vec<String> >();
+            .map( | e | String::from( e ).trim().to_owned() ).collect::< Vec< String > >();
 
             Some( splits )
           };

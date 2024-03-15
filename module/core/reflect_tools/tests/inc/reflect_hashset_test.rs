@@ -18,7 +18,7 @@ fn reflect_hashset_test()
 
   a_id!( reflect( &set ).is_container(), true );
   a_id!( reflect( &set ).len(), 3 );
-  a_id!( reflect( &set ).type_name(), "std::collections::hash::set::HashSet<i32>" );
+  a_id!( reflect( &set ).type_name(), "std::collections::hash::set::HashSet< i32 >" );
   a_id!( reflect( &set ).type_id(), core::any::TypeId::of::< HashSet< i32 > >() );
 
   let expected = vec!

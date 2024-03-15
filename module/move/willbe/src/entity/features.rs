@@ -21,7 +21,7 @@ mod private
   ///
   /// # Returns
   ///
-  /// Returns a `HashSet<BTreeSet<String>>` where each `BTreeSet<String>` is a unique combination of feature names,
+  /// Returns a `HashSet<BTreeSet< String >>` where each `BTreeSet< String >` is a unique combination of feature names,
   /// taking into account the inclusion, exclusion, and size constraints.
   ///
   /// # Examples
@@ -49,7 +49,7 @@ mod private
   {
     let mut features_powerset = HashSet::new();
 
-    let filtered_features : Vec<_> = package
+    let filtered_features : Vec< _ > = package
     .features
     .keys()
     .filter( | f | !exclude_features.contains( f ) )

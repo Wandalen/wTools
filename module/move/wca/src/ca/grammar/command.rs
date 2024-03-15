@@ -200,7 +200,7 @@ pub( crate ) mod private
     ///
     /// # Arguments
     ///
-    /// * `name` - The name of the property. It should implement the `Into<String>` trait.
+    /// * `name` - The name of the property. It should implement the `Into< String >` trait.
     pub fn property< IntoName >( self, name : IntoName ) -> PropertyDescriptionFormer< Self, impl former::ToSuperFormer< PropertyDescription, Self > >
     where
       IntoName : Into< String >,

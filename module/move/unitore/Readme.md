@@ -6,20 +6,20 @@ Feed reader with the ability to set updates frequency.
 
 ### Basic use-case
 
-To start using unitore, set environment variable `UNITORE_STORAGE` to path to desired storage location.
-Then create configuration toml file with list of feed information - its link and update period.
+To start using unitore, create configuration toml file with list of feed information - its link and update period.
+
+- `update_period` : update frequency for feed. Example values: `12h`, `1h 20min`, `2days 5h`;
+- `link` : URL for feed source; 
 Example:
 
 
 ```toml
 [[config]]
-name = "bbc" 
-period = "2days" 
+update_period = "1min" 
 link = "https://feeds.bbci.co.uk/news/world/rss.xml"
 
 [[config]]
-name = "times"
-period = "2days"
+update_period = "1min"
 link = "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
 
 ```
@@ -30,6 +30,8 @@ cargo run .config.add ./config/feeds.toml
 ```
 To download feeds from sources specified in config file into storage use command `.frames.download`.
 Every time this command is run, feeds from all sources listed in all config files will be updated.
+By default, unitore will store downloaded frames at `_data` folder, you can change that by setting
+environment variable `UNITORE_STORAGE_PATH` to path to desired storage location.
 ```bash
 cargo run .frames.download
 ```

@@ -55,7 +55,7 @@ pub( crate ) mod private
       .map
       (
         |( number, subj )|
-        format!( "\n- {}subject_{number} - {} `[{:?}]`", if subj.optional { "`<optional>` " } else { "" }, subj.hint, subj.kind )
+        format!( "\n- {}subject_{number} - {} `[{:?}]`", if subj.optional { "`< optional >` " } else { "" }, subj.hint, subj.kind )
       )
       .join( "\n" );
       let full_properties = cmd
@@ -65,7 +65,7 @@ pub( crate ) mod private
       .map
       (
         |( name, value )|
-        format!( "\n- {}{name} - {} `[{:?}]`", if value.optional { "`<optional>` " } else { "" }, value.hint, value.kind )
+        format!( "\n- {}{name} - {} `[{:?}]`", if value.optional { "`< optional >` " } else { "" }, value.hint, value.kind )
       )
       .join( "\n" );
       // aaa : for Bohdan : toooooo log lines. 130 is max

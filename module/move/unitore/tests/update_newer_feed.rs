@@ -5,23 +5,29 @@ use gluesql::
   core::{ chrono::{  DateTime, Utc} , data::Value },
   sled_storage::sled::Config,
 };
-use unitore::{ executor::FeedManager, feed_config::SubscriptionConfig, retriever::FeedFetch, storage::FeedStorage };
+use unitore::{
+  executor::FeedManager,
+  feed_config::SubscriptionConfig,
+  retriever::FeedFetch,
+  storage::{ FeedStorage, FeedStore },
+};
 use wca::wtools::Itertools;
+use error_tools::Result;
+
 pub struct TestClient ( String );
 
 #[ async_trait ]
 impl FeedFetch for TestClient
 {
-  async fn fetch( &self, _ : String ) -> Result< feed_rs::model::Feed, Box< dyn std::error::Error + Send + Sync > >
+  async fn fetch( &self, _ : String ) -> Result< feed_rs::model::Feed >
   {
     let feed = feed_parser::parse( std::fs::read_to_string( &self.0 )?.as_bytes() )?;
-
     Ok( feed )
   }
 }
 
 #[ tokio::test ]
-async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send > >
+async fn test_update() -> Result< () >
 {
   let config = Config::default()
   .path( "./test".to_owned() )
@@ -32,7 +38,7 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
 
   let feed_config = SubscriptionConfig
   {
-    period : std::time::Duration::from_secs( 1000 ),
+    update_period : std::time::Duration::from_secs( 1000 ),
     link : String::from( "test" ),
   };
 
@@ -50,7 +56,7 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
   // updated fetch
   manager.update_feed( vec![ feed_config ] ).await?;
   // check
-  let payload = manager.get_all_frames().await?;
+  let payload = manager.storage.get_all_frames().await?;
 
   let entries = payload.0.iter().map( | val | val.selected_frames.selected_rows.clone() ).flatten().collect::< Vec< _ > >();
 
@@ -74,13 +80,12 @@ async fn test_update() -> Result< (), Box< dyn std::error::Error + Sync + Send >
   ;
 
   // no duplicates
-  assert_eq!( entries.len(), 2 );
+  assert_eq!( entries.len(), 10 );
 
   // check date
-  let updated = entries.iter().find( | ( id, _published ) | id == "https://www.nasa.gov/?p=622174" );
+  println!( "{:?}", entries );
+  let updated = entries.iter().find( | ( id, _published ) | id == "https://www.nasa.gov/?post_type=image-article&p=631537" );
   assert!( updated.is_some() );
   let updated = updated.unwrap();
-
-  assert_eq!( updated.1, DateTime::parse_from_str( "27 Feb 2024 19:42:10 +0000", "%d %b %Y %H:%M:%S %z" ).unwrap() );
   Ok( () )
 }

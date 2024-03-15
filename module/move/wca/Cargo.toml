@@ -1,6 +1,6 @@
 [package]
 name = "wca"
-version = "0.11.0"
+version = "0.12.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,7 +24,7 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-exclude = [ "/tests", "/examples", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 default = [ "enabled" ]
