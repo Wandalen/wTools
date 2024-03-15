@@ -68,17 +68,27 @@ mod private
     {
       for combination in filtered_features.iter().combinations( subset_size )
       {
-        let subset : BTreeSet< String > = combination.into_iter().cloned().collect();
+        let mut subset : BTreeSet< String > = combination.into_iter().cloned().collect();
         if subset.is_empty() || subset == filtered_features
         {
           continue
         }
-        // subset.extend( enabled_features.iter().cloned() );
+        subset.extend( enabled_features.iter().cloned() );
         features_powerset.insert( subset );
       }
     }
+    
+    if with_all_features
+    {
+      features_powerset.insert( filtered_features );
+    }
+    
+    if with_none_features
+    {
+      features_powerset.insert( [].into_iter().collect() );
+    }
 
-    features_powerset
+    features_powerset.into_iter().take( variants_cap ).collect()
   }
 }
 
