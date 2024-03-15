@@ -1,6 +1,11 @@
+//! Endpoints and report for feed commands.
+
 use crate::*;
-use executor::FeedManager;
-use super::{ Report, frames::SelectedEntries };
+use executor::
+{
+  FeedManager,
+  endpoints::{ Report, frames::SelectedEntries },
+};
 use storage::{ FeedStorage, FeedStore };
 use error_tools::Result;
 
@@ -25,6 +30,7 @@ pub struct FeedsReport
 
 impl FeedsReport
 {
+  /// Create new empty report for feeds command.
   pub fn new() -> Self
   {
     Self { selected_entries : SelectedEntries::new() }
@@ -48,7 +54,7 @@ impl std::fmt::Display for FeedsReport
       let mut headers = vec![ EMPTY_CELL.to_owned() ];
       headers.extend( self.selected_entries.selected_columns.iter().map( | str | str.to_owned() ) );
 
-      let table = table::table_with_headers( headers, rows );
+      let table = table_display::table_with_headers( headers, rows );
       if let Some( table ) = table
       {
         write!( f, "{}", table )?;

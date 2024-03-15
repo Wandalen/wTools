@@ -1,3 +1,5 @@
+//! Query command endpoint and report.
+
 use crate::*;
 use gluesql::core::executor::Payload;
 use super::Report;
@@ -25,16 +27,13 @@ const EMPTY_CELL : &'static str = "";
 
 /// Information about result of execution of custom query.
 #[ derive( Debug ) ]
-pub struct QueryReport
-{
-  pub result : Vec< gluesql::prelude::Payload >,
-}
+pub struct QueryReport( pub Vec< gluesql::prelude::Payload > );
 
 impl std::fmt::Display for QueryReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    for payload in &self.result
+    for payload in &self.0
     {
       match payload
       {
@@ -67,7 +66,7 @@ impl std::fmt::Display for QueryReport
               ];
               rows.push( new_row );
             }
-            let table = table::plain_table( rows );
+            let table = table_display::plain_table( rows );
             if let Some( table ) = table
             {
               writeln!( f, "{}", table )?;

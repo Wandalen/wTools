@@ -1,3 +1,5 @@
+//! Tables metadata commands endpoints and reports.
+
 use crate::*;
 use executor::FeedManager;
 use gluesql::core::executor::Payload;
@@ -92,7 +94,7 @@ impl std::fmt::Display for TablesReport
       );
     }
 
-    let table = table::table_with_headers
+    let table = table_display::table_with_headers
     (
       vec!
       [

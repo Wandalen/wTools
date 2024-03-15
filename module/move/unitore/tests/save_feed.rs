@@ -37,7 +37,7 @@ async fn test_save_feed_plain() -> Result< () >
       updated_frames : 0,
       selected_frames : SelectedEntries::new(),
       existing_frames : 0,
-      feed_title : String::new(),
+      feed_link : String::new(),
       is_new_feed : false,
     } ] ) ) )
   ;

@@ -1,6 +1,5 @@
-//! Feed client
+//! Client that fetches feeds entries.
 
-// use super::*;
 use hyper_tls::HttpsConnector;
 use hyper_util::
 {
@@ -16,6 +15,7 @@ use error_tools::{ Result, for_app::Context };
 #[ async_trait::async_trait ]
 pub trait FeedFetch
 {
+  /// Get feed from source specified by its link.
   async fn fetch( &self, source : String ) -> Result< feed_rs::model::Feed >;
 }
 
@@ -30,8 +30,12 @@ impl FeedFetch for FeedClient
   {
     let https = HttpsConnector::new();
     let client = Client::builder( TokioExecutor::new() ).build::< _, Empty< Bytes > >( https );
-    let link = source.parse().context( "Failed to parse source link to download frames" )?;
-    let mut res = client.get( link ).await?;
+    let link = source.parse().context( format!( "Failed to parse source link {}", source ) )?;
+    let mut res = client
+    .get( link )
+    .await
+    .context( format!( "Failed to fetch frames from source {}", source ) )?
+    ;
 
     let mut feed = Vec::new();
     while let Some( next ) = res.frame().await
@@ -44,8 +48,6 @@ impl FeedFetch for FeedClient
     }
 
     let feed = feed_parser::parse( feed.as_slice() ).context( "Failed to parse retrieved feeds." )?;
-
-   ..println!( "{:#?}", feed.links );
 
     Ok( feed )
   }

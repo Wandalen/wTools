@@ -33,7 +33,7 @@ impl std::fmt::Display for FieldsReport
       rows.push( vec![ EMPTY_CELL.to_owned(), field[ 0 ].to_owned(), field[ 1 ].to_owned(), field[ 2 ].to_owned() ] );
     }
 
-    let table = table::table_with_headers
+    let table = table_display::table_with_headers
     (
       vec!
       [

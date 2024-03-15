@@ -3,21 +3,22 @@ use std::time::Duration;
 use feed_rs::model::{ Entry, Feed };
 use gluesql::core::
 {
-  ast_builder::{ function::generate_uuid, null, text, timestamp, ExprNode },
+  ast_builder::{ null, text, timestamp, ExprNode },
   chrono::SecondsFormat,
 };
 
+/// Feed in format convenient for saving in storage.
 pub struct FeedRow( pub Vec< ExprNode< 'static > > );
 
 impl FeedRow
 {
+  /// Create new feed row for storage.
   pub fn new( feed_link : String, update_period : Duration ) -> Self
   {
     FeedRow( vec!
     [
       text( feed_link ),
       null(),
-      // text( feed_link ),
       null(),
       null(),
       null(),
@@ -48,7 +49,6 @@ impl From< ( Feed, Duration ) > for FeedRow
         } ).collect::< Vec< _ > >()[ 0 ]
         .clone(),
       value.title.clone().map( | title | text( title.content ) ).unwrap_or( null() ),
-      // value.links.get( 0 ).map( | link | text( link.href.clone() ) ).unwrap_or( null() ),
       value.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
       text( value.authors.iter().map( | p | p.name.clone() ).fold( String::new(), | acc, val | format!( "{}, {}", acc, val ) ) ),
       value.description.clone().map( | desc | text( desc.content ) ).unwrap_or( null() ),

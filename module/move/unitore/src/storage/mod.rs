@@ -1,3 +1,4 @@
+use crate::*;
 use std::{ collections::HashMap, sync::Arc, time::Duration };
 use error_tools::{ err, for_app::Context, Result };
 use tokio::sync::Mutex;
@@ -20,7 +21,8 @@ use gluesql::
   // qqq : don't put report into different file, keep the in the same file where it used
   // aaa: put into separate files with functions that use them
 // };
-use crate::executor::endpoints::{
+use executor::endpoints::
+{
   feeds::FeedsReport,
   query::QueryReport,
   frames::{ UpdateReport, ListReport },
@@ -65,7 +67,6 @@ impl FeedStorage< SledStorage >
     .add_column( "link TEXT PRIMARY KEY" )
     .add_column( "type TEXT" )
     .add_column( "title TEXT" )
-    // .add_column( "link TEXT UNIQUE" )
     .add_column( "updated TIMESTAMP" )
     .add_column( "authors TEXT" )
     .add_column( "description TEXT" )
@@ -174,7 +175,7 @@ impl FeedStore for FeedStorage< SledStorage >
     let glue = &mut *self.storage.lock().await;
     let payloads = glue.execute( &query ).await.context( "Failed to execute query" )?;
 
-    let report = QueryReport { result : payloads };
+    let report = QueryReport ( payloads );
 
     Ok( report )
   }
@@ -297,16 +298,6 @@ impl FeedStore for FeedStorage< SledStorage >
     .set( "authors", entry[ 3 ].to_owned() )
     .set( "description", entry[ 4 ].to_owned() )
     .set( "published", entry[ 5 ].to_owned() )
-    // .columns
-    // (
-    //   "title,
-    //   updated,
-    //   authors,
-    //   description,
-    //   published,
-    //   update_period",
-    // )
-    //.values( feeds_rows )
     .filter( col( "link" ).eq( entry[ 0 ].to_owned() ) )
     .execute( &mut *self.storage.lock().await )
     .await
@@ -348,7 +339,8 @@ impl FeedStore for FeedStorage< SledStorage >
   {
     let new_feed_links = feeds
     .iter()
-    .map( | feed | feed.0.links.iter().filter_map( | link |
+    .map( | feed |
+      feed.0.links.iter().filter_map( | link |
       {
         if let Some( media_type ) = &link.media_type
         {

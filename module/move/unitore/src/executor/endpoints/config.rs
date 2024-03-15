@@ -1,11 +1,11 @@
+//! Endpoint and report for commands for config files.
+
 use crate::*;
+use super::*;
 use error_tools::{ err, for_app::Context, BasicError, Result };
 use executor::FeedManager;
-use super::Report;
 use storage::{ FeedStorage, FeedStore };
 use gluesql::{ prelude::Payload, sled_storage::SledStorage };
-
-use feed_config::read_feed_config;
 
 /// Add configuration file with subscriptions to storage.
 pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
@@ -24,7 +24,7 @@ pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args
   .context( "Added 0 config files.\n Failed to add config file to storage." )?
   ;
 
-  let feeds = read_feed_config( path.to_string_lossy().to_string() )?
+  let feeds = feed_config::read( path.to_string_lossy().to_string() )?
   .into_iter()
   .map( | feed | crate::storage::model::FeedRow::new( feed.link, feed.update_period ) )
   .collect::< Vec< _ > >()
@@ -71,6 +71,7 @@ pub struct ConfigReport
 
 impl ConfigReport
 {
+  /// Create new report for config report with provided payload.
   pub fn new( payload : Payload ) -> Self
   {
     Self { payload, new_feeds : None }
@@ -113,7 +114,7 @@ impl std::fmt::Display for ConfigReport
           rows.push( vec![ EMPTY_CELL.to_owned(), String::from( row[ 0 ].clone() ) ] );
         }
 
-        let table = table::plain_table( rows );
+        let table = table_display::plain_table( rows );
         if let Some( table ) = table
         {
           write!( f, "{}", table )?;

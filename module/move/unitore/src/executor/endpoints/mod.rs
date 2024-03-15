@@ -1,3 +1,5 @@
+//! Endpoint for command execution.
+
 pub mod list_fields;
 pub mod frames;
 pub mod feeds;
