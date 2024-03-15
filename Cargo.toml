@@ -200,7 +200,7 @@ path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/core/former_meta"
 default-features = false
 
