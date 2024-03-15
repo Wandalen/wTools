@@ -418,7 +418,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// Derives the `SetComponents` trait for a struct, enabling `components_set` which set all fields at once.
 ///
 /// This will work only if every field can be acquired from the passed value.
-/// In other words, the type passed as an argument to `components_set`` must implement Into<T> for each field type.
+/// In other words, the type passed as an argument to `components_set` must implement Into<T> for each field type.
 ///
 /// # Attributes
 ///
@@ -434,133 +434,250 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///
 /// # Input Code Example
 ///
-/// Given a struct definition annotated with `#[ derive( SetComponents ) ]` :
+/// An example when we encapsulate parameters passed to a function in a struct.
 ///
 /// ```rust
 /// use former::{ SetComponent, SetComponents };
 ///
-/// #[ derive( Debug, Default, PartialEq ) ]
-/// struct Hours
+/// #[ derive( Default, SetComponent, SetComponents ) ]
+/// struct BigOptions
 /// {
-///   c : u8,
+///   cond : bool,
+///   int : i32,
+///   str : String,
+///   vec : Vec< u8 >,
 /// }
 ///
-/// impl From<u8> for Hours
+/// #[ derive( Default, SetComponent, SetComponents ) ]
+/// struct SubBigOptions
 /// {
-///   fn from( value : u8 ) -> Self
+///   cond: bool,
+///   int: i32,
+/// }
+///
+/// impl From< &BigOptions > for bool
+/// {
+///   fn from( value : &BigOptions ) -> Self
 ///   {
-///     Hours
-///     {
-///       c : value
-///     }
+///     value.cond
 ///   }
 /// }
 ///
-/// #[ derive( Debug, Default, PartialEq ) ]
-/// struct Minutes
+/// impl From< &BigOptions > for i32
 /// {
-///   c : u8,
-/// }
-///
-/// impl From<u8> for Minutes
-/// {
-///   fn from( value : u8 ) -> Self
+///   fn from( value: &BigOptions ) -> Self
 ///   {
-///     Minutes
-///     {
-///       c : value
-///     }
+///     value.int
 ///   }
 /// }
 ///
-/// #[ derive( Debug, Default, PartialEq, SetComponent, SetComponents ) ]
-/// pub struct Clock
+/// fn boo( options : &BigOptions ) -> &Vec< u8 >
 /// {
-///   hours : Hours,
-///   minutes : Minutes,
+///   &options.vec
 /// }
 ///
-/// let mut clock = Clock::default();
-/// clock.components_set( 3 );
+/// fn foo( options : &SubBigOptions ) -> bool
+/// {
+///   !options.cond
+/// }
 ///
-/// assert_eq!(
-///   clock,
-///   Clock
-///   {
-///     hours : Hours{ c : 3_u8 },
-///     minutes : Minutes{ c : 3_u8 },
-///   });
+/// let options1 = BigOptions
+/// {
+///   cond : true,
+///   int : -14,
+///   ..Default::default()
+/// };
+/// boo( &options1 );
+///
+/// let mut options2 = SubBigOptions::default();
+/// options2.components_set( &options1 );
+/// foo( &options2 );
 /// ```
 ///
 /// Which expands approximately into :
 ///
 /// ```rust
 /// use former::{ SetComponent, SetComponents };
-///
-/// struct Hours
+/// 
+/// struct BigOptions
 /// {
-///   c: u8,
+///   cond : bool,
+///   int : i32,
+///   str : String,
+///   vec : Vec< u8 >,
 /// }
-///
-/// struct Minutes
-/// {
-///   c: u8,
-/// }
-///
-/// pub struct Clock
-/// {
-///   hours: Hours,
-///   minutes: Minutes,
-/// }
-///
-/// impl< IntoT > SetComponent< Hours, IntoT > for Clock
+/// 
+/// impl< IntoT > SetComponent< bool, IntoT > for BigOptions
 /// where
-///     IntoT : Into< Hours >,
+///   IntoT : Into< bool >,
 /// {
 ///   #[ inline( always ) ]
 ///   fn set( &mut self, component : IntoT )
 ///   {
-///     self.hours = component.into();
+///     self.cond = component.into();
 ///   }
 /// }
-///
-/// impl< IntoT > SetComponent< Minutes, IntoT > for Clock
+/// 
+/// #[ allow( non_snake_case ) ]
+/// impl< IntoT > SetComponent< i32, IntoT > for BigOptions
 /// where
-///   IntoT : Into< Minutes >,
+///   IntoT : Into< i32 >,
 /// {
 ///   #[ inline( always ) ]
 ///   fn set( &mut self, component : IntoT )
 ///   {
-///     self.minutes = component.into();
+///     self.int = component.into();
+///   }
+/// }
+/// 
+/// #[ allow( non_snake_case ) ]
+/// impl< IntoT > SetComponent< String, IntoT > for BigOptions
+/// where
+///   IntoT : Into< String >,
+/// {
+///   #[ inline( always ) ]
+///   fn set( &mut self, component : IntoT )
+///   {
+///     self.str = component.into();
+///   }
+/// }
+/// 
+/// #[ allow( non_snake_case ) ]
+/// impl< IntoT > SetComponent< Vec< u8 >, IntoT > for BigOptions
+/// where
+///   IntoT : Into< Vec< u8 > >,
+/// {
+///   #[ inline( always ) ]
+///   fn set( &mut self, component : IntoT )
+///   {
+///     self.vec = component.into();
+///   }
+/// }
+/// 
+/// pub trait BigOptionsSetComponents< IntoT >
+/// where
+///   IntoT : Into< bool >,
+///   IntoT : Into< i32 >,
+///   IntoT : Into< String >,
+///   IntoT : Into< Vec< u8 > >,
+///   IntoT : Clone,
+/// {
+///   fn components_set( &mut self, component : IntoT );
+/// }
+/// 
+/// impl< T, IntoT > BigOptionsSetComponents< IntoT > for T
+/// where
+///   T : former::SetComponent< bool, IntoT >,
+///   T : former::SetComponent< i32, IntoT >,
+///   T : former::SetComponent< String, IntoT >,
+///   T : former::SetComponent< Vec< u8 >, IntoT >,
+///   IntoT : Into< bool >,
+///   IntoT : Into< i32 >,
+///   IntoT : Into< String >,
+///   IntoT : Into< Vec< u8 > >,
+///   IntoT : Clone,
+/// {
+///   #[ inline( always ) ]
+///   fn components_set( &mut self, component : IntoT )
+///   {
+///     former::SetComponent::< bool, _ >::set( self, component.clone() );
+///     former::SetComponent::< i32, _ >::set( self, component.clone() );
+///     former::SetComponent::< String, _ >::set( self, component.clone() );
+///     former::SetComponent::< Vec< u8 >, _ >::set( self, component.clone() );
 ///   }
 /// }
 ///
-/// pub trait ClockSetComponents< IntoT >
+/// struct SubBigOptions
+/// {
+///   cond : bool,
+///   int : i32,
+/// }
+///
+/// #[ allow( non_snake_case ) ]
+/// impl< IntoT > SetComponent< bool, IntoT > for SubBigOptions
 /// where
-///   IntoT : Into<Hours>,
-///   IntoT : Into< Minutes >,
+///   IntoT : Into< bool >,
+/// {
+///   #[ inline( always ) ]
+///   fn set( &mut self, component : IntoT )
+///   {
+///     self.cond = component.into();
+///   }
+/// }
+///
+/// #[ allow( non_snake_case ) ]
+/// impl< IntoT > SetComponent< i32, IntoT > for SubBigOptions
+/// where
+///     IntoT : Into< i32 >,
+/// {
+///   #[ inline( always ) ]
+///   fn set( &mut self, component : IntoT )
+///   {
+///     self.int = component.into();
+///   }
+/// }
+///
+/// pub trait SubBigOptionsSetComponents< IntoT >
+/// where
+///   IntoT : Into< bool >,
+///   IntoT : Into< i32 >,
 ///   IntoT : Clone,
 /// {
 ///   fn components_set( &mut self, component : IntoT );
 /// }
 ///
-/// impl< T, IntoT > ClockSetComponents< IntoT > for T
+/// impl< T, IntoT > SubBigOptionsSetComponents< IntoT > for T
 /// where
-///   T : former::SetComponent< Hours, IntoT >,
-///   T : former::SetComponent< Minutes, IntoT >,
-///   IntoT : Into< Hours >,
-///   IntoT : Into< Minutes >,
+///   T : former::SetComponent< bool, IntoT >,
+///   T : former::SetComponent< i32, IntoT >,
+///   IntoT : Into< bool >,
+///   IntoT : Into< i32 >,
 ///   IntoT : Clone,
 /// {
+///   #[ inline( always ) ]
 ///   fn components_set( &mut self, component : IntoT )
 ///   {
-///     former::SetComponent::< Hours, _ >::set( self, component.clone() );
-///     former::SetComponent::< Minutes, _ >::set( self, component.clone() );
+///     former::SetComponent::< bool, _ >::set( self, component.clone() );
+///     former::SetComponent::< i32, _ >::set( self, component.clone() );
 ///   }
 /// }
 ///
-/// let mut clock = Clock::default();
-/// clock.components_set( 3 );
+/// impl From< &BigOptions > for bool
+/// {
+///   fn from( value : &BigOptions ) -> Self
+///   {
+///     value.cond
+///   }
+/// }
+///
+/// impl From< &BigOptions > for i32
+/// {
+///   fn from( value : &BigOptions ) -> Self
+///   {
+///     value.int
+///   }
+/// }
+///
+/// fn boo( options : &BigOptions ) -> &Vec< u8 >
+/// {
+///   &options.vec
+/// }
+///
+/// fn foo( options : &SubBigOptions ) -> bool
+/// {
+///   !options.cond
+/// }
+///
+/// let options1 = BigOptions
+/// {
+///   cond : true,
+///   int : -14,
+///   ..Default::default()
+/// };
+/// boo( &options1 );
+/// let mut options2 = SubBigOptions::default();
+/// options2.components_set( &options1 );
+/// foo( &options2 );
 /// ```
 ///
 #[ cfg( feature = "enabled" ) ]
