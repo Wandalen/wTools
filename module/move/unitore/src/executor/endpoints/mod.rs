@@ -10,6 +10,7 @@ pub mod table;
 /// General report.
 pub trait Report : std::fmt::Display + std::fmt::Debug
 {
+  /// Print report of executed command.
   fn report( &self )
   {
     println!( "{self}" );

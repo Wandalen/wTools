@@ -16,6 +16,14 @@ impl std::fmt::Display for ReportTable
   }
 }
 
+impl std::fmt::Debug for ReportTable
+{
+  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  {
+    write!( f, "{}", self.0 )
+  }
+}
+
 /// Transform 2-dimensional vec of String data into displayable table with plain rows.
 pub fn plain_table( rows : Vec< Vec< String > > ) -> Option< ReportTable >
 {

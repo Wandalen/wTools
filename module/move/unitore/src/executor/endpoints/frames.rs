@@ -3,7 +3,9 @@
 use crate::*;
 use super::*;
 use executor::FeedManager;
-use storage::{ FeedStorage, FeedStore };
+use crate::storage::frame::FrameStore;
+use storage::{ FeedStorage, config::ConfigStore };
+use crate::storage::frame::RowValue;
 use gluesql::prelude::{ Payload, Value, SledStorage };
 use feed_config;
 use error_tools::{ err, Result };
@@ -15,7 +17,7 @@ pub async fn list_frames(
 ) -> Result< impl Report >
 {
     let mut manager = FeedManager::new( storage );
-    manager.storage.get_all_frames().await
+    manager.storage.list_frames().await
 }
 
 /// Update all frames from config files saved in storage.
@@ -185,7 +187,7 @@ impl std::fmt::Display for SelectedEntries
       {
         for i in 0..self.selected_columns.len()
         {
-          write!( f, "{} : {}, ", self.selected_columns[ i ], storage::model::RowValue( &row[ i ] ) )?;
+          write!( f, "{} : {}, ", self.selected_columns[ i ], RowValue( &row[ i ] ) )?;
         }
         writeln!( f, "" )?;
       }

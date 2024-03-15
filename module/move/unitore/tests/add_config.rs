@@ -25,7 +25,7 @@ async fn add_config_file() -> Result< () >
   let mut manager = FeedManager::new( feed_storage );
   let res = manager.storage.get_all_feeds().await?;
 
-  let feeds_links = res.selected_entries.selected_rows
+  let feeds_links = res.0.selected_rows
   .iter()
   .map( | feed | String::from( feed[ 1 ].clone() ) )
   .collect::< Vec< _ > >()

@@ -1,8 +1,8 @@
 use crate::*;
-use std::{ collections::HashMap, sync::Arc, time::Duration };
-use error_tools::{ err, for_app::Context, Result };
+use std::{ sync::Arc, time::Duration };
+use error_tools::{ for_app::Context, Result };
 use tokio::sync::Mutex;
-use feed_rs::model::{ Entry, Feed };
+use feed_rs::model::Feed;
 use gluesql::
 {
   core::
@@ -15,24 +15,21 @@ use gluesql::
   prelude::Glue,
   sled_storage::{ sled::Config, SledStorage },
 };
-// qqq : ask
-// use crate::report::
-// {
-  // qqq : don't put report into different file, keep the in the same file where it used
-  // aaa: put into separate files with functions that use them
-// };
+
 use executor::endpoints::
 {
   feeds::FeedsReport,
   query::QueryReport,
-  frames::{ UpdateReport, ListReport },
-  table::TablesReport,
-  list_fields::FieldsReport,
+  frames::UpdateReport,
 };
+use storage::frame::{ FrameStore, RowValue };
 use wca::wtools::Itertools;
 
 pub mod model;
-use model::{ FeedRow, FrameRow };
+use model::FeedRow;
+pub mod config;
+pub mod frame;
+pub mod tables;
 
 /// Storage for feed frames.
 #[ derive( Clone ) ]
@@ -116,44 +113,18 @@ impl FeedStorage< SledStorage >
 #[ async_trait::async_trait( ?Send ) ]
 pub trait FeedStore
 {
-  /// Insert items from list into feed table.
-  async fn save_frames( &mut self, feed : Vec< ( Entry, String ) > ) -> Result< Payload >;
 
   /// Insert items from list into feed table.
   async fn save_feed( &mut self, feed : Vec< ( Feed, Duration ) > ) -> Result< () >;
 
-  /// Update items from list in feed table.
-  async fn update_feed( &mut self, feed : Vec< ( Entry, String ) > ) -> Result< () >;
-
   /// Process fetched feed, new items will be saved, modified items will be updated.
   async fn process_feeds( &mut self, feeds : Vec< ( Feed, Duration ) > ) -> Result< UpdateReport >;
-
-  /// Get all feed frames from storage.
-  async fn get_all_frames( &mut self ) -> Result< ListReport >;
 
   /// Get all feeds from storage.
   async fn get_all_feeds( &mut self ) -> Result< FeedsReport >;
 
   /// Execute custom query passed as String.
   async fn execute_query( &mut self, query : String ) -> Result< QueryReport >;
-
-  /// Get list of column titles of feed table.
-  fn columns_titles( &mut self ) -> FieldsReport;
-
-  /// Add subscription.
-  async fn add_config( &mut self, config : String ) -> Result< Payload >;
-
-  /// Remove subscription.
-  async fn delete_config( &mut self, path : String ) -> Result< Payload >;
-
-  /// List subscriptions.
-  async fn list_configs( &mut self ) -> Result< Payload >;
-
-  /// List tables in storage.
-  async fn list_tables( &mut self ) -> Result< TablesReport >;
-
-  /// List columns of table.
-  async fn list_columns( &mut self, table_name : String ) -> Result< TablesReport >;
 
   /// Add feeds entries.
   async fn add_feeds( &mut self, feeds : Vec< FeedRow > ) -> Result< Payload >;
@@ -162,14 +133,6 @@ pub trait FeedStore
 #[ async_trait::async_trait( ?Send ) ]
 impl FeedStore for FeedStorage< SledStorage >
 {
-  fn columns_titles( &mut self ) -> FieldsReport
-  {
-    FieldsReport
-    {
-      fields_list : self.frame_fields.clone()
-    }
-  }
-
   async fn execute_query( &mut self, query : String ) -> Result< QueryReport >
   {
     let glue = &mut *self.storage.lock().await;
@@ -180,72 +143,6 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( report )
   }
 
-  async fn list_tables( &mut self ) -> Result< TablesReport >
-  {
-    let glue = &mut *self.storage.lock().await;
-    let payloads = glue.execute( "SELECT * FROM GLUE_TABLE_COLUMNS" ).await?;
-
-    let report = TablesReport::new( payloads );
-
-    Ok( report )
-  }
-
-  async fn list_columns( &mut self, table_name : String ) -> Result< TablesReport >
-  {
-    let glue = &mut *self.storage.lock().await;
-    let query_str = format!( "SELECT * FROM GLUE_TABLE_COLUMNS WHERE TABLE_NAME='{}'", table_name );
-    let payloads = glue.execute( &query_str ).await?;
-
-    let report = TablesReport::new( payloads );
-
-    Ok( report )
-  }
-
-  async fn get_all_frames( &mut self ) -> Result< ListReport >
-  {
-    let res = table( "frame" ).select().execute( &mut *self.storage.lock().await ).await?;
-
-    let mut reports = Vec::new();
-    let all_frames = match res
-    {
-      Payload::Select { labels: label_vec, rows: rows_vec } =>
-      {
-        crate::executor::endpoints::frames::SelectedEntries
-        {
-          selected_rows : rows_vec,
-          selected_columns : label_vec,
-        }
-      },
-      _ => crate::executor::endpoints::frames::SelectedEntries::new(),
-    };
-
-    let mut feeds_map = HashMap::new();
-
-    for row in all_frames.selected_rows
-    {
-      let title_val = row.last().unwrap().clone();
-      let title = String::from( title_val );
-      feeds_map.entry( title )
-      .and_modify( | vec : &mut Vec< Vec< Value > > | vec.push( row.clone() ) )
-      .or_insert( vec![ row ] )
-      ;
-    }
-
-    for ( title, frames ) in feeds_map
-    {
-      let mut report = crate::executor::endpoints::frames::FramesReport::new( title );
-      report.existing_frames = frames.len();
-      report.selected_frames = crate::executor::endpoints::frames::SelectedEntries
-      {
-        selected_rows : frames,
-        selected_columns : all_frames.selected_columns.clone(),
-      };
-      reports.push( report );
-    }
-
-    Ok( ListReport( reports ) )
-  }
-
   async fn get_all_feeds( &mut self ) -> Result< FeedsReport >
   {
     let res = table( "feed" ).select().project( "title, link, update_period" ).execute( &mut *self.storage.lock().await ).await?;
@@ -254,7 +151,7 @@ impl FeedStore for FeedStorage< SledStorage >
     {
       Payload::Select { labels: label_vec, rows: rows_vec } =>
       {
-        report.selected_entries = crate::executor::endpoints::frames::SelectedEntries
+        report.0 = crate::executor::endpoints::frames::SelectedEntries
         {
           selected_rows : rows_vec,
           selected_columns : label_vec,
@@ -264,25 +161,6 @@ impl FeedStore for FeedStorage< SledStorage >
     }
 
     Ok( report )
-  }
-
-  async fn save_frames( &mut self, frames : Vec< ( Entry, String ) > ) -> Result< Payload >
-  {
-    let entries_rows = frames.into_iter().map( | entry | FrameRow::from( entry ).0 ).collect_vec();
-
-    let insert = table( "frame" )
-    .insert()
-    .columns
-    (
-      self.frame_fields.iter().map( | field | field[ 0 ] ).join( "," ).as_str()
-    )
-    .values( entries_rows )
-    .execute( &mut *self.storage.lock().await )
-    .await
-    .context( "Failed to insert frames" )?
-    ;
-
-    Ok( insert )
   }
 
   async fn save_feed( &mut self, feed : Vec< ( Feed, Duration ) > ) -> Result< () >
@@ -305,29 +183,6 @@ impl FeedStore for FeedStorage< SledStorage >
     ;
     }
 
-    Ok( () )
-  }
-
-  async fn update_feed( &mut self, feed : Vec< ( Entry, String ) > ) -> Result< () >
-  {
-    let entries_rows = feed.into_iter().map( | entry | FrameRow::from( entry ).0 ).collect_vec();
-
-    for entry in entries_rows
-    {
-      let _update = table( "frame" )
-      .update()
-      .set( "title", entry[ 1 ].to_owned() )
-      .set( "content", entry[ 4 ].to_owned() )
-      .set( "links", entry[ 5 ].to_owned() )
-      .set( "summary", entry[ 6 ].to_owned() )
-      .set( "published", entry[ 8 ].to_owned() )
-      .set( "media", entry[ 9 ].to_owned() )
-      .filter( col( "id" ).eq( entry[ 0 ].to_owned() ) )
-      .execute( &mut *self.storage.lock().await )
-      .await
-      .context( "Failed to update frames" )?
-      ;
-    }
     Ok( () )
   }
 
@@ -377,7 +232,7 @@ impl FeedStore for FeedStorage< SledStorage >
       {
 
         let existing_feeds = existing_feeds
-        .filter_map( | feed | feed.get( "link" ).map( | link | String::from( crate::storage::model::RowValue( link ) ) ))
+        .filter_map( | feed | feed.get( "link" ).map( | link | String::from( RowValue( link ) ) ))
         .collect_vec()
         ;
 
@@ -481,65 +336,6 @@ impl FeedStore for FeedStorage< SledStorage >
     }
 
     Ok( UpdateReport( reports ) )
-  }
-
-  async fn add_config( &mut self, config : String ) -> Result< Payload >
-  {
-    let res = table( "config" )
-    .insert()
-    .columns
-    (
-      "path",
-    )
-    .values( vec![ vec![ text( config ) ] ] )
-    .execute( &mut *self.storage.lock().await )
-    .await;
-
-    // let res = match &res
-    // {
-    //   Err( err ) =>
-    //   {
-    //     if let gluesql::core::error::Error::Validate( val_err ) = err
-    //     {
-    //       let res = match val_err
-    //       {
-    //         gluesql::core::error::ValidateError::DuplicateEntryOnPrimaryKeyField( _ ) =>
-    //         {
-    //           res.context( "Config with same path already exists." )
-    //         },
-    //         _ => res.into()
-    //       };
-
-    //       res
-    //     }
-    //     res.into()
-    //   },
-    //   Ok( _ ) => res.into(),
-    // };
-
-    Ok( res? )
-  }
-
-  async fn delete_config( &mut self, path : String ) -> Result< Payload >
-  {
-    let res = table( "config" )
-    .delete()
-    .filter( col( "path" ).eq( format!( "'{}'", path ) ) )
-    .execute( &mut *self.storage.lock().await )
-    .await?;
-
-    if res == Payload::Delete( 0 )
-    {
-      return Err( err!( format!( "Config file with path {} not found in storage", path ) ) )
-    }
-
-    Ok( res )
-  }
-
-  async fn list_configs( &mut self ) -> Result< Payload >
-  {
-    let res = table( "config" ).select().execute( &mut *self.storage.lock().await ).await?;
-    Ok( res )
   }
 
   async fn add_feeds( &mut self, feed : Vec< FeedRow > ) -> Result< Payload >

@@ -1,10 +1,12 @@
 //! Execute plan.
 
+use self::storage::frame::FrameStore;
+
 use super::*;
 use feed_config::SubscriptionConfig;
 use gluesql::sled_storage::{ sled::Config, SledStorage };
 use retriever::{ FeedClient, FeedFetch };
-use storage::{ FeedStorage, FeedStore };
+use storage::{ FeedStorage, FeedStore, config::ConfigStore, tables::TableStore };
 use wca::{ Args, Type };
 use executor::endpoints::Report;
 use error_tools::Result;
@@ -236,7 +238,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 }
 
 /// Manages feed subsriptions and updates.
-pub struct FeedManager< C, S : FeedStore + Send >
+pub struct FeedManager< C, S : FeedStore + ConfigStore + FrameStore + Send >
 {
   /// Subscription configuration with link and update period.
   pub config : Vec< SubscriptionConfig >,
@@ -246,7 +248,7 @@ pub struct FeedManager< C, S : FeedStore + Send >
   pub client : C,
 }
 
-impl< S : FeedStore + Send > FeedManager< FeedClient, S >
+impl< S : FeedStore + ConfigStore + FrameStore + TableStore + Send > FeedManager< FeedClient, S >
 {
   /// Create new instance of FeedManager.
   pub fn new( storage : S ) -> FeedManager< FeedClient, S >
@@ -260,7 +262,7 @@ impl< S : FeedStore + Send > FeedManager< FeedClient, S >
   }
 }
 
-impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
+impl< C : FeedFetch, S : FeedStore + ConfigStore + FrameStore + TableStore + Send > FeedManager< C, S >
 {
   /// Set configurations for subscriptions.
   pub fn set_config( &mut self, configs : Vec< SubscriptionConfig > )

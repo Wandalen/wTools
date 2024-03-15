@@ -4,7 +4,8 @@ use crate::*;
 use executor::FeedManager;
 use gluesql::core::executor::Payload;
 use super::Report;
-use storage::{ FeedStorage, FeedStore };
+use storage::FeedStorage;
+use crate::storage::tables::TableStore;
 use error_tools::{ err, BasicError, Result };
 
 /// Get labels of column for specified table.
@@ -35,6 +36,7 @@ pub async fn list_tables(
 
 const EMPTY_CELL : &'static str = "";
 
+/// Information about execution of tables commands.
 #[ derive( Debug ) ]
 pub struct TablesReport
 {
@@ -43,6 +45,7 @@ pub struct TablesReport
 
 impl TablesReport
 {
+  /// Create new report from payload.
   pub fn new( payload : Vec< Payload > ) -> Self
   {
     let mut result = std::collections::HashMap::new();
