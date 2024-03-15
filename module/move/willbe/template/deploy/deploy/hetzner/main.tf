@@ -31,8 +31,6 @@ resource "hcloud_server" "uaconf" {
     ipv6_enabled = false
   }
 
-  ssh_keys = ["viktor.d"]
-
   user_data = templatefile("${path.module}/templates/cloud-init.tpl", {
     location              = "${var.REGION}"
     project_id            = "${var.PROJECT_ID}"
