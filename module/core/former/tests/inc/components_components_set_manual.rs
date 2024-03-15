@@ -42,39 +42,6 @@ impl From< &Options1 > for f32
   }
 }
 
-impl< IntoT > former::ComponentSet< i32, IntoT > for Options1
-where
-  IntoT : Into< i32 >,
-{
-  #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
-  {
-    self.field1 = component.into().clone();
-  }
-}
-
-impl< IntoT > former::ComponentSet< String, IntoT > for Options1
-where
-  IntoT : Into< String >,
-{
-  #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
-  {
-    self.field2 = component.into().clone();
-  }
-}
-
-impl< IntoT > former::ComponentSet< f32, IntoT > for Options1
-where
-  IntoT : Into< f32 >,
-{
-  #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
-  {
-    self.field3 = component.into().clone();
-  }
-}
-
 ///
 /// Options2
 ///
@@ -84,24 +51,6 @@ pub struct Options2
 {
   field1 : i32,
   field2 : String,
-}
-
-impl From< &Options2 > for i32
-{
-  #[ inline( always ) ]
-  fn from( src : &Options2 ) -> Self
-  {
-    src.field1.clone()
-  }
-}
-
-impl From< &Options2 > for String
-{
-  #[ inline( always ) ]
-  fn from( src : &Options2 ) -> Self
-  {
-    src.field2.clone()
-  }
 }
 
 impl< IntoT > former::ComponentSet< i32, IntoT > for Options2
@@ -155,25 +104,6 @@ where
   }
 }
 
-impl< T > From< T > for Options2
-where
-  T : Into< i32 >,
-  T : Into< String >,
-  T : Clone,
-{
-  #[ inline( always ) ]
-  fn from( src : T ) -> Self
-  {
-    let field1 = Into::< i32 >::into( src.clone() );
-    let field2 = Into::< String >::into( src.clone() );
-    Options2
-    {
-      field1,
-      field2,
-    }
-  }
-}
-
 //
 
-include!( "only_test/components_composite.rs" );
+include!( "only_test/components_components_set.rs" );
