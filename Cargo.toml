@@ -205,7 +205,7 @@ path = "module/core/former_meta"
 default-features = false
 
 [workspace.dependencies.impls_index]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/core/impls_index"
 default-features = false
 
