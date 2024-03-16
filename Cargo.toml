@@ -310,7 +310,7 @@ path = "module/alias/werror"
 ## strs
 
 [workspace.dependencies.strs_tools]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/core/strs_tools"
 default-features = false
 
