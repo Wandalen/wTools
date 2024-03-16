@@ -335,7 +335,8 @@ dt_full = [
   # "dt_vectorized_from",
   "dt_interval",
 ]
-dt_no_std = [ "dt", "data_type/no_std" ]
+
+# dt_no_std = [ "dt", "data_type/no_std" ]
 # dt_use_std = [ "dt", "data_type/use_std" ]
 dt_use_alloc = [ "dt", "data_type/use_alloc" ]
 
@@ -371,8 +372,7 @@ diagnostics_compiletime_assertions = [ "diagnostics_tools/diagnostics_compiletim
 
 nightly = [] # must be empty
 
-# # use_std = []
-no_std = []
+# no_std = []
 use_alloc = []
 enabled = []
 

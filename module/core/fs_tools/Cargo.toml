@@ -23,37 +23,13 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/fs",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
-
-[lib]
-name = "fs_tools"
-path = "src/fs/fs_tools_lib.rs"
-
-[[test]]
-name = "fs_tools_test"
-path = "tests/fs/fs_tools_tests.rs"
-
-[[test]]
-name = "fs_tools_smoke_test"
-path = "tests/smoke_test.rs"
-
-[[example]]
-name = "fs_tools_trivial"
-path = "examples/fs_tools_trivial/src/main.rs"
 
 [dependencies]
 

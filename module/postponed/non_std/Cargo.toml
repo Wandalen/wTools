@@ -379,7 +379,6 @@ full = [
   # "use_std",
   "use_alloc",
 ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []

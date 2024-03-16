@@ -5,6 +5,8 @@
 
 Collection of algorithms and structures to handle paths properly.
 
+All functions in the crate don't touch file system, but only process paths.
+
 <!-- ### Basic use-case
 
 ```rust

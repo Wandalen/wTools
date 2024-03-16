@@ -40,7 +40,6 @@ full = [
   "use_alloc",
   "enabled",
 ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []

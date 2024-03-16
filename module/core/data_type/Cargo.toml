@@ -48,8 +48,7 @@ full = [
   # "dt_vectorized_from",
   # "type_constructor/full",
 ]
-# # use_std = []
-no_std = []
+# no_std = []
 use_alloc = []
 enabled = []
 
