@@ -285,7 +285,7 @@ path = "module/alias/instance_of"
 default-features = false
 
 [workspace.dependencies.inspect_type]
-version = "~0.7.0"
+version = "~0.8.0"
 path = "module/core/inspect_type"
 default-features = false
 
