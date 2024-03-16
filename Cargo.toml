@@ -332,7 +332,7 @@ path = "module/alias/file_tools"
 default-features = false
 
 [workspace.dependencies.proper_path_tools]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/core/proper_path_tools"
 default-features = false
 
