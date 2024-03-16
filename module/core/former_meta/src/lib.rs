@@ -665,11 +665,24 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 /// ```
 ///
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_components_assign" ) ]
+#[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
 #[ proc_macro_derive( ComponentsAssign, attributes( debug ) ) ]
 pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::components_assign::components_assign( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_from_components" ) ]
+#[ proc_macro_derive( FromComponents, attributes( debug ) ) ]
+pub fn from_components( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::from_components::from_components( input );
   match result
   {
     Ok( stream ) => stream.into(),

@@ -135,32 +135,3 @@ fn generate_component_assign_call( field : &syn::Field ) -> Result< proc_macro2:
     }
   )
 }
-
-// ///
-// /// Options2ComponentsAssign.
-// ///
-//
-// pub trait Options2ComponentsAssign< IntoT >
-// where
-//   IntoT : Into< i32 >,
-//   IntoT : Into< String >,
-//   IntoT : Clone,
-// {
-//   fn components_assign( &mut self, component : IntoT );
-// }
-//
-// impl< T, IntoT > Options2ComponentsAssign< IntoT > for T
-// where
-//   T : former::ComponentAssign< i32, IntoT >,
-//   T : former::ComponentAssign< String, IntoT >,
-//   IntoT : Into< i32 >,
-//   IntoT : Into< String >,
-//   IntoT : Clone,
-// {
-//   #[ inline( always ) ]
-//   fn components_assign( &mut self, component : IntoT )
-//   {
-//     former::ComponentAssign::< i32, _ >::assign( self, component.clone() );
-//     former::ComponentAssign::< String, _ >::assign( self, component.clone() );
-//   }
-// }

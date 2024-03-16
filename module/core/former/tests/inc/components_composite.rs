@@ -16,10 +16,9 @@ use former::{ ComponentAssign, AssignWithType };
     TheModule::ComponentFrom,
     TheModule::ComponentAssign,
     TheModule::ComponentsAssign,
-    // TheModule::FromComponents,
+    TheModule::FromComponents,
   )
 ]
-// #[ debug ]
 // qqq : make these traits working for generic struct, use `split_for_impl`
 pub struct Options1
 {
@@ -41,10 +40,9 @@ pub struct Options1
     TheModule::ComponentFrom,
     TheModule::ComponentAssign,
     TheModule::ComponentsAssign,
-    // TheModule::FromComponents,
+    TheModule::FromComponents,
   )
 ]
-// #[ debug ]
 pub struct Options2
 {
   field1 : i32,
@@ -53,24 +51,24 @@ pub struct Options2
 
 //
 
-impl< T > From< T > for Options2
-where
-  T : Into< i32 >,
-  T : Into< String >,
-  T : Clone,
-{
-  #[ inline( always ) ]
-  fn from( src : T ) -> Self
-  {
-    let field1 = Into::< i32 >::into( src.clone() );
-    let field2 = Into::< String >::into( src.clone() );
-    Options2
-    {
-      field1,
-      field2,
-    }
-  }
-}
+// impl< T > From< T > for Options2
+// where
+//   T : Into< i32 >,
+//   T : Into< String >,
+//   T : Clone,
+// {
+//   #[ inline( always ) ]
+//   fn from( src : T ) -> Self
+//   {
+//     let field1 = Into::< i32 >::into( src.clone() );
+//     let field2 = Into::< String >::into( src.clone() );
+//     Options2
+//     {
+//       field1,
+//       field2,
+//     }
+//   }
+// }
 
 //
 
