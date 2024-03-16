@@ -1,12 +1,12 @@
 
 
 #[ test ]
-fn component_set()
+fn component_assign()
 {
 
   let mut got : Person = Default::default();
-  got.set( 13 );
-  got.set( "John" );
+  got.assign( 13 );
+  got.assign( "John" );
   assert_eq!( got, Person { age : 13, name : "John".to_string() } );
 
 }

@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::ComponentSet;
+use former::ComponentAssign;
 
 
 #[ derive( Default, PartialEq, Debug ) ]
@@ -11,21 +11,21 @@ struct Person
   name : String,
 }
 
-impl< IntoT > ComponentSet< i32, IntoT > for Person
+impl< IntoT > ComponentAssign< i32, IntoT > for Person
 where
   IntoT : Into< i32 >,
 {
-  fn set( &mut self, component : IntoT )
+  fn assign( &mut self, component : IntoT )
   {
     self.age = component.into();
   }
 }
 
-impl< IntoT > ComponentSet< String, IntoT > for Person
+impl< IntoT > ComponentAssign< String, IntoT > for Person
 where
   IntoT : Into< String >,
 {
-  fn set( &mut self, component : IntoT )
+  fn assign( &mut self, component : IntoT )
   {
     self.name = component.into();
   }
@@ -33,4 +33,4 @@ where
 
 //
 
-include!( "only_test/components_component_set.rs" );
+include!( "only_test/components_component_assign.rs" );

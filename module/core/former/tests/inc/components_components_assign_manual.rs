@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::{ ComponentSet, SetWithType };
+use former::{ ComponentAssign, AssignWithType };
 
 ///
 /// Options1
@@ -42,71 +42,71 @@ impl From< &Options1 > for f32
   }
 }
 
-impl< IntoT > former::ComponentSet< i32, IntoT > for Options1
+impl< IntoT > former::ComponentAssign< i32, IntoT > for Options1
 where
   IntoT : Into< i32 >,
 {
   #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
+  fn assign( &mut self, component : IntoT )
   {
     self.field1 = component.into().clone();
   }
 }
 
-impl< IntoT > former::ComponentSet< String, IntoT > for Options1
+impl< IntoT > former::ComponentAssign< String, IntoT > for Options1
 where
   IntoT : Into< String >,
 {
   #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
+  fn assign( &mut self, component : IntoT )
   {
     self.field2 = component.into().clone();
   }
 }
 
-impl< IntoT > former::ComponentSet< f32, IntoT > for Options1
+impl< IntoT > former::ComponentAssign< f32, IntoT > for Options1
 where
   IntoT : Into< f32 >,
 {
   #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
+  fn assign( &mut self, component : IntoT )
   {
     self.field3 = component.into().clone();
   }
 }
 
 ///
-/// Options1ComponentsSet.
+/// Options1ComponentsAssign.
 ///
 
 // #[ allow( dead_code ) ]
-pub trait Options1ComponentsSet< IntoT >
+pub trait Options1ComponentsAssign< IntoT >
 where
   IntoT : Into< i32 >,
   IntoT : Into< String >,
   IntoT : Into< f32 >,
   IntoT : Clone,
 {
-  fn options_1_set( &mut self, component : IntoT );
+  fn options_1_assign( &mut self, component : IntoT );
 }
 
 // #[ allow( dead_code ) ]
-impl< T, IntoT > Options1ComponentsSet< IntoT > for T
+impl< T, IntoT > Options1ComponentsAssign< IntoT > for T
 where
-  T : former::ComponentSet< i32, IntoT >,
-  T : former::ComponentSet< String, IntoT >,
-  T : former::ComponentSet< f32, IntoT >,
+  T : former::ComponentAssign< i32, IntoT >,
+  T : former::ComponentAssign< String, IntoT >,
+  T : former::ComponentAssign< f32, IntoT >,
   IntoT : Into< i32 >,
   IntoT : Into< String >,
   IntoT : Into< f32 >,
   IntoT : Clone,
 {
   #[ inline( always ) ]
-  fn options_1_set( &mut self, component : IntoT )
+  fn options_1_assign( &mut self, component : IntoT )
   {
-    former::ComponentSet::< i32, _ >::set( self, component.clone() );
-    former::ComponentSet::< String, _ >::set( self, component.clone() );
-    former::ComponentSet::< f32, _ >::set( self, component.clone() );
+    former::ComponentAssign::< i32, _ >::assign( self, component.clone() );
+    former::ComponentAssign::< String, _ >::assign( self, component.clone() );
+    former::ComponentAssign::< f32, _ >::assign( self, component.clone() );
   }
 }
 
@@ -139,57 +139,57 @@ impl From< &Options2 > for String
   }
 }
 
-impl< IntoT > former::ComponentSet< i32, IntoT > for Options2
+impl< IntoT > former::ComponentAssign< i32, IntoT > for Options2
 where
   IntoT : Into< i32 >,
 {
   #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
+  fn assign( &mut self, component : IntoT )
   {
     self.field1 = component.into().clone();
   }
 }
 
-impl< IntoT > former::ComponentSet< String, IntoT > for Options2
+impl< IntoT > former::ComponentAssign< String, IntoT > for Options2
 where
   IntoT : Into< String >,
 {
   #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
+  fn assign( &mut self, component : IntoT )
   {
     self.field2 = component.into().clone();
   }
 }
 
 ///
-/// Options2ComponentsSet.
+/// Options2ComponentsAssign.
 ///
 
-pub trait Options2ComponentsSet< IntoT >
+pub trait Options2ComponentsAssign< IntoT >
 where
   IntoT : Into< i32 >,
   IntoT : Into< String >,
   IntoT : Clone,
 {
-  fn options_2_set( &mut self, component : IntoT );
+  fn options_2_assign( &mut self, component : IntoT );
 }
 
-impl< T, IntoT > Options2ComponentsSet< IntoT > for T
+impl< T, IntoT > Options2ComponentsAssign< IntoT > for T
 where
-  T : former::ComponentSet< i32, IntoT >,
-  T : former::ComponentSet< String, IntoT >,
+  T : former::ComponentAssign< i32, IntoT >,
+  T : former::ComponentAssign< String, IntoT >,
   IntoT : Into< i32 >,
   IntoT : Into< String >,
   IntoT : Clone,
 {
   #[ inline( always ) ]
-  fn options_2_set( &mut self, component : IntoT )
+  fn options_2_assign( &mut self, component : IntoT )
   {
-    former::ComponentSet::< i32, _ >::set( self, component.clone() );
-    former::ComponentSet::< String, _ >::set( self, component.clone() );
+    former::ComponentAssign::< i32, _ >::assign( self, component.clone() );
+    former::ComponentAssign::< String, _ >::assign( self, component.clone() );
   }
 }
 
 //
 
-include!( "only_test/components_components_set.rs" );
+include!( "only_test/components_components_assign.rs" );

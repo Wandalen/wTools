@@ -20,12 +20,12 @@ mod private
   //
   // [ optimization : debug | channel : stable | feature : derive_component_from,use_alloc ]
   // [ optimization : debug | channel : stable | feature : default,enabled ]
-  // [ optimization : debug | channel : stable | feature : derive_components_set ]
-  // [ optimization : debug | channel : stable | feature : derive_component_from,derive_component_set ]
-  // [ optimization : debug | channel : stable | feature : derive_former,derive_component_set ]
+  // [ optimization : debug | channel : stable | feature : derive_components_assign ]
+  // [ optimization : debug | channel : stable | feature : derive_component_from,derive_component_assign ]
+  // [ optimization : debug | channel : stable | feature : derive_former,derive_component_assign ]
   // [ optimization : debug | channel : stable | feature : enabled ]
-  // [ optimization : debug | channel : stable | feature : derive_component_set,no_std ]
-  // [ optimization : debug | channel : stable | feature : default,derive_component_set ]
+  // [ optimization : debug | channel : stable | feature : derive_component_assign,no_std ]
+  // [ optimization : debug | channel : stable | feature : default,derive_component_assign ]
   // [ optimization : debug | channel : stable | feature : no-features ]
   //
   // should be

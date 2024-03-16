@@ -16,30 +16,30 @@
 ///
 /// # Examples
 ///
-/// Implementing `ComponentSet` to set a name string on a struct :
+/// Implementing `ComponentAssign` to set a name string on a struct :
 ///
 /// ```rust
-/// use former::ComponentSet;
+/// use former::ComponentAssign;
 ///
 /// struct MyStruct
 /// {
 ///   name : String,
 /// }
 ///
-/// impl< IntoT : Into< String > > ComponentSet< String, IntoT > for MyStruct
+/// impl< IntoT : Into< String > > ComponentAssign< String, IntoT > for MyStruct
 /// {
-///   fn set( &mut self, component : IntoT )
+///   fn assign( &mut self, component : IntoT )
 ///   {
 ///     self.name = component.into();
 ///   }
 /// }
 ///
 /// let mut obj = MyStruct { name : String::new() };
-/// obj.set( "New Name" );
+/// obj.assign( "New Name" );
 /// assert_eq!( obj.name, "New Name" );
 /// ```
-#[ cfg( any( feature = "derive_component_set", feature = "derive_components_set" ) ) ]
-pub trait ComponentSet< T, IntoT >
+#[ cfg( any( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+pub trait ComponentAssign< T, IntoT >
 where
   IntoT : Into< T >,
 {
@@ -47,14 +47,14 @@ where
   ///
   /// This method takes ownership of the given value ( `component` ), which is of type `IntoT`.
   /// `component` is then converted into type `T` and set as the component of the object.
-  fn set( &mut self, component : IntoT );
+  fn assign( &mut self, component : IntoT );
 }
 
-/// The `SetWithType` trait provides a mechanism to set a component on an object, utilizing the type information explicitly. This trait extends the functionality of `SetComponen`t by allowing implementers to specify the component's type at the method call site, enhancing expressiveness in code that manipulates object states.
+/// The `AssignWithType` trait provides a mechanism to set a component on an object, utilizing the type information explicitly. This trait extends the functionality of `SetComponen`t by allowing implementers to specify the component's type at the method call site, enhancing expressiveness in code that manipulates object states.
 ///
 /// ### Method Detail
 ///
-/// - `set_with_type::< T, IntoT >( &mut self, component : IntoT )`
+/// - `assign_with_type::< T, IntoT >( &mut self, component : IntoT )`
 ///
 /// This method allows an implementer of `SetWithTyp`e to set a component on self where the component's type is T, and the input value is of type `IntoT`, which can be converted into `T`. This method bridges the gap between dynamic type usage and static type enforcement, providing a flexible yet type-safe interface for modifying object states.
 ///
@@ -66,50 +66,50 @@ where
 /// ### Example
 ///
 /// ```rust
-/// use former::{ ComponentSet, SetWithType };
+/// use former::{ ComponentAssign, AssignWithType };
 ///
 /// struct UserProfile
 /// {
 ///   username : String,
 /// }
 ///
-/// impl< IntoT : Into< String > > ComponentSet< String, IntoT > for UserProfile
+/// impl< IntoT : Into< String > > ComponentAssign< String, IntoT > for UserProfile
 //  where String: From< String >,
 /// {
-///   fn set( &mut self, component : IntoT )
+///   fn assign( &mut self, component : IntoT )
 ///   {
 ///     self.username = component.into();
 ///   }
 /// }
 ///
 /// let mut user_profile = UserProfile { username : String::new() };
-/// user_profile.set_with_type::< String, _ >( "john_doe" );
+/// user_profile.assign_with_type::< String, _ >( "john_doe" );
 ///
 /// assert_eq!( user_profile.username, "john_doe" );
 /// ```
 ///
 
-#[ cfg( any( feature = "derive_component_set", feature = "derive_components_set" ) ) ]
-pub trait SetWithType
+#[ cfg( any( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+pub trait AssignWithType
 {
   /// Function to set value of a component by its type.
-  fn set_with_type< T, IntoT >( &mut self, component : IntoT )
+  fn assign_with_type< T, IntoT >( &mut self, component : IntoT )
   where
     IntoT : Into< T >,
-    Self : ComponentSet< T, IntoT >;
+    Self : ComponentAssign< T, IntoT >;
 }
 
-#[ cfg( any( feature = "derive_component_set", feature = "derive_components_set" ) ) ]
-impl< S > SetWithType for S
+#[ cfg( any( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+impl< S > AssignWithType for S
 {
 
   #[ inline( always ) ]
-  fn set_with_type< T, IntoT >( &mut self, component : IntoT )
+  fn assign_with_type< T, IntoT >( &mut self, component : IntoT )
   where
     IntoT : Into< T >,
-    Self : ComponentSet< T, IntoT >,
+    Self : ComponentAssign< T, IntoT >,
   {
-    ComponentSet::< T, IntoT >::set( self, component );
+    ComponentAssign::< T, IntoT >::assign( self, component );
   }
 
 }

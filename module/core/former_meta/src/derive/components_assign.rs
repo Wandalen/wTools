@@ -3,12 +3,12 @@ use macro_tools::{ attr, diag, type_struct, Result };
 use iter_tools::{ Itertools, process_results };
 
 ///
-/// Generate `ComponentsSet` trait implementation for the type, providing `components_set` function
+/// Generate `ComponentsAssign` trait implementation for the type, providing `components_assign` function
 ///
 /// Output example can be found in in the root of the module
 ///
 
-pub fn components_set( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+pub fn components_assign( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   use convert_case::{ Case, Casing };
   let original_input = input.clone();
@@ -17,30 +17,30 @@ pub fn components_set( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 
   // name
   let item_name = parsed.item_name;
-  let trait_name = format!( "{}ComponentsSet", item_name );
+  let trait_name = format!( "{}ComponentsAssign", item_name );
   let trait_ident = syn::Ident::new( &trait_name, item_name.span() );
-  let method_name = format!( "{}_set", item_name.to_string().to_case( Case::Snake ) );
+  let method_name = format!( "{}_assign", item_name.to_string().to_case( Case::Snake ) );
   let method_ident = syn::Ident::new( &method_name, item_name.span() );
 
   // fields
-  let ( bounds1, bounds2, component_sets ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map( | field |
+  let ( bounds1, bounds2, component_assigns ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map( | field |
   {
     let field_type = &field.ty;
     let bound1 = generate_trait_bounds( field_type );
     let bound2 = generate_impl_bounds( field_type );
-    let component_set = generate_component_set_call( field );
-    ( bound1, bound2, component_set )
+    let component_assign = generate_component_assign_call( field );
+    ( bound1, bound2, component_assign )
   }).multiunzip();
 
   let bounds1 : Vec< _ > = process_results( bounds1, | iter | iter.collect() )?;
   let bounds2 : Vec< _ > = process_results( bounds2, | iter | iter.collect() )?;
-  let component_sets : Vec< _ > = process_results( component_sets, | iter | iter.collect() )?;
+  let component_assigns : Vec< _ > = process_results( component_assigns, | iter | iter.collect() )?;
 
   // code
   let doc = format!( "Interface to assign instance from set of components exposed by a single argument." );
   let trait_bounds = qt! { #( #bounds1 )* IntoT : Clone };
   let impl_bounds = qt! { #( #bounds2 )* #( #bounds1 )* IntoT : Clone };
-  let component_sets = qt! { #( #component_sets )* };
+  let component_assigns = qt! { #( #component_assigns )* };
   let result = qt!
   {
 
@@ -60,7 +60,7 @@ pub fn components_set( input : proc_macro::TokenStream ) -> Result< proc_macro2:
       #[ doc = #doc ]
       fn #method_ident( &mut self, component : IntoT )
       {
-        #component_sets
+        #component_assigns
       }
     }
 
@@ -68,13 +68,13 @@ pub fn components_set( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 
   if has_debug
   {
-    diag::debug_report_print( "derive : ComponentsSet", original_input, &result );
+    diag::debug_report_print( "derive : ComponentsAssign", original_input, &result );
   }
   Ok( result )
 }
 
 ///
-/// Generate trait bounds needed for `components_set`
+/// Generate trait bounds needed for `components_assign`
 ///
 /// ### Output example
 ///
@@ -94,12 +94,12 @@ fn generate_trait_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Toke
 }
 
 ///
-/// Generate impl bounds needed for `components_set`
+/// Generate impl bounds needed for `components_assign`
 ///
 /// ### Output example
 ///
 /// ```ignore
-/// T : former::ComponentSet< i32, IntoT >,
+/// T : former::ComponentAssign< i32, IntoT >,
 /// ```
 ///
 fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::TokenStream >
@@ -108,22 +108,22 @@ fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Token
   (
     qt!
     {
-      T : former::ComponentSet< #field_type, IntoT >,
+      T : former::ComponentAssign< #field_type, IntoT >,
     }
   )
 }
 
 ///
-/// Generate set calls needed by `components_set`
-/// Returns a "unit" of work of `components_set` function, performing `set` on each field.
+/// Generate set calls needed by `components_assign`
+/// Returns a "unit" of work of `components_assign` function, performing `set` on each field.
 ///
 /// Output example
 ///
 /// ```ignore
-/// former::ComponentSet::< i32, _ >::set( self.component.clone() );
+/// former::ComponentAssign::< i32, _ >::assign( self.component.clone() );
 /// ```
 ///
-fn generate_component_set_call( field : &syn::Field ) -> Result< proc_macro2::TokenStream >
+fn generate_component_assign_call( field : &syn::Field ) -> Result< proc_macro2::TokenStream >
 {
   // let field_name = field.ident.as_ref().expect( "Expected the field to have a name" );
   let field_type = &field.ty;
@@ -131,36 +131,36 @@ fn generate_component_set_call( field : &syn::Field ) -> Result< proc_macro2::To
   (
     qt!
     {
-      former::ComponentSet::< #field_type, _ >::set( self, component.clone() );
+      former::ComponentAssign::< #field_type, _ >::assign( self, component.clone() );
     }
   )
 }
 
 // ///
-// /// Options2ComponentsSet.
+// /// Options2ComponentsAssign.
 // ///
 //
-// pub trait Options2ComponentsSet< IntoT >
+// pub trait Options2ComponentsAssign< IntoT >
 // where
 //   IntoT : Into< i32 >,
 //   IntoT : Into< String >,
 //   IntoT : Clone,
 // {
-//   fn components_set( &mut self, component : IntoT );
+//   fn components_assign( &mut self, component : IntoT );
 // }
 //
-// impl< T, IntoT > Options2ComponentsSet< IntoT > for T
+// impl< T, IntoT > Options2ComponentsAssign< IntoT > for T
 // where
-//   T : former::ComponentSet< i32, IntoT >,
-//   T : former::ComponentSet< String, IntoT >,
+//   T : former::ComponentAssign< i32, IntoT >,
+//   T : former::ComponentAssign< String, IntoT >,
 //   IntoT : Into< i32 >,
 //   IntoT : Into< String >,
 //   IntoT : Clone,
 // {
 //   #[ inline( always ) ]
-//   fn components_set( &mut self, component : IntoT )
+//   fn components_assign( &mut self, component : IntoT )
 //   {
-//     former::ComponentSet::< i32, _ >::set( self, component.clone() );
-//     former::ComponentSet::< String, _ >::set( self, component.clone() );
+//     former::ComponentAssign::< i32, _ >::assign( self, component.clone() );
+//     former::ComponentAssign::< String, _ >::assign( self, component.clone() );
 //   }
 // }

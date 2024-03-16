@@ -1,13 +1,13 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::{ ComponentSet, SetWithType };
+use former::{ ComponentAssign, AssignWithType };
 
 ///
 /// Options1
 ///
 
-#[ derive( Debug, Default, PartialEq, TheModule::ComponentSet, TheModule::ComponentsSet ) ]
+#[ derive( Debug, Default, PartialEq, TheModule::ComponentAssign, TheModule::ComponentsAssign ) ]
 pub struct Options1
 {
   field1 : i32,
@@ -46,7 +46,7 @@ impl From< &Options1 > for f32
 /// Options2
 ///
 
-#[ derive( Debug, Default, PartialEq, TheModule::ComponentSet, TheModule::ComponentsSet ) ]
+#[ derive( Debug, Default, PartialEq, TheModule::ComponentAssign, TheModule::ComponentsAssign ) ]
 pub struct Options2
 {
   field1 : i32,
@@ -73,4 +73,4 @@ impl From< &Options2 > for String
 
 //
 
-include!( "only_test/components_components_set.rs" );
+include!( "only_test/components_components_assign.rs" );
