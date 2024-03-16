@@ -44,7 +44,7 @@ mod mod1
 }
 
 // trace_macros!( true );
-TheModule::types!
+the_module::types!
 {
   #[ derive( Debug, Clone ) ]
   #[ derive( PartialEq ) ]

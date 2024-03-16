@@ -1,5 +1,5 @@
 use super::*;
-use TheModule::process;
+use the_module::process;
 use std::
 {
   env::consts::EXE_EXTENSION,
@@ -8,10 +8,11 @@ use std::
   process::Command,
 };
 
-// xxx : ?
+// xxx : qqq : ?
 pub fn path_to_exe( name : &Path, temp_path : &Path ) -> PathBuf
 {
-  _ = Command::new("rustc")
+
+  _ = Command::new( "rustc" )
   .current_dir( temp_path )
   .arg( name )
   .status()
@@ -26,17 +27,15 @@ pub fn path_to_exe( name : &Path, temp_path : &Path ) -> PathBuf
 fn err_out_err()
 {
   let temp = assert_fs::TempDir::new().unwrap();
-  let root_path = Path::new( env!( "CARGO_MANIFEST_DIR" ) );
-  let assets_relative_path = Path::new( ASSETS_PATH );
-  let assets_path = root_path.join( assets_relative_path );
-
+  let crate_path = Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+  let assets_path = crate_path.join( Path::new( ASSET_PATH ) );
   let args : [ OsString ; 0 ] = [];
 
   let options = process::RunOptions::former()
   .application( path_to_exe( &assets_path.join( "err_out_test" ).join( "err_out_err.rs" ), temp.path() ) )
   .args( args.to_vec() )
   .path( temp.to_path_buf() )
-  .join_steam( true )
+  .joining_steams( true )
   .form();
 
   let report = process::run( options ).unwrap().out;
@@ -48,20 +47,17 @@ fn err_out_err()
 fn out_err_out()
 {
   let temp = assert_fs::TempDir::new().unwrap();
-  let root_path = Path::new( env!( "CARGO_MANIFEST_DIR" ) );
-  let assets_relative_path = Path::new( ASSETS_PATH );
-  let assets_path = root_path.join( assets_relative_path );
-
+  let crate_path = Path::new( env!( "CARGO_MANIFEST_DIR" ) );
+  let assets_path = crate_path.join( Path::new( ASSET_PATH ) );
   let args : [ OsString ; 0 ] = [];
 
   let options = process::RunOptions::former()
   .application( path_to_exe( &assets_path.join( "err_out_test" ).join( "out_err_out.rs" ), temp.path() ) )
   .args( args.to_vec() )
   .path( temp.to_path_buf() )
-  .join_steam( true )
+  .joining_steams( true )
   .form();
   let report = process::run( options ).unwrap().out;
 
   assert_eq!( "This is stdout text\nThis is stderr text\nThis is stdout text\n", report );
 }
-

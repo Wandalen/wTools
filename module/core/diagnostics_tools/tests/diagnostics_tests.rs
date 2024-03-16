@@ -6,7 +6,7 @@
 // #![ feature( trace_macros ) ]
 
 #[ allow( unused_imports ) ]
-use diagnostics_tools as TheModule;
+use diagnostics_tools as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 // #[ path="../../../../module/step/meta/src/module/terminal.rs" ]

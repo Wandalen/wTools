@@ -3,7 +3,7 @@ use super::*;
 
 tests_impls!
 {
-  
+
 
   fn empty_parameter()
   {
@@ -25,7 +25,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
 
       ///
@@ -81,7 +81,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       pair Pair : mod1::Float;
     }
@@ -98,7 +98,7 @@ tests_impls!
   {
     use core::fmt;
 
-    TheModule::types!
+    the_module::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
@@ -116,12 +116,12 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
-      let got : Pair< f32, f64 > = TheModule::from!();
+      let got : Pair< f32, f64 > = the_module::from!();
       let exp = Pair::< f32, f64 >( 0.0, 0.0 );
       a_id!( got, exp );
 
       /* test.case( "make2" ) */
-      let got : Pair< f32, f64 > = TheModule::from!( 13.0, 31.0 );
+      let got : Pair< f32, f64 > = the_module::from!( 13.0, 31.0 );
       let exp = Pair::< f32, f64 >( 13.0, 31.0 );
       a_id!( got, exp );
     }
@@ -183,7 +183,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       pair Pair : < T1, T2 >;
     }
@@ -200,7 +200,7 @@ tests_impls!
   {
     use core::fmt;
 
-    TheModule::types!
+    the_module::types!
     {
 
       pair Pair1 : f64, f32;
@@ -274,19 +274,19 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
-      let got : TheModule::Pair< f32, f64 > = TheModule::from!();
-      let exp = TheModule::Pair::< f32, f64 >( 0.0, 0.0 );
+      let got : the_module::Pair< f32, f64 > = the_module::from!();
+      let exp = the_module::Pair::< f32, f64 >( 0.0, 0.0 );
       a_id!( got, exp );
 
       /* test.case( "make2" ) */
-      let got : TheModule::Pair< f32, f64 > = TheModule::from!( 13.0, 31.0 );
-      let exp = TheModule::Pair::< f32, f64 >( 13.0, 31.0 );
+      let got : the_module::Pair< f32, f64 > = the_module::from!( 13.0, 31.0 );
+      let exp = the_module::Pair::< f32, f64 >( 13.0, 31.0 );
       a_id!( got, exp );
     }
 
     /* test.case( "from tuple into pair" ) */
-    let instance1 : TheModule::Pair< f32, f64 > = ( 13.0, 31.0 ).into();
-    let instance2 = TheModule::Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
+    let instance1 : the_module::Pair< f32, f64 > = ( 13.0, 31.0 ).into();
+    let instance2 = the_module::Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance1.1, 31.0 );
     a_id!( instance2.0, 13.0 );
@@ -294,8 +294,8 @@ tests_impls!
     a_id!( instance1, instance2 );
 
     /* test.case( "from Pair into tuple" ) */
-    let instance1 : TheModule::Pair< f32, f64 > = ( 13.0, 31.0 ).into();
-    let instance2 = TheModule::Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
+    let instance1 : the_module::Pair< f32, f64 > = ( 13.0, 31.0 ).into();
+    let instance2 = the_module::Pair::< f32, f64 >::from( ( 13.0, 31.0 ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance1.1, 31.0 );
     a_id!( instance2.0, 13.0 );
@@ -303,8 +303,8 @@ tests_impls!
     a_id!( instance1, instance2 );
 
     /* test.case( "from itself into itself" ) */
-    let instance1 : TheModule::Pair< f32, f64 > = ( TheModule::Pair::from( ( 13.0, 31.0 ) ) ).into();
-    let instance2 = TheModule::Pair::< f32, f64 >::from( TheModule::Pair::from( ( 13.0, 31.0 ) ) );
+    let instance1 : the_module::Pair< f32, f64 > = ( the_module::Pair::from( ( 13.0, 31.0 ) ) ).into();
+    let instance2 = the_module::Pair::< f32, f64 >::from( the_module::Pair::from( ( 13.0, 31.0 ) ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance1.1, 31.0 );
     a_id!( instance2.0, 13.0 );
@@ -312,7 +312,7 @@ tests_impls!
     a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : TheModule::Pair< f32, f64 > = ( 13.0, 31.0 ).into();
+    let instance1 : the_module::Pair< f32, f64 > = ( 13.0, 31.0 ).into();
     let instance2 = instance1.clone();
     a_id!( instance1.0, 13.0 );
     a_id!( instance1.1, 31.0 );
@@ -321,12 +321,12 @@ tests_impls!
     a_id!( instance1, instance2 );
 
     /* test.case( "default" ) */
-    let instance1 : TheModule::Pair< f32, f64 > = Default::default();
+    let instance1 : the_module::Pair< f32, f64 > = Default::default();
     a_id!( instance1.0, 0.0 );
     a_id!( instance1.1, 0.0 );
 
 //     /* test.case( "deref" ) */
-//     let got : TheModule::Pair< f32, f64 > = ( 13.5 ).into();
+//     let got : the_module::Pair< f32, f64 > = ( 13.5 ).into();
 //     a_id!( got.round(), 14.0 );
 
   }
@@ -345,8 +345,8 @@ tests_impls!
     }
 
     /* test.case( "from tuple into pair" ) */
-    let instance1 : TheModule::Pair< Floats< f32, f64 >, f32 > = ( Floats( 13.0, 31.0 ), 131.0 ).into();
-    let instance2 = TheModule::Pair::< Floats< f32, f64 >, f32 >::from( ( Floats( 13.0, 31.0 ), 131.0 ) );
+    let instance1 : the_module::Pair< Floats< f32, f64 >, f32 > = ( Floats( 13.0, 31.0 ), 131.0 ).into();
+    let instance2 = the_module::Pair::< Floats< f32, f64 >, f32 >::from( ( Floats( 13.0, 31.0 ), 131.0 ) );
     a_id!( instance1.0.0, 13.0 );
     a_id!( instance1.0.1, 31.0 );
     a_id!( instance1.1, 131.0 );
@@ -360,11 +360,11 @@ tests_impls!
 
   fn struct_transitive_from()
   {
-    // use TheModule::{ From_2 };
+    // use the_module::{ From_2 };
 
     /* test.case( "from tuple" ) */
     {
-      // TheModule::types!
+      // the_module::types!
       // {
       //   #[ derive( PartialEq, Debug ) ]
       //   single MySingle : i32
@@ -385,8 +385,8 @@ tests_impls!
       }
 
       let src = ( 1, 3 );
-      let got : TheModule::Pair< MySingle, MySingle > = src.into();
-      let exp = TheModule::Pair::from( ( MySingle::from( 1 ), MySingle::from( 3 ) ) );
+      let got : the_module::Pair< MySingle, MySingle > = src.into();
+      let exp = the_module::Pair::from( ( MySingle::from( 1 ), MySingle::from( 3 ) ) );
       a_id!( got, exp );
     }
     // zzz : implement similar test for other type constructors
@@ -394,15 +394,15 @@ tests_impls!
     // /* test.case( "from pair" ) */
     // {
     //   // trace_macros!( true );
-    //   TheModule::types!
+    //   the_module::types!
     //   {
     //     #[ derive( PartialEq, Debug ) ]
     //     single MySingle : i32
     //   };
     //   // trace_macros!( false );
-    //   let src = TheModule::Pair::from_2( 1, 3 );
-    //   // let got : TheModule::Pair< MySingle, MySingle > = src.into();
-    //   let exp = TheModule::Pair::from_2( MySingle::from_1( 1 ), MySingle::from_1( 3 ) );
+    //   let src = the_module::Pair::from_2( 1, 3 );
+    //   // let got : the_module::Pair< MySingle, MySingle > = src.into();
+    //   let exp = the_module::Pair::from_2( MySingle::from_1( 1 ), MySingle::from_1( 3 ) );
     //   // a_id!( got, exp );
     // }
 

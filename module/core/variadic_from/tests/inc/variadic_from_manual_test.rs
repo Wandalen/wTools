@@ -14,7 +14,7 @@ fn from_named_fields()
     d : i32,
   }
 
-  impl TheModule::wtools::From_0 for StructNamedFields
+  impl the_module::wtools::From_0 for StructNamedFields
   {
     fn from_0() -> Self
     {
@@ -26,17 +26,17 @@ fn from_named_fields()
     }
   }
 
-  impl TheModule::wtools::From_1< i32 > for StructNamedFields
+  impl the_module::wtools::From_1< i32 > for StructNamedFields
   {
     fn from_1( a : i32 ) -> Self { Self{ a, b : a, c : a, d : a } }
   }
 
-//   impl TheModule::wtools::From_2< i32, i32 > for StructNamedFields
+//   impl the_module::wtools::From_2< i32, i32 > for StructNamedFields
 //   {
 //     fn from_2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
 //   }
 //
-//   impl TheModule::wtools::From_3< i32, i32, i32 > for StructNamedFields
+//   impl the_module::wtools::From_3< i32, i32, i32 > for StructNamedFields
 //   {
 //     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
 //   }
@@ -53,7 +53,7 @@ fn from_tuple()
   #[ derive( Debug, PartialEq ) ]
   struct StructTuple( i32, i32, i32, i32 );
 
-  impl TheModule::wtools::From_0 for StructTuple
+  impl the_module::wtools::From_0 for StructTuple
   {
     fn from_0() -> Self
     {
@@ -65,17 +65,17 @@ fn from_tuple()
     }
   }
 
-  impl TheModule::wtools::From_1< i32 > for StructTuple
+  impl the_module::wtools::From_1< i32 > for StructTuple
   {
     fn from_1( a : i32 ) -> Self { Self( a, a, a, a ) }
   }
 
-//   impl TheModule::wtools::From_2< i32, i32 > for StructTuple
+//   impl the_module::wtools::From_2< i32, i32 > for StructTuple
 //   {
 //     fn from_2( a : i32, b : i32 ) -> Self { Self( a, b, b, b ) }
 //   }
 //
-//   impl TheModule::wtools::From_3< i32, i32, i32 > for StructTuple
+//   impl the_module::wtools::From_3< i32, i32, i32 > for StructTuple
 //   {
 //     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self( a, b, c, c ) }
 //   }

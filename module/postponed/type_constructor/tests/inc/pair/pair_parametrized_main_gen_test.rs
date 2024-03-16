@@ -31,7 +31,7 @@ use super::*;
 // }
 
 // // trace_macros!( true );
-// TheModule::types!
+// the_module::types!
 // {
 //   #[ derive( Debug, Clone ) ]
 //   #[ derive( PartialEq ) ]

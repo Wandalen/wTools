@@ -3,7 +3,7 @@
 // #![ feature( type_alias_impl_trait ) ]
 
 #[ allow( unused_imports ) ]
-use graphs_tools as TheModule;
+use graphs_tools as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

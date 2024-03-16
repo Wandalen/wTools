@@ -44,7 +44,7 @@ impl From< &Options1 > for f32
 /// Options2
 ///
 
-#[ derive( Debug, Default, PartialEq, TheModule::FromComponents ) ]
+#[ derive( Debug, Default, PartialEq, the_module::FromComponents ) ]
 pub struct Options2
 {
   field1 : i32,

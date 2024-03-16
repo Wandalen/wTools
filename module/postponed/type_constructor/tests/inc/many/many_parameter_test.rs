@@ -6,7 +6,7 @@ tests_impls!
   fn parameter_complex()
   {
 
-    TheModule::types!
+    the_module::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
@@ -56,7 +56,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       many Many : < T >;
     }
@@ -73,36 +73,36 @@ tests_impls!
   {
 
     /* test.case( "from f32 into Many" ) */
-    let instance1 : TheModule::Many< f32 > = core::iter::once( 13.0 ).into();
-    let instance2 = TheModule::Many::< f32 >::from( core::iter::once( 13.0 ) );
+    let instance1 : the_module::Many< f32 > = core::iter::once( 13.0 ).into();
+    let instance2 = the_module::Many::< f32 >::from( core::iter::once( 13.0 ) );
     a_id!( instance1.0, vec![ 13.0 ] );
     a_id!( instance2.0, vec![ 13.0 ] );
     a_id!( instance1, instance2 );
 
     /* test.case( "from itself into itself" ) */
-    let instance1 : TheModule::Many< f32 > = ( TheModule::Many::from( core::iter::once( 13.0 ) ) ).into();
-    let instance2 = TheModule::Many::< f32 >::from( TheModule::Many::from( core::iter::once( 13.0 ) ) );
+    let instance1 : the_module::Many< f32 > = ( the_module::Many::from( core::iter::once( 13.0 ) ) ).into();
+    let instance2 = the_module::Many::< f32 >::from( the_module::Many::from( core::iter::once( 13.0 ) ) );
     a_id!( instance1.0, vec![ 13.0 ] );
     a_id!( instance2.0, vec![ 13.0 ] );
     a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : TheModule::Many< f32 > = core::iter::once( 13.0 ).into();
+    let instance1 : the_module::Many< f32 > = core::iter::once( 13.0 ).into();
     let instance2 = instance1.clone();
     a_id!( instance2.0, vec![ 13.0 ] );
     a_id!( instance1, instance2 );
 
     /* test.case( "default" ) */
-    let instance1 : TheModule::Many< f32 > = Default::default();
+    let instance1 : the_module::Many< f32 > = Default::default();
     a_id!( instance1.0, std::vec::Vec::< f32 >::new() );
 
     /* test.case( "deref" ) */
-    let mut got : TheModule::Many< f32 > = core::iter::once( 13.0 ).into();
+    let mut got : the_module::Many< f32 > = core::iter::once( 13.0 ).into();
     a_id!( got.len(), 1 );
     a_id!( got.pop(), Some( 13.0 ) );
 
     /* test.case( "iterate" ) */
-    // let mut got : TheModule::Many< f32 > = [ 1.0, 2.0, 3.0 ].into();
+    // let mut got : the_module::Many< f32 > = [ 1.0, 2.0, 3.0 ].into();
     // a_id!( got.len(), 3 );
     // for e in got
     // {
@@ -141,15 +141,15 @@ tests_impls!
     }
 
     /* test.case( "from f32 into Many" ) */
-    let instance1 : TheModule::Many< mod1::Floats< f32 > > = core::iter::once( mk!( 13.0 ) ).into();
-    let instance2 = TheModule::Many::< mod1::Floats< f32 > >::from( core::iter::once( mk!( 13.0 ) ) );
+    let instance1 : the_module::Many< mod1::Floats< f32 > > = core::iter::once( mk!( 13.0 ) ).into();
+    let instance2 = the_module::Many::< mod1::Floats< f32 > >::from( core::iter::once( mk!( 13.0 ) ) );
     a_id!( instance1.0[ 0 ].0, 13.0 );
     a_id!( instance1.len(), 1 );
     a_id!( instance2.0[ 0 ].0, 13.0 );
     a_id!( instance2.len(), 1 );
 
     /* test.case( "deref" ) */
-    let mut got : TheModule::Many< f32 > = core::iter::once( 13.0 ).into();
+    let mut got : the_module::Many< f32 > = core::iter::once( 13.0 ).into();
     a_id!( got.len(), 1 );
     a_id!( got.pop(), Some( 13.0 ) );
 

@@ -5,7 +5,7 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-use wautomata as TheModule;
+use wautomata as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

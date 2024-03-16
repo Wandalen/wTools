@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use TheModule::*;
+use the_module::*;
 
 //
 

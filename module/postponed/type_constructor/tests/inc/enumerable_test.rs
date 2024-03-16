@@ -11,7 +11,7 @@ macro_rules! PairDefine
   {
 
     struct Pair1( i32, i32 );
-    impl TheModule::Enumerable for Pair1
+    impl the_module::Enumerable for Pair1
     {
       type Element = i32;
       fn len( &self ) -> usize
@@ -43,7 +43,7 @@ macro_rules! PairDefine
         }
       }
     }
-    // impl TheModule::EnumerableMut for Pair1
+    // impl the_module::EnumerableMut for Pair1
     // {
     //   fn element_mut< 'slf, 'element >( &'slf mut self, index : usize ) -> &'element mut Self::Element
     //   where
@@ -72,7 +72,7 @@ tests_impls!
 
   fn basic()
   {
-    use TheModule::prelude::*;
+    use the_module::prelude::*;
     PairDefine!();
 
     /* test.case( "basic" ); */
@@ -89,26 +89,26 @@ tests_impls!
 
   fn manual_into_iter()
   {
-    use TheModule::prelude::*;
+    use the_module::prelude::*;
     PairDefine!();
 
     impl IntoIterator for Pair1
     {
       type Item = < Pair1 as Enumerable >::Element;
-      type IntoIter = TheModule::EnumerableIteratorCopy< Self >;
+      type IntoIter = the_module::EnumerableIteratorCopy< Self >;
       fn into_iter( self ) -> Self::IntoIter
       {
-        TheModule::EnumerableIteratorCopy::new( self )
+        the_module::EnumerableIteratorCopy::new( self )
       }
     }
 
     impl< 'a > IntoIterator for &'a Pair1
     {
       type Item = &'a < Pair1 as Enumerable >::Element;
-      type IntoIter = TheModule::EnumerableIteratorRef< 'a, Pair1 >;
+      type IntoIter = the_module::EnumerableIteratorRef< 'a, Pair1 >;
       fn into_iter( self ) -> Self::IntoIter
       {
-        TheModule::EnumerableIteratorRef::new( self )
+        the_module::EnumerableIteratorRef::new( self )
       }
     }
 
@@ -151,7 +151,7 @@ tests_impls!
 
   fn enumerable_iterate_trait()
   {
-    use TheModule::prelude::*;
+    use the_module::prelude::*;
     PairDefine!();
 
     /* test.case( "consumable iterator" ); */
@@ -193,26 +193,26 @@ tests_impls!
 
   fn into_iterate_enumerable_iterate_trait()
   {
-    use TheModule::prelude::*;
+    use the_module::prelude::*;
     PairDefine!();
 
     impl IntoIterator for Pair1
     {
       type Item = < Pair1 as Enumerable >::Element;
-      type IntoIter = TheModule::EnumerableIteratorCopy< Self >;
+      type IntoIter = the_module::EnumerableIteratorCopy< Self >;
       fn into_iter( self ) -> Self::IntoIter
       {
-        TheModule::EnumerableIteratorCopy::new( self )
+        the_module::EnumerableIteratorCopy::new( self )
       }
     }
 
     impl< 'a > IntoIterator for &'a Pair1
     {
       type Item = &'a < Pair1 as Enumerable >::Element;
-      type IntoIter = TheModule::EnumerableIteratorRef< 'a, Pair1 >;
+      type IntoIter = the_module::EnumerableIteratorRef< 'a, Pair1 >;
       fn into_iter( self ) -> Self::IntoIter
       {
-        TheModule::EnumerableIteratorRef::new( self )
+        the_module::EnumerableIteratorRef::new( self )
       }
     }
 

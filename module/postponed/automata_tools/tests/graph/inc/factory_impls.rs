@@ -4,8 +4,8 @@
 
 //   fn node()
 //   {
-//     use TheModule::prelude::*;
-//     let mut factory = GenerativeNodeFactory::< TheModule::IdentityWithInt >::make();
+//     use the_module::prelude::*;
+//     let mut factory = GenerativeNodeFactory::< the_module::IdentityWithInt >::make();
 
 //     let n1 = factory.node_making( 1 );
 //     let n1b = factory.node( 1 );
@@ -27,9 +27,9 @@
 
 //   fn make_default()
 //   {
-//     use TheModule::prelude::*;
+//     use the_module::prelude::*;
 
-//     let mut factory : GenerativeNodeFactory::< TheModule::IdentityWithInt > = from!();
+//     let mut factory : GenerativeNodeFactory::< the_module::IdentityWithInt > = from!();
 //     let n1 = factory.node_making( 1 );
 //     let n1b = factory.node( 1 );
 //     a_id!( n1, n1b.id() );
@@ -41,9 +41,9 @@
 
 //   fn basic()
 //   {
-//     use TheModule::prelude::*;
+//     use the_module::prelude::*;
 
-//     let mut factory = GenerativeNodeFactory::< TheModule::IdentityWithInt >::make();
+//     let mut factory = GenerativeNodeFactory::< the_module::IdentityWithInt >::make();
 
 //     let a = factory.node_making( 1 );
 //     let b = factory.node_making( 2 );
@@ -92,9 +92,9 @@
 
 //   fn make_with_edge_list()
 //   {
-//     use TheModule::prelude::*;
+//     use the_module::prelude::*;
 
-//     let mut factory = GenerativeNodeFactory::< TheModule::IdentityWithInt >::make();
+//     let mut factory = GenerativeNodeFactory::< the_module::IdentityWithInt >::make();
 
 //     factory.make_with_edge_list
 //     ([
@@ -119,7 +119,7 @@
 //     let got : HashSet< _ > = factory.out_edges( 2 ).map( | el | ( el.1.in_node, el.1.out_node ) ).collect();
 //     let exp = hset![ ( factory.edge_id( 2 ), factory.edge_id( 1 ) ), ( factory.edge_id( 2 ), factory.edge_id( 2 ) ) ];
 //     // let exp = hset![ factory.edge_ids( 2, 1 ), factory.edge_ids( 2, 2 ) ];
-//     // let exp : HashSet< ( TheModule::IdentityWithInt, TheModule::IdentityWithInt ) > = hset![ ( 2, 1 ).into(), ( 2, 2 ).into() ];
+//     // let exp : HashSet< ( the_module::IdentityWithInt, the_module::IdentityWithInt ) > = hset![ ( 2, 1 ).into(), ( 2, 2 ).into() ];
 //     a_id!( got, exp );
 
 //   }
@@ -130,9 +130,9 @@
 // //
 // //   fn make_with_edge_list_string()
 // //   {
-// //     use TheModule::prelude::*;
+// //     use the_module::prelude::*;
 // //
-// //     let mut factory = ReadableNodeFactory::< TheModule::IdentityWithName >::make();
+// //     let mut factory = ReadableNodeFactory::< the_module::IdentityWithName >::make();
 // //
 // //     factory.make_with_edge_list
 // //     ([
@@ -158,9 +158,9 @@
 
 //   fn graph_print()
 //   {
-//     use TheModule::prelude::*;
+//     use the_module::prelude::*;
 
-//     let mut factory = GenerativeNodeFactory::< TheModule::IdentityWithInt >::make();
+//     let mut factory = GenerativeNodeFactory::< the_module::IdentityWithInt >::make();
 
 //     factory.make_with_edge_list
 //     ([

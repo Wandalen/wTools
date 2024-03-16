@@ -5,7 +5,7 @@
 // #![ feature( trace_macros ) ]
 // #![ feature( type_name_of_val ) ]
 
-use type_constructor as TheModule;
+use type_constructor as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

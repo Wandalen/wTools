@@ -27,7 +27,7 @@ tests_impls!
 
   fn with_u8()
   {
-    #[ derive( Debug, PartialEq, TheModule::Former ) ]
+    #[ derive( Debug, PartialEq, the_module::Former ) ]
     pub struct Counter
     {
       count : u8,
@@ -50,7 +50,7 @@ tests_impls!
 // zzz : make it working
   fn with_u16()
   {
-//     #[ derive( Debug, PartialEq, TheModule::Former ) ]
+//     #[ derive( Debug, PartialEq, the_module::Former ) ]
 //     pub struct Counter
 //     {
 //       count : u16,

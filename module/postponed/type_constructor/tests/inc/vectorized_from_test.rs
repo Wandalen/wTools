@@ -6,8 +6,8 @@ tests_impls!
 {
   fn basic()
   {
-    use TheModule::{ VectorizedInto, VectorizedFrom };
-    TheModule::types!
+    use the_module::{ VectorizedInto, VectorizedFrom };
+    the_module::types!
     {
       #[ derive( Debug, PartialEq, Clone ) ]
       single Single1 : i32;

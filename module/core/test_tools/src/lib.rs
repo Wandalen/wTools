@@ -13,12 +13,9 @@ pub mod dependency
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::paste;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::trybuild;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::anyhow;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use ::trybuild;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::rustversion;
@@ -41,17 +38,19 @@ pub mod dependency
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::diagnostics_tools;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use ::process_tools;
 
 }
 
-// #[ cfg( feature = "enabled" ) ]
-// use ::meta_tools::mod_interface;
-
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
+// #[ cfg( not( feature = "no_std" ) ) ]
 ::meta_tools::mod_interface!
 {
   // #![ debug ]
+
+  protected use super::dependency::*;
 
   layer test;
 
@@ -60,17 +59,21 @@ pub mod dependency
   use super::exposed::typing;
   use super::exposed::dt;
   use super::exposed::diagnostics;
+  use super::exposed::process;
 
-  // protected use super::dependency;
-  protected use super::dependency::*;
+  // prelude use ::rustversion::{ nightly, stable };
 
-  prelude use ::rustversion::{ nightly, stable };
+  // // xxx : eliminate need to do such things, putting itself to proper category
+  // exposed use super::test::compiletime;
+  // exposed use super::test::helper;
+  // exposed use super::test::smoke_test;
 
   prelude use ::meta_tools as meta;
   prelude use ::mem_tools as mem;
   prelude use ::typing_tools as typing;
   prelude use ::data_type as dt;
   prelude use ::diagnostics_tools as diagnostics;
+  prelude use ::process_tools as process;
 
   prelude use ::meta_tools::
   {
@@ -85,6 +88,6 @@ pub mod dependency
 }
 
 // xxx : use module namespaces
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-pub use test::{ compiletime, helper, smoke_test };
+// #[ cfg( feature = "enabled" ) ]
+// #[ cfg( not( feature = "no_std" ) ) ]
+// pub use test::{ compiletime, helper, smoke_test };

@@ -5,7 +5,7 @@ use super::*;
 /// Options1
 ///
 
-#[ derive( Debug, Default, PartialEq, TheModule::ComponentFrom ) ]
+#[ derive( Debug, Default, PartialEq, the_module::ComponentFrom ) ]
 #[ debug ]
 // zzz : enable the test
 pub struct Options1

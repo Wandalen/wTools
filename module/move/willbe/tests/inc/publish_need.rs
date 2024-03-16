@@ -7,7 +7,7 @@ use std::
 };
 
 use assert_fs::prelude::*;
-use TheModule::
+use the_module::
 {
   package::{ publish_need, Package },
   path::AbsolutePath,

@@ -2,7 +2,7 @@
 use super::*;
 
 // trace_macros!( true );
-// TheModule::types!
+// the_module::types!
 // {
 // #[ derive( Debug, Clone ) ]
 // #[ derive( PartialEq, Default ) ]
@@ -130,7 +130,7 @@ where T : Clone,
   }
 }
 
-impl< T > TheModule::CloneAsTuple < (T,) >
+impl< T > the_module::CloneAsTuple < (T,) >
 for Single< T >
 where T : Clone,
 {
@@ -141,7 +141,7 @@ where T : Clone,
   }
 }
 
-impl< T > TheModule::CloneAsArray< T, 1 >
+impl< T > the_module::CloneAsArray< T, 1 >
 for Single< T >
 where T : Clone,
 {
@@ -152,7 +152,7 @@ where T : Clone,
   }
 }
 
-impl< T > TheModule::AsTuple< ( T, ) >
+impl< T > the_module::AsTuple< ( T, ) >
 for Single< T >
 {
   #[ inline ]
@@ -165,7 +165,7 @@ for Single< T >
   }
 }
 
-impl< T > TheModule::AsArray< T, 1 >
+impl< T > the_module::AsArray< T, 1 >
 for Single< T >
 {
   #[ inline ]
@@ -178,20 +178,20 @@ for Single< T >
   }
 }
 
-impl< T > TheModule::AsSlice < T >
+impl< T > the_module::AsSlice < T >
 for Single< T >
 {
   #[ inline ]
   fn as_slice( &self ) -> &[ T ]
   {
-    &TheModule::AsArray::as_array( self )[..]
+    &the_module::AsArray::as_array( self )[..]
   }
 }
 
-TheModule::_if_from!
+the_module::_if_from!
 {
 
-//   impl< T > TheModule::From_0
+//   impl< T > the_module::From_0
 //   for Single< T >
 //   where T : Default
 //   {
@@ -202,7 +202,7 @@ TheModule::_if_from!
 //     }
 //   }
 //
-//   impl< T > TheModule::From_1< T >
+//   impl< T > the_module::From_1< T >
 //   for Single< T >
 //   {
 //     #[ inline ]

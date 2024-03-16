@@ -7,6 +7,6 @@
 
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
-use mem_tools as TheModule;
+use mem_tools as the_module;
 
 mod inc;

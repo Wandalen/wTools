@@ -55,6 +55,7 @@ mem_tools = { workspace = true, features = [ "full" ] }
 typing_tools = { workspace = true, features = [ "full" ] }
 data_type = { workspace = true, features = [ "full" ] }
 diagnostics_tools = { workspace = true, features = [ "full" ] }
+process_tools = { workspace = true, features = [ "full" ] }
 
 [build-dependencies]
 rustc_version = "0.4"

@@ -9,7 +9,7 @@ tests_impls!
 {
   fn basic()
   {
-    use TheModule::prelude::*;
+    use the_module::prelude::*;
 
     /* test.case( "Vec" ) */
     let src = Vec::< i32 >::new();

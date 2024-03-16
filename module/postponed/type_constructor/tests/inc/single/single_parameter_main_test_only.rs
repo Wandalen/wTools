@@ -3,7 +3,7 @@ tests_impls!
   fn main()
   {
     use core::fmt;
-    use TheModule::
+    use the_module::
     {
       CloneAsTuple,
       CloneAsArray,

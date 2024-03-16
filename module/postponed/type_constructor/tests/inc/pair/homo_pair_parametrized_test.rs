@@ -32,7 +32,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
 
       ///
@@ -123,7 +123,7 @@ tests_impls!
 
   fn parametrized_multiple()
   {
-    use TheModule::
+    use the_module::
     {
       CloneAsTuple,
       CloneAsArray,
@@ -175,7 +175,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
@@ -224,12 +224,12 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make1" ) */
-      let got : Pair< f32, f64 > = TheModule::from!( mk!( 13.0 ) );
+      let got : Pair< f32, f64 > = the_module::from!( mk!( 13.0 ) );
       let exp = Pair::< f32, f64 >::from( ( mk!( 13.0 ), mk!( 13.0 ) ) );
       a_id!( got, exp );
 
       /* test.case( "make2" ) */
-      let got : Pair< f32, f64 > = TheModule::from!( mk!( 13.0 ), mk!( 31.0 ) );
+      let got : Pair< f32, f64 > = the_module::from!( mk!( 13.0 ), mk!( 31.0 ) );
       let exp = Pair::< f32, f64 >::from( ( mk!( 13.0 ), mk!( 31.0 ) ) );
       a_id!( got, exp );
     }
@@ -314,7 +314,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       pair Pair : mod1::Floats< T1, T2 >;
     }

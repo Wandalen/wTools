@@ -23,10 +23,10 @@ tests_impls!
     /* test.case( "sample1" ) */
     {
       let ( a, b, c ) = ( 1, 2, 3 );
-      TheModule::braces_unwrap!( dbg, { a, b, c } );
+      the_module::braces_unwrap!( dbg, { a, b, c } );
       // generates :
       // dbg!( a, b, c );
-      TheModule::braces_unwrap!( dbg, a, b, c );
+      the_module::braces_unwrap!( dbg, a, b, c );
       // generates :
       // dbg!( a, b, c );
     }
@@ -34,7 +34,7 @@ tests_impls!
     /* test.case( "sample2" ) */
     {
       let ( prefix, a, b, c, postfix ) = ( "prefix", 1, 2, 3, "postfix" );
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         dbg where
         @Prefix{ prefix, }
@@ -43,7 +43,7 @@ tests_impls!
       );
       // generates :
       // dbg!( prefix, a, b, c, psotfix );
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         dbg where
         @Prefix{ prefix, }
@@ -58,37 +58,37 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::braces_unwrap!( test_with, a, b, c );
+      the_module::braces_unwrap!( test_with, a, b, c );
       let exp = "a, b, c;";
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!( test_with, { a, b, c } );
+      the_module::braces_unwrap!( test_with, { a, b, c } );
       let exp = "a, b, c;";
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!( test_with, { { a, b, c } } );
+      the_module::braces_unwrap!( test_with, { { a, b, c } } );
       let exp = "{ a, b, c };";
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!( test_with, ( a, b, c ) );
+      the_module::braces_unwrap!( test_with, ( a, b, c ) );
       let exp = "(a, b, c);";
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!( test_with, ( ( a, b, c ) ) );
+      the_module::braces_unwrap!( test_with, ( ( a, b, c ) ) );
       let exp = "((a, b, c));";
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!( test_with, [ a, b, c ] );
+      the_module::braces_unwrap!( test_with, [ a, b, c ] );
       let exp = "[a, b, c];";
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!( test_with, [ [ a, b, c ] ] );
+      the_module::braces_unwrap!( test_with, [ [ a, b, c ] ] );
       let exp = "[[a, b, c]];";
       a_id!( GOT, exp );
 
@@ -98,7 +98,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @SRC{ a, b, c }
@@ -107,7 +107,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @SRC{ { a, b, c } }
@@ -116,7 +116,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @SRC{ { { a, b, c } } }
@@ -125,7 +125,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @SRC{ ( a, b, c ) }
@@ -134,7 +134,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @SRC{ ( ( a, b, c ) ) }
@@ -143,7 +143,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @SRC{ [ a, b, c ] }
@@ -152,7 +152,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @SRC{ [ [ a, b, c ] ] }
@@ -165,7 +165,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -176,7 +176,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -187,7 +187,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -198,7 +198,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -209,7 +209,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -220,7 +220,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -231,7 +231,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -248,7 +248,7 @@ tests_impls!
     {
       /* 0 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ { prefix } }
@@ -259,7 +259,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 1 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ { prefix } }
@@ -270,7 +270,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 2 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ { prefix } }
@@ -281,7 +281,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 3 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ { prefix } }
@@ -292,7 +292,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 4 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -303,7 +303,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 5 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -314,7 +314,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 6 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -325,7 +325,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 7 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -340,7 +340,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -350,7 +350,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -360,7 +360,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -370,7 +370,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -380,7 +380,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -390,7 +390,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -400,7 +400,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -416,7 +416,7 @@ tests_impls!
     {
       /* 0 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ { prefix } }
@@ -426,7 +426,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 1 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ { prefix } }
@@ -436,7 +436,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 2 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -446,7 +446,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 3 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Prefix{ prefix }
@@ -460,7 +460,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Postfix{ postfix }
@@ -470,7 +470,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Postfix{ postfix }
@@ -480,7 +480,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Postfix{ postfix }
@@ -490,7 +490,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Postfix{ postfix }
@@ -500,7 +500,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Postfix{ postfix }
@@ -510,7 +510,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Postfix{ postfix }
@@ -520,7 +520,7 @@ tests_impls!
       a_id!( GOT, exp );
 
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Postfix{ postfix }
@@ -536,7 +536,7 @@ tests_impls!
     {
       /* 0 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Postfix{ { postfix } }
@@ -546,7 +546,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 1 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Postfix{ { postfix } }
@@ -556,7 +556,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 2 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Postfix{ postfix }
@@ -566,7 +566,7 @@ tests_impls!
       a_id!( GOT, exp );
       /* 3 */
       GOT = "".to_string();
-      TheModule::braces_unwrap!
+      the_module::braces_unwrap!
       (
         test_with where
         @Postfix{ postfix }
@@ -600,7 +600,7 @@ tests_impls!
 
     /* test.case( "sample : function-style" ) */
     {
-      TheModule::for_each!( dbg, "a", "b", "c" );
+      the_module::for_each!( dbg, "a", "b", "c" );
       // generates
       dbg!( "a" );
       dbg!( "b" );
@@ -609,7 +609,7 @@ tests_impls!
 
     /* test.case( "sample : map-style" ) */
     {
-      TheModule::for_each!
+      the_module::for_each!
       {
         dbg where
         @Prefix { "prefix".to_string() + }
@@ -624,7 +624,7 @@ tests_impls!
 
     /* test.case( "sample : more than single token" ) */
     {
-      TheModule::for_each!
+      the_module::for_each!
       {
         dbg where
         @Prefix { "prefix".to_string() + }
@@ -639,7 +639,7 @@ tests_impls!
 
     /* test.case( "sample : callbackless" ) */
     {
-      TheModule::for_each!
+      the_module::for_each!
       {
         @Prefix { dbg! }
         @Each ( "a" ) ( "b" ) ( "c" )
@@ -656,7 +656,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with, a, b, c );
+      the_module::for_each!( test_with, a, b, c );
       let exp = "a+b+c+";
       a_id!( GOT, exp );
     }
@@ -665,7 +665,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with, { std :: collections :: HashMap }, { std :: collections :: BTreeMap } );
+      the_module::for_each!( test_with, { std :: collections :: HashMap }, { std :: collections :: BTreeMap } );
       let exp = "std :: collections :: HashMap+std :: collections :: BTreeMap+";
       a_id!( GOT, exp );
     }
@@ -674,7 +674,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with, { a _ a }, { b _ b } );
+      the_module::for_each!( test_with, { a _ a }, { b _ b } );
       let exp = "a _ a+b _ b+";
       a_id!( GOT, exp );
     }
@@ -683,7 +683,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with, { a _ a }, { b _ b }, );
+      the_module::for_each!( test_with, { a _ a }, { b _ b }, );
       let exp = "a _ a+b _ b+";
       a_id!( GOT, exp );
     }
@@ -692,7 +692,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with, ( std :: collections :: HashMap ), ( std :: collections :: BTreeMap ) );
+      the_module::for_each!( test_with, ( std :: collections :: HashMap ), ( std :: collections :: BTreeMap ) );
       let exp = "(std :: collections :: HashMap)+(std :: collections :: BTreeMap)+";
       a_id!( GOT, exp );
     }
@@ -703,7 +703,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!
+      the_module::for_each!
       {
         @Prefix { test_with! }
         @Postfix { ; test_with!( postfix ); }
@@ -717,7 +717,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!
+      the_module::for_each!
       {
         @Prefix { test_with! }
         @Each ( a ) ( b ) ( c )
@@ -730,7 +730,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!
+      the_module::for_each!
       {
         @Postfix { ; test_with!( postfix ); }
         @Each { test_with!( a ) } { test_with!( b ) } { test_with!( c ) }
@@ -745,7 +745,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with where @Each a b c );
+      the_module::for_each!( test_with where @Each a b c );
       let exp = "a+b+c+";
       a_id!( GOT, exp );
     }
@@ -754,7 +754,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with where @Prefix prefix @Postfix postfix @Each a b c );
+      the_module::for_each!( test_with where @Prefix prefix @Postfix postfix @Each a b c );
       let exp = "prefix a postfix+prefix b postfix+prefix c postfix+";
       a_id!( GOT, exp );
     }
@@ -763,7 +763,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with where @Prefix prefix @Each a b c );
+      the_module::for_each!( test_with where @Prefix prefix @Each a b c );
       let exp = "prefix a+prefix b+prefix c+";
       a_id!( GOT, exp );
     }
@@ -772,7 +772,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!( test_with where @Postfix postfix @Each a b c );
+      the_module::for_each!( test_with where @Postfix postfix @Each a b c );
       let exp = "a postfix+b postfix+c postfix+";
       a_id!( GOT, exp );
     }
@@ -783,7 +783,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!
+      the_module::for_each!
       {
         test_with where
         @Each { a _ a } { b _ b } { c _ c }
@@ -796,7 +796,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!
+      the_module::for_each!
       {
         test_with where
         @Prefix { pre fix }
@@ -811,7 +811,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!
+      the_module::for_each!
       {
         test_with where
         @Prefix { pre fix }
@@ -825,7 +825,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!
+      the_module::for_each!
       {
         test_with where
         @Postfix { post fix }
@@ -864,7 +864,7 @@ tests_impls!
         $( where $( $Args : tt )* )?
       ) =>
       {
-        TheModule::for_each!
+        the_module::for_each!
         (
           $Callback where
           $( $( $Args )* )?
@@ -888,7 +888,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!
+      the_module::for_each!
       {
         for_each_float where
         @Each
@@ -903,7 +903,7 @@ tests_impls!
 
     {
       GOT = "".to_string();
-      TheModule::for_each!
+      the_module::for_each!
       {
         for_each_float where
         @Prefix { test_with where @Prefix }

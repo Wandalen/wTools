@@ -5,7 +5,7 @@ tests_impls!
 {
   fn main()
   {
-    use TheModule::
+    use the_module::
     {
       CloneAsTuple,
       CloneAsArray,
@@ -57,12 +57,12 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make1" ) */
-      let instance1 : Pair< mod1::Float > = TheModule::from!( mk!( 13.0 ) );
+      let instance1 : Pair< mod1::Float > = the_module::from!( mk!( 13.0 ) );
       let instance2 = Pair::< mod1::Float >::from( [ mk!( 13.0 ), mk!( 13.0 ) ] );
       a_id!( instance1, instance2 );
 
       /* test.case( "make2" ) */
-      let instance1 : Pair< mod1::Float > = TheModule::from!( mk!( 13.0 ), mk!( 31.0 ) );
+      let instance1 : Pair< mod1::Float > = the_module::from!( mk!( 13.0 ), mk!( 31.0 ) );
       let instance2 = Pair::< mod1::Float >::from( [ mk!( 13.0 ), mk!( 31.0 ) ] );
       a_id!( instance1, instance2 );
     }

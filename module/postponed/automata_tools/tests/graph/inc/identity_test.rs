@@ -8,7 +8,7 @@
 
 //   fn identity_with_int()
 //   {
-//     use TheModule::exposed::*;
+//     use the_module::exposed::*;
 
 //     /* test.case( "basic" ) */
 //     {
@@ -77,7 +77,7 @@
 
 //   fn identity_implemented_for_identity_by_pointer()
 //   {
-//     use TheModule::exposed::*;
+//     use the_module::exposed::*;
 
 //     let x = 1;
 //     let y = 1;
@@ -92,7 +92,7 @@
 
 //   fn identity_implemented_for_identity_by_name()
 //   {
-//     use TheModule::exposed::*;
+//     use the_module::exposed::*;
 
 //     let src1 = IdentityWithName::make( "abc" );
 //     let src2 = IdentityWithName::make( "abc" );
@@ -106,7 +106,7 @@
 
 //   fn identity_implemented_for_identity_by_int()
 //   {
-//     use TheModule::exposed::*;
+//     use the_module::exposed::*;
 
 //     let src1 = IdentityWithInt::make( 3 );
 //     let src2 = IdentityWithInt::make( 3 );

@@ -1,11 +1,11 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use std::
-  {
-    path::{ Component, Path, PathBuf },
-    time::{ SystemTime, UNIX_EPOCH, SystemTimeError },
-  };
+  // use std::
+  // {
+  //   path::{ Component, Path, PathBuf },
+  //   time::{ SystemTime, UNIX_EPOCH, SystemTimeError },
+  // };
   // use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
 
   // // xxx : it's not path, but file
@@ -136,8 +136,13 @@ pub( crate ) mod private
   /// A `PathBuf` containing the normalized path.
   ///
 
-  pub fn normalize< P : AsRef< Path > >( path : P ) -> PathBuf
+  pub fn normalize< P : AsRef< std::path::Path > >( path : P ) -> std::path::PathBuf
   {
+
+    use std::
+    {
+      path::{ Component, PathBuf },
+    };
 
     let mut components = Vec::new();
     let mut starts_with_dot = false;
@@ -200,8 +205,10 @@ pub( crate ) mod private
   // qqq : for Petro : for Bohdan : why that transofrmation is necessary. give several examples of input and output
   /// Returns the canonical, absolute form of the path with all intermediate components normalized and symbolic links resolved.
   /// This function does not touch fs.
-  pub fn canonicalize( path : impl AsRef< Path > ) -> std::io::Result< PathBuf >
+  pub fn canonicalize( path : impl AsRef< std::path::Path > ) -> std::io::Result< std::path::PathBuf >
   {
+    use std::path::PathBuf;
+
     // println!( "a" );
     // let path = path.as_ref().canonicalize()?;
     // println!( "b" );
@@ -229,10 +236,41 @@ pub( crate ) mod private
     Ok( path )
   }
 
-  /// Generate name based on system time
-  // xxx : qqq : tests and documentation
-  pub fn unique_folder_name() -> Result<String, SystemTimeError>
+  /// Generates a unique folder name using the current system time, process ID,
+  /// thread ID, and an internal thread-local counter.
+  ///
+  /// This function constructs the folder name by combining:
+  /// - The current system time in nanoseconds since the UNIX epoch,
+  /// - The current process ID,
+  /// - A checksum of the current thread's ID,
+  /// - An internal thread-local counter which increments on each call within the same thread.
+  ///
+  /// The format of the generated name is "{timestamp}_{pid}_{tid}_{counter}",
+  /// where each component adds a layer of uniqueness, making the name suitable for
+  /// temporary or unique directory creation in multi-threaded and multi-process environments.
+  ///
+  /// # Returns
+  ///
+  /// A `Result< String, SystemTimeError >` where:
+  /// - `Ok( String )` contains the unique folder name if the current system time
+  ///   can be determined relative to the UNIX epoch,
+  /// - `Err( SystemTimeError )` if there is an error determining the system time.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use proper_path_tools::path::unique_folder_name;
+  /// let folder_name = unique_folder_name().unwrap();
+  /// println!( "Generated folder name: {}", folder_name );
+  /// ```
+
+  #[ cfg( feature = "path_unique_folder_name" ) ]
+  pub fn unique_folder_name() -> Result< String, SystemTimeError >
   {
+    use std::
+    {
+      time::{ SystemTime, UNIX_EPOCH, SystemTimeError },
+    };
 
     // Thread-local static variable for a counter
     thread_local!
@@ -249,13 +287,13 @@ pub( crate ) mod private
     });
 
     let timestamp = SystemTime::now()
-      .duration_since( UNIX_EPOCH )?
-      .as_nanos();
+    .duration_since( UNIX_EPOCH )?
+    .as_nanos();
 
     let pid = std::process::id();
-    let tid = format!( "{:?}", std::thread::current().id() ).as_bytes().iter().sum::<u8>();
+    let tid = std::thread::current().id();
 
-    Ok( format!( "{}_{}_{}_{}", timestamp, pid, tid, count ) )
+    Ok( format!( "{}_{}_{:?}_{}", timestamp, pid, tid, count ) )
   }
 
 }
@@ -266,6 +304,7 @@ crate::mod_interface!
   protected use is_glob;
   protected use normalize;
   protected use canonicalize;
+  #[ cfg( feature = "path_unique_folder_name" ) ]
   protected use unique_folder_name;
 
   /// Describe absolute path. Prefer using absolute path instead of relative when ever possible.

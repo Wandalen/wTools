@@ -6,7 +6,7 @@
 #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 
 #[ allow( unused_imports ) ]
-use std_tools as TheModule;
+use std_tools as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

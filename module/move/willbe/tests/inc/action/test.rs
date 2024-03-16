@@ -3,7 +3,7 @@ use std::io::Write;
 use std::path::{ Path, PathBuf };
 use assert_fs::TempDir;
 
-use crate::TheModule::*;
+use crate::the_module::*;
 use action::test::{test, TestsCommandOptions};
 use path::AbsolutePath;
 use channel::*;

@@ -13,10 +13,10 @@ use former::{ ComponentAssign, AssignWithType };
     Debug,
     Default,
     PartialEq,
-    TheModule::ComponentFrom,
-    TheModule::ComponentAssign,
-    TheModule::ComponentsAssign,
-    TheModule::FromComponents,
+    the_module::ComponentFrom,
+    the_module::ComponentAssign,
+    the_module::ComponentsAssign,
+    the_module::FromComponents,
   )
 ]
 // qqq : make these traits working for generic struct, use `split_for_impl`
@@ -37,10 +37,10 @@ pub struct Options1
     Debug,
     Default,
     PartialEq,
-    TheModule::ComponentFrom,
-    TheModule::ComponentAssign,
-    TheModule::ComponentsAssign,
-    TheModule::FromComponents,
+    the_module::ComponentFrom,
+    the_module::ComponentAssign,
+    the_module::ComponentsAssign,
+    the_module::FromComponents,
   )
 ]
 pub struct Options2

@@ -26,7 +26,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
 
       ///
@@ -157,7 +157,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
@@ -172,7 +172,7 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make2" ) */
-      let got : Pair< f32, f64, f32 > = TheModule::from!( mk1!( 13.0 ), mk2!( 31.0 ) );
+      let got : Pair< f32, f64, f32 > = the_module::from!( mk1!( 13.0 ), mk2!( 31.0 ) );
       let exp = Pair::< f32, f64, f32 >( mk1!( 13.0 ), mk2!( 31.0 ) );
       a_id!( got, exp );
     }
@@ -210,7 +210,7 @@ tests_impls!
     {
 
       // trace_macros!( true );
-      TheModule::types!
+      the_module::types!
       {
 
         ///
@@ -245,7 +245,7 @@ tests_impls!
     {
 
       // trace_macros!( true );
-      TheModule::types!
+      the_module::types!
       {
 
         ///
@@ -280,7 +280,7 @@ tests_impls!
     {
 
       // trace_macros!( true );
-      TheModule::types!
+      the_module::types!
       {
 
         ///
@@ -315,7 +315,7 @@ tests_impls!
     {
 
       // trace_macros!( true );
-      TheModule::types!
+      the_module::types!
       {
 
         ///
@@ -350,7 +350,7 @@ tests_impls!
     {
 
       // trace_macros!( true );
-      TheModule::types!
+      the_module::types!
       {
 
         ///
@@ -398,7 +398,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       pair Pair : mod1::Floats< T1, T2 >, mod1::Floats< T3, T4 >;
     }
@@ -415,7 +415,7 @@ tests_impls!
 
     /* test.case( "single-line" ) */
     {
-      TheModule::types!( pair MyPair : i32, i64 );
+      the_module::types!( pair MyPair : i32, i64 );
       let x = MyPair( 13, 31 );
       println!( "x : ( {}, {} )", x.0, x.1 );
       // prints : x : ( 13, 31 )
@@ -424,7 +424,7 @@ tests_impls!
     /* test.case( "parametrized tuple" ) */
     {
       use core::fmt;
-      TheModule::types!
+      the_module::types!
       {
         #[ derive( Debug ) ]
         pair MyPair : < T1 : fmt::Debug, T2 : fmt::Debug >;

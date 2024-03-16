@@ -2,7 +2,7 @@
 include!( "../../../../module/step/meta/src/module/terminal.rs" );
 
 #[ allow( unused_imports ) ]
-use {{template_blank}} as TheModule;
+use {{template_blank}} as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

@@ -14,4 +14,7 @@ mod_interface!
   /// Basic functionality.
   layer process;
 
+  /// Inspection of running environment.
+  layer environment;
+
 }

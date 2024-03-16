@@ -1,7 +1,7 @@
 use super::*;
 
-use TheModule::*;
-use TheModule::features::features_powerset;
+use the_module::*;
+use the_module::features::features_powerset;
 
 use std::collections::HashMap;
 use cargo_metadata::Package;

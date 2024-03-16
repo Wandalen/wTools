@@ -92,44 +92,44 @@ where
   fn from( src : &[ mod1::Floats< T1, T2 > ] ) -> Self { Self( src[ 0 ].clone(), src[ 1 ].clone() ) }
 }
 impl< T1 : PartialEq + std::marker::Copy, T2 : Default >
-  TheModule::CloneAsTuple< ( mod1::Floats< T1, T2 >, mod1::Floats< T1, T2 > ) > for Pair< T1, T2 >
+  the_module::CloneAsTuple< ( mod1::Floats< T1, T2 >, mod1::Floats< T1, T2 > ) > for Pair< T1, T2 >
 where
   mod1::Floats< T1, T2 > : Clone,
 {
   #[ inline ]
   fn clone_as_tuple( &self ) -> ( mod1::Floats< T1, T2 >, mod1::Floats< T1, T2 > ) { ( self.0.clone(), self.1.clone() ) }
 }
-impl< T1 : PartialEq + std::marker::Copy, T2 : Default > TheModule::CloneAsArray< mod1::Floats< T1, T2 >, 2 > for Pair< T1, T2 >
+impl< T1 : PartialEq + std::marker::Copy, T2 : Default > the_module::CloneAsArray< mod1::Floats< T1, T2 >, 2 > for Pair< T1, T2 >
 where
   mod1::Floats< T1, T2 > : Clone,
 {
   #[ inline ]
   fn clone_as_array( &self ) -> [ mod1::Floats< T1, T2 >; 2 ] { [ self.0.clone(), self.1.clone() ] }
 }
-impl< T1 : PartialEq + std::marker::Copy, T2 : Default > TheModule::AsTuple< ( mod1::Floats< T1, T2 >, mod1::Floats< T1, T2 > ) >
+impl< T1 : PartialEq + std::marker::Copy, T2 : Default > the_module::AsTuple< ( mod1::Floats< T1, T2 >, mod1::Floats< T1, T2 > ) >
   for Pair< T1, T2 >
 {
   #[ inline ]
   fn as_tuple( &self ) -> &( mod1::Floats< T1, T2 >, mod1::Floats< T1, T2 > ) { unsafe { core::mem::transmute::< _, _ >( self ) } }
 }
-impl< T1 : PartialEq + std::marker::Copy, T2 : Default > TheModule::AsArray< mod1::Floats< T1, T2 >, 2 > for Pair< T1, T2 >
+impl< T1 : PartialEq + std::marker::Copy, T2 : Default > the_module::AsArray< mod1::Floats< T1, T2 >, 2 > for Pair< T1, T2 >
 {
   #[ inline ]
   fn as_array( &self ) -> &[ mod1::Floats< T1, T2 >; 2 ] { unsafe { core::mem::transmute::< _, _ >( self ) } }
 }
-impl< T1 : PartialEq + std::marker::Copy, T2 : Default > TheModule::AsSlice< mod1::Floats< T1, T2 >> for Pair< T1, T2 >
+impl< T1 : PartialEq + std::marker::Copy, T2 : Default > the_module::AsSlice< mod1::Floats< T1, T2 >> for Pair< T1, T2 >
 {
   #[ inline ]
-  fn as_slice( &self ) -> &[ mod1::Floats< T1, T2 > ] { &TheModule::AsArray::as_array( self )[ .. ] }
+  fn as_slice( &self ) -> &[ mod1::Floats< T1, T2 > ] { &the_module::AsArray::as_array( self )[ .. ] }
 }
-impl< T1 : PartialEq + std::marker::Copy, T2 : Default > TheModule::From_1< mod1::Floats< T1, T2 >> for Pair< T1, T2 >
+impl< T1 : PartialEq + std::marker::Copy, T2 : Default > the_module::From_1< mod1::Floats< T1, T2 >> for Pair< T1, T2 >
 where
   mod1::Floats< T1, T2 > : Clone,
 {
   #[ inline ]
   fn from_1( _0 : mod1::Floats< T1, T2 > ) -> Self { Self( _0.clone(), _0.clone() ) }
 }
-impl< T1 : PartialEq + std::marker::Copy, T2 : Default > TheModule::From_2< mod1::Floats< T1, T2 >, mod1::Floats< T1, T2 >>
+impl< T1 : PartialEq + std::marker::Copy, T2 : Default > the_module::From_2< mod1::Floats< T1, T2 >, mod1::Floats< T1, T2 >>
   for Pair< T1, T2 >
 where
   mod1::Floats< T1, T2 > : Clone,

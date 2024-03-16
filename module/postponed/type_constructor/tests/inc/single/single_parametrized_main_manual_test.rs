@@ -44,7 +44,7 @@ mod mod1
 }
 
 // trace_macros!( true );
-// TheModule::types!
+// the_module::types!
 // {
 //   #[ derive( Debug, Clone ) ]
 //   #[ derive( PartialEq ) ]
@@ -155,7 +155,7 @@ where
 }
 
 impl< T1 : PartialEq + std::marker::Copy, T2 : Default >
-TheModule::CloneAsTuple < ( mod1::Floats< T1, T2 >, ) >
+the_module::CloneAsTuple < ( mod1::Floats< T1, T2 >, ) >
 for Single< T1, T2 >
 where
   mod1::Floats< T1, T2 > : Clone,
@@ -168,7 +168,7 @@ where
 }
 
 impl< T1 : PartialEq + std::marker::Copy, T2 : Default >
-TheModule::CloneAsArray < mod1::Floats< T1, T2 >, 1 >
+the_module::CloneAsArray < mod1::Floats< T1, T2 >, 1 >
 for Single< T1, T2 >
 where
   mod1::Floats< T1, T2 > : Clone,
@@ -181,7 +181,7 @@ where
 }
 
 impl< T1 : PartialEq + std::marker::Copy, T2 : Default >
-TheModule::AsTuple< ( mod1::Floats< T1, T2 >, ) >
+the_module::AsTuple< ( mod1::Floats< T1, T2 >, ) >
 for Single< T1, T2 >
 {
   #[ inline ]
@@ -195,7 +195,7 @@ for Single< T1, T2 >
 }
 
 impl< T1 : PartialEq + std::marker::Copy, T2 : Default >
-TheModule::AsArray< mod1::Floats< T1, T2 >, 1 >
+the_module::AsArray< mod1::Floats< T1, T2 >, 1 >
 for Single< T1, T2 >
 {
   #[ inline ]
@@ -209,20 +209,20 @@ for Single< T1, T2 >
 }
 
 impl< T1 : PartialEq + std::marker::Copy, T2 : Default >
-TheModule::AsSlice
+the_module::AsSlice
 < mod1::Floats< T1, T2 > >
 for Single< T1, T2 >
 {
   #[ inline ]
   fn as_slice( &self ) -> &[ mod1::Floats< T1, T2 > ]
   {
-    &TheModule::AsArray::as_array( self )[ .. ]
+    &the_module::AsArray::as_array( self )[ .. ]
   }
 }
 
-TheModule::_if_from!
+the_module::_if_from!
 {
-  impl< T1 : PartialEq + std::marker::Copy, T2 : Default > TheModule::From_1< mod1::Floats< T1, T2 > >
+  impl< T1 : PartialEq + std::marker::Copy, T2 : Default > the_module::From_1< mod1::Floats< T1, T2 > >
   for Single< T1, T2 >
   {
     #[ inline ]

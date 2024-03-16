@@ -47,7 +47,7 @@ impl< T1 : PartialEq + std::marker::Copy, T2 : Default, T : Copy > From< Pair< T
   fn from( src : Pair< T1, T2, T > ) -> Self { ( src.0, src.1 ) }
 }
 impl< T1 : PartialEq + std::marker::Copy, T2 : Default, T : Copy >
-  TheModule::From_2< mod1::Floats< T1, T2 >, std::sync::Arc< T > > for Pair< T1, T2, T >
+  the_module::From_2< mod1::Floats< T1, T2 >, std::sync::Arc< T > > for Pair< T1, T2, T >
 {
   #[ inline ]
   fn from_2( _0 : mod1::Floats< T1, T2 >, _1 : std::sync::Arc< T > ) -> Self { Self( _0, _1 ) }

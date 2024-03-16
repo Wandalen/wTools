@@ -24,8 +24,8 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+default = [ "enabled", "process_environment_is_cicd" ]
+full = [ "enabled", "process_environment_is_cicd" ]
 no_std = []
 use_alloc = []
 enabled = [
@@ -36,12 +36,13 @@ enabled = [
   "iter_tools/enabled",
 ]
 
+process_environment_is_cicd = []
+
 [dependencies]
 mod_interface = { workspace = true }
 former = { workspace = true, features = [ "derive_former" ] }
 proper_path_tools = { workspace = true }
-error_tools = { workspace = true, features = [ "error_for_app" ] }
-# qqq : xxx : rid off error_for_app
+error_tools = { workspace = true, features = [ "error_for_app" ] } # qqq : xxx : rid off error_for_app
 iter_tools = { workspace = true }
 
 ## external

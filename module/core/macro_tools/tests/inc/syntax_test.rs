@@ -19,8 +19,8 @@ tests_impls!
       #[ derive( Clone ) ]
       #[ derive( Debug ) ]
     };
-    let got = syn::parse2::< TheModule::AttributesOuter >( code ).unwrap();
-    let exp = TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!
+    let got = syn::parse2::< the_module::AttributesOuter >( code ).unwrap();
+    let exp = the_module::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!
     {
       #[ derive( Copy ) ]
       #[ derive( Clone ) ]
@@ -34,8 +34,8 @@ tests_impls!
       // #![ deny( missing_docs ) ]
       #![ warn( something ) ]
     };
-    let got = syn::parse2::< TheModule::AttributesInner >( code ).unwrap();
-    let exp = TheModule::AttributesInner::from( syn::Attribute::parse_inner.parse2( qt!
+    let got = syn::parse2::< the_module::AttributesInner >( code ).unwrap();
+    let exp = the_module::AttributesInner::from( syn::Attribute::parse_inner.parse2( qt!
     {
       // #![ deny( missing_docs ) ]
       #![ warn( something ) ]
@@ -50,15 +50,15 @@ tests_impls!
       #[ warn( something1 ) ]
       #[ warn( something2 ) ]
     };
-    let got = syn::parse2::< TheModule::Pair< TheModule::AttributesInner, TheModule::AttributesOuter > >( code ).unwrap();
-    let exp = TheModule::Pair::from
+    let got = syn::parse2::< the_module::Pair< the_module::AttributesInner, the_module::AttributesOuter > >( code ).unwrap();
+    let exp = the_module::Pair::from
     ((
-      TheModule::AttributesInner::from( syn::Attribute::parse_inner.parse2( qt!
+      the_module::AttributesInner::from( syn::Attribute::parse_inner.parse2( qt!
       {
         #![ warn( missing_docs1 ) ]
         #![ warn( missing_docs2 ) ]
       } )? ),
-      TheModule::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!
+      the_module::AttributesOuter::from( syn::Attribute::parse_outer.parse2( qt!
       {
         #[ warn( something1 ) ]
         #[ warn( something2 ) ]

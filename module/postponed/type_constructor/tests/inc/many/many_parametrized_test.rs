@@ -16,7 +16,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
 
       ///
@@ -72,7 +72,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
@@ -104,7 +104,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       many Many : mod1::Float;
     }
@@ -130,7 +130,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       many Many : mod1::Floats< T1, T2 >;
     }
@@ -152,17 +152,17 @@ tests_impls!
 //     }
 //
 //     // trace_macros!( true );
-//     // TheModule::types!
+//     // the_module::types!
 //     // {
 //     //   pub many Structs : Struct;
 //     // }
 //     // trace_macros!( false );
 //
-//     pub struct Structs (pub TheModule :: _Vec < Struct >) ;
+//     pub struct Structs (pub the_module :: _Vec < Struct >) ;
 //
 //     impl core :: ops :: Deref for Structs
 //     {
-//       type Target = TheModule :: _Vec < Struct > ; #[ inline ] fn deref(& self) -> &
+//       type Target = the_module :: _Vec < Struct > ; #[ inline ] fn deref(& self) -> &
 //       Self :: Target { & self.0 }
 //     }
 //
@@ -173,7 +173,7 @@ tests_impls!
 //     }
 //
 //     impl From < Struct > for Structs
-//     { #[ inline ] fn from(src : Struct) -> Self { Self(TheModule :: _vec! [src]) } }
+//     { #[ inline ] fn from(src : Struct) -> Self { Self(the_module :: _vec! [src]) } }
 //
 //     impl < __FromRef > From < & __FromRef > for Structs where __FromRef : Clone,
 //     Self : From < __FromRef >,
@@ -185,7 +185,7 @@ tests_impls!
 //     impl From < (Struct,) > for Structs
 //     {
 //       #[ inline ] fn from(src : (Struct,)) -> Self
-//       { Self(TheModule :: _vec! [src.0]) }
+//       { Self(the_module :: _vec! [src.0]) }
 //     }
 //
 //     impl < const N : usize > From < [Struct ; N] >
@@ -193,7 +193,7 @@ tests_impls!
 //     // where Struct : Clone,
 //     {
 //       #[ inline ] fn from(src : [Struct ; N]) -> Self
-//       { Self(TheModule :: _Vec :: from(src)) }
+//       { Self(the_module :: _Vec :: from(src)) }
 //     }
 //
 //     impl From < & [Struct] > for Structs
@@ -201,35 +201,35 @@ tests_impls!
 //     {
 //       // #[ inline ]
 //       fn from(src : & [Struct]) -> Self
-//       { Self(TheModule :: _Vec :: from(src)) }
+//       { Self(the_module :: _Vec :: from(src)) }
 //     }
 //
-//     impl TheModule :: AsSlice < Struct > for Structs
+//     impl the_module :: AsSlice < Struct > for Structs
 //     // where Struct : Clone,
 //     { #[ inline ] fn as_slice(& self) -> & [Struct] { & self [..] } }
 //
-//     impl TheModule :: From_0 for Structs
+//     impl the_module :: From_0 for Structs
 //     {
 //       #[ inline ] fn from_0() -> Self
-//       { Self(TheModule :: _Vec :: < Struct > :: new()) }
+//       { Self(the_module :: _Vec :: < Struct > :: new()) }
 //     }
 //
-//     impl TheModule :: From_1 < Struct > for Structs
+//     impl the_module :: From_1 < Struct > for Structs
 //     {
 //       #[ inline ] fn from_1(_0 : Struct,) -> Self
-//       { Self(TheModule :: _vec! [_0]) }
+//       { Self(the_module :: _vec! [_0]) }
 //     }
 //
-//     impl TheModule :: From_2 < Struct, Struct, > for Structs
+//     impl the_module :: From_2 < Struct, Struct, > for Structs
 //     {
 //       #[ inline ] fn from_2(_0 : Struct, _1 : Struct,) -> Self
-//       { Self(TheModule :: _vec! [_0, _1]) }
+//       { Self(the_module :: _vec! [_0, _1]) }
 //     }
 //
-//     impl TheModule :: From_3 < Struct, Struct, Struct, > for Structs
+//     impl the_module :: From_3 < Struct, Struct, Struct, > for Structs
 //     {
 //       #[ inline ] fn from_3(_0 : Struct, _1 : Struct, _2 : Struct,) -> Self
-//       { Self(TheModule :: _vec! [_0, _1, _2]) }
+//       { Self(the_module :: _vec! [_0, _1, _2]) }
 //     }
 //
 //   }
@@ -243,7 +243,7 @@ tests_impls!
   {
     use core::fmt;
 
-    TheModule::types!
+    the_module::types!
     {
 
       many Many1 : f32;
@@ -297,7 +297,7 @@ tests_impls!
 
     /* test.case( "single-line" ) */
     {
-      TheModule::types!( many MyMany : i32 );
+      the_module::types!( many MyMany : i32 );
       let x = MyMany::from( [ 1, 2, 3 ] );
       println!( "x : {:?}", x.0 );
     }

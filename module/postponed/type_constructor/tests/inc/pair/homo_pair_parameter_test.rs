@@ -16,7 +16,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       pair Pair : mod1::Float, mod1::Float;
     }
@@ -31,7 +31,7 @@ tests_impls!
 
   fn parameter_with_derives()
   {
-    use TheModule::
+    use the_module::
     {
       CloneAsTuple,
       CloneAsArray,
@@ -61,7 +61,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
 
       ///
@@ -98,12 +98,12 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make1" ) */
-      let instance1 : Pair< mod1::Float > = TheModule::from!( mk!( 13.0 ) );
+      let instance1 : Pair< mod1::Float > = the_module::from!( mk!( 13.0 ) );
       let instance2 = Pair::< mod1::Float >::from( [ mk!( 13.0 ), mk!( 13.0 ) ] );
       a_id!( instance1, instance2 );
 
       /* test.case( "make2" ) */
-      let instance1 : Pair< mod1::Float > = TheModule::from!( mk!( 13.0 ), mk!( 31.0 ) );
+      let instance1 : Pair< mod1::Float > = the_module::from!( mk!( 13.0 ), mk!( 31.0 ) );
       let instance2 = Pair::< mod1::Float >::from( [ mk!( 13.0 ), mk!( 31.0 ) ] );
       a_id!( instance1, instance2 );
     }
@@ -235,7 +235,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       pair Pair : < T1 >;
     }
@@ -264,28 +264,28 @@ tests_impls!
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
       /* test.case( "make0" ) */
-      let got : TheModule::HomoPair< f32 > = TheModule::from!();
-      let exp = TheModule::HomoPair::< f32 >( 0.0, 0.0 );
+      let got : the_module::HomoPair< f32 > = the_module::from!();
+      let exp = the_module::HomoPair::< f32 >( 0.0, 0.0 );
       a_id!( got, exp );
 
       /* test.case( "make2" ) */
-      let got : TheModule::HomoPair< f32 > = TheModule::from!( 13.0, 31.0 );
-      let exp = TheModule::HomoPair::< f32 >( 13.0, 31.0 );
+      let got : the_module::HomoPair< f32 > = the_module::from!( 13.0, 31.0 );
+      let exp = the_module::HomoPair::< f32 >( 13.0, 31.0 );
       a_id!( got, exp );
     }
 
     /* test.case( "from tuple into pair" ) */
-    let instance1 : TheModule::HomoPair< f32 > = ( 13.0, 31.0 ).into();
-    let instance2 = TheModule::HomoPair::< f32 >::from( ( 13.0, 31.0 ) );
+    let instance1 : the_module::HomoPair< f32 > = ( 13.0, 31.0 ).into();
+    let instance2 = the_module::HomoPair::< f32 >::from( ( 13.0, 31.0 ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance1.1, 31.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance2.1, 31.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from TheModule::HomoPair into tuple" ) */
-    let instance1 : TheModule::HomoPair< f32 > = ( 13.0, 31.0 ).into();
-    let instance2 = TheModule::HomoPair::< f32 >::from( ( 13.0, 31.0 ) );
+    /* test.case( "from the_module::HomoPair into tuple" ) */
+    let instance1 : the_module::HomoPair< f32 > = ( 13.0, 31.0 ).into();
+    let instance2 = the_module::HomoPair::< f32 >::from( ( 13.0, 31.0 ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance1.1, 31.0 );
     a_id!( instance2.0, 13.0 );
@@ -293,17 +293,17 @@ tests_impls!
     a_id!( instance1, instance2 );
 
     /* test.case( "from itself into itself" ) */
-    let instance1 : TheModule::HomoPair< f32 > = ( TheModule::HomoPair::from( ( 13.0, 31.0 ) ) ).into();
-    let instance2 = TheModule::HomoPair::< f32 >::from( TheModule::HomoPair::from( ( 13.0, 31.0 ) ) );
+    let instance1 : the_module::HomoPair< f32 > = ( the_module::HomoPair::from( ( 13.0, 31.0 ) ) ).into();
+    let instance2 = the_module::HomoPair::< f32 >::from( the_module::HomoPair::from( ( 13.0, 31.0 ) ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance1.1, 31.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance2.1, 31.0 );
     a_id!( instance1, instance2 );
 
-    /* test.case( "from scalar into TheModule::HomoPair" ) */
-    let instance1 : TheModule::HomoPair< f32 > = ( TheModule::HomoPair::from( 13.0 ) ).into();
-    let instance2 = TheModule::HomoPair::< f32 >::from( TheModule::HomoPair::from( 13.0 ) );
+    /* test.case( "from scalar into the_module::HomoPair" ) */
+    let instance1 : the_module::HomoPair< f32 > = ( the_module::HomoPair::from( 13.0 ) ).into();
+    let instance2 = the_module::HomoPair::< f32 >::from( the_module::HomoPair::from( 13.0 ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance1.1, 13.0 );
     a_id!( instance2.0, 13.0 );
@@ -311,7 +311,7 @@ tests_impls!
     a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : TheModule::HomoPair< f32 > = ( 13.0, 31.0 ).into();
+    let instance1 : the_module::HomoPair< f32 > = ( 13.0, 31.0 ).into();
     let instance2 = instance1.clone();
     a_id!( instance1.0, 13.0 );
     a_id!( instance1.1, 31.0 );
@@ -320,12 +320,12 @@ tests_impls!
     a_id!( instance1, instance2 );
 
     /* test.case( "default" ) */
-    let instance1 : TheModule::HomoPair< f32 > = Default::default();
+    let instance1 : the_module::HomoPair< f32 > = Default::default();
     a_id!( instance1.0, 0.0 );
     a_id!( instance1.1, 0.0 );
 
     /* test.case( "deref" ) */
-    let got : TheModule::HomoPair< f32 > = ( 13.5, 31.5 ).into();
+    let got : the_module::HomoPair< f32 > = ( 13.5, 31.5 ).into();
     a_id!( got.round(), ( 14.0, 32.0 ) );
 
   }
@@ -343,7 +343,7 @@ tests_impls!
     }
 
     /* test.case( "smoke test" ) */
-    let instance1 = TheModule::HomoPair( Floats( 13.0, 31.0 ), Floats( 13.0, 31.0 ) );
+    let instance1 = the_module::HomoPair( Floats( 13.0, 31.0 ), Floats( 13.0, 31.0 ) );
 
   }
 
@@ -351,7 +351,7 @@ tests_impls!
 
   fn samples()
   {
-    use TheModule::
+    use the_module::
     {
       CloneAsTuple,
       CloneAsArray,
@@ -359,7 +359,7 @@ tests_impls!
 
     /* test.case( "single-line homopair" ) */
     {
-      TheModule::types!( pair MyHomoPair : i32 );
+      the_module::types!( pair MyHomoPair : i32 );
       let x = MyHomoPair( 13, 31 );
       println!( "x : ( {}, {} )", x.0, x.1 );
       // prints : x : ( 13, 31 )
@@ -368,7 +368,7 @@ tests_impls!
     /* test.case( "parametrized tuple" ) */
     {
       use core::fmt;
-      TheModule::types!
+      the_module::types!
       {
         #[ derive( Debug ) ]
         pair MyHomoPair : < T : fmt::Debug >;

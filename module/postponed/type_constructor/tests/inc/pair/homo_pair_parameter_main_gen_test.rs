@@ -2,7 +2,7 @@
 use super::*;
 
 // trace_macros!( true );
-// TheModule::types!
+// the_module::types!
 // {
 
 //   ///

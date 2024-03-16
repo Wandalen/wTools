@@ -7,7 +7,7 @@ tests_impls!
   fn parameter_complex()
   {
 
-    TheModule::types!
+    the_module::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
@@ -59,7 +59,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       single Single : < T >;
     }
@@ -79,7 +79,7 @@ tests_impls!
     mod mod1
     {
       use super::*;
-      TheModule::types!
+      the_module::types!
       {
         #[ derive( Debug, Clone ) ]
         pub single Public1 : < T >;
@@ -103,32 +103,32 @@ tests_impls!
   {
 
     /* test.case( "from f32 into Single" ) */
-    let instance1 : TheModule::Single< f32 > = ( 13.0 ).into();
-    let instance2 = TheModule::Single::< f32 >::from( 13.0 );
+    let instance1 : the_module::Single< f32 > = ( 13.0 ).into();
+    let instance2 = the_module::Single::< f32 >::from( 13.0 );
     a_id!( instance1.0, 13.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
     /* test.case( "from itself into itself" ) */
-    let instance1 : TheModule::Single< f32 > = ( TheModule::Single::from( 13.0 ) ).into();
-    let instance2 = TheModule::Single::< f32 >::from( TheModule::Single::from( 13.0 ) );
+    let instance1 : the_module::Single< f32 > = ( the_module::Single::from( 13.0 ) ).into();
+    let instance2 = the_module::Single::< f32 >::from( the_module::Single::from( 13.0 ) );
     a_id!( instance1.0, 13.0 );
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
     /* test.case( "clone / eq" ) */
-    let instance1 : TheModule::Single< f32 > = ( 13.0 ).into();
+    let instance1 : the_module::Single< f32 > = ( 13.0 ).into();
     let instance2 = instance1.clone();
     a_id!( instance2.0, 13.0 );
     a_id!( instance1, instance2 );
 
     /* test.case( "default" ) */
-    let instance1 : TheModule::Single< f32 > = Default::default();
+    let instance1 : the_module::Single< f32 > = Default::default();
     a_id!( instance1.0, 0.0 );
 
     /* test.case( "deref" ) */
     use core::ops::AddAssign;
-    let mut got : TheModule::Single< f32 > = ( 13.5 ).into();
+    let mut got : the_module::Single< f32 > = ( 13.5 ).into();
     a_id!( got.round(), 14.0 );
     got.add_assign( 1.0 );
     a_id!( got.0, 14.5 );
@@ -136,16 +136,16 @@ tests_impls!
     /* test.case( "make0" ) */
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
-      let got : TheModule::Single< f32 > = TheModule::from!();
-      let exp = TheModule::Single::< f32 >::from( 0.0 );
+      let got : the_module::Single< f32 > = the_module::from!();
+      let exp = the_module::Single::< f32 >::from( 0.0 );
       a_id!( got, exp );
     }
 
     /* test.case( "make1" ) */
     #[ cfg( any( feature = "make", feature = "dt_make" ) ) ]
     {
-      let got : TheModule::Single< f32 > = TheModule::Single::< f32 >::from( 13.0 );
-      let exp = TheModule::Single::< f32 >::from( 13.0 );
+      let got : the_module::Single< f32 > = the_module::Single::< f32 >::from( 13.0 );
+      let exp = the_module::Single::< f32 >::from( 13.0 );
       a_id!( got, exp );
     }
 
@@ -166,21 +166,21 @@ tests_impls!
     }
 
     /* test.case( "from f32 into Single" ) */
-    let instance1 : TheModule::Single< Floats< f32 > > = ( Floats( 13.0 ) ).into();
-    let instance2 = TheModule::Single::< Floats< f32 > >::from( Floats( 13.0 ) );
+    let instance1 : the_module::Single< Floats< f32 > > = ( Floats( 13.0 ) ).into();
+    let instance2 = the_module::Single::< Floats< f32 > >::from( Floats( 13.0 ) );
     a_id!( instance1.0.0, 13.0 );
     a_id!( instance2.0.0, 13.0 );
 
     /* test.case( "from itself into itself" ) */
     let val = Floats::< f32 >::new( 13.0 );
-    let instance1 : TheModule::Single< Floats< f32 > > = ( TheModule::Single::from( val ) ).into();
-    let instance2 = TheModule::Single::< Floats< f32 > >::from( TheModule::Single::from( Floats( 13.0 ) ) );
+    let instance1 : the_module::Single< Floats< f32 > > = ( the_module::Single::from( val ) ).into();
+    let instance2 = the_module::Single::< Floats< f32 > >::from( the_module::Single::from( Floats( 13.0 ) ) );
     a_id!( instance1.0.0, 13.0 );
     a_id!( instance2.0.0, 13.0 );
 
     /* test.case( "deref" ) */
     use core::ops::AddAssign;
-    let mut got : TheModule::Single< f32 > = ( 13.5 ).into();
+    let mut got : the_module::Single< f32 > = ( 13.5 ).into();
     a_id!( got.round(), 14.0 );
     got.add_assign( 1.0 );
     a_id!( got.0, 14.5 );

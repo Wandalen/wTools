@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-TheModule::types!
+the_module::types!
 {
   #[ derive( Debug, Clone ) ]
   #[ derive( PartialEq, Default ) ]

@@ -1,5 +1,5 @@
 use super::*;
-use TheModule::prelude::impls3;
+use the_module::prelude::impls3;
 
 //
 

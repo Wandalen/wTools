@@ -7,7 +7,7 @@ use former::{ ComponentAssign, AssignWithType };
 /// Options1
 ///
 
-#[ derive( Debug, Default, PartialEq, TheModule::ComponentAssign, TheModule::ComponentsAssign ) ]
+#[ derive( Debug, Default, PartialEq, the_module::ComponentAssign, the_module::ComponentsAssign ) ]
 pub struct Options1
 {
   field1 : i32,
@@ -46,7 +46,7 @@ impl From< &Options1 > for f32
 /// Options2
 ///
 
-#[ derive( Debug, Default, PartialEq, TheModule::ComponentAssign, TheModule::ComponentsAssign ) ]
+#[ derive( Debug, Default, PartialEq, the_module::ComponentAssign, the_module::ComponentsAssign ) ]
 pub struct Options2
 {
   field1 : i32,

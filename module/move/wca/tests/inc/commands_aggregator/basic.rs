@@ -154,7 +154,7 @@ tests_impls!
 
   fn string_subject_with_colon()
   {
-    let dictionary = &TheModule::Dictionary::former()
+    let dictionary = &the_module::Dictionary::former()
     .command
     (
       wca::Command::former()
@@ -168,26 +168,26 @@ tests_impls!
     )
     .perform();
     let parser = Parser::former().form();
-    use TheModule::CommandParser;
-    let grammar = TheModule::Verifier;
-    let executor = TheModule::Executor::former().form();
+    use the_module::CommandParser;
+    let grammar = the_module::Verifier;
+    let executor = the_module::Executor::former().form();
 
     let command = r#".command qwe:rty nightly:true "#;
 
     let raw_command = parser.command( command ).unwrap();
     let grammar_command = grammar.to_command( dictionary, raw_command ).unwrap();
 
-    a_id!( grammar_command.subjects, vec![ TheModule::Value::String( "qwe:rty".into() ) ] );
+    a_id!( grammar_command.subjects, vec![ the_module::Value::String( "qwe:rty".into() ) ] );
 
     a_id!( (), executor.command( dictionary, grammar_command ).unwrap() );
   }
 
   fn no_prop_subject_with_colon()
   {
-    let dictionary = &TheModule::Dictionary::former()
+    let dictionary = &the_module::Dictionary::former()
     .command
     (
-      TheModule::Command::former()
+      the_module::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -200,24 +200,24 @@ tests_impls!
     let command = r#".command qwe:rty"#;
 
     let parser = Parser::former().form();
-    use TheModule::CommandParser;
-    let grammar = TheModule::Verifier;
-    let executor = TheModule::Executor::former().form();
+    use the_module::CommandParser;
+    let grammar = the_module::Verifier;
+    let executor = the_module::Executor::former().form();
 
     let raw_command = parser.command( command ).unwrap();
     let grammar_command = grammar.to_command( dictionary, raw_command ).unwrap();
 
-    a_id!( grammar_command.subjects, vec![ TheModule::Value::String( "qwe:rty".into() ) ] );
+    a_id!( grammar_command.subjects, vec![ the_module::Value::String( "qwe:rty".into() ) ] );
 
     a_id!( (), executor.command( dictionary, grammar_command ).unwrap() );
   }
 
   fn optional_prop_subject_with_colon()
   {
-    let dictionary = &TheModule::Dictionary::former()
+    let dictionary = &the_module::Dictionary::former()
     .command
     (
-      TheModule::Command::former()
+      the_module::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -231,14 +231,14 @@ tests_impls!
     let command = r#".command qwe:rty"#;
 
     let parser = Parser::former().form();
-    use TheModule::CommandParser;
-    let grammar = TheModule::Verifier;
-    let executor = TheModule::Executor::former().form();
+    use the_module::CommandParser;
+    let grammar = the_module::Verifier;
+    let executor = the_module::Executor::former().form();
 
     let raw_command = parser.command( command ).unwrap();
     let grammar_command = grammar.to_command( dictionary, raw_command ).unwrap();
 
-    a_id!( grammar_command.subjects, vec![ TheModule::Value::String("qwe:rty".into()) ] );
+    a_id!( grammar_command.subjects, vec![ the_module::Value::String("qwe:rty".into()) ] );
 
     a_id!( (), executor.command( dictionary, grammar_command ).unwrap() );
   }

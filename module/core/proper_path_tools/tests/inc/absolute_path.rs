@@ -4,7 +4,7 @@ use super::*;
 #[ test ]
 fn basic()
 {
-  use TheModule::AbsolutePath;
+  use the_module::AbsolutePath;
 
   let path1 = "/some/absolute/path";
   let got : AbsolutePath = path1.try_into().unwrap();

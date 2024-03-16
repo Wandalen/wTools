@@ -3,7 +3,7 @@
 // #![ deny( missing_docs ) ]
 
 #[ allow( unused_imports ) ]
-use test_tools as TheModule;
+use test_tools as the_module;
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]

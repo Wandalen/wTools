@@ -16,7 +16,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
 
       ///
@@ -81,7 +81,7 @@ tests_impls!
     mod mod1
     {
       use super::*;
-      TheModule::types!
+      the_module::types!
       {
         #[ derive( Debug, Clone ) ]
         pub single Public1 : f32;
@@ -109,7 +109,7 @@ tests_impls!
       pub use f32;
     }
 
-    TheModule::types!
+    the_module::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
@@ -166,7 +166,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       single Single : mod1::Float;
     }
@@ -223,7 +223,7 @@ tests_impls!
 
     }
 
-    TheModule::types!
+    the_module::types!
     {
       #[ derive( Debug, Clone ) ]
       #[ derive( PartialEq ) ]
@@ -310,7 +310,7 @@ tests_impls!
 
     }
 
-    TheModule::types!
+    the_module::types!
     {
 
       ///
@@ -372,7 +372,7 @@ tests_impls!
     }
 
     // trace_macros!( true );
-    TheModule::types!
+    the_module::types!
     {
       single Single : mod1::Floats< T1, T2 >;
     }
@@ -389,7 +389,7 @@ tests_impls!
   {
     use core::fmt;
 
-    TheModule::types!
+    the_module::types!
     {
 
       single Single1 : f32;
@@ -462,7 +462,7 @@ tests_impls!
 
     /* test.case( "multiple" ) */
     {
-      TheModule::types!
+      the_module::types!
       {
 
         single MySingle : f32;
@@ -509,13 +509,13 @@ tests_impls!
 
     /* test.case( "no macro" ) */
     {
-      let i32_in_tuple = TheModule::Single::< i32 >::from( 13 );
+      let i32_in_tuple = the_module::Single::< i32 >::from( 13 );
       dbg!( i32_in_tuple );
       // i32_in_tuple = Single( 13 )
-      let i32_and_f32_in_tuple = TheModule::Pair::< i32, f32 >::from( TheModule::Pair( 13, 13.0 ) );
+      let i32_and_f32_in_tuple = the_module::Pair::< i32, f32 >::from( the_module::Pair( 13, 13.0 ) );
       dbg!( i32_and_f32_in_tuple );
       // vec_of_i32_in_tuple = Pair( 13, 13.0 )
-      let two_i32_in_tuple = TheModule::HomoPair::< i32 >::from( TheModule::HomoPair( 13, 31 ) );
+      let two_i32_in_tuple = the_module::HomoPair::< i32 >::from( the_module::HomoPair( 13, 31 ) );
       dbg!( two_i32_in_tuple );
       // vec_of_i32_in_tuple = HomoPair( 13, 31 )
       #[ cfg
@@ -527,7 +527,7 @@ tests_impls!
         )
       ) ]
       {
-        let vec_of_i32_in_tuple = TheModule::Many::< i32 >::from([ 1, 2, 3 ]);
+        let vec_of_i32_in_tuple = the_module::Many::< i32 >::from([ 1, 2, 3 ]);
         dbg!( vec_of_i32_in_tuple );
         // vec_of_i32_in_tuple = Many([ 1, 2, 3 ])
       }
@@ -535,14 +535,14 @@ tests_impls!
 
     /* test.case( "single-line" ) */
     {
-      TheModule::types!( single MySingle : i32 );
+      the_module::types!( single MySingle : i32 );
       let x = MySingle( 13 );
       println!( "x : {}", x.0 );
     }
 
     /* test.case( "derives and attributes" ) */
     {
-      TheModule::types!
+      the_module::types!
       {
         /// This is also attribute and macro understands it.
         #[ derive( Debug ) ]
@@ -554,13 +554,13 @@ tests_impls!
 
     /* test.case( "struct instead of macro" ) */
     {
-      let x = TheModule::Single::< i32 >( 13 );
+      let x = the_module::Single::< i32 >( 13 );
       dbg!( x );
     }
 
     /* test.case( "parametrized element" ) */
     {
-      TheModule::types!
+      the_module::types!
       {
         #[ derive( Debug ) ]
         single MySingle : std::sync::Arc< T : Copy >;
@@ -571,7 +571,7 @@ tests_impls!
 
     /* test.case( "parametrized tuple" ) */
     {
-      TheModule::types!
+      the_module::types!
       {
         #[ derive( Debug ) ]
         single MySingle : < T : Copy >;

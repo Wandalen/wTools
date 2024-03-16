@@ -5,7 +5,7 @@
 // #![ feature( trace_macros ) ]
 
 #[ allow( unused_imports ) ]
-use type_constructor as TheModule;
+use type_constructor as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

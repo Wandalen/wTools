@@ -1,5 +1,5 @@
 use super::*;
-use TheModule::Former;
+use the_module::Former;
 
 #[ derive( Debug, PartialEq ) ]
 struct Vec

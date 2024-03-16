@@ -55,7 +55,7 @@ mod private
       [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
       .into_iter()
       .chain( if self.optimization == Optimization::Release { Some( "--release".into() ) } else { None } )
-      .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } ) 
+      .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
       // qqq : for Petro : bad, --no-default-features is always enabled!
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
       // qqq : for Petro : bad, --all-features is always disabled!
@@ -104,7 +104,7 @@ mod private
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
-      .join_steam( true )
+      .joining_steams( true )
       .form();
       process::run( options )
     }

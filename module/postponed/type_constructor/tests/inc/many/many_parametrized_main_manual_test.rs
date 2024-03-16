@@ -46,7 +46,7 @@ mod mod1
 //
 
 // trace_macros!( true );
-// TheModule::types!
+// the_module::types!
 // {
 //   #[  derive( Debug, Clone )  ]
 //   #[  derive( PartialEq )  ]
@@ -59,12 +59,12 @@ mod mod1
 #[ derive( Debug, Clone ) ]
 #[ derive( PartialEq ) ]
 struct Many< T1 : PartialEq, T2 : Default >
-( pub TheModule::_Vec< mod1::Floats < T1, T2 > > );
+( pub the_module::_Vec< mod1::Floats < T1, T2 > > );
 
 impl< T1 : PartialEq, T2 : Default > core::ops::Deref
 for Many < T1, T2 >
 {
-  type Target = TheModule::_Vec < mod1::Floats < T1, T2 > >;
+  type Target = the_module::_Vec < mod1::Floats < T1, T2 > >;
   #[ inline ]
   fn deref( & self ) -> & Self::Target
   {
@@ -95,7 +95,7 @@ where
     let src2 = src
     .into_iter()
     .map( | e | e.into() )
-    .collect::< TheModule::_Vec< mod1::Floats< T1, T2 > > >();
+    .collect::< the_module::_Vec< mod1::Floats< T1, T2 > > >();
     Self( src2 )
   }
 }
@@ -114,7 +114,7 @@ where
 //     let src2 = src
 //     .into_iter()
 //     .map( | e | *e )
-//     .collect::< TheModule::_Vec< mod1::Floats< T1, T2 > > >();
+//     .collect::< the_module::_Vec< mod1::Floats< T1, T2 > > >();
 //     Self( src2 )
 //   }
 // }
@@ -126,7 +126,7 @@ for Many < T1, T2 >
   #[ inline ]
   fn from( src : mod1::Floats < T1, T2 > ) -> Self
   {
-    Self( TheModule::_vec! [ src ] )
+    Self( the_module::_vec! [ src ] )
   }
 }
 
@@ -151,7 +151,7 @@ for Many < T1, T2 >
 //   #[ inline ]
 //   fn from( src : ( mod1::Floats < T1, T2 >, ) ) -> Self
 //   {
-//     Self( TheModule::_vec![  src.0  ] )
+//     Self( the_module::_vec![  src.0  ] )
 //   }
 // }
 
@@ -161,7 +161,7 @@ for Many < T1, T2 >
 // {
 //   #[ inline ] fn from( src : [ mod1::Floats < T1, T2 > ; N ] ) -> Self
 //   {
-//     Self( TheModule::_Vec::from( src ) )
+//     Self( the_module::_Vec::from( src ) )
 //   }
 // }
 
@@ -174,13 +174,13 @@ for Many < T1, T2 >
 //   #[ inline ]
 //   fn from( src : & [ mod1::Floats < T1, T2 > ] ) -> Self
 //   {
-//     Self( TheModule::_Vec::from( src ) )
+//     Self( the_module::_Vec::from( src ) )
 //   }
 // }
 // yyy
 
 impl < T1 : PartialEq, T2 : Default >
-TheModule::AsSlice
+the_module::AsSlice
 < mod1::Floats < T1, T2 > >
 for Many < T1, T2 >
 {
@@ -191,48 +191,48 @@ for Many < T1, T2 >
   }
 }
 
-TheModule::_if_from!
+the_module::_if_from!
 {
 
-  impl < T1 : PartialEq, T2 : Default > TheModule::From_0
+  impl < T1 : PartialEq, T2 : Default > the_module::From_0
   for Many < T1, T2 >
   {
     #[ inline ] fn from_0() -> Self
     {
-      Self( TheModule::_Vec::< mod1::Floats < T1, T2 > >::new() )
+      Self( the_module::_Vec::< mod1::Floats < T1, T2 > >::new() )
     }
   }
 
   impl < T1 : PartialEq, T2 : Default >
-  TheModule::From_1 < mod1::Floats < T1, T2 > >
+  the_module::From_1 < mod1::Floats < T1, T2 > >
   for Many < T1, T2 >
   {
     #[ inline ]
     fn from_1( _0 : mod1::Floats < T1, T2 >, ) -> Self
     {
-      Self( TheModule::_vec! [ _0 ] )
+      Self( the_module::_vec! [ _0 ] )
     }
   }
 
   impl < T1 : PartialEq, T2 : Default >
-  TheModule::From_2 < mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, >
+  the_module::From_2 < mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, >
   for Many < T1, T2 >
   {
     #[ inline ]
     fn from_2( _0 : mod1::Floats < T1, T2 >, _1 : mod1::Floats < T1, T2 >, ) -> Self
     {
-      Self( TheModule::_vec! [ _0, _1 ] )
+      Self( the_module::_vec! [ _0, _1 ] )
     }
   }
 
   impl < T1 : PartialEq, T2 : Default >
-  TheModule::From_3 < mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, >
+  the_module::From_3 < mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, mod1::Floats < T1, T2 >, >
   for Many < T1, T2 >
   {
     #[ inline ]
     fn from_3( _0 : mod1::Floats < T1, T2 >, _1 : mod1::Floats < T1, T2 >, _2 : mod1::Floats < T1, T2 >, ) -> Self
     {
-      Self( TheModule::_vec! [ _0, _1, _2 ] )
+      Self( the_module::_vec! [ _0, _1, _2 ] )
     }
   }
 

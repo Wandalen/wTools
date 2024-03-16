@@ -2,7 +2,7 @@
 use super::*;
 
 // trace_macros!( true );
-// TheModule::types!
+// the_module::types!
 // {
 //   #[ derive( Debug, Clone ) ]
 //   #[ derive( PartialEq, Default ) ]
@@ -12,11 +12,11 @@ use super::*;
 
 #[ derive( Debug, Clone ) ]
 #[ derive( PartialEq, Default ) ]
-struct Many< T > ( pub TheModule::_Vec < T > );
+struct Many< T > ( pub the_module::_Vec < T > );
 
 impl< T > core::ops::Deref for Many< T >
 {
-  type Target = TheModule::_Vec < T >;
+  type Target = the_module::_Vec < T >;
   #[ inline ]
   fn deref( &self) -> & Self::Target
   {
@@ -52,7 +52,7 @@ where
 //   #[ inline ]
 //   fn from( src : T ) -> Self
 //   {
-//     Self( TheModule::_vec![ src ] )
+//     Self( the_module::_vec![ src ] )
 //   }
 // }
 //
@@ -62,7 +62,7 @@ where
 //   #[ inline ]
 //   fn from( src : &T ) -> Self
 //   {
-//     Self( TheModule::_vec![ src.clone() ] )
+//     Self( the_module::_vec![ src.clone() ] )
 //   }
 // }
 //
@@ -71,7 +71,7 @@ where
 //   #[ inline ]
 //   fn from( src : ( T, ) ) -> Self
 //   {
-//     Self( TheModule::_vec![ src.0 ] )
+//     Self( the_module::_vec![ src.0 ] )
 //   }
 // }
 //
@@ -80,7 +80,7 @@ where
 //   #[ inline ]
 //   fn from( src : [ T ; N ] ) -> Self
 //   {
-//     Self( TheModule::_Vec::from( src ) )
+//     Self( the_module::_Vec::from( src ) )
 //   }
 // }
 //
@@ -89,11 +89,11 @@ where
 //   #[ inline ]
 //   fn from( src : &[ T ] ) -> Self
 //   {
-//     Self( TheModule::_Vec::from( src ) )
+//     Self( the_module::_Vec::from( src ) )
 //   }
 // }
 
-impl< T > TheModule::AsSlice< T > for Many< T >
+impl< T > the_module::AsSlice< T > for Many< T >
 {
   #[ inline ] fn as_slice(& self) -> &[ T ]
   {
@@ -101,41 +101,41 @@ impl< T > TheModule::AsSlice< T > for Many< T >
   }
 }
 
-TheModule::_if_from!
+the_module::_if_from!
 {
 
-  // impl< T > TheModule::From_0 for Many< T >
+  // impl< T > the_module::From_0 for Many< T >
   // {
   //   #[ inline ]
   //   fn from_0() -> Self
   //   {
-  //     Self( TheModule::_Vec::new() )
+  //     Self( the_module::_Vec::new() )
   //   }
   // }
 
-  impl< T > TheModule::From_1 < T > for Many< T >
+  impl< T > the_module::From_1 < T > for Many< T >
   {
     #[ inline ]
     fn from_1(_0 : T) -> Self
     {
-      Self(TheModule::_vec! [_0])
+      Self(the_module::_vec! [_0])
     }
   }
 
-  impl< T > TheModule::From_2 < T, T > for Many< T >
+  impl< T > the_module::From_2 < T, T > for Many< T >
   {
     #[ inline ]
     fn from_2(_0 : T, _1 : T) -> Self
     {
-      Self( TheModule::_vec![ _0, _1 ] )
+      Self( the_module::_vec![ _0, _1 ] )
     }
   }
 
-  impl< T > TheModule::From_3 < T, T, T > for Many< T >
+  impl< T > the_module::From_3 < T, T, T > for Many< T >
   {
     #[ inline ] fn from_3(_0 : T, _1 : T, _2 : T) -> Self
     {
-      Self( TheModule::_vec![ _0, _1, _2 ] )
+      Self( the_module::_vec![ _0, _1, _2 ] )
     }
   }
 

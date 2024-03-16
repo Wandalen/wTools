@@ -77,50 +77,50 @@ where
   #[ inline ]
   fn from( src : T1 ) -> Self { Self( src.clone(), src.clone() ) }
 }
-impl< T1 > TheModule::CloneAsTuple< ( T1, T1 ) > for Pair< T1 >
+impl< T1 > the_module::CloneAsTuple< ( T1, T1 ) > for Pair< T1 >
 where
   T1 : Clone,
 {
   #[ inline ]
   fn clone_as_tuple( &self ) -> ( T1, T1 ) { ( self.0.clone(), self.1.clone() ) }
 }
-impl< T1 > TheModule::CloneAsArray< T1, 2 > for Pair< T1 >
+impl< T1 > the_module::CloneAsArray< T1, 2 > for Pair< T1 >
 where
   T1 : Clone,
 {
   #[ inline ]
   fn clone_as_array( &self ) -> [ T1; 2 ] { [ self.0.clone(), self.1.clone() ] }
 }
-impl< T1 > TheModule::AsTuple< ( T1, T1 ) > for Pair< T1 >
+impl< T1 > the_module::AsTuple< ( T1, T1 ) > for Pair< T1 >
 {
   #[ inline ]
   fn as_tuple( &self ) -> &( T1, T1 ) { unsafe { core::mem::transmute::< &_, &( T1, T1 ) >( self ) } }
 }
-impl< T1 > TheModule::AsArray< T1, 2 > for Pair< T1 >
+impl< T1 > the_module::AsArray< T1, 2 > for Pair< T1 >
 {
   #[ inline ]
   fn as_array( &self ) -> &[ T1; 2 ] { unsafe { core::mem::transmute::< &_, &[ T1; 2 ]>( self ) } }
 }
-impl< T1 > TheModule::AsSlice< T1 > for Pair< T1 >
+impl< T1 > the_module::AsSlice< T1 > for Pair< T1 >
 {
   #[ inline ]
-  fn as_slice( &self ) -> &[ T1 ] { &TheModule::AsArray::as_array( self )[ ..] }
+  fn as_slice( &self ) -> &[ T1 ] { &the_module::AsArray::as_array( self )[ ..] }
 }
-impl< T1 > TheModule::From_0 for Pair< T1 >
+impl< T1 > the_module::From_0 for Pair< T1 >
 where
   T1 : Default,
 {
   #[ inline ]
   fn from_0() -> Self { Self( Default::default(), Default::default() ) }
 }
-impl< T1 > TheModule::From_1< T1 > for Pair< T1 >
+impl< T1 > the_module::From_1< T1 > for Pair< T1 >
 where
   T1 : Clone,
 {
   #[ inline ]
   fn from_1( _0 : T1 ) -> Self { Self( _0.clone(), _0.clone() ) }
 }
-impl< T1 > TheModule::From_2< T1, T1 > for Pair< T1 >
+impl< T1 > the_module::From_2< T1, T1 > for Pair< T1 >
 {
   #[ inline ]
   fn from_2( _0 : T1, _1 : T1 ) -> Self { Self( _0, _1 ) }

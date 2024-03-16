@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ derive( Debug, PartialEq, TheModule::Former ) ]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 pub struct StructWithCustomSetters
 {
   ordinary : String,

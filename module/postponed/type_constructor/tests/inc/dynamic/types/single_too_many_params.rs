@@ -1,5 +1,5 @@
-use type_constructor as TheModule;
-use TheModule::prelude::*;
+use type_constructor as the_module;
+use the_module::prelude::*;
 
 types!
 {

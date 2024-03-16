@@ -24,11 +24,13 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+default = [ "enabled", "path_unique_folder_name" ]
+full = [ "enabled", "path_unique_folder_name" ]
 no_std = []
 use_alloc = []
 enabled = [ "mod_interface/enabled" ]
+
+path_unique_folder_name = []
 
 [dependencies]
 mod_interface = { workspace = true }

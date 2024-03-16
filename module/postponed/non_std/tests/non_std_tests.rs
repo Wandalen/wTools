@@ -5,7 +5,7 @@
 // #![ allow( non_snake_case ) ]
 #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 #[ allow( unused_imports ) ]
-use non_std as TheModule;
+use non_std as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 
