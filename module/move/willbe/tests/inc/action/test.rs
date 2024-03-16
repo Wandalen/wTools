@@ -10,7 +10,7 @@ use channel::*;
 use optimization::*;
 
 #[ test ]
-// if the test fails => the report is returned as an error ( Err(CmdReport) )
+// if the test fails => the report is returned as an error ( Err(Report) )
 fn fail_test()
 {
   let temp = TempDir::new().unwrap();
@@ -49,7 +49,7 @@ fn fail_test()
 }
 
 #[ test ]
-// if a compilation error occurred => the report is returned as an error ( Err(CmdReport) )
+// if a compilation error occurred => the report is returned as an error ( Err(Report) )
 fn fail_build()
 {
   let temp = TempDir::new().unwrap();

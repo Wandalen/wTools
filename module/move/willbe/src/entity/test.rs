@@ -16,7 +16,7 @@ mod private
   use cargo_metadata::Package;
   use colored::Colorize;
   use rayon::ThreadPoolBuilder;
-  use process::CmdReport;
+  use process::Report;
   use wtools::error::anyhow::{ Error, format_err };
   use wtools::iter::Itertools;
   use wtools::error::Result;
@@ -75,9 +75,9 @@ mod private
   ///
   /// # Returns
   ///
-  /// Returns a `Result` containing a `CmdReport` if the command is executed successfully,
+  /// Returns a `Result` containing a `Report` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn _run< P >( path : P, options : SingleTestOptions, dry : bool ) -> Result< CmdReport, ( CmdReport, Error ) >
+  pub fn _run< P >( path : P, options : SingleTestOptions, dry : bool ) -> Result< Report, ( Report, Error ) >
   where
     P : AsRef< Path >
   {
@@ -89,7 +89,7 @@ mod private
     {
       Ok
       (
-        CmdReport
+        Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
           path : path.as_ref().to_path_buf(),
@@ -100,7 +100,7 @@ mod private
     }
     else
     {
-      let options = process::RunOptions::former()
+      let options = process::Run::former()
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
@@ -168,9 +168,9 @@ mod private
     pub package_name : String, /* qqq : for Petro : bad, reuse newtype */
     /// A `BTreeMap` where the keys are `channel::Channel` enums representing the channels
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
-    ///   feature names and the values are `CmdReport` structs representing the test results for
+    ///   feature names and the values are `Report` structs representing the test results for
     ///   the specific feature and channel.
-    pub tests : BTreeMap< Optimization, BTreeMap< Channel, BTreeMap< String, Result< CmdReport, CmdReport > > > >,
+    pub tests : BTreeMap< Optimization, BTreeMap< Channel, BTreeMap< String, Result< Report, Report > > > >,
     // qqq : for Petro : rid off map of map of map, keep flat map // add new entity TestVariant {opt, channel, features}
   }
 

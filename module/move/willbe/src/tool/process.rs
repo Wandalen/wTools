@@ -31,7 +31,7 @@ pub( crate ) mod private
   /// - `current_path`: The working directory path where the command is executed.
   ///
   /// # Returns:
-  /// A `Result` containing a `CmdReport` on success, which includes the command's output,
+  /// A `Result` containing a `Report` on success, which includes the command's output,
   /// or an error if the command fails to execute or complete.
   ///
   /// # Examples:
@@ -48,7 +48,7 @@ pub( crate ) mod private
     exec_path : &str,
     current_path : impl Into< PathBuf >,
   )
-  -> Result< CmdReport, ( CmdReport, Error ) >
+  -> Result< Report, ( Report, Error ) >
   {
     let current_path = current_path.into();
     let ( program, args ) =
@@ -60,18 +60,18 @@ pub( crate ) mod private
     {
       ( "sh", [ "-c", exec_path ] )
     };
-    let options = RunOptions::former()
+    let options = Run::former()
     .application( program )
     .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
     .path( current_path )
     .form();
-    // xxx : qqq : for Petro : implement run for former та для RunOptions
+    // xxx : qqq : for Petro : implement run for former та для Run
     run( options )
   }
 
   /// Process command output.
   #[ derive( Debug, Clone, Default ) ]
-  pub struct CmdReport
+  pub struct Report
   {
     /// Command that was executed.
     pub command : String,
@@ -83,7 +83,7 @@ pub( crate ) mod private
     pub err : String,
   }
 
-  impl std::fmt::Display for CmdReport
+  impl std::fmt::Display for Report
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
@@ -104,7 +104,7 @@ pub( crate ) mod private
 
   /// Option for `run` function
   #[ derive( Debug, Former ) ]
-  pub struct RunOptions
+  pub struct Run
   {
     application : PathBuf,
     args : Vec< OsString >,
@@ -122,13 +122,13 @@ pub( crate ) mod private
   /// - `path`: Directory path to run the application in.
   ///
   /// # Returns:
-  /// A `Result` containing `CmdReport` on success, detailing execution output,
+  /// A `Result` containing `Report` on success, detailing execution output,
   /// or an error message on failure.
   ///
   /// # Errors:
   /// Returns an error if the process fails to spawn, complete, or if output
   /// cannot be decoded as UTF-8.
-  pub fn run( options : RunOptions ) -> Result< CmdReport, ( CmdReport, Error ) >
+  pub fn run( options : Run ) -> Result< Report, ( Report, Error ) >
   {
     let application : &Path = options.application.as_ref();
     let path : &Path = options.path.as_ref();
@@ -143,7 +143,7 @@ pub( crate ) mod private
       .run()
       .map_err( | e | ( Default::default(), e.into() ) )?;
 
-      let report = CmdReport
+      let report = Report
       {
         command : format!( "{} {}", application.display(), options.args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
         path : path.to_path_buf(),
@@ -176,7 +176,7 @@ pub( crate ) mod private
       .context( "failed to wait on child" )
       .map_err( | e | ( Default::default(), e.into() ) )?;
 
-      let report = CmdReport
+      let report = Report
       {
         command : format!( "{} {}", application.display(), options.args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
         path : path.to_path_buf(),
@@ -198,8 +198,8 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use CmdReport;
+  protected use Report;
   protected use run_with_shell;
   protected use run;
-  protected use RunOptions;
+  protected use Run;
 }
