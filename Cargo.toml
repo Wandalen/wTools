@@ -354,15 +354,15 @@ version = "~0.2.0"
 path = "module/move/graphs_tools"
 default-features = false
 
-[workspace.dependencies.automata_tools]
-version = "~0.2.0"
-path = "module/move/automata_tools"
-default-features = false
-
-[workspace.dependencies.wautomata]
-version = "~0.2.0"
-path = "module/alias/wautomata"
-default-features = false
+# [workspace.dependencies.automata_tools]
+# version = "~0.2.0"
+# path = "module/move/automata_tools"
+# default-features = false
+#
+# [workspace.dependencies.wautomata]
+# version = "~0.2.0"
+# path = "module/alias/wautomata"
+# default-features = false
 
 
 ## ca
