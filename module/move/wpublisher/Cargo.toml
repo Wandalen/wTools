@@ -39,37 +39,17 @@ no_std = []
 use_alloc = []
 enabled = []
 
-[lib]
-name = "wpublisher"
-path = "src/publisher/wpublisher_lib.rs"
-
-[[bin]]
-name = "wpublisher"
-path = "src/publisher/wpublisher_entry.rs"
-
-[[test]]
-name = "publisher_test"
-path = "tests/publisher/wpublisher_tests.rs"
-
-[[test]]
-name = "publisher_smoke_test"
-path = "tests/smoke_test.rs"
-
-[[example]]
-name = "wpublisher_trivial"
-path = "examples/wpublisher_trivial/src/main.rs"
-
 [dependencies]
-wtools = { workspace = true }
-wca = { workspace = true }
-mod_interface = { workspace = true }
-anyhow = "~1.0"
-toml_edit = "~0.14"
-cargo_metadata = "~0.14"
-ureq = "~2.9"
-sha-1 = "~0.10"
-globwalk = "~0.8"
-petgraph = "~0.6"
+# wtools = { workspace = true }
+# wca = { workspace = true }
+# mod_interface = { workspace = true }
+# anyhow = "~1.0"
+# toml_edit = "~0.14"
+# cargo_metadata = "~0.14"
+# ureq = "~2.9"
+# sha-1 = "~0.10"
+# globwalk = "~0.8"
+# petgraph = "~0.6"
 
 [dev-dependencies]
 test_tools = { workspace = true }
