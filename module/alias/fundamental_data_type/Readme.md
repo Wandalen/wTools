@@ -2,7 +2,7 @@
 
 # Module :: fundamental_data_type
 
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml) [![docs.rs](https://img.shields.io/docsrs/fundamental_data_type?color=e3e8f0&logo=docs.rs)](https://docs.rs/fundamental_data_type) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+[![deprecated](https://raster.shields.io/static/v1?label=stability&message=deprecated&color=red&logoColor=eee)](https://github.com/emersion/stability-badges#deprecated) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleFundamentalDataTypePush.yml) [![docs.rs](https://img.shields.io/docsrs/fundamental_data_type?color=e3e8f0&logo=docs.rs)](https://docs.rs/fundamental_data_type) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
 Fundamental data types and type constructors, like Single, Pair, Homopair, Many.
 

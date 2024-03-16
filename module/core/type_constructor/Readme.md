@@ -1,8 +1,10 @@
 <!-- {{# generate.module_header{} #}} -->
 
-# Module :: type_constructor
+# Module :: fundamental_data_type
 
 [![deprecated](https://raster.shields.io/static/v1?label=stability&message=deprecated&color=red&logoColor=eee)](https://github.com/emersion/stability-badges#deprecated) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTypeConstructorPush.yml) [![docs.rs](https://img.shields.io/docsrs/type_constructor?color=e3e8f0&logo=docs.rs)](https://docs.rs/type_constructor) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftype_constructor_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20type_constructor_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+
+<!-- qqq : make it alias for derive_tools -->
 
 Fundamental data types and type constructors, like Single, Pair, Homopair, Many.
 
