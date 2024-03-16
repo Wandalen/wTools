@@ -73,14 +73,22 @@ mod subformer_basic;
 mod components_component_from_manual;
 #[ cfg( feature = "derive_component_from" ) ]
 mod components_component_from;
+
 #[ cfg( feature = "derive_component_assign" ) ]
 mod components_component_assign_manual;
 #[ cfg( feature = "derive_component_assign" ) ]
 mod components_component_assign;
+
 #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
 mod components_components_assign_manual;
 #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
 mod components_components_assign;
+
+#[ cfg( all( feature = "derive_from_components" ) ) ]
+mod components_from_components_manual;
+#[ cfg( all( feature = "derive_from_components" ) ) ]
+mod components_from_components;
+
 #[ cfg( all( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
 mod components_composite_manual;
 #[ cfg( all( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]

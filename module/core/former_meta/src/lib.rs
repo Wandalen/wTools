@@ -677,6 +677,93 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::Token
   }
 }
 
+/// A procedural macro to automatically derive the `From<T>` trait implementation for a struct,
+/// enabling instances of one type to be converted from instances of another type.
+///
+/// It is part of type-based forming approach which requires each field having an unique type. Each field
+/// of the target struct must be capable of being individually converted from the source type `T`.
+/// This macro simplifies the implementation of type conversions, particularly useful for
+/// constructing a struct from another type with compatible fields. The source type `T` must
+/// implement `Into< FieldType >` for each field type of the target struct.
+///
+/// # Attributes
+///
+/// - `debug`: Optional. Enables debug printing during macro expansion.
+///
+/// # Requirements
+///
+/// - Available only when the feature flags `enabled` and `derive_from_components`
+///   are activated in your Cargo.toml. It's activated by default.
+///
+/// # Examples
+///
+/// Given the structs `Options1` and `Options2`, where `Options2` is a subset of `Options1`:
+///
+/// ```rust
+/// use former::FromComponents;
+///
+/// #[ derive( Debug, Default, PartialEq ) ]
+/// pub struct Options1
+/// {
+///   field1 : i32,
+///   field2 : String,
+///   field3 : f32,
+/// }
+///
+/// impl From< &Options1 > for i32
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : &Options1 ) -> Self
+///   {
+///     src.field1.clone()
+///   }
+/// }
+///
+/// impl From< &Options1 > for String
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : &Options1 ) -> Self
+///   {
+///     src.field2.clone()
+///   }
+/// }
+///
+/// impl From< &Options1 > for f32
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : &Options1 ) -> Self
+///   {
+///     src.field3.clone()
+///   }
+/// }
+///
+/// #[ derive( Debug, Default, PartialEq, FromComponents ) ]
+/// pub struct Options2
+/// {
+///   field1 : i32,
+///   field2 : String,
+/// }
+///
+/// let o1 = Options1 { field1 : 42, field2 : "Hello, world!".to_string(), field3 : 13.01 };
+///
+/// // Demonstrating conversion from Options1 to Options2
+/// let o2 : Options2 = Into::< Options2 >::into( &o1 );
+/// let expected = Options2 { field1 : 42, field2 : "Hello, world!".to_string() };
+/// assert_eq!( o2, expected );
+///
+/// // Alternative way using `.into()`
+/// let o2 : Options2 = ( &o1 ).into();
+/// assert_eq!( o2, expected );
+///
+/// // Alternative way using `.from()`
+/// let o2 = Options2::from( &o1 );
+/// assert_eq!( o2, expected );
+/// ```
+///
+/// This demonstrates how `Options2` can be derived from `Options1` using the `FromComponents` macro,
+/// automatically generating the necessary `From< &Options1 >` implementation for `Options2`, facilitating
+/// an easy conversion between these types based on their compatible fields.
+///
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_from_components" ) ]
 #[ proc_macro_derive( FromComponents, attributes( debug ) ) ]

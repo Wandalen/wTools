@@ -1,7 +1,12 @@
 use super::*;
 use macro_tools::{ attr, diag, type_struct, Result };
 
-/// Implement `From< T >` for the entity structure, implying that `T` implement `Into< Field >` for each field and that each field has its unique type. It's part of process of type-based forming.
+///
+/// Generates an implementation of the `From< T >` trait for a custom struct, enabling
+/// type-based conversion from `T` to the struct. This function parses the given
+/// `TokenStream` representing a struct, and produces code that allows for its
+/// fields to be initialized from an instance of type `T`, assuming `T` can be
+/// converted into each of the struct's field types.
 ///
 /// # Example of generated code
 ///
@@ -25,6 +30,7 @@ use macro_tools::{ attr, diag, type_struct, Result };
 ///   }
 /// }
 /// ```
+///
 
 #[ inline ]
 pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
@@ -36,14 +42,9 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
   // Struct name
   let item_name = parsed.item_name.clone();
 
-  // Fields
-  // let field_types : Vec< _ > = parsed.fields.iter().map( | field | &field.ty ).collect();
-
   // Generate snipets
-  let trait_bounds = generate_trait_bounds( &parsed.field_types()[ .. ] );
-  let field_assigns = generate_field_assigns( &parsed.fields_many() );
-
-  // Struct initialization
+  let trait_bounds = trait_bounds( &parsed.field_types()[ .. ] );
+  let field_assigns = field_assign( &parsed.fields_many() );
   let field_names : Vec< _ > = parsed.fields.iter().map( | field | &field.ident ).collect();
 
   // Generate the From<T> trait implementation
@@ -73,8 +74,24 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
   Ok( result.into() )
 }
 
+/// Generates trait bounds for the `From< T >` implementation, ensuring that `T`
+/// can be converted into each of the struct's field types. This function
+/// constructs a sequence of trait bounds necessary for the `From< T >`
+/// implementation to compile.
+///
+/// # Example of generated code
+///
+/// Given field types `[i32, String]`, this function generates:
+///
+/// ```ignore
+/// T : Into< i32 >,
+/// T : Into< String >,
+/// ```
+///
+/// These trait bounds are then used in the `From<T>` implementation to ensure type compatibility.
+
 #[ inline ]
-fn generate_trait_bounds( field_types : &[ &syn::Type ] ) -> Vec< proc_macro2::TokenStream >
+fn trait_bounds( field_types : &[ &syn::Type ] ) -> Vec< proc_macro2::TokenStream >
 {
   field_types.iter().map( | field_type |
   {
@@ -85,8 +102,23 @@ fn generate_trait_bounds( field_types : &[ &syn::Type ] ) -> Vec< proc_macro2::T
   }).collect()
 }
 
+/// Generates code snippets for converting `T` into each of the struct's fields
+/// inside the `from` function of the `From<T>` trait implementation. This function
+/// creates a series of statements that clone the source `T`, convert it into the
+/// appropriate field type, and assign it to the corresponding field of the struct.
+///
+/// # Example of generated code
+///
+/// For a struct with fields `field1: i32` and `field2: String`, this function generates:
+///
+/// ```ignore
+/// let field1 = Into::< i32 >::into( src.clone() );
+/// let field2 = Into::< String >::into( src.clone() );
+/// ```
+///
+
 #[ inline ]
-fn generate_field_assigns( fields : &[ &syn::Field ] ) -> Vec< proc_macro2::TokenStream >
+fn field_assign( fields : &[ &syn::Field ] ) -> Vec< proc_macro2::TokenStream >
 {
   fields.iter().map( | field |
   {
